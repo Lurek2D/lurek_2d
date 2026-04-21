@@ -356,13 +356,13 @@ lurek.input.bind("quit",  "escape")
 -- ---------------------------------------------------------------------------
 -- Init
 -- ---------------------------------------------------------------------------
-lurek.init(function()
+function lurek.init()
     lurek.window.setTitle("Signal Demo — Lurek2D")
     lurek.render.setBackgroundColor(0.06, 0.06, 0.10)
     lurek.camera.setPosition(0, 0)
-end)
+end
 
-lurek.ready(function()
+function lurek.ready()
     -- Engine particle systems per signal type
     hit_ps = lurek.particle.newSystem({
         maxParticles = 200, emissionRate = 0,
@@ -402,7 +402,7 @@ lurek.ready(function()
     })
 
     register_subscribers()
-end)
+end
 
 -- ---------------------------------------------------------------------------
 -- Process

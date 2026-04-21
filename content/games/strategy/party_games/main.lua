@@ -125,7 +125,7 @@ lurek.input.bind("start",   "space")
 lurek.input.bind("quit",    "escape")
 
 -- ── Init ──────────────────────────────────────────────────
-lurek.init(function()
+function lurek.init()
     lurek.window.setTitle("Party Games — Lurek2D")
     lurek.render.setBackgroundColor(0.06, 0.04, 0.12, 1.0)
     math.randomseed(os.time())
@@ -140,10 +140,10 @@ lurek.init(function()
         startSize    = 8, endSize = 1,
         spread       = math.pi * 2,
     })
-end)
+end
 
 -- ── Process ───────────────────────────────────────────────
-lurek.process(function(dt)
+function lurek.process(dt)
     if celebration_sys then celebration_sys:update(dt) end
     if flash_t > 0 then flash_t = flash_t - dt end
 
@@ -231,7 +231,7 @@ lurek.process(function(dt)
         end
         return
     end
-end)
+end
 
 -- Helper to handle text input for math and typing (simplified polling)
 lurek.process(function(dt)
@@ -284,17 +284,17 @@ lurek.process(function(dt)
 end)
 
 -- ── Render world ──────────────────────────────────────────
-lurek.render(function()
+function lurek.render()
     if celebration_sys then celebration_sys:draw() end
     -- Flash overlay
     if flash_t > 0 and flash_col then
         local a = flash_t / 0.3 * flash_col[4]
         lurek.render.drawRect(0, 0, W, H, { color = { flash_col[1], flash_col[2], flash_col[3], a } })
     end
-end)
+end
 
 -- ── Render UI ─────────────────────────────────────────────
-lurek.render_ui(function()
+function lurek.render_ui()
     if state == "menu" then
         lurek.render.drawText("PARTY GAMES", 240, 180, { color = {1,0.8,0.2,1}, size = 48 })
         lurek.render.drawText("Press SPACE to start", 268, 280, { color = {0.7,0.7,0.7,1}, size = 18 })
@@ -363,4 +363,4 @@ lurek.render_ui(function()
             lurek.render.drawText("Space=continue", 320, 456, { color = {0.5,0.5,0.5,1}, size = 14 })
         end
     end
-end)
+end

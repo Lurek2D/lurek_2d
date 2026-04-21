@@ -283,7 +283,7 @@ end)
 
 -- ── Callbacks ──────────────────────────────────────────────────────────
 
-lurek.init(function()
+function lurek.init()
     screen_w, screen_h = lurek.window.getSize()
     lurek.render.setBackgroundColor(0.1, 0.15, 0.1)
     generate_world()
@@ -294,13 +294,13 @@ lurek.init(function()
     player_draw_x = player_x
     player_draw_y = player_y
     update_visibility()
-end)
+end
 
-lurek.ready(function()
+function lurek.ready()
     lurek.window.setTitle("Minimap Demo — Lurek2D")
     -- fade in title
     tween_add(_G, "title_alpha", 1, 0.8, "ease_out")
-end)
+end
 
 lurek.process(function(dt)
     tweens_update(dt)

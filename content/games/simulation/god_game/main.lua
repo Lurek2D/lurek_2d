@@ -640,7 +640,7 @@ lurek.render(function()
     end
 end)
 
-lurek.render_ui(function()
+function lurek.render_ui()
     if state == TITLE then
         lurek.render.drawText("GOD GAME", 240, 180, 48, 0.9, 0.85, 0.6, 1)
         lurek.render.drawText("SHAPE THE WORLD", 260, 250, 20, 0.7, 0.7, 0.6, 0.8)
@@ -707,4 +707,4 @@ lurek.render_ui(function()
         local name = terrain_names[t] or "?"
         lurek.render.drawText(name .. " (" .. cursor_gx .. "," .. cursor_gy .. ")", 10, 555, 12, 0.5, 0.5, 0.5, 0.7)
     end
-end)
+end

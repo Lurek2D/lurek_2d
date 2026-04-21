@@ -217,7 +217,7 @@ lurek.input.bind("click", "mouse1")
 lurek.input.bind("quit",  "escape")
 
 -- ── Init ──────────────────────────────────────────────────
-lurek.init(function()
+function lurek.init()
     lurek.window.setTitle("Match 3 — Lurek2D")
     lurek.render.setBackgroundColor(0.05, 0.04, 0.10, 1.0)
     math.randomseed(os.time())
@@ -242,7 +242,7 @@ lurek.init(function()
     })
 
     init_grid()
-end)
+end
 
 -- ── Process ───────────────────────────────────────────────
 lurek.process(function(dt)
@@ -376,7 +376,7 @@ lurek.render(function()
 end)
 
 -- ── Render UI ─────────────────────────────────────────────
-lurek.render_ui(function()
+function lurek.render_ui()
     lurek.render.drawRect(0, 0, W, GRID_Y - 4, { color = {0.08,0.06,0.14,1} })
     lurek.render.drawText("Score: " .. score, 14, 10, { color = {1,1,0.3,1}, size = 18 })
     lurek.render.drawText("Moves: " .. moves_left, 240, 10, { color = {0.4,0.9,0.4,1}, size = 18 })
@@ -390,4 +390,4 @@ lurek.render_ui(function()
         lurek.render.drawText("GAME OVER", 280, 245, { color = {0.9,0.2,0.2,1}, size = 34 })
         lurek.render.drawText("Final score: " .. score, 300, 295, { color = {1,1,1,1}, size = 18 })
     end
-end)
+end

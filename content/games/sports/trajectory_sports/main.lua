@@ -628,14 +628,14 @@ end
 -- Callbacks
 -- ═══════════════════════════════════════════════════════════════════
 
-lurek.init(function()
+function lurek.init()
     lurek.window.setTitle("Trajectory Sports — Lurek2D")
     lurek.window.setBackgroundColor(0.1, 0.1, 0.15)
-end)
+end
 
-lurek.ready(function()
+function lurek.ready()
     lurek.camera.init(W, H)
-end)
+end
 
 lurek.process(function(dt)
     title_blink = title_blink + dt

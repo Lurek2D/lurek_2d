@@ -416,12 +416,12 @@ end
 -- ---------------------------------------------------------------------------
 -- lurek.init — one-time setup
 -- ---------------------------------------------------------------------------
-lurek.init(function()
+function lurek.init()
     lurek.window.setTitle("Commando — Lurek2D")
     lurek.render.setBackgroundColor(0.08, 0.18, 0.06)
     cam = lurek.camera.new()
     cam:setPosition(0, 0)
-end)
+end
 
 -- ---------------------------------------------------------------------------
 -- lurek.process — logic update
@@ -801,7 +801,7 @@ end)
 -- ---------------------------------------------------------------------------
 -- lurek.render_ui — HUD overlay
 -- ---------------------------------------------------------------------------
-lurek.render_ui(function()
+function lurek.render_ui()
     if current_state == STATE.TITLE then
         -- Title screen
         lurek.render.setColor(0.2, 0.8, 0.15, 1)
@@ -850,4 +850,4 @@ lurek.render_ui(function()
         lurek.render.setColor(0.8, 0.8, 0.3, 0.7)
         lurek.render.print("HI: " .. high_score, SCREEN_W - 80, SCREEN_H - 20)
     end
-end)
+end

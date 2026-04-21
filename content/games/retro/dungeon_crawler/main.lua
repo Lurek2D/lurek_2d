@@ -181,7 +181,7 @@ end
 ------------------------------------------------------------------------
 -- lurek.init
 ------------------------------------------------------------------------
-lurek.init(function()
+function lurek.init()
     lurek.window.setTitle("Dungeon Crawler — Lurek2D")
     lurek.render.setBackgroundColor(0.02, 0.02, 0.05)
 
@@ -200,7 +200,7 @@ lurek.init(function()
     player.vy = player.gy - 0.5
     player.va = DIR_ANGLE[player.dir + 1]
     reveal_around(player.gx, player.gy)
-end)
+end
 
 lurek.ready(function() end)
 

@@ -513,7 +513,7 @@ end
 -- ---------------------------------------------------------------------------
 -- Engine callbacks
 -- ---------------------------------------------------------------------------
-lurek.init(function()
+function lurek.init()
     lurek.window.setTitle("Card Game — Lurek2D")
     lurek.render.setBackgroundColor(0.08, 0.05, 0.1)
     lurek.timer.setTargetFPS(60)
@@ -521,12 +521,12 @@ lurek.init(function()
     lurek.input.bind("end_turn", "space")
     lurek.input.bind("quit", "escape")
     reset_game()
-end)
+end
 
-lurek.ready(function()
+function lurek.ready()
     state = STATE_TITLE
     title_timer = 0
-end)
+end
 
 -- ---------------------------------------------------------------------------
 -- Process

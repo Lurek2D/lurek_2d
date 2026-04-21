@@ -130,7 +130,7 @@ lurek.input.bind("start_wave",   "space")
 lurek.input.bind("quit",         "escape")
 
 -- ── Init ──────────────────────────────────────────────────
-lurek.init(function()
+function lurek.init()
     lurek.window.setTitle("Maze Defense — Lurek2D")
     lurek.render.setBackgroundColor(0.05, 0.08, 0.05, 1.0)
 
@@ -147,7 +147,7 @@ lurek.init(function()
 
     init_grid()
     rebuild_path()
-end)
+end
 
 -- ── Process ───────────────────────────────────────────────
 lurek.process(function(dt)
@@ -333,7 +333,7 @@ lurek.render(function()
 end)
 
 -- ── Render UI ─────────────────────────────────────────────
-lurek.render_ui(function()
+function lurek.render_ui()
     lurek.render.drawText("Gold: " .. gold, 14, 8, { color = {1,0.85,0.2,1}, size = 15 })
     lurek.render.drawText("Lives: " .. lives, 130, 8, { color = {0.3,1.0,0.3,1}, size = 15 })
     lurek.render.drawText("Wave: " .. wave .. "/5", 240, 8, { color = {0.7,0.7,1.0,1}, size = 15 })
@@ -348,4 +348,4 @@ lurek.render_ui(function()
     elseif state == "victory" then
         lurek.render.drawText("VICTORY!", 270, 200, { color = {1,0.9,0.2,1}, size = 48 })
     end
-end)
+end

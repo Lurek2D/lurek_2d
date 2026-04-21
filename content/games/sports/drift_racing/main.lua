@@ -481,16 +481,16 @@ lurek.input.bind("quit", "escape")
 
 define_tracks()
 
-lurek.init(function()
+function lurek.init()
     lurek.window.setTitle("Drift Racing — Lurek2D")
     lurek.render.setBackgroundColor(0.15, 0.2, 0.1)
-end)
+end
 
-lurek.ready(function()
+function lurek.ready()
     state = "TITLE"
-end)
+end
 
-lurek.process(function(delta)
+function lurek.process(delta)
     dt = delta
 
     if lurek.input.is_action_just_pressed("quit") then
@@ -536,7 +536,7 @@ lurek.process(function(delta)
     end
 
     lurek.window.setTitle(string.format("Drift Racing — FPS: %d", lurek.timer.getFPS()))
-end)
+end
 
 lurek.render(function()
     if state == "RACING" then

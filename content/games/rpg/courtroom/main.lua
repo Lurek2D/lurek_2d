@@ -232,10 +232,10 @@ local function process_objection(evidence_index)
     end
 end
 
-lurek.init(function()
+function lurek.init()
     lurek.window.setTitle("Courtroom Drama — Lurek2D")
     lurek.render.setBackgroundColor(0.15, 0.1, 0.08)
-end)
+end
 
 lurek.ready(function() end)
 

@@ -264,16 +264,16 @@ lurek.input.bind("nav_up",     "up")
 lurek.input.bind("nav_down",   "down")
 
 -- ── Init ────────────────────────────────────────────────────────
-lurek.init(function()
+function lurek.init()
     lurek.window.setTitle("Mining — Lurek2D")
     lurek.render.setBackgroundColor(0.05, 0.03, 0.02)
     math.randomseed(os.time())
     generate_mine()
-end)
+end
 
-lurek.ready(function()
+function lurek.ready()
     state = "TITLE"
-end)
+end
 
 -- ── Process ─────────────────────────────────────────────────────
 lurek.process(function(dt)

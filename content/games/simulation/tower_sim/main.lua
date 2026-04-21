@@ -339,7 +339,7 @@ end
 
 -- === Engine callbacks ===
 
-lurek.init(function()
+function lurek.init()
     lurek.window.setTitle("Tower Sim — Lurek2D")
     lurek.render.setBackgroundColor(0.6, 0.8, 1.0)
 
@@ -352,11 +352,11 @@ lurek.init(function()
     lurek.input.bind("elevator", "e")
     lurek.input.bind("place", "mouse1")
     lurek.input.bind("quit", "escape")
-end)
+end
 
-lurek.ready(function()
+function lurek.ready()
     init_tower()
-end)
+end
 
 lurek.process(function(delta)
     dt = delta
@@ -544,7 +544,7 @@ lurek.render(function()
     end
 end)
 
-lurek.render_ui(function()
+function lurek.render_ui()
     if state == "TITLE" then
         lurek.render.drawRect(0, 0, 800, 600, 0.1, 0.1, 0.2, 1.0)
         lurek.render.drawText("TOWER SIM", 240, 160, 48)
@@ -599,4 +599,4 @@ lurek.render_ui(function()
 
     -- FPS
     lurek.render.drawText("FPS: " .. lurek.timer.getFPS(), 730, 580, 12)
-end)
+end

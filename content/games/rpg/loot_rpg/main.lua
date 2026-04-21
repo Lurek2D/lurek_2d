@@ -252,7 +252,7 @@ lurek.input.bind("quit",      "escape")
 -- Callbacks
 -- ============================================================
 
-lurek.init(function()
+function lurek.init()
     lurek.render.setBackgroundColor(0.08, 0.06, 0.12, 1.0)
     cam = lurek.camera.new()
     math.randomseed(os.time())
@@ -280,9 +280,9 @@ lurek.init(function()
         endSize      = 2,
         spread       = math.pi * 2,
     })
-end)
+end
 
-lurek.process(function(dt)
+function lurek.process(dt)
     titleBlink = titleBlink + dt
 
     if lootSparkle then lootSparkle:update(dt) end
@@ -346,16 +346,16 @@ lurek.process(function(dt)
     elseif lurek.input.isKeyDown("down") then
         scrollOffset = scrollOffset + 1
     end
-end)
+end
 
 -- ============================================================
 -- Render (world)
 -- ============================================================
 
-lurek.render(function()
+function lurek.render()
     if lootSparkle then lootSparkle:draw() end
     if combatFlash then combatFlash:draw() end
-end)
+end
 
 -- ============================================================
 -- Render UI
@@ -487,7 +487,7 @@ local function renderGameOver()
     lurek.render.drawText("Press SPACE to return to title", 260, 400, { color = {1.0, 1.0, 1.0, 0.6}, size = 16 })
 end
 
-lurek.render_ui(function()
+function lurek.render_ui()
     local fps = lurek.timer.getFPS()
     lurek.render.drawText("FPS: " .. math.floor(fps), 720, 8, { color = {0.5, 0.5, 0.5, 1.0}, size = 12 })
 
@@ -497,4 +497,4 @@ lurek.render_ui(function()
     elseif state == STATE_ROOM     then renderRoom()
     elseif state == STATE_GAME_OVER then renderGameOver()
     end
-end)
+end

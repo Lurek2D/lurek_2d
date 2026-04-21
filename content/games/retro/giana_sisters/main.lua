@@ -211,9 +211,9 @@ end
 lurek.setTitle("Giana Sisters — Lurek2D")
 lurek.setBackgroundColor(0.1, 0.1, 0.3)
 
-lurek.init(function()
+function lurek.init()
   load_level(1)
-end)
+end
 
 lurek.process(function(dt)
   -- Global quit

@@ -244,22 +244,22 @@ lurek.input.bind("quit",    "escape")
 -- ---------------------------------------------------------------------------
 -- Init
 -- ---------------------------------------------------------------------------
-lurek.init(function()
+function lurek.init()
     lurek.window.setTitle("Vehicle Builder — Lurek2D")
     lurek.window.setBackgroundColor(0.1, 0.1, 0.12)
     clear_grid()
-end)
+end
 
 -- ---------------------------------------------------------------------------
 -- Ready
 -- ---------------------------------------------------------------------------
-lurek.ready(function()
+function lurek.ready()
     -- place a starter frame in center
     local cr = math.floor(GRID_ROWS / 2)
     local cc = math.floor(GRID_COLS / 2)
     grid[cr][cc] = PART.FRAME
     compute_stats()
-end)
+end
 
 -- ---------------------------------------------------------------------------
 -- Process

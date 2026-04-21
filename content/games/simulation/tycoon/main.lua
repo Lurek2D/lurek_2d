@@ -255,7 +255,7 @@ end
 -- Engine callbacks
 -- ══════════════════════════════════════════════════════════════════════════
 
-lurek.init(function()
+function lurek.init()
     lurek.window.setTitle("Tycoon — Lurek2D")
     lurek.render.setBackgroundColor(0.08, 0.06, 0.1)
     lurek.camera.init(W, H)
@@ -272,11 +272,11 @@ lurek.init(function()
     lurek.input.bind("prestige", "p")
     lurek.input.bind("select",   "mouse1")
     lurek.input.bind("quit",     "escape")
-end)
+end
 
-lurek.ready(function()
+function lurek.ready()
     gold_per_second = compute_gps()
-end)
+end
 
 lurek.process(function(dt)
     if lurek.input.justPressed("quit") then

@@ -371,7 +371,7 @@ local function update_fighter(f, dt, move_left, move_right, do_jump, do_attack, 
 end
 
 -- ── lurek.init ───────────────────────────────────────────────────────────
-lurek.init(function()
+function lurek.init()
     lurek.window.setTitle("Platform Fighter — Lurek2D")
     lurek.render.setBackgroundColor(0.15, 0.2, 0.35)
 
@@ -424,12 +424,12 @@ lurek.init(function()
         colors     = {{1,1,1,0.6},{0.5,0.5,1,0}},
         sizes      = {3, 1},
     })
-end)
+end
 
 -- ── lurek.ready ──────────────────────────────────────────────────────────
-lurek.ready(function()
+function lurek.ready()
     lurek.camera.setPosition(0, 0)
-end)
+end
 
 -- ── lurek.process ────────────────────────────────────────────────────────
 lurek.process(function(dt)

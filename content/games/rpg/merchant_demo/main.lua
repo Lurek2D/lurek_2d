@@ -305,16 +305,16 @@ end
 -- ---------------------------------------------------------------------------
 -- Engine callbacks
 -- ---------------------------------------------------------------------------
-lurek.init(function()
+function lurek.init()
     lurek.window.setTitle("Merchant — Lurek2D")
     lurek.render.setBackgroundColor(0.15, 0.12, 0.08)
     lurek.timer.setTargetFPS(60)
     reset_game()
-end)
+end
 
-lurek.ready(function()
+function lurek.ready()
     current_state = STATE.TITLE
-end)
+end
 
 lurek.process(function(dt)
     -- Title screen

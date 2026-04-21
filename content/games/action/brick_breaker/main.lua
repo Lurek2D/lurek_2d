@@ -127,7 +127,7 @@ local function apply_pu(k)
 end
 
 -- ── Init ──────────────────────────────────────────────────────────────────
-lurek.init(function()
+function lurek.init()
     lurek.window.setTitle("Brick Breaker — Lurek2D")
     lurek.render.setBackgroundColor(0.05, 0.05, 0.1)
 
@@ -151,7 +151,7 @@ lurek.init(function()
     hit_ps:setColors(1,0.9,0.5,1, 1,0.5,0.1,0)
 
     lurek.camera.new()
-end)
+end
 
 -- ── Process ───────────────────────────────────────────────────────────────
 lurek.process(function(dt)
@@ -315,7 +315,7 @@ lurek.render(function()
 end)
 
 -- ── Render UI ─────────────────────────────────────────────────────────────
-lurek.render_ui(function()
+function lurek.render_ui()
     local fps = lurek.timer.getFPS()
     local a = math.sin(blink*3)*0.5+0.5
 
@@ -359,4 +359,4 @@ lurek.render_ui(function()
     if state == STATE.PLAYING and on_paddle then
         lurek.render.print("PRESS SPACE TO LAUNCH", W/2-105, PADDLE_Y+30, 16, 1,1,1,a)
     end
-end)
+end

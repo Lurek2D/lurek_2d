@@ -131,7 +131,7 @@ end)
 ------------------------------------------------------------
 -- Input bindings
 ------------------------------------------------------------
-lurek.ready(function()
+function lurek.ready()
     lurek.input.bind("build_standard", "1")
     lurek.input.bind("build_deluxe",   "2")
     lurek.input.bind("build_suite",    "3")
@@ -140,7 +140,7 @@ lurek.ready(function()
     lurek.input.bind("upgrade",        "u")
     lurek.input.bind("select",         "mouse1")
     lurek.input.bind("quit",           "escape")
-end)
+end
 
 ------------------------------------------------------------
 -- Update

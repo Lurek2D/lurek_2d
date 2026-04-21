@@ -198,15 +198,15 @@ end
 
 -- ── Callbacks ───────────────────────────────────────────────────────────────
 
-lurek.init(function()
+function lurek.init()
     lurek.window.setTitle("Alchemy Lab — Lurek2D")
     lurek.render.setBackgroundColor(0.12, 0.08, 0.06)
     lurek.camera.reset()
-end)
+end
 
-lurek.ready(function()
+function lurek.ready()
     set_message("Welcome to the Alchemy Lab!", 3)
-end)
+end
 
 -- ── Process ─────────────────────────────────────────────────────────────────
 

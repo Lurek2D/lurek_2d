@@ -379,14 +379,14 @@ lurek.input.bind("speed2", "2")
 lurek.input.bind("speed3", "3")
 lurek.input.bind("quit", "escape")
 
-lurek.init(function()
+function lurek.init()
     lurek.window.setTitle("Railroad — Lurek2D")
     generate_map()
-end)
+end
 
-lurek.ready(function()
+function lurek.ready()
     lurek.camera.setPosition(0, 0)
-end)
+end
 
 lurek.process(function(dt)
     if lurek.input.pressed("quit") then

@@ -245,15 +245,15 @@ end
 -- ============================================================
 -- Init
 -- ============================================================
-lurek.init(function()
+function lurek.init()
     lurek.window.setTitle("Light Showcase — Lurek2D")
     lurek.render.setBackgroundColor(0.02, 0.02, 0.05)
     lurek.camera.setPosition(0, 0)
-end)
+end
 
-lurek.ready(function()
+function lurek.ready()
     -- nothing extra needed
-end)
+end
 
 -- ============================================================
 -- Process

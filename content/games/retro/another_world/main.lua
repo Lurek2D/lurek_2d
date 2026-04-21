@@ -604,7 +604,7 @@ end
 -- =========================================================================
 -- Lurek callbacks
 -- =========================================================================
-lurek.init(function()
+function lurek.init()
     lurek.window.setTitle("Another World — Lurek2D")
     lurek.render.setBackgroundColor(0.05, 0.05, 0.28)
 
@@ -619,12 +619,12 @@ lurek.init(function()
     math.randomseed(os.time())
     build_scenes()
     current_state = STATE.TITLE
-end)
+end
 
 -- ---------------------------------------------------------------------------
 -- Process
 -- ---------------------------------------------------------------------------
-lurek.process(function(dt)
+function lurek.process(dt)
     if lurek.input.pressed("quit") then
         lurek.event.quit()
         return
@@ -682,7 +682,7 @@ lurek.process(function(dt)
     update_shields(dt)
     update_aliens(dt)
     update_alien_projectiles(dt)
-end)
+end
 
 -- ---------------------------------------------------------------------------
 -- Render — world scene

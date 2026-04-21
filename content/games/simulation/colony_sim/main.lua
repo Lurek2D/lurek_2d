@@ -387,7 +387,7 @@ local function try_select_colonist(mx, my)
 end
 
 -- ── Init ────────────────────────────────────────────────────
-lurek.init(function()
+function lurek.init()
     lurek.window.setTitle("Colony Sim — Lurek2D")
     lurek.render.setBackgroundColor(0.1, 0.15, 0.1)
 
@@ -404,12 +404,12 @@ lurek.init(function()
     lurek.input.bind("speed_3",        "3")
     lurek.input.bind("select",         "mouse1")
     lurek.input.bind("quit",           "escape")
-end)
+end
 
-lurek.ready(function()
+function lurek.ready()
     generate_map()
     init_colonists()
-end)
+end
 
 -- ── Process ─────────────────────────────────────────────────
 lurek.process(function(dt)
@@ -601,7 +601,7 @@ lurek.render(function()
 end)
 
 -- ── Render UI (HUD overlay) ─────────────────────────────────
-lurek.render_ui(function()
+function lurek.render_ui()
     if state ~= "PLAYING" then return end
 
     local W = 800
@@ -679,4 +679,4 @@ lurek.render_ui(function()
     if message ~= "" then
         lurek.render.drawText(message, 10, bottom_y - 20, {size = 13, color = {1, 1, 0.7, math.min(1, message_timer)}})
     end
-end)
+end

@@ -355,7 +355,7 @@ end
 -- ---------------------------------------------------------------------------
 -- Lurek callbacks
 -- ---------------------------------------------------------------------------
-lurek.init(function()
+function lurek.init()
     lurek.window.setTitle("Bullet Hell — Lurek2D")
     lurek.render.setBackgroundColor(0.05, 0.02, 0.1)
 
@@ -374,7 +374,7 @@ lurek.init(function()
     math.randomseed(os.time())
     reset_game()
     current_state = STATE.TITLE
-end)
+end
 
 -- ---------------------------------------------------------------------------
 -- Process

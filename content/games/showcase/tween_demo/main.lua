@@ -185,16 +185,16 @@ lurek.input.bind("quit",         "escape")
 -- ============================================================
 -- Init
 -- ============================================================
-lurek.init(function()
+function lurek.init()
     lurek.window.setTitle("Tween Demo — Lurek2D")
     lurek.render.setBackgroundColor(0.08, 0.06, 0.1)
     lurek.camera.setPosition(0, 0)
-end)
+end
 
 -- ============================================================
 -- Ready
 -- ============================================================
-lurek.ready(function()
+function lurek.ready()
     -- Burst particles: animation cycle complete
     psys_burst = lurek.particle.newSystem(MAX_PARTICLES)
     psys_burst:setEmissionRate(0)
@@ -228,7 +228,7 @@ lurek.ready(function()
     )
     psys_flash:setPosition(SCREEN_W / 2, 30)
     psys_flash:start()
-end)
+end
 
 -- ============================================================
 -- Process

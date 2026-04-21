@@ -500,7 +500,7 @@ end
 -- ---------------------------------------------------------------------------
 -- Lurek callbacks
 -- ---------------------------------------------------------------------------
-lurek.init(function()
+function lurek.init()
     lurek.window.setTitle("Galaga — Lurek2D")
     lurek.render.setBackgroundColor(0, 0, 0.02)
 
@@ -516,7 +516,7 @@ lurek.init(function()
     math.randomseed(os.time())
     create_stars()
     reset_game()
-end)
+end
 
 -- ---------------------------------------------------------------------------
 -- Process
@@ -942,7 +942,7 @@ end)
 -- ---------------------------------------------------------------------------
 -- Render UI (HUD overlay — screen space)
 -- ---------------------------------------------------------------------------
-lurek.render_ui(function()
+function lurek.render_ui()
     -- Score
     lurek.render.setColor(1, 1, 1, 1)
     lurek.render.print("SCORE: " .. tostring(score), 10, 8)
@@ -968,4 +968,4 @@ lurek.render_ui(function()
     local fps = lurek.timer.getFPS()
     lurek.render.setColor(0.4, 0.4, 0.4, 1)
     lurek.render.print("FPS: " .. tostring(math.floor(fps)), 10, SCREEN_H - 20)
-end)
+end

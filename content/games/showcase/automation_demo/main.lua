@@ -235,16 +235,16 @@ lurek.input.bind("quit",    "escape")
 -- ============================================================
 -- Callbacks
 -- ============================================================
-lurek.init(function()
+function lurek.init()
     lurek.window.setTitle("Automation Demo — Lurek2D")
     lurek.render.setBackgroundColor(0.1, 0.1, 0.15)
     state = STATE_TITLE
     title_timer = 0
-end)
+end
 
-lurek.ready(function()
+function lurek.ready()
     -- ready
-end)
+end
 
 lurek.process(function(dt)
     -- FPS counter

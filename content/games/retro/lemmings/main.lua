@@ -381,13 +381,13 @@ end
 lurek.setTitle("Lemmings — Lurek2D")
 lurek.setBackgroundColor(0.05, 0.05, 0.15)
 
-lurek.init(function()
+function lurek.init()
     lurek.window.setTitle("Lemmings — Lurek2D")
-end)
+end
 
-lurek.ready(function()
+function lurek.ready()
     state = STATE_TITLE
-end)
+end
 
 lurek.process(function(dt)
     -- track mouse

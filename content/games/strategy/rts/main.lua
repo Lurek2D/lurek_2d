@@ -147,7 +147,7 @@ lurek.input.bind("cam_right", "d")
 lurek.input.bind("quit",      "escape")
 
 -- ── Init ──────────────────────────────────────────────────
-lurek.init(function()
+function lurek.init()
     lurek.window.setTitle("RTS — Lurek2D")
     lurek.render.setBackgroundColor(0.06, 0.12, 0.06, 1.0)
 
@@ -175,7 +175,7 @@ lurek.init(function()
 
     math.randomseed(os.time())
     init_game()
-end)
+end
 
 -- ── Process ───────────────────────────────────────────────
 lurek.process(function(dt)
@@ -395,7 +395,7 @@ lurek.render(function()
 end)
 
 -- ── Render UI ─────────────────────────────────────────────
-lurek.render_ui(function()
+function lurek.render_ui()
     -- Panel
     lurek.render.drawRect(0, H - ui_panel_h, W, ui_panel_h, { color = {0.1,0.1,0.1,0.9} })
 
@@ -418,4 +418,4 @@ lurek.render_ui(function()
         lurek.render.drawText("VICTORY!", 290, 225, { color = {1,0.9,0.2,1}, size = 32 })
         lurek.render.drawText("Score: " .. score, 330, 270, { color = {1,1,1,1}, size = 18 })
     end
-end)
+end

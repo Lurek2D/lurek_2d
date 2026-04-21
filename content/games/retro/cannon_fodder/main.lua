@@ -202,7 +202,7 @@ end
 -- ============================================================================
 -- Callbacks
 -- ============================================================================
-lurek.init(function()
+function lurek.init()
     lurek.window.setTitle("Cannon Fodder — Lurek2D")
     lurek.setBackgroundColor(0.1, 0.2, 0.05)
 
@@ -213,12 +213,12 @@ lurek.init(function()
     lurek.input.action("fire",    {"space"})
     lurek.input.action("grenade", {"g"})
     lurek.input.action("quit",    {"escape"})
-end)
+end
 
-lurek.ready(function()
+function lurek.ready()
     state = STATE.TITLE
     title_blink_timer = 0
-end)
+end
 
 -- ============================================================================
 -- Process

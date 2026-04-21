@@ -462,7 +462,7 @@ local function reset_game()
 end
 
 -- ── lurek.init ────────────────────────────────────────────────
-lurek.init(function()
+function lurek.init()
     lurek.window.setTitle("Raycaster FPS — Lurek2D")
     lurek.render.setBackgroundColor(0, 0, 0)
 
@@ -481,7 +481,7 @@ lurek.init(function()
 
     cam = lurek.camera.new(SCREEN_W, SCREEN_H)
     reset_game()
-end)
+end
 
 lurek.ready(function() end)
 

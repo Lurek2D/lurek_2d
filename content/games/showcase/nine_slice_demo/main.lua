@@ -296,18 +296,18 @@ end)
 
 -- ── Callbacks ──────────────────────────────────────────────────────────
 
-lurek.init(function()
+function lurek.init()
     SCREEN_W, SCREEN_H = lurek.window.getSize()
     lurek.render.setBackgroundColor(0.1, 0.08, 0.12)
     math.randomseed(os.time())
-end)
+end
 
-lurek.ready(function()
+function lurek.ready()
     lurek.window.setTitle("Nine Slice Demo — Lurek2D")
     tween_add(_G, "title_alpha", 1, 0.7, "ease_out")
-end)
+end
 
-lurek.process(function(dt)
+function lurek.process(dt)
     tweens_update(dt)
     particles_update(dt)
 
@@ -324,13 +324,13 @@ lurek.process(function(dt)
         STYLES[current_style].name, math.floor(panel_w), math.floor(panel_h),
         lurek.timer.getFPS()
     ))
-end)
+end
 
 -- ── Render: world-space (empty for this UI demo) ───────────────────────
 
-lurek.render(function()
+function lurek.render()
     -- nothing in world space for this showcase
-end)
+end
 
 -- ── Render UI ──────────────────────────────────────────────────────────
 

@@ -201,7 +201,7 @@ end
 -- ============================================================
 -- Input bindings
 -- ============================================================
-lurek.ready(function()
+function lurek.ready()
     lurek.render.setBackgroundColor(0.06, 0.06, 0.08)
     lurek.window.setTitle("Pipeline Showcase — Lurek2D")
     lurek.camera.setPosition(0, 0)
@@ -222,7 +222,7 @@ lurek.ready(function()
     pipe_highlight[1] = 1.0
 
     init_balls()
-end)
+end
 
 -- ============================================================
 -- process(dt) — callback index 2

@@ -283,15 +283,15 @@ lurek.input.bind("quit", "escape")
 
 -- ── Callbacks ─────────────────────────────────────────────────────
 
-lurek.init(function()
+function lurek.init()
     lurek.window.setTitle("Golf Classic — Lurek2D")
     lurek.window.setBackgroundColor(0.2, 0.5, 0.2)
     make_holes()
-end)
+end
 
-lurek.ready(function()
+function lurek.ready()
     lurek.camera.init(W, H)
-end)
+end
 
 lurek.process(function(dt)
     title_blink = title_blink + dt

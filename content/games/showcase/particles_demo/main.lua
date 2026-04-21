@@ -276,15 +276,15 @@ lurek.input.bind("quit", "escape")
 -- ============================================================
 -- Init
 -- ============================================================
-lurek.init(function()
+function lurek.init()
     lurek.window.setTitle("Particles Demo — Lurek2D")
     lurek.render.setBackgroundColor(0.05, 0.05, 0.08)
     lurek.camera.setPosition(0, 0)
-end)
+end
 
-lurek.ready(function()
+function lurek.ready()
     -- system created on first preset switch
-end)
+end
 
 -- ============================================================
 -- Process
@@ -443,7 +443,7 @@ end)
 -- ============================================================
 -- Render: particles (world-space)
 -- ============================================================
-lurek.render(function()
+function lurek.render()
     if state == STATE_TITLE then return end
 
     -- Draw the particle system
@@ -454,7 +454,7 @@ lurek.render(function()
     -- Subtle floor line
     lurek.render.setColor(0.15, 0.15, 0.2, 0.3)
     lurek.render.drawRectFill(0, SCREEN_H - 2, SCREEN_W, 2)
-end)
+end
 
 -- ============================================================
 -- Render UI: HUD, preset name, stats, title screen

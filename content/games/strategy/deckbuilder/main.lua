@@ -126,7 +126,7 @@ lurek.input.bind("confirm",    "space")
 lurek.input.bind("quit",       "escape")
 
 -- ── Init ─────────────────────────────────────────────────
-lurek.init(function()
+function lurek.init()
     lurek.window.setTitle("Deckbuilder — Lurek2D")
     lurek.render.setBackgroundColor(0.08, 0.06, 0.14, 1.0)
     math.randomseed(os.time())
@@ -155,7 +155,7 @@ lurek.init(function()
 
     player = { hp = 50, maxHp = 50, block = 0 }
     start_fight(1)
-end)
+end
 
 -- ── Process ───────────────────────────────────────────────
 lurek.process(function(dt)
@@ -269,10 +269,10 @@ lurek.process(function(dt)
 end)
 
 -- ── Render world ──────────────────────────────────────────
-lurek.render(function()
+function lurek.render()
     if hit_particles  then hit_particles:draw()  end
     if card_particles then card_particles:draw() end
-end)
+end
 
 -- ── Render UI ─────────────────────────────────────────────
 lurek.render_ui(function()

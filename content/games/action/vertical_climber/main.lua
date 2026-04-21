@@ -234,7 +234,7 @@ local function sky_color()
 end
 
 -- ── Engine callbacks ──────────────────────────────────────────────────────
-lurek.init(function()
+function lurek.init()
     lurek.window.setTitle("Vertical Climber — Lurek2D")
     lurek.window.setBackgroundColor(0.6, 0.75, 0.9)
 
@@ -283,11 +283,11 @@ lurek.init(function()
         colorStart = {1.0, 1.0, 1.0, 0.8},
         colorEnd   = {0.8, 0.8, 0.8, 0.0},
     })
-end)
+end
 
-lurek.ready(function()
+function lurek.ready()
     generate_initial_platforms()
-end)
+end
 
 -- ── Process ───────────────────────────────────────────────────────────────
 lurek.process(function(dt)
@@ -614,7 +614,7 @@ lurek.render(function()
 end)
 
 -- ── Render UI (screen space) ──────────────────────────────────────────────
-lurek.render_ui(function()
+function lurek.render_ui()
     local fps = lurek.timer.getFPS()
 
     -- ── Title screen ──────────────────────────────────────────────────────
@@ -694,4 +694,4 @@ lurek.render_ui(function()
     -- FPS
     lurek.render.setColor(0.5, 0.5, 0.6, 0.5)
     lurek.render.drawText("FPS: " .. fps, SCREEN_W - 70, SCREEN_H - 20, 12)
-end)
+end

@@ -375,7 +375,7 @@ end
 -- ---------------------------------------------------------------------------
 -- Init
 -- ---------------------------------------------------------------------------
-lurek.init(function()
+function lurek.init()
     lurek.window.setTitle("Wildlife Photo — Lurek2D")
     lurek.render.setBackgroundColor(bg_r, bg_g, bg_b)
 
@@ -418,7 +418,7 @@ lurek.init(function()
     })
 
     reset_game()
-end)
+end
 
 -- ---------------------------------------------------------------------------
 -- Update

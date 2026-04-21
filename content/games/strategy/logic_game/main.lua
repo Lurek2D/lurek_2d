@@ -119,7 +119,7 @@ lurek.input.bind("next_lvl",  "n")
 lurek.input.bind("quit",      "escape")
 
 -- ── Init ──────────────────────────────────────────────────
-lurek.init(function()
+function lurek.init()
     lurek.window.setTitle("Logic Game — Lurek2D")
     lurek.render.setBackgroundColor(0.06, 0.06, 0.12, 1.0)
 
@@ -146,7 +146,7 @@ lurek.init(function()
     })
 
     load_level(level_idx)
-end)
+end
 
 -- ── Process ───────────────────────────────────────────────
 lurek.process(function(dt)

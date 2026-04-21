@@ -277,16 +277,16 @@ end
 --------------------------------------------------------------
 -- Engine callbacks
 --------------------------------------------------------------
-lurek.init(function()
+function lurek.init()
     lurek.window.setTitle("Sniper — Lurek2D")
     lurek.setBackgroundColor(0.3, 0.35, 0.25)
     lurek.showFPS(true)
     math.randomseed(os.time())
-end)
+end
 
-lurek.ready(function()
+function lurek.ready()
     -- Ready
-end)
+end
 
 lurek.process(function(dt)
     if lurek.input.isActionPressed("quit") then
@@ -511,7 +511,7 @@ end)
 --------------------------------------------------------------
 -- Render UI: HUD, wind, score, round info, title/game over
 --------------------------------------------------------------
-lurek.render_ui(function()
+function lurek.render_ui()
     if state == STATE_TITLE then
         lurek.render.drawText("SNIPER", W / 2 - 80, H / 2 - 60, 48, {0.9, 0.85, 0.7, 1})
         lurek.render.drawText("Ballistics Puzzle", W / 2 - 70, H / 2, 18, {0.7, 0.7, 0.6, 1})
@@ -601,4 +601,4 @@ lurek.render_ui(function()
         local c = {1, 1, 0.5, score_popup.alpha}
         lurek.render.drawText(score_popup.text, score_popup.x - 30, score_popup.y, 18, c)
     end
-end)
+end

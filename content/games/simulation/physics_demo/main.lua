@@ -402,9 +402,9 @@ lurek.init(function()
   end)
 end)
 
-lurek.ready(function()
+function lurek.ready()
   lurek.camera.reset()
-end)
+end
 
 -- ───────────────────────── process ───────────────────────────
 lurek.process(function(dt)

@@ -401,7 +401,7 @@ lurek.input.bind("quit", "escape")
 ------------------------------------------------------------------------
 -- lurek.init
 ------------------------------------------------------------------------
-lurek.init(function()
+function lurek.init()
     lurek.window.setTitle("Creature Collector — Lurek2D")
     lurek.render.setBackgroundColor(0.2, 0.4, 0.15)
     generate_map()
@@ -409,7 +409,7 @@ lurek.init(function()
     local starter = math.random(1, 3)
     party = { make_creature(starter, 3) }
     active_idx = 1
-end)
+end
 
 ------------------------------------------------------------------------
 -- lurek.process — game logic

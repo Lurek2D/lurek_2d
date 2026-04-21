@@ -197,6 +197,18 @@ def run_target(binary: Path, target: Target, frames: int, timeout: float) -> Res
         if bucket == "UNKNOWN":
             bucket = "CRASH"
         head = head or f"exit {exit_code}"
+    elif target.kind == "example":
+        # Examples are stub scripts: print + exit, no game loop, no PNG expected.
+        # An example PASSES whenever it ran to completion without an engine-side
+        # Lua error. The engine catches Lua errors and shows an error screen but
+        # still exits 0, so we have to look at stderr for [L011]/[L0xx] tags or
+        # any "attempt to ..." line to decide.
+        offending = _bucket_from_stderr(stderr_lines)
+        if offending[0] != "UNKNOWN":
+            bucket, head = offending
+        else:
+            bucket = "PASS"
+            head = ""
     elif not produced_image:
         bucket = "NO_IMAGE"
         head = "exited cleanly but no PNG written"

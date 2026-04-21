@@ -162,15 +162,15 @@ lurek.input.bind("hill_large", "3")
 lurek.input.bind("quit", "escape")
 
 -- ─── Init ────────────────────────────────────────────────────────────
-lurek.init(function()
+function lurek.init()
     lurek.window.setTitle("Ski Jump — Lurek2D")
     lurek.window.setBackgroundColor(0.7, 0.8, 0.95)
     compute_ramp()
     math.randomseed(os.time())
-end)
+end
 
 -- ─── Process ─────────────────────────────────────────────────────────
-lurek.process(function(delta)
+function lurek.process(delta)
     dt = delta
 
     if lurek.input.isActionPressed("quit") then
@@ -366,7 +366,7 @@ lurek.process(function(delta)
     cam_x = math.max(0, cam_x)
 
     update_particles()
-end)
+end
 
 -- ─── Render (world) ──────────────────────────────────────────────────
 lurek.render(function()

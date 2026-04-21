@@ -470,14 +470,14 @@ lurek.input.bind("confirm",    "return")
 -- ---------------------------------------------------------------------------
 -- Callbacks
 -- ---------------------------------------------------------------------------
-lurek.init(function()
+function lurek.init()
     lurek.window.setTitle("Physics Sandbox — Lurek2D")
     lurek.window.setBackgroundColor(0.06, 0.06, 0.08)
-end)
+end
 
-lurek.ready(function()
+function lurek.ready()
     title_timer = 0
-end)
+end
 
 -- ---------------------------------------------------------------------------
 -- Process: TITLE
@@ -639,13 +639,13 @@ end
 -- ---------------------------------------------------------------------------
 -- Process dispatch
 -- ---------------------------------------------------------------------------
-lurek.process(function(dt)
+function lurek.process(dt)
     if current_state == STATE.TITLE then
         process_title(dt)
     elseif current_state == STATE.SANDBOX then
         process_sandbox(dt)
     end
-end)
+end
 
 -- ---------------------------------------------------------------------------
 -- Render: TITLE
@@ -747,18 +747,18 @@ end
 -- ---------------------------------------------------------------------------
 -- Render dispatch
 -- ---------------------------------------------------------------------------
-lurek.render(function()
+function lurek.render()
     if current_state == STATE.TITLE then
         render_title()
     elseif current_state == STATE.SANDBOX then
         render_sandbox()
     end
-end)
+end
 
 -- ---------------------------------------------------------------------------
 -- Render UI (HUD overlay)
 -- ---------------------------------------------------------------------------
-lurek.render_ui(function()
+function lurek.render_ui()
     if current_state ~= STATE.SANDBOX then return end
 
     local fps = lurek.timer.getFPS()
@@ -814,4 +814,4 @@ lurek.render_ui(function()
     lurek.render.drawText(
         "[B]uild  [D]estroy  [R]ope  [1-4]Shapes  [Space]Ball  [G]ravity  [Arrows]Dir  [C]olor  [X]Clear",
         8, SCREEN_H - 18, { r = 0.5, g = 0.5, b = 0.5, size = 11 })
-end)
+end

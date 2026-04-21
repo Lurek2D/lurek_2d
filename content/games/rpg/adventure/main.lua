@@ -305,7 +305,7 @@ end
 ------------------------------------------------------------------------
 -- Init
 ------------------------------------------------------------------------
-lurek.init(function()
+function lurek.init()
     lurek.input.addAction("up",        {"w", "up"})
     lurek.input.addAction("down",      {"s", "down"})
     lurek.input.addAction("left",      {"a", "left"})
@@ -338,11 +338,11 @@ lurek.init(function()
         colorStart = {0.6, 0.5, 0.4, 0.6},
         colorEnd   = {0.5, 0.4, 0.3, 0.0},
     })
-end)
+end
 
-lurek.ready(function()
+function lurek.ready()
     game_state = STATE.TITLE
-end)
+end
 
 ------------------------------------------------------------------------
 -- Process

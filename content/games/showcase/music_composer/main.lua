@@ -224,7 +224,7 @@ end
 -- ---------------------------------------------------------------------------
 -- Init
 -- ---------------------------------------------------------------------------
-lurek.init(function()
+function lurek.init()
     lurek.window.setTitle("Music Composer — Lurek2D")
     lurek.setBackgroundColor(COL_BG[1], COL_BG[2], COL_BG[3])
     setup_input()
@@ -260,20 +260,20 @@ lurek.init(function()
     ps_cursor:setSizes(2, 0.5)
     ps_cursor:setColors(1, 0.95, 0.4, 0.8, 1, 0.95, 0.4, 0)
     ps_cursor:stop()
-end)
+end
 
 -- ---------------------------------------------------------------------------
 -- Ready
 -- ---------------------------------------------------------------------------
-lurek.ready(function()
+function lurek.ready()
     current_state = STATE.TITLE
     title_timer = 0
-end)
+end
 
 -- ---------------------------------------------------------------------------
 -- Process
 -- ---------------------------------------------------------------------------
-lurek.process(function(dt)
+function lurek.process(dt)
     -- Quit
     if lurek.input.isActionJustPressed("quit") then
         lurek.event.quit()
@@ -399,7 +399,7 @@ lurek.process(function(dt)
     -- FPS title
     local fps = lurek.timer.getFPS()
     lurek.window.setTitle(string.format("Music Composer — %d FPS", fps))
-end)
+end
 
 -- ---------------------------------------------------------------------------
 -- Render — grid, notes, cursor

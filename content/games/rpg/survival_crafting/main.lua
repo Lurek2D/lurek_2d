@@ -219,7 +219,7 @@ end
 -- ============================================================================
 -- Input bindings
 -- ============================================================================
-lurek.init(function()
+function lurek.init()
     lurek.window.setTitle("Survival Crafting — Lurek2D")
     lurek.render.setBackgroundColor(0.30, 0.65, 0.20)
 
@@ -235,11 +235,11 @@ lurek.init(function()
     lurek.input.bind("start", {"return"})
 
     math.randomseed(os.time())
-end)
+end
 
-lurek.ready(function()
+function lurek.ready()
     lurek.camera.setPosition(0, 0)
-end)
+end
 
 -- ============================================================================
 -- Start / restart

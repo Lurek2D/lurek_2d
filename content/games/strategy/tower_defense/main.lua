@@ -134,7 +134,7 @@ lurek.input.bind("quit",       "escape")
 local hover_c, hover_r = 0, 0
 
 -- ── Init ──────────────────────────────────────────────────
-lurek.init(function()
+function lurek.init()
     lurek.window.setTitle("Tower Defense — Lurek2D")
     lurek.render.setBackgroundColor(0.05, 0.08, 0.05, 1.0)
     math.randomseed(os.time())
@@ -171,7 +171,7 @@ lurek.init(function()
         startSize    = 4, endSize = 1,
         spread       = math.pi * 2,
     })
-end)
+end
 
 -- ── Process ───────────────────────────────────────────────
 lurek.process(function(dt)
@@ -379,7 +379,7 @@ lurek.render(function()
 end)
 
 -- ── Render UI ─────────────────────────────────────────────
-lurek.render_ui(function()
+function lurek.render_ui()
     -- Top bar
     lurek.render.drawRect(0, 0, W, OY - 2, { color = {0.08,0.1,0.08,1} })
     lurek.render.drawText("Gold: " .. gold, 12, 6, { color = {1,0.85,0.2,1}, size = 14 })
@@ -404,4 +404,4 @@ lurek.render_ui(function()
         lurek.render.drawText("VICTORY!", 300, 245, { color = {1,0.9,0.2,1}, size = 36 })
         lurek.render.drawText("Score: " .. score, 340, 295, { color = {1,1,1,1}, size = 18 })
     end
-end)
+end

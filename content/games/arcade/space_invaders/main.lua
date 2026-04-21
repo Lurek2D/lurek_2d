@@ -248,7 +248,7 @@ end
 -- ---------------------------------------------------------------------------
 -- Lurek callbacks
 -- ---------------------------------------------------------------------------
-lurek.init(function()
+function lurek.init()
     lurek.window.setTitle("Space Invaders — Lurek2D")
     lurek.render.setBackgroundColor(0.02, 0.02, 0.06)
 
@@ -264,7 +264,7 @@ lurek.init(function()
 
     math.randomseed(os.time())
     reset_game()
-end)
+end
 
 -- ---------------------------------------------------------------------------
 -- Process
@@ -660,7 +660,7 @@ end)
 -- ---------------------------------------------------------------------------
 -- Render UI (HUD overlay — screen space)
 -- ---------------------------------------------------------------------------
-lurek.render_ui(function()
+function lurek.render_ui()
     -- Score
     lurek.render.setColor(1, 1, 1, 1)
     lurek.render.print("SCORE: " .. tostring(score), 10, 8)
@@ -683,4 +683,4 @@ lurek.render_ui(function()
     -- Ground line
     lurek.render.setColor(0.2, 0.8, 0.2, 1)
     lurek.render.drawRect("fill", 0, SCREEN_H - 24, SCREEN_W, 2)
-end)
+end

@@ -538,18 +538,19 @@ end
 -- ---------------------------------------------------------------------------
 -- lurek.init
 -- ---------------------------------------------------------------------------
-lurek.init(function()
+function lurek.init()
     lurek.window.setTitle("Visual Novel — Lurek2D")
     lurek.render.setBackgroundColor(0.08, 0.08, 0.12)
     camera = lurek.camera.new()
     title_alpha = 0
-end)
+end
 
 -- ---------------------------------------------------------------------------
 -- lurek.ready
 -- ---------------------------------------------------------------------------
-lurek.ready(function()
-end)
+function lurek.ready()
+
+end
 
 -- ---------------------------------------------------------------------------
 -- lurek.process

@@ -305,7 +305,7 @@ local function show_message(text)
 end
 
 -- ── Engine callbacks ──────────────────────────────────────────────────────
-lurek.init(function()
+function lurek.init()
     lurek.window.setTitle("Stealth — Lurek2D")
     lurek.window.setBackgroundColor(0.05, 0.08, 0.05)
 
@@ -340,11 +340,11 @@ lurek.init(function()
         colorStart = {1.0, 0.95, 0.3, 1.0},
         colorEnd   = {1.0, 0.85, 0.1, 0.0},
     })
-end)
+end
 
-lurek.ready(function()
+function lurek.ready()
     game_state = STATE.TITLE
-end)
+end
 
 -- ── Process ───────────────────────────────────────────────────────────────
 lurek.process(function(dt)
@@ -764,7 +764,7 @@ lurek.render(function()
 end)
 
 -- ── Render UI ─────────────────────────────────────────────────────────────
-lurek.render_ui(function()
+function lurek.render_ui()
     if game_state == STATE.TITLE then
         -- Title screen
         lurek.render.setColor(0.2, 0.9, 0.3, 1)
@@ -851,4 +851,4 @@ lurek.render_ui(function()
         lurek.render.setColor(0.8, 0.8, 0.8, 0.8)
         lurek.render.print("Press ENTER to continue", SCREEN_W / 2 - 80, SCREEN_H / 2 + 10)
     end
-end)
+end

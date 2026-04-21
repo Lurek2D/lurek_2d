@@ -818,16 +818,16 @@ lurek.input.bind("quit",        "escape")
 -- ---------------------------------------------------------------------------
 -- Engine Callbacks
 -- ---------------------------------------------------------------------------
-lurek.init(function()
+function lurek.init()
     lurek.window.setTitle("Factory — Lurek2D")
     lurek.render.setBackgroundColor(0.1, 0.1, 0.12)
-end)
+end
 
-lurek.ready(function()
+function lurek.ready()
     game_time = 0
-end)
+end
 
-lurek.process(function(dt)
+function lurek.process(dt)
     game_time = game_time + dt
 
     if lurek.input.wasActionPressed("quit") then
@@ -895,9 +895,9 @@ lurek.process(function(dt)
     end
 
     update_playing(dt)
-end)
+end
 
-lurek.render(function()
+function lurek.render()
     if current_state == STATE.PLAYING then
         draw_grid()
         draw_ore_tiles()
@@ -907,9 +907,9 @@ lurek.render(function()
         draw_items()
         draw_particles()
     end
-end)
+end
 
-lurek.render_ui(function()
+function lurek.render_ui()
     if current_state == STATE.TITLE then
         draw_title()
     elseif current_state == STATE.PLAYING then
@@ -917,4 +917,4 @@ lurek.render_ui(function()
     elseif current_state == STATE.VICTORY then
         draw_victory()
     end
-end)
+end

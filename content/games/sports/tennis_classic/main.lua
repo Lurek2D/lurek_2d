@@ -248,7 +248,7 @@ local function is_in_service_box(bx, by, serving_from_bottom)
 end
 
 -- ── Input bindings ────────────────────────────────────────────────
-lurek.init(function()
+function lurek.init()
     lurek.render.setBackgroundColor(0.2, 0.4, 0.2)
     lurek.window.setTitle("Tennis Classic — Lurek2D")
 
@@ -281,7 +281,7 @@ lurek.init(function()
     lurek.particle.setSpeed(net_particles, 10, 40)
     lurek.particle.setColors(net_particles, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0)
     lurek.particle.setSizes(net_particles, 2, 1)
-end)
+end
 
 -- ── Process ───────────────────────────────────────────────────────
 lurek.process(function(dt)

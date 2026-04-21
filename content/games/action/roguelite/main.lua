@@ -513,7 +513,7 @@ end
 -- ══════════════════════════════════════════════════════════════════════════
 --  lurek.init — one-time setup
 -- ══════════════════════════════════════════════════════════════════════════
-lurek.init(function()
+function lurek.init()
     lurek.window.setTitle("Roguelite — Lurek2D")
     lurek.window.setBackgroundColor(0.08, 0.06, 0.04)
 
@@ -531,12 +531,12 @@ lurek.init(function()
     lurek.input.bind("quit",   {"escape"})
 
     math.randomseed(os.time())
-end)
+end
 
 -- ══════════════════════════════════════════════════════════════════════════
 --  lurek.ready — create particles & tweens after GPU init
 -- ══════════════════════════════════════════════════════════════════════════
-lurek.ready(function()
+function lurek.ready()
     death_burst = lurek.particle.new({
         maxParticles = 60,
         emitRate     = 0,
@@ -578,7 +578,7 @@ lurek.ready(function()
     })
 
     lurek.camera.setPosition(0, 0)
-end)
+end
 
 -- ══════════════════════════════════════════════════════════════════════════
 --  lurek.process — game logic each frame

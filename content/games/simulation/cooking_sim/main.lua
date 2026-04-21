@@ -165,20 +165,20 @@ lurek.input.bind("escape", "quit")
 ------------------------------------------------------------
 -- Callbacks
 ------------------------------------------------------------
-lurek.init(function()
+function lurek.init()
     lurek.window.setTitle("Cooking Sim — Lurek2D")
     lurek.render.setBackgroundColor(0.15, 0.1, 0.05)
     lurek.camera.setPosition(0, 0)
     reset_inventory()
     fill_customer_queue()
-end)
+end
 
-lurek.ready(function()
+function lurek.ready()
     gold = 0
     day = 1
     satisfaction = 100
     gold_display = 0
-end)
+end
 
 ------------------------------------------------------------
 -- Process

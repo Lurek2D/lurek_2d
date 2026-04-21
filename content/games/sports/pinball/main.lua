@@ -185,15 +185,15 @@ lurek.input.bind("quit", "escape")
 
 -- ─── Callbacks ──────────────────────────────────────────────────────
 
-lurek.init(function()
+function lurek.init()
     lurek.window.setTitle("Pinball — Lurek2D")
     lurek.window.setBackgroundColor(0.02, 0.02, 0.05)
     reset_targets()
-end)
+end
 
-lurek.ready(function()
+function lurek.ready()
     lurek.camera.init(W, H)
-end)
+end
 
 lurek.process(function(dt)
     title_blink = title_blink + dt
@@ -531,7 +531,7 @@ end)
 
 -- ─── Render UI — score, balls, state overlays ───────────────────────
 
-lurek.render_ui(function()
+function lurek.render_ui()
     local fps = lurek.timer.getFPS()
 
     -- Score bar
@@ -582,4 +582,4 @@ lurek.render_ui(function()
         lurek.draw.setColor(0.6, 0.6, 0.7, 1)
         lurek.draw.text("Press SPACE", W / 2 - 40, H / 2 + 70)
     end
-end)
+end

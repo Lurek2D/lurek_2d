@@ -222,7 +222,7 @@ local function on_moving_platform()
 end
 
 -- ── Engine callbacks ──────────────────────────────────────────────────────
-lurek.init(function()
+function lurek.init()
     lurek.window.setTitle("Platformer — Lurek2D")
     lurek.window.setBackgroundColor(0.3, 0.5, 0.8)
 
@@ -261,11 +261,11 @@ lurek.init(function()
         colorStart = {1.0, 0.2, 0.2, 1.0},
         colorEnd   = {0.5, 0.0, 0.0, 0.0},
     })
-end)
+end
 
-lurek.ready(function()
+function lurek.ready()
     load_level(1)
-end)
+end
 
 -- ── Process ───────────────────────────────────────────────────────────────
 lurek.process(function(dt)
@@ -637,7 +637,7 @@ lurek.render(function()
 end)
 
 -- ── Render UI (screen space) ──────────────────────────────────────────────
-lurek.render_ui(function()
+function lurek.render_ui()
     -- ── Title screen ──────────────────────────────────────────────────────
     if game_state == STATE.TITLE then
         lurek.render.setColor(0.2, 0.4, 0.9, 1)
@@ -692,4 +692,4 @@ lurek.render_ui(function()
             lurek.render.drawText("PRESS ENTER", SCREEN_W / 2 - 70, SCREEN_H / 2 + 50, 18)
         end
     end
-end)
+end

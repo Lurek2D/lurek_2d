@@ -161,7 +161,7 @@ end
 -- ---------------------------------------------------------------------------
 -- Input Setup
 -- ---------------------------------------------------------------------------
-lurek.init(function()
+function lurek.init()
     lurek.window.setTitle("Farming Sim — Lurek2D")
     lurek.render.setBackgroundColor(0.1, 0.15, 0.05)
 
@@ -206,7 +206,7 @@ lurek.init(function()
     })
 
     reset_game()
-end)
+end
 
 -- ---------------------------------------------------------------------------
 -- Update

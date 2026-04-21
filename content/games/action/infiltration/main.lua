@@ -230,7 +230,7 @@ local function start_hack(door_gx, door_gy)
 end
 
 -- ── lurek.init ────────────────────────────────────────────────────────────
-lurek.init(function()
+function lurek.init()
     lurek.window.setTitle("Infiltration — Lurek2D")
     lurek.window.setBackgroundColor(0.02, 0.02, 0.04)
 
@@ -266,12 +266,12 @@ lurek.init(function()
         colors    = {{1.0, 0.9, 0.2, 1.0}, {1.0, 0.4, 0.0, 0.0}},
         sizes     = {3, 1},
     })
-end)
+end
 
 -- ── lurek.ready ───────────────────────────────────────────────────────────
-lurek.ready(function()
+function lurek.ready()
     reset_game()
-end)
+end
 
 -- ── lurek.process ─────────────────────────────────────────────────────────
 lurek.process(function(dt)

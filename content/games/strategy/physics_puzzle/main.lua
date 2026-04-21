@@ -152,7 +152,7 @@ lurek.input.bind("next_level",   "n")
 lurek.input.bind("quit",         "escape")
 
 -- ── Init ──────────────────────────────────────────────────
-lurek.init(function()
+function lurek.init()
     lurek.window.setTitle("Physics Puzzle — Lurek2D")
     lurek.render.setBackgroundColor(0.05, 0.08, 0.12, 1.0)
     math.randomseed(os.time())
@@ -195,10 +195,10 @@ lurek.init(function()
     goal  = { x = LEVELS[level].goal.x, y = LEVELS[level].goal.y, r = 22 }
     placed = {}
     state  = "place"
-end)
+end
 
 -- ── Process ───────────────────────────────────────────────
-lurek.process(function(dt)
+function lurek.process(dt)
     if ball_trail    then ball_trail:update(dt)    end
     if win_burst     then win_burst:update(dt)     end
     if bounce_sparks then bounce_sparks:update(dt) end
@@ -259,7 +259,7 @@ lurek.process(function(dt)
         update_physics(dt)
         if ball_trail then ball_trail:emit(ball.x, ball.y, 1) end
     end
-end)
+end
 
 -- ── Render world ──────────────────────────────────────────
 lurek.render(function()
@@ -301,7 +301,7 @@ lurek.render(function()
 end)
 
 -- ── Render UI ─────────────────────────────────────────────
-lurek.render_ui(function()
+function lurek.render_ui()
     local lv = LEVELS[level]
     lurek.render.drawText("Level " .. level .. ": " .. lv.title, 14, 10, { color = {1,0.9,0.3,1}, size = 15 })
     lurek.render.drawText("Budget: " .. #placed .. "/" .. lv.budgets, 400, 10, { color = {0.7,0.9,1.0,1}, size = 15 })
@@ -317,4 +317,4 @@ lurek.render_ui(function()
     elseif state == "fail" then
         lurek.render.drawText("BALL LOST — R to retry", 240, 260, { color = {0.9,0.3,0.3,1}, size = 26 })
     end
-end)
+end

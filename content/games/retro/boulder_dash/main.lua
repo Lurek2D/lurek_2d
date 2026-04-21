@@ -211,15 +211,15 @@ end
 -- Callbacks
 -- ============================================================================
 
-lurek.init(function()
+function lurek.init()
     lurek.window.setTitle("Boulder Dash — Lurek2D")
     lurek.setBackgroundColor(0.06, 0.04, 0.02)
     math.randomseed(os.time())
-end)
+end
 
-lurek.ready(function()
+function lurek.ready()
     -- Ready
-end)
+end
 
 lurek.process(function(dt)
     if state == TITLE then
@@ -466,7 +466,7 @@ end)
 -- UI rendering: HUD, title, game over
 -- ============================================================================
 
-lurek.render_ui(function()
+function lurek.render_ui()
     local fps = lurek.timer.getFPS()
 
     if state == TITLE then
@@ -538,4 +538,4 @@ lurek.render_ui(function()
 
         lurek.render.drawText(string.format("FPS: %d", fps), 10, 580, 12, 0.3, 0.3, 0.3, 1)
     end
-end)
+end

@@ -331,7 +331,7 @@ end)
 ------------------------------------------------------------
 -- Input bindings
 ------------------------------------------------------------
-lurek.ready(function()
+function lurek.ready()
     lurek.input.bind("build_path",    "1")
     lurek.input.bind("build_fence",   "2")
     lurek.input.bind("build_water",   "3")
@@ -347,7 +347,7 @@ lurek.ready(function()
     lurek.input.bind("buy3",          "3")
     lurek.input.bind("buy4",          "4")
     lurek.input.bind("buy5",          "5")
-end)
+end
 
 ------------------------------------------------------------
 -- Update

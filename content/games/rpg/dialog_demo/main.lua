@@ -365,16 +365,17 @@ local function select_choice(idx)
 end
 
 -- ── lurek.init ────────────────────────────────────────────────
-lurek.init(function()
+function lurek.init()
     lurek.window.setTitle("Dialog Demo — Lurek2D")
     lurek.render.setBackgroundColor(0.1, 0.1, 0.15)
     title_alpha = 0
     title_prompt_alpha = 0
-end)
+end
 
 -- ── lurek.ready ───────────────────────────────────────────────
-lurek.ready(function()
-end)
+function lurek.ready()
+
+end
 
 -- ── lurek.process ─────────────────────────────────────────────
 lurek.process(function(dt)

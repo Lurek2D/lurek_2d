@@ -276,7 +276,7 @@ end
 -- ---------------------------------------------------------------------------
 -- Input bindings
 -- ---------------------------------------------------------------------------
-lurek.init(function()
+function lurek.init()
     lurek.window.setTitle("Medical Sim — Lurek2D")
     lurek.render.setBackgroundColor(0.1, 0.1, 0.12)
     camera = lurek.camera.new()
@@ -289,14 +289,14 @@ lurek.init(function()
     lurek.input.bind("equip",          "e")
     lurek.input.bind("select",         "mouse1")
     lurek.input.bind("quit",           "escape")
-end)
+end
 
 -- ---------------------------------------------------------------------------
 -- Ready
 -- ---------------------------------------------------------------------------
-lurek.ready(function()
+function lurek.ready()
     initGame()
-end)
+end
 
 -- ---------------------------------------------------------------------------
 -- Process
@@ -589,7 +589,7 @@ end)
 -- ---------------------------------------------------------------------------
 -- Render UI (screen-space HUD & menus)
 -- ---------------------------------------------------------------------------
-lurek.render_ui(function()
+function lurek.render_ui()
     -- ---- TITLE SCREEN ----
     if current_state == STATE.TITLE then
         lurek.render.drawText("MEDICAL SIM", 200, 180, 48, 0.9, 0.3, 0.3, 1)
@@ -654,4 +654,4 @@ lurek.render_ui(function()
             selectedDoctor.busy and "(busy)" or "(idle)")
         lurek.render.drawText(info, 10, SCREEN_H - 42, 14, 0.4, 0.8, 1.0, 1)
     end
-end)
+end

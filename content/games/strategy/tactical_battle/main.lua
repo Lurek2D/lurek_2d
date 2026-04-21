@@ -234,7 +234,7 @@ lurek.input.bind("quit",       "escape")
 local hover_c, hover_r = 0, 0
 
 -- ── Init ──────────────────────────────────────────────────
-lurek.init(function()
+function lurek.init()
     lurek.window.setTitle("Tactical Battle — Lurek2D")
     lurek.render.setBackgroundColor(0.06, 0.08, 0.12, 1.0)
     math.randomseed(os.time())
@@ -285,7 +285,7 @@ lurek.init(function()
     spawn_unit(12, 8, "knight",  "enemy")
     spawn_unit(11, 4, "archer",  "enemy")
     spawn_unit(11, 6, "mage",    "enemy")
-end)
+end
 
 -- ── Process ───────────────────────────────────────────────
 lurek.process(function(dt)

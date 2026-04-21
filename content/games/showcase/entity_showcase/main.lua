@@ -352,14 +352,14 @@ end
 -- ============================================================
 -- Callbacks
 -- ============================================================
-lurek.init(function()
+function lurek.init()
     lurek.window.setTitle("Entity Showcase — Lurek2D")
     lurek.window.setBackgroundColor(0.06, 0.08, 0.1)
-end)
+end
 
-lurek.ready(function()
+function lurek.ready()
     title_timer = 0
-end)
+end
 
 lurek.process(function(dt)
     -- FPS

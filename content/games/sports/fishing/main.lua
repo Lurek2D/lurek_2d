@@ -205,13 +205,13 @@ lurek.window.setTitle("Fishing — Lurek2D")
 lurek.render.setBackgroundColor(0.4, 0.6, 0.8)
 
 -- Callbacks
-lurek.init(function()
+function lurek.init()
   math.randomseed(os.time())
-end)
+end
 
-lurek.ready(function()
+function lurek.ready()
   show_message("", 0)
-end)
+end
 
 lurek.process(function(delta)
   dt = delta

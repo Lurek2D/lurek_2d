@@ -425,14 +425,15 @@ local function tally_votes()
 end
 
 -- ── Callbacks ──────────────────────────────────────────────────────────────
-lurek.init(function()
+function lurek.init()
     lurek.window.setTitle("Social Deduction — Lurek2D")
     lurek.render.setBackgroundColor(0.08, 0.08, 0.12)
     lurek.tween.to(1.0, function(t) title_alpha = t end, { ease = "outQuad" })
-end)
+end
 
-lurek.ready(function()
-end)
+function lurek.ready()
+
+end
 
 lurek.process(function(delta)
     dt = delta

@@ -235,7 +235,7 @@ lurek.input.bind("quit",      "escape")
 local hover_c, hover_r = 0, 0
 
 -- ── Init ──────────────────────────────────────────────────
-lurek.init(function()
+function lurek.init()
     lurek.window.setTitle("Wargame — Lurek2D")
     lurek.render.setBackgroundColor(0.07, 0.07, 0.05, 1.0)
     math.randomseed(os.time())
@@ -268,7 +268,7 @@ lurek.init(function()
     new_unit(13,2,"infantry","enemy"); new_unit(13,6,"infantry","enemy")
     new_unit(14,4,"tank","enemy");     new_unit(12,8,"tank","enemy")
     new_unit(14,8,"artillery","enemy");new_unit(13,3,"recon","enemy")
-end)
+end
 
 -- ── Process ───────────────────────────────────────────────
 lurek.process(function(dt)

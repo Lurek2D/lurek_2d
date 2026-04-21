@@ -726,24 +726,24 @@ end
 -- ---------------------------------------------------------------------------
 -- lurek.init
 -- ---------------------------------------------------------------------------
-lurek.init(function()
+function lurek.init()
     lurek.render.setBackgroundColor(0.6, 0.3, 0.2)
     lurek.window.setTitle("Track & Field — Lurek2D")
     camera = lurek.camera.new()
     init_particles()
-end)
+end
 
 -- ---------------------------------------------------------------------------
 -- lurek.ready
 -- ---------------------------------------------------------------------------
-lurek.ready(function()
+function lurek.ready()
     current_state = STATE.TITLE
-end)
+end
 
 -- ---------------------------------------------------------------------------
 -- lurek.process
 -- ---------------------------------------------------------------------------
-lurek.process(function(dt)
+function lurek.process(dt)
     -- Quit
     if lurek.input.isPressed("quit") then
         lurek.event.signal("quit")
@@ -833,7 +833,7 @@ lurek.process(function(dt)
 
     -- FPS in title
     lurek.window.setTitle(string.format("Track & Field — %d FPS", lurek.timer.getFPS()))
-end)
+end
 
 -- ---------------------------------------------------------------------------
 -- Render helpers

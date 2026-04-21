@@ -429,14 +429,14 @@ local function update_transfer()
 end
 
 -- Callbacks
-lurek.init(function()
+function lurek.init()
     lurek.window.setTitle("Paradroid — Lurek2D")
     lurek.setBackgroundColor(0.03, 0.03, 0.08)
-end)
+end
 
 lurek.ready(function() end)
 
-lurek.process(function(delta)
+function lurek.process(delta)
     dt = delta
     title_blink = title_blink + dt
 
@@ -469,7 +469,7 @@ lurek.process(function(delta)
             state = STATE_TITLE
         end
     end
-end)
+end
 
 lurek.render(function()
     if state == STATE_TITLE then
@@ -614,7 +614,7 @@ lurek.render(function()
     end
 end)
 
-lurek.render_ui(function()
+function lurek.render_ui()
     if state ~= STATE_PLAYING and state ~= STATE_TRANSFER then return end
 
     -- Droid ID
@@ -648,4 +648,4 @@ lurek.render_ui(function()
     if dt > 0 then
         gfx.drawText(string.format("FPS %d", math.floor(1 / dt + 0.5)), 4, 580, 12, 0.3, 0.3, 0.4)
     end
-end)
+end

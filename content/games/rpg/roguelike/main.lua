@@ -460,17 +460,17 @@ lurek.input.bind("move_right", {"right", "d"})
 lurek.input.bind("confirm",    {"return"})
 lurek.input.bind("quit",       {"escape"})
 
-lurek.init(function()
+function lurek.init()
     lurek.window.setTitle("Roguelike — Lurek2D")
     math.randomseed(os.time())
     player = make_player()
-end)
+end
 
-lurek.ready(function()
+function lurek.ready()
     -- Ready
-end)
+end
 
-lurek.process(function(dt)
+function lurek.process(dt)
     -- Input handling
     if lurek.input.isActionJustPressed("quit") then
         lurek.event.quit()
@@ -505,7 +505,7 @@ lurek.process(function(dt)
     update_tweens(dt)
     update_stair_particles(dt)
     update_pickup_particles(dt)
-end)
+end
 
 ----------------------------------------
 -- Rendering: dungeon, player, enemies

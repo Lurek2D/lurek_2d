@@ -263,7 +263,7 @@ lurek.input.bind("escape", "quit")
 -- ---------------------------------------------------------------------------
 -- Callbacks
 -- ---------------------------------------------------------------------------
-lurek.init(function()
+function lurek.init()
     lurek.window.setTitle("Modding Demo — Lurek2D")
     lurek.render.setBackgroundColor(COL_BG[1], COL_BG[2], COL_BG[3])
 
@@ -293,12 +293,12 @@ lurek.init(function()
         COL_COIN[1], COL_COIN[2], COL_COIN[3], 0
     )
     ps_coin:setSizes(3, 1)
-end)
+end
 
-lurek.ready(function()
+function lurek.ready()
     title_timer = 0
     tw_preview.alpha = 0.0
-end)
+end
 
 lurek.process(function(dt)
     -- Title auto-advance

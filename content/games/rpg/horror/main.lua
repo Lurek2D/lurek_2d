@@ -287,10 +287,10 @@ lurek.init(function()
     for i = 1, #KEY_POSITIONS do keys_found[i] = false end
 end)
 
-lurek.ready(function()
+function lurek.ready()
     lurek.render.setBackgroundColor(0.01, 0.01, 0.02)
     game_state = STATE.TITLE
-end)
+end
 
 ------------------------------------------------------------------------
 -- Process

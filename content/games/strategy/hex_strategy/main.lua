@@ -132,7 +132,7 @@ lurek.input.bind("next_turn",  "n")
 lurek.input.bind("quit",       "escape")
 
 -- ── Init ──────────────────────────────────────────────────
-lurek.init(function()
+function lurek.init()
     lurek.window.setTitle("Hex Strategy — Lurek2D")
     lurek.render.setBackgroundColor(0.04, 0.06, 0.1, 1.0)
 
@@ -151,10 +151,10 @@ lurek.init(function()
     })
 
     gen_map()
-end)
+end
 
 -- ── Process ───────────────────────────────────────────────
-lurek.process(function(dt)
+function lurek.process(dt)
     if expand_burst then expand_burst:update(dt) end
     if city_sparkle then city_sparkle:update(dt) end
     if info_timer > 0 then info_timer = info_timer - dt end
@@ -207,7 +207,7 @@ lurek.process(function(dt)
             show_info("City already built here")
         end
     end
-end)
+end
 
 -- ── Render ────────────────────────────────────────────────
 lurek.render(function()
@@ -244,7 +244,7 @@ lurek.render(function()
 end)
 
 -- ── Render UI ─────────────────────────────────────────────
-lurek.render_ui(function()
+function lurek.render_ui()
     lurek.render.drawRect(0, 0, W, 44, { color = {0.06,0.08,0.08,0.92} })
     lurek.render.drawText("Gold:" .. math.floor(resources.gold), 10, 8, { color = {1,0.85,0.2,1}, size = 13 })
     lurek.render.drawText("Wood:" .. math.floor(resources.wood), 110, 8, { color = {0.5,0.8,0.3,1}, size = 13 })
@@ -265,4 +265,4 @@ lurek.render_ui(function()
         local a = math.min(1.0, info_timer)
         lurek.render.drawText(info_text, W/2 - 140, H/2 - 16, { color = {1,1,0.6,a}, size = 18 })
     end
-end)
+end
