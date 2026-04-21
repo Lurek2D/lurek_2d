@@ -15,6 +15,7 @@ Usage:
     python tools/audit/example_coverage.py --module timer   # one module
     python tools/audit/example_coverage.py --json           # machine-readable
     python tools/audit/example_coverage.py --report         # exit 1 if any gap (CI gate)
+    python tools/audit/example_coverage.py --markdown FILE  # export a Markdown report
 
 Exit codes:
     0 — all examples 100% covered (stubs are OK for --report unless --no-stubs passed)
@@ -156,6 +157,9 @@ class ModuleCov:
     total: int = 0
     covered: int = 0        # hand-written real code coverage
     stub_covered: int = 0   # covered only by an auto-generated --@api-stub: block
+    line_count: int = 0     # total lines in file
+    comment_count: int = 0  # comment lines
+    docstring_count: int = 0 # items covered with docstrings
     missing: list = field(default_factory=list)
     stub_items: list = field(default_factory=list)  # items present only as stubs
 
@@ -192,27 +196,34 @@ def load_entries(jp: Path) -> list[ApiEntry]:
     return out
 
 
-def load_texts(d: Path) -> dict[str, tuple[str, str]]:
+def load_texts(d: Path) -> dict[str, dict]:
     """Load all .lua files.
 
-    Returns a dict of filename -> (real_code, stub_markers) where:
-      - real_code: non-comment lines only (for real coverage matching)
-      - stub_markers: the set of api-stub marker names found (--@api-stub: X)
+    Returns dict: filename -> { 'real_code': str, 'stub_ids': set, 'lines': int, 'comments': int }
     """
-    out: dict[str, tuple[str, str]] = {}
+    out: dict[str, dict] = {}
     for p in d.glob('*.lua'):
         raw = p.read_text(encoding='utf-8', errors='replace')
         code_lines = []
         stub_ids: set[str] = set()
-        for ln in raw.splitlines():
+        file_lines = raw.splitlines()
+        comments = 0
+        for ln in file_lines:
             stripped = ln.lstrip()
+            if stripped.startswith('--'):
+                comments += 1
             if stripped.startswith('--@api-stub:'):
                 # Extract the api id: --@api-stub: Owner:name  or  lurek.ns.name
                 marker = stripped[len('--@api-stub:'):].strip()
                 stub_ids.add(marker)
             elif not stripped.startswith('--'):
                 code_lines.append(ln)
-        out[p.name] = ('\n'.join(code_lines), stub_ids)
+        out[p.name] = {
+            'real_code': '\n'.join(code_lines),
+            'stub_ids': stub_ids,
+            'lines': len(file_lines),
+            'comments': comments
+        }
     return out
 
 
@@ -225,7 +236,7 @@ def _match_name(entry: 'ApiEntry', text: str) -> bool:
     return bool(re.search(pat, text))
 
 
-def build_cov(entries: list[ApiEntry], texts: dict[str, tuple[str, set]]) -> dict[str, ModuleCov]:
+def build_cov(entries: list[ApiEntry], texts: dict[str, dict]) -> dict[str, ModuleCov]:
     bk: dict[str, ModuleCov] = {}
     for e in entries:
         key = e.module
@@ -238,12 +249,16 @@ def build_cov(entries: list[ApiEntry], texts: dict[str, tuple[str, set]]) -> dic
         mc = bk[key]
         mc.total += 1
 
-        pair = texts.get(mc.example_file)
-        if not pair:
+        data = texts.get(mc.example_file)
+        if not data:
             mc.missing.append(e.name)
             continue
 
-        real_code, stub_ids = pair
+        mc.line_count = data['lines']
+        mc.comment_count = data['comments']
+
+        real_code = data['real_code']
+        stub_ids = data['stub_ids']
 
         # Build the stub marker id for this entry
         if e.is_method:
@@ -253,9 +268,13 @@ def build_cov(entries: list[ApiEntry], texts: dict[str, tuple[str, set]]) -> dic
 
         if _match_name(e, real_code):
             mc.covered += 1
+            if len(e.description.strip()) > 0:
+                mc.docstring_count += 1
         elif stub_id in stub_ids:
             mc.stub_covered += 1
             mc.stub_items.append(e.name)
+            if len(e.description.strip()) > 0:
+                mc.docstring_count += 1
         else:
             mc.missing.append(e.name)
     return bk
@@ -315,6 +334,35 @@ def print_missing(bk: dict[str, ModuleCov], filt: str | None = None) -> None:
             print(f'  ~ {fn}  [stub only -- needs real scenario]')
 
 
+def export_markdown(bk: dict[str, ModuleCov], out_path: str):
+    p = Path(out_path)
+    p.parent.mkdir(parents=True, exist_ok=True)
+    
+    with p.open('w', encoding='utf-8') as f:
+        f.write("# Example Coverage & Quality Report\n\n")
+        f.write("| Module | Namespace | Example File | Coverage | Stubs | Total | Length (lines) | Comments | Docstrings |\n")
+        f.write("|---|---|---|---|---|---|---|---|---|\n")
+        
+        total_cov = total_stub = total_all = total_lines = total_comms = total_docs = 0
+        for k, mc in sorted(bk.items()):
+            ex_exists = (EXAMPLES_DIR / mc.example_file).exists()
+            flag = '' if ex_exists else ' (MISSING)'
+            
+            f.write(f"| `{k}` | `lurek.{mc.namespace}` | `{mc.example_file}`{flag} | ")
+            f.write(f"{mc.covered} | {mc.stub_covered} | {mc.total} | {mc.line_count} | {mc.comment_count} | {mc.docstring_count} |\n")
+            
+            total_cov += mc.covered
+            total_stub += mc.stub_covered
+            total_all += mc.total
+            total_lines += mc.line_count
+            total_comms += mc.comment_count
+            total_docs += mc.docstring_count
+            
+        f.write(f"| **TOTAL** | | | **{total_cov}** | **{total_stub}** | **{total_all}** | **{total_lines}** | **{total_comms}** | **{total_docs}** |\n\n")
+        
+        pct = ((total_cov + total_stub) / total_all * 100) if total_all else 100
+        f.write(f"**Overall Coverage (including stubs):** {pct:.1f}%\n")
+
 def main() -> int:
     p = argparse.ArgumentParser(description=__doc__,
                                 formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -325,6 +373,7 @@ def main() -> int:
     p.add_argument('--report',    action='store_true', help='CI gate: exit 1 if any gaps exist')
     p.add_argument('--no-stubs',  action='store_true', help='With --report: also fail if any stub blocks remain')
     p.add_argument('--module',    metavar='NAME',      help='Filter to one module')
+    p.add_argument('--markdown',  metavar='FILE',      nargs='?', const='docs/quality/example_coverage.md', help='Export Markdown report to FILE')
     args = p.parse_args()
 
     if not API_JSON.exists():
@@ -341,7 +390,10 @@ def main() -> int:
     has_gaps  = any(len(mc.missing) > 0 for mc in bk.values())
     has_stubs = any(len(mc.stub_items) > 0 for mc in bk.values())
 
-    if args.json:
+    if args.markdown:
+        export_markdown(bk, args.markdown)
+        print(f"Exported Markdown report to {args.markdown}")
+    elif args.json:
         print(json.dumps({
             k: {
                 'namespace':    f"lurek.{mc.namespace}",
