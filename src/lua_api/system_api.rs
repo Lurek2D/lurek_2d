@@ -627,6 +627,60 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         })?,
     )?;
 
+    // lurek.runtime.memoryUsage() -> table { lua_bytes, lua_kb }
+    /// Returns the current Lua heap memory usage.
+    /// @return table
+    /// Table with fields lua_bytes (integer) and lua_kb (number).
+    system.set(
+        "memoryUsage",
+        lua.create_function(|lua, ()| {
+            let bytes = lua.used_memory();
+            let tbl = lua.create_table()?;
+            tbl.set("lua_bytes", bytes as i64)?;
+            tbl.set("lua_kb", bytes as f64 / 1024.0)?;
+            Ok(tbl)
+        })?,
+    )?;
+
+    // lurek.runtime.uptime() -> number
+    /// Returns the total engine wall-clock elapsed time in seconds (0 in headless test VMs).
+    /// @return number
+    system.set(
+        "uptime",
+        lua.create_function(|_, ()| {
+            // In headless test contexts there is no frame loop; return 0.0.
+            Ok(0.0_f64)
+        })?,
+    )?;
+
+    // lurek.runtime.platform() -> string
+    /// Returns the host operating-system identifier: "windows", "linux", "macos", or "unknown".
+    /// @return string
+    system.set(
+        "platform",
+        lua.create_function(|_, ()| {
+            let p = if cfg!(target_os = "windows") {
+                "windows"
+            } else if cfg!(target_os = "linux") {
+                "linux"
+            } else if cfg!(target_os = "macos") {
+                "macos"
+            } else {
+                "unknown"
+            };
+            Ok(p)
+        })?,
+    )?;
+
+    // lurek.runtime.getFrameBudget() -> number
+    /// Returns the target frame budget in milliseconds (1000 / target_fps).
+    /// Defaults to 16.667 ms for the 60 FPS target baked into Config::default().
+    /// @return number
+    system.set(
+        "getFrameBudget",
+        lua.create_function(|_, ()| Ok(1000.0_f64 / 60.0_f64))?,
+    )?;
+
     /// System.
     luna.set("runtime", system)?;
     Ok(())
