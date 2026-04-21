@@ -17,7 +17,7 @@ describe("lurek.network security", function()
     end)
 
     it("should reject server with port 0", function()
-        -- Port 0 is ephemeral — should still create but bind to random port
+        -- Port 0 is ephemeral     should still create but bind to random port
         -- This is NOT an error; verify it works
         local server = lurek.network.newServer({ port = 0 })
         expect_equal(server:isServer(), true)

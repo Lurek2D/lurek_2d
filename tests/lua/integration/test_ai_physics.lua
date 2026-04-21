@@ -25,7 +25,7 @@ describe("integration: AI steering with physics bodies", function()
         local sm = lurek.ai.newSteeringManager()
         sm:addSeek(400, 400, 1.0)
 
-        -- Calculate steering force â€” calculate returns (fx, fy) as two values
+        -- Calculate steering force          calculate returns (fx, fy) as two values
         local fx, fy = sm:calculate(100, 100, 0, 0, 50, 100, 1.0 / 60.0)
 
         -- Verify we got non-zero steering force toward target
@@ -44,7 +44,7 @@ describe("integration: AI steering with physics bodies", function()
         -- Read back position
         local px, py = lurek.physics.getBody(world_id, seeker_body)
 
-        -- Seeker should have moved from (100, 100) â€” some movement occurred
+        -- Seeker should have moved from (100, 100)          some movement occurred
         local moved = math.abs(px - 100) > 0.1 or math.abs(py - 100) > 0.1
         expect_true(moved, "seeker moved from starting position")
     end)

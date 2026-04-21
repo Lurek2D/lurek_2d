@@ -45,7 +45,7 @@ describe("stress: massive entity spawn and kill", function()
             universe:set(id, "name",  "ecs")
         end
         local w_elapsed = os.clock() - start
-        print(string.format("[STRESS] write 1000 Ă— 5 components: %.4fs", w_elapsed))
+        print(string.format("[STRESS] write 1000       5 components: %.4fs", w_elapsed))
 
         local start2 = os.clock()
         local sum = 0
@@ -53,7 +53,7 @@ describe("stress: massive entity spawn and kill", function()
             sum = sum + universe:get(id, "hp")
         end
         local r_elapsed = os.clock() - start2
-        print(string.format("[STRESS] read 1000 Ă— hp: %.4fs (sum=%d)", r_elapsed, sum))
+        print(string.format("[STRESS] read 1000       hp: %.4fs (sum=%d)", r_elapsed, sum))
 
         expect_true(w_elapsed + r_elapsed < 10.0, "component r/w budget")
         expect_equal(100 * COUNT, sum, "all HPs are 100")

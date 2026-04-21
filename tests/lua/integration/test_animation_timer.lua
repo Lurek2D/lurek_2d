@@ -10,7 +10,7 @@ describe("integration: animation driven by timer delta", function()
     -- @description Verifies repeated frame-sized deltas advance an animation through its frames without error.
     it("animation advances by injected delta", function()
         local anim = lurek.animation.new()
-        -- addFrame(x, y, w, h) — no duration param
+        -- addFrame(x, y, w, h)     no duration param
         for _ = 1, 4 do
             anim:addFrame(0, 0, 32, 32)
         end
@@ -43,7 +43,7 @@ describe("integration: animation driven by timer delta", function()
     -- @description Verifies animation frame index advances after enough time has elapsed.
     it("animation frame changes at correct simulated time", function()
         local anim = lurek.animation.new()
-        -- addFrame(x, y, w, h) — no duration arg
+        -- addFrame(x, y, w, h)     no duration arg
         anim:addFrame(0, 0, 32, 32)
         anim:addFrame(0, 0, 32, 32)
         anim:addFrame(0, 0, 32, 32)

@@ -286,12 +286,10 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         "poll",
         lua.create_function(move |lua, ()| {
             let s2 = s.clone();
-            lua.create_function(
-                move |lua, ()| match s2.borrow_mut().event_queue.poll() {
-                    Some(event) => event_to_lua_multi(lua, &event),
-                    None => Ok(LuaMultiValue::new()),
-                },
-            )
+            lua.create_function(move |lua, ()| match s2.borrow_mut().event_queue.poll() {
+                Some(event) => event_to_lua_multi(lua, &event),
+                None => Ok(LuaMultiValue::new()),
+            })
         })?,
     )?;
 
@@ -525,7 +523,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
             for val in iter {
                 event_args.push(EventArg::from_lua_val(&val)?);
             }
-            s.borrow_mut().event_queue.push_event(&name, event_args.clone());
+            s.borrow_mut()
+                .event_queue
+                .push_event(&name, event_args.clone());
             let cap_val = *cap_p.borrow();
             if cap_val > 0 {
                 let mut buf = hist_p.borrow_mut();

@@ -3,9 +3,9 @@
 
 local OUT = "tests/output/animation/"
 
--- â”€â”€ helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+--                  helpers                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
 
---- Build a fake sprite-sheet ImageData (8 frames of 16Ă—16, laid out in a 4Ă—2 grid).
+--- Build a fake sprite-sheet ImageData (8 frames of 16x16, laid out in a 4x2 grid).
 --- Each frame is a different hue so we can visually verify the correct frame is selected.
 local function make_sprite_sheet()
     local FRAME_W, FRAME_H = 16, 16
@@ -33,7 +33,7 @@ local function make_sprite_sheet()
 
         img:drawRect(ox + 1, oy + 1, FRAME_W - 2, FRAME_H - 2, c[1], c[2], c[3], 255)
 
-        -- Frame number text marker (a small 2Ă—2 bright pixel per digit)
+        -- Frame number text marker (a small 2x2 bright pixel per digit)
         img:setPixel(ox + 2, oy + 2, 255, 255, 255, 255)
         img:setPixel(ox + 3, oy + 2, 255, 255, 255, 255)
     end
@@ -41,7 +41,7 @@ local function make_sprite_sheet()
     return img, FRAME_W, FRAME_H, COLS * FRAME_W, ROWS * FRAME_H
 end
 
--- â”€â”€ tests â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+--                  tests                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
 
 -- @description Builds basic Animator clips and exercises playback state toggles before any visual evidence is written.
 describe("Evidence: lurek.animation Animator creation", function()
@@ -58,7 +58,7 @@ describe("Evidence: lurek.animation addClipFromGrid quad selection", function()
     -- @evidence file
     -- @covers Animator:pollEvents
     -- @description Steps through every frame of a sprite-sheet clip and writes a PNG grid showing the selected source quads.
-    it("addClipFromGrid produces correct UV quads â€” PNG evidence: frame_grid", function()
+    it("addClipFromGrid produces correct UV quads -    PNG evidence: frame_grid", function()
         local img, FW, FH, TW, TH = make_sprite_sheet()
 
         local anim = lurek.animation.new()
@@ -91,7 +91,7 @@ describe("Evidence: lurek.animation addClipFromGrid quad selection", function()
                 for py = 0, FH - 1 do
                     for px = 0, FW - 1 do
                         local r, g, b, a = img:getPixel(q.x + px + 1, q.y + py + 1)
-                        -- Scale each source pixel to out_scale Ă— out_scale block
+                        -- Scale each source pixel to out_scale x out_scale block
                         for sy = 0, out_scale - 1 do
                             for sx = 0, out_scale - 1 do
                                 out:setPixel(ox + px*out_scale + sx + 1,
@@ -105,8 +105,7 @@ describe("Evidence: lurek.animation addClipFromGrid quad selection", function()
         end
 
         lurek.image.savePNG(out, OUT .. "evidence_animation_frame_grid.png")
-    end)
-        local events = anim:pollEvents()
+            local events = anim:pollEvents()
         local found_done = false
         for _, ev in ipairs(events) do
             if ev.type == "done" or ev.type == "ended" or ev.type == "finish" then
@@ -127,7 +126,7 @@ describe("Evidence: animation speed scaling visual", function()
     -- @covers Animator:getQuad
     -- @evidence file
     -- @description Renders a two-lane timing comparison that shows a 2x-speed clip advances through frame quads faster than the baseline clip.
-    it("speed 2Ă— advances twice as fast â€” PNG evidence: speed_compare", function()
+    it("speed 2x advances twice as fast -    PNG evidence: speed_compare", function()
         local W = 120
         local img = lurek.image.newImageData(W, 20)
         img:fill(20, 20, 20, 255)
@@ -137,7 +136,7 @@ describe("Evidence: animation speed scaling visual", function()
         anim1:addClip("walk", {1, 2, 3, 4}, 4, true)
         anim1:play("walk")
 
-        -- 2Ă— speed
+        -- 2x speed
         local anim2 = lurek.animation.new()
         anim2:addClip("walk", {1, 2, 3, 4}, 4, true)
         anim2:play("walk")
@@ -167,6 +166,6 @@ describe("Evidence: animation speed scaling visual", function()
 
         lurek.image.savePNG(img, OUT .. "evidence_animation_speed_compare.png")
     end)
-end)
 
+end)
 test_summary()

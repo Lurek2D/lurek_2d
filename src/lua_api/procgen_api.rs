@@ -1,4 +1,4 @@
-﻿//! `lurek.procgen` â€” Stateless procedural generation utilities.
+//! `lurek.procgen` — Stateless procedural generation utilities.
 
 use super::SharedState;
 use mlua::prelude::*;
@@ -23,10 +23,10 @@ use crate::procgen::{
 /// Registers the `lurek.procgen` API table with the Lua VM.
 ///
 /// @param lua : &Lua
-/// @param lurek : &LuaTable
+/// @param luna : &LuaTable
 /// @param _state : Rc<RefCell<SharedState>>
 ///
-pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
+pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
 
     // -- cellularAutomata --
@@ -407,16 +407,18 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
         lua.create_function(|_, opts: LuaTable| {
             let axiom: String = opts.get("axiom").unwrap_or_else(|_| String::from("F"));
             let iterations: u32 = opts.get("iterations").unwrap_or(3);
-            let rules: Vec<(char, &'static str)> = Vec::new();
+            let mut rules: Vec<(char, &'static str)> = Vec::new();
             let rule_strings: Vec<(char, String)> = opts
                 .get::<_, Option<LuaTable>>("rules")
                 .unwrap_or(None)
                 .map(|rt| {
                     let mut v = Vec::new();
-                    for (k, val) in rt.pairs::<LuaValue, String>().flatten() {
-                        if let LuaValue::String(s) = k {
-                            if let Some(c) = s.to_str().ok().and_then(|ss| ss.chars().next()) {
-                                v.push((c, val));
+                    for pair in rt.pairs::<LuaValue, String>() {
+                        if let Ok((k, val)) = pair {
+                            if let LuaValue::String(s) = k {
+                                if let Some(c) = s.to_str().ok().and_then(|ss| ss.chars().next()) {
+                                    v.push((c, val));
+                                }
                             }
                         }
                     }
@@ -446,12 +448,14 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
                     .unwrap_or(None)
                     .map(|rt| {
                         let mut v = Vec::new();
-                        for (k, val) in rt.pairs::<LuaValue, String>().flatten() {
-                            if let LuaValue::String(s) = k {
-                                if let Some(c) =
-                                    s.to_str().ok().and_then(|ss| ss.chars().next())
-                                {
-                                    v.push((c, val));
+                        for pair in rt.pairs::<LuaValue, String>() {
+                            if let Ok((k, val)) = pair {
+                                if let LuaValue::String(s) = k {
+                                    if let Some(c) =
+                                        s.to_str().ok().and_then(|ss| ss.chars().next())
+                                    {
+                                        v.push((c, val));
+                                    }
                                 }
                             }
                         }
@@ -904,16 +908,18 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
         lua.create_function(|_, opts: LuaTable| {
             let axiom: String = opts.get("axiom").unwrap_or_else(|_| String::from("F"));
             let iterations: u32 = opts.get("iterations").unwrap_or(3);
-            let rules: Vec<(char, &'static str)> = Vec::new();
+            let mut rules: Vec<(char, &'static str)> = Vec::new();
             let rule_strings: Vec<(char, String)> = opts
                 .get::<_, Option<LuaTable>>("rules")
                 .unwrap_or(None)
                 .map(|rt| {
                     let mut v = Vec::new();
-                    for (k, val) in rt.pairs::<LuaValue, String>().flatten() {
-                        if let LuaValue::String(s) = k {
-                            if let Some(c) = s.to_str().ok().and_then(|ss| ss.chars().next()) {
-                                v.push((c, val));
+                    for pair in rt.pairs::<LuaValue, String>() {
+                        if let Ok((k, val)) = pair {
+                            if let LuaValue::String(s) = k {
+                                if let Some(c) = s.to_str().ok().and_then(|ss| ss.chars().next()) {
+                                    v.push((c, val));
+                                }
                             }
                         }
                     }
@@ -943,12 +949,14 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
                     .unwrap_or(None)
                     .map(|rt| {
                         let mut v = Vec::new();
-                        for (k, val) in rt.pairs::<LuaValue, String>().flatten() {
-                            if let LuaValue::String(s) = k {
-                                if let Some(c) =
-                                    s.to_str().ok().and_then(|ss| ss.chars().next())
-                                {
-                                    v.push((c, val));
+                        for pair in rt.pairs::<LuaValue, String>() {
+                            if let Ok((k, val)) = pair {
+                                if let LuaValue::String(s) = k {
+                                    if let Some(c) =
+                                        s.to_str().ok().and_then(|ss| ss.chars().next())
+                                    {
+                                        v.push((c, val));
+                                    }
                                 }
                             }
                         }
@@ -1192,7 +1200,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
         lua.create_function(|_, (x, y, z): (f32, f32, f32)| Ok(simplex_noise_3d(x, y, z)))?,
     )?;
 
-    lurek.set("procgen", tbl)?;
+    luna.set("procgen", tbl)?;
     Ok(())
 }
 

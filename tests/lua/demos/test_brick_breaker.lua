@@ -46,7 +46,7 @@ describe("brick_breaker: mechanics checks", function()
             src:find("hit") ~= nil or
             src:find("intersect") ~= nil or
             src:find("overlap") ~= nil,
-            "No collision detection found — ball passes through bricks")
+            "No collision detection found     ball passes through bricks")
     end)
 
     it("has lives or fail condition", function()
@@ -56,7 +56,7 @@ describe("brick_breaker: mechanics checks", function()
             src:find("life") ~= nil or
             src:find("game_over") ~= nil or
             src:find("SCREEN_H") ~= nil,
-            "No failure condition found — ball falling below screen is unhandled")
+            "No failure condition found     ball falling below screen is unhandled")
     end)
 end)
 

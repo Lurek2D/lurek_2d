@@ -98,7 +98,10 @@ mod widget_tests {
     #[test]
     fn widget_new_label() {
         let w = Widget::new_label(1, 1, "Hello");
-        assert!(matches!(w.kind, lurek2d::terminal::WidgetKind::Label { .. }));
+        assert!(matches!(
+            w.kind,
+            lurek2d::terminal::WidgetKind::Label { .. }
+        ));
         assert_eq!(w.get_text().unwrap(), "Hello".to_string());
     }
 

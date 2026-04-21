@@ -38,7 +38,7 @@ describe("stress: camera position updates", function()
     -- @covers Camera:setZoom
     -- @stress Allocates 100 cameras and performs 1000 combined position-plus-zoom updates on each.
     -- @description Stresses bulk camera mutation by iterating over a camera pool and changing both transform properties inside a nested update loop.
-    it("100 cameras Ă— 1000 updates each in <5s", function()
+    it("100 cameras       1000 updates each in <5s", function()
         local CAMS    = 100
         local UPDATES = 1000
         local cams    = {}
@@ -55,7 +55,7 @@ describe("stress: camera position updates", function()
             end
         end
         local elapsed = os.clock() - start
-        print(string.format("[STRESS] 100 cameras Ă— 1000 updates: %.4fs (%.0f updates/sec)",
+        print(string.format("[STRESS] 100 cameras       1000 updates: %.4fs (%.0f updates/sec)",
             elapsed, (CAMS * UPDATES) / elapsed))
 
         expect_true(elapsed < 5.0, "multi-camera budget: " .. elapsed .. "s")

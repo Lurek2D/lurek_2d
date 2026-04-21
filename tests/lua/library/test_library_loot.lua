@@ -1,12 +1,12 @@
 -- tests/lua/library/test_library_loot.lua
--- BDD tests for library/loot/init.lua — alias sampler, drop DSL, pity, modifier.
+-- BDD tests for library/loot/init.lua     alias sampler, drop DSL, pity, modifier.
 
 local loot = require("library.loot")
 
 describe("library.loot", function()
 
     describe("LootTable.sample distribution", function()
-        it("samples respect declared weights within ±3% over 50k draws", function()
+        it("samples respect declared weights within   3% over 50k draws", function()
             local rng = lurek.math.newRandomGenerator()
             rng:setSeed(424242)
             loot.setDefaultRng(rng)
@@ -132,7 +132,7 @@ describe("library.loot", function()
     end)
 
     describe("Modifier", function()
-        it("apply yields independent table — original untouched", function()
+        it("apply yields independent table     original untouched", function()
             local base = loot.fromList({{id="a",weight=10},{id="b",weight=10}})
             local mf = loot.newModifier():add("boost",
                 function(e) return e.id == "a" and 5 or 1 end)
@@ -145,7 +145,7 @@ describe("library.loot", function()
 
     describe("error paths", function()
         it("fromToml raises on missing engine bindings", function()
-            -- lurek.filesystem.read may not be wired in headless test VM — either way it must error
+            -- lurek.filesystem.read may not be wired in headless test VM     either way it must error
             -- on a path that does not exist or on missing binding.
             expect_error(function()
                 loot.fromToml("nonexistent_file_for_loot_test_xyz.toml")

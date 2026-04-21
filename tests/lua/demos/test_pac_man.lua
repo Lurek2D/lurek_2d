@@ -29,7 +29,7 @@ describe("pac_man: game mechanics", function()
         expect_true(
             src:find("ghost") ~= nil or
             src:find("enemy") ~= nil,
-            "No ghost/enemy found — there is no challenge")
+            "No ghost/enemy found     there is no challenge")
     end)
 
     it("has dot or pellet collection", function()
@@ -39,7 +39,7 @@ describe("pac_man: game mechanics", function()
             src:find("pellet") ~= nil or
             src:find("food") ~= nil or
             src:find("coin") ~= nil,
-            "No dots/pellets found — nothing to collect")
+            "No dots/pellets found     nothing to collect")
     end)
 
     it("has score system", function()

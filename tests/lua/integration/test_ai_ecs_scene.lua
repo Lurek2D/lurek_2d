@@ -43,7 +43,7 @@ describe("ai + entity + scene integration", function()
         fsm:forceState("patrol")
         expect_equal("patrol", fsm:getCurrentState(), "enemy starts patrolling")
 
-        -- Simulate player detection â†’ chase
+        -- Simulate player detection          chase
         fsm:forceState("chase")
         expect_equal("chase", fsm:getCurrentState(), "enemy chases player")
         universe:set(enemy, "ai_state", "chase")

@@ -1,6 +1,6 @@
 //! Unit-aware pathfinder with result caching and convenience methods.
 //!
-//! This module is part of Lurek2D's `pathfind` subsystem and provides the implementation
+//! This module is part of Lurek2D's `pathfinding` subsystem and provides the implementation
 //! details for unit pathfinder-related operations and data management.
 //! Key types exported from this module: `Waypoint`, `UnitPathfinder`.
 //! Primary functions: `new()`, `find_path()`, `find_path_smooth()`, `get_path_length()`.
@@ -425,5 +425,43 @@ impl UnitPathfinder {
             let oldest = self.cache_order.remove(0);
             self.cache.remove(&oldest);
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::pathfind::nav_grid::NavGrid;
+    use std::cell::RefCell;
+    use std::rc::Rc;
+
+    fn open_grid(w: u32, h: u32) -> Rc<RefCell<NavGrid>> {
+        Rc::new(RefCell::new(NavGrid::new(w, h)))
+    }
+
+    #[test]
+    fn find_path_trivial() {
+        let g = open_grid(5, 5);
+        let mut up = UnitPathfinder::new(g);
+        let path = up.find_path(0, 0, 4, 4, 1);
+        assert!(path.is_some());
+    }
+
+    #[test]
+    fn cache_hit_returns_same_path() {
+        let g = open_grid(5, 5);
+        let mut up = UnitPathfinder::new(g);
+        let p1 = up.find_path(0, 0, 4, 4, 1).unwrap();
+        let p2 = up.find_path(0, 0, 4, 4, 1).unwrap();
+        assert_eq!(p1, p2);
+    }
+
+    #[test]
+    fn path_through_blocked_returns_none() {
+        let g_inner = NavGrid::new(3, 1);
+        let g = Rc::new(RefCell::new(g_inner));
+        g.borrow_mut().set_blocked(1, 0, true);
+        let mut up = UnitPathfinder::new(g);
+        assert!(up.find_path(0, 0, 2, 0, 1).is_none());
     }
 }

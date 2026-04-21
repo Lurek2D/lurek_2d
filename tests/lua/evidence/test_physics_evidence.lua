@@ -1,4 +1,4 @@
--- Evidence test: physics simulation â€” body positions after stepping
+-- Evidence test: physics simulation -    body positions after stepping
 -- Produces: physics_sim.png showing colored dots at body positions
 
 -- @description Covers suite: evidence: physics simulation.
@@ -24,7 +24,7 @@ describe("evidence: physics simulation", function()
         local rect = lurek.physics.newRectangleShape(200, 20)
         lurek.physics.attachShape(ground, rect)
 
-        -- circle (dynamic â€” should fall under gravity)
+        -- circle (dynamic -    should fall under gravity)
         local ball = world:newBody(100, 20, "dynamic")
         local circle = lurek.physics.newCircleShape(10)
         circle:setRestitution(0.5)
@@ -45,7 +45,7 @@ describe("evidence: physics simulation", function()
         local img = lurek.image.newImageData(256, 256)
         img:fill(20, 20, 40, 255)
 
-        -- ground â€” white bar
+        -- ground -    white bar
         for px = 28, 228 do
             for py = 190, 210 do
                 img:setPixel(px, py, 200, 200, 200, 255)
@@ -95,20 +95,14 @@ describe("Evidence: lurek.physics.drawDebugGpu", function()
         expect_equal(ok, true)
     end)
         expect_equal(ok, true)
-    end)
         expect_equal(ok, true)
-    end)
         expect_equal(ok, true)
-    end)
         expect_equal(ok, true)
-    end)
         local ok, err = pcall(function()
             lurek.physics.drawDebugGpu(world)
         end)
         expect_equal(ok, true)
-    end)
 
-end)
 
 
 
@@ -124,17 +118,17 @@ end)
 local out = {}
 local function log(s) out[#out+1] = s end
 
--- ── Create world ──────────────────────────────────────────────────────────
+--        Create world                                                                                                                                                                               
 local world = lurek.physics.newWorld(0, 9.81)
 
--- ── Solver iterations ─────────────────────────────────────────────────────
+--        Solver iterations                                                                                                                                                                
 log("solver_iterations_default=" .. tostring(world:getSolverIterations()))
 world:setSolverIterations(8)
 log("solver_iterations_after_set=" .. tostring(world:getSolverIterations()))
 world:setSolverIterations(0)
 log("solver_iterations_clamped=" .. tostring(world:getSolverIterations()))
 
--- ── One-way platform ──────────────────────────────────────────────────────
+--        One-way platform                                                                                                                                                                   
 local platform = lurek.physics.newBody(world, 200, 400, "static")
 world:setBodyOneWay(platform, 0, -1)
 local nx, ny = world:getBodyOneWay(platform)
@@ -143,28 +137,28 @@ world:clearBodyOneWay(platform)
 local nx2, ny2 = world:getBodyOneWay(platform)
 log("one_way_cleared=" .. tostring(nx2) .. "," .. tostring(ny2))
 
--- ── Body sleeping ─────────────────────────────────────────────────────────
+--        Body sleeping                                                                                                                                                                            
 local dyn = lurek.physics.newBody(world, 0, 0, "dynamic")
 world:sleepBody(dyn)
 log("after_sleep=" .. tostring(world:isBodySleeping(dyn)))
 world:wakeUpBody(dyn)
 log("after_wake=" .. tostring(world:isBodySleeping(dyn)))
 
--- ── CCD ───────────────────────────────────────────────────────────────────
+--        CCD                                                                                                                                                                                                          
 local bullet = lurek.physics.newBody(world, 500, 0, "dynamic")
 world:setBodyCCD(bullet, true)
 log("ccd_enabled=" .. tostring(world:getBodyCCD(bullet)))
 world:setBodyCCD(bullet, false)
 log("ccd_disabled=" .. tostring(world:getBodyCCD(bullet)))
 
--- ── Breakable joints ──────────────────────────────────────────────────────
+--        Breakable joints                                                                                                                                                                   
 local b1 = lurek.physics.newBody(world, 0, 0, "dynamic")
 local b2 = lurek.physics.newBody(world, 60, 0, "dynamic")
 local jid = lurek.physics.newJoint(world, b1, b2, "distance")
 world:setJointBreakForce(jid, 50.0)
 log("joint_break_force=" .. tostring(world:getJointBreakForce(jid)))
 
--- ── Contact callbacks registered ─────────────────────────────────────────
+--        Contact callbacks registered                                                                                                                            
 local begin_fired = 0
 local end_fired   = 0
 world:setBeginContact(function(a, b) begin_fired = begin_fired + 1 end)
@@ -175,7 +169,7 @@ world:clearBeginContact()
 world:clearEndContact()
 log("callbacks_cleared=true")
 
--- ── Batch body creation ───────────────────────────────────────────────────
+--        Batch body creation                                                                                                                                                          
 local ids = world:newBodies({
     {0, 100, "dynamic"},
     {100, 100, "static"},
@@ -186,14 +180,14 @@ for i, id in ipairs(ids) do
     log("batch_id[" .. i .. "]=" .. type(id))
 end
 
--- ── Body sleeping via userdata ─────────────────────────────────────────────
+--        Body sleeping via userdata                                                                                                                                        
 local body_u = lurek.physics.newBody(world, 999, 999, "dynamic")
 body_u:sleep()
 log("body_userdata_sleep=" .. tostring(body_u:isSleeping()))
 body_u:wakeUp()
 log("body_userdata_wake=" .. tostring(body_u:isSleeping()))
 
--- ── Write evidence file ───────────────────────────────────────────────────
+--        Write evidence file                                                                                                                                                          
 local path = "tests/lua/evidence/physics_ext_report.txt"
 local f, err = io.open(path, "w")
 if f then
@@ -206,7 +200,7 @@ else
     print(table.concat(out, "\n"))
 end
 
--- ── Minimal BDD assertions ────────────────────────────────────────────────
+--        Minimal BDD assertions                                                                                                                                                 
 describe("lurek.physics extension evidence", function()
 end)
 
@@ -283,7 +277,7 @@ end)
 -- Merged from: test_evidence_physics.lua
 -- ================================================================
 
--- Evidence test: physics simulation â€” body positions after stepping
+-- Evidence test: physics simulation -    body positions after stepping
 -- Produces: physics_sim.png showing colored dots at body positions
 
 -- @description Covers suite: evidence: physics simulation.
@@ -309,7 +303,7 @@ describe("evidence: physics simulation", function()
         local rect = lurek.physics.newRectangleShape(200, 20)
         lurek.physics.attachShape(ground, rect)
 
-        -- circle (dynamic â€” should fall under gravity)
+        -- circle (dynamic -    should fall under gravity)
         local ball = world:newBody(100, 20, "dynamic")
         local circle = lurek.physics.newCircleShape(10)
         circle:setRestitution(0.5)
@@ -330,7 +324,7 @@ describe("evidence: physics simulation", function()
         local img = lurek.image.newImageData(256, 256)
         img:fill(20, 20, 40, 255)
 
-        -- ground â€” white bar
+        -- ground -    white bar
         for px = 28, 228 do
             for py = 190, 210 do
                 img:setPixel(px, py, 200, 200, 200, 255)
@@ -380,20 +374,14 @@ describe("Evidence: lurek.physics.drawDebugGpu", function()
         expect_equal(ok, true)
     end)
         expect_equal(ok, true)
-    end)
         expect_equal(ok, true)
-    end)
         expect_equal(ok, true)
-    end)
         expect_equal(ok, true)
-    end)
         local ok, err = pcall(function()
             lurek.physics.drawDebugGpu(world)
         end)
         expect_equal(ok, true)
-    end)
 
-end)
 
 
 
@@ -409,17 +397,17 @@ end)
 local out = {}
 local function log(s) out[#out+1] = s end
 
--- ── Create world ──────────────────────────────────────────────────────────
+--        Create world                                                                                                                                                                               
 local world = lurek.physics.newWorld(0, 9.81)
 
--- ── Solver iterations ─────────────────────────────────────────────────────
+--        Solver iterations                                                                                                                                                                
 log("solver_iterations_default=" .. tostring(world:getSolverIterations()))
 world:setSolverIterations(8)
 log("solver_iterations_after_set=" .. tostring(world:getSolverIterations()))
 world:setSolverIterations(0)
 log("solver_iterations_clamped=" .. tostring(world:getSolverIterations()))
 
--- ── One-way platform ──────────────────────────────────────────────────────
+--        One-way platform                                                                                                                                                                   
 local platform = lurek.physics.newBody(world, 200, 400, "static")
 world:setBodyOneWay(platform, 0, -1)
 local nx, ny = world:getBodyOneWay(platform)
@@ -428,28 +416,28 @@ world:clearBodyOneWay(platform)
 local nx2, ny2 = world:getBodyOneWay(platform)
 log("one_way_cleared=" .. tostring(nx2) .. "," .. tostring(ny2))
 
--- ── Body sleeping ─────────────────────────────────────────────────────────
+--        Body sleeping                                                                                                                                                                            
 local dyn = lurek.physics.newBody(world, 0, 0, "dynamic")
 world:sleepBody(dyn)
 log("after_sleep=" .. tostring(world:isBodySleeping(dyn)))
 world:wakeUpBody(dyn)
 log("after_wake=" .. tostring(world:isBodySleeping(dyn)))
 
--- ── CCD ───────────────────────────────────────────────────────────────────
+--        CCD                                                                                                                                                                                                          
 local bullet = lurek.physics.newBody(world, 500, 0, "dynamic")
 world:setBodyCCD(bullet, true)
 log("ccd_enabled=" .. tostring(world:getBodyCCD(bullet)))
 world:setBodyCCD(bullet, false)
 log("ccd_disabled=" .. tostring(world:getBodyCCD(bullet)))
 
--- ── Breakable joints ──────────────────────────────────────────────────────
+--        Breakable joints                                                                                                                                                                   
 local b1 = lurek.physics.newBody(world, 0, 0, "dynamic")
 local b2 = lurek.physics.newBody(world, 60, 0, "dynamic")
 local jid = lurek.physics.newJoint(world, b1, b2, "distance")
 world:setJointBreakForce(jid, 50.0)
 log("joint_break_force=" .. tostring(world:getJointBreakForce(jid)))
 
--- ── Contact callbacks registered ─────────────────────────────────────────
+--        Contact callbacks registered                                                                                                                            
 local begin_fired = 0
 local end_fired   = 0
 world:setBeginContact(function(a, b) begin_fired = begin_fired + 1 end)
@@ -460,7 +448,7 @@ world:clearBeginContact()
 world:clearEndContact()
 log("callbacks_cleared=true")
 
--- ── Batch body creation ───────────────────────────────────────────────────
+--        Batch body creation                                                                                                                                                          
 local ids = world:newBodies({
     {0, 100, "dynamic"},
     {100, 100, "static"},
@@ -471,14 +459,14 @@ for i, id in ipairs(ids) do
     log("batch_id[" .. i .. "]=" .. type(id))
 end
 
--- ── Body sleeping via userdata ─────────────────────────────────────────────
+--        Body sleeping via userdata                                                                                                                                        
 local body_u = lurek.physics.newBody(world, 999, 999, "dynamic")
 body_u:sleep()
 log("body_userdata_sleep=" .. tostring(body_u:isSleeping()))
 body_u:wakeUp()
 log("body_userdata_wake=" .. tostring(body_u:isSleeping()))
 
--- ── Write evidence file ───────────────────────────────────────────────────
+--        Write evidence file                                                                                                                                                          
 local path = "tests/lua/evidence/physics_ext_report.txt"
 local f, err = io.open(path, "w")
 if f then
@@ -491,7 +479,7 @@ else
     print(table.concat(out, "\n"))
 end
 
--- ── Minimal BDD assertions ────────────────────────────────────────────────
+--        Minimal BDD assertions                                                                                                                                                 
 describe("lurek.physics extension evidence", function()
 end)
 
@@ -557,6 +545,114 @@ describe("evidence: physics zone event tracking", function()
 
         -- Verify at least one enter event was produced.
         expect_true(#events >= 1, "expected at least one zone enter event")
+        expect_evidence_created(path)
+    end)
+
+end)
+
+-- ================================================================
+-- Merged from: test_cellular_sand_evidence.lua
+-- ================================================================
+
+-- Evidence test: cellular sand falling simulation
+-- Produces: cellular_sand.png showing sand particles after 50 simulation steps.
+-- Proves CellularWorld step() works: sand placed at the top migrates to the bottom.
+
+-- @description Covers suite: evidence: cellular sand simulation.
+describe("evidence: cellular sand simulation", function()
+    -- @covers lurek.physics.newCellular
+    -- @covers LuaCellular:fillRect
+    -- @covers LuaCellular:stepN
+    -- @covers LuaCellular:toImageData
+    -- @covers lurek.image.savePNG
+    -- @evidence file
+    -- @description Places a layer of sand at the top of a 64x64 grid (64x64 pixels),
+    --              steps 50 times, then renders and saves a PNG proving
+    --              sand migrated downward (pile visible at the bottom).
+    it("sand falls to the bottom and produces a visible pile image", function()
+        ensure_evidence_dir("physics")
+        local path = evidence_output_dir("physics") .. "cellular_sand.png"
+
+        local W, H = 64, 64
+        local sim = lurek.physics.newCellular(W, H)
+
+        -- Fill top 3 rows with sand.
+        sim:fillRect(0, 0, W, 3, lurek.physics.CELL_SAND)
+
+        -- Run simulation for 50 ticks.
+        sim:stepN(50)
+
+        -- Verify sand moved (counted at top row should be near zero).
+        local top_sand = 0
+        for x = 0, W - 1 do
+            if sim:getCell(x, 0) == lurek.physics.CELL_SAND then
+                top_sand = top_sand + 1
+            end
+        end
+        expect_true(top_sand < W * 3, "sand should have migrated away from top")
+
+        -- Render evidence image.
+        local raw = sim:toImageData()
+        expect_equal(W * H * 4, #raw)
+
+        local img = lurek.image.newImageData(W, H)
+        img:setRawData(raw)
+        lurek.image.savePNG(img, path)
+        expect_evidence_created(path)
+    end)
+end)
+
+
+
+
+-- ================================================================
+-- Merged from: test_evidence_cellular_sand.lua
+-- ================================================================
+
+-- Evidence test: cellular sand falling simulation
+-- Produces: cellular_sand.png showing sand particles after 50 simulation steps.
+-- Proves CellularWorld step() works: sand placed at the top migrates to the bottom.
+
+-- @description Covers suite: evidence: cellular sand simulation.
+describe("evidence: cellular sand simulation", function()
+    -- @covers lurek.physics.newCellular
+    -- @covers LuaCellular:fillRect
+    -- @covers LuaCellular:stepN
+    -- @covers LuaCellular:toImageData
+    -- @covers lurek.image.savePNG
+    -- @evidence file
+    -- @description Places a layer of sand at the top of a 64x64 grid (64x64 pixels),
+    --              steps 50 times, then renders and saves a PNG proving
+    --              sand migrated downward (pile visible at the bottom).
+    it("sand falls to the bottom and produces a visible pile image", function()
+        ensure_evidence_dir("physics")
+        local path = evidence_output_dir("physics") .. "cellular_sand.png"
+
+        local W, H = 64, 64
+        local sim = lurek.physics.newCellular(W, H)
+
+        -- Fill top 3 rows with sand.
+        sim:fillRect(0, 0, W, 3, lurek.physics.CELL_SAND)
+
+        -- Run simulation for 50 ticks.
+        sim:stepN(50)
+
+        -- Verify sand moved (counted at top row should be near zero).
+        local top_sand = 0
+        for x = 0, W - 1 do
+            if sim:getCell(x, 0) == lurek.physics.CELL_SAND then
+                top_sand = top_sand + 1
+            end
+        end
+        expect_true(top_sand < W * 3, "sand should have migrated away from top")
+
+        -- Render evidence image.
+        local raw = sim:toImageData()
+        expect_equal(W * H * 4, #raw)
+
+        local img = lurek.image.newImageData(W, H)
+        img:setRawData(raw)
+        lurek.image.savePNG(img, path)
         expect_evidence_created(path)
     end)
 end)

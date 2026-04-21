@@ -168,7 +168,7 @@ describe("Per-Key Versioning", function()
         ns:set("a", 2)
         ns:set("a", 3)
         ns:set("b", 10)
-        -- a is at v3, b is at v1 → max is 3
+        -- a is at v3, b is at v1     max is 3
         expect_equal(ns:getVersion(), 3)
     end)
 
@@ -537,7 +537,7 @@ describe("Delta Handling", function()
         }, {})
         expect_equal(ns:get("hp"), 100)
 
-        -- Try to apply version 3 (stale) — should be ignored
+        -- Try to apply version 3 (stale)     should be ignored
         local changes = {}
         ns:_handle(1, {
             action = "delta",

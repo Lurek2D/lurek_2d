@@ -19,7 +19,7 @@ describe("pong: game mechanics", function()
         expect_true(
             src:find("isActionDown%s*%(") ~= nil or
             src:find("wasActionPressed%s*%(") ~= nil,
-            "No input polling found — paddles cannot move")
+            "No input polling found     paddles cannot move")
     end)
 
     it("draws rectangles for paddles and ball", function()
@@ -27,7 +27,7 @@ describe("pong: game mechanics", function()
         expect_true(
             src:find("drawRect%s*%(") ~= nil or
             src:find("drawCircle%s*%(") ~= nil,
-            "No draw calls found — game objects will not render")
+            "No draw calls found     game objects will not render")
     end)
 
     it("has score tracking variables or table", function()
@@ -44,7 +44,7 @@ describe("pong: game mechanics", function()
             src:find("speed") ~= nil or
             src:find("dx") ~= nil or
             src:find("ball") ~= nil,
-            "No ball velocity reference found — ball physics missing")
+            "No ball velocity reference found     ball physics missing")
     end)
 end)
 

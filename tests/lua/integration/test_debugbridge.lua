@@ -209,7 +209,7 @@ describe("lurek.debugbridge broadcast", function()
     -- @description Verifies broadcast is safe to call with no clients connected, documenting this file's single-module scope.
     it("broadcast does not error without connected clients", function()
         lurek.debugbridge.broadcast("test_event", '{"key": "value"}')
-        -- No error means success â€” no clients to receive it
+        -- No error means success          no clients to receive it
     end)
 
 end)

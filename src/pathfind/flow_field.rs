@@ -1,6 +1,6 @@
 //! Flow field pathfinding for steering many units toward one or more targets.
 //!
-//! This module is part of Lurek2D's `pathfind` subsystem and provides the implementation
+//! This module is part of Lurek2D's `pathfinding` subsystem and provides the implementation
 //! details for flow field-related operations and data management.
 //! Key types exported from this module: `FlowField`.
 //! Primary functions: `new()`, `calculate()`, `calculate_multi()`, `get_direction()`.
@@ -368,5 +368,33 @@ impl FlowField {
             );
         }
         img
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::pathfind::nav_grid::NavGrid;
+    use std::cell::RefCell;
+    use std::rc::Rc;
+
+    fn open_grid(w: u32, h: u32) -> Rc<RefCell<NavGrid>> {
+        Rc::new(RefCell::new(NavGrid::new(w, h)))
+    }
+
+    #[test]
+    fn new_field_not_calculated() {
+        let g = open_grid(5, 5);
+        let ff = FlowField::new(g);
+        assert!(!ff.is_calculated());
+    }
+
+    #[test]
+    fn calculate_and_get_direction() {
+        let g = open_grid(5, 5);
+        let mut ff = FlowField::new(g);
+        ff.calculate(4, 4, 1);
+        let (dx, dy) = ff.get_direction(0, 0);
+        assert!(dx.is_finite() && dy.is_finite());
     }
 }

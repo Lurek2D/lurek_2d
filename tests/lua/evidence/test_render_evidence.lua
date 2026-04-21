@@ -2,7 +2,7 @@
 -- Canonical file. Merged from multiple sources.
 
 -- test_evidence_render_drawing.lua
--- Evidence test: lurek.render drawing API â€” renders each primitive into PNG
+-- Evidence test: lurek.render drawing API -    renders each primitive into PNG
 -- Produces: graphic_primitives.png, graphic_color_grid.png
 
 local OUT = "tests/output/graphics/"
@@ -115,7 +115,7 @@ describe("Evidence: lurek.render drawing API + PNG output", function()
     -- @covers lurek.image.savePNG
     -- @evidence file
     -- @description Iterates through a grid of colors, round-trips them through the graphics state, and writes the resulting swatch sheet.
-    it("PNG: color grid â€” setColor evidence across hue range", function()
+    it("PNG: color grid -    setColor evidence across hue range", function()
         local W, H = 128, 128
         local img = lurek.image.newImageData(W, H)
 
@@ -157,11 +157,8 @@ describe("Evidence: lurek.render new GPU draw commands", function()
         expect_equal(ok, true)
     end)
         expect_equal(ok, true)
-    end)
         expect_equal(ok, true)
-    end)
 
-end)
 
 
 
@@ -229,7 +226,7 @@ end)
 -- ================================================================
 
 -- test_evidence_render_drawing.lua
--- Evidence test: lurek.render drawing API â€” renders each primitive into PNG
+-- Evidence test: lurek.render drawing API -    renders each primitive into PNG
 -- Produces: graphic_primitives.png, graphic_color_grid.png
 
 local OUT = "tests/output/graphics/"
@@ -342,7 +339,7 @@ describe("Evidence: lurek.render drawing API + PNG output", function()
     -- @covers lurek.image.savePNG
     -- @evidence file
     -- @description Iterates through a grid of colors, round-trips them through the graphics state, and writes the resulting swatch sheet.
-    it("PNG: color grid â€” setColor evidence across hue range", function()
+    it("PNG: color grid -    setColor evidence across hue range", function()
         local W, H = 128, 128
         local img = lurek.image.newImageData(W, H)
 
@@ -384,11 +381,8 @@ describe("Evidence: lurek.render new GPU draw commands", function()
         expect_equal(ok, true)
     end)
         expect_equal(ok, true)
-    end)
         expect_equal(ok, true)
-    end)
 
-end)
 
 
 
@@ -1597,7 +1591,7 @@ describe("Evidence: combined noise + minimap", function()
                 local nx = gx / GRID * 3
                 local ny = gy / GRID * 3
                 local h_val = ng:fbm(nx, ny, 4, 0.5, 2.0)
-                -- -1..1 â†’ 0..255
+                -- -1..1          0..255
                 local v = math.floor((h_val + 1) * 0.5 * 255)
                 local terrain = h_val > 0.1 and 1 or 0
                 mm:setTerrain(gx, gy, terrain)
@@ -2042,6 +2036,730 @@ max_bodies = 1000
         write_text(migrated_path("hash", "sha1_engine.txt"), lurek.data.hash("sha1", "Lurek2D engine test vector"))
         write_text(migrated_path("hash", "sha256_hello.txt"), lurek.data.hash("sha256", "Hello, Lurek2D!"))
         write_text(migrated_path("hash", "sha512_engine.txt"), lurek.data.hash("sha512", "Lurek2D engine test vector"))
+    end)
+
+end)
+
+-- ================================================================
+-- Merged from: test_canvas_evidence.lua
+-- ================================================================
+
+-- test_evidence_canvas.lua
+-- Evidence test: Canvas creation, dimensions, release + PNG visualization
+-- Produces: canvas_sizes.png, canvas_lifecycle.png
+
+local OUT = "tests/output/canvas/"
+
+--- Helper: draw a filled rectangle into an ImageData.
+local function draw_rect(img, x0, y0, w, h, r, g, b, a)
+    a = a or 255
+    for y = y0, math.min(y0 + h - 1, img:getHeight() - 1) do
+        for x = x0, math.min(x0 + w - 1, img:getWidth() - 1) do
+            img:setPixel(x, y, r, g, b, a)
+        end
+    end
+end
+
+--- Helper: draw a 1px border.
+local function draw_border(img, x0, y0, w, h, r, g, b)
+    for x = x0, math.min(x0 + w - 1, img:getWidth() - 1) do
+        if y0 >= 0 and y0 < img:getHeight() then img:setPixel(x, y0, r, g, b, 255) end
+        local yb = y0 + h - 1
+        if yb >= 0 and yb < img:getHeight() then img:setPixel(x, yb, r, g, b, 255) end
+    end
+    for y = y0, math.min(y0 + h - 1, img:getHeight() - 1) do
+        if x0 >= 0 and x0 < img:getWidth() then img:setPixel(x0, y, r, g, b, 255) end
+        local xr = x0 + w - 1
+        if xr >= 0 and xr < img:getWidth() then img:setPixel(xr, y, r, g, b, 255) end
+    end
+end
+
+-- @description Covers suite: Evidence: Canvas lifecycle + PNG visualization.
+describe("Evidence: Canvas lifecycle + PNG visualization", function()
+
+    -- @covers lurek.render.newCanvas
+    -- @covers Canvas:getDimensions
+    -- @covers Canvas:release
+    -- @evidence file
+    -- @description Creates canvases of several sizes and renders scaled rectangles that visualize the reported dimensions in one PNG.
+    it("PNG: canvas sizes visualized as colored rectangles", function()
+        local W, H = 256, 256
+        local img = lurek.image.newImageData(W, H)
+        img:fill(20, 20, 30, 255)
+
+        local canvases = {
+            {128, 64,  255, 80,  80},
+            {200, 100, 80,  255, 80},
+            {64,  64,  80,  80,  255},
+            {256, 256, 255, 255, 80},
+            {32,  32,  255, 128, 0},
+            {320, 180, 128, 0,   255},
+        }
+        local y_off = 4
+        for _, cfg in ipairs(canvases) do
+            local cw, ch, r, g, b = cfg[1], cfg[2], cfg[3], cfg[4], cfg[5]
+            local c = lurek.render.newCanvas(cw, ch)
+            local aw, ah = c:getDimensions()
+            c:release()
+            local scale = math.min(240 / aw, 30 / ah)
+            local dw = math.floor(aw * scale)
+            local dh = math.max(math.floor(ah * scale), 4)
+            draw_rect(img, 8, y_off, dw, dh, r, g, b, 255)
+            draw_border(img, 8, y_off, dw, dh, 255, 255, 255)
+            y_off = y_off + dh + 4
+        end
+
+        lurek.image.savePNG(img, OUT .. "canvas_sizes.png")
+    end)
+
+    -- @covers lurek.render.newCanvas
+    -- @covers Canvas:getWidth
+    -- @covers Canvas:release
+    -- @evidence file
+    -- @description Draws a simple lifecycle diagram that encodes created, active, and released canvas states into file evidence.
+    it("PNG: canvas lifecycle state diagram (created/active/released)", function()
+        local img = lurek.image.newImageData(128, 64)
+        img:fill(30, 30, 40, 255)
+
+        local c = lurek.render.newCanvas(64, 64)
+        -- Created (green)
+        draw_rect(img, 4, 4, 36, 56, 0, 200, 0, 255)
+        -- Active (blue) â€” we read width to prove it's alive
+        local _ = c:getWidth()
+        draw_rect(img, 46, 4, 36, 56, 0, 0, 200, 255)
+        -- Released (red)
+        c:release()
+        draw_rect(img, 88, 4, 36, 56, 200, 0, 0, 255)
+
+        lurek.image.savePNG(img, OUT .. "canvas_lifecycle.png")
+    end)
+
+end)
+
+
+
+-- ================================================================
+-- Merged from: test_evidence_canvas.lua
+-- ================================================================
+
+-- test_evidence_canvas.lua
+-- Evidence test: Canvas creation, dimensions, release + PNG visualization
+-- Produces: canvas_sizes.png, canvas_lifecycle.png
+
+local OUT = "tests/output/canvas/"
+
+--- Helper: draw a filled rectangle into an ImageData.
+local function draw_rect(img, x0, y0, w, h, r, g, b, a)
+    a = a or 255
+    for y = y0, math.min(y0 + h - 1, img:getHeight() - 1) do
+        for x = x0, math.min(x0 + w - 1, img:getWidth() - 1) do
+            img:setPixel(x, y, r, g, b, a)
+        end
+    end
+end
+
+--- Helper: draw a 1px border.
+local function draw_border(img, x0, y0, w, h, r, g, b)
+    for x = x0, math.min(x0 + w - 1, img:getWidth() - 1) do
+        if y0 >= 0 and y0 < img:getHeight() then img:setPixel(x, y0, r, g, b, 255) end
+        local yb = y0 + h - 1
+        if yb >= 0 and yb < img:getHeight() then img:setPixel(x, yb, r, g, b, 255) end
+    end
+    for y = y0, math.min(y0 + h - 1, img:getHeight() - 1) do
+        if x0 >= 0 and x0 < img:getWidth() then img:setPixel(x0, y, r, g, b, 255) end
+        local xr = x0 + w - 1
+        if xr >= 0 and xr < img:getWidth() then img:setPixel(xr, y, r, g, b, 255) end
+    end
+end
+
+-- @description Covers suite: Evidence: Canvas lifecycle + PNG visualization.
+describe("Evidence: Canvas lifecycle + PNG visualization", function()
+
+    -- @covers lurek.render.newCanvas
+    -- @covers Canvas:getDimensions
+    -- @covers Canvas:release
+    -- @evidence file
+    -- @description Creates canvases of several sizes and renders scaled rectangles that visualize the reported dimensions in one PNG.
+    it("PNG: canvas sizes visualized as colored rectangles", function()
+        local W, H = 256, 256
+        local img = lurek.image.newImageData(W, H)
+        img:fill(20, 20, 30, 255)
+
+        local canvases = {
+            {128, 64,  255, 80,  80},
+            {200, 100, 80,  255, 80},
+            {64,  64,  80,  80,  255},
+            {256, 256, 255, 255, 80},
+            {32,  32,  255, 128, 0},
+            {320, 180, 128, 0,   255},
+        }
+        local y_off = 4
+        for _, cfg in ipairs(canvases) do
+            local cw, ch, r, g, b = cfg[1], cfg[2], cfg[3], cfg[4], cfg[5]
+            local c = lurek.render.newCanvas(cw, ch)
+            local aw, ah = c:getDimensions()
+            c:release()
+            local scale = math.min(240 / aw, 30 / ah)
+            local dw = math.floor(aw * scale)
+            local dh = math.max(math.floor(ah * scale), 4)
+            draw_rect(img, 8, y_off, dw, dh, r, g, b, 255)
+            draw_border(img, 8, y_off, dw, dh, 255, 255, 255)
+            y_off = y_off + dh + 4
+        end
+
+        lurek.image.savePNG(img, OUT .. "canvas_sizes.png")
+    end)
+
+    -- @covers lurek.render.newCanvas
+    -- @covers Canvas:getWidth
+    -- @covers Canvas:release
+    -- @evidence file
+    -- @description Draws a simple lifecycle diagram that encodes created, active, and released canvas states into file evidence.
+    it("PNG: canvas lifecycle state diagram (created/active/released)", function()
+        local img = lurek.image.newImageData(128, 64)
+        img:fill(30, 30, 40, 255)
+
+        local c = lurek.render.newCanvas(64, 64)
+        -- Created (green)
+        draw_rect(img, 4, 4, 36, 56, 0, 200, 0, 255)
+        -- Active (blue) â€” we read width to prove it's alive
+        local _ = c:getWidth()
+        draw_rect(img, 46, 4, 36, 56, 0, 0, 200, 255)
+        -- Released (red)
+        c:release()
+        draw_rect(img, 88, 4, 36, 56, 200, 0, 0, 255)
+
+        lurek.image.savePNG(img, OUT .. "canvas_lifecycle.png")
+    end)
+
+end)
+
+-- ================================================================
+-- Merged from: test_layers_evidence.lua
+-- ================================================================
+
+-- test_evidence_layers.lua
+-- Evidence test: Image layer compositing and DrawLayer z-order management
+
+local OUT = "tests/output/layers/"
+
+local function fill_rect(img, x, y, w, h, r, g, b, a)
+    a = a or 255
+    img:drawRect(x, y, w, h, r, g, b, a)
+end
+
+-- @description Covers suite: Evidence: Image layers.
+describe("Evidence: Image layers", function()
+
+    -- @covers lurek.image.newImageData
+    -- @covers ImageData:drawRect
+    -- @covers ImageData:drawCircle
+    -- @covers lurek.image.savePNG
+    -- @evidence file
+    -- @description Builds three conceptual layers and composites them into one image to document manual layer merging.
+    it("merges three color layers into one image", function()
+        local W, H = 256, 256
+
+        -- Background layer
+        local base = lurek.image.newImageData(W, H)
+        fill_rect(base, 0, 0, W, H, 30, 30, 60, 255)
+
+        -- Mid layer: blue rectangle
+        local mid = lurek.image.newImageData(W, H)
+        fill_rect(mid, 40, 40, 140, 140, 40, 80, 200, 180)
+
+        -- Top layer: red circle
+        local top_img = lurek.image.newImageData(W, H)
+        top_img:drawCircle(128, 128, 60, 220, 60, 60, 180)
+
+        -- Compose base + mid + top by drawing rects into the base
+        fill_rect(base, 40, 40, 140, 140, 40, 80, 200, 180)
+        base:drawCircle(128, 128, 60, 220, 60, 60, 180)
+
+        lurek.image.savePNG(base, OUT .. "basic_merge.png")
+    end)
+
+    -- @covers lurek.image.newImageData
+    -- @covers ImageData:drawRect
+    -- @covers lurek.image.savePNG
+    -- @evidence file
+    -- @description Paints a row of alpha-varied strips so opacity layering can be inspected across several levels.
+    it("produces distinct opacity levels for a gradient layer stack", function()
+        local W, H = 256, 64
+
+        local strips = { 255, 200, 150, 100, 50, 0 }
+        local img = lurek.image.newImageData(W, H)
+        fill_rect(img, 0, 0, W, H, 20, 20, 40, 255)
+
+        local sw = math.floor(W / #strips)
+        for i, alpha in ipairs(strips) do
+            local x = (i - 1) * sw
+            fill_rect(img, x, 0, sw, H, 220, 80, 80, alpha)
+        end
+
+        lurek.image.savePNG(img, OUT .. "opacity.png")
+    end)
+
+    -- @covers lurek.render.newDrawLayer
+    -- @covers DrawLayer:queue
+    -- @covers DrawLayer:flush
+    -- @covers DrawLayer:clear
+    -- @covers lurek.image.savePNG
+    -- @evidence file
+    -- @description Exercises z-ordered draw-layer queue management and saves a simple stacked-rect image representing the managed layers.
+    it("uses DrawLayer to manage z-ordered render queue", function()
+        local layer = lurek.render.newDrawLayer()
+
+        -- Queue some draws at different z levels
+        local calls = 0
+        layer:queue(5, function()
+            calls = calls + 1
+        end)
+        layer:queue(1, function()
+            calls = calls + 1
+        end)
+        layer:queue(10, function()
+            calls = calls + 1
+        end)
+
+        -- Flush executes the queued callbacks
+        layer:flush()
+
+        -- Demonstrate clear without flush
+        layer:queue(3, function() end)
+        layer:queue(7, function() end)
+        layer:clear()
+
+        -- Write an image to show layer concept
+        local W, H = 200, 200
+        local img = lurek.image.newImageData(W, H)
+        fill_rect(img, 0,   0,   W,   H,   20,  20,  40,  255)
+        fill_rect(img, 10,  10,  180, 180, 40,  80,  200, 200)
+        fill_rect(img, 50,  50,  100, 100, 220, 80,  80,  200)
+        fill_rect(img, 80,  80,  40,  40,  80,  220, 80,  200)
+        lurek.image.savePNG(img, OUT .. "management.png")
+    end)
+
+end)
+
+
+
+-- ================================================================
+-- Merged from: test_evidence_layers.lua
+-- ================================================================
+
+-- test_evidence_layers.lua
+-- Evidence test: Image layer compositing and DrawLayer z-order management
+
+local OUT = "tests/output/layers/"
+
+local function fill_rect(img, x, y, w, h, r, g, b, a)
+    a = a or 255
+    img:drawRect(x, y, w, h, r, g, b, a)
+end
+
+-- @description Covers suite: Evidence: Image layers.
+describe("Evidence: Image layers", function()
+
+    -- @covers lurek.image.newImageData
+    -- @covers ImageData:drawRect
+    -- @covers ImageData:drawCircle
+    -- @covers lurek.image.savePNG
+    -- @evidence file
+    -- @description Builds three conceptual layers and composites them into one image to document manual layer merging.
+    it("merges three color layers into one image", function()
+        local W, H = 256, 256
+
+        -- Background layer
+        local base = lurek.image.newImageData(W, H)
+        fill_rect(base, 0, 0, W, H, 30, 30, 60, 255)
+
+        -- Mid layer: blue rectangle
+        local mid = lurek.image.newImageData(W, H)
+        fill_rect(mid, 40, 40, 140, 140, 40, 80, 200, 180)
+
+        -- Top layer: red circle
+        local top_img = lurek.image.newImageData(W, H)
+        top_img:drawCircle(128, 128, 60, 220, 60, 60, 180)
+
+        -- Compose base + mid + top by drawing rects into the base
+        fill_rect(base, 40, 40, 140, 140, 40, 80, 200, 180)
+        base:drawCircle(128, 128, 60, 220, 60, 60, 180)
+
+        lurek.image.savePNG(base, OUT .. "basic_merge.png")
+    end)
+
+    -- @covers lurek.image.newImageData
+    -- @covers ImageData:drawRect
+    -- @covers lurek.image.savePNG
+    -- @evidence file
+    -- @description Paints a row of alpha-varied strips so opacity layering can be inspected across several levels.
+    it("produces distinct opacity levels for a gradient layer stack", function()
+        local W, H = 256, 64
+
+        local strips = { 255, 200, 150, 100, 50, 0 }
+        local img = lurek.image.newImageData(W, H)
+        fill_rect(img, 0, 0, W, H, 20, 20, 40, 255)
+
+        local sw = math.floor(W / #strips)
+        for i, alpha in ipairs(strips) do
+            local x = (i - 1) * sw
+            fill_rect(img, x, 0, sw, H, 220, 80, 80, alpha)
+        end
+
+        lurek.image.savePNG(img, OUT .. "opacity.png")
+    end)
+
+    -- @covers lurek.render.newDrawLayer
+    -- @covers DrawLayer:queue
+    -- @covers DrawLayer:flush
+    -- @covers DrawLayer:clear
+    -- @covers lurek.image.savePNG
+    -- @evidence file
+    -- @description Exercises z-ordered draw-layer queue management and saves a simple stacked-rect image representing the managed layers.
+    it("uses DrawLayer to manage z-ordered render queue", function()
+        local layer = lurek.render.newDrawLayer()
+
+        -- Queue some draws at different z levels
+        local calls = 0
+        layer:queue(5, function()
+            calls = calls + 1
+        end)
+        layer:queue(1, function()
+            calls = calls + 1
+        end)
+        layer:queue(10, function()
+            calls = calls + 1
+        end)
+
+        -- Flush executes the queued callbacks
+        layer:flush()
+
+        -- Demonstrate clear without flush
+        layer:queue(3, function() end)
+        layer:queue(7, function() end)
+        layer:clear()
+
+        -- Write an image to show layer concept
+        local W, H = 200, 200
+        local img = lurek.image.newImageData(W, H)
+        fill_rect(img, 0,   0,   W,   H,   20,  20,  40,  255)
+        fill_rect(img, 10,  10,  180, 180, 40,  80,  200, 200)
+        fill_rect(img, 50,  50,  100, 100, 220, 80,  80,  200)
+        fill_rect(img, 80,  80,  40,  40,  80,  220, 80,  200)
+        lurek.image.savePNG(img, OUT .. "management.png")
+    end)
+
+end)
+
+-- ================================================================
+-- Merged from: test_shapes_evidence.lua
+-- ================================================================
+
+-- test_evidence_shapes.lua
+-- Evidence test: 2D shape drawing using lurek.image primitives
+
+local OUT = "tests/output/shapes/"
+
+-- Helper: draw a regular polygon centred at (cx, cy)
+local function draw_polygon(img, cx, cy, radius, sides, r, g, b, a)
+    a = a or 255
+    local prev_x, prev_y
+    for i = 0, sides do
+        local angle = (i / sides) * 2 * math.pi - math.pi / 2
+        local nx = math.floor(cx + radius * math.cos(angle))
+        local ny = math.floor(cy + radius * math.sin(angle))
+        if prev_x then
+            img:drawLine(prev_x, prev_y, nx, ny, r, g, b, a)
+        end
+        prev_x, prev_y = nx, ny
+    end
+end
+
+-- Helper: draw a spiral
+local function draw_spiral(img, cx, cy, turns, r, g, b)
+    local steps = turns * 60
+    local prev_x, prev_y
+    for i = 0, steps do
+        local t  = i / steps
+        local angle  = t * turns * 2 * math.pi
+        local rad    = t * 80
+        local nx = math.floor(cx + rad * math.cos(angle))
+        local ny = math.floor(cy + rad * math.sin(angle))
+        if prev_x then
+            img:drawLine(prev_x, prev_y, nx, ny, r, g, b, 255)
+        end
+        prev_x, prev_y = nx, ny
+    end
+end
+
+-- @description Covers suite: Evidence: Shapes.
+describe("Evidence: Shapes", function()
+
+    -- @covers lurek.image.newImageData
+    -- @covers ImageData:drawRect
+    -- @covers ImageData:drawLine
+    -- @covers ImageData:drawCircle
+    -- @covers lurek.image.savePNG
+    -- @evidence file
+    -- @description Draws a gallery of polygon outlines and filled circles to provide a compact catalog of shape rasterization.
+    it("renders a polygon gallery", function()
+        local W, H = 512, 256
+        local img = lurek.image.newImageData(W, H)
+        img:drawRect(0, 0, W, H, 20, 20, 30, 255)
+
+        -- Row of polygons: triangle, square, pentagon, hexagon, octagon, circle
+        local configs = {
+            { sides = 3,  cx = 48,  label = "tri"  },
+            { sides = 4,  cx = 128, label = "quad" },
+            { sides = 5,  cx = 208, label = "pent" },
+            { sides = 6,  cx = 288, label = "hex"  },
+            { sides = 8,  cx = 368, label = "oct"  },
+            { sides = 32, cx = 448, label = "circ" },
+        }
+        for _, c in ipairs(configs) do
+            draw_polygon(img, c.cx, 80, 36, c.sides, 80, 160, 255, 255)
+            draw_polygon(img, c.cx, 80, 36, c.sides, 80, 160, 255, 255)
+        end
+
+        -- Second row: filled circles
+        for i, c in ipairs(configs) do
+            local hue_r = math.floor(40 + (i - 1) * 35)
+            img:drawCircle(c.cx, 180, 28, hue_r, 120, 200, 200)
+        end
+
+        lurek.image.savePNG(img, OUT .. "polygon_gallery.png")
+    end)
+
+    -- @covers lurek.image.newImageData
+    -- @covers ImageData:drawRect
+    -- @covers ImageData:drawCircle
+    -- @covers ImageData:drawLine
+    -- @covers lurek.image.savePNG
+    -- @evidence file
+    -- @description Draws a scene of filled primitive shapes and diagonal lines to show layered primitive composition.
+    it("renders filled primitive shapes", function()
+        local W, H = 400, 400
+        local img = lurek.image.newImageData(W, H)
+        img:drawRect(0, 0, W, H, 15, 15, 25, 255)
+
+        -- Filled rectangles
+        img:drawRect(20,  20,  120, 80,  200, 80,  80,  200)
+        img:drawRect(160, 20,  120, 80,  80,  200, 80,  200)
+        img:drawRect(300, 20,  80,  80,  80,  80,  200, 200)
+
+        -- Filled circles
+        img:drawCircle(60,  200, 50, 220, 120, 40,  200)
+        img:drawCircle(200, 200, 50, 40,  180, 220, 200)
+        img:drawCircle(340, 200, 50, 180, 40,  220, 200)
+
+        -- Diagonal lines
+        for i = 0, 7 do
+            local x = i * 50
+            img:drawLine(x, 300, x + 40, 380, 200, 200, 40, 200)
+        end
+
+        lurek.image.savePNG(img, OUT .. "filled_primitives.png")
+    end)
+
+    -- @covers lurek.image.newImageData
+    -- @covers ImageData:drawLine
+    -- @covers lurek.image.savePNG
+    -- @evidence file
+    -- @description Draws several spirals with different turn counts and saves the result as PNG evidence.
+    it("renders a spiral gallery", function()
+        local W, H = 400, 300
+        local img = lurek.image.newImageData(W, H)
+        img:drawRect(0, 0, W, H, 10, 10, 20, 255)
+
+        draw_spiral(img, 70,  150, 3, 220, 80,  80)
+        draw_spiral(img, 200, 150, 4, 80,  220, 80)
+        draw_spiral(img, 330, 150, 5, 80,  80,  220)
+
+        lurek.image.savePNG(img, OUT .. "spirals.png")
+    end)
+
+    -- @covers lurek.image.newImageData
+    -- @covers ImageData:drawCircle
+    -- @covers ImageData:drawLine
+    -- @covers lurek.image.savePNG
+    -- @evidence file
+    -- @description Draws concentric rings of circles and polygons to provide a second multi-shape rasterization reference image.
+    it("renders concentric shape rings", function()
+        local W, H = 300, 300
+        local img = lurek.image.newImageData(W, H)
+        img:drawRect(0, 0, W, H, 10, 10, 20, 255)
+
+        local cx, cy = 150, 150
+        for i = 1, 8 do
+            local r = i * 16
+            local col = math.floor(20 + i * 28)
+            local inv = math.max(0, 220 - col)
+            img:drawCircle(cx, cy, r, col, 120, inv, 180)
+        end
+        for i = 1, 5 do
+            local r = i * 20
+            draw_polygon(img, cx, cy, r, 6, 255, 200, 50, 200)
+        end
+
+        lurek.image.savePNG(img, OUT .. "concentric_rings.png")
+    end)
+
+end)
+
+
+
+-- ================================================================
+-- Merged from: test_evidence_shapes.lua
+-- ================================================================
+
+-- test_evidence_shapes.lua
+-- Evidence test: 2D shape drawing using lurek.image primitives
+
+local OUT = "tests/output/shapes/"
+
+-- Helper: draw a regular polygon centred at (cx, cy)
+local function draw_polygon(img, cx, cy, radius, sides, r, g, b, a)
+    a = a or 255
+    local prev_x, prev_y
+    for i = 0, sides do
+        local angle = (i / sides) * 2 * math.pi - math.pi / 2
+        local nx = math.floor(cx + radius * math.cos(angle))
+        local ny = math.floor(cy + radius * math.sin(angle))
+        if prev_x then
+            img:drawLine(prev_x, prev_y, nx, ny, r, g, b, a)
+        end
+        prev_x, prev_y = nx, ny
+    end
+end
+
+-- Helper: draw a spiral
+local function draw_spiral(img, cx, cy, turns, r, g, b)
+    local steps = turns * 60
+    local prev_x, prev_y
+    for i = 0, steps do
+        local t  = i / steps
+        local angle  = t * turns * 2 * math.pi
+        local rad    = t * 80
+        local nx = math.floor(cx + rad * math.cos(angle))
+        local ny = math.floor(cy + rad * math.sin(angle))
+        if prev_x then
+            img:drawLine(prev_x, prev_y, nx, ny, r, g, b, 255)
+        end
+        prev_x, prev_y = nx, ny
+    end
+end
+
+-- @description Covers suite: Evidence: Shapes.
+describe("Evidence: Shapes", function()
+
+    -- @covers lurek.image.newImageData
+    -- @covers ImageData:drawRect
+    -- @covers ImageData:drawLine
+    -- @covers ImageData:drawCircle
+    -- @covers lurek.image.savePNG
+    -- @evidence file
+    -- @description Draws a gallery of polygon outlines and filled circles to provide a compact catalog of shape rasterization.
+    it("renders a polygon gallery", function()
+        local W, H = 512, 256
+        local img = lurek.image.newImageData(W, H)
+        img:drawRect(0, 0, W, H, 20, 20, 30, 255)
+
+        -- Row of polygons: triangle, square, pentagon, hexagon, octagon, circle
+        local configs = {
+            { sides = 3,  cx = 48,  label = "tri"  },
+            { sides = 4,  cx = 128, label = "quad" },
+            { sides = 5,  cx = 208, label = "pent" },
+            { sides = 6,  cx = 288, label = "hex"  },
+            { sides = 8,  cx = 368, label = "oct"  },
+            { sides = 32, cx = 448, label = "circ" },
+        }
+        for _, c in ipairs(configs) do
+            draw_polygon(img, c.cx, 80, 36, c.sides, 80, 160, 255, 255)
+            draw_polygon(img, c.cx, 80, 36, c.sides, 80, 160, 255, 255)
+        end
+
+        -- Second row: filled circles
+        for i, c in ipairs(configs) do
+            local hue_r = math.floor(40 + (i - 1) * 35)
+            img:drawCircle(c.cx, 180, 28, hue_r, 120, 200, 200)
+        end
+
+        lurek.image.savePNG(img, OUT .. "polygon_gallery.png")
+    end)
+
+    -- @covers lurek.image.newImageData
+    -- @covers ImageData:drawRect
+    -- @covers ImageData:drawCircle
+    -- @covers ImageData:drawLine
+    -- @covers lurek.image.savePNG
+    -- @evidence file
+    -- @description Draws a scene of filled primitive shapes and diagonal lines to show layered primitive composition.
+    it("renders filled primitive shapes", function()
+        local W, H = 400, 400
+        local img = lurek.image.newImageData(W, H)
+        img:drawRect(0, 0, W, H, 15, 15, 25, 255)
+
+        -- Filled rectangles
+        img:drawRect(20,  20,  120, 80,  200, 80,  80,  200)
+        img:drawRect(160, 20,  120, 80,  80,  200, 80,  200)
+        img:drawRect(300, 20,  80,  80,  80,  80,  200, 200)
+
+        -- Filled circles
+        img:drawCircle(60,  200, 50, 220, 120, 40,  200)
+        img:drawCircle(200, 200, 50, 40,  180, 220, 200)
+        img:drawCircle(340, 200, 50, 180, 40,  220, 200)
+
+        -- Diagonal lines
+        for i = 0, 7 do
+            local x = i * 50
+            img:drawLine(x, 300, x + 40, 380, 200, 200, 40, 200)
+        end
+
+        lurek.image.savePNG(img, OUT .. "filled_primitives.png")
+    end)
+
+    -- @covers lurek.image.newImageData
+    -- @covers ImageData:drawLine
+    -- @covers lurek.image.savePNG
+    -- @evidence file
+    -- @description Draws several spirals with different turn counts and saves the result as PNG evidence.
+    it("renders a spiral gallery", function()
+        local W, H = 400, 300
+        local img = lurek.image.newImageData(W, H)
+        img:drawRect(0, 0, W, H, 10, 10, 20, 255)
+
+        draw_spiral(img, 70,  150, 3, 220, 80,  80)
+        draw_spiral(img, 200, 150, 4, 80,  220, 80)
+        draw_spiral(img, 330, 150, 5, 80,  80,  220)
+
+        lurek.image.savePNG(img, OUT .. "spirals.png")
+    end)
+
+    -- @covers lurek.image.newImageData
+    -- @covers ImageData:drawCircle
+    -- @covers ImageData:drawLine
+    -- @covers lurek.image.savePNG
+    -- @evidence file
+    -- @description Draws concentric rings of circles and polygons to provide a second multi-shape rasterization reference image.
+    it("renders concentric shape rings", function()
+        local W, H = 300, 300
+        local img = lurek.image.newImageData(W, H)
+        img:drawRect(0, 0, W, H, 10, 10, 20, 255)
+
+        local cx, cy = 150, 150
+        for i = 1, 8 do
+            local r = i * 16
+            local col = math.floor(20 + i * 28)
+            local inv = math.max(0, 220 - col)
+            img:drawCircle(cx, cy, r, col, 120, inv, 180)
+        end
+        for i = 1, 5 do
+            local r = i * 20
+            draw_polygon(img, cx, cy, r, 6, 255, 200, 50, 200)
+        end
+
+        lurek.image.savePNG(img, OUT .. "concentric_rings.png")
     end)
 
 end)

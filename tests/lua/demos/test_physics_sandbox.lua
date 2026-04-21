@@ -29,7 +29,7 @@ describe("physics_sandbox: interactive physics checks", function()
             src:find("destroy%s*%(") ~= nil or
             src:find("MAX") ~= nil or
             src:find("limit") ~= nil,
-            "No body removal or limit found — sandbox will overflow")
+            "No body removal or limit found     sandbox will overflow")
     end)
 
     it("uses gravity", function()

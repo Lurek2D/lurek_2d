@@ -73,7 +73,7 @@ describe("integration: tween drives entity transform", function()
         local v_ease_in = st_ease_in:lerp(from_val, to_val)
 
         -- At t=0.1, linear = ~10, quadIn should be less (slow start)
-        expect_near(10, v_linear, 2.0, "linear at 10% ≈ 10")
+        expect_near(10, v_linear, 2.0, "linear at 10%     10")
         expect_true(v_ease_in < v_linear, "ease-in slower than linear at 10%")
     end)
 end)

@@ -97,7 +97,7 @@ describe("Evidence: lurek.effect effect API + PNG visualization", function()
     -- @covers lurek.image.savePNG
     -- @evidence file
     -- @description Combines flash and lightning overlays into one comparison PNG to document multiple transient overlay modes.
-    it("PNG: combined effects â€” flash + lightning visualization", function()
+    it("PNG: combined effects -    flash + lightning visualization", function()
         local W, H = 128, 128
         local img = lurek.image.newImageData(W, H)
         img:fill(20, 20, 40, 255)
@@ -166,8 +166,8 @@ local function draw_rect(img, x0, y0, w, h, r, g, b)
     end
 end
 
--- @description Covers suite: Evidence: PostFx + ImageData effects â†’ PNG output.
-describe("Evidence: PostFx + ImageData effects â†’ PNG output", function()
+-- @description Covers suite: Evidence: PostFx + ImageData effects          PNG output.
+describe("Evidence: PostFx + ImageData effects          PNG output", function()
     -- @covers ImageData:grayscale
     -- @covers ImageData:getPixel
     -- @covers lurek.image.savePNG
@@ -227,7 +227,7 @@ describe("Evidence: PostFx + ImageData effects â†’ PNG output", function()
     -- @covers lurek.image.savePNG
     -- @evidence file
     -- @description Builds a horizontal strip comparing several image effects side by side on the same source pattern.
-    it("PNG: effect strip â€” original + 8 effects side by side", function()
+    it("PNG: effect strip -    original + 8 effects side by side", function()
         local CELL = 64
         local effects = {"original", "grayscale", "sepia", "invert", "blur", "sharpen", "brightness", "contrast", "threshold"}
         local count = #effects
@@ -326,17 +326,14 @@ end)
 describe("New effect types appear in getEffectTypes()", function()
         record(string.format("TOTAL_EFFECT_TYPES: %d", #types))
     end)
-end)
 
 describe("New effect types in a PostFxStack", function()
         expect_equal(stack:count() >= #NEW_TYPES, true)
     end)
-end)
 
 describe("newPresetStack evidence", function()
     local PRESETS = { "retro_tv", "horror", "dream", "neon", "sepia_age" }
     end)
-end)
 
 -- Write evidence artifact.
 local output_dir = "tests/output"
@@ -457,7 +454,7 @@ describe("Evidence: lurek.effect effect API + PNG visualization", function()
     -- @covers lurek.image.savePNG
     -- @evidence file
     -- @description Combines flash and lightning overlays into one comparison PNG to document multiple transient overlay modes.
-    it("PNG: combined effects â€” flash + lightning visualization", function()
+    it("PNG: combined effects -    flash + lightning visualization", function()
         local W, H = 128, 128
         local img = lurek.image.newImageData(W, H)
         img:fill(20, 20, 40, 255)
@@ -526,8 +523,8 @@ local function draw_rect(img, x0, y0, w, h, r, g, b)
     end
 end
 
--- @description Covers suite: Evidence: PostFx + ImageData effects â†’ PNG output.
-describe("Evidence: PostFx + ImageData effects â†’ PNG output", function()
+-- @description Covers suite: Evidence: PostFx + ImageData effects          PNG output.
+describe("Evidence: PostFx + ImageData effects          PNG output", function()
     -- @covers ImageData:grayscale
     -- @covers ImageData:getPixel
     -- @covers lurek.image.savePNG
@@ -587,7 +584,7 @@ describe("Evidence: PostFx + ImageData effects â†’ PNG output", function()
     -- @covers lurek.image.savePNG
     -- @evidence file
     -- @description Builds a horizontal strip comparing several image effects side by side on the same source pattern.
-    it("PNG: effect strip â€” original + 8 effects side by side", function()
+    it("PNG: effect strip -    original + 8 effects side by side", function()
         local CELL = 64
         local effects = {"original", "grayscale", "sepia", "invert", "blur", "sharpen", "brightness", "contrast", "threshold"}
         local count = #effects

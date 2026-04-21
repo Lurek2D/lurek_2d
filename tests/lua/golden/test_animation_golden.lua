@@ -1,4 +1,4 @@
--- Golden test: animation â€” compare evidence output against golden samples
+-- Golden test: animation          compare evidence output against golden samples
 
 -- @description Covers suite: golden: animation evidence comparison.
 describe("golden: animation evidence comparison", function()

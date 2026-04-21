@@ -19,7 +19,7 @@ describe("worms terrain + physics integration", function()
         local terrain = lurek.physics.newTerrain(64, 64, 8, world)
 
         -- Fill solid ground from row 32 down.
-        terrain:fillRect(0, 256, 512, 512, true) -- world y 256 → cell row 32
+        terrain:fillRect(0, 256, 512, 512, true) -- world y 256     cell row 32
         terrain:flush()
 
         -- Drop a body from above the solid region.

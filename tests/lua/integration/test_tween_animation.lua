@@ -35,7 +35,7 @@ describe("tween + animation integration", function()
 
         local val = state:lerp(0, 1)
         -- easeInOut at 50% should be ~0.5 (symmetric)
-        expect_near(0.5, val, 0.1, "easeInOut at midpoint ≈ 0.5")
+        expect_near(0.5, val, 0.1, "easeInOut at midpoint     0.5")
     end)
 
     -- @covers lurek.tween.newState
@@ -62,7 +62,7 @@ describe("tween + animation integration", function()
         local v2 = t2:lerp(100, 200)
 
         expect_near(100, v1, 1.0, "tween1 finished at 100")
-        expect_near(150, v2, 2.0, "tween2 at midpoint ≈150")
+        expect_near(150, v2, 2.0, "tween2 at midpoint    150")
     end)
 end)
 

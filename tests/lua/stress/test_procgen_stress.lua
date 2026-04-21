@@ -1,11 +1,11 @@
 -- tests/lua/stress/test_procgen_stress.lua
--- Stress tests for lurek.procgen — throughput and allocation under load.
+-- Stress tests for lurek.procgen     throughput and allocation under load.
 -- Validates that generators don't crash, memory-leak, or hang under large inputs.
 
 
--- ─────────────────────────────────────────────
+--                                                                                                                                        
 -- Repeated dungeon generation
--- ─────────────────────────────────────────────
+--                                                                                                                                        
 describe("procgen stress: repeated dungeon generation", function()
 
     it("bspDungeon 100 iterations with different seeds", function()
@@ -22,24 +22,24 @@ describe("procgen stress: repeated dungeon generation", function()
         end
     end)
 
-    it("bspDungeon large map (200×150) completes without crash", function()
+    it("bspDungeon large map (200  150) completes without crash", function()
         local d = lurek.procgen.bspDungeon({ width = 200, height = 150, seed = 777 })
         expect_type("table", d.rooms)
         expect_true(#d.rooms > 0, "large map should generate rooms")
     end)
 end)
 
--- ─────────────────────────────────────────────
+--                                                                                                                                        
 -- Heightmap throughput
--- ─────────────────────────────────────────────
+--                                                                                                                                        
 describe("procgen stress: heightmap large and repeated", function()
 
-    it("heightmap 128×128 completes", function()
+    it("heightmap 128  128 completes", function()
         local hm = lurek.procgen.heightmap({ width = 128, height = 128, seed = 1, octaves = 4 })
         expect_equal(128 * 128, #hm.cells)
     end)
 
-    it("heightmap 256×256 completes", function()
+    it("heightmap 256  256 completes", function()
         local hm = lurek.procgen.heightmap({ width = 256, height = 256, seed = 2, octaves = 6 })
         expect_equal(256 * 256, #hm.cells)
     end)
@@ -52,22 +52,22 @@ describe("procgen stress: heightmap large and repeated", function()
     end)
 end)
 
--- ─────────────────────────────────────────────
+--                                                                                                                                        
 -- Noise map throughput
--- ─────────────────────────────────────────────
+--                                                                                                                                        
 describe("procgen stress: noise maps", function()
 
-    it("noiseMap 512×512 completes", function()
+    it("noiseMap 512  512 completes", function()
         local m = lurek.procgen.noiseMap(512, 512, { seed = 1 })
         expect_equal(512 * 512, #m)
     end)
 
-    it("noiseMapParallel 512×512 completes", function()
+    it("noiseMapParallel 512  512 completes", function()
         local m = lurek.procgen.noiseMapParallel(512, 512, { octaves = 4 })
         expect_equal(512 * 512, #m)
     end)
 
-    it("noiseMapParallel 1024×1024 completes", function()
+    it("noiseMapParallel 1024  1024 completes", function()
         local m = lurek.procgen.noiseMapParallel(1024, 1024)
         expect_equal(1024 * 1024, #m)
     end)
@@ -80,9 +80,9 @@ describe("procgen stress: noise maps", function()
     end)
 end)
 
--- ─────────────────────────────────────────────
+--                                                                                                                                        
 -- L-System expansion
--- ─────────────────────────────────────────────
+--                                                                                                                                        
 describe("procgen stress: L-system deep expansion", function()
 
     it("L-system 8 iterations completes fast", function()
@@ -100,9 +100,9 @@ describe("procgen stress: L-system deep expansion", function()
     end)
 end)
 
--- ─────────────────────────────────────────────
+--                                                                                                                                        
 -- Name generation throughput
--- ─────────────────────────────────────────────
+--                                                                                                                                        
 describe("procgen stress: name generation", function()
 
     it("1000 names generated without error", function()
@@ -117,9 +117,9 @@ describe("procgen stress: name generation", function()
     end)
 end)
 
--- ─────────────────────────────────────────────
+--                                                                                                                                        
 -- World graph large
--- ─────────────────────────────────────────────
+--                                                                                                                                        
 describe("procgen stress: world graph", function()
 
     it("worldGraph 100 regions completes without error", function()
@@ -136,12 +136,12 @@ describe("procgen stress: world graph", function()
     end)
 end)
 
--- ─────────────────────────────────────────────
+--                                                                                                                                        
 -- WFC stress
--- ─────────────────────────────────────────────
+--                                                                                                                                        
 describe("procgen stress: wfc generation", function()
 
-    it("wfc 32×32 grid completes", function()
+    it("wfc 32  32 grid completes", function()
         local tiles = { { id = 0, weight = 1.0 }, { id = 1, weight = 0.5 } }
         local adj = { [0] = { 0, 1 }, [1] = { 0, 1 } }
         local g = lurek.procgen.wfcGenerate({ width = 32, height = 32, tiles = tiles, adjacencies = adj, seed = 5 })
@@ -158,25 +158,25 @@ describe("procgen stress: wfc generation", function()
     end)
 end)
 
--- ─────────────────────────────────────────────
+--                                                                                                                                        
 -- HexGrid range-of-movement large map
--- ─────────────────────────────────────────────
+--                                                                                                                                        
 describe("pathfinding stress: hexGrid large map", function()
 
-    it("hexGrid 100×100 findPath completes", function()
+    it("hexGrid 100  100 findPath completes", function()
         local g = lurek.pathfind.newHexGrid(100, 100)
         local path = g:findPath(1, 1, 100, 100)
         expect_true(path == nil or #path > 0, "should find path or return nil")
     end)
 
-    it("hexGrid 50×50 fieldOfView radius=20 completes", function()
+    it("hexGrid 50  50 fieldOfView radius=20 completes", function()
         local g = lurek.pathfind.newHexGrid(50, 50)
         local fov = g:fieldOfView(25, 25, 20)
         expect_type("table", fov)
         expect_true(#fov > 0, "FOV should cover some cells")
     end)
 
-    it("rangeMap 50×50 with budget 15 completes", function()
+    it("rangeMap 50  50 with budget 15 completes", function()
         local r = lurek.pathfind.rangeMap({
             width = 50, height = 50,
             origin_x = 25, origin_y = 25,

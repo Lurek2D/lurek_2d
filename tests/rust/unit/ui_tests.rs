@@ -53,21 +53,31 @@ mod theme_tests {
         let mut t = Theme::new();
         let style = WidgetStyle::default();
         t.set_style(WidgetType::Button, WidgetState::Normal, style.clone());
-        assert!(t.get_style(WidgetType::Button, WidgetState::Normal).is_some());
+        assert!(t
+            .get_style(WidgetType::Button, WidgetState::Normal)
+            .is_some());
     }
 
     #[test]
     fn theme_fallback_to_normal_state() {
         let mut t = Theme::new();
-        t.set_style(WidgetType::Button, WidgetState::Normal, WidgetStyle::default());
+        t.set_style(
+            WidgetType::Button,
+            WidgetState::Normal,
+            WidgetStyle::default(),
+        );
         // Requesting Hovered should fall back to Normal.
-        assert!(t.get_style(WidgetType::Button, WidgetState::Hovered).is_some());
+        assert!(t
+            .get_style(WidgetType::Button, WidgetState::Hovered)
+            .is_some());
     }
 
     #[test]
     fn theme_missing_type_returns_none() {
         let t = Theme::new();
-        assert!(t.get_style(WidgetType::Label, WidgetState::Normal).is_none());
+        assert!(t
+            .get_style(WidgetType::Label, WidgetState::Normal)
+            .is_none());
     }
 
     #[test]

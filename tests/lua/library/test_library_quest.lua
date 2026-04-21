@@ -1,9 +1,9 @@
 -- tests/lua/unit/test_library_quest.lua
--- BDD tests for library.quest â€” pure-Lua quest system
+-- BDD tests for library.quest          pure-Lua quest system
 
 local quest = require("library.quest")
 
--- â”€â”€â”€ Objective â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+--                          Objective                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
 
 -- @description Verifies objective defaults, progress tracking, completion state, tags, visibility, and optional or required objective metadata.
 describe("Objective", function()
@@ -101,7 +101,7 @@ describe("Objective", function()
     end)
 end)
 
--- â”€â”€â”€ QuestStage â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+--                          QuestStage                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
 
 -- @description Covers quest-stage creation, objective aggregation, completion checks, and stage-level metadata or ordering helpers.
 describe("QuestStage", function()
@@ -163,7 +163,7 @@ describe("QuestStage", function()
     end)
 end)
 
--- â”€â”€â”€ Quest â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+--                          Quest                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
 
 -- @description Exercises quest defaults, stage progression, status changes, tags, rewards, and stage or objective accessors.
 describe("Quest", function()
@@ -345,7 +345,7 @@ describe("Quest", function()
     end)
 end)
 
--- â”€â”€â”€ QuestLog â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+--                          QuestLog                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
 
 -- @description Validates log-level quest registration, activation, completion, failure, lookup, sorting, and log-wide mutation helpers.
 describe("QuestLog", function()
@@ -464,7 +464,7 @@ describe("QuestLog", function()
     end)
 end)
 
--- â”€â”€â”€ Objective:removeTag â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+--                          Objective:removeTag                                                                                                                                                                                                                                                                                                                                                                                                                                                 
 
 -- @description Adds focused coverage for removing objective tags and reporting whether a tag was actually present.
 describe("Objective:removeTag", function()
@@ -494,7 +494,7 @@ describe("Objective:removeTag", function()
     end)
 end)
 
--- â”€â”€â”€ QuestStage:getObjectives â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+--                          QuestStage:getObjectives                                                                                                                                                                                                                                                                                                                                                                                                         
 
 -- @description Verifies stage objective access returns the stored objective list in insertion order.
 describe("QuestStage:getObjectives", function()
@@ -517,7 +517,7 @@ describe("QuestStage:getObjectives", function()
     end)
 end)
 
--- â”€â”€â”€ QuestLog extended â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+--                          QuestLog extended                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
 
 -- @description Covers resetting quests in the log so progress and statuses return to their starting values.
 describe("QuestLog:resetQuest", function()
@@ -605,7 +605,7 @@ describe("QuestLog:activeCount / completedCount", function()
     end)
 end)
 
--- â”€â”€â”€ Status enum tables â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+--                          Status enum tables                                                                                                                                                                                                                                                                                                                                                                                                                                                         
 
 -- @description Confirms exported quest-status constants match the string values used by quest state transitions.
 describe("M.QuestStatus enum", function()
@@ -630,7 +630,7 @@ describe("M.ObjectiveStatus enum", function()
         expect_equal(quest.ObjectiveStatus.FAILED,    "failed")
     end)
 end)
--- ─── Bug-fix regression tests ─────────────────────────────────────────────────
+--           Bug-fix regression tests                                                                                                                                                    
 
 -- @description Tests that advanceObjective only searches the current stage by default.
 describe("Quest:advanceObjective current-stage scoping", function()

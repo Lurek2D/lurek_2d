@@ -3,9 +3,9 @@
 -- Namespaces: lurek.procgen + lurek.ai
 
 
--- ─────────────────────────────────────────────
+--                                                                                                                                        
 -- WorldGraph Reachability (AI-style BFS)
--- ─────────────────────────────────────────────
+--                                                                                                                                        
 describe("procgen worldGraph + ai navigation concepts", function()
 
     it("worldGraph edges form a connected-ish graph", function()
@@ -112,9 +112,9 @@ describe("procgen worldGraph + ai navigation concepts", function()
     end)
 end)
 
--- ─────────────────────────────────────────────
+--                                                                                                                                        
 -- WFC grid as AI domain knowledge layout
--- ─────────────────────────────────────────────
+--                                                                                                                                        
 describe("wfcGenerate provides tile layout for AI", function()
 
     it("tile counts are within expected range", function()

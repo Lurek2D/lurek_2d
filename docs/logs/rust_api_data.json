@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generated": "2026-04-21T18:55:55.536716+00:00",
+    "generated": "2026-04-21T19:40:30.142809+00:00",
     "generator": "tools/gen_rust_api_data.py",
     "version": "0.20.0",
     "stats": {
@@ -370,7 +370,7 @@
             "kind": "struct",
             "description": "MCTS engine with arena-allocated node tree.  Resets the tree on every `search` call so intermediate state never leaks between decisions. The arena grows as needed and is cleared at the start of each search.  # Fields - `config` — `MCTSConfig`. - `arena` — `Vec<MCTSNode>`. - `rng` — `u64`.",
             "file": "src/ai/mcts.rs",
-            "line": 128
+            "line": 130
           }
         ]
       },
@@ -1576,21 +1576,21 @@
             "kind": "struct",
             "description": "Descriptor for a single DSP effect used in offline processing.  Parameters map to the same `p1`/`p2`/`p3` slots as the real-time [`EffectParams`]: see [`EffectType`] variant docs for the meaning of each slot.  # Fields - `typ`  â€” `EffectType`. The effect algorithm to apply. - `p1`   â€” `f32`. Primary parameter (cutoff, room\\_size, drive, threshold, â€¦). - `p2`   â€” `f32`. Secondary parameter (q, mix, ratio, gain\\_db, â€¦). - `p3`   â€” `f32`. Tertiary parameter (mix, makeup\\_gain, release, â€¦).",
             "file": "src/audio/offline.rs",
-            "line": 49
+            "line": 54
           },
           {
             "name": "process_offline",
             "kind": "fn",
             "description": "Decodes `input_path`, applies `effects` in series, and writes the result to `output_path`.  The output is a 16-bit PCM mono/stereo WAV file with the same sample rate and channel count as the input.  An empty `effects` slice performs a passthrough.  # Parameters - `input_path`  â€” `&str`. Path to the source WAV file. - `output_path` â€” `&str`. Destination path for the processed WAV. - `effects`     â€” `&[OfflineEffect]`. Ordered chain of effects.  # Returns `Result<(), String>`. Returns an error string if the input cannot be decoded or the output cannot be written.",
             "file": "src/audio/offline.rs",
-            "line": 73
+            "line": 78
           },
           {
             "name": "normalize_file",
             "kind": "fn",
             "description": "Normalises the peak amplitude of `input_path` to `target_level` and writes to `output_path`.  The input is decoded to f32, scaled so that the peak magnitude equals `target_level`, and the result is saved as a 16-bit PCM WAV.  # Parameters - `input_path`   â€” `&str`. Path to the source WAV file. - `output_path`  â€” `&str`. Destination path for the normalised WAV. - `target_level` â€” `f32`. Target peak level in `(0.0, 1.0]`.  # Returns `Result<(), String>`. Returns an error if the target is outside the allowed range or the file cannot be read or written.",
             "file": "src/audio/offline.rs",
-            "line": 119
+            "line": 124
           }
         ]
       },
@@ -3495,7 +3495,7 @@
         ]
       },
       "ecs::universe": {
-        "module_doc": "Universe — a self-contained ECS world. Entities are u32 IDs starting at 1.  This module is part of Lurek2D's `ecs` subsystem and provides the implementation details for universe-related operations and data management. Key types exported from this module: `Universe`. Primary functions: `new()`, `get_system_store()`, `spawn()`, `kill()`.  All public items are documented. See the parent module for architectural context and the `lurek.*` Lua API for the scripting interface.",
+        "module_doc": "Universe — a self-contained ECS world. Entities are u32 IDs starting at 1.  This module is part of Lurek2D's `entity` subsystem and provides the implementation details for universe-related operations and data management. Key types exported from this module: `Universe`. Primary functions: `new()`, `get_system_store()`, `spawn()`, `kill()`.  All public items are documented. See the parent module for architectural context and the `lurek.*` Lua API for the scripting interface.",
         "source_file": "src/ecs/universe.rs",
         "items": [
           {
@@ -4132,7 +4132,7 @@
             "kind": "fn",
             "description": "Pre-project a great-circle arc into a flat screenspace point list.  Returns `[x0, y0, x1, y1, …]`. May return fewer points if the arc is entirely on the back of the globe.",
             "file": "src/globe/draw.rs",
-            "line": 196
+            "line": 176
           }
         ]
       },
@@ -5179,21 +5179,21 @@
             "kind": "fn",
             "description": "Render an animation playback strip as snapshot columns.  Draws `snapshots.len()` side-by-side panels, each showing a frame index highlighted in the sequence. The panel columns are colored to indicate which frame was active at that step.  # Parameters - `snapshots` — `&[usize]`. Frame index active at each step. - `total_frames` — `usize`. Total frame count. - `panel_w` — `u32`. Width of each step panel. - `height` — `u32`.  # Returns `ImageData`.",
             "file": "src/image/visualization/animation.rs",
-            "line": 84
+            "line": 77
           },
           {
             "name": "animation_playback_control_to_image",
             "kind": "fn",
             "description": "Render an animation playback-control timeline diagram.  Draws a run-frame bar, idle-frame bar, optional quad annotation, and a summary footer showing total frame and clip counts.  # Parameters - `run_frames` — `&[usize]`. Frame index active at each run step. - `idle_frames` — `&[usize]`. Frame index active at each idle step. - `total_frames` — `usize`. Total frame count in the animation. - `quad_str` — `Option<&str>`. Optional quad coordinate annotation. - `summary` — `&str`. Footer summary text. - `width` — `u32`. - `height` — `u32`.  # Returns `ImageData`.",
             "file": "src/image/visualization/animation.rs",
-            "line": 138
+            "line": 131
           },
           {
             "name": "draw_animation_to_image",
             "kind": "fn",
             "description": "Render an animation as a CPU image for headless testing.  Delegates to [`draw_animation_frame_grid_to_image`] with cell dimensions derived from the requested output size and frame count.  # Parameters - `anim` — `&Animation`. Animation controller to render. - `width` — `u32`. Output image width in pixels. - `height` — `u32`. Output image height in pixels.  # Returns `ImageData`.",
             "file": "src/image/visualization/animation.rs",
-            "line": 215
+            "line": 208
           }
         ]
       },
@@ -8145,7 +8145,7 @@
         ]
       },
       "pathfind::async_pool": {
-        "module_doc": "Thread pool for asynchronous path computation.  Pathfinding requests are submitted with an ID and processed on worker threads. Results are collected via non-blocking [`PathThreadPool::poll`].  This module is part of Lurek2D's `pathfind` subsystem and provides the implementation details for async pool-related operations and data management. Key types exported from this module: `PathThreadPool`. Primary functions: `new()`, `submit()`, `poll()`, `cancel()`.  All public items are documented. See the parent module for architectural context and the `lurek.*` Lua API for the scripting interface.",
+        "module_doc": "Thread pool for asynchronous path computation.  Pathfinding requests are submitted with an ID and processed on worker threads. Results are collected via non-blocking [`PathThreadPool::poll`].  This module is part of Lurek2D's `pathfinding` subsystem and provides the implementation details for async pool-related operations and data management. Key types exported from this module: `PathThreadPool`. Primary functions: `new()`, `submit()`, `poll()`, `cancel()`.  All public items are documented. See the parent module for architectural context and the `lurek.*` Lua API for the scripting interface.",
         "source_file": "src/pathfind/async_pool.rs",
         "items": [
           {
@@ -8178,7 +8178,7 @@
         ]
       },
       "pathfind::flow_field": {
-        "module_doc": "Flow field pathfinding for steering many units toward one or more targets.  This module is part of Lurek2D's `pathfind` subsystem and provides the implementation details for flow field-related operations and data management. Key types exported from this module: `FlowField`. Primary functions: `new()`, `calculate()`, `calculate_multi()`, `get_direction()`.  All public items are documented. See the parent module for architectural context and the `lurek.*` Lua API for the scripting interface.",
+        "module_doc": "Flow field pathfinding for steering many units toward one or more targets.  This module is part of Lurek2D's `pathfinding` subsystem and provides the implementation details for flow field-related operations and data management. Key types exported from this module: `FlowField`. Primary functions: `new()`, `calculate()`, `calculate_multi()`, `get_direction()`.  All public items are documented. See the parent module for architectural context and the `lurek.*` Lua API for the scripting interface.",
         "source_file": "src/pathfind/flow_field.rs",
         "items": [
           {
@@ -8504,7 +8504,7 @@
         ]
       },
       "pathfind::nav_grid": {
-        "module_doc": "Navigation grid with per-cell traversal costs and diagonal movement modes.  This module is part of Lurek2D's `pathfind` subsystem and provides the implementation details for nav grid-related operations and data management. Key types exported from this module: `DiagonalMode`, `NavGrid`. Primary functions: `from_lua_str()`, `new()`, `from_costs()`, `get_width()`.  All public items are documented. See the parent module for architectural context and the `lurek.*` Lua API for the scripting interface.",
+        "module_doc": "Navigation grid with per-cell traversal costs and diagonal movement modes.  This module is part of Lurek2D's `pathfinding` subsystem and provides the implementation details for nav grid-related operations and data management. Key types exported from this module: `DiagonalMode`, `NavGrid`. Primary functions: `from_lua_str()`, `new()`, `from_costs()`, `get_width()`.  All public items are documented. See the parent module for architectural context and the `lurek.*` Lua API for the scripting interface.",
         "source_file": "src/pathfind/nav_grid.rs",
         "items": [
           {
@@ -8562,7 +8562,7 @@
         "items": []
       },
       "pathfind::unit_pathfinder": {
-        "module_doc": "Unit-aware pathfinder with result caching and convenience methods.  This module is part of Lurek2D's `pathfind` subsystem and provides the implementation details for unit pathfinder-related operations and data management. Key types exported from this module: `Waypoint`, `UnitPathfinder`. Primary functions: `new()`, `find_path()`, `find_path_smooth()`, `get_path_length()`.  All public items are documented. See the parent module for architectural context and the `lurek.*` Lua API for the scripting interface.",
+        "module_doc": "Unit-aware pathfinder with result caching and convenience methods.  This module is part of Lurek2D's `pathfinding` subsystem and provides the implementation details for unit pathfinder-related operations and data management. Key types exported from this module: `Waypoint`, `UnitPathfinder`. Primary functions: `new()`, `find_path()`, `find_path_smooth()`, `get_path_length()`.  All public items are documented. See the parent module for architectural context and the `lurek.*` Lua API for the scripting interface.",
         "source_file": "src/pathfind/unit_pathfinder.rs",
         "items": [
           {

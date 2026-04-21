@@ -78,7 +78,7 @@ describe("cellular world simulation integration", function()
         sim:fillCircle(16, 16, 4, lurek.physics.CELL_ROCK)
         local n = sim:countCells(lurek.physics.CELL_ROCK)
         expect_true(n > 0, "at least one rock cell placed")
-        -- fillCircle with r=4 on a 32×32 grid should place roughly π*16≈50 cells
+        -- fillCircle with r=4 on a 32  32 grid should place roughly   *16   50 cells
         expect_true(n >= 20, "circle should cover at least 20 cells")
     end)
 end)

@@ -4,7 +4,7 @@
 require("tests.lua.init")
 local Stats = require("library.stats")
 
--- â”€â”€ Attribute â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+--                  Attribute                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
 
 -- @description Verifies attribute defaults and optional base-value initialization for simple numeric stats.
 describe("Attribute", function()
@@ -25,7 +25,7 @@ describe("Attribute", function()
     end)
 end)
 
--- â”€â”€ Buff â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+--                  Buff                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
 
 -- @description Covers buff defaults, source metadata, and expiration behavior for timed and permanent modifiers.
 describe("Buff", function()
@@ -59,7 +59,7 @@ describe("Buff", function()
     end)
 end)
 
--- â”€â”€ Skill â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+--                  Skill                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
 
 -- @description Tests skill defaults and option-based overrides for max level, resource costs, and cooldown metadata.
 describe("Skill", function()
@@ -85,7 +85,7 @@ describe("Skill", function()
     end)
 end)
 
--- â”€â”€ Perk â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+--                  Perk                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
 
 -- @description Verifies perk defaults and option-driven requirement or trait metadata.
 describe("Perk", function()
@@ -107,7 +107,7 @@ describe("Perk", function()
     end)
 end)
 
--- â”€â”€ ActionPoints â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+--                  ActionPoints                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
 
 -- @description Confirms action-point objects start at their configured maximum value.
 describe("ActionPoints", function()
@@ -120,7 +120,7 @@ describe("ActionPoints", function()
     end)
 end)
 
--- â”€â”€ Morale â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+--                  Morale                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
 
 -- @description Verifies morale defaults including current, max, and threshold values for panic and berserk states.
 describe("Morale", function()
@@ -135,7 +135,7 @@ describe("Morale", function()
     end)
 end)
 
--- â”€â”€ LevelThresholds â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+--                  LevelThresholds                                                                                                                                                                                                                                                                                                                                                                                                                                                         
 
 -- @description Exercises table-based and linear level-threshold calculators across known and out-of-range levels.
 describe("LevelThresholds", function()
@@ -160,7 +160,7 @@ describe("LevelThresholds", function()
     end)
 end)
 
--- â”€â”€ Sheet basics â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+--                  Sheet basics                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
 
 -- @description Covers core sheet behavior for defining stats, clamping base values, and querying min, max, regen, and sorted stat names.
 describe("Sheet basics", function()
@@ -236,7 +236,7 @@ describe("Sheet basics", function()
     end)
 end)
 
--- â”€â”€ Buffs on Sheet â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+--                  Buffs on Sheet                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
 
 -- @description Validates sheet-level buff application, multiplicative modifiers, removal, filtering, and aggregate buff counting.
 describe("Sheet buffs", function()
@@ -317,7 +317,7 @@ describe("Sheet buffs", function()
     end)
 end)
 
--- â”€â”€ Traits â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+--                  Traits                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
 
 -- @description Tests trait registration and application so trait buffs alter sheet values and can be added or removed cleanly.
 describe("Traits", function()
@@ -351,7 +351,7 @@ describe("Traits", function()
     end)
 end)
 
--- â”€â”€ Skills â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+--                  Skills                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
 
 -- @description Exercises sheet-managed skills for learning, leveling, resource costs, cooldowns, and ready-state checks.
 describe("Skills", function()
@@ -413,7 +413,7 @@ describe("Skills", function()
     end)
 end)
 
--- â”€â”€ Perks â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+--                  Perks                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
 
 -- @description Covers perk acquisition rules, trait side effects, and level-gated unlock behavior on stat sheets.
 describe("Perks", function()
@@ -457,7 +457,7 @@ describe("Perks", function()
     end)
 end)
 
--- â”€â”€ Flags â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+--                  Flags                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
 
 -- @description Verifies generic boolean flag storage for adding, clearing, and testing named status flags.
 describe("Flags", function()
@@ -483,7 +483,7 @@ describe("Flags", function()
     end)
 end)
 
--- â”€â”€ XP / Level â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+--                  XP / Level                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
 
 -- @description Tests XP accumulation, level thresholds, multi-level gains, and threshold assignment on character sheets.
 describe("XP and Levelling", function()
@@ -494,8 +494,8 @@ describe("XP and Levelling", function()
         local s = Stats.newSheet()
         s:setLevelThresholds(Stats.newLinearThresholds(100, 100))
         local gained = s:addXP(250)
-        -- Level 1 threshold = 100: 250 >= 100 â†’ level 2, xp = 150
-        -- Level 2 threshold = 200: 150 < 200 â†’ stop
+        -- Level 1 threshold = 100: 250 >= 100          level 2, xp = 150
+        -- Level 2 threshold = 200: 150 < 200          stop
         expect_equal(gained, 1)
         expect_equal(s:getLevel(), 2)
         expect_equal(s:getXP(), 150)
@@ -524,7 +524,7 @@ describe("XP and Levelling", function()
     end)
 end)
 
--- â”€â”€ Use tracking â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+--                  Use tracking                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
 
 -- @description Covers usage counters and derived proficiency or tracking helpers tied to repeated action use.
 describe("Use tracking", function()
@@ -554,7 +554,7 @@ describe("Use tracking", function()
     end)
 end)
 
--- â”€â”€ Action Points â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+--                  Action Points                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
 
 -- @description Exercises action-point mutation, spending, refreshing, and clamp behavior on the sheet wrapper.
 describe("Action Points", function()
@@ -602,7 +602,7 @@ describe("Action Points", function()
     end)
 end)
 
--- â”€â”€ Morale â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+--                  Morale                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
 
 -- @description Validates morale changes, threshold overrides, and panic or berserk state detection with flag side effects.
 describe("Morale system", function()
@@ -652,7 +652,7 @@ describe("Morale system", function()
     end)
 end)
 
--- â”€â”€ Resistances â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+--                  Resistances                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
 
 -- @description Covers resistance assignment and typed damage application, including fallback behavior when no damage type is supplied.
 describe("Resistances", function()
@@ -688,7 +688,7 @@ describe("Resistances", function()
     end)
 end)
 
--- â”€â”€ Encumbrance â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+--                  Encumbrance                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
 
 -- @description Verifies encumbrance tracking and the threshold check that marks a sheet as encumbered.
 describe("Encumbrance", function()
@@ -712,7 +712,7 @@ describe("Encumbrance", function()
     end)
 end)
 
--- â”€â”€ Initiative â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+--                  Initiative                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
 
 -- @description Confirms initiative has a default value and supports direct set or get mutation.
 describe("Initiative", function()
@@ -726,7 +726,7 @@ describe("Initiative", function()
     end)
 end)
 
--- â”€â”€ Update (tick) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+--                  Update (tick)                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
 
 -- @description Exercises periodic update logic for timed buff expiry, cooldown ticking, and regeneration clamped by stat maxima.
 describe("Update tick", function()
@@ -773,7 +773,7 @@ describe("Update tick", function()
     end)
 end)
 
--- â”€â”€ Snapshot/Restore â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+--                  Snapshot/Restore                                                                                                                                                                                                                                                                                                                                                                                                                                                 
 
 -- @description Tests serializing a sheet snapshot and restoring it after mutations to recover stats, flags, resistances, and XP.
 describe("Snapshot and Restore", function()
@@ -806,7 +806,7 @@ describe("Snapshot and Restore", function()
     end)
 end)
 
--- â”€â”€ Registry â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+--                  Registry                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
 
 -- @description Validates registry helpers for traits, races, and classes together with archetype application and sorted name lookups.
 describe("StatsRegistry", function()
@@ -894,7 +894,7 @@ describe("StatsRegistry", function()
     end)
 end)
 
--- ── Buff formula correctness ────────────────────────────────────
+--        Buff formula correctness                                                                                                             
 
 -- @description Validates the corrected buff formula: base * mul_prod + add_sum.
 describe("Buff formula", function()
@@ -940,7 +940,7 @@ describe("Buff formula", function()
     end)
 end)
 
--- ── Stack mode enforcement ──────────────────────────────────────
+--        Stack mode enforcement                                                                                                                   
 
 -- @description Tests that StackMode is enforced when adding duplicate buffs.
 describe("Buff stack modes", function()
@@ -1011,7 +1011,7 @@ describe("Buff stack modes", function()
     end)
 end)
 
--- ── Encumbrance update ──────────────────────────────────────────
+--        Encumbrance update                                                                                                                               
 
 -- @description Tests that the update tick auto-manages the 'encumbered' flag based on weight.
 describe("Encumbrance update", function()
@@ -1045,7 +1045,7 @@ describe("Encumbrance update", function()
     end)
 end)
 
--- ── Input validation ────────────────────────────────────────────
+--        Input validation                                                                                                                                     
 
 -- @description Tests input validation at public function boundaries.
 describe("Input validation", function()

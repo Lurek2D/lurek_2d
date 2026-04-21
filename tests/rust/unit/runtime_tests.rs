@@ -1,8 +1,8 @@
 //! Tests for the runtime module.
 
-use lurek2d::runtime::log_messages::*;
-use lurek2d::runtime::error::{EngineError, ErrorCategory};
 use lurek2d::runtime::config::Config;
+use lurek2d::runtime::error::{EngineError, ErrorCategory};
+use lurek2d::runtime::log_messages::*;
 
 // ── log_messages ─────────────────────────────────────────────────────────────
 

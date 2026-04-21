@@ -3,9 +3,9 @@
 -- Namespaces: lurek.pathfind + lurek.ai
 
 
--- ─────────────────────────────────────────────
+--                                                                                                                                        
 -- HexGrid: AI turn-based movement patterns
--- ─────────────────────────────────────────────
+--                                                                                                                                        
 describe("hexGrid + AI turn-based movement", function()
 
     it("AI unit can find path to target", function()
@@ -84,9 +84,9 @@ describe("hexGrid + AI turn-based movement", function()
     end)
 end)
 
--- ─────────────────────────────────────────────
+--                                                                                                                                        
 -- JPS Grid: AI real-time movement
--- ─────────────────────────────────────────────
+--                                                                                                                                        
 describe("jpsGrid + AI real-time movement", function()
 
     it("AI pathfinding request returns a route", function()
@@ -122,9 +122,9 @@ describe("jpsGrid + AI real-time movement", function()
     end)
 end)
 
--- ─────────────────────────────────────────────
+--                                                                                                                                        
 -- RangeMap: AI tactical movement zones
--- ─────────────────────────────────────────────
+--                                                                                                                                        
 describe("rangeMap + AI tactical analysis", function()
 
     it("AI identifies cells within movement budget", function()
@@ -133,7 +133,7 @@ describe("rangeMap + AI tactical analysis", function()
             origin_x = 5, origin_y = 5,
             budget = 2.0
         })
-        -- Cross shape (4 directions × 2 steps) plus origin = ~13 cells
+        -- Cross shape (4 directions    2 steps) plus origin = ~13 cells
         expect_true(#result.cells >= 5, "expected at least 5 cells with budget=2")
     end)
 

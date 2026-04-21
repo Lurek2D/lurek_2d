@@ -1,4 +1,4 @@
--- Integration test: library.inventory × lurek.serial (runtime name for "lurek.serial").
+-- Integration test: library.inventory    lurek.serial (runtime name for "lurek.serial").
 --
 -- Scope: Round-trips an inventory snapshot through `lurek.serial.toJson` /
 -- `fromJson` and confirms container, slot, and stack-count state survives
@@ -34,7 +34,7 @@ local function snapshot(inv)
     return snap
 end
 
-describe("integration: library.inventory × lurek.serial", function()
+describe("integration: library.inventory    lurek.serial", function()
 
     -- @description Inventory snapshot survives a JSON round-trip and rebuilds equal table state.
     it("snapshot round-trips through codec.toJson/fromJson", function()
@@ -84,7 +84,7 @@ describe("integration: library.inventory × lurek.serial", function()
     end)
 
     -- @description Loading a payload missing the "containers" field returns a sensible default
-    -- instead of raising — restoration code can fall back to an empty inventory.
+    -- instead of raising     restoration code can fall back to an empty inventory.
     it("missing containers field decodes to empty list with sensible default", function()
         local back = lurek.serial.fromJson("{}")
         expect_type("table", back)
@@ -116,7 +116,7 @@ end)
 -- Merged from: test_integration_inventory_save.lua
 -- ================================================================
 
--- Integration test: library.inventory × lurek.serial (runtime name for "lurek.serial").
+-- Integration test: library.inventory    lurek.serial (runtime name for "lurek.serial").
 --
 -- Scope: Round-trips an inventory snapshot through `lurek.serial.toJson` /
 -- `fromJson` and confirms container, slot, and stack-count state survives
@@ -152,7 +152,7 @@ local function snapshot(inv)
     return snap
 end
 
-describe("integration: library.inventory × lurek.serial", function()
+describe("integration: library.inventory    lurek.serial", function()
 
     -- @description Inventory snapshot survives a JSON round-trip and rebuilds equal table state.
     it("snapshot round-trips through codec.toJson/fromJson", function()
@@ -202,7 +202,7 @@ describe("integration: library.inventory × lurek.serial", function()
     end)
 
     -- @description Loading a payload missing the "containers" field returns a sensible default
-    -- instead of raising — restoration code can fall back to an empty inventory.
+    -- instead of raising     restoration code can fall back to an empty inventory.
     it("missing containers field decodes to empty list with sensible default", function()
         local back = lurek.serial.fromJson("{}")
         expect_type("table", back)

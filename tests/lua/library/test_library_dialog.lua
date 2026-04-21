@@ -43,7 +43,7 @@ describe("library.dialog", function()
         -- @description Checks that update reveals say-node text over time and transitions to waiting once the full line is visible.
         it("reveals text over time", function()
             local seq = dialog.newSequencer()
-            seq:setSpeed(100) -- 100 cps â†’ 1 char per 0.01s
+            seq:setSpeed(100) -- 100 cps          1 char per 0.01s
             seq:load({
                 { type = "say", speaker = "NPC", text = "Hello" },
             })
@@ -51,7 +51,7 @@ describe("library.dialog", function()
             -- At start, 0 chars revealed
             expect_equal(seq:revealedText(), "")
             -- After enough time, all 5 chars appear
-            seq:update(0.1) -- 100 cps * 0.1s = 10 chars â†’ whole word
+            seq:update(0.1) -- 100 cps * 0.1s = 10 chars          whole word
             expect_equal(seq:revealedText(), "Hello")
             expect_equal(seq:getState(), "waiting")
         end)
@@ -284,7 +284,7 @@ describe("library.dialog", function()
     end)
 end)
 
--- â”€â”€â”€ Node constructor helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+--                          Node constructor helpers                                                                                                                                                                                                                                                                                                                                                                                                                 
 
 -- @description Verifies the dialog helper constructors and exported node or state enums build the expected node tables and constant values.
 describe("node constructors", function()
@@ -392,7 +392,7 @@ describe("node constructors", function()
     end)
 end)
 
--- â”€â”€â”€ event node â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+--                          event node                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
 
 -- @description Tests event nodes and constructor-built event nodes to ensure event callbacks receive name and payload before sequencing continues.
 describe("event node", function()
@@ -431,7 +431,7 @@ describe("event node", function()
     end)
 end)
 
--- â”€â”€â”€ jump node â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+--                          jump node                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
 
 -- @description Exercises jump nodes for successful label targeting, constructor parity, and unknown-label fallthrough behavior.
 describe("jump node", function()
@@ -480,7 +480,7 @@ describe("jump node", function()
     end)
 end)
 
--- â”€â”€â”€ cond predicate â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+--                          cond predicate                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
 
 -- @description Verifies conditional predicates can skip one or multiple nodes while still allowing true predicates to keep nodes active.
 describe("cond predicate", function()
@@ -526,7 +526,7 @@ describe("cond predicate", function()
     end)
 end)
 
--- â”€â”€â”€ typewrite per-char event â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+--                          typewrite per-char event                                                                                                                                                                                                                                                                                                                                                                                                                 
 
 -- @description Covers per-character typewrite events during reveal and confirms no typewrite events fire when speed is zero.
 describe("typewrite event", function()
@@ -565,7 +565,7 @@ describe("typewrite event", function()
     end)
 end)
 
--- â”€â”€â”€ done event alias â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+--                          done event alias                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
 
 -- @description Validates the done alias event both for normal sequence completion and for empty scripts that finish immediately on start.
 describe("done event", function()
@@ -597,7 +597,7 @@ describe("done event", function()
     end)
 end)
 
--- ——— bug fixes ————————————————————————————————————————————————————————————
+--           bug fixes                                                                                                                                                                                     
 
 describe("bug fixes", function()
 

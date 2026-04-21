@@ -1,5 +1,5 @@
 -- tests/lua/library/test_library_cinematic.lua
--- BDD tests for library/cinematic/init.lua — multi-track scrubbable timeline.
+-- BDD tests for library/cinematic/init.lua     multi-track scrubbable timeline.
 
 local cine = require("library.cinematic")
 

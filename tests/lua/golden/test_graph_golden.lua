@@ -1,4 +1,4 @@
--- Golden test: graph â€” compare evidence output against golden samples
+-- Golden test: graph          compare evidence output against golden samples
 
 -- @description Covers suite: golden: graph evidence comparison.
 describe("golden: graph evidence comparison", function()

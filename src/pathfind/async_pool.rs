@@ -3,7 +3,7 @@
 //! Pathfinding requests are submitted with an ID and processed on worker
 //! threads. Results are collected via non-blocking [`PathThreadPool::poll`].
 //!
-//! This module is part of Lurek2D's `pathfind` subsystem and provides the implementation
+//! This module is part of Lurek2D's `pathfinding` subsystem and provides the implementation
 //! details for async pool-related operations and data management.
 //! Key types exported from this module: `PathThreadPool`.
 //! Primary functions: `new()`, `submit()`, `poll()`, `cancel()`.
@@ -219,5 +219,25 @@ impl PathThreadPool {
     /// `usize`.
     pub fn get_thread_count(&self) -> usize {
         self.thread_count
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn default_thread_count() {
+        let pool = PathThreadPool::new(1);
+        assert!(pool.get_thread_count() >= 1);
+    }
+
+    #[test]
+    fn set_thread_count_minimum_one() {
+        let mut pool = PathThreadPool::new(1);
+        pool.set_thread_count(0);
+        assert_eq!(pool.get_thread_count(), 1);
+        pool.set_thread_count(4);
+        assert_eq!(pool.get_thread_count(), 4);
     }
 }

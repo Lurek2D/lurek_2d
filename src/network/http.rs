@@ -100,9 +100,13 @@ fn execute_with_agent(
                 request = request.header(name, value);
             }
             if let Some(body_data) = body {
-                request.send(body_data).map_err(|e| format!("request error: {e}"))?
+                request
+                    .send(body_data)
+                    .map_err(|e| format!("request error: {e}"))?
             } else {
-                request.send(&[] as &[u8]).map_err(|e| format!("request error: {e}"))?
+                request
+                    .send(&[] as &[u8])
+                    .map_err(|e| format!("request error: {e}"))?
             }
         }
         "GET" | "HEAD" | "OPTIONS" | "DELETE" | _ => {

@@ -1420,7 +1420,7 @@ function BlendLayerSet:len() end
 ---@return table
 function BlendLayerSet:listLayers() end
 
---- Removes a blend layer by name. No-op if the layer does not exist.
+--- Removes a blend layer by name.
 ---@param name any
 ---@return boolean
 function BlendLayerSet:removeLayer(name) end
@@ -3555,23 +3555,9 @@ function DataFrame:addRowBatch(rows) end
 ---@return DataFrame
 function DataFrame:clone() end
 
---- Returns the number of columns (alias for ncols).
----@return integer
-function DataFrame:columnCount() end
-
---- Returns a table of column names (alias for columns).
----@return table
-function DataFrame:columnNames() end
-
 --- Returns a table of column names.
 ---@return table
 function DataFrame:columns() end
-
---- Pearson correlation coefficient between two numeric columns.
----@param col_a any
----@param col_b any
----@return number
-function DataFrame:corr(col_a, col_b) end
 
 --- Compute a correlation matrix for all numeric columns.
 ---@return DataFrame
@@ -3611,7 +3597,7 @@ function DataFrame:fillNil(col, val) end
 ---@return table
 function DataFrame:getColumn(col) end
 
---- Return a numeric column as a Lua array of numbers (nils â†’ 0/nan).
+--- Return a numeric column as a Lua array of numbers (nils → 0/nan).
 ---@param col any
 ---@return table
 function DataFrame:getColumnAsF64(col) end
@@ -3696,10 +3682,6 @@ function DataFrame:removeRow(row) end
 ---@return nil
 function DataFrame:rename(col, new_name) end
 
---- Returns the number of rows (alias for nrows).
----@return integer
-function DataFrame:rowCount() end
-
 --- Returns a random sample of n rows.
 ---@param n any
 ---@param seed? any (optional)
@@ -3710,6 +3692,12 @@ function DataFrame:sample(n, seed) end
 ---@param cols any
 ---@return DataFrame
 function DataFrame:select(cols) end
+
+--- Set a numeric column from a Lua array of numbers.
+---@param col any
+---@param values any
+---@return nil
+function DataFrame:setColumnFromF64(col, values) end
 
 --- Returns rows from start to end (1-based, inclusive).
 ---@param start any
@@ -3772,17 +3760,11 @@ function DataFrame:unique(col) end
 ---@return number
 function DataFrame:variance(col) end
 
---- Add a cumulative-sum column.
----@param col any
----@param name any
----@return nil
-function DataFrame:withCumsum(col, name) end
-
---- Add a z-score column for the given numeric column.
----@param col any
----@param name any
----@return nil
-function DataFrame:zscoreCol(col, name) end
+--- Returns a new DataFrame with an additional computed column named `col_name`.
+---@param col_name any
+---@param expr any
+---@return DataFrame
+function DataFrame:withEval(col_name, expr) end
 
 --- Lua-side wrapper around a shared [`Database`].
 ---@class Database
@@ -3857,10 +3839,6 @@ function lurek.dataframe.fromJSON(s) end
 ---@param rows any
 ---@return DataFrame
 function lurek.dataframe.fromTable(rows) end
-
---- Alias for `newDataFrame`. Creates a new empty DataFrame.
----@return DataFrame
-function lurek.dataframe.new() end
 
 --- Creates a new empty DataFrame.
 ---@return DataFrame
@@ -5870,11 +5848,6 @@ local Globe = {}
 ---@return boolean
 function Globe:addProvince(p) end
 
---- Emits render commands for the globe and pushes them to the render queue.
----@param font table|nil
----@return table
-function Globe:emitFrame(font) end
-
 --- Find the shortest province path from `from_id` to `to_id`.
 ---@param from_id any
 ---@param to_id any
@@ -6007,7 +5980,7 @@ function Globe:setLabelText(id, text) end
 ---@param vis any
 function Globe:setLabelVisible(id, vis) end
 
---- Set layer opacity (0.0â€“1.0).
+--- Set layer opacity (0.0–1.0).
 ---@param name any
 ---@param alpha any
 function Globe:setLayerAlpha(name, alpha) end
@@ -6026,7 +5999,7 @@ function Globe:setMarkerVisible(id, vis) end
 ---@param deg any
 function Globe:setRotation(deg) end
 
---- Set time of day (0.0â€“24.0 hours).
+--- Set time of day (0.0–24.0 hours).
 ---@param t any
 function Globe:setTimeOfDay(t) end
 
@@ -8121,17 +8094,13 @@ local CatmullRom = {}
 ---@param y any
 function CatmullRom:addPoint(x, y) end
 
---- Returns the number of control points in the spline.
----@return integer
-function CatmullRom:count() end
-
 --- Number of control points.
 ---@return integer
 function CatmullRom:len() end
 
---- Removes the control point at `index` (1-based Lua index). Safe: does nothing if out
+--- Removes the control point at `index` (0-based) and returns it.
 ---@param idx any
----@return nil
+---@return number
 function CatmullRom:removePoint(idx) end
 
 --- Sample the spline at global t in [0, 1].
@@ -8153,7 +8122,7 @@ local Circle = {}
 ---@return number
 function Circle:aabb() end
 
---- Returns the area of the circle (Ď€ rÂ˛).
+--- Returns the area of the circle (π r²).
 ---@return number
 function Circle:area() end
 
@@ -8168,7 +8137,7 @@ function Circle:contains(px, py) end
 ---@return boolean
 function Circle:intersects(other) end
 
---- Returns the circumference of the circle (2 Ď€ r).
+--- Returns the circumference of the circle (2 π r).
 ---@return number
 function Circle:perimeter() end
 
@@ -8554,11 +8523,11 @@ function Vec3:sub(other) end
 ---@param y any
 function lurek.math.Vec2(x, y) end
 
----@param self any
+--- Compatibility alias for `vec3`.
 ---@param x any
 ---@param y any
 ---@param z any
-function lurek.math.__call(self, x, y, z) end
+function lurek.math.Vec3(x, y, z) end
 
 --- Creates a new empty AABB tree for efficient broad-phase overlap queries.
 ---@return AabbTree
@@ -8618,7 +8587,7 @@ function lurek.math.bresenham(x1, y1, x2, y2) end
 ---@return CatmullRomSpline
 function lurek.math.catmullRom(points) end
 
---- Returns the smallest integer â‰Ą x.
+--- Returns the smallest integer ≥ x.
 ---@param x any
 ---@return number
 function lurek.math.ceil(x) end
@@ -8739,7 +8708,7 @@ function lurek.math.exp(x) end
 ---@return number
 function lurek.math.fbm(x, y, seed, octaves, lacunarity, gain) end
 
---- Returns the largest integer â‰¤ x.
+--- Returns the largest integer ≤ x.
 ---@param x any
 ---@return number
 function lurek.math.floor(x) end
@@ -8752,7 +8721,7 @@ function lurek.math.fmod(x, y) end
 
 --- Parses a hex color string (#RRGGBB or #RRGGBBAA) into (r, g, b, a) floats.
 ---@param hex any
----@return number?
+---@return number
 function lurek.math.fromHex(hex) end
 
 --- Converts a gamma-encoded sRGB value to linear space.
@@ -8779,82 +8748,82 @@ function lurek.math.hermite(p0x, p0y, p1x, p1y, m0x, m0y, m1x, m1y) end
 ---@return number
 function lurek.math.hslToRgb(h, s, l) end
 
---- Back ease-in â€” overshoots slightly before settling at the target.
+--- Back ease-in — overshoots slightly before settling at the target.
 ---@param t any
 ---@return number
 function lurek.math.inBack(t) end
 
---- Bounce ease-in â€” reverse bounce effect that accelerates into the motion.
+--- Bounce ease-in — reverse bounce effect that accelerates into the motion.
 ---@param t any
 ---@return number
 function lurek.math.inBounce(t) end
 
---- Cubic ease-in â€” acceleration starts slowly then increases sharply.
+--- Cubic ease-in — acceleration starts slowly then increases sharply.
 ---@param t any
 ---@return number
 function lurek.math.inCubic(t) end
 
---- Elastic ease-in â€” spring-like overshoot at the beginning of the motion.
+--- Elastic ease-in — spring-like overshoot at the beginning of the motion.
 ---@param t any
 ---@return number
 function lurek.math.inElastic(t) end
 
---- Exponential ease-in â€” very slow start that accelerates sharply near the end.
+--- Exponential ease-in — very slow start that accelerates sharply near the end.
 ---@param t any
 ---@return number
 function lurek.math.inExpo(t) end
 
---- Back ease-in-out â€” overshoot on both ends.
+--- Back ease-in-out — overshoot on both ends.
 ---@param t any
 ---@return number
 function lurek.math.inOutBack(t) end
 
---- Bounce ease-in-out â€” bouncing motion on both ends.
+--- Bounce ease-in-out — bouncing motion on both ends.
 ---@param t any
 ---@return number
 function lurek.math.inOutBounce(t) end
 
---- Cubic ease-in-out â€” slow start and end with fast cubic middle.
+--- Cubic ease-in-out — slow start and end with fast cubic middle.
 ---@param t any
 ---@return number
 function lurek.math.inOutCubic(t) end
 
---- Elastic ease-in-out â€” spring-like oscillation on both ends.
+--- Elastic ease-in-out — spring-like oscillation on both ends.
 ---@param t any
 ---@return number
 function lurek.math.inOutElastic(t) end
 
---- Exponential ease-in-out â€” very slow start and end with an exponential surge.
+--- Exponential ease-in-out — very slow start and end with an exponential surge.
 ---@param t any
 ---@return number
 function lurek.math.inOutExpo(t) end
 
---- Quadratic ease-in-out â€” slow start, fast middle, slow end.
+--- Quadratic ease-in-out — slow start, fast middle, slow end.
 ---@param t any
 ---@return number
 function lurek.math.inOutQuad(t) end
 
---- Quartic ease-in-out â€” very slow start and end with a sharp middle peak.
+--- Quartic ease-in-out — very slow start and end with a sharp middle peak.
 ---@param t any
 ---@return number
 function lurek.math.inOutQuart(t) end
 
---- Sinusoidal ease-in-out â€” smooth S-curve based on cosine interpolation.
+--- Sinusoidal ease-in-out — smooth S-curve based on cosine interpolation.
 ---@param t any
 ---@return number
 function lurek.math.inOutSine(t) end
 
---- Quadratic ease-in â€” acceleration that starts at zero and increases.
+--- Quadratic ease-in — acceleration that starts at zero and increases.
 ---@param t any
 ---@return number
 function lurek.math.inQuad(t) end
 
---- Quartic ease-in â€” strongly delayed acceleration using a power-of-4 curve.
+--- Quartic ease-in — strongly delayed acceleration using a power-of-4 curve.
 ---@param t any
 ---@return number
 function lurek.math.inQuart(t) end
 
---- Sinusoidal ease-in â€” gentle acceleration based on a sine curve.
+--- Sinusoidal ease-in — gentle acceleration based on a sine curve.
 ---@param t any
 ---@return number
 function lurek.math.inSine(t) end
@@ -8921,15 +8890,6 @@ function lurek.math.max() end
 ---@return number
 function lurek.math.min() end
 
----@param x any
----@param y any
----@param z any
-function lurek.math.new(x, y, z) end
-
-function lurek.math.new() end
-
-function lurek.math.new() end
-
 --- Creates a new BezierCurve from a flat table of coordinates {x1,y1, x2,y2, ...}.
 ---@param points any
 ---@return BezierCurve
@@ -8976,52 +8936,45 @@ function lurek.math.newTransform(x, y, angle, sx, sy, ox, oy, kx, ky) end
 ---@return Tween
 function lurek.math.newTween(duration, easing_name) end
 
---- Back ease-out â€” overshoots the target then snaps back into place.
+--- Back ease-out — overshoots the target then snaps back into place.
 ---@param t any
 ---@return number
 function lurek.math.outBack(t) end
 
---- Bounce ease-out â€” simulates a ball bouncing against the target value.
+--- Bounce ease-out — simulates a ball bouncing against the target value.
 ---@param t any
 ---@return number
 function lurek.math.outBounce(t) end
 
---- Cubic ease-out â€” rapid deceleration using a cubic power curve.
+--- Cubic ease-out — rapid deceleration using a cubic power curve.
 ---@param t any
 ---@return number
 function lurek.math.outCubic(t) end
 
---- Elastic ease-out â€” spring-like oscillation that settles at the target.
+--- Elastic ease-out — spring-like oscillation that settles at the target.
 ---@param t any
 ---@return number
 function lurek.math.outElastic(t) end
 
---- Exponential ease-out â€” sharp initial speed that decelerates exponentially.
+--- Exponential ease-out — sharp initial speed that decelerates exponentially.
 ---@param t any
 ---@return number
 function lurek.math.outExpo(t) end
 
---- Quadratic ease-out â€” deceleration that starts fast and ends at zero.
+--- Quadratic ease-out — deceleration that starts fast and ends at zero.
 ---@param t any
 ---@return number
 function lurek.math.outQuad(t) end
 
---- Quartic ease-out â€” rapid deceleration using a power-of-4 curve.
+--- Quartic ease-out — rapid deceleration using a power-of-4 curve.
 ---@param t any
 ---@return number
 function lurek.math.outQuart(t) end
 
---- Sinusoidal ease-out â€” gentle deceleration based on a cosine curve.
+--- Sinusoidal ease-out — gentle deceleration based on a cosine curve.
 ---@param t any
 ---@return number
 function lurek.math.outSine(t) end
-
---- Returns 2D Perlin noise in [-1, 1].
----@param x any
----@param y any
----@param seed? any (optional)
----@return number
-function lurek.math.perlin(x, y, seed) end
 
 --- Returns 2D Perlin noise at (x, y) with the given seed.
 ---@param x any
@@ -9037,13 +8990,6 @@ function lurek.math.perlin2d(x, y, seed) end
 ---@param seed? any (optional)
 ---@return number
 function lurek.math.perlin3d(x, y, z, seed) end
-
---- Alias for `perlin`. Returns 2D Perlin noise in [-1, 1].
----@param x any
----@param y any
----@param seed? any (optional)
----@return number
-function lurek.math.perlinFast(x, y, seed) end
 
 --- Returns true if (px, py) is inside the polygon given as a flat {x1,y1,...} table.
 ---@param pts any
@@ -9174,13 +9120,6 @@ function lurek.math.sign(x) end
 ---@return number
 function lurek.math.sign(v) end
 
---- Alias for `simplex2d`. Returns 2D Simplex noise at (x, y).
----@param x any
----@param y any
----@param seed? any (optional)
----@return number
-function lurek.math.simplex(x, y, seed) end
-
 --- Returns 2D Simplex noise at (x, y) with the given seed.
 ---@param x any
 ---@param y any
@@ -9206,9 +9145,6 @@ function lurek.math.sin(x) end
 ---@param x any
 ---@return number
 function lurek.math.smoothstep(edge0, edge1, x) end
-
----@param v any
-function lurek.math.splat(v) end
 
 --- Returns the square root of x.
 ---@param x any
@@ -9240,8 +9176,6 @@ function lurek.math.vec3(x, y, z) end
 ---@param points any
 ---@return table
 function lurek.math.voronoi(points) end
-
-function lurek.math.zero() end
 
 ---@class lurek.minimap
 lurek.minimap = {}

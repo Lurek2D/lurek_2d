@@ -29,7 +29,7 @@ This may be intentional (engine internals) or an oversight.
 ### `globe::draw`
 
 - `emit_globe_frame` — Emit all render commands for one globe frame.  `default_font `src/globe/draw.rs:23`
-- `project_arc` — Pre-project a great-circle arc into a flat screenspace point `src/globe/draw.rs:196`
+- `project_arc` — Pre-project a great-circle arc into a flat screenspace point `src/globe/draw.rs:176`
 
 ### `globe::lighting`
 
@@ -55,10 +55,10 @@ This may be intentional (engine internals) or an oversight.
 
 ### `image::visualization::animation`
 
-- `animation_playback_control_to_image` — Render an animation playback-control timeline diagram.  Draw `src/image/visualization/animation.rs:138`
+- `animation_playback_control_to_image` — Render an animation playback-control timeline diagram.  Draw `src/image/visualization/animation.rs:131`
 - `draw_animation_frame_grid_to_image` — Render an animation's frame grid as a strip of numbered cell `src/image/visualization/animation.rs:21`
-- `draw_animation_playback_to_image` — Render an animation playback strip as snapshot columns.  Dra `src/image/visualization/animation.rs:84`
-- `draw_animation_to_image` — Render an animation as a CPU image for headless testing.  De `src/image/visualization/animation.rs:215`
+- `draw_animation_playback_to_image` — Render an animation playback strip as snapshot columns.  Dra `src/image/visualization/animation.rs:77`
+- `draw_animation_to_image` — Render an animation as a CPU image for headless testing.  De `src/image/visualization/animation.rs:208`
 
 ### `image::visualization::audio`
 
@@ -188,7 +188,7 @@ These appear as `// (undocumented)` in `docs/API/rust-api.md`.
 
 ---
 
-## 3. Lua Docstring Issues (41 items)
+## 3. Lua Docstring Issues (31 items)
 
 Lua API items with missing or very short descriptions (< 25 chars).
 These appear without documentation in `docs/API/lua-api.md` and IntelliSense.
@@ -228,15 +228,6 @@ These appear without documentation in `docs/API/lua-api.md` and IntelliSense.
 
 - `module` **`lurek.input`** — *(no description)*
 
-### `math`
-
-- `function` **`lurek.math.__call`** — *(no description)*
-- `function` **`lurek.math.new`** — *(no description)*
-- `function` **`lurek.math.new`** — *(no description)*
-- `function` **`lurek.math.new`** — *(no description)*
-- `function` **`lurek.math.splat`** — *(no description)*
-- `function` **`lurek.math.zero`** — *(no description)*
-
 ### `minimap`
 
 - `module` **`lurek.minimap`** — *(no description)*
@@ -250,17 +241,9 @@ These appear without documentation in `docs/API/lua-api.md` and IntelliSense.
 
 - `module` **`lurek.particle`** — *(no description)*
 
-### `physics`
-
-- `module` **`lurek.physics`** — *(no description)*
-
 ### `pipeline`
 
 - `module` **`lurek.pipeline`** — *(no description)*
-
-### `procgen`
-
-- `module` **`lurek.procgen`** — *(no description)*
 
 ### `raycaster`
 
@@ -282,10 +265,6 @@ These appear without documentation in `docs/API/lua-api.md` and IntelliSense.
 
 - `module` **`lurek.serial`** — *(no description)*
 
-### `terminal`
-
-- `module` **`lurek.terminal`** — *(no description)*
-
 ### `thread`
 
 - `module` **`lurek.thread`** — *(no description)*
@@ -297,10 +276,6 @@ These appear without documentation in `docs/API/lua-api.md` and IntelliSense.
 ### `timer`
 
 - `module` **`lurek.timer`** — *(no description)*
-
-### `ui`
-
-- `module` **`lurek.ui`** — *(no description)*
 
 ### `window`
 

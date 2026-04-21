@@ -1,4 +1,4 @@
--- Golden test: procgen â€” compare evidence output against golden samples
+-- Golden test: procgen          compare evidence output against golden samples
 
 -- @description Covers suite: golden: procgen evidence comparison.
 describe("golden: procgen evidence comparison", function()

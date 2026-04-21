@@ -1467,7 +1467,7 @@ pub struct RelationshipManager  // Manages all relation types and the per-pair r
 
 ### `ecs::universe`
 
-> Universe — a self-contained ECS world. Entities are u32 IDs starting at 1.  This module is part of Lurek2D's `ecs` subsystem and provides the implementation details for universe-related operations and data management. Key types exported from this module: `Universe`. Primary functions: `new()`, `get_system_store()`, `spawn()`, `kill()`.  All public items are documented. See the parent module for architectural context and the `lurek.*` Lua API for the scripting interface.
+> Universe — a self-contained ECS world. Entities are u32 IDs starting at 1.  This module is part of Lurek2D's `entity` subsystem and provides the implementation details for universe-related operations and data management. Key types exported from this module: `Universe`. Primary functions: `new()`, `get_system_store()`, `spawn()`, `kill()`.  All public items are documented. See the parent module for architectural context and the `lurek.*` Lua API for the scripting interface.
 
 *[src/ecs/universe.rs](src/ecs/universe.rs) — 2/2 documented (100%)*
 
@@ -3374,7 +3374,7 @@ pub fn smooth_path()  // Smooth a path by removing unnecessary waypoints via lin
 
 ### `pathfind::async_pool`
 
-> Thread pool for asynchronous path computation.  Pathfinding requests are submitted with an ID and processed on worker threads. Results are collected via non-blocking [`PathThreadPool::poll`].  This module is part of Lurek2D's `pathfind` subsystem and provides the implementation details for async pool-related operations and data management. Key types exported from this module: `PathThreadPool`. Primary functions: `new()`, `submit()`, `poll()`, `cancel()`.  All public items are documented. See the parent module for architectural context and the `lurek.*` Lua API for the scripting interface.
+> Thread pool for asynchronous path computation.  Pathfinding requests are submitted with an ID and processed on worker threads. Results are collected via non-blocking [`PathThreadPool::poll`].  This module is part of Lurek2D's `pathfinding` subsystem and provides the implementation details for async pool-related operations and data management. Key types exported from this module: `PathThreadPool`. Primary functions: `new()`, `submit()`, `poll()`, `cancel()`.  All public items are documented. See the parent module for architectural context and the `lurek.*` Lua API for the scripting interface.
 
 *[src/pathfind/async_pool.rs](src/pathfind/async_pool.rs) — 2/2 documented (100%)*
 
@@ -3395,7 +3395,7 @@ pub fn bidirectional_astar()  // Run bidirectional A★ search on `grid` from `s
 
 ### `pathfind::flow_field`
 
-> Flow field pathfinding for steering many units toward one or more targets.  This module is part of Lurek2D's `pathfind` subsystem and provides the implementation details for flow field-related operations and data management. Key types exported from this module: `FlowField`. Primary functions: `new()`, `calculate()`, `calculate_multi()`, `get_direction()`.  All public items are documented. See the parent module for architectural context and the `lurek.*` Lua API for the scripting interface.
+> Flow field pathfinding for steering many units toward one or more targets.  This module is part of Lurek2D's `pathfinding` subsystem and provides the implementation details for flow field-related operations and data management. Key types exported from this module: `FlowField`. Primary functions: `new()`, `calculate()`, `calculate_multi()`, `get_direction()`.  All public items are documented. See the parent module for architectural context and the `lurek.*` Lua API for the scripting interface.
 
 *[src/pathfind/flow_field.rs](src/pathfind/flow_field.rs) — 1/1 documented (100%)*
 
@@ -3496,7 +3496,7 @@ pub struct JpsGrid  // A uniform-cost grid optimised for JPS pathfinding.  # Fie
 
 ### `pathfind::nav_grid`
 
-> Navigation grid with per-cell traversal costs and diagonal movement modes.  This module is part of Lurek2D's `pathfind` subsystem and provides the implementation details for nav grid-related operations and data management. Key types exported from this module: `DiagonalMode`, `NavGrid`. Primary functions: `from_lua_str()`, `new()`, `from_costs()`, `get_width()`.  All public items are documented. See the parent module for architectural context and the `lurek.*` Lua API for the scripting interface.
+> Navigation grid with per-cell traversal costs and diagonal movement modes.  This module is part of Lurek2D's `pathfinding` subsystem and provides the implementation details for nav grid-related operations and data management. Key types exported from this module: `DiagonalMode`, `NavGrid`. Primary functions: `from_lua_str()`, `new()`, `from_costs()`, `get_width()`.  All public items are documented. See the parent module for architectural context and the `lurek.*` Lua API for the scripting interface.
 
 *[src/pathfind/nav_grid.rs](src/pathfind/nav_grid.rs) — 2/2 documented (100%)*
 
@@ -3528,7 +3528,7 @@ pub struct RangeMap  // A precomputed range map: cheapest path costs from a sing
 
 ### `pathfind::unit_pathfinder`
 
-> Unit-aware pathfinder with result caching and convenience methods.  This module is part of Lurek2D's `pathfind` subsystem and provides the implementation details for unit pathfinder-related operations and data management. Key types exported from this module: `Waypoint`, `UnitPathfinder`. Primary functions: `new()`, `find_path()`, `find_path_smooth()`, `get_path_length()`.  All public items are documented. See the parent module for architectural context and the `lurek.*` Lua API for the scripting interface.
+> Unit-aware pathfinder with result caching and convenience methods.  This module is part of Lurek2D's `pathfinding` subsystem and provides the implementation details for unit pathfinder-related operations and data management. Key types exported from this module: `Waypoint`, `UnitPathfinder`. Primary functions: `new()`, `find_path()`, `find_path_smooth()`, `get_path_length()`.  All public items are documented. See the parent module for architectural context and the `lurek.*` Lua API for the scripting interface.
 
 *[src/pathfind/unit_pathfinder.rs](src/pathfind/unit_pathfinder.rs) — 2/2 documented (100%)*
 

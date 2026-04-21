@@ -18,7 +18,7 @@ describe("postfx_demo: post-processing API usage", function()
         if not src then pending("source missing") return end
         expect_true(
             src:find("lurek%.effect") ~= nil,
-            "No lurek.effect reference found — demo has no post-processing")
+            "No lurek.effect reference found     demo has no post-processing")
     end)
 
     it("applies or creates at least one effect pass", function()
@@ -37,7 +37,7 @@ describe("postfx_demo: post-processing API usage", function()
         if not src then pending("source missing") return end
         expect_false(
             src:find("lurek%.postfx") ~= nil,
-            "Old namespace lurek.effect found — use lurek.effect")
+            "Old namespace lurek.effect found     use lurek.effect")
     end)
 end)
 

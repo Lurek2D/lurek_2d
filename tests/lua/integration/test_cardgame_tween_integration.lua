@@ -1,4 +1,4 @@
--- Integration test: library.cardgame × lurek.tween.
+-- Integration test: library.cardgame    lurek.tween.
 --
 -- Scope: Animates a cardgame Card's `tile_x` / `tile_y` position via
 -- `lurek.tween.tween`, verifies a callback fires on tween completion,
@@ -27,7 +27,7 @@ local function fresh_card()
     return cg.newCard("knight")
 end
 
-describe("integration: library.cardgame × lurek.tween", function()
+describe("integration: library.cardgame    lurek.tween", function()
 
     -- @description A linear tween drives a card's tile_x toward the target across multiple update ticks.
     it("tween updates card tile_x toward target over multiple updates", function()
@@ -126,7 +126,7 @@ end)
 -- Merged from: test_integration_cardgame_tween.lua
 -- ================================================================
 
--- Integration test: library.cardgame × lurek.tween.
+-- Integration test: library.cardgame    lurek.tween.
 --
 -- Scope: Animates a cardgame Card's `tile_x` / `tile_y` position via
 -- `lurek.tween.tween`, verifies a callback fires on tween completion,
@@ -155,7 +155,7 @@ local function fresh_card()
     return cg.newCard("knight")
 end
 
-describe("integration: library.cardgame × lurek.tween", function()
+describe("integration: library.cardgame    lurek.tween", function()
 
     -- @description A linear tween drives a card's tile_x toward the target across multiple update ticks.
     it("tween updates card tile_x toward target over multiple updates", function()

@@ -7,7 +7,7 @@ package.path = "./content/library/?/init.lua;" .. package.path
 local combat = require("library.combat")
 
 
--- â”€â”€ CollisionGroupSet â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+--                  CollisionGroupSet                                                                                                                                                                                                                                                                                                                                                                                                                                 
 
 -- @description Tests collision group registration, symmetric collision masks, group enumeration, reset behavior, and mask computation for enabled interactions.
 describe("CollisionGroupSet", function()
@@ -82,12 +82,12 @@ describe("CollisionGroupSet", function()
         cgs:defineGroup("c")
         cgs:setCollides("a", "c", false)
         local mask = cgs:computeMask("a")
-        -- a(1) collides with a(1) and b(2) but not c(4) â†’ mask = 3
+        -- a(1) collides with a(1) and b(2) but not c(4)          mask = 3
         expect_equal(mask, 3)
     end)
 end)
 
--- â”€â”€ MountSlot â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+--                  MountSlot                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
 
 -- @description Verifies mount slot construction, default size class selection, and default full-circle firing arc values.
 describe("MountSlot", function()
@@ -111,7 +111,7 @@ describe("MountSlot", function()
     end)
 end)
 
--- â”€â”€ Chassis â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+--                  Chassis                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
 
 -- @description Covers chassis durability, armor, slot registration, lethal damage, healing clamps, and per-zone armor lookup helpers.
 describe("Chassis", function()
@@ -175,7 +175,7 @@ describe("Chassis", function()
     end)
 end)
 
--- â”€â”€ Turret â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+--                  Turret                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
 
 -- @description Exercises turret targeting, arc clamping, aiming detection, angular update output, and the full getter or setter surface for turret state.
 describe("Turret", function()
@@ -215,7 +215,7 @@ describe("Turret", function()
         t.turn_speed = 2.0
         t:aimAtAngle(1.0)
         local vel = t:update(0.1, 0)
-        -- diff = 1.0, max_step = 0.2, diff > max_step â†’ return turn_speed = 2.0
+        -- diff = 1.0, max_step = 0.2, diff > max_step          return turn_speed = 2.0
         expect_equal(vel, 2.0)
     end)
 
@@ -276,7 +276,7 @@ describe("Turret", function()
     end)
 end)
 
--- â”€â”€ Weapon â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+--                  Weapon                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
 
 -- @description Validates weapon defaults, firing and cooldown flow, reload logic, burst-fire state, ammo exhaustion checks, and weapon property accessors.
 describe("Weapon", function()
@@ -425,7 +425,7 @@ describe("Weapon", function()
     end)
 end)
 
--- â”€â”€ Projectile â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+--                  Projectile                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
 
 -- @description Focuses on pooled projectile instances to verify reset behavior and active-update bookkeeping for lifetime and traveled distance.
 describe("Projectile", function()
@@ -468,7 +468,7 @@ describe("Projectile", function()
     end)
 end)
 
--- â”€â”€ ProjectilePool â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+--                  ProjectilePool                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
 
 -- @description Tests projectile pool allocation, exhaustion, release safety, pooled lookup, pool-size clamping, and active-slot bookkeeping.
 describe("ProjectilePool", function()
@@ -554,7 +554,7 @@ describe("ProjectilePool", function()
     end)
 end)
 
--- â”€â”€ CombatWorld â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+--                  CombatWorld                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
 
 -- @description Verifies combat world aggregation of chassis, turrets, weapons, and pools together with updates, cleanup, counters, and reset behavior.
 describe("CombatWorld", function()
@@ -671,7 +671,7 @@ describe("CombatWorld", function()
     end)
 end)
 
--- â”€â”€ Enums â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+--                  Enums                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
 
 -- @description Confirms the combat module exports the expected projectile and armor-zone enum string constants.
 describe("Enums", function()
@@ -695,7 +695,7 @@ describe("Enums", function()
     end)
 end)
 
--- ── Bug fix: collision group overflow error message ──────────────────────────
+--        Bug fix: collision group overflow error message                                                                               
 
 describe("CollisionGroupSet overflow", function()
     -- @covers library.combat.newCollisionGroupSet
@@ -724,7 +724,7 @@ describe("CollisionGroupSet overflow", function()
     end)
 end)
 
--- ── Bug fix: turret arc snapping ─────────────────────────────────────────────
+--        Bug fix: turret arc snapping                                                                                                                                        
 
 describe("Turret arc snapping", function()
     -- @covers library.combat.newTurret
@@ -764,13 +764,13 @@ describe("Turret arc snapping", function()
         t.arc_min = -1.0
         t.arc_max = 1.0
         t:aimAtAngle(5.0)  -- outside arc; effective = 1.0
-        -- current_angle is already at 1.0 → diff = 0, vel = 0
+        -- current_angle is already at 1.0     diff = 0, vel = 0
         local vel = t:update(0.1, 1.0)
         expect_near(vel, 0.0, 0.01)
     end)
 end)
 
--- ── Bug fix: weapon burst inter-burst cooldown ───────────────────────────────
+--        Bug fix: weapon burst inter-burst cooldown                                                                                              
 
 describe("Weapon burst cooldown", function()
     -- @covers library.combat.newWeapon
@@ -789,7 +789,7 @@ describe("Weapon burst cooldown", function()
         -- Expire cooldown
         w:updateCooldown(0.05)
 
-        -- Shot 2: burst_remaining 2→1, cooldown = burst_delay (still mid-burst)
+        -- Shot 2: burst_remaining 2   1, cooldown = burst_delay (still mid-burst)
         expect_equal(w:fire(0), true)
         expect_equal(w.burst_remaining, 1)
         expect_near(w.cooldown_remaining, 0.05, 0.001)
@@ -797,7 +797,7 @@ describe("Weapon burst cooldown", function()
         -- Expire cooldown
         w:updateCooldown(0.05)
 
-        -- Shot 3 (last in burst): burst_remaining 1→0, cooldown = 1/fire_rate = 0.5
+        -- Shot 3 (last in burst): burst_remaining 1   0, cooldown = 1/fire_rate = 0.5
         expect_equal(w:fire(0), true)
         expect_equal(w.burst_remaining, 0)
         expect_near(w.cooldown_remaining, 0.5, 0.001)
@@ -814,7 +814,7 @@ describe("Weapon burst cooldown", function()
     end)
 end)
 
--- ── Input validation ─────────────────────────────────────────────────────────
+--        Input validation                                                                                                                                                                            
 
 describe("Input validation", function()
     -- @covers library.combat.newWeapon
@@ -867,7 +867,7 @@ describe("Input validation", function()
     end)
 end)
 
--- ── Pool exhaustion and DEFAULT_POOL_SIZE ────────────────────────────────────
+--        Pool exhaustion and DEFAULT_POOL_SIZE                                                                                                             
 
 describe("ProjectilePool defaults", function()
     -- @covers library.combat.newProjectilePool

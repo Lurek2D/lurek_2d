@@ -1,4 +1,4 @@
--- Integration test: library.quest × lurek.timer.Scheduler.
+-- Integration test: library.quest    lurek.timer.Scheduler.
 --
 -- Scope: Drives quest progression and failure from a `lurek.timer.Scheduler`
 -- userdata. Demonstrates the recommended pattern from `library/quest/init.lua`
@@ -31,7 +31,7 @@ local function build_log_with_quest(qid, deadline_obj_required)
     return log, q
 end
 
-describe("integration: library.quest × lurek.timer.Scheduler", function()
+describe("integration: library.quest    lurek.timer.Scheduler", function()
 
     -- @description A scheduled deadline auto-fails an in-progress quest when its callback fires.
     it("scheduler:after deadline auto-fails an active quest", function()
@@ -120,7 +120,7 @@ end)
 -- Merged from: test_integration_quest_time.lua
 -- ================================================================
 
--- Integration test: library.quest × lurek.timer.Scheduler.
+-- Integration test: library.quest    lurek.timer.Scheduler.
 --
 -- Scope: Drives quest progression and failure from a `lurek.timer.Scheduler`
 -- userdata. Demonstrates the recommended pattern from `library/quest/init.lua`
@@ -153,7 +153,7 @@ local function build_log_with_quest(qid, deadline_obj_required)
     return log, q
 end
 
-describe("integration: library.quest × lurek.timer.Scheduler", function()
+describe("integration: library.quest    lurek.timer.Scheduler", function()
 
     -- @description A scheduled deadline auto-fails an in-progress quest when its callback fires.
     it("scheduler:after deadline auto-fails an active quest", function()

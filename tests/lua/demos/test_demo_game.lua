@@ -26,14 +26,14 @@ describe("demo_game: shooting gallery API usage", function()
         if not src then pending("source missing") return end
         expect_true(
             src:find("getMousePosition%s*%(") ~= nil,
-            "getMousePosition() not called — crosshair will not track mouse")
+            "getMousePosition() not called     crosshair will not track mouse")
     end)
 
     it("uses wasActionPressed to detect shots", function()
         if not src then pending("source missing") return end
         expect_true(
             src:find("wasActionPressed%s*%(") ~= nil,
-            "wasActionPressed() not found — shooting input is unregistered")
+            "wasActionPressed() not found     shooting input is unregistered")
     end)
 
     it("renders text score or game state", function()
@@ -41,14 +41,14 @@ describe("demo_game: shooting gallery API usage", function()
         expect_true(
             src:find("lurek%.render%.print%s*%(") ~= nil or
             src:find("lurek%.render%.drawText%s*%(") ~= nil,
-            "No text rendering found — score HUD will not display")
+            "No text rendering found     score HUD will not display")
     end)
 
     it("has lurek.render_ui callback for UI overlay", function()
         if not src then pending("source missing") return end
         expect_true(
             src:find("function%s+lurek%.render_ui%s*%(") ~= nil,
-            "lurek.render_ui callback not found — UI HUD will not render")
+            "lurek.render_ui callback not found     UI HUD will not render")
     end)
 end)
 

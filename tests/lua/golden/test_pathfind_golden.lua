@@ -21,7 +21,7 @@ end)
 -- Merged from: test_pathfind_golden_grid.lua
 -- ================================================================
 
--- Golden test: pathfinding â€” compare evidence output against golden samples
+-- Golden test: pathfinding          compare evidence output against golden samples
 
 -- @description Covers suite: golden: pathfinding evidence comparison.
 describe("golden: pathfinding evidence comparison", function()

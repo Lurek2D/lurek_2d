@@ -39,7 +39,7 @@ describe("integration: localized strings in UI labels", function()
     -- @description Verifies switching the active locale changes the text fed into a UI label.
     it("switching locale updates UI text", function()
         lurek.i18n.loadTable("en", { greeting = "Hello" })
-        lurek.i18n.loadTable("pl", { greeting = "Cześć" })
+        lurek.i18n.loadTable("pl", { greeting = "Cze    " })
 
         lurek.i18n.setLanguage("en")
         local en_text = lurek.i18n.t("greeting")
@@ -47,7 +47,7 @@ describe("integration: localized strings in UI labels", function()
 
         lurek.i18n.setLanguage("pl")
         local pl_text = lurek.i18n.t("greeting")
-        expect_equal("Cześć", pl_text, "Polish greeting")
+        expect_equal("Cze    ", pl_text, "Polish greeting")
 
         local label = lurek.ui.newLabel()
         label.setText(pl_text)

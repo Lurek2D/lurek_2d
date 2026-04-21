@@ -13,7 +13,7 @@ describe("integration: entity events via signal", function()
         local on_spawn    = lurek.event.newSignal()
         local spawn_count = 0
 
-        -- connect(event_name, fn) — event name is required
+        -- connect(event_name, fn)     event name is required
         on_spawn:connect("spawn", function(id)
             spawn_count = spawn_count + 1
         end)

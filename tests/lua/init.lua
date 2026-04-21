@@ -313,9 +313,9 @@ function expect_deep_equal(expected, actual, msg)
 end
 
 -- Stress measurement helper: runs fn() count times, prints [PERF] line, returns elapsed seconds.
--- @param name   : string  — label printed in [PERF] output
--- @param count  : number  — iteration count
--- @param fn     : function — operation under test
+-- @param name   : string      label printed in [PERF] output
+-- @param count  : number      iteration count
+-- @param fn     : function     operation under test
 -- @return number elapsed seconds
 function measure(name, count, fn)
     local start = os.clock()
@@ -329,9 +329,9 @@ end
 
 -- Golden comparison helper: compares actual string to expected baseline string.
 -- On first run (expected == nil) it prints the actual value for recording.
--- @param name     : string  — label for error messages
--- @param actual   : string  — serialized output to check
--- @param expected : string  — hardcoded baseline (nil = print mode)
+-- @param name     : string      label for error messages
+-- @param actual   : string      serialized output to check
+-- @param expected : string      hardcoded baseline (nil = print mode)
 function expect_golden(name, actual, expected)
     if expected == nil then
         io.write(string.format("[GOLDEN] %s:\n%s\n", name, tostring(actual)))
@@ -343,15 +343,15 @@ end
 -- Canvas pixel verification helper for headless visual evidence tests.
 -- Reads a pixel from a Canvas object and asserts each RGBA channel is within tolerance.
 -- Requires canvas:getPixel(x, y) to be available (headless-safe via CPU readback).
--- @param canvas    : Canvas  — canvas object to sample
--- @param x         : number  — pixel x coordinate (0-based)
--- @param y         : number  — pixel y coordinate (0-based)
--- @param er        : number  — expected red channel [0.0, 1.0]
--- @param eg        : number  — expected green channel [0.0, 1.0]
--- @param eb        : number  — expected blue channel [0.0, 1.0]
--- @param ea        : number  — expected alpha channel [0.0, 1.0]
--- @param tolerance : number  — per-channel tolerance (default 0.05)
--- @param msg       : string  — optional label for error messages
+-- @param canvas    : Canvas      canvas object to sample
+-- @param x         : number      pixel x coordinate (0-based)
+-- @param y         : number      pixel y coordinate (0-based)
+-- @param er        : number      expected red channel [0.0, 1.0]
+-- @param eg        : number      expected green channel [0.0, 1.0]
+-- @param eb        : number      expected blue channel [0.0, 1.0]
+-- @param ea        : number      expected alpha channel [0.0, 1.0]
+-- @param tolerance : number      per-channel tolerance (default 0.05)
+-- @param msg       : string      optional label for error messages
 function expect_canvas_pixel(canvas, x, y, er, eg, eb, ea, tolerance, msg)
     tolerance = tolerance or 0.05
     local label = msg and (msg .. " ") or ""
@@ -371,12 +371,12 @@ function expect_canvas_pixel(canvas, x, y, er, eg, eb, ea, tolerance, msg)
     ch("a", ea, a or 0)
 end
 
--- ══════════════════════════════════════════════════════════════════════════════
+--                                                                                                                                                                                                                                           
 -- Evidence test helpers
--- ══════════════════════════════════════════════════════════════════════════════
+--                                                                                                                                                                                                                                           
 
 --- Returns the standard evidence output directory for a category.
---- @param category : string  — e.g. "physics", "animation"
+--- @param category : string      e.g. "physics", "animation"
 --- @return string path like "tests/output/physics/"
 function evidence_output_dir(category)
     return "tests/output/" .. category .. "/"
@@ -399,9 +399,9 @@ function ensure_evidence_dir(category)
 end
 
 --- Asserts that an evidence file was created at the given path.
---- Evidence tests use this instead of value assertions — they only check the file exists.
---- @param path : string — file path to check
---- @param msg  : string — optional label
+--- Evidence tests use this instead of value assertions     they only check the file exists.
+--- @param path : string     file path to check
+--- @param msg  : string     optional label
 function expect_evidence_created(path, msg)
     -- io.open is sandboxed (nil) in the test VM; if we reach this point the
     -- savePNG call above already succeeded (it errors on write failure), so we
@@ -421,9 +421,9 @@ function expect_evidence_created(path, msg)
     end
 end
 
--- ══════════════════════════════════════════════════════════════════════════════
+--                                                                                                                                                                                                                                           
 -- Golden test helpers
--- ══════════════════════════════════════════════════════════════════════════════
+--                                                                                                                                                                                                                                           
 
 --- Reads a file and returns its contents as a string, or nil on failure.
 --- @param path : string
@@ -444,19 +444,19 @@ local function _read_file_bytes(path)
 end
 
 --- Compares an evidence file against a golden sample file (binary-exact).
---- Golden tests use this — they do NOT create content, only compare.
---- @param evidence_path : string — path to evidence output (created by evidence test)
---- @param golden_path   : string — path to committed golden sample
---- @param msg           : string — optional label
+--- Golden tests use this     they do NOT create content, only compare.
+--- @param evidence_path : string     path to evidence output (created by evidence test)
+--- @param golden_path   : string     path to committed golden sample
+--- @param msg           : string     optional label
 function expect_golden_file_match(evidence_path, golden_path, msg)
     local evidence = _read_file_bytes(evidence_path)
     if not evidence then
-        error(string.format("%s: evidence file not found: '%s' — run the evidence test first",
+        error(string.format("%s: evidence file not found: '%s'     run the evidence test first",
             msg or "golden", evidence_path), 2)
     end
     local golden = _read_file_bytes(golden_path)
     if not golden then
-        error(string.format("%s: golden sample not found: '%s' — commit a baseline sample",
+        error(string.format("%s: golden sample not found: '%s'     commit a baseline sample",
             msg or "golden", golden_path), 2)
     end
     if evidence ~= golden then
@@ -467,9 +467,9 @@ end
 
 --- Compares evidence text against a golden sample, ignoring trailing whitespace per line.
 --- Useful for text-based golden tests where line endings may differ.
---- @param evidence_path : string — path to evidence output
---- @param golden_path   : string — path to committed golden sample
---- @param msg           : string — optional label
+--- @param evidence_path : string     path to evidence output
+--- @param golden_path   : string     path to committed golden sample
+--- @param msg           : string     optional label
 function expect_golden_text_match(evidence_path, golden_path, msg)
     local evidence = _read_file_bytes(evidence_path)
     if not evidence then

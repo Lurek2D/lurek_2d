@@ -19,14 +19,14 @@ describe("hello_world: content checks", function()
         expect_true(
             src:find("lurek%.render%.print%s*%(") ~= nil or
             src:find("lurek%.render%.drawText%s*%(") ~= nil,
-            "No text rendering call found — 'Hello World' will not appear")
+            "No text rendering call found     'Hello World' will not appear")
     end)
 
     it("has some form of quit binding or quit handling", function()
         if not src then pending("source missing") return end
         expect_true(
             src:find("quit") ~= nil,
-            "No quit handling — game has no exit path")
+            "No quit handling     game has no exit path")
     end)
 end)
 

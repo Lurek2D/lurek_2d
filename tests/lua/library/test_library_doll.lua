@@ -3,7 +3,7 @@
 
 local doll = require("library.doll")
 
--- â”€â”€ Part â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+--                  Part                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
 
 -- @description Verifies part defaults plus texture, transform, colour, flip, attribute, fixture, origin, and rotation-following helpers.
 describe("Part", function()
@@ -143,7 +143,7 @@ describe("Part", function()
     end)
 end)
 
--- â”€â”€ DollTemplate â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+--                  DollTemplate                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
 
 -- @description Covers template naming, socket registration, duplicate rejection, removal, lookup, ordering, and default socket field values.
 describe("DollTemplate", function()
@@ -243,7 +243,7 @@ describe("DollTemplate", function()
     end)
 end)
 
--- â”€â”€ Doll â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+--                  Doll                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
 
 -- @description Exercises doll transforms, attachment rules, detach flows, socket occupancy queries, and body or userdata references.
 describe("Doll", function()
@@ -387,7 +387,7 @@ describe("Doll", function()
     end)
 end)
 
--- â”€â”€ getDrawList â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+--                  getDrawList                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
 
 -- @description Validates draw-list generation for empty and populated dolls, combined ordering, world transforms, visibility, and scale effects.
 describe("Doll:getDrawList", function()
@@ -573,7 +573,7 @@ describe("Doll:getDrawList", function()
     end)
 end)
 
--- â”€â”€ Hot-swap â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+--                  Hot-swap                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
 
 -- @description Tests replacing attached parts at runtime so hot-swapping preserves socket routing and updated draw output.
 describe("Doll hot-swap", function()
@@ -596,7 +596,7 @@ describe("Doll hot-swap", function()
     end)
 end)
 
--- ── Input Validation ──────────────────────────────────────────────────────────
+--        Input Validation                                                                                                                                                                               
 
 -- @description Verifies input validation for socket names, scale values, and draw orders.
 describe("Input Validation", function()
@@ -649,7 +649,7 @@ describe("Input Validation", function()
     end)
 end)
 
--- ── Part:getAbsoluteScale ─────────────────────────────────────────────────────
+--        Part:getAbsoluteScale                                                                                                                                                                
 
 -- @description Verifies getAbsoluteScale returns positive magnitude regardless of flip or negative scale.
 describe("Part:getAbsoluteScale", function()
@@ -673,7 +673,7 @@ describe("Part:getAbsoluteScale", function()
     end)
 end)
 
--- ── Part:getAttributes ────────────────────────────────────────────────────────
+--        Part:getAttributes                                                                                                                                                                         
 
 -- @description Verifies getAttributes returns a shallow copy of all stored key-value attributes.
 describe("Part:getAttributes", function()
@@ -702,7 +702,7 @@ describe("Part:getAttributes", function()
     end)
 end)
 
--- ── doll.getAbsoluteScale (module function) ───────────────────────────────────
+--        doll.getAbsoluteScale (module function)                                                                                                          
 
 -- @description Verifies the module-level getAbsoluteScale helper strips flip sign from draw-list entries.
 describe("doll.getAbsoluteScale", function()
@@ -745,7 +745,7 @@ describe("doll.getAbsoluteScale", function()
     end)
 end)
 
--- ── Socket rotation transforms ────────────────────────────────────────────────
+--        Socket rotation transforms                                                                                                                                                 
 
 -- @description Verifies part offset is rotated by socket rotation in the draw list.
 describe("Socket rotation transforms", function()
@@ -797,7 +797,7 @@ describe("Socket rotation transforms", function()
     end)
 end)
 
--- ── Flip behaviour ────────────────────────────────────────────────────────────
+--        Flip behaviour                                                                                                                                                                                     
 
 -- @description Verifies flip flags produce correct negative scale values in the draw list.
 describe("Flip behaviour", function()

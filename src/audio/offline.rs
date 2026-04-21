@@ -25,8 +25,13 @@ use crate::audio::dsp::{ActiveEffect, AtomicParam, EffectParams, EffectType};
 fn ensure_parent_dir(path: &str) -> Result<(), String> {
     if let Some(parent) = std::path::Path::new(path).parent() {
         if !parent.as_os_str().is_empty() && !parent.exists() {
-            std::fs::create_dir_all(parent)
-                .map_err(|e| format!("cannot create output directory '{}': {}", parent.display(), e))?;
+            std::fs::create_dir_all(parent).map_err(|e| {
+                format!(
+                    "cannot create output directory '{}': {}",
+                    parent.display(),
+                    e
+                )
+            })?;
         }
     }
     Ok(())

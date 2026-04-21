@@ -1,4 +1,4 @@
-﻿//! `lurek.terminal` â€” Grid-based character-cell terminal emulator and widget toolkit.
+//! `lurek.terminal` — Grid-based character-cell terminal emulator and widget toolkit.
 
 use super::SharedState;
 use mlua::prelude::*;
@@ -289,44 +289,30 @@ fn reindex_widget_handles(terminal: &Rc<TerminalBinding>, removed_index: usize) 
     *terminal.widget_handles.borrow_mut() = reindexed;
 }
 
-/// Inspects a widget's current attachment and either returns the existing
-/// index on this terminal, errors if attached to a different terminal, or
-/// returns the widget + pending children ready to attach.
-type PrepareResult = Result<usize, (Widget, Vec<Rc<RefCell<WidgetBinding>>>)>;
-
-fn prepare_attach(
-    terminal: &Rc<TerminalBinding>,
-    binding: &Rc<RefCell<WidgetBinding>>,
-) -> LuaResult<PrepareResult> {
-    let binding_ref = binding.borrow();
-    match &binding_ref.attachment {
-        WidgetAttachment::Detached => Ok(Err((
-            binding_ref.widget.clone(),
-            binding_ref.pending_children.clone(),
-        ))),
-        WidgetAttachment::Attached {
-            terminal: attached_terminal,
-            index,
-        } => {
-            if Rc::ptr_eq(attached_terminal, terminal) {
-                Ok(Ok(*index))
-            } else {
-                Err(runtime_error(
-                    "Terminal:addWidget",
-                    "widget is already attached to another terminal",
-                ))
-            }
-        }
-    }
-}
-
 fn attach_widget(
     terminal: &Rc<TerminalBinding>,
     binding: &Rc<RefCell<WidgetBinding>>,
 ) -> LuaResult<usize> {
-    let (widget, pending_children) = match prepare_attach(terminal, binding)? {
-        Ok(existing_index) => return Ok(existing_index),
-        Err(pair) => pair,
+    let (widget, pending_children) = {
+        let binding_ref = binding.borrow();
+        match &binding_ref.attachment {
+            WidgetAttachment::Detached => (
+                binding_ref.widget.clone(),
+                binding_ref.pending_children.clone(),
+            ),
+            WidgetAttachment::Attached {
+                terminal: attached_terminal,
+                index,
+            } => {
+                if Rc::ptr_eq(attached_terminal, terminal) {
+                    return Ok(*index);
+                }
+                return Err(runtime_error(
+                    "Terminal:addWidget",
+                    "widget is already attached to another terminal",
+                ));
+            }
+        }
     };
 
     let index = terminal.terminal.borrow_mut().add_widget(widget);
@@ -1288,10 +1274,10 @@ impl LuaUserData for LuaWidget {
 /// Registers the `lurek.terminal` API table with the Lua VM.
 ///
 /// @param lua : &Lua
-/// @param lurek : &LuaTable
+/// @param luna : &LuaTable
 /// @param state : Rc<RefCell<SharedState>>
 ///
-pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
+pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
 
     // -- newTerminal --
@@ -1442,7 +1428,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         )?,
     )?;
 
-    // â”€â”€ Scrollback â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ── Scrollback ────────────────────────────────────────────────────────────
 
     // -- pushScrollback --
     /// Appends a line to this terminal's scrollback buffer.
@@ -1457,7 +1443,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     tbl.set(
         "pushScrollback",
         lua.create_function(move |_, (term_ud, line): (LuaAnyUserData, String)| {
-            let term_ref = term_ud.borrow_mut::<LuaTerminal>()?;
+            let mut term_ref = term_ud.borrow_mut::<LuaTerminal>()?;
             let _ = s.borrow();
             term_ref
                 .binding
@@ -1506,7 +1492,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         "scrollbackLen",
         lua.create_function(|_, term_ud: LuaAnyUserData| {
             let term_ref = term_ud.borrow::<LuaTerminal>()?;
-            let binding = term_ref.binding.terminal.borrow_mut();
+            let mut binding = term_ref.binding.terminal.borrow_mut();
             Ok(binding.scrollback_len())
         })?,
     )?;
@@ -1522,7 +1508,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     tbl.set(
         "setScrollbackCap",
         lua.create_function(|_, (term_ud, cap): (LuaAnyUserData, usize)| {
-            let term_ref = term_ud.borrow_mut::<LuaTerminal>()?;
+            let mut term_ref = term_ud.borrow_mut::<LuaTerminal>()?;
             term_ref
                 .binding
                 .terminal
@@ -1532,7 +1518,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
 
-    // â”€â”€ Command history â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ── Command history ───────────────────────────────────────────────────────
 
     // -- pushCmdHistory --
     /// Appends a command string to this terminal's history.
@@ -1546,7 +1532,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     tbl.set(
         "pushCmdHistory",
         lua.create_function(|_, (term_ud, cmd): (LuaAnyUserData, String)| {
-            let term_ref = term_ud.borrow_mut::<LuaTerminal>()?;
+            let mut term_ref = term_ud.borrow_mut::<LuaTerminal>()?;
             term_ref
                 .binding
                 .terminal
@@ -1566,7 +1552,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     tbl.set(
         "prevCmd",
         lua.create_function(|_, term_ud: LuaAnyUserData| {
-            let term_ref = term_ud.borrow_mut::<LuaTerminal>()?;
+            let mut term_ref = term_ud.borrow_mut::<LuaTerminal>()?;
             let mut binding = term_ref.binding.terminal.borrow_mut();
             Ok(binding.prev_cmd().map(|s| s.to_owned()))
         })?,
@@ -1582,7 +1568,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     tbl.set(
         "nextCmd",
         lua.create_function(|_, term_ud: LuaAnyUserData| {
-            let term_ref = term_ud.borrow_mut::<LuaTerminal>()?;
+            let mut term_ref = term_ud.borrow_mut::<LuaTerminal>()?;
             let mut binding = term_ref.binding.terminal.borrow_mut();
             Ok(binding.next_cmd().map(|s| s.to_owned()))
         })?,
@@ -1597,7 +1583,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         "cmdHistoryLen",
         lua.create_function(|_, term_ud: LuaAnyUserData| {
             let term_ref = term_ud.borrow::<LuaTerminal>()?;
-            let binding = term_ref.binding.terminal.borrow_mut();
+            let mut binding = term_ref.binding.terminal.borrow_mut();
             Ok(binding.cmd_history_len())
         })?,
     )?;
@@ -1610,13 +1596,13 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     tbl.set(
         "clearCmdHistory",
         lua.create_function(|_, term_ud: LuaAnyUserData| {
-            let term_ref = term_ud.borrow_mut::<LuaTerminal>()?;
+            let mut term_ref = term_ud.borrow_mut::<LuaTerminal>()?;
             term_ref.binding.terminal.borrow_mut().clear_cmd_history();
             Ok(())
         })?,
     )?;
 
-    // â”€â”€ Colour themes â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ── Colour themes ─────────────────────────────────────────────────────────
 
     // -- applyTheme --
     /// Applies a named colour theme to a terminal, recolouring all existing cells.
@@ -1639,13 +1625,13 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                 "nord" => (236, 239, 244, 46, 52, 64),
                 other => {
                     return Err(LuaError::RuntimeError(format!(
-                        "unknown theme '{other}' â€” available: solarized_dark, solarized_light, monokai, dracula, nord"
+                        "unknown theme '{other}' — available: solarized_dark, solarized_light, monokai, dracula, nord"
                     )));
                 }
             };
             let fg = [fr as f32 / 255.0, fg_c as f32 / 255.0, fb as f32 / 255.0, 1.0];
             let bg = [br as f32 / 255.0, bg_c as f32 / 255.0, bb as f32 / 255.0, 1.0];
-            let term_ref = term_ud.borrow_mut::<LuaTerminal>()?;
+            let mut term_ref = term_ud.borrow_mut::<LuaTerminal>()?;
             term_ref.binding.terminal.borrow_mut().set_default_colors(fg, bg);
             Ok(())
         })?,
@@ -1655,9 +1641,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// Prints text at 1-based `(col, row)` with per-keyword colour highlighting.
     ///
     /// `rules` is an array of tables, each with:
-    /// - `pattern` â€” `string` â€” plain substring to match (case-sensitive).
-    /// - `fg`      â€” `{r, g, b}` table with 0-255 integer values.
-    /// - `bg`      â€” `{r, g, b}` (optional) background colour.
+    /// - `pattern` — `string` — plain substring to match (case-sensitive).
+    /// - `fg`      — `{r, g, b}` table with 0-255 integer values.
+    /// - `bg`      — `{r, g, b}` (optional) background colour.
     ///
     /// Rules are checked left-to-right; the first match wins per token.
     /// Unmatched text is printed with white (1,1,1,1) foreground and unchanged background.
@@ -1715,7 +1701,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                         bg,
                     });
                 }
-                let term_ref = term_ud.borrow_mut::<LuaTerminal>()?;
+                let mut term_ref = term_ud.borrow_mut::<LuaTerminal>()?;
                 let default_fg = [1.0f32, 1.0, 1.0, 1.0];
                 let mut remaining = text.as_str();
                 let mut cur_col = col;
@@ -1760,7 +1746,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         )?,
     )?;
 
-    // â”€â”€ ANSI escape code support â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ── ANSI escape code support ──────────────────────────────────────────────
 
     /// Strips all ANSI escape codes from `text` and returns the plain string.
     /// @param text : string
@@ -1816,7 +1802,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         "printAnsi",
         lua.create_function(
             |_, (t_ud, col, row, text): (LuaAnyUserData, i64, i64, String)| {
-                let t = t_ud.borrow_mut::<LuaTerminal>()?;
+                let mut t = t_ud.borrow_mut::<LuaTerminal>()?;
                 let spans = parse_ansi_spans(&text);
                 let mut cur_col = col as usize;
                 for span in &spans {
@@ -1858,7 +1844,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         )?,
     )?;
 
-    // â”€â”€ Tab completion â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ── Tab completion ────────────────────────────────────────────────────────
 
     let comp_rc = Rc::new(RefCell::new(CompletionEngine::new()));
 
@@ -1952,6 +1938,6 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         lua.create_function(|_, ()| Ok(crate::terminal::MAX_ROWS as u32))?,
     )?;
 
-    lurek.set("terminal", tbl)?;
+    luna.set("terminal", tbl)?;
     Ok(())
 }

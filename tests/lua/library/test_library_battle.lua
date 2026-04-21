@@ -496,7 +496,7 @@ describe("DamageType", function()
 end)
 
 ---------------------------------------------------------------------------
--- CombatAction â€” tags and metadata
+-- CombatAction          tags and metadata
 ---------------------------------------------------------------------------
 
 -- @description Covers suite: CombatAction tags and metadata.
@@ -542,7 +542,7 @@ describe("CombatAction tags and metadata", function()
 end)
 
 ---------------------------------------------------------------------------
--- StatusEffect â€” metadata
+-- StatusEffect          metadata
 ---------------------------------------------------------------------------
 
 -- @description Covers suite: StatusEffect metadata.
@@ -566,7 +566,7 @@ describe("StatusEffect metadata", function()
 end)
 
 ---------------------------------------------------------------------------
--- Combatant â€” setLevel
+-- Combatant          setLevel
 ---------------------------------------------------------------------------
 
 -- @description Covers suite: Combatant setLevel.

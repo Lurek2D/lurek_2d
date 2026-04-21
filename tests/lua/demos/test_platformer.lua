@@ -38,7 +38,7 @@ describe("platformer: mechanics checks", function()
             src:find("vel_y") ~= nil or
             src:find("vy") ~= nil or
             src:find("velocity%.y") ~= nil,
-            "No gravity/vertical velocity found — player will float")
+            "No gravity/vertical velocity found     player will float")
     end)
 
     it("has ground collision or on_ground flag", function()
@@ -48,7 +48,7 @@ describe("platformer: mechanics checks", function()
             src:find("grounded") ~= nil or
             src:find("floor") ~= nil or
             src:find("collide") ~= nil,
-            "No ground collision found — player will fall forever")
+            "No ground collision found     player will fall forever")
     end)
 
     it("has level or platform data", function()

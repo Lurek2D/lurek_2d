@@ -47,7 +47,7 @@ describe("tower_defense: mechanics checks", function()
             src:find("coin") ~= nil or
             src:find("resource") ~= nil or
             src:find("cost") ~= nil,
-            "No currency/resource system found — towers can always be placed for free")
+            "No currency/resource system found     towers can always be placed for free")
     end)
 
     it("has HUD rendering for game state", function()

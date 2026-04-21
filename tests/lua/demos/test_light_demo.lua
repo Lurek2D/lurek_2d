@@ -31,14 +31,14 @@ describe("light_demo: lighting API usage", function()
             src:find(":moveTo%s*%(") ~= nil or
             src:find("%.x%s*=") ~= nil or
             src:find("%.y%s*=") ~= nil,
-            "No light position update found — lights will be static")
+            "No light position update found     lights will be static")
     end)
 
     it("does not use lurek.lighting (old namespace)", function()
         if not src then pending("source missing") return end
         expect_false(
             src:find("lurek%.lighting") ~= nil,
-            "Old namespace lurek.lighting found — use lurek.light")
+            "Old namespace lurek.lighting found     use lurek.light")
     end)
 end)
 

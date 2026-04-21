@@ -3,7 +3,7 @@
 
 local inventory = require("library.inventory")
 
--- ─── InvItem ──────────────────────────────────────────────────────────────────
+--           InvItem                                                                                                                                                                                                       
 
 -- @description Verifies inventory item defaults plus stat, tag, weight, slot-type, and metadata behaviors on standalone items.
 describe("InvItem", function()
@@ -96,7 +96,7 @@ describe("InvItem", function()
     end)
 end)
 
--- ─── ItemStack ────────────────────────────────────────────────────────────────
+--           ItemStack                                                                                                                                                                                                 
 
 -- @description Covers stack quantity math, capacity checks, split or merge flows, and the relationship between an item stack and its underlying item.
 describe("ItemStack", function()
@@ -184,7 +184,7 @@ describe("ItemStack", function()
     end)
 end)
 
--- ─── Slot ─────────────────────────────────────────────────────────────────────
+--           Slot                                                                                                                                                                                                                
 
 -- @description Tests equipment and container slots for acceptance rules, set or clear flows, occupancy checks, and slot-level metadata.
 describe("Slot", function()
@@ -247,7 +247,7 @@ describe("Slot", function()
     end)
 end)
 
--- ─── Container ────────────────────────────────────────────────────────────────
+--           Container                                                                                                                                                                                                 
 
 -- @description Exercises fixed-size containers including slot access, add or remove flows, transfers, counting, and structural constraints.
 describe("Container.fixed", function()
@@ -384,7 +384,7 @@ describe("Container.unlimited", function()
     end)
 end)
 
--- ─── ItemSet ──────────────────────────────────────────────────────────────────
+--           ItemSet                                                                                                                                                                                                       
 
 -- @description Tests item-set requirements, activation checks, and bookkeeping for named equipment collections.
 describe("ItemSet", function()
@@ -432,7 +432,7 @@ describe("ItemSet", function()
     end)
 end)
 
--- ─── Inventory ────────────────────────────────────────────────────────────────
+--           Inventory                                                                                                                                                                                                 
 
 -- @description Validates whole-inventory orchestration across containers, equipment slots, item counts, transfers, stack operations, and subsystem toggles.
 describe("Inventory", function()
@@ -695,7 +695,7 @@ describe("Inventory", function()
     end)
 end)
 
--- ─── Container.removeSlot ─────────────────────────────────────────────────────
+--           Container.removeSlot                                                                                                                                                                
 
 -- @description Focuses on removing container slots safely, including index validation and post-removal slot compaction.
 describe("Container.removeSlot", function()
@@ -720,7 +720,7 @@ describe("Container.removeSlot", function()
     end)
 end)
 
--- ─── Slot.setState / getState / getSlotType / SlotState constants ─────────────
+--           Slot.setState / getState / getSlotType / SlotState constants                                        
 
 -- @description Confirms slot state getters and setters and the exported slot-state enum string values.
 describe("Slot.state", function()
@@ -753,7 +753,7 @@ describe("Slot.state", function()
     end)
 end)
 
--- ─── ContainerMode enum ───────────────────────────────────────────────────────
+--           ContainerMode enum                                                                                                                                                                      
 
 -- @description Verifies container mode constants and confirms they can be passed directly into container construction.
 describe("ContainerMode", function()
@@ -774,7 +774,7 @@ describe("ContainerMode", function()
     end)
 end)
 
--- ─── Bug fix: expandable overflow ──────────────────────────────────────────────
+--           Bug fix: expandable overflow                                                                                                                                           
 
 -- @description Validates that expandable containers respect the max_slots cap.
 describe("Container.expandable.bounds", function()
@@ -784,11 +784,11 @@ describe("Container.expandable.bounds", function()
         local c = inventory.newContainer("pouch", "expandable", 2, 4)
         expect_equal(c:slotCount(), 2)
         expect_equal(c:getCapacity(), 4)
-        -- Expand by 5 — only 2 should be added (capped at 4 total)
+        -- Expand by 5     only 2 should be added (capped at 4 total)
         local ok = c:expand(5)
         expect_equal(ok, true)
         expect_equal(c:slotCount(), 4)
-        -- Another expand should fail — already at cap
+        -- Another expand should fail     already at cap
         expect_equal(c:expand(1), false)
         expect_equal(c:slotCount(), 4)
     end)
@@ -827,7 +827,7 @@ describe("Container.expandable.bounds", function()
     end)
 end)
 
--- ─── Bug fix: multi-stack merge ─────────────────────────────────────────────
+--           Bug fix: multi-stack merge                                                                                                                                        
 
 -- @description Validates that addItem merges into ALL matching partial stacks.
 describe("Container.addItem.merge", function()
@@ -860,13 +860,13 @@ describe("Container.addItem.merge", function()
     end)
 end)
 
--- ─── Tag-based slot filtering in containers ─────────────────────────────────
+--           Tag-based slot filtering in containers                                                                                                    
 
 -- @description Validates that tagged slots correctly accept/reject items via canAccept.
 describe("Container.tagFiltering", function()
     -- @description Verifies case: typed slot in container accepts item with matching tag.
     it("typed slot in container accepts item with matching tag via addItem", function()
-        -- Container with a "weapon" slot — item type is "magic_blade" but has "weapon" tag
+        -- Container with a "weapon" slot     item type is "magic_blade" but has "weapon" tag
         local c = inventory.newContainer("equip", "fixed", 0)
         local weapon_slot = inventory.newSlot("weapon", inventory.SlotState.Active)
         c:addSlot(weapon_slot)
@@ -897,7 +897,7 @@ describe("Container.tagFiltering", function()
     end)
 end)
 
--- ─── Input validation ─────────────────────────────────────────────────────────
+--           Input validation                                                                                                                                                                            
 
 -- @description Validates that input validation catches bad arguments early.
 describe("InputValidation", function()

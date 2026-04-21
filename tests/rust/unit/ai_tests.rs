@@ -56,7 +56,7 @@ mod bandit_tests {
 // ── behavior_tree ─────────────────────────────────────────────────────────────
 
 mod behavior_tree_tests {
-    use lurek2d::ai::behavior_tree::{BehaviorTree, BTStatus, ParallelPolicy};
+    use lurek2d::ai::behavior_tree::{BTStatus, BehaviorTree, ParallelPolicy};
 
     #[test]
     fn bt_status_conversions() {
@@ -67,9 +67,18 @@ mod behavior_tree_tests {
 
     #[test]
     fn parallel_policy_parse() {
-        assert_eq!(ParallelPolicy::parse_str("requireAll"), ParallelPolicy::RequireAll);
-        assert_eq!(ParallelPolicy::parse_str("requireOne"), ParallelPolicy::RequireOne);
-        assert_eq!(ParallelPolicy::parse_str("unknown"), ParallelPolicy::RequireOne);
+        assert_eq!(
+            ParallelPolicy::parse_str("requireAll"),
+            ParallelPolicy::RequireAll
+        );
+        assert_eq!(
+            ParallelPolicy::parse_str("requireOne"),
+            ParallelPolicy::RequireOne
+        );
+        assert_eq!(
+            ParallelPolicy::parse_str("unknown"),
+            ParallelPolicy::RequireOne
+        );
     }
 
     #[test]
@@ -269,7 +278,11 @@ mod htn_tests {
         domain.add_primitive("eat", vec!["hungry"], vec![], vec!["hungry"]);
         domain.add_compound(
             "satisfy_hunger",
-            vec![HTNMethod::with_preconditions("use_eat", vec!["hungry"], vec!["eat"])],
+            vec![HTNMethod::with_preconditions(
+                "use_eat",
+                vec!["hungry"],
+                vec!["eat"],
+            )],
         );
         domain
     }

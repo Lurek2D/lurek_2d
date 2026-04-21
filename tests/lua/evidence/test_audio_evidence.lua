@@ -82,7 +82,7 @@ describe("Evidence: lurek.audio API + WAV output", function()
     -- @covers lurek.audio.saveWAV
     -- @evidence file
     -- @description Generates a frequency sweep from 200 Hz to 2000 Hz and records both the audio file and waveform render.
-    it("WAV: frequency sweep 200â†’2000 Hz (2 seconds)", function()
+    it("WAV: frequency sweep 200        2000 Hz (2 seconds)", function()
         local RATE = 44100
         local DURATION = 2.0
         local samples = math.floor(RATE * DURATION)
@@ -175,7 +175,7 @@ describe("Evidence: lurek.audio Bus API + WAV output", function()
     -- @covers lurek.audio.saveWAV
     -- @evidence file
     -- @description Applies a bus volume value to a synthesized sine wave and writes the scaled result as bus-volume evidence.
-    it("WAV: volume-scaled sine â€” simulates bus volume", function()
+    it("WAV: volume-scaled sine -    simulates bus volume", function()
         -- Generate a 440 Hz sine at full amplitude, then create a
         -- half-volume version to demonstrate bus volume effect
         local RATE = 44100
@@ -208,7 +208,7 @@ describe("Evidence: lurek.audio Bus API + WAV output", function()
     -- @covers lurek.audio.saveWAV
     -- @evidence file
     -- @description Multiplies the source tone frequency by the bus pitch value and saves the shifted result as file evidence.
-    it("WAV: pitch-shifted sine â€” simulates bus pitch", function()
+    it("WAV: pitch-shifted sine -    simulates bus pitch", function()
         -- Generate a sine where frequency is multiplied by bus pitch
         local RATE = 44100
         local DURATION = 1.0
@@ -283,7 +283,7 @@ end)
 local OUT = "tests/output/audio/"
 local SR  = 22050   -- sample rate for all tests
 
--- â”€â”€ helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+--                  helpers                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
 
 --- Returns the peak absolute sample value (0..1) for a SoundData
 local function peak_amplitude(sd)
@@ -309,7 +309,7 @@ local function waveform_compare(sd_before, sd_after, label_before, label_after, 
     lurek.image.savePNG(img, path)
 end
 
--- â”€â”€ Low-pass filter â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+--                  Low-pass filter                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
 
 -- @description Exercises the low-pass DSP path with analytical amplitude checks and a before/after waveform render.
 describe("Evidence: lurek.audio applyLowpass", function()
@@ -329,7 +329,7 @@ describe("Evidence: lurek.audio applyLowpass", function()
 
 end)
 
--- â”€â”€ High-pass filter â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+--                  High-pass filter                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
 
 -- @description Exercises the high-pass DSP path with analytical comparisons and waveform evidence.
 describe("Evidence: lurek.audio applyHighpass", function()
@@ -347,7 +347,7 @@ describe("Evidence: lurek.audio applyHighpass", function()
 
 end)
 
--- â”€â”€ Bandpass filter â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+--                  Bandpass filter                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
 
 -- @description Exercises the band-pass filter with in-band and out-of-band signals plus file evidence from filtered noise.
 describe("Evidence: lurek.audio applyBandpass", function()
@@ -365,13 +365,13 @@ describe("Evidence: lurek.audio applyBandpass", function()
 
 end)
 
--- â”€â”€ Gain â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+--                  Gain                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
 
 -- @description Covers gain scaling and clipping behavior on SoundData buffers.
 describe("Evidence: lurek.audio applyGain", function()
 end)
 
--- â”€â”€ Mix â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+--                  Mix                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
 
 -- @description Covers additive mixing using both a silence control case and a waveform-rendered combined signal.
 describe("Evidence: lurek.audio mixInto", function()
@@ -390,7 +390,7 @@ describe("Evidence: lurek.audio mixInto", function()
 
 end)
 
--- â”€â”€ Filter sweep visual â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+--                  Filter sweep visual                                                                                                                                                                                                                                                                                                                                                                                                                                                         
 
 -- @description Produces a strip of filtered-noise waveform lanes to show how lowering or raising cutoff changes the visible signal envelope.
 describe("Evidence: lurek.audio filter sweep PNG", function()
@@ -428,7 +428,7 @@ end)
 
 -- Evidence test: proves lurek.audio.processOffline and lurek.audio.normalizeFile
 -- write valid WAV files to disk that contain non-trivial PCM data.
--- Does NOT call raw draw calls. Litmus: delete offline.rs → these calls error.
+-- Does NOT call raw draw calls. Litmus: delete offline.rs     these calls error.
 
 local WAVE    = "tests/fixtures/sine_mono_44100.wav"
 local OUT_DIR = "tests/output/"
@@ -495,7 +495,7 @@ end)
 
 -- Evidence test: proves lurek.audio.waveformToPng and lurek.audio.spectrogramToPng
 -- create valid PNG image files from WAV audio data.
--- Litmus: delete src/audio/visualizer.rs → these calls error out.
+-- Litmus: delete src/audio/visualizer.rs     these calls error out.
 
 local WAVE    = "tests/fixtures/sine_mono_44100.wav"
 local OUT_DIR = "tests/output/"
@@ -549,13 +549,13 @@ end)
 
 -- test_evidence_audio_waves.lua
 -- Evidence tests: waveform synthesis using lurek.audio generators.
--- All tests are headless â€” no audio device required.
+-- All tests are headless -    no audio device required.
 
 local OUT = "tests/output/audio/"
 local SR  = 44100
-local DUR = 0.05  -- 50 ms â€” short but enough to measure waveform properties
+local DUR = 0.05  -- 50 ms -    short but enough to measure waveform properties
 
--- â”€â”€ helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+--                  helpers                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
 
 --- Compute RMS of a SoundData buffer
 local function rms(sd)
@@ -587,42 +587,38 @@ local function waveform_strip(img, sd, lane, lanes_total, colour)
     sd:drawWaveform(img, 0, y, img:width(), h_per_lane, r, g, b, 255)
 end
 
--- â”€â”€ Sine wave â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+--                  Sine wave                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
 
 -- @description Covers synthesized sine-wave generation, basic amplitude properties, and buffer sizing.
 describe("Evidence: lurek.audio newSineWave", function()
 end)
 
--- â”€â”€ Square wave â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+--                  Square wave                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
 
 -- @description Covers square-wave generation and its characteristic amplitude and RMS behavior.
 describe("Evidence: lurek.audio newSquareWave", function()
 end)
 
--- â”€â”€ Sawtooth wave â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+--                  Sawtooth wave                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
 
 -- @description Covers sawtooth-wave construction and its expected amplitude distribution.
 describe("Evidence: lurek.audio newSawtoothWave", function()
 end)
 
--- â”€â”€ Triangle wave â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+--                  Triangle wave                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
 
 -- @description Covers triangle-wave construction and its expected peak and RMS properties.
 describe("Evidence: lurek.audio newTriangleWave", function()
 end)
 
--- â”€â”€ White noise â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+--                  White noise                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
 
 -- @description Covers deterministic white-noise generation, amplitude limits, and seed repeatability.
 describe("Evidence: lurek.audio newWhiteNoise", function()
-        end
-    end)
-        end
-    end)
-
 end)
 
--- â”€â”€ Visual evidence: all five waveforms on one PNG â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+--                  Visual evidence: all five waveforms on one PNG                                                                                                                                                                                                                         
 
 -- @description Writes visual and audio evidence comparing all generator outputs side by side.
 describe("Evidence: lurek.audio waveform PNG", function()
@@ -682,7 +678,7 @@ describe("Evidence: lurek.audio waveform PNG", function()
 
 end)
 
--- â”€â”€ Manual sample synthesis (FM / ADSR / drum) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+--                  Manual sample synthesis (FM / ADSR / drum)                                                                                                                                                                                                                                                                 
 
 -- @description Builds several hand-authored synthesis examples to document more advanced sample authoring workflows.
 describe("Evidence: lurek.audio manual sample synthesis", function()
@@ -692,7 +688,7 @@ describe("Evidence: lurek.audio manual sample synthesis", function()
     -- @covers lurek.audio.saveWAV
     -- @evidence file
     -- @description Synthesizes a simple two-operator FM tone and saves it as a richer alternative to the stock sine-wave generator.
-    it("FM synthesis â€” 2-operator FM produces a richer waveform than a sine", function()
+    it("FM synthesis -    2-operator FM produces a richer waveform than a sine", function()
         local mod_freq = 880.0
         local car_freq = 440.0
         local mod_idx  = 2.0
@@ -750,7 +746,7 @@ describe("Evidence: lurek.audio manual sample synthesis", function()
     -- @covers lurek.audio.saveWAV
     -- @evidence file
     -- @description Builds a kick drum from a decaying sine with falling pitch and writes the result as drum evidence.
-    it("drum kick synthesis â€” exponential pitch decay for kick transient", function()
+    it("drum kick synthesis -    exponential pitch decay for kick transient", function()
         local dur_k = 0.3
         local n_k   = math.floor(dur_k * SR)
         local sd = lurek.audio.newSoundData(n_k, SR, 1)
@@ -772,7 +768,7 @@ describe("Evidence: lurek.audio manual sample synthesis", function()
     -- @covers lurek.audio.saveWAV
     -- @evidence file
     -- @description Shapes filtered white noise into a hi-hat-style transient and saves the result as a short percussion artifact.
-    it("drum hi-hat synthesis â€” filtered white noise with exponential decay", function()
+    it("drum hi-hat synthesis -    filtered white noise with exponential decay", function()
         local dur_h = 0.1
         local n_h   = math.floor(dur_h * SR)
         -- Build white noise via newWhiteNoise then apply envelope via setSample
@@ -881,7 +877,7 @@ describe("Evidence: lurek.audio API + WAV output", function()
     -- @covers lurek.audio.saveWAV
     -- @evidence file
     -- @description Generates a frequency sweep from 200 Hz to 2000 Hz and records both the audio file and waveform render.
-    it("WAV: frequency sweep 200â†’2000 Hz (2 seconds)", function()
+    it("WAV: frequency sweep 200        2000 Hz (2 seconds)", function()
         local RATE = 44100
         local DURATION = 2.0
         local samples = math.floor(RATE * DURATION)
@@ -974,7 +970,7 @@ describe("Evidence: lurek.audio Bus API + WAV output", function()
     -- @covers lurek.audio.saveWAV
     -- @evidence file
     -- @description Applies a bus volume value to a synthesized sine wave and writes the scaled result as bus-volume evidence.
-    it("WAV: volume-scaled sine â€” simulates bus volume", function()
+    it("WAV: volume-scaled sine -    simulates bus volume", function()
         -- Generate a 440 Hz sine at full amplitude, then create a
         -- half-volume version to demonstrate bus volume effect
         local RATE = 44100
@@ -1007,7 +1003,7 @@ describe("Evidence: lurek.audio Bus API + WAV output", function()
     -- @covers lurek.audio.saveWAV
     -- @evidence file
     -- @description Multiplies the source tone frequency by the bus pitch value and saves the shifted result as file evidence.
-    it("WAV: pitch-shifted sine â€” simulates bus pitch", function()
+    it("WAV: pitch-shifted sine -    simulates bus pitch", function()
         -- Generate a sine where frequency is multiplied by bus pitch
         local RATE = 44100
         local DURATION = 1.0
@@ -1077,7 +1073,7 @@ end)
 
 -- Evidence test: proves lurek.audio.processOffline and lurek.audio.normalizeFile
 -- write valid WAV files to disk that contain non-trivial PCM data.
--- Does NOT call raw draw calls. Litmus: delete offline.rs → these calls error.
+-- Does NOT call raw draw calls. Litmus: delete offline.rs     these calls error.
 
 local WAVE    = "tests/fixtures/sine_mono_44100.wav"
 local OUT_DIR = "tests/evidence_out/"
@@ -1144,7 +1140,7 @@ end)
 
 -- Evidence test: proves lurek.audio.waveformToPng and lurek.audio.spectrogramToPng
 -- create valid PNG image files from WAV audio data.
--- Litmus: delete src/audio/visualizer.rs → these calls error out.
+-- Litmus: delete src/audio/visualizer.rs     these calls error out.
 
 local WAVE    = "tests/fixtures/sine_mono_44100.wav"
 local OUT_DIR = "tests/evidence_out/"
@@ -1187,6 +1183,6 @@ describe("Evidence: lurek.audio.spectrogramToPng", function()
         expect_not_nil(data)
         expect_equal(true, #data >= 100)
     end)
-end)
 
+end)
 test_summary()

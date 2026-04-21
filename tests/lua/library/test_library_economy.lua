@@ -775,7 +775,7 @@ describe("Bug-fix regressions", function()
         local r = eco.newResource("energy", 100)
         r:add(10)
         r:setMinimum(0)
-        r:setDecayPercent(5.0) -- 500% per second — way more than value
+        r:setDecayPercent(5.0) -- 500% per second     way more than value
         local net = r:getNetRate()
         -- net should be clamped to -(value - minimum) = -10
         expect_equal(net, -10)
@@ -877,7 +877,7 @@ describe("Bug-fix regressions", function()
         r:add(50)
         r:reserve(40)
         expect_equal(r:getReserved(), 40)
-        -- Now unreserve a small amount — reserved stays within value
+        -- Now unreserve a small amount     reserved stays within value
         r:unreserve(5)
         expect_equal(r:getReserved(), 35)
     end)

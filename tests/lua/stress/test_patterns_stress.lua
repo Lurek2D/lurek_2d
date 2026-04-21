@@ -8,7 +8,7 @@ describe("stress: patterns observer throughput", function()
     -- @covers Observer:notify
     -- @stress Registers 1000 subscribers and performs 100 notify broadcasts across the full listener set.
     -- @description Stresses observer fanout throughput by accumulating many listeners and delivering repeated notifications to every callback.
-    it("1000 observers Ă— 100 notifications: <10s", function()
+    it("1000 observers       100 notifications: <10s", function()
         local obs   = lurek.patterns.newObserver()
         local SUBS  = 1000
         local NOTIF = 100

@@ -3,7 +3,7 @@
 
 local item = require("library.item")
 
--- ─── Type registry ────────────────────────────────────────────────────────────
+--           Type registry                                                                                                                                                                                     
 
 -- @description Covers item type registry definition, lookup, name enumeration, and clearing of registered item archetypes.
 describe("TypeRegistry", function()
@@ -39,7 +39,7 @@ describe("TypeRegistry", function()
     end)
 end)
 
--- ─── Item object ──────────────────────────────────────────────────────────────
+--           Item object                                                                                                                                                                                           
 
 -- @description Verifies item defaults and mutation helpers for stats, tags, counters, cloning, naming, slot assignment, and registry-seeded fields.
 describe("Item", function()
@@ -165,7 +165,7 @@ describe("Item", function()
     end)
 end)
 
--- ─── Stack ────────────────────────────────────────────────────────────────────
+--           Stack                                                                                                                                                                                                             
 
 -- @description Exercises generic item stacks for push or pop flow, indexing, filtering, sorting, snapshots, and capacity-aware behaviors.
 describe("Stack", function()
@@ -278,7 +278,7 @@ describe("Stack", function()
     end)
 end)
 
--- ─── ItemPool ─────────────────────────────────────────────────────────────────
+--           ItemPool                                                                                                                                                                                                    
 
 -- @description Tests weighted item pools for type management, random draws, weight mutation, emptiness checks, and total-weight bookkeeping.
 describe("ItemPool", function()
@@ -362,7 +362,7 @@ describe("ItemPool", function()
     end)
 end)
 
--- ─── StackHistory ─────────────────────────────────────────────────────────────
+--           StackHistory                                                                                                                                                                                        
 
 -- @description Covers history recording, pruning, source filtering, emptiness checks, and access to the latest recorded stack event.
 describe("StackHistory", function()
@@ -427,7 +427,7 @@ describe("StackHistory", function()
     end)
 end)
 
--- ─── StackManager ─────────────────────────────────────────────────────────────
+--           StackManager                                                                                                                                                                                        
 
 -- @description Verifies stack-manager orchestration for named stacks, movement between stacks, aggregate counting, and existence checks.
 describe("StackManager", function()
@@ -458,7 +458,7 @@ describe("StackManager", function()
     end)
 end)
 
--- ─── Analysis ─────────────────────────────────────────────────────────────────
+--           Analysis                                                                                                                                                                                                    
 
 -- @description Tests selecting the top-N item indices by stat value while preserving the module's documented 0-based result convention.
 describe("findNOfStat", function()
@@ -634,7 +634,7 @@ describe("StackBuilder", function()
     end)
 end)
 
--- ─── Item counters ────────────────────────────────────────────────────────────
+--           Item counters                                                                                                                                                                                     
 
 -- @description Adds focused counter coverage for unset defaults, mutation, deletion, shallow copies, and clone independence.
 describe("Item counters", function()
@@ -707,7 +707,7 @@ describe("Item counters", function()
     end)
 end)
 
--- ─── Item name / slot ─────────────────────────────────────────────────────────
+--           Item name / slot                                                                                                                                                                            
 
 -- @description Covers item display names and slot metadata, including registry defaults and clone preservation.
 describe("Item name and slot", function()
@@ -765,7 +765,7 @@ describe("Item name and slot", function()
     end)
 end)
 
--- ─── Stack.peekBottom ─────────────────────────────────────────────────────────
+--           Stack.peekBottom                                                                                                                                                                            
 
 -- @description Verifies bottom-peek behavior returns the first pushed item without mutating stack contents.
 describe("Stack peekBottom", function()
@@ -788,7 +788,7 @@ describe("Stack peekBottom", function()
     end)
 end)
 
--- ─── ItemPool extras ──────────────────────────────────────────────────────────
+--           ItemPool extras                                                                                                                                                                               
 
 -- @description Extends item-pool coverage for empty-state checks and total-weight updates after mutation.
 describe("ItemPool isEmpty and totalWeight", function()
@@ -832,7 +832,7 @@ describe("ItemPool isEmpty and totalWeight", function()
     end)
 end)
 
--- ─── StackHistory extras ──────────────────────────────────────────────────────
+--           StackHistory extras                                                                                                                                                                   
 
 -- @description Adds history coverage for emptiness, most-recent lookup, and source-based filtering of recorded actions.
 describe("StackHistory extras", function()
@@ -878,7 +878,7 @@ describe("StackHistory extras", function()
     end)
 end)
 
--- ─── StackManager extras ──────────────────────────────────────────────────────
+--           StackManager extras                                                                                                                                                                   
 
 -- @description Extends stack-manager coverage for creation helpers, top moves, typed moves, total counting, and error paths on missing stacks.
 describe("StackManager extras", function()
@@ -991,7 +991,7 @@ describe("StackManager extras", function()
     end)
 end)
 
--- ─── Slot ─────────────────────────────────────────────────────────────────────
+--           Slot                                                                                                                                                                                                                
 
 -- @description Tests slot containers for bounded capacity, indexed removal, peeking, clearing, and tag or type presence checks.
 describe("Slot", function()
@@ -1114,7 +1114,7 @@ describe("Slot", function()
     end)
 end)
 
--- ─── sortedIndicesByStat descending ──────────────────────────────────────────
+--           sortedIndicesByStat descending                                                                                                                               
 
 -- @description Verifies stat-based index sorting for ascending, descending, and default-order calls.
 describe("sortedIndicesByStat descending", function()
@@ -1162,7 +1162,7 @@ describe("sortedIndicesByStat descending", function()
     end)
 end)
 
--- ─── Bug fix: clearTypes does not affect existing items ───────────────────────
+--           Bug fix: clearTypes does not affect existing items                                                                      
 
 -- @description Verifies that items created before clearTypes retain their stats, tags, and category.
 describe("clearTypes isolation", function()
@@ -1191,7 +1191,7 @@ describe("clearTypes isolation", function()
     end)
 end)
 
--- ─── Bug fix: pool draw edge cases ───────────────────────────────────────────
+--           Bug fix: pool draw edge cases                                                                                                                                  
 
 -- @description Verifies pool draw behavior under empty, nil-return, and unique-type-clamping edge cases.
 describe("Pool draw edge cases", function()
@@ -1261,7 +1261,7 @@ describe("Pool draw edge cases", function()
     end)
 end)
 
--- ─── Bug fix: undefined type items ───────────────────────────────────────────
+--           Bug fix: undefined type items                                                                                                                                  
 
 -- @description Verifies that creating items with unregistered types uses safe defaults.
 describe("Undefined type items", function()
@@ -1289,7 +1289,7 @@ describe("Undefined type items", function()
     end)
 end)
 
--- ─── Input validation ────────────────────────────────────────────────────────
+--           Input validation                                                                                                                                                                         
 
 -- @description Verifies that input validation rejects invalid arguments with descriptive errors.
 describe("Input validation", function()

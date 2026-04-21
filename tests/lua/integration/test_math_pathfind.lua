@@ -3,9 +3,9 @@
 -- Namespaces: lurek.math + lurek.pathfind
 
 
--- ─────────────────────────────────────────────
+--                                                                                                                                        
 -- Vec3
--- ─────────────────────────────────────────────
+--                                                                                                                                        
 describe("math.vec3", function()
 
     it("creates a Vec3 with correct components", function()
@@ -116,9 +116,9 @@ describe("math.vec3", function()
     end)
 end)
 
--- ─────────────────────────────────────────────
+--                                                                                                                                        
 -- Catmull-Rom Spline
--- ─────────────────────────────────────────────
+--                                                                                                                                        
 describe("math.catmullRom", function()
 
     local pts = { { x = 0, y = 0 }, { x = 1, y = 0 }, { x = 2, y = 1 }, { x = 3, y = 0 } }
@@ -155,9 +155,9 @@ describe("math.catmullRom", function()
     end)
 end)
 
--- ─────────────────────────────────────────────
+--                                                                                                                                        
 -- Hermite Spline
--- ─────────────────────────────────────────────
+--                                                                                                                                        
 describe("math.hermite", function()
 
     it("creates a hermite spline without error", function()
@@ -187,9 +187,9 @@ describe("math.hermite", function()
     end)
 end)
 
--- ─────────────────────────────────────────────
+--                                                                                                                                        
 -- lerp / remap free functions
--- ─────────────────────────────────────────────
+--                                                                                                                                        
 describe("math.lerp / math.remap", function()
 
     it("lerp at t=0 returns a", function()
@@ -225,9 +225,9 @@ describe("math.lerp / math.remap", function()
     end)
 end)
 
--- ─────────────────────────────────────────────
+--                                                                                                                                        
 -- Vec3 heuristic applied to pathfinding costs
--- ─────────────────────────────────────────────
+--                                                                                                                                        
 describe("vec3 + pathfinding heuristic integration", function()
 
     it("3D distances can weight JPS grid costs", function()

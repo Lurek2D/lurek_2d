@@ -1,10 +1,10 @@
---- BDD tests for library.patterns — coroutine scheduler.
+--- BDD tests for library.patterns     coroutine scheduler.
 --- Covers task lifecycle, yield timing, error handling, status, max iterations.
 
 require("tests.lua.init")
 local patterns = require("library.patterns")
 
--- ── newScheduler ──────────────────────────────────────────────────────────────
+--        newScheduler                                                                                                                                                                                           
 
 describe("newScheduler", function()
     it("should create an empty scheduler", function()
@@ -23,7 +23,7 @@ describe("newScheduler", function()
     end)
 end)
 
--- ── add ───────────────────────────────────────────────────────────────────────
+--        add                                                                                                                                                                                                                      
 
 describe("add", function()
     it("should return an incrementing task id", function()
@@ -85,7 +85,7 @@ describe("add", function()
     end)
 end)
 
--- ── remove ────────────────────────────────────────────────────────────────────
+--        remove                                                                                                                                                                                                             
 
 describe("remove", function()
     it("should remove an existing task", function()
@@ -107,7 +107,7 @@ describe("remove", function()
     end)
 end)
 
--- ── pause / resume ────────────────────────────────────────────────────────────
+--        pause / resume                                                                                                                                                                                     
 
 describe("pause / resume", function()
     it("should prevent a paused task from running", function()
@@ -157,7 +157,7 @@ describe("pause / resume", function()
     end)
 end)
 
--- ── update / yield timing ─────────────────────────────────────────────────────
+--        update / yield timing                                                                                                                                                                
 
 describe("update", function()
     it("should not resume a task before its wait time elapses", function()
@@ -251,7 +251,7 @@ describe("update", function()
     end)
 end)
 
--- ── max iterations guard ──────────────────────────────────────────────────────
+--        max iterations guard                                                                                                                                                                   
 
 describe("max iterations", function()
     it("should stop after max_iterations resumes per update", function()
@@ -280,7 +280,7 @@ describe("max iterations", function()
     end)
 end)
 
--- ── error handling ────────────────────────────────────────────────────────────
+--        error handling                                                                                                                                                                                     
 
 describe("error handling", function()
     it("should capture error from a task that errors on start", function()
@@ -337,7 +337,7 @@ describe("error handling", function()
     end)
 end)
 
--- ── getStatus ─────────────────────────────────────────────────────────────────
+--        getStatus                                                                                                                                                                                                    
 
 describe("getStatus", function()
     it("should return 'running' for an active task", function()
@@ -379,7 +379,7 @@ describe("getStatus", function()
     end)
 end)
 
--- ── getCount ──────────────────────────────────────────────────────────────────
+--        getCount                                                                                                                                                                                                       
 
 describe("getCount", function()
     it("should be 0 on fresh scheduler", function()
@@ -397,7 +397,7 @@ describe("getCount", function()
     end)
 end)
 
--- ── clear ─────────────────────────────────────────────────────────────────────
+--        clear                                                                                                                                                                                                                
 
 describe("clear", function()
     it("should remove all tasks", function()
@@ -417,7 +417,7 @@ describe("clear", function()
     end)
 end)
 
--- ── edge cases ────────────────────────────────────────────────────────────────
+--        edge cases                                                                                                                                                                                                 
 
 describe("edge cases", function()
     it("should handle task yielding nil (treated as 0)", function()
@@ -426,7 +426,7 @@ describe("edge cases", function()
         s:add(function(yield)
             while true do
                 count = count + 1
-                yield()  -- nil seconds → treated as 0
+                yield()  -- nil seconds     treated as 0
             end
         end)
         count = 0

@@ -36,7 +36,7 @@ describe("sprites: sprite API usage", function()
         if not src then pending("source missing") return end
         expect_false(
             src:find("lurek%.sprite%.create%s*%(") ~= nil,
-            "lurek.sprite.create() is invalid — use lurek.sprite.new()")
+            "lurek.sprite.create() is invalid     use lurek.sprite.new()")
     end)
 end)
 

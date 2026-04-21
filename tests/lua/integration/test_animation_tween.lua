@@ -48,7 +48,7 @@ describe("animation + tween integration", function()
 
     it("animation addFrame and tween compose without error", function()
         local anim = lurek.animation.new()
-        -- addFrame(x, y, w, h) — no duration param
+        -- addFrame(x, y, w, h)     no duration param
         anim:addFrame(1, 1, 16, 16)
         anim:addFrame(17, 1, 16, 16)
         anim:addClip("single", {0, 1}, 10.0, false)

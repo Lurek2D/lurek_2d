@@ -1,4 +1,4 @@
-﻿//! `lurek.globe` â€” XCOM-style Geoscape province sphere API.
+//! `lurek.globe` — XCOM-style Geoscape province sphere API.
 //!
 //! Thin Lua wrapper. All `mlua` imports and `impl LuaUserData` live here.
 //! Domain logic lives in `crate::globe::*`.
@@ -10,14 +10,23 @@ use std::collections::HashMap;
 use std::rc::Rc;
 use std::sync::{Arc, Mutex};
 
+use crate::globe::fog::FogStore;
+use crate::globe::label::LabelStore;
+use crate::globe::layer::LayerStore;
 use crate::globe::loader;
+use crate::globe::marker::MarkerStore;
+use crate::globe::picking::{pick, PickResult};
+use crate::globe::projection::OrbitCamera;
 use crate::globe::registry::{Globe, GlobeRegistry};
 use crate::globe::types::{
-    GlobeSpec, LabelStyle, Layer, LodTier, MarkerStyle, Province, MAX_PROVINCES,
+    GlobeError, GlobeSpec, Label, LabelStyle, Layer, LodTier, Marker, MarkerStyle, Province,
+    MAX_PROVINCES,
 };
-use crate::math::sphere::{great_circle_distance, great_circle_path, lat_lon_to_unit};
+use crate::math::sphere::{
+    great_circle_distance, great_circle_path, lat_lon_to_unit, unit_to_lat_lon,
+};
 
-// â”€â”€ LuaGlobe â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── LuaGlobe ────────────────────────────────────────────────────────────────
 
 /// Lua-accessible handle to a `Globe` inside a `GlobeRegistry`.
 ///
@@ -55,7 +64,7 @@ impl LuaGlobe {
 
 impl LuaUserData for LuaGlobe {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
-        // â”€â”€ Province management â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        // ── Province management ──────────────────────────────────────────────
 
         // -- addProvince --
         /// Adds a province from a table {id, centroid={lat,lon}, vertices={{lat,lon},...},
@@ -162,7 +171,7 @@ impl LuaUserData for LuaGlobe {
             this.with(|g| g.get_province(id).and_then(|p| p.attrs.get(&key).cloned()))
         });
 
-        // â”€â”€ Camera â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        // ── Camera ──────────────────────────────────────────────────────────
 
         // -- pan --
         /// Pan the orbit camera by delta-latitude and delta-longitude (degrees).
@@ -214,7 +223,7 @@ impl LuaUserData for LuaGlobe {
             })
         });
 
-        // â”€â”€ Picking â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        // ── Picking ─────────────────────────────────────────────────────────
 
         // -- pick --
         /// Returns the province ID under screen coordinates, or nil.
@@ -239,9 +248,10 @@ impl LuaUserData for LuaGlobe {
                 ),
                 None => (None, None),
             })
+            .map(|(x, y)| (x, y))
         });
 
-        // â”€â”€ Fog of war â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        // ── Fog of war ───────────────────────────────────────────────────────
 
         // -- setActiveViewer --
         /// Set the faction/viewer whose fog mask filters rendering.
@@ -287,7 +297,7 @@ impl LuaUserData for LuaGlobe {
             })
         });
 
-        // â”€â”€ Markers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        // ── Markers ──────────────────────────────────────────────────────────
 
         // -- addMarker --
         /// Add a marker. Returns marker ID.
@@ -352,7 +362,7 @@ impl LuaUserData for LuaGlobe {
             this.with(|g| g.markers.get_attr(id, &key).map(|s| s.to_owned()))
         });
 
-        // â”€â”€ Labels â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        // ── Labels ───────────────────────────────────────────────────────────
 
         // -- addLabel --
         /// Add a text label. Returns label ID.
@@ -394,7 +404,7 @@ impl LuaUserData for LuaGlobe {
             this.with_mut(|g| g.labels.remove(id).is_some())
         });
 
-        // â”€â”€ Layers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        // ── Layers ───────────────────────────────────────────────────────────
 
         // -- addLayer --
         /// Add or replace a named thematic layer.
@@ -447,17 +457,17 @@ impl LuaUserData for LuaGlobe {
         });
 
         // -- setLayerAlpha --
-        /// Set layer opacity (0.0â€“1.0).
+        /// Set layer opacity (0.0–1.0).
         /// @param name : string
         /// @param alpha : number
         methods.add_method_mut("setLayerAlpha", |_, this, (name, alpha): (String, f32)| {
             this.with_mut(|g| g.layers.set_alpha(&name, alpha))
         });
 
-        // â”€â”€ Spec / time â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        // ── Spec / time ──────────────────────────────────────────────────────
 
         // -- setTimeOfDay --
-        /// Set time of day (0.0â€“24.0 hours).
+        /// Set time of day (0.0–24.0 hours).
         /// @param t : number
         methods.add_method_mut("setTimeOfDay", |_, this, t: f32| {
             this.with_mut(|g| g.spec.time_of_day = t % 24.0)
@@ -482,24 +492,6 @@ impl LuaUserData for LuaGlobe {
         /// @param dt : number
         methods.add_method_mut("update", |_, this, dt: f32| this.with_mut(|g| g.update(dt)));
 
-        // -- emitFrame --
-        /// Emits render commands for the globe and pushes them to the render queue.
-        /// @param font : table|nil
-        /// @return table (dummy table representing cmds)
-        methods.add_method("emitFrame", |lua, this, _font: mlua::Value| {
-            let cmds = this.with(|g| g.emit_frame(None))?;
-            let len = cmds.len();
-            {
-                let mut st = this.state.borrow_mut();
-                st.render_commands.extend(cmds);
-            }
-            let t = lua.create_table()?;
-            for i in 1..=len {
-                t.set(i, i)?;
-            }
-            Ok(t)
-        });
-
         // -- setBorders --
         /// Enable or disable province border rendering.
         /// @param show : boolean
@@ -507,7 +499,7 @@ impl LuaUserData for LuaGlobe {
             this.with_mut(|g| g.spec.render_borders = show)
         });
 
-        // â”€â”€ Path finding â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        // ── Path finding ─────────────────────────────────────────────────────
 
         // -- findPath --
         /// Find the shortest province path from `from_id` to `to_id`.
@@ -545,7 +537,7 @@ impl LuaUserData for LuaGlobe {
             },
         );
 
-        // â”€â”€ Arc management â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        // ── Arc management ──────────────────────────────────────────────────
 
         // -- addArc --
         /// Add an arc (great-circle path between two lat/lon points).
@@ -598,7 +590,7 @@ impl LuaUserData for LuaGlobe {
     }
 }
 
-// â”€â”€ LuaGlobeRegistry â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── LuaGlobeRegistry ────────────────────────────────────────────────────────
 
 /// Lua-accessible handle to the shared `GlobeRegistry`.
 #[derive(Clone)]
@@ -684,7 +676,7 @@ impl LuaUserData for LuaGlobeRegistry {
     }
 }
 
-// â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Helpers ──────────────────────────────────────────────────────────────────
 
 fn parse_globe_spec(tbl: Option<LuaTable>) -> GlobeSpec {
     let mut spec = GlobeSpec::default();
@@ -714,10 +706,10 @@ fn parse_globe_spec(tbl: Option<LuaTable>) -> GlobeSpec {
     spec
 }
 
-// â”€â”€ register â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── register ─────────────────────────────────────────────────────────────────
 
 /// Register `lurek.globe` into the Lua VM.
-pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
+pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
     let registry = Arc::new(Mutex::new(GlobeRegistry::new()));
 
@@ -791,8 +783,8 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
             lua.create_function(
                 move |_, (name, toml_src, spec_tbl): (String, String, Option<LuaTable>)| {
                     let spec = parse_globe_spec(spec_tbl);
-                    let provinces =
-                        loader::load_from_toml_str(&toml_src).map_err(mlua::Error::RuntimeError)?;
+                    let provinces = loader::load_from_toml_str(&toml_src)
+                        .map_err(|e| mlua::Error::RuntimeError(e))?;
                     {
                         let mut guard = reg.lock().map_err(|e| {
                             mlua::Error::RuntimeError(format!("registry lock poisoned: {e}"))
@@ -870,13 +862,13 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     tbl.set("MAX_PROVINCES", MAX_PROVINCES as u32)?;
 
     // -- globe.LOD_FAR / LOD_MID / LOD_NEAR (convenience constants) --
-    /// LOD_FAR: string constant `"far"` â€” zoomed-out detail tier (zoom < 1.5).
+    /// LOD_FAR: string constant `"far"` — zoomed-out detail tier (zoom < 1.5).
     tbl.set("LOD_FAR", "far")?;
-    /// LOD_MID: string constant `"mid"` â€” medium detail tier (1.5 â‰¤ zoom < 4.0).
+    /// LOD_MID: string constant `"mid"` — medium detail tier (1.5 ≤ zoom < 4.0).
     tbl.set("LOD_MID", "mid")?;
-    /// LOD_NEAR: string constant `"near"` â€” high detail, close-zoom tier (zoom â‰Ą 4.0).
+    /// LOD_NEAR: string constant `"near"` — high detail, close-zoom tier (zoom ≥ 4.0).
     tbl.set("LOD_NEAR", "near")?;
 
-    lurek.set("globe", tbl)?;
+    luna.set("globe", tbl)?;
     Ok(())
 }

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-21T18:55:59.086368+00:00",
+  "generated_at": "2026-04-21T21:23:52.928134+00:00",
   "summary": {
     "rust": {
       "total": 5261,
@@ -8,14 +8,14 @@
       "pct": 100.0
     },
     "lua_api": {
-      "total": 57,
-      "covered": 57,
+      "total": 54,
+      "covered": 54,
       "missing": 0,
       "pct": 100.0
     },
     "total": {
-      "total": 5318,
-      "covered": 5318,
+      "total": 5315,
+      "covered": 5315,
       "missing": 0,
       "pct": 100.0
     }
@@ -1574,7 +1574,7 @@
       "source": "rust",
       "module": "ai",
       "file": "src/ai/mcts.rs",
-      "line": 128,
+      "line": 130,
       "kind": "struct",
       "name": "MCTSEngine",
       "has_doc": true
@@ -1583,7 +1583,7 @@
       "source": "rust",
       "module": "ai",
       "file": "src/ai/mcts.rs",
-      "line": 143,
+      "line": 145,
       "kind": "fn",
       "name": "new",
       "has_doc": true
@@ -1592,7 +1592,7 @@
       "source": "rust",
       "module": "ai",
       "file": "src/ai/mcts.rs",
-      "line": 152,
+      "line": 158,
       "kind": "fn",
       "name": "config",
       "has_doc": true
@@ -1601,7 +1601,7 @@
       "source": "rust",
       "module": "ai",
       "file": "src/ai/mcts.rs",
-      "line": 170,
+      "line": 178,
       "kind": "fn",
       "name": "search",
       "has_doc": true
@@ -5975,7 +5975,7 @@
       "source": "rust",
       "module": "audio",
       "file": "src/audio/offline.rs",
-      "line": 49,
+      "line": 54,
       "kind": "struct",
       "name": "OfflineEffect",
       "has_doc": true
@@ -5984,7 +5984,7 @@
       "source": "rust",
       "module": "audio",
       "file": "src/audio/offline.rs",
-      "line": 73,
+      "line": 78,
       "kind": "fn",
       "name": "process_offline",
       "has_doc": true
@@ -5993,7 +5993,7 @@
       "source": "rust",
       "module": "audio",
       "file": "src/audio/offline.rs",
-      "line": 119,
+      "line": 124,
       "kind": "fn",
       "name": "normalize_file",
       "has_doc": true
@@ -13949,7 +13949,7 @@
       "source": "rust",
       "module": "globe",
       "file": "src/globe/draw.rs",
-      "line": 196,
+      "line": 176,
       "kind": "fn",
       "name": "project_arc",
       "has_doc": true
@@ -17684,7 +17684,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/visualization/animation.rs",
-      "line": 84,
+      "line": 77,
       "kind": "fn",
       "name": "draw_animation_playback_to_image",
       "has_doc": true
@@ -17693,7 +17693,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/visualization/animation.rs",
-      "line": 138,
+      "line": 131,
       "kind": "fn",
       "name": "animation_playback_control_to_image",
       "has_doc": true
@@ -17702,7 +17702,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/visualization/animation.rs",
-      "line": 215,
+      "line": 208,
       "kind": "fn",
       "name": "draw_animation_to_image",
       "has_doc": true
@@ -20348,7 +20348,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/animation_api.rs",
-      "line": 533,
+      "line": 534,
       "kind": "fn",
       "name": "register",
       "has_doc": true
@@ -20357,7 +20357,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/animation_api.rs",
-      "line": 648,
+      "line": 649,
       "kind": "struct",
       "name": "LuaAnimCurve",
       "has_doc": true
@@ -20366,7 +20366,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/animation_api.rs",
-      "line": 731,
+      "line": 732,
       "kind": "struct",
       "name": "LuaAnimSyncGroup",
       "has_doc": true
@@ -20528,7 +20528,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/dataframe_api.rs",
-      "line": 1138,
+      "line": 1119,
       "kind": "struct",
       "name": "LuaDatabase",
       "has_doc": true
@@ -20537,7 +20537,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/dataframe_api.rs",
-      "line": 1270,
+      "line": 1254,
       "kind": "fn",
       "name": "register",
       "has_doc": true
@@ -20708,7 +20708,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/globe_api.rs",
-      "line": 26,
+      "line": 35,
       "kind": "struct",
       "name": "LuaGlobe",
       "has_doc": true
@@ -20717,7 +20717,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/globe_api.rs",
-      "line": 605,
+      "line": 597,
       "kind": "struct",
       "name": "LuaGlobeRegistry",
       "has_doc": true
@@ -20726,7 +20726,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/globe_api.rs",
-      "line": 720,
+      "line": 712,
       "kind": "fn",
       "name": "register",
       "has_doc": true
@@ -20897,7 +20897,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/math_api.rs",
-      "line": 439,
+      "line": 433,
       "kind": "struct",
       "name": "LuaHermite",
       "has_doc": true
@@ -20906,7 +20906,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/math_api.rs",
-      "line": 461,
+      "line": 455,
       "kind": "struct",
       "name": "LuaRandomGenerator",
       "has_doc": true
@@ -20915,7 +20915,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/math_api.rs",
-      "line": 539,
+      "line": 533,
       "kind": "struct",
       "name": "LuaTransform",
       "has_doc": true
@@ -20924,7 +20924,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/math_api.rs",
-      "line": 696,
+      "line": 690,
       "kind": "struct",
       "name": "LuaBezierCurve",
       "has_doc": true
@@ -20933,7 +20933,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/math_api.rs",
-      "line": 841,
+      "line": 835,
       "kind": "struct",
       "name": "LuaTween",
       "has_doc": true
@@ -20942,7 +20942,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/math_api.rs",
-      "line": 962,
+      "line": 956,
       "kind": "struct",
       "name": "LuaSpatialHash",
       "has_doc": true
@@ -20951,7 +20951,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/math_api.rs",
-      "line": 1090,
+      "line": 1084,
       "kind": "struct",
       "name": "LuaNoiseGenerator",
       "has_doc": true
@@ -20960,7 +20960,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/math_api.rs",
-      "line": 1405,
+      "line": 1399,
       "kind": "struct",
       "name": "LuaCircle",
       "has_doc": true
@@ -20969,7 +20969,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/math_api.rs",
-      "line": 1472,
+      "line": 1466,
       "kind": "struct",
       "name": "LuaAabbTree",
       "has_doc": true
@@ -20978,7 +20978,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/math_api.rs",
-      "line": 1621,
+      "line": 1578,
       "kind": "fn",
       "name": "register",
       "has_doc": true
@@ -21221,7 +21221,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 97,
+      "line": 98,
       "kind": "struct",
       "name": "LuaWorld",
       "has_doc": true
@@ -21230,7 +21230,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 1235,
+      "line": 1236,
       "kind": "struct",
       "name": "LuaZone",
       "has_doc": true
@@ -21239,7 +21239,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 1413,
+      "line": 1414,
       "kind": "struct",
       "name": "LuaTerrain",
       "has_doc": true
@@ -21248,7 +21248,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 1619,
+      "line": 1620,
       "kind": "struct",
       "name": "LuaCellular",
       "has_doc": true
@@ -21257,7 +21257,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 1793,
+      "line": 1794,
       "kind": "struct",
       "name": "LuaBody",
       "has_doc": true
@@ -21266,7 +21266,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 2236,
+      "line": 2237,
       "kind": "struct",
       "name": "LuaPhysicsShape",
       "has_doc": true
@@ -21275,7 +21275,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 2387,
+      "line": 2388,
       "kind": "fn",
       "name": "register",
       "has_doc": true
@@ -21392,7 +21392,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/procgen_api.rs",
-      "line": 1205,
+      "line": 1213,
       "kind": "fn",
       "name": "from_lua_table",
       "has_doc": true
@@ -21401,7 +21401,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/procgen_api.rs",
-      "line": 1233,
+      "line": 1241,
       "kind": "fn",
       "name": "from_lua_table",
       "has_doc": true
@@ -21761,7 +21761,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/terminal_api.rs",
-      "line": 1294,
+      "line": 1280,
       "kind": "fn",
       "name": "register",
       "has_doc": true
@@ -21806,7 +21806,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/tilemap_api.rs",
-      "line": 44,
+      "line": 42,
       "kind": "struct",
       "name": "LuaTileSet",
       "has_doc": true
@@ -21815,7 +21815,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/tilemap_api.rs",
-      "line": 304,
+      "line": 302,
       "kind": "struct",
       "name": "LuaTileMap",
       "has_doc": true
@@ -21824,7 +21824,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/tilemap_api.rs",
-      "line": 888,
+      "line": 886,
       "kind": "struct",
       "name": "LuaAutoTileSheet",
       "has_doc": true
@@ -21833,7 +21833,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/tilemap_api.rs",
-      "line": 993,
+      "line": 991,
       "kind": "struct",
       "name": "LuaChunkMap",
       "has_doc": true
@@ -21842,7 +21842,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/tilemap_api.rs",
-      "line": 1135,
+      "line": 1133,
       "kind": "struct",
       "name": "LuaLargeMapRenderer",
       "has_doc": true
@@ -21851,7 +21851,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/tilemap_api.rs",
-      "line": 1311,
+      "line": 1309,
       "kind": "struct",
       "name": "LuaIsoMap",
       "has_doc": true
@@ -21860,7 +21860,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/tilemap_api.rs",
-      "line": 1501,
+      "line": 1497,
       "kind": "struct",
       "name": "LuaMapBlock",
       "has_doc": true
@@ -21869,7 +21869,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/tilemap_api.rs",
-      "line": 1651,
+      "line": 1647,
       "kind": "struct",
       "name": "LuaMapGroup",
       "has_doc": true
@@ -21878,7 +21878,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/tilemap_api.rs",
-      "line": 1719,
+      "line": 1715,
       "kind": "struct",
       "name": "LuaMapScript",
       "has_doc": true
@@ -21887,7 +21887,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/tilemap_api.rs",
-      "line": 1815,
+      "line": 1811,
       "kind": "struct",
       "name": "LuaMapGen",
       "has_doc": true
@@ -21896,7 +21896,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/tilemap_api.rs",
-      "line": 1861,
+      "line": 1857,
       "kind": "fn",
       "name": "register",
       "has_doc": true
@@ -21968,7 +21968,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/ui_api.rs",
-      "line": 6182,
+      "line": 6180,
       "kind": "struct",
       "name": "LuaLineChart",
       "has_doc": true
@@ -21977,7 +21977,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/ui_api.rs",
-      "line": 6246,
+      "line": 6244,
       "kind": "struct",
       "name": "LuaBarChart",
       "has_doc": true
@@ -21986,7 +21986,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/ui_api.rs",
-      "line": 6302,
+      "line": 6300,
       "kind": "struct",
       "name": "LuaScatterPlot",
       "has_doc": true
@@ -21995,7 +21995,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/ui_api.rs",
-      "line": 6368,
+      "line": 6366,
       "kind": "struct",
       "name": "LuaPieChart",
       "has_doc": true
@@ -22004,7 +22004,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/ui_api.rs",
-      "line": 6409,
+      "line": 6407,
       "kind": "struct",
       "name": "LuaAreaChart",
       "has_doc": true
@@ -27926,7 +27926,7 @@
       "source": "rust",
       "module": "pathfind",
       "file": "src/pathfind/iso_grid.rs",
-      "line": 123,
+      "line": 126,
       "kind": "fn",
       "name": "line_of_sight",
       "has_doc": true
@@ -27935,7 +27935,7 @@
       "source": "rust",
       "module": "pathfind",
       "file": "src/pathfind/iso_grid.rs",
-      "line": 163,
+      "line": 166,
       "kind": "fn",
       "name": "neighbors",
       "has_doc": true
@@ -47474,7 +47474,7 @@
       "source": "lua_api",
       "module": "globe_api",
       "file": "src/lua_api/globe_api.rs",
-      "line": 870,
+      "line": 862,
       "kind": "fn",
       "name": "MAX_PROVINCES",
       "has_doc": true
@@ -47483,7 +47483,7 @@
       "source": "lua_api",
       "module": "globe_api",
       "file": "src/lua_api/globe_api.rs",
-      "line": 874,
+      "line": 866,
       "kind": "fn",
       "name": "LOD_FAR",
       "has_doc": true
@@ -47492,7 +47492,7 @@
       "source": "lua_api",
       "module": "globe_api",
       "file": "src/lua_api/globe_api.rs",
-      "line": 876,
+      "line": 868,
       "kind": "fn",
       "name": "LOD_MID",
       "has_doc": true
@@ -47501,7 +47501,7 @@
       "source": "lua_api",
       "module": "globe_api",
       "file": "src/lua_api/globe_api.rs",
-      "line": 878,
+      "line": 870,
       "kind": "fn",
       "name": "LOD_NEAR",
       "has_doc": true
@@ -47510,7 +47510,7 @@
       "source": "lua_api",
       "module": "math_api",
       "file": "src/lua_api/math_api.rs",
-      "line": 2489,
+      "line": 2407,
       "kind": "fn",
       "name": "pi",
       "has_doc": true
@@ -47519,7 +47519,7 @@
       "source": "lua_api",
       "module": "math_api",
       "file": "src/lua_api/math_api.rs",
-      "line": 2494,
+      "line": 2412,
       "kind": "fn",
       "name": "tau",
       "has_doc": true
@@ -47528,7 +47528,7 @@
       "source": "lua_api",
       "module": "math_api",
       "file": "src/lua_api/math_api.rs",
-      "line": 2499,
+      "line": 2417,
       "kind": "fn",
       "name": "huge",
       "has_doc": true
@@ -47537,7 +47537,7 @@
       "source": "lua_api",
       "module": "math_api",
       "file": "src/lua_api/math_api.rs",
-      "line": 2523,
+      "line": 2441,
       "kind": "fn",
       "name": "sin",
       "has_doc": true
@@ -47546,7 +47546,7 @@
       "source": "lua_api",
       "module": "math_api",
       "file": "src/lua_api/math_api.rs",
-      "line": 2529,
+      "line": 2447,
       "kind": "fn",
       "name": "cos",
       "has_doc": true
@@ -47555,7 +47555,7 @@
       "source": "lua_api",
       "module": "math_api",
       "file": "src/lua_api/math_api.rs",
-      "line": 2535,
+      "line": 2453,
       "kind": "fn",
       "name": "tan",
       "has_doc": true
@@ -47564,7 +47564,7 @@
       "source": "lua_api",
       "module": "math_api",
       "file": "src/lua_api/math_api.rs",
-      "line": 2541,
+      "line": 2459,
       "kind": "fn",
       "name": "asin",
       "has_doc": true
@@ -47573,7 +47573,7 @@
       "source": "lua_api",
       "module": "math_api",
       "file": "src/lua_api/math_api.rs",
-      "line": 2547,
+      "line": 2465,
       "kind": "fn",
       "name": "acos",
       "has_doc": true
@@ -47582,7 +47582,7 @@
       "source": "lua_api",
       "module": "math_api",
       "file": "src/lua_api/math_api.rs",
-      "line": 2578,
+      "line": 2496,
       "kind": "fn",
       "name": "sqrt",
       "has_doc": true
@@ -47591,7 +47591,7 @@
       "source": "lua_api",
       "module": "math_api",
       "file": "src/lua_api/math_api.rs",
-      "line": 2584,
+      "line": 2502,
       "kind": "fn",
       "name": "abs",
       "has_doc": true
@@ -47600,7 +47600,7 @@
       "source": "lua_api",
       "module": "math_api",
       "file": "src/lua_api/math_api.rs",
-      "line": 2590,
+      "line": 2508,
       "kind": "fn",
       "name": "floor",
       "has_doc": true
@@ -47609,7 +47609,7 @@
       "source": "lua_api",
       "module": "math_api",
       "file": "src/lua_api/math_api.rs",
-      "line": 2596,
+      "line": 2514,
       "kind": "fn",
       "name": "ceil",
       "has_doc": true
@@ -47618,7 +47618,7 @@
       "source": "lua_api",
       "module": "math_api",
       "file": "src/lua_api/math_api.rs",
-      "line": 2602,
+      "line": 2520,
       "kind": "fn",
       "name": "round",
       "has_doc": true
@@ -47627,7 +47627,7 @@
       "source": "lua_api",
       "module": "math_api",
       "file": "src/lua_api/math_api.rs",
-      "line": 2608,
+      "line": 2526,
       "kind": "fn",
       "name": "exp",
       "has_doc": true
@@ -47636,34 +47636,7 @@
       "source": "lua_api",
       "module": "math_api",
       "file": "src/lua_api/math_api.rs",
-      "line": 2882,
-      "kind": "fn",
-      "name": "Vec3",
-      "has_doc": true
-    },
-    {
-      "source": "lua_api",
-      "module": "math_api",
-      "file": "src/lua_api/math_api.rs",
-      "line": 2920,
-      "kind": "fn",
-      "name": "CatmullRomSpline",
-      "has_doc": true
-    },
-    {
-      "source": "lua_api",
-      "module": "math_api",
-      "file": "src/lua_api/math_api.rs",
-      "line": 2937,
-      "kind": "fn",
-      "name": "Transform",
-      "has_doc": true
-    },
-    {
-      "source": "lua_api",
-      "module": "math_api",
-      "file": "src/lua_api/math_api.rs",
-      "line": 3002,
+      "line": 2865,
       "kind": "fn",
       "name": "sign",
       "has_doc": true
@@ -47708,7 +47681,7 @@
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 2793,
+      "line": 2794,
       "kind": "fn",
       "name": "CELL_AIR",
       "has_doc": true
@@ -47717,7 +47690,7 @@
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 2795,
+      "line": 2796,
       "kind": "fn",
       "name": "CELL_SAND",
       "has_doc": true
@@ -47726,7 +47699,7 @@
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 2797,
+      "line": 2798,
       "kind": "fn",
       "name": "CELL_WATER",
       "has_doc": true
@@ -47735,7 +47708,7 @@
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 2799,
+      "line": 2800,
       "kind": "fn",
       "name": "CELL_ROCK",
       "has_doc": true
@@ -47744,7 +47717,7 @@
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 2801,
+      "line": 2802,
       "kind": "fn",
       "name": "CELL_FIRE",
       "has_doc": true
@@ -47753,7 +47726,7 @@
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 2803,
+      "line": 2804,
       "kind": "fn",
       "name": "CELL_GAS",
       "has_doc": true
@@ -47807,7 +47780,7 @@
       "source": "lua_api",
       "module": "tilemap_api",
       "file": "src/lua_api/tilemap_api.rs",
-      "line": 2304,
+      "line": 2300,
       "kind": "fn",
       "name": "FLOOR",
       "has_doc": true
@@ -47816,7 +47789,7 @@
       "source": "lua_api",
       "module": "tilemap_api",
       "file": "src/lua_api/tilemap_api.rs",
-      "line": 2306,
+      "line": 2302,
       "kind": "fn",
       "name": "NORTH_WALL",
       "has_doc": true
@@ -47825,7 +47798,7 @@
       "source": "lua_api",
       "module": "tilemap_api",
       "file": "src/lua_api/tilemap_api.rs",
-      "line": 2308,
+      "line": 2304,
       "kind": "fn",
       "name": "WEST_WALL",
       "has_doc": true
@@ -47834,7 +47807,7 @@
       "source": "lua_api",
       "module": "tilemap_api",
       "file": "src/lua_api/tilemap_api.rs",
-      "line": 2310,
+      "line": 2306,
       "kind": "fn",
       "name": "OBJECT",
       "has_doc": true

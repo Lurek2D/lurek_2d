@@ -1,5 +1,5 @@
 -- tests/lua/library/test_library_roguelike.lua
--- BDD tests for library/roguelike/init.lua — FOV, scheduler, goal map.
+-- BDD tests for library/roguelike/init.lua     FOV, scheduler, goal map.
 
 local rl = require("library.roguelike")
 
@@ -13,7 +13,7 @@ describe("library.roguelike", function()
             expect_true(fov:isVisible(0, 0))
         end)
 
-        it("respects blocker — wall hides cells behind it", function()
+        it("respects blocker     wall hides cells behind it", function()
             -- Vertical wall at x=2 between origin and target (3,0).
             local function blk(x, _) return x == 2 end
             local fov = rl.newFov({range=8}):setBlocker(blk):compute(0, 0)
@@ -54,7 +54,7 @@ describe("library.roguelike", function()
                 if a == fast then fast_count = fast_count + 1
                 else              slow_count = slow_count + 1 end
             end
-            -- speed ratio 2:1 → roughly 400/200
+            -- speed ratio 2:1     roughly 400/200
             expect_in_range(fast_count / 600, 0.55, 0.75)
             expect_in_range(slow_count / 600, 0.25, 0.45)
         end)

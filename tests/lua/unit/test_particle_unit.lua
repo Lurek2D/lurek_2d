@@ -63,7 +63,7 @@
 -- @covers lurek.particle.stop
 -- @covers lurek.particle.update
 
-ď»ż-- Lurek2D Particle API Tests
+    -- Lurek2D Particle API Tests
 
 -- @description Verifies the particle namespace is exposed to Lua as a table.
 describe("lurek.particle module exists", function()
@@ -828,6 +828,6 @@ describe("lurek.particle setFlipbook / getFlipbook", function()
         expect_equal(ok, false, "setFlipbook(0, ...) must raise an error")
         lurek.particle.release(ps)
     end)
-end)
 
+end)
 test_summary()

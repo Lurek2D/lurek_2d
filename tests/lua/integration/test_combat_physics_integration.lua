@@ -1,4 +1,4 @@
--- Integration test: library.combat × lurek.physics.
+-- Integration test: library.combat    lurek.physics.
 --
 -- Scope: Pairs combat Chassis (HP, armour, friendly-fire group masks) with
 -- the lurek.physics rigid-body world. Each combatant owns a physics Body
@@ -7,7 +7,7 @@
 -- friendly-fire filtering, and calls `Chassis:takeDamage` on survivors.
 --
 -- Fallback: `lurek.physics.newWorld(gx, gy)` is fully headless (no GPU /
--- window required — see tests/lua/unit/test_physics.lua). However, raycast
+-- window required     see tests/lua/unit/test_physics.lua). However, raycast
 -- and shapecast resolve against attached colliders and the flat
 -- `lurek.physics.newBody` wrapper does NOT attach a collider by default.
 -- This test therefore uses position-based range queries via
@@ -63,7 +63,7 @@ local function resolve_targets(world, targets, sx, sy, range, mask)
     return out
 end
 
-describe("integration: library.combat × lurek.physics", function()
+describe("integration: library.combat    lurek.physics", function()
 
     -- @description Combat hit detection consumes physics body positions and damages the in-range chassis.
     it("damage is applied to a chassis whose physics body is in range", function()
@@ -159,7 +159,7 @@ end)
 -- Merged from: test_integration_combat_physics.lua
 -- ================================================================
 
--- Integration test: library.combat × lurek.physics.
+-- Integration test: library.combat    lurek.physics.
 --
 -- Scope: Pairs combat Chassis (HP, armour, friendly-fire group masks) with
 -- the lurek.physics rigid-body world. Each combatant owns a physics Body
@@ -168,7 +168,7 @@ end)
 -- friendly-fire filtering, and calls `Chassis:takeDamage` on survivors.
 --
 -- Fallback: `lurek.physics.newWorld(gx, gy)` is fully headless (no GPU /
--- window required — see tests/lua/unit/test_physics.lua). However, raycast
+-- window required     see tests/lua/unit/test_physics.lua). However, raycast
 -- and shapecast resolve against attached colliders and the flat
 -- `lurek.physics.newBody` wrapper does NOT attach a collider by default.
 -- This test therefore uses position-based range queries via
@@ -223,7 +223,7 @@ local function resolve_targets(world, targets, sx, sy, range, mask)
     return out
 end
 
-describe("integration: library.combat × lurek.physics", function()
+describe("integration: library.combat    lurek.physics", function()
 
     -- @description Combat hit detection consumes physics body positions and damages the in-range chassis.
     it("damage is applied to a chassis whose physics body is in range", function()

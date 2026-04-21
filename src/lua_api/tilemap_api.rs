@@ -22,17 +22,15 @@ use crate::tilemap::tileset::{TileAnimFrame, TileSet};
 /// Convert a 1-based `usize` Lua index to a 0-based engine index, returning a
 /// Lua error (not a panic) when the caller passes `0`.
 fn one_based_usize(name: &str, val: usize) -> LuaResult<usize> {
-    val.checked_sub(1).ok_or_else(|| {
-        mlua::Error::RuntimeError(format!("{name} must be >= 1 (got {val})"))
-    })
+    val.checked_sub(1)
+        .ok_or_else(|| mlua::Error::RuntimeError(format!("{name} must be >= 1 (got {val})")))
 }
 
 /// Convert a 1-based `u32` Lua index to a 0-based engine index, returning a
 /// Lua error (not a panic) when the caller passes `0`.
 fn one_based_u32(name: &str, val: u32) -> LuaResult<u32> {
-    val.checked_sub(1).ok_or_else(|| {
-        mlua::Error::RuntimeError(format!("{name} must be >= 1 (got {val})"))
-    })
+    val.checked_sub(1)
+        .ok_or_else(|| mlua::Error::RuntimeError(format!("{name} must be >= 1 (got {val})")))
 }
 
 // -------------------------------------------------------------------------------
@@ -1363,9 +1361,7 @@ impl LuaUserData for LuaIsoMap {
                 let z = one_based_usize("z", z)?;
                 let x = one_based_u32("x", x)?;
                 let y = one_based_u32("y", y)?;
-                this.inner
-                    .borrow_mut()
-                    .set_tile_part(z, x, y, part, gid);
+                this.inner.borrow_mut().set_tile_part(z, x, y, part, gid);
                 Ok(())
             },
         );

@@ -1,4 +1,4 @@
--- Golden test: tilemap â€” compare evidence output against golden samples
+-- Golden test: tilemap          compare evidence output against golden samples
 
 -- @description Covers suite: golden: tilemap evidence comparison.
 describe("golden: tilemap evidence comparison", function()

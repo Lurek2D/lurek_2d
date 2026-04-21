@@ -1,4 +1,4 @@
-﻿//! `lurek.data` â€” Binary data manipulation, compression, hashing, and encoding.
+//! `lurek.data` — Binary data manipulation, compression, hashing, and encoding.
 //!
 //! Provides struct-style `pack`/`unpack`, binary file I/O via `ByteData`/`DataView`,
 //! compression (deflate, gzip, zstd, lz4), cryptographic and non-cryptographic hashing,
@@ -97,8 +97,8 @@ fn bin_values_to_lua(lua: &Lua, vals: Vec<BinValue>) -> LuaResult<Vec<LuaValue<'
 /// collect them while the buffer holds a reference.
 ///
 /// # Fields
-/// - `inner` â€” Ordered queue of `LuaRegistryKey` references (front = oldest).
-/// - `capacity` â€” Maximum number of elements before oldest is overwritten.
+/// - `inner` — Ordered queue of `LuaRegistryKey` references (front = oldest).
+/// - `capacity` — Maximum number of elements before oldest is overwritten.
 pub struct LuaRingBuffer {
     inner: VecDeque<LuaRegistryKey>,
     capacity: usize,
@@ -280,10 +280,10 @@ fn lua_table_to_toml_value(value: &LuaValue) -> LuaResult<toml::Value> {
 /// Registers the `lurek.data` API table with the Lua VM.
 ///
 /// @param lua : &Lua
-/// @param lurek : &LuaTable
+/// @param luna : &LuaTable
 /// @param _state : Rc<RefCell<SharedState>>
 ///
-pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
+pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
 
     // -- pack --
@@ -590,7 +590,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
         })?,
     )?;
 
-    lurek.set("data", tbl)?;
+    luna.set("data", tbl)?;
     Ok(())
 }
 
@@ -860,15 +860,15 @@ impl LuaUserData for LuaDataWriter {
 
 impl mlua::UserData for ByteData {
     fn add_methods<'lua, M: mlua::UserDataMethods<'lua, Self>>(methods: &mut M) {
-        // â”€â”€ getSize â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        // ── getSize ──────────────────────────────────────────────
         /// Get the size.
         /// @return integer
         methods.add_method("getSize", |_, this, ()| Ok(this.len()));
-        // â”€â”€ getString â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        // ── getString ──────────────────────────────────────────────
         /// Get the string representation.
         /// @return string
         methods.add_method("getString", |_, this, ()| Ok(this.get_string()));
-        // â”€â”€ getByte â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        // ── getByte ──────────────────────────────────────────────
         /// Get a byte at the specified offset.
         /// @param offset : integer
         /// @return integer
@@ -881,7 +881,7 @@ impl mlua::UserData for ByteData {
                 ))
             })
         });
-        // â”€â”€ setByte â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        // ── setByte ──────────────────────────────────────────────
         /// Set a byte at the specified offset.
         /// @param offset : integer
         /// @param value : integer
@@ -897,7 +897,7 @@ impl mlua::UserData for ByteData {
                 )))
             }
         });
-        // â”€â”€ clone â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        // ── clone ──────────────────────────────────────────────
         /// Clone the ByteData.
         /// @return ByteData
         methods.add_method("clone", |lua, this, ()| {
@@ -942,7 +942,7 @@ impl mlua::UserData for ByteData {
 
         // -- getBit --
         /// Returns the value of a single bit within the buffer.
-        /// `byte_offset` is 0-based, `bit_offset` is 0â€“7 (0 = LSB).
+        /// `byte_offset` is 0-based, `bit_offset` is 0–7 (0 = LSB).
         ///
         /// @param byte_offset : integer   0-based byte index
         /// @param bit_offset  : integer   bit index within byte [0..7]

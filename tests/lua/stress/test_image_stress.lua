@@ -6,7 +6,7 @@ describe("stress: image creation throughput", function()
     -- @covers lurek.image.newImage
     -- @stress Allocates 100 separate 64x64 image objects in a measured loop.
     -- @description Stresses image-object construction throughput by repeatedly creating small image buffers and retaining them in Lua memory.
-    it("create 100 images (64Ă—64) without error: <10s", function()
+    it("create 100 images (64     64) without error: <10s", function()
         local COUNT  = 100
         local images = {}
 

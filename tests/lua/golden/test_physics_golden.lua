@@ -1,4 +1,4 @@
--- Golden test: physics â€” compare evidence output against golden samples
+-- Golden test: physics          compare evidence output against golden samples
 
 -- @description Covers suite: golden: physics evidence comparison.
 describe("golden: physics evidence comparison", function()

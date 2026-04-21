@@ -1,4 +1,4 @@
--- Integration test: library.dialog × lurek.event (runtime name for "lurek.event").
+-- Integration test: library.dialog    lurek.event (runtime name for "lurek.event").
 --
 -- Scope: Verifies that library.dialog sequencer events ("line", "choice",
 -- "finished") can be routed through a `lurek.event.newSignal()` instance
@@ -16,7 +16,7 @@
 
 local dialog = require("library.dialog")
 
-describe("integration: library.dialog × lurek.event", function()
+describe("integration: library.dialog    lurek.event", function()
 
     local function bridge(seq, sig, events)
         for _, name in ipairs(events) do
@@ -142,7 +142,7 @@ end)
 -- Merged from: test_integration_dialog_event.lua
 -- ================================================================
 
--- Integration test: library.dialog × lurek.event (runtime name for "lurek.event").
+-- Integration test: library.dialog    lurek.event (runtime name for "lurek.event").
 --
 -- Scope: Verifies that library.dialog sequencer events ("line", "choice",
 -- "finished") can be routed through a `lurek.event.newSignal()` instance
@@ -160,7 +160,7 @@ end)
 
 local dialog = require("library.dialog")
 
-describe("integration: library.dialog × lurek.event", function()
+describe("integration: library.dialog    lurek.event", function()
 
     local function bridge(seq, sig, events)
         for _, name in ipairs(events) do

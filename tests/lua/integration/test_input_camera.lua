@@ -12,7 +12,7 @@ describe("integration: input coordinates mapped through camera", function()
         cam:setPosition(0, 0)
         cam:setZoom(1.0)
 
-        -- With camera at origin, zoom 1.0 â†’ world pos equals screen pos
+        -- With camera at origin, zoom 1.0          world pos equals screen pos
         local screen_x, screen_y = 320.0, 240.0
         local cx, cy = cam:getPosition()
         local zoom   = cam:getZoom()

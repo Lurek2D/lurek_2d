@@ -27,7 +27,7 @@ describe("stress: AI FSM evaluation throughput", function()
     -- @covers StateMachine:update
     -- @stress Allocates 100 FSMs, then performs 10 full update passes across the whole pool.
     -- @description Pushes multi-agent update throughput by building a small FSM per agent and running nested loops over 100 machines to stress repeated state-machine stepping.
-    it("100 agents Ă— 10 FSM updates each: <10s", function()
+    it("100 agents       10 FSM updates each: <10s", function()
         local AGENTS    = 100
         local UPDATES   = 10
         local machines  = {}
@@ -49,7 +49,7 @@ describe("stress: AI FSM evaluation throughput", function()
             end
         end
         local elapsed = os.clock() - start
-        print(string.format("[STRESS] 100 AI agents Ă— 10 updates: %.4fs", elapsed))
+        print(string.format("[STRESS] 100 AI agents       10 updates: %.4fs", elapsed))
 
         expect_true(elapsed < 10.0, "multi-agent FSM budget: " .. elapsed .. "s")
     end)

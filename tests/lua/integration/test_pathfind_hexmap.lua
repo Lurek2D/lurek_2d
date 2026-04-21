@@ -3,9 +3,9 @@
 -- Namespaces: lurek.pathfind
 
 
--- ─────────────────────────────────────────────
+--                                                                                                                                        
 -- Hex Grid
--- ─────────────────────────────────────────────
+--                                                                                                                                        
 describe("pathfinding.newHexGrid", function()
 
     it("creates a hex grid without error", function()
@@ -116,9 +116,9 @@ describe("pathfinding.newHexGrid", function()
     end)
 end)
 
--- ─────────────────────────────────────────────
+--                                                                                                                                        
 -- Range Map
--- ─────────────────────────────────────────────
+--                                                                                                                                        
 describe("pathfinding.rangeMap", function()
 
     it("returns cells, width, height", function()

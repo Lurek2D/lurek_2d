@@ -43,7 +43,7 @@ describe("particles_demo: particle API usage", function()
         if not src then pending("source missing") return end
         expect_false(
             src:find("lurek%.particle%.create%s*%(") ~= nil,
-            "lurek.particle.create() is invalid — use lurek.particle.new()")
+            "lurek.particle.create() is invalid     use lurek.particle.new()")
     end)
 end)
 

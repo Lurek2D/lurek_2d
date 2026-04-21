@@ -29,21 +29,21 @@ describe("tween_demo: tween API usage", function()
         local has_update = src:find(":update%s*%(") ~= nil or
                            src:find("lurek%.tween%.update%s*%(") ~= nil or
                            src:find("tween.*update") ~= nil
-        expect_true(has_update, "No tween update call found — tweens will not animate")
+        expect_true(has_update, "No tween update call found     tweens will not animate")
     end)
 
     it("does not use lurek.tween.create (wrong factory)", function()
         if not src then pending("source missing") return end
         expect_false(
             src:find("lurek%.tween%.create%s*%(") ~= nil,
-            "lurek.tween.create() is invalid — use lurek.tween.new()")
+            "lurek.tween.create() is invalid     use lurek.tween.new()")
     end)
 
     it("uses an easing function or easing string", function()
         if not src then pending("source missing") return end
         expect_true(
             src:find("ease") ~= nil or src:find("linear") ~= nil or src:find("quad") ~= nil,
-            "No easing reference found — tween uses no easing function")
+            "No easing reference found     tween uses no easing function")
     end)
 end)
 

@@ -24,7 +24,7 @@ describe("stress: filesystem write/read throughput", function()
             lurek.filesystem.write(path, payload)
         end
         local w_elapsed = os.clock() - start_w
-        print(string.format("[STRESS] write %d Ă— 1KB files: %.4fs (%.0f KB/s)",
+        print(string.format("[STRESS] write %d       1KB files: %.4fs (%.0f KB/s)",
             COUNT, w_elapsed, COUNT / w_elapsed))
 
         -- Read phase
@@ -33,7 +33,7 @@ describe("stress: filesystem write/read throughput", function()
             local _ = lurek.filesystem.read(path)
         end
         local r_elapsed = os.clock() - start_r
-        print(string.format("[STRESS] read %d Ă— 1KB files: %.4fs (%.0f KB/s)",
+        print(string.format("[STRESS] read %d       1KB files: %.4fs (%.0f KB/s)",
             COUNT, r_elapsed, COUNT / r_elapsed))
 
         -- Cleanup

@@ -41,14 +41,14 @@ describe("physics_demo: physics API usage", function()
             src:find("function%s+lurek%.process_physics") ~= nil or
             src:find("lurek%.physics%.step") ~= nil or
             src:find(":step%s*%(") ~= nil,
-            "No physics step/update call found — physics won't simulate")
+            "No physics step/update call found     physics won't simulate")
     end)
 
     it("does not call lurek.physics.update (wrong method)", function()
         if not src then pending("source missing") return end
         expect_false(
             src:find("lurek%.physics%.update%s*%(") ~= nil,
-            "lurek.physics.update() is invalid — use the process_physics callback or :step()")
+            "lurek.physics.update() is invalid     use the process_physics callback or :step()")
     end)
 end)
 

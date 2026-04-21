@@ -4,7 +4,7 @@
 
 local scheduler = require("library.scheduler")
 
-describe("scheduler library – newScheduler", function()
+describe("scheduler library     newScheduler", function()
     -- @description Verify that newScheduler returns a usable scheduler object.
     it("returns a scheduler with zero tasks by default", function()
         local s = scheduler.newScheduler()
@@ -20,7 +20,7 @@ describe("scheduler library – newScheduler", function()
     end)
 end)
 
-describe("scheduler library – add and immediate execution", function()
+describe("scheduler library     add and immediate execution", function()
     -- @description A task that does not yield runs to completion on add().
     it("runs a non-yielding task immediately on add", function()
         local s = scheduler.newScheduler()
@@ -51,7 +51,7 @@ describe("scheduler library – add and immediate execution", function()
     end)
 end)
 
-describe("scheduler library – yield and update timing", function()
+describe("scheduler library     yield and update timing", function()
     -- @description A task that yields 1 s is still pending after 0.5 s of updates.
     it("task is still pending after partial dt", function()
         local s = scheduler.newScheduler()
@@ -97,7 +97,7 @@ describe("scheduler library – yield and update timing", function()
     end)
 end)
 
-describe("scheduler library – remove", function()
+describe("scheduler library     remove", function()
     -- @description Removing a task by id stops it from being resumed.
     it("removes a pending task before it resumes", function()
         local s = scheduler.newScheduler()
@@ -113,7 +113,7 @@ describe("scheduler library – remove", function()
     end)
 end)
 
-describe("scheduler library – pause and resume", function()
+describe("scheduler library     pause and resume", function()
     -- @description A paused task does not progress even when dt passes.
     it("paused task does not advance", function()
         local s = scheduler.newScheduler()
@@ -144,7 +144,7 @@ describe("scheduler library – pause and resume", function()
     end)
 end)
 
-describe("scheduler library – getStatus", function()
+describe("scheduler library     getStatus", function()
     -- @description getStatus returns 'running' for an active task.
     it("returns running for an active task", function()
         local s = scheduler.newScheduler()
@@ -161,7 +161,7 @@ describe("scheduler library – getStatus", function()
     end)
 end)
 
-describe("scheduler library – getCount and clear", function()
+describe("scheduler library     getCount and clear", function()
     -- @description getCount reflects the number of active tasks.
     it("getCount increments on add", function()
         local s = scheduler.newScheduler()
@@ -180,7 +180,7 @@ describe("scheduler library – getCount and clear", function()
     end)
 end)
 
-describe("scheduler library – error handling", function()
+describe("scheduler library     error handling", function()
     -- @description An erroring task is captured in getErrors() and removed.
     it("captures erroring task in getErrors", function()
         local s = scheduler.newScheduler()

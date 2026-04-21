@@ -76,7 +76,7 @@ describe("compute stress: element-wise operations", function()
     -- @description Stresses intermediate-array creation and arithmetic chaining by executing three sequential vector operations before a final reduction.
     it("chains multiple operations", function()
         local a = lurek.compute.ones({5000}, "float32")
-        -- Chain: add ďż˝ mul ďż˝ sub
+        -- Chain: add        mul        sub
         local b = a:add(a)       -- 2
         local c = b:mul(b)       -- 4
         local d = c:sub(a)       -- 3

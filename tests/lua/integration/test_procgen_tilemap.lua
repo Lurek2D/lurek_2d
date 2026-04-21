@@ -53,7 +53,7 @@ describe("procgen + tilemap integration", function()
         local map1 = generate_map(42.0)
         local map2 = generate_map(42.0)
 
-        -- Same seed Ă˘â€ â€™ same tiles
+        -- Same seed                     same tiles
         for y = 0, 7 do
             for x = 0, 7 do
                 local t1 = map1:getTile(1, x + 1, y + 1)
@@ -91,10 +91,10 @@ describe("procgen + tilemap integration", function()
     end)
 end)
 
--- â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
--- BSP Dungeon â†’ Tilemap passability
--- â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-describe("bspDungeon â†’ tilemap grid passability", function()
+--                                                                                                                                                                                                                                                                                                                                                                         
+-- BSP Dungeon          Tilemap passability
+--                                                                                                                                                                                                                                                                                                                                                                         
+describe("bspDungeon          tilemap grid passability", function()
 
     it("BSP rooms can map to walkable tile IDs", function()
         local d = lurek.procgen.bspDungeon({ width = 40, height = 30, seed = 42 })

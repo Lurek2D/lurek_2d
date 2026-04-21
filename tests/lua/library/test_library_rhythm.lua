@@ -1,12 +1,12 @@
 -- tests/lua/library/test_library_rhythm.lua
--- BDD tests for library/rhythm/init.lua — beat clock, sequencer, judgement.
+-- BDD tests for library/rhythm/init.lua     beat clock, sequencer, judgement.
 
 local rhythm = require("library.rhythm")
 
 describe("library.rhythm", function()
 
     describe("Clock.getBeat", function()
-        it("advances at the declared BPM — 120bpm = 2 beats/sec", function()
+        it("advances at the declared BPM     120bpm = 2 beats/sec", function()
             local c = rhythm.newClock(120):start()
             for _ = 1, 100 do c:update(0.01) end  -- 1.0s
             expect_near(2.0, c:getBeat(), 0.05)

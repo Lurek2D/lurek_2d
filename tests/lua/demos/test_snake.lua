@@ -37,14 +37,14 @@ describe("snake: game mechanics", function()
             src:find("food") ~= nil or
             src:find("apple") ~= nil or
             src:find("item") ~= nil,
-            "No food/item found — snake has nothing to eat")
+            "No food/item found     snake has nothing to eat")
     end)
 
     it("draws grid cells or snake segments", function()
         if not src then pending("source missing") return end
         expect_true(
             src:find("drawRect%s*%(") ~= nil,
-            "No drawRect call found — snake segments will not render")
+            "No drawRect call found     snake segments will not render")
     end)
 end)
 

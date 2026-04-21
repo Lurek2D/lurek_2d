@@ -89,7 +89,7 @@ describe("stress: cellular world simulation", function()
             sim:stepN(500)
         end)
 
-        -- Rock is immutable — count must remain the same.
+        -- Rock is immutable     count must remain the same.
         expect_equal(rock_initial, sim:countCells(lurek.physics.CELL_ROCK))
 
         -- Sand is conserved.
@@ -279,7 +279,7 @@ describe("stress: physics terrain fill/dig/flush", function()
     it("collapse then solidPositions is consistent", function()
         local world = lurek.physics.newWorld(0, 0)
         local terrain = lurek.physics.newTerrain(64, 64, 4, world)
-        -- Fill top half only (rows 0-31); rows 32-63 are air → all top cells will collapse.
+        -- Fill top half only (rows 0-31); rows 32-63 are air     all top cells will collapse.
         terrain:fillRect(0, 0, 256, 128, true) -- world coords for rows 0-31
         local before = #terrain:solidPositions()
         terrain:collapseColumns()
@@ -373,7 +373,7 @@ describe("stress: cellular world simulation", function()
             sim:stepN(500)
         end)
 
-        -- Rock is immutable — count must remain the same.
+        -- Rock is immutable     count must remain the same.
         expect_equal(rock_initial, sim:countCells(lurek.physics.CELL_ROCK))
 
         -- Sand is conserved.
@@ -435,7 +435,7 @@ describe("stress: physics terrain fill/dig/flush", function()
     it("collapse then solidPositions is consistent", function()
         local world = lurek.physics.newWorld(0, 0)
         local terrain = lurek.physics.newTerrain(64, 64, 4, world)
-        -- Fill top half only (rows 0-31); rows 32-63 are air → all top cells will collapse.
+        -- Fill top half only (rows 0-31); rows 32-63 are air     all top cells will collapse.
         terrain:fillRect(0, 0, 256, 128, true) -- world coords for rows 0-31
         local before = #terrain:solidPositions()
         terrain:collapseColumns()

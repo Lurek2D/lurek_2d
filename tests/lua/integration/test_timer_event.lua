@@ -29,7 +29,7 @@ describe("timer + event integration", function()
         local sig = lurek.event.newSignal()
         local received = nil
 
-        -- connect(event_name, fn) — name is required
+        -- connect(event_name, fn)     name is required
         sig:connect("value", function(v)
             received = v
         end)

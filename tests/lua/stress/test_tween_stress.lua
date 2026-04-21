@@ -11,7 +11,7 @@ describe("stress: many active tweens updated simultaneously", function()
     -- @covers Tween:update
     -- @stress Allocates 1000 tweens and advances all of them through 100 update passes.
     -- @description Stresses bulk tween stepping by preconfiguring a large tween pool and running nested update loops over every active tween.
-    it("1000 tweens Ă— 100 updates each: <5s", function()
+    it("1000 tweens       100 updates each: <5s", function()
         local N_TWEENS  = 1000
         local N_UPDATES = 100
         local tweens    = {}

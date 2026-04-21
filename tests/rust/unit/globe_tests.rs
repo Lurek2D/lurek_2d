@@ -214,7 +214,7 @@ mod fog_tests {
 
 mod lighting_tests {
     use lurek2d::globe::lighting::{
-        sun_direction, province_intensity, compute_intensities, terminator_alpha,
+        compute_intensities, province_intensity, sun_direction, terminator_alpha,
     };
     use lurek2d::globe::types::GlobeSpec;
 
@@ -261,7 +261,7 @@ mod lighting_tests {
         // Province exactly under the sun (same direction as sun).
         let sun_lat = 0.0_f32;
         let sun_lon = 180.0_f32; // default ToD=0.25 → sun is westward, use lon 0 directly.
-        // Use a simpler setup: direct sun vector.
+                                 // Use a simpler setup: direct sun vector.
         let sun = lurek2d::math::Vec3::new(0.0, 0.0, 1.0);
         // lat=90 corresponds to north pole (z=1 on unit sphere in lat_lon_to_unit).
         // Actually lat_lon_to_unit(0, 0) = (sin(0), 0, cos(0)) in some conventions;
@@ -270,7 +270,10 @@ mod lighting_tests {
         let intensity = province_intensity(0.0, 0.0, &sun, 0.08);
         // Dot product with (0,0,1) for lat=0, lon=0 depends on sphere convention;
         // just verify it is within [0.08, 1.0].
-        assert!(intensity >= 0.08 && intensity <= 1.0, "intensity {intensity} out of range");
+        assert!(
+            intensity >= 0.08 && intensity <= 1.0,
+            "intensity {intensity} out of range"
+        );
     }
 
     #[test]
@@ -364,8 +367,8 @@ mod lighting_tests {
 
 mod projection_tests {
     use lurek2d::globe::projection::{
-        OrbitCamera, build_view_matrix, project_point, project_province,
-        project_point_with_z, screen_delta_to_pan, normalize_v3,
+        build_view_matrix, normalize_v3, project_point, project_point_with_z, project_province,
+        screen_delta_to_pan, OrbitCamera,
     };
     use lurek2d::globe::types::{GlobeSpec, LodTier, Province};
     use lurek2d::math::Vec3;
@@ -467,7 +470,15 @@ mod projection_tests {
         let cam = default_camera();
         let view = build_view_matrix(&spec, &cam);
         // lat=30, lon=0 is roughly toward camera at default orientation.
-        let result = project_point(30.0, 0.0, &view, spec.radius, cam.zoom, cam.screen_cx, cam.screen_cy);
+        let result = project_point(
+            30.0,
+            0.0,
+            &view,
+            spec.radius,
+            cam.zoom,
+            cam.screen_cx,
+            cam.screen_cy,
+        );
         assert!(result.is_some(), "expected front-facing point to project");
     }
 
@@ -477,7 +488,15 @@ mod projection_tests {
         let cam = default_camera();
         let view = build_view_matrix(&spec, &cam);
         // lat=-30, lon=180 is the antipodal region — should be culled.
-        let result = project_point(-30.0, 180.0, &view, spec.radius, cam.zoom, cam.screen_cx, cam.screen_cy);
+        let result = project_point(
+            -30.0,
+            180.0,
+            &view,
+            spec.radius,
+            cam.zoom,
+            cam.screen_cx,
+            cam.screen_cy,
+        );
         // Allow either None or Some — the exact cull depends on camera angle.
         // Just verify no panic.
         let _ = result;
@@ -489,7 +508,15 @@ mod projection_tests {
         let spec = default_spec();
         let cam = default_camera();
         let view = build_view_matrix(&spec, &cam);
-        if let Some(v) = project_point(30.0, 0.0, &view, spec.radius, cam.zoom, cam.screen_cx, cam.screen_cy) {
+        if let Some(v) = project_point(
+            30.0,
+            0.0,
+            &view,
+            spec.radius,
+            cam.zoom,
+            cam.screen_cx,
+            cam.screen_cy,
+        ) {
             assert!(v.x > 0.0 && v.x < 1280.0);
             assert!(v.y > 0.0 && v.y < 720.0);
         }
@@ -618,7 +645,7 @@ mod projection_tests {
 
 mod topology_tests {
     use lurek2d::globe::topology::ProvinceGraph;
-    use lurek2d::globe::types::{Province, GlobeError};
+    use lurek2d::globe::types::{GlobeError, Province};
 
     fn make_province(id: u32, neighbors: Vec<u32>) -> Province {
         let mut p = Province::new(id, vec![(0.0_f32, 0.0_f32), (1.0, 0.0), (0.5, 1.0)]);
@@ -705,7 +732,8 @@ mod topology_tests {
     fn set_and_get_attr() {
         let mut g = ProvinceGraph::new();
         g.insert(Province::new(1, vec![])).unwrap();
-        g.set_attr(1, "terrain".to_string(), "plains".to_string()).unwrap();
+        g.set_attr(1, "terrain".to_string(), "plains".to_string())
+            .unwrap();
         assert_eq!(g.get_attr(1, "terrain"), Some("plains"));
     }
 
@@ -727,8 +755,10 @@ mod topology_tests {
     fn set_attr_overwrites_existing() {
         let mut g = ProvinceGraph::new();
         g.insert(Province::new(1, vec![])).unwrap();
-        g.set_attr(1, "owner".to_string(), "red".to_string()).unwrap();
-        g.set_attr(1, "owner".to_string(), "blue".to_string()).unwrap();
+        g.set_attr(1, "owner".to_string(), "red".to_string())
+            .unwrap();
+        g.set_attr(1, "owner".to_string(), "blue".to_string())
+            .unwrap();
         assert_eq!(g.get_attr(1, "owner"), Some("blue"));
     }
 

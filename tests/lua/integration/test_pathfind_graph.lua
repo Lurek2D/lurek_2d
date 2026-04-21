@@ -3,9 +3,9 @@
 -- Namespaces: lurek.pathfind + lurek.procgen
 
 
--- ─────────────────────────────────────────────
+--                                                                                                                                        
 -- JPS Grid
--- ─────────────────────────────────────────────
+--                                                                                                                                        
 describe("pathfinding.newJpsGrid", function()
 
     it("creates a JPS grid without error", function()
@@ -25,7 +25,7 @@ describe("pathfinding.newJpsGrid", function()
         local g = lurek.pathfind.newJpsGrid(6, 6)
         g:setBlocked(1, 1, true)
         local path = g:findPath(1, 1, 6, 6)
-        -- Blocked start → no path
+        -- Blocked start     no path
         expect_true(path == nil or type(path) == "table", "should return nil or table")
     end)
 
@@ -79,9 +79,9 @@ describe("pathfinding.newJpsGrid", function()
     end)
 end)
 
--- ─────────────────────────────────────────────
+--                                                                                                                                        
 -- JPS Grid + WorldGraph produced by procgen
--- ─────────────────────────────────────────────
+--                                                                                                                                        
 describe("procgen worldGraph + JPS grid integration", function()
 
     it("worldGraph region coordinates stay within world bounds", function()
@@ -118,7 +118,7 @@ describe("procgen worldGraph + JPS grid integration", function()
         for y = 1, d.height do
             for x = 1, d.width do
                 local idx = (y - 1) * d.width + x
-                -- False = wall → blocked
+                -- False = wall     blocked
                 if not d.grid[idx] then
                     g:setBlocked(x, y, true)
                 end
@@ -138,7 +138,7 @@ describe("procgen worldGraph + JPS grid integration", function()
         end
         if #floors >= 2 then
             local path = g:findPath(floors[1].x, floors[1].y, floors[2].x, floors[2].y)
-            -- Path may be nil if rooms not connected — that's acceptable; just ensure no crash
+            -- Path may be nil if rooms not connected     that's acceptable; just ensure no crash
             expect_true(path == nil or type(path) == "table", "expected nil or table")
         end
     end)

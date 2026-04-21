@@ -13,14 +13,14 @@
 -- accessible after the engine boots.
 --
 -- NOTE: lurek.conf(t) is a write-once function called during startup
--- (before the window opens). These tests verify the READ path only â€”
+-- (before the window opens). These tests verify the READ path only         
 -- they do not attempt to re-configure a running engine.
 
 require("tests/lua/init")
 
--- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+--                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
 -- 1. lurek.conf existence
--- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+--                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
 
 -- @description Covers suite: lurek.conf function.
 describe("lurek.conf function", function()
@@ -31,9 +31,9 @@ describe("lurek.conf function", function()
     end)
 end)
 
--- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+--                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
 -- 2. lurek.window namespace mirrors conf.window
--- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+--                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
 
 -- @description Covers suite: lurek.window runtime values.
 describe("lurek.window runtime values", function()
@@ -67,9 +67,9 @@ describe("lurek.window runtime values", function()
     end)
 end)
 
--- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+--                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
 -- 3. Modules table
--- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+--                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
 
 -- @description Covers suite: lurek.runtime module flags.
 describe("lurek.runtime module flags", function()
@@ -96,9 +96,9 @@ describe("lurek.runtime module flags", function()
     end)
 end)
 
--- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+--                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
 -- 4. lurek.conf merge semantics (introspection via lurek.window)
--- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+--                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
 
 -- @description Covers suite: lurek.conf merge semantics.
 describe("lurek.conf merge semantics", function()
@@ -108,7 +108,7 @@ describe("lurek.conf merge semantics", function()
     -- @covers lurek.window.getWidth
     -- @description Confirms only that the default boot width has been populated into the runtime window state, not that it equals an exact fixture value.
     it("default window width matches conf default of 800", function()
-        -- The test VM is created with 800Ă—600 by default (see make_vm).
+        -- The test VM is created with 800     600 by default (see make_vm).
         -- lurek.window.getWidth() should reflect that.
         local w = lurek.window.getWidth()
         expect_equal(w >= 1, true)  -- just confirm it's set
@@ -135,9 +135,9 @@ describe("lurek.conf merge semantics", function()
     end)
 end)
 
--- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+--                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
 -- 5. conf.lua conf() call does not crash with various overrides
--- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+--                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
 
 -- @description Covers suite: lurek.conf call-time safety.
 describe("lurek.conf call-time safety", function()

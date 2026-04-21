@@ -1,7 +1,7 @@
 //! Smoke tests for the pathfind module against the current public API.
 
 use lurek2d::pathfind::{
-    astar, bidirectional_astar, ai_flow_field::FlowField, JpsGrid, NavGrid, PathThreadPool,
+    ai_flow_field::FlowField, astar, bidirectional_astar, JpsGrid, NavGrid, PathThreadPool,
     RangeMap,
 };
 

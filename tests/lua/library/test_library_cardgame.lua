@@ -7,7 +7,7 @@ package.path = "./content/library/?/init.lua;" .. package.path
 local cg = require("library.cardgame")
 
 
--- â”€â”€ Registry â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+--                  Registry                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
 
 -- @description Exercises registry lifecycle operations including define, lookup, sorted name enumeration, and full reset of registered card types.
 describe("Registry", function()
@@ -46,7 +46,7 @@ describe("Registry", function()
     end)
 end)
 
--- â”€â”€ Card â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+--                  Card                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
 
 -- @description Verifies cards inherit registry defaults and support stat, tag, counter, metadata, reset, identity, and default presentation fields.
 describe("Card", function()
@@ -139,7 +139,7 @@ describe("Card", function()
     end)
 end)
 
--- â”€â”€ Stack â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+--                  Stack                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
 
 -- @description Covers ordered stack behavior including push and pop variants, capacity, search and counting helpers, sorting, shuffling, snapshots, and zone flags.
 describe("Stack", function()
@@ -391,7 +391,7 @@ describe("Stack", function()
     end)
 end)
 
--- â”€â”€ Slot â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+--                  Slot                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
 
 -- @description Tests slot-style containers for push and pop flow, capacity checks, tag or type predicates, and full clearing semantics.
 describe("Slot", function()
@@ -441,7 +441,7 @@ describe("Slot", function()
     end)
 end)
 
--- â”€â”€ CardPool â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+--                  CardPool                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
 
 -- @description Validates weighted card pools for repeated draws, unique draws, card instantiation, weight updates, name listing, and rarity-filtered pulls.
 describe("CardPool", function()
@@ -528,7 +528,7 @@ describe("CardPool", function()
     end)
 end)
 
--- â”€â”€ StackManager â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+--                  StackManager                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
 
 -- @description Exercises stack manager orchestration for creating stacks, moving top cards or typed cards, counting totals, and removing named stacks.
 describe("StackManager", function()
@@ -595,7 +595,7 @@ describe("StackManager", function()
     end)
 end)
 
--- â”€â”€ DeckBuilder â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+--                  DeckBuilder                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
 
 -- @description Covers deck builder recipes that add entries, expand quantities, and produce stacks populated with the expected card types.
 describe("DeckBuilder", function()
@@ -682,7 +682,7 @@ describe("DeckBuilder", function()
     end)
 end)
 
--- â”€â”€ StackHistory â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+--                  StackHistory                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
 
 -- @description Covers suite: StackHistory.
 describe("StackHistory", function()
@@ -744,7 +744,7 @@ describe("StackHistory", function()
     end)
 end)
 
--- â”€â”€ CardGroup â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+--                  CardGroup                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
 
 -- @description Covers suite: CardGroup.
 describe("CardGroup", function()
@@ -761,7 +761,7 @@ describe("CardGroup", function()
     end)
 end)
 
--- â”€â”€ Analysis helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+--                  Analysis helpers                                                                                                                                                                                                                                                                                                                                                                                                                                         
 
 -- @description Covers suite: Analysis helpers.
 describe("Analysis helpers", function()
@@ -872,7 +872,7 @@ describe("Analysis helpers", function()
     end)
 end)
 
--- ── ID counter ──────────────────────────────────────────────────────────
+--        ID counter                                                                                                                                                                               
 
 -- @description Covers ID counter inspection and session reset behavior.
 describe("ID counter", function()
@@ -905,7 +905,7 @@ describe("ID counter", function()
     end)
 end)
 
--- ── Search return types ─────────────────────────────────────────────────
+--        Search return types                                                                                                                                                    
 
 -- @description Verifies search/find return types are consistent: searchBy* returns indices, findBy*All returns objects.
 describe("Search return types", function()
@@ -971,7 +971,7 @@ describe("Search return types", function()
     end)
 end)
 
--- ── CardTypeDef fields ──────────────────────────────────────────────────
+--        CardTypeDef fields                                                                                                                                                       
 
 -- @description Verifies CardTypeDef has all documented fields with correct defaults.
 describe("CardTypeDef fields", function()
@@ -995,7 +995,7 @@ describe("CardTypeDef fields", function()
     end)
 end)
 
--- ── Empty stack / pool edge cases ───────────────────────────────────────
+--        Empty stack / pool edge cases                                                                                                                      
 
 -- @description Tests edge cases on empty stacks, slots, and pools.
 describe("Empty edge cases", function()
@@ -1068,7 +1068,7 @@ describe("Empty edge cases", function()
     end)
 end)
 
--- ── Input validation ────────────────────────────────────────────────────
+--        Input validation                                                                                                                                                             
 
 -- @description Tests that constructors and mutators reject invalid inputs.
 describe("Input validation", function()

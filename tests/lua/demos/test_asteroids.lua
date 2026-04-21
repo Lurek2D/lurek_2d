@@ -28,7 +28,7 @@ describe("asteroids: game mechanics", function()
             src:find("bullet") ~= nil or
             src:find("projectile") ~= nil or
             src:find("shot") ~= nil,
-            "No bullet/projectile found — player cannot shoot")
+            "No bullet/projectile found     player cannot shoot")
     end)
 
     it("has thrust and rotation controls", function()
@@ -46,7 +46,7 @@ describe("asteroids: game mechanics", function()
             src:find("wrap") ~= nil or
             src:find("SCREEN_W") ~= nil or
             src:find("width") ~= nil,
-            "No screen wrap-around found — objects will fly off screen")
+            "No screen wrap-around found     objects will fly off screen")
     end)
 
     it("uses circle drawing for asteroids or ship", function()

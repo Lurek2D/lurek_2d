@@ -19,7 +19,7 @@ describe("space zone gravity integration", function()
         -- Place a dynamic body somewhere inside the zone.
         world:newBody(200, 0, "dynamic")
 
-        -- Step once â€” zone tracker should produce an enter event.
+        -- Step once          zone tracker should produce an enter event.
         world:step(1/60)
         local events = world:getZoneEvents()
         expect_true(#events >= 1, "expected zone enter event")
@@ -39,7 +39,7 @@ describe("space zone gravity integration", function()
         -- Body at origin, zero initial velocity.
         world:newBody(0, 0, "dynamic")
 
-        -- Step several frames â€” if zero-g works, body should not fall far.
+        -- Step several frames          if zero-g works, body should not fall far.
         -- We can only check the simulation runs without error here since
         -- getBody is on the module-level API, not the world method.
         expect_no_error(function()

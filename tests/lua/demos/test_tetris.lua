@@ -40,7 +40,7 @@ describe("tetris: game mechanics", function()
             src:find("fall") ~= nil or
             src:find("timer") ~= nil or
             src:find("drop") ~= nil,
-            "No fall timer found — pieces won't drop automatically")
+            "No fall timer found     pieces won't drop automatically")
     end)
 
     it("has rotate action binding or logic", function()
@@ -50,7 +50,7 @@ describe("tetris: game mechanics", function()
             src:find('"up"') ~= nil or
             src:find('"z"') ~= nil or
             src:find('"x"') ~= nil,
-            "No rotation found — tetris pieces cannot be rotated")
+            "No rotation found     tetris pieces cannot be rotated")
     end)
 
     it("has line clear logic", function()

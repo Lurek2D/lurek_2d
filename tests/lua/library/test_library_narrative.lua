@@ -1,5 +1,5 @@
 -- tests/lua/library/test_library_narrative.lua
--- BDD tests for library/narrative/init.lua — Ink-subset interpreter.
+-- BDD tests for library/narrative/init.lua     Ink-subset interpreter.
 
 local narrative = require("library.narrative")
 

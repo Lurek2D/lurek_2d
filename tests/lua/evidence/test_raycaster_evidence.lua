@@ -10,13 +10,11 @@ local OUT = "tests/output/raycaster/"
 -- @description Covers suite: Evidence: lurek.raycaster API contracts.
 describe("Evidence: lurek.raycaster API contracts", function()
     end)
-    end)
         for y = 0, 15 do
             rc:setCell(0, y, 1)
             rc:setCell(15, y, 1)
         end
         local rays = rc:castRays(8.0, 8.0, 0.0, math.pi / 2, 60, 30)
-    end)
     -- @covers Raycaster:setCell
     -- @covers Raycaster:castRaysFlat
     -- @covers lurek.raycaster.distanceShade
@@ -61,7 +59,6 @@ describe("Evidence: lurek.raycaster API contracts", function()
         lurek.image.savePNG(img, OUT .. "raycaster_depth.png")
     end)
 
-end)
 
 
 
@@ -70,7 +67,7 @@ end)
 -- ================================================================
 
 -- test_evidence_raycaster_ext.lua
--- Evidence test: extended lurek.raycaster API — DoorManager, HeightMap, PointLight
+-- Evidence test: extended lurek.raycaster API     DoorManager, HeightMap, PointLight
 
 -- @description Covers suite: Evidence: lurek.raycaster extended API (DoorManager/HeightMap/PointLight).
 describe("Evidence: lurek.raycaster extended API", function()
@@ -94,13 +91,11 @@ local OUT = "tests/output/raycaster/"
 -- @description Covers suite: Evidence: lurek.raycaster API contracts.
 describe("Evidence: lurek.raycaster API contracts", function()
     end)
-    end)
         for y = 0, 15 do
             rc:setCell(0, y, 1)
             rc:setCell(15, y, 1)
         end
         local rays = rc:castRays(8.0, 8.0, 0.0, math.pi / 2, 60, 30)
-    end)
     -- @covers Raycaster:setCell
     -- @covers Raycaster:castRaysFlat
     -- @covers lurek.raycaster.distanceShade
@@ -145,7 +140,6 @@ describe("Evidence: lurek.raycaster API contracts", function()
         lurek.image.savePNG(img, OUT .. "raycaster_depth.png")
     end)
 
-end)
 
 
 
@@ -154,7 +148,7 @@ end)
 -- ================================================================
 
 -- test_evidence_raycaster_ext.lua
--- Evidence test: extended lurek.raycaster API — DoorManager, HeightMap, PointLight
+-- Evidence test: extended lurek.raycaster API     DoorManager, HeightMap, PointLight
 
 -- @description Covers suite: Evidence: lurek.raycaster extended API (DoorManager/HeightMap/PointLight).
 describe("Evidence: lurek.raycaster extended API", function()
