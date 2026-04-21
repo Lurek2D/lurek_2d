@@ -12,7 +12,6 @@
 //!
 //! Uses `rustls` (via ureq default features) for HTTPS — no OpenSSL dependency.
 
-use std::io::Read;
 use std::time::Duration;
 
 use log::{debug, warn};

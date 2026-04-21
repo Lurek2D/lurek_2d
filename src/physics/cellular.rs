@@ -35,7 +35,6 @@
 //! rows are processed bottom-to-top.  This ensures no two threads write to the
 //! same cell simultaneously.
 
-use std::collections::HashSet;
 
 // ── CellType ──────────────────────────────────────────────────────────────────
 

@@ -219,8 +219,8 @@ impl TerrainMap {
         for v in self.cells.iter_mut() {
             *v = solid;
         }
-        let chunk_cols = (self.width + CHUNK_SIZE - 1) / CHUNK_SIZE;
-        let chunk_rows = (self.height + CHUNK_SIZE - 1) / CHUNK_SIZE;
+        let chunk_cols = self.width.div_ceil(CHUNK_SIZE);
+        let chunk_rows = self.height.div_ceil(CHUNK_SIZE);
         for cy in 0..chunk_rows {
             for cx in 0..chunk_cols {
                 self.dirty_chunks.insert(ChunkId { cx, cy });
@@ -496,8 +496,8 @@ impl TerrainMap {
                 cells[i] = (byte >> bit_idx) & 1 == 1;
             }
         }
-        let chunk_cols = (width + CHUNK_SIZE - 1) / CHUNK_SIZE;
-        let chunk_rows = (height + CHUNK_SIZE - 1) / CHUNK_SIZE;
+        let chunk_cols = width.div_ceil(CHUNK_SIZE);
+        let chunk_rows = height.div_ceil(CHUNK_SIZE);
         let mut dirty_chunks = HashSet::new();
         for cy in 0..chunk_rows {
             for cx in 0..chunk_cols {

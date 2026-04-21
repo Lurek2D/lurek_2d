@@ -81,7 +81,7 @@ mod vfs_tests {
     #[test]
     fn read_bytes_returns_raw_content() {
         let dir = make_temp_game("read_bytes");
-        std::fs::write(dir.join("bin.dat"), &[0xFF, 0x00, 0xAB]).unwrap();
+        std::fs::write(dir.join("bin.dat"), [0xFF, 0x00, 0xAB]).unwrap();
         let fs = GameFS::new(&dir);
         assert_eq!(fs.read_bytes("bin.dat").unwrap(), vec![0xFF, 0x00, 0xAB]);
         let _ = std::fs::remove_dir_all(&dir);
@@ -615,12 +615,12 @@ mod async_loader_tests {
 
 mod reject_traversal_tests {
     use lurek2d::filesystem::GameFS;
-    use std::path::PathBuf;
+    
 
     fn make_vfs() -> GameFS {
         let base = std::env::temp_dir().join("lurek_traversal_test");
         std::fs::create_dir_all(&base).ok();
-        GameFS::new(PathBuf::from(base))
+        GameFS::new(base)
     }
 
     #[test]

@@ -152,8 +152,8 @@ pub fn transform_points(matrix: &NdArray, points: &NdArray) -> Result<NdArray, S
     }
     let n = points.shape()[0];
     let ms = matrix.shape();
-    let is3x3 = ms == &[3, 3];
-    let is2x2 = ms == &[2, 2];
+    let is3x3 = ms == [3, 3];
+    let is2x2 = ms == [2, 2];
     if !is2x2 && !is3x3 {
         return Err(format!(
             "transform_points: matrix must be [2,2] or [3,3], got {:?}",
@@ -216,7 +216,7 @@ pub fn gaussian_kernel(size: usize, sigma: f64) -> Result<NdArray, String> {
     if size == 0 {
         return Err("gaussian_kernel: size must be ≥ 1".to_string());
     }
-    if size % 2 == 0 {
+    if size.is_multiple_of(2) {
         return Err(format!("gaussian_kernel: size must be odd, got {size}"));
     }
     if sigma <= 0.0 {

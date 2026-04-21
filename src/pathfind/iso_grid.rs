@@ -189,7 +189,7 @@ impl IsoGrid {
     }
 
     pub fn is_blocked_or_oob(&self, x: u32, y: u32) -> bool {
-        self.index(x, y).map_or(true, |i| self.blocked[i])
+        self.index(x, y).is_none_or(|i| self.blocked[i])
     }
 }
 

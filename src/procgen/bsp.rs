@@ -158,7 +158,7 @@ fn split(
 
     // Choose split direction
     let split_horizontal = if can_split_h && can_split_v {
-        rng.next() % 2 == 0
+        rng.next().is_multiple_of(2)
     } else {
         can_split_h
     };

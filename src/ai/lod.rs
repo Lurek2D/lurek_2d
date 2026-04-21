@@ -170,7 +170,7 @@ impl AILod {
                 if t.update_every == 0 {
                     false
                 } else {
-                    frame_number % t.update_every as u64 == 0
+                    frame_number.is_multiple_of(t.update_every as u64)
                 }
             }
             None => false,

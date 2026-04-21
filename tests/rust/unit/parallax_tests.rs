@@ -1,6 +1,5 @@
 //! Tests for the parallax module.
 
-use lurek2d::image::ImageData;
 use lurek2d::parallax::layer::ParallaxDrawBatch;
 use lurek2d::parallax::render::batch_to_render_commands;
 use lurek2d::parallax::ParallaxLayer;

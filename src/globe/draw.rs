@@ -10,11 +10,10 @@ use crate::globe::lighting::{province_intensity, sun_direction};
 use crate::globe::marker::MarkerStore;
 use crate::globe::projection::{build_view_matrix, project_point, project_province, OrbitCamera};
 use crate::globe::topology::ProvinceGraph;
-use crate::globe::types::{Arc as GlobeArc, GlobeSpec, LodTier, ProvinceId};
+use crate::globe::types::{Arc as GlobeArc, GlobeSpec, LodTier};
 use crate::math::sphere::great_circle_path;
-use crate::math::Vec2;
 use crate::render::renderer::{BlendMode, DrawMode, RenderCommand};
-use crate::runtime::resource_keys::{FontKey, TextureKey};
+use crate::runtime::resource_keys::FontKey;
 use std::collections::HashMap;
 
 /// Emit all render commands for one globe frame.

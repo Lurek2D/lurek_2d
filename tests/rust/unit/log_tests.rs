@@ -1,6 +1,5 @@
 //! Tests for the log module.
 
-use std::collections::BTreeMap;
 
 // ── log mod ───────────────────────────────────────────────────────────────────
 

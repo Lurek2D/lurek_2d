@@ -20,7 +20,7 @@ use crate::math::{Mat3, Vec2};
 use crate::render::mesh::Mesh;
 use crate::render::renderer::{
     BevelStyle, BlendMode, DrawMode, GradientDirection, HexOrientation, ParticleRenderShape,
-    PathSegment, PhysicsDebugConfig, PhysicsDebugShape, RenderCommand, SpineSlotDraw, TextAlign,
+    PathSegment, RenderCommand, TextAlign,
     TextureData,
 };
 use crate::render::shader::{Shader, ShaderFragmentInput, UniformValue};

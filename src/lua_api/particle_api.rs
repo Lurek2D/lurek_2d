@@ -1236,7 +1236,7 @@ impl LuaUserData for LuaParticleSystem {
                     }
                 }
                 ps.config.quads = quads;
-                ps.config.animated_frames = (cols * rows) as u32;
+                ps.config.animated_frames = cols * rows;
                 ps.config.frame_rate = fps;
                 Ok(())
             },
@@ -1259,7 +1259,7 @@ impl LuaUserData for LuaParticleSystem {
             let cell_w = ps.config.quads[0][2];
             let cols = (1.0_f32 / cell_w).round() as u32;
             let rows = if cols > 0 {
-                (total as u32 + cols - 1) / cols
+                (total as u32).div_ceil(cols)
             } else {
                 1
             };

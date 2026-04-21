@@ -2987,7 +2987,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         "polygonClip",
         lua.create_function(|lua, (pts, nx, ny, d): (LuaTable, f32, f32, f32)| {
             let len = pts.len()? as usize;
-            if len % 2 != 0 {
+            if !len.is_multiple_of(2) {
                 return Err(LuaError::RuntimeError(
                     "polygonClip: polygon table must contain an even number of values (x,y pairs)"
                         .into(),

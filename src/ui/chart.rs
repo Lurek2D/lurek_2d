@@ -222,7 +222,7 @@ impl LineChart {
     ///
     /// # Returns
     /// `ImageData`.
-    pub fn draw_to_image(&self, mut img: &mut crate::image::ImageData) {
+    pub fn draw_to_image(&self, img: &mut crate::image::ImageData) {
         let cfg = &self.config;
         let (bgr, bgg, bgb) = cfg.bg_color;
         img.fill(bgr, bgg, bgb, 255);
@@ -349,7 +349,7 @@ impl BarChart {
     ///
     /// # Returns
     /// `ImageData`.
-    pub fn draw_to_image(&self, mut img: &mut crate::image::ImageData) {
+    pub fn draw_to_image(&self, img: &mut crate::image::ImageData) {
         let cfg = &self.config;
         let (bgr, bgg, bgb) = cfg.bg_color;
         img.fill(bgr, bgg, bgb, 255);
@@ -453,7 +453,7 @@ impl ScatterPlot {
     ///
     /// # Returns
     /// `ImageData`.
-    pub fn draw_to_image(&self, mut img: &mut crate::image::ImageData) {
+    pub fn draw_to_image(&self, img: &mut crate::image::ImageData) {
         let cfg = &self.config;
         let (bgr, bgg, bgb) = cfg.bg_color;
         img.fill(bgr, bgg, bgb, 255);

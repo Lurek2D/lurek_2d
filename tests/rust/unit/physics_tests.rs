@@ -812,7 +812,7 @@ mod world_tests {
         let mut w = World::new(0.0, 9.8);
         let zone = PhysicsZone::new_rect(0, 0.0, 0.0, 200.0, 200.0);
         let zid = w.add_zone(zone);
-        assert!(zid > 0 || zid == 0);
+        assert!(zid >= 0);
     }
 
     #[test]

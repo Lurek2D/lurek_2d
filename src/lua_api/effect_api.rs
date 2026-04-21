@@ -15,7 +15,6 @@ use crate::effect::{
     WeatherType,
 };
 use crate::render::renderer::{PostFxPass, RenderCommand};
-use std::collections::HashMap;
 use std::sync::atomic::{AtomicU64, Ordering};
 
 /// Monotonic counter used to generate unique stack IDs for per-stack GPU capture textures.

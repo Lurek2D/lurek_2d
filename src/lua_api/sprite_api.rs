@@ -333,7 +333,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
 // -------------------------------------------------------------------------------
 
 /// Converts a `Rect` to a Lua table `{x, y, w, h}`.
-fn quad_table(lua: &Lua, r: Rect) -> LuaResult<LuaTable> {
+fn quad_table(lua: &Lua, r: Rect) -> LuaResult<LuaTable<'_>> {
     let t = lua.create_table()?;
     t.set("x", r.x)?;
     t.set("y", r.y)?;

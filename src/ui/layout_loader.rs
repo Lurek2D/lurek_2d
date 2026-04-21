@@ -431,12 +431,12 @@ fn apply_base_props(ctx: &mut GuiContext, idx: usize, def: &WidgetDef) {
     match ctx.widgets.get_mut(idx) {
         Some(WidgetKind::Slider(sl)) => {
             if let Some(v) = def.value {
-                sl.value = v as f64;
+                sl.value = v;
             }
         }
         Some(WidgetKind::ProgressBar(pb)) => {
             if let Some(v) = def.value {
-                pb.value = v as f64;
+                pb.value = v;
             }
         }
         Some(WidgetKind::SpinBox(sb)) => {

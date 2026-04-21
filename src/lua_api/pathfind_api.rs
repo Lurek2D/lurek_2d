@@ -373,7 +373,7 @@ impl LuaUserData for LuaUnitPathfinder {
                 let pf = this.inner.borrow();
                 let grid_borrowed = pf.nav_grid().borrow();
                 let (path_opt, complete) = bidirectional_astar(
-                    &*grid_borrowed,
+                    &grid_borrowed,
                     (x1 - 1, y1 - 1),
                     (x2 - 1, y2 - 1),
                     unit_size.unwrap_or(1),

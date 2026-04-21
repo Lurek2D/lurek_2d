@@ -864,8 +864,8 @@ impl GameFS {
         let search_dir = if dir_part == "." {
             self.base_dir.clone()
         } else {
-            let resolved = self.resolve_read_path(dir_part)?;
-            resolved
+            
+            self.resolve_read_path(dir_part)?
         };
         if !search_dir.is_dir() {
             return Ok(Vec::new());

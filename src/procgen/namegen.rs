@@ -33,8 +33,7 @@ impl NameGen {
 
         for word in training {
             // Pad start with sentinel chars so the model can begin generation
-            let padded: String = std::iter::repeat('\x00')
-                .take(order)
+            let padded: String = std::iter::repeat_n('\x00', order)
                 .chain(word.chars())
                 .chain(std::iter::once('\x01')) // end sentinel
                 .collect();
@@ -89,7 +88,7 @@ impl NameGen {
     }
 
     fn try_generate(&mut self, max_len: usize) -> Option<String> {
-        let mut context: Vec<char> = std::iter::repeat('\x00').take(self.order).collect();
+        let mut context: Vec<char> = std::iter::repeat_n('\x00', self.order).collect();
         let mut name = String::new();
 
         for _ in 0..max_len + self.order + 4 {
@@ -125,7 +124,7 @@ impl NameGen {
     }
 }
 
-fn capitalise(mut s: String) -> String {
+fn capitalise(s: String) -> String {
     let mut chars = s.chars();
     match chars.next() {
         None => s,

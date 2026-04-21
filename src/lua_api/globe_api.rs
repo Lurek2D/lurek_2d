@@ -10,20 +10,14 @@ use std::collections::HashMap;
 use std::rc::Rc;
 use std::sync::{Arc, Mutex};
 
-use crate::globe::fog::FogStore;
-use crate::globe::label::LabelStore;
-use crate::globe::layer::LayerStore;
 use crate::globe::loader;
-use crate::globe::marker::MarkerStore;
-use crate::globe::picking::{pick, PickResult};
-use crate::globe::projection::OrbitCamera;
 use crate::globe::registry::{Globe, GlobeRegistry};
 use crate::globe::types::{
-    GlobeError, GlobeSpec, Label, LabelStyle, Layer, LodTier, Marker, MarkerStyle, Province,
+    GlobeSpec, LabelStyle, Layer, LodTier, MarkerStyle, Province,
     MAX_PROVINCES,
 };
 use crate::math::sphere::{
-    great_circle_distance, great_circle_path, lat_lon_to_unit, unit_to_lat_lon,
+    great_circle_distance, great_circle_path, lat_lon_to_unit,
 };
 
 // ── LuaGlobe ────────────────────────────────────────────────────────────────
@@ -248,7 +242,6 @@ impl LuaUserData for LuaGlobe {
                 ),
                 None => (None, None),
             })
-            .map(|(x, y)| (x, y))
         });
 
         // ── Fog of war ───────────────────────────────────────────────────────
@@ -784,7 +777,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
                 move |_, (name, toml_src, spec_tbl): (String, String, Option<LuaTable>)| {
                     let spec = parse_globe_spec(spec_tbl);
                     let provinces = loader::load_from_toml_str(&toml_src)
-                        .map_err(|e| mlua::Error::RuntimeError(e))?;
+                        .map_err(mlua::Error::RuntimeError)?;
                     {
                         let mut guard = reg.lock().map_err(|e| {
                             mlua::Error::RuntimeError(format!("registry lock poisoned: {e}"))

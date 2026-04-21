@@ -19,7 +19,7 @@ mod heightmap_tests {
     fn values_normalised_to_unit() {
         let hm = Heightmap::generate(&HeightmapOpts::default());
         for &v in &hm.cells {
-            assert!(v >= 0.0 && v <= 1.0, "elevation out of [0,1]: {v}");
+            assert!((0.0..=1.0).contains(&v), "elevation out of [0,1]: {v}");
         }
     }
 
@@ -40,7 +40,7 @@ mod heightmap_tests {
             ..Default::default()
         });
         for &v in &hm.cells {
-            assert!(v >= 0.0 && v <= 1.0, "post-erosion value out of [0,1]: {v}");
+            assert!((0.0..=1.0).contains(&v), "post-erosion value out of [0,1]: {v}");
         }
     }
 
@@ -417,7 +417,7 @@ mod render_tests {
     fn from_perlin_values_in_range() {
         let grid = NoiseGrid::from_perlin(16, 16, 0.2);
         for &v in &grid.cells {
-            assert!(v >= 0.0 && v <= 1.0, "value out of [0,1]: {v}");
+            assert!((0.0..=1.0).contains(&v), "value out of [0,1]: {v}");
         }
     }
 
@@ -474,8 +474,8 @@ mod poisson_tests {
         assert!(!points.is_empty());
         // Check all points are within bounds
         for &(x, y) in &points {
-            assert!(x >= 0.0 && x < 50.0);
-            assert!(y >= 0.0 && y < 50.0);
+            assert!((0.0..50.0).contains(&x));
+            assert!((0.0..50.0).contains(&y));
         }
         // Check minimum distance constraint
         for i in 0..points.len() {
@@ -514,7 +514,7 @@ mod noise_tests {
     fn perlin2d_value_range() {
         for i in 0..100 {
             let v = perlin2d(i as f32 * 0.37, i as f32 * 0.53, 0);
-            assert!(v >= -1.5 && v <= 1.5, "perlin2d out of expected range: {v}");
+            assert!((-1.5..=1.5).contains(&v), "perlin2d out of expected range: {v}");
         }
     }
 
@@ -530,7 +530,7 @@ mod noise_tests {
         for i in 0..100 {
             let v = simplex2d(i as f32 * 0.41, i as f32 * 0.59, 0);
             assert!(
-                v >= -1.5 && v <= 1.5,
+                (-1.5..=1.5).contains(&v),
                 "simplex2d out of expected range: {v}"
             );
         }
@@ -613,7 +613,7 @@ mod noise_tests {
         let g = NoiseGenerator::new(0);
         for i in 0..200 {
             let v = g.perlin_1d(i as f64 * 0.13);
-            assert!(v >= -1.5 && v <= 1.5, "perlin_1d out of range: {v}");
+            assert!((-1.5..=1.5).contains(&v), "perlin_1d out of range: {v}");
         }
     }
 
@@ -622,7 +622,7 @@ mod noise_tests {
         let g = NoiseGenerator::new(0);
         for i in 0..100 {
             let v = g.perlin_2d(i as f64 * 0.37, i as f64 * 0.53);
-            assert!(v >= -1.5 && v <= 1.5, "perlin_2d out of range: {v}");
+            assert!((-1.5..=1.5).contains(&v), "perlin_2d out of range: {v}");
         }
     }
 
@@ -631,7 +631,7 @@ mod noise_tests {
         let g = NoiseGenerator::new(0);
         for i in 0..100 {
             let v = g.perlin_3d(i as f64 * 0.3, i as f64 * 0.5, i as f64 * 0.7);
-            assert!(v >= -1.5 && v <= 1.5, "perlin_3d out of range: {v}");
+            assert!((-1.5..=1.5).contains(&v), "perlin_3d out of range: {v}");
         }
     }
 
@@ -878,7 +878,7 @@ mod lcg_tests {
         let mut rng = Lcg::new(0);
         for _ in 0..100 {
             let v = rng.next_f32();
-            assert!(v >= 0.0 && v < 1.0, "value out of [0,1): {v}");
+            assert!((0.0..1.0).contains(&v), "value out of [0,1): {v}");
         }
     }
 }

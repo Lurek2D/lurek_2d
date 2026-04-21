@@ -90,7 +90,7 @@ impl HexGrid {
     /// # Returns
     /// `bool`.
     pub fn is_blocked(&self, col: u32, row: u32) -> bool {
-        self.index(col, row).map_or(true, |i| self.blocked[i])
+        self.index(col, row).is_none_or(|i| self.blocked[i])
     }
 
     /// A* pathfinding on the hex grid.
@@ -300,7 +300,7 @@ impl HexGrid {
     }
 
     /// Cube-to-offset coordinate conversion.
-    fn from_cube(&self, x: i32, y: i32, z: i32) -> (u32, u32) {
+    fn from_cube(&self, x: i32, _y: i32, z: i32) -> (u32, u32) {
         match self.layout {
             HexLayout::PointyTop => {
                 let col = x + (z - (z & 1)) / 2;
@@ -317,7 +317,7 @@ impl HexGrid {
     fn neighbor_dirs(&self, row: u32) -> [(i32, i32); 6] {
         match self.layout {
             HexLayout::PointyTop => {
-                if row % 2 == 0 {
+                if row.is_multiple_of(2) {
                     [(1, 0), (0, -1), (-1, -1), (-1, 0), (-1, 1), (0, 1)]
                 } else {
                     [(1, 0), (1, -1), (0, -1), (-1, 0), (0, 1), (1, 1)]

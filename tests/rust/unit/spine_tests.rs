@@ -41,7 +41,7 @@ mod bone_tests {
 // ── slot ──────────────────────────────────────────────────────────────
 
 mod slot_tests {
-    use super::*;
+    
     use lurek2d::spine::slot::Slot;
 
     #[test]
@@ -123,7 +123,7 @@ mod ik_tests {
 // ── timeline ──────────────────────────────────────────────────────────
 
 mod timeline_tests {
-    use super::*;
+    
     use lurek2d::spine::timeline::{BoneProperty, BoneTimeline, EasingType, EventKeyframe, SkeletonAnimation};
 
     // ── EasingType ────────────────────────────────────────────────────

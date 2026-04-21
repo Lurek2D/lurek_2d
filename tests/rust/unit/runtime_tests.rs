@@ -88,7 +88,7 @@ mod error_tests {
             EngineError::ConfigError("".into()),
             EngineError::ResourceNotFound("".into()),
             EngineError::ResourceNotLoaded("".into()),
-            EngineError::IoError(std::io::Error::new(std::io::ErrorKind::Other, "")),
+            EngineError::IoError(std::io::Error::other("")),
         ];
         let mut codes: Vec<&str> = errors.iter().map(|e| e.code()).collect();
         let total = codes.len();
@@ -180,7 +180,7 @@ mod error_tests {
             EngineError::ConfigError("".into()),
             EngineError::ResourceNotFound("".into()),
             EngineError::ResourceNotLoaded("".into()),
-            EngineError::IoError(std::io::Error::new(std::io::ErrorKind::Other, "")),
+            EngineError::IoError(std::io::Error::other("")),
         ];
         for err in &errors {
             assert!(!err.recovery_hint().is_empty(), "empty hint for {:?}", err);

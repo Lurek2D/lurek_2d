@@ -972,7 +972,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
                 Option<u8>,
                 Option<bool>,
             )| {
-                let mut host = host_ud.borrow_mut::<LuaNetworkHost>()?;
+                let host = host_ud.borrow_mut::<LuaNetworkHost>()?;
                 // Build envelope: { id = entity_id, data = <table fields> }
                 let mut fields: Vec<(String, NetValue)> = Vec::new();
                 for pair in data_tbl.pairs::<LuaValue, LuaValue>() {

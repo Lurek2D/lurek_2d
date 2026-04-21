@@ -8,7 +8,7 @@
 //! visually appropriate for a geoscape-style map and efficient for 8k provinces.
 
 use crate::globe::types::GlobeSpec;
-use crate::math::sphere::{axial_tilt_mat, lat_lon_to_unit, rot_y};
+use crate::math::sphere::{lat_lon_to_unit, rot_y};
 use crate::math::Vec3;
 
 /// Compute the sun direction as a world-space unit vector.

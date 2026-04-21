@@ -8,7 +8,7 @@ use std::rc::Rc;
 use super::SharedState;
 use crate::ui::containers::LayoutDirection;
 use crate::ui::context::{GuiContext, GuiEvent, WidgetKind};
-use crate::ui::extras::{AccordionSection, Badge, TableColumn, Toast};
+use crate::ui::extras::{AccordionSection, TableColumn, Toast};
 use crate::ui::theme::{Theme, WidgetStyle};
 use crate::ui::widget::{WidgetState, WidgetType};
 
@@ -5980,8 +5980,8 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
                 };
                 match val {
                     mlua::Value::Number(n) => match w {
-                        WidgetKind::Slider(sl) => sl.value = n as f64,
-                        WidgetKind::ProgressBar(pb) => pb.value = n as f64,
+                        WidgetKind::Slider(sl) => sl.value = n,
+                        WidgetKind::ProgressBar(pb) => pb.value = n,
                         _ => {}
                     },
                     mlua::Value::String(s) => {
@@ -6132,7 +6132,7 @@ fn read_widget_children(table: &mlua::Table) -> mlua::Result<Option<Vec<crate::u
         return Ok(None);
     };
     let len = ct.raw_len();
-    let mut result = Vec::with_capacity(len as usize);
+    let mut result = Vec::with_capacity(len);
     for i in 1..=len {
         let child_table: mlua::Table = ct.get(i)?;
         result.push(lua_table_to_widget_def(&child_table)?);

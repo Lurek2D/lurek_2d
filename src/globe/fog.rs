@@ -21,7 +21,7 @@ pub struct FogMask {
 impl FogMask {
     /// Create a new fog mask with all provinces hidden.
     pub fn all_hidden() -> Self {
-        let words = (MAX_PROVINCES + 63) / 64;
+        let words = MAX_PROVINCES.div_ceil(64);
         Self {
             bits: vec![0u64; words],
         }
@@ -29,7 +29,7 @@ impl FogMask {
 
     /// Create a new fog mask with all provinces visible.
     pub fn all_visible() -> Self {
-        let words = (MAX_PROVINCES + 63) / 64;
+        let words = MAX_PROVINCES.div_ceil(64);
         let mut bits = vec![!0u64; words];
         // Clear bits beyond MAX_PROVINCES.
         let trailing = MAX_PROVINCES % 64;

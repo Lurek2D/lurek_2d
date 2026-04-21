@@ -39,7 +39,7 @@ c = true
 "#;
         let val = parse_toml(input).unwrap();
         let inner = &val["a"]["b"]["c"];
-        assert_eq!(inner.as_bool().unwrap(), true);
+        assert!(inner.as_bool().unwrap());
     }
 
     #[test]

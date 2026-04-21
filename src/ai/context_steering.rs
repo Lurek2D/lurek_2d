@@ -335,7 +335,7 @@ impl ContextSteering {
                 }
                 ContextBehaviorKind::Wander { jitter, .. } => {
                     // Perturb wander angle each evaluation
-                    let hash_jitter = ((ay * 7.3 + ax * 3.7 + vx + vy).sin() * 43758.5453123) % 1.0;
+                    let hash_jitter = ((ay * 7.3 + ax * 3.7 + vx + vy).sin() * 43_758.547) % 1.0;
                     self.wander_angle += (hash_jitter * 2.0 - 1.0) * jitter;
                     fill_cone(ring, self.wander_angle, slot_angle, b.weight, n);
                 }

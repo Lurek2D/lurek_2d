@@ -6,7 +6,7 @@
 //! Key functions: `cumsum`, `diff`, `histogram`, `percentile`, `covariance`,
 //! `pearson_corr`, `normalize_range`, `zscore`, `convolve1d`, `correlate1d`.
 
-use crate::compute::array::{DataType, NdArray};
+use crate::compute::array::NdArray;
 
 // ---------------------------------------------------------------------------
 // Cumulative operations

@@ -2,7 +2,7 @@
 
 use lurek2d::math::{Color, Vec2};
 use lurek2d::raycaster::*;
-use lurek2d::render::renderer::{DrawMode, RenderCommand};
+use lurek2d::render::renderer::RenderCommand;
 
 // ── visibility ────────────────────────────────────────────────────────
 

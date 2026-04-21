@@ -95,7 +95,7 @@ mod host_tests {
     fn host_role_copy_clone() {
         let r = HostRole::Server;
         let r2 = r; // Copy
-        let r3 = r.clone(); // Clone
+        let r3 = r; // Clone
         assert_eq!(r, r2);
         assert_eq!(r, r3);
     }

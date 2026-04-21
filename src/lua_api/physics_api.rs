@@ -9,7 +9,6 @@ use super::SharedState;
 use crate::math::Vec2;
 use crate::physics::{
     Body, BodyType, CellType, CellularWorld, PhysicsZone, RaycastHit, Shape, TerrainMap, World,
-    ZoneGravityMode,
 };
 
 // -------------------------------------------------------------------------------
@@ -1594,7 +1593,7 @@ impl LuaUserData for LuaTerrain {
         ///
         /// @return string
         methods.add_method("toBytes", |lua, this, ()| {
-            lua.create_string(&this.terrain.borrow().to_bytes())
+            lua.create_string(this.terrain.borrow().to_bytes())
         });
 
         // -- loadFromBytes --
@@ -1768,7 +1767,7 @@ impl LuaUserData for LuaCellular {
         ///
         /// @return string
         methods.add_method("toBytes", |lua, this, ()| {
-            lua.create_string(&this.sim.borrow().to_bytes())
+            lua.create_string(this.sim.borrow().to_bytes())
         });
 
         // -- loadFromBytes --

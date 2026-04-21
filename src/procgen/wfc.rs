@@ -161,7 +161,7 @@ pub fn wfc_generate(opts: &WfcOpts) -> WfcGrid {
                                 opts.rules
                                     .adjacencies
                                     .get(cur_tile)
-                                    .map_or(true, |adj| adj.contains(nb_tile))
+                                    .is_none_or(|adj| adj.contains(nb_tile))
                             })
                         })
                         .collect();

@@ -641,8 +641,8 @@ impl ImageData {
                 }
             }
             // Unmatched rows / columns: count as maximum difference
-            let extra_self = (self.width * self.height - shared_w * shared_h) as u32 * 4 * 255;
-            let extra_other = (other.width * other.height - shared_w * shared_h) as u32 * 4 * 255;
+            let extra_self = (self.width * self.height - shared_w * shared_h) * 4 * 255;
+            let extra_other = (other.width * other.height - shared_w * shared_h) * 4 * 255;
             total + extra_self + extra_other
         }
     }
@@ -666,7 +666,7 @@ impl ImageData {
         if ksize == 0 {
             return Err("ksize must be >= 1".into());
         }
-        if ksize % 2 == 0 {
+        if ksize.is_multiple_of(2) {
             return Err(format!("ksize must be odd, got {}", ksize));
         }
         if kernel.len() != ksize * ksize {
@@ -699,7 +699,7 @@ impl ImageData {
                         }
                     }
                 }
-                let idx = ((py * w as i32) as usize + px as usize) * 4;
+                let idx = ((py * w) as usize + px as usize) * 4;
                 for c in 0..3usize {
                     out.pixels[idx + c] = acc[c].clamp(0.0, 255.0).round() as u8;
                 }

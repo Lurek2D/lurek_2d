@@ -1,7 +1,7 @@
 //! Tests for the graph module.
 
 use lurek2d::graph::{
-    ConversionRule, Edge, FlowMode, Graph, GraphEvent, GraphItem, GraphStats, ItemPosition, Node,
+    ConversionRule, Edge, FlowMode, Graph, GraphEvent, GraphItem, ItemPosition, Node,
     OverflowPolicy,
 };
 

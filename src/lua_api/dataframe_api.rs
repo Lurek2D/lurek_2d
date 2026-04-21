@@ -961,7 +961,7 @@ impl LuaUserData for LuaDataFrame {
                     .inner
                     .borrow()
                     .with_eval(&col_name, &expr)
-                    .map_err(|e| LuaError::RuntimeError(e))?;
+                    .map_err(LuaError::RuntimeError)?;
                 lua.create_userdata(LuaDataFrame::new(result))
             },
         );

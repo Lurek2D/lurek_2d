@@ -270,7 +270,7 @@ mod lighting_tests {
         let intensity = province_intensity(0.0, 0.0, &sun, 0.08);
         // Dot product with (0,0,1) for lat=0, lon=0 depends on sphere convention;
         // just verify it is within [0.08, 1.0].
-        assert!(intensity >= 0.08 && intensity <= 1.0, "intensity {intensity} out of range");
+        assert!((0.08..=1.0).contains(&intensity), "intensity {intensity} out of range");
     }
 
     #[test]
@@ -338,7 +338,7 @@ mod lighting_tests {
         let sun = lurek2d::math::Vec3::new(0.0, 1.0, 0.0);
         let alpha = terminator_alpha(90.0, 0.0, &sun, 10.0);
         // North pole with sun pointing up should be fully lit.
-        assert!(alpha >= 0.0 && alpha <= 1.0);
+        assert!((0.0..=1.0).contains(&alpha));
     }
 
     #[test]
@@ -346,7 +346,7 @@ mod lighting_tests {
         let spec = default_spec();
         let sun = sun_direction(&spec);
         let alpha = terminator_alpha(45.0, 30.0, &sun, 15.0);
-        assert!(alpha >= 0.0 && alpha <= 1.0);
+        assert!((0.0..=1.0).contains(&alpha));
     }
 
     #[test]
@@ -356,7 +356,7 @@ mod lighting_tests {
         // With transition_deg = 0 the result can only be 0 or 1.
         let alpha = terminator_alpha(45.0, 30.0, &sun, 0.0);
         // Should not panic and return a clamped value.
-        assert!(alpha >= 0.0 && alpha <= 1.0);
+        assert!((0.0..=1.0).contains(&alpha));
     }
 }
 

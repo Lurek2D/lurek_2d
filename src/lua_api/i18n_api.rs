@@ -757,10 +757,8 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
                 // Substitute {placeholder} variables when provided.
                 let result = if let Some(tbl) = vars {
                     let mut out = raw;
-                    for pair in tbl.pairs::<String, String>() {
-                        if let Ok((k, v)) = pair {
-                            out = out.replace(&format!("{{{}}}", k), &v);
-                        }
+                    for (k, v) in tbl.pairs::<String, String>().flatten() {
+                        out = out.replace(&format!("{{{}}}", k), &v);
                     }
                     out
                 } else {

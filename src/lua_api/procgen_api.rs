@@ -407,18 +407,16 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         lua.create_function(|_, opts: LuaTable| {
             let axiom: String = opts.get("axiom").unwrap_or_else(|_| String::from("F"));
             let iterations: u32 = opts.get("iterations").unwrap_or(3);
-            let mut rules: Vec<(char, &'static str)> = Vec::new();
+            let rules: Vec<(char, &'static str)> = Vec::new();
             let rule_strings: Vec<(char, String)> = opts
                 .get::<_, Option<LuaTable>>("rules")
                 .unwrap_or(None)
                 .map(|rt| {
                     let mut v = Vec::new();
-                    for pair in rt.pairs::<LuaValue, String>() {
-                        if let Ok((k, val)) = pair {
-                            if let LuaValue::String(s) = k {
-                                if let Some(c) = s.to_str().ok().and_then(|ss| ss.chars().next()) {
-                                    v.push((c, val));
-                                }
+                    for (k, val) in rt.pairs::<LuaValue, String>().flatten() {
+                        if let LuaValue::String(s) = k {
+                            if let Some(c) = s.to_str().ok().and_then(|ss| ss.chars().next()) {
+                                v.push((c, val));
                             }
                         }
                     }
@@ -448,14 +446,12 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
                     .unwrap_or(None)
                     .map(|rt| {
                         let mut v = Vec::new();
-                        for pair in rt.pairs::<LuaValue, String>() {
-                            if let Ok((k, val)) = pair {
-                                if let LuaValue::String(s) = k {
-                                    if let Some(c) =
-                                        s.to_str().ok().and_then(|ss| ss.chars().next())
-                                    {
-                                        v.push((c, val));
-                                    }
+                        for (k, val) in rt.pairs::<LuaValue, String>().flatten() {
+                            if let LuaValue::String(s) = k {
+                                if let Some(c) =
+                                    s.to_str().ok().and_then(|ss| ss.chars().next())
+                                {
+                                    v.push((c, val));
                                 }
                             }
                         }
@@ -908,18 +904,16 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         lua.create_function(|_, opts: LuaTable| {
             let axiom: String = opts.get("axiom").unwrap_or_else(|_| String::from("F"));
             let iterations: u32 = opts.get("iterations").unwrap_or(3);
-            let mut rules: Vec<(char, &'static str)> = Vec::new();
+            let rules: Vec<(char, &'static str)> = Vec::new();
             let rule_strings: Vec<(char, String)> = opts
                 .get::<_, Option<LuaTable>>("rules")
                 .unwrap_or(None)
                 .map(|rt| {
                     let mut v = Vec::new();
-                    for pair in rt.pairs::<LuaValue, String>() {
-                        if let Ok((k, val)) = pair {
-                            if let LuaValue::String(s) = k {
-                                if let Some(c) = s.to_str().ok().and_then(|ss| ss.chars().next()) {
-                                    v.push((c, val));
-                                }
+                    for (k, val) in rt.pairs::<LuaValue, String>().flatten() {
+                        if let LuaValue::String(s) = k {
+                            if let Some(c) = s.to_str().ok().and_then(|ss| ss.chars().next()) {
+                                v.push((c, val));
                             }
                         }
                     }
@@ -949,14 +943,12 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
                     .unwrap_or(None)
                     .map(|rt| {
                         let mut v = Vec::new();
-                        for pair in rt.pairs::<LuaValue, String>() {
-                            if let Ok((k, val)) = pair {
-                                if let LuaValue::String(s) = k {
-                                    if let Some(c) =
-                                        s.to_str().ok().and_then(|ss| ss.chars().next())
-                                    {
-                                        v.push((c, val));
-                                    }
+                        for (k, val) in rt.pairs::<LuaValue, String>().flatten() {
+                            if let LuaValue::String(s) = k {
+                                if let Some(c) =
+                                    s.to_str().ok().and_then(|ss| ss.chars().next())
+                                {
+                                    v.push((c, val));
                                 }
                             }
                         }

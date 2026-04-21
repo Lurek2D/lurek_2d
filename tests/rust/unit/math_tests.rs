@@ -2162,7 +2162,7 @@ mod noise_functions_tests {
             let y = i as f32 * 0.53;
             let v = perlin2d(x, y, 0);
             assert!(
-                v >= -1.5 && v <= 1.5,
+                (-1.5..=1.5).contains(&v),
                 "Perlin out of range: {v} at ({x}, {y})"
             );
         }
@@ -2196,7 +2196,7 @@ mod noise_functions_tests {
             let y = i as f32 * 0.53;
             let v = simplex2d(x, y, 0);
             assert!(
-                v >= -1.5 && v <= 1.5,
+                (-1.5..=1.5).contains(&v),
                 "Simplex out of range: {v} at ({x}, {y})"
             );
         }
@@ -2252,7 +2252,7 @@ mod noise_generator_tests {
             let y = i as f64 * 0.53;
             let v = gen.perlin_2d(x, y);
             assert!(
-                v >= -1.5 && v <= 1.5,
+                (-1.5..=1.5).contains(&v),
                 "perlin_2d out of range: {} at ({}, {})",
                 v,
                 x,
@@ -2269,7 +2269,7 @@ mod noise_generator_tests {
             let y = i as f64 * 0.47;
             let v = gen.simplex_2d(x, y);
             assert!(
-                v >= -1.5 && v <= 1.5,
+                (-1.5..=1.5).contains(&v),
                 "simplex_2d out of range: {} at ({}, {})",
                 v,
                 x,
