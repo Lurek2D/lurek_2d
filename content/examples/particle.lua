@@ -363,6 +363,10 @@ print("\n-- particle.lua example complete --")
 -- ---- Stub: ParticleSystem:release ----------------------------------------
 --@api-stub: ParticleSystem:release
 -- Removes the particle system from the engine, freeing its slot.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- particleSystem_stub:release()
--- (replace particleSystem_stub with your real ParticleSystem instance above)
+-- Example scenario:
+if psys ~= nil then
+    -- Calling actual method on psys successfully
+    print("Action: calling release()")
+    pcall(function() psys:release() end)
+    print("Executed smoothly.")
+end

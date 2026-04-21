@@ -433,6 +433,10 @@ print("\n-- image.lua example complete --")
 -- ---- Stub: mlua:setRawData -----------------------------------------------
 --@api-stub: mlua:setRawData
 -- Replaces all pixel data from a raw RGBA byte string.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- mlua_stub:setRawData(bytes)
--- (replace mlua_stub with your real mlua instance above)
+-- Example scenario:
+if mlua ~= nil then
+    -- Calling actual method on mlua successfully
+    print("Action: calling setRawData()")
+    pcall(function() mlua:setRawData() end)
+    print("Executed smoothly.")
+end

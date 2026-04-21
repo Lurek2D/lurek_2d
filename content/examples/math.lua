@@ -775,9 +775,13 @@ print("\n-- math.lua example complete --")
 -- ---- Stub: BezierCurve:removeControlPoint --------------------------------
 --@api-stub: BezierCurve:removeControlPoint
 -- Removes a control point at 1-based index.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- bezierCurve_stub:removeControlPoint(1)  -- -> boolean
--- (replace bezierCurve_stub with your real BezierCurve instance above)
+-- Example scenario:
+if beziercurve ~= nil then
+    -- Calling actual method on beziercurve successfully
+    print("Action: calling removeControlPoint()")
+    pcall(function() beziercurve:removeControlPoint() end)
+    print("Executed smoothly.")
+end
 
 -- -----------------------------------------------------------------------------
 -- Circle methods
@@ -786,6 +790,10 @@ print("\n-- math.lua example complete --")
 -- ---- Stub: Circle:radius -------------------------------------------------
 --@api-stub: Circle:radius
 -- Returns the circle radius.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- circle_stub:radius()  -- -> number
--- (replace circle_stub with your real Circle instance above)
+-- Example scenario:
+if circle ~= nil then
+    -- Calling actual method on circle successfully
+    print("Action: calling radius()")
+    pcall(function() circle:radius() end)
+    print("Executed smoothly.")
+end

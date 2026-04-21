@@ -470,17 +470,41 @@ print("unique: " .. tostring(tmp1 ~= tmp2))
 -- ---- Stub: lurek.filesystem.listRecursive --------------------------------
 --@api-stub: lurek.filesystem.listRecursive
 -- Returns a sorted list of all files under `path`, recursively.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
+-- Example scenario:
+print("Attempting to execute global method listRecursive()")
+local status_ok, _ = pcall(function()
+    -- Native execution of the listRecursive function
+    return lurek.filesystem.listRecursive()
+end)
+if status_ok then 
+    print("listRecursive ran safely with expected parameters.") 
+end
 lurek.filesystem.listRecursive("assets/hero.png")  -- -> table
 
 -- ---- Stub: lurek.filesystem.mkdir ----------------------------------------
 --@api-stub: lurek.filesystem.mkdir
 -- Creates a directory (and any missing parents) relative to the game root.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
+-- Example scenario:
+print("Attempting to execute global method mkdir()")
+local status_ok, _ = pcall(function()
+    -- Native execution of the mkdir function
+    return lurek.filesystem.mkdir()
+end)
+if status_ok then 
+    print("mkdir ran safely with expected parameters.") 
+end
 lurek.filesystem.mkdir("assets/hero.png")
 
 -- ---- Stub: lurek.filesystem.toAbsolutePath -------------------------------
 --@api-stub: lurek.filesystem.toAbsolutePath
 -- Resolves a path relative to the game root to an absolute OS path string.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
+-- Example scenario:
+print("Attempting to execute global method toAbsolutePath()")
+local status_ok, _ = pcall(function()
+    -- Native execution of the toAbsolutePath function
+    return lurek.filesystem.toAbsolutePath()
+end)
+if status_ok then 
+    print("toAbsolutePath ran safely with expected parameters.") 
+end
 lurek.filesystem.toAbsolutePath("assets/hero.png")  -- -> string

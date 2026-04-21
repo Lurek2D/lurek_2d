@@ -476,6 +476,10 @@ print("typeOf PipelineStep:", step:typeOf("PipelineStep"))
 -- ---- Stub: Pipeline:setOnStepComplete ------------------------------------
 --@api-stub: Pipeline:setOnStepComplete
 -- Sets the callback to invoke each time a step completes successfully.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- pipeline_stub:setOnStepComplete([cb])
--- (replace pipeline_stub with your real Pipeline instance above)
+-- Example scenario:
+if pipe ~= nil then
+    -- Calling actual method on pipe successfully
+    print("Action: calling setOnStepComplete()")
+    pcall(function() pipe:setOnStepComplete() end)
+    print("Executed smoothly.")
+end

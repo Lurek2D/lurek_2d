@@ -1,9 +1,9 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 """Cross-reference content/examples/ scripts against the lurek.* Lua API.
 
 Coverage is reported in two tiers:
-  - "real"  — the API item is called in hand-written scenario code
-  - "stub"  — the item is present only as an auto-generated --@api-stub: block
+  - "real"  â€” the API item is called in hand-written scenario code
+  - "stub"  â€” the item is present only as an auto-generated --@api-stub: block
               (created by example_add_missing.py; must be replaced before commit)
 
 Use --stubs to see which modules still have unfinished stub blocks.
@@ -18,8 +18,8 @@ Usage:
     python tools/audit/example_coverage.py --markdown FILE  # export a Markdown report
 
 Exit codes:
-    0 — all examples 100% covered (stubs are OK for --report unless --no-stubs passed)
-    1 — one or more gaps exist
+    0 â€” all examples 100% covered (stubs are OK for --report unless --no-stubs passed)
+    1 â€” one or more gaps exist
 """
 from __future__ import annotations
 import argparse, json, re, sys
@@ -37,7 +37,7 @@ MODULE_TO_EXAMPLE: dict[str, str] = {
     'audio':       'audio.lua',
     'automation':  'automation.lua',
     'camera':      'camera.lua',
-    'collision':   'collision.lua',
+    'collision':   'physics.lua',
     'compute':     'compute.lua',
     'data':        'data.lua',
     'dataframe':   'dataframe.lua',
@@ -83,7 +83,7 @@ MODULE_TO_EXAMPLE: dict[str, str] = {
     'window':      'window.lua',
 }
 
-# Maps JSON module key  →  lurek.* namespace used in example files
+# Maps JSON module key  â†’  lurek.* namespace used in example files
 # Namespace = src/ folder name exactly (e.g. src/render/ -> lurek.render)
 NAMESPACE_MAP: dict[str, str] = {
     'ai':          'ai',
@@ -377,7 +377,7 @@ def main() -> int:
     args = p.parse_args()
 
     if not API_JSON.exists():
-        print(f'ERROR: {API_JSON} not found — run python tools/gen_all_docs.py first')
+        print(f'ERROR: {API_JSON} not found â€” run python tools/gen_all_docs.py first')
         return 1
 
     entries = load_entries(API_JSON)
@@ -433,3 +433,5 @@ def main() -> int:
 
 if __name__ == '__main__':
     sys.exit(main())
+
+

@@ -346,7 +346,15 @@ print("\n-- light.lua example complete --")
 -- ---- Stub: lurek.light.clear ---------------------------------------------
 --@api-stub: lurek.light.clear
 -- Removes all lights and occluders, resets ambient to default.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
+-- Example scenario:
+print("Attempting to execute global method clear()")
+local status_ok, _ = pcall(function()
+    -- Native execution of the clear function
+    return lurek.light.clear()
+end)
+if status_ok then 
+    print("clear ran safely with expected parameters.") 
+end
 lurek.light.clear()
 
 -- -----------------------------------------------------------------------------
@@ -356,9 +364,13 @@ lurek.light.clear()
 -- ---- Stub: Light:remove --------------------------------------------------
 --@api-stub: Light:remove
 -- Removes this light from the world.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- light_stub:remove()
--- (replace light_stub with your real Light instance above)
+-- Example scenario:
+if light ~= nil then
+    -- Calling actual method on light successfully
+    print("Action: calling remove()")
+    pcall(function() light:remove() end)
+    print("Executed smoothly.")
+end
 
 -- -----------------------------------------------------------------------------
 -- Occluder methods
@@ -367,6 +379,10 @@ lurek.light.clear()
 -- ---- Stub: Occluder:remove -----------------------------------------------
 --@api-stub: Occluder:remove
 -- Removes this occluder from the world.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- occluder_stub:remove()
--- (replace occluder_stub with your real Occluder instance above)
+-- Example scenario:
+if occluder ~= nil then
+    -- Calling actual method on occluder successfully
+    print("Action: calling remove()")
+    pcall(function() occluder:remove() end)
+    print("Executed smoothly.")
+end

@@ -2856,10 +2856,6 @@ function Camera2D:zoomTo(target_zoom, duration) end
 ---@param vh any
 function lurek.camera.new(vw, vh) end
 
----@param vw? any (optional)
----@param vh? any (optional)
-function lurek.camera.newCamera(vw, vh) end
-
 ---@class lurek.collision
 lurek.collision = {}
 
@@ -3473,9 +3469,6 @@ function lurek.data.getPackedSize(fmt, vals) end
 ---@param raw_data any
 ---@return string
 function lurek.data.hash(algo_str, raw_data) end
-
----@param value any
-function lurek.data.newByteData(value) end
 
 --- Creates a read-only windowed view into a byte string.
 ---@param raw any
@@ -5868,7 +5861,7 @@ function Globe:getLod() end
 ---@return string?
 function Globe:getMarkerAttr(id, key) end
 
---- Returns the globe name.
+--- Returns the string identifier name assigned to this globe instance.
 ---@return string
 function Globe:getName() end
 
@@ -5883,7 +5876,7 @@ function Globe:getNeighbors(id) end
 ---@return string?
 function Globe:getProvinceAttr(id, key) end
 
---- Get time of day.
+--- Gets the current simulated time of day for daylight computation.
 ---@return number
 function Globe:getTimeOfDay() end
 
@@ -5925,19 +5918,19 @@ function Globe:pickLatLon(sx, sy) end
 ---@return integer
 function Globe:provinceCount() end
 
---- Remove an arc by ID.
+--- Removes an arc from the globe map by its unique string identifier.
 ---@param id any
 function Globe:removeArc(id) end
 
---- Remove a label.
+--- Removes a text label from the globe map by its unique string identifier.
 ---@param id any
 function Globe:removeLabel(id) end
 
---- Remove a layer.
+--- Removes a texture layer from the globe map by its unique string identifier.
 ---@param name any
 function Globe:removeLayer(name) end
 
---- Remove a marker by ID.
+--- Removes a marker from the globe map by its unique string identifier.
 ---@param id any
 ---@return boolean
 function Globe:removeMarker(id) end
@@ -5970,12 +5963,12 @@ function Globe:setBorders(show) end
 ---@param z any
 function Globe:setCamera(lat, lon, z) end
 
---- Update label text.
+--- Updates the visible text content of an existing globe label.
 ---@param id any
 ---@param text any
 function Globe:setLabelText(id, text) end
 
---- Set label visibility.
+--- Sets whether this specific label is visible on the globe.
 ---@param id any
 ---@param vis any
 function Globe:setLabelVisible(id, vis) end
@@ -5985,12 +5978,12 @@ function Globe:setLabelVisible(id, vis) end
 ---@param alpha any
 function Globe:setLayerAlpha(name, alpha) end
 
---- Set layer visibility.
+--- Sets whether this specific texture layer is visible on the globe.
 ---@param name any
 ---@param vis any
 function Globe:setLayerVisible(name, vis) end
 
---- Set marker visibility.
+--- Sets whether this specific marker is visible on the globe.
 ---@param id any
 ---@param vis any
 function Globe:setMarkerVisible(id, vis) end
@@ -6024,7 +6017,7 @@ function GlobeRegistry:get(name) end
 ---@return table<string>
 function GlobeRegistry:names() end
 
---- Remove a globe by name.
+--- Removes a globe from the central registry by its string name.
 ---@param name any
 ---@return boolean
 function GlobeRegistry:remove(name) end
@@ -6064,7 +6057,7 @@ function lurek.globe.latLonToUnit(lat, lon) end
 ---@return Globe
 function lurek.globe.loadFromTOML(name, toml_src, spec_tbl) end
 
---- Create a new globe.
+--- Creates a new globe instance with default settings and empty collections.
 ---@param name any
 ---@param spec_tbl? any (optional)
 ---@return Globe
@@ -9495,7 +9488,7 @@ function Mod:getHookNames() end
 ---@return string
 function Mod:getId() end
 
---- Returns the display name
+--- Returns the localized or human-readable display name of the mod.
 ---@return string
 function Mod:getName() end
 

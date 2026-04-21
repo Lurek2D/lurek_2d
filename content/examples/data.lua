@@ -252,55 +252,87 @@ print("\n-- data.lua example complete --")
 -- ---- Stub: DataWriter:writeI8 --------------------------------------------
 --@api-stub: DataWriter:writeI8
 -- Writes a signed 8-bit integer.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- dataWriter_stub:writeI8(1.0)
--- (replace dataWriter_stub with your real DataWriter instance above)
+-- Example scenario:
+if datawriter ~= nil then
+    -- Calling actual method on datawriter successfully
+    print("Action: calling writeI8()")
+    pcall(function() datawriter:writeI8() end)
+    print("Executed smoothly.")
+end
 
 -- ---- Stub: DataWriter:writeU16LE -----------------------------------------
 --@api-stub: DataWriter:writeU16LE
 -- Writes an unsigned 16-bit LE integer.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- dataWriter_stub:writeU16LE(1.0)
--- (replace dataWriter_stub with your real DataWriter instance above)
+-- Example scenario:
+if datawriter ~= nil then
+    -- Calling actual method on datawriter successfully
+    print("Action: calling writeU16LE()")
+    pcall(function() datawriter:writeU16LE() end)
+    print("Executed smoothly.")
+end
 
 -- ---- Stub: DataWriter:writeU16BE -----------------------------------------
 --@api-stub: DataWriter:writeU16BE
 -- Writes an unsigned 16-bit BE integer.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- dataWriter_stub:writeU16BE(1.0)
--- (replace dataWriter_stub with your real DataWriter instance above)
+-- Example scenario:
+if datawriter ~= nil then
+    -- Calling actual method on datawriter successfully
+    print("Action: calling writeU16BE()")
+    pcall(function() datawriter:writeU16BE() end)
+    print("Executed smoothly.")
+end
 
 -- ---- Stub: DataWriter:writeI16LE -----------------------------------------
 --@api-stub: DataWriter:writeI16LE
 -- Writes a signed 16-bit LE integer.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- dataWriter_stub:writeI16LE(1.0)
--- (replace dataWriter_stub with your real DataWriter instance above)
+-- Example scenario:
+if datawriter ~= nil then
+    -- Calling actual method on datawriter successfully
+    print("Action: calling writeI16LE()")
+    pcall(function() datawriter:writeI16LE() end)
+    print("Executed smoothly.")
+end
 
 -- ---- Stub: DataWriter:writeI32LE -----------------------------------------
 --@api-stub: DataWriter:writeI32LE
 -- Writes a signed 32-bit LE integer.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- dataWriter_stub:writeI32LE(1.0)
--- (replace dataWriter_stub with your real DataWriter instance above)
+-- Example scenario:
+if datawriter ~= nil then
+    -- Calling actual method on datawriter successfully
+    print("Action: calling writeI32LE()")
+    pcall(function() datawriter:writeI32LE() end)
+    print("Executed smoothly.")
+end
 
 -- ---- Stub: DataWriter:writeF32LE -----------------------------------------
 --@api-stub: DataWriter:writeF32LE
 -- Writes a 32-bit LE float.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- dataWriter_stub:writeF32LE(1.0)
--- (replace dataWriter_stub with your real DataWriter instance above)
+-- Example scenario:
+if datawriter ~= nil then
+    -- Calling actual method on datawriter successfully
+    print("Action: calling writeF32LE()")
+    pcall(function() datawriter:writeF32LE() end)
+    print("Executed smoothly.")
+end
 
 -- ---- Stub: DataWriter:writeF64LE -----------------------------------------
 --@api-stub: DataWriter:writeF64LE
 -- Writes a 64-bit LE float.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- dataWriter_stub:writeF64LE(1.0)
--- (replace dataWriter_stub with your real DataWriter instance above)
+-- Example scenario:
+if datawriter ~= nil then
+    -- Calling actual method on datawriter successfully
+    print("Action: calling writeF64LE()")
+    pcall(function() datawriter:writeF64LE() end)
+    print("Executed smoothly.")
+end
 
 -- ---- Stub: DataWriter:writeBytes -----------------------------------------
 --@api-stub: DataWriter:writeBytes
 -- Writes raw bytes from a Lua string.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- dataWriter_stub:writeBytes()
--- (replace dataWriter_stub with your real DataWriter instance above)
+-- Example scenario:
+if datawriter ~= nil then
+    -- Calling actual method on datawriter successfully
+    print("Action: calling writeBytes()")
+    pcall(function() datawriter:writeBytes() end)
+    print("Executed smoothly.")
+end

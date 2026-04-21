@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-21T21:27:54.893071+00:00",
+  "generated_at": "2026-04-21T22:19:51.380220+00:00",
   "summary": {
     "rust": {
       "total": 5261,
@@ -20438,7 +20438,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/automation_api.rs",
-      "line": 397,
+      "line": 399,
       "kind": "fn",
       "name": "vec_from_lua_table",
       "has_doc": true
@@ -20510,7 +20510,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/data_api.rs",
-      "line": 754,
+      "line": 755,
       "kind": "struct",
       "name": "LuaDataWriter",
       "has_doc": true
@@ -20717,7 +20717,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/globe_api.rs",
-      "line": 597,
+      "line": 599,
       "kind": "struct",
       "name": "LuaGlobeRegistry",
       "has_doc": true
@@ -20726,7 +20726,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/globe_api.rs",
-      "line": 712,
+      "line": 715,
       "kind": "fn",
       "name": "register",
       "has_doc": true
@@ -21023,7 +21023,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/mods_api.rs",
-      "line": 419,
+      "line": 420,
       "kind": "struct",
       "name": "LuaModManager",
       "has_doc": true
@@ -21032,7 +21032,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/mods_api.rs",
-      "line": 426,
+      "line": 427,
       "kind": "fn",
       "name": "new",
       "has_doc": true
@@ -21041,7 +21041,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/mods_api.rs",
-      "line": 607,
+      "line": 608,
       "kind": "fn",
       "name": "register",
       "has_doc": true
@@ -21131,7 +21131,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/particle_api.rs",
-      "line": 1554,
+      "line": 1556,
       "kind": "fn",
       "name": "from_lua_opts",
       "has_doc": true
@@ -47474,7 +47474,7 @@
       "source": "lua_api",
       "module": "globe_api",
       "file": "src/lua_api/globe_api.rs",
-      "line": 862,
+      "line": 865,
       "kind": "fn",
       "name": "MAX_PROVINCES",
       "has_doc": true
@@ -47483,7 +47483,7 @@
       "source": "lua_api",
       "module": "globe_api",
       "file": "src/lua_api/globe_api.rs",
-      "line": 866,
+      "line": 869,
       "kind": "fn",
       "name": "LOD_FAR",
       "has_doc": true
@@ -47492,7 +47492,7 @@
       "source": "lua_api",
       "module": "globe_api",
       "file": "src/lua_api/globe_api.rs",
-      "line": 868,
+      "line": 871,
       "kind": "fn",
       "name": "LOD_MID",
       "has_doc": true
@@ -47501,7 +47501,7 @@
       "source": "lua_api",
       "module": "globe_api",
       "file": "src/lua_api/globe_api.rs",
-      "line": 870,
+      "line": 873,
       "kind": "fn",
       "name": "LOD_NEAR",
       "has_doc": true
@@ -47735,7 +47735,7 @@
       "source": "lua_api",
       "module": "scene_api",
       "file": "src/lua_api/scene_api.rs",
-      "line": 1189,
+      "line": 1191,
       "kind": "fn",
       "name": "transitions",
       "has_doc": true

@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 """Convenience runner: regenerate the full Lurek2D documentation pipeline in one command.
 
 Steps:
@@ -45,6 +45,8 @@ SCRIPTS_WITH_ARGS = [
      "Rust test docs (docs/tests/test_docs_rust.md)"),
     ("docs/gen_test_docs.py", ["--mode", "lua",  "--output", "docs/tests/test_docs_lua.md"],
      "Lua test docs (docs/tests/test_docs_lua.md)"),
+    ("audit/example_coverage.py", ["--markdown", "docs/API/example_coverage.md"],
+     "Example coverage (docs/API/example_coverage.md)"),
     ("audit/gen_coverage_gaps.py", [],
      "Coverage gaps (docs/API/coverage_gaps.md)"),
 ]
@@ -106,3 +108,5 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
+

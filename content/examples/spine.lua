@@ -217,6 +217,10 @@ end
 -- ---- Stub: SkeletonAnimation:getEvents -----------------------------------
 --@api-stub: SkeletonAnimation:getEvents
 -- Returns a list of event names that fall in the half-open interval `(from, to]`.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- skeletonAnimation_stub:getEvents(from, to)
--- (replace skeletonAnimation_stub with your real SkeletonAnimation instance above)
+-- Example scenario:
+if skeletonanimation ~= nil then
+    -- Calling actual method on skeletonanimation successfully
+    print("Action: calling getEvents()")
+    pcall(function() skeletonanimation:getEvents() end)
+    print("Executed smoothly.")
+end

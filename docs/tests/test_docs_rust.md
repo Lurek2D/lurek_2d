@@ -1612,9 +1612,9 @@
 
 **Uncovered public functions** (18):
 
-- `Step::vec_from_lua_table` in `src/lua_api/automation_api.rs:397`
+- `Step::vec_from_lua_table` in `src/lua_api/automation_api.rs:399`
 - `add_type_methods` in `src/lua_api/lua_types.rs:43`
-- `ParticleConfig::from_lua_opts` in `src/lua_api/particle_api.rs:1554`
+- `ParticleConfig::from_lua_opts` in `src/lua_api/particle_api.rs:1556`
 - `LuaStep::execute_sync` in `src/lua_api/pipeline_api.rs:52`
 - `pipeline_result_to_lua` in `src/lua_api/pipeline_api.rs:501`
 - `cancel_remaining_steps` in `src/lua_api/pipeline_api.rs:543`

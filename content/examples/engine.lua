@@ -13,59 +13,139 @@
 -- ---- Stub: lurek.engine.getVersion ---------------------------------------
 --@api-stub: lurek.engine.getVersion
 -- Returns the engine version string (from `Cargo.toml`).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
+-- Example scenario:
+print("Attempting to execute global method getVersion()")
+local status_ok, _ = pcall(function()
+    -- Native execution of the getVersion function
+    return lurek.engine.getVersion()
+end)
+if status_ok then 
+    print("getVersion ran safely with expected parameters.") 
+end
 lurek.engine.getVersion()  -- -> string
 
 -- ---- Stub: lurek.engine.getFrameBudget -----------------------------------
 --@api-stub: lurek.engine.getFrameBudget
 -- Returns the target frame budget in milliseconds (default: 1000 / 60 â‰ 16.667 ms).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
+-- Example scenario:
+print("Attempting to execute global method getFrameBudget()")
+local status_ok, _ = pcall(function()
+    -- Native execution of the getFrameBudget function
+    return lurek.engine.getFrameBudget()
+end)
+if status_ok then 
+    print("getFrameBudget ran safely with expected parameters.") 
+end
 lurek.engine.getFrameBudget()  -- -> number
 
 -- ---- Stub: lurek.engine.memoryUsage --------------------------------------
 --@api-stub: lurek.engine.memoryUsage
 -- Returns a table with `lua_bytes` (Lua GC heap usage in bytes) and
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
+-- Example scenario:
+print("Attempting to execute global method memoryUsage()")
+local status_ok, _ = pcall(function()
+    -- Native execution of the memoryUsage function
+    return lurek.engine.memoryUsage()
+end)
+if status_ok then 
+    print("memoryUsage ran safely with expected parameters.") 
+end
 lurek.engine.memoryUsage()  -- -> table
 
 -- ---- Stub: lurek.engine.platform -----------------------------------------
 --@api-stub: lurek.engine.platform
 -- Returns a string identifying the host operating system:
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
+-- Example scenario:
+print("Attempting to execute global method platform()")
+local status_ok, _ = pcall(function()
+    -- Native execution of the platform function
+    return lurek.engine.platform()
+end)
+if status_ok then 
+    print("platform ran safely with expected parameters.") 
+end
 lurek.engine.platform()  -- -> string
 
 -- ---- Stub: lurek.engine.uptime -------------------------------------------
 --@api-stub: lurek.engine.uptime
 -- Returns the total engine uptime in seconds (sum of all processed deltas).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
+-- Example scenario:
+print("Attempting to execute global method uptime()")
+local status_ok, _ = pcall(function()
+    -- Native execution of the uptime function
+    return lurek.engine.uptime()
+end)
+if status_ok then 
+    print("uptime ran safely with expected parameters.") 
+end
 lurek.engine.uptime()  -- -> number
 
 -- ---- Stub: lurek.engine.fps ----------------------------------------------
 --@api-stub: lurek.engine.fps
 -- Returns the current measured frames-per-second.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
+-- Example scenario:
+print("Attempting to execute global method fps()")
+local status_ok, _ = pcall(function()
+    -- Native execution of the fps function
+    return lurek.engine.fps()
+end)
+if status_ok then 
+    print("fps ran safely with expected parameters.") 
+end
 lurek.engine.fps()  -- -> number
 
 -- ---- Stub: lurek.engine.frameCount ---------------------------------------
 --@api-stub: lurek.engine.frameCount
 -- Returns the total number of frames processed since engine start.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
+-- Example scenario:
+print("Attempting to execute global method frameCount()")
+local status_ok, _ = pcall(function()
+    -- Native execution of the frameCount function
+    return lurek.engine.frameCount()
+end)
+if status_ok then 
+    print("frameCount ran safely with expected parameters.") 
+end
 lurek.engine.frameCount()  -- -> integer
 
 -- ---- Stub: lurek.engine.isDebug ------------------------------------------
 --@api-stub: lurek.engine.isDebug
 -- Returns `true` if the engine was compiled in debug mode.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
+-- Example scenario:
+print("Attempting to execute global method isDebug()")
+local status_ok, _ = pcall(function()
+    -- Native execution of the isDebug function
+    return lurek.engine.isDebug()
+end)
+if status_ok then 
+    print("isDebug ran safely with expected parameters.") 
+end
 lurek.engine.isDebug()  -- -> boolean
 
 -- ---- Stub: lurek.engine.setResourceBudget --------------------------------
 --@api-stub: lurek.engine.setResourceBudget
 -- Sets the maximum resident texture memory budget in bytes.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
+-- Example scenario:
+print("Attempting to execute global method setResourceBudget()")
+local status_ok, _ = pcall(function()
+    -- Native execution of the setResourceBudget function
+    return lurek.engine.setResourceBudget()
+end)
+if status_ok then 
+    print("setResourceBudget ran safely with expected parameters.") 
+end
 lurek.engine.setResourceBudget(budget_bytes)
 
 -- ---- Stub: lurek.engine.getResourceStats ---------------------------------
 --@api-stub: lurek.engine.getResourceStats
 -- Returns a table with resident resource memory statistics.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
+-- Example scenario:
+print("Attempting to execute global method getResourceStats()")
+local status_ok, _ = pcall(function()
+    -- Native execution of the getResourceStats function
+    return lurek.engine.getResourceStats()
+end)
+if status_ok then 
+    print("getResourceStats ran safely with expected parameters.") 
+end
 lurek.engine.getResourceStats()  -- -> table

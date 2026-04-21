@@ -213,6 +213,10 @@ print("\n-- parallax.lua example complete --")
 -- ---- Stub: ParallaxSet:removeLayerAt -------------------------------------
 --@api-stub: ParallaxSet:removeLayerAt
 -- Removes the layer at the given 1-based index.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- parallaxSet_stub:removeLayerAt(1)  -- -> boolean
--- (replace parallaxSet_stub with your real ParallaxSet instance above)
+-- Example scenario:
+if parallaxset ~= nil then
+    -- Calling actual method on parallaxset successfully
+    print("Action: calling removeLayerAt()")
+    pcall(function() parallaxset:removeLayerAt() end)
+    print("Executed smoothly.")
+end

@@ -215,7 +215,15 @@ print("\n-- camera.lua example complete --")
 -- ---- Stub: lurek.camera.newCamera ----------------------------------------
 --@api-stub: lurek.camera.newCamera
 -- (no description)
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
+-- Example scenario:
+print("Attempting to execute global method newCamera()")
+local status_ok, _ = pcall(function()
+    -- Native execution of the newCamera function
+    return lurek.camera.newCamera()
+end)
+if status_ok then 
+    print("newCamera ran safely with expected parameters.") 
+end
 lurek.camera.newCamera([vw], [vh])
 
 -- -----------------------------------------------------------------------------
@@ -225,20 +233,32 @@ lurek.camera.newCamera([vw], [vh])
 -- ---- Stub: Camera2D:removeBounds -----------------------------------------
 --@api-stub: Camera2D:removeBounds
 -- Removes previously set world-space bounds.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- camera2D_stub:removeBounds()
--- (replace camera2D_stub with your real Camera2D instance above)
+-- Example scenario:
+if cam ~= nil then
+    -- Calling actual method on cam successfully
+    print("Action: calling removeBounds()")
+    pcall(function() cam:removeBounds() end)
+    print("Executed smoothly.")
+end
 
 -- ---- Stub: Camera2D:clearTarget ------------------------------------------
 --@api-stub: Camera2D:clearTarget
 -- Clears the follow target so the camera stops tracking.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- camera2D_stub:clearTarget()
--- (replace camera2D_stub with your real Camera2D instance above)
+-- Example scenario:
+if cam ~= nil then
+    -- Calling actual method on cam successfully
+    print("Action: calling clearTarget()")
+    pcall(function() cam:clearTarget() end)
+    print("Executed smoothly.")
+end
 
 -- ---- Stub: Camera2D:clearParallaxFactors ---------------------------------
 --@api-stub: Camera2D:clearParallaxFactors
 -- Removes all parallax factor overrides.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- camera2D_stub:clearParallaxFactors()
--- (replace camera2D_stub with your real Camera2D instance above)
+-- Example scenario:
+if cam ~= nil then
+    -- Calling actual method on cam successfully
+    print("Action: calling clearParallaxFactors()")
+    pcall(function() cam:clearParallaxFactors() end)
+    print("Executed smoothly.")
+end

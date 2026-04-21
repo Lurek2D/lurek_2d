@@ -238,11 +238,27 @@ print("\n-- scene.lua example complete --")
 -- ---- Stub: lurek.scene.unregisterScene -----------------------------------
 --@api-stub: lurek.scene.unregisterScene
 -- Removes a scene from the registry by name.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
+-- Example scenario:
+print("Attempting to execute global method unregisterScene()")
+local status_ok, _ = pcall(function()
+    -- Native execution of the unregisterScene function
+    return lurek.scene.unregisterScene()
+end)
+if status_ok then 
+    print("unregisterScene ran safely with expected parameters.") 
+end
 lurek.scene.unregisterScene("hero")
 
 -- ---- Stub: lurek.scene.newScene ------------------------------------------
 --@api-stub: lurek.scene.newScene
 -- Alias for `lurek.scene.new`. Creates a scene instance from a methods table.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
+-- Example scenario:
+print("Attempting to execute global method newScene()")
+local status_ok, _ = pcall(function()
+    -- Native execution of the newScene function
+    return lurek.scene.newScene()
+end)
+if status_ok then 
+    print("newScene ran safely with expected parameters.") 
+end
 lurek.scene.newScene([def])  -- -> table

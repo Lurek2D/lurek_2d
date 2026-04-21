@@ -1,13 +1,13 @@
 {
   "meta": {
-    "generated": "2026-04-21T21:33:05.590764+00:00",
+    "generated": "2026-04-21T22:19:50.318072+00:00",
     "generator": "tools/gen_rust_api_data.py",
     "version": "0.20.0",
     "stats": {
       "rust_items": 1859,
       "rust_modules": 449,
       "rust_tests": 0,
-      "lua_tests": 242
+      "lua_tests": 245
     }
   },
   "rust_api": {
@@ -939,7 +939,7 @@
         ]
       },
       "animation::clip": {
-        "module_doc": "",
+        "module_doc": "[`AnimClip`] â€” a named animation clip referencing frames by index.",
         "source_file": "src/animation/clip.rs",
         "items": [
           {
@@ -965,7 +965,7 @@
         ]
       },
       "animation::curve": {
-        "module_doc": "An [`AnimCurve`] holds a list of `(time, value)` keyframes in ascending time order and evaluates the interpolated value at any time `t` using the selected [`EasingKind`].",
+        "module_doc": "Keyframe-based animation curves with per-segment easing.  An [`AnimCurve`] holds a list of `(time, value)` keyframes in ascending time order and evaluates the interpolated value at any time `t` using the selected [`EasingKind`].",
         "source_file": "src/animation/curve.rs",
         "items": [
           {
@@ -985,7 +985,7 @@
         ]
       },
       "animation::event": {
-        "module_doc": "",
+        "module_doc": "[`AnimEvent`] â€” events emitted during animation playback.",
         "source_file": "src/animation/event.rs",
         "items": [
           {
@@ -998,7 +998,7 @@
         ]
       },
       "animation::frame": {
-        "module_doc": "",
+        "module_doc": "[`AnimFrame`] â€” a single animation frame with a source rectangle and optional duration.",
         "source_file": "src/animation/frame.rs",
         "items": [
           {
@@ -1094,7 +1094,7 @@
         ]
       },
       "animation::render": {
-        "module_doc": "Provides a helper to convert the current animation frame into a [`RenderCommand::DrawQuad`].  Pure CPU â€” no wgpu, winit, or mlua.",
+        "module_doc": "Render-command generation for sprite animations.  Provides a helper to convert the current animation frame into a [`RenderCommand::DrawQuad`].  Pure CPU â€” no wgpu, winit, or mlua.",
         "source_file": "src/animation/render.rs",
         "items": [
           {
@@ -1169,7 +1169,7 @@
         ]
       },
       "animation::sync_group": {
-        "module_doc": "An [`AnimSyncGroup`] holds a collection of [`Animation`](crate::animation::Animation) keys (slot-map `DefaultKey`) that should all receive the same [`tick`](no-link) call together.  The group itself does **not** own the animations â€” it only stores the keys. Ticking is performed in the Lua API layer so that it can borrow `SharedState`.",
+        "module_doc": "Named animation synchronisation groups.  An [`AnimSyncGroup`] holds a collection of [`Animation`](crate::animation::Animation) keys (slot-map `DefaultKey`) that should all receive the same [`tick`](no-link) call together.  The group itself does **not** own the animations â€” it only stores the keys. Ticking is performed in the Lua API layer so that it can borrow `SharedState`.",
         "source_file": "src/animation/sync_group.rs",
         "items": [
           {
@@ -1182,7 +1182,7 @@
         ]
       },
       "app::app": {
-        "module_doc": "Uses a `winit` event loop with `GpuRenderer` for hardware-accelerated rendering. The game loop structure (callbacks, SharedState, Lua VM) follows the standard pattern.",
+        "module_doc": "Lurek2D application lifecycle using winit 0.30 + wgpu GPU rendering.  Uses a `winit` event loop with `GpuRenderer` for hardware-accelerated rendering. The game loop structure (callbacks, SharedState, Lua VM) follows the standard pattern.",
         "source_file": "src/app/app.rs",
         "items": [
           {
@@ -1230,7 +1230,7 @@
         ]
       },
       "app::app_winit": {
-        "module_doc": "# DEAD FILE This file is NOT declared in `src/engine/mod.rs` and is not compiled. Preserved for reference only. Message catalog migration was NOT applied here. Replaces the minifb-based `App` with a `winit` event loop and `GpuRenderer`. The game loop structure (callbacks, SharedState, Lua VM) is preserved; only the rendering and windowing backends change.",
+        "module_doc": "Lurek2D application lifecycle using winit 0.30 + wgpu GPU rendering.  # DEAD FILE This file is NOT declared in `src/engine/mod.rs` and is not compiled. Preserved for reference only. Message catalog migration was NOT applied here. Replaces the minifb-based `App` with a `winit` event loop and `GpuRenderer`. The game loop structure (callbacks, SharedState, Lua VM) is preserved; only the rendering and windowing backends change.",
         "source_file": "src/app/app_winit.rs",
         "items": [
           {
@@ -1608,7 +1608,7 @@
         ]
       },
       "audio::sound_data": {
-        "module_doc": "`SoundData` stores fully decoded f32 PCM samples in interleaved channel order (for stereo: L, R, L, R, ...). It can be created as a silent buffer or decoded from an audio file via rodio. Lua code can read and write individual samples for procedural audio and DSP effects.",
+        "module_doc": "Decoded PCM audio sample buffer with per-sample read/write access.  `SoundData` stores fully decoded f32 PCM samples in interleaved channel order (for stereo: L, R, L, R, ...). It can be created as a silent buffer or decoded from an audio file via rodio. Lua code can read and write individual samples for procedural audio and DSP effects.",
         "source_file": "src/audio/sound_data.rs",
         "items": [
           {
@@ -1721,7 +1721,7 @@
         ]
       },
       "automation::step": {
-        "module_doc": "This module provides the [`Action`] enum and [`Step`] struct that form the building blocks of a simulation script. A `Step` pairs a wall-clock offset (seconds from script start) with an action type and optional action-specific parameters such as key name, mouse coordinates, button index, and text.  Steps are created programmatically and collected into a [`Script`](super::Script) to be played back by the [`Simulator`](super::Simulator).",
+        "module_doc": "Step definitions for the automation simulation module.  This module provides the [`Action`] enum and [`Step`] struct that form the building blocks of a simulation script. A `Step` pairs a wall-clock offset (seconds from script start) with an action type and optional action-specific parameters such as key name, mouse coordinates, button index, and text.  Steps are created programmatically and collected into a [`Script`](super::Script) to be played back by the [`Simulator`](super::Simulator).",
         "source_file": "src/automation/step.rs",
         "items": [
           {
@@ -3995,7 +3995,7 @@
         ]
       },
       "filesystem": {
-        "module_doc": "Provides [`vfs::GameFS`] â€” the central filesystem abstraction that sandboxes all file I/O to the game's base directory. Every path is checked against a canonical path traversal guard before the OS is asked to open the file, preventing Lua scripts from escaping the sandbox via `..`, absolute paths, or symbolic links.  ## Subsystem inventory - [`vfs`] â€” [`GameFS`]: sandboxed read/write with virtual mount-point overlay - [`file_handle`] â€” [`FileHandle`]: open-file session with cursored read/write - [`async_loader`] â€” background asset-loading worker (off main thread) - [`file_data`] â€” [`FileData`]: raw byte buffer returned from VFS reads  ## Sandbox rules - Reads: base game folder + all mounted mod layers - Writes: save-data directory only (configured separately from the read-only game folder) - Any path that resolves outside the base after canonicalization â†’ `EngineError::FsPathTraversal`  All public items are documented. Lua bridge: `src/lua_api/filesystem_api.rs`.",
+        "module_doc": "Sandboxed virtual filesystem for Lurek2D.  Provides [`vfs::GameFS`] â€” the central filesystem abstraction that sandboxes all file I/O to the game's base directory. Every path is checked against a canonical path traversal guard before the OS is asked to open the file, preventing Lua scripts from escaping the sandbox via `..`, absolute paths, or symbolic links.  ## Subsystem inventory - [`vfs`] â€” [`GameFS`]: sandboxed read/write with virtual mount-point overlay - [`file_handle`] â€” [`FileHandle`]: open-file session with cursored read/write - [`async_loader`] â€” background asset-loading worker (off main thread) - [`file_data`] â€” [`FileData`]: raw byte buffer returned from VFS reads  ## Sandbox rules - Reads: base game folder + all mounted mod layers - Writes: save-data directory only (configured separately from the read-only game folder) - Any path that resolves outside the base after canonicalization â†’ `EngineError::FsPathTraversal`  All public items are documented. Lua bridge: `src/lua_api/filesystem_api.rs`.",
         "source_file": "src/filesystem/mod.rs",
         "items": [
           {
@@ -5929,7 +5929,7 @@
         ]
       },
       "root": {
-        "module_doc": "This crate is a thin wrapper around the `lurek2d` library crate. Its only job is to call [`lurek2d::lurek_run`], which installs the panic hook, parses the command-line game-directory argument, loads `conf.lua`, and enters the main engine loop.  Two binary crates share the same source via `Cargo.toml` feature flags:   - `lurek`   â€” console-attached binary (default, used during development)   - `lurekc`  â€” no-console binary (Windows release build, no terminal window)  To run a game pass the path to the game directory as the first CLI argument:  ```text lurek path/to/my_game ```  If no argument is given, the engine looks for `main.lua` in the current working directory and falls back to the splash screen if none is found.",
+        "module_doc": "Lurek2D engine binary entry point.  This crate is a thin wrapper around the `lurek2d` library crate. Its only job is to call [`lurek2d::lurek_run`], which installs the panic hook, parses the command-line game-directory argument, loads `conf.lua`, and enters the main engine loop.  Two binary crates share the same source via `Cargo.toml` feature flags:   - `lurek`   â€” console-attached binary (default, used during development)   - `lurekc`  â€” no-console binary (Windows release build, no terminal window)  To run a game pass the path to the game directory as the first CLI argument:  ```text lurek path/to/my_game ```  If no argument is given, the engine looks for `main.lua` in the current working directory and falls back to the splash screen if none is found.",
         "source_file": "src/main.rs",
         "items": []
       },
@@ -10931,7 +10931,7 @@
         ]
       },
       "runtime::log_messages": {
-        "module_doc": "Every engine log message has a stable ID (`L001`..`L099`) so that external tools and Lua scripts can filter or match on them.  Use the [`log_msg!`] macro instead of bare `log::info!` / `log::warn!` / `log::error!` calls.",
+        "module_doc": "Structured logging with stable message IDs for the Lurek2D engine.  Every engine log message has a stable ID (`L001`..`L099`) so that external tools and Lua scripts can filter or match on them.  Use the [`log_msg!`] macro instead of bare `log::info!` / `log::warn!` / `log::error!` calls.",
         "source_file": "src/runtime/log_messages.rs",
         "items": [
           {
@@ -13103,7 +13103,7 @@
         ]
       },
       "scene::render": {
-        "module_doc": "[`SceneStack`] is a pure ID-based LIFO stack â€” it stores no render data, only scene identifiers. GPU rendering is driven by Lua-side `draw()` callbacks; the Rust domain layer has no scene content to iterate.  These implementations satisfy the render-command interface contract so that `SceneStack` participates uniformly in the engine draw pipeline. Pure CPU â€” no wgpu, winit, or mlua imports.",
+        "module_doc": "Render-command generation and CPU drawing for the scene module.  [`SceneStack`] is a pure ID-based LIFO stack â€” it stores no render data, only scene identifiers. GPU rendering is driven by Lua-side `draw()` callbacks; the Rust domain layer has no scene content to iterate.  These implementations satisfy the render-command interface contract so that `SceneStack` participates uniformly in the engine draw pipeline. Pure CPU â€” no wgpu, winit, or mlua imports.",
         "source_file": "src/scene/render.rs",
         "items": []
       },
@@ -13981,7 +13981,7 @@
         ]
       },
       "thread::worker": {
-        "module_doc": "Each [`LuaThread`] spawns an OS thread running its own `mlua::Lua` instance. Communication with the main thread happens exclusively through [`Channel`] objects â€” no Lua state is shared across threads (design constraint **B-04**).  ## Worker sandbox Workers receive a minimal `lurek.*` API surface: `lurek.thread.getChannel(name)`, `lurek.filesystem.read(path)` (read-only, no `..` traversal), and the `arg` global table. Graphics, audio, window, input, physics, and any module touching `SharedState` are deliberately excluded.",
+        "module_doc": "Background Lua thread with independent VM.  Each [`LuaThread`] spawns an OS thread running its own `mlua::Lua` instance. Communication with the main thread happens exclusively through [`Channel`] objects â€” no Lua state is shared across threads (design constraint **B-04**).  ## Worker sandbox Workers receive a minimal `lurek.*` API surface: `lurek.thread.getChannel(name)`, `lurek.filesystem.read(path)` (read-only, no `..` traversal), and the `arg` global table. Graphics, audio, window, input, physics, and any module touching `SharedState` are deliberately excluded.",
         "source_file": "src/thread/worker.rs",
         "items": [
           {
@@ -14580,7 +14580,7 @@
         ]
       },
       "timer": {
-        "module_doc": "This module is part of Lurek2D's **Core Runtime** tier and provides two complementary types plus a convenience sleep helper:  - [`Clock`]: per-frame delta-time tracking, rolling FPS measurement, total elapsed   time, and frame counting. Called once per frame by `App` at the top of the game loop. - [`Scheduler`]: one-shot (`after`) and repeating (`every`) timed events with   individual pause/resume, cancellation handles, named events, and a global   time-scale multiplier. - [`sleep`]: suspends the calling OS thread - intended **only** for worker VM threads;   calling from the main VM stalls the engine frame loop.  ## Threading constraint Both `Clock` and `Scheduler` live on the main thread inside `SharedState`. Background threads should use `lurek.thread.Channel` for timed coordination.  All public items are documented. Lua bridge: `src/lua_api/timer_api.rs`.",
+        "module_doc": "Frame timing, scheduled events, and sleep utilities.  This module is part of Lurek2D's **Core Runtime** tier and provides two complementary types plus a convenience sleep helper:  - [`Clock`]: per-frame delta-time tracking, rolling FPS measurement, total elapsed   time, and frame counting. Called once per frame by `App` at the top of the game loop. - [`Scheduler`]: one-shot (`after`) and repeating (`every`) timed events with   individual pause/resume, cancellation handles, named events, and a global   time-scale multiplier. - [`sleep`]: suspends the calling OS thread - intended **only** for worker VM threads;   calling from the main VM stalls the engine frame loop.  ## Threading constraint Both `Clock` and `Scheduler` live on the main thread inside `SharedState`. Background threads should use `lurek.thread.Channel` for timed coordination.  All public items are documented. Lua bridge: `src/lua_api/timer_api.rs`.",
         "source_file": "src/timer/mod.rs",
         "items": [
           {
@@ -17052,6 +17052,13 @@
         "kind": "lua"
       },
       {
+        "file": "tests/lua/unit/test_collision_unit.lua",
+        "module": "test_collision_unit",
+        "name": "test_collision_unit",
+        "description": "test_collision_unit.lua\\nrequire(\\\"lunasome.testing\\\")\\ndescribe(\\\"collision\\\", function()\\n    it(\"lurek.collision.testAABB works\", function()\\n        -- @tests lurek.collision.testAABB\\n        -- TODO: add assertion for lurek.collision.testAABB\\n    end)\\n    it(\"lurek.collision.testCircles works\", function()\\n        -- @tests lurek.collision.testCircles\\n        -- TODO: add assertion for lurek.collision.testCircles\\n    end)\\n    it(\"lurek.collision.testPoint works\", function()\\n        -- @tests lurek.collision.testPoint\\n        -- TODO: add assertion for lurek.collision.testPoint\\n    end)\\n    it(\"lurek.collision.testCircleAABB works\", function()\\n        -- @tests lurek.collision.testCircleAABB\\n        -- TODO: add assertion for lurek.collision.testCircleAABB\\n    end)\\nend)\\n",
+        "kind": "lua"
+      },
+      {
         "file": "tests/lua/unit/test_compute_unit.lua",
         "module": "test_compute_unit",
         "name": "test_compute_unit",
@@ -17126,6 +17133,13 @@
         "module": "test_effect_unit",
         "name": "test_effect_unit",
         "description": "Lurek2D Effect API Unit Tests (consolidated)",
+        "kind": "lua"
+      },
+      {
+        "file": "tests/lua/unit/test_engine_unit.lua",
+        "module": "test_engine_unit",
+        "name": "test_engine_unit",
+        "description": "Lurek2D engine API Tests",
         "kind": "lua"
       },
       {
@@ -17343,6 +17357,13 @@
         "module": "test_sprite_unit",
         "name": "test_sprite_unit",
         "description": "Lurek2D Lua BDD tests for lurek.sprite",
+        "kind": "lua"
+      },
+      {
+        "file": "tests/lua/unit/test_system_unit.lua",
+        "module": "test_system_unit",
+        "name": "test_system_unit",
+        "description": "Lurek2D system API Tests",
         "kind": "lua"
       },
       {

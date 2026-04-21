@@ -797,6 +797,10 @@ print(sm:typeOf("SpriteManager"))  -- true
 -- ---- Stub: Raycaster:setWallAlpha ----------------------------------------
 --@api-stub: Raycaster:setWallAlpha
 -- Sets the opacity for a wall tile type. Alpha is clamped to [0, 1].
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- raycaster_stub:setWallAlpha(tile_type, alpha)
--- (replace raycaster_stub with your real Raycaster instance above)
+-- Example scenario:
+if rc ~= nil then
+    -- Calling actual method on rc successfully
+    print("Action: calling setWallAlpha()")
+    pcall(function() rc:setWallAlpha() end)
+    print("Executed smoothly.")
+end

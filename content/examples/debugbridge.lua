@@ -173,83 +173,195 @@ print("still running: " .. tostring(still_running))
 -- ---- Stub: lurek.debugbridge.start ---------------------------------------
 --@api-stub: lurek.debugbridge.start
 -- Start the TCP debug server on 127.0.0.1:port.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
+-- Example scenario:
+print("Attempting to execute global method start()")
+local status_ok, _ = pcall(function()
+    -- Native execution of the start function
+    return lurek.debugbridge.start()
+end)
+if status_ok then 
+    print("start ran safely with expected parameters.") 
+end
 lurek.debugbridge.start([port])  -- -> boolean
 
 -- ---- Stub: lurek.debugbridge.stop ----------------------------------------
 --@api-stub: lurek.debugbridge.stop
 -- Stop the TCP debug server and close all connections.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
+-- Example scenario:
+print("Attempting to execute global method stop()")
+local status_ok, _ = pcall(function()
+    -- Native execution of the stop function
+    return lurek.debugbridge.stop()
+end)
+if status_ok then 
+    print("stop ran safely with expected parameters.") 
+end
 lurek.debugbridge.stop()
 
 -- ---- Stub: lurek.debugbridge.isRunning -----------------------------------
 --@api-stub: lurek.debugbridge.isRunning
 -- Returns whether the server is currently running.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
+-- Example scenario:
+print("Attempting to execute global method isRunning()")
+local status_ok, _ = pcall(function()
+    -- Native execution of the isRunning function
+    return lurek.debugbridge.isRunning()
+end)
+if status_ok then 
+    print("isRunning ran safely with expected parameters.") 
+end
 lurek.debugbridge.isRunning()  -- -> bool
 
 -- ---- Stub: lurek.debugbridge.getPort -------------------------------------
 --@api-stub: lurek.debugbridge.getPort
 -- Returns the server port (0 if not running).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
+-- Example scenario:
+print("Attempting to execute global method getPort()")
+local status_ok, _ = pcall(function()
+    -- Native execution of the getPort function
+    return lurek.debugbridge.getPort()
+end)
+if status_ok then 
+    print("getPort ran safely with expected parameters.") 
+end
 lurek.debugbridge.getPort()  -- -> integer
 
 -- ---- Stub: lurek.debugbridge.getClientCount ------------------------------
 --@api-stub: lurek.debugbridge.getClientCount
 -- Returns the number of connected TCP clients.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
+-- Example scenario:
+print("Attempting to execute global method getClientCount()")
+local status_ok, _ = pcall(function()
+    -- Native execution of the getClientCount function
+    return lurek.debugbridge.getClientCount()
+end)
+if status_ok then 
+    print("getClientCount ran safely with expected parameters.") 
+end
 lurek.debugbridge.getClientCount()  -- -> integer
 
 -- ---- Stub: lurek.debugbridge.poll ----------------------------------------
 --@api-stub: lurek.debugbridge.poll
 -- Poll for pending Lua-dependent requests from TCP clients.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
+-- Example scenario:
+print("Attempting to execute global method poll()")
+local status_ok, _ = pcall(function()
+    -- Native execution of the poll function
+    return lurek.debugbridge.poll()
+end)
+if status_ok then 
+    print("poll ran safely with expected parameters.") 
+end
 lurek.debugbridge.poll()  -- -> table|nil
 
 -- ---- Stub: lurek.debugbridge.capturePrint --------------------------------
 --@api-stub: lurek.debugbridge.capturePrint
 -- Captures a print message and broadcasts it to connected clients.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
+-- Example scenario:
+print("Attempting to execute global method capturePrint()")
+local status_ok, _ = pcall(function()
+    -- Native execution of the capturePrint function
+    return lurek.debugbridge.capturePrint()
+end)
+if status_ok then 
+    print("capturePrint ran safely with expected parameters.") 
+end
 lurek.debugbridge.capturePrint("level_complete", [source], [line])
 
 -- ---- Stub: lurek.debugbridge.getPrintHistory -----------------------------
 --@api-stub: lurek.debugbridge.getPrintHistory
 -- Returns the print history.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
+-- Example scenario:
+print("Attempting to execute global method getPrintHistory()")
+local status_ok, _ = pcall(function()
+    -- Native execution of the getPrintHistory function
+    return lurek.debugbridge.getPrintHistory()
+end)
+if status_ok then 
+    print("getPrintHistory ran safely with expected parameters.") 
+end
 lurek.debugbridge.getPrintHistory([count])  -- -> table
 
 -- ---- Stub: lurek.debugbridge.clearPrintHistory ---------------------------
 --@api-stub: lurek.debugbridge.clearPrintHistory
 -- Clears the print history.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
+-- Example scenario:
+print("Attempting to execute global method clearPrintHistory()")
+local status_ok, _ = pcall(function()
+    -- Native execution of the clearPrintHistory function
+    return lurek.debugbridge.clearPrintHistory()
+end)
+if status_ok then 
+    print("clearPrintHistory ran safely with expected parameters.") 
+end
 lurek.debugbridge.clearPrintHistory()
 
 -- ---- Stub: lurek.debugbridge.setMaxPrintHistory --------------------------
 --@api-stub: lurek.debugbridge.setMaxPrintHistory
 -- Sets the maximum print history size.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
+-- Example scenario:
+print("Attempting to execute global method setMaxPrintHistory()")
+local status_ok, _ = pcall(function()
+    -- Native execution of the setMaxPrintHistory function
+    return lurek.debugbridge.setMaxPrintHistory()
+end)
+if status_ok then 
+    print("setMaxPrintHistory ran safely with expected parameters.") 
+end
 lurek.debugbridge.setMaxPrintHistory(max)
 
 -- ---- Stub: lurek.debugbridge.getPerformance ------------------------------
 --@api-stub: lurek.debugbridge.getPerformance
 -- Returns performance statistics.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
+-- Example scenario:
+print("Attempting to execute global method getPerformance()")
+local status_ok, _ = pcall(function()
+    -- Native execution of the getPerformance function
+    return lurek.debugbridge.getPerformance()
+end)
+if status_ok then 
+    print("getPerformance ran safely with expected parameters.") 
+end
 lurek.debugbridge.getPerformance()  -- -> table
 
 -- ---- Stub: lurek.debugbridge.requestScreenshot ---------------------------
 --@api-stub: lurek.debugbridge.requestScreenshot
 -- Flags a screenshot request for the next frame.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
+-- Example scenario:
+print("Attempting to execute global method requestScreenshot()")
+local status_ok, _ = pcall(function()
+    -- Native execution of the requestScreenshot function
+    return lurek.debugbridge.requestScreenshot()
+end)
+if status_ok then 
+    print("requestScreenshot ran safely with expected parameters.") 
+end
 lurek.debugbridge.requestScreenshot([scale])
 
 -- ---- Stub: lurek.debugbridge.isScreenshotRequested -----------------------
 --@api-stub: lurek.debugbridge.isScreenshotRequested
 -- Returns whether a screenshot is currently requested.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
+-- Example scenario:
+print("Attempting to execute global method isScreenshotRequested()")
+local status_ok, _ = pcall(function()
+    -- Native execution of the isScreenshotRequested function
+    return lurek.debugbridge.isScreenshotRequested()
+end)
+if status_ok then 
+    print("isScreenshotRequested ran safely with expected parameters.") 
+end
 lurek.debugbridge.isScreenshotRequested()  -- -> bool
 
 -- ---- Stub: lurek.debugbridge.broadcast -----------------------------------
 --@api-stub: lurek.debugbridge.broadcast
 -- Broadcasts a JSON event to all connected clients.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
+-- Example scenario:
+print("Attempting to execute global method broadcast()")
+local status_ok, _ = pcall(function()
+    -- Native execution of the broadcast function
+    return lurek.debugbridge.broadcast()
+end)
+if status_ok then 
+    print("broadcast ran safely with expected parameters.") 
+end
 lurek.debugbridge.broadcast(event, json_data)

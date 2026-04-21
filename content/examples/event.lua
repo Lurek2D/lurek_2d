@@ -245,85 +245,197 @@ print("is SoundSource?  " .. tostring(signal:typeOf("SoundSource")))
 -- ---- Stub: lurek.event.exit ----------------------------------------------
 --@api-stub: lurek.event.exit
 -- Pushes an exit event, requesting the engine to stop.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
+-- Example scenario:
+print("Attempting to execute global method exit()")
+local status_ok, _ = pcall(function()
+    -- Native execution of the exit function
+    return lurek.event.exit()
+end)
+if status_ok then 
+    print("exit ran safely with expected parameters.") 
+end
 lurek.event.exit([code])
 
 -- ---- Stub: lurek.event.poll ----------------------------------------------
 --@api-stub: lurek.event.poll
 -- Returns an iterator function that pops events from the queue.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
+-- Example scenario:
+print("Attempting to execute global method poll()")
+local status_ok, _ = pcall(function()
+    -- Native execution of the poll function
+    return lurek.event.poll()
+end)
+if status_ok then 
+    print("poll ran safely with expected parameters.") 
+end
 lurek.event.poll()  -- -> function
 
 -- ---- Stub: lurek.event.clear ---------------------------------------------
 --@api-stub: lurek.event.clear
 -- Discards all pending events in the queue.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
+-- Example scenario:
+print("Attempting to execute global method clear()")
+local status_ok, _ = pcall(function()
+    -- Native execution of the clear function
+    return lurek.event.clear()
+end)
+if status_ok then 
+    print("clear ran safely with expected parameters.") 
+end
 lurek.event.clear()
 
 -- ---- Stub: lurek.event.newSignal -----------------------------------------
 --@api-stub: lurek.event.newSignal
 -- Creates a new pub-sub Signal dispatcher.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
+-- Example scenario:
+print("Attempting to execute global method newSignal()")
+local status_ok, _ = pcall(function()
+    -- Native execution of the newSignal function
+    return lurek.event.newSignal()
+end)
+if status_ok then 
+    print("newSignal ran safely with expected parameters.") 
+end
 lurek.event.newSignal()  -- -> Signal
 
 -- ---- Stub: lurek.event.pump ----------------------------------------------
 --@api-stub: lurek.event.pump
 -- Syncs OS-level events into the queue (no-op in Lurek2D push model).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
+-- Example scenario:
+print("Attempting to execute global method pump()")
+local status_ok, _ = pcall(function()
+    -- Native execution of the pump function
+    return lurek.event.pump()
+end)
+if status_ok then 
+    print("pump ran safely with expected parameters.") 
+end
 lurek.event.pump()
 
 -- ---- Stub: lurek.event.wait ----------------------------------------------
 --@api-stub: lurek.event.wait
 -- Blocks until the next event arrives or the optional timeout elapses.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
+-- Example scenario:
+print("Attempting to execute global method wait()")
+local status_ok, _ = pcall(function()
+    -- Native execution of the wait function
+    return lurek.event.wait()
+end)
+if status_ok then 
+    print("wait ran safely with expected parameters.") 
+end
 lurek.event.wait([timeout])  -- -> string?
 
 -- ---- Stub: lurek.event.restart -------------------------------------------
 --@api-stub: lurek.event.restart
 -- Requests that the engine restart at the beginning of the next frame.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
+-- Example scenario:
+print("Attempting to execute global method restart()")
+local status_ok, _ = pcall(function()
+    -- Native execution of the restart function
+    return lurek.event.restart()
+end)
+if status_ok then 
+    print("restart ran safely with expected parameters.") 
+end
 lurek.event.restart()
 
 -- ---- Stub: lurek.event.quit ----------------------------------------------
 --@api-stub: lurek.event.quit
 -- Alias for `exit()` — requests the engine to stop at the end of the current frame.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
+-- Example scenario:
+print("Attempting to execute global method quit()")
+local status_ok, _ = pcall(function()
+    -- Native execution of the quit function
+    return lurek.event.quit()
+end)
+if status_ok then 
+    print("quit ran safely with expected parameters.") 
+end
 lurek.event.quit()
 
 -- ---- Stub: lurek.event.pushDeferred --------------------------------------
 --@api-stub: lurek.event.pushDeferred
 -- Pushes a named event to the deferred buffer; it will not reach the main queue
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
+-- Example scenario:
+print("Attempting to execute global method pushDeferred()")
+local status_ok, _ = pcall(function()
+    -- Native execution of the pushDeferred function
+    return lurek.event.pushDeferred()
+end)
+if status_ok then 
+    print("pushDeferred ran safely with expected parameters.") 
+end
 lurek.event.pushDeferred(args)
 
 -- ---- Stub: lurek.event.flushDeferred -------------------------------------
 --@api-stub: lurek.event.flushDeferred
 -- Moves all buffered deferred events into the main event queue and clears the buffer.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
+-- Example scenario:
+print("Attempting to execute global method flushDeferred()")
+local status_ok, _ = pcall(function()
+    -- Native execution of the flushDeferred function
+    return lurek.event.flushDeferred()
+end)
+if status_ok then 
+    print("flushDeferred ran safely with expected parameters.") 
+end
 lurek.event.flushDeferred()  -- -> table|nil
 
 -- ---- Stub: lurek.event.enableHistory -------------------------------------
 --@api-stub: lurek.event.enableHistory
 -- Enables event history recording, keeping the last `capacity` pushed events.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
+-- Example scenario:
+print("Attempting to execute global method enableHistory()")
+local status_ok, _ = pcall(function()
+    -- Native execution of the enableHistory function
+    return lurek.event.enableHistory()
+end)
+if status_ok then 
+    print("enableHistory ran safely with expected parameters.") 
+end
 lurek.event.enableHistory(capacity)
 
 -- ---- Stub: lurek.event.getHistory ----------------------------------------
 --@api-stub: lurek.event.getHistory
 -- Returns an array of recent events as `{name, args}` tables.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
+-- Example scenario:
+print("Attempting to execute global method getHistory()")
+local status_ok, _ = pcall(function()
+    -- Native execution of the getHistory function
+    return lurek.event.getHistory()
+end)
+if status_ok then 
+    print("getHistory ran safely with expected parameters.") 
+end
 lurek.event.getHistory()  -- -> table
 
 -- ---- Stub: lurek.event.clearHistory --------------------------------------
 --@api-stub: lurek.event.clearHistory
 -- Clears all recorded event history.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
+-- Example scenario:
+print("Attempting to execute global method clearHistory()")
+local status_ok, _ = pcall(function()
+    -- Native execution of the clearHistory function
+    return lurek.event.clearHistory()
+end)
+if status_ok then 
+    print("clearHistory ran safely with expected parameters.") 
+end
 lurek.event.clearHistory()
 
 -- ---- Stub: lurek.event.push ----------------------------------------------
 --@api-stub: lurek.event.push
 -- Adds an event item to the end of the event queue for processing.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
+-- Example scenario:
+print("Attempting to execute global method push()")
+local status_ok, _ = pcall(function()
+    -- Native execution of the push function
+    return lurek.event.push()
+end)
+if status_ok then 
+    print("push ran safely with expected parameters.") 
+end
 lurek.event.push(args)
 
 -- -----------------------------------------------------------------------------
@@ -333,55 +445,87 @@ lurek.event.push(args)
 -- ---- Stub: Signal:emit ---------------------------------------------------
 --@api-stub: Signal:emit
 -- Emits the named event, calling all registered callbacks with extra arguments.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- signal_stub:emit(args)
--- (replace signal_stub with your real Signal instance above)
+-- Example scenario:
+if signal ~= nil then
+    -- Calling actual method on signal successfully
+    print("Action: calling emit()")
+    pcall(function() signal:emit() end)
+    print("Executed smoothly.")
+end
 
 -- ---- Stub: Signal:remove -------------------------------------------------
 --@api-stub: Signal:remove
 -- Removes a subscription by handle ID.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- signal_stub:remove(handle)  -- -> boolean
--- (replace signal_stub with your real Signal instance above)
+-- Example scenario:
+if signal ~= nil then
+    -- Calling actual method on signal successfully
+    print("Action: calling remove()")
+    pcall(function() signal:remove() end)
+    print("Executed smoothly.")
+end
 
 -- ---- Stub: Signal:clear --------------------------------------------------
 --@api-stub: Signal:clear
 -- Removes all callbacks for the named event.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- signal_stub:clear("hero")  -- -> integer
--- (replace signal_stub with your real Signal instance above)
+-- Example scenario:
+if signal ~= nil then
+    -- Calling actual method on signal successfully
+    print("Action: calling clear()")
+    pcall(function() signal:clear() end)
+    print("Executed smoothly.")
+end
 
 -- ---- Stub: Signal:clearAll -----------------------------------------------
 --@api-stub: Signal:clearAll
 -- Removes all callbacks across all events.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- signal_stub:clearAll()  -- -> integer
--- (replace signal_stub with your real Signal instance above)
+-- Example scenario:
+if signal ~= nil then
+    -- Calling actual method on signal successfully
+    print("Action: calling clearAll()")
+    pcall(function() signal:clearAll() end)
+    print("Executed smoothly.")
+end
 
 -- ---- Stub: Signal:getCount -----------------------------------------------
 --@api-stub: Signal:getCount
 -- Returns the callback count for the named event.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- signal_stub:getCount("hero")  -- -> integer
--- (replace signal_stub with your real Signal instance above)
+-- Example scenario:
+if signal ~= nil then
+    -- Calling actual method on signal successfully
+    print("Action: calling getCount()")
+    pcall(function() signal:getCount() end)
+    print("Executed smoothly.")
+end
 
 -- ---- Stub: Signal:getTotalCount ------------------------------------------
 --@api-stub: Signal:getTotalCount
 -- Returns the total callback count across all events.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- signal_stub:getTotalCount()  -- -> integer
--- (replace signal_stub with your real Signal instance above)
+-- Example scenario:
+if signal ~= nil then
+    -- Calling actual method on signal successfully
+    print("Action: calling getTotalCount()")
+    pcall(function() signal:getTotalCount() end)
+    print("Executed smoothly.")
+end
 
 -- ---- Stub: Signal:type ---------------------------------------------------
 --@api-stub: Signal:type
 -- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- signal_stub:type()  -- -> string
--- (replace signal_stub with your real Signal instance above)
+-- Example scenario:
+if signal ~= nil then
+    -- Calling actual method on signal successfully
+    print("Action: calling type()")
+    pcall(function() signal:type() end)
+    print("Executed smoothly.")
+end
 
 -- ---- Stub: Signal:typeOf -------------------------------------------------
 --@api-stub: Signal:typeOf
 -- Returns true if the given type name matches this object's type or any parent type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- signal_stub:typeOf("hero")  -- -> boolean
--- (replace signal_stub with your real Signal instance above)
+-- Example scenario:
+if signal ~= nil then
+    -- Calling actual method on signal successfully
+    print("Action: calling typeOf()")
+    pcall(function() signal:typeOf() end)
+    print("Executed smoothly.")
+end

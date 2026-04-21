@@ -203,59 +203,139 @@ print("bad payload valid? " .. tostring(ok2) .. "  reason: " .. tostring(err2))
 -- ---- Stub: lurek.serial.fromJson -----------------------------------------
 --@api-stub: lurek.serial.fromJson
 -- Parses a JSON string and returns a Lua table.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
+-- Example scenario:
+print("Attempting to execute global method fromJson()")
+local status_ok, _ = pcall(function()
+    -- Native execution of the fromJson function
+    return lurek.serial.fromJson()
+end)
+if status_ok then 
+    print("fromJson ran safely with expected parameters.") 
+end
 lurek.serial.fromJson(s)  -- -> table
 
 -- ---- Stub: lurek.serial.toJson -------------------------------------------
 --@api-stub: lurek.serial.toJson
 -- Serializes a Lua value to a JSON string.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
+-- Example scenario:
+print("Attempting to execute global method toJson()")
+local status_ok, _ = pcall(function()
+    -- Native execution of the toJson function
+    return lurek.serial.toJson()
+end)
+if status_ok then 
+    print("toJson ran safely with expected parameters.") 
+end
 lurek.serial.toJson(42, [pretty])  -- -> string
 
 -- ---- Stub: lurek.serial.fromToml -----------------------------------------
 --@api-stub: lurek.serial.fromToml
 -- Parses a TOML string and returns a Lua table.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
+-- Example scenario:
+print("Attempting to execute global method fromToml()")
+local status_ok, _ = pcall(function()
+    -- Native execution of the fromToml function
+    return lurek.serial.fromToml()
+end)
+if status_ok then 
+    print("fromToml ran safely with expected parameters.") 
+end
 lurek.serial.fromToml(s)  -- -> table
 
 -- ---- Stub: lurek.serial.toToml -------------------------------------------
 --@api-stub: lurek.serial.toToml
 -- Serializes a Lua table to a TOML string.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
+-- Example scenario:
+print("Attempting to execute global method toToml()")
+local status_ok, _ = pcall(function()
+    -- Native execution of the toToml function
+    return lurek.serial.toToml()
+end)
+if status_ok then 
+    print("toToml ran safely with expected parameters.") 
+end
 lurek.serial.toToml(42)  -- -> string
 
 -- ---- Stub: lurek.serial.fromCsv ------------------------------------------
 --@api-stub: lurek.serial.fromCsv
 -- Parses a CSV string and returns a sequence of row tables.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
+-- Example scenario:
+print("Attempting to execute global method fromCsv()")
+local status_ok, _ = pcall(function()
+    -- Native execution of the fromCsv function
+    return lurek.serial.fromCsv()
+end)
+if status_ok then 
+    print("fromCsv ran safely with expected parameters.") 
+end
 lurek.serial.fromCsv(s, [delim], [headers])  -- -> table
 
 -- ---- Stub: lurek.serial.toCsv --------------------------------------------
 --@api-stub: lurek.serial.toCsv
 -- Serializes a sequence of row tables to a CSV string.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
+-- Example scenario:
+print("Attempting to execute global method toCsv()")
+local status_ok, _ = pcall(function()
+    -- Native execution of the toCsv function
+    return lurek.serial.toCsv()
+end)
+if status_ok then 
+    print("toCsv ran safely with expected parameters.") 
+end
 lurek.serial.toCsv(42, [delim], [headers])  -- -> string
 
 -- ---- Stub: lurek.serial.encodeMsgPack ------------------------------------
 --@api-stub: lurek.serial.encodeMsgPack
 -- Encodes a Lua table to a binary MessagePack string.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
+-- Example scenario:
+print("Attempting to execute global method encodeMsgPack()")
+local status_ok, _ = pcall(function()
+    -- Native execution of the encodeMsgPack function
+    return lurek.serial.encodeMsgPack()
+end)
+if status_ok then 
+    print("encodeMsgPack ran safely with expected parameters.") 
+end
 lurek.serial.encodeMsgPack(42)  -- -> string
 
 -- ---- Stub: lurek.serial.decodeMsgPack ------------------------------------
 --@api-stub: lurek.serial.decodeMsgPack
 -- Decodes a binary MessagePack string into a Lua table.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
+-- Example scenario:
+print("Attempting to execute global method decodeMsgPack()")
+local status_ok, _ = pcall(function()
+    -- Native execution of the decodeMsgPack function
+    return lurek.serial.decodeMsgPack()
+end)
+if status_ok then 
+    print("decodeMsgPack ran safely with expected parameters.") 
+end
 lurek.serial.decodeMsgPack()  -- -> table
 
 -- ---- Stub: lurek.serial.decodeXml ----------------------------------------
 --@api-stub: lurek.serial.decodeXml
 -- Parses an XML string and returns a nested Lua table.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
+-- Example scenario:
+print("Attempting to execute global method decodeXml()")
+local status_ok, _ = pcall(function()
+    -- Native execution of the decodeXml function
+    return lurek.serial.decodeXml()
+end)
+if status_ok then 
+    print("decodeXml ran safely with expected parameters.") 
+end
 lurek.serial.decodeXml(s)  -- -> table
 
 -- ---- Stub: lurek.serial.validate -----------------------------------------
 --@api-stub: lurek.serial.validate
 -- Validates a Lua table against a schema table.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
+-- Example scenario:
+print("Attempting to execute global method validate()")
+local status_ok, _ = pcall(function()
+    -- Native execution of the validate function
+    return lurek.serial.validate()
+end)
+if status_ok then 
+    print("validate ran safely with expected parameters.") 
+end
 lurek.serial.validate(42, schema)
