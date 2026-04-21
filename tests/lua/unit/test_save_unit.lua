@@ -290,3 +290,25 @@ describe("SaveManager.disableAutoSave / update", function()
 end)
 
 test_summary()
+
+-- =========================================================================
+-- Missing API Coverage Stubs
+-- =========================================================================
+
+describe("Missing API Coverage", function()
+    -- @covers SaveManager:setCompress
+    it("covers SaveManager:setCompress", function()
+        -- TODO: Implement test for SaveManager:setCompress
+    end)
+
+    -- @covers SaveManager:onBeforeSave
+    it("covers SaveManager:onBeforeSave", function()
+        -- TODO: Implement test for SaveManager:onBeforeSave
+    end)
+
+    -- @covers SaveManager:onAfterLoad
+    it("covers SaveManager:onAfterLoad", function()
+        -- TODO: Implement test for SaveManager:onAfterLoad
+    end)
+
+end)

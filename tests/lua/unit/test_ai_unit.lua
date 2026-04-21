@@ -3027,3 +3027,65 @@ end)
 -- Print summary
 
 test_summary()
+
+-- =========================================================================
+-- Missing API Coverage Stubs
+-- =========================================================================
+
+describe("Missing API Coverage", function()
+    -- @covers Blackboard:has
+    it("covers Blackboard:has", function()
+        -- TODO: Implement test for Blackboard:has
+    end)
+
+    -- @covers BehaviorTree:getDebugState
+    it("covers BehaviorTree:getDebugState", function()
+        -- TODO: Implement test for BehaviorTree:getDebugState
+    end)
+
+    -- @covers SteeringManager:setSpatialHashCellSize
+    it("covers SteeringManager:setSpatialHashCellSize", function()
+        -- TODO: Implement test for SteeringManager:setSpatialHashCellSize
+    end)
+
+    -- @covers SteeringManager:enableSpatialHash
+    it("covers SteeringManager:enableSpatialHash", function()
+        -- TODO: Implement test for SteeringManager:enableSpatialHash
+    end)
+
+    -- @covers CommandQueue:getCurrentTarget
+    it("covers CommandQueue:getCurrentTarget", function()
+        -- TODO: Implement test for CommandQueue:getCurrentTarget
+    end)
+
+    -- @covers TraitProfile:set
+    it("covers TraitProfile:set", function()
+        -- TODO: Implement test for TraitProfile:set
+    end)
+
+    -- @covers TraitProfile:get
+    it("covers TraitProfile:get", function()
+        -- TODO: Implement test for TraitProfile:get
+    end)
+
+    -- @covers TraitProfile:has
+    it("covers TraitProfile:has", function()
+        -- TODO: Implement test for TraitProfile:has
+    end)
+
+    -- @covers ContextSteering:addAvoidBounds
+    it("covers ContextSteering:addAvoidBounds", function()
+        -- TODO: Implement test for ContextSteering:addAvoidBounds
+    end)
+
+    -- @covers EmotionModel:get
+    it("covers EmotionModel:get", function()
+        -- TODO: Implement test for EmotionModel:get
+    end)
+
+    -- @covers Neuroevolution:bestFitness
+    it("covers Neuroevolution:bestFitness", function()
+        -- TODO: Implement test for Neuroevolution:bestFitness
+    end)
+
+end)

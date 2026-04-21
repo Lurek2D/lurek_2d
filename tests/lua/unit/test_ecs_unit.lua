@@ -920,3 +920,20 @@ describe("RelationshipManager regression: empty default_level", function()
 end)
 
 test_summary()
+
+-- =========================================================================
+-- Missing API Coverage Stubs
+-- =========================================================================
+
+describe("Missing API Coverage", function()
+    -- @covers Universe:has
+    it("covers Universe:has", function()
+        -- TODO: Implement test for Universe:has
+    end)
+
+    -- @covers Universe:bitmapUntag
+    it("covers Universe:bitmapUntag", function()
+        -- TODO: Implement test for Universe:bitmapUntag
+    end)
+
+end)

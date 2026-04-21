@@ -427,3 +427,35 @@ describe("localization format helpers (RS parity)", function()
 end)
 
 test_summary()
+
+-- =========================================================================
+-- Missing API Coverage Stubs
+-- =========================================================================
+
+describe("Missing API Coverage", function()
+    -- @covers lurek.i18n.onLanguageChange
+    it("covers lurek.i18n.onLanguageChange", function()
+        -- TODO: Implement test for lurek.i18n.onLanguageChange
+    end)
+
+    -- @covers lurek.i18n.formatNumber
+    it("covers lurek.i18n.formatNumber", function()
+        -- TODO: Implement test for lurek.i18n.formatNumber
+    end)
+
+    -- @covers lurek.i18n.formatDate
+    it("covers lurek.i18n.formatDate", function()
+        -- TODO: Implement test for lurek.i18n.formatDate
+    end)
+
+    -- @covers lurek.i18n.tGender
+    it("covers lurek.i18n.tGender", function()
+        -- TODO: Implement test for lurek.i18n.tGender
+    end)
+
+    -- @covers lurek.i18n.getLoadedLocales
+    it("covers lurek.i18n.getLoadedLocales", function()
+        -- TODO: Implement test for lurek.i18n.getLoadedLocales
+    end)
+
+end)

@@ -614,3 +614,70 @@ describe("lurek.pipeline toAscii", function()
 end)
 
 test_summary()
+
+-- =========================================================================
+-- Missing API Coverage Stubs
+-- =========================================================================
+
+describe("Missing API Coverage", function()
+    -- @covers Step:setCallback
+    it("covers Step:setCallback", function()
+        -- TODO: Implement test for Step:setCallback
+    end)
+
+    -- @covers Step:getTimeout
+    it("covers Step:getTimeout", function()
+        -- TODO: Implement test for Step:getTimeout
+    end)
+
+    -- @covers Step:setRetryDelay
+    it("covers Step:setRetryDelay", function()
+        -- TODO: Implement test for Step:setRetryDelay
+    end)
+
+    -- @covers Step:setOnError
+    it("covers Step:setOnError", function()
+        -- TODO: Implement test for Step:setOnError
+    end)
+
+    -- @covers Step:getAttempt
+    it("covers Step:getAttempt", function()
+        -- TODO: Implement test for Step:getAttempt
+    end)
+
+    -- @covers Pipeline:run
+    it("covers Pipeline:run", function()
+        -- TODO: Implement test for Pipeline:run
+    end)
+
+    -- @covers Pipeline:runAsync
+    it("covers Pipeline:runAsync", function()
+        -- TODO: Implement test for Pipeline:runAsync
+    end)
+
+    -- @covers Pipeline:getResult
+    it("covers Pipeline:getResult", function()
+        -- TODO: Implement test for Pipeline:getResult
+    end)
+
+    -- @covers Pipeline:getContext
+    it("covers Pipeline:getContext", function()
+        -- TODO: Implement test for Pipeline:getContext
+    end)
+
+    -- @covers Pipeline:setOnComplete
+    it("covers Pipeline:setOnComplete", function()
+        -- TODO: Implement test for Pipeline:setOnComplete
+    end)
+
+    -- @covers Pipeline:setOnStepComplete
+    it("covers Pipeline:setOnStepComplete", function()
+        -- TODO: Implement test for Pipeline:setOnStepComplete
+    end)
+
+    -- @covers Pipeline:setOnStepError
+    it("covers Pipeline:setOnStepError", function()
+        -- TODO: Implement test for Pipeline:setOnStepError
+    end)
+
+end)

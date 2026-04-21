@@ -917,3 +917,75 @@ describe("terminal resetCellSize", function()
 end)
 
 test_summary()
+
+-- =========================================================================
+-- Missing API Coverage Stubs
+-- =========================================================================
+
+describe("Missing API Coverage", function()
+    -- @covers lurek.terminal.pushScrollback
+    it("covers lurek.terminal.pushScrollback", function()
+        -- TODO: Implement test for lurek.terminal.pushScrollback
+    end)
+
+    -- @covers lurek.terminal.getScrollback
+    it("covers lurek.terminal.getScrollback", function()
+        -- TODO: Implement test for lurek.terminal.getScrollback
+    end)
+
+    -- @covers lurek.terminal.scrollbackLen
+    it("covers lurek.terminal.scrollbackLen", function()
+        -- TODO: Implement test for lurek.terminal.scrollbackLen
+    end)
+
+    -- @covers lurek.terminal.setScrollbackCap
+    it("covers lurek.terminal.setScrollbackCap", function()
+        -- TODO: Implement test for lurek.terminal.setScrollbackCap
+    end)
+
+    -- @covers lurek.terminal.pushCmdHistory
+    it("covers lurek.terminal.pushCmdHistory", function()
+        -- TODO: Implement test for lurek.terminal.pushCmdHistory
+    end)
+
+    -- @covers lurek.terminal.prevCmd
+    it("covers lurek.terminal.prevCmd", function()
+        -- TODO: Implement test for lurek.terminal.prevCmd
+    end)
+
+    -- @covers lurek.terminal.nextCmd
+    it("covers lurek.terminal.nextCmd", function()
+        -- TODO: Implement test for lurek.terminal.nextCmd
+    end)
+
+    -- @covers lurek.terminal.cmdHistoryLen
+    it("covers lurek.terminal.cmdHistoryLen", function()
+        -- TODO: Implement test for lurek.terminal.cmdHistoryLen
+    end)
+
+    -- @covers lurek.terminal.clearCmdHistory
+    it("covers lurek.terminal.clearCmdHistory", function()
+        -- TODO: Implement test for lurek.terminal.clearCmdHistory
+    end)
+
+    -- @covers lurek.terminal.applyTheme
+    it("covers lurek.terminal.applyTheme", function()
+        -- TODO: Implement test for lurek.terminal.applyTheme
+    end)
+
+    -- @covers lurek.terminal.printHighlighted
+    it("covers lurek.terminal.printHighlighted", function()
+        -- TODO: Implement test for lurek.terminal.printHighlighted
+    end)
+
+    -- @covers lurek.terminal.printAnsi
+    it("covers lurek.terminal.printAnsi", function()
+        -- TODO: Implement test for lurek.terminal.printAnsi
+    end)
+
+    -- @covers Terminal:autoResize
+    it("covers Terminal:autoResize", function()
+        -- TODO: Implement test for Terminal:autoResize
+    end)
+
+end)

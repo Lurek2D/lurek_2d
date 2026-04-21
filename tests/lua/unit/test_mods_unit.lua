@@ -500,3 +500,55 @@ describe("ModManager reload queue", function()
 end)
 
 test_summary()
+
+-- =========================================================================
+-- Missing API Coverage Stubs
+-- =========================================================================
+
+describe("Missing API Coverage", function()
+    -- @covers lurek.mods.checkApiVersion
+    it("covers lurek.mods.checkApiVersion", function()
+        -- TODO: Implement test for lurek.mods.checkApiVersion
+    end)
+
+    -- @covers Mod:getApiVersion
+    it("covers Mod:getApiVersion", function()
+        -- TODO: Implement test for Mod:getApiVersion
+    end)
+
+    -- @covers Mod:setApiVersion
+    it("covers Mod:setApiVersion", function()
+        -- TODO: Implement test for Mod:setApiVersion
+    end)
+
+    -- @covers Mod:getCapabilities
+    it("covers Mod:getCapabilities", function()
+        -- TODO: Implement test for Mod:getCapabilities
+    end)
+
+    -- @covers Mod:setCapabilities
+    it("covers Mod:setCapabilities", function()
+        -- TODO: Implement test for Mod:setCapabilities
+    end)
+
+    -- @covers Mod:getConfigSchema
+    it("covers Mod:getConfigSchema", function()
+        -- TODO: Implement test for Mod:getConfigSchema
+    end)
+
+    -- @covers Mod:setConfigSchema
+    it("covers Mod:setConfigSchema", function()
+        -- TODO: Implement test for Mod:setConfigSchema
+    end)
+
+    -- @covers Mod:releaseRefs
+    it("covers Mod:releaseRefs", function()
+        -- TODO: Implement test for Mod:releaseRefs
+    end)
+
+    -- @covers ModManager:getModPath
+    it("covers ModManager:getModPath", function()
+        -- TODO: Implement test for ModManager:getModPath
+    end)
+
+end)

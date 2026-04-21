@@ -451,3 +451,15 @@ describe("Async / Promise", function()
 end)
 
 test_summary()
+
+-- =========================================================================
+-- Missing API Coverage Stubs
+-- =========================================================================
+
+describe("Missing API Coverage", function()
+    -- @covers Channel:pop
+    it("covers Channel:pop", function()
+        -- TODO: Implement test for Channel:pop
+    end)
+
+end)

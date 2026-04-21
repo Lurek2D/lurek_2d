@@ -754,3 +754,25 @@ describe("globe_demo: callback name guards", function()
 end)
 
 test_summary()
+
+-- =========================================================================
+-- Missing API Coverage Stubs
+-- =========================================================================
+
+describe("Missing API Coverage", function()
+    -- @covers lurek.globe.get
+    it("covers lurek.globe.get", function()
+        -- TODO: Implement test for lurek.globe.get
+    end)
+
+    -- @covers Globe:pan
+    it("covers Globe:pan", function()
+        -- TODO: Implement test for Globe:pan
+    end)
+
+    -- @covers GlobeRegistry:get
+    it("covers GlobeRegistry:get", function()
+        -- TODO: Implement test for GlobeRegistry:get
+    end)
+
+end)

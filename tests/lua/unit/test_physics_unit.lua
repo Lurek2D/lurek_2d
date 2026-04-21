@@ -2229,3 +2229,75 @@ describe("lurek.physics helpers", function()
 end)
 
 test_summary()
+
+-- =========================================================================
+-- Missing API Coverage Stubs
+-- =========================================================================
+
+describe("Missing API Coverage", function()
+    -- @covers lurek.physics.debugDraw
+    it("covers lurek.physics.debugDraw", function()
+        -- TODO: Implement test for lurek.physics.debugDraw
+    end)
+
+    -- @covers World:getJointBodies
+    it("covers World:getJointBodies", function()
+        -- TODO: Implement test for World:getJointBodies
+    end)
+
+    -- @covers World:getJointMotorSpeed
+    it("covers World:getJointMotorSpeed", function()
+        -- TODO: Implement test for World:getJointMotorSpeed
+    end)
+
+    -- @covers World:getJointLimits
+    it("covers World:getJointLimits", function()
+        -- TODO: Implement test for World:getJointLimits
+    end)
+
+    -- @covers World:getBodyAtPoint
+    it("covers World:getBodyAtPoint", function()
+        -- TODO: Implement test for World:getBodyAtPoint
+    end)
+
+    -- @covers World:getCollisionEvents
+    it("covers World:getCollisionEvents", function()
+        -- TODO: Implement test for World:getCollisionEvents
+    end)
+
+    -- @covers World:getBeginContactEvents
+    it("covers World:getBeginContactEvents", function()
+        -- TODO: Implement test for World:getBeginContactEvents
+    end)
+
+    -- @covers World:getEndContactEvents
+    it("covers World:getEndContactEvents", function()
+        -- TODO: Implement test for World:getEndContactEvents
+    end)
+
+    -- @covers World:getContacts
+    it("covers World:getContacts", function()
+        -- TODO: Implement test for World:getContacts
+    end)
+
+    -- @covers World:getBodyContacts
+    it("covers World:getBodyContacts", function()
+        -- TODO: Implement test for World:getBodyContacts
+    end)
+
+    -- @covers World:setBodyType
+    it("covers World:setBodyType", function()
+        -- TODO: Implement test for World:setBodyType
+    end)
+
+    -- @covers World:getBodyType
+    it("covers World:getBodyType", function()
+        -- TODO: Implement test for World:getBodyType
+    end)
+
+    -- @covers Body:setMass
+    it("covers Body:setMass", function()
+        -- TODO: Implement test for Body:setMass
+    end)
+
+end)

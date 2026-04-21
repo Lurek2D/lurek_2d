@@ -831,3 +831,45 @@ describe("lurek.particle setFlipbook / getFlipbook", function()
 
 end)
 test_summary()
+
+-- =========================================================================
+-- Missing API Coverage Stubs
+-- =========================================================================
+
+describe("Missing API Coverage", function()
+    -- @covers lurek.particle.newTrail
+    it("covers lurek.particle.newTrail", function()
+        -- TODO: Implement test for lurek.particle.newTrail
+    end)
+
+    -- @covers Trail:pushPoint
+    it("covers Trail:pushPoint", function()
+        -- TODO: Implement test for Trail:pushPoint
+    end)
+
+    -- @covers Trail:setWidth
+    it("covers Trail:setWidth", function()
+        -- TODO: Implement test for Trail:setWidth
+    end)
+
+    -- @covers Trail:setLifetime
+    it("covers Trail:setLifetime", function()
+        -- TODO: Implement test for Trail:setLifetime
+    end)
+
+    -- @covers Trail:getLifetime
+    it("covers Trail:getLifetime", function()
+        -- TODO: Implement test for Trail:getLifetime
+    end)
+
+    -- @covers Trail:setMinDistance
+    it("covers Trail:setMinDistance", function()
+        -- TODO: Implement test for Trail:setMinDistance
+    end)
+
+    -- @covers Trail:getPointCount
+    it("covers Trail:getPointCount", function()
+        -- TODO: Implement test for Trail:getPointCount
+    end)
+
+end)

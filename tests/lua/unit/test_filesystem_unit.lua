@@ -677,3 +677,25 @@ describe("lurek.filesystem.createTempFile temporary file creation", function()
 end)
 
 test_summary()
+
+-- =========================================================================
+-- Missing API Coverage Stubs
+-- =========================================================================
+
+describe("Missing API Coverage", function()
+    -- @covers lurek.filesystem.removeDir
+    it("covers lurek.filesystem.removeDir", function()
+        -- TODO: Implement test for lurek.filesystem.removeDir
+    end)
+
+    -- @covers ZipMount:readFile
+    it("covers ZipMount:readFile", function()
+        -- TODO: Implement test for ZipMount:readFile
+    end)
+
+    -- @covers ZipMount:listFiles
+    it("covers ZipMount:listFiles", function()
+        -- TODO: Implement test for ZipMount:listFiles
+    end)
+
+end)

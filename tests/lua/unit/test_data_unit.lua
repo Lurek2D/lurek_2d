@@ -1057,3 +1057,80 @@ describe("lurek.data crc32 checksum", function()
 end)
 
 test_summary()
+
+-- =========================================================================
+-- Missing API Coverage Stubs
+-- =========================================================================
+
+describe("Missing API Coverage", function()
+    -- @covers RingBuffer:pop
+    it("covers RingBuffer:pop", function()
+        -- TODO: Implement test for RingBuffer:pop
+    end)
+
+    -- @covers RingBuffer:len
+    it("covers RingBuffer:len", function()
+        -- TODO: Implement test for RingBuffer:len
+    end)
+
+    -- @covers DataView:getInt8
+    it("covers DataView:getInt8", function()
+        -- TODO: Implement test for DataView:getInt8
+    end)
+
+    -- @covers DataView:getInt16
+    it("covers DataView:getInt16", function()
+        -- TODO: Implement test for DataView:getInt16
+    end)
+
+    -- @covers DataView:getInt32
+    it("covers DataView:getInt32", function()
+        -- TODO: Implement test for DataView:getInt32
+    end)
+
+    -- @covers DataWriter:writeI8
+    it("covers DataWriter:writeI8", function()
+        -- TODO: Implement test for DataWriter:writeI8
+    end)
+
+    -- @covers DataWriter:writeU16LE
+    it("covers DataWriter:writeU16LE", function()
+        -- TODO: Implement test for DataWriter:writeU16LE
+    end)
+
+    -- @covers DataWriter:writeU16BE
+    it("covers DataWriter:writeU16BE", function()
+        -- TODO: Implement test for DataWriter:writeU16BE
+    end)
+
+    -- @covers DataWriter:writeI16LE
+    it("covers DataWriter:writeI16LE", function()
+        -- TODO: Implement test for DataWriter:writeI16LE
+    end)
+
+    -- @covers DataWriter:writeI32LE
+    it("covers DataWriter:writeI32LE", function()
+        -- TODO: Implement test for DataWriter:writeI32LE
+    end)
+
+    -- @covers DataWriter:writeF32LE
+    it("covers DataWriter:writeF32LE", function()
+        -- TODO: Implement test for DataWriter:writeF32LE
+    end)
+
+    -- @covers DataWriter:writeF64LE
+    it("covers DataWriter:writeF64LE", function()
+        -- TODO: Implement test for DataWriter:writeF64LE
+    end)
+
+    -- @covers DataWriter:writeBytes
+    it("covers DataWriter:writeBytes", function()
+        -- TODO: Implement test for DataWriter:writeBytes
+    end)
+
+    -- @covers DataWriter:len
+    it("covers DataWriter:len", function()
+        -- TODO: Implement test for DataWriter:len
+    end)
+
+end)

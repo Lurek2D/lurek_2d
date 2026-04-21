@@ -873,3 +873,355 @@ describe("target rendering/drawing contract: entity", function()
 end)
 
 test_summary()
+
+-- =========================================================================
+-- Missing API Coverage Stubs
+-- =========================================================================
+
+describe("Missing API Coverage", function()
+    -- @covers lurek.render.getBackgroundColor
+    it("covers lurek.render.getBackgroundColor", function()
+        -- TODO: Implement test for lurek.render.getBackgroundColor
+    end)
+
+    -- @covers lurek.render.arc
+    it("covers lurek.render.arc", function()
+        -- TODO: Implement test for lurek.render.arc
+    end)
+
+    -- @covers lurek.render.drawq
+    it("covers lurek.render.drawq", function()
+        -- TODO: Implement test for lurek.render.drawq
+    end)
+
+    -- @covers lurek.render.printf
+    it("covers lurek.render.printf", function()
+        -- TODO: Implement test for lurek.render.printf
+    end)
+
+    -- @covers lurek.render.printRich
+    it("covers lurek.render.printRich", function()
+        -- TODO: Implement test for lurek.render.printRich
+    end)
+
+    -- @covers lurek.render.setPointSize
+    it("covers lurek.render.setPointSize", function()
+        -- TODO: Implement test for lurek.render.setPointSize
+    end)
+
+    -- @covers lurek.render.getPointSize
+    it("covers lurek.render.getPointSize", function()
+        -- TODO: Implement test for lurek.render.getPointSize
+    end)
+
+    -- @covers lurek.render.getFontSizes
+    it("covers lurek.render.getFontSizes", function()
+        -- TODO: Implement test for lurek.render.getFontSizes
+    end)
+
+    -- @covers lurek.render.getDefaultFont
+    it("covers lurek.render.getDefaultFont", function()
+        -- TODO: Implement test for lurek.render.getDefaultFont
+    end)
+
+    -- @covers lurek.render.getFontCellWidth
+    it("covers lurek.render.getFontCellWidth", function()
+        -- TODO: Implement test for lurek.render.getFontCellWidth
+    end)
+
+    -- @covers lurek.render.getFontWrap
+    it("covers lurek.render.getFontWrap", function()
+        -- TODO: Implement test for lurek.render.getFontWrap
+    end)
+
+    -- @covers lurek.render.setCanvas
+    it("covers lurek.render.setCanvas", function()
+        -- TODO: Implement test for lurek.render.setCanvas
+    end)
+
+    -- @covers lurek.render.getCanvas
+    it("covers lurek.render.getCanvas", function()
+        -- TODO: Implement test for lurek.render.getCanvas
+    end)
+
+    -- @covers lurek.render.getCanvasSize
+    it("covers lurek.render.getCanvasSize", function()
+        -- TODO: Implement test for lurek.render.getCanvasSize
+    end)
+
+    -- @covers lurek.render.newSpriteBatch
+    it("covers lurek.render.newSpriteBatch", function()
+        -- TODO: Implement test for lurek.render.newSpriteBatch
+    end)
+
+    -- @covers lurek.render.newMesh
+    it("covers lurek.render.newMesh", function()
+        -- TODO: Implement test for lurek.render.newMesh
+    end)
+
+    -- @covers lurek.render.newShader
+    it("covers lurek.render.newShader", function()
+        -- TODO: Implement test for lurek.render.newShader
+    end)
+
+    -- @covers lurek.render.newQuad
+    it("covers lurek.render.newQuad", function()
+        -- TODO: Implement test for lurek.render.newQuad
+    end)
+
+    -- @covers lurek.render.pop
+    it("covers lurek.render.pop", function()
+        -- TODO: Implement test for lurek.render.pop
+    end)
+
+    -- @covers lurek.render.shear
+    it("covers lurek.render.shear", function()
+        -- TODO: Implement test for lurek.render.shear
+    end)
+
+    -- @covers lurek.render.applyTransform
+    it("covers lurek.render.applyTransform", function()
+        -- TODO: Implement test for lurek.render.applyTransform
+    end)
+
+    -- @covers lurek.render.setScissor
+    it("covers lurek.render.setScissor", function()
+        -- TODO: Implement test for lurek.render.setScissor
+    end)
+
+    -- @covers lurek.render.getScissor
+    it("covers lurek.render.getScissor", function()
+        -- TODO: Implement test for lurek.render.getScissor
+    end)
+
+    -- @covers lurek.render.intersectScissor
+    it("covers lurek.render.intersectScissor", function()
+        -- TODO: Implement test for lurek.render.intersectScissor
+    end)
+
+    -- @covers lurek.render.setColorMask
+    it("covers lurek.render.setColorMask", function()
+        -- TODO: Implement test for lurek.render.setColorMask
+    end)
+
+    -- @covers lurek.render.getColorMask
+    it("covers lurek.render.getColorMask", function()
+        -- TODO: Implement test for lurek.render.getColorMask
+    end)
+
+    -- @covers lurek.render.setWireframe
+    it("covers lurek.render.setWireframe", function()
+        -- TODO: Implement test for lurek.render.setWireframe
+    end)
+
+    -- @covers lurek.render.isWireframe
+    it("covers lurek.render.isWireframe", function()
+        -- TODO: Implement test for lurek.render.isWireframe
+    end)
+
+    -- @covers lurek.render.setStencilTest
+    it("covers lurek.render.setStencilTest", function()
+        -- TODO: Implement test for lurek.render.setStencilTest
+    end)
+
+    -- @covers lurek.render.setDefaultFilter
+    it("covers lurek.render.setDefaultFilter", function()
+        -- TODO: Implement test for lurek.render.setDefaultFilter
+    end)
+
+    -- @covers lurek.render.getDefaultFilter
+    it("covers lurek.render.getDefaultFilter", function()
+        -- TODO: Implement test for lurek.render.getDefaultFilter
+    end)
+
+    -- @covers lurek.render.drawQuadBezier
+    it("covers lurek.render.drawQuadBezier", function()
+        -- TODO: Implement test for lurek.render.drawQuadBezier
+    end)
+
+    -- @covers lurek.render.drawCubicBezier
+    it("covers lurek.render.drawCubicBezier", function()
+        -- TODO: Implement test for lurek.render.drawCubicBezier
+    end)
+
+    -- @covers lurek.render.drawGradientRect
+    it("covers lurek.render.drawGradientRect", function()
+        -- TODO: Implement test for lurek.render.drawGradientRect
+    end)
+
+    -- @covers lurek.render.drawColoredPolygon
+    it("covers lurek.render.drawColoredPolygon", function()
+        -- TODO: Implement test for lurek.render.drawColoredPolygon
+    end)
+
+    -- @covers lurek.render.drawIsoCubeTile
+    it("covers lurek.render.drawIsoCubeTile", function()
+        -- TODO: Implement test for lurek.render.drawIsoCubeTile
+    end)
+
+    -- @covers lurek.render.drawHexTile
+    it("covers lurek.render.drawHexTile", function()
+        -- TODO: Implement test for lurek.render.drawHexTile
+    end)
+
+    -- @covers lurek.render.beginSortGroup
+    it("covers lurek.render.beginSortGroup", function()
+        -- TODO: Implement test for lurek.render.beginSortGroup
+    end)
+
+    -- @covers lurek.render.pushSortKey
+    it("covers lurek.render.pushSortKey", function()
+        -- TODO: Implement test for lurek.render.pushSortKey
+    end)
+
+    -- @covers lurek.render.flushSortGroup
+    it("covers lurek.render.flushSortGroup", function()
+        -- TODO: Implement test for lurek.render.flushSortGroup
+    end)
+
+    -- @covers lurek.render.drawBevelRect
+    it("covers lurek.render.drawBevelRect", function()
+        -- TODO: Implement test for lurek.render.drawBevelRect
+    end)
+
+    -- @covers lurek.render.pushLayer
+    it("covers lurek.render.pushLayer", function()
+        -- TODO: Implement test for lurek.render.pushLayer
+    end)
+
+    -- @covers lurek.render.popLayer
+    it("covers lurek.render.popLayer", function()
+        -- TODO: Implement test for lurek.render.popLayer
+    end)
+
+    -- @covers lurek.render.drawQuadBezier
+    it("covers lurek.render.drawQuadBezier", function()
+        -- TODO: Implement test for lurek.render.drawQuadBezier
+    end)
+
+    -- @covers lurek.render.drawCubicBezier
+    it("covers lurek.render.drawCubicBezier", function()
+        -- TODO: Implement test for lurek.render.drawCubicBezier
+    end)
+
+    -- @covers lurek.render.drawGradientRect
+    it("covers lurek.render.drawGradientRect", function()
+        -- TODO: Implement test for lurek.render.drawGradientRect
+    end)
+
+    -- @covers lurek.render.drawColoredPolygon
+    it("covers lurek.render.drawColoredPolygon", function()
+        -- TODO: Implement test for lurek.render.drawColoredPolygon
+    end)
+
+    -- @covers lurek.render.drawIsoCubeTile
+    it("covers lurek.render.drawIsoCubeTile", function()
+        -- TODO: Implement test for lurek.render.drawIsoCubeTile
+    end)
+
+    -- @covers lurek.render.drawHexTile
+    it("covers lurek.render.drawHexTile", function()
+        -- TODO: Implement test for lurek.render.drawHexTile
+    end)
+
+    -- @covers lurek.render.beginSortGroup
+    it("covers lurek.render.beginSortGroup", function()
+        -- TODO: Implement test for lurek.render.beginSortGroup
+    end)
+
+    -- @covers lurek.render.pushSortKey
+    it("covers lurek.render.pushSortKey", function()
+        -- TODO: Implement test for lurek.render.pushSortKey
+    end)
+
+    -- @covers lurek.render.flushSortGroup
+    it("covers lurek.render.flushSortGroup", function()
+        -- TODO: Implement test for lurek.render.flushSortGroup
+    end)
+
+    -- @covers lurek.render.drawBevelRect
+    it("covers lurek.render.drawBevelRect", function()
+        -- TODO: Implement test for lurek.render.drawBevelRect
+    end)
+
+    -- @covers lurek.render.pushLayer
+    it("covers lurek.render.pushLayer", function()
+        -- TODO: Implement test for lurek.render.pushLayer
+    end)
+
+    -- @covers lurek.render.popLayer
+    it("covers lurek.render.popLayer", function()
+        -- TODO: Implement test for lurek.render.popLayer
+    end)
+
+    -- @covers lurek.render.currentLayer
+    it("covers lurek.render.currentLayer", function()
+        -- TODO: Implement test for lurek.render.currentLayer
+    end)
+
+    -- @covers lurek.render.isLayerVisible
+    it("covers lurek.render.isLayerVisible", function()
+        -- TODO: Implement test for lurek.render.isLayerVisible
+    end)
+
+    -- @covers lurek.render.getLayerZOrder
+    it("covers lurek.render.getLayerZOrder", function()
+        -- TODO: Implement test for lurek.render.getLayerZOrder
+    end)
+
+    -- @covers lurek.render.setLayerZOrder
+    it("covers lurek.render.setLayerZOrder", function()
+        -- TODO: Implement test for lurek.render.setLayerZOrder
+    end)
+
+    -- @covers Font:getLineHeight
+    it("covers Font:getLineHeight", function()
+        -- TODO: Implement test for Font:getLineHeight
+    end)
+
+    -- @covers Font:setLineHeight
+    it("covers Font:setLineHeight", function()
+        -- TODO: Implement test for Font:setLineHeight
+    end)
+
+    -- @covers Font:getAscent
+    it("covers Font:getAscent", function()
+        -- TODO: Implement test for Font:getAscent
+    end)
+
+    -- @covers Font:getDescent
+    it("covers Font:getDescent", function()
+        -- TODO: Implement test for Font:getDescent
+    end)
+
+    -- @covers Font:getWrap
+    it("covers Font:getWrap", function()
+        -- TODO: Implement test for Font:getWrap
+    end)
+
+    -- @covers Mesh:getVertexCount
+    it("covers Mesh:getVertexCount", function()
+        -- TODO: Implement test for Mesh:getVertexCount
+    end)
+
+    -- @covers Mesh:getVertex
+    it("covers Mesh:getVertex", function()
+        -- TODO: Implement test for Mesh:getVertex
+    end)
+
+    -- @covers Mesh:setVertex
+    it("covers Mesh:setVertex", function()
+        -- TODO: Implement test for Mesh:setVertex
+    end)
+
+    -- @covers Shader:hasUniform
+    it("covers Shader:hasUniform", function()
+        -- TODO: Implement test for Shader:hasUniform
+    end)
+
+    -- @covers Quad:getTextureDimensions
+    it("covers Quad:getTextureDimensions", function()
+        -- TODO: Implement test for Quad:getTextureDimensions
+    end)
+
+end)

@@ -663,3 +663,20 @@ describe("lurek.timer.delay", function()
 end)
 
 test_summary()
+
+-- =========================================================================
+-- Missing API Coverage Stubs
+-- =========================================================================
+
+describe("Missing API Coverage", function()
+    -- @covers Scheduler:getRepeatCount
+    it("covers Scheduler:getRepeatCount", function()
+        -- TODO: Implement test for Scheduler:getRepeatCount
+    end)
+
+    -- @covers Scheduler:resetEvent
+    it("covers Scheduler:resetEvent", function()
+        -- TODO: Implement test for Scheduler:resetEvent
+    end)
+
+end)

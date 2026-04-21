@@ -946,3 +946,35 @@ describe("UnitPathfinder regression: zero index", function()
 end)
 
 test_summary()
+
+-- =========================================================================
+-- Missing API Coverage Stubs
+-- =========================================================================
+
+describe("Missing API Coverage", function()
+    -- @covers lurek.pathfind.setThreadCount
+    it("covers lurek.pathfind.setThreadCount", function()
+        -- TODO: Implement test for lurek.pathfind.setThreadCount
+    end)
+
+    -- @covers NavGrid:rebuildAbstract
+    it("covers NavGrid:rebuildAbstract", function()
+        -- TODO: Implement test for NavGrid:rebuildAbstract
+    end)
+
+    -- @covers NavGrid:setDirty
+    it("covers NavGrid:setDirty", function()
+        -- TODO: Implement test for NavGrid:setDirty
+    end)
+
+    -- @covers NavGrid:clearDirty
+    it("covers NavGrid:clearDirty", function()
+        -- TODO: Implement test for NavGrid:clearDirty
+    end)
+
+    -- @covers FlowField:getDirectionAngle
+    it("covers FlowField:getDirectionAngle", function()
+        -- TODO: Implement test for FlowField:getDirectionAngle
+    end)
+
+end)

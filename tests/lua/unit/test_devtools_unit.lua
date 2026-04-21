@@ -531,3 +531,35 @@ describe("lurek.devtools newRepl", function()
 end)
 
 test_summary()
+
+-- =========================================================================
+-- Missing API Coverage Stubs
+-- =========================================================================
+
+describe("Missing API Coverage", function()
+    -- @covers lurek.devtools.log
+    it("covers lurek.devtools.log", function()
+        -- TODO: Implement test for lurek.devtools.log
+    end)
+
+    -- @covers lurek.devtools.exposeWatch
+    it("covers lurek.devtools.exposeWatch", function()
+        -- TODO: Implement test for lurek.devtools.exposeWatch
+    end)
+
+    -- @covers lurek.devtools.removeWatch
+    it("covers lurek.devtools.removeWatch", function()
+        -- TODO: Implement test for lurek.devtools.removeWatch
+    end)
+
+    -- @covers lurek.devtools.getWatches
+    it("covers lurek.devtools.getWatches", function()
+        -- TODO: Implement test for lurek.devtools.getWatches
+    end)
+
+    -- @covers ReplConsole:len
+    it("covers ReplConsole:len", function()
+        -- TODO: Implement test for ReplConsole:len
+    end)
+
+end)

@@ -744,3 +744,30 @@ describe("lurek.window.getScaleInfo", function()
 end)
 
 test_summary()
+
+-- =========================================================================
+-- Missing API Coverage Stubs
+-- =========================================================================
+
+describe("Missing API Coverage", function()
+    -- @covers lurek.window.getFullscreenModes
+    it("covers lurek.window.getFullscreenModes", function()
+        -- TODO: Implement test for lurek.window.getFullscreenModes
+    end)
+
+    -- @covers lurek.window.getDisplayName
+    it("covers lurek.window.getDisplayName", function()
+        -- TODO: Implement test for lurek.window.getDisplayName
+    end)
+
+    -- @covers lurek.window.getPixelDimensions
+    it("covers lurek.window.getPixelDimensions", function()
+        -- TODO: Implement test for lurek.window.getPixelDimensions
+    end)
+
+    -- @covers lurek.window.showMessageBox
+    it("covers lurek.window.showMessageBox", function()
+        -- TODO: Implement test for lurek.window.showMessageBox
+    end)
+
+end)

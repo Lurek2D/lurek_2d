@@ -1,4 +1,4 @@
-﻿# tests/lua/security — Lua Security Tests
+# tests/lua/security — Lua Security Tests
 
 Adversarial tests for sandbox enforcement, nil spam, path traversal, and resource exhaustion from Lua.
 

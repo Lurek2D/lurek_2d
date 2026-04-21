@@ -1750,3 +1750,35 @@ describe("ImageData:mapPixels", function()
 end)
 
 test_summary()
+
+-- =========================================================================
+-- Missing API Coverage Stubs
+-- =========================================================================
+
+describe("Missing API Coverage", function()
+    -- @covers lurek.image.newPaletteLut
+    it("covers lurek.image.newPaletteLut", function()
+        -- TODO: Implement test for lurek.image.newPaletteLut
+    end)
+
+    -- @covers lurek.image.newProvinceGrid
+    it("covers lurek.image.newProvinceGrid", function()
+        -- TODO: Implement test for lurek.image.newProvinceGrid
+    end)
+
+    -- @covers CompressedImageData:getMipmapCount
+    it("covers CompressedImageData:getMipmapCount", function()
+        -- TODO: Implement test for CompressedImageData:getMipmapCount
+    end)
+
+    -- @covers mlua:applyPaletteLut
+    it("covers mlua:applyPaletteLut", function()
+        -- TODO: Implement test for mlua:applyPaletteLut
+    end)
+
+    -- @covers PaletteLUT:getColorCount
+    it("covers PaletteLUT:getColorCount", function()
+        -- TODO: Implement test for PaletteLUT:getColorCount
+    end)
+
+end)

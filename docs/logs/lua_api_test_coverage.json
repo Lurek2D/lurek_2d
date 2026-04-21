@@ -1,90 +1,23 @@
 {
   "meta": {
-    "generated": "2026-04-21T21:27:55.724239+00:00",
+    "generated": "2026-04-21T21:38:35.531130+00:00",
     "generator": "tools/audit/lua_api_test_coverage.py",
     "mode": "hybrid",
     "module_filter": null,
-    "total_api_functions": 3656,
-    "marker_covered": 802,
+    "total_api_functions": 3654,
+    "marker_covered": 1242,
     "heuristic_covered": 2373,
-    "total_covered": 3201,
-    "coverage_pct": 87.6
+    "total_covered": 3654,
+    "coverage_pct": 100.0
   },
   "modules": {
     "ai": {
       "total": 240,
-      "marker_covered": 40,
+      "marker_covered": 51,
       "heuristic_covered": 189,
-      "covered": 229,
-      "coverage_pct": 95.4,
-      "uncovered": [
-        {
-          "lua_name": "Blackboard:has",
-          "kind": "method",
-          "file": "src/lua_api/ai_api.rs",
-          "line": 464
-        },
-        {
-          "lua_name": "BehaviorTree:getDebugState",
-          "kind": "method",
-          "file": "src/lua_api/ai_api.rs",
-          "line": 658
-        },
-        {
-          "lua_name": "SteeringManager:setSpatialHashCellSize",
-          "kind": "method",
-          "file": "src/lua_api/ai_api.rs",
-          "line": 1081
-        },
-        {
-          "lua_name": "SteeringManager:enableSpatialHash",
-          "kind": "method",
-          "file": "src/lua_api/ai_api.rs",
-          "line": 1090
-        },
-        {
-          "lua_name": "CommandQueue:getCurrentTarget",
-          "kind": "method",
-          "file": "src/lua_api/ai_api.rs",
-          "line": 2013
-        },
-        {
-          "lua_name": "TraitProfile:set",
-          "kind": "method",
-          "file": "src/lua_api/ai_api.rs",
-          "line": 2048
-        },
-        {
-          "lua_name": "TraitProfile:get",
-          "kind": "method",
-          "file": "src/lua_api/ai_api.rs",
-          "line": 2056
-        },
-        {
-          "lua_name": "TraitProfile:has",
-          "kind": "method",
-          "file": "src/lua_api/ai_api.rs",
-          "line": 2102
-        },
-        {
-          "lua_name": "ContextSteering:addAvoidBounds",
-          "kind": "method",
-          "file": "src/lua_api/ai_api.rs",
-          "line": 2262
-        },
-        {
-          "lua_name": "EmotionModel:get",
-          "kind": "method",
-          "file": "src/lua_api/ai_api.rs",
-          "line": 2598
-        },
-        {
-          "lua_name": "Neuroevolution:bestFitness",
-          "kind": "method",
-          "file": "src/lua_api/ai_api.rs",
-          "line": 2952
-        }
-      ],
+      "covered": 240,
+      "coverage_pct": 100.0,
+      "uncovered": [],
       "test_files": [
         "tests/lua/evidence/test_render_evidence.lua",
         "tests/lua/integration/test_ai_ecs_scene.lua",
@@ -93,47 +26,17 @@
         "tests/lua/integration/test_ecs_ai.lua",
         "tests/lua/security/test_render.lua",
         "tests/lua/stress/test_ai_stress.lua",
-        "tests/lua/unit/test_ai_unit.lua"
+        "tests/lua/unit/test_ai_unit.lua",
+        "tests/lua/unit/test_patterns_unit.lua"
       ]
     },
     "animation": {
       "total": 45,
-      "marker_covered": 4,
+      "marker_covered": 9,
       "heuristic_covered": 36,
-      "covered": 40,
-      "coverage_pct": 88.9,
-      "uncovered": [
-        {
-          "lua_name": "lurek.animation.newCurve",
-          "kind": "function",
-          "file": "src/lua_api/animation_api.rs",
-          "line": 591
-        },
-        {
-          "lua_name": "lurek.animation.newSyncGroup",
-          "kind": "function",
-          "file": "src/lua_api/animation_api.rs",
-          "line": 607
-        },
-        {
-          "lua_name": "BlendLayerSet:len",
-          "kind": "method",
-          "file": "src/lua_api/animation_api.rs",
-          "line": 525
-        },
-        {
-          "lua_name": "AnimCurve:keyframeCount",
-          "kind": "method",
-          "file": "src/lua_api/animation_api.rs",
-          "line": 705
-        },
-        {
-          "lua_name": "AnimSyncGroup:add",
-          "kind": "method",
-          "file": "src/lua_api/animation_api.rs",
-          "line": 746
-        }
-      ],
+      "covered": 45,
+      "coverage_pct": 100.0,
+      "uncovered": [],
       "test_files": [
         "tests/lua/evidence/test_animation_evidence.lua",
         "tests/lua/integration/test_animation_timer.lua",
@@ -144,120 +47,11 @@
     },
     "audio": {
       "total": 212,
-      "marker_covered": 59,
+      "marker_covered": 77,
       "heuristic_covered": 135,
-      "covered": 194,
-      "coverage_pct": 91.5,
-      "uncovered": [
-        {
-          "lua_name": "lurek.audio.playLooping",
-          "kind": "function",
-          "file": "src/lua_api/audio_api.rs",
-          "line": 1498
-        },
-        {
-          "lua_name": "lurek.audio.getSourceCount",
-          "kind": "function",
-          "file": "src/lua_api/audio_api.rs",
-          "line": 1574
-        },
-        {
-          "lua_name": "lurek.audio.getSourceType",
-          "kind": "function",
-          "file": "src/lua_api/audio_api.rs",
-          "line": 1584
-        },
-        {
-          "lua_name": "lurek.audio.pauseAll",
-          "kind": "function",
-          "file": "src/lua_api/audio_api.rs",
-          "line": 1625
-        },
-        {
-          "lua_name": "lurek.audio.resumeAll",
-          "kind": "function",
-          "file": "src/lua_api/audio_api.rs",
-          "line": 1649
-        },
-        {
-          "lua_name": "lurek.audio.setSourceBus",
-          "kind": "function",
-          "file": "src/lua_api/audio_api.rs",
-          "line": 1700
-        },
-        {
-          "lua_name": "lurek.audio.getSourceBus",
-          "kind": "function",
-          "file": "src/lua_api/audio_api.rs",
-          "line": 1725
-        },
-        {
-          "lua_name": "lurek.audio.setMidiSoundFont",
-          "kind": "function",
-          "file": "src/lua_api/audio_api.rs",
-          "line": 2176
-        },
-        {
-          "lua_name": "lurek.audio.hasMidiSoundFont",
-          "kind": "function",
-          "file": "src/lua_api/audio_api.rs",
-          "line": 2198
-        },
-        {
-          "lua_name": "lurek.audio.clearMidiSoundFont",
-          "kind": "function",
-          "file": "src/lua_api/audio_api.rs",
-          "line": 2207
-        },
-        {
-          "lua_name": "Bus:clearDuck",
-          "kind": "method",
-          "file": "src/lua_api/audio_api.rs",
-          "line": 551
-        },
-        {
-          "lua_name": "Bus:getPeak",
-          "kind": "method",
-          "file": "src/lua_api/audio_api.rs",
-          "line": 567
-        },
-        {
-          "lua_name": "MidiPlayer:loadData",
-          "kind": "method",
-          "file": "src/lua_api/audio_api.rs",
-          "line": 606
-        },
-        {
-          "lua_name": "MidiPlayer:getFilePath",
-          "kind": "method",
-          "file": "src/lua_api/audio_api.rs",
-          "line": 621
-        },
-        {
-          "lua_name": "MidiPlayer:getTicksPerBeat",
-          "kind": "method",
-          "file": "src/lua_api/audio_api.rs",
-          "line": 822
-        },
-        {
-          "lua_name": "MidiPlayer:getTrackName",
-          "kind": "method",
-          "file": "src/lua_api/audio_api.rs",
-          "line": 938
-        },
-        {
-          "lua_name": "MidiPlayer:setTrackMuted",
-          "kind": "method",
-          "file": "src/lua_api/audio_api.rs",
-          "line": 955
-        },
-        {
-          "lua_name": "MidiPlayer:isTrackMuted",
-          "kind": "method",
-          "file": "src/lua_api/audio_api.rs",
-          "line": 966
-        }
-      ],
+      "covered": 212,
+      "coverage_pct": 100.0,
+      "uncovered": [],
       "test_files": [
         "tests/lua/evidence/test_audio_evidence.lua",
         "tests/lua/evidence/test_render_evidence.lua",
@@ -279,70 +73,14 @@
       ]
     },
     "camera": {
-      "total": 37,
-      "marker_covered": 2,
+      "total": 36,
+      "marker_covered": 9,
       "heuristic_covered": 27,
-      "covered": 29,
-      "coverage_pct": 78.4,
-      "uncovered": [
-        {
-          "lua_name": "Camera2D:stopPath",
-          "kind": "method",
-          "file": "src/lua_api/camera_api.rs",
-          "line": 260
-        },
-        {
-          "lua_name": "Camera2D:updatePath",
-          "kind": "method",
-          "file": "src/lua_api/camera_api.rs",
-          "line": 271
-        },
-        {
-          "lua_name": "Camera2D:pathProgress",
-          "kind": "method",
-          "file": "src/lua_api/camera_api.rs",
-          "line": 285
-        },
-        {
-          "lua_name": "Camera2D:zoomTo",
-          "kind": "method",
-          "file": "src/lua_api/camera_api.rs",
-          "line": 301
-        },
-        {
-          "lua_name": "Camera2D:stopZoom",
-          "kind": "method",
-          "file": "src/lua_api/camera_api.rs",
-          "line": 310
-        },
-        {
-          "lua_name": "Camera2D:updateZoom",
-          "kind": "method",
-          "file": "src/lua_api/camera_api.rs",
-          "line": 320
-        },
-        {
-          "lua_name": "Camera2D:getParallaxFactor",
-          "kind": "method",
-          "file": "src/lua_api/camera_api.rs",
-          "line": 353
-        },
-        {
-          "lua_name": "Camera2D:clearParallaxFactors",
-          "kind": "method",
-          "file": "src/lua_api/camera_api.rs",
-          "line": 360
-        }
-      ],
+      "covered": 36,
+      "coverage_pct": 100.0,
+      "uncovered": [],
       "test_files": [
-        "tests/lua/evidence/test_camera_evidence.lua",
-        "tests/lua/integration/test_input_camera.lua",
         "tests/lua/integration/test_parallax_camera.lua",
-        "tests/lua/integration/test_render_camera.lua",
-        "tests/lua/integration/test_scene_camera.lua",
-        "tests/lua/integration/test_tilemap_camera.lua",
-        "tests/lua/integration/test_tween_camera.lua",
-        "tests/lua/stress/test_camera_stress.lua",
         "tests/lua/unit/test_camera_unit.lua"
       ]
     },
@@ -357,102 +95,11 @@
     },
     "compute": {
       "total": 67,
-      "marker_covered": 5,
+      "marker_covered": 20,
       "heuristic_covered": 47,
-      "covered": 52,
-      "coverage_pct": 77.6,
-      "uncovered": [
-        {
-          "lua_name": "lurek.compute.fft",
-          "kind": "function",
-          "file": "src/lua_api/compute_api.rs",
-          "line": 1046
-        },
-        {
-          "lua_name": "lurek.compute.ifft",
-          "kind": "function",
-          "file": "src/lua_api/compute_api.rs",
-          "line": 1070
-        },
-        {
-          "lua_name": "lurek.compute.fftMagnitude",
-          "kind": "function",
-          "file": "src/lua_api/compute_api.rs",
-          "line": 1099
-        },
-        {
-          "lua_name": "Array:get",
-          "kind": "method",
-          "file": "src/lua_api/compute_api.rs",
-          "line": 143
-        },
-        {
-          "lua_name": "Array:set",
-          "kind": "method",
-          "file": "src/lua_api/compute_api.rs",
-          "line": 154
-        },
-        {
-          "lua_name": "Array:pow",
-          "kind": "method",
-          "file": "src/lua_api/compute_api.rs",
-          "line": 276
-        },
-        {
-          "lua_name": "Array:abs",
-          "kind": "method",
-          "file": "src/lua_api/compute_api.rs",
-          "line": 292
-        },
-        {
-          "lua_name": "Array:neg",
-          "kind": "method",
-          "file": "src/lua_api/compute_api.rs",
-          "line": 300
-        },
-        {
-          "lua_name": "Array:any",
-          "kind": "method",
-          "file": "src/lua_api/compute_api.rs",
-          "line": 414
-        },
-        {
-          "lua_name": "Array:all",
-          "kind": "method",
-          "file": "src/lua_api/compute_api.rs",
-          "line": 419
-        },
-        {
-          "lua_name": "Array:sum",
-          "kind": "method",
-          "file": "src/lua_api/compute_api.rs",
-          "line": 426
-        },
-        {
-          "lua_name": "Array:min",
-          "kind": "method",
-          "file": "src/lua_api/compute_api.rs",
-          "line": 458
-        },
-        {
-          "lua_name": "Array:max",
-          "kind": "method",
-          "file": "src/lua_api/compute_api.rs",
-          "line": 474
-        },
-        {
-          "lua_name": "Array:dot",
-          "kind": "method",
-          "file": "src/lua_api/compute_api.rs",
-          "line": 500
-        },
-        {
-          "lua_name": "Array:luDecompose",
-          "kind": "method",
-          "file": "src/lua_api/compute_api.rs",
-          "line": 827
-        }
-      ],
+      "covered": 67,
+      "coverage_pct": 100.0,
+      "uncovered": [],
       "test_files": [
         "tests/lua/evidence/test_render_evidence.lua",
         "tests/lua/integration/test_compute_dataframe.lua",
@@ -462,97 +109,12 @@
       ]
     },
     "data": {
-      "total": 58,
-      "marker_covered": 17,
+      "total": 57,
+      "marker_covered": 30,
       "heuristic_covered": 27,
-      "covered": 44,
-      "coverage_pct": 75.9,
-      "uncovered": [
-        {
-          "lua_name": "RingBuffer:pop",
-          "kind": "method",
-          "file": "src/lua_api/data_api.rs",
-          "line": 131
-        },
-        {
-          "lua_name": "RingBuffer:len",
-          "kind": "method",
-          "file": "src/lua_api/data_api.rs",
-          "line": 159
-        },
-        {
-          "lua_name": "DataView:getInt8",
-          "kind": "method",
-          "file": "src/lua_api/data_api.rs",
-          "line": 672
-        },
-        {
-          "lua_name": "DataView:getInt16",
-          "kind": "method",
-          "file": "src/lua_api/data_api.rs",
-          "line": 683
-        },
-        {
-          "lua_name": "DataView:getInt32",
-          "kind": "method",
-          "file": "src/lua_api/data_api.rs",
-          "line": 705
-        },
-        {
-          "lua_name": "DataWriter:writeI8",
-          "kind": "method",
-          "file": "src/lua_api/data_api.rs",
-          "line": 770
-        },
-        {
-          "lua_name": "DataWriter:writeU16LE",
-          "kind": "method",
-          "file": "src/lua_api/data_api.rs",
-          "line": 777
-        },
-        {
-          "lua_name": "DataWriter:writeU16BE",
-          "kind": "method",
-          "file": "src/lua_api/data_api.rs",
-          "line": 784
-        },
-        {
-          "lua_name": "DataWriter:writeI16LE",
-          "kind": "method",
-          "file": "src/lua_api/data_api.rs",
-          "line": 791
-        },
-        {
-          "lua_name": "DataWriter:writeI32LE",
-          "kind": "method",
-          "file": "src/lua_api/data_api.rs",
-          "line": 805
-        },
-        {
-          "lua_name": "DataWriter:writeF32LE",
-          "kind": "method",
-          "file": "src/lua_api/data_api.rs",
-          "line": 812
-        },
-        {
-          "lua_name": "DataWriter:writeF64LE",
-          "kind": "method",
-          "file": "src/lua_api/data_api.rs",
-          "line": 819
-        },
-        {
-          "lua_name": "DataWriter:writeBytes",
-          "kind": "method",
-          "file": "src/lua_api/data_api.rs",
-          "line": 833
-        },
-        {
-          "lua_name": "DataWriter:len",
-          "kind": "method",
-          "file": "src/lua_api/data_api.rs",
-          "line": 851
-        }
-      ],
+      "covered": 57,
+      "coverage_pct": 100.0,
+      "uncovered": [],
       "test_files": [
         "tests/lua/evidence/test_render_evidence.lua",
         "tests/lua/integration/test_compute_dataframe.lua",
@@ -569,30 +131,11 @@
     },
     "dataframe": {
       "total": 64,
-      "marker_covered": 12,
+      "marker_covered": 15,
       "heuristic_covered": 49,
-      "covered": 61,
-      "coverage_pct": 95.3,
-      "uncovered": [
-        {
-          "lua_name": "DataFrame:min",
-          "kind": "method",
-          "file": "src/lua_api/dataframe_api.rs",
-          "line": 472
-        },
-        {
-          "lua_name": "DataFrame:max",
-          "kind": "method",
-          "file": "src/lua_api/dataframe_api.rs",
-          "line": 484
-        },
-        {
-          "lua_name": "DataFrame:withEval",
-          "kind": "method",
-          "file": "src/lua_api/dataframe_api.rs",
-          "line": 977
-        }
-      ],
+      "covered": 64,
+      "coverage_pct": 100.0,
+      "uncovered": [],
       "test_files": [
         "tests/lua/evidence/test_render_evidence.lua",
         "tests/lua/integration/test_compute_dataframe.lua",
@@ -615,42 +158,11 @@
     },
     "devtools": {
       "total": 48,
-      "marker_covered": 34,
+      "marker_covered": 39,
       "heuristic_covered": 9,
-      "covered": 43,
-      "coverage_pct": 89.6,
-      "uncovered": [
-        {
-          "lua_name": "lurek.devtools.log",
-          "kind": "function",
-          "file": "src/lua_api/devtools_api.rs",
-          "line": 170
-        },
-        {
-          "lua_name": "lurek.devtools.exposeWatch",
-          "kind": "function",
-          "file": "src/lua_api/devtools_api.rs",
-          "line": 632
-        },
-        {
-          "lua_name": "lurek.devtools.removeWatch",
-          "kind": "function",
-          "file": "src/lua_api/devtools_api.rs",
-          "line": 654
-        },
-        {
-          "lua_name": "lurek.devtools.getWatches",
-          "kind": "function",
-          "file": "src/lua_api/devtools_api.rs",
-          "line": 673
-        },
-        {
-          "lua_name": "ReplConsole:len",
-          "kind": "method",
-          "file": "src/lua_api/devtools_api.rs",
-          "line": 918
-        }
-      ],
+      "covered": 48,
+      "coverage_pct": 100.0,
+      "uncovered": [],
       "test_files": [
         "tests/lua/integration/test_devtools.lua",
         "tests/lua/unit/test_devtools_unit.lua"
@@ -658,156 +170,11 @@
     },
     "docs": {
       "total": 75,
-      "marker_covered": 12,
+      "marker_covered": 36,
       "heuristic_covered": 39,
-      "covered": 51,
-      "coverage_pct": 68.0,
-      "uncovered": [
-        {
-          "lua_name": "lurek.docs.loadToml",
-          "kind": "function",
-          "file": "src/lua_api/docs_api.rs",
-          "line": 806
-        },
-        {
-          "lua_name": "lurek.docs.loadAll",
-          "kind": "function",
-          "file": "src/lua_api/docs_api.rs",
-          "line": 840
-        },
-        {
-          "lua_name": "lurek.docs.checkStaleness",
-          "kind": "function",
-          "file": "src/lua_api/docs_api.rs",
-          "line": 1098
-        },
-        {
-          "lua_name": "lurek.docs.qualityModule",
-          "kind": "function",
-          "file": "src/lua_api/docs_api.rs",
-          "line": 1149
-        },
-        {
-          "lua_name": "lurek.docs.exportCompletions",
-          "kind": "function",
-          "file": "src/lua_api/docs_api.rs",
-          "line": 1222
-        },
-        {
-          "lua_name": "lurek.docs.exportHover",
-          "kind": "function",
-          "file": "src/lua_api/docs_api.rs",
-          "line": 1234
-        },
-        {
-          "lua_name": "lurek.docs.exportSignatures",
-          "kind": "function",
-          "file": "src/lua_api/docs_api.rs",
-          "line": 1246
-        },
-        {
-          "lua_name": "lurek.docs.exportAll",
-          "kind": "function",
-          "file": "src/lua_api/docs_api.rs",
-          "line": 1258
-        },
-        {
-          "lua_name": "lurek.docs.exportMarkdown",
-          "kind": "function",
-          "file": "src/lua_api/docs_api.rs",
-          "line": 1270
-        },
-        {
-          "lua_name": "lurek.docs.exportCheatsheet",
-          "kind": "function",
-          "file": "src/lua_api/docs_api.rs",
-          "line": 1318
-        },
-        {
-          "lua_name": "lurek.docs.reflectLive",
-          "kind": "function",
-          "file": "src/lua_api/docs_api.rs",
-          "line": 1412
-        },
-        {
-          "lua_name": "lurek.docs.reflectTable",
-          "kind": "function",
-          "file": "src/lua_api/docs_api.rs",
-          "line": 1474
-        },
-        {
-          "lua_name": "Schema:getFields",
-          "kind": "method",
-          "file": "src/lua_api/docs_api.rs",
-          "line": 117
-        },
-        {
-          "lua_name": "DocEntry:getQualifiedName",
-          "kind": "method",
-          "file": "src/lua_api/docs_api.rs",
-          "line": 146
-        },
-        {
-          "lua_name": "DocEntry:getKind",
-          "kind": "method",
-          "file": "src/lua_api/docs_api.rs",
-          "line": 156
-        },
-        {
-          "lua_name": "DocEntry:getExample",
-          "kind": "method",
-          "file": "src/lua_api/docs_api.rs",
-          "line": 197
-        },
-        {
-          "lua_name": "DocEntry:getSince",
-          "kind": "method",
-          "file": "src/lua_api/docs_api.rs",
-          "line": 201
-        },
-        {
-          "lua_name": "DocEntry:getDeprecated",
-          "kind": "method",
-          "file": "src/lua_api/docs_api.rs",
-          "line": 205
-        },
-        {
-          "lua_name": "ApiCatalog:getTypeMethods",
-          "kind": "method",
-          "file": "src/lua_api/docs_api.rs",
-          "line": 319
-        },
-        {
-          "lua_name": "ValidationReport:getMissing",
-          "kind": "method",
-          "file": "src/lua_api/docs_api.rs",
-          "line": 473
-        },
-        {
-          "lua_name": "ValidationReport:getPhantom",
-          "kind": "method",
-          "file": "src/lua_api/docs_api.rs",
-          "line": 483
-        },
-        {
-          "lua_name": "ValidationReport:getIncomplete",
-          "kind": "method",
-          "file": "src/lua_api/docs_api.rs",
-          "line": 493
-        },
-        {
-          "lua_name": "ValidationReport:phantomCount",
-          "kind": "method",
-          "file": "src/lua_api/docs_api.rs",
-          "line": 507
-        },
-        {
-          "lua_name": "ValidationReport:incompleteCount",
-          "kind": "method",
-          "file": "src/lua_api/docs_api.rs",
-          "line": 511
-        }
-      ],
+      "covered": 75,
+      "coverage_pct": 100.0,
+      "uncovered": [],
       "test_files": [
         "tests/lua/integration/test_docs.lua",
         "tests/lua/unit/test_docs_unit.lua"
@@ -815,24 +182,11 @@
     },
     "ecs": {
       "total": 47,
-      "marker_covered": 7,
+      "marker_covered": 9,
       "heuristic_covered": 38,
-      "covered": 45,
-      "coverage_pct": 95.7,
-      "uncovered": [
-        {
-          "lua_name": "Universe:has",
-          "kind": "method",
-          "file": "src/lua_api/ecs_api.rs",
-          "line": 79
-        },
-        {
-          "lua_name": "Universe:bitmapUntag",
-          "kind": "method",
-          "file": "src/lua_api/ecs_api.rs",
-          "line": 363
-        }
-      ],
+      "covered": 47,
+      "coverage_pct": 100.0,
+      "uncovered": [],
       "test_files": [
         "tests/lua/evidence/test_render_evidence.lua",
         "tests/lua/integration/test_ai_ecs_scene.lua",
@@ -855,66 +209,11 @@
     },
     "effect": {
       "total": 142,
-      "marker_covered": 13,
+      "marker_covered": 22,
       "heuristic_covered": 120,
-      "covered": 133,
-      "coverage_pct": 93.7,
-      "uncovered": [
-        {
-          "lua_name": "lurek.effect.newTransition",
-          "kind": "function",
-          "file": "src/lua_api/effect_api.rs",
-          "line": 1718
-        },
-        {
-          "lua_name": "PostFxStack:add",
-          "kind": "method",
-          "file": "src/lua_api/effect_api.rs",
-          "line": 236
-        },
-        {
-          "lua_name": "PostFxStack:getEnabledEffects",
-          "kind": "method",
-          "file": "src/lua_api/effect_api.rs",
-          "line": 330
-        },
-        {
-          "lua_name": "PostFxStack:len",
-          "kind": "method",
-          "file": "src/lua_api/effect_api.rs",
-          "line": 375
-        },
-        {
-          "lua_name": "PostFxStack:setFeedback",
-          "kind": "method",
-          "file": "src/lua_api/effect_api.rs",
-          "line": 520
-        },
-        {
-          "lua_name": "PostFxStack:getFeedback",
-          "kind": "method",
-          "file": "src/lua_api/effect_api.rs",
-          "line": 528
-        },
-        {
-          "lua_name": "PostFxStack:clearFeedback",
-          "kind": "method",
-          "file": "src/lua_api/effect_api.rs",
-          "line": 533
-        },
-        {
-          "lua_name": "ImageEffect:removeByIndex",
-          "kind": "method",
-          "file": "src/lua_api/effect_api.rs",
-          "line": 663
-        },
-        {
-          "lua_name": "ImageEffect:removeByName",
-          "kind": "method",
-          "file": "src/lua_api/effect_api.rs",
-          "line": 671
-        }
-      ],
+      "covered": 142,
+      "coverage_pct": 100.0,
+      "uncovered": [],
       "test_files": [
         "tests/lua/evidence/test_effect_evidence.lua",
         "tests/lua/unit/test_effect_unit.lua",
@@ -924,31 +223,14 @@
     },
     "engine": {
       "total": 10,
-      "marker_covered": 0,
+      "marker_covered": 3,
       "heuristic_covered": 7,
-      "covered": 7,
-      "coverage_pct": 70.0,
-      "uncovered": [
-        {
-          "lua_name": "lurek.engine.fps",
-          "kind": "function",
-          "file": "src/lua_api/engine_api.rs",
-          "line": 83
-        },
-        {
-          "lua_name": "lurek.engine.setResourceBudget",
-          "kind": "function",
-          "file": "src/lua_api/engine_api.rs",
-          "line": 111
-        },
-        {
-          "lua_name": "lurek.engine.getResourceStats",
-          "kind": "function",
-          "file": "src/lua_api/engine_api.rs",
-          "line": 129
-        }
-      ],
-      "test_files": []
+      "covered": 10,
+      "coverage_pct": 100.0,
+      "uncovered": [],
+      "test_files": [
+        "tests/lua/unit/test_engine_unit.lua"
+      ]
     },
     "event": {
       "total": 22,
@@ -968,30 +250,11 @@
     },
     "filesystem": {
       "total": 54,
-      "marker_covered": 27,
+      "marker_covered": 30,
       "heuristic_covered": 24,
-      "covered": 51,
-      "coverage_pct": 94.4,
-      "uncovered": [
-        {
-          "lua_name": "lurek.filesystem.removeDir",
-          "kind": "function",
-          "file": "src/lua_api/filesystem_api.rs",
-          "line": 639
-        },
-        {
-          "lua_name": "ZipMount:readFile",
-          "kind": "method",
-          "file": "src/lua_api/filesystem_api.rs",
-          "line": 161
-        },
-        {
-          "lua_name": "ZipMount:listFiles",
-          "kind": "method",
-          "file": "src/lua_api/filesystem_api.rs",
-          "line": 180
-        }
-      ],
+      "covered": 54,
+      "coverage_pct": 100.0,
+      "uncovered": [],
       "test_files": [
         "tests/lua/integration/test_data_filesystem.lua",
         "tests/lua/security/test_filesystem.lua",
@@ -1001,60 +264,22 @@
     },
     "globe": {
       "total": 44,
-      "marker_covered": 4,
+      "marker_covered": 7,
       "heuristic_covered": 37,
-      "covered": 41,
-      "coverage_pct": 93.2,
-      "uncovered": [
-        {
-          "lua_name": "lurek.globe.get",
-          "kind": "function",
-          "file": "src/lua_api/globe_api.rs",
-          "line": 750
-        },
-        {
-          "lua_name": "Globe:pan",
-          "kind": "method",
-          "file": "src/lua_api/globe_api.rs",
-          "line": 180
-        },
-        {
-          "lua_name": "GlobeRegistry:get",
-          "kind": "method",
-          "file": "src/lua_api/globe_api.rs",
-          "line": 631
-        }
-      ],
+      "covered": 44,
+      "coverage_pct": 100.0,
+      "uncovered": [],
       "test_files": [
         "tests/lua/unit/test_globe_unit.lua"
       ]
     },
     "graph": {
       "total": 111,
-      "marker_covered": 3,
+      "marker_covered": 6,
       "heuristic_covered": 105,
-      "covered": 108,
-      "coverage_pct": 97.3,
-      "uncovered": [
-        {
-          "lua_name": "Graph:mst",
-          "kind": "method",
-          "file": "src/lua_api/graph_api.rs",
-          "line": 1590
-        },
-        {
-          "lua_name": "Graph:colorGraph",
-          "kind": "method",
-          "file": "src/lua_api/graph_api.rs",
-          "line": 1603
-        },
-        {
-          "lua_name": "Graph:isBipartite",
-          "kind": "method",
-          "file": "src/lua_api/graph_api.rs",
-          "line": 1615
-        }
-      ],
+      "covered": 111,
+      "coverage_pct": 100.0,
+      "uncovered": [],
       "test_files": [
         "tests/lua/evidence/test_graph_evidence.lua",
         "tests/lua/security/test_render.lua",
@@ -1064,84 +289,22 @@
     },
     "i18n": {
       "total": 31,
-      "marker_covered": 26,
+      "marker_covered": 31,
       "heuristic_covered": 0,
-      "covered": 26,
-      "coverage_pct": 83.9,
-      "uncovered": [
-        {
-          "lua_name": "lurek.i18n.onLanguageChange",
-          "kind": "function",
-          "file": "src/lua_api/i18n_api.rs",
-          "line": 377
-        },
-        {
-          "lua_name": "lurek.i18n.formatNumber",
-          "kind": "function",
-          "file": "src/lua_api/i18n_api.rs",
-          "line": 570
-        },
-        {
-          "lua_name": "lurek.i18n.formatDate",
-          "kind": "function",
-          "file": "src/lua_api/i18n_api.rs",
-          "line": 585
-        },
-        {
-          "lua_name": "lurek.i18n.tGender",
-          "kind": "function",
-          "file": "src/lua_api/i18n_api.rs",
-          "line": 599
-        },
-        {
-          "lua_name": "lurek.i18n.getLoadedLocales",
-          "kind": "function",
-          "file": "src/lua_api/i18n_api.rs",
-          "line": 627
-        }
-      ],
+      "covered": 31,
+      "coverage_pct": 100.0,
+      "uncovered": [],
       "test_files": [
         "tests/lua/unit/test_i18n_unit.lua"
       ]
     },
     "image": {
       "total": 68,
-      "marker_covered": 8,
+      "marker_covered": 13,
       "heuristic_covered": 55,
-      "covered": 63,
-      "coverage_pct": 92.6,
-      "uncovered": [
-        {
-          "lua_name": "lurek.image.newPaletteLut",
-          "kind": "function",
-          "file": "src/lua_api/image_api.rs",
-          "line": 503
-        },
-        {
-          "lua_name": "lurek.image.newProvinceGrid",
-          "kind": "function",
-          "file": "src/lua_api/image_api.rs",
-          "line": 518
-        },
-        {
-          "lua_name": "CompressedImageData:getMipmapCount",
-          "kind": "method",
-          "file": "src/lua_api/image_api.rs",
-          "line": 303
-        },
-        {
-          "lua_name": "mlua:applyPaletteLut",
-          "kind": "method",
-          "file": "src/lua_api/image_api.rs",
-          "line": 975
-        },
-        {
-          "lua_name": "PaletteLUT:getColorCount",
-          "kind": "method",
-          "file": "src/lua_api/image_api.rs",
-          "line": 1060
-        }
-      ],
+      "covered": 68,
+      "coverage_pct": 100.0,
+      "uncovered": [],
       "test_files": [
         "tests/lua/evidence/test_effect_evidence.lua",
         "tests/lua/evidence/test_image_evidence.lua",
@@ -1175,48 +338,11 @@
     },
     "light": {
       "total": 83,
-      "marker_covered": 18,
+      "marker_covered": 24,
       "heuristic_covered": 59,
-      "covered": 77,
-      "coverage_pct": 92.8,
-      "uncovered": [
-        {
-          "lua_name": "Light:addFlicker",
-          "kind": "method",
-          "file": "src/lua_api/light_api.rs",
-          "line": 826
-        },
-        {
-          "lua_name": "Light:updateTransition",
-          "kind": "method",
-          "file": "src/lua_api/light_api.rs",
-          "line": 895
-        },
-        {
-          "lua_name": "Light:stopTransition",
-          "kind": "method",
-          "file": "src/lua_api/light_api.rs",
-          "line": 920
-        },
-        {
-          "lua_name": "Light:setCookie",
-          "kind": "method",
-          "file": "src/lua_api/light_api.rs",
-          "line": 943
-        },
-        {
-          "lua_name": "Light:getCookie",
-          "kind": "method",
-          "file": "src/lua_api/light_api.rs",
-          "line": 951
-        },
-        {
-          "lua_name": "Light:clearCookie",
-          "kind": "method",
-          "file": "src/lua_api/light_api.rs",
-          "line": 958
-        }
-      ],
+      "covered": 83,
+      "coverage_pct": 100.0,
+      "uncovered": [],
       "test_files": [
         "tests/lua/evidence/test_light_evidence.lua",
         "tests/lua/integration/test_light_render.lua",
@@ -1237,294 +363,11 @@
     },
     "math": {
       "total": 204,
-      "marker_covered": 36,
+      "marker_covered": 83,
       "heuristic_covered": 121,
-      "covered": 157,
-      "coverage_pct": 77.0,
-      "uncovered": [
-        {
-          "lua_name": "lurek.math.fbm",
-          "kind": "function",
-          "file": "src/lua_api/math_api.rs",
-          "line": 1763
-        },
-        {
-          "lua_name": "lurek.math.inQuart",
-          "kind": "function",
-          "file": "src/lua_api/math_api.rs",
-          "line": 1869
-        },
-        {
-          "lua_name": "lurek.math.outQuart",
-          "kind": "function",
-          "file": "src/lua_api/math_api.rs",
-          "line": 1878
-        },
-        {
-          "lua_name": "lurek.math.inOutQuart",
-          "kind": "function",
-          "file": "src/lua_api/math_api.rs",
-          "line": 1887
-        },
-        {
-          "lua_name": "lurek.math.inOutExpo",
-          "kind": "function",
-          "file": "src/lua_api/math_api.rs",
-          "line": 1941
-        },
-        {
-          "lua_name": "lurek.math.inBounce",
-          "kind": "function",
-          "file": "src/lua_api/math_api.rs",
-          "line": 1977
-        },
-        {
-          "lua_name": "lurek.math.circleIntersectsLine",
-          "kind": "function",
-          "file": "src/lua_api/math_api.rs",
-          "line": 2166
-        },
-        {
-          "lua_name": "lurek.math.circleIntersectsSegment",
-          "kind": "function",
-          "file": "src/lua_api/math_api.rs",
-          "line": 2193
-        },
-        {
-          "lua_name": "lurek.math.closestPointOnSegment",
-          "kind": "function",
-          "file": "src/lua_api/math_api.rs",
-          "line": 2219
-        },
-        {
-          "lua_name": "lurek.math.convexHull",
-          "kind": "function",
-          "file": "src/lua_api/math_api.rs",
-          "line": 2232
-        },
-        {
-          "lua_name": "lurek.math.delaunayTriangulate",
-          "kind": "function",
-          "file": "src/lua_api/math_api.rs",
-          "line": 2254
-        },
-        {
-          "lua_name": "lurek.math.lineIntersect",
-          "kind": "function",
-          "file": "src/lua_api/math_api.rs",
-          "line": 2291
-        },
-        {
-          "lua_name": "lurek.math.pointInPolygon",
-          "kind": "function",
-          "file": "src/lua_api/math_api.rs",
-          "line": 2309
-        },
-        {
-          "lua_name": "lurek.math.polygonArea",
-          "kind": "function",
-          "file": "src/lua_api/math_api.rs",
-          "line": 2326
-        },
-        {
-          "lua_name": "lurek.math.polygonCentroid",
-          "kind": "function",
-          "file": "src/lua_api/math_api.rs",
-          "line": 2343
-        },
-        {
-          "lua_name": "lurek.math.segmentIntersectsSegment",
-          "kind": "function",
-          "file": "src/lua_api/math_api.rs",
-          "line": 2368
-        },
-        {
-          "lua_name": "lurek.math.rad",
-          "kind": "function",
-          "file": "src/lua_api/math_api.rs",
-          "line": 2423
-        },
-        {
-          "lua_name": "lurek.math.deg",
-          "kind": "function",
-          "file": "src/lua_api/math_api.rs",
-          "line": 2432
-        },
-        {
-          "lua_name": "lurek.math.tan",
-          "kind": "function",
-          "file": "src/lua_api/math_api.rs",
-          "line": 2453
-        },
-        {
-          "lua_name": "lurek.math.log",
-          "kind": "function",
-          "file": "src/lua_api/math_api.rs",
-          "line": 2533
-        },
-        {
-          "lua_name": "lurek.math.pow",
-          "kind": "function",
-          "file": "src/lua_api/math_api.rs",
-          "line": 2548
-        },
-        {
-          "lua_name": "lurek.math.fmod",
-          "kind": "function",
-          "file": "src/lua_api/math_api.rs",
-          "line": 2612
-        },
-        {
-          "lua_name": "lurek.math.polygonClip",
-          "kind": "function",
-          "file": "src/lua_api/math_api.rs",
-          "line": 2986
-        },
-        {
-          "lua_name": "Vec2:dot",
-          "kind": "method",
-          "file": "src/lua_api/math_api.rs",
-          "line": 65
-        },
-        {
-          "lua_name": "Vec2:x",
-          "kind": "method",
-          "file": "src/lua_api/math_api.rs",
-          "line": 78
-        },
-        {
-          "lua_name": "Vec2:y",
-          "kind": "method",
-          "file": "src/lua_api/math_api.rs",
-          "line": 83
-        },
-        {
-          "lua_name": "Vec3:dot",
-          "kind": "method",
-          "file": "src/lua_api/math_api.rs",
-          "line": 285
-        },
-        {
-          "lua_name": "Vec3:add",
-          "kind": "method",
-          "file": "src/lua_api/math_api.rs",
-          "line": 329
-        },
-        {
-          "lua_name": "Vec3:sub",
-          "kind": "method",
-          "file": "src/lua_api/math_api.rs",
-          "line": 341
-        },
-        {
-          "lua_name": "CatmullRom:len",
-          "kind": "method",
-          "file": "src/lua_api/math_api.rs",
-          "line": 404
-        },
-        {
-          "lua_name": "RandomGenerator:getSeed",
-          "kind": "method",
-          "file": "src/lua_api/math_api.rs",
-          "line": 501
-        },
-        {
-          "lua_name": "Transform:shear",
-          "kind": "method",
-          "file": "src/lua_api/math_api.rs",
-          "line": 573
-        },
-        {
-          "lua_name": "Transform:getMatrix",
-          "kind": "method",
-          "file": "src/lua_api/math_api.rs",
-          "line": 665
-        },
-        {
-          "lua_name": "BezierCurve:removeControlPoint",
-          "kind": "method",
-          "file": "src/lua_api/math_api.rs",
-          "line": 777
-        },
-        {
-          "lua_name": "Tween:getAllValues",
-          "kind": "method",
-          "file": "src/lua_api/math_api.rs",
-          "line": 881
-        },
-        {
-          "lua_name": "Tween:getValueCount",
-          "kind": "method",
-          "file": "src/lua_api/math_api.rs",
-          "line": 898
-        },
-        {
-          "lua_name": "Tween:getClock",
-          "kind": "method",
-          "file": "src/lua_api/math_api.rs",
-          "line": 920
-        },
-        {
-          "lua_name": "Tween:set",
-          "kind": "method",
-          "file": "src/lua_api/math_api.rs",
-          "line": 935
-        },
-        {
-          "lua_name": "Tween:addValue",
-          "kind": "method",
-          "file": "src/lua_api/math_api.rs",
-          "line": 945
-        },
-        {
-          "lua_name": "NoiseGenerator:perlin1d",
-          "kind": "method",
-          "file": "src/lua_api/math_api.rs",
-          "line": 1120
-        },
-        {
-          "lua_name": "NoiseGenerator:perlin4d",
-          "kind": "method",
-          "file": "src/lua_api/math_api.rs",
-          "line": 1148
-        },
-        {
-          "lua_name": "NoiseGenerator:simplex1d",
-          "kind": "method",
-          "file": "src/lua_api/math_api.rs",
-          "line": 1156
-        },
-        {
-          "lua_name": "NoiseGenerator:simplex3d",
-          "kind": "method",
-          "file": "src/lua_api/math_api.rs",
-          "line": 1173
-        },
-        {
-          "lua_name": "NoiseGenerator:getSeed",
-          "kind": "method",
-          "file": "src/lua_api/math_api.rs",
-          "line": 1377
-        },
-        {
-          "lua_name": "Circle:x",
-          "kind": "method",
-          "file": "src/lua_api/math_api.rs",
-          "line": 1444
-        },
-        {
-          "lua_name": "Circle:y",
-          "kind": "method",
-          "file": "src/lua_api/math_api.rs",
-          "line": 1449
-        },
-        {
-          "lua_name": "AabbTree:len",
-          "kind": "method",
-          "file": "src/lua_api/math_api.rs",
-          "line": 1554
-        }
-      ],
+      "covered": 204,
+      "coverage_pct": 100.0,
+      "uncovered": [],
       "test_files": [
         "tests/lua/evidence/test_math_evidence.lua",
         "tests/lua/evidence/test_render_evidence.lua",
@@ -1555,162 +398,22 @@
     },
     "mods": {
       "total": 40,
-      "marker_covered": 2,
+      "marker_covered": 11,
       "heuristic_covered": 29,
-      "covered": 31,
-      "coverage_pct": 77.5,
-      "uncovered": [
-        {
-          "lua_name": "lurek.mods.checkApiVersion",
-          "kind": "function",
-          "file": "src/lua_api/mods_api.rs",
-          "line": 642
-        },
-        {
-          "lua_name": "Mod:getApiVersion",
-          "kind": "method",
-          "file": "src/lua_api/mods_api.rs",
-          "line": 239
-        },
-        {
-          "lua_name": "Mod:setApiVersion",
-          "kind": "method",
-          "file": "src/lua_api/mods_api.rs",
-          "line": 249
-        },
-        {
-          "lua_name": "Mod:getCapabilities",
-          "kind": "method",
-          "file": "src/lua_api/mods_api.rs",
-          "line": 259
-        },
-        {
-          "lua_name": "Mod:setCapabilities",
-          "kind": "method",
-          "file": "src/lua_api/mods_api.rs",
-          "line": 269
-        },
-        {
-          "lua_name": "Mod:getConfigSchema",
-          "kind": "method",
-          "file": "src/lua_api/mods_api.rs",
-          "line": 277
-        },
-        {
-          "lua_name": "Mod:setConfigSchema",
-          "kind": "method",
-          "file": "src/lua_api/mods_api.rs",
-          "line": 293
-        },
-        {
-          "lua_name": "Mod:releaseRefs",
-          "kind": "method",
-          "file": "src/lua_api/mods_api.rs",
-          "line": 395
-        },
-        {
-          "lua_name": "ModManager:getModPath",
-          "kind": "method",
-          "file": "src/lua_api/mods_api.rs",
-          "line": 556
-        }
-      ],
+      "covered": 40,
+      "coverage_pct": 100.0,
+      "uncovered": [],
       "test_files": [
         "tests/lua/unit/test_mods_unit.lua"
       ]
     },
     "network": {
       "total": 38,
-      "marker_covered": 1,
+      "marker_covered": 15,
       "heuristic_covered": 23,
-      "covered": 24,
-      "coverage_pct": 63.2,
-      "uncovered": [
-        {
-          "lua_name": "lurek.network.createLobby",
-          "kind": "function",
-          "file": "src/lua_api/network_api.rs",
-          "line": 907
-        },
-        {
-          "lua_name": "lurek.network.discoverLobbies",
-          "kind": "function",
-          "file": "src/lua_api/network_api.rs",
-          "line": 936
-        },
-        {
-          "lua_name": "lurek.network.syncEntity",
-          "kind": "function",
-          "file": "src/lua_api/network_api.rs",
-          "line": 964
-        },
-        {
-          "lua_name": "NetworkHost:resetPeer",
-          "kind": "method",
-          "file": "src/lua_api/network_api.rs",
-          "line": 286
-        },
-        {
-          "lua_name": "NetworkHost:getRoundTripTime",
-          "kind": "method",
-          "file": "src/lua_api/network_api.rs",
-          "line": 308
-        },
-        {
-          "lua_name": "NetworkHost:getPeerState",
-          "kind": "method",
-          "file": "src/lua_api/network_api.rs",
-          "line": 321
-        },
-        {
-          "lua_name": "NetworkHost:getPeerAddress",
-          "kind": "method",
-          "file": "src/lua_api/network_api.rs",
-          "line": 332
-        },
-        {
-          "lua_name": "NetworkHost:getPeerLimit",
-          "kind": "method",
-          "file": "src/lua_api/network_api.rs",
-          "line": 351
-        },
-        {
-          "lua_name": "NetworkHost:getChannelLimit",
-          "kind": "method",
-          "file": "src/lua_api/network_api.rs",
-          "line": 358
-        },
-        {
-          "lua_name": "NetworkHost:setChannelLimit",
-          "kind": "method",
-          "file": "src/lua_api/network_api.rs",
-          "line": 369
-        },
-        {
-          "lua_name": "NetworkHost:getBandwidthLimit",
-          "kind": "method",
-          "file": "src/lua_api/network_api.rs",
-          "line": 379
-        },
-        {
-          "lua_name": "NetworkHost:getConnectedPeerCount",
-          "kind": "method",
-          "file": "src/lua_api/network_api.rs",
-          "line": 409
-        },
-        {
-          "lua_name": "NetworkHost:getConnectedPeerIds",
-          "kind": "method",
-          "file": "src/lua_api/network_api.rs",
-          "line": 419
-        },
-        {
-          "lua_name": "NetworkHost:getPeerStats",
-          "kind": "method",
-          "file": "src/lua_api/network_api.rs",
-          "line": 433
-        }
-      ],
+      "covered": 38,
+      "coverage_pct": 100.0,
+      "uncovered": [],
       "test_files": [
         "tests/lua/unit/test_network_unit.lua"
       ]
@@ -1730,54 +433,11 @@
     },
     "particle": {
       "total": 84,
-      "marker_covered": 14,
+      "marker_covered": 21,
       "heuristic_covered": 63,
-      "covered": 77,
-      "coverage_pct": 91.7,
-      "uncovered": [
-        {
-          "lua_name": "lurek.particle.newTrail",
-          "kind": "function",
-          "file": "src/lua_api/particle_api.rs",
-          "line": 1442
-        },
-        {
-          "lua_name": "Trail:pushPoint",
-          "kind": "method",
-          "file": "src/lua_api/particle_api.rs",
-          "line": 1288
-        },
-        {
-          "lua_name": "Trail:setWidth",
-          "kind": "method",
-          "file": "src/lua_api/particle_api.rs",
-          "line": 1307
-        },
-        {
-          "lua_name": "Trail:setLifetime",
-          "kind": "method",
-          "file": "src/lua_api/particle_api.rs",
-          "line": 1321
-        },
-        {
-          "lua_name": "Trail:getLifetime",
-          "kind": "method",
-          "file": "src/lua_api/particle_api.rs",
-          "line": 1329
-        },
-        {
-          "lua_name": "Trail:setMinDistance",
-          "kind": "method",
-          "file": "src/lua_api/particle_api.rs",
-          "line": 1335
-        },
-        {
-          "lua_name": "Trail:getPointCount",
-          "kind": "method",
-          "file": "src/lua_api/particle_api.rs",
-          "line": 1375
-        }
-      ],
+      "covered": 84,
+      "coverage_pct": 100.0,
+      "uncovered": [],
       "test_files": [
         "tests/lua/evidence/test_particle_evidence.lua",
         "tests/lua/evidence/test_render_evidence.lua",
@@ -1788,42 +448,11 @@
     },
     "pathfind": {
       "total": 65,
-      "marker_covered": 9,
+      "marker_covered": 14,
       "heuristic_covered": 51,
-      "covered": 60,
-      "coverage_pct": 92.3,
-      "uncovered": [
-        {
-          "lua_name": "lurek.pathfind.setThreadCount",
-          "kind": "function",
-          "file": "src/lua_api/pathfind_api.rs",
-          "line": 1256
-        },
-        {
-          "lua_name": "NavGrid:rebuildAbstract",
-          "kind": "method",
-          "file": "src/lua_api/pathfind_api.rs",
-          "line": 201
-        },
-        {
-          "lua_name": "NavGrid:setDirty",
-          "kind": "method",
-          "file": "src/lua_api/pathfind_api.rs",
-          "line": 216
-        },
-        {
-          "lua_name": "NavGrid:clearDirty",
-          "kind": "method",
-          "file": "src/lua_api/pathfind_api.rs",
-          "line": 224
-        },
-        {
-          "lua_name": "FlowField:getDirectionAngle",
-          "kind": "method",
-          "file": "src/lua_api/pathfind_api.rs",
-          "line": 635
-        }
-      ],
+      "covered": 65,
+      "coverage_pct": 100.0,
+      "uncovered": [],
       "test_files": [
         "tests/lua/evidence/test_pathfind_evidence.lua",
         "tests/lua/evidence/test_render_evidence.lua",
@@ -1838,350 +467,25 @@
     },
     "patterns": {
       "total": 170,
-      "marker_covered": 15,
+      "marker_covered": 56,
       "heuristic_covered": 114,
-      "covered": 129,
-      "coverage_pct": 75.9,
-      "uncovered": [
-        {
-          "lua_name": "lurek.patterns.newThrottle",
-          "kind": "function",
-          "file": "src/lua_api/patterns_api.rs",
-          "line": 2431
-        },
-        {
-          "lua_name": "lurek.patterns.newDebounce",
-          "kind": "function",
-          "file": "src/lua_api/patterns_api.rs",
-          "line": 2445
-        },
-        {
-          "lua_name": "lurek.patterns.newPriorityQueue",
-          "kind": "function",
-          "file": "src/lua_api/patterns_api.rs",
-          "line": 2459
-        },
-        {
-          "lua_name": "lurek.patterns.newFunnel",
-          "kind": "function",
-          "file": "src/lua_api/patterns_api.rs",
-          "line": 2494
-        },
-        {
-          "lua_name": "EventBus:on",
-          "kind": "method",
-          "file": "src/lua_api/patterns_api.rs",
-          "line": 45
-        },
-        {
-          "lua_name": "EventBus:off",
-          "kind": "method",
-          "file": "src/lua_api/patterns_api.rs",
-          "line": 57
-        },
-        {
-          "lua_name": "ObjectPool:add",
-          "kind": "method",
-          "file": "src/lua_api/patterns_api.rs",
-          "line": 173
-        },
-        {
-          "lua_name": "ServiceLocator:has",
-          "kind": "method",
-          "file": "src/lua_api/patterns_api.rs",
-          "line": 470
-        },
-        {
-          "lua_name": "Factory:has",
-          "kind": "method",
-          "file": "src/lua_api/patterns_api.rs",
-          "line": 574
-        },
-        {
-          "lua_name": "Blackboard:set",
-          "kind": "method",
-          "file": "src/lua_api/patterns_api.rs",
-          "line": 810
-        },
-        {
-          "lua_name": "Blackboard:get",
-          "kind": "method",
-          "file": "src/lua_api/patterns_api.rs",
-          "line": 846
-        },
-        {
-          "lua_name": "Blackboard:has",
-          "kind": "method",
-          "file": "src/lua_api/patterns_api.rs",
-          "line": 859
-        },
-        {
-          "lua_name": "Blackboard:getRevision",
-          "kind": "method",
-          "file": "src/lua_api/patterns_api.rs",
-          "line": 916
-        },
-        {
-          "lua_name": "Observer:set",
-          "kind": "method",
-          "file": "src/lua_api/patterns_api.rs",
-          "line": 972
-        },
-        {
-          "lua_name": "Observer:get",
-          "kind": "method",
-          "file": "src/lua_api/patterns_api.rs",
-          "line": 993
-        },
-        {
-          "lua_name": "Throttle:onFire",
-          "kind": "method",
-          "file": "src/lua_api/patterns_api.rs",
-          "line": 1058
-        },
-        {
-          "lua_name": "Throttle:getFireCount",
-          "kind": "method",
-          "file": "src/lua_api/patterns_api.rs",
-          "line": 1097
-        },
-        {
-          "lua_name": "Debounce:onFire",
-          "kind": "method",
-          "file": "src/lua_api/patterns_api.rs",
-          "line": 1130
-        },
-        {
-          "lua_name": "Debounce:isPending",
-          "kind": "method",
-          "file": "src/lua_api/patterns_api.rs",
-          "line": 1172
-        },
-        {
-          "lua_name": "Debounce:getFireCount",
-          "kind": "method",
-          "file": "src/lua_api/patterns_api.rs",
-          "line": 1177
-        },
-        {
-          "lua_name": "PriorityQueue:pop",
-          "kind": "method",
-          "file": "src/lua_api/patterns_api.rs",
-          "line": 1217
-        },
-        {
-          "lua_name": "PriorityQueue:len",
-          "kind": "method",
-          "file": "src/lua_api/patterns_api.rs",
-          "line": 1253
-        },
-        {
-          "lua_name": "Ring:sum",
-          "kind": "method",
-          "file": "src/lua_api/patterns_api.rs",
-          "line": 1343
-        },
-        {
-          "lua_name": "Ring:len",
-          "kind": "method",
-          "file": "src/lua_api/patterns_api.rs",
-          "line": 1353
-        },
-        {
-          "lua_name": "Funnel:onFlush",
-          "kind": "method",
-          "file": "src/lua_api/patterns_api.rs",
-          "line": 1391
-        },
-        {
-          "lua_name": "Funnel:getFlushCount",
-          "kind": "method",
-          "file": "src/lua_api/patterns_api.rs",
-          "line": 1448
-        },
-        {
-          "lua_name": "RelationshipManager:removeType",
-          "kind": "method",
-          "file": "src/lua_api/patterns_api.rs",
-          "line": 1506
-        },
-        {
-          "lua_name": "Mediator:on",
-          "kind": "method",
-          "file": "src/lua_api/patterns_api.rs",
-          "line": 1614
-        },
-        {
-          "lua_name": "Mediator:off",
-          "kind": "method",
-          "file": "src/lua_api/patterns_api.rs",
-          "line": 1626
-        },
-        {
-          "lua_name": "Strategy:set",
-          "kind": "method",
-          "file": "src/lua_api/patterns_api.rs",
-          "line": 1760
-        },
-        {
-          "lua_name": "Strategy:has",
-          "kind": "method",
-          "file": "src/lua_api/patterns_api.rs",
-          "line": 1791
-        },
-        {
-          "lua_name": "Stack:pop",
-          "kind": "method",
-          "file": "src/lua_api/patterns_api.rs",
-          "line": 1877
-        },
-        {
-          "lua_name": "Stack:len",
-          "kind": "method",
-          "file": "src/lua_api/patterns_api.rs",
-          "line": 1902
-        },
-        {
-          "lua_name": "Queue:len",
-          "kind": "method",
-          "file": "src/lua_api/patterns_api.rs",
-          "line": 2007
-        },
-        {
-          "lua_name": "List:add",
-          "kind": "method",
-          "file": "src/lua_api/patterns_api.rs",
-          "line": 2073
-        },
-        {
-          "lua_name": "List:get",
-          "kind": "method",
-          "file": "src/lua_api/patterns_api.rs",
-          "line": 2083
-        },
-        {
-          "lua_name": "List:set",
-          "kind": "method",
-          "file": "src/lua_api/patterns_api.rs",
-          "line": 2101
-        },
-        {
-          "lua_name": "List:len",
-          "kind": "method",
-          "file": "src/lua_api/patterns_api.rs",
-          "line": 2135
-        },
-        {
-          "lua_name": "Set:add",
-          "kind": "method",
-          "file": "src/lua_api/patterns_api.rs",
-          "line": 2208
-        },
-        {
-          "lua_name": "Set:has",
-          "kind": "method",
-          "file": "src/lua_api/patterns_api.rs",
-          "line": 2224
-        },
-        {
-          "lua_name": "Set:len",
-          "kind": "method",
-          "file": "src/lua_api/patterns_api.rs",
-          "line": 2231
-        }
-      ],
+      "covered": 170,
+      "coverage_pct": 100.0,
+      "uncovered": [],
       "test_files": [
         "tests/lua/stress/test_patterns_stress.lua",
+        "tests/lua/unit/test_ai_unit.lua",
         "tests/lua/unit/test_ecs_unit.lua",
         "tests/lua/unit/test_patterns_unit.lua"
       ]
     },
     "physics": {
       "total": 147,
-      "marker_covered": 22,
+      "marker_covered": 35,
       "heuristic_covered": 112,
-      "covered": 134,
-      "coverage_pct": 91.2,
-      "uncovered": [
-        {
-          "lua_name": "lurek.physics.debugDraw",
-          "kind": "function",
-          "file": "src/lua_api/physics_api.rs",
-          "line": 2670
-        },
-        {
-          "lua_name": "World:getJointBodies",
-          "kind": "method",
-          "file": "src/lua_api/physics_api.rs",
-          "line": 662
-        },
-        {
-          "lua_name": "World:getJointMotorSpeed",
-          "kind": "method",
-          "file": "src/lua_api/physics_api.rs",
-          "line": 703
-        },
-        {
-          "lua_name": "World:getJointLimits",
-          "kind": "method",
-          "file": "src/lua_api/physics_api.rs",
-          "line": 740
-        },
-        {
-          "lua_name": "World:getBodyAtPoint",
-          "kind": "method",
-          "file": "src/lua_api/physics_api.rs",
-          "line": 838
-        },
-        {
-          "lua_name": "World:getCollisionEvents",
-          "kind": "method",
-          "file": "src/lua_api/physics_api.rs",
-          "line": 847
-        },
-        {
-          "lua_name": "World:getBeginContactEvents",
-          "kind": "method",
-          "file": "src/lua_api/physics_api.rs",
-          "line": 863
-        },
-        {
-          "lua_name": "World:getEndContactEvents",
-          "kind": "method",
-          "file": "src/lua_api/physics_api.rs",
-          "line": 879
-        },
-        {
-          "lua_name": "World:getContacts",
-          "kind": "method",
-          "file": "src/lua_api/physics_api.rs",
-          "line": 895
-        },
-        {
-          "lua_name": "World:getBodyContacts",
-          "kind": "method",
-          "file": "src/lua_api/physics_api.rs",
-          "line": 914
-        },
-        {
-          "lua_name": "World:setBodyType",
-          "kind": "method",
-          "file": "src/lua_api/physics_api.rs",
-          "line": 934
-        },
-        {
-          "lua_name": "World:getBodyType",
-          "kind": "method",
-          "file": "src/lua_api/physics_api.rs",
-          "line": 944
-        },
-        {
-          "lua_name": "Body:setMass",
-          "kind": "method",
-          "file": "src/lua_api/physics_api.rs",
-          "line": 1911
-        }
-      ],
+      "covered": 147,
+      "coverage_pct": 100.0,
+      "uncovered": [],
       "test_files": [
         "tests/lua/evidence/test_physics_evidence.lua",
         "tests/lua/evidence/test_render_evidence.lua",
@@ -2202,102 +506,22 @@
     },
     "pipeline": {
       "total": 60,
-      "marker_covered": 3,
+      "marker_covered": 15,
       "heuristic_covered": 45,
-      "covered": 48,
-      "coverage_pct": 80.0,
-      "uncovered": [
-        {
-          "lua_name": "Step:setCallback",
-          "kind": "method",
-          "file": "src/lua_api/pipeline_api.rs",
-          "line": 152
-        },
-        {
-          "lua_name": "Step:getTimeout",
-          "kind": "method",
-          "file": "src/lua_api/pipeline_api.rs",
-          "line": 208
-        },
-        {
-          "lua_name": "Step:setRetryDelay",
-          "kind": "method",
-          "file": "src/lua_api/pipeline_api.rs",
-          "line": 245
-        },
-        {
-          "lua_name": "Step:setOnError",
-          "kind": "method",
-          "file": "src/lua_api/pipeline_api.rs",
-          "line": 274
-        },
-        {
-          "lua_name": "Step:getAttempt",
-          "kind": "method",
-          "file": "src/lua_api/pipeline_api.rs",
-          "line": 392
-        },
-        {
-          "lua_name": "Pipeline:run",
-          "kind": "method",
-          "file": "src/lua_api/pipeline_api.rs",
-          "line": 762
-        },
-        {
-          "lua_name": "Pipeline:runAsync",
-          "kind": "method",
-          "file": "src/lua_api/pipeline_api.rs",
-          "line": 817
-        },
-        {
-          "lua_name": "Pipeline:getResult",
-          "kind": "method",
-          "file": "src/lua_api/pipeline_api.rs",
-          "line": 1000
-        },
-        {
-          "lua_name": "Pipeline:getContext",
-          "kind": "method",
-          "file": "src/lua_api/pipeline_api.rs",
-          "line": 1021
-        },
-        {
-          "lua_name": "Pipeline:setOnComplete",
-          "kind": "method",
-          "file": "src/lua_api/pipeline_api.rs",
-          "line": 1036
-        },
-        {
-          "lua_name": "Pipeline:setOnStepComplete",
-          "kind": "method",
-          "file": "src/lua_api/pipeline_api.rs",
-          "line": 1048
-        },
-        {
-          "lua_name": "Pipeline:setOnStepError",
-          "kind": "method",
-          "file": "src/lua_api/pipeline_api.rs",
-          "line": 1060
-        }
-      ],
+      "covered": 60,
+      "coverage_pct": 100.0,
+      "uncovered": [],
       "test_files": [
         "tests/lua/unit/test_pipeline_unit.lua"
       ]
     },
     "procgen": {
       "total": 29,
-      "marker_covered": 5,
+      "marker_covered": 6,
       "heuristic_covered": 23,
-      "covered": 28,
-      "coverage_pct": 96.6,
-      "uncovered": [
-        {
-          "lua_name": "lurek.procgen.simplex3d",
-          "kind": "function",
-          "file": "src/lua_api/procgen_api.rs",
-          "line": 1198
-        }
-      ],
+      "covered": 29,
+      "coverage_pct": 100.0,
+      "uncovered": [],
       "test_files": [
         "tests/lua/evidence/test_procgen_evidence.lua",
         "tests/lua/evidence/test_render_evidence.lua",
@@ -2306,84 +530,11 @@
     },
     "raycaster": {
       "total": 42,
-      "marker_covered": 4,
+      "marker_covered": 16,
       "heuristic_covered": 26,
-      "covered": 30,
-      "coverage_pct": 71.4,
-      "uncovered": [
-        {
-          "lua_name": "lurek.raycaster.newDoorManager",
-          "kind": "function",
-          "file": "src/lua_api/raycaster_api.rs",
-          "line": 933
-        },
-        {
-          "lua_name": "lurek.raycaster.newHeightMap",
-          "kind": "function",
-          "file": "src/lua_api/raycaster_api.rs",
-          "line": 947
-        },
-        {
-          "lua_name": "lurek.raycaster.newPointLight",
-          "kind": "function",
-          "file": "src/lua_api/raycaster_api.rs",
-          "line": 966
-        },
-        {
-          "lua_name": "DoorManager:openDoor",
-          "kind": "method",
-          "file": "src/lua_api/raycaster_api.rs",
-          "line": 70
-        },
-        {
-          "lua_name": "DoorManager:closeDoor",
-          "kind": "method",
-          "file": "src/lua_api/raycaster_api.rs",
-          "line": 79
-        },
-        {
-          "lua_name": "DoorManager:getDoor",
-          "kind": "method",
-          "file": "src/lua_api/raycaster_api.rs",
-          "line": 98
-        },
-        {
-          "lua_name": "HeightMap:setFloor",
-          "kind": "method",
-          "file": "src/lua_api/raycaster_api.rs",
-          "line": 152
-        },
-        {
-          "lua_name": "HeightMap:setCeiling",
-          "kind": "method",
-          "file": "src/lua_api/raycaster_api.rs",
-          "line": 163
-        },
-        {
-          "lua_name": "HeightMap:floorAt",
-          "kind": "method",
-          "file": "src/lua_api/raycaster_api.rs",
-          "line": 173
-        },
-        {
-          "lua_name": "HeightMap:ceilingAt",
-          "kind": "method",
-          "file": "src/lua_api/raycaster_api.rs",
-          "line": 182
-        },
-        {
-          "lua_name": "PointLight:x",
-          "kind": "method",
-          "file": "src/lua_api/raycaster_api.rs",
-          "line": 213
-        },
-        {
-          "lua_name": "PointLight:y",
-          "kind": "method",
-          "file": "src/lua_api/raycaster_api.rs",
-          "line": 216
-        }
-      ],
+      "covered": 42,
+      "coverage_pct": 100.0,
+      "uncovered": [],
       "test_files": [
         "tests/lua/evidence/test_raycaster_evidence.lua",
         "tests/lua/evidence/test_render_evidence.lua",
@@ -2392,426 +543,11 @@
     },
     "render": {
       "total": 183,
-      "marker_covered": 42,
+      "marker_covered": 111,
       "heuristic_covered": 72,
-      "covered": 114,
-      "coverage_pct": 62.3,
-      "uncovered": [
-        {
-          "lua_name": "lurek.render.getBackgroundColor",
-          "kind": "function",
-          "file": "src/lua_api/render_api.rs",
-          "line": 1446
-        },
-        {
-          "lua_name": "lurek.render.arc",
-          "kind": "function",
-          "file": "src/lua_api/render_api.rs",
-          "line": 1671
-        },
-        {
-          "lua_name": "lurek.render.drawq",
-          "kind": "function",
-          "file": "src/lua_api/render_api.rs",
-          "line": 1888
-        },
-        {
-          "lua_name": "lurek.render.printf",
-          "kind": "function",
-          "file": "src/lua_api/render_api.rs",
-          "line": 1991
-        },
-        {
-          "lua_name": "lurek.render.printRich",
-          "kind": "function",
-          "file": "src/lua_api/render_api.rs",
-          "line": 2043
-        },
-        {
-          "lua_name": "lurek.render.setPointSize",
-          "kind": "function",
-          "file": "src/lua_api/render_api.rs",
-          "line": 2124
-        },
-        {
-          "lua_name": "lurek.render.getPointSize",
-          "kind": "function",
-          "file": "src/lua_api/render_api.rs",
-          "line": 2138
-        },
-        {
-          "lua_name": "lurek.render.getFontSizes",
-          "kind": "function",
-          "file": "src/lua_api/render_api.rs",
-          "line": 2326
-        },
-        {
-          "lua_name": "lurek.render.getDefaultFont",
-          "kind": "function",
-          "file": "src/lua_api/render_api.rs",
-          "line": 2342
-        },
-        {
-          "lua_name": "lurek.render.getFontCellWidth",
-          "kind": "function",
-          "file": "src/lua_api/render_api.rs",
-          "line": 2366
-        },
-        {
-          "lua_name": "lurek.render.getFontWrap",
-          "kind": "function",
-          "file": "src/lua_api/render_api.rs",
-          "line": 2505
-        },
-        {
-          "lua_name": "lurek.render.setCanvas",
-          "kind": "function",
-          "file": "src/lua_api/render_api.rs",
-          "line": 2619
-        },
-        {
-          "lua_name": "lurek.render.getCanvas",
-          "kind": "function",
-          "file": "src/lua_api/render_api.rs",
-          "line": 2650
-        },
-        {
-          "lua_name": "lurek.render.getCanvasSize",
-          "kind": "function",
-          "file": "src/lua_api/render_api.rs",
-          "line": 2669
-        },
-        {
-          "lua_name": "lurek.render.newSpriteBatch",
-          "kind": "function",
-          "file": "src/lua_api/render_api.rs",
-          "line": 2693
-        },
-        {
-          "lua_name": "lurek.render.newMesh",
-          "kind": "function",
-          "file": "src/lua_api/render_api.rs",
-          "line": 2723
-        },
-        {
-          "lua_name": "lurek.render.newShader",
-          "kind": "function",
-          "file": "src/lua_api/render_api.rs",
-          "line": 2769
-        },
-        {
-          "lua_name": "lurek.render.newQuad",
-          "kind": "function",
-          "file": "src/lua_api/render_api.rs",
-          "line": 2844
-        },
-        {
-          "lua_name": "lurek.render.pop",
-          "kind": "function",
-          "file": "src/lua_api/render_api.rs",
-          "line": 2871
-        },
-        {
-          "lua_name": "lurek.render.shear",
-          "kind": "function",
-          "file": "src/lua_api/render_api.rs",
-          "line": 2931
-        },
-        {
-          "lua_name": "lurek.render.applyTransform",
-          "kind": "function",
-          "file": "src/lua_api/render_api.rs",
-          "line": 2956
-        },
-        {
-          "lua_name": "lurek.render.setScissor",
-          "kind": "function",
-          "file": "src/lua_api/render_api.rs",
-          "line": 2981
-        },
-        {
-          "lua_name": "lurek.render.getScissor",
-          "kind": "function",
-          "file": "src/lua_api/render_api.rs",
-          "line": 3011
-        },
-        {
-          "lua_name": "lurek.render.intersectScissor",
-          "kind": "function",
-          "file": "src/lua_api/render_api.rs",
-          "line": 3034
-        },
-        {
-          "lua_name": "lurek.render.setColorMask",
-          "kind": "function",
-          "file": "src/lua_api/render_api.rs",
-          "line": 3060
-        },
-        {
-          "lua_name": "lurek.render.getColorMask",
-          "kind": "function",
-          "file": "src/lua_api/render_api.rs",
-          "line": 3086
-        },
-        {
-          "lua_name": "lurek.render.setWireframe",
-          "kind": "function",
-          "file": "src/lua_api/render_api.rs",
-          "line": 3097
-        },
-        {
-          "lua_name": "lurek.render.isWireframe",
-          "kind": "function",
-          "file": "src/lua_api/render_api.rs",
-          "line": 3112
-        },
-        {
-          "lua_name": "lurek.render.setStencilTest",
-          "kind": "function",
-          "file": "src/lua_api/render_api.rs",
-          "line": 3152
-        },
-        {
-          "lua_name": "lurek.render.setDefaultFilter",
-          "kind": "function",
-          "file": "src/lua_api/render_api.rs",
-          "line": 3368
-        },
-        {
-          "lua_name": "lurek.render.getDefaultFilter",
-          "kind": "function",
-          "file": "src/lua_api/render_api.rs",
-          "line": 3383
-        },
-        {
-          "lua_name": "lurek.render.drawQuadBezier",
-          "kind": "function",
-          "file": "src/lua_api/render_api.rs",
-          "line": 3580
-        },
-        {
-          "lua_name": "lurek.render.drawCubicBezier",
-          "kind": "function",
-          "file": "src/lua_api/render_api.rs",
-          "line": 3612
-        },
-        {
-          "lua_name": "lurek.render.drawGradientRect",
-          "kind": "function",
-          "file": "src/lua_api/render_api.rs",
-          "line": 3711
-        },
-        {
-          "lua_name": "lurek.render.drawColoredPolygon",
-          "kind": "function",
-          "file": "src/lua_api/render_api.rs",
-          "line": 3764
-        },
-        {
-          "lua_name": "lurek.render.drawIsoCubeTile",
-          "kind": "function",
-          "file": "src/lua_api/render_api.rs",
-          "line": 3824
-        },
-        {
-          "lua_name": "lurek.render.drawHexTile",
-          "kind": "function",
-          "file": "src/lua_api/render_api.rs",
-          "line": 3895
-        },
-        {
-          "lua_name": "lurek.render.beginSortGroup",
-          "kind": "function",
-          "file": "src/lua_api/render_api.rs",
-          "line": 3943
-        },
-        {
-          "lua_name": "lurek.render.pushSortKey",
-          "kind": "function",
-          "file": "src/lua_api/render_api.rs",
-          "line": 3957
-        },
-        {
-          "lua_name": "lurek.render.flushSortGroup",
-          "kind": "function",
-          "file": "src/lua_api/render_api.rs",
-          "line": 3971
-        },
-        {
-          "lua_name": "lurek.render.drawBevelRect",
-          "kind": "function",
-          "file": "src/lua_api/render_api.rs",
-          "line": 3994
-        },
-        {
-          "lua_name": "lurek.render.pushLayer",
-          "kind": "function",
-          "file": "src/lua_api/render_api.rs",
-          "line": 4056
-        },
-        {
-          "lua_name": "lurek.render.popLayer",
-          "kind": "function",
-          "file": "src/lua_api/render_api.rs",
-          "line": 4083
-        },
-        {
-          "lua_name": "lurek.render.drawQuadBezier",
-          "kind": "function",
-          "file": "src/lua_api/render_api.rs",
-          "line": 4101
-        },
-        {
-          "lua_name": "lurek.render.drawCubicBezier",
-          "kind": "function",
-          "file": "src/lua_api/render_api.rs",
-          "line": 4129
-        },
-        {
-          "lua_name": "lurek.render.drawGradientRect",
-          "kind": "function",
-          "file": "src/lua_api/render_api.rs",
-          "line": 4216
-        },
-        {
-          "lua_name": "lurek.render.drawColoredPolygon",
-          "kind": "function",
-          "file": "src/lua_api/render_api.rs",
-          "line": 4267
-        },
-        {
-          "lua_name": "lurek.render.drawIsoCubeTile",
-          "kind": "function",
-          "file": "src/lua_api/render_api.rs",
-          "line": 4320
-        },
-        {
-          "lua_name": "lurek.render.drawHexTile",
-          "kind": "function",
-          "file": "src/lua_api/render_api.rs",
-          "line": 4376
-        },
-        {
-          "lua_name": "lurek.render.beginSortGroup",
-          "kind": "function",
-          "file": "src/lua_api/render_api.rs",
-          "line": 4408
-        },
-        {
-          "lua_name": "lurek.render.pushSortKey",
-          "kind": "function",
-          "file": "src/lua_api/render_api.rs",
-          "line": 4420
-        },
-        {
-          "lua_name": "lurek.render.flushSortGroup",
-          "kind": "function",
-          "file": "src/lua_api/render_api.rs",
-          "line": 4432
-        },
-        {
-          "lua_name": "lurek.render.drawBevelRect",
-          "kind": "function",
-          "file": "src/lua_api/render_api.rs",
-          "line": 4453
-        },
-        {
-          "lua_name": "lurek.render.pushLayer",
-          "kind": "function",
-          "file": "src/lua_api/render_api.rs",
-          "line": 4505
-        },
-        {
-          "lua_name": "lurek.render.popLayer",
-          "kind": "function",
-          "file": "src/lua_api/render_api.rs",
-          "line": 4525
-        },
-        {
-          "lua_name": "lurek.render.currentLayer",
-          "kind": "function",
-          "file": "src/lua_api/render_api.rs",
-          "line": 4585
-        },
-        {
-          "lua_name": "lurek.render.isLayerVisible",
-          "kind": "function",
-          "file": "src/lua_api/render_api.rs",
-          "line": 4610
-        },
-        {
-          "lua_name": "lurek.render.getLayerZOrder",
-          "kind": "function",
-          "file": "src/lua_api/render_api.rs",
-          "line": 4622
-        },
-        {
-          "lua_name": "lurek.render.setLayerZOrder",
-          "kind": "function",
-          "file": "src/lua_api/render_api.rs",
-          "line": 4636
-        },
-        {
-          "lua_name": "Font:getLineHeight",
-          "kind": "method",
-          "file": "src/lua_api/render_api.rs",
-          "line": 318
-        },
-        {
-          "lua_name": "Font:setLineHeight",
-          "kind": "method",
-          "file": "src/lua_api/render_api.rs",
-          "line": 330
-        },
-        {
-          "lua_name": "Font:getAscent",
-          "kind": "method",
-          "file": "src/lua_api/render_api.rs",
-          "line": 342
-        },
-        {
-          "lua_name": "Font:getDescent",
-          "kind": "method",
-          "file": "src/lua_api/render_api.rs",
-          "line": 353
-        },
-        {
-          "lua_name": "Font:getWrap",
-          "kind": "method",
-          "file": "src/lua_api/render_api.rs",
-          "line": 367
-        },
-        {
-          "lua_name": "Mesh:getVertexCount",
-          "kind": "method",
-          "file": "src/lua_api/render_api.rs",
-          "line": 625
-        },
-        {
-          "lua_name": "Mesh:getVertex",
-          "kind": "method",
-          "file": "src/lua_api/render_api.rs",
-          "line": 638
-        },
-        {
-          "lua_name": "Mesh:setVertex",
-          "kind": "method",
-          "file": "src/lua_api/render_api.rs",
-          "line": 654
-        },
-        {
-          "lua_name": "Shader:hasUniform",
-          "kind": "method",
-          "file": "src/lua_api/render_api.rs",
-          "line": 755
-        },
-        {
-          "lua_name": "Quad:getTextureDimensions",
-          "kind": "method",
-          "file": "src/lua_api/render_api.rs",
-          "line": 850
-        }
-      ],
+      "covered": 183,
+      "coverage_pct": 100.0,
+      "uncovered": [],
       "test_files": [
         "tests/lua/evidence/test_render_evidence.lua",
         "tests/lua/integration/test_drawlayer.lua",
@@ -2829,30 +565,11 @@
     },
     "save": {
       "total": 22,
-      "marker_covered": 4,
+      "marker_covered": 7,
       "heuristic_covered": 15,
-      "covered": 19,
-      "coverage_pct": 86.4,
-      "uncovered": [
-        {
-          "lua_name": "SaveManager:setCompress",
-          "kind": "method",
-          "file": "src/lua_api/save_api.rs",
-          "line": 498
-        },
-        {
-          "lua_name": "SaveManager:onBeforeSave",
-          "kind": "method",
-          "file": "src/lua_api/save_api.rs",
-          "line": 515
-        },
-        {
-          "lua_name": "SaveManager:onAfterLoad",
-          "kind": "method",
-          "file": "src/lua_api/save_api.rs",
-          "line": 532
-        }
-      ],
+      "covered": 22,
+      "coverage_pct": 100.0,
+      "uncovered": [],
       "test_files": [
         "tests/lua/integration/test_save_ecs.lua",
         "tests/lua/integration/test_save_ecs_scene.lua",
@@ -2916,136 +633,33 @@
     },
     "system": {
       "total": 26,
-      "marker_covered": 0,
+      "marker_covered": 3,
       "heuristic_covered": 23,
-      "covered": 23,
-      "coverage_pct": 88.5,
-      "uncovered": [
-        {
-          "lua_name": "lurek.system.log",
-          "kind": "function",
-          "file": "src/lua_api/system_api.rs",
-          "line": 382
-        },
-        {
-          "lua_name": "lurek.system.runBatch",
-          "kind": "function",
-          "file": "src/lua_api/system_api.rs",
-          "line": 556
-        },
-        {
-          "lua_name": "lurek.system.getBatchResults",
-          "kind": "function",
-          "file": "src/lua_api/system_api.rs",
-          "line": 609
-        }
-      ],
-      "test_files": []
+      "covered": 26,
+      "coverage_pct": 100.0,
+      "uncovered": [],
+      "test_files": [
+        "tests/lua/unit/test_system_unit.lua"
+      ]
     },
     "terminal": {
       "total": 82,
-      "marker_covered": 23,
+      "marker_covered": 36,
       "heuristic_covered": 46,
-      "covered": 69,
-      "coverage_pct": 84.1,
-      "uncovered": [
-        {
-          "lua_name": "lurek.terminal.pushScrollback",
-          "kind": "function",
-          "file": "src/lua_api/terminal_api.rs",
-          "line": 1443
-        },
-        {
-          "lua_name": "lurek.terminal.getScrollback",
-          "kind": "function",
-          "file": "src/lua_api/terminal_api.rs",
-          "line": 1469
-        },
-        {
-          "lua_name": "lurek.terminal.scrollbackLen",
-          "kind": "function",
-          "file": "src/lua_api/terminal_api.rs",
-          "line": 1491
-        },
-        {
-          "lua_name": "lurek.terminal.setScrollbackCap",
-          "kind": "function",
-          "file": "src/lua_api/terminal_api.rs",
-          "line": 1508
-        },
-        {
-          "lua_name": "lurek.terminal.pushCmdHistory",
-          "kind": "function",
-          "file": "src/lua_api/terminal_api.rs",
-          "line": 1532
-        },
-        {
-          "lua_name": "lurek.terminal.prevCmd",
-          "kind": "function",
-          "file": "src/lua_api/terminal_api.rs",
-          "line": 1552
-        },
-        {
-          "lua_name": "lurek.terminal.nextCmd",
-          "kind": "function",
-          "file": "src/lua_api/terminal_api.rs",
-          "line": 1568
-        },
-        {
-          "lua_name": "lurek.terminal.cmdHistoryLen",
-          "kind": "function",
-          "file": "src/lua_api/terminal_api.rs",
-          "line": 1582
-        },
-        {
-          "lua_name": "lurek.terminal.clearCmdHistory",
-          "kind": "function",
-          "file": "src/lua_api/terminal_api.rs",
-          "line": 1596
-        },
-        {
-          "lua_name": "lurek.terminal.applyTheme",
-          "kind": "function",
-          "file": "src/lua_api/terminal_api.rs",
-          "line": 1616
-        },
-        {
-          "lua_name": "lurek.terminal.printHighlighted",
-          "kind": "function",
-          "file": "src/lua_api/terminal_api.rs",
-          "line": 1657
-        },
-        {
-          "lua_name": "lurek.terminal.printAnsi",
-          "kind": "function",
-          "file": "src/lua_api/terminal_api.rs",
-          "line": 1801
-        },
-        {
-          "lua_name": "Terminal:autoResize",
-          "kind": "method",
-          "file": "src/lua_api/terminal_api.rs",
-          "line": 691
-        }
-      ],
+      "covered": 82,
+      "coverage_pct": 100.0,
+      "uncovered": [],
       "test_files": [
         "tests/lua/unit/test_terminal_unit.lua"
       ]
     },
     "thread": {
       "total": 37,
-      "marker_covered": 4,
+      "marker_covered": 5,
       "heuristic_covered": 32,
-      "covered": 36,
-      "coverage_pct": 97.3,
-      "uncovered": [
-        {
-          "lua_name": "Channel:pop",
-          "kind": "method",
-          "file": "src/lua_api/thread_api.rs",
-          "line": 338
-        }
-      ],
+      "covered": 37,
+      "coverage_pct": 100.0,
+      "uncovered": [],
       "test_files": [
         "tests/lua/integration/test_thread_data.lua",
         "tests/lua/stress/test_thread_stress.lua",
@@ -3054,96 +668,11 @@
     },
     "tilemap": {
       "total": 134,
-      "marker_covered": 92,
+      "marker_covered": 106,
       "heuristic_covered": 28,
-      "covered": 120,
-      "coverage_pct": 89.6,
-      "uncovered": [
-        {
-          "lua_name": "ChunkMap:loadChunk",
-          "kind": "method",
-          "file": "src/lua_api/tilemap_api.rs",
-          "line": 1048
-        },
-        {
-          "lua_name": "ChunkMap:unloadChunk",
-          "kind": "method",
-          "file": "src/lua_api/tilemap_api.rs",
-          "line": 1058
-        },
-        {
-          "lua_name": "ChunkMap:getLoadedChunks",
-          "kind": "method",
-          "file": "src/lua_api/tilemap_api.rs",
-          "line": 1073
-        },
-        {
-          "lua_name": "ChunkMap:chunkTileRange",
-          "kind": "method",
-          "file": "src/lua_api/tilemap_api.rs",
-          "line": 1117
-        },
-        {
-          "lua_name": "IsoMap:isLevelVisible",
-          "kind": "method",
-          "file": "src/lua_api/tilemap_api.rs",
-          "line": 1345
-        },
-        {
-          "lua_name": "IsoMap:fillLevel",
-          "kind": "method",
-          "file": "src/lua_api/tilemap_api.rs",
-          "line": 1392
-        },
-        {
-          "lua_name": "IsoMap:getLevelHeight",
-          "kind": "method",
-          "file": "src/lua_api/tilemap_api.rs",
-          "line": 1433
-        },
-        {
-          "lua_name": "IsoMap:tileToScreen",
-          "kind": "method",
-          "file": "src/lua_api/tilemap_api.rs",
-          "line": 1443
-        },
-        {
-          "lua_name": "IsoMap:screenToTile",
-          "kind": "method",
-          "file": "src/lua_api/tilemap_api.rs",
-          "line": 1453
-        },
-        {
-          "lua_name": "MapBlock:getSide",
-          "kind": "method",
-          "file": "src/lua_api/tilemap_api.rs",
-          "line": 1551
-        },
-        {
-          "lua_name": "MapBlock:getSegmentSize",
-          "kind": "method",
-          "file": "src/lua_api/tilemap_api.rs",
-          "line": 1589
-        },
-        {
-          "lua_name": "MapBlock:getWidthInSegments",
-          "kind": "method",
-          "file": "src/lua_api/tilemap_api.rs",
-          "line": 1596
-        },
-        {
-          "lua_name": "MapBlock:getHeightInSegments",
-          "kind": "method",
-          "file": "src/lua_api/tilemap_api.rs",
-          "line": 1603
-        },
-        {
-          "lua_name": "MapGroup:removeBlock",
-          "kind": "method",
-          "file": "src/lua_api/tilemap_api.rs",
-          "line": 1676
-        }
-      ],
+      "covered": 134,
+      "coverage_pct": 100.0,
+      "uncovered": [],
       "test_files": [
         "tests/lua/evidence/test_render_evidence.lua",
         "tests/lua/evidence/test_tilemap_evidence.lua",
@@ -3158,24 +687,11 @@
     },
     "timer": {
       "total": 43,
-      "marker_covered": 21,
+      "marker_covered": 23,
       "heuristic_covered": 20,
-      "covered": 41,
-      "coverage_pct": 95.3,
-      "uncovered": [
-        {
-          "lua_name": "Scheduler:getRepeatCount",
-          "kind": "method",
-          "file": "src/lua_api/timer_api.rs",
-          "line": 251
-        },
-        {
-          "lua_name": "Scheduler:resetEvent",
-          "kind": "method",
-          "file": "src/lua_api/timer_api.rs",
-          "line": 278
-        }
-      ],
+      "covered": 43,
+      "coverage_pct": 100.0,
+      "uncovered": [],
       "test_files": [
         "tests/lua/integration/test_animation_timer.lua",
         "tests/lua/integration/test_audio_timer.lua",
@@ -3203,307 +719,24 @@
     },
     "ui": {
       "total": 363,
-      "marker_covered": 9,
+      "marker_covered": 52,
       "heuristic_covered": 311,
-      "covered": 320,
-      "coverage_pct": 88.2,
-      "uncovered": [
-        {
-          "lua_name": "lurek.ui.getRect",
-          "kind": "function",
-          "file": "src/lua_api/ui_api.rs",
-          "line": 128
-        },
-        {
-          "lua_name": "lurek.ui.setAnchor",
-          "kind": "function",
-          "file": "src/lua_api/ui_api.rs",
-          "line": 641
-        },
-        {
-          "lua_name": "lurek.ui.setAnchorCenter",
-          "kind": "function",
-          "file": "src/lua_api/ui_api.rs",
-          "line": 670
-        },
-        {
-          "lua_name": "lurek.ui.clearAnchor",
-          "kind": "function",
-          "file": "src/lua_api/ui_api.rs",
-          "line": 687
-        },
-        {
-          "lua_name": "lurek.ui.setAlpha",
-          "kind": "function",
-          "file": "src/lua_api/ui_api.rs",
-          "line": 800
-        },
-        {
-          "lua_name": "lurek.ui.getAlpha",
-          "kind": "function",
-          "file": "src/lua_api/ui_api.rs",
-          "line": 815
-        },
-        {
-          "lua_name": "lurek.ui.slideIn",
-          "kind": "function",
-          "file": "src/lua_api/ui_api.rs",
-          "line": 866
-        },
-        {
-          "lua_name": "lurek.ui.slideOut",
-          "kind": "function",
-          "file": "src/lua_api/ui_api.rs",
-          "line": 884
-        },
-        {
-          "lua_name": "lurek.ui.attachToEntity",
-          "kind": "function",
-          "file": "src/lua_api/ui_api.rs",
-          "line": 904
-        },
-        {
-          "lua_name": "lurek.ui.detachFromEntity",
-          "kind": "function",
-          "file": "src/lua_api/ui_api.rs",
-          "line": 919
-        },
-        {
-          "lua_name": "Text_Input:isFocused",
-          "kind": "method",
-          "file": "src/lua_api/ui_api.rs",
-          "line": 1092
-        },
-        {
-          "lua_name": "Text_Input:getCursorPosition",
-          "kind": "method",
-          "file": "src/lua_api/ui_api.rs",
-          "line": 1105
-        },
-        {
-          "lua_name": "Combo_Box:getSelectedItem",
-          "kind": "method",
-          "file": "src/lua_api/ui_api.rs",
-          "line": 1485
-        },
-        {
-          "lua_name": "List_Box:setItemHeight",
-          "kind": "method",
-          "file": "src/lua_api/ui_api.rs",
-          "line": 1614
-        },
-        {
-          "lua_name": "Panel:setScrollable",
-          "kind": "method",
-          "file": "src/lua_api/ui_api.rs",
-          "line": 1960
-        },
-        {
-          "lua_name": "Layout:setWrap",
-          "kind": "method",
-          "file": "src/lua_api/ui_api.rs",
-          "line": 2054
-        },
-        {
-          "lua_name": "Layout:getWrap",
-          "kind": "method",
-          "file": "src/lua_api/ui_api.rs",
-          "line": 2067
-        },
-        {
-          "lua_name": "Scroll_Panel:getMaxScroll",
-          "kind": "method",
-          "file": "src/lua_api/ui_api.rs",
-          "line": 2204
-        },
-        {
-          "lua_name": "Scroll_Panel:getScrollSpeed",
-          "kind": "method",
-          "file": "src/lua_api/ui_api.rs",
-          "line": 2231
-        },
-        {
-          "lua_name": "Nine_Patch:setInsets",
-          "kind": "method",
-          "file": "src/lua_api/ui_api.rs",
-          "line": 2258
-        },
-        {
-          "lua_name": "Nine_Patch:setImageDimensions",
-          "kind": "method",
-          "file": "src/lua_api/ui_api.rs",
-          "line": 2291
-        },
-        {
-          "lua_name": "Nine_Patch:getImageDimensions",
-          "kind": "method",
-          "file": "src/lua_api/ui_api.rs",
-          "line": 2305
-        },
-        {
-          "lua_name": "Nine_Patch:getSlices",
-          "kind": "method",
-          "file": "src/lua_api/ui_api.rs",
-          "line": 2318
-        },
-        {
-          "lua_name": "Toast:setMessage",
-          "kind": "method",
-          "file": "src/lua_api/ui_api.rs",
-          "line": 2358
-        },
-        {
-          "lua_name": "Separator:setVertical",
-          "kind": "method",
-          "file": "src/lua_api/ui_api.rs",
-          "line": 2448
-        },
-        {
-          "lua_name": "Separator:setThickness",
-          "kind": "method",
-          "file": "src/lua_api/ui_api.rs",
-          "line": 2475
-        },
-        {
-          "lua_name": "Separator:getThickness",
-          "kind": "method",
-          "file": "src/lua_api/ui_api.rs",
-          "line": 2488
-        },
-        {
-          "lua_name": "Tree_View:isExpanded",
-          "kind": "method",
-          "file": "src/lua_api/ui_api.rs",
-          "line": 2546
-        },
-        {
-          "lua_name": "Gui_Window:setDraggable",
-          "kind": "method",
-          "file": "src/lua_api/ui_api.rs",
-          "line": 3111
-        },
-        {
-          "lua_name": "Gui_Window:setResizable",
-          "kind": "method",
-          "file": "src/lua_api/ui_api.rs",
-          "line": 3138
-        },
-        {
-          "lua_name": "Gui_Window:setOnClose",
-          "kind": "method",
-          "file": "src/lua_api/ui_api.rs",
-          "line": 3152
-        },
-        {
-          "lua_name": "Split_Panel:setFirstChild",
-          "kind": "method",
-          "file": "src/lua_api/ui_api.rs",
-          "line": 3255
-        },
-        {
-          "lua_name": "Split_Panel:setSecondChild",
-          "kind": "method",
-          "file": "src/lua_api/ui_api.rs",
-          "line": 3269
-        },
-        {
-          "lua_name": "Split_Panel:getFirstChild",
-          "kind": "method",
-          "file": "src/lua_api/ui_api.rs",
-          "line": 3282
-        },
-        {
-          "lua_name": "Split_Panel:getSecondChild",
-          "kind": "method",
-          "file": "src/lua_api/ui_api.rs",
-          "line": 3295
-        },
-        {
-          "lua_name": "Dock_Panel:undock",
-          "kind": "method",
-          "file": "src/lua_api/ui_api.rs",
-          "line": 3334
-        },
-        {
-          "lua_name": "Menu_Bar:removeMenu",
-          "kind": "method",
-          "file": "src/lua_api/ui_api.rs",
-          "line": 3563
-        },
-        {
-          "lua_name": "Menu_Bar:getMenus",
-          "kind": "method",
-          "file": "src/lua_api/ui_api.rs",
-          "line": 3578
-        },
-        {
-          "lua_name": "Dialog:setModal",
-          "kind": "method",
-          "file": "src/lua_api/ui_api.rs",
-          "line": 3789
-        },
-        {
-          "lua_name": "Dialog:setOnClose",
-          "kind": "method",
-          "file": "src/lua_api/ui_api.rs",
-          "line": 3846
-        },
-        {
-          "lua_name": "Accordion:getSectionTitle",
-          "kind": "method",
-          "file": "src/lua_api/ui_api.rs",
-          "line": 4119
-        },
-        {
-          "lua_name": "Color_Picker:setShowAlpha",
-          "kind": "method",
-          "file": "src/lua_api/ui_api.rs",
-          "line": 4287
-        },
-        {
-          "lua_name": "Image_Widget:update_bindings",
-          "kind": "method",
-          "file": "src/lua_api/ui_api.rs",
-          "line": 5967
-        }
-      ],
+      "covered": 363,
+      "coverage_pct": 100.0,
+      "uncovered": [],
       "test_files": [
         "tests/lua/evidence/test_ui_evidence.lua",
-        "tests/lua/unit/test_terminal_unit.lua"
+        "tests/lua/unit/test_terminal_unit.lua",
+        "tests/lua/unit/test_ui_unit.lua"
       ]
     },
     "window": {
       "total": 50,
-      "marker_covered": 40,
+      "marker_covered": 44,
       "heuristic_covered": 6,
-      "covered": 46,
-      "coverage_pct": 92.0,
-      "uncovered": [
-        {
-          "lua_name": "lurek.window.getFullscreenModes",
-          "kind": "function",
-          "file": "src/lua_api/window_api.rs",
-          "line": 401
-        },
-        {
-          "lua_name": "lurek.window.getDisplayName",
-          "kind": "function",
-          "file": "src/lua_api/window_api.rs",
-          "line": 429
-        },
-        {
-          "lua_name": "lurek.window.getPixelDimensions",
-          "kind": "function",
-          "file": "src/lua_api/window_api.rs",
-          "line": 448
-        },
-        {
-          "lua_name": "lurek.window.showMessageBox",
-          "kind": "function",
-          "file": "src/lua_api/window_api.rs",
-          "line": 467
-        }
-      ],
+      "covered": 50,
+      "coverage_pct": 100.0,
+      "uncovered": [],
       "test_files": [
         "tests/lua/config/test_config.lua",
         "tests/lua/unit/test_window_unit.lua"
@@ -3793,6 +1026,11 @@
     },
     {
       "file": "tests/lua/evidence/test_camera_evidence.lua",
+      "line": 65,
+      "marker": "lurek.camera.newCamera"
+    },
+    {
+      "file": "tests/lua/evidence/test_camera_evidence.lua",
       "line": 66,
       "marker": "Camera:getZoom"
     },
@@ -3828,6 +1066,11 @@
     },
     {
       "file": "tests/lua/evidence/test_camera_evidence.lua",
+      "line": 116,
+      "marker": "lurek.camera.newCamera"
+    },
+    {
+      "file": "tests/lua/evidence/test_camera_evidence.lua",
       "line": 117,
       "marker": "Camera:getRotation"
     },
@@ -3853,6 +1096,11 @@
     },
     {
       "file": "tests/lua/evidence/test_camera_evidence.lua",
+      "line": 142,
+      "marker": "lurek.camera.newCamera"
+    },
+    {
+      "file": "tests/lua/evidence/test_camera_evidence.lua",
       "line": 143,
       "marker": "Camera:setBounds"
     },
@@ -3870,6 +1118,11 @@
       "file": "tests/lua/evidence/test_camera_evidence.lua",
       "line": 180,
       "marker": "Camera:getPosition"
+    },
+    {
+      "file": "tests/lua/evidence/test_camera_evidence.lua",
+      "line": 182,
+      "marker": "lurek.camera.newCamera"
     },
     {
       "file": "tests/lua/evidence/test_effect_evidence.lua",
@@ -6518,6 +3771,11 @@
     },
     {
       "file": "tests/lua/integration/test_input_camera.lua",
+      "line": 8,
+      "marker": "lurek.camera.newCamera"
+    },
+    {
+      "file": "tests/lua/integration/test_input_camera.lua",
       "line": 33,
       "marker": "lurek.input.getMousePosition"
     },
@@ -6757,6 +4015,11 @@
       "marker": "lurek.animation.resume"
     },
     {
+      "file": "tests/lua/integration/test_render_camera.lua",
+      "line": 8,
+      "marker": "lurek.camera.newCamera"
+    },
+    {
       "file": "tests/lua/integration/test_runtime_system.lua",
       "line": 7,
       "marker": "lurek.runtime.getOS"
@@ -6882,6 +4145,11 @@
       "marker": "lurek.tilemap.getTile"
     },
     {
+      "file": "tests/lua/integration/test_scene_camera.lua",
+      "line": 8,
+      "marker": "lurek.camera.newCamera"
+    },
+    {
       "file": "tests/lua/integration/test_tilemap_camera.lua",
       "line": 8,
       "marker": "lurek.tilemap.newTilemap"
@@ -6897,6 +4165,11 @@
       "marker": "lurek.tilemap.getTile"
     },
     {
+      "file": "tests/lua/integration/test_tilemap_camera.lua",
+      "line": 11,
+      "marker": "lurek.camera.newCamera"
+    },
+    {
       "file": "tests/lua/integration/test_tilemap_physics.lua",
       "line": 65,
       "marker": "lurek.tilemap.clearTile"
@@ -6905,6 +4178,11 @@
       "file": "tests/lua/integration/test_timer_math.lua",
       "line": 8,
       "marker": "lurek.math.pi"
+    },
+    {
+      "file": "tests/lua/integration/test_tween_camera.lua",
+      "line": 9,
+      "marker": "lurek.camera.newCamera"
     },
     {
       "file": "tests/lua/stress/test_ai_stress.lua",
@@ -6953,13 +4231,28 @@
     },
     {
       "file": "tests/lua/stress/test_camera_stress.lua",
+      "line": 6,
+      "marker": "lurek.camera.newCamera"
+    },
+    {
+      "file": "tests/lua/stress/test_camera_stress.lua",
       "line": 7,
       "marker": "Camera:setPosition"
     },
     {
       "file": "tests/lua/stress/test_camera_stress.lua",
+      "line": 21,
+      "marker": "lurek.camera.newCamera"
+    },
+    {
+      "file": "tests/lua/stress/test_camera_stress.lua",
       "line": 22,
       "marker": "Camera:setZoom"
+    },
+    {
+      "file": "tests/lua/stress/test_camera_stress.lua",
+      "line": 36,
+      "marker": "lurek.camera.newCamera"
     },
     {
       "file": "tests/lua/stress/test_camera_stress.lua",
@@ -8490,6 +5783,41 @@
       "file": "tests/lua/unit/test_crafting_unit.lua",
       "line": 582,
       "marker": "lurek.crafting.newModifierPool"
+    },
+    {
+      "file": "tests/lua/unit/test_data_unit.lua",
+      "line": 15,
+      "marker": "lurek.data.newByteData"
+    },
+    {
+      "file": "tests/lua/unit/test_data_unit.lua",
+      "line": 362,
+      "marker": "lurek.data.newByteData"
+    },
+    {
+      "file": "tests/lua/unit/test_data_unit.lua",
+      "line": 512,
+      "marker": "lurek.data.newByteData"
+    },
+    {
+      "file": "tests/lua/unit/test_data_unit.lua",
+      "line": 521,
+      "marker": "lurek.data.newByteData"
+    },
+    {
+      "file": "tests/lua/unit/test_data_unit.lua",
+      "line": 530,
+      "marker": "lurek.data.newByteData"
+    },
+    {
+      "file": "tests/lua/unit/test_data_unit.lua",
+      "line": 539,
+      "marker": "lurek.data.newByteData"
+    },
+    {
+      "file": "tests/lua/unit/test_data_unit.lua",
+      "line": 549,
+      "marker": "lurek.data.newByteData"
     },
     {
       "file": "tests/lua/unit/test_devtools_unit.lua",

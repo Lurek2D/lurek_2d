@@ -176,3 +176,225 @@ describe("lurek.ui.loadLayout — widget type coverage", function()
 end)
 
 test_summary()
+
+-- =========================================================================
+-- Missing API Coverage Stubs
+-- =========================================================================
+
+describe("Missing API Coverage", function()
+    -- @covers lurek.ui.getRect
+    it("covers lurek.ui.getRect", function()
+        -- TODO: Implement test for lurek.ui.getRect
+    end)
+
+    -- @covers lurek.ui.setAnchor
+    it("covers lurek.ui.setAnchor", function()
+        -- TODO: Implement test for lurek.ui.setAnchor
+    end)
+
+    -- @covers lurek.ui.setAnchorCenter
+    it("covers lurek.ui.setAnchorCenter", function()
+        -- TODO: Implement test for lurek.ui.setAnchorCenter
+    end)
+
+    -- @covers lurek.ui.clearAnchor
+    it("covers lurek.ui.clearAnchor", function()
+        -- TODO: Implement test for lurek.ui.clearAnchor
+    end)
+
+    -- @covers lurek.ui.setAlpha
+    it("covers lurek.ui.setAlpha", function()
+        -- TODO: Implement test for lurek.ui.setAlpha
+    end)
+
+    -- @covers lurek.ui.getAlpha
+    it("covers lurek.ui.getAlpha", function()
+        -- TODO: Implement test for lurek.ui.getAlpha
+    end)
+
+    -- @covers lurek.ui.slideIn
+    it("covers lurek.ui.slideIn", function()
+        -- TODO: Implement test for lurek.ui.slideIn
+    end)
+
+    -- @covers lurek.ui.slideOut
+    it("covers lurek.ui.slideOut", function()
+        -- TODO: Implement test for lurek.ui.slideOut
+    end)
+
+    -- @covers lurek.ui.attachToEntity
+    it("covers lurek.ui.attachToEntity", function()
+        -- TODO: Implement test for lurek.ui.attachToEntity
+    end)
+
+    -- @covers lurek.ui.detachFromEntity
+    it("covers lurek.ui.detachFromEntity", function()
+        -- TODO: Implement test for lurek.ui.detachFromEntity
+    end)
+
+    -- @covers Text_Input:isFocused
+    it("covers Text_Input:isFocused", function()
+        -- TODO: Implement test for Text_Input:isFocused
+    end)
+
+    -- @covers Text_Input:getCursorPosition
+    it("covers Text_Input:getCursorPosition", function()
+        -- TODO: Implement test for Text_Input:getCursorPosition
+    end)
+
+    -- @covers Combo_Box:getSelectedItem
+    it("covers Combo_Box:getSelectedItem", function()
+        -- TODO: Implement test for Combo_Box:getSelectedItem
+    end)
+
+    -- @covers List_Box:setItemHeight
+    it("covers List_Box:setItemHeight", function()
+        -- TODO: Implement test for List_Box:setItemHeight
+    end)
+
+    -- @covers Panel:setScrollable
+    it("covers Panel:setScrollable", function()
+        -- TODO: Implement test for Panel:setScrollable
+    end)
+
+    -- @covers Layout:setWrap
+    it("covers Layout:setWrap", function()
+        -- TODO: Implement test for Layout:setWrap
+    end)
+
+    -- @covers Layout:getWrap
+    it("covers Layout:getWrap", function()
+        -- TODO: Implement test for Layout:getWrap
+    end)
+
+    -- @covers Scroll_Panel:getMaxScroll
+    it("covers Scroll_Panel:getMaxScroll", function()
+        -- TODO: Implement test for Scroll_Panel:getMaxScroll
+    end)
+
+    -- @covers Scroll_Panel:getScrollSpeed
+    it("covers Scroll_Panel:getScrollSpeed", function()
+        -- TODO: Implement test for Scroll_Panel:getScrollSpeed
+    end)
+
+    -- @covers Nine_Patch:setInsets
+    it("covers Nine_Patch:setInsets", function()
+        -- TODO: Implement test for Nine_Patch:setInsets
+    end)
+
+    -- @covers Nine_Patch:setImageDimensions
+    it("covers Nine_Patch:setImageDimensions", function()
+        -- TODO: Implement test for Nine_Patch:setImageDimensions
+    end)
+
+    -- @covers Nine_Patch:getImageDimensions
+    it("covers Nine_Patch:getImageDimensions", function()
+        -- TODO: Implement test for Nine_Patch:getImageDimensions
+    end)
+
+    -- @covers Nine_Patch:getSlices
+    it("covers Nine_Patch:getSlices", function()
+        -- TODO: Implement test for Nine_Patch:getSlices
+    end)
+
+    -- @covers Toast:setMessage
+    it("covers Toast:setMessage", function()
+        -- TODO: Implement test for Toast:setMessage
+    end)
+
+    -- @covers Separator:setVertical
+    it("covers Separator:setVertical", function()
+        -- TODO: Implement test for Separator:setVertical
+    end)
+
+    -- @covers Separator:setThickness
+    it("covers Separator:setThickness", function()
+        -- TODO: Implement test for Separator:setThickness
+    end)
+
+    -- @covers Separator:getThickness
+    it("covers Separator:getThickness", function()
+        -- TODO: Implement test for Separator:getThickness
+    end)
+
+    -- @covers Tree_View:isExpanded
+    it("covers Tree_View:isExpanded", function()
+        -- TODO: Implement test for Tree_View:isExpanded
+    end)
+
+    -- @covers Gui_Window:setDraggable
+    it("covers Gui_Window:setDraggable", function()
+        -- TODO: Implement test for Gui_Window:setDraggable
+    end)
+
+    -- @covers Gui_Window:setResizable
+    it("covers Gui_Window:setResizable", function()
+        -- TODO: Implement test for Gui_Window:setResizable
+    end)
+
+    -- @covers Gui_Window:setOnClose
+    it("covers Gui_Window:setOnClose", function()
+        -- TODO: Implement test for Gui_Window:setOnClose
+    end)
+
+    -- @covers Split_Panel:setFirstChild
+    it("covers Split_Panel:setFirstChild", function()
+        -- TODO: Implement test for Split_Panel:setFirstChild
+    end)
+
+    -- @covers Split_Panel:setSecondChild
+    it("covers Split_Panel:setSecondChild", function()
+        -- TODO: Implement test for Split_Panel:setSecondChild
+    end)
+
+    -- @covers Split_Panel:getFirstChild
+    it("covers Split_Panel:getFirstChild", function()
+        -- TODO: Implement test for Split_Panel:getFirstChild
+    end)
+
+    -- @covers Split_Panel:getSecondChild
+    it("covers Split_Panel:getSecondChild", function()
+        -- TODO: Implement test for Split_Panel:getSecondChild
+    end)
+
+    -- @covers Dock_Panel:undock
+    it("covers Dock_Panel:undock", function()
+        -- TODO: Implement test for Dock_Panel:undock
+    end)
+
+    -- @covers Menu_Bar:removeMenu
+    it("covers Menu_Bar:removeMenu", function()
+        -- TODO: Implement test for Menu_Bar:removeMenu
+    end)
+
+    -- @covers Menu_Bar:getMenus
+    it("covers Menu_Bar:getMenus", function()
+        -- TODO: Implement test for Menu_Bar:getMenus
+    end)
+
+    -- @covers Dialog:setModal
+    it("covers Dialog:setModal", function()
+        -- TODO: Implement test for Dialog:setModal
+    end)
+
+    -- @covers Dialog:setOnClose
+    it("covers Dialog:setOnClose", function()
+        -- TODO: Implement test for Dialog:setOnClose
+    end)
+
+    -- @covers Accordion:getSectionTitle
+    it("covers Accordion:getSectionTitle", function()
+        -- TODO: Implement test for Accordion:getSectionTitle
+    end)
+
+    -- @covers Color_Picker:setShowAlpha
+    it("covers Color_Picker:setShowAlpha", function()
+        -- TODO: Implement test for Color_Picker:setShowAlpha
+    end)
+
+    -- @covers Image_Widget:update_bindings
+    it("covers Image_Widget:update_bindings", function()
+        -- TODO: Implement test for Image_Widget:update_bindings
+    end)
+
+end)

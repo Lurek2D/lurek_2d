@@ -1799,3 +1799,55 @@ describe("overlay combined", function()
 end)
 
 test_summary()
+
+-- =========================================================================
+-- Missing API Coverage Stubs
+-- =========================================================================
+
+describe("Missing API Coverage", function()
+    -- @covers lurek.effect.newTransition
+    it("covers lurek.effect.newTransition", function()
+        -- TODO: Implement test for lurek.effect.newTransition
+    end)
+
+    -- @covers PostFxStack:add
+    it("covers PostFxStack:add", function()
+        -- TODO: Implement test for PostFxStack:add
+    end)
+
+    -- @covers PostFxStack:getEnabledEffects
+    it("covers PostFxStack:getEnabledEffects", function()
+        -- TODO: Implement test for PostFxStack:getEnabledEffects
+    end)
+
+    -- @covers PostFxStack:len
+    it("covers PostFxStack:len", function()
+        -- TODO: Implement test for PostFxStack:len
+    end)
+
+    -- @covers PostFxStack:setFeedback
+    it("covers PostFxStack:setFeedback", function()
+        -- TODO: Implement test for PostFxStack:setFeedback
+    end)
+
+    -- @covers PostFxStack:getFeedback
+    it("covers PostFxStack:getFeedback", function()
+        -- TODO: Implement test for PostFxStack:getFeedback
+    end)
+
+    -- @covers PostFxStack:clearFeedback
+    it("covers PostFxStack:clearFeedback", function()
+        -- TODO: Implement test for PostFxStack:clearFeedback
+    end)
+
+    -- @covers ImageEffect:removeByIndex
+    it("covers ImageEffect:removeByIndex", function()
+        -- TODO: Implement test for ImageEffect:removeByIndex
+    end)
+
+    -- @covers ImageEffect:removeByName
+    it("covers ImageEffect:removeByName", function()
+        -- TODO: Implement test for ImageEffect:removeByName
+    end)
+
+end)

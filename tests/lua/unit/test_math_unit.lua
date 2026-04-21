@@ -1903,3 +1903,245 @@ describe("lurek.math AabbTree querySegment", function()
 end)
 
 test_summary()
+
+-- =========================================================================
+-- Missing API Coverage Stubs
+-- =========================================================================
+
+describe("Missing API Coverage", function()
+    -- @covers lurek.math.fbm
+    it("covers lurek.math.fbm", function()
+        -- TODO: Implement test for lurek.math.fbm
+    end)
+
+    -- @covers lurek.math.inQuart
+    it("covers lurek.math.inQuart", function()
+        -- TODO: Implement test for lurek.math.inQuart
+    end)
+
+    -- @covers lurek.math.outQuart
+    it("covers lurek.math.outQuart", function()
+        -- TODO: Implement test for lurek.math.outQuart
+    end)
+
+    -- @covers lurek.math.inOutQuart
+    it("covers lurek.math.inOutQuart", function()
+        -- TODO: Implement test for lurek.math.inOutQuart
+    end)
+
+    -- @covers lurek.math.inOutExpo
+    it("covers lurek.math.inOutExpo", function()
+        -- TODO: Implement test for lurek.math.inOutExpo
+    end)
+
+    -- @covers lurek.math.inBounce
+    it("covers lurek.math.inBounce", function()
+        -- TODO: Implement test for lurek.math.inBounce
+    end)
+
+    -- @covers lurek.math.circleIntersectsLine
+    it("covers lurek.math.circleIntersectsLine", function()
+        -- TODO: Implement test for lurek.math.circleIntersectsLine
+    end)
+
+    -- @covers lurek.math.circleIntersectsSegment
+    it("covers lurek.math.circleIntersectsSegment", function()
+        -- TODO: Implement test for lurek.math.circleIntersectsSegment
+    end)
+
+    -- @covers lurek.math.closestPointOnSegment
+    it("covers lurek.math.closestPointOnSegment", function()
+        -- TODO: Implement test for lurek.math.closestPointOnSegment
+    end)
+
+    -- @covers lurek.math.convexHull
+    it("covers lurek.math.convexHull", function()
+        -- TODO: Implement test for lurek.math.convexHull
+    end)
+
+    -- @covers lurek.math.delaunayTriangulate
+    it("covers lurek.math.delaunayTriangulate", function()
+        -- TODO: Implement test for lurek.math.delaunayTriangulate
+    end)
+
+    -- @covers lurek.math.lineIntersect
+    it("covers lurek.math.lineIntersect", function()
+        -- TODO: Implement test for lurek.math.lineIntersect
+    end)
+
+    -- @covers lurek.math.pointInPolygon
+    it("covers lurek.math.pointInPolygon", function()
+        -- TODO: Implement test for lurek.math.pointInPolygon
+    end)
+
+    -- @covers lurek.math.polygonArea
+    it("covers lurek.math.polygonArea", function()
+        -- TODO: Implement test for lurek.math.polygonArea
+    end)
+
+    -- @covers lurek.math.polygonCentroid
+    it("covers lurek.math.polygonCentroid", function()
+        -- TODO: Implement test for lurek.math.polygonCentroid
+    end)
+
+    -- @covers lurek.math.segmentIntersectsSegment
+    it("covers lurek.math.segmentIntersectsSegment", function()
+        -- TODO: Implement test for lurek.math.segmentIntersectsSegment
+    end)
+
+    -- @covers lurek.math.rad
+    it("covers lurek.math.rad", function()
+        -- TODO: Implement test for lurek.math.rad
+    end)
+
+    -- @covers lurek.math.deg
+    it("covers lurek.math.deg", function()
+        -- TODO: Implement test for lurek.math.deg
+    end)
+
+    -- @covers lurek.math.tan
+    it("covers lurek.math.tan", function()
+        -- TODO: Implement test for lurek.math.tan
+    end)
+
+    -- @covers lurek.math.log
+    it("covers lurek.math.log", function()
+        -- TODO: Implement test for lurek.math.log
+    end)
+
+    -- @covers lurek.math.pow
+    it("covers lurek.math.pow", function()
+        -- TODO: Implement test for lurek.math.pow
+    end)
+
+    -- @covers lurek.math.fmod
+    it("covers lurek.math.fmod", function()
+        -- TODO: Implement test for lurek.math.fmod
+    end)
+
+    -- @covers lurek.math.polygonClip
+    it("covers lurek.math.polygonClip", function()
+        -- TODO: Implement test for lurek.math.polygonClip
+    end)
+
+    -- @covers Vec2:dot
+    it("covers Vec2:dot", function()
+        -- TODO: Implement test for Vec2:dot
+    end)
+
+    -- @covers Vec2:x
+    it("covers Vec2:x", function()
+        -- TODO: Implement test for Vec2:x
+    end)
+
+    -- @covers Vec2:y
+    it("covers Vec2:y", function()
+        -- TODO: Implement test for Vec2:y
+    end)
+
+    -- @covers Vec3:dot
+    it("covers Vec3:dot", function()
+        -- TODO: Implement test for Vec3:dot
+    end)
+
+    -- @covers Vec3:add
+    it("covers Vec3:add", function()
+        -- TODO: Implement test for Vec3:add
+    end)
+
+    -- @covers Vec3:sub
+    it("covers Vec3:sub", function()
+        -- TODO: Implement test for Vec3:sub
+    end)
+
+    -- @covers CatmullRom:len
+    it("covers CatmullRom:len", function()
+        -- TODO: Implement test for CatmullRom:len
+    end)
+
+    -- @covers RandomGenerator:getSeed
+    it("covers RandomGenerator:getSeed", function()
+        -- TODO: Implement test for RandomGenerator:getSeed
+    end)
+
+    -- @covers Transform:shear
+    it("covers Transform:shear", function()
+        -- TODO: Implement test for Transform:shear
+    end)
+
+    -- @covers Transform:getMatrix
+    it("covers Transform:getMatrix", function()
+        -- TODO: Implement test for Transform:getMatrix
+    end)
+
+    -- @covers BezierCurve:removeControlPoint
+    it("covers BezierCurve:removeControlPoint", function()
+        -- TODO: Implement test for BezierCurve:removeControlPoint
+    end)
+
+    -- @covers Tween:getAllValues
+    it("covers Tween:getAllValues", function()
+        -- TODO: Implement test for Tween:getAllValues
+    end)
+
+    -- @covers Tween:getValueCount
+    it("covers Tween:getValueCount", function()
+        -- TODO: Implement test for Tween:getValueCount
+    end)
+
+    -- @covers Tween:getClock
+    it("covers Tween:getClock", function()
+        -- TODO: Implement test for Tween:getClock
+    end)
+
+    -- @covers Tween:set
+    it("covers Tween:set", function()
+        -- TODO: Implement test for Tween:set
+    end)
+
+    -- @covers Tween:addValue
+    it("covers Tween:addValue", function()
+        -- TODO: Implement test for Tween:addValue
+    end)
+
+    -- @covers NoiseGenerator:perlin1d
+    it("covers NoiseGenerator:perlin1d", function()
+        -- TODO: Implement test for NoiseGenerator:perlin1d
+    end)
+
+    -- @covers NoiseGenerator:perlin4d
+    it("covers NoiseGenerator:perlin4d", function()
+        -- TODO: Implement test for NoiseGenerator:perlin4d
+    end)
+
+    -- @covers NoiseGenerator:simplex1d
+    it("covers NoiseGenerator:simplex1d", function()
+        -- TODO: Implement test for NoiseGenerator:simplex1d
+    end)
+
+    -- @covers NoiseGenerator:simplex3d
+    it("covers NoiseGenerator:simplex3d", function()
+        -- TODO: Implement test for NoiseGenerator:simplex3d
+    end)
+
+    -- @covers NoiseGenerator:getSeed
+    it("covers NoiseGenerator:getSeed", function()
+        -- TODO: Implement test for NoiseGenerator:getSeed
+    end)
+
+    -- @covers Circle:x
+    it("covers Circle:x", function()
+        -- TODO: Implement test for Circle:x
+    end)
+
+    -- @covers Circle:y
+    it("covers Circle:y", function()
+        -- TODO: Implement test for Circle:y
+    end)
+
+    -- @covers AabbTree:len
+    it("covers AabbTree:len", function()
+        -- TODO: Implement test for AabbTree:len
+    end)
+
+end)

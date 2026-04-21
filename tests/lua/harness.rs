@@ -1,4 +1,4 @@
-﻿//! Test harness that discovers and runs all Lua integration test scripts.
+//! Test harness that discovers and runs all Lua integration test scripts.
 //!
 //! # Running tests in parallel
 //! Cargo runs test executables serially, but libtest may run the `#[test]`
@@ -1296,4 +1296,14 @@ fn lua_library_stats() {
 #[test]
 fn lua_library_scheduler() {
     run_lua_test("library/test_library_scheduler.lua");
+}
+
+#[test]
+fn lua_unit_engine_unit() {
+    run_lua_test("unit/test_engine_unit.lua");
+}
+
+#[test]
+fn lua_unit_system_unit() {
+    run_lua_test("unit/test_system_unit.lua");
 }

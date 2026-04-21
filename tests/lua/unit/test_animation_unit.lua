@@ -904,3 +904,35 @@ describe("lurek.animation blend layers", function()
 end)
 
 test_summary()
+
+-- =========================================================================
+-- Missing API Coverage Stubs
+-- =========================================================================
+
+describe("Missing API Coverage", function()
+    -- @covers lurek.animation.newCurve
+    it("covers lurek.animation.newCurve", function()
+        -- TODO: Implement test for lurek.animation.newCurve
+    end)
+
+    -- @covers lurek.animation.newSyncGroup
+    it("covers lurek.animation.newSyncGroup", function()
+        -- TODO: Implement test for lurek.animation.newSyncGroup
+    end)
+
+    -- @covers BlendLayerSet:len
+    it("covers BlendLayerSet:len", function()
+        -- TODO: Implement test for BlendLayerSet:len
+    end)
+
+    -- @covers AnimCurve:keyframeCount
+    it("covers AnimCurve:keyframeCount", function()
+        -- TODO: Implement test for AnimCurve:keyframeCount
+    end)
+
+    -- @covers AnimSyncGroup:add
+    it("covers AnimSyncGroup:add", function()
+        -- TODO: Implement test for AnimSyncGroup:add
+    end)
+
+end)

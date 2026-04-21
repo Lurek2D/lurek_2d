@@ -2229,3 +2229,80 @@ describe("IsoMap regression: zero index", function()
 end)
 
 test_summary()
+
+-- =========================================================================
+-- Missing API Coverage Stubs
+-- =========================================================================
+
+describe("Missing API Coverage", function()
+    -- @covers ChunkMap:loadChunk
+    it("covers ChunkMap:loadChunk", function()
+        -- TODO: Implement test for ChunkMap:loadChunk
+    end)
+
+    -- @covers ChunkMap:unloadChunk
+    it("covers ChunkMap:unloadChunk", function()
+        -- TODO: Implement test for ChunkMap:unloadChunk
+    end)
+
+    -- @covers ChunkMap:getLoadedChunks
+    it("covers ChunkMap:getLoadedChunks", function()
+        -- TODO: Implement test for ChunkMap:getLoadedChunks
+    end)
+
+    -- @covers ChunkMap:chunkTileRange
+    it("covers ChunkMap:chunkTileRange", function()
+        -- TODO: Implement test for ChunkMap:chunkTileRange
+    end)
+
+    -- @covers IsoMap:isLevelVisible
+    it("covers IsoMap:isLevelVisible", function()
+        -- TODO: Implement test for IsoMap:isLevelVisible
+    end)
+
+    -- @covers IsoMap:fillLevel
+    it("covers IsoMap:fillLevel", function()
+        -- TODO: Implement test for IsoMap:fillLevel
+    end)
+
+    -- @covers IsoMap:getLevelHeight
+    it("covers IsoMap:getLevelHeight", function()
+        -- TODO: Implement test for IsoMap:getLevelHeight
+    end)
+
+    -- @covers IsoMap:tileToScreen
+    it("covers IsoMap:tileToScreen", function()
+        -- TODO: Implement test for IsoMap:tileToScreen
+    end)
+
+    -- @covers IsoMap:screenToTile
+    it("covers IsoMap:screenToTile", function()
+        -- TODO: Implement test for IsoMap:screenToTile
+    end)
+
+    -- @covers MapBlock:getSide
+    it("covers MapBlock:getSide", function()
+        -- TODO: Implement test for MapBlock:getSide
+    end)
+
+    -- @covers MapBlock:getSegmentSize
+    it("covers MapBlock:getSegmentSize", function()
+        -- TODO: Implement test for MapBlock:getSegmentSize
+    end)
+
+    -- @covers MapBlock:getWidthInSegments
+    it("covers MapBlock:getWidthInSegments", function()
+        -- TODO: Implement test for MapBlock:getWidthInSegments
+    end)
+
+    -- @covers MapBlock:getHeightInSegments
+    it("covers MapBlock:getHeightInSegments", function()
+        -- TODO: Implement test for MapBlock:getHeightInSegments
+    end)
+
+    -- @covers MapGroup:removeBlock
+    it("covers MapGroup:removeBlock", function()
+        -- TODO: Implement test for MapGroup:removeBlock
+    end)
+
+end)

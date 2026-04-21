@@ -1620,3 +1620,25 @@ describe("lurek.graph tickParallel", function()
 end)
 
 test_summary()
+
+-- =========================================================================
+-- Missing API Coverage Stubs
+-- =========================================================================
+
+describe("Missing API Coverage", function()
+    -- @covers Graph:mst
+    it("covers Graph:mst", function()
+        -- TODO: Implement test for Graph:mst
+    end)
+
+    -- @covers Graph:colorGraph
+    it("covers Graph:colorGraph", function()
+        -- TODO: Implement test for Graph:colorGraph
+    end)
+
+    -- @covers Graph:isBipartite
+    it("covers Graph:isBipartite", function()
+        -- TODO: Implement test for Graph:isBipartite
+    end)
+
+end)

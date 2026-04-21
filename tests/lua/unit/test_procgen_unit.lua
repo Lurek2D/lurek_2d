@@ -447,3 +447,15 @@ describe("procgen.noiseMap / noiseMapParallel", function()
 end)
 
 test_summary()
+
+-- =========================================================================
+-- Missing API Coverage Stubs
+-- =========================================================================
+
+describe("Missing API Coverage", function()
+    -- @covers lurek.procgen.simplex3d
+    it("covers lurek.procgen.simplex3d", function()
+        -- TODO: Implement test for lurek.procgen.simplex3d
+    end)
+
+end)

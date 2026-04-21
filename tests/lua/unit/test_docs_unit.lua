@@ -335,3 +335,130 @@ describe("lurek.docs", function()
 end)
 
 test_summary()
+
+-- =========================================================================
+-- Missing API Coverage Stubs
+-- =========================================================================
+
+describe("Missing API Coverage", function()
+    -- @covers lurek.docs.loadToml
+    it("covers lurek.docs.loadToml", function()
+        -- TODO: Implement test for lurek.docs.loadToml
+    end)
+
+    -- @covers lurek.docs.loadAll
+    it("covers lurek.docs.loadAll", function()
+        -- TODO: Implement test for lurek.docs.loadAll
+    end)
+
+    -- @covers lurek.docs.checkStaleness
+    it("covers lurek.docs.checkStaleness", function()
+        -- TODO: Implement test for lurek.docs.checkStaleness
+    end)
+
+    -- @covers lurek.docs.qualityModule
+    it("covers lurek.docs.qualityModule", function()
+        -- TODO: Implement test for lurek.docs.qualityModule
+    end)
+
+    -- @covers lurek.docs.exportCompletions
+    it("covers lurek.docs.exportCompletions", function()
+        -- TODO: Implement test for lurek.docs.exportCompletions
+    end)
+
+    -- @covers lurek.docs.exportHover
+    it("covers lurek.docs.exportHover", function()
+        -- TODO: Implement test for lurek.docs.exportHover
+    end)
+
+    -- @covers lurek.docs.exportSignatures
+    it("covers lurek.docs.exportSignatures", function()
+        -- TODO: Implement test for lurek.docs.exportSignatures
+    end)
+
+    -- @covers lurek.docs.exportAll
+    it("covers lurek.docs.exportAll", function()
+        -- TODO: Implement test for lurek.docs.exportAll
+    end)
+
+    -- @covers lurek.docs.exportMarkdown
+    it("covers lurek.docs.exportMarkdown", function()
+        -- TODO: Implement test for lurek.docs.exportMarkdown
+    end)
+
+    -- @covers lurek.docs.exportCheatsheet
+    it("covers lurek.docs.exportCheatsheet", function()
+        -- TODO: Implement test for lurek.docs.exportCheatsheet
+    end)
+
+    -- @covers lurek.docs.reflectLive
+    it("covers lurek.docs.reflectLive", function()
+        -- TODO: Implement test for lurek.docs.reflectLive
+    end)
+
+    -- @covers lurek.docs.reflectTable
+    it("covers lurek.docs.reflectTable", function()
+        -- TODO: Implement test for lurek.docs.reflectTable
+    end)
+
+    -- @covers Schema:getFields
+    it("covers Schema:getFields", function()
+        -- TODO: Implement test for Schema:getFields
+    end)
+
+    -- @covers DocEntry:getQualifiedName
+    it("covers DocEntry:getQualifiedName", function()
+        -- TODO: Implement test for DocEntry:getQualifiedName
+    end)
+
+    -- @covers DocEntry:getKind
+    it("covers DocEntry:getKind", function()
+        -- TODO: Implement test for DocEntry:getKind
+    end)
+
+    -- @covers DocEntry:getExample
+    it("covers DocEntry:getExample", function()
+        -- TODO: Implement test for DocEntry:getExample
+    end)
+
+    -- @covers DocEntry:getSince
+    it("covers DocEntry:getSince", function()
+        -- TODO: Implement test for DocEntry:getSince
+    end)
+
+    -- @covers DocEntry:getDeprecated
+    it("covers DocEntry:getDeprecated", function()
+        -- TODO: Implement test for DocEntry:getDeprecated
+    end)
+
+    -- @covers ApiCatalog:getTypeMethods
+    it("covers ApiCatalog:getTypeMethods", function()
+        -- TODO: Implement test for ApiCatalog:getTypeMethods
+    end)
+
+    -- @covers ValidationReport:getMissing
+    it("covers ValidationReport:getMissing", function()
+        -- TODO: Implement test for ValidationReport:getMissing
+    end)
+
+    -- @covers ValidationReport:getPhantom
+    it("covers ValidationReport:getPhantom", function()
+        -- TODO: Implement test for ValidationReport:getPhantom
+    end)
+
+    -- @covers ValidationReport:getIncomplete
+    it("covers ValidationReport:getIncomplete", function()
+        -- TODO: Implement test for ValidationReport:getIncomplete
+    end)
+
+    -- @covers ValidationReport:phantomCount
+    it("covers ValidationReport:phantomCount", function()
+        -- TODO: Implement test for ValidationReport:phantomCount
+    end)
+
+    -- @covers ValidationReport:incompleteCount
+    it("covers ValidationReport:incompleteCount", function()
+        -- TODO: Implement test for ValidationReport:incompleteCount
+    end)
+
+end)

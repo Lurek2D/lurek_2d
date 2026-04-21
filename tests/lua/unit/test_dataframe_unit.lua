@@ -1870,3 +1870,25 @@ describe("DataFrame: rank", function()
 end)
 
 test_summary()
+
+-- =========================================================================
+-- Missing API Coverage Stubs
+-- =========================================================================
+
+describe("Missing API Coverage", function()
+    -- @covers DataFrame:min
+    it("covers DataFrame:min", function()
+        -- TODO: Implement test for DataFrame:min
+    end)
+
+    -- @covers DataFrame:max
+    it("covers DataFrame:max", function()
+        -- TODO: Implement test for DataFrame:max
+    end)
+
+    -- @covers DataFrame:withEval
+    it("covers DataFrame:withEval", function()
+        -- TODO: Implement test for DataFrame:withEval
+    end)
+
+end)

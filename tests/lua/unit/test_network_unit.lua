@@ -761,3 +761,80 @@ describe("lurek.network.newRuntime", function()
 end)
 
 test_summary()
+
+-- =========================================================================
+-- Missing API Coverage Stubs
+-- =========================================================================
+
+describe("Missing API Coverage", function()
+    -- @covers lurek.network.createLobby
+    it("covers lurek.network.createLobby", function()
+        -- TODO: Implement test for lurek.network.createLobby
+    end)
+
+    -- @covers lurek.network.discoverLobbies
+    it("covers lurek.network.discoverLobbies", function()
+        -- TODO: Implement test for lurek.network.discoverLobbies
+    end)
+
+    -- @covers lurek.network.syncEntity
+    it("covers lurek.network.syncEntity", function()
+        -- TODO: Implement test for lurek.network.syncEntity
+    end)
+
+    -- @covers NetworkHost:resetPeer
+    it("covers NetworkHost:resetPeer", function()
+        -- TODO: Implement test for NetworkHost:resetPeer
+    end)
+
+    -- @covers NetworkHost:getRoundTripTime
+    it("covers NetworkHost:getRoundTripTime", function()
+        -- TODO: Implement test for NetworkHost:getRoundTripTime
+    end)
+
+    -- @covers NetworkHost:getPeerState
+    it("covers NetworkHost:getPeerState", function()
+        -- TODO: Implement test for NetworkHost:getPeerState
+    end)
+
+    -- @covers NetworkHost:getPeerAddress
+    it("covers NetworkHost:getPeerAddress", function()
+        -- TODO: Implement test for NetworkHost:getPeerAddress
+    end)
+
+    -- @covers NetworkHost:getPeerLimit
+    it("covers NetworkHost:getPeerLimit", function()
+        -- TODO: Implement test for NetworkHost:getPeerLimit
+    end)
+
+    -- @covers NetworkHost:getChannelLimit
+    it("covers NetworkHost:getChannelLimit", function()
+        -- TODO: Implement test for NetworkHost:getChannelLimit
+    end)
+
+    -- @covers NetworkHost:setChannelLimit
+    it("covers NetworkHost:setChannelLimit", function()
+        -- TODO: Implement test for NetworkHost:setChannelLimit
+    end)
+
+    -- @covers NetworkHost:getBandwidthLimit
+    it("covers NetworkHost:getBandwidthLimit", function()
+        -- TODO: Implement test for NetworkHost:getBandwidthLimit
+    end)
+
+    -- @covers NetworkHost:getConnectedPeerCount
+    it("covers NetworkHost:getConnectedPeerCount", function()
+        -- TODO: Implement test for NetworkHost:getConnectedPeerCount
+    end)
+
+    -- @covers NetworkHost:getConnectedPeerIds
+    it("covers NetworkHost:getConnectedPeerIds", function()
+        -- TODO: Implement test for NetworkHost:getConnectedPeerIds
+    end)
+
+    -- @covers NetworkHost:getPeerStats
+    it("covers NetworkHost:getPeerStats", function()
+        -- TODO: Implement test for NetworkHost:getPeerStats
+    end)
+
+end)

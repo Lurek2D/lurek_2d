@@ -530,3 +530,50 @@ describe("camera effects — breathing", function()
 end)
 
 test_summary()
+
+-- =========================================================================
+-- Missing API Coverage Stubs
+-- =========================================================================
+
+describe("Missing API Coverage", function()
+    -- @covers Camera2D:stopPath
+    it("covers Camera2D:stopPath", function()
+        -- TODO: Implement test for Camera2D:stopPath
+    end)
+
+    -- @covers Camera2D:updatePath
+    it("covers Camera2D:updatePath", function()
+        -- TODO: Implement test for Camera2D:updatePath
+    end)
+
+    -- @covers Camera2D:pathProgress
+    it("covers Camera2D:pathProgress", function()
+        -- TODO: Implement test for Camera2D:pathProgress
+    end)
+
+    -- @covers Camera2D:zoomTo
+    it("covers Camera2D:zoomTo", function()
+        -- TODO: Implement test for Camera2D:zoomTo
+    end)
+
+    -- @covers Camera2D:stopZoom
+    it("covers Camera2D:stopZoom", function()
+        -- TODO: Implement test for Camera2D:stopZoom
+    end)
+
+    -- @covers Camera2D:updateZoom
+    it("covers Camera2D:updateZoom", function()
+        -- TODO: Implement test for Camera2D:updateZoom
+    end)
+
+    -- @covers Camera2D:getParallaxFactor
+    it("covers Camera2D:getParallaxFactor", function()
+        -- TODO: Implement test for Camera2D:getParallaxFactor
+    end)
+
+    -- @covers Camera2D:clearParallaxFactors
+    it("covers Camera2D:clearParallaxFactors", function()
+        -- TODO: Implement test for Camera2D:clearParallaxFactors
+    end)
+
+end)
