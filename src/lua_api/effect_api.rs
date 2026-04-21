@@ -1763,8 +1763,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         lua.create_function(move |_, ()| Ok(*sed.borrow()))?,
     )?;
 
-    luna.set("overlay", tbl.clone())?;
-    luna.set("postfx", tbl)?;
+    luna.set("effect", tbl)?;
 
     Ok(())
 }

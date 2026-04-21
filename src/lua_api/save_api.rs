@@ -611,6 +611,6 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         lua.create_function(move |lua, ()| lua.create_userdata(LuaSaveManager::new(s.clone())))?,
     )?;
 
-    luna.set("savegame", tbl)?;
+    luna.set("save", tbl)?;
     Ok(())
 }

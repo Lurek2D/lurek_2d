@@ -520,7 +520,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
             lua.create_userdata(LuaProvinceGrid { inner: grid })
         })?,
     )?;
-    luna.set("img", tbl)?;
+    luna.set("image", tbl)?;
     Ok(())
 }
 

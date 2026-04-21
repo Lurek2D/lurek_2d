@@ -184,6 +184,10 @@ impl LuaUserData for LuaInputRecording {
 /// @param state : Rc<RefCell<SharedState>>
 ///
 pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
+    // lurek.input — parent table that nests keyboard, mouse, gamepad, touch
+    // plus action-mapping and recorder APIs.
+    let input_tbl = lua.create_table()?;
+
     // ── lurek.input.keyboard ─────────────────────────────────────────────────────────
 
     let keyboard = lua.create_table()?;
@@ -286,7 +290,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         })?,
     )?;
 
-    luna.set("keyboard", keyboard)?;
+    input_tbl.set("keyboard", keyboard)?;
 
     // ── lurek.input.mouse ────────────────────────────────────────────────────────────
 
@@ -519,7 +523,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         lua.create_function(move |_, ()| Ok(s.borrow().mouse.get_scroll()))?,
     )?;
 
-    luna.set("mouse", mouse)?;
+    input_tbl.set("mouse", mouse)?;
 
     // ── lurek.input.gamepad ──────────────────────────────────────────────────────────
 
@@ -835,7 +839,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         })?,
     )?;
 
-    luna.set("gamepad", gamepad)?;
+    input_tbl.set("gamepad", gamepad)?;
 
     // ── lurek.input.touch ────────────────────────────────────────────────────────────
 
@@ -898,12 +902,11 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         lua.create_function(move |_, ()| Ok(s.borrow().touch.get_touch_count()))?,
     )?;
 
-    luna.set("touch", touch)?;
+    input_tbl.set("touch", touch)?;
 
     // ─────────────────────────────────────────────────────────────────────────
     // lurek.input  — Action-mapping layer on top of keyboard/mouse/gamepad state
     // ─────────────────────────────────────────────────────────────────────────
-    let input_tbl = lua.create_table()?;
 
     // action_map: action_name -> list of key/button names
     let action_map: Rc<RefCell<HashMap<String, Vec<String>>>> =

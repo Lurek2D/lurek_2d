@@ -765,6 +765,6 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
 
-    luna.set("entity", tbl)?;
+    luna.set("ecs", tbl)?;
     Ok(())
 }

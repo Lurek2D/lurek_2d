@@ -386,7 +386,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         })?,
     )?;
 
-    luna.set("simulator", tbl)?;
+    luna.set("automation", tbl)?;
     Ok(())
 }
 

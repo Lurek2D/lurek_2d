@@ -4834,6 +4834,6 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         })?,
     )?;
 
-    luna.set("graphic", graphics)?;
+    luna.set("render", graphics)?;
     Ok(())
 }

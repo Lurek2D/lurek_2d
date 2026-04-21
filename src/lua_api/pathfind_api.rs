@@ -1425,6 +1425,6 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
 
-    luna.set("pathfinding", tbl)?;
+    luna.set("pathfind", tbl)?;
     Ok(())
 }

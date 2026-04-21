@@ -760,6 +760,6 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     let wait_fn: LuaValue = tbl.get("waitSeconds")?;
     tbl.set("delay", wait_fn)?;
 
-    luna.set("time", tbl)?;
+    luna.set("timer", tbl)?;
     Ok(())
 }

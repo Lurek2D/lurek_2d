@@ -736,6 +736,6 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         })?,
     )?;
 
-    luna.set("fs", tbl)?;
+    luna.set("filesystem", tbl)?;
     Ok(())
 }

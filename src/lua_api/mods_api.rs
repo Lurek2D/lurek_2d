@@ -725,6 +725,6 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
 
-    luna.set("modding", tbl)?;
+    luna.set("mods", tbl)?;
     Ok(())
 }

@@ -628,6 +628,6 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     )?;
 
     /// System.
-    luna.set("platform", system)?;
+    luna.set("runtime", system)?;
     Ok(())
 }
