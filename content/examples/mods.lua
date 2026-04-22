@@ -1,23 +1,12 @@
 -- content/examples/mods.lua
--- Scaffolded coverage of the lurek.mods API (40 items).
+-- Hand-written coverage of the lurek.mods API (40 items).
 --
--- Every --@api-stub: block below is a SCAFFOLD. The body must be
--- replaced by hand with a 3-6 line real usage snippet showing how to
--- call the API in real game context, written by reading:
---   * src/lua_api/mods_api.rs   (Lua binding, arg types, return shape)
---   * src/mods/                 (semantics, side effects)
---   * docs/specs/mods.md        (canonical reference)
---
--- Snippet rules (love2d-wiki style):
---   * NO `return` at top-level (breaks the file).
---   * NO `pcall` defensive wrappers, NO `if false then`.
---   * Wrap GPU / audio / physics calls inside
---     `function lurek.render() ... end` or
---     `function lurek.update(dt) ... end` callbacks so the file loads.
---   * Use REAL values: paths like "sfx/jump.ogg", keys like "space",
---     colours like {1, 0.5, 0, 1}.
---   * Keep the two `--` comment lines: 1) what the API does (use the
---     existing description), 2) one line of practical advice.
+-- The lurek.mods namespace builds and arranges Mod metadata records
+-- (id, version, dependencies, priority, capabilities, config schema,
+-- hooks) and exposes a ModManager that resolves load order, validates
+-- dependency graphs, and tracks a hot-reload queue. Everything below
+-- runs against in-memory metadata; no Lua chunks are executed by the
+-- mod loader itself.
 --
 -- Run: cargo run -- content/examples/mods.lua
 
@@ -25,325 +14,418 @@
 
 --@api-stub: lurek.mods.newMod
 -- Creates a new Mod from an info table with at least an `id` field.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/mods_api.rs and docs/specs/mods.md).
-do  -- TODO: lurek.mods.newMod
-  local _todo = "TODO: write a real lurek.mods.newMod usage example"
-  print(_todo)
+-- Build the Mod once at load time and stash it on a registry table; reuse the same userdata when registering with a manager.
+do  -- lurek.mods.newMod
+  local hud_mod = lurek.mods.newMod({
+    id = "core.hud",
+    name = "Core HUD",
+    version = "1.2.0",
+    author = "studio",
+    priority = 10,
+    dependencies = {"core.input"},
+  })
+  lurek.log.info("built mod " .. hud_mod:getId() .. " v" .. hud_mod:getVersion(), "mods")
 end
 
 --@api-stub: lurek.mods.newModManager
 -- Creates a new empty ModManager.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/mods_api.rs and docs/specs/mods.md).
-do  -- TODO: lurek.mods.newModManager
-  local _todo = "TODO: write a real lurek.mods.newModManager usage example"
-  print(_todo)
+-- Create exactly one ModManager per game and keep it on a module-level local so every system shares the same registry.
+do  -- lurek.mods.newModManager
+  local manager = lurek.mods.newModManager()
+  lurek.log.info("manager initialised, " .. manager:getModCount() .. " mods", "mods")
 end
 
 --@api-stub: lurek.mods.checkApiVersion
 -- Checks whether a mod's required `api_version` is compatible with the given `host_version`.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/mods_api.rs and docs/specs/mods.md).
-do  -- TODO: lurek.mods.checkApiVersion
-  local _todo = "TODO: write a real lurek.mods.checkApiVersion usage example"
-  print(_todo)
+-- Call before registerMod when loading third-party content; reject the mod when ok is false and surface the message to the user.
+do  -- lurek.mods.checkApiVersion
+  local probe = lurek.mods.newMod({id = "fan.skins", api_version = "1.4.0"})
+  local ok, msg = lurek.mods.checkApiVersion(probe, "1.6.2")
+  if not ok then
+    lurek.log.warn("incompatible mod: " .. (msg or "unknown"), "mods")
+  end
 end
 
 -- ── Mod methods ──
 
 --@api-stub: Mod:getId
 -- Returns the unique mod identifier.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/mods_api.rs and docs/specs/mods.md).
-do  -- TODO: Mod:getId
-  local _todo = "TODO: write a real Mod:getId usage example"
-  print(_todo)
+-- Use the id as the key when storing per-mod state in your own tables; it is guaranteed stable across restarts.
+do  -- Mod:getId
+  local m = lurek.mods.newMod({id = "core.audio"})
+  local registry = {}
+  registry[m:getId()] = {volume = 0.8}
 end
 
 --@api-stub: Mod:getName
 -- Returns the localized or human-readable display name of the mod.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/mods_api.rs and docs/specs/mods.md).
-do  -- TODO: Mod:getName
-  local _todo = "TODO: write a real Mod:getName usage example"
-  print(_todo)
+-- Show getName() in the mod-list UI; falls back to an empty string when the manifest omits the field.
+do  -- Mod:getName
+  local m = lurek.mods.newMod({id = "ui.theme.dark", name = "Dark Theme"})
+  local label = m:getName()
+  if label == "" then label = m:getId() end
+  lurek.log.info("listing: " .. label, "ui")
 end
 
 --@api-stub: Mod:getVersion
 -- Returns the version string.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/mods_api.rs and docs/specs/mods.md).
-do  -- TODO: Mod:getVersion
-  local _todo = "TODO: write a real Mod:getVersion usage example"
-  print(_todo)
+-- Compare against an expected version string when validating save-file compatibility before loading mod-owned data.
+do  -- Mod:getVersion
+  local m = lurek.mods.newMod({id = "core.physics", version = "2.1.0"})
+  if m:getVersion() ~= "2.1.0" then
+    lurek.log.warn("save was written by " .. m:getVersion(), "save")
+  end
 end
 
 --@api-stub: Mod:getAuthor
 -- Returns the author name string from this mod's metadata manifest.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/mods_api.rs and docs/specs/mods.md).
-do  -- TODO: Mod:getAuthor
-  local _todo = "TODO: write a real Mod:getAuthor usage example"
-  print(_todo)
+-- Display in credits and "report bug" dialogs so players know who to contact about a misbehaving mod.
+do  -- Mod:getAuthor
+  local m = lurek.mods.newMod({id = "fan.maps", author = "alice"})
+  local credit = m:getAuthor()
+  lurek.log.info("map pack by " .. credit, "credits")
 end
 
 --@api-stub: Mod:getDescription
 -- Returns the mod description.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/mods_api.rs and docs/specs/mods.md).
-do  -- TODO: Mod:getDescription
-  local _todo = "TODO: write a real Mod:getDescription usage example"
-  print(_todo)
+-- Render as a tooltip or detail-panel paragraph; treat as untrusted user text and avoid embedding in HTML/markup directly.
+do  -- Mod:getDescription
+  local m = lurek.mods.newMod({id = "ui.minimap", description = "Adds a corner minimap with fog-of-war."})
+  local detail = m:getDescription()
+  lurek.log.info("about: " .. detail, "ui")
 end
 
 --@api-stub: Mod:getDependencies
 -- Returns the list of required mod IDs.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/mods_api.rs and docs/specs/mods.md).
-do  -- TODO: Mod:getDependencies
-  local _todo = "TODO: write a real Mod:getDependencies usage example"
-  print(_todo)
+-- Iterate the result to ensure every dependency is registered before activating this mod's hooks.
+do  -- Mod:getDependencies
+  local m = lurek.mods.newMod({id = "fan.weapons", dependencies = {"core.combat", "core.audio"}})
+  for _, dep in ipairs(m:getDependencies()) do
+    lurek.log.debug("requires " .. dep, "mods")
+  end
 end
 
 --@api-stub: Mod:getPriority
 -- Returns the load-order priority.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/mods_api.rs and docs/specs/mods.md).
-do  -- TODO: Mod:getPriority
-  local _todo = "TODO: write a real Mod:getPriority usage example"
-  print(_todo)
+-- Higher priority mods load first; use it to sort a mod-list UI so foundational mods appear at the top.
+do  -- Mod:getPriority
+  local a = lurek.mods.newMod({id = "core.base", priority = 100})
+  local b = lurek.mods.newMod({id = "fan.tweak", priority = 5})
+  if a:getPriority() > b:getPriority() then
+    lurek.log.info(a:getId() .. " loads before " .. b:getId(), "mods")
+  end
 end
 
 --@api-stub: Mod:isEnabled
 -- Returns whether the mod is enabled.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/mods_api.rs and docs/specs/mods.md).
-do  -- TODO: Mod:isEnabled
-  local _todo = "TODO: write a real Mod:isEnabled usage example"
-  print(_todo)
+-- Skip rendering and hook dispatch for disabled mods; default is true unless the manifest explicitly disables it.
+do  -- Mod:isEnabled
+  local m = lurek.mods.newMod({id = "fan.cheats"})
+  if m:isEnabled() then
+    lurek.log.debug(m:getId() .. " is active", "mods")
+  end
 end
 
 --@api-stub: Mod:setEnabled
 -- Enables or disables this mod; disabled mods are skipped during loading.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/mods_api.rs and docs/specs/mods.md).
-do  -- TODO: Mod:setEnabled
-  local _todo = "TODO: write a real Mod:setEnabled usage example"
-  print(_todo)
+-- Call when the user toggles a checkbox in the mod-manager UI; persist the result so the choice survives restarts.
+do  -- Mod:setEnabled
+  local m = lurek.mods.newMod({id = "fan.skins"})
+  local user_choice = false
+  m:setEnabled(user_choice)
+  lurek.log.info(m:getId() .. " enabled=" .. tostring(m:isEnabled()), "mods")
 end
 
 --@api-stub: Mod:isLoaded
 -- Returns whether the mod has been loaded.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/mods_api.rs and docs/specs/mods.md).
-do  -- TODO: Mod:isLoaded
-  local _todo = "TODO: write a real Mod:isLoaded usage example"
-  print(_todo)
+-- Use to short-circuit re-registration logic and to drive a "loaded/unloaded" badge in the mod list.
+do  -- Mod:isLoaded
+  local m = lurek.mods.newMod({id = "core.input"})
+  if not m:isLoaded() then
+    lurek.log.debug("pending: " .. m:getId(), "mods")
+  end
 end
 
 --@api-stub: Mod:getApiVersion
 -- Returns the required engine API version string, or nil if not set.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/mods_api.rs and docs/specs/mods.md).
-do  -- TODO: Mod:getApiVersion
-  local _todo = "TODO: write a real Mod:getApiVersion usage example"
-  print(_todo)
+-- Branch on nil to treat absent api_version as "any version"; otherwise gate loading on a semver comparison.
+do  -- Mod:getApiVersion
+  local m = lurek.mods.newMod({id = "fan.maps", api_version = "1.5.0"})
+  local req = m:getApiVersion()
+  if req then
+    lurek.log.info(m:getId() .. " requires engine >= " .. req, "mods")
+  end
 end
 
 --@api-stub: Mod:setApiVersion
 -- Sets the required engine API version string.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/mods_api.rs and docs/specs/mods.md).
-do  -- TODO: Mod:setApiVersion
-  local _todo = "TODO: write a real Mod:setApiVersion usage example"
-  print(_todo)
+-- Use during programmatic mod construction (tests, scripted manifests) to declare the engine surface the mod was authored against.
+do  -- Mod:setApiVersion
+  local m = lurek.mods.newMod({id = "test.fixture"})
+  m:setApiVersion("1.6.0")
+  lurek.log.debug("fixture api_version=" .. m:getApiVersion(), "test")
 end
 
 --@api-stub: Mod:getCapabilities
 -- Returns an array of declared capability flags.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/mods_api.rs and docs/specs/mods.md).
-do  -- TODO: Mod:getCapabilities
-  local _todo = "TODO: write a real Mod:getCapabilities usage example"
-  print(_todo)
+-- Treat capabilities as a permissions list; check membership before letting a mod register network or filesystem hooks.
+do  -- Mod:getCapabilities
+  local m = lurek.mods.newMod({id = "fan.online", capabilities = {"network", "filesystem"}})
+  for _, cap in ipairs(m:getCapabilities()) do
+    lurek.log.debug(m:getId() .. " uses " .. cap, "mods")
+  end
 end
 
 --@api-stub: Mod:setCapabilities
 -- Replaces the capability list with the given array of strings.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/mods_api.rs and docs/specs/mods.md).
-do  -- TODO: Mod:setCapabilities
-  local _todo = "TODO: write a real Mod:setCapabilities usage example"
-  print(_todo)
+-- Replaces the entire list — read getCapabilities() first if you only want to add one entry.
+do  -- Mod:setCapabilities
+  local m = lurek.mods.newMod({id = "fan.tools"})
+  local caps = m:getCapabilities()
+  caps[#caps + 1] = "filesystem"
+  m:setCapabilities(caps)
 end
 
 --@api-stub: Mod:getConfigSchema
 -- Returns the config schema as an array of `{key, type, default}` tables.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/mods_api.rs and docs/specs/mods.md).
-do  -- TODO: Mod:getConfigSchema
-  local _todo = "TODO: write a real Mod:getConfigSchema usage example"
-  print(_todo)
+-- Walk the schema to generate a settings UI dynamically — one row per entry with the right widget for the type.
+do  -- Mod:getConfigSchema
+  local m = lurek.mods.newMod({id = "ui.theme", config_schema = {
+    {key = "accent", type = "string", default = "#ff8800"},
+  }})
+  for _, entry in ipairs(m:getConfigSchema()) do
+    lurek.log.debug("setting " .. entry.key .. " (" .. entry.type .. ")", "ui")
+  end
 end
 
 --@api-stub: Mod:setConfigSchema
 -- Replaces the config schema with the given array of `{key, type, default}` tables.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/mods_api.rs and docs/specs/mods.md).
-do  -- TODO: Mod:setConfigSchema
-  local _todo = "TODO: write a real Mod:setConfigSchema usage example"
-  print(_todo)
+-- Use when the schema is computed at runtime (e.g. derived from a TOML manifest) instead of supplied to newMod.
+do  -- Mod:setConfigSchema
+  local m = lurek.mods.newMod({id = "fan.audio"})
+  m:setConfigSchema({
+    {key = "music_vol", type = "number", default = "0.8"},
+    {key = "sfx_vol",   type = "number", default = "1.0"},
+  })
 end
 
 --@api-stub: Mod:getHook
 -- Returns the hook function for the given name, or nil.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/mods_api.rs and docs/specs/mods.md).
-do  -- TODO: Mod:getHook
-  local _todo = "TODO: write a real Mod:getHook usage example"
-  print(_todo)
+-- Returns nil when the hook is not registered, so always check before invoking — calling nil panics the script.
+do  -- Mod:getHook
+  local m = lurek.mods.newMod({id = "fan.combat"})
+  m:setHook("on_damage", function(amount) return amount * 2 end)
+  local fn = m:getHook("on_damage")
+  if fn then lurek.log.debug("doubled: " .. fn(10), "combat") end
 end
 
 --@api-stub: Mod:hasHook
 -- Returns whether a hook with the given name exists.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/mods_api.rs and docs/specs/mods.md).
-do  -- TODO: Mod:hasHook
-  local _todo = "TODO: write a real Mod:hasHook usage example"
-  print(_todo)
+-- Cheaper than getHook() when you only need to know whether to dispatch; avoids the registry-value clone.
+do  -- Mod:hasHook
+  local m = lurek.mods.newMod({id = "fan.input"})
+  m:setHook("on_jump", function() end)
+  if m:hasHook("on_jump") then
+    lurek.log.debug(m:getId() .. " handles jump", "input")
+  end
 end
 
 --@api-stub: Mod:getHookNames
 -- Returns an array of registered hook names.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/mods_api.rs and docs/specs/mods.md).
-do  -- TODO: Mod:getHookNames
-  local _todo = "TODO: write a real Mod:getHookNames usage example"
-  print(_todo)
+-- Iterate to dispatch every named callback during a global event, or to print a debug summary of a mod's surface.
+do  -- Mod:getHookNames
+  local m = lurek.mods.newMod({id = "fan.events"})
+  m:setHook("on_load", function() end)
+  m:setHook("on_quit", function() end)
+  for _, name in ipairs(m:getHookNames()) do
+    lurek.log.debug(m:getId() .. " hook: " .. name, "mods")
+  end
 end
 
 --@api-stub: Mod:setConfig
 -- Stores an arbitrary config value for this mod.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/mods_api.rs and docs/specs/mods.md).
-do  -- TODO: Mod:setConfig
-  local _todo = "TODO: write a real Mod:setConfig usage example"
-  print(_todo)
+-- Persist the user's runtime choices (a table) here so the mod itself owns the state — no global config table needed.
+do  -- Mod:setConfig
+  local m = lurek.mods.newMod({id = "fan.audio"})
+  m:setConfig({music_vol = 0.6, sfx_vol = 1.0, mute = false})
 end
 
 --@api-stub: Mod:getConfig
 -- Returns the stored config value, or nil.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/mods_api.rs and docs/specs/mods.md).
-do  -- TODO: Mod:getConfig
-  local _todo = "TODO: write a real Mod:getConfig usage example"
-  print(_todo)
+-- Returns nil before setConfig has been called; default to a safe fallback rather than indexing nil.
+do  -- Mod:getConfig
+  local m = lurek.mods.newMod({id = "fan.audio"})
+  m:setConfig({music_vol = 0.5})
+  local cfg = m:getConfig() or {music_vol = 1.0}
+  lurek.log.debug("music vol=" .. cfg.music_vol, "audio")
 end
 
 --@api-stub: Mod:releaseRefs
 -- Releases all hook and config registry references.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/mods_api.rs and docs/specs/mods.md).
-do  -- TODO: Mod:releaseRefs
-  local _todo = "TODO: write a real Mod:releaseRefs usage example"
-  print(_todo)
+-- Call before discarding a mod userdata to free its Lua-registry slots; otherwise the GC keeps the closures alive.
+do  -- Mod:releaseRefs
+  local m = lurek.mods.newMod({id = "scratch.tmp"})
+  m:setHook("on_tick", function() end)
+  m:setConfig({foo = 1})
+  m:releaseRefs()
 end
 
 -- ── ModManager methods ──
 
 --@api-stub: ModManager:registerMod
 -- Registers a mod from its Mod userdata.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/mods_api.rs and docs/specs/mods.md).
-do  -- TODO: ModManager:registerMod
-  local _todo = "TODO: write a real ModManager:registerMod usage example"
-  print(_todo)
+-- The manager copies the underlying ModInfo, so further edits to the Mod userdata won't show up — register last.
+do  -- ModManager:registerMod
+  local mgr = lurek.mods.newModManager()
+  local m = lurek.mods.newMod({id = "core.hud", priority = 50})
+  mgr:registerMod(m)
+  lurek.log.info("registered " .. mgr:getModCount() .. " mods", "mods")
 end
 
 --@api-stub: ModManager:unregisterMod
 -- Removes a mod by ID and returns whether it was found.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/mods_api.rs and docs/specs/mods.md).
-do  -- TODO: ModManager:unregisterMod
-  local _todo = "TODO: write a real ModManager:unregisterMod usage example"
-  print(_todo)
+-- Returns false when the id was not registered; useful for idempotent cleanup in a "disable mod" flow.
+do  -- ModManager:unregisterMod
+  local mgr = lurek.mods.newModManager()
+  mgr:registerMod(lurek.mods.newMod({id = "fan.skins"}))
+  local removed = mgr:unregisterMod("fan.skins")
+  lurek.log.info("removed=" .. tostring(removed), "mods")
 end
 
 --@api-stub: ModManager:hasMod
 -- Returns whether a mod with the given ID is registered.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/mods_api.rs and docs/specs/mods.md).
-do  -- TODO: ModManager:hasMod
-  local _todo = "TODO: write a real ModManager:hasMod usage example"
-  print(_todo)
+-- Use to gate dependency-aware features ("if combat mod present, show advanced HUD").
+do  -- ModManager:hasMod
+  local mgr = lurek.mods.newModManager()
+  mgr:registerMod(lurek.mods.newMod({id = "core.combat"}))
+  if mgr:hasMod("core.combat") then
+    lurek.log.debug("combat available", "ui")
+  end
 end
 
 --@api-stub: ModManager:getModCount
 -- Returns the number of registered mods.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/mods_api.rs and docs/specs/mods.md).
-do  -- TODO: ModManager:getModCount
-  local _todo = "TODO: write a real ModManager:getModCount usage example"
-  print(_todo)
+-- Useful as a quick "mods detected: N" line in the title screen or a load-time summary log.
+do  -- ModManager:getModCount
+  local mgr = lurek.mods.newModManager()
+  mgr:registerMod(lurek.mods.newMod({id = "a"}))
+  mgr:registerMod(lurek.mods.newMod({id = "b"}))
+  lurek.log.info("loaded " .. mgr:getModCount() .. " mods", "boot")
 end
 
 --@api-stub: ModManager:getAllMods
 -- Returns an array of info tables for all registered mods.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/mods_api.rs and docs/specs/mods.md).
-do  -- TODO: ModManager:getAllMods
-  local _todo = "TODO: write a real ModManager:getAllMods usage example"
-  print(_todo)
+-- Returns plain Lua tables (snapshots), not live Mod userdata; safe to filter, sort, and serialise for UI rows.
+do  -- ModManager:getAllMods
+  local mgr = lurek.mods.newModManager()
+  mgr:registerMod(lurek.mods.newMod({id = "core.hud", name = "HUD"}))
+  for _, info in ipairs(mgr:getAllMods()) do
+    lurek.log.debug(info.id .. " priority=" .. info.priority, "mods")
+  end
 end
 
 --@api-stub: ModManager:getLoadOrder
 -- Returns an array of info tables in effective load order.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/mods_api.rs and docs/specs/mods.md).
-do  -- TODO: ModManager:getLoadOrder
-  local _todo = "TODO: write a real ModManager:getLoadOrder usage example"
-  print(_todo)
+-- Iterate this (not getAllMods) when running per-mod init code, so dependency order is respected.
+do  -- ModManager:getLoadOrder
+  local mgr = lurek.mods.newModManager()
+  mgr:registerMod(lurek.mods.newMod({id = "core.base", priority = 100}))
+  mgr:registerMod(lurek.mods.newMod({id = "fan.ui",   priority = 10, dependencies = {"core.base"}}))
+  for i, info in ipairs(mgr:getLoadOrder()) do
+    lurek.log.info(i .. ": " .. info.id, "mods")
+  end
 end
 
 --@api-stub: ModManager:validateDependencies
 -- Returns an array of mod IDs with missing dependencies.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/mods_api.rs and docs/specs/mods.md).
-do  -- TODO: ModManager:validateDependencies
-  local _todo = "TODO: write a real ModManager:validateDependencies usage example"
-  print(_todo)
+-- An empty result means the graph is satisfied; a non-empty list should be surfaced to the user before launching the game.
+do  -- ModManager:validateDependencies
+  local mgr = lurek.mods.newModManager()
+  mgr:registerMod(lurek.mods.newMod({id = "fan.weapons", dependencies = {"core.combat"}}))
+  for _, broken_id in ipairs(mgr:validateDependencies()) do
+    lurek.log.error("missing deps for " .. broken_id, "mods")
+  end
 end
 
 --@api-stub: ModManager:hasCircularDependencies
 -- Returns whether any circular dependency cycles exist.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/mods_api.rs and docs/specs/mods.md).
-do  -- TODO: ModManager:hasCircularDependencies
-  local _todo = "TODO: write a real ModManager:hasCircularDependencies usage example"
-  print(_todo)
+-- Refuse to call getLoadOrder when this is true; the resulting order would be undefined.
+do  -- ModManager:hasCircularDependencies
+  local mgr = lurek.mods.newModManager()
+  mgr:registerMod(lurek.mods.newMod({id = "a", dependencies = {"b"}}))
+  mgr:registerMod(lurek.mods.newMod({id = "b", dependencies = {"a"}}))
+  if mgr:hasCircularDependencies() then
+    lurek.log.error("dependency cycle detected", "mods")
+  end
 end
 
 --@api-stub: ModManager:setLoadOrder
 -- Sets an explicit load order from an array of mod ID strings.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/mods_api.rs and docs/specs/mods.md).
-do  -- TODO: ModManager:setLoadOrder
-  local _todo = "TODO: write a real ModManager:setLoadOrder usage example"
-  print(_todo)
+-- Use to honour a user-saved order from a previous session; IDs not in the array fall back to priority sorting.
+do  -- ModManager:setLoadOrder
+  local mgr = lurek.mods.newModManager()
+  mgr:registerMod(lurek.mods.newMod({id = "core.base"}))
+  mgr:registerMod(lurek.mods.newMod({id = "fan.ui"}))
+  mgr:setLoadOrder({"core.base", "fan.ui"})
 end
 
 --@api-stub: ModManager:clearLoadOrder
 -- Clears the custom load order, reverting to priority-based sorting.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/mods_api.rs and docs/specs/mods.md).
-do  -- TODO: ModManager:clearLoadOrder
-  local _todo = "TODO: write a real ModManager:clearLoadOrder usage example"
-  print(_todo)
+-- Call when the user clicks "reset order" in the mod-manager UI to undo a manual reorder.
+do  -- ModManager:clearLoadOrder
+  local mgr = lurek.mods.newModManager()
+  mgr:setLoadOrder({"a", "b", "c"})
+  mgr:clearLoadOrder()
+  lurek.log.info("load order reset to priority", "mods")
 end
 
 --@api-stub: ModManager:scanFolder
 -- Scans a directory for mods with mod.toml and registers them.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/mods_api.rs and docs/specs/mods.md).
-do  -- TODO: ModManager:scanFolder
-  local _todo = "TODO: write a real ModManager:scanFolder usage example"
-  print(_todo)
+-- Returns info tables for everything it found and registered; pass an absolute or game-relative folder path.
+do  -- ModManager:scanFolder
+  local mgr = lurek.mods.newModManager()
+  local discovered = mgr:scanFolder("content/plugins")
+  lurek.log.info("auto-registered " .. #discovered .. " mods", "mods")
 end
 
 --@api-stub: ModManager:getModPath
 -- Returns the filesystem path of a registered mod, or nil.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/mods_api.rs and docs/specs/mods.md).
-do  -- TODO: ModManager:getModPath
-  local _todo = "TODO: write a real ModManager:getModPath usage example"
-  print(_todo)
+-- Returns nil for in-memory mods that were not loaded from disk; use to locate a mod's assets folder.
+do  -- ModManager:getModPath
+  local mgr = lurek.mods.newModManager()
+  mgr:registerMod(lurek.mods.newMod({id = "fan.skins"}))
+  local path = mgr:getModPath("fan.skins")
+  if path then lurek.log.debug("on-disk at " .. path, "mods") end
 end
 
 --@api-stub: ModManager:markForReload
 -- Marks a registered mod for hot-reload.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/mods_api.rs and docs/specs/mods.md).
-do  -- TODO: ModManager:markForReload
-  local _todo = "TODO: write a real ModManager:markForReload usage example"
-  print(_todo)
+-- Returns true when the mod was queued; false when the id is unknown. Watch for file changes and call this from a dev tool.
+do  -- ModManager:markForReload
+  local mgr = lurek.mods.newModManager()
+  mgr:registerMod(lurek.mods.newMod({id = "core.hud"}))
+  local queued = mgr:markForReload("core.hud")
+  lurek.log.debug("queued for reload=" .. tostring(queued), "mods")
 end
 
 --@api-stub: ModManager:getReloadQueue
 -- Returns the array of mod IDs pending hot-reload.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/mods_api.rs and docs/specs/mods.md).
-do  -- TODO: ModManager:getReloadQueue
-  local _todo = "TODO: write a real ModManager:getReloadQueue usage example"
-  print(_todo)
+-- Drain this in your dev-tool reload step, then call clearReloadQueue once the actual reloads are applied.
+do  -- ModManager:getReloadQueue
+  local mgr = lurek.mods.newModManager()
+  mgr:registerMod(lurek.mods.newMod({id = "ui.theme"}))
+  mgr:markForReload("ui.theme")
+  for _, id in ipairs(mgr:getReloadQueue()) do
+    lurek.log.info("reload pending: " .. id, "mods")
+  end
 end
 
 --@api-stub: ModManager:clearReloadQueue
 -- Clears the reload queue without reloading.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/mods_api.rs and docs/specs/mods.md).
-do  -- TODO: ModManager:clearReloadQueue
-  local _todo = "TODO: write a real ModManager:clearReloadQueue usage example"
-  print(_todo)
+-- Call after you've actually performed the reloads, or to abandon a queued batch when the user cancels.
+do  -- ModManager:clearReloadQueue
+  local mgr = lurek.mods.newModManager()
+  mgr:markForReload("core.hud")
+  mgr:clearReloadQueue()
+  lurek.log.debug("queue size=" .. #mgr:getReloadQueue(), "mods")
 end
-
