@@ -1,23 +1,10 @@
 -- content/examples/thread.lua
--- Scaffolded coverage of the lurek.thread API (37 items).
+-- Hand-written coverage of the lurek.thread API (37 items).
 --
--- Every --@api-stub: block below is a SCAFFOLD. The body must be
--- replaced by hand with a 3-6 line real usage snippet showing how to
--- call the API in real game context, written by reading:
---   * src/lua_api/thread_api.rs   (Lua binding, arg types, return shape)
---   * src/thread/                 (semantics, side effects)
---   * docs/specs/thread.md        (canonical reference)
---
--- Snippet rules (love2d-wiki style):
---   * NO `return` at top-level (breaks the file).
---   * NO `pcall` defensive wrappers, NO `if false then`.
---   * Wrap GPU / audio / physics calls inside
---     `function lurek.render() ... end` or
---     `function lurek.update(dt) ... end` callbacks so the file loads.
---   * Use REAL values: paths like "sfx/jump.ogg", keys like "space",
---     colours like {1, 0.5, 0, 1}.
---   * Keep the two `--` comment lines: 1) what the API does (use the
---     existing description), 2) one line of practical advice.
+-- Threads run in isolated Lua VMs and cannot share upvalues, so all
+-- cross-VM communication goes through Channels: pass a Lua source
+-- string to newThread/newPool/async, then push/pop work and results
+-- through named channels (lurek.thread.getChannel("queue_name")).
 --
 -- Run: cargo run -- content/examples/thread.lua
 
@@ -25,305 +12,392 @@
 
 --@api-stub: lurek.thread.newThread
 -- Creates a new background thread from a Lua code string.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/thread_api.rs and docs/specs/thread.md).
-do  -- TODO: lurek.thread.newThread
-  local _todo = "TODO: write a real lurek.thread.newThread usage example"
-  print(_todo)
+-- Pair with :start() to launch; the code string runs in a fresh VM with no access to main-thread state.
+do  -- lurek.thread.newThread
+  local worker = lurek.thread.newThread([[
+    local q = lurek.thread.getChannel("work_queue")
+    q:push("hello from worker")
+  ]])
+  worker:start()
 end
 
 --@api-stub: lurek.thread.newChannel
 -- Creates an unnamed thread-safe channel for inter-thread communication.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/thread_api.rs and docs/specs/thread.md).
-do  -- TODO: lurek.thread.newChannel
-  local _todo = "TODO: write a real lurek.thread.newChannel usage example"
-  print(_todo)
+-- Use unnamed channels when you want the channel scoped to a single thread group; pass it via :start() args.
+do  -- lurek.thread.newChannel
+  local ch = lurek.thread.newChannel()
+  ch:push({ event = "spawn", x = 100, y = 50 })
+  local msg = ch:pop()
+  lurek.log.info("event=" .. msg.event, "thread")
 end
 
 --@api-stub: lurek.thread.getChannel
 -- Gets or creates a named global channel shared across threads.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/thread_api.rs and docs/specs/thread.md).
-do  -- TODO: lurek.thread.getChannel
-  local _todo = "TODO: write a real lurek.thread.getChannel usage example"
-  print(_todo)
+-- Same name returns the same channel anywhere; this is how a worker VM finds the main thread's queue.
+do  -- lurek.thread.getChannel
+  local jobs = lurek.thread.getChannel("work_queue")
+  jobs:push({ task = "load_chunk", id = 42 })
+  jobs:push({ task = "load_chunk", id = 43 })
 end
 
 --@api-stub: lurek.thread.newPool
 -- Creates a thread pool of N workers all running the same Lua code.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/thread_api.rs and docs/specs/thread.md).
-do  -- TODO: lurek.thread.newPool
-  local _todo = "TODO: write a real lurek.thread.newPool usage example"
-  print(_todo)
+-- Workers pull from getChannel("__pool_input") and push to getChannel("__pool_output"); use pool:submit/:collect from main.
+do  -- lurek.thread.newPool
+  local pool = lurek.thread.newPool(4, [[
+    local inp = lurek.thread.getChannel("__pool_input")
+    local out = lurek.thread.getChannel("__pool_output")
+    while true do local n = inp:demand(); out:push(n * n) end
+  ]])
+  pool:submit(7)
 end
 
 --@api-stub: lurek.thread.async
 -- Starts a one-shot background computation and returns a Promise.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/thread_api.rs and docs/specs/thread.md).
-do  -- TODO: lurek.thread.async
-  local _todo = "TODO: write a real lurek.thread.async usage example"
-  print(_todo)
+-- Use for fire-and-forget jobs whose single result you'll poll for next frame; the worker pushes via "__promise_result".
+do  -- lurek.thread.async
+  local promise = lurek.thread.async([[
+    local total = 0
+    for i = 1, 1000000 do total = total + i end
+    lurek.thread.getChannel("__promise_result"):push(total)
+  ]])
+  lurek.log.info("checksum job dispatched", "thread")
 end
 
 -- ── ThreadHandle methods ──
 
 --@api-stub: ThreadHandle:type
 -- Returns the type name of this object.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/thread_api.rs and docs/specs/thread.md).
-do  -- TODO: ThreadHandle:type
-  local _todo = "TODO: write a real ThreadHandle:type usage example"
-  print(_todo)
+-- Useful for runtime polymorphism when a function might receive a Thread, Channel, or Promise.
+do  -- ThreadHandle:type
+  local t = lurek.thread.newThread("-- noop")
+  if t:type() == "Thread" then
+    lurek.log.debug("got a thread handle", "thread")
+  end
 end
 
 --@api-stub: ThreadHandle:typeOf
 -- Returns whether this object is of the given type.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/thread_api.rs and docs/specs/thread.md).
-do  -- TODO: ThreadHandle:typeOf
-  local _todo = "TODO: write a real ThreadHandle:typeOf usage example"
-  print(_todo)
+-- Accepts "Thread" or "Object"; use to validate args in helper functions that wrap thread management.
+do  -- ThreadHandle:typeOf
+  local t = lurek.thread.newThread("-- noop")
+  assert(t:typeOf("Thread"))
+  assert(t:typeOf("Object"))
 end
 
 --@api-stub: ThreadHandle:start
 -- Launches the background thread, passing optional arguments via varargs.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/thread_api.rs and docs/specs/thread.md).
-do  -- TODO: ThreadHandle:start
-  local _todo = "TODO: write a real ThreadHandle:start usage example"
-  print(_todo)
+-- Args go through the channel-value conversion (numbers/strings/booleans/tables only); use ... in worker code to read them.
+do  -- ThreadHandle:start
+  local t = lurek.thread.newThread([[
+    local seed, count = ...
+    lurek.thread.getChannel("results"):push(seed + count)
+  ]])
+  t:start(100, 25)
 end
 
 --@api-stub: ThreadHandle:wait
 -- Blocks the calling thread until the background thread finishes.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/thread_api.rs and docs/specs/thread.md).
-do  -- TODO: ThreadHandle:wait
-  local _todo = "TODO: write a real ThreadHandle:wait usage example"
-  print(_todo)
+-- Avoid calling wait() in lurek.process — it stalls the frame; reserve for shutdown or once-per-level loads.
+do  -- ThreadHandle:wait
+  local loader = lurek.thread.newThread([[
+    lurek.thread.getChannel("level_data"):push("ready")
+  ]])
+  loader:start()
+  loader:wait()
 end
 
 --@api-stub: ThreadHandle:isRunning
 -- Returns whether the thread is currently executing.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/thread_api.rs and docs/specs/thread.md).
-do  -- TODO: ThreadHandle:isRunning
-  local _todo = "TODO: write a real ThreadHandle:isRunning usage example"
-  print(_todo)
+-- Poll once per frame from lurek.process to drive a non-blocking "loading" state without :wait().
+do  -- ThreadHandle:isRunning
+  local job = lurek.thread.newThread("-- background work")
+  job:start()
+  if job:isRunning() then
+    lurek.log.debug("still loading...", "thread")
+  end
 end
 
 --@api-stub: ThreadHandle:getError
 -- Returns the error message if the thread failed, or nil.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/thread_api.rs and docs/specs/thread.md).
-do  -- TODO: ThreadHandle:getError
-  local _todo = "TODO: write a real ThreadHandle:getError usage example"
-  print(_todo)
+-- Always check after :wait() or once isRunning() turns false; worker errors are silent otherwise.
+do  -- ThreadHandle:getError
+  local job = lurek.thread.newThread("error('boom')")
+  job:start()
+  job:wait()
+  local err = job:getError()
+  if err then lurek.log.error("worker failed: " .. err, "thread") end
 end
 
 -- ── ThreadPool methods ──
 
 --@api-stub: ThreadPool:type
 -- Returns the type name of this object.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/thread_api.rs and docs/specs/thread.md).
-do  -- TODO: ThreadPool:type
-  local _todo = "TODO: write a real ThreadPool:type usage example"
-  print(_todo)
+-- Returns "ThreadPool"; handy in generic dispatchers that handle several lurek.thread userdata kinds.
+do  -- ThreadPool:type
+  local pool = lurek.thread.newPool(2, "-- noop")
+  if pool:type() == "ThreadPool" then
+    lurek.log.debug("pool ready", "thread")
+  end
 end
 
 --@api-stub: ThreadPool:typeOf
 -- Returns whether this object is of the given type.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/thread_api.rs and docs/specs/thread.md).
-do  -- TODO: ThreadPool:typeOf
-  local _todo = "TODO: write a real ThreadPool:typeOf usage example"
-  print(_todo)
+-- Use to guard helpers that only accept pools (vs single Thread handles) before calling :submit.
+do  -- ThreadPool:typeOf
+  local pool = lurek.thread.newPool(2, "-- noop")
+  assert(pool:typeOf("ThreadPool"))
 end
 
 --@api-stub: ThreadPool:submit
 -- Submits a value to the pool's input channel for processing by a worker.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/thread_api.rs and docs/specs/thread.md).
-do  -- TODO: ThreadPool:submit
-  local _todo = "TODO: write a real ThreadPool:submit usage example"
-  print(_todo)
+-- One value per call; pack multiple fields into a table when a job needs structured input.
+do  -- ThreadPool:submit
+  local pool = lurek.thread.newPool(4, [[
+    local inp = lurek.thread.getChannel("__pool_input")
+    local out = lurek.thread.getChannel("__pool_output")
+    while true do out:push(inp:demand() * 2) end
+  ]])
+  pool:submit({ id = 1, payload = "tile_chunk_a" })
+  pool:submit({ id = 2, payload = "tile_chunk_b" })
 end
 
 --@api-stub: ThreadPool:collect
 -- Retrieves the next result from the pool's output channel (non-blocking).
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/thread_api.rs and docs/specs/thread.md).
-do  -- TODO: ThreadPool:collect
-  local _todo = "TODO: write a real ThreadPool:collect usage example"
-  print(_todo)
+-- Drain in a loop from lurek.process — collect returns nil when the queue is empty so the frame never stalls.
+do  -- ThreadPool:collect
+  local pool = lurek.thread.newPool(2, "-- worker")
+  function lurek.process(_)
+    local result = pool:collect()
+    while result do
+      lurek.log.debug("got result", "thread")
+      result = pool:collect()
+    end
+  end
 end
 
 --@api-stub: ThreadPool:size
 -- Returns the number of workers in this pool.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/thread_api.rs and docs/specs/thread.md).
-do  -- TODO: ThreadPool:size
-  local _todo = "TODO: write a real ThreadPool:size usage example"
-  print(_todo)
+-- Useful for sizing back-pressure: don't submit more in-flight jobs than 4× the worker count.
+do  -- ThreadPool:size
+  local pool = lurek.thread.newPool(8, "-- worker")
+  local max_inflight = pool:size() * 4
+  lurek.log.info("backpressure cap = " .. max_inflight, "thread")
 end
 
 --@api-stub: ThreadPool:join
 -- Blocks until all workers in the pool have finished execution.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/thread_api.rs and docs/specs/thread.md).
-do  -- TODO: ThreadPool:join
-  local _todo = "TODO: write a real ThreadPool:join usage example"
-  print(_todo)
+-- Call only on shutdown — workers in busy loops never finish on their own; push a sentinel value first if needed.
+do  -- ThreadPool:join
+  local pool = lurek.thread.newPool(2, [[
+    local n = lurek.thread.getChannel("__pool_input"):pop()
+    if n then lurek.thread.getChannel("__pool_output"):push(n) end
+  ]])
+  pool:submit(1); pool:submit(2)
+  pool:join()
 end
 
 --@api-stub: ThreadPool:getInputChannel
--- Returns the shared input Channel (main â†’ workers).
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/thread_api.rs and docs/specs/thread.md).
-do  -- TODO: ThreadPool:getInputChannel
-  local _todo = "TODO: write a real ThreadPool:getInputChannel usage example"
-  print(_todo)
+-- Returns the shared input Channel (main → workers).
+-- Grab the raw channel when you want to push many items at once or use :supply() for back-pressure.
+do  -- ThreadPool:getInputChannel
+  local pool = lurek.thread.newPool(4, "-- worker")
+  local input = pool:getInputChannel()
+  for i = 1, 100 do input:push(i) end
 end
 
 --@api-stub: ThreadPool:getOutputChannel
--- Returns the shared output Channel (workers â†’ main).
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/thread_api.rs and docs/specs/thread.md).
-do  -- TODO: ThreadPool:getOutputChannel
-  local _todo = "TODO: write a real ThreadPool:getOutputChannel usage example"
-  print(_todo)
+-- Returns the shared output Channel (workers → main).
+-- Inspect getCount() on it to monitor worker throughput, or use demand(timeout) in a sync drain.
+do  -- ThreadPool:getOutputChannel
+  local pool = lurek.thread.newPool(4, "-- worker")
+  local out = pool:getOutputChannel()
+  lurek.log.debug("pending results: " .. out:getCount(), "thread")
 end
 
 -- ── Promise methods ──
 
 --@api-stub: Promise:type
 -- Returns the type name of this object.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/thread_api.rs and docs/specs/thread.md).
-do  -- TODO: Promise:type
-  local _todo = "TODO: write a real Promise:type usage example"
-  print(_todo)
+-- Returns "Promise"; useful in generic awaiter helpers.
+do  -- Promise:type
+  local p = lurek.thread.async("-- noop")
+  if p:type() == "Promise" then
+    lurek.log.debug("promise dispatched", "thread")
+  end
 end
 
 --@api-stub: Promise:typeOf
 -- Returns whether this object is of the given type.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/thread_api.rs and docs/specs/thread.md).
-do  -- TODO: Promise:typeOf
-  local _todo = "TODO: write a real Promise:typeOf usage example"
-  print(_todo)
+-- Accepts "Promise" or "Object"; guards generic dispatch over thread userdata.
+do  -- Promise:typeOf
+  local p = lurek.thread.async("-- noop")
+  assert(p:typeOf("Promise"))
 end
 
 --@api-stub: Promise:isDone
 -- Returns true if the promise has a result or has errored (non-blocking).
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/thread_api.rs and docs/specs/thread.md).
-do  -- TODO: Promise:isDone
-  local _todo = "TODO: write a real Promise:isDone usage example"
-  print(_todo)
+-- Poll from lurek.process to avoid blocking the frame; pair with :result() once true.
+do  -- Promise:isDone
+  local p = lurek.thread.async([[
+    lurek.thread.getChannel("__promise_result"):push(42)
+  ]])
+  if p:isDone() then
+    lurek.log.info("promise ready", "thread")
+  end
 end
 
 --@api-stub: Promise:result
 -- Pops and returns the promise result, or nil if not yet ready.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/thread_api.rs and docs/specs/thread.md).
-do  -- TODO: Promise:result
-  local _todo = "TODO: write a real Promise:result usage example"
-  print(_todo)
+-- Returns the value the worker pushed into "__promise_result"; check :getError() if nil persists.
+do  -- Promise:result
+  local p = lurek.thread.async([[
+    lurek.thread.getChannel("__promise_result"):push({ score = 999 })
+  ]])
+  function lurek.process(_)
+    local r = p:result()
+    if r then lurek.log.info("score=" .. r.score, "thread") end
+  end
 end
 
 --@api-stub: Promise:getError
 -- Returns the worker error string if the promise failed, otherwise nil.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/thread_api.rs and docs/specs/thread.md).
-do  -- TODO: Promise:getError
-  local _todo = "TODO: write a real Promise:getError usage example"
-  print(_todo)
+-- Inspect after :isDone() returns true and :result() returns nil — that combination signals a worker crash.
+do  -- Promise:getError
+  local p = lurek.thread.async("error('worker died')")
+  function lurek.process(_)
+    if p:isDone() and not p:result() then
+      lurek.log.error("async failed: " .. (p:getError() or "?"), "thread")
+    end
+  end
 end
 
 -- ── Channel methods ──
 
 --@api-stub: Channel:type
 -- Returns the type of the object.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/thread_api.rs and docs/specs/thread.md).
-do  -- TODO: Channel:type
-  local _todo = "TODO: write a real Channel:type usage example"
-  print(_todo)
+-- Returns "Channel"; useful for runtime checks in generic message routers.
+do  -- Channel:type
+  local ch = lurek.thread.newChannel()
+  if ch:type() == "Channel" then
+    lurek.log.debug("got a channel", "thread")
+  end
 end
 
 --@api-stub: Channel:typeOf
 -- Checks if the object is of the specified type.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/thread_api.rs and docs/specs/thread.md).
-do  -- TODO: Channel:typeOf
-  local _todo = "TODO: write a real Channel:typeOf usage example"
-  print(_todo)
+-- Accepts "Channel" or "Object"; guards helpers that wrap channel send/receive.
+do  -- Channel:typeOf
+  local ch = lurek.thread.newChannel()
+  assert(ch:typeOf("Channel"))
 end
 
 --@api-stub: Channel:push
 -- Pushes a value to the channel.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/thread_api.rs and docs/specs/thread.md).
-do  -- TODO: Channel:push
-  local _todo = "TODO: write a real Channel:push usage example"
-  print(_todo)
+-- Non-blocking; returns the message id. Values are deep-copied across the VM boundary so mutating after push is safe.
+do  -- Channel:push
+  local events = lurek.thread.getChannel("game_events")
+  events:push({ kind = "enemy_killed", id = 17 })
+  events:push({ kind = "score_delta", value = 100 })
 end
 
 --@api-stub: Channel:pop
 -- Retrieves and removes a value from the channel.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/thread_api.rs and docs/specs/thread.md).
-do  -- TODO: Channel:pop
-  local _todo = "TODO: write a real Channel:pop usage example"
-  print(_todo)
+-- Non-blocking; returns nil when empty. Drain in a while loop each frame to process all pending messages.
+do  -- Channel:pop
+  local events = lurek.thread.getChannel("game_events")
+  function lurek.process(_)
+    local ev = events:pop()
+    while ev do ev = events:pop() end
+  end
 end
 
 --@api-stub: Channel:peek
 -- Retrieves the value from the channel without removing it.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/thread_api.rs and docs/specs/thread.md).
-do  -- TODO: Channel:peek
-  local _todo = "TODO: write a real Channel:peek usage example"
-  print(_todo)
+-- Use to look at the next message without consuming it — handy for priority routing before committing to handle.
+do  -- Channel:peek
+  local jobs = lurek.thread.getChannel("work_queue")
+  jobs:push({ priority = "high", task = "save" })
+  local next_job = jobs:peek()
+  if next_job and next_job.priority == "high" then
+    lurek.log.info("high-priority job pending", "thread")
+  end
 end
 
 --@api-stub: Channel:demand
 -- Blocks until a value is available or the timeout expires, then removes and returns it.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/thread_api.rs and docs/specs/thread.md).
-do  -- TODO: Channel:demand
-  local _todo = "TODO: write a real Channel:demand usage example"
-  print(_todo)
+-- Pass a timeout in seconds (or nil to block forever); used inside worker loops, never on the main frame thread.
+do  -- Channel:demand
+  local worker = lurek.thread.newThread([[
+    local inbox = lurek.thread.getChannel("worker_inbox")
+    local msg = inbox:demand(1.0)
+    if msg then lurek.thread.getChannel("results"):push("ack") end
+  ]])
+  worker:start()
 end
 
 --@api-stub: Channel:getCount
 -- Returns the number of items in the channel.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/thread_api.rs and docs/specs/thread.md).
-do  -- TODO: Channel:getCount
-  local _todo = "TODO: write a real Channel:getCount usage example"
-  print(_todo)
+-- Use for back-pressure: stop submitting new jobs once the queue exceeds a budget.
+do  -- Channel:getCount
+  local jobs = lurek.thread.getChannel("work_queue")
+  if jobs:getCount() < 64 then
+    jobs:push({ task = "stream_chunk" })
+  end
 end
 
 --@api-stub: Channel:clear
 -- Clears all items from the channel.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/thread_api.rs and docs/specs/thread.md).
-do  -- TODO: Channel:clear
-  local _todo = "TODO: write a real Channel:clear usage example"
-  print(_todo)
+-- Useful between levels or after cancelling a long-running batch — drops every pending message at once.
+do  -- Channel:clear
+  local stale = lurek.thread.getChannel("level_events")
+  stale:push({ kind = "old" })
+  stale:clear()
+  assert(stale:getCount() == 0)
 end
 
 --@api-stub: Channel:supply
 -- Blocks until the channel has space, then adds the value.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/thread_api.rs and docs/specs/thread.md).
-do  -- TODO: Channel:supply
-  local _todo = "TODO: write a real Channel:supply usage example"
-  print(_todo)
+-- Currently unbounded, so behaves like push(); prefer it for code paths that may later add capacity limits.
+do  -- Channel:supply
+  local out = lurek.thread.getChannel("worker_results")
+  out:supply({ tile = 1, ok = true })
+  out:supply({ tile = 2, ok = true })
 end
 
 --@api-stub: Channel:pushTable
 -- Serializes a Lua table and pushes it to the channel.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/thread_api.rs and docs/specs/thread.md).
-do  -- TODO: Channel:pushTable
-  local _todo = "TODO: write a real Channel:pushTable usage example"
-  print(_todo)
+-- Same as push() for tables but errors loudly if the value isn't a table — use to enforce a structured-message contract.
+do  -- Channel:pushTable
+  local ch = lurek.thread.getChannel("packets")
+  ch:pushTable({ op = "spawn", x = 64, y = 32, kind = "goblin" })
 end
 
 --@api-stub: Channel:popTable
 -- Pops a value from the channel expecting a table.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/thread_api.rs and docs/specs/thread.md).
-do  -- TODO: Channel:popTable
-  local _todo = "TODO: write a real Channel:popTable usage example"
-  print(_todo)
+-- Returns nil if the next item isn't a table — non-table messages are dropped silently, so use only on table-only channels.
+do  -- Channel:popTable
+  local ch = lurek.thread.getChannel("packets")
+  ch:pushTable({ op = "spawn", id = 7 })
+  local pkt = ch:popTable()
+  if pkt then lurek.log.info("op=" .. pkt.op, "thread") end
 end
 
 --@api-stub: Channel:pushBytes
 -- Pushes raw binary data (a Lua string treated as a byte array) to the channel.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/thread_api.rs and docs/specs/thread.md).
-do  -- TODO: Channel:pushBytes
-  local _todo = "TODO: write a real Channel:pushBytes usage example"
-  print(_todo)
+-- Use for serialised buffers (image data, save blobs) where you don't want Lua-string interning churn on the worker side.
+do  -- Channel:pushBytes
+  local stream = lurek.thread.getChannel("net_out")
+  local payload = string.char(0xDE, 0xAD, 0xBE, 0xEF)
+  stream:pushBytes(payload)
 end
 
 --@api-stub: Channel:popBytes
 -- Pops a bytes value from the channel and returns it as a Lua string.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/thread_api.rs and docs/specs/thread.md).
-do  -- TODO: Channel:popBytes
-  local _todo = "TODO: write a real Channel:popBytes usage example"
-  print(_todo)
+-- Returns nil if the next item isn't bytes; pair with pushBytes on the producer side and treat the result as opaque.
+do  -- Channel:popBytes
+  local stream = lurek.thread.getChannel("net_in")
+  stream:pushBytes("\x01\x02\x03")
+  local bytes = stream:popBytes()
+  if bytes then lurek.log.debug("got " .. #bytes .. " bytes", "thread") end
 end
-
