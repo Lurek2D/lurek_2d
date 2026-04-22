@@ -1,23 +1,10 @@
 -- content/examples/image.lua
--- Scaffolded coverage of the lurek.image API (68 items).
+-- Hand-written coverage of the lurek.image API (68 items).
 --
--- Every --@api-stub: block below is a SCAFFOLD. The body must be
--- replaced by hand with a 3-6 line real usage snippet showing how to
--- call the API in real game context, written by reading:
---   * src/lua_api/image_api.rs   (Lua binding, arg types, return shape)
---   * src/image/                 (semantics, side effects)
---   * docs/specs/image.md        (canonical reference)
---
--- Snippet rules (love2d-wiki style):
---   * NO `return` at top-level (breaks the file).
---   * NO `pcall` defensive wrappers, NO `if false then`.
---   * Wrap GPU / audio / physics calls inside
---     `function lurek.render() ... end` or
---     `function lurek.update(dt) ... end` callbacks so the file loads.
---   * Use REAL values: paths like "sfx/jump.ogg", keys like "space",
---     colours like {1, 0.5, 0, 1}.
---   * Keep the two `--` comment lines: 1) what the API does (use the
---     existing description), 2) one line of practical advice.
+-- The lurek.image namespace owns CPU-side pixel buffers (ImageData),
+-- compressed DDS payloads, layered painting canvases (LayeredImage),
+-- province-map spatial indices, and palette remapping tables. All
+-- image paths are resolved against the project's game directory.
 --
 -- Run: cargo run -- content/examples/image.lua
 
@@ -25,555 +12,656 @@
 
 --@api-stub: lurek.image.newImageData
 -- Creates a new blank ImageData or loads one from a file.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/image_api.rs and docs/specs/image.md).
-do  -- TODO: lurek.image.newImageData
-  local _todo = "TODO: write a real lurek.image.newImageData usage example"
-  print(_todo)
+-- Pass a path to load from disk, or (width, height) to allocate a transparent RGBA8 buffer.
+do  -- lurek.image.newImageData
+  local hero = lurek.image.newImageData("assets/hero.png")
+  local scratch = lurek.image.newImageData(64, 64)
+  scratch:fill(0, 0, 0, 0)
+  lurek.log.info("loaded hero " .. hero:getWidth() .. "x" .. hero:getHeight(), "image")
 end
 
 --@api-stub: lurek.image.newCompressedData
 -- Loads compressed texture data from a DDS file.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/image_api.rs and docs/specs/image.md).
-do  -- TODO: lurek.image.newCompressedData
-  local _todo = "TODO: write a real lurek.image.newCompressedData usage example"
-  print(_todo)
+-- Use for GPU-ready BCn formats so wgpu can upload without a CPU decode pass.
+do  -- lurek.image.newCompressedData
+  local cd = lurek.image.newCompressedData("assets/terrain_bc1.dds")
+  local mips = cd:getMipmapCount()
+  lurek.log.info("dds " .. cd:getFormat() .. " mips=" .. mips, "image")
 end
 
 --@api-stub: lurek.image.isCompressed
 -- Returns true if the file at the given path is a DDS file.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/image_api.rs and docs/specs/image.md).
-do  -- TODO: lurek.image.isCompressed
-  local _todo = "TODO: write a real lurek.image.isCompressed usage example"
-  print(_todo)
+-- Branch on this before choosing newCompressedData vs newImageData for unknown asset paths.
+do  -- lurek.image.isCompressed
+  local path = "assets/terrain_bc1.dds"
+  if lurek.image.isCompressed(path) then
+    lurek.image.newCompressedData(path)
+  else
+    lurek.image.newImageData(path)
+  end
 end
 
 --@api-stub: lurek.image.newLayeredImage
 -- Creates a new empty LayeredImage canvas with no layers.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/image_api.rs and docs/specs/image.md).
-do  -- TODO: lurek.image.newLayeredImage
-  local _todo = "TODO: write a real lurek.image.newLayeredImage usage example"
-  print(_todo)
+-- Use as a paint document; addLayer() afterwards to begin compositing.
+do  -- lurek.image.newLayeredImage
+  local doc = lurek.image.newLayeredImage(256, 256)
+  local bg = doc:addLayer("background")
+  local fg = doc:addLayer("foreground")
+  lurek.log.info("layers bg=" .. bg .. " fg=" .. fg, "image")
 end
 
 --@api-stub: lurek.image.saveImage
 -- Saves a flat ImageData to a LIMG binary file at the given path.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/image_api.rs and docs/specs/image.md).
-do  -- TODO: lurek.image.saveImage
-  local _todo = "TODO: write a real lurek.image.saveImage usage example"
-  print(_todo)
+-- LIMG preserves raw RGBA8 with no quality loss; prefer it over PNG for round-trip pipelines.
+do  -- lurek.image.saveImage
+  local img = lurek.image.newImageData(64, 64)
+  img:fill(255, 128, 0, 255)
+  lurek.image.saveImage(img, "save/orange64.limg")
 end
 
 --@api-stub: lurek.image.savePNG
 -- Saves a flat ImageData as a PNG file at the given path.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/image_api.rs and docs/specs/image.md).
-do  -- TODO: lurek.image.savePNG
-  local _todo = "TODO: write a real lurek.image.savePNG usage example"
-  print(_todo)
+-- Use for screenshots, thumbnails, and any artifact a human or external tool will open.
+do  -- lurek.image.savePNG
+  local shot = lurek.image.newImageData(128, 64)
+  shot:fill(20, 30, 40, 255)
+  shot:drawCircle(64, 32, 24, 255, 200, 0, 255)
+  lurek.image.savePNG(shot, "save/screenshot.png")
 end
 
 --@api-stub: lurek.image.loadImage
 -- Loads an ImageData from a LIMG binary file.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/image_api.rs and docs/specs/image.md).
-do  -- TODO: lurek.image.loadImage
-  local _todo = "TODO: write a real lurek.image.loadImage usage example"
-  print(_todo)
+-- Pair with saveImage() to reload pixel buffers written by an earlier session.
+do  -- lurek.image.loadImage
+  local restored = lurek.image.loadImage("save/orange64.limg")
+  local w, h = restored:getDimensions()
+  lurek.log.info("restored " .. w .. "x" .. h, "image")
 end
 
 --@api-stub: lurek.image.loadLayered
 -- Loads a LayeredImage from a LIMG binary file.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/image_api.rs and docs/specs/image.md).
-do  -- TODO: lurek.image.loadLayered
-  local _todo = "TODO: write a real lurek.image.loadLayered usage example"
-  print(_todo)
+-- Use for resuming a paint document with all named layers, opacities, and visibility intact.
+do  -- lurek.image.loadLayered
+  local doc = lurek.image.loadLayered("save/painting.limg")
+  local count = doc:layerCount()
+  lurek.log.info("painting reopened with " .. count .. " layers", "image")
 end
 
 --@api-stub: lurek.image.newPaletteLut
 -- Creates a new empty `PaletteLUT` used to remap colours in an image.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/image_api.rs and docs/specs/image.md).
-do  -- TODO: lurek.image.newPaletteLut
-  local _todo = "TODO: write a real lurek.image.newPaletteLut usage example"
-  print(_todo)
+-- Build once with setColor() entries, then apply to many sprites that share the same palette.
+do  -- lurek.image.newPaletteLut
+  local lut = lurek.image.newPaletteLut()
+  local before = lut:getColorCount()
+  lurek.log.info("new lut entries=" .. before, "image")
 end
 
 --@api-stub: lurek.image.newProvinceGrid
 -- Loads a province map PNG and builds an O(1) spatial index with adjacency data.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/image_api.rs and docs/specs/image.md).
-do  -- TODO: lurek.image.newProvinceGrid
-  local _todo = "TODO: write a real lurek.image.newProvinceGrid usage example"
-  print(_todo)
+-- Use for grand-strategy maps where each unique RGB colour identifies one province.
+do  -- lurek.image.newProvinceGrid
+  local grid = lurek.image.newProvinceGrid("assets/world_provinces.png")
+  local count = grid:provinceCount()
+  lurek.log.info("loaded " .. count .. " provinces", "map")
 end
 
 -- ── ProvinceGrid methods ──
 
 --@api-stub: ProvinceGrid:getWidth
 -- Returns the grid width in pixels.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/image_api.rs and docs/specs/image.md).
-do  -- TODO: ProvinceGrid:getWidth
-  local _todo = "TODO: write a real ProvinceGrid:getWidth usage example"
-  print(_todo)
+-- Pair with getHeight() to clamp mouse coordinates before calling getAt().
+do  -- ProvinceGrid:getWidth
+  local grid = lurek.image.newProvinceGrid("assets/world_provinces.png")
+  local w = grid:getWidth()
+  if w > 0 then
+    lurek.log.info("province map width=" .. w, "map")
+  end
 end
 
 --@api-stub: ProvinceGrid:getHeight
 -- Returns the grid height in pixels.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/image_api.rs and docs/specs/image.md).
-do  -- TODO: ProvinceGrid:getHeight
-  local _todo = "TODO: write a real ProvinceGrid:getHeight usage example"
-  print(_todo)
+-- Use alongside getWidth() to size the rendered minimap or perform bounds checks.
+do  -- ProvinceGrid:getHeight
+  local grid = lurek.image.newProvinceGrid("assets/world_provinces.png")
+  local h = grid:getHeight()
+  lurek.log.info("province map height=" .. h, "map")
 end
 
 --@api-stub: ProvinceGrid:getAt
 -- Returns the province ID at pixel coordinates (x, y).
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/image_api.rs and docs/specs/image.md).
-do  -- TODO: ProvinceGrid:getAt
-  local _todo = "TODO: write a real ProvinceGrid:getAt usage example"
-  print(_todo)
+-- Returns 0 for the background; check for non-zero before treating the click as a province.
+do  -- ProvinceGrid:getAt
+  local grid = lurek.image.newProvinceGrid("assets/world_provinces.png")
+  local id = grid:getAt(128, 96)
+  if id ~= 0 then
+    lurek.log.info("clicked province " .. id, "map")
+  end
 end
 
 --@api-stub: ProvinceGrid:provinceCount
 -- Returns the number of unique non-zero province IDs detected in the map.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/image_api.rs and docs/specs/image.md).
-do  -- TODO: ProvinceGrid:provinceCount
-  local _todo = "TODO: write a real ProvinceGrid:provinceCount usage example"
-  print(_todo)
+-- Pre-allocate per-province arrays (owners, populations) using this count at startup.
+do  -- ProvinceGrid:provinceCount
+  local grid = lurek.image.newProvinceGrid("assets/world_provinces.png")
+  local count = grid:provinceCount()
+  local owners = {}
+  for i = 1, count do owners[i] = 0 end
+  lurek.log.info("allocated owner table for " .. count .. " provinces", "map")
 end
 
 --@api-stub: ProvinceGrid:adjacencies
 -- Returns an array of adjacency records.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/image_api.rs and docs/specs/image.md).
-do  -- TODO: ProvinceGrid:adjacencies
-  local _todo = "TODO: write a real ProvinceGrid:adjacencies usage example"
-  print(_todo)
+-- Walk the result to build a graph for AI invasion planning or border rendering.
+do  -- ProvinceGrid:adjacencies
+  local grid = lurek.image.newProvinceGrid("assets/world_provinces.png")
+  local edges = grid:adjacencies()
+  lurek.log.info("adjacency edges=" .. #edges, "map")
 end
 
 -- ── LayeredImage methods ──
 
 --@api-stub: LayeredImage:getWidth
 -- Returns the canvas width shared by all layers.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/image_api.rs and docs/specs/image.md).
-do  -- TODO: LayeredImage:getWidth
-  local _todo = "TODO: write a real LayeredImage:getWidth usage example"
-  print(_todo)
+-- Use to size brush strokes or to validate imported layer buffers match the canvas.
+do  -- LayeredImage:getWidth
+  local doc = lurek.image.newLayeredImage(256, 128)
+  local w = doc:getWidth()
+  lurek.log.info("canvas width=" .. w, "paint")
 end
 
 --@api-stub: LayeredImage:getHeight
 -- Returns the canvas height shared by all layers.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/image_api.rs and docs/specs/image.md).
-do  -- TODO: LayeredImage:getHeight
-  local _todo = "TODO: write a real LayeredImage:getHeight usage example"
-  print(_todo)
+-- Pair with getWidth() to centre tools or build coordinate transforms.
+do  -- LayeredImage:getHeight
+  local doc = lurek.image.newLayeredImage(256, 128)
+  local h = doc:getHeight()
+  lurek.log.info("canvas height=" .. h, "paint")
 end
 
 --@api-stub: LayeredImage:layerCount
 -- Returns the number of layers in the stack.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/image_api.rs and docs/specs/image.md).
-do  -- TODO: LayeredImage:layerCount
-  local _todo = "TODO: write a real LayeredImage:layerCount usage example"
-  print(_todo)
+-- Use to drive a layers panel or to iterate every layer with getLayer(i).
+do  -- LayeredImage:layerCount
+  local doc = lurek.image.newLayeredImage(64, 64)
+  doc:addLayer("base")
+  doc:addLayer("ink")
+  lurek.log.info("layer count=" .. doc:layerCount(), "paint")
 end
 
 --@api-stub: LayeredImage:addLayer
 -- Appends a new blank transparent layer on top and returns its 1-based index.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/image_api.rs and docs/specs/image.md).
-do  -- TODO: LayeredImage:addLayer
-  local _todo = "TODO: write a real LayeredImage:addLayer usage example"
-  print(_todo)
+-- Capture the returned index so subsequent setName / setOpacity / setVisible target the right layer.
+do  -- LayeredImage:addLayer
+  local doc = lurek.image.newLayeredImage(128, 128)
+  local idx = doc:addLayer("highlights")
+  doc:setOpacity(idx, 0.75)
+  lurek.log.info("added layer at index " .. idx, "paint")
 end
 
 --@api-stub: LayeredImage:removeLayer
 -- Removes the layer at the given 1-based index.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/image_api.rs and docs/specs/image.md).
-do  -- TODO: LayeredImage:removeLayer
-  local _todo = "TODO: write a real LayeredImage:removeLayer usage example"
-  print(_todo)
+-- Subsequent layer indices shift down by one — refresh any cached ids after a remove.
+do  -- LayeredImage:removeLayer
+  local doc = lurek.image.newLayeredImage(64, 64)
+  doc:addLayer("scratch")
+  doc:removeLayer(1)
+  lurek.log.info("layers after remove=" .. doc:layerCount(), "paint")
 end
 
 --@api-stub: LayeredImage:getLayer
 -- Returns a copy of the layer's pixel buffer as an ImageData.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/image_api.rs and docs/specs/image.md).
-do  -- TODO: LayeredImage:getLayer
-  local _todo = "TODO: write a real LayeredImage:getLayer usage example"
-  print(_todo)
+-- The returned ImageData is a snapshot; mutate it freely without affecting the source layer.
+do  -- LayeredImage:getLayer
+  local doc = lurek.image.newLayeredImage(64, 64)
+  doc:addLayer("base")
+  local snap = doc:getLayer(1)
+  lurek.image.savePNG(snap, "save/layer1.png")
 end
 
 --@api-stub: LayeredImage:getOpacity
 -- Returns the opacity of a layer in [0.0, 1.0].
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/image_api.rs and docs/specs/image.md).
-do  -- TODO: LayeredImage:getOpacity
-  local _todo = "TODO: write a real LayeredImage:getOpacity usage example"
-  print(_todo)
+-- Read before adjusting so a slider can fade towards the existing value rather than snapping.
+do  -- LayeredImage:getOpacity
+  local doc = lurek.image.newLayeredImage(64, 64)
+  doc:addLayer("ink")
+  local a = doc:getOpacity(1)
+  lurek.log.info("layer 1 opacity=" .. a, "paint")
 end
 
 --@api-stub: LayeredImage:setOpacity
 -- Sets the opacity of a layer.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/image_api.rs and docs/specs/image.md).
-do  -- TODO: LayeredImage:setOpacity
-  local _todo = "TODO: write a real LayeredImage:setOpacity usage example"
-  print(_todo)
+-- Clamp UI sliders to [0, 1]; setOpacity itself accepts only that range.
+do  -- LayeredImage:setOpacity
+  local doc = lurek.image.newLayeredImage(64, 64)
+  local idx = doc:addLayer("shadow")
+  doc:setOpacity(idx, 0.5)
 end
 
 --@api-stub: LayeredImage:isVisible
 -- Returns whether a layer is visible.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/image_api.rs and docs/specs/image.md).
-do  -- TODO: LayeredImage:isVisible
-  local _todo = "TODO: write a real LayeredImage:isVisible usage example"
-  print(_todo)
+-- Use to drive the eye-icon state in a layers panel or to skip merge work for hidden layers.
+do  -- LayeredImage:isVisible
+  local doc = lurek.image.newLayeredImage(64, 64)
+  doc:addLayer("ink")
+  if doc:isVisible(1) then
+    lurek.log.info("layer 1 is visible", "paint")
+  end
 end
 
 --@api-stub: LayeredImage:setVisible
 -- Shows or hides a layer during compositing.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/image_api.rs and docs/specs/image.md).
-do  -- TODO: LayeredImage:setVisible
-  local _todo = "TODO: write a real LayeredImage:setVisible usage example"
-  print(_todo)
+-- Toggle from a UI handler; merge() and save() respect the visibility flag.
+do  -- LayeredImage:setVisible
+  local doc = lurek.image.newLayeredImage(64, 64)
+  local idx = doc:addLayer("guides")
+  doc:setVisible(idx, false)
 end
 
 --@api-stub: LayeredImage:getName
 -- Returns the name of a layer.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/image_api.rs and docs/specs/image.md).
-do  -- TODO: LayeredImage:getName
-  local _todo = "TODO: write a real LayeredImage:getName usage example"
-  print(_todo)
+-- Use to populate a layers panel or to look up a layer by user-friendly label.
+do  -- LayeredImage:getName
+  local doc = lurek.image.newLayeredImage(64, 64)
+  doc:addLayer("background")
+  local name = doc:getName(1)
+  lurek.log.info("layer 1 name='" .. name .. "'", "paint")
 end
 
 --@api-stub: LayeredImage:setName
 -- Renames the layer at the given index to the new name string.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/image_api.rs and docs/specs/image.md).
-do  -- TODO: LayeredImage:setName
-  local _todo = "TODO: write a real LayeredImage:setName usage example"
-  print(_todo)
+-- Call after a user double-clicks the layer label; names need not be unique.
+do  -- LayeredImage:setName
+  local doc = lurek.image.newLayeredImage(64, 64)
+  local idx = doc:addLayer("untitled")
+  doc:setName(idx, "background")
 end
 
 --@api-stub: LayeredImage:swapLayers
 -- Swaps two layers by their 1-based indices, changing their compositing order.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/image_api.rs and docs/specs/image.md).
-do  -- TODO: LayeredImage:swapLayers
-  local _todo = "TODO: write a real LayeredImage:swapLayers usage example"
-  print(_todo)
+-- Use when the user drags a layer up or down in the panel; only adjacent swaps need a single call.
+do  -- LayeredImage:swapLayers
+  local doc = lurek.image.newLayeredImage(64, 64)
+  doc:addLayer("a")
+  doc:addLayer("b")
+  doc:swapLayers(1, 2)
 end
 
 --@api-stub: LayeredImage:merge
 -- Flattens all visible layers into a single ImageData using Porter-Duff "over" compositing.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/image_api.rs and docs/specs/image.md).
-do  -- TODO: LayeredImage:merge
-  local _todo = "TODO: write a real LayeredImage:merge usage example"
-  print(_todo)
+-- Use to bake a paint document for export or to upload as a single GPU texture.
+do  -- LayeredImage:merge
+  local doc = lurek.image.newLayeredImage(64, 64)
+  doc:addLayer("base")
+  local flat = doc:merge()
+  lurek.image.savePNG(flat, "save/flattened.png")
 end
 
 --@api-stub: LayeredImage:save
 -- Saves the layered image to a LIMG binary file at the given path.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/image_api.rs and docs/specs/image.md).
-do  -- TODO: LayeredImage:save
-  local _todo = "TODO: write a real LayeredImage:save usage example"
-  print(_todo)
+-- LIMG preserves layer names, opacities, and visibility; use for project files, not exports.
+do  -- LayeredImage:save
+  local doc = lurek.image.newLayeredImage(128, 128)
+  doc:addLayer("background")
+  doc:save("save/painting.limg")
 end
 
 -- ── CompressedImageData methods ──
 
 --@api-stub: CompressedImageData:getWidth
 -- Returns the width of the base mip level in pixels.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/image_api.rs and docs/specs/image.md).
-do  -- TODO: CompressedImageData:getWidth
-  local _todo = "TODO: write a real CompressedImageData:getWidth usage example"
-  print(_todo)
+-- Use to validate atlases or to compute UV coordinates for compressed textures.
+do  -- CompressedImageData:getWidth
+  local cd = lurek.image.newCompressedData("assets/terrain_bc1.dds")
+  local w = cd:getWidth()
+  lurek.log.info("dds base width=" .. w, "image")
 end
 
 --@api-stub: CompressedImageData:getHeight
 -- Returns the height of the base mip level in pixels.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/image_api.rs and docs/specs/image.md).
-do  -- TODO: CompressedImageData:getHeight
-  local _todo = "TODO: write a real CompressedImageData:getHeight usage example"
-  print(_todo)
+-- Pair with getWidth() to size the destination quad before drawing.
+do  -- CompressedImageData:getHeight
+  local cd = lurek.image.newCompressedData("assets/terrain_bc1.dds")
+  local h = cd:getHeight()
+  lurek.log.info("dds base height=" .. h, "image")
 end
 
 --@api-stub: CompressedImageData:getDimensions
 -- Returns the width and height of the base mip level.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/image_api.rs and docs/specs/image.md).
-do  -- TODO: CompressedImageData:getDimensions
-  local _todo = "TODO: write a real CompressedImageData:getDimensions usage example"
-  print(_todo)
+-- One call instead of two when you need both dimensions in a single statement.
+do  -- CompressedImageData:getDimensions
+  local cd = lurek.image.newCompressedData("assets/terrain_bc1.dds")
+  local w, h = cd:getDimensions()
+  lurek.log.info("dds " .. w .. "x" .. h, "image")
 end
 
 --@api-stub: CompressedImageData:getMipmapCount
 -- Returns the number of mipmap levels stored.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/image_api.rs and docs/specs/image.md).
-do  -- TODO: CompressedImageData:getMipmapCount
-  local _todo = "TODO: write a real CompressedImageData:getMipmapCount usage example"
-  print(_todo)
+-- Branch on >1 to enable trilinear sampling; use 1 for pixel-art atlases that ship without mips.
+do  -- CompressedImageData:getMipmapCount
+  local cd = lurek.image.newCompressedData("assets/terrain_bc1.dds")
+  local mips = cd:getMipmapCount()
+  if mips > 1 then
+    lurek.log.info("trilinear ready, mips=" .. mips, "image")
+  end
 end
 
 --@api-stub: CompressedImageData:getFormat
 -- Returns the compressed format name string.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/image_api.rs and docs/specs/image.md).
-do  -- TODO: CompressedImageData:getFormat
-  local _todo = "TODO: write a real CompressedImageData:getFormat usage example"
-  print(_todo)
+-- Inspect to confirm the DDS uses an expected BCn variant before uploading.
+do  -- CompressedImageData:getFormat
+  local cd = lurek.image.newCompressedData("assets/terrain_bc1.dds")
+  local fmt = cd:getFormat()
+  lurek.log.info("dds format=" .. fmt, "image")
 end
 
--- ── mlua methods ──
+-- ── ImageData methods ──
 
 --@api-stub: mlua:getWidth
 -- Returns the width.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/image_api.rs and docs/specs/image.md).
-do  -- TODO: mlua:getWidth
-  local _todo = "TODO: write a real mlua:getWidth usage example"
-  print(_todo)
+-- Read after newImageData/loadImage to size the destination canvas or sprite quad.
+do  -- mlua:getWidth
+  local img = lurek.image.newImageData("assets/hero.png")
+  local w = img:getWidth()
+  lurek.log.info("hero width=" .. w, "image")
 end
 
 --@api-stub: mlua:getHeight
 -- Returns the height.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/image_api.rs and docs/specs/image.md).
-do  -- TODO: mlua:getHeight
-  local _todo = "TODO: write a real mlua:getHeight usage example"
-  print(_todo)
+-- Use with getWidth() to lay out atlases or compute aspect ratio.
+do  -- mlua:getHeight
+  local img = lurek.image.newImageData("assets/hero.png")
+  local h = img:getHeight()
+  lurek.log.info("hero height=" .. h, "image")
 end
 
 --@api-stub: mlua:getDimensions
 -- Returns the dimensions.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/image_api.rs and docs/specs/image.md).
-do  -- TODO: mlua:getDimensions
-  local _todo = "TODO: write a real mlua:getDimensions usage example"
-  print(_todo)
+-- One call for both axes; useful when destructuring straight into local variables.
+do  -- mlua:getDimensions
+  local img = lurek.image.newImageData("assets/hero.png")
+  local w, h = img:getDimensions()
+  lurek.log.info("hero " .. w .. "x" .. h, "image")
 end
 
 --@api-stub: mlua:getPixel
 -- Returns the pixel.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/image_api.rs and docs/specs/image.md).
-do  -- TODO: mlua:getPixel
-  local _todo = "TODO: write a real mlua:getPixel usage example"
-  print(_todo)
+-- Out-of-bounds (x, y) raises an error; clamp inputs against getDimensions() first.
+do  -- mlua:getPixel
+  local img = lurek.image.newImageData("assets/hero.png")
+  local r, g, b, a = img:getPixel(0, 0)
+  lurek.log.info("top-left rgba=" .. r .. "," .. g .. "," .. b .. "," .. a, "image")
 end
 
 --@api-stub: mlua:encode
 -- Encode.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/image_api.rs and docs/specs/image.md).
-do  -- TODO: mlua:encode
-  local _todo = "TODO: write a real mlua:encode usage example"
-  print(_todo)
+-- Only "png" is currently supported; the returned string is a complete PNG file body.
+do  -- mlua:encode
+  local img = lurek.image.newImageData(64, 64)
+  img:fill(0, 200, 100, 255)
+  local png_bytes = img:encode("png")
+  lurek.log.info("png byte length=" .. #png_bytes, "image")
 end
 
 --@api-stub: mlua:getString
 -- Returns the string.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/image_api.rs and docs/specs/image.md).
-do  -- TODO: mlua:getString
-  local _todo = "TODO: write a real mlua:getString usage example"
-  print(_todo)
+-- Returns the raw RGBA8 byte string; useful for hashing or shipping over a network channel.
+do  -- mlua:getString
+  local img = lurek.image.newImageData(8, 8)
+  img:fill(255, 0, 0, 255)
+  local raw = img:getString()
+  lurek.log.info("raw bytes=" .. #raw, "image")
 end
 
 --@api-stub: mlua:mapPixel
 -- Map pixel.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/image_api.rs and docs/specs/image.md).
-do  -- TODO: mlua:mapPixel
-  local _todo = "TODO: write a real mlua:mapPixel usage example"
-  print(_todo)
+-- Callback receives (x, y, r, g, b, a) and must return four bytes; runs on the Lua thread.
+do  -- mlua:mapPixel
+  local img = lurek.image.newImageData(32, 32)
+  img:fill(64, 64, 64, 255)
+  img:mapPixel(function(_, _, r, g, b, a) return 255 - r, 255 - g, 255 - b, a end)
 end
 
 --@api-stub: mlua:brightness
 -- Brightness.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/image_api.rs and docs/specs/image.md).
-do  -- TODO: mlua:brightness
-  local _todo = "TODO: write a real mlua:brightness usage example"
-  print(_todo)
+-- Factor > 1.0 brightens, < 1.0 darkens; clamps internally to valid byte range.
+do  -- mlua:brightness
+  local img = lurek.image.newImageData("assets/hero.png")
+  img:brightness(1.2)
+  lurek.image.savePNG(img, "save/hero_brighter.png")
 end
 
 --@api-stub: mlua:contrast
 -- Contrast.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/image_api.rs and docs/specs/image.md).
-do  -- TODO: mlua:contrast
-  local _todo = "TODO: write a real mlua:contrast usage example"
-  print(_todo)
+-- 1.0 is identity; 1.5 boosts contrast moderately, 0.5 mutes it.
+do  -- mlua:contrast
+  local img = lurek.image.newImageData("assets/hero.png")
+  img:contrast(1.4)
+  lurek.image.savePNG(img, "save/hero_contrast.png")
 end
 
 --@api-stub: mlua:saturation
 -- Saturation.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/image_api.rs and docs/specs/image.md).
-do  -- TODO: mlua:saturation
-  local _todo = "TODO: write a real mlua:saturation usage example"
-  print(_todo)
+-- 0.0 yields grayscale, 1.0 is identity, >1.0 boosts colour.
+do  -- mlua:saturation
+  local img = lurek.image.newImageData("assets/hero.png")
+  img:saturation(0.0)
+  lurek.image.savePNG(img, "save/hero_desaturated.png")
 end
 
 --@api-stub: mlua:gamma
 -- Gamma.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/image_api.rs and docs/specs/image.md).
-do  -- TODO: mlua:gamma
-  local _todo = "TODO: write a real mlua:gamma usage example"
-  print(_todo)
+-- Use ~2.2 to encode linear data to sRGB-like space, ~0.4545 for the inverse.
+do  -- mlua:gamma
+  local img = lurek.image.newImageData("assets/hero.png")
+  img:gamma(2.2)
+  lurek.image.savePNG(img, "save/hero_gamma.png")
 end
 
 --@api-stub: mlua:grayscale
 -- Grayscale.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/image_api.rs and docs/specs/image.md).
-do  -- TODO: mlua:grayscale
-  local _todo = "TODO: write a real mlua:grayscale usage example"
-  print(_todo)
+-- Uses luminance weights; alpha is preserved untouched.
+do  -- mlua:grayscale
+  local img = lurek.image.newImageData("assets/hero.png")
+  img:grayscale()
+  lurek.image.savePNG(img, "save/hero_gray.png")
 end
 
 --@api-stub: mlua:sepia
 -- Sepia.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/image_api.rs and docs/specs/image.md).
-do  -- TODO: mlua:sepia
-  local _todo = "TODO: write a real mlua:sepia usage example"
-  print(_todo)
+-- Applies a fixed warm-tone matrix; pair with brightness() to taste before saving.
+do  -- mlua:sepia
+  local img = lurek.image.newImageData("assets/hero.png")
+  img:sepia()
+  lurek.image.savePNG(img, "save/hero_sepia.png")
 end
 
 --@api-stub: mlua:invert
 -- Invert.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/image_api.rs and docs/specs/image.md).
-do  -- TODO: mlua:invert
-  local _todo = "TODO: write a real mlua:invert usage example"
-  print(_todo)
+-- Inverts RGB but leaves alpha alone; useful for negative-image effects.
+do  -- mlua:invert
+  local img = lurek.image.newImageData("assets/hero.png")
+  img:invert()
+  lurek.image.savePNG(img, "save/hero_inverted.png")
 end
 
 --@api-stub: mlua:threshold
 -- Threshold.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/image_api.rs and docs/specs/image.md).
-do  -- TODO: mlua:threshold
-  local _todo = "TODO: write a real mlua:threshold usage example"
-  print(_todo)
+-- Pixels with luminance >= value become white, others black; useful for masks.
+do  -- mlua:threshold
+  local img = lurek.image.newImageData("assets/hero.png")
+  img:threshold(128)
+  lurek.image.savePNG(img, "save/hero_mask.png")
 end
 
 --@api-stub: mlua:posterize
 -- Posterize.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/image_api.rs and docs/specs/image.md).
-do  -- TODO: mlua:posterize
-  local _todo = "TODO: write a real mlua:posterize usage example"
-  print(_todo)
+-- Quantises each channel to N levels; 4 gives a cartoony look, 2 is near-monochrome.
+do  -- mlua:posterize
+  local img = lurek.image.newImageData("assets/hero.png")
+  img:posterize(4)
+  lurek.image.savePNG(img, "save/hero_posterized.png")
 end
 
 --@api-stub: mlua:fill
 -- Fill.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/image_api.rs and docs/specs/image.md).
-do  -- TODO: mlua:fill
-  local _todo = "TODO: write a real mlua:fill usage example"
-  print(_todo)
+-- Pass (0, 0, 0, 0) to clear to transparent; channels are unsigned bytes.
+do  -- mlua:fill
+  local img = lurek.image.newImageData(64, 64)
+  img:fill(20, 30, 40, 255)
+  lurek.image.savePNG(img, "save/solid.png")
 end
 
 --@api-stub: mlua:noise
 -- Noise.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/image_api.rs and docs/specs/image.md).
-do  -- TODO: mlua:noise
-  local _todo = "TODO: write a real mlua:noise usage example"
-  print(_todo)
+-- amount is the maximum per-channel deviation; 0 leaves the image untouched.
+do  -- mlua:noise
+  local img = lurek.image.newImageData(64, 64)
+  img:fill(128, 128, 128, 255)
+  img:noise(32)
+  lurek.image.savePNG(img, "save/noise.png")
 end
 
 --@api-stub: mlua:alphaMask
 -- Alpha mask.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/image_api.rs and docs/specs/image.md).
-do  -- TODO: mlua:alphaMask
-  local _todo = "TODO: write a real mlua:alphaMask usage example"
-  print(_todo)
+-- Multiplies every pixel's alpha by factor; 0.0 hides the image, 1.0 is identity.
+do  -- mlua:alphaMask
+  local img = lurek.image.newImageData("assets/hero.png")
+  img:alphaMask(0.5)
+  lurek.image.savePNG(img, "save/hero_halfalpha.png")
 end
 
 --@api-stub: mlua:flipHorizontal
 -- Flip horizontal.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/image_api.rs and docs/specs/image.md).
-do  -- TODO: mlua:flipHorizontal
-  local _todo = "TODO: write a real mlua:flipHorizontal usage example"
-  print(_todo)
+-- Mirrors left/right in place; call twice to restore the original.
+do  -- mlua:flipHorizontal
+  local img = lurek.image.newImageData("assets/hero.png")
+  img:flipHorizontal()
+  lurek.image.savePNG(img, "save/hero_flipped.png")
 end
 
 --@api-stub: mlua:flipVertical
 -- Flip vertical.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/image_api.rs and docs/specs/image.md).
-do  -- TODO: mlua:flipVertical
-  local _todo = "TODO: write a real mlua:flipVertical usage example"
-  print(_todo)
+-- Mirrors top/bottom in place; useful when import coordinates disagree on Y axis.
+do  -- mlua:flipVertical
+  local img = lurek.image.newImageData("assets/hero.png")
+  img:flipVertical()
+  lurek.image.savePNG(img, "save/hero_vflipped.png")
 end
 
 --@api-stub: mlua:rotate90cw
 -- Rotate90cw.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/image_api.rs and docs/specs/image.md).
-do  -- TODO: mlua:rotate90cw
-  local _todo = "TODO: write a real mlua:rotate90cw usage example"
-  print(_todo)
+-- Returns a NEW ImageData rotated 90° clockwise; the original is left untouched.
+do  -- mlua:rotate90cw
+  local img = lurek.image.newImageData("assets/hero.png")
+  local rotated = img:rotate90cw()
+  lurek.image.savePNG(rotated, "save/hero_cw.png")
 end
 
 --@api-stub: mlua:crop
 -- Crop.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/image_api.rs and docs/specs/image.md).
-do  -- TODO: mlua:crop
-  local _todo = "TODO: write a real mlua:crop usage example"
-  print(_todo)
+-- Returns a NEW ImageData covering the rectangle; nil if the rect is outside the source.
+do  -- mlua:crop
+  local img = lurek.image.newImageData("assets/hero.png")
+  local face = img:crop(8, 4, 32, 32)
+  lurek.image.savePNG(face, "save/hero_face.png")
 end
 
 --@api-stub: mlua:resizeNearest
 -- Resize nearest.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/image_api.rs and docs/specs/image.md).
-do  -- TODO: mlua:resizeNearest
-  local _todo = "TODO: write a real mlua:resizeNearest usage example"
-  print(_todo)
+-- Use for pixel art where bilinear would blur; returns a NEW ImageData at the requested size.
+do  -- mlua:resizeNearest
+  local img = lurek.image.newImageData("assets/hero.png")
+  local big = img:resizeNearest(128, 128)
+  lurek.image.savePNG(big, "save/hero_2x.png")
 end
 
 --@api-stub: mlua:blur
 -- Blur.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/image_api.rs and docs/specs/image.md).
-do  -- TODO: mlua:blur
-  local _todo = "TODO: write a real mlua:blur usage example"
-  print(_todo)
+-- Box blur of given pixel radius; cost scales with radius², keep ≤ 8 for per-frame work.
+do  -- mlua:blur
+  local img = lurek.image.newImageData("assets/hero.png")
+  local soft = img:blur(2)
+  lurek.image.savePNG(soft, "save/hero_blurred.png")
 end
 
 --@api-stub: mlua:sharpen
 -- Sharpen.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/image_api.rs and docs/specs/image.md).
-do  -- TODO: mlua:sharpen
-  local _todo = "TODO: write a real mlua:sharpen usage example"
-  print(_todo)
+-- Returns a NEW ImageData with a fixed 3x3 unsharp kernel applied; safe to call repeatedly.
+do  -- mlua:sharpen
+  local img = lurek.image.newImageData("assets/hero.png")
+  local crisp = img:sharpen()
+  lurek.image.savePNG(crisp, "save/hero_sharp.png")
 end
 
 --@api-stub: mlua:resize
 -- Returns a bilinear-interpolated copy of the image at the given dimensions.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/image_api.rs and docs/specs/image.md).
-do  -- TODO: mlua:resize
-  local _todo = "TODO: write a real mlua:resize usage example"
-  print(_todo)
+-- Returns nil if either dimension is zero; check before saving the result.
+do  -- mlua:resize
+  local img = lurek.image.newImageData("assets/hero.png")
+  local thumb = img:resize(32, 32)
+  if thumb then
+    lurek.image.savePNG(thumb, "save/hero_thumb.png")
+  end
 end
 
 --@api-stub: mlua:diff
 -- Returns the sum of absolute per-channel pixel differences with another ImageData.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/image_api.rs and docs/specs/image.md).
-do  -- TODO: mlua:diff
-  local _todo = "TODO: write a real mlua:diff usage example"
-  print(_todo)
+-- Use as a cheap regression metric for golden-image comparisons; 0 means pixel-perfect.
+do  -- mlua:diff
+  local a = lurek.image.newImageData("assets/hero.png")
+  local b = lurek.image.newImageData("save/hero_baseline.png")
+  local delta = a:diff(b)
+  lurek.log.info("image diff=" .. delta, "test")
 end
 
 --@api-stub: mlua:mapPixels
 -- Applies a function to every pixel in-place.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/image_api.rs and docs/specs/image.md).
-do  -- TODO: mlua:mapPixels
-  local _todo = "TODO: write a real mlua:mapPixels usage example"
-  print(_todo)
+-- Like mapPixel but emphasises bulk transform; the callback signature is identical.
+do  -- mlua:mapPixels
+  local img = lurek.image.newImageData(32, 32)
+  img:fill(100, 100, 100, 255)
+  img:mapPixels(function(_, _, r, g, b, a) return r + 50, g, b, a end)
 end
 
 --@api-stub: mlua:applyPaletteLut
 -- Applies a `PaletteLUT` to the image in place, replacing exact colour matches.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/image_api.rs and docs/specs/image.md).
-do  -- TODO: mlua:applyPaletteLut
-  local _todo = "TODO: write a real mlua:applyPaletteLut usage example"
-  print(_todo)
+-- Pixels not present in the LUT are left unchanged; build the LUT once and reuse for many sprites.
+do  -- mlua:applyPaletteLut
+  local img = lurek.image.newImageData("assets/hero.png")
+  local lut = lurek.image.newPaletteLut()
+  img:applyPaletteLut(lut)
+  lurek.image.savePNG(img, "save/hero_recoloured.png")
 end
 
 --@api-stub: mlua:setRawData
 -- Replaces all pixel data from a raw RGBA byte string.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/image_api.rs and docs/specs/image.md).
-do  -- TODO: mlua:setRawData
-  local _todo = "TODO: write a real mlua:setRawData usage example"
-  print(_todo)
+-- The string length must equal width * height * 4; useful for piping bytes from network or compute.
+do  -- mlua:setRawData
+  local img = lurek.image.newImageData(2, 2)
+  local bytes = string.rep(string.char(255, 0, 0, 255), 4)
+  img:setRawData(bytes)
+  lurek.image.savePNG(img, "save/red2x2.png")
 end
 
 -- ── PaletteLUT methods ──
 
 --@api-stub: PaletteLUT:getColorCount
 -- Returns the number of colour mapping entries.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/image_api.rs and docs/specs/image.md).
-do  -- TODO: PaletteLUT:getColorCount
-  local _todo = "TODO: write a real PaletteLUT:getColorCount usage example"
-  print(_todo)
+-- Read to size a UI list of remap entries or to detect an empty LUT before applying.
+do  -- PaletteLUT:getColorCount
+  local lut = lurek.image.newPaletteLut()
+  local n = lut:getColorCount()
+  if n == 0 then
+    lurek.log.info("lut is empty, no remaps configured", "image")
+  end
 end
 
 --@api-stub: PaletteLUT:clear
 -- Removes all colour mapping entries.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/image_api.rs and docs/specs/image.md).
-do  -- TODO: PaletteLUT:clear
-  local _todo = "TODO: write a real PaletteLUT:clear usage example"
-  print(_todo)
+-- Call before rebuilding a LUT from a new palette so old entries are not accidentally retained.
+do  -- PaletteLUT:clear
+  local lut = lurek.image.newPaletteLut()
+  lut:clear()
+  lurek.log.info("lut reset, count=" .. lut:getColorCount(), "image")
 end
-
