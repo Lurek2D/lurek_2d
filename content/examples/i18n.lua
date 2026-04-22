@@ -1,23 +1,9 @@
 -- content/examples/i18n.lua
--- Scaffolded coverage of the lurek.i18n API (31 items).
+-- Hand-written coverage of the lurek.i18n API (31 items).
 --
--- Every --@api-stub: block below is a SCAFFOLD. The body must be
--- replaced by hand with a 3-6 line real usage snippet showing how to
--- call the API in real game context, written by reading:
---   * src/lua_api/i18n_api.rs   (Lua binding, arg types, return shape)
---   * src/i18n/                 (semantics, side effects)
---   * docs/specs/i18n.md        (canonical reference)
---
--- Snippet rules (love2d-wiki style):
---   * NO `return` at top-level (breaks the file).
---   * NO `pcall` defensive wrappers, NO `if false then`.
---   * Wrap GPU / audio / physics calls inside
---     `function lurek.render() ... end` or
---     `function lurek.update(dt) ... end` callbacks so the file loads.
---   * Use REAL values: paths like "sfx/jump.ogg", keys like "space",
---     colours like {1, 0.5, 0, 1}.
---   * Keep the two `--` comment lines: 1) what the API does (use the
---     existing description), 2) one line of practical advice.
+-- Translation tables are flat dot-path maps ("ui.menu.start" = "Start") and the
+-- catalog falls back through setFallbacks() when a key is missing. `t` handles
+-- {placeholder} interpolation and CLDR-style .one/.other plural variants.
 --
 -- Run: cargo run -- content/examples/i18n.lua
 
@@ -25,249 +11,309 @@
 
 --@api-stub: lurek.i18n.loadTable
 -- Loads a language table under the given locale code.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/i18n_api.rs and docs/specs/i18n.md).
-do  -- TODO: lurek.i18n.loadTable
-  local _todo = "TODO: write a real lurek.i18n.loadTable usage example"
-  print(_todo)
+-- Pass a nested table; keys are flattened with dot-paths so designers can group strings naturally.
+do  -- lurek.i18n.loadTable
+  lurek.i18n.loadTable("en", {
+    ui = { start = "Start", quit = "Quit" },
+    hud = { score = "Score: {n}" },
+  })
 end
 
 --@api-stub: lurek.i18n.unloadTable
 -- Unloads a locale from the catalog.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/i18n_api.rs and docs/specs/i18n.md).
-do  -- TODO: lurek.i18n.unloadTable
-  local _todo = "TODO: write a real lurek.i18n.unloadTable usage example"
-  print(_todo)
+-- Returns true if the locale existed; useful when hot-swapping language packs from a mod folder.
+do  -- lurek.i18n.unloadTable
+  lurek.i18n.loadTable("xx", { ui = { start = "Go" } })
+  local removed = lurek.i18n.unloadTable("xx")
+  lurek.log.info("xx removed=" .. tostring(removed), "i18n")
 end
 
 --@api-stub: lurek.i18n.setLanguage
 -- Sets the active translation language.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/i18n_api.rs and docs/specs/i18n.md).
-do  -- TODO: lurek.i18n.setLanguage
-  local _todo = "TODO: write a real lurek.i18n.setLanguage usage example"
-  print(_todo)
+-- Fires every onLanguageChange callback with (new, old); call after loadTable for that locale.
+do  -- lurek.i18n.setLanguage
+  lurek.i18n.loadTable("fr", { ui = { start = "Commencer" } })
+  lurek.i18n.setLanguage("fr")
 end
 
 --@api-stub: lurek.i18n.getLanguage
 -- Returns the currently active locale code, or nil if unset.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/i18n_api.rs and docs/specs/i18n.md).
-do  -- TODO: lurek.i18n.getLanguage
-  local _todo = "TODO: write a real lurek.i18n.getLanguage usage example"
-  print(_todo)
+-- Branch on this when persisting the player's language choice into the save file.
+do  -- lurek.i18n.getLanguage
+  local active = lurek.i18n.getLanguage()
+  if active then
+    lurek.log.info("active locale=" .. active, "i18n")
+  end
 end
 
 --@api-stub: lurek.i18n.getLanguages
 -- Returns all loaded locale codes.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/i18n_api.rs and docs/specs/i18n.md).
-do  -- TODO: lurek.i18n.getLanguages
-  local _todo = "TODO: write a real lurek.i18n.getLanguages usage example"
-  print(_todo)
+-- Use to populate a language-picker dropdown in the options menu.
+do  -- lurek.i18n.getLanguages
+  for _, code in ipairs(lurek.i18n.getLanguages()) do
+    lurek.log.info("available: " .. code, "i18n")
+  end
 end
 
 --@api-stub: lurek.i18n.setFallbacks
 -- Sets the ordered list of fallback locale codes tried when a key is missing.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/i18n_api.rs and docs/specs/i18n.md).
-do  -- TODO: lurek.i18n.setFallbacks
-  local _todo = "TODO: write a real lurek.i18n.setFallbacks usage example"
-  print(_todo)
+-- Order matters: regional variants first, then base language, then English as a last resort.
+do  -- lurek.i18n.setFallbacks
+  lurek.i18n.loadTable("en", { ui = { quit = "Quit" } })
+  lurek.i18n.setFallbacks({ "en-US", "en" })
 end
 
 --@api-stub: lurek.i18n.getFallbacks
 -- Returns the current fallback locale array.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/i18n_api.rs and docs/specs/i18n.md).
-do  -- TODO: lurek.i18n.getFallbacks
-  local _todo = "TODO: write a real lurek.i18n.getFallbacks usage example"
-  print(_todo)
+-- Inspect on startup to verify a config file was applied before any translation lookup runs.
+do  -- lurek.i18n.getFallbacks
+  local chain = lurek.i18n.getFallbacks()
+  lurek.log.info("fallback depth=" .. #chain, "i18n")
 end
 
 --@api-stub: lurek.i18n.t
--- Translates a key against the active locale with optional variable.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/i18n_api.rs and docs/specs/i18n.md).
-do  -- TODO: lurek.i18n.t
-  local _todo = "TODO: write a real lurek.i18n.t usage example"
-  print(_todo)
+-- Translates a key against the active locale with optional variable substitution and pluralization.
+-- Pass a vars table for {name} placeholders; pass count to pick between key.one and key.other.
+do  -- lurek.i18n.t
+  lurek.i18n.loadTable("en", {
+    hud = { score = "Score: {n}", lives = { one = "1 life", other = "{count} lives" } },
+  })
+  lurek.i18n.setLanguage("en")
+  local hud = lurek.i18n.t("hud.score", { n = "1500" })
+  local lives = lurek.i18n.t("hud.lives", nil, 3)
+  lurek.log.info(hud .. " / " .. lives, "i18n")
 end
 
 --@api-stub: lurek.i18n.hasKey
 -- Returns whether a key exists in the active locale.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/i18n_api.rs and docs/specs/i18n.md).
-do  -- TODO: lurek.i18n.hasKey
-  local _todo = "TODO: write a real lurek.i18n.hasKey usage example"
-  print(_todo)
+-- Use before t() when a missing key should trigger a different code path rather than a placeholder string.
+do  -- lurek.i18n.hasKey
+  lurek.i18n.loadTable("en", { ui = { start = "Start" } })
+  lurek.i18n.setLanguage("en")
+  if not lurek.i18n.hasKey("ui.credits") then
+    lurek.log.warn("ui.credits not localised yet", "i18n")
+  end
 end
 
 --@api-stub: lurek.i18n.getKeys
 -- Returns all known keys for the active locale.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/i18n_api.rs and docs/specs/i18n.md).
-do  -- TODO: lurek.i18n.getKeys
-  local _todo = "TODO: write a real lurek.i18n.getKeys usage example"
-  print(_todo)
+-- Handy for editor tooling or dumping a coverage diff against a reference locale.
+do  -- lurek.i18n.getKeys
+  lurek.i18n.loadTable("en", { ui = { start = "Start", quit = "Quit" } })
+  lurek.i18n.setLanguage("en")
+  local total = #lurek.i18n.getKeys()
+  lurek.log.info("en key count=" .. total, "i18n")
 end
 
 --@api-stub: lurek.i18n.setKey
 -- Inserts or overwrites a single key in the given locale.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/i18n_api.rs and docs/specs/i18n.md).
-do  -- TODO: lurek.i18n.setKey
-  local _todo = "TODO: write a real lurek.i18n.setKey usage example"
-  print(_todo)
+-- Useful for runtime patches (mod overrides, dynamic NPC names) without rebuilding the table.
+do  -- lurek.i18n.setKey
+  lurek.i18n.loadTable("en", { ui = { start = "Start" } })
+  lurek.i18n.setKey("en", "ui.continue", "Continue")
+  lurek.i18n.setLanguage("en")
+  lurek.log.info(lurek.i18n.t("ui.continue"), "i18n")
 end
 
 --@api-stub: lurek.i18n.interpolate
 -- Interpolates {name} placeholders in a template string.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/i18n_api.rs and docs/specs/i18n.md).
-do  -- TODO: lurek.i18n.interpolate
-  local _todo = "TODO: write a real lurek.i18n.interpolate usage example"
-  print(_todo)
+-- Reach for this when formatting strings that aren't in the catalog (debug overlays, log lines).
+do  -- lurek.i18n.interpolate
+  local msg = lurek.i18n.interpolate(
+    "Player {name} reached level {lvl}",
+    { name = "Aria", lvl = "7" }
+  )
+  lurek.log.info(msg, "i18n")
 end
 
 --@api-stub: lurek.i18n.pluralFor
 -- Returns the CLDR plural category for a number ("one" or "other", etc.).
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/i18n_api.rs and docs/specs/i18n.md).
-do  -- TODO: lurek.i18n.pluralFor
-  local _todo = "TODO: write a real lurek.i18n.pluralFor usage example"
-  print(_todo)
+-- Use to pick a manual plural variant when t()'s built-in plural lookup isn't enough.
+do  -- lurek.i18n.pluralFor
+  for _, n in ipairs({ 0, 1, 5 }) do
+    local cat = lurek.i18n.pluralFor(n)
+    lurek.log.info("n=" .. n .. " -> " .. cat, "i18n")
+  end
 end
 
 --@api-stub: lurek.i18n.onLanguageChange
 -- Registers a callback invoked when setLanguage() is called.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/i18n_api.rs and docs/specs/i18n.md).
-do  -- TODO: lurek.i18n.onLanguageChange
-  local _todo = "TODO: write a real lurek.i18n.onLanguageChange usage example"
-  print(_todo)
+-- Use to refresh cached string textures (font atlases, pre-rendered HUD labels) on language switch.
+do  -- lurek.i18n.onLanguageChange
+  lurek.i18n.onLanguageChange(function(new_locale, old_locale)
+    lurek.log.info("locale changed " .. tostring(old_locale) .. " -> " .. new_locale, "i18n")
+  end)
+  lurek.i18n.loadTable("de", { ui = { start = "Start" } })
+  lurek.i18n.setLanguage("de")
 end
 
 --@api-stub: lurek.i18n.hasLanguage
 -- Returns whether a locale has been loaded.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/i18n_api.rs and docs/specs/i18n.md).
-do  -- TODO: lurek.i18n.hasLanguage
-  local _todo = "TODO: write a real lurek.i18n.hasLanguage usage example"
-  print(_todo)
+-- Cheaper than scanning getLanguages(); call before setLanguage() to avoid switching to an empty catalog.
+do  -- lurek.i18n.hasLanguage
+  lurek.i18n.loadTable("ja", { ui = { start = "開始" } })
+  if lurek.i18n.hasLanguage("ja") then
+    lurek.i18n.setLanguage("ja")
+  end
 end
 
 --@api-stub: lurek.i18n.getAvailableLanguages
 -- Returns all loaded locale codes (alias for getLanguages).
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/i18n_api.rs and docs/specs/i18n.md).
-do  -- TODO: lurek.i18n.getAvailableLanguages
-  local _todo = "TODO: write a real lurek.i18n.getAvailableLanguages usage example"
-  print(_todo)
+-- Prefer this name in UI code where "available" reads better than "loaded".
+do  -- lurek.i18n.getAvailableLanguages
+  local langs = lurek.i18n.getAvailableLanguages()
+  lurek.log.info("options menu langs=" .. #langs, "i18n")
 end
 
 --@api-stub: lurek.i18n.setBase
 -- Sets the base/fallback language (adds it as first fallback).
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/i18n_api.rs and docs/specs/i18n.md).
-do  -- TODO: lurek.i18n.setBase
-  local _todo = "TODO: write a real lurek.i18n.setBase usage example"
-  print(_todo)
+-- Set once at boot to the locale your source strings are written in (typically "en").
+do  -- lurek.i18n.setBase
+  lurek.i18n.setBase("en")
 end
 
 --@api-stub: lurek.i18n.getBase
 -- Returns the base/fallback language.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/i18n_api.rs and docs/specs/i18n.md).
-do  -- TODO: lurek.i18n.getBase
-  local _todo = "TODO: write a real lurek.i18n.getBase usage example"
-  print(_todo)
+-- Use to know which locale a translator should diff their work against.
+do  -- lurek.i18n.getBase
+  local base = lurek.i18n.getBase()
+  if base ~= "" then
+    lurek.log.info("source locale=" .. base, "i18n")
+  end
 end
 
 --@api-stub: lurek.i18n.onChange
 -- Registers a callback invoked when setLanguage() is called (alias: onChange).
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/i18n_api.rs and docs/specs/i18n.md).
-do  -- TODO: lurek.i18n.onChange
-  local _todo = "TODO: write a real lurek.i18n.onChange usage example"
-  print(_todo)
+-- Shorter spelling; both onChange and onLanguageChange push to the same callback list.
+do  -- lurek.i18n.onChange
+  lurek.i18n.onChange(function(new_locale, _old)
+    lurek.log.info("UI rebuild for " .. new_locale, "i18n")
+  end)
 end
 
 --@api-stub: lurek.i18n.offChange
 -- Unregisters all onChange callbacks.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/i18n_api.rs and docs/specs/i18n.md).
-do  -- TODO: lurek.i18n.offChange
-  local _todo = "TODO: write a real lurek.i18n.offChange usage example"
-  print(_todo)
+-- Call on scene teardown so dead UI handlers don't fire when the next scene switches language.
+do  -- lurek.i18n.offChange
+  lurek.i18n.onChange(function() end)
+  lurek.i18n.offChange()
+  lurek.log.info("locale-change handlers cleared", "i18n")
 end
 
 --@api-stub: lurek.i18n.keyCount
 -- Returns the number of keys loaded in the active locale.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/i18n_api.rs and docs/specs/i18n.md).
-do  -- TODO: lurek.i18n.keyCount
-  local _todo = "TODO: write a real lurek.i18n.keyCount usage example"
-  print(_todo)
+-- Display in a dev overlay to spot when a locale ships with far fewer entries than the base.
+do  -- lurek.i18n.keyCount
+  lurek.i18n.loadTable("en", { ui = { start = "Start", quit = "Quit" } })
+  lurek.i18n.setLanguage("en")
+  lurek.log.info("active locale has " .. lurek.i18n.keyCount() .. " keys", "i18n")
 end
 
 --@api-stub: lurek.i18n.categories
 -- Returns unique first-path-segment category prefixes for all active locale keys.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/i18n_api.rs and docs/specs/i18n.md).
-do  -- TODO: lurek.i18n.categories
-  local _todo = "TODO: write a real lurek.i18n.categories usage example"
-  print(_todo)
+-- Use to drive a sectioned in-game string browser ("ui", "hud", "dialog", ...).
+do  -- lurek.i18n.categories
+  lurek.i18n.loadTable("en", { ui = { start = "Start" }, hud = { score = "S" } })
+  lurek.i18n.setLanguage("en")
+  for _, c in ipairs(lurek.i18n.categories()) do
+    lurek.log.info("category " .. c, "i18n")
+  end
 end
 
 --@api-stub: lurek.i18n.keysInCategory
 -- Returns all keys in the active locale whose first path segment matches category.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/i18n_api.rs and docs/specs/i18n.md).
-do  -- TODO: lurek.i18n.keysInCategory
-  local _todo = "TODO: write a real lurek.i18n.keysInCategory usage example"
-  print(_todo)
+-- Pair with categories() to lazily build a translator-tools panel one section at a time.
+do  -- lurek.i18n.keysInCategory
+  lurek.i18n.loadTable("en", { ui = { start = "Start", quit = "Quit" } })
+  lurek.i18n.setLanguage("en")
+  local ui_keys = lurek.i18n.keysInCategory("ui")
+  lurek.log.info("ui-section keys=" .. #ui_keys, "i18n")
 end
 
 --@api-stub: lurek.i18n.search
 -- Searches active locale values for a substring query (case-insensitive).
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/i18n_api.rs and docs/specs/i18n.md).
-do  -- TODO: lurek.i18n.search
-  local _todo = "TODO: write a real lurek.i18n.search usage example"
-  print(_todo)
+-- For one-off searches; build an inverted index (buildIndex) when querying repeatedly.
+do  -- lurek.i18n.search
+  lurek.i18n.loadTable("en", { ui = { start = "Start", restart = "Restart" } })
+  lurek.i18n.setLanguage("en")
+  local hits = lurek.i18n.search("start", 10)
+  lurek.log.info("matches=" .. #hits, "i18n")
 end
 
 --@api-stub: lurek.i18n.buildIndex
 -- Builds an inverted word index for the active locale.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/i18n_api.rs and docs/specs/i18n.md).
-do  -- TODO: lurek.i18n.buildIndex
-  local _todo = "TODO: write a real lurek.i18n.buildIndex usage example"
-  print(_todo)
+-- Cache the returned table once; repeat searchIndexed() calls run in O(query words) instead of O(keys).
+do  -- lurek.i18n.buildIndex
+  lurek.i18n.loadTable("en", { ui = { start = "Start game", quit = "Quit game" } })
+  lurek.i18n.setLanguage("en")
+  local index = lurek.i18n.buildIndex()
+  lurek.log.info("indexed words=" .. tostring(next(index) ~= nil), "i18n")
 end
 
 --@api-stub: lurek.i18n.searchIndexed
 -- Searches the provided pre-built index for entries matching all words in query.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/i18n_api.rs and docs/specs/i18n.md).
-do  -- TODO: lurek.i18n.searchIndexed
-  local _todo = "TODO: write a real lurek.i18n.searchIndexed usage example"
-  print(_todo)
+-- Multi-word queries intersect the per-word key sets, so order of words doesn't matter.
+do  -- lurek.i18n.searchIndexed
+  lurek.i18n.loadTable("en", { ui = { start = "Start game", quit = "Quit game" } })
+  lurek.i18n.setLanguage("en")
+  local index = lurek.i18n.buildIndex()
+  local matches = lurek.i18n.searchIndexed(index, "start game", 5)
+  lurek.log.info("indexed matches=" .. #matches, "i18n")
 end
 
 --@api-stub: lurek.i18n.mergeLocale
--- Merges a flat keyâ†’value table into an existing locale without replacing the whole table.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/i18n_api.rs and docs/specs/i18n.md).
-do  -- TODO: lurek.i18n.mergeLocale
-  local _todo = "TODO: write a real lurek.i18n.mergeLocale usage example"
-  print(_todo)
+-- Merges a flat key→value table into an existing locale without replacing the whole table.
+-- Use for incremental loads: ship the base pack at boot, then merge per-scene strings on demand.
+do  -- lurek.i18n.mergeLocale
+  lurek.i18n.loadTable("en", { ui = { start = "Start" } })
+  lurek.i18n.mergeLocale("en", {
+    ["dialog.intro"] = "Welcome, traveller.",
+    ["dialog.outro"] = "Farewell.",
+  })
 end
 
 --@api-stub: lurek.i18n.formatNumber
 -- Formats a number with locale-aware decimal and thousands separators.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/i18n_api.rs and docs/specs/i18n.md).
-do  -- TODO: lurek.i18n.formatNumber
-  local _todo = "TODO: write a real lurek.i18n.formatNumber usage example"
-  print(_todo)
+-- European locales (de, fr, ...) emit "1.234,50"; pass {decimals=N} to control precision.
+do  -- lurek.i18n.formatNumber
+  lurek.i18n.setLanguage("de")
+  local price = lurek.i18n.formatNumber(1234.5, { decimals = 2 })
+  lurek.log.info("DE price=" .. price, "i18n")
 end
 
 --@api-stub: lurek.i18n.formatDate
 -- Formats a Unix timestamp according to the active locale's date order.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/i18n_api.rs and docs/specs/i18n.md).
-do  -- TODO: lurek.i18n.formatDate
-  local _todo = "TODO: write a real lurek.i18n.formatDate usage example"
-  print(_todo)
+-- Pass "iso" for machine-readable, "short" for HUD use, "long" for dialog/UI prose.
+do  -- lurek.i18n.formatDate
+  lurek.i18n.setLanguage("en")
+  local stamp = lurek.i18n.formatDate(1700000000, "long")
+  lurek.log.info("save written " .. stamp, "i18n")
 end
 
 --@api-stub: lurek.i18n.tGender
 -- Looks up a translation key augmented with a gender suffix.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/i18n_api.rs and docs/specs/i18n.md).
-do  -- TODO: lurek.i18n.tGender
-  local _todo = "TODO: write a real lurek.i18n.tGender usage example"
-  print(_todo)
+-- Falls back to the bare key if the gendered variant is missing, so partial coverage is safe.
+do  -- lurek.i18n.tGender
+  lurek.i18n.loadTable("en", {
+    npc = {
+      greet = {
+        masculine = "He waves at you.",
+        feminine = "She waves at you.",
+        neutral = "They wave at you.",
+      },
+    },
+  })
+  lurek.i18n.setLanguage("en")
+  local line = lurek.i18n.tGender("npc.greet", "feminine")
+  lurek.log.info(line, "i18n")
 end
 
 --@api-stub: lurek.i18n.getLoadedLocales
 -- Returns an array of all currently loaded locale codes.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/i18n_api.rs and docs/specs/i18n.md).
-do  -- TODO: lurek.i18n.getLoadedLocales
-  local _todo = "TODO: write a real lurek.i18n.getLoadedLocales usage example"
-  print(_todo)
+-- Equivalent to getLanguages(); prefer this name in save/load code that talks about "locales".
+do  -- lurek.i18n.getLoadedLocales
+  lurek.i18n.loadTable("en", { ui = { start = "Start" } })
+  lurek.i18n.loadTable("fr", { ui = { start = "Commencer" } })
+  local locales = lurek.i18n.getLoadedLocales()
+  lurek.log.info("loaded locale count=" .. #locales, "i18n")
 end
-
