@@ -628,3 +628,30 @@ do  -- Database:typeOf
     lurek.log.info("Database is an Object")
   end
 end
+
+--@api-stub: GroupedFrame:aggregate
+-- Apply a Lua aggregator function to a column within each group.
+-- fn(values_table) -> number  -- receives all column values for the group, returns one number.
+do  -- GroupedFrame:aggregate
+  local df = lurek.dataframe.newFrame({ damage = {12, 8, 20, 5}, class = {"warrior","mage","warrior","mage"} })
+  local grouped = df:groupBy("class")
+  if grouped and grouped.aggregate then
+    local result = grouped:aggregate("damage", function(vals)
+      local sum = 0
+      for _, v in ipairs(vals) do sum = sum + v end
+      return sum / #vals  -- mean
+    end)
+    lurek.log.debug("aggregate done", "dataframe")
+  end
+end
+
+--@api-stub: DataFrame:groupByObj
+-- Group the frame by an object-type column (uses identity comparison).
+-- Returns a GroupedFrame; call :aggregate() on it to reduce per-group.
+do  -- DataFrame:groupByObj
+  local df = lurek.dataframe.newFrame({ score = {1,2,3}, key = {"a","b","a"} })
+  if df.groupByObj then
+    local grouped = df:groupByObj("key")
+    lurek.log.debug("groupByObj returned: " .. tostring(grouped), "dataframe")
+  end
+end

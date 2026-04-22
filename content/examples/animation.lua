@@ -501,3 +501,17 @@ do  -- AnimSyncGroup:memberCount
   squad:add(1); squad:add(2)
   if squad:memberCount() > 0 then lurek.log.info("squad alive: " .. squad:memberCount(), "anim") end
 end
+
+--@api-stub: AnimCurve:setCustomEasing
+-- Attach a Lua function as the easing for this curve. The function receives a
+-- normalised t in [0,1] and must return the eased value (also in [0,1]).
+do  -- AnimCurve:setCustomEasing
+  if lurek.animation.newCurve then
+    local c = lurek.animation.newCurve()
+    c:setCustomEasing(function(t)
+      -- Smoothstep
+      return t * t * (3 - 2 * t)
+    end)
+    lurek.log.debug("custom easing attached", "anim")
+  end
+end

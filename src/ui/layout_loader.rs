@@ -309,7 +309,7 @@ fn create_from_def(ctx: &mut GuiContext, def: &WidgetDef) -> Result<usize, Strin
         "slider" => ctx.add_slider(def.min.unwrap_or(0.0), def.max.unwrap_or(1.0)),
         "progressbar" => ctx.add_progress_bar(def.min.unwrap_or(0.0), def.max.unwrap_or(1.0)),
         "combobox" => ctx.add_combo_box(),
-        "listbox" => ctx.add_list_box(),
+        "listbox" | "list" => ctx.add_list_box(),
         "panel" => ctx.add_panel(),
         "layout" => {
             let dir = def
@@ -344,7 +344,7 @@ fn create_from_def(ctx: &mut GuiContext, def: &WidgetDef) -> Result<usize, Strin
                 .unwrap_or(true);
             ctx.add_scroll_bar(vertical)
         }
-        "guiwindow" => ctx.add_gui_window(def.text.clone().unwrap_or_default()),
+        "guiwindow" | "window" => ctx.add_gui_window(def.text.clone().unwrap_or_default()),
         "splitpanel" => ctx.add_split_panel(
             def.orientation
                 .clone()
@@ -364,10 +364,11 @@ fn create_from_def(ctx: &mut GuiContext, def: &WidgetDef) -> Result<usize, Strin
         "tooltippanel" => ctx.add_tooltip_panel(def.text.clone().unwrap_or_default()),
         "colorpicker" => ctx.add_color_picker(),
         "guitable" => ctx.add_gui_table(),
-        "imagewidget" => ctx.add_image_widget(),
+        "imagewidget" | "image" => ctx.add_image_widget(),
         "spinbox" => ctx.add_spin_box(def.min.unwrap_or(0.0), def.max.unwrap_or(100.0)),
         "switch" => ctx.add_switch(def.on.unwrap_or(false)),
         "badge" => ctx.add_badge(def.value.map(|v| v as u32).unwrap_or(0)),
+        "custom" => ctx.add_custom_widget(),
         unknown => return Err(format!("Unknown widget type: \"{unknown}\"")),
     };
 
@@ -508,6 +509,7 @@ fn widget_kind_color(kind: &WidgetKind) -> [u8; 4] {
         WidgetKind::TooltipPanel(_) => [200, 200, 150, 220],
         WidgetKind::MenuItem(_) => [80, 90, 100, 255],
         WidgetKind::Toast(_) => [160, 120, 60, 220],
+        WidgetKind::Custom(_) => [255, 200, 100, 200],
     }
 }
 

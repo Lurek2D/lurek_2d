@@ -1435,3 +1435,43 @@ do  -- PhysicsShape:destroy
   shape:destroy()
   shape = nil
 end
+
+--@api-stub: lurek.physics.testAABB
+-- Test overlap between two axis-aligned bounding boxes.
+-- Returns true if the boxes overlap; false otherwise.
+do  -- lurek.physics.testAABB
+  if lurek.physics.testAABB then
+    local hit = lurek.physics.testAABB(0, 0, 10, 10, 5, 5, 20, 20)
+    lurek.log.debug("AABB overlap=" .. tostring(hit), "physics")
+  end
+end
+
+--@api-stub: lurek.physics.testCircles
+-- Test overlap between two circles defined by centre and radius.
+-- Returns true if the circles overlap.
+do  -- lurek.physics.testCircles
+  if lurek.physics.testCircles then
+    local hit = lurek.physics.testCircles(0, 0, 5, 3, 3, 5)
+    lurek.log.debug("circles overlap=" .. tostring(hit), "physics")
+  end
+end
+
+--@api-stub: lurek.physics.testCircleAABB
+-- Test overlap between a circle and an AABB.
+-- Returns true if the shapes overlap.
+do  -- lurek.physics.testCircleAABB
+  if lurek.physics.testCircleAABB then
+    local hit = lurek.physics.testCircleAABB(5, 5, 3, 0, 0, 10, 10)
+    lurek.log.debug("circle-AABB overlap=" .. tostring(hit), "physics")
+  end
+end
+
+--@api-stub: lurek.physics.testPoint
+-- Test whether a point lies inside an AABB.
+-- Returns true if the point is within the box.
+do  -- lurek.physics.testPoint
+  if lurek.physics.testPoint then
+    local hit = lurek.physics.testPoint(5, 5, 0, 0, 10, 10)
+    lurek.log.debug("point-in-AABB=" .. tostring(hit), "physics")
+  end
+end

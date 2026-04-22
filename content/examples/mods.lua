@@ -429,3 +429,65 @@ do  -- ModManager:clearReloadQueue
   mgr:clearReloadQueue()
   lurek.log.debug("queue size=" .. #mgr:getReloadQueue(), "mods")
 end
+
+-- ── Content Registry ──────────────────────────────────────────────────────────
+
+--@api-stub: lurek.mods.newRegistry
+-- Create a new typed content registry for mod-contributed assets and objects.
+-- Registries are standalone — attach them to a mod or keep them global.
+do  -- lurek.mods.newRegistry
+  local reg = lurek.mods.newRegistry()
+  lurek.log.debug("registry created", "mods")
+end
+
+--@api-stub: ContentRegistry:registerType
+-- Register a new content type before inserting entries.
+-- All entries must be registered under a declared type.
+do  -- ContentRegistry:registerType
+  local reg = lurek.mods.newRegistry()
+  reg:registerType("weapon")
+  lurek.log.debug("registered type 'weapon'", "mods")
+end
+
+--@api-stub: ContentRegistry:register
+-- Insert a content entry under a previously registered type.
+-- @param type_name string, @param id string, @param obj any
+do  -- ContentRegistry:register
+  local reg = lurek.mods.newRegistry()
+  reg:registerType("weapon")
+  reg:register("weapon", "iron_sword", { name = "Iron Sword", damage = 12 })
+  lurek.log.debug("registered iron_sword", "mods")
+end
+
+--@api-stub: ContentRegistry:get
+-- Retrieve a content entry by type and id.
+-- Returns nil if not found.
+do  -- ContentRegistry:get
+  local reg = lurek.mods.newRegistry()
+  reg:registerType("spell")
+  reg:register("spell", "fireball", { cost = 10 })
+  local s = reg:get("spell", "fireball")
+  lurek.log.debug("spell cost=" .. (s and s.cost or "nil"), "mods")
+end
+
+--@api-stub: ContentRegistry:getAll
+-- Return a table of all entries for a type as {id: obj} map.
+-- Keys are the entry ids; values are the registered objects.
+do  -- ContentRegistry:getAll
+  local reg = lurek.mods.newRegistry()
+  reg:registerType("item")
+  reg:register("item", "potion", { name = "Potion" })
+  local all = reg:getAll("item")
+  lurek.log.debug("item count=" .. (all.potion and 1 or 0), "mods")
+end
+
+--@api-stub: ContentRegistry:getTypes
+-- Return an array of all registered type names in this registry.
+-- Useful for mod inspection UIs and validation passes.
+do  -- ContentRegistry:getTypes
+  local reg = lurek.mods.newRegistry()
+  reg:registerType("creature")
+  reg:registerType("item")
+  local types = reg:getTypes()
+  lurek.log.debug("type count=" .. #types, "mods")
+end

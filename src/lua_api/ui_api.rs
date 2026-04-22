@@ -421,7 +421,7 @@ fn create_widget_table<'a>(
     let cbs2 = cbs.clone();
     t.set(
         "setOnDraw",
-        lua.create_function(move |lua, f: LuaFunction| {
+        lua.create_function(move |lua, (_self, f): (LuaValue, LuaFunction)| {
             let key = lua.create_registry_value(f)?;
             cbs2.borrow_mut().on_draw.insert(idx, key);
             Ok(())
@@ -5599,9 +5599,88 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     )?;
 
     // -- draw --
-    /// Headless compatibility stub for GUI draw.
+    /// Invokes all registered on_draw callbacks, each receiving the widget's
+    /// computed screen-space rect as a table `{x, y, w, h}`.
     /// @return nil
-    tbl.set("draw", lua.create_function(|_, ()| Ok(()))?)?;
+    let c = ctx.clone();
+    let cbs_draw = callbacks.clone();
+    tbl.set(
+        "draw",
+        lua.create_function(move |lua, ()| {
+            let widget_ids: Vec<usize> =
+                cbs_draw.borrow().on_draw.keys().copied().collect();
+            for widget_idx in widget_ids {
+                let (rx, ry, rw, rh) = {
+                    let g = c.borrow();
+                    g.widgets
+                        .get(widget_idx)
+                        .map(|w| {
+                            let r = &w.base().computed_rect;
+                            (r.x, r.y, r.width, r.height)
+                        })
+                        .unwrap_or((0.0, 0.0, 0.0, 0.0))
+                };
+                let func_opt: Option<LuaFunction> = {
+                    let cbs = cbs_draw.borrow();
+                    cbs.on_draw
+                        .get(&widget_idx)
+                        .map(|key| lua.registry_value(key))
+                        .transpose()?
+                };
+                if let Some(func) = func_opt {
+                    let rect = lua.create_table()?;
+                    rect.set("x", rx)?;
+                    rect.set("y", ry)?;
+                    rect.set("w", rw)?;
+                    rect.set("h", rh)?;
+                    func.call::<_, ()>(rect)?;
+                }
+            }
+            Ok(())
+        })?,
+    )?;
+
+    // -- newCustomWidget --
+    /// Creates a new widget with custom Lua-driven rendering.
+    /// @param config : table  — { id?, x?, y?, width?, height?, visible?, enabled? }
+    /// @return table
+    let c = ctx.clone();
+    let cbs = callbacks.clone();
+    tbl.set(
+        "newCustomWidget",
+        lua.create_function(move |lua, config: Option<LuaTable>| {
+            let idx = {
+                let mut g = c.borrow_mut();
+                let idx = g.add_custom_widget();
+                if let Some(ref cfg) = config {
+                    let b = g.widgets[idx].base_mut();
+                    if let Ok(v) = cfg.get::<_, f32>("x") {
+                        b.x = v;
+                    }
+                    if let Ok(v) = cfg.get::<_, f32>("y") {
+                        b.y = v;
+                    }
+                    if let Ok(v) = cfg.get::<_, f32>("width") {
+                        b.width = v;
+                    }
+                    if let Ok(v) = cfg.get::<_, f32>("height") {
+                        b.height = v;
+                    }
+                    if let Ok(v) = cfg.get::<_, String>("id") {
+                        b.id = v;
+                    }
+                    if let Ok(v) = cfg.get::<_, bool>("visible") {
+                        b.visible = v;
+                    }
+                    if let Ok(v) = cfg.get::<_, bool>("enabled") {
+                        b.enabled = v;
+                    }
+                }
+                idx
+            };
+            create_widget_table(lua, &c, idx, &cbs)
+        })?,
+    )?;
 
     // -- getWidgetCount --
     /// Returns the total widget count in the context.

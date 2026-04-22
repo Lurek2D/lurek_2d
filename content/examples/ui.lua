@@ -3119,3 +3119,29 @@ do  -- AreaChart:drawToImage
   w:drawToImage()
 end
 
+-- ── Custom widget extensibility ──
+
+--@api-stub: Image_Widget:newCustomWidget
+-- Creates a widget with fully Lua-driven rendering via an on_draw callback.
+-- Call once during init to register the widget; call lurek.ui.draw() each frame.
+do  -- Image_Widget:newCustomWidget
+  local widget = lurek.ui.newCustomWidget({
+    x = 50, y = 50, width = 300, height = 200, id = "health_bar",
+  })
+  if widget and widget.setOnDraw then
+    widget:setOnDraw(function(rect)
+      local health = 0.75
+      -- Draw background
+      lurek.graphic.setColor(0.2, 0.2, 0.2, 1)
+      lurek.graphic.fillRect(rect.x, rect.y, rect.w, rect.h)
+      -- Draw health fill
+      lurek.graphic.setColor(0, 1, 0, 1)
+      lurek.graphic.fillRect(rect.x, rect.y, rect.w * health, rect.h)
+      -- Draw label
+      lurek.graphic.setColor(1, 1, 1, 1)
+      lurek.graphic.print("HP: 75%", rect.x + 4, rect.y + 4)
+    end)
+  end
+  print("newCustomWidget: ok")
+end
+

@@ -1388,3 +1388,77 @@ do  -- mlua:typeOf
   end
 end
 
+--@api-stub: lurek.effect.newCustomEffect + enableAutoUniforms
+-- Creates a custom WGSL shader effect with auto-injected time and resolution uniforms.
+-- Call enableAutoUniforms() on the effect to have the engine write (time, frame, width, height)
+-- into p[3] each frame. Access them in WGSL as params.p[3].x / .y / .z / .w respectively.
+do  -- enableAutoUniforms
+  local wgsl = [[
+    @group(0) @binding(0) var t_src: texture_2d<f32>;
+    @group(0) @binding(1) var s_src: sampler;
+
+    struct PostFxParams { p: array<vec4<f32>, 4>, }
+    @group(0) @binding(2) var<uniform> params: PostFxParams;
+
+    // p[3] auto-uniform layout when enableAutoUniforms() is active:
+    //   p[3].x = total elapsed time (seconds)
+    //   p[3].y = frame count (cast to f32)
+    //   p[3].z = render target width (pixels)
+    //   p[3].w = render target height (pixels)
+
+    @fragment
+    fn fs_main(
+        @location(0) color: vec4<f32>,
+        @location(1) uv: vec2<f32>
+    ) -> @location(0) vec4<f32> {
+        let time = params.p[3].x;
+        let wave = sin(uv.x * 20.0 + time * 3.0) * 0.005;
+        let distorted_uv = vec2<f32>(uv.x, uv.y + wave);
+        return textureSample(t_src, s_src, distorted_uv);
+    }
+  ]]
+
+  local shader_id = lurek.render.newShader(wgsl)
+  local wave_effect = lurek.effect.newCustomEffect(shader_id)
+  wave_effect:enableAutoUniforms()
+  lurek.log.info("auto_uniforms=" .. tostring(wave_effect:isAutoUniforms()), "fx")
+
+  local stack = lurek.effect.newStack(1280, 720)
+  stack:add(wave_effect)
+
+  function lurek.render()
+    stack:beginCapture()
+    -- draw scene here
+    stack:endCapture()
+    stack:apply()
+  end
+end
+
+
+--@api-stub: PostFxEffect:enableAutoUniforms
+-- Enable auto-uniform injection for this effect.
+-- The engine writes (time, frame, width, height) into p[3] each frame.
+do  -- PostFxEffect:enableAutoUniforms
+  local fx = lurek.effect.newCustomEffect(0)
+  fx:enableAutoUniforms()
+  lurek.log.debug("enableAutoUniforms called", "fx")
+end
+
+--@api-stub: PostFxEffect:isAutoUniforms
+-- Returns true if auto-uniform injection is currently enabled for this effect.
+-- Check before relying on p[3] values in WGSL.
+do  -- PostFxEffect:isAutoUniforms
+  local fx = lurek.effect.newCustomEffect(0)
+  fx:enableAutoUniforms()
+  lurek.log.debug("isAutoUniforms=" .. tostring(fx:isAutoUniforms()), "fx")
+end
+
+--@api-stub: PostFxEffect:disableAutoUniforms
+-- Disable auto-uniform injection (reverts enableAutoUniforms). p[3] will not be written.
+-- Call before manually supplying custom p[3] values via setParam.
+do  -- PostFxEffect:disableAutoUniforms
+  local fx = lurek.effect.newCustomEffect(0)
+  fx:enableAutoUniforms()
+  fx:disableAutoUniforms()
+  lurek.log.debug("auto_uniforms=" .. tostring(fx:isAutoUniforms()), "fx")
+end

@@ -853,3 +853,89 @@ do  -- Trail:drawToImage
   local img = trail:drawToImage(128, 128)
   lurek.log.debug("baked trail img " .. img:getWidth() .. "px", "fx")
 end
+
+-- ── Phase 03: Lua Extensibility Hooks ──
+
+--@api-stub: ParticleSystem:addSubSystem
+-- Attaches a child emitter that updates and renders alongside the parent.
+-- Use to build layered effects: e.g. fire with a smoke sub-emitter running at half the rate.
+do  -- ParticleSystem:addSubSystem
+  local fire = lurek.particle.newSystem({
+    maxParticles = 200, emissionRate = 60,
+    lifetimeMin = 0.3, lifetimeMax = 0.7,
+    speedMin = 40, speedMax = 90,
+    direction = -math.pi / 2, spread = 0.4,
+  })
+  local smoke_idx = fire:addSubSystem({
+    maxParticles = 80, emissionRate = 20,
+    lifetimeMin = 1.0, lifetimeMax = 2.0,
+    speedMin = 10, speedMax = 30,
+    direction = -math.pi / 2, spread = 0.6,
+  })
+  lurek.log.debug("smoke sub-system index: " .. smoke_idx, "fx")
+  lurek.log.debug("sub-system count: " .. fire:subSystemCount(), "fx")
+  fire:setPosition(400, 300)
+  fire:start()
+end
+
+--@api-stub: ParticleSystem:subSystemCount
+-- Returns the number of direct child sub-systems attached to this emitter.
+-- Check before indexing to avoid out-of-range accesses.
+do  -- ParticleSystem:subSystemCount
+  local ps = lurek.particle.newSystem({ maxParticles = 64 })
+  ps:addSubSystem({ maxParticles = 16 })
+  ps:addSubSystem({ maxParticles = 16 })
+  lurek.log.debug("sub count: " .. ps:subSystemCount(), "fx")  -- 2
+end
+
+--@api-stub: ParticleSystem:setCustomEmissionShape
+-- Registers a Lua callback that returns (offset_x, offset_y) for each new particle.
+-- The callback fires once per spawned particle; return pixel offsets relative to the emitter.
+do  -- ParticleSystem:setCustomEmissionShape
+  local ps = lurek.particle.newSystem({
+    maxParticles = 128, emissionRate = 30,
+    lifetimeMin = 0.8, lifetimeMax = 1.5,
+    speedMin = 0, speedMax = 0,
+  })
+  local angle = 0
+  ps:setCustomEmissionShape(function()
+    angle = angle + 0.3
+    local r = 60 + math.sin(angle * 2) * 20
+    return math.cos(angle) * r, math.sin(angle) * r
+  end)
+  ps:setPosition(400, 300)
+  ps:start()
+end
+
+--@api-stub: ParticleSystem:setOnDeathBatch
+-- Registers a Lua callback fired after each update() with all particles that died that frame.
+-- Each entry in the batch table has fields: x, y, vx, vy (world-space position and velocity).
+do  -- ParticleSystem:setOnDeathBatch
+  local ps = lurek.particle.newSystem({
+    maxParticles = 64, emissionRate = 10,
+    lifetimeMin = 0.5, lifetimeMax = 1.0,
+    speedMin = 50, speedMax = 100,
+  })
+  ps:setOnDeathBatch(function(batch)
+    for _, entry in ipairs(batch) do
+      -- spawn a sparkle at each death position
+      lurek.log.debug(
+        string.format("death at (%.1f, %.1f) v=(%.1f, %.1f)", entry.x, entry.y, entry.vx, entry.vy),
+        "fx"
+      )
+    end
+  end)
+  ps:setPosition(320, 240)
+  ps:start()
+end
+
+--@api-stub: lurek.particle.fromTOML
+-- Load a ParticleSystem configuration from a TOML string or file path.
+-- Returns a new ParticleSystem configured from the parsed TOML definition.
+do  -- lurek.particle.fromTOML
+  if lurek.particle.fromTOML then
+    local toml_str = '[emitter]\nmaxParticles = 100\nlifetime = 2.0\n'
+    local ps = lurek.particle.fromTOML(toml_str)
+    lurek.log.debug("fromTOML: " .. tostring(ps), "particle")
+  end
+end

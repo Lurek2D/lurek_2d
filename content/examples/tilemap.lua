@@ -1280,3 +1280,49 @@ do  -- MapScript:addStep
   script:addStep({ type = "drawPath", x = 1, y = 1, w = 14, h = 14, gid = 2, pathWidth = 2 })
   lurek.log.info("authored " .. script:getStepCount() .. " step(s)", "tilemap")
 end
+
+--@api-stub: TileMap:onTileStep
+-- Register a callback fired when an entity steps onto a tile with the given GID.
+-- @param gid integer, @param fn function(entity, tx, ty)
+do  -- TileMap:onTileStep
+  local tm = lurek.tilemap.new({ width = 8, height = 8, tileSize = 32 })
+  if tm.onTileStep then
+    tm:onTileStep(5, function(entity, tx, ty)
+      lurek.log.debug("entity stepped on gid=5 at " .. tx .. "," .. ty, "tilemap")
+    end)
+  end
+end
+
+--@api-stub: TileMap:onTileExit
+-- Register a callback fired when an entity exits a tile with the given GID.
+-- @param gid integer, @param fn function(entity, tx, ty)
+do  -- TileMap:onTileExit
+  local tm = lurek.tilemap.new({ width = 8, height = 8, tileSize = 32 })
+  if tm.onTileExit then
+    tm:onTileExit(5, function(entity, tx, ty)
+      lurek.log.debug("entity exited gid=5 at " .. tx .. "," .. ty, "tilemap")
+    end)
+  end
+end
+
+--@api-stub: TileMap:fireTileStep
+-- Manually fire the onTileStep callback for a GID, entity, and tile coords.
+-- Used by physics integrations or scripted movement systems.
+do  -- TileMap:fireTileStep
+  local tm = lurek.tilemap.new({ width = 8, height = 8, tileSize = 32 })
+  if tm.fireTileStep then
+    tm:fireTileStep(5, 1, 2, 3)
+  end
+  lurek.log.debug("fireTileStep called", "tilemap")
+end
+
+--@api-stub: TileMap:fireTileExit
+-- Manually fire the onTileExit callback for a GID, entity, and tile coords.
+-- Used by scripted teleport or scene-transition systems that bypass the physics step.
+do  -- TileMap:fireTileExit
+  local tm = lurek.tilemap.new({ width = 8, height = 8, tileSize = 32 })
+  if tm.fireTileExit then
+    tm:fireTileExit(5, 1, 2, 3)
+  end
+  lurek.log.debug("fireTileExit called", "tilemap")
+end
