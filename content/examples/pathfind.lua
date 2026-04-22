@@ -1,23 +1,11 @@
 -- content/examples/pathfind.lua
--- Scaffolded coverage of the lurek.pathfind API (65 items).
+-- Hand-written coverage of the lurek.pathfind API (65 items).
 --
--- Every --@api-stub: block below is a SCAFFOLD. The body must be
--- replaced by hand with a 3-6 line real usage snippet showing how to
--- call the API in real game context, written by reading:
---   * src/lua_api/pathfind_api.rs   (Lua binding, arg types, return shape)
---   * src/pathfind/                 (semantics, side effects)
---   * docs/specs/pathfind.md        (canonical reference)
---
--- Snippet rules (love2d-wiki style):
---   * NO `return` at top-level (breaks the file).
---   * NO `pcall` defensive wrappers, NO `if false then`.
---   * Wrap GPU / audio / physics calls inside
---     `function lurek.render() ... end` or
---     `function lurek.update(dt) ... end` callbacks so the file loads.
---   * Use REAL values: paths like "sfx/jump.ogg", keys like "space",
---     colours like {1, 0.5, 0, 1}.
---   * Keep the two `--` comment lines: 1) what the API does (use the
---     existing description), 2) one line of practical advice.
+-- The lurek.pathfind namespace provides A*/Theta*/JPS pathfinding,
+-- BFS flow fields, hex grids, range maps and HPA* abstract graphs
+-- on top of weighted square or hex grids. Coordinates exposed to
+-- Lua are 1-based; constructors return userdata with object-style
+-- methods (`grid:setCost(x, y, cost)`).
 --
 -- Run: cargo run -- content/examples/pathfind.lua
 
@@ -25,535 +13,676 @@
 
 --@api-stub: lurek.pathfind.newNavGrid
 -- Creates a new NavGrid with all cells walkable.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pathfind_api.rs and docs/specs/pathfind.md).
-do  -- TODO: lurek.pathfind.newNavGrid
-  local _todo = "TODO: write a real lurek.pathfind.newNavGrid usage example"
-  print(_todo)
+-- Allocate the grid once at level load; cells default to cost 1 (cheapest walkable).
+do  -- lurek.pathfind.newNavGrid
+  local grid = lurek.pathfind.newNavGrid(64, 48)
+  grid:setCost(10, 10, 0)  -- mark a wall: cost 0 == blocked
+  grid:setCost(11, 10, 5)  -- swamp: 5x slower than open ground
+  lurek.log.info("nav grid ready: " .. grid:getWidth() .. "x" .. grid:getHeight(), "pathfind")
 end
 
 --@api-stub: lurek.pathfind.newPathfinder
 -- Creates a new UnitPathfinder backed by a NavGrid.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pathfind_api.rs and docs/specs/pathfind.md).
-do  -- TODO: lurek.pathfind.newPathfinder
-  local _todo = "TODO: write a real lurek.pathfind.newPathfinder usage example"
-  print(_todo)
+-- Pair one pathfinder with each NavGrid so caches and dirty-rect state stay isolated per map.
+do  -- lurek.pathfind.newPathfinder
+  local grid = lurek.pathfind.newNavGrid(64, 48)
+  local pf = lurek.pathfind.newPathfinder(grid)
+  pf:setCacheEnabled(true)
+  pf:setCacheMaxSize(128)
 end
 
 --@api-stub: lurek.pathfind.newFlowField
 -- Creates a new FlowField backed by a NavGrid.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pathfind_api.rs and docs/specs/pathfind.md).
-do  -- TODO: lurek.pathfind.newFlowField
-  local _todo = "TODO: write a real lurek.pathfind.newFlowField usage example"
-  print(_todo)
+-- Use a flow field when many agents share the same goal — one calculate() amortises across the swarm.
+do  -- lurek.pathfind.newFlowField
+  local grid = lurek.pathfind.newNavGrid(48, 32)
+  local field = lurek.pathfind.newFlowField(grid)
+  field:calculate(40, 28)  -- goal cell (1-based)
+  local dx, dy = field:getDirection(5, 5)
+  lurek.log.debug("flow at (5,5): " .. dx .. "," .. dy, "pathfind")
 end
 
 --@api-stub: lurek.pathfind.newPathGrid
 -- Creates a new PathGrid with per-cell cost and walkability.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pathfind_api.rs and docs/specs/pathfind.md).
-do  -- TODO: lurek.pathfind.newPathGrid
-  local _todo = "TODO: write a real lurek.pathfind.newPathGrid usage example"
-  print(_todo)
+-- PathGrid uses world-space cell sizes; pass tile pixel size so findPath returns pixel-space waypoints.
+do  -- lurek.pathfind.newPathGrid
+  local grid = lurek.pathfind.newPathGrid(40, 30, 32)  -- 40x30 tiles, 32px each
+  grid:setWalkable(15, 10, false)
+  grid:setCost(15, 11, 3.0)  -- difficult terrain
+  lurek.log.info("path grid cell size = " .. grid:getCellSize(), "pathfind")
 end
 
 --@api-stub: lurek.pathfind.newPathFlowField
 -- Creates a new BFS flow field from a PathGrid.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pathfind_api.rs and docs/specs/pathfind.md).
-do  -- TODO: lurek.pathfind.newPathFlowField
-  local _todo = "TODO: write a real lurek.pathfind.newPathFlowField usage example"
-  print(_todo)
+-- Snapshots walkability from the PathGrid at construction time; rebuild a fresh field after editing the grid.
+do  -- lurek.pathfind.newPathFlowField
+  local grid = lurek.pathfind.newPathGrid(32, 24, 16)
+  grid:setWalkable(10, 10, false)
+  local field = lurek.pathfind.newPathFlowField(grid)
+  field:setGoal(30, 22)
+  lurek.log.debug("ai field has goal: " .. tostring(field:hasGoal()), "ai")
 end
 
 --@api-stub: lurek.pathfind.setThreadCount
 -- Sets the background pathfinding thread count (currently a no-op).
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pathfind_api.rs and docs/specs/pathfind.md).
-do  -- TODO: lurek.pathfind.setThreadCount
-  local _todo = "TODO: write a real lurek.pathfind.setThreadCount usage example"
-  print(_todo)
+-- Currently a no-op stub that emits a warning; safe to call from config but does not actually spawn workers yet.
+do  -- lurek.pathfind.setThreadCount
+  local desired_workers = 4
+  lurek.pathfind.setThreadCount(desired_workers)
+  lurek.log.info("requested " .. desired_workers .. " pathfind workers", "pathfind")
 end
 
 --@api-stub: lurek.pathfind.getThreadCount
 -- Returns the background pathfinding thread count (currently always 0).
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pathfind_api.rs and docs/specs/pathfind.md).
-do  -- TODO: lurek.pathfind.getThreadCount
-  local _todo = "TODO: write a real lurek.pathfind.getThreadCount usage example"
-  print(_todo)
+-- Always returns 0 in the current build — branch on the result to decide whether to dispatch async path requests.
+do  -- lurek.pathfind.getThreadCount
+  local n = lurek.pathfind.getThreadCount()
+  if n == 0 then
+    lurek.log.info("pathfinding runs synchronously on the main thread", "pathfind")
+  end
 end
 
 --@api-stub: lurek.pathfind.newNavGridFromTileMap
 -- Builds a NavGrid from a TileMap layer, treating specified GIDs as blocked (unwalkable).
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pathfind_api.rs and docs/specs/pathfind.md).
-do  -- TODO: lurek.pathfind.newNavGridFromTileMap
-  local _todo = "TODO: write a real lurek.pathfind.newNavGridFromTileMap usage example"
-  print(_todo)
+-- Pass the GIDs of solid tiles so the resulting NavGrid mirrors collision exactly without manual setCost loops.
+do  -- lurek.pathfind.newNavGridFromTileMap
+  local tm = lurek.tilemap.newTileMap(40, 25, 32, 32)
+  tm:setTile(1, 10, 5, 7)  -- place wall tile (gid=7) on layer 1
+  local grid = lurek.pathfind.newNavGridFromTileMap(tm, 1, {7, 8, 9})
+  lurek.log.info("nav grid from tilemap: " .. grid:getWidth() .. "x" .. grid:getHeight(), "pathfind")
 end
 
 --@api-stub: lurek.pathfind.newHexGrid
 -- Creates a hex grid for pathfinding, LOS, FOV, and range queries.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pathfind_api.rs and docs/specs/pathfind.md).
-do  -- TODO: lurek.pathfind.newHexGrid
-  local _todo = "TODO: write a real lurek.pathfind.newHexGrid usage example"
-  print(_todo)
+-- Choose 'flat' or 'pointy' to match your tilemap orientation; default is 'flat' top.
+do  -- lurek.pathfind.newHexGrid
+  local hex = lurek.pathfind.newHexGrid(20, 16, "pointy")
+  hex:setBlocked(5, 5, true)
+  hex:setCost(6, 5, 2.5)  -- forest hex
+  lurek.log.info("hex grid blocked at 5,5: " .. tostring(hex:isBlocked(5, 5)), "hex")
 end
 
 --@api-stub: lurek.pathfind.newJpsGrid
 -- Creates a uniform-cost grid optimised for Jump Point Search (orthogonal + diagonal).
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pathfind_api.rs and docs/specs/pathfind.md).
-do  -- TODO: lurek.pathfind.newJpsGrid
-  local _todo = "TODO: write a real lurek.pathfind.newJpsGrid usage example"
-  print(_todo)
+-- JPS is dramatically faster than A* on large open maps; use it when most cells are walkable.
+do  -- lurek.pathfind.newJpsGrid
+  local jps = lurek.pathfind.newJpsGrid(128, 128)
+  jps:setBlocked(64, 64, true)
+  local path = jps:findPath(1, 1, 128, 128)
+  lurek.log.info("jps path waypoints: " .. (path and #path or 0), "pathfind")
 end
 
 --@api-stub: lurek.pathfind.rangeMap
 -- Computes a Dijkstra range-of-movement map from an origin within a movement budget.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pathfind_api.rs and docs/specs/pathfind.md).
-do  -- TODO: lurek.pathfind.rangeMap
-  local _todo = "TODO: write a real lurek.pathfind.rangeMap usage example"
-  print(_todo)
+-- One-shot Dijkstra range query — useful for tactics-style 'show movement squares' overlays.
+do  -- lurek.pathfind.rangeMap
+  local result = lurek.pathfind.rangeMap({
+    width = 16, height = 16, origin_x = 8, origin_y = 8,
+    budget = 5.0, diagonal = true,
+  })
+  lurek.log.info("reachable cells within 5 moves: " .. #result.cells, "tactics")
 end
 
 -- ── NavGrid methods ──
 
 --@api-stub: NavGrid:getWidth
 -- Returns the grid width in cells.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pathfind_api.rs and docs/specs/pathfind.md).
-do  -- TODO: NavGrid:getWidth
-  local _todo = "TODO: write a real NavGrid:getWidth usage example"
-  print(_todo)
+-- Use to clamp UI cursors and bullet trajectories to the grid extent.
+do  -- NavGrid:getWidth
+  local grid = lurek.pathfind.newNavGrid(80, 60)
+  local w = grid:getWidth()
+  lurek.log.info("nav grid width = " .. w .. " cells", "pathfind")
 end
 
 --@api-stub: NavGrid:getHeight
 -- Returns the grid height in cells.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pathfind_api.rs and docs/specs/pathfind.md).
-do  -- TODO: NavGrid:getHeight
-  local _todo = "TODO: write a real NavGrid:getHeight usage example"
-  print(_todo)
+-- Pair with getWidth() when iterating cells; keep loops 1-based to match the API.
+do  -- NavGrid:getHeight
+  local grid = lurek.pathfind.newNavGrid(80, 60)
+  local h = grid:getHeight()
+  lurek.log.info("nav grid height = " .. h .. " cells", "pathfind")
 end
 
 --@api-stub: NavGrid:getDimensions
 -- Returns the grid dimensions as width, height.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pathfind_api.rs and docs/specs/pathfind.md).
-do  -- TODO: NavGrid:getDimensions
-  local _todo = "TODO: write a real NavGrid:getDimensions usage example"
-  print(_todo)
+-- Cheaper than two separate getters when both axes are needed for the same calculation.
+do  -- NavGrid:getDimensions
+  local grid = lurek.pathfind.newNavGrid(64, 48)
+  local w, h = grid:getDimensions()
+  local total = w * h
+  lurek.log.info("grid has " .. total .. " cells", "pathfind")
 end
 
 --@api-stub: NavGrid:setCost
 -- Sets the traversal cost of a cell (1-based coordinates).
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pathfind_api.rs and docs/specs/pathfind.md).
-do  -- TODO: NavGrid:setCost
-  local _todo = "TODO: write a real NavGrid:setCost usage example"
-  print(_todo)
+-- Cost 0 = impassable, 1 = open, 2-255 = increasingly expensive (mud, water, hazards).
+do  -- NavGrid:setCost
+  local grid = lurek.pathfind.newNavGrid(32, 32)
+  grid:setCost(16, 16, 0)   -- wall
+  grid:setCost(17, 16, 5)   -- swamp
+  grid:setCost(18, 16, 10)  -- deep water
 end
 
 --@api-stub: NavGrid:getCost
 -- Returns the traversal cost of a cell (1-based coordinates).
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pathfind_api.rs and docs/specs/pathfind.md).
-do  -- TODO: NavGrid:getCost
-  local _todo = "TODO: write a real NavGrid:getCost usage example"
-  print(_todo)
+-- Branch on the read-back to decide whether terrain modifiers like SFX or particle bursts should fire.
+do  -- NavGrid:getCost
+  local grid = lurek.pathfind.newNavGrid(32, 32)
+  grid:setCost(10, 10, 5)
+  local c = grid:getCost(10, 10)
+  if c > 1 then
+    lurek.log.debug("rough terrain at 10,10 cost=" .. c, "pathfind")
+  end
 end
 
 --@api-stub: NavGrid:isBlocked
 -- Returns true if the cell is blocked (1-based coordinates).
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pathfind_api.rs and docs/specs/pathfind.md).
-do  -- TODO: NavGrid:isBlocked
-  local _todo = "TODO: write a real NavGrid:isBlocked usage example"
-  print(_todo)
+-- Cheaper than getCost() == 0 because it short-circuits; use for collision pre-checks.
+do  -- NavGrid:isBlocked
+  local grid = lurek.pathfind.newNavGrid(20, 20)
+  grid:setCost(5, 5, 0)
+  if grid:isBlocked(5, 5) then
+    lurek.log.warn("entity tried to enter blocked cell 5,5", "ai")
+  end
 end
 
 --@api-stub: NavGrid:fill
 -- Sets every cell to the given cost.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pathfind_api.rs and docs/specs/pathfind.md).
-do  -- TODO: NavGrid:fill
-  local _todo = "TODO: write a real NavGrid:fill usage example"
-  print(_todo)
+-- Convenience for resetting between procgen passes; pass 0 to wipe to all-blocked, 1 to reopen everything.
+do  -- NavGrid:fill
+  local grid = lurek.pathfind.newNavGrid(50, 50)
+  grid:fill(0)  -- start fully blocked
+  for x = 10, 40 do grid:setCost(x, 25, 1) end  -- carve a corridor
 end
 
 --@api-stub: NavGrid:loadFromString
 -- Overwrites the grid from a raw byte string (row-major, one byte per cell).
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pathfind_api.rs and docs/specs/pathfind.md).
-do  -- TODO: NavGrid:loadFromString
-  local _todo = "TODO: write a real NavGrid:loadFromString usage example"
-  print(_todo)
+-- Round-trips with saveToString(); the byte string is row-major with one byte per cell.
+do  -- NavGrid:loadFromString
+  local grid = lurek.pathfind.newNavGrid(4, 2)
+  grid:loadFromString(string.char(1,1,0,1, 1,5,5,1))
+  lurek.log.info("loaded grid, cell (2,2) cost=" .. grid:getCost(2, 2), "save")
 end
 
 --@api-stub: NavGrid:saveToString
 -- Exports the cost grid as a byte string (row-major, one byte per cell).
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pathfind_api.rs and docs/specs/pathfind.md).
-do  -- TODO: NavGrid:saveToString
-  local _todo = "TODO: write a real NavGrid:saveToString usage example"
-  print(_todo)
+-- Pair with lurek.fs.write to persist generated maps; the result is a raw byte string of length width*height.
+do  -- NavGrid:saveToString
+  local grid = lurek.pathfind.newNavGrid(8, 8)
+  grid:setCost(4, 4, 0)
+  local blob = grid:saveToString()
+  lurek.log.info("serialised grid: " .. #blob .. " bytes", "save")
 end
 
 --@api-stub: NavGrid:setChunkSize
 -- Sets the HPA★ chunk size.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pathfind_api.rs and docs/specs/pathfind.md).
-do  -- TODO: NavGrid:setChunkSize
-  local _todo = "TODO: write a real NavGrid:setChunkSize usage example"
-  print(_todo)
+-- Smaller chunks = faster local re-plans, larger chunks = fewer abstract nodes; 16 is a good default for 1k-cell maps.
+do  -- NavGrid:setChunkSize
+  local grid = lurek.pathfind.newNavGrid(128, 128)
+  grid:setChunkSize(16)
+  grid:rebuildAbstract()
 end
 
 --@api-stub: NavGrid:getChunkSize
 -- Returns the current HPA★ chunk size.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pathfind_api.rs and docs/specs/pathfind.md).
-do  -- TODO: NavGrid:getChunkSize
-  local _todo = "TODO: write a real NavGrid:getChunkSize usage example"
-  print(_todo)
+-- Read it after rebuildAbstract() to confirm the planner picked up your size override.
+do  -- NavGrid:getChunkSize
+  local grid = lurek.pathfind.newNavGrid(64, 64)
+  grid:setChunkSize(8)
+  local cs = grid:getChunkSize()
+  lurek.log.debug("hpa chunk size = " .. cs, "pathfind")
 end
 
 --@api-stub: NavGrid:rebuildAbstract
 -- Rebuilds the HPA★ abstract graph from the current grid state.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pathfind_api.rs and docs/specs/pathfind.md).
-do  -- TODO: NavGrid:rebuildAbstract
-  local _todo = "TODO: write a real NavGrid:rebuildAbstract usage example"
-  print(_todo)
+-- Call once after bulk edits, or after clearDirty() processed pending rectangles, to refresh long-distance plans.
+do  -- NavGrid:rebuildAbstract
+  local grid = lurek.pathfind.newNavGrid(64, 64)
+  grid:setChunkSize(16)
+  for x = 1, 64 do grid:setCost(x, 32, 0) end  -- horizontal wall
+  grid:rebuildAbstract()
 end
 
 --@api-stub: NavGrid:setDirty
 -- Records a dirty rectangle for incremental HPA★ updates (1-based coordinates).
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pathfind_api.rs and docs/specs/pathfind.md).
-do  -- TODO: NavGrid:setDirty
-  local _todo = "TODO: write a real NavGrid:setDirty usage example"
-  print(_todo)
+-- Mark the bounding box of any cell edit so the next abstract rebuild only touches affected chunks.
+do  -- NavGrid:setDirty
+  local grid = lurek.pathfind.newNavGrid(64, 64)
+  grid:setCost(20, 20, 0)
+  grid:setCost(21, 20, 0)
+  grid:setDirty(20, 20, 2, 1)  -- 2x1 rectangle from (20,20)
 end
 
 --@api-stub: NavGrid:clearDirty
 -- Clears all pending dirty rectangles.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pathfind_api.rs and docs/specs/pathfind.md).
-do  -- TODO: NavGrid:clearDirty
-  local _todo = "TODO: write a real NavGrid:clearDirty usage example"
-  print(_todo)
+-- Call after rebuildAbstract() consumed the dirty list; lets the next frame start fresh.
+do  -- NavGrid:clearDirty
+  local grid = lurek.pathfind.newNavGrid(64, 64)
+  grid:setDirty(10, 10, 4, 4)
+  grid:rebuildAbstract()
+  grid:clearDirty()
 end
 
 --@api-stub: NavGrid:setDiagonalMode
 -- Sets the diagonal movement mode.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pathfind_api.rs and docs/specs/pathfind.md).
-do  -- TODO: NavGrid:setDiagonalMode
-  local _todo = "TODO: write a real NavGrid:setDiagonalMode usage example"
-  print(_todo)
+-- Modes: "never", "always", "no_corner_cutting" (recommended for tile-based games to prevent clipping).
+do  -- NavGrid:setDiagonalMode
+  local grid = lurek.pathfind.newNavGrid(40, 40)
+  grid:setDiagonalMode("no_corner_cutting")
+  lurek.log.info("diagonal mode set to " .. grid:getDiagonalMode(), "pathfind")
 end
 
 --@api-stub: NavGrid:getDiagonalMode
 -- Returns the current diagonal movement mode as a string.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pathfind_api.rs and docs/specs/pathfind.md).
-do  -- TODO: NavGrid:getDiagonalMode
-  local _todo = "TODO: write a real NavGrid:getDiagonalMode usage example"
-  print(_todo)
+-- Read back when serialising save files so the loaded map preserves movement rules.
+do  -- NavGrid:getDiagonalMode
+  local grid = lurek.pathfind.newNavGrid(20, 20)
+  local mode = grid:getDiagonalMode()
+  if mode == "never" then
+    lurek.log.debug("4-directional movement only", "pathfind")
+  end
 end
 
 --@api-stub: NavGrid:type
 -- Returns the type name of this object.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pathfind_api.rs and docs/specs/pathfind.md).
-do  -- TODO: NavGrid:type
-  local _todo = "TODO: write a real NavGrid:type usage example"
-  print(_todo)
+-- Returns the literal string "NavGrid"; use in generic dispatch tables to switch on userdata kind.
+do  -- NavGrid:type
+  local grid = lurek.pathfind.newNavGrid(8, 8)
+  local kind = grid:type()
+  lurek.log.debug("object type: " .. kind, "pathfind")
 end
 
 --@api-stub: NavGrid:typeOf
 -- Returns true if this object is of the given type.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pathfind_api.rs and docs/specs/pathfind.md).
-do  -- TODO: NavGrid:typeOf
-  local _todo = "TODO: write a real NavGrid:typeOf usage example"
-  print(_todo)
+-- Accepts the literal type name or "Object" (the engine root type) for polymorphic checks.
+do  -- NavGrid:typeOf
+  local grid = lurek.pathfind.newNavGrid(8, 8)
+  if grid:typeOf("NavGrid") then
+    lurek.log.debug("confirmed nav grid", "pathfind")
+  end
 end
 
 -- ── UnitPathfinder methods ──
 
 --@api-stub: UnitPathfinder:getPathLength
 -- Returns the euclidean length of a path table.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pathfind_api.rs and docs/specs/pathfind.md).
-do  -- TODO: UnitPathfinder:getPathLength
-  local _todo = "TODO: write a real UnitPathfinder:getPathLength usage example"
-  print(_todo)
+-- Returns euclidean (not grid-step) length — useful for ETA estimates given a unit speed.
+do  -- UnitPathfinder:getPathLength
+  local g = lurek.pathfind.newNavGrid(32, 32)
+  local pf = lurek.pathfind.newPathfinder(g)
+  local path = pf:findPath(1, 1, 30, 30)
+  if path then
+    lurek.log.info("path length = " .. pf:getPathLength(path), "pathfind")
+  end
 end
 
 --@api-stub: UnitPathfinder:getPathCost
 -- Returns the sum of grid traversal costs along a path.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pathfind_api.rs and docs/specs/pathfind.md).
-do  -- TODO: UnitPathfinder:getPathCost
-  local _todo = "TODO: write a real UnitPathfinder:getPathCost usage example"
-  print(_todo)
+-- Sums per-cell traversal costs; compare two candidate paths to pick the cheapest under terrain modifiers.
+do  -- UnitPathfinder:getPathCost
+  local g = lurek.pathfind.newNavGrid(32, 32)
+  g:setCost(10, 10, 5)
+  local pf = lurek.pathfind.newPathfinder(g)
+  local path = pf:findPath(1, 1, 20, 20)
+  if path then
+    lurek.log.info("path cost = " .. pf:getPathCost(path), "pathfind")
+  end
 end
 
 --@api-stub: UnitPathfinder:setCacheEnabled
 -- Enables or disables path result caching.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pathfind_api.rs and docs/specs/pathfind.md).
-do  -- TODO: UnitPathfinder:setCacheEnabled
-  local _todo = "TODO: write a real UnitPathfinder:setCacheEnabled usage example"
-  print(_todo)
+-- Enable for stationary maps where the same start/goal pairs recur; disable when the grid mutates each frame.
+do  -- UnitPathfinder:setCacheEnabled
+  local g = lurek.pathfind.newNavGrid(32, 32)
+  local pf = lurek.pathfind.newPathfinder(g)
+  pf:setCacheEnabled(true)
+  lurek.log.info("path cache enabled", "pathfind")
 end
 
 --@api-stub: UnitPathfinder:isCacheEnabled
 -- Returns true if path result caching is enabled.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pathfind_api.rs and docs/specs/pathfind.md).
-do  -- TODO: UnitPathfinder:isCacheEnabled
-  local _todo = "TODO: write a real UnitPathfinder:isCacheEnabled usage example"
-  print(_todo)
+-- Branch on this before calling expensive query helpers — no point pre-warming the cache if it is off.
+do  -- UnitPathfinder:isCacheEnabled
+  local g = lurek.pathfind.newNavGrid(16, 16)
+  local pf = lurek.pathfind.newPathfinder(g)
+  if pf:isCacheEnabled() then
+    lurek.log.debug("warming path cache", "pathfind")
+  end
 end
 
 --@api-stub: UnitPathfinder:clearCache
 -- Removes all cached path results.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pathfind_api.rs and docs/specs/pathfind.md).
-do  -- TODO: UnitPathfinder:clearCache
-  local _todo = "TODO: write a real UnitPathfinder:clearCache usage example"
-  print(_todo)
+-- Call after any setCost / setDirty change so stale paths through removed walls are invalidated.
+do  -- UnitPathfinder:clearCache
+  local g = lurek.pathfind.newNavGrid(32, 32)
+  local pf = lurek.pathfind.newPathfinder(g)
+  g:setCost(8, 8, 0)  -- new wall
+  pf:clearCache()
 end
 
 --@api-stub: UnitPathfinder:getCacheSize
 -- Returns the number of entries in the path cache.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pathfind_api.rs and docs/specs/pathfind.md).
-do  -- TODO: UnitPathfinder:getCacheSize
-  local _todo = "TODO: write a real UnitPathfinder:getCacheSize usage example"
-  print(_todo)
+-- Use to monitor cache pressure; pair with setCacheMaxSize for back-pressure logging in long sessions.
+do  -- UnitPathfinder:getCacheSize
+  local g = lurek.pathfind.newNavGrid(32, 32)
+  local pf = lurek.pathfind.newPathfinder(g)
+  pf:setCacheEnabled(true)
+  local n = pf:getCacheSize()
+  lurek.log.debug("cached paths = " .. n, "pathfind")
 end
 
 --@api-stub: UnitPathfinder:setCacheMaxSize
 -- Sets the maximum number of cached path entries.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pathfind_api.rs and docs/specs/pathfind.md).
-do  -- TODO: UnitPathfinder:setCacheMaxSize
-  local _todo = "TODO: write a real UnitPathfinder:setCacheMaxSize usage example"
-  print(_todo)
+-- Bound memory usage on long sessions; entries are evicted LRU when the cap is hit.
+do  -- UnitPathfinder:setCacheMaxSize
+  local g = lurek.pathfind.newNavGrid(64, 64)
+  local pf = lurek.pathfind.newPathfinder(g)
+  pf:setCacheEnabled(true)
+  pf:setCacheMaxSize(256)
 end
 
 --@api-stub: UnitPathfinder:type
 -- Returns the type name of this object.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pathfind_api.rs and docs/specs/pathfind.md).
-do  -- TODO: UnitPathfinder:type
-  local _todo = "TODO: write a real UnitPathfinder:type usage example"
-  print(_todo)
+-- Returns "UnitPathfinder" — distinguish from the bare userdata wrappers.
+do  -- UnitPathfinder:type
+  local g = lurek.pathfind.newNavGrid(8, 8)
+  local pf = lurek.pathfind.newPathfinder(g)
+  lurek.log.debug("object: " .. pf:type(), "pathfind")
 end
 
 --@api-stub: UnitPathfinder:typeOf
 -- Returns true if this object is of the given type.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pathfind_api.rs and docs/specs/pathfind.md).
-do  -- TODO: UnitPathfinder:typeOf
-  local _todo = "TODO: write a real UnitPathfinder:typeOf usage example"
-  print(_todo)
+-- Returns true for the literal name or for "Object"; useful in generic dispatch tables.
+do  -- UnitPathfinder:typeOf
+  local g = lurek.pathfind.newNavGrid(8, 8)
+  local pf = lurek.pathfind.newPathfinder(g)
+  if pf:typeOf("UnitPathfinder") then
+    lurek.log.debug("confirmed pathfinder", "pathfind")
+  end
 end
 
 -- ── FlowField methods ──
 
 --@api-stub: FlowField:getDirection
 -- Returns the normalised direction vector at a cell (1-based coordinates).
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pathfind_api.rs and docs/specs/pathfind.md).
-do  -- TODO: FlowField:getDirection
-  local _todo = "TODO: write a real FlowField:getDirection usage example"
-  print(_todo)
+-- Returns dx, dy in [-1, 1]; multiply by speed*dt to drive each agent toward the shared goal.
+do  -- FlowField:getDirection
+  local g = lurek.pathfind.newNavGrid(32, 32)
+  local f = lurek.pathfind.newFlowField(g)
+  f:calculate(30, 30)
+  local dx, dy = f:getDirection(5, 5)
+  lurek.log.debug("flow @5,5 = " .. dx .. "," .. dy, "flow")
 end
 
 --@api-stub: FlowField:getDirectionAngle
 -- Returns the flow direction as an angle in radians (1-based coordinates).
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pathfind_api.rs and docs/specs/pathfind.md).
-do  -- TODO: FlowField:getDirectionAngle
-  local _todo = "TODO: write a real FlowField:getDirectionAngle usage example"
-  print(_todo)
+-- Convenience for sprite rotation — returns radians directly so you can feed it into render.draw().
+do  -- FlowField:getDirectionAngle
+  local g = lurek.pathfind.newNavGrid(32, 32)
+  local f = lurek.pathfind.newFlowField(g)
+  f:calculate(20, 20)
+  local angle = f:getDirectionAngle(5, 5)
+  lurek.log.debug("flow angle = " .. angle .. " rad", "flow")
 end
 
 --@api-stub: FlowField:getCostToTarget
 -- Returns the integrated cost to the nearest target (1-based coordinates).
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pathfind_api.rs and docs/specs/pathfind.md).
-do  -- TODO: FlowField:getCostToTarget
-  local _todo = "TODO: write a real FlowField:getCostToTarget usage example"
-  print(_todo)
+-- Returns the integrated cost to the nearest target — use as a heuristic for AI threat maps.
+do  -- FlowField:getCostToTarget
+  local g = lurek.pathfind.newNavGrid(32, 32)
+  local f = lurek.pathfind.newFlowField(g)
+  f:calculate(16, 16)
+  local d = f:getCostToTarget(1, 1)
+  lurek.log.info("distance to target = " .. d, "flow")
 end
 
 --@api-stub: FlowField:isCalculated
 -- Returns true if the flow field has been computed at least once.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pathfind_api.rs and docs/specs/pathfind.md).
-do  -- TODO: FlowField:isCalculated
-  local _todo = "TODO: write a real FlowField:isCalculated usage example"
-  print(_todo)
+-- Guard reads with this — getDirection on an uncalculated field returns 0,0 which would stall agents.
+do  -- FlowField:isCalculated
+  local g = lurek.pathfind.newNavGrid(16, 16)
+  local f = lurek.pathfind.newFlowField(g)
+  if not f:isCalculated() then
+    f:calculate(10, 10)
+  end
 end
 
 --@api-stub: FlowField:getTargets
 -- Returns the target cells from the most recent computation (1-based coordinates).
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pathfind_api.rs and docs/specs/pathfind.md).
-do  -- TODO: FlowField:getTargets
-  local _todo = "TODO: write a real FlowField:getTargets usage example"
-  print(_todo)
+-- Useful for visualising goal markers; entries are 1-based {x=,y=} tables.
+do  -- FlowField:getTargets
+  local g = lurek.pathfind.newNavGrid(20, 20)
+  local f = lurek.pathfind.newFlowField(g)
+  f:calculateMulti({{x=5, y=5}, {x=15, y=15}}, 1)
+  local targets = f:getTargets()
+  lurek.log.info("flow has " .. #targets .. " goals", "flow")
 end
 
 --@api-stub: FlowField:type
 -- Returns the type name of this object.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pathfind_api.rs and docs/specs/pathfind.md).
-do  -- TODO: FlowField:type
-  local _todo = "TODO: write a real FlowField:type usage example"
-  print(_todo)
+-- Returns "FlowField" — both NavGrid- and PathGrid-backed flow fields share this type name.
+do  -- FlowField:type
+  local g = lurek.pathfind.newNavGrid(8, 8)
+  local f = lurek.pathfind.newFlowField(g)
+  lurek.log.debug("object: " .. f:type(), "flow")
 end
 
 --@api-stub: FlowField:typeOf
 -- Returns true if this object is of the given type.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pathfind_api.rs and docs/specs/pathfind.md).
-do  -- TODO: FlowField:typeOf
-  local _todo = "TODO: write a real FlowField:typeOf usage example"
-  print(_todo)
+-- Use to write swarm AI that consumes either flavour of flow field uniformly.
+do  -- FlowField:typeOf
+  local g = lurek.pathfind.newNavGrid(8, 8)
+  local f = lurek.pathfind.newFlowField(g)
+  if f:typeOf("FlowField") then
+    lurek.log.debug("confirmed flow field", "flow")
+  end
 end
 
 -- ── PathGrid methods ──
 
 --@api-stub: PathGrid:getWidth
 -- Returns the grid width in cells.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pathfind_api.rs and docs/specs/pathfind.md).
-do  -- TODO: PathGrid:getWidth
-  local _todo = "TODO: write a real PathGrid:getWidth usage example"
-  print(_todo)
+-- Returned in cells, not pixels — multiply by getCellSize() for world-space extent.
+do  -- PathGrid:getWidth
+  local g = lurek.pathfind.newPathGrid(40, 30, 32)
+  local w = g:getWidth()
+  lurek.log.info("path grid is " .. w .. " cells wide", "pathfind")
 end
 
 --@api-stub: PathGrid:getHeight
 -- Returns the grid height in cells.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pathfind_api.rs and docs/specs/pathfind.md).
-do  -- TODO: PathGrid:getHeight
-  local _todo = "TODO: write a real PathGrid:getHeight usage example"
-  print(_todo)
+-- Pair with getWidth() to clamp camera bounds on grid-based levels.
+do  -- PathGrid:getHeight
+  local g = lurek.pathfind.newPathGrid(40, 30, 32)
+  local h = g:getHeight()
+  lurek.log.info("path grid is " .. h .. " cells tall", "pathfind")
 end
 
 --@api-stub: PathGrid:getCellSize
 -- Returns the world-space size of each cell.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pathfind_api.rs and docs/specs/pathfind.md).
-do  -- TODO: PathGrid:getCellSize
-  local _todo = "TODO: write a real PathGrid:getCellSize usage example"
-  print(_todo)
+-- World-space cell size in pixels; multiply by cell index to get drawing coordinates.
+do  -- PathGrid:getCellSize
+  local g = lurek.pathfind.newPathGrid(20, 15, 64)
+  local cs = g:getCellSize()
+  lurek.log.info("each cell = " .. cs .. " px", "pathfind")
 end
 
 --@api-stub: PathGrid:setWalkable
 -- Sets the walkability of a cell (1-based coordinates).
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pathfind_api.rs and docs/specs/pathfind.md).
-do  -- TODO: PathGrid:setWalkable
-  local _todo = "TODO: write a real PathGrid:setWalkable usage example"
-  print(_todo)
+-- Cheaper alternative to setCost(0) when you only need on/off; preserves the existing cost multiplier.
+do  -- PathGrid:setWalkable
+  local g = lurek.pathfind.newPathGrid(30, 20, 32)
+  g:setWalkable(15, 10, false)  -- close a doorway
+  g:setWalkable(16, 10, true)   -- open another
 end
 
 --@api-stub: PathGrid:isWalkable
 -- Returns true if a cell is walkable (1-based coordinates).
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pathfind_api.rs and docs/specs/pathfind.md).
-do  -- TODO: PathGrid:isWalkable
-  local _todo = "TODO: write a real PathGrid:isWalkable usage example"
-  print(_todo)
+-- Pre-flight check before issuing findPath so you avoid the planner cost when the goal is unreachable.
+do  -- PathGrid:isWalkable
+  local g = lurek.pathfind.newPathGrid(20, 20, 32)
+  g:setWalkable(10, 10, false)
+  if not g:isWalkable(10, 10) then
+    lurek.log.warn("goal cell 10,10 is blocked", "ai")
+  end
 end
 
 --@api-stub: PathGrid:setCost
 -- Sets the cost multiplier for a cell (1-based coordinates).
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pathfind_api.rs and docs/specs/pathfind.md).
-do  -- TODO: PathGrid:setCost
-  local _todo = "TODO: write a real PathGrid:setCost usage example"
-  print(_todo)
+-- Floating-point cost multiplier — values < 1 prefer this terrain, > 1 avoid it.
+do  -- PathGrid:setCost
+  local g = lurek.pathfind.newPathGrid(40, 30, 32)
+  g:setCost(20, 15, 3.0)  -- mud
+  g:setCost(21, 15, 0.5)  -- road
 end
 
 --@api-stub: PathGrid:getCost
 -- Returns the cost multiplier for a cell (1-based coordinates).
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pathfind_api.rs and docs/specs/pathfind.md).
-do  -- TODO: PathGrid:getCost
-  local _todo = "TODO: write a real PathGrid:getCost usage example"
-  print(_todo)
+-- Returns the multiplier (default 1.0); branch on it to drive movement-speed modifiers on the agent.
+do  -- PathGrid:getCost
+  local g = lurek.pathfind.newPathGrid(20, 20, 32)
+  g:setCost(5, 5, 2.5)
+  local mult = g:getCost(5, 5)
+  if mult > 1 then
+    lurek.log.debug("difficult terrain mult=" .. mult, "ai")
+  end
 end
 
 --@api-stub: PathGrid:type
 -- Returns the type name of this object.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pathfind_api.rs and docs/specs/pathfind.md).
-do  -- TODO: PathGrid:type
-  local _todo = "TODO: write a real PathGrid:type usage example"
-  print(_todo)
+-- Returns "PathGrid" — distinguishes the world-space grid from the cell-only NavGrid.
+do  -- PathGrid:type
+  local g = lurek.pathfind.newPathGrid(8, 8, 16)
+  lurek.log.debug("object: " .. g:type(), "pathfind")
 end
 
 --@api-stub: PathGrid:typeOf
 -- Returns true if this object is of the given type.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pathfind_api.rs and docs/specs/pathfind.md).
-do  -- TODO: PathGrid:typeOf
-  local _todo = "TODO: write a real PathGrid:typeOf usage example"
-  print(_todo)
+-- Use in generic helpers that accept any grid kind for visualisation.
+do  -- PathGrid:typeOf
+  local g = lurek.pathfind.newPathGrid(8, 8, 16)
+  if g:typeOf("PathGrid") then
+    lurek.log.debug("confirmed path grid", "pathfind")
+  end
 end
 
 -- ── AiFlowField methods ──
 
 --@api-stub: AiFlowField:getWidth
 -- Returns the flow field grid width in cells.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pathfind_api.rs and docs/specs/pathfind.md).
-do  -- TODO: AiFlowField:getWidth
-  local _todo = "TODO: write a real AiFlowField:getWidth usage example"
-  print(_todo)
+-- Mirrors the underlying PathGrid width; use for drawing debug overlays.
+do  -- AiFlowField:getWidth
+  local g = lurek.pathfind.newPathGrid(32, 24, 32)
+  local f = lurek.pathfind.newPathFlowField(g)
+  lurek.log.info("ai flow width = " .. f:getWidth(), "ai")
 end
 
 --@api-stub: AiFlowField:getHeight
 -- Returns the flow field grid height in cells.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pathfind_api.rs and docs/specs/pathfind.md).
-do  -- TODO: AiFlowField:getHeight
-  local _todo = "TODO: write a real AiFlowField:getHeight usage example"
-  print(_todo)
+-- Pair with getWidth() when iterating cells for visualisation.
+do  -- AiFlowField:getHeight
+  local g = lurek.pathfind.newPathGrid(32, 24, 32)
+  local f = lurek.pathfind.newPathFlowField(g)
+  lurek.log.info("ai flow height = " .. f:getHeight(), "ai")
 end
 
 --@api-stub: AiFlowField:hasGoal
 -- Returns true if a goal has been set.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pathfind_api.rs and docs/specs/pathfind.md).
-do  -- TODO: AiFlowField:hasGoal
-  local _todo = "TODO: write a real AiFlowField:hasGoal usage example"
-  print(_todo)
+-- Cheap guard before calling getDirection — without a goal the field yields zero vectors and agents stall.
+do  -- AiFlowField:hasGoal
+  local g = lurek.pathfind.newPathGrid(16, 16, 32)
+  local f = lurek.pathfind.newPathFlowField(g)
+  if not f:hasGoal() then
+    f:setGoal(8, 8)
+  end
 end
 
 --@api-stub: AiFlowField:setGoal
 -- Sets the goal cell and triggers BFS recomputation (1-based coordinates).
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pathfind_api.rs and docs/specs/pathfind.md).
-do  -- TODO: AiFlowField:setGoal
-  local _todo = "TODO: write a real AiFlowField:setGoal usage example"
-  print(_todo)
+-- Setting a new goal triggers a full BFS recompute — call sparingly (e.g. on player move, not per frame).
+do  -- AiFlowField:setGoal
+  local g = lurek.pathfind.newPathGrid(20, 20, 32)
+  local f = lurek.pathfind.newPathFlowField(g)
+  f:setGoal(15, 15)  -- player position
+  lurek.log.debug("ai goal set to 15,15", "ai")
 end
 
 --@api-stub: AiFlowField:getDirection
 -- Returns the normalised direction toward the goal (1-based coordinates).
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pathfind_api.rs and docs/specs/pathfind.md).
-do  -- TODO: AiFlowField:getDirection
-  local _todo = "TODO: write a real AiFlowField:getDirection usage example"
-  print(_todo)
+-- Returns dx, dy unit vector toward the goal; multiply by agent speed*dt for displacement.
+do  -- AiFlowField:getDirection
+  local g = lurek.pathfind.newPathGrid(20, 20, 32)
+  local f = lurek.pathfind.newPathFlowField(g)
+  f:setGoal(18, 18)
+  local dx, dy = f:getDirection(2, 2)
+  lurek.log.debug("ai flow @2,2 = " .. dx .. "," .. dy, "ai")
 end
 
 --@api-stub: AiFlowField:getDistance
 -- Returns the BFS distance to the goal (1-based coordinates).
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pathfind_api.rs and docs/specs/pathfind.md).
-do  -- TODO: AiFlowField:getDistance
-  local _todo = "TODO: write a real AiFlowField:getDistance usage example"
-  print(_todo)
+-- BFS hop count to the goal — handy as a threat heuristic or to gate aggro radius.
+do  -- AiFlowField:getDistance
+  local g = lurek.pathfind.newPathGrid(20, 20, 32)
+  local f = lurek.pathfind.newPathFlowField(g)
+  f:setGoal(10, 10)
+  local d = f:getDistance(2, 2)
+  if d < 8 then
+    lurek.log.info("enemy within aggro range, d=" .. d, "ai")
+  end
 end
 
 --@api-stub: AiFlowField:type
 -- Returns the type name of this object.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pathfind_api.rs and docs/specs/pathfind.md).
-do  -- TODO: AiFlowField:type
-  local _todo = "TODO: write a real AiFlowField:type usage example"
-  print(_todo)
+-- Returns "FlowField" (shared with NavGrid-backed flow); use typeOf() if you must distinguish source grid.
+do  -- AiFlowField:type
+  local g = lurek.pathfind.newPathGrid(8, 8, 16)
+  local f = lurek.pathfind.newPathFlowField(g)
+  lurek.log.debug("object: " .. f:type(), "ai")
 end
 
 --@api-stub: AiFlowField:typeOf
 -- Returns true if this object is of the given type.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pathfind_api.rs and docs/specs/pathfind.md).
-do  -- TODO: AiFlowField:typeOf
-  local _todo = "TODO: write a real AiFlowField:typeOf usage example"
-  print(_todo)
+-- Useful in generic swarm code that accepts either flow-field flavour.
+do  -- AiFlowField:typeOf
+  local g = lurek.pathfind.newPathGrid(8, 8, 16)
+  local f = lurek.pathfind.newPathFlowField(g)
+  if f:typeOf("FlowField") then
+    lurek.log.debug("confirmed flow field", "ai")
+  end
 end
 
 -- ── HexGrid methods ──
 
 --@api-stub: HexGrid:setCost
 -- Set movement cost for a cell (1-based coordinates).
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pathfind_api.rs and docs/specs/pathfind.md).
-do  -- TODO: HexGrid:setCost
-  local _todo = "TODO: write a real HexGrid:setCost usage example"
-  print(_todo)
+-- Hex movement cost in floating-point; useful for terrain modifiers like 'forest costs 2 hexes to enter'.
+do  -- HexGrid:setCost
+  local hex = lurek.pathfind.newHexGrid(15, 12, "flat")
+  hex:setCost(5, 4, 2.0)  -- forest hex
+  hex:setCost(6, 4, 3.0)  -- swamp hex
 end
 
 --@api-stub: HexGrid:isBlocked
 -- Returns true if a cell is blocked (1-based coordinates).
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pathfind_api.rs and docs/specs/pathfind.md).
-do  -- TODO: HexGrid:isBlocked
-  local _todo = "TODO: write a real HexGrid:isBlocked usage example"
-  print(_todo)
+-- Pre-check before moving a unit; cheaper than calling findPath only to discover the goal is impassable.
+do  -- HexGrid:isBlocked
+  local hex = lurek.pathfind.newHexGrid(10, 8, "pointy")
+  hex:setBlocked(3, 3, true)
+  if hex:isBlocked(3, 3) then
+    lurek.log.debug("hex 3,3 is impassable", "hex")
+  end
 end
 
 -- ── JpsGrid methods ──
 
 --@api-stub: JpsGrid:isBlocked
 -- Returns true if the cell is blocked (1-based coordinates).
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pathfind_api.rs and docs/specs/pathfind.md).
-do  -- TODO: JpsGrid:isBlocked
-  local _todo = "TODO: write a real JpsGrid:isBlocked usage example"
-  print(_todo)
+-- JPS expects uniform-cost grids — query blocked state to gate AI before issuing a path request.
+do  -- JpsGrid:isBlocked
+  local jps = lurek.pathfind.newJpsGrid(64, 64)
+  jps:setBlocked(32, 32, true)
+  if jps:isBlocked(32, 32) then
+    lurek.log.debug("jps cell 32,32 is blocked", "jps")
+  end
 end
 
