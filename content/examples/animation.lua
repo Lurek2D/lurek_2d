@@ -1,458 +1,343 @@
 -- content/examples/animation.lua
--- Practical usage examples for the lurek.animation API (45 items).
---
--- Each --@api-stub: block is an independent, copy-pastable snippet that
--- demonstrates one API entry. Calls are wrapped in pcall(...) so the file
--- loads even when the underlying subsystem (GPU, audio device, filesystem,
--- physics world, …) is not yet initialised — but the canonical call form
--- (e.g. `lurek.animation.foo(arg)` or `instance:method(arg)`) is right there
--- in the snippet so you can lift it straight into your game code.
---
+-- love2d-style usage snippets for the lurek.animation API (45 items).
+-- Each --@api-stub: block is a copy-pastable snippet showing the API
+-- in real context (callbacks, conditionals, real arg values).
 -- Run: cargo run -- content/examples/animation.lua
 
-print("[example] lurek.animation — 45 API entries")
-
--- ── lurek.animation.* free functions ──
+-- ── lurek.animation.* functions ──
 
 --@api-stub: lurek.animation.new
 -- Creates a new, empty Animation controller.
--- Call when you need to invoke new.
-local ok, obj = pcall(function() return lurek.animation.new() end)
-if ok and obj then print("created:", obj) end
-print("lurek.animation.new ok=", ok)
+-- Build once at startup; reuse across frames.
+local obj = lurek.animation.new()
+print("created", obj)
+return obj
 
 --@api-stub: lurek.animation.fromAseprite
 -- Parses an Aseprite JSON export string and builds an Animation with clips and frames.
--- Call when you need to invoke from aseprite.
-local ok, obj = pcall(function() return lurek.animation.fromAseprite("json_str value") end)
-if ok and obj then print("created:", obj) end
-print("lurek.animation.fromAseprite ok=", ok)
+-- Build once at startup; reuse across frames.
+local fromaseprite = lurek.animation.fromAseprite("hello")
+print("created", fromaseprite)
+return fromaseprite
 
 --@api-stub: lurek.animation.newStateMachine
 -- Creates an animation FSM from an Animation controller and an initial state name.
--- Call when you need to create a new state machine.
-local ok, obj = pcall(function() return lurek.animation.newStateMachine(nil, nil) end)
-if ok and obj then print("created:", obj) end
-print("lurek.animation.newStateMachine ok=", ok)
+-- Build once at startup; reuse across frames.
+local statemachine = lurek.animation.newStateMachine(anim_ud, initial)
+print("created", statemachine)
+return statemachine
 
 --@api-stub: lurek.animation.newCurve
 -- Creates a new empty [`AnimCurve`] with linear interpolation.
--- Call when you need to create a new curve.
-local ok, obj = pcall(function() return lurek.animation.newCurve() end)
-if ok and obj then print("created:", obj) end
-print("lurek.animation.newCurve ok=", ok)
+-- Build once at startup; reuse across frames.
+local curve = lurek.animation.newCurve()
+print("created", curve)
+return curve
 
 --@api-stub: lurek.animation.newSyncGroup
 -- Creates a new empty [`AnimSyncGroup`].
--- Call when you need to create a new sync group.
-local ok, obj = pcall(function() return lurek.animation.newSyncGroup() end)
-if ok and obj then print("created:", obj) end
-print("lurek.animation.newSyncGroup ok=", ok)
+-- Build once at startup; reuse across frames.
+local syncgroup = lurek.animation.newSyncGroup()
+print("created", syncgroup)
+return syncgroup
 
 --@api-stub: lurek.animation.newBlendLayerSet
 -- Creates a new empty [`BlendLayerSet`] for compositing multiple animation clips.
--- Call when you need to create a new blend layer set.
-local ok, obj = pcall(function() return lurek.animation.newBlendLayerSet() end)
-if ok and obj then print("created:", obj) end
-print("lurek.animation.newBlendLayerSet ok=", ok)
+-- Build once at startup; reuse across frames.
+local blendlayerset = lurek.animation.newBlendLayerSet()
+print("created", blendlayerset)
+return blendlayerset
 
 -- ── Animation methods ──
 
 --@api-stub: Animation:addFrame
 -- Adds a single frame to the frame pool by source rectangle.
--- Call when you need to add frame.
--- Build a Animation via the appropriate lurek.animation.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.animation.newAnimation(...)
-if instance then
-  local ok, result = pcall(function() return instance:addFrame(0, 0, 100, 100) end)
-  print("Animation:addFrame ->", ok, result)
-end
+-- Side-effecting; safe to call any time after init.
+local animation = lurek.animation.newAnimation()
+animation:addFrame(100, 100, 64, 64)
+print("Animation:addFrame done")
 
 --@api-stub: Animation:play
 -- Starts playback of the named clip.
--- Call when you need to invoke play.
--- Build a Animation via the appropriate lurek.animation.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.animation.newAnimation(...)
-if instance then
-  local ok, result = pcall(function() return instance:play("name") end)
-  print("Animation:play ->", ok, result)
-end
+-- Trigger from input, timers, or game events.
+local animation = lurek.animation.newAnimation()
+animation:play("main")
+-- trigger from input, timer, or event
+print("ok")
 
 --@api-stub: Animation:stop
 -- Stops playback and resets to frame 0.
--- Call when you need to invoke stop.
--- Build a Animation via the appropriate lurek.animation.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.animation.newAnimation(...)
-if instance then
-  local ok, result = pcall(function() return instance:stop() end)
-  print("Animation:stop ->", ok, result)
-end
+-- Trigger from input, timers, or game events.
+local animation = lurek.animation.newAnimation()
+animation:stop()
+-- trigger from input, timer, or event
+print("ok")
 
 --@api-stub: Animation:pause
 -- Pauses playback at the current frame.
--- Call when you need to invoke pause.
--- Build a Animation via the appropriate lurek.animation.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.animation.newAnimation(...)
-if instance then
-  local ok, result = pcall(function() return instance:pause() end)
-  print("Animation:pause ->", ok, result)
-end
+-- Trigger from input, timers, or game events.
+local animation = lurek.animation.newAnimation()
+animation:pause()
+-- trigger from input, timer, or event
+print("ok")
 
 --@api-stub: Animation:resume
 -- Resumes playback from the current frame.
--- Call when you need to invoke resume.
--- Build a Animation via the appropriate lurek.animation.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.animation.newAnimation(...)
-if instance then
-  local ok, result = pcall(function() return instance:resume() end)
-  print("Animation:resume ->", ok, result)
-end
+-- Trigger from input, timers, or game events.
+local animation = lurek.animation.newAnimation()
+animation:resume()
+-- trigger from input, timer, or event
+print("ok")
 
 --@api-stub: Animation:update
 -- Advances the animation by dt seconds.
--- Call when you need to invoke update.
--- Build a Animation via the appropriate lurek.animation.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.animation.newAnimation(...)
-if instance then
-  local ok, result = pcall(function() return instance:update(1.0) end)
-  print("Animation:update ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local animation = lurek.animation.newAnimation()
+animation:update(dt)
+print("Animation:update applied")
 
 --@api-stub: Animation:getQuad
 -- Returns the source quad (x, y, w, h) for the current frame, or nil.
--- Call when you need to read quad.
--- Build a Animation via the appropriate lurek.animation.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.animation.newAnimation(...)
-if instance then
-  local ok, result = pcall(function() return instance:getQuad() end)
-  print("Animation:getQuad ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local animation = lurek.animation.newAnimation()  -- or your existing handle
+local value = animation:getQuad()
+print("Animation:getQuad ->", value)
 
 --@api-stub: Animation:pollEvents
 -- Drains and returns all pending animation events as a table.
--- Call when you need to invoke poll events.
--- Build a Animation via the appropriate lurek.animation.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.animation.newAnimation(...)
-if instance then
-  local ok, result = pcall(function() return instance:pollEvents() end)
-  print("Animation:pollEvents ->", ok, result)
-end
+-- See the module spec for detailed semantics.
+local animation = lurek.animation.newAnimation()
+animation:pollEvents()
+print("Animation:pollEvents done")
 
 --@api-stub: Animation:isPlaying
 -- Returns true if a clip is currently playing.
--- Call when you need to check is playing.
--- Build a Animation via the appropriate lurek.animation.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.animation.newAnimation(...)
-if instance then
-  local ok, result = pcall(function() return instance:isPlaying() end)
-  print("Animation:isPlaying ->", ok, result)
-end
+-- Use as a guard inside lurek.update or event handlers.
+local animation = lurek.animation.newAnimation()
+if animation:isPlaying() then print("yes") end
+-- swap the constructor for your real handle
+print("ok")
 
 --@api-stub: Animation:isLooping
 -- Returns true if the current clip is set to loop.
--- Call when you need to check is looping.
--- Build a Animation via the appropriate lurek.animation.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.animation.newAnimation(...)
-if instance then
-  local ok, result = pcall(function() return instance:isLooping() end)
-  print("Animation:isLooping ->", ok, result)
-end
+-- Use as a guard inside lurek.update or event handlers.
+local animation = lurek.animation.newAnimation()
+if animation:isLooping() then print("yes") end
+-- swap the constructor for your real handle
+print("ok")
 
 --@api-stub: Animation:getClip
 -- Returns the name of the currently playing clip, or nil.
--- Call when you need to read clip.
--- Build a Animation via the appropriate lurek.animation.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.animation.newAnimation(...)
-if instance then
-  local ok, result = pcall(function() return instance:getClip() end)
-  print("Animation:getClip ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local animation = lurek.animation.newAnimation()  -- or your existing handle
+local value = animation:getClip()
+print("Animation:getClip ->", value)
 
 --@api-stub: Animation:getSpeed
 -- Returns the playback speed multiplier.
--- Call when you need to read speed.
--- Build a Animation via the appropriate lurek.animation.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.animation.newAnimation(...)
-if instance then
-  local ok, result = pcall(function() return instance:getSpeed() end)
-  print("Animation:getSpeed ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local animation = lurek.animation.newAnimation()  -- or your existing handle
+local value = animation:getSpeed()
+print("Animation:getSpeed ->", value)
 
 --@api-stub: Animation:setSpeed
 -- Sets the playback speed multiplier.
--- Call when you need to assign speed.
--- Build a Animation via the appropriate lurek.animation.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.animation.newAnimation(...)
-if instance then
-  local ok, result = pcall(function() return instance:setSpeed(nil) end)
-  print("Animation:setSpeed ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local animation = lurek.animation.newAnimation()
+animation:setSpeed(speed)
+print("Animation:setSpeed applied")
 
 --@api-stub: Animation:getFrameCount
 -- Returns the total number of frames in the frame pool.
--- Call when you need to read frame count.
--- Build a Animation via the appropriate lurek.animation.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.animation.newAnimation(...)
-if instance then
-  local ok, result = pcall(function() return instance:getFrameCount() end)
-  print("Animation:getFrameCount ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local animation = lurek.animation.newAnimation()  -- or your existing handle
+local value = animation:getFrameCount()
+print("Animation:getFrameCount ->", value)
 
 --@api-stub: Animation:getClipCount
 -- Returns the number of registered clips.
--- Call when you need to read clip count.
--- Build a Animation via the appropriate lurek.animation.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.animation.newAnimation(...)
-if instance then
-  local ok, result = pcall(function() return instance:getClipCount() end)
-  print("Animation:getClipCount ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local animation = lurek.animation.newAnimation()  -- or your existing handle
+local value = animation:getClipCount()
+print("Animation:getClipCount ->", value)
 
 --@api-stub: Animation:getCurrentFrame
 -- Returns the current position within the active clip (0-based).
--- Call when you need to read current frame.
--- Build a Animation via the appropriate lurek.animation.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.animation.newAnimation(...)
-if instance then
-  local ok, result = pcall(function() return instance:getCurrentFrame() end)
-  print("Animation:getCurrentFrame ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local animation = lurek.animation.newAnimation()  -- or your existing handle
+local value = animation:getCurrentFrame()
+print("Animation:getCurrentFrame ->", value)
 
 --@api-stub: Animation:setFrame
 -- Sets the playback position within the current clip.
--- Call when you need to assign frame.
--- Build a Animation via the appropriate lurek.animation.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.animation.newAnimation(...)
-if instance then
-  local ok, result = pcall(function() return instance:setFrame(1) end)
-  print("Animation:setFrame ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local animation = lurek.animation.newAnimation()
+animation:setFrame(1)
+print("Animation:setFrame applied")
 
 --@api-stub: Animation:getBlendState
 -- Returns the two quads and blend factor during a crossfade, or nil when not blending.
--- Call when you need to read blend state.
--- Build a Animation via the appropriate lurek.animation.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.animation.newAnimation(...)
-if instance then
-  local ok, result = pcall(function() return instance:getBlendState() end)
-  print("Animation:getBlendState ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local animation = lurek.animation.newAnimation()  -- or your existing handle
+local value = animation:getBlendState()
+print("Animation:getBlendState ->", value)
 
 --@api-stub: Animation:drawToImage
 -- Renders the current animation frame into a new ImageData (white bg, blue frame rect).
--- Call when you need to render to image.
--- Build a Animation via the appropriate lurek.animation.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.animation.newAnimation(...)
-if instance then
-  local ok, result = pcall(function() return instance:drawToImage(100, 100) end)
-  print("Animation:drawToImage ->", ok, result)
-end
+-- Place inside `function lurek.render() ... end`.
+local animation = lurek.animation.newAnimation()
+animation:drawToImage(64, 64)
+print("Animation:drawToImage done")
 
 -- ── AnimStateMachine methods ──
 
 --@api-stub: AnimStateMachine:update
 -- Advances the FSM by `dt` seconds, evaluating transitions.
--- Call when you need to invoke update.
--- Build a AnimStateMachine via the appropriate lurek.animation.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.animation.newAnimStateMachine(...)
-if instance then
-  local ok, result = pcall(function() return instance:update(1.0) end)
-  print("AnimStateMachine:update ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local animStateMachine = lurek.animation.newAnimStateMachine()
+animStateMachine:update(dt)
+print("AnimStateMachine:update applied")
 
 --@api-stub: AnimStateMachine:getState
 -- Returns the name of the currently active state.
--- Call when you need to read state.
--- Build a AnimStateMachine via the appropriate lurek.animation.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.animation.newAnimStateMachine(...)
-if instance then
-  local ok, result = pcall(function() return instance:getState() end)
-  print("AnimStateMachine:getState ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local animStateMachine = lurek.animation.newAnimStateMachine()  -- or your existing handle
+local value = animStateMachine:getState()
+print("AnimStateMachine:getState ->", value)
 
 --@api-stub: AnimStateMachine:forceState
 -- Immediately jumps to the named state, bypassing transition conditions.
--- Call when you need to invoke force state.
--- Build a AnimStateMachine via the appropriate lurek.animation.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.animation.newAnimStateMachine(...)
-if instance then
-  local ok, result = pcall(function() return instance:forceState("name") end)
-  print("AnimStateMachine:forceState ->", ok, result)
-end
+-- See the module spec for detailed semantics.
+local animStateMachine = lurek.animation.newAnimStateMachine()
+animStateMachine:forceState("main")
+print("AnimStateMachine:forceState done")
 
 --@api-stub: AnimStateMachine:setParam
 -- Sets an FSM parameter value (number, boolean, or integer supported).
--- Call when you need to assign param.
--- Build a AnimStateMachine via the appropriate lurek.animation.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.animation.newAnimStateMachine(...)
-if instance then
-  local ok, result = pcall(function() return instance:setParam("name", nil) end)
-  print("AnimStateMachine:setParam ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local animStateMachine = lurek.animation.newAnimStateMachine()
+animStateMachine:setParam("main", value)
+print("AnimStateMachine:setParam applied")
 
 --@api-stub: AnimStateMachine:getQuad
 -- Returns the source quad for the current animation frame, or nil.
--- Call when you need to read quad.
--- Build a AnimStateMachine via the appropriate lurek.animation.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.animation.newAnimStateMachine(...)
-if instance then
-  local ok, result = pcall(function() return instance:getQuad() end)
-  print("AnimStateMachine:getQuad ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local animStateMachine = lurek.animation.newAnimStateMachine()  -- or your existing handle
+local value = animStateMachine:getQuad()
+print("AnimStateMachine:getQuad ->", value)
 
 -- ── BlendLayerSet methods ──
 
 --@api-stub: BlendLayerSet:removeLayer
 -- Removes a blend layer by name.
--- Call when you need to remove layer.
--- Build a BlendLayerSet via the appropriate lurek.animation.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.animation.newBlendLayerSet(...)
-if instance then
-  local ok, result = pcall(function() return instance:removeLayer("name") end)
-  print("BlendLayerSet:removeLayer ->", ok, result)
-end
+-- Pair with the matching constructor to free resources.
+local blendLayerSet = lurek.animation.newBlendLayerSet()
+blendLayerSet:removeLayer("main")
+-- blendLayerSet is now released
+print("ok")
 
 --@api-stub: BlendLayerSet:setWeight
 -- Sets the blend weight of a named layer (clamped to [0, 1]).
--- Call when you need to assign weight.
--- Build a BlendLayerSet via the appropriate lurek.animation.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.animation.newBlendLayerSet(...)
-if instance then
-  local ok, result = pcall(function() return instance:setWeight("name", nil) end)
-  print("BlendLayerSet:setWeight ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local blendLayerSet = lurek.animation.newBlendLayerSet()
+blendLayerSet:setWeight("main", weight)
+print("BlendLayerSet:setWeight applied")
 
 --@api-stub: BlendLayerSet:getWeight
 -- Returns the blend weight of a named layer, or nil if not found.
--- Call when you need to read weight.
--- Build a BlendLayerSet via the appropriate lurek.animation.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.animation.newBlendLayerSet(...)
-if instance then
-  local ok, result = pcall(function() return instance:getWeight("name") end)
-  print("BlendLayerSet:getWeight ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local blendLayerSet = lurek.animation.newBlendLayerSet()  -- or your existing handle
+local value = blendLayerSet:getWeight("main")
+print("BlendLayerSet:getWeight ->", value)
 
 --@api-stub: BlendLayerSet:setMask
 -- Replaces the bone mask of a layer.
--- Call when you need to assign mask.
--- Build a BlendLayerSet via the appropriate lurek.animation.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.animation.newBlendLayerSet(...)
-if instance then
-  local ok, result = pcall(function() return instance:setMask("name", nil) end)
-  print("BlendLayerSet:setMask ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local blendLayerSet = lurek.animation.newBlendLayerSet()
+blendLayerSet:setMask("main", bones)
+print("BlendLayerSet:setMask applied")
 
 --@api-stub: BlendLayerSet:listLayers
 -- Returns an ordered array of layer info tables: {name, clip_name, weight, bones}.
--- Call when you need to invoke list layers.
--- Build a BlendLayerSet via the appropriate lurek.animation.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.animation.newBlendLayerSet(...)
-if instance then
-  local ok, result = pcall(function() return instance:listLayers() end)
-  print("BlendLayerSet:listLayers ->", ok, result)
-end
+-- See the module spec for detailed semantics.
+local blendLayerSet = lurek.animation.newBlendLayerSet()
+blendLayerSet:listLayers()
+print("BlendLayerSet:listLayers done")
 
 --@api-stub: BlendLayerSet:len
 -- Returns the number of blend layers.
--- Call when you need to invoke len.
--- Build a BlendLayerSet via the appropriate lurek.animation.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.animation.newBlendLayerSet(...)
-if instance then
-  local ok, result = pcall(function() return instance:len() end)
-  print("BlendLayerSet:len ->", ok, result)
-end
+-- See the module spec for detailed semantics.
+local blendLayerSet = lurek.animation.newBlendLayerSet()
+blendLayerSet:len()
+print("BlendLayerSet:len done")
 
 -- ── AnimCurve methods ──
 
 --@api-stub: AnimCurve:addKeyframe
 -- Inserts a keyframe at the given time.
--- If a keyframe at the same time already.
--- Build a AnimCurve via the appropriate lurek.animation.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.animation.newAnimCurve(...)
-if instance then
-  local ok, result = pcall(function() return instance:addKeyframe(nil, nil) end)
-  print("AnimCurve:addKeyframe ->", ok, result)
-end
+-- Side-effecting; safe to call any time after init.
+local animCurve = lurek.animation.newAnimCurve()
+animCurve:addKeyframe(t, v)
+print("AnimCurve:addKeyframe done")
 
 --@api-stub: AnimCurve:eval
 -- Returns the interpolated value at the given time using the curve's easing.
--- Call when you need to invoke eval.
--- Build a AnimCurve via the appropriate lurek.animation.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.animation.newAnimCurve(...)
-if instance then
-  local ok, result = pcall(function() return instance:eval(nil) end)
-  print("AnimCurve:eval ->", ok, result)
-end
+-- See the module spec for detailed semantics.
+local animCurve = lurek.animation.newAnimCurve()
+animCurve:eval(t)
+print("AnimCurve:eval done")
 
 --@api-stub: AnimCurve:setEasing
 -- Sets the easing kind applied between all keyframe segments.
--- Call when you need to assign easing.
--- Build a AnimCurve via the appropriate lurek.animation.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.animation.newAnimCurve(...)
-if instance then
-  local ok, result = pcall(function() return instance:setEasing(nil) end)
-  print("AnimCurve:setEasing ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local animCurve = lurek.animation.newAnimCurve()
+animCurve:setEasing(mode)
+print("AnimCurve:setEasing applied")
 
 --@api-stub: AnimCurve:keyframeCount
 -- Returns the number of keyframes currently stored.
--- Call when you need to invoke keyframe count.
--- Build a AnimCurve via the appropriate lurek.animation.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.animation.newAnimCurve(...)
-if instance then
-  local ok, result = pcall(function() return instance:keyframeCount() end)
-  print("AnimCurve:keyframeCount ->", ok, result)
-end
+-- See the module spec for detailed semantics.
+local animCurve = lurek.animation.newAnimCurve()
+animCurve:keyframeCount()
+print("AnimCurve:keyframeCount done")
 
 --@api-stub: AnimCurve:clear
 -- Removes all keyframes from this animation curve, resetting it to empty.
--- Call when you need to invoke clear.
--- Build a AnimCurve via the appropriate lurek.animation.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.animation.newAnimCurve(...)
-if instance then
-  local ok, result = pcall(function() return instance:clear() end)
-  print("AnimCurve:clear ->", ok, result)
-end
+-- Pair with the matching constructor to free resources.
+local animCurve = lurek.animation.newAnimCurve()
+animCurve:clear()
+-- animCurve is now released
+print("ok")
 
 -- ── AnimSyncGroup methods ──
 
 --@api-stub: AnimSyncGroup:add
 -- Adds an animation handle to the group.
--- Call when you need to invoke add.
--- Build a AnimSyncGroup via the appropriate lurek.animation.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.animation.newAnimSyncGroup(...)
-if instance then
-  local ok, result = pcall(function() return instance:add(nil) end)
-  print("AnimSyncGroup:add ->", ok, result)
-end
+-- Side-effecting; safe to call any time after init.
+local animSyncGroup = lurek.animation.newAnimSyncGroup()
+animSyncGroup:add(handle)
+print("AnimSyncGroup:add done")
 
 --@api-stub: AnimSyncGroup:remove
 -- Removes an animation handle from the group.
--- Call when you need to invoke remove.
--- Build a AnimSyncGroup via the appropriate lurek.animation.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.animation.newAnimSyncGroup(...)
-if instance then
-  local ok, result = pcall(function() return instance:remove(nil) end)
-  print("AnimSyncGroup:remove ->", ok, result)
-end
+-- Pair with the matching constructor to free resources.
+local animSyncGroup = lurek.animation.newAnimSyncGroup()
+animSyncGroup:remove(handle)
+-- animSyncGroup is now released
+print("ok")
 
 --@api-stub: AnimSyncGroup:clear
 -- Removes all animation handles from the group.
--- Call when you need to invoke clear.
--- Build a AnimSyncGroup via the appropriate lurek.animation.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.animation.newAnimSyncGroup(...)
-if instance then
-  local ok, result = pcall(function() return instance:clear() end)
-  print("AnimSyncGroup:clear ->", ok, result)
-end
+-- Pair with the matching constructor to free resources.
+local animSyncGroup = lurek.animation.newAnimSyncGroup()
+animSyncGroup:clear()
+-- animSyncGroup is now released
+print("ok")
 
 --@api-stub: AnimSyncGroup:memberCount
 -- Returns the number of animations currently in the group.
--- Call when you need to invoke member count.
--- Build a AnimSyncGroup via the appropriate lurek.animation.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.animation.newAnimSyncGroup(...)
-if instance then
-  local ok, result = pcall(function() return instance:memberCount() end)
-  print("AnimSyncGroup:memberCount ->", ok, result)
-end
+-- See the module spec for detailed semantics.
+local animSyncGroup = lurek.animation.newAnimSyncGroup()
+animSyncGroup:memberCount()
+print("AnimSyncGroup:memberCount done")
 

@@ -1,676 +1,501 @@
 -- content/examples/image.lua
--- Practical usage examples for the lurek.image API (68 items).
---
--- Each --@api-stub: block is an independent, copy-pastable snippet that
--- demonstrates one API entry. Calls are wrapped in pcall(...) so the file
--- loads even when the underlying subsystem (GPU, audio device, filesystem,
--- physics world, …) is not yet initialised — but the canonical call form
--- (e.g. `lurek.image.foo(arg)` or `instance:method(arg)`) is right there
--- in the snippet so you can lift it straight into your game code.
---
+-- love2d-style usage snippets for the lurek.image API (68 items).
+-- Each --@api-stub: block is a copy-pastable snippet showing the API
+-- in real context (callbacks, conditionals, real arg values).
 -- Run: cargo run -- content/examples/image.lua
 
-print("[example] lurek.image — 68 API entries")
-
--- ── lurek.image.* free functions ──
+-- ── lurek.image.* functions ──
 
 --@api-stub: lurek.image.newImageData
 -- Creates a new blank ImageData or loads one from a file.
--- Call when you need to create a new image data.
-local ok, obj = pcall(function() return lurek.image.newImageData({}) end)
-if ok and obj then print("created:", obj) end
-print("lurek.image.newImageData ok=", ok)
+-- Build once at startup; reuse across frames.
+local imagedata = lurek.image.newImageData({ x = 0, y = 0 })
+print("created", imagedata)
+return imagedata
 
 --@api-stub: lurek.image.newCompressedData
 -- Loads compressed texture data from a DDS file.
--- Call when you need to create a new compressed data.
-local ok, obj = pcall(function() return lurek.image.newCompressedData("sprites/player.png") end)
-if ok and obj then print("created:", obj) end
-print("lurek.image.newCompressedData ok=", ok)
+-- Build once at startup; reuse across frames.
+local compresseddata = lurek.image.newCompressedData("img/sprite.png")
+print("created", compresseddata)
+return compresseddata
 
 --@api-stub: lurek.image.isCompressed
 -- Returns true if the file at the given path is a DDS file.
--- Call when you need to check is compressed.
-local ok, result = pcall(function() return lurek.image.isCompressed("sprites/player.png") end)
-if ok and result then print("yes") else print("no or unavailable") end
-print("lurek.image.isCompressed ok=", ok)
+-- Use as a guard inside lurek.update or event handlers.
+if lurek.image.isCompressed("img/sprite.png") then
+  print("isCompressed -> true")
+end
 
 --@api-stub: lurek.image.newLayeredImage
 -- Creates a new empty LayeredImage canvas with no layers.
--- Call when you need to create a new layered image.
-local ok, obj = pcall(function() return lurek.image.newLayeredImage(100, 100) end)
-if ok and obj then print("created:", obj) end
-print("lurek.image.newLayeredImage ok=", ok)
+-- Build once at startup; reuse across frames.
+local layeredimage = lurek.image.newLayeredImage(64, 64)
+print("created", layeredimage)
+return layeredimage
 
 --@api-stub: lurek.image.saveImage
 -- Saves a flat ImageData to a LIMG binary file at the given path.
--- Call when you need to invoke save image.
-local ok, obj = pcall(function() return lurek.image.saveImage(nil, "sprites/player.png") end)
-if ok and obj then print("created:", obj) end
-print("lurek.image.saveImage ok=", ok)
+-- May block — call from a worker thread for large payloads.
+local result = lurek.image.saveImage(img_ud, "img/sprite.png")
+-- may block; consider lurek.thread for large payloads
+print("saveImage:", result)
+print("ok")
 
 --@api-stub: lurek.image.savePNG
 -- Saves a flat ImageData as a PNG file at the given path.
--- Call when you need to invoke save p n g.
-local ok, obj = pcall(function() return lurek.image.savePNG(nil, "sprites/player.png") end)
-if ok and obj then print("created:", obj) end
-print("lurek.image.savePNG ok=", ok)
+-- May block — call from a worker thread for large payloads.
+local result = lurek.image.savePNG(img_ud, "img/sprite.png")
+-- may block; consider lurek.thread for large payloads
+print("savePNG:", result)
+print("ok")
 
 --@api-stub: lurek.image.loadImage
 -- Loads an ImageData from a LIMG binary file.
--- Call when you need to load image.
-local ok, obj = pcall(function() return lurek.image.loadImage("sprites/player.png") end)
-if ok and obj then print("created:", obj) end
-print("lurek.image.loadImage ok=", ok)
+-- May block — call from a worker thread for large payloads.
+local result = lurek.image.loadImage("img/sprite.png")
+-- may block; consider lurek.thread for large payloads
+print("loadImage:", result)
+print("ok")
 
 --@api-stub: lurek.image.loadLayered
 -- Loads a LayeredImage from a LIMG binary file.
--- Call when you need to load layered.
-local ok, obj = pcall(function() return lurek.image.loadLayered("sprites/player.png") end)
-if ok and obj then print("created:", obj) end
-print("lurek.image.loadLayered ok=", ok)
+-- May block — call from a worker thread for large payloads.
+local result = lurek.image.loadLayered("img/sprite.png")
+-- may block; consider lurek.thread for large payloads
+print("loadLayered:", result)
+print("ok")
 
 --@api-stub: lurek.image.newPaletteLut
 -- Creates a new empty `PaletteLUT` used to remap colours in an image.
--- Call when you need to create a new palette lut.
-local ok, obj = pcall(function() return lurek.image.newPaletteLut() end)
-if ok and obj then print("created:", obj) end
-print("lurek.image.newPaletteLut ok=", ok)
+-- Build once at startup; reuse across frames.
+local palettelut = lurek.image.newPaletteLut()
+print("created", palettelut)
+return palettelut
 
 --@api-stub: lurek.image.newProvinceGrid
 -- Loads a province map PNG and builds an O(1) spatial index with adjacency data.
--- Call when you need to create a new province grid.
-local ok, obj = pcall(function() return lurek.image.newProvinceGrid("sprites/player.png") end)
-if ok and obj then print("created:", obj) end
-print("lurek.image.newProvinceGrid ok=", ok)
+-- Build once at startup; reuse across frames.
+local provincegrid = lurek.image.newProvinceGrid("img/sprite.png")
+print("created", provincegrid)
+return provincegrid
 
 -- ── ProvinceGrid methods ──
 
 --@api-stub: ProvinceGrid:getWidth
 -- Returns the grid width in pixels.
--- Call when you need to read width.
--- Build a ProvinceGrid via the appropriate lurek.image.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.image.newProvinceGrid(...)
-if instance then
-  local ok, result = pcall(function() return instance:getWidth() end)
-  print("ProvinceGrid:getWidth ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local provinceGrid = lurek.image.newProvinceGrid()  -- or your existing handle
+local value = provinceGrid:getWidth()
+print("ProvinceGrid:getWidth ->", value)
 
 --@api-stub: ProvinceGrid:getHeight
 -- Returns the grid height in pixels.
--- Call when you need to read height.
--- Build a ProvinceGrid via the appropriate lurek.image.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.image.newProvinceGrid(...)
-if instance then
-  local ok, result = pcall(function() return instance:getHeight() end)
-  print("ProvinceGrid:getHeight ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local provinceGrid = lurek.image.newProvinceGrid()  -- or your existing handle
+local value = provinceGrid:getHeight()
+print("ProvinceGrid:getHeight ->", value)
 
 --@api-stub: ProvinceGrid:getAt
 -- Returns the province ID at pixel coordinates (x, y).
--- Returns 0 for background or out-of-bounds.
--- Build a ProvinceGrid via the appropriate lurek.image.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.image.newProvinceGrid(...)
-if instance then
-  local ok, result = pcall(function() return instance:getAt(0, 0) end)
-  print("ProvinceGrid:getAt ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local provinceGrid = lurek.image.newProvinceGrid()  -- or your existing handle
+local value = provinceGrid:getAt(100, 100)
+print("ProvinceGrid:getAt ->", value)
 
 --@api-stub: ProvinceGrid:provinceCount
 -- Returns the number of unique non-zero province IDs detected in the map.
--- Call when you need to invoke province count.
--- Build a ProvinceGrid via the appropriate lurek.image.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.image.newProvinceGrid(...)
-if instance then
-  local ok, result = pcall(function() return instance:provinceCount() end)
-  print("ProvinceGrid:provinceCount ->", ok, result)
-end
+-- See the module spec for detailed semantics.
+local provinceGrid = lurek.image.newProvinceGrid()
+provinceGrid:provinceCount()
+print("ProvinceGrid:provinceCount done")
 
 --@api-stub: ProvinceGrid:adjacencies
 -- Returns an array of adjacency records.
--- Each record is {province_a, province_b, border_pixels}.
--- Build a ProvinceGrid via the appropriate lurek.image.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.image.newProvinceGrid(...)
-if instance then
-  local ok, result = pcall(function() return instance:adjacencies() end)
-  print("ProvinceGrid:adjacencies ->", ok, result)
-end
+-- See the module spec for detailed semantics.
+local provinceGrid = lurek.image.newProvinceGrid()
+provinceGrid:adjacencies()
+print("ProvinceGrid:adjacencies done")
 
 -- ── LayeredImage methods ──
 
 --@api-stub: LayeredImage:getWidth
 -- Returns the canvas width shared by all layers.
--- Call when you need to read width.
--- Build a LayeredImage via the appropriate lurek.image.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.image.newLayeredImage(...)
-if instance then
-  local ok, result = pcall(function() return instance:getWidth() end)
-  print("LayeredImage:getWidth ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local layeredImage = lurek.image.newLayeredImage()  -- or your existing handle
+local value = layeredImage:getWidth()
+print("LayeredImage:getWidth ->", value)
 
 --@api-stub: LayeredImage:getHeight
 -- Returns the canvas height shared by all layers.
--- Call when you need to read height.
--- Build a LayeredImage via the appropriate lurek.image.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.image.newLayeredImage(...)
-if instance then
-  local ok, result = pcall(function() return instance:getHeight() end)
-  print("LayeredImage:getHeight ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local layeredImage = lurek.image.newLayeredImage()  -- or your existing handle
+local value = layeredImage:getHeight()
+print("LayeredImage:getHeight ->", value)
 
 --@api-stub: LayeredImage:layerCount
 -- Returns the number of layers in the stack.
--- Call when you need to invoke layer count.
--- Build a LayeredImage via the appropriate lurek.image.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.image.newLayeredImage(...)
-if instance then
-  local ok, result = pcall(function() return instance:layerCount() end)
-  print("LayeredImage:layerCount ->", ok, result)
-end
+-- See the module spec for detailed semantics.
+local layeredImage = lurek.image.newLayeredImage()
+layeredImage:layerCount()
+print("LayeredImage:layerCount done")
 
 --@api-stub: LayeredImage:addLayer
 -- Appends a new blank transparent layer on top and returns its 1-based index.
--- Call when you need to add layer.
--- Build a LayeredImage via the appropriate lurek.image.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.image.newLayeredImage(...)
-if instance then
-  local ok, result = pcall(function() return instance:addLayer("sprites/player.png") end)
-  print("LayeredImage:addLayer ->", ok, result)
-end
+-- Side-effecting; safe to call any time after init.
+local layeredImage = lurek.image.newLayeredImage()
+layeredImage:addLayer("img/sprite.png")
+print("LayeredImage:addLayer done")
 
 --@api-stub: LayeredImage:removeLayer
 -- Removes the layer at the given 1-based index.
--- Returns true on success.
--- Build a LayeredImage via the appropriate lurek.image.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.image.newLayeredImage(...)
-if instance then
-  local ok, result = pcall(function() return instance:removeLayer(1) end)
-  print("LayeredImage:removeLayer ->", ok, result)
-end
+-- Pair with the matching constructor to free resources.
+local layeredImage = lurek.image.newLayeredImage()
+layeredImage:removeLayer(1)
+-- layeredImage is now released
+print("ok")
 
 --@api-stub: LayeredImage:getLayer
 -- Returns a copy of the layer's pixel buffer as an ImageData.
--- Call when you need to read layer.
--- Build a LayeredImage via the appropriate lurek.image.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.image.newLayeredImage(...)
-if instance then
-  local ok, result = pcall(function() return instance:getLayer(1) end)
-  print("LayeredImage:getLayer ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local layeredImage = lurek.image.newLayeredImage()  -- or your existing handle
+local value = layeredImage:getLayer(1)
+print("LayeredImage:getLayer ->", value)
 
 --@api-stub: LayeredImage:getOpacity
 -- Returns the opacity of a layer in [0.0, 1.0].
--- Call when you need to read opacity.
--- Build a LayeredImage via the appropriate lurek.image.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.image.newLayeredImage(...)
-if instance then
-  local ok, result = pcall(function() return instance:getOpacity(1) end)
-  print("LayeredImage:getOpacity ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local layeredImage = lurek.image.newLayeredImage()  -- or your existing handle
+local value = layeredImage:getOpacity(1)
+print("LayeredImage:getOpacity ->", value)
 
 --@api-stub: LayeredImage:setOpacity
 -- Sets the opacity of a layer.
--- Value is clamped to [0.0, 1.0].
--- Build a LayeredImage via the appropriate lurek.image.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.image.newLayeredImage(...)
-if instance then
-  local ok, result = pcall(function() return instance:setOpacity(1, nil) end)
-  print("LayeredImage:setOpacity ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local layeredImage = lurek.image.newLayeredImage()
+layeredImage:setOpacity(1, opacity)
+print("LayeredImage:setOpacity applied")
 
 --@api-stub: LayeredImage:isVisible
 -- Returns whether a layer is visible.
--- Call when you need to check is visible.
--- Build a LayeredImage via the appropriate lurek.image.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.image.newLayeredImage(...)
-if instance then
-  local ok, result = pcall(function() return instance:isVisible(1) end)
-  print("LayeredImage:isVisible ->", ok, result)
-end
+-- Use as a guard inside lurek.update or event handlers.
+local layeredImage = lurek.image.newLayeredImage()
+if layeredImage:isVisible(1) then print("yes") end
+-- swap the constructor for your real handle
+print("ok")
 
 --@api-stub: LayeredImage:setVisible
 -- Shows or hides a layer during compositing.
--- Call when you need to assign visible.
--- Build a LayeredImage via the appropriate lurek.image.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.image.newLayeredImage(...)
-if instance then
-  local ok, result = pcall(function() return instance:setVisible(1, nil) end)
-  print("LayeredImage:setVisible ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local layeredImage = lurek.image.newLayeredImage()
+layeredImage:setVisible(1, visible)
+print("LayeredImage:setVisible applied")
 
 --@api-stub: LayeredImage:getName
 -- Returns the name of a layer.
--- Call when you need to read name.
--- Build a LayeredImage via the appropriate lurek.image.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.image.newLayeredImage(...)
-if instance then
-  local ok, result = pcall(function() return instance:getName(1) end)
-  print("LayeredImage:getName ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local layeredImage = lurek.image.newLayeredImage()  -- or your existing handle
+local value = layeredImage:getName(1)
+print("LayeredImage:getName ->", value)
 
 --@api-stub: LayeredImage:setName
 -- Renames the layer at the given index to the new name string.
--- Call when you need to assign name.
--- Build a LayeredImage via the appropriate lurek.image.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.image.newLayeredImage(...)
-if instance then
-  local ok, result = pcall(function() return instance:setName(1, "sprites/player.png") end)
-  print("LayeredImage:setName ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local layeredImage = lurek.image.newLayeredImage()
+layeredImage:setName(1, "img/sprite.png")
+print("LayeredImage:setName applied")
 
 --@api-stub: LayeredImage:swapLayers
 -- Swaps two layers by their 1-based indices, changing their compositing order.
--- Call when you need to invoke swap layers.
--- Build a LayeredImage via the appropriate lurek.image.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.image.newLayeredImage(...)
-if instance then
-  local ok, result = pcall(function() return instance:swapLayers(1, 1) end)
-  print("LayeredImage:swapLayers ->", ok, result)
-end
+-- See the module spec for detailed semantics.
+local layeredImage = lurek.image.newLayeredImage()
+layeredImage:swapLayers(1, 0)
+print("LayeredImage:swapLayers done")
 
 --@api-stub: LayeredImage:merge
 -- Flattens all visible layers into a single ImageData using Porter-Duff "over" compositing.
--- Call when you need to invoke merge.
--- Build a LayeredImage via the appropriate lurek.image.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.image.newLayeredImage(...)
-if instance then
-  local ok, result = pcall(function() return instance:merge() end)
-  print("LayeredImage:merge ->", ok, result)
-end
+-- See the module spec for detailed semantics.
+local layeredImage = lurek.image.newLayeredImage()
+layeredImage:merge()
+print("LayeredImage:merge done")
 
 --@api-stub: LayeredImage:save
 -- Saves the layered image to a LIMG binary file at the given path.
--- Call when you need to invoke save.
--- Build a LayeredImage via the appropriate lurek.image.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.image.newLayeredImage(...)
-if instance then
-  local ok, result = pcall(function() return instance:save("sprites/player.png") end)
-  print("LayeredImage:save ->", ok, result)
-end
+-- May block — call from a worker thread for large payloads.
+local layeredImage = lurek.image.newLayeredImage()
+layeredImage:save("img/sprite.png")
+print("LayeredImage:save done")
 
 -- ── CompressedImageData methods ──
 
 --@api-stub: CompressedImageData:getWidth
 -- Returns the width of the base mip level in pixels.
--- Call when you need to read width.
--- Build a CompressedImageData via the appropriate lurek.image.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.image.newCompressedImageData(...)
-if instance then
-  local ok, result = pcall(function() return instance:getWidth() end)
-  print("CompressedImageData:getWidth ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local compressedImageData = lurek.image.newCompressedImageData()  -- or your existing handle
+local value = compressedImageData:getWidth()
+print("CompressedImageData:getWidth ->", value)
 
 --@api-stub: CompressedImageData:getHeight
 -- Returns the height of the base mip level in pixels.
--- Call when you need to read height.
--- Build a CompressedImageData via the appropriate lurek.image.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.image.newCompressedImageData(...)
-if instance then
-  local ok, result = pcall(function() return instance:getHeight() end)
-  print("CompressedImageData:getHeight ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local compressedImageData = lurek.image.newCompressedImageData()  -- or your existing handle
+local value = compressedImageData:getHeight()
+print("CompressedImageData:getHeight ->", value)
 
 --@api-stub: CompressedImageData:getDimensions
 -- Returns the width and height of the base mip level.
--- Call when you need to read dimensions.
--- Build a CompressedImageData via the appropriate lurek.image.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.image.newCompressedImageData(...)
-if instance then
-  local ok, result = pcall(function() return instance:getDimensions() end)
-  print("CompressedImageData:getDimensions ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local compressedImageData = lurek.image.newCompressedImageData()  -- or your existing handle
+local value = compressedImageData:getDimensions()
+print("CompressedImageData:getDimensions ->", value)
 
 --@api-stub: CompressedImageData:getMipmapCount
 -- Returns the number of mipmap levels stored.
--- Call when you need to read mipmap count.
--- Build a CompressedImageData via the appropriate lurek.image.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.image.newCompressedImageData(...)
-if instance then
-  local ok, result = pcall(function() return instance:getMipmapCount() end)
-  print("CompressedImageData:getMipmapCount ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local compressedImageData = lurek.image.newCompressedImageData()  -- or your existing handle
+local value = compressedImageData:getMipmapCount()
+print("CompressedImageData:getMipmapCount ->", value)
 
 --@api-stub: CompressedImageData:getFormat
 -- Returns the compressed format name string.
--- Call when you need to read format.
--- Build a CompressedImageData via the appropriate lurek.image.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.image.newCompressedImageData(...)
-if instance then
-  local ok, result = pcall(function() return instance:getFormat() end)
-  print("CompressedImageData:getFormat ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local compressedImageData = lurek.image.newCompressedImageData()  -- or your existing handle
+local value = compressedImageData:getFormat()
+print("CompressedImageData:getFormat ->", value)
 
 -- ── mlua methods ──
 
 --@api-stub: mlua:getWidth
 -- Returns the width.
--- Call when you need to read width.
--- Build a mlua via the appropriate lurek.image.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.image.newmlua(...)
-if instance then
-  local ok, result = pcall(function() return instance:getWidth() end)
-  print("mlua:getWidth ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local mlua = lurek.image.newmlua()  -- or your existing handle
+local value = mlua:getWidth()
+print("mlua:getWidth ->", value)
 
 --@api-stub: mlua:getHeight
 -- Returns the height.
--- Call when you need to read height.
--- Build a mlua via the appropriate lurek.image.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.image.newmlua(...)
-if instance then
-  local ok, result = pcall(function() return instance:getHeight() end)
-  print("mlua:getHeight ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local mlua = lurek.image.newmlua()  -- or your existing handle
+local value = mlua:getHeight()
+print("mlua:getHeight ->", value)
 
 --@api-stub: mlua:getDimensions
 -- Returns the dimensions.
--- Call when you need to read dimensions.
--- Build a mlua via the appropriate lurek.image.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.image.newmlua(...)
-if instance then
-  local ok, result = pcall(function() return instance:getDimensions() end)
-  print("mlua:getDimensions ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local mlua = lurek.image.newmlua()  -- or your existing handle
+local value = mlua:getDimensions()
+print("mlua:getDimensions ->", value)
 
 --@api-stub: mlua:getPixel
 -- Returns the pixel.
--- Call when you need to read pixel.
--- Build a mlua via the appropriate lurek.image.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.image.newmlua(...)
-if instance then
-  local ok, result = pcall(function() return instance:getPixel(0, 0) end)
-  print("mlua:getPixel ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local mlua = lurek.image.newmlua()  -- or your existing handle
+local value = mlua:getPixel(100, 100)
+print("mlua:getPixel ->", value)
 
 --@api-stub: mlua:encode
 -- Encode.
--- Call when you need to invoke encode.
--- Build a mlua via the appropriate lurek.image.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.image.newmlua(...)
-if instance then
-  local ok, result = pcall(function() return instance:encode("format value") end)
-  print("mlua:encode ->", ok, result)
-end
+-- May block — call from a worker thread for large payloads.
+local mlua = lurek.image.newmlua()
+mlua:encode("hello")
+print("mlua:encode done")
 
 --@api-stub: mlua:getString
 -- Returns the string.
--- Call when you need to read string.
--- Build a mlua via the appropriate lurek.image.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.image.newmlua(...)
-if instance then
-  local ok, result = pcall(function() return instance:getString() end)
-  print("mlua:getString ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local mlua = lurek.image.newmlua()  -- or your existing handle
+local value = mlua:getString()
+print("mlua:getString ->", value)
 
 --@api-stub: mlua:mapPixel
 -- Map pixel.
--- Call when you need to invoke map pixel.
--- Build a mlua via the appropriate lurek.image.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.image.newmlua(...)
-if instance then
-  local ok, result = pcall(function() return instance:mapPixel(function() end) end)
-  print("mlua:mapPixel ->", ok, result)
-end
+-- See the module spec for detailed semantics.
+local mlua = lurek.image.newmlua()
+mlua:mapPixel(function() print("mapPixel fired") end)
+print("mlua:mapPixel done")
 
 --@api-stub: mlua:brightness
 -- Brightness.
--- Call when you need to invoke brightness.
--- Build a mlua via the appropriate lurek.image.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.image.newmlua(...)
-if instance then
-  local ok, result = pcall(function() return instance:brightness(1) end)
-  print("mlua:brightness ->", ok, result)
-end
+-- See the module spec for detailed semantics.
+local mlua = lurek.image.newmlua()
+mlua:brightness(1.0)
+print("mlua:brightness done")
 
 --@api-stub: mlua:contrast
 -- Contrast.
--- Call when you need to invoke contrast.
--- Build a mlua via the appropriate lurek.image.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.image.newmlua(...)
-if instance then
-  local ok, result = pcall(function() return instance:contrast(1) end)
-  print("mlua:contrast ->", ok, result)
-end
+-- See the module spec for detailed semantics.
+local mlua = lurek.image.newmlua()
+mlua:contrast(1.0)
+print("mlua:contrast done")
 
 --@api-stub: mlua:saturation
 -- Saturation.
--- Call when you need to invoke saturation.
--- Build a mlua via the appropriate lurek.image.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.image.newmlua(...)
-if instance then
-  local ok, result = pcall(function() return instance:saturation(1) end)
-  print("mlua:saturation ->", ok, result)
-end
+-- See the module spec for detailed semantics.
+local mlua = lurek.image.newmlua()
+mlua:saturation(1.0)
+print("mlua:saturation done")
 
 --@api-stub: mlua:gamma
 -- Gamma.
--- Call when you need to invoke gamma.
--- Build a mlua via the appropriate lurek.image.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.image.newmlua(...)
-if instance then
-  local ok, result = pcall(function() return instance:gamma(nil) end)
-  print("mlua:gamma ->", ok, result)
-end
+-- See the module spec for detailed semantics.
+local mlua = lurek.image.newmlua()
+mlua:gamma(gamma)
+print("mlua:gamma done")
 
 --@api-stub: mlua:grayscale
 -- Grayscale.
--- Call when you need to invoke grayscale.
--- Build a mlua via the appropriate lurek.image.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.image.newmlua(...)
-if instance then
-  local ok, result = pcall(function() return instance:grayscale() end)
-  print("mlua:grayscale ->", ok, result)
-end
+-- See the module spec for detailed semantics.
+local mlua = lurek.image.newmlua()
+mlua:grayscale()
+print("mlua:grayscale done")
 
 --@api-stub: mlua:sepia
 -- Sepia.
--- Call when you need to invoke sepia.
--- Build a mlua via the appropriate lurek.image.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.image.newmlua(...)
-if instance then
-  local ok, result = pcall(function() return instance:sepia() end)
-  print("mlua:sepia ->", ok, result)
-end
+-- See the module spec for detailed semantics.
+local mlua = lurek.image.newmlua()
+mlua:sepia()
+print("mlua:sepia done")
 
 --@api-stub: mlua:invert
 -- Invert.
--- Call when you need to invoke invert.
--- Build a mlua via the appropriate lurek.image.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.image.newmlua(...)
-if instance then
-  local ok, result = pcall(function() return instance:invert() end)
-  print("mlua:invert ->", ok, result)
-end
+-- See the module spec for detailed semantics.
+local mlua = lurek.image.newmlua()
+mlua:invert()
+print("mlua:invert done")
 
 --@api-stub: mlua:threshold
 -- Threshold.
--- Call when you need to invoke threshold.
--- Build a mlua via the appropriate lurek.image.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.image.newmlua(...)
-if instance then
-  local ok, result = pcall(function() return instance:threshold(nil) end)
-  print("mlua:threshold ->", ok, result)
-end
+-- See the module spec for detailed semantics.
+local mlua = lurek.image.newmlua()
+mlua:threshold(value)
+print("mlua:threshold done")
 
 --@api-stub: mlua:posterize
 -- Posterize.
--- Call when you need to invoke posterize.
--- Build a mlua via the appropriate lurek.image.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.image.newmlua(...)
-if instance then
-  local ok, result = pcall(function() return instance:posterize(nil) end)
-  print("mlua:posterize ->", ok, result)
-end
+-- See the module spec for detailed semantics.
+local mlua = lurek.image.newmlua()
+mlua:posterize(levels)
+print("mlua:posterize done")
 
 --@api-stub: mlua:fill
 -- Fill.
--- Call when you need to invoke fill.
--- Build a mlua via the appropriate lurek.image.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.image.newmlua(...)
-if instance then
-  local ok, result = pcall(function() return instance:fill(1, 1, 1, 1) end)
-  print("mlua:fill ->", ok, result)
-end
+-- See the module spec for detailed semantics.
+local mlua = lurek.image.newmlua()
+mlua:fill(1, 0.5, 0, 1)
+print("mlua:fill done")
 
 --@api-stub: mlua:noise
 -- Noise.
--- Call when you need to invoke noise.
--- Build a mlua via the appropriate lurek.image.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.image.newmlua(...)
-if instance then
-  local ok, result = pcall(function() return instance:noise(nil) end)
-  print("mlua:noise ->", ok, result)
-end
+-- See the module spec for detailed semantics.
+local mlua = lurek.image.newmlua()
+mlua:noise(amount)
+print("mlua:noise done")
 
 --@api-stub: mlua:alphaMask
 -- Alpha mask.
--- Call when you need to invoke alpha mask.
--- Build a mlua via the appropriate lurek.image.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.image.newmlua(...)
-if instance then
-  local ok, result = pcall(function() return instance:alphaMask(1) end)
-  print("mlua:alphaMask ->", ok, result)
-end
+-- See the module spec for detailed semantics.
+local mlua = lurek.image.newmlua()
+mlua:alphaMask(1.0)
+print("mlua:alphaMask done")
 
 --@api-stub: mlua:flipHorizontal
 -- Flip horizontal.
--- Call when you need to invoke flip horizontal.
--- Build a mlua via the appropriate lurek.image.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.image.newmlua(...)
-if instance then
-  local ok, result = pcall(function() return instance:flipHorizontal() end)
-  print("mlua:flipHorizontal ->", ok, result)
-end
+-- See the module spec for detailed semantics.
+local mlua = lurek.image.newmlua()
+mlua:flipHorizontal()
+print("mlua:flipHorizontal done")
 
 --@api-stub: mlua:flipVertical
 -- Flip vertical.
--- Call when you need to invoke flip vertical.
--- Build a mlua via the appropriate lurek.image.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.image.newmlua(...)
-if instance then
-  local ok, result = pcall(function() return instance:flipVertical() end)
-  print("mlua:flipVertical ->", ok, result)
-end
+-- See the module spec for detailed semantics.
+local mlua = lurek.image.newmlua()
+mlua:flipVertical()
+print("mlua:flipVertical done")
 
 --@api-stub: mlua:rotate90cw
 -- Rotate90cw.
--- Call when you need to invoke rotate90cw.
--- Build a mlua via the appropriate lurek.image.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.image.newmlua(...)
-if instance then
-  local ok, result = pcall(function() return instance:rotate90cw() end)
-  print("mlua:rotate90cw ->", ok, result)
-end
+-- See the module spec for detailed semantics.
+local mlua = lurek.image.newmlua()
+mlua:rotate90cw()
+print("mlua:rotate90cw done")
 
 --@api-stub: mlua:crop
 -- Crop.
--- Call when you need to invoke crop.
--- Build a mlua via the appropriate lurek.image.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.image.newmlua(...)
-if instance then
-  local ok, result = pcall(function() return instance:crop(0, 0, 100, 100) end)
-  print("mlua:crop ->", ok, result)
-end
+-- See the module spec for detailed semantics.
+local mlua = lurek.image.newmlua()
+mlua:crop(100, 100, 64, 64)
+print("mlua:crop done")
 
 --@api-stub: mlua:resizeNearest
 -- Resize nearest.
--- Call when you need to invoke resize nearest.
--- Build a mlua via the appropriate lurek.image.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.image.newmlua(...)
-if instance then
-  local ok, result = pcall(function() return instance:resizeNearest(nil, nil) end)
-  print("mlua:resizeNearest ->", ok, result)
-end
+-- See the module spec for detailed semantics.
+local mlua = lurek.image.newmlua()
+mlua:resizeNearest(new_w, new_h)
+print("mlua:resizeNearest done")
 
 --@api-stub: mlua:blur
 -- Blur.
--- Call when you need to invoke blur.
--- Build a mlua via the appropriate lurek.image.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.image.newmlua(...)
-if instance then
-  local ok, result = pcall(function() return instance:blur(nil) end)
-  print("mlua:blur ->", ok, result)
-end
+-- See the module spec for detailed semantics.
+local mlua = lurek.image.newmlua()
+mlua:blur(radius)
+print("mlua:blur done")
 
 --@api-stub: mlua:sharpen
 -- Sharpen.
--- Call when you need to invoke sharpen.
--- Build a mlua via the appropriate lurek.image.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.image.newmlua(...)
-if instance then
-  local ok, result = pcall(function() return instance:sharpen() end)
-  print("mlua:sharpen ->", ok, result)
-end
+-- See the module spec for detailed semantics.
+local mlua = lurek.image.newmlua()
+mlua:sharpen()
+print("mlua:sharpen done")
 
 --@api-stub: mlua:resize
 -- Returns a bilinear-interpolated copy of the image at the given dimensions.
--- Call when you need to invoke resize.
--- Build a mlua via the appropriate lurek.image.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.image.newmlua(...)
-if instance then
-  local ok, result = pcall(function() return instance:resize(100, 100) end)
-  print("mlua:resize ->", ok, result)
-end
+-- See the module spec for detailed semantics.
+local mlua = lurek.image.newmlua()
+mlua:resize(64, 64)
+print("mlua:resize done")
 
 --@api-stub: mlua:diff
 -- Returns the sum of absolute per-channel pixel differences with another ImageData.
--- Call when you need to invoke diff.
--- Build a mlua via the appropriate lurek.image.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.image.newmlua(...)
-if instance then
-  local ok, result = pcall(function() return instance:diff(nil) end)
-  print("mlua:diff ->", ok, result)
-end
+-- See the module spec for detailed semantics.
+local mlua = lurek.image.newmlua()
+mlua:diff(other_ud)
+print("mlua:diff done")
 
 --@api-stub: mlua:mapPixels
 -- Applies a function to every pixel in-place.
--- Call when you need to invoke map pixels.
--- Build a mlua via the appropriate lurek.image.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.image.newmlua(...)
-if instance then
-  local ok, result = pcall(function() return instance:mapPixels(function() end) end)
-  print("mlua:mapPixels ->", ok, result)
-end
+-- See the module spec for detailed semantics.
+local mlua = lurek.image.newmlua()
+mlua:mapPixels(function() print("mapPixels fired") end)
+print("mlua:mapPixels done")
 
 --@api-stub: mlua:applyPaletteLut
 -- Applies a `PaletteLUT` to the image in place, replacing exact colour matches.
--- Call when you need to invoke apply palette lut.
--- Build a mlua via the appropriate lurek.image.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.image.newmlua(...)
-if instance then
-  local ok, result = pcall(function() return instance:applyPaletteLut(nil) end)
-  print("mlua:applyPaletteLut ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local mlua = lurek.image.newmlua()
+mlua:applyPaletteLut(lut_ud)
+print("mlua:applyPaletteLut applied")
 
 --@api-stub: mlua:setRawData
 -- Replaces all pixel data from a raw RGBA byte string.
--- Call when you need to assign raw data.
--- Build a mlua via the appropriate lurek.image.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.image.newmlua(...)
-if instance then
-  local ok, result = pcall(function() return instance:setRawData(nil) end)
-  print("mlua:setRawData ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local mlua = lurek.image.newmlua()
+mlua:setRawData(bytes)
+print("mlua:setRawData applied")
 
 -- ── PaletteLUT methods ──
 
 --@api-stub: PaletteLUT:getColorCount
 -- Returns the number of colour mapping entries.
--- Call when you need to read color count.
--- Build a PaletteLUT via the appropriate lurek.image.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.image.newPaletteLUT(...)
-if instance then
-  local ok, result = pcall(function() return instance:getColorCount() end)
-  print("PaletteLUT:getColorCount ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local paletteLUT = lurek.image.newPaletteLUT()  -- or your existing handle
+local value = paletteLUT:getColorCount()
+print("PaletteLUT:getColorCount ->", value)
 
 --@api-stub: PaletteLUT:clear
 -- Removes all colour mapping entries.
--- Call when you need to invoke clear.
--- Build a PaletteLUT via the appropriate lurek.image.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.image.newPaletteLUT(...)
-if instance then
-  local ok, result = pcall(function() return instance:clear() end)
-  print("PaletteLUT:clear ->", ok, result)
-end
+-- Pair with the matching constructor to free resources.
+local paletteLUT = lurek.image.newPaletteLUT()
+paletteLUT:clear()
+-- paletteLUT is now released
+print("ok")
 

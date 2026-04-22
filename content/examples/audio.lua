@@ -1,1851 +1,1568 @@
 -- content/examples/audio.lua
--- Practical usage examples for the lurek.audio API (212 items).
---
--- Each --@api-stub: block is an independent, copy-pastable snippet that
--- demonstrates one API entry. Calls are wrapped in pcall(...) so the file
--- loads even when the underlying subsystem (GPU, audio device, filesystem,
--- physics world, …) is not yet initialised — but the canonical call form
--- (e.g. `lurek.audio.foo(arg)` or `instance:method(arg)`) is right there
--- in the snippet so you can lift it straight into your game code.
---
+-- love2d-style usage snippets for the lurek.audio API (212 items).
+-- Each --@api-stub: block is a copy-pastable snippet showing the API
+-- in real context (callbacks, conditionals, real arg values).
 -- Run: cargo run -- content/examples/audio.lua
 
-print("[example] lurek.audio — 212 API entries")
-
--- ── lurek.audio.* free functions ──
+-- ── lurek.audio.* functions ──
 
 --@api-stub: lurek.audio.newSource
 -- Loads an audio file and returns a Source handle.
--- Call when you need to create a new source.
-local ok, obj = pcall(function() return lurek.audio.newSource({}) end)
-if ok and obj then print("created:", obj) end
-print("lurek.audio.newSource ok=", ok)
+-- Build once at startup; reuse across frames.
+local jump = lurek.audio.newSource("sfx/jump.ogg")
+jump:setVolume(0.7)
+jump:play()
 
 --@api-stub: lurek.audio.play
 -- Plays a source, with optional bus routing via options table.
--- Call when you need to invoke play.
-local ok, result = pcall(function() return lurek.audio.play(nil, {}) end)
-if not ok then print("action skipped:", result) end
-print("lurek.audio.play fired=", ok)
+-- Trigger from input, timers, or game events.
+local music = lurek.audio.newSource("music/theme.ogg")
+music:setLooping(true)
+lurek.audio.play(music)
 
 --@api-stub: lurek.audio.stop
 -- Stops playback and resets seek position.
--- Call when you need to invoke stop.
-local ok, result = pcall(function() return lurek.audio.stop(nil) end)
-if not ok then print("action skipped:", result) end
-print("lurek.audio.stop fired=", ok)
+-- Trigger from input, timers, or game events.
+local sfx = lurek.audio.newSource("sfx/loop.ogg")
+sfx:play()
+lurek.audio.stop(sfx)
 
 --@api-stub: lurek.audio.setVolume
 -- Sets source playback volume.
--- Call when you need to assign volume.
-local ok, err = pcall(function() lurek.audio.setVolume(nil, nil) end)
-if not ok then print("set skipped:", err) end
-print("lurek.audio.setVolume applied=", ok)
+-- Apply at startup or in response to user input.
+lurek.audio.setVolume(0.5)
+local v = lurek.audio.getVolume and lurek.audio.getVolume() or 0.5
+print("master volume:", v)
 
 --@api-stub: lurek.audio.getVolume
 -- Returns the source volume.
--- Call when you need to read volume.
-local ok, value = pcall(function() return lurek.audio.getVolume(nil) end)
-local v = ok and value or "(unavailable)"
-print("lurek.audio.getVolume ->", v)
+-- Cheap to call; safe inside callbacks.
+local value = lurek.audio.getVolume(id_val)
+print("getVolume:", value)
+return value
 
 --@api-stub: lurek.audio.pause
 -- Pauses playback at the current position.
--- Call when you need to invoke pause.
-local ok, result = pcall(function() return lurek.audio.pause(nil) end)
-if not ok then print("action skipped:", result) end
-print("lurek.audio.pause fired=", ok)
+-- Trigger from input, timers, or game events.
+-- trigger from input or timer
+lurek.audio.pause(id_val)
+print("pause fired")
+print("ok")
 
 --@api-stub: lurek.audio.resume
 -- Resumes playback from pause.
--- Call when you need to invoke resume.
-local ok, result = pcall(function() return lurek.audio.resume(nil) end)
-if not ok then print("action skipped:", result) end
-print("lurek.audio.resume fired=", ok)
+-- Trigger from input, timers, or game events.
+-- trigger from input or timer
+lurek.audio.resume(id_val)
+print("resume fired")
+print("ok")
 
 --@api-stub: lurek.audio.setPitch
 -- Sets source pitch multiplier.
--- Call when you need to assign pitch.
-local ok, err = pcall(function() lurek.audio.setPitch(nil, nil) end)
-if not ok then print("set skipped:", err) end
-print("lurek.audio.setPitch applied=", ok)
+-- Apply at startup or in response to user input.
+-- apply at startup or on config change
+lurek.audio.setPitch(id_val, pitch)
+print("setPitch applied")
+print("ok")
 
 --@api-stub: lurek.audio.getPitch
 -- Returns the source pitch multiplier.
--- Call when you need to read pitch.
-local ok, value = pcall(function() return lurek.audio.getPitch(nil) end)
-local v = ok and value or "(unavailable)"
-print("lurek.audio.getPitch ->", v)
+-- Cheap to call; safe inside callbacks.
+local value = lurek.audio.getPitch(id_val)
+print("getPitch:", value)
+return value
 
 --@api-stub: lurek.audio.isPlaying
 -- Returns true if the source is playing.
--- Call when you need to check is playing.
-local ok, result = pcall(function() return lurek.audio.isPlaying(nil) end)
-if ok and result then print("yes") else print("no or unavailable") end
-print("lurek.audio.isPlaying ok=", ok)
+-- Use as a guard inside lurek.update or event handlers.
+if lurek.audio.isPlaying(id_val) then
+  print("isPlaying -> true")
+end
 
 --@api-stub: lurek.audio.isPaused
 -- Returns true if the source is paused.
--- Call when you need to check is paused.
-local ok, result = pcall(function() return lurek.audio.isPaused(nil) end)
-if ok and result then print("yes") else print("no or unavailable") end
-print("lurek.audio.isPaused ok=", ok)
+-- Use as a guard inside lurek.update or event handlers.
+if lurek.audio.isPaused(id_val) then
+  print("isPaused -> true")
+end
 
 --@api-stub: lurek.audio.isStopped
 -- Returns true if the source is stopped.
--- Call when you need to check is stopped.
-local ok, result = pcall(function() return lurek.audio.isStopped(nil) end)
-if ok and result then print("yes") else print("no or unavailable") end
-print("lurek.audio.isStopped ok=", ok)
+-- Use as a guard inside lurek.update or event handlers.
+if lurek.audio.isStopped(id_val) then
+  print("isStopped -> true")
+end
 
 --@api-stub: lurek.audio.setLooping
 -- Enables or disables looping.
--- Call when you need to assign looping.
-local ok, err = pcall(function() lurek.audio.setLooping(nil, nil) end)
-if not ok then print("set skipped:", err) end
-print("lurek.audio.setLooping applied=", ok)
+-- Apply at startup or in response to user input.
+-- apply at startup or on config change
+lurek.audio.setLooping(id_val, looping)
+print("setLooping applied")
+print("ok")
 
 --@api-stub: lurek.audio.isLooping
 -- Returns true if looping is enabled.
--- Call when you need to check is looping.
-local ok, result = pcall(function() return lurek.audio.isLooping(nil) end)
-if ok and result then print("yes") else print("no or unavailable") end
-print("lurek.audio.isLooping ok=", ok)
+-- Use as a guard inside lurek.update or event handlers.
+if lurek.audio.isLooping(id_val) then
+  print("isLooping -> true")
+end
 
 --@api-stub: lurek.audio.playLooping
 -- Plays the source in a continuous loop.
--- Call when you need to play looping.
-local ok, result = pcall(function() return lurek.audio.playLooping(nil) end)
-if not ok then print("action skipped:", result) end
-print("lurek.audio.playLooping fired=", ok)
+-- Trigger from input, timers, or game events.
+-- trigger from input or timer
+lurek.audio.playLooping(id_val)
+print("playLooping fired")
+print("ok")
 
 --@api-stub: lurek.audio.setPan
 -- Sets stereo panning (-1.0 left to 1.0 right).
--- Call when you need to assign pan.
-local ok, err = pcall(function() lurek.audio.setPan(nil, nil) end)
-if not ok then print("set skipped:", err) end
-print("lurek.audio.setPan applied=", ok)
+-- Apply at startup or in response to user input.
+-- apply at startup or on config change
+lurek.audio.setPan(id_val, pan)
+print("setPan applied")
+print("ok")
 
 --@api-stub: lurek.audio.getPan
 -- Returns the source stereo panning.
--- Call when you need to read pan.
-local ok, value = pcall(function() return lurek.audio.getPan(nil) end)
-local v = ok and value or "(unavailable)"
-print("lurek.audio.getPan ->", v)
+-- Cheap to call; safe inside callbacks.
+local value = lurek.audio.getPan(id_val)
+print("getPan:", value)
+return value
 
 --@api-stub: lurek.audio.setMasterVolume
 -- Sets the global master volume.
--- Call when you need to assign master volume.
-local ok, err = pcall(function() lurek.audio.setMasterVolume(nil) end)
-if not ok then print("set skipped:", err) end
-print("lurek.audio.setMasterVolume applied=", ok)
+-- Apply at startup or in response to user input.
+-- apply at startup or on config change
+lurek.audio.setMasterVolume(vol)
+print("setMasterVolume applied")
+print("ok")
 
 --@api-stub: lurek.audio.getMasterVolume
 -- Returns the global master volume.
--- Call when you need to read master volume.
-local ok, value = pcall(function() return lurek.audio.getMasterVolume() end)
-local v = ok and value or "(unavailable)"
-print("lurek.audio.getMasterVolume ->", v)
+-- Cheap to call; safe inside callbacks.
+local value = lurek.audio.getMasterVolume()
+print("getMasterVolume:", value)
+return value
 
 --@api-stub: lurek.audio.getActiveSourceCount
 -- Returns the number of currently playing sources.
--- Call when you need to read active source count.
-local ok, value = pcall(function() return lurek.audio.getActiveSourceCount() end)
-local v = ok and value or "(unavailable)"
-print("lurek.audio.getActiveSourceCount ->", v)
+-- Cheap to call; safe inside callbacks.
+local value = lurek.audio.getActiveSourceCount()
+print("getActiveSourceCount:", value)
+return value
 
 --@api-stub: lurek.audio.getSourceCount
 -- Returns the total number of registered sources.
--- Call when you need to read source count.
-local ok, value = pcall(function() return lurek.audio.getSourceCount() end)
-local v = ok and value or "(unavailable)"
-print("lurek.audio.getSourceCount ->", v)
+-- Cheap to call; safe inside callbacks.
+local value = lurek.audio.getSourceCount()
+print("getSourceCount:", value)
+return value
 
 --@api-stub: lurek.audio.getSourceType
 -- Returns the type string ("static" or "stream") of a source.
--- Call when you need to read source type.
-local ok, value = pcall(function() return lurek.audio.getSourceType(nil) end)
-local v = ok and value or "(unavailable)"
-print("lurek.audio.getSourceType ->", v)
+-- Cheap to call; safe inside callbacks.
+local value = lurek.audio.getSourceType(id_val)
+print("getSourceType:", value)
+return value
 
 --@api-stub: lurek.audio.clone
 -- Creates an independent copy of a source.
--- Call when you need to invoke clone.
-local ok, result = pcall(function() return lurek.audio.clone(nil) end)
-if ok then print("lurek.audio.clone ->", result)
-else print("unavailable:", result) end
+-- See the module spec for detailed semantics.
+local result = lurek.audio.clone(id_val)
+print("clone:", result)
+return result
 
 --@api-stub: lurek.audio.pauseAll
 -- Pauses all currently playing sources.
--- Call when you need to invoke pause all.
-local ok, result = pcall(function() return lurek.audio.pauseAll() end)
-if not ok then print("action skipped:", result) end
-print("lurek.audio.pauseAll fired=", ok)
+-- Trigger from input, timers, or game events.
+-- trigger from input or timer
+lurek.audio.pauseAll()
+print("pauseAll fired")
+print("ok")
 
 --@api-stub: lurek.audio.stopAll
 -- Stops all currently playing sources.
--- Call when you need to invoke stop all.
-local ok, result = pcall(function() return lurek.audio.stopAll() end)
-if not ok then print("action skipped:", result) end
-print("lurek.audio.stopAll fired=", ok)
+-- Trigger from input, timers, or game events.
+-- trigger from input or timer
+lurek.audio.stopAll()
+print("stopAll fired")
+print("ok")
 
 --@api-stub: lurek.audio.resumeAll
 -- Resumes all paused sources.
--- Call when you need to invoke resume all.
-local ok, result = pcall(function() return lurek.audio.resumeAll() end)
-if not ok then print("action skipped:", result) end
-print("lurek.audio.resumeAll fired=", ok)
+-- Trigger from input, timers, or game events.
+-- trigger from input or timer
+lurek.audio.resumeAll()
+print("resumeAll fired")
+print("ok")
 
 --@api-stub: lurek.audio.release
 -- Releases a source and frees its memory.
--- Call when you need to invoke release.
-local ok, result = pcall(function() return lurek.audio.release(nil) end)
-if ok then print("lurek.audio.release ->", result)
-else print("unavailable:", result) end
+-- See the module spec for detailed semantics.
+local result = lurek.audio.release(id_val)
+print("release:", result)
+return result
 
 --@api-stub: lurek.audio.newBus
 -- Creates a named audio bus for grouping sources.
--- Call when you need to create a new bus.
-local ok, obj = pcall(function() return lurek.audio.newBus("sfx/click.ogg") end)
-if ok and obj then print("created:", obj) end
-print("lurek.audio.newBus ok=", ok)
+-- Build once at startup; reuse across frames.
+local bus = lurek.audio.newBus("sfx/click.ogg")
+print("created", bus)
+return bus
 
 --@api-stub: lurek.audio.setSourceBus
 -- Assigns a source to a bus.
--- Call when you need to assign source bus.
-local ok, err = pcall(function() lurek.audio.setSourceBus(nil, nil) end)
-if not ok then print("set skipped:", err) end
-print("lurek.audio.setSourceBus applied=", ok)
+-- Apply at startup or in response to user input.
+-- apply at startup or on config change
+lurek.audio.setSourceBus(id_val, bus_val)
+print("setSourceBus applied")
+print("ok")
 
 --@api-stub: lurek.audio.getSourceBus
 -- Returns the bus a source is assigned to, or nil.
--- Call when you need to read source bus.
-local ok, value = pcall(function() return lurek.audio.getSourceBus(nil) end)
-local v = ok and value or "(unavailable)"
-print("lurek.audio.getSourceBus ->", v)
+-- Cheap to call; safe inside callbacks.
+local value = lurek.audio.getSourceBus(id_val)
+print("getSourceBus:", value)
+return value
 
 --@api-stub: lurek.audio.getMaxSources
 -- Returns the maximum number of simultaneous sources.
--- Call when you need to read max sources.
-local ok, value = pcall(function() return lurek.audio.getMaxSources() end)
-local v = ok and value or "(unavailable)"
-print("lurek.audio.getMaxSources ->", v)
+-- Cheap to call; safe inside callbacks.
+local value = lurek.audio.getMaxSources()
+print("getMaxSources:", value)
+return value
 
 --@api-stub: lurek.audio.getDuration
 -- Returns the total duration of a source in seconds.
--- Call when you need to read duration.
-local ok, value = pcall(function() return lurek.audio.getDuration(nil) end)
-local v = ok and value or "(unavailable)"
-print("lurek.audio.getDuration ->", v)
+-- Cheap to call; safe inside callbacks.
+local value = lurek.audio.getDuration(id_val)
+print("getDuration:", value)
+return value
 
 --@api-stub: lurek.audio.tell
 -- Returns the current playback position in seconds.
--- Call when you need to invoke tell.
-local ok, result = pcall(function() return lurek.audio.tell(nil) end)
-if ok then print("lurek.audio.tell ->", result)
-else print("unavailable:", result) end
+-- See the module spec for detailed semantics.
+local result = lurek.audio.tell(id_val)
+print("tell:", result)
+return result
 
 --@api-stub: lurek.audio.seek
 -- Seeks to a time position in seconds.
--- Call when you need to invoke seek.
-local ok, result = pcall(function() return lurek.audio.seek(nil, nil) end)
-if ok then print("lurek.audio.seek ->", result)
-else print("unavailable:", result) end
+-- See the module spec for detailed semantics.
+local result = lurek.audio.seek(id_val, pos)
+print("seek:", result)
+return result
 
 --@api-stub: lurek.audio.setLowpass
 -- Applies a low-pass filter to a source.
--- Call when you need to assign lowpass.
-local ok, err = pcall(function() lurek.audio.setLowpass(nil, nil) end)
-if not ok then print("set skipped:", err) end
-print("lurek.audio.setLowpass applied=", ok)
+-- Apply at startup or in response to user input.
+-- apply at startup or on config change
+lurek.audio.setLowpass(id_val, cutoff_hz)
+print("setLowpass applied")
+print("ok")
 
 --@api-stub: lurek.audio.setHighpass
 -- Applies a high-pass filter to a source.
--- Call when you need to assign highpass.
-local ok, err = pcall(function() lurek.audio.setHighpass(nil, nil) end)
-if not ok then print("set skipped:", err) end
-print("lurek.audio.setHighpass applied=", ok)
+-- Apply at startup or in response to user input.
+-- apply at startup or on config change
+lurek.audio.setHighpass(id_val, cutoff_hz)
+print("setHighpass applied")
+print("ok")
 
 --@api-stub: lurek.audio.getLowpass
 -- Returns the low-pass filter cutoff of a source.
--- Call when you need to read lowpass.
-local ok, value = pcall(function() return lurek.audio.getLowpass(nil) end)
-local v = ok and value or "(unavailable)"
-print("lurek.audio.getLowpass ->", v)
+-- Cheap to call; safe inside callbacks.
+local value = lurek.audio.getLowpass(id_val)
+print("getLowpass:", value)
+return value
 
 --@api-stub: lurek.audio.getHighpass
 -- Returns the high-pass filter cutoff of a source.
--- Call when you need to read highpass.
-local ok, value = pcall(function() return lurek.audio.getHighpass(nil) end)
-local v = ok and value or "(unavailable)"
-print("lurek.audio.getHighpass ->", v)
+-- Cheap to call; safe inside callbacks.
+local value = lurek.audio.getHighpass(id_val)
+print("getHighpass:", value)
+return value
 
 --@api-stub: lurek.audio.clearFilter
 -- Removes any active filter from a source.
--- Call when you need to invoke clear filter.
-local ok, err = pcall(function() lurek.audio.clearFilter(nil) end)
-if not ok then print("skipped:", err) end
-print("lurek.audio.clearFilter cleared=", ok)
+-- Pair with the matching constructor to free resources.
+-- release the resource and forget the handle
+lurek.audio.clearFilter(id_val)
+print("clearFilter done")
+print("ok")
 
 --@api-stub: lurek.audio.fadeIn
 -- Fades a source in from silence over the given duration.
--- Call when you need to invoke fade in.
-local ok, result = pcall(function() return lurek.audio.fadeIn(nil, nil) end)
-if ok then print("lurek.audio.fadeIn ->", result)
-else print("unavailable:", result) end
+-- See the module spec for detailed semantics.
+local result = lurek.audio.fadeIn(id_val, dur)
+print("fadeIn:", result)
+return result
 
 --@api-stub: lurek.audio.getFadeIn
 -- Returns the fade-in duration of a source.
--- Call when you need to read fade in.
-local ok, value = pcall(function() return lurek.audio.getFadeIn(nil) end)
-local v = ok and value or "(unavailable)"
-print("lurek.audio.getFadeIn ->", v)
+-- Cheap to call; safe inside callbacks.
+local value = lurek.audio.getFadeIn(id_val)
+print("getFadeIn:", value)
+return value
 
 --@api-stub: lurek.audio.setListener2D
 -- Sets the 2D listener position for spatial audio.
--- Call when you need to assign listener2 d.
-local ok, err = pcall(function() lurek.audio.setListener2D(0, 0) end)
-if not ok then print("set skipped:", err) end
-print("lurek.audio.setListener2D applied=", ok)
+-- Apply at startup or in response to user input.
+-- apply at startup or on config change
+lurek.audio.setListener2D(100, 100)
+print("setListener2D applied")
+print("ok")
 
 --@api-stub: lurek.audio.getListener2D
 -- Returns the 2D listener position (x, y).
--- Call when you need to read listener2 d.
-local ok, value = pcall(function() return lurek.audio.getListener2D() end)
-local v = ok and value or "(unavailable)"
-print("lurek.audio.getListener2D ->", v)
+-- Cheap to call; safe inside callbacks.
+local value = lurek.audio.getListener2D()
+print("getListener2D:", value)
+return value
 
 --@api-stub: lurek.audio.setListener
 -- Sets the 3D listener position.
--- Call when you need to assign listener.
-local ok, err = pcall(function() lurek.audio.setListener(0, 0, 0) end)
-if not ok then print("set skipped:", err) end
-print("lurek.audio.setListener applied=", ok)
+-- Apply at startup or in response to user input.
+-- apply at startup or on config change
+lurek.audio.setListener(100, 100, 0)
+print("setListener applied")
+print("ok")
 
 --@api-stub: lurek.audio.getListener
 -- Returns the 3D listener position (x, y, z).
--- Call when you need to read listener.
-local ok, value = pcall(function() return lurek.audio.getListener() end)
-local v = ok and value or "(unavailable)"
-print("lurek.audio.getListener ->", v)
+-- Cheap to call; safe inside callbacks.
+local value = lurek.audio.getListener()
+print("getListener:", value)
+return value
 
 --@api-stub: lurek.audio.setPosition
 -- Sets the 3D position of a source.
--- Call when you need to assign position.
-local ok, err = pcall(function() lurek.audio.setPosition(nil, 0, 0, 0) end)
-if not ok then print("set skipped:", err) end
-print("lurek.audio.setPosition applied=", ok)
+-- Apply at startup or in response to user input.
+-- apply at startup or on config change
+lurek.audio.setPosition(id_val, 100, 100, 0)
+print("setPosition applied")
+print("ok")
 
 --@api-stub: lurek.audio.getPosition
 -- Returns the 3D position of a source (x, y, z).
--- Call when you need to read position.
-local ok, value = pcall(function() return lurek.audio.getPosition(nil) end)
-local v = ok and value or "(unavailable)"
-print("lurek.audio.getPosition ->", v)
+-- Cheap to call; safe inside callbacks.
+local value = lurek.audio.getPosition(id_val)
+print("getPosition:", value)
+return value
 
 --@api-stub: lurek.audio.setVelocity
 -- Sets the velocity of a source for Doppler.
--- Call when you need to assign velocity.
-local ok, err = pcall(function() lurek.audio.setVelocity(nil, 0, 0, 0) end)
-if not ok then print("set skipped:", err) end
-print("lurek.audio.setVelocity applied=", ok)
+-- Apply at startup or in response to user input.
+-- apply at startup or on config change
+lurek.audio.setVelocity(id_val, 100, 100, 0)
+print("setVelocity applied")
+print("ok")
 
 --@api-stub: lurek.audio.getVelocity
 -- Returns the velocity of a source (x, y, z).
--- Call when you need to read velocity.
-local ok, value = pcall(function() return lurek.audio.getVelocity(nil) end)
-local v = ok and value or "(unavailable)"
-print("lurek.audio.getVelocity ->", v)
+-- Cheap to call; safe inside callbacks.
+local value = lurek.audio.getVelocity(id_val)
+print("getVelocity:", value)
+return value
 
 --@api-stub: lurek.audio.setOrientation
 -- Sets the 6-component orientation of a source.
--- Call when you need to assign orientation.
-local ok, err = pcall(function() lurek.audio.setOrientation(nil, nil, nil, nil, nil, nil, nil) end)
-if not ok then print("set skipped:", err) end
-print("lurek.audio.setOrientation applied=", ok)
+-- Apply at startup or in response to user input.
+-- apply at startup or on config change
+lurek.audio.setOrientation(id_val, fx, fy, fz, ux, uy, uz)
+print("setOrientation applied")
+print("ok")
 
 --@api-stub: lurek.audio.getOrientation
 -- Returns the 6-component orientation of a source.
--- Call when you need to read orientation.
-local ok, value = pcall(function() return lurek.audio.getOrientation(nil) end)
-local v = ok and value or "(unavailable)"
-print("lurek.audio.getOrientation ->", v)
+-- Cheap to call; safe inside callbacks.
+local value = lurek.audio.getOrientation(id_val)
+print("getOrientation:", value)
+return value
 
 --@api-stub: lurek.audio.setDopplerScale
 -- Sets the global Doppler effect scale.
--- Call when you need to assign doppler scale.
-local ok, err = pcall(function() lurek.audio.setDopplerScale(1) end)
-if not ok then print("set skipped:", err) end
-print("lurek.audio.setDopplerScale applied=", ok)
+-- Apply at startup or in response to user input.
+-- apply at startup or on config change
+lurek.audio.setDopplerScale(1.0)
+print("setDopplerScale applied")
+print("ok")
 
 --@api-stub: lurek.audio.getDopplerScale
 -- Returns the current Doppler scale.
--- Call when you need to read doppler scale.
-local ok, value = pcall(function() return lurek.audio.getDopplerScale() end)
-local v = ok and value or "(unavailable)"
-print("lurek.audio.getDopplerScale ->", v)
+-- Cheap to call; safe inside callbacks.
+local value = lurek.audio.getDopplerScale()
+print("getDopplerScale:", value)
+return value
 
 --@api-stub: lurek.audio.setDistanceModel
 -- Sets the distance attenuation model.
--- Call when you need to assign distance model.
-local ok, err = pcall(function() lurek.audio.setDistanceModel(nil) end)
-if not ok then print("set skipped:", err) end
-print("lurek.audio.setDistanceModel applied=", ok)
+-- Apply at startup or in response to user input.
+-- apply at startup or on config change
+lurek.audio.setDistanceModel(model)
+print("setDistanceModel applied")
+print("ok")
 
 --@api-stub: lurek.audio.getDistanceModel
 -- Returns the current distance model name.
--- Call when you need to read distance model.
-local ok, value = pcall(function() return lurek.audio.getDistanceModel() end)
-local v = ok and value or "(unavailable)"
-print("lurek.audio.getDistanceModel ->", v)
+-- Cheap to call; safe inside callbacks.
+local value = lurek.audio.getDistanceModel()
+print("getDistanceModel:", value)
+return value
 
 --@api-stub: lurek.audio.setMeter
 -- Sets the master peak meter level (0.0â€“1.0).
--- Call when you need to assign meter.
-local ok, err = pcall(function() lurek.audio.setMeter(nil) end)
-if not ok then print("set skipped:", err) end
-print("lurek.audio.setMeter applied=", ok)
+-- Apply at startup or in response to user input.
+-- apply at startup or on config change
+lurek.audio.setMeter(level)
+print("setMeter applied")
+print("ok")
 
 --@api-stub: lurek.audio.getMeter
 -- Returns the stored master peak meter level.
--- Call when you need to read meter.
-local ok, value = pcall(function() return lurek.audio.getMeter() end)
-local v = ok and value or "(unavailable)"
-print("lurek.audio.getMeter ->", v)
+-- Cheap to call; safe inside callbacks.
+local value = lurek.audio.getMeter()
+print("getMeter:", value)
+return value
 
 --@api-stub: lurek.audio.newMidiPlayer
 -- Creates a MIDI player, optionally loading a file.
--- Call when you need to create a new midi player.
-local ok, obj = pcall(function() return lurek.audio.newMidiPlayer("sfx/click.ogg") end)
-if ok and obj then print("created:", obj) end
-print("lurek.audio.newMidiPlayer ok=", ok)
+-- Build once at startup; reuse across frames.
+local midiplayer = lurek.audio.newMidiPlayer("sfx/click.ogg")
+print("created", midiplayer)
+return midiplayer
 
 --@api-stub: lurek.audio.newSoundData
 -- Creates a SoundData from a file or as a silent buffer.
--- Call when you need to create a new sound data.
-local ok, obj = pcall(function() return lurek.audio.newSoundData({}) end)
-if ok and obj then print("created:", obj) end
-print("lurek.audio.newSoundData ok=", ok)
+-- Build once at startup; reuse across frames.
+local sounddata = lurek.audio.newSoundData({ x = 0, y = 0 })
+print("created", sounddata)
+return sounddata
 
 --@api-stub: lurek.audio.setMidiSoundFont
 -- Sets the global SoundFont for MIDI synthesis.
--- Call when you need to assign midi sound font.
-local ok, err = pcall(function() lurek.audio.setMidiSoundFont("sfx/click.ogg") end)
-if not ok then print("set skipped:", err) end
-print("lurek.audio.setMidiSoundFont applied=", ok)
+-- Apply at startup or in response to user input.
+-- apply at startup or on config change
+lurek.audio.setMidiSoundFont("sfx/click.ogg")
+print("setMidiSoundFont applied")
+print("ok")
 
 --@api-stub: lurek.audio.hasMidiSoundFont
 -- Returns true if a SoundFont is loaded.
--- Call when you need to check has midi sound font.
-local ok, result = pcall(function() return lurek.audio.hasMidiSoundFont() end)
-if ok and result then print("yes") else print("no or unavailable") end
-print("lurek.audio.hasMidiSoundFont ok=", ok)
+-- Use as a guard inside lurek.update or event handlers.
+if lurek.audio.hasMidiSoundFont() then
+  print("hasMidiSoundFont -> true")
+end
 
 --@api-stub: lurek.audio.clearMidiSoundFont
 -- Unloads the active SoundFont.
--- Call when you need to invoke clear midi sound font.
-local ok, err = pcall(function() lurek.audio.clearMidiSoundFont() end)
-if not ok then print("skipped:", err) end
-print("lurek.audio.clearMidiSoundFont cleared=", ok)
+-- Pair with the matching constructor to free resources.
+-- release the resource and forget the handle
+lurek.audio.clearMidiSoundFont()
+print("clearMidiSoundFont done")
+print("ok")
 
 --@api-stub: lurek.audio.newDecoder
 -- Creates a streaming audio decoder.
--- Call when you need to create a new decoder.
-local ok, obj = pcall(function() return lurek.audio.newDecoder(nil, nil) end)
-if ok and obj then print("created:", obj) end
-print("lurek.audio.newDecoder ok=", ok)
+-- Build once at startup; reuse across frames.
+local decoder = lurek.audio.newDecoder(source, buffersize)
+print("created", decoder)
+return decoder
 
 --@api-stub: lurek.audio.newQueueableSource
 -- Creates a queueable source for manual PCM buffering.
--- Call when you need to create a new queueable source.
-local ok, obj = pcall(function() return lurek.audio.newQueueableSource() end)
-if ok and obj then print("created:", obj) end
-print("lurek.audio.newQueueableSource ok=", ok)
+-- Build once at startup; reuse across frames.
+local queueablesource = lurek.audio.newQueueableSource()
+print("created", queueablesource)
+return queueablesource
 
 --@api-stub: lurek.audio.queueSource
 -- Pushes a SoundData buffer into a queueable source.
--- Call when you need to invoke queue source.
-local ok, result = pcall(function() return lurek.audio.queueSource(1, nil) end)
-if ok then print("lurek.audio.queueSource ->", result)
-else print("unavailable:", result) end
+-- See the module spec for detailed semantics.
+local result = lurek.audio.queueSource(1, sd)
+print("queueSource:", result)
+return result
 
 --@api-stub: lurek.audio.getFreeBufferCount
 -- Returns the free buffer slots in a queueable source.
--- Call when you need to read free buffer count.
-local ok, value = pcall(function() return lurek.audio.getFreeBufferCount(1) end)
-local v = ok and value or "(unavailable)"
-print("lurek.audio.getFreeBufferCount ->", v)
+-- Cheap to call; safe inside callbacks.
+local value = lurek.audio.getFreeBufferCount(1)
+print("getFreeBufferCount:", value)
+return value
 
 --@api-stub: lurek.audio.playQueueable
 -- Starts playback of a queueable source.
--- Call when you need to play queueable.
-local ok, result = pcall(function() return lurek.audio.playQueueable(1) end)
-if not ok then print("action skipped:", result) end
-print("lurek.audio.playQueueable fired=", ok)
+-- Trigger from input, timers, or game events.
+-- trigger from input or timer
+lurek.audio.playQueueable(1)
+print("playQueueable fired")
+print("ok")
 
 --@api-stub: lurek.audio.stopQueueable
 -- Stops a queueable source and drains its buffers.
--- Call when you need to invoke stop queueable.
-local ok, result = pcall(function() return lurek.audio.stopQueueable(1) end)
-if not ok then print("action skipped:", result) end
-print("lurek.audio.stopQueueable fired=", ok)
+-- Trigger from input, timers, or game events.
+-- trigger from input or timer
+lurek.audio.stopQueueable(1)
+print("stopQueueable fired")
+print("ok")
 
 --@api-stub: lurek.audio.getPlaybackDevices
 -- Returns a table of available audio output device names.
--- Call when you need to read playback devices.
-local ok, value = pcall(function() return lurek.audio.getPlaybackDevices() end)
-local v = ok and value or "(unavailable)"
-print("lurek.audio.getPlaybackDevices ->", v)
+-- Cheap to call; safe inside callbacks.
+local value = lurek.audio.getPlaybackDevices()
+print("getPlaybackDevices:", value)
+return value
 
 --@api-stub: lurek.audio.getPlaybackDevice
 -- Returns the current audio output device name.
--- Call when you need to read playback device.
-local ok, value = pcall(function() return lurek.audio.getPlaybackDevice() end)
-local v = ok and value or "(unavailable)"
-print("lurek.audio.getPlaybackDevice ->", v)
+-- Cheap to call; safe inside callbacks.
+local value = lurek.audio.getPlaybackDevice()
+print("getPlaybackDevice:", value)
+return value
 
 --@api-stub: lurek.audio.setPlaybackDevice
 -- Selects an audio output device by name.
--- Call when you need to assign playback device.
-local ok, err = pcall(function() lurek.audio.setPlaybackDevice("sfx/click.ogg") end)
-if not ok then print("set skipped:", err) end
-print("lurek.audio.setPlaybackDevice applied=", ok)
+-- Apply at startup or in response to user input.
+-- apply at startup or on config change
+lurek.audio.setPlaybackDevice("sfx/click.ogg")
+print("setPlaybackDevice applied")
+print("ok")
 
 --@api-stub: lurek.audio.create_bus
 -- Creates a bus by name (functional style).
--- Call when you need to invoke create_bus.
-local ok, obj = pcall(function() return lurek.audio.create_bus("sfx/click.ogg", "sfx/click.ogg") end)
-if ok and obj then print("created:", obj) end
-print("lurek.audio.create_bus ok=", ok)
+-- Build once at startup; reuse across frames.
+local create_bus = lurek.audio.create_bus("sfx/click.ogg", "sfx/click.ogg")
+print("created", create_bus)
+return create_bus
 
 --@api-stub: lurek.audio.set_bus_volume
 -- Sets a bus volume by name.
--- Call when you need to invoke set_bus_volume.
-local ok, err = pcall(function() lurek.audio.set_bus_volume("sfx/click.ogg", nil) end)
-if not ok then print("set skipped:", err) end
-print("lurek.audio.set_bus_volume applied=", ok)
+-- Apply at startup or in response to user input.
+-- apply at startup or on config change
+lurek.audio.set_bus_volume("sfx/click.ogg", volume)
+print("set_bus_volume applied")
+print("ok")
 
 --@api-stub: lurek.audio.add_effect
 -- Adds a DSP effect to a bus.
--- Call when you need to invoke add_effect.
-local ok, err = pcall(function() lurek.audio.add_effect("sfx/click.ogg", "effect_type_str value", {}) end)
-if not ok then print("mutator skipped:", err) end
-print("lurek.audio.add_effect done=", ok)
+-- Side-effecting; safe to call any time after init.
+lurek.audio.add_effect("sfx/click.ogg", "hello", { x = 0, y = 0 })
+-- mutator; side effect applied
+print("add_effect done")
+print("ok")
 
 --@api-stub: lurek.audio.remove_effect
 -- Removes a DSP effect from a bus.
--- Call when you need to invoke remove_effect.
-local ok, err = pcall(function() lurek.audio.remove_effect("sfx/click.ogg", 1) end)
-if not ok then print("skipped:", err) end
-print("lurek.audio.remove_effect cleared=", ok)
+-- Pair with the matching constructor to free resources.
+-- release the resource and forget the handle
+lurek.audio.remove_effect("sfx/click.ogg", 1)
+print("remove_effect done")
+print("ok")
 
 --@api-stub: lurek.audio.set_effect_param
 -- Sets a parameter on a DSP effect.
--- Call when you need to invoke set_effect_param.
-local ok, err = pcall(function() lurek.audio.set_effect_param("sfx/click.ogg", 1, "sfx/click.ogg", nil) end)
-if not ok then print("set skipped:", err) end
-print("lurek.audio.set_effect_param applied=", ok)
+-- Apply at startup or in response to user input.
+-- apply at startup or on config change
+lurek.audio.set_effect_param("sfx/click.ogg", 1, "sfx/click.ogg", value)
+print("set_effect_param applied")
+print("ok")
 
 --@api-stub: lurek.audio.newSineWave
 -- Generate a mono sine-wave SoundData buffer.
--- Call when you need to create a new sine wave.
-local ok, obj = pcall(function() return lurek.audio.newSineWave(nil, 1.0, nil, nil) end)
-if ok and obj then print("created:", obj) end
-print("lurek.audio.newSineWave ok=", ok)
+-- Build once at startup; reuse across frames.
+local sinewave = lurek.audio.newSineWave(freq, 1.0, sample_rate, amplitude)
+print("created", sinewave)
+return sinewave
 
 --@api-stub: lurek.audio.newSquareWave
 -- Generate a mono square-wave SoundData buffer.
--- Call when you need to create a new square wave.
-local ok, obj = pcall(function() return lurek.audio.newSquareWave(nil, 1.0, nil, nil) end)
-if ok and obj then print("created:", obj) end
-print("lurek.audio.newSquareWave ok=", ok)
+-- Build once at startup; reuse across frames.
+local squarewave = lurek.audio.newSquareWave(freq, 1.0, sample_rate, amplitude)
+print("created", squarewave)
+return squarewave
 
 --@api-stub: lurek.audio.newSawtoothWave
 -- Generate a mono sawtooth-wave SoundData buffer.
--- Call when you need to create a new sawtooth wave.
-local ok, obj = pcall(function() return lurek.audio.newSawtoothWave(nil, 1.0, nil, nil) end)
-if ok and obj then print("created:", obj) end
-print("lurek.audio.newSawtoothWave ok=", ok)
+-- Build once at startup; reuse across frames.
+local sawtoothwave = lurek.audio.newSawtoothWave(freq, 1.0, sample_rate, amplitude)
+print("created", sawtoothwave)
+return sawtoothwave
 
 --@api-stub: lurek.audio.newTriangleWave
 -- Generate a mono triangle-wave SoundData buffer.
--- Call when you need to create a new triangle wave.
-local ok, obj = pcall(function() return lurek.audio.newTriangleWave(nil, 1.0, nil, nil) end)
-if ok and obj then print("created:", obj) end
-print("lurek.audio.newTriangleWave ok=", ok)
+-- Build once at startup; reuse across frames.
+local trianglewave = lurek.audio.newTriangleWave(freq, 1.0, sample_rate, amplitude)
+print("created", trianglewave)
+return trianglewave
 
 --@api-stub: lurek.audio.newWhiteNoise
 -- Generate a reproducible white-noise SoundData buffer.
--- Call when you need to create a new white noise.
-local ok, obj = pcall(function() return lurek.audio.newWhiteNoise(1.0, nil, nil, nil) end)
-if ok and obj then print("created:", obj) end
-print("lurek.audio.newWhiteNoise ok=", ok)
+-- Build once at startup; reuse across frames.
+local whitenoise = lurek.audio.newWhiteNoise(1.0, sample_rate, amplitude, seed)
+print("created", whitenoise)
+return whitenoise
 
 --@api-stub: lurek.audio.applyLowpass
 -- Applies a first-order IIR low-pass filter to a SoundData in-place.
--- Call when you need to invoke apply lowpass.
-local ok, err = pcall(function() lurek.audio.applyLowpass(nil, nil) end)
-if not ok then print("set skipped:", err) end
-print("lurek.audio.applyLowpass applied=", ok)
+-- Apply at startup or in response to user input.
+-- apply at startup or on config change
+lurek.audio.applyLowpass(sd_ud, cutoff_hz)
+print("applyLowpass applied")
+print("ok")
 
 --@api-stub: lurek.audio.applyHighpass
 -- Applies a first-order IIR high-pass filter to a SoundData in-place.
--- Call when you need to invoke apply highpass.
-local ok, err = pcall(function() lurek.audio.applyHighpass(nil, nil) end)
-if not ok then print("set skipped:", err) end
-print("lurek.audio.applyHighpass applied=", ok)
+-- Apply at startup or in response to user input.
+-- apply at startup or on config change
+lurek.audio.applyHighpass(sd_ud, cutoff_hz)
+print("applyHighpass applied")
+print("ok")
 
 --@api-stub: lurek.audio.applyBandpass
 -- Applies a bandpass filter (high-pass then low-pass) to a SoundData in-place.
--- Call when you need to invoke apply bandpass.
-local ok, err = pcall(function() lurek.audio.applyBandpass(nil, nil, nil) end)
-if not ok then print("set skipped:", err) end
-print("lurek.audio.applyBandpass applied=", ok)
+-- Apply at startup or in response to user input.
+-- apply at startup or on config change
+lurek.audio.applyBandpass(sd_ud, low_hz, high_hz)
+print("applyBandpass applied")
+print("ok")
 
 --@api-stub: lurek.audio.applyGain
 -- Scales every sample by gain (clamped to [-1, 1]).
--- Call when you need to invoke apply gain.
-local ok, err = pcall(function() lurek.audio.applyGain(nil, nil) end)
-if not ok then print("set skipped:", err) end
-print("lurek.audio.applyGain applied=", ok)
+-- Apply at startup or in response to user input.
+-- apply at startup or on config change
+lurek.audio.applyGain(sd_ud, gain)
+print("applyGain applied")
+print("ok")
 
 --@api-stub: lurek.audio.mixInto
 -- Additively mixes another SoundData into the destination in-place.
--- Call when you need to invoke mix into.
-local ok, result = pcall(function() return lurek.audio.mixInto(nil, nil) end)
-if ok then print("lurek.audio.mixInto ->", result)
-else print("unavailable:", result) end
+-- See the module spec for detailed semantics.
+local result = lurek.audio.mixInto(dest_ud, src_ud)
+print("mixInto:", result)
+return result
 
 --@api-stub: lurek.audio.saveWAV
 -- Saves a SoundData as a 16-bit PCM WAV file at the given path.
--- Call when you need to invoke save w a v.
-local ok, obj = pcall(function() return lurek.audio.saveWAV(nil, "sfx/click.ogg") end)
-if ok and obj then print("created:", obj) end
-print("lurek.audio.saveWAV ok=", ok)
+-- May block — call from a worker thread for large payloads.
+local result = lurek.audio.saveWAV(sd_ud, "sfx/click.ogg")
+-- may block; consider lurek.thread for large payloads
+print("saveWAV:", result)
+print("ok")
 
 --@api-stub: lurek.audio.setStereoWidth
 -- Sets the stereo width multiplier for a source (1.0 = normal, 0.0 = mono).
--- Call when you need to assign stereo width.
-local ok, err = pcall(function() lurek.audio.setStereoWidth(nil, 100) end)
-if not ok then print("set skipped:", err) end
-print("lurek.audio.setStereoWidth applied=", ok)
+-- Apply at startup or in response to user input.
+-- apply at startup or on config change
+lurek.audio.setStereoWidth(src_ud, 64)
+print("setStereoWidth applied")
+print("ok")
 
 --@api-stub: lurek.audio.getStereoWidth
 -- Returns the current stereo width for a source.
--- Call when you need to read stereo width.
-local ok, value = pcall(function() return lurek.audio.getStereoWidth(nil) end)
-local v = ok and value or "(unavailable)"
-print("lurek.audio.getStereoWidth ->", v)
+-- Cheap to call; safe inside callbacks.
+local value = lurek.audio.getStereoWidth(src_ud)
+print("getStereoWidth:", value)
+return value
 
 --@api-stub: lurek.audio.setRandomPitch
 -- Sets a random pitch range applied each time the source is played.
--- Call when you need to assign random pitch.
-local ok, err = pcall(function() lurek.audio.setRandomPitch(nil, 0, 100) end)
-if not ok then print("set skipped:", err) end
-print("lurek.audio.setRandomPitch applied=", ok)
+-- Apply at startup or in response to user input.
+-- apply at startup or on config change
+lurek.audio.setRandomPitch(src_ud, 0, 100)
+print("setRandomPitch applied")
+print("ok")
 
 --@api-stub: lurek.audio.clearRandomPitch
 -- Clears any random pitch range on a source, restoring fixed pitch.
--- Call when you need to invoke clear random pitch.
-local ok, err = pcall(function() lurek.audio.clearRandomPitch(nil) end)
-if not ok then print("skipped:", err) end
-print("lurek.audio.clearRandomPitch cleared=", ok)
+-- Pair with the matching constructor to free resources.
+-- release the resource and forget the handle
+lurek.audio.clearRandomPitch(src_ud)
+print("clearRandomPitch done")
+print("ok")
 
 --@api-stub: lurek.audio.crossfade
 -- Crossfades from one source to another over a duration.
--- Call when you need to invoke crossfade.
-local ok, result = pcall(function() return lurek.audio.crossfade(nil, nil, 1.0) end)
-if ok then print("lurek.audio.crossfade ->", result)
-else print("unavailable:", result) end
+-- See the module spec for detailed semantics.
+local result = lurek.audio.crossfade(from_ud, to_ud, 1.0)
+print("crossfade:", result)
+return result
 
 --@api-stub: lurek.audio.getBusPeak
 -- Returns the peak signal level of the named bus (stub: always 0.0).
--- Call when you need to read bus peak.
-local ok, value = pcall(function() return lurek.audio.getBusPeak("sfx/click.ogg") end)
-local v = ok and value or "(unavailable)"
-print("lurek.audio.getBusPeak ->", v)
+-- Cheap to call; safe inside callbacks.
+local value = lurek.audio.getBusPeak("sfx/click.ogg")
+print("getBusPeak:", value)
+return value
 
 --@api-stub: lurek.audio.getBusRms
 -- Returns the RMS signal level of the named bus (stub: always 0.0).
--- Call when you need to read bus rms.
-local ok, value = pcall(function() return lurek.audio.getBusRms("sfx/click.ogg") end)
-local v = ok and value or "(unavailable)"
-print("lurek.audio.getBusRms ->", v)
+-- Cheap to call; safe inside callbacks.
+local value = lurek.audio.getBusRms("sfx/click.ogg")
+print("getBusRms:", value)
+return value
 
 --@api-stub: lurek.audio.newPool
 -- Creates a polyphonic sound pool for the given file with N simultaneous voices.
--- Call when you need to create a new pool.
-local ok, obj = pcall(function() return lurek.audio.newPool("sfx/click.ogg", 10) end)
-if ok and obj then print("created:", obj) end
-print("lurek.audio.newPool ok=", ok)
+-- Build once at startup; reuse across frames.
+local pool = lurek.audio.newPool("sfx/click.ogg", 10)
+print("created", pool)
+return pool
 
 --@api-stub: lurek.audio.processOffline
 -- Applies a DSP effect chain to a WAV file and writes output.
--- Call when you need to invoke process offline.
-local ok, result = pcall(function() return lurek.audio.processOffline(nil, nil, nil) end)
-if ok then print("lurek.audio.processOffline ->", result)
-else print("unavailable:", result) end
+-- See the module spec for detailed semantics.
+local result = lurek.audio.processOffline(input, output, effects_tbl)
+print("processOffline:", result)
+return result
 
 --@api-stub: lurek.audio.normalizeFile
 -- Normalizes a WAV file peak amplitude to target_level and writes output.
--- Call when you need to invoke normalize file.
-local ok, result = pcall(function() return lurek.audio.normalizeFile(nil, nil, nil) end)
-if ok then print("lurek.audio.normalizeFile ->", result)
-else print("unavailable:", result) end
+-- See the module spec for detailed semantics.
+local result = lurek.audio.normalizeFile(input, output, target)
+print("normalizeFile:", result)
+return result
 
 --@api-stub: lurek.audio.waveformToPng
 -- Renders the waveform of a WAV file to a PNG image.
--- Call when you need to invoke waveform to png.
-local ok, result = pcall(function() return lurek.audio.waveformToPng(nil, nil, 100, 100) end)
-if ok then print("lurek.audio.waveformToPng ->", result)
-else print("unavailable:", result) end
+-- See the module spec for detailed semantics.
+local result = lurek.audio.waveformToPng(input, output, 64, 64)
+print("waveformToPng:", result)
+return result
 
 --@api-stub: lurek.audio.spectrogramToPng
 -- Renders a time-frequency spectrogram of a WAV file to a PNG image.
--- Call when you need to invoke spectrogram to png.
-local ok, result = pcall(function() return lurek.audio.spectrogramToPng(nil, nil, 100, 100) end)
-if ok then print("lurek.audio.spectrogramToPng ->", result)
-else print("unavailable:", result) end
+-- See the module spec for detailed semantics.
+local result = lurek.audio.spectrogramToPng(input, output, 64, 64)
+print("spectrogramToPng:", result)
+return result
 
 -- ── Source methods ──
 
 --@api-stub: Source:play
 -- Starts or resumes playback.
--- Call when you need to invoke play.
--- Build a Source via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newSource(...)
-if instance then
-  local ok, result = pcall(function() return instance:play() end)
-  print("Source:play ->", ok, result)
-end
+-- Trigger from input, timers, or game events.
+local source = lurek.audio.newSource()
+source:play()
+-- trigger from input, timer, or event
+print("ok")
 
 --@api-stub: Source:stop
 -- Stops playback and resets seek position.
--- Call when you need to invoke stop.
--- Build a Source via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newSource(...)
-if instance then
-  local ok, result = pcall(function() return instance:stop() end)
-  print("Source:stop ->", ok, result)
-end
+-- Trigger from input, timers, or game events.
+local source = lurek.audio.newSource()
+source:stop()
+-- trigger from input, timer, or event
+print("ok")
 
 --@api-stub: Source:pause
 -- Pauses playback at the current position.
--- Call when you need to invoke pause.
--- Build a Source via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newSource(...)
-if instance then
-  local ok, result = pcall(function() return instance:pause() end)
-  print("Source:pause ->", ok, result)
-end
+-- Trigger from input, timers, or game events.
+local source = lurek.audio.newSource()
+source:pause()
+-- trigger from input, timer, or event
+print("ok")
 
 --@api-stub: Source:resume
 -- Resumes playback from the paused position.
--- Call when you need to invoke resume.
--- Build a Source via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newSource(...)
-if instance then
-  local ok, result = pcall(function() return instance:resume() end)
-  print("Source:resume ->", ok, result)
-end
+-- Trigger from input, timers, or game events.
+local source = lurek.audio.newSource()
+source:resume()
+-- trigger from input, timer, or event
+print("ok")
 
 --@api-stub: Source:setVolume
 -- Sets playback volume (0.0 = silent, 1.0 = full).
--- Call when you need to assign volume.
--- Build a Source via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newSource(...)
-if instance then
-  local ok, result = pcall(function() return instance:setVolume(nil) end)
-  print("Source:setVolume ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local source = lurek.audio.newSource()
+source:setVolume(vol)
+print("Source:setVolume applied")
 
 --@api-stub: Source:getVolume
 -- Returns the current volume multiplier.
--- Call when you need to read volume.
--- Build a Source via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newSource(...)
-if instance then
-  local ok, result = pcall(function() return instance:getVolume() end)
-  print("Source:getVolume ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local source = lurek.audio.newSource()  -- or your existing handle
+local value = source:getVolume()
+print("Source:getVolume ->", value)
 
 --@api-stub: Source:setPitch
 -- Sets the pitch multiplier (1.0 = normal).
--- Call when you need to assign pitch.
--- Build a Source via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newSource(...)
-if instance then
-  local ok, result = pcall(function() return instance:setPitch(nil) end)
-  print("Source:setPitch ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local source = lurek.audio.newSource()
+source:setPitch(pitch)
+print("Source:setPitch applied")
 
 --@api-stub: Source:getPitch
 -- Returns the current pitch multiplier.
--- Call when you need to read pitch.
--- Build a Source via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newSource(...)
-if instance then
-  local ok, result = pcall(function() return instance:getPitch() end)
-  print("Source:getPitch ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local source = lurek.audio.newSource()  -- or your existing handle
+local value = source:getPitch()
+print("Source:getPitch ->", value)
 
 --@api-stub: Source:setLooping
 -- Enables or disables looping playback.
--- Call when you need to assign looping.
--- Build a Source via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newSource(...)
-if instance then
-  local ok, result = pcall(function() return instance:setLooping(nil) end)
-  print("Source:setLooping ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local source = lurek.audio.newSource()
+source:setLooping(looping)
+print("Source:setLooping applied")
 
 --@api-stub: Source:isLooping
 -- Returns true if looping is enabled.
--- Call when you need to check is looping.
--- Build a Source via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newSource(...)
-if instance then
-  local ok, result = pcall(function() return instance:isLooping() end)
-  print("Source:isLooping ->", ok, result)
-end
+-- Use as a guard inside lurek.update or event handlers.
+local source = lurek.audio.newSource()
+if source:isLooping() then print("yes") end
+-- swap the constructor for your real handle
+print("ok")
 
 --@api-stub: Source:isPlaying
 -- Returns true if currently playing.
--- Call when you need to check is playing.
--- Build a Source via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newSource(...)
-if instance then
-  local ok, result = pcall(function() return instance:isPlaying() end)
-  print("Source:isPlaying ->", ok, result)
-end
+-- Use as a guard inside lurek.update or event handlers.
+local source = lurek.audio.newSource()
+if source:isPlaying() then print("yes") end
+-- swap the constructor for your real handle
+print("ok")
 
 --@api-stub: Source:isPaused
 -- Returns true if playback is paused.
--- Call when you need to check is paused.
--- Build a Source via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newSource(...)
-if instance then
-  local ok, result = pcall(function() return instance:isPaused() end)
-  print("Source:isPaused ->", ok, result)
-end
+-- Use as a guard inside lurek.update or event handlers.
+local source = lurek.audio.newSource()
+if source:isPaused() then print("yes") end
+-- swap the constructor for your real handle
+print("ok")
 
 --@api-stub: Source:isStopped
 -- Returns true if playback has stopped.
--- Call when you need to check is stopped.
--- Build a Source via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newSource(...)
-if instance then
-  local ok, result = pcall(function() return instance:isStopped() end)
-  print("Source:isStopped ->", ok, result)
-end
+-- Use as a guard inside lurek.update or event handlers.
+local source = lurek.audio.newSource()
+if source:isStopped() then print("yes") end
+-- swap the constructor for your real handle
+print("ok")
 
 --@api-stub: Source:setPan
 -- Sets stereo panning (-1.0 left to 1.0 right).
--- Call when you need to assign pan.
--- Build a Source via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newSource(...)
-if instance then
-  local ok, result = pcall(function() return instance:setPan(nil) end)
-  print("Source:setPan ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local source = lurek.audio.newSource()
+source:setPan(pan)
+print("Source:setPan applied")
 
 --@api-stub: Source:getPan
 -- Returns the current stereo panning value.
--- Call when you need to read pan.
--- Build a Source via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newSource(...)
-if instance then
-  local ok, result = pcall(function() return instance:getPan() end)
-  print("Source:getPan ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local source = lurek.audio.newSource()  -- or your existing handle
+local value = source:getPan()
+print("Source:getPan ->", value)
 
 --@api-stub: Source:clone
 -- Creates an independent copy of this source.
--- Call when you need to invoke clone.
--- Build a Source via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newSource(...)
-if instance then
-  local ok, result = pcall(function() return instance:clone() end)
-  print("Source:clone ->", ok, result)
-end
+-- See the module spec for detailed semantics.
+local source = lurek.audio.newSource()
+source:clone()
+print("Source:clone done")
 
 --@api-stub: Source:getType
 -- Returns the source type ("static" or "stream").
--- Call when you need to read type.
--- Build a Source via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newSource(...)
-if instance then
-  local ok, result = pcall(function() return instance:getType() end)
-  print("Source:getType ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local source = lurek.audio.newSource()  -- or your existing handle
+local value = source:getType()
+print("Source:getType ->", value)
 
 --@api-stub: Source:getDuration
 -- Returns the total duration in seconds.
--- Call when you need to read duration.
--- Build a Source via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newSource(...)
-if instance then
-  local ok, result = pcall(function() return instance:getDuration() end)
-  print("Source:getDuration ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local source = lurek.audio.newSource()  -- or your existing handle
+local value = source:getDuration()
+print("Source:getDuration ->", value)
 
 --@api-stub: Source:tell
 -- Returns the current playback position in seconds.
--- Call when you need to invoke tell.
--- Build a Source via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newSource(...)
-if instance then
-  local ok, result = pcall(function() return instance:tell() end)
-  print("Source:tell ->", ok, result)
-end
+-- See the module spec for detailed semantics.
+local source = lurek.audio.newSource()
+source:tell()
+print("Source:tell done")
 
 --@api-stub: Source:seek
 -- Seeks to a time position in seconds.
--- Call when you need to invoke seek.
--- Build a Source via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newSource(...)
-if instance then
-  local ok, result = pcall(function() return instance:seek(nil) end)
-  print("Source:seek ->", ok, result)
-end
+-- See the module spec for detailed semantics.
+local source = lurek.audio.newSource()
+source:seek(pos)
+print("Source:seek done")
 
 --@api-stub: Source:setLowpass
 -- Applies a low-pass filter at the given cutoff frequency.
--- Call when you need to assign lowpass.
--- Build a Source via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newSource(...)
-if instance then
-  local ok, result = pcall(function() return instance:setLowpass(nil) end)
-  print("Source:setLowpass ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local source = lurek.audio.newSource()
+source:setLowpass(cutoff_hz)
+print("Source:setLowpass applied")
 
 --@api-stub: Source:setHighpass
 -- Applies a high-pass filter at the given cutoff frequency.
--- Call when you need to assign highpass.
--- Build a Source via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newSource(...)
-if instance then
-  local ok, result = pcall(function() return instance:setHighpass(nil) end)
-  print("Source:setHighpass ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local source = lurek.audio.newSource()
+source:setHighpass(cutoff_hz)
+print("Source:setHighpass applied")
 
 --@api-stub: Source:getLowpass
 -- Returns the low-pass filter cutoff frequency.
--- Call when you need to read lowpass.
--- Build a Source via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newSource(...)
-if instance then
-  local ok, result = pcall(function() return instance:getLowpass() end)
-  print("Source:getLowpass ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local source = lurek.audio.newSource()  -- or your existing handle
+local value = source:getLowpass()
+print("Source:getLowpass ->", value)
 
 --@api-stub: Source:getHighpass
 -- Returns the high-pass filter cutoff frequency.
--- Call when you need to read highpass.
--- Build a Source via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newSource(...)
-if instance then
-  local ok, result = pcall(function() return instance:getHighpass() end)
-  print("Source:getHighpass ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local source = lurek.audio.newSource()  -- or your existing handle
+local value = source:getHighpass()
+print("Source:getHighpass ->", value)
 
 --@api-stub: Source:clearFilter
 -- Removes any active filter from this source.
--- Call when you need to invoke clear filter.
--- Build a Source via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newSource(...)
-if instance then
-  local ok, result = pcall(function() return instance:clearFilter() end)
-  print("Source:clearFilter ->", ok, result)
-end
+-- Pair with the matching constructor to free resources.
+local source = lurek.audio.newSource()
+source:clearFilter()
+-- source is now released
+print("ok")
 
 --@api-stub: Source:fadeIn
 -- Fades in from silence over the given duration in seconds.
--- Call when you need to invoke fade in.
--- Build a Source via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newSource(...)
-if instance then
-  local ok, result = pcall(function() return instance:fadeIn(nil) end)
-  print("Source:fadeIn ->", ok, result)
-end
+-- See the module spec for detailed semantics.
+local source = lurek.audio.newSource()
+source:fadeIn(dur)
+print("Source:fadeIn done")
 
 --@api-stub: Source:getFadeIn
 -- Returns the current fade-in duration in seconds.
--- Call when you need to read fade in.
--- Build a Source via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newSource(...)
-if instance then
-  local ok, result = pcall(function() return instance:getFadeIn() end)
-  print("Source:getFadeIn ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local source = lurek.audio.newSource()  -- or your existing handle
+local value = source:getFadeIn()
+print("Source:getFadeIn ->", value)
 
 -- ── Bus methods ──
 
 --@api-stub: Bus:getName
 -- Returns the unique name string assigned to this audio bus.
--- Call when you need to read name.
--- Build a Bus via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newBus(...)
-if instance then
-  local ok, result = pcall(function() return instance:getName() end)
-  print("Bus:getName ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local bus = lurek.audio.newBus()  -- or your existing handle
+local value = bus:getName()
+print("Bus:getName ->", value)
 
 --@api-stub: Bus:setVolume
 -- Sets the volume for all sources on this bus.
--- Call when you need to assign volume.
--- Build a Bus via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newBus(...)
-if instance then
-  local ok, result = pcall(function() return instance:setVolume(nil) end)
-  print("Bus:setVolume ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local bus = lurek.audio.newBus()
+bus:setVolume(vol)
+print("Bus:setVolume applied")
 
 --@api-stub: Bus:getVolume
 -- Returns the current volume multiplier applied to all sources on this bus.
--- Call when you need to read volume.
--- Build a Bus via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newBus(...)
-if instance then
-  local ok, result = pcall(function() return instance:getVolume() end)
-  print("Bus:getVolume ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local bus = lurek.audio.newBus()  -- or your existing handle
+local value = bus:getVolume()
+print("Bus:getVolume ->", value)
 
 --@api-stub: Bus:setPitch
 -- Sets the pitch multiplier for all sources on this bus.
--- Call when you need to assign pitch.
--- Build a Bus via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newBus(...)
-if instance then
-  local ok, result = pcall(function() return instance:setPitch(nil) end)
-  print("Bus:setPitch ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local bus = lurek.audio.newBus()
+bus:setPitch(pitch)
+print("Bus:setPitch applied")
 
 --@api-stub: Bus:getPitch
 -- Returns the bus pitch multiplier.
--- Call when you need to read pitch.
--- Build a Bus via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newBus(...)
-if instance then
-  local ok, result = pcall(function() return instance:getPitch() end)
-  print("Bus:getPitch ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local bus = lurek.audio.newBus()  -- or your existing handle
+local value = bus:getPitch()
+print("Bus:getPitch ->", value)
 
 --@api-stub: Bus:pause
 -- Pauses all sources on this bus.
--- Call when you need to invoke pause.
--- Build a Bus via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newBus(...)
-if instance then
-  local ok, result = pcall(function() return instance:pause() end)
-  print("Bus:pause ->", ok, result)
-end
+-- Trigger from input, timers, or game events.
+local bus = lurek.audio.newBus()
+bus:pause()
+-- trigger from input, timer, or event
+print("ok")
 
 --@api-stub: Bus:resume
 -- Resumes all sources on this bus.
--- Call when you need to invoke resume.
--- Build a Bus via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newBus(...)
-if instance then
-  local ok, result = pcall(function() return instance:resume() end)
-  print("Bus:resume ->", ok, result)
-end
+-- Trigger from input, timers, or game events.
+local bus = lurek.audio.newBus()
+bus:resume()
+-- trigger from input, timer, or event
+print("ok")
 
 --@api-stub: Bus:isPaused
 -- Returns true if this bus is paused.
--- Call when you need to check is paused.
--- Build a Bus via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newBus(...)
-if instance then
-  local ok, result = pcall(function() return instance:isPaused() end)
-  print("Bus:isPaused ->", ok, result)
-end
+-- Use as a guard inside lurek.update or event handlers.
+local bus = lurek.audio.newBus()
+if bus:isPaused() then print("yes") end
+-- swap the constructor for your real handle
+print("ok")
 
 --@api-stub: Bus:type
 -- Returns the type name of this object.
--- Call when you need to invoke type.
--- Build a Bus via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newBus(...)
-if instance then
-  local ok, result = pcall(function() return instance:type() end)
-  print("Bus:type ->", ok, result)
-end
+-- See the module spec for detailed semantics.
+local bus = lurek.audio.newBus()
+bus:type()
+print("Bus:type done")
 
 --@api-stub: Bus:typeOf
 -- Returns true if this object is of the given type.
--- Call when you need to invoke type of.
--- Build a Bus via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newBus(...)
-if instance then
-  local ok, result = pcall(function() return instance:typeOf("sfx/click.ogg") end)
-  print("Bus:typeOf ->", ok, result)
-end
+-- See the module spec for detailed semantics.
+local bus = lurek.audio.newBus()
+bus:typeOf("sfx/click.ogg")
+print("Bus:typeOf done")
 
 --@api-stub: Bus:clearDuck
 -- Removes the ducking target from this bus, restoring the target bus.
--- Call when you need to invoke clear duck.
--- Build a Bus via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newBus(...)
-if instance then
-  local ok, result = pcall(function() return instance:clearDuck() end)
-  print("Bus:clearDuck ->", ok, result)
-end
+-- Pair with the matching constructor to free resources.
+local bus = lurek.audio.newBus()
+bus:clearDuck()
+-- bus is now released
+print("ok")
 
 --@api-stub: Bus:getPeak
 -- Returns the average peak amplitude of all sources currently on this bus.
--- Call when you need to read peak.
--- Build a Bus via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newBus(...)
-if instance then
-  local ok, result = pcall(function() return instance:getPeak() end)
-  print("Bus:getPeak ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local bus = lurek.audio.newBus()  -- or your existing handle
+local value = bus:getPeak()
+print("Bus:getPeak ->", value)
 
 -- ── MidiPlayer methods ──
 
 --@api-stub: MidiPlayer:load
 -- Loads a MIDI file from the given path.
--- Call when you need to invoke load.
--- Build a MidiPlayer via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newMidiPlayer(...)
-if instance then
-  local ok, result = pcall(function() return instance:load("sfx/click.ogg") end)
-  print("MidiPlayer:load ->", ok, result)
-end
+-- May block — call from a worker thread for large payloads.
+local midiPlayer = lurek.audio.newMidiPlayer()
+midiPlayer:load("sfx/click.ogg")
+print("MidiPlayer:load done")
 
 --@api-stub: MidiPlayer:loadData
 -- Loads MIDI data from a Lua string.
--- Call when you need to load data.
--- Build a MidiPlayer via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newMidiPlayer(...)
-if instance then
-  local ok, result = pcall(function() return instance:loadData() end)
-  print("MidiPlayer:loadData ->", ok, result)
-end
+-- May block — call from a worker thread for large payloads.
+local midiPlayer = lurek.audio.newMidiPlayer()
+midiPlayer:loadData()
+print("MidiPlayer:loadData done")
 
 --@api-stub: MidiPlayer:isLoaded
 -- Returns true if a MIDI sequence is loaded.
--- Call when you need to check is loaded.
--- Build a MidiPlayer via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newMidiPlayer(...)
-if instance then
-  local ok, result = pcall(function() return instance:isLoaded() end)
-  print("MidiPlayer:isLoaded ->", ok, result)
-end
+-- Use as a guard inside lurek.update or event handlers.
+local midiPlayer = lurek.audio.newMidiPlayer()
+if midiPlayer:isLoaded() then print("yes") end
+-- swap the constructor for your real handle
+print("ok")
 
 --@api-stub: MidiPlayer:getFilePath
 -- Returns the file path of the loaded MIDI, or nil.
--- Call when you need to read file path.
--- Build a MidiPlayer via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newMidiPlayer(...)
-if instance then
-  local ok, result = pcall(function() return instance:getFilePath() end)
-  print("MidiPlayer:getFilePath ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local midiPlayer = lurek.audio.newMidiPlayer()  -- or your existing handle
+local value = midiPlayer:getFilePath()
+print("MidiPlayer:getFilePath ->", value)
 
 --@api-stub: MidiPlayer:setSoundFont
 -- Loads a SoundFont file into this player (stub).
--- Call when you need to assign sound font.
--- Build a MidiPlayer via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newMidiPlayer(...)
-if instance then
-  local ok, result = pcall(function() return instance:setSoundFont("sfx/click.ogg") end)
-  print("MidiPlayer:setSoundFont ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local midiPlayer = lurek.audio.newMidiPlayer()
+midiPlayer:setSoundFont("sfx/click.ogg")
+print("MidiPlayer:setSoundFont applied")
 
 --@api-stub: MidiPlayer:getSoundFontPath
 -- Returns the SoundFont file path, or nil (stub).
--- Call when you need to read sound font path.
--- Build a MidiPlayer via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newMidiPlayer(...)
-if instance then
-  local ok, result = pcall(function() return instance:getSoundFontPath() end)
-  print("MidiPlayer:getSoundFontPath ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local midiPlayer = lurek.audio.newMidiPlayer()  -- or your existing handle
+local value = midiPlayer:getSoundFontPath()
+print("MidiPlayer:getSoundFontPath ->", value)
 
 --@api-stub: MidiPlayer:useDefaultSoundFont
 -- Reverts to the built-in default SoundFont (stub).
--- Call when you need to invoke use default sound font.
--- Build a MidiPlayer via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newMidiPlayer(...)
-if instance then
-  local ok, result = pcall(function() return instance:useDefaultSoundFont() end)
-  print("MidiPlayer:useDefaultSoundFont ->", ok, result)
-end
+-- See the module spec for detailed semantics.
+local midiPlayer = lurek.audio.newMidiPlayer()
+midiPlayer:useDefaultSoundFont()
+print("MidiPlayer:useDefaultSoundFont done")
 
 --@api-stub: MidiPlayer:play
 -- Starts or resumes MIDI sequence playback from the current position.
--- Call when you need to invoke play.
--- Build a MidiPlayer via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newMidiPlayer(...)
-if instance then
-  local ok, result = pcall(function() return instance:play() end)
-  print("MidiPlayer:play ->", ok, result)
-end
+-- Trigger from input, timers, or game events.
+local midiPlayer = lurek.audio.newMidiPlayer()
+midiPlayer:play()
+-- trigger from input, timer, or event
+print("ok")
 
 --@api-stub: MidiPlayer:pause
 -- Pauses the MIDI sequence at the current position; resume with `play()`.
--- Call when you need to invoke pause.
--- Build a MidiPlayer via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newMidiPlayer(...)
-if instance then
-  local ok, result = pcall(function() return instance:pause() end)
-  print("MidiPlayer:pause ->", ok, result)
-end
+-- Trigger from input, timers, or game events.
+local midiPlayer = lurek.audio.newMidiPlayer()
+midiPlayer:pause()
+-- trigger from input, timer, or event
+print("ok")
 
 --@api-stub: MidiPlayer:stop
 -- Stops MIDI playback and resets the playhead to the beginning.
--- Call when you need to invoke stop.
--- Build a MidiPlayer via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newMidiPlayer(...)
-if instance then
-  local ok, result = pcall(function() return instance:stop() end)
-  print("MidiPlayer:stop ->", ok, result)
-end
+-- Trigger from input, timers, or game events.
+local midiPlayer = lurek.audio.newMidiPlayer()
+midiPlayer:stop()
+-- trigger from input, timer, or event
+print("ok")
 
 --@api-stub: MidiPlayer:isPlaying
 -- Returns true if MIDI is currently playing.
--- Call when you need to check is playing.
--- Build a MidiPlayer via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newMidiPlayer(...)
-if instance then
-  local ok, result = pcall(function() return instance:isPlaying() end)
-  print("MidiPlayer:isPlaying ->", ok, result)
-end
+-- Use as a guard inside lurek.update or event handlers.
+local midiPlayer = lurek.audio.newMidiPlayer()
+if midiPlayer:isPlaying() then print("yes") end
+-- swap the constructor for your real handle
+print("ok")
 
 --@api-stub: MidiPlayer:isPaused
 -- Returns true if MIDI playback is paused.
--- Call when you need to check is paused.
--- Build a MidiPlayer via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newMidiPlayer(...)
-if instance then
-  local ok, result = pcall(function() return instance:isPaused() end)
-  print("MidiPlayer:isPaused ->", ok, result)
-end
+-- Use as a guard inside lurek.update or event handlers.
+local midiPlayer = lurek.audio.newMidiPlayer()
+if midiPlayer:isPaused() then print("yes") end
+-- swap the constructor for your real handle
+print("ok")
 
 --@api-stub: MidiPlayer:seek
 -- Seeks to a time position in seconds.
--- Call when you need to invoke seek.
--- Build a MidiPlayer via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newMidiPlayer(...)
-if instance then
-  local ok, result = pcall(function() return instance:seek(nil) end)
-  print("MidiPlayer:seek ->", ok, result)
-end
+-- See the module spec for detailed semantics.
+local midiPlayer = lurek.audio.newMidiPlayer()
+midiPlayer:seek(secs)
+print("MidiPlayer:seek done")
 
 --@api-stub: MidiPlayer:tell
 -- Returns the current playback position in seconds.
--- Call when you need to invoke tell.
--- Build a MidiPlayer via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newMidiPlayer(...)
-if instance then
-  local ok, result = pcall(function() return instance:tell() end)
-  print("MidiPlayer:tell ->", ok, result)
-end
+-- See the module spec for detailed semantics.
+local midiPlayer = lurek.audio.newMidiPlayer()
+midiPlayer:tell()
+print("MidiPlayer:tell done")
 
 --@api-stub: MidiPlayer:getDuration
 -- Returns the total MIDI duration in seconds.
--- Call when you need to read duration.
--- Build a MidiPlayer via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newMidiPlayer(...)
-if instance then
-  local ok, result = pcall(function() return instance:getDuration() end)
-  print("MidiPlayer:getDuration ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local midiPlayer = lurek.audio.newMidiPlayer()  -- or your existing handle
+local value = midiPlayer:getDuration()
+print("MidiPlayer:getDuration ->", value)
 
 --@api-stub: MidiPlayer:setLooping
 -- Enables or disables looping.
--- Call when you need to assign looping.
--- Build a MidiPlayer via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newMidiPlayer(...)
-if instance then
-  local ok, result = pcall(function() return instance:setLooping(nil) end)
-  print("MidiPlayer:setLooping ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local midiPlayer = lurek.audio.newMidiPlayer()
+midiPlayer:setLooping(looping)
+print("MidiPlayer:setLooping applied")
 
 --@api-stub: MidiPlayer:isLooping
 -- Returns true if looping is enabled.
--- Call when you need to check is looping.
--- Build a MidiPlayer via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newMidiPlayer(...)
-if instance then
-  local ok, result = pcall(function() return instance:isLooping() end)
-  print("MidiPlayer:isLooping ->", ok, result)
-end
+-- Use as a guard inside lurek.update or event handlers.
+local midiPlayer = lurek.audio.newMidiPlayer()
+if midiPlayer:isLooping() then print("yes") end
+-- swap the constructor for your real handle
+print("ok")
 
 --@api-stub: MidiPlayer:setVolume
 -- Sets MIDI playback volume.
--- Call when you need to assign volume.
--- Build a MidiPlayer via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newMidiPlayer(...)
-if instance then
-  local ok, result = pcall(function() return instance:setVolume(nil) end)
-  print("MidiPlayer:setVolume ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local midiPlayer = lurek.audio.newMidiPlayer()
+midiPlayer:setVolume(vol)
+print("MidiPlayer:setVolume applied")
 
 --@api-stub: MidiPlayer:getVolume
 -- Returns the current MIDI volume.
--- Call when you need to read volume.
--- Build a MidiPlayer via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newMidiPlayer(...)
-if instance then
-  local ok, result = pcall(function() return instance:getVolume() end)
-  print("MidiPlayer:getVolume ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local midiPlayer = lurek.audio.newMidiPlayer()  -- or your existing handle
+local value = midiPlayer:getVolume()
+print("MidiPlayer:getVolume ->", value)
 
 --@api-stub: MidiPlayer:setBus
 -- Routes MIDI output through a bus (or nil to clear).
--- Call when you need to assign bus.
--- Build a MidiPlayer via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newMidiPlayer(...)
-if instance then
-  local ok, result = pcall(function() return instance:setBus(nil) end)
-  print("MidiPlayer:setBus ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local midiPlayer = lurek.audio.newMidiPlayer()
+midiPlayer:setBus(bus_val)
+print("MidiPlayer:setBus applied")
 
 --@api-stub: MidiPlayer:getBus
 -- Returns the assigned bus, or nil.
--- Call when you need to read bus.
--- Build a MidiPlayer via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newMidiPlayer(...)
-if instance then
-  local ok, result = pcall(function() return instance:getBus() end)
-  print("MidiPlayer:getBus ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local midiPlayer = lurek.audio.newMidiPlayer()  -- or your existing handle
+local value = midiPlayer:getBus()
+print("MidiPlayer:getBus ->", value)
 
 --@api-stub: MidiPlayer:setTempo
 -- Sets playback tempo in BPM.
--- Call when you need to assign tempo.
--- Build a MidiPlayer via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newMidiPlayer(...)
-if instance then
-  local ok, result = pcall(function() return instance:setTempo(nil) end)
-  print("MidiPlayer:setTempo ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local midiPlayer = lurek.audio.newMidiPlayer()
+midiPlayer:setTempo(bpm)
+print("MidiPlayer:setTempo applied")
 
 --@api-stub: MidiPlayer:getTempo
 -- Returns the current tempo in BPM.
--- Call when you need to read tempo.
--- Build a MidiPlayer via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newMidiPlayer(...)
-if instance then
-  local ok, result = pcall(function() return instance:getTempo() end)
-  print("MidiPlayer:getTempo ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local midiPlayer = lurek.audio.newMidiPlayer()  -- or your existing handle
+local value = midiPlayer:getTempo()
+print("MidiPlayer:getTempo ->", value)
 
 --@api-stub: MidiPlayer:getOriginalTempo
 -- Returns the original MIDI file tempo in BPM.
--- Call when you need to read original tempo.
--- Build a MidiPlayer via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newMidiPlayer(...)
-if instance then
-  local ok, result = pcall(function() return instance:getOriginalTempo() end)
-  print("MidiPlayer:getOriginalTempo ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local midiPlayer = lurek.audio.newMidiPlayer()  -- or your existing handle
+local value = midiPlayer:getOriginalTempo()
+print("MidiPlayer:getOriginalTempo ->", value)
 
 --@api-stub: MidiPlayer:setTempoScale
 -- Sets the tempo scale factor (1.0 = original speed).
--- Call when you need to assign tempo scale.
--- Build a MidiPlayer via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newMidiPlayer(...)
-if instance then
-  local ok, result = pcall(function() return instance:setTempoScale(1) end)
-  print("MidiPlayer:setTempoScale ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local midiPlayer = lurek.audio.newMidiPlayer()
+midiPlayer:setTempoScale(1.0)
+print("MidiPlayer:setTempoScale applied")
 
 --@api-stub: MidiPlayer:getTempoScale
 -- Returns the current tempo scale factor.
--- Call when you need to read tempo scale.
--- Build a MidiPlayer via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newMidiPlayer(...)
-if instance then
-  local ok, result = pcall(function() return instance:getTempoScale() end)
-  print("MidiPlayer:getTempoScale ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local midiPlayer = lurek.audio.newMidiPlayer()  -- or your existing handle
+local value = midiPlayer:getTempoScale()
+print("MidiPlayer:getTempoScale ->", value)
 
 --@api-stub: MidiPlayer:getTicksPerBeat
 -- Returns the PPQ resolution from the MIDI header.
--- Call when you need to read ticks per beat.
--- Build a MidiPlayer via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newMidiPlayer(...)
-if instance then
-  local ok, result = pcall(function() return instance:getTicksPerBeat() end)
-  print("MidiPlayer:getTicksPerBeat ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local midiPlayer = lurek.audio.newMidiPlayer()  -- or your existing handle
+local value = midiPlayer:getTicksPerBeat()
+print("MidiPlayer:getTicksPerBeat ->", value)
 
 --@api-stub: MidiPlayer:setChannelVolume
 -- Sets volume for a MIDI channel (1-indexed).
--- Call when you need to assign channel volume.
--- Build a MidiPlayer via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newMidiPlayer(...)
-if instance then
-  local ok, result = pcall(function() return instance:setChannelVolume(nil, nil) end)
-  print("MidiPlayer:setChannelVolume ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local midiPlayer = lurek.audio.newMidiPlayer()
+midiPlayer:setChannelVolume(ch, vol)
+print("MidiPlayer:setChannelVolume applied")
 
 --@api-stub: MidiPlayer:getChannelVolume
 -- Returns the volume for a MIDI channel (1-indexed).
--- Call when you need to read channel volume.
--- Build a MidiPlayer via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newMidiPlayer(...)
-if instance then
-  local ok, result = pcall(function() return instance:getChannelVolume(nil) end)
-  print("MidiPlayer:getChannelVolume ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local midiPlayer = lurek.audio.newMidiPlayer()  -- or your existing handle
+local value = midiPlayer:getChannelVolume(ch)
+print("MidiPlayer:getChannelVolume ->", value)
 
 --@api-stub: MidiPlayer:setChannelMuted
 -- Mutes or unmutes a MIDI channel (1-indexed).
--- Call when you need to assign channel muted.
--- Build a MidiPlayer via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newMidiPlayer(...)
-if instance then
-  local ok, result = pcall(function() return instance:setChannelMuted(nil, nil) end)
-  print("MidiPlayer:setChannelMuted ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local midiPlayer = lurek.audio.newMidiPlayer()
+midiPlayer:setChannelMuted(ch, muted)
+print("MidiPlayer:setChannelMuted applied")
 
 --@api-stub: MidiPlayer:isChannelMuted
 -- Returns true if a MIDI channel is muted (1-indexed).
--- Call when you need to check is channel muted.
--- Build a MidiPlayer via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newMidiPlayer(...)
-if instance then
-  local ok, result = pcall(function() return instance:isChannelMuted(nil) end)
-  print("MidiPlayer:isChannelMuted ->", ok, result)
-end
+-- Use as a guard inside lurek.update or event handlers.
+local midiPlayer = lurek.audio.newMidiPlayer()
+if midiPlayer:isChannelMuted(ch) then print("yes") end
+-- swap the constructor for your real handle
+print("ok")
 
 --@api-stub: MidiPlayer:getChannelInstrument
 -- Returns the GM instrument for a MIDI channel (1-indexed).
--- Call when you need to read channel instrument.
--- Build a MidiPlayer via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newMidiPlayer(...)
-if instance then
-  local ok, result = pcall(function() return instance:getChannelInstrument(nil) end)
-  print("MidiPlayer:getChannelInstrument ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local midiPlayer = lurek.audio.newMidiPlayer()  -- or your existing handle
+local value = midiPlayer:getChannelInstrument(ch)
+print("MidiPlayer:getChannelInstrument ->", value)
 
 --@api-stub: MidiPlayer:getChannelCount
 -- Returns the number of MIDI channels.
--- Call when you need to read channel count.
--- Build a MidiPlayer via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newMidiPlayer(...)
-if instance then
-  local ok, result = pcall(function() return instance:getChannelCount() end)
-  print("MidiPlayer:getChannelCount ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local midiPlayer = lurek.audio.newMidiPlayer()  -- or your existing handle
+local value = midiPlayer:getChannelCount()
+print("MidiPlayer:getChannelCount ->", value)
 
 --@api-stub: MidiPlayer:soloChannel
 -- Solos a MIDI channel (1-indexed).
--- Call when you need to invoke solo channel.
--- Build a MidiPlayer via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newMidiPlayer(...)
-if instance then
-  local ok, result = pcall(function() return instance:soloChannel(nil) end)
-  print("MidiPlayer:soloChannel ->", ok, result)
-end
+-- See the module spec for detailed semantics.
+local midiPlayer = lurek.audio.newMidiPlayer()
+midiPlayer:soloChannel(ch)
+print("MidiPlayer:soloChannel done")
 
 --@api-stub: MidiPlayer:unsoloAll
 -- Clears solo on all channels.
--- Call when you need to invoke unsolo all.
--- Build a MidiPlayer via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newMidiPlayer(...)
-if instance then
-  local ok, result = pcall(function() return instance:unsoloAll() end)
-  print("MidiPlayer:unsoloAll ->", ok, result)
-end
+-- See the module spec for detailed semantics.
+local midiPlayer = lurek.audio.newMidiPlayer()
+midiPlayer:unsoloAll()
+print("MidiPlayer:unsoloAll done")
 
 --@api-stub: MidiPlayer:getTrackCount
 -- Returns the number of tracks in the MIDI sequence.
--- Call when you need to read track count.
--- Build a MidiPlayer via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newMidiPlayer(...)
-if instance then
-  local ok, result = pcall(function() return instance:getTrackCount() end)
-  print("MidiPlayer:getTrackCount ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local midiPlayer = lurek.audio.newMidiPlayer()  -- or your existing handle
+local value = midiPlayer:getTrackCount()
+print("MidiPlayer:getTrackCount ->", value)
 
 --@api-stub: MidiPlayer:getTrackName
 -- Returns the name of a MIDI track (1-indexed), or nil.
--- Call when you need to read track name.
--- Build a MidiPlayer via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newMidiPlayer(...)
-if instance then
-  local ok, result = pcall(function() return instance:getTrackName(1) end)
-  print("MidiPlayer:getTrackName ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local midiPlayer = lurek.audio.newMidiPlayer()  -- or your existing handle
+local value = midiPlayer:getTrackName(1)
+print("MidiPlayer:getTrackName ->", value)
 
 --@api-stub: MidiPlayer:setTrackMuted
 -- Mutes or unmutes a track (1-indexed).
--- Call when you need to assign track muted.
--- Build a MidiPlayer via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newMidiPlayer(...)
-if instance then
-  local ok, result = pcall(function() return instance:setTrackMuted(1, nil) end)
-  print("MidiPlayer:setTrackMuted ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local midiPlayer = lurek.audio.newMidiPlayer()
+midiPlayer:setTrackMuted(1, muted)
+print("MidiPlayer:setTrackMuted applied")
 
 --@api-stub: MidiPlayer:isTrackMuted
 -- Returns true if a track is muted (1-indexed).
--- Call when you need to check is track muted.
--- Build a MidiPlayer via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newMidiPlayer(...)
-if instance then
-  local ok, result = pcall(function() return instance:isTrackMuted(1) end)
-  print("MidiPlayer:isTrackMuted ->", ok, result)
-end
+-- Use as a guard inside lurek.update or event handlers.
+local midiPlayer = lurek.audio.newMidiPlayer()
+if midiPlayer:isTrackMuted(1) then print("yes") end
+-- swap the constructor for your real handle
+print("ok")
 
 --@api-stub: MidiPlayer:getNoteCount
 -- Returns the total note count in the MIDI sequence.
--- Call when you need to read note count.
--- Build a MidiPlayer via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newMidiPlayer(...)
-if instance then
-  local ok, result = pcall(function() return instance:getNoteCount() end)
-  print("MidiPlayer:getNoteCount ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local midiPlayer = lurek.audio.newMidiPlayer()  -- or your existing handle
+local value = midiPlayer:getNoteCount()
+print("MidiPlayer:getNoteCount ->", value)
 
 --@api-stub: MidiPlayer:setOnNoteOn
 -- Registers a note-on callback (stub).
--- Call when you need to assign on note on.
--- Build a MidiPlayer via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newMidiPlayer(...)
-if instance then
-  local ok, result = pcall(function() return instance:setOnNoteOn(function() end) end)
-  print("MidiPlayer:setOnNoteOn ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local midiPlayer = lurek.audio.newMidiPlayer()
+midiPlayer:setOnNoteOn(function() print("setOnNoteOn fired") end)
+print("MidiPlayer:setOnNoteOn applied")
 
 --@api-stub: MidiPlayer:setOnNoteOff
 -- Registers a note-off callback (stub).
--- Call when you need to assign on note off.
--- Build a MidiPlayer via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newMidiPlayer(...)
-if instance then
-  local ok, result = pcall(function() return instance:setOnNoteOff(function() end) end)
-  print("MidiPlayer:setOnNoteOff ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local midiPlayer = lurek.audio.newMidiPlayer()
+midiPlayer:setOnNoteOff(function() print("setOnNoteOff fired") end)
+print("MidiPlayer:setOnNoteOff applied")
 
 --@api-stub: MidiPlayer:setOnEnd
 -- Registers a playback-end callback (stub).
--- Call when you need to assign on end.
--- Build a MidiPlayer via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newMidiPlayer(...)
-if instance then
-  local ok, result = pcall(function() return instance:setOnEnd(function() end) end)
-  print("MidiPlayer:setOnEnd ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local midiPlayer = lurek.audio.newMidiPlayer()
+midiPlayer:setOnEnd(function() print("setOnEnd fired") end)
+print("MidiPlayer:setOnEnd applied")
 
 --@api-stub: MidiPlayer:getSampleRate
 -- Returns the PCM output sample rate in Hz.
--- Call when you need to read sample rate.
--- Build a MidiPlayer via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newMidiPlayer(...)
-if instance then
-  local ok, result = pcall(function() return instance:getSampleRate() end)
-  print("MidiPlayer:getSampleRate ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local midiPlayer = lurek.audio.newMidiPlayer()  -- or your existing handle
+local value = midiPlayer:getSampleRate()
+print("MidiPlayer:getSampleRate ->", value)
 
 --@api-stub: MidiPlayer:setSampleRate
 -- Sets the PCM output sample rate in Hz (clamped 8000â€“192000).
--- Call when you need to assign sample rate.
--- Build a MidiPlayer via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newMidiPlayer(...)
-if instance then
-  local ok, result = pcall(function() return instance:setSampleRate(nil) end)
-  print("MidiPlayer:setSampleRate ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local midiPlayer = lurek.audio.newMidiPlayer()
+midiPlayer:setSampleRate(rate)
+print("MidiPlayer:setSampleRate applied")
 
 --@api-stub: MidiPlayer:getChannels
 -- Returns the PCM output channel count (1 = mono, 2 = stereo).
--- Call when you need to read channels.
--- Build a MidiPlayer via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newMidiPlayer(...)
-if instance then
-  local ok, result = pcall(function() return instance:getChannels() end)
-  print("MidiPlayer:getChannels ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local midiPlayer = lurek.audio.newMidiPlayer()  -- or your existing handle
+local value = midiPlayer:getChannels()
+print("MidiPlayer:getChannels ->", value)
 
 --@api-stub: MidiPlayer:setChannels
 -- Sets the PCM output channel count (clamped 1â€“2).
--- Call when you need to assign channels.
--- Build a MidiPlayer via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newMidiPlayer(...)
-if instance then
-  local ok, result = pcall(function() return instance:setChannels(nil) end)
-  print("MidiPlayer:setChannels ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local midiPlayer = lurek.audio.newMidiPlayer()
+midiPlayer:setChannels(channels)
+print("MidiPlayer:setChannels applied")
 
 --@api-stub: MidiPlayer:type
 -- Returns the type name of this object.
--- Call when you need to invoke type.
--- Build a MidiPlayer via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newMidiPlayer(...)
-if instance then
-  local ok, result = pcall(function() return instance:type() end)
-  print("MidiPlayer:type ->", ok, result)
-end
+-- See the module spec for detailed semantics.
+local midiPlayer = lurek.audio.newMidiPlayer()
+midiPlayer:type()
+print("MidiPlayer:type done")
 
 --@api-stub: MidiPlayer:typeOf
 -- Returns true if this object is of the given type.
--- Call when you need to invoke type of.
--- Build a MidiPlayer via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newMidiPlayer(...)
-if instance then
-  local ok, result = pcall(function() return instance:typeOf("sfx/click.ogg") end)
-  print("MidiPlayer:typeOf ->", ok, result)
-end
+-- See the module spec for detailed semantics.
+local midiPlayer = lurek.audio.newMidiPlayer()
+midiPlayer:typeOf("sfx/click.ogg")
+print("MidiPlayer:typeOf done")
 
 -- ── SoundPool methods ──
 
 --@api-stub: SoundPool:play
 -- Plays the next available voice and returns its SoundKey as an integer.
--- Call when you need to invoke play.
--- Build a SoundPool via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newSoundPool(...)
-if instance then
-  local ok, result = pcall(function() return instance:play() end)
-  print("SoundPool:play ->", ok, result)
-end
+-- Trigger from input, timers, or game events.
+local soundPool = lurek.audio.newSoundPool()
+soundPool:play()
+-- trigger from input, timer, or event
+print("ok")
 
 --@api-stub: SoundPool:stopAll
 -- Stops all voices in this pool.
--- Call when you need to invoke stop all.
--- Build a SoundPool via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newSoundPool(...)
-if instance then
-  local ok, result = pcall(function() return instance:stopAll() end)
-  print("SoundPool:stopAll ->", ok, result)
-end
+-- Trigger from input, timers, or game events.
+local soundPool = lurek.audio.newSoundPool()
+soundPool:stopAll()
+-- trigger from input, timer, or event
+print("ok")
 
 --@api-stub: SoundPool:setVolume
 -- Sets the volume for all voices in this pool.
--- Call when you need to assign volume.
--- Build a SoundPool via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newSoundPool(...)
-if instance then
-  local ok, result = pcall(function() return instance:setVolume(nil) end)
-  print("SoundPool:setVolume ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local soundPool = lurek.audio.newSoundPool()
+soundPool:setVolume(vol)
+print("SoundPool:setVolume applied")
 
 --@api-stub: SoundPool:setBus
 -- Routes all voices through the named bus.
--- Call when you need to assign bus.
--- Build a SoundPool via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newSoundPool(...)
-if instance then
-  local ok, result = pcall(function() return instance:setBus("sfx/click.ogg") end)
-  print("SoundPool:setBus ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local soundPool = lurek.audio.newSoundPool()
+soundPool:setBus("sfx/click.ogg")
+print("SoundPool:setBus applied")
 
 --@api-stub: SoundPool:release
 -- Releases all voices from the mixer and invalidates this pool.
--- Call when you need to invoke release.
--- Build a SoundPool via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newSoundPool(...)
-if instance then
-  local ok, result = pcall(function() return instance:release() end)
-  print("SoundPool:release ->", ok, result)
-end
+-- See the module spec for detailed semantics.
+local soundPool = lurek.audio.newSoundPool()
+soundPool:release()
+print("SoundPool:release done")
 
 --@api-stub: SoundPool:getVoiceCount
 -- Returns the total number of voices in this pool.
--- Call when you need to read voice count.
--- Build a SoundPool via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newSoundPool(...)
-if instance then
-  local ok, result = pcall(function() return instance:getVoiceCount() end)
-  print("SoundPool:getVoiceCount ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local soundPool = lurek.audio.newSoundPool()  -- or your existing handle
+local value = soundPool:getVoiceCount()
+print("SoundPool:getVoiceCount ->", value)
 
 --@api-stub: SoundPool:type
 -- Returns the type name of this object.
--- Call when you need to invoke type.
--- Build a SoundPool via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newSoundPool(...)
-if instance then
-  local ok, result = pcall(function() return instance:type() end)
-  print("SoundPool:type ->", ok, result)
-end
+-- See the module spec for detailed semantics.
+local soundPool = lurek.audio.newSoundPool()
+soundPool:type()
+print("SoundPool:type done")
 
 --@api-stub: SoundPool:typeOf
 -- Returns true if the type name matches.
--- Call when you need to invoke type of.
--- Build a SoundPool via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newSoundPool(...)
-if instance then
-  local ok, result = pcall(function() return instance:typeOf("sfx/click.ogg") end)
-  print("SoundPool:typeOf ->", ok, result)
-end
+-- See the module spec for detailed semantics.
+local soundPool = lurek.audio.newSoundPool()
+soundPool:typeOf("sfx/click.ogg")
+print("SoundPool:typeOf done")
 
 -- ── Decoder methods ──
 
 --@api-stub: Decoder:decode
 -- Decodes the next chunk of samples, or nil at EOF.
--- Call when you need to invoke decode.
--- Build a Decoder via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newDecoder(...)
-if instance then
-  local ok, result = pcall(function() return instance:decode() end)
-  print("Decoder:decode ->", ok, result)
-end
+-- May block — call from a worker thread for large payloads.
+local decoder = lurek.audio.newDecoder()
+decoder:decode()
+print("Decoder:decode done")
 
 --@api-stub: Decoder:getChannelCount
 -- Returns the number of audio channels.
--- Call when you need to read channel count.
--- Build a Decoder via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newDecoder(...)
-if instance then
-  local ok, result = pcall(function() return instance:getChannelCount() end)
-  print("Decoder:getChannelCount ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local decoder = lurek.audio.newDecoder()  -- or your existing handle
+local value = decoder:getChannelCount()
+print("Decoder:getChannelCount ->", value)
 
 --@api-stub: Decoder:getBitDepth
 -- Returns the per-sample bit depth of this decoded audio stream.
--- Call when you need to read bit depth.
--- Build a Decoder via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newDecoder(...)
-if instance then
-  local ok, result = pcall(function() return instance:getBitDepth() end)
-  print("Decoder:getBitDepth ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local decoder = lurek.audio.newDecoder()  -- or your existing handle
+local value = decoder:getBitDepth()
+print("Decoder:getBitDepth ->", value)
 
 --@api-stub: Decoder:getSampleRate
 -- Returns the sample rate in Hz.
--- Call when you need to read sample rate.
--- Build a Decoder via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newDecoder(...)
-if instance then
-  local ok, result = pcall(function() return instance:getSampleRate() end)
-  print("Decoder:getSampleRate ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local decoder = lurek.audio.newDecoder()  -- or your existing handle
+local value = decoder:getSampleRate()
+print("Decoder:getSampleRate ->", value)
 
 --@api-stub: Decoder:getDuration
 -- Returns the total duration in seconds.
--- Call when you need to read duration.
--- Build a Decoder via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newDecoder(...)
-if instance then
-  local ok, result = pcall(function() return instance:getDuration() end)
-  print("Decoder:getDuration ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local decoder = lurek.audio.newDecoder()  -- or your existing handle
+local value = decoder:getDuration()
+print("Decoder:getDuration ->", value)
 
 --@api-stub: Decoder:seek
 -- Seeks to a time offset in seconds.
--- Call when you need to invoke seek.
--- Build a Decoder via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newDecoder(...)
-if instance then
-  local ok, result = pcall(function() return instance:seek(nil) end)
-  print("Decoder:seek ->", ok, result)
-end
+-- See the module spec for detailed semantics.
+local decoder = lurek.audio.newDecoder()
+decoder:seek(offset)
+print("Decoder:seek done")
 
 --@api-stub: Decoder:rewind
 -- Rewinds to the beginning.
--- Call when you need to invoke rewind.
--- Build a Decoder via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newDecoder(...)
-if instance then
-  local ok, result = pcall(function() return instance:rewind() end)
-  print("Decoder:rewind ->", ok, result)
-end
+-- See the module spec for detailed semantics.
+local decoder = lurek.audio.newDecoder()
+decoder:rewind()
+print("Decoder:rewind done")
 
 --@api-stub: Decoder:tell
 -- Returns the current position in seconds.
--- Call when you need to invoke tell.
--- Build a Decoder via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newDecoder(...)
-if instance then
-  local ok, result = pcall(function() return instance:tell() end)
-  print("Decoder:tell ->", ok, result)
-end
+-- See the module spec for detailed semantics.
+local decoder = lurek.audio.newDecoder()
+decoder:tell()
+print("Decoder:tell done")
 
 --@api-stub: Decoder:isSeekable
 -- Returns true if seeking is supported.
--- Call when you need to check is seekable.
--- Build a Decoder via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newDecoder(...)
-if instance then
-  local ok, result = pcall(function() return instance:isSeekable() end)
-  print("Decoder:isSeekable ->", ok, result)
-end
+-- Use as a guard inside lurek.update or event handlers.
+local decoder = lurek.audio.newDecoder()
+if decoder:isSeekable() then print("yes") end
+-- swap the constructor for your real handle
+print("ok")
 
 --@api-stub: Decoder:release
 -- Releases the decoder (no-op).
--- Call when you need to invoke release.
--- Build a Decoder via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newDecoder(...)
-if instance then
-  local ok, result = pcall(function() return instance:release() end)
-  print("Decoder:release ->", ok, result)
-end
+-- See the module spec for detailed semantics.
+local decoder = lurek.audio.newDecoder()
+decoder:release()
+print("Decoder:release done")
 
 -- ── mlua methods ──
 
 --@api-stub: mlua:getSampleCount
 -- Get the total number of samples.
--- Call when you need to read sample count.
--- Build a mlua via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newmlua(...)
-if instance then
-  local ok, result = pcall(function() return instance:getSampleCount() end)
-  print("mlua:getSampleCount ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local mlua = lurek.audio.newmlua()  -- or your existing handle
+local value = mlua:getSampleCount()
+print("mlua:getSampleCount ->", value)
 
 --@api-stub: mlua:getSampleRate
 -- Get the sample rate.
--- Call when you need to read sample rate.
--- Build a mlua via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newmlua(...)
-if instance then
-  local ok, result = pcall(function() return instance:getSampleRate() end)
-  print("mlua:getSampleRate ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local mlua = lurek.audio.newmlua()  -- or your existing handle
+local value = mlua:getSampleRate()
+print("mlua:getSampleRate ->", value)
 
 --@api-stub: mlua:getChannelCount
 -- Get the number of channels.
--- Call when you need to read channel count.
--- Build a mlua via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newmlua(...)
-if instance then
-  local ok, result = pcall(function() return instance:getChannelCount() end)
-  print("mlua:getChannelCount ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local mlua = lurek.audio.newmlua()  -- or your existing handle
+local value = mlua:getChannelCount()
+print("mlua:getChannelCount ->", value)
 
 --@api-stub: mlua:getDuration
 -- Get the audio duration in seconds.
--- Call when you need to read duration.
--- Build a mlua via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newmlua(...)
-if instance then
-  local ok, result = pcall(function() return instance:getDuration() end)
-  print("mlua:getDuration ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local mlua = lurek.audio.newmlua()  -- or your existing handle
+local value = mlua:getDuration()
+print("mlua:getDuration ->", value)
 
 --@api-stub: mlua:getBitDepth
 -- Get the bit depth.
--- Call when you need to read bit depth.
--- Build a mlua via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newmlua(...)
-if instance then
-  local ok, result = pcall(function() return instance:getBitDepth() end)
-  print("mlua:getBitDepth ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local mlua = lurek.audio.newmlua()  -- or your existing handle
+local value = mlua:getBitDepth()
+print("mlua:getBitDepth ->", value)
 
 --@api-stub: mlua:getSample
 -- Get a specific sample by index.
--- Call when you need to read sample.
--- Build a mlua via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newmlua(...)
-if instance then
-  local ok, result = pcall(function() return instance:getSample(1) end)
-  print("mlua:getSample ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local mlua = lurek.audio.newmlua()  -- or your existing handle
+local value = mlua:getSample(1)
+print("mlua:getSample ->", value)
 
 --@api-stub: mlua:setSample
 -- Set a specific sample by index.
--- Call when you need to assign sample.
--- Build a mlua via the appropriate lurek.audio.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.audio.newmlua(...)
-if instance then
-  local ok, result = pcall(function() return instance:setSample(1, nil) end)
-  print("mlua:setSample ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local mlua = lurek.audio.newmlua()
+mlua:setSample(1, value)
+print("mlua:setSample applied")
 

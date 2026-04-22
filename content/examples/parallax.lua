@@ -1,444 +1,318 @@
 -- content/examples/parallax.lua
--- Practical usage examples for the lurek.parallax API (43 items).
---
--- Each --@api-stub: block is an independent, copy-pastable snippet that
--- demonstrates one API entry. Calls are wrapped in pcall(...) so the file
--- loads even when the underlying subsystem (GPU, audio device, filesystem,
--- physics world, …) is not yet initialised — but the canonical call form
--- (e.g. `lurek.parallax.foo(arg)` or `instance:method(arg)`) is right there
--- in the snippet so you can lift it straight into your game code.
---
+-- love2d-style usage snippets for the lurek.parallax API (43 items).
+-- Each --@api-stub: block is a copy-pastable snippet showing the API
+-- in real context (callbacks, conditionals, real arg values).
 -- Run: cargo run -- content/examples/parallax.lua
 
-print("[example] lurek.parallax — 43 API entries")
-
--- ── lurek.parallax.* free functions ──
+-- ── lurek.parallax.* functions ──
 
 --@api-stub: lurek.parallax.newLayer
 -- Creates a new parallax background layer from an options table.
--- Call when you need to create a new layer.
-local ok, obj = pcall(function() return lurek.parallax.newLayer({}) end)
-if ok and obj then print("created:", obj) end
-print("lurek.parallax.newLayer ok=", ok)
+-- Build once at startup; reuse across frames.
+local layer = lurek.parallax.newLayer({ x = 0, y = 0 })
+print("created", layer)
+return layer
 
 --@api-stub: lurek.parallax.newSet
 -- Creates a new empty parallax set with the given name.
--- Call when you need to create a new set.
-local ok, obj = pcall(function() return lurek.parallax.newSet("name") end)
-if ok and obj then print("created:", obj) end
-print("lurek.parallax.newSet ok=", ok)
+-- Build once at startup; reuse across frames.
+local set = lurek.parallax.newSet("main")
+print("created", set)
+return set
 
 -- ── ParallaxLayer methods ──
 
 --@api-stub: ParallaxLayer:type
 -- Returns the type name of this object.
--- Call when you need to invoke type.
--- Build a ParallaxLayer via the appropriate lurek.parallax.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.parallax.newParallaxLayer(...)
-if instance then
-  local ok, result = pcall(function() return instance:type() end)
-  print("ParallaxLayer:type ->", ok, result)
-end
+-- See the module spec for detailed semantics.
+local parallaxLayer = lurek.parallax.newParallaxLayer()
+parallaxLayer:type()
+print("ParallaxLayer:type done")
 
 --@api-stub: ParallaxLayer:update
 -- Advances the autonomous scroll accumulator by `dt` seconds.
--- Call when you need to invoke update.
--- Build a ParallaxLayer via the appropriate lurek.parallax.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.parallax.newParallaxLayer(...)
-if instance then
-  local ok, result = pcall(function() return instance:update(1.0) end)
-  print("ParallaxLayer:update ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local parallaxLayer = lurek.parallax.newParallaxLayer()
+parallaxLayer:update(dt)
+print("ParallaxLayer:update applied")
 
 --@api-stub: ParallaxLayer:render
 -- Draws the layer using an explicit camera world position.
--- Call when you need to invoke render.
--- Build a ParallaxLayer via the appropriate lurek.parallax.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.parallax.newParallaxLayer(...)
-if instance then
-  local ok, result = pcall(function() return instance:render(nil, nil) end)
-  print("ParallaxLayer:render ->", ok, result)
-end
+-- See the module spec for detailed semantics.
+local parallaxLayer = lurek.parallax.newParallaxLayer()
+parallaxLayer:render(cam_x, cam_y)
+print("ParallaxLayer:render done")
 
 --@api-stub: ParallaxLayer:renderAuto
 -- Draws the layer using the engine active camera position automatically.
--- Call when you need to invoke render auto.
--- Build a ParallaxLayer via the appropriate lurek.parallax.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.parallax.newParallaxLayer(...)
-if instance then
-  local ok, result = pcall(function() return instance:renderAuto() end)
-  print("ParallaxLayer:renderAuto ->", ok, result)
-end
+-- See the module spec for detailed semantics.
+local parallaxLayer = lurek.parallax.newParallaxLayer()
+parallaxLayer:renderAuto()
+print("ParallaxLayer:renderAuto done")
 
 --@api-stub: ParallaxLayer:resetAutoscroll
 -- Resets the autonomous scroll accumulator to zero.
--- Call when you need to invoke reset autoscroll.
--- Build a ParallaxLayer via the appropriate lurek.parallax.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.parallax.newParallaxLayer(...)
-if instance then
-  local ok, result = pcall(function() return instance:resetAutoscroll() end)
-  print("ParallaxLayer:resetAutoscroll ->", ok, result)
-end
+-- Pair with the matching constructor to free resources.
+local parallaxLayer = lurek.parallax.newParallaxLayer()
+parallaxLayer:resetAutoscroll()
+-- parallaxLayer is now released
+print("ok")
 
 --@api-stub: ParallaxLayer:setScrollFactor
 -- Sets the scroll factor relative to camera movement on each axis.
--- Call when you need to assign scroll factor.
--- Build a ParallaxLayer via the appropriate lurek.parallax.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.parallax.newParallaxLayer(...)
-if instance then
-  local ok, result = pcall(function() return instance:setScrollFactor(0, 0) end)
-  print("ParallaxLayer:setScrollFactor ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local parallaxLayer = lurek.parallax.newParallaxLayer()
+parallaxLayer:setScrollFactor(100, 100)
+print("ParallaxLayer:setScrollFactor applied")
 
 --@api-stub: ParallaxLayer:getScrollFactor
 -- Returns the scroll factor as `(x, y)`.
--- Call when you need to read scroll factor.
--- Build a ParallaxLayer via the appropriate lurek.parallax.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.parallax.newParallaxLayer(...)
-if instance then
-  local ok, result = pcall(function() return instance:getScrollFactor() end)
-  print("ParallaxLayer:getScrollFactor ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local parallaxLayer = lurek.parallax.newParallaxLayer()  -- or your existing handle
+local value = parallaxLayer:getScrollFactor()
+print("ParallaxLayer:getScrollFactor ->", value)
 
 --@api-stub: ParallaxLayer:setOffset
 -- Sets the static world-pixel position bias added on top of camera scroll.
--- Call when you need to assign offset.
--- Build a ParallaxLayer via the appropriate lurek.parallax.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.parallax.newParallaxLayer(...)
-if instance then
-  local ok, result = pcall(function() return instance:setOffset(0, 0) end)
-  print("ParallaxLayer:setOffset ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local parallaxLayer = lurek.parallax.newParallaxLayer()
+parallaxLayer:setOffset(100, 100)
+print("ParallaxLayer:setOffset applied")
 
 --@api-stub: ParallaxLayer:getOffset
 -- Returns the static offset as `(x, y)`.
--- Call when you need to read offset.
--- Build a ParallaxLayer via the appropriate lurek.parallax.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.parallax.newParallaxLayer(...)
-if instance then
-  local ok, result = pcall(function() return instance:getOffset() end)
-  print("ParallaxLayer:getOffset ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local parallaxLayer = lurek.parallax.newParallaxLayer()  -- or your existing handle
+local value = parallaxLayer:getOffset()
+print("ParallaxLayer:getOffset ->", value)
 
 --@api-stub: ParallaxLayer:setAutoscroll
 -- Sets the autonomous scroll velocity in world-pixels per second.
--- Call when you need to assign autoscroll.
--- Build a ParallaxLayer via the appropriate lurek.parallax.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.parallax.newParallaxLayer(...)
-if instance then
-  local ok, result = pcall(function() return instance:setAutoscroll(0, 0) end)
-  print("ParallaxLayer:setAutoscroll ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local parallaxLayer = lurek.parallax.newParallaxLayer()
+parallaxLayer:setAutoscroll(100, 100)
+print("ParallaxLayer:setAutoscroll applied")
 
 --@api-stub: ParallaxLayer:getAutoscroll
 -- Returns the autoscroll velocity as `(vx, vy)`.
--- Call when you need to read autoscroll.
--- Build a ParallaxLayer via the appropriate lurek.parallax.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.parallax.newParallaxLayer(...)
-if instance then
-  local ok, result = pcall(function() return instance:getAutoscroll() end)
-  print("ParallaxLayer:getAutoscroll ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local parallaxLayer = lurek.parallax.newParallaxLayer()  -- or your existing handle
+local value = parallaxLayer:getAutoscroll()
+print("ParallaxLayer:getAutoscroll ->", value)
 
 --@api-stub: ParallaxLayer:setRepeat
 -- Sets whether the layer tiles on the X and Y axes.
--- Call when you need to assign repeat.
--- Build a ParallaxLayer via the appropriate lurek.parallax.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.parallax.newParallaxLayer(...)
-if instance then
-  local ok, result = pcall(function() return instance:setRepeat(nil, nil) end)
-  print("ParallaxLayer:setRepeat ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local parallaxLayer = lurek.parallax.newParallaxLayer()
+parallaxLayer:setRepeat(rx, ry)
+print("ParallaxLayer:setRepeat applied")
 
 --@api-stub: ParallaxLayer:setScale
 -- Sets the texture display scale factor on each axis.
--- Call when you need to assign scale.
--- Build a ParallaxLayer via the appropriate lurek.parallax.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.parallax.newParallaxLayer(...)
-if instance then
-  local ok, result = pcall(function() return instance:setScale(nil, nil) end)
-  print("ParallaxLayer:setScale ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local parallaxLayer = lurek.parallax.newParallaxLayer()
+parallaxLayer:setScale(sx, sy)
+print("ParallaxLayer:setScale applied")
 
 --@api-stub: ParallaxLayer:setZ
 -- Sets the draw-order depth.
--- Lower values render first (further back).
--- Build a ParallaxLayer via the appropriate lurek.parallax.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.parallax.newParallaxLayer(...)
-if instance then
-  local ok, result = pcall(function() return instance:setZ(0) end)
-  print("ParallaxLayer:setZ ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local parallaxLayer = lurek.parallax.newParallaxLayer()
+parallaxLayer:setZ(0)
+print("ParallaxLayer:setZ applied")
 
 --@api-stub: ParallaxLayer:getZ
 -- Returns the draw-order depth.
--- Call when you need to read z.
--- Build a ParallaxLayer via the appropriate lurek.parallax.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.parallax.newParallaxLayer(...)
-if instance then
-  local ok, result = pcall(function() return instance:getZ() end)
-  print("ParallaxLayer:getZ ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local parallaxLayer = lurek.parallax.newParallaxLayer()  -- or your existing handle
+local value = parallaxLayer:getZ()
+print("ParallaxLayer:getZ ->", value)
 
 --@api-stub: ParallaxLayer:setOpacity
 -- Sets the layer-wide opacity override in `[0.0, 1.0]`.
--- Call when you need to assign opacity.
--- Build a ParallaxLayer via the appropriate lurek.parallax.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.parallax.newParallaxLayer(...)
-if instance then
-  local ok, result = pcall(function() return instance:setOpacity(1) end)
-  print("ParallaxLayer:setOpacity ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local parallaxLayer = lurek.parallax.newParallaxLayer()
+parallaxLayer:setOpacity(1)
+print("ParallaxLayer:setOpacity applied")
 
 --@api-stub: ParallaxLayer:getOpacity
 -- Returns the current opacity.
--- Call when you need to read opacity.
--- Build a ParallaxLayer via the appropriate lurek.parallax.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.parallax.newParallaxLayer(...)
-if instance then
-  local ok, result = pcall(function() return instance:getOpacity() end)
-  print("ParallaxLayer:getOpacity ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local parallaxLayer = lurek.parallax.newParallaxLayer()  -- or your existing handle
+local value = parallaxLayer:getOpacity()
+print("ParallaxLayer:getOpacity ->", value)
 
 --@api-stub: ParallaxLayer:setTint
 -- Sets the multiplicative RGBA tint applied to all pixels of this layer.
--- Call when you need to assign tint.
--- Build a ParallaxLayer via the appropriate lurek.parallax.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.parallax.newParallaxLayer(...)
-if instance then
-  local ok, result = pcall(function() return instance:setTint(1, 1, 1, 1) end)
-  print("ParallaxLayer:setTint ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local parallaxLayer = lurek.parallax.newParallaxLayer()
+parallaxLayer:setTint(1, 0.5, 0, 1)
+print("ParallaxLayer:setTint applied")
 
 --@api-stub: ParallaxLayer:getTint
 -- Returns the current tint as `(r, g, b, a)`.
--- Call when you need to read tint.
--- Build a ParallaxLayer via the appropriate lurek.parallax.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.parallax.newParallaxLayer(...)
-if instance then
-  local ok, result = pcall(function() return instance:getTint() end)
-  print("ParallaxLayer:getTint ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local parallaxLayer = lurek.parallax.newParallaxLayer()  -- or your existing handle
+local value = parallaxLayer:getTint()
+print("ParallaxLayer:getTint ->", value)
 
 --@api-stub: ParallaxLayer:setBlendMode
 -- Sets the GPU blend mode for this layer.
--- Call when you need to assign blend mode.
--- Build a ParallaxLayer via the appropriate lurek.parallax.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.parallax.newParallaxLayer(...)
-if instance then
-  local ok, result = pcall(function() return instance:setBlendMode(nil) end)
-  print("ParallaxLayer:setBlendMode ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local parallaxLayer = lurek.parallax.newParallaxLayer()
+parallaxLayer:setBlendMode(mode)
+print("ParallaxLayer:setBlendMode applied")
 
 --@api-stub: ParallaxLayer:getBlendMode
 -- Returns the current blend mode as a string.
--- Call when you need to read blend mode.
--- Build a ParallaxLayer via the appropriate lurek.parallax.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.parallax.newParallaxLayer(...)
-if instance then
-  local ok, result = pcall(function() return instance:getBlendMode() end)
-  print("ParallaxLayer:getBlendMode ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local parallaxLayer = lurek.parallax.newParallaxLayer()  -- or your existing handle
+local value = parallaxLayer:getBlendMode()
+print("ParallaxLayer:getBlendMode ->", value)
 
 --@api-stub: ParallaxLayer:setVisible
 -- Shows or hides this layer.
--- Call when you need to assign visible.
--- Build a ParallaxLayer via the appropriate lurek.parallax.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.parallax.newParallaxLayer(...)
-if instance then
-  local ok, result = pcall(function() return instance:setVisible(nil) end)
-  print("ParallaxLayer:setVisible ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local parallaxLayer = lurek.parallax.newParallaxLayer()
+parallaxLayer:setVisible(v)
+print("ParallaxLayer:setVisible applied")
 
 --@api-stub: ParallaxLayer:isVisible
 -- Returns `true` if the layer is currently visible.
--- Call when you need to check is visible.
--- Build a ParallaxLayer via the appropriate lurek.parallax.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.parallax.newParallaxLayer(...)
-if instance then
-  local ok, result = pcall(function() return instance:isVisible() end)
-  print("ParallaxLayer:isVisible ->", ok, result)
-end
+-- Use as a guard inside lurek.update or event handlers.
+local parallaxLayer = lurek.parallax.newParallaxLayer()
+if parallaxLayer:isVisible() then print("yes") end
+-- swap the constructor for your real handle
+print("ok")
 
 --@api-stub: ParallaxLayer:clearClamp
 -- Removes scroll clamping so the layer scrolls freely.
--- Call when you need to invoke clear clamp.
--- Build a ParallaxLayer via the appropriate lurek.parallax.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.parallax.newParallaxLayer(...)
-if instance then
-  local ok, result = pcall(function() return instance:clearClamp() end)
-  print("ParallaxLayer:clearClamp ->", ok, result)
-end
+-- Pair with the matching constructor to free resources.
+local parallaxLayer = lurek.parallax.newParallaxLayer()
+parallaxLayer:clearClamp()
+-- parallaxLayer is now released
+print("ok")
 
 --@api-stub: ParallaxLayer:setTiling
 -- Enables or disables seamless infinite tiling on both axes simultaneously.
--- Call when you need to assign tiling.
--- Build a ParallaxLayer via the appropriate lurek.parallax.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.parallax.newParallaxLayer(...)
-if instance then
-  local ok, result = pcall(function() return instance:setTiling(nil) end)
-  print("ParallaxLayer:setTiling ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local parallaxLayer = lurek.parallax.newParallaxLayer()
+parallaxLayer:setTiling(enabled)
+print("ParallaxLayer:setTiling applied")
 
 --@api-stub: ParallaxLayer:getTiling
 -- Returns `true` if seamless infinite tiling is enabled.
--- Call when you need to read tiling.
--- Build a ParallaxLayer via the appropriate lurek.parallax.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.parallax.newParallaxLayer(...)
-if instance then
-  local ok, result = pcall(function() return instance:getTiling() end)
-  print("ParallaxLayer:getTiling ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local parallaxLayer = lurek.parallax.newParallaxLayer()  -- or your existing handle
+local value = parallaxLayer:getTiling()
+print("ParallaxLayer:getTiling ->", value)
 
 --@api-stub: ParallaxLayer:setTileSize
 -- Sets explicit tile dimensions in logical pixels, overriding the default.
--- Call when you need to assign tile size.
--- Build a ParallaxLayer via the appropriate lurek.parallax.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.parallax.newParallaxLayer(...)
-if instance then
-  local ok, result = pcall(function() return instance:setTileSize(100, 100) end)
-  print("ParallaxLayer:setTileSize ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local parallaxLayer = lurek.parallax.newParallaxLayer()
+parallaxLayer:setTileSize(64, 64)
+print("ParallaxLayer:setTileSize applied")
 
 --@api-stub: ParallaxLayer:setDepth
 -- Sets the floating-point draw depth for fine-grained layer ordering.
--- Call when you need to assign depth.
--- Build a ParallaxLayer via the appropriate lurek.parallax.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.parallax.newParallaxLayer(...)
-if instance then
-  local ok, result = pcall(function() return instance:setDepth(0) end)
-  print("ParallaxLayer:setDepth ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local parallaxLayer = lurek.parallax.newParallaxLayer()
+parallaxLayer:setDepth(0)
+print("ParallaxLayer:setDepth applied")
 
 --@api-stub: ParallaxLayer:getDepth
 -- Returns the current floating-point depth.
--- Call when you need to read depth.
--- Build a ParallaxLayer via the appropriate lurek.parallax.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.parallax.newParallaxLayer(...)
-if instance then
-  local ok, result = pcall(function() return instance:getDepth() end)
-  print("ParallaxLayer:getDepth ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local parallaxLayer = lurek.parallax.newParallaxLayer()  -- or your existing handle
+local value = parallaxLayer:getDepth()
+print("ParallaxLayer:getDepth ->", value)
 
 -- ── ParallaxSet methods ──
 
 --@api-stub: ParallaxSet:type
 -- Returns the type name of this object.
--- Call when you need to invoke type.
--- Build a ParallaxSet via the appropriate lurek.parallax.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.parallax.newParallaxSet(...)
-if instance then
-  local ok, result = pcall(function() return instance:type() end)
-  print("ParallaxSet:type ->", ok, result)
-end
+-- See the module spec for detailed semantics.
+local parallaxSet = lurek.parallax.newParallaxSet()
+parallaxSet:type()
+print("ParallaxSet:type done")
 
 --@api-stub: ParallaxSet:addLayer
 -- Adds a layer to this set.
--- Call when you need to add layer.
--- Build a ParallaxSet via the appropriate lurek.parallax.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.parallax.newParallaxSet(...)
-if instance then
-  local ok, result = pcall(function() return instance:addLayer(nil) end)
-  print("ParallaxSet:addLayer ->", ok, result)
-end
+-- Side-effecting; safe to call any time after init.
+local parallaxSet = lurek.parallax.newParallaxSet()
+parallaxSet:addLayer(layer)
+print("ParallaxSet:addLayer done")
 
 --@api-stub: ParallaxSet:removeLayerAt
 -- Removes the layer at the given 1-based index.
--- Call when you need to remove layer at.
--- Build a ParallaxSet via the appropriate lurek.parallax.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.parallax.newParallaxSet(...)
-if instance then
-  local ok, result = pcall(function() return instance:removeLayerAt(1) end)
-  print("ParallaxSet:removeLayerAt ->", ok, result)
-end
+-- Pair with the matching constructor to free resources.
+local parallaxSet = lurek.parallax.newParallaxSet()
+parallaxSet:removeLayerAt(1)
+-- parallaxSet is now released
+print("ok")
 
 --@api-stub: ParallaxSet:layerCount
 -- Returns the number of layers in this set.
--- Call when you need to invoke layer count.
--- Build a ParallaxSet via the appropriate lurek.parallax.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.parallax.newParallaxSet(...)
-if instance then
-  local ok, result = pcall(function() return instance:layerCount() end)
-  print("ParallaxSet:layerCount ->", ok, result)
-end
+-- See the module spec for detailed semantics.
+local parallaxSet = lurek.parallax.newParallaxSet()
+parallaxSet:layerCount()
+print("ParallaxSet:layerCount done")
 
 --@api-stub: ParallaxSet:sortByZ
 -- Re-sorts all layers by ascending `z` value.
--- Call when you need to invoke sort by z.
--- Build a ParallaxSet via the appropriate lurek.parallax.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.parallax.newParallaxSet(...)
-if instance then
-  local ok, result = pcall(function() return instance:sortByZ() end)
-  print("ParallaxSet:sortByZ ->", ok, result)
-end
+-- See the module spec for detailed semantics.
+local parallaxSet = lurek.parallax.newParallaxSet()
+parallaxSet:sortByZ()
+print("ParallaxSet:sortByZ done")
 
 --@api-stub: ParallaxSet:setVisible
 -- Shows or hides all layers in this set.
--- Call when you need to assign visible.
--- Build a ParallaxSet via the appropriate lurek.parallax.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.parallax.newParallaxSet(...)
-if instance then
-  local ok, result = pcall(function() return instance:setVisible(nil) end)
-  print("ParallaxSet:setVisible ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local parallaxSet = lurek.parallax.newParallaxSet()
+parallaxSet:setVisible(v)
+print("ParallaxSet:setVisible applied")
 
 --@api-stub: ParallaxSet:isVisible
 -- Returns `true` if the set is currently visible.
--- Call when you need to check is visible.
--- Build a ParallaxSet via the appropriate lurek.parallax.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.parallax.newParallaxSet(...)
-if instance then
-  local ok, result = pcall(function() return instance:isVisible() end)
-  print("ParallaxSet:isVisible ->", ok, result)
-end
+-- Use as a guard inside lurek.update or event handlers.
+local parallaxSet = lurek.parallax.newParallaxSet()
+if parallaxSet:isVisible() then print("yes") end
+-- swap the constructor for your real handle
+print("ok")
 
 --@api-stub: ParallaxSet:update
 -- Advances the autoscroll accumulator of every layer by `dt` seconds.
--- Call when you need to invoke update.
--- Build a ParallaxSet via the appropriate lurek.parallax.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.parallax.newParallaxSet(...)
-if instance then
-  local ok, result = pcall(function() return instance:update(1.0) end)
-  print("ParallaxSet:update ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local parallaxSet = lurek.parallax.newParallaxSet()
+parallaxSet:update(dt)
+print("ParallaxSet:update applied")
 
 --@api-stub: ParallaxSet:render
 -- Draws all visible layers in ascending `z` order using an explicit camera position.
--- Call when you need to invoke render.
--- Build a ParallaxSet via the appropriate lurek.parallax.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.parallax.newParallaxSet(...)
-if instance then
-  local ok, result = pcall(function() return instance:render(nil, nil) end)
-  print("ParallaxSet:render ->", ok, result)
-end
+-- See the module spec for detailed semantics.
+local parallaxSet = lurek.parallax.newParallaxSet()
+parallaxSet:render(cam_x, cam_y)
+print("ParallaxSet:render done")
 
 --@api-stub: ParallaxSet:renderAuto
 -- Draws all visible layers using the engine active camera position.
--- Call when you need to invoke render auto.
--- Build a ParallaxSet via the appropriate lurek.parallax.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.parallax.newParallaxSet(...)
-if instance then
-  local ok, result = pcall(function() return instance:renderAuto() end)
-  print("ParallaxSet:renderAuto ->", ok, result)
-end
+-- See the module spec for detailed semantics.
+local parallaxSet = lurek.parallax.newParallaxSet()
+parallaxSet:renderAuto()
+print("ParallaxSet:renderAuto done")
 
 --@api-stub: ParallaxSet:getName
 -- Returns the name of this set.
--- Call when you need to read name.
--- Build a ParallaxSet via the appropriate lurek.parallax.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.parallax.newParallaxSet(...)
-if instance then
-  local ok, result = pcall(function() return instance:getName() end)
-  print("ParallaxSet:getName ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local parallaxSet = lurek.parallax.newParallaxSet()  -- or your existing handle
+local value = parallaxSet:getName()
+print("ParallaxSet:getName ->", value)
 
 --@api-stub: ParallaxSet:setName
 -- Sets the name of this set.
--- Call when you need to assign name.
--- Build a ParallaxSet via the appropriate lurek.parallax.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.parallax.newParallaxSet(...)
-if instance then
-  local ok, result = pcall(function() return instance:setName("name") end)
-  print("ParallaxSet:setName ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local parallaxSet = lurek.parallax.newParallaxSet()
+parallaxSet:setName("main")
+print("ParallaxSet:setName applied")
 

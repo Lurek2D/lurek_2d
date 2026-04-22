@@ -1,212 +1,216 @@
 -- content/examples/automation.lua
--- Practical usage examples for the lurek.automation API (28 items).
---
--- Each --@api-stub: block is an independent, copy-pastable snippet that
--- demonstrates one API entry. Calls are wrapped in pcall(...) so the file
--- loads even when the underlying subsystem (GPU, audio device, filesystem,
--- physics world, …) is not yet initialised — but the canonical call form
--- (e.g. `lurek.automation.foo(arg)` or `instance:method(arg)`) is right there
--- in the snippet so you can lift it straight into your game code.
---
+-- love2d-style usage snippets for the lurek.automation API (28 items).
+-- Each --@api-stub: block is a copy-pastable snippet showing the API
+-- in real context (callbacks, conditionals, real arg values).
 -- Run: cargo run -- content/examples/automation.lua
 
-print("[example] lurek.automation — 28 API entries")
-
--- ── lurek.automation.* free functions ──
+-- ── lurek.automation.* functions ──
 
 --@api-stub: lurek.automation.load
 -- Loads a named script from a Lua data table containing a steps array.
--- Call when you need to invoke load.
-local ok, obj = pcall(function() return lurek.automation.load("name", {}) end)
-if ok and obj then print("created:", obj) end
-print("lurek.automation.load ok=", ok)
+-- May block — call from a worker thread for large payloads.
+local result = lurek.automation.load("main", { x = 0, y = 0 })
+-- may block; consider lurek.thread for large payloads
+print("load:", result)
+print("ok")
 
 --@api-stub: lurek.automation.unload
 -- Removes a loaded script by name, returning true if it existed.
--- Call when you need to invoke unload.
-local ok, result = pcall(function() return lurek.automation.unload("name") end)
-if ok then print("lurek.automation.unload ->", result)
-else print("unavailable:", result) end
+-- See the module spec for detailed semantics.
+local result = lurek.automation.unload("main")
+print("unload:", result)
+return result
 
 --@api-stub: lurek.automation.hasScript
 -- Returns true if a script with the given name is registered.
--- Call when you need to check has script.
-local ok, result = pcall(function() return lurek.automation.hasScript("name") end)
-if ok and result then print("yes") else print("no or unavailable") end
-print("lurek.automation.hasScript ok=", ok)
+-- Use as a guard inside lurek.update or event handlers.
+if lurek.automation.hasScript("main") then
+  print("hasScript -> true")
+end
 
 --@api-stub: lurek.automation.getScripts
 -- Returns an array of all registered script names.
--- Call when you need to read scripts.
-local ok, value = pcall(function() return lurek.automation.getScripts() end)
-local v = ok and value or "(unavailable)"
-print("lurek.automation.getScripts ->", v)
+-- Cheap to call; safe inside callbacks.
+local value = lurek.automation.getScripts()
+print("getScripts:", value)
+return value
 
 --@api-stub: lurek.automation.start
 -- Starts playback of the named script from the beginning.
--- Call when you need to invoke start.
-local ok, result = pcall(function() return lurek.automation.start("name") end)
-if not ok then print("action skipped:", result) end
-print("lurek.automation.start fired=", ok)
+-- Trigger from input, timers, or game events.
+-- trigger from input or timer
+lurek.automation.start("main")
+print("start fired")
+print("ok")
 
 --@api-stub: lurek.automation.stop
 -- Stops playback and resets the simulator to idle.
--- Call when you need to invoke stop.
-local ok, result = pcall(function() return lurek.automation.stop() end)
-if not ok then print("action skipped:", result) end
-print("lurek.automation.stop fired=", ok)
+-- Trigger from input, timers, or game events.
+-- trigger from input or timer
+lurek.automation.stop()
+print("stop fired")
+print("ok")
 
 --@api-stub: lurek.automation.pause
 -- Pauses playback at the current step position.
--- Call when you need to invoke pause.
-local ok, result = pcall(function() return lurek.automation.pause() end)
-if not ok then print("action skipped:", result) end
-print("lurek.automation.pause fired=", ok)
+-- Trigger from input, timers, or game events.
+-- trigger from input or timer
+lurek.automation.pause()
+print("pause fired")
+print("ok")
 
 --@api-stub: lurek.automation.resume
 -- Resumes playback from a paused position.
--- Call when you need to invoke resume.
-local ok, result = pcall(function() return lurek.automation.resume() end)
-if not ok then print("action skipped:", result) end
-print("lurek.automation.resume fired=", ok)
+-- Trigger from input, timers, or game events.
+-- trigger from input or timer
+lurek.automation.resume()
+print("resume fired")
+print("ok")
 
 --@api-stub: lurek.automation.update
 -- Advances the playback clock by `dt` seconds, dispatching due steps.
--- Call when you need to invoke update.
-local ok, err = pcall(function() lurek.automation.update(1.0) end)
-if not ok then print("set skipped:", err) end
-print("lurek.automation.update applied=", ok)
+-- Apply at startup or in response to user input.
+-- apply at startup or on config change
+lurek.automation.update(dt)
+print("update applied")
+print("ok")
 
 --@api-stub: lurek.automation.isRunning
 -- Returns true if the simulator is actively playing a script.
--- Call when you need to check is running.
-local ok, result = pcall(function() return lurek.automation.isRunning() end)
-if ok and result then print("yes") else print("no or unavailable") end
-print("lurek.automation.isRunning ok=", ok)
+-- Use as a guard inside lurek.update or event handlers.
+if lurek.automation.isRunning() then
+  print("isRunning -> true")
+end
 
 --@api-stub: lurek.automation.isPaused
 -- Returns true if playback is currently paused.
--- Call when you need to check is paused.
-local ok, result = pcall(function() return lurek.automation.isPaused() end)
-if ok and result then print("yes") else print("no or unavailable") end
-print("lurek.automation.isPaused ok=", ok)
+-- Use as a guard inside lurek.update or event handlers.
+if lurek.automation.isPaused() then
+  print("isPaused -> true")
+end
 
 --@api-stub: lurek.automation.isComplete
 -- Returns true if all steps in the active script have been dispatched.
--- Call when you need to check is complete.
-local ok, result = pcall(function() return lurek.automation.isComplete() end)
-if ok and result then print("yes") else print("no or unavailable") end
-print("lurek.automation.isComplete ok=", ok)
+-- Use as a guard inside lurek.update or event handlers.
+if lurek.automation.isComplete() then
+  print("isComplete -> true")
+end
 
 --@api-stub: lurek.automation.getCurrentStep
 -- Returns the index of the next step to be dispatched.
--- Call when you need to read current step.
-local ok, value = pcall(function() return lurek.automation.getCurrentStep() end)
-local v = ok and value or "(unavailable)"
-print("lurek.automation.getCurrentStep ->", v)
+-- Cheap to call; safe inside callbacks.
+local value = lurek.automation.getCurrentStep()
+print("getCurrentStep:", value)
+return value
 
 --@api-stub: lurek.automation.getStepCount
 -- Returns the total number of steps in the active script.
--- Call when you need to read step count.
-local ok, value = pcall(function() return lurek.automation.getStepCount() end)
-local v = ok and value or "(unavailable)"
-print("lurek.automation.getStepCount ->", v)
+-- Cheap to call; safe inside callbacks.
+local value = lurek.automation.getStepCount()
+print("getStepCount:", value)
+return value
 
 --@api-stub: lurek.automation.getCurrentScript
 -- Returns the name of the active script, or nil if idle.
--- Call when you need to read current script.
-local ok, value = pcall(function() return lurek.automation.getCurrentScript() end)
-local v = ok and value or "(unavailable)"
-print("lurek.automation.getCurrentScript ->", v)
+-- Cheap to call; safe inside callbacks.
+local value = lurek.automation.getCurrentScript()
+print("getCurrentScript:", value)
+return value
 
 --@api-stub: lurek.automation.getElapsedTime
 -- Returns seconds elapsed since playback started.
--- Call when you need to read elapsed time.
-local ok, value = pcall(function() return lurek.automation.getElapsedTime() end)
-local v = ok and value or "(unavailable)"
-print("lurek.automation.getElapsedTime ->", v)
+-- Cheap to call; safe inside callbacks.
+local value = lurek.automation.getElapsedTime()
+print("getElapsedTime:", value)
+return value
 
 --@api-stub: lurek.automation.loadFromToml
 -- Parses a TOML string and registers it as a named script.
--- Call when you need to load from toml.
-local ok, obj = pcall(function() return lurek.automation.loadFromToml("name", "toml_str value") end)
-if ok and obj then print("created:", obj) end
-print("lurek.automation.loadFromToml ok=", ok)
+-- May block — call from a worker thread for large payloads.
+local result = lurek.automation.loadFromToml("main", "hello")
+-- may block; consider lurek.thread for large payloads
+print("loadFromToml:", result)
+print("ok")
 
 --@api-stub: lurek.automation.getStepLimit
 -- Returns the step limit for the named script, or nil if not found.
--- Call when you need to read step limit.
-local ok, value = pcall(function() return lurek.automation.getStepLimit("name") end)
-local v = ok and value or "(unavailable)"
-print("lurek.automation.getStepLimit ->", v)
+-- Cheap to call; safe inside callbacks.
+local value = lurek.automation.getStepLimit("main")
+print("getStepLimit:", value)
+return value
 
 --@api-stub: lurek.automation.setStepLimit
 -- Sets the step limit for the named script (clamped to 1..MAX_STEPS).
--- Call when you need to assign step limit.
-local ok, err = pcall(function() lurek.automation.setStepLimit("name", 10) end)
-if not ok then print("set skipped:", err) end
-print("lurek.automation.setStepLimit applied=", ok)
+-- Apply at startup or in response to user input.
+-- apply at startup or on config change
+lurek.automation.setStepLimit("main", 10)
+print("setStepLimit applied")
+print("ok")
 
 --@api-stub: lurek.automation.saveMacro
 -- Saves a currently-loaded script under a macro name for fast replay.
--- Call when you need to invoke save macro.
-local ok, obj = pcall(function() return lurek.automation.saveMacro("macro_name", "script_name") end)
-if ok and obj then print("created:", obj) end
-print("lurek.automation.saveMacro ok=", ok)
+-- May block — call from a worker thread for large payloads.
+local result = lurek.automation.saveMacro("main", "main")
+-- may block; consider lurek.thread for large payloads
+print("saveMacro:", result)
+print("ok")
 
 --@api-stub: lurek.automation.playMacro
 -- Loads and starts playback of a previously saved macro.
--- Call when you need to play macro.
-local ok, result = pcall(function() return lurek.automation.playMacro("name") end)
-if not ok then print("action skipped:", result) end
-print("lurek.automation.playMacro fired=", ok)
+-- Trigger from input, timers, or game events.
+-- trigger from input or timer
+lurek.automation.playMacro("main")
+print("playMacro fired")
+print("ok")
 
 --@api-stub: lurek.automation.hasMacro
 -- Returns true if a macro with the given name has been saved.
--- Call when you need to check has macro.
-local ok, result = pcall(function() return lurek.automation.hasMacro("name") end)
-if ok and result then print("yes") else print("no or unavailable") end
-print("lurek.automation.hasMacro ok=", ok)
+-- Use as a guard inside lurek.update or event handlers.
+if lurek.automation.hasMacro("main") then
+  print("hasMacro -> true")
+end
 
 --@api-stub: lurek.automation.listMacros
 -- Returns an array of all saved macro names.
--- Call when you need to invoke list macros.
-local ok, result = pcall(function() return lurek.automation.listMacros() end)
-if ok then print("lurek.automation.listMacros ->", result)
-else print("unavailable:", result) end
+-- See the module spec for detailed semantics.
+local result = lurek.automation.listMacros()
+print("listMacros:", result)
+return result
 
 --@api-stub: lurek.automation.setPlaybackSpeed
 -- Sets the dt multiplier for script playback (0.5 = half speed, 2.0 = double).
--- Call when you need to assign playback speed.
-local ok, err = pcall(function() lurek.automation.setPlaybackSpeed(1) end)
-if not ok then print("set skipped:", err) end
-print("lurek.automation.setPlaybackSpeed applied=", ok)
+-- Apply at startup or in response to user input.
+-- apply at startup or on config change
+lurek.automation.setPlaybackSpeed(1.0)
+print("setPlaybackSpeed applied")
+print("ok")
 
 --@api-stub: lurek.automation.getPlaybackSpeed
 -- Returns the current playback speed multiplier (default 1.0).
--- Call when you need to read playback speed.
-local ok, value = pcall(function() return lurek.automation.getPlaybackSpeed() end)
-local v = ok and value or "(unavailable)"
-print("lurek.automation.getPlaybackSpeed ->", v)
+-- Cheap to call; safe inside callbacks.
+local value = lurek.automation.getPlaybackSpeed()
+print("getPlaybackSpeed:", value)
+return value
 
 --@api-stub: lurek.automation.setHighlightMode
 -- Enables or disables the highlight overlay hint.
--- Call when you need to assign highlight mode.
-local ok, err = pcall(function() lurek.automation.setHighlightMode(nil) end)
-if not ok then print("set skipped:", err) end
-print("lurek.automation.setHighlightMode applied=", ok)
+-- Apply at startup or in response to user input.
+-- apply at startup or on config change
+lurek.automation.setHighlightMode(enable)
+print("setHighlightMode applied")
+print("ok")
 
 --@api-stub: lurek.automation.isHighlightMode
 -- Returns whether the highlight overlay hint is active.
--- Call when you need to check is highlight mode.
-local ok, result = pcall(function() return lurek.automation.isHighlightMode() end)
-if ok and result then print("yes") else print("no or unavailable") end
-print("lurek.automation.isHighlightMode ok=", ok)
+-- Use as a guard inside lurek.update or event handlers.
+if lurek.automation.isHighlightMode() then
+  print("isHighlightMode -> true")
+end
 
 --@api-stub: lurek.automation.waitUntil
 -- Pauses playback advancement until predicate() returns true or timeout seconds elapse.
--- Call when you need to invoke wait until.
-local ok, result = pcall(function() return lurek.automation.waitUntil(nil, nil) end)
-if ok then print("lurek.automation.waitUntil ->", result)
-else print("unavailable:", result) end
+-- See the module spec for detailed semantics.
+local result = lurek.automation.waitUntil(predicate, timeout)
+print("waitUntil:", result)
+return result
 

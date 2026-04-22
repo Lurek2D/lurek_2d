@@ -1,1131 +1,822 @@
 -- content/examples/graph.lua
--- Practical usage examples for the lurek.graph API (111 items).
---
--- Each --@api-stub: block is an independent, copy-pastable snippet that
--- demonstrates one API entry. Calls are wrapped in pcall(...) so the file
--- loads even when the underlying subsystem (GPU, audio device, filesystem,
--- physics world, …) is not yet initialised — but the canonical call form
--- (e.g. `lurek.graph.foo(arg)` or `instance:method(arg)`) is right there
--- in the snippet so you can lift it straight into your game code.
---
+-- love2d-style usage snippets for the lurek.graph API (111 items).
+-- Each --@api-stub: block is a copy-pastable snippet showing the API
+-- in real context (callbacks, conditionals, real arg values).
 -- Run: cargo run -- content/examples/graph.lua
 
-print("[example] lurek.graph — 111 API entries")
-
--- ── lurek.graph.* free functions ──
+-- ── lurek.graph.* functions ──
 
 --@api-stub: lurek.graph.newGraph
 -- Creates a new empty directed graph for item flow simulation.
--- Call when you need to create a new graph.
-local ok, obj = pcall(function() return lurek.graph.newGraph() end)
-if ok and obj then print("created:", obj) end
-print("lurek.graph.newGraph ok=", ok)
+-- Build once at startup; reuse across frames.
+local graph = lurek.graph.newGraph()
+print("created", graph)
+return graph
 
 -- ── GraphItem methods ──
 
 --@api-stub: GraphItem:getType
 -- Returns the item type string.
--- Call when you need to read type.
--- Build a GraphItem via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newGraphItem(...)
-if instance then
-  local ok, result = pcall(function() return instance:getType() end)
-  print("GraphItem:getType ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local graphItem = lurek.graph.newGraphItem()  -- or your existing handle
+local value = graphItem:getType()
+print("GraphItem:getType ->", value)
 
 --@api-stub: GraphItem:setType
 -- Sets the item type string.
--- Call when you need to assign type.
--- Build a GraphItem via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newGraphItem(...)
-if instance then
-  local ok, result = pcall(function() return instance:setType(nil) end)
-  print("GraphItem:setType ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local graphItem = lurek.graph.newGraphItem()
+graphItem:setType(t)
+print("GraphItem:setType applied")
 
 --@api-stub: GraphItem:getDecayTime
 -- Returns the decay time in seconds (-1 = immortal).
--- Call when you need to read decay time.
--- Build a GraphItem via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newGraphItem(...)
-if instance then
-  local ok, result = pcall(function() return instance:getDecayTime() end)
-  print("GraphItem:getDecayTime ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local graphItem = lurek.graph.newGraphItem()  -- or your existing handle
+local value = graphItem:getDecayTime()
+print("GraphItem:getDecayTime ->", value)
 
 --@api-stub: GraphItem:setDecayTime
 -- Sets the decay time in seconds (-1 = immortal).
--- Call when you need to assign decay time.
--- Build a GraphItem via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newGraphItem(...)
-if instance then
-  local ok, result = pcall(function() return instance:setDecayTime(nil) end)
-  print("GraphItem:setDecayTime ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local graphItem = lurek.graph.newGraphItem()
+graphItem:setDecayTime(t)
+print("GraphItem:setDecayTime applied")
 
 --@api-stub: GraphItem:getRemainingLife
 -- Returns the remaining life in seconds.
--- Call when you need to read remaining life.
--- Build a GraphItem via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newGraphItem(...)
-if instance then
-  local ok, result = pcall(function() return instance:getRemainingLife() end)
-  print("GraphItem:getRemainingLife ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local graphItem = lurek.graph.newGraphItem()  -- or your existing handle
+local value = graphItem:getRemainingLife()
+print("GraphItem:getRemainingLife ->", value)
 
 --@api-stub: GraphItem:isAlive
 -- Returns true if the item is alive.
--- Call when you need to check is alive.
--- Build a GraphItem via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newGraphItem(...)
-if instance then
-  local ok, result = pcall(function() return instance:isAlive() end)
-  print("GraphItem:isAlive ->", ok, result)
-end
+-- Use as a guard inside lurek.update or event handlers.
+local graphItem = lurek.graph.newGraphItem()
+if graphItem:isAlive() then print("yes") end
+-- swap the constructor for your real handle
+print("ok")
 
 --@api-stub: GraphItem:kill
 -- Marks this graph item as dead so it is removed on the next cleanup pass.
--- Call when you need to invoke kill.
--- Build a GraphItem via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newGraphItem(...)
-if instance then
-  local ok, result = pcall(function() return instance:kill() end)
-  print("GraphItem:kill ->", ok, result)
-end
+-- See the module spec for detailed semantics.
+local graphItem = lurek.graph.newGraphItem()
+graphItem:kill()
+print("GraphItem:kill done")
 
 --@api-stub: GraphItem:getPriority
 -- Returns the item priority.
--- Call when you need to read priority.
--- Build a GraphItem via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newGraphItem(...)
-if instance then
-  local ok, result = pcall(function() return instance:getPriority() end)
-  print("GraphItem:getPriority ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local graphItem = lurek.graph.newGraphItem()  -- or your existing handle
+local value = graphItem:getPriority()
+print("GraphItem:getPriority ->", value)
 
 --@api-stub: GraphItem:setPriority
 -- Sets the scheduling priority; higher values are processed before lower ones.
--- Call when you need to assign priority.
--- Build a GraphItem via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newGraphItem(...)
-if instance then
-  local ok, result = pcall(function() return instance:setPriority(nil) end)
-  print("GraphItem:setPriority ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local graphItem = lurek.graph.newGraphItem()
+graphItem:setPriority(p)
+print("GraphItem:setPriority applied")
 
 --@api-stub: GraphItem:getPosition
 -- Returns the item position: node userdata if at a node, (edge, progress).
--- Call when you need to read position.
--- Build a GraphItem via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newGraphItem(...)
-if instance then
-  local ok, result = pcall(function() return instance:getPosition() end)
-  print("GraphItem:getPosition ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local graphItem = lurek.graph.newGraphItem()  -- or your existing handle
+local value = graphItem:getPosition()
+print("GraphItem:getPosition ->", value)
 
 --@api-stub: GraphItem:type
 -- Returns the type name of this object.
--- Call when you need to invoke type.
--- Build a GraphItem via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newGraphItem(...)
-if instance then
-  local ok, result = pcall(function() return instance:type() end)
-  print("GraphItem:type ->", ok, result)
-end
+-- See the module spec for detailed semantics.
+local graphItem = lurek.graph.newGraphItem()
+graphItem:type()
+print("GraphItem:type done")
 
 --@api-stub: GraphItem:typeOf
 -- Returns true if this object is of the given type.
--- Call when you need to invoke type of.
--- Build a GraphItem via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newGraphItem(...)
-if instance then
-  local ok, result = pcall(function() return instance:typeOf("name") end)
-  print("GraphItem:typeOf ->", ok, result)
-end
+-- See the module spec for detailed semantics.
+local graphItem = lurek.graph.newGraphItem()
+graphItem:typeOf("main")
+print("GraphItem:typeOf done")
 
 -- ── Edge methods ──
 
 --@api-stub: Edge:getType
 -- Returns the edge type string.
--- Call when you need to read type.
--- Build a Edge via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newEdge(...)
-if instance then
-  local ok, result = pcall(function() return instance:getType() end)
-  print("Edge:getType ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local edge = lurek.graph.newEdge()  -- or your existing handle
+local value = edge:getType()
+print("Edge:getType ->", value)
 
 --@api-stub: Edge:setType
 -- Sets the edge type string.
--- Call when you need to assign type.
--- Build a Edge via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newEdge(...)
-if instance then
-  local ok, result = pcall(function() return instance:setType(nil) end)
-  print("Edge:setType ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local edge = lurek.graph.newEdge()
+edge:setType(t)
+print("Edge:setType applied")
 
 --@api-stub: Edge:getFrom
 -- Returns the source node handle.
--- Call when you need to read from.
--- Build a Edge via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newEdge(...)
-if instance then
-  local ok, result = pcall(function() return instance:getFrom() end)
-  print("Edge:getFrom ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local edge = lurek.graph.newEdge()  -- or your existing handle
+local value = edge:getFrom()
+print("Edge:getFrom ->", value)
 
 --@api-stub: Edge:getTo
 -- Returns the destination node handle.
--- Call when you need to read to.
--- Build a Edge via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newEdge(...)
-if instance then
-  local ok, result = pcall(function() return instance:getTo() end)
-  print("Edge:getTo ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local edge = lurek.graph.newEdge()  -- or your existing handle
+local value = edge:getTo()
+print("Edge:getTo ->", value)
 
 --@api-stub: Edge:getCapacity
 -- Returns the edge capacity (-1 = unlimited).
--- Call when you need to read capacity.
--- Build a Edge via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newEdge(...)
-if instance then
-  local ok, result = pcall(function() return instance:getCapacity() end)
-  print("Edge:getCapacity ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local edge = lurek.graph.newEdge()  -- or your existing handle
+local value = edge:getCapacity()
+print("Edge:getCapacity ->", value)
 
 --@api-stub: Edge:setCapacity
 -- Sets the edge capacity (-1 = unlimited).
--- Call when you need to assign capacity.
--- Build a Edge via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newEdge(...)
-if instance then
-  local ok, result = pcall(function() return instance:setCapacity(nil) end)
-  print("Edge:setCapacity ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local edge = lurek.graph.newEdge()
+edge:setCapacity(c)
+print("Edge:setCapacity applied")
 
 --@api-stub: Edge:getThroughput
 -- Returns items per second this edge can transfer.
--- Call when you need to read throughput.
--- Build a Edge via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newEdge(...)
-if instance then
-  local ok, result = pcall(function() return instance:getThroughput() end)
-  print("Edge:getThroughput ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local edge = lurek.graph.newEdge()  -- or your existing handle
+local value = edge:getThroughput()
+print("Edge:getThroughput ->", value)
 
 --@api-stub: Edge:setThroughput
 -- Sets items per second this edge can transfer.
--- Call when you need to assign throughput.
--- Build a Edge via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newEdge(...)
-if instance then
-  local ok, result = pcall(function() return instance:setThroughput(nil) end)
-  print("Edge:setThroughput ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local edge = lurek.graph.newEdge()
+edge:setThroughput(t)
+print("Edge:setThroughput applied")
 
 --@api-stub: Edge:getTravelTime
 -- Returns the travel time in seconds for items on this edge.
--- Call when you need to read travel time.
--- Build a Edge via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newEdge(...)
-if instance then
-  local ok, result = pcall(function() return instance:getTravelTime() end)
-  print("Edge:getTravelTime ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local edge = lurek.graph.newEdge()  -- or your existing handle
+local value = edge:getTravelTime()
+print("Edge:getTravelTime ->", value)
 
 --@api-stub: Edge:setTravelTime
 -- Sets the travel time in seconds for items on this edge.
--- Call when you need to assign travel time.
--- Build a Edge via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newEdge(...)
-if instance then
-  local ok, result = pcall(function() return instance:setTravelTime(nil) end)
-  print("Edge:setTravelTime ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local edge = lurek.graph.newEdge()
+edge:setTravelTime(t)
+print("Edge:setTravelTime applied")
 
 --@api-stub: Edge:getWeight
 -- Returns the pathfinding weight of this edge.
--- Call when you need to read weight.
--- Build a Edge via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newEdge(...)
-if instance then
-  local ok, result = pcall(function() return instance:getWeight() end)
-  print("Edge:getWeight ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local edge = lurek.graph.newEdge()  -- or your existing handle
+local value = edge:getWeight()
+print("Edge:getWeight ->", value)
 
 --@api-stub: Edge:setWeight
 -- Sets the pathfinding weight of this edge.
--- Call when you need to assign weight.
--- Build a Edge via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newEdge(...)
-if instance then
-  local ok, result = pcall(function() return instance:setWeight(100) end)
-  print("Edge:setWeight ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local edge = lurek.graph.newEdge()
+edge:setWeight(64)
+print("Edge:setWeight applied")
 
 --@api-stub: Edge:getSpeedModifier
 -- Returns the speed modifier applied to items in transit.
--- Call when you need to read speed modifier.
--- Build a Edge via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newEdge(...)
-if instance then
-  local ok, result = pcall(function() return instance:getSpeedModifier() end)
-  print("Edge:getSpeedModifier ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local edge = lurek.graph.newEdge()  -- or your existing handle
+local value = edge:getSpeedModifier()
+print("Edge:getSpeedModifier ->", value)
 
 --@api-stub: Edge:setSpeedModifier
 -- Sets the speed modifier applied to items in transit.
--- Call when you need to assign speed modifier.
--- Build a Edge via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newEdge(...)
-if instance then
-  local ok, result = pcall(function() return instance:setSpeedModifier(nil) end)
-  print("Edge:setSpeedModifier ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local edge = lurek.graph.newEdge()
+edge:setSpeedModifier(m)
+print("Edge:setSpeedModifier applied")
 
 --@api-stub: Edge:getCooldown
 -- Returns the cooldown duration in seconds.
--- Call when you need to read cooldown.
--- Build a Edge via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newEdge(...)
-if instance then
-  local ok, result = pcall(function() return instance:getCooldown() end)
-  print("Edge:getCooldown ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local edge = lurek.graph.newEdge()  -- or your existing handle
+local value = edge:getCooldown()
+print("Edge:getCooldown ->", value)
 
 --@api-stub: Edge:setCooldown
 -- Sets the cooldown duration in seconds.
--- Call when you need to assign cooldown.
--- Build a Edge via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newEdge(...)
-if instance then
-  local ok, result = pcall(function() return instance:setCooldown(nil) end)
-  print("Edge:setCooldown ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local edge = lurek.graph.newEdge()
+edge:setCooldown(c)
+print("Edge:setCooldown applied")
 
 --@api-stub: Edge:isOnCooldown
 -- Returns true if the edge is currently on cooldown.
--- Call when you need to check is on cooldown.
--- Build a Edge via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newEdge(...)
-if instance then
-  local ok, result = pcall(function() return instance:isOnCooldown() end)
-  print("Edge:isOnCooldown ->", ok, result)
-end
+-- Use as a guard inside lurek.update or event handlers.
+local edge = lurek.graph.newEdge()
+if edge:isOnCooldown() then print("yes") end
+-- swap the constructor for your real handle
+print("ok")
 
 --@api-stub: Edge:isBidirectional
 -- Returns true if items can travel the edge in either direction.
--- Call when you need to check is bidirectional.
--- Build a Edge via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newEdge(...)
-if instance then
-  local ok, result = pcall(function() return instance:isBidirectional() end)
-  print("Edge:isBidirectional ->", ok, result)
-end
+-- Use as a guard inside lurek.update or event handlers.
+local edge = lurek.graph.newEdge()
+if edge:isBidirectional() then print("yes") end
+-- swap the constructor for your real handle
+print("ok")
 
 --@api-stub: Edge:setBidirectional
 -- Sets whether items can travel the edge in either direction.
--- Call when you need to assign bidirectional.
--- Build a Edge via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newEdge(...)
-if instance then
-  local ok, result = pcall(function() return instance:setBidirectional(1) end)
-  print("Edge:setBidirectional ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local edge = lurek.graph.newEdge()
+edge:setBidirectional(0)
+print("Edge:setBidirectional applied")
 
 --@api-stub: Edge:isActive
 -- Returns true if the edge is active.
--- Call when you need to check is active.
--- Build a Edge via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newEdge(...)
-if instance then
-  local ok, result = pcall(function() return instance:isActive() end)
-  print("Edge:isActive ->", ok, result)
-end
+-- Use as a guard inside lurek.update or event handlers.
+local edge = lurek.graph.newEdge()
+if edge:isActive() then print("yes") end
+-- swap the constructor for your real handle
+print("ok")
 
 --@api-stub: Edge:setActive
 -- Sets the active state of this edge.
--- Call when you need to assign active.
--- Build a Edge via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newEdge(...)
-if instance then
-  local ok, result = pcall(function() return instance:setActive(1) end)
-  print("Edge:setActive ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local edge = lurek.graph.newEdge()
+edge:setActive(1)
+print("Edge:setActive applied")
 
 --@api-stub: Edge:getItemsInTransit
 -- Returns a table of GraphItem handles currently in transit on this edge.
--- Call when you need to read items in transit.
--- Build a Edge via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newEdge(...)
-if instance then
-  local ok, result = pcall(function() return instance:getItemsInTransit() end)
-  print("Edge:getItemsInTransit ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local edge = lurek.graph.newEdge()  -- or your existing handle
+local value = edge:getItemsInTransit()
+print("Edge:getItemsInTransit ->", value)
 
 --@api-stub: Edge:addAllowedType
 -- Adds an item type to the edge allow-list.
--- Call when you need to add allowed type.
--- Build a Edge via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newEdge(...)
-if instance then
-  local ok, result = pcall(function() return instance:addAllowedType(nil) end)
-  print("Edge:addAllowedType ->", ok, result)
-end
+-- Side-effecting; safe to call any time after init.
+local edge = lurek.graph.newEdge()
+edge:addAllowedType(t)
+print("Edge:addAllowedType done")
 
 --@api-stub: Edge:removeAllowedType
 -- Removes an item type from the edge allow-list.
--- Call when you need to remove allowed type.
--- Build a Edge via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newEdge(...)
-if instance then
-  local ok, result = pcall(function() return instance:removeAllowedType(nil) end)
-  print("Edge:removeAllowedType ->", ok, result)
-end
+-- Pair with the matching constructor to free resources.
+local edge = lurek.graph.newEdge()
+edge:removeAllowedType(t)
+-- edge is now released
+print("ok")
 
 --@api-stub: Edge:clearAllowedTypes
 -- Clears the edge allow-list so all item types are permitted.
--- Call when you need to invoke clear allowed types.
--- Build a Edge via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newEdge(...)
-if instance then
-  local ok, result = pcall(function() return instance:clearAllowedTypes() end)
-  print("Edge:clearAllowedTypes ->", ok, result)
-end
+-- Pair with the matching constructor to free resources.
+local edge = lurek.graph.newEdge()
+edge:clearAllowedTypes()
+-- edge is now released
+print("ok")
 
 --@api-stub: Edge:isItemTypeAllowed
 -- Returns true if the given item type is allowed on this edge.
--- Call when you need to check is item type allowed.
--- Build a Edge via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newEdge(...)
-if instance then
-  local ok, result = pcall(function() return instance:isItemTypeAllowed(nil) end)
-  print("Edge:isItemTypeAllowed ->", ok, result)
-end
+-- Use as a guard inside lurek.update or event handlers.
+local edge = lurek.graph.newEdge()
+if edge:isItemTypeAllowed(t) then print("yes") end
+-- swap the constructor for your real handle
+print("ok")
 
 --@api-stub: Edge:type
 -- Returns the type name "GraphEdge".
--- Call when you need to invoke type.
--- Build a Edge via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newEdge(...)
-if instance then
-  local ok, result = pcall(function() return instance:type() end)
-  print("Edge:type ->", ok, result)
-end
+-- See the module spec for detailed semantics.
+local edge = lurek.graph.newEdge()
+edge:type()
+print("Edge:type done")
 
 --@api-stub: Edge:typeOf
 -- Returns true when the given name matches "GraphEdge" or a parent type.
--- Call when you need to invoke type of.
--- Build a Edge via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newEdge(...)
-if instance then
-  local ok, result = pcall(function() return instance:typeOf("name") end)
-  print("Edge:typeOf ->", ok, result)
-end
+-- See the module spec for detailed semantics.
+local edge = lurek.graph.newEdge()
+edge:typeOf("main")
+print("Edge:typeOf done")
 
 -- ── Node methods ──
 
 --@api-stub: Node:getType
 -- Returns the node type string.
--- Call when you need to read type.
--- Build a Node via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newNode(...)
-if instance then
-  local ok, result = pcall(function() return instance:getType() end)
-  print("Node:getType ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local node = lurek.graph.newNode()  -- or your existing handle
+local value = node:getType()
+print("Node:getType ->", value)
 
 --@api-stub: Node:setType
 -- Sets the node type string.
--- Call when you need to assign type.
--- Build a Node via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newNode(...)
-if instance then
-  local ok, result = pcall(function() return instance:setType(nil) end)
-  print("Node:setType ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local node = lurek.graph.newNode()
+node:setType(t)
+print("Node:setType applied")
 
 --@api-stub: Node:getCapacity
 -- Returns the node capacity (-1 = unlimited).
--- Call when you need to read capacity.
--- Build a Node via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newNode(...)
-if instance then
-  local ok, result = pcall(function() return instance:getCapacity() end)
-  print("Node:getCapacity ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local node = lurek.graph.newNode()  -- or your existing handle
+local value = node:getCapacity()
+print("Node:getCapacity ->", value)
 
 --@api-stub: Node:setCapacity
 -- Sets the node capacity (-1 = unlimited).
--- Call when you need to assign capacity.
--- Build a Node via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newNode(...)
-if instance then
-  local ok, result = pcall(function() return instance:setCapacity(nil) end)
-  print("Node:setCapacity ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local node = lurek.graph.newNode()
+node:setCapacity(c)
+print("Node:setCapacity applied")
 
 --@api-stub: Node:getItemCount
 -- Returns the number of items currently at this node.
--- Call when you need to read item count.
--- Build a Node via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newNode(...)
-if instance then
-  local ok, result = pcall(function() return instance:getItemCount() end)
-  print("Node:getItemCount ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local node = lurek.graph.newNode()  -- or your existing handle
+local value = node:getItemCount()
+print("Node:getItemCount ->", value)
 
 --@api-stub: Node:isFull
 -- Returns true if the node has reached its capacity.
--- Call when you need to check is full.
--- Build a Node via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newNode(...)
-if instance then
-  local ok, result = pcall(function() return instance:isFull() end)
-  print("Node:isFull ->", ok, result)
-end
+-- Use as a guard inside lurek.update or event handlers.
+local node = lurek.graph.newNode()
+if node:isFull() then print("yes") end
+-- swap the constructor for your real handle
+print("ok")
 
 --@api-stub: Node:isActive
 -- Returns true if the node is active.
--- Call when you need to check is active.
--- Build a Node via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newNode(...)
-if instance then
-  local ok, result = pcall(function() return instance:isActive() end)
-  print("Node:isActive ->", ok, result)
-end
+-- Use as a guard inside lurek.update or event handlers.
+local node = lurek.graph.newNode()
+if node:isActive() then print("yes") end
+-- swap the constructor for your real handle
+print("ok")
 
 --@api-stub: Node:setActive
 -- Sets the active state of this node.
--- Call when you need to assign active.
--- Build a Node via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newNode(...)
-if instance then
-  local ok, result = pcall(function() return instance:setActive(1) end)
-  print("Node:setActive ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local node = lurek.graph.newNode()
+node:setActive(1)
+print("Node:setActive applied")
 
 --@api-stub: Node:getOverflowPolicy
 -- Returns the overflow policy as a string.
--- Call when you need to read overflow policy.
--- Build a Node via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newNode(...)
-if instance then
-  local ok, result = pcall(function() return instance:getOverflowPolicy() end)
-  print("Node:getOverflowPolicy ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local node = lurek.graph.newNode()  -- or your existing handle
+local value = node:getOverflowPolicy()
+print("Node:getOverflowPolicy ->", value)
 
 --@api-stub: Node:setOverflowPolicy
 -- Sets the overflow policy from a string.
--- Call when you need to assign overflow policy.
--- Build a Node via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newNode(...)
-if instance then
-  local ok, result = pcall(function() return instance:setOverflowPolicy(nil) end)
-  print("Node:setOverflowPolicy ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local node = lurek.graph.newNode()
+node:setOverflowPolicy(p)
+print("Node:setOverflowPolicy applied")
 
 --@api-stub: Node:getFlowMode
 -- Returns the flow mode as a string.
--- Call when you need to read flow mode.
--- Build a Node via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newNode(...)
-if instance then
-  local ok, result = pcall(function() return instance:getFlowMode() end)
-  print("Node:getFlowMode ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local node = lurek.graph.newNode()  -- or your existing handle
+local value = node:getFlowMode()
+print("Node:getFlowMode ->", value)
 
 --@api-stub: Node:setFlowMode
 -- Sets the flow mode from a string.
--- Call when you need to assign flow mode.
--- Build a Node via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newNode(...)
-if instance then
-  local ok, result = pcall(function() return instance:setFlowMode(nil) end)
-  print("Node:setFlowMode ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local node = lurek.graph.newNode()
+node:setFlowMode(m)
+print("Node:setFlowMode applied")
 
 --@api-stub: Node:getPushRate
 -- Returns items per second this node pushes.
--- Call when you need to read push rate.
--- Build a Node via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newNode(...)
-if instance then
-  local ok, result = pcall(function() return instance:getPushRate() end)
-  print("Node:getPushRate ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local node = lurek.graph.newNode()  -- or your existing handle
+local value = node:getPushRate()
+print("Node:getPushRate ->", value)
 
 --@api-stub: Node:setPushRate
 -- Sets items per second this node pushes.
--- Call when you need to assign push rate.
--- Build a Node via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newNode(...)
-if instance then
-  local ok, result = pcall(function() return instance:setPushRate(1) end)
-  print("Node:setPushRate ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local node = lurek.graph.newNode()
+node:setPushRate(1)
+print("Node:setPushRate applied")
 
 --@api-stub: Node:getPullRate
 -- Returns items per second this node pulls.
--- Call when you need to read pull rate.
--- Build a Node via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newNode(...)
-if instance then
-  local ok, result = pcall(function() return instance:getPullRate() end)
-  print("Node:getPullRate ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local node = lurek.graph.newNode()  -- or your existing handle
+local value = node:getPullRate()
+print("Node:getPullRate ->", value)
 
 --@api-stub: Node:setPullRate
 -- Sets items per second this node pulls.
--- Call when you need to assign pull rate.
--- Build a Node via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newNode(...)
-if instance then
-  local ok, result = pcall(function() return instance:setPullRate(1) end)
-  print("Node:setPullRate ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local node = lurek.graph.newNode()
+node:setPullRate(1)
+print("Node:setPullRate applied")
 
 --@api-stub: Node:getPushFilter
 -- Returns the push filter string, or nil if unset.
--- Call when you need to read push filter.
--- Build a Node via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newNode(...)
-if instance then
-  local ok, result = pcall(function() return instance:getPushFilter() end)
-  print("Node:getPushFilter ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local node = lurek.graph.newNode()  -- or your existing handle
+local value = node:getPushFilter()
+print("Node:getPushFilter ->", value)
 
 --@api-stub: Node:setPushFilter
 -- Sets the push filter string, or nil to clear.
--- Call when you need to assign push filter.
--- Build a Node via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newNode(...)
-if instance then
-  local ok, result = pcall(function() return instance:setPushFilter(nil) end)
-  print("Node:setPushFilter ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local node = lurek.graph.newNode()
+node:setPushFilter(f)
+print("Node:setPushFilter applied")
 
 --@api-stub: Node:getPullFilter
 -- Returns the pull filter string, or nil if unset.
--- Call when you need to read pull filter.
--- Build a Node via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newNode(...)
-if instance then
-  local ok, result = pcall(function() return instance:getPullFilter() end)
-  print("Node:getPullFilter ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local node = lurek.graph.newNode()  -- or your existing handle
+local value = node:getPullFilter()
+print("Node:getPullFilter ->", value)
 
 --@api-stub: Node:setPullFilter
 -- Sets the pull filter string, or nil to clear.
--- Call when you need to assign pull filter.
--- Build a Node via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newNode(...)
-if instance then
-  local ok, result = pcall(function() return instance:setPullFilter(nil) end)
-  print("Node:setPullFilter ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local node = lurek.graph.newNode()
+node:setPullFilter(f)
+print("Node:setPullFilter applied")
 
 --@api-stub: Node:getProcessTime
 -- Returns the processing time in seconds.
--- Call when you need to read process time.
--- Build a Node via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newNode(...)
-if instance then
-  local ok, result = pcall(function() return instance:getProcessTime() end)
-  print("Node:getProcessTime ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local node = lurek.graph.newNode()  -- or your existing handle
+local value = node:getProcessTime()
+print("Node:getProcessTime ->", value)
 
 --@api-stub: Node:setProcessTime
 -- Sets the processing time in seconds.
--- Call when you need to assign process time.
--- Build a Node via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newNode(...)
-if instance then
-  local ok, result = pcall(function() return instance:setProcessTime(nil) end)
-  print("Node:setProcessTime ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local node = lurek.graph.newNode()
+node:setProcessTime(t)
+print("Node:setProcessTime applied")
 
 --@api-stub: Node:isQueueEnabled
 -- Returns true if the node queue is enabled.
--- Call when you need to check is queue enabled.
--- Build a Node via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newNode(...)
-if instance then
-  local ok, result = pcall(function() return instance:isQueueEnabled() end)
-  print("Node:isQueueEnabled ->", ok, result)
-end
+-- Use as a guard inside lurek.update or event handlers.
+local node = lurek.graph.newNode()
+if node:isQueueEnabled() then print("yes") end
+-- swap the constructor for your real handle
+print("ok")
 
 --@api-stub: Node:setQueueEnabled
 -- Enables or disables the node queue.
--- Call when you need to assign queue enabled.
--- Build a Node via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newNode(...)
-if instance then
-  local ok, result = pcall(function() return instance:setQueueEnabled(nil) end)
-  print("Node:setQueueEnabled ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local node = lurek.graph.newNode()
+node:setQueueEnabled(e)
+print("Node:setQueueEnabled applied")
 
 --@api-stub: Node:getQueueCapacity
 -- Returns the queue capacity (-1 = unlimited).
--- Call when you need to read queue capacity.
--- Build a Node via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newNode(...)
-if instance then
-  local ok, result = pcall(function() return instance:getQueueCapacity() end)
-  print("Node:getQueueCapacity ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local node = lurek.graph.newNode()  -- or your existing handle
+local value = node:getQueueCapacity()
+print("Node:getQueueCapacity ->", value)
 
 --@api-stub: Node:setQueueCapacity
 -- Sets the queue capacity (-1 = unlimited).
--- Call when you need to assign queue capacity.
--- Build a Node via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newNode(...)
-if instance then
-  local ok, result = pcall(function() return instance:setQueueCapacity(nil) end)
-  print("Node:setQueueCapacity ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local node = lurek.graph.newNode()
+node:setQueueCapacity(c)
+print("Node:setQueueCapacity applied")
 
 --@api-stub: Node:getQueueSize
 -- Returns the number of items currently in the queue.
--- Call when you need to read queue size.
--- Build a Node via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newNode(...)
-if instance then
-  local ok, result = pcall(function() return instance:getQueueSize() end)
-  print("Node:getQueueSize ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local node = lurek.graph.newNode()  -- or your existing handle
+local value = node:getQueueSize()
+print("Node:getQueueSize ->", value)
 
 --@api-stub: Node:getItems
 -- Returns a table of GraphItem handles at this node.
--- Call when you need to read items.
--- Build a Node via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newNode(...)
-if instance then
-  local ok, result = pcall(function() return instance:getItems() end)
-  print("Node:getItems ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local node = lurek.graph.newNode()  -- or your existing handle
+local value = node:getItems()
+print("Node:getItems ->", value)
 
 --@api-stub: Node:getEdges
 -- Returns a table of Edge handles connected to this node.
--- Call when you need to read edges.
--- Build a Node via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newNode(...)
-if instance then
-  local ok, result = pcall(function() return instance:getEdges("dir") end)
-  print("Node:getEdges ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local node = lurek.graph.newNode()  -- or your existing handle
+local value = node:getEdges("data/file.txt")
+print("Node:getEdges ->", value)
 
 --@api-stub: Node:clearConversion
 -- Removes the conversion rule for the given input type.
--- Call when you need to invoke clear conversion.
--- Build a Node via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newNode(...)
-if instance then
-  local ok, result = pcall(function() return instance:clearConversion(nil) end)
-  print("Node:clearConversion ->", ok, result)
-end
+-- Pair with the matching constructor to free resources.
+local node = lurek.graph.newNode()
+node:clearConversion(in_type)
+-- node is now released
+print("ok")
 
 --@api-stub: Node:clearAllConversions
 -- Removes all conversion rules from this node.
--- Call when you need to invoke clear all conversions.
--- Build a Node via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newNode(...)
-if instance then
-  local ok, result = pcall(function() return instance:clearAllConversions() end)
-  print("Node:clearAllConversions ->", ok, result)
-end
+-- Pair with the matching constructor to free resources.
+local node = lurek.graph.newNode()
+node:clearAllConversions()
+-- node is now released
+print("ok")
 
 --@api-stub: Node:addTag
 -- Attaches a string tag to this node for fast group queries.
--- Call when you need to add tag.
--- Build a Node via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newNode(...)
-if instance then
-  local ok, result = pcall(function() return instance:addTag("tag") end)
-  print("Node:addTag ->", ok, result)
-end
+-- Side-effecting; safe to call any time after init.
+local node = lurek.graph.newNode()
+node:addTag("main")
+print("Node:addTag done")
 
 --@api-stub: Node:removeTag
 -- Removes a tag from this node.
--- Call when you need to remove tag.
--- Build a Node via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newNode(...)
-if instance then
-  local ok, result = pcall(function() return instance:removeTag("tag") end)
-  print("Node:removeTag ->", ok, result)
-end
+-- Pair with the matching constructor to free resources.
+local node = lurek.graph.newNode()
+node:removeTag("main")
+-- node is now released
+print("ok")
 
 --@api-stub: Node:hasTag
 -- Returns true if this node has the given tag.
--- Call when you need to check has tag.
--- Build a Node via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newNode(...)
-if instance then
-  local ok, result = pcall(function() return instance:hasTag("tag") end)
-  print("Node:hasTag ->", ok, result)
-end
+-- Use as a guard inside lurek.update or event handlers.
+local node = lurek.graph.newNode()
+if node:hasTag("main") then print("yes") end
+-- swap the constructor for your real handle
+print("ok")
 
 --@api-stub: Node:clearTags
 -- Removes all tags from this node.
--- Call when you need to invoke clear tags.
--- Build a Node via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newNode(...)
-if instance then
-  local ok, result = pcall(function() return instance:clearTags() end)
-  print("Node:clearTags ->", ok, result)
-end
+-- Pair with the matching constructor to free resources.
+local node = lurek.graph.newNode()
+node:clearTags()
+-- node is now released
+print("ok")
 
 --@api-stub: Node:getTags
 -- Returns a table of tag strings on this node.
--- Call when you need to read tags.
--- Build a Node via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newNode(...)
-if instance then
-  local ok, result = pcall(function() return instance:getTags() end)
-  print("Node:getTags ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local node = lurek.graph.newNode()  -- or your existing handle
+local value = node:getTags()
+print("Node:getTags ->", value)
 
 --@api-stub: Node:removeSupply
 -- Removes the supply declaration for the given item type.
--- Call when you need to remove supply.
--- Build a Node via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newNode(...)
-if instance then
-  local ok, result = pcall(function() return instance:removeSupply(nil) end)
-  print("Node:removeSupply ->", ok, result)
-end
+-- Pair with the matching constructor to free resources.
+local node = lurek.graph.newNode()
+node:removeSupply(item_type)
+-- node is now released
+print("ok")
 
 --@api-stub: Node:clearSupplies
 -- Removes all supply declarations from this node.
--- Call when you need to invoke clear supplies.
--- Build a Node via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newNode(...)
-if instance then
-  local ok, result = pcall(function() return instance:clearSupplies() end)
-  print("Node:clearSupplies ->", ok, result)
-end
+-- Pair with the matching constructor to free resources.
+local node = lurek.graph.newNode()
+node:clearSupplies()
+-- node is now released
+print("ok")
 
 --@api-stub: Node:removeDemand
 -- Removes the demand declaration for the given item type.
--- Call when you need to remove demand.
--- Build a Node via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newNode(...)
-if instance then
-  local ok, result = pcall(function() return instance:removeDemand(nil) end)
-  print("Node:removeDemand ->", ok, result)
-end
+-- Pair with the matching constructor to free resources.
+local node = lurek.graph.newNode()
+node:removeDemand(item_type)
+-- node is now released
+print("ok")
 
 --@api-stub: Node:clearDemands
 -- Removes all demand declarations from this node.
--- Call when you need to invoke clear demands.
--- Build a Node via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newNode(...)
-if instance then
-  local ok, result = pcall(function() return instance:clearDemands() end)
-  print("Node:clearDemands ->", ok, result)
-end
+-- Pair with the matching constructor to free resources.
+local node = lurek.graph.newNode()
+node:clearDemands()
+-- node is now released
+print("ok")
 
 --@api-stub: Node:enqueue
 -- Pushes an item into the node queue.
--- Call when you need to invoke enqueue.
--- Build a Node via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newNode(...)
-if instance then
-  local ok, result = pcall(function() return instance:enqueue(nil) end)
-  print("Node:enqueue ->", ok, result)
-end
+-- See the module spec for detailed semantics.
+local node = lurek.graph.newNode()
+node:enqueue(item_ud)
+print("Node:enqueue done")
 
 --@api-stub: Node:dequeue
 -- Pops the next item from the node queue, or nil if empty.
--- Call when you need to invoke dequeue.
--- Build a Node via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newNode(...)
-if instance then
-  local ok, result = pcall(function() return instance:dequeue() end)
-  print("Node:dequeue ->", ok, result)
-end
+-- See the module spec for detailed semantics.
+local node = lurek.graph.newNode()
+node:dequeue()
+print("Node:dequeue done")
 
 --@api-stub: Node:type
 -- Returns the type name "GraphNode".
--- Call when you need to invoke type.
--- Build a Node via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newNode(...)
-if instance then
-  local ok, result = pcall(function() return instance:type() end)
-  print("Node:type ->", ok, result)
-end
+-- See the module spec for detailed semantics.
+local node = lurek.graph.newNode()
+node:type()
+print("Node:type done")
 
 --@api-stub: Node:typeOf
 -- Returns true when the given name matches "GraphNode" or a parent type.
--- Call when you need to invoke type of.
--- Build a Node via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newNode(...)
-if instance then
-  local ok, result = pcall(function() return instance:typeOf("name") end)
-  print("Node:typeOf ->", ok, result)
-end
+-- See the module spec for detailed semantics.
+local node = lurek.graph.newNode()
+node:typeOf("main")
+print("Node:typeOf done")
 
 -- ── Graph methods ──
 
 --@api-stub: Graph:removeNode
 -- Removes a node from the graph.
--- Call when you need to remove node.
--- Build a Graph via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newGraph(...)
-if instance then
-  local ok, result = pcall(function() return instance:removeNode(nil) end)
-  print("Graph:removeNode ->", ok, result)
-end
+-- Pair with the matching constructor to free resources.
+local graph = lurek.graph.newGraph()
+graph:removeNode(node_ud)
+-- graph is now released
+print("ok")
 
 --@api-stub: Graph:hasNode
 -- Returns true if the node exists in the graph.
--- Call when you need to check has node.
--- Build a Graph via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newGraph(...)
-if instance then
-  local ok, result = pcall(function() return instance:hasNode(nil) end)
-  print("Graph:hasNode ->", ok, result)
-end
+-- Use as a guard inside lurek.update or event handlers.
+local graph = lurek.graph.newGraph()
+if graph:hasNode(node_ud) then print("yes") end
+-- swap the constructor for your real handle
+print("ok")
 
 --@api-stub: Graph:getNodes
 -- Returns a table of all Node handles.
--- Call when you need to read nodes.
--- Build a Graph via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newGraph(...)
-if instance then
-  local ok, result = pcall(function() return instance:getNodes() end)
-  print("Graph:getNodes ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local graph = lurek.graph.newGraph()  -- or your existing handle
+local value = graph:getNodes()
+print("Graph:getNodes ->", value)
 
 --@api-stub: Graph:getNodeCount
 -- Returns the number of nodes in the graph.
--- Call when you need to read node count.
--- Build a Graph via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newGraph(...)
-if instance then
-  local ok, result = pcall(function() return instance:getNodeCount() end)
-  print("Graph:getNodeCount ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local graph = lurek.graph.newGraph()  -- or your existing handle
+local value = graph:getNodeCount()
+print("Graph:getNodeCount ->", value)
 
 --@api-stub: Graph:removeEdge
 -- Removes an edge from the graph.
--- Call when you need to remove edge.
--- Build a Graph via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newGraph(...)
-if instance then
-  local ok, result = pcall(function() return instance:removeEdge(nil) end)
-  print("Graph:removeEdge ->", ok, result)
-end
+-- Pair with the matching constructor to free resources.
+local graph = lurek.graph.newGraph()
+graph:removeEdge(edge_ud)
+-- graph is now released
+print("ok")
 
 --@api-stub: Graph:hasEdge
 -- Returns true if the edge exists in the graph.
--- Call when you need to check has edge.
--- Build a Graph via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newGraph(...)
-if instance then
-  local ok, result = pcall(function() return instance:hasEdge(nil) end)
-  print("Graph:hasEdge ->", ok, result)
-end
+-- Use as a guard inside lurek.update or event handlers.
+local graph = lurek.graph.newGraph()
+if graph:hasEdge(edge_ud) then print("yes") end
+-- swap the constructor for your real handle
+print("ok")
 
 --@api-stub: Graph:getEdges
 -- Returns a table of all Edge handles.
--- Call when you need to read edges.
--- Build a Graph via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newGraph(...)
-if instance then
-  local ok, result = pcall(function() return instance:getEdges() end)
-  print("Graph:getEdges ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local graph = lurek.graph.newGraph()  -- or your existing handle
+local value = graph:getEdges()
+print("Graph:getEdges ->", value)
 
 --@api-stub: Graph:getEdgeCount
 -- Returns the number of edges in the graph.
--- Call when you need to read edge count.
--- Build a Graph via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newGraph(...)
-if instance then
-  local ok, result = pcall(function() return instance:getEdgeCount() end)
-  print("Graph:getEdgeCount ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local graph = lurek.graph.newGraph()  -- or your existing handle
+local value = graph:getEdgeCount()
+print("Graph:getEdgeCount ->", value)
 
 --@api-stub: Graph:removeItem
 -- Removes an item from the graph entirely.
--- Call when you need to remove item.
--- Build a Graph via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newGraph(...)
-if instance then
-  local ok, result = pcall(function() return instance:removeItem(nil) end)
-  print("Graph:removeItem ->", ok, result)
-end
+-- Pair with the matching constructor to free resources.
+local graph = lurek.graph.newGraph()
+graph:removeItem(item_ud)
+-- graph is now released
+print("ok")
 
 --@api-stub: Graph:hasItem
 -- Returns true if the item exists in the graph.
--- Call when you need to check has item.
--- Build a Graph via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newGraph(...)
-if instance then
-  local ok, result = pcall(function() return instance:hasItem(nil) end)
-  print("Graph:hasItem ->", ok, result)
-end
+-- Use as a guard inside lurek.update or event handlers.
+local graph = lurek.graph.newGraph()
+if graph:hasItem(item_ud) then print("yes") end
+-- swap the constructor for your real handle
+print("ok")
 
 --@api-stub: Graph:getItems
 -- Returns a table of all GraphItem handles.
--- Call when you need to read items.
--- Build a Graph via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newGraph(...)
-if instance then
-  local ok, result = pcall(function() return instance:getItems() end)
-  print("Graph:getItems ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local graph = lurek.graph.newGraph()  -- or your existing handle
+local value = graph:getItems()
+print("Graph:getItems ->", value)
 
 --@api-stub: Graph:getItemCount
 -- Returns the number of items in the graph.
--- Call when you need to read item count.
--- Build a Graph via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newGraph(...)
-if instance then
-  local ok, result = pcall(function() return instance:getItemCount() end)
-  print("Graph:getItemCount ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local graph = lurek.graph.newGraph()  -- or your existing handle
+local value = graph:getItemCount()
+print("Graph:getItemCount ->", value)
 
 --@api-stub: Graph:update
 -- Advances simulation by dt seconds and fires event callbacks.
--- Call when you need to invoke update.
--- Build a Graph via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newGraph(...)
-if instance then
-  local ok, result = pcall(function() return instance:update(1.0) end)
-  print("Graph:update ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local graph = lurek.graph.newGraph()
+graph:update(dt)
+print("Graph:update applied")
 
 --@api-stub: Graph:step
 -- Runs one discrete simulation step and fires event callbacks.
--- Call when you need to invoke step.
--- Build a Graph via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newGraph(...)
-if instance then
-  local ok, result = pcall(function() return instance:step() end)
-  print("Graph:step ->", ok, result)
-end
+-- Trigger from input, timers, or game events.
+local graph = lurek.graph.newGraph()
+graph:step()
+-- trigger from input, timer, or event
+print("ok")
 
 --@api-stub: Graph:tickParallel
 -- Advances simulation by dt seconds using a parallelised decay phase.
--- Call when you need to invoke tick parallel.
--- Build a Graph via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newGraph(...)
-if instance then
-  local ok, result = pcall(function() return instance:tickParallel(1.0) end)
-  print("Graph:tickParallel ->", ok, result)
-end
+-- Trigger from input, timers, or game events.
+local graph = lurek.graph.newGraph()
+graph:tickParallel(dt)
+-- trigger from input, timer, or event
+print("ok")
 
 --@api-stub: Graph:getNeighbors
 -- Returns a table of direct neighbor Node handles.
--- Call when you need to read neighbors.
--- Build a Graph via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newGraph(...)
-if instance then
-  local ok, result = pcall(function() return instance:getNeighbors(nil) end)
-  print("Graph:getNeighbors ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local graph = lurek.graph.newGraph()  -- or your existing handle
+local value = graph:getNeighbors(node_ud)
+print("Graph:getNeighbors ->", value)
 
 --@api-stub: Graph:getComponents
 -- Returns weakly connected components as a table of tables of Node handles.
--- Call when you need to read components.
--- Build a Graph via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newGraph(...)
-if instance then
-  local ok, result = pcall(function() return instance:getComponents() end)
-  print("Graph:getComponents ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local graph = lurek.graph.newGraph()  -- or your existing handle
+local value = graph:getComponents()
+print("Graph:getComponents ->", value)
 
 --@api-stub: Graph:hasCycle
 -- Returns true if the graph contains a directed cycle.
--- Call when you need to check has cycle.
--- Build a Graph via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newGraph(...)
-if instance then
-  local ok, result = pcall(function() return instance:hasCycle() end)
-  print("Graph:hasCycle ->", ok, result)
-end
+-- Use as a guard inside lurek.update or event handlers.
+local graph = lurek.graph.newGraph()
+if graph:hasCycle() then print("yes") end
+-- swap the constructor for your real handle
+print("ok")
 
 --@api-stub: Graph:topologicalSort
 -- Returns a topologically sorted table of Node handles, or nil if a cycle exists.
--- Call when you need to invoke topological sort.
--- Build a Graph via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newGraph(...)
-if instance then
-  local ok, result = pcall(function() return instance:topologicalSort() end)
-  print("Graph:topologicalSort ->", ok, result)
-end
+-- See the module spec for detailed semantics.
+local graph = lurek.graph.newGraph()
+graph:topologicalSort()
+print("Graph:topologicalSort done")
 
 --@api-stub: Graph:mst
 -- Returns edge IDs forming a minimum spanning tree (Kruskal, undirected view).
--- Call when you need to invoke mst.
--- Build a Graph via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newGraph(...)
-if instance then
-  local ok, result = pcall(function() return instance:mst() end)
-  print("Graph:mst ->", ok, result)
-end
+-- See the module spec for detailed semantics.
+local graph = lurek.graph.newGraph()
+graph:mst()
+print("Graph:mst done")
 
 --@api-stub: Graph:colorGraph
 -- Assigns each node the smallest non-negative integer colour not shared with any.
--- Call when you need to invoke color graph.
--- Build a Graph via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newGraph(...)
-if instance then
-  local ok, result = pcall(function() return instance:colorGraph() end)
-  print("Graph:colorGraph ->", ok, result)
-end
+-- See the module spec for detailed semantics.
+local graph = lurek.graph.newGraph()
+graph:colorGraph()
+print("Graph:colorGraph done")
 
 --@api-stub: Graph:isBipartite
 -- Returns `true` when the graph can be 2-coloured (bipartite check via BFS).
--- Call when you need to check is bipartite.
--- Build a Graph via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newGraph(...)
-if instance then
-  local ok, result = pcall(function() return instance:isBipartite() end)
-  print("Graph:isBipartite ->", ok, result)
-end
+-- Use as a guard inside lurek.update or event handlers.
+local graph = lurek.graph.newGraph()
+if graph:isBipartite() then print("yes") end
+-- swap the constructor for your real handle
+print("ok")
 
 --@api-stub: Graph:processDemand
 -- Processes all supply/demand declarations and fires event callbacks.
--- Call when you need to invoke process demand.
--- Build a Graph via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newGraph(...)
-if instance then
-  local ok, result = pcall(function() return instance:processDemand() end)
-  print("Graph:processDemand ->", ok, result)
-end
+-- See the module spec for detailed semantics.
+local graph = lurek.graph.newGraph()
+graph:processDemand()
+print("Graph:processDemand done")
 
 --@api-stub: Graph:getStats
 -- Returns a statistics snapshot table.
--- Call when you need to read stats.
--- Build a Graph via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newGraph(...)
-if instance then
-  local ok, result = pcall(function() return instance:getStats() end)
-  print("Graph:getStats ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local graph = lurek.graph.newGraph()  -- or your existing handle
+local value = graph:getStats()
+print("Graph:getStats ->", value)
 
 --@api-stub: Graph:type
 -- Returns the type name of this object.
--- Call when you need to invoke type.
--- Build a Graph via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newGraph(...)
-if instance then
-  local ok, result = pcall(function() return instance:type() end)
-  print("Graph:type ->", ok, result)
-end
+-- See the module spec for detailed semantics.
+local graph = lurek.graph.newGraph()
+graph:type()
+print("Graph:type done")
 
 --@api-stub: Graph:typeOf
 -- Returns true if this object is of the given type.
--- Call when you need to invoke type of.
--- Build a Graph via the appropriate lurek.graph.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.graph.newGraph(...)
-if instance then
-  local ok, result = pcall(function() return instance:typeOf("name") end)
-  print("Graph:typeOf ->", ok, result)
-end
+-- See the module spec for detailed semantics.
+local graph = lurek.graph.newGraph()
+graph:typeOf("main")
+print("Graph:typeOf done")
 

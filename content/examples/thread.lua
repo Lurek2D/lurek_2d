@@ -1,379 +1,282 @@
 -- content/examples/thread.lua
--- Practical usage examples for the lurek.thread API (37 items).
---
--- Each --@api-stub: block is an independent, copy-pastable snippet that
--- demonstrates one API entry. Calls are wrapped in pcall(...) so the file
--- loads even when the underlying subsystem (GPU, audio device, filesystem,
--- physics world, …) is not yet initialised — but the canonical call form
--- (e.g. `lurek.thread.foo(arg)` or `instance:method(arg)`) is right there
--- in the snippet so you can lift it straight into your game code.
---
+-- love2d-style usage snippets for the lurek.thread API (37 items).
+-- Each --@api-stub: block is a copy-pastable snippet showing the API
+-- in real context (callbacks, conditionals, real arg values).
 -- Run: cargo run -- content/examples/thread.lua
 
-print("[example] lurek.thread — 37 API entries")
-
--- ── lurek.thread.* free functions ──
+-- ── lurek.thread.* functions ──
 
 --@api-stub: lurek.thread.newThread
 -- Creates a new background thread from a Lua code string.
--- Call when you need to create a new thread.
-local ok, obj = pcall(function() return lurek.thread.newThread(nil) end)
-if ok and obj then print("created:", obj) end
-print("lurek.thread.newThread ok=", ok)
+-- Build once at startup; reuse across frames.
+local thread = lurek.thread.newThread(code)
+print("created", thread)
+return thread
 
 --@api-stub: lurek.thread.newChannel
 -- Creates an unnamed thread-safe channel for inter-thread communication.
--- Call when you need to create a new channel.
-local ok, obj = pcall(function() return lurek.thread.newChannel() end)
-if ok and obj then print("created:", obj) end
-print("lurek.thread.newChannel ok=", ok)
+-- Build once at startup; reuse across frames.
+local channel = lurek.thread.newChannel()
+print("created", channel)
+return channel
 
 --@api-stub: lurek.thread.getChannel
 -- Gets or creates a named global channel shared across threads.
--- Call when you need to read channel.
-local ok, value = pcall(function() return lurek.thread.getChannel("name") end)
-local v = ok and value or "(unavailable)"
-print("lurek.thread.getChannel ->", v)
+-- Cheap to call; safe inside callbacks.
+local value = lurek.thread.getChannel("main")
+print("getChannel:", value)
+return value
 
 --@api-stub: lurek.thread.newPool
 -- Creates a thread pool of N workers all running the same Lua code.
--- Call when you need to create a new pool.
-local ok, obj = pcall(function() return lurek.thread.newPool(10, nil) end)
-if ok and obj then print("created:", obj) end
-print("lurek.thread.newPool ok=", ok)
+-- Build once at startup; reuse across frames.
+local pool = lurek.thread.newPool(10, code)
+print("created", pool)
+return pool
 
 --@api-stub: lurek.thread.async
 -- Starts a one-shot background computation and returns a Promise.
--- Call when you need to invoke async.
-local ok, result = pcall(function() return lurek.thread.async(nil, {}) end)
-if ok then print("lurek.thread.async ->", result)
-else print("unavailable:", result) end
+-- See the module spec for detailed semantics.
+local result = lurek.thread.async(code, { x = 0, y = 0 })
+print("async:", result)
+return result
 
 -- ── ThreadHandle methods ──
 
 --@api-stub: ThreadHandle:type
 -- Returns the type name of this object.
--- Call when you need to invoke type.
--- Build a ThreadHandle via the appropriate lurek.thread.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.thread.newThreadHandle(...)
-if instance then
-  local ok, result = pcall(function() return instance:type() end)
-  print("ThreadHandle:type ->", ok, result)
-end
+-- See the module spec for detailed semantics.
+local threadHandle = lurek.thread.newThreadHandle()
+threadHandle:type()
+print("ThreadHandle:type done")
 
 --@api-stub: ThreadHandle:typeOf
 -- Returns whether this object is of the given type.
--- Call when you need to invoke type of.
--- Build a ThreadHandle via the appropriate lurek.thread.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.thread.newThreadHandle(...)
-if instance then
-  local ok, result = pcall(function() return instance:typeOf("name") end)
-  print("ThreadHandle:typeOf ->", ok, result)
-end
+-- See the module spec for detailed semantics.
+local threadHandle = lurek.thread.newThreadHandle()
+threadHandle:typeOf("main")
+print("ThreadHandle:typeOf done")
 
 --@api-stub: ThreadHandle:start
 -- Launches the background thread, passing optional arguments via varargs.
--- Call when you need to invoke start.
--- Build a ThreadHandle via the appropriate lurek.thread.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.thread.newThreadHandle(...)
-if instance then
-  local ok, result = pcall(function() return instance:start({}) end)
-  print("ThreadHandle:start ->", ok, result)
-end
+-- Trigger from input, timers, or game events.
+local threadHandle = lurek.thread.newThreadHandle()
+threadHandle:start({ x = 0, y = 0 })
+-- trigger from input, timer, or event
+print("ok")
 
 --@api-stub: ThreadHandle:wait
 -- Blocks the calling thread until the background thread finishes.
--- Call when you need to invoke wait.
--- Build a ThreadHandle via the appropriate lurek.thread.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.thread.newThreadHandle(...)
-if instance then
-  local ok, result = pcall(function() return instance:wait() end)
-  print("ThreadHandle:wait ->", ok, result)
-end
+-- See the module spec for detailed semantics.
+local threadHandle = lurek.thread.newThreadHandle()
+threadHandle:wait()
+print("ThreadHandle:wait done")
 
 --@api-stub: ThreadHandle:isRunning
 -- Returns whether the thread is currently executing.
--- Call when you need to check is running.
--- Build a ThreadHandle via the appropriate lurek.thread.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.thread.newThreadHandle(...)
-if instance then
-  local ok, result = pcall(function() return instance:isRunning() end)
-  print("ThreadHandle:isRunning ->", ok, result)
-end
+-- Use as a guard inside lurek.update or event handlers.
+local threadHandle = lurek.thread.newThreadHandle()
+if threadHandle:isRunning() then print("yes") end
+-- swap the constructor for your real handle
+print("ok")
 
 --@api-stub: ThreadHandle:getError
 -- Returns the error message if the thread failed, or nil.
--- Call when you need to read error.
--- Build a ThreadHandle via the appropriate lurek.thread.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.thread.newThreadHandle(...)
-if instance then
-  local ok, result = pcall(function() return instance:getError() end)
-  print("ThreadHandle:getError ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local threadHandle = lurek.thread.newThreadHandle()  -- or your existing handle
+local value = threadHandle:getError()
+print("ThreadHandle:getError ->", value)
 
 -- ── ThreadPool methods ──
 
 --@api-stub: ThreadPool:type
 -- Returns the type name of this object.
--- Call when you need to invoke type.
--- Build a ThreadPool via the appropriate lurek.thread.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.thread.newThreadPool(...)
-if instance then
-  local ok, result = pcall(function() return instance:type() end)
-  print("ThreadPool:type ->", ok, result)
-end
+-- See the module spec for detailed semantics.
+local threadPool = lurek.thread.newThreadPool()
+threadPool:type()
+print("ThreadPool:type done")
 
 --@api-stub: ThreadPool:typeOf
 -- Returns whether this object is of the given type.
--- Call when you need to invoke type of.
--- Build a ThreadPool via the appropriate lurek.thread.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.thread.newThreadPool(...)
-if instance then
-  local ok, result = pcall(function() return instance:typeOf("name") end)
-  print("ThreadPool:typeOf ->", ok, result)
-end
+-- See the module spec for detailed semantics.
+local threadPool = lurek.thread.newThreadPool()
+threadPool:typeOf("main")
+print("ThreadPool:typeOf done")
 
 --@api-stub: ThreadPool:submit
 -- Submits a value to the pool's input channel for processing by a worker.
--- Call when you need to invoke submit.
--- Build a ThreadPool via the appropriate lurek.thread.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.thread.newThreadPool(...)
-if instance then
-  local ok, result = pcall(function() return instance:submit(nil) end)
-  print("ThreadPool:submit ->", ok, result)
-end
+-- See the module spec for detailed semantics.
+local threadPool = lurek.thread.newThreadPool()
+threadPool:submit(value)
+print("ThreadPool:submit done")
 
 --@api-stub: ThreadPool:collect
 -- Retrieves the next result from the pool's output channel (non-blocking).
--- Call when you need to invoke collect.
--- Build a ThreadPool via the appropriate lurek.thread.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.thread.newThreadPool(...)
-if instance then
-  local ok, result = pcall(function() return instance:collect() end)
-  print("ThreadPool:collect ->", ok, result)
-end
+-- See the module spec for detailed semantics.
+local threadPool = lurek.thread.newThreadPool()
+threadPool:collect()
+print("ThreadPool:collect done")
 
 --@api-stub: ThreadPool:size
 -- Returns the number of workers in this pool.
--- Call when you need to invoke size.
--- Build a ThreadPool via the appropriate lurek.thread.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.thread.newThreadPool(...)
-if instance then
-  local ok, result = pcall(function() return instance:size() end)
-  print("ThreadPool:size ->", ok, result)
-end
+-- See the module spec for detailed semantics.
+local threadPool = lurek.thread.newThreadPool()
+threadPool:size()
+print("ThreadPool:size done")
 
 --@api-stub: ThreadPool:join
 -- Blocks until all workers in the pool have finished execution.
--- Call when you need to invoke join.
--- Build a ThreadPool via the appropriate lurek.thread.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.thread.newThreadPool(...)
-if instance then
-  local ok, result = pcall(function() return instance:join() end)
-  print("ThreadPool:join ->", ok, result)
-end
+-- See the module spec for detailed semantics.
+local threadPool = lurek.thread.newThreadPool()
+threadPool:join()
+print("ThreadPool:join done")
 
 --@api-stub: ThreadPool:getInputChannel
 -- Returns the shared input Channel (main â†’ workers).
--- Call when you need to read input channel.
--- Build a ThreadPool via the appropriate lurek.thread.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.thread.newThreadPool(...)
-if instance then
-  local ok, result = pcall(function() return instance:getInputChannel() end)
-  print("ThreadPool:getInputChannel ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local threadPool = lurek.thread.newThreadPool()  -- or your existing handle
+local value = threadPool:getInputChannel()
+print("ThreadPool:getInputChannel ->", value)
 
 --@api-stub: ThreadPool:getOutputChannel
 -- Returns the shared output Channel (workers â†’ main).
--- Call when you need to read output channel.
--- Build a ThreadPool via the appropriate lurek.thread.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.thread.newThreadPool(...)
-if instance then
-  local ok, result = pcall(function() return instance:getOutputChannel() end)
-  print("ThreadPool:getOutputChannel ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local threadPool = lurek.thread.newThreadPool()  -- or your existing handle
+local value = threadPool:getOutputChannel()
+print("ThreadPool:getOutputChannel ->", value)
 
 -- ── Promise methods ──
 
 --@api-stub: Promise:type
 -- Returns the type name of this object.
--- Call when you need to invoke type.
--- Build a Promise via the appropriate lurek.thread.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.thread.newPromise(...)
-if instance then
-  local ok, result = pcall(function() return instance:type() end)
-  print("Promise:type ->", ok, result)
-end
+-- See the module spec for detailed semantics.
+local promise = lurek.thread.newPromise()
+promise:type()
+print("Promise:type done")
 
 --@api-stub: Promise:typeOf
 -- Returns whether this object is of the given type.
--- Call when you need to invoke type of.
--- Build a Promise via the appropriate lurek.thread.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.thread.newPromise(...)
-if instance then
-  local ok, result = pcall(function() return instance:typeOf("name") end)
-  print("Promise:typeOf ->", ok, result)
-end
+-- See the module spec for detailed semantics.
+local promise = lurek.thread.newPromise()
+promise:typeOf("main")
+print("Promise:typeOf done")
 
 --@api-stub: Promise:isDone
 -- Returns true if the promise has a result or has errored (non-blocking).
--- Call when you need to check is done.
--- Build a Promise via the appropriate lurek.thread.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.thread.newPromise(...)
-if instance then
-  local ok, result = pcall(function() return instance:isDone() end)
-  print("Promise:isDone ->", ok, result)
-end
+-- Use as a guard inside lurek.update or event handlers.
+local promise = lurek.thread.newPromise()
+if promise:isDone() then print("yes") end
+-- swap the constructor for your real handle
+print("ok")
 
 --@api-stub: Promise:result
 -- Pops and returns the promise result, or nil if not yet ready.
--- Call when you need to invoke result.
--- Build a Promise via the appropriate lurek.thread.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.thread.newPromise(...)
-if instance then
-  local ok, result = pcall(function() return instance:result() end)
-  print("Promise:result ->", ok, result)
-end
+-- See the module spec for detailed semantics.
+local promise = lurek.thread.newPromise()
+promise:result()
+print("Promise:result done")
 
 --@api-stub: Promise:getError
 -- Returns the worker error string if the promise failed, otherwise nil.
--- Call when you need to read error.
--- Build a Promise via the appropriate lurek.thread.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.thread.newPromise(...)
-if instance then
-  local ok, result = pcall(function() return instance:getError() end)
-  print("Promise:getError ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local promise = lurek.thread.newPromise()  -- or your existing handle
+local value = promise:getError()
+print("Promise:getError ->", value)
 
 -- ── Channel methods ──
 
 --@api-stub: Channel:type
 -- Returns the type of the object.
--- Call when you need to invoke type.
--- Build a Channel via the appropriate lurek.thread.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.thread.newChannel(...)
-if instance then
-  local ok, result = pcall(function() return instance:type() end)
-  print("Channel:type ->", ok, result)
-end
+-- See the module spec for detailed semantics.
+local channel = lurek.thread.newChannel()
+channel:type()
+print("Channel:type done")
 
 --@api-stub: Channel:typeOf
 -- Checks if the object is of the specified type.
--- Call when you need to invoke type of.
--- Build a Channel via the appropriate lurek.thread.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.thread.newChannel(...)
-if instance then
-  local ok, result = pcall(function() return instance:typeOf("name") end)
-  print("Channel:typeOf ->", ok, result)
-end
+-- See the module spec for detailed semantics.
+local channel = lurek.thread.newChannel()
+channel:typeOf("main")
+print("Channel:typeOf done")
 
 --@api-stub: Channel:push
 -- Pushes a value to the channel.
--- Call when you need to invoke push.
--- Build a Channel via the appropriate lurek.thread.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.thread.newChannel(...)
-if instance then
-  local ok, result = pcall(function() return instance:push(nil) end)
-  print("Channel:push ->", ok, result)
-end
+-- Side-effecting; safe to call any time after init.
+local channel = lurek.thread.newChannel()
+channel:push(value)
+print("Channel:push done")
 
 --@api-stub: Channel:pop
 -- Retrieves and removes a value from the channel.
--- Call when you need to invoke pop.
--- Build a Channel via the appropriate lurek.thread.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.thread.newChannel(...)
-if instance then
-  local ok, result = pcall(function() return instance:pop() end)
-  print("Channel:pop ->", ok, result)
-end
+-- Pair with the matching constructor to free resources.
+local channel = lurek.thread.newChannel()
+channel:pop()
+-- channel is now released
+print("ok")
 
 --@api-stub: Channel:peek
 -- Retrieves the value from the channel without removing it.
--- Call when you need to invoke peek.
--- Build a Channel via the appropriate lurek.thread.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.thread.newChannel(...)
-if instance then
-  local ok, result = pcall(function() return instance:peek() end)
-  print("Channel:peek ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local channel = lurek.thread.newChannel()  -- or your existing handle
+local value = channel:peek()
+print("Channel:peek ->", value)
 
 --@api-stub: Channel:demand
 -- Blocks until a value is available or the timeout expires, then removes and returns it.
--- Call when you need to invoke demand.
--- Build a Channel via the appropriate lurek.thread.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.thread.newChannel(...)
-if instance then
-  local ok, result = pcall(function() return instance:demand(nil) end)
-  print("Channel:demand ->", ok, result)
-end
+-- See the module spec for detailed semantics.
+local channel = lurek.thread.newChannel()
+channel:demand(timeout)
+print("Channel:demand done")
 
 --@api-stub: Channel:getCount
 -- Returns the number of items in the channel.
--- Call when you need to read count.
--- Build a Channel via the appropriate lurek.thread.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.thread.newChannel(...)
-if instance then
-  local ok, result = pcall(function() return instance:getCount() end)
-  print("Channel:getCount ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local channel = lurek.thread.newChannel()  -- or your existing handle
+local value = channel:getCount()
+print("Channel:getCount ->", value)
 
 --@api-stub: Channel:clear
 -- Clears all items from the channel.
--- Call when you need to invoke clear.
--- Build a Channel via the appropriate lurek.thread.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.thread.newChannel(...)
-if instance then
-  local ok, result = pcall(function() return instance:clear() end)
-  print("Channel:clear ->", ok, result)
-end
+-- Pair with the matching constructor to free resources.
+local channel = lurek.thread.newChannel()
+channel:clear()
+-- channel is now released
+print("ok")
 
 --@api-stub: Channel:supply
 -- Blocks until the channel has space, then adds the value.
--- Call when you need to invoke supply.
--- Build a Channel via the appropriate lurek.thread.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.thread.newChannel(...)
-if instance then
-  local ok, result = pcall(function() return instance:supply(nil) end)
-  print("Channel:supply ->", ok, result)
-end
+-- See the module spec for detailed semantics.
+local channel = lurek.thread.newChannel()
+channel:supply(value)
+print("Channel:supply done")
 
 --@api-stub: Channel:pushTable
 -- Serializes a Lua table and pushes it to the channel.
--- Call when you need to invoke push table.
--- Build a Channel via the appropriate lurek.thread.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.thread.newChannel(...)
-if instance then
-  local ok, result = pcall(function() return instance:pushTable(nil) end)
-  print("Channel:pushTable ->", ok, result)
-end
+-- Side-effecting; safe to call any time after init.
+local channel = lurek.thread.newChannel()
+channel:pushTable(value)
+print("Channel:pushTable done")
 
 --@api-stub: Channel:popTable
 -- Pops a value from the channel expecting a table.
--- Call when you need to invoke pop table.
--- Build a Channel via the appropriate lurek.thread.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.thread.newChannel(...)
-if instance then
-  local ok, result = pcall(function() return instance:popTable() end)
-  print("Channel:popTable ->", ok, result)
-end
+-- Pair with the matching constructor to free resources.
+local channel = lurek.thread.newChannel()
+channel:popTable()
+-- channel is now released
+print("ok")
 
 --@api-stub: Channel:pushBytes
 -- Pushes raw binary data (a Lua string treated as a byte array) to the channel.
--- Call when you need to invoke push bytes.
--- Build a Channel via the appropriate lurek.thread.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.thread.newChannel(...)
-if instance then
-  local ok, result = pcall(function() return instance:pushBytes({}) end)
-  print("Channel:pushBytes ->", ok, result)
-end
+-- Side-effecting; safe to call any time after init.
+local channel = lurek.thread.newChannel()
+channel:pushBytes({ x = 0, y = 0 })
+print("Channel:pushBytes done")
 
 --@api-stub: Channel:popBytes
 -- Pops a bytes value from the channel and returns it as a Lua string.
--- Call when you need to invoke pop bytes.
--- Build a Channel via the appropriate lurek.thread.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.thread.newChannel(...)
-if instance then
-  local ok, result = pcall(function() return instance:popBytes() end)
-  print("Channel:popBytes ->", ok, result)
-end
+-- Pair with the matching constructor to free resources.
+local channel = lurek.thread.newChannel()
+channel:popBytes()
+-- channel is now released
+print("ok")
 

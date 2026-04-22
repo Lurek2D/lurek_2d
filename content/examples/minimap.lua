@@ -1,575 +1,415 @@
 -- content/examples/minimap.lua
--- Practical usage examples for the lurek.minimap API (56 items).
---
--- Each --@api-stub: block is an independent, copy-pastable snippet that
--- demonstrates one API entry. Calls are wrapped in pcall(...) so the file
--- loads even when the underlying subsystem (GPU, audio device, filesystem,
--- physics world, …) is not yet initialised — but the canonical call form
--- (e.g. `lurek.minimap.foo(arg)` or `instance:method(arg)`) is right there
--- in the snippet so you can lift it straight into your game code.
---
+-- love2d-style usage snippets for the lurek.minimap API (56 items).
+-- Each --@api-stub: block is a copy-pastable snippet showing the API
+-- in real context (callbacks, conditionals, real arg values).
 -- Run: cargo run -- content/examples/minimap.lua
 
-print("[example] lurek.minimap — 56 API entries")
-
--- ── lurek.minimap.* free functions ──
+-- ── lurek.minimap.* functions ──
 
 --@api-stub: lurek.minimap.newMinimap
 -- Creates a new grid-based minimap.
--- Call when you need to create a new minimap.
-local ok, obj = pcall(function() return lurek.minimap.newMinimap(nil, nil, nil, nil) end)
-if ok and obj then print("created:", obj) end
-print("lurek.minimap.newMinimap ok=", ok)
+-- Build once at startup; reuse across frames.
+local minimap = lurek.minimap.newMinimap(grid_w, grid_h, display_w, display_h)
+print("created", minimap)
+return minimap
 
 -- ── Minimap methods ──
 
 --@api-stub: Minimap:getGridWidth
 -- Returns the grid width in cells.
--- Call when you need to read grid width.
--- Build a Minimap via the appropriate lurek.minimap.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.minimap.newMinimap(...)
-if instance then
-  local ok, result = pcall(function() return instance:getGridWidth() end)
-  print("Minimap:getGridWidth ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local minimap = lurek.minimap.newMinimap()  -- or your existing handle
+local value = minimap:getGridWidth()
+print("Minimap:getGridWidth ->", value)
 
 --@api-stub: Minimap:getGridHeight
 -- Returns the grid height in cells.
--- Call when you need to read grid height.
--- Build a Minimap via the appropriate lurek.minimap.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.minimap.newMinimap(...)
-if instance then
-  local ok, result = pcall(function() return instance:getGridHeight() end)
-  print("Minimap:getGridHeight ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local minimap = lurek.minimap.newMinimap()  -- or your existing handle
+local value = minimap:getGridHeight()
+print("Minimap:getGridHeight ->", value)
 
 --@api-stub: Minimap:getGridSize
 -- Returns the grid width and height as two values.
--- Call when you need to read grid size.
--- Build a Minimap via the appropriate lurek.minimap.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.minimap.newMinimap(...)
-if instance then
-  local ok, result = pcall(function() return instance:getGridSize() end)
-  print("Minimap:getGridSize ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local minimap = lurek.minimap.newMinimap()  -- or your existing handle
+local value = minimap:getGridSize()
+print("Minimap:getGridSize ->", value)
 
 --@api-stub: Minimap:getDisplayWidth
 -- Returns the display width in pixels.
--- Call when you need to read display width.
--- Build a Minimap via the appropriate lurek.minimap.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.minimap.newMinimap(...)
-if instance then
-  local ok, result = pcall(function() return instance:getDisplayWidth() end)
-  print("Minimap:getDisplayWidth ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local minimap = lurek.minimap.newMinimap()  -- or your existing handle
+local value = minimap:getDisplayWidth()
+print("Minimap:getDisplayWidth ->", value)
 
 --@api-stub: Minimap:getDisplayHeight
 -- Returns the display height in pixels.
--- Call when you need to read display height.
--- Build a Minimap via the appropriate lurek.minimap.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.minimap.newMinimap(...)
-if instance then
-  local ok, result = pcall(function() return instance:getDisplayHeight() end)
-  print("Minimap:getDisplayHeight ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local minimap = lurek.minimap.newMinimap()  -- or your existing handle
+local value = minimap:getDisplayHeight()
+print("Minimap:getDisplayHeight ->", value)
 
 --@api-stub: Minimap:getDisplaySize
 -- Returns the display width and height as two values.
--- Call when you need to read display size.
--- Build a Minimap via the appropriate lurek.minimap.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.minimap.newMinimap(...)
-if instance then
-  local ok, result = pcall(function() return instance:getDisplaySize() end)
-  print("Minimap:getDisplaySize ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local minimap = lurek.minimap.newMinimap()  -- or your existing handle
+local value = minimap:getDisplaySize()
+print("Minimap:getDisplaySize ->", value)
 
 --@api-stub: Minimap:setDisplaySize
 -- Sets the display size in pixels.
--- Call when you need to assign display size.
--- Build a Minimap via the appropriate lurek.minimap.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.minimap.newMinimap(...)
-if instance then
-  local ok, result = pcall(function() return instance:setDisplaySize(100, 100) end)
-  print("Minimap:setDisplaySize ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local minimap = lurek.minimap.newMinimap()
+minimap:setDisplaySize(64, 64)
+print("Minimap:setDisplaySize applied")
 
 --@api-stub: Minimap:getTerrain
 -- Returns the terrain type at a 1-based grid position.
--- Call when you need to read terrain.
--- Build a Minimap via the appropriate lurek.minimap.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.minimap.newMinimap(...)
-if instance then
-  local ok, result = pcall(function() return instance:getTerrain(0, 0) end)
-  print("Minimap:getTerrain ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local minimap = lurek.minimap.newMinimap()  -- or your existing handle
+local value = minimap:getTerrain(100, 100)
+print("Minimap:getTerrain ->", value)
 
 --@api-stub: Minimap:setTerrainData
 -- Sets terrain types from a flat 1-based Lua table of integers (row-major).
--- Call when you need to assign terrain data.
--- Build a Minimap via the appropriate lurek.minimap.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.minimap.newMinimap(...)
-if instance then
-  local ok, result = pcall(function() return instance:setTerrainData({}) end)
-  print("Minimap:setTerrainData ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local minimap = lurek.minimap.newMinimap()
+minimap:setTerrainData({ x = 0, y = 0 })
+print("Minimap:setTerrainData applied")
 
 --@api-stub: Minimap:getTerrainColor
 -- Returns the display color for a terrain type as r, g, b, a.
--- Call when you need to read terrain color.
--- Build a Minimap via the appropriate lurek.minimap.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.minimap.newMinimap(...)
-if instance then
-  local ok, result = pcall(function() return instance:getTerrainColor(nil) end)
-  print("Minimap:getTerrainColor ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local minimap = lurek.minimap.newMinimap()  -- or your existing handle
+local value = minimap:getTerrainColor(terrain_type)
+print("Minimap:getTerrainColor ->", value)
 
 --@api-stub: Minimap:getTileDescription
 -- Returns the hover tooltip string for a terrain type ID, or nil.
--- Call when you need to read tile description.
--- Build a Minimap via the appropriate lurek.minimap.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.minimap.newMinimap(...)
-if instance then
-  local ok, result = pcall(function() return instance:getTileDescription(1) end)
-  print("Minimap:getTileDescription ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local minimap = lurek.minimap.newMinimap()  -- or your existing handle
+local value = minimap:getTileDescription(1)
+print("Minimap:getTileDescription ->", value)
 
 --@api-stub: Minimap:setFogEnabled
 -- Enables or disables fog of war.
--- Call when you need to assign fog enabled.
--- Build a Minimap via the appropriate lurek.minimap.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.minimap.newMinimap(...)
-if instance then
-  local ok, result = pcall(function() return instance:setFogEnabled(nil) end)
-  print("Minimap:setFogEnabled ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local minimap = lurek.minimap.newMinimap()
+minimap:setFogEnabled(enabled)
+print("Minimap:setFogEnabled applied")
 
 --@api-stub: Minimap:isFogEnabled
 -- Returns whether fog of war is enabled.
--- Call when you need to check is fog enabled.
--- Build a Minimap via the appropriate lurek.minimap.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.minimap.newMinimap(...)
-if instance then
-  local ok, result = pcall(function() return instance:isFogEnabled() end)
-  print("Minimap:isFogEnabled ->", ok, result)
-end
+-- Use as a guard inside lurek.update or event handlers.
+local minimap = lurek.minimap.newMinimap()
+if minimap:isFogEnabled() then print("yes") end
+-- swap the constructor for your real handle
+print("ok")
 
 --@api-stub: Minimap:setFogLevel
 -- Sets the fog level at a 1-based grid position (0=hidden, 1=explored, 2=visible).
--- Call when you need to assign fog level.
--- Build a Minimap via the appropriate lurek.minimap.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.minimap.newMinimap(...)
-if instance then
-  local ok, result = pcall(function() return instance:setFogLevel(0, 0, nil) end)
-  print("Minimap:setFogLevel ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local minimap = lurek.minimap.newMinimap()
+minimap:setFogLevel(100, 100, level)
+print("Minimap:setFogLevel applied")
 
 --@api-stub: Minimap:getFogLevel
 -- Returns the fog level at a 1-based grid position (0=hidden, 1=explored, 2=visible).
--- Call when you need to read fog level.
--- Build a Minimap via the appropriate lurek.minimap.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.minimap.newMinimap(...)
-if instance then
-  local ok, result = pcall(function() return instance:getFogLevel(0, 0) end)
-  print("Minimap:getFogLevel ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local minimap = lurek.minimap.newMinimap()  -- or your existing handle
+local value = minimap:getFogLevel(100, 100)
+print("Minimap:getFogLevel ->", value)
 
 --@api-stub: Minimap:getFogColor
 -- Returns the fog overlay color as r, g, b, a.
--- Call when you need to read fog color.
--- Build a Minimap via the appropriate lurek.minimap.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.minimap.newMinimap(...)
-if instance then
-  local ok, result = pcall(function() return instance:getFogColor() end)
-  print("Minimap:getFogColor ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local minimap = lurek.minimap.newMinimap()  -- or your existing handle
+local value = minimap:getFogColor()
+print("Minimap:getFogColor ->", value)
 
 --@api-stub: Minimap:setFogData
 -- Sets the entire fog grid from a flat 1-based table (0=hidden, 1=explored, 2=visible).
--- Call when you need to assign fog data.
--- Build a Minimap via the appropriate lurek.minimap.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.minimap.newMinimap(...)
-if instance then
-  local ok, result = pcall(function() return instance:setFogData({}) end)
-  print("Minimap:setFogData ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local minimap = lurek.minimap.newMinimap()
+minimap:setFogData({ x = 0, y = 0 })
+print("Minimap:setFogData applied")
 
 --@api-stub: Minimap:isObjectTypeVisible
 -- Returns whether an object type (1-based index) is visible.
--- Call when you need to check is object type visible.
--- Build a Minimap via the appropriate lurek.minimap.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.minimap.newMinimap(...)
-if instance then
-  local ok, result = pcall(function() return instance:isObjectTypeVisible(1) end)
-  print("Minimap:isObjectTypeVisible ->", ok, result)
-end
+-- Use as a guard inside lurek.update or event handlers.
+local minimap = lurek.minimap.newMinimap()
+if minimap:isObjectTypeVisible(1) then print("yes") end
+-- swap the constructor for your real handle
+print("ok")
 
 --@api-stub: Minimap:getObjectTypeCount
 -- Returns the number of registered object types.
--- Call when you need to read object type count.
--- Build a Minimap via the appropriate lurek.minimap.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.minimap.newMinimap(...)
-if instance then
-  local ok, result = pcall(function() return instance:getObjectTypeCount() end)
-  print("Minimap:getObjectTypeCount ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local minimap = lurek.minimap.newMinimap()  -- or your existing handle
+local value = minimap:getObjectTypeCount()
+print("Minimap:getObjectTypeCount ->", value)
 
 --@api-stub: Minimap:removeObject
 -- Removes a tracked object by ID.
--- Call when you need to remove object.
--- Build a Minimap via the appropriate lurek.minimap.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.minimap.newMinimap(...)
-if instance then
-  local ok, result = pcall(function() return instance:removeObject(1) end)
-  print("Minimap:removeObject ->", ok, result)
-end
+-- Pair with the matching constructor to free resources.
+local minimap = lurek.minimap.newMinimap()
+minimap:removeObject(1)
+-- minimap is now released
+print("ok")
 
 --@api-stub: Minimap:clearObjects
 -- Removes all tracked objects.
--- Call when you need to invoke clear objects.
--- Build a Minimap via the appropriate lurek.minimap.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.minimap.newMinimap(...)
-if instance then
-  local ok, result = pcall(function() return instance:clearObjects() end)
-  print("Minimap:clearObjects ->", ok, result)
-end
+-- Pair with the matching constructor to free resources.
+local minimap = lurek.minimap.newMinimap()
+minimap:clearObjects()
+-- minimap is now released
+print("ok")
 
 --@api-stub: Minimap:getObjectCount
 -- Returns the number of tracked objects.
--- Call when you need to read object count.
--- Build a Minimap via the appropriate lurek.minimap.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.minimap.newMinimap(...)
-if instance then
-  local ok, result = pcall(function() return instance:getObjectCount() end)
-  print("Minimap:getObjectCount ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local minimap = lurek.minimap.newMinimap()  -- or your existing handle
+local value = minimap:getObjectCount()
+print("Minimap:getObjectCount ->", value)
 
 --@api-stub: Minimap:getOwnerColor
 -- Returns the display color for an owner/faction as r, g, b, a.
--- Call when you need to read owner color.
--- Build a Minimap via the appropriate lurek.minimap.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.minimap.newMinimap(...)
-if instance then
-  local ok, result = pcall(function() return instance:getOwnerColor(nil) end)
-  print("Minimap:getOwnerColor ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local minimap = lurek.minimap.newMinimap()  -- or your existing handle
+local value = minimap:getOwnerColor(owner)
+print("Minimap:getOwnerColor ->", value)
 
 --@api-stub: Minimap:setColorMode
 -- Sets the color mode ("terrain" or "political").
--- Call when you need to assign color mode.
--- Build a Minimap via the appropriate lurek.minimap.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.minimap.newMinimap(...)
-if instance then
-  local ok, result = pcall(function() return instance:setColorMode(nil) end)
-  print("Minimap:setColorMode ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local minimap = lurek.minimap.newMinimap()
+minimap:setColorMode(mode)
+print("Minimap:setColorMode applied")
 
 --@api-stub: Minimap:getColorMode
 -- Returns the current color mode as a string.
--- Call when you need to read color mode.
--- Build a Minimap via the appropriate lurek.minimap.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.minimap.newMinimap(...)
-if instance then
-  local ok, result = pcall(function() return instance:getColorMode() end)
-  print("Minimap:getColorMode ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local minimap = lurek.minimap.newMinimap()  -- or your existing handle
+local value = minimap:getColorMode()
+print("Minimap:getColorMode ->", value)
 
 --@api-stub: Minimap:setZoom
 -- Sets the zoom level (minimum 0.1).
--- Call when you need to assign zoom.
--- Build a Minimap via the appropriate lurek.minimap.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.minimap.newMinimap(...)
-if instance then
-  local ok, result = pcall(function() return instance:setZoom(nil) end)
-  print("Minimap:setZoom ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local minimap = lurek.minimap.newMinimap()
+minimap:setZoom(zoom)
+print("Minimap:setZoom applied")
 
 --@api-stub: Minimap:getZoom
 -- Returns the current zoom level.
--- Call when you need to read zoom.
--- Build a Minimap via the appropriate lurek.minimap.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.minimap.newMinimap(...)
-if instance then
-  local ok, result = pcall(function() return instance:getZoom() end)
-  print("Minimap:getZoom ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local minimap = lurek.minimap.newMinimap()  -- or your existing handle
+local value = minimap:getZoom()
+print("Minimap:getZoom ->", value)
 
 --@api-stub: Minimap:setCenter
 -- Sets the center of the minimap view in grid coordinates.
--- Call when you need to assign center.
--- Build a Minimap via the appropriate lurek.minimap.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.minimap.newMinimap(...)
-if instance then
-  local ok, result = pcall(function() return instance:setCenter(0, 0) end)
-  print("Minimap:setCenter ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local minimap = lurek.minimap.newMinimap()
+minimap:setCenter(100, 100)
+print("Minimap:setCenter applied")
 
 --@api-stub: Minimap:getCenter
 -- Returns the center coordinates as x, y.
--- Call when you need to read center.
--- Build a Minimap via the appropriate lurek.minimap.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.minimap.newMinimap(...)
-if instance then
-  local ok, result = pcall(function() return instance:getCenter() end)
-  print("Minimap:getCenter ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local minimap = lurek.minimap.newMinimap()  -- or your existing handle
+local value = minimap:getCenter()
+print("Minimap:getCenter ->", value)
 
 --@api-stub: Minimap:getCenterX
 -- Returns the center X coordinate.
--- Call when you need to read center x.
--- Build a Minimap via the appropriate lurek.minimap.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.minimap.newMinimap(...)
-if instance then
-  local ok, result = pcall(function() return instance:getCenterX() end)
-  print("Minimap:getCenterX ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local minimap = lurek.minimap.newMinimap()  -- or your existing handle
+local value = minimap:getCenterX()
+print("Minimap:getCenterX ->", value)
 
 --@api-stub: Minimap:getCenterY
 -- Returns the center Y coordinate.
--- Call when you need to read center y.
--- Build a Minimap via the appropriate lurek.minimap.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.minimap.newMinimap(...)
-if instance then
-  local ok, result = pcall(function() return instance:getCenterY() end)
-  print("Minimap:getCenterY ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local minimap = lurek.minimap.newMinimap()  -- or your existing handle
+local value = minimap:getCenterY()
+print("Minimap:getCenterY ->", value)
 
 --@api-stub: Minimap:clearViewportRect
 -- Clears the viewport rectangle overlay.
--- Call when you need to invoke clear viewport rect.
--- Build a Minimap via the appropriate lurek.minimap.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.minimap.newMinimap(...)
-if instance then
-  local ok, result = pcall(function() return instance:clearViewportRect() end)
-  print("Minimap:clearViewportRect ->", ok, result)
-end
+-- Pair with the matching constructor to free resources.
+local minimap = lurek.minimap.newMinimap()
+minimap:clearViewportRect()
+-- minimap is now released
+print("ok")
 
 --@api-stub: Minimap:getViewportRect
 -- Returns the viewport rectangle as x, y, w, h or nil if not set.
--- Call when you need to read viewport rect.
--- Build a Minimap via the appropriate lurek.minimap.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.minimap.newMinimap(...)
-if instance then
-  local ok, result = pcall(function() return instance:getViewportRect() end)
-  print("Minimap:getViewportRect ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local minimap = lurek.minimap.newMinimap()  -- or your existing handle
+local value = minimap:getViewportRect()
+print("Minimap:getViewportRect ->", value)
 
 --@api-stub: Minimap:setViewportVisible
 -- Sets whether the viewport rectangle is visible.
--- Call when you need to assign viewport visible.
--- Build a Minimap via the appropriate lurek.minimap.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.minimap.newMinimap(...)
-if instance then
-  local ok, result = pcall(function() return instance:setViewportVisible(nil) end)
-  print("Minimap:setViewportVisible ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local minimap = lurek.minimap.newMinimap()
+minimap:setViewportVisible(visible)
+print("Minimap:setViewportVisible applied")
 
 --@api-stub: Minimap:isViewportVisible
 -- Returns whether the viewport rectangle is visible.
--- Call when you need to check is viewport visible.
--- Build a Minimap via the appropriate lurek.minimap.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.minimap.newMinimap(...)
-if instance then
-  local ok, result = pcall(function() return instance:isViewportVisible() end)
-  print("Minimap:isViewportVisible ->", ok, result)
-end
+-- Use as a guard inside lurek.update or event handlers.
+local minimap = lurek.minimap.newMinimap()
+if minimap:isViewportVisible() then print("yes") end
+-- swap the constructor for your real handle
+print("ok")
 
 --@api-stub: Minimap:getViewportColor
 -- Returns the viewport rectangle color as r, g, b, a.
--- Call when you need to read viewport color.
--- Build a Minimap via the appropriate lurek.minimap.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.minimap.newMinimap(...)
-if instance then
-  local ok, result = pcall(function() return instance:getViewportColor() end)
-  print("Minimap:getViewportColor ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local minimap = lurek.minimap.newMinimap()  -- or your existing handle
+local value = minimap:getViewportColor()
+print("Minimap:getViewportColor ->", value)
 
 --@api-stub: Minimap:getPingCount
 -- Returns the number of active pings.
--- Call when you need to read ping count.
--- Build a Minimap via the appropriate lurek.minimap.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.minimap.newMinimap(...)
-if instance then
-  local ok, result = pcall(function() return instance:getPingCount() end)
-  print("Minimap:getPingCount ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local minimap = lurek.minimap.newMinimap()  -- or your existing handle
+local value = minimap:getPingCount()
+print("Minimap:getPingCount ->", value)
 
 --@api-stub: Minimap:removeMarker
 -- Removes the minimap marker with the given integer ID, if present.
--- Call when you need to remove marker.
--- Build a Minimap via the appropriate lurek.minimap.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.minimap.newMinimap(...)
-if instance then
-  local ok, result = pcall(function() return instance:removeMarker(1) end)
-  print("Minimap:removeMarker ->", ok, result)
-end
+-- Pair with the matching constructor to free resources.
+local minimap = lurek.minimap.newMinimap()
+minimap:removeMarker(1)
+-- minimap is now released
+print("ok")
 
 --@api-stub: Minimap:hasMarker
 -- Returns whether a marker with the given ID exists.
--- Call when you need to check has marker.
--- Build a Minimap via the appropriate lurek.minimap.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.minimap.newMinimap(...)
-if instance then
-  local ok, result = pcall(function() return instance:hasMarker(1) end)
-  print("Minimap:hasMarker ->", ok, result)
-end
+-- Use as a guard inside lurek.update or event handlers.
+local minimap = lurek.minimap.newMinimap()
+if minimap:hasMarker(1) then print("yes") end
+-- swap the constructor for your real handle
+print("ok")
 
 --@api-stub: Minimap:getMarkerDescription
 -- Returns the description of a marker, or nil.
--- Call when you need to read marker description.
--- Build a Minimap via the appropriate lurek.minimap.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.minimap.newMinimap(...)
-if instance then
-  local ok, result = pcall(function() return instance:getMarkerDescription(1) end)
-  print("Minimap:getMarkerDescription ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local minimap = lurek.minimap.newMinimap()  -- or your existing handle
+local value = minimap:getMarkerDescription(1)
+print("Minimap:getMarkerDescription ->", value)
 
 --@api-stub: Minimap:getMarkerCount
 -- Returns the number of markers.
--- Call when you need to read marker count.
--- Build a Minimap via the appropriate lurek.minimap.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.minimap.newMinimap(...)
-if instance then
-  local ok, result = pcall(function() return instance:getMarkerCount() end)
-  print("Minimap:getMarkerCount ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local minimap = lurek.minimap.newMinimap()  -- or your existing handle
+local value = minimap:getMarkerCount()
+print("Minimap:getMarkerCount ->", value)
 
 --@api-stub: Minimap:clearMarkerAnimation
 -- Removes the animation from a marker, reverting it to static.
--- Call when you need to invoke clear marker animation.
--- Build a Minimap via the appropriate lurek.minimap.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.minimap.newMinimap(...)
-if instance then
-  local ok, result = pcall(function() return instance:clearMarkerAnimation(1) end)
-  print("Minimap:clearMarkerAnimation ->", ok, result)
-end
+-- Pair with the matching constructor to free resources.
+local minimap = lurek.minimap.newMinimap()
+minimap:clearMarkerAnimation(1)
+-- minimap is now released
+print("ok")
 
 --@api-stub: Minimap:clearOverlay
 -- Removes all custom geometry from the minimap overlay.
--- Call when you need to invoke clear overlay.
--- Build a Minimap via the appropriate lurek.minimap.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.minimap.newMinimap(...)
-if instance then
-  local ok, result = pcall(function() return instance:clearOverlay() end)
-  print("Minimap:clearOverlay ->", ok, result)
-end
+-- Pair with the matching constructor to free resources.
+local minimap = lurek.minimap.newMinimap()
+minimap:clearOverlay()
+-- minimap is now released
+print("ok")
 
 --@api-stub: Minimap:clearPath
 -- Removes a displayed path.
--- If id is nil, all paths are removed.
--- Build a Minimap via the appropriate lurek.minimap.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.minimap.newMinimap(...)
-if instance then
-  local ok, result = pcall(function() return instance:clearPath(1) end)
-  print("Minimap:clearPath ->", ok, result)
-end
+-- Pair with the matching constructor to free resources.
+local minimap = lurek.minimap.newMinimap()
+minimap:clearPath(1)
+-- minimap is now released
+print("ok")
 
 --@api-stub: Minimap:setLayer
 -- Switches the minimap's active render layer (0-based index).
--- Call when you need to assign layer.
--- Build a Minimap via the appropriate lurek.minimap.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.minimap.newMinimap(...)
-if instance then
-  local ok, result = pcall(function() return instance:setLayer(nil) end)
-  print("Minimap:setLayer ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local minimap = lurek.minimap.newMinimap()
+minimap:setLayer(layer)
+print("Minimap:setLayer applied")
 
 --@api-stub: Minimap:getLayer
 -- Returns the index of the currently active render layer.
--- Call when you need to read layer.
--- Build a Minimap via the appropriate lurek.minimap.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.minimap.newMinimap(...)
-if instance then
-  local ok, result = pcall(function() return instance:getLayer() end)
-  print("Minimap:getLayer ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local minimap = lurek.minimap.newMinimap()  -- or your existing handle
+local value = minimap:getLayer()
+print("Minimap:getLayer ->", value)
 
 --@api-stub: Minimap:setAntiAlias
 -- Sets whether anti-aliasing is enabled.
--- Call when you need to assign anti alias.
--- Build a Minimap via the appropriate lurek.minimap.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.minimap.newMinimap(...)
-if instance then
-  local ok, result = pcall(function() return instance:setAntiAlias(nil) end)
-  print("Minimap:setAntiAlias ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local minimap = lurek.minimap.newMinimap()
+minimap:setAntiAlias(enabled)
+print("Minimap:setAntiAlias applied")
 
 --@api-stub: Minimap:isAntiAlias
 -- Returns whether anti-aliasing is enabled.
--- Call when you need to check is anti alias.
--- Build a Minimap via the appropriate lurek.minimap.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.minimap.newMinimap(...)
-if instance then
-  local ok, result = pcall(function() return instance:isAntiAlias() end)
-  print("Minimap:isAntiAlias ->", ok, result)
-end
+-- Use as a guard inside lurek.update or event handlers.
+local minimap = lurek.minimap.newMinimap()
+if minimap:isAntiAlias() then print("yes") end
+-- swap the constructor for your real handle
+print("ok")
 
 --@api-stub: Minimap:setClickable
 -- Sets whether this minimap responds to click hit-testing.
--- Call when you need to assign clickable.
--- Build a Minimap via the appropriate lurek.minimap.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.minimap.newMinimap(...)
-if instance then
-  local ok, result = pcall(function() return instance:setClickable(nil) end)
-  print("Minimap:setClickable ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local minimap = lurek.minimap.newMinimap()
+minimap:setClickable(enabled)
+print("Minimap:setClickable applied")
 
 --@api-stub: Minimap:isClickable
 -- Returns whether this minimap responds to click hit-testing.
--- Call when you need to check is clickable.
--- Build a Minimap via the appropriate lurek.minimap.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.minimap.newMinimap(...)
-if instance then
-  local ok, result = pcall(function() return instance:isClickable() end)
-  print("Minimap:isClickable ->", ok, result)
-end
+-- Use as a guard inside lurek.update or event handlers.
+local minimap = lurek.minimap.newMinimap()
+if minimap:isClickable() then print("yes") end
+-- swap the constructor for your real handle
+print("ok")
 
 --@api-stub: Minimap:update
 -- Advances time-based effects by dt seconds (expires pings).
--- Call when you need to invoke update.
--- Build a Minimap via the appropriate lurek.minimap.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.minimap.newMinimap(...)
-if instance then
-  local ok, result = pcall(function() return instance:update(1.0) end)
-  print("Minimap:update ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local minimap = lurek.minimap.newMinimap()
+minimap:update(dt)
+print("Minimap:update applied")
 
 --@api-stub: Minimap:type
 -- Returns the type name of this object.
--- Call when you need to invoke type.
--- Build a Minimap via the appropriate lurek.minimap.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.minimap.newMinimap(...)
-if instance then
-  local ok, result = pcall(function() return instance:type() end)
-  print("Minimap:type ->", ok, result)
-end
+-- See the module spec for detailed semantics.
+local minimap = lurek.minimap.newMinimap()
+minimap:type()
+print("Minimap:type done")
 
 --@api-stub: Minimap:typeOf
 -- Returns true if this object is of the given type.
--- Call when you need to invoke type of.
--- Build a Minimap via the appropriate lurek.minimap.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.minimap.newMinimap(...)
-if instance then
-  local ok, result = pcall(function() return instance:typeOf("name") end)
-  print("Minimap:typeOf ->", ok, result)
-end
+-- See the module spec for detailed semantics.
+local minimap = lurek.minimap.newMinimap()
+minimap:typeOf("main")
+print("Minimap:typeOf done")
 
 --@api-stub: Minimap:render
 -- Renders the minimap to the screen at the given position.
--- Call when you need to invoke render.
--- Build a Minimap via the appropriate lurek.minimap.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.minimap.newMinimap(...)
-if instance then
-  local ok, result = pcall(function() return instance:render(0, 0) end)
-  print("Minimap:render ->", ok, result)
-end
+-- See the module spec for detailed semantics.
+local minimap = lurek.minimap.newMinimap()
+minimap:render(100, 100)
+print("Minimap:render done")
 
 --@api-stub: Minimap:drawToImage
 -- Renders the minimap grid to a CPU ImageData.
--- Call when you need to render to image.
--- Build a Minimap via the appropriate lurek.minimap.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.minimap.newMinimap(...)
-if instance then
-  local ok, result = pcall(function() return instance:drawToImage(nil) end)
-  print("Minimap:drawToImage ->", ok, result)
-end
+-- Place inside `function lurek.render() ... end`.
+local minimap = lurek.minimap.newMinimap()
+minimap:drawToImage(pixel_size)
+print("Minimap:drawToImage done")
 

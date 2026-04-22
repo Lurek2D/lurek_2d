@@ -1,611 +1,441 @@
 -- content/examples/pipeline.lua
--- Practical usage examples for the lurek.pipeline API (60 items).
---
--- Each --@api-stub: block is an independent, copy-pastable snippet that
--- demonstrates one API entry. Calls are wrapped in pcall(...) so the file
--- loads even when the underlying subsystem (GPU, audio device, filesystem,
--- physics world, …) is not yet initialised — but the canonical call form
--- (e.g. `lurek.pipeline.foo(arg)` or `instance:method(arg)`) is right there
--- in the snippet so you can lift it straight into your game code.
---
+-- love2d-style usage snippets for the lurek.pipeline API (60 items).
+-- Each --@api-stub: block is a copy-pastable snippet showing the API
+-- in real context (callbacks, conditionals, real arg values).
 -- Run: cargo run -- content/examples/pipeline.lua
 
-print("[example] lurek.pipeline — 60 API entries")
-
--- ── lurek.pipeline.* free functions ──
+-- ── lurek.pipeline.* functions ──
 
 --@api-stub: lurek.pipeline.newStep
 -- Creates a new pipeline step with the given name and optional callback.
--- Call when you need to create a new step.
-local ok, obj = pcall(function() return lurek.pipeline.newStep("name", function() end) end)
-if ok and obj then print("created:", obj) end
-print("lurek.pipeline.newStep ok=", ok)
+-- Build once at startup; reuse across frames.
+local step = lurek.pipeline.newStep("main", function() print("newStep fired") end)
+print("created", step)
+return step
 
 --@api-stub: lurek.pipeline.newPipeline
 -- Creates a new empty pipeline with the given name (defaults to "pipeline").
--- Call when you need to create a new pipeline.
-local ok, obj = pcall(function() return lurek.pipeline.newPipeline("name") end)
-if ok and obj then print("created:", obj) end
-print("lurek.pipeline.newPipeline ok=", ok)
+-- Build once at startup; reuse across frames.
+local pipeline = lurek.pipeline.newPipeline("main")
+print("created", pipeline)
+return pipeline
 
 --@api-stub: lurek.pipeline.fromTable
 -- Deserialises a pipeline from a definition table.
--- Call when you need to invoke from table.
-local ok, obj = pcall(function() return lurek.pipeline.fromTable(nil) end)
-if ok and obj then print("created:", obj) end
-print("lurek.pipeline.fromTable ok=", ok)
+-- Build once at startup; reuse across frames.
+local fromtable = lurek.pipeline.fromTable(def)
+print("created", fromtable)
+return fromtable
 
 -- ── Step methods ──
 
 --@api-stub: Step:getName
 -- Returns the unique name of this step.
--- Call when you need to read name.
--- Build a Step via the appropriate lurek.pipeline.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.pipeline.newStep(...)
-if instance then
-  local ok, result = pcall(function() return instance:getName() end)
-  print("Step:getName ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local step = lurek.pipeline.newStep()  -- or your existing handle
+local value = step:getName()
+print("Step:getName ->", value)
 
 --@api-stub: Step:setCallback
 -- Stores a Lua function as the execute callback for this step.
--- Call when you need to assign callback.
--- Build a Step via the appropriate lurek.pipeline.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.pipeline.newStep(...)
-if instance then
-  local ok, result = pcall(function() return instance:setCallback(function() end) end)
-  print("Step:setCallback ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local step = lurek.pipeline.newStep()
+step:setCallback(function() print("setCallback fired") end)
+print("Step:setCallback applied")
 
 --@api-stub: Step:setCondition
 -- Stores a Lua function (or nil) as the run-condition for this step.
--- Call when you need to assign condition.
--- Build a Step via the appropriate lurek.pipeline.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.pipeline.newStep(...)
-if instance then
-  local ok, result = pcall(function() return instance:setCondition(nil) end)
-  print("Step:setCondition ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local step = lurek.pipeline.newStep()
+step:setCondition(cond)
+print("Step:setCondition applied")
 
 --@api-stub: Step:setDelay
 -- Sets the delay in seconds to wait after dependencies finish.
--- Call when you need to assign delay.
--- Build a Step via the appropriate lurek.pipeline.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.pipeline.newStep(...)
-if instance then
-  local ok, result = pcall(function() return instance:setDelay(1.0) end)
-  print("Step:setDelay ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local step = lurek.pipeline.newStep()
+step:setDelay(1.0)
+print("Step:setDelay applied")
 
 --@api-stub: Step:getDelay
 -- Returns the configured delay in seconds.
--- Call when you need to read delay.
--- Build a Step via the appropriate lurek.pipeline.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.pipeline.newStep(...)
-if instance then
-  local ok, result = pcall(function() return instance:getDelay() end)
-  print("Step:getDelay ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local step = lurek.pipeline.newStep()  -- or your existing handle
+local value = step:getDelay()
+print("Step:getDelay ->", value)
 
 --@api-stub: Step:setTimeout
 -- Stores a timeout in seconds in the step's metadata.
--- Call when you need to assign timeout.
--- Build a Step via the appropriate lurek.pipeline.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.pipeline.newStep(...)
-if instance then
-  local ok, result = pcall(function() return instance:setTimeout(1.0) end)
-  print("Step:setTimeout ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local step = lurek.pipeline.newStep()
+step:setTimeout(1.0)
+print("Step:setTimeout applied")
 
 --@api-stub: Step:getTimeout
 -- Returns the timeout stored in metadata, or 0.0 if unset.
--- Call when you need to read timeout.
--- Build a Step via the appropriate lurek.pipeline.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.pipeline.newStep(...)
-if instance then
-  local ok, result = pcall(function() return instance:getTimeout() end)
-  print("Step:getTimeout ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local step = lurek.pipeline.newStep()  -- or your existing handle
+local value = step:getTimeout()
+print("Step:getTimeout ->", value)
 
 --@api-stub: Step:setRetryCount
 -- Sets the maximum number of retry attempts on failure.
--- Call when you need to assign retry count.
--- Build a Step via the appropriate lurek.pipeline.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.pipeline.newStep(...)
-if instance then
-  local ok, result = pcall(function() return instance:setRetryCount(10) end)
-  print("Step:setRetryCount ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local step = lurek.pipeline.newStep()
+step:setRetryCount(10)
+print("Step:setRetryCount applied")
 
 --@api-stub: Step:getRetryCount
 -- Returns the configured retry count.
--- Call when you need to read retry count.
--- Build a Step via the appropriate lurek.pipeline.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.pipeline.newStep(...)
-if instance then
-  local ok, result = pcall(function() return instance:getRetryCount() end)
-  print("Step:getRetryCount ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local step = lurek.pipeline.newStep()  -- or your existing handle
+local value = step:getRetryCount()
+print("Step:getRetryCount ->", value)
 
 --@api-stub: Step:setRetryDelay
 -- Sets the delay in seconds between retry attempts.
--- Call when you need to assign retry delay.
--- Build a Step via the appropriate lurek.pipeline.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.pipeline.newStep(...)
-if instance then
-  local ok, result = pcall(function() return instance:setRetryDelay(1.0) end)
-  print("Step:setRetryDelay ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local step = lurek.pipeline.newStep()
+step:setRetryDelay(1.0)
+print("Step:setRetryDelay applied")
 
 --@api-stub: Step:setOptional
 -- Marks whether this step is optional (downstream steps continue on failure).
--- Call when you need to assign optional.
--- Build a Step via the appropriate lurek.pipeline.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.pipeline.newStep(...)
-if instance then
-  local ok, result = pcall(function() return instance:setOptional(nil) end)
-  print("Step:setOptional ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local step = lurek.pipeline.newStep()
+step:setOptional(optional)
+print("Step:setOptional applied")
 
 --@api-stub: Step:isOptional
 -- Returns whether this step is marked as optional.
--- Call when you need to check is optional.
--- Build a Step via the appropriate lurek.pipeline.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.pipeline.newStep(...)
-if instance then
-  local ok, result = pcall(function() return instance:isOptional() end)
-  print("Step:isOptional ->", ok, result)
-end
+-- Use as a guard inside lurek.update or event handlers.
+local step = lurek.pipeline.newStep()
+if step:isOptional() then print("yes") end
+-- swap the constructor for your real handle
+print("ok")
 
 --@api-stub: Step:setOnError
 -- Stores a Lua function (or nil) to call if this step fails.
--- Call when you need to assign on error.
--- Build a Step via the appropriate lurek.pipeline.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.pipeline.newStep(...)
-if instance then
-  local ok, result = pcall(function() return instance:setOnError(function() end) end)
-  print("Step:setOnError ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local step = lurek.pipeline.newStep()
+step:setOnError(function() print("setOnError fired") end)
+print("Step:setOnError applied")
 
 --@api-stub: Step:setData
 -- Stores an arbitrary string value under the given key in step metadata.
--- Call when you need to assign data.
--- Build a Step via the appropriate lurek.pipeline.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.pipeline.newStep(...)
-if instance then
-  local ok, result = pcall(function() return instance:setData("key", nil) end)
-  print("Step:setData ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local step = lurek.pipeline.newStep()
+step:setData("space", value)
+print("Step:setData applied")
 
 --@api-stub: Step:getData
 -- Retrieves a metadata value by key, returning nil if not found.
--- Call when you need to read data.
--- Build a Step via the appropriate lurek.pipeline.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.pipeline.newStep(...)
-if instance then
-  local ok, result = pcall(function() return instance:getData("key") end)
-  print("Step:getData ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local step = lurek.pipeline.newStep()  -- or your existing handle
+local value = step:getData("space")
+print("Step:getData ->", value)
 
 --@api-stub: Step:setTag
 -- Sets the tag on this step for grouping and filtering.
--- Call when you need to assign tag.
--- Build a Step via the appropriate lurek.pipeline.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.pipeline.newStep(...)
-if instance then
-  local ok, result = pcall(function() return instance:setTag("tag") end)
-  print("Step:setTag ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local step = lurek.pipeline.newStep()
+step:setTag("main")
+print("Step:setTag applied")
 
 --@api-stub: Step:getTag
 -- Returns the tag on this step, or nil if unset.
--- Call when you need to read tag.
--- Build a Step via the appropriate lurek.pipeline.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.pipeline.newStep(...)
-if instance then
-  local ok, result = pcall(function() return instance:getTag() end)
-  print("Step:getTag ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local step = lurek.pipeline.newStep()  -- or your existing handle
+local value = step:getTag()
+print("Step:getTag ->", value)
 
 --@api-stub: Step:dependsOn
 -- Adds a dependency on another step by name or PipelineStep.
--- Returns self for chaining.
--- Build a Step via the appropriate lurek.pipeline.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.pipeline.newStep(...)
-if instance then
-  local ok, result = pcall(function() return instance:dependsOn(nil) end)
-  print("Step:dependsOn ->", ok, result)
-end
+-- See the module spec for detailed semantics.
+local step = lurek.pipeline.newStep()
+step:dependsOn(dep)
+print("Step:dependsOn done")
 
 --@api-stub: Step:getDependencies
 -- Returns the list of dependency step names.
--- Call when you need to read dependencies.
--- Build a Step via the appropriate lurek.pipeline.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.pipeline.newStep(...)
-if instance then
-  local ok, result = pcall(function() return instance:getDependencies() end)
-  print("Step:getDependencies ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local step = lurek.pipeline.newStep()  -- or your existing handle
+local value = step:getDependencies()
+print("Step:getDependencies ->", value)
 
 --@api-stub: Step:getDependencyCount
 -- Returns the number of declared dependencies.
--- Call when you need to read dependency count.
--- Build a Step via the appropriate lurek.pipeline.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.pipeline.newStep(...)
-if instance then
-  local ok, result = pcall(function() return instance:getDependencyCount() end)
-  print("Step:getDependencyCount ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local step = lurek.pipeline.newStep()  -- or your existing handle
+local value = step:getDependencyCount()
+print("Step:getDependencyCount ->", value)
 
 --@api-stub: Step:getStatus
 -- Returns the current execution status as a string.
--- Call when you need to read status.
--- Build a Step via the appropriate lurek.pipeline.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.pipeline.newStep(...)
-if instance then
-  local ok, result = pcall(function() return instance:getStatus() end)
-  print("Step:getStatus ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local step = lurek.pipeline.newStep()  -- or your existing handle
+local value = step:getStatus()
+print("Step:getStatus ->", value)
 
 --@api-stub: Step:getError
 -- Returns the error message from the last failed attempt, or nil.
--- Call when you need to read error.
--- Build a Step via the appropriate lurek.pipeline.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.pipeline.newStep(...)
-if instance then
-  local ok, result = pcall(function() return instance:getError() end)
-  print("Step:getError ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local step = lurek.pipeline.newStep()  -- or your existing handle
+local value = step:getError()
+print("Step:getError ->", value)
 
 --@api-stub: Step:getDuration
 -- Returns total seconds spent executing this step.
--- Call when you need to read duration.
--- Build a Step via the appropriate lurek.pipeline.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.pipeline.newStep(...)
-if instance then
-  local ok, result = pcall(function() return instance:getDuration() end)
-  print("Step:getDuration ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local step = lurek.pipeline.newStep()  -- or your existing handle
+local value = step:getDuration()
+print("Step:getDuration ->", value)
 
 --@api-stub: Step:getAttempt
 -- Returns the number of execution attempts so far.
--- Call when you need to read attempt.
--- Build a Step via the appropriate lurek.pipeline.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.pipeline.newStep(...)
-if instance then
-  local ok, result = pcall(function() return instance:getAttempt() end)
-  print("Step:getAttempt ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local step = lurek.pipeline.newStep()  -- or your existing handle
+local value = step:getAttempt()
+print("Step:getAttempt ->", value)
 
 --@api-stub: Step:type
 -- Returns the type name "PipelineStep".
--- Call when you need to invoke type.
--- Build a Step via the appropriate lurek.pipeline.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.pipeline.newStep(...)
-if instance then
-  local ok, result = pcall(function() return instance:type() end)
-  print("Step:type ->", ok, result)
-end
+-- See the module spec for detailed semantics.
+local step = lurek.pipeline.newStep()
+step:type()
+print("Step:type done")
 
 --@api-stub: Step:typeOf
 -- Returns true when the given name matches "PipelineStep" or a parent type.
--- Call when you need to invoke type of.
--- Build a Step via the appropriate lurek.pipeline.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.pipeline.newStep(...)
-if instance then
-  local ok, result = pcall(function() return instance:typeOf("name") end)
-  print("Step:typeOf ->", ok, result)
-end
+-- See the module spec for detailed semantics.
+local step = lurek.pipeline.newStep()
+step:typeOf("main")
+print("Step:typeOf done")
 
 -- ── Pipeline methods ──
 
 --@api-stub: Pipeline:addStep
 -- Adds a step to the pipeline.
--- Returns self for chaining.
--- Build a Pipeline via the appropriate lurek.pipeline.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.pipeline.newPipeline(...)
-if instance then
-  local ok, result = pcall(function() return instance:addStep(nil) end)
-  print("Pipeline:addStep ->", ok, result)
-end
+-- Side-effecting; safe to call any time after init.
+local pipeline = lurek.pipeline.newPipeline()
+pipeline:addStep(step_ud)
+print("Pipeline:addStep done")
 
 --@api-stub: Pipeline:removeStep
 -- Removes a step from the pipeline by name.
--- Call when you need to remove step.
--- Build a Pipeline via the appropriate lurek.pipeline.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.pipeline.newPipeline(...)
-if instance then
-  local ok, result = pcall(function() return instance:removeStep("name") end)
-  print("Pipeline:removeStep ->", ok, result)
-end
+-- Pair with the matching constructor to free resources.
+local pipeline = lurek.pipeline.newPipeline()
+pipeline:removeStep("main")
+-- pipeline is now released
+print("ok")
 
 --@api-stub: Pipeline:getStep
 -- Returns the LuaStep wrapper for the named step, or nil.
--- Call when you need to read step.
--- Build a Pipeline via the appropriate lurek.pipeline.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.pipeline.newPipeline(...)
-if instance then
-  local ok, result = pcall(function() return instance:getStep("name") end)
-  print("Pipeline:getStep ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local pipeline = lurek.pipeline.newPipeline()  -- or your existing handle
+local value = pipeline:getStep("main")
+print("Pipeline:getStep ->", value)
 
 --@api-stub: Pipeline:getSteps
 -- Returns a Lua array of all step wrappers in the pipeline.
--- Call when you need to read steps.
--- Build a Pipeline via the appropriate lurek.pipeline.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.pipeline.newPipeline(...)
-if instance then
-  local ok, result = pcall(function() return instance:getSteps() end)
-  print("Pipeline:getSteps ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local pipeline = lurek.pipeline.newPipeline()  -- or your existing handle
+local value = pipeline:getSteps()
+print("Pipeline:getSteps ->", value)
 
 --@api-stub: Pipeline:getStepCount
 -- Returns the total number of steps.
--- Call when you need to read step count.
--- Build a Pipeline via the appropriate lurek.pipeline.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.pipeline.newPipeline(...)
-if instance then
-  local ok, result = pcall(function() return instance:getStepCount() end)
-  print("Pipeline:getStepCount ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local pipeline = lurek.pipeline.newPipeline()  -- or your existing handle
+local value = pipeline:getStepCount()
+print("Pipeline:getStepCount ->", value)
 
 --@api-stub: Pipeline:getStepsByTag
 -- Returns a Lua array of all steps whose tag matches the given string.
--- Call when you need to read steps by tag.
--- Build a Pipeline via the appropriate lurek.pipeline.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.pipeline.newPipeline(...)
-if instance then
-  local ok, result = pcall(function() return instance:getStepsByTag("tag") end)
-  print("Pipeline:getStepsByTag ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local pipeline = lurek.pipeline.newPipeline()  -- or your existing handle
+local value = pipeline:getStepsByTag("main")
+print("Pipeline:getStepsByTag ->", value)
 
 --@api-stub: Pipeline:clear
 -- Clears all steps from the pipeline.
--- Call when you need to invoke clear.
--- Build a Pipeline via the appropriate lurek.pipeline.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.pipeline.newPipeline(...)
-if instance then
-  local ok, result = pcall(function() return instance:clear() end)
-  print("Pipeline:clear ->", ok, result)
-end
+-- Pair with the matching constructor to free resources.
+local pipeline = lurek.pipeline.newPipeline()
+pipeline:clear()
+-- pipeline is now released
+print("ok")
 
 --@api-stub: Pipeline:validate
 -- Validates the pipeline DAG.
--- Returns (ok, error_array).
--- Build a Pipeline via the appropriate lurek.pipeline.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.pipeline.newPipeline(...)
-if instance then
-  local ok, result = pcall(function() return instance:validate() end)
-  print("Pipeline:validate ->", ok, result)
-end
+-- See the module spec for detailed semantics.
+local pipeline = lurek.pipeline.newPipeline()
+pipeline:validate()
+print("Pipeline:validate done")
 
 --@api-stub: Pipeline:getExecutionOrder
 -- Returns the topological execution order as an array of step names.
--- Call when you need to read execution order.
--- Build a Pipeline via the appropriate lurek.pipeline.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.pipeline.newPipeline(...)
-if instance then
-  local ok, result = pcall(function() return instance:getExecutionOrder() end)
-  print("Pipeline:getExecutionOrder ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local pipeline = lurek.pipeline.newPipeline()  -- or your existing handle
+local value = pipeline:getExecutionOrder()
+print("Pipeline:getExecutionOrder ->", value)
 
 --@api-stub: Pipeline:getParallelGroups
 -- Returns parallel execution groups as a nested array of step name arrays.
--- Call when you need to read parallel groups.
--- Build a Pipeline via the appropriate lurek.pipeline.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.pipeline.newPipeline(...)
-if instance then
-  local ok, result = pcall(function() return instance:getParallelGroups() end)
-  print("Pipeline:getParallelGroups ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local pipeline = lurek.pipeline.newPipeline()  -- or your existing handle
+local value = pipeline:getParallelGroups()
+print("Pipeline:getParallelGroups ->", value)
 
 --@api-stub: Pipeline:run
 -- Executes the pipeline synchronously in topological order.
--- Call when you need to invoke run.
--- Build a Pipeline via the appropriate lurek.pipeline.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.pipeline.newPipeline(...)
-if instance then
-  local ok, result = pcall(function() return instance:run("context value") end)
-  print("Pipeline:run ->", ok, result)
-end
+-- Trigger from input, timers, or game events.
+local pipeline = lurek.pipeline.newPipeline()
+pipeline:run("hello")
+-- trigger from input, timer, or event
+print("ok")
 
 --@api-stub: Pipeline:runAsync
 -- Starts an async pipeline run.
--- Steps are executed one-per-frame via update(dt).
--- Build a Pipeline via the appropriate lurek.pipeline.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.pipeline.newPipeline(...)
-if instance then
-  local ok, result = pcall(function() return instance:runAsync("context value") end)
-  print("Pipeline:runAsync ->", ok, result)
-end
+-- Trigger from input, timers, or game events.
+local pipeline = lurek.pipeline.newPipeline()
+pipeline:runAsync("hello")
+-- trigger from input, timer, or event
+print("ok")
 
 --@api-stub: Pipeline:update
 -- Advances the async pipeline by one tick.
--- Returns true when all steps are done.
--- Build a Pipeline via the appropriate lurek.pipeline.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.pipeline.newPipeline(...)
-if instance then
-  local ok, result = pcall(function() return instance:update(1.0) end)
-  print("Pipeline:update ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local pipeline = lurek.pipeline.newPipeline()
+pipeline:update(dt)
+print("Pipeline:update applied")
 
 --@api-stub: Pipeline:cancel
 -- Cancels all pending and waiting steps.
--- Call when you need to invoke cancel.
--- Build a Pipeline via the appropriate lurek.pipeline.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.pipeline.newPipeline(...)
-if instance then
-  local ok, result = pcall(function() return instance:cancel() end)
-  print("Pipeline:cancel ->", ok, result)
-end
+-- Pair with the matching constructor to free resources.
+local pipeline = lurek.pipeline.newPipeline()
+pipeline:cancel()
+-- pipeline is now released
+print("ok")
 
 --@api-stub: Pipeline:reset
 -- Resets all step states and clears the async context.
--- Call when you need to invoke reset.
--- Build a Pipeline via the appropriate lurek.pipeline.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.pipeline.newPipeline(...)
-if instance then
-  local ok, result = pcall(function() return instance:reset() end)
-  print("Pipeline:reset ->", ok, result)
-end
+-- Pair with the matching constructor to free resources.
+local pipeline = lurek.pipeline.newPipeline()
+pipeline:reset()
+-- pipeline is now released
+print("ok")
 
 --@api-stub: Pipeline:isRunning
 -- Returns true if the pipeline is currently running asynchronously.
--- Call when you need to check is running.
--- Build a Pipeline via the appropriate lurek.pipeline.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.pipeline.newPipeline(...)
-if instance then
-  local ok, result = pcall(function() return instance:isRunning() end)
-  print("Pipeline:isRunning ->", ok, result)
-end
+-- Use as a guard inside lurek.update or event handlers.
+local pipeline = lurek.pipeline.newPipeline()
+if pipeline:isRunning() then print("yes") end
+-- swap the constructor for your real handle
+print("ok")
 
 --@api-stub: Pipeline:isComplete
 -- Returns true if all steps have reached a terminal state.
--- Call when you need to check is complete.
--- Build a Pipeline via the appropriate lurek.pipeline.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.pipeline.newPipeline(...)
-if instance then
-  local ok, result = pcall(function() return instance:isComplete() end)
-  print("Pipeline:isComplete ->", ok, result)
-end
+-- Use as a guard inside lurek.update or event handlers.
+local pipeline = lurek.pipeline.newPipeline()
+if pipeline:isComplete() then print("yes") end
+-- swap the constructor for your real handle
+print("ok")
 
 --@api-stub: Pipeline:setErrorMode
 -- Sets the pipeline error mode: "abort" or "continue".
--- Call when you need to assign error mode.
--- Build a Pipeline via the appropriate lurek.pipeline.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.pipeline.newPipeline(...)
-if instance then
-  local ok, result = pcall(function() return instance:setErrorMode(nil) end)
-  print("Pipeline:setErrorMode ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local pipeline = lurek.pipeline.newPipeline()
+pipeline:setErrorMode(mode)
+print("Pipeline:setErrorMode applied")
 
 --@api-stub: Pipeline:getErrorMode
 -- Returns the current error mode as a string.
--- Call when you need to read error mode.
--- Build a Pipeline via the appropriate lurek.pipeline.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.pipeline.newPipeline(...)
-if instance then
-  local ok, result = pcall(function() return instance:getErrorMode() end)
-  print("Pipeline:getErrorMode ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local pipeline = lurek.pipeline.newPipeline()  -- or your existing handle
+local value = pipeline:getErrorMode()
+print("Pipeline:getErrorMode ->", value)
 
 --@api-stub: Pipeline:getResult
 -- Returns the current result table built from step states, or nil.
--- Call when you need to read result.
--- Build a Pipeline via the appropriate lurek.pipeline.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.pipeline.newPipeline(...)
-if instance then
-  local ok, result = pcall(function() return instance:getResult() end)
-  print("Pipeline:getResult ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local pipeline = lurek.pipeline.newPipeline()  -- or your existing handle
+local value = pipeline:getResult()
+print("Pipeline:getResult ->", value)
 
 --@api-stub: Pipeline:getContext
 -- Returns the stored async context table, or nil.
--- Call when you need to read context.
--- Build a Pipeline via the appropriate lurek.pipeline.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.pipeline.newPipeline(...)
-if instance then
-  local ok, result = pcall(function() return instance:getContext() end)
-  print("Pipeline:getContext ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local pipeline = lurek.pipeline.newPipeline()  -- or your existing handle
+local value = pipeline:getContext()
+print("Pipeline:getContext ->", value)
 
 --@api-stub: Pipeline:setOnComplete
 -- Sets the callback to invoke when the pipeline completes.
--- Call when you need to assign on complete.
--- Build a Pipeline via the appropriate lurek.pipeline.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.pipeline.newPipeline(...)
-if instance then
-  local ok, result = pcall(function() return instance:setOnComplete(function() end) end)
-  print("Pipeline:setOnComplete ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local pipeline = lurek.pipeline.newPipeline()
+pipeline:setOnComplete(function() print("setOnComplete fired") end)
+print("Pipeline:setOnComplete applied")
 
 --@api-stub: Pipeline:setOnStepComplete
 -- Sets the callback to invoke each time a step completes successfully.
--- Call when you need to assign on step complete.
--- Build a Pipeline via the appropriate lurek.pipeline.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.pipeline.newPipeline(...)
-if instance then
-  local ok, result = pcall(function() return instance:setOnStepComplete(function() end) end)
-  print("Pipeline:setOnStepComplete ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local pipeline = lurek.pipeline.newPipeline()
+pipeline:setOnStepComplete(function() print("setOnStepComplete fired") end)
+print("Pipeline:setOnStepComplete applied")
 
 --@api-stub: Pipeline:setOnStepError
 -- Sets the callback to invoke each time a step fails.
--- Call when you need to assign on step error.
--- Build a Pipeline via the appropriate lurek.pipeline.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.pipeline.newPipeline(...)
-if instance then
-  local ok, result = pcall(function() return instance:setOnStepError(function() end) end)
-  print("Pipeline:setOnStepError ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local pipeline = lurek.pipeline.newPipeline()
+pipeline:setOnStepError(function() print("setOnStepError fired") end)
+print("Pipeline:setOnStepError applied")
 
 --@api-stub: Pipeline:getName
 -- Returns the pipeline's name.
--- Call when you need to read name.
--- Build a Pipeline via the appropriate lurek.pipeline.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.pipeline.newPipeline(...)
-if instance then
-  local ok, result = pcall(function() return instance:getName() end)
-  print("Pipeline:getName ->", ok, result)
-end
+-- Cheap to call; safe inside callbacks.
+local pipeline = lurek.pipeline.newPipeline()  -- or your existing handle
+local value = pipeline:getName()
+print("Pipeline:getName ->", value)
 
 --@api-stub: Pipeline:setName
 -- Sets the pipeline's name.
--- Call when you need to assign name.
--- Build a Pipeline via the appropriate lurek.pipeline.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.pipeline.newPipeline(...)
-if instance then
-  local ok, result = pcall(function() return instance:setName("name") end)
-  print("Pipeline:setName ->", ok, result)
-end
+-- Apply at startup or in response to user input.
+local pipeline = lurek.pipeline.newPipeline()
+pipeline:setName("main")
+print("Pipeline:setName applied")
 
 --@api-stub: Pipeline:toTable
 -- Serialises the pipeline definition to a Lua table (no callbacks).
--- Call when you need to invoke to table.
--- Build a Pipeline via the appropriate lurek.pipeline.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.pipeline.newPipeline(...)
-if instance then
-  local ok, result = pcall(function() return instance:toTable() end)
-  print("Pipeline:toTable ->", ok, result)
-end
+-- See the module spec for detailed semantics.
+local pipeline = lurek.pipeline.newPipeline()
+pipeline:toTable()
+print("Pipeline:toTable done")
 
 --@api-stub: Pipeline:type
 -- Returns the type name of this object.
--- Call when you need to invoke type.
--- Build a Pipeline via the appropriate lurek.pipeline.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.pipeline.newPipeline(...)
-if instance then
-  local ok, result = pcall(function() return instance:type() end)
-  print("Pipeline:type ->", ok, result)
-end
+-- See the module spec for detailed semantics.
+local pipeline = lurek.pipeline.newPipeline()
+pipeline:type()
+print("Pipeline:type done")
 
 --@api-stub: Pipeline:onProgress
 -- Registers a callback invoked after every step with `(step_name, status)`.
--- Call when you need to invoke on progress.
--- Build a Pipeline via the appropriate lurek.pipeline.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.pipeline.newPipeline(...)
-if instance then
-  local ok, result = pcall(function() return instance:onProgress(function() end) end)
-  print("Pipeline:onProgress ->", ok, result)
-end
+-- See the module spec for detailed semantics.
+local pipeline = lurek.pipeline.newPipeline()
+pipeline:onProgress(function() print("onProgress fired") end)
+print("Pipeline:onProgress done")
 
 --@api-stub: Pipeline:toAscii
 -- Returns a multi-line ASCII string visualising the pipeline DAG.
--- Call when you need to invoke to ascii.
--- Build a Pipeline via the appropriate lurek.pipeline.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.pipeline.newPipeline(...)
-if instance then
-  local ok, result = pcall(function() return instance:toAscii() end)
-  print("Pipeline:toAscii ->", ok, result)
-end
+-- See the module spec for detailed semantics.
+local pipeline = lurek.pipeline.newPipeline()
+pipeline:toAscii()
+print("Pipeline:toAscii done")
 
 --@api-stub: Pipeline:typeOf
 -- Returns the type identifier string of this pipeline stage object.
--- Call when you need to invoke type of.
--- Build a Pipeline via the appropriate lurek.pipeline.new* constructor first.
-local instance = nil  -- e.g. local instance = lurek.pipeline.newPipeline(...)
-if instance then
-  local ok, result = pcall(function() return instance:typeOf("name") end)
-  print("Pipeline:typeOf ->", ok, result)
-end
+-- See the module spec for detailed semantics.
+local pipeline = lurek.pipeline.newPipeline()
+pipeline:typeOf("main")
+print("Pipeline:typeOf done")
 
