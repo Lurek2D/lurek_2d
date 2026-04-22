@@ -1,23 +1,10 @@
 -- content/examples/event.lua
--- Scaffolded coverage of the lurek.event API (22 items).
+-- Hand-written coverage of the lurek.event API (22 items).
 --
--- Every --@api-stub: block below is a SCAFFOLD. The body must be
--- replaced by hand with a 3-6 line real usage snippet showing how to
--- call the API in real game context, written by reading:
---   * src/lua_api/event_api.rs   (Lua binding, arg types, return shape)
---   * src/event/                 (semantics, side effects)
---   * docs/specs/event.md        (canonical reference)
---
--- Snippet rules (love2d-wiki style):
---   * NO `return` at top-level (breaks the file).
---   * NO `pcall` defensive wrappers, NO `if false then`.
---   * Wrap GPU / audio / physics calls inside
---     `function lurek.render() ... end` or
---     `function lurek.update(dt) ... end` callbacks so the file loads.
---   * Use REAL values: paths like "sfx/jump.ogg", keys like "space",
---     colours like {1, 0.5, 0, 1}.
---   * Keep the two `--` comment lines: 1) what the API does (use the
---     existing description), 2) one line of practical advice.
+-- The event module exposes two layers: a per-frame event queue (push / poll /
+-- wait, plus deferred buffering and an optional history ring) and a Signal
+-- userdata for in-process pub-sub. Signals are independent of the queue and
+-- fire callbacks synchronously.
 --
 -- Run: cargo run -- content/examples/event.lua
 
@@ -25,179 +12,240 @@
 
 --@api-stub: lurek.event.exit
 -- Pushes an exit event, requesting the engine to stop.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/event_api.rs and docs/specs/event.md).
-do  -- TODO: lurek.event.exit
-  local _todo = "TODO: write a real lurek.event.exit usage example"
-  print(_todo)
+-- Pass a non-zero code from CI / smoke runs so the wrapping shell sees the failure.
+do  -- lurek.event.exit
+  local fatal = false
+  if fatal then
+    lurek.event.exit(1)
+  else
+    lurek.event.exit(0)
+  end
 end
 
 --@api-stub: lurek.event.poll
 -- Returns an iterator function that pops events from the queue.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/event_api.rs and docs/specs/event.md).
-do  -- TODO: lurek.event.poll
-  local _todo = "TODO: write a real lurek.event.poll usage example"
-  print(_todo)
+-- Drain the iterator once per frame in lurek.process so no event lingers across ticks.
+do  -- lurek.event.poll
+  function lurek.process(dt)
+    for name, a, b in lurek.event.poll() do
+      if name == "keypressed" and a == "escape" then
+        lurek.event.quit()
+      end
+    end
+  end
 end
 
 --@api-stub: lurek.event.clear
 -- Discards all pending events in the queue.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/event_api.rs and docs/specs/event.md).
-do  -- TODO: lurek.event.clear
-  local _todo = "TODO: write a real lurek.event.clear usage example"
-  print(_todo)
+-- Call on scene transitions to drop stale input that arrived during a loading screen.
+do  -- lurek.event.clear
+  local function load_level(name)
+    lurek.event.clear()
+    lurek.log.info("loaded " .. name .. "; input queue flushed", "scene")
+  end
+  load_level("forest_01")
 end
 
 --@api-stub: lurek.event.newSignal
 -- Creates a new pub-sub Signal dispatcher.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/event_api.rs and docs/specs/event.md).
-do  -- TODO: lurek.event.newSignal
-  local _todo = "TODO: write a real lurek.event.newSignal usage example"
-  print(_todo)
+-- Create one Signal per subsystem (combat, ui, world) so callback churn stays scoped.
+do  -- lurek.event.newSignal
+  local combat = lurek.event.newSignal()
+  combat:register("damage", function(target, amount)
+    lurek.log.info(target .. " took " .. amount .. " hp", "combat")
+  end)
+  combat:emit("damage", "goblin", 12)
 end
 
 --@api-stub: lurek.event.pump
 -- Syncs OS-level events into the queue (no-op in Lurek2D push model).
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/event_api.rs and docs/specs/event.md).
-do  -- TODO: lurek.event.pump
-  local _todo = "TODO: write a real lurek.event.pump usage example"
-  print(_todo)
+-- Provided for love2d portability; safe to leave in main loops ported from love.
+do  -- lurek.event.pump
+  function lurek.process(dt)
+    lurek.event.pump()
+    for name in lurek.event.poll() do
+      lurek.log.debug("event: " .. name, "input")
+    end
+  end
 end
 
 --@api-stub: lurek.event.wait
 -- Blocks until the next event arrives or the optional timeout elapses.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/event_api.rs and docs/specs/event.md).
-do  -- TODO: lurek.event.wait
-  local _todo = "TODO: write a real lurek.event.wait usage example"
-  print(_todo)
+-- Use only in headless tools / editor modes; in a game loop it stalls rendering.
+do  -- lurek.event.wait
+  local name = lurek.event.wait(0.5)
+  if name then
+    lurek.log.info("got event '" .. name .. "' within timeout", "tool")
+  else
+    lurek.log.info("wait timed out, continuing idle", "tool")
+  end
 end
 
 --@api-stub: lurek.event.restart
 -- Requests that the engine restart at the beginning of the next frame.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/event_api.rs and docs/specs/event.md).
-do  -- TODO: lurek.event.restart
-  local _todo = "TODO: write a real lurek.event.restart usage example"
-  print(_todo)
+-- Use after applying graphics settings that need a fresh window / GPU device.
+do  -- lurek.event.restart
+  local function apply_graphics_preset(preset)
+    lurek.log.info("applied preset '" .. preset .. "', restarting", "boot")
+    lurek.event.restart()
+  end
+  apply_graphics_preset("high")
 end
 
 --@api-stub: lurek.event.quit
--- Alias for `exit()` â€” requests the engine to stop at the end of the current frame.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/event_api.rs and docs/specs/event.md).
-do  -- TODO: lurek.event.quit
-  local _todo = "TODO: write a real lurek.event.quit usage example"
-  print(_todo)
+-- Alias for `exit()` — requests the engine to stop at the end of the current frame.
+-- Wire to a confirmed "Quit to desktop" menu button; exit code is always 0.
+do  -- lurek.event.quit
+  local function on_quit_button()
+    lurek.log.info("user requested quit", "ui")
+    lurek.event.quit()
+  end
+  on_quit_button()
 end
 
 --@api-stub: lurek.event.pushDeferred
 -- Pushes a named event to the deferred buffer; it will not reach the main queue.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/event_api.rs and docs/specs/event.md).
-do  -- TODO: lurek.event.pushDeferred
-  local _todo = "TODO: write a real lurek.event.pushDeferred usage example"
-  print(_todo)
+-- Use mid-iteration to avoid mutating the queue you are currently polling.
+do  -- lurek.event.pushDeferred
+  for i = 1, 3 do
+    lurek.event.pushDeferred("spawn", "enemy", i * 64, 0)
+  end
+  lurek.event.flushDeferred()
 end
 
 --@api-stub: lurek.event.flushDeferred
 -- Moves all buffered deferred events into the main event queue and clears the buffer.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/event_api.rs and docs/specs/event.md).
-do  -- TODO: lurek.event.flushDeferred
-  local _todo = "TODO: write a real lurek.event.flushDeferred usage example"
-  print(_todo)
+-- Returns the number of events flushed; call once at the end of each tick.
+do  -- lurek.event.flushDeferred
+  lurek.event.pushDeferred("save", "slot1")
+  lurek.event.pushDeferred("save", "slot2")
+  local moved = lurek.event.flushDeferred()
+  lurek.log.info("flushed " .. moved .. " deferred events", "event")
 end
 
 --@api-stub: lurek.event.enableHistory
 -- Enables event history recording, keeping the last `capacity` pushed events.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/event_api.rs and docs/specs/event.md).
-do  -- TODO: lurek.event.enableHistory
-  local _todo = "TODO: write a real lurek.event.enableHistory usage example"
-  print(_todo)
+-- Pass 0 to disable. Useful for debug overlays or post-mortem crash dumps.
+do  -- lurek.event.enableHistory
+  lurek.event.enableHistory(64)
+  lurek.event.push("checkpoint", "boss_arena")
+  lurek.event.push("achievement", "first_blood")
 end
 
 --@api-stub: lurek.event.getHistory
 -- Returns an array of recent events as `{name, args}` tables.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/event_api.rs and docs/specs/event.md).
-do  -- TODO: lurek.event.getHistory
-  local _todo = "TODO: write a real lurek.event.getHistory usage example"
-  print(_todo)
+-- Walk the result to render a rolling event log, or to dump on crash for repro.
+do  -- lurek.event.getHistory
+  lurek.event.enableHistory(32)
+  lurek.event.push("damage", "player", 5)
+  for _, entry in ipairs(lurek.event.getHistory()) do
+    lurek.log.debug("hist: " .. entry.name .. " #args=" .. #entry.args, "event")
+  end
 end
 
 --@api-stub: lurek.event.clearHistory
 -- Clears all recorded event history.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/event_api.rs and docs/specs/event.md).
-do  -- TODO: lurek.event.clearHistory
-  local _todo = "TODO: write a real lurek.event.clearHistory usage example"
-  print(_todo)
+-- Call when entering a new level so the debug overlay does not show prior-level events.
+do  -- lurek.event.clearHistory
+  lurek.event.enableHistory(16)
+  lurek.event.push("temp_event")
+  lurek.event.clearHistory()
+  lurek.log.info("history cleared, entries=" .. #lurek.event.getHistory(), "event")
 end
 
 --@api-stub: lurek.event.push
 -- Adds an event item to the end of the event queue for processing.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/event_api.rs and docs/specs/event.md).
-do  -- TODO: lurek.event.push
-  local _todo = "TODO: write a real lurek.event.push usage example"
-  print(_todo)
+-- Extra args travel with the event and surface as additional return values from poll().
+do  -- lurek.event.push
+  lurek.event.push("damage", "player", 12, "fire")
+  for name, target, amount, kind in lurek.event.poll() do
+    if name == "damage" then
+      lurek.log.info(target .. " took " .. amount .. " " .. kind, "combat")
+    end
+  end
 end
 
 -- ── Signal methods ──
 
 --@api-stub: Signal:emit
 -- Emits the named event, calling all registered callbacks with extra arguments.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/event_api.rs and docs/specs/event.md).
-do  -- TODO: Signal:emit
-  local _todo = "TODO: write a real Signal:emit usage example"
-  print(_todo)
+-- Synchronous: callbacks run on the calling thread before emit returns.
+do  -- Signal:emit
+  local sig = lurek.event.newSignal()
+  sig:register("level_up", function(actor, new_level)
+    lurek.log.info(actor .. " reached level " .. new_level, "rpg")
+  end)
+  sig:emit("level_up", "hero", 7)
 end
 
 --@api-stub: Signal:remove
 -- Removes a subscription by handle ID.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/event_api.rs and docs/specs/event.md).
-do  -- TODO: Signal:remove
-  local _todo = "TODO: write a real Signal:remove usage example"
-  print(_todo)
+-- Capture the handle returned by :register and remove it when the listener is destroyed.
+do  -- Signal:remove
+  local sig = lurek.event.newSignal()
+  local handle = sig:register("tick", function() end)
+  local removed = sig:remove(handle)
+  lurek.log.info("unsubscribed handle=" .. handle .. " ok=" .. tostring(removed), "event")
 end
 
 --@api-stub: Signal:clear
 -- Removes all callbacks for the named event.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/event_api.rs and docs/specs/event.md).
-do  -- TODO: Signal:clear
-  local _todo = "TODO: write a real Signal:clear usage example"
-  print(_todo)
+-- Use on scene unload to drop every listener for one event without tracking handles.
+do  -- Signal:clear
+  local sig = lurek.event.newSignal()
+  sig:register("damage", function() end)
+  sig:register("damage", function() end)
+  local n = sig:clear("damage")
+  lurek.log.info("dropped " .. n .. " damage listeners", "event")
 end
 
 --@api-stub: Signal:clearAll
 -- Removes all callbacks across all events.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/event_api.rs and docs/specs/event.md).
-do  -- TODO: Signal:clearAll
-  local _todo = "TODO: write a real Signal:clearAll usage example"
-  print(_todo)
+-- Heavy hammer; reserve for full Signal teardown when the owning subsystem shuts down.
+do  -- Signal:clearAll
+  local sig = lurek.event.newSignal()
+  sig:register("a", function() end)
+  sig:register("b", function() end)
+  local total = sig:clearAll()
+  lurek.log.info("dispatcher reset, removed=" .. total, "event")
 end
 
 --@api-stub: Signal:getCount
 -- Returns the callback count for the named event.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/event_api.rs and docs/specs/event.md).
-do  -- TODO: Signal:getCount
-  local _todo = "TODO: write a real Signal:getCount usage example"
-  print(_todo)
+-- Branch on it to skip building expensive emit args when no one is listening.
+do  -- Signal:getCount
+  local sig = lurek.event.newSignal()
+  sig:register("frame", function() end)
+  if sig:getCount("frame") > 0 then
+    sig:emit("frame", 0.016)
+  end
 end
 
 --@api-stub: Signal:getTotalCount
 -- Returns the total callback count across all events.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/event_api.rs and docs/specs/event.md).
-do  -- TODO: Signal:getTotalCount
-  local _todo = "TODO: write a real Signal:getTotalCount usage example"
-  print(_todo)
+-- Surface in a debug overlay to spot listener leaks (count climbing each frame).
+do  -- Signal:getTotalCount
+  local sig = lurek.event.newSignal()
+  sig:register("a", function() end)
+  sig:register("b", function() end)
+  lurek.log.debug("signal listener count=" .. sig:getTotalCount(), "diag")
 end
 
 --@api-stub: Signal:type
 -- Returns the type name of this object.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/event_api.rs and docs/specs/event.md).
-do  -- TODO: Signal:type
-  local _todo = "TODO: write a real Signal:type usage example"
-  print(_todo)
+-- Use in generic helpers that accept multiple userdata kinds and need to dispatch on type.
+do  -- Signal:type
+  local sig = lurek.event.newSignal()
+  local kind = sig:type()
+  lurek.log.info("created object of type=" .. kind, "diag")
 end
 
 --@api-stub: Signal:typeOf
 -- Returns true if the given type name matches this object's type or any parent type.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/event_api.rs and docs/specs/event.md).
-do  -- TODO: Signal:typeOf
-  local _todo = "TODO: write a real Signal:typeOf usage example"
-  print(_todo)
+-- Use as a guard in library code that should accept any Signal-derived dispatcher.
+do  -- Signal:typeOf
+  local sig = lurek.event.newSignal()
+  if sig:typeOf("Signal") and sig:typeOf("Object") then
+    lurek.log.info("dispatcher passes Signal+Object guard", "diag")
+  end
 end
-
