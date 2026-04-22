@@ -1,23 +1,11 @@
 -- content/examples/animation.lua
--- Scaffolded coverage of the lurek.animation API (45 items).
+-- Hand-written coverage of the lurek.animation API (45 items).
 --
--- Every --@api-stub: block below is a SCAFFOLD. The body must be
--- replaced by hand with a 3-6 line real usage snippet showing how to
--- call the API in real game context, written by reading:
---   * src/lua_api/animation_api.rs   (Lua binding, arg types, return shape)
---   * src/animation/                 (semantics, side effects)
---   * docs/specs/animation.md        (canonical reference)
---
--- Snippet rules (love2d-wiki style):
---   * NO `return` at top-level (breaks the file).
---   * NO `pcall` defensive wrappers, NO `if false then`.
---   * Wrap GPU / audio / physics calls inside
---     `function lurek.render() ... end` or
---     `function lurek.update(dt) ... end` callbacks so the file loads.
---   * Use REAL values: paths like "sfx/jump.ogg", keys like "space",
---     colours like {1, 0.5, 0, 1}.
---   * Keep the two `--` comment lines: 1) what the API does (use the
---     existing description), 2) one line of practical advice.
+-- Animations are controllers built from a frame pool plus named clips.
+-- Build them with `lurek.animation.new()` then drive them from
+-- `lurek.process(dt)` (advance) and `lurek.render()` (consume the quad
+-- via `:getQuad()` and pass it to `lurek.render.drawQuad`). State
+-- machines and blend-layer sets layer richer behaviour on top.
 --
 -- Run: cargo run -- content/examples/animation.lua
 
@@ -25,371 +13,491 @@
 
 --@api-stub: lurek.animation.new
 -- Creates a new, empty Animation controller.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/animation_api.rs and docs/specs/animation.md).
-do  -- TODO: lurek.animation.new
-  local _todo = "TODO: write a real lurek.animation.new usage example"
-  print(_todo)
+-- Call once at startup; populate it with `:addFrame` and `:addClip` before `:play`.
+do  -- lurek.animation.new
+  local hero = lurek.animation.new()
+  hero:addFrame(0, 0, 32, 32)
+  hero:addFrame(32, 0, 32, 32)
+  hero:addClip("idle", {0, 1}, 4, true)
+  hero:play("idle")
 end
 
 --@api-stub: lurek.animation.fromAseprite
 -- Parses an Aseprite JSON export string and builds an Animation with clips and frames.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/animation_api.rs and docs/specs/animation.md).
-do  -- TODO: lurek.animation.fromAseprite
-  local _todo = "TODO: write a real lurek.animation.fromAseprite usage example"
-  print(_todo)
+-- Use when you author sprites in Aseprite and export the JSON sidecar alongside the sheet PNG.
+do  -- lurek.animation.fromAseprite
+  local json = lurek.fs.read("assets/hero.json")
+  if json then
+    local hero = lurek.animation.fromAseprite(json)
+    hero:play("walk")
+  end
 end
 
 --@api-stub: lurek.animation.newStateMachine
 -- Creates an animation FSM from an Animation controller and an initial state name.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/animation_api.rs and docs/specs/animation.md).
-do  -- TODO: lurek.animation.newStateMachine
-  local _todo = "TODO: write a real lurek.animation.newStateMachine usage example"
-  print(_todo)
+-- Build the Animation first; the FSM consumes it, so do not reuse the original handle afterwards.
+do  -- lurek.animation.newStateMachine
+  local anim = lurek.animation.new()
+  anim:addFrame(0, 0, 32, 32)
+  anim:addClip("idle", {0}, 1, true)
+  local fsm = lurek.animation.newStateMachine(anim, "idle")
+  fsm:addState("idle", "idle", true)
 end
 
 --@api-stub: lurek.animation.newCurve
--- Creates a new empty [`AnimCurve`] with linear interpolation.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/animation_api.rs and docs/specs/animation.md).
-do  -- TODO: lurek.animation.newCurve
-  local _todo = "TODO: write a real lurek.animation.newCurve usage example"
-  print(_todo)
+-- Creates a new empty AnimCurve with linear interpolation.
+-- Use for tween-style value tracks (camera zoom, light intensity) that are not full sprite clips.
+do  -- lurek.animation.newCurve
+  local zoom = lurek.animation.newCurve()
+  zoom:addKeyframe(0.0, 1.0)
+  zoom:addKeyframe(1.5, 2.0)
+  local current = zoom:eval(0.75)
+  lurek.log.info("camera zoom at t=0.75 -> " .. current, "anim")
 end
 
 --@api-stub: lurek.animation.newSyncGroup
--- Creates a new empty [`AnimSyncGroup`].
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/animation_api.rs and docs/specs/animation.md).
-do  -- TODO: lurek.animation.newSyncGroup
-  local _todo = "TODO: write a real lurek.animation.newSyncGroup usage example"
-  print(_todo)
+-- Creates a new empty AnimSyncGroup.
+-- Use to keep a squad of enemies marching in lockstep so their footfalls line up visually.
+do  -- lurek.animation.newSyncGroup
+  local squad = lurek.animation.newSyncGroup()
+  squad:add(1)
+  squad:add(2)
+  lurek.log.info("synced animations: " .. squad:memberCount(), "anim")
 end
 
 --@api-stub: lurek.animation.newBlendLayerSet
--- Creates a new empty [`BlendLayerSet`] for compositing multiple animation clips.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/animation_api.rs and docs/specs/animation.md).
-do  -- TODO: lurek.animation.newBlendLayerSet
-  local _todo = "TODO: write a real lurek.animation.newBlendLayerSet usage example"
-  print(_todo)
+-- Creates a new empty BlendLayerSet for compositing multiple animation clips.
+-- Use for upper-body / lower-body splits: the legs run while the torso aims a weapon.
+do  -- lurek.animation.newBlendLayerSet
+  local bls = lurek.animation.newBlendLayerSet()
+  bls:addLayer("base", "run", 1.0)
+  bls:addLayer("upper", "aim", 0.8, {"spine", "arm_r"})
 end
 
 -- ── Animation methods ──
 
 --@api-stub: Animation:addFrame
 -- Adds a single frame to the frame pool by source rectangle.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/animation_api.rs and docs/specs/animation.md).
-do  -- TODO: Animation:addFrame
-  local _todo = "TODO: write a real Animation:addFrame usage example"
-  print(_todo)
+-- Use when frames are irregular sizes; for uniform grids prefer `:addFramesFromGrid`.
+do  -- Animation:addFrame
+  local anim = lurek.animation.new()
+  local idx = anim:addFrame(0, 0, 48, 64)
+  anim:addFrame(48, 0, 48, 64)
+  lurek.log.debug("added frame index=" .. idx, "anim")
 end
 
 --@api-stub: Animation:play
 -- Starts playback of the named clip.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/animation_api.rs and docs/specs/animation.md).
-do  -- TODO: Animation:play
-  local _todo = "TODO: write a real Animation:play usage example"
-  print(_todo)
+-- Returns true on success; check the result before assuming the clip name was registered.
+do  -- Animation:play
+  local anim = lurek.animation.new()
+  anim:addFrame(0, 0, 32, 32)
+  anim:addClip("walk", {0}, 8, true)
+  if not anim:play("walk") then
+    lurek.log.warn("clip 'walk' not registered", "anim")
+  end
 end
 
 --@api-stub: Animation:stop
 -- Stops playback and resets to frame 0.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/animation_api.rs and docs/specs/animation.md).
-do  -- TODO: Animation:stop
-  local _todo = "TODO: write a real Animation:stop usage example"
-  print(_todo)
+-- Call when leaving a state (e.g. enemy died) so the next `:play` starts cleanly.
+do  -- Animation:stop
+  local anim = lurek.animation.new()
+  anim:addFrame(0, 0, 32, 32)
+  anim:addClip("walk", {0}, 8, true)
+  anim:play("walk")
+  anim:stop()
 end
 
 --@api-stub: Animation:pause
 -- Pauses playback at the current frame.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/animation_api.rs and docs/specs/animation.md).
-do  -- TODO: Animation:pause
-  local _todo = "TODO: write a real Animation:pause usage example"
-  print(_todo)
+-- Use when the game opens a menu or a cutscene; resume later with `:resume`.
+do  -- Animation:pause
+  local anim = lurek.animation.new()
+  anim:addFrame(0, 0, 32, 32)
+  anim:addClip("walk", {0}, 8, true)
+  anim:play("walk")
+  anim:pause()
 end
 
 --@api-stub: Animation:resume
 -- Resumes playback from the current frame.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/animation_api.rs and docs/specs/animation.md).
-do  -- TODO: Animation:resume
-  local _todo = "TODO: write a real Animation:resume usage example"
-  print(_todo)
+-- Pair with `:pause` around menu/dialog screens so animations pick up exactly where they stopped.
+do  -- Animation:resume
+  local anim = lurek.animation.new()
+  anim:addFrame(0, 0, 32, 32)
+  anim:addClip("walk", {0}, 8, true)
+  anim:play("walk")
+  anim:pause()
+  anim:resume()
 end
 
 --@api-stub: Animation:update
 -- Advances the animation by dt seconds.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/animation_api.rs and docs/specs/animation.md).
-do  -- TODO: Animation:update
-  local _todo = "TODO: write a real Animation:update usage example"
-  print(_todo)
+-- Call once per frame from `lurek.process(dt)`; never from `lurek.render` or you skew with the framerate.
+do  -- Animation:update
+  local anim = lurek.animation.new()
+  anim:addFrame(0, 0, 32, 32)
+  anim:addClip("walk", {0}, 8, true)
+  anim:play("walk")
+  function lurek.process(dt) anim:update(dt) end
 end
 
 --@api-stub: Animation:getQuad
 -- Returns the source quad (x, y, w, h) for the current frame, or nil.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/animation_api.rs and docs/specs/animation.md).
-do  -- TODO: Animation:getQuad
-  local _todo = "TODO: write a real Animation:getQuad usage example"
-  print(_todo)
+-- Use the returned table directly as the source rect for `lurek.render.drawQuad` of the sprite-sheet.
+do  -- Animation:getQuad
+  local anim = lurek.animation.new()
+  anim:addFrame(0, 0, 32, 32)
+  anim:addClip("idle", {0}, 4, true)
+  anim:play("idle")
+  local q = anim:getQuad()
+  if q then lurek.log.debug("frame quad w=" .. q.w .. " h=" .. q.h, "anim") end
 end
 
 --@api-stub: Animation:pollEvents
 -- Drains and returns all pending animation events as a table.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/animation_api.rs and docs/specs/animation.md).
-do  -- TODO: Animation:pollEvents
-  local _todo = "TODO: write a real Animation:pollEvents usage example"
-  print(_todo)
+-- Drain every frame; events include `frame_changed` and `clip_finished` and are dropped if not read.
+do  -- Animation:pollEvents
+  local anim = lurek.animation.new()
+  anim:addFrame(0, 0, 32, 32)
+  anim:addClip("attack", {0}, 8, false)
+  anim:play("attack")
+  function lurek.process(dt)
+    anim:update(dt)
+    for _, ev in ipairs(anim:pollEvents()) do
+      if ev.type == "clip_finished" then lurek.log.info("attack done", "anim") end
+    end
+  end
 end
 
 --@api-stub: Animation:isPlaying
 -- Returns true if a clip is currently playing.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/animation_api.rs and docs/specs/animation.md).
-do  -- TODO: Animation:isPlaying
-  local _todo = "TODO: write a real Animation:isPlaying usage example"
-  print(_todo)
+-- Use to gate input: don't accept a new attack command while the previous swing is still playing.
+do  -- Animation:isPlaying
+  local anim = lurek.animation.new()
+  anim:addFrame(0, 0, 32, 32)
+  anim:addClip("swing", {0}, 6, false)
+  anim:play("swing")
+  if anim:isPlaying() then lurek.log.debug("swing in progress, ignoring input", "combat") end
 end
 
 --@api-stub: Animation:isLooping
 -- Returns true if the current clip is set to loop.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/animation_api.rs and docs/specs/animation.md).
-do  -- TODO: Animation:isLooping
-  local _todo = "TODO: write a real Animation:isLooping usage example"
-  print(_todo)
+-- Branch on this when deciding whether the AI should switch states automatically when the clip ends.
+do  -- Animation:isLooping
+  local anim = lurek.animation.new()
+  anim:addFrame(0, 0, 32, 32)
+  anim:addClip("idle", {0}, 2, true)
+  anim:play("idle")
+  if not anim:isLooping() then lurek.log.warn("idle clip should loop but does not", "anim") end
 end
 
 --@api-stub: Animation:getClip
 -- Returns the name of the currently playing clip, or nil.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/animation_api.rs and docs/specs/animation.md).
-do  -- TODO: Animation:getClip
-  local _todo = "TODO: write a real Animation:getClip usage example"
-  print(_todo)
+-- Useful for debug overlays and for asserting state-machine transitions actually fired.
+do  -- Animation:getClip
+  local anim = lurek.animation.new()
+  anim:addFrame(0, 0, 32, 32)
+  anim:addClip("run", {0}, 12, true)
+  anim:play("run")
+  local clip = anim:getClip()
+  if clip then lurek.log.debug("now playing: " .. clip, "anim") end
 end
 
 --@api-stub: Animation:getSpeed
 -- Returns the playback speed multiplier.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/animation_api.rs and docs/specs/animation.md).
-do  -- TODO: Animation:getSpeed
-  local _todo = "TODO: write a real Animation:getSpeed usage example"
-  print(_todo)
+-- Read before changing it so you can restore the original after a brief slow-mo effect.
+do  -- Animation:getSpeed
+  local anim = lurek.animation.new()
+  anim:addFrame(0, 0, 32, 32)
+  anim:addClip("run", {0}, 12, true)
+  local previous = anim:getSpeed()
+  anim:setSpeed(previous * 0.5)
 end
 
 --@api-stub: Animation:setSpeed
 -- Sets the playback speed multiplier.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/animation_api.rs and docs/specs/animation.md).
-do  -- TODO: Animation:setSpeed
-  local _todo = "TODO: write a real Animation:setSpeed usage example"
-  print(_todo)
+-- 1.0 is normal, 2.0 doubles fps, 0.0 freezes; negative values are clamped to 0.
+do  -- Animation:setSpeed
+  local anim = lurek.animation.new()
+  anim:addFrame(0, 0, 32, 32)
+  anim:addClip("run", {0}, 12, true)
+  anim:play("run")
+  anim:setSpeed(2.0)
 end
 
 --@api-stub: Animation:getFrameCount
 -- Returns the total number of frames in the frame pool.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/animation_api.rs and docs/specs/animation.md).
-do  -- TODO: Animation:getFrameCount
-  local _todo = "TODO: write a real Animation:getFrameCount usage example"
-  print(_todo)
+-- Use as a sanity check after `:addFramesFromGrid` to confirm the sheet was sliced correctly.
+do  -- Animation:getFrameCount
+  local anim = lurek.animation.new()
+  anim:addFrame(0, 0, 32, 32)
+  anim:addFrame(32, 0, 32, 32)
+  if anim:getFrameCount() ~= 2 then lurek.log.error("frame pool wrong size", "anim") end
 end
 
 --@api-stub: Animation:getClipCount
 -- Returns the number of registered clips.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/animation_api.rs and docs/specs/animation.md).
-do  -- TODO: Animation:getClipCount
-  local _todo = "TODO: write a real Animation:getClipCount usage example"
-  print(_todo)
+-- Helpful in tooling to verify an Aseprite import populated all expected clips.
+do  -- Animation:getClipCount
+  local anim = lurek.animation.new()
+  anim:addFrame(0, 0, 32, 32)
+  anim:addClip("idle", {0}, 4, true)
+  lurek.log.info("clips registered: " .. anim:getClipCount(), "anim")
 end
 
 --@api-stub: Animation:getCurrentFrame
 -- Returns the current position within the active clip (0-based).
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/animation_api.rs and docs/specs/animation.md).
-do  -- TODO: Animation:getCurrentFrame
-  local _todo = "TODO: write a real Animation:getCurrentFrame usage example"
-  print(_todo)
+-- Use to drive frame-locked logic such as triggering a footstep sound on frame 3 of "walk".
+do  -- Animation:getCurrentFrame
+  local anim = lurek.animation.new()
+  anim:addFrame(0, 0, 32, 32)
+  anim:addClip("walk", {0}, 8, true)
+  anim:play("walk")
+  if anim:getCurrentFrame() == 3 then lurek.audio.play("sfx/step.ogg") end
 end
 
 --@api-stub: Animation:setFrame
 -- Sets the playback position within the current clip.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/animation_api.rs and docs/specs/animation.md).
-do  -- TODO: Animation:setFrame
-  local _todo = "TODO: write a real Animation:setFrame usage example"
-  print(_todo)
+-- Use to scrub an editor timeline or to align two animations at a specific frame.
+do  -- Animation:setFrame
+  local anim = lurek.animation.new()
+  anim:addFrame(0, 0, 32, 32)
+  anim:addClip("walk", {0}, 8, true)
+  anim:play("walk")
+  anim:setFrame(0)
 end
 
 --@api-stub: Animation:getBlendState
 -- Returns the two quads and blend factor during a crossfade, or nil when not blending.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/animation_api.rs and docs/specs/animation.md).
-do  -- TODO: Animation:getBlendState
-  local _todo = "TODO: write a real Animation:getBlendState usage example"
-  print(_todo)
+-- During a crossfade, draw both quads with alpha = blend / (1 - blend) for a soft transition.
+do  -- Animation:getBlendState
+  local anim = lurek.animation.new()
+  anim:addFrame(0, 0, 32, 32)
+  anim:addClip("idle", {0}, 4, true)
+  anim:play("idle")
+  local bs = anim:getBlendState()
+  if bs then lurek.log.debug("crossfade blend=" .. bs.blend, "anim") end
 end
 
 --@api-stub: Animation:drawToImage
 -- Renders the current animation frame into a new ImageData (white bg, blue frame rect).
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/animation_api.rs and docs/specs/animation.md).
-do  -- TODO: Animation:drawToImage
-  local _todo = "TODO: write a real Animation:drawToImage usage example"
-  print(_todo)
+-- Use to bake a debug thumbnail of the current frame for tooling or screenshot tests.
+do  -- Animation:drawToImage
+  local anim = lurek.animation.new()
+  anim:addFrame(0, 0, 32, 32)
+  anim:addClip("idle", {0}, 4, true)
+  anim:play("idle")
+  local thumb = anim:drawToImage(64, 64)
+  thumb:save("save/anim_thumb.png")
 end
 
 -- ── AnimStateMachine methods ──
 
 --@api-stub: AnimStateMachine:update
 -- Advances the FSM by `dt` seconds, evaluating transitions.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/animation_api.rs and docs/specs/animation.md).
-do  -- TODO: AnimStateMachine:update
-  local _todo = "TODO: write a real AnimStateMachine:update usage example"
-  print(_todo)
+-- Call from `lurek.process(dt)`; transitions fire only here, never inside `setParam`.
+do  -- AnimStateMachine:update
+  local anim = lurek.animation.new()
+  anim:addFrame(0, 0, 32, 32); anim:addClip("idle", {0}, 4, true)
+  local fsm = lurek.animation.newStateMachine(anim, "idle")
+  fsm:addState("idle", "idle", true)
+  function lurek.process(dt) fsm:update(dt) end
 end
 
 --@api-stub: AnimStateMachine:getState
 -- Returns the name of the currently active state.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/animation_api.rs and docs/specs/animation.md).
-do  -- TODO: AnimStateMachine:getState
-  local _todo = "TODO: write a real AnimStateMachine:getState usage example"
-  print(_todo)
+-- Use for HUD overlays and for asserting that gameplay parameter changes flipped the state as expected.
+do  -- AnimStateMachine:getState
+  local anim = lurek.animation.new()
+  anim:addFrame(0, 0, 32, 32); anim:addClip("idle", {0}, 4, true)
+  local fsm = lurek.animation.newStateMachine(anim, "idle")
+  fsm:addState("idle", "idle", true)
+  if fsm:getState() ~= "idle" then lurek.log.warn("unexpected initial state", "anim") end
 end
 
 --@api-stub: AnimStateMachine:forceState
 -- Immediately jumps to the named state, bypassing transition conditions.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/animation_api.rs and docs/specs/animation.md).
-do  -- TODO: AnimStateMachine:forceState
-  local _todo = "TODO: write a real AnimStateMachine:forceState usage example"
-  print(_todo)
+-- Use sparingly — for spawn, respawn, and cutscene exits. Returns true if the target state existed.
+do  -- AnimStateMachine:forceState
+  local anim = lurek.animation.new()
+  anim:addFrame(0, 0, 32, 32); anim:addClip("idle", {0}, 4, true); anim:addClip("dead", {0}, 1, false)
+  local fsm = lurek.animation.newStateMachine(anim, "idle")
+  fsm:addState("idle", "idle", true); fsm:addState("dead", "dead", false)
+  if not fsm:forceState("dead") then lurek.log.error("dead state missing", "anim") end
 end
 
 --@api-stub: AnimStateMachine:setParam
 -- Sets an FSM parameter value (number, boolean, or integer supported).
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/animation_api.rs and docs/specs/animation.md).
-do  -- TODO: AnimStateMachine:setParam
-  local _todo = "TODO: write a real AnimStateMachine:setParam usage example"
-  print(_todo)
+-- Push gameplay variables (speed, hp, jumping) here every frame so registered transitions can react.
+do  -- AnimStateMachine:setParam
+  local anim = lurek.animation.new()
+  anim:addFrame(0, 0, 32, 32); anim:addClip("idle", {0}, 4, true); anim:addClip("run", {0}, 8, true)
+  local fsm = lurek.animation.newStateMachine(anim, "idle")
+  fsm:addState("idle", "idle", true); fsm:addState("run", "run", true)
+  fsm:addTransition("idle", "run", "speed > 0.5")
+  function lurek.process(dt) fsm:setParam("speed", 1.2); fsm:update(dt) end
 end
 
 --@api-stub: AnimStateMachine:getQuad
 -- Returns the source quad for the current animation frame, or nil.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/animation_api.rs and docs/specs/animation.md).
-do  -- TODO: AnimStateMachine:getQuad
-  local _todo = "TODO: write a real AnimStateMachine:getQuad usage example"
-  print(_todo)
+-- Drive sprite rendering off this rather than the underlying Animation; the FSM owns the active clip.
+do  -- AnimStateMachine:getQuad
+  local anim = lurek.animation.new()
+  anim:addFrame(0, 0, 32, 32); anim:addClip("idle", {0}, 4, true)
+  local fsm = lurek.animation.newStateMachine(anim, "idle")
+  fsm:addState("idle", "idle", true)
+  function lurek.render() local q = fsm:getQuad(); if q then lurek.log.debug("fsm quad w=" .. q.w, "anim") end end
 end
 
 -- ── BlendLayerSet methods ──
 
 --@api-stub: BlendLayerSet:removeLayer
 -- Removes a blend layer by name.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/animation_api.rs and docs/specs/animation.md).
-do  -- TODO: BlendLayerSet:removeLayer
-  local _todo = "TODO: write a real BlendLayerSet:removeLayer usage example"
-  print(_todo)
+-- Call when a body part is destroyed (e.g. arm severed) so its clip stops contributing.
+do  -- BlendLayerSet:removeLayer
+  local bls = lurek.animation.newBlendLayerSet()
+  bls:addLayer("base", "idle", 1.0)
+  bls:addLayer("upper", "aim", 0.5, {"spine"})
+  bls:removeLayer("upper")
 end
 
 --@api-stub: BlendLayerSet:setWeight
 -- Sets the blend weight of a named layer (clamped to [0, 1]).
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/animation_api.rs and docs/specs/animation.md).
-do  -- TODO: BlendLayerSet:setWeight
-  local _todo = "TODO: write a real BlendLayerSet:setWeight usage example"
-  print(_todo)
+-- Drive this from gameplay (e.g. crouch amount, aim strength) for smooth blend transitions.
+do  -- BlendLayerSet:setWeight
+  local bls = lurek.animation.newBlendLayerSet()
+  bls:addLayer("base", "idle", 1.0)
+  bls:addLayer("aim", "aim", 0.0, {"spine", "arm_r"})
+  local aim_strength = 0.7
+  bls:setWeight("aim", aim_strength)
 end
 
 --@api-stub: BlendLayerSet:getWeight
 -- Returns the blend weight of a named layer, or nil if not found.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/animation_api.rs and docs/specs/animation.md).
-do  -- TODO: BlendLayerSet:getWeight
-  local _todo = "TODO: write a real BlendLayerSet:getWeight usage example"
-  print(_todo)
+-- Use to read back the current blend after `setWeight` has clamped your input.
+do  -- BlendLayerSet:getWeight
+  local bls = lurek.animation.newBlendLayerSet()
+  bls:addLayer("aim", "aim", 0.5, {"spine"})
+  local w = bls:getWeight("aim")
+  if w and w > 0.5 then lurek.log.debug("aim layer dominant", "anim") end
 end
 
 --@api-stub: BlendLayerSet:setMask
 -- Replaces the bone mask of a layer.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/animation_api.rs and docs/specs/animation.md).
-do  -- TODO: BlendLayerSet:setMask
-  local _todo = "TODO: write a real BlendLayerSet:setMask usage example"
-  print(_todo)
+-- Call when the active weapon changes — pistol uses {arm_r}, rifle uses {spine, arm_l, arm_r}.
+do  -- BlendLayerSet:setMask
+  local bls = lurek.animation.newBlendLayerSet()
+  bls:addLayer("aim", "aim_pistol", 1.0, {"arm_r"})
+  bls:setMask("aim", {"spine", "arm_l", "arm_r"})
 end
 
 --@api-stub: BlendLayerSet:listLayers
 -- Returns an ordered array of layer info tables: {name, clip_name, weight, bones}.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/animation_api.rs and docs/specs/animation.md).
-do  -- TODO: BlendLayerSet:listLayers
-  local _todo = "TODO: write a real BlendLayerSet:listLayers usage example"
-  print(_todo)
+-- Iterate this from your skeletal animator to drive each layer's contribution to the final pose.
+do  -- BlendLayerSet:listLayers
+  local bls = lurek.animation.newBlendLayerSet()
+  bls:addLayer("base", "idle", 1.0)
+  bls:addLayer("aim", "aim", 0.6, {"arm_r"})
+  for _, layer in ipairs(bls:listLayers()) do
+    lurek.log.debug(layer.name .. " weight=" .. layer.weight, "anim")
+  end
 end
 
 --@api-stub: BlendLayerSet:len
 -- Returns the number of blend layers.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/animation_api.rs and docs/specs/animation.md).
-do  -- TODO: BlendLayerSet:len
-  local _todo = "TODO: write a real BlendLayerSet:len usage example"
-  print(_todo)
+-- Cheap probe for editor/debug HUDs without iterating the full layer list.
+do  -- BlendLayerSet:len
+  local bls = lurek.animation.newBlendLayerSet()
+  bls:addLayer("base", "idle", 1.0)
+  if bls:len() == 0 then lurek.log.warn("blend set has no layers", "anim") end
 end
 
 -- ── AnimCurve methods ──
 
 --@api-stub: AnimCurve:addKeyframe
 -- Inserts a keyframe at the given time.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/animation_api.rs and docs/specs/animation.md).
-do  -- TODO: AnimCurve:addKeyframe
-  local _todo = "TODO: write a real AnimCurve:addKeyframe usage example"
-  print(_todo)
+-- Times do not need to be sorted; the curve sorts and de-duplicates them on insert.
+do  -- AnimCurve:addKeyframe
+  local fade = lurek.animation.newCurve()
+  fade:addKeyframe(0.0, 0.0)
+  fade:addKeyframe(0.5, 1.0)
+  fade:addKeyframe(1.0, 0.0)
 end
 
 --@api-stub: AnimCurve:eval
 -- Returns the interpolated value at the given time using the curve's easing.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/animation_api.rs and docs/specs/animation.md).
-do  -- TODO: AnimCurve:eval
-  local _todo = "TODO: write a real AnimCurve:eval usage example"
-  print(_todo)
+-- Out-of-range `t` is clamped to the first/last keyframe value; an empty curve returns 0.
+do  -- AnimCurve:eval
+  local fade = lurek.animation.newCurve()
+  fade:addKeyframe(0.0, 0.0); fade:addKeyframe(1.0, 1.0)
+  local alpha = fade:eval(0.25)
+  function lurek.render() lurek.render.setColor(1, 1, 1, alpha) end
 end
 
 --@api-stub: AnimCurve:setEasing
 -- Sets the easing kind applied between all keyframe segments.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/animation_api.rs and docs/specs/animation.md).
-do  -- TODO: AnimCurve:setEasing
-  local _todo = "TODO: write a real AnimCurve:setEasing usage example"
-  print(_todo)
+-- Accepts "step", "linear", "ease_in", "ease_out", "ease_in_out"; unknown names raise an error.
+do  -- AnimCurve:setEasing
+  local curve = lurek.animation.newCurve()
+  curve:addKeyframe(0.0, 0.0); curve:addKeyframe(1.0, 1.0)
+  curve:setEasing("ease_in_out")
 end
 
 --@api-stub: AnimCurve:keyframeCount
 -- Returns the number of keyframes currently stored.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/animation_api.rs and docs/specs/animation.md).
-do  -- TODO: AnimCurve:keyframeCount
-  local _todo = "TODO: write a real AnimCurve:keyframeCount usage example"
-  print(_todo)
+-- Useful as a guard before `:eval` to avoid relying on the empty-curve 0.0 fallback.
+do  -- AnimCurve:keyframeCount
+  local curve = lurek.animation.newCurve()
+  curve:addKeyframe(0.0, 0.0)
+  if curve:keyframeCount() < 2 then lurek.log.warn("curve needs at least two keyframes", "anim") end
 end
 
 --@api-stub: AnimCurve:clear
 -- Removes all keyframes from this animation curve, resetting it to empty.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/animation_api.rs and docs/specs/animation.md).
-do  -- TODO: AnimCurve:clear
-  local _todo = "TODO: write a real AnimCurve:clear usage example"
-  print(_todo)
+-- Call when a new sequence loads so the curve can be rebuilt without allocating a new instance.
+do  -- AnimCurve:clear
+  local curve = lurek.animation.newCurve()
+  curve:addKeyframe(0.0, 0.5); curve:addKeyframe(1.0, 1.0)
+  curve:clear()
 end
 
 -- ── AnimSyncGroup methods ──
 
 --@api-stub: AnimSyncGroup:add
 -- Adds an animation handle to the group.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/animation_api.rs and docs/specs/animation.md).
-do  -- TODO: AnimSyncGroup:add
-  local _todo = "TODO: write a real AnimSyncGroup:add usage example"
-  print(_todo)
+-- Handles are integers returned by `lurek.animation.new()`; duplicates are silently ignored.
+do  -- AnimSyncGroup:add
+  local squad = lurek.animation.newSyncGroup()
+  squad:add(1)
+  squad:add(2)
+  squad:add(3)
 end
 
 --@api-stub: AnimSyncGroup:remove
 -- Removes an animation handle from the group.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/animation_api.rs and docs/specs/animation.md).
-do  -- TODO: AnimSyncGroup:remove
-  local _todo = "TODO: write a real AnimSyncGroup:remove usage example"
-  print(_todo)
+-- Call when an entity is despawned so the group does not try to advance a stale handle.
+do  -- AnimSyncGroup:remove
+  local squad = lurek.animation.newSyncGroup()
+  squad:add(1); squad:add(2)
+  squad:remove(1)
 end
 
 --@api-stub: AnimSyncGroup:clear
 -- Removes all animation handles from the group.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/animation_api.rs and docs/specs/animation.md).
-do  -- TODO: AnimSyncGroup:clear
-  local _todo = "TODO: write a real AnimSyncGroup:clear usage example"
-  print(_todo)
+-- Call on scene change so the next level starts with an empty sync group.
+do  -- AnimSyncGroup:clear
+  local squad = lurek.animation.newSyncGroup()
+  squad:add(1); squad:add(2); squad:add(3)
+  squad:clear()
 end
 
 --@api-stub: AnimSyncGroup:memberCount
 -- Returns the number of animations currently in the group.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/animation_api.rs and docs/specs/animation.md).
-do  -- TODO: AnimSyncGroup:memberCount
-  local _todo = "TODO: write a real AnimSyncGroup:memberCount usage example"
-  print(_todo)
+-- Use for HUD debug ("X enemies marching") and to skip processing when the group is empty.
+do  -- AnimSyncGroup:memberCount
+  local squad = lurek.animation.newSyncGroup()
+  squad:add(1); squad:add(2)
+  if squad:memberCount() > 0 then lurek.log.info("squad alive: " .. squad:memberCount(), "anim") end
 end
-
