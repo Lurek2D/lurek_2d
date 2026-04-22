@@ -1,23 +1,9 @@
 -- content/examples/pipeline.lua
--- Scaffolded coverage of the lurek.pipeline API (60 items).
+-- Hand-written coverage of the lurek.pipeline API (60 items).
 --
--- Every --@api-stub: block below is a SCAFFOLD. The body must be
--- replaced by hand with a 3-6 line real usage snippet showing how to
--- call the API in real game context, written by reading:
---   * src/lua_api/pipeline_api.rs   (Lua binding, arg types, return shape)
---   * src/pipeline/                 (semantics, side effects)
---   * docs/specs/pipeline.md        (canonical reference)
---
--- Snippet rules (love2d-wiki style):
---   * NO `return` at top-level (breaks the file).
---   * NO `pcall` defensive wrappers, NO `if false then`.
---   * Wrap GPU / audio / physics calls inside
---     `function lurek.render() ... end` or
---     `function lurek.update(dt) ... end` callbacks so the file loads.
---   * Use REAL values: paths like "sfx/jump.ogg", keys like "space",
---     colours like {1, 0.5, 0, 1}.
---   * Keep the two `--` comment lines: 1) what the API does (use the
---     existing description), 2) one line of practical advice.
+-- Pipelines are dependency-ordered DAGs of named steps with sync and
+-- async runners, retries, conditions, tags, and per-step callbacks for
+-- structuring boot sequences, save/load flows, and asset loaders.
 --
 -- Run: cargo run -- content/examples/pipeline.lua
 
@@ -25,485 +11,599 @@
 
 --@api-stub: lurek.pipeline.newStep
 -- Creates a new pipeline step with the given name and optional callback.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pipeline_api.rs and docs/specs/pipeline.md).
-do  -- TODO: lurek.pipeline.newStep
-  local _todo = "TODO: write a real lurek.pipeline.newStep usage example"
-  print(_todo)
+-- Pass the callback inline for one-shot tasks; configure delay/retry/tag on the returned step.
+do  -- lurek.pipeline.newStep
+  local step = lurek.pipeline.newStep("load_audio", function(ctx)
+    ctx.audio_loaded = true
+  end)
+  step:setTag("boot")
 end
 
 --@api-stub: lurek.pipeline.newPipeline
 -- Creates a new empty pipeline with the given name (defaults to "pipeline").
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pipeline_api.rs and docs/specs/pipeline.md).
-do  -- TODO: lurek.pipeline.newPipeline
-  local _todo = "TODO: write a real lurek.pipeline.newPipeline usage example"
-  print(_todo)
+-- Call once at boot to declare the top-level run; the name surfaces in toAscii output and progress callbacks.
+do  -- lurek.pipeline.newPipeline
+  local boot = lurek.pipeline.newPipeline("boot")
+  boot:addStep(lurek.pipeline.newStep("init", function() end))
+  lurek.log.info("pipeline '" .. boot:getName() .. "' built", "boot")
 end
 
 --@api-stub: lurek.pipeline.fromTable
 -- Deserialises a pipeline from a definition table.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pipeline_api.rs and docs/specs/pipeline.md).
-do  -- TODO: lurek.pipeline.fromTable
-  local _todo = "TODO: write a real lurek.pipeline.fromTable usage example"
-  print(_todo)
+-- Use when the DAG is data-driven (TOML/JSON); wire callbacks afterwards via getStep + setCallback.
+do  -- lurek.pipeline.fromTable
+  local def = { name = "save", steps = {
+    { name = "snapshot",   deps = {} },
+    { name = "write_disk", deps = { "snapshot" } },
+  } }
+  local pl = lurek.pipeline.fromTable(def)
+  pl:getStep("snapshot"):setCallback(function(ctx) ctx.snap = "ok" end)
 end
 
 -- ── Step methods ──
 
 --@api-stub: Step:getName
 -- Returns the unique name of this step.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pipeline_api.rs and docs/specs/pipeline.md).
-do  -- TODO: Step:getName
-  local _todo = "TODO: write a real Step:getName usage example"
-  print(_todo)
+-- Read when iterating Pipeline:getSteps to log per-step diagnostics or build a UI label.
+do  -- Step:getName
+  local step = lurek.pipeline.newStep("hydrate_world")
+  lurek.log.info("registering step: " .. step:getName(), "boot")
 end
 
 --@api-stub: Step:setCallback
 -- Stores a Lua function as the execute callback for this step.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pipeline_api.rs and docs/specs/pipeline.md).
-do  -- TODO: Step:setCallback
-  local _todo = "TODO: write a real Step:setCallback usage example"
-  print(_todo)
+-- Attach or replace the executor body after construction; required when wiring a fromTable pipeline.
+do  -- Step:setCallback
+  local step = lurek.pipeline.newStep("warm_caches")
+  step:setCallback(function(ctx)
+    ctx.caches = { sprites = 64, audio = 16 }
+  end)
 end
 
 --@api-stub: Step:setCondition
 -- Stores a Lua function (or nil) as the run-condition for this step.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pipeline_api.rs and docs/specs/pipeline.md).
-do  -- TODO: Step:setCondition
-  local _todo = "TODO: write a real Step:setCondition usage example"
-  print(_todo)
+-- Pass nil to clear; skipped steps don't fail their dependents — useful for debug-only or DLC-gated steps.
+do  -- Step:setCondition
+  local step = lurek.pipeline.newStep("seed_demo_data", function(ctx) ctx.seeded = true end)
+  step:setCondition(function() return lurek.log.getLevel() == "debug" end)
 end
 
 --@api-stub: Step:setDelay
 -- Sets the delay in seconds to wait after dependencies finish.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pipeline_api.rs and docs/specs/pipeline.md).
-do  -- TODO: Step:setDelay
-  local _todo = "TODO: write a real Step:setDelay usage example"
-  print(_todo)
+-- Use to stagger intros or pace splash animations; honoured by both sync and async runners.
+do  -- Step:setDelay
+  local step = lurek.pipeline.newStep("show_logo")
+  step:setDelay(0.5)
 end
 
 --@api-stub: Step:getDelay
 -- Returns the configured delay in seconds.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pipeline_api.rs and docs/specs/pipeline.md).
-do  -- TODO: Step:getDelay
-  local _todo = "TODO: write a real Step:getDelay usage example"
-  print(_todo)
+-- Read when displaying loading-progress estimates or unit-testing scheduling.
+do  -- Step:getDelay
+  local step = lurek.pipeline.newStep("fade_in")
+  step:setDelay(1.25)
+  lurek.log.debug("fade_in waits " .. step:getDelay() .. "s", "boot")
 end
 
 --@api-stub: Step:setTimeout
 -- Stores a timeout in seconds in the step's metadata.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pipeline_api.rs and docs/specs/pipeline.md).
-do  -- TODO: Step:setTimeout
-  local _todo = "TODO: write a real Step:setTimeout usage example"
-  print(_todo)
+-- Cap the per-attempt runtime so the scheduler can abort long-running async steps cleanly.
+do  -- Step:setTimeout
+  local step = lurek.pipeline.newStep("fetch_remote_config")
+  step:setTimeout(5.0)
 end
 
 --@api-stub: Step:getTimeout
 -- Returns the timeout stored in metadata, or 0.0 if unset.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pipeline_api.rs and docs/specs/pipeline.md).
-do  -- TODO: Step:getTimeout
-  local _todo = "TODO: write a real Step:getTimeout usage example"
-  print(_todo)
+-- Branch on the value (0 means no deadline) when surfacing time budgets in dev tooling.
+do  -- Step:getTimeout
+  local step = lurek.pipeline.newStep("download_dlc")
+  step:setTimeout(30.0)
+  if step:getTimeout() > 0 then
+    lurek.log.info("download bounded to " .. step:getTimeout() .. "s", "net")
+  end
 end
 
 --@api-stub: Step:setRetryCount
 -- Sets the maximum number of retry attempts on failure.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pipeline_api.rs and docs/specs/pipeline.md).
-do  -- TODO: Step:setRetryCount
-  local _todo = "TODO: write a real Step:setRetryCount usage example"
-  print(_todo)
+-- Combine with setRetryDelay for back-off; total attempts equals 1 + retry_count.
+do  -- Step:setRetryCount
+  local step = lurek.pipeline.newStep("connect_server", function(ctx) ctx.online = true end)
+  step:setRetryCount(3)
+  step:setRetryDelay(0.5)
 end
 
 --@api-stub: Step:getRetryCount
 -- Returns the configured retry count.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pipeline_api.rs and docs/specs/pipeline.md).
-do  -- TODO: Step:getRetryCount
-  local _todo = "TODO: write a real Step:getRetryCount usage example"
-  print(_todo)
+-- Read back when building a settings UI or when validating a deserialised pipeline.
+do  -- Step:getRetryCount
+  local step = lurek.pipeline.newStep("publish_score")
+  step:setRetryCount(2)
+  lurek.log.info("retries=" .. step:getRetryCount(), "net")
 end
 
 --@api-stub: Step:setRetryDelay
 -- Sets the delay in seconds between retry attempts.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pipeline_api.rs and docs/specs/pipeline.md).
-do  -- TODO: Step:setRetryDelay
-  local _todo = "TODO: write a real Step:setRetryDelay usage example"
-  print(_todo)
+-- Use 1-2s for flaky network calls so transient errors clear before the next attempt.
+do  -- Step:setRetryDelay
+  local step = lurek.pipeline.newStep("login")
+  step:setRetryCount(4)
+  step:setRetryDelay(2.0)
 end
 
 --@api-stub: Step:setOptional
 -- Marks whether this step is optional (downstream steps continue on failure).
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pipeline_api.rs and docs/specs/pipeline.md).
-do  -- TODO: Step:setOptional
-  local _todo = "TODO: write a real Step:setOptional usage example"
-  print(_todo)
+-- Use for nice-to-have boot work (achievements, telemetry) so a failure doesn't block gameplay.
+do  -- Step:setOptional
+  local step = lurek.pipeline.newStep("preload_credits", function() end)
+  step:setOptional(true)
 end
 
 --@api-stub: Step:isOptional
 -- Returns whether this step is marked as optional.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pipeline_api.rs and docs/specs/pipeline.md).
-do  -- TODO: Step:isOptional
-  local _todo = "TODO: write a real Step:isOptional usage example"
-  print(_todo)
+-- Branch visualisation/UI on whether a step is required vs nice-to-have.
+do  -- Step:isOptional
+  local step = lurek.pipeline.newStep("achievements_sync")
+  step:setOptional(true)
+  if step:isOptional() then
+    lurek.log.debug(step:getName() .. " will not abort the pipeline", "boot")
+  end
 end
 
 --@api-stub: Step:setOnError
 -- Stores a Lua function (or nil) to call if this step fails.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pipeline_api.rs and docs/specs/pipeline.md).
-do  -- TODO: Step:setOnError
-  local _todo = "TODO: write a real Step:setOnError usage example"
-  print(_todo)
+-- Receives the error message; pass nil to clear. Use for per-step recovery or logging.
+do  -- Step:setOnError
+  local step = lurek.pipeline.newStep("load_save", function() error("missing slot") end)
+  step:setOnError(function(err)
+    lurek.log.warn("save load failed: " .. err, "save")
+  end)
 end
 
 --@api-stub: Step:setData
 -- Stores an arbitrary string value under the given key in step metadata.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pipeline_api.rs and docs/specs/pipeline.md).
-do  -- TODO: Step:setData
-  local _todo = "TODO: write a real Step:setData usage example"
-  print(_todo)
+-- Strings only — use to template per-step config (scene name, asset path) read inside the callback.
+do  -- Step:setData
+  local step = lurek.pipeline.newStep("load_level")
+  step:setData("scene", "forest_01")
+  step:setData("difficulty", "normal")
 end
 
 --@api-stub: Step:getData
 -- Retrieves a metadata value by key, returning nil if not found.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pipeline_api.rs and docs/specs/pipeline.md).
-do  -- TODO: Step:getData
-  local _todo = "TODO: write a real Step:getData usage example"
-  print(_todo)
+-- Always default with `or` since unknown keys return nil rather than raising.
+do  -- Step:getData
+  local step = lurek.pipeline.newStep("load_level")
+  step:setData("scene", "forest_01")
+  local scene = step:getData("scene") or "title"
+  lurek.log.info("loading scene: " .. scene, "scene")
 end
 
 --@api-stub: Step:setTag
 -- Sets the tag on this step for grouping and filtering.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pipeline_api.rs and docs/specs/pipeline.md).
-do  -- TODO: Step:setTag
-  local _todo = "TODO: write a real Step:setTag usage example"
-  print(_todo)
+-- Pair with Pipeline:getStepsByTag to operate on a logical subset ("gpu", "net", "audio").
+do  -- Step:setTag
+  local step = lurek.pipeline.newStep("compile_shaders")
+  step:setTag("gpu")
 end
 
 --@api-stub: Step:getTag
 -- Returns the tag on this step, or nil if unset.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pipeline_api.rs and docs/specs/pipeline.md).
-do  -- TODO: Step:getTag
-  local _todo = "TODO: write a real Step:getTag usage example"
-  print(_todo)
+-- Use to colour-code or group steps in a debug overlay; default with `or` for untagged steps.
+do  -- Step:getTag
+  local step = lurek.pipeline.newStep("warm_audio")
+  step:setTag("audio")
+  local tag = step:getTag() or "untagged"
+  lurek.log.debug(step:getName() .. " tag=" .. tag, "boot")
 end
 
 --@api-stub: Step:dependsOn
 -- Adds a dependency on another step by name or PipelineStep.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pipeline_api.rs and docs/specs/pipeline.md).
-do  -- TODO: Step:dependsOn
-  local _todo = "TODO: write a real Step:dependsOn usage example"
-  print(_todo)
+-- Pass a Step userdata or a name string; multiple calls accumulate, so chain them for fan-in nodes.
+do  -- Step:dependsOn
+  local boot = lurek.pipeline.newStep("boot")
+  local load = lurek.pipeline.newStep("load_assets")
+  load:dependsOn(boot)
+  load:dependsOn("network_ready")
 end
 
 --@api-stub: Step:getDependencies
 -- Returns the list of dependency step names.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pipeline_api.rs and docs/specs/pipeline.md).
-do  -- TODO: Step:getDependencies
-  local _todo = "TODO: write a real Step:getDependencies usage example"
-  print(_todo)
+-- Iterate to render a DAG visualiser; the array is empty for entry-point steps.
+do  -- Step:getDependencies
+  local step = lurek.pipeline.newStep("present")
+  step:dependsOn("draw_world")
+  step:dependsOn("draw_ui")
+  for _, name in ipairs(step:getDependencies()) do
+    lurek.log.debug("present depends on " .. name, "boot")
+  end
 end
 
 --@api-stub: Step:getDependencyCount
 -- Returns the number of declared dependencies.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pipeline_api.rs and docs/specs/pipeline.md).
-do  -- TODO: Step:getDependencyCount
-  local _todo = "TODO: write a real Step:getDependencyCount usage example"
-  print(_todo)
+-- Use as a cheap O(1) guard before walking getDependencies; zero means an entry-point step.
+do  -- Step:getDependencyCount
+  local step = lurek.pipeline.newStep("commit_save")
+  step:dependsOn("snapshot_state")
+  if step:getDependencyCount() == 0 then
+    lurek.log.warn("commit_save has no deps; will run immediately", "save")
+  end
 end
 
 --@api-stub: Step:getStatus
 -- Returns the current execution status as a string.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pipeline_api.rs and docs/specs/pipeline.md).
-do  -- TODO: Step:getStatus
-  local _todo = "TODO: write a real Step:getStatus usage example"
-  print(_todo)
+-- One of "pending", "waiting", "running", "completed", "failed", "skipped", "cancelled".
+do  -- Step:getStatus
+  local pl = lurek.pipeline.newPipeline("audit")
+  local s = lurek.pipeline.newStep("noop", function() end)
+  pl:addStep(s); pl:run()
+  lurek.log.info("noop status: " .. s:getStatus(), "boot")
 end
 
 --@api-stub: Step:getError
 -- Returns the error message from the last failed attempt, or nil.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pipeline_api.rs and docs/specs/pipeline.md).
-do  -- TODO: Step:getError
-  local _todo = "TODO: write a real Step:getError usage example"
-  print(_todo)
+-- Check after a failed run before retrying; nil means the step succeeded or hasn't run yet.
+do  -- Step:getError
+  local step = lurek.pipeline.newStep("touchy", function() error("disk full") end)
+  local pl = lurek.pipeline.newPipeline("io"); pl:addStep(step); pl:run()
+  if step:getError() then
+    lurek.log.error(step:getName() .. ": " .. step:getError(), "io")
+  end
 end
 
 --@api-stub: Step:getDuration
 -- Returns total seconds spent executing this step.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pipeline_api.rs and docs/specs/pipeline.md).
-do  -- TODO: Step:getDuration
-  local _todo = "TODO: write a real Step:getDuration usage example"
-  print(_todo)
+-- Sums all attempts; combine with onProgress to build a per-step profiler view.
+do  -- Step:getDuration
+  local step = lurek.pipeline.newStep("compute", function() end)
+  local pl = lurek.pipeline.newPipeline("bench"); pl:addStep(step); pl:run()
+  lurek.log.info(string.format("compute took %.3fs", step:getDuration()), "perf")
 end
 
 --@api-stub: Step:getAttempt
 -- Returns the number of execution attempts so far.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pipeline_api.rs and docs/specs/pipeline.md).
-do  -- TODO: Step:getAttempt
-  local _todo = "TODO: write a real Step:getAttempt usage example"
-  print(_todo)
+-- Equals 1 for steps that succeeded first try; inspect to detect flaky steps after retries.
+do  -- Step:getAttempt
+  local step = lurek.pipeline.newStep("flaky", function() end)
+  step:setRetryCount(2)
+  local pl = lurek.pipeline.newPipeline("net"); pl:addStep(step); pl:run()
+  lurek.log.debug("flaky attempts: " .. step:getAttempt(), "net")
 end
 
 --@api-stub: Step:type
 -- Returns the type name "PipelineStep".
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pipeline_api.rs and docs/specs/pipeline.md).
-do  -- TODO: Step:type
-  local _todo = "TODO: write a real Step:type usage example"
-  print(_todo)
+-- Useful for runtime introspection alongside duck-typed values pulled from a generic container.
+do  -- Step:type
+  local step = lurek.pipeline.newStep("init")
+  if step:type() == "PipelineStep" then
+    lurek.log.debug("got a real step", "boot")
+  end
 end
 
 --@api-stub: Step:typeOf
 -- Returns true when the given name matches "PipelineStep" or a parent type.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pipeline_api.rs and docs/specs/pipeline.md).
-do  -- TODO: Step:typeOf
-  local _todo = "TODO: write a real Step:typeOf usage example"
-  print(_todo)
+-- Pass "Object" to test for any pipeline-namespace value when bridging from generic code.
+do  -- Step:typeOf
+  local step = lurek.pipeline.newStep("init")
+  if step:typeOf("Object") then
+    lurek.log.debug("step inherits from Object", "boot")
+  end
 end
 
 -- ── Pipeline methods ──
 
 --@api-stub: Pipeline:addStep
 -- Adds a step to the pipeline.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pipeline_api.rs and docs/specs/pipeline.md).
-do  -- TODO: Pipeline:addStep
-  local _todo = "TODO: write a real Pipeline:addStep usage example"
-  print(_todo)
+-- Returns the pipeline for chaining; step names must be unique within a single pipeline.
+do  -- Pipeline:addStep
+  local pl = lurek.pipeline.newPipeline("boot")
+  pl:addStep(lurek.pipeline.newStep("read_config", function(ctx) ctx.cfg = {} end))
+    :addStep(lurek.pipeline.newStep("warm_cache",  function() end))
 end
 
 --@api-stub: Pipeline:removeStep
 -- Removes a step from the pipeline by name.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pipeline_api.rs and docs/specs/pipeline.md).
-do  -- TODO: Pipeline:removeStep
-  local _todo = "TODO: write a real Pipeline:removeStep usage example"
-  print(_todo)
+-- Safe before run() begins; existing dependents on the removed name will fail validate().
+do  -- Pipeline:removeStep
+  local pl = lurek.pipeline.newPipeline("boot")
+  pl:addStep(lurek.pipeline.newStep("legacy_check", function() end))
+  pl:removeStep("legacy_check")
 end
 
 --@api-stub: Pipeline:getStep
 -- Returns the LuaStep wrapper for the named step, or nil.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pipeline_api.rs and docs/specs/pipeline.md).
-do  -- TODO: Pipeline:getStep
-  local _todo = "TODO: write a real Pipeline:getStep usage example"
-  print(_todo)
+-- Required to attach callbacks after fromTable, since serialised pipelines lack callback closures.
+do  -- Pipeline:getStep
+  local pl = lurek.pipeline.fromTable({ steps = { { name = "boot", deps = {} } } })
+  local boot = pl:getStep("boot")
+  if boot then boot:setCallback(function(ctx) ctx.booted = true end) end
 end
 
 --@api-stub: Pipeline:getSteps
 -- Returns a Lua array of all step wrappers in the pipeline.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pipeline_api.rs and docs/specs/pipeline.md).
-do  -- TODO: Pipeline:getSteps
-  local _todo = "TODO: write a real Pipeline:getSteps usage example"
-  print(_todo)
+-- Returns registration order, not execution order — use getExecutionOrder for the topological view.
+do  -- Pipeline:getSteps
+  local pl = lurek.pipeline.newPipeline("scan")
+  pl:addStep(lurek.pipeline.newStep("a"))
+  pl:addStep(lurek.pipeline.newStep("b"))
+  for _, s in ipairs(pl:getSteps()) do
+    lurek.log.debug("found step " .. s:getName(), "boot")
+  end
 end
 
 --@api-stub: Pipeline:getStepCount
 -- Returns the total number of steps.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pipeline_api.rs and docs/specs/pipeline.md).
-do  -- TODO: Pipeline:getStepCount
-  local _todo = "TODO: write a real Pipeline:getStepCount usage example"
-  print(_todo)
+-- O(1) size check; use to short-circuit empty pipelines before incurring run setup cost.
+do  -- Pipeline:getStepCount
+  local pl = lurek.pipeline.newPipeline("dynamic")
+  if pl:getStepCount() == 0 then
+    lurek.log.warn("nothing to do; skipping run", "boot")
+  end
 end
 
 --@api-stub: Pipeline:getStepsByTag
 -- Returns a Lua array of all steps whose tag matches the given string.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pipeline_api.rs and docs/specs/pipeline.md).
-do  -- TODO: Pipeline:getStepsByTag
-  local _todo = "TODO: write a real Pipeline:getStepsByTag usage example"
-  print(_todo)
+-- Returns an empty table when no steps match — safe to ipairs without a nil check.
+do  -- Pipeline:getStepsByTag
+  local pl = lurek.pipeline.newPipeline("boot")
+  local s = lurek.pipeline.newStep("upload_metric"); s:setTag("net"); pl:addStep(s)
+  for _, n in ipairs(pl:getStepsByTag("net")) do
+    lurek.log.info("net step: " .. n:getName(), "net")
+  end
 end
 
 --@api-stub: Pipeline:clear
 -- Clears all steps from the pipeline.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pipeline_api.rs and docs/specs/pipeline.md).
-do  -- TODO: Pipeline:clear
-  local _todo = "TODO: write a real Pipeline:clear usage example"
-  print(_todo)
+-- Useful when rebuilding the pipeline from a hot-reloaded definition without allocating a new one.
+do  -- Pipeline:clear
+  local pl = lurek.pipeline.newPipeline("hot")
+  pl:addStep(lurek.pipeline.newStep("old"))
+  pl:clear()
 end
 
 --@api-stub: Pipeline:validate
 -- Validates the pipeline DAG.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pipeline_api.rs and docs/specs/pipeline.md).
-do  -- TODO: Pipeline:validate
-  local _todo = "TODO: write a real Pipeline:validate usage example"
-  print(_todo)
+-- Returns (ok, errors_array); call before run() to surface missing deps and cycles up front.
+do  -- Pipeline:validate
+  local pl = lurek.pipeline.newPipeline("check")
+  local s = lurek.pipeline.newStep("orphan"); s:dependsOn("missing"); pl:addStep(s)
+  local ok, errs = pl:validate()
+  if not ok then
+    for _, e in ipairs(errs) do lurek.log.error(e, "pipeline") end
+  end
 end
 
 --@api-stub: Pipeline:getExecutionOrder
 -- Returns the topological execution order as an array of step names.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pipeline_api.rs and docs/specs/pipeline.md).
-do  -- TODO: Pipeline:getExecutionOrder
-  local _todo = "TODO: write a real Pipeline:getExecutionOrder usage example"
-  print(_todo)
+-- Returns (order, nil) on success or (nil, err) on cycle; check the second return before reading the first.
+do  -- Pipeline:getExecutionOrder
+  local pl = lurek.pipeline.newPipeline("plan")
+  pl:addStep(lurek.pipeline.newStep("a"))
+  local order, err = pl:getExecutionOrder()
+  if err then lurek.log.error(err, "pipeline")
+  else lurek.log.info("first step: " .. order[1], "pipeline") end
 end
 
 --@api-stub: Pipeline:getParallelGroups
 -- Returns parallel execution groups as a nested array of step name arrays.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pipeline_api.rs and docs/specs/pipeline.md).
-do  -- TODO: Pipeline:getParallelGroups
-  local _todo = "TODO: write a real Pipeline:getParallelGroups usage example"
-  print(_todo)
+-- Each inner table holds steps with no inter-dependencies; safe to dispatch concurrently.
+do  -- Pipeline:getParallelGroups
+  local pl = lurek.pipeline.newPipeline("parallel")
+  pl:addStep(lurek.pipeline.newStep("a"))
+  pl:addStep(lurek.pipeline.newStep("b"))
+  local groups = pl:getParallelGroups()
+  lurek.log.info("group count: " .. #groups, "pipeline")
 end
 
 --@api-stub: Pipeline:run
 -- Executes the pipeline synchronously in topological order.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pipeline_api.rs and docs/specs/pipeline.md).
-do  -- TODO: Pipeline:run
-  local _todo = "TODO: write a real Pipeline:run usage example"
-  print(_todo)
+-- Pass an optional context table to share state between steps via ctx.results.
+do  -- Pipeline:run
+  local pl = lurek.pipeline.newPipeline("boot")
+  pl:addStep(lurek.pipeline.newStep("load", function(ctx) ctx.assets = 12 end))
+  local result = pl:run({ user = "p1" })
+  lurek.log.info("ok=" .. tostring(result.success), "boot")
 end
 
 --@api-stub: Pipeline:runAsync
 -- Starts an async pipeline run.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pipeline_api.rs and docs/specs/pipeline.md).
-do  -- TODO: Pipeline:runAsync
-  local _todo = "TODO: write a real Pipeline:runAsync usage example"
-  print(_todo)
+-- Steps execute one-per-frame via update(dt); call from inside lurek.process to advance.
+do  -- Pipeline:runAsync
+  local pl = lurek.pipeline.newPipeline("loading")
+  pl:addStep(lurek.pipeline.newStep("a", function() end))
+  pl:runAsync({ progress = 0 })
+  function lurek.process(dt) pl:update(dt) end
 end
 
 --@api-stub: Pipeline:update
 -- Advances the async pipeline by one tick.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pipeline_api.rs and docs/specs/pipeline.md).
-do  -- TODO: Pipeline:update
-  local _todo = "TODO: write a real Pipeline:update usage example"
-  print(_todo)
+-- Returns true on the tick the pipeline finishes; pair with runAsync inside lurek.process.
+do  -- Pipeline:update
+  local pl = lurek.pipeline.newPipeline("loader")
+  pl:addStep(lurek.pipeline.newStep("scan", function() end))
+  pl:runAsync()
+  function lurek.process(dt)
+    if pl:update(dt) then lurek.log.info("loader done", "boot") end
+  end
 end
 
 --@api-stub: Pipeline:cancel
 -- Cancels all pending and waiting steps.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pipeline_api.rs and docs/specs/pipeline.md).
-do  -- TODO: Pipeline:cancel
-  local _todo = "TODO: write a real Pipeline:cancel usage example"
-  print(_todo)
+-- In-flight steps continue to completion; safe to call from a UI button or timeout handler.
+do  -- Pipeline:cancel
+  local pl = lurek.pipeline.newPipeline("net")
+  pl:addStep(lurek.pipeline.newStep("ping", function() end))
+  pl:runAsync()
+  pl:cancel()
 end
 
 --@api-stub: Pipeline:reset
 -- Resets all step states and clears the async context.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pipeline_api.rs and docs/specs/pipeline.md).
-do  -- TODO: Pipeline:reset
-  local _todo = "TODO: write a real Pipeline:reset usage example"
-  print(_todo)
+-- Call between runs to reuse the same pipeline definition without re-adding steps.
+do  -- Pipeline:reset
+  local pl = lurek.pipeline.newPipeline("retry")
+  pl:addStep(lurek.pipeline.newStep("once", function() end))
+  pl:run(); pl:reset(); pl:run()
 end
 
 --@api-stub: Pipeline:isRunning
 -- Returns true if the pipeline is currently running asynchronously.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pipeline_api.rs and docs/specs/pipeline.md).
-do  -- TODO: Pipeline:isRunning
-  local _todo = "TODO: write a real Pipeline:isRunning usage example"
-  print(_todo)
+-- True only between runAsync and the tick where update returns true; false for sync runs.
+do  -- Pipeline:isRunning
+  local pl = lurek.pipeline.newPipeline("loader")
+  pl:addStep(lurek.pipeline.newStep("a", function() end))
+  pl:runAsync()
+  if pl:isRunning() then lurek.log.debug("loader in flight", "boot") end
 end
 
 --@api-stub: Pipeline:isComplete
 -- Returns true if all steps have reached a terminal state.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pipeline_api.rs and docs/specs/pipeline.md).
-do  -- TODO: Pipeline:isComplete
-  local _todo = "TODO: write a real Pipeline:isComplete usage example"
-  print(_todo)
+-- Check before reading getResult; terminal states are completed/failed/skipped/cancelled.
+do  -- Pipeline:isComplete
+  local pl = lurek.pipeline.newPipeline("boot")
+  pl:addStep(lurek.pipeline.newStep("noop", function() end))
+  pl:run()
+  if pl:isComplete() then lurek.log.info("boot finished", "boot") end
 end
 
 --@api-stub: Pipeline:setErrorMode
 -- Sets the pipeline error mode: "abort" or "continue".
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pipeline_api.rs and docs/specs/pipeline.md).
-do  -- TODO: Pipeline:setErrorMode
-  local _todo = "TODO: write a real Pipeline:setErrorMode usage example"
-  print(_todo)
+-- "abort" (default) stops the run on first failure; "continue" keeps going and skips dependents.
+do  -- Pipeline:setErrorMode
+  local pl = lurek.pipeline.newPipeline("scan")
+  pl:setErrorMode("continue")
+  pl:addStep(lurek.pipeline.newStep("a", function() end))
 end
 
 --@api-stub: Pipeline:getErrorMode
 -- Returns the current error mode as a string.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pipeline_api.rs and docs/specs/pipeline.md).
-do  -- TODO: Pipeline:getErrorMode
-  local _todo = "TODO: write a real Pipeline:getErrorMode usage example"
-  print(_todo)
+-- Use when serialising config back out, or to assert in tests that mode propagated correctly.
+do  -- Pipeline:getErrorMode
+  local pl = lurek.pipeline.newPipeline("boot")
+  pl:setErrorMode("continue")
+  lurek.log.info("error mode: " .. pl:getErrorMode(), "boot")
 end
 
 --@api-stub: Pipeline:getResult
 -- Returns the current result table built from step states, or nil.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pipeline_api.rs and docs/specs/pipeline.md).
-do  -- TODO: Pipeline:getResult
-  local _todo = "TODO: write a real Pipeline:getResult usage example"
-  print(_todo)
+-- Returns nil for empty pipelines; the table mirrors the run() return value (success, completed, errors).
+do  -- Pipeline:getResult
+  local pl = lurek.pipeline.newPipeline("boot")
+  pl:addStep(lurek.pipeline.newStep("noop", function() end))
+  pl:run()
+  local r = pl:getResult()
+  if r then lurek.log.info("completed=" .. #r.completed, "boot") end
 end
 
 --@api-stub: Pipeline:getContext
 -- Returns the stored async context table, or nil.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pipeline_api.rs and docs/specs/pipeline.md).
-do  -- TODO: Pipeline:getContext
-  local _todo = "TODO: write a real Pipeline:getContext usage example"
-  print(_todo)
+-- The context is the table you passed to runAsync; nil means no async run is active.
+do  -- Pipeline:getContext
+  local pl = lurek.pipeline.newPipeline("loader")
+  pl:addStep(lurek.pipeline.newStep("a", function() end))
+  pl:runAsync({ progress = 0 })
+  local ctx = pl:getContext()
+  if ctx then lurek.log.debug("progress=" .. tostring(ctx.progress), "boot") end
 end
 
 --@api-stub: Pipeline:setOnComplete
 -- Sets the callback to invoke when the pipeline completes.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pipeline_api.rs and docs/specs/pipeline.md).
-do  -- TODO: Pipeline:setOnComplete
-  local _todo = "TODO: write a real Pipeline:setOnComplete usage example"
-  print(_todo)
+-- Receives the result table; pass nil to clear. Fires once per run regardless of sync or async.
+do  -- Pipeline:setOnComplete
+  local pl = lurek.pipeline.newPipeline("boot")
+  pl:setOnComplete(function(r)
+    lurek.log.info("pipeline done: success=" .. tostring(r.success), "boot")
+  end)
+  pl:addStep(lurek.pipeline.newStep("noop", function() end)); pl:run()
 end
 
 --@api-stub: Pipeline:setOnStepComplete
 -- Sets the callback to invoke each time a step completes successfully.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pipeline_api.rs and docs/specs/pipeline.md).
-do  -- TODO: Pipeline:setOnStepComplete
-  local _todo = "TODO: write a real Pipeline:setOnStepComplete usage example"
-  print(_todo)
+-- Receives (step_name, ctx); ideal for driving a progress bar or per-step log line.
+do  -- Pipeline:setOnStepComplete
+  local pl = lurek.pipeline.newPipeline("loader")
+  pl:setOnStepComplete(function(name, _ctx)
+    lurek.log.info("loaded: " .. name, "loader")
+  end)
+  pl:addStep(lurek.pipeline.newStep("textures", function() end)); pl:run()
 end
 
 --@api-stub: Pipeline:setOnStepError
 -- Sets the callback to invoke each time a step fails.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pipeline_api.rs and docs/specs/pipeline.md).
-do  -- TODO: Pipeline:setOnStepError
-  local _todo = "TODO: write a real Pipeline:setOnStepError usage example"
-  print(_todo)
+-- Receives (step_name, err_msg); combine with continue mode for tolerant pipelines that log and skip.
+do  -- Pipeline:setOnStepError
+  local pl = lurek.pipeline.newPipeline("net")
+  pl:setOnStepError(function(name, err)
+    lurek.log.warn(name .. " failed: " .. err, "net")
+  end)
+  pl:addStep(lurek.pipeline.newStep("ping", function() error("timeout") end)); pl:run()
 end
 
 --@api-stub: Pipeline:getName
 -- Returns the pipeline's name.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pipeline_api.rs and docs/specs/pipeline.md).
-do  -- TODO: Pipeline:getName
-  local _todo = "TODO: write a real Pipeline:getName usage example"
-  print(_todo)
+-- Surfaces in toAscii output and __tostring; use as a tag when emitting cross-pipeline logs.
+do  -- Pipeline:getName
+  local pl = lurek.pipeline.newPipeline("save_routine")
+  lurek.log.info("running pipeline " .. pl:getName(), "save")
 end
 
 --@api-stub: Pipeline:setName
 -- Sets the pipeline's name.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pipeline_api.rs and docs/specs/pipeline.md).
-do  -- TODO: Pipeline:setName
-  local _todo = "TODO: write a real Pipeline:setName usage example"
-  print(_todo)
+-- Useful when several pipelines share a templated builder; suffix with a scene id for clarity.
+do  -- Pipeline:setName
+  local pl = lurek.pipeline.newPipeline("temp")
+  pl:setName("scene_" .. "forest_01")
+  lurek.log.debug("pipeline renamed to " .. pl:getName(), "scene")
 end
 
 --@api-stub: Pipeline:toTable
 -- Serialises the pipeline definition to a Lua table (no callbacks).
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pipeline_api.rs and docs/specs/pipeline.md).
-do  -- TODO: Pipeline:toTable
-  local _todo = "TODO: write a real Pipeline:toTable usage example"
-  print(_todo)
+-- Pair with lurek.pipeline.fromTable for round-tripping; reattach callbacks via getStep:setCallback.
+do  -- Pipeline:toTable
+  local pl = lurek.pipeline.newPipeline("dump")
+  pl:addStep(lurek.pipeline.newStep("a"))
+  local t = pl:toTable()
+  lurek.log.info("serialised name=" .. t.name .. " steps=" .. #t.steps, "boot")
 end
 
 --@api-stub: Pipeline:type
 -- Returns the type name of this object.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pipeline_api.rs and docs/specs/pipeline.md).
-do  -- TODO: Pipeline:type
-  local _todo = "TODO: write a real Pipeline:type usage example"
-  print(_todo)
+-- Always returns "Pipeline"; cheap runtime guard before invoking pipeline-only methods on unknown values.
+do  -- Pipeline:type
+  local pl = lurek.pipeline.newPipeline("boot")
+  if pl:type() == "Pipeline" then
+    lurek.log.debug("got a pipeline userdata", "boot")
+  end
 end
 
 --@api-stub: Pipeline:onProgress
 -- Registers a callback invoked after every step with `(step_name, status)`.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pipeline_api.rs and docs/specs/pipeline.md).
-do  -- TODO: Pipeline:onProgress
-  local _todo = "TODO: write a real Pipeline:onProgress usage example"
-  print(_todo)
+-- Lightweight per-step hook that fires regardless of success or failure; status is a lowercase string.
+do  -- Pipeline:onProgress
+  local pl = lurek.pipeline.newPipeline("loader")
+  pl:onProgress(function(name, status)
+    lurek.log.debug(name .. " -> " .. status, "loader")
+  end)
+  pl:addStep(lurek.pipeline.newStep("a", function() end)); pl:run()
 end
 
 --@api-stub: Pipeline:toAscii
 -- Returns a multi-line ASCII string visualising the pipeline DAG.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pipeline_api.rs and docs/specs/pipeline.md).
-do  -- TODO: Pipeline:toAscii
-  local _todo = "TODO: write a real Pipeline:toAscii usage example"
-  print(_todo)
+-- Splat into a debug overlay or build log; each row groups steps that may run in parallel.
+do  -- Pipeline:toAscii
+  local pl = lurek.pipeline.newPipeline("plan")
+  pl:addStep(lurek.pipeline.newStep("a"))
+  pl:addStep(lurek.pipeline.newStep("b"))
+  lurek.log.info("\n" .. pl:toAscii(), "pipeline")
 end
 
 --@api-stub: Pipeline:typeOf
 -- Returns the type identifier string of this pipeline stage object.
--- TODO: replace this scaffold with a real usage snippet (see src/lua_api/pipeline_api.rs and docs/specs/pipeline.md).
-do  -- TODO: Pipeline:typeOf
-  local _todo = "TODO: write a real Pipeline:typeOf usage example"
-  print(_todo)
+-- Pass "Object" to test for any pipeline-namespace value; returns true for "Pipeline" or its parents.
+do  -- Pipeline:typeOf
+  local pl = lurek.pipeline.newPipeline("boot")
+  if pl:typeOf("Object") then
+    lurek.log.debug("pipeline inherits from Object", "boot")
+  end
 end
 
