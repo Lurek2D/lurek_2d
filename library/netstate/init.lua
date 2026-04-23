@@ -216,7 +216,8 @@ end
 function NetState:get(key)
     if type(key) ~= "string" then return nil end
     local entry = self._state[key]
-    return entry and entry.value or nil
+    if entry then return entry.value end
+    return nil
 end
 
 --- Get the per-key version number.

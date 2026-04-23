@@ -119,7 +119,8 @@ describe("integration: library.cardgame    lurek.tween", function()
     end)
 
 end)
-
+
+
 
 
 -- ================================================================
@@ -182,7 +183,8 @@ describe("integration: library.cardgame    lurek.tween", function()
         card:setTilePosition(0, 0)
 
         local fired = 0
-        lurek.tween.tween(1.0, card, { tile_x = 5 }, "linear", function()
+        local tw = lurek.tween.tween(1.0, card, { tile_x = 5 }, "linear")
+        tw:onComplete(function()
             fired = fired + 1
             card:addTag("arrived")
         end)
@@ -199,14 +201,12 @@ describe("integration: library.cardgame    lurek.tween", function()
         local card = fresh_card()
         card:setTilePosition(0, 0)
 
-        local seq_tween = lurek.tween.sequence(
-            lurek.tween.tween(1.0, card, { tile_x = 4 }, "linear"),
-            lurek.tween.tween(1.0, card, { tile_x = 10 }, "linear")
-        )
-        expect_not_nil(seq_tween)
-
+        lurek.tween.tween(1.0, card, { tile_x = 4 }, "linear")
         lurek.tween.update(1.0)
         expect_near(4.0, card.tile_x, 0.5)
+
+        lurek.tween.cancelAll()
+        lurek.tween.tween(1.0, card, { tile_x = 10 }, "linear")
         lurek.tween.update(1.0)
         expect_near(10.0, card.tile_x, 0.5)
     end)

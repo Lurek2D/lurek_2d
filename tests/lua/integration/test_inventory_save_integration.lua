@@ -109,7 +109,8 @@ describe("integration: library.inventory    lurek.serial", function()
     end)
 
 end)
-
+
+
 
 
 -- ================================================================
@@ -157,7 +158,7 @@ describe("integration: library.inventory    lurek.serial", function()
     -- @description Inventory snapshot survives a JSON round-trip and rebuilds equal table state.
     it("snapshot round-trips through codec.toJson/fromJson", function()
         local inv = inventory.newInventory()
-        local bag = inventory.newContainer("bag", "list", 8, 8)
+        local bag = inventory.newContainer("bag", "fixed", 8, 8)
         inv:addContainer("bag", bag)
         local item = inventory.newItem("potion")
         bag:addItem(item, 3)
@@ -178,7 +179,7 @@ describe("integration: library.inventory    lurek.serial", function()
     -- @description Stack quantities are preserved across the JSON round-trip.
     it("stack counts survive round-trip", function()
         local inv = inventory.newInventory()
-        local box = inventory.newContainer("box", "list", 4, 4)
+        local box = inventory.newContainer("box", "fixed", 4, 4)
         inv:addContainer("box", box)
         local arrow = inventory.newItem("arrow")
         arrow:setStackLimit(99)
@@ -193,7 +194,7 @@ describe("integration: library.inventory    lurek.serial", function()
     it("container order is preserved across round-trip", function()
         local inv = inventory.newInventory()
         for _, name in ipairs({ "alpha", "bravo", "charlie" }) do
-            inv:addContainer(name, inventory.newContainer(name, "list", 1, 1))
+            inv:addContainer(name, inventory.newContainer(name, "fixed", 1, 1))
         end
         local back = lurek.serial.fromJson(lurek.serial.toJson(snapshot(inv)))
         expect_equal("alpha", back.containers[1].name)

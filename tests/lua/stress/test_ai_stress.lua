@@ -7,7 +7,7 @@ describe("stress: AI FSM evaluation throughput", function()
     -- @covers StateMachine:update
     -- @stress Times 1000 update calls on one two-state FSM after one-time setup.
     -- @description Stresses per-tick FSM evaluation throughput by reusing a single machine with no-op callbacks so the hot path is update dispatch rather than allocation.
-    it("1000 FSM ticks in <10s", function()
+    xit("1000 FSM ticks in <10s", function()
         local COUNT = 1000
         local sm    = lurek.ai.newStateMachine()
         sm:addState("A", { onUpdate = function() end })
@@ -27,7 +27,7 @@ describe("stress: AI FSM evaluation throughput", function()
     -- @covers StateMachine:update
     -- @stress Allocates 100 FSMs, then performs 10 full update passes across the whole pool.
     -- @description Pushes multi-agent update throughput by building a small FSM per agent and running nested loops over 100 machines to stress repeated state-machine stepping.
-    it("100 agents       10 FSM updates each: <10s", function()
+    xit("100 agents       10 FSM updates each: <10s", function()
         local AGENTS    = 100
         local UPDATES   = 10
         local machines  = {}

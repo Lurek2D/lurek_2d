@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-23T00:40:22.942757+00:00",
+  "generated_at": "2026-04-23T11:45:09.596947+00:00",
   "summary": {
     "rust": {
       "total": 5330,
@@ -3941,7 +3941,7 @@
       "source": "rust",
       "module": "animation",
       "file": "src/animation/state_machine.rs",
-      "line": 181,
+      "line": 184,
       "kind": "fn",
       "name": "add_transition",
       "has_doc": true
@@ -3950,7 +3950,7 @@
       "source": "rust",
       "module": "animation",
       "file": "src/animation/state_machine.rs",
-      "line": 201,
+      "line": 208,
       "kind": "fn",
       "name": "set_param_float",
       "has_doc": true
@@ -3959,7 +3959,7 @@
       "source": "rust",
       "module": "animation",
       "file": "src/animation/state_machine.rs",
-      "line": 210,
+      "line": 218,
       "kind": "fn",
       "name": "set_param_bool",
       "has_doc": true
@@ -3968,7 +3968,7 @@
       "source": "rust",
       "module": "animation",
       "file": "src/animation/state_machine.rs",
-      "line": 219,
+      "line": 228,
       "kind": "fn",
       "name": "set_param_int",
       "has_doc": true
@@ -3977,7 +3977,7 @@
       "source": "rust",
       "module": "animation",
       "file": "src/animation/state_machine.rs",
-      "line": 230,
+      "line": 240,
       "kind": "fn",
       "name": "get_param",
       "has_doc": true
@@ -3986,7 +3986,7 @@
       "source": "rust",
       "module": "animation",
       "file": "src/animation/state_machine.rs",
-      "line": 241,
+      "line": 251,
       "kind": "fn",
       "name": "update",
       "has_doc": true
@@ -3995,7 +3995,7 @@
       "source": "rust",
       "module": "animation",
       "file": "src/animation/state_machine.rs",
-      "line": 303,
+      "line": 315,
       "kind": "fn",
       "name": "get_state",
       "has_doc": true
@@ -4004,7 +4004,7 @@
       "source": "rust",
       "module": "animation",
       "file": "src/animation/state_machine.rs",
-      "line": 314,
+      "line": 326,
       "kind": "fn",
       "name": "force_state",
       "has_doc": true
@@ -4013,7 +4013,7 @@
       "source": "rust",
       "module": "animation",
       "file": "src/animation/state_machine.rs",
-      "line": 335,
+      "line": 347,
       "kind": "fn",
       "name": "get_animation",
       "has_doc": true
@@ -4022,7 +4022,7 @@
       "source": "rust",
       "module": "animation",
       "file": "src/animation/state_machine.rs",
-      "line": 343,
+      "line": 355,
       "kind": "fn",
       "name": "get_animation_mut",
       "has_doc": true
@@ -4031,7 +4031,7 @@
       "source": "rust",
       "module": "animation",
       "file": "src/animation/state_machine.rs",
-      "line": 351,
+      "line": 363,
       "kind": "fn",
       "name": "compare_nums",
       "has_doc": true
@@ -4040,7 +4040,7 @@
       "source": "rust",
       "module": "animation",
       "file": "src/animation/state_machine.rs",
-      "line": 371,
+      "line": 383,
       "kind": "fn",
       "name": "parse_condition",
       "has_doc": true

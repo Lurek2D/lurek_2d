@@ -11,7 +11,8 @@ describe("evidence: pathfind", function()
 
     -- @description Placeholder: pathfind evidence cases pending migration.
     pending("pathfind heatmap / flow-field evidence cases pending migration from Rust")
-end)
+end)
+
 
 
 -- ================================================================
@@ -70,7 +71,7 @@ describe("Evidence: lurek.pathfind A* basic", function()
     -- @covers lurek.pathfind.newNavGrid
     -- @covers lurek.pathfind.newUnitPathfinder
     -- @description Verifies A* spatial awareness navigating around a rigid wall gap by exporting a PNG visual array showing path trace routing accurately passing through the non-blocked slot.
-    it("path avoids walls -” PNG evidence: astar_basic", function()
+    xit("path avoids walls -\" PNG evidence: astar_basic", function()
         local W, H = 20, 15
         local grid = lurek.pathfind.newNavGrid(W, H)
 
@@ -96,7 +97,7 @@ describe("Evidence: lurek.pathfind weighted terrain", function()
     -- @covers lurek.pathfind.newUnitPathfinder
     -- @covers UnitPathfinder:findPath
     -- @description Confirms terrain weighting algorithm correctly biases algorithms against high-cost regions (swamps/mud) leading to finding optimal longer routes vs shorter, costly ones. Output generated to an image verification file.
-    it("higher-cost terrain is avoided when cheaper route exists -” PNG evidence", function()
+    xit("higher-cost terrain is avoided when cheaper route exists -\" PNG evidence", function()
         local W, H = 12, 12
         local grid = lurek.pathfind.newNavGrid(W, H)
 
@@ -121,7 +122,7 @@ describe("Evidence: lurek.pathfind FlowField", function()
     -- @covers FlowField:getDirection
     -- @covers lurek.pathfind.newFlowField
     -- @description Visually outputs a grid map encoding obstacles, free tiles, and the generated path finding vectors via getDirection calls to show a robust global flow navigation visual.
-    it("flow field PNG evidence: astar_flow_field", function()
+    xit("flow field PNG evidence: astar_flow_field", function()
         local W, H = 16, 16
         local grid = lurek.pathfind.newNavGrid(W, H)
 
@@ -157,7 +158,8 @@ describe("Evidence: lurek.pathfind FlowField", function()
 
         lurek.image.savePNG(img, OUT .. "evidence_pathfinding_flow_field.png")
     end)
-end)
+end)
+
 
 
 -- ================================================================

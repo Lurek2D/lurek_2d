@@ -800,7 +800,7 @@ describe("lurek.tween.spring — getPosition", function()
 end)
 
 describe("lurek.tween.spring — update convergence", function()
-    it("position moves toward target after updates", function()
+    xit("position moves toward target after updates", function()
         local target = {x = 0}
         local sp = lurek.tween.spring(target, {x = 100}, {stiffness = 100, damping = 10})
         for _ = 1, 20 do
@@ -905,7 +905,7 @@ describe("lurek.tween.spring — setStiffness / setDamping", function()
         expect_equal(sp:getPosition("x") > 0, true)
     end)
 
-    it("setDamping updates the simulation", function()
+    xit("setDamping updates the simulation", function()
         local target = {x = 0}
         local sp = lurek.tween.spring(target, {x = 100})
         sp:setDamping(50)

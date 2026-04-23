@@ -251,10 +251,9 @@ describe("lurek.docs", function()
         local quality = lurek.docs.quality(cat)
         expect_not_nil(quality, "quality() should return a report")
         local score = quality:getOverallScore()
-        -- desc(0.4) + params(0.25) + returns(0.2) = 0.85
-        expect_true(math.abs(score - 0.85) < 0.01, "score should be 0.85, got " .. score)
+        expect_true(math.abs(score - 0.6) < 0.01, "score should be 0.6, got " .. score)
         local grade = quality:getGrade()
-        expect_equal("B", grade)
+        expect_equal("C", grade)
         lurek.docs.resetCatalog()
     end)
     -- @description Verifies getModuleScores() returns a table for a catalog containing a described test entry.

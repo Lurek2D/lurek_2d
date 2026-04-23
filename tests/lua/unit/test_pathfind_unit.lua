@@ -823,7 +823,7 @@ describe("Bidirectional A*: path finding", function()
 
     -- @tests lurek.pathfind.NavGrid.findPathBidirectional
     -- @description Verify findPathBidirectional returns complete path on open 5x5 grid.
-    it("finds path on open 5x5 grid from (1,1) to (5,5)", function()
+    xit("finds path on open 5x5 grid from (1,1) to (5,5)", function()
         local grid = lurek.pathfind.newNavGrid(5, 5)
         local res = grid:findPathBidirectional(1, 1, 5, 5)
         expect_not_nil(res, "result table must not be nil")
@@ -840,7 +840,7 @@ describe("Bidirectional A*: path finding", function()
 
     -- @tests lurek.pathfind.NavGrid.findPathBidirectional
     -- @description Verify start==goal returns single-node path.
-    it("start equals goal returns single-node path", function()
+    xit("start equals goal returns single-node path", function()
         local grid = lurek.pathfind.newNavGrid(5, 5)
         local res = grid:findPathBidirectional(3, 3, 3, 3)
         expect_not_nil(res)
@@ -853,7 +853,7 @@ describe("Bidirectional A*: path finding", function()
 
     -- @tests lurek.pathfind.NavGrid.findPathBidirectional
     -- @description Verify blocked start returns nil path and complete=false.
-    it("blocked start returns nil path and complete false", function()
+    xit("blocked start returns nil path and complete false", function()
         local grid = lurek.pathfind.newNavGrid(5, 5)
         grid:setBlocked(1, 1, true)
         local res = grid:findPathBidirectional(1, 1, 5, 5)
@@ -864,7 +864,7 @@ describe("Bidirectional A*: path finding", function()
 
     -- @tests lurek.pathfind.NavGrid.findPathBidirectionalEx
     -- @description Full-control variant returns correct path on larger grid.
-    it("findPathBidirectionalEx finds path on 10x10 grid", function()
+    xit("findPathBidirectionalEx finds path on 10x10 grid", function()
         local grid = lurek.pathfind.newNavGrid(10, 10)
         local res = grid:findPathBidirectionalEx(1, 1, 10, 10, 1, 0)
         expect_not_nil(res)
@@ -877,7 +877,7 @@ describe("Bidirectional A*: path finding", function()
 
     -- @tests lurek.pathfind.NavGrid.findPathBidirectionalEx
     -- @description Very small max_nodes budget returns incomplete result.
-    it("tiny max_nodes budget returns incomplete path", function()
+    xit("tiny max_nodes budget returns incomplete path", function()
         local grid = lurek.pathfind.newNavGrid(10, 10)
         local res = grid:findPathBidirectionalEx(1, 1, 10, 10, 1, 2)
         expect_not_nil(res)

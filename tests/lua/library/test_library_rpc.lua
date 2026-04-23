@@ -16,6 +16,11 @@ end
 lurek.network.pack = function(t) return t end
 lurek.network.unpack = function(t) return t end
 
+-- Mock lurek.serial so the library's _encode/_decode use identity too
+if not lurek.serial then lurek.serial = {} end
+lurek.serial.toJson = function(t) return t end
+lurek.serial.fromJson = function(t) return t end
+
 --- MockHost simulates a network host for testing.
 local MockHost = {}
 MockHost.__index = MockHost

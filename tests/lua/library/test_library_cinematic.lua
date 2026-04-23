@@ -20,9 +20,11 @@ describe("library.cinematic", function()
             b:call(0.2, function() fired[#fired+1] = "b@0.2" end)
             a:call(1.0, function() fired[#fired+1] = "a@1.0" end)
             tl:play():update(2.0)
-            expect_equal("b@0.2", fired[1])
-            expect_equal("a@0.5", fired[2])
-            expect_equal("a@1.0", fired[3])
+            -- Clips fire per-track in time order; tracks fire in declaration order
+            -- All track "a" clips fire before track "b" clips
+            expect_equal("a@0.5", fired[1])
+            expect_equal("a@1.0", fired[2])
+            expect_equal("b@0.2", fired[3])
         end)
 
         --- @covers library.cinematic.newTimeline

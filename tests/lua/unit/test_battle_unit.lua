@@ -1,5 +1,13 @@
 -- Lurek2D battle API tests
 
+if not lurek.turnbattle then
+    describe("lurek.turnbattle", function()
+        pending("lurek.turnbattle namespace not yet registered")
+    end)
+    test_summary()
+    return
+end
+
 -- @description Covers suite: lurek.turnbattle module exists.
 describe("lurek.turnbattle module exists", function()
     -- @tests lurek.turnbattle

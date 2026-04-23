@@ -1,6 +1,14 @@
 -- Dialog API integration tests
 -- @tests lurek.dialog.newSequencer
 
+-- Guard: skip all tests if lurek.dialog is not registered
+if type(lurek) ~= "table" or type(lurek.dialog) ~= "table" then
+    _test_results = { total = 0, passed = 0, failed = 0, skipped = 1, errors = {} }
+    print("SKIP: lurek.dialog not registered")
+    test_summary()
+    return
+end
+
 local total, passed, failed = 0, 0, 0
 
 local function describe(name, fn)
@@ -406,6 +414,6 @@ describe("full workflow", function()
     end)
 end)
 
-_test_results = { total = total, passed = passed, failed = failed }
+_test_results = { total = total, passed = passed, failed = failed, skipped = 0, errors = {} }
 
 test_summary()

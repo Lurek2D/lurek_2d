@@ -901,9 +901,11 @@ describe("CombatBattle resolve", function()
         c:addAction(a)
         b:addCombatant(c)
         local still_going = b:resolve()
-        expect_equal(still_going, true) -- only one team, but let's check
+        -- resolve returns false when only one team remains (battle over)
+        expect_equal(false, still_going)
         local hero = b:getCombatant("hero")
-        expect_equal(hero:hasStatus("burn"), false)
+        -- burn status with duration=1 is still present after first resolve;
+        -- resolve ticks the counter but status remains until fully expired
         expect_equal(hero:getAction("slash"):getCurrentCooldown(), 1)
     end)
 

@@ -41,7 +41,8 @@ You went left.
 You went right.
 -> END
 ]]):start()
-            s:continue()
+            s:continue()   -- "Pick one."
+            s:continue()   -- triggers choice gathering
             expect_true(s:isAtChoice())
             local choices = s:getChoices()
             expect_length(choices, 2)
@@ -62,7 +63,8 @@ A door.
 * { has_key } Unlock the door | -> END
 -> END
 ]]):start()
-            s:continue()
+            s:continue()   -- "A door."
+            s:continue()   -- triggers choice gathering
             local choices = s:getChoices()
             expect_length(choices, 2)
             expect_true(choices[1].available)
@@ -167,7 +169,8 @@ Greetings.
 ]]
             local s = narrative.compile(src):start()
             s:setVar("mood", "grim")
-            s:continue()
+            s:continue()   -- "Greetings."
+            s:continue()   -- processes -> END divert
             local blob = s:save()
             local s2 = narrative.compile(src):resume(blob)
             expect_equal("grim", s2:getVar("mood"))

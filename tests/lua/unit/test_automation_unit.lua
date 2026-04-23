@@ -787,7 +787,7 @@ describe("lurek.automation step limit", function()
     -- @description Loads a script, sets its step limit, and reads it back to verify round-trip fidelity.
     it("setStepLimit_registers_on_a_loaded_script", function()
         lurek.automation.load("step_limit_test", {
-            steps = { { action = "key", key = "a", time = 0.01 } }
+            steps = { { action = "keypress", key = "a", time = 0.01 } }
         })
         local ok = lurek.automation.setStepLimit("step_limit_test", 50)
         expect_true(ok)
@@ -809,7 +809,7 @@ describe("lurek.automation step limit", function()
     -- @description Overwrites an existing step limit with a new value and verifies the stored value updates.
     it("setStepLimit_overwrites_previous_value", function()
         lurek.automation.load("sl_overwrite", {
-            steps = { { action = "key", key = "b", time = 0.01 } }
+            steps = { { action = "keypress", key = "b", time = 0.01 } }
         })
         lurek.automation.setStepLimit("sl_overwrite", 25)
         lurek.automation.setStepLimit("sl_overwrite", 99)

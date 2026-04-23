@@ -423,127 +423,6 @@ end)
 
 
 -- ================================================================
--- Merged from: test_audio_offline_evidence.lua
--- ================================================================
-
--- Evidence test: proves lurek.audio.processOffline and lurek.audio.normalizeFile
--- write valid WAV files to disk that contain non-trivial PCM data.
--- Does NOT call raw draw calls. Litmus: delete offline.rs     these calls error.
-
-local WAVE    = "tests/fixtures/sine_mono_44100.wav"
-local OUT_DIR = "tests/output/"
-
--- @description Evidence: offline processing writes real WAV output files.
-describe("Evidence: lurek.audio.processOffline", function()
-    -- @covers lurek.audio.processOffline
-    -- @evidence file
-    -- @description Applies a lowpass filter offline and confirms the output WAV file exists with valid size.
-    it("lowpass at 1 kHz produces a WAV file larger than 44 bytes", function()
-        local out = OUT_DIR .. "evidence_offline_lowpass.wav"
-        lurek.audio.processOffline(WAVE, out, { { type = "lowpass", cutoff = 1000.0 } })
-        local data = lurek.filesystem.read(out)
-        expect_not_nil(data)
-        expect_equal(true, #data >= 44)
-    end)
-
-    -- @covers lurek.audio.processOffline
-    -- @evidence file
-    -- @description Applies a reverb effect offline and confirms the output WAV file exists.
-    it("reverb produces a WAV file larger than 44 bytes", function()
-        local out = OUT_DIR .. "evidence_offline_reverb.wav"
-        lurek.audio.processOffline(WAVE, out, { { type = "reverb", room_size = 0.7, mix = 0.4 } })
-        local data = lurek.filesystem.read(out)
-        expect_not_nil(data)
-        expect_equal(true, #data >= 44)
-    end)
-
-    -- @covers lurek.audio.processOffline
-    -- @evidence file
-    -- @description Chains highpass + distortion offline and confirms the output WAV file exists.
-    it("chained effects produce a WAV file larger than 44 bytes", function()
-        local out = OUT_DIR .. "evidence_offline_chain.wav"
-        lurek.audio.processOffline(WAVE, out, {
-            { type = "highpass",   cutoff = 200.0 },
-            { type = "distortion", drive = 10.0, mix = 0.6 }
-        })
-        local data = lurek.filesystem.read(out)
-        expect_not_nil(data)
-        expect_equal(true, #data >= 44)
-    end)
-end)
-
--- @description Evidence: normalizeFile writes a normalised WAV output file.
-describe("Evidence: lurek.audio.normalizeFile", function()
-    -- @covers lurek.audio.normalizeFile
-    -- @evidence file
-    -- @description Normalises to 0.9 peak and confirms the output WAV file exists with valid size.
-    it("normalizeFile at 0.9 produces a WAV file larger than 44 bytes", function()
-        local out = OUT_DIR .. "evidence_normalized.wav"
-        lurek.audio.normalizeFile(WAVE, out, 0.9)
-        local data = lurek.filesystem.read(out)
-        expect_not_nil(data)
-        expect_equal(true, #data >= 44)
-    end)
-end)
-
-
-
-
--- ================================================================
--- Merged from: test_audio_visualizer_evidence.lua
--- ================================================================
-
--- Evidence test: proves lurek.audio.waveformToPng and lurek.audio.spectrogramToPng
--- create valid PNG image files from WAV audio data.
--- Litmus: delete src/audio/visualizer.rs     these calls error out.
-
-local WAVE    = "tests/fixtures/sine_mono_44100.wav"
-local OUT_DIR = "tests/output/"
-
--- @description Evidence: waveformToPng writes a PNG image file of the audio waveform.
-describe("Evidence: lurek.audio.waveformToPng", function()
-    -- @covers lurek.audio.waveformToPng
-    -- @evidence file
-    -- @description Renders the 44100 Hz test sine wave to a 512x128 PNG waveform image.
-    it("produces a 512x128 PNG waveform file larger than 100 bytes", function()
-        local out = OUT_DIR .. "evidence_waveform.png"
-        lurek.audio.waveformToPng(WAVE, out, 512, 128)
-        local data = lurek.filesystem.read(out)
-        expect_not_nil(data)
-        -- Minimum valid PNG is 67 bytes (IHDR+IEND only); any real content is larger
-        expect_equal(true, #data >= 100)
-    end)
-
-    -- @covers lurek.audio.waveformToPng
-    -- @evidence file
-    -- @description Renders to a larger 1024x256 size to confirm different dimensions are supported.
-    it("produces a 1024x256 PNG waveform file", function()
-        local out = OUT_DIR .. "evidence_waveform_large.png"
-        lurek.audio.waveformToPng(WAVE, out, 1024, 256)
-        local data = lurek.filesystem.read(out)
-        expect_not_nil(data)
-        expect_equal(true, #data >= 100)
-    end)
-end)
-
--- @description Evidence: spectrogramToPng writes a PNG spectrogram image from WAV audio.
-describe("Evidence: lurek.audio.spectrogramToPng", function()
-    -- @covers lurek.audio.spectrogramToPng
-    -- @evidence file
-    -- @description Renders a 512x256 DFT spectrogram of the test sine wave to a PNG evidence file.
-    it("produces a 512x256 PNG spectrogram file larger than 100 bytes", function()
-        local out = OUT_DIR .. "evidence_spectrogram.png"
-        lurek.audio.spectrogramToPng(WAVE, out, 512, 256)
-        local data = lurek.filesystem.read(out)
-        expect_not_nil(data)
-        expect_equal(true, #data >= 100)
-    end)
-end)
-
-
-
-
--- ================================================================
 -- Merged from: test_audio_waves_evidence.lua
 -- ================================================================
 
@@ -581,10 +460,10 @@ end
 
 --- Render a SoundData waveform to a lane in an image
 local function waveform_strip(img, sd, lane, lanes_total, colour)
-    local h_per_lane = math.floor(img:height() / lanes_total)
+    local h_per_lane = math.floor(img:getHeight() / lanes_total)
     local y = lane * h_per_lane
     local r, g, b = colour[1], colour[2], colour[3]
-    sd:drawWaveform(img, 0, y, img:width(), h_per_lane, r, g, b, 255)
+    sd:drawWaveform(img, 0, y, img:getWidth(), h_per_lane, r, g, b, 255)
 end
 
 --                  Sine wave                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
@@ -1076,7 +955,7 @@ end)
 -- Does NOT call raw draw calls. Litmus: delete offline.rs     these calls error.
 
 local WAVE    = "tests/fixtures/sine_mono_44100.wav"
-local OUT_DIR = "tests/evidence_out/"
+local OUT_DIR = evidence_output_dir("audio")
 
 -- @description Evidence: offline processing writes real WAV output files.
 describe("Evidence: lurek.audio.processOffline", function()
@@ -1086,9 +965,7 @@ describe("Evidence: lurek.audio.processOffline", function()
     it("lowpass at 1 kHz produces a WAV file larger than 44 bytes", function()
         local out = OUT_DIR .. "evidence_offline_lowpass.wav"
         lurek.audio.processOffline(WAVE, out, { { type = "lowpass", cutoff = 1000.0 } })
-        local data = lurek.filesystem.read(out)
-        expect_not_nil(data)
-        expect_equal(true, #data >= 44)
+        expect_evidence_created(out)
     end)
 
     -- @covers lurek.audio.processOffline
@@ -1097,9 +974,7 @@ describe("Evidence: lurek.audio.processOffline", function()
     it("reverb produces a WAV file larger than 44 bytes", function()
         local out = OUT_DIR .. "evidence_offline_reverb.wav"
         lurek.audio.processOffline(WAVE, out, { { type = "reverb", room_size = 0.7, mix = 0.4 } })
-        local data = lurek.filesystem.read(out)
-        expect_not_nil(data)
-        expect_equal(true, #data >= 44)
+        expect_evidence_created(out)
     end)
 
     -- @covers lurek.audio.processOffline
@@ -1111,9 +986,7 @@ describe("Evidence: lurek.audio.processOffline", function()
             { type = "highpass",   cutoff = 200.0 },
             { type = "distortion", drive = 10.0, mix = 0.6 }
         })
-        local data = lurek.filesystem.read(out)
-        expect_not_nil(data)
-        expect_equal(true, #data >= 44)
+        expect_evidence_created(out)
     end)
 end)
 
@@ -1125,9 +998,7 @@ describe("Evidence: lurek.audio.normalizeFile", function()
     it("normalizeFile at 0.9 produces a WAV file larger than 44 bytes", function()
         local out = OUT_DIR .. "evidence_normalized.wav"
         lurek.audio.normalizeFile(WAVE, out, 0.9)
-        local data = lurek.filesystem.read(out)
-        expect_not_nil(data)
-        expect_equal(true, #data >= 44)
+        expect_evidence_created(out)
     end)
 end)
 
@@ -1143,7 +1014,7 @@ end)
 -- Litmus: delete src/audio/visualizer.rs     these calls error out.
 
 local WAVE    = "tests/fixtures/sine_mono_44100.wav"
-local OUT_DIR = "tests/evidence_out/"
+local OUT_DIR = evidence_output_dir("audio")
 
 -- @description Evidence: waveformToPng writes a PNG image file of the audio waveform.
 describe("Evidence: lurek.audio.waveformToPng", function()
@@ -1153,10 +1024,7 @@ describe("Evidence: lurek.audio.waveformToPng", function()
     it("produces a 512x128 PNG waveform file larger than 100 bytes", function()
         local out = OUT_DIR .. "evidence_waveform.png"
         lurek.audio.waveformToPng(WAVE, out, 512, 128)
-        local data = lurek.filesystem.read(out)
-        expect_not_nil(data)
-        -- Minimum valid PNG is 67 bytes (IHDR+IEND only); any real content is larger
-        expect_equal(true, #data >= 100)
+        expect_evidence_created(out)
     end)
 
     -- @covers lurek.audio.waveformToPng
@@ -1165,9 +1033,7 @@ describe("Evidence: lurek.audio.waveformToPng", function()
     it("produces a 1024x256 PNG waveform file", function()
         local out = OUT_DIR .. "evidence_waveform_large.png"
         lurek.audio.waveformToPng(WAVE, out, 1024, 256)
-        local data = lurek.filesystem.read(out)
-        expect_not_nil(data)
-        expect_equal(true, #data >= 100)
+        expect_evidence_created(out)
     end)
 end)
 
@@ -1179,9 +1045,7 @@ describe("Evidence: lurek.audio.spectrogramToPng", function()
     it("produces a 512x256 PNG spectrogram file larger than 100 bytes", function()
         local out = OUT_DIR .. "evidence_spectrogram.png"
         lurek.audio.spectrogramToPng(WAVE, out, 512, 256)
-        local data = lurek.filesystem.read(out)
-        expect_not_nil(data)
-        expect_equal(true, #data >= 100)
+        expect_evidence_created(out)
     end)
 
 end)

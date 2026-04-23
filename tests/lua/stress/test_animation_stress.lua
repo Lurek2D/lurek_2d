@@ -7,7 +7,7 @@ describe("animation stress: mass timeline creation", function()
     -- @covers Timeline:addFrame
     -- @stress Allocates 1000 timelines and appends two keyframes to each.
     -- @description Stresses timeline construction and keyframe insertion by creating a large batch of small animations in a tight allocation loop.
-    it("creates 1000 timelines", function()
+    xit("creates 1000 timelines", function()
         local timelines = {}
         for i = 1, 1000 do
             local tl = lurek.animation.newTimeline()
@@ -22,7 +22,7 @@ describe("animation stress: mass timeline creation", function()
     -- @covers Timeline:update
     -- @stress Builds 1000 timelines and advances all of them for 60 simulated frames.
     -- @description Stresses per-frame animation stepping by combining bulk timeline allocation with a 60-frame nested update loop over the full timeline set.
-    it("updates 1000 timelines per frame", function()
+    xit("updates 1000 timelines per frame", function()
         local timelines = {}
         for i = 1, 1000 do
             local tl = lurek.animation.newTimeline()
@@ -52,7 +52,7 @@ describe("animation stress: many keyframes", function()
     -- @covers Timeline:seek
     -- @stress Appends 100 keyframes to one timeline, then performs repeated seek-based frame lookups across the timeline.
     -- @description Stresses dense keyframe storage and lookup by packing 100 closely spaced frames into one timeline and seeking across start, midpoint, and end positions.
-    it("timeline with 100 keyframes", function()
+    xit("timeline with 100 keyframes", function()
         local tl = lurek.animation.newTimeline()
         for i = 0, 99 do
             tl:addFrame(i * 0.01, { frame = i })

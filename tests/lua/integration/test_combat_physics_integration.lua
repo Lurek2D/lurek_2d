@@ -152,7 +152,8 @@ describe("integration: library.combat    lurek.physics", function()
     end)
 
 end)
-
+
+
 
 
 -- ================================================================
@@ -188,7 +189,7 @@ local combat = require("library.combat")
 
 local function make_target(world, x, y, hp, group_bit)
     local body = lurek.physics.newBody(world, x, y, "dynamic")
-    local chassis = combat.newChassis("body_" .. tostring(x) .. "_" .. tostring(y), hp)
+    local chassis = combat.newChassis(body:getId(), hp)
     chassis.group = group_bit
     return { body = body, chassis = chassis }
 end

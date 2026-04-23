@@ -453,8 +453,8 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
 
     // lurek.platform.getEnv(name) -> string?
     /// Returns the value of an environment variable, or nil if not set.
-    /// - `name` â€” Environment variable name (case-sensitive on Linux/macOS).
-    /// String value of the variable, or nil if it is not set.
+    /// @param name string Environment variable name (case-sensitive on Linux/macOS).
+    /// @return string? String value of the variable, or nil if it is not set.
     system.set(
         "getEnv",
         lua.create_function(|_, name: String| match std::env::var(&name) {

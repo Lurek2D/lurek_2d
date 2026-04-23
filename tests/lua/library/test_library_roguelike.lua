@@ -31,7 +31,9 @@ describe("library.roguelike", function()
             expect_false(fov:isVisible(4, 0))
         end)
 
-        --- @covers library.roguelike.newFov        --- @covers library.roguelike.Fov:isExplored        it("explored set persists after recompute from a new origin", function()
+        --- @covers library.roguelike.newFov
+        --- @covers library.roguelike.Fov:isExplored
+        it("explored set persists after recompute from a new origin", function()
             local fov = rl.newFov({range=3}):setBlocker(open_blocker):compute(0, 0)
             expect_true(fov:isExplored(2, 0))
             fov:compute(20, 20)
@@ -148,9 +150,9 @@ describe("library.roguelike", function()
         --- @covers library.roguelike.bresenham
         it("bresenham produces continuous endpoints", function()
             local pts = rl.bresenham(0, 0, 3, 2)
-            expect_equal(0, pts[1].x); expect_equal(0, pts[1].y)
+            expect_equal(0, pts[1][1]); expect_equal(0, pts[1][2])
             local last = pts[#pts]
-            expect_equal(3, last.x); expect_equal(2, last.y)
+            expect_equal(3, last[1]); expect_equal(2, last[2])
         end)
     end)
 end)

@@ -90,12 +90,12 @@ describe("Evidence: lurek.animation addClipFromGrid quad selection", function()
 
                 for py = 0, FH - 1 do
                     for px = 0, FW - 1 do
-                        local r, g, b, a = img:getPixel(q.x + px + 1, q.y + py + 1)
+                        local r, g, b, a = img:getPixel(q.x + px, q.y + py)
                         -- Scale each source pixel to out_scale x out_scale block
                         for sy = 0, out_scale - 1 do
                             for sx = 0, out_scale - 1 do
-                                out:setPixel(ox + px*out_scale + sx + 1,
-                                             oy + py*out_scale + sy + 1,
+                                out:setPixel(ox + px*out_scale + sx,
+                                             oy + py*out_scale + sy,
                                              r, g, b, a)
                             end
                         end
@@ -157,11 +157,11 @@ describe("Evidence: animation speed scaling visual", function()
         -- Draw sample bars
         for i, v in ipairs(samples1) do
             local val = math.min(255, (math.floor(v / 16)) * 64 + 60)
-            img:setPixel(i * (math.floor(W / 30)), 5, val, 180, 80, 255)
+            img:setPixel((i - 1) * (math.floor(W / 30)), 5, val, 180, 80, 255)
         end
         for i, v in ipairs(samples2) do
             local val = math.min(255, (math.floor(v / 16)) * 64 + 60)
-            img:setPixel(i * (math.floor(W / 30)), 15, 80, 180, val, 255)
+            img:setPixel((i - 1) * (math.floor(W / 30)), 15, 80, 180, val, 255)
         end
 
         lurek.image.savePNG(img, OUT .. "evidence_animation_speed_compare.png")

@@ -135,7 +135,8 @@ describe("integration: library.dialog    lurek.event", function()
     end)
 
 end)
-
+
+
 
 
 -- ================================================================
@@ -175,7 +176,7 @@ describe("integration: library.dialog    lurek.event", function()
         bridge(seq, sig, { "line", "finished" })
 
         local got_speaker, got_text
-        sig:on("line", function(speaker, text)
+        sig:connect("line", function(speaker, text)
             got_speaker, got_text = speaker, text
         end)
 
@@ -195,8 +196,8 @@ describe("integration: library.dialog    lurek.event", function()
         bridge(seq, sig, { "line" })
 
         local count_a, count_b = 0, 0
-        sig:on("line", function() count_a = count_a + 1 end)
-        sig:on("line", function() count_b = count_b + 1 end)
+        sig:connect("line", function() count_a = count_a + 1 end)
+        sig:connect("line", function() count_b = count_b + 1 end)
 
         seq:setSpeed(100)
         seq:load({ { type = "say", speaker = "N", text = "X" } })
@@ -214,7 +215,7 @@ describe("integration: library.dialog    lurek.event", function()
         bridge(seq, sig, { "line", "finished" })
 
         local finished = false
-        sig:on("finished", function() finished = true end)
+        sig:connect("finished", function() finished = true end)
 
         seq:setSpeed(1000)
         seq:load({ { type = "say", speaker = "N", text = "End." } })
@@ -231,7 +232,7 @@ describe("integration: library.dialog    lurek.event", function()
         bridge(seq, sig, { "choice" })
 
         local choice_fired = false
-        sig:on("choice", function() choice_fired = true end)
+        sig:connect("choice", function() choice_fired = true end)
 
         seq:load({
             { type = "choice", text = "Pick:", options = {
@@ -252,7 +253,7 @@ describe("integration: library.dialog    lurek.event", function()
         bridge(seq, sig, { "line" })
 
         local count = 0
-        sig:on("line", function() count = count + 1 end)
+        sig:connect("line", function() count = count + 1 end)
 
         seq:setSpeed(1000)
         seq:load({

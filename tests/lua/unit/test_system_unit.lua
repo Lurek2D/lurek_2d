@@ -1,8 +1,5 @@
 -- Lurek2D system API Tests
 
-require('lurek.test.framework')
-
-
 -- =========================================================================
 -- Missing API Coverage Stubs
 -- =========================================================================
@@ -185,3 +182,5 @@ describe("Missing explicit test for lurek.system.parseArgs", function()
         -- TODO: add assertion for lurek.system.parseArgs
     end)
 end)
+
+test_summary()

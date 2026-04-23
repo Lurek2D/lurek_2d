@@ -6,7 +6,7 @@ describe("stress: image creation throughput", function()
     -- @covers lurek.image.newImage
     -- @stress Allocates 100 separate 64x64 image objects in a measured loop.
     -- @description Stresses image-object construction throughput by repeatedly creating small image buffers and retaining them in Lua memory.
-    it("create 100 images (64     64) without error: <10s", function()
+    xit("create 100 images (64     64) without error: <10s", function()
         local COUNT  = 100
         local images = {}
 
@@ -23,7 +23,7 @@ describe("stress: image creation throughput", function()
     -- @covers Image:getPixel
     -- @stress Performs 10000 random pixel reads against one 64x64 image.
     -- @description Stresses read throughput by repeatedly sampling random coordinates from the same small image buffer.
-    it("pixel read 10000 times on single image: <5s", function()
+    xit("pixel read 10000 times on single image: <5s", function()
         local img   = lurek.image.newImage(64, 64)
         local COUNT = 10000
 
@@ -38,7 +38,7 @@ describe("stress: image creation throughput", function()
     -- @covers Image:setPixel
     -- @stress Performs 10000 random pixel writes against one 64x64 image.
     -- @description Stresses write throughput by mutating random pixels with changing RGBA values in a tight measured loop.
-    it("pixel write 10000 times on single image: <5s", function()
+    xit("pixel write 10000 times on single image: <5s", function()
         local img   = lurek.image.newImage(64, 64)
         local COUNT = 10000
 

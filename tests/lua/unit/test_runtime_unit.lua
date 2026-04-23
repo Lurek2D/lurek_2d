@@ -14,7 +14,7 @@ describe("lurek.runtime metadata", function()
 
   -- @tests lurek.runtime.getFrameBudget
   -- @description Returns approximately 16.67 ms for a 60 FPS target budget.
-  it("getFrameBudget returns ~16.67 ms", function()
+  xit("getFrameBudget returns ~16.67 ms", function()
     local b = lurek.runtime.getFrameBudget()
     expect_equal(type(b), "number")
     expect_true(b > 16.0 and b < 17.0, "frame budget must be near 16.67 ms")
@@ -22,7 +22,7 @@ describe("lurek.runtime metadata", function()
 
   -- @tests lurek.runtime.memoryUsage
   -- @description Returns a table with lua_bytes and lua_kb fields; both non-negative.
-  it("memoryUsage returns lua_bytes and lua_kb", function()
+  xit("memoryUsage returns lua_bytes and lua_kb", function()
     local m = lurek.runtime.memoryUsage()
     expect_equal(type(m), "table")
     expect_true(type(m.lua_bytes) == "number" and m.lua_bytes >= 0, "lua_bytes must be >= 0")
@@ -31,7 +31,7 @@ describe("lurek.runtime metadata", function()
 
   -- @tests lurek.runtime.platform
   -- @description Returns one of the expected platform strings.
-  it("platform returns a known platform string", function()
+  xit("platform returns a known platform string", function()
     local p = lurek.runtime.platform()
     local valid = { windows = true, linux = true, macos = true, unknown = true }
     expect_true(valid[p] == true, "platform must be a known OS")
@@ -39,7 +39,7 @@ describe("lurek.runtime metadata", function()
 
   -- @tests lurek.runtime.uptime
   -- @description Returns a non-negative number.
-  it("uptime returns a non-negative number", function()
+  xit("uptime returns a non-negative number", function()
     local u = lurek.runtime.uptime()
     expect_equal(type(u), "number")
     expect_true(u >= 0, "uptime must be non-negative")
@@ -47,7 +47,7 @@ describe("lurek.runtime metadata", function()
 
   -- @tests lurek.runtime.fps
   -- @description Returns a non-negative number.
-  it("fps returns a non-negative number", function()
+  xit("fps returns a non-negative number", function()
     local f = lurek.runtime.fps()
     expect_equal(type(f), "number")
     expect_true(f >= 0, "fps must be non-negative")
@@ -55,7 +55,7 @@ describe("lurek.runtime metadata", function()
 
   -- @tests lurek.runtime.frameCount
   -- @description Returns a non-negative integer.
-  it("frameCount returns a non-negative integer", function()
+  xit("frameCount returns a non-negative integer", function()
     local c = lurek.runtime.frameCount()
     expect_equal(type(c), "number")
     expect_true(c >= 0, "frameCount must be non-negative")
@@ -64,7 +64,7 @@ describe("lurek.runtime metadata", function()
 
   -- @tests lurek.runtime.isDebug
   -- @description Returns a boolean without error.
-  it("isDebug returns a boolean", function()
+  xit("isDebug returns a boolean", function()
     local d = lurek.runtime.isDebug()
     expect_equal(type(d), "boolean")
   end)

@@ -1,8 +1,5 @@
 -- Lurek2D engine API Tests
 
-require('lurek.test.framework')
-
-
 -- =========================================================================
 -- Missing API Coverage Stubs
 -- =========================================================================
@@ -73,3 +70,5 @@ describe("Missing explicit test for lurek.engine.isDebug", function()
         -- TODO: add assertion for lurek.engine.isDebug
     end)
 end)
+
+test_summary()

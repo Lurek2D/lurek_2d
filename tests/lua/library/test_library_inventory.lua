@@ -491,9 +491,12 @@ describe("Container.expandable", function()
     -- @covers library.inventory.Container:slotCount
     it("expand adds slots in expandable mode", function()
         local c = inventory.newContainer("bag", "expandable", 2)
-        expect_equal(c:slotCount(), 2)
+        expect_equal(2, c:slotCount())
+        -- Raise capacity ceiling before expanding
+        c:setCapacity(10)
         c:expand(3)
-        expect_equal(c:slotCount(), 5)
+        -- expand(3) adds 3 slots; total becomes 2 + 3 = 5
+        expect_equal(5, c:slotCount())
     end)
 
     -- @description Verifies case: expand returns false in fixed mode.
@@ -1229,7 +1232,7 @@ describe("Container.tagFiltering", function()
     -- @covers library.inventory.newSlot
     it("typed slot in container accepts item with matching tag via addItem", function()
         -- Container with a "weapon" slot     item type is "magic_blade" but has "weapon" tag
-        local c = inventory.newContainer("equip", "fixed", 0)
+        local c = inventory.newContainer("equip", "expandable", 0, 1)
         local weapon_slot = inventory.newSlot("weapon", inventory.SlotState.Active)
         c:addSlot(weapon_slot)
 
@@ -1247,7 +1250,7 @@ describe("Container.tagFiltering", function()
     -- @covers library.inventory.newItem
     -- @covers library.inventory.newSlot
     it("typed slot rejects item without matching type or tag", function()
-        local c = inventory.newContainer("equip", "fixed", 0)
+        local c = inventory.newContainer("equip", "expandable", 0, 1)
         c:addSlot(inventory.newSlot("weapon", inventory.SlotState.Active))
 
         local potion = inventory.newItem("potion")
@@ -1262,7 +1265,7 @@ describe("Container.tagFiltering", function()
     -- @covers library.inventory.newItem
     -- @covers library.inventory.newSlot
     it("item type match satisfies slot type without needing tag", function()
-        local c = inventory.newContainer("equip", "fixed", 0)
+        local c = inventory.newContainer("equip", "expandable", 0, 1)
         c:addSlot(inventory.newSlot("sword", inventory.SlotState.Active))
 
         local sword = inventory.newItem("sword")

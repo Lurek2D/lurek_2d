@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generated": "2026-04-23T00:40:26.825327+00:00",
+    "generated": "2026-04-23T11:45:37.880380+00:00",
     "generator": "tools/audit/lua_api_test_coverage.py",
     "mode": "hybrid",
     "module_filter": null,
@@ -1280,12 +1280,12 @@
     },
     {
       "file": "tests/lua/config/test_config.lua",
-      "line": 82,
+      "line": 81,
       "marker": "lurek.runtime.getVersion"
     },
     {
       "file": "tests/lua/config/test_config.lua",
-      "line": 90,
+      "line": 89,
       "marker": "lurek.runtime.getOS"
     },
     {
@@ -1415,117 +1415,117 @@
     },
     {
       "file": "tests/lua/evidence/test_audio_evidence.lua",
-      "line": 626,
+      "line": 505,
       "marker": "SoundData:drawWaveform"
     },
     {
       "file": "tests/lua/evidence/test_audio_evidence.lua",
-      "line": 687,
+      "line": 566,
       "marker": "SoundData:setSample"
     },
     {
       "file": "tests/lua/evidence/test_audio_evidence.lua",
-      "line": 707,
+      "line": 586,
       "marker": "SoundData:setSample"
     },
     {
       "file": "tests/lua/evidence/test_audio_evidence.lua",
-      "line": 708,
+      "line": 587,
       "marker": "SoundData:getSample"
     },
     {
       "file": "tests/lua/evidence/test_audio_evidence.lua",
-      "line": 745,
+      "line": 624,
       "marker": "SoundData:setSample"
     },
     {
       "file": "tests/lua/evidence/test_audio_evidence.lua",
-      "line": 766,
+      "line": 645,
       "marker": "SoundData:getSample"
     },
     {
       "file": "tests/lua/evidence/test_audio_evidence.lua",
-      "line": 767,
+      "line": 646,
       "marker": "SoundData:setSample"
     },
     {
       "file": "tests/lua/evidence/test_audio_evidence.lua",
-      "line": 805,
+      "line": 684,
       "marker": "SoundData:setSample"
     },
     {
       "file": "tests/lua/evidence/test_audio_evidence.lua",
-      "line": 806,
+      "line": 685,
       "marker": "SoundData:getSample"
     },
     {
       "file": "tests/lua/evidence/test_audio_evidence.lua",
-      "line": 807,
+      "line": 686,
       "marker": "SoundData:drawWaveform"
     },
     {
       "file": "tests/lua/evidence/test_audio_evidence.lua",
-      "line": 810,
+      "line": 689,
       "marker": "SoundData:getDuration"
     },
     {
       "file": "tests/lua/evidence/test_audio_evidence.lua",
-      "line": 843,
+      "line": 722,
       "marker": "SoundData:setSample"
     },
     {
       "file": "tests/lua/evidence/test_audio_evidence.lua",
-      "line": 844,
+      "line": 723,
       "marker": "SoundData:drawWaveform"
     },
     {
       "file": "tests/lua/evidence/test_audio_evidence.lua",
-      "line": 875,
+      "line": 754,
       "marker": "SoundData:setSample"
     },
     {
       "file": "tests/lua/evidence/test_audio_evidence.lua",
-      "line": 876,
+      "line": 755,
       "marker": "SoundData:drawWaveform"
     },
     {
       "file": "tests/lua/evidence/test_audio_evidence.lua",
-      "line": 903,
+      "line": 782,
       "marker": "SoundData:setSample"
     },
     {
       "file": "tests/lua/evidence/test_audio_evidence.lua",
-      "line": 904,
+      "line": 783,
       "marker": "SoundData:drawWaveform"
     },
     {
       "file": "tests/lua/evidence/test_audio_evidence.lua",
-      "line": 967,
+      "line": 846,
       "marker": "AudioBus:setVolume"
     },
     {
       "file": "tests/lua/evidence/test_audio_evidence.lua",
-      "line": 968,
+      "line": 847,
       "marker": "AudioBus:getVolume"
     },
     {
       "file": "tests/lua/evidence/test_audio_evidence.lua",
-      "line": 1000,
+      "line": 879,
       "marker": "AudioBus:setPitch"
     },
     {
       "file": "tests/lua/evidence/test_audio_evidence.lua",
-      "line": 1001,
+      "line": 880,
       "marker": "AudioBus:getPitch"
     },
     {
       "file": "tests/lua/evidence/test_audio_evidence.lua",
-      "line": 1030,
+      "line": 909,
       "marker": "AudioBus:setVolume"
     },
     {
       "file": "tests/lua/evidence/test_audio_evidence.lua",
-      "line": 1032,
+      "line": 911,
       "marker": "SoundData:getSample"
     },
     {
@@ -1760,112 +1760,112 @@
     },
     {
       "file": "tests/lua/evidence/test_effect_evidence.lua",
-      "line": 388,
+      "line": 386,
       "marker": "Overlay:triggerFlash"
     },
     {
       "file": "tests/lua/evidence/test_effect_evidence.lua",
-      "line": 419,
+      "line": 417,
       "marker": "Overlay:triggerFade"
     },
     {
       "file": "tests/lua/evidence/test_effect_evidence.lua",
-      "line": 449,
+      "line": 447,
       "marker": "Overlay:triggerFlash"
     },
     {
       "file": "tests/lua/evidence/test_effect_evidence.lua",
-      "line": 528,
+      "line": 526,
       "marker": "ImageData:grayscale"
     },
     {
       "file": "tests/lua/evidence/test_effect_evidence.lua",
-      "line": 529,
+      "line": 527,
       "marker": "ImageData:getPixel"
     },
     {
       "file": "tests/lua/evidence/test_effect_evidence.lua",
-      "line": 541,
+      "line": 539,
       "marker": "ImageData:invert"
     },
     {
       "file": "tests/lua/evidence/test_effect_evidence.lua",
-      "line": 542,
+      "line": 540,
       "marker": "ImageData:getPixel"
     },
     {
       "file": "tests/lua/evidence/test_effect_evidence.lua",
-      "line": 556,
+      "line": 554,
       "marker": "ImageData:blur"
     },
     {
       "file": "tests/lua/evidence/test_effect_evidence.lua",
-      "line": 566,
+      "line": 564,
+      "marker": "ImageData:sepia"
+    },
+    {
+      "file": "tests/lua/evidence/test_effect_evidence.lua",
+      "line": 574,
+      "marker": "ImageData:grayscale"
+    },
+    {
+      "file": "tests/lua/evidence/test_effect_evidence.lua",
+      "line": 575,
       "marker": "ImageData:sepia"
     },
     {
       "file": "tests/lua/evidence/test_effect_evidence.lua",
       "line": 576,
-      "marker": "ImageData:grayscale"
-    },
-    {
-      "file": "tests/lua/evidence/test_effect_evidence.lua",
-      "line": 577,
-      "marker": "ImageData:sepia"
-    },
-    {
-      "file": "tests/lua/evidence/test_effect_evidence.lua",
-      "line": 578,
       "marker": "ImageData:invert"
     },
     {
       "file": "tests/lua/evidence/test_effect_evidence.lua",
-      "line": 579,
+      "line": 577,
       "marker": "ImageData:blur"
     },
     {
       "file": "tests/lua/evidence/test_effect_evidence.lua",
-      "line": 580,
+      "line": 578,
       "marker": "ImageData:sharpen"
     },
     {
       "file": "tests/lua/evidence/test_effect_evidence.lua",
-      "line": 581,
+      "line": 579,
       "marker": "ImageData:brightness"
     },
     {
       "file": "tests/lua/evidence/test_effect_evidence.lua",
-      "line": 582,
+      "line": 580,
       "marker": "ImageData:contrast"
     },
     {
       "file": "tests/lua/evidence/test_effect_evidence.lua",
-      "line": 583,
+      "line": 581,
       "marker": "ImageData:threshold"
     },
     {
       "file": "tests/lua/evidence/test_effect_evidence.lua",
-      "line": 620,
+      "line": 618,
       "marker": "ImageData:posterize"
     },
     {
       "file": "tests/lua/evidence/test_effect_evidence.lua",
-      "line": 621,
+      "line": 619,
       "marker": "ImageData:gamma"
     },
     {
       "file": "tests/lua/evidence/test_effect_evidence.lua",
-      "line": 622,
+      "line": 620,
       "marker": "ImageData:tint"
     },
     {
       "file": "tests/lua/evidence/test_effect_evidence.lua",
-      "line": 634,
+      "line": 632,
       "marker": "ImageData:saturation"
     },
     {
       "file": "tests/lua/evidence/test_effect_evidence.lua",
-      "line": 635,
+      "line": 633,
       "marker": "ImageData:flipHorizontal"
     },
     {
@@ -3040,317 +3040,317 @@
     },
     {
       "file": "tests/lua/evidence/test_physics_evidence.lua",
-      "line": 222,
+      "line": 221,
       "marker": "LuaZone:setGravityZero"
     },
     {
       "file": "tests/lua/evidence/test_physics_evidence.lua",
-      "line": 501,
+      "line": 499,
       "marker": "LuaZone:setGravityZero"
+    },
+    {
+      "file": "tests/lua/evidence/test_physics_evidence.lua",
+      "line": 562,
+      "marker": "LuaCellular:fillRect"
+    },
+    {
+      "file": "tests/lua/evidence/test_physics_evidence.lua",
+      "line": 563,
+      "marker": "LuaCellular:stepN"
     },
     {
       "file": "tests/lua/evidence/test_physics_evidence.lua",
       "line": 564,
+      "marker": "LuaCellular:toImageData"
+    },
+    {
+      "file": "tests/lua/evidence/test_physics_evidence.lua",
+      "line": 617,
       "marker": "LuaCellular:fillRect"
     },
     {
       "file": "tests/lua/evidence/test_physics_evidence.lua",
-      "line": 565,
+      "line": 618,
       "marker": "LuaCellular:stepN"
-    },
-    {
-      "file": "tests/lua/evidence/test_physics_evidence.lua",
-      "line": 566,
-      "marker": "LuaCellular:toImageData"
     },
     {
       "file": "tests/lua/evidence/test_physics_evidence.lua",
       "line": 619,
-      "marker": "LuaCellular:fillRect"
-    },
-    {
-      "file": "tests/lua/evidence/test_physics_evidence.lua",
-      "line": 620,
-      "marker": "LuaCellular:stepN"
-    },
-    {
-      "file": "tests/lua/evidence/test_physics_evidence.lua",
-      "line": 621,
       "marker": "LuaCellular:toImageData"
     },
     {
       "file": "tests/lua/evidence/test_raycaster_evidence.lua",
-      "line": 19,
-      "marker": "Raycaster:castRaysFlat"
-    },
-    {
-      "file": "tests/lua/evidence/test_raycaster_evidence.lua",
-      "line": 100,
+      "line": 13,
       "marker": "Raycaster:castRaysFlat"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 190,
+      "line": 187,
       "marker": "LuaTerrain:fillAll"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 191,
+      "line": 188,
       "marker": "LuaTerrain:fillCircle"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 192,
+      "line": 189,
       "marker": "LuaTerrain:toImageData"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 414,
+      "line": 408,
       "marker": "LuaTerrain:fillAll"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 415,
+      "line": 409,
       "marker": "LuaTerrain:fillCircle"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 416,
+      "line": 410,
       "marker": "LuaTerrain:toImageData"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 478,
+      "line": 466,
       "marker": "ImageData:fill"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 479,
+      "line": 467,
       "marker": "ImageData:setPixel"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 496,
+      "line": 484,
       "marker": "ImageData:setPixel"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 512,
+      "line": 500,
       "marker": "ImageData:setPixel"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 531,
+      "line": 519,
       "marker": "ImageData:setPixel"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 551,
+      "line": 539,
       "marker": "ImageData:setPixel"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 573,
+      "line": 561,
       "marker": "ImageData:setPixel"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 588,
+      "line": 576,
       "marker": "ImageData:setPixel"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 670,
+      "line": 658,
       "marker": "SoundData:setSample"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 693,
+      "line": 681,
       "marker": "SoundData:setSample"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 714,
+      "line": 702,
       "marker": "SoundData:setSample"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 738,
+      "line": 726,
       "marker": "SoundData:setSample"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 756,
+      "line": 744,
       "marker": "SoundData:setSample"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 775,
+      "line": 763,
       "marker": "SoundData:setSample"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 794,
+      "line": 782,
       "marker": "SoundData:setSample"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 810,
+      "line": 798,
       "marker": "SoundData:setSample"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 830,
+      "line": 818,
       "marker": "ImageData:setPixel"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 872,
+      "line": 860,
       "marker": "ImageData:brightness"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 873,
+      "line": 861,
       "marker": "ImageData:contrast"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 874,
+      "line": 862,
       "marker": "ImageData:grayscale"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 875,
+      "line": 863,
       "marker": "ImageData:sepia"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 876,
+      "line": 864,
       "marker": "ImageData:invert"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 877,
+      "line": 865,
       "marker": "ImageData:threshold"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 878,
+      "line": 866,
       "marker": "ImageData:posterize"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 879,
+      "line": 867,
       "marker": "ImageData:tint"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 880,
+      "line": 868,
       "marker": "ImageData:saturation"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 881,
+      "line": 869,
       "marker": "ImageData:gamma"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 882,
+      "line": 870,
       "marker": "ImageData:noise"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 883,
+      "line": 871,
       "marker": "ImageData:flipHorizontal"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 884,
+      "line": 872,
       "marker": "ImageData:flipVertical"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 885,
+      "line": 873,
       "marker": "ImageData:rotate90Cw"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 886,
+      "line": 874,
       "marker": "ImageData:blur"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 887,
+      "line": 875,
       "marker": "ImageData:sharpen"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 888,
+      "line": 876,
       "marker": "ImageData:crop"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 889,
+      "line": 877,
       "marker": "ImageData:resizeNearest"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 950,
+      "line": 938,
       "marker": "TileMap:setTile"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 1000,
+      "line": 982,
       "marker": "ImageData:fill"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 1001,
+      "line": 983,
       "marker": "ImageData:setPixel"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 1018,
+      "line": 1000,
       "marker": "ImageData:setPixel"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 1034,
+      "line": 1016,
       "marker": "ImageData:setPixel"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 1053,
+      "line": 1035,
       "marker": "ImageData:setPixel"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 1073,
+      "line": 1055,
       "marker": "ImageData:setPixel"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 1095,
+      "line": 1077,
       "marker": "ImageData:setPixel"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 1110,
+      "line": 1092,
       "marker": "ImageData:setPixel"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 1192,
+      "line": 1174,
       "marker": "SoundData:setSample"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 1215,
+      "line": 1197,
       "marker": "SoundData:setSample"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 1236,
+      "line": 1218,
+      "marker": "SoundData:setSample"
+    },
+    {
+      "file": "tests/lua/evidence/test_render_evidence.lua",
+      "line": 1242,
       "marker": "SoundData:setSample"
     },
     {
@@ -3360,273 +3360,278 @@
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 1278,
+      "line": 1279,
       "marker": "SoundData:setSample"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 1297,
+      "line": 1298,
       "marker": "SoundData:setSample"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 1316,
+      "line": 1314,
       "marker": "SoundData:setSample"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 1332,
-      "marker": "SoundData:setSample"
-    },
-    {
-      "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 1352,
+      "line": 1334,
       "marker": "ImageData:setPixel"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 1394,
+      "line": 1376,
       "marker": "ImageData:brightness"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 1395,
+      "line": 1377,
       "marker": "ImageData:contrast"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 1396,
+      "line": 1378,
       "marker": "ImageData:grayscale"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 1397,
+      "line": 1379,
       "marker": "ImageData:sepia"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 1398,
+      "line": 1380,
       "marker": "ImageData:invert"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 1399,
+      "line": 1381,
       "marker": "ImageData:threshold"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 1400,
+      "line": 1382,
       "marker": "ImageData:posterize"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 1401,
+      "line": 1383,
       "marker": "ImageData:tint"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 1402,
+      "line": 1384,
       "marker": "ImageData:saturation"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 1403,
+      "line": 1385,
       "marker": "ImageData:gamma"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 1404,
+      "line": 1386,
       "marker": "ImageData:noise"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 1405,
+      "line": 1387,
       "marker": "ImageData:flipHorizontal"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 1406,
+      "line": 1388,
       "marker": "ImageData:flipVertical"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 1407,
+      "line": 1389,
       "marker": "ImageData:rotate90Cw"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 1408,
+      "line": 1390,
       "marker": "ImageData:blur"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 1409,
+      "line": 1391,
       "marker": "ImageData:sharpen"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 1410,
+      "line": 1392,
       "marker": "ImageData:crop"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 1411,
+      "line": 1393,
       "marker": "ImageData:resizeNearest"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 1472,
+      "line": 1454,
       "marker": "TileMap:setTile"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 1512,
+      "line": 1494,
       "marker": "NavGrid:setBlocked"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 1514,
+      "line": 1496,
       "marker": "Pathfinder:findPath"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 1573,
+      "line": 1555,
       "marker": "NoiseGenerator:fbm"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 1575,
+      "line": 1557,
       "marker": "Minimap:setTerrain"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 1623,
+      "line": 1605,
       "marker": "NoiseGenerator:fbm"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 1626,
+      "line": 1608,
       "marker": "Raycaster:castRays"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 1798,
+      "line": 1780,
       "marker": "NdArray:fill"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 1799,
+      "line": 1781,
       "marker": "NdArray:sum"
+    },
+    {
+      "file": "tests/lua/evidence/test_render_evidence.lua",
+      "line": 1796,
+      "marker": "DataFrame:addColumn"
+    },
+    {
+      "file": "tests/lua/evidence/test_render_evidence.lua",
+      "line": 1812,
+      "marker": "World:spawn"
+    },
+    {
+      "file": "tests/lua/evidence/test_render_evidence.lua",
+      "line": 1813,
+      "marker": "World:isAlive"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
       "line": 1814,
-      "marker": "DataFrame:addColumn"
-    },
-    {
-      "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 1830,
-      "marker": "World:spawn"
-    },
-    {
-      "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 1831,
-      "marker": "World:isAlive"
-    },
-    {
-      "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 1832,
       "marker": "World:getEntityCount"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 1950,
+      "line": 1932,
       "marker": "NdArray:fill"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 1951,
+      "line": 1933,
       "marker": "NdArray:sum"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 1966,
+      "line": 1948,
       "marker": "DataFrame:addColumn"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 1982,
+      "line": 1964,
       "marker": "World:spawn"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 1983,
+      "line": 1965,
       "marker": "World:isAlive"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 1984,
+      "line": 1966,
       "marker": "World:getEntityCount"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 2255,
+      "line": 2237,
       "marker": "ImageData:drawRect"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 2256,
+      "line": 2238,
       "marker": "ImageData:drawCircle"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 2283,
+      "line": 2265,
       "marker": "ImageData:drawRect"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 2365,
+      "line": 2347,
       "marker": "ImageData:drawRect"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 2366,
+      "line": 2348,
       "marker": "ImageData:drawCircle"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 2393,
+      "line": 2375,
       "marker": "ImageData:drawRect"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 2500,
+      "line": 2482,
       "marker": "ImageData:drawRect"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 2501,
+      "line": 2483,
       "marker": "ImageData:drawLine"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 2502,
+      "line": 2484,
       "marker": "ImageData:drawCircle"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 2535,
+      "line": 2517,
       "marker": "ImageData:drawRect"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 2536,
+      "line": 2518,
       "marker": "ImageData:drawCircle"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 2537,
+      "line": 2519,
       "marker": "ImageData:drawLine"
+    },
+    {
+      "file": "tests/lua/evidence/test_render_evidence.lua",
+      "line": 2548,
+      "marker": "ImageData:drawLine"
+    },
+    {
+      "file": "tests/lua/evidence/test_render_evidence.lua",
+      "line": 2565,
+      "marker": "ImageData:drawCircle"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
@@ -3635,57 +3640,47 @@
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 2583,
-      "marker": "ImageData:drawCircle"
-    },
-    {
-      "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 2584,
-      "marker": "ImageData:drawLine"
-    },
-    {
-      "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 2657,
+      "line": 2639,
       "marker": "ImageData:drawRect"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 2658,
+      "line": 2640,
       "marker": "ImageData:drawLine"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 2659,
+      "line": 2641,
       "marker": "ImageData:drawCircle"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 2692,
+      "line": 2674,
       "marker": "ImageData:drawRect"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 2693,
+      "line": 2675,
       "marker": "ImageData:drawCircle"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 2694,
+      "line": 2676,
       "marker": "ImageData:drawLine"
+    },
+    {
+      "file": "tests/lua/evidence/test_render_evidence.lua",
+      "line": 2705,
+      "marker": "ImageData:drawLine"
+    },
+    {
+      "file": "tests/lua/evidence/test_render_evidence.lua",
+      "line": 2722,
+      "marker": "ImageData:drawCircle"
     },
     {
       "file": "tests/lua/evidence/test_render_evidence.lua",
       "line": 2723,
-      "marker": "ImageData:drawLine"
-    },
-    {
-      "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 2740,
-      "marker": "ImageData:drawCircle"
-    },
-    {
-      "file": "tests/lua/evidence/test_render_evidence.lua",
-      "line": 2741,
       "marker": "ImageData:drawLine"
     },
     {

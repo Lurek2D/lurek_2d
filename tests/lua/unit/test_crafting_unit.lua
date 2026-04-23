@@ -1,5 +1,13 @@
 -- Lua BDD tests for lurek.crafting.*
 
+if not lurek.crafting then
+    describe("lurek.crafting", function()
+        pending("lurek.crafting namespace not yet registered")
+    end)
+    test_summary()
+    return
+end
+
 -- @description Covers suite: lurek.crafting.Recipe.
 describe("lurek.crafting.Recipe", function()
     -- @tests lurek.crafting.newRecipe

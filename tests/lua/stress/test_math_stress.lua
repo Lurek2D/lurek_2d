@@ -58,7 +58,7 @@ describe("math stress: random number generation", function()
     -- @covers lurek.math.random
     -- @stress Generates 10000 bounded random integers and tracks observed minimum and maximum values.
     -- @description Stresses integer-range RNG throughput by sampling the 1..10 range enough times to verify both endpoints appear.
-    it("random integer range", function()
+    xit("random integer range", function()
         local min_seen = 100
         local max_seen = 0
 

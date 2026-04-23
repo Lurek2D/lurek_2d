@@ -15,7 +15,7 @@ describe("stress: filesystem write/read throughput", function()
         local files   = {}
 
         for i = 1, COUNT do
-            files[i] = "stress_fs_tmp_" .. i .. ".bin"
+            files[i] = "save/stress_fs_tmp_" .. i .. ".bin"
         end
 
         -- Write phase

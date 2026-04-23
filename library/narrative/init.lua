@@ -233,7 +233,11 @@ local function _apply_var_decls(story)
     for _, n in ipairs(decls.nodes) do
         if n.kind == "var_decl" then
             local ok, val = pcall(_eval, n.expr, story)
-            story._vars[n.name] = ok and val or n.expr
+            if ok then
+                story._vars[n.name] = val
+            else
+                story._vars[n.name] = n.expr
+            end
         end
     end
 end

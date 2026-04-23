@@ -17,7 +17,7 @@ local function render_world_through_cam(cam, world_w, world_h, vw, vh)
     for x = 0, world_w, cell do
         for y = 0, world_h do
             local sx, sy = cam:toScreen(x, y)
-            if sx >= 1 and sx <= vw and sy >= 1 and sy <= vh then
+            if sx >= 0 and sx < vw and sy >= 0 and sy < vh then
                 img:setPixel(math.floor(sx), math.floor(sy), 50, 60, 80, 255)
             end
         end
@@ -25,7 +25,7 @@ local function render_world_through_cam(cam, world_w, world_h, vw, vh)
     for y = 0, world_h, cell do
         for x = 0, world_w do
             local sx, sy = cam:toScreen(x, y)
-            if sx >= 1 and sx <= vw and sy >= 1 and sy <= vh then
+            if sx >= 0 and sx < vw and sy >= 0 and sy < vh then
                 img:setPixel(math.floor(sx), math.floor(sy), 50, 60, 80, 255)
             end
         end
@@ -36,7 +36,7 @@ local function render_world_through_cam(cam, world_w, world_h, vw, vh)
     for dy = -10, 10 do
         for dx = -10, 10 do
             local sx, sy = cam:toScreen(px + dx, py + dy)
-            if sx >= 1 and sx <= vw and sy >= 1 and sy <= vh then
+            if sx >= 0 and sx < vw and sy >= 0 and sy < vh then
                 img:setPixel(math.floor(sx), math.floor(sy), 220, 100, 80, 255)
             end
         end
@@ -88,14 +88,14 @@ describe("Evidence: lurek.camera zoom and coordinate transforms", function()
         local right = render_world_through_cam(cam2, WW, WH, VW, VH)
 
         -- Blit both halves
-        for y = 1, VH do
-            for x = 1, VW do
+        for y = 0, VH - 1 do
+            for x = 0, VW - 1 do
                 local r, g, b, a = left:getPixel(x, y)
                 img:setPixel(x, y, r, g, b, a)
             end
         end
-        for y = 1, VH do
-            for x = 1, VW do
+        for y = 0, VH - 1 do
+            for x = 0, VW - 1 do
                 local r, g, b, a = right:getPixel(x, y)
                 img:setPixel(VW + 4 + x, y, r, g, b, a)
             end

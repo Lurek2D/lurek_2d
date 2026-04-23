@@ -657,7 +657,7 @@ describe("Turn-Based Support", function()
     -- @covers library.netstate.NetState:setTurnOrder
     it("setTurnOrder filters non-number entries", function()
         local ns = netstate_mod.new(nil, { authority = true, turnBased = true })
-        ns:setTurnOrder({ 1, "bad", nil, 2 })
+        ns:setTurnOrder({ 1, "bad", 2 })
         ns:beginTurn()
         expect_equal(ns:getTurnPeer(), 1)
         ns:beginTurn()

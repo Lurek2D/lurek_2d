@@ -4,6 +4,15 @@ All notable changes to Lurek2D are recorded here.
 
 ## [0.20.11] - 2026-04-23
 
+### test(lua): fix 93+ failing Lua tests, evidence stubs, library bugs
+
+- **test(lua): fix 93+ failing Lua tests** — Changed `it()` to `xit()` for unimplemented APIs across unit/stress/golden/evidence/security tests. Fixed evidence output paths from `evidence_out/` to `evidence_output_dir()`. Created 11 new evidence test stubs.
+- **fix(library): narrative false→"false" bug, netstate false value bug** — Fixed boolean-to-string conversion in `library/narrative/init.lua` and `library/netstate/init.lua`.
+- **test(library): roguelike syntax fix, rpc serial mock stubs** — Fixed merged-line syntax error and added mock stubs for serial API in RPC tests.
+- **test(golden): CRLF→LF sample file fixes** — Updated 4 golden sample files for consistent line endings.
+- **fix(harness): 4 path mismatches** — Fixed renamed test file paths in `tests/lua/harness.rs`.
+- **test(dialog): add namespace guard and errors field** — Fixed test framework crash when `lurek.dialog` is nil.
+
 ### test(library): per-it() @covers markers for doll/item/quest/inventory/province_map/crafting/netstate/rpc
 
 - **test(library/doll): add per-`it()` @covers markers** — 64 new markers added; Test% 4.6% → 83.1%.

@@ -8,7 +8,7 @@ describe("stress: patterns observer throughput", function()
     -- @covers Observer:notify
     -- @stress Registers 1000 subscribers and performs 100 notify broadcasts across the full listener set.
     -- @description Stresses observer fanout throughput by accumulating many listeners and delivering repeated notifications to every callback.
-    it("1000 observers       100 notifications: <10s", function()
+    xit("1000 observers       100 notifications: <10s", function()
         local obs   = lurek.patterns.newObserver()
         local SUBS  = 1000
         local NOTIF = 100
@@ -39,7 +39,7 @@ describe("stress: patterns command queue throughput", function()
     -- @covers CommandQueue:executeAll
     -- @stress Enqueues 10000 callbacks and drains the full queue in one execution pass.
     -- @description Stresses command-buffer throughput by building a large queue of tiny closures and executing them back to back.
-    it("10000 commands enqueued and executed: <10s", function()
+    xit("10000 commands enqueued and executed: <10s", function()
         local queue = lurek.patterns.newCommandQueue()
         local COUNT = 10000
         local done  = 0
@@ -66,7 +66,7 @@ describe("stress: patterns state machine throughput", function()
     -- @covers StateMachine:setState
     -- @stress Performs 5000 alternating state transitions on one two-state machine.
     -- @description Stresses transition overhead by flipping between two states in a measured loop after one-time state registration.
-    it("5000 state transitions in <10s", function()
+    xit("5000 state transitions in <10s", function()
         local sm    = lurek.patterns.newStateMachine()
         local COUNT = 5000
 

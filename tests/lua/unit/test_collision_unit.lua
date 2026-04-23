@@ -1,1 +1,7 @@
--- test_collision_unit.lua\nrequire(\"lunasome.testing\")\ndescribe(\"collision\", function()\n    it("lurek.collision.testAABB works", function()\n        -- @tests lurek.collision.testAABB\n        -- TODO: add assertion for lurek.collision.testAABB\n    end)\n    it("lurek.collision.testCircles works", function()\n        -- @tests lurek.collision.testCircles\n        -- TODO: add assertion for lurek.collision.testCircles\n    end)\n    it("lurek.collision.testPoint works", function()\n        -- @tests lurek.collision.testPoint\n        -- TODO: add assertion for lurek.collision.testPoint\n    end)\n    it("lurek.collision.testCircleAABB works", function()\n        -- @tests lurek.collision.testCircleAABB\n        -- TODO: add assertion for lurek.collision.testCircleAABB\n    end)\nend)\n
+-- test_collision_unit.lua
+
+describe("lurek.collision", function()
+    pending("collision tests pending implementation")
+end)
+
+test_summary()

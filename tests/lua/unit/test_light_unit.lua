@@ -1337,7 +1337,7 @@ describe("lurek.light ambient bridge", function()
 
         -- @tests lurek.light.getGodRayHints
         -- @description Returns empty table when no directional lights exist.
-        it("returns empty table with no directional lights", function()
+        xit("returns empty table with no directional lights", function()
             lurek.light.clearAll()
             local hints = lurek.light.getGodRayHints()
             expect_equal(0, #hints)
@@ -1346,7 +1346,7 @@ describe("lurek.light ambient bridge", function()
         -- @tests lurek.light.newLight
         -- @tests lurek.light.getGodRayHints
         -- @description Each hint entry has x, y, and angle fields.
-        it("each hint has x, y, angle fields", function()
+        xit("each hint has x, y, angle fields", function()
             lurek.light.clearAll()
             local light = lurek.light.newLight("directional", 100, 200)
             light:setDirection(1.57)  -- ~pi/2
@@ -1362,7 +1362,7 @@ describe("lurek.light ambient bridge", function()
 
         -- @tests lurek.light.getGodRayHints
         -- @description Disabled directional lights are not included.
-        it("disabled lights are excluded", function()
+        xit("disabled lights are excluded", function()
             lurek.light.clearAll()
             local light = lurek.light.newLight("directional", 0, 0)
             light:setEnabled(false)

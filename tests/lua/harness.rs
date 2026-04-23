@@ -174,7 +174,7 @@ fn lua_integration_save_ecs() {
 // === Library module tests (tests/lua/library/) ===
 #[test]
 fn lua_integration_data_system() {
-    run_lua_test("integration/test_data_app.lua");
+    run_lua_test("integration/test_data_system.lua");
 }
 #[test]
 fn lua_integration_math_render() {
@@ -215,7 +215,7 @@ fn lua_integration_drawlayer() {
 
 #[test]
 fn lua_integration_runtime_system() {
-    run_lua_test("integration/test_runtime_app.lua");
+    run_lua_test("integration/test_runtime_system.lua");
 }
 
 // ─── Phase 2 Integration Tests ───────────────────────────────────────────────
@@ -318,7 +318,7 @@ fn lua_integration_animation_timer() {
 
 #[test]
 fn lua_integration_data_filesystem() {
-    run_lua_test("integration/test_data_fileapp.lua");
+    run_lua_test("integration/test_data_filesystem.lua");
 }
 
 #[test]
@@ -328,7 +328,7 @@ fn lua_integration_save_tilemap() {
 
 #[test]
 fn lua_integration_event_entity() {
-    run_lua_test("integration/test_event_ecs.lua");
+    run_lua_test("integration/test_event_entity.lua");
 }
 
 #[test]
