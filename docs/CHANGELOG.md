@@ -2,6 +2,23 @@
 
 All notable changes to Lurek2D are recorded here.
 
+## [0.20.21] - 2026-04-25
+
+### fix(tooling): repair Lua API catalog, namespace map, BOM, and evidence markers
+
+- **`tools/docs/gen_lua_api.py`** — added multi-line `add_method_mut(` parser (393 methods were
+  invisible when the method name appeared on the next line); added `_LUA_NAMESPACE_OVERRIDE =
+  {"system": "runtime"}` to fix `lurek.system.*` → `lurek.runtime.*` lua_names; applied override
+  in all 3 `lua_name` computation sites. API catalog grew from 3704 → 4097 functions.
+- **`src/lua_api/particle_api.rs`** — removed UTF-8 BOM so the `//!` module doc comment is now
+  detected by `_collect_module_doc()` in `gen_lua_api.py`.
+- **`tools/audit/gen_coverage_gaps.py`** — added 4 private Rust helper modules to
+  `_INTERNAL_MODULES`: `animation::state_machine`, `i18n::format`, `particle::render`,
+  `terminal::highlighter`. Eliminates false-positive coverage gaps for pure-Rust helpers with no
+  Lua surface.
+- **`tests/lua/evidence/test_animation_evidence.lua`** — corrected 9 `@covers Animator:*` markers
+  to `@covers Animation:*` (the Lua-visible class name).
+
 ## [0.20.20] - 2026-04-25
 
 ### docs(examples): add `--@api-stub:` blocks to cover all 4102 `lurek.*` API items in `content/examples/`
