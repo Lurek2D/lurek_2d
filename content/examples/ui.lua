@@ -1,4 +1,4 @@
--- content/examples/ui.lua
+﻿-- content/examples/ui.lua
 -- Hand-written coverage of the lurek.ui API (363 items).
 --
 -- Every --@api-stub: block below is a real love2d-wiki-style snippet
@@ -424,7 +424,7 @@ do  -- lurek.ui.detachFromEntity
   print("detachFromEntity called")
 end
 
--- ── Button methods ──
+-- â”€â”€ Button methods â”€â”€
 
 --@api-stub: Button:setText
 -- Sets the text for this Button widget.
@@ -436,14 +436,14 @@ end
 
 --@api-stub: Button:getText
 -- Returns the text of this Button widget.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- Button:getText
   local btn = lurek.ui.newButton("btn_play", "Play")
   local v = btn:getText()
   print("getText:", v)
 end
 
--- ── Label methods ──
+-- â”€â”€ Label methods â”€â”€
 
 --@api-stub: Label:setText
 -- Sets the text for this Label widget.
@@ -455,14 +455,14 @@ end
 
 --@api-stub: Label:getText
 -- Returns the text of this Label widget.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- Label:getText
   local lbl = lurek.ui.newLabel("lbl_score", "Score: 0")
   local v = lbl:getText()
   print("getText:", v)
 end
 
--- ── Text_Input methods ──
+-- â”€â”€ Text_Input methods â”€â”€
 
 --@api-stub: Text_Input:setText
 -- Sets the text for this Text_Input widget.
@@ -474,7 +474,7 @@ end
 
 --@api-stub: Text_Input:getText
 -- Returns the text of this Text_Input widget.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- Text_Input:getText
   local ti = lurek.ui.newTextInput("ti_name", "")
   local v = ti:getText()
@@ -491,7 +491,7 @@ end
 
 --@api-stub: Text_Input:getPlaceholder
 -- Returns the placeholder of this Text_Input widget.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- Text_Input:getPlaceholder
   local ti = lurek.ui.newTextInput("ti_name", "")
   local v = ti:getPlaceholder()
@@ -508,7 +508,7 @@ end
 
 --@api-stub: Text_Input:isFocused
 -- Returns true if focused is enabled for this Text_Input widget.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- Text_Input:isFocused
   local ti = lurek.ui.newTextInput("ti_name", "")
   local v = ti:isFocused()
@@ -517,14 +517,14 @@ end
 
 --@api-stub: Text_Input:getCursorPosition
 -- Returns the cursor position of this Text_Input widget.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- Text_Input:getCursorPosition
   local ti = lurek.ui.newTextInput("ti_name", "")
   local v = ti:getCursorPosition()
   print("getCursorPosition:", v)
 end
 
--- ── Checkbox methods ──
+-- â”€â”€ Checkbox methods â”€â”€
 
 --@api-stub: Checkbox:setChecked
 -- Sets the checked for this Checkbox widget.
@@ -536,7 +536,7 @@ end
 
 --@api-stub: Checkbox:isChecked
 -- Returns true if checked is enabled for this Checkbox widget.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- Checkbox:isChecked
   local cb = lurek.ui.newCheckbox("cb_sound", "Sound", true)
   local v = cb:isChecked()
@@ -553,14 +553,14 @@ end
 
 --@api-stub: Checkbox:getText
 -- Returns the text of this Checkbox widget.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- Checkbox:getText
   local cb = lurek.ui.newCheckbox("cb_sound", "Sound", true)
   local v = cb:getText()
   print("getText:", v)
 end
 
--- ── Slider methods ──
+-- â”€â”€ Slider methods â”€â”€
 
 --@api-stub: Slider:setValue
 -- Sets the value for this Slider widget.
@@ -572,7 +572,7 @@ end
 
 --@api-stub: Slider:getValue
 -- Returns the value of this Slider widget.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- Slider:getValue
   local sl = lurek.ui.newSlider(0, 100, 50)
   local v = sl:getValue()
@@ -597,7 +597,7 @@ end
 
 --@api-stub: Slider:getMin
 -- Returns the min of this Slider widget.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- Slider:getMin
   local sl = lurek.ui.newSlider(0, 100, 50)
   local v = sl:getMin()
@@ -606,14 +606,14 @@ end
 
 --@api-stub: Slider:getMax
 -- Returns the max of this Slider widget.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- Slider:getMax
   local sl = lurek.ui.newSlider(0, 100, 50)
   local v = sl:getMax()
   print("getMax:", v)
 end
 
--- ── Progress_Bar methods ──
+-- â”€â”€ Progress_Bar methods â”€â”€
 
 --@api-stub: Progress_Bar:setValue
 -- Sets the value for this Progress_Bar widget.
@@ -625,7 +625,7 @@ end
 
 --@api-stub: Progress_Bar:getValue
 -- Returns the value of this Progress_Bar widget.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- Progress_Bar:getValue
   local pb = lurek.ui.newProgressBar(0.5)
   local v = pb:getValue()
@@ -634,7 +634,7 @@ end
 
 --@api-stub: Progress_Bar:getProgress
 -- Returns the progress of this Progress_Bar widget.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- Progress_Bar:getProgress
   local pb = lurek.ui.newProgressBar(0.5)
   local v = pb:getProgress()
@@ -651,7 +651,7 @@ end
 
 --@api-stub: Progress_Bar:getMin
 -- Returns the min of this Progress_Bar widget.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- Progress_Bar:getMin
   local pb = lurek.ui.newProgressBar(0.5)
   local v = pb:getMin()
@@ -660,14 +660,14 @@ end
 
 --@api-stub: Progress_Bar:getMax
 -- Returns the max of this Progress_Bar widget.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- Progress_Bar:getMax
   local pb = lurek.ui.newProgressBar(0.5)
   local v = pb:getMax()
   print("getMax:", v)
 end
 
--- ── Combo_Box methods ──
+-- â”€â”€ Combo_Box methods â”€â”€
 
 --@api-stub: Combo_Box:addItem
 -- Adds a item entry to this Combo_Box widget.
@@ -695,7 +695,7 @@ end
 
 --@api-stub: Combo_Box:getItemCount
 -- Returns the item count of this Combo_Box widget.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- Combo_Box:getItemCount
   local cb = lurek.ui.newComboBox({"Easy","Normal","Hard"})
   local v = cb:getItemCount()
@@ -704,7 +704,7 @@ end
 
 --@api-stub: Combo_Box:getItem
 -- Returns the item of this Combo_Box widget.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- Combo_Box:getItem
   local cb = lurek.ui.newComboBox({"Easy","Normal","Hard"})
   local v = cb:getItem()
@@ -721,7 +721,7 @@ end
 
 --@api-stub: Combo_Box:getSelectedIndex
 -- Returns the selected index of this Combo_Box widget.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- Combo_Box:getSelectedIndex
   local cb = lurek.ui.newComboBox({"Easy","Normal","Hard"})
   local v = cb:getSelectedIndex()
@@ -730,14 +730,14 @@ end
 
 --@api-stub: Combo_Box:getSelectedItem
 -- Returns the selected item of this Combo_Box widget.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- Combo_Box:getSelectedItem
   local cb = lurek.ui.newComboBox({"Easy","Normal","Hard"})
   local v = cb:getSelectedItem()
   print("getSelectedItem:", v)
 end
 
--- ── List_Box methods ──
+-- â”€â”€ List_Box methods â”€â”€
 
 --@api-stub: List_Box:addItem
 -- Adds a item entry to this List_Box widget.
@@ -765,7 +765,7 @@ end
 
 --@api-stub: List_Box:getItemCount
 -- Returns the item count of this List_Box widget.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- List_Box:getItemCount
   local w = lurek.ui.newPanel()
   local v = w:getItemCount()
@@ -774,7 +774,7 @@ end
 
 --@api-stub: List_Box:getItem
 -- Returns the item of this List_Box widget.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- List_Box:getItem
   local w = lurek.ui.newPanel()
   local v = w:getItem()
@@ -791,7 +791,7 @@ end
 
 --@api-stub: List_Box:getSelectedIndex
 -- Returns the selected index of this List_Box widget.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- List_Box:getSelectedIndex
   local w = lurek.ui.newPanel()
   local v = w:getSelectedIndex()
@@ -806,7 +806,7 @@ do  -- List_Box:setItemHeight
   w:setItemHeight(50)
 end
 
--- ── Tab_Bar methods ──
+-- â”€â”€ Tab_Bar methods â”€â”€
 
 --@api-stub: Tab_Bar:addTab
 -- Adds a tab entry to this Tab_Bar widget.
@@ -827,7 +827,7 @@ end
 
 --@api-stub: Tab_Bar:getTab
 -- Returns the tab of this Tab_Bar widget.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- Tab_Bar:getTab
   local tabs = lurek.ui.newTabBar({"Equip","Stats","Map"})
   local v = tabs:getTab()
@@ -836,7 +836,7 @@ end
 
 --@api-stub: Tab_Bar:getTabCount
 -- Returns the tab count of this Tab_Bar widget.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- Tab_Bar:getTabCount
   local tabs = lurek.ui.newTabBar({"Equip","Stats","Map"})
   local v = tabs:getTabCount()
@@ -853,14 +853,14 @@ end
 
 --@api-stub: Tab_Bar:getActiveTab
 -- Returns the active tab of this Tab_Bar widget.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- Tab_Bar:getActiveTab
   local tabs = lurek.ui.newTabBar({"Equip","Stats","Map"})
   local v = tabs:getActiveTab()
   print("getActiveTab:", v)
 end
 
--- ── Spin_Box methods ──
+-- â”€â”€ Spin_Box methods â”€â”€
 
 --@api-stub: Spin_Box:setValue
 -- Sets the value for this SpinBox widget.
@@ -872,7 +872,7 @@ end
 
 --@api-stub: Spin_Box:getValue
 -- Returns the current value of this SpinBox widget.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- Spin_Box:getValue
   local spin = lurek.ui.newSpinBox(0, 99, 1)
   local v = spin:getValue()
@@ -911,7 +911,7 @@ do  -- Spin_Box:setStep
   spin:setStep(1)
 end
 
--- ── Switch methods ──
+-- â”€â”€ Switch methods â”€â”€
 
 --@api-stub: Switch:setOn
 -- Sets the on/off state of this Switch widget.
@@ -923,7 +923,7 @@ end
 
 --@api-stub: Switch:isOn
 -- Returns the on/off state of this Switch widget.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- Switch:isOn
   local sw = lurek.ui.newSwitch(false)
   local v = sw:isOn()
@@ -938,7 +938,7 @@ do  -- Switch:toggle
   sw:toggle()
 end
 
--- ── Badge methods ──
+-- â”€â”€ Badge methods â”€â”€
 
 --@api-stub: Badge:setCount
 -- Sets the count displayed on this Badge widget.
@@ -950,7 +950,7 @@ end
 
 --@api-stub: Badge:getCount
 -- Returns the raw count of this Badge widget.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- Badge:getCount
   local badge = lurek.ui.newBadge("3")
   local v = badge:getCount()
@@ -959,14 +959,14 @@ end
 
 --@api-stub: Badge:getDisplayText
 -- Returns the display text of this Badge widget, e.g.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- Badge:getDisplayText
   local badge = lurek.ui.newBadge("3")
   local v = badge:getDisplayText()
   print("getDisplayText:", v)
 end
 
--- ── Panel methods ──
+-- â”€â”€ Panel methods â”€â”€
 
 --@api-stub: Panel:setTitle
 -- Sets the title for this Panel widget.
@@ -978,7 +978,7 @@ end
 
 --@api-stub: Panel:getTitle
 -- Returns the title of this Panel widget.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- Panel:getTitle
   local panel = lurek.ui.newPanel()
   local v = panel:getTitle()
@@ -993,7 +993,7 @@ do  -- Panel:setScrollable
   panel:setScrollable(1)
 end
 
--- ── Layout methods ──
+-- â”€â”€ Layout methods â”€â”€
 
 --@api-stub: Layout:setDirection
 -- Sets the direction for this Layout widget.
@@ -1005,7 +1005,7 @@ end
 
 --@api-stub: Layout:getDirection
 -- Returns the direction of this Layout widget.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- Layout:getDirection
   local layout = lurek.ui.newLayout("vertical")
   local v = layout:getDirection()
@@ -1022,7 +1022,7 @@ end
 
 --@api-stub: Layout:getSpacing
 -- Returns the spacing of this Layout widget.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- Layout:getSpacing
   local layout = lurek.ui.newLayout("vertical")
   local v = layout:getSpacing()
@@ -1047,7 +1047,7 @@ end
 
 --@api-stub: Layout:getWrap
 -- Returns the wrap of this Layout widget.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- Layout:getWrap
   local layout = lurek.ui.newLayout("vertical")
   local v = layout:getWrap()
@@ -1064,7 +1064,7 @@ end
 
 --@api-stub: Layout:getAlign
 -- Returns the align of this Layout widget.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- Layout:getAlign
   local layout = lurek.ui.newLayout("vertical")
   local v = layout:getAlign()
@@ -1081,14 +1081,14 @@ end
 
 --@api-stub: Layout:getJustify
 -- Returns the justify of this Layout widget.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- Layout:getJustify
   local layout = lurek.ui.newLayout("vertical")
   local v = layout:getJustify()
   print("getJustify:", v)
 end
 
--- ── Scroll_Panel methods ──
+-- â”€â”€ Scroll_Panel methods â”€â”€
 
 --@api-stub: Scroll_Panel:setContentSize
 -- Sets the content size for this Scroll_Panel widget.
@@ -1100,7 +1100,7 @@ end
 
 --@api-stub: Scroll_Panel:getContentSize
 -- Returns the content size of this Scroll_Panel widget.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- Scroll_Panel:getContentSize
   local sp = lurek.ui.newScrollPanel(400, 300)
   local v = sp:getContentSize()
@@ -1117,7 +1117,7 @@ end
 
 --@api-stub: Scroll_Panel:getScrollPosition
 -- Returns the scroll position of this Scroll_Panel widget.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- Scroll_Panel:getScrollPosition
   local sp = lurek.ui.newScrollPanel(400, 300)
   local v = sp:getScrollPosition()
@@ -1126,7 +1126,7 @@ end
 
 --@api-stub: Scroll_Panel:getMaxScroll
 -- Returns the max scroll of this Scroll_Panel widget.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- Scroll_Panel:getMaxScroll
   local sp = lurek.ui.newScrollPanel(400, 300)
   local v = sp:getMaxScroll()
@@ -1143,14 +1143,14 @@ end
 
 --@api-stub: Scroll_Panel:getScrollSpeed
 -- Returns the scroll speed of this Scroll_Panel widget.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- Scroll_Panel:getScrollSpeed
   local sp = lurek.ui.newScrollPanel(400, 300)
   local v = sp:getScrollSpeed()
   print("getScrollSpeed:", v)
 end
 
--- ── Nine_Patch methods ──
+-- â”€â”€ Nine_Patch methods â”€â”€
 
 --@api-stub: Nine_Patch:setInsets
 -- Sets the insets for this Nine_Patch widget.
@@ -1162,7 +1162,7 @@ end
 
 --@api-stub: Nine_Patch:getInsets
 -- Returns the insets of this Nine_Patch widget.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- Nine_Patch:getInsets
   local np = lurek.ui.newNinePatch("assets/panel.9.png")
   local v = np:getInsets()
@@ -1179,7 +1179,7 @@ end
 
 --@api-stub: Nine_Patch:getImageDimensions
 -- Returns the image dimensions of this Nine_Patch widget.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- Nine_Patch:getImageDimensions
   local np = lurek.ui.newNinePatch("assets/panel.9.png")
   local v = np:getImageDimensions()
@@ -1188,14 +1188,14 @@ end
 
 --@api-stub: Nine_Patch:getSlices
 -- Returns the slices of this Nine_Patch widget.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- Nine_Patch:getSlices
   local np = lurek.ui.newNinePatch("assets/panel.9.png")
   local v = np:getSlices()
   print("getSlices:", v)
 end
 
--- ── Toast methods ──
+-- â”€â”€ Toast methods â”€â”€
 
 --@api-stub: Toast:setMessage
 -- Sets the message for this Toast widget.
@@ -1207,7 +1207,7 @@ end
 
 --@api-stub: Toast:getMessage
 -- Returns the message of this Toast widget.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- Toast:getMessage
   local toast = lurek.ui.newToast("Saved.", 2.0)
   local v = toast:getMessage()
@@ -1224,7 +1224,7 @@ end
 
 --@api-stub: Toast:getDuration
 -- Returns the duration of this Toast widget.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- Toast:getDuration
   local toast = lurek.ui.newToast("Saved.", 2.0)
   local v = toast:getDuration()
@@ -1233,7 +1233,7 @@ end
 
 --@api-stub: Toast:getProgress
 -- Returns the progress of this Toast widget.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- Toast:getProgress
   local toast = lurek.ui.newToast("Saved.", 2.0)
   local v = toast:getProgress()
@@ -1242,14 +1242,14 @@ end
 
 --@api-stub: Toast:isExpired
 -- Returns true if expired is enabled for this Toast widget.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- Toast:isExpired
   local toast = lurek.ui.newToast("Saved.", 2.0)
   local v = toast:isExpired()
   print("isExpired:", v)
 end
 
--- ── Separator methods ──
+-- â”€â”€ Separator methods â”€â”€
 
 --@api-stub: Separator:setVertical
 -- Sets the vertical for this Separator widget.
@@ -1261,7 +1261,7 @@ end
 
 --@api-stub: Separator:isVertical
 -- Returns true if vertical is enabled for this Separator widget.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- Separator:isVertical
   local sep = lurek.ui.newSeparator("horizontal")
   local v = sep:isVertical()
@@ -1278,14 +1278,14 @@ end
 
 --@api-stub: Separator:getThickness
 -- Returns the thickness of this Separator widget.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- Separator:getThickness
   local sep = lurek.ui.newSeparator("horizontal")
   local v = sep:getThickness()
   print("getThickness:", v)
 end
 
--- ── Tree_View methods ──
+-- â”€â”€ Tree_View methods â”€â”€
 
 --@api-stub: Tree_View:addNode
 -- Adds a node entry to this Tree_View widget.
@@ -1305,7 +1305,7 @@ end
 
 --@api-stub: Tree_View:isExpanded
 -- Returns true if expanded is enabled for this Tree_View widget.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- Tree_View:isExpanded
   local tree = lurek.ui.newTreeView({label="root"})
   local v = tree:isExpanded()
@@ -1314,7 +1314,7 @@ end
 
 --@api-stub: Tree_View:getNodeCount
 -- Returns the node count of this Tree_View widget.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- Tree_View:getNodeCount
   local tree = lurek.ui.newTreeView({label="root"})
   local v = tree:getNodeCount()
@@ -1339,7 +1339,7 @@ end
 
 --@api-stub: Tree_View:getNodeText
 -- Returns the node text of this Tree_View widget.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- Tree_View:getNodeText
   local tree = lurek.ui.newTreeView({label="root"})
   local v = tree:getNodeText()
@@ -1380,7 +1380,7 @@ end
 
 --@api-stub: Tree_View:isNodeExpanded
 -- Returns true if node expanded is enabled for this Tree_View widget.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- Tree_View:isNodeExpanded
   local tree = lurek.ui.newTreeView({label="root"})
   local v = tree:isNodeExpanded()
@@ -1413,7 +1413,7 @@ end
 
 --@api-stub: Tree_View:getSelectedNode
 -- Returns the selected node of this Tree_View widget.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- Tree_View:getSelectedNode
   local tree = lurek.ui.newTreeView({label="root"})
   local v = tree:getSelectedNode()
@@ -1422,7 +1422,7 @@ end
 
 --@api-stub: Tree_View:getChildNodes
 -- Returns the child nodes of this Tree_View widget.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- Tree_View:getChildNodes
   local tree = lurek.ui.newTreeView({label="root"})
   local v = tree:getChildNodes()
@@ -1431,7 +1431,7 @@ end
 
 --@api-stub: Tree_View:getParentNode
 -- Returns the parent node of this Tree_View widget.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- Tree_View:getParentNode
   local tree = lurek.ui.newTreeView({label="root"})
   local v = tree:getParentNode()
@@ -1440,18 +1440,18 @@ end
 
 --@api-stub: Tree_View:getNodeDepth
 -- Returns the node depth of this Tree_View widget.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- Tree_View:getNodeDepth
   local tree = lurek.ui.newTreeView({label="root"})
   local v = tree:getNodeDepth()
   print("getNodeDepth:", v)
 end
 
--- ── Radio_Button methods ──
+-- â”€â”€ Radio_Button methods â”€â”€
 
 --@api-stub: Radio_Button:getText
 -- Returns the text of this Radio_Button widget.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- Radio_Button:getText
   local rb = lurek.ui.newRadioButton("rb_easy","Easy","diff")
   local v = rb:getText()
@@ -1468,7 +1468,7 @@ end
 
 --@api-stub: Radio_Button:isSelected
 -- Returns true if selected is enabled for this Radio_Button widget.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- Radio_Button:isSelected
   local rb = lurek.ui.newRadioButton("rb_easy","Easy","diff")
   local v = rb:isSelected()
@@ -1485,7 +1485,7 @@ end
 
 --@api-stub: Radio_Button:getGroup
 -- Returns the group of this Radio_Button widget.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- Radio_Button:getGroup
   local rb = lurek.ui.newRadioButton("rb_easy","Easy","diff")
   local v = rb:getGroup()
@@ -1508,11 +1508,11 @@ do  -- Radio_Button:setOnChange
   rb:setOnChange(function() print("event") end)
 end
 
--- ── Scroll_Bar methods ──
+-- â”€â”€ Scroll_Bar methods â”€â”€
 
 --@api-stub: Scroll_Bar:getScrollPosition
 -- Returns the scroll position of this Scroll_Bar widget.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- Scroll_Bar:getScrollPosition
   local sb = lurek.ui.newScrollBar("vertical", 0, 100)
   local v = sb:getScrollPosition()
@@ -1529,7 +1529,7 @@ end
 
 --@api-stub: Scroll_Bar:getContentSize
 -- Returns the content size of this Scroll_Bar widget.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- Scroll_Bar:getContentSize
   local sb = lurek.ui.newScrollBar("vertical", 0, 100)
   local v = sb:getContentSize()
@@ -1546,7 +1546,7 @@ end
 
 --@api-stub: Scroll_Bar:getViewSize
 -- Returns the view size of this Scroll_Bar widget.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- Scroll_Bar:getViewSize
   local sb = lurek.ui.newScrollBar("vertical", 0, 100)
   local v = sb:getViewSize()
@@ -1563,7 +1563,7 @@ end
 
 --@api-stub: Scroll_Bar:isVertical
 -- Returns true if vertical is enabled for this Scroll_Bar widget.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- Scroll_Bar:isVertical
   local sb = lurek.ui.newScrollBar("vertical", 0, 100)
   local v = sb:isVertical()
@@ -1578,11 +1578,11 @@ do  -- Scroll_Bar:setOnChange
   sb:setOnChange(function() print("event") end)
 end
 
--- ── Gui_Window methods ──
+-- â”€â”€ Gui_Window methods â”€â”€
 
 --@api-stub: Gui_Window:getTitle
 -- Returns the title of this Gui_Window widget.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- Gui_Window:getTitle
   local w = lurek.ui.newPanel()
   local v = w:getTitle()
@@ -1599,7 +1599,7 @@ end
 
 --@api-stub: Gui_Window:isCloseable
 -- Returns true if closeable is enabled for this Gui_Window widget.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- Gui_Window:isCloseable
   local w = lurek.ui.newPanel()
   local v = w:isCloseable()
@@ -1616,7 +1616,7 @@ end
 
 --@api-stub: Gui_Window:isDraggable
 -- Returns true if draggable is enabled for this Gui_Window widget.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- Gui_Window:isDraggable
   local w = lurek.ui.newPanel()
   local v = w:isDraggable()
@@ -1633,7 +1633,7 @@ end
 
 --@api-stub: Gui_Window:isResizable
 -- Returns true if resizable is enabled for this Gui_Window widget.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- Gui_Window:isResizable
   local w = lurek.ui.newPanel()
   local v = w:isResizable()
@@ -1656,11 +1656,11 @@ do  -- Gui_Window:setOnClose
   w:setOnClose(function() print("event") end)
 end
 
--- ── Split_Panel methods ──
+-- â”€â”€ Split_Panel methods â”€â”€
 
 --@api-stub: Split_Panel:getOrientation
 -- Returns the orientation of this Split_Panel widget.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- Split_Panel:getOrientation
   local split = lurek.ui.newSplitPanel("horizontal", 0.5)
   local v = split:getOrientation()
@@ -1677,7 +1677,7 @@ end
 
 --@api-stub: Split_Panel:getSplitPosition
 -- Returns the split position of this Split_Panel widget.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- Split_Panel:getSplitPosition
   local split = lurek.ui.newSplitPanel("horizontal", 0.5)
   local v = split:getSplitPosition()
@@ -1694,7 +1694,7 @@ end
 
 --@api-stub: Split_Panel:getMinPanelSize
 -- Returns the min panel size of this Split_Panel widget.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- Split_Panel:getMinPanelSize
   local split = lurek.ui.newSplitPanel("horizontal", 0.5)
   local v = split:getMinPanelSize()
@@ -1727,7 +1727,7 @@ end
 
 --@api-stub: Split_Panel:getFirstChild
 -- Returns the first child of this Split_Panel widget.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- Split_Panel:getFirstChild
   local split = lurek.ui.newSplitPanel("horizontal", 0.5)
   local v = split:getFirstChild()
@@ -1736,14 +1736,14 @@ end
 
 --@api-stub: Split_Panel:getSecondChild
 -- Returns the second child of this Split_Panel widget.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- Split_Panel:getSecondChild
   local split = lurek.ui.newSplitPanel("horizontal", 0.5)
   local v = split:getSecondChild()
   print("getSecondChild:", v)
 end
 
--- ── Dock_Panel methods ──
+-- â”€â”€ Dock_Panel methods â”€â”€
 
 --@api-stub: Dock_Panel:dock
 -- Performs the dock operation on this Dock_Panel widget.
@@ -1763,7 +1763,7 @@ end
 
 --@api-stub: Dock_Panel:getDockedCount
 -- Returns the docked count of this Dock_Panel widget.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- Dock_Panel:getDockedCount
   local dock = lurek.ui.newDockPanel()
   local v = dock:getDockedCount()
@@ -1780,18 +1780,18 @@ end
 
 --@api-stub: Dock_Panel:getSplitSize
 -- Returns the split size of this Dock_Panel widget.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- Dock_Panel:getSplitSize
   local dock = lurek.ui.newDockPanel()
   local v = dock:getSplitSize()
   print("getSplitSize:", v)
 end
 
--- ── Toolbar methods ──
+-- â”€â”€ Toolbar methods â”€â”€
 
 --@api-stub: Toolbar:getOrientation
 -- Returns the orientation of this Toolbar widget.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- Toolbar:getOrientation
   local tb = lurek.ui.newToolbar()
   local v = tb:getOrientation()
@@ -1832,7 +1832,7 @@ end
 
 --@api-stub: Toolbar:getButton
 -- Returns the button of this Toolbar widget.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- Toolbar:getButton
   local tb = lurek.ui.newToolbar()
   local v = tb:getButton()
@@ -1857,14 +1857,14 @@ end
 
 --@api-stub: Toolbar:isButtonToggled
 -- Returns true if button toggled is enabled for this Toolbar widget.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- Toolbar:isButtonToggled
   local tb = lurek.ui.newToolbar()
   local v = tb:isButtonToggled()
   print("isButtonToggled:", v)
 end
 
--- ── Menu_Bar methods ──
+-- â”€â”€ Menu_Bar methods â”€â”€
 
 --@api-stub: Menu_Bar:addMenu
 -- Adds a menu entry to this Menu_Bar widget.
@@ -1885,7 +1885,7 @@ end
 
 --@api-stub: Menu_Bar:getMenus
 -- Returns the menus of this Menu_Bar widget.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- Menu_Bar:getMenus
   local mb = lurek.ui.newMenuBar()
   local v = mb:getMenus()
@@ -1894,18 +1894,18 @@ end
 
 --@api-stub: Menu_Bar:getMenuCount
 -- Returns the menu count of this Menu_Bar widget.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- Menu_Bar:getMenuCount
   local mb = lurek.ui.newMenuBar()
   local v = mb:getMenuCount()
   print("getMenuCount:", v)
 end
 
--- ── Menu_Item methods ──
+-- â”€â”€ Menu_Item methods â”€â”€
 
 --@api-stub: Menu_Item:getText
 -- Returns the text of this Menu_Item widget.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- Menu_Item:getText
   local mi = lurek.ui.newMenuItem("New Game")
   local v = mi:getText()
@@ -1922,7 +1922,7 @@ end
 
 --@api-stub: Menu_Item:getShortcut
 -- Returns the shortcut of this Menu_Item widget.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- Menu_Item:getShortcut
   local mi = lurek.ui.newMenuItem("New Game")
   local v = mi:getShortcut()
@@ -1939,7 +1939,7 @@ end
 
 --@api-stub: Menu_Item:isChecked
 -- Returns true if checked is enabled for this Menu_Item widget.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- Menu_Item:isChecked
   local mi = lurek.ui.newMenuItem("New Game")
   local v = mi:isChecked()
@@ -1964,7 +1964,7 @@ end
 
 --@api-stub: Menu_Item:getSubItems
 -- Returns the sub items of this Menu_Item widget.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- Menu_Item:getSubItems
   local mi = lurek.ui.newMenuItem("New Game")
   local v = mi:getSubItems()
@@ -1979,11 +1979,11 @@ do  -- Menu_Item:setOnClick
   mi:setOnClick(function() print("event") end)
 end
 
--- ── Dialog methods ──
+-- â”€â”€ Dialog methods â”€â”€
 
 --@api-stub: Dialog:getTitle
 -- Returns the title of this Dialog widget.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- Dialog:getTitle
   local dlg = lurek.ui.newDialog("dlg_quit", "Quit?")
   local v = dlg:getTitle()
@@ -2000,7 +2000,7 @@ end
 
 --@api-stub: Dialog:isModal
 -- Returns true if modal is enabled for this Dialog widget.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- Dialog:isModal
   local dlg = lurek.ui.newDialog("dlg_quit", "Quit?")
   local v = dlg:isModal()
@@ -2017,7 +2017,7 @@ end
 
 --@api-stub: Dialog:isOpen
 -- Returns true if open is enabled for this Dialog widget.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- Dialog:isOpen
   local dlg = lurek.ui.newDialog("dlg_quit", "Quit?")
   local v = dlg:isOpen()
@@ -2058,7 +2058,7 @@ end
 
 --@api-stub: Dialog:getContent
 -- Returns the content of this Dialog widget.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- Dialog:getContent
   local dlg = lurek.ui.newDialog("dlg_quit", "Quit?")
   local v = dlg:getContent()
@@ -2073,7 +2073,7 @@ do  -- Dialog:addButton
   dlg:addButton(1)
 end
 
--- ── Status_Bar methods ──
+-- â”€â”€ Status_Bar methods â”€â”€
 
 --@api-stub: Status_Bar:addSection
 -- Adds a section entry to this Status_Bar widget.
@@ -2093,7 +2093,7 @@ end
 
 --@api-stub: Status_Bar:getSectionText
 -- Returns the section text of this Status_Bar widget.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- Status_Bar:getSectionText
   local sb = lurek.ui.newStatusBar()
   local v = sb:getSectionText()
@@ -2102,7 +2102,7 @@ end
 
 --@api-stub: Status_Bar:getSectionCount
 -- Returns the section count of this Status_Bar widget.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- Status_Bar:getSectionCount
   local sb = lurek.ui.newStatusBar()
   local v = sb:getSectionCount()
@@ -2125,7 +2125,7 @@ do  -- Status_Bar:setSectionWidget
   sb:setSectionWidget("primary")
 end
 
--- ── Accordion methods ──
+-- â”€â”€ Accordion methods â”€â”€
 
 --@api-stub: Accordion:addSection
 -- Adds a section entry to this Accordion widget.
@@ -2137,7 +2137,7 @@ end
 
 --@api-stub: Accordion:getSectionCount
 -- Returns the section count of this Accordion widget.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- Accordion:getSectionCount
   local acc = lurek.ui.newAccordion()
   local v = acc:getSectionCount()
@@ -2154,7 +2154,7 @@ end
 
 --@api-stub: Accordion:isSectionExpanded
 -- Returns true if section expanded is enabled for this Accordion widget.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- Accordion:isSectionExpanded
   local acc = lurek.ui.newAccordion()
   local v = acc:isSectionExpanded()
@@ -2163,7 +2163,7 @@ end
 
 --@api-stub: Accordion:isExclusive
 -- Returns true if exclusive is enabled for this Accordion widget.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- Accordion:isExclusive
   local acc = lurek.ui.newAccordion()
   local v = acc:isExclusive()
@@ -2180,18 +2180,18 @@ end
 
 --@api-stub: Accordion:getSectionTitle
 -- Returns the section title of this Accordion widget.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- Accordion:getSectionTitle
   local acc = lurek.ui.newAccordion()
   local v = acc:getSectionTitle()
   print("getSectionTitle:", v)
 end
 
--- ── Tooltip_Panel methods ──
+-- â”€â”€ Tooltip_Panel methods â”€â”€
 
 --@api-stub: Tooltip_Panel:getText
 -- Returns the text of this Tooltip_Panel widget.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- Tooltip_Panel:getText
   local tip = lurek.ui.newTooltipPanel("Click to attack")
   local v = tip:getText()
@@ -2208,7 +2208,7 @@ end
 
 --@api-stub: Tooltip_Panel:getDelay
 -- Returns the delay of this Tooltip_Panel widget.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- Tooltip_Panel:getDelay
   local tip = lurek.ui.newTooltipPanel("Click to attack")
   local v = tip:getDelay()
@@ -2225,7 +2225,7 @@ end
 
 --@api-stub: Tooltip_Panel:getTarget
 -- Returns the target of this Tooltip_Panel widget.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- Tooltip_Panel:getTarget
   local tip = lurek.ui.newTooltipPanel("Click to attack")
   local v = tip:getTarget()
@@ -2240,11 +2240,11 @@ do  -- Tooltip_Panel:setTarget
   tip:setTarget(1)
 end
 
--- ── Color_Picker methods ──
+-- â”€â”€ Color_Picker methods â”€â”€
 
 --@api-stub: Color_Picker:getColor
 -- Returns the color of this Color_Picker widget.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- Color_Picker:getColor
   local cp = lurek.ui.newColorPicker({1,0,0,1})
   local v = cp:getColor()
@@ -2261,7 +2261,7 @@ end
 
 --@api-stub: Color_Picker:getShowAlpha
 -- Returns the show alpha of this Color_Picker widget.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- Color_Picker:getShowAlpha
   local cp = lurek.ui.newColorPicker({1,0,0,1})
   local v = cp:getShowAlpha()
@@ -2278,7 +2278,7 @@ end
 
 --@api-stub: Color_Picker:getColorMode
 -- Returns the color mode of this Color_Picker widget.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- Color_Picker:getColorMode
   local cp = lurek.ui.newColorPicker({1,0,0,1})
   local v = cp:getColorMode()
@@ -2301,7 +2301,7 @@ do  -- Color_Picker:setOnChange
   cp:setOnChange(function() print("event") end)
 end
 
--- ── Gui_Table methods ──
+-- â”€â”€ Gui_Table methods â”€â”€
 
 --@api-stub: Gui_Table:addColumn
 -- Adds a column entry to this Gui_Table widget.
@@ -2313,7 +2313,7 @@ end
 
 --@api-stub: Gui_Table:getColumnCount
 -- Returns the column count of this Gui_Table widget.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- Gui_Table:getColumnCount
   local tbl = lurek.ui.newTable({"Name","Score"})
   local v = tbl:getColumnCount()
@@ -2330,7 +2330,7 @@ end
 
 --@api-stub: Gui_Table:getRowCount
 -- Returns the row count of this Gui_Table widget.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- Gui_Table:getRowCount
   local tbl = lurek.ui.newTable({"Name","Score"})
   local v = tbl:getRowCount()
@@ -2339,7 +2339,7 @@ end
 
 --@api-stub: Gui_Table:getCell
 -- Returns the cell of this Gui_Table widget.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- Gui_Table:getCell
   local tbl = lurek.ui.newTable({"Name","Score"})
   local v = tbl:getCell()
@@ -2356,7 +2356,7 @@ end
 
 --@api-stub: Gui_Table:getSelectedRow
 -- Returns the selected row of this Gui_Table widget.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- Gui_Table:getSelectedRow
   local tbl = lurek.ui.newTable({"Name","Score"})
   local v = tbl:getSelectedRow()
@@ -2373,7 +2373,7 @@ end
 
 --@api-stub: Gui_Table:isSortable
 -- Returns true if sortable is enabled for this Gui_Table widget.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- Gui_Table:isSortable
   local tbl = lurek.ui.newTable({"Name","Score"})
   local v = tbl:isSortable()
@@ -2396,11 +2396,11 @@ do  -- Gui_Table:setOnSelect
   tbl:setOnSelect(function() print("event") end)
 end
 
--- ── Image_Widget methods ──
+-- â”€â”€ Image_Widget methods â”€â”€
 
 --@api-stub: Image_Widget:getScaleMode
 -- Returns the scale mode of this Image_Widget widget.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- Image_Widget:getScaleMode
   local img = lurek.ui.newImageWidget("assets/portrait.png")
   local v = img:getScaleMode()
@@ -2417,7 +2417,7 @@ end
 
 --@api-stub: Image_Widget:getTint
 -- Returns the tint of this Image_Widget widget.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- Image_Widget:getTint
   local img = lurek.ui.newImageWidget("assets/portrait.png")
   local v = img:getTint()
@@ -2706,7 +2706,7 @@ end
 
 --@api-stub: Image_Widget:getTheme
 -- Returns whether a theme is set.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- Image_Widget:getTheme
   local img = lurek.ui.newImageWidget("assets/portrait.png")
   local v = img:getTheme()
@@ -2715,7 +2715,7 @@ end
 
 --@api-stub: Image_Widget:getRoot
 -- Returns the root panel widget table.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- Image_Widget:getRoot
   local img = lurek.ui.newImageWidget("assets/portrait.png")
   local v = img:getRoot()
@@ -2732,7 +2732,7 @@ end
 
 --@api-stub: Image_Widget:getFocus
 -- Returns the focused widget index or nil.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- Image_Widget:getFocus
   local img = lurek.ui.newImageWidget("assets/portrait.png")
   local v = img:getFocus()
@@ -2773,7 +2773,7 @@ end
 
 --@api-stub: Image_Widget:getToastCount
 -- Returns the number of active toasts.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- Image_Widget:getToastCount
   local img = lurek.ui.newImageWidget("assets/portrait.png")
   local v = img:getToastCount()
@@ -2846,7 +2846,7 @@ end
 
 --@api-stub: Image_Widget:getWidgetCount
 -- Returns the total widget count in the context.
--- Read the current state — useful inside callbacks or per-frame UI logic.
+-- Read the current state â€” useful inside callbacks or per-frame UI logic.
 do  -- Image_Widget:getWidgetCount
   local img = lurek.ui.newImageWidget("assets/portrait.png")
   local v = img:getWidgetCount()
@@ -3029,7 +3029,7 @@ do  -- Image_Widget:renderToImage
   img:renderToImage()
 end
 
--- ── LineChart methods ──
+-- â”€â”€ LineChart methods â”€â”€
 
 --@api-stub: LineChart:setYMax
 -- Sets the maximum Y value for axis scaling.
@@ -3055,7 +3055,7 @@ do  -- LineChart:drawToImage
   chart:drawToImage()
 end
 
--- ── BarChart methods ──
+-- â”€â”€ BarChart methods â”€â”€
 
 --@api-stub: BarChart:drawToImage
 -- Renders the bar chart into an existing ImageData.
@@ -3065,7 +3065,7 @@ do  -- BarChart:drawToImage
   w:drawToImage()
 end
 
--- ── ScatterPlot methods ──
+-- â”€â”€ ScatterPlot methods â”€â”€
 
 --@api-stub: ScatterPlot:setXRange
 -- Sets the X-axis data range.
@@ -3091,7 +3091,7 @@ do  -- ScatterPlot:drawToImage
   plot:drawToImage()
 end
 
--- ── PieChart methods ──
+-- â”€â”€ PieChart methods â”€â”€
 
 --@api-stub: PieChart:drawToImage
 -- Renders the pie chart into an existing ImageData.
@@ -3101,7 +3101,7 @@ do  -- PieChart:drawToImage
   chart:drawToImage()
 end
 
--- ── AreaChart methods ──
+-- â”€â”€ AreaChart methods â”€â”€
 
 --@api-stub: AreaChart:setYMax
 -- Sets the maximum Y value for axis scaling.
@@ -3119,7 +3119,7 @@ do  -- AreaChart:drawToImage
   w:drawToImage()
 end
 
--- ── Custom widget extensibility ──
+-- â”€â”€ Custom widget extensibility â”€â”€
 
 --@api-stub: Image_Widget:newCustomWidget
 -- Creates a widget with fully Lua-driven rendering via an on_draw callback.
@@ -3132,14 +3132,14 @@ do  -- Image_Widget:newCustomWidget
     widget:setOnDraw(function(rect)
       local health = 0.75
       -- Draw background
-      lurek.graphic.setColor(0.2, 0.2, 0.2, 1)
-      lurek.graphic.fillRect(rect.x, rect.y, rect.w, rect.h)
+      lurek.render.setColor(0.2, 0.2, 0.2, 1)
+      lurek.render.fillRect(rect.x, rect.y, rect.w, rect.h)
       -- Draw health fill
-      lurek.graphic.setColor(0, 1, 0, 1)
-      lurek.graphic.fillRect(rect.x, rect.y, rect.w * health, rect.h)
+      lurek.render.setColor(0, 1, 0, 1)
+      lurek.render.fillRect(rect.x, rect.y, rect.w * health, rect.h)
       -- Draw label
-      lurek.graphic.setColor(1, 1, 1, 1)
-      lurek.graphic.print("HP: 75%", rect.x + 4, rect.y + 4)
+      lurek.render.setColor(1, 1, 1, 1)
+      lurek.render.print("HP: 75%", rect.x + 4, rect.y + 4)
     end)
   end
   print("newCustomWidget: ok")

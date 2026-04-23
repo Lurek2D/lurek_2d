@@ -1,4 +1,4 @@
--- content/examples/ecs.lua
+﻿-- content/examples/ecs.lua
 -- Hand-written coverage of the lurek.ecs API (47 items).
 --
 -- Components are plain Lua tables stored under string names per entity
@@ -8,7 +8,7 @@
 --
 -- Run: cargo run -- content/examples/ecs.lua
 
--- ── lurek.ecs.* functions ──
+-- â”€â”€ lurek.ecs.* functions â”€â”€
 
 --@api-stub: lurek.ecs.newUniverse
 -- Creates a new empty ECS universe.
@@ -20,7 +20,7 @@ do  -- lurek.ecs.newUniverse
   lurek.log.info("universe ready, first id=" .. hero, "ecs")
 end
 
--- ── Universe methods ──
+-- â”€â”€ Universe methods â”€â”€
 
 --@api-stub: Universe:spawn
 -- Creates a new entity and returns its packed ID.
@@ -44,7 +44,7 @@ end
 
 --@api-stub: Universe:isAlive
 -- Returns true if the entity ID is currently alive.
--- Always check before using a stored ID — slots are recycled and packed IDs disambiguate generations.
+-- Always check before using a stored ID â€” slots are recycled and packed IDs disambiguate generations.
 do  -- Universe:isAlive
   local world = lurek.ecs.newUniverse()
   local id = world:spawn()
@@ -120,7 +120,7 @@ end
 
 --@api-stub: Universe:getEntityCount
 -- Returns the number of alive entities.
--- Cheaper than #getEntities — call it from HUD/debug overlays every frame.
+-- Cheaper than #getEntities â€” call it from HUD/debug overlays every frame.
 do  -- Universe:getEntityCount
   local world = lurek.ecs.newUniverse()
   for _ = 1, 12 do world:spawn() end
@@ -163,7 +163,7 @@ do  -- Universe:render
     render = function(_, w)
       for _, id in ipairs(w:query("position", "sprite")) do
         local p = w:get(id, "position")
-        lurek.graphic.rectangle("fill", p.x, p.y, 16, 16)
+        lurek.render.rectangle("fill", p.x, p.y, 16, 16)
       end
     end
   }
@@ -267,7 +267,7 @@ end
 
 --@api-stub: Universe:setLayer
 -- Sets the layer for an entity.
--- Layers control draw/sort order — use small integers (e.g. 0=floor, 10=actor, 20=ui).
+-- Layers control draw/sort order â€” use small integers (e.g. 0=floor, 10=actor, 20=ui).
 do  -- Universe:setLayer
   local world = lurek.ecs.newUniverse()
   local floor = world:spawn(); world:setLayer(floor, 0)
@@ -316,7 +316,7 @@ end
 
 --@api-stub: Universe:bitmapTag
 -- Adds a bitmap tag to an entity.
--- 64-tag bitset gives O(1) tag check and fast multi-tag intersection — use for hot per-frame flags.
+-- 64-tag bitset gives O(1) tag check and fast multi-tag intersection â€” use for hot per-frame flags.
 do  -- Universe:bitmapTag
   local world = lurek.ecs.newUniverse()
   world:defineTag("solid")
@@ -346,7 +346,7 @@ end
 
 --@api-stub: Universe:queryBitmapTag
 -- Returns all alive entities with the given bitmap tag.
--- Drive your collision broadphase or AI scan from this — single u64 mask compare per entity.
+-- Drive your collision broadphase or AI scan from this â€” single u64 mask compare per entity.
 do  -- Universe:queryBitmapTag
   local world = lurek.ecs.newUniverse()
   world:defineTag("enemy")
@@ -449,7 +449,7 @@ end
 
 --@api-stub: Universe:killRecursive
 -- Kills an entity and all its descendants recursively.
--- Drop a whole prefab in one call — wagon + driver + cargo all die together.
+-- Drop a whole prefab in one call â€” wagon + driver + cargo all die together.
 do  -- Universe:killRecursive
   local world = lurek.ecs.newUniverse()
   local wagon = world:spawn()
@@ -469,7 +469,7 @@ end
 
 --@api-stub: Universe:deserialize
 -- Restores entity state from a snapshot produced by serialize().
--- Clears live entities first; blueprints and registered systems survive — you keep your pipeline.
+-- Clears live entities first; blueprints and registered systems survive â€” you keep your pipeline.
 do  -- Universe:deserialize
   local world = lurek.ecs.newUniverse()
   local e = world:spawn(); world:set(e, "position", { x = 1, y = 2 })
@@ -490,7 +490,7 @@ end
 
 --@api-stub: Universe:getRelated
 -- Returns all entity IDs reachable from `from` via the named relationship.
--- Model "owns", "targets", "follows" without polluting components — relationships stay queryable.
+-- Model "owns", "targets", "follows" without polluting components â€” relationships stay queryable.
 do  -- Universe:getRelated
   local world = lurek.ecs.newUniverse()
   local hero = world:spawn()

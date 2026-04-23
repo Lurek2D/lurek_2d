@@ -218,8 +218,31 @@ Full rendering pipeline with screenshot. Lives in `tests/rust/ext/` only — not
 |---|---|
 | `-- @evidence pixel` | Test uses Canvas pixel readback for visual proof |
 | `-- @evidence file` | Test writes an output file as evidence |
+| `-- @evidence skip` | Operation requires GPU/audio; xit'd in headless mode; document skip reason inline |
 | `-- @stress` | Test measures throughput performance |
 | `-- @golden` | Test compares against a golden baseline |
+
+### Evidence Artifact Contract (MANDATORY)
+
+Every `it()` block in an `evidence/` file **MUST** satisfy all of the following:
+
+1. **Produce at least one artifact.** Call `expect_evidence_created(path)` after writing the file. An `it()` that only calls `pending()` is a **contract violation** — the harness will count the test as failed.
+2. **Use `evidence_output_dir("module")` for all paths.** Never hard-code `tests/output/module/`. Always call `ensure_evidence_dir("module")` in `before_each`.
+3. **GPU-limited operations use `xit()` + a text artifact.** If an operation requires a live GPU context (canvas rendering, texture readback), mark the GPU rendering test as `xit()` (with `-- @evidence skip` and a comment explaining why). Still provide at least one headless test in the same file that writes a text/JSON artifact (e.g. API surface manifest via `io.open`).
+4. **Placeholder evidence files are banned.** A file whose only content is `pending(...)` has no artifacts and must be replaced with a real implementation before merge. This applies to every `evidence/` layer file for every module.
+
+### Evidence File Naming Contract
+
+File naming follows **TST-06** strictly:
+
+```
+tests/lua/evidence/test_<module>_evidence.lua
+```
+
+- `<module>` is the **Rust source module name** (`src/<module>/`) — e.g. `math`, `physics`, `ui`, `image`.
+- The layer suffix is always `_evidence` — never `_ev`, `_artifacts`, or a sub-feature name.
+- One file per module. Sub-features (bezier, easing, noise, geometry) that are sub-modules of `src/math/` belong in `test_math_evidence.lua` OR have their own dedicated `test_<submodule>_evidence.lua` only if they are separately registered in `tests/lua/harness.rs` AND correspond to a distinct `src/<submodule>/` directory.
+- No per-sub-feature splits within a module — merge into the single canonical file.
 
 ---
 

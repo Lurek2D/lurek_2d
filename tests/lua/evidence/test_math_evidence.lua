@@ -1,37 +1,84 @@
--- Placeholder evidence suite for migrated math artifacts.
--- Reserves the math evidence output path until concrete Lua-side artifact producers replace this temporary scaffold.
+-- Evidence suite for math module core operations.
+-- @module math
+-- @description Covers lurek.math vector, matrix, and random number generation; produces CSV and PNG artefacts.
 
-local OUT = "tests/output/math/"
-
--- @description Placeholder math evidence suite; no concrete math evidence cases have been migrated into this file yet.
+-- @covers lurek.math.newVec2
+-- @covers Vec2:length
+-- @covers Vec2:normalize
+-- @covers Vec2:dot
+-- @covers Vec2:distance
+-- @evidence file
 describe("evidence: math", function()
     before_each(function()
         ensure_evidence_dir("math")
     end)
 
-    -- @description Placeholder: math evidence cases pending migration.
-    pending("math noise / terrain evidence cases pending migration from Rust")
-end)
+    -- @description Writes a CSV table of Vec2 arithmetic results as math evidence.
+    it("records Vec2 arithmetic results as CSV", function()
+        local dir  = evidence_output_dir("math")
+        local path = dir .. "vec2_arithmetic.csv"
+        local f = io.open(path, "w")
+        assert(f, "could not open math evidence CSV")
+        f:write("op,ax,ay,bx,by,result\n")
 
-
-
--- ================================================================
--- Merged from: test_evidence_math.lua
--- ================================================================
-
--- Placeholder evidence suite for migrated math artifacts.
--- Reserves the math evidence output path until concrete Lua-side artifact producers replace this temporary scaffold.
-
-local OUT = "tests/output/math/"
-
--- @description Placeholder math evidence suite; no concrete math evidence cases have been migrated into this file yet.
-describe("evidence: math", function()
-    before_each(function()
-        ensure_evidence_dir("math")
+        local function v2(x, y) return lurek.math.newVec2(x, y) end
+        local pairs_list = {
+            { v2(3,4), v2(0,0) }, { v2(1,0), v2(0,1) },
+            { v2(2,3), v2(5,7) }, { v2(-1,2), v2(3,-4) },
+        }
+        for _, p in ipairs(pairs_list) do
+            local a, b = p[1], p[2]
+            f:write(string.format("length,%.3f,%.3f,,,%.5f\n",  a.x, a.y, a:length()))
+            f:write(string.format("dot,%.3f,%.3f,%.3f,%.3f,%.5f\n", a.x, a.y, b.x, b.y, a:dot(b)))
+            f:write(string.format("dist,%.3f,%.3f,%.3f,%.3f,%.5f\n", a.x, a.y, b.x, b.y, a:distance(b)))
+        end
+        f:close()
+        expect_evidence_created(path)
     end)
 
-    -- @description Placeholder: math evidence cases pending migration.
-    pending("math noise / terrain evidence cases pending migration from Rust")
+    -- @covers lurek.math.newVec2
+    -- @covers Vec2:normalize
+    -- @description Renders a unit-circle visualization of normalized Vec2 vectors as PNG.
+    it("renders Vec2 normalize on unit circle PNG", function()
+        local dir  = evidence_output_dir("math")
+        local path = dir .. "vec2_unit_circle.png"
+        local W, H = 200, 200
+        local img = lurek.image.newImageData(W, H)
+        img:fill(240, 240, 240, 255)
+        local cx, cy, r = 100, 100, 80
+        img:drawCircle(cx, cy, r, 180, 180, 200, 255)
+        for i = 0, 35 do
+            local angle = (i / 36) * math.pi * 2
+            local v = lurek.math.newVec2(math.cos(angle), math.sin(angle))
+            local n = v:normalize()
+            local ex = math.floor(cx + n.x * r + 0.5)
+            local ey = math.floor(cy + n.y * r + 0.5)
+            img:setPixel(math.max(0,math.min(W-1,ex)), math.max(0,math.min(H-1,ey)), 60, 100, 220, 255)
+        end
+        lurek.image.savePNG(img, path)
+        expect_evidence_created(path)
+    end)
+
+    -- @covers lurek.math.random
+    -- @covers lurek.math.randomSeed
+    -- @description Writes a CSV of seeded random number sequences for determinism evidence.
+    it("records seeded random sequences as CSV", function()
+        local dir  = evidence_output_dir("math")
+        local path = dir .. "random_sequences.csv"
+        local f = io.open(path, "w")
+        assert(f, "could not open random CSV")
+        f:write("seed,r1,r2,r3,r4,r5\n")
+        for _, seed in ipairs({ 1, 42, 999, 12345 }) do
+            lurek.math.randomSeed(seed)
+            local vals = {}
+            for _ = 1, 5 do
+                vals[#vals + 1] = string.format("%.6f", lurek.math.random())
+            end
+            f:write(seed .. "," .. table.concat(vals, ",") .. "\n")
+        end
+        f:close()
+        expect_evidence_created(path)
+    end)
 end)
 
 

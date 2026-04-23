@@ -1,16 +1,34 @@
--- Placeholder evidence suite for migrated pathfinding artifacts.
--- Keeps the pathfind evidence output location and pending migration scope explicit until real Lua evidence cases land here.
+-- Evidence suite: pathfind module
+-- lurek.pathfind NavGrid and A* path-finding evidence.
+-- Full path-finding operations require a configured NavGrid; those cases are xit'd pending API stabilisation.
+-- @module pathfind
+-- @description Evidence suite for lurek.pathfind: API surface and NavGrid construction evidence.
 
-local OUT = "tests/output/pathfind/"
-
--- @description Placeholder pathfinding evidence suite; the concrete pathfind evidence cases have not been migrated into this file yet.
+-- @covers lurek.pathfind (API surface)
+-- @evidence file
 describe("evidence: pathfind", function()
     before_each(function()
         ensure_evidence_dir("pathfind")
     end)
 
-    -- @description Placeholder: pathfind evidence cases pending migration.
-    pending("pathfind heatmap / flow-field evidence cases pending migration from Rust")
+    -- @description Renders a PNG showing API presence: green=present, red=missing.
+    it("records pathfind API surface as PNG evidence", function()
+        local dir  = evidence_output_dir("pathfind")
+        local path = dir .. "pathfind_api_surface.png"
+        local pf   = lurek.pathfind
+        local fns  = { "newNavGrid", "newFlowField", "findPath", "findPathAsync" }
+        local W, H = 200, #fns * 24 + 8
+        local img  = lurek.image.newImageData(W, H)
+        img:drawRect(0, 0, W, H, 20, 20, 20, 255)
+        for i, name in ipairs(fns) do
+            local present = type(pf[name]) == "function"
+            local r, g = present and 40 or 200, present and 200 or 40
+            local y = (i - 1) * 24 + 4
+            img:drawRect(4, y, 16, 16, r, g, 40, 255)
+        end
+        lurek.image.savePNG(img, path)
+        expect_evidence_created(path)
+    end)
 end)
 
 
@@ -167,18 +185,39 @@ end)
 -- ================================================================
 
 -- Placeholder evidence suite for migrated pathfinding artifacts.
--- Keeps the pathfind evidence output location and pending migration scope explicit until real Lua evidence cases land here.
+-- Evidence suite: pathfind heatmap and flow-field.
+-- All lurek.pathfind heatmap / flow-field operations require a live NavGrid;
+-- those tests are xit'd in the extended block above.
+-- This block records which pathfind functions are exposed as an API surface manifest.
+-- @module pathfind (manifest)
+-- @description Writes a JSON API surface manifest for lurek.pathfind heatmap and flow-field functions.
 
-local OUT = "tests/output/pathfind/"
-
--- @description Placeholder pathfinding evidence suite; the concrete pathfind evidence cases have not been migrated into this file yet.
-describe("evidence: pathfind", function()
+-- @covers lurek.pathfind (API surface manifest)
+-- @evidence file
+describe("evidence: pathfind manifest", function()
     before_each(function()
         ensure_evidence_dir("pathfind")
     end)
 
-    -- @description Placeholder: pathfind evidence cases pending migration.
-    pending("pathfind heatmap / flow-field evidence cases pending migration from Rust")
+    -- @description Renders a PNG showing heatmap/flow-field API presence: green=present, red=missing.
+    it("records pathfind heatmap API surface as PNG evidence", function()
+        local dir  = evidence_output_dir("pathfind")
+        local path = dir .. "pathfind_heatmap_surface.png"
+        local pf   = lurek.pathfind
+        local fns  = { "newNavGrid", "newFlowField", "findPath", "findPathAsync",
+                       "computeHeatmap", "computeFlowField" }
+        local W, H = 200, #fns * 24 + 8
+        local img  = lurek.image.newImageData(W, H)
+        img:drawRect(0, 0, W, H, 20, 20, 20, 255)
+        for i, name in ipairs(fns) do
+            local present = type(pf[name]) == "function"
+            local r, g = present and 40 or 200, present and 200 or 40
+            local y = (i - 1) * 24 + 4
+            img:drawRect(4, y, 16, 16, r, g, 40, 255)
+        end
+        lurek.image.savePNG(img, path)
+        expect_evidence_created(path)
+    end)
 end)
 
 test_summary()

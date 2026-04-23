@@ -2,6 +2,18 @@
 
 All notable changes to Lurek2D are recorded here.
 
+## [0.20.12] - 2026-04-24
+
+### test(evidence): replace 13 placeholder evidence files with real artifact-producing tests
+
+- **test(evidence): replaced all 13 `pending()` stubs** with real PNG-producing `it()` tests across: `bezier`, `canvas`, `cellular_sand`, `charts`, `easing`, `geometry`, `gui`, `imagedata`, `layers`, `math`, `noise`, `pathfind`, `shapes`. Every `it()` now calls `lurek.image.savePNG(img, path)` + `expect_evidence_created(path)`. GPU-only operations (canvas) use `xit()`.
+- **fix(evidence): all LuaJIT `//` floor-division operators** replaced with `math.floor(x/y)` (LuaJIT does not support `//`).
+- **fix(evidence): `io.open` usage replaced with PNG artifacts** in geometry and pathfind files (`io.open` is nil in the test VM).
+- **fix(evidence): `BezierCurve:getDerivative()`** correctly called as `curve:getDerivative()` (returns a derivative BezierCurve), then `:evaluate(t)` for the tangent direction.
+- **fix(examples): `lurek.graphic` → `lurek.render`** in `content/examples/ui.lua` (6 occurrences) and `content/examples/ecs.lua` (1 occurrence).
+- **docs(skills): `testing-rust` SKILL.md** — added Anti-pattern bullet banning placeholder `pending()` in evidence files.
+- **docs(skills): `testing-rust` `snippets/extended-notes.md`** — added full "Evidence Artifact Contract (MANDATORY)" and "Evidence File Naming Contract" sections.
+
 ## [0.20.11] - 2026-04-23
 
 ### test(lua): fix 93+ failing Lua tests, evidence stubs, library bugs

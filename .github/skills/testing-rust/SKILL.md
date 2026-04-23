@@ -74,6 +74,7 @@ See [snippets/1-test-architecture-overview.txt](snippets/1-test-architecture-ove
 - Adding logic (math, branching, loops) to a `src/lua_api/*_api.rs` closure solely to make it testable — **TST-03** violation; extract to `src/<module>/` first, then test the domain function.
 - Registering tests against symbols defined inside `mod.rs` — **TST-04** violation; move the definition into a sibling file first.
 - Creating a second Lua test file for a module layer that already has one — **TST-06** violation. E.g. do NOT create `test_audio_effects_evidence.lua` if `test_audio_evidence.lua` exists. Merge content instead.
+- Writing a placeholder `it()` in an `evidence/` file that only calls `pending(...)` — **evidence artifact contract** violation. Every `it()` in an evidence file MUST call `expect_evidence_created(path)` on a real artifact. Replace with a real test or use `xit()` with a `-- @evidence skip` comment if the operation requires GPU/audio.
 - Referencing `conf.lua` in tests or scripts — `conf.lua` support has been removed; use `conf.toml` only.
 
 See [snippets/extended-notes.md](snippets/extended-notes.md) for extended guidance on naming, float comparison, evidence vs golden contracts, and coverage tooling.
