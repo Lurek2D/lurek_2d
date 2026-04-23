@@ -11,21 +11,27 @@
 
 ## Summary
 
-The `physics` module provides Lurek2D's rigid-body physics simulation backed by the rapier2d 0.32 library. It exposes a comprehensive 2D physics API for game scripts while handling all the complexity of the rapier pipeline internally.
+The `physics` module provides Lurek2D's rigid-body physics simulation backed by rapier2d 0.32. It is a Platform Services tier module that exposes a comprehensive 2D physics API for game scripts while handling all rapier pipeline complexity internally. Physics is classified CORE-KEEP — too central to 2D games to extract as a plugin.
 
-`World` owns the complete rapier simulation state: rigid body set, collider set, joint set, broad-phase, narrow-phase, integration parameters, and the pipeline. `World::step(dt)` advances the simulation by one time step — syncing body property changes into rapier, running the pipeline, and reading back positions/velocities for dynamic bodies. `World::get_collision_events()` returns a `Vec<BodyContact>` (re-exported as `CollisionEvent`) for script-side response each frame. `World::raycast(origin, direction, max_distance, mask)` returns `Option<RaycastHit>` with hit point, normal, and body reference. `World::step_fixed(accumulated_dt, step_dt, max_steps)` provides fixed-timestep sub-stepping for deterministic simulation.
+**World and simulation step.** `World` owns the complete rapier simulation state: rigid body set, collider set, joint set, broad-phase, narrow-phase, integration parameters, and the pipeline. `World::step(dt)` advances by one time step: syncing body property changes into rapier, running the pipeline, and reading back positions/velocities for dynamic bodies. `World::step_fixed(accumulated_dt, step_dt, max_steps)` provides fixed-timestep sub-stepping for deterministic simulation with accumulator-based variable frame rate handling. `World::get_collision_events()` returns `Vec<BodyContact>` for script-side response each frame.
 
-`Body` instances are created with `BodyType` (Dynamic, Kinematic, Static, or Sensor) and `BodyShape` (Rect or Circle). Sensor bodies detect overlaps without generating impulse responses. Extended shapes (`Shape` enum) support polygons, edges, and chains beyond the basic primitives. `StandaloneShape` wraps a `Shape` with default fixture parameters for reuse across multiple bodies.
+**Bodies and shapes.** `Body` instances are created with `BodyType` (Dynamic, Kinematic, Static, Sensor) and `BodyShape` (Rect or Circle). Sensor bodies detect overlaps without impulse responses. The extended `Shape` enum supports polygons, edges, and chains for complex static geometry. `StandaloneShape` wraps a `Shape` with default fixture parameters for reuse across multiple bodies. Each `Body` carries mass, restitution, friction, linear/angular velocity, and a category+mask bit field for collision filtering.
 
-Joint types: revolute (pin), prismatic (slider), distance, weld (rigid), rope (max distance), wheel (prismatic + rotation), friction, motor, and mouse (spring target). Pulley and gear joints are stubs that fall back to distance/revolute.
+**Spatial queries.** `World::raycast(origin, direction, max_distance, mask)` returns `Option<RaycastHit>` with hit point, normal, and body reference. `World::overlap_rect(rect, mask)` and `World::overlap_circle(center, radius, mask)` return lists of overlapping body IDs. `World::contact_pairs()` returns current narrow-phase `ContactInfo` snapshots for detailed per-pair inspection.
 
-Extended features: `PhysicsZone` adds per-region gravity and damping overrides applied before each pipeline step — useful for water, low-gravity zones, and wind fields; `ZoneEvent` fires when bodies enter or leave zones. `ZoneTracker` provides change-detection for zone membership. `TerrainMap` is a destructible terrain system using a bit-grid of solid/empty cells with chunked 16×16 static colliders that update when cells are modified via `flush()`. `CellularWorld` is a separate falling-sand automaton independent of rapier, simulating per-cell material gravity (sand, water, fire, gas, rock) and interaction rules with configurable palettes and serialization.
+**Joints.** Revolute (pin joint with optional motor and limits), prismatic (slider), distance (spring), weld (rigid), rope (max-distance constraint), wheel (prismatic + rotation for vehicles), friction (linear/angular), motor, and mouse (spring toward a dragged target). Pulley and gear joints are stubs that fall back to distance and revolute joints.
 
-The `collision_helpers` module provides lightweight stateless geometric collision utilities (AABB, circle, point tests) that complement the full rapier pipeline — useful for scripted pre-checks without spawning physics bodies.
+**Physics zones.** `PhysicsZone` adds per-region gravity and damping overrides applied before each pipeline step. Zone boundaries are circles, rectangles, or convex polygons. `ZoneGravityMode` can scale world gravity, replace it, or apply an attractor/repulsor force. `ZoneEvent` fires when bodies enter or leave zones. `ZoneTracker` provides change-detection for zone membership. Used for water, low-gravity fields, and directional wind.
 
-**Scope boundary**: Platform Services tier. Depends on `math`, `runtime`, `image`, `render` (for debug commands), `rapier2d`. Lua bridge in `src/lua_api/physics_api.rs`.
+**Destructible terrain.** `TerrainMap` is a bitgrid-backed static collider system for Worms-style terrain deformation. The grid is divided into 16x16 `Chunk` regions, each backed by a rapier compound shape built from edge segments. `set_cell(x, y, solid)` marks cells; `flush()` rebuilds changed chunk colliders. `apply_circle_damage(cx, cy, radius)` removes all cells within a radius and marks affected chunks dirty.
 
-_Plugin candidacy: CORE-KEEP — physics is fundamental to 2D games and too central to extract. See [docs/architecture/plugins.md](../architecture/plugins.md)._
+**Cellular automaton.** `CellularWorld` is a falling-sand simulation independent of rapier, operating on a per-cell material grid. `CellType` variants: Sand, Water, Fire, Gas, Rock (immovable). Each `tick()` applies gravity rules, material interaction (fire spreads, water flows, gas rises). Palette configuration controls per-type colours. `to_image()` exports the current state for GPU upload.
+
+**Collision helpers.** `collision_helpers` provides lightweight stateless geometric collision utilities (AABB, circle, point-in-shape) that complement the full rapier pipeline for scripted pre-checks without spawning physics bodies.
+
+**Lua surface.** `lurek.physics.newWorld(gravity_x, gravity_y)`. World methods: `addBody(spec)` returns body_id, `removeBody(id)`, `getBody(id)`, `setBodyPos(id, x, y)`, `setBodyVel(id, vx, vy)`, `step(dt)`, `getCollisions()`, `raycast(ox, oy, dx, dy, dist, mask)`, `addJoint(type, id_a, id_b, params)`. Zone: `addZone(spec)` returns zone_id, `removeZone(id)`. Terrain: `newTerrain(w, h)`. Cellular: `newCellular(w, h)`.
+
+**Scope boundary.** Platform Services tier. Depends on `math`, `runtime`, `image`, `render` (debug commands), `rapier2d`. Lua bridge in `src/lua_api/physics_api.rs`.
 
 ## Files
 

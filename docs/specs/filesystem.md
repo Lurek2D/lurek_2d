@@ -11,19 +11,27 @@
 
 ## Summary
 
-The `filesystem` module provides Lurek2D's sandboxed virtual filesystem abstraction. It wraps all file-system access behind a `GameFS` type that ensures Lua scripts and engine code can only read and write within the game's allowed directory tree — preventing path traversal attacks that would let a game script escape its sandbox to access arbitrary host paths.
+The `filesystem` module is Lurek2D's sandboxed virtual filesystem abstraction — a Core Runtime tier module that wraps all file I/O behind a `GameFS` type ensuring Lua scripts and engine code can only read and write within the game's allowed directory tree. It is the primary security boundary preventing path traversal attacks that could allow a game script to access arbitrary host files.
 
-`GameFS` is initialised with a base directory (the loaded game folder) and an optional save-data directory. Every path passed to any `GameFS` method is resolved against the base directory and checked against a traversal guard: any path component that would escape the base (via `..`, symbolic links, or absolute path prefixes) is rejected with an `EngineError::FsPathTraversal` error before the OS is ever asked to open the file. The check is strict: it resolves the canonical path and confirms the result starts with the base directory prefix.
+**Sandbox model.** `GameFS` is initialised with a base directory (the loaded game folder) and an optional separate save-data directory. Every path passed to any `GameFS` method is resolved against the base directory and checked against a traversal guard: components using `..`, symbolic links, or absolute path prefixes are rejected with `EngineError::FsPathTraversal` before the OS is ever consulted. The check resolves the canonical path and confirms it starts with the base directory prefix. Write operations are always routed to the save-data directory (if configured) rather than the read-only game folder; read operations can access both — mirroring LÖVE2D's content/save split.
 
-The API covers: `read_string(path)`, `read_bytes(path)`, `write_string(path, content)`, `write_bytes(path, data)`, `list(path)`, `get_directory_items(path)`, `get_info(path)`, `exists(path)`, `create_directory(path)`, `remove(path)`, `copy_file(src, dst)`, `move_file(src, dst)`, `remove_dir(path)`, `glob(pattern)`, `append_string(path, content)`, and `read_lines(path)`. `FileHandle` provides an open-file session with cursored reads, sequential writes, seek/tell, and explicit close semantics. `FileInfo` carries file type (`File`, `Directory`, `Symlink`, `Other`), size, modification timestamp, and read-only flag. `AsyncLoader` provides a background worker thread for non-blocking file reads with bounded-channel back-pressure.
+**Core file API.** `GameFS` methods: `read_string(path)`, `read_bytes(path)`, `write_string(path, content)`, `write_bytes(path, data)`, `append_string(path, content)`, `read_lines(path)` (iterator), `list(path)` (directory entries), `get_directory_items(path)` (with type tags), `get_info(path)` → `FileInfo`, `exists(path)`, `create_directory(path)`, `remove(path)`, `copy_file(src, dst)`, `move_file(src, dst)`, `remove_dir(path)`, `glob(pattern)` (wildcard matching).
 
-Write operations are always routed to the save-data directory (if configured) rather than the read-only game folder. Read operations can access both. This separation mirrors how LÖVE2D handles the `love.filesystem` split between game content and mutable save state.
+**FileHandle.** `FileHandle` provides an open-file session with explicit lifecycle: `open(path, mode)` → handle, `read(n)`, `read_all()`, `write(bytes)`, `seek(pos)`, `tell()`, `close()`. `FileMode` enum: `Read`, `Write`, `Append`, `ReadWrite`. Lua: `lurek.filesystem.open(path, mode)` returns a `FileHandle` userdata.
 
-The module also provides the `MountPoint` abstraction for overlaying read-only archive or zip mounts on top of the base file system, used by the `mods` module to load mod content packages.
+**FileInfo.** `FileInfo` carries: `file_type` (`File`, `Directory`, `Symlink`, `Other`), `size` (bytes), `mod_time` (Unix timestamp), `read_only` flag. Returned by `lurek.filesystem.getInfo(path)`.
 
-Two additional types expand the runtime I/O surface. `FileWatcher` (from `watcher.rs`) is a polling-based change detector that Lua scripts can use to react to file modifications at development time, created via `lurek.filesystem.newWatcher()`. `ZipArchive` adds first-class ZIP archive support: files inside a `.zip` can be listed and read without extracting them to disk, created via `lurek.filesystem.newZip()`. Both types expose full Lua method sets through `lurek.filesystem.*`.
+**AsyncLoader.** `AsyncLoader` provides a background worker thread for non-blocking file reads with bounded-channel back-pressure. `load(path) → LoadHandle`; `poll(handle) → LoadStatus` (Pending, Ready(FileData), Error). Used by the asset pipeline to load textures, audio, and scripts without blocking the main thread. Lua: `lurek.filesystem.loadAsync(path)` → handle; `lurek.filesystem.pollLoad(handle)`.
 
-**Scope boundary**: Core Runtime tier. Depends on `runtime` for error types. Lua bridge in `src/lua_api/filesystem_api.rs`.
+**FileWatcher.** `FileWatcher` is a polling-based change detector that tracks file modification times. `watch(path)`, `check()` → changed paths, `unwatch(path)`. Designed for development hot-reload: Lua scripts watch their own assets and reload on change. Lua: `lurek.filesystem.newWatcher()` → `FileWatcher` userdata.
+
+**ZIP archive support.** `ZipMount` / `ZipArchive` adds first-class ZIP archive support: files inside a `.zip` can be listed and read without extracting to disk. Lua: `lurek.filesystem.newZip(path)` → `ZipArchive` userdata; `zip:list()`, `zip:read(entry)`, `zip:exists(entry)`.
+
+**Mount points.** `MountLayer` provides a read-only virtual filesystem overlay for archive and mod content packages. The `mods` module uses `MountLayer` to overlay mod `.lurek` archives over the base game directory, giving mod content transparent access through the same `GameFS` API.
+
+**Lua surface.** `lurek.filesystem.read(path)`, `write(path, content)`, `append(path, content)`, `exists(path)`, `list(path)`, `getInfo(path)`, `mkdir(path)`, `remove(path)`, `copy(src, dst)`, `move(src, dst)`, `glob(pattern)`, `open(path, mode)` → `FileHandle`, `loadAsync(path)` → handle, `pollLoad(handle)`, `newWatcher()` → `FileWatcher`, `newZip(path)` → `ZipArchive`.
+
+**Scope boundary.** Core Runtime tier. Depends on `runtime` for error types. Lua bridge in `src/lua_api/filesystem_api.rs`.
 
 ## Files
 

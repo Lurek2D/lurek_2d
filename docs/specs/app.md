@@ -11,15 +11,29 @@
 
 ## Summary
 
-The `app` module is Lurek2D's application entry-point and engine lifecycle orchestrator. It sits at the Edge/Integration tier — the topmost layer of the engine dependency graph — and owns the winit 0.30 event loop, the wgpu surface and device, the Lua VM instance, and the main frame pacing loop.
+The `app` module is Lurek2D's application entry point and engine lifecycle orchestrator — the Edge/Integration tier topmost layer. It owns the winit 0.30 event loop, the wgpu device and surface, the Lua VM instance, and the main frame pacing loop. Nothing else in the engine imports from `app`; it is the integration layer that wires all subsystems together.
 
-`App::run()` is where everything starts: it creates the OS window via winit, initialises the wgpu renderer, constructs `SharedState`, creates the Lua VM via `lua_api::create_lua_vm()`, and then enters the winit event loop. The internal `LunaApp` struct implements winit's `ApplicationHandler` trait with a `RunState` state machine (Running → Error → Restarting). Each frame the loop dispatches OS events, calls the Lua callback sequence (`ready` → `process_physics` (fixed timestep) → `fixedUpdate` (optional fixed timestep) → `process(dt)` → `process_late(dt)` → `render()`), auto-collects parallax / tilemap / raycaster / UI render commands, then calls `GpuRenderer::render_frame()` to process the accumulated `RenderCommand` queue.
+**Startup.** `App::run()` is the single public entry point. It creates the OS window via winit, initialises the wgpu device and swap chain, constructs `SharedState`, creates the Lua VM via `lua_api::create_lua_vm()`, and enters the winit event loop. If no game folder is provided on the command line, it renders a branded splash screen. Drag-and-drop of a folder or `.lurek` archive from the OS file manager also starts a game session mid-run.
 
-Special startup modes are handled here: if no game is provided, a branded splash screen is rendered; Lua and engine errors transition to a blue `ErrorScreen` with traceback, recovery hints, clipboard copy (Ctrl+C), and restart (R key). `debug_overlay.rs` provides the lightweight in-engine FPS and draw-call counter overlay toggled via F12. Gamepad discovery and hot-plug events are routed through the gilrs library. File drag-and-drop events (folders and `.lurek`/`.lurek` archives) and screenshot requests (including auto-screenshot for CI) are also handled at this layer. Viewport scaling supports `letterbox`, `stretch`, `pixel`, and `none` modes via `recompute_viewport()`.
+**Frame loop.** The internal `LurekApp` struct implements winit's `ApplicationHandler` trait. Each frame the loop:
+1. Dispatches OS events (keyboard, mouse, gamepad via gilrs, resize, drag-drop, close).
+2. Calls the Lua callback sequence: `ready` (once) → `process_physics` (fixed timestep, if used) → `fixedUpdate` (optional fixed timestep) → `process(dt)` → `process_late(dt)` → `render()`.
+3. Auto-collects render commands from parallax, tilemap, raycaster, and UI subsystems.
+4. Calls `GpuRenderer::render_frame()` to flush the accumulated `RenderCommand` queue to the GPU.
 
-Because `App` imports from virtually every other module (render, audio, input, lua_api, filesystem, etc.) it is deliberately kept thin — orchestration only, no domain logic. All subsystem behaviour lives in their own modules; `App` just wires them up and drives the frame cycle.
+**Run state machine.** `RunState` has three states: Running, Error, and Restarting. Any Lua or engine error transitions to Error, which displays the `ErrorScreen`. R key restarts the game from scratch; the engine re-initialises the Lua VM and reloads all Lua scripts without restarting the process.
 
-**Scope boundary**: Edge/Integration tier. Imports from all other module groups. Nothing in the engine imports from `app`.
+**Error screen.** `ErrorScreen` converts Lua runtime errors (`mlua::Error`) and engine errors (`EngineError`) into a structured blue screen with formatted traceback, recovery hints, Ctrl+C clipboard copy of the error text, and R-to-restart. `wrap_text` handles word-wrapping for the narrow screen layout.
+
+**Debug overlay.** `DebugOverlay` is a lightweight FPS and draw-call counter rendered as overlay text, toggled by F12. It uses only the existing `RenderCommand` text draw path and adds negligible overhead.
+
+**Viewport scaling.** `recompute_viewport()` supports four scaling modes configured via `conf.lua`: `letterbox` (fit with black bars), `stretch` (fill with distortion), `pixel` (integer scale), and `none` (raw pixel passthrough). `fit_contain_size` is the helper that computes the maximum integer-preserving size.
+
+**Gamepad support.** gilrs gamepad discovery and hot-plug events are processed in the winit event handler. Axes and buttons are mapped to `lurek.input` key codes and dispatched to the normal input pipeline — no separate gamepad API is needed.
+
+**CI screenshot.** Auto-screenshot mode (`--screenshot`) renders exactly one frame, saves a PNG to a configured path, and exits. Used by `tests/demo_smoke_tests.rs` `#[ignore]` tests to capture reference screenshots.
+
+**Scope boundary.** Edge/Integration tier. Imports from render, audio, input, lua_api, filesystem, and all other module groups. Nothing in the engine imports from `app`.
 
 ## Files
 

@@ -11,19 +11,31 @@
 
 ## Summary
 
-The `math` module is Lurek2D's foundational mathematics library — the leaf of the engine's dependency graph with zero Lurek2D module dependencies of its own. Every other module that needs 2D math, geometry, or color types imports from here.
+The `math` module is Lurek2D's foundational mathematics library — a Foundations tier module at the leaf of the engine's dependency graph with zero Lurek2D module dependencies of its own. Every other module that needs 2D math, geometry, or colour types imports from here.
 
-Core value types: `Vec2` (2D f32 vector with arithmetic operators, swizzling, dot/cross/normalize/lerp/distance helpers), `Vec3` (3D f32 vector with equivalent ops), `Mat3` (3×3 column-major affine transform matrix supporting translate, rotate, scale application and matrix multiplication), `Transform` (chainable builder wrapping `Mat3`), `Rect` (AABB with contains/overlaps/union/intersection), `Color` (the engine's canonical sRGB `[f32; 4]` type with named constants, `u8` and `f32` constructors, and packed `u32` output — all engine code must use this, not custom color structs).
+**Core value types.** `Vec2` (2D f32 vector with arithmetic operators, swizzling, dot/cross/normalise/lerp/distance), `Vec3` (3D f32 vector with equivalent ops), `Mat3` (3x3 column-major affine transform matrix supporting translate, rotate, scale composition and multiplication), `Transform` (chainable builder wrapping `Mat3`), `Rect` (AABB with contains/overlaps/union/intersection), `Color` (the engine's canonical sRGB `[f32; 4]` type with named constants, `u8` and `f32` constructors, packed `u32` output, HSV conversion, and gamma helpers — all engine colour handling must use this type).
 
-Curve and spline types: `BezierCurve` (De Casteljau evaluation), `CatmullRomSpline` and `HermiteSpline` (smooth interpolating splines for animation paths).
+**Curve and spline types.** `BezierCurve` (arbitrary-order De Casteljau evaluation with tangent and arc-length queries), `CatmullRomSpline` (smooth interpolating spline for animation paths), `HermiteSpline` (tension-controlled interpolation). These underpin animation, camera paths, and UI transitions.
 
-Utility types: `RandomGenerator` (seedable deterministic linear congruential RNG for reproducible sequences), `SpatialHash` (grid-based broad-phase AABB collision query), `EasingType` enum with 30+ easing functions as both named functions and an enum for serialization, `geometry` module with ear-clipping triangulation, convex hull, point-in-polygon test, line-segment intersection, and rasterization helpers.
+**Geometry utilities.** `geometry.rs` provides free-standing geometry helpers: circle/point containment, AABB overlap, line segment intersection, Bresenham rasterisation, convex hull (Andrew's monotone chain), ear-clipping polygon triangulation, and polygon area/centroid. `polygon.rs` focuses on convexity testing and triangulation quality. `Circle` and `Sphere` are lightweight value types for game-code collision geometry.
 
-All types are plain-old data with `#[derive(Debug, Clone, Copy)]`; none hold heap allocations except spline control-point vectors.
+**Spatial index.** `SpatialHash` is a uniform-grid broad-phase AABB index: `insert(id, rect)`, `query_rect(rect)` returns a set of IDs, `remove(id)`. `AabbTree` is a dynamic BVH for the same query surface with better worst-case complexity for non-uniformly distributed objects.
 
-Three new source files add major computational capabilities. `voronoi.rs` introduces `VoronoiDiagram` for Fortune’s sweep-line Voronoi tessellation with site iteration and cell neighbour queries, useful for procedural territory generation and spatial partitioning. `noise.rs` introduces `NoiseField`, a higher-level noise generator wrapping the existing functions with configurable octaves, frequency, and persistence into a single queryable object. `transform.rs` introduces `Transform2D`, a mutable 2D transform wrapper around `Mat3` with chainable translate, rotate, scale, and shear operations plus world-to-local and local-to-world point conversion. Lua callers gain a large set of new `lurek.math.*` functions covering Voronoi generation, noise fields, transform algebra, and extended geometric utilities.
+**Noise.** `noise_functions.rs` provides standalone Perlin, Simplex, and FBM helpers. `noise_generator.rs` wraps these in `NoiseGenerator` — a seeded, configurable object with named presets (terrain, cloud, wood grain, marble), domain-warping, fractal layering, and Worley cellular noise. `NoiseField` is the simplified Lua-facing wrapper.
 
-**Scope boundary**: Foundations tier. Zero Lurek2D dependencies. Lua bridge in `src/lua_api/math_api.rs`.
+**Voronoi tessellation.** `voronoi.rs` implements Fortune's sweep-line algorithm. `VoronoiDiagram::new(points)` computes the tessellation; `cells()` iterates `VoronoiCell` entries with polygon boundary vertices and neighbour indices. Used for procedural territory maps, dungeon partitioning, and noise dithering.
+
+**Transform algebra.** `Transform2D` in `transform.rs` is a mutable 2D transform wrapper around `Mat3` with chainable `translate(dx, dy)`, `rotate(angle)`, `scale(sx, sy)`, `shear(sx, sy)` operations and `world_to_local(p)` / `local_to_world(p)` point conversion. This simplifies 2D scene-graph transform accumulation without manually composing Mat3 calls.
+
+**Easing.** `EasingType` enum covers 30+ named easing functions (linear, quad, cubic, quart, quint, sine, expo, circ, bounce, back, elastic — all in/out/in-out variants), addressable both by enum variant and by string name for serialisation. `easing.rs` also contains the numeric interpolation primitives in `tween.rs` used by the `tween` feature module.
+
+**Randomisation.** `RandomGenerator` wraps `fastrand` in a seedable, serialisable deterministic RNG. `seed(n)`, `float()`, `int_range(min, max)`, `bool_chance(p)`, `pick(table)`, `shuffle(table)`. Used wherever reproducible sequences are needed (procedural generation, test fixtures, AI noise).
+
+**Math facade.** `facade.rs` exposes free functions: `lerp(a, b, t)`, `remap(v, in_min, in_max, out_min, out_max)`, `clamp(v, lo, hi)`, `sign(v)`, `smoothstep(e0, e1, x)`, `inverse_lerp(a, b, v)`.
+
+**Lua surface.** `lurek.math.*` exposes Vec2/Vec3/Mat3/Color constructors and full method sets; `Rect`, `BezierCurve`, `Transform2D`, `NoiseField`, `VoronoiDiagram`, `SpatialHash` userdata; easing functions via `lurek.math.ease(type, t)`, random via `lurek.math.newRand(seed)` and free functions (lerp, clamp, remap, etc.).
+
+**Scope boundary.** Foundations tier. Zero Lurek2D dependencies. Lua bridge in `src/lua_api/math_api.rs`.
 
 ## Files
 

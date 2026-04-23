@@ -11,17 +11,25 @@
 
 ## Summary
 
-The `scene` module implements Lurek2D's scene management system for organizing the game lifecycle into named, stackable scenes with transition effects. It is a Feature Systems tier module that acts as the high-level coordinator for switching between game states (main menu, gameplay, pause screen, cutscene, etc.) without unloading global resources.
+## Summary
 
-`SceneStack` is a LIFO stack of named scenes. Each scene is a Lua table with optional lifecycle callbacks: `enter(params)`, `leave()`, `pause()`, `resume()`, `update(dt)`, `draw()`, `draw_ui()`. Pushing a new scene onto the stack calls `enter(params)` on the incoming scene and `pause()` on the scene now beneath it. Popping calls `leave()` on the top scene and `resume()` on the scene below. Multiple scenes may be active simultaneously: by default all scenes on the stack have their `update(dt)` called, while only the top scene has its `draw()` called, though this can be overridden with `render_below = true`.
+The `scene` module implements Lurek2D's scene management system for organising the game lifecycle into named, stackable scenes with transition effects. It is a Feature Systems tier module acting as the high-level coordinator for switching between game states — main menu, gameplay, pause screen, cutscene — without unloading global resources.
 
-`TransitionType` controls the animated switch between scenes: `Fade` (alpha fade to a tint color then fade in, configurable duration and `EasingType`), `Slide` (directional camera-offset slide), or `Instant` (no transition). `TransitionState` tracks the in-progress transition's normalized progress and manages the intermediate half-transition frame.
+**SceneStack.** `SceneStack` is a LIFO stack of named scenes. Each scene is a Lua table with optional lifecycle callbacks: `enter(params)`, `leave()`, `pause()`, `resume()`, `update(dt)`, `draw()`, `draw_ui()`. Pushing a new scene calls `enter(params)` on the incoming scene and `pause()` on the scene now beneath it. Popping calls `leave()` on the top scene and `resume()` on the scene below. Multiple scenes may be active simultaneously: by default all scenes on the stack receive `update(dt)`, while only the top scene receives `draw()`. Setting `render_below = true` on a scene enables transparent overlays — e.g. a pause menu drawn on top of a frozen gameplay scene. Scenes are registered by string name via `register(name, table)` and pushed by name via `push(name, params)`.
 
-`DepthSorter` is a supplemental utility that accumulates `RenderedObject` records carrying `RenderCommand` entries with Z-values and emits them sorted lowest-to-highest Z when `flush()` is called. This provides a straightforward painter's-algorithm sort for mixed-depth 2D scenes.
+**Transitions.** `TransitionType` controls animated scene switches: `Fade` (alpha fade to a configurable tint colour then fade in, with configurable duration and `EasingType` curve), `Slide` (directional camera-offset slide in four compass directions), and `Instant` (no transition, immediate swap). `ActiveTransition` tracks in-progress normalised progress and manages the intermediate half-transition frame — outgoing scene is drawn during the first half, incoming during the second. Transition duration defaults to 300 ms. Queued transition chaining allows triggering one transition after another completes without game-side coroutines.
 
-New scene transition helper methods have been added to `SceneStack`, making common transition patterns available from Lua without requiring game scripts to manage transition progress directly. These additions cover queued transition chaining — triggering one transition after another completes — and instant-swap shortcuts accessible via `lurek.scene.*` for cleaner scene flow code.
+**Shared scene data.** `SceneStack` maintains a string-keyed shared data map for state that must survive scene transitions — persistent UI state, global game parameters, player stats carried across levels. `set_shared(key, value)` and `get_shared(key)` provide this cross-scene communication channel from Lua, avoiding global variables.
 
-**Scope boundary**: Feature Systems tier. Depends on `render`, `runtime`, `math`. Lua bridge in `src/lua_api/scene_api.rs`.
+**DepthSorter.** A supplemental utility that accumulates `DepthEntry` records carrying Z-values and callbacks. Entries are sorted lowest-to-highest Z when `flush()` is called, providing painter's-algorithm depth ordering for mixed-depth 2D scenes. Sort modes: default (unstable), stable (insertion-order tie-breaking), radix (integer Z keys, fastest for many entries), and parallel (Rayon, fastest for very large lists). `add(depth, fn)` for callbacks, `add_object(depth, table)` for objects with a `:drawSorted()` method.
+
+**Scene IDs.** Each scene on the stack receives a unique integer `SceneId` allocated by `next_scene_id()`. This ID is used for internal bookkeeping: the stack tracks which scene ID owns which shared data keys and clears orphaned entries when a scene leaves.
+
+**Render integration.** `generate_render_commands()` traverses the active stack bottom-to-top, calling each scene's `draw()` in order. `draw_to_image()` renders the stack state to a CPU image for headless screenshot testing.
+
+**Lua surface.** `lurek.scene.register(name, callbacks_table)`, `lurek.scene.push(name, params)`, `lurek.scene.pop()`, `lurek.scene.replace(name, params)`, `lurek.scene.current()` → name, `lurek.scene.stack()` → name array. Transitions: `lurek.scene.setTransition(type, opts)` before `push`/`pop`. Shared data: `lurek.scene.setShared(key, value)`, `lurek.scene.getShared(key)`. Depth sorter: `lurek.scene.newDepthSorter(stable)`, methods `add(depth, fn)`, `sort()`, `flush()`, `clear()`.
+
+**Scope boundary.** Feature Systems tier. Depends on `render` (RenderCommand), `runtime` (SharedState), `math` (EasingType). Lua bridge in `src/lua_api/scene_api.rs`.
 
 ## Files
 

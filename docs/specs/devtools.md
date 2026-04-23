@@ -11,19 +11,21 @@
 
 ## Summary
 
-The `devtools` module provides Lurek2D's in-process developer tools: a structured logger, a frame profiler, rolling frame statistics, and a file watcher for hot-reload detection. These tools are exposed to Lua games via `lurek.devtools.*` and are designed to aid game developers during development without shipping GPU overlays or requiring a separate profiler binary.
+The `devtools` module is Lurek2D's in-process developer toolbox — a Feature Systems tier module exposing structured logging, frame profiling, rolling frame statistics, a file watcher for hot-reload, and an interactive Lua REPL, all accessible from Lua scripts via `lurek.devtools.*`. It is intended to aid game developers during development without requiring a separate profiler binary or GPU overlay renderer.
 
-`Logger` is a level-filtered, categorised in-process log with a rolling history ring buffer. Messages are tagged with a `LogLevel` (trace/debug/info/warn/error) and an optional category string. The history is accessible from Lua for in-game debug consoles. `Logger` is separate from the engine's Rust `log` crate output — it captures Lua-emitted messages independently.
+**Logger.** `Logger` is a level-filtered, categorised in-process message store with a rolling history ring buffer. Messages are tagged with a `LogLevel` (trace/debug/info/warn/error) and an optional category string. `push(level, category, message)` records an entry; `tail(n)` returns the most recent n entries; `filter_category(cat)` returns all entries matching a category prefix. The history bound is configurable (`set_capacity`). `Logger` is separate from the engine's Rust `log` crate output — it independently captures Lua-emitted diagnostic messages for in-game debug consoles and tooling.
 
-`Profiler` is a hierarchical zone-based frame profiler. `begin_zone(name)` / `end_zone()` calls bracket sections of game code; the profiler records wall-clock time per zone and builds a tree of `ProfileZone` entries for each completed frame. Results are accessible from Lua for custom in-game overlays.
+**Profiler.** `Profiler` is a hierarchical zone-based frame profiler. `begin_zone(name)` / `end_zone()` bracket sections of game code; the profiler records wall-clock time per zone and builds a tree of `ProfileZone` entries for each completed frame. Each `ProfileZone` has `total_time()` (wall clock including children) and `self_time()` (exclusive cost), and `flatten()` collapses the tree to a pre-order list for tabular display. From Lua: `lurek.devtools.profiler:begin("name")`, `profiler:end()`, `profiler:frame()` returns the last completed frame's zone tree as a table.
 
-`FrameStats` computes rolling FPS and frame-time statistics including mean, min, max, and percentile values (p50/p95/p99) over the last N frames. `FrameSnapshot` captures one frame's complete stat set for display or logging.
+**FrameStats.** `FrameStats` is a rolling sample buffer for frame delta-time values. `record(dt)` pushes a new sample, evicting the oldest when at capacity. `snapshot()` returns a `FrameSnapshot` with: current FPS, mean frame time, min, max, and percentile values p50/p95/p99 computed over the current window. Used by the debug overlay and the debug bridge performance endpoint.
 
-`FileWatcher` polls file modification times at a configurable interval. When a watched path's mtime changes, it queues a change notification that Lua code can poll to trigger hot-reload of assets or scripts.
+**FileWatcher.** `FileWatcher` polls file modification times at a configurable interval. Watched paths are registered with `watch(path)`; `check()` returns the list of paths whose mtime has changed since the last check. From Lua: `lurek.devtools.watcher:watch(path)`, `watcher:check()` → changed paths table. Intended for hot-reload workflows: a Lua game can watch its own scripts and assets and call `lurek.require` or re-load textures on change without a full restart.
 
-The `repl.rs` source file adds `ReplConsole`, an interactive Lua REPL with a bounded input history buffer that can be embedded in a running game session without spawning a separate process. Lua scripts drive it through `lurek.devtools.repl:eval(code)` for expression execution, `repl:history()` and `repl:historySize()` for browsing past inputs, and `repl:clearHistory()` to reset the buffer — enabling in-game developer consoles that evaluate live Lua without external tooling.
+**REPL console.** `ReplConsole` provides an interactive Lua REPL with a bounded input history buffer that can be embedded in a running game session without spawning a separate process. `eval(code)` executes an arbitrary Lua expression in the current VM and returns its string representation. `history()` / `historySize()` / `clearHistory()` manage the input history ring. This enables in-game developer consoles (e.g., a text input field that submits code to `repl:eval()`) without external tooling.
 
-**Scope boundary**: Feature Systems tier. Depends on `runtime`. Lua bridge in `src/lua_api/devtools_api.rs`.
+**Lua surface.** `lurek.devtools.newLogger(capacity)` / `newProfiler()` / `newFrameStats(capacity)` / `newWatcher(interval_ms)` / `newRepl()` create instances. `Logger` userdata: `push(level, cat, msg)`, `tail(n)`, `filterCategory(cat)`, `clear()`, `setLevel(level)`. `Profiler` userdata: `begin(name)`, `stop()`, `frame()` (tree). `FrameStats` userdata: `record(dt)`, `snapshot()` (table with fps/mean/min/max/p50/p95/p99). `FileWatcher` userdata: `watch(path)`, `check()`. `ReplConsole` userdata: `eval(code)`, `history()`, `historySize()`, `clearHistory()`.
+
+**Scope boundary.** Feature Systems tier. Depends on `runtime` for VM access in REPL eval. Lua bridge in `src/lua_api/devtools_api.rs`.
 
 ## Files
 

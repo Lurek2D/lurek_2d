@@ -11,50 +11,25 @@
 
 ## Summary
 
-The `pipeline` module provides Lurek2D's DAG-based workflow orchestration
-system for composing multi-step data-processing sequences with explicit
-dependency ordering, parallel execution, error policies, and time-based
-scheduling. It is a Feature Systems tier module designed for analytics
-pipelines, boot initialization sequences, automated test orchestration, and
-complex mod-loading or asset-processing workflows where steps must run in a
-controlled, partially-ordered manner.
+## Summary
 
-**DAG model**: `Pipeline` stores `PipelineStep` nodes and directed edges in a
-name-keyed adjacency structure. Each `PipelineStep` carries: a unique name
-string, a `StepStatus` tracking its run state (Pending → Running → Done |
-Failed | Skipped | Cancelled), an `ErrorPolicy` (`FailFast` — abort the run on
-first error; `Continue` — collect errors and run all steps;
-`Retry(n)` — retry up to n times before marking failed), an optional timeout
-duration, arbitrary string tag set, and a list of dependency step names. The
-DAG must be acyclic — `validate()` returns a list of error strings including
-cycle detection and missing-dependency reports before any execution begins.
+The `pipeline` module provides Lurek2D's DAG-based workflow orchestration system for composing multi-step data-processing sequences with explicit dependency ordering, parallel execution, error policies, and time-based scheduling. It is a Feature Systems tier module designed for analytics pipelines, boot initialisation sequences, automated test orchestration, mod-loading workflows, and asset-processing pipelines where steps must run in a controlled, partially-ordered manner.
 
-**Execution**: `Pipeline::run()` performs Kahn's algorithm topological sort,
-groups independent steps into parallel levels via `get_parallel_groups()`,
-executes group by group, and collects a `PipelineResult` carrying
-`PipelineStatus` (Success, PartialFailure, Failed, Cancelled) plus per-step
-outcome records. `run_async()` dispatches each step group to a thread pool,
-allowing independent steps to run concurrently where the dependency graph
-permits. Lua callbacks registered per step supply the actual execution logic;
-the pipeline module handles only ordering, error policy, and timing.
+**DAG model.** `Pipeline` stores `PipelineStep` nodes and directed edges in a name-keyed adjacency structure. Each `PipelineStep` carries: a unique name string, `StepStatus` tracking run state (Pending → Running → Done | Failed | Skipped | Cancelled), `ErrorPolicy` (`FailFast` — abort on first error; `Continue` — collect errors and run all steps; `Retry(n)` — retry up to n times before marking failed), an optional timeout duration, an arbitrary string tag set, and a list of dependency step names. The DAG must be acyclic — `validate()` returns a list of error strings including cycle detection and missing-dependency reports before any execution begins.
 
-**PipelineScheduler**: Wraps one or more pipelines with time-based triggering.
-It tracks elapsed time per step delay and per-pipeline interval. `tick(dt)` is
-called each frame; `update(dt)` returns names of steps whose delay has elapsed
-and that are ready to fire. This makes the scheduler the timing primitive for
-async multi-frame pipeline execution without requiring hand-managed timers in
-game scripts.
+**Execution engine.** `Pipeline::run()` performs Kahn's topological sort, groups independent steps into parallel levels via `get_parallel_groups()`, executes groups sequentially, and collects a `PipelineResult` carrying `PipelineStatus` (Success, PartialFailure, Failed, Cancelled) plus per-step outcome records. `run_async()` dispatches each step group to a thread pool so independent steps within a level execute concurrently where the dependency graph permits. Lua callbacks registered per step supply the actual execution logic; the pipeline module handles only ordering, error policy, retry counting, and timing.
 
-**Diagnostics and composition**: `to_ascii_diagram()` returns a multi-line
-ASCII string visualising DAG edges and step names for debugging.
-`add_sub_pipeline(sub, prefix)` merges all steps from another pipeline with a
-name prefix, enabling composable workflow libraries. `collect_result()`
-aggregates per-step runtime data into a `PipelineResult` including total counts
-of completed, failed, skipped, and cancelled steps alongside step-level error
-messages for post-run inspection.
+**Sub-pipelines and composition.** `add_sub_pipeline(sub, prefix)` merges all steps from another `Pipeline` with a name prefix, enabling composable workflow libraries. Prefixed names guarantee no conflicts when two sub-pipelines declare steps with identical names. This pattern is used by the engine boot sequence to compose the init pipeline from independently-authored sub-pipelines for audio, render, input, and game content loading.
 
-**Scope boundary**: Feature Systems tier. Depends on `math`, `runtime`. Lua
-bridge in `src/lua_api/pipeline_api.rs` as `lurek.pipeline.*`.
+**PipelineScheduler.** Wraps one or more pipelines with time-based triggering. Tracks elapsed time per step delay and per-pipeline interval. `tick(dt)` advances the scheduler; `update(dt)` returns names of steps whose delay has elapsed and are ready to fire. Steps may be configured with an initial delay, a recurring interval (cron-style repetition), or one-shot execution. This makes `PipelineScheduler` the timing primitive for multi-frame async pipeline execution without hand-managed timers.
+
+**Diagnostics.** `to_ascii_diagram()` returns a multi-line ASCII string visualising DAG edges and step names for debugging and logging. `collect_result()` aggregates per-step runtime data into a `PipelineResult` with total counts of completed, failed, skipped, and cancelled steps alongside step-level error messages. `step_durations()` returns a map from step name to execution duration for performance profiling.
+
+**Tags and filtering.** Steps can carry arbitrary string tags (e.g. `"io"`, `"gpu"`, `"optional"`). `run_tagged(tags)` executes only the subgraph of steps matching any of the given tags. `skip_tagged(tags)` marks matching steps as Skipped before execution begins. Used for selective re-runs (only re-run IO steps after a config change) and conditional execution (skip GPU steps in headless mode).
+
+**Lua surface.** `lurek.pipeline.new(name)`. Methods: `addStep(name, deps, fn, opts)`, `run()` → result table, `runAsync(fn)`, `validate()` → errors, `getStatus(name)`, `cancel()`, `addSubPipeline(sub, prefix)`, `toDiagram()`. Scheduler: `lurek.pipeline.newScheduler()`, `addPipeline(pipeline, interval_ms)`, `tick(dt)`, `update(dt)` → fired step names.
+
+**Scope boundary.** Feature Systems tier. Depends on `math`, `runtime`. Lua bridge in `src/lua_api/pipeline_api.rs`.
 
 ## Files
 

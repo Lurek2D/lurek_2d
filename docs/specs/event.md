@@ -11,19 +11,23 @@
 
 ## Summary
 
-The `event` module provides Lurek2D's centralised event queue — the single channel through which OS input, window state changes, custom Lua events, and automation-injected synthetic input flow before being dispatched to Lua callbacks. All modules that raise or consume events route through this module rather than coupling directly to each other.
+The `event` module is Lurek2D's centralised event queue — the single channel through which OS input, window state changes, custom Lua events, and automation-injected synthetic input flow before being dispatched to Lua callbacks. It is a Core Runtime tier module with no upstream engine dependencies. All modules that raise or consume events route through this module rather than coupling directly to each other.
 
-The core type is `EventQueue`, a FIFO ring of `Event` values backed by `VecDeque`. `App` pushes events during the winit event handler; at the start of each logical-update tick the queue is drained and dispatched to the registered Lua listeners (key-down, key-up, mouse-move, etc.).
+**EventQueue — the core FIFO.** `EventQueue` is a FIFO ring of `Event` values backed by `VecDeque`. `App` pushes events during the winit event handler; at the start of each logical-update tick the queue is drained and dispatched to registered Lua listeners. `push(event)`, `push_event(name, args)`, `poll()`, `clear()`, `is_empty()`, `len()`. The `wait(timeout_ms)` variant blocks until an event arrives or the timeout elapses, used in CI screenshot mode.
 
-`Event` is a flat tagged enum that covers: keyboard events (key code, scancode, modifiers, repeat flag), mouse events (button, position, scroll delta), gamepad events (axis, button, device ID), text input (Unicode character), window events (resize, focus, close, file-drop), touch events, and user-defined events (`UserEvent` with a string key and an optional Lua value payload). The user event variant is what `lurek.event.emit(name, data)` uses to implement the publish-subscribe pattern between Lua scripts.
+**Event enum.** `Event` is a flat tagged struct carrying a name string and a `Vec<EventArg>` payload. The engine internally dispatches OS events as named events with typed arguments: `"keydown"` (keycode, scancode, modifiers, repeat), `"keyup"`, `"mousemove"` (x, y), `"mousedown"` / `"mouseup"` (button, x, y), `"mousewheel"` (dx, dy), `"gamepadaxis"` (device_id, axis, value), `"gamepadbutton"` (device_id, button, pressed), `"textinput"` (Unicode string), `"resize"` (w, h), `"focus"` / `"blur"`, `"filedrop"` (path), `"touch"` (id, phase, x, y). `UserEvent` is the variant emitted by `lurek.event.emit(name, data)` for pub-sub between Lua scripts.
 
-The `automation` module also injects synthetic events into the queue through the same `push()` path as real hardware events, which is what makes automation playback transparent to downstream callbacks.
+**Deferred dispatch.** The `EventBus` supports deferred batching: `push_deferred(event)` enqueues into a pending buffer; `flush()` atomically merges the buffer into the main queue; `drain()` discards the pending buffer without dispatching. This enables patterns where multiple events are committed as a group or discarded atomically — useful for undo/redo stacks and transaction-like game-state updates. Lua: `lurek.event.pushDeferred(name, data)`, `lurek.event.flush()`.
 
-Because the event queue is shared via `Rc<RefCell<EventQueue>>` inside `SharedState`, it is only safe to access on the main thread. Background threads that need to communicate use `lurek.thread.Channel` instead.
+**Signal — handle-based pub-sub.** `Signal` is a separate pub-sub dispatcher providing handle-based subscriptions with exact-name and glob-wildcard matching. `subscribe(event_name, handler) → handle_id`, `remove(handle_id)`, `clear(event_name)`, `clear_all()`. Glob subscriptions (`"enemy.*"`) match any event whose name begins with the prefix. The Signal is Lua-accessible via `lurek.event.newSignal()`, providing scoped pub-sub within a module without routing through the global queue.
 
-The `EventBus` has been extended with deferred-dispatch support: `push_deferred(event)` enqueues an event into a pending buffer that is only merged into the main queue on an explicit `flush()` call, and `drain()` consumes all pending deferred events without dispatching them. Lua scripts access these through `lurek.event.pushDeferred(name, data)` and `lurek.event.flush()`, enabling batched event delivery patterns where multiple events should be committed as a group or discarded atomically.
+**Automation integration.** The `automation` module injects synthetic events through the same `push()` path as real hardware events, making playback transparent to downstream callbacks — a key property for deterministic test replay.
 
-**Scope boundary**: Core Runtime tier. No upstream engine dependencies. Lua bridge handled through `app` dispatch.
+**Threading note.** `EventQueue` is shared via `Rc<RefCell<EventQueue>>` inside `SharedState` and is only safe on the main thread. Background threads communicate via `lurek.thread.Channel` instead.
+
+**Lua surface.** `lurek.event.emit(name, data)` — emit a custom event. `lurek.event.on(name, callback) → handle` — subscribe. `lurek.event.off(handle)` — unsubscribe. `lurek.event.once(name, callback)` — subscribe for one delivery. `lurek.event.pushDeferred(name, data)`, `flush()`. `lurek.event.newSignal()` → `Signal` userdata: `subscribe(name, fn)`, `remove(handle)`, `clear(name)`, `clearAll()`, `fire(name, ...)`.
+
+**Scope boundary.** Core Runtime tier. No upstream engine dependencies. Lua bridge in `src/lua_api/event_api.rs`; OS event dispatch via `app` module.
 
 ## Files
 

@@ -11,15 +11,29 @@
 
 ## Summary
 
-The `render` module is Lurek2D's GPU rendering layer, backed by wgpu 22. Its fundamental design is a deferred command queue: nothing executes GPU work during Lua callbacks. Instead, scripts push `RenderCommand` enum variants into a `Vec<RenderCommand>` in `SharedState`. After all Lua callbacks return for the frame, `GpuRenderer::render_frame()` processes the queue, batches compatible draw calls, issues wgpu render passes, and presents the swapchain surface.
+## Summary
 
-`RenderCommand` is the central enum covering: `DrawImage` (textured quad with position, rotation, scale, color tint, blend mode, UV region), `DrawText` (string with font, size, color, alignment), `DrawShape` (compound vector shapes), `DrawMesh` (custom vertex geometry), `DrawCanvas` (render a Canvas off-screen target as an image), `PostProcess` (WGSL shader pass), `SetCamera` (push/pop camera transform), `SetBlend`, `PushScissor/PopScissor`, `DrawLayer` (Z-ordered batch), and `Clear`.
+The `render` module is Lurek2D's GPU rendering layer backed by wgpu 22. Its architecture is a deferred command queue: no GPU work executes during Lua callbacks. Scripts push `RenderCommand` enum variants into a `Vec<RenderCommand>` in `SharedState`. After all Lua callbacks complete for the frame, `GpuRenderer::render_frame()` processes the queue, batches compatible draw calls, issues wgpu render passes, and presents the swapchain surface. This design ensures the Lua VM never holds a GPU resource lock.
 
-`GpuRenderer` manages the wgpu `Device`, `Queue`, `Surface`, swapchain configuration, and all resource pools (`SlotMap<TextureKey, Texture>`, `SlotMap<FontKey, Font>`, `SlotMap<ShaderKey, Shader>`, `SlotMap<CanvasKey, Canvas>`, etc.). `Canvas` implements off-screen render-to-texture for post-processing and minimap rendering. `Font` provides bitmap glyph lookup from embedded PNG sprite sheets (6 built-in sizes) with grid-based indexing. `Shader` wraps user-supplied WGSL with a uniform variable table updated each frame. `PostFxPipeline` orchestrates ping-pong texture passes for multi-pass post-processing.
+**RenderCommand enum.** The central command enum covers every draw operation: `DrawImage` (textured quad with position, rotation, scale, colour tint, blend mode, UV region), `DrawText` (string with font, size, colour, alignment), `DrawShape` (compound vector shapes — `CompoundShape` builder), `DrawPath` (arbitrary `Vec<PathSegment>` vector path), `DrawMesh` (custom vertex geometry), `DrawCanvas` (render a Canvas off-screen target as an image), `PostProcess` (WGSL shader pass with uniform table), `DrawLayer` (Z-ordered batch), `SetCamera` (push/pop 2D camera transform), `SetBlend`, `PushScissor`/`PopScissor`, `Clear`, and `DrawParticleSystem` (instanced particle rendering). The enum also carries stencil, depth, and gradient draw operations.
 
-Additional `RenderCommand` variants have been added to the central enum, expanding the draw call surface for specialized rendering workloads. Blend mode options have been extended with new compositing modes accessible from Lua scripts via `lurek.render.*`, giving game developers finer control over how translucent sprites, UI layers, and post-processing effects composite together. The Lua namespace is the singular `lurek.render` (not `lurek.renders`); this matches the binding registration in `src/lua_api/graphic_api.rs`.
+**GpuRenderer.** `GpuRenderer` owns the wgpu `Device`, `Queue`, `Surface`, and swapchain configuration. Resource pools use `SlotMap<TextureKey, Texture>`, `SlotMap<FontKey, Font>`, `SlotMap<ShaderKey, Shader>`, `SlotMap<CanvasKey, Canvas>`, and `SlotMap<MeshKey, Mesh>`. Resource handles (keys) are passed to Lua as opaque UserData for the lifetime of the resource. `RenderStats` reports per-frame draw call counts, batch merge counts, and GPU command buffer sizes.
 
-**Scope boundary**: Platform Services tier. Depends on `math`, `runtime`, `image`, `wgpu`. Lua bridge in `src/lua_api/render_api.rs` (registered as `lurek.render.*`).
+**Canvas (render-to-texture).** `Canvas` is an off-screen render target backed by a wgpu texture and view. Scripts call `lurek.render.beginCanvas(id)`, issue draw commands, then `lurek.render.endCanvas()`. The canvas texture is then available as an image for further compositing. This underpins multi-pass post-processing, minimaps, and dynamic texture generation.
+
+**Post-processing.** `PostFxPipeline` orchestrates ping-pong texture passes. `PostFxPass` queues a WGSL fragment shader pass with uniform variable bindings. `ShaderPassDescriptor` attaches a lightweight per-image effect. Multi-pass pipelines are composed as ordered `PostFxPass` sequences, each reading from the previous pass's output texture. Built-in passes cover CRT scanlines, vignette, blur, and colour grading; custom WGSL is supported.
+
+**Fonts and text.** `Font` provides bitmap glyph lookup from embedded PNG sprite sheets in six built-in sizes (8, 10, 12, 14, 16, 24 px). `GlyphInfo` carries atlas UV, advance width, and offset. `TextAlign` enum: Left, Center, Right, Top, Bottom, Baseline. `DrawText` supports multi-line text with word-wrap and per-span tinting via `TextSpan`.
+
+**Shapes and paths.** `CompoundShape` is a builder for vector primitives (circle, rectangle, polygon, rounded rectangle, ellipse). `DrawMode` selects fill versus stroke. `PathSegment` variants (MoveTo, LineTo, QuadTo, CubicTo, Arc, Close) compose arbitrary vector paths. `GradientDirection` enables two-stop linear and radial gradients as fill colours.
+
+**Blend modes.** `BlendMode` covers Alpha, Additive, Multiply, Screen, Overlay, PremultipliedAlpha, and Subtract. `CompareMode` and `StencilAction` support stencil masking. `DepthMode` controls depth test comparison for layered 2.5D scenes.
+
+**Meshes.** `Mesh` stores `Vec<MeshVertex>` (position, UV, colour) with `MeshDrawMode` (Triangles, TriangleStrip, LineList, LineStrip). Meshes are GPU-uploaded once and drawn zero-copy thereafter.
+
+**Lua surface.** `lurek.render.loadTexture(path)` → tex_id, `loadFont(path, size)` → font_id, `loadShader(wgsl)` → shader_id. Draw commands via the `lurek.draw.*` namespace (thin wrappers over `RenderCommand`): `lurek.draw.image(tex, x, y, opts)`, `lurek.draw.text(str, x, y, opts)`, `lurek.draw.rect(x, y, w, h, opts)`, `lurek.draw.circle(cx, cy, r, opts)`, `lurek.draw.path(segments, opts)`, `lurek.draw.mesh(mesh_id, x, y, opts)`. Canvas: `lurek.render.newCanvas(w, h)`, `beginCanvas(id)`, `endCanvas()`. Post-process: `lurek.render.postProcess(shader_id, uniforms)`.
+
+**Scope boundary.** Platform Services tier. Depends on `math`, `runtime`, `image`, `wgpu 22`. Lua bridge in `src/lua_api/render_api.rs`.
 
 ## Files
 

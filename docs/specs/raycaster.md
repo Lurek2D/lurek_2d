@@ -11,19 +11,31 @@
 
 ## Summary
 
-The `raycaster` module implements a grid-based 2D raycaster engine for Wolfenstein-style first-person dungeon-crawler and retro FPS games. It provides all the building blocks for rendering a 3D-looking scene from a 2D grid using textured wall columns, billboard sprites, lighting, doors, floor/ceiling variation, and screen-space visibility.
+## Summary
 
-`Raycaster2D` is the core DDA (Digital Differential Analyzer) traversal type. Given a player position, direction, and a 2D grid of tile IDs, it casts a horizontal array of rays — one per screen column — and returns a `Vec<RayHit>`, where each `RayHit` carries the grid cell coordinates, the struck face (North/South/East/West), the hit offset along the face (for texture UV mapping), and the perpendicular distance from the camera plane.
+The `raycaster` module implements a grid-based 2D raycasting engine for Wolfenstein-style first-person dungeon-crawler and retro FPS games. It is a Feature Systems tier module providing DDA grid traversal, textured wall columns, billboard sprites, dynamic lighting, doors, floor/ceiling variation, and screen-space visibility. All rendering produces `RenderCommand` output consumed by the standard wgpu renderer.
 
-`DepthBuffer` records perpendicular depth per screen column for sprite occlusion testing. `project_column(dist, height)` converts a perpendicular distance into a projected wall column pixel height with a `distance_shade` falloff factor. `ColumnBatch` assembles the per-column draw data into instanced-quad render commands for a single GPU draw call.
+**DDA traversal.** `Raycaster2D` is the core Digital Differential Analyzer type. Given a player position, direction, camera plane width, and a 2D grid of tile IDs, it casts a horizontal array of rays — one per screen column — returning a `Vec<RayHit>`. Each `RayHit` carries the grid cell coordinates, struck face (North/South/East/West), hit offset along the face (for texture U coordinate), perpendicular distance from the camera plane, and the tile ID.
 
-`SpriteProjection` projects billboarded textured sprites into screen space with depth buffer clipping. `DoorManager` manages sliding door states (open, closed, opening, closing) for grid-blocking interactive geometry. `HeightMap` adds variable floor and ceiling heights for stepped or multi-level environments. `visibility.rs` computes a 2D visibility polygon via endpoint raycasting for field-of-view shadows. The `segment` submodule provides `Segment` and a general `cast_ray_2d` line-segment intersection test.
+**Projection and depth.** `project_column(dist, height)` converts perpendicular distance to a projected wall column pixel height. `distance_shade(dist, max_dist)` produces a linear fog factor. `DepthBuffer` records perpendicular depth per screen column for sprite occlusion testing. `ColumnBatch` assembles per-column draw data into instanced quad render commands for a single GPU draw call.
 
-The new `cast_floor_row` method on `Raycaster2D` (in `dda.rs`) adds support for floor and ceiling UV texture coordinate computation, enabling fully textured floor and ceiling surfaces in raycaster scenes rather than flat-colored fills. Lua scripts can use the extended `lurek.raycaster.*` API to configure per-cell floor and ceiling textures, completing the visual feature set needed for Wolfenstein- and Doom-style environments where floor and ceiling textures are as important as wall textures.
+**Floor and ceiling.** `cast_floor_row(y, player, plane)` computes floor and ceiling UV texture coordinates for a screen row, enabling fully textured floor and ceiling surfaces. Each cell can have independent floor and ceiling tile IDs. This completes the Wolfenstein-style visual feature set where floor and ceiling textures are as important as wall textures.
 
-**Scope boundary**: Feature Systems tier. Depends on `render`, `math`, `runtime`. Lua bridge in `src/lua_api/raycaster_api.rs`.
+**Sprites.** `SpriteProjection` projects billboarded sprites into screen space with depth buffer clipping and scale calculation. `SpriteManager` manages a batch of world-space sprites with depth-sorted rendering. Sprites render in front of walls at the correct depth using the perpendicular depth buffer from the wall pass.
 
-_Plugin candidacy: this module is a candidate for the plugin tier under proposed constraint A-05 — see [docs/architecture/plugins.md](../architecture/plugins.md)._
+**Doors.** `DoorManager` manages sliding door states (open, closed, opening, closing) for grid-blocking interactive geometry. `DoorDirection` describes how a door slides (horizontal, vertical). `DoorState` tracks animation progress. Doors occupy grid cells and are included in the DDA traversal as special half-blocked cells.
+
+**Height variation.** `HeightMap` adds variable floor and ceiling heights for stepped or multi-level environments. Per-cell height offsets are applied during column projection.
+
+**Lighting.** `lighting.rs` defines point lights and computes influence values for projected wall geometry. Point lights contribute a shading multiplier per wall column based on distance and angle. Used for torch effects, coloured ambient zones, and dynamic scene lighting without GPU deferred passes.
+
+**Visibility.** `visibility.rs` computes a 2D visibility polygon via endpoint raycasting for field-of-view shadows. The segment raycaster in `segment.rs` provides `cast_ray_2d` line-segment intersection for non-grid geometry.
+
+**Scene model.** `RaycasterScene` is the high-level scene representation: map, floor/ceiling tile atlas, sprite list, lights, and door states. `build_scene.rs` constructs a scene from these inputs. `render.rs` converts the scene to `RenderCommand` sequences for textured-quad rendering.
+
+**Lua surface.** `lurek.raycaster.new(map, screen_w, screen_h)` creates a raycaster. Methods: `setPlayer(x, y, angle, fov)`, `cast()` → hit array, `render(tex_atlas, commands)`, `setFloor(x, y, tile_id)`, `setCeiling(x, y, tile_id)`, `addSprite(id, x, y, tex)`, `addLight(x, y, radius, color)`, `addDoor(x, y, dir)`, `openDoor(id)`, `closeDoor(id)`, `update(dt)`, `floorRow(y)` → UV table, `visibility(segments)` → polygon.
+
+**Scope boundary.** Feature Systems tier. Depends on `render`, `math`, `runtime`. Plugin candidacy under proposed constraint A-05 (see `docs/architecture/plugins.md`). Lua bridge in `src/lua_api/raycaster_api.rs`.
 
 ## Files
 

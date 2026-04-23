@@ -11,53 +11,29 @@
 
 ## Summary
 
-The `globe` module provides an XCOM Geoscape-style 2D strategic globe view —
-a projection-correct rendering of a unit sphere divided into navigable named
-provinces. It is a Feature Systems tier module that works entirely through the
-engine's existing 2D `RenderCommand` variants (`DrawConvexFan`, `Polyline`,
-`Circle`, `Print`), adding no new wgpu pipeline or 3D draw calls (consistent
-with binding constraint A-03).
+The `globe` module provides an XCOM Geoscape-style 2D strategic globe view — a projection-correct rendering of a unit sphere divided into navigable named provinces. It is a Feature Systems tier module that works entirely through the engine's existing 2D `RenderCommand` variants (`DrawConvexFan`, `Polyline`, `Circle`, `Print`), adding no new wgpu pipeline or 3D draw calls (consistent with binding constraint A-03).
 
-**Province topology**: `ProvinceGraph` stores adjacency lists keyed by
-`ProvinceId` (u32). Each `Province` carries a vertex polygon in lat/lon
-degrees, centroid coordinates, neighbor list, free-form attribute `HashMap`,
-per-edge tag sets, optional texture name, and base RGBA color. Up to
-`MAX_PROVINCES` (8192) provinces are supported per globe instance.
-`ProvinceGraph` supports A\* pathfinding between provinces, reachability
-analysis with configurable edge-tag filtering, and nearest-province queries
-for click-to-select interactions.
+**Province topology.** `ProvinceGraph` stores adjacency lists keyed by `ProvinceId` (u32). Each `Province` carries a vertex polygon in lat/lon degrees, centroid coordinates, a neighbour list, a free-form attribute `HashMap`, per-edge tag sets, an optional texture name, and a base RGBA colour. Up to `MAX_PROVINCES` (8192) provinces are supported per globe instance. `ProvinceGraph` supports A\* pathfinding between provinces, reachability analysis with configurable edge-tag filtering, and nearest-province queries for click-to-select interactions.
 
-**Orbit camera**: `OrbitCamera` tracks lat/lon look-at position, zoom
-multiplier, and screen centre offset. `build_view_matrix` converts orbital
-parameters to a 2D projection matrix used by the draw pass. `project_province`
-and `project_point` map lat/lon to screen coordinates under the current
-projection. `LodTier` (Far / Mid / Near) derives from zoom and gates border
-detail, province labels, and marker rendering at three LOD levels.
+**Orbit camera.** `OrbitCamera` tracks lat/lon look-at position, zoom multiplier, and screen-centre offset. `build_view_matrix()` converts orbital parameters to the 2D projection matrix used by the draw pass. `project_province(id)` and `project_point(lat, lon)` map lat/lon coordinates to screen space under the current projection. `LodTier` (Far / Mid / Near) derives from zoom level and gates border detail, province label rendering, and marker rendering at three LOD levels so distant views stay uncluttered.
 
-**Day/night lighting**: The sun direction derives from `GlobeSpec.time_of_day`
-(0–24 h) and an `axial_tilt_deg` field. Each province receives a scalar
-intensity value with a soft terminator band. The `ambient` floor prevents
-night-side provinces from becoming invisible.
+**Day/night lighting.** The sun direction derives from `GlobeSpec.time_of_day` (0–24 h) and an `axial_tilt_deg` field. Each province receives a scalar intensity value with a soft terminator band computed in `lighting.rs`. The `ambient` floor prevents night-side provinces from going fully dark. The intensity value is applied as a brightness multiplier to the province's effective colour at draw time.
 
-**Fog of war**: `FogMask` is a compact 128 × u64 bit-vector giving O(1)
-reveal/hide per province. `FogStore` manages one `FogMask` per viewer entity,
-enabling multi-faction fog-of-war without per-frame heap allocation.
+**Fog of war.** `FogMask` is a compact 128 × u64 bit-vector giving O(1) reveal/hide per province. `FogStore` manages one `FogMask` per viewer entity, enabling multi-faction fog-of-war without per-frame heap allocation. `reveal(province_id)`, `hide(province_id)`, `is_revealed(province_id)`. Fog intensity modulates the province colour independently of the day/night lighting multiplier.
 
-**Markers, labels, and overlay layers**: `MarkerStore` and `LabelStore` manage
-point-of-interest and text overlays with lifecycle tracking. `LayerStore` holds
-thematic overlay layers (political, terrain, heat-map) and computes a blended
-`effective_color` for each province at draw time from base color, overlay
-contributions, and fog intensity.
+**Markers, labels, and overlay layers.** `MarkerStore` and `LabelStore` manage point-of-interest and text overlays with lifecycle tracking: `add(id, lat, lon, data)`, `remove(id)`, `update(id, data)`. `LayerStore` holds thematic overlay layers — political, terrain, heat-map, custom — and computes a blended `effective_color` for each province at draw time from base colour, overlay contributions, fog intensity, and day/night multiplier.
 
-**Arc rendering**: `Arc` records great-circle routes or range-ring annotations;
-the draw module converts arcs to polyline sequences in screen space.
+**Arc rendering.** `Arc` records great-circle routes or range-ring annotations between two lat/lon points. The draw module converts arcs to polyline sequences in screen space and emits `RenderCommand::Polyline` entries. Useful for trade routes, missile arcs, and influence boundaries.
 
-**Loaders**: `loader.rs` parses TOML province-map files (province polygon
-lists, adjacency tables, attribute maps) and stub PNG province rasters. Both
-populate native `Globe` structures through `GlobeRegistry`.
+**Province picking.** `picking.rs` provides screen-to-province hit-testing: `pick(screen_x, screen_y)` → `Option<ProvinceId>` using a convex-fan point-in-polygon test under the current projection. Used by click-to-select and hover-highlight interactions in Lua scripts.
 
-**Scope boundary**: Feature Systems tier. Depends on `render`, `math`,
-`runtime`, `image`. Lua bridge in `src/lua_api/globe_api.rs`.
+**Loaders.** `loader.rs` parses TOML province-map files (province polygon lists, adjacency tables, attribute maps) and stub PNG province rasters. Both populate native `Globe` structures through `GlobeRegistry`. Provinces can also be constructed programmatically via the Lua API for procedurally generated maps.
+
+**Registry.** `GlobeRegistry` manages multiple named globe instances (`create(name, spec)`, `get(name)`, `destroy(name)`). This allows games to maintain separate strategic maps (world map, regional view, star chart) as distinct instances.
+
+**Lua surface.** `lurek.globe.create(name, spec)`, `destroy(name)`, `get(name)` → `Globe` userdata. `Globe` methods: `addProvince(def)`, `removeProvince(id)`, `setAdjacent(a, b)`, `findPath(a, b)`, `reachable(start, max_steps)`, `pickProvince(x, y)`, `setCamera(lat, lon, zoom)`, `setTime(hours)`, `setFog(faction, province, revealed)`, `addMarker(id, lat, lon, data)`, `addLabel(id, lat, lon, text)`, `addLayer(name)`, `setLayerColor(layer, province, color)`, `draw()`.
+
+**Scope boundary.** Feature Systems tier. Depends on `render`, `math`, `runtime`, `image`. Lua bridge in `src/lua_api/globe_api.rs`.
 
 ## Files
 

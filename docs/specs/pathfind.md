@@ -11,17 +11,29 @@
 
 ## Summary
 
-The `pathfind` module is Lurek2D's comprehensive pathfinding library. It provides grid-based, hex-based, isometric, hierarchical, flow-field, and abstract graph pathfinding for games of any scale and topology. All computation is CPU-only and the module is fully headless for testing.
+## Summary
 
-`NavGrid` is a 2D walkability and cost grid with per-cell integer weights and four diagonal movement modes. `astar(grid, start, end)` returns a `Vec<(i32, i32)>` optimal path using A\* with an octile heuristic. `flow_field(grid, target)` precomputes a per-cell direction vector grid toward the target, used for crowd steering without per-agent pathfinding. `Dijkstra`-based `RangeMap` computes all cells reachable within a movement budget, used for turn-based movement previews.
+The `pathfind` module is Lurek2D's comprehensive pathfinding library — a Feature Systems tier module providing grid-based, hex-based, isometric, hierarchical, flow-field, and abstract graph pathfinding for games of any scale and topology. All computation is CPU-only and fully headless for testing.
 
-`HPA*` clusters the grid into abstract nodes with precomputed inter-cluster edge weights, enabling efficient planning over large maps by first finding an abstract path then refining locally. `HexGrid` provides axial-coordinate hex pathfinding with optional per-cell costs. `IsoGrid` provides isometric pathfinding backed by a flat cost array with walkability masking.
+**Navigation grids.** `NavGrid` is a 2D walkability and cost grid with per-cell integer weights and four configurable diagonal movement modes (none, always, no-corner-cut, only-corner-cut). A\* search is implemented in `astar.rs` via `astar(grid, start, end)` returning a `Vec<(i32, i32)>` optimal path using an octile heuristic. Jump Point Search (JPS) in `jps.rs` provides near-equivalent results on uniform-cost grids with drastically fewer node expansions. `PathGrid` in `pathgrid.rs` offers an alternative float-cost grid with caching and built-in path operations.
 
-For non-grid navigation: `graph_astar` and `graph_range` run A\* and Dijkstra range queries on abstract `Graph<N, f32>` instances, suitable for province-level and world-graph navigation. `InfluenceMap` is a multi-layer spatial float grid for strategic area analysis (threat maps, resource maps, contested zones). `PathThreadPool` provides background pathfinding via a worker pool for off-thread `NavGrid` queries, keeping pathfinding off the main Lua thread for large scenes.
+**Flow fields.** `flow_field(grid, target)` in `flow_field.rs` precomputes a per-cell direction vector grid toward a target position using Dijkstra propagation. `FlowField` results are shared across many agents: each agent queries only its current cell for a steering direction, eliminating per-agent path costs for crowds. `ai_flow_field.rs` provides a simplified BFS-style variant for lightweight AI movement support. The `ai` module re-exports these types through `lurek.ai.*` so the crowd steering API has a single Lua-facing surface.
 
-The new `bidir.rs` source file introduces `BidirSearch`, a bidirectional A* implementation that searches simultaneously from start and goal, halving the effective search space on large navigation grids. Lua path query methods have been extended with new filtering and cost-annotation helpers accessible through `lurek.pathfind.*`, making multi-constraint pathfinding — avoid certain tile types, prefer low-cost corridors — practical from game scripts without modifying grid weights globally.
+**Range and influence maps.** `RangeMap` in `range_map.rs` computes all cells reachable within a movement budget (Dijkstra with cost accumulation), powering turn-based movement previews and skill ranges. `InfluenceMap` in `influence_map.rs` is a multi-layer spatial float grid for strategic area analysis: threat maps, resource maps, contested zone pressure, and unit visibility heatmaps. Multiple named layers share the same grid dimensions and are queried independently.
 
-**Scope boundary**: Feature Systems tier. Depends on `math`, `graph`, `runtime`. Lua bridge in `src/lua_api/pathfind_api.rs`. The `ai` module re-exports `FlowField`, `Cell`, and `PathGrid` from here so `lurek.ai.*` can offer a unified scripting surface; treat that re-export as a stable contract for AI-side flow-field consumers.
+**Hierarchical pathfinding.** `hpa.rs` clusters the navigation grid into rectangular `Chunk` regions with pre-computed `AbstractNode` entrance points and `AbstractEdge` inter-cluster weights. `AbstractGraph` enables HPA* planning: first an abstract path is found in the cluster graph (fast), then each abstract segment is refined locally with standard A\* (precise). This scales to maps of 1000x1000 cells without per-frame full-grid searches.
+
+**Non-grid navigation.** `graph_path.rs` runs A\* and Dijkstra range queries on abstract `Graph<N, f32>` instances for province-level and world-map navigation. `ProvincePath` and `ProvinceCostFn` provide a typed wrapper. Hex pathfinding is in `hex_grid.rs` (axial coordinates, configurable cost, LOS, FOV, and range-of-movement). Isometric pathfinding is in `iso_grid.rs` (diamond topology, 4-directional, walkability mask).
+
+**Bidirectional search.** `bidir.rs` introduces `BidirSearch`, a bidirectional A\* that searches simultaneously from start and goal, halving the effective search space on large navigation grids. Particularly effective when start and goal are far apart and the grid is dense.
+
+**Unit pathfinder.** `UnitPathfinder` in `unit_pathfinder.rs` wraps pathfinding for unit-sized actors with caching, partial path reuse, and nearest-walkable recovery when the exact goal is unwalkable. Designed for game-code use where the caller wants a single `findPath(start, goal)` call without managing grid details.
+
+**Background pathfinding.** `PathThreadPool` in `async_pool.rs` dispatches `NavGrid` path queries to a worker pool, returning futures polled via `poll()`. This keeps heavy pathfinding off the main Lua thread for large scenes.
+
+**Lua surface.** `lurek.pathfind.newGrid(w, h)` creates a `NavGrid`. Methods: `setWalkable(x, y, bool)`, `setCost(x, y, cost)`, `findPath(sx, sy, gx, gy, opts)` → path array, `flowField(tx, ty)` → FlowField userdata, `rangeMap(sx, sy, budget)` → RangeMap userdata. Path filtering via `opts.avoid`, `opts.prefer`. Influence: `lurek.pathfind.newInfluenceMap(layers, w, h)`. Hex: `lurek.pathfind.newHexGrid(w, h, layout)`. Graph: `lurek.pathfind.newGraph()` with `addNode`, `addEdge`, `findPath`.
+
+**Scope boundary.** Feature Systems tier. Depends on `math`, `graph`, `runtime`. The `ai` module re-exports `FlowField`, `Cell`, and `PathGrid` from here. Lua bridge in `src/lua_api/pathfind_api.rs`.
 
 ## Files
 

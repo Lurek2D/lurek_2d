@@ -11,17 +11,25 @@
 
 ## Summary
 
-The `animation` module provides Lurek2D's sprite animation system — the dedicated subsystem for describing how a textured sprite changes its source rectangle over time. It is a Foundations tier module that imports only from `crate::math`, making it usable in tests and non-rendering contexts without importing any platform services.
+The `animation` module is Lurek2D's sprite animation system — a Foundations tier subsystem dedicated to describing how a textured sprite changes its source rectangle over time. It imports only from `crate::math`, so it can run in unit tests and non-rendering contexts without any platform services or GPU state.
 
-The core type is `Animation`, a controller that owns a flat pool of `AnimFrame` entries and any number of named `AnimClip` objects. A frame stores a source rectangle (the UV quad into the sprite sheet) and an optional per-frame duration override. A clip stores an ordered list of frame indices, a default frames-per-second rate, and a looping flag. Game code calls `add_frame` (or `add_frames_from_grid` for regular grids), registers clips with `add_clip`, then calls `play(clip_name)` each time a sprite state changes. On each game tick `update(dt)` advances the frame timer, emits `AnimEvent` notifications through a pending queue (for events like `ClipEnd` or `FrameReached`), and optionally performs crossfade transitions between clips.
+**Core playback.** `Animation` is the main controller. It owns a flat pool of `AnimFrame` entries (each a source rectangle into a sprite sheet with an optional per-frame duration override) and any number of named `AnimClip` objects (an ordered list of frame indices, a default FPS rate, and a looping flag). Typical usage: `add_frame` or `add_frames_from_grid` for atlas layouts, then `add_clip` to register named states, then `play(clip_name)` when sprite state changes. `update(dt)` advances the frame timer, emits `AnimEvent` notifications via a pending queue (`ClipEnd`, `FrameReached`, `ClipLoop`), and applies crossfade transitions between clips.
 
-Beyond the basic controller, the module ships: an `AnimStateMachine` for parameter-driven transitions between clips — named `AnimParamValue` parameters and `ConditionOp` comparisons drive `AnimTransition` edges; an Aseprite JSON parser (`aseprite.rs`) that loads Aseprite-exported frames and tags into the engine's native types; and `AnimRenderParams`, a lightweight struct packaging all information the render pipeline needs to draw one animated sprite frame.
+**State machine.** `AnimStateMachine` provides parameter-driven transitions between clips. `AnimParamValue` holds boolean, integer, or float values. `AnimTransition` edges carry a `TransitionCondition` (parameter name, `ConditionOp`, threshold) — the machine evaluates all outgoing transitions from the current state each update tick and switches automatically when a condition fires. `AnimStateConfig` stores per-state clip name, transition priority, and optional blend-in duration.
 
-The animation module has no knowledge of texture handles, entity IDs, or scene transforms — it works entirely with source rectangles and float timers.
+**Blend layers.** `BlendLayerSet` composites multiple animation clips on a single sprite with per-layer blend weights and optional `BlendMask` bone-subset filtering. Layers are ordered and evaluated additively, enabling upper/lower body split animations or damage-overlay blending without a separate entity.
 
-Three new source files extend the module's capabilities. `blend.rs` introduces `BlendMask`, `BlendLayer`, and `BlendLayerSet` for compositing multiple animation clips on a single sprite with per-layer blend weights and optional bone-subset masks. `curve.rs` introduces `AnimCurve` and `EasingKind` for keyframe-based procedural animation curves with per-segment interpolation modes. `sync_group.rs` introduces `AnimSyncGroup` for coordinating playback timing across multiple animation instances, ensuring that separate sprites advance in lock-step. Lua callers access these through `lurek.animation.newCurve()`, `lurek.animation.newSyncGroup()`, and `lurek.animation.newBlendLayerSet()`, each returning a fully scriptable userdata with its own method set.
+**Animation curves.** `AnimCurve` is a keyframe-based procedural animation curve. Keyframes store (time, value) pairs; adjacent pairs define segments with a configurable `EasingKind` interpolation mode (Linear, QuadIn, QuadOut, QuadInOut, CubicIn, CubicOut, CubicInOut, Sine, Bounce, Custom). Curves drive rotation, scale, alpha, or any float property independently of sprite-sheet frames.
 
-**Scope boundary**: Foundations tier. Depends only on `math`. Lua bridge in `src/lua_api/animation_api.rs`.
+**Sync groups.** `AnimSyncGroup` coordinates playback timing across multiple `Animation` instances so separate sprites (e.g., a character's body and shadow) advance in lock-step. `set_phase(t)` and `advance(dt)` synchronise all registered handles.
+
+**Aseprite importer.** `aseprite.rs` parses Aseprite JSON export strings (`load_aseprite_json`) into `AsepriteParsed` — a list of `AsepriteFrameData` source rectangles and `AsepriteTagData` named clip ranges — and then populates the engine's native `Animation` type.
+
+**Render integration.** `AnimRenderParams` packages all data the render pipeline needs to draw one frame: texture key, source rect, destination transform, and flip flags. The module itself never issues draw calls; it only produces parameters consumed by `render`.
+
+**Lua surface.** `lurek.animation.new()` creates an `Animation`. `lurek.animation.newStateMachine()`, `lurek.animation.newCurve()`, `lurek.animation.newSyncGroup()`, and `lurek.animation.newBlendLayerSet()` expose the additional subsystems. `lurek.animation.loadAseprite(json_string)` parses Aseprite exports. All returned userdatas are fully scriptable with their complete method sets.
+
+**Scope boundary.** Foundations tier. Depends only on `math`. Lua bridge in `src/lua_api/animation_api.rs`.
 
 ## Files
 

@@ -11,15 +11,31 @@
 
 ## Summary
 
-The `image` module provides Lurek2D's CPU-side pixel buffer type and image manipulation operations. `ImageData` is a heap-allocated RGBA8 pixel buffer (`width * height * 4` bytes) with construction from file, raw bytes, or zeroed allocation; per-pixel get/set with bounds checking; drawing primitives (filled rect, circle, Bresenham line, 3×5 bitmap font label); and operations including `resize` (nearest-neighbour and bilinear), `blit(src, dst_x, dst_y)` (Porter-Duff *over*), `fill`, `map_pixel(fn)` / `map_pixel_par(fn)` (Rayon-accelerated for images > 65K pixels), `get_region` (crop), `diff(other)` (for golden tests), `convolve(kernel, ksize)`, and `encode_png()`. PNG/JPEG decoding is handled via the `image` external crate.
+The `image` module is Lurek2D's CPU-side pixel buffer and image manipulation library — a Platform Services tier module used by the asset pipeline, golden tests, save serialisation, and the debug visualisation system. It has no dependency on wgpu or the GPU render pipeline, making it fully usable in headless test contexts.
 
-`CompressedImageData` holds DDS/DXT compressed GPU texture data (DXT1/DXT3/DXT5/BC7/ETC) loaded without CPU decompression, ready to upload directly to the GPU. `PaletteLUT` is a color palette lookup table mapping source colours to target colours for shader-based or CPU-side palette swapping effects. `LayeredImage` + `ImageLayer` implement a Porter-Duff compositing stack where each layer contributes opacity, visibility, and a human-readable name to a flattened RGBA output image.
+**ImageData — the core buffer.** `ImageData` is a heap-allocated RGBA8 pixel buffer (`width × height × 4` bytes) with construction from file (PNG/JPEG via the `image` crate), from raw bytes, or zeroed allocation. Per-pixel API: `get_pixel(x, y)` → `[u8;4]`, `set_pixel(x, y, rgba)`. Drawing primitives: filled rect, filled circle, Bresenham line, 3×5 bitmap font label. Bulk transforms: `resize(w, h, filter)` (nearest-neighbour and bilinear), `blit(src, dst_x, dst_y)` (Porter-Duff over), `fill(color)`, `get_region(x, y, w, h)` (crop), `diff(other)` (pixel-by-pixel delta image for golden tests). High-throughput transforms: `map_pixel(fn)` and `map_pixel_par(fn)` (Rayon-accelerated for images > 65K pixels). Format export: `encode_png()` → bytes.
 
-The `texture` submodule provides `Texture` (a lightweight GPU handle with dimensions; images are premultiplied on load) and the `texture_atlas` submodule provides `TextureAtlas` (a shelf-packing bin-packer for named sprite-sheet regions). The `serial` submodule handles the binary `.lim` (LIMG) format for efficient zlib-compressed ImageData/LayeredImage serialization. The `visualization` submodule provides 40+ standalone helpers for producing debug imagery (animation, camera, noise, geometry, HUD, graphs) without import cycles. The `render` submodule generates GPU `RenderCommand` entries from `ImageData` for direct draw calls.
+**Image effects.** `effects.rs` extends `ImageData` with CPU-side image processing: brightness/contrast adjustment, hue-rotate, saturate, desaturate, sepia tone, invert, blur (box and Gaussian), sharpen, emboss, edge detection, pixelate, and `convolve(kernel, ksize)` for custom kernels. These effects run entirely on the CPU and do not require a GPU shader.
 
-The `province_grid.rs` source file introduces `ProvinceGrid`, a flat spatial index built from a province-colour PNG that provides O(1) pixel-to-province coordinate lookup and single-pass O(w×h) adjacency detection with border-pixel counts. This type is designed for strategy games that use colour-coded province maps.
+**Layered compositing.** `LayeredImage` and `ImageLayer` implement a Porter-Duff compositing stack. Each `ImageLayer` carries a name, visibility flag, opacity scalar, and its own `ImageData` backing store. `LayeredImage::flatten()` composites all visible layers in order into a single `ImageData`. Used for multi-layer save files (e.g., the `painting.limg` save format) and for the `effect` module's CPU-side compositing path.
 
-**Scope boundary**: Platform Services tier. Depends on the `image` external crate for file decoding, `ddsfile` for DDS parsing, `flate2` for LIMG compression, and `rayon` for parallel pixel transforms. Lua bridge in `src/lua_api/image_api.rs`.
+**Province grid.** `ProvinceGrid` in `province_grid.rs` is a flat `Vec<u32>` spatial index built from a province-colour PNG in a single O(w×h) scan. Each unique non-black RGB is assigned a sequential province ID (1..n). Provides O(1) coordinate-to-province lookup (`get(x, y) → province_id`) and single-pass adjacency detection with border-pixel counts (`adjacencies()` → `Vec<AdjacencyPair>`). Used by the `globe` module and strategy games that use colour-coded province maps.
+
+**Compressed image data.** `CompressedImageData` holds DDS/DXT1/DXT3/DXT5/BC7/ETC compressed GPU texture data loaded without CPU decompression, ready to upload directly to wgpu. `CompressedFormat` identifies the compression format. This path is used for large atlas textures where the file size and VRAM footprint matter.
+
+**Palette LUT.** `PaletteLUT` is a colour palette lookup table mapping source RGBA values to target RGBA values for palette-swap effects. Used by the `effect` module's CPU palette-swap pass and the shader-side palette-swap render feature.
+
+**Texture atlas.** `TextureAtlas` in `texture_atlas.rs` uses a shelf-packing bin-packing algorithm to arrange named rectangular regions into a fixed atlas layout. `pack(entries)` → atlas layout with per-region UV coordinates. Used by the sprite and render modules for batching.
+
+**Serial format.** `serial.rs` implements the binary `.lim` (LIMG) format: zlib-compressed `ImageData` or `LayeredImage` with a fixed header. `encode_lim(image)` → bytes; `decode_lim(bytes)` → `ImageData` or `LayeredImage`. Used by the `save` module.
+
+**Visualisation helpers.** The `visualization/` submodule provides over 40 standalone helper functions that produce `ImageData` debug bitmaps without import cycles: animation frame sequence previews, audio waveform bitmaps, camera frustum diagrams, easing curves, Bezier curves, noise maps, geometry intersection diagrams, HUD bar renderings, and graph visualisations. These are used exclusively by development and documentation tooling.
+
+**Render integration.** `render.rs` converts `ImageData` values into `RenderCommand::DrawImage` entries for direct draw calls without creating a persistent GPU texture. Used for debug overlays that change every frame.
+
+**Lua surface.** `lurek.image.new(w, h)`, `lurek.image.load(path)`. `ImageData` userdata: `get(x, y)`, `set(x, y, r, g, b, a)`, `resize(w, h)`, `blit(src, dx, dy)`, `fill(r, g, b, a)`, `region(x, y, w, h)`, `encodePng()`, `diff(other)`. Effects: `brightness(v)`, `blur(r)`, `convolve(kernel)`, etc. `lurek.image.newLayers()` → `LayeredImage`. `lurek.image.loadCompressed(path)` → `CompressedImageData`. `lurek.image.newAtlas()` → `TextureAtlas`.
+
+**Scope boundary.** Platform Services tier. Depends on `image` external crate, `ddsfile`, `flate2`, `rayon`. Lua bridge in `src/lua_api/image_api.rs`.
 
 ## Files
 

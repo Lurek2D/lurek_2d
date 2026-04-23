@@ -11,17 +11,35 @@
 
 ## Summary
 
-The `camera` module provides Lurek2D's camera and viewport types for 2D rendering. It is a Foundations tier module that imports only from `crate::math`, so it can be used in tests and non-rendering contexts without any platform dependencies.
+The `camera` module provides Lurek2D's camera, viewport, and cinematic effects system — a Platform Services tier module that imports only from `crate::math`, making it usable in tests and non-rendering contexts without platform dependencies.
 
-Two camera types are provided. `Camera` is the flat API variant: it holds a 2D position, zoom level, and rotation angle, and exposes `view_matrix()` to compute the `Mat3` transform applied to all world-space draw commands. `Camera2D` extends `Camera` with smooth-follow behaviour (spring-based lerp toward a target entity position), screen-shake (time-decaying offset with configurable magnitude and frequency), and axis-locked follow bounds (a dead zone rectangle the target must leave before the camera begins moving).
+**Camera2D — the primary type.** `Camera2D` holds position, zoom level, rotation angle, and a full set of gameplay follow behaviours:
+- *Smooth follow*: spring-based exponential lerp toward a target entity position with configurable `follow_speed`.
+- *Dead zone*: a rectangular region around the camera center where the target can move without triggering camera movement.
+- *Look-ahead*: optional velocity-based forward prediction so the camera shows more of where the player is heading.
+- *Bounds clamping*: the camera can be constrained to a world-space AABB so it never shows outside the level.
+- *Screen shake*: time-decaying additive offset with configurable magnitude and frequency, applied after follow computation.
 
-`Viewport` maps the fixed game resolution onto the physical window size through a configurable `ScaleMode`: `Expand` (the game canvas grows with the window), `FixedWidth` (height grows, width is fixed), `PixelPerfect` (integer scaling only), and `Stretch` (the game canvas is always stretched to fill the window with no aspect-ratio preservation). `ViewportScale` extends `Viewport` with automatic scaled-dimension tracking for integration with the render transform stack, emitting content width/height alongside the computed scale factor.
+`Camera` is the minimal flat variant — position, zoom, rotation — and `view_matrix()` produces the `Mat3` applied to all world-space draw commands.
 
-`SharedState` holds a single `Camera` field; the `lua_api/camera_api.rs` bridge exposes the full `Camera2D` method set to Lua scripts as `lurek.camera.*`.
+**Viewport.** `Viewport` maps the fixed logical game resolution onto the physical window through four `ScaleMode` variants: `Expand` (canvas grows with window), `FixedWidth` (height grows, width fixed), `PixelPerfect` (integer-only scaling), `Stretch` (fill window ignoring aspect ratio). `ViewportScale` extends `Viewport` with scaled content-dimension tracking for the render transform stack.
 
-Two new source files add cinematic camera capabilities. `effects.rs` provides `ZoomPulse` (a brief zoom-in that decays via a sine envelope), `CameraSway` (sinusoidal x/y offset oscillation for underwater or rocking effects), and `CameraBreathing` (subtle periodic zoom for a living-camera feel). `path.rs` provides `CameraPath` for smooth world-space waypoint-following over a fixed duration and `ZoomTween` for linear zoom transitions. `Camera2D` gains the computed properties `effective_zoom` and `effect_offset`. The Lua surface adds `followPath/stopPath/updatePath/pathProgress` for path-following control, `zoomTo/stopZoom/updateZoom` for zoom animation, `setParallaxFactor/getParallaxFactor/clearParallaxFactors` for per-camera parallax scaling, and `zoomPulse`, `stopSway/isSway`, and `startBreathing/stopBreathing/isBreathing` for the cinematic effect bindings.
+**Cinematic effects.** `effects.rs` adds three time-based overlays applied on top of follow and shake:
+- `ZoomPulse`: brief zoom-in that decays back to base zoom via a sine envelope — useful for hit impacts.
+- `CameraSway`: sinusoidal x/y offset oscillation for underwater or rocking effects.
+- `CameraBreathing`: subtle periodic zoom oscillation for a living-camera feel during cutscenes.
 
-**Scope boundary**: Foundations tier. Depends only on `math`. Lua bridge in `src/lua_api/camera_api.rs`.
+**Camera path.** `path.rs` provides `CameraPath` for smooth world-space waypoint following over a fixed duration (linear interpolation between consecutive waypoints), and `ZoomTween` for linear zoom-level transitions. Both are non-blocking — `update(dt)` drives them and returns `true` when complete.
+
+**Parallax scaling.** Per-camera parallax factors map layer scroll speeds to the camera's view-matrix. `set_parallax_factor(layer_id, factor)` / `get_parallax_factor(layer_id)` / `clear_parallax_factors()` let each camera drive a different parallax coefficient, enabling split-screen scenes with independent depth illusions.
+
+**Render integration.** `render.rs` converts camera state into `RenderCommand` sequences: push transform → translate → rotate → scale → pop transform. The bridge layer invokes this before the game's draw callback so Lua scripts see the camera applied transparently.
+
+**Coordinate helpers.** `world_to_screen(x, y)` and `screen_to_world(x, y)` convert between coordinate spaces using the current view-matrix and viewport scale, exposed to Lua for picking and UI-anchoring.
+
+**Lua surface.** `lurek.camera.getPosition()`, `setPosition`, `getZoom`, `setZoom`, `getRotation`, `setRotation`, `setFollow(entity)`, `setDeadZone(w, h)`, `setBounds(xmin, ymin, xmax, ymax)`, `shake(magnitude, duration, frequency)`, `worldToScreen`, `screenToWorld`. Extended: `followPath(waypoints, duration)`, `stopPath()`, `pathProgress()`, `zoomTo(target, duration)`, `zoomPulse(magnitude, duration)`, `startSway(amplitude, frequency)`, `stopSway()`, `startBreathing(amplitude, frequency)`, `stopBreathing()`, `setParallaxFactor(layer, factor)`.
+
+**Scope boundary.** Platform Services tier. Depends only on `math`. Lua bridge in `src/lua_api/camera_api.rs`.
 
 ## Files
 

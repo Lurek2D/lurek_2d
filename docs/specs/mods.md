@@ -11,17 +11,23 @@
 
 ## Summary
 
-The `mods` module provides Lurek2D's mod-loading framework — the system by which user-created content packages can extend or replace a base game without modifying its source. It is a Feature Systems tier module that integrates with `filesystem` for virtual filesystem mounting and with `runtime` for configuration.
+## Summary
 
-The core type is `ModManager`, which handles the full mod lifecycle: scanning configured mod search paths for `mod.toml` manifest files; parsing manifests into `ModInfo` records (unique string ID, display name, version semver, author, description, dependency list); resolving load order via topological sort over the dependency graph; detecting circular dependencies and missing dependencies; enabling/disabling individual mods; mounting enabled mod folders into `GameFS` as overlay `MountLayer` entries; and polling mtime for hot-reload detection.
+The `mods` module provides Lurek2D's mod-loading framework — the system by which user-created content packages extend or replace a base game without modifying its source. It is a Feature Systems tier module that integrates with `filesystem` for virtual filesystem mounting and with `runtime` for configuration.
 
-Each mod folder must contain a `mod.toml` with at minimum an `id`, `name`, and `version` field. Assets in a mod folder override base game assets at the same virtual path; new assets are simply added to the virtual filesystem. Dependency ordering ensures that if mod B depends on mod A, mod A's assets are mounted first so mod B's overrides take precedence.
+**ModManager lifecycle.** `ModManager` handles the complete mod lifecycle: scanning configured mod search paths for `mod.toml` manifest files; parsing manifests into `ModInfo` records (unique string ID, display name, semantic version, author, description, dependency list); resolving load order via topological sort over the dependency graph; detecting circular dependencies and missing dependencies as distinct error cases; enabling and disabling individual mods at runtime; mounting enabled mod folders into `GameFS` as overlay `MountLayer` entries so game code sees a unified virtual filesystem; and polling mtime for hot-reload detection.
 
-Hot-reload queuing works by recording the mtime of each mounted mod folder at load time and comparing on each `tick()` call. When a change is detected, the mod is queued for reload notification to the Lua callback registered via `lurek.mods.onReload(fn)`.
+**Mod manifest format.** Each mod folder must contain a `mod.toml` with at minimum `id`, `name`, and `version` fields. Optional fields include `author`, `description`, and `dependencies` (a list of mod ID strings). Assets in a mod folder override base game assets at the same virtual path. New assets not in the base game are simply added to the virtual filesystem. Dependency ordering ensures that if mod B depends on mod A, mod A's assets are mounted first so mod B's overrides take precedence — the last-mounted asset wins.
 
-The new `registry.rs` file introduces `ModRegistry`, a typed name-to-value store for mod-contributed content such as custom item definitions, ability data, or configuration overrides. Lua scripts access it through the `lurek.mods.registry.*` namespace, allowing mods to register their content contributions into a shared catalog that the base game and other mods can discover by name without tight coupling between mod scripts. *(Note: `registry.rs` is a planned addition; as of 2026-04-18 the registry API is exposed only through hook/config methods on the Mod userdata in `mods_api.rs`.)*
+**Load order.** By default `ModManager` resolves load order via `load_order()` which performs a topological sort respecting declared dependencies, then sorts within each tier by a numeric `priority` field from the manifest. `set_load_order(ids)` overrides this with an explicit sequence; `clear_load_order()` reverts to automatic sorting. `validate_dependencies()` returns a list of mod IDs whose declared dependencies are not registered, and `has_circular_dependencies()` detects cycles.
 
-**Scope boundary**: Feature Systems tier. Depends on `filesystem`, `runtime`. Lua bridge in `src/lua_api/mods_api.rs`.
+**Hot-reload.** `mark_for_reload(id)` places a mod in the pending reload queue. On the next `tick()` call the manager fans out reload events to Lua callbacks registered via `lurek.mods.onReload(fn)`. The Lua callback receives the mod ID and the reload reason. Game code can then re-execute the mod's Lua init scripts or notify subsystems that depend on mod-provided data.
+
+**ModRegistry.** `registry.rs` introduces `ModRegistry`, a typed name-to-value store for mod-contributed content: custom item definitions, ability descriptors, configuration overrides, or any serialisable data table. Lua scripts access it through the `lurek.mods.registry.*` namespace. A mod calls `lurek.mods.registry.register(name, data)` at init time; other mods and the base game discover contributions via `lurek.mods.registry.get(name)` or `lurek.mods.registry.list(prefix)`. This allows loose coupling between mods — no mod needs to import from another, only from the shared registry.
+
+**Lua surface.** `lurek.mods.scan(path)`, `lurek.mods.list()` → array of mod info tables, `lurek.mods.enable(id)`, `lurek.mods.disable(id)`, `lurek.mods.isEnabled(id)`, `lurek.mods.loadOrder()`, `lurek.mods.validateDeps()`, `lurek.mods.onReload(fn)`. Registry: `lurek.mods.registry.register(key, data)`, `lurek.mods.registry.get(key)`, `lurek.mods.registry.list(prefix)`, `lurek.mods.registry.unregister(key)`.
+
+**Scope boundary.** Feature Systems tier. Depends on `filesystem` (MountLayer, GameFS), `runtime` (config, SharedState). Lua bridge in `src/lua_api/mods_api.rs`.
 
 ## Files
 

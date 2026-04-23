@@ -11,17 +11,29 @@
 
 ## Summary
 
-The `audio` module provides Lurek2D's sound loading, playback, and volume management. It wraps the `rodio` audio library behind a `Mixer` type that manages all loaded sounds, their playback state, volume, pitch, pan, looping, and fade effects. Game code accesses everything through the `lurek.audio.*` Lua bindings, which delegate to `Mixer` and `Bus` instances stored in `SharedState`.
+The `audio` module is Lurek2D's full-featured sound engine — a Platform Services tier subsystem built on `rodio` 0.17. It handles everything from sound loading and real-time playback to bus mixing, DSP effects chains, spatial 2D audio, MIDI synthesis, and offline processing. All Lua access goes through `lurek.audio.*` which delegates to `Mixer` and `Bus` instances stored in `SharedState`.
 
-The `Mixer` is the central controller: it owns a `SlotMap<SoundKey, AudioEntry>` for O(1) handle lookup and safe invalidation on release, and uses a rodio `OutputStream` + `OutputStreamHandle` for PCM output. Sounds may be loaded as `Static` (fully decoded into memory, suitable for short SFX) or `Stream` (incrementally decoded from disk, suitable for music). Pitch, volume, and pan are applied per-source; fade effects interpolate volume over time.
+**Mixer.** `Mixer` is the central audio controller. It owns a `SlotMap<SoundKey, AudioEntry>` for O(1) handle lookup and safe invalidation on drop. A `rodio::OutputStream` + `OutputStreamHandle` drives PCM to the default audio device (enumerable and selectable via `facade.rs`). Sounds are loaded as two modes: `Static` (fully decoded into a `SoundData` in-memory buffer — for short SFX) or `Stream` (incrementally decoded from disk — for music). Per-source controls: volume, pitch (speed multiplier), stereo pan, looping flag, and independent play/pause/stop/seek operations. Fade-in and fade-out are built-in via linear interpolation over user-specified durations.
 
-`Bus` is a named group for applying shared volume and pause state to all sources assigned to it, e.g. a `"music"` bus or `"sfx"` bus. Buses are pure data containers; the mixer multiplies source volume/pitch by bus values on every `set_volume` or `update` call.
+**Bus system.** `Bus` is a named group for shared volume and pause control. Sources are assigned to a bus by name at load or dynamically at runtime; the mixer multiplies each source's effective volume/pitch by its bus multiplier on every update. Typical buses: `"music"`, `"sfx"`, `"voice"`. Buses extend into **duck-target** support: `set_duck_target(priority_bus, factor, attack, release)` causes a bus to automatically lower its volume when a designated priority bus is active — dialogue-over-music ducking with no manual scripting. `Bus:getPeak()` returns a real-time RMS level for UI VU meters.
 
-Additional features: `SpatialState` for 2D positional audio with distance falloff; `Decoder` for chunked streaming PCM; `SoundData` for decoded in-memory PCM with per-sample read/write access; and `MidiPlayer`, a software MIDI synthesizer with sine-additive PCM rendering that requires no external MIDI device.
+**DSP effects.** `dsp.rs` provides a dynamic per-source `SharedEffectGraph` that chains `ActiveEffect` slots. `EffectType` variants: LowPass, HighPass, Reverb, Delay, Chorus, Distortion, Compressor, Equalizer, Pitch, Gate, Tremolo, Vibrato. Each effect slot stores `EffectParams` with atomic float parameters (`AtomicParam`) for thread-safe real-time automation. `DynamicEffectSource` wraps a rodio source and applies the chain. Buses also carry their own effect chains via `Bus::add_effect` / `Bus::remove_effect`.
 
-The `Bus` type has been extended with duck-target support: `set_duck_target` and `clear_duck_target` allow a bus to automatically lower its volume when a designated priority bus is active, enabling dialogue-over-music ducking without manual scripting. The `MidiPlayer` now exposes `get/set_output_sample_rate` and `get/set_output_channels` for fine-grained PCM output control alongside Lua-accessible `play`, `pause`, and `stop` lifecycle methods. The `Mixer` gains `set/get_peak` and `bus_peak` for real-time VU meter data. Lua scripts access these additions via `lurek.audio.setMeter/getMeter`, `Bus:getName/getVolume/clearDuck/getPeak`, and `Decoder:getBitDepth`.
+**Spatial audio.** `SpatialState` stores a source's world-space position, velocity, and a max-distance for falloff calculation. The mixer translates spatial positions to stereo pan and volume attenuation on each `update(dt)` call. Listener position and orientation are set via `lurek.audio.setListenerPosition` / `setListenerVelocity`.
 
-**Scope boundary**: Platform Services tier. Depends on `runtime` (SoundKey, SharedState). Lua bridge in `src/lua_api/audio_api.rs`.
+**Sound data and decoding.** `SoundData` holds fully decoded f32 PCM with per-sample read/write access (useful for procedural audio). `Decoder` provides chunked streaming reads from audio files (WAV, OGG, MP3, FLAC). `QueueableSource` is a manually-fed streaming sink that accepts raw f32 PCM buffers pushed in real time — used for procedurally generated audio or network audio streams.
+
+**MIDI synthesis.** `MidiPlayer` is a software MIDI synthesizer: `load(path)` parses `.mid` files via `midly`, then `render()` produces f32 PCM via sine-additive per-channel synthesis. `get/set_output_sample_rate` and `get/set_output_channels` control output quality. Exposed to Lua as `lurek.audio.loadMidi(path)` returning a `MidiPlayer` userdata with `play`, `pause`, `stop`.
+
+**Sound pool.** `SoundPool` provides round-robin polyphonic playback of a single audio asset — play calls cycle through a fixed number of voices so rapid fire SFX (gunshots, footsteps) don't cut each other off. Configured by `max_voices` parameter.
+
+**Offline processing.** `offline.rs` applies `OfflineEffect` chains to in-memory `SoundData` buffers outside the real-time mixer, producing processed PCM results for export or analysis.
+
+**Visualisation.** `visualizer.rs` exports waveform and spectrogram PNG images from `SoundData`, useful for development tooling, debug overlays, and audio-reactive UI.
+
+**Lua surface.** `lurek.audio.load(path, options)` loads a sound (returning a `SoundKey`), `play`, `pause`, `stop`, `seek`, `volume`, `pitch`, `pan`, `loop`, `fadeTo`, `getDuration`, `getTime`. Bus management: `lurek.audio.getBus(name)` → `Bus` userdata with `setVolume`, `setPitch`, `pause`, `resume`, `addEffect`, `setDuckTarget`, `getPeak`. Effects: `lurek.audio.addEffect(sound_key, effect_type, params)`. Spatial: `setPosition`, `setListenerPosition`. MIDI: `loadMidi` → `MidiPlayer`. Pool: `newPool(path, voices)` → `SoundPool`.
+
+**Scope boundary.** Platform Services tier. Depends on `runtime` (SoundKey, SharedState). Lua bridge in `src/lua_api/audio_api.rs`.
 
 ## Files
 

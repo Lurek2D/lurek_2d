@@ -11,17 +11,27 @@
 
 ## Summary
 
-The `parallax` module implements multi-layer scrolling backgrounds with camera-relative scroll factors, autoscroll, tiling, blend modes, z-ordering, and optional clamp boxes. It is a Feature Systems tier module that depends on the render command types and SharedState for camera position.
+## Summary
 
-The central type is `ParallaxLayer`, which stores all visual and scroll parameters for one scrolling background layer: a `TextureKey` for the source image; `scroll_factor (vx, vy)` in the range [0.0, 1.0] relative to camera speed (0 = pinned to screen, 1 = moves fully with camera); `autoscroll_velocity` for time-driven translation independent of camera; `manual_offset` for game-controlled additional displacement; scale, tint color, opacity, `BlendMode`, Z-order, `repeat_x`/`repeat_y` (whether to tile), and an optional `(min_x, min_y, max_x, max_y)` clamp box.
+The `parallax` module implements multi-layer scrolling backgrounds with camera-relative scroll factors, autoscroll, tiling, blend modes, z-ordering, and optional clamp boxes. It is a Feature Systems tier module that depends on render command types and `SharedState` for camera position.
 
-The scroll formula applied each frame is: `pixel_offset = camera_pos * scroll_factor + manual_offset + autoscroll_accumulation`. For repeating layers, the tile start position wraps: `start_x = -(pixel_offset_x % texture_width)`. `update(dt)` advances the autoscroll accumulator.
+**ParallaxLayer.** `ParallaxLayer` stores all visual and scroll parameters for a single scrolling background layer: a `TextureKey` for the source image; `scroll_factor (vx, vy)` in the range [0.0, 1.0] relative to camera speed (0.0 = pinned to screen, 1.0 = moves fully with world camera); `autoscroll_velocity` for time-driven translation independent of camera movement; `manual_offset` for game-controlled additional displacement. Additional fields: scale, tint colour, opacity, `BlendMode`, Z-order, `repeat_x`/`repeat_y` tiling flags, and an optional `(min_x, min_y, max_x, max_y)` clamp box that constrains pixel offset and prevents layers from drifting off screen.
 
-`ParallaxDrawBatch` is the output of `build_draw_calls(cam_x, cam_y)` — a list of tile positions and UV rectangles consumed by the Lua bridge to emit `RenderCommand::DrawImage` entries. `ParallaxSet` groups multiple layers under a shared name for coordinated `update()` and `drawAuto()` calls that read camera position from `SharedState`.
+**Scroll formula.** The pixel offset applied each frame is `pixel_offset = camera_pos * scroll_factor + manual_offset + autoscroll_accumulation`. For repeating layers the tile start position wraps: `start_x = -(pixel_offset_x % texture_width)`. `update(dt)` advances the autoscroll accumulator by `autoscroll_velocity * dt` each call.
 
-New layer management methods have been added to `ParallaxLayer`, extending the Lua API surface for dynamic scroll configurations. These additions allow Lua scripts to adjust scroll factors, clamp bounds, and autoscroll velocities on existing layers at runtime through `lurek.parallax.*` without reconstructing the layer object — enabling responsive parallax effects that react to game state, such as a background layer that accelerates during a sprint sequence.
+**ParallaxDrawBatch.** `build_draw_calls(cam_x, cam_y)` produces a `ParallaxDrawBatch` — a list of tile positions and UV rectangles consumed by the render bridge to emit `RenderCommand::DrawImage` entries. The batch separates geometry computation from GPU command emission, enabling headless testing via `draw_to_image()` without a GPU.
 
-**Scope boundary**: Feature Systems tier. Depends on `render` (command types and BlendMode), `runtime` (SharedState, TextureKey). Lua bridge in `src/lua_api/parallax_api.rs`.
+**ParallaxSet.** `ParallaxSet` groups multiple named `ParallaxLayer` objects under a shared handle. `update(dt)` advances all layers at once. `drawAuto(commands)` reads the current camera position from `SharedState` and builds draw calls for all layers in Z-order without the caller needing to track camera state. Layers can be added, removed, and reordered by name within the set.
+
+**Dynamic configuration.** `set_scroll_factor(vx, vy)`, `set_autoscroll_velocity(vx, vy)`, `set_manual_offset(ox, oy)`, `set_clamp_box(min_x, min_y, max_x, max_y)`, `set_opacity(a)`, `set_tint(color)`, `set_blend_mode(mode)`, `set_depth(z)` can all be called on a live layer at runtime. This enables responsive parallax effects — e.g. a background layer that accelerates during a sprint sequence or shifts hue during a weather transition — without reconstructing the layer.
+
+**Tiling.** `set_tiling(repeat_x, repeat_y)` enables seamless infinite tiling on each axis independently. `set_tile_size(w, h)` overrides the natural texture dimensions as the tile step, enabling non-square tiling grids or partial-tile edge handling. `reset_autoscroll()` zeroes the autoscroll accumulator without changing velocity, useful for level transitions that need the background positioned at the origin.
+
+**Render pipeline.** `render.rs` calls `generate_render_commands(cam_x, cam_y, screen_w, screen_h)` per layer, which builds the batch and converts it to `RenderCommand` entries with blend mode, tint, and per-tile UV. `batch_to_render_commands(batch, commands)` is the corresponding function for pre-built batches. Drawing order follows Z-depth, lowest value drawn first (behind).
+
+**Lua surface.** `lurek.parallax.newLayer(opts)` creates a layer from a spec table. `lurek.parallax.newSet(name)` creates a layer group. Layer methods: `update(dt)`, `draw(cam_x, cam_y, commands)`, `setScrollFactor(vx, vy)`, `setAutoscroll(vx, vy)`, `setOffset(ox, oy)`, `setOpacity(a)`, `setTint(color)`, `setBlendMode(mode)`, `setDepth(z)`, `setTiling(rx, ry)`, `setClampBox(minx, miny, maxx, maxy)`, `resetAutoscroll()`. Set methods: `add(name, layer)`, `remove(name)`, `get(name)`, `update(dt)`, `drawAuto(commands)`, `setOrder(names)`.
+
+**Scope boundary.** Feature Systems tier. Depends on `render` (RenderCommand, BlendMode), `runtime` (SharedState, TextureKey), `math`. Lua bridge in `src/lua_api/parallax_api.rs`.
 
 ## Files
 

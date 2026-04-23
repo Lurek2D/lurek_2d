@@ -11,56 +11,29 @@
 
 ## Summary
 
-The `tilemap` module is Lurek2D's tile-map authoring and rendering subsystem,
-covering everything from simple single-layer orthogonal grids to multi-layer
-maps with animated tiles, external format imports, automatic tile selection,
-isometric depth sorting, hex coordinates, and sparse infinite map support.
+The `tilemap` module is Lurek2D's tile-map authoring and rendering subsystem in the Feature Systems tier. It covers the full range from simple single-layer orthogonal grids to multi-layer maps with animated tiles, external format imports, automatic tile selection, isometric depth sorting, hex coordinates, and sparse infinite chunk maps.
 
-**Core map model**: `TileMap` is the top-level container: a multi-layer grid
-where each `TileLayer` holds a flat row-major array of tile GIDs, a name,
-Z-order, opacity, visibility flag, tint color, parallax scroll multipliers,
-and per-layer draw offsets. `get_tile(layer, x, y)`, `set_tile(layer, x, y, id)`,
-and `fill_rect(layer, rect, id)` are the primary CRUD operations.
-`sweep_rect(rect)` returns all non-empty tile IDs within a world-space AABB,
-providing the broad-phase collision pre-filter used before rapier2d shape
-generation.
+**Core map model.** `TileMap` is the top-level container: a multi-layer grid where each `TileLayer` holds a flat row-major `Vec<u32>` of tile GIDs plus display properties — name, Z-order, opacity, visibility flag, tint colour, parallax scroll multipliers, and per-layer draw offsets. Primary CRUD: `get_tile(layer, x, y)`, `set_tile(layer, x, y, id)`, `fill_rect(layer, rect, id)`, `swap_tiles(layer, rect)`. Viewport culling: only tiles within the camera AABB are rendered. `sweep_rect(rect)` returns all non-empty GIDs intersecting a world-space AABB — used as the broad-phase collision pre-filter before rapier2d shape generation. Animation state tracks frame timers per animated tile GID across all layers.
 
-**TileSet**: Stores the source `TextureKey`, tile dimensions, tile count, and
-per-tile properties: `passable` flag, optional `TileAnimFrame` sequence
-(local-id + duration pairs), custom property `HashMap`, and optional collision
-shape override. `TileProperties::collision_shape` selects the shape for physics
-collider auto-generation, allowing concave and per-tile hitboxes.
+**TileSet.** Stores the source `TextureKey`, tile dimensions, tile count, and per-tile properties: `passable` flag, optional `TileAnimFrame` sequence (local-id + duration pairs), custom `HashMap<String, String>` properties, and an optional `collision_shape` override for physics collider generation. The collision shape allows concave and non-rectangular hitboxes per tile variant.
 
-**External format importers**: `load_tmx(path)` parses Tiled `.tmx` XML
-exports including object layers, tile properties, image layers, embedded and
-external tileset references, and base64/zlib-encoded tile payloads.
-`load_ldtk(path)` parses LDtk JSON exports. Both populate native `TileMap` +
-`TileSet` structures so upstream code is format-agnostic.
+**External format importers.** `load_tmx(path)` parses Tiled `.tmx` XML exports including object layers, tile properties, image layers, embedded and external tileset references, and base64/zlib-encoded tile payloads. `load_ldtk(path)` parses LDtk JSON exports. Both populate native `TileMap` + `TileSet` structures so all downstream code is format-agnostic.
 
-**AutoTile**: `AutoTileSheet` precomputes bitmask-to-tile-index lookup tables
-for RPGMaker blob-47, composite-48, and minimal-16 atlas layouts, automatically
-selecting the correct tile variant from an 8-neighbor bitmask. This eliminates
-manual tile placement in procedurally generated or runtime-editable maps.
-`get_quarter_rects` and `get_quarter_dst_rects` support sub-tile composite
-rendering for the RPGMaker 47-tile format.
+**AutoTile.** `AutoTileSheet` precomputes bitmask-to-tile-index lookup tables for three atlas layouts: RPGMaker blob-47, composite-48, and minimal-16. Given an 8-neighbor bitmask, it selects the correct tile variant automatically — eliminating manual tile placement in procedurally generated or runtime-editable maps. `get_quarter_rects` / `get_quarter_dst_rects` support sub-tile composite rendering for RPGMaker 47-tile atlas format.
 
-**Isometric and hex support**: `IsoMap` stores multi-level isometric grids with
-four `IsoTilePart` sub-slots per cell (Floor, Wall, Object, Overlay) and yields
-painter's-algorithm depth-sorted `IsoDrawItem` records. `coords.rs` provides
-`to_screen_iso`/`from_screen_iso` (diamond isometric projection) and
-`to_screen_hex`/`from_screen_hex` (pointy-top axial hex) coordinate helpers.
+**Isometric and hex support.** `IsoMap` stores multi-level isometric grids with four `IsoTilePart` sub-slots per cell (Floor, Wall, Object, Overlay) and yields painter's-algorithm depth-sorted `IsoDrawItem` records for correct layering. `coords.rs` provides `to_screen_iso` / `from_screen_iso` (diamond isometric projection) and `to_screen_hex` / `from_screen_hex` (pointy-top axial hex) coordinate conversion helpers usable from both Rust and Lua.
 
-**ChunkMap**: A `HashMap<(i32,i32), Vec<u32>>` sparse infinite map with
-`load_chunk`/`unload_chunk` lifecycle management; `get_chunks_in_view(viewport)`
-returns only chunk coordinates that intersect the camera frustum.
+**Chunk map.** `ChunkMap` is a `HashMap<(i32, i32), Vec<u32>>` sparse infinite tile map supporting negative coordinates. `load_chunk` / `unload_chunk` manage per-chunk lifecycle. `get_chunks_in_view(viewport)` returns only chunk keys intersecting the camera frustum for efficient streaming.
 
-**Procedural map generation**: `MapGen` consumes `MapBlock` prefab libraries
-and `MapScript` recipes to assemble `TileMap` outputs. `PolygonMap` manages
-named polygon overlays with hit-testing and label support.
+**Procedural generation.** `MapGen` consumes `MapBlock` prefab libraries and `MapScript` step sequences to assemble `TileMap` outputs procedurally. `PolygonMap` manages named polygon overlays with hit-testing, highlight state, and bounding-box queries for province or zone overlay use cases.
 
-**Scope boundary**: Feature Systems tier. Depends on `render`, `math`,
-`runtime`, `image`. Lua bridge in `src/lua_api/tilemap_api.rs` as
-`lurek.tilemap.*`.
+**Tile walker.** `TileWalker` implements a cardinal, cell-by-cell movement controller with directional facing, step animation readiness, and passability checks — useful for dungeon-crawler or grid-locked movement games.
+
+**Render integration.** `render.rs` generates `RenderCommand` batches from `TileMap` layers. `large_map_renderer.rs` tracks chunk visibility, dirty state, and LOD metadata for worlds that need culling-friendly batched rendering at scale.
+
+**Lua surface.** `lurek.tilemap.newMap(w, h, tile_w, tile_h)` creates an empty map. `lurek.tilemap.loadTMX(path)` and `lurek.tilemap.loadLDtk(path)` import external formats. The `TileMap` userdata exposes layer management, tile CRUD, fill/flood operations, animation control, physics collision mesh generation, chunk streaming, and render command retrieval. `AutoTileSheet` is exposed via `lurek.tilemap.newAutoTileSheet(tileset, layout)` with a `computeTile(map, layer, x, y)` method. `IsoMap` and coordinate helpers are exposed under the same namespace.
+
+**Scope boundary.** Feature Systems tier. Depends on `render`, `math`, `runtime`, `image`. Lua bridge in `src/lua_api/tilemap_api.rs`.
 
 ## Files
 

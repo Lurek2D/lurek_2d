@@ -11,17 +11,30 @@
 
 ## Summary
 
-The `particle` module implements emitter-based 2D particle systems. A `ParticleSystem` manages a bounded pool of short-lived `Particle` instances, advancing position, velocity, lifetime, rotation, and visual properties each frame with Euler integration, and recycling dead particles to keep memory allocation bounded at `ParticleConfig::max_particles`.
+The `particle` module implements emitter-based 2D particle systems for the Feature Systems tier. It provides a CPU-simulated particle engine with bounded memory (pool-based recycling), data-driven emitter configuration, and direct integration with the render pipeline via `RenderCommand` batches.
 
-`ParticleConfig` (~50 fields) controls all emission and simulation parameters: particles-per-second rate, `EmissionShape` (Point, Circle, Rectangle, Ring, Line, Cone, Star, Spiral), `AreaDistribution` (None, Uniform, Normal, Ellipse, BorderEllipse, BorderRectangle), velocity spread (min/max speed and angle), rotation (initial range, angular velocity range), linear damping, radial and tangential acceleration, quadratic drag, orbital rotation, turbulence, lifetime range (min/max seconds), and multi-stop gradient interpolation for size, color, and alpha over each particle's normalized life. `InsertMode` (Top, Bottom, Random) determines where new particles are placed in the draw order.
+**Core simulation.** `ParticleSystem` owns a bounded pool of `Particle` instances (capacity set by `ParticleConfig::max_particles`). Each call to `update(dt)` advances all live particles using Euler integration: position += velocity × dt, velocity modified by drag, radial/tangential acceleration, orbital rotation, attractor gravity wells, turbulence, and optional axis-aligned bounce bounds. Particles are recycled when their lifetime expires, keeping allocation constant after the pool fills. A frame-accurate burst system supports both continuous rate-based emission and one-shot `burst(n)` calls.
 
-`EmitterState` tracks whether the emitter is active, paused, or stopped. `RelativeMode` selects whether particles move in world space or follow the emitter's position after spawn. Point attractors and axis-aligned bounce bounds provide additional per-frame forces. Death sub-emitters (`death_emitter` + `death_burst_count`) enable cascading particle bursts at each particle's death position. Texture support: the `ParticleSystem` holds an optional `TextureKey`; particles are rendered as textured quads with optional flipbook animation.
+**Configuration (`ParticleConfig`).** Approximately 50 fields control every aspect of emission and simulation:
+- *Emission shape*: `EmissionShape` enum — Point, Circle, Rectangle, Ring (with `ring_thickness`), Line, Cone, Star, Spiral, Custom.
+- *Area distribution*: `AreaDistribution` — None, Uniform, Normal, Ellipse, BorderEllipse, BorderRectangle.
+- *Motion*: min/max speed and angle spread, radial acceleration, tangential acceleration, linear damping, orbital rotation rate, turbulence amplitude.
+- *Rotation*: initial angle range, angular velocity range.
+- *Lifetime*: min/max lifetime in seconds.
+- *Visual interpolation*: multi-stop gradient curves for size, color (RGBA), and alpha over normalised lifetime [0..1].
+- *Draw order*: `InsertMode` — Top, Bottom, Random.
+- *World space*: `RelativeMode` — World (particles detach from emitter) or Local (particles follow emitter).
+- *Death emitters*: `death_emitter: Option<Box<ParticleConfig>>` + `death_burst_count` — trigger a child burst at each particle's death position, enabling cascading effects.
 
-`ParticleShape` is an enum of ten geometric render primitives (Square, Circle, Triangle, Spark, Diamond, Shrapnel, Ray, Puff, Ring, Capsule) for texture-free particle rendering, each with deterministic shape generation via `Particle::shape_seed`. `Trail` adds a time-fading ribbon effect as a `Vec<TrailPoint>` history for smoke, laser, and motion-blur effects.
+**Forces.** `Attractor` structs (gravity wells with position, strength, radius) and an optional `BounceBounds` (axis-aligned rectangle with per-wall restitution) are stored on `ParticleSystem` and applied every tick, beyond the standard config-driven acceleration.
 
-Additional emitter control methods have been added to `ParticleSystem`, enabling finer runtime manipulation of active emitter state through the Lua API. These updates extend the `ParticleConfig` parameter set with new shape and physics modifiers that game scripts can adjust mid-flight, including updated support for shrapnel emission patterns, ring-thickness control, and ray-aspect particle rendering.
+**Rendering.** `ParticleShape` is a ten-variant geometric primitive enum for texture-free rendering: Square, Circle, Triangle, Spark, Diamond, Shrapnel (n-edge polygon with deterministic per-particle seed), Ray (aspect-ratio-controlled), Puff, Ring, Capsule. For texture-based rendering, `ParticleSystem` holds an optional `TextureKey`; `expand_particle_commands` splits emitter batches into individual `DrawQuad`/`DrawImageEx` commands. `Trail` adds a fading ribbon effect via a timestamped `Vec<TrailPoint>` history — useful for smoke trails, laser beams, and motion blur.
 
-**Scope boundary**: Feature Systems tier. Depends on `render`, `math`, `runtime`. Lua bridge in `src/lua_api/particle_api.rs`.
+**Sub-systems.** `ParticleSystem::sub_systems` holds child `ParticleSystem` instances that follow the parent's position and are ticked in the same update cycle, enabling compound effect trees.
+
+**Lua surface.** `lurek.particle.newSystem(config_table)` creates an emitter from a Lua table or a TOML config string. The resulting `ParticleSystem` userdata exposes: `emit(n)`, `update(dt)`, `setPosition(x, y)`, `getPosition()`, `setRate(n)`, `getParticleCount()`, `setRelativeMode(mode)`, `addAttractor(x, y, strength, radius)`, `clearAttractors()`, `setBounceBounds(xmin, ymin, xmax, ymax, restitution)`, `pause()`, `resume()`, `stop()`, `reset()`, `addSubSystem(config_table)`, `getRenderCommands()`, and property setters for most `ParticleConfig` fields including `setMaxParticles`, `setLifetime`, `setSpeed`, `setEmissionShape`, `setTextureKey`.
+
+**Scope boundary.** Feature Systems tier. Depends on `render`, `math`, `runtime`. Lua bridge in `src/lua_api/particle_api.rs`.
 
 ## Files
 

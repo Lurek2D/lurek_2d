@@ -11,19 +11,32 @@
 
 ## Summary
 
-The `effect` module owns Lurek2D's post-processing and image-effect pipeline. Its purpose is to apply full-screen or region-based visual transformations — blur, bloom, distortion, color grading, scanlines, vignette, pixelation, and custom WGSL fragment shaders — on top of the already-rendered game scene by compositing successive passes through CPU-side image buffers or GPU canvas render-to-texture.
+The `effect` module owns Lurek2D's post-processing and image-effect pipeline — a Platform Services tier module that applies full-screen or region-based visual transformations on top of the rendered game scene. It is the home for blur, bloom, distortion, colour grading, scanlines, vignette, pixelation, lens distortion, weather overlays, screen flash/shake/fade, and custom WGSL fragment shaders. All effect state flows through the render command queue and has no coupling to physics, audio, ECS, or input.
 
-The central type is `ImageEffect`, a description of one post-processing pass. An effect holds a `ShaderPassDescriptor` that names the WGSL shader, its bind group layout, and any uniform parameters (floats for intensity, radius, seed, color, etc.). Assembling multiple `ImageEffect` values into an `EffectChain` produces a sorted multi-pass pipeline where each pass reads from the previous pass's output and writes to the next pass's input texture. The final pass writes to the screen.
+**PostFxStack — the full-frame pipeline.** `PostFxStack` is the ordered container for full-screen post-processing passes. `PostFxEffect` describes one pass: an `PostFxEffectType` variant selecting the built-in shader, a parameter map (`HashMap<String, f32>` for intensity, radius, threshold, etc.), an enabled flag, and an optional custom WGSL shader handle. Effects are applied in stack order after the main world and UI passes are complete.
 
-`presets.rs` registers a library of commonly needed effects — gaussian blur, chromatic aberration, CRT scanlines, color inversion, sepia, and others — as named `ImageEffect` templates that Lua scripts can apply by name without writing WGSL themselves. Custom shader effects are supported by providing an inline WGSL string and a parameter table.
+**ImageEffect — per-object effects.** `ImageEffect` is a smaller effect descriptor attached to individual image or sprite draws. It supports the same preset library but applies only to the texture it is attached to before it is composited into the scene, enabling per-sprite chromatic aberration, desaturation, or custom shader effects.
 
-At render time, effects are queued as `RenderCommand::PostProcess` entries. The GPU renderer processes these commands after the main world pass and UI pass, binding each effect's shader and rendering a full-screen textured quad. All WGSL shader sources for built-in presets are embedded statically at compile time.
+**Presets library.** `presets.rs` registers a library of commonly needed named effects as `PostFxEffect` templates: gaussian blur, box blur, chromatic aberration, CRT scanlines, colour inversion, sepia, pixelation, edge detection, sharpening, and a classic vignette. Lua scripts apply these by name without writing WGSL.
 
-The effect module does not own scene rendering or sprite drawing. It only describes and manages the post-process layer. Physics, input, audio, and ECS have no coupling to this module.
+**Dedicated preset types.** Three additional source files add first-class preset types with their own parameter sets:
+- `color_grade.rs` — `ColorGrade`: separate shadow, midtone, and highlight tint controls with saturation and exposure.
+- `lens_distort.rs` — `LensDistort`: barrel and pincushion optical lens distortion with configurable strength and aberration.
+- `scanline.rs` — `Scanline`: CRT-style horizontal scanline overlay with line height, brightness, and colour shift.
 
-Three new source files add dedicated post-processing presets as first-class types. `color_grade.rs` introduces `ColorGrade`, a configurable color-grading pass with separate shadow, midtone, and highlight tint controls. `lens_distort.rs` introduces `LensDistort` for barrel and pincushion optical lens distortion. `scanline.rs` introduces `Scanline` for CRT-style horizontal scanline overlays. Each type is constructed from Lua via `lurek.effect.newColorGrade()`, `lurek.effect.newLensDistort()`, and `lurek.effect.newScanline()`, with their full parameter sets exposed as Lua method chains on the returned userdata.
+**Overlay — top-level screen controller.** `Overlay` aggregates all ambient, atmospheric, weather, and transient screen-state into a single controller polled by the renderer each frame:
+- `AmbientState`: time-of-day tint and brightness.
+- `FogState`, `CloudState`, `HeatHazeState`, `VignetteState`, `FilmGrainState`, `LightningState` (atmosphere).
+- `WaterOverlay`: UV-distortion water surface with depth tint.
+- `WeatherState`: rain/snow particle simulation with wind and intensity.
+- `ScreenEffects`: flash (timed full-screen colour), shake (positional offset), fade (in/out alpha transition).
+- `TransitionState`: cross-fade, wipe, and slide screen-transition management.
 
-**Scope boundary**: Platform Services tier. Depends on `render` (command types), `image`, `runtime`. Lua bridge in `src/lua_api/fx_api.rs`.
+**Render integration.** `render.rs` emits `RenderCommand::BeginPostFx` / `RenderCommand::EndPostFx` / `RenderCommand::ApplyPostFx` markers into the command queue. The GPU renderer processes these after the main draw pass: for each effect in the stack, it binds the effect's shader (all built-in WGSL sources are embedded at compile time), pushes uniform parameters, and renders a full-screen textured quad reading from the previous pass's output.
+
+**Lua surface.** `lurek.effect.newStack()` → `PostFxStack` userdata. `stack:add(effectName, params)`, `stack:remove(i)`, `stack:enable(i)`, `stack:disable(i)`. `lurek.effect.newImageEffect(name, params)` → `ImageEffect` userdata (attached to image draws). `lurek.effect.newColorGrade(params)`, `newLensDistort(params)`, `newScanline(params)`. Overlay: `lurek.effect.overlay.*` for ambient, fog, vignette, weather, flash, shake, fade.
+
+**Scope boundary.** Platform Services tier. Depends on `render` (command types), `image`, `runtime`. Lua bridge in `src/lua_api/effect_api.rs`.
 
 ## Files
 

@@ -11,15 +11,25 @@
 
 ## Summary
 
-The `docs` module is Lurek2D's in-engine API documentation catalog and data-validation schema system. It serves two distinct but related purposes: providing a structured, queryable database of `lurek.*` API metadata at runtime, and offering a lightweight schema validation mechanism for arbitrary structured game data such as config files, save data, and mod manifests.
+The `docs` module is Lurek2D's in-engine API documentation catalog and data-validation schema system — a Foundations tier module with no rendering, audio, or physics dependencies. It serves two distinct but closely related purposes: providing a structured, queryable database of `lurek.*` API metadata at runtime for IDE tooling and Lua introspection, and offering a lightweight schema validation mechanism for arbitrary structured game data such as config files, save data, and mod manifests.
 
-The documentation catalog side is built around three types. `DocEntry` is a description of a single documented API item — function, method, value, or type — carrying its qualified name, module, kind, a human-readable description, ordered `ParamInfo` parameters, and `ReturnInfo` return descriptors. A `Catalog` is an in-memory collection of `DocEntry` records with query methods for searching by name, filtering by module, and building completion lists. A `QualityReport` computes a quality score for each module's documentation coverage, surfacing missing descriptions, missing parameter type hints, and missing return information. These types are populated at engine boot by iterating over the bound API and serve the VS Code extension's IntelliSense completions, the `lurek.docs` Lua API, and the debug bridge's hover-information queries.
+**Documentation catalog.** The catalog side is built around three core types. `DocEntry` is the canonical description of one documented API item — function, method, value, or type — carrying its fully-qualified name, module name, kind tag (`function`/`method`/`value`/`type`), a human-readable description, ordered `ParamInfo` parameter records (name, type hint, description), and `ReturnInfo` return descriptors. A `Catalog` is an in-memory collection of `DocEntry` records with query methods: `add(entry)`, `modules()` (sorted unique list), `all_entries()`, `entries_for_module(name)`, `get_entry(qualified_name)`, `search(query)` (case-insensitive substring over name and description), `filter_by_kind(kind)`, `clear()`.
 
-The schema validation side lives in the `schema` submodule. A `Schema` is a map of field names to `FieldRule` entries, each specifying required vs optional presence, a `FieldType` constraint (Number, Text, Bool, Table, Any), and an optional default value. Calling `schema.validate(table)` returns a `SchemaResult` enumerating any missing required fields or type mismatches. Game code uses this for validating plugin manifests, validated config sections, and structured save-data before passing values deeper into the engine.
+**Population and use.** The catalog is populated at engine boot by iterating over the registered `lurek.*` API surface and constructing `DocEntry` records from the Rust binding metadata. It serves three downstream consumers: the VS Code extension's IntelliSense completions (via `export_completions`), hover information (via `export_hover`), and signature help (via `export_signatures`); the debug bridge's real-time hover queries over the TCP protocol; and the `lurek.docs` Lua API that lets game code query the API at runtime (useful for in-game help screens and mod-documentation generators).
 
-Neither the catalog nor the schema validator has rendering, audio, or physics dependencies. The module is headless and fully testable without a window or GPU.
+**Quality reporting.** `QualityReport` computes a completeness score for each module's documentation: it identifies entries with missing prose descriptions, missing parameter type hints, missing return descriptions, and empty example lists, and produces a per-module quality percentage. `ValidationReport` compares the catalog against an expected API surface and lists phantom entries (in catalog, not in source) and missing entries (in source, not in catalog). These are used by `tools/audit/docstring_audit.py` and `tools/audit/lua_api_test_coverage.py`.
 
-**Scope boundary**: Foundations tier. No engine module imports. Lua bridge in `src/lua_api/docs_api.rs`.
+**Export formats.** `export.rs` converts the catalog into editor-facing payloads written to JSON files:
+- `export_completions(catalog, path)` → VS Code completion item array.
+- `export_hover(catalog, path)` → map of qualified name → hover markdown.
+- `export_signatures(catalog, path)` → map of qualified name → signature help.
+These outputs are consumed by the VS Code extension at extension activation time.
+
+**Schema validation.** `schema.rs` provides a lightweight data contract system independent of the documentation catalog. A `Schema` is a map of field names to `FieldRule` entries; each rule specifies: required vs optional presence, a `FieldType` constraint (Number, Text, Bool, Table, Any), and an optional default value. `schema.validate_pairs(pairs)` checks a sequence of key-value pairs and returns a `SchemaResult` listing any `SchemaError` entries (missing required fields, type mismatches). Game code uses this for validating plugin manifests, `conf.lua` sections, and structured save-data before trusting values deeper in the engine.
+
+**Lua surface.** `lurek.docs.catalog()` returns a snapshot of the runtime catalog as a Lua table. `lurek.docs.query(name)` looks up a single entry. `lurek.docs.search(query)` returns matching entries. `lurek.docs.modules()` lists module names. Schema: `lurek.docs.newSchema(rules)` → `Schema` userdata; `schema:validate(table)` → `{ok, errors}`.
+
+**Scope boundary.** Foundations tier. No engine module imports. Lua bridge in `src/lua_api/docs_api.rs`.
 
 ## Files
 

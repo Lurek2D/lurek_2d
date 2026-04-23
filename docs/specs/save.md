@@ -11,53 +11,29 @@
 
 ## Summary
 
-The `save` module provides Lurek2D's game save/load orchestration system. Its
-responsibility is lifecycle management — coordinating when and what to save,
-handling schema versioning, running migrations, and driving auto-save — rather
-than byte-level serialization (that belongs to `serial`) or file I/O (that
-belongs to `filesystem`).
+## Summary
 
-**SaveManager**: The central coordination object. It maintains a registry of
-named collector modules, a current schema version integer, a dirty flag, an
-optional auto-save configuration (interval in seconds plus target slot name),
-and an ordered list of migration version checkpoints. Game code calls
-`register(name, gather_fn, restore_fn)` to install a named data collector whose
-`gather()` callback returns a Lua table and whose `restore(data)` callback
-reloads game state from it.
+The `save` module is Lurek2D's game save/load orchestration system — a Feature Systems tier module whose responsibility is lifecycle management: coordinating when and what to save, handling schema versioning, running migrations, and driving auto-save. Byte-level serialisation belongs to `serial`; file I/O belongs to `filesystem`. The `save` module calls both.
 
-**Save/load flow**: `collect()` calls every registered `gather()` callback and
-assembles results into a slot data table with `SlotMeta` metadata (name, Unix
-timestamp, schema version, summary string). `restore(data)` reads the saved
-schema version from `SlotMeta`, determines which ordered migration checkpoints
-fall between the saved version and the current version, runs them in sequence
-(each migration receives the raw data table and returns a transformed copy),
-and then calls every registered `restore()` callback. This migration chain
-transparently upgrades save files from older schema versions at load time
-without requiring external tooling.
+**SaveManager lifecycle.** `SaveManager` is the central coordinator. It maintains a registry of named collector modules, a current schema version integer, a dirty flag, optional auto-save configuration, and an ordered list of migration version checkpoints. Game code calls `register(name, gather_fn, restore_fn)` to install a named collector whose `gather()` callback returns a Lua table of game state and whose `restore(data)` callback reloads it. Multiple collectors can be registered for the same save slot (player state, world state, inventory, settings), each saving independently under their name key.
 
-**Dirty flag and auto-save**: `mark_dirty()` signals that unsaved state exists;
-`is_dirty()` lets game code conditionally show a save indicator in the UI.
-`enable_auto_save(interval, slot)` activates a timer-based background save;
-`update(dt)` advances the timer each frame and returns the target slot name when
-a save should fire. `disable_auto_save()` stops background saves without
-affecting manual `write()` calls.
+**Save flow.** `collect()` calls every registered `gather()` in registration order and assembles results into a slot data table with `SlotMeta` metadata: slot name, Unix timestamp, schema version integer, and a free-text summary string (e.g. "Chapter 2 – Forest of Shadows, 3h 42m"). This table is then passed to `serial` for TOML or Lua serialisation and to `filesystem` for write. `SaveValue` (nil, bool, number, string, table) is the Lua-serialisable value enum for Rust-side serialisation. `serialize_table` and `serialize_value` produce valid Lua return-statement strings from `SaveValue` trees, written to disk as `.lua` data files directly loadable with the Lua interpreter. `SaveValue::from_lua` converts `mlua::Value` to `SaveValue` for Rust-side processing before serialisation.
 
-**SaveValue serialization**: `SaveValue` (nil, bool, number, string, table) is
-the Lua-serializable value enum for Rust-side serialization. `serialize_table`
-and `serialize_value` produce valid Lua return-statement strings from
-`SaveValue` trees, written to disk as `.lua` data files loadable directly with
-the Lua interpreter. `SaveValue::from_lua` converts `mlua::Value` to
-`SaveValue` for Rust-side processing before serialization.
+**Load and migration.** `restore(data)` reads the saved schema version from `SlotMeta`, determines which ordered migration checkpoints fall between the saved version and the current version, runs them in sequence (each migration receives the raw data table and returns a transformed copy), then calls every registered `restore()` callback. This migration chain transparently upgrades save files from older schema versions at load time without requiring external tooling. `register_migration(from_version, to_version, fn)` registers a migration step. Migrations are applied in version-ascending order.
 
-**Compression**: `compress_save_content` and `decompress_save_content` in
-`save_manager.rs` wrap the raw serialized string with a configurable
-compression codec, reducing disk usage for large save files with many
-registered collectors.
+**Dirty flag.** `mark_dirty()` signals that unsaved state exists. `is_dirty()` lets game code conditionally show a save indicator in the UI. The flag is cleared after a successful `write()`. Combined with auto-save, this prevents unnecessary writes when nothing has changed since the last save.
 
-**Note on dead code**: `save_data.rs` is present in the source tree but is NOT
-declared in `mod.rs` and is dead code — it contains an older parallel copy of
-the same types. The canonical implementation lives entirely in
-`save_manager.rs`.
+**Auto-save.** `enable_auto_save(interval_secs, slot_name)` activates timer-based background saves. `update(dt)` advances the timer each frame and returns `Some(slot_name)` when a save should fire — the caller (typically `app::GameLoop`) performs the actual write. `disable_auto_save()` stops background saves without affecting manual `write()` calls. Multiple save slots (e.g. three numbered slots plus an autosave slot) coexist under different names.
+
+**Compression.** `compress_save_content(data, codec)` and `decompress_save_content(bytes, codec)` wrap the raw serialised string with a configurable compression codec (default: zstd), reducing disk usage for large save files with many registered collectors. The codec is stored in the file header so the correct decompressor is always used regardless of future codec changes.
+
+**Slot introspection.** `list_slots(path)` scans a directory for save files and returns a list of `SlotMeta` tables without loading the full save data — used for save/load menus. `delete_slot(name)` removes a save file from disk. `slot_exists(name)` tests for existence without I/O.
+
+**Note on dead code.** `save_data.rs` is present in the source tree but not declared in `mod.rs` and is dead code — it contains an older parallel copy of the same types. The canonical implementation lives entirely in `save_manager.rs`.
+
+**Lua surface.** `lurek.save.register(name, gather_fn, restore_fn)`, `lurek.save.write(slot)`, `lurek.save.load(slot)`, `lurek.save.delete(slot)`, `lurek.save.exists(slot)` → bool, `lurek.save.list(dir)` → array of slot meta tables, `lurek.save.isDirty()`, `lurek.save.markDirty()`, `lurek.save.enableAutoSave(interval, slot)`, `lurek.save.disableAutoSave()`, `lurek.save.registerMigration(from, to, fn)`.
+
+**Scope boundary.** Feature Systems tier. Depends on `filesystem` (file read/write), `serial` (serialisation), `runtime` (SharedState). Lua bridge in `src/lua_api/save_api.rs`.
 
 **Scope boundary**: Feature Systems tier. Depends on `filesystem`, `runtime`,
 `serial`. Lua bridge in `src/lua_api/save_api.rs` as `lurek.save.*`.

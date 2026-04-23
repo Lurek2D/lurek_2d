@@ -11,17 +11,25 @@
 
 ## Summary
 
-The `spine` module provides Lurek2D's hierarchical skeletal animation system for rigged character and object animation. It is a Feature Systems tier module implementing its own skeleton, animation, IK, and skin systems rather than integrating the official Spine SDK (respecting design assumption A-02 and licensing constraints).
+## Summary
 
-`Skeleton` owns a flat list of `Bone` nodes with individual local transforms (translation x/y, rotation in radians, scale x/y) and parent bone indices. `update_world_transforms()` performs an O(n) top-down pass multiplying each bone's local transform with its parent's accumulated world transform, updating `world_x`, `world_y`, `world_rotation`, and `world_scale_x/y`. This produces the pose's complete world-space transform set without recursion.
+The `spine` module provides Lurek2D's hierarchical skeletal animation system for rigged character and object animation. It is a Feature Systems tier module implementing its own skeleton, animation, IK, and skin systems independently rather than integrating the official Spine SDK — respecting design assumption A-02 and licensing constraints.
 
-`Slot` is an attachment point linking a bone to a displayable resource via a named attachment string. Slots carry a tint colour and draw order. Swapping slot attachments at runtime (via the skin system) implements skins and equipment changes. Note: mesh deformation and vertex skinning are not yet implemented — slots bind rigid sprites only.
+**Skeleton and bone hierarchy.** `Skeleton` owns a flat list of `Bone` nodes with individual local transforms (translation x/y, rotation in radians, scale x/y) and parent bone indices. `update_world_transforms()` performs an O(n) top-down pass multiplying each bone's local transform with its parent's accumulated world transform, updating `world_x`, `world_y`, `world_rotation`, and `world_scale_x/y`. This produces the complete world-space pose without recursion. `BoneParams` is a convenience bundle for creating bones in one call. Root transform is applied before propagation, enabling whole-skeleton positioning and rotation.
 
-`BoneTimeline` and `Keyframe` provide keyframe-driven animation: each keyframe carries a time offset, a target transform value, and an `EasingType` (Linear, EaseIn, EaseOut, EaseInOut, Step) for the segment. `SkeletonAnimation` is a named clip with per-bone `BoneTimeline` entries and optional `EventKeyframe` markers for frame-precise sound/effect triggers. `IKConstraint` solves two-bone IK chains (upper/lower limb) using the law of cosines for inverse kinematics targeting. `apply_to_skeleton_blended` supports weighted cross-fade blending between animation clips.
+**Slots and attachments.** `Slot` is an attachment point linking a bone to a displayable resource via a named attachment string. Slots carry a tint colour and draw order. Swapping slot attachments at runtime implements skins and equipment changes without rebuilding the skeleton. Note: mesh deformation and vertex skinning are not yet implemented — slots bind rigid sprites only, making this a pure 2D skeletal system suitable for cutout-style animation.
 
-Updated spine animation methods expand the Lua-accessible surface for runtime skeleton manipulation. New methods on `Skeleton` and `SkeletonAnimation` allow Lua scripts to query current pose state, blend between animation clips, and attach or detach slot resources dynamically through `lurek.spine.*`, reducing the boilerplate needed for common game-character workflows like equipment swaps and procedural pose blending.
+**Keyframe animation.** `BoneTimeline` stores a time-ordered sequence of `Keyframe` entries for a single `BoneProperty` (translate_x, translate_y, rotate, scale_x, scale_y). Each keyframe carries a time offset, a target float value, and an `EasingType` (Linear, EaseIn, EaseOut, EaseInOut, Step) for the interpolation segment following it. `SkeletonAnimation` is a named clip with per-bone `BoneTimeline` entries and optional `EventKeyframe` markers for frame-precise sound or effect triggers. `apply_to_skeleton(time)` applies the animation pose at a given time position by lerping adjacent keyframes using the configured easing curve.
 
-**Scope boundary**: Feature Systems tier. Depends on `render`, `math`, `runtime`. Lua bridge in `src/lua_api/spine_api.rs`.
+**Blended animation.** `apply_to_skeleton_blended(time, weight)` supports weighted cross-fade blending between animation clips. The caller manages two active animations and a blend factor; both animations write to the same skeleton bones with complementary weights, producing smooth pose transitions without discontinuities. Used for crossfade transitions, weapon layer blending, and facial expression overlays.
+
+**IK constraints.** `IKConstraint` solves two-bone IK chains (upper/lower limb) using the law-of-cosines analytic solver. `set_target(world_x, world_y)` sets the world-space target; `solve(bones)` writes the resulting local rotations into the upper and lower bone. Bend direction can be constrained (elbow bends inward, knee bends forward). IK solving runs after keyframe animation application and before final world transform propagation.
+
+**Debug rendering.** `Skeleton::generate_render_commands(world_x, world_y, commands)` emits debug geometry: bone lines (from parent to child bone), slot attachment outlines, and IK target markers as `RenderCommand::DrawShape` entries. Used by `devtools` debug overlays and `spine_tests.rs` screenshot comparison tests.
+
+**Lua surface.** `lurek.spine.newSkeleton()` creates a skeleton. Methods: `addBone(params)` → index, `addSlot(name, bone_index)` → index, `setSlotAttachment(slot_index, name)`, `setBoneTransform(index, x, y, rot, sx, sy)`, `updateWorldTransforms()`, `applyAnimation(anim, time)`, `blendAnimations(anim_a, time_a, anim_b, time_b, weight)`, `addIK(bone_a, bone_b)`, `solveIK(ik_id, tx, ty)`, `debugDraw(wx, wy, commands)`. Animation: `lurek.spine.newAnimation(name)`, `addTimeline(bone_index, property, keyframes)`, `addEvent(time, name)`.
+
+**Scope boundary.** Feature Systems tier. Depends on `render`, `math`, `runtime`. Lua bridge in `src/lua_api/spine_api.rs`.
 
 ## Files
 

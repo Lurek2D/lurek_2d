@@ -11,19 +11,25 @@
 
 ## Summary
 
-The `network` module provides Lurek2D's multiplayer networking stack, covering four transport layers: ENet reliable-UDP for peer-to-peer game traffic, raw TCP for custom protocols, asynchronous HTTP for REST APIs and leaderboards, and WebSocket for live chat and event streaming.
+## Summary
 
-`NetworkHost` wraps `rusty_enet::Host<UdpSocket>` and can act as both server and client simultaneously: binding to a port enables incoming connections, while `connect(addr)` creates outgoing ones. The single `service(timeout)` call drives all UDP I/O — it processes all queued packets, fires connection/disconnect/receive events, and sends outgoing data. ENet provides ordered reliable delivery, sequenced unreliable delivery, and unsequenced unreliable modes selectable per-packet.
+The `network` module provides Lurek2D's multiplayer networking stack, covering four distinct transport layers: ENet reliable-UDP for peer-to-peer game traffic, raw TCP for custom protocols, asynchronous HTTP for REST APIs and leaderboards, and WebSocket for live chat and event streaming. It is a Core Runtime tier module — no Feature Systems imports — and a strong plugin candidacy candidate given its heavy dependency footprint.
 
-HTTP, TCP, and WebSocket operations run on the `NetworkRuntime` background OS thread with `mpsc` request/response channels. The main engine thread submits requests (non-blocking) and polls completed responses once per frame before `lurek.process(dt)` fires — keeping transport I/O fully non-blocking from the Lua VM's perspective.
+**ENet transport.** `NetworkHost` wraps `rusty_enet::Host<UdpSocket>` and can act as server, client, or peer-to-peer host simultaneously via `HostRole`. Binding to a port enables incoming connections; `connect(addr)` creates outgoing ones. A single `service(timeout)` call drives all UDP I/O — processing queued packets, firing `NetworkEvent::Connect` / `Disconnect` / `Receive` events, and sending outgoing data. ENet provides three delivery modes per packet: ordered reliable, sequenced unreliable, and unsequenced unreliable.
 
-`message.rs` implements MessagePack serialization for compact binary network transport: `encode_table(lua_table)` converts a Lua table to a byte vector, `decode_table(bytes, lua)` reconstructs a Lua table. This round-trip is the recommended format for application-level game messages.
+**HTTP, TCP, and WebSocket.** These three transports run on a `NetworkRuntime` background OS thread via `mpsc` request/response channels. The main engine thread submits `NetworkRequest` variants (non-blocking) and polls completed `NetworkResponse` entries once per frame, keeping all transport I/O fully non-blocking from the Lua VM's perspective. HTTP uses `ureq` with configurable timeout. TCP is managed by `TcpConnectionManager` with non-blocking multi-connection support. WebSocket is managed by `WebSocketManager` with per-connection send/receive queues.
 
-The `lobby.rs` source file introduces `NetworkLobby`, a LAN lobby discovery type that uses UDP broadcast to advertise and enumerate local game sessions. Lua scripts access the full lobby API through `lurek.net.lobby.*`, enabling game menus to list nearby games and join them without requiring a dedicated matchmaking server. `LobbyInfo` carries the session name, current player count, maximum capacity, and host address.
+**Message serialisation.** `message.rs` implements MessagePack encoding for compact binary network transport. `encode_table(lua_table)` converts a Lua table to a byte vector via the `NetValue` intermediate enum. `decode_table(bytes, lua)` reconstructs a Lua table. `pack` and `unpack` are the lower-level primitive variants. MessagePack is the recommended format for all application-level game messages; raw strings are also supported for interoperability with non-Lurek2D servers.
 
-**Scope boundary**: Core Runtime tier. No Platform Services or Feature Systems imports. Lua bridge in `src/lua_api/network_api.rs`. The crate tree is heavy (`rusty_enet` + `ureq` + `tungstenite` + `rmp-serde` + `rustls`), which is why the module is a plugin candidate.
+**LAN lobby discovery.** `lobby.rs` introduces `NetworkLobby`, a LAN lobby discovery type using UDP broadcast to advertise and enumerate local game sessions. `LobbyInfo` carries session name, current player count, maximum capacity, and host address. Lua scripts access the full lobby API through `lurek.network.lobby.*`, enabling game menus to list nearby sessions and join them without a dedicated matchmaking server.
 
-_Plugin candidacy: this module is a candidate for the plugin tier under proposed constraint A-05 — see [docs/architecture/plugins.md](../architecture/plugins.md)._
+**Constants and error model.** `constants.rs` defines compile-time limits: `MAX_PEERS=4096`, `DEFAULT_PEERS=16`, `DEFAULT_CHANNELS=2`, `HTTP_TIMEOUT_SECS=30`, `TCP_BUFFER_SIZE=65536`, `WS_BUFFER_SIZE=65536`. `NetworkError` variants: `ConnectionFailed`, `SendFailed`, `InvalidPeer`, `InvalidAddress`, `Http`, `WebSocket`, `Tcp`, `Serialization`, `Thread`. All Lua-facing methods map errors to named string values.
+
+**Per-peer diagnostics.** `PeerStats` carries a per-peer statistics snapshot (round-trip time, packet loss, send/receive rates). `lurek.network.peerStats(peer_id)` returns the current snapshot. These are used by client-side network quality indicators and server-side load balancing.
+
+**Lua surface.** `lurek.network.newHost(role, port, peers)` creates a host. Methods: `connect(addr)`, `disconnect(peer)`, `send(peer, channel, data, mode)`, `broadcast(channel, data, mode)`, `service(dt)` → events table. HTTP: `lurek.network.get(url, cb)`, `post(url, body, cb)`. WebSocket: `lurek.network.wsConnect(url)` → id, `wsSend(id, data)`, `wsClose(id)`, `wsPoll()` → events. TCP: `lurek.network.tcpConnect(addr)` → id, `tcpSend(id, data)`, `tcpClose(id)`, `tcpPoll()` → events. Lobby: `lurek.network.lobby.advertise(info)`, `scan(timeout_ms)` → array, `stopAdvertise()`.
+
+**Scope boundary.** Core Runtime tier. No Platform Services or Feature Systems imports. Crate dependencies: `rusty_enet`, `ureq`, `tungstenite`, `rmp-serde`, `rustls`. Plugin candidacy: strong candidate for the plugin tier under proposed constraint A-05 (see `docs/architecture/plugins.md`). Lua bridge in `src/lua_api/network_api.rs`.
 
 ## Files
 

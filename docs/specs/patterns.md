@@ -11,15 +11,31 @@
 
 ## Summary
 
-The `patterns` module provides twelve classic game-programming design patterns as ready-to-use Rust types exposed to Lua via `lurek.patterns.*`. All pattern types hold only pure-Rust state and logic; callbacks are stored in the Lua API layer (`src/lua_api/patterns_api.rs`).
+## Summary
 
-Pattern inventory: `EventBus` — named-event publish-subscribe with priority ordering and subscription management; `ObjectPool` — slot-tracking pool to recycle Lua objects without GC pressure; `CommandStack` — undo/redo history with batch grouping for atomic multi-step operations; `ServiceLocator` — singleton-like named service registry for global access without tight coupling; `Factory` — type-name constructor registry with aliasing for data-driven object creation; `StateMachine` — FSM with guarded transition rules, entry/exit callbacks, and state history; `Blackboard` — hierarchical typed key-value store for AI and game system coordination, shareable between agents; `Observer` — reactive per-key property subscriptions that fire callbacks when watched values change; `Throttle` / `Debounce` — rate-limit and trailing-edge delay for event callbacks; `PriorityQueue` — priority-ordered agenda for turn-based scheduling; `Ring` — fixed-capacity circular history buffer; `Funnel` — time-windowed event aggregator that batches events for deferred processing.
+The `patterns` module provides twelve classic game-programming design patterns as ready-to-use Rust types exposed to Lua via `lurek.patterns.*`. It is a Feature Systems tier module. All pattern types hold only pure-Rust state; callbacks are stored in the Lua API layer (`src/lua_api/patterns_api.rs`), not in the domain types.
 
-Each pattern is a self-contained Rust struct with no heap allocations in steady-state hot paths. The module is a Feature Systems tier module and may import from Tier 1 and Foundations but must not import from `lua_api`.
+**Publish-subscribe patterns.** `EventBus` is a named-event publish-subscribe bus with priority-ordered listeners, one-shot subscriptions, and subscription management (cancel by ID). Used for decoupled system communication where any number of subscribers can react to a named event without the publisher knowing the listeners. `Mediator` provides named-channel message routing between components — a centralised broker variant where all messages pass through a known hub.
 
-Updated pattern type methods expand the scripting surface for several patterns. `StateMachine`, `EventBus`, `Blackboard`, and `PriorityQueue` have all received additional accessor and mutation methods through the Lua bridge, covering use-cases such as state introspection, conditional subscriber management, typed blackboard iteration, and priority re-ordering that previously required workarounds in game scripts.
+**Object lifecycle.** `ObjectPool` tracks recyclable object slots to reduce GC churn. The Lua layer stores actual values; the Rust type tracks which slots are active, idle, and available. `acquire()` returns the next idle slot ID; `release(id)` marks it idle. `Factory` is a constructor-name registry with optional alias resolution for data-driven object creation: `register(name, fn)`, `create(name, args)`.
 
-**Scope boundary**: Feature Systems tier. Depends on `runtime`. Lua bridge in `src/lua_api/patterns_api.rs`.
+**Command and undo.** `CommandStack` provides undo/redo history with batch grouping for atomic multi-step operations. `push(label)`, `undo()`, `redo()`, `beginBatch()`, `endBatch()`. The Lua layer holds the actual do/undo callbacks keyed by the command ID returned by `push`.
+
+**State machines.** `StateMachine` is a full FSM with registered states, explicit guarded transition rules, entry/exit callbacks, and state history. `addState(name)`, `addTransition(from, to, guard)`, `transition(target)`, `currentState()`, `history()`. `SimpleState` is the lightweight variant for games that need named states without a validated transition graph.
+
+**Shared knowledge.** `Blackboard` is a hierarchical typed key-value store for AI and game system coordination. `BlackboardValue` enum carries `Nil`, `Bool`, `Int`, `Float`, `String`, `Vec2`, and `Table` variants. `set(key, value)`, `get(key)` → value, `watch(key, fn)` (fires on change), `revision()` (monotone update counter). Multiple systems share a `Blackboard` userdata without tight coupling. `Observer` provides reactive per-key subscriptions on any watched table with the same change-fire semantics.
+
+**Rate limiting.** `Throttle` implements leading-edge rate limiting: the first event in a window fires immediately; subsequent events within the cooldown are dropped. `Debounce` is trailing-edge delay: every new event restarts a timer; only the event after the quiet period fires. Both are useful for input handling, network request throttling, and animation trigger debouncing.
+
+**Scheduling.** `PriorityQueue` is a stable highest-priority-first queue for turn-based scheduling and agenda management. `push(priority, item)`, `pop()` → item, `peek()` → item, `reprioritize(id, new_priority)`. `Ring` is a fixed-capacity circular history buffer for time-series data and recent-event queries.
+
+**Data structures.** `Funnel` is a time-windowed event aggregator: `add(event)`, `flush()` → batch (fires when window expires or is manually drained). `BiMap` is a bidirectional hash map with bijection enforcement. `Trie` is a string-key prefix index with `prefixSearch(prefix)` and ordered iteration. `ServiceLocator` is a singleton-style named-service registry for global access without dependency injection.
+
+**Extended scripting surface.** `StateMachine`, `EventBus`, `Blackboard`, and `PriorityQueue` each have additional accessor and mutation methods on the Lua bridge for state introspection, conditional subscriber management, typed blackboard iteration, and priority re-ordering that previously required game-side workarounds.
+
+**Lua surface.** `lurek.patterns.newEventBus()`, `newObjectPool(capacity)`, `newCommandStack(limit)`, `newServiceLocator()`, `newFactory()`, `newStateMachine()`, `newBlackboard()`, `newObserver()`, `newThrottle(interval)`, `newDebounce(delay)`, `newPriorityQueue()`, `newRing(capacity)`, `newFunnel(window_ms)`, `newBiMap()`, `newTrie()`, `newMediator()`.
+
+**Scope boundary.** Feature Systems tier. Depends on `runtime` (SharedState for timer access). Lua bridge in `src/lua_api/patterns_api.rs`.
 
 ## Files
 

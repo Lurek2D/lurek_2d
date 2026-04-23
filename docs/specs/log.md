@@ -11,48 +11,23 @@
 
 ## Summary
 
-The `log` module is Lurek2D's Foundations-tier logging façade exposed to game
-scripts through `lurek.log.*`. It wraps the Rust `log` crate so that
-game-script output appears alongside engine diagnostic output, all controlled
-by `RUST_LOG` and by a per-VM sink routing layer on top of the standard log
-channel.
+## Summary
 
-**Global level management**: `set_level(level)`, `get_level()`, and
-`enabled_for(level)` delegate to `crate::runtime::log_messages`, giving Lua
-scripts a single knob for the global log filter. `enabled_for` lets callers
-cheaply check whether a level is active before building an expensive message
-string. The four severity helpers — `debug`, `info`, `warn`, `error` — emit
-through the standard Rust `log` crate and fan out to any registered sinks.
+The `log` module is Lurek2D's logging facade for Lua game scripts — a Foundations tier module that routes `lurek.log.*` calls through the Rust `log` crate so game-script output appears alongside engine diagnostics in the unified log stream, filtered by the same `RUST_LOG` environment variable mechanism used by the engine itself.
 
-**Structured logging**: `log_structured(level, msg, fields)` emits a
-`msg { k1=v1, … }` formatted record using a `LogFields` sorted map of
-string key-value pairs. `debug_fields`, `info_fields`, `warn_fields`, and
-`error_fields` are Lua shorthand helpers combining level selection and field
-emission in one call, useful for analytics and telemetry pipelines that
-need machine-parseable key-value output.
+**Level management.** `set_level(level)`, `get_level()`, and `enabled_for(level)` delegate to the shared log configuration, giving Lua scripts a single knob for the global filter. `enabled_for` allows cheap pre-checks before building an expensive log message string. Four severity helper functions — `debug(msg)`, `info(msg)`, `warn(msg)`, `error(msg)` — emit through the standard `log` macro chain and fan out to all registered sinks.
 
-**Sink routing layer**: The `sinks` submodule adds an out-of-band routing
-layer on top of the `log` crate output. A `Sink` pairs a `SinkKind` backend
-— `File` (append), `Memory` (bounded ring buffer of `MemoryEntry` records), or
-`RotatingFile` (rotation by byte count with configurable backup count) — with
-an independent `SinkLevel` minimum threshold. This allows capturing all
-`debug` output to a rotating log file while keeping only `warn` and above in
-the in-memory ring, entirely independently of the global `RUST_LOG` filter.
+**Structured logging.** `log_structured(level, msg, fields)` emits a record in `msg { key1=val1, key2=val2, ... }` format using a `LogFields` sorted map. `debug_fields`, `info_fields`, `warn_fields`, and `error_fields` are Lua shorthand helpers that combine level selection and field emission in a single call. Structured output is machine-parseable, making it suitable for analytics pipelines, automated test assertions, and telemetry collection.
 
-**SinkRegistry**: Maintains a per-VM ordered list of sinks. `add(sink)`
-assigns a numeric ID used for later `remove(id)`, `flush(id)`, or
-`read_memory(id, drain)` calls. `dispatch(level, msg)` and
-`dispatch_structured(level, msg, fields)` fan out every emitted message to all
-registered sinks whose `min_level` is satisfied.
+**Sink routing layer.** The `sinks` submodule adds a configurable routing layer running in parallel with the standard `log` crate output. A `Sink` pairs a `SinkKind` backend with an independent `SinkLevel` minimum threshold, allowing separate capture policies per destination. Three sink kinds are supported: `File` (append-mode; one record per line), `RotatingFile` (byte-count rotation with configurable backup file count — e.g. five 1 MB files), and `Memory` (bounded ring buffer of `MemoryEntry` records capped at a configurable max size). A `File` sink at `debug` level captures the full trace for post-mortem analysis; a `Memory` sink at `warn` level drives an in-game notification panel — both active at the same time via `SinkRegistry`.
 
-**Memory sinks for in-game UIs**: `read_memory(id, drain)` returns all
-buffered `MemoryEntry` records, optionally clearing the buffer, making memory
-sinks the natural backing store for in-game log-viewer panels, REPL consoles,
-and developer overlays. `listSinks()` in Lua returns a descriptive table for
-each registered sink so tooling can display active log destinations at runtime.
+**SinkRegistry.** `SinkRegistry` maintains a per-VM ordered list of sinks. `add(sink)` returns a numeric `SinkId` for later management: `remove(id)`, `flush(id)` (force file flush), `read_memory(id, drain)` (return buffered `MemoryEntry` records, optionally clearing the buffer). `dispatch(level, msg)` and `dispatch_structured(level, msg, fields)` fan out each emitted record to all registered sinks whose `min_level` threshold is satisfied. The level check is done per-sink, so a single `dispatch` call feeds only the sinks that opted into that level.
 
-**Scope boundary**: Core Runtime tier. Depends on `runtime`. Lua bridge in
-`src/lua_api/log_api.rs` as `lurek.log.*`.
+**In-game log viewers.** `read_memory(id, drain)` is designed for real-time UI consumption: pass `drain = false` to read without clearing (for a scrollable log panel), `drain = true` to pop and process (for a notification queue that clears after display). `MemoryEntry` carries timestamp, level, and message. `listSinks()` in Lua returns a descriptive table for each registered sink so developer overlays can show which log destinations are currently active.
+
+**Lua surface.** `lurek.log.debug(msg)`, `info(msg)`, `warn(msg)`, `error(msg)`. `lurek.log.setLevel(level)`, `getLevel()`, `isEnabled(level)`. `lurek.log.structured(level, msg, fields)` (convenience variants: `debugFields`, `infoFields`, `warnFields`, `errorFields`). Sinks: `lurek.log.addSink(spec)` → id, `removeSink(id)`, `flushSink(id)`, `readMemory(id, drain)`, `listSinks()`.
+
+**Scope boundary.** Foundations tier. Depends on `runtime` for shared log state access. Lua bridge in `src/lua_api/log_api.rs`.
 
 ## Files
 

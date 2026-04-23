@@ -11,17 +11,25 @@
 
 ## Summary
 
-The `automation` module provides Lurek2D's automated input simulation engine for loading and playing back recorded input sequences. Its primary use-cases are headless integration tests, QA regression replay, speedrun verification, and recorded developer input sessions.
+The `automation` module is Lurek2D's automated input simulation engine — a Feature Systems tier subsystem for loading, recording, and playing back scripted input sequences. It is primarily used for headless integration tests, QA regression replay, speedrun verification, and development session recording.
 
-The central type is `Simulator`, a playback engine that drives named `Script` objects. Each `Script` contains an ordered, time-sorted sequence of `Step` records, each holding an `Action` variant (one of 8 kinds: key-press, key-release, mouse-move, mouse-press, mouse-release, text-input, scroll, and wait) plus a timestamp and a parameters map. Scripts are capped at `MAX_STEPS` entries to prevent unbounded memory use.
+**Core model.** The central type is `Simulator`, a playback engine that owns a named registry of `Script` objects. Each `Script` contains a time-sorted `Vec<Step>` where every `Step` pairs an `Action` variant with a timestamp (in seconds from script start) and an optional parameters map. `Action` has eight variants: `KeyPress`, `KeyRelease`, `MouseMove`, `MousePress`, `MouseRelease`, `TextInput`, `Scroll`, and `Wait`. Scripts are capped at `MAX_STEPS` entries (module-wide default, overridable per-script) to prevent unbounded memory use.
 
-During playback, `simulator.update(dt)` advances an internal clock and fires all steps whose timestamp has been reached by injecting synthetic `Event` values into the engine's `EventQueue` through the same `push()` path as real hardware events. This makes automation playback completely transparent to downstream Lua callbacks — they cannot distinguish replayed input from real user input.
+**Playback.** `Simulator::update(dt)` advances an internal elapsed clock and dispatches all steps whose timestamp is reached by pushing synthetic `Event` values into the engine's `EventQueue` through the same `push()` path as real hardware events. This makes replay completely transparent to Lua callbacks — scripts cannot distinguish replayed input from physical input. The simulator maintains a playback state machine: `Idle → Running → Paused → Running → Complete`. Controls: `start(name)`, `stop()`, `pause()`, `resume()`, `is_complete()`.
 
-Scripts can be loaded programmatically from Lua tables or from serialized TOML files. The `Simulator` tracks playback status (idle, running, paused, complete) and provides `start()`, `stop()`, `pause()`, `resume()`, and `is_complete()` controls.
+**Script lifecycle.** Scripts can be created programmatically from Lua tables or loaded from TOML files via `Script::from_toml(string)`. Each script carries: name, optional description string, the step list, and an optional per-script step limit via `set_step_limit` / `get_step_limit` (independent of the module-wide `MAX_STEPS` cap).
 
-Individual scripts can now carry per-script step limits via `Script::set_step_limit` and `Script::get_step_limit`, independent of the module-wide `MAX_STEPS` cap. The `Simulator` has been significantly extended with macro management (`save_macro`, `play_macro`, `has_macro`, `list_macros`), time-scaled playback (`get/set_playback_speed`), and visual-feedback replay via `set/is_highlight_mode`. The Lua surface gains `lurek.automation.getStepLimit/setStepLimit`, the full macro API, speed controls, and `waitUntil(predicate)` — a synchronization primitive that blocks the simulation step until a Lua condition is satisfied.
+**Macro system.** `Simulator` includes an inline macro recording and playback manager: `save_macro(name, steps)` stores a named step sequence; `play_macro(name)` appends it to the active timeline; `has_macro(name)` / `list_macros()` query the registry. This enables composable test sequences from reusable input fragments.
 
-**Scope boundary**: Core Runtime tier. Depends on `event`, `runtime`. Lua bridge in `src/lua_api/automation_api.rs`.
+**Time scaling.** `set_playback_speed(factor)` / `get_playback_speed()` controls the rate at which the internal clock advances relative to wall-clock dt. Values greater than 1.0 fast-forward replay, enabling rapid regression sweeps. Values less than 1.0 slow-motion the replay for debugging timing-sensitive steps.
+
+**Highlight mode.** `set_highlight_mode(bool)` / `is_highlight_mode()` toggles visual input feedback during replay — useful for demo recording and QA review sessions where reviewers need to see which input is being simulated.
+
+**`waitUntil` primitive.** The Lua surface exposes `lurek.automation.waitUntil(predicate)`, a synchronisation step that inserts a blocking sentinel into the timeline. The simulator fires the predicate each tick and only advances to the next step when it returns true. This enables `waitUntil(function() return boss:isDead() end)` style synchronisation without hard-coded timestamps.
+
+**Lua surface.** `lurek.automation.newSimulator()` → `Simulator` userdata. Script management: `load(name, steps_table)`, `loadToml(name, toml_string)`, `unload(name)`, `hasScript(name)`, `listScripts()`. Playback: `start(name)`, `stop()`, `pause()`, `resume()`, `isComplete()`, `isRunning()`, `isPaused()`, `update(dt)`. Extended API: `setStepLimit(n)`, `getStepLimit()`, `setPlaybackSpeed(f)`, `getPlaybackSpeed()`, `saveMacro(name, steps)`, `playMacro(name)`, `listMacros()`, `setHighlightMode(bool)`, `waitUntil(fn)`.
+
+**Scope boundary.** Core Runtime tier (uses runtime event infrastructure). Depends on `event`, `runtime`. Lua bridge in `src/lua_api/automation_api.rs`.
 
 ## Files
 

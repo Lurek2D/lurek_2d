@@ -11,49 +11,29 @@
 
 ## Summary
 
-The `serial` module provides Lurek2D's format-agnostic text and binary
-serialization. Its central type is `SerialValue` — a recursive enum
-(`Null`, `Bool`, `Int(i64)`, `Float(f64)`, `Str(String)`,
-`Seq(Vec<SerialValue>)`, `Map(IndexMap<String, SerialValue>)`) — that acts as
-the common intermediate representation shared by every active format driver,
-decoupling JSON, TOML, CSV, MessagePack, and Lua-table conversion from one
-another.
+## Summary
 
-**TOML** is the preferred human-authored config format per binding constraint
-B-05: `to_toml(v)` and `from_toml(s)`. TOML imposes a table root and rejects
-null values — `to_toml` enforces these constraints at serialization time,
-returning a descriptive error for values that cannot be expressed in valid
-TOML. **JSON** is provided for external interop via `serde_json`: `to_json(v)`
-and `from_json(s)`. **CSV** supports configurable header presence and delimiter
-character through `CsvOptions`: `to_csv(rows, opts)` and `from_csv(text, opts)`.
-**MessagePack** provides compact binary encoding and decoding through
-`rmp-serde`, using `MsgValue` as an intermediate serde-compatible mirror.
-**XML** provides read-only parsing via `roxmltree`, with `decode(xml)` returning
-a nested `SerialValue::Map` tree that represents element attributes and children.
-**YAML** is excluded per constraint B-05; `yaml.rs` exists on disk as a stub
-but is intentionally not compiled or re-exported from `mod.rs`.
+The `serial` module provides Lurek2D's format-agnostic text and binary serialisation — a Foundations tier module with no Lurek2D imports. Its central type is `SerialValue`, a recursive enum (`Null`, `Bool`, `Int(i64)`, `Float(f64)`, `Str(String)`, `Seq(Vec<SerialValue>)`, `Map(IndexMap<String, SerialValue>)`) that acts as the common intermediate representation shared by every format driver. This decouples JSON, TOML, CSV, MessagePack, and Lua-table conversion from one another — each driver converts to/from `SerialValue` independently.
 
-**Schema validation**: `validate(value, schema)` in `schema.rs` performs
-structural validation, checking required keys, value-type constraints, and
-optional field presence against a `SerialValue` schema descriptor, returning a
-sorted list of human-readable validation error strings.
+**TOML.** The preferred human-authored config format per binding constraint B-05. `to_toml(v)` serialises a `SerialValue` tree to a TOML string; `from_toml(s)` parses back. TOML imposes a table root and rejects null values — `to_toml` enforces these constraints at serialisation time, returning a descriptive `EngineError` for values that cannot be expressed in valid TOML. Used by `save`, `config`, `mods`, and game project configuration files.
 
-**Lua bridge**: `to_lua(sv, lua)` and `from_lua(lua_val)` in `lua_table.rs`
-convert between `SerialValue` trees and `mlua::Value` trees, enabling the
-`serial_api.rs` Lua bridge to accept and return native Lua tables for every
-serialization call. The `lurek.serial` namespace exposes `fromJson`, `toJson`,
-`fromToml`, `toToml`, `fromCsv`, `toCsv`, `encodeMsgPack`, `decodeMsgPack`,
-`decodeXml`, and `validate` to game scripts.
+**JSON.** For external API interop via `serde_json`: `to_json(v)` and `from_json(s)`. JSON supports null values and array roots. Pretty-print option via `JsonOptions::pretty`. Used by `network` (HTTP bodies) and `analytics` (event records). Per B-05 JSON is external-interop only — human-authored files use TOML.
 
-**No file I/O**: The module performs no file I/O — callers supply strings or
-byte slices and receive strings or byte slices. File reading and writing is the
-responsibility of `filesystem`. The `save` module uses `to_toml` / `from_toml`
-to serialize save collector outputs; the `data` module builds on top of serial
-encoders for binary storage formats.
+**CSV.** `CsvOptions` configures header presence, delimiter character (default comma), and quote character. `to_csv(rows, opts)` serialises a `Vec<SerialValue::Map>` to CSV with header row. `from_csv(text, opts)` parses to a sequence of maps keyed by column name, or to a sequence of sequences without headers. Used by `dataframe` for data export.
 
-**Scope boundary**: Foundations tier. Depends only on external crates (toml,
-serde_json, csv, rmp-serde, roxmltree, indexmap). Lua bridge in
-`src/lua_api/serial_api.rs` as `lurek.serial.*`.
+**MessagePack.** Compact binary encoding/decoding via `rmp-serde`. `encode_msgpack(v)` returns a `Vec<u8>`; `decode_msgpack(bytes)` returns `SerialValue`. Uses `MsgValue` as an intermediate serde-compatible mirror type. Recommended format for all `network` application-level messages and `serial`-backed binary data blobs. 3-5x smaller than equivalent JSON for numeric-heavy game state.
+
+**XML.** Read-only parsing via `roxmltree`: `decode_xml(s)` returns a nested `SerialValue::Map` tree representing element names, attributes (under `"@attrs"` key), and children. Write support is not provided — XML generation is out of scope per the engine's format policy. Used for importing third-party asset metadata (e.g. TMX tilemap files, Spine skeleton XML).
+
+**YAML.** Excluded per constraint B-05. `yaml.rs` exists on disk as a stub but is intentionally not compiled or re-exported from `mod.rs`. Any attempt to use YAML should be redirected to TOML.
+
+**Schema validation.** `validate(value, schema)` in `schema.rs` performs structural validation: required key presence, value-type constraints, optional field presence, and numeric range checks against a `SerialValue` schema descriptor. Returns a sorted list of human-readable error strings. Used by `config` to validate `conf.toml` at boot and by game code to validate mod manifests.
+
+**Lua bridge.** `to_lua(sv, lua)` and `from_lua(lua_val)` in `lua_table.rs` convert between `SerialValue` trees and `mlua::Value` trees, enabling `serial_api.rs` to accept and return native Lua tables for every serialisation call. The `lurek.serial` namespace exposes: `fromJson(str)`, `toJson(table, opts)`, `fromToml(str)`, `toToml(table)`, `fromCsv(str, opts)`, `toCsv(rows, opts)`, `encodeMsgPack(table)` → bytes, `decodeMsgPack(bytes)`, `decodeXml(str)`, `validate(table, schema)` → errors array.
+
+**No file I/O.** This module performs no file I/O — callers supply strings or byte slices and receive strings or byte slices. File reading and writing is the responsibility of `filesystem`. The `save` module calls `to_toml`/`from_toml`; the `data` module builds on top of serial encoders for binary storage formats.
+
+**Scope boundary.** Foundations tier. Depends only on external crates: `toml`, `serde_json`, `csv`, `rmp-serde`, `roxmltree`, `indexmap`. No Lurek2D imports. Lua bridge in `src/lua_api/serial_api.rs`.
 
 ## Files
 

@@ -11,17 +11,27 @@
 
 ## Summary
 
-The `light` module provides Lurek2D's 2D point-light data model. It is a Foundations tier module — a pure data container with no GPU resources stored in it. The renderer receives light data via `RenderCommand` variants and performs all GPU work after Lua callbacks return.
+## Summary
 
-`Light2D` is the core type, describing one light source with: position (x, y), `LightType` (Point, Spot, or Directional), color, intensity, radius, enabled flag, inner/outer cone angles for spot lights, direction angle, `FalloffMode` (Linear, Quadratic, or Constant), optional `FlickerConfig` for built-in sinusoidal/noise intensity oscillation, and optional polygon shadow casting via `Occluder` geometry. `Attenuation` provides custom falloff coefficients for callers who need finer control than the named `FalloffMode` presets.
+The `light` module provides Lurek2D's 2D point-light data model — a Foundations tier module that is a pure data container with no GPU resources stored in it. The renderer receives light data via `RenderCommand` variants and performs all GPU work outside of this module. The design keeps light state Lua-scriptable and headlessly testable without a window.
 
-`LightWorld` is the resource pool and render interface: it owns all active `Light2D` instances in a `SlotMap<LightKey, Light2D>`, provides CRUD operations, and exposes `build_render_commands()` which converts the active light set into `RenderCommand::Light2D` entries each frame. `LightBlendMode` controls how light color composites with the scene: `Multiply` (shadow darkening), `Additive` (glowing lamp pile-up), or `Screen`. `ShadowFilter` controls edge quality for shadow boundaries.
+**Light2D — the core light record.** `Light2D` describes one light source with: world-space position (x, y), `LightType` variant (Point, Spot, Directional), colour (RGBA), intensity scalar, effective radius (world units), enabled flag, inner/outer cone angles for spot lights, direction angle, `FalloffMode` (Linear, Quadratic, Constant), optional `FlickerConfig` for sinusoidal or noise-based intensity oscillation, optional polygon `Occluder` geometry for shadow casting, and mask bits controlling which layer objects receive this light. `Attenuation` provides custom per-coefficient (constant, linear, quadratic) falloff for callers who need finer control than the named `FalloffMode` presets.
 
-Occluder polygons are expressed as lists of `Vec2` vertices defining the shadow-casting outline. The renderer traces shadow lines from each light's position against all enabled occluders, producing the shadow mask that gates lighting contributions.
+**LightWorld — the resource pool.** `LightWorld` owns all active `Light2D` instances in a `SlotMap<LightKey, Light2D>` and all active `Occluder` instances in a companion slot map. Key operations: `add_light(light) → LightKey`, `remove_light(key)`, `get_light(key)`, `get_light_mut(key)`, `set_ambient(color)`, `get_ambient()`. Group operations: `enable_group(group_id)`, `disable_group(group_id)`, `set_group_intensity(group_id, factor)` — useful for day/night zone transitions affecting multiple lights at once. `build_render_commands()` converts the active pool to `RenderCommand::Light2D` entries each frame.
 
-The `shadow.rs` source file introduces `ShadowCaster` as a dedicated first-class type for shadow-casting geometry. Rather than embedding occluder polygons directly in `Light2D`, game code can create standalone `ShadowCaster` instances via `lurek.light.newShadowCaster()` and assign them independently of specific lights, enabling scenes where one occluder interacts with multiple light sources without data duplication.
+**LightBlendMode.** `LightBlendMode` controls how each light's colour contribution composites with the rendered scene: `Additive` (lamps pile up, brightens scene), `Multiply` (darkens scene, shadow-zone effect), `Screen` (soft additive with ceiling at white). Set per light, not globally.
 
-**Scope boundary**: Foundations tier. Depends only on `math`. Lua bridge in `src/lua_api/light_api.rs`.
+**FlickerConfig.** `FlickerConfig` specifies time-varying intensity modulation: oscillation amplitude (fraction of base intensity), frequency Hz, phase offset for avoiding synchronisation between nearby torches, and a noise seed for irregular rather than sinusoidal flicker. The flicker is advanced externally by calling `advance_flicker(dt)` on `LightWorld`; the result is folded into the intensity at render-command build time.
+
+**Occluder polygons.** `Occluder` is a polygon shadow-caster with a list of `Vec2` vertices, a world-space transform (position, scale, rotation angle), an opacity scalar (0 = transparent, 1 = fully opaque), layer mask, and an enabled flag. The renderer traces shadow lines from each light position against all active occluders for the same layer mask, building a shadow map that gates the light contribution.
+
+**ShadowCaster — standalone geometry.** `shadow.rs` introduces `ShadowCaster` as a first-class type independent of any specific `Light2D`. Game objects (walls, characters, furniture) register their outline as a `ShadowCaster` once; all lights with matching layer masks automatically interact with it. `ShadowFilter` selects the shadow edge smoothing quality (Hard, Soft, SoftHigh).
+
+**LightTransition — smooth interpolation.** `LightTransition` linearly interpolates a `Light2D`'s colour, intensity, and radius from their current values to target values over a fixed duration. `update(dt) → bool` advances and returns `true` on completion. Used for torch extinction, level-transition lighting, and scripted events.
+
+**Lua surface.** `lurek.light.new(spec)` → `Light2D` userdata. `lurek.light.newWorld()` → `LightWorld` userdata. `LightWorld` methods: `add(light)`, `remove(key)`, `get(key)`, `setAmbient(r,g,b,a)`, `enableGroup(id)`, `disableGroup(id)`, `setGroupIntensity(id, factor)`, `advanceFlicker(dt)`. `Light2D` methods: `setPosition(x,y)`, `setColor(r,g,b,a)`, `setIntensity(v)`, `setRadius(v)`, `setFlicker(config)`, `setOccluder(vertices)`, `setBlendMode(mode)`. `lurek.light.newTransition(light, target, duration)`. `lurek.light.newShadowCaster(vertices)`.
+
+**Scope boundary.** Foundations tier. Depends only on `math`. Lua bridge in `src/lua_api/light_api.rs`.
 
 ## Files
 

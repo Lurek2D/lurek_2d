@@ -11,19 +11,27 @@
 
 ## Summary
 
-The `minimap` module provides a grid-based minimap data model for overhead map displays with fog of war, tracked game objects, pings, persistent markers, and a viewport rectangle overlay. It is a Feature Systems tier module that is pure CPU — it has no direct GPU dependencies and produces `RenderCommand` entries for the renderer each frame.
+## Summary
 
-`Minimap` is the main data container: a 2D grid of cells, each storing a terrain type ID. Fog-of-war is tracked per-cell via a `FogLevel` enum (Hidden/Explored/Visible). `ColorMode` controls whether cells are colored by terrain type or by owner faction (political mode falls back to terrain colors since per-cell owner is not stored).
+The `minimap` module provides a grid-based minimap data model for overhead map displays — a Feature Systems tier module that is pure CPU code producing `RenderCommand` entries for the renderer each frame. It has no direct GPU dependencies and can operate independently of the main camera and scene rendering pipelines.
 
-`MinimapObject` entries represent tracked game entities: each carries a grid position, a `type_index` into the registered `MinimapObjectType` array, and an `owner` identifier. `set_object(id, x, y, type_index, owner)` creates or updates tracked entities. A `HashMap<u32, MinimapObject>` manages the pool keyed by user-assigned IDs.
+**Core data model.** `Minimap` is the main data container: a 2D grid of cells where each cell stores a terrain type ID (as a `u8` index into a registered terrain colour palette). Fog of war is tracked per-cell via a `FogLevel` enum (`Hidden` / `Explored` / `Visible`). `ColorMode` controls whether cells are rendered by terrain type or by owner faction (political mode falls back to terrain colours when per-cell owner is not stored). The grid supports multiple layers via `LayerData` for split-level maps — dungeon floors, underground passages, or altitude bands.
 
-`MinimapPing` provides temporary pulsing markers at a world position for events like alerts or waypoints. `MinimapMarker` adds persistent named icons for points of interest. The viewport rectangle overlay uses the current `Camera` bounds from `SharedState` to draw a rectangle on the minimap showing which part of the world is currently visible on screen.
+**Tracked game objects.** `MinimapObject` entries represent tracked game entities projected onto the minimap. Each carries a grid position, a `type_index` into the registered `MinimapObjectType` array (which stores a display colour and visibility toggle per type), and an `owner` identifier for faction colouring. `set_object(id, x, y, type_index, owner)` creates or updates tracked entities; a `HashMap<u32, MinimapObject>` manages the pool keyed by user-assigned IDs. `remove_object(id)` and `clear_objects()` manage the pool. Objects outside the currently revealed fog area are suppressed automatically.
 
-The `render` submodule converts the `Minimap` state into a series of `RenderCommand::DrawShape` and `RenderCommand::DrawImage` entries each frame.
+**Pings and markers.** `MinimapPing` provides temporary pulsing markers at grid positions for events like alerts or waypoints. Pings have a configurable pulse duration and colour and are removed automatically after expiry. `MinimapMarker` adds persistent named icons for points of interest; each marker carries a label, optional icon index, and a `MarkerAnimation` for visual emphasis (static, pulsing, rotating). Markers can be queried by region via `markers_in_rect(rect)`.
 
-New overlay management methods have been added to `Minimap`, expanding the surface available to Lua scripts for custom map annotations. These additions allow game code to add, remove, and query overlay shapes and paths programmatically through `lurek.minimap.*`, making it straightforward to display pathfinding routes, territory borders, or event zones directly on the minimap without custom rendering code.
+**Viewport overlay.** A viewport rectangle overlay uses the current `Camera` bounds from `SharedState` to compute which portion of the world grid is currently visible on screen and draws a framed rectangle on the minimap accordingly. This gives the player spatial awareness of their current view within the larger map.
 
-**Scope boundary**: Feature Systems tier. Depends on `render` (command types), `math`, `runtime`. Lua bridge in `src/lua_api/minimap_api.rs`.
+**Overlay shapes and paths.** `OverlayShape` is a custom geometric shape drawn in grid space on top of the minimap (circle, rectangle, polygon). `OverlayPath` represents a sequence of grid points for displaying pathfinding routes, patrol paths, or territory borders. `add_overlay_shape(id, shape)`, `remove_overlay_shape(id)`, `add_overlay_path(id, path)`, and `remove_overlay_path(id)` are the management API. These allow game code to annotate the minimap with dynamic information without custom rendering logic.
+
+**Coordinate system.** `world_to_minimap(world_pos)` converts a world-space `Vec2` to minimap display pixels. `minimap_to_world(px, py)` does the inverse. Both account for zoom factor and pan offset. `set_zoom(factor)` and `set_pan(dx, dy)` control the view transformation applied to the minimap display.
+
+**Rendering.** The `render` submodule converts `Minimap` state into `RenderCommand::DrawShape` and `RenderCommand::DrawImage` entries each frame. Cells are drawn as coloured quads batched per-colour to minimise render commands. Fog cells use an alpha overlay. Objects, pings, markers, viewport rectangle, and overlay shapes are drawn in layered order on top.
+
+**Lua surface.** `lurek.minimap.new(gw, gh, dw, dh)` creates a minimap. Methods on the returned userdata: `setTerrain`, `setFog`, `setColorMode`, `setTerrainColor`, `setObject`, `removeObject`, `clearObjects`, `addPing`, `addMarker`, `setViewportVisible`, `addOverlayShape`, `addOverlayPath`, `worldToMinimap`, `minimapToWorld`, `setZoom`, `setPan`, `render(commands)`.
+
+**Scope boundary.** Feature Systems tier. Depends on `render` (RenderCommand types), `math`, `runtime`. Lua bridge in `src/lua_api/minimap_api.rs`.
 
 ## Files
 

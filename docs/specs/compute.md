@@ -11,17 +11,23 @@
 
 ## Summary
 
-The `compute` module provides Lurek2D's dense N-dimensional numerical array library, exposed to Lua scripts as `lurek.compute.*` (the bridge in `src/lua_api/compute_api.rs` registers the table under that name; an earlier `lurek.compute` alias is no longer current). All computation runs on the CPU — the name reflects its intended use for matrix operations, signal processing, and numerical workloads that would otherwise require GPU compute shaders.
+The `compute` module is Lurek2D's dense N-dimensional numerical array library for the Foundations tier. It provides CPU-side matrix operations, signal processing, spatial transforms, and linear algebra that would otherwise require GPU compute shaders. All arithmetic executes synchronously on the calling thread — no background workers, no GPU memory — making it safe to call from Lua game scripts and easy to unit-test headlessly.
 
-The core type is `NdArray`, a row-major array supporting 1D, 2D, and 3D shapes with three element types: `f32`, `f64`, and `i32` (discriminated by the `DataType` enum). Construction: `new(shape, dtype)`, `zeros`, `ones`, `from_flat_data`. Access: `get(indices)`, `set(indices, value)`, `slice(ranges)`. Shape inspection: `shape()`, `ndim()`, `numel()`, `reshape(new_shape)`.
+**Core type: `NdArray`.** `NdArray` is a row-major contiguous buffer supporting 1D, 2D, and 3D shapes. Three element types are supported via the `DataType` enum: `Float32`, `Float64`, and `Int32`. The restricted type set keeps the API predictable for Lua callers who do not control Rust type inference. Construction helpers: `new(shape, dtype)`, `zeros`, `ones`, `range(start, stop, step)`, `from_slice`. The Lua API additionally exposes `fromTable` to create an array from a plain Lua table. Shape inspection: `shape()`, `ndim()`, `numel()`. Mutation: `get_by_indices`/`set_by_indices` (multi-dim), `get_f64`/`set_f64` (flat index). Structural transforms: `reshape`, `transpose_2d`, `clone_array`, `fill`.
 
-The `ops` submodule provides element-wise arithmetic (add, subtract, multiply, divide, modulo) and reductions (sum, mean, min, max, argmin, argmax) over full arrays or individual axes. The `spatial` submodule adds 2D convolution, max/average pooling, and distance transforms. The `linalg` submodule provides linear algebra: dot product, matrix multiply, Gaussian elimination solvers, Sobel edge detection kernels, and outer products. The `analytics` submodule covers signal processing (FFT, autocorrelation, moving average), normalization (L1/L2/min-max), and statistical functions (variance, standard deviation, histogram).
+**`ops` submodule.** Element-wise binary operations (add, sub, mul, div, mod, pow) and their scalar variants. Unary transforms: `sqrt`, `abs`, `neg`, `clamp`, `threshold`. Comparison predicates (eq, neq, gt, lt, gte, lte) with scalar forms. Logical aggregates: `any`, `all`, `count_nonzero`. Global reductions: `sum`, `mean`, `min_val`, `max_val`, `argmin`, `argmax`. Axis reductions with the same set of operations. Conditional selection: `where_mask`. Bitwise operations for `Int32` arrays: AND, OR, XOR, NOT, left shift, right shift.
 
-The new `fft.rs` submodule adds a dedicated Fast Fourier Transform implementation alongside its inverse, complementing the existing `analytics` signal-processing helpers with a first-class FFT type optimized for power-of-two sequences. Lua scripts access these directly via `lurek.compute.fft(array)` and `lurek.compute.ifft(array)`, receiving a new `NdArray` containing the complex spectrum or the reconstructed time-domain signal.
+**`spatial` submodule.** 2D convolution (`convolve2d`) with zero-padding for same-size output. Morphological dilation and erosion with a Manhattan-diamond structuring element. Flood fill using BFS with 4-connectivity. Sub-array extraction/insertion (`get_region`/`set_region`). 2D matrix multiplication (`matmul`). 1D dot product.
 
-**Scope boundary**: Foundations tier. No Lurek2D module imports. Lua bridge in `src/lua_api/compute_api.rs`.
+**`linalg` submodule.** Vector utilities: L2 normalise, 2D cross product (signed scalar), outer product. Matrix construction: 2×2 rotation matrix, 3×3 homogeneous affine matrix. Point transformation by 2×2 or 3×3 matrix. `linsolve` via Gaussian elimination with partial pivoting. `lu_decompose` (P·A = L·U). `eigenvalue_power` (dominant eigenvalue by power iteration). `gaussian_kernel` generator. `sobel` edge detection.
 
-_Plugin candidacy: this module is a candidate for the plugin tier under proposed constraint A-05 — see [docs/architecture/plugins.md](../architecture/plugins.md)._
+**`analytics` submodule.** Signal processing: `convolve1d`, `correlate1d`, autocorrelation, moving average. Statistics: `variance`, `std_dev`, `histogram`, `percentile`, `covariance`, `pearson_corr`. Transforms: `cumsum`, `diff`, normalise to range (`normalize_range`), z-score standardisation (`zscore`). Normalisation norms: L1, L2, min-max.
+
+**`fft` submodule.** Dedicated Fast Fourier Transform (power-of-two optimized). `fft(data)` returns the complex DFT spectrum. `ifft(data)` reconstructs the time-domain signal. `fft_magnitude(data)` returns the magnitude spectrum `|X[k]|`. Lua scripts access all three via `lurek.compute.fft`, `lurek.compute.ifft`, `lurek.compute.fftMagnitude`.
+
+**Lua surface.** 11 module-level constructor/utility functions and a full `Array` userdata type with ~40 methods covering shape inspection, element access, arithmetic, reductions, transforms, and serialisation. Matrix helpers `gaussianKernel`, `rotate2dMatrix`, `affine2d` are exposed as free functions.
+
+**Scope boundary.** Foundations tier. No Lurek2D module dependencies. Lua bridge in `src/lua_api/compute_api.rs`. Plugin candidacy under proposed constraint A-05 — see [docs/architecture/plugins.md](../architecture/plugins.md).
 
 ## Files
 

@@ -11,19 +11,31 @@
 
 ## Summary
 
-The `terminal` module provides a character-cell text-mode terminal emulator embedded in the Lurek2D engine. It is designed for roguelikes, text adventures, in-game debug consoles, and retro-style ASCII rendering. All output goes through `RenderCommand::DrawText` to keep GPU access deferred.
+## Summary
 
-`Terminal` owns a fixed-size 2D grid of `TCell` values capped at 512×256 cells. Each `TCell` stores a Unicode character, foreground `Color`, background `Color`, and a `CellStyle` bitmask (Bold, Italic, Underline, Strikethrough, Blink, Inverse). Terminal cell coordinates are 1-based for Lua ergonomics.
+The `terminal` module provides a character-cell text-mode terminal emulator embedded in the Lurek2D engine. It is a Feature Systems tier module designed for roguelikes, text adventures, in-game debug consoles, REPL overlays, and retro ASCII rendering. All output goes through `RenderCommand::DrawText`, keeping GPU access deferred and consistent with the command-queue architecture.
 
-Text operations: `print(x, y, text, fg, bg)` places styled text at a specific grid position; `println(s)` appends with automatic line wrap and scroll; `put_char(x, y, ch, fg, bg)` sets a single cell; `fill(x, y, w, h, ch, fg, bg)` floods a rectangular region; `print_box(x, y, w, h, border_style)` draws a box-drawing character border; `clear()` resets all cells.
+**Cell grid.** `Terminal` owns a fixed-size 2D grid of `TCell` values capped at 512×256 cells. Each `TCell` stores a Unicode code point, foreground `Color`, background `Color`, and a `CellStyle` bitmask (Bold, Italic, Underline, Strikethrough, Blink, Inverse). Terminal cell coordinates are 1-based for Lua ergonomics. `ColorMode` selects 24-bit true colour, 256-colour palette (web palette), or 16-colour classic terminal mode.
 
-`BorderStyle` enum: Single, Double, Round (box-drawing curves), Bold (heavy box), ASCII (`+/-|`) for maximum compatibility, or None. `ColorMode` selects 24-bit true color, 256-color palette, or 16-color classic terminal mode.
+**Text operations.** `print(x, y, text, fg, bg)` places styled text at a specific grid position; `println(s)` appends with automatic line wrap and scroll; `put_char(x, y, ch, fg, bg)` sets a single cell; `fill(x, y, w, h, ch, fg, bg)` floods a rectangular region with a character and colour pair; `print_box(x, y, w, h, border_style)` draws a box-drawing character border around a region; `clear()` resets all cells to space with default colours; `clear_rect(x, y, w, h)` clears a sub-region only.
 
-`Widget` instances provide reusable interactive TUI controls: each has a `WidgetKind` (Label, Button, TextInput, ProgressBar, SelectList, Border) and manages its own cell region. Input event routing delivers key and mouse events to focused widgets.
+**Border styles.** `BorderStyle` enum: `Single` (thin box-drawing), `Double` (double-line box-drawing), `Round` (box-drawing with curved corners), `Bold` (heavy box-drawing), `ASCII` (`+/-|` for maximum font compatibility), `None` (no border). Border characters are drawn using Unicode box-drawing codepoints in the cell grid, requiring a monospace font that covers the box-drawing Unicode block.
 
-Three source files extend the terminal's text-mode surface. The existing `ansi.rs` provides `AnsiColor` and `AnsiSpan`; it now also exposes `AnsiSequence` and an `ansiEscape` generator via `lurek.terminal.ansiEscape()` for programmatic ANSI styling. `widget.rs` exposes `TerminalWidget` as a standalone Lua-constructible TUI control via `lurek.terminal.newWidget()`, enabling interactive in-game consoles with buttons, progress bars, and text inputs inside the character-cell grid. `markup.rs` introduces `MarkupToken` and a rich-text markup parser accessible via `lurek.terminal.parseMarkup(text)`, allowing BBCode-style `[color]`, `[bold]`, and `[blink]` tags in terminal output strings.
+**ANSI escape.** `ansi.rs` provides `AnsiColor` (RGBA in [0, 255]) and `AnsiSpan` (a contiguous styled text run). `parse_ansi_spans(text)` tokenises an ANSI-escape-coded string into `Vec<AnsiSpan>` records for display in the cell grid. `strip_ansi_codes(text)` removes all escape sequences for plain-text extraction. `ansiEscape(code, text)` generates a single ANSI escape-wrapped string for programmatic styling.
 
-**Scope boundary**: Feature Systems tier. Depends on `render`, `math`, `runtime`. Lua bridge in `src/lua_api/terminal_api.rs`.
+**Rich-text markup.** `markup.rs` implements a BBCode-style markup parser. `MarkupToken` variants cover text, colour tags (`[color=#rrggbb]...[/color]`), style tags (`[bold]`, `[italic]`, `[underline]`, `[blink]`), and link tags. `parse_markup(text)` returns a `Vec<MarkupToken>` that `Terminal::print_markup(x, y, tokens)` renders directly to the cell grid as styled spans, enabling richly formatted text without manual per-character `put_char` calls.
+
+**Syntax highlighting.** `highlighter.rs` implements earliest-match-wins highlighting. `HighlightRule` pairs a plain-substring pattern with foreground and background `Color` values. `highlight_spans(text, rules)` returns a `Vec<ColoredSpan>` where overlapping rules are resolved by match position. Used by the in-game debug console and REPL for keyword, string, and number colouring.
+
+**Tab completion.** `CompletionEngine` maintains a candidate string list and a per-prefix cycling cursor. `add_candidate(s)`, `remove_candidate(s)`, `complete(prefix)` → next candidate or prefix itself when exhausted, `reset(prefix)` restarts the cycle. Used by interactive console widgets for command-line completion.
+
+**Widgets.** `Widget` instances provide reusable interactive TUI controls. Each combines a `WidgetBase` (position, size, visibility, enabled state, tag) with a `WidgetKind`: `Label` (static text), `Button` (clickable action), `TextInput` (editable single-line input with cursor), `ProgressBar` (float value [0, 1] with configurable fill character), `SelectList` (scrollable item list with keyboard navigation), `Border` (decorative box), and `Panel` (container for grouped widgets). Input event routing delivers keyboard and mouse events to the focused widget in the terminal's focus chain. `TerminalEvent` enum signals widget state changes back to the Lua callback layer.
+
+**Render pipeline.** `render.rs` converts the terminal cell grid and active widgets to `RenderCommand::DrawText` sequences per visible row. The default font is the engine's embedded monospace bitmap font. Cell background colours emit `RenderCommand::DrawShape` quads. `draw_to_image()` renders the full terminal grid to a CPU `ImageData` buffer for headless screenshot testing.
+
+**Lua surface.** `lurek.terminal.new(cols, rows)` creates a terminal. Methods: `print(x, y, str, fg, bg)`, `println(str)`, `putChar(x, y, ch, fg, bg)`, `fill(x, y, w, h, ch, fg, bg)`, `printBox(x, y, w, h, style)`, `clear()`, `clearRect(x, y, w, h)`, `render(commands)`. Rich text: `printMarkup(x, y, markup_str)`. Highlight: `addHighlightRule(pattern, fg, bg)`, `highlight(text)` → spans. Widgets: `addWidget(kind, opts)` → widget_id, `setFocus(widget_id)`, `setWidgetText(id, str)`, `getWidgetValue(id)`. Completion: `addCompletion(str)`, `complete(prefix)` → next.
+
+**Scope boundary.** Feature Systems tier. Depends on `render`, `math`, `runtime`. Lua bridge in `src/lua_api/terminal_api.rs`.
 
 ## Files
 

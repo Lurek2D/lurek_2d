@@ -11,17 +11,33 @@
 
 ## Summary
 
-The `data` module provides Lurek2D's binary data manipulation toolkit: raw byte buffers, compression, cryptographic hashing, binary encoding, and structured pack/unpack utilities. It is a Foundations tier module with no engine dependencies, used by game code and engine internals that need to work with binary data at a byte level.
+The `data` module is Lurek2D's binary data manipulation toolkit — a Foundations tier module with no engine dependencies. It provides the low-level building blocks used by game code and engine internals that must work with binary data at the byte level: raw byte buffers, compression, cryptographic hashing, binary encoding/decoding, structured pack/unpack, MessagePack, and ring buffers.
 
-The core type is `ByteData`, a heap-allocated raw byte buffer with bounds-checked element access. Most operations work by consuming or returning `ByteData` instances rather than modifying them in place.
+**`ByteData` — the core buffer.** `ByteData` is an owned, heap-allocated raw byte buffer with bounds-checked element access. It is the primary interchange type: network payloads, save-file blobs, compressed data, and hashed content all flow through `ByteData`. Key operations: `new(n)`, `from_slice`, `as_slice`, `get(i)`, `set(i, v)`, `len`, `append`, `split_at`, `concat`. Lua scripts receive `ByteData` userdata with the full method set including `toHex()`, `toBase64()`, `slice(start, len)`.
 
-Compression (`compress` submodule) supports deflate, gzip, lz4, and zlib via the `CompressFormat` enum. Hashing (`hash`) provides MD5, SHA-1, SHA-256, and SHA-512 via the `HashAlgorithm` enum. Encoding (`encode`) provides base64 and hex via the `EncodeFormat` enum.
+**Compression.** `compress.rs` wraps deflate, gzip, zlib (via flate2), and LZ4 (via lz4_flex) behind the `CompressFormat` enum. `compress(data, format)` and `decompress(data, format)` operate on `ByteData` and are the primary interfaces. LZ4 is the default for in-memory data exchange; zlib/gzip for file interoperability.
 
-The `pack`/`unpack` functions provide a LÖVE2D-compatible binary pack format using format-string tokens (`b` byte, `i` / `I` signed/unsigned integers in various widths, `f` float, `d` double, `s` length-prefixed string, `z` null-terminated string, `c` fixed-length byte sequence). This API is used by network serialization and save-data encoding. The separate `bin_pack` module implements Lurek2D's own space-separated type-token serialization format for edge cases requiring human-readable binary encoding. `DataView` provides a windowed, read-only view into a byte slice without copying. `RingBuffer` is a generic fixed-capacity circular buffer useful for input history, debug logs, and event queues. `toml_convert` handles TOML string ↔ `toml::Value` conversion for the Lua bridge, and `msgpack` provides MessagePack serialization via `rmp-serde` using `serde_json::Value` as the intermediate representation.
+**Hashing.** `hash.rs` provides `hash(data, algorithm) → ByteData` for MD5, SHA-1, SHA-256, and SHA-512 via the `HashAlgorithm` enum. Output is a fixed-length `ByteData` digest. The Lua surface exposes `lurek.data.hash(bytes, "sha256")` returning a hex string directly.
 
-Text format parsing (JSON, TOML, CSV) is the responsibility of the `serial` module under `lurek.serial`.
+**Binary encoding.** `encode.rs` provides `encode(data, format)` / `decode(text, format)` for the `EncodeFormat` enum variants: `Base64` and `Hex`. Used for transport-safe representations of binary payloads.
 
-**Scope boundary**: Foundations tier. Depends only on external crates (flate2, lz4_flex, sha2, base64, hex, rmp-serde, toml). Lua bridge in `src/lua_api/data_api.rs`.
+**Pack/unpack.** `pack.rs` implements a LÖVE2D-compatible single-character format string binary packer: `b` (byte), `i`/`I` (signed/unsigned integers in 1/2/4/8 byte widths), `f` (float32), `d` (float64), `s` (length-prefixed string), `z` (null-terminated), `c<n>` (fixed-length bytes). `pack(fmt, values) → ByteData` / `unpack(fmt, data) → table`. Used by network serialisation and persistent save-data encoding for cross-platform compatibility.
+
+**Named-token format.** `bin_pack.rs` implements Lurek2D's own named-token binary format (`u32`, `f64`, `str`, `i16`, with endian modifiers). `BinValue` is the tagged value enum bridging dynamic Lua input to strongly-typed binary writes. Intended for human-readable debug encoding scenarios.
+
+**DataView / DataWriter.** `DataView` is a read-only typed cursor over a byte slice with bounds-checked little-endian typed accessors (no copy). `DataWriter` is the growable write-cursor companion. `LuaDataView` wraps `DataView` as Lua userdata keeping the domain type free of Lua method registration.
+
+**MessagePack.** `msgpack.rs` provides `to_msgpack(json_value) → ByteData` / `from_msgpack(data) → serde_json::Value` via `rmp-serde`. Used by `serial` and `network` for compact cross-language encoding.
+
+**TOML conversion.** `toml_convert.rs` handles TOML string ↔ `toml::Value` trees for the Lua-facing TOML helpers. This keeps TOML parsing concerns isolated from the `serial` module.
+
+**Ring buffer.** `RingBuffer<T>` is a generic fixed-capacity circular buffer, useful for input history windows, debug log tails, and time-stamped event queues. Exposes `push`, `pop`, `peek`, `len`, `is_full`, `as_slice`.
+
+**Lua surface.** `lurek.data.new(n)` creates a `ByteData`. `lurek.data.compress/decompress(bytes, format)`, `lurek.data.hash(bytes, algo)`, `lurek.data.encode/decode(bytes, format)`, `lurek.data.pack(fmt, ...)`, `lurek.data.unpack(fmt, bytes)`, `lurek.data.newView(bytes)` → `DataView`, `lurek.data.newWriter()` → `DataWriter`. `ByteData` userdata: `get`, `set`, `len`, `append`, `slice`, `toHex`, `toBase64`, `toTable`.
+
+**Note.** Text format parsing (JSON, TOML, CSV) is the responsibility of the `serial` module under `lurek.serial`. `data` covers only binary representations.
+
+**Scope boundary.** Foundations tier. Depends only on external crates: flate2, lz4_flex, sha2, base64, hex, rmp-serde, toml. Lua bridge in `src/lua_api/data_api.rs`.
 
 ## Files
 
