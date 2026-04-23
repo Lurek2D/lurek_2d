@@ -1060,7 +1060,7 @@ impl LuaUserData for LuaShape {
         );
 
         // -- circle --
-        /// Queues a circle command.
+        /// Queues a filled or outlined circle draw command onto this shape.
         /// @param mode : string  "fill" or "line"
         /// @param x    : number  centre X
         /// @param y    : number  centre Y
@@ -1213,7 +1213,7 @@ impl LuaUserData for LuaShape {
         });
 
         // -- arc --
-        /// Queues an arc command.
+        /// Queues a filled or outlined arc draw command onto this shape.
         /// @param mode     : string   "fill" or "line"
         /// @param x        : number   centre X
         /// @param y        : number   centre Y

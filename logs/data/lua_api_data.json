@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generated": "2026-04-23T22:05:37.739022+00:00",
+    "generated": "2026-04-23T22:09:06.538550+00:00",
     "generator": "tools/gen_lua_api_data.py",
     "version": "0.20.0",
     "stats": {
@@ -11,8 +11,8 @@
   "lua_api": {
     "summary": {
       "total_functions": 4103,
-      "documented": 4100,
-      "coverage_pct": 99.9,
+      "documented": 4101,
+      "coverage_pct": 100.0,
       "modules": 49
     },
     "modules": {
@@ -12576,14 +12576,25 @@
             "lua_name": "lurek.camera.newCamera",
             "kind": "function",
             "owner_type": "",
-            "description": "",
-            "full_doc": "",
+            "description": "Creates a new 2D camera with the given viewport dimensions.",
+            "full_doc": "Creates a new 2D camera with the given viewport dimensions.\n\nBoth parameters default to 800 and 600 respectively when omitted.\n@param viewport_w : number?  Viewport width in pixels (default 800).\n@param viewport_h : number?  Viewport height in pixels (default 600).\n@return Camera2D",
             "params_doc": "",
             "returns_doc": "",
             "inferred_sig": "([vw], [vh])",
-            "typed_params": [],
-            "inferred_return": "",
-            "line": 540,
+            "typed_params": [
+              [
+                "viewport_w",
+                "number?",
+                true
+              ],
+              [
+                "viewport_h",
+                "number?",
+                true
+              ]
+            ],
+            "inferred_return": "Camera2D",
+            "line": 546,
             "file": "src/lua_api/camera_api.rs"
           }
         ],
@@ -16450,7 +16461,7 @@
             "inferred_sig": "()",
             "typed_params": [],
             "inferred_return": "DataFrame",
-            "line": 1634,
+            "line": 1638,
             "file": "src/lua_api/dataframe_api.rs"
           },
           {
@@ -16465,7 +16476,7 @@
             "inferred_sig": "()",
             "typed_params": [],
             "inferred_return": "Database",
-            "line": 1642,
+            "line": 1646,
             "file": "src/lua_api/dataframe_api.rs"
           },
           {
@@ -16486,7 +16497,7 @@
               ]
             ],
             "inferred_return": "DataFrame",
-            "line": 1655,
+            "line": 1659,
             "file": "src/lua_api/dataframe_api.rs"
           },
           {
@@ -16507,7 +16518,7 @@
               ]
             ],
             "inferred_return": "DataFrame",
-            "line": 1684,
+            "line": 1688,
             "file": "src/lua_api/dataframe_api.rs"
           },
           {
@@ -16528,7 +16539,7 @@
               ]
             ],
             "inferred_return": "DataFrame",
-            "line": 1696,
+            "line": 1700,
             "file": "src/lua_api/dataframe_api.rs"
           },
           {
@@ -16549,7 +16560,7 @@
               ]
             ],
             "inferred_return": "DataFrame",
-            "line": 1708,
+            "line": 1712,
             "file": "src/lua_api/dataframe_api.rs"
           },
           {
@@ -16580,7 +16591,7 @@
               ]
             ],
             "inferred_return": "DataFrame",
-            "line": 1722,
+            "line": 1726,
             "file": "src/lua_api/dataframe_api.rs"
           },
           {
@@ -16601,7 +16612,7 @@
               ]
             ],
             "inferred_return": "VecFrame",
-            "line": 1740,
+            "line": 1744,
             "file": "src/lua_api/dataframe_api.rs"
           },
           {
@@ -16622,7 +16633,7 @@
               ]
             ],
             "inferred_return": "DataFrame",
-            "line": 1753,
+            "line": 1757,
             "file": "src/lua_api/dataframe_api.rs"
           }
         ],
@@ -17843,8 +17854,8 @@
                 "lua_name": "DataFrame:pivot",
                 "kind": "method",
                 "owner_type": "DataFrame",
-                "description": "Create a pivot table.",
-                "full_doc": "Create a pivot table.\n@param row_col : string|integer\n@param col_col : string|integer\n@param val_col : string|integer\n@return DataFrame",
+                "description": "Creates a wide pivot table by reshaping rows into columns.",
+                "full_doc": "Creates a wide pivot table by reshaping rows into columns.\n\nGroups rows by `row_col`, uses distinct values of `col_col` as new column\nheaders, and fills cells with values from `val_col`.\n@param row_col : string|integer  Column whose values become row keys.\n@param col_col : string|integer  Column whose distinct values become headers.\n@param val_col : string|integer  Column to place in the pivot cells.\n@return DataFrame",
                 "params_doc": "",
                 "returns_doc": "",
                 "inferred_sig": "(row_col, col_col, val_col)",
@@ -17866,7 +17877,7 @@
                   ]
                 ],
                 "inferred_return": "DataFrame",
-                "line": 842,
+                "line": 846,
                 "file": "src/lua_api/dataframe_api.rs"
               },
               {
@@ -17892,7 +17903,7 @@
                   ]
                 ],
                 "inferred_return": "number",
-                "line": 862,
+                "line": 866,
                 "file": "src/lua_api/dataframe_api.rs"
               },
               {
@@ -17907,7 +17918,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "DataFrame",
-                "line": 877,
+                "line": 881,
                 "file": "src/lua_api/dataframe_api.rs"
               },
               {
@@ -17933,7 +17944,7 @@
                   ]
                 ],
                 "inferred_return": "nil",
-                "line": 887,
+                "line": 891,
                 "file": "src/lua_api/dataframe_api.rs"
               },
               {
@@ -17969,7 +17980,7 @@
                   ]
                 ],
                 "inferred_return": "nil",
-                "line": 905,
+                "line": 909,
                 "file": "src/lua_api/dataframe_api.rs"
               },
               {
@@ -17995,7 +18006,7 @@
                   ]
                 ],
                 "inferred_return": "DataFrame",
-                "line": 921,
+                "line": 925,
                 "file": "src/lua_api/dataframe_api.rs"
               },
               {
@@ -18016,7 +18027,7 @@
                   ]
                 ],
                 "inferred_return": "table|nil",
-                "line": 938,
+                "line": 942,
                 "file": "src/lua_api/dataframe_api.rs"
               },
               {
@@ -18037,7 +18048,7 @@
                   ]
                 ],
                 "inferred_return": "number",
-                "line": 952,
+                "line": 956,
                 "file": "src/lua_api/dataframe_api.rs"
               },
               {
@@ -18058,7 +18069,7 @@
                   ]
                 ],
                 "inferred_return": "nil",
-                "line": 964,
+                "line": 968,
                 "file": "src/lua_api/dataframe_api.rs"
               },
               {
@@ -18079,7 +18090,7 @@
                   ]
                 ],
                 "inferred_return": "table",
-                "line": 986,
+                "line": 990,
                 "file": "src/lua_api/dataframe_api.rs"
               },
               {
@@ -18105,7 +18116,7 @@
                   ]
                 ],
                 "inferred_return": "nil",
-                "line": 1005,
+                "line": 1009,
                 "file": "src/lua_api/dataframe_api.rs"
               },
               {
@@ -18120,7 +18131,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "string",
-                "line": 1020,
+                "line": 1024,
                 "file": "src/lua_api/dataframe_api.rs"
               },
               {
@@ -18141,7 +18152,7 @@
                   ]
                 ],
                 "inferred_return": "boolean",
-                "line": 1026,
+                "line": 1030,
                 "file": "src/lua_api/dataframe_api.rs"
               },
               {
@@ -18167,7 +18178,7 @@
                   ]
                 ],
                 "inferred_return": "DataFrame",
-                "line": 1044,
+                "line": 1048,
                 "file": "src/lua_api/dataframe_api.rs"
               },
               {
@@ -18203,7 +18214,7 @@
                   ]
                 ],
                 "inferred_return": "DataFrame",
-                "line": 1066,
+                "line": 1070,
                 "file": "src/lua_api/dataframe_api.rs"
               },
               {
@@ -18234,7 +18245,7 @@
                   ]
                 ],
                 "inferred_return": "DataFrame",
-                "line": 1103,
+                "line": 1107,
                 "file": "src/lua_api/dataframe_api.rs"
               },
               {
@@ -18265,7 +18276,7 @@
                   ]
                 ],
                 "inferred_return": "DataFrame",
-                "line": 1133,
+                "line": 1137,
                 "file": "src/lua_api/dataframe_api.rs"
               },
               {
@@ -18296,7 +18307,7 @@
                   ]
                 ],
                 "inferred_return": "DataFrame",
-                "line": 1162,
+                "line": 1166,
                 "file": "src/lua_api/dataframe_api.rs"
               }
             ]
@@ -18327,7 +18338,7 @@
                   ]
                 ],
                 "inferred_return": "nil",
-                "line": 1198,
+                "line": 1202,
                 "file": "src/lua_api/dataframe_api.rs"
               },
               {
@@ -18348,7 +18359,7 @@
                   ]
                 ],
                 "inferred_return": "nil",
-                "line": 1213,
+                "line": 1217,
                 "file": "src/lua_api/dataframe_api.rs"
               },
               {
@@ -18369,7 +18380,7 @@
                   ]
                 ],
                 "inferred_return": "nil",
-                "line": 1225,
+                "line": 1229,
                 "file": "src/lua_api/dataframe_api.rs"
               },
               {
@@ -18390,7 +18401,7 @@
                   ]
                 ],
                 "inferred_return": "boolean",
-                "line": 1236,
+                "line": 1240,
                 "file": "src/lua_api/dataframe_api.rs"
               },
               {
@@ -18405,7 +18416,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "table",
-                "line": 1243,
+                "line": 1247,
                 "file": "src/lua_api/dataframe_api.rs"
               },
               {
@@ -18420,7 +18431,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "integer",
-                "line": 1256,
+                "line": 1260,
                 "file": "src/lua_api/dataframe_api.rs"
               },
               {
@@ -18435,7 +18446,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 1263,
+                "line": 1267,
                 "file": "src/lua_api/dataframe_api.rs"
               },
               {
@@ -18456,7 +18467,7 @@
                   ]
                 ],
                 "inferred_return": "nil",
-                "line": 1272,
+                "line": 1276,
                 "file": "src/lua_api/dataframe_api.rs"
               },
               {
@@ -18471,7 +18482,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "string",
-                "line": 1282,
+                "line": 1286,
                 "file": "src/lua_api/dataframe_api.rs"
               },
               {
@@ -18492,7 +18503,7 @@
                   ]
                 ],
                 "inferred_return": "DataFrame",
-                "line": 1290,
+                "line": 1294,
                 "file": "src/lua_api/dataframe_api.rs"
               },
               {
@@ -18507,7 +18518,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "string",
-                "line": 1300,
+                "line": 1304,
                 "file": "src/lua_api/dataframe_api.rs"
               },
               {
@@ -18528,7 +18539,7 @@
                   ]
                 ],
                 "inferred_return": "boolean",
-                "line": 1306,
+                "line": 1310,
                 "file": "src/lua_api/dataframe_api.rs"
               }
             ]
@@ -18559,7 +18570,7 @@
                   ]
                 ],
                 "inferred_return": "",
-                "line": 1337,
+                "line": 1341,
                 "file": "src/lua_api/dataframe_api.rs"
               },
               {
@@ -18585,7 +18596,7 @@
                   ]
                 ],
                 "inferred_return": "",
-                "line": 1347,
+                "line": 1351,
                 "file": "src/lua_api/dataframe_api.rs"
               },
               {
@@ -18611,7 +18622,7 @@
                   ]
                 ],
                 "inferred_return": "",
-                "line": 1357,
+                "line": 1361,
                 "file": "src/lua_api/dataframe_api.rs"
               },
               {
@@ -18637,7 +18648,7 @@
                   ]
                 ],
                 "inferred_return": "",
-                "line": 1367,
+                "line": 1371,
                 "file": "src/lua_api/dataframe_api.rs"
               },
               {
@@ -18658,7 +18669,7 @@
                   ]
                 ],
                 "inferred_return": "",
-                "line": 1376,
+                "line": 1380,
                 "file": "src/lua_api/dataframe_api.rs"
               },
               {
@@ -18679,7 +18690,7 @@
                   ]
                 ],
                 "inferred_return": "",
-                "line": 1385,
+                "line": 1389,
                 "file": "src/lua_api/dataframe_api.rs"
               },
               {
@@ -18700,7 +18711,7 @@
                   ]
                 ],
                 "inferred_return": "",
-                "line": 1394,
+                "line": 1398,
                 "file": "src/lua_api/dataframe_api.rs"
               },
               {
@@ -18721,7 +18732,7 @@
                   ]
                 ],
                 "inferred_return": "",
-                "line": 1403,
+                "line": 1407,
                 "file": "src/lua_api/dataframe_api.rs"
               },
               {
@@ -18742,7 +18753,7 @@
                   ]
                 ],
                 "inferred_return": "",
-                "line": 1412,
+                "line": 1416,
                 "file": "src/lua_api/dataframe_api.rs"
               },
               {
@@ -18773,7 +18784,7 @@
                   ]
                 ],
                 "inferred_return": "",
-                "line": 1423,
+                "line": 1427,
                 "file": "src/lua_api/dataframe_api.rs"
               },
               {
@@ -18809,7 +18820,7 @@
                   ]
                 ],
                 "inferred_return": "",
-                "line": 1441,
+                "line": 1445,
                 "file": "src/lua_api/dataframe_api.rs"
               },
               {
@@ -18835,7 +18846,7 @@
                   ]
                 ],
                 "inferred_return": "number|nil",
-                "line": 1459,
+                "line": 1463,
                 "file": "src/lua_api/dataframe_api.rs"
               },
               {
@@ -18866,7 +18877,7 @@
                   ]
                 ],
                 "inferred_return": "table",
-                "line": 1475,
+                "line": 1479,
                 "file": "src/lua_api/dataframe_api.rs"
               },
               {
@@ -18887,7 +18898,7 @@
                   ]
                 ],
                 "inferred_return": "VecFrame",
-                "line": 1495,
+                "line": 1499,
                 "file": "src/lua_api/dataframe_api.rs"
               },
               {
@@ -18908,7 +18919,7 @@
                   ]
                 ],
                 "inferred_return": "string|nil",
-                "line": 1515,
+                "line": 1519,
                 "file": "src/lua_api/dataframe_api.rs"
               },
               {
@@ -18934,7 +18945,7 @@
                   ]
                 ],
                 "inferred_return": "",
-                "line": 1522,
+                "line": 1526,
                 "file": "src/lua_api/dataframe_api.rs"
               },
               {
@@ -18949,7 +18960,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "integer",
-                "line": 1533,
+                "line": 1537,
                 "file": "src/lua_api/dataframe_api.rs"
               },
               {
@@ -18964,7 +18975,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "integer",
-                "line": 1537,
+                "line": 1541,
                 "file": "src/lua_api/dataframe_api.rs"
               },
               {
@@ -18979,7 +18990,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "table",
-                "line": 1541,
+                "line": 1545,
                 "file": "src/lua_api/dataframe_api.rs"
               },
               {
@@ -19005,7 +19016,7 @@
                   ]
                 ],
                 "inferred_return": "table",
-                "line": 1556,
+                "line": 1560,
                 "file": "src/lua_api/dataframe_api.rs"
               },
               {
@@ -19036,7 +19047,7 @@
                   ]
                 ],
                 "inferred_return": "",
-                "line": 1579,
+                "line": 1583,
                 "file": "src/lua_api/dataframe_api.rs"
               },
               {
@@ -19051,7 +19062,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "DataFrame",
-                "line": 1599,
+                "line": 1603,
                 "file": "src/lua_api/dataframe_api.rs"
               },
               {
@@ -19066,7 +19077,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "string",
-                "line": 1607,
+                "line": 1611,
                 "file": "src/lua_api/dataframe_api.rs"
               },
               {
@@ -19087,7 +19098,7 @@
                   ]
                 ],
                 "inferred_return": "boolean",
-                "line": 1612,
+                "line": 1616,
                 "file": "src/lua_api/dataframe_api.rs"
               }
             ]
@@ -68616,8 +68627,8 @@
                 "lua_name": "Shape:circle",
                 "kind": "method",
                 "owner_type": "Shape",
-                "description": "Queues a circle command.",
-                "full_doc": "Queues a circle command.\n@param mode : string  \"fill\" or \"line\"\n@param x    : number  centre X\n@param y    : number  centre Y\n@param r    : number  radius\n@return nil",
+                "description": "Queues a filled or outlined circle draw command onto this shape.",
+                "full_doc": "Queues a filled or outlined circle draw command onto this shape.\n@param mode : string  \"fill\" or \"line\"\n@param x    : number  centre X\n@param y    : number  centre Y\n@param r    : number  radius\n@return nil",
                 "params_doc": "",
                 "returns_doc": "",
                 "inferred_sig": "(mode, x, y, r)",
@@ -68816,8 +68827,8 @@
                 "lua_name": "Shape:arc",
                 "kind": "method",
                 "owner_type": "Shape",
-                "description": "Queues an arc command.",
-                "full_doc": "Queues an arc command.\n@param mode     : string   \"fill\" or \"line\"\n@param x        : number   centre X\n@param y        : number   centre Y\n@param r        : number   radius\n@param astart   : number   start angle in radians\n@param aend     : number   end angle in radians\n@param segments : integer?  curve resolution (default 32)\n@return nil",
+                "description": "Queues a filled or outlined arc draw command onto this shape.",
+                "full_doc": "Queues a filled or outlined arc draw command onto this shape.\n@param mode     : string   \"fill\" or \"line\"\n@param x        : number   centre X\n@param y        : number   centre Y\n@param r        : number   radius\n@param astart   : number   start angle in radians\n@param aend     : number   end angle in radians\n@param segments : integer?  curve resolution (default 32)\n@return nil",
                 "params_doc": "",
                 "returns_doc": "",
                 "inferred_sig": "",
@@ -76456,8 +76467,8 @@
                 "lua_name": "TileMap:setLayerVisible",
                 "kind": "method",
                 "owner_type": "TileMap",
-                "description": "Sets layer visibility.",
-                "full_doc": "Sets layer visibility.\n@param idx : integer\n@param visible : boolean\n@return nil",
+                "description": "Shows or hides a tile layer by its 1-based index.",
+                "full_doc": "Shows or hides a tile layer by its 1-based index.\n@param idx : integer\n@param visible : boolean\n@return nil",
                 "params_doc": "",
                 "returns_doc": "",
                 "inferred_sig": "(idx, visible)",

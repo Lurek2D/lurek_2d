@@ -834,10 +834,14 @@ impl LuaUserData for LuaDataFrame {
         );
 
         // -- pivot --
-        /// Create a pivot table.
-        /// @param row_col : string|integer
-        /// @param col_col : string|integer
-        /// @param val_col : string|integer
+        /// Creates a wide pivot table by reshaping rows into columns.
+        ///
+        /// Groups rows by `row_col`, uses distinct values of `col_col` as new column
+        /// headers, and fills cells with values from `val_col`.
+        ///
+        /// @param row_col : string|integer  Column whose values become row keys.
+        /// @param col_col : string|integer  Column whose distinct values become headers.
+        /// @param val_col : string|integer  Column to place in the pivot cells.
         /// @return DataFrame
         methods.add_method(
             "pivot",

@@ -3296,10 +3296,23 @@
           "name": "newCamera",
           "fullPath": "lurek.camera.newCamera",
           "signature": "([vw], [vh])",
-          "description": "",
-          "parameters": [],
-          "returns": "nil",
-          "returnType": "nil",
+          "description": "Creates a new 2D camera with the given viewport dimensions.",
+          "parameters": [
+            {
+              "name": "viewport_w",
+              "type": "number",
+              "description": "",
+              "optional": true
+            },
+            {
+              "name": "viewport_h",
+              "type": "number",
+              "description": "",
+              "optional": true
+            }
+          ],
+          "returns": "Camera2D",
+          "returnType": "Camera2D",
           "isMethod": false,
           "objectType": null
         }

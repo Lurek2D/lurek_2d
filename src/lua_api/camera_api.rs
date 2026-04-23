@@ -535,7 +535,13 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     )?;
 
     // -- newCamera -- (alias for `new`, default 800×600 if called with no args)
-    // Creates a new camera object to view the game world.
+    /// Creates a new 2D camera with the given viewport dimensions.
+    ///
+    /// Both parameters default to 800 and 600 respectively when omitted.
+    ///
+    /// @param viewport_w : number?  Viewport width in pixels (default 800).
+    /// @param viewport_h : number?  Viewport height in pixels (default 600).
+    /// @return Camera2D
     let s = state.clone();
     tbl.set(
         "newCamera",

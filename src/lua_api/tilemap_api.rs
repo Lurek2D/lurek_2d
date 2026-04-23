@@ -380,7 +380,7 @@ impl LuaUserData for LuaTileMap {
         });
 
         // -- setLayerVisible --
-        /// Sets layer visibility.
+        /// Shows or hides a tile layer by its 1-based index.
         /// @param idx : integer
         /// @param visible : boolean
         /// @return nil
