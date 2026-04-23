@@ -175,20 +175,19 @@ name = "lurek2d"
 path = "src/lib.rs"
 
 [profile.dev]
-# opt-level 1 keeps game code debuggable while feeling reasonably smooth.
-# incremental is disabled because repeated debug rebuilds of the large
-# `lua_tests` binary produced unstable Windows MSVC link failures.
-# debug = "line-tables-only" preserves file/line info for backtraces and
-# basic debugger step-through, but drops full DWARF variable metadata.
-opt-level = 1
+# opt-level 0 = fastest possible compilation for rapid iteration.
+# incremental disabled: repeated debug rebuilds of lua_tests caused unstable
+# Windows MSVC link failures with incremental + /DEBUG:FASTLINK.
+# line-tables-only keeps file/line backtraces without heavy DWARF metadata.
+opt-level = 0
 incremental = false
 debug = "line-tables-only"
 # Use the toolchain default split debug behavior for stability.
 
-# Optimize all dependencies even in debug mode (common fast-iteration pattern)
-# Gives near-release performance for deps while keeping game code debuggable
+# Compile dependencies at opt-level 1 — avoids pathologically slow dep builds
+# (proc-macros, wgpu internals) while still being faster than opt-level 3.
 [profile.dev.package."*"]
-opt-level = 3
+opt-level = 1
 
 [profile.release]
 # Size + throughput: opt-level=z minimises binary size while LTO/codegen-units=1 maximises

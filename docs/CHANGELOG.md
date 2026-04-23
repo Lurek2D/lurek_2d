@@ -2,6 +2,15 @@
 
 All notable changes to Lurek2D are recorded here.
 
+## [0.20.13] - 2026-04-24
+
+### chore(build): optimise debug/release profiles and dist pipeline
+
+- **perf(build): `[profile.dev]` `opt-level` lowered from `1` to `0`** — maximises incremental compile speed for rapid iteration. `incremental = false` retained (Windows MSVC link stability).
+- **perf(build): `[profile.dev.package."*"]` `opt-level` reduced from `3` to `1`** — faster first-build of dependencies while still avoiding pathologically slow opt-level-0 proc-macros.
+- **fix(dist): UPX flags changed from `--best --lzma` to `--lzma -6`** (medium LZMA) — `dist/lurek2d-windows-x86_64/lurek2d.exe` now compresses 20.25 MB → 5.08 MB, ZIP ~6.6 MB, well under the 10 MB target.
+- **fix(dist): stale version string `"0.19.0"` updated to `"0.20.0"`** in `tools/dist/dist.ps1`.
+
 ## [0.20.12] - 2026-04-24
 
 ### test(evidence): replace 13 placeholder evidence files with real artifact-producing tests

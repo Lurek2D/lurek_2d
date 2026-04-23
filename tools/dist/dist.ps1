@@ -41,7 +41,7 @@ $ErrorActionPreference = 'Stop'
 $WorkspaceRoot = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
 if (-not $OutDir) { $OutDir = Join-Path $WorkspaceRoot 'dist' }
 
-$Version = "0.19.0"
+$Version = "0.20.0"
 $ArchName = "lurek2d-windows-x86_64"
 $PackageDir = Join-Path $OutDir $ArchName
 $ZipPath = Join-Path $OutDir "$ArchName.zip"
@@ -107,7 +107,9 @@ Write-OK "Copied lurek2d.exe ($SizeBefore MB)"
 $upx = Get-Command upx -ErrorAction SilentlyContinue
 if ($upx) {
     Write-Step "UPX found -- compressing lurek2d.exe ..."
-    & upx --best --lzma $DestBinary 2>&1 | ForEach-Object { Write-Host "    $_" }
+    # --lzma -6 = medium LZMA compression: fast packing, still ~50% size reduction.
+    # Avoids --best/-9 which adds minutes with minimal extra gain.
+    & upx --lzma -6 $DestBinary 2>&1 | ForEach-Object { Write-Host "    $_" }
     if ($LASTEXITCODE -eq 0) {
         $SizeAfter = [math]::Round((Get-Item $DestBinary).Length / 1MB, 2)
         Write-OK "UPX compressed: $SizeBefore MB � $SizeAfter MB"
