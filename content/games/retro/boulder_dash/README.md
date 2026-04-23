@@ -1,29 +1,40 @@
 # Boulder Dash
 
-**Category:** Retro
-**Engine:** Lurek2D
+_Dig through a cave, collect sparkling diamonds, dodge falling boulders, and escape before the clock runs out._
 
-A classic cave exploration game inspired by the 1984 original. Dig through earth, collect diamonds, avoid falling boulders, and reach the exit before time runs out.
+## Run
 
-## How to Play
-
-- **Arrow keys** — Move player (dig through earth automatically)
-- **Escape** — Quit
-
-## Features
-
-- Grid-based cave system (40×26 cells) with procedurally generated layouts
-- Boulder physics: gravity, cascading falls, sliding off rounded surfaces
-- Falling boulders and diamonds crush anything beneath them
-- Collect the required number of diamonds to open the exit
-- 3 progressively harder levels with increasing diamond requirements
-- Countdown timer per level — reach the exit before time expires
-- 3 lives — falling boulders kill you, running out of time costs a life
-- Particle effects for digging, collecting, boulder impacts, and death
-- Tween animations on diamond counter and level transitions
-
-## Running
-
-```bash
+```powershell
 cargo run -- content/games/retro/boulder_dash
 ```
+
+## Controls
+
+| Key        | Action                                     |
+| ---------- | ------------------------------------------ |
+| Arrow keys | Move player (digs Earth tiles on contact)  |
+| Escape     | Quit                                       |
+
+## Gameplay
+
+Navigate a 40 x 26 grid cave filled with Earth, Walls, Boulders, and Diamonds. Moving into an Earth cell clears it; pushing a Boulder sideways works if the adjacent cell is free. Boulders and Diamonds obey gravity — they fall into empty cells and slide off rounded surfaces, creating chain reactions. Collect the required number of Diamonds per level to open the exit tile; reach the exit before the countdown timer expires.
+
+You have three lives — a falling Boulder kills you, as does running out of time. Exits pulse with a glow animation to help you spot them after clearing the diamond quota. There are three progressively harder levels with increasing diamond requirements, tighter time limits, and denser boulder fields.
+
+## APIs Used
+
+**`lurek.*` engine bindings**
+
+- `lurek.render` — draws all cave tiles (Earth, Wall, Boulder, Diamond, Exit, Player) as coloured rectangles with detail highlights.
+- `lurek.input` — action-bound arrow key controls for player movement and UI confirmation.
+- `lurek.window` — sets the window title on startup.
+- `lurek.event` — signals clean engine shutdown on Escape.
+- `lurek.timer` — queries elapsed time to drive diamond pulse and exit glow animations.
+
+**Lunasome (`library/`) modules**
+
+_None._
+
+## Changes from Original Demo
+
+Inspired by First Star Software's 1984 Boulder Dash. This implementation is built from scratch in Lua using the Lurek2D render API — no sprites or audio, geometry-only rendering. Level generation is procedural rather than using original game maps. Boulder and diamond sliding physics are implemented as a custom Lua simulation stepping at 0.18-second intervals.

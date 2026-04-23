@@ -1,29 +1,43 @@
-# Merchant
+# Merchant (Demo)
 
-Medieval trading shop simulation where you buy low, sell high, and manage your inventory to maximize profit over a five-day cycle.
+_A playable demo of the Lurek2D merchant simulation — buy, sell, serve customers, and turn a profit over five in-game days._
 
 ## Run
 
-```
-cargo run -- content/games/rpg/merchant
+```powershell
+cargo run -- content/games/rpg/merchant_demo
 ```
 
 ## Controls
 
-| Key | Action |
-|-----|--------|
-| 1–8 | Buy item / sell item (in sell mode) |
-| A | Auto-buy most expensive affordable item |
-| S | Toggle sell mode |
-| R | Restock merchant shelf |
-| L | Open/close sales ledger |
-| Escape | Quit |
+| Key    | Action                                         |
+| ------ | ---------------------------------------------- |
+| 1–8    | Buy item from shelf / sell item (in sell mode) |
+| A      | Auto-buy the most expensive affordable item    |
+| S      | Toggle sell mode                               |
+| R      | Restock the merchant shelf                     |
+| L      | Open / close the sales ledger                  |
+| Escape | Quit                                           |
 
-## Mechanics
+## Gameplay
 
-- **Item catalog**: 8 items across Weapons, Armor, and Potions — each with unique gold cost and stats.
-- **Trading**: Buy items from the merchant shelf and hold them in your inventory. Sell back at 75% of buy price, or wait for customers offering 120%.
-- **Customers**: A customer arrives every 5 seconds wanting a random item. If you have it in stock, you auto-sell at a premium. Refusing too many customers lowers your reputation.
-- **Reputation**: Successful sales raise your reputation, which increases sell prices over time. Missing customer requests lowers it.
-- **Daily cycle**: Each day lasts 60 seconds. After 5 days the game ends and your final gold is your score.
-- **Sales ledger**: Press L to review a log of all buy/sell transactions.
+Manage a medieval shop stocking eight items across Weapons, Armor, and Potions categories. Buy items from the shelf into your inventory and sell them back at 75% of cost — or wait for customers who pay a 120% premium. A customer arrives every five seconds wanting a random item; serving them raises your reputation, which gradually increases sell prices. Missing requests lowers reputation. Each of the five days lasts 60 seconds; after the final day your accumulated gold is your score. The sales ledger (L) logs every transaction for review. Higher reputation means more profitable deals and a larger end score.
+
+## APIs Used
+
+**`lurek.*` engine bindings**
+
+- `lurek.render` — draws the shop backdrop, shelf panels, inventory grid, customer sprite, particle effects, and all text overlays.
+- `lurek.input` — raw keyboard queries for number keys 1–8 and action keys A, S, R, L, Escape.
+- `lurek.window` — sets the window title on startup.
+- `lurek.timer` — sets the target frame rate to 60 FPS.
+- `lurek.event` — signals clean engine shutdown on Escape.
+- `lurek.camera` — reads camera position for scene origin alignment.
+
+**Lunasome (`library/`) modules**
+
+_None._
+
+## Changes from Original Demo
+
+This is the demo build of the `merchant` project. It uses the same mechanics and API surface as the full version, serving as a focused showcase of the engine's rendering and timer APIs in a management-game context. Note: the `## Run` path above correctly points to `content/games/rpg/merchant_demo`.
