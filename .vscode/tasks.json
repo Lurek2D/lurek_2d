@@ -1,465 +1,264 @@
-{
+﻿{
     "version": "2.0.0",
     "tasks": [
+
         // ─── 🔨 BUILD ─────────────────────────────────────────────────────────
+        // Debug: fastest compile, full DWARF symbols — use during development.
+        // Release: opt-level=3, LTO, stripped — balanced perf/size, ~20 MB raw.
+        // Dist: opt-level=z, fat LTO, stripped — use dist.ps1 to compress+ship.
+        // Check: type-checks only, no binary — fastest way to catch errors.
         {
             "label": "Build: Debug",
-            "detail": "� [profile.dev] opt-level=0, full DWARF debug symbols, 256 codegen units. Fastest compile. Use for active development and debugging.",
+            "detail": "🔨 [profile.dev] opt-level=0, full DWARF, 256 codegen units — fastest compile. Use for active development and step-through debugging.",
             "type": "shell",
             "command": "python tools/dev/parallel_cargo.py build debug",
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            },
-            "problemMatcher": [
-                "$rustc"
-            ]
+            "group": { "kind": "build", "isDefault": true },
+            "problemMatcher": ["$rustc"]
         },
         {
             "label": "Build: Release",
-            "detail": "� [profile.release] opt-level=3, LTO, stripped, panic=abort. Balanced performance + size (~20 MB raw). Use for performance testing.",
+            "detail": "🔨 [profile.release] opt-level=3, LTO, stripped, panic=abort — balanced performance and size (~20 MB raw). Use for performance testing.",
             "type": "shell",
             "command": "python tools/dev/parallel_cargo.py build release",
             "group": "build",
-            "problemMatcher": [
-                "$rustc"
-            ]
+            "problemMatcher": ["$rustc"]
         },
         {
             "label": "Build: Dist",
-            "detail": "📦 [profile.dist] opt-level=z, fat LTO, stripped — max size reduction. Run 'Dist: Package Windows' to apply UPX and assemble the distributable ZIP.",
+            "detail": "🔨 [profile.dist] opt-level=z, fat LTO, stripped — maximum size reduction. Run 'Dist: Package Windows' afterward to apply UPX and produce the distributable ZIP.",
             "type": "shell",
             "command": "python tools/dev/parallel_cargo.py build dist",
             "group": "build",
-            "problemMatcher": [
-                "$rustc"
-            ]
+            "problemMatcher": ["$rustc"]
         },
         {
-            "detail": "⚡ Type-check and resolve the crate through tools/dev/parallel_cargo.py without producing a binary — much faster than a full build.",
+            "label": "Build: Check",
+            "detail": "🔨 Type-check and resolve all crates without producing a binary — much faster than a full build. Run this first to catch errors quickly.",
             "type": "shell",
             "command": "python tools/dev/parallel_cargo.py check",
             "group": "build",
-            "problemMatcher": [
-                "$rustc"
-            ]
+            "problemMatcher": ["$rustc"]
         },
-        // ─── ▶️  RUN SHOWCASE GAMES ──────────────────────────────────────────
-        // Pick-example tasks — use these to choose which showcase game to run.
-        // The Tasks picker will ask you to select an example from the list.
+
+        // ─── ▶️  RUN ───────────────────────────────────────────────────────────
+        // Pick demo: builds (debug or release) then runs the chosen showcase game.
+        // Quick launch: runs the already-built binary without rebuilding (splash screen).
         {
-            "label": "Run Debug: Pick Example",
-            "detail": "🐛 Build (debug) and run a chosen showcase game through tools/dev/parallel_cargo.py.",
+            "label": "▶ Run: Debug — pick demo",
+            "detail": "▶️ Build (debug) then run a chosen showcase game. Picker lists all content/games/showcase/ entries.",
             "type": "shell",
-            "command": "python tools/dev/parallel_cargo.py run debug -- ${input:exampleGame}",
+            "command": "python tools/dev/parallel_cargo.py run debug -- ${input:showcaseGame}",
             "group": "build",
-            "problemMatcher": [
-                "$rustc"
-            ]
+            "problemMatcher": ["$rustc"]
         },
         {
-            "label": "Run Release: Pick Example",
-            "detail": "🚀 Build (release) and run a chosen showcase game through tools/dev/parallel_cargo.py.",
+            "label": "▶ Run: Release — pick demo",
+            "detail": "▶️ Build (release) then run a chosen showcase game. Slower to compile but runs at full performance.",
             "type": "shell",
-            "command": "python tools/dev/parallel_cargo.py run release -- ${input:exampleGame}",
+            "command": "python tools/dev/parallel_cargo.py run release -- ${input:showcaseGame}",
             "group": "build",
-            "problemMatcher": [
-                "$rustc"
-            ]
-        },
-        // ─── 🧪 TEST ──────────────────────────────────────────────────────────
-        {
-            "label": "Test: All",
-            "detail": "🧪 Run the full test suite through the parallel orchestration path: bounded Rust test fan-out first, then the Lua bindings harness. Default test task.",
-            "dependsOrder": "sequence",
-            "dependsOn": [
-                "Test: Rust targets (all cores)",
-                "Test: Lua bindings"
-            ],
-            "group": {
-                "kind": "test",
-                "isDefault": true
-            },
-            "problemMatcher": []
+            "problemMatcher": ["$rustc"]
         },
         {
-            "label": "Test: Rust targets (all cores)",
-            "detail": "🧪 Fan out non-Lua Rust test targets through tools/dev/parallel_cargo.py with bounded subprocess concurrency and per-process libtest threads.",
-            "type": "shell",
-            "command": "python tools/dev/parallel_cargo.py test rust",
-            "group": "test",
-            "problemMatcher": [
-                "$rustc"
-            ]
-        },
-        {
-            "label": "Test: All (verbose)",
-            "detail": "🧪 Run the full repo-owned test flow through tools/dev/parallel_cargo.py with verbose cargo output and --nocapture.",
-            "type": "shell",
-            "command": "python tools/dev/parallel_cargo.py test all --verbose --nocapture",
-            "group": "test",
-            "problemMatcher": [
-                "$rustc"
-            ]
-        },
-        {
-            "label": "Test: Math module",
-            "detail": "🧮 Run only math-related tests — Vec2, Mat3, Rect, distance, clamp, and fast math helpers.",
-            "type": "shell",
-            "command": "python tools/dev/parallel_cargo.py test target math_tests",
-            "group": "test",
-            "problemMatcher": [
-                "$rustc"
-            ]
-        },
-        {
-            "label": "Test: Physics module",
-            "detail": "⚙️  Run only physics integration tests — bodies, world stepping, and AABB collision resolution.",
-            "type": "shell",
-            "command": "python tools/dev/parallel_cargo.py test target physics_tests",
-            "group": "test",
-            "problemMatcher": [
-                "$rustc"
-            ]
-        },
-        {
-            "label": "Test: Graphics module",
-            "detail": "🎨 Run only graphics integration tests — color, camera transforms, and draw command processing.",
-            "type": "shell",
-            "command": "python tools/dev/parallel_cargo.py test target graphics_tests",
-            "group": "test",
-            "problemMatcher": [
-                "$rustc"
-            ]
-        },
-        {
-            "label": "Test: Lua bindings",
-            "detail": "🌙 Run only Lua binding tests through tools/dev/parallel_cargo.py — exercises the full lurek.* API surface headlessly (no window).",
-            "type": "shell",
-            "command": "python tools/dev/parallel_cargo.py test lua",
-            "group": "test",
-            "problemMatcher": [
-                "$rustc"
-            ]
-        },
-        {
-            "label": "Test: Audio module",
-            "detail": "🎵 Run only audio integration tests — source loading and mixer state (no playback in CI).",
-            "type": "shell",
-            "command": "python tools/dev/parallel_cargo.py test target audio_tests",
-            "group": "test",
-            "problemMatcher": [
-                "$rustc"
-            ]
-        },
-        {
-            "label": "Test: Input module",
-            "detail": "🎮 Run only input integration tests — keyboard and mouse state machine.",
-            "type": "shell",
-            "command": "python tools/dev/parallel_cargo.py test target input_tests",
-            "group": "test",
-            "problemMatcher": [
-                "$rustc"
-            ]
-        },
-        // ─── 🔍 QUALITY GATES ─────────────────────────────────────────────────
-        {
-            "label": "Lint: Clippy",
-            "detail": "🔍 Run Clippy through tools/dev/parallel_cargo.py against the workspace.",
-            "type": "shell",
-            "command": "python tools/dev/parallel_cargo.py clippy",
-            "group": "build",
-            "problemMatcher": [
-                "$rustc"
-            ]
-        },
-        {
-            "label": "Lint: Clippy (deny warnings)",
-            "detail": "🚫 Run Clippy through tools/dev/parallel_cargo.py in CI-strict mode (-D warnings).",
-            "type": "shell",
-            "command": "python tools/dev/parallel_cargo.py clippy --deny-warnings",
-            "group": "build",
-            "problemMatcher": [
-                "$rustc"
-            ]
-        },
-        {
-            "label": "Format: Apply",
-            "detail": "📐 Auto-format all Rust source files through tools/dev/parallel_cargo.py.",
-            "type": "shell",
-            "command": "python tools/dev/parallel_cargo.py fmt apply",
-            "problemMatcher": []
-        },
-        {
-            "label": "Format: Check",
-            "detail": "📐 Verify formatting through tools/dev/parallel_cargo.py without modifying files.",
-            "type": "shell",
-            "command": "python tools/dev/parallel_cargo.py fmt check",
-            "problemMatcher": []
-        },
-        {
-            "label": "Quality Gate: Full",
-            "detail": "✅ Run the complete quality gate: fmt check → clippy → all tests. All three must pass before any push to main.",
-            "dependsOrder": "sequence",
-            "dependsOn": [
-                "Format: Check",
-                "Lint: Clippy",
-                "Test: All"
-            ],
-            "group": "test",
-            "problemMatcher": [
-                "$rustc"
-            ]
-        },
-        // ─── 📖 LUA API DOCUMENTATION ─────────────────────────────────────────
-        {
-            "label": "Lua API: Generate Reference",
-            "detail": "📝 Run tools/docs/gen_lua_api.py to regenerate docs/lua_api_reference_generated.md from docstrings in src/lua_api/*.rs",
-            "type": "shell",
-            "command": "python tools/docs/gen_lua_api.py",
-            "problemMatcher": []
-        },
-        {
-            "label": "Lua API: Check Coverage",
-            "detail": "✓ Run tools/docs/gen_lua_api.py --check to validate all 77 Lua functions have docstrings. Exit code 1 if any missing.",
-            "type": "shell",
-            "command": "python tools/docs/gen_lua_api.py --check",
-            "problemMatcher": []
-        },
-        {
-            "label": "Lua API: Add Docstrings (Setup)",
-            "detail": "🔧 Run tools/fix/add_lua_docstrings.py to auto-add /// docstrings from inline comments. Run once during project setup.",
-            "type": "shell",
-            "command": "python tools/fix/add_lua_docstrings.py",
-            "problemMatcher": []
-        },
-        // ─── 📖 DOCUMENTATION ─────────────────────────────────────────────────
-        {
-            "label": "Docs: Open in Browser",
-            "detail": "📖 Generate rustdoc for lurek2d and open the HTML output through tools/dev/parallel_cargo.py.",
-            "type": "shell",
-            "command": "python tools/dev/parallel_cargo.py doc --open --no-deps",
-            "problemMatcher": []
-        },
-        {
-            "label": "Docs: Collect API (Python)",
-            "detail": "📝 Run tools/docs/collect_docs.py to scan src/ and regenerate docs/api_generated.md with all public API items and doc comments.",
-            "type": "shell",
-            "command": "python tools/docs/collect_docs.py",
-            "problemMatcher": []
-        },
-        {
-            "label": "Docs: Generate Library API",
-            "detail": "📚 Run tools/docs/gen_lib_docs.py to regenerate docs/reports/library-docs.md (aggregate) and docs/reports/libs/lib_<name>.md (per-library) from content/library/*/init.lua LDoc tags.",
-            "type": "shell",
-            "command": "python tools/docs/gen_lib_docs.py",
-            "problemMatcher": []
-        },
-        {
-            "label": "Docs: Report Missing Docs",
-            "detail": "📋 Run tools/docs/collect_docs.py --report-missing to list every public item that lacks a /// doc comment.",
-            "type": "shell",
-            "command": "python tools/docs/collect_docs.py --report-missing",
-            "problemMatcher": []
-        },
-        {
-            "label": "Docs: Suggest Missing Docstrings",
-            "detail": "💡 Run tools/docs/collect_docs.py --suggest to print starter /// doc lines for every undocumented public item.",
-            "type": "shell",
-            "command": "python tools/docs/collect_docs.py --suggest",
-            "problemMatcher": []
-        },
-        {
-            "label": "Docs: Coverage Report",
-            "detail": "📊 Run tools/audit/doc_coverage.py to show docstring coverage for all Rust public items and Lua API bindings. Writes logs/doc_coverage.json.",
-            "type": "shell",
-            "command": "python tools/audit/doc_coverage.py",
-            "problemMatcher": []
-        },
-        {
-            "label": "Docs: Coverage Check (Missing)",
-            "detail": "🔍 Run tools/audit/doc_coverage.py --report-missing to list all public items missing /// doc comments. Exits 1 if any found.",
-            "type": "shell",
-            "command": "python tools/audit/doc_coverage.py --report-missing",
-            "problemMatcher": []
-        },
-        {
-            "label": "Docs: Generate Test Docs",
-            "detail": "🧪 Run tools/docs/gen_test_docs.py to generate docs/reports/test_docs.md — a human-readable description of all tests and coverage gaps. Requires logs/test_coverage.json (run 'Docs: Test Coverage' first).",
-            "type": "shell",
-            "command": "python tools/docs/gen_test_docs.py",
-            "problemMatcher": []
-        },
-        {
-            "label": "Docs: Test Coverage",
-            "detail": "📊 Run tools/audit/test_coverage.py to analyse Rust and Lua API test coverage. Writes logs/test_coverage.json.",
-            "type": "shell",
-            "command": "python tools/audit/test_coverage.py",
-            "problemMatcher": []
-        },
-        {
-            "label": "Docs: Full Pipeline",
-            "detail": "🚀 Run tools/gen_all_docs.py to regenerate ALL documentation: API refs, test catalog, coverage analytics, wiki cheatsheet.",
-            "type": "shell",
-            "command": "python tools/gen_all_docs.py",
-            "problemMatcher": []
-        },
-        // ─── 📦 INSTALL ───────────────────────────────────────────────────────
-        {
-            "label": "Install: Local (Windows)",
-            "detail": "📦 Build release binary and install lurek.exe to %USERPROFILE%\\bin. Copies content/demos/ too. Run once — then use 'Run (Installed):' tasks.",
-            "type": "shell",
-            "command": "powershell -ExecutionPolicy Bypass -File tools/dist/install.ps1",
-            "problemMatcher": []
-        },
-        {
-            "label": "Install: Local (Linux / macOS)",
-            "detail": "📦 Build release binary and install lurek2d to /usr/local/bin. Copies content/demos/ folder. May require sudo.",
-            "type": "shell",
-            "command": "bash tools/dist/install.sh",
-            "problemMatcher": []
-        },
-        {
-            "label": "Uninstall: Local (Windows)",
-            "detail": "🗑️  Remove lurek.exe from %USERPROFILE%\\bin and the installed content/demos/ folder.",
-            "type": "shell",
-            "command": "powershell -ExecutionPolicy Bypass -File tools/dist/install.ps1 --uninstall",
-            "problemMatcher": []
-        },
-        // ─── 🌙 RUN WITH INSTALLED BINARY ────────────────────────────────────
-        // Requires 'Install: Local (Windows)' to have been run at least once.
-        {
-            "label": "Run (Installed): Hello World",
-            "detail": "🌙 Run content/demos/hello_world with the installed lurek2d binary (no recompile). Run 'Install: Local (Windows)' first.",
-            "type": "shell",
-            "command": "lurek content/demos/hello_world",
-            "problemMatcher": []
-        },
-        {
-            "label": "Run (Installed): Physics Demo",
-            "detail": "🌙 Run content/demos/physics_demo with the installed lurek2d binary (no recompile).",
-            "type": "shell",
-            "command": "lurek content/demos/physics_demo",
-            "problemMatcher": []
-        },
-        {
-            "label": "Run (Installed): Sprites",
-            "detail": "🌙 Run content/demos/sprites with the installed lurek2d binary (no recompile).",
-            "type": "shell",
-            "command": "lurek content/demos/sprites",
-            "problemMatcher": []
-        },
-        {
-            "label": "Run (Installed): Splash Screen",
-            "detail": "🌙 Launch the installed lurek2d binary with no game argument — displays the Lurek2D splash screen.",
-            "type": "shell",
-            "command": "lurek",
-            "problemMatcher": []
-        },
-        {
-            "label": "Run Debug: Splash (drag-drop ready)",
-            "detail": "⚡ Launch the debug binary from build/debug WITHOUT rebuilding — fast startup for drag-drop folder loading. Build once first with 'Build: Debug'.",
+            "label": "▶ Run: Debug (no rebuild)",
+            "detail": "▶️ Launch existing build/debug/lurek2d.exe instantly without recompiling — shows splash screen. Drag a game folder onto the window. Build once first.",
             "type": "shell",
             "command": "${workspaceFolder}/build/debug/lurek2d",
             "problemMatcher": []
         },
         {
-            "label": "Run Release: Splash (drag-drop ready)",
-            "detail": "⚡ Launch the release binary from build/release WITHOUT rebuilding — fastest startup for drag-drop testing. Build once first with 'Build: Release'.",
+            "label": "▶ Run: Release (no rebuild)",
+            "detail": "▶️ Launch existing build/release/lurek2d.exe instantly without recompiling — shows splash screen. Fastest drag-and-drop testing after a Release build.",
             "type": "shell",
             "command": "${workspaceFolder}/build/release/lurek2d",
             "problemMatcher": []
         },
+
+        // ─── 🧪 TEST ──────────────────────────────────────────────────────────
+        // Test: All runs Rust (parallel) + Lua in sequence — the default test task.
+        // Individual module tests are useful for targeted iteration on one system.
         {
-            "label": "Build + Run Debug: Splash",
-            "detail": "🔨 Rebuild debug binary then launch splash screen — guarantees you run the latest code. Use this when in doubt about stale binaries.",
+            "label": "Test: All",
+            "detail": "🧪 Full test suite: parallel Rust targets then Lua bindings harness. Default test task (Ctrl+Shift+T).",
             "dependsOrder": "sequence",
-            "dependsOn": [
-                "Build: Debug",
-                "Run Debug: Splash (drag-drop ready)"
-            ],
+            "dependsOn": ["Test: Rust", "Test: Lua"],
+            "group": { "kind": "test", "isDefault": true },
             "problemMatcher": []
         },
         {
-            "label": "Build + Run Release: Splash",
-            "detail": "🔨 Rebuild release binary then launch splash screen — use before drag-drop testing after code changes.",
+            "label": "Test: Rust",
+            "detail": "🧪 Run all non-Lua Rust test targets in parallel (bounded concurrency) via tools/dev/parallel_cargo.py.",
+            "type": "shell",
+            "command": "python tools/dev/parallel_cargo.py test rust",
+            "group": "test",
+            "problemMatcher": ["$rustc"]
+        },
+        {
+            "label": "Test: Lua",
+            "detail": "🧪 Run the Lua bindings harness (lurek.* API surface, headless, no window).",
+            "type": "shell",
+            "command": "python tools/dev/parallel_cargo.py test lua",
+            "group": "test",
+            "problemMatcher": ["$rustc"]
+        },
+        {
+            "label": "Test: Math",
+            "detail": "🧮 Run only math tests — Vec2, Mat3, Rect, distance, clamp, fast-math helpers.",
+            "type": "shell",
+            "command": "python tools/dev/parallel_cargo.py test target math_tests",
+            "group": "test",
+            "problemMatcher": ["$rustc"]
+        },
+        {
+            "label": "Test: Physics",
+            "detail": "⚙️ Run only physics tests — bodies, world stepping, AABB collision.",
+            "type": "shell",
+            "command": "python tools/dev/parallel_cargo.py test target physics_tests",
+            "group": "test",
+            "problemMatcher": ["$rustc"]
+        },
+        {
+            "label": "Test: Graphics",
+            "detail": "🎨 Run only graphics tests — color, camera transforms, draw command processing.",
+            "type": "shell",
+            "command": "python tools/dev/parallel_cargo.py test target graphics_tests",
+            "group": "test",
+            "problemMatcher": ["$rustc"]
+        },
+        {
+            "label": "Test: Audio",
+            "detail": "🎵 Run only audio tests — source loading and mixer state (no playback in CI).",
+            "type": "shell",
+            "command": "python tools/dev/parallel_cargo.py test target audio_tests",
+            "group": "test",
+            "problemMatcher": ["$rustc"]
+        },
+        {
+            "label": "Test: Input",
+            "detail": "🎮 Run only input tests — keyboard and mouse state machine.",
+            "type": "shell",
+            "command": "python tools/dev/parallel_cargo.py test target input_tests",
+            "group": "test",
+            "problemMatcher": ["$rustc"]
+        },
+
+        // ─── 🔍 QUALITY ───────────────────────────────────────────────────────
+        // Quality: Gate runs the full pre-push pipeline — must all pass before commit.
+        // Clippy runs with -D warnings (strict). Format: Apply auto-fixes files.
+        {
+            "label": "Quality: Gate",
+            "detail": "✅ Full pre-push pipeline: format check → clippy (strict) → all tests. All three must pass before pushing.",
             "dependsOrder": "sequence",
-            "dependsOn": [
-                "Build: Release",
-                "Run Release: Splash (drag-drop ready)"
-            ],
+            "dependsOn": ["Quality: Format Check", "Quality: Clippy", "Test: All"],
+            "group": "test",
+            "problemMatcher": ["$rustc"]
+        },
+        {
+            "label": "Quality: Clippy",
+            "detail": "🔍 Run Clippy with -D warnings (strict CI mode). Zero warnings allowed.",
+            "type": "shell",
+            "command": "python tools/dev/parallel_cargo.py clippy --deny-warnings",
+            "group": "build",
+            "problemMatcher": ["$rustc"]
+        },
+        {
+            "label": "Quality: Format Apply",
+            "detail": "📐 Auto-format all Rust source files with rustfmt.",
+            "type": "shell",
+            "command": "python tools/dev/parallel_cargo.py fmt apply",
             "problemMatcher": []
         },
-        // ─── 🚀 DISTRIBUTION ──────────────────────────────────────────────────
+        {
+            "label": "Quality: Format Check",
+            "detail": "📐 Verify formatting without modifying files. Exits 1 if any file is unformatted.",
+            "type": "shell",
+            "command": "python tools/dev/parallel_cargo.py fmt check",
+            "problemMatcher": []
+        },
+
+        // ─── 📖 DOCS ──────────────────────────────────────────────────────────
+        // Full Pipeline regenerates everything in one shot — run after any API change.
+        // Rust Browser opens rustdoc HTML locally.
+        // Library API regenerates LDoc output for content/library/.
+        {
+            "label": "Docs: Full Pipeline",
+            "detail": "📖 Run tools/gen_all_docs.py — regenerates ALL docs: API references, test catalog, coverage analytics, wiki cheatsheet.",
+            "type": "shell",
+            "command": "python tools/gen_all_docs.py",
+            "problemMatcher": []
+        },
+        {
+            "label": "Docs: Rust (browser)",
+            "detail": "📖 Generate rustdoc for lurek2d and open the HTML output in the browser.",
+            "type": "shell",
+            "command": "python tools/dev/parallel_cargo.py doc --open --no-deps",
+            "problemMatcher": []
+        },
+        {
+            "label": "Docs: Library API",
+            "detail": "📖 Regenerate docs/reports/lib-api.md from content/library/*/init.lua LDoc tags.",
+            "type": "shell",
+            "command": "python tools/docs/gen_lib_docs.py",
+            "problemMatcher": []
+        },
+
+        // ─── 📦 DIST ──────────────────────────────────────────────────────────
+        // Package Windows: full dist build + UPX compress + ZIP → dist/ folder.
+        // Repackage: skip cargo build, just re-run UPX + copy (fast iteration).
+        // Install Windows: builds release and installs lurek.exe to %USERPROFILE%\bin.
         {
             "label": "Dist: Package Windows",
-            "detail": "🚀 Release build → dist/lurek2d-windows-x86_64/ folder + .zip archive. Output is ready to distribute to end users.",
+            "detail": "📦 Build [profile.dist], UPX-compress (20 MB → ~5 MB), assemble dist/lurek2d-windows-x86_64/ and ZIP. Full pipeline.",
             "type": "shell",
             "command": "powershell -ExecutionPolicy Bypass -File tools/dist/dist.ps1",
             "problemMatcher": []
         },
         {
-            "label": "Dist: Package Windows (skip build)",
-            "detail": "🚀 Re-package using an already-compiled release binary — skips cargo build. Faster for iteration.",
+            "label": "Dist: Repackage (skip build)",
+            "detail": "📦 Re-run UPX compression and assemble the dist folder from an already-compiled binary. Fast iteration on packaging.",
             "type": "shell",
             "command": "powershell -ExecutionPolicy Bypass -File tools/dist/dist.ps1 -SkipBuild",
             "problemMatcher": []
         },
         {
-            "label": "Dist: Package Linux / macOS",
-            "detail": "🚀 Release build → dist/lurek2d-<os>-<arch>/ folder + .tar.gz archive. Run in WSL or a Linux/macOS shell.",
+            "label": "Dist: Install Windows",
+            "detail": "📦 Build release binary and install lurek.exe to %USERPROFILE%\\bin. Run once — then use 'Run: Release (no rebuild)' or drag-and-drop games.",
             "type": "shell",
-            "command": "bash tools/dist/dist.sh",
+            "command": "powershell -ExecutionPolicy Bypass -File tools/dist/install.ps1",
             "problemMatcher": []
         },
+
+        // ─── 🤖 CAG ───────────────────────────────────────────────────────────
         {
-            "label": "Dist: NSIS Installer (Windows)",
-            "detail": "📦 Build a Windows installer from tools/dist/installer.nsi → dist/lurek2d-0.5.0-setup.exe. Requires NSIS 3.x on PATH.",
-            "type": "shell",
-            "command": "makensis tools/dist/installer.nsi",
-            "problemMatcher": []
-        },
-        // ─── 🤖 CAG VALIDATION ────────────────────────────────────────────────
-        {
-            "label": "CAG: Validate All",
-            "detail": "🤖 Run tools/validate/cag_validate.py to check all agent, skill, prompt, and instruction files for schema compliance.",
+            "label": "CAG: Validate",
+            "detail": "🤖 Validate all .github/ CAG files (agents, skills, prompts, instructions) for schema compliance.",
             "type": "shell",
             "command": "python tools/validate/cag_validate.py",
             "problemMatcher": []
         }
+
     ],
+
     // ─── INPUTS ───────────────────────────────────────────────────────────────
-    // Used by "Run Debug: Pick Example" and "Run Release: Pick Example" tasks.
+    // Used by '▶ Run: Debug — pick demo' and '▶ Run: Release — pick demo'.
     "inputs": [
         {
-            "id": "exampleGame",
+            "id": "showcaseGame",
             "type": "pickString",
             "description": "Choose a showcase game to run",
             "options": [
-                {
-                    "label": "Hello World",
-                    "value": "content/games/showcase/hello_world"
-                },
-                {
-                    "label": "Sprites",
-                    "value": "content/games/showcase/sprites"
-                },
-                {
-                    "label": "Scene Demo",
-                    "value": "content/games/showcase/scene_demo"
-                },
-                {
-                    "label": "Demo Game",
-                    "value": "content/games/showcase/demo_game"
-                },
-                {
-                    "label": "Light Demo",
-                    "value": "content/games/showcase/light_demo"
-                },
-                {
-                    "label": "Particles Demo",
-                    "value": "content/games/showcase/particles_demo"
-                }
+                { "label": "Hello World",       "value": "content/games/showcase/hello_world" },
+                { "label": "Sprites",           "value": "content/games/showcase/sprites" },
+                { "label": "Scene Demo",        "value": "content/games/showcase/scene_demo" },
+                { "label": "Particles Demo",    "value": "content/games/showcase/particles_demo" },
+                { "label": "Light Demo",        "value": "content/games/showcase/light_demo" },
+                { "label": "Globe Demo",        "value": "content/games/showcase/globe_demo" },
+                { "label": "Terminal Demo",     "value": "content/games/showcase/terminal_demo" },
+                { "label": "Hacking Game",      "value": "content/games/showcase/hacking_game" },
+                { "label": "Tween Demo",        "value": "content/games/showcase/tween_demo" },
+                { "label": "PostFX Demo",       "value": "content/games/showcase/postfx_demo" },
+                { "label": "Minimap Demo",      "value": "content/games/showcase/minimap_demo" },
+                { "label": "Demo Game",         "value": "content/games/showcase/demo_game" }
             ],
             "default": "content/games/showcase/hello_world"
         }

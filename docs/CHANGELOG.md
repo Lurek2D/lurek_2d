@@ -2,6 +2,23 @@
 
 All notable changes to Lurek2D are recorded here.
 
+## [0.20.15] - 2026-04-23
+
+### chore(vscode): redesign tasks.json from scratch — 49 tasks → 27, no duplicates
+
+Completely rewrote `.vscode/tasks.json`. Removed 22 tasks (duplicates, bloat, platform-inappropriate, superseded by `gen_all_docs.py`). Added missing `Build: Check` label. Fixed `Quality: Gate` to use strict Clippy (`-D warnings`). Expanded demo picker to 12 showcase entries. Categories: 🔨 Build (4), ▶️ Run (4), 🧪 Test (8), 🔍 Quality (4), 📖 Docs (3), 📦 Dist (3), 🤖 CAG (1).
+
+**Removed tasks (22):**
+- `Test: All (verbose)` — duplicate of `Test: All`
+- `Lint: Clippy` / `Lint: Clippy (deny warnings)` → merged into `Quality: Clippy` (strict only)
+- `Lua API: Generate Reference`, `Lua API: Check Coverage`, `Lua API: Add Docstrings (Setup)` — all superseded by `Docs: Full Pipeline`
+- `Docs: Collect API`, `Docs: Report Missing Docs`, `Docs: Suggest Missing Docstrings`, `Docs: Coverage Report`, `Docs: Coverage Check`, `Docs: Generate Test Docs`, `Docs: Test Coverage` — all superseded by `Docs: Full Pipeline`
+- `Run (Installed): Hello World/Physics Demo/Sprites/Splash Screen` — superseded by `▶ Run: Release — pick demo`
+- `Build + Run Debug: Splash` / `Build + Run Release: Splash` — superseded by `▶ Run: Debug — pick demo` / `▶ Run: Release — pick demo`
+- `Install: Local (Linux / macOS)` — Windows-only workspace
+- `Dist: Package Linux / macOS` — Windows-only workspace
+- `Dist: NSIS Installer (Windows)` — requires external NSIS install, niche use
+
 ## [0.20.14] - 2026-04-23
 
 ### chore(build): overhaul all three build profiles and dist pipeline
