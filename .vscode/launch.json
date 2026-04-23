@@ -32,7 +32,7 @@
             "console": "integratedTerminal"
         },
         // ─── 🚀 RELEASE ───────────────────────────────────────────────────────
-        // [profile.release]: opt-level=3, LTO, stripped symbols, panic=abort.
+        // [profile.release]: opt-level=s, fat LTO, stripped, panic=abort.
         // Balanced performance + size. Raw binary ~20 MB. Use dist.ps1 to ship.
         {
             "type": "lldb",

@@ -2,6 +2,16 @@
 
 All notable changes to Lurek2D are recorded here.
 
+## [0.20.16] - 2026-04-23
+
+### fix(build): correct release profile opt-level to hit ~20 MB target
+
+- `[profile.release]` `opt-level` changed from `3` → `"s"`: level 3 inlines aggressively and produced a 32 MB binary; "s" applies all meaningful optimizations while avoiding code-bloating transformations, targeting ~20 MB.
+- `lto` changed from `true` (thin) → `"fat"`: full whole-program link-time optimization for stronger dead-code elimination across all crates.
+- `launch.json` comment updated to reflect `opt-level="s"`.
+
+**Target sizes:** debug ~55 MB (don't care), release ~20 MB (in progress), dist 5 MB (UPX — already achieved).
+
 ## [0.20.15] - 2026-04-23
 
 ### chore(vscode): redesign tasks.json from scratch — 49 tasks → 27, no duplicates

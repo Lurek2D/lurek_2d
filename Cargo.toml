@@ -191,12 +191,13 @@ codegen-units = 256
 opt-level = 1
 
 [profile.release]
-# BALANCED PERFORMANCE + SIZE — tuned for maximum runtime speed while keeping
-# the binary reasonably small. LTO + codegen-units=1 maximize dead-code removal.
-# strip + panic=abort drop all unneeded symbols and unwind tables.
-# Raw binary ~20 MB; use `cargo build --profile dist` (or dist.ps1) to ship.
-opt-level = 3
-lto = true
+# BALANCED PERFORMANCE + SIZE — opt-level="s" applies most optimizations but
+# avoids the extreme loop-unrolling and function inlining of level 3, which
+# inflates the binary to 30+ MB. "s" targets ~20 MB with near-3 performance.
+# lto="fat" + codegen-units=1 give maximum cross-crate dead-code elimination.
+# strip=true + panic=abort remove all symbol tables and unwind machinery.
+opt-level = "s"
+lto = "fat"
 codegen-units = 1
 strip = true
 panic = "abort"
