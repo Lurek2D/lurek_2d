@@ -76,6 +76,9 @@ function M.fromAudio(source, bpm, opts)
     return c
 end
 
+--- Set the clock BPM immediately, cancelling any in-progress ramp.
+-- @param bpm number New BPM value (must be > 0).
+-- @treturn Clock self
 function Clock:setBpm(bpm)
     if bpm <= 0 then error("setBpm: bpm must be > 0", 2) end
     self._bpm        = bpm
@@ -84,6 +87,10 @@ function Clock:setBpm(bpm)
     return self
 end
 
+--- Smoothly ramp BPM from the current value to `target` over `seconds`.
+-- @param target number Target BPM (must be > 0).
+-- @param seconds number Ramp duration in seconds (must be > 0).
+-- @treturn Clock self
 function Clock:rampBpm(target, seconds)
     if target <= 0 or seconds <= 0 then
         error("rampBpm: positive target & seconds required", 2)
@@ -95,10 +102,17 @@ function Clock:rampBpm(target, seconds)
     return self
 end
 
+--- Return the current BPM (may be mid-ramp).
+-- @treturn number current BPM
 function Clock:getBpm() return self._bpm end
 
+--- Set swing amount (0–0.5; 0 = straight, 0.5 = maximum shuffle).
+-- @param amount number Swing factor (clamped by caller convention).
+-- @treturn Clock self
 function Clock:setSwing(amount) self._swing = amount or 0; return self end
 
+--- Start (or restart) the clock from beat zero.
+-- @treturn Clock self
 function Clock:start()
     self._running       = true
     self._t             = 0
@@ -112,7 +126,11 @@ function Clock:start()
     return self
 end
 
+--- Stop the clock, preserving the current beat position.
+-- @treturn Clock self
 function Clock:stop()       self._running = false; return self end
+--- Return true if the clock is currently running.
+-- @treturn boolean
 function Clock:isRunning()  return self._running end
 
 local function _advance_bpm_ramp(self, dt)
@@ -127,6 +145,10 @@ local function _advance_bpm_ramp(self, dt)
     self._bpm = self._start_bpm + (self._target_bpm - self._start_bpm) * f
 end
 
+--- Advance the clock by `dt` seconds. Call once per frame from `lurek.process`.
+-- Fires beat/bar events and triggers any registered schedule handles.
+-- @param dt number Elapsed time in seconds since the last frame.
+-- @treturn Clock self
 function Clock:update(dt)
     if not self._running then return self end
     _advance_bpm_ramp(self, dt)
@@ -192,6 +214,9 @@ function Clock:update(dt)
     return self
 end
 
+--- Re-anchor the clock to a new audio source's current playhead.
+-- @param source table lurek.audio Source (must support `:getPosition()`).
+-- @treturn Clock self
 function Clock:syncToAudio(source)
     self._audio_src = source
     if source and source.getPosition then
@@ -207,16 +232,24 @@ function Clock:getBeat()
     return self._t * _beats_per_second(self._bpm)
 end
 
+--- Fractional bar number since `:start()` (beat / subdivision).
+-- @treturn number current bar position
 function Clock:getBar()
     return self:getBeat() / self._subdivision
 end
 
+--- Fractional position within the current subdivision step (0 = step start, 1 = next step).
+-- @param division integer? Step size in subdivisions (defaults to clock subdivision).
+-- @treturn number phase in [0, 1)
 function Clock:getPhase(division)
     division = division or self._subdivision
     local beats = self:getBeat() * (division / self._subdivision)
     return beats - floor(beats)
 end
 
+--- Seconds until the next step boundary at the given subdivision.
+-- @param division integer? Beat subdivision (defaults to clock subdivision).
+-- @treturn number seconds remaining until the next step
 function Clock:beatTimeRemaining(division)
     division = division or self._subdivision
     local phase = self:getPhase(division)
@@ -224,6 +257,10 @@ function Clock:beatTimeRemaining(division)
     return (1.0 - phase) * seconds_per_step
 end
 
+--- Return true if the clock is within `tolerance` of a step boundary.
+-- @param division integer? Beat subdivision (defaults to clock subdivision).
+-- @param tolerance number? Phase tolerance (default 0.05).
+-- @treturn boolean
 function Clock:isOnBeat(division, tolerance)
     division  = division  or self._subdivision
     tolerance = tolerance or 0.05
@@ -231,6 +268,10 @@ function Clock:isOnBeat(division, tolerance)
     return phase < tolerance or (1 - phase) < tolerance
 end
 
+--- Nearest beat index and signed timing error in seconds.
+-- @param division integer? Beat subdivision (defaults to clock subdivision).
+-- @treturn number nearest beat index
+-- @treturn number signed error in seconds (negative = early)
 function Clock:nearestBeat(division)
     division = division or self._subdivision
     local beats = self:getBeat() * (division / self._subdivision)
@@ -242,6 +283,10 @@ end
 
 -- ─── Scheduler API on the clock ─────────────────────────────────────────────
 
+--- Schedule `fn` to fire on every step at `division`. Returns a cancellable handle.
+-- @param division integer Step frequency in subdivisions.
+-- @param fn function Callback `fn(step_index)`.
+-- @treturn table schedule handle
 function Clock:every(division, fn)
     local h = {
         kind = "every", division = division, fn = fn,
@@ -254,6 +299,10 @@ function Clock:every(division, fn)
     return h
 end
 
+--- Schedule `fn` to fire once when the clock reaches `beat`.
+-- @param beat number Target beat position (must be in the future).
+-- @param fn function Callback `fn(beat)`.
+-- @treturn table schedule handle
 function Clock:at(beat, fn)
     if beat < self:getBeat() then
         error("Clock:at: beat is in the past", 2)
@@ -267,6 +316,12 @@ function Clock:at(beat, fn)
     return h
 end
 
+--- Schedule `fn` on each `'x'` character in a step-pattern string.
+-- Pattern length sets subdivision; `'x'` triggers, any other char is a rest.
+-- Example: `"x.x."` fires on steps 1 and 3 of a 4-step bar.
+-- @param str string Pattern string (`'x'` = trigger, others = rest).
+-- @param fn function Callback `fn(step_index)`.
+-- @treturn table schedule handle
 function Clock:pattern(str, fn)
     if type(str) ~= "string" or #str == 0 then
         error("Clock:pattern: string must be non-empty", 2)
@@ -280,6 +335,9 @@ function Clock:pattern(str, fn)
     return h
 end
 
+--- Cancel a previously registered schedule handle.
+-- @param handle table Handle returned by `:every`, `:at`, or `:pattern`.
+-- @treturn boolean true if the handle was found and removed
 function Clock:cancel(handle)
     if not handle then return false end
     handle.cancelled = true
@@ -289,11 +347,15 @@ function Clock:cancel(handle)
     return false
 end
 
+--- Cancel all registered schedule handles on this clock.
+-- @treturn Clock self
 function Clock:cancelAll()
     self._handles = {}
     return self
 end
 
+--- Return a snapshot table of current clock state for serialisation.
+-- @treturn table `{bpm, beat, bar, phase, running}`
 function Clock:dump()
     return {
         bpm = self._bpm, beat = self:getBeat(), bar = self:getBar(),
@@ -305,6 +367,9 @@ end
 
 local _windows = { perfect = 0.025, great = 0.05, good = 0.10 }
 
+--- Override the default judgement window thresholds (all values in seconds).
+-- Keys: `perfect`, `great`, `good`. Omitted keys keep their current values.
+-- @param w table `{perfect=number, great=number, good=number}`.
 function M.setJudgementWindows(w)
     if type(w) ~= "table" then error("setJudgementWindows: table required", 2) end
     _windows.perfect = w.perfect or _windows.perfect
@@ -312,6 +377,8 @@ function M.setJudgementWindows(w)
     _windows.good    = w.good    or _windows.good
 end
 
+--- Return the current judgement window thresholds as a table.
+-- @treturn table `{perfect, great, good}` in seconds
 function M.getJudgementWindows()
     return { perfect = _windows.perfect, great = _windows.great, good = _windows.good }
 end

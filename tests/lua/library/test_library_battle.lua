@@ -8,6 +8,13 @@ local battle = require("library.battle")
 -- @description Covers status effect creation, permanent-duration handling, and turn ticking that transitions temporary effects into the expired state.
 describe("StatusEffect", function()
     -- @covers library.battle.newStatusEffect
+    --- @covers library.battle.StatusEffect:getName
+    --- @covers library.battle.StatusEffect:getDuration
+    --- @covers library.battle.StatusEffect:getStacks
+    --- @covers library.battle.StatusEffect:isExpired
+    --- @covers library.battle.StatusEffect:tickTurn
+    --- @covers library.battle.StatusEffect:setDuration
+    --- @covers library.battle.StatusEffect:setStacks
     -- @description Verifies status effects start with the supplied name and duration plus the documented default stack and expiry state.
     it("creates with defaults", function()
         local e = battle.newStatusEffect("burn", 3)
@@ -46,6 +53,23 @@ end)
 -- @description Exercises combat action defaults, cooldown state changes after use, and accuracy clamping for out-of-range values.
 describe("CombatAction", function()
     -- @covers library.battle.newAction
+    --- @covers library.battle.CombatAction:getName
+    --- @covers library.battle.CombatAction:getBaseDamage
+    --- @covers library.battle.CombatAction:getDamageType
+    --- @covers library.battle.CombatAction:getAccuracy
+    --- @covers library.battle.CombatAction:isReady
+    --- @covers library.battle.CombatAction:setCooldown
+    --- @covers library.battle.CombatAction:useAction
+    --- @covers library.battle.CombatAction:getCurrentCooldown
+    --- @covers library.battle.CombatAction:tickCooldown
+    --- @covers library.battle.CombatAction:setAccuracy
+    --- @covers library.battle.CombatAction:setBaseDamage
+    --- @covers library.battle.CombatAction:setDamageType
+    --- @covers library.battle.CombatAction:getCooldown
+    --- @covers library.battle.CombatAction:getCostHp
+    --- @covers library.battle.CombatAction:setCostHp
+    --- @covers library.battle.CombatAction:getCostMp
+    --- @covers library.battle.CombatAction:setCostMp
     -- @description Verifies combat actions expose the expected default name, damage, accuracy, type, and ready state.
     it("creates with defaults", function()
         local a = battle.newAction("slash")
@@ -88,6 +112,40 @@ end)
 -- @description Verifies combatant stat defaults, damage and healing rules, stacked statuses, action registration, and metadata or stat access helpers.
 describe("Combatant", function()
     -- @covers library.battle.newCombatant
+    --- @covers library.battle.Combatant:getTeam
+    --- @covers library.battle.Combatant:getHp
+    --- @covers library.battle.Combatant:getMaxHp
+    --- @covers library.battle.Combatant:getMp
+    --- @covers library.battle.Combatant:getMaxMp
+    --- @covers library.battle.Combatant:getSpeed
+    --- @covers library.battle.Combatant:isAlive
+    --- @covers library.battle.Combatant:takeDamage
+    --- @covers library.battle.Combatant:setResistance
+    --- @covers library.battle.Combatant:heal
+    --- @covers library.battle.Combatant:addStatus
+    --- @covers library.battle.Combatant:hasStatus
+    --- @covers library.battle.Combatant:getStatuses
+    --- @covers library.battle.Combatant:removeStatus
+    --- @covers library.battle.Combatant:tickStatuses
+    --- @covers library.battle.Combatant:getHpPercent
+    --- @covers library.battle.Combatant:getMpPercent
+    --- @covers library.battle.Combatant:addAction
+    --- @covers library.battle.Combatant:hasAction
+    --- @covers library.battle.Combatant:getAction
+    --- @covers library.battle.Combatant:setStat
+    --- @covers library.battle.Combatant:getStat
+    --- @covers library.battle.Combatant:getActionNames
+    --- @covers library.battle.Combatant:getStatusNames
+    --- @covers library.battle.Combatant:setMeta
+    --- @covers library.battle.Combatant:getMeta
+    --- @covers library.battle.Combatant:setTeam
+    --- @covers library.battle.Combatant:setHp
+    --- @covers library.battle.Combatant:setMaxHp
+    --- @covers library.battle.Combatant:setMp
+    --- @covers library.battle.Combatant:setMaxMp
+    --- @covers library.battle.Combatant:setSpeed
+    --- @covers library.battle.Combatant:setLevel
+    --- @covers library.battle.Combatant:getLevel
     -- @description Verifies combatants start with the documented default team, health, mana, speed, and alive state.
     it("creates with defaults", function()
         local c = battle.newCombatant("hero")
@@ -228,6 +286,25 @@ end)
 -- @description Validates battle roster management, initiative ordering, turn advancement, combat resolution, win detection, logs, and whole-party ticking helpers.
 describe("CombatBattle", function()
     -- @covers library.battle.newBattle
+    --- @covers library.battle.Battle:getCount
+    --- @covers library.battle.Battle:getTurnCount
+    --- @covers library.battle.Battle:isOver
+    --- @covers library.battle.Battle:addCombatant
+    --- @covers library.battle.Battle:getCombatant
+    --- @covers library.battle.Battle:sortInitiative
+    --- @covers library.battle.Battle:getAllNames
+    --- @covers library.battle.Battle:getCurrentCombatant
+    --- @covers library.battle.Battle:nextTurn
+    --- @covers library.battle.Battle:getWinner
+    --- @covers library.battle.Battle:setName
+    --- @covers library.battle.Battle:removeCombatant
+    --- @covers library.battle.Battle:getTeamCombatants
+    --- @covers library.battle.Battle:getLivingCombatants
+    --- @covers library.battle.Battle:tickAllStatuses
+    --- @covers library.battle.Battle:tickAllCooldowns
+    --- @covers library.battle.Battle:applyEffect
+    --- @covers library.battle.Battle:getLogs
+    --- @covers library.battle.Battle:clearLogs
     -- @description Verifies new battles start empty with no turns taken and no winner decided.
     it("creates empty battle", function()
         local b = battle.newBattle("arena")

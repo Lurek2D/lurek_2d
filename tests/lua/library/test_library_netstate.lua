@@ -6,6 +6,11 @@ local netstate_mod = require("library.netstate")
 ---------------------------------------------------------------------------
 
 describe("Construction & Authority", function()
+    --- @covers library.netstate.new
+    --- @covers library.netstate.NetState:isAuthority
+    --- @covers library.netstate.NetState:getKeyCount
+    --- @covers library.netstate.NetState:getVersion
+    --- @covers library.netstate.NetState:getCurrentTurn
     it("creates with nil host and defaults", function()
         local ns = netstate_mod.new(nil)
         expect_equal(ns:isAuthority(), false)
@@ -59,6 +64,9 @@ end)
 ---------------------------------------------------------------------------
 
 describe("State Get / Set", function()
+    --- @covers library.netstate.new
+    --- @covers library.netstate.NetState:set
+    --- @covers library.netstate.NetState:get
     it("set and get a value as authority", function()
         local ns = netstate_mod.new(nil, { authority = true })
         local ok, err = ns:set("health", 100)
@@ -141,6 +149,8 @@ end)
 ---------------------------------------------------------------------------
 
 describe("Per-Key Versioning", function()
+    --- @covers library.netstate.new
+    --- @covers library.netstate.NetState:getKeyVersion
     it("each key starts at version 0", function()
         local ns = netstate_mod.new(nil, { authority = true })
         expect_equal(ns:getKeyVersion("x"), 0)
@@ -184,6 +194,10 @@ end)
 ---------------------------------------------------------------------------
 
 describe("Callbacks", function()
+    --- @covers library.netstate.new
+    --- @covers library.netstate.NetState:onChanged
+    --- @covers library.netstate.NetState:onChange
+    --- @covers library.netstate.NetState:clearCallbacks
     it("fires key-specific callback on set", function()
         local ns = netstate_mod.new(nil, { authority = true })
         local fired = {}
@@ -263,6 +277,8 @@ end)
 ---------------------------------------------------------------------------
 
 describe("Dirty Set", function()
+    --- @covers library.netstate.new
+    --- @covers library.netstate.NetState:getDirtyCount
     it("tracks dirty keys after set", function()
         local ns = netstate_mod.new(nil, { authority = true })
         expect_equal(ns:getDirtyCount(), 0)
@@ -320,6 +336,9 @@ end)
 ---------------------------------------------------------------------------
 
 describe("Remove Key", function()
+    --- @covers library.netstate.new
+    --- @covers library.netstate.NetState:remove
+    --- @covers library.netstate.NetState:hasKey
     it("removes an existing key", function()
         local ns = netstate_mod.new(nil, { authority = true })
         ns:set("hp", 100)
@@ -369,6 +388,13 @@ end)
 ---------------------------------------------------------------------------
 
 describe("Turn-Based Support", function()
+    --- @covers library.netstate.new
+    --- @covers library.netstate.NetState:setTurnOrder
+    --- @covers library.netstate.NetState:beginTurn
+    --- @covers library.netstate.NetState:endTurn
+    --- @covers library.netstate.NetState:getTurnPeer
+    --- @covers library.netstate.NetState:isTurn
+    --- @covers library.netstate.NetState:onTurn
     it("beginTurn advances turn counter", function()
         local ns = netstate_mod.new(nil, { authority = true, turnBased = true })
         ns:setTurnOrder({ 1, 2, 3 })
@@ -513,6 +539,7 @@ end)
 ---------------------------------------------------------------------------
 
 describe("Delta Handling", function()
+    --- @covers library.netstate.new
     it("applies delta update on non-authority", function()
         local ns = netstate_mod.new(nil, { authority = false })
         local changes = {}
@@ -623,6 +650,7 @@ end)
 ---------------------------------------------------------------------------
 
 describe("Full State Handling", function()
+    --- @covers library.netstate.new
     it("applies full state snapshot", function()
         local ns = netstate_mod.new(nil, { authority = false })
         ns:_handle(1, {
@@ -653,6 +681,7 @@ end)
 ---------------------------------------------------------------------------
 
 describe("Turn Message Handling", function()
+    --- @covers library.netstate.new
     it("applies turn update from network", function()
         local ns = netstate_mod.new(nil, { authority = false, turnBased = true })
         ns:_handle(1, {
@@ -697,6 +726,10 @@ end)
 ---------------------------------------------------------------------------
 
 describe("Sync & Poll nil host", function()
+    --- @covers library.netstate.new
+    --- @covers library.netstate.NetState:sync
+    --- @covers library.netstate.NetState:poll
+    --- @covers library.netstate.NetState:requestFullState
     it("sync is no-op with nil host", function()
         local ns = netstate_mod.new(nil, { authority = true })
         ns:set("x", 1)
@@ -729,6 +762,8 @@ end)
 ---------------------------------------------------------------------------
 
 describe("Logging", function()
+    --- @covers library.netstate.setLogging
+    --- @covers library.netstate.new
     it("custom log function receives messages", function()
         local logs = {}
         netstate_mod.setLogging(true, function(msg) table.insert(logs, msg) end)
@@ -759,6 +794,9 @@ end)
 ---------------------------------------------------------------------------
 
 describe("Edge Cases", function()
+    --- @covers library.netstate.new
+    --- @covers library.netstate.NetState:onFullStateTimeout
+    --- @covers library.netstate.NetState:getAll
     it("set nil value is valid", function()
         local ns = netstate_mod.new(nil, { authority = true })
         ns:set("x", 42)

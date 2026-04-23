@@ -8,11 +8,16 @@ describe("library.roguelike", function()
     describe("Fov", function()
         local function open_blocker(_, _) return false end
 
+        --- @covers library.roguelike.newFov
+        --- @covers library.roguelike.Fov:setBlocker
+        --- @covers library.roguelike.Fov:compute
+        --- @covers library.roguelike.Fov:isVisible
         it("origin cell is always visible", function()
             local fov = rl.newFov({range=5}):setBlocker(open_blocker):compute(0, 0)
             expect_true(fov:isVisible(0, 0))
         end)
 
+        --- @covers library.roguelike.newFov
         it("respects blocker     wall hides cells behind it", function()
             -- Vertical wall at x=2 between origin and target (3,0).
             local function blk(x, _) return x == 2 end
@@ -26,7 +31,7 @@ describe("library.roguelike", function()
             expect_false(fov:isVisible(4, 0))
         end)
 
-        it("explored set persists after recompute from a new origin", function()
+        --- @covers library.roguelike.newFov        --- @covers library.roguelike.Fov:isExplored        it("explored set persists after recompute from a new origin", function()
             local fov = rl.newFov({range=3}):setBlocker(open_blocker):compute(0, 0)
             expect_true(fov:isExplored(2, 0))
             fov:compute(20, 20)
@@ -34,6 +39,8 @@ describe("library.roguelike", function()
             expect_false(fov:isVisible(2, 0))   -- no longer in current view
         end)
 
+        --- @covers library.roguelike.newFov
+        --- @covers library.roguelike.Fov:resetExplored
         it("resetExplored clears the persistent set", function()
             local fov = rl.newFov({range=3}):setBlocker(open_blocker):compute(0, 0)
             fov:resetExplored()
@@ -42,6 +49,9 @@ describe("library.roguelike", function()
     end)
 
     describe("Scheduler", function()
+        --- @covers library.roguelike.newScheduler
+        --- @covers library.roguelike.Scheduler:add
+        --- @covers library.roguelike.Scheduler:next
         it("faster actor acts more often over many turns", function()
             local sch = rl.newScheduler()
             local fast = { id = "fast" }
@@ -59,6 +69,8 @@ describe("library.roguelike", function()
             expect_in_range(slow_count / 600, 0.25, 0.45)
         end)
 
+        --- @covers library.roguelike.newScheduler
+        --- @covers library.roguelike.Scheduler:remove
         it("remove(actor) prevents future picks", function()
             local sch = rl.newScheduler()
             local a, b = {}, {}
@@ -69,6 +81,9 @@ describe("library.roguelike", function()
             end
         end)
 
+        --- @covers library.roguelike.newScheduler
+        --- @covers library.roguelike.Scheduler:save
+        --- @covers library.roguelike.Scheduler:restore
         it("save / restore round-trips actor energies", function()
             local sch = rl.newScheduler()
             local a = {}; sch:add(a, 25)
@@ -81,6 +96,7 @@ describe("library.roguelike", function()
             expect_not_nil(blob.clock)
         end)
 
+        --- @covers library.roguelike.newScheduler
         it("add raises on non-positive speed", function()
             local sch = rl.newScheduler()
             expect_error(function() sch:add({}, 0) end)
@@ -89,6 +105,10 @@ describe("library.roguelike", function()
     end)
 
     describe("GoalMap", function()
+        --- @covers library.roguelike.newGoalMap
+        --- @covers library.roguelike.GoalMap:setSources
+        --- @covers library.roguelike.GoalMap:bake
+        --- @covers library.roguelike.GoalMap:gradientAt
         it("gradient points toward nearest source", function()
             local g = rl.newGoalMap(10, 10)
                 :setSources({ { 5, 5, 0 } })
@@ -98,6 +118,8 @@ describe("library.roguelike", function()
             expect_equal(0, dy)
         end)
 
+        --- @covers library.roguelike.newGoalMap
+        --- @covers library.roguelike.GoalMap:distanceAt
         it("distance increases with hop count", function()
             local g = rl.newGoalMap(10, 10):setSources({{5,5,0}}):bake()
             expect_equal(0, g:distanceAt(5, 5))
@@ -105,6 +127,8 @@ describe("library.roguelike", function()
             expect_equal(3, g:distanceAt(5, 8))
         end)
 
+        --- @covers library.roguelike.newGoalMap
+        --- @covers library.roguelike.GoalMap:flee
         it("flee inversion produces a step away from threat", function()
             local g = rl.newGoalMap(10, 10):setSources({{5,5,0}}):bake()
             local dx, dy = g:flee(4, 5, 1.5)
@@ -113,6 +137,7 @@ describe("library.roguelike", function()
                 "flee should not step toward the source")
         end)
 
+        --- @covers library.roguelike.newGoalMap
         it("bake without sources raises descriptive error", function()
             local g = rl.newGoalMap(5, 5)
             expect_error(function() g:bake() end)
@@ -120,6 +145,7 @@ describe("library.roguelike", function()
     end)
 
     describe("module helpers", function()
+        --- @covers library.roguelike.bresenham
         it("bresenham produces continuous endpoints", function()
             local pts = rl.bresenham(0, 0, 3, 2)
             expect_equal(0, pts[1].x); expect_equal(0, pts[1].y)

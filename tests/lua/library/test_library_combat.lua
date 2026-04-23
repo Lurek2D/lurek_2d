@@ -7,11 +7,19 @@ package.path = "./library/?/init.lua;" .. package.path
 local combat = require("library.combat")
 
 
---                  CollisionGroupSet                                                                                                                                                                                                                                                                                                                                                                                                                                 
+--                  CollisionGroupSet
 
 -- @description Tests collision group registration, symmetric collision masks, group enumeration, reset behavior, and mask computation for enabled interactions.
 describe("CollisionGroupSet", function()
     -- @covers library.combat.newCollisionGroupSet
+    --- @covers library.combat.CollisionGroupSet:defineGroup
+    --- @covers library.combat.CollisionGroupSet:getGroupBit
+    --- @covers library.combat.CollisionGroupSet:setCollides
+    --- @covers library.combat.CollisionGroupSet:getCollides
+    --- @covers library.combat.CollisionGroupSet:computeMask
+    --- @covers library.combat.CollisionGroupSet:groupCount
+    --- @covers library.combat.CollisionGroupSet:groupNames
+    --- @covers library.combat.CollisionGroupSet:reset
     -- @description Verifies group definitions allocate successive power-of-two bitmasks for collision filtering.
     it("defineGroup assigns power-of-2 bits", function()
         local cgs = combat.newCollisionGroupSet()
@@ -87,7 +95,7 @@ describe("CollisionGroupSet", function()
     end)
 end)
 
---                  MountSlot                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
+--                  MountSlot
 
 -- @description Verifies mount slot construction, default size class selection, and default full-circle firing arc values.
 describe("MountSlot", function()
@@ -111,11 +119,19 @@ describe("MountSlot", function()
     end)
 end)
 
---                  Chassis                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
+--                  Chassis
 
 -- @description Covers chassis durability, armor, slot registration, lethal damage, healing clamps, and per-zone armor lookup helpers.
 describe("Chassis", function()
     -- @covers library.combat.newChassis
+    --- @covers library.combat.Chassis:addSlot
+    --- @covers library.combat.Chassis:getSlot
+    --- @covers library.combat.Chassis:getSlots
+    --- @covers library.combat.Chassis:takeDamage
+    --- @covers library.combat.Chassis:heal
+    --- @covers library.combat.Chassis:isDead
+    --- @covers library.combat.Chassis:getArmor
+    --- @covers library.combat.Chassis:setArmor
     -- @description Verifies chassis start with matching HP and max HP and are not destroyed initially.
     it("new with max_hp", function()
         local c = combat.newChassis(1, 100)
@@ -175,11 +191,27 @@ describe("Chassis", function()
     end)
 end)
 
---                  Turret                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+--                  Turret
 
 -- @description Exercises turret targeting, arc clamping, aiming detection, angular update output, and the full getter or setter surface for turret state.
 describe("Turret", function()
     -- @covers library.combat.newTurret
+    --- @covers library.combat.Turret:aimAtAngle
+    --- @covers library.combat.Turret:clampToArc
+    --- @covers library.combat.Turret:update
+    --- @covers library.combat.Turret:isAimed
+    --- @covers library.combat.Turret:setTurnSpeed
+    --- @covers library.combat.Turret:getTurnSpeed
+    --- @covers library.combat.Turret:setArcMin
+    --- @covers library.combat.Turret:getArcMin
+    --- @covers library.combat.Turret:setArcMax
+    --- @covers library.combat.Turret:getArcMax
+    --- @covers library.combat.Turret:setTargetAngle
+    --- @covers library.combat.Turret:getTargetAngle
+    --- @covers library.combat.Turret:setSizeClass
+    --- @covers library.combat.Turret:getSizeClass
+    --- @covers library.combat.Turret:setDestroyed
+    --- @covers library.combat.Turret:isDestroyed
     -- @description Verifies turrets start with the supplied body and joint ids plus default speed and destroyed state.
     it("new with defaults", function()
         local t = combat.newTurret(10, 20)
@@ -276,11 +308,44 @@ describe("Turret", function()
     end)
 end)
 
---                  Weapon                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+--                  Weapon
 
 -- @description Validates weapon defaults, firing and cooldown flow, reload logic, burst-fire state, ammo exhaustion checks, and weapon property accessors.
 describe("Weapon", function()
     -- @covers library.combat.newWeapon
+    --- @covers library.combat.Weapon:canFire
+    --- @covers library.combat.Weapon:fire
+    --- @covers library.combat.Weapon:updateCooldown
+    --- @covers library.combat.Weapon:reload
+    --- @covers library.combat.Weapon:isOutOfAmmo
+    --- @covers library.combat.Weapon:startFiring
+    --- @covers library.combat.Weapon:stopFiring
+    --- @covers library.combat.Weapon:isFiring
+    --- @covers library.combat.Weapon:setName
+    --- @covers library.combat.Weapon:setFireRate
+    --- @covers library.combat.Weapon:getFireRate
+    --- @covers library.combat.Weapon:setAmmo
+    --- @covers library.combat.Weapon:getAmmo
+    --- @covers library.combat.Weapon:setMaxAmmo
+    --- @covers library.combat.Weapon:getMaxAmmo
+    --- @covers library.combat.Weapon:setBurstSize
+    --- @covers library.combat.Weapon:getBurstSize
+    --- @covers library.combat.Weapon:setBurstDelay
+    --- @covers library.combat.Weapon:getBurstDelay
+    --- @covers library.combat.Weapon:setSpread
+    --- @covers library.combat.Weapon:getSpread
+    --- @covers library.combat.Weapon:setDamageAmount
+    --- @covers library.combat.Weapon:getDamageAmount
+    --- @covers library.combat.Weapon:setDamageType
+    --- @covers library.combat.Weapon:getDamageType
+    --- @covers library.combat.Weapon:setPenetration
+    --- @covers library.combat.Weapon:getPenetration
+    --- @covers library.combat.Weapon:setRange
+    --- @covers library.combat.Weapon:getRange
+    --- @covers library.combat.Weapon:setProjectileSpeed
+    --- @covers library.combat.Weapon:getProjectileSpeed
+    --- @covers library.combat.Weapon:setProjectileType
+    --- @covers library.combat.Weapon:getProjectileType
     -- @description Verifies weapons start with the expected default name, ammo mode, and ready-to-fire state.
     it("new with defaults", function()
         local w = combat.newWeapon("Laser")
@@ -425,7 +490,7 @@ describe("Weapon", function()
     end)
 end)
 
---                  Projectile                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
+--                  Projectile
 
 -- @description Focuses on pooled projectile instances to verify reset behavior and active-update bookkeeping for lifetime and traveled distance.
 describe("Projectile", function()
@@ -468,11 +533,20 @@ describe("Projectile", function()
     end)
 end)
 
---                  ProjectilePool                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
+--                  ProjectilePool
 
 -- @description Tests projectile pool allocation, exhaustion, release safety, pooled lookup, pool-size clamping, and active-slot bookkeeping.
 describe("ProjectilePool", function()
     -- @covers library.combat.newProjectilePool
+    --- @covers library.combat.ProjectilePool:spawn
+    --- @covers library.combat.ProjectilePool:release
+    --- @covers library.combat.ProjectilePool:activeCount
+    --- @covers library.combat.ProjectilePool:freeCount
+    --- @covers library.combat.ProjectilePool:getActive
+    --- @covers library.combat.ProjectilePool:resetAll
+    --- @covers library.combat.ProjectilePool:get
+    --- @covers library.combat.Projectile:reset
+    --- @covers library.combat.Projectile:update
     -- @description Verifies projectile pools start with all slots free and no active projectiles.
     it("new creates pool with free slots", function()
         local pool = combat.newProjectilePool(10)
@@ -554,11 +628,24 @@ describe("ProjectilePool", function()
     end)
 end)
 
---                  CombatWorld                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
+--                  CombatWorld
 
 -- @description Verifies combat world aggregation of chassis, turrets, weapons, and pools together with updates, cleanup, counters, and reset behavior.
 describe("CombatWorld", function()
     -- @covers library.combat.newCombatWorld
+    --- @covers library.combat.CombatWorld:addChassis
+    --- @covers library.combat.CombatWorld:getChassis
+    --- @covers library.combat.CombatWorld:addTurret
+    --- @covers library.combat.CombatWorld:getTurret
+    --- @covers library.combat.CombatWorld:addWeapon
+    --- @covers library.combat.CombatWorld:getWeapon
+    --- @covers library.combat.CombatWorld:addPool
+    --- @covers library.combat.CombatWorld:getPool
+    --- @covers library.combat.CombatWorld:activeChassisCount
+    --- @covers library.combat.CombatWorld:activeProjectileCount
+    --- @covers library.combat.CombatWorld:update
+    --- @covers library.combat.CombatWorld:reset
+    --- @covers library.combat.CombatWorld:cleanup
     -- @description Verifies new combat worlds start with empty chassis, turret, weapon, and pool collections.
     it("new creates empty world", function()
         local w = combat.newCombatWorld()
@@ -671,7 +758,7 @@ describe("CombatWorld", function()
     end)
 end)
 
---                  Enums                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
+--                  Enums
 
 -- @description Confirms the combat module exports the expected projectile and armor-zone enum string constants.
 describe("Enums", function()
@@ -695,7 +782,7 @@ describe("Enums", function()
     end)
 end)
 
---        Bug fix: collision group overflow error message                                                                               
+--        Bug fix: collision group overflow error message
 
 describe("CollisionGroupSet overflow", function()
     -- @covers library.combat.newCollisionGroupSet
@@ -724,7 +811,7 @@ describe("CollisionGroupSet overflow", function()
     end)
 end)
 
---        Bug fix: turret arc snapping                                                                                                                                        
+--        Bug fix: turret arc snapping
 
 describe("Turret arc snapping", function()
     -- @covers library.combat.newTurret
@@ -770,7 +857,7 @@ describe("Turret arc snapping", function()
     end)
 end)
 
---        Bug fix: weapon burst inter-burst cooldown                                                                                              
+--        Bug fix: weapon burst inter-burst cooldown
 
 describe("Weapon burst cooldown", function()
     -- @covers library.combat.newWeapon
@@ -814,7 +901,7 @@ describe("Weapon burst cooldown", function()
     end)
 end)
 
---        Input validation                                                                                                                                                                            
+--        Input validation
 
 describe("Input validation", function()
     -- @covers library.combat.newWeapon
@@ -867,7 +954,7 @@ describe("Input validation", function()
     end)
 end)
 
---        Pool exhaustion and DEFAULT_POOL_SIZE                                                                                                             
+--        Pool exhaustion and DEFAULT_POOL_SIZE
 
 describe("ProjectilePool defaults", function()
     -- @covers library.combat.newProjectilePool

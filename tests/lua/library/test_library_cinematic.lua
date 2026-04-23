@@ -6,6 +6,11 @@ local cine = require("library.cinematic")
 describe("library.cinematic", function()
 
     describe("clip firing", function()
+        --- @covers library.cinematic.newTimeline
+        --- @covers library.cinematic.Timeline:track
+        --- @covers library.cinematic.Track:call
+        --- @covers library.cinematic.Timeline:play
+        --- @covers library.cinematic.Timeline:update
         it("clips fire in declared order across multiple tracks", function()
             local fired = {}
             local tl = cine.newTimeline()
@@ -20,6 +25,8 @@ describe("library.cinematic", function()
             expect_equal("a@1.0", fired[3])
         end)
 
+        --- @covers library.cinematic.newTimeline
+        --- @covers library.cinematic.Timeline:setTime
         it("setTime(t) seeks past clips and applies them", function()
             local hit = false
             local tl = cine.newTimeline()
@@ -31,6 +38,10 @@ describe("library.cinematic", function()
     end)
 
     describe("pause / resume", function()
+        --- @covers library.cinematic.newTimeline
+        --- @covers library.cinematic.Timeline:pause
+        --- @covers library.cinematic.Timeline:resume
+        --- @covers library.cinematic.Timeline:getTime
         it("pause then resume preserves elapsed time", function()
             local tl = cine.newTimeline()
             tl:track("x"):call(2.0, function() end)
@@ -43,6 +54,9 @@ describe("library.cinematic", function()
     end)
 
     describe("onComplete", function()
+        --- @covers library.cinematic.newTimeline
+        --- @covers library.cinematic.Timeline:onComplete
+        --- @covers library.cinematic.Timeline:isFinished
         it("fires once at duration", function()
             local n = 0
             local tl = cine.newTimeline()
@@ -55,6 +69,9 @@ describe("library.cinematic", function()
     end)
 
     describe("labels & skip", function()
+        --- @covers library.cinematic.newTimeline
+        --- @covers library.cinematic.Timeline:label
+        --- @covers library.cinematic.Timeline:skipTo
         it("skipTo jumps the playhead to the labelled time", function()
             local tl = cine.newTimeline()
             tl:track("x"):call(2.0, function() end)
@@ -63,6 +80,7 @@ describe("library.cinematic", function()
             expect_near(2.0, tl:getTime(), 1e-9)
         end)
 
+        --- @covers library.cinematic.newTimeline
         it("skipTo on unknown label raises", function()
             local tl = cine.newTimeline()
             expect_error(function() tl:skipTo("nope") end)
@@ -70,6 +88,8 @@ describe("library.cinematic", function()
     end)
 
     describe("branch", function()
+        --- @covers library.cinematic.newTimeline
+        --- @covers library.cinematic.Timeline:branch
         it("only runs when predicate is true at branch time", function()
             local tl    = cine.newTimeline()
             local child = cine.newTimeline()
@@ -83,6 +103,8 @@ describe("library.cinematic", function()
     end)
 
     describe("scrubbing", function()
+        --- @covers library.cinematic.newTimeline
+        --- @covers library.cinematic.Track:audio
         it("backward scrub past non-reversible clip raises", function()
             local tl = cine.newTimeline()
             tl:track("x"):audio(0.5, "song.ogg")
@@ -90,6 +112,7 @@ describe("library.cinematic", function()
             expect_error(function() tl:setTime(0.0) end)
         end)
 
+        --- @covers library.cinematic.newTimeline
         it("backward scrub through reversible call clip is allowed", function()
             local applied
             local tl = cine.newTimeline()
@@ -101,6 +124,8 @@ describe("library.cinematic", function()
     end)
 
     describe("export", function()
+        --- @covers library.cinematic.newTimeline
+        --- @covers library.cinematic.Timeline:export
         it("export returns playhead state", function()
             local tl = cine.newTimeline()
             tl:track("x"):call(2.0, function() end)
@@ -112,6 +137,8 @@ describe("library.cinematic", function()
     end)
 
     describe("error paths", function()
+        --- @covers library.cinematic.newTimeline
+        --- @covers library.cinematic.Track:add
         it("track:add raises on missing 'at'", function()
             local tl = cine.newTimeline()
             expect_error(function() tl:track("x"):add({ kind = "call" }) end)

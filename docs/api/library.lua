@@ -1368,6 +1368,10 @@ function library.cinematic.fromTable(spec) end
 ---@return nil
 function library.cinematic.track(name) end
 
+--- Return an ordered array of all tracks in this timeline.
+---@return table
+function library.cinematic.tracks() end
+
 --- Recompute total duration from the latest clip end.
 ---@return nil
 function library.cinematic._recompute_duration() end
@@ -1375,6 +1379,43 @@ function library.cinematic._recompute_duration() end
 --- Bind a dialog handler `fn(line)` invoked by `track:dialog` clips.
 ---@return nil
 function library.cinematic.setDialogHandler(fn) end
+
+--- Start (or resume) playback of this timeline.
+---@return Timeline
+function library.cinematic.play() end
+
+--- Pause playback at the current time position.
+---@return Timeline
+function library.cinematic.pause() end
+
+--- Resume playback from the current time position.
+---@return Timeline
+function library.cinematic.resume() end
+
+--- Stop playback and reset the timeline to time zero.
+---@return Timeline
+function library.cinematic.stop() end
+
+--- Return true if the timeline is currently playing.
+---@return boolean
+function library.cinematic.isPlaying() end
+
+--- Return true if the timeline has reached its end and is not looping.
+---@return boolean
+function library.cinematic.isFinished() end
+
+--- Return the current playback time in seconds.
+---@return number
+function library.cinematic.getTime() end
+
+--- Return the total duration of the timeline in seconds.
+---@return number
+function library.cinematic.getDuration() end
+
+--- Set the playback speed multiplier (1.0 = real-time, 2.0 = double speed).
+---@param s number
+---@return Timeline
+function library.cinematic.setTimeScale(s) end
 
 --- Add a labelled cue point.
 ---@return nil
@@ -1388,9 +1429,47 @@ function library.cinematic.branch(at, predicate, child) end
 ---@return nil
 function library.cinematic.update(dt) end
 
+--- Reset fired/applied flags on all clips in all tracks (used after loop restart).
+---@return nil
+function library.cinematic._reset_clip_flags() end
+
 --- Seek to absolute time.
 ---@return nil
 function library.cinematic.setTime(t) end
+
+--- Seek forward or backward by `delta` seconds relative to current time.
+---@param delta number
+---@return Timeline
+function library.cinematic.scrub(delta) end
+
+--- Rewind the timeline to time zero.
+---@return Timeline
+function library.cinematic.rewind() end
+
+--- Seek to the time position of a named label.
+---@param label string
+---@return Timeline
+function library.cinematic.skipTo(label) end
+
+--- Register a callback invoked when the timeline finishes. Returns a handle that can be passed to `Timeline:offHandle`.
+---@param fn function
+---@return table
+function library.cinematic.onComplete(fn) end
+
+--- Register a callback invoked whenever a clip on `name` track begins.
+---@param name string
+---@param fn function
+---@return table
+function library.cinematic.onTrackEnter(name, fn) end
+
+--- Deregister a callback handle previously returned by `onComplete` or `onTrackEnter`.
+---@param handle table
+---@return nil
+function library.cinematic.offHandle(handle) end
+
+--- Export a lightweight snapshot of the timeline state for serialisation.
+---@return table
+function library.cinematic.export() end
 
 ---@class library.combat
 library.combat = {}
@@ -2662,13 +2741,48 @@ library.doll = {}
 ---@return Part
 function library.doll.newPart() end
 
---- Texture / Quad
----@return nil
+--- Texture / Quad Return the texture assigned to this part.
+---@return any
 function library.doll.getTexture() end
 
---- Local Transform
+--- Assign a texture to this part.
+---@param tex any
 ---@return nil
+function library.doll.setTexture(tex) end
+
+--- Return the texture quad (sub-region) for this part.
+---@return any
+function library.doll.getQuad() end
+
+--- Set the texture quad (sub-region) for this part.
+---@param q any
+---@return nil
+function library.doll.setQuad(q) end
+
+--- Local Transform Return the local offset of this part from its socket origin.
+---@return number
+---@return number
 function library.doll.getOffset() end
+
+--- Set the local offset of this part from its socket origin.
+---@param x number
+---@param y number
+---@return nil
+function library.doll.setOffset(x, y) end
+
+--- Return the local rotation of this part in radians.
+---@return number
+function library.doll.getRotation() end
+
+--- Set the local rotation of this part in radians.
+---@param r number
+---@return nil
+function library.doll.setRotation(r) end
+
+--- Return the local scale of this part as (scaleX, scaleY).
+---@return number
+---@return number
+function library.doll.getScale() end
 
 --- Set part scale. Passing a single number sets uniform scale.
 ---@param sx number
@@ -2676,8 +2790,19 @@ function library.doll.getOffset() end
 ---@return nil
 function library.doll.setScale(sx, sy) end
 
---- Draw Order & Type
+--- Return the render origin (pivot point) of this part.
+---@return number
+---@return number
+function library.doll.getOrigin() end
+
+--- Set the render origin (pivot point) of this part.
+---@param ox number
+---@param oy number
 ---@return nil
+function library.doll.setOrigin(ox, oy) end
+
+--- Draw Order & Type Return the draw order key for this part.
+---@return number
 function library.doll.getDrawOrder() end
 
 --- Set part draw order (z-sort key).
@@ -2685,21 +2810,82 @@ function library.doll.getDrawOrder() end
 ---@return nil
 function library.doll.setDrawOrder(n) end
 
---- Visibility & Appearance
+--- Return the part type string (used for socket type-filter matching).
+---@return string
+function library.doll.getPartType() end
+
+--- Set the part type string.
+---@param t string
 ---@return nil
+function library.doll.setPartType(t) end
+
+--- Visibility & Appearance Return true if this part is currently visible.
+---@return boolean
 function library.doll.isVisible() end
 
---- Behaviour
+--- Set visibility of this part.
+---@param v boolean
 ---@return nil
+function library.doll.setVisible(v) end
+
+--- Return the RGBA colour tint of this part.
+---@return number
+---@return number
+---@return number
+---@return number
+function library.doll.getColor() end
+
+--- Set the RGBA colour tint of this part.
+---@param r number
+---@param g number
+---@param b number
+---@param a number
+---@return nil
+function library.doll.setColor(r, g, b, a) end
+
+--- Return the flip flags for this part.
+---@return boolean
+---@return boolean
+function library.doll.getFlip() end
+
+--- Set horizontal and vertical flip flags.
+---@param fx boolean
+---@param fy boolean
+---@return nil
+function library.doll.setFlip(fx, fy) end
+
+--- Behaviour Return true if this part inherits the socket's rotation.
+---@return boolean
 function library.doll.getFollowsRotation() end
 
---- Attributes (user-defined key-value store)
+--- Set whether this part inherits the socket's rotation.
+---@param f boolean
 ---@return nil
+function library.doll.setFollowsRotation(f) end
+
+--- Attributes (user-defined key-value store) Get the value of a user-defined attribute by key.
+---@param key string
+---@return any
 function library.doll.getAttribute(key) end
 
---- Optional physics fixture ref (stored, never called)
+--- Set a user-defined attribute value.
+---@param key string
+---@param val any
 ---@return nil
+function library.doll.setAttribute(key, val) end
+
+--- Return a list of all attribute keys on this part.
+---@return table
+function library.doll.getAttributeKeys() end
+
+--- Optional physics fixture ref (stored, never called) Return the optional physics fixture reference.
+---@return any
 function library.doll.getFixture() end
+
+--- Store an optional physics fixture reference on this part.
+---@param f any
+---@return nil
+function library.doll.setFixture(f) end
 
 --- Get the absolute scale magnitude, ignoring flip. Useful when flip is used for mirroring but the caller needs the positive magnitude (e.g. bounding-box calculation).
 ---@return number
@@ -2715,6 +2901,15 @@ function library.doll.getAttributes() end
 ---@return DollTemplate
 function library.doll.newTemplate(name) end
 
+--- Return the template name.
+---@return string
+function library.doll.getName() end
+
+--- Set the template name.
+---@param n string
+---@return nil
+function library.doll.setName(n) end
+
 --- Add a socket to the template. Returns true on success, or false plus a message if the name is invalid or already registered.
 ---@param socketName string
 ---@param acceptType string
@@ -2726,6 +2921,24 @@ function library.doll.newTemplate(name) end
 ---@return string
 function library.doll.addSocket(socketName, acceptType, x, y, rotation, drawOrder) end
 
+--- Remove a socket by name. Returns false if the socket does not exist.
+---@param socketName string
+---@return boolean
+function library.doll.removeSocket(socketName) end
+
+--- Return a copy of the socket definition, or nil if not found.
+---@param socketName string
+---@return table|nil
+function library.doll.getSocket(socketName) end
+
+--- Return an ordered array of socket names.
+---@return table
+function library.doll.getSocketNames() end
+
+--- Return the number of sockets in this template.
+---@return number
+function library.doll.getSocketCount() end
+
 --- Internal: iterate raw sockets (used by Doll).
 ---@return nil
 function library.doll._iterSockets() end
@@ -2735,21 +2948,67 @@ function library.doll._iterSockets() end
 ---@return Doll
 function library.doll.newDoll(template) end
 
---- Transform
----@return nil
+--- Transform Return the world-space position of this doll.
+---@return number
+---@return number
 function library.doll.getPosition() end
 
---- Template
+--- Set the world-space position of this doll.
+---@param x number
+---@param y number
 ---@return nil
+function library.doll.setPosition(x, y) end
+
+--- Return the world-space rotation of this doll in radians.
+---@return number
+function library.doll.getRotation() end
+
+--- Set the world-space rotation of this doll in radians.
+---@param r number
+---@return nil
+function library.doll.setRotation(r) end
+
+--- Return the world-space scale of this doll.
+---@return number
+---@return number
+function library.doll.getScale() end
+
+--- Set the world-space scale of this doll.
+---@param sx number
+---@param sy number
+---@return nil
+function library.doll.setScale(sx, sy) end
+
+--- Template Return the DollTemplate this doll was created from.
+---@return DollTemplate
 function library.doll.getTemplate() end
 
---- Visibility
----@return nil
+--- Visibility Return true if this doll is currently visible.
+---@return boolean
 function library.doll.isVisible() end
 
---- Optional body / user data refs
+--- Set the visibility of this doll.
+---@param v boolean
 ---@return nil
+function library.doll.setVisible(v) end
+
+--- Optional body / user data refs Return the optional physics body reference attached to this doll.
+---@return any
 function library.doll.getBody() end
+
+--- Store an optional physics body reference on this doll.
+---@param b any
+---@return nil
+function library.doll.setBody(b) end
+
+--- Return the optional user-data reference on this doll.
+---@return any
+function library.doll.getUserData() end
+
+--- Store an optional user-data reference on this doll.
+---@param v any
+---@return nil
+function library.doll.setUserData(v) end
 
 --- Attach a Part to a named socket. Returns false if socket not found, type mismatch, or invalid args.
 ---@param socketName string
@@ -2761,6 +3020,28 @@ function library.doll.attach(socketName, part) end
 ---@param socketName string
 ---@return Part|nil
 function library.doll.detach(socketName) end
+
+--- Return the Part attached at `socketName`, or nil.
+---@param socketName string
+---@return Part|nil
+function library.doll.getPartAt(socketName) end
+
+--- Return the socket name the given Part is attached to, or nil.
+---@param part Part
+---@return string|nil
+function library.doll.findSocket(part) end
+
+--- Detach all parts from all sockets.
+---@return nil
+function library.doll.detachAll() end
+
+--- Return an array of socket names that currently have a part attached.
+---@return table
+function library.doll.getAttachedSockets() end
+
+--- Return an array of socket names that are currently empty.
+---@return table
+function library.doll.getEmptySockets() end
 
 --- Compute world-transform draw list sorted by drawOrder. Each entry: {socketName, part, x, y, rotation, scaleX, scaleY, originX, originY, drawOrder}. **Flip behaviour**: Part flip flags produce negative scale values (e.g. scaleX = -2 when flipX is true and doll+part scale = 2). This is intentional — GPU scale-based mirroring. Use `doll.getAbsoluteScale(entry)` if you need the positive magnitude. **Transform order**: Part offset is rotated by socket rotation before being added to the socket position (socket-local space). The combined offset is then scaled by doll scale and rotated by doll rotation. Does NOT filter by part visibility — caller handles that.
 ---@return table
@@ -5065,9 +5346,6 @@ function library.netstate.toJson() end
 ---@return boolean
 function library.netstate.requestFullState() end
 
----@class library.patterns
-library.patterns = {}
-
 ---@class library.province_map
 library.province_map = {}
 
@@ -5792,9 +6070,117 @@ function library.rhythm.newClock(bpm, opts) end
 ---@return nil
 function library.rhythm.fromAudio(source, bpm, opts) end
 
+--- Set the clock BPM immediately, cancelling any in-progress ramp.
+---@param bpm number
+---@return Clock
+function library.rhythm.setBpm(bpm) end
+
+--- Smoothly ramp BPM from the current value to `target` over `seconds`.
+---@param target number
+---@param seconds number
+---@return Clock
+function library.rhythm.rampBpm(target, seconds) end
+
+--- Return the current BPM (may be mid-ramp).
+---@return number
+function library.rhythm.getBpm() end
+
+--- Set swing amount (0–0.5; 0 = straight, 0.5 = maximum shuffle).
+---@param amount number
+---@return Clock
+function library.rhythm.setSwing(amount) end
+
+--- Start (or restart) the clock from beat zero.
+---@return Clock
+function library.rhythm.start() end
+
+--- Stop the clock, preserving the current beat position.
+---@return Clock
+function library.rhythm.stop() end
+
+--- Return true if the clock is currently running.
+---@return boolean
+function library.rhythm.isRunning() end
+
+--- Advance the clock by `dt` seconds. Call once per frame from `lurek.process`. Fires beat/bar events and triggers any registered schedule handles.
+---@param dt number
+---@return Clock
+function library.rhythm.update(dt) end
+
+--- Re-anchor the clock to a new audio source's current playhead.
+---@param source table
+---@return Clock
+function library.rhythm.syncToAudio(source) end
+
 --- Fractional beats since `:start()`.
 ---@return nil
 function library.rhythm.getBeat() end
+
+--- Fractional bar number since `:start()` (beat / subdivision).
+---@return number
+function library.rhythm.getBar() end
+
+--- Fractional position within the current subdivision step (0 = step start, 1 = next step).
+---@param division integer?
+---@return number
+function library.rhythm.getPhase(division) end
+
+--- Seconds until the next step boundary at the given subdivision.
+---@param division integer?
+---@return number
+function library.rhythm.beatTimeRemaining(division) end
+
+--- Return true if the clock is within `tolerance` of a step boundary.
+---@param division integer?
+---@param tolerance number?
+---@return boolean
+function library.rhythm.isOnBeat(division, tolerance) end
+
+--- Nearest beat index and signed timing error in seconds.
+---@param division integer?
+---@return number
+---@return number
+function library.rhythm.nearestBeat(division) end
+
+--- Schedule `fn` to fire on every step at `division`. Returns a cancellable handle.
+---@param division integer
+---@param fn function
+---@return table
+function library.rhythm.every(division, fn) end
+
+--- Schedule `fn` to fire once when the clock reaches `beat`.
+---@param beat number
+---@param fn function
+---@return table
+function library.rhythm.at(beat, fn) end
+
+--- Schedule `fn` on each `'x'` character in a step-pattern string. Pattern length sets subdivision; `'x'` triggers, any other char is a rest. Example: `"x.x."` fires on steps 1 and 3 of a 4-step bar.
+---@param str string
+---@param fn function
+---@return table
+function library.rhythm.pattern(str, fn) end
+
+--- Cancel a previously registered schedule handle.
+---@param handle table
+---@return boolean
+function library.rhythm.cancel(handle) end
+
+--- Cancel all registered schedule handles on this clock.
+---@return Clock
+function library.rhythm.cancelAll() end
+
+--- Return a snapshot table of current clock state for serialisation.
+---@return table
+function library.rhythm.dump() end
+
+--- Override the default judgement window thresholds (all values in seconds). Keys: `perfect`, `great`, `good`. Omitted keys keep their current values.
+---@param w table
+---@return nil
+function library.rhythm.setJudgementWindows(w) end
+
+--- Return the current judgement window thresholds as a table.
+---@return table
+function library.rhythm.getJudgementWindows() end
 
 --- Judge a player input against the nearest beat at `division`.
 ---@param clock Clock
@@ -5824,9 +6210,55 @@ function library.roguelike.attachTilemap(tilemap, layer, blocker_ids) end
 ---@return nil
 function library.roguelike.compute(ox, oy) end
 
+--- Return true if `(x, y)` is within the current visible set.
+---@param x integer
+---@param y integer
+---@return boolean
+function library.roguelike.isVisible(x, y) end
+
+--- Return true if `(x, y)` has ever been revealed by a previous `:compute` call.
+---@param x integer
+---@param y integer
+---@return boolean
+function library.roguelike.isExplored(x, y) end
+
+--- Clear the explored set (does not affect the current visible set).
+---@return Fov
+function library.roguelike.resetExplored() end
+
+--- Iterate over every currently visible cell, calling `fn(x, y)` for each.
+---@param fn function
+---@return Fov
+function library.roguelike.eachVisible(fn) end
+
+--- Return an array of `{x, y}` tables for all currently visible cells.
+---@return table
+function library.roguelike.visibleCells() end
+
+--- Serialise visible and explored sets for save/restore.
+---@return table
+function library.roguelike.export() end
+
 --- Create an action-cost (energy) scheduler. Each actor has a `speed` value; on each `:next()` call the actor with the highest accumulated energy goes. Internal clock advances by the minimum ticks needed to bring at least one actor's energy >= 100.
 ---@return Scheduler
 function library.roguelike.newScheduler() end
+
+--- Add an actor with the given speed to the scheduler. Speed determines how quickly the actor's energy accumulates.
+---@param actor any
+---@param speed number
+---@return Scheduler
+function library.roguelike.add(actor, speed) end
+
+--- Remove an actor from the scheduler. No-op if not present.
+---@param actor any
+---@return Scheduler
+function library.roguelike.remove(actor) end
+
+--- Update the speed of an existing actor.
+---@param actor any
+---@param speed number
+---@return Scheduler
+function library.roguelike.setSpeed(actor, speed) end
 
 --- Pop the next-to-act actor. Returns the actor and ticks advanced this call.
 ---@return nil
@@ -5840,9 +6272,60 @@ function library.roguelike.peek() end
 ---@return nil
 function library.roguelike.tick(n) end
 
+--- Reset the scheduler clock and all actor energies to zero.
+---@return Scheduler
+function library.roguelike.reset() end
+
+--- Serialise scheduler state for save/restore.
+---@return table
+function library.roguelike.save() end
+
+--- Restore scheduler state from a previously saved blob.
+---@param blob table
+---@return Scheduler
+function library.roguelike.restore(blob) end
+
 --- Construct a goal map of the given grid dimensions.
 ---@return nil
 function library.roguelike.newGoalMap(width, height) end
+
+--- Set a custom blocker predicate `fn(x, y) -> bool`.
+---@param fn function|nil
+---@return GoalMap
+function library.roguelike.setBlocker(fn) end
+
+--- Attach to a tilemap layer, treating the supplied tile IDs as blockers.
+---@param tilemap table|userdata
+---@param layer integer?
+---@param blocker_ids table?
+---@return GoalMap
+function library.roguelike.attachTilemap(tilemap, layer, blocker_ids) end
+
+--- Replace the current source list with the given positions. Each entry may be `{x, y}`, `{x, y, weight}`, or `{x=, y=, weight=}`.
+---@param positions table
+---@return GoalMap
+function library.roguelike.setSources(positions) end
+
+--- Add a single goal-source cell.
+---@param x integer
+---@param y integer
+---@param w number?
+---@return GoalMap
+function library.roguelike.addSource(x, y, w) end
+
+--- Remove all goal-source cells and mark the distance field dirty.
+---@return GoalMap
+function library.roguelike.clearSources() end
+
+--- Bake the Dijkstra distance field from the current sources. Delegates to `lurek.pathfind.dijkstra` when available; falls back to a pure-Lua 4-neighbour BFS otherwise.
+---@return GoalMap
+function library.roguelike.bake() end
+
+--- Return the baked distance value at `(x, y)`. Auto-bakes if dirty. Returns `math.huge` for unreachable or out-of-bounds cells.
+---@param x integer
+---@param y integer
+---@return number
+function library.roguelike.distanceAt(x, y) end
 
 --- Unit step toward the nearest goal cell.
 ---@return nil

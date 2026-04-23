@@ -150,18 +150,18 @@ def _api_md_names(lib_name: str) -> set[str]:
     if not API_MD.exists():
         return set()
     text = API_MD.read_text(encoding="utf-8", errors="replace")
-    # Find the section for this library: ## `library.<name>`
-    pattern = rf"## `library\.{re.escape(lib_name)}`(.*?)(?=\n## |\Z)"
+    # Find the section for this library
+    pattern = rf"## `library\.{re.escape(lib_name)}`.*?(?=\n## `library\.|\Z)"
     m = re.search(pattern, text, re.DOTALL)
     if not m:
         return set()
-    section = m.group(1)
-    # Extract function names from ### `fn_name(` lines
+    section = m.group(0)
     names: set[str] = set()
-    for fn_m in re.finditer(r"###\s+`(\w+)\s*\(", section):
+    # Module-level: library.{lib}.funcname(
+    for fn_m in re.finditer(rf'library\.{re.escape(lib_name)}\.(\w+)\s*\(', section):
         names.add(fn_m.group(1))
-    # Also extract method names: `ClassName:method(`
-    for fn_m in re.finditer(r"###\s+`\w+:(\w+)\s*\(", section):
+    # Class methods: ClassName:methodname(
+    for fn_m in re.finditer(r'\b\w+:(\w+)\s*\(', section):
         names.add(fn_m.group(1))
     return names
 

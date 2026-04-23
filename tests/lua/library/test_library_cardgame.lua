@@ -7,11 +7,15 @@ package.path = "./library/?/init.lua;" .. package.path
 local cg = require("library.cardgame")
 
 
---                  Registry                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
+--                  Registry
 
 -- @description Exercises registry lifecycle operations including define, lookup, sorted name enumeration, and full reset of registered card types.
 describe("Registry", function()
     -- @covers library.cardgame.defineCardType
+    --- @covers library.cardgame.newCardTypeDef
+    --- @covers library.cardgame.getCardType
+    --- @covers library.cardgame.getCardTypeNames
+    --- @covers library.cardgame.clearCardTypes
     -- @description Verifies case: defineCardType and getCardType round-trip.
     it("defineCardType and getCardType round-trip", function()
         cg.clearCardTypes()
@@ -46,11 +50,34 @@ describe("Registry", function()
     end)
 end)
 
---                  Card                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
+--                  Card
 
 -- @description Verifies cards inherit registry defaults and support stat, tag, counter, metadata, reset, identity, and default presentation fields.
 describe("Card", function()
     -- @covers library.cardgame.newCard
+    --- @covers library.cardgame.Card:getStat
+    --- @covers library.cardgame.Card:setStat
+    --- @covers library.cardgame.Card:addStat
+    --- @covers library.cardgame.Card:removeStat
+    --- @covers library.cardgame.Card:hasTag
+    --- @covers library.cardgame.Card:addTag
+    --- @covers library.cardgame.Card:removeTag
+    --- @covers library.cardgame.Card:getCounter
+    --- @covers library.cardgame.Card:setCounter
+    --- @covers library.cardgame.Card:addCounter
+    --- @covers library.cardgame.Card:removeCounter
+    --- @covers library.cardgame.Card:getMeta
+    --- @covers library.cardgame.Card:setMeta
+    --- @covers library.cardgame.Card:resetStats
+    --- @covers library.cardgame.Card:flip
+    --- @covers library.cardgame.Card:tap
+    --- @covers library.cardgame.Card:untap
+    --- @covers library.cardgame.Card:isFaceUp
+    --- @covers library.cardgame.Card:isTapped
+    --- @covers library.cardgame.Card:setRarity
+    --- @covers library.cardgame.Card:getRarity
+    --- @covers library.cardgame.Card:setTilePosition
+    --- @covers library.cardgame.Card:getTilePosition
     -- @description Verifies case: seeds fields from registry.
     it("seeds fields from registry", function()
         cg.clearCardTypes()
@@ -139,11 +166,56 @@ describe("Card", function()
     end)
 end)
 
---                  Stack                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+--                  Stack
 
 -- @description Covers ordered stack behavior including push and pop variants, capacity, search and counting helpers, sorting, shuffling, snapshots, and zone flags.
 describe("Stack", function()
     -- @covers library.cardgame.newStack
+    --- @covers library.cardgame.newStackWithCapacity
+    --- @covers library.cardgame.Stack:pushTop
+    --- @covers library.cardgame.Stack:pushBottom
+    --- @covers library.cardgame.Stack:popTop
+    --- @covers library.cardgame.Stack:popBottom
+    --- @covers library.cardgame.Stack:popMany
+    --- @covers library.cardgame.Stack:peekTop
+    --- @covers library.cardgame.Stack:peekBottom
+    --- @covers library.cardgame.Stack:peekAt
+    --- @covers library.cardgame.Stack:size
+    --- @covers library.cardgame.Stack:isEmpty
+    --- @covers library.cardgame.Stack:isFull
+    --- @covers library.cardgame.Stack:capacity
+    --- @covers library.cardgame.Stack:setCapacity
+    --- @covers library.cardgame.Stack:insertAt
+    --- @covers library.cardgame.Stack:removeAt
+    --- @covers library.cardgame.Stack:moveWithin
+    --- @covers library.cardgame.Stack:clear
+    --- @covers library.cardgame.Stack:searchByType
+    --- @covers library.cardgame.Stack:searchByTag
+    --- @covers library.cardgame.Stack:searchByCategory
+    --- @covers library.cardgame.Stack:findByType
+    --- @covers library.cardgame.Stack:findByTag
+    --- @covers library.cardgame.Stack:findByCategoryAll
+    --- @covers library.cardgame.Stack:findByTypeAll
+    --- @covers library.cardgame.Stack:findByTagAll
+    --- @covers library.cardgame.Stack:removeById
+    --- @covers library.cardgame.Stack:containsId
+    --- @covers library.cardgame.Stack:countByType
+    --- @covers library.cardgame.Stack:countByCategory
+    --- @covers library.cardgame.Stack:countByTag
+    --- @covers library.cardgame.Stack:sortByStat
+    --- @covers library.cardgame.Stack:sortByStatDesc
+    --- @covers library.cardgame.Stack:sortByCategory
+    --- @covers library.cardgame.Stack:sortByName
+    --- @covers library.cardgame.Stack:shuffle
+    --- @covers library.cardgame.Stack:items
+    --- @covers library.cardgame.Stack:peekTopNTypes
+    --- @covers library.cardgame.Stack:snapshotCards
+    --- @covers library.cardgame.Stack:restoreCards
+    --- @covers library.cardgame.Stack:isOrdered
+    --- @covers library.cardgame.Stack:setOrdered
+    --- @covers library.cardgame.Stack:isPublic
+    --- @covers library.cardgame.Stack:setPublic
+    --- @covers library.cardgame.Stack:setName
     -- @description Verifies case: push and pop from top.
     it("push and pop from top", function()
         cg.clearCardTypes()
@@ -391,11 +463,21 @@ describe("Stack", function()
     end)
 end)
 
---                  Slot                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
+--                  Slot
 
 -- @description Tests slot-style containers for push and pop flow, capacity checks, tag or type predicates, and full clearing semantics.
 describe("Slot", function()
     -- @covers library.cardgame.newSlot
+    --- @covers library.cardgame.newSlotWithCapacity
+    --- @covers library.cardgame.Slot:push
+    --- @covers library.cardgame.Slot:pop
+    --- @covers library.cardgame.Slot:peek
+    --- @covers library.cardgame.Slot:peekAt
+    --- @covers library.cardgame.Slot:getItems
+    --- @covers library.cardgame.Slot:hasItemWithTag
+    --- @covers library.cardgame.Slot:hasItemOfType
+    --- @covers library.cardgame.Slot:removeAt
+    --- @covers library.cardgame.Slot:setCapacity
     -- @description Verifies case: push and pop.
     it("push and pop", function()
         cg.clearCardTypes()
@@ -441,11 +523,24 @@ describe("Slot", function()
     end)
 end)
 
---                  CardPool                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
+--                  CardPool
 
 -- @description Validates weighted card pools for repeated draws, unique draws, card instantiation, weight updates, name listing, and rarity-filtered pulls.
 describe("CardPool", function()
     -- @covers library.cardgame.newCardPool
+    --- @covers library.cardgame.CardPool:add
+    --- @covers library.cardgame.CardPool:remove
+    --- @covers library.cardgame.CardPool:setWeight
+    --- @covers library.cardgame.CardPool:getWeight
+    --- @covers library.cardgame.CardPool:totalWeight
+    --- @covers library.cardgame.CardPool:getTypeNames
+    --- @covers library.cardgame.CardPool:drawTypes
+    --- @covers library.cardgame.CardPool:drawItems
+    --- @covers library.cardgame.CardPool:drawUniqueTypes
+    --- @covers library.cardgame.CardPool:drawUniqueItems
+    --- @covers library.cardgame.CardPool:drawItemsSeeded
+    --- @covers library.cardgame.CardPool:drawByRarity
+    --- @covers library.cardgame.CardPool:setRarityWeight
     -- @description Verifies case: add and draw types.
     it("add and draw types", function()
         cg.clearCardTypes()
@@ -528,11 +623,22 @@ describe("CardPool", function()
     end)
 end)
 
---                  StackManager                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
+--                  StackManager
 
 -- @description Exercises stack manager orchestration for creating stacks, moving top cards or typed cards, counting totals, and removing named stacks.
 describe("StackManager", function()
     -- @covers library.cardgame.newStackManager
+    --- @covers library.cardgame.StackManager:addStack
+    --- @covers library.cardgame.StackManager:createStack
+    --- @covers library.cardgame.StackManager:createStackCapped
+    --- @covers library.cardgame.StackManager:removeStack
+    --- @covers library.cardgame.StackManager:hasStack
+    --- @covers library.cardgame.StackManager:getStack
+    --- @covers library.cardgame.StackManager:stackNames
+    --- @covers library.cardgame.StackManager:totalItems
+    --- @covers library.cardgame.StackManager:moveItem
+    --- @covers library.cardgame.StackManager:moveItemByType
+    --- @covers library.cardgame.StackManager:moveTop
     -- @description Verifies case: create and manage stacks.
     it("create and manage stacks", function()
         cg.clearCardTypes()
@@ -595,11 +701,24 @@ describe("StackManager", function()
     end)
 end)
 
---                  DeckBuilder                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+--                  DeckBuilder
 
 -- @description Covers deck builder recipes that add entries, expand quantities, and produce stacks populated with the expected card types.
 describe("DeckBuilder", function()
     -- @covers library.cardgame.newDeckBuilder
+    --- @covers library.cardgame.newBuildEntry
+    --- @covers library.cardgame.DeckBuilder:add
+    --- @covers library.cardgame.DeckBuilder:addWith
+    --- @covers library.cardgame.DeckBuilder:requireType
+    --- @covers library.cardgame.DeckBuilder:banType
+    --- @covers library.cardgame.DeckBuilder:removeBannedType
+    --- @covers library.cardgame.DeckBuilder:setMaxCopiesForType
+    --- @covers library.cardgame.DeckBuilder:addRequiredTag
+    --- @covers library.cardgame.DeckBuilder:addRequiredCategory
+    --- @covers library.cardgame.DeckBuilder:validateEntries
+    --- @covers library.cardgame.DeckBuilder:validateStack
+    --- @covers library.cardgame.DeckBuilder:build
+    --- @covers library.cardgame.DeckBuilder:buildNamed
     -- @description Verifies case: build creates stack with entries.
     it("build creates stack with entries", function()
         cg.clearCardTypes()
@@ -682,10 +801,27 @@ describe("DeckBuilder", function()
     end)
 end)
 
---                  StackHistory                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
+--                  StackHistory
 
 -- @description Covers suite: StackHistory.
 describe("StackHistory", function()
+    --- @covers library.cardgame.newStackHistory
+    --- @covers library.cardgame.newStackHistoryWithMaxSize
+    --- @covers library.cardgame.pushed
+    --- @covers library.cardgame.popped
+    --- @covers library.cardgame.moved
+    --- @covers library.cardgame.shuffled
+    --- @covers library.cardgame.sorted
+    --- @covers library.cardgame.cleared
+    --- @covers library.cardgame.built
+    --- @covers library.cardgame.custom
+    --- @covers library.cardgame.StackHistory:record
+    --- @covers library.cardgame.StackHistory:recordCustom
+    --- @covers library.cardgame.StackHistory:len
+    --- @covers library.cardgame.StackHistory:last
+    --- @covers library.cardgame.StackHistory:entries
+    --- @covers library.cardgame.StackHistory:entriesFor
+    --- @covers library.cardgame.StackHistory:clear
     -- @description Verifies case: record and retrieve entries.
     it("record and retrieve entries", function()
         local h = cg.newStackHistory()
@@ -744,10 +880,12 @@ describe("StackHistory", function()
     end)
 end)
 
---                  CardGroup                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+--                  CardGroup
 
 -- @description Covers suite: CardGroup.
 describe("CardGroup", function()
+    --- @covers library.cardgame.newCardGroup
+    --- @covers library.cardgame.CardGroup:itemsFrom
     -- @description Verifies case: itemsFrom collects cards by index.
     it("itemsFrom collects cards by index", function()
         cg.clearCardTypes()
@@ -761,10 +899,18 @@ describe("CardGroup", function()
     end)
 end)
 
---                  Analysis helpers                                                                                                                                                                                                                                                                                                                                                                                                                                         
+--                  Analysis helpers
 
 -- @description Covers suite: Analysis helpers.
 describe("Analysis helpers", function()
+    --- @covers library.cardgame.groupByStat
+    --- @covers library.cardgame.groupByTagPrefix
+    --- @covers library.cardgame.findNOfStat
+    --- @covers library.cardgame.findSequences
+    --- @covers library.cardgame.checkDeckLimit
+    --- @covers library.cardgame.groupByCategory
+    --- @covers library.cardgame.findAtLeastNOfStat
+    --- @covers library.cardgame.findTagGroups
     -- @description Verifies case: groupByStat buckets by integer stat value.
     it("groupByStat buckets by integer stat value", function()
         cg.clearCardTypes()
@@ -872,10 +1018,12 @@ describe("Analysis helpers", function()
     end)
 end)
 
---        ID counter                                                                                                                                                                               
+--        ID counter
 
 -- @description Covers ID counter inspection and session reset behavior.
 describe("ID counter", function()
+    --- @covers library.cardgame.getIdCounter
+    --- @covers library.cardgame.resetIdCounter
     -- @description Verifies case: getIdCounter returns current value.
     it("getIdCounter returns current value", function()
         cg.clearCardTypes()
@@ -905,7 +1053,7 @@ describe("ID counter", function()
     end)
 end)
 
---        Search return types                                                                                                                                                    
+--        Search return types
 
 -- @description Verifies search/find return types are consistent: searchBy* returns indices, findBy*All returns objects.
 describe("Search return types", function()
@@ -971,7 +1119,7 @@ describe("Search return types", function()
     end)
 end)
 
---        CardTypeDef fields                                                                                                                                                       
+--        CardTypeDef fields
 
 -- @description Verifies CardTypeDef has all documented fields with correct defaults.
 describe("CardTypeDef fields", function()
@@ -995,7 +1143,7 @@ describe("CardTypeDef fields", function()
     end)
 end)
 
---        Empty stack / pool edge cases                                                                                                                      
+--        Empty stack / pool edge cases
 
 -- @description Tests edge cases on empty stacks, slots, and pools.
 describe("Empty edge cases", function()
@@ -1068,7 +1216,7 @@ describe("Empty edge cases", function()
     end)
 end)
 
---        Input validation                                                                                                                                                             
+--        Input validation
 
 -- @description Tests that constructors and mutators reject invalid inputs.
 describe("Input validation", function()

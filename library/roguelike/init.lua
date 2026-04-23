@@ -159,19 +159,32 @@ function Fov:compute(ox, oy)
     return self
 end
 
+--- Return true if `(x, y)` is within the current visible set.
+-- @param x integer grid x coordinate
+-- @param y integer grid y coordinate
+-- @treturn boolean
 function Fov:isVisible(x, y)
     return self._visible[_key(x, y)] == true
 end
 
+--- Return true if `(x, y)` has ever been revealed by a previous `:compute` call.
+-- @param x integer grid x coordinate
+-- @param y integer grid y coordinate
+-- @treturn boolean
 function Fov:isExplored(x, y)
     return self._explored[_key(x, y)] == true
 end
 
+--- Clear the explored set (does not affect the current visible set).
+-- @treturn Fov self
 function Fov:resetExplored()
     self._explored = {}
     return self
 end
 
+--- Iterate over every currently visible cell, calling `fn(x, y)` for each.
+-- @param fn function callback receiving integer `x, y`
+-- @treturn Fov self
 function Fov:eachVisible(fn)
     for k in pairs(self._visible) do
         local x = floor(k / 100000)
@@ -181,6 +194,8 @@ function Fov:eachVisible(fn)
     return self
 end
 
+--- Return an array of `{x, y}` tables for all currently visible cells.
+-- @treturn table array of `{x=integer, y=integer}`
 function Fov:visibleCells()
     local out = {}
     for k in pairs(self._visible) do
@@ -191,6 +206,8 @@ function Fov:visibleCells()
     return out
 end
 
+--- Serialise visible and explored sets for save/restore.
+-- @treturn table `{range, origin, visible, explored}`
 function Fov:export()
     local visible = {}
     for k in pairs(self._visible)  do visible[#visible + 1]  = k end
@@ -218,6 +235,11 @@ function M.newScheduler()
     }, Scheduler)
 end
 
+--- Add an actor with the given speed to the scheduler.
+-- Speed determines how quickly the actor's energy accumulates.
+-- @param actor any opaque actor reference
+-- @param speed number Energy gain per tick (must be > 0).
+-- @treturn Scheduler self
 function Scheduler:add(actor, speed)
     if self._index[actor] then
         error("Scheduler:add: actor already present", 2)
@@ -231,6 +253,9 @@ function Scheduler:add(actor, speed)
     return self
 end
 
+--- Remove an actor from the scheduler. No-op if not present.
+-- @param actor any actor reference previously added with `:add`
+-- @treturn Scheduler self
 function Scheduler:remove(actor)
     local pos = self._index[actor]
     if not pos then return self end
@@ -240,6 +265,10 @@ function Scheduler:remove(actor)
     return self
 end
 
+--- Update the speed of an existing actor.
+-- @param actor any actor reference
+-- @param speed number New speed value (must be > 0).
+-- @treturn Scheduler self
 function Scheduler:setSpeed(actor, speed)
     local pos = self._index[actor]
     if not pos then error("Scheduler:setSpeed: unknown actor", 2) end
@@ -308,12 +337,16 @@ function Scheduler:tick(n)
     return out
 end
 
+--- Reset the scheduler clock and all actor energies to zero.
+-- @treturn Scheduler self
 function Scheduler:reset()
     self._clock = 0
     for _, r in ipairs(self._actors) do r.energy = 0 end
     return self
 end
 
+--- Serialise scheduler state for save/restore.
+-- @treturn table `{clock, actors}` where `actors` contains per-actor speed/energy
 function Scheduler:save()
     local actors = {}
     for i, r in ipairs(self._actors) do
@@ -322,6 +355,9 @@ function Scheduler:save()
     return { clock = self._clock, actors = actors }
 end
 
+--- Restore scheduler state from a previously saved blob.
+-- @param blob table Blob produced by `:save()`.
+-- @treturn Scheduler self
 function Scheduler:restore(blob)
     if type(blob) ~= "table" then error("Scheduler:restore: blob required", 2) end
     self._clock = blob.clock or 0
@@ -356,8 +392,16 @@ function M.newGoalMap(width, height)
     }, GoalMap)
 end
 
+--- Set a custom blocker predicate `fn(x, y) -> bool`.
+-- @param fn function|nil returns true for impassable cells (nil = allow all)
+-- @treturn GoalMap self
 function GoalMap:setBlocker(fn) self._blocker = fn or function() return false end; return self end
 
+--- Attach to a tilemap layer, treating the supplied tile IDs as blockers.
+-- @param tilemap table|userdata tilemap with `:getTile(layer, x, y)` or table indexing
+-- @param layer integer? layer index (default 1)
+-- @param blocker_ids table? array of tile IDs to treat as walls (default {1})
+-- @treturn GoalMap self
 function GoalMap:attachTilemap(tilemap, layer, blocker_ids)
     layer = layer or 1
     blocker_ids = blocker_ids or { 1 }
@@ -379,6 +423,10 @@ function GoalMap:attachTilemap(tilemap, layer, blocker_ids)
     return self
 end
 
+--- Replace the current source list with the given positions.
+-- Each entry may be `{x, y}`, `{x, y, weight}`, or `{x=, y=, weight=}`.
+-- @param positions table array of source position entries
+-- @treturn GoalMap self
 function GoalMap:setSources(positions)
     self._sources = {}
     for _, p in ipairs(positions) do
@@ -388,12 +436,19 @@ function GoalMap:setSources(positions)
     return self
 end
 
+--- Add a single goal-source cell.
+-- @param x integer source x coordinate
+-- @param y integer source y coordinate
+-- @param w number? initial distance weight (default 0)
+-- @treturn GoalMap self
 function GoalMap:addSource(x, y, w)
     self._sources[#self._sources + 1] = { x = x, y = y, w = w or 0 }
     self._dirty = true
     return self
 end
 
+--- Remove all goal-source cells and mark the distance field dirty.
+-- @treturn GoalMap self
 function GoalMap:clearSources()
     self._sources = {}
     self._dirty = true
@@ -437,6 +492,10 @@ local function _bake_dijkstra(self)
     self._dirty = false
 end
 
+--- Bake the Dijkstra distance field from the current sources.
+-- Delegates to `lurek.pathfind.dijkstra` when available; falls back to a
+-- pure-Lua 4-neighbour BFS otherwise.
+-- @treturn GoalMap self
 function GoalMap:bake()
     if #self._sources == 0 then
         error("GoalMap:bake: no sources set", 2)
@@ -464,6 +523,11 @@ local function _ensure(self)
     if self._dirty then self:bake() end
 end
 
+--- Return the baked distance value at `(x, y)`. Auto-bakes if dirty.
+-- Returns `math.huge` for unreachable or out-of-bounds cells.
+-- @param x integer grid x coordinate
+-- @param y integer grid y coordinate
+-- @treturn number distance (or math.huge)
 function GoalMap:distanceAt(x, y)
     _ensure(self)
     local row = self._dist[y]

@@ -54,16 +54,37 @@ function M.newPart()
     local _attributes = {}
 
     -- Texture / Quad
+    --- Return the texture assigned to this part.
+    -- @treturn any texture handle (or nil)
     function part:getTexture()       return _texture end
+    --- Assign a texture to this part.
+    -- @tparam any tex texture handle from `lurek.image`
     function part:setTexture(tex)    _texture = tex end
+    --- Return the texture quad (sub-region) for this part.
+    -- @treturn any quad (or nil)
     function part:getQuad()          return _quad end
+    --- Set the texture quad (sub-region) for this part.
+    -- @tparam any q quad value
     function part:setQuad(q)         _quad = q end
 
     -- Local Transform
+    --- Return the local offset of this part from its socket origin.
+    -- @treturn number offsetX
+    -- @treturn number offsetY
     function part:getOffset()        return _offsetX, _offsetY end
+    --- Set the local offset of this part from its socket origin.
+    -- @tparam number x horizontal offset
+    -- @tparam number y vertical offset
     function part:setOffset(x, y)    _offsetX = x; _offsetY = y end
+    --- Return the local rotation of this part in radians.
+    -- @treturn number rotation
     function part:getRotation()      return _rotation end
+    --- Set the local rotation of this part in radians.
+    -- @tparam number r rotation in radians
     function part:setRotation(r)     _rotation = r end
+    --- Return the local scale of this part as (scaleX, scaleY).
+    -- @treturn number scaleX
+    -- @treturn number scaleY
     function part:getScale()         return _scaleX, _scaleY end
     --- Set part scale. Passing a single number sets uniform scale.
     -- @tparam number sx horizontal scale
@@ -73,10 +94,18 @@ function M.newPart()
         if sy ~= nil and type(sy) ~= "number" then error("setScale: sy must be a number", 2) end
         _scaleX = sx; _scaleY = sy or sx
     end
+    --- Return the render origin (pivot point) of this part.
+    -- @treturn number originX
+    -- @treturn number originY
     function part:getOrigin()        return _originX, _originY end
+    --- Set the render origin (pivot point) of this part.
+    -- @tparam number ox horizontal origin
+    -- @tparam number oy vertical origin
     function part:setOrigin(ox, oy)  _originX = ox; _originY = oy end
 
     -- Draw Order & Type
+    --- Return the draw order key for this part.
+    -- @treturn number draw order value
     function part:getDrawOrder()     return _drawOrder end
     --- Set part draw order (z-sort key).
     -- @tparam number n draw order value
@@ -84,26 +113,62 @@ function M.newPart()
         if type(n) ~= "number" then error("setDrawOrder: n must be a number", 2) end
         _drawOrder = n
     end
+    --- Return the part type string (used for socket type-filter matching).
+    -- @treturn string part type
     function part:getPartType()      return _partType end
+    --- Set the part type string.
+    -- @tparam string t part type identifier
     function part:setPartType(t)     _partType = t end
 
     -- Visibility & Appearance
+    --- Return true if this part is currently visible.
+    -- @treturn boolean
     function part:isVisible()        return _visible end
+    --- Set visibility of this part.
+    -- @tparam boolean v true to show, false to hide
     function part:setVisible(v)      _visible = v end
+    --- Return the RGBA colour tint of this part.
+    -- @treturn number r
+    -- @treturn number g
+    -- @treturn number b
+    -- @treturn number a
     function part:getColor()         return _colorR, _colorG, _colorB, _colorA end
+    --- Set the RGBA colour tint of this part.
+    -- @tparam number r red (0–1)
+    -- @tparam number g green (0–1)
+    -- @tparam number b blue (0–1)
+    -- @tparam[opt=1] number a alpha (0–1)
     function part:setColor(r, g, b, a)
         _colorR = r; _colorG = g; _colorB = b; _colorA = a or 1
     end
+    --- Return the flip flags for this part.
+    -- @treturn boolean flipX
+    -- @treturn boolean flipY
     function part:getFlip()          return _flipX, _flipY end
+    --- Set horizontal and vertical flip flags.
+    -- @tparam boolean fx flip horizontally
+    -- @tparam[opt=false] boolean fy flip vertically
     function part:setFlip(fx, fy)    _flipX = fx; _flipY = fy or false end
 
     -- Behaviour
+    --- Return true if this part inherits the socket's rotation.
+    -- @treturn boolean
     function part:getFollowsRotation()    return _followsRotation end
+    --- Set whether this part inherits the socket's rotation.
+    -- @tparam boolean f true to inherit socket rotation
     function part:setFollowsRotation(f)   _followsRotation = f end
 
     -- Attributes (user-defined key-value store)
+    --- Get the value of a user-defined attribute by key.
+    -- @tparam string key attribute key
+    -- @return any stored value, or nil
     function part:getAttribute(key)       return _attributes[key] end
+    --- Set a user-defined attribute value.
+    -- @tparam string key attribute key
+    -- @param val any value to store
     function part:setAttribute(key, val)  _attributes[key] = val end
+    --- Return a list of all attribute keys on this part.
+    -- @treturn table array of key strings
     function part:getAttributeKeys()
         local keys = {}
         for k in pairs(_attributes) do keys[#keys + 1] = k end
@@ -111,7 +176,11 @@ function M.newPart()
     end
 
     -- Optional physics fixture ref (stored, never called)
+    --- Return the optional physics fixture reference.
+    -- @return any fixture or nil
     function part:getFixture()       return _fixture end
+    --- Store an optional physics fixture reference on this part.
+    -- @param f any fixture reference
     function part:setFixture(f)      _fixture = f end
 
     --- Get the absolute scale magnitude, ignoring flip.
@@ -147,7 +216,11 @@ function M.newTemplate(name)
     local _sockets = {}       -- ordered array of socket defs
     local _index   = {}       -- name → array index for O(1) lookup
 
+    --- Return the template name.
+    -- @treturn string template name
     function tmpl:getName()          return _name end
+    --- Set the template name.
+    -- @tparam string n new template name
     function tmpl:setName(n)         _name = n end
 
     --- Add a socket to the template.
@@ -182,6 +255,9 @@ function M.newTemplate(name)
         return true
     end
 
+    --- Remove a socket by name. Returns false if the socket does not exist.
+    -- @tparam string socketName socket to remove
+    -- @treturn boolean true if removed
     function tmpl:removeSocket(socketName)
         local idx = _index[socketName]
         if not idx then return false end
@@ -192,6 +268,9 @@ function M.newTemplate(name)
         return true
     end
 
+    --- Return a copy of the socket definition, or nil if not found.
+    -- @tparam string socketName socket to look up
+    -- @treturn table|nil socket definition copy `{name, acceptType, x, y, rotation, drawOrder}`
     function tmpl:getSocket(socketName)
         local idx = _index[socketName]
         if not idx then return nil end
@@ -206,12 +285,16 @@ function M.newTemplate(name)
         }
     end
 
+    --- Return an ordered array of socket names.
+    -- @treturn table array of socket name strings
     function tmpl:getSocketNames()
         local names = {}
         for _, s in ipairs(_sockets) do names[#names + 1] = s.name end
         return names
     end
 
+    --- Return the number of sockets in this template.
+    -- @treturn number socket count
     function tmpl:getSocketCount()
         return #_sockets
     end
@@ -247,24 +330,54 @@ function M.newDoll(template)
     local _draw_warned = false  -- one-time deprecation warning gate for doll:draw()
 
     -- Transform
+    --- Return the world-space position of this doll.
+    -- @treturn number x
+    -- @treturn number y
     function doll:getPosition()      return _x, _y end
+    --- Set the world-space position of this doll.
+    -- @tparam number x world x position
+    -- @tparam number y world y position
     function doll:setPosition(x, y)  _x = x; _y = y end
+    --- Return the world-space rotation of this doll in radians.
+    -- @treturn number rotation
     function doll:getRotation()      return _rotation end
+    --- Set the world-space rotation of this doll in radians.
+    -- @tparam number r rotation in radians
     function doll:setRotation(r)     _rotation = r end
+    --- Return the world-space scale of this doll.
+    -- @treturn number scaleX
+    -- @treturn number scaleY
     function doll:getScale()         return _scaleX, _scaleY end
+    --- Set the world-space scale of this doll.
+    -- @tparam number sx horizontal scale
+    -- @tparam[opt=sx] number sy vertical scale
     function doll:setScale(sx, sy)   _scaleX = sx; _scaleY = sy or sx end
 
     -- Template
+    --- Return the DollTemplate this doll was created from.
+    -- @treturn DollTemplate
     function doll:getTemplate()      return _template end
 
     -- Visibility
+    --- Return true if this doll is currently visible.
+    -- @treturn boolean
     function doll:isVisible()        return _visible end
+    --- Set the visibility of this doll.
+    -- @tparam boolean v true to show, false to hide
     function doll:setVisible(v)      _visible = v end
 
     -- Optional body / user data refs
+    --- Return the optional physics body reference attached to this doll.
+    -- @return any body or nil
     function doll:getBody()          return _body end
+    --- Store an optional physics body reference on this doll.
+    -- @param b any body reference
     function doll:setBody(b)         _body = b end
+    --- Return the optional user-data reference on this doll.
+    -- @return any user data or nil
     function doll:getUserData()      return _userData end
+    --- Store an optional user-data reference on this doll.
+    -- @param v any user data
     function doll:setUserData(v)     _userData = v end
 
     --- Attach a Part to a named socket.
@@ -300,10 +413,16 @@ function M.newDoll(template)
         return part
     end
 
+    --- Return the Part attached at `socketName`, or nil.
+    -- @tparam string socketName socket to query
+    -- @treturn Part|nil
     function doll:getPartAt(socketName)
         return _slots[socketName]
     end
 
+    --- Return the socket name the given Part is attached to, or nil.
+    -- @tparam Part part part to find
+    -- @treturn string|nil socket name
     function doll:findSocket(part)
         for name, p in pairs(_slots) do
             if p == part then return name end
@@ -311,16 +430,21 @@ function M.newDoll(template)
         return nil
     end
 
+    --- Detach all parts from all sockets.
     function doll:detachAll()
         _slots = {}
     end
 
+    --- Return an array of socket names that currently have a part attached.
+    -- @treturn table array of socket name strings
     function doll:getAttachedSockets()
         local names = {}
         for name in pairs(_slots) do names[#names + 1] = name end
         return names
     end
 
+    --- Return an array of socket names that are currently empty.
+    -- @treturn table array of socket name strings
     function doll:getEmptySockets()
         local names = {}
         for _, socketName in ipairs(_template:getSocketNames()) do

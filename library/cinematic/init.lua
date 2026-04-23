@@ -243,6 +243,8 @@ function Timeline:track(name)
     return tr
 end
 
+--- Return an ordered array of all tracks in this timeline.
+-- @treturn table array of Track objects
 function Timeline:tracks()
     local out = {}
     for i, n in ipairs(self._track_order) do out[i] = self._tracks[n] end
@@ -267,14 +269,33 @@ function Timeline:setDialogHandler(fn)
     return self
 end
 
+--- Start (or resume) playback of this timeline.
+-- @treturn Timeline self
 function Timeline:play()    self._playing = true;  self._finished = false; return self end
+--- Pause playback at the current time position.
+-- @treturn Timeline self
 function Timeline:pause()   self._playing = false; return self end
+--- Resume playback from the current time position.
+-- @treturn Timeline self
 function Timeline:resume()  self._playing = true;  return self end
+--- Stop playback and reset the timeline to time zero.
+-- @treturn Timeline self
 function Timeline:stop()    self._playing = false; self._t = 0; self._finished = false; return self end
+--- Return true if the timeline is currently playing.
+-- @treturn boolean
 function Timeline:isPlaying()  return self._playing end
+--- Return true if the timeline has reached its end and is not looping.
+-- @treturn boolean
 function Timeline:isFinished() return self._finished end
+--- Return the current playback time in seconds.
+-- @treturn number
 function Timeline:getTime()    return self._t end
+--- Return the total duration of the timeline in seconds.
+-- @treturn number
 function Timeline:getDuration() return self._duration end
+--- Set the playback speed multiplier (1.0 = real-time, 2.0 = double speed).
+-- @param s number time scale factor
+-- @treturn Timeline self
 function Timeline:setTimeScale(s) self._scale = s; return self end
 
 --- Add a labelled cue point.
@@ -393,6 +414,7 @@ function Timeline:update(dt)
     return self
 end
 
+--- Reset fired/applied flags on all clips in all tracks (used after loop restart).
 function Timeline:_reset_clip_flags()
     for _, tr in pairs(self._tracks) do
         for _, c in ipairs(tr._clips) do
@@ -416,15 +438,27 @@ function Timeline:setTime(t)
     return self
 end
 
+--- Seek forward or backward by `delta` seconds relative to current time.
+-- @param delta number Signed seconds to advance (negative = rewind).
+-- @treturn Timeline self
 function Timeline:scrub(delta) return self:setTime(self._t + delta) end
+--- Rewind the timeline to time zero.
+-- @treturn Timeline self
 function Timeline:rewind()     return self:setTime(0) end
 
+--- Seek to the time position of a named label.
+-- @param label string Label name registered with `Timeline:label`.
+-- @treturn Timeline self
 function Timeline:skipTo(label)
     local at = self._labels[label]
     if not at then error("Timeline:skipTo: unknown label '"..tostring(label).."'", 2) end
     return self:setTime(at)
 end
 
+--- Register a callback invoked when the timeline finishes.
+-- Returns a handle that can be passed to `Timeline:offHandle`.
+-- @param fn function callback `fn(timeline)`
+-- @treturn table handle
 function Timeline:onComplete(fn)
     local h = { id = self._next_handle, fn = fn, kind = "complete" }
     self._next_handle = self._next_handle + 1
@@ -432,6 +466,10 @@ function Timeline:onComplete(fn)
     return h
 end
 
+--- Register a callback invoked whenever a clip on `name` track begins.
+-- @param name string track name
+-- @param fn function callback `fn(clip)`
+-- @treturn table handle
 function Timeline:onTrackEnter(name, fn)
     self._on_track_enter[name] = self._on_track_enter[name] or {}
     local h = { id = self._next_handle, fn = fn, kind = "track" }
@@ -440,6 +478,8 @@ function Timeline:onTrackEnter(name, fn)
     return h
 end
 
+--- Deregister a callback handle previously returned by `onComplete` or `onTrackEnter`.
+-- @param handle table handle to remove
 function Timeline:offHandle(handle)
     if not handle then return end
     if handle.kind == "complete" then
@@ -455,6 +495,8 @@ function Timeline:offHandle(handle)
     end
 end
 
+--- Export a lightweight snapshot of the timeline state for serialisation.
+-- @treturn table `{t, scale, duration, playing, finished}`
 function Timeline:export()
     return {
         t = self._t, scale = self._scale, duration = self._duration,

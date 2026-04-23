@@ -7,7 +7,7 @@ package.path = "./library/?/init.lua;" .. package.path
 local pm = require("library.province_map")
 
 
---                  Province                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+--                  Province
 
 -- @description Verifies province defaults, ids, colours, terrain metadata, and basic province-level getters or setters.
 describe("Province", function()
@@ -33,7 +33,7 @@ describe("Province", function()
     end)
 end)
 
---                  AdjacencyEdge                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
+--                  AdjacencyEdge
 
 -- @description Covers adjacency edge creation, border metadata, and tag storage for province-to-province connections.
 describe("AdjacencyEdge", function()
@@ -55,7 +55,7 @@ describe("AdjacencyEdge", function()
     end)
 end)
 
---                  ProvinceDefinition                                                                                                                                                                                                                                                                                                                                                                                                                         
+--                  ProvinceDefinition
 
 -- @description Tests province-definition helpers that capture import-ready province metadata before map insertion.
 describe("ProvinceDefinition", function()
@@ -70,7 +70,7 @@ describe("ProvinceDefinition", function()
     end)
 end)
 
---                  BorderSegment                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
+--                  BorderSegment
 
 -- @description Verifies border-segment construction used for extracted and rendered province boundaries.
 describe("BorderSegment", function()
@@ -84,7 +84,7 @@ describe("BorderSegment", function()
     end)
 end)
 
---                  BorderStyle                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
+--                  BorderStyle
 
 -- @description Confirms the border-style enum exposes the expected symbolic styles for map rendering and export.
 describe("BorderStyle", function()
@@ -98,7 +98,7 @@ describe("BorderStyle", function()
     end)
 end)
 
---                  MapMode & ColorFn                                                                                                                                                                                                                                                                                                                                                                                                                                 
+--                  MapMode & ColorFn
 
 -- @description Covers map-mode creation and the color-function wrappers that drive per-province visualisation.
 describe("MapMode", function()
@@ -132,7 +132,7 @@ describe("MapMode", function()
     end)
 end)
 
---                  ProvinceMap                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
+--                  ProvinceMap
 
 -- @description Exercises core province-map storage including provinces, adjacency, pixels, counts, and direct lookup helpers.
 describe("ProvinceMap", function()
@@ -211,7 +211,7 @@ describe("ProvinceMap", function()
     end)
 end)
 
---                  EventBus                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+--                  EventBus
 
 -- @description Tests the province-map event bus for subscriptions, publications, and listener removal flow.
 describe("EventBus", function()
@@ -267,7 +267,7 @@ describe("EventBus", function()
     end)
 end)
 
---                  Free Functions                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+--                  Free Functions
 
 -- @description Covers free-function helpers that derive adjacency and border data from province-map structures.
 describe("Free Functions", function()
@@ -359,7 +359,7 @@ describe("Free Functions", function()
     end)
 end)
 
---                  Province extended                                                                                                                                                                                                                                                                                                                                                                                                                                                 
+--                  Province extended
 
 -- @description Verifies province faction, defense, building, and resource helpers that extend province state beyond its base identity.
 describe("Province.faction", function()
@@ -403,7 +403,7 @@ describe("Province.faction", function()
     end)
 end)
 
---                  ProvinceMap extended                                                                                                                                                                                                                                                                                                                                                                                                                 
+--                  ProvinceMap extended
 
 -- @description Tests route finding across direct, chained, blocked, and unreachable province graphs, including passable-edge predicates.
 describe("ProvinceMap.findRoute", function()
@@ -596,7 +596,7 @@ describe("allFactions", function()
     end)
 end)
 
---                  Gap coverage                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
+--                  Gap coverage
 
 -- @description Tests province removal for both existing and missing province ids.
 describe("ProvinceMap.removeProvince", function()
@@ -824,7 +824,7 @@ describe("resolveProvinceColors", function()
     end)
 end)
 
---        Adjacency bidirectionality                                                                                                                                     
+--        Adjacency bidirectionality
 
 -- @description Verifies that adjacency edges are bidirectional and normalised.
 describe("Adjacency.bidirectionality", function()
@@ -867,7 +867,7 @@ describe("Adjacency.bidirectionality", function()
     end)
 end)
 
---        Pixel coordinate system                                                                                                                                              
+--        Pixel coordinate system
 
 -- @description Verifies pixel coordinate system, 0-based addressing, and auto-adjacency on setPixel.
 describe("Pixel.coordinates", function()
@@ -919,7 +919,7 @@ describe("Pixel.coordinates", function()
     end)
 end)
 
---        Input validation                                                                                                                                                                   
+--        Input validation
 
 -- @description Verifies that invalid inputs are rejected with assertions.
 describe("Input.validation", function()
@@ -964,7 +964,7 @@ describe("Input.validation", function()
     end)
 end)
 
---        Route finding edge cases                                                                                                                                           
+--        Route finding edge cases
 
 -- @description Additional route finding edge cases beyond the basic suite.
 describe("ProvinceMap.findRoute.edge_cases", function()
@@ -1017,7 +1017,7 @@ describe("ProvinceMap.findRoute.edge_cases", function()
     end)
 end)
 
---        Dual representation sync                                                                                                                                           
+--        Dual representation sync
 
 -- @description Verifies that adjacency and getNeighbors stay in sync across all mutation paths.
 describe("DualRepresentation.sync", function()

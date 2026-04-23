@@ -6,6 +6,10 @@ local narrative = require("library.narrative")
 describe("library.narrative", function()
 
     describe("compile + continue", function()
+        --- @covers library.narrative.compile
+        --- @covers library.narrative.Story:start
+        --- @covers library.narrative.Story:continue
+        --- @covers library.narrative.Story:isEnded
         it("compiles and runs a single-knot prose-only story", function()
             local s = narrative.compile([[
 === START ===
@@ -20,6 +24,10 @@ Second line.
             expect_true(s:isEnded())
         end)
 
+        --- @covers library.narrative.compile
+        --- @covers library.narrative.Story:isAtChoice
+        --- @covers library.narrative.Story:getChoices
+        --- @covers library.narrative.Story:choose
         it("emits choices and advances on choose(index)", function()
             local s = narrative.compile([[
 === START ===
@@ -44,6 +52,7 @@ You went right.
     end)
 
     describe("conditional choices", function()
+        --- @covers library.narrative.compile
         it("hides choices guarded by failing conditions", function()
             local s = narrative.compile([[
 VAR has_key = false
@@ -60,6 +69,7 @@ A door.
             expect_false(choices[2].available)
         end)
 
+        --- @covers library.narrative.compile
         it("raises when choosing an unavailable choice", function()
             local s = narrative.compile([[
 VAR ok = false
@@ -74,6 +84,8 @@ Door.
     end)
 
     describe("variables & inline substitution", function()
+        --- @covers library.narrative.compile
+        --- @covers library.narrative.Story:bindFunction
         it("substitutes Lua-bound function values inside {fn()} markers", function()
             local s = narrative.compile([[
 === START ===
@@ -84,6 +96,9 @@ HP: {hp()}
             expect_equal("HP: 42", s:continue())
         end)
 
+        --- @covers library.narrative.compile
+        --- @covers library.narrative.Story:setVar
+        --- @covers library.narrative.Story:getVar
         it("substitutes simple {var} references", function()
             local s = narrative.compile([[
 VAR who = "Alric"
@@ -96,6 +111,8 @@ Hello {who}.
     end)
 
     describe("tags", function()
+        --- @covers library.narrative.compile
+        --- @covers library.narrative.Story:onTag
         it("tag handlers fire when their tag appears", function()
             local seen = {}
             local s = narrative.compile([[
@@ -112,6 +129,9 @@ Quiet line.
     end)
 
     describe("flow control", function()
+        --- @covers library.narrative.compile
+        --- @covers library.narrative.Story:continueAll
+        --- @covers library.narrative.Story:visit
         it("visit counter increments across diverts", function()
             local s = narrative.compile([[
 === START ===
@@ -126,6 +146,8 @@ At court.
             expect_equal(1, s:visit("START"))
         end)
 
+        --- @covers library.narrative.compile
+        --- @covers library.narrative.Story:turnsSince
         it("turnsSince returns math.huge for never-visited knots", function()
             local s = narrative.compile("=== START ===\nHi.\n-> END\n"):start()
             expect_equal(math.huge, s:turnsSince("MISSING"))
@@ -133,6 +155,9 @@ At court.
     end)
 
     describe("save / resume", function()
+        --- @covers library.narrative.compile
+        --- @covers library.narrative.Story:save
+        --- @covers library.narrative.Story:resume
         it("round-trips variables and turn counter", function()
             local src = [[
 VAR mood = "happy"
@@ -151,6 +176,7 @@ Greetings.
     end)
 
     describe("error paths", function()
+        --- @covers library.narrative.compile
         it("raises descriptive error on unknown knot divert", function()
             expect_error(function()
                 narrative.compile([[
@@ -161,6 +187,7 @@ Hi.
             end)
         end)
 
+        --- @covers library.narrative.compile
         it("compile raises on malformed VAR", function()
             expect_error(function()
                 narrative.compile("VAR _\n=== START ===\nHi.\n-> END\n")
@@ -169,6 +196,7 @@ Hi.
     end)
 
     describe("module helpers", function()
+        --- @covers library.narrative.formatList
         it("formatList emits Oxford-style enumeration", function()
             expect_equal("a", narrative.formatList({"a"}))
             expect_equal("a and b", narrative.formatList({"a","b"}))

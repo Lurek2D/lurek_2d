@@ -6,6 +6,8 @@ local scheduler = require("library.scheduler")
 
 describe("scheduler library     newScheduler", function()
     -- @description Verify that newScheduler returns a usable scheduler object.
+    --- @covers library.scheduler.newScheduler
+    --- @covers library.scheduler.sched:getCount
     it("returns a scheduler with zero tasks by default", function()
         local s = scheduler.newScheduler()
         assert(s ~= nil, "newScheduler() must return non-nil")
@@ -13,6 +15,7 @@ describe("scheduler library     newScheduler", function()
     end)
 
     -- @description Custom max_iterations option is accepted without error.
+    --- @covers library.scheduler.newScheduler
     it("accepts opts.max_iterations", function()
         local s = scheduler.newScheduler({ max_iterations = 500 })
         assert(s ~= nil)
@@ -22,6 +25,9 @@ end)
 
 describe("scheduler library     add and immediate execution", function()
     -- @description A task that does not yield runs to completion on add().
+    --- @covers library.scheduler.newScheduler
+    --- @covers library.scheduler.sched:add
+    --- @covers library.scheduler.sched:update
     it("runs a non-yielding task immediately on add", function()
         local s = scheduler.newScheduler()
         local ran = false
@@ -35,6 +41,7 @@ describe("scheduler library     add and immediate execution", function()
     end)
 
     -- @description add() returns the numeric task id starting at 1.
+    --- @covers library.scheduler.newScheduler
     it("returns incrementing ids", function()
         local s = scheduler.newScheduler()
         local id1 = s:add(function(y) y(999) end)
@@ -44,6 +51,7 @@ describe("scheduler library     add and immediate execution", function()
     end)
 
     -- @description add() rejects non-function arguments.
+    --- @covers library.scheduler.newScheduler
     it("errors on non-function argument", function()
         local s = scheduler.newScheduler()
         local ok = pcall(function() s:add("not a function") end)
@@ -53,6 +61,7 @@ end)
 
 describe("scheduler library     yield and update timing", function()
     -- @description A task that yields 1 s is still pending after 0.5 s of updates.
+    --- @covers library.scheduler.newScheduler
     it("task is still pending after partial dt", function()
         local s = scheduler.newScheduler()
         local done = false
@@ -66,6 +75,7 @@ describe("scheduler library     yield and update timing", function()
     end)
 
     -- @description A task that yields 1 s resumes and completes after 1 s of updates.
+    --- @covers library.scheduler.newScheduler
     it("task resumes after enough dt", function()
         local s = scheduler.newScheduler()
         local done = false
@@ -80,6 +90,7 @@ describe("scheduler library     yield and update timing", function()
     end)
 
     -- @description Multiple sequential yields are processed correctly.
+    --- @covers library.scheduler.newScheduler
     it("multi-yield task resumes at each step", function()
         local s = scheduler.newScheduler()
         local step = 0
@@ -99,6 +110,8 @@ end)
 
 describe("scheduler library     remove", function()
     -- @description Removing a task by id stops it from being resumed.
+    --- @covers library.scheduler.newScheduler
+    --- @covers library.scheduler.sched:remove
     it("removes a pending task before it resumes", function()
         local s = scheduler.newScheduler()
         local done = false
@@ -115,6 +128,9 @@ end)
 
 describe("scheduler library     pause and resume", function()
     -- @description A paused task does not progress even when dt passes.
+    --- @covers library.scheduler.newScheduler
+    --- @covers library.scheduler.sched:pause
+    --- @covers library.scheduler.sched:resume
     it("paused task does not advance", function()
         local s = scheduler.newScheduler()
         local done = false
@@ -128,6 +144,7 @@ describe("scheduler library     pause and resume", function()
     end)
 
     -- @description A resumed-after-pause task completes normally.
+    --- @covers library.scheduler.newScheduler
     it("resumed task completes after unpausing", function()
         local s = scheduler.newScheduler()
         local done = false
@@ -146,6 +163,8 @@ end)
 
 describe("scheduler library     getStatus", function()
     -- @description getStatus returns 'running' for an active task.
+    --- @covers library.scheduler.newScheduler
+    --- @covers library.scheduler.sched:getStatus
     it("returns running for an active task", function()
         local s = scheduler.newScheduler()
         local id = s:add(function(y) y(999) end)
@@ -154,6 +173,7 @@ describe("scheduler library     getStatus", function()
     end)
 
     -- @description getStatus returns nil or 'done' for an unknown id.
+    --- @covers library.scheduler.newScheduler
     it("returns nil or done for unknown id", function()
         local s = scheduler.newScheduler()
         local st = s:getStatus(999)
@@ -163,6 +183,7 @@ end)
 
 describe("scheduler library     getCount and clear", function()
     -- @description getCount reflects the number of active tasks.
+    --- @covers library.scheduler.newScheduler
     it("getCount increments on add", function()
         local s = scheduler.newScheduler()
         s:add(function(y) y(999) end)
@@ -171,6 +192,8 @@ describe("scheduler library     getCount and clear", function()
     end)
 
     -- @description clear() removes all tasks at once.
+    --- @covers library.scheduler.newScheduler
+    --- @covers library.scheduler.sched:clear
     it("clear removes all tasks", function()
         local s = scheduler.newScheduler()
         s:add(function(y) y(999) end)
@@ -182,6 +205,9 @@ end)
 
 describe("scheduler library     error handling", function()
     -- @description An erroring task is captured in getErrors() and removed.
+    --- @covers library.scheduler.newScheduler
+    --- @covers library.scheduler.sched:getErrors
+    --- @covers library.scheduler.sched:clearErrors
     it("captures erroring task in getErrors", function()
         local s = scheduler.newScheduler()
         local id = s:add(function(_y)
@@ -196,6 +222,7 @@ describe("scheduler library     error handling", function()
     end)
 
     -- @description clearErrors() empties the error list.
+    --- @covers library.scheduler.newScheduler
     it("clearErrors empties the error list", function()
         local s = scheduler.newScheduler()
         s:add(function(_y) error("boom") end)
