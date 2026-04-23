@@ -10,6 +10,7 @@ describe("TypeRegistry", function()
     -- @covers library.item.defineType
     -- @covers library.item.getType
     -- @description Verifies case: clearTypes resets registry.
+    -- @covers library.item.clearTypes
     it("clearTypes resets registry", function()
         item.clearTypes()
         item.defineType("sword", { category="weapon", base_stats={dmg=10}, base_tags={} })
@@ -18,6 +19,9 @@ describe("TypeRegistry", function()
     end)
 
     -- @description Verifies case: defineType and getType round-trip.
+    -- @covers library.item.clearTypes
+    -- @covers library.item.defineType
+    -- @covers library.item.getType
     it("defineType and getType round-trip", function()
         item.clearTypes()
         item.defineType("axe", { category="weapon", base_stats={dmg=15}, base_tags={"equippable"} })
@@ -27,6 +31,9 @@ describe("TypeRegistry", function()
     end)
 
     -- @description Verifies case: getTypeNames returns sorted names.
+    -- @covers library.item.clearTypes
+    -- @covers library.item.defineType
+    -- @covers library.item.getTypeNames
     it("getTypeNames returns sorted names", function()
         item.clearTypes()
         item.defineType("sword", { category="weapon", base_stats={}, base_tags={} })
@@ -45,6 +52,9 @@ end)
 describe("Item", function()
     -- @covers library.item.newItem
     -- @description Verifies case: stats from base_stats.
+    -- @covers library.item.Item:getStat
+    -- @covers library.item.clearTypes
+    -- @covers library.item.defineType
     it("stats from base_stats", function()
         item.clearTypes()
         item.defineType("sword", { category="weapon", base_stats={dmg=10, spd=5}, base_tags={} })
@@ -54,6 +64,11 @@ describe("Item", function()
     end)
 
     -- @description Verifies case: setStat overrides base stat.
+    -- @covers library.item.Item:getStat
+    -- @covers library.item.Item:setStat
+    -- @covers library.item.clearTypes
+    -- @covers library.item.defineType
+    -- @covers library.item.newItem
     it("setStat overrides base stat", function()
         item.clearTypes()
         item.defineType("sword", { category="weapon", base_stats={dmg=10}, base_tags={} })
@@ -63,6 +78,11 @@ describe("Item", function()
     end)
 
     -- @description Verifies case: addStat accumulates delta.
+    -- @covers library.item.Item:addStat
+    -- @covers library.item.Item:getStat
+    -- @covers library.item.clearTypes
+    -- @covers library.item.defineType
+    -- @covers library.item.newItem
     it("addStat accumulates delta", function()
         item.clearTypes()
         item.defineType("sword", { category="weapon", base_stats={dmg=10}, base_tags={} })
@@ -72,6 +92,11 @@ describe("Item", function()
     end)
 
     -- @description Verifies case: removeStat clears the stat.
+    -- @covers library.item.Item:getStat
+    -- @covers library.item.Item:removeStat
+    -- @covers library.item.clearTypes
+    -- @covers library.item.defineType
+    -- @covers library.item.newItem
     it("removeStat clears the stat", function()
         item.clearTypes()
         item.defineType("sword", { category="weapon", base_stats={dmg=10}, base_tags={} })
@@ -81,6 +106,10 @@ describe("Item", function()
     end)
 
     -- @description Verifies case: getStats returns shallow copy.
+    -- @covers library.item.Item:getStats
+    -- @covers library.item.clearTypes
+    -- @covers library.item.defineType
+    -- @covers library.item.newItem
     it("getStats returns shallow copy", function()
         item.clearTypes()
         item.defineType("sword", { category="weapon", base_stats={dmg=10}, base_tags={} })
@@ -90,6 +119,11 @@ describe("Item", function()
     end)
 
     -- @description Verifies case: base_tags copied per instance.
+    -- @covers library.item.Item:addTag
+    -- @covers library.item.Item:hasTag
+    -- @covers library.item.clearTypes
+    -- @covers library.item.defineType
+    -- @covers library.item.newItem
     it("base_tags copied per instance", function()
         item.clearTypes()
         item.defineType("ring", { category="acc", base_stats={}, base_tags={"equippable","magic"} })
@@ -101,6 +135,12 @@ describe("Item", function()
     end)
 
     -- @description Verifies case: addTag / removeTag / getTags.
+    -- @covers library.item.Item:addTag
+    -- @covers library.item.Item:getTags
+    -- @covers library.item.Item:hasTag
+    -- @covers library.item.Item:removeTag
+    -- @covers library.item.clearTypes
+    -- @covers library.item.newItem
     it("addTag / removeTag / getTags", function()
         item.clearTypes()
         local it = item.newItem("gem")
@@ -114,6 +154,10 @@ describe("Item", function()
     end)
 
     -- @description Verifies case: getCategory returns registry category.
+    -- @covers library.item.Item:getCategory
+    -- @covers library.item.clearTypes
+    -- @covers library.item.defineType
+    -- @covers library.item.newItem
     it("getCategory returns registry category", function()
         item.clearTypes()
         item.defineType("wand", { category="magic", base_stats={}, base_tags={} })
@@ -122,6 +166,10 @@ describe("Item", function()
     end)
 
     -- @description Verifies case: setMeta / getMeta round-trip.
+    -- @covers library.item.Item:getMeta
+    -- @covers library.item.Item:setMeta
+    -- @covers library.item.clearTypes
+    -- @covers library.item.newItem
     it("setMeta / getMeta round-trip", function()
         item.clearTypes()
         local it = item.newItem("ancient_tome")
@@ -130,6 +178,10 @@ describe("Item", function()
     end)
 
     -- @description Verifies case: setOwner / getOwner.
+    -- @covers library.item.Item:getOwner
+    -- @covers library.item.Item:setOwner
+    -- @covers library.item.clearTypes
+    -- @covers library.item.newItem
     it("setOwner / getOwner", function()
         item.clearTypes()
         local it = item.newItem("coin")
@@ -139,6 +191,16 @@ describe("Item", function()
     end)
 
     -- @description Verifies case: clone creates independent copy (stats, tags, meta).
+    -- @covers library.item.Item:addTag
+    -- @covers library.item.Item:clone
+    -- @covers library.item.Item:getMeta
+    -- @covers library.item.Item:getStat
+    -- @covers library.item.Item:hasTag
+    -- @covers library.item.Item:setMeta
+    -- @covers library.item.Item:setStat
+    -- @covers library.item.clearTypes
+    -- @covers library.item.defineType
+    -- @covers library.item.newItem
     it("clone creates independent copy (stats, tags, meta)", function()
         item.clearTypes()
         item.defineType("sword", { category="weapon", base_stats={dmg=10}, base_tags={"equippable"} })
@@ -155,6 +217,11 @@ describe("Item", function()
     end)
 
     -- @description Verifies case: getStats mutations don't affect item.
+    -- @covers library.item.Item:getStat
+    -- @covers library.item.Item:getStats
+    -- @covers library.item.clearTypes
+    -- @covers library.item.defineType
+    -- @covers library.item.newItem
     it("getStats mutations don't affect item", function()
         item.clearTypes()
         item.defineType("sword", { category="weapon", base_stats={dmg=5}, base_tags={} })
@@ -171,6 +238,10 @@ end)
 describe("Stack", function()
     -- @covers library.item.newStack
     -- @description Verifies case: push / size / peek round-trip.
+    -- @covers library.item.Stack:peek
+    -- @covers library.item.Stack:push
+    -- @covers library.item.Stack:size
+    -- @covers library.item.newItem
     it("push / size / peek round-trip", function()
         local s = item.newStack("test")
         local a = item.newItem("coin")
@@ -180,6 +251,11 @@ describe("Stack", function()
     end)
 
     -- @description Verifies case: pop removes top.
+    -- @covers library.item.Stack:pop
+    -- @covers library.item.Stack:push
+    -- @covers library.item.Stack:size
+    -- @covers library.item.newItem
+    -- @covers library.item.newStack
     it("pop removes top", function()
         local s = item.newStack("test")
         local a = item.newItem("a"); local b = item.newItem("b")
@@ -190,6 +266,11 @@ describe("Stack", function()
     end)
 
     -- @description Verifies case: popBottom removes first item.
+    -- @covers library.item.Stack:popBottom
+    -- @covers library.item.Stack:push
+    -- @covers library.item.Stack:size
+    -- @covers library.item.newItem
+    -- @covers library.item.newStack
     it("popBottom removes first item", function()
         local s = item.newStack("test")
         local a = item.newItem("a"); local b = item.newItem("b")
@@ -200,6 +281,11 @@ describe("Stack", function()
     end)
 
     -- @description Verifies case: pushBottom inserts at index 1.
+    -- @covers library.item.Stack:popBottom
+    -- @covers library.item.Stack:push
+    -- @covers library.item.Stack:pushBottom
+    -- @covers library.item.newItem
+    -- @covers library.item.newStack
     it("pushBottom inserts at index 1", function()
         local s = item.newStack("test")
         local a = item.newItem("a"); local b = item.newItem("b")
@@ -209,6 +295,10 @@ describe("Stack", function()
     end)
 
     -- @description Verifies case: peekAt by 1-based index.
+    -- @covers library.item.Stack:peekAt
+    -- @covers library.item.Stack:push
+    -- @covers library.item.newItem
+    -- @covers library.item.newStack
     it("peekAt by 1-based index", function()
         local s = item.newStack("test")
         local a = item.newItem("a"); local b = item.newItem("b"); local c = item.newItem("c")
@@ -217,6 +307,11 @@ describe("Stack", function()
     end)
 
     -- @description Verifies case: removeAt removes specific index.
+    -- @covers library.item.Stack:push
+    -- @covers library.item.Stack:removeAt
+    -- @covers library.item.Stack:size
+    -- @covers library.item.newItem
+    -- @covers library.item.newStack
     it("removeAt removes specific index", function()
         local s = item.newStack("test")
         local a = item.newItem("a"); local b = item.newItem("b"); local c = item.newItem("c")
@@ -227,6 +322,12 @@ describe("Stack", function()
     end)
 
     -- @description Verifies case: insertAt inserts at position.
+    -- @covers library.item.Stack:insertAt
+    -- @covers library.item.Stack:peekAt
+    -- @covers library.item.Stack:push
+    -- @covers library.item.Stack:size
+    -- @covers library.item.newItem
+    -- @covers library.item.newStack
     it("insertAt inserts at position", function()
         local s = item.newStack("test")
         local a = item.newItem("a"); local b = item.newItem("b"); local x = item.newItem("x")
@@ -237,6 +338,13 @@ describe("Stack", function()
     end)
 
     -- @description Verifies case: findFirst returns matching item.
+    -- @covers library.item.Item:getType
+    -- @covers library.item.Stack:findFirst
+    -- @covers library.item.Stack:push
+    -- @covers library.item.clearTypes
+    -- @covers library.item.defineType
+    -- @covers library.item.newItem
+    -- @covers library.item.newStack
     it("findFirst returns matching item", function()
         item.clearTypes()
         item.defineType("sword", { category="weapon", base_stats={dmg=10}, base_tags={} })
@@ -250,6 +358,10 @@ describe("Stack", function()
     end)
 
     -- @description Verifies case: getItems returns bottom-to-top copy.
+    -- @covers library.item.Stack:getItems
+    -- @covers library.item.Stack:push
+    -- @covers library.item.newItem
+    -- @covers library.item.newStack
     it("getItems returns bottom-to-top copy", function()
         local s = item.newStack("test")
         local a = item.newItem("a"); local b = item.newItem("b")
@@ -261,6 +373,10 @@ describe("Stack", function()
     end)
 
     -- @description Verifies case: capacity limits push.
+    -- @covers library.item.Stack:isFull
+    -- @covers library.item.Stack:push
+    -- @covers library.item.newItem
+    -- @covers library.item.newStack
     it("capacity limits push", function()
         local s = item.newStack("tiny", 2)
         s:push(item.newItem("a"))
@@ -270,6 +386,11 @@ describe("Stack", function()
     end)
 
     -- @description Verifies case: clear empties stack.
+    -- @covers library.item.Stack:clear
+    -- @covers library.item.Stack:push
+    -- @covers library.item.Stack:size
+    -- @covers library.item.newItem
+    -- @covers library.item.newStack
     it("clear empties stack", function()
         local s = item.newStack("test")
         s:push(item.newItem("a"))
@@ -284,6 +405,11 @@ end)
 describe("ItemPool", function()
     -- @covers library.item.newItemPool
     -- @description Verifies case: draw returns item from pool.
+    -- @covers library.item.Item:getType
+    -- @covers library.item.ItemPool:addType
+    -- @covers library.item.ItemPool:draw
+    -- @covers library.item.clearTypes
+    -- @covers library.item.defineType
     it("draw returns item from pool", function()
         item.clearTypes()
         item.defineType("gold", { category="misc", base_stats={}, base_tags={} })
@@ -294,6 +420,8 @@ describe("ItemPool", function()
     end)
 
     -- @description Verifies case: draw returns nil when empty.
+    -- @covers library.item.ItemPool:draw
+    -- @covers library.item.newItemPool
     it("draw returns nil when empty", function()
         local pool = item.newItemPool()
         local drawn = pool:draw()
@@ -301,6 +429,9 @@ describe("ItemPool", function()
     end)
 
     -- @description Verifies case: size returns entry count.
+    -- @covers library.item.ItemPool:addType
+    -- @covers library.item.ItemPool:size
+    -- @covers library.item.newItemPool
     it("size returns entry count", function()
         local pool = item.newItemPool()
         pool:addType("a", 1); pool:addType("b", 2)
@@ -308,6 +439,11 @@ describe("ItemPool", function()
     end)
 
     -- @description Verifies case: drawTypes returns n items.
+    -- @covers library.item.ItemPool:addType
+    -- @covers library.item.ItemPool:drawTypes
+    -- @covers library.item.clearTypes
+    -- @covers library.item.defineType
+    -- @covers library.item.newItemPool
     it("drawTypes returns n items", function()
         item.clearTypes()
         item.defineType("coin", { category="misc", base_stats={}, base_tags={} })
@@ -318,6 +454,12 @@ describe("ItemPool", function()
     end)
 
     -- @description Verifies case: drawUniqueTypes returns distinct type names.
+    -- @covers library.item.Item:getType
+    -- @covers library.item.ItemPool:addType
+    -- @covers library.item.ItemPool:drawUniqueTypes
+    -- @covers library.item.clearTypes
+    -- @covers library.item.defineType
+    -- @covers library.item.newItemPool
     it("drawUniqueTypes returns distinct type names", function()
         item.clearTypes()
         item.defineType("a", { category="misc", base_stats={}, base_tags={} })
@@ -335,6 +477,11 @@ describe("ItemPool", function()
     end)
 
     -- @description Verifies case: setWeight updates total.
+    -- @covers library.item.ItemPool:addType
+    -- @covers library.item.ItemPool:getEntries
+    -- @covers library.item.ItemPool:setWeight
+    -- @covers library.item.clearTypes
+    -- @covers library.item.newItemPool
     it("setWeight updates total", function()
         item.clearTypes()
         local pool = item.newItemPool()
@@ -345,6 +492,10 @@ describe("ItemPool", function()
     end)
 
     -- @description Verifies case: remove decreases size.
+    -- @covers library.item.ItemPool:addType
+    -- @covers library.item.ItemPool:remove
+    -- @covers library.item.ItemPool:size
+    -- @covers library.item.newItemPool
     it("remove decreases size", function()
         local pool = item.newItemPool()
         pool:addType("common", 10); pool:addType("rare", 1)
@@ -353,6 +504,9 @@ describe("ItemPool", function()
     end)
 
     -- @description Verifies case: getEntries returns copy.
+    -- @covers library.item.ItemPool:addType
+    -- @covers library.item.ItemPool:getEntries
+    -- @covers library.item.newItemPool
     it("getEntries returns copy", function()
         local pool = item.newItemPool()
         pool:addType("x", 2.0)
@@ -368,6 +522,8 @@ end)
 describe("StackHistory", function()
     -- @covers library.item.newStackHistory
     -- @description Verifies case: recordPush creates entry.
+    -- @covers library.item.StackHistory:entries
+    -- @covers library.item.StackHistory:recordPush
     it("recordPush creates entry", function()
         local h = item.newStackHistory(10)
         h:recordPush("bag", "sword", 1)
@@ -379,6 +535,9 @@ describe("StackHistory", function()
     end)
 
     -- @description Verifies case: recordPop creates entry.
+    -- @covers library.item.StackHistory:entries
+    -- @covers library.item.StackHistory:recordPop
+    -- @covers library.item.newStackHistory
     it("recordPop creates entry", function()
         local h = item.newStackHistory(10)
         h:recordPop("bag", "gem", 0)
@@ -387,6 +546,9 @@ describe("StackHistory", function()
     end)
 
     -- @description Verifies case: recordClear creates clear entry.
+    -- @covers library.item.StackHistory:entries
+    -- @covers library.item.StackHistory:recordClear
+    -- @covers library.item.newStackHistory
     it("recordClear creates clear entry", function()
         local h = item.newStackHistory(10)
         h:recordClear("bag")
@@ -395,6 +557,9 @@ describe("StackHistory", function()
     end)
 
     -- @description Verifies case: bounded at max_entries.
+    -- @covers library.item.StackHistory:recordCustom
+    -- @covers library.item.newStackHistory
+    -- @covers library.item.StackHistory:count
     it("bounded at max_entries", function()
         local h = item.newStackHistory(3)
         for i = 1, 5 do h:recordCustom("src", "action_"..i, i) end
@@ -402,6 +567,9 @@ describe("StackHistory", function()
     end)
 
     -- @description Verifies case: getLastN returns last n entries.
+    -- @covers library.item.StackHistory:recordCustom
+    -- @covers library.item.newStackHistory
+    -- @covers library.item.StackHistory:getLastN
     it("getLastN returns last n entries", function()
         local h = item.newStackHistory(50)
         for i = 1, 5 do h:recordCustom("src", "ev_"..i, i) end
@@ -411,6 +579,10 @@ describe("StackHistory", function()
     end)
 
     -- @description Verifies case: clear resets log.
+    -- @covers library.item.StackHistory:clear
+    -- @covers library.item.StackHistory:count
+    -- @covers library.item.StackHistory:recordCustom
+    -- @covers library.item.newStackHistory
     it("clear resets log", function()
         local h = item.newStackHistory(10)
         h:recordCustom("x", "y", 1)
@@ -433,6 +605,9 @@ end)
 describe("StackManager", function()
     -- @covers library.item.newStackManager
     -- @description Verifies case: addStack / getStack round-trip.
+    -- @covers library.item.StackManager:addStack
+    -- @covers library.item.StackManager:getStack
+    -- @covers library.item.newStack
     it("addStack / getStack round-trip", function()
         local mgr = item.newStackManager()
         local s   = item.newStack("weapons")
@@ -441,6 +616,11 @@ describe("StackManager", function()
     end)
 
     -- @description Verifies case: removeStack returns true if existed.
+    -- @covers library.item.StackManager:addStack
+    -- @covers library.item.StackManager:getStack
+    -- @covers library.item.StackManager:removeStack
+    -- @covers library.item.newStack
+    -- @covers library.item.newStackManager
     it("removeStack returns true if existed", function()
         local mgr = item.newStackManager()
         mgr:addStack("x", item.newStack("x"))
@@ -449,6 +629,10 @@ describe("StackManager", function()
     end)
 
     -- @description Verifies case: keys returns sorted names.
+    -- @covers library.item.StackManager:addStack
+    -- @covers library.item.StackManager:keys
+    -- @covers library.item.newStack
+    -- @covers library.item.newStackManager
     it("keys returns sorted names", function()
         local mgr = item.newStackManager()
         mgr:addStack("zz", item.newStack("zz"))
@@ -464,6 +648,9 @@ end)
 describe("findNOfStat", function()
     -- @covers library.item.findNOfStat
     -- @description Verifies case: returns top n indices (0-based).
+    -- @covers library.item.Item:setStat
+    -- @covers library.item.clearTypes
+    -- @covers library.item.newItem
     it("returns top n indices (0-based)", function()
         item.clearTypes()
         local items = {}
@@ -486,6 +673,9 @@ end)
 describe("groupByStat", function()
     -- @covers library.item.groupByStat
     -- @description Verifies case: groups items by stat value.
+    -- @covers library.item.Item:setStat
+    -- @covers library.item.clearTypes
+    -- @covers library.item.newItem
     it("groups items by stat value", function()
         item.clearTypes()
         local items = {}
@@ -505,6 +695,9 @@ end)
 describe("groupByTagPrefix", function()
     -- @covers library.item.groupByTagPrefix
     -- @description Verifies case: groups items by tag prefix.
+    -- @covers library.item.Item:addTag
+    -- @covers library.item.clearTypes
+    -- @covers library.item.newItem
     it("groups items by tag prefix", function()
         item.clearTypes()
         local swords = {}
@@ -523,6 +716,9 @@ end)
 describe("findSequences", function()
     -- @covers library.item.findSequences
     -- @description Verifies case: finds consecutive runs of same stat value.
+    -- @covers library.item.Item:setStat
+    -- @covers library.item.clearTypes
+    -- @covers library.item.newItem
     it("finds consecutive runs of same stat value", function()
         item.clearTypes()
         local items = {}
@@ -540,6 +736,10 @@ describe("findSequences", function()
     end)
 
     -- @description Verifies case: returns empty for all-distinct sequence.
+    -- @covers library.item.Item:setStat
+    -- @covers library.item.clearTypes
+    -- @covers library.item.newItem
+    -- @covers library.item.findSequences
     it("returns empty for all-distinct sequence", function()
         item.clearTypes()
         local items = {}
@@ -554,6 +754,13 @@ end)
 describe("StackBuilder", function()
     -- @covers library.item.newStackBuilder
     -- @description Verifies case: build creates stack from recipe.
+    -- @covers library.item.ItemPool:size
+    -- @covers library.item.Slot:size
+    -- @covers library.item.Stack:size
+    -- @covers library.item.StackBuilder:add
+    -- @covers library.item.StackBuilder:build
+    -- @covers library.item.clearTypes
+    -- @covers library.item.defineType
     it("build creates stack from recipe", function()
         item.clearTypes()
         item.defineType("arrow", { category="ammo", base_stats={}, base_tags={} })
@@ -566,6 +773,15 @@ describe("StackBuilder", function()
     end)
 
     -- @description Verifies case: addWith applies stat overrides to built items.
+    -- @covers library.item.ItemPool:size
+    -- @covers library.item.Slot:size
+    -- @covers library.item.Stack:getItems
+    -- @covers library.item.Stack:size
+    -- @covers library.item.StackBuilder:addWith
+    -- @covers library.item.StackBuilder:build
+    -- @covers library.item.clearTypes
+    -- @covers library.item.defineType
+    -- @covers library.item.newStackBuilder
     it("addWith applies stat overrides to built items", function()
         item.clearTypes()
         item.defineType("sword", { category="weapon", base_stats={dmg=5}, base_tags={} })
@@ -580,6 +796,15 @@ describe("StackBuilder", function()
     end)
 
     -- @description Verifies case: setShuffleOnBuild does not lose items.
+    -- @covers library.item.ItemPool:size
+    -- @covers library.item.Slot:size
+    -- @covers library.item.Stack:size
+    -- @covers library.item.StackBuilder:add
+    -- @covers library.item.StackBuilder:build
+    -- @covers library.item.StackBuilder:setShuffleOnBuild
+    -- @covers library.item.clearTypes
+    -- @covers library.item.defineType
+    -- @covers library.item.newStackBuilder
     it("setShuffleOnBuild does not lose items", function()
         item.clearTypes()
         item.defineType("card", { category="misc", base_stats={}, base_tags={} })
@@ -591,6 +816,12 @@ describe("StackBuilder", function()
     end)
 
     -- @description Verifies case: validateEntries detects banned types.
+    -- @covers library.item.StackBuilder:add
+    -- @covers library.item.StackBuilder:banType
+    -- @covers library.item.StackBuilder:validateEntries
+    -- @covers library.item.clearTypes
+    -- @covers library.item.defineType
+    -- @covers library.item.newStackBuilder
     it("validateEntries detects banned types", function()
         item.clearTypes()
         item.defineType("bomb", { category="misc", base_stats={}, base_tags={} })
@@ -602,6 +833,11 @@ describe("StackBuilder", function()
     end)
 
     -- @description Verifies case: validateEntries passes clean recipe.
+    -- @covers library.item.StackBuilder:add
+    -- @covers library.item.StackBuilder:validateEntries
+    -- @covers library.item.clearTypes
+    -- @covers library.item.defineType
+    -- @covers library.item.newStackBuilder
     it("validateEntries passes clean recipe", function()
         item.clearTypes()
         item.defineType("coin", { category="misc", base_stats={}, base_tags={} })
@@ -612,6 +848,12 @@ describe("StackBuilder", function()
     end)
 
     -- @description Verifies case: validateStack detects missing required type.
+    -- @covers library.item.StackBuilder:requireType
+    -- @covers library.item.StackBuilder:validateStack
+    -- @covers library.item.clearTypes
+    -- @covers library.item.defineType
+    -- @covers library.item.newStack
+    -- @covers library.item.newStackBuilder
     it("validateStack detects missing required type", function()
         item.clearTypes()
         item.defineType("key", { category="misc", base_stats={}, base_tags={} })
@@ -623,6 +865,17 @@ describe("StackBuilder", function()
     end)
 
     -- @description Verifies case: buildNamed is alias for build.
+    -- @covers library.item.Item:getName
+    -- @covers library.item.ItemPool:size
+    -- @covers library.item.Slot:getName
+    -- @covers library.item.Slot:size
+    -- @covers library.item.Stack:getName
+    -- @covers library.item.Stack:size
+    -- @covers library.item.StackBuilder:add
+    -- @covers library.item.StackBuilder:buildNamed
+    -- @covers library.item.clearTypes
+    -- @covers library.item.defineType
+    -- @covers library.item.newStackBuilder
     it("buildNamed is alias for build", function()
         item.clearTypes()
         item.defineType("gem", { category="misc", base_stats={}, base_tags={} })
@@ -640,6 +893,8 @@ end)
 describe("Item counters", function()
     -- @covers library.item.newItem
     -- @description Verifies case: getCounter returns 0 for unset key.
+    -- @covers library.item.Item:getCounter
+    -- @covers library.item.clearTypes
     it("getCounter returns 0 for unset key", function()
         item.clearTypes()
         local it = item.newItem("thing")
@@ -647,6 +902,10 @@ describe("Item counters", function()
     end)
 
     -- @description Verifies case: setCounter / getCounter round-trip.
+    -- @covers library.item.Item:getCounter
+    -- @covers library.item.Item:setCounter
+    -- @covers library.item.clearTypes
+    -- @covers library.item.newItem
     it("setCounter / getCounter round-trip", function()
         item.clearTypes()
         local it = item.newItem("thing")
@@ -655,6 +914,11 @@ describe("Item counters", function()
     end)
 
     -- @description Verifies case: addCounter accumulates delta.
+    -- @covers library.item.Item:addCounter
+    -- @covers library.item.Item:getCounter
+    -- @covers library.item.Item:setCounter
+    -- @covers library.item.clearTypes
+    -- @covers library.item.newItem
     it("addCounter accumulates delta", function()
         item.clearTypes()
         local it = item.newItem("thing")
@@ -665,6 +929,9 @@ describe("Item counters", function()
     end)
 
     -- @description Verifies case: addCounter creates counter at delta when absent.
+    -- @covers library.item.Item:addCounter
+    -- @covers library.item.clearTypes
+    -- @covers library.item.newItem
     it("addCounter creates counter at delta when absent", function()
         item.clearTypes()
         local it = item.newItem("thing")
@@ -673,6 +940,11 @@ describe("Item counters", function()
     end)
 
     -- @description Verifies case: removeCounter deletes the key.
+    -- @covers library.item.Item:getCounter
+    -- @covers library.item.Item:removeCounter
+    -- @covers library.item.Item:setCounter
+    -- @covers library.item.clearTypes
+    -- @covers library.item.newItem
     it("removeCounter deletes the key", function()
         item.clearTypes()
         local it = item.newItem("thing")
@@ -682,6 +954,11 @@ describe("Item counters", function()
     end)
 
     -- @description Verifies case: getCounters returns shallow copy.
+    -- @covers library.item.Item:getCounter
+    -- @covers library.item.Item:getCounters
+    -- @covers library.item.Item:setCounter
+    -- @covers library.item.clearTypes
+    -- @covers library.item.newItem
     it("getCounters returns shallow copy", function()
         item.clearTypes()
         local it = item.newItem("thing")
@@ -696,6 +973,11 @@ describe("Item counters", function()
     end)
 
     -- @description Verifies case: clone copies counters.
+    -- @covers library.item.Item:clone
+    -- @covers library.item.Item:getCounter
+    -- @covers library.item.Item:setCounter
+    -- @covers library.item.clearTypes
+    -- @covers library.item.newItem
     it("clone copies counters", function()
         item.clearTypes()
         local it = item.newItem("thing")
@@ -713,6 +995,9 @@ end)
 describe("Item name and slot", function()
     -- @covers library.item.newItem
     -- @description Verifies case: getName seeds from type def name.
+    -- @covers library.item.Item:getName
+    -- @covers library.item.clearTypes
+    -- @covers library.item.defineType
     it("getName seeds from type def name", function()
         item.clearTypes()
         item.defineType("legendary_sword", { name="Excalibur", category="weapon", base_stats={}, base_tags={} })
@@ -721,6 +1006,9 @@ describe("Item name and slot", function()
     end)
 
     -- @description Verifies case: getName defaults to type_name when no def name.
+    -- @covers library.item.Item:getName
+    -- @covers library.item.clearTypes
+    -- @covers library.item.newItem
     it("getName defaults to type_name when no def name", function()
         item.clearTypes()
         local it = item.newItem("plain_item")
@@ -728,6 +1016,10 @@ describe("Item name and slot", function()
     end)
 
     -- @description Verifies case: setName / getName round-trip.
+    -- @covers library.item.Item:getName
+    -- @covers library.item.Item:setName
+    -- @covers library.item.clearTypes
+    -- @covers library.item.newItem
     it("setName / getName round-trip", function()
         item.clearTypes()
         local it = item.newItem("ring")
@@ -736,6 +1028,9 @@ describe("Item name and slot", function()
     end)
 
     -- @description Verifies case: getSlot returns empty string by default.
+    -- @covers library.item.Item:getSlot
+    -- @covers library.item.clearTypes
+    -- @covers library.item.newItem
     it("getSlot returns empty string by default", function()
         item.clearTypes()
         local it = item.newItem("coin")
@@ -743,6 +1038,10 @@ describe("Item name and slot", function()
     end)
 
     -- @description Verifies case: setSlot / getSlot round-trip.
+    -- @covers library.item.Item:getSlot
+    -- @covers library.item.Item:setSlot
+    -- @covers library.item.clearTypes
+    -- @covers library.item.newItem
     it("setSlot / getSlot round-trip", function()
         item.clearTypes()
         local it = item.newItem("sword")
@@ -751,6 +1050,15 @@ describe("Item name and slot", function()
     end)
 
     -- @description Verifies case: clone copies slot and name.
+    -- @covers library.item.Item:clone
+    -- @covers library.item.Item:getName
+    -- @covers library.item.Item:getSlot
+    -- @covers library.item.Item:setName
+    -- @covers library.item.Item:setSlot
+    -- @covers library.item.Slot:getName
+    -- @covers library.item.Stack:getName
+    -- @covers library.item.clearTypes
+    -- @covers library.item.newItem
     it("clone copies slot and name", function()
         item.clearTypes()
         local it = item.newItem("shield")
@@ -771,6 +1079,10 @@ end)
 describe("Stack peekBottom", function()
     -- @covers library.item.newStack
     -- @description Verifies case: returns first item without removing it.
+    -- @covers library.item.Stack:peekBottom
+    -- @covers library.item.Stack:push
+    -- @covers library.item.Stack:size
+    -- @covers library.item.newItem
     it("returns first item without removing it", function()
         local s = item.newStack("test")
         local a = item.newItem("a")
@@ -782,6 +1094,8 @@ describe("Stack peekBottom", function()
     end)
 
     -- @description Verifies case: returns nil on empty stack.
+    -- @covers library.item.Stack:peekBottom
+    -- @covers library.item.newStack
     it("returns nil on empty stack", function()
         local s = item.newStack("test")
         expect_equal(s:peekBottom(), nil)
@@ -794,12 +1108,16 @@ end)
 describe("ItemPool isEmpty and totalWeight", function()
     -- @covers library.item.newItemPool
     -- @description Verifies case: isEmpty returns true when empty.
+    -- @covers library.item.ItemPool:isEmpty
     it("isEmpty returns true when empty", function()
         local pool = item.newItemPool()
         expect_equal(pool:isEmpty(), true)
     end)
 
     -- @description Verifies case: isEmpty returns false after addType.
+    -- @covers library.item.ItemPool:addType
+    -- @covers library.item.ItemPool:isEmpty
+    -- @covers library.item.newItemPool
     it("isEmpty returns false after addType", function()
         local pool = item.newItemPool()
         pool:addType("coin", 1)
@@ -807,6 +1125,9 @@ describe("ItemPool isEmpty and totalWeight", function()
     end)
 
     -- @description Verifies case: totalWeight returns sum of weights.
+    -- @covers library.item.ItemPool:addType
+    -- @covers library.item.ItemPool:totalWeight
+    -- @covers library.item.newItemPool
     it("totalWeight returns sum of weights", function()
         local pool = item.newItemPool()
         pool:addType("common", 3)
@@ -815,6 +1136,10 @@ describe("ItemPool isEmpty and totalWeight", function()
     end)
 
     -- @description Verifies case: totalWeight updates after setWeight.
+    -- @covers library.item.ItemPool:addType
+    -- @covers library.item.ItemPool:setWeight
+    -- @covers library.item.ItemPool:totalWeight
+    -- @covers library.item.newItemPool
     it("totalWeight updates after setWeight", function()
         local pool = item.newItemPool()
         pool:addType("a", 2)
@@ -823,6 +1148,10 @@ describe("ItemPool isEmpty and totalWeight", function()
     end)
 
     -- @description Verifies case: totalWeight updates after remove.
+    -- @covers library.item.ItemPool:addType
+    -- @covers library.item.ItemPool:remove
+    -- @covers library.item.ItemPool:totalWeight
+    -- @covers library.item.newItemPool
     it("totalWeight updates after remove", function()
         local pool = item.newItemPool()
         pool:addType("x", 3)
@@ -838,12 +1167,16 @@ end)
 describe("StackHistory extras", function()
     -- @covers library.item.newStackHistory
     -- @description Verifies case: isEmpty is true on fresh history.
+    -- @covers library.item.StackHistory:isEmpty
     it("isEmpty is true on fresh history", function()
         local h = item.newStackHistory(10)
         expect_equal(h:isEmpty(), true)
     end)
 
     -- @description Verifies case: isEmpty is false after record.
+    -- @covers library.item.StackHistory:isEmpty
+    -- @covers library.item.StackHistory:recordPush
+    -- @covers library.item.newStackHistory
     it("isEmpty is false after record", function()
         local h = item.newStackHistory(10)
         h:recordPush("bag", "coin", 1)
@@ -851,6 +1184,10 @@ describe("StackHistory extras", function()
     end)
 
     -- @description Verifies case: last returns most recent entry.
+    -- @covers library.item.StackHistory:last
+    -- @covers library.item.StackHistory:recordCustom
+    -- @covers library.item.StackHistory:recordPush
+    -- @covers library.item.newStackHistory
     it("last returns most recent entry", function()
         local h = item.newStackHistory(10)
         h:recordPush("bag", "coin", 1)
@@ -860,12 +1197,17 @@ describe("StackHistory extras", function()
     end)
 
     -- @description Verifies case: last returns nil on empty history.
+    -- @covers library.item.StackHistory:last
+    -- @covers library.item.newStackHistory
     it("last returns nil on empty history", function()
         local h = item.newStackHistory(10)
         expect_equal(h:last(), nil)
     end)
 
     -- @description Verifies case: entriesFor filters by source.
+    -- @covers library.item.StackHistory:entriesFor
+    -- @covers library.item.StackHistory:recordPush
+    -- @covers library.item.newStackHistory
     it("entriesFor filters by source", function()
         local h = item.newStackHistory(20)
         h:recordPush("bag",   "coin",  1)
@@ -884,12 +1226,17 @@ end)
 describe("StackManager extras", function()
     -- @covers library.item.newStackManager
     -- @description Verifies case: hasStack returns false when missing.
+    -- @covers library.item.StackManager:hasStack
     it("hasStack returns false when missing", function()
         local mgr = item.newStackManager()
         expect_equal(mgr:hasStack("unknown"), false)
     end)
 
     -- @description Verifies case: hasStack returns true after addStack.
+    -- @covers library.item.StackManager:addStack
+    -- @covers library.item.StackManager:hasStack
+    -- @covers library.item.newStack
+    -- @covers library.item.newStackManager
     it("hasStack returns true after addStack", function()
         local mgr = item.newStackManager()
         mgr:addStack("inv", item.newStack("inv"))
@@ -897,6 +1244,12 @@ describe("StackManager extras", function()
     end)
 
     -- @description Verifies case: createStack adds empty unlimited stack.
+    -- @covers library.item.ItemPool:size
+    -- @covers library.item.Slot:size
+    -- @covers library.item.Stack:size
+    -- @covers library.item.StackManager:createStack
+    -- @covers library.item.StackManager:getStack
+    -- @covers library.item.newStackManager
     it("createStack adds empty unlimited stack", function()
         local mgr = item.newStackManager()
         mgr:createStack("draw")
@@ -906,6 +1259,14 @@ describe("StackManager extras", function()
     end)
 
     -- @description Verifies case: createStackCapped respects capacity.
+    -- @covers library.item.Slot:push
+    -- @covers library.item.Stack:push
+    -- @covers library.item.StackManager:createStackCapped
+    -- @covers library.item.StackManager:getStack
+    -- @covers library.item.newItem
+    -- @covers library.item.newStackManager
+    -- @covers library.item.Slot:isFull
+    -- @covers library.item.Stack:isFull
     it("createStackCapped respects capacity", function()
         local mgr = item.newStackManager()
         mgr:createStackCapped("hand", 3)
@@ -915,6 +1276,11 @@ describe("StackManager extras", function()
     end)
 
     -- @description Verifies case: totalItems sums across all stacks.
+    -- @covers library.item.StackManager:createStack
+    -- @covers library.item.StackManager:getStack
+    -- @covers library.item.StackManager:totalItems
+    -- @covers library.item.newItem
+    -- @covers library.item.newStackManager
     it("totalItems sums across all stacks", function()
         local mgr = item.newStackManager()
         mgr:createStack("a")
@@ -926,6 +1292,13 @@ describe("StackManager extras", function()
     end)
 
     -- @description Verifies case: moveItem moves item between stacks.
+    -- @covers library.item.StackManager:createStack
+    -- @covers library.item.StackManager:getStack
+    -- @covers library.item.StackManager:moveItem
+    -- @covers library.item.clearTypes
+    -- @covers library.item.defineType
+    -- @covers library.item.newItem
+    -- @covers library.item.newStackManager
     it("moveItem moves item between stacks", function()
         item.clearTypes()
         item.defineType("coin", { category="misc", base_stats={}, base_tags={} })
@@ -941,6 +1314,9 @@ describe("StackManager extras", function()
     end)
 
     -- @description Verifies case: moveItem returns error for missing stack.
+    -- @covers library.item.StackManager:createStack
+    -- @covers library.item.StackManager:moveItem
+    -- @covers library.item.newStackManager
     it("moveItem returns error for missing stack", function()
         local mgr = item.newStackManager()
         mgr:createStack("src")
@@ -950,6 +1326,14 @@ describe("StackManager extras", function()
     end)
 
     -- @description Verifies case: moveItemByType finds item by type.
+    -- @covers library.item.Item:getType
+    -- @covers library.item.StackManager:createStack
+    -- @covers library.item.StackManager:getStack
+    -- @covers library.item.StackManager:moveItemByType
+    -- @covers library.item.clearTypes
+    -- @covers library.item.defineType
+    -- @covers library.item.newItem
+    -- @covers library.item.newStackManager
     it("moveItemByType finds item by type", function()
         item.clearTypes()
         item.defineType("sword", { category="weapon", base_stats={}, base_tags={} })
@@ -965,6 +1349,9 @@ describe("StackManager extras", function()
     end)
 
     -- @description Verifies case: moveItemByType returns error when type not found.
+    -- @covers library.item.StackManager:createStack
+    -- @covers library.item.StackManager:moveItemByType
+    -- @covers library.item.newStackManager
     it("moveItemByType returns error when type not found", function()
         local mgr = item.newStackManager()
         mgr:createStack("src")
@@ -975,6 +1362,13 @@ describe("StackManager extras", function()
     end)
 
     -- @description Verifies case: moveTop moves the top item.
+    -- @covers library.item.StackManager:createStack
+    -- @covers library.item.StackManager:getStack
+    -- @covers library.item.StackManager:moveTop
+    -- @covers library.item.clearTypes
+    -- @covers library.item.defineType
+    -- @covers library.item.newItem
+    -- @covers library.item.newStackManager
     it("moveTop moves the top item", function()
         item.clearTypes()
         item.defineType("ball", { category="misc", base_stats={}, base_tags={} })
@@ -997,6 +1391,10 @@ end)
 describe("Slot", function()
     -- @covers library.item.newSlot
     -- @description Verifies case: push / size / peek round-trip.
+    -- @covers library.item.Slot:peek
+    -- @covers library.item.Slot:push
+    -- @covers library.item.Slot:size
+    -- @covers library.item.newItem
     it("push / size / peek round-trip", function()
         local s = item.newSlot("weapon_slot")
         local sword = item.newItem("sword")
@@ -1006,12 +1404,18 @@ describe("Slot", function()
     end)
 
     -- @description Verifies case: isEmpty returns true when empty.
+    -- @covers library.item.Slot:isEmpty
+    -- @covers library.item.newSlot
     it("isEmpty returns true when empty", function()
         local s = item.newSlot("slot")
         expect_equal(s:isEmpty(), true)
     end)
 
     -- @description Verifies case: isEmpty returns false after push.
+    -- @covers library.item.Slot:isEmpty
+    -- @covers library.item.Slot:push
+    -- @covers library.item.newItem
+    -- @covers library.item.newSlot
     it("isEmpty returns false after push", function()
         local s = item.newSlot("slot")
         s:push(item.newItem("x"))
@@ -1019,6 +1423,10 @@ describe("Slot", function()
     end)
 
     -- @description Verifies case: isFull blocks push at capacity.
+    -- @covers library.item.Slot:isFull
+    -- @covers library.item.Slot:push
+    -- @covers library.item.newItem
+    -- @covers library.item.newSlot
     it("isFull blocks push at capacity", function()
         local s = item.newSlot("hand", 1)
         s:push(item.newItem("sword"))
@@ -1027,6 +1435,9 @@ describe("Slot", function()
     end)
 
     -- @description Verifies case: getCapacity / setCapacity round-trip.
+    -- @covers library.item.Slot:getCapacity
+    -- @covers library.item.Slot:setCapacity
+    -- @covers library.item.newSlot
     it("getCapacity / setCapacity round-trip", function()
         local s = item.newSlot("ring_slot", 2)
         expect_equal(s:getCapacity(), 2)
@@ -1035,6 +1446,11 @@ describe("Slot", function()
     end)
 
     -- @description Verifies case: pop removes last item.
+    -- @covers library.item.Slot:pop
+    -- @covers library.item.Slot:push
+    -- @covers library.item.Slot:size
+    -- @covers library.item.newItem
+    -- @covers library.item.newSlot
     it("pop removes last item", function()
         local s = item.newSlot("slot")
         local a = item.newItem("a")
@@ -1045,6 +1461,11 @@ describe("Slot", function()
     end)
 
     -- @description Verifies case: removeAt removes item at index.
+    -- @covers library.item.Slot:push
+    -- @covers library.item.Slot:removeAt
+    -- @covers library.item.Slot:size
+    -- @covers library.item.newItem
+    -- @covers library.item.newSlot
     it("removeAt removes item at index", function()
         local s = item.newSlot("slot")
         local a = item.newItem("a")
@@ -1056,6 +1477,11 @@ describe("Slot", function()
     end)
 
     -- @description Verifies case: peekAt peeks without removal.
+    -- @covers library.item.Slot:peekAt
+    -- @covers library.item.Slot:push
+    -- @covers library.item.Slot:size
+    -- @covers library.item.newItem
+    -- @covers library.item.newSlot
     it("peekAt peeks without removal", function()
         local s = item.newSlot("slot")
         local a = item.newItem("a")
@@ -1066,6 +1492,11 @@ describe("Slot", function()
     end)
 
     -- @description Verifies case: clear returns all items.
+    -- @covers library.item.Slot:clear
+    -- @covers library.item.Slot:isEmpty
+    -- @covers library.item.Slot:push
+    -- @covers library.item.newItem
+    -- @covers library.item.newSlot
     it("clear returns all items", function()
         local s = item.newSlot("slot")
         local a = item.newItem("a")
@@ -1077,6 +1508,10 @@ describe("Slot", function()
     end)
 
     -- @description Verifies case: items returns shallow copy.
+    -- @covers library.item.Slot:items
+    -- @covers library.item.Slot:push
+    -- @covers library.item.newItem
+    -- @covers library.item.newSlot
     it("items returns shallow copy", function()
         local s = item.newSlot("slot")
         local a = item.newItem("a")
@@ -1087,6 +1522,12 @@ describe("Slot", function()
     end)
 
     -- @description Verifies case: hasItemWithTag detects tagged items.
+    -- @covers library.item.Item:addTag
+    -- @covers library.item.Slot:hasItemWithTag
+    -- @covers library.item.Slot:push
+    -- @covers library.item.clearTypes
+    -- @covers library.item.newItem
+    -- @covers library.item.newSlot
     it("hasItemWithTag detects tagged items", function()
         item.clearTypes()
         local s = item.newSlot("slot")
@@ -1098,6 +1539,12 @@ describe("Slot", function()
     end)
 
     -- @description Verifies case: hasItemOfType detects item type.
+    -- @covers library.item.Slot:hasItemOfType
+    -- @covers library.item.Slot:push
+    -- @covers library.item.clearTypes
+    -- @covers library.item.defineType
+    -- @covers library.item.newItem
+    -- @covers library.item.newSlot
     it("hasItemOfType detects item type", function()
         item.clearTypes()
         item.defineType("sword", { category="weapon", base_stats={}, base_tags={} })
@@ -1108,6 +1555,8 @@ describe("Slot", function()
     end)
 
     -- @description Verifies case: getName returns the slot name.
+    -- @covers library.item.Slot:getName
+    -- @covers library.item.newSlot
     it("getName returns the slot name", function()
         local s = item.newSlot("offhand")
         expect_equal(s:getName(), "offhand")
@@ -1120,6 +1569,9 @@ end)
 describe("sortedIndicesByStat descending", function()
     -- @covers library.item.sortedIndicesByStat
     -- @description Verifies case: ascending=false returns highest-first indices.
+    -- @covers library.item.Item:setStat
+    -- @covers library.item.clearTypes
+    -- @covers library.item.newItem
     it("ascending=false returns highest-first indices", function()
         item.clearTypes()
         local items = {}
@@ -1135,6 +1587,10 @@ describe("sortedIndicesByStat descending", function()
     end)
 
     -- @description Verifies case: ascending=true matches original behaviour.
+    -- @covers library.item.Item:setStat
+    -- @covers library.item.clearTypes
+    -- @covers library.item.newItem
+    -- @covers library.item.sortedIndicesByStat
     it("ascending=true matches original behaviour", function()
         item.clearTypes()
         local items = {}
@@ -1149,6 +1605,10 @@ describe("sortedIndicesByStat descending", function()
     end)
 
     -- @description Verifies case: nil ascending defaults to ascending.
+    -- @covers library.item.Item:setStat
+    -- @covers library.item.clearTypes
+    -- @covers library.item.newItem
+    -- @covers library.item.sortedIndicesByStat
     it("nil ascending defaults to ascending", function()
         item.clearTypes()
         local items = {}
@@ -1167,6 +1627,13 @@ end)
 -- @description Verifies that items created before clearTypes retain their stats, tags, and category.
 describe("clearTypes isolation", function()
     -- @description Verifies case: existing items keep stats after clearTypes.
+    -- @covers library.item.Item:getCategory
+    -- @covers library.item.Item:getStat
+    -- @covers library.item.Item:getType
+    -- @covers library.item.Item:hasTag
+    -- @covers library.item.clearTypes
+    -- @covers library.item.defineType
+    -- @covers library.item.newItem
     it("existing items keep stats after clearTypes", function()
         item.clearTypes()
         item.defineType("sword", { category="weapon", base_stats={dmg=10}, base_tags={"sharp"} })
@@ -1180,6 +1647,11 @@ describe("clearTypes isolation", function()
     end)
 
     -- @description Verifies case: new items after clearTypes get defaults.
+    -- @covers library.item.Item:getCategory
+    -- @covers library.item.Item:getStat
+    -- @covers library.item.clearTypes
+    -- @covers library.item.defineType
+    -- @covers library.item.newItem
     it("new items after clearTypes get defaults", function()
         item.clearTypes()
         item.defineType("sword", { category="weapon", base_stats={dmg=10}, base_tags={} })
@@ -1196,12 +1668,16 @@ end)
 -- @description Verifies pool draw behavior under empty, nil-return, and unique-type-clamping edge cases.
 describe("Pool draw edge cases", function()
     -- @description Verifies case: draw returns nil on empty pool.
+    -- @covers library.item.ItemPool:draw
+    -- @covers library.item.newItemPool
     it("draw returns nil on empty pool", function()
         local pool = item.newItemPool()
         expect_equal(pool:draw(), nil)
     end)
 
     -- @description Verifies case: drawTypes on empty pool returns array with nils.
+    -- @covers library.item.ItemPool:drawTypes
+    -- @covers library.item.newItemPool
     it("drawTypes on empty pool returns nils", function()
         local pool = item.newItemPool()
         local drawn = pool:drawTypes(3)
@@ -1211,6 +1687,12 @@ describe("Pool draw edge cases", function()
     end)
 
     -- @description Verifies case: drawUniqueTypes clamps to available unique types.
+    -- @covers library.item.Item:getType
+    -- @covers library.item.ItemPool:addType
+    -- @covers library.item.ItemPool:drawUniqueTypes
+    -- @covers library.item.clearTypes
+    -- @covers library.item.defineType
+    -- @covers library.item.newItemPool
     it("drawUniqueTypes clamps to available unique types", function()
         item.clearTypes()
         item.defineType("a", { category="misc", base_stats={}, base_tags={} })
@@ -1228,6 +1710,9 @@ describe("Pool draw edge cases", function()
     end)
 
     -- @description Verifies case: drawUniqueTypes with n=0 returns empty.
+    -- @covers library.item.ItemPool:addType
+    -- @covers library.item.ItemPool:drawUniqueTypes
+    -- @covers library.item.newItemPool
     it("drawUniqueTypes with n=0 returns empty", function()
         local pool = item.newItemPool()
         pool:addType("x", 1)
@@ -1236,6 +1721,8 @@ describe("Pool draw edge cases", function()
     end)
 
     -- @description Verifies case: addType rejects zero weight.
+    -- @covers library.item.ItemPool:addType
+    -- @covers library.item.newItemPool
     it("addType rejects zero weight", function()
         local pool = item.newItemPool()
         expect_error(function()
@@ -1244,6 +1731,8 @@ describe("Pool draw edge cases", function()
     end)
 
     -- @description Verifies case: addType rejects negative weight.
+    -- @covers library.item.ItemPool:addType
+    -- @covers library.item.newItemPool
     it("addType rejects negative weight", function()
         local pool = item.newItemPool()
         expect_error(function()
@@ -1252,6 +1741,9 @@ describe("Pool draw edge cases", function()
     end)
 
     -- @description Verifies case: setWeight rejects zero weight.
+    -- @covers library.item.ItemPool:addType
+    -- @covers library.item.ItemPool:setWeight
+    -- @covers library.item.newItemPool
     it("setWeight rejects zero weight", function()
         local pool = item.newItemPool()
         pool:addType("x", 1)
@@ -1266,6 +1758,11 @@ end)
 -- @description Verifies that creating items with unregistered types uses safe defaults.
 describe("Undefined type items", function()
     -- @description Verifies case: newItem with unregistered type uses misc defaults.
+    -- @covers library.item.Item:getCategory
+    -- @covers library.item.Item:getStat
+    -- @covers library.item.Item:getType
+    -- @covers library.item.clearTypes
+    -- @covers library.item.newItem
     it("newItem with unregistered type uses misc defaults", function()
         item.clearTypes()
         local it = item.newItem("nonexistent_type")
@@ -1275,6 +1772,7 @@ describe("Undefined type items", function()
     end)
 
     -- @description Verifies case: newItem with empty string errors.
+    -- @covers library.item.newItem
     it("newItem with empty string errors", function()
         expect_error(function()
             item.newItem("")
@@ -1282,6 +1780,7 @@ describe("Undefined type items", function()
     end)
 
     -- @description Verifies case: newItem with nil errors.
+    -- @covers library.item.newItem
     it("newItem with nil errors", function()
         expect_error(function()
             item.newItem(nil)
@@ -1294,6 +1793,7 @@ end)
 -- @description Verifies that input validation rejects invalid arguments with descriptive errors.
 describe("Input validation", function()
     -- @description Verifies case: defineType rejects nil name.
+    -- @covers library.item.defineType
     it("defineType rejects nil name", function()
         expect_error(function()
             item.defineType(nil, {})
@@ -1301,6 +1801,7 @@ describe("Input validation", function()
     end)
 
     -- @description Verifies case: defineType rejects empty string name.
+    -- @covers library.item.defineType
     it("defineType rejects empty string name", function()
         expect_error(function()
             item.defineType("", {})
@@ -1308,6 +1809,7 @@ describe("Input validation", function()
     end)
 
     -- @description Verifies case: defineType rejects non-table def.
+    -- @covers library.item.defineType
     it("defineType rejects non-table def", function()
         expect_error(function()
             item.defineType("valid", "not a table")
@@ -1315,6 +1817,7 @@ describe("Input validation", function()
     end)
 
     -- @description Verifies case: newStack rejects empty name.
+    -- @covers library.item.newStack
     it("newStack rejects empty name", function()
         expect_error(function()
             item.newStack("")
@@ -1322,6 +1825,7 @@ describe("Input validation", function()
     end)
 
     -- @description Verifies case: newStack rejects negative capacity.
+    -- @covers library.item.newStack
     it("newStack rejects negative capacity", function()
         expect_error(function()
             item.newStack("test", -1)
@@ -1329,6 +1833,9 @@ describe("Input validation", function()
     end)
 
     -- @description Verifies case: setStat rejects empty key.
+    -- @covers library.item.Item:setStat
+    -- @covers library.item.clearTypes
+    -- @covers library.item.newItem
     it("setStat rejects empty key", function()
         item.clearTypes()
         local it = item.newItem("thing")
@@ -1338,6 +1845,9 @@ describe("Input validation", function()
     end)
 
     -- @description Verifies case: addStat rejects empty key.
+    -- @covers library.item.Item:addStat
+    -- @covers library.item.clearTypes
+    -- @covers library.item.newItem
     it("addStat rejects empty key", function()
         item.clearTypes()
         local it = item.newItem("thing")
@@ -1347,6 +1857,8 @@ describe("Input validation", function()
     end)
 
     -- @description Verifies case: pool addType rejects empty type_name.
+    -- @covers library.item.ItemPool:addType
+    -- @covers library.item.newItemPool
     it("pool addType rejects empty type_name", function()
         local pool = item.newItemPool()
         expect_error(function()
@@ -1355,6 +1867,8 @@ describe("Input validation", function()
     end)
 
     -- @description Verifies case: pool addType rejects non-number weight.
+    -- @covers library.item.ItemPool:addType
+    -- @covers library.item.newItemPool
     it("pool addType rejects non-number weight", function()
         local pool = item.newItemPool()
         expect_error(function()

@@ -22,6 +22,7 @@ describe("Province", function()
     end)
 
     -- @description Verifies case: fields are writable.
+    -- @covers library.province_map.newProvince
     it("fields are writable", function()
         local p = pm.newProvince(2, {0, 128, 0})
         p.area = 100
@@ -47,6 +48,9 @@ describe("AdjacencyEdge", function()
     end)
 
     -- @description Verifies case: tags can be added and checked.
+    -- @covers library.province_map.addEdgeTag
+    -- @covers library.province_map.hasEdgeTag
+    -- @covers library.province_map.newAdjacencyEdge
     it("tags can be added and checked", function()
         local e = pm.newAdjacencyEdge(3, 4)
         pm.addEdgeTag(e, "river")
@@ -90,6 +94,7 @@ end)
 describe("BorderStyle", function()
     -- @covers library.province_map.BorderStyle
     -- @description Verifies case: new with defaults.
+    -- @covers library.province_map.newBorderStyle
     it("new with defaults", function()
         local s = pm.newBorderStyle()
         expect_equal(s.width, 1.0)
@@ -111,6 +116,7 @@ describe("MapMode", function()
     end)
 
     -- @description Verifies case: fixed color fn.
+    -- @covers library.province_map.newFixedColorFn
     it("fixed color fn", function()
         local fn = pm.newFixedColorFn({[1] = {255,0,0}})
         expect_equal(fn.type, "fixed")
@@ -118,6 +124,7 @@ describe("MapMode", function()
     end)
 
     -- @description Verifies case: gradient color fn.
+    -- @covers library.province_map.newGradientColorFn
     it("gradient color fn", function()
         local fn = pm.newGradientColorFn({}, {0,0,0}, {255,255,255}, 0, 100)
         expect_equal(fn.type, "gradient")
@@ -125,6 +132,7 @@ describe("MapMode", function()
     end)
 
     -- @description Verifies case: category color fn.
+    -- @covers library.province_map.newCategoryColorFn
     it("category color fn", function()
         local fn = pm.newCategoryColorFn({}, {}, {64, 64, 64})
         expect_equal(fn.type, "category")
@@ -138,6 +146,9 @@ end)
 describe("ProvinceMap", function()
     -- @covers library.province_map.newProvinceMap
     -- @description Verifies case: new with dimensions.
+    -- @covers library.province_map.ProvinceMap:height
+    -- @covers library.province_map.ProvinceMap:provinceCount
+    -- @covers library.province_map.ProvinceMap:width
     it("new with dimensions", function()
         local map = pm.newProvinceMap(100, 200)
         expect_equal(map:width(), 100)
@@ -146,6 +157,11 @@ describe("ProvinceMap", function()
     end)
 
     -- @description Verifies case: insertProvince and getProvince.
+    -- @covers library.province_map.ProvinceMap:getProvince
+    -- @covers library.province_map.ProvinceMap:insertProvince
+    -- @covers library.province_map.ProvinceMap:provinceCount
+    -- @covers library.province_map.newProvince
+    -- @covers library.province_map.newProvinceMap
     it("insertProvince and getProvince", function()
         local map = pm.newProvinceMap(10, 10)
         local p = pm.newProvince(5, {255, 0, 0})
@@ -156,6 +172,10 @@ describe("ProvinceMap", function()
     end)
 
     -- @description Verifies case: provinceIds returns sorted list.
+    -- @covers library.province_map.ProvinceMap:insertProvince
+    -- @covers library.province_map.ProvinceMap:provinceIds
+    -- @covers library.province_map.newProvince
+    -- @covers library.province_map.newProvinceMap
     it("provinceIds returns sorted list", function()
         local map = pm.newProvinceMap(10, 10)
         map:insertProvince(pm.newProvince(3, {0,0,0}))
@@ -168,6 +188,9 @@ describe("ProvinceMap", function()
     end)
 
     -- @description Verifies case: setPixel and getProvinceAt.
+    -- @covers library.province_map.ProvinceMap:getProvinceAt
+    -- @covers library.province_map.ProvinceMap:setPixel
+    -- @covers library.province_map.newProvinceMap
     it("setPixel and getProvinceAt", function()
         local map = pm.newProvinceMap(4, 4)
         map:setPixel(1, 2, 7)
@@ -177,6 +200,11 @@ describe("ProvinceMap", function()
     end)
 
     -- @description Verifies case: insertAdjacency and getAdjacency.
+    -- @covers library.province_map.ProvinceMap:adjacencyCount
+    -- @covers library.province_map.ProvinceMap:getAdjacency
+    -- @covers library.province_map.ProvinceMap:insertAdjacency
+    -- @covers library.province_map.newAdjacencyEdge
+    -- @covers library.province_map.newProvinceMap
     it("insertAdjacency and getAdjacency", function()
         local map = pm.newProvinceMap(10, 10)
         map:insertAdjacency(pm.newAdjacencyEdge(1, 2))
@@ -189,6 +217,10 @@ describe("ProvinceMap", function()
     end)
 
     -- @description Verifies case: getNeighbors returns sorted ids.
+    -- @covers library.province_map.ProvinceMap:getNeighbors
+    -- @covers library.province_map.ProvinceMap:insertAdjacency
+    -- @covers library.province_map.newAdjacencyEdge
+    -- @covers library.province_map.newProvinceMap
     it("getNeighbors returns sorted ids", function()
         local map = pm.newProvinceMap(10, 10)
         map:insertAdjacency(pm.newAdjacencyEdge(1, 3))
@@ -199,6 +231,10 @@ describe("ProvinceMap", function()
     end)
 
     -- @description Verifies case: distance between centroids.
+    -- @covers library.province_map.ProvinceMap:distance
+    -- @covers library.province_map.ProvinceMap:insertProvince
+    -- @covers library.province_map.newProvince
+    -- @covers library.province_map.newProvinceMap
     it("distance between centroids", function()
         local map = pm.newProvinceMap(100, 100)
         local a = pm.newProvince(1, {0,0,0})
@@ -217,6 +253,8 @@ end)
 describe("EventBus", function()
     -- @covers library.province_map.newEventBus
     -- @description Verifies case: new starts empty.
+    -- @covers library.province_map.EventBus:isEmpty
+    -- @covers library.province_map.EventBus:poll
     it("new starts empty", function()
         local bus = pm.newEventBus()
         expect_equal(bus:isEmpty(), true)
@@ -224,6 +262,11 @@ describe("EventBus", function()
     end)
 
     -- @description Verifies case: emit and poll events.
+    -- @covers library.province_map.EventBus:emitMapLoaded
+    -- @covers library.province_map.EventBus:emitProvinceAdded
+    -- @covers library.province_map.EventBus:isEmpty
+    -- @covers library.province_map.EventBus:poll
+    -- @covers library.province_map.newEventBus
     it("emit and poll events", function()
         local bus = pm.newEventBus()
         bus:emitMapLoaded()
@@ -238,6 +281,11 @@ describe("EventBus", function()
     end)
 
     -- @description Verifies case: drain returns all and empties.
+    -- @covers library.province_map.EventBus:drain
+    -- @covers library.province_map.EventBus:emitAdjacencyDetected
+    -- @covers library.province_map.EventBus:emitProvinceRemoved
+    -- @covers library.province_map.EventBus:isEmpty
+    -- @covers library.province_map.newEventBus
     it("drain returns all and empties", function()
         local bus = pm.newEventBus()
         bus:emitProvinceRemoved(1)
@@ -248,6 +296,20 @@ describe("EventBus", function()
     end)
 
     -- @description Verifies case: all emit methods work.
+    -- @covers library.province_map.EventBus:drain
+    -- @covers library.province_map.EventBus:emitAdjacencyChanged
+    -- @covers library.province_map.EventBus:emitAdjacencyDetected
+    -- @covers library.province_map.EventBus:emitAdjacencyRemoved
+    -- @covers library.province_map.EventBus:emitBordersExtracted
+    -- @covers library.province_map.EventBus:emitMapLoaded
+    -- @covers library.province_map.EventBus:emitMapModeApplied
+    -- @covers library.province_map.EventBus:emitPositionsCalculated
+    -- @covers library.province_map.EventBus:emitProvinceAdded
+    -- @covers library.province_map.EventBus:emitProvinceDeselected
+    -- @covers library.province_map.EventBus:emitProvinceHovered
+    -- @covers library.province_map.EventBus:emitProvinceRemoved
+    -- @covers library.province_map.EventBus:emitProvinceSelected
+    -- @covers library.province_map.newEventBus
     it("all emit methods work", function()
         local bus = pm.newEventBus()
         bus:emitMapLoaded()
@@ -274,6 +336,7 @@ describe("Free Functions", function()
     -- @covers library.province_map.detectAdjacency
     -- @covers library.province_map.extractBorders
     -- @description Verifies case: colorToId encodes RGB.
+    -- @covers library.province_map.colorToId
     it("colorToId encodes RGB", function()
         expect_equal(pm.colorToId(255, 0, 0), 16711680)
         expect_equal(pm.colorToId(0, 255, 0), 65280)
@@ -282,6 +345,11 @@ describe("Free Functions", function()
     end)
 
     -- @description Verifies case: loadFromDefinitions builds map.
+    -- @covers library.province_map.ProvinceMap:adjacencyCount
+    -- @covers library.province_map.ProvinceMap:getNeighbors
+    -- @covers library.province_map.ProvinceMap:getProvince
+    -- @covers library.province_map.ProvinceMap:provinceCount
+    -- @covers library.province_map.loadFromDefinitions
     it("loadFromDefinitions builds map", function()
         local defs = {
             {id = 1, color = {255,0,0}, center = {x = 10, y = 20}, neighbors = {2}, name = "Alpha"},
@@ -297,6 +365,13 @@ describe("Free Functions", function()
     end)
 
     -- @description Verifies case: detectAdjacency scans pixel grid.
+    -- @covers library.province_map.ProvinceMap:adjacencyCount
+    -- @covers library.province_map.ProvinceMap:getAdjacency
+    -- @covers library.province_map.ProvinceMap:insertProvince
+    -- @covers library.province_map.ProvinceMap:setPixel
+    -- @covers library.province_map.detectAdjacency
+    -- @covers library.province_map.newProvince
+    -- @covers library.province_map.newProvinceMap
     it("detectAdjacency scans pixel grid", function()
         local map = pm.newProvinceMap(3, 3)
         map:insertProvince(pm.newProvince(1, {255,0,0}))
@@ -316,6 +391,10 @@ describe("Free Functions", function()
     end)
 
     -- @description Verifies case: extractAllBorders returns segments.
+    -- @covers library.province_map.ProvinceMap:insertAdjacency
+    -- @covers library.province_map.extractAllBorders
+    -- @covers library.province_map.newAdjacencyEdge
+    -- @covers library.province_map.newProvinceMap
     it("extractAllBorders returns segments", function()
         local map = pm.newProvinceMap(10, 10)
         map:insertAdjacency(pm.newAdjacencyEdge(1, 2))
@@ -325,6 +404,10 @@ describe("Free Functions", function()
     end)
 
     -- @description Verifies case: extractBordersWithTag filters by tag.
+    -- @covers library.province_map.ProvinceMap:insertAdjacency
+    -- @covers library.province_map.extractBordersWithTag
+    -- @covers library.province_map.newAdjacencyEdge
+    -- @covers library.province_map.newProvinceMap
     it("extractBordersWithTag filters by tag", function()
         local map = pm.newProvinceMap(10, 10)
         local e1 = pm.newAdjacencyEdge(1, 2)
@@ -336,6 +419,10 @@ describe("Free Functions", function()
     end)
 
     -- @description Verifies case: calculateCapital returns centroid.
+    -- @covers library.province_map.ProvinceMap:insertProvince
+    -- @covers library.province_map.calculateCapital
+    -- @covers library.province_map.newProvince
+    -- @covers library.province_map.newProvinceMap
     it("calculateCapital returns centroid", function()
         local map = pm.newProvinceMap(10, 10)
         local p = pm.newProvince(1, {0,0,0})
@@ -347,6 +434,11 @@ describe("Free Functions", function()
     end)
 
     -- @description Verifies case: calculateAllPositions syncs center to centroid.
+    -- @covers library.province_map.ProvinceMap:getProvince
+    -- @covers library.province_map.ProvinceMap:insertProvince
+    -- @covers library.province_map.calculateAllPositions
+    -- @covers library.province_map.newProvince
+    -- @covers library.province_map.newProvinceMap
     it("calculateAllPositions syncs center to centroid", function()
         local map = pm.newProvinceMap(10, 10)
         local p = pm.newProvince(1, {0,0,0})
@@ -365,6 +457,8 @@ end)
 describe("Province.faction", function()
     -- @covers library.province_map.newProvince
     -- @description Verifies case: setFaction / getFaction.
+    -- @covers library.province_map.Province:getFaction
+    -- @covers library.province_map.Province:setFaction
     it("setFaction / getFaction", function()
         local p = pm.newProvince(1, {0,0,0})
         expect_equal(p:getFaction(), nil)
@@ -373,6 +467,9 @@ describe("Province.faction", function()
     end)
 
     -- @description Verifies case: setDefenseRating / getDefenseRating.
+    -- @covers library.province_map.Province:getDefenseRating
+    -- @covers library.province_map.Province:setDefenseRating
+    -- @covers library.province_map.newProvince
     it("setDefenseRating / getDefenseRating", function()
         local p = pm.newProvince(1, {0,0,0})
         p:setDefenseRating(75)
@@ -380,6 +477,11 @@ describe("Province.faction", function()
     end)
 
     -- @description Verifies case: addBuilding / hasBuilding / getBuildings / removeBuilding.
+    -- @covers library.province_map.Province:addBuilding
+    -- @covers library.province_map.Province:getBuildings
+    -- @covers library.province_map.Province:hasBuilding
+    -- @covers library.province_map.Province:removeBuilding
+    -- @covers library.province_map.newProvince
     it("addBuilding / hasBuilding / getBuildings / removeBuilding", function()
         local p = pm.newProvince(1, {0,0,0})
         p:addBuilding("barracks")
@@ -392,6 +494,10 @@ describe("Province.faction", function()
     end)
 
     -- @description Verifies case: setResource / getResource / getResources.
+    -- @covers library.province_map.Province:getResource
+    -- @covers library.province_map.Province:getResources
+    -- @covers library.province_map.Province:setResource
+    -- @covers library.province_map.newProvince
     it("setResource / getResource / getResources", function()
         local p = pm.newProvince(1, {0,0,0})
         p:setResource("gold", 50)
@@ -419,6 +525,7 @@ describe("ProvinceMap.findRoute", function()
     end
 
     -- @description Verifies case: direct adjacency returns two-element path.
+    -- @covers library.province_map.ProvinceMap:findRoute
     it("direct adjacency returns two-element path", function()
         local map = make_chain(2)
         local path = map:findRoute(1, 2)
@@ -428,6 +535,7 @@ describe("ProvinceMap.findRoute", function()
     end)
 
     -- @description Verifies case: chain path returns ordered ids.
+    -- @covers library.province_map.ProvinceMap:findRoute
     it("chain path returns ordered ids", function()
         local map = make_chain(4)
         local path = map:findRoute(1, 4)
@@ -437,6 +545,7 @@ describe("ProvinceMap.findRoute", function()
     end)
 
     -- @description Verifies case: same province returns single-element path.
+    -- @covers library.province_map.ProvinceMap:findRoute
     it("same province returns single-element path", function()
         local map = make_chain(3)
         local path = map:findRoute(2, 2)
@@ -445,6 +554,10 @@ describe("ProvinceMap.findRoute", function()
     end)
 
     -- @description Verifies case: unreachable returns nil.
+    -- @covers library.province_map.ProvinceMap:findRoute
+    -- @covers library.province_map.ProvinceMap:insertProvince
+    -- @covers library.province_map.newProvince
+    -- @covers library.province_map.newProvinceMap
     it("unreachable returns nil", function()
         local map = pm.newProvinceMap(10, 10)
         map:insertProvince(pm.newProvince(1, {0,0,0}))
@@ -453,6 +566,7 @@ describe("ProvinceMap.findRoute", function()
     end)
 
     -- @description Verifies case: passable_fn can block an edge.
+    -- @covers library.province_map.ProvinceMap:findRoute
     it("passable_fn can block an edge", function()
         local map = make_chain(3)
         -- block 1-2 edge
@@ -467,6 +581,10 @@ end)
 describe("ProvinceMap.faction_queries", function()
     -- @covers library.province_map.newProvinceMap
     -- @description Verifies case: getProvincesByFaction returns matching IDs.
+    -- @covers library.province_map.Province:setFaction
+    -- @covers library.province_map.ProvinceMap:insertProvince
+    -- @covers library.province_map.newProvince
+    -- @covers library.province_map.ProvinceMap:getProvincesByFaction
     it("getProvincesByFaction returns matching IDs", function()
         local map = pm.newProvinceMap(10, 10)
         for i = 1, 5 do
@@ -480,6 +598,12 @@ describe("ProvinceMap.faction_queries", function()
     end)
 
     -- @description Verifies case: totalResourceForFaction sums across provinces.
+    -- @covers library.province_map.Province:setFaction
+    -- @covers library.province_map.Province:setResource
+    -- @covers library.province_map.ProvinceMap:insertProvince
+    -- @covers library.province_map.newProvince
+    -- @covers library.province_map.newProvinceMap
+    -- @covers library.province_map.ProvinceMap:totalResourceForFaction
     it("totalResourceForFaction sums across provinces", function()
         local map = pm.newProvinceMap(10, 10)
         for i = 1, 3 do
@@ -492,6 +616,11 @@ describe("ProvinceMap.faction_queries", function()
     end)
 
     -- @description Verifies case: getUncontrolledProvinces.
+    -- @covers library.province_map.Province:setFaction
+    -- @covers library.province_map.ProvinceMap:getUncontrolledProvinces
+    -- @covers library.province_map.ProvinceMap:insertProvince
+    -- @covers library.province_map.newProvince
+    -- @covers library.province_map.newProvinceMap
     it("getUncontrolledProvinces", function()
         local map = pm.newProvinceMap(10, 10)
         local a = pm.newProvince(1, {0,0,0}); a:setFaction("red"); map:insertProvince(a)
@@ -506,6 +635,10 @@ end)
 describe("ProvinceMap.setAdjacent", function()
     -- @covers library.province_map.newProvinceMap
     -- @description Verifies case: creates new edge.
+    -- @covers library.province_map.ProvinceMap:adjacencyCount
+    -- @covers library.province_map.ProvinceMap:insertProvince
+    -- @covers library.province_map.ProvinceMap:setAdjacent
+    -- @covers library.province_map.newProvince
     it("creates new edge", function()
         local map = pm.newProvinceMap(10, 10)
         map:insertProvince(pm.newProvince(1, {0,0,0}))
@@ -517,6 +650,9 @@ describe("ProvinceMap.setAdjacent", function()
     end)
 
     -- @description Verifies case: updates existing edge with new tags.
+    -- @covers library.province_map.ProvinceMap:getAdjacency
+    -- @covers library.province_map.ProvinceMap:setAdjacent
+    -- @covers library.province_map.newProvinceMap
     it("updates existing edge with new tags", function()
         local map = pm.newProvinceMap(10, 10)
         map:setAdjacent(1, 2, {road = true})
@@ -531,6 +667,11 @@ end)
 describe("ProvinceMap.graph_analysis", function()
     -- @covers library.province_map.newProvinceMap
     -- @description Verifies case: findIsolatedProvinces returns unconnected ids.
+    -- @covers library.province_map.ProvinceMap:findIsolatedProvinces
+    -- @covers library.province_map.ProvinceMap:insertAdjacency
+    -- @covers library.province_map.ProvinceMap:insertProvince
+    -- @covers library.province_map.newAdjacencyEdge
+    -- @covers library.province_map.newProvince
     it("findIsolatedProvinces returns unconnected ids", function()
         local map = pm.newProvinceMap(10, 10)
         map:insertProvince(pm.newProvince(1, {0,0,0}))
@@ -543,6 +684,12 @@ describe("ProvinceMap.graph_analysis", function()
     end)
 
     -- @description Verifies case: getConnectedComponents partitions provinces.
+    -- @covers library.province_map.ProvinceMap:insertProvince
+    -- @covers library.province_map.newProvince
+    -- @covers library.province_map.newProvinceMap
+    -- @covers library.province_map.ProvinceMap:getConnectedComponents
+    -- @covers library.province_map.ProvinceMap:insertAdjacency
+    -- @covers library.province_map.newAdjacencyEdge
     it("getConnectedComponents partitions provinces", function()
         local map = pm.newProvinceMap(10, 10)
         for i = 1, 4 do map:insertProvince(pm.newProvince(i, {0,0,0})) end
@@ -558,6 +705,7 @@ describe("ColorFn_apply", function()
     -- @covers library.province_map.applyGradientColor
     -- @covers library.province_map.applyCategoryColor
     -- @description Verifies case: applyGradientColor interpolates.
+    -- @covers library.province_map.newGradientColorFn
     it("applyGradientColor interpolates", function()
         local fn = pm.newGradientColorFn({[1]=0}, {0,0,0}, {255,255,255}, 0, 100)
         local c0 = pm.applyGradientColor(fn, 1)
@@ -568,6 +716,8 @@ describe("ColorFn_apply", function()
     end)
 
     -- @description Verifies case: applyCategoryColor selects by category.
+    -- @covers library.province_map.applyCategoryColor
+    -- @covers library.province_map.newCategoryColorFn
     it("applyCategoryColor selects by category", function()
         local fn = pm.newCategoryColorFn(
             {[1]="hot"}, {hot={255,0,0}}, {0,0,0})
@@ -582,6 +732,10 @@ end)
 describe("allFactions", function()
     -- @covers library.province_map.allFactions
     -- @description Verifies case: returns sorted faction list.
+    -- @covers library.province_map.Province:setFaction
+    -- @covers library.province_map.ProvinceMap:insertProvince
+    -- @covers library.province_map.newProvince
+    -- @covers library.province_map.newProvinceMap
     it("returns sorted faction list", function()
         local map = pm.newProvinceMap(10, 10)
         for i, f in ipairs({"green","blue","red","blue"}) do
@@ -602,6 +756,11 @@ end)
 describe("ProvinceMap.removeProvince", function()
     -- @covers library.province_map.newProvinceMap
     -- @description Verifies case: removes an existing province and returns true.
+    -- @covers library.province_map.ProvinceMap:getProvince
+    -- @covers library.province_map.ProvinceMap:insertProvince
+    -- @covers library.province_map.ProvinceMap:provinceCount
+    -- @covers library.province_map.ProvinceMap:removeProvince
+    -- @covers library.province_map.newProvince
     it("removes an existing province and returns true", function()
         local map = pm.newProvinceMap(10, 10)
         map:insertProvince(pm.newProvince(7, {0,0,0}))
@@ -612,6 +771,8 @@ describe("ProvinceMap.removeProvince", function()
     end)
 
     -- @description Verifies case: returns false for missing province.
+    -- @covers library.province_map.ProvinceMap:removeProvince
+    -- @covers library.province_map.newProvinceMap
     it("returns false for missing province", function()
         local map = pm.newProvinceMap(10, 10)
         expect_equal(map:removeProvince(99), false)
@@ -622,6 +783,11 @@ end)
 describe("ProvinceMap.removeAdjacency", function()
     -- @covers library.province_map.newProvinceMap
     -- @description Verifies case: removes an existing edge and returns true.
+    -- @covers library.province_map.ProvinceMap:adjacencyCount
+    -- @covers library.province_map.ProvinceMap:getAdjacency
+    -- @covers library.province_map.ProvinceMap:insertAdjacency
+    -- @covers library.province_map.ProvinceMap:removeAdjacency
+    -- @covers library.province_map.newAdjacencyEdge
     it("removes an existing edge and returns true", function()
         local map = pm.newProvinceMap(10, 10)
         map:insertAdjacency(pm.newAdjacencyEdge(1, 2))
@@ -632,6 +798,10 @@ describe("ProvinceMap.removeAdjacency", function()
     end)
 
     -- @description Verifies case: symmetric: removeAdjacency(b, a) also works.
+    -- @covers library.province_map.ProvinceMap:insertAdjacency
+    -- @covers library.province_map.ProvinceMap:removeAdjacency
+    -- @covers library.province_map.newAdjacencyEdge
+    -- @covers library.province_map.newProvinceMap
     it("symmetric: removeAdjacency(b, a) also works", function()
         local map = pm.newProvinceMap(10, 10)
         map:insertAdjacency(pm.newAdjacencyEdge(3, 5))
@@ -639,6 +809,8 @@ describe("ProvinceMap.removeAdjacency", function()
     end)
 
     -- @description Verifies case: returns false for missing edge.
+    -- @covers library.province_map.ProvinceMap:removeAdjacency
+    -- @covers library.province_map.newProvinceMap
     it("returns false for missing edge", function()
         local map = pm.newProvinceMap(10, 10)
         expect_equal(map:removeAdjacency(1, 2), false)
@@ -649,6 +821,10 @@ end)
 describe("totalEdgeCount", function()
     -- @covers library.province_map.totalEdgeCount
     -- @description Verifies case: mirrors adjacencyCount.
+    -- @covers library.province_map.ProvinceMap:adjacencyCount
+    -- @covers library.province_map.ProvinceMap:insertAdjacency
+    -- @covers library.province_map.newAdjacencyEdge
+    -- @covers library.province_map.newProvinceMap
     it("mirrors adjacencyCount", function()
         local map = pm.newProvinceMap(10, 10)
         map:insertAdjacency(pm.newAdjacencyEdge(1, 2))
@@ -662,6 +838,8 @@ end)
 describe("ProvinceMap.pixelLookup", function()
     -- @covers library.province_map.newProvinceMap
     -- @description Verifies case: returns the internal lookup table.
+    -- @covers library.province_map.ProvinceMap:pixelLookup
+    -- @covers library.province_map.ProvinceMap:setPixel
     it("returns the internal lookup table", function()
         local map = pm.newProvinceMap(2, 2)
         map:setPixel(0, 0, 5)
@@ -678,6 +856,11 @@ end)
 describe("extractBordersByProperty", function()
     -- @covers library.province_map.extractBordersByProperty
     -- @description Verifies case: returns segments where property differs.
+    -- @covers library.province_map.ProvinceMap:insertAdjacency
+    -- @covers library.province_map.ProvinceMap:insertProvince
+    -- @covers library.province_map.newAdjacencyEdge
+    -- @covers library.province_map.newProvince
+    -- @covers library.province_map.newProvinceMap
     it("returns segments where property differs", function()
         local map = pm.newProvinceMap(10, 10)
         local a = pm.newProvince(1, {0,0,0}); a.terrain = "forest"
@@ -695,6 +878,12 @@ describe("extractBordersByProperty", function()
     end)
 
     -- @description Verifies case: returns empty when all properties match.
+    -- @covers library.province_map.ProvinceMap:insertAdjacency
+    -- @covers library.province_map.ProvinceMap:insertProvince
+    -- @covers library.province_map.extractBordersByProperty
+    -- @covers library.province_map.newAdjacencyEdge
+    -- @covers library.province_map.newProvince
+    -- @covers library.province_map.newProvinceMap
     it("returns empty when all properties match", function()
         local map = pm.newProvinceMap(10, 10)
         local a = pm.newProvince(1, {0,0,0}); a.biome = "arctic"
@@ -711,6 +900,11 @@ end)
 describe("detectAdjacencyWithTags", function()
     -- @covers library.province_map.detectAdjacencyWithTags
     -- @description Verifies case: detects normal adjacency and tags edges via tag pixels.
+    -- @covers library.province_map.ProvinceMap:getAdjacency
+    -- @covers library.province_map.ProvinceMap:insertProvince
+    -- @covers library.province_map.ProvinceMap:setPixel
+    -- @covers library.province_map.newProvince
+    -- @covers library.province_map.newProvinceMap
     it("detects normal adjacency and tags edges via tag pixels", function()
         -- 3x1 pixel strip: [prov1][tag_pixel][prov2]
         -- tag pixel (id=99) should cause the edge between 1 and 2 to get tag "river"
@@ -727,6 +921,13 @@ describe("detectAdjacencyWithTags", function()
     end)
 
     -- @description Verifies case: with empty tag table behaves like detectAdjacency.
+    -- @covers library.province_map.ProvinceMap:adjacencyCount
+    -- @covers library.province_map.ProvinceMap:getAdjacency
+    -- @covers library.province_map.ProvinceMap:insertProvince
+    -- @covers library.province_map.ProvinceMap:setPixel
+    -- @covers library.province_map.detectAdjacencyWithTags
+    -- @covers library.province_map.newProvince
+    -- @covers library.province_map.newProvinceMap
     it("with empty tag table behaves like detectAdjacency", function()
         local map = pm.newProvinceMap(2, 1)
         map:insertProvince(pm.newProvince(1, {255,0,0}))
@@ -744,6 +945,9 @@ end)
 describe("adjacencyToGraph", function()
     -- @covers library.province_map.adjacencyToGraph
     -- @description Verifies case: produces nodes and edges from the adjacency table.
+    -- @covers library.province_map.ProvinceMap:insertAdjacency
+    -- @covers library.province_map.newAdjacencyEdge
+    -- @covers library.province_map.newProvinceMap
     it("produces nodes and edges from the adjacency table", function()
         local map = pm.newProvinceMap(10, 10)
         map:insertAdjacency(pm.newAdjacencyEdge(1, 2))
@@ -754,6 +958,10 @@ describe("adjacencyToGraph", function()
     end)
 
     -- @description Verifies case: nodes are sorted.
+    -- @covers library.province_map.ProvinceMap:insertAdjacency
+    -- @covers library.province_map.adjacencyToGraph
+    -- @covers library.province_map.newAdjacencyEdge
+    -- @covers library.province_map.newProvinceMap
     it("nodes are sorted", function()
         local map = pm.newProvinceMap(10, 10)
         map:insertAdjacency(pm.newAdjacencyEdge(5, 2))
@@ -765,6 +973,8 @@ describe("adjacencyToGraph", function()
     end)
 
     -- @description Verifies case: empty map returns empty graph.
+    -- @covers library.province_map.adjacencyToGraph
+    -- @covers library.province_map.newProvinceMap
     it("empty map returns empty graph", function()
         local map = pm.newProvinceMap(10, 10)
         local g = pm.adjacencyToGraph(map)
@@ -777,6 +987,10 @@ end)
 describe("resolveProvinceColors", function()
     -- @covers library.province_map.resolveProvinceColors
     -- @description Verifies case: source color mode returns normalised rgb.
+    -- @covers library.province_map.ProvinceMap:insertProvince
+    -- @covers library.province_map.newMapMode
+    -- @covers library.province_map.newProvince
+    -- @covers library.province_map.newProvinceMap
     it("source color mode returns normalised rgb", function()
         local map = pm.newProvinceMap(10, 10)
         local p = pm.newProvince(1, {255, 0, 128})
@@ -791,6 +1005,12 @@ describe("resolveProvinceColors", function()
     end)
 
     -- @description Verifies case: fixed color mode picks per-province colour.
+    -- @covers library.province_map.ProvinceMap:insertProvince
+    -- @covers library.province_map.newFixedColorFn
+    -- @covers library.province_map.newMapMode
+    -- @covers library.province_map.newProvince
+    -- @covers library.province_map.newProvinceMap
+    -- @covers library.province_map.resolveProvinceColors
     it("fixed color mode picks per-province colour", function()
         local map = pm.newProvinceMap(10, 10)
         map:insertProvince(pm.newProvince(1, {0,0,0}))
@@ -802,6 +1022,12 @@ describe("resolveProvinceColors", function()
     end)
 
     -- @description Verifies case: gradient mode interpolates.
+    -- @covers library.province_map.ProvinceMap:insertProvince
+    -- @covers library.province_map.newGradientColorFn
+    -- @covers library.province_map.newMapMode
+    -- @covers library.province_map.newProvince
+    -- @covers library.province_map.newProvinceMap
+    -- @covers library.province_map.resolveProvinceColors
     it("gradient mode interpolates", function()
         local map = pm.newProvinceMap(10, 10)
         map:insertProvince(pm.newProvince(1, {0,0,0}))
@@ -813,6 +1039,12 @@ describe("resolveProvinceColors", function()
     end)
 
     -- @description Verifies case: category mode resolves by category.
+    -- @covers library.province_map.ProvinceMap:insertProvince
+    -- @covers library.province_map.newCategoryColorFn
+    -- @covers library.province_map.newMapMode
+    -- @covers library.province_map.newProvince
+    -- @covers library.province_map.newProvinceMap
+    -- @covers library.province_map.resolveProvinceColors
     it("category mode resolves by category", function()
         local map = pm.newProvinceMap(10, 10)
         map:insertProvince(pm.newProvince(1, {0,0,0}))
@@ -829,6 +1061,9 @@ end)
 -- @description Verifies that adjacency edges are bidirectional and normalised.
 describe("Adjacency.bidirectionality", function()
     -- @description Verifies case: insertAdjacency normalises edge direction.
+    -- @covers library.province_map.ProvinceMap:getAdjacency
+    -- @covers library.province_map.ProvinceMap:insertAdjacency
+    -- @covers library.province_map.newProvinceMap
     it("insertAdjacency normalises edge direction", function()
         local map = pm.newProvinceMap(10, 10)
         -- Manually create an edge with reversed order (5 > 2).
@@ -844,6 +1079,8 @@ describe("Adjacency.bidirectionality", function()
     end)
 
     -- @description Verifies case: setAdjacent stores normalised edge.
+    -- @covers library.province_map.ProvinceMap:setAdjacent
+    -- @covers library.province_map.newProvinceMap
     it("setAdjacent stores normalised edge", function()
         local map = pm.newProvinceMap(10, 10)
         local edge = map:setAdjacent(10, 3)
@@ -852,6 +1089,11 @@ describe("Adjacency.bidirectionality", function()
     end)
 
     -- @description Verifies case: getNeighbors returns both sides of an edge.
+    -- @covers library.province_map.ProvinceMap:getNeighbors
+    -- @covers library.province_map.ProvinceMap:insertProvince
+    -- @covers library.province_map.ProvinceMap:setAdjacent
+    -- @covers library.province_map.newProvince
+    -- @covers library.province_map.newProvinceMap
     it("getNeighbors returns both sides of an edge", function()
         local map = pm.newProvinceMap(10, 10)
         map:insertProvince(pm.newProvince(1, {0,0,0}))
@@ -872,6 +1114,9 @@ end)
 -- @description Verifies pixel coordinate system, 0-based addressing, and auto-adjacency on setPixel.
 describe("Pixel.coordinates", function()
     -- @description Verifies case: pixel_lookup uses 1-based index internally.
+    -- @covers library.province_map.ProvinceMap:pixelLookup
+    -- @covers library.province_map.ProvinceMap:setPixel
+    -- @covers library.province_map.newProvinceMap
     it("pixel_lookup uses 1-based index internally", function()
         local map = pm.newProvinceMap(3, 3)
         map:setPixel(0, 0, 10)   -- index = 0*3 + 0 + 1 = 1
@@ -882,6 +1127,9 @@ describe("Pixel.coordinates", function()
     end)
 
     -- @description Verifies case: out-of-bounds setPixel is silently ignored.
+    -- @covers library.province_map.ProvinceMap:getProvinceAt
+    -- @covers library.province_map.ProvinceMap:setPixel
+    -- @covers library.province_map.newProvinceMap
     it("out-of-bounds setPixel is silently ignored", function()
         local map = pm.newProvinceMap(2, 2)
         map:setPixel(-1, 0, 1)
@@ -892,6 +1140,10 @@ describe("Pixel.coordinates", function()
     end)
 
     -- @description Verifies case: setPixel auto-detects adjacency bidirectionally.
+    -- @covers library.province_map.ProvinceMap:adjacencyCount
+    -- @covers library.province_map.ProvinceMap:getAdjacency
+    -- @covers library.province_map.ProvinceMap:setPixel
+    -- @covers library.province_map.newProvinceMap
     it("setPixel auto-detects adjacency bidirectionally", function()
         local map = pm.newProvinceMap(3, 1)
         map:setPixel(0, 0, 1)
@@ -905,6 +1157,9 @@ describe("Pixel.coordinates", function()
     end)
 
     -- @description Verifies case: setPixel adjacency checks all four directions.
+    -- @covers library.province_map.ProvinceMap:getAdjacency
+    -- @covers library.province_map.ProvinceMap:setPixel
+    -- @covers library.province_map.newProvinceMap
     it("setPixel adjacency checks all four directions", function()
         local map = pm.newProvinceMap(3, 3)
         -- Place province 1 at center neighbours.
@@ -924,40 +1179,51 @@ end)
 -- @description Verifies that invalid inputs are rejected with assertions.
 describe("Input.validation", function()
     -- @description Verifies case: newProvince rejects non-number id.
+    -- @covers library.province_map.newProvince
     it("newProvince rejects non-number id", function()
         expect_error(function() pm.newProvince("bad", {0,0,0}) end)
     end)
 
     -- @description Verifies case: newAdjacencyEdge rejects non-number ids.
+    -- @covers library.province_map.newAdjacencyEdge
     it("newAdjacencyEdge rejects non-number ids", function()
         expect_error(function() pm.newAdjacencyEdge("a", 1) end)
     end)
 
     -- @description Verifies case: setFaction rejects non-string, non-nil.
+    -- @covers library.province_map.Province:setFaction
+    -- @covers library.province_map.newProvince
     it("setFaction rejects non-string, non-nil", function()
         local p = pm.newProvince(1, {0,0,0})
         expect_error(function() p:setFaction(123) end)
     end)
 
     -- @description Verifies case: setResource rejects negative amount.
+    -- @covers library.province_map.Province:setResource
+    -- @covers library.province_map.newProvince
     it("setResource rejects negative amount", function()
         local p = pm.newProvince(1, {0,0,0})
         expect_error(function() p:setResource("gold", -5) end)
     end)
 
     -- @description Verifies case: colorToId rejects out-of-range values.
+    -- @covers library.province_map.colorToId
     it("colorToId rejects out-of-range values", function()
         expect_error(function() pm.colorToId(256, 0, 0) end)
         expect_error(function() pm.colorToId(0, -1, 0) end)
     end)
 
     -- @description Verifies case: setAdjacent rejects non-number ids.
+    -- @covers library.province_map.ProvinceMap:setAdjacent
+    -- @covers library.province_map.newProvinceMap
     it("setAdjacent rejects non-number ids", function()
         local map = pm.newProvinceMap(10, 10)
         expect_error(function() map:setAdjacent("a", 1) end)
     end)
 
     -- @description Verifies case: findRoute rejects non-number ids.
+    -- @covers library.province_map.ProvinceMap:findRoute
+    -- @covers library.province_map.newProvinceMap
     it("findRoute rejects non-number ids", function()
         local map = pm.newProvinceMap(10, 10)
         expect_error(function() map:findRoute("a", 1) end)
@@ -969,6 +1235,12 @@ end)
 -- @description Additional route finding edge cases beyond the basic suite.
 describe("ProvinceMap.findRoute.edge_cases", function()
     -- @description Verifies case: route avoids impassable edge.
+    -- @covers library.province_map.ProvinceMap:insertProvince
+    -- @covers library.province_map.newProvince
+    -- @covers library.province_map.newProvinceMap
+    -- @covers library.province_map.ProvinceMap:findRoute
+    -- @covers library.province_map.ProvinceMap:insertAdjacency
+    -- @covers library.province_map.newAdjacencyEdge
     it("route avoids impassable edge and takes detour", function()
         -- Diamond: 1-2, 1-3, 2-4, 3-4.  Block 1-2 edge.
         local map = pm.newProvinceMap(10, 10)
@@ -989,6 +1261,10 @@ describe("ProvinceMap.findRoute.edge_cases", function()
     end)
 
     -- @description Verifies case: route through single-node graph.
+    -- @covers library.province_map.ProvinceMap:findRoute
+    -- @covers library.province_map.ProvinceMap:insertProvince
+    -- @covers library.province_map.newProvince
+    -- @covers library.province_map.newProvinceMap
     it("route through single-node graph", function()
         local map = pm.newProvinceMap(10, 10)
         map:insertProvince(pm.newProvince(42, {0,0,0}))
@@ -998,6 +1274,12 @@ describe("ProvinceMap.findRoute.edge_cases", function()
     end)
 
     -- @description Verifies case: route in disconnected components returns nil.
+    -- @covers library.province_map.ProvinceMap:insertProvince
+    -- @covers library.province_map.newProvince
+    -- @covers library.province_map.newProvinceMap
+    -- @covers library.province_map.ProvinceMap:findRoute
+    -- @covers library.province_map.ProvinceMap:insertAdjacency
+    -- @covers library.province_map.newAdjacencyEdge
     it("route in disconnected components returns nil", function()
         local map = pm.newProvinceMap(10, 10)
         for i = 1, 4 do map:insertProvince(pm.newProvince(i, {0,0,0})) end
@@ -1007,6 +1289,12 @@ describe("ProvinceMap.findRoute.edge_cases", function()
     end)
 
     -- @description Verifies case: all edges impassable returns nil.
+    -- @covers library.province_map.ProvinceMap:findRoute
+    -- @covers library.province_map.ProvinceMap:insertAdjacency
+    -- @covers library.province_map.ProvinceMap:insertProvince
+    -- @covers library.province_map.newAdjacencyEdge
+    -- @covers library.province_map.newProvince
+    -- @covers library.province_map.newProvinceMap
     it("all edges impassable returns nil", function()
         local map = pm.newProvinceMap(10, 10)
         map:insertProvince(pm.newProvince(1, {0,0,0}))
@@ -1022,6 +1310,11 @@ end)
 -- @description Verifies that adjacency and getNeighbors stay in sync across all mutation paths.
 describe("DualRepresentation.sync", function()
     -- @description Verifies case: setAdjacent is reflected in getNeighbors.
+    -- @covers library.province_map.ProvinceMap:getNeighbors
+    -- @covers library.province_map.ProvinceMap:insertProvince
+    -- @covers library.province_map.ProvinceMap:setAdjacent
+    -- @covers library.province_map.newProvince
+    -- @covers library.province_map.newProvinceMap
     it("setAdjacent is reflected in getNeighbors", function()
         local map = pm.newProvinceMap(10, 10)
         map:insertProvince(pm.newProvince(1, {0,0,0}))
@@ -1036,6 +1329,12 @@ describe("DualRepresentation.sync", function()
     end)
 
     -- @description Verifies case: removeAdjacency removes from getNeighbors.
+    -- @covers library.province_map.ProvinceMap:getNeighbors
+    -- @covers library.province_map.ProvinceMap:insertProvince
+    -- @covers library.province_map.ProvinceMap:removeAdjacency
+    -- @covers library.province_map.ProvinceMap:setAdjacent
+    -- @covers library.province_map.newProvince
+    -- @covers library.province_map.newProvinceMap
     it("removeAdjacency removes from getNeighbors", function()
         local map = pm.newProvinceMap(10, 10)
         map:insertProvince(pm.newProvince(1, {0,0,0}))
@@ -1047,6 +1346,11 @@ describe("DualRepresentation.sync", function()
     end)
 
     -- @description Verifies case: pixel-based adjacency is visible in getNeighbors.
+    -- @covers library.province_map.ProvinceMap:getNeighbors
+    -- @covers library.province_map.ProvinceMap:insertProvince
+    -- @covers library.province_map.ProvinceMap:setPixel
+    -- @covers library.province_map.newProvince
+    -- @covers library.province_map.newProvinceMap
     it("pixel-based adjacency is visible in getNeighbors", function()
         local map = pm.newProvinceMap(2, 1)
         map:insertProvince(pm.newProvince(1, {0,0,0}))
@@ -1060,6 +1364,11 @@ describe("DualRepresentation.sync", function()
     end)
 
     -- @description Verifies case: detectAdjacency edges are visible in getNeighbors.
+    -- @covers library.province_map.ProvinceMap:getNeighbors
+    -- @covers library.province_map.ProvinceMap:insertProvince
+    -- @covers library.province_map.detectAdjacency
+    -- @covers library.province_map.newProvince
+    -- @covers library.province_map.newProvinceMap
     it("detectAdjacency edges are visible in getNeighbors", function()
         local map = pm.newProvinceMap(2, 1)
         map:insertProvince(pm.newProvince(10, {0,0,0}))

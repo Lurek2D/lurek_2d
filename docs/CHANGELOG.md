@@ -2,6 +2,21 @@
 
 All notable changes to Lurek2D are recorded here.
 
+## [0.20.11] - 2026-04-23
+
+### test(library): per-it() @covers markers for doll/item/quest/inventory/province_map/crafting/netstate/rpc
+
+- **test(library/doll): add per-`it()` @covers markers** — 64 new markers added; Test% 4.6% → 83.1%.
+- **test(library/item): add per-`it()` @covers markers** — 108 new markers added; Test% 10.1% → 70.3%.
+- **test(library/quest): add per-`it()` @covers markers** — 67 new markers added; Test% 7.1% → 89.3%.
+- **test(library/inventory): add per-`it()` @covers markers** — 77 new markers added; Test% 6.7% → 81.1%.
+- **test(library/province_map): add per-`it()` @covers markers** — 63 new markers added; Test% 19.5% → 93.9%.
+- **test(library/crafting): add per-`it()` @covers markers** — 51 new markers added; Test% 10.2% → 68.3% (ceiling — 16 functions genuinely untested in existing tests).
+- **test(library/netstate): add per-`it()` @covers markers** — 40 new markers added; Test% 76.5% → 79.4%.
+- **test(library/rpc): add per-`it()` @covers markers** — 15 new markers added; Test% 87.5% → 87.5% (already covered).
+- **docs(reports): regenerate `logs/reports/library_coverage.md`** — Reflects updated Test% across all 22 libraries.
+- **docs(api): regenerate `docs/api/library.md` and `docs/api/library.lua`** — Via `tools/docs/gen_lib_docs.py`.
+
 ## [0.20.10] - 2026-04-23
 
 ### chore(cag): end-of-session sweep — fix E003 and W005 regressions in copilot-instructions.md
