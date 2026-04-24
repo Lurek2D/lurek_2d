@@ -3386,6 +3386,7 @@ function Camera2D:zoomTo(target_zoom, duration) end
 --- Creates a new Camera2D with the given viewport dimensions.
 ---@param vw any
 ---@param vh any
+---@return Camera2D
 function lurek.camera.new(vw, vh) end
 
 ---@param vw? any (optional)
@@ -4047,6 +4048,10 @@ function lurek.data.getPackedSize(fmt, vals) end
 ---@return string
 function lurek.data.hash(algo_str, raw_data) end
 
+--- Instantiates a raw byte data container object.
+---@param value any
+function lurek.data.newByteData(value) end
+
 --- Creates a read-only windowed view into a byte string.
 ---@param raw any
 ---@param offset? any (optional)
@@ -4373,9 +4378,9 @@ function DataFrame:setValue(row, col, val) end
 
 --- Returns rows from start to end (1-based, inclusive).
 ---@param start any
----@param end any
+---@param end_ any
 ---@return DataFrame
-function DataFrame:slice(start, end) end
+function DataFrame:slice(start, end_) end
 
 --- Sorts by column, returns a new DataFrame.
 ---@param col any
@@ -12090,9 +12095,9 @@ function ParticleSystem:setBounds(xmin, xmax, ymin, ymax, restitution) end
 function ParticleSystem:setBufferSize(n) end
 
 --- Sets color keyframes. Each arg is a table {r, g, b, a}.
----@param colors any
+---@param ... table
 ---@return nil
-function ParticleSystem:setColors(colors) end
+function ParticleSystem:setColors(...) end
 
 --- Sets a Lua function that returns (offset_x, offset_y) for each newly spawned
 ---@param cb any
@@ -12206,9 +12211,9 @@ function ParticleSystem:setShape(shape) end
 function ParticleSystem:setSizeVariation(v) end
 
 --- Sets size keyframes (varargs: each number is one keyframe).
----@param sizes any
+---@param ... number
 ---@return nil
-function ParticleSystem:setSizes(sizes) end
+function ParticleSystem:setSizes(...) end
 
 --- Sets min/max initial speed.
 ---@param min any
@@ -12335,9 +12340,9 @@ function Trail:setTailColor(r, g, b, a) end
 
 --- Sets the start and end width of the trail ribbon.
 ---@param start any
----@param end? any (optional)
+---@param end_? any (optional)
 ---@return nil
-function Trail:setWidth(start, end) end
+function Trail:setWidth(start, end_) end
 
 --- Ages trail points and removes expired ones.
 ---@param dt any
@@ -16669,8 +16674,11 @@ function lurek.render.isLayerVisible(name) end
 function lurek.render.isWireframe() end
 
 --- Draws a line between two points.
----@param args any
-function lurek.render.line(args) end
+---@param x1 number
+---@param y1 number
+---@param x2 number
+---@param y2 number
+function lurek.render.line(x1, y1, x2, y2) end
 
 --- Creates an off-screen render canvas.
 ---@param width any
@@ -16746,8 +16754,10 @@ function lurek.render.origin() end
 function lurek.render.points(args) end
 
 --- Draws a polygon from a list of vertices.
----@param args any
-function lurek.render.polygon(args) end
+---@param mode string
+---@param ... number
+---@return nil
+function lurek.render.polygon(mode, ...) end
 
 --- Pops the transform from the stack.
 function lurek.render.pop() end
@@ -20809,7 +20819,7 @@ function List_Box:setSelectedIndex(index) end
 
 --- Adds MenuBar-specific methods.
 ---@class Menu_Bar
-local Menu_Bar = {}
+Menu_Bar = {}
 
 --- Adds a menu entry to this Menu_Bar widget.
 ---@param menu_idx any
@@ -20831,7 +20841,7 @@ function Menu_Bar:removeMenu(menu_idx) end
 
 --- Adds MenuItem-specific methods.
 ---@class Menu_Item
-local Menu_Item = {}
+Menu_Item = {}
 
 --- Adds a sub item entry to this Menu_Item widget.
 ---@param child_idx any
@@ -20876,7 +20886,7 @@ function Menu_Item:setText(text) end
 
 --- Adds NinePatch-specific methods.
 ---@class Nine_Patch
-local Nine_Patch = {}
+Nine_Patch = {}
 
 --- Returns the image dimensions of this Nine_Patch widget.
 ---@return integer
@@ -20906,7 +20916,7 @@ function Nine_Patch:setInsets(left, top, right, bottom) end
 
 --- Adds Panel-specific methods.
 ---@class Panel
-local Panel = {}
+Panel = {}
 
 --- Returns the title of this Panel widget.
 ---@return string
@@ -20924,7 +20934,7 @@ function Panel:setTitle(title) end
 
 --- Lua wrapper for a pie chart renderer.
 ---@class PieChart
-local PieChart = {}
+PieChart = {}
 
 --- Adds a labelled pie segment.
 ---@param label any
@@ -20942,7 +20952,7 @@ function PieChart:drawToImage(target) end
 
 --- Adds ProgressBar-specific methods to a widget table.
 ---@class Progress_Bar
-local Progress_Bar = {}
+Progress_Bar = {}
 
 --- Returns the max of this Progress_Bar widget.
 ---@return number
@@ -20973,7 +20983,7 @@ function Progress_Bar:setValue(v) end
 
 --- Adds RadioButton-specific methods.
 ---@class Radio_Button
-local Radio_Button = {}
+Radio_Button = {}
 
 --- Returns the group of this Radio_Button widget.
 ---@return string
@@ -21009,7 +21019,7 @@ function Radio_Button:setText(text) end
 
 --- Lua wrapper for a scatter plot renderer.
 ---@class ScatterPlot
-local ScatterPlot = {}
+ScatterPlot = {}
 
 --- Adds a named data series.
 ---@param name any
@@ -21039,7 +21049,7 @@ function ScatterPlot:setYRange(mn, mx) end
 
 --- Adds ScrollBar-specific methods.
 ---@class Scroll_Bar
-local Scroll_Bar = {}
+Scroll_Bar = {}
 
 --- Returns the content size of this Scroll_Bar widget.
 ---@return number
@@ -21079,7 +21089,7 @@ function Scroll_Bar:setViewSize(v) end
 
 --- Adds ScrollPanel-specific methods.
 ---@class Scroll_Panel
-local Scroll_Panel = {}
+Scroll_Panel = {}
 
 --- Returns the content size of this Scroll_Panel widget.
 ---@return number
@@ -21116,7 +21126,7 @@ function Scroll_Panel:setScrollSpeed(speed) end
 
 --- Adds Separator-specific methods.
 ---@class Separator
-local Separator = {}
+Separator = {}
 
 --- Returns the thickness of this Separator widget.
 ---@return number
@@ -21138,7 +21148,7 @@ function Separator:setVertical(v) end
 
 --- Adds Slider-specific methods to a widget table.
 ---@class Slider
-local Slider = {}
+Slider = {}
 
 --- Returns the max of this Slider widget.
 ---@return number
@@ -21170,7 +21180,7 @@ function Slider:setValue(v) end
 
 --- Adds SpinBox-specific methods to a widget table.
 ---@class Spin_Box
-local Spin_Box = {}
+Spin_Box = {}
 
 --- Decrements the value by one step.
 ---@return nil
@@ -21202,7 +21212,7 @@ function Spin_Box:setValue(v) end
 
 --- Adds SplitPanel-specific methods.
 ---@class Split_Panel
-local Split_Panel = {}
+Split_Panel = {}
 
 --- Returns the first child of this Split_Panel widget.
 ---@return nil
@@ -21251,7 +21261,7 @@ function Split_Panel:setSplitPosition(v) end
 
 --- Adds StatusBar-specific methods.
 ---@class Status_Bar
-local Status_Bar = {}
+Status_Bar = {}
 
 --- Adds a section entry to this Status_Bar widget.
 ---@param text any
@@ -21287,7 +21297,7 @@ function Status_Bar:setSectionWidget(section_idx, widget) end
 
 --- Adds Switch-specific methods to a widget table.
 ---@class Switch
-local Switch = {}
+Switch = {}
 
 --- Returns the on/off state of this Switch widget.
 ---@return boolean
@@ -21304,7 +21314,7 @@ function Switch:toggle() end
 
 --- Adds TabBar-specific methods (1-based indices in Lua).
 ---@class Tab_Bar
-local Tab_Bar = {}
+Tab_Bar = {}
 
 --- Adds a tab entry to this Tab_Bar widget.
 ---@param label any
@@ -21336,7 +21346,7 @@ function Tab_Bar:setActiveTab(index) end
 
 --- Adds TextInput-specific methods to a widget table.
 ---@class Text_Input
-local Text_Input = {}
+Text_Input = {}
 
 --- Returns the cursor position of this Text_Input widget.
 ---@return integer
@@ -21371,7 +21381,7 @@ function Text_Input:setText(text) end
 
 --- Lua-side wrapper around a GUI [`Theme`].
 ---@class Theme
-local Theme = {}
+Theme = {}
 
 --- Sets a style for a (widget_type, state) pair.
 ---@param widget_type any
@@ -21382,7 +21392,7 @@ function Theme:setStyle(widget_type, state, style_table) end
 
 --- Adds Toast-specific methods.
 ---@class Toast
-local Toast = {}
+Toast = {}
 
 --- Returns the duration of this Toast widget.
 ---@return number
@@ -21412,7 +21422,7 @@ function Toast:setMessage(msg) end
 
 --- Adds Toolbar-specific methods.
 ---@class Toolbar
-local Toolbar = {}
+Toolbar = {}
 
 --- Adds a button entry to this Toolbar widget.
 ---@param id any
@@ -21462,7 +21472,7 @@ function Toolbar:setOrientation(v) end
 
 --- Adds TooltipPanel-specific methods.
 ---@class Tooltip_Panel
-local Tooltip_Panel = {}
+Tooltip_Panel = {}
 
 --- Returns the delay of this Tooltip_Panel widget.
 ---@return number
@@ -21493,7 +21503,7 @@ function Tooltip_Panel:setText(text) end
 
 --- Adds TreeView-specific methods (1-based indices in Lua).
 ---@class Tree_View
-local Tree_View = {}
+Tree_View = {}
 
 --- Adds a node entry to this Tree_View widget.
 ---@param text any

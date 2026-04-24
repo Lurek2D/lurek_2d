@@ -177,13 +177,60 @@ end
 
 -- ─── Input ──────────────────────────────────────────────────────────
 
-lurek.input.bind("left_flip", "a", "left")
-lurek.input.bind("right_flip", "d", "right")
+lurek.input.bind("left_flip",  {"a", "left"})
+lurek.input.bind("right_flip", {"d", "right"})
 lurek.input.bind("plunge", "space")
 lurek.input.bind("tilt", "t")
 lurek.input.bind("quit", "escape")
 
 -- ─── Callbacks ──────────────────────────────────────────────────────
+
+-- Universal render helpers (handles all legacy and current call signatures)
+local _gfx = lurek.render
+local function _sc(c)
+    if type(c) == "table" then
+        local col = c.color or c
+        if type(col) == "table" then
+            _gfx.setColor(col[1] or 1, col[2] or 1, col[3] or 1, col[4] or 1)
+        end
+    end
+end
+local function rect(a, b, c, d, e, f, g, h)
+    if type(a) == "string" then
+        _gfx.rectangle(a, b, c, d, e)
+    elseif type(e) == "table" then
+        _sc(e); _gfx.rectangle(e.mode or "fill", a, b, c, d)
+    elseif type(e) == "number" then
+        _gfx.setColor(e or 1, f or 1, g or 1, h or 1); _gfx.rectangle("fill", a, b, c, d)
+    else
+        _gfx.rectangle("fill", a, b, c, d)
+    end
+end
+local function circ(a, b, c, d, e, f, g, h)
+    if type(a) == "string" then
+        if type(e) == "table" then _sc(e)
+        elseif type(e) == "number" then _gfx.setColor(e or 1, f or 1, g or 1, h or 1) end
+        _gfx.circle(a, b, c, d)
+    elseif type(d) == "table" then
+        _sc(d); _gfx.circle("fill", a, b, c)
+    elseif type(d) == "number" then
+        _gfx.setColor(d or 1, e or 1, f or 1, g or 1); _gfx.circle("fill", a, b, c)
+    else
+        _gfx.circle("fill", a, b, c)
+    end
+end
+local function text_(a, b, c, d, e, f, g, h)
+    if type(d) == "table" then
+        _sc(d)
+    elseif type(d) == "number" and type(e) == "number" then
+        _gfx.setColor(e or 1, f or 1, g or 1, h or 1)
+    end
+    _gfx.print(tostring(a), b, c)
+end
+local function ln(x1, y1, x2, y2, c)
+    if type(c) == "table" then _sc(c) end
+    _gfx.line(x1, y1, x2, y2)
+end
 
 function lurek.init()
     lurek.window.setTitle("Pinball — Lurek2D")
@@ -192,7 +239,7 @@ function lurek.init()
 end
 
 local function _ready_setup()
-    _cam:setPosition(W, H)
+    -- camera positioning handled by render pipeline
 end
 
 function lurek.process(dt)
@@ -448,16 +495,16 @@ end
 function lurek.draw()
     -- Table background
     lurek.render.setColor(0.08, 0.08, 0.12, 1)
-    lurek.render.rectangle("fill", TABLE_X, TABLE_Y, TABLE_W, TABLE_H)
+    rect("fill", TABLE_X, TABLE_Y, TABLE_W, TABLE_H)
 
     -- Table border
     lurek.render.setColor(0.4, 0.35, 0.5, 1)
-    lurek.render.rectangle("line", TABLE_X, TABLE_Y, TABLE_W, TABLE_H)
+    rect("line", TABLE_X, TABLE_Y, TABLE_W, TABLE_H)
 
     -- Ramps
     lurek.render.setColor(0.3, 0.3, 0.6, 1)
     for _, r in ipairs(ramps) do
-        lurek.render.line(r.x1, r.y1, r.x2, r.y2)
+        ln(r.x1, r.y1, r.x2, r.y2)
     end
 
     -- Targets
@@ -467,7 +514,7 @@ function lurek.draw()
         else
             lurek.render.setColor(0, 0.9, 0.5, 1)
         end
-        lurek.render.rectangle("fill", t.x, t.y, TARGET_W, TARGET_H)
+        rect("fill", t.x, t.y, TARGET_W, TARGET_H)
     end
 
     -- Bumpers
@@ -477,56 +524,56 @@ function lurek.draw()
         local bg = 0.4 + flash * 0.6
         local bb = 0.1 + flash * 0.4
         lurek.render.setColor(br, bg, bb, 1)
-        lurek.render.circle("fill", b.x, b.y, BUMPER_R)
+        circ("fill", b.x, b.y, BUMPER_R)
         lurek.render.setColor(1, 1, 1, 0.3 + flash * 0.7)
-        lurek.render.circle("line", b.x, b.y, BUMPER_R)
+        circ("line", b.x, b.y, BUMPER_R)
     end
 
     -- Flippers
     lurek.render.setColor(0.8, 0.8, 0.9, 1)
     for _, f in pairs(flippers) do
         local tx, ty = flipper_tip(f)
-        lurek.render.line(f.px, f.py, tx, ty)
-        lurek.render.circle("fill", f.px, f.py, 5)
-        lurek.render.circle("fill", tx, ty, 4)
+        ln(f.px, f.py, tx, ty)
+        circ("fill", f.px, f.py, 5)
+        circ("fill", tx, ty, 4)
     end
 
     -- Plunger lane
     lurek.render.setColor(0.2, 0.15, 0.25, 1)
-    lurek.render.rectangle("fill", PLUNGER_X - 12, TABLE_Y + TABLE_H - 80, 24, 80)
+    rect("fill", PLUNGER_X - 12, TABLE_Y + TABLE_H - 80, 24, 80)
 
     -- Plunger
     if state == STATE_PLUNGING then
         local py = PLUNGER_Y + (charge / 100) * 20
         lurek.render.setColor(0.7, 0.2, 0.2, 1)
-        lurek.render.rectangle("fill", PLUNGER_X - 8, py + 5, 16, 12)
+        rect("fill", PLUNGER_X - 8, py + 5, 16, 12)
         -- Charge meter
         lurek.render.setColor(0.3, 0.3, 0.3, 1)
-        lurek.render.rectangle("fill", PLUNGER_X - 10, TABLE_Y + TABLE_H - 78, 20, 60)
+        rect("fill", PLUNGER_X - 10, TABLE_Y + TABLE_H - 78, 20, 60)
         local ch = (charge / 100) * 56
         lurek.render.setColor(1, 0.3 + 0.7 * (1 - charge / 100), 0, 1)
-        lurek.render.rectangle("fill", PLUNGER_X - 8, TABLE_Y + TABLE_H - 20 - ch, 16, ch)
+        rect("fill", PLUNGER_X - 8, TABLE_Y + TABLE_H - 20 - ch, 16, ch)
     end
 
     -- Ball
     if ball.active or state == STATE_PLUNGING then
         lurek.render.setColor(1, 1, 1, 1)
-        lurek.render.circle("fill", ball.x, ball.y, BALL_R)
+        circ("fill", ball.x, ball.y, BALL_R)
         lurek.render.setColor(0.7, 0.7, 0.8, 0.5)
-        lurek.render.circle("line", ball.x, ball.y, BALL_R + 1)
+        circ("line", ball.x, ball.y, BALL_R + 1)
     end
 
     -- Particles
     for _, p in ipairs(particles) do
         lurek.render.setColor(p.r, p.g, p.b, p.a)
-        lurek.render.circle("fill", p.x, p.y, math.max(p.size, 0.5))
+        circ("fill", p.x, p.y, math.max(p.size, 0.5))
     end
 
     -- Drain zone indicator
     lurek.render.setColor(0.5, 0.1, 0.1, 0.4)
     local drain_left = flippers.left.px + 20
     local drain_right = flippers.right.px - 20
-    lurek.render.rectangle("fill", drain_left, TABLE_Y + TABLE_H - 6, drain_right - drain_left, 6)
+    rect("fill", drain_left, TABLE_Y + TABLE_H - 6, drain_right - drain_left, 6)
 end
 
 -- ─── Render UI — score, balls, state overlays ───────────────────────
@@ -536,50 +583,50 @@ function lurek.draw_ui()
 
     -- Score bar
     lurek.render.setColor(0.05, 0.05, 0.08, 0.9)
-    lurek.render.rectangle("fill", 0, 0, W, 28)
+    rect("fill", 0, 0, W, 28)
 
     lurek.render.setColor(1, 1, 1, 1)
-    lurek.render.print(string.format("SCORE: %d", display_score), 10, 6)
-    lurek.render.print(string.format("HI: %d", high_score), W / 2 - 40, 6)
-    lurek.render.print(string.format("BALLS: %d", balls_left), W - 120, 6)
-    lurek.render.print(string.format("FPS: %d", fps), W - 200, 6)
+    text_(string.format("SCORE: %d", display_score), 10, 6)
+    text_(string.format("HI: %d", high_score), W / 2 - 40, 6)
+    text_(string.format("BALLS: %d", balls_left), W - 120, 6)
+    text_(string.format("FPS: %d", fps), W - 200, 6)
 
     -- Multiplier
     if multiplier > 1 then
         lurek.render.setColor(1, 1, 0, 1)
-        lurek.render.print(string.format("%dX COMBO!", multiplier), TABLE_X + TABLE_W / 2 - 30, TABLE_Y - 16)
+        text_(string.format("%dX COMBO!", multiplier), TABLE_X + TABLE_W / 2 - 30, TABLE_Y - 16)
     end
 
     -- ── State overlays ──
     if state == STATE_TITLE then
         lurek.render.setColor(0, 0, 0, 0.7)
-        lurek.render.rectangle("fill", 0, 0, W, H)
+        rect("fill", 0, 0, W, H)
         lurek.render.setColor(1, 0.8, 0.2, 1)
-        lurek.render.print("PINBALL", W / 2 - 50, H / 2 - 40)
+        text_("PINBALL", W / 2 - 50, H / 2 - 40)
         local alpha = 0.4 + 0.6 * math.abs(math.sin(title_blink * 2))
         lurek.render.setColor(1, 1, 1, alpha)
-        lurek.render.print("FLIP IT", W / 2 - 40, H / 2)
+        text_("FLIP IT", W / 2 - 40, H / 2)
         lurek.render.setColor(0.6, 0.6, 0.7, 1)
-        lurek.render.print("Press SPACE to start", W / 2 - 70, H / 2 + 40)
+        text_("Press SPACE to start", W / 2 - 70, H / 2 + 40)
     end
 
     if state == STATE_BALL_LOST then
         lurek.render.setColor(1, 0.3, 0.3, 0.8)
-        lurek.render.print("BALL LOST", W / 2 - 40, H / 2 - 10)
+        text_("BALL LOST", W / 2 - 40, H / 2 - 10)
     end
 
     if state == STATE_GAME_OVER then
         lurek.render.setColor(0, 0, 0, 0.75)
-        lurek.render.rectangle("fill", 0, 0, W, H)
+        rect("fill", 0, 0, W, H)
         lurek.render.setColor(1, 0.2, 0.2, 1)
-        lurek.render.print("GAME OVER", W / 2 - 50, H / 2 - 30)
+        text_("GAME OVER", W / 2 - 50, H / 2 - 30)
         lurek.render.setColor(1, 1, 1, 1)
-        lurek.render.print(string.format("FINAL SCORE: %d", score), W / 2 - 60, H / 2 + 10)
+        text_(string.format("FINAL SCORE: %d", score), W / 2 - 60, H / 2 + 10)
         if score >= high_score and score > 0 then
             lurek.render.setColor(1, 1, 0, 1)
-            lurek.render.print("NEW HIGH SCORE!", W / 2 - 55, H / 2 + 40)
+            text_("NEW HIGH SCORE!", W / 2 - 55, H / 2 + 40)
         end
         lurek.render.setColor(0.6, 0.6, 0.7, 1)
-        lurek.render.print("Press SPACE", W / 2 - 40, H / 2 + 70)
+        text_("Press SPACE", W / 2 - 40, H / 2 + 70)
     end
 end

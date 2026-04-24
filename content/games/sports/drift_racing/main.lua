@@ -1,3 +1,50 @@
+-- Universal render helpers (handles all legacy and current call signatures)
+local _gfx = lurek.render
+local function _sc(c)
+    if type(c) == "table" then
+        local col = c.color or c
+        if type(col) == "table" then
+            _gfx.setColor(col[1] or 1, col[2] or 1, col[3] or 1, col[4] or 1)
+        end
+    end
+end
+local function rect(a, b, c, d, e, f, g, h)
+    if type(a) == "string" then
+        _gfx.rectangle(a, b, c, d, e)
+    elseif type(e) == "table" then
+        _sc(e); _gfx.rectangle(e.mode or "fill", a, b, c, d)
+    elseif type(e) == "number" then
+        _gfx.setColor(e or 1, f or 1, g or 1, h or 1); _gfx.rectangle("fill", a, b, c, d)
+    else
+        _gfx.rectangle("fill", a, b, c, d)
+    end
+end
+local function circ(a, b, c, d, e, f, g, h)
+    if type(a) == "string" then
+        if type(e) == "table" then _sc(e)
+        elseif type(e) == "number" then _gfx.setColor(e or 1, f or 1, g or 1, h or 1) end
+        _gfx.circle(a, b, c, d)
+    elseif type(d) == "table" then
+        _sc(d); _gfx.circle("fill", a, b, c)
+    elseif type(d) == "number" then
+        _gfx.setColor(d or 1, e or 1, f or 1, g or 1); _gfx.circle("fill", a, b, c)
+    else
+        _gfx.circle("fill", a, b, c)
+    end
+end
+local function text_(a, b, c, d, e, f, g, h)
+    if type(d) == "table" then
+        _sc(d)
+    elseif type(d) == "number" and type(e) == "number" then
+        _gfx.setColor(e or 1, f or 1, g or 1, h or 1)
+    end
+    _gfx.print(tostring(a), b, c)
+end
+local function ln(x1, y1, x2, y2, c)
+    if type(c) == "table" then _sc(c) end
+    _gfx.line(x1, y1, x2, y2)
+end
+
 --[[
 
   Drift Racing — Lurek2D
@@ -449,10 +496,10 @@ local function draw_road_segment(ax, ay, bx, by)
     local len = math.sqrt(dx * dx + dy * dy)
     if len == 0 then return end
     local nx, ny = -dy / len * ROAD_WIDTH, dx / len * ROAD_WIDTH
-    lurek.render.drawq(
+    lurek.render.setColor(0.35, 0.35, 0.35, 1)
+    lurek.render.polygon("fill",
         ax + nx, ay + ny, bx + nx, by + ny,
-        bx - nx, by - ny, ax - nx, ay - ny,
-        0.35, 0.35, 0.35, 1
+        bx - nx, by - ny, ax - nx, ay - ny
     )
 end
 
@@ -461,10 +508,10 @@ local function draw_car(x, y, angle, w, h, r, g, b)
     lurek.render.translate(x, y)
     lurek.render.rotate(angle)
     lurek.render.setColor(r, g, b, 1)
-    lurek.render.rectangle("fill", -w / 2, -h / 2, w, h)
+    rect("fill", -w / 2, -h / 2, w, h)
     -- Windshield
     lurek.render.setColor(0.6, 0.8, 1, 0.8)
-    lurek.render.rectangle("fill", w * 0.1, -h * 0.3, w * 0.25, h * 0.6)
+    rect("fill", w * 0.1, -h * 0.3, w * 0.25, h * 0.6)
     lurek.render.pop()
 end
 
@@ -550,7 +597,7 @@ function lurek.draw()
 
         -- Draw grass background
         lurek.render.setColor(0.2, 0.45, 0.15, 1)
-        lurek.render.rectangle("fill", -200, -200, SCREEN_W * 2 + 400, SCREEN_H * 2 + 400)
+        rect("fill", -200, -200, SCREEN_W * 2 + 400, SCREEN_H * 2 + 400)
 
         -- Draw road segments
         for i = 1, n do
@@ -560,19 +607,19 @@ function lurek.draw()
 
         -- Draw start/finish line
         lurek.render.setColor(1, 1, 1, 0.8)
-        lurek.render.rectangle("fill", wp[1].x - 4, wp[1].y - ROAD_WIDTH, 8, ROAD_WIDTH * 2)
+        rect("fill", wp[1].x - 4, wp[1].y - ROAD_WIDTH, 8, ROAD_WIDTH * 2)
 
         -- Draw tire marks
         for _, mark in ipairs(tire_marks) do
             lurek.render.setColor(0.15, 0.15, 0.15, mark.alpha)
-            lurek.render.circle("fill", mark.x, mark.y, 2)
+            circ("fill", mark.x, mark.y, 2)
         end
 
         -- Draw boost pads
         for _, pad in ipairs(boost_pads) do
             if pad.active then
                 lurek.render.setColor(1, 0.9, 0.1, 0.9)
-                lurek.render.rectangle("fill", pad.x - BOOST_PAD_SIZE / 2, pad.y - BOOST_PAD_SIZE / 2, BOOST_PAD_SIZE, BOOST_PAD_SIZE)
+                rect("fill", pad.x - BOOST_PAD_SIZE / 2, pad.y - BOOST_PAD_SIZE / 2, BOOST_PAD_SIZE, BOOST_PAD_SIZE)
             end
         end
 
@@ -580,7 +627,7 @@ function lurek.draw()
         local next_cp = (player.checkpoint % n) + 1
         local cp = wp[next_cp]
         lurek.render.setColor(0.3, 1, 0.3, 0.3 + 0.2 * math.sin(race_timer * 4))
-        lurek.render.circle("line", cp.x, cp.y, CHECKPOINT_RADIUS)
+        circ("line", cp.x, cp.y, CHECKPOINT_RADIUS)
 
         -- Draw AI cars
         for _, ai in ipairs(ai_cars) do
@@ -594,11 +641,11 @@ function lurek.draw()
         for _, p in ipairs(particles) do
             lurek.render.setColor(p.r, p.g, p.b, p.a)
             if p.kind == "smoke" then
-                lurek.render.circle("fill", p.x, p.y, 3 + (1 - p.life / p.max_life) * 4)
+                circ("fill", p.x, p.y, 3 + (1 - p.life / p.max_life) * 4)
             elseif p.kind == "boost" then
-                lurek.render.circle("fill", p.x, p.y, 4)
+                circ("fill", p.x, p.y, 4)
             elseif p.kind == "flash" then
-                lurek.render.circle("fill", p.x, p.y, 2 + p.life * 6)
+                circ("fill", p.x, p.y, 2 + p.life * 6)
             end
         end
 
@@ -609,41 +656,41 @@ end
 function lurek.draw_ui()
     if state == "TITLE" then
         lurek.render.setColor(1, 0.85, 0.1, 1)
-        lurek.render.print("DRIFT RACING", SCREEN_W / 2 - 120, SCREEN_H / 2 - 60, 0, 3, 3)
+        text_("DRIFT RACING", SCREEN_W / 2 - 120, SCREEN_H / 2 - 60, 0, 3, 3)
         lurek.render.setColor(0.8, 0.8, 0.8, 0.7 + 0.3 * math.sin(lurek.timer.getTime() * 3))
-        lurek.render.print("SLIDE TO WIN", SCREEN_W / 2 - 80, SCREEN_H / 2 + 10, 0, 1.5, 1.5)
+        text_("SLIDE TO WIN", SCREEN_W / 2 - 80, SCREEN_H / 2 + 10, 0, 1.5, 1.5)
         lurek.render.setColor(0.6, 0.6, 0.6, 1)
-        lurek.render.print("Press W to start", SCREEN_W / 2 - 60, SCREEN_H / 2 + 60)
+        text_("Press W to start", SCREEN_W / 2 - 60, SCREEN_H / 2 + 60)
 
     elseif state == "TRACK_SELECT" then
         lurek.render.setColor(1, 1, 1, 1)
-        lurek.render.print("SELECT TRACK", SCREEN_W / 2 - 100, 80, 0, 2.5, 2.5)
+        text_("SELECT TRACK", SCREEN_W / 2 - 100, 80, 0, 2.5, 2.5)
         for i, track in ipairs(tracks) do
             local y = 180 + (i - 1) * 80
             lurek.render.setColor(0.9, 0.9, 0.3, 1)
-            lurek.render.print(string.format("[%d] %s", i, track.name), SCREEN_W / 2 - 100, y, 0, 1.5, 1.5)
+            text_(string.format("[%d] %s", i, track.name), SCREEN_W / 2 - 100, y, 0, 1.5, 1.5)
             lurek.render.setColor(0.6, 0.6, 0.6, 1)
-            lurek.render.print("Difficulty: " .. track.difficulty, SCREEN_W / 2 - 80, y + 30)
+            text_("Difficulty: " .. track.difficulty, SCREEN_W / 2 - 80, y + 30)
         end
 
     elseif state == "RACING" then
         -- Speed display (tweened)
         lurek.render.setColor(1, 1, 1, 1)
-        lurek.render.print(string.format("Speed: %d", math.floor(tween_speed_display)), 20, 20)
+        text_(string.format("Speed: %d", math.floor(tween_speed_display)), 20, 20)
 
         -- Lap counter (with scale tween)
         local lap_text = string.format("Lap %d / %d", math.min(player.lap + 1, TOTAL_LAPS), TOTAL_LAPS)
         lurek.render.setColor(1, 1, 0.3, 1)
-        lurek.render.print(lap_text, 20, 50, 0, tween_lap_scale, tween_lap_scale)
+        text_(lap_text, 20, 50, 0, tween_lap_scale, tween_lap_scale)
 
         -- Race timer
         lurek.render.setColor(1, 1, 1, 0.9)
-        lurek.render.print(string.format("Time: %.1fs", race_timer), SCREEN_W - 160, 20)
+        text_(string.format("Time: %.1fs", race_timer), SCREEN_W - 160, 20)
 
         -- Best lap
         if best_lap < math.huge then
             lurek.render.setColor(0.3, 1, 0.3, 1)
-            lurek.render.print(string.format("Best Lap: %.1fs", best_lap), SCREEN_W - 180, 45)
+            text_(string.format("Best Lap: %.1fs", best_lap), SCREEN_W - 180, 45)
         end
 
         -- Position (tweened alpha)
@@ -652,50 +699,50 @@ function lurek.draw_ui()
         local pos_colors = {{1, 0.85, 0}, {0.75, 0.75, 0.75}, {0.8, 0.5, 0.2}}
         local pc = pos_colors[pos] or {1, 1, 1}
         lurek.render.setColor(pc[1], pc[2], pc[3], tween_pos_alpha)
-        lurek.render.print(pos_labels[pos] or tostring(pos), SCREEN_W / 2 - 20, 15, 0, 2, 2)
+        text_(pos_labels[pos] or tostring(pos), SCREEN_W / 2 - 20, 15, 0, 2, 2)
 
         -- Drift score
         if player.is_drifting then
             lurek.render.setColor(1, 0.5, 0, 0.9)
-            lurek.render.print(string.format("DRIFT! +%d", math.floor(player.drift_score)), SCREEN_W / 2 - 50, 55, 0, 1.3, 1.3)
+            text_(string.format("DRIFT! +%d", math.floor(player.drift_score)), SCREEN_W / 2 - 50, 55, 0, 1.3, 1.3)
         else
             lurek.render.setColor(0.7, 0.7, 0.7, 0.6)
-            lurek.render.print(string.format("Drift: %d pts", math.floor(player.drift_score)), 20, 80)
+            text_(string.format("Drift: %d pts", math.floor(player.drift_score)), 20, 80)
         end
 
         -- Boost indicator
         if player.boost_fuel > 0 then
             lurek.render.setColor(1, 0.9, 0.1, 1)
-            lurek.render.print(string.format("Boost: %d", player.boost_fuel), 20, 105)
+            text_(string.format("Boost: %d", player.boost_fuel), 20, 105)
         end
         if player.boost_active then
             lurek.render.setColor(1, 0.4, 0, 0.8 + 0.2 * math.sin(race_timer * 10))
-            lurek.render.print("BOOST!", SCREEN_W / 2 - 30, 80, 0, 1.5, 1.5)
+            text_("BOOST!", SCREEN_W / 2 - 30, 80, 0, 1.5, 1.5)
         end
 
     elseif state == "RESULTS" then
         lurek.render.setColor(1, 1, 1, 1)
-        lurek.render.print("RACE COMPLETE!", SCREEN_W / 2 - 120, 80, 0, 2.5, 2.5)
+        text_("RACE COMPLETE!", SCREEN_W / 2 - 120, 80, 0, 2.5, 2.5)
 
         local pos_labels = {"1st", "2nd", "3rd"}
         local pos_colors = {{1, 0.85, 0}, {0.75, 0.75, 0.75}, {0.8, 0.5, 0.2}}
         local pc = pos_colors[results.position] or {1, 1, 1}
 
         lurek.render.setColor(pc[1], pc[2], pc[3], 1)
-        lurek.render.print(string.format("Position: %s", pos_labels[results.position] or "???"), SCREEN_W / 2 - 100, 180, 0, 2, 2)
+        text_(string.format("Position: %s", pos_labels[results.position] or "???"), SCREEN_W / 2 - 100, 180, 0, 2, 2)
 
         lurek.render.setColor(1, 1, 1, 1)
-        lurek.render.print(string.format("Total Time: %.1fs", results.total_time), SCREEN_W / 2 - 80, 250)
+        text_(string.format("Total Time: %.1fs", results.total_time), SCREEN_W / 2 - 80, 250)
 
         if results.best_lap < math.huge then
             lurek.render.setColor(0.3, 1, 0.3, 1)
-            lurek.render.print(string.format("Best Lap: %.1fs", results.best_lap), SCREEN_W / 2 - 80, 290)
+            text_(string.format("Best Lap: %.1fs", results.best_lap), SCREEN_W / 2 - 80, 290)
         end
 
         lurek.render.setColor(1, 0.5, 0, 1)
-        lurek.render.print(string.format("Drift Score: %d pts", results.drift_score), SCREEN_W / 2 - 80, 330)
+        text_(string.format("Drift Score: %d pts", results.drift_score), SCREEN_W / 2 - 80, 330)
 
         lurek.render.setColor(0.6, 0.6, 0.6, 0.7 + 0.3 * math.sin(lurek.timer.getTime() * 3))
-        lurek.render.print("Press W for track select", SCREEN_W / 2 - 90, 420)
+        text_("Press W for track select", SCREEN_W / 2 - 90, 420)
     end
 end

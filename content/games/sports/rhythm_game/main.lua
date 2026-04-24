@@ -85,7 +85,7 @@ local SONGS = {
 -- ---------------------------------------------------------------------------
 -- Game state
 -- ---------------------------------------------------------------------------
-local camera = nil
+local camera = nil  ---@type Camera2D
 local title_timer = 0
 local selected_song = 1
 local song_speed = 200
@@ -95,10 +95,12 @@ local chart = {}
 local song_time = 0
 local score = 0
 local display_score = 0
+local _score_tbl   = { val = 0 }
 local combo = 0
 local max_combo = 0
 local life = LIFE_MAX
 local display_life = LIFE_MAX
+local _life_tbl    = { val = LIFE_MAX }
 local perfects = 0
 local goods = 0
 local misses = 0
@@ -113,8 +115,8 @@ local hit_particles = nil
 local combo_particles = nil
 
 -- Tweens
-local score_tween = nil
-local life_tween = nil
+local score_tween = nil  ---@type any  -- kept for nil-guard; tweens driven via _score_tbl
+local life_tween  = nil  ---@type any  -- kept for nil-guard; tweens driven via _life_tbl
 local hit_zone_pulse = 0
 
 -- Lane press state (for hold notes)
@@ -161,10 +163,12 @@ local function start_song(idx)
     song_time = 0
     score = 0
     display_score = 0
+    _score_tbl.val = 0
     combo = 0
     max_combo = 0
     life = LIFE_MAX
     display_life = LIFE_MAX
+    _life_tbl.val = LIFE_MAX
     perfects = 0
     goods = 0
     misses = 0
@@ -220,13 +224,14 @@ local function process_hit(lane)
 
         -- Combo milestone particles
         if combo > 0 and combo % 10 == 0 and combo_particles then
-            combo_particles:emit(W / 2, H / 2, 40)
+            combo_particles:setPosition(W / 2, H / 2)
+            combo_particles:emit(40)
         end
 
         -- Tweens
         if lurek.tween then
-            score_tween = lurek.tween.tween(0.3, { val = display_score }, { val = score }, "outQuad")
-            life_tween = lurek.tween.tween(0.3, { val = display_life }, { val = life }, "outQuad")
+            score_tween = lurek.tween.to(_score_tbl, { val = score }, 0.3, "outQuad")
+            life_tween  = lurek.tween.to(_life_tbl,  { val = life  }, 0.3, "outQuad")
         end
         hit_zone_pulse = 1.0
     else
@@ -235,7 +240,7 @@ local function process_hit(lane)
         combo = 0
         life = clamp(life - MISS_PENALTY, 0, LIFE_MAX)
         if lurek.tween then
-            life_tween = lurek.tween.tween(0.3, { val = display_life }, { val = life }, "outQuad")
+            life_tween = lurek.tween.to(_life_tbl, { val = life }, 0.3, "outQuad")
         end
     end
 end
@@ -243,6 +248,54 @@ end
 -- ---------------------------------------------------------------------------
 -- Engine callbacks
 -- ---------------------------------------------------------------------------
+
+-- Universal render helpers (handles all legacy and current call signatures)
+local _gfx = lurek.render
+local function _sc(c)
+    if type(c) == "table" then
+        local col = c.color or c
+        if type(col) == "table" then
+            _gfx.setColor(col[1] or 1, col[2] or 1, col[3] or 1, col[4] or 1)
+        end
+    end
+end
+local function rect(a, b, c, d, e, f, g, h, i)
+    if type(a) == "string" then
+        if type(f) == "number" then _gfx.setColor(f, g or 1, h or 1, i or 1) end
+        _gfx.rectangle(a, b, c, d, e)
+    elseif type(e) == "table" then
+        _sc(e); _gfx.rectangle(e.mode or "fill", a, b, c, d)
+    elseif type(e) == "number" then
+        _gfx.setColor(e or 1, f or 1, g or 1, h or 1); _gfx.rectangle("fill", a, b, c, d)
+    else
+        _gfx.rectangle("fill", a, b, c, d)
+    end
+end
+local function circ(a, b, c, d, e, f, g, h)
+    if type(a) == "string" then
+        if type(e) == "table" then _sc(e)
+        elseif type(e) == "number" then _gfx.setColor(e or 1, f or 1, g or 1, h or 1) end
+        _gfx.circle(a, b, c, d)
+    elseif type(d) == "table" then
+        _sc(d); _gfx.circle("fill", a, b, c)
+    elseif type(d) == "number" then
+        _gfx.setColor(d or 1, e or 1, f or 1, g or 1); _gfx.circle("fill", a, b, c)
+    else
+        _gfx.circle("fill", a, b, c)
+    end
+end
+local function text_(a, b, c, d, e, f, g, h)
+    if type(d) == "table" then
+        _sc(d)
+    elseif type(d) == "number" and type(e) == "number" then
+        _gfx.setColor(e or 1, f or 1, g or 1, h or 1)
+    end
+    _gfx.print(tostring(a), b, c)
+end
+local function ln(x1, y1, x2, y2, c)
+    if type(c) == "table" then _sc(c) end
+    _gfx.line(x1, y1, x2, y2)
+end
 
 function lurek.init()
     lurek.window.setTitle("Rhythm Game — Lurek2D")
@@ -267,14 +320,14 @@ function lurek.init()
         hit_particles:setColors({ { 1, 0.85, 0.2, 1 }, { 1, 0.5, 0.1, 0 } })
         hit_particles:setSpeed(80, 200)
         hit_particles:setParticleLifetime(0.3, 0.6)
-        hit_particles:setSize(4, 1)
+        hit_particles:setSizes(4, 1)
         hit_particles:setSpread(math.pi * 2)
 
         combo_particles = lurek.particle.newSystem({maxParticles=500})
         combo_particles:setColors({ { 1, 1, 1, 1 }, { 0.5, 0.8, 1, 0 } })
         combo_particles:setSpeed(100, 300)
         combo_particles:setParticleLifetime(0.5, 1.0)
-        combo_particles:setSize(6, 2)
+        combo_particles:setSizes(6, 2)
         combo_particles:setSpread(math.pi * 2)
     end
 end
@@ -404,7 +457,7 @@ function lurek.process(dt)
             combo = 0
             life = clamp(life - MISS_PENALTY, 0, LIFE_MAX)
             if lurek.tween then
-                life_tween = lurek.tween.tween(0.3, { val = display_life }, { val = life }, "outQuad")
+                life_tween = lurek.tween.to(_life_tbl, { val = life }, 0.3, "outQuad")
             end
         end
 
@@ -434,19 +487,9 @@ function lurek.process(dt)
         bg_pulse = clamp(bg_pulse + dt * 0.5, 0, 0.3)
     end
 
-    -- Update tweens
-    if score_tween then
-        score_tween:update(dt)
-        display_score = score_tween.subject.val
-    else
-        display_score = score
-    end
-    if life_tween then
-        life_tween:update(dt)
-        display_life = life_tween.subject.val
-    else
-        display_life = life
-    end
+    -- Update tweens (engine-driven; read directly from target tables)
+    display_score = _score_tbl.val
+    display_life  = _life_tbl.val
 
     -- Update particles
     if hit_particles then hit_particles:update(dt) end
@@ -476,24 +519,24 @@ function lurek.draw()
         local cx = W / 2
         -- Title text
         local alpha = clamp(math.sin(title_timer * 1.5) * 0.3 + 0.7, 0.4, 1)
-        lurek.render.print("RHYTHM GAME", cx - 120, 180, 48, 1, alpha, 0.3, alpha)
-        lurek.render.print("FEEL THE BEAT", cx - 90, 250, 24, 0.7, 0.5, 0.9, alpha)
-        lurek.render.print("Press ENTER to start", cx - 90, 400, 18, 0.6, 0.6, 0.6, 0.5 + math.sin(title_timer * 3) * 0.3)
+        text_("RHYTHM GAME", cx - 120, 180, 48, 1, alpha, 0.3, alpha)
+        text_("FEEL THE BEAT", cx - 90, 250, 24, 0.7, 0.5, 0.9, alpha)
+        text_("Press ENTER to start", cx - 90, 400, 18, 0.6, 0.6, 0.6, 0.5 + math.sin(title_timer * 3) * 0.3)
         return
     end
 
     if current_state == STATE_SONG_SELECT then
-        lurek.render.print("SELECT A SONG", W / 2 - 100, 80, 36, 0.9, 0.8, 1, 1)
+        text_("SELECT A SONG", W / 2 - 100, 80, 36, 0.9, 0.8, 1, 1)
         for i, song in ipairs(SONGS) do
             local yy = 180 + (i - 1) * 80
             local sel = (i == selected_song)
             local r, g, b = 0.5, 0.5, 0.5
             if sel then r, g, b = 1, 0.85, 0.2 end
             local arrow = sel and "> " or "  "
-            lurek.render.print(arrow .. song.name, W / 2 - 120, yy, 28, r, g, b, 1)
-            lurek.render.print(string.format("  %d notes  |  %dpx/s", #song.chart_fn(), song.speed), W / 2 - 100, yy + 32, 16, 0.5, 0.5, 0.6, 0.8)
+            text_(arrow .. song.name, W / 2 - 120, yy, 28, r, g, b, 1)
+            text_(string.format("  %d notes  |  %dpx/s", #song.chart_fn(), song.speed), W / 2 - 100, yy + 32, 16, 0.5, 0.5, 0.6, 0.8)
         end
-        lurek.render.print("Up/Down to select, Enter to play", W / 2 - 140, H - 60, 16, 0.4, 0.4, 0.5, 0.7)
+        text_("Up/Down to select, Enter to play", W / 2 - 140, H - 60, 16, 0.4, 0.4, 0.5, 0.7)
         return
     end
 
@@ -512,25 +555,25 @@ function lurek.draw()
         local lx = LANE_START_X + (i - 1) * (LANE_W + LANE_GAP)
         local c = LANE_COLORS[i]
         -- Lane background (dark)
-        lurek.render.rectangle("fill", lx, 0, LANE_W, H, c[1] * 0.1, c[2] * 0.1, c[3] * 0.1, 0.5)
+        rect("fill", lx, 0, LANE_W, H, c[1] * 0.1, c[2] * 0.1, c[3] * 0.1, 0.5)
         -- Lane glow
         if lane_glow[i] > 0.01 then
-            lurek.render.rectangle("fill", lx, 0, LANE_W, H, c[1], c[2], c[3], lane_glow[i] * 0.15)
+            rect("fill", lx, 0, LANE_W, H, c[1], c[2], c[3], lane_glow[i] * 0.15)
         end
     end
 
     -- Draw hit zone
     local hz_alpha = 0.6 + hit_zone_pulse * 0.4
-    lurek.render.rectangle("fill", LANE_START_X - 10, HIT_ZONE_Y - HIT_ZONE_H / 2, TOTAL_LANE_W + 20, HIT_ZONE_H, 1, 1, 1, hz_alpha * 0.3)
+    rect("fill", LANE_START_X - 10, HIT_ZONE_Y - HIT_ZONE_H / 2, TOTAL_LANE_W + 20, HIT_ZONE_H, 1, 1, 1, hz_alpha * 0.3)
     -- Per-lane hit zone highlights
     for i = 1, LANE_COUNT do
         local lx = LANE_START_X + (i - 1) * (LANE_W + LANE_GAP)
         local c = LANE_COLORS[i]
         if lane_held[i] then
-            lurek.render.rectangle("fill", lx, HIT_ZONE_Y - 20, LANE_W, 40, c[1], c[2], c[3], 0.4)
+            rect("fill", lx, HIT_ZONE_Y - 20, LANE_W, 40, c[1], c[2], c[3], 0.4)
         end
         if hit_flash[i] > 0 then
-            lurek.render.rectangle("fill", lx, HIT_ZONE_Y - 30, LANE_W, 60, 1, 1, 1, hit_flash[i])
+            rect("fill", lx, HIT_ZONE_Y - 30, LANE_W, 60, 1, 1, 1, hit_flash[i])
         end
     end
 
@@ -542,14 +585,14 @@ function lurek.draw()
             -- Hold tail
             if n.hold_rem and n.hold_rem > 0 then
                 local tail_h = n.hold_rem
-                lurek.render.rectangle("fill", nx + 4, n.y - tail_h, NOTE_W - 8, tail_h, c[1] * 0.7, c[2] * 0.7, c[3] * 0.7, 0.6)
+                rect("fill", nx + 4, n.y - tail_h, NOTE_W - 8, tail_h, c[1] * 0.7, c[2] * 0.7, c[3] * 0.7, 0.6)
             end
             -- Note head
             local bright = 1.0
             if n.held then bright = 1.2 end
-            lurek.render.rectangle("fill", nx, n.y - NOTE_H, NOTE_W, NOTE_H, c[1] * bright, c[2] * bright, c[3] * bright, 0.95)
+            rect("fill", nx, n.y - NOTE_H, NOTE_W, NOTE_H, c[1] * bright, c[2] * bright, c[3] * bright, 0.95)
             -- Note border
-            lurek.render.rectangle("line", nx, n.y - NOTE_H, NOTE_W, NOTE_H, 1, 1, 1, 0.3)
+            rect("line", nx, n.y - NOTE_H, NOTE_W, NOTE_H, 1, 1, 1, 0.3)
         end
     end
 
@@ -569,21 +612,21 @@ function lurek.draw_ui()
             C = { 0.7, 0.5, 0.2 }, F = { 0.8, 0.2, 0.2 },
         }
         local gc = grade_colors[result_grade] or { 1, 1, 1 }
-        lurek.render.print("RESULTS", W / 2 - 60, 60, 40, 0.9, 0.9, 1, 1)
-        lurek.render.print(result_grade, W / 2 - 30, 120, 72, gc[1], gc[2], gc[3], 1)
-        lurek.render.print(string.format("Score: %d", score), W / 2 - 80, 220, 24, 1, 1, 1, 0.9)
-        lurek.render.print(string.format("Max Combo: %d", max_combo), W / 2 - 80, 260, 20, 0.8, 0.8, 0.8, 0.8)
-        lurek.render.print(string.format("Perfect: %d  Good: %d  Miss: %d", perfects, goods, misses), W / 2 - 140, 300, 18, 0.7, 0.7, 0.7, 0.8)
+        text_("RESULTS", W / 2 - 60, 60, 40, 0.9, 0.9, 1, 1)
+        text_(result_grade, W / 2 - 30, 120, 72, gc[1], gc[2], gc[3], 1)
+        text_(string.format("Score: %d", score), W / 2 - 80, 220, 24, 1, 1, 1, 0.9)
+        text_(string.format("Max Combo: %d", max_combo), W / 2 - 80, 260, 20, 0.8, 0.8, 0.8, 0.8)
+        text_(string.format("Perfect: %d  Good: %d  Miss: %d", perfects, goods, misses), W / 2 - 140, 300, 18, 0.7, 0.7, 0.7, 0.8)
         local mult_text = string.format("Best Multiplier: %dx", (max_combo >= 50 and 4) or (max_combo >= 25 and 3) or (max_combo >= 10 and 2) or 1)
-        lurek.render.print(mult_text, W / 2 - 90, 340, 18, 0.6, 0.6, 0.7, 0.7)
-        lurek.render.print("Press ENTER to continue", W / 2 - 100, H - 60, 16, 0.5, 0.5, 0.6, 0.6 + math.sin(title_timer * 3) * 0.3)
+        text_(mult_text, W / 2 - 90, 340, 18, 0.6, 0.6, 0.7, 0.7)
+        text_("Press ENTER to continue", W / 2 - 100, H - 60, 16, 0.5, 0.5, 0.6, 0.6 + math.sin(title_timer * 3) * 0.3)
         return
     end
 
     if current_state ~= STATE_PLAYING then return end
 
     -- Score
-    lurek.render.print(string.format("SCORE: %d", math.floor(display_score)), 10, 10, 24, 1, 1, 1, 0.9)
+    text_(string.format("SCORE: %d", math.floor(display_score)), 10, 10, 24, 1, 1, 1, 0.9)
 
     -- Combo
     if combo > 0 then
@@ -593,9 +636,9 @@ function lurek.draw_ui()
         if mult >= 4 then cr, cg, cb = 1, 0.85, 0.2
         elseif mult >= 3 then cr, cg, cb = 0.9, 0.5, 1
         elseif mult >= 2 then cr, cg, cb = 0.3, 0.9, 1 end
-        lurek.render.print(string.format("%d COMBO", combo), W / 2 - 50, 20, 28, cr, cg, cb, combo_alpha)
+        text_(string.format("%d COMBO", combo), W / 2 - 50, 20, 28, cr, cg, cb, combo_alpha)
         if mult > 1 then
-            lurek.render.print(string.format("%dx", mult), W / 2 + 50, 24, 20, cr, cg, cb, 0.8)
+            text_(string.format("%dx", mult), W / 2 + 50, 24, 20, cr, cg, cb, 0.8)
         end
     end
 
@@ -606,24 +649,24 @@ function lurek.draw_ui()
     local bar_y = 12
     local life_pct = clamp(display_life / LIFE_MAX, 0, 1)
     -- Background
-    lurek.render.rectangle("fill", bar_x, bar_y, bar_w, bar_h, 0.2, 0.2, 0.2, 0.7)
+    rect("fill", bar_x, bar_y, bar_w, bar_h, 0.2, 0.2, 0.2, 0.7)
     -- Fill
     local lr, lg, lb = 0.2, 0.8, 0.3
     if life_pct < 0.3 then lr, lg, lb = 0.9, 0.2, 0.2
     elseif life_pct < 0.6 then lr, lg, lb = 0.9, 0.7, 0.2 end
-    lurek.render.rectangle("fill", bar_x, bar_y, bar_w * life_pct, bar_h, lr, lg, lb, 0.9)
+    rect("fill", bar_x, bar_y, bar_w * life_pct, bar_h, lr, lg, lb, 0.9)
     -- Border
-    lurek.render.rectangle("line", bar_x, bar_y, bar_w, bar_h, 1, 1, 1, 0.3)
-    lurek.render.print("LIFE", bar_x - 40, bar_y, 14, 0.8, 0.8, 0.8, 0.7)
+    rect("line", bar_x, bar_y, bar_w, bar_h, 1, 1, 1, 0.3)
+    text_("LIFE", bar_x - 40, bar_y, 14, 0.8, 0.8, 0.8, 0.7)
 
     -- Song progress
     local progress = 0
     if total_notes_in_song > 0 then
         progress = clamp((perfects + goods + misses) / total_notes_in_song, 0, 1)
     end
-    lurek.render.rectangle("fill", 10, H - 20, (W - 20) * progress, 6, 0.4, 0.4, 0.8, 0.5)
+    rect("fill", 10, H - 20, (W - 20) * progress, 6, 0.4, 0.4, 0.8, 0.5)
 
     -- FPS
     local fps = lurek.timer.getFPS()
-    lurek.render.print(string.format("FPS: %d", fps), W - 80, H - 20, 12, 0.4, 0.4, 0.4, 0.5)
+    text_(string.format("FPS: %d", fps), W - 80, H - 20, 12, 0.4, 0.4, 0.4, 0.5)
 end

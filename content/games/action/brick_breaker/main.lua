@@ -128,6 +128,54 @@ end
 
 -- ── Init ──────────────────────────────────────────────────────────────────
 
+-- Universal render helpers (handles all legacy and current call signatures)
+local _gfx = lurek.render
+local function _sc(c)
+    if type(c) == "table" then
+        local col = c.color or c
+        if type(col) == "table" then
+            _gfx.setColor(col[1] or 1, col[2] or 1, col[3] or 1, col[4] or 1)
+        end
+    end
+end
+local function rect(a, b, c, d, e, f, g, h, i)
+    if type(a) == "string" then
+        if type(f) == "number" then _gfx.setColor(f, g or 1, h or 1, i or 1) end
+        _gfx.rectangle(a, b, c, d, e)
+    elseif type(e) == "table" then
+        _sc(e); _gfx.rectangle(e.mode or "fill", a, b, c, d)
+    elseif type(e) == "number" then
+        _gfx.setColor(e or 1, f or 1, g or 1, h or 1); _gfx.rectangle("fill", a, b, c, d)
+    else
+        _gfx.rectangle("fill", a, b, c, d)
+    end
+end
+local function circ(a, b, c, d, e, f, g, h)
+    if type(a) == "string" then
+        if type(e) == "table" then _sc(e)
+        elseif type(e) == "number" then _gfx.setColor(e or 1, f or 1, g or 1, h or 1) end
+        _gfx.circle(a, b, c, d)
+    elseif type(d) == "table" then
+        _sc(d); _gfx.circle("fill", a, b, c)
+    elseif type(d) == "number" then
+        _gfx.setColor(d or 1, e or 1, f or 1, g or 1); _gfx.circle("fill", a, b, c)
+    else
+        _gfx.circle("fill", a, b, c)
+    end
+end
+local function text_(a, b, c, d, e, f, g, h)
+    if type(d) == "table" then
+        _sc(d)
+    elseif type(d) == "number" and type(e) == "number" then
+        _gfx.setColor(e or 1, f or 1, g or 1, h or 1)
+    end
+    _gfx.print(tostring(a), b, c)
+end
+local function ln(x1, y1, x2, y2, c)
+    if type(c) == "table" then _sc(c) end
+    _gfx.line(x1, y1, x2, y2)
+end
+
 function lurek.init()
     lurek.window.setTitle("Brick Breaker — Lurek2D")
     lurek.render.setBackgroundColor(0.05, 0.05, 0.1)
@@ -149,7 +197,7 @@ function lurek.init()
     hit_ps:setSpeed(40, 100)
     hit_ps:setSpread(math.pi)
     hit_ps:setSizes(3, 1)
-    hit_ps:setColors(1,0.9,0.5,1, 1,0.5,0.1,0)
+    hit_ps:setColors({1,0.9,0.5,1}, {1,0.5,0.1,0})
 
     lurek.camera.new()
 end
@@ -257,7 +305,7 @@ function lurek.process(dt)
     if brick_count <= 0 then
         state = STATE.LEVEL_COMPLETE
         flash.alpha = 1
-        lurek.tween.to(flash, 1.5, { alpha = 0 })
+        lurek.tween.to(flash, { alpha = 0 }, 1.5)
     end
 
     -- Power-ups
@@ -278,31 +326,31 @@ function lurek.draw()
         if br.alive then
             local c = HP_CLR[br.hp] or HP_CLR[1]
             local o = HP_OUT[br.hp] or HP_OUT[1]
-            lurek.render.rectangle("fill", br.x,br.y, BRICK_W,BRICK_H, c[1],c[2],c[3])
-            lurek.render.rectangle("line", br.x,br.y, BRICK_W,BRICK_H, o[1],o[2],o[3])
+            rect("fill", br.x,br.y, BRICK_W,BRICK_H, c[1],c[2],c[3])
+            rect("line", br.x,br.y, BRICK_W,BRICK_H, o[1],o[2],o[3])
         end
     end
 
     -- Paddle
     local pc = wide_tmr>0 and {1,0.7,0.2} or {0.9,0.9,0.9}
-    lurek.render.rectangle("fill", paddle_x,PADDLE_Y, pad_w,PADDLE_H, pc[1],pc[2],pc[3])
-    lurek.render.rectangle("line", paddle_x,PADDLE_Y, pad_w,PADDLE_H, 1,1,1,0.5)
+    rect("fill", paddle_x,PADDLE_Y, pad_w,PADDLE_H, pc[1],pc[2],pc[3])
+    rect("line", paddle_x,PADDLE_Y, pad_w,PADDLE_H, 1,1,1,0.5)
 
     -- Balls
     if on_paddle then
-        lurek.render.circle("fill", paddle_x+pad_w/2, PADDLE_Y-BALL_R-1, BALL_R, 1,1,1)
+        circ("fill", paddle_x+pad_w/2, PADDLE_Y-BALL_R-1, BALL_R, 1,1,1)
     else
         for _,b in ipairs(balls) do
-            lurek.render.circle("fill", b.x,b.y, BALL_R, 1,1,1)
-            lurek.render.circle("fill", b.x,b.y, BALL_R+3, 1,1,1,0.15)
+            circ("fill", b.x,b.y, BALL_R, 1,1,1)
+            circ("fill", b.x,b.y, BALL_R+3, 1,1,1,0.15)
         end
     end
 
     -- Power-ups
     for _,pu in ipairs(powerups) do
         local c = PU_CLR[pu.kind]
-        lurek.render.rectangle("fill", pu.x,pu.y, PU_SIZE,PU_SIZE, c[1],c[2],c[3],0.9)
-        lurek.render.print(pu.kind, pu.x+3, pu.y+1, 14, 1,1,1)
+        rect("fill", pu.x,pu.y, PU_SIZE,PU_SIZE, c[1],c[2],c[3],0.9)
+        text_(pu.kind, pu.x+3, pu.y+1, 14, 1,1,1)
     end
 
     -- Particles
@@ -311,7 +359,7 @@ function lurek.draw()
 
     -- Level flash
     if flash.alpha > 0.01 then
-        lurek.render.rectangle("fill", 0,0, W,H, 1,1,1, flash.alpha*0.3)
+        rect("fill", 0,0, W,H, 1,1,1, flash.alpha*0.3)
     end
 end
 
@@ -321,43 +369,43 @@ function lurek.draw_ui()
     local a = math.sin(blink*3)*0.5+0.5
 
     if state == STATE.TITLE then
-        lurek.render.print("BRICK BREAKER", W/2-130, H/2-60, 36, 0.2,0.6,1.0)
-        lurek.render.print("PRESS ENTER", W/2-75, H/2+10, 20, 1,1,1,a)
-        lurek.render.print("A/D or Arrows = Move  |  Space = Launch  |  Esc = Quit",
+        text_("BRICK BREAKER", W/2-130, H/2-60, 36, 0.2,0.6,1.0)
+        text_("PRESS ENTER", W/2-75, H/2+10, 20, 1,1,1,a)
+        text_("A/D or Arrows = Move  |  Space = Launch  |  Esc = Quit",
             W/2-220, H/2+60, 14, 0.6,0.6,0.6)
-        lurek.render.print(string.format("FPS: %d", fps), 10, H-20, 12, 0.4,0.4,0.4)
+        text_(string.format("FPS: %d", fps), 10, H-20, 12, 0.4,0.4,0.4)
         return
     end
 
     -- HUD
-    lurek.render.print(string.format("SCORE: %d", score), 10, 8, 18, 1,1,1)
-    lurek.render.print(string.format("LEVEL: %d", level), W/2-40, 8, 18, 0.6,0.9,1)
-    lurek.render.print(string.format("LIVES: %d", lives), W-110, 8, 18, 1,0.4,0.4)
-    lurek.render.print(string.format("FPS: %d", fps), W-80, H-20, 12, 0.4,0.4,0.4)
+    text_(string.format("SCORE: %d", score), 10, 8, 18, 1,1,1)
+    text_(string.format("LEVEL: %d", level), W/2-40, 8, 18, 0.6,0.9,1)
+    text_(string.format("LIVES: %d", lives), W-110, 8, 18, 1,0.4,0.4)
+    text_(string.format("FPS: %d", fps), W-80, H-20, 12, 0.4,0.4,0.4)
 
     local iy = 30
     if wide_tmr>0 then
-        lurek.render.print(string.format("[W] Wide: %.0fs",wide_tmr), W-150,iy, 12, 1,0.6,0.1)
+        text_(string.format("[W] Wide: %.0fs",wide_tmr), W-150,iy, 12, 1,0.6,0.1)
         iy = iy + 16
     end
     if slow_tmr>0 then
-        lurek.render.print(string.format("[S] Slow: %.0fs",slow_tmr), W-150,iy, 12, 0.4,1,0.4)
+        text_(string.format("[S] Slow: %.0fs",slow_tmr), W-150,iy, 12, 0.4,1,0.4)
     end
 
     if state == STATE.GAME_OVER then
-        lurek.render.rectangle("fill", 0,0, W,H, 0,0,0,0.6)
-        lurek.render.print("GAME OVER", W/2-100, H/2-40, 36, 1,0.3,0.3)
-        lurek.render.print(string.format("Final Score: %d", score), W/2-80, H/2+10, 20, 1,1,1)
-        lurek.render.print("PRESS ENTER TO RESTART", W/2-120, H/2+50, 16, 1,1,1,a)
+        rect("fill", 0,0, W,H, 0,0,0,0.6)
+        text_("GAME OVER", W/2-100, H/2-40, 36, 1,0.3,0.3)
+        text_(string.format("Final Score: %d", score), W/2-80, H/2+10, 20, 1,1,1)
+        text_("PRESS ENTER TO RESTART", W/2-120, H/2+50, 16, 1,1,1,a)
     end
 
     if state == STATE.LEVEL_COMPLETE then
-        lurek.render.rectangle("fill", 0,0, W,H, 0,0,0,0.5)
-        lurek.render.print(string.format("LEVEL %d COMPLETE!", level), W/2-120, H/2-30, 30, 0.2,1,0.5)
-        lurek.render.print("PRESS ENTER FOR NEXT LEVEL", W/2-140, H/2+20, 16, 1,1,1,a)
+        rect("fill", 0,0, W,H, 0,0,0,0.5)
+        text_(string.format("LEVEL %d COMPLETE!", level), W/2-120, H/2-30, 30, 0.2,1,0.5)
+        text_("PRESS ENTER FOR NEXT LEVEL", W/2-140, H/2+20, 16, 1,1,1,a)
     end
 
     if state == STATE.PLAYING and on_paddle then
-        lurek.render.print("PRESS SPACE TO LAUNCH", W/2-105, PADDLE_Y+30, 16, 1,1,1,a)
+        text_("PRESS SPACE TO LAUNCH", W/2-105, PADDLE_Y+30, 16, 1,1,1,a)
     end
 end

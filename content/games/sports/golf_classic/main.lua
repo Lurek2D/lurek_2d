@@ -278,10 +278,57 @@ end
 
 -- ── Input ─────────────────────────────────────────────────────────
 
-lurek.input.bind("shoot", "space", "mouse1")
+lurek.input.bind("shoot", {"space", "mouse1"})
 lurek.input.bind("quit", "escape")
 
 -- ── Callbacks ─────────────────────────────────────────────────────
+
+-- Universal render helpers (handles all legacy and current call signatures)
+local _gfx = lurek.render
+local function _sc(c)
+    if type(c) == "table" then
+        local col = c.color or c
+        if type(col) == "table" then
+            _gfx.setColor(col[1] or 1, col[2] or 1, col[3] or 1, col[4] or 1)
+        end
+    end
+end
+local function rect(a, b, c, d, e, f, g, h)
+    if type(a) == "string" then
+        _gfx.rectangle(a, b, c, d, e)
+    elseif type(e) == "table" then
+        _sc(e); _gfx.rectangle(e.mode or "fill", a, b, c, d)
+    elseif type(e) == "number" then
+        _gfx.setColor(e or 1, f or 1, g or 1, h or 1); _gfx.rectangle("fill", a, b, c, d)
+    else
+        _gfx.rectangle("fill", a, b, c, d)
+    end
+end
+local function circ(a, b, c, d, e, f, g, h)
+    if type(a) == "string" then
+        if type(e) == "table" then _sc(e)
+        elseif type(e) == "number" then _gfx.setColor(e or 1, f or 1, g or 1, h or 1) end
+        _gfx.circle(a, b, c, d)
+    elseif type(d) == "table" then
+        _sc(d); _gfx.circle("fill", a, b, c)
+    elseif type(d) == "number" then
+        _gfx.setColor(d or 1, e or 1, f or 1, g or 1); _gfx.circle("fill", a, b, c)
+    else
+        _gfx.circle("fill", a, b, c)
+    end
+end
+local function text_(a, b, c, d, e, f, g, h)
+    if type(d) == "table" then
+        _sc(d)
+    elseif type(d) == "number" and type(e) == "number" then
+        _gfx.setColor(e or 1, f or 1, g or 1, h or 1)
+    end
+    _gfx.print(tostring(a), b, c)
+end
+local function ln(x1, y1, x2, y2, c)
+    if type(c) == "table" then _sc(c) end
+    _gfx.line(x1, y1, x2, y2)
+end
 
 function lurek.init()
     lurek.window.setTitle("Golf Classic — Lurek2D")
@@ -290,7 +337,7 @@ function lurek.init()
 end
 
 local function _ready_setup()
-    _cam:setPosition(W, H)
+    -- camera positioning handled by render pipeline
 end
 
 function lurek.process(dt)
@@ -346,6 +393,7 @@ function lurek.process(dt)
     end
 
     -- Mouse aim
+    ---@diagnostic disable-next-line: undefined-field
     aim_x, aim_y = lurek.input.mouse.getPosition()
 
     -- ── AIMING ──
@@ -489,43 +537,43 @@ function lurek.draw()
 
     -- Draw fairway background
     lurek.render.setColor(0.18, 0.55, 0.18, 1)
-    lurek.render.rectangle("fill", 0, 0, W, H)
+    rect("fill", 0, 0, W, H)
 
     -- Draw rough zones
     for _, r in ipairs(h.rough) do
         lurek.render.setColor(0.1, 0.35, 0.1, 1)
-        lurek.render.rectangle("fill", r.x, r.y, r.w, r.h)
+        rect("fill", r.x, r.y, r.w, r.h)
     end
 
     -- Draw sand bunkers
     for _, s in ipairs(h.bunkers) do
         lurek.render.setColor(0.85, 0.78, 0.45, 1)
-        lurek.render.rectangle("fill", s.x, s.y, s.w, s.h)
+        rect("fill", s.x, s.y, s.w, s.h)
     end
 
     -- Draw water hazards
     for _, w in ipairs(h.water) do
         lurek.render.setColor(0.15, 0.3, 0.8, 0.8)
-        lurek.render.rectangle("fill", w.x, w.y, w.w, w.h)
+        rect("fill", w.x, w.y, w.w, w.h)
     end
 
     -- Draw walls
     for _, w in ipairs(h.walls) do
         lurek.render.setColor(0.45, 0.3, 0.15, 1)
-        lurek.render.rectangle("fill", w.x, w.y, w.w, w.h)
+        rect("fill", w.x, w.y, w.w, w.h)
     end
 
     -- Draw hole target
     lurek.render.setColor(0.08, 0.08, 0.08, 1)
-    lurek.render.circle("fill", h.target.x, h.target.y, HOLE_R)
+    circ("fill", h.target.x, h.target.y, HOLE_R)
     lurek.render.setColor(0.15, 0.15, 0.15, 1)
-    lurek.render.circle("line", h.target.x, h.target.y, HOLE_R)
+    circ("line", h.target.x, h.target.y, HOLE_R)
 
     -- Flag pole
     lurek.render.setColor(0.6, 0.6, 0.6, 1)
-    lurek.render.line(h.target.x, h.target.y, h.target.x, h.target.y - 30)
+    ln(h.target.x, h.target.y, h.target.x, h.target.y - 30)
     lurek.render.setColor(1, 0.2, 0.2, 1)
-    lurek.render.rectangle("fill", h.target.x, h.target.y - 30, 15, 10)
+    rect("fill", h.target.x, h.target.y - 30, 15, 10)
 
     -- Aim line
     if state == S_AIMING then
@@ -536,28 +584,28 @@ function lurek.draw()
             local nx, ny = dx / d, dy / d
             local line_len = 40 + (power / MAX_POWER) * 80
             lurek.render.setColor(1, 1, 1, 0.5)
-            lurek.render.line(ball.x, ball.y, ball.x + nx * line_len, ball.y + ny * line_len)
+            ln(ball.x, ball.y, ball.x + nx * line_len, ball.y + ny * line_len)
         end
     end
 
     -- Particles
     for _, p in ipairs(particles) do
         lurek.render.setColor(p.r, p.g, p.b, p.a)
-        lurek.render.circle("fill", p.x, p.y, p.size)
+        circ("fill", p.x, p.y, p.size)
     end
 
     -- Ball
     if state ~= S_HOLE_DONE then
         lurek.render.setColor(1, 1, 1, 1)
-        lurek.render.circle("fill", ball.x, ball.y, BALL_R)
+        circ("fill", ball.x, ball.y, BALL_R)
         lurek.render.setColor(0.8, 0.8, 0.8, 1)
-        lurek.render.circle("line", ball.x, ball.y, BALL_R)
+        circ("line", ball.x, ball.y, BALL_R)
     else
         -- Sinking animation: shrink into hole
         local r = BALL_R * (1 - sink_anim)
         if r > 0.5 then
             lurek.render.setColor(1, 1, 1, 1 - sink_anim)
-            lurek.render.circle("fill", holes[current_hole].target.x, holes[current_hole].target.y, r)
+            circ("fill", holes[current_hole].target.x, holes[current_hole].target.y, r)
         end
     end
 end
@@ -568,29 +616,29 @@ function lurek.draw_ui()
     -- ── TITLE SCREEN ──
     if state == S_TITLE then
         lurek.render.setColor(0.05, 0.2, 0.05, 1)
-        lurek.render.rectangle("fill", 0, 0, W, H)
+        rect("fill", 0, 0, W, H)
 
         lurek.render.setColor(1, 1, 1, 1)
-        lurek.render.print("GOLF CLASSIC", W / 2 - 80, 180)
+        text_("GOLF CLASSIC", W / 2 - 80, 180)
 
         if math.floor(title_blink * 2) % 2 == 0 then
             lurek.render.setColor(0.8, 0.9, 0.4, 1)
-            lurek.render.print("TEE OFF", W / 2 - 40, 260)
+            text_("TEE OFF", W / 2 - 40, 260)
         end
 
         lurek.render.setColor(0.6, 0.6, 0.6, 1)
-        lurek.render.print("Mouse to aim — Space/Click to charge — Release to shoot", W / 2 - 200, 340)
-        lurek.render.print("9 holes of mini golf", W / 2 - 70, 380)
+        text_("Mouse to aim — Space/Click to charge — Release to shoot", W / 2 - 200, 340)
+        text_("9 holes of mini golf", W / 2 - 70, 380)
         return
     end
 
     -- ── SCORECARD ──
     if state == S_SCORECARD then
         lurek.render.setColor(0.05, 0.15, 0.05, 1)
-        lurek.render.rectangle("fill", 0, 0, W, H)
+        rect("fill", 0, 0, W, H)
 
         lurek.render.setColor(1, 0.9, 0.3, 1)
-        lurek.render.print("SCORECARD", W / 2 - 50, 40)
+        text_("SCORECARD", W / 2 - 50, 40)
 
         local y = 90
         local ts = total_strokes()
@@ -608,7 +656,7 @@ function lurek.draw_ui()
             elseif diff > 0 then lurek.render.setColor(1, 0.4, 0.4, 1)
             else lurek.render.setColor(1, 1, 1, 1) end
 
-            lurek.render.print("Hole " .. i .. ": " .. s .. " strokes  (Par " .. par .. ")" .. diff_str, 200, y)
+            text_("Hole " .. i .. ": " .. s .. " strokes  (Par " .. par .. ")" .. diff_str, 200, y)
             y = y + 28
         end
 
@@ -622,11 +670,11 @@ function lurek.draw_ui()
         if total_diff < 0 then label = label .. "  (" .. total_diff .. " UNDER PAR!)"
         elseif total_diff > 0 then label = label .. "  (+" .. total_diff .. " over par)"
         else label = label .. "  (EVEN PAR)" end
-        lurek.render.print(label, 200, y)
+        text_(label, 200, y)
 
         y = y + 50
         lurek.render.setColor(0.6, 0.6, 0.6, 1)
-        lurek.render.print("Press Space to return to title", W / 2 - 110, y)
+        text_("Press Space to return to title", W / 2 - 110, y)
         return
     end
 
@@ -635,32 +683,32 @@ function lurek.draw_ui()
 
     -- Hole info
     lurek.render.setColor(1, 1, 1, 1)
-    lurek.render.print("Hole " .. current_hole .. " / " .. #holes, 10, 10)
-    lurek.render.print("Par " .. h.par, 10, 30)
-    lurek.render.print("Strokes: " .. strokes, 10, 50)
+    text_("Hole " .. current_hole .. " / " .. #holes, 10, 10)
+    text_("Par " .. h.par, 10, 30)
+    text_("Strokes: " .. strokes, 10, 50)
 
     -- Stroke vs par indicator
     local diff = strokes - h.par
     if diff > 0 then
         lurek.render.setColor(1, 0.4, 0.4, 1)
-        lurek.render.print("+" .. diff, 130, 50)
+        text_("+" .. diff, 130, 50)
     elseif diff < 0 then
         lurek.render.setColor(0.4, 1, 0.4, 1)
-        lurek.render.print(tostring(diff), 130, 50)
+        text_(tostring(diff), 130, 50)
     end
 
     -- Wind indicator
     lurek.render.setColor(0.7, 0.85, 1, 1)
-    lurek.render.print("Wind:", 10, 80)
+    text_("Wind:", 10, 80)
     local wind_cx, wind_cy = 80, 88
     lurek.render.setColor(1, 1, 1, 0.6)
-    lurek.render.circle("line", wind_cx, wind_cy, 12)
+    circ("line", wind_cx, wind_cy, 12)
     if wind.strength > 0.1 then
         local wnx = wind.dx / wind.strength
         local wny = wind.dy / wind.strength
         local arrow_len = 8 + (wind.strength / 35) * 8
         lurek.render.setColor(0.5, 0.8, 1, 1)
-        lurek.render.line(wind_cx, wind_cy, wind_cx + wnx * arrow_len, wind_cy + wny * arrow_len)
+        ln(wind_cx, wind_cy, wind_cx + wnx * arrow_len, wind_cy + wny * arrow_len)
     end
 
     -- Power bar (right side)
@@ -670,9 +718,9 @@ function lurek.draw_ui()
     local bar_h = 300
 
     lurek.render.setColor(0.2, 0.2, 0.2, 0.8)
-    lurek.render.rectangle("fill", bar_x, bar_y, bar_w, bar_h)
+    rect("fill", bar_x, bar_y, bar_w, bar_h)
     lurek.render.setColor(0.4, 0.4, 0.4, 1)
-    lurek.render.rectangle("line", bar_x, bar_y, bar_w, bar_h)
+    rect("line", bar_x, bar_y, bar_w, bar_h)
 
     -- Fill
     local fill_h = (power / MAX_POWER) * bar_h
@@ -682,15 +730,15 @@ function lurek.draw_ui()
         local pg = 1 - fill_t * 0.7
         local pb = 0.2
         lurek.render.setColor(pr, pg, pb, 1)
-        lurek.render.rectangle("fill", bar_x + 2, bar_y + bar_h - fill_h, bar_w - 4, fill_h)
+        rect("fill", bar_x + 2, bar_y + bar_h - fill_h, bar_w - 4, fill_h)
     end
     lurek.render.setColor(1, 1, 1, 0.7)
-    lurek.render.print(math.floor(power) .. "%", bar_x - 5, bar_y + bar_h + 8)
+    text_(math.floor(power) .. "%", bar_x - 5, bar_y + bar_h + 8)
 
     -- Hole complete message
     if state == S_HOLE_DONE then
         lurek.render.setColor(0, 0, 0, 0.5)
-        lurek.render.rectangle("fill", W / 2 - 120, H / 2 - 40, 240, 80)
+        rect("fill", W / 2 - 120, H / 2 - 40, 240, 80)
 
         local msg = "HOLE IN!"
         local s_diff = strokes - h.par
@@ -703,12 +751,12 @@ function lurek.draw_ui()
         if strokes == 1 then msg = "HOLE IN ONE!!!" end
 
         lurek.render.setColor(1, 0.9, 0.3, 1)
-        lurek.render.print(msg, W / 2 - 50, H / 2 - 20)
+        text_(msg, W / 2 - 50, H / 2 - 20)
         lurek.render.setColor(1, 1, 1, 0.8)
-        lurek.render.print(strokes .. " strokes", W / 2 - 35, H / 2 + 10)
+        text_(strokes .. " strokes", W / 2 - 35, H / 2 + 10)
     end
 
     -- FPS
     lurek.render.setColor(0.5, 0.5, 0.5, 0.5)
-    lurek.render.print("FPS: " .. lurek.timer.getFPS(), W - 90, H - 20)
+    text_("FPS: " .. lurek.timer.getFPS(), W - 90, H - 20)
 end

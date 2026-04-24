@@ -2,7 +2,110 @@
 
 All notable changes to Lurek2D are recorded here.
 
-## [0.20.28] - 2026-04-23
+## [0.20.32] - 2026-04-25
+
+### fix(lua-api): fix API stubs and game call signatures across action/ and sports/ games
+
+- **`docs/api/lurek.lua`**: fixed four incorrect LuaCATS stubs:
+  `lurek.render.line` (1→4 named params), `lurek.render.polygon` (1→variadic mode+coords),
+  `ParticleSystem:setSizes` (2→variadic numbers), `ParticleSystem:setColors` (2→variadic tables),
+  `lurek.camera.new` (added `---@return Camera2D`).
+- **`content/games/action/fighting_game/main.lua`**: fixed `tween.to` arg order (target, fields, duration);
+  fixed `ParticleSystem:emit(x,y,n)` → `setPosition(x,y); emit(n)` for 3 particle systems;
+  added type annotations; added camera init and nil guard.
+- **`content/games/action/endless_runner/main.lua`**: stripped UTF-8 BOM; fixed `ps:draw()` → `ps:render()`;
+  fixed all `emit(count,x,y)` → `setPosition+emit` (5 sites); added `---@type ParticleSystem` annotations.
+- **`content/games/action/brick_breaker/main.lua`**: fixed `setColors` flat-args → table-per-keyframe;
+  fixed `tween.to` arg order.
+- **`content/games/sports/drift_racing/main.lua`**: replaced non-existent `lurek.render.drawq` with
+  `setColor + polygon("fill", …)`.
+- **`content/games/sports/golf_classic/main.lua`**: removed undefined `_cam:setPosition` call;
+  fixed `input.bind(action,"k1","k2")` → `input.bind(action,{"k1","k2"})`;
+  suppressed `lurek.input.mouse` undefined-field diagnostic.
+- **`content/games/sports/pinball/main.lua`**: removed undefined `_cam:setPosition` call;
+  fixed `input.bind` 3-arg → table form for both flip bindings.
+- **`content/games/sports/tennis_classic/main.lua`**: added non-nullable type annotations for camera
+  and particle systems; fixed `setColors` flat-args → table-per-keyframe (3 systems);
+  fixed all `emit(x,y,n)` → `setPosition+emit` (8 sites).
+- **`content/games/sports/fishing/main.lua`**: added `---@cast hooked_fish table` at state boundaries;
+  suppressed false-positive `keyboard.isDown("quit")` diagnostic.
+- **`content/games/sports/rhythm_game/main.lua`**: replaced non-existent `lurek.tween.tween()` API with
+  `lurek.tween.to(_score_tbl/life_tbl, …)`; removed `tween:update(dt)` and `.subject` accesses;
+  fixed `setSize→setSizes` (2 sites); fixed `emit(x,y,n)→setPosition+emit`; added camera annotation.
+
+### fix(content): fix all wrong lurek.render API call signatures in game files
+
+- **`content/games/**/*.lua`** (120 files): all game scripts now redirect
+  `rectangle`, `circle`, `print`, and `line` through universal render helpers
+  (`rect`, `circ`, `text_`, `ln`) that accept every legacy call pattern:
+  inline `r,g,b,a` color args, `{color={…}}` table-style, extra `size`/`scale`
+  args on `print`, `circle` without mode string, and `line` with extra width arg.
+  Helpers inserted at file scope (before any draw-helper functions) so closures
+  capture the correct locals.
+- **`content/examples/engine.lua`**: fixed `lurek.render.print(font, str, x, y, …)`
+  → `lurek.render.setFont(font); lurek.render.setColor(…); lurek.render.print(str,x,y)`.
+- **`tests/lua/security/test_filesystem.lua`**: removed dangling `aa.` fragment (line 12)
+  that was parsed by LuaJIT as `aa.describe(...)`, silently hijacking the `describe` call
+  and crashing `lua_security_filesystem`. All 10 security tests now pass.
+- **`work/fix_all_render.py`**, **`work/fix_helpers_placement.py`**: batch-fix scripts
+  used to apply and reposition helpers across all game files.
+
+## [0.20.31] - 2026-04-24
+
+### refactor(extension): delegate generic Lua IntelliSense to sumneko.lua
+
+- **`.vscode/settings.json`**: changed `Lua.runtime.version` from `"Lua 5.4"` to `"LuaJIT"`.
+  `docs/api/lurek.lua` (LuaCATS stubs) is already indexed via `Lua.workspace.library` pointing
+  at `docs/`, so sumneko.lua now provides `lurek.*` type completions automatically.
+- **`extensions/vscode/src/providers/completion.ts`**: removed `LUA_BUILTINS` array (28 globals),
+  `LUA_STDLIB_MODULES` module-name list, and the `stdlibMatch` stdlib function completions block
+  (`string.*`, `table.*`, `math.*`, etc.). All delegated to sumneko.lua.
+- **`extensions/vscode/src/providers/luajitHints.ts`**: removed `BIT_FUNCTIONS`, `JIT_FUNCTIONS`,
+  `FFI_FUNCTIONS` arrays plus their `completionProvider` and `hoverProvider` registrations.
+  sumneko.lua in LuaJIT mode covers `bit.*`, `jit.*`, `ffi.*`. Lurek-specific perf diagnostics
+  (`PERF_RULES`) and compat warnings (`COMPAT_RULES`) are kept.
+- **`extensions/vscode/src/extension2.ts`**: removed `luacatsProvider.register()` call and the
+  unused import. User-defined `---@class` / `---@field` completions and hover are now handled by
+  sumneko.lua. All lurek-specific features (callbacks, factory type inference, diagnostics, hover,
+  code lens, MCP) are unaffected.
+
+## [0.20.30] - 2026-04-24
+
+### fix(extension): fix VS Code linter false positives and incorrect draw-API namespace
+
+- **`extensions/vscode/cag/game-dev/templates/*/main.lua`** (11 files): reverted
+  `lurek.graphic.*` → `lurek.render.*` (the correct draw API namespace registered by
+  `render_api.rs`). `function lurek.draw()` callback name kept correct.
+- **`extensions/vscode/src/providers/luajitHints.ts`**: `lurek.compat.warnLevel` pattern
+  `/\bwarn\s*\(/` matched `lurek.log.warn(...)` as a false positive. Changed to
+  `/(?<!\.)(?<!\w)\bwarn\s*\(/` to exclude method calls.
+- **`extensions/vscode/src/providers/requireGraph.ts`**: added `KNOWN_RUNTIME_MODULES` set
+  (`tests/lua/init`, `tests.lua.init`, `socket`) so harness-injected and sandboxed
+  modules no longer trigger `lurek.requireMissing` warnings.
+- **`extensions/vscode/src/providers/diagnostics.ts`**: `checkUnknownLurekFunc` now tracks
+  `xit()` block depth and skips lines inside disabled test cases, eliminating false-positive
+  `lurek.unknownFunction` warnings for functions called only in disabled tests.
+- **`work/coverage-gaps-20260423/scripts/fix_broken_links.ps1`**: renamed `Fix-Link` →
+  `Repair-Link` and `Fix-SkillCompanions` → `Repair-SkillCompanions` (PSUseApprovedVerbs).
+- Extension dist rebuilt (`npm run build`).
+
+
+
+### fix(api): unroll devtools level-log loop; fix templates; fix dataframe example
+
+- **`src/lua_api/devtools_api.rs`**: `trace`/`debug`/`info`/`warn`/`error`/`fatal` were
+  registered inside a `for` loop, making them invisible to the static API scanner. Unrolled
+  to six explicit `dt.set()` calls with individual `///` docstrings so the scanner picks
+  them up. Behaviour is identical at runtime.
+- **`extensions/vscode/cag/game-dev/templates/*/main.lua`** (12 files): replaced
+  `function lurek.render()` with `function lurek.draw()` (correct callback name) and
+  replaced all `gfx.*` / `lurek.render.*` draw calls with `lurek.graphic.*` (correct namespace).
+  Removed spurious `local gfx = lurek.render` capture lines.
+- **`content/examples/dataframe.lua`** line 652: `lurek.dataframe.newFrame` → `newDataFrame`.
+- **`logs/data/lua_api_data.json`** and **`extensions/vscode/data/lurek-api.json`** regenerated.
+- Extension dist rebuilt (`npm run build`).
+
+
 
 ### fix(api): fix misplaced docstring for `newByteData`; regenerate API JSON
 

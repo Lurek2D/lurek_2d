@@ -57,7 +57,7 @@ end
 
 -- ── Game state ────────────────────────────────────────────────────
 local state = ST.TITLE
-local camera = nil
+local camera = nil  ---@type Camera2D
 local title_timer = 0
 local point_timer = 0
 local point_msg = ""
@@ -94,9 +94,9 @@ local rally_count = 0
 local last_hitter = 0
 
 -- Particles
-local dust_particles = nil
-local ace_particles = nil
-local net_particles = nil
+local dust_particles = nil  ---@type ParticleSystem
+local ace_particles  = nil  ---@type ParticleSystem
+local net_particles  = nil  ---@type ParticleSystem
 
 -- Tweens
 local score_popup = { text = "", alpha = 0, y = 0 }
@@ -185,7 +185,8 @@ local function award_point(winner)
             state = ST.MATCH_END
 
             if ace_particles then
-                ace_particles:emit(CENTER_X, NET_Y, 40)
+                ace_particles:setPosition(CENTER_X, NET_Y)
+                ace_particles:emit(40)
             end
             return
         end
@@ -249,6 +250,54 @@ end
 
 -- ── Input bindings ────────────────────────────────────────────────
 
+-- Universal render helpers (handles all legacy and current call signatures)
+local _gfx = lurek.render
+local function _sc(c)
+    if type(c) == "table" then
+        local col = c.color or c
+        if type(col) == "table" then
+            _gfx.setColor(col[1] or 1, col[2] or 1, col[3] or 1, col[4] or 1)
+        end
+    end
+end
+local function rect(a, b, c, d, e, f, g, h)
+    if type(a) == "string" then
+        _gfx.rectangle(a, b, c, d, e)
+    elseif type(e) == "table" then
+        _sc(e); _gfx.rectangle(e.mode or "fill", a, b, c, d)
+    elseif type(e) == "number" then
+        _gfx.setColor(e or 1, f or 1, g or 1, h or 1); _gfx.rectangle("fill", a, b, c, d)
+    else
+        _gfx.rectangle("fill", a, b, c, d)
+    end
+end
+local function circ(a, b, c, d, e, f, g, h)
+    if type(a) == "string" then
+        if type(e) == "table" then _sc(e)
+        elseif type(e) == "number" then _gfx.setColor(e or 1, f or 1, g or 1, h or 1) end
+        _gfx.circle(a, b, c, d)
+    elseif type(d) == "table" then
+        _sc(d); _gfx.circle("fill", a, b, c)
+    elseif type(d) == "number" then
+        _gfx.setColor(d or 1, e or 1, f or 1, g or 1); _gfx.circle("fill", a, b, c)
+    else
+        _gfx.circle("fill", a, b, c)
+    end
+end
+local function text_(a, b, c, d, e, f, g, h)
+    if type(d) == "table" then
+        _sc(d)
+    elseif type(d) == "number" and type(e) == "number" then
+        _gfx.setColor(e or 1, f or 1, g or 1, h or 1)
+    end
+    _gfx.print(tostring(a), b, c)
+end
+local function ln(x1, y1, x2, y2, r, g, b, a)
+    if type(r) == "table" then _sc(r)
+    elseif r then _gfx.setColor(r, g or 1, b or 1, a or 1) end
+    _gfx.line(x1, y1, x2, y2)
+end
+
 function lurek.init()
     lurek.render.setBackgroundColor(0.2, 0.4, 0.2)
     lurek.window.setTitle("Tennis Classic — Lurek2D")
@@ -267,20 +316,20 @@ function lurek.init()
     dust_particles = lurek.particle.newSystem({maxParticles=50})
     dust_particles:setParticleLifetime(0.2, 0.5)
     dust_particles:setSpeed(20, 80)
-    dust_particles:setColors(0.8, 0.7, 0.5, 1.0, 0.8, 0.7, 0.5, 0.0)
+    dust_particles:setColors({0.8, 0.7, 0.5, 1.0}, {0.8, 0.7, 0.5, 0.0})
     dust_particles:setSizes(3, 1)
 
     ace_particles = lurek.particle.newSystem({maxParticles=80})
     ace_particles:setParticleLifetime(0.3, 0.8)
     ace_particles:setSpeed(50, 200)
-    ace_particles:setColors(1.0, 1.0, 0.0, 1.0, 1.0, 0.5, 0.0, 0.0)
+    ace_particles:setColors({1.0, 1.0, 0.0, 1.0}, {1.0, 0.5, 0.0, 0.0})
     ace_particles:setSizes(5, 1)
     ace_particles:setSpread(math.pi * 2)
 
     net_particles = lurek.particle.newSystem({maxParticles=30})
     net_particles:setParticleLifetime(0.1, 0.3)
     net_particles:setSpeed(10, 40)
-    net_particles:setColors(1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0)
+    net_particles:setColors({1.0, 1.0, 1.0, 1.0}, {1.0, 1.0, 1.0, 0.0})
     net_particles:setSizes(2, 1)
 end
 
@@ -381,7 +430,8 @@ function lurek.process(dt)
                     ball.bounced = false
                     last_hitter = 1
                     state = ST.PLAYING
-                    dust_particles:emit(ball.x, ball.y, 8)
+                    dust_particles:setPosition(ball.x, ball.y)
+                    dust_particles:emit(8)
                 end
 
                 if ball_height > math.pi then
@@ -404,7 +454,8 @@ function lurek.process(dt)
                 ball.bounced = false
                 last_hitter = 2
                 state = ST.PLAYING
-                dust_particles:emit(ball.x, ball.y, 8)
+                dust_particles:setPosition(ball.x, ball.y)
+                dust_particles:emit(8)
             end
         end
         return
@@ -436,7 +487,8 @@ function lurek.process(dt)
             local spd_total = math.sqrt(ball.vx * ball.vx + ball.vy * ball.vy)
             if spd_total < 100 then
                 -- Net fault
-                net_particles:emit(ball.x, NET_Y, 15)
+                net_particles:setPosition(ball.x, NET_Y)
+                net_particles:emit(15)
                 ball.active = false
                 award_point((last_hitter == 1) and 2 or 1)
                 return
@@ -482,7 +534,8 @@ function lurek.process(dt)
             -- Ball in opponent half, first bounce
             if ball.y <= COURT_T + 5 then
                 ball.bounced = true
-                dust_particles:emit(ball.x, ball.y, 5)
+                dust_particles:setPosition(ball.x, ball.y)
+                dust_particles:emit(5)
 
                 -- Service box check for serves
                 if serve_phase == 2 and last_hitter == 1 then
@@ -507,7 +560,8 @@ function lurek.process(dt)
         if ball.vy > 0 and ball.y > NET_Y and not ball.bounced then
             if ball.y >= COURT_B - 5 then
                 ball.bounced = true
-                dust_particles:emit(ball.x, ball.y, 5)
+                dust_particles:setPosition(ball.x, ball.y)
+                dust_particles:emit(5)
 
                 if serve_phase == 2 and last_hitter == 2 then
                     if not is_in_service_box(ball.x, ball.y, false) then
@@ -562,7 +616,8 @@ function lurek.process(dt)
                     rally_count = rally_count + 1
                     aim_dir = 0
                     spin_type = 0
-                    dust_particles:emit(ball.x, ball.y, 6)
+                    dust_particles:setPosition(ball.x, ball.y)
+                    dust_particles:emit(6)
 
                     if rally_count >= 10 then
                         score_popup = { text = "Rally: " .. rally_count, alpha = 1.0, y = H / 2 - 40 }
@@ -604,7 +659,8 @@ function lurek.process(dt)
                     serve_phase = 0
                     rally_count = rally_count + 1
                     ai_react_timer = 0
-                    dust_particles:emit(ball.x, ball.y, 6)
+                    dust_particles:setPosition(ball.x, ball.y)
+                    dust_particles:emit(6)
                 end
             end
         else
@@ -622,25 +678,25 @@ end
 -- ── Render (world-space: court, players, ball) ────────────────────
 function lurek.draw()
     -- Court background (green)
-    lurek.render.rectangle(COURT_L, COURT_T, COURT_W, COURT_H, 0.18, 0.55, 0.18, 1.0)
+    rect(COURT_L, COURT_T, COURT_W, COURT_H, 0.18, 0.55, 0.18, 1.0)
 
     -- Court lines (white)
     local lw = 2
     -- Outer boundary
-    lurek.render.rectangle(COURT_L, COURT_T, COURT_W, COURT_H, 1, 1, 1, 1)
+    rect(COURT_L, COURT_T, COURT_W, COURT_H, 1, 1, 1, 1)
     -- Center service line (vertical)
-    lurek.render.line(CENTER_X, SERVICE_LINE_T, CENTER_X, SERVICE_LINE_B, 1, 1, 1, 1)
+    ln(CENTER_X, SERVICE_LINE_T, CENTER_X, SERVICE_LINE_B, 1, 1, 1, 1)
     -- Service lines (horizontal)
-    lurek.render.line(COURT_L, SERVICE_LINE_T, COURT_R, SERVICE_LINE_T, 1, 1, 1, 1)
-    lurek.render.line(COURT_L, SERVICE_LINE_B, COURT_R, SERVICE_LINE_B, 1, 1, 1, 1)
+    ln(COURT_L, SERVICE_LINE_T, COURT_R, SERVICE_LINE_T, 1, 1, 1, 1)
+    ln(COURT_L, SERVICE_LINE_B, COURT_R, SERVICE_LINE_B, 1, 1, 1, 1)
     -- Net
-    lurek.render.line(COURT_L - 10, NET_Y, COURT_R + 10, NET_Y, 1, 1, 1, 0.8)
+    ln(COURT_L - 10, NET_Y, COURT_R + 10, NET_Y, 1, 1, 1, 0.8)
     -- Net posts
-    lurek.render.rectangle(COURT_L - 12, NET_Y - 3, 6, 6, 0.6, 0.6, 0.6, 1)
-    lurek.render.rectangle(COURT_R + 6, NET_Y - 3, 6, 6, 0.6, 0.6, 0.6, 1)
+    rect(COURT_L - 12, NET_Y - 3, 6, 6, 0.6, 0.6, 0.6, 1)
+    rect(COURT_R + 6, NET_Y - 3, 6, 6, 0.6, 0.6, 0.6, 1)
     -- Center marks
-    lurek.render.line(CENTER_X, COURT_B - 15, CENTER_X, COURT_B, 1, 1, 1, 1)
-    lurek.render.line(CENTER_X, COURT_T, CENTER_X, COURT_T + 15, 1, 1, 1, 1)
+    ln(CENTER_X, COURT_B - 15, CENTER_X, COURT_B, 1, 1, 1, 1)
+    ln(CENTER_X, COURT_T, CENTER_X, COURT_T + 15, 1, 1, 1, 1)
 
     if state == ST.TITLE then
         return
@@ -649,17 +705,17 @@ function lurek.draw()
     -- Ball trail
     for _, t in ipairs(ball_trail) do
         local a = t.t / 0.3
-        lurek.render.circle("fill", t.x, t.y, BALL_R * 0.6, 1, 1, 0.7, a * 0.3)
+        circ("fill", t.x, t.y, BALL_R * 0.6, 1, 1, 0.7, a * 0.3)
     end
 
     -- Player (blue)
-    lurek.render.rectangle(
+    rect(
         player.x - PLAYER_W / 2, player.y - PLAYER_H / 2,
         PLAYER_W, PLAYER_H, 0.2, 0.4, 1.0, 1.0
     )
 
     -- Opponent (red)
-    lurek.render.rectangle(
+    rect(
         opponent.x - PLAYER_W / 2, opponent.y - PLAYER_H / 2,
         PLAYER_W, PLAYER_H, 1.0, 0.3, 0.3, 1.0
     )
@@ -668,15 +724,15 @@ function lurek.draw()
     if ball.active or state == ST.SERVING then
         local br = BALL_R
         -- Shadow
-        lurek.render.circle("fill", ball.x + 2, ball.y + 2, br, 0, 0, 0, 0.3)
+        circ("fill", ball.x + 2, ball.y + 2, br, 0, 0, 0, 0.3)
         -- Ball
-        lurek.render.circle("fill", ball.x, ball.y, br, 1.0, 1.0, 1.0, 1.0)
+        circ("fill", ball.x, ball.y, br, 1.0, 1.0, 1.0, 1.0)
     end
 
     -- Charge indicator
     if charging then
         local bar_w = 30 * charge_power
-        lurek.render.rectangle(player.x - 15, player.y + PLAYER_H / 2 + 4, bar_w, 4,
+        rect(player.x - 15, player.y + PLAYER_H / 2 + 4, bar_w, 4,
             1.0, 1.0 - charge_power, 0, 1)
     end
 
@@ -693,15 +749,15 @@ function lurek.draw_ui()
     if state == ST.TITLE then
         -- Title screen
         local blink = math.abs(math.sin(title_timer * 2))
-        lurek.render.print("TENNIS CLASSIC", W / 2 - 120, H / 2 - 60, 32, 1, 1, 1, 1)
-        lurek.render.print("GAME  SET  MATCH", W / 2 - 100, H / 2 - 20, 18, 0.8, 0.8, 0.8, 1)
-        lurek.render.print("Press SPACE to start", W / 2 - 80, H / 2 + 40, 16, 1, 1, 1, blink)
-        lurek.render.print("FPS: " .. fps, 10, H - 20, 12, 0.5, 0.5, 0.5, 1)
+        text_("TENNIS CLASSIC", W / 2 - 120, H / 2 - 60, 32, 1, 1, 1, 1)
+        text_("GAME  SET  MATCH", W / 2 - 100, H / 2 - 20, 18, 0.8, 0.8, 0.8, 1)
+        text_("Press SPACE to start", W / 2 - 80, H / 2 + 40, 16, 1, 1, 1, blink)
+        text_("FPS: " .. fps, 10, H - 20, 12, 0.5, 0.5, 0.5, 1)
         return
     end
 
     -- Scoreboard background
-    lurek.render.rectangle(0, 0, W, 28, 0, 0, 0, 0.6)
+    rect(0, 0, W, 28, 0, 0, 0, 0.6)
 
     -- Score display
     local score_str
@@ -729,22 +785,22 @@ function lurek.draw_ui()
 
     local server_str = (server == 1) and " [P serve]" or " [O serve]"
 
-    lurek.render.print("Score: " .. score_str .. server_str, 10, 6, 14, 1, 1, 1, 1)
-    lurek.render.print(sets_str, W / 2 - 60, 6, 14, 0.9, 0.9, 0.5, 1)
+    text_("Score: " .. score_str .. server_str, 10, 6, 14, 1, 1, 1, 1)
+    text_(sets_str, W / 2 - 60, 6, 14, 0.9, 0.9, 0.5, 1)
 
     -- Rally counter
     if rally_count > 0 and state == ST.PLAYING then
-        lurek.render.print("Rally: " .. rally_count, W - 100, 6, 14, 0.5, 1.0, 0.5, 1)
+        text_("Rally: " .. rally_count, W - 100, 6, 14, 0.5, 1.0, 0.5, 1)
     end
 
     -- Point / set / match messages
     if state == ST.POINT or state == ST.SET_END or state == ST.MATCH_END then
-        lurek.render.print(point_msg, W / 2 - 80, H / 2, 24, 1, 1, 0.3, 1)
+        text_(point_msg, W / 2 - 80, H / 2, 24, 1, 1, 0.3, 1)
     end
 
     -- Score popup (tween-like fade)
     if score_popup.alpha > 0 then
-        lurek.render.print(score_popup.text, W / 2 - 60, score_popup.y, 20,
+        text_(score_popup.text, W / 2 - 60, score_popup.y, 20,
             1, 1, 0.2, score_popup.alpha)
     end
 
@@ -752,9 +808,9 @@ function lurek.draw_ui()
     if state == ST.SERVING and server == 1 then
         local msg = (serve_phase == 0) and "Press SPACE to toss" or "Press SPACE to hit!"
         if serve_count == 1 then msg = "Second serve — " .. msg end
-        lurek.render.print(msg, W / 2 - 90, H - 30, 14, 1, 1, 1, 0.8)
+        text_(msg, W / 2 - 90, H - 30, 14, 1, 1, 1, 0.8)
     end
 
     -- FPS
-    lurek.render.print("FPS: " .. fps, W - 70, H - 20, 12, 0.5, 0.5, 0.5, 1)
+    text_("FPS: " .. fps, W - 70, H - 20, 12, 0.5, 0.5, 0.5, 1)
 end

@@ -1,4 +1,51 @@
-﻿-- ============================================================================
+-- Universal render helpers (handles all legacy and current call signatures)
+local _gfx = lurek.render
+local function _sc(c)
+    if type(c) == "table" then
+        local col = c.color or c
+        if type(col) == "table" then
+            _gfx.setColor(col[1] or 1, col[2] or 1, col[3] or 1, col[4] or 1)
+        end
+    end
+end
+local function rect(a, b, c, d, e, f, g, h)
+    if type(a) == "string" then
+        _gfx.rectangle(a, b, c, d, e)
+    elseif type(e) == "table" then
+        _sc(e); _gfx.rectangle(e.mode or "fill", a, b, c, d)
+    elseif type(e) == "number" then
+        _gfx.setColor(e or 1, f or 1, g or 1, h or 1); _gfx.rectangle("fill", a, b, c, d)
+    else
+        _gfx.rectangle("fill", a, b, c, d)
+    end
+end
+local function circ(a, b, c, d, e, f, g, h)
+    if type(a) == "string" then
+        if type(e) == "table" then _sc(e)
+        elseif type(e) == "number" then _gfx.setColor(e or 1, f or 1, g or 1, h or 1) end
+        _gfx.circle(a, b, c, d)
+    elseif type(d) == "table" then
+        _sc(d); _gfx.circle("fill", a, b, c)
+    elseif type(d) == "number" then
+        _gfx.setColor(d or 1, e or 1, f or 1, g or 1); _gfx.circle("fill", a, b, c)
+    else
+        _gfx.circle("fill", a, b, c)
+    end
+end
+local function text_(a, b, c, d, e, f, g, h)
+    if type(d) == "table" then
+        _sc(d)
+    elseif type(d) == "number" and type(e) == "number" then
+        _gfx.setColor(e or 1, f or 1, g or 1, h or 1)
+    end
+    _gfx.print(tostring(a), b, c)
+end
+local function ln(x1, y1, x2, y2, c)
+    if type(c) == "table" then _sc(c) end
+    _gfx.line(x1, y1, x2, y2)
+end
+
+-- ============================================================================
 --  Endless Runner — Sprint through an infinite landscape, dodge or die
 -- ----------------------------------------------------------------------------
 --  Category : action
@@ -66,9 +113,9 @@ local world_offset   = 0
 local next_obstacle  = 300
 
 -- ── Particles ─────────────────────────────────────────────────────────────
-local dust_ps       = nil
-local coin_ps       = nil
-local death_ps      = nil
+local dust_ps       = nil  ---@type ParticleSystem
+local coin_ps       = nil  ---@type ParticleSystem
+local death_ps      = nil  ---@type ParticleSystem
 
 -- ── Tween targets ─────────────────────────────────────────────────────────
 local coin_flash    = { scale = 1 }
@@ -194,7 +241,10 @@ local function update_player(dt)
             player.on_ground = true
             player.jumps = 0
             -- Landing dust
-            if dust_ps then dust_ps:emit(8, PLAYER_X + PLAYER_W / 2, GROUND_Y) end
+            if dust_ps then
+                dust_ps:setPosition(PLAYER_X + PLAYER_W / 2, GROUND_Y)
+                dust_ps:emit(8)
+            end
         end
     end
 end
@@ -289,7 +339,8 @@ local function check_collisions()
                 player.stumble_timer = 0
                 player.rotation = 0
                 if death_ps then
-                    death_ps:emit(20, PLAYER_X + PLAYER_W / 2, player.y + PLAYER_H / 2)
+                    death_ps:setPosition(PLAYER_X + PLAYER_W / 2, player.y + PLAYER_H / 2)
+                    death_ps:emit(20)
                 end
                 return
             end
@@ -302,7 +353,8 @@ local function check_collisions()
         player.stumble_timer = 0
         player.rotation = 0
         if death_ps then
-            death_ps:emit(15, PLAYER_X + PLAYER_W / 2, GROUND_Y)
+            death_ps:setPosition(PLAYER_X + PLAYER_W / 2, GROUND_Y)
+            death_ps:emit(15)
         end
         return
     end
@@ -315,7 +367,10 @@ local function check_collisions()
             if cdist_x * cdist_x + cdist_y * cdist_y < (COIN_SIZE + pw / 2) * (COIN_SIZE + pw / 2) then
                 c.collected = true
                 coins_collected = coins_collected + 1
-                if coin_ps then coin_ps:emit(10, c.x, c.y) end
+                if coin_ps then
+                    coin_ps:setPosition(c.x, c.y)
+                    coin_ps:emit(10)
+                end
                 coin_flash.scale = 1.8
                 lurek.tween.to(coin_flash, { scale = 1.0 }, 0.3, "outBack")
             end
@@ -330,16 +385,16 @@ local function draw_parallax()
         lurek.render.setColor(c[1], c[2], c[3], c[4])
         for _, s in ipairs(layer.shapes) do
             local base_y = layer.y + (layer.h - s.h)
-            lurek.render.rectangle("fill", s.x, base_y, s.w, s.h)
+            rect("fill", s.x, base_y, s.w, s.h)
         end
     end
 end
 
 local function draw_ground()
     lurek.render.setColor(0.35, 0.25, 0.15, 1)
-    lurek.render.rectangle("fill", 0, GROUND_Y, SCREEN_W, SCREEN_H - GROUND_Y)
+    rect("fill", 0, GROUND_Y, SCREEN_W, SCREEN_H - GROUND_Y)
     lurek.render.setColor(0.5, 0.4, 0.2, 1)
-    lurek.render.rectangle("fill", 0, GROUND_Y, SCREEN_W, 3)
+    rect("fill", 0, GROUND_Y, SCREEN_W, 3)
 end
 
 local function draw_player_char()
@@ -355,35 +410,35 @@ local function draw_player_char()
         local x2, y2 = cx + ( hw * co - (-hh) * s), cy + ( hw * s + (-hh) * co)
         local x3, y3 = cx + ( hw * co -   hh  * s), cy + ( hw * s +   hh  * co)
         local x4, y4 = cx + (-hw * co -   hh  * s), cy + (-hw * s +   hh  * co)
-        lurek.render.line(x1, y1, x2, y2)
-        lurek.render.line(x2, y2, x3, y3)
-        lurek.render.line(x3, y3, x4, y4)
-        lurek.render.line(x4, y4, x1, y1)
+        ln(x1, y1, x2, y2)
+        ln(x2, y2, x3, y3)
+        ln(x3, y3, x4, y4)
+        ln(x4, y4, x1, y1)
         return
     end
 
     if player.sliding then
         lurek.render.setColor(0.2, 0.7, 1.0, 1)
-        lurek.render.rectangle("fill", PLAYER_X, GROUND_Y - SLIDE_H, PLAYER_W + 8, SLIDE_H)
+        rect("fill", PLAYER_X, GROUND_Y - SLIDE_H, PLAYER_W + 8, SLIDE_H)
         lurek.render.setColor(1, 1, 1, 1)
-        lurek.render.rectangle("fill", PLAYER_X + PLAYER_W - 2, GROUND_Y - SLIDE_H + 4, 8, 6)
+        rect("fill", PLAYER_X + PLAYER_W - 2, GROUND_Y - SLIDE_H + 4, 8, 6)
     else
         -- Body
         lurek.render.setColor(0.2, 0.7, 1.0, 1)
-        lurek.render.rectangle("fill", PLAYER_X, player.y, PLAYER_W, PLAYER_H)
+        rect("fill", PLAYER_X, player.y, PLAYER_W, PLAYER_H)
         -- Head
         lurek.render.setColor(0.9, 0.75, 0.6, 1)
-        lurek.render.circle("fill", PLAYER_X + PLAYER_W / 2, player.y - 6, 10)
+        circ("fill", PLAYER_X + PLAYER_W / 2, player.y - 6, 10)
         -- Eye
         lurek.render.setColor(1, 1, 1, 1)
-        lurek.render.circle("fill", PLAYER_X + PLAYER_W / 2 + 4, player.y - 8, 3)
+        circ("fill", PLAYER_X + PLAYER_W / 2 + 4, player.y - 8, 3)
         lurek.render.setColor(0, 0, 0, 1)
-        lurek.render.circle("fill", PLAYER_X + PLAYER_W / 2 + 5, player.y - 8, 1.5)
+        circ("fill", PLAYER_X + PLAYER_W / 2 + 5, player.y - 8, 1.5)
         -- Animated legs
         local leg_phase = math.sin(distance * 0.08) * 6
         lurek.render.setColor(0.15, 0.5, 0.85, 1)
-        lurek.render.rectangle("fill", PLAYER_X + 4,  player.y + PLAYER_H, 6, 8 + leg_phase)
-        lurek.render.rectangle("fill", PLAYER_X + 18, player.y + PLAYER_H, 6, 8 - leg_phase)
+        rect("fill", PLAYER_X + 4,  player.y + PLAYER_H, 6, 8 + leg_phase)
+        rect("fill", PLAYER_X + 18, player.y + PLAYER_H, 6, 8 - leg_phase)
     end
 end
 
@@ -391,21 +446,21 @@ local function draw_obstacles()
     for _, obs in ipairs(obstacles) do
         if obs.is_gap then
             lurek.render.setColor(0.1, 0.08, 0.05, 1)
-            lurek.render.rectangle("fill", obs.x, obs.y, obs.w, SCREEN_H - obs.y)
+            rect("fill", obs.x, obs.y, obs.w, SCREEN_H - obs.y)
             lurek.render.setColor(0.9, 0.2, 0.1, 0.7)
-            lurek.render.rectangle("fill", obs.x, obs.y, 4, 20)
-            lurek.render.rectangle("fill", obs.x + obs.w - 4, obs.y, 4, 20)
+            rect("fill", obs.x, obs.y, 4, 20)
+            rect("fill", obs.x + obs.w - 4, obs.y, 4, 20)
         elseif obs.kind == "tall" then
             lurek.render.setColor(0.7, 0.15, 0.1, 1)
-            lurek.render.rectangle("fill", obs.x, obs.y, obs.w, obs.h)
+            rect("fill", obs.x, obs.y, obs.w, obs.h)
             lurek.render.setColor(0.9, 0.8, 0.1, 0.8)
-            lurek.render.rectangle("fill", obs.x + 4, obs.y + obs.h / 2 - 3, obs.w - 8, 6)
+            rect("fill", obs.x + 4, obs.y + obs.h / 2 - 3, obs.w - 8, 6)
         elseif obs.kind == "low" then
             lurek.render.setColor(0.6, 0.4, 0.1, 1)
-            lurek.render.rectangle("fill", obs.x, obs.y, obs.w, obs.h)
+            rect("fill", obs.x, obs.y, obs.w, obs.h)
             lurek.render.setColor(0.5, 0.35, 0.1, 1)
-            lurek.render.rectangle("fill", obs.x, obs.y + obs.h, 4, GROUND_Y - obs.y - obs.h)
-            lurek.render.rectangle("fill", obs.x + obs.w - 4, obs.y + obs.h, 4, GROUND_Y - obs.y - obs.h)
+            rect("fill", obs.x, obs.y + obs.h, 4, GROUND_Y - obs.y - obs.h)
+            rect("fill", obs.x + obs.w - 4, obs.y + obs.h, 4, GROUND_Y - obs.y - obs.h)
         end
     end
 end
@@ -416,14 +471,15 @@ local function draw_coins()
             local wobble = math.abs(math.sin(distance * 0.05 + c.x * 0.1))
             local w = COIN_SIZE * (0.4 + 0.6 * wobble)
             lurek.render.setColor(1.0, 0.85, 0.1, 1)
-            lurek.render.circle("fill", c.x, c.y, w)
+            circ("fill", c.x, c.y, w)
             lurek.render.setColor(0.9, 0.7, 0.0, 1)
-            lurek.render.circle("fill", c.x, c.y, w * 0.6)
+            circ("fill", c.x, c.y, w * 0.6)
         end
     end
 end
 
 -- ── load ──────────────────────────────────────────────────────────────────
+
 function lurek.init()
     lurek.window.setTitle("Endless Runner — Lurek2D")
     lurek.render.setBackgroundColor(0.4, 0.6, 0.9)
@@ -533,7 +589,7 @@ end
 function lurek.draw()
     -- Sky gradient band near horizon
     lurek.render.setColor(0.55, 0.75, 1.0, 0.3)
-    lurek.render.rectangle("fill", 0, GROUND_Y - 80, SCREEN_W, 80)
+    rect("fill", 0, GROUND_Y - 80, SCREEN_W, 80)
 
     draw_parallax()
 
@@ -549,99 +605,99 @@ function lurek.draw()
 
     -- Particles (world space)
     lurek.render.setColor(1, 1, 1, 1)
-    dust_ps:draw()
-    coin_ps:draw()
-    death_ps:draw()
+    dust_ps:render()
+    coin_ps:render()
+    death_ps:render()
 end
 
 -- ── render_ui (screen space — HUD, title, death) ──────────────────────────
 function lurek.draw_ui()
     if scene == STATE.TITLE then
         lurek.render.setColor(1, 1, 1, 1)
-        lurek.render.print("ENDLESS RUNNER", SCREEN_W / 2 - 160, 140, 3)
+        text_("ENDLESS RUNNER", SCREEN_W / 2 - 160, 140, 3)
 
         lurek.render.setColor(0.9, 0.85, 0.7, 1)
-        lurek.render.print("Run. Jump. Slide. Survive.", SCREEN_W / 2 - 115, 210, 1.2)
+        text_("Run. Jump. Slide. Survive.", SCREEN_W / 2 - 115, 210, 1.2)
 
         if high_score > 0 then
             lurek.render.setColor(1, 0.85, 0.1, 1)
-            lurek.render.print("HIGH SCORE: " .. math.floor(high_score) .. "m", SCREEN_W / 2 - 80, 270, 1.2)
+            text_("HIGH SCORE: " .. math.floor(high_score) .. "m", SCREEN_W / 2 - 80, 270, 1.2)
         end
 
         local alpha = 0.4 + 0.6 * math.abs(math.sin(title_blink * 2.5))
         lurek.render.setColor(1, 1, 0.3, alpha)
-        lurek.render.print("PRESS ENTER", SCREEN_W / 2 - 60, 340, 1.5)
+        text_("PRESS ENTER", SCREEN_W / 2 - 60, 340, 1.5)
 
         lurek.render.setColor(0.7, 0.7, 0.7, 1)
-        lurek.render.print("Jump: Space/W/Up   Slide: S/Down   Quit: Escape", SCREEN_W / 2 - 210, 430, 1)
-        lurek.render.print("Double jump unlocks at 500m!", SCREEN_W / 2 - 120, 460, 1)
+        text_("Jump: Space/W/Up   Slide: S/Down   Quit: Escape", SCREEN_W / 2 - 210, 430, 1)
+        text_("Double jump unlocks at 500m!", SCREEN_W / 2 - 120, 460, 1)
 
         lurek.render.setColor(0.4, 0.4, 0.4, 1)
-        lurek.render.print(tostring(lurek.timer.getFPS()) .. " FPS", SCREEN_W - 80, SCREEN_H - 18, 1)
+        text_(tostring(lurek.timer.getFPS()) .. " FPS", SCREEN_W - 80, SCREEN_H - 18, 1)
         return
     end
 
     -- ── HUD ───────────────────────────────────────────────────────────────
     lurek.render.setColor(1, 1, 1, 1)
-    lurek.render.print("DISTANCE", 10, 8, 1)
+    text_("DISTANCE", 10, 8, 1)
     lurek.render.setColor(0.3, 1, 0.5, 1)
-    lurek.render.print(math.floor(distance) .. "m", 90, 8, 1.1)
+    text_(math.floor(distance) .. "m", 90, 8, 1.1)
 
     lurek.render.setColor(1, 0.85, 0.1, 1)
-    lurek.render.print("COINS", 10, 30, 1)
+    text_("COINS", 10, 30, 1)
     lurek.render.setColor(1, 0.9, 0.3, 1)
-    lurek.render.print(tostring(coins_collected), 65, 30, coin_flash.scale)
+    text_(tostring(coins_collected), 65, 30, coin_flash.scale)
 
     local total = math.floor(distance) + coins_collected * COIN_SCORE
     lurek.render.setColor(1, 1, 1, 1)
-    lurek.render.print("SCORE", SCREEN_W / 2 - 40, 8, 1)
+    text_("SCORE", SCREEN_W / 2 - 40, 8, 1)
     lurek.render.setColor(0.4, 0.9, 1, 1)
-    lurek.render.print(tostring(total), SCREEN_W / 2 + 20, 8, 1.1)
+    text_(tostring(total), SCREEN_W / 2 + 20, 8, 1.1)
 
     lurek.render.setColor(0.8, 0.8, 0.8, 1)
-    lurek.render.print("SPEED", SCREEN_W - 130, 8, 1)
+    text_("SPEED", SCREEN_W - 130, 8, 1)
     lurek.render.setColor(1, 0.5 + 0.5 * (scroll_speed / SPEED_CAP), 0.2, 1)
-    lurek.render.print(math.floor(scroll_speed), SCREEN_W - 70, 8, 1.1)
+    text_(math.floor(scroll_speed), SCREEN_W - 70, 8, 1.1)
 
     -- Speed increase flash
     if speed_flash.alpha > 0.01 then
         lurek.render.setColor(1, 1, 0.3, speed_flash.alpha)
-        lurek.render.print("SPEED UP!", SCREEN_W / 2 - 45, SCREEN_H / 2 - 60, 2)
+        text_("SPEED UP!", SCREEN_W / 2 - 45, SCREEN_H / 2 - 60, 2)
     end
 
     -- Double jump indicator
     if distance >= DOUBLE_JUMP_DIST then
         lurek.render.setColor(0.3, 0.9, 1, 0.7)
-        lurek.render.print("2x JUMP", SCREEN_W - 100, 30, 1)
+        text_("2x JUMP", SCREEN_W - 100, 30, 1)
     end
 
     if high_score > 0 then
         lurek.render.setColor(1, 0.85, 0.1, 0.5)
-        lurek.render.print("BEST: " .. math.floor(high_score) .. "m", SCREEN_W - 130, SCREEN_H - 18, 1)
+        text_("BEST: " .. math.floor(high_score) .. "m", SCREEN_W - 130, SCREEN_H - 18, 1)
     end
 
     lurek.render.setColor(0.4, 0.4, 0.4, 1)
-    lurek.render.print(tostring(lurek.timer.getFPS()) .. " FPS", 10, SCREEN_H - 18, 1)
+    text_(tostring(lurek.timer.getFPS()) .. " FPS", 10, SCREEN_H - 18, 1)
 
     -- ── Death overlay ─────────────────────────────────────────────────────
     if scene == STATE.DEAD then
         lurek.render.setColor(0, 0, 0, 0.55)
-        lurek.render.rectangle("fill", SCREEN_W / 2 - 180, SCREEN_H / 2 - 80, 360, 180)
+        rect("fill", SCREEN_W / 2 - 180, SCREEN_H / 2 - 80, 360, 180)
 
         lurek.render.setColor(0.9, 0.15, 0.1, 1)
-        lurek.render.print("GAME OVER", SCREEN_W / 2 - 90, SCREEN_H / 2 - 60, 2.5)
+        text_("GAME OVER", SCREEN_W / 2 - 90, SCREEN_H / 2 - 60, 2.5)
 
         lurek.render.setColor(1, 1, 1, 1)
-        lurek.render.print("Distance: " .. math.floor(distance) .. "m", SCREEN_W / 2 - 65, SCREEN_H / 2 + 5, 1.2)
-        lurek.render.print("Coins: " .. coins_collected .. " (+" .. coins_collected * COIN_SCORE .. ")", SCREEN_W / 2 - 75, SCREEN_H / 2 + 30, 1)
+        text_("Distance: " .. math.floor(distance) .. "m", SCREEN_W / 2 - 65, SCREEN_H / 2 + 5, 1.2)
+        text_("Coins: " .. coins_collected .. " (+" .. coins_collected * COIN_SCORE .. ")", SCREEN_W / 2 - 75, SCREEN_H / 2 + 30, 1)
 
         local final_score = math.floor(distance) + coins_collected * COIN_SCORE
         lurek.render.setColor(0.4, 0.9, 1, 1)
-        lurek.render.print("TOTAL: " .. final_score, SCREEN_W / 2 - 50, SCREEN_H / 2 + 55, 1.3)
+        text_("TOTAL: " .. final_score, SCREEN_W / 2 - 50, SCREEN_H / 2 + 55, 1.3)
 
         local alpha = 0.4 + 0.6 * math.abs(math.sin(title_blink * 3))
         lurek.render.setColor(1, 1, 0.3, alpha)
-        lurek.render.print("PRESS ENTER", SCREEN_W / 2 - 60, SCREEN_H / 2 + 85, 1.2)
+        text_("PRESS ENTER", SCREEN_W / 2 - 60, SCREEN_H / 2 + 85, 1.2)
     end
 end
 
