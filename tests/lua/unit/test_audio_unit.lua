@@ -1679,7 +1679,7 @@ describe("lurek.audio.setStereoWidth", function()
     -- @tests lurek.audio.setStereoWidth
     it("errors on invalid source handle", function()
         expect_error(function()
-            lurek.audio.setStereoWidth(99999999, 1.0)
+            lurek.audio.setStereoWidth(99999999, 1.0) ---@diagnostic disable-line: param-type-mismatch
         end, "invalid")
     end)
 end)
@@ -1703,7 +1703,7 @@ describe("lurek.audio.setRandomPitch", function()
     -- @tests lurek.audio.setRandomPitch
     it("errors on invalid source", function()
         expect_error(function()
-            lurek.audio.setRandomPitch(12345678, 0.9, 1.1)
+            lurek.audio.setRandomPitch(12345678, 0.9, 1.1) ---@diagnostic disable-line: param-type-mismatch
         end, "invalid")
     end)
 
@@ -1737,7 +1737,7 @@ describe("lurek.audio.crossfade", function()
     it("errors if first source is invalid", function()
         local src_b = lurek.audio.newSource(WAVE, "static")
         expect_error(function()
-            lurek.audio.crossfade(99999999, src_b, 0.5)
+            lurek.audio.crossfade(99999999, src_b, 0.5) ---@diagnostic disable-line: param-type-mismatch
         end, "invalid")
     end)
 end)

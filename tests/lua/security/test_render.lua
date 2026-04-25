@@ -3,6 +3,7 @@
 
 -- Lurek2D Security Test: API Fuzz / Nil Spam
 -- Tests that core APIs handle nil, wrong types, and edge cases gracefully
+---@diagnostic disable: param-type-mismatch
 
 -- @description Covers suite: fuzz: nil arguments to core APIs.
 describe("fuzz: nil arguments to core APIs", function()
@@ -367,7 +368,8 @@ describe("validation: physics invalid args", function()
         local world_id = lurek.physics.newWorld(0, 100)
         -- Engine may accept or coerce invalid types
         expect_no_error(function()
-            lurek.physics.newBody(world_id, 0, 0, "invalid_type")
+            local invalid_bt = "invalid_type"
+            lurek.physics.newBody(world_id, 0, 0, invalid_bt)
         end, "invalid body type should not crash")
     end)
 

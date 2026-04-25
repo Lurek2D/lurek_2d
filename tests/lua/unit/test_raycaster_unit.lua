@@ -330,7 +330,7 @@ describe("lurek.raycaster castFloorRow", function()
         xit("table length equals screen width", function()
             local rc = make_raycaster()
             local uvs = rc:castFloorRow(cam_x, cam_y, dir_x, dir_y, plane_x, plane_y, 100)
-            local w = rc:getScreenWidth()
+            local w = rc:getScreenWidth() ---@diagnostic disable-line: undefined-field
             expect_equal(w, #uvs)
         end)
 
@@ -363,7 +363,7 @@ describe("lurek.raycaster castFloorRow", function()
         -- @description Calling for multiple rows does not error.
         xit("works for consecutive rows", function()
             local rc = make_raycaster()
-            local h = rc:getScreenHeight()
+            local h = rc:getScreenHeight() ---@diagnostic disable-line: undefined-field
             for row = math.floor(h / 2), h - 1 do
                 local uvs = rc:castFloorRow(cam_x, cam_y, dir_x, dir_y, plane_x, plane_y, row)
                 expect_type("table", uvs)
@@ -803,7 +803,7 @@ describe("DoorManager:addDoor", function()
     it("addDoor increments door count", function()
         -- @covers DoorManager:addDoor
         local dm = lurek.raycaster.newDoorManager()
-        dm:addDoor(3, 5, 0, 0.0)
+        dm:addDoor(3, 5, "horizontal", 0.0)
         expect_equal(1, dm:count())
     end)
 end)
@@ -857,7 +857,7 @@ describe("SpriteManager:add", function()
     it("add does not crash", function()
         -- @covers SpriteManager:add
         local sm = lurek.raycaster.newSpriteManager()
-        local ok, _ = pcall(function() sm:add(1, 5.0, 5.0, {}) end)
+        local ok, _ = pcall(function() sm:add(1, 5.0, 5.0, {}) end) ---@diagnostic disable-line: param-type-mismatch
         expect_type("boolean", ok)
     end)
 end)

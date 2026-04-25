@@ -30,13 +30,13 @@ end
 local function check_png(name)
     local out = evidence_output_dir() .. name .. ".png"
     local sample = sample_dir() .. "/" .. name .. ".png"
-    expect_golden_file_match(out, sample, 0.05) -- allow 5% difference for rendering variance
+    expect_golden_file_match(out, sample)
 end
 
 local function check_wav(name)
     local out = evidence_output_dir() .. name .. ".wav"
     local sample = sample_dir() .. "/" .. name .. ".wav"
-    expect_golden_file_match(out, sample, 0.05)
+    expect_golden_file_match(out, sample)
 end
 
 -- @description Covers suite: Migrated Golden Tests 20.

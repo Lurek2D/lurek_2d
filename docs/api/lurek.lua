@@ -18526,6 +18526,10 @@ lurek.thread.newPool = function(size, code) end
 lurek.thread.newThread = function(code) end
 
 ---@class lurek.tilemap
+---@field FLOOR integer  IsoMap floor layer index (1)
+---@field NORTH_WALL integer  IsoMap north-wall layer index (2)
+---@field WEST_WALL integer  IsoMap west-wall layer index (3)
+---@field OBJECT integer  IsoMap object layer index (4)
 lurek.tilemap = {}
 
 --- Lua-side wrapper around an [`AutoTileSheet`].
@@ -19860,21 +19864,18 @@ function Tween:isActive() end
 
 --- Sets a callback called when the tween is cancelled. Returns self.
 ---@param fn function
----@param f any
 ---@return Tween
-Tween.onCancel = function(fn, f) end
+function Tween:onCancel(fn) end
 
 --- Sets a callback to fire when the tween finishes all cycles. Returns self for chaining.
 ---@param fn function
----@param f any
 ---@return Tween
-Tween.onComplete = function(fn, f) end
+function Tween:onComplete(fn) end
 
 --- Sets a callback called every tick with the current eased `t` (0..=1). Returns self.
 ---@param fn function
----@param f any
 ---@return Tween
-Tween.onUpdate = function(fn, f) end
+function Tween:onUpdate(fn) end
 
 --- Pauses this tween; time stops advancing but the tween is not cancelled.
 ---@return nil
@@ -19899,9 +19900,10 @@ function Tween:setYoyo(enabled) end
 TweenParallel = {}
 
 --- Adds an existing LuaTween to the parallel group; marks the tween as owned.
+---@param tween Tween
 ---@param tw_ud any
 ---@return nil
-function TweenParallel:add(tw_ud) end
+TweenParallel.add = function(tween, tw_ud) end
 
 --- Cancels the parallel group immediately.
 ---@return nil
@@ -19912,9 +19914,9 @@ function TweenParallel:cancel() end
 function TweenParallel:isActive() end
 
 --- Sets a callback fired when all child tweens finish. Returns self.
----@param f any
+---@param fn function
 ---@return TweenParallel
-function TweenParallel:onComplete(f) end
+function TweenParallel:onComplete(fn) end
 
 --- Marks the parallel as active. Returns self.
 ---@return TweenParallel
@@ -19933,9 +19935,9 @@ function TweenParallel:tween(duration, target, fields, easing) end
 TweenSequence = {}
 
 --- Appends an immediate callback step. Returns self.
----@param f any
+---@param fn function
 ---@return TweenSequence
-function TweenSequence:callback(f) end
+function TweenSequence:callback(fn) end
 
 --- Cancels the sequence and stops all pending steps.
 ---@return nil
@@ -19943,19 +19945,17 @@ function TweenSequence:cancel() end
 
 --- Appends a delay step that waits `seconds` before proceeding. Returns self.
 ---@param seconds number
----@param fn? function
----@param cb? any
 ---@return TweenSequence
-function TweenSequence:delay(seconds, fn, cb) end
+function TweenSequence:delay(seconds) end
 
 --- Returns true if the sequence has been started and has not yet completed.
 ---@return boolean
 function TweenSequence:isActive() end
 
 --- Sets a callback fired when all steps complete. Returns self.
----@param f any
+---@param fn function
 ---@return TweenSequence
-function TweenSequence:onComplete(f) end
+function TweenSequence:onComplete(fn) end
 
 --- Marks the sequence as active so `lurek.tween.update(dt)` begins ticking it. Returns self.
 ---@return TweenSequence
@@ -19971,6 +19971,7 @@ function TweenSequence:tween(duration, target, fields, easing) end
 
 --- Lua-side wrapper around the pure-Rust [`TweenState`] timing core.
 ---@class TweenState
+---@field paused boolean  When true, tick() does not advance progress.
 TweenState = {}
 
 --- Returns whether the tween state has completed.

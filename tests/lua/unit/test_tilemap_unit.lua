@@ -692,6 +692,7 @@ describe("TileMap tileset management", function()
         tm:addTileSet(ts)
         local retrieved = tm:getTileSet(1)
         expect_type("userdata", retrieved)
+        assert(retrieved ~= nil, "expected tileset")
         expect_equal(1, retrieved:getFirstGid())
     end)
 
@@ -1815,7 +1816,7 @@ describe("lurek.tilemap.newMapGen", function()
     -- @description Confirms newMapGen also accepts explicit numeric dimensions.
     it("creates a MapGen from numeric dimensions", function()
         local group = lurek.tilemap.newMapGroup("world")
-        local gen = lurek.tilemap.newMapGen(group, 4, 4)
+        local gen = lurek.tilemap.newMapGen(group, 4, 4) ---@diagnostic disable-line: param-type-mismatch
         expect_type("userdata", gen)
     end)
 
@@ -2004,7 +2005,7 @@ describe("lurek.tilemap extended", function()
         end)
 
         xit("listed GIDs are walkable", function()
-            local tm = lurek.tilemap.new(2, 1, 16, 16)
+            local tm = lurek.tilemap.newTileMap(16, 16)
             tm:setTile(1, 0, 0, 5)
             tm:setTile(1, 1, 0, 6)
             local grid = tm:toNavGrid(1, {5})
@@ -2015,13 +2016,13 @@ describe("lurek.tilemap extended", function()
 
     describe("onTileEnter() / checkEntities()", function()
         xit("onTileEnter accepts a callback", function()
-            local tm = lurek.tilemap.new(4, 4, 16, 16)
+            local tm = lurek.tilemap.newTileMap(16, 16)
             tm:onTileEnter(5, function(wx, wy, tx, ty) end)
             expect_equal(true, true)
         end)
 
         xit("callback fires for a matching tile", function()
-            local tm = lurek.tilemap.new(4, 4, 16, 16)
+            local tm = lurek.tilemap.newTileMap(16, 16)
             tm:setTile(1, 0, 0, 5)
             local fired = false
             tm:onTileEnter(5, function(wx, wy, tx, ty)
@@ -2032,7 +2033,7 @@ describe("lurek.tilemap extended", function()
         end)
 
         xit("callback does not fire for a non-matching tile", function()
-            local tm = lurek.tilemap.new(4, 4, 16, 16)
+            local tm = lurek.tilemap.newTileMap(16, 16)
             tm:setTile(1, 0, 0, 3)
             local fired = false
             tm:onTileEnter(5, function()
@@ -2517,8 +2518,8 @@ end)
 -- =========================================================================
 describe("tilemap tile step/exit callbacks", function()
     it("onTileStep exists on TileMap userdata", function()
-        if lurek.tilemap and lurek.tilemap.newMap then
-            local m = lurek.tilemap.newMap(16, 16)
+        if lurek.tilemap and lurek.tilemap.newTileMap then
+            local m = lurek.tilemap.newTileMap(16, 16)
             if m then
                 expect_equal(type(m.onTileStep), "function")
             end
@@ -2526,8 +2527,8 @@ describe("tilemap tile step/exit callbacks", function()
     end)
 
     it("onTileExit exists on TileMap userdata", function()
-        if lurek.tilemap and lurek.tilemap.newMap then
-            local m = lurek.tilemap.newMap(16, 16)
+        if lurek.tilemap and lurek.tilemap.newTileMap then
+            local m = lurek.tilemap.newTileMap(16, 16)
             if m then
                 expect_equal(type(m.onTileExit), "function")
             end
@@ -2535,8 +2536,8 @@ describe("tilemap tile step/exit callbacks", function()
     end)
 
     it("fireTileStep exists on TileMap userdata", function()
-        if lurek.tilemap and lurek.tilemap.newMap then
-            local m = lurek.tilemap.newMap(16, 16)
+        if lurek.tilemap and lurek.tilemap.newTileMap then
+            local m = lurek.tilemap.newTileMap(16, 16)
             if m then
                 expect_equal(type(m.fireTileStep), "function")
             end
@@ -2544,8 +2545,8 @@ describe("tilemap tile step/exit callbacks", function()
     end)
 
     it("fireTileExit exists on TileMap userdata", function()
-        if lurek.tilemap and lurek.tilemap.newMap then
-            local m = lurek.tilemap.newMap(16, 16)
+        if lurek.tilemap and lurek.tilemap.newTileMap then
+            local m = lurek.tilemap.newTileMap(16, 16)
             if m then
                 expect_equal(type(m.fireTileExit), "function")
             end
@@ -2553,8 +2554,8 @@ describe("tilemap tile step/exit callbacks", function()
     end)
 
     it("onTileStep accepts a function without error", function()
-        if lurek.tilemap and lurek.tilemap.newMap then
-            local m = lurek.tilemap.newMap(16, 16)
+        if lurek.tilemap and lurek.tilemap.newTileMap then
+            local m = lurek.tilemap.newTileMap(16, 16)
             if m and m.onTileStep then
                 local ok = pcall(function()
                     m:onTileStep(1, function(entity, tx, ty) end)
@@ -2565,8 +2566,8 @@ describe("tilemap tile step/exit callbacks", function()
     end)
 
     it("onTileExit accepts a function without error", function()
-        if lurek.tilemap and lurek.tilemap.newMap then
-            local m = lurek.tilemap.newMap(16, 16)
+        if lurek.tilemap and lurek.tilemap.newTileMap then
+            local m = lurek.tilemap.newTileMap(16, 16)
             if m and m.onTileExit then
                 local ok = pcall(function()
                     m:onTileExit(1, function(entity, tx, ty) end)
@@ -2577,8 +2578,8 @@ describe("tilemap tile step/exit callbacks", function()
     end)
 
     it("fireTileStep invokes registered callback", function()
-        if lurek.tilemap and lurek.tilemap.newMap then
-            local m = lurek.tilemap.newMap(16, 16)
+        if lurek.tilemap and lurek.tilemap.newTileMap then
+            local m = lurek.tilemap.newTileMap(16, 16)
             if m and m.onTileStep and m.fireTileStep then
                 local called = false
                 m:onTileStep(5, function(entity, tx, ty)

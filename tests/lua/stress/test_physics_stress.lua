@@ -199,7 +199,7 @@ describe("physics stress: collision storm", function()
         for i = 1, 200 do
             local x = (i % 20) * 15 + 50
             local y = math.floor(i / 20) * 15
-            lurek.physics.newCircleBody(world, x, y, 5, "dynamic")
+            world:newCircleBody(x, y, 5, "dynamic")
         end
 
         -- Step 180 times (3 seconds)

@@ -4,30 +4,38 @@ All notable changes to Lurek2D are recorded here.
 
 ## [0.20.38] - 2026-04-25
 
-### docs(research): added smallest-html-renderers report
-- **`work/html-rendering-research/reports/smallest-html-renderers.md`**: Created a comparison of native Rust HTML renderers focusing on minimal binary footprint.
+### fix(tests, stubs): fix LuaLS diagnostics in 7 test files and regenerate type stubs
 
-### fix(tests, examples, stubs): fix LuaLS redundant/missing-parameter diagnostics
+- **`docs/api/lurek.lua`**: Regenerated via `tools/docs/gen_luadoc.py`. Added `@field` annotations for
+  `lurek.tilemap.FLOOR/NORTH_WALL/WEST_WALL/OBJECT` constants, `TweenState.paused` field. Fixed method
+  stubs for `Tween:onCancel/onComplete/onUpdate`, `TweenParallel:onComplete/start/tween`,
+  `TweenSequence:callback/delay/onComplete/start/tween` from dot-notation to colon-notation.
+  Fixed `Shape:polygon` to variadic `...`. Made `newQueueableSource` `buffer_count` param optional.
+- **`tests/lua/golden/test_math_golden.lua`**: Removed spurious numeric tolerance argument from
+  `expect_golden_file_match` (signature is `(out, sample, msg?)` — no float tolerance param).
+- **`tests/lua/stress/test_patterns_stress.lua`**: Fixed `obs:notify()` → `obs:set("x", true)`;
+  fixed `lurek.patterns.newCommandQueue/StateMachine` → `lurek.ai.newCommandQueue/newStateMachine`;
+  updated `@covers` annotations and method names (`getState/setState` → `getCurrentState/forceState`,
+  `push/executeAll` → `enqueue/getCount`, `setInitialState` added).
+- **`tests/lua/stress/test_serial_stress.lua`**: Fixed `lurek.serial.base64Encode/Decode` →
+  `lurek.data.encode/decode("base64", ...)`. Added `---@diagnostic disable-line: param-type-mismatch`
+  on intentional table-to-string JSON encode call.
+- **`tests/lua/stress/test_physics_stress.lua`**: Fixed `lurek.physics.newCircleBody(world, ...)` →
+  method call `world:newCircleBody(...)`.
+- **`tests/lua/unit/test_raycaster_unit.lua`**: Added `---@diagnostic disable-line` for nonexistent
+  `getScreenWidth/Height` calls in disabled `xit` blocks, and for intentional wrong-type param in error
+  path tests.
+- **`tests/lua/unit/test_tilemap_unit.lua`**: Added nil-check assert before `retrieved:getFirstGid()`.
+  Fixed `lurek.tilemap.new(w,h,tw,th)` and `lurek.tilemap.newMap(...)` → `lurek.tilemap.newTileMap(...)`
+  (4 xit-block occurrences + 7 it-block occurrences). Suppressed intentional `newMapGen` param mismatch.
+- **`tests/lua/library/test_library_province_map.lua`**: Added `assert(e ~= nil)` guards after all
+  `bus:poll()` calls; added nil guards after `calculateCapital` and `findRoute` results.
+- **`tests/lua/security/test_render.lua`**: Added `---@diagnostic disable: param-type-mismatch` at
+  file top (security fuzz test — all mismatches are intentional).
+- **`tests/lua/unit/test_audio_unit.lua`**: Added `---@diagnostic disable-line: param-type-mismatch`
+  on intentional invalid-handle fuzz calls.
 
-- **`docs/api/lurek.lua`**: Fixed `TweenSequence.tween` and `TweenParallel.tween` stub style from
-  `.method = function(...)` to `:method(...)` so LuaLS sees self correctly.
-  Fixed `Shape:polygon(mode, coords)` to accept variadic vertex args `Shape:polygon(mode, ...)`.
-  Marked `lurek.patterns.newObserver` `name` param as optional (`name?`).
-- **`tests/lua/stress/test_physics_stress.lua`**: Removed extra width/height args from
-  `world:newBody(x, y, w, h, type)` → `world:newBody(x, y, type)` (Rust: 3 params).
-- **`tests/lua/unit/test_gui_unit.lua`**: `lurek.ui.mousemoved(100, 100, 0, 0)` → `lurek.ui.mousemoved(100, 100)`.
-- **`tests/lua/stress/test_save_stress.lua`**: `sm:setSummary("k", v)` → `sm:setSummary(tostring(v))`;
-  `sm:getSummary("k")` → `sm:getSummary()`.
-- **`tests/lua/stress/test_serial_stress.lua`**, **`tests/lua/security/test_render.lua`**:
-  Added required `"deflate"` format arg to `compress`/`decompress` calls.
-- **`tests/lua/integration/test_tilemap_camera.lua`**: Removed extra 4th arg from `newTileMap` calls (3 params).
-- **`tests/lua/unit/test_raycaster_unit.lua`**: Removed extra arg from `newPointLight` (7 params, not 8).
-  Fixed `lurek.raycaster.new` calls and other raycaster method arities.
-- **`tests/lua/unit/test_tilemap_unit.lua`**, **`tests/lua/library/test_library_province_map.lua`**:
-  Fixed call site arity to match actual Rust-registered signatures.
-- **`tests/lua/stress/test_patterns_stress.lua`**, **`tests/lua/unit/test_audio_unit.lua`**:
-  Added missing required arguments at call sites.
-- **`tests/lua/golden/test_math_golden.lua`**, **`tests/lua/demos/test_globe_demo.lua`**:
+
   Suppressed false-positive LuaLS diagnostics with `---@diagnostic disable-line` annotations.
 - **`content/examples/tween.lua`**, **`content/examples/ui.lua`**: Fixed call sites to match corrected stubs.
 
