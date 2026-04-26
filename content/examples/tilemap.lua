@@ -1898,121 +1898,156 @@ end
 
 -- ---- Stub: LLargeMapRenderer:setMapData ----------------------------------
 --@api-stub: LLargeMapRenderer:setMapData
--- Loads a flat array of tile IDs (row-major) covering width Ă— height tiles.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lLargeMapRenderer_stub:setMapData(data, 256, 256)
--- (replace lLargeMapRenderer_stub with your real LLargeMapRenderer instance above)
-
--- ---- Stub: LLargeMapRenderer:setTile -------------------------------------
+-- Loads a flat array of tile IDs (row-major) covering width × height tiles.
+-- Call once after creation to load the full tile array.
+do  -- LLargeMapRenderer:setMapData
+  local lmr = lurek.tilemap.newLargeMapRenderer(16, 16)
+  local map_data = {}
+  for i = 1, 8 * 8 do map_data[i] = (i % 4) + 1 end
+  lmr:setMapData(map_data, 8, 8)
+  lurek.log.info("map loaded: " .. lmr:getMapSize(), "tilemap")
+end
 --@api-stub: LLargeMapRenderer:setTile
 -- Sets a single tile ID at (x, y).  Coordinates are 0-based.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lLargeMapRenderer_stub:setTile(0.0, 0.0, tile_id)
--- (replace lLargeMapRenderer_stub with your real LLargeMapRenderer instance above)
-
--- ---- Stub: LLargeMapRenderer:getTile -------------------------------------
+-- Use for real-time tile edits (e.g. destroying a tile on player impact).
+do  -- LLargeMapRenderer:setTile
+  local lmr = lurek.tilemap.newLargeMapRenderer(16, 16)
+  local data = {}; for i = 1, 8*8 do data[i] = 1 end
+  lmr:setMapData(data, 8, 8)
+  lmr:setTile(3, 2, 5)   -- (0-based col=3, row=2) → tile 5
+  lurek.log.info("tile(3,2)=" .. tostring(lmr:getTile(3, 2)), "tilemap")
+end
 --@api-stub: LLargeMapRenderer:getTile
 -- Returns the tile ID at (x, y), or nil if out of bounds.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lLargeMapRenderer_stub:getTile(0.0, 0.0)  -- -> integer?
--- (replace lLargeMapRenderer_stub with your real LLargeMapRenderer instance above)
-
--- ---- Stub: LLargeMapRenderer:getMapSize ----------------------------------
+-- Use to query terrain type or collision group for a given cell.
+do  -- LLargeMapRenderer:getTile
+  local lmr = lurek.tilemap.newLargeMapRenderer(16, 16)
+  local data = {}; for i = 1, 4*4 do data[i] = i end
+  lmr:setMapData(data, 4, 4)
+  local id = lmr:getTile(1, 2)
+  lurek.log.info("tile(1,2)=" .. tostring(id), "tilemap")
+end
 --@api-stub: LLargeMapRenderer:getMapSize
 -- Returns the map dimensions as (width, height) in tiles.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lLargeMapRenderer_stub:getMapSize()  -- -> integer, integer
--- (replace lLargeMapRenderer_stub with your real LLargeMapRenderer instance above)
-
--- ---- Stub: LLargeMapRenderer:setChunkSize --------------------------------
+-- Use to validate bounds before iterating the tile array.
+do  -- LLargeMapRenderer:getMapSize
+  local lmr = lurek.tilemap.newLargeMapRenderer(16, 16)
+  local data = {}; for i = 1, 10*10 do data[i] = 1 end
+  lmr:setMapData(data, 10, 10)
+  local w, h = lmr:getMapSize()
+  lurek.log.info("map size=" .. w .. "x" .. h, "tilemap")
+end
 --@api-stub: LLargeMapRenderer:setChunkSize
 -- Sets the chunk size used for culling (default 16).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lLargeMapRenderer_stub:setChunkSize(size)
--- (replace lLargeMapRenderer_stub with your real LLargeMapRenderer instance above)
-
--- ---- Stub: LLargeMapRenderer:getChunkSize --------------------------------
+-- Larger chunks reduce draw calls; smaller chunks improve culling precision.
+do  -- LLargeMapRenderer:setChunkSize
+  local lmr = lurek.tilemap.newLargeMapRenderer(16, 16)
+  lmr:setChunkSize(8)
+  lurek.log.info("chunk_size=" .. lmr:getChunkSize(), "tilemap")
+end
 --@api-stub: LLargeMapRenderer:getChunkSize
 -- Returns the current chunk size.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lLargeMapRenderer_stub:getChunkSize()  -- -> integer
--- (replace lLargeMapRenderer_stub with your real LLargeMapRenderer instance above)
-
--- ---- Stub: LLargeMapRenderer:invalidateChunk -----------------------------
+-- Inspect before profiling to understand the culling granularity.
+do  -- LLargeMapRenderer:getChunkSize
+  local lmr = lurek.tilemap.newLargeMapRenderer(16, 16)
+  lmr:setChunkSize(16)
+  lurek.log.info("chunk_size=" .. lmr:getChunkSize(), "tilemap")
+end
 --@api-stub: LLargeMapRenderer:invalidateChunk
--- Marks a chunk at chunk-grid coordinates (cx, cy) as dirty,
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lLargeMapRenderer_stub:invalidateChunk(cx, cy)
--- (replace lLargeMapRenderer_stub with your real LLargeMapRenderer instance above)
-
--- ---- Stub: LLargeMapRenderer:invalidateAll -------------------------------
+-- Marks a chunk at chunk-grid coordinates (cx, cy) as dirty.
+-- Call after setTile so the renderer recomputes that chunk next frame.
+do  -- LLargeMapRenderer:invalidateChunk
+  local lmr = lurek.tilemap.newLargeMapRenderer(16, 16)
+  local data = {}; for i = 1, 32*32 do data[i] = 1 end
+  lmr:setMapData(data, 32, 32)
+  lmr:setTile(5, 5, 2)
+  lmr:invalidateChunk(0, 0)   -- chunk (0,0) contains tile (5,5) for chunk_size=16
+  lurek.log.info("chunk (0,0) invalidated", "tilemap")
+end
 --@api-stub: LLargeMapRenderer:invalidateAll
 -- Marks every chunk as dirty.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lLargeMapRenderer_stub:invalidateAll()
--- (replace lLargeMapRenderer_stub with your real LLargeMapRenderer instance above)
-
--- ---- Stub: LLargeMapRenderer:getVisibleChunks ----------------------------
+-- Use after batch-editing many tiles or swapping the entire tileset atlas.
+do  -- LLargeMapRenderer:invalidateAll
+  local lmr = lurek.tilemap.newLargeMapRenderer(16, 16)
+  lmr:invalidateAll()
+  lurek.log.info("all chunks invalidated", "tilemap")
+end
 --@api-stub: LLargeMapRenderer:getVisibleChunks
 -- Returns the number of chunks currently within the camera viewport.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lLargeMapRenderer_stub:getVisibleChunks()  -- -> integer
--- (replace lLargeMapRenderer_stub with your real LLargeMapRenderer instance above)
-
--- ---- Stub: LLargeMapRenderer:getTotalChunks ------------------------------
+-- Use to monitor culling efficiency during profiling.
+do  -- LLargeMapRenderer:getVisibleChunks
+  local lmr = lurek.tilemap.newLargeMapRenderer(16, 16)
+  local data = {}; for i = 1, 32*32 do data[i] = 1 end
+  lmr:setMapData(data, 32, 32)
+  lmr:setCamera(0, 0, 1.0)
+  lmr:setViewport(800, 600)
+  lurek.log.info("visible_chunks=" .. lmr:getVisibleChunks(), "tilemap")
+end
 --@api-stub: LLargeMapRenderer:getTotalChunks
 -- Returns the total number of chunks that cover the loaded map.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lLargeMapRenderer_stub:getTotalChunks()  -- -> integer
--- (replace lLargeMapRenderer_stub with your real LLargeMapRenderer instance above)
-
--- ---- Stub: LLargeMapRenderer:setCamera -----------------------------------
+-- Compare with getVisibleChunks to measure culling effectiveness.
+do  -- LLargeMapRenderer:getTotalChunks
+  local lmr = lurek.tilemap.newLargeMapRenderer(16, 16)
+  local data = {}; for i = 1, 32*32 do data[i] = 1 end
+  lmr:setMapData(data, 32, 32)
+  lurek.log.info("total_chunks=" .. lmr:getTotalChunks(), "tilemap")
+end
 --@api-stub: LLargeMapRenderer:setCamera
 -- Updates the camera position and zoom used for visibility culling.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lLargeMapRenderer_stub:setCamera(0.0, 0.0, zoom)
--- (replace lLargeMapRenderer_stub with your real LLargeMapRenderer instance above)
-
--- ---- Stub: LLargeMapRenderer:setViewport ---------------------------------
+-- Call every frame with the current camera state before rendering.
+do  -- LLargeMapRenderer:setCamera
+  local lmr = lurek.tilemap.newLargeMapRenderer(16, 16)
+  lmr:setCamera(128, 64, 2.0)   -- camera at world (128, 64), zoom 2×
+  lmr:setViewport(800, 600)
+  lurek.log.info("camera updated, visible=" .. lmr:getVisibleChunks(), "tilemap")
+end
 --@api-stub: LLargeMapRenderer:setViewport
 -- Sets the viewport dimensions in pixels used for visibility culling.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lLargeMapRenderer_stub:setViewport(64.0, 64.0)
--- (replace lLargeMapRenderer_stub with your real LLargeMapRenderer instance above)
-
--- ---- Stub: LLargeMapRenderer:setLodEnabled -------------------------------
+-- Update when the window is resized.
+do  -- LLargeMapRenderer:setViewport
+  local lmr = lurek.tilemap.newLargeMapRenderer(16, 16)
+  lmr:setViewport(1280, 720)
+  lmr:setCamera(0, 0, 1.0)
+  lurek.log.info("viewport set 1280x720", "tilemap")
+end
 --@api-stub: LLargeMapRenderer:setLodEnabled
 -- Enables or disables level-of-detail rendering for distant chunks.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lLargeMapRenderer_stub:setLodEnabled(true)
--- (replace lLargeMapRenderer_stub with your real LLargeMapRenderer instance above)
-
--- ---- Stub: LLargeMapRenderer:isLodEnabled --------------------------------
+-- Enable on large maps (100+ chunks) to reduce GPU vertex count.
+do  -- LLargeMapRenderer:setLodEnabled
+  local lmr = lurek.tilemap.newLargeMapRenderer(16, 16)
+  lmr:setLodEnabled(true)
+  lurek.log.info("lod_enabled=" .. tostring(lmr:isLodEnabled()), "tilemap")
+end
 --@api-stub: LLargeMapRenderer:isLodEnabled
 -- Returns whether LOD rendering is currently enabled.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lLargeMapRenderer_stub:isLodEnabled()  -- -> boolean
--- (replace lLargeMapRenderer_stub with your real LLargeMapRenderer instance above)
-
--- ---- Stub: LLargeMapRenderer:setLodThresholds ----------------------------
+-- Use to conditionally show a quality indicator in the options menu.
+do  -- LLargeMapRenderer:isLodEnabled
+  local lmr = lurek.tilemap.newLargeMapRenderer(16, 16)
+  lmr:setLodEnabled(false)
+  lurek.log.info("lod=" .. tostring(lmr:isLodEnabled()), "tilemap")
+end
 --@api-stub: LLargeMapRenderer:setLodThresholds
 -- Sets the distance thresholds (in tile units) at which each LOD level activates.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lLargeMapRenderer_stub:setLodThresholds(levels)
--- (replace lLargeMapRenderer_stub with your real LLargeMapRenderer instance above)
-
--- ---- Stub: LLargeMapRenderer:setTilesetColumns ---------------------------
+-- Tune for your map size: closer thresholds = more aggressive LOD pop-in.
+do  -- LLargeMapRenderer:setLodThresholds
+  local lmr = lurek.tilemap.newLargeMapRenderer(16, 16)
+  lmr:setLodEnabled(true)
+  lmr:setLodThresholds(32, 64, 128)   -- lod1 at 32 tiles, lod2 at 64, lod3 at 128
+  lurek.log.info("LOD thresholds configured", "tilemap")
+end
 --@api-stub: LLargeMapRenderer:setTilesetColumns
 -- Sets the number of tile columns in the atlas texture used for UV calculation.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lLargeMapRenderer_stub:setTilesetColumns(cols)
--- (replace lLargeMapRenderer_stub with your real LLargeMapRenderer instance above)
-
--- ---- Stub: LLargeMapRenderer:getTilesetColumns ---------------------------
+-- Must match the actual atlas layout; wrong values produce scrambled tiles.
+do  -- LLargeMapRenderer:setTilesetColumns
+  local lmr = lurek.tilemap.newLargeMapRenderer(16, 16)
+  lmr:setTilesetColumns(16)   -- 16-column atlas (e.g. 256×256 with 16×16 tiles)
+  lurek.log.info("tileset_cols=" .. lmr:getTilesetColumns(), "tilemap")
+end
 --@api-stub: LLargeMapRenderer:getTilesetColumns
 -- Returns the number of tileset atlas columns.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lLargeMapRenderer_stub:getTilesetColumns()  -- -> integer
--- (replace lLargeMapRenderer_stub with your real LLargeMapRenderer instance above)
-
-
+-- Use to verify atlas configuration is correct before rendering.
+do  -- LLargeMapRenderer:getTilesetColumns
+  local lmr = lurek.tilemap.newLargeMapRenderer(16, 16)
+  lmr:setTilesetColumns(8)
+  lurek.log.info("tileset_cols=" .. lmr:getTilesetColumns(), "tilemap")
+end

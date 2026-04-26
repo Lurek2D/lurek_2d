@@ -2815,81 +2815,109 @@ end
 -- ---- Stub: LAIBlackboard:setNumber ---------------------------------------
 --@api-stub: LAIBlackboard:setNumber
 -- Stores a number under the given key.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAIBlackboard_stub:setNumber("player_score", 42)
--- (replace lAIBlackboard_stub with your real LAIBlackboard instance above)
-
--- ---- Stub: LAIBlackboard:getNumber ---------------------------------------
+-- Use to share numeric state (health, timer, score) between AI behavior nodes.
+do  -- LAIBlackboard:setNumber
+  local bb = lurek.ai.newBlackboard()
+  bb:setNumber("health", 100)
+  bb:setNumber("aggro_timer", 3.5)
+  lurek.log.info("health=" .. bb:getNumber("health", 0), "ai")
+end
 --@api-stub: LAIBlackboard:getNumber
 -- Returns the number for the given key, or default.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAIBlackboard_stub:getNumber("player_score", [default])  -- -> number
--- (replace lAIBlackboard_stub with your real LAIBlackboard instance above)
-
--- ---- Stub: LAIBlackboard:setBool -----------------------------------------
+-- Use when a behavior node reads a counter or measurement from shared state.
+do  -- LAIBlackboard:getNumber
+  local bb = lurek.ai.newBlackboard()
+  bb:setNumber("speed", 5.0)
+  local v = bb:getNumber("speed", 0.0)
+  local missing = bb:getNumber("nonexistent", -1.0)
+  lurek.log.info("speed=" .. v .. " missing=" .. missing, "ai")
+end
 --@api-stub: LAIBlackboard:setBool
 -- Stores a boolean under the given key.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAIBlackboard_stub:setBool("player_score", 42)
--- (replace lAIBlackboard_stub with your real LAIBlackboard instance above)
-
--- ---- Stub: LAIBlackboard:getBool -----------------------------------------
+-- Use for simple AI flags like 'is_alerted', 'can_see_player', 'is_patrolling'.
+do  -- LAIBlackboard:setBool
+  local bb = lurek.ai.newBlackboard()
+  bb:setBool("is_alerted", true)
+  bb:setBool("can_attack", false)
+  lurek.log.info("alerted=" .. tostring(bb:getBool("is_alerted", false)), "ai")
+end
 --@api-stub: LAIBlackboard:getBool
 -- Returns the boolean for the given key, or default.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAIBlackboard_stub:getBool("player_score", [default])  -- -> boolean
--- (replace lAIBlackboard_stub with your real LAIBlackboard instance above)
-
--- ---- Stub: LAIBlackboard:setString ---------------------------------------
+-- Guards against nil by providing a safe fallback when the key is not yet set.
+do  -- LAIBlackboard:getBool
+  local bb = lurek.ai.newBlackboard()
+  bb:setBool("player_visible", true)
+  lurek.log.info("visible=" .. tostring(bb:getBool("player_visible", false)), "ai")
+  lurek.log.info("default=" .. tostring(bb:getBool("unknown_key", false)), "ai")
+end
 --@api-stub: LAIBlackboard:setString
 -- Stores a string under the given key.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAIBlackboard_stub:setString("player_score", 42)
--- (replace lAIBlackboard_stub with your real LAIBlackboard instance above)
-
--- ---- Stub: LAIBlackboard:getString ---------------------------------------
+-- Use to pass string state (current_target_id, current_state) between nodes.
+do  -- LAIBlackboard:setString
+  local bb = lurek.ai.newBlackboard()
+  bb:setString("state", "patrol")
+  bb:setString("target_id", "player_1")
+  lurek.log.info("state=" .. bb:getString("state", "idle"), "ai")
+end
 --@api-stub: LAIBlackboard:getString
 -- Returns the string for the given key, or default.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAIBlackboard_stub:getString("player_score", [default])  -- -> string
--- (replace lAIBlackboard_stub with your real LAIBlackboard instance above)
-
--- ---- Stub: LAIBlackboard:has ---------------------------------------------
+-- Use to read state machine labels or entity IDs from the shared board.
+do  -- LAIBlackboard:getString
+  local bb = lurek.ai.newBlackboard()
+  bb:setString("last_command", "patrol_waypoint_3")
+  local cmd = bb:getString("last_command", "idle")
+  lurek.log.info("last_command=" .. cmd, "ai")
+end
 --@api-stub: LAIBlackboard:has
 -- Returns true if a value exists under the key.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAIBlackboard_stub:has("player_score")  -- -> boolean
--- (replace lAIBlackboard_stub with your real LAIBlackboard instance above)
-
--- ---- Stub: LAIBlackboard:remove ------------------------------------------
+-- Guard behavior nodes with :has() before reading, to avoid default fallback costs.
+do  -- LAIBlackboard:has
+  local bb = lurek.ai.newBlackboard()
+  bb:setNumber("ammo", 12)
+  lurek.log.info("has ammo: " .. tostring(bb:has("ammo")), "ai")
+  lurek.log.info("has mana: " .. tostring(bb:has("mana")), "ai")
+end
 --@api-stub: LAIBlackboard:remove
 -- Removes the entry at key.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAIBlackboard_stub:remove("player_score")
--- (replace lAIBlackboard_stub with your real LAIBlackboard instance above)
-
--- ---- Stub: LAIBlackboard:clear -------------------------------------------
+-- Use to clear stale state when a behavior phase ends.
+do  -- LAIBlackboard:remove
+  local bb = lurek.ai.newBlackboard()
+  bb:setString("target", "goblin_5")
+  lurek.log.info("before remove: " .. tostring(bb:has("target")), "ai")
+  bb:remove("target")
+  lurek.log.info("after remove: " .. tostring(bb:has("target")), "ai")
+end
 --@api-stub: LAIBlackboard:clear
 -- Removes all local entries.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAIBlackboard_stub:clear()
--- (replace lAIBlackboard_stub with your real LAIBlackboard instance above)
-
--- ---- Stub: LAIBlackboard:getKeys -----------------------------------------
+-- Reset the board at the start of each new AI encounter or scene.
+do  -- LAIBlackboard:clear
+  local bb = lurek.ai.newBlackboard()
+  bb:setNumber("hp", 80)
+  bb:setBool("alerted", true)
+  lurek.log.info("size before clear=" .. bb:getSize(), "ai")
+  bb:clear()
+  lurek.log.info("size after clear=" .. bb:getSize(), "ai")
+end
 --@api-stub: LAIBlackboard:getKeys
 -- Returns all local keys as a table.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAIBlackboard_stub:getKeys()  -- -> table
--- (replace lAIBlackboard_stub with your real LAIBlackboard instance above)
-
--- ---- Stub: LAIBlackboard:getSize -----------------------------------------
+-- Use for debugging or to iterate all known entries on the board.
+do  -- LAIBlackboard:getKeys
+  local bb = lurek.ai.newBlackboard()
+  bb:setNumber("energy", 50)
+  bb:setBool("charging", false)
+  bb:setString("phase", "attack")
+  local keys = bb:getKeys()
+  lurek.log.info("key count=" .. #keys, "ai")
+end
 --@api-stub: LAIBlackboard:getSize
 -- Returns the number of local entries.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAIBlackboard_stub:getSize()  -- -> integer
--- (replace lAIBlackboard_stub with your real LAIBlackboard instance above)
-
--- ---- Stub: LAIBlackboard:type --------------------------------------------
+-- Use to check how many keys are currently stored before iterating.
+do  -- LAIBlackboard:getSize
+  local bb = lurek.ai.newBlackboard()
+  bb:setNumber("x", 10)
+  bb:setNumber("y", 20)
+  lurek.log.info("size=" .. bb:getSize(), "ai")
+end
 --@api-stub: LAIBlackboard:type
 -- Returns the type name of this object.
 -- Useful for runtime type inspection.

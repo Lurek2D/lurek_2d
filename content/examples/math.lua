@@ -2227,11 +2227,13 @@ do  -- LTween:typeOf
 end
 --@api-stub: LVec2:fromAngle
 -- Creates a unit vector from an angle in radians.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lVec2_stub:fromAngle(radians)  -- -> Vec2
--- (replace lVec2_stub with your real LVec2 instance above)
-
--- ---- Stub: LVec2:type ----------------------------------------------------
+-- Useful for computing heading direction from a rotation angle.
+do  -- LVec2:fromAngle
+  local v = lurek.math.vec2(1, 0)
+  local angle = math.pi / 4   -- 45 degrees (northeast)
+  local dir = v:fromAngle(angle)
+  lurek.log.info("dir.x=" .. dir.x .. " dir.y=" .. dir.y, "math")
+end
 --@api-stub: LVec2:type
 -- Returns the type name of this object.
 -- Useful for runtime type inspection.
@@ -2249,12 +2251,13 @@ do  -- LVec2:typeOf
   lurek.log.info("is wrong: " .. tostring(vec2_obj:typeOf("Unknown")), "math")
 end
 --@api-stub: LVec3:splat
--- Creates a Vec3 with all components set to `v`.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lVec3_stub:splat(1.0)  -- -> Vec3
--- (replace lVec3_stub with your real LVec3 instance above)
-
--- ---- Stub: LVec3:type ----------------------------------------------------
+-- Creates a Vec3 with all components set to v.
+-- Useful for uniform scale vectors or initialising colour triples.
+do  -- LVec3:splat
+  local v = lurek.math.vec3(0, 0, 0)
+  local ones = v:splat(1.0)
+  lurek.log.info("splat=" .. ones.x .. "," .. ones.y .. "," .. ones.z, "math")
+end
 --@api-stub: LVec3:type
 -- Returns the type name of this object.
 -- Useful for runtime type inspection.

@@ -1728,64 +1728,91 @@ end
 -- ---- Stub: LList:add -----------------------------------------------------
 --@api-stub: LList:add
 -- Appends a value to the end of the list.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lList_stub:add(42)
--- (replace lList_stub with your real LList instance above)
-
--- ---- Stub: LList:get -----------------------------------------------------
+-- Use as a type-safe growable array for game objects or event queues.
+do  -- LList:add
+  local lst = lurek.patterns.newList()
+  lst:add("sword")
+  lst:add("shield")
+  lst:add("potion")
+  lurek.log.info("list size=" .. lst:len(), "patterns")
+end
 --@api-stub: LList:get
 -- Returns the value at a 1-based index, or nil.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lList_stub:get(1)  -- -> table|nil
--- (replace lList_stub with your real LList instance above)
-
--- ---- Stub: LList:set -----------------------------------------------------
+-- Use to read items without removing them.
+do  -- LList:get
+  local lst = lurek.patterns.newList()
+  lst:add("apple")
+  lst:add("banana")
+  local item = lst:get(2)   -- 1-based index
+  lurek.log.info("item[2]=" .. tostring(item), "patterns")
+end
 --@api-stub: LList:set
 -- Replaces the value at a 1-based index.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lList_stub:set(1, 42)
--- (replace lList_stub with your real LList instance above)
-
--- ---- Stub: LList:remove --------------------------------------------------
+-- Use to update a specific slot without shifting other items.
+do  -- LList:set
+  local lst = lurek.patterns.newList()
+  lst:add("iron_sword")
+  lst:add("leather_boots")
+  lst:set(1, "mythril_sword")
+  lurek.log.info("slot 1=" .. tostring(lst:get(1)), "patterns")
+end
 --@api-stub: LList:remove
 -- Removes and returns the value at a 1-based index.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lList_stub:remove(1)  -- -> table|nil
--- (replace lList_stub with your real LList instance above)
-
--- ---- Stub: LList:len -----------------------------------------------------
+-- Use to consume items from a queue or unequip from a slot.
+do  -- LList:remove
+  local lst = lurek.patterns.newList()
+  lst:add("quest_a")
+  lst:add("quest_b")
+  lst:add("quest_c")
+  local removed = lst:remove(2)
+  lurek.log.info("removed=" .. tostring(removed) .. " remaining=" .. lst:len(), "patterns")
+end
 --@api-stub: LList:len
 -- Returns the number of items in the list.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lList_stub:len()  -- -> integer
--- (replace lList_stub with your real LList instance above)
-
--- ---- Stub: LList:isEmpty -------------------------------------------------
+-- Check before iterating to avoid out-of-bounds reads.
+do  -- LList:len
+  local lst = lurek.patterns.newList()
+  for i = 1, 5 do lst:add(i * 10) end
+  lurek.log.info("list length=" .. lst:len(), "patterns")
+end
 --@api-stub: LList:isEmpty
 -- Returns true if the list is empty.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lList_stub:isEmpty()  -- -> boolean
--- (replace lList_stub with your real LList instance above)
-
--- ---- Stub: LList:contains ------------------------------------------------
+-- Use as a guard before attempting to read from the list.
+do  -- LList:isEmpty
+  local lst = lurek.patterns.newList()
+  lurek.log.info("before add: " .. tostring(lst:isEmpty()), "patterns")
+  lst:add("item")
+  lurek.log.info("after add: " .. tostring(lst:isEmpty()), "patterns")
+end
 --@api-stub: LList:contains
--- Returns true if the list contains a value equal to the given Lua value (string/number/boolean).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lList_stub:contains(42)  -- -> boolean
--- (replace lList_stub with your real LList instance above)
-
--- ---- Stub: LList:clear ---------------------------------------------------
+-- Returns true if the list contains a value equal to the given Lua value.
+-- Use for membership checks on small collections like equipped items.
+do  -- LList:contains
+  local lst = lurek.patterns.newList()
+  lst:add("fire")
+  lst:add("ice")
+  lst:add("thunder")
+  lurek.log.info("has fire: " .. tostring(lst:contains("fire")), "patterns")
+  lurek.log.info("has wind: " .. tostring(lst:contains("wind")), "patterns")
+end
 --@api-stub: LList:clear
 -- Removes all values from the list.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lList_stub:clear()
--- (replace lList_stub with your real LList instance above)
-
--- ---- Stub: LList:toArray -------------------------------------------------
+-- Use when a list is reused across scenes or rounds.
+do  -- LList:clear
+  local lst = lurek.patterns.newList()
+  lst:add("a")
+  lst:add("b")
+  lst:clear()
+  lurek.log.info("length after clear=" .. lst:len(), "patterns")
+end
 --@api-stub: LList:toArray
 -- Returns all items as a Lua table.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lList_stub:toArray()  -- -> table
--- (replace lList_stub with your real LList instance above)
-
-
+-- Use when you need a snapshot for sorting or serialising list contents.
+do  -- LList:toArray
+  local lst = lurek.patterns.newList()
+  lst:add(10)
+  lst:add(20)
+  lst:add(30)
+  local arr = lst:toArray()
+  lurek.log.info("arr[2]=" .. tostring(arr[2]), "patterns")
+end

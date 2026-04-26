@@ -528,59 +528,72 @@ end
 
 -- ---- Stub: LTween:cancel -------------------------------------------------
 --@api-stub: LTween:cancel
--- Cancels this tween immediately; fires the `onCancel` callback if set.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTween_stub:cancel(ud)
--- (replace lTween_stub with your real LTween instance above)
-
--- -----------------------------------------------------------------------------
--- LTweenParallel methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LTweenParallel:tween ------------------------------------------
+-- Cancels this tween immediately; fires the onCancel callback if set.
+-- Use to interrupt tweens on scene exit or player death.
+do  -- LTween:cancel
+  local target = { x = 0 }
+  local tw = lurek.tween.tween(1.0, target, { x = 100 })
+  tw:cancel()   -- interrupt before it finishes
+  lurek.log.info("tween cancelled, target.x=" .. tostring(target.x), "tween")
+end
 --@api-stub: LTweenParallel:tween
 -- Creates and adds an inline tween entry to the parallel group. Returns self.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTweenParallel_stub:tween()  -- -> TweenParallel
--- (replace lTweenParallel_stub with your real LTweenParallel instance above)
-
--- ---- Stub: LTweenParallel:start ------------------------------------------
+-- Lets you chain multiple property animations that run simultaneously.
+do  -- LTweenParallel:tween
+  local obj = { x = 0, alpha = 1.0 }
+  lurek.tween.parallel()
+    :tween(0.5, obj, { x = 200 })
+    :tween(0.5, obj, { alpha = 0.0 })
+    :start()
+  lurek.log.info("parallel group with two tweens started", "tween")
+end
 --@api-stub: LTweenParallel:start
 -- Marks the parallel as active. Returns self.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTweenParallel_stub:start(ud)  -- -> TweenParallel
--- (replace lTweenParallel_stub with your real LTweenParallel instance above)
-
--- -----------------------------------------------------------------------------
--- LTweenSequence methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LTweenSequence:tween ------------------------------------------
+-- Call once all child tweens have been added; lurek.tween.update(dt) then ticks it.
+do  -- LTweenParallel:start
+  local pos = { x = 0 }
+  local col = { a = 1.0 }
+  lurek.tween.parallel()
+    :tween(0.4, pos, { x = 100 })
+    :tween(0.4, col, { a = 0 })
+    :start()   -- activates the group
+  lurek.log.info("parallel group started", "tween")
+end
 --@api-stub: LTweenSequence:tween
--- Appends a tween step: animates `fields` on `target` over `duration`. Returns self.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTweenSequence_stub:tween()  -- -> TweenSequence
--- (replace lTweenSequence_stub with your real LTweenSequence instance above)
-
--- ---- Stub: LTweenSequence:delay ------------------------------------------
+-- Appends a tween step: animates fields on target over duration. Returns self.
+-- Chain multiple calls to build a step-by-step animation sequence.
+do  -- LTweenSequence:tween
+  local pos = { x = 0, y = 0 }
+  lurek.tween.sequence()
+    :tween(0.3, pos, { x = 100 })  -- step 1: move right
+    :tween(0.3, pos, { y = 80 })   -- step 2: move down
+    :start()
+  lurek.log.info("sequence with two tween steps queued", "tween")
+end
 --@api-stub: LTweenSequence:delay
--- Appends a delay step that waits `seconds` before proceeding. Returns self.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTweenSequence_stub:delay(ud, seconds, [cb])  -- -> TweenSequence
--- (replace lTweenSequence_stub with your real LTweenSequence instance above)
-
--- ---- Stub: LTweenSequence:start ------------------------------------------
+-- Appends a delay step that waits seconds before proceeding. Returns self.
+-- Insert pauses between animation steps for dramatic timing.
+do  -- LTweenSequence:delay
+  local obj = { x = 0 }
+  lurek.tween.sequence()
+    :tween(0.2, obj, { x = 100 })
+    :delay(0.5)                    -- pause half a second
+    :tween(0.2, obj, { x = 0 })
+    :start()
+  lurek.log.info("sequence with delay inserted", "tween")
+end
 --@api-stub: LTweenSequence:start
--- Marks the sequence as active so `lurek.tween.update(dt)` begins ticking it. Returns self.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTweenSequence_stub:start(ud)  -- -> TweenSequence
--- (replace lTweenSequence_stub with your real LTweenSequence instance above)
-
--- -----------------------------------------------------------------------------
--- LTweenState methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LTweenState:type ----------------------------------------------
+-- Marks the sequence as active so lurek.tween.update(dt) begins ticking it.
+-- Without start() the sequence is dormant even after all steps are appended.
+do  -- LTweenSequence:start
+  local door = { y = 0 }
+  local seq = lurek.tween.sequence()
+    :tween(0.4, door, { y = 64 })
+    :delay(1.0)
+    :tween(0.4, door, { y = 0 })
+  seq:start()   -- begin the sequence
+  lurek.log.info("door open/wait/close sequence started", "tween")
+end
 --@api-stub: LTweenState:type
 -- Returns the type name of this object.
 -- Useful for runtime type inspection.

@@ -3302,22 +3302,20 @@ do  -- LBarChart:typeOf
 end
 --@api-stub: LLineChart:type
 -- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lLineChart_stub:type()  -- -> string
--- (replace lLineChart_stub with your real LLineChart instance above)
-
--- ---- Stub: LLineChart:typeOf ---------------------------------------------
+-- Useful for runtime type inspection of UI chart objects.
+do  -- LLineChart:type
+  local chart = lurek.ui.newLineChart({ width = 400, height = 300, title = "Sales" })
+  local t = chart:type()
+  lurek.log.info("LLineChart:type=" .. t, "ui")
+end
 --@api-stub: LLineChart:typeOf
 -- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lLineChart_stub:typeOf("hero")  -- -> boolean
--- (replace lLineChart_stub with your real LLineChart instance above)
-
--- -----------------------------------------------------------------------------
--- LPieChart methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LPieChart:type ------------------------------------------------
+-- Use for runtime type checks on UI chart objects.
+do  -- LLineChart:typeOf
+  local chart = lurek.ui.newLineChart({ width = 400, height = 300, title = "Revenue" })
+  lurek.log.info("is LLineChart: " .. tostring(chart:typeOf("LLineChart")), "ui")
+  lurek.log.info("is wrong: " .. tostring(chart:typeOf("Unknown")), "ui")
+end
 --@api-stub: LPieChart:type
 -- Returns the type name of this object.
 -- Useful for runtime type inspection.
@@ -3382,33 +3380,36 @@ end
 -- ---- Stub: lurek.ui.type -------------------------------------------------
 --@api-stub: lurek.ui.type
 -- Returns the Lua type name of this widget (e.g. "LButton").
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
-lurek.ui.type()  -- -> string
-
-
--- -----------------------------------------------------------------------------
--- LLineChart methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LLineChart:setYMax --------------------------------------------
+-- Use for runtime type dispatch in generic widget handlers.
+do  -- lurek.ui.type
+  local chart = lurek.ui.newLineChart({ width = 200, height = 150, title = "FPS" })
+  local t = lurek.ui.type(chart)
+  lurek.log.info("ui.type=" .. tostring(t), "ui")
+end
 --@api-stub: LLineChart:setYMax
 -- Sets the maximum Y value for axis scaling.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lLineChart_stub:setYMax(1.0)
--- (replace lLineChart_stub with your real LLineChart instance above)
-
--- ---- Stub: LLineChart:setXMax --------------------------------------------
+-- Use when the data range is known ahead of time for a stable chart view.
+do  -- LLineChart:setYMax
+  local chart = lurek.ui.newLineChart({ width = 400, height = 300, title = "Score" })
+  chart:setYMax(1000)
+  lurek.log.info("y-axis max set to 1000", "ui")
+end
 --@api-stub: LLineChart:setXMax
 -- Sets the maximum X value for axis scaling.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lLineChart_stub:setXMax(1.0)
--- (replace lLineChart_stub with your real LLineChart instance above)
-
--- ---- Stub: LLineChart:drawToImage ----------------------------------------
+-- Use to fix the time window when showing rolling 60-second traces.
+do  -- LLineChart:setXMax
+  local chart = lurek.ui.newLineChart({ width = 400, height = 300, title = "FPS" })
+  chart:setXMax(60)   -- fixed 60-second window
+  lurek.log.info("x-axis max set to 60", "ui")
+end
 --@api-stub: LLineChart:drawToImage
 -- Renders the line chart into an existing ImageData.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lLineChart_stub:drawToImage()
--- (replace lLineChart_stub with your real LLineChart instance above)
-
-
+-- Use to embed charts into sprite textures or screenshots.
+do  -- LLineChart:drawToImage
+  local chart = lurek.ui.newLineChart({ width = 256, height = 128, title = "Wave" })
+  chart:setXMax(10)
+  chart:setYMax(1.0)
+  local idata = lurek.image.newImageData(256, 128)
+  chart:drawToImage(idata)
+  lurek.log.info("chart rendered to ImageData 256x128", "ui")
+end

@@ -434,28 +434,52 @@ do  -- LThread:typeOf
 end
 --@api-stub: LThread:start
 -- Launches the background thread, passing optional arguments via varargs.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lThread_stub:start(...)
--- (replace lThread_stub with your real LThread instance above)
-
--- ---- Stub: LThread:wait --------------------------------------------------
+-- Use to offload CPU-heavy work (path-find, PCG) off the main game loop thread.
+do  -- LThread:start
+  local t = lurek.thread.newThread([[
+    local ch = lurek.thread.getChannel("result")
+    ch:push(42)
+  ]])
+  t:start()
+  lurek.log.info("thread started, running=" .. tostring(t:isRunning()), "thread")
+  t:wait()
+end
 --@api-stub: LThread:wait
 -- Blocks the calling thread until the background thread finishes.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lThread_stub:wait()
--- (replace lThread_stub with your real LThread instance above)
-
--- ---- Stub: LThread:isRunning ---------------------------------------------
+-- Use after start() to synchronise results before reading shared state.
+do  -- LThread:wait
+  local t = lurek.thread.newThread([[
+    -- lightweight worker
+  ]])
+  t:start()
+  t:wait()   -- block until done
+  lurek.log.info("thread finished, err=" .. tostring(t:getError()), "thread")
+end
 --@api-stub: LThread:isRunning
 -- Returns whether the thread is currently executing.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lThread_stub:isRunning()  -- -> boolean
--- (replace lThread_stub with your real LThread instance above)
-
--- ---- Stub: LThread:getError ----------------------------------------------
+-- Poll this instead of blocking when you want a non-blocking status check.
+do  -- LThread:isRunning
+  local t = lurek.thread.newThread([[
+    -- minimal worker
+  ]])
+  lurek.log.info("before start: " .. tostring(t:isRunning()), "thread")
+  t:start()
+  lurek.log.info("after start: " .. tostring(t:isRunning()), "thread")
+  t:wait()
+end
 --@api-stub: LThread:getError
 -- Returns the error message if the thread failed, or nil.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lThread_stub:getError()  -- -> string?
--- (replace lThread_stub with your real LThread instance above)
-
+-- Always check this after wait() to detect worker-side runtime errors.
+do  -- LThread:getError
+  local t = lurek.thread.newThread([[
+    -- safe worker; no error expected
+  ]])
+  t:start()
+  t:wait()
+  local err = t:getError()
+  if err then
+    lurek.log.info("thread error: " .. err, "thread")
+  else
+    lurek.log.info("thread completed cleanly", "thread")
+  end
+end

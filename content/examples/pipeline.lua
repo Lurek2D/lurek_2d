@@ -648,182 +648,220 @@ end
 
 -- ---- Stub: LPipelineStep:getName -----------------------------------------
 --@api-stub: LPipelineStep:getName
--- Returns the unique name of this step
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lPipelineStep_stub:getName()  -- -> string
--- (replace lPipelineStep_stub with your real LPipelineStep instance above)
-
--- ---- Stub: LPipelineStep:setCallback -------------------------------------
+-- Returns the unique name of this step.
+-- Use for logging, debugging, or resolving dependencies by name.
+do  -- LPipelineStep:getName
+  local step = lurek.pipeline.newStep("load_assets", function() end)
+  lurek.log.info("step name=" .. step:getName(), "pipeline")
+end
 --@api-stub: LPipelineStep:setCallback
--- Stores a Lua function as the execute callback for this step
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lPipelineStep_stub:setCallback(cb)
--- (replace lPipelineStep_stub with your real LPipelineStep instance above)
-
--- ---- Stub: LPipelineStep:setCondition ------------------------------------
+-- Stores a Lua function as the execute callback for this step.
+-- Replace the callback to swap logic without rebuilding the pipeline.
+do  -- LPipelineStep:setCallback
+  local step = lurek.pipeline.newStep("process", function() end)
+  step:setCallback(function()
+    lurek.log.info("step executing: process", "pipeline")
+  end)
+  lurek.log.info("callback updated for: " .. step:getName(), "pipeline")
+end
 --@api-stub: LPipelineStep:setCondition
--- Stores a Lua function (or nil) as the run-condition for this step
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lPipelineStep_stub:setCondition([cond])
--- (replace lPipelineStep_stub with your real LPipelineStep instance above)
-
--- ---- Stub: LPipelineStep:setDelay ----------------------------------------
+-- Stores a Lua function (or nil) as the run-condition for this step.
+-- The step is skipped when the condition returns false.
+do  -- LPipelineStep:setCondition
+  local step = lurek.pipeline.newStep("optional_step", function() end)
+  step:setCondition(function()
+    return true  -- always run in this example
+  end)
+  lurek.log.info("condition set for: " .. step:getName(), "pipeline")
+end
 --@api-stub: LPipelineStep:setDelay
--- Sets the delay in seconds to wait after dependencies finish
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lPipelineStep_stub:setDelay(seconds)
--- (replace lPipelineStep_stub with your real LPipelineStep instance above)
-
--- ---- Stub: LPipelineStep:getDelay ----------------------------------------
+-- Sets the delay in seconds to wait after dependencies finish.
+-- Use to throttle heavy steps or add cooldowns between phases.
+do  -- LPipelineStep:setDelay
+  local step = lurek.pipeline.newStep("delayed_step", function() end)
+  step:setDelay(0.5)
+  lurek.log.info("delay=" .. step:getDelay(), "pipeline")
+end
 --@api-stub: LPipelineStep:getDelay
--- Returns the configured delay in seconds
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lPipelineStep_stub:getDelay()  -- -> number
--- (replace lPipelineStep_stub with your real LPipelineStep instance above)
-
--- ---- Stub: LPipelineStep:setTimeout --------------------------------------
+-- Returns the configured delay in seconds.
+-- Use when inspecting step configuration before starting a pipeline.
+do  -- LPipelineStep:getDelay
+  local step = lurek.pipeline.newStep("fetch_data", function() end)
+  step:setDelay(1.0)
+  lurek.log.info("delay=" .. step:getDelay(), "pipeline")
+end
 --@api-stub: LPipelineStep:setTimeout
--- Stores a timeout in seconds in the step's metadata
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lPipelineStep_stub:setTimeout(seconds)
--- (replace lPipelineStep_stub with your real LPipelineStep instance above)
-
--- ---- Stub: LPipelineStep:getTimeout --------------------------------------
+-- Stores a timeout in seconds in the step's metadata.
+-- Steps that exceed the timeout are marked as failed.
+do  -- LPipelineStep:setTimeout
+  local step = lurek.pipeline.newStep("network_call", function() end)
+  step:setTimeout(5.0)
+  lurek.log.info("timeout=" .. step:getTimeout(), "pipeline")
+end
 --@api-stub: LPipelineStep:getTimeout
--- Returns the timeout stored in metadata, or 0.0 if unset
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lPipelineStep_stub:getTimeout()  -- -> number
--- (replace lPipelineStep_stub with your real LPipelineStep instance above)
-
--- ---- Stub: LPipelineStep:setRetryCount -----------------------------------
+-- Returns the timeout stored in metadata, or 0.0 if unset.
+-- Use to validate that long-running steps have appropriate safety limits.
+do  -- LPipelineStep:getTimeout
+  local step = lurek.pipeline.newStep("upload", function() end)
+  step:setTimeout(10.0)
+  lurek.log.info("timeout=" .. step:getTimeout() .. "s", "pipeline")
+end
 --@api-stub: LPipelineStep:setRetryCount
--- Sets the maximum number of retry attempts on failure
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lPipelineStep_stub:setRetryCount(10)
--- (replace lPipelineStep_stub with your real LPipelineStep instance above)
-
--- ---- Stub: LPipelineStep:getRetryCount -----------------------------------
+-- Sets the maximum number of retry attempts on failure.
+-- Use for transient failures like network timeouts or resource contention.
+do  -- LPipelineStep:setRetryCount
+  local step = lurek.pipeline.newStep("fetch_leaderboard", function() end)
+  step:setRetryCount(3)
+  lurek.log.info("retry_count=" .. step:getRetryCount(), "pipeline")
+end
 --@api-stub: LPipelineStep:getRetryCount
--- Returns the configured retry count
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lPipelineStep_stub:getRetryCount()  -- -> integer
--- (replace lPipelineStep_stub with your real LPipelineStep instance above)
-
--- ---- Stub: LPipelineStep:setRetryDelay -----------------------------------
+-- Returns the configured retry count.
+-- Inspect this before running to confirm fault-tolerance settings.
+do  -- LPipelineStep:getRetryCount
+  local step = lurek.pipeline.newStep("save_progress", function() end)
+  step:setRetryCount(2)
+  lurek.log.info("retry_count=" .. step:getRetryCount(), "pipeline")
+end
 --@api-stub: LPipelineStep:setRetryDelay
--- Sets the delay in seconds between retry attempts
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lPipelineStep_stub:setRetryDelay(seconds)
--- (replace lPipelineStep_stub with your real LPipelineStep instance above)
-
--- ---- Stub: LPipelineStep:setOptional -------------------------------------
+-- Sets the delay in seconds between retry attempts.
+-- Use to implement exponential back-off for unstable external dependencies.
+do  -- LPipelineStep:setRetryDelay
+  local step = lurek.pipeline.newStep("send_score", function() end)
+  step:setRetryCount(3)
+  step:setRetryDelay(0.5)   -- wait 0.5s before each retry
+  lurek.log.info("retry delay configured for: " .. step:getName(), "pipeline")
+end
 --@api-stub: LPipelineStep:setOptional
--- Marks whether this step is optional (downstream steps continue on failure)
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lPipelineStep_stub:setOptional(optional)
--- (replace lPipelineStep_stub with your real LPipelineStep instance above)
-
--- ---- Stub: LPipelineStep:isOptional --------------------------------------
+-- Marks whether this step is optional (downstream steps continue on failure).
+-- Use for non-critical analytics or telemetry uploads.
+do  -- LPipelineStep:setOptional
+  local step = lurek.pipeline.newStep("telemetry", function() end)
+  step:setOptional(true)
+  lurek.log.info("optional=" .. tostring(step:isOptional()), "pipeline")
+end
 --@api-stub: LPipelineStep:isOptional
--- Returns whether this step is marked as optional
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lPipelineStep_stub:isOptional()  -- -> boolean
--- (replace lPipelineStep_stub with your real LPipelineStep instance above)
-
--- ---- Stub: LPipelineStep:setOnError --------------------------------------
+-- Returns whether this step is marked as optional.
+-- Use to decide whether a failure should block or skip downstream steps.
+do  -- LPipelineStep:isOptional
+  local step = lurek.pipeline.newStep("analytics", function() end)
+  step:setOptional(true)
+  lurek.log.info("is optional=" .. tostring(step:isOptional()), "pipeline")
+end
 --@api-stub: LPipelineStep:setOnError
--- Stores a Lua function (or nil) to call if this step fails
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lPipelineStep_stub:setOnError([cb])
--- (replace lPipelineStep_stub with your real LPipelineStep instance above)
-
--- ---- Stub: LPipelineStep:setData -----------------------------------------
+-- Stores a Lua function (or nil) to call if this step fails.
+-- Use to log diagnostics or rollback state when a critical step errors.
+do  -- LPipelineStep:setOnError
+  local step = lurek.pipeline.newStep("critical_step", function() end)
+  step:setOnError(function(err)
+    lurek.log.info("step failed: " .. tostring(err), "pipeline")
+  end)
+  lurek.log.info("error handler registered for: " .. step:getName(), "pipeline")
+end
 --@api-stub: LPipelineStep:setData
--- Stores an arbitrary string value under the given key in step metadata
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lPipelineStep_stub:setData("player_score", 42)
--- (replace lPipelineStep_stub with your real LPipelineStep instance above)
-
--- ---- Stub: LPipelineStep:getData -----------------------------------------
+-- Stores an arbitrary string value under the given key in step metadata.
+-- Use to attach config values or resource names needed by the callback.
+do  -- LPipelineStep:setData
+  local step = lurek.pipeline.newStep("load_level", function() end)
+  step:setData("level_id", "dungeon_2")
+  step:setData("difficulty", "hard")
+  lurek.log.info("level_id=" .. step:getData("level_id"), "pipeline")
+end
 --@api-stub: LPipelineStep:getData
--- Retrieves a metadata value by key, returning nil if not found
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lPipelineStep_stub:getData("player_score")  -- -> string?
--- (replace lPipelineStep_stub with your real LPipelineStep instance above)
-
--- ---- Stub: LPipelineStep:setTag ------------------------------------------
+-- Retrieves a metadata value by key, returning nil if not found.
+-- Use inside the callback to read config values passed by the caller.
+do  -- LPipelineStep:getData
+  local step = lurek.pipeline.newStep("init_renderer", function() end)
+  step:setData("resolution", "1920x1080")
+  local res = step:getData("resolution")
+  lurek.log.info("resolution=" .. tostring(res), "pipeline")
+end
 --@api-stub: LPipelineStep:setTag
--- Sets the tag on this step for grouping and filtering
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lPipelineStep_stub:setTag("enemy")
--- (replace lPipelineStep_stub with your real LPipelineStep instance above)
-
--- ---- Stub: LPipelineStep:getTag ------------------------------------------
+-- Sets the tag on this step for grouping and filtering.
+-- Use to batch-skip or batch-run steps by category.
+do  -- LPipelineStep:setTag
+  local step = lurek.pipeline.newStep("warmup_shader", function() end)
+  step:setTag("graphics")
+  lurek.log.info("tag=" .. tostring(step:getTag()), "pipeline")
+end
 --@api-stub: LPipelineStep:getTag
--- Returns the tag on this step, or nil if unset
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lPipelineStep_stub:getTag()  -- -> string?
--- (replace lPipelineStep_stub with your real LPipelineStep instance above)
-
--- ---- Stub: LPipelineStep:dependsOn ---------------------------------------
+-- Returns the tag on this step, or nil if unset.
+-- Use to categorise steps when building the pipeline configuration UI.
+do  -- LPipelineStep:getTag
+  local step = lurek.pipeline.newStep("load_audio", function() end)
+  step:setTag("audio")
+  lurek.log.info("tag=" .. tostring(step:getTag()), "pipeline")
+end
 --@api-stub: LPipelineStep:dependsOn
--- Adds a dependency on another step by name or PipelineStep. Returns self for chaining
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lPipelineStep_stub:dependsOn(dep)  -- -> Step
--- (replace lPipelineStep_stub with your real LPipelineStep instance above)
-
--- ---- Stub: LPipelineStep:getDependencies ---------------------------------
+-- Adds a dependency on another step by name or PipelineStep. Returns self for chaining.
+-- Use to declare step ordering so the pipeline waits for prerequisites.
+do  -- LPipelineStep:dependsOn
+  local a = lurek.pipeline.newStep("load_assets", function() end)
+  local b = lurek.pipeline.newStep("init_scene", function() end)
+  b:dependsOn(a)   -- init_scene waits for load_assets
+  lurek.log.info("dep count=" .. b:getDependencyCount(), "pipeline")
+end
 --@api-stub: LPipelineStep:getDependencies
--- Returns the list of dependency step names
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lPipelineStep_stub:getDependencies()  -- -> table
--- (replace lPipelineStep_stub with your real LPipelineStep instance above)
-
--- ---- Stub: LPipelineStep:getDependencyCount ------------------------------
+-- Returns the list of dependency step names.
+-- Use to visualise or validate the pipeline graph before execution.
+do  -- LPipelineStep:getDependencies
+  local a = lurek.pipeline.newStep("fetch", function() end)
+  local b = lurek.pipeline.newStep("parse", function() end)
+  b:dependsOn(a)
+  local deps = b:getDependencies()
+  lurek.log.info("dep[1]=" .. tostring(deps[1]), "pipeline")
+end
 --@api-stub: LPipelineStep:getDependencyCount
--- Returns the number of declared dependencies
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lPipelineStep_stub:getDependencyCount()  -- -> integer
--- (replace lPipelineStep_stub with your real LPipelineStep instance above)
-
--- ---- Stub: LPipelineStep:getStatus ---------------------------------------
+-- Returns the number of declared dependencies.
+-- Use to quickly verify that all required steps have been registered.
+do  -- LPipelineStep:getDependencyCount
+  local a = lurek.pipeline.newStep("step_a", function() end)
+  local b = lurek.pipeline.newStep("step_b", function() end)
+  local c = lurek.pipeline.newStep("step_c", function() end)
+  c:dependsOn(a):dependsOn(b)
+  lurek.log.info("dep count=" .. c:getDependencyCount(), "pipeline")
+end
 --@api-stub: LPipelineStep:getStatus
--- Returns the current execution status as a string
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lPipelineStep_stub:getStatus()  -- -> string
--- (replace lPipelineStep_stub with your real LPipelineStep instance above)
-
--- ---- Stub: LPipelineStep:getError ----------------------------------------
+-- Returns the current execution status as a string.
+-- Possible values: "pending", "running", "done", "failed", "skipped".
+do  -- LPipelineStep:getStatus
+  local step = lurek.pipeline.newStep("build_nav", function() end)
+  lurek.log.info("initial status=" .. step:getStatus(), "pipeline")
+end
 --@api-stub: LPipelineStep:getError
--- Returns the error message from the last failed attempt, or nil
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lPipelineStep_stub:getError()  -- -> string?
--- (replace lPipelineStep_stub with your real LPipelineStep instance above)
-
--- ---- Stub: LPipelineStep:getDuration -------------------------------------
+-- Returns the error message from the last failed attempt, or nil.
+-- Always check after pipeline completion to surface any step failures.
+do  -- LPipelineStep:getError
+  local step = lurek.pipeline.newStep("connect", function() end)
+  local err = step:getError()
+  lurek.log.info("error=" .. tostring(err), "pipeline")
+end
 --@api-stub: LPipelineStep:getDuration
--- Returns total seconds spent executing this step
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lPipelineStep_stub:getDuration()  -- -> number
--- (replace lPipelineStep_stub with your real LPipelineStep instance above)
-
--- ---- Stub: LPipelineStep:getAttempt --------------------------------------
+-- Returns total seconds spent executing this step.
+-- Use for performance profiling to identify slow pipeline stages.
+do  -- LPipelineStep:getDuration
+  local step = lurek.pipeline.newStep("gen_terrain", function() end)
+  lurek.log.info("duration=" .. step:getDuration() .. "s", "pipeline")
+end
 --@api-stub: LPipelineStep:getAttempt
--- Returns the number of execution attempts so far
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lPipelineStep_stub:getAttempt()  -- -> integer
--- (replace lPipelineStep_stub with your real LPipelineStep instance above)
-
--- ---- Stub: LPipelineStep:type --------------------------------------------
+-- Returns the number of execution attempts so far.
+-- Use to log retry count when diagnosing intermittent failures.
+do  -- LPipelineStep:getAttempt
+  local step = lurek.pipeline.newStep("login", function() end)
+  lurek.log.info("attempt=" .. step:getAttempt(), "pipeline")
+end
 --@api-stub: LPipelineStep:type
--- Returns the type name "PipelineStep"
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lPipelineStep_stub:type()  -- -> string
--- (replace lPipelineStep_stub with your real LPipelineStep instance above)
-
--- ---- Stub: LPipelineStep:typeOf ------------------------------------------
+-- Returns the type name "PipelineStep".
+-- Useful for runtime type inspection.
+do  -- LPipelineStep:type
+  local step = lurek.pipeline.newStep("test_step", function() end)
+  local t = step:type()
+  lurek.log.info("LPipelineStep:type=" .. t, "pipeline")
+end
 --@api-stub: LPipelineStep:typeOf
--- Returns true when the given name matches "PipelineStep" or a parent type
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lPipelineStep_stub:typeOf("hero")  -- -> boolean
--- (replace lPipelineStep_stub with your real LPipelineStep instance above)
+-- Returns true when the given name matches "PipelineStep" or a parent type.
+-- Use for runtime type checks.
+do  -- LPipelineStep:typeOf
+  local step = lurek.pipeline.newStep("check_step", function() end)
+  lurek.log.info("is PipelineStep: " .. tostring(step:typeOf("PipelineStep")), "pipeline")
+  lurek.log.info("is wrong: " .. tostring(step:typeOf("Unknown")), "pipeline")
+end

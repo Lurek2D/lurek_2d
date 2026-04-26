@@ -2333,39 +2333,39 @@ do  -- LDecoder:typeOf
 end
 --@api-stub: LSoundData:getSampleCount
 -- Get the total number of samples.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSoundData_stub:getSampleCount()  -- -> integer
--- (replace lSoundData_stub with your real LSoundData instance above)
-
--- ---- Stub: LSoundData:getSampleRate --------------------------------------
+-- Use to calculate buffer length or iterate over waveform data.
+do  -- LSoundData:getSampleCount
+  local sd = lurek.audio.newSineWave(440, 1.0, 44100, 0.5)
+  lurek.log.info("sample_count=" .. sd:getSampleCount(), "audio")
+end
 --@api-stub: LSoundData:getSampleRate
 -- Returns the sample rate of this audio buffer in Hz (e.g. 44100 or 48000).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSoundData_stub:getSampleRate()  -- -> integer
--- (replace lSoundData_stub with your real LSoundData instance above)
-
--- ---- Stub: LSoundData:getChannelCount ------------------------------------
+-- Use to compute time offsets or to validate compatibility before mixing.
+do  -- LSoundData:getSampleRate
+  local sd = lurek.audio.newSineWave(440, 0.5, 44100, 0.5)
+  lurek.log.info("sample_rate=" .. sd:getSampleRate(), "audio")
+end
 --@api-stub: LSoundData:getChannelCount
 -- Get the number of channels.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSoundData_stub:getChannelCount()  -- -> integer
--- (replace lSoundData_stub with your real LSoundData instance above)
-
--- ---- Stub: LSoundData:getDuration ----------------------------------------
+-- 1 = mono, 2 = stereo. Use to route mixing or panning logic.
+do  -- LSoundData:getChannelCount
+  local sd = lurek.audio.newSineWave(440, 0.5, 44100, 0.5)
+  lurek.log.info("channels=" .. sd:getChannelCount(), "audio")
+end
 --@api-stub: LSoundData:getDuration
 -- Get the audio duration in seconds.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSoundData_stub:getDuration()  -- -> number
--- (replace lSoundData_stub with your real LSoundData instance above)
-
--- ---- Stub: LSoundData:getBitDepth ----------------------------------------
+-- Use to display progress bars or schedule timed events.
+do  -- LSoundData:getDuration
+  local sd = lurek.audio.newSineWave(440, 2.0, 44100, 0.5)
+  lurek.log.info("duration=" .. sd:getDuration() .. "s", "audio")
+end
 --@api-stub: LSoundData:getBitDepth
 -- Returns the bit depth of this audio buffer (typically 16 or 32 bits per sample).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSoundData_stub:getBitDepth()  -- -> integer
--- (replace lSoundData_stub with your real LSoundData instance above)
-
--- ---- Stub: LSoundData:getSample ------------------------------------------
+-- Use to choose the right encoding path when exporting WAV data.
+do  -- LSoundData:getBitDepth
+  local sd = lurek.audio.newSineWave(440, 0.5, 44100, 0.5)
+  lurek.log.info("bit_depth=" .. sd:getBitDepth(), "audio")
+end
 --@api-stub: LSoundData:getSample
 -- Get a specific sample by index.
 -- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
@@ -2375,23 +2375,21 @@ end
 -- ---- Stub: LSoundData:drawWaveform ---------------------------------------
 --@api-stub: LSoundData:drawWaveform
 -- Draws the waveform onto an ImageData buffer.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSoundData_stub:drawWaveform()
--- (replace lSoundData_stub with your real LSoundData instance above)
-
--- ---- Stub: LSoundData:setSample ------------------------------------------
+-- Use to render a waveform visualisation for an audio editor UI.
+do  -- LSoundData:drawWaveform
+  local sd = lurek.audio.newSineWave(440, 0.5, 44100, 0.5)
+  local idata = lurek.image.newImageData(256, 64)
+  sd:drawWaveform(idata, 0, 0, 0.0, 1.0, 0.5)   -- green waveform at (0,0)
+  lurek.log.info("waveform drawn to image 256x64", "audio")
+end
 --@api-stub: LSoundData:setSample
 -- Set a specific sample by index.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSoundData_stub:setSample(1, 42)
--- (replace lSoundData_stub with your real LSoundData instance above)
-
-
--- -----------------------------------------------------------------------------
--- LSource methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LSource:type --------------------------------------------------
+-- Use for custom synthesis or patching individual samples in a buffer.
+do  -- LSoundData:setSample
+  local sd = lurek.audio.newSineWave(440, 0.5, 44100, 0.5)
+  sd:setSample(0, 1, 0.0)   -- silence first sample, channel 1
+  lurek.log.info("sample[0] after zero=" .. sd:getSample(0, 1), "audio")
+end
 --@api-stub: LSource:type
 -- Returns the type name of this object.
 -- Useful for runtime type inspection.

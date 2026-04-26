@@ -943,72 +943,87 @@ end
 -- ---- Stub: LAIFlowField:getWidth -----------------------------------------
 --@api-stub: LAIFlowField:getWidth
 -- Returns the flow field grid width in cells.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAIFlowField_stub:getWidth()  -- -> integer
--- (replace lAIFlowField_stub with your real LAIFlowField instance above)
-
--- ---- Stub: LAIFlowField:getHeight ----------------------------------------
+-- Use to iterate over the field or validate coordinate range.
+do  -- LAIFlowField:getWidth
+  local grid = lurek.pathfind.newNavGrid(12, 8)
+  local ff = lurek.pathfind.newFlowField(grid)
+  lurek.log.info("width=" .. ff:getWidth(), "pathfind")
+end
 --@api-stub: LAIFlowField:getHeight
 -- Returns the flow field grid height in cells.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAIFlowField_stub:getHeight()  -- -> integer
--- (replace lAIFlowField_stub with your real LAIFlowField instance above)
-
--- ---- Stub: LAIFlowField:hasGoal ------------------------------------------
+-- Use to iterate over the field or validate coordinate range.
+do  -- LAIFlowField:getHeight
+  local grid = lurek.pathfind.newNavGrid(12, 8)
+  local ff = lurek.pathfind.newFlowField(grid)
+  lurek.log.info("height=" .. ff:getHeight(), "pathfind")
+end
 --@api-stub: LAIFlowField:hasGoal
 -- Returns true if a goal has been set.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAIFlowField_stub:hasGoal()  -- -> boolean
--- (replace lAIFlowField_stub with your real LAIFlowField instance above)
-
--- ---- Stub: LAIFlowField:setGoal ------------------------------------------
+-- Check before calling getDirection/getDistance to avoid nil errors.
+do  -- LAIFlowField:hasGoal
+  local grid = lurek.pathfind.newNavGrid(8, 8)
+  local ff = lurek.pathfind.newFlowField(grid)
+  lurek.log.info("has goal before set: " .. tostring(ff:hasGoal()), "pathfind")
+  ff:setGoal(4, 4)
+  lurek.log.info("has goal after set: " .. tostring(ff:hasGoal()), "pathfind")
+end
 --@api-stub: LAIFlowField:setGoal
 -- Sets the goal cell and triggers BFS recomputation (1-based coordinates).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAIFlowField_stub:setGoal(0.0, 0.0)
--- (replace lAIFlowField_stub with your real LAIFlowField instance above)
-
--- ---- Stub: LAIFlowField:getGoal ------------------------------------------
+-- Use when the player or a target moves to a new cell.
+do  -- LAIFlowField:setGoal
+  local grid = lurek.pathfind.newNavGrid(8, 8)
+  local ff = lurek.pathfind.newFlowField(grid)
+  ff:setGoal(5, 3)   -- 1-based (col=5, row=3)
+  lurek.log.info("goal set, dx=" .. tostring(ff:getDirection(1, 1)), "pathfind")
+end
 --@api-stub: LAIFlowField:getGoal
 -- Returns the goal cell (1-based coordinates) or nil if unset.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAIFlowField_stub:getGoal()
--- (replace lAIFlowField_stub with your real LAIFlowField instance above)
-
--- ---- Stub: LAIFlowField:getDirection -------------------------------------
+-- Use to display or serialise the current goal.
+do  -- LAIFlowField:getGoal
+  local grid = lurek.pathfind.newNavGrid(8, 8)
+  local ff = lurek.pathfind.newFlowField(grid)
+  ff:setGoal(6, 2)
+  local gx, gy = ff:getGoal()
+  lurek.log.info("goal=" .. tostring(gx) .. "," .. tostring(gy), "pathfind")
+end
 --@api-stub: LAIFlowField:getDirection
 -- Returns the normalised direction toward the goal (1-based coordinates).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAIFlowField_stub:getDirection(0.0, 0.0)  -- -> number, number
--- (replace lAIFlowField_stub with your real LAIFlowField instance above)
-
--- ---- Stub: LAIFlowField:getDistance --------------------------------------
+-- Feed this vector directly into an agent's movement velocity.
+do  -- LAIFlowField:getDirection
+  local grid = lurek.pathfind.newNavGrid(8, 8)
+  local ff = lurek.pathfind.newFlowField(grid)
+  ff:setGoal(8, 8)
+  local dx, dy = ff:getDirection(1, 1)
+  lurek.log.info("dir dx=" .. tostring(dx) .. " dy=" .. tostring(dy), "pathfind")
+end
 --@api-stub: LAIFlowField:getDistance
 -- Returns the BFS distance to the goal (1-based coordinates).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAIFlowField_stub:getDistance(0.0, 0.0)  -- -> number
--- (replace lAIFlowField_stub with your real LAIFlowField instance above)
-
--- ---- Stub: LAIFlowField:type ---------------------------------------------
+-- Use for threat evaluation: closer = higher urgency.
+do  -- LAIFlowField:getDistance
+  local grid = lurek.pathfind.newNavGrid(8, 8)
+  local ff = lurek.pathfind.newFlowField(grid)
+  ff:setGoal(8, 8)
+  local dist = ff:getDistance(1, 1)
+  lurek.log.info("distance from (1,1) to goal=" .. tostring(dist), "pathfind")
+end
 --@api-stub: LAIFlowField:type
 -- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAIFlowField_stub:type()  -- -> string
--- (replace lAIFlowField_stub with your real LAIFlowField instance above)
-
--- ---- Stub: LAIFlowField:typeOf -------------------------------------------
+-- Useful for runtime type inspection of pathfind objects.
+do  -- LAIFlowField:type
+  local grid = lurek.pathfind.newNavGrid(8, 8)
+  local ff = lurek.pathfind.newFlowField(grid)
+  local t = ff:type()
+  lurek.log.info("LAIFlowField:type=" .. t, "pathfind")
+end
 --@api-stub: LAIFlowField:typeOf
 -- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAIFlowField_stub:typeOf("hero")  -- -> boolean
--- (replace lAIFlowField_stub with your real LAIFlowField instance above)
-
-
--- -----------------------------------------------------------------------------
--- LHexGrid methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LHexGrid:type -------------------------------------------------
+-- Use for runtime type checks on pathfind objects.
+do  -- LAIFlowField:typeOf
+  local grid = lurek.pathfind.newNavGrid(8, 8)
+  local ff = lurek.pathfind.newFlowField(grid)
+  lurek.log.info("is LAIFlowField: " .. tostring(ff:typeOf("LAIFlowField")), "pathfind")
+  lurek.log.info("is wrong: " .. tostring(ff:typeOf("Unknown")), "pathfind")
+end
 --@api-stub: LHexGrid:type
 -- Returns the type name of this object.
 -- Useful for runtime type inspection.

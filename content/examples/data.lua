@@ -688,67 +688,77 @@ end
 -- ---- Stub: lurek.data.newByteData ----------------------------------------
 --@api-stub: lurek.data.newByteData
 -- Instantiates a raw byte data container object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
-lurek.data.newByteData(42)  -- -> ByteData
-
--- -----------------------------------------------------------------------------
--- LByteData methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LByteData:getSize ---------------------------------------------
+-- Use to hold binary blobs, serialised game state, or raw network payloads.
+do  -- lurek.data.newByteData
+  local bd = lurek.data.newByteData(16)
+  lurek.log.info("byte data size=" .. bd:getSize(), "data")
+end
 --@api-stub: LByteData:getSize
 -- Returns the total byte length of this buffer.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lByteData_stub:getSize()  -- -> integer
--- (replace lByteData_stub with your real LByteData instance above)
-
--- ---- Stub: LByteData:getString -------------------------------------------
+-- Use to bounds-check offsets before reading or writing.
+do  -- LByteData:getSize
+  local bd = lurek.data.newByteData(32)
+  lurek.log.info("size=" .. bd:getSize(), "data")
+end
 --@api-stub: LByteData:getString
 -- Get the string representation.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lByteData_stub:getString()  -- -> string
--- (replace lByteData_stub with your real LByteData instance above)
-
--- ---- Stub: LByteData:getByte ---------------------------------------------
+-- Use to extract embedded text or inspect buffer contents as a string.
+do  -- LByteData:getString
+  local bd = lurek.data.newByteData(8)
+  local s = bd:getString()
+  lurek.log.info("string length=" .. #s, "data")
+end
 --@api-stub: LByteData:getByte
 -- Get a byte at the specified offset.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lByteData_stub:getByte(offset)  -- -> integer
--- (replace lByteData_stub with your real LByteData instance above)
-
--- ---- Stub: LByteData:setByte ---------------------------------------------
+-- Use when reading structured binary records at known field positions.
+do  -- LByteData:getByte
+  local bd = lurek.data.newByteData(8)
+  bd:setByte(0, 0xFF)
+  local b = bd:getByte(0)
+  lurek.log.info("byte[0]=" .. tostring(b), "data")
+end
 --@api-stub: LByteData:setByte
 -- Set a byte at the specified offset.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lByteData_stub:setByte(offset, 42)
--- (replace lByteData_stub with your real LByteData instance above)
-
--- ---- Stub: LByteData:clone -----------------------------------------------
+-- Use when writing structured binary records at known field positions.
+do  -- LByteData:setByte
+  local bd = lurek.data.newByteData(8)
+  bd:setByte(0, 42)
+  bd:setByte(3, 255)
+  lurek.log.info("byte[0]=" .. bd:getByte(0) .. " byte[3]=" .. bd:getByte(3), "data")
+end
 --@api-stub: LByteData:clone
 -- Creates an independent copy of this byte buffer with identical contents.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lByteData_stub:clone()  -- -> ByteData
--- (replace lByteData_stub with your real LByteData instance above)
-
--- ---- Stub: LByteData:setBit ----------------------------------------------
+-- Use when you need a snapshot before mutating the original.
+do  -- LByteData:clone
+  local bd = lurek.data.newByteData(4)
+  bd:setByte(0, 99)
+  local copy = bd:clone()
+  lurek.log.info("copy[0]=" .. copy:getByte(0), "data")
+end
 --@api-stub: LByteData:setBit
 -- Sets or clears a single bit within the buffer.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lByteData_stub:setBit(byte_offset, bit_offset, 42)
--- (replace lByteData_stub with your real LByteData instance above)
-
--- ---- Stub: LByteData:getBit ----------------------------------------------
+-- Use for compact boolean flags packed into individual bytes.
+do  -- LByteData:setBit
+  local bd = lurek.data.newByteData(4)
+  bd:setBit(0, 3, true)   -- byte 0, bit 3 = 1
+  bd:setBit(0, 1, false)  -- byte 0, bit 1 = 0
+  lurek.log.info("bit(0,3)=" .. tostring(bd:getBit(0, 3)), "data")
+end
 --@api-stub: LByteData:getBit
 -- Returns the value of a single bit within the buffer.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lByteData_stub:getBit(byte_offset, bit_offset)  -- -> boolean
--- (replace lByteData_stub with your real LByteData instance above)
-
--- ---- Stub: LByteData:readBits --------------------------------------------
+-- Use for reading compact boolean flags stored in bit-packed records.
+do  -- LByteData:getBit
+  local bd = lurek.data.newByteData(4)
+  bd:setByte(0, 0b10101010)
+  local b = bd:getBit(0, 1)
+  lurek.log.info("bit(0,1)=" .. tostring(b), "data")
+end
 --@api-stub: LByteData:readBits
--- Reads `count` consecutive bits starting at `byte_offset`/`bit_offset`
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lByteData_stub:readBits(byte_offset, bit_offset, 10)
--- (replace lByteData_stub with your real LByteData instance above)
-
-
+-- Reads count consecutive bits starting at byte_offset/bit_offset.
+-- Use for decoding variable-length bit-packed fields.
+do  -- LByteData:readBits
+  local bd = lurek.data.newByteData(4)
+  bd:setByte(0, 0b11001100)
+  local val = bd:readBits(0, 4, 4)
+  lurek.log.info("bits=" .. tostring(val), "data")
+end

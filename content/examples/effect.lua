@@ -1607,67 +1607,82 @@ end
 -- ---- Stub: LScreenTransition:play ----------------------------------------
 --@api-stub: LScreenTransition:play
 -- Starts the transition playing forward (scene fades/wipes out).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lScreenTransition_stub:play()
--- (replace lScreenTransition_stub with your real LScreenTransition instance above)
-
--- ---- Stub: LScreenTransition:reverse -------------------------------------
+-- Call on scene exit to animate the screen away.
+do  -- LScreenTransition:play
+  local tr = lurek.effect.newTransition("fade", 0.5, {0, 0, 0, 1})
+  tr:play()
+  lurek.log.info("transition playing, active=" .. tostring(tr:isActive()), "effect")
+end
 --@api-stub: LScreenTransition:reverse
 -- Starts the transition in reverse (scene fades/wipes in).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lScreenTransition_stub:reverse()
--- (replace lScreenTransition_stub with your real LScreenTransition instance above)
-
--- ---- Stub: LScreenTransition:update --------------------------------------
+-- Call on scene enter to animate the new screen appearing.
+do  -- LScreenTransition:reverse
+  local tr = lurek.effect.newTransition("fade", 0.5, {0, 0, 0, 1})
+  tr:reverse()
+  lurek.log.info("transition reversed, active=" .. tostring(tr:isActive()), "effect")
+end
 --@api-stub: LScreenTransition:update
--- Advances the transition by `dt` seconds. Returns `true` while
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lScreenTransition_stub:update(0.016)  -- -> boolean
--- (replace lScreenTransition_stub with your real LScreenTransition instance above)
-
--- ---- Stub: LScreenTransition:progress ------------------------------------
+-- Advances the transition by dt seconds. Returns true while still running.
+-- Call once per frame in your scene update to animate the transition.
+do  -- LScreenTransition:update
+  local tr = lurek.effect.newTransition("fade", 0.5, {0, 0, 0, 1})
+  tr:play()
+  local running = tr:update(0.1)
+  lurek.log.info("still_active=" .. tostring(running), "effect")
+end
 --@api-stub: LScreenTransition:progress
--- Returns the fractional progress `[0, 1]` of the transition, taking
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lScreenTransition_stub:progress()  -- -> number
--- (replace lScreenTransition_stub with your real LScreenTransition instance above)
-
--- ---- Stub: LScreenTransition:isActive ------------------------------------
+-- Returns the fractional progress [0, 1] of the transition.
+-- Use to synchronise game-logic events with the mid-point of a fade.
+do  -- LScreenTransition:progress
+  local tr = lurek.effect.newTransition("fade", 1.0, {0, 0, 0, 1})
+  tr:play()
+  tr:update(0.25)
+  lurek.log.info("progress=" .. tr:progress(), "effect")
+end
 --@api-stub: LScreenTransition:isActive
--- Returns `true` while the transition is running.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lScreenTransition_stub:isActive()  -- -> boolean
--- (replace lScreenTransition_stub with your real LScreenTransition instance above)
-
--- ---- Stub: LScreenTransition:isDone --------------------------------------
+-- Returns true while the transition is running.
+-- Use to gate scene changes until the fade-out completes.
+do  -- LScreenTransition:isActive
+  local tr = lurek.effect.newTransition("wipe", 0.4, {0, 0, 0, 1})
+  lurek.log.info("before play: " .. tostring(tr:isActive()), "effect")
+  tr:play()
+  lurek.log.info("after play: " .. tostring(tr:isActive()), "effect")
+end
 --@api-stub: LScreenTransition:isDone
--- Returns `true` after the transition has completed.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lScreenTransition_stub:isDone()  -- -> boolean
--- (replace lScreenTransition_stub with your real LScreenTransition instance above)
-
--- ---- Stub: LScreenTransition:kind ----------------------------------------
+-- Returns true after the transition has completed.
+-- Poll this to know when it is safe to load the next scene.
+do  -- LScreenTransition:isDone
+  local tr = lurek.effect.newTransition("fade", 0.1, {0, 0, 0, 1})
+  tr:play()
+  while not tr:isDone() do
+    tr:update(0.05)
+  end
+  lurek.log.info("transition is done", "effect")
+end
 --@api-stub: LScreenTransition:kind
--- Returns the transition kind name (`"fade"`, `"wipe"`, `"iris_wipe"`,
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lScreenTransition_stub:kind()  -- -> string
--- (replace lScreenTransition_stub with your real LScreenTransition instance above)
-
--- ---- Stub: LScreenTransition:color ---------------------------------------
+-- Returns the transition kind name (fade, wipe, iris_wipe, etc.).
+-- Use to verify which transition type is active for debugging.
+do  -- LScreenTransition:kind
+  local tr = lurek.effect.newTransition("iris_wipe", 0.5, {0, 0, 0, 1})
+  lurek.log.info("kind=" .. tr:kind(), "effect")
+end
 --@api-stub: LScreenTransition:color
--- Returns the fill color as four numbers: `r, g, b, a`.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lScreenTransition_stub:color()  -- -> number, number, number, number
--- (replace lScreenTransition_stub with your real LScreenTransition instance above)
-
--- ---- Stub: LScreenTransition:setColor ------------------------------------
+-- Returns the fill color as four numbers: r, g, b, a.
+-- Use to read the current overlay color for UI synchronisation.
+do  -- LScreenTransition:color
+  local tr = lurek.effect.newTransition("fade", 0.5, {0.1, 0.2, 0.3, 1.0})
+  local r, g, b, a = tr:color()
+  lurek.log.info("color r=" .. r .. " g=" .. g .. " b=" .. b, "effect")
+end
 --@api-stub: LScreenTransition:setColor
--- Updates the fill color from `{r, g, b, a?}`.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lScreenTransition_stub:setColor()
--- (replace lScreenTransition_stub with your real LScreenTransition instance above)
-
--- ---- Stub: LScreenTransition:type ----------------------------------------
+-- Updates the fill color from {r, g, b, a?}.
+-- Use to change the overlay colour between transitions (e.g. white flash).
+do  -- LScreenTransition:setColor
+  local tr = lurek.effect.newTransition("fade", 0.5, {0, 0, 0, 1})
+  tr:setColor({1.0, 1.0, 1.0, 1.0})   -- switch to white flash
+  local r, g, b = tr:color()
+  lurek.log.info("updated color r=" .. r .. " g=" .. g, "effect")
+end
 --@api-stub: LScreenTransition:type
 -- Returns the type name of this object ("ScreenTransition").
 -- Useful for runtime type inspection.

@@ -580,19 +580,19 @@ end
 -- ---- Stub: lurek.devtools.debug ------------------------------------------
 --@api-stub: lurek.devtools.debug
 -- Logs a message at DEBUG level.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
-lurek.devtools.debug(message)
-
--- ---- Stub: lurek.devtools.info -------------------------------------------
+-- Use for verbose internal tracing during development; filtered out in release builds.
+do  -- lurek.devtools.debug
+  lurek.devtools.debug("debug trace: player_x=32.5, frame=120")
+end
 --@api-stub: lurek.devtools.info
 -- Logs a message at INFO level.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
-lurek.devtools.info(message)
-
--- ---- Stub: lurek.devtools.warn -------------------------------------------
+-- Use for key lifecycle events that should appear in normal development runs.
+do  -- lurek.devtools.info
+  lurek.devtools.info("game loaded: level=1, entities=42")
+end
 --@api-stub: lurek.devtools.warn
 -- Logs a message at WARN level.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
-lurek.devtools.warn(message)
-
-
+-- Use when a recoverable problem is detected but execution can continue.
+do  -- lurek.devtools.warn
+  lurek.devtools.warn("texture cache miss: assets/hero.png")
+end
