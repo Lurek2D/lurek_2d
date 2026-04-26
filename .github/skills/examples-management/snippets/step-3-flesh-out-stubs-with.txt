@@ -1,2 +1,0 @@
-@workspace /file:content/examples/timer.lua
-Use the flesh-out-example.prompt.md prompt to expand all stubs into real examples.

@@ -146,9 +146,7 @@ impl LuaUserData for LuaLayeredImage {
         /// @param index integer
         /// @param imagedata ImageData
         /// @return boolean
-        methods.add_method_mut(
-            "setLayer",
-            |_, this, (index, img): (usize, LuaAnyUserData)| {
+        methods.add_method_mut("setLayer", |_, this, (index, img): (usize, LuaAnyUserData)| {
                 if index == 0 {
                     return Err(LuaError::RuntimeError("layer index must be >= 1".into()));
                 }
@@ -254,9 +252,7 @@ impl LuaUserData for LuaLayeredImage {
         /// @param from_index integer
         /// @param to_index integer
         /// @return boolean
-        methods.add_method_mut(
-            "moveLayer",
-            |_, this, (from_idx, to_idx): (usize, usize)| {
+        methods.add_method_mut("moveLayer", |_, this, (from_idx, to_idx): (usize, usize)| {
                 if from_idx == 0 || to_idx == 0 {
                     return Err(LuaError::RuntimeError("layer indices must be >= 1".into()));
                 }
@@ -370,9 +366,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @param height integer?
     /// @return ImageData
     let s = state.clone();
-    tbl.set(
-        "newImageData",
-        lua.create_function(move |lua, args: LuaMultiValue| {
+    tbl.set("newImageData", lua.create_function(move |lua, args: LuaMultiValue| {
             let mut iter = args.into_iter();
             let first = iter.next().ok_or_else(|| {
                 LuaError::RuntimeError("newImageData expects (width, height) or (filename)".into())
@@ -413,9 +407,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @param filename string
     /// @return CompressedImageData
     let s = state.clone();
-    tbl.set(
-        "newCompressedData",
-        lua.create_function(move |lua, filename: String| {
+    tbl.set("newCompressedData", lua.create_function(move |lua, filename: String| {
             let path = s.borrow().game_dir.join(&filename);
             let path_str = path
                 .to_str()
@@ -430,9 +422,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @param filename string
     /// @return boolean
     let s = state.clone();
-    tbl.set(
-        "isCompressed",
-        lua.create_function(move |_, filename: String| {
+    tbl.set("isCompressed", lua.create_function(move |_, filename: String| {
             let path = s.borrow().game_dir.join(&filename);
             Ok(CompressedImageData::is_dds_file(
                 path.to_str().unwrap_or(""),
@@ -445,9 +435,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @param width integer
     /// @param height integer
     /// @return LayeredImage
-    tbl.set(
-        "newLayeredImage",
-        lua.create_function(move |lua, (width, height): (u32, u32)| {
+    tbl.set("newLayeredImage", lua.create_function(move |lua, (width, height): (u32, u32)| {
             lua.create_userdata(LuaLayeredImage {
                 inner: LayeredImage::new(width, height),
             })
@@ -460,9 +448,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @param path string
     /// @return nil
     let s = state.clone();
-    tbl.set(
-        "saveImage",
-        lua.create_function(move |_, (img_ud, filename): (LuaAnyUserData, String)| {
+    tbl.set("saveImage", lua.create_function(move |_, (img_ud, filename): (LuaAnyUserData, String)| {
             let path = s.borrow().game_dir.join(&filename);
             let path_str = path
                 .to_str()
@@ -480,9 +466,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @param path string
     /// @return nil
     let s = state.clone();
-    tbl.set(
-        "savePNG",
-        lua.create_function(move |_, (img_ud, filename): (LuaAnyUserData, String)| {
+    tbl.set("savePNG", lua.create_function(move |_, (img_ud, filename): (LuaAnyUserData, String)| {
             let path = s.borrow().game_dir.join(&filename);
             let raw = img_ud
                 .borrow::<ImageData>()
@@ -500,9 +484,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @param path string
     /// @return ImageData
     let s = state.clone();
-    tbl.set(
-        "loadImage",
-        lua.create_function(move |lua, filename: String| {
+    tbl.set("loadImage", lua.create_function(move |lua, filename: String| {
             let path = s.borrow().game_dir.join(&filename);
             let path_str = path
                 .to_str()
@@ -517,9 +499,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @param path string
     /// @return LayeredImage
     let s = state.clone();
-    tbl.set(
-        "loadLayered",
-        lua.create_function(move |lua, filename: String| {
+    tbl.set("loadLayered", lua.create_function(move |lua, filename: String| {
             let path = s.borrow().game_dir.join(&filename);
             let path_str = path
                 .to_str()
@@ -533,9 +513,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// Creates a new empty `PaletteLUT` used to remap colours in an image.
     ///
     /// @return PaletteLUT
-    tbl.set(
-        "newPaletteLut",
-        lua.create_function(|lua, ()| {
+    tbl.set("newPaletteLut", lua.create_function(|lua, ()| {
             lua.create_userdata(LuaPaletteLUT {
                 inner: crate::image::palette_lut::PaletteLUT::new(),
             })
@@ -548,9 +526,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @param filename string
     /// @return ProvinceGrid
     let s = state.clone();
-    tbl.set(
-        "newProvinceGrid",
-        lua.create_function(move |lua, filename: String| {
+    tbl.set("newProvinceGrid", lua.create_function(move |lua, filename: String| {
             let path = s.borrow().game_dir.join(&filename);
             let path_str = path
                 .to_str()
@@ -606,9 +582,7 @@ impl mlua::UserData for ImageData {
         /// @param b integer   blue [0-255]
         /// @param a integer   alpha [0-255]
         /// @return nil
-        methods.add_method_mut(
-            "setPixel",
-            |_, this, (x, y, r, g, b, a): (u32, u32, u8, u8, u8, u8)| {
+        methods.add_method_mut("setPixel", |_, this, (x, y, r, g, b, a): (u32, u32, u8, u8, u8, u8)| {
                 if this.set_pixel(x, y, r, g, b, a) {
                     Ok(())
                 } else {
@@ -703,9 +677,7 @@ impl mlua::UserData for ImageData {
         /// @param tb integer   blue component [0-255]
         /// @param factor number   blend weight [0.0-1.0]
         /// @return nil
-        methods.add_method_mut(
-            "tint",
-            |_, this, (tr, tg, tb, factor): (u8, u8, u8, f32)| {
+        methods.add_method_mut("tint", |_, this, (tr, tg, tb, factor): (u8, u8, u8, f32)| {
                 this.tint(tr, tg, tb, factor);
                 Ok(())
             },
@@ -863,9 +835,7 @@ impl mlua::UserData for ImageData {
         /// @param b integer
         /// @param a integer
         /// @return nil
-        methods.add_method_mut(
-            "drawRect",
-            |_, this, (x, y, w, h, r, g, b, a): (i32, i32, u32, u32, u8, u8, u8, u8)| {
+        methods.add_method_mut("drawRect", |_, this, (x, y, w, h, r, g, b, a): (i32, i32, u32, u32, u8, u8, u8, u8)| {
                 this.draw_rect(x, y, w, h, r, g, b, a);
                 Ok(())
             },
@@ -880,9 +850,7 @@ impl mlua::UserData for ImageData {
         /// @param b integer
         /// @param a integer
         /// @return nil
-        methods.add_method_mut(
-            "drawCircle",
-            |_, this, (cx, cy, radius, r, g, b, a): (i32, i32, u32, u8, u8, u8, u8)| {
+        methods.add_method_mut("drawCircle", |_, this, (cx, cy, radius, r, g, b, a): (i32, i32, u32, u8, u8, u8, u8)| {
                 this.draw_circle(cx, cy, radius, r, g, b, a);
                 Ok(())
             },
@@ -898,9 +866,7 @@ impl mlua::UserData for ImageData {
         /// @param b integer
         /// @param a integer
         /// @return nil
-        methods.add_method_mut(
-            "drawLine",
-            |_, this, (x0, y0, x1, y1, r, g, b, a): (i32, i32, i32, i32, u8, u8, u8, u8)| {
+        methods.add_method_mut("drawLine", |_, this, (x0, y0, x1, y1, r, g, b, a): (i32, i32, i32, i32, u8, u8, u8, u8)| {
                 this.draw_line(x0, y0, x1, y1, r, g, b, a);
                 Ok(())
             },
@@ -930,9 +896,7 @@ impl mlua::UserData for ImageData {
         /// @param dst_x integer
         /// @param dst_y integer
         /// @return nil
-        methods.add_method_mut(
-            "blit",
-            |_, this, (src_ud, dst_x, dst_y): (LuaAnyUserData, i32, i32)| {
+        methods.add_method_mut("blit", |_, this, (src_ud, dst_x, dst_y): (LuaAnyUserData, i32, i32)| {
                 let src_ref = src_ud.borrow::<ImageData>()?;
                 this.blit(&src_ref, dst_x, dst_y);
                 Ok(())
@@ -949,9 +913,7 @@ impl mlua::UserData for ImageData {
         /// @param width integer
         /// @param height integer
         /// @return ImageData?
-        methods.add_method(
-            "getRegion",
-            |lua, this, (x, y, w, h): (u32, u32, u32, u32)| match this.get_region(x, y, w, h) {
+        methods.add_method("getRegion", |lua, this, (x, y, w, h): (u32, u32, u32, u32)| match this.get_region(x, y, w, h) {
                 Some(img) => Ok(LuaValue::UserData(lua.create_userdata(img)?)),
                 None => Ok(LuaValue::Nil),
             },
@@ -1002,9 +964,7 @@ impl mlua::UserData for ImageData {
         /// @param kernel table
         /// @param ksize integer
         /// @return ImageData
-        methods.add_method(
-            "convolve",
-            |lua, this, (kernel_t, ksize): (LuaTable, usize)| {
+        methods.add_method("convolve", |lua, this, (kernel_t, ksize): (LuaTable, usize)| {
                 let len = kernel_t.len()? as usize;
                 let mut kernel: Vec<f64> = Vec::with_capacity(len);
                 for i in 1..=len {
@@ -1045,9 +1005,7 @@ impl mlua::UserData for ImageData {
         /// @param dx integer
         /// @param dy integer
         /// @return nil
-        methods.add_method_mut(
-            "paste",
-            |_, this, (src_ud, dx, dy): (LuaAnyUserData, u32, u32)| {
+        methods.add_method_mut("paste", |_, this, (src_ud, dx, dy): (LuaAnyUserData, u32, u32)| {
                 let src = src_ud.borrow::<ImageData>()?;
                 this.paste(&src, dx, dy);
                 Ok(())
@@ -1092,9 +1050,7 @@ impl LuaUserData for LuaPaletteLUT {
         /// @param to_b integer     0-255
         /// @param to_a integer     0-255
         /// @return nil
-        methods.add_method_mut(
-            "setColor",
-            |_, this, (fr, fg, fb, fa, tr, tg, tb, ta): (u8, u8, u8, u8, u8, u8, u8, u8)| {
+        methods.add_method_mut("setColor", |_, this, (fr, fg, fb, fa, tr, tg, tb, ta): (u8, u8, u8, u8, u8, u8, u8, u8)| {
                 use crate::math::color::Color;
                 let from = Color {
                     r: fr as f32 / 255.0,

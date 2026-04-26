@@ -78,6 +78,7 @@ def extract_lua_api(gen_lua_api, verbose: bool = False) -> dict:
                 "inferred_sig": f.inferred_sig,
                 "typed_params": f.typed_params,
                 "inferred_return": f.inferred_return,
+                "return_description": f.return_description,
                 "line": f.line,
                 "file": f.file,
             }

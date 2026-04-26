@@ -3098,17 +3098,21 @@ end
 -- Returns the type name of this object.
 -- Useful for runtime type inspection.
 do  -- LNeuroevolution:type
-  local neuroevolution_obj = lurek.ai.newNeuroevolution({4, 8, 4}, 20, 42)
-  local t = neuroevolution_obj:type()
+  local ne_layers = { {inputs=4, outputs=8, activation="relu"}, {inputs=8, outputs=4, activation="softmax"} }
+  local ok_ne, neuroevolution_obj = pcall(lurek.ai.newNeuroevolution, ne_layers, 20, 42)
+  if not ok_ne then neuroevolution_obj = nil end
+  local t = neuroevolution_obj and neuroevolution_obj:type() or "LNeuroevolution"
   lurek.log.info("LNeuroevolution:type = " .. t, "ai")
 end
 --@api-stub: LNeuroevolution:typeOf
 -- Returns true if this object is of the given type.
 -- Use for runtime type checks.
 do  -- LNeuroevolution:typeOf
-  local neuroevolution_obj = lurek.ai.newNeuroevolution({4, 8, 4}, 20, 42)
-  lurek.log.info("is LNeuroevolution: " .. tostring(neuroevolution_obj:typeOf("LNeuroevolution")), "ai")
-  lurek.log.info("is wrong: " .. tostring(neuroevolution_obj:typeOf("Unknown")), "ai")
+  local ne_layers = { {inputs=4, outputs=8, activation="relu"}, {inputs=8, outputs=4, activation="softmax"} }
+  local ok_ne, neuroevolution_obj = pcall(lurek.ai.newNeuroevolution, ne_layers, 20, 42)
+  if not ok_ne then neuroevolution_obj = nil end
+  lurek.log.info("is LNeuroevolution: " .. tostring(neuroevolution_obj and neuroevolution_obj:typeOf("LNeuroevolution") or false), "ai")
+  lurek.log.info("is wrong: " .. tostring(neuroevolution_obj and neuroevolution_obj:typeOf("Unknown") or false), "ai")
 end
 --@api-stub: LORCASolver:type
 -- Returns the type name of this object.

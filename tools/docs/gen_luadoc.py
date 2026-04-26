@@ -110,11 +110,10 @@ def extract_return_from_full_doc(full_doc):
     """
     types = []
     for line in full_doc.splitlines():
-        match = re.match(r"^@return\s+(.+?)\s*$", line.strip())
-        if match:
-            # Strip description (2+ spaces separate type from description text).
-            type_part = re.split(r"\s{2,}", match.group(1).strip())[0].strip()
-            types.append(type_part)
+        stripped = line.strip()
+        pipe_match = re.match(r"^@return\s*\|\s*([^|]+?)\s*\|\s*(.+)$", stripped)
+        if pipe_match:
+            types.append(pipe_match.group(1).strip())
     if not types:
         return ""
     if len(types) == 1:
@@ -219,11 +218,17 @@ def parse_params(fn):
             pname = p[0].strip()
             ptype = p[1].strip() if len(p) > 1 else "any"
             is_opt = p[2] if len(p) > 2 else False
+            param_desc = p[3].strip() if len(p) > 3 else ""
             pname_clean = pname if pname == "..." else re.sub(r'[^a-zA-Z0-9_]', '', pname.replace(' ', '_'))
             if pname_clean and pname_clean not in pkeys:
                 pkeys.append(pname_clean)
                 ptype_map[pname_clean] = normalize_param_type(ptype, is_opt)
-                pdesc_map[pname_clean] = "(optional)" if is_opt else ""
+                if param_desc:
+                    pdesc_map[pname_clean] = param_desc
+                elif is_opt:
+                    pdesc_map[pname_clean] = "(optional)"
+                else:
+                    pdesc_map[pname_clean] = ""
         return pkeys, ptype_map, pdesc_map
 
     # 1. Start with params_doc
@@ -347,11 +352,14 @@ def write_function_doc(out, fn, name):
             param_names.append(safe_k)
 
     ret = parse_returns(fn)
+    ret_desc = fn.get("return_description", "").strip()
     if ret:
         ret_parts = split_top_level_types(ret)
         if len(ret_parts) > 1:
             for r in ret_parts:
                 out.append(f"---@return {r.strip()}")
+        elif ret_desc:
+            out.append(f"---@return {ret} {ret_desc}")
         else:
             out.append(f"---@return {ret}")
 
@@ -415,9 +423,6 @@ def main():
         "Node":           "LGraphNode",      # LuaNode shorthand → full graph type
         "Step":           "LPipelineStep",   # LuaStep shorthand → full pipeline type
         "ThreadHandle":   "LThread",         # LuaThreadHandle → LThread
-        # parallax_api.rs uses "Lua" prefix in @return docstrings but registers as "L" prefix
-        "LuaParallaxLayer": "LParallaxLayer",
-        "LuaParallaxSet":   "LParallaxSet",
     }
     # Auto-derive: if a referenced type "Foo" has a declared counterpart "LFoo" (exact match),
     # alias it.  Case-insensitive fallback for minor capitalisation differences.
@@ -436,27 +441,6 @@ def main():
     # Types defined as @class in docs/api/library.lua — skip generating aliases for them
     # to avoid 'duplicate-doc-alias' warnings from the Lua language server.
     _SKIP_ALIAS = {"EventBus", "Scheduler", "Stack"}
-
-    # Direct return-type overrides for specific functions whose docstring return type
-    # would collide with a @class already declared in library.lua (making a @alias a
-    # duplicate-doc error).  These bypass the opaque-alias system entirely by
-    # overwriting inferred_return before write_function_doc is called.
-    _FUNCTION_RETURN_OVERRIDES: dict[str, str] = {
-        "lurek.patterns.newEventBus": "LEventBus",
-        "lurek.patterns.newStack":    "LStack",
-    }
-
-    # Per-function parameter type overrides.  Key = full function name (e.g. "lurek.serial.toJson").
-    # Value = {param_name: new_type}.  Applied before write_function_doc to fix cases where the
-    # Rust docstring says `table` but the runtime actually accepts any Lua value.
-    _PARAM_TYPE_OVERRIDES: dict[str, dict[str, str]] = {
-        "lurek.serial.toJson":       {"value": "any"},
-        "lurek.serial.toToml":       {"value": "any"},
-        "lurek.serial.toCsv":        {"value": "any"},
-        "lurek.serial.encodeMsgPack": {"value": "any"},
-        "lurek.serial.encode":       {"value": "any"},
-        "lurek.serial.validate":     {"value": "any"},
-    }
 
     for type_name in opaque_types:
         if type_name in _SKIP_ALIAS:
@@ -557,25 +541,6 @@ def main():
             # the lua_name is already correct — preserve nested paths (keyboard.isDown etc.).
             if mod_name != lua_ns and name.startswith(f"lurek.{mod_name}."):
                 name = f"lurek.{lua_ns}." + name[len(f"lurek.{mod_name}."):]
-            # Apply return-type override (used when bare type name collides with library.lua).
-            # Clear returns_doc AND full_doc so parse_returns falls through to inferred_return.
-            if name in _FUNCTION_RETURN_OVERRIDES:
-                func = {**func,
-                        "inferred_return": _FUNCTION_RETURN_OVERRIDES[name],
-                        "returns_doc": "",
-                        "full_doc": ""}
-            # Apply per-param type overrides (used when Rust docstring says `table` but
-            # the API actually accepts any Lua value).
-            if name in _PARAM_TYPE_OVERRIDES and func.get("typed_params"):
-                param_ovr = _PARAM_TYPE_OVERRIDES[name]
-                new_typed: list = []
-                for p in func["typed_params"]:
-                    pname = p[0] if p else ""
-                    if pname in param_ovr:
-                        new_typed.append([p[0], param_ovr[pname]] + list(p[2:]))
-                    else:
-                        new_typed.append(p)
-                func = {**func, "typed_params": new_typed}
             write_function_doc(out, func, name)
 
         # ── Particle flat-forwarding wrappers ─────────────────────────────────────────

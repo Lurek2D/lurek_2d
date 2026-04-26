@@ -651,21 +651,30 @@ window.addEventListener('resize',draw);
   });
   registerCommand(context, "lurek2d.getApiDoc", () => browseApi());
 
-  // ─── Scan All Games (bulk diagnostic) ────────────────────
+  // ─── Scan Lua Workspace (bulk diagnostic) ────────────────
   registerCommand(context, "lurek2d.scanAllGames", async () => {
     const wsRoot = getWorkspaceRoot();
     if (!wsRoot) {
       vscode.window.showErrorMessage("No workspace open.");
       return;
     }
-    const uris = await vscode.workspace.findFiles("content/games/**/main.lua", "**/node_modules/**");
+    const uris = await vscode.workspace.findFiles(
+      LUA_WORKSPACE_SCAN_INCLUDE,
+      LUA_WORKSPACE_SCAN_EXCLUDE,
+    );
     if (uris.length === 0) {
-      vscode.window.showInformationMessage("No game main.lua files found.");
+      vscode.window.showInformationMessage(
+        "No Lua files found under src/, library/, content/, .github/, or tests/.",
+      );
       return;
     }
 
     await vscode.window.withProgress(
-      { location: vscode.ProgressLocation.Notification, title: `Scanning ${uris.length} games…`, cancellable: false },
+      {
+        location: vscode.ProgressLocation.Notification,
+        title: `Scanning ${uris.length} Lua files…`,
+        cancellable: false,
+      },
       async (progress) => {
         let done = 0;
         for (const uri of uris) {
@@ -684,7 +693,9 @@ window.addEventListener('resize',draw);
 
     // Show Problems panel
     await vscode.commands.executeCommand("workbench.action.problems.focus");
-    vscode.window.showInformationMessage(`Scanned ${uris.length} games. Check the Problems panel for errors.`);
+    vscode.window.showInformationMessage(
+      `Scanned ${uris.length} Lua files. Check the Problems panel for errors.`,
+    );
   });
 
   // ─── MCP Server ──────────────────────────────────────────
@@ -736,6 +747,9 @@ function registerCommand(
 function getWorkspaceRoot(): string | undefined {
   return vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
 }
+
+const LUA_WORKSPACE_SCAN_INCLUDE = "{src,library,content,.github,tests}/**/*.lua";
+const LUA_WORKSPACE_SCAN_EXCLUDE = "{**/node_modules/**,**/build/**,**/dist/**,**/out/**,**/save/**,**/logs/**,ideas/**,work/**}";
 
 /**
  * Configures lua-language-server (sumneko.lua) to include the lurek2d LuaCATS

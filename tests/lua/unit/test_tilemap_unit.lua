@@ -2283,9 +2283,20 @@ describe("Missing API Coverage", function()
         -- TODO: Implement test for IsoMap:screenToTile
     end)
 
+    -- @tests MapBlock:setSide
     -- @tests MapBlock:getSide
-    it("covers MapBlock:getSide", function()
-        -- TODO: Implement test for MapBlock:getSide
+    it("setSide stores a connection id retrievable via getSide", function()
+        local block = lurek.tilemap.newMapBlock(4, 4, 1, 4)
+        block:setSide("north", 1, 7)
+        expect_equal(7, block:getSide("north", 1))
+        block:setSide("east", 2, 3)
+        expect_equal(3, block:getSide("east", 2))
+    end)
+
+    -- @tests MapBlock:getSide
+    it("getSide returns 0 for a segment that was never set", function()
+        local block = lurek.tilemap.newMapBlock(4, 4, 1, 4)
+        expect_equal(0, block:getSide("south", 1))
     end)
 
     -- @tests MapBlock:getSegmentSize

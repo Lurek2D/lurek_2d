@@ -25,6 +25,7 @@ struct SelectorPart {
     combinator: Option<Combinator>,
 }
 
+/// Returns `true` if `element_id` satisfies the CSS `selector` within the element arena.
 pub(crate) fn matches_selector(
     elements: &[HtmlElement],
     element_id: HtmlElementId,
@@ -115,11 +116,7 @@ fn parse_selector(selector: &str) -> Vec<SelectorPart> {
     parts
 }
 
-fn push_part(
-    parts: &mut Vec<SelectorPart>,
-    token: &mut String,
-    combinator: Option<Combinator>,
-) {
+fn push_part(parts: &mut Vec<SelectorPart>, token: &mut String, combinator: Option<Combinator>) {
     let trimmed = token.trim();
     if !trimmed.is_empty() {
         parts.push(SelectorPart {

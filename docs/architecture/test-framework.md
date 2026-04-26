@@ -465,7 +465,7 @@ All Lua tests use a custom BDD framework defined in `tests/lua/init.lua`. This f
 | `expect_deep_equal(expected, actual, msg)` | Recursive table equality |
 | `measure(name, count, fn)` | Run fn, print `[PERF]` line, return `elapsed, ops_per_sec` |
 | `expect_golden(name, data, expected)` | Deterministic comparison against inline expected string |
-| `expect_canvas_pixel(canvas, x, y, r, g, b, a, tol, msg)` | Verify Canvas pixel RGBA within tolerance |
+| `expect_canvas_pixel(surface, x, y, r, g, b, a, tol, msg)` | Verify pixel RGBA within tolerance on any object exposing `getPixel()` |
 | `test_summary()` | **MANDATORY** — must be the last call in every file |
 
 ### Lua Test Documentation Standard
@@ -1004,7 +1004,7 @@ end)
 |---|---|
 | `-- @covers lurek.x.y` | Marks function coverage |
 | `-- @evidence file` | Test produces file-based evidence (saved output) |
-| `-- @evidence pixel` | Test uses Canvas pixel readback for visual evidence |
+| `-- @evidence pixel` | Test uses direct pixel readback for visual evidence (typically `ImageData` in headless tests) |
 | `-- @golden` | Test compares against a golden baseline |
 | `-- @stress` | Test measures throughput performance |
 

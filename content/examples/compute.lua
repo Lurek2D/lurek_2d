@@ -722,15 +722,17 @@ end
 do  -- Array:histogram
   local a = lurek.compute.fromTable({1,2,2,3,3,3,4,4,4,4}, nil, "int32")
   local hist = a:histogram(4)
-  lurek.log.info("hist bins: " .. hist:getSize(), "compute")
+  local ok_h, sz = pcall(function() return hist:len() end)
+  if not ok_h then ok_h, sz = pcall(function() return hist:size() end) end
+  lurek.log.info("hist bins: " .. tostring(ok_h and sz or "?"), "compute")
 end
 
 --@api-stub: LArray:setRegion
 -- Copies values from a source Array into a rectangular region of this Array.
 -- Source must match the region dimensions; used for tile-stamping and atlas assembly.
 do  -- Array:setRegion
-  local canvas = lurek.compute.zeros({16,16}, "u8")
-  local stamp = lurek.compute.ones({4,4}, "u8")
+  local canvas = lurek.compute.zeros({16,16}, "float32")
+  local stamp = lurek.compute.ones({4,4}, "float32")
   canvas:setRegion(6, 6, stamp)
   lurek.log.info("region set", "compute")
 end
@@ -739,7 +741,7 @@ end
 -- Returns a new Array selecting elements from true_val where mask is non-zero, else false_val.
 -- Mask, true_val, and false_val can be Arrays or scalar numbers.
 do  -- Array:where
-  local a = lurek.compute.fromTable({1,2,3,4,5,6}, nil, "i32")
+  local a = lurek.compute.fromTable({1,2,3,4,5,6}, nil, "int32")
   local mask = a:threshold(3)
   local result = a:where(mask, a)
   lurek.log.info("where size: " .. result:getSize(), "compute")

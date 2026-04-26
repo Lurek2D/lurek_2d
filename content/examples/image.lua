@@ -807,7 +807,7 @@ end
 do  -- mlua (ImageData):tint
   local img = lurek.image.newImageData(32, 32)
   img:fill(1, 1, 1, 1)
-  img:tint(1.0, 0.3, 0.3)
+  img:tint(255, 76, 76, 0.5)
   lurek.log.info("tint applied", "image")
 end
 
@@ -1343,7 +1343,7 @@ do  -- LImageData:applyPaletteLut
   local img = lurek.image.newImageData(8, 8)
   img:fill(255, 0, 0, 255)   -- red
   local lut = lurek.image.newPaletteLut()
-  lut:add(255, 0, 0, 0, 255, 0)   -- red → green
+  lut:setColor(255, 0, 0, 255, 0, 255, 0, 255)   -- red → green
   img:applyPaletteLut(lut)
   local r, g = img:getPixel(0, 0)
   lurek.log.info("after lut r=" .. r .. " g=" .. g, "image")

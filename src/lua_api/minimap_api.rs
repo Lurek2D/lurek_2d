@@ -94,9 +94,7 @@ impl LuaUserData for LuaMinimap {
         /// @param y integer
         /// @param terrain_type integer
         /// @return nil
-        methods.add_method_mut(
-            "setTerrain",
-            |_, this, (x, y, terrain_type): (u32, u32, u32)| {
+        methods.add_method_mut("setTerrain", |_, this, (x, y, terrain_type): (u32, u32, u32)| {
                 if x == 0 || y == 0 {
                     return Err(LuaError::RuntimeError(
                         "lurek.minimap: setTerrain coordinates are 1-based".into(),
@@ -144,9 +142,7 @@ impl LuaUserData for LuaMinimap {
         /// @param b number
         /// @param a number?
         /// @return nil
-        methods.add_method_mut(
-            "setTerrainColor",
-            |_, this, (terrain_type, r, g, b, a): (u32, f32, f32, f32, Option<f32>)| {
+        methods.add_method_mut("setTerrainColor", |_, this, (terrain_type, r, g, b, a): (u32, f32, f32, f32, Option<f32>)| {
                 this.inner
                     .set_terrain_color(terrain_type, [r, g, b, a.unwrap_or(1.0)]);
                 Ok(())
@@ -169,9 +165,7 @@ impl LuaUserData for LuaMinimap {
         /// @param type_id integer
         /// @param desc string
         /// @return nil
-        methods.add_method_mut(
-            "setTileDescription",
-            |_, this, (type_id, desc): (u32, String)| {
+        methods.add_method_mut("setTileDescription", |_, this, (type_id, desc): (u32, String)| {
                 this.inner.set_tile_description(type_id, desc);
                 Ok(())
             },
@@ -242,9 +236,7 @@ impl LuaUserData for LuaMinimap {
         /// @param b number
         /// @param a number?
         /// @return nil
-        methods.add_method_mut(
-            "setFogColor",
-            |_, this, (r, g, b, a): (f32, f32, f32, Option<f32>)| {
+        methods.add_method_mut("setFogColor", |_, this, (r, g, b, a): (f32, f32, f32, Option<f32>)| {
                 this.inner.set_fog_color([r, g, b, a.unwrap_or(0.8)]);
                 Ok(())
             },
@@ -283,9 +275,7 @@ impl LuaUserData for LuaMinimap {
         /// @param b number
         /// @param a number?
         /// @return integer
-        methods.add_method_mut(
-            "addObjectType",
-            |_, this, (name, r, g, b, a): (String, f32, f32, f32, Option<f32>)| {
+        methods.add_method_mut("addObjectType", |_, this, (name, r, g, b, a): (String, f32, f32, f32, Option<f32>)| {
                 let idx = this
                     .inner
                     .add_object_type(name, [r, g, b, a.unwrap_or(1.0)]);
@@ -298,9 +288,7 @@ impl LuaUserData for LuaMinimap {
         /// @param type_idx integer
         /// @param visible boolean
         /// @return nil
-        methods.add_method_mut(
-            "setObjectTypeVisible",
-            |_, this, (type_idx, visible): (usize, bool)| {
+        methods.add_method_mut("setObjectTypeVisible", |_, this, (type_idx, visible): (usize, bool)| {
                 if type_idx == 0 {
                     return Err(LuaError::RuntimeError(
                         "lurek.minimap: object type index is 1-based".into(),
@@ -341,9 +329,7 @@ impl LuaUserData for LuaMinimap {
         /// @param type_idx integer
         /// @param owner integer?
         /// @return nil
-        methods.add_method_mut(
-            "setObject",
-            |_, this, (id, x, y, type_idx, owner): (u32, f32, f32, usize, Option<u32>)| {
+        methods.add_method_mut("setObject", |_, this, (id, x, y, type_idx, owner): (u32, f32, f32, usize, Option<u32>)| {
                 if type_idx == 0 {
                     return Err(LuaError::RuntimeError(
                         "lurek.minimap: object type index is 1-based".into(),
@@ -388,9 +374,7 @@ impl LuaUserData for LuaMinimap {
         /// @param b number
         /// @param a number?
         /// @return nil
-        methods.add_method_mut(
-            "setOwnerColor",
-            |_, this, (owner, r, g, b, a): (u32, f32, f32, f32, Option<f32>)| {
+        methods.add_method_mut("setOwnerColor", |_, this, (owner, r, g, b, a): (u32, f32, f32, f32, Option<f32>)| {
                 this.inner
                     .set_owner_color(owner, [r, g, b, a.unwrap_or(1.0)]);
                 Ok(())
@@ -482,9 +466,7 @@ impl LuaUserData for LuaMinimap {
         /// @param w number
         /// @param h number
         /// @return nil
-        methods.add_method_mut(
-            "setViewportRect",
-            |_, this, (x, y, w, h): (f32, f32, f32, f32)| {
+        methods.add_method_mut("setViewportRect", |_, this, (x, y, w, h): (f32, f32, f32, f32)| {
                 this.inner.set_viewport_rect(x, y, w, h);
                 Ok(())
             },
@@ -532,9 +514,7 @@ impl LuaUserData for LuaMinimap {
         /// @param b number
         /// @param a number?
         /// @return nil
-        methods.add_method_mut(
-            "setViewportColor",
-            |_, this, (r, g, b, a): (f32, f32, f32, Option<f32>)| {
+        methods.add_method_mut("setViewportColor", |_, this, (r, g, b, a): (f32, f32, f32, Option<f32>)| {
                 this.inner.set_viewport_color([r, g, b, a.unwrap_or(0.8)]);
                 Ok(())
             },
@@ -561,9 +541,7 @@ impl LuaUserData for LuaMinimap {
         /// @param a number?
         /// @return nil
         #[allow(clippy::type_complexity)]
-        methods.add_method_mut(
-            "addPing",
-            |_,
+        methods.add_method_mut("addPing", |_,
              this,
              (x, y, duration, r, g, b, a): (
                 f32,
@@ -603,9 +581,7 @@ impl LuaUserData for LuaMinimap {
         /// @param a number?
         /// @return integer
         #[allow(clippy::type_complexity)]
-        methods.add_method_mut(
-            "addMarker",
-            |_,
+        methods.add_method_mut("addMarker", |_,
              this,
              (x, y, desc, r, g, b, a): (
                 f32,
@@ -666,9 +642,7 @@ impl LuaUserData for LuaMinimap {
         /// @param anim_type string  -- "blink", "pulse", or "rotate"
         /// @param speed number
         /// @return nil
-        methods.add_method_mut(
-            "setMarkerAnimation",
-            |_, this, (id, anim_type, speed): (u32, String, f32)| {
+        methods.add_method_mut("setMarkerAnimation", |_, this, (id, anim_type, speed): (u32, String, f32)| {
                 let anim = match anim_type.as_str() {
                     "blink" => MarkerAnimation::Blink { speed, phase: 0.0 },
                     "pulse" => MarkerAnimation::Pulse { speed, phase: 0.0 },
@@ -705,9 +679,7 @@ impl LuaUserData for LuaMinimap {
         /// @param y2 number
         /// @param color table  -- {r, g, b, a} integers 0-255
         /// @return nil
-        methods.add_method_mut(
-            "drawLine",
-            |_, this, (x1, y1, x2, y2, color_tbl): (f32, f32, f32, f32, LuaTable)| {
+        methods.add_method_mut("drawLine", |_, this, (x1, y1, x2, y2, color_tbl): (f32, f32, f32, f32, LuaTable)| {
                 let color = parse_color_table(color_tbl)?;
                 this.inner.draw_line(x1, y1, x2, y2, color);
                 Ok(())
@@ -722,9 +694,7 @@ impl LuaUserData for LuaMinimap {
         /// @param h number
         /// @param color table  -- {r, g, b, a} integers 0-255
         /// @return nil
-        methods.add_method_mut(
-            "drawRect",
-            |_, this, (x, y, w, h, color_tbl): (f32, f32, f32, f32, LuaTable)| {
+        methods.add_method_mut("drawRect", |_, this, (x, y, w, h, color_tbl): (f32, f32, f32, f32, LuaTable)| {
                 let color = parse_color_table(color_tbl)?;
                 this.inner.draw_rect(x, y, w, h, color);
                 Ok(())
@@ -747,9 +717,7 @@ impl LuaUserData for LuaMinimap {
         /// @param color table   -- { r, g, b, a } integers 0-255
         /// @return nil
         /// integer  -- path ID (pass to clearPath to remove it)
-        methods.add_method_mut(
-            "showPath",
-            |_, this, (points_tbl, color_tbl): (LuaTable, LuaTable)| {
+        methods.add_method_mut("showPath", |_, this, (points_tbl, color_tbl): (LuaTable, LuaTable)| {
                 let color = parse_color_table(color_tbl)?;
                 let len = points_tbl.len()? as usize;
                 let mut points = Vec::with_capacity(len);
@@ -794,9 +762,7 @@ impl LuaUserData for LuaMinimap {
         /// @param layer integer
         /// @param data table  -- flat 1-based table of terrain type integers
         /// @return nil
-        methods.add_method_mut(
-            "setLayerData",
-            |_, this, (layer, data_tbl): (usize, LuaTable)| {
+        methods.add_method_mut("setLayerData", |_, this, (layer, data_tbl): (usize, LuaTable)| {
                 let len = data_tbl.len()? as usize;
                 let mut cells = Vec::with_capacity(len);
                 for i in 1..=len {
@@ -856,9 +822,7 @@ impl LuaUserData for LuaMinimap {
         /// @param minimap_x number
         /// @param minimap_y number
         /// @return string?
-        methods.add_method(
-            "getHoverInfo",
-            |_, this, (sx, sy, mx, my): (f32, f32, f32, f32)| {
+        methods.add_method("getHoverInfo", |_, this, (sx, sy, mx, my): (f32, f32, f32, f32)| {
                 Ok(this
                     .inner
                     .get_hover_info(sx, sy, mx, my)
@@ -875,9 +839,7 @@ impl LuaUserData for LuaMinimap {
         /// @param minimap_x number
         /// @param minimap_y number
         /// @return number, number
-        methods.add_method(
-            "screenToGrid",
-            |_, this, (sx, sy, mx, my): (f32, f32, f32, f32)| {
+        methods.add_method("screenToGrid", |_, this, (sx, sy, mx, my): (f32, f32, f32, f32)| {
                 Ok(this.inner.screen_to_grid(sx, sy, mx, my))
             },
         );
@@ -889,9 +851,7 @@ impl LuaUserData for LuaMinimap {
         /// @param minimap_x number
         /// @param minimap_y number
         /// @return number, number
-        methods.add_method(
-            "gridToScreen",
-            |_, this, (gx, gy, mx, my): (f32, f32, f32, f32)| {
+        methods.add_method("gridToScreen", |_, this, (gx, gy, mx, my): (f32, f32, f32, f32)| {
                 Ok(this.inner.grid_to_screen(gx, gy, mx, my))
             },
         );
@@ -967,9 +927,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @param display_h integer?
     /// @return Minimap
     let s = state.clone();
-    tbl.set(
-        "newMinimap",
-        lua.create_function(
+    tbl.set("newMinimap", lua.create_function(
             move |_, (grid_w, grid_h, display_w, display_h): (u32, u32, Option<u32>, Option<u32>)| {
                 let dw = display_w.unwrap_or(200);
                 let dh = display_h.unwrap_or(200);

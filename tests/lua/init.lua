@@ -340,24 +340,41 @@ function expect_golden(name, actual, expected)
     end
 end
 
--- Canvas pixel verification helper for headless visual evidence tests.
--- Reads a pixel from a Canvas object and asserts each RGBA channel is within tolerance.
--- Requires canvas:getPixel(x, y) to be available (headless-safe via CPU readback).
--- @param canvas    : Canvas      canvas object to sample
+-- Pixel verification helper for headless visual evidence tests.
+-- Reads a pixel from any surface object exposing getPixel(x, y) and asserts
+-- each RGBA channel is within tolerance. Supports both normalized [0,1]
+-- channels and byte [0,255] channels.
+-- @param surface   : userdata    surface object to sample
 -- @param x         : number      pixel x coordinate (0-based)
 -- @param y         : number      pixel y coordinate (0-based)
--- @param er        : number      expected red channel [0.0, 1.0]
--- @param eg        : number      expected green channel [0.0, 1.0]
--- @param eb        : number      expected blue channel [0.0, 1.0]
--- @param ea        : number      expected alpha channel [0.0, 1.0]
--- @param tolerance : number      per-channel tolerance (default 0.05)
+-- @param er        : number      expected red channel [0.0, 1.0] or [0, 255]
+-- @param eg        : number      expected green channel [0.0, 1.0] or [0, 255]
+-- @param eb        : number      expected blue channel [0.0, 1.0] or [0, 255]
+-- @param ea        : number      expected alpha channel [0.0, 1.0] or [0, 255]
+-- @param tolerance : number      per-channel tolerance in matching scale (default 0.05)
 -- @param msg       : string      optional label for error messages
-function expect_canvas_pixel(canvas, x, y, er, eg, eb, ea, tolerance, msg)
-    tolerance = tolerance or 0.05
+function expect_canvas_pixel(surface, x, y, er, eg, eb, ea, tolerance, msg)
+    local function normalize_channel(value)
+        value = tonumber(value) or 0
+        if value > 1 then
+            return value / 255
+        end
+        return value
+    end
+
+    local function normalize_tolerance(value)
+        value = tonumber(value) or 0.05
+        if value > 1 then
+            return value / 255
+        end
+        return value
+    end
+
+    tolerance = normalize_tolerance(tolerance)
     local label = msg and (msg .. " ") or ""
-    local ok, r, g, b, a = pcall(function() return canvas:getPixel(x, y) end)
+    local ok, r, g, b, a = pcall(function() return surface:getPixel(x, y) end)
     if not ok then
-        error(string.format("%scanvas:getPixel(%d,%d) failed: %s", label, x, y, tostring(r)), 2)
+        error(string.format("%sgetPixel(%d,%d) failed: %s", label, x, y, tostring(r)), 2)
     end
     local function ch(name, expected, actual)
         if math.abs(expected - actual) > tolerance then
@@ -365,10 +382,10 @@ function expect_canvas_pixel(canvas, x, y, er, eg, eb, ea, tolerance, msg)
                 label, x, y, name, expected, actual, tolerance), 3)
         end
     end
-    ch("r", er, r or 0)
-    ch("g", eg, g or 0)
-    ch("b", eb, b or 0)
-    ch("a", ea, a or 0)
+    ch("r", normalize_channel(er), normalize_channel(r))
+    ch("g", normalize_channel(eg), normalize_channel(g))
+    ch("b", normalize_channel(eb), normalize_channel(b))
+    ch("a", normalize_channel(ea), normalize_channel(a))
 end
 
 --

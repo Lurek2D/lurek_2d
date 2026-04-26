@@ -6,105 +6,49 @@ description: "Load this skill when working with the Lurek2D GPU rendering pipeli
 
 ## Mission
 
-# GPU Programming — Lurek2D
+Own the wgpu 22 rendering pipeline: RenderCommand queue, shader authoring, texture management, canvas render-to-texture, blend modes, transform stacks, and GPU performance rules.
 
 ## When To Load
 
-- Implementing or modifying a `RenderCommand` variant
+- Implementing or modifying a RenderCommand variant
 - Adding a wgpu render pipeline (new blend mode, new shader type)
 - Writing or debugging custom WGSL shaders
-- Texture management — loading, uploading, caching by `TextureKey`
-- Canvas (render-to-texture) implementation patterns
-- Diagnosing wgpu validation layer errors or GPU memory issues
-- Profiling GPU frame time and draw call count
+- Texture management, canvas render-to-texture patterns
+- Diagnosing wgpu validation errors or GPU memory issues
 
 ## When To Skip
 
-- Skip it for font rasterization details, Lua API design, or physics.
+- Font rasterization details, Lua API design, or physics
 
 ## Domain Knowledge
 
-### Owns
-- wgpu device/adapter/surface setup and swapchain lifecycle
-- `RenderCommand` queue lifecycle and variant dispatch
-- Built-in WGSL shaders and custom user shader pipeline
-- Texture upload, format selection, and deferred destruction
-- Blend mode pipeline cache
-- Canvas render-to-texture pattern
-- Transform stack (`PushTransform` / `PopTransform`)
-- GPU performance rules for integrated-GPU baseline
+**wgpu stack:** wgpu 22 only, no OpenGL path. Auto-selects Vulkan→DX12→Metal. All rendering goes through GpuRenderer in src/render/gpu_renderer.rs.
 
-### wgpu Stack
-> See [snippets/wgpu-stack.txt](snippets/wgpu-stack.txt) for the example.
+**RenderCommand queue lifecycle:** Lua pushes commands during draw() callback, GpuRenderer processes them after draw() returns. render_commands cleared at start of each frame's draw step. Only one wgpu::CommandEncoder per frame in render_frame(). Never render inside a Lua closure — push RenderCommands only.
 
-Lurek2D targets **wgpu 22**. No raw OpenGL path exists. All rendering goes through `GpuRenderer` in `src/render/gpu_renderer.rs`.
+**Adding a new RenderCommand variant:** (1) add variant to RenderCommand enum in src/render/renderer.rs, (2) add execution arm in src/render/gpu_renderer.rs, (3) add Lua push function in src/lua_api/render_api.rs, (4) add Lua BDD test in tests/lua/unit/test_render_unit.lua.
 
-### RenderCommand Queue Lifecycle
-> See [snippets/rendercommand-queue-lifecycle.txt](snippets/rendercommand-queue-lifecycle.txt) for the example.
+**Built-in shaders:** COLOR_SHADER (position+color, pass-through fragment) and TEXTURE_SHADER (position+UV+color tint, texture sample) — both embedded in src/render/gpu_renderer.rs.
 
-**Invariants:**
-- Never render inside a Lua closure — push RenderCommands only
-- `render_commands` is cleared at the start of each frame's draw step (step 7)
-- Only one `wgpu::CommandEncoder` is created per frame in `render_frame()`
+**Custom WGSL shaders:** entry point @fragment fn fs_main(...) -> @location(0) vec4<f32>. Auto-uniforms: luna_Time (f32), luna_ScreenSize (vec2<f32>). Do not declare bindings at group 0 (engine reserved). User uniforms go at group 2+, set via lurek.render.sendShaderUniform(shader, name, value).
 
-### Adding a New RenderCommand Variant
-1. Add variant to `RenderCommand` enum in `src/render/renderer.rs`
-2. Add execution arm in `src/render/gpu_renderer.rs` (match arm)
-3. Add Lua push function in `src/lua_api/render_api.rs`
-4. Add Lua BDD test in `tests/lua/unit/test_render_unit.lua`
+**Texture management:** Rgba8Unorm for data textures, Rgba8UnormSrgb for sRGB. Textures cached by TextureKey (SlotMap). Deferred destruction — never use a TextureKey after release().
 
-### Shader Authoring (WGSL)
-### Built-In Shaders
+**Canvas render-to-texture:** lurek.render.newCanvas(w,h), lurek.render.setCanvas(canvas)→draw→lurek.render.setCanvas() to return to screen. Used for post-processing and multi-pass rendering.
 
-Two WGSL shaders are embedded in the binary:
+**Performance rules:** target 60fps at 1080p on integrated GPUs (Intel UHD, AMD APU). Max ~2000 draw calls/frame. Use SpriteBatch for batching. 5 blend modes available (alpha, additive, multiply, screen, replace).
 
-| Shader | File | Vertex | Fragment |
-|--------|------|--------|----------|
-| `COLOR_SHADER` | `embedded in src/render/gpu_renderer.rs (COLOR_SHADER)` | position + color | pass-through |
-| `TEXTURE_SHADER` | `embedded in src/render/gpu_renderer.rs (TEXTURE_SHADER)` | position + UV + color tint | texture sample |
+**Common wgpu validation errors:** BUFFER_COPY_ALIGNMENT (buffer sizes must be multiples of 4 bytes), BIND_GROUP_LAYOUT_MISMATCH (shader layout != pipeline layout), INVALID_OPERATION (using released resource). Enable validation: set RUST_LOG=wgpu_core=warn.
 
-### Custom User Shaders
-
-Users provide WGSL fragment (or vertex+fragment) source via `lurek.render.newShader`:
-
-> See [snippets/custom-user-shaders.txt](snippets/custom-user-shaders.txt) for the example.
-
-**Shader authoring rules:**
-- Entry point: `@fragment fn fs_main(...) -> @location(0) vec4<f32>`
-- Access screen size via `luna_ScreenSize`, time via `luna_Time`
-- Return `vec4<f32>` (RGBA) from fragment shader
-- Do not declare bindings at group 0 (reserved for engine uniforms)
-- User uniforms go at group 2+; set via `lurek.render.sendShaderUniform(shader, name, value)`
-
-### Validation Errors
-
-Enable the wgpu validation layer during development:
-
-> See [snippets/validation-errors.ps1](snippets/validation-errors.ps1) for the example.
-
-Common wgpu errors:
-- `BUFFER_COPY_ALIGNMENT` — vertex/index buffer sizes must be multiples of 4 bytes
-- `BIND_GROUP_LAYOUT_MISMATCH` — shader binding layout != render pipeline layout
-- `INVALID_OPERATION` — using a released resource (check deferred destruction queue)
-
-### Texture Management
-> See [examples/texture-management.rs](examples/texture-management.rs) for the example.
-
-
-> See [snippets/extended-notes.md](snippets/extended-notes.md) for additional notes.
+**Transform stack:** PushTransform/PopTransform RenderCommands for hierarchical transforms. Always balance push/pop pairs.
 
 ## Companion File Index
 
-- [snippets/wgpu-stack.txt](snippets/wgpu-stack.txt) — wgpu Stack
-- [snippets/rendercommand-queue-lifecycle.txt](snippets/rendercommand-queue-lifecycle.txt) — RenderCommand Queue Lifecycle
-- [snippets/custom-user-shaders.txt](snippets/custom-user-shaders.txt) — Custom User Shaders
-- [snippets/validation-errors.ps1](snippets/validation-errors.ps1) — Validation Errors
-- [examples/texture-management.rs](examples/texture-management.rs) — Texture Management
-- [examples/canvas-render-to-texture.lua](examples/canvas-render-to-texture.lua) — Canvas (Render-to-Texture)
-- [snippets/canvas-render-to-texture-2.txt](snippets/canvas-render-to-texture-2.txt) — Canvas (Render-to-Texture)
-- [snippets/transform-stack.txt](snippets/transform-stack.txt) — Transform Stack
-- [snippets/extended-notes.md](snippets/extended-notes.md) — extended notes (overflow)
+None — all guidance is inline.
 
 ## References
 
-- See related skills in `.github/skills/`.
+- src/render/gpu_renderer.rs — main GPU renderer
+- src/render/renderer.rs — RenderCommand enum
+- src/lua_api/render_api.rs — Lua render bindings
+- docs/specs/render.md — canonical render module spec

@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generated": "2026-04-25T22:43:08.622940+00:00",
+    "generated": "2026-04-26T13:35:17.759354+00:00",
     "generator": "tools/gen_rust_api_data.py",
     "version": "1.0.0",
     "stats": {
@@ -13,7 +13,7 @@
   "rust_api": {
     "summary": {
       "total_items": 1903,
-      "documented": 1878,
+      "documented": 1892,
       "modules": 458
     },
     "modules": {
@@ -4926,9 +4926,9 @@
           {
             "name": "normalise_name",
             "kind": "fn",
-            "description": "",
+            "description": "Trims and lowercases `name` for consistent attribute / property map keying.",
             "file": "src/html/element.rs",
-            "line": 219
+            "line": 229
           }
         ]
       },
@@ -4939,37 +4939,37 @@
           {
             "name": "document",
             "kind": "mod",
-            "description": "",
-            "file": "src/html/mod.rs",
-            "line": 3
-          },
-          {
-            "name": "element",
-            "kind": "mod",
-            "description": "",
+            "description": "DOM document arena — root type returned by `HtmlDocument::new` and `load_document`.",
             "file": "src/html/mod.rs",
             "line": 4
           },
           {
-            "name": "parser",
+            "name": "element",
             "kind": "mod",
-            "description": "",
-            "file": "src/html/mod.rs",
-            "line": 5
-          },
-          {
-            "name": "selector",
-            "kind": "mod",
-            "description": "",
+            "description": "DOM element node with tag, attributes, classes, inline style, text, and layout rect.",
             "file": "src/html/mod.rs",
             "line": 6
           },
           {
+            "name": "parser",
+            "kind": "mod",
+            "description": "Lenient HTML tokeniser — parses a UTF-8 string into the element arena.",
+            "file": "src/html/mod.rs",
+            "line": 8
+          },
+          {
+            "name": "selector",
+            "kind": "mod",
+            "description": "CSS selector matcher — supports type, class, id, and descendant / child combinators.",
+            "file": "src/html/mod.rs",
+            "line": 10
+          },
+          {
             "name": "style",
             "kind": "mod",
-            "description": "",
+            "description": "CSS parser and cascade engine — parses stylesheet sources and resolves computed styles.",
             "file": "src/html/mod.rs",
-            "line": 7
+            "line": 12
           }
         ]
       },
@@ -4980,23 +4980,23 @@
           {
             "name": "parse_into",
             "kind": "fn",
-            "description": "",
+            "description": "Parses `html` and appends new elements under `parent`, returning the direct child ids.",
             "file": "src/html/parser.rs",
-            "line": 12
+            "line": 13
           },
           {
             "name": "escape_text",
             "kind": "fn",
-            "description": "",
+            "description": "Escapes `&`, `<`, and `>` for safe inclusion in HTML text content.",
             "file": "src/html/parser.rs",
-            "line": 160
+            "line": 162
           },
           {
             "name": "escape_attribute",
             "kind": "fn",
-            "description": "",
+            "description": "Escapes `&`, `<`, `>`, and `\"` for safe inclusion in HTML attribute values.",
             "file": "src/html/parser.rs",
-            "line": 166
+            "line": 169
           }
         ]
       },
@@ -5007,9 +5007,9 @@
           {
             "name": "matches_selector",
             "kind": "fn",
-            "description": "",
+            "description": "Returns `true` if `element_id` satisfies the CSS `selector` within the element arena.",
             "file": "src/html/selector.rs",
-            "line": 28
+            "line": 29
           }
         ]
       },
@@ -5027,30 +5027,30 @@
           {
             "name": "CssParseResult",
             "kind": "struct",
-            "description": "",
+            "description": "Output of [`parse_declarations`] — a property map and any parse warnings.",
             "file": "src/html/style.rs",
-            "line": 23
+            "line": 24
           },
           {
             "name": "parse_stylesheets",
             "kind": "fn",
-            "description": "",
+            "description": "Parses multiple stylesheet source strings into a flat list of [`CssRule`]s and any warnings.",
             "file": "src/html/style.rs",
-            "line": 28
+            "line": 30
           },
           {
             "name": "parse_declarations",
             "kind": "fn",
-            "description": "",
+            "description": "Parses a single CSS declaration block (e.g. `\"color: red; margin: 0\"`) into a [`CssParseResult`].",
             "file": "src/html/style.rs",
-            "line": 54
+            "line": 57
           },
           {
             "name": "parse_length",
             "kind": "fn",
-            "description": "",
+            "description": "Parses a CSS length value (`px`, `%` relative to `basis`, or bare `f32`). Returns `None` for unparseable values.",
             "file": "src/html/style.rs",
-            "line": 76
+            "line": 80
           }
         ]
       },

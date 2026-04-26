@@ -471,9 +471,7 @@ impl LuaUserData for LuaAIBlackboard {
         /// @param key string
         /// @param default number?
         /// @return number
-        methods.add_method(
-            "getNumber",
-            |_, this, (key, default): (String, Option<f64>)| {
+        methods.add_method("getNumber", |_, this, (key, default): (String, Option<f64>)| {
                 Ok(this.inner.borrow().get_number(&key, default.unwrap_or(0.0)))
             },
         );
@@ -493,9 +491,7 @@ impl LuaUserData for LuaAIBlackboard {
         /// @param key string
         /// @param default boolean?
         /// @return boolean
-        methods.add_method(
-            "getBool",
-            |_, this, (key, default): (String, Option<bool>)| {
+        methods.add_method("getBool", |_, this, (key, default): (String, Option<bool>)| {
                 Ok(this.inner.borrow().get_bool(&key, default.unwrap_or(false)))
             },
         );
@@ -515,9 +511,7 @@ impl LuaUserData for LuaAIBlackboard {
         /// @param key string
         /// @param default string?
         /// @return string
-        methods.add_method(
-            "getString",
-            |_, this, (key, default): (String, Option<String>)| {
+        methods.add_method("getString", |_, this, (key, default): (String, Option<String>)| {
                 let def = default.unwrap_or_default();
                 Ok(this.inner.borrow().get_string(&key, &def))
             },
@@ -619,9 +613,7 @@ impl LuaUserData for LuaStateMachine {
         /// @param guard function?
         /// @param priority integer?
         /// @return nil
-        methods.add_method(
-            "addTransition",
-            |lua, this, (from, to, guard, priority): (String, String, Option<LuaFunction>, Option<i32>)| {
+        methods.add_method("addTransition", |lua, this, (from, to, guard, priority): (String, String, Option<LuaFunction>, Option<i32>)| {
                 let guard_key = guard.map(|f| lua.create_registry_value(f)).transpose()?;
                 this.inner.borrow_mut().add_transition_raw(from, to, priority.unwrap_or(0), guard_key);
                 Ok(())
@@ -937,9 +929,7 @@ impl LuaUserData for LuaSteeringManager {
         /// @param ty number
         /// @param weight number?
         /// @return nil
-        methods.add_method(
-            "addSeek",
-            |_, this, (tx, ty, weight): (f32, f32, Option<f32>)| {
+        methods.add_method("addSeek", |_, this, (tx, ty, weight): (f32, f32, Option<f32>)| {
                 this.inner
                     .borrow_mut()
                     .add_seek(tx, ty, weight.unwrap_or(1.0));
@@ -954,9 +944,7 @@ impl LuaUserData for LuaSteeringManager {
         /// @param panicDist number?
         /// @param weight number?
         /// @return nil
-        methods.add_method(
-            "addFlee",
-            |_, this, (tx, ty, panic_dist, weight): (f32, f32, Option<f32>, Option<f32>)| {
+        methods.add_method("addFlee", |_, this, (tx, ty, panic_dist, weight): (f32, f32, Option<f32>, Option<f32>)| {
                 this.inner.borrow_mut().add_flee(
                     tx,
                     ty,
@@ -974,9 +962,7 @@ impl LuaUserData for LuaSteeringManager {
         /// @param slowingRadius number?
         /// @param weight number?
         /// @return nil
-        methods.add_method(
-            "addArrive",
-            |_, this, (tx, ty, slowing, weight): (f32, f32, Option<f32>, Option<f32>)| {
+        methods.add_method("addArrive", |_, this, (tx, ty, slowing, weight): (f32, f32, Option<f32>, Option<f32>)| {
                 this.inner.borrow_mut().add_arrive(
                     tx,
                     ty,
@@ -994,9 +980,7 @@ impl LuaUserData for LuaSteeringManager {
         /// @param jitter number?
         /// @param weight number?
         /// @return nil
-        methods.add_method(
-            "addWander",
-            |_,
+        methods.add_method("addWander", |_,
              this,
              (radius, dist, jitter, weight): (
                 Option<f32>,
@@ -1019,9 +1003,7 @@ impl LuaUserData for LuaSteeringManager {
         /// @param targetName string?
         /// @param weight number?
         /// @return nil
-        methods.add_method(
-            "addPursue",
-            |_, this, (target_name, weight): (Option<String>, Option<f32>)| {
+        methods.add_method("addPursue", |_, this, (target_name, weight): (Option<String>, Option<f32>)| {
                 this.inner
                     .borrow_mut()
                     .add_pursue(target_name, weight.unwrap_or(1.0));
@@ -1034,9 +1016,7 @@ impl LuaUserData for LuaSteeringManager {
         /// @param threatName string?
         /// @param weight number?
         /// @return nil
-        methods.add_method(
-            "addEvade",
-            |_, this, (threat_name, weight): (Option<String>, Option<f32>)| {
+        methods.add_method("addEvade", |_, this, (threat_name, weight): (Option<String>, Option<f32>)| {
                 this.inner
                     .borrow_mut()
                     .add_evade(threat_name, weight.unwrap_or(1.0));
@@ -1052,9 +1032,7 @@ impl LuaUserData for LuaSteeringManager {
         /// @param cohWeight number?
         /// @param weight number?
         /// @return nil
-        methods.add_method(
-            "addFlock",
-            #[allow(clippy::type_complexity)]
+        methods.add_method("addFlock", #[allow(clippy::type_complexity)]
             |_,
              this,
              (neighbor_radius, sep_w, align_w, coh_w, weight): (
@@ -1115,9 +1093,7 @@ impl LuaUserData for LuaSteeringManager {
         /// @param maxForce number
         /// @param dt number
         /// @return number, number
-        methods.add_method(
-            "calculate",
-            |_, this, (px, py, vx, vy, max_speed, max_force, dt): (f32, f32, f32, f32, f32, f32, f32)| {
+        methods.add_method("calculate", |_, this, (px, py, vx, vy, max_speed, max_force, dt): (f32, f32, f32, f32, f32, f32, f32)| {
                 let force = this.inner.borrow_mut().calculate(
                     (px, py),
                     (vx, vy),
@@ -1167,9 +1143,7 @@ impl LuaUserData for LuaSteeringManager {
         /// @param callback function(agent, dt) -> dx, dy
         /// @param weight number?
         /// @return nil
-        methods.add_method(
-            "addCustomBehavior",
-            |lua, this, (func, weight): (LuaFunction, Option<f32>)| {
+        methods.add_method("addCustomBehavior", |lua, this, (func, weight): (LuaFunction, Option<f32>)| {
                 let key = lua.create_registry_value(func)?;
                 let callback_id = this.custom_callbacks.borrow_mut().register(key);
                 this.inner
@@ -1192,9 +1166,7 @@ impl LuaUserData for LuaSteeringManager {
         /// @param agent Agent
         /// @param dt number
         /// @return number, number  (fx, fy)
-        methods.add_method(
-            "applyCustomSteering",
-            |lua, this, (agent_ud, dt): (LuaAnyUserData, f32)| {
+        methods.add_method("applyCustomSteering", |lua, this, (agent_ud, dt): (LuaAnyUserData, f32)| {
                 let behaviors: Vec<(u32, f32)> = {
                     let sm = this.inner.borrow();
                     sm.behaviors
@@ -1273,9 +1245,7 @@ impl LuaUserData for LuaQLearner {
         /// @param reward number
         /// @param nextState integer
         /// @return nil
-        methods.add_method(
-            "learn",
-            |_, this, (state, action, reward, next_state): (usize, usize, f64, usize)| {
+        methods.add_method("learn", |_, this, (state, action, reward, next_state): (usize, usize, f64, usize)| {
                 this.inner.borrow_mut().learn(
                     state.saturating_sub(1),
                     action.saturating_sub(1),
@@ -1304,9 +1274,7 @@ impl LuaUserData for LuaQLearner {
         /// @param action integer
         /// @param value number
         /// @return nil
-        methods.add_method(
-            "setQValue",
-            |_, this, (state, action, value): (usize, usize, f64)| {
+        methods.add_method("setQValue", |_, this, (state, action, value): (usize, usize, f64)| {
                 this.inner.borrow_mut().set_q(
                     state.saturating_sub(1),
                     action.saturating_sub(1),
@@ -1463,9 +1431,7 @@ impl LuaUserData for LuaUtilityAI {
         /// @param scorer function
         /// @param weight number?
         /// @return nil
-        methods.add_method(
-            "addAction",
-            |lua, this, (name, scorer_fn, weight): (String, LuaFunction, Option<f64>)| {
+        methods.add_method("addAction", |lua, this, (name, scorer_fn, weight): (String, LuaFunction, Option<f64>)| {
                 let key = lua.create_registry_value(scorer_fn)?;
                 this.inner.borrow_mut().actions.push(UAAction {
                     name,
@@ -1515,9 +1481,7 @@ impl LuaUserData for LuaUtilityAI {
         /// @param p3 number?
         /// @param weight number?
         /// @return nil
-        methods.add_method(
-            "addConsideration",
-            |lua,
+        methods.add_method("addConsideration", |lua,
              this,
              (action_name, name, scorer_fn, curve_arg, p1, p2, p3, weight): (
                 String,
@@ -1614,9 +1578,7 @@ impl LuaUserData for LuaGOAPPlanner {
         /// @param cost number?
         /// @param callback function?
         /// @return nil
-        methods.add_method(
-            "addAction",
-            |lua, this, (name, cost, callback): (String, Option<f64>, Option<LuaFunction>)| {
+        methods.add_method("addAction", |lua, this, (name, cost, callback): (String, Option<f64>, Option<LuaFunction>)| {
                 let cb_key = callback.map(|f| lua.create_registry_value(f)).transpose()?;
                 this.inner.borrow_mut().actions.push(GOAPAction {
                     name,
@@ -1635,9 +1597,7 @@ impl LuaUserData for LuaGOAPPlanner {
         /// @param key string
         /// @param value boolean
         /// @return nil
-        methods.add_method(
-            "setPrecondition",
-            |_, this, (action_name, key, value): (String, String, bool)| {
+        methods.add_method("setPrecondition", |_, this, (action_name, key, value): (String, String, bool)| {
                 let mut planner = this.inner.borrow_mut();
                 if let Some(action) = planner.actions.iter_mut().find(|a| a.name == action_name) {
                     action.preconditions.insert(key, value);
@@ -1652,9 +1612,7 @@ impl LuaUserData for LuaGOAPPlanner {
         /// @param key string
         /// @param value boolean
         /// @return nil
-        methods.add_method(
-            "setEffect",
-            |_, this, (action_name, key, value): (String, String, bool)| {
+        methods.add_method("setEffect", |_, this, (action_name, key, value): (String, String, bool)| {
                 let mut planner = this.inner.borrow_mut();
                 if let Some(action) = planner.actions.iter_mut().find(|a| a.name == action_name) {
                     action.effects.insert(key, value);
@@ -1668,9 +1626,7 @@ impl LuaUserData for LuaGOAPPlanner {
         /// @param name string
         /// @param priority number?
         /// @return nil
-        methods.add_method(
-            "addGoal",
-            |_, this, (name, priority): (String, Option<f64>)| {
+        methods.add_method("addGoal", |_, this, (name, priority): (String, Option<f64>)| {
                 this.inner.borrow_mut().goals.push(GOAPGoal {
                     name,
                     priority: priority.unwrap_or(1.0),
@@ -1686,9 +1642,7 @@ impl LuaUserData for LuaGOAPPlanner {
         /// @param key string
         /// @param value boolean
         /// @return nil
-        methods.add_method(
-            "setGoalState",
-            |_, this, (goal_name, key, value): (String, String, bool)| {
+        methods.add_method("setGoalState", |_, this, (goal_name, key, value): (String, String, bool)| {
                 let mut planner = this.inner.borrow_mut();
                 if let Some(goal) = planner.goals.iter_mut().find(|g| g.name == goal_name) {
                     goal.state.insert(key, value);
@@ -1702,9 +1656,7 @@ impl LuaUserData for LuaGOAPPlanner {
         /// @param worldState table
         /// @param maxDepth integer?
         /// @return table
-        methods.add_method(
-            "plan",
-            |lua, this, (world_state_tbl, max_depth): (LuaTable, Option<usize>)| {
+        methods.add_method("plan", |lua, this, (world_state_tbl, max_depth): (LuaTable, Option<usize>)| {
                 let mut world_state = HashMap::new();
                 for pair in world_state_tbl.pairs::<String, bool>() {
                     let (k, v) = pair?;
@@ -1801,9 +1753,7 @@ impl LuaUserData for LuaInfluenceMap {
         /// @param y integer
         /// @param value number
         /// @return nil
-        methods.add_method(
-            "setInfluence",
-            |_, this, (layer, x, y, value): (String, usize, usize, f32)| {
+        methods.add_method("setInfluence", |_, this, (layer, x, y, value): (String, usize, usize, f32)| {
                 this.inner.borrow_mut().set_influence(
                     &layer,
                     x.saturating_sub(1),
@@ -1820,9 +1770,7 @@ impl LuaUserData for LuaInfluenceMap {
         /// @param x integer
         /// @param y integer
         /// @return number
-        methods.add_method(
-            "getInfluence",
-            |_, this, (layer, x, y): (String, usize, usize)| {
+        methods.add_method("getInfluence", |_, this, (layer, x, y): (String, usize, usize)| {
                 Ok(this.inner.borrow().get_influence(
                     &layer,
                     x.saturating_sub(1),
@@ -1840,9 +1788,7 @@ impl LuaUserData for LuaInfluenceMap {
         /// @param value number
         /// @param falloff number?
         /// @return nil
-        methods.add_method(
-            "stampInfluence",
-            |_, this, (layer, wx, wy, radius, value, falloff): (String, f32, f32, f32, f32, Option<f32>)| {
+        methods.add_method("stampInfluence", |_, this, (layer, wx, wy, radius, value, falloff): (String, f32, f32, f32, f32, Option<f32>)| {
                 this.inner.borrow_mut().stamp_influence(
                     &layer,
                     wx,
@@ -1860,9 +1806,7 @@ impl LuaUserData for LuaInfluenceMap {
         /// @param layer string
         /// @param momentum number?
         /// @return nil
-        methods.add_method(
-            "propagate",
-            |_, this, (layer, momentum): (String, Option<f32>)| {
+        methods.add_method("propagate", |_, this, (layer, momentum): (String, Option<f32>)| {
                 this.inner
                     .borrow_mut()
                     .propagate(&layer, momentum.unwrap_or(0.5));
@@ -1921,9 +1865,7 @@ impl LuaUserData for LuaInfluenceMap {
         /// @param ww number
         /// @param wh number
         /// @return number
-        methods.add_method(
-            "queryRect",
-            |_, this, (layer, wx, wy, ww, wh): (String, f32, f32, f32, f32)| {
+        methods.add_method("queryRect", |_, this, (layer, wx, wy, ww, wh): (String, f32, f32, f32, f32)| {
                 Ok(this.inner.borrow().query_rect(&layer, wx, wy, ww, wh))
             },
         );
@@ -1936,9 +1878,7 @@ impl LuaUserData for LuaInfluenceMap {
         /// @param weightB number
         /// @param dest string
         /// @return nil
-        methods.add_method(
-            "blend",
-            |_, this, (layer_a, weight_a, layer_b, weight_b, dest): (String, f32, String, f32, String)| {
+        methods.add_method("blend", |_, this, (layer_a, weight_a, layer_b, weight_b, dest): (String, f32, String, f32, String)| {
                 this.inner.borrow_mut().blend(&layer_a, weight_a, &layer_b, weight_b, &dest);
                 Ok(())
             },
@@ -2053,9 +1993,7 @@ impl LuaUserData for LuaSquad {
         /// @param ftype string
         /// @param spacing number?
         /// @return nil
-        methods.add_method(
-            "setFormation",
-            |_, this, (ftype, spacing): (String, Option<f32>)| {
+        methods.add_method("setFormation", |_, this, (ftype, spacing): (String, Option<f32>)| {
                 let mut sq = this.inner.borrow_mut();
                 sq.formation = FormationType::parse_str(&ftype);
                 if let Some(s) = spacing {
@@ -2085,9 +2023,7 @@ impl LuaUserData for LuaSquad {
         /// @param leaderX number
         /// @param leaderY number
         /// @return number, number
-        methods.add_method(
-            "getFormationPosition",
-            |_, this, (member_idx, leader_x, leader_y): (usize, f32, f32)| {
+        methods.add_method("getFormationPosition", |_, this, (member_idx, leader_x, leader_y): (usize, f32, f32)| {
                 Ok(this
                     .inner
                     .borrow()
@@ -2152,9 +2088,7 @@ impl LuaUserData for LuaCommandQueue {
         /// @param callback function
         /// @param opts table?
         /// @return nil
-        methods.add_method(
-            "enqueue",
-            |lua, this, (kind, callback, opts): (String, LuaFunction, Option<LuaTable>)| {
+        methods.add_method("enqueue", |lua, this, (kind, callback, opts): (String, LuaFunction, Option<LuaTable>)| {
                 let key = lua.create_registry_value(callback)?;
                 let (tx, ty, priority, interruptible) = parse_command_opts(&opts)?;
                 this.inner
@@ -2170,9 +2104,7 @@ impl LuaUserData for LuaCommandQueue {
         /// @param callback function
         /// @param opts table?
         /// @return nil
-        methods.add_method(
-            "pushFront",
-            |lua, this, (kind, callback, opts): (String, LuaFunction, Option<LuaTable>)| {
+        methods.add_method("pushFront", |lua, this, (kind, callback, opts): (String, LuaFunction, Option<LuaTable>)| {
                 let key = lua.create_registry_value(callback)?;
                 let (tx, ty, priority, interruptible) = parse_command_opts(&opts)?;
                 this.inner
@@ -2188,9 +2120,7 @@ impl LuaUserData for LuaCommandQueue {
         /// @param callback function
         /// @param opts table?
         /// @return nil
-        methods.add_method(
-            "replace",
-            |lua, this, (kind, callback, opts): (String, LuaFunction, Option<LuaTable>)| {
+        methods.add_method("replace", |lua, this, (kind, callback, opts): (String, LuaFunction, Option<LuaTable>)| {
                 let key = lua.create_registry_value(callback)?;
                 let (tx, ty, priority, interruptible) = parse_command_opts(&opts)?;
                 this.inner
@@ -2295,9 +2225,7 @@ impl LuaUserData for LuaTraitProfile {
         /// @param duration number|nil
         /// @param source string
         /// @return nil
-        methods.add_method_mut(
-            "addModifier",
-            |_, this, (trait_name, delta, duration, source): (String, f32, Option<f32>, String)| {
+        methods.add_method_mut("addModifier", |_, this, (trait_name, delta, duration, source): (String, f32, Option<f32>, String)| {
                 this.inner
                     .borrow_mut()
                     .add_modifier(&trait_name, delta, duration, &source);
@@ -2372,9 +2300,7 @@ impl LuaUserData for LuaStimulusWorld {
         /// @param radius number
         /// @param tag string|nil
         /// @return integer
-        methods.add_method_mut(
-            "addVisual",
-            |_, this, (x, y, intensity, radius, tag): (f32, f32, f32, f32, Option<String>)| {
+        methods.add_method_mut("addVisual", |_, this, (x, y, intensity, radius, tag): (f32, f32, f32, f32, Option<String>)| {
                 Ok(this
                     .inner
                     .borrow_mut()
@@ -2390,9 +2316,7 @@ impl LuaUserData for LuaStimulusWorld {
         /// @param decay_rate number
         /// @param tag string|nil
         /// @return integer
-        methods.add_method_mut(
-            "addAuditory",
-            |_,
+        methods.add_method_mut("addAuditory", |_,
              this,
              (x, y, intensity, radius, decay_rate, tag): (
                 f32,
@@ -2427,9 +2351,7 @@ impl LuaUserData for LuaStimulusWorld {
 
         /// Returns or performs count.
         /// @return integer
-        methods.add_method(
-            "count",
-            |_, this, ()| Ok(this.inner.borrow().count() as i64),
+        methods.add_method("count", |_, this, ()| Ok(this.inner.borrow().count() as i64),
         );
 
         /// Resets or clears the state.
@@ -2469,9 +2391,7 @@ impl LuaUserData for LuaContextSteering {
         /// @param ty number
         /// @param weight number
         /// @return nil
-        methods.add_method_mut(
-            "addSeekTarget",
-            |_, this, (tx, ty, weight): (f32, f32, f32)| {
+        methods.add_method_mut("addSeekTarget", |_, this, (tx, ty, weight): (f32, f32, f32)| {
                 this.inner.borrow_mut().add_seek_target(tx, ty, weight);
                 Ok(())
             },
@@ -2492,9 +2412,7 @@ impl LuaUserData for LuaContextSteering {
         /// @param radius number
         /// @param weight number
         /// @return nil
-        methods.add_method_mut(
-            "addAvoidPoint",
-            |_, this, (x, y, radius, weight): (f32, f32, f32, f32)| {
+        methods.add_method_mut("addAvoidPoint", |_, this, (x, y, radius, weight): (f32, f32, f32, f32)| {
                 this.inner
                     .borrow_mut()
                     .add_avoid_point(x, y, radius, weight);
@@ -2528,9 +2446,7 @@ impl LuaUserData for LuaContextSteering {
         /// @param vx number
         /// @param vy number
         /// @return number, number
-        methods.add_method_mut(
-            "evaluate",
-            |_, this, (ax, ay, vx, vy): (f32, f32, f32, f32)| {
+        methods.add_method_mut("evaluate", |_, this, (ax, ay, vx, vy): (f32, f32, f32, f32)| {
                 let (dx, dy) = this.inner.borrow_mut().evaluate(ax, ay, vx, vy);
                 Ok((dx, dy))
             },
@@ -2741,9 +2657,7 @@ impl LuaUserData for LuaHTNDomain {
         /// @param compound_name string
         /// @param methods table  -- array of {preconditions=[], sub_tasks=[]}
         /// @return nil
-        methods.add_method_mut(
-            "addCompound",
-            |lua, this, (comp_name, methods_table): (String, LuaTable)| {
+        methods.add_method_mut("addCompound", |lua, this, (comp_name, methods_table): (String, LuaTable)| {
                 let mut htn_methods: Vec<HTNMethod> = Vec::new();
                 for i in 1..=methods_table.raw_len() {
                     let m: LuaTable = methods_table.raw_get(i)?;
@@ -2771,9 +2685,7 @@ impl LuaUserData for LuaHTNDomain {
         /// @param root_task string
         /// @param state table
         /// @return table|nil
-        methods.add_method(
-            "plan",
-            |lua, this, (root_task, state_table): (String, LuaTable)| {
+        methods.add_method("plan", |lua, this, (root_task, state_table): (String, LuaTable)| {
                 let mut state: WorldState = std::collections::HashMap::new();
                 for pair in state_table.pairs::<String, f32>() {
                     let (k, v) = pair?;
@@ -2830,9 +2742,7 @@ impl LuaUserData for LuaMCTSEngine {
         /// @param apply_action function(state, action) -> integer
         /// @param evaluate function(state) -> number
         /// @return integer|nil
-        methods.add_method_mut(
-            "search",
-            |_,
+        methods.add_method_mut("search", |_,
              this,
              (root_state, get_actions_fn, apply_fn, eval_fn): (
                 i64,
@@ -2889,9 +2799,7 @@ impl LuaUserData for LuaEmotionModel {
         /// @param decay_rate number
         /// @param min_visible number
         /// @return nil
-        methods.add_method_mut(
-            "add",
-            |_, this, (name, rest, decay, min_vis): (String, f32, f32, f32)| {
+        methods.add_method_mut("add", |_, this, (name, rest, decay, min_vis): (String, f32, f32, f32)| {
                 this.inner
                     .borrow_mut()
                     .add(Emotion::new(&name, rest, decay, min_vis));
@@ -2974,9 +2882,7 @@ impl LuaUserData for LuaORCASolver {
         /// @param radius number
         /// @param max_speed number
         /// @return integer
-        methods.add_method_mut(
-            "addAgent",
-            |_, this, (x, y, radius, max_speed): (f32, f32, f32, f32)| {
+        methods.add_method_mut("addAgent", |_, this, (x, y, radius, max_speed): (f32, f32, f32, f32)| {
                 Ok(this
                     .inner
                     .borrow_mut()
@@ -2989,9 +2895,7 @@ impl LuaUserData for LuaORCASolver {
         /// @param pvx number
         /// @param pvy number
         /// @return nil
-        methods.add_method_mut(
-            "setPreferredVelocity",
-            |_, this, (idx, pvx, pvy): (usize, f32, f32)| {
+        methods.add_method_mut("setPreferredVelocity", |_, this, (idx, pvx, pvy): (usize, f32, f32)| {
                 if let Some(a) = this.inner.borrow_mut().agents.get_mut(idx) {
                     a.preferred_velocity = (pvx, pvy);
                 }
@@ -3068,9 +2972,7 @@ impl LuaUserData for LuaNeuralNet {
         /// @param outputs integer
         /// @param activation string
         /// @return nil
-        methods.add_method_mut(
-            "addLayer",
-            |_, this, (inputs, outputs, activation): (usize, usize, String)| {
+        methods.add_method_mut("addLayer", |_, this, (inputs, outputs, activation): (usize, usize, String)| {
                 let act = Activation::from_str(&activation);
                 this.inner.borrow_mut().add_layer(inputs, outputs, act);
                 Ok(())
@@ -3459,9 +3361,7 @@ impl LuaUserData for LuaAILod {
         /// @param ref_x number
         /// @param ref_y number
         /// @return integer
-        methods.add_method(
-            "tierFor",
-            |_, this, (ax, ay, rx, ry): (f32, f32, f32, f32)| {
+        methods.add_method("tierFor", |_, this, (ax, ay, rx, ry): (f32, f32, f32, f32)| {
                 Ok(this.inner.borrow().tier_for((ax, ay), (rx, ry)) as i64)
             },
         );
@@ -3516,9 +3416,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     // â”€â”€ newWorld â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     /// Creates a new AI world container.
     /// @return AIWorld
-    tbl.set(
-        "newWorld",
-        lua.create_function(|_, ()| {
+    tbl.set("newWorld", lua.create_function(|_, ()| {
             Ok(LuaAIWorld {
                 inner: Rc::new(RefCell::new(AIWorld::new())),
                 custom_callbacks: Rc::new(RefCell::new(CallbackRegistry::new())),
@@ -3529,9 +3427,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     // â”€â”€ newBlackboard â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     /// Creates a new standalone blackboard.
     /// @return AIBlackboard
-    tbl.set(
-        "newBlackboard",
-        lua.create_function(|_, ()| {
+    tbl.set("newBlackboard", lua.create_function(|_, ()| {
             Ok(LuaAIBlackboard {
                 inner: Rc::new(RefCell::new(Blackboard::new())),
             })
@@ -3541,9 +3437,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     // â”€â”€ newStateMachine â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     /// Creates a new finite state machine.
     /// @return StateMachine
-    tbl.set(
-        "newStateMachine",
-        lua.create_function(|_, ()| {
+    tbl.set("newStateMachine", lua.create_function(|_, ()| {
             Ok(LuaStateMachine {
                 inner: Rc::new(RefCell::new(crate::ai::StateMachine::new())),
             })
@@ -3553,9 +3447,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     // â”€â”€ newBehaviorTree â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     /// Creates a new behavior tree.
     /// @return BehaviorTree
-    tbl.set(
-        "newBehaviorTree",
-        lua.create_function(|_, ()| {
+    tbl.set("newBehaviorTree", lua.create_function(|_, ()| {
             Ok(LuaBehaviorTree {
                 inner: Rc::new(RefCell::new(BehaviorTree::new())),
             })
@@ -3565,9 +3457,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     // â”€â”€ newSelector â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     /// Creates a BT selector node.
     /// @return BTNode
-    tbl.set(
-        "newSelector",
-        lua.create_function(|_, ()| {
+    tbl.set("newSelector", lua.create_function(|_, ()| {
             Ok(LuaBTNode {
                 inner: Rc::new(RefCell::new(BTNode::Selector {
                     children: Vec::new(),
@@ -3580,9 +3470,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     // â”€â”€ newSequence â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     /// Creates a BT sequence node.
     /// @return BTNode
-    tbl.set(
-        "newSequence",
-        lua.create_function(|_, ()| {
+    tbl.set("newSequence", lua.create_function(|_, ()| {
             Ok(LuaBTNode {
                 inner: Rc::new(RefCell::new(BTNode::Sequence {
                     children: Vec::new(),
@@ -3597,9 +3485,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// @param successPolicy string?
     /// @param failurePolicy string?
     /// @return BTNode
-    tbl.set(
-        "newParallel",
-        lua.create_function(|_, (sp, fp): (Option<String>, Option<String>)| {
+    tbl.set("newParallel", lua.create_function(|_, (sp, fp): (Option<String>, Option<String>)| {
             Ok(LuaBTNode {
                 inner: Rc::new(RefCell::new(BTNode::Parallel {
                     children: Vec::new(),
@@ -3617,9 +3503,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     // â”€â”€ newInverter â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     /// Creates a BT inverter decorator.
     /// @return BTNode
-    tbl.set(
-        "newInverter",
-        lua.create_function(|_, ()| {
+    tbl.set("newInverter", lua.create_function(|_, ()| {
             Ok(LuaBTNode {
                 inner: Rc::new(RefCell::new(BTNode::Inverter {
                     child: Box::new(BTNode::Sequence {
@@ -3635,9 +3519,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// Creates a BT repeater decorator.
     /// @param count integer?
     /// @return BTNode
-    tbl.set(
-        "newRepeater",
-        lua.create_function(|_, count: Option<u32>| {
+    tbl.set("newRepeater", lua.create_function(|_, count: Option<u32>| {
             Ok(LuaBTNode {
                 inner: Rc::new(RefCell::new(BTNode::Repeater {
                     child: Box::new(BTNode::Sequence {
@@ -3654,9 +3536,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     // â”€â”€ newSucceeder â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     /// Creates a BT succeeder decorator.
     /// @return BTNode
-    tbl.set(
-        "newSucceeder",
-        lua.create_function(|_, ()| {
+    tbl.set("newSucceeder", lua.create_function(|_, ()| {
             Ok(LuaBTNode {
                 inner: Rc::new(RefCell::new(BTNode::Succeeder {
                     child: Box::new(BTNode::Sequence {
@@ -3672,9 +3552,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// Creates a BT action leaf with a Lua callback.
     /// @param callback function
     /// @return BTNode
-    tbl.set(
-        "newAction",
-        lua.create_function(|lua, callback: LuaFunction| {
+    tbl.set("newAction", lua.create_function(|lua, callback: LuaFunction| {
             let key = lua.create_registry_value(callback)?;
             Ok(LuaBTNode {
                 inner: Rc::new(RefCell::new(BTNode::Action { callback: key })),
@@ -3686,9 +3564,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// Creates a BT condition leaf with a Lua predicate.
     /// @param callback function
     /// @return BTNode
-    tbl.set(
-        "newCondition",
-        lua.create_function(|lua, callback: LuaFunction| {
+    tbl.set("newCondition", lua.create_function(|lua, callback: LuaFunction| {
             let key = lua.create_registry_value(callback)?;
             Ok(LuaBTNode {
                 inner: Rc::new(RefCell::new(BTNode::Condition { callback: key })),
@@ -3702,9 +3578,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// @param predicate function(agent, blackboard) -> boolean
     /// @param child BTNode
     /// @return BTNode
-    tbl.set(
-        "newGuard",
-        lua.create_function(
+    tbl.set("newGuard", lua.create_function(
             |lua, (predicate, child_ud): (LuaFunction, LuaAnyUserData)| {
                 let key = lua.create_registry_value(predicate)?;
                 let child = child_ud.borrow::<LuaBTNode>()?;
@@ -3730,9 +3604,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     // â”€â”€ newSteeringManager â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     /// Creates a new steering behavior manager.
     /// @return SteeringManager
-    tbl.set(
-        "newSteeringManager",
-        lua.create_function(|_, ()| {
+    tbl.set("newSteeringManager", lua.create_function(|_, ()| {
             Ok(LuaSteeringManager {
                 inner: Rc::new(RefCell::new(SteeringManager::new())),
                 custom_callbacks: Rc::new(RefCell::new(CallbackRegistry::new())),
@@ -3745,9 +3617,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// @param stateCount integer
     /// @param actionCount integer
     /// @return QLearner
-    tbl.set(
-        "newQLearner",
-        lua.create_function(|_, (sc, ac): (usize, usize)| {
+    tbl.set("newQLearner", lua.create_function(|_, (sc, ac): (usize, usize)| {
             Ok(LuaQLearner {
                 inner: Rc::new(RefCell::new(QLearner::new(sc, ac))),
             })
@@ -3757,9 +3627,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     // â”€â”€ newUtilityAI â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     /// Creates a new utility AI evaluator.
     /// @return UtilityAI
-    tbl.set(
-        "newUtilityAI",
-        lua.create_function(|_, ()| {
+    tbl.set("newUtilityAI", lua.create_function(|_, ()| {
             Ok(LuaUtilityAI {
                 inner: Rc::new(RefCell::new(UtilityAI::new())),
                 custom_callbacks: Rc::new(RefCell::new(CallbackRegistry::new())),
@@ -3770,9 +3638,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     // â”€â”€ newGOAPPlanner â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     /// Creates a new GOAP planning solver.
     /// @return GOAPPlanner
-    tbl.set(
-        "newGOAPPlanner",
-        lua.create_function(|_, ()| {
+    tbl.set("newGOAPPlanner", lua.create_function(|_, ()| {
             Ok(LuaGOAPPlanner {
                 inner: Rc::new(RefCell::new(GOAPPlanner::new())),
             })
@@ -3785,9 +3651,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// @param height integer
     /// @param cellSize number
     /// @return InfluenceMap
-    tbl.set(
-        "newInfluenceMap",
-        lua.create_function(|_, (w, h, cs): (usize, usize, f32)| {
+    tbl.set("newInfluenceMap", lua.create_function(|_, (w, h, cs): (usize, usize, f32)| {
             Ok(LuaInfluenceMap {
                 inner: Rc::new(RefCell::new(InfluenceMap::new(w, h, cs))),
             })
@@ -3798,9 +3662,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// Creates a named squad for formation positioning.
     /// @param name string
     /// @return Squad
-    tbl.set(
-        "newSquad",
-        lua.create_function(|_, name: String| {
+    tbl.set("newSquad", lua.create_function(|_, name: String| {
             Ok(LuaSquad {
                 inner: Rc::new(RefCell::new(Squad::new(&name))),
             })
@@ -3810,9 +3672,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     // â”€â”€ newCommandQueue â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     /// Creates an RTS-style command queue.
     /// @return CommandQueue
-    tbl.set(
-        "newCommandQueue",
-        lua.create_function(|_, ()| {
+    tbl.set("newCommandQueue", lua.create_function(|_, ()| {
             Ok(LuaCommandQueue {
                 inner: Rc::new(RefCell::new(CommandQueue::new())),
             })
@@ -3822,9 +3682,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     // â”€â”€ newTraitProfile â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     /// Creates a new personality trait profile.
     /// @return TraitProfile
-    tbl.set(
-        "newTraitProfile",
-        lua.create_function(|_, ()| {
+    tbl.set("newTraitProfile", lua.create_function(|_, ()| {
             Ok(LuaTraitProfile {
                 inner: Rc::new(RefCell::new(TraitProfile::new())),
             })
@@ -3834,9 +3692,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     // â”€â”€ newStimulusWorld â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     /// Creates a new stimulus perception world.
     /// @return StimulusWorld
-    tbl.set(
-        "newStimulusWorld",
-        lua.create_function(|_, ()| {
+    tbl.set("newStimulusWorld", lua.create_function(|_, ()| {
             Ok(LuaStimulusWorld {
                 inner: Rc::new(RefCell::new(StimulusWorld::new())),
             })
@@ -3847,9 +3703,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// Creates a new context steering controller.
     /// @param slots integer
     /// @return ContextSteering
-    tbl.set(
-        "newContextSteering",
-        lua.create_function(|_, slots: usize| {
+    tbl.set("newContextSteering", lua.create_function(|_, slots: usize| {
             let slots = if slots == 0 { 16 } else { slots };
             Ok(LuaContextSteering {
                 inner: Rc::new(RefCell::new(ContextSteering::new(slots))),
@@ -3860,9 +3714,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     // â”€â”€ newNeedSystem â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     /// Creates a new motivational need system.
     /// @return NeedSystem
-    tbl.set(
-        "newNeedSystem",
-        lua.create_function(|_, ()| {
+    tbl.set("newNeedSystem", lua.create_function(|_, ()| {
             Ok(LuaNeedSystem {
                 inner: Rc::new(RefCell::new(NeedSystem::new())),
             })
@@ -3872,9 +3724,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     // â”€â”€ newAIDirector â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     /// Creates a new AI pacing director with default config.
     /// @return AIDirector
-    tbl.set(
-        "newAIDirector",
-        lua.create_function(|_, ()| {
+    tbl.set("newAIDirector", lua.create_function(|_, ()| {
             Ok(LuaAIDirector {
                 inner: Rc::new(RefCell::new(AIDirector::new())),
             })
@@ -3884,9 +3734,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     // â”€â”€ newHTNDomain â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     /// Creates a new Hierarchical Task Network domain.
     /// @return HTNDomain
-    tbl.set(
-        "newHTNDomain",
-        lua.create_function(|_, ()| {
+    tbl.set("newHTNDomain", lua.create_function(|_, ()| {
             Ok(LuaHTNDomain {
                 inner: Rc::new(RefCell::new(HTNDomain::new())),
             })
@@ -3900,9 +3748,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// @param rollout_depth integer
     /// @param seed integer
     /// @return MCTSEngine
-    tbl.set(
-        "newMCTSEngine",
-        lua.create_function(|_, (iters, uct_c, depth, seed): (u32, f32, usize, u64)| {
+    tbl.set("newMCTSEngine", lua.create_function(|_, (iters, uct_c, depth, seed): (u32, f32, usize, u64)| {
             let cfg = MCTSConfig {
                 iterations: iters,
                 uct_c,
@@ -3918,9 +3764,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     // â”€â”€ newEmotionModel â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     /// Creates a new affective emotion model.
     /// @return EmotionModel
-    tbl.set(
-        "newEmotionModel",
-        lua.create_function(|_, ()| {
+    tbl.set("newEmotionModel", lua.create_function(|_, ()| {
             Ok(LuaEmotionModel {
                 inner: Rc::new(RefCell::new(EmotionModel::new())),
             })
@@ -3931,9 +3775,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// Creates a new ORCA crowd avoidance solver.
     /// @param time_horizon number
     /// @return ORCASolver
-    tbl.set(
-        "newORCASolver",
-        lua.create_function(|_, time_horizon: f32| {
+    tbl.set("newORCASolver", lua.create_function(|_, time_horizon: f32| {
             Ok(LuaORCASolver {
                 inner: Rc::new(RefCell::new(ORCASolver::new(time_horizon))),
             })
@@ -3943,9 +3785,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     // â”€â”€ newNeuralNet â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     /// Creates a new feedforward neural network (inference only).
     /// @return NeuralNet
-    tbl.set(
-        "newNeuralNet",
-        lua.create_function(|_, ()| {
+    tbl.set("newNeuralNet", lua.create_function(|_, ()| {
             Ok(LuaNeuralNet {
                 inner: Rc::new(RefCell::new(NeuralNet::new())),
             })
@@ -3958,9 +3798,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// @param gene_count integer
     /// @param seed integer
     /// @return GeneticAlgorithm
-    tbl.set(
-        "newGeneticAlgorithm",
-        lua.create_function(|_, (pop_size, gene_count, seed): (usize, usize, u64)| {
+    tbl.set("newGeneticAlgorithm", lua.create_function(|_, (pop_size, gene_count, seed): (usize, usize, u64)| {
             Ok(LuaGeneticAlgorithm {
                 inner: Rc::new(RefCell::new(GeneticAlgorithm::new(
                     pop_size, gene_count, seed,
@@ -3976,9 +3814,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// @param epsilon number   -- only used for epsilon_greedy
     /// @param seed integer
     /// @return Bandit
-    tbl.set(
-        "newBandit",
-        lua.create_function(
+    tbl.set("newBandit", lua.create_function(
             |_, (arm_count, strategy, epsilon, seed): (usize, String, f32, u64)| {
                 let strat = match strategy.as_str() {
                     "ucb1" => BanditStrategy::UCB1,
@@ -4000,9 +3836,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// @param pop_size integer
     /// @param seed integer
     /// @return Neuroevolution
-    tbl.set(
-        "newNeuroevolution",
-        lua.create_function(|_, (layer_spec, pop_size, seed): (LuaTable, usize, u64)| {
+    tbl.set("newNeuroevolution", lua.create_function(|_, (layer_spec, pop_size, seed): (LuaTable, usize, u64)| {
             let mut spec: Vec<(usize, usize, &'static str)> = Vec::new();
             for i in 1..=layer_spec.raw_len() {
                 let entry: LuaTable = layer_spec.raw_get(i)?;
@@ -4031,9 +3865,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// Creates a new throttled strategy AI.
     /// @param update_interval number  -- seconds between re-evaluations
     /// @return StrategyAI
-    tbl.set(
-        "newStrategyAI",
-        lua.create_function(|_, update_interval: f32| {
+    tbl.set("newStrategyAI", lua.create_function(|_, update_interval: f32| {
             Ok(LuaStrategyAI {
                 inner: Rc::new(RefCell::new(StrategyAI::new(update_interval))),
             })
@@ -4043,9 +3875,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     // â”€â”€ newAILod â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     /// Creates a new AI LOD controller with default 3-tier config.
     /// @return AILod
-    tbl.set(
-        "newAILod",
-        lua.create_function(|_, ()| {
+    tbl.set("newAILod", lua.create_function(|_, ()| {
             Ok(LuaAILod {
                 inner: Rc::new(RefCell::new(AILod::default())),
             })

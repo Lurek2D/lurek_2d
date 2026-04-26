@@ -81,10 +81,8 @@ impl LuaUserData for LuaGroupedFrame {
         /// Apply a Lua function to aggregate a column's values per group.
         /// @param col_name : string — column to aggregate
         /// @param fn : function(values: table) → number — receives array of column values, returns aggregate
-        /// @return DataFrame — new dataframe with group keys and aggregated values
-        methods.add_method(
-            "aggregate",
-            |lua, this, (col_name, func): (String, LuaFunction)| {
+        /// @return LDataFrame — new dataframe with group keys and aggregated values
+        methods.add_method("aggregate", |lua, this, (col_name, func): (String, LuaFunction)| {
                 let mut result = DataFrame::new();
                 result
                     .add_column("group_key", CellValue::Nil)
@@ -185,11 +183,9 @@ impl LuaUserData for LuaDataFrame {
         // -- addColumn --
         /// Adds a new column with an optional default value.
         /// @param name : string
-        /// @param default : LuaValue?
+        /// @param default : nil|boolean|number|string
         /// @return nil
-        methods.add_method(
-            "addColumn",
-            |_, this, (name, default): (String, Option<LuaValue>)| {
+        methods.add_method("addColumn", |_, this, (name, default): (String, Option<LuaValue>)| {
                 let def = default.map(lua_to_cell).unwrap_or(CellValue::Nil);
                 this.inner
                     .borrow_mut()
@@ -288,7 +284,7 @@ impl LuaUserData for LuaDataFrame {
         /// Returns a single cell value.
         /// @param row : integer
         /// @param col : string|integer
-        /// @return LuaValue
+        /// @return nil|boolean|number|string
         methods.add_method("getValue", |lua, this, (row, col): (usize, LuaValue)| {
             let r = validate_row(row)?;
             let cr = lua_to_col_ref(col)?;
@@ -301,11 +297,9 @@ impl LuaUserData for LuaDataFrame {
         /// Sets a single cell value.
         /// @param row : integer
         /// @param col : string|integer
-        /// @param val : LuaValue
+        /// @param val : nil|boolean|number|string
         /// @return nil
-        methods.add_method(
-            "setValue",
-            |_, this, (row, col, val): (usize, LuaValue, LuaValue)| {
+        methods.add_method("setValue", |_, this, (row, col, val): (usize, LuaValue, LuaValue)| {
                 let r = validate_row(row)?;
                 let cr = lua_to_col_ref(col)?;
                 let cv = lua_to_cell(val);
@@ -320,11 +314,9 @@ impl LuaUserData for LuaDataFrame {
         /// Filters rows where column matches a condition, returns a new DataFrame.
         /// @param col : string|integer
         /// @param op : string
-        /// @param val : LuaValue
-        /// @return DataFrame
-        methods.add_method(
-            "filter",
-            |_, this, (col, op, val): (LuaValue, String, LuaValue)| {
+        /// @param val : nil|boolean|number|string
+        /// @return LDataFrame
+        methods.add_method("filter", |_, this, (col, op, val): (LuaValue, String, LuaValue)| {
                 let cr = lua_to_col_ref(col)?;
                 let cv = lua_to_cell(val);
                 let df = this.inner.borrow();
@@ -337,10 +329,8 @@ impl LuaUserData for LuaDataFrame {
         /// Sorts by column, returns a new DataFrame.
         /// @param col : string|integer
         /// @param ascending : boolean?
-        /// @return DataFrame
-        methods.add_method(
-            "sort",
-            |_, this, (col, ascending): (LuaValue, Option<bool>)| {
+        /// @return LDataFrame
+        methods.add_method("sort", |_, this, (col, ascending): (LuaValue, Option<bool>)| {
                 let cr = lua_to_col_ref(col)?;
                 let df = this.inner.borrow();
                 let result = df
@@ -353,7 +343,7 @@ impl LuaUserData for LuaDataFrame {
         // -- head --
         /// Returns the first n rows (default 5).
         /// @param n : integer?
-        /// @return DataFrame
+        /// @return LDataFrame
         methods.add_method("head", |_, this, n: Option<usize>| {
             let df = this.inner.borrow();
             Ok(LuaDataFrame::new(df.head(n.unwrap_or(5))))
@@ -362,7 +352,7 @@ impl LuaUserData for LuaDataFrame {
         // -- tail --
         /// Returns the last n rows (default 5).
         /// @param n : integer?
-        /// @return DataFrame
+        /// @return LDataFrame
         methods.add_method("tail", |_, this, n: Option<usize>| {
             let df = this.inner.borrow();
             Ok(LuaDataFrame::new(df.tail(n.unwrap_or(5))))
@@ -372,7 +362,7 @@ impl LuaUserData for LuaDataFrame {
         /// Returns rows from start to end (1-based, inclusive).
         /// @param start : integer
         /// @param end_idx : integer
-        /// @return DataFrame
+        /// @return LDataFrame
         methods.add_method("slice", |_, this, (start, end): (usize, usize)| {
             if start == 0 || end == 0 {
                 return Err(LuaError::RuntimeError("slice indices must be >= 1".into()));
@@ -387,7 +377,7 @@ impl LuaUserData for LuaDataFrame {
         // -- select --
         /// Selects a subset of columns, returns a new DataFrame.
         /// @param cols : string|integer...
-        /// @return DataFrame
+        /// @return LDataFrame
         methods.add_method("select", |_, this, cols: LuaMultiValue| {
             let col_refs: Vec<ColRef> = cols
                 .into_iter()
@@ -434,7 +424,7 @@ impl LuaUserData for LuaDataFrame {
         // -- groupByObj --
         /// Groups rows by column value, returns a GroupedFrame object supporting aggregate().
         /// @param col : string|integer
-        /// @return GroupedFrame
+        /// @return LGroupedFrame
         methods.add_method("groupByObj", |_, this, col: LuaValue| {
             let cr = lua_to_col_ref(col)?;
             let df = this.inner.borrow();
@@ -444,14 +434,12 @@ impl LuaUserData for LuaDataFrame {
 
         // -- join --
         /// Joins with another DataFrame on matching columns.
-        /// @param other : DataFrame
+        /// @param other : LDataFrame
         /// @param this_col : string|integer
         /// @param other_col : string|integer
         /// @param join_type : string?
-        /// @return DataFrame
-        methods.add_method(
-            "join",
-            |_,
+        /// @return LDataFrame
+        methods.add_method("join", |_,
              this,
              (other, this_col, other_col, jtype): (
                 LuaAnyUserData,
@@ -473,7 +461,7 @@ impl LuaUserData for LuaDataFrame {
 
         // -- merge --
         /// Appends rows from another DataFrame in-place.
-        /// @param other : DataFrame
+        /// @param other : LDataFrame
         /// @return nil
         methods.add_method("merge", |_, this, other: LuaAnyUserData| {
             let other_df = other.borrow::<LuaDataFrame>()?;
@@ -485,7 +473,7 @@ impl LuaUserData for LuaDataFrame {
         // -- countBy --
         /// Counts distinct values in a column, returns a DataFrame with value and count columns.
         /// @param col : string|integer
-        /// @return DataFrame
+        /// @return LDataFrame
         methods.add_method("countBy", |_, this, col: LuaValue| {
             let cr = lua_to_col_ref(col)?;
             let df = this.inner.borrow();
@@ -496,7 +484,7 @@ impl LuaUserData for LuaDataFrame {
         // -- dropNil --
         /// Removes rows where the given column is nil, returns a new DataFrame.
         /// @param col : string|integer
-        /// @return DataFrame
+        /// @return LDataFrame
         methods.add_method("dropNil", |_, this, col: LuaValue| {
             let cr = lua_to_col_ref(col)?;
             let df = this.inner.borrow();
@@ -508,7 +496,7 @@ impl LuaUserData for LuaDataFrame {
         /// Returns a random sample of n rows.
         /// @param n : integer
         /// @param seed : integer?
-        /// @return DataFrame
+        /// @return LDataFrame
         methods.add_method("sample", |_, this, (n, seed): (usize, Option<u64>)| {
             let df = this.inner.borrow();
             Ok(LuaDataFrame::new(df.sample(n, seed)))
@@ -516,7 +504,7 @@ impl LuaUserData for LuaDataFrame {
 
         // -- describe --
         /// Returns descriptive statistics for all numeric columns.
-        /// @return DataFrame
+        /// @return LDataFrame
         methods.add_method("describe", |_, this, ()| {
             let df = this.inner.borrow();
             Ok(LuaDataFrame::new(df.describe()))
@@ -603,7 +591,7 @@ impl LuaUserData for LuaDataFrame {
         // -- fillNil --
         /// Replaces nil values in a column with the given value.
         /// @param col : string|integer
-        /// @param val : LuaValue
+        /// @param val : nil|boolean|number|string
         /// @return nil
         methods.add_method("fillNil", |_, this, (col, val): (LuaValue, LuaValue)| {
             let cr = lua_to_col_ref(col)?;
@@ -619,9 +607,7 @@ impl LuaUserData for LuaDataFrame {
         /// @param col : string|integer
         /// @param func : function
         /// @return nil
-        methods.add_method(
-            "apply",
-            |lua, this, (col_val, func): (LuaValue, LuaFunction)| {
+        methods.add_method("apply", |lua, this, (col_val, func): (LuaValue, LuaFunction)| {
                 let col = lua_to_col_ref(col_val)?;
                 let mut df = this.inner.borrow_mut();
                 let cells = df.column_data_mut(col).map_err(LuaError::RuntimeError)?;
@@ -681,7 +667,7 @@ impl LuaUserData for LuaDataFrame {
         // -- query --
         /// Executes a SQL query against this DataFrame.
         /// @param sql_str : string
-        /// @return DataFrame
+        /// @return LDataFrame
         methods.add_method("query", |_, this, sql_str: String| {
             let df = this.inner.borrow();
             let result = sql::query_sql(&df, &sql_str).map_err(LuaError::RuntimeError)?;
@@ -690,7 +676,7 @@ impl LuaUserData for LuaDataFrame {
 
         // -- clone --
         /// Returns a deep copy of this DataFrame.
-        /// @return DataFrame
+        /// @return LDataFrame
         methods.add_method("clone", |_, this, ()| {
             Ok(LuaDataFrame::new(this.inner.borrow().clone_df()))
         });
@@ -703,9 +689,7 @@ impl LuaUserData for LuaDataFrame {
         /// @param window : integer
         /// @param name : string
         /// @return nil
-        methods.add_method_mut(
-            "withRollingMean",
-            |_, this, (col, window, name): (LuaValue, usize, String)| {
+        methods.add_method_mut("withRollingMean", |_, this, (col, window, name): (LuaValue, usize, String)| {
                 let col_ref = lua_to_col_ref(col)?;
                 this.inner
                     .borrow_mut()
@@ -720,9 +704,7 @@ impl LuaUserData for LuaDataFrame {
         /// @param window : integer
         /// @param name : string
         /// @return nil
-        methods.add_method_mut(
-            "withRollingSum",
-            |_, this, (col, window, name): (LuaValue, usize, String)| {
+        methods.add_method_mut("withRollingSum", |_, this, (col, window, name): (LuaValue, usize, String)| {
                 let col_ref = lua_to_col_ref(col)?;
                 this.inner
                     .borrow_mut()
@@ -737,9 +719,7 @@ impl LuaUserData for LuaDataFrame {
         /// @param window : integer
         /// @param name : string
         /// @return nil
-        methods.add_method_mut(
-            "withRollingMin",
-            |_, this, (col, window, name): (LuaValue, usize, String)| {
+        methods.add_method_mut("withRollingMin", |_, this, (col, window, name): (LuaValue, usize, String)| {
                 let col_ref = lua_to_col_ref(col)?;
                 this.inner
                     .borrow_mut()
@@ -754,9 +734,7 @@ impl LuaUserData for LuaDataFrame {
         /// @param window : integer
         /// @param name : string
         /// @return nil
-        methods.add_method_mut(
-            "withRollingMax",
-            |_, this, (col, window, name): (LuaValue, usize, String)| {
+        methods.add_method_mut("withRollingMax", |_, this, (col, window, name): (LuaValue, usize, String)| {
                 let col_ref = lua_to_col_ref(col)?;
                 this.inner
                     .borrow_mut()
@@ -771,9 +749,7 @@ impl LuaUserData for LuaDataFrame {
         /// @param ascending : boolean?
         /// @param name : string
         /// @return nil
-        methods.add_method_mut(
-            "withRank",
-            |_, this, (col, asc, name): (LuaValue, Option<bool>, String)| {
+        methods.add_method_mut("withRank", |_, this, (col, asc, name): (LuaValue, Option<bool>, String)| {
                 let col_ref = lua_to_col_ref(col)?;
                 this.inner
                     .borrow_mut()
@@ -787,9 +763,7 @@ impl LuaUserData for LuaDataFrame {
         /// @param col : string|integer
         /// @param name : string
         /// @return nil
-        methods.add_method_mut(
-            "withPctChange",
-            |_, this, (col, name): (LuaValue, String)| {
+        methods.add_method_mut("withPctChange", |_, this, (col, name): (LuaValue, String)| {
                 let col_ref = lua_to_col_ref(col)?;
                 this.inner
                     .borrow_mut()
@@ -817,10 +791,8 @@ impl LuaUserData for LuaDataFrame {
         /// @param group_col : string|integer
         /// @param agg_col : string|integer
         /// @param fn_name : string
-        /// @return DataFrame
-        methods.add_method(
-            "groupAgg",
-            |_, this, (group_col, agg_col, fn_name): (LuaValue, LuaValue, String)| {
+        /// @return LDataFrame
+        methods.add_method("groupAgg", |_, this, (group_col, agg_col, fn_name): (LuaValue, LuaValue, String)| {
                 let gc = lua_to_col_ref(group_col)?;
                 let ac = lua_to_col_ref(agg_col)?;
                 let agg_fn = AggFn::parse(&fn_name).map_err(LuaError::RuntimeError)?;
@@ -842,10 +814,8 @@ impl LuaUserData for LuaDataFrame {
         /// @param row_col : string|integer  Column whose values become row keys.
         /// @param col_col : string|integer  Column whose distinct values become headers.
         /// @param val_col : string|integer  Column to place in the pivot cells.
-        /// @return DataFrame
-        methods.add_method(
-            "pivot",
-            |_, this, (row_col, col_col, val_col): (LuaValue, LuaValue, LuaValue)| {
+        /// @return LDataFrame
+        methods.add_method("pivot", |_, this, (row_col, col_col, val_col): (LuaValue, LuaValue, LuaValue)| {
                 let rc = lua_to_col_ref(row_col)?;
                 let cc = lua_to_col_ref(col_col)?;
                 let vc = lua_to_col_ref(val_col)?;
@@ -874,7 +844,7 @@ impl LuaUserData for LuaDataFrame {
 
         // -- correlationMatrix --
         /// Compute a correlation matrix for all numeric columns.
-        /// @return DataFrame
+        /// @return LDataFrame
         methods.add_method("correlationMatrix", |_, this, ()| {
             let result = this.inner.borrow().correlation_matrix();
             Ok(LuaDataFrame::new(result))
@@ -900,9 +870,7 @@ impl LuaUserData for LuaDataFrame {
         /// @param out_max : number
         /// @param name : string
         /// @return nil
-        methods.add_method_mut(
-            "normalizeCol",
-            |_, this, (col, out_min, out_max, name): (LuaValue, f64, f64, String)| {
+        methods.add_method_mut("normalizeCol", |_, this, (col, out_min, out_max, name): (LuaValue, f64, f64, String)| {
                 let col_ref = lua_to_col_ref(col)?;
                 this.inner
                     .borrow_mut()
@@ -915,10 +883,8 @@ impl LuaUserData for LuaDataFrame {
         /// Return a new DataFrame with only outlier rows (|z-score| > threshold).
         /// @param col : string|integer
         /// @param threshold : number?
-        /// @return DataFrame
-        methods.add_method(
-            "outliers",
-            |_, this, (col, threshold): (LuaValue, Option<f64>)| {
+        /// @return LDataFrame
+        methods.add_method("outliers", |_, this, (col, threshold): (LuaValue, Option<f64>)| {
                 let col_ref = lua_to_col_ref(col)?;
                 let result = this
                     .inner
@@ -1000,9 +966,7 @@ impl LuaUserData for LuaDataFrame {
         /// @param col : string|integer
         /// @param values : table
         /// @return nil
-        methods.add_method_mut(
-            "setColumnFromF64",
-            |_, this, (col, values): (LuaValue, LuaTable)| {
+        methods.add_method_mut("setColumnFromF64", |_, this, (col, values): (LuaValue, LuaTable)| {
                 let col_ref = lua_to_col_ref(col)?;
                 let mut vals: Vec<f64> = Vec::new();
                 for pair in values.sequence_values::<f64>() {
@@ -1043,10 +1007,8 @@ impl LuaUserData for LuaDataFrame {
         /// ```
         /// @param col_name : string
         /// @param expr : string
-        /// @return DataFrame
-        methods.add_method(
-            "withEval",
-            |lua, this, (col_name, expr): (String, String)| {
+        /// @return LDataFrame
+        methods.add_method("withEval", |lua, this, (col_name, expr): (String, String)| {
                 let result = this
                     .inner
                     .borrow()
@@ -1071,10 +1033,8 @@ impl LuaUserData for LuaDataFrame {
         /// @param col_key : string|integer
         /// @param value_key : string|integer
         /// @param agg : string?
-        /// @return DataFrame
-        methods.add_method(
-            "pivotTable",
-            |_,
+        /// @return LDataFrame
+        methods.add_method("pivotTable", |_,
              this,
              (row_key, col_key, value_key, agg): (
                 LuaValue,
@@ -1108,10 +1068,8 @@ impl LuaUserData for LuaDataFrame {
         /// @param col : string|integer
         /// @param window : integer
         /// @param result_col : string?
-        /// @return DataFrame
-        methods.add_method(
-            "rollingMean",
-            |_, this, (col, window, result_col): (LuaValue, usize, Option<String>)| {
+        /// @return LDataFrame
+        methods.add_method("rollingMean", |_, this, (col, window, result_col): (LuaValue, usize, Option<String>)| {
                 let cr = lua_to_col_ref(col)?;
                 let out_name = result_col.unwrap_or_else(|| "rolling_mean".to_string());
                 let df = this.inner.borrow();
@@ -1136,10 +1094,8 @@ impl LuaUserData for LuaDataFrame {
         /// @param col : string|integer
         /// @param window : integer
         /// @param result_col : string?
-        /// @return DataFrame
-        methods.add_method(
-            "rollingSum",
-            |_, this, (col, window, result_col): (LuaValue, usize, Option<String>)| {
+        /// @return LDataFrame
+        methods.add_method("rollingSum", |_, this, (col, window, result_col): (LuaValue, usize, Option<String>)| {
                 let cr = lua_to_col_ref(col)?;
                 let out_name = result_col.unwrap_or_else(|| "rolling_sum".to_string());
                 let df = this.inner.borrow();
@@ -1163,10 +1119,8 @@ impl LuaUserData for LuaDataFrame {
         /// @param col : string|integer
         /// @param order : string?
         /// @param result_col : string?
-        /// @return DataFrame
-        methods.add_method(
-            "rank",
-            |_, this, (col, order, result_col): (LuaValue, Option<String>, Option<String>)| {
+        /// @return LDataFrame
+        methods.add_method("rank", |_, this, (col, order, result_col): (LuaValue, Option<String>, Option<String>)| {
                 let cr = lua_to_col_ref(col)?;
                 let ord = order.as_deref().unwrap_or("asc");
                 let out_name = result_col.unwrap_or_else(|| "rank".to_string());
@@ -1194,11 +1148,9 @@ impl LuaUserData for LuaDatabase {
         // -- addTable --
         /// Adds or replaces a table by cloning the given DataFrame.
         /// @param name : string
-        /// @param df : DataFrame
+        /// @param df : LDataFrame
         /// @return nil
-        methods.add_method(
-            "addTable",
-            |_, this, (name, df_ud): (String, LuaAnyUserData)| {
+        methods.add_method("addTable", |_, this, (name, df_ud): (String, LuaAnyUserData)| {
                 let lua_df = df_ud.borrow::<LuaDataFrame>()?;
                 let cloned = lua_df.inner.borrow().clone_df();
                 this.inner.borrow_mut().add_table(&name, cloned);
@@ -1209,7 +1161,7 @@ impl LuaUserData for LuaDatabase {
         // -- getTable --
         /// Returns a copy of a table by name, or nil if not found.
         /// @param name : string
-        /// @return DataFrame?
+        /// @return LDataFrame?
         methods.add_method("getTable", |_, this, name: String| {
             let db = this.inner.borrow();
             match db.get_table(&name) {
@@ -1267,7 +1219,7 @@ impl LuaUserData for LuaDatabase {
 
         // -- merge --
         /// Merges all tables from another Database into this one.
-        /// @param other : Database
+        /// @param other : LDatabase
         /// @return nil
         methods.add_method("merge", |_, this, other: LuaAnyUserData| {
             let other_db = other.borrow::<LuaDatabase>()?;
@@ -1284,7 +1236,7 @@ impl LuaUserData for LuaDatabase {
         // -- query --
         /// Executes a SQL query against the database tables.
         /// @param sql_str : string
-        /// @return DataFrame
+        /// @return LDataFrame
         methods.add_method("query", |_, this, sql_str: String| {
             let db = this.inner.borrow();
             let result = sql::query_sql_database(&db, &sql_str).map_err(LuaError::RuntimeError)?;
@@ -1332,6 +1284,7 @@ impl LuaUserData for LuaVecFrame {
         /// Add a scalar to every element of a Float64 column.
         /// @param col : string
         /// @param val : number
+        /// @return nil
         methods.add_method_mut("colAdd", |_, this, (col, val): (String, f64)| {
             this.inner
                 .borrow_mut()
@@ -1342,6 +1295,7 @@ impl LuaUserData for LuaVecFrame {
         /// Subtract a scalar from every element of a Float64 column.
         /// @param col : string
         /// @param val : number
+        /// @return nil
         methods.add_method_mut("colSub", |_, this, (col, val): (String, f64)| {
             this.inner
                 .borrow_mut()
@@ -1352,6 +1306,7 @@ impl LuaUserData for LuaVecFrame {
         /// Multiply every element of a Float64 column by a scalar.
         /// @param col : string
         /// @param val : number
+        /// @return nil
         methods.add_method_mut("colMul", |_, this, (col, val): (String, f64)| {
             this.inner
                 .borrow_mut()
@@ -1362,6 +1317,7 @@ impl LuaUserData for LuaVecFrame {
         /// Divide every element of a Float64 column by a scalar.
         /// @param col : string
         /// @param val : number
+        /// @return nil
         methods.add_method_mut("colDiv", |_, this, (col, val): (String, f64)| {
             this.inner
                 .borrow_mut()
@@ -1371,6 +1327,7 @@ impl LuaUserData for LuaVecFrame {
 
         /// Apply absolute value to every element of a Float64 column.
         /// @param col : string
+        /// @return nil
         methods.add_method_mut("colAbs", |_, this, col: String| {
             this.inner
                 .borrow_mut()
@@ -1380,6 +1337,7 @@ impl LuaUserData for LuaVecFrame {
 
         /// Apply square root to every element of a Float64 column.
         /// @param col : string
+        /// @return nil
         methods.add_method_mut("colSqrt", |_, this, col: String| {
             this.inner
                 .borrow_mut()
@@ -1389,6 +1347,7 @@ impl LuaUserData for LuaVecFrame {
 
         /// Apply floor to every element of a Float64 column.
         /// @param col : string
+        /// @return nil
         methods.add_method_mut("colFloor", |_, this, col: String| {
             this.inner
                 .borrow_mut()
@@ -1398,6 +1357,7 @@ impl LuaUserData for LuaVecFrame {
 
         /// Apply ceiling to every element of a Float64 column.
         /// @param col : string
+        /// @return nil
         methods.add_method_mut("colCeil", |_, this, col: String| {
             this.inner
                 .borrow_mut()
@@ -1407,6 +1367,7 @@ impl LuaUserData for LuaVecFrame {
 
         /// Negate every element of a Float64 column.
         /// @param col : string
+        /// @return nil
         methods.add_method_mut("colNeg", |_, this, col: String| {
             this.inner
                 .borrow_mut()
@@ -1418,9 +1379,7 @@ impl LuaUserData for LuaVecFrame {
         /// @param col : string
         /// @param min_val : number
         /// @param max_val : number
-        methods.add_method_mut(
-            "colClamp",
-            |_, this, (col, min_val, max_val): (String, f64, f64)| {
+        methods.add_method_mut("colClamp", |_, this, (col, min_val, max_val): (String, f64, f64)| {
                 this.inner
                     .borrow_mut()
                     .col_clamp(&col, min_val, max_val)
@@ -1436,9 +1395,7 @@ impl LuaUserData for LuaVecFrame {
         /// @param left_col : string
         /// @param op : string
         /// @param right_col : string
-        methods.add_method_mut(
-            "colOp",
-            |_, this, (out_col, left_col, op, right_col): (String, String, String, String)| {
+        methods.add_method_mut("colOp", |_, this, (out_col, left_col, op, right_col): (String, String, String, String)| {
                 let bop = BinaryOp::parse(&op).map_err(LuaError::RuntimeError)?;
                 this.inner
                     .borrow_mut()
@@ -1470,9 +1427,7 @@ impl LuaUserData for LuaVecFrame {
         /// @param cmp_op : string
         /// @param val : number
         /// @return table  -- array of booleans
-        methods.add_method(
-            "filterMask",
-            |lua, this, (col, cmp_op, val): (String, String, f64)| {
+        methods.add_method("filterMask", |lua, this, (col, cmp_op, val): (String, String, f64)| {
                 let op = CmpOp::parse(&cmp_op).map_err(LuaError::RuntimeError)?;
                 let mask = this
                     .inner
@@ -1489,7 +1444,7 @@ impl LuaUserData for LuaVecFrame {
 
         /// Return a new VecFrame containing only the rows where mask[i] is true.
         /// @param mask : table  -- array of booleans (from filterMask)
-        /// @return VecFrame
+        /// @return LVecFrame
         methods.add_method("applyMask", |_, this, mask_tbl: LuaTable| {
             let len = mask_tbl.len()? as usize;
             let mut mask = Vec::with_capacity(len);
@@ -1517,6 +1472,7 @@ impl LuaUserData for LuaVecFrame {
         /// Cast a column to a new dtype: "float64", "int64", or "text".
         /// @param col : string
         /// @param dtype : string
+        /// @return nil
         methods.add_method_mut("colCast", |_, this, (col, dtype): (String, String)| {
             this.inner
                 .borrow_mut()
@@ -1551,9 +1507,7 @@ impl LuaUserData for LuaVecFrame {
         /// @param cols : table  -- array of column name strings
         /// @param op : string
         /// @return table
-        methods.add_method(
-            "parReduce",
-            |lua, this, (cols_tbl, op): (LuaTable, String)| {
+        methods.add_method("parReduce", |lua, this, (cols_tbl, op): (LuaTable, String)| {
                 let rop = ReduceOp::parse(&op).map_err(LuaError::RuntimeError)?;
                 let len = cols_tbl.len()? as usize;
                 let cols: Vec<String> = (1..=len)
@@ -1580,9 +1534,7 @@ impl LuaUserData for LuaVecFrame {
         /// @param cols : table  -- array of column name strings
         /// @param op : string
         /// @param val : number
-        methods.add_method_mut(
-            "parScalarOp",
-            |_, this, (cols_tbl, op, val): (LuaTable, String, f64)| {
+        methods.add_method_mut("parScalarOp", |_, this, (cols_tbl, op, val): (LuaTable, String, f64)| {
                 let sop = ScalarOp::parse(&op).map_err(LuaError::RuntimeError)?;
                 let len = cols_tbl.len()? as usize;
                 let cols: Vec<String> = (1..=len)
@@ -1602,7 +1554,7 @@ impl LuaUserData for LuaVecFrame {
         // ── Conversion ───────────────────────────────────────────────────
 
         /// Convert this VecFrame back to a DataFrame.
-        /// @return DataFrame
+        /// @return LDataFrame
         methods.add_method("toDataFrame", |_, this, ()| {
             Ok(LuaDataFrame::new(this.inner.borrow().to_dataframe()))
         });
@@ -1637,18 +1589,14 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
 
     // -- newDataFrame --
     /// Creates a new empty DataFrame.
-    /// @return DataFrame
-    tbl.set(
-        "newDataFrame",
-        lua.create_function(|_, ()| Ok(LuaDataFrame::new(DataFrame::new())))?,
+    /// @return LDataFrame
+    tbl.set("newDataFrame", lua.create_function(|_, ()| Ok(LuaDataFrame::new(DataFrame::new())))?,
     )?;
 
     // -- newDatabase --
     /// Creates a new empty Database.
-    /// @return Database
-    tbl.set(
-        "newDatabase",
-        lua.create_function(|_, ()| {
+    /// @return LDatabase
+    tbl.set("newDatabase", lua.create_function(|_, ()| {
             Ok(LuaDatabase {
                 inner: Rc::new(RefCell::new(Database::new())),
             })
@@ -1658,10 +1606,8 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     // -- fromTable --
     /// Creates a DataFrame from an array of row tables.
     /// @param rows : table
-    /// @return DataFrame
-    tbl.set(
-        "fromTable",
-        lua.create_function(|_, rows: LuaTable| {
+    /// @return LDataFrame
+    tbl.set("fromTable", lua.create_function(|_, rows: LuaTable| {
             let mut df = DataFrame::new();
             let len = rows.len()?;
             for i in 1..=len {
@@ -1687,10 +1633,8 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     // -- fromCSV --
     /// Parses a CSV string into a DataFrame.
     /// @param s : string
-    /// @return DataFrame
-    tbl.set(
-        "fromCSV",
-        lua.create_function(|_, s: String| {
+    /// @return LDataFrame
+    tbl.set("fromCSV", lua.create_function(|_, s: String| {
             let df = serial::from_csv(&s).map_err(LuaError::RuntimeError)?;
             Ok(LuaDataFrame::new(df))
         })?,
@@ -1699,10 +1643,8 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     // -- fromJSON --
     /// Parses a JSON string into a DataFrame.
     /// @param s : string
-    /// @return DataFrame
-    tbl.set(
-        "fromJSON",
-        lua.create_function(|_, s: String| {
+    /// @return LDataFrame
+    tbl.set("fromJSON", lua.create_function(|_, s: String| {
             let df = serial::from_json(&s).map_err(LuaError::RuntimeError)?;
             Ok(LuaDataFrame::new(df))
         })?,
@@ -1711,10 +1653,8 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     // -- fromBinary --
     /// Deserializes a binary LVDF string into a DataFrame.
     /// @param s : string
-    /// @return DataFrame
-    tbl.set(
-        "fromBinary",
-        lua.create_function(|_, s: LuaString| {
+    /// @return LDataFrame
+    tbl.set("fromBinary", lua.create_function(|_, s: LuaString| {
             let df = serial::from_binary(s.as_bytes()).map_err(LuaError::RuntimeError)?;
             Ok(LuaDataFrame::new(df))
         })?,
@@ -1725,10 +1665,8 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     /// @param defs : table
     /// @param n : integer
     /// @param seed : integer?
-    /// @return DataFrame
-    tbl.set(
-        "random",
-        lua.create_function(|_, (defs_tbl, n, seed): (LuaTable, usize, Option<u64>)| {
+    /// @return LDataFrame
+    tbl.set("random", lua.create_function(|_, (defs_tbl, n, seed): (LuaTable, usize, Option<u64>)| {
             let mut defs = Vec::new();
             for i in 1..=defs_tbl.len()? {
                 let pair: LuaTable = defs_tbl.get(i)?;
@@ -1742,11 +1680,9 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
 
     // -- toVec --
     /// Converts a DataFrame to a VecFrame for vectorized column operations.
-    /// @param df : DataFrame
-    /// @return VecFrame
-    tbl.set(
-        "toVec",
-        lua.create_function(|_, df: LuaAnyUserData| {
+    /// @param df : LDataFrame
+    /// @return LVecFrame
+    tbl.set("toVec", lua.create_function(|_, df: LuaAnyUserData| {
             let lua_df = df.borrow::<LuaDataFrame>()?;
             let vf = VecFrame::from_dataframe(&lua_df.inner.borrow());
             Ok(LuaVecFrame::new(vf))
@@ -1755,11 +1691,9 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
 
     // -- fromVec --
     /// Converts a VecFrame back to a DataFrame.
-    /// @param vf : VecFrame
-    /// @return DataFrame
-    tbl.set(
-        "fromVec",
-        lua.create_function(|_, vf: LuaAnyUserData| {
+    /// @param vf : LVecFrame
+    /// @return LDataFrame
+    tbl.set("fromVec", lua.create_function(|_, vf: LuaAnyUserData| {
             let lua_vf = vf.borrow::<LuaVecFrame>()?;
             let df = lua_vf.inner.borrow().to_dataframe();
             Ok(LuaDataFrame::new(df))

@@ -19,26 +19,20 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     // -- getVersion --
     /// Returns the engine version string (from `Cargo.toml`).
     /// @return string
-    tbl.set(
-        "getVersion",
-        lua.create_function(|_, ()| Ok(env!("CARGO_PKG_VERSION")))?,
+    tbl.set("getVersion", lua.create_function(|_, ()| Ok(env!("CARGO_PKG_VERSION")))?,
     )?;
 
     // -- getFrameBudget --
     /// Returns the target frame budget in milliseconds (default: 1000 / 60 â‰ 16.667 ms).
     /// @return number
-    tbl.set(
-        "getFrameBudget",
-        lua.create_function(|_, ()| Ok(1000.0_f64 / 60.0_f64))?,
+    tbl.set("getFrameBudget", lua.create_function(|_, ()| Ok(1000.0_f64 / 60.0_f64))?,
     )?;
 
     // -- memoryUsage --
     /// Returns a table with `lua_bytes` (Lua GC heap usage in bytes) and
     /// `lua_kb` (same in kilobytes, rounded to two decimal places).
     /// @return table
-    tbl.set(
-        "memoryUsage",
-        lua.create_function(|lua, ()| {
+    tbl.set("memoryUsage", lua.create_function(|lua, ()| {
             let bytes = lua.used_memory();
             let out = lua.create_table()?;
             out.set("lua_bytes", bytes as u64)?;
@@ -51,9 +45,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// Returns a string identifying the host operating system:
     /// `"windows"`, `"linux"`, or `"macos"`.
     /// @return string
-    tbl.set(
-        "platform",
-        lua.create_function(|_, ()| {
+    tbl.set("platform", lua.create_function(|_, ()| {
             let name = if cfg!(target_os = "windows") {
                 "windows"
             } else if cfg!(target_os = "linux") {
@@ -71,9 +63,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// Returns the total engine uptime in seconds (sum of all processed deltas).
     /// @return number
     let s = state.clone();
-    tbl.set(
-        "uptime",
-        lua.create_function(move |_, ()| Ok(s.borrow().total_time))?,
+    tbl.set("uptime", lua.create_function(move |_, ()| Ok(s.borrow().total_time))?,
     )?;
 
     let s = state.clone();
@@ -86,17 +76,13 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// Returns the total number of frames processed since engine start.
     /// @return integer
     let s = state.clone();
-    tbl.set(
-        "frameCount",
-        lua.create_function(move |_, ()| Ok(s.borrow().clock.frame_count()))?,
+    tbl.set("frameCount", lua.create_function(move |_, ()| Ok(s.borrow().clock.frame_count()))?,
     )?;
 
     // -- isDebug --
     /// Returns `true` if the engine was compiled in debug mode.
     /// @return boolean
-    tbl.set(
-        "isDebug",
-        lua.create_function(|_, ()| Ok(cfg!(debug_assertions)))?,
+    tbl.set("isDebug", lua.create_function(|_, ()| Ok(cfg!(debug_assertions)))?,
     )?;
 
     // -- setResourceBudget --
@@ -108,9 +94,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     ///
     /// @param budget_bytes integer
     let s = state.clone();
-    tbl.set(
-        "setResourceBudget",
-        lua.create_function(move |_, budget_bytes: u64| {
+    tbl.set("setResourceBudget", lua.create_function(move |_, budget_bytes: u64| {
             s.borrow_mut().resource_budget_bytes = budget_bytes;
             Ok(())
         })?,
@@ -126,9 +110,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     ///
     /// @return table
     let s = state.clone();
-    tbl.set(
-        "getResourceStats",
-        lua.create_function(move |lua, ()| {
+    tbl.set("getResourceStats", lua.create_function(move |lua, ()| {
             let st = s.borrow();
             let (tex_bytes, budget) = st.resource_memory_stats();
             let out = lua.create_table()?;

@@ -138,10 +138,6 @@ pub struct LuaMod {
 
 impl LuaMod {
     /// Creates a new [`LuaMod`] from a [`ModInfo`].
-    ///
-    /// @param inner ModInfo
-    ///
-    /// @return Self
     pub fn new(inner: ModInfo) -> Self {
         Self {
             inner,
@@ -310,9 +306,7 @@ impl LuaUserData for LuaMod {
         /// @param name string
         /// @param func function
         /// @return nil
-        methods.add_method_mut(
-            "setHook",
-            |lua, this, (name, func): (String, LuaFunction)| {
+        methods.add_method_mut("setHook", |lua, this, (name, func): (String, LuaFunction)| {
                 if let Some(old_key) = this.hooks.remove(&name) {
                     lua.remove_registry_value(old_key)?;
                 }
@@ -364,7 +358,7 @@ impl LuaUserData for LuaMod {
         /// Stores an arbitrary config value for this mod
         /// Sets the config.
         ///
-        /// @param value table
+        /// @param value any
         /// @return nil
         methods.add_method_mut("setConfig", |lua, this, value: LuaValue| {
             if let Some(old_key) = this.config.take() {
@@ -379,7 +373,7 @@ impl LuaUserData for LuaMod {
         /// Returns the stored config value, or nil
         /// Returns the config.
         ///
-        /// @return table?
+        /// @return nil|boolean|number|string|table|function|userdata|thread
         methods.add_method("getConfig", |lua, this, ()| {
             if let Some(key) = &this.config {
                 lua.registry_value::<LuaValue>(key)
@@ -436,7 +430,6 @@ pub struct LuaModManager {
 
 impl LuaModManager {
     /// Creates a new empty [`LuaModManager`].
-    /// @return Self
     pub fn new() -> Self {
         Self {
             inner: ModManager::new(),
@@ -456,7 +449,7 @@ impl LuaUserData for LuaModManager {
         /// Registers a mod from its Mod userdata
         /// Register mod.
         ///
-        /// @param mod_ud Mod
+        /// @param mod_ud LMod
         /// @return nil
         methods.add_method_mut("registerMod", |_, this, ud: LuaAnyUserData| {
             let info = ud.borrow::<LuaMod>()?.inner.clone();
@@ -675,7 +668,7 @@ impl LuaUserData for LuaContentRegistry {
         /// Retrieve a content entry.
         /// @param type_name string — registered type name
         /// @param id string — content identifier
-        /// @return any — the registered content, or nil if not found
+        /// @return nil|boolean|number|string|table|function|userdata|thread
         methods.add_method("get", |lua, this, (type_name, id): (String, String)| {
             let val = this.entries
                 .get(&type_name)
@@ -749,10 +742,8 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     // -- newMod --
     /// Creates a new Mod from an info table with at least an `id` field.
     /// @param info table
-    /// @return Mod
-    tbl.set(
-        "newMod",
-        lua.create_function(|lua, info: LuaTable| {
+    /// @return LMod
+    tbl.set("newMod", lua.create_function(|lua, info: LuaTable| {
             let mod_info = mod_info_from_table(&info)?;
             lua.create_userdata(LuaMod::new(mod_info))
         })?,
@@ -760,35 +751,29 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
 
     // -- newModManager --
     /// Creates a new empty ModManager.
-    /// @return ModManager
-    tbl.set(
-        "newModManager",
-        lua.create_function(|lua, ()| lua.create_userdata(LuaModManager::new()))?,
+    /// @return LModManager
+    tbl.set("newModManager", lua.create_function(|lua, ()| lua.create_userdata(LuaModManager::new()))?,
     )?;
 
     // -- newRegistry --
     /// Creates a new empty ContentRegistry for mod-contributed assets.
-    /// @return ContentRegistry
-    tbl.set(
-        "newRegistry",
-        lua.create_function(|lua, ()| lua.create_userdata(LuaContentRegistry::new()))?,
+    /// @return LContentRegistry
+    tbl.set("newRegistry", lua.create_function(|lua, ()| lua.create_userdata(LuaContentRegistry::new()))?,
     )?;
 
     // -- checkApiVersion --
     /// Checks whether a mod's required `api_version` is compatible with the given `host_version`.
-    /// @return table|nil
     ///
     /// Both version strings must be of the form "MAJOR.MINOR.PATCH". A mod is
     /// compatible when its MAJOR equals the host MAJOR and its MINOR â‰¤ the host
     /// MINOR. Returns `true` if compatible, `false` otherwise. Always returns
     /// `true` when the mod has no `api_version` set.
     ///
-    /// @param mod_ud Mod
+    /// @param mod_ud LMod
     /// @param host_version string
-    /// boolean, string?
-    tbl.set(
-        "checkApiVersion",
-        lua.create_function(|lua, (mod_ud, host_version): (LuaAnyUserData, String)| {
+    /// @return boolean
+    /// @return string?
+    tbl.set("checkApiVersion", lua.create_function(|lua, (mod_ud, host_version): (LuaAnyUserData, String)| {
             let api_ver = {
                 let m = mod_ud.borrow::<LuaMod>()?;
                 m.inner.api_version.clone()

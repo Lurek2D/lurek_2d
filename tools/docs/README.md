@@ -16,6 +16,7 @@ python tools/gen_all_docs.py
 |---|---|---|---|
 | `gen_rust_api_data.py` | `src/**/*.rs` | `logs/data/rust_api_data.json` | `--output` |
 | `gen_lua_api_data.py` | `src/lua_api/*.rs` | `logs/data/lua_api_data.json` | `--output`, `--verbose` |
+| `gen_lua_docstring_skeletons.py` | `src/lua_api/*.rs` | `logs/data/lua_docstring_skeletons.json` or `logs/reports/lua_docstring_skeletons.md` | `--format json\|markdown`, `--output` |
 | `gen_extension_api.py` | `logs/data/lua_api_data.json` | `extensions/vscode/data/lurek-api.json` | `--input`, `--output`, `--verbose` |
 
 ### Reference generators â€” human-readable docs from JSON
@@ -56,6 +57,10 @@ python tools/docs/gen_lua_api.py --check
 # Regenerate JSON intermediates
 python tools/docs/gen_lua_api_data.py
 python tools/docs/gen_rust_api_data.py
+
+# Rebuild fresh docstring skeletons from Rust definitions only
+python tools/docs/gen_lua_docstring_skeletons.py
+python tools/docs/gen_lua_docstring_skeletons.py src/lua_api/timer_api.rs --format markdown
 
 # List items missing /// docs
 python tools/docs/collect_docs.py --report-missing

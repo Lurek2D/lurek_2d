@@ -42,9 +42,7 @@ impl LuaUserData for LuaEventBus {
         /// @param callback function
         /// @param priority integer?
         /// @return integer
-        methods.add_method(
-            "on",
-            |lua, this, (event, callback, priority): (String, LuaFunction, Option<i64>)| {
+        methods.add_method("on", |lua, this, (event, callback, priority): (String, LuaFunction, Option<i64>)| {
                 let priority = priority.unwrap_or(0);
                 let id = this.bus.borrow_mut().subscribe(&event, priority, false);
                 let key = lua.create_registry_value(callback)?;
@@ -278,9 +276,7 @@ impl LuaUserData for LuaCommandStack {
         /// @param exec_fn function
         /// @param undo_fn function?
         /// @return nil
-        methods.add_method(
-            "execute",
-            |lua, this, (name, exec_fn, undo_fn): (String, LuaFunction, Option<LuaFunction>)| {
+        methods.add_method("execute", |lua, this, (name, exec_fn, undo_fn): (String, LuaFunction, Option<LuaFunction>)| {
                 let undo_count = this.stack.borrow().undo_count();
                 let discarded: Vec<u64> = {
                     let mut ids = this.history_ids.borrow_mut();
@@ -563,9 +559,7 @@ impl LuaUserData for LuaFactory {
         /// @param type_name string
         /// @param ctor function
         /// @return nil
-        methods.add_method(
-            "register",
-            |lua, this, (type_name, ctor): (String, LuaFunction)| {
+        methods.add_method("register", |lua, this, (type_name, ctor): (String, LuaFunction)| {
                 this.factory.borrow_mut().register(&type_name);
                 let key = lua.create_registry_value(ctor)?;
                 if let Some(old) = this.constructors.borrow_mut().insert(type_name, key) {
@@ -611,9 +605,7 @@ impl LuaUserData for LuaFactory {
         /// @param alias string
         /// @param canonical string
         /// @return nil
-        methods.add_method(
-            "alias",
-            |_lua, this, (alias, canonical): (String, String)| {
+        methods.add_method("alias", |_lua, this, (alias, canonical): (String, String)| {
                 this.factory.borrow_mut().add_alias(&alias, &canonical);
                 Ok(())
             },
@@ -691,9 +683,7 @@ impl LuaUserData for LuaSimpleState {
         /// @param name string
         /// @param callbacks table?
         /// @return nil
-        methods.add_method(
-            "addState",
-            |lua, this, (name, callbacks): (String, Option<LuaTable>)| {
+        methods.add_method("addState", |lua, this, (name, callbacks): (String, Option<LuaTable>)| {
                 {
                     let mut enter = this.enter_keys.borrow_mut();
                     let mut exit = this.exit_keys.borrow_mut();
@@ -967,9 +957,7 @@ impl LuaUserData for LuaBlackboard {
         /// @param key string
         /// @param callback function
         /// @return integer
-        methods.add_method(
-            "watch",
-            |lua, this, (key, callback): (String, LuaFunction)| {
+        methods.add_method("watch", |lua, this, (key, callback): (String, LuaFunction)| {
                 let id = {
                     let mut nid = this.next_watcher_id.borrow_mut();
                     let id = *nid;
@@ -1088,9 +1076,7 @@ impl LuaUserData for LuaObserver {
         /// @param callback function
         /// @param once boolean?
         /// @return integer
-        methods.add_method(
-            "subscribe",
-            |lua, this, (key, callback, once): (String, LuaFunction, Option<bool>)| {
+        methods.add_method("subscribe", |lua, this, (key, callback, once): (String, LuaFunction, Option<bool>)| {
                 let id = this
                     .observer
                     .borrow_mut()
@@ -1303,9 +1289,7 @@ impl LuaUserData for LuaPriorityQueue {
         /// @param value any
         /// @param label string?
         /// @return integer
-        methods.add_method(
-            "push",
-            |lua, this, (priority, value, label): (i64, LuaValue, Option<String>)| {
+        methods.add_method("push", |lua, this, (priority, value, label): (i64, LuaValue, Option<String>)| {
                 let id = this
                     .queue
                     .borrow_mut()
@@ -1396,9 +1380,7 @@ impl LuaUserData for LuaRing {
         /// @param value any
         /// @param tag string?
         /// @return integer
-        methods.add_method(
-            "push",
-            |_, this, (value, tag): (LuaValue, Option<String>)| {
+        methods.add_method("push", |_, this, (value, tag): (LuaValue, Option<String>)| {
                 let tag = tag.as_deref().unwrap_or("");
                 let id = match &value {
                     LuaValue::Integer(n) => this.ring.borrow_mut().push_number(*n as f64, tag),
@@ -1621,9 +1603,7 @@ impl LuaUserData for LuaRelationshipManager {
         /// @param levels table
         /// @param default_level string?
         /// @return nil
-        methods.add_method(
-            "defineType",
-            |_, this, (name, levels, default_level): (String, LuaTable, Option<String>)| {
+        methods.add_method("defineType", |_, this, (name, levels, default_level): (String, LuaTable, Option<String>)| {
                 let lvs: Vec<String> = levels
                     .sequence_values::<String>()
                     .collect::<LuaResult<_>>()?;
@@ -1688,9 +1668,7 @@ impl LuaUserData for LuaRelationshipManager {
         /// @param type_name string
         /// @param level string
         /// @return boolean
-        methods.add_method(
-            "setLevel",
-            |_, this, (a, b, type_name, level): (u32, u32, String, String)| {
+        methods.add_method("setLevel", |_, this, (a, b, type_name, level): (u32, u32, String, String)| {
                 Ok(this.rm.borrow_mut().set_level(a, b, &type_name, &level))
             },
         );
@@ -1701,9 +1679,7 @@ impl LuaUserData for LuaRelationshipManager {
         /// @param b integer
         /// @param type_name string
         /// @return string?
-        methods.add_method(
-            "getLevel",
-            |_, this, (a, b, type_name): (u32, u32, String)| {
+        methods.add_method("getLevel", |_, this, (a, b, type_name): (u32, u32, String)| {
                 Ok(this.rm.borrow().get_level(a, b, &type_name))
             },
         );
@@ -1752,9 +1728,7 @@ impl LuaUserData for LuaMediator {
         /// @param channel string
         /// @param callback function
         /// @return integer
-        methods.add_method(
-            "on",
-            |lua, this, (channel, callback): (String, LuaFunction)| {
+        methods.add_method("on", |lua, this, (channel, callback): (String, LuaFunction)| {
                 let id = this.mediator.borrow_mut().register(&channel);
                 let key = lua.create_registry_value(callback)?;
                 this.callbacks.borrow_mut().insert(id, key);
@@ -1890,9 +1864,7 @@ impl LuaUserData for LuaStrategy {
         /// @param name string
         /// @param callback function
         /// @return nil
-        methods.add_method(
-            "register",
-            |lua, this, (name, callback): (String, LuaFunction)| {
+        methods.add_method("register", |lua, this, (name, callback): (String, LuaFunction)| {
                 let id = this.strategy.borrow_mut().register(&name);
                 let key = lua.create_registry_value(callback)?;
                 this.callbacks.borrow_mut().insert(id, key);
@@ -2434,13 +2406,11 @@ impl LuaUserData for LuaSet {
 pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let patterns = lua.create_table()?;
 
-    // lurek.patterns.newEventBus(name?) -> EventBus
+    // lurek.patterns.newEventBus(name?) -> LEventBus
     /// Creates a new EventBus instance.
     /// @param name string?
-    /// @return EventBus
-    patterns.set(
-        "newEventBus",
-        lua.create_function(|_lua, name: Option<String>| {
+    /// @return LEventBus
+    patterns.set("newEventBus", lua.create_function(|_lua, name: Option<String>| {
             Ok(LuaEventBus {
                 bus: Rc::new(RefCell::new(crate::patterns::EventBus::new(
                     name.as_deref().unwrap_or(""),
@@ -2453,9 +2423,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     // lurek.patterns.newObjectPool() -> ObjectPool
     /// Creates a new ObjectPool instance.
     /// @return ObjectPool
-    patterns.set(
-        "newObjectPool",
-        lua.create_function(|_lua, ()| {
+    patterns.set("newObjectPool", lua.create_function(|_lua, ()| {
             Ok(LuaObjectPool {
                 pool: Rc::new(RefCell::new(crate::patterns::ObjectPool::new("", 0))),
                 idle_objects: Rc::new(RefCell::new(HashMap::new())),
@@ -2468,9 +2436,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// Creates a new CommandStack instance.
     /// @param max_size integer?
     /// @return CommandStack
-    patterns.set(
-        "newCommandStack",
-        lua.create_function(|_lua, max_size: Option<usize>| {
+    patterns.set("newCommandStack", lua.create_function(|_lua, max_size: Option<usize>| {
             Ok(LuaCommandStack {
                 stack: Rc::new(RefCell::new(crate::patterns::CommandStack::new(
                     max_size.unwrap_or(0),
@@ -2485,9 +2451,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     // lurek.patterns.newServiceLocator() -> ServiceLocator
     /// Creates a new ServiceLocator instance.
     /// @return ServiceLocator
-    patterns.set(
-        "newServiceLocator",
-        lua.create_function(|_lua, ()| {
+    patterns.set("newServiceLocator", lua.create_function(|_lua, ()| {
             Ok(LuaServiceLocator {
                 locator: Rc::new(RefCell::new(crate::patterns::ServiceLocator::new())),
                 services: Rc::new(RefCell::new(HashMap::new())),
@@ -2498,9 +2462,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     // lurek.patterns.newFactory() -> Factory
     /// Creates a new Factory instance.
     /// @return Factory
-    patterns.set(
-        "newFactory",
-        lua.create_function(|_lua, ()| {
+    patterns.set("newFactory", lua.create_function(|_lua, ()| {
             Ok(LuaFactory {
                 factory: Rc::new(RefCell::new(crate::patterns::Factory::new())),
                 constructors: Rc::new(RefCell::new(HashMap::new())),
@@ -2511,9 +2473,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     // lurek.patterns.newSimpleState() -> SimpleState
     /// Creates a new SimpleState finite state machine instance.
     /// @return SimpleState
-    patterns.set(
-        "newSimpleState",
-        lua.create_function(|_lua, ()| {
+    patterns.set("newSimpleState", lua.create_function(|_lua, ()| {
             Ok(LuaSimpleState {
                 state: Rc::new(RefCell::new(crate::patterns::SimpleState::new())),
                 enter_keys: Rc::new(RefCell::new(HashMap::new())),
@@ -2527,9 +2487,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// Creates a new Blackboard shared key-value store.
     /// @param name string?
     /// @return Blackboard
-    patterns.set(
-        "newBlackboard",
-        lua.create_function(|_lua, name: Option<String>| {
+    patterns.set("newBlackboard", lua.create_function(|_lua, name: Option<String>| {
             Ok(LuaBlackboard {
                 board: Rc::new(RefCell::new(crate::patterns::Blackboard::new(
                     name.as_deref().unwrap_or(""),
@@ -2545,9 +2503,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// Creates a new reactive property Observer.
     /// @param name string?
     /// @return Observer
-    patterns.set(
-        "newObserver",
-        lua.create_function(|_lua, name: Option<String>| {
+    patterns.set("newObserver", lua.create_function(|_lua, name: Option<String>| {
             Ok(LuaObserver {
                 observer: Rc::new(RefCell::new(crate::patterns::Observer::new(
                     name.as_deref().unwrap_or(""),
@@ -2562,9 +2518,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// Creates a leading-edge rate limiter that fires at most once per interval seconds.
     /// @param interval number
     /// @return Throttle
-    patterns.set(
-        "newThrottle",
-        lua.create_function(|_lua, interval: f64| {
+    patterns.set("newThrottle", lua.create_function(|_lua, interval: f64| {
             Ok(LuaThrottle {
                 throttle: Rc::new(RefCell::new(crate::patterns::Throttle::new(interval))),
                 callback: Rc::new(RefCell::new(None)),
@@ -2576,9 +2530,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// Creates a trailing-edge debounce that fires after the input stream is idle for wait seconds.
     /// @param wait number
     /// @return Debounce
-    patterns.set(
-        "newDebounce",
-        lua.create_function(|_lua, wait: f64| {
+    patterns.set("newDebounce", lua.create_function(|_lua, wait: f64| {
             Ok(LuaDebounce {
                 debounce: Rc::new(RefCell::new(crate::patterns::Debounce::new(wait))),
                 callback: Rc::new(RefCell::new(None)),
@@ -2590,9 +2542,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// Creates a stable priority-ordered task queue.
     /// @param name string?
     /// @return PriorityQueue
-    patterns.set(
-        "newPriorityQueue",
-        lua.create_function(|_lua, name: Option<String>| {
+    patterns.set("newPriorityQueue", lua.create_function(|_lua, name: Option<String>| {
             Ok(LuaPriorityQueue {
                 queue: Rc::new(RefCell::new(crate::patterns::PriorityQueue::new(
                     name.as_deref().unwrap_or(""),
@@ -2607,9 +2557,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// @param capacity integer
     /// @param name string?
     /// @return Ring
-    patterns.set(
-        "newRing",
-        lua.create_function(|_lua, (capacity, name): (usize, Option<String>)| {
+    patterns.set("newRing", lua.create_function(|_lua, (capacity, name): (usize, Option<String>)| {
             Ok(LuaRing {
                 ring: Rc::new(RefCell::new(crate::patterns::Ring::new(
                     name.as_deref().unwrap_or(""),
@@ -2625,9 +2573,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// @param max_entries integer?
     /// @param name string?
     /// @return Funnel
-    patterns.set(
-        "newFunnel",
-        lua.create_function(
+    patterns.set("newFunnel", lua.create_function(
             |_lua, (window, max_entries, name): (f64, Option<usize>, Option<String>)| {
                 Ok(LuaFunnel {
                     funnel: Rc::new(RefCell::new(crate::patterns::Funnel::new(
@@ -2644,9 +2590,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     // lurek.patterns.newRelationshipManager() -> RelationshipManager
     /// Creates a new entity relationship manager.
     /// @return RelationshipManager
-    patterns.set(
-        "newRelationshipManager",
-        lua.create_function(|_, ()| {
+    patterns.set("newRelationshipManager", lua.create_function(|_, ()| {
             Ok(LuaRelationshipManager {
                 rm: Rc::new(RefCell::new(crate::ecs::RelationshipManager::new())),
             })
@@ -2656,9 +2600,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     // lurek.patterns.newMediator() -> Mediator
     /// Creates a new named-channel message broker.
     /// @return Mediator
-    patterns.set(
-        "newMediator",
-        lua.create_function(|_, ()| {
+    patterns.set("newMediator", lua.create_function(|_, ()| {
             Ok(LuaMediator {
                 mediator: Rc::new(RefCell::new(crate::patterns::Mediator::new())),
                 callbacks: Rc::new(RefCell::new(HashMap::new())),
@@ -2669,9 +2611,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     // lurek.patterns.newStrategy() -> Strategy
     /// Creates a new strategy registry.
     /// @return Strategy
-    patterns.set(
-        "newStrategy",
-        lua.create_function(|_, ()| {
+    patterns.set("newStrategy", lua.create_function(|_, ()| {
             Ok(LuaStrategy {
                 strategy: Rc::new(RefCell::new(crate::patterns::Strategy::new())),
                 callbacks: Rc::new(RefCell::new(HashMap::new())),
@@ -2679,13 +2619,11 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
         })?,
     )?;
 
-    // lurek.patterns.newStack(capacity?) -> Stack
+    // lurek.patterns.newStack(capacity?) -> LStack
     /// Creates a LIFO stack. capacity=0 means unlimited.
     /// @param capacity integer?
-    /// @return Stack
-    patterns.set(
-        "newStack",
-        lua.create_function(|_, capacity: Option<usize>| {
+    /// @return LStack
+    patterns.set("newStack", lua.create_function(|_, capacity: Option<usize>| {
             Ok(LuaStack {
                 meta: crate::patterns::StackMeta::new(capacity.unwrap_or(0)),
                 items: Rc::new(RefCell::new(Vec::new())),
@@ -2697,9 +2635,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// Creates a FIFO queue. capacity=0 means unlimited.
     /// @param capacity integer?
     /// @return Queue
-    patterns.set(
-        "newQueue",
-        lua.create_function(|_, capacity: Option<usize>| {
+    patterns.set("newQueue", lua.create_function(|_, capacity: Option<usize>| {
             Ok(LuaQueue {
                 meta: crate::patterns::QueueMeta::new(capacity.unwrap_or(0)),
                 items: Rc::new(RefCell::new(VecDeque::new())),
@@ -2710,9 +2646,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     // lurek.patterns.newList() -> List
     /// Creates an ordered, resizable list.
     /// @return List
-    patterns.set(
-        "newList",
-        lua.create_function(|_, ()| {
+    patterns.set("newList", lua.create_function(|_, ()| {
             Ok(LuaList {
                 items: Rc::new(RefCell::new(Vec::new())),
             })
@@ -2722,9 +2656,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     // lurek.patterns.newSet() -> Set
     /// Creates an unordered set that rejects duplicate values (by string key).
     /// @return Set
-    patterns.set(
-        "newSet",
-        lua.create_function(|_, ()| {
+    patterns.set("newSet", lua.create_function(|_, ()| {
             Ok(LuaSet {
                 items: Rc::new(RefCell::new(HashSet::new())),
             })

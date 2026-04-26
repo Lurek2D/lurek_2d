@@ -34,29 +34,37 @@ describe("lurek.event.wait", function()
   end)
 
   -- @tests lurek.event.wait
-  -- @description Waits for 10 ms against an empty queue and verifies the API returns nil instead of inventing an event.
-  it("returns nil on timeout with no events", function()
+  -- @description Waits for 10 ms against an empty queue and verifies the API returns a fixed false, empty-name, empty-args tuple.
+  it("returns fixed empty result on timeout with no events", function()
     -- 10 ms timeout, queue is empty
-    local name = lurek.event.wait(0.01)
-    expect_equal(name, nil)
+    local ok, name, args = lurek.event.wait(0.01)
+    expect_equal(ok, false)
+    expect_equal(name, "")
+    expect_equal(type(args), "table")
+    expect_equal(#args, 0)
   end)
 
   -- @tests lurek.event.push
   -- @tests lurek.event.wait
-  -- @description Pushes a named event and immediately waits with zero timeout to confirm wait consumes the queued event without blocking.
-  it("returns event name immediately if event is available", function()
+  -- @description Pushes a named event and immediately waits with zero timeout to confirm wait returns a fixed tuple.
+  it("returns fixed event tuple immediately if event is available", function()
     lurek.event.push("testev")
-    local name = lurek.event.wait(0)
+    local ok, name, args = lurek.event.wait(0)
+    expect_equal(ok, true)
     expect_equal(name, "testev")
+    expect_equal(type(args), "table")
   end)
 
   -- @tests lurek.event.clear
   -- @tests lurek.event.wait
-  -- @description Clears pending events first, then verifies a zero-timeout wait reports an empty queue by returning nil.
-  it("returns nil with zero timeout and empty queue", function()
+  -- @description Clears pending events first, then verifies a zero-timeout wait reports an empty queue with a fixed tuple.
+  it("returns fixed empty result with zero timeout and empty queue", function()
     lurek.event.clear()
-    local name = lurek.event.wait(0)
-    expect_equal(name, nil)
+    local ok, name, args = lurek.event.wait(0)
+    expect_equal(ok, false)
+    expect_equal(name, "")
+    expect_equal(type(args), "table")
+    expect_equal(#args, 0)
   end)
 end)
 

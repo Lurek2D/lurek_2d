@@ -521,12 +521,12 @@ end
 -- ── lurek.parallax.* functions ──
 
 --@api-stub: LParallaxLayer:setClamp
--- Enables edge clamping so the layer texture does not tile beyond its bounds.
--- Use for layers with defined edges (mountain silhouettes, foreground props).
+-- Clamps the scroll offset to a world-pixel range on each axis.
+-- Prevents the layer from scrolling outside [min_x, max_x] × [min_y, max_y].
 do  -- ParallaxLayer:setClamp
   local ok, err = pcall(function()
     local layer = lurek.parallax.newLayer({texture = lurek.render.newImage("bg_mountains.png"), scroll_factor_x = 0.3})
-    layer:setClamp(true)
+    layer:setClamp(0, 0, 800, 600)
     lurek.log.info("clamp enabled", "parallax")
   end)
   if not ok then lurek.log.info("clamp: asset not available", "parallax") end

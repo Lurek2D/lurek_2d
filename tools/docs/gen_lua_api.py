@@ -45,8 +45,9 @@ class LuaFunction:
     file: str
     kind: str  # "function" or "method"
     inferred_sig: str = field(default="")  # parameter signature inferred from Rust closure
-    typed_params: list = field(default_factory=list)  # [(name, lua_type, is_optional), ...]
+    typed_params: list = field(default_factory=list)  # [(name, lua_type, is_optional, description), ...]
     inferred_return: str = field(default="")           # "bool", "Card", "table", "" etc.
+    return_description: str = field(default="")        # human-readable return description
 
 
 def _collect_docstring_above(lines: List[str], line_idx: int) -> str:
@@ -149,55 +150,47 @@ def _rust_type_to_lua(rust_type: str) -> str:
 
 
 def _parse_tagged_params(docstring: str) -> list:
-    """Parse ``@param name type`` or ``@param name : type`` lines from a /// docstring.
+    """Parse ``@param`` lines from a /// docstring.
 
-    Returns a list of ``(name, lua_type, is_optional)`` tuples where
-    ``is_optional`` is ``True`` when the type ends with ``?`` (e.g. ``Card?``).
+    Required format::
 
-    Accepts both formats used in the Rust source::
-
-        /// @param name type  Optional description.
-        /// @param name : Type  Optional description.
+        /// @param | name | Type | Description text.
     """
     result = []
     for line in docstring.splitlines():
-        m = re.match(r"@param\s+(\w+\??|\.\.\.)\s*:?\s*(.+)", line.strip())
-        if m:
-            name = m.group(1)
+        stripped = line.strip()
+
+        pipe_match = re.match(
+            r"@param\s*\|\s*(\w+\??|\.\.\.)\s*\|\s*([^|]+?)\s*\|\s*(.+)",
+            stripped,
+        )
+        if pipe_match:
+            name = pipe_match.group(1)
             name_optional = name.endswith("?") and name != "..."
             if name_optional:
                 name = name[:-1]
-            rest = m.group(2).strip()
-            # Strip a leading colon that wasn't consumed (e.g. ": type" captured as rest)
-            rest = re.sub(r"^:\s*", "", rest)
-            rest = re.sub(r"^\?\s*", "", rest)
-            # Type ends at first 2+ spaces (description separator); rest is description
-            type_part = re.split(r"\s{2,}", rest)[0].strip()
-            lua_type = type_part.rstrip(",.")
-            # Normalise spaces around | so "string | table" → "string|table"
+            lua_type = pipe_match.group(2).strip().rstrip(",.")
             lua_type = re.sub(r"\s*\|\s*", "|", lua_type)
+            description = pipe_match.group(3).strip()
             is_optional = name_optional or lua_type.endswith("?")
-            result.append((name, lua_type, is_optional))
+            result.append((name, lua_type, is_optional, description))
     return result
 
 
-def _parse_tagged_return(docstring: str) -> str:
-    """Parse ``@return type`` from a /// docstring.
+def _parse_tagged_return(docstring: str) -> tuple:
+    """Parse ``@return`` lines from a /// docstring.
 
-    Returns the type string (e.g. ``"bool"``, ``"Card?"``, ``"string"``) or
-    ``""`` when no ``@return`` tag is present.
+    Required format::
 
-    Expected format in Rust ///::
-
-        /// @return Type  Optional description.
+        /// @return | Type | Description text.
     """
     for line in docstring.splitlines():
-        m = re.match(r"@return\s+(.+)", line.strip())
-        if m:
-            rest = m.group(1).strip()
-            type_part = re.split(r"\s{2,}", rest)[0].strip()
-            return type_part.rstrip(",.")
-    return ""
+        stripped = line.strip()
+
+        pipe_match = re.match(r"@return\s*\|\s*([^|]+?)\s*\|\s*(.+)", stripped)
+        if pipe_match:
+            return (pipe_match.group(1).strip().rstrip(",."), pipe_match.group(2).strip())
+    return ("", "")
 
 
 def _parse_inferred_sig_tokens(inferred_sig: str) -> List[tuple[str, bool]]:
@@ -234,12 +227,12 @@ def _merge_typed_params_with_inferred(typed_params: list, inferred_sig: str) -> 
             if len(typed) > 1 and typed[1] not in merged_type_parts:
                 merged_type_parts.append(typed[1])
         merged_type = "|".join(merged_type_parts) if merged_type_parts else "any"
-        return [("...", merged_type, False)]
+        return [("...", merged_type, False, "")]
 
     if not typed_params:
         merged = []
         for name, is_optional in inferred:
-            merged.append((name, "any", is_optional))
+            merged.append((name, "any", is_optional, ""))
         return merged
 
     if not inferred:
@@ -250,6 +243,7 @@ def _merge_typed_params_with_inferred(typed_params: list, inferred_sig: str) -> 
         name = typed[0]
         lua_type = typed[1] if len(typed) > 1 else "any"
         is_optional = typed[2] if len(typed) > 2 else False
+        description = typed[3] if len(typed) > 3 else ""
 
         if index < len(inferred):
             inferred_name, inferred_optional = inferred[index]
@@ -260,11 +254,11 @@ def _merge_typed_params_with_inferred(typed_params: list, inferred_sig: str) -> 
                 # Keep the docstring name when present, but prefer inferred ``...``.
                 name = name
 
-        merged.append((name, lua_type, is_optional))
+        merged.append((name, lua_type, is_optional, description))
 
     if len(inferred) > len(typed_params):
         for name, is_optional in inferred[len(typed_params):]:
-            merged.append((name, "any", is_optional))
+            merged.append((name, "any", is_optional, ""))
 
     return merged
 
@@ -704,7 +698,8 @@ def extract_lua_functions(api_file: Path) -> List[LuaFunction]:
                         typed_params=_merge_typed_params_with_inferred(
                             _parse_tagged_params(docstring), inferred
                         ),
-                        inferred_return=_parse_tagged_return(docstring),
+                        inferred_return=_parse_tagged_return(docstring)[0],
+                        return_description=_parse_tagged_return(docstring)[1],
                     ))
 
         # Single-line set pattern
@@ -740,7 +735,8 @@ def extract_lua_functions(api_file: Path) -> List[LuaFunction]:
                 typed_params=_merge_typed_params_with_inferred(
                     _parse_tagged_params(docstring), inferred
                 ),
-                inferred_return=_parse_tagged_return(docstring),
+                inferred_return=_parse_tagged_return(docstring)[0],
+                return_description=_parse_tagged_return(docstring)[1],
             ))
 
         # Userdata methods — existing pattern (docstring directly above the add_method line)
@@ -764,7 +760,8 @@ def extract_lua_functions(api_file: Path) -> List[LuaFunction]:
                 typed_params=_merge_typed_params_with_inferred(
                     _parse_tagged_params(docstring), inferred
                 ),
-                inferred_return=_parse_tagged_return(docstring),
+                inferred_return=_parse_tagged_return(docstring)[0],
+                return_description=_parse_tagged_return(docstring)[1],
             ))
 
         method_function_m = method_function_re.search(stripped)
@@ -787,7 +784,8 @@ def extract_lua_functions(api_file: Path) -> List[LuaFunction]:
                 typed_params=_merge_typed_params_with_inferred(
                     _parse_tagged_params(docstring), inferred
                 ),
-                inferred_return=_parse_tagged_return(docstring),
+                inferred_return=_parse_tagged_return(docstring)[0],
+                return_description=_parse_tagged_return(docstring)[1],
             ))
 
         # Multi-line add_method: method name on the next line
@@ -813,7 +811,8 @@ def extract_lua_functions(api_file: Path) -> List[LuaFunction]:
                     typed_params=_merge_typed_params_with_inferred(
                         _parse_tagged_params(docstring), inferred
                     ),
-                    inferred_return=_parse_tagged_return(docstring),
+                    inferred_return=_parse_tagged_return(docstring)[0],
+                    return_description=_parse_tagged_return(docstring)[1],
                 ))
 
         if not method_function_m and method_function_multiline_re.search(stripped) and i + 1 < len(lines):
@@ -838,7 +837,8 @@ def extract_lua_functions(api_file: Path) -> List[LuaFunction]:
                     typed_params=_merge_typed_params_with_inferred(
                         _parse_tagged_params(docstring), inferred
                     ),
-                    inferred_return=_parse_tagged_return(docstring),
+                    inferred_return=_parse_tagged_return(docstring)[0],
+                    return_description=_parse_tagged_return(docstring)[1],
                 ))
 
         # NEW: methods.add_method("luaName", Self::fn_name) — named fn pattern
@@ -864,7 +864,8 @@ def extract_lua_functions(api_file: Path) -> List[LuaFunction]:
                 typed_params=_merge_typed_params_with_inferred(
                     _parse_tagged_params(docstring), inferred
                 ),
-                inferred_return=_parse_tagged_return(docstring),
+                inferred_return=_parse_tagged_return(docstring)[0],
+                return_description=_parse_tagged_return(docstring)[1],
             ))
 
         # NEW: .set("luaName", lua.create_function(named_fn)?) — named fn reference
@@ -893,7 +894,8 @@ def extract_lua_functions(api_file: Path) -> List[LuaFunction]:
                     typed_params=_merge_typed_params_with_inferred(
                         _parse_tagged_params(docstring), inferred
                     ),
-                    inferred_return=_parse_tagged_return(docstring),
+                    inferred_return=_parse_tagged_return(docstring)[0],
+                    return_description=_parse_tagged_return(docstring)[1],
                 ))
 
         i += 1

@@ -39,9 +39,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable) -> LuaResult<()> {
     let th = thread_handle.clone();
     /// @param port u16?
     /// @return boolean
-    db.set(
-        "start",
-        lua.create_function(move |_, port: Option<u16>| {
+    db.set("start", lua.create_function(move |_, port: Option<u16>| {
             if run.load(Ordering::Relaxed) {
                 return Ok(false);
             }
@@ -71,9 +69,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable) -> LuaResult<()> {
     /// Stop the TCP debug server and close all connections.
     let run = running.clone();
     let th = thread_handle.clone();
-    db.set(
-        "stop",
-        lua.create_function(move |_, ()| {
+    db.set("stop", lua.create_function(move |_, ()| {
             run.store(false, Ordering::Relaxed);
             // Wait for thread to finish
             if let Ok(mut h) = th.lock() {
@@ -88,25 +84,19 @@ pub fn register(lua: &Lua, lurek: &LuaTable) -> LuaResult<()> {
     /// Returns whether the server is currently running.
     let run = running.clone();
     /// @return bool
-    db.set(
-        "isRunning",
-        lua.create_function(move |_, ()| Ok(run.load(Ordering::Relaxed)))?,
+    db.set("isRunning", lua.create_function(move |_, ()| Ok(run.load(Ordering::Relaxed)))?,
     )?;
 
     /// Returns the server port (0 if not running).
     let sh = shared.clone();
     /// @return integer
-    db.set(
-        "getPort",
-        lua.create_function(move |_, ()| Ok(sh.lock().map(|s| s.port).unwrap_or(0)))?,
+    db.set("getPort", lua.create_function(move |_, ()| Ok(sh.lock().map(|s| s.port).unwrap_or(0)))?,
     )?;
 
     /// Returns the number of connected TCP clients.
     let sh = shared.clone();
     /// @return integer
-    db.set(
-        "getClientCount",
-        lua.create_function(move |_, ()| Ok(sh.lock().map(|s| s.client_count).unwrap_or(0)))?,
+    db.set("getClientCount", lua.create_function(move |_, ()| Ok(sh.lock().map(|s| s.client_count).unwrap_or(0)))?,
     )?;
 
     /// Poll for pending Lua-dependent requests from TCP clients.
@@ -115,9 +105,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable) -> LuaResult<()> {
     /// buffer â€” no manual `recordFrame()` call is needed.
     let sh = shared.clone();
     /// @return table|nil
-    db.set(
-        "poll",
-        lua.create_function(move |lua, ()| {
+    db.set("poll", lua.create_function(move |lua, ()| {
             // Auto-record frame time from lurek.timer.getDelta â€” no manual call needed.
             if let Ok(lurek_tbl) = lua.globals().get::<_, LuaTable>("lurek") {
                 if let Ok(time_tbl) = lurek_tbl.get::<_, LuaTable>("time") {
@@ -295,9 +283,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable) -> LuaResult<()> {
     /// @param msg string
     /// @param source string?
     /// @param line integer?
-    db.set(
-        "capturePrint",
-        lua.create_function(
+    db.set("capturePrint", lua.create_function(
             move |_, (msg, source, line): (String, Option<String>, Option<u32>)| {
                 let mut s = sh
                     .lock()
@@ -314,9 +300,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable) -> LuaResult<()> {
     let sh = shared.clone();
     /// @param count integer?
     /// @return table
-    db.set(
-        "getPrintHistory",
-        lua.create_function(move |lua, count: Option<usize>| {
+    db.set("getPrintHistory", lua.create_function(move |lua, count: Option<usize>| {
             let s = sh
                 .lock()
                 .map_err(|e| LuaError::RuntimeError(e.to_string()))?;
@@ -342,9 +326,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable) -> LuaResult<()> {
 
     /// Clears the print history.
     let sh = shared.clone();
-    db.set(
-        "clearPrintHistory",
-        lua.create_function(move |_, ()| {
+    db.set("clearPrintHistory", lua.create_function(move |_, ()| {
             let mut s = sh
                 .lock()
                 .map_err(|e| LuaError::RuntimeError(e.to_string()))?;
@@ -356,9 +338,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable) -> LuaResult<()> {
     /// Sets the maximum print history size.
     let sh = shared.clone();
     /// @param max integer
-    db.set(
-        "setMaxPrintHistory",
-        lua.create_function(move |_, max: usize| {
+    db.set("setMaxPrintHistory", lua.create_function(move |_, max: usize| {
             let mut s = sh
                 .lock()
                 .map_err(|e| LuaError::RuntimeError(e.to_string()))?;
@@ -372,9 +352,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable) -> LuaResult<()> {
     /// Returns performance statistics.
     let sh = shared.clone();
     /// @return table
-    db.set(
-        "getPerformance",
-        lua.create_function(move |lua, ()| {
+    db.set("getPerformance", lua.create_function(move |lua, ()| {
             let s = sh
                 .lock()
                 .map_err(|e| LuaError::RuntimeError(e.to_string()))?;
@@ -396,9 +374,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable) -> LuaResult<()> {
     /// Flags a screenshot request for the next frame.
     let sh = shared.clone();
     /// @param scale integer?
-    db.set(
-        "requestScreenshot",
-        lua.create_function(move |_, scale: Option<u32>| {
+    db.set("requestScreenshot", lua.create_function(move |_, scale: Option<u32>| {
             let mut s = sh
                 .lock()
                 .map_err(|e| LuaError::RuntimeError(e.to_string()))?;
@@ -411,9 +387,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable) -> LuaResult<()> {
     /// Returns whether a screenshot is currently requested.
     let sh = shared.clone();
     /// @return bool
-    db.set(
-        "isScreenshotRequested",
-        lua.create_function(move |_, ()| {
+    db.set("isScreenshotRequested", lua.create_function(move |_, ()| {
             Ok(sh.lock().map(|s| s.screenshot_requested).unwrap_or(false))
         })?,
     )?;
@@ -424,9 +398,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable) -> LuaResult<()> {
     let sh = shared.clone();
     /// @param event string
     /// @param json_data string
-    db.set(
-        "broadcast",
-        lua.create_function(move |_, (event, json_data): (String, String)| {
+    db.set("broadcast", lua.create_function(move |_, (event, json_data): (String, String)| {
             let mut s = sh
                 .lock()
                 .map_err(|e| LuaError::RuntimeError(e.to_string()))?;

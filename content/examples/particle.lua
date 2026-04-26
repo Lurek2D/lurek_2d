@@ -957,7 +957,7 @@ end
 do  -- ParticleSystem:addSubEmitter
   local parent = lurek.particle.newSystem({max_particles=200})
   local sparks  = lurek.particle.newSystem({max_particles=50})
-  parent:addSubEmitter(sparks, "on_death")
+  parent:addSubEmitter({trigger="on_death", max_particles=50})
   parent:start()
   lurek.log.info("sub emitter count: " .. parent:subSystemCount(), "particle")
 end
@@ -967,7 +967,7 @@ end
 -- Pass bounce=true to reflect velocity; false causes particles to be killed on contact.
 do  -- ParticleSystem:setBounds
   local ps = lurek.particle.newSystem({max_particles=500})
-  ps:setBounds(0, 0, 800, 600, false)
+  ps:setBounds(0, 0, 800, 600, 0.0)
   ps:start()
   lurek.log.info("bounds set", "particle")
 end

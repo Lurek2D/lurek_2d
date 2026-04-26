@@ -43,9 +43,7 @@ impl LuaUserData for LuaAnimation {
         /// @param start integer
         /// @param count integer
         /// @return integer
-        methods.add_method_mut(
-            "addFramesFromGrid",
-            |_, this, (tw, th, fw, fh, start, count): (u32, u32, u32, u32, usize, usize)| {
+        methods.add_method_mut("addFramesFromGrid", |_, this, (tw, th, fw, fh, start, count): (u32, u32, u32, u32, usize, usize)| {
                 Ok(this
                     .inner
                     .add_frames_from_grid(tw, th, fw, fh, start, count))
@@ -59,9 +57,7 @@ impl LuaUserData for LuaAnimation {
         /// @param fps number
         /// @param looping boolean
         /// @return nil
-        methods.add_method_mut(
-            "addClip",
-            |_, this, (name, indices_tbl, fps, looping): (String, LuaTable, f32, bool)| {
+        methods.add_method_mut("addClip", |_, this, (name, indices_tbl, fps, looping): (String, LuaTable, f32, bool)| {
                 let mut indices: Vec<usize> = Vec::new();
                 for v in indices_tbl.sequence_values::<usize>() {
                     indices.push(v?);
@@ -83,9 +79,7 @@ impl LuaUserData for LuaAnimation {
         /// @param fps number
         /// @param looping boolean
         /// @return nil
-        methods.add_method_mut(
-            "addClipFromGrid",
-            |_,
+        methods.add_method_mut("addClipFromGrid", |_,
              this,
              (name, tw, th, fw, fh, start, count, fps, looping): (
                 String,
@@ -242,9 +236,7 @@ impl LuaUserData for LuaAnimation {
         /// @param clip_name string
         /// @param duration number
         /// @return boolean
-        methods.add_method_mut(
-            "crossfade",
-            |_, this, (clip_name, duration): (String, f32)| {
+        methods.add_method_mut("crossfade", |_, this, (clip_name, duration): (String, f32)| {
                 Ok(this.inner.crossfade(&clip_name, duration))
             },
         );
@@ -341,9 +333,7 @@ impl LuaUserData for LuaAnimStateMachine {
         /// @param clip string
         /// @param looping boolean
         /// @return nil
-        methods.add_method_mut(
-            "addState",
-            |_, this, (name, clip, looping): (String, String, bool)| {
+        methods.add_method_mut("addState", |_, this, (name, clip, looping): (String, String, bool)| {
                 this.inner.add_state(&name, &clip, looping);
                 Ok(())
             },
@@ -356,9 +346,7 @@ impl LuaUserData for LuaAnimStateMachine {
         /// @param to_state string
         /// @param condition string
         /// @return nil
-        methods.add_method_mut(
-            "addTransition",
-            |_, this, (from_state, to_state, condition): (String, String, String)| {
+        methods.add_method_mut("addTransition", |_, this, (from_state, to_state, condition): (String, String, String)| {
                 this.inner
                     .add_transition(&from_state, &to_state, &condition);
                 Ok(())
@@ -454,9 +442,7 @@ impl LuaUserData for LuaBlendLayerSet {
         /// @param weight number
         /// @param bones table?
         /// @return boolean
-        methods.add_method_mut(
-            "addLayer",
-            |_, this, (name, clip_name, weight, bones): (String, String, f32, Option<LuaTable>)| {
+        methods.add_method_mut("addLayer", |_, this, (name, clip_name, weight, bones): (String, String, f32, Option<LuaTable>)| {
                 let mask = if let Some(t) = bones {
                     let mut names: Vec<String> = Vec::new();
                     for pair in t.pairs::<LuaValue, String>() {
@@ -574,9 +560,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     // ── new ──────────────────────────────────────────────────────────────────
     /// Creates a new, empty Animation controller.
     /// @return Animation
-    tbl.set(
-        "new",
-        lua.create_function(|lua, ()| {
+    tbl.set("new", lua.create_function(|lua, ()| {
             lua.create_userdata(LuaAnimation {
                 inner: Animation::new(),
             })
@@ -589,9 +573,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     /// Returns nil and an error message on parse failure.
     /// @param json_str string
     /// Animation?
-    tbl.set(
-        "fromAseprite",
-        lua.create_function(
+    tbl.set("fromAseprite", lua.create_function(
             |lua, json_str: String| match load_aseprite_json(&json_str) {
                 Ok(parsed) => {
                     let anim = Animation::load_from_aseprite(&parsed);
@@ -608,9 +590,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     /// @param anim Animation
     /// @param initial_state string
     /// @return AnimStateMachine
-    tbl.set(
-        "newStateMachine",
-        lua.create_function(|lua, (anim_ud, initial): (LuaAnyUserData, String)| {
+    tbl.set("newStateMachine", lua.create_function(|lua, (anim_ud, initial): (LuaAnyUserData, String)| {
             let anim = anim_ud.take::<LuaAnimation>()?.inner;
             lua.create_userdata(LuaAnimStateMachine {
                 inner: AnimStateMachine::new(anim, initial),
@@ -625,9 +605,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     /// interpolated value with `curve:eval(t)`.
     ///
     /// @return AnimCurve
-    tbl.set(
-        "newCurve",
-        lua.create_function(|lua, ()| {
+    tbl.set("newCurve", lua.create_function(|lua, ()| {
             lua.create_userdata(LuaAnimCurve {
                 inner: crate::animation::curve::AnimCurve::new(),
                 custom_easing: None,
@@ -642,9 +620,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     /// from `lurek.process` to advance all member animations at once.
     ///
     /// @return AnimSyncGroup
-    tbl.set(
-        "newSyncGroup",
-        lua.create_function(|lua, ()| {
+    tbl.set("newSyncGroup", lua.create_function(|lua, ()| {
             lua.create_userdata(LuaAnimSyncGroup {
                 inner: crate::animation::sync_group::AnimSyncGroup::new(),
             })
@@ -666,9 +642,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     /// bls:addLayer("upper", "wave", 0.6, {"spine", "arm_r"})
     /// ```
     /// @return BlendLayerSet
-    tbl.set(
-        "newBlendLayerSet",
-        lua.create_function(|lua, ()| {
+    tbl.set("newBlendLayerSet", lua.create_function(|lua, ()| {
             lua.create_userdata(LuaBlendLayerSet {
                 inner: BlendLayerSet::new(),
             })

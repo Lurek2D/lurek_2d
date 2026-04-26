@@ -32,10 +32,6 @@ pub struct LuaStep {
 
 impl LuaStep {
     /// Creates a new [`LuaStep`] wrapping the given [`PipelineStep`].
-    ///
-    /// @param step PipelineStep
-    ///
-    /// @return Self
     pub fn new(step: PipelineStep) -> Self {
         Self {
             inner: Rc::new(RefCell::new(step)),
@@ -45,10 +41,7 @@ impl LuaStep {
         }
     }
 
-    /// Executes this step's callback synchronously, handling retries and status transitions
-    /// @param crate parameter
-    ///
-    /// @return LuaResult<bool>
+    /// Executes this step's callback synchronously, handling retries and status transitions.
     pub(crate) fn execute_sync<'lua>(
         &self,
         lua: &'lua Lua,
@@ -448,10 +441,6 @@ pub struct LuaPipeline {
 
 impl LuaPipeline {
     /// Creates a new [`LuaPipeline`] wrapping the given [`Pipeline`].
-    ///
-    /// @param pipeline Pipeline
-    ///
-    /// @return Self
     pub fn new(pipeline: Pipeline) -> Self {
         Self {
             inner: Rc::new(RefCell::new(pipeline)),
@@ -467,10 +456,6 @@ impl LuaPipeline {
     }
 
     /// Creates a [`LuaPipeline`] from pre-built pipeline and wrapper maps (used by deserialisers).
-    /// @param pipeline_rc Rc<RefCell<Pipeline>>
-    /// @param wrappers_rc Rc<RefCell<HashMap<String, LuaStep>>>
-    ///
-    /// @return Self
     pub fn from_parts(
         pipeline_rc: Rc<RefCell<Pipeline>>,
         wrappers_rc: Rc<RefCell<HashMap<String, LuaStep>>>,
@@ -1141,9 +1126,7 @@ impl LuaUserData for LuaPipeline {
         /// @param fn function -- step body
         /// @param when_fn function -- returns bool; false skips the step
         /// @return Pipeline
-        methods.add_method(
-            "addConditional",
-            |lua,
+        methods.add_method("addConditional", |lua,
              this,
              (name, deps_tbl, cb, cond): (String, LuaTable, LuaFunction, LuaFunction)| {
                 let dep_names: Vec<String> = deps_tbl
@@ -1208,9 +1191,7 @@ impl LuaUserData for LuaPipeline {
         /// @param alias string
         /// @param outer_deps table?  â€” Array of step names in this pipeline to depend on.
         /// @return nil
-        methods.add_method(
-            "addSubPipeline",
-            |_, this, (sub_ud, alias, deps_tbl): (mlua::AnyUserData, String, Option<mlua::Table>)| {
+        methods.add_method("addSubPipeline", |_, this, (sub_ud, alias, deps_tbl): (mlua::AnyUserData, String, Option<mlua::Table>)| {
                 let sub_ref = sub_ud.borrow::<LuaPipeline>().map_err(mlua::Error::external)?;
                 let sub_clone = sub_ref.inner.borrow().clone();
                 let outer_deps: Vec<String> = if let Some(tbl) = deps_tbl {
@@ -1257,9 +1238,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// @param name string
     /// @param fn function?
     /// @return Step
-    tbl.set(
-        "newStep",
-        lua.create_function(|lua, (name, callback): (String, Option<LuaFunction>)| {
+    tbl.set("newStep", lua.create_function(|lua, (name, callback): (String, Option<LuaFunction>)| {
             let step = PipelineStep::new(name);
             let wrapper = LuaStep::new(step);
             if let Some(cb) = callback {
@@ -1273,9 +1252,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// Creates a new empty pipeline with the given name (defaults to "pipeline").
     /// @param name string?
     /// @return Pipeline
-    tbl.set(
-        "newPipeline",
-        lua.create_function(|_, name: Option<String>| {
+    tbl.set("newPipeline", lua.create_function(|_, name: Option<String>| {
             let pipeline = Pipeline::new(name.unwrap_or_else(|| "pipeline".to_string()));
             Ok(LuaPipeline::new(pipeline))
         })?,
@@ -1285,9 +1262,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// Deserialises a pipeline from a definition table.
     /// @param def table
     /// @return Pipeline
-    tbl.set(
-        "fromTable",
-        lua.create_function(|lua, def: LuaTable| {
+    tbl.set("fromTable", lua.create_function(|lua, def: LuaTable| {
             let name: Option<String> = def.get("name")?;
             let error_mode_str: Option<String> = def.get("errorMode")?;
 

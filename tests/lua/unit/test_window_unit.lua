@@ -517,10 +517,10 @@ describe("lurek.window DPI and dialog", function()
   end)
 
   -- @tests lurek.window.openFileDialog
-  -- @description openFileDialog function exists and is callable; in test mode the dialog is expected to return nil (no UI).
-  it("openFileDialog is callable and returns nil or string in headless mode", function()
+    -- @description openFileDialog function exists and is callable; in test mode the dialog is expected to return an empty table.
+    it("openFileDialog is callable and returns a table in headless mode", function()
     local result = lurek.window.openFileDialog({ title = "Test", multiple = false })
-    expect_true(result == nil or type(result) == "string", "result must be nil or string")
+        expect_equal(type(result), "table")
   end)
 end)
 

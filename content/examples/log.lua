@@ -123,7 +123,7 @@ do  -- lurek.log.readMemory
   local mem_id = lurek.log.addSink({ type = "memory", capacity = 16, level = "warn" })
   lurek.log.warn("collision spike on enemy 7", "physics")
   local entries = lurek.log.readMemory(mem_id, true)
-  for _, e in ipairs(entries or {}) do
+  for _, e in ipairs(entries) do
     print("[" .. e.level .. "][" .. e.tag .. "] " .. e.message)
   end
 end

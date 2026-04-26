@@ -1,14 +1,14 @@
 {
   "meta": {
-    "generated": "2026-04-25T22:43:16.164472+00:00",
+    "generated": "2026-04-26T13:35:22.930859+00:00",
     "generator": "tools/audit/lua_api_test_coverage.py",
     "mode": "hybrid",
     "module_filter": null,
-    "total_api_functions": 4379,
-    "marker_covered": 229,
-    "heuristic_covered": 4002,
-    "total_covered": 4255,
-    "coverage_pct": 97.2
+    "total_api_functions": 4022,
+    "marker_covered": 215,
+    "heuristic_covered": 3660,
+    "total_covered": 3899,
+    "coverage_pct": 96.9
   },
   "modules": {
     "ai": {
@@ -543,43 +543,43 @@
           "lua_name": "lurek.html.preventDefault",
           "kind": "function",
           "file": "src/lua_api/html_api.rs",
-          "line": 891
+          "line": 915
         },
         {
           "lua_name": "lurek.html.stopPropagation",
           "kind": "function",
           "file": "src/lua_api/html_api.rs",
-          "line": 900
+          "line": 924
         },
         {
           "lua_name": "lurek.html.isDefaultPrevented",
           "kind": "function",
           "file": "src/lua_api/html_api.rs",
-          "line": 909
+          "line": 933
         },
         {
           "lua_name": "LHtmlDocument:on",
           "kind": "method",
           "file": "src/lua_api/html_api.rs",
-          "line": 232
+          "line": 234
         },
         {
           "lua_name": "LHtmlDocument:off",
           "kind": "method",
           "file": "src/lua_api/html_api.rs",
-          "line": 245
+          "line": 249
         },
         {
           "lua_name": "LHtmlElement:on",
           "kind": "method",
           "file": "src/lua_api/html_api.rs",
-          "line": 674
+          "line": 691
         },
         {
           "lua_name": "LHtmlElement:off",
           "kind": "method",
           "file": "src/lua_api/html_api.rs",
-          "line": 692
+          "line": 709
         }
       ],
       "test_files": [
@@ -835,13 +835,13 @@
           "lua_name": "LTrail:setHeadColor",
           "kind": "method",
           "file": "src/lua_api/particle_api.rs",
-          "line": 1420
+          "line": 1421
         },
         {
           "lua_name": "LTrail:setTailColor",
           "kind": "method",
           "file": "src/lua_api/particle_api.rs",
-          "line": 1436
+          "line": 1437
         }
       ],
       "test_files": [
@@ -1376,21 +1376,15 @@
     "tilemap": {
       "total": 188,
       "marker_covered": 3,
-      "heuristic_covered": 183,
-      "covered": 186,
-      "coverage_pct": 98.9,
+      "heuristic_covered": 184,
+      "covered": 187,
+      "coverage_pct": 99.5,
       "uncovered": [
         {
           "lua_name": "LChunkMap:getChunksInView",
           "kind": "method",
           "file": "src/lua_api/tilemap_api.rs",
           "line": 1199
-        },
-        {
-          "lua_name": "LMapBlock:setSide",
-          "kind": "method",
-          "file": "src/lua_api/tilemap_api.rs",
-          "line": 1680
         }
       ],
       "test_files": [
@@ -1441,18 +1435,13 @@
       ]
     },
     "ui": {
-      "total": 380,
-      "marker_covered": 14,
-      "heuristic_covered": 366,
-      "covered": 380,
+      "total": 23,
+      "marker_covered": 0,
+      "heuristic_covered": 23,
+      "covered": 23,
       "coverage_pct": 100.0,
       "uncovered": [],
-      "test_files": [
-        "tests/lua/evidence/test_charts_evidence.lua",
-        "tests/lua/evidence/test_gui_evidence.lua",
-        "tests/lua/evidence/test_ui_evidence.lua",
-        "tests/lua/integration/test_i18n_ui.lua"
-      ]
+      "test_files": []
     },
     "window": {
       "total": 50,
@@ -1829,6 +1818,11 @@
     },
     {
       "file": "tests/lua/evidence/test_charts_evidence.lua",
+      "line": 11,
+      "marker": "lurek.ui.newLineChart"
+    },
+    {
+      "file": "tests/lua/evidence/test_charts_evidence.lua",
       "line": 12,
       "marker": "LineChart:addSeries"
     },
@@ -1844,6 +1838,11 @@
     },
     {
       "file": "tests/lua/evidence/test_charts_evidence.lua",
+      "line": 35,
+      "marker": "lurek.ui.newBarChart"
+    },
+    {
+      "file": "tests/lua/evidence/test_charts_evidence.lua",
       "line": 36,
       "marker": "BarChart:addSeries"
     },
@@ -1856,6 +1855,11 @@
       "file": "tests/lua/evidence/test_charts_evidence.lua",
       "line": 38,
       "marker": "BarChart:drawToImage"
+    },
+    {
+      "file": "tests/lua/evidence/test_charts_evidence.lua",
+      "line": 58,
+      "marker": "lurek.ui.newScatterPlot"
     },
     {
       "file": "tests/lua/evidence/test_charts_evidence.lua",
@@ -1879,6 +1883,11 @@
     },
     {
       "file": "tests/lua/evidence/test_charts_evidence.lua",
+      "line": 85,
+      "marker": "lurek.ui.newPieChart"
+    },
+    {
+      "file": "tests/lua/evidence/test_charts_evidence.lua",
       "line": 86,
       "marker": "PieChart:addSegment"
     },
@@ -1886,6 +1895,11 @@
       "file": "tests/lua/evidence/test_charts_evidence.lua",
       "line": 87,
       "marker": "PieChart:drawToImage"
+    },
+    {
+      "file": "tests/lua/evidence/test_charts_evidence.lua",
+      "line": 105,
+      "marker": "lurek.ui.newAreaChart"
     },
     {
       "file": "tests/lua/evidence/test_charts_evidence.lua",
@@ -2211,6 +2225,36 @@
       "file": "tests/lua/evidence/test_graph_evidence.lua",
       "line": 110,
       "marker": "Graph:findPath"
+    },
+    {
+      "file": "tests/lua/evidence/test_gui_evidence.lua",
+      "line": 11,
+      "marker": "lurek.ui.loadLayout"
+    },
+    {
+      "file": "tests/lua/evidence/test_gui_evidence.lua",
+      "line": 12,
+      "marker": "lurek.ui.renderToImage"
+    },
+    {
+      "file": "tests/lua/evidence/test_gui_evidence.lua",
+      "line": 32,
+      "marker": "lurek.ui.loadLayout"
+    },
+    {
+      "file": "tests/lua/evidence/test_gui_evidence.lua",
+      "line": 33,
+      "marker": "lurek.ui.renderToImage"
+    },
+    {
+      "file": "tests/lua/evidence/test_gui_evidence.lua",
+      "line": 66,
+      "marker": "lurek.ui.loadLayout"
+    },
+    {
+      "file": "tests/lua/evidence/test_gui_evidence.lua",
+      "line": 67,
+      "marker": "lurek.ui.renderToImage"
     },
     {
       "file": "tests/lua/evidence/test_html_evidence.lua",
@@ -5004,6 +5048,51 @@
     },
     {
       "file": "tests/lua/evidence/test_ui_evidence.lua",
+      "line": 20,
+      "marker": "lurek.ui.loadLayout"
+    },
+    {
+      "file": "tests/lua/evidence/test_ui_evidence.lua",
+      "line": 21,
+      "marker": "lurek.ui.renderToImage"
+    },
+    {
+      "file": "tests/lua/evidence/test_ui_evidence.lua",
+      "line": 46,
+      "marker": "lurek.ui.loadLayout"
+    },
+    {
+      "file": "tests/lua/evidence/test_ui_evidence.lua",
+      "line": 47,
+      "marker": "lurek.ui.renderToImage"
+    },
+    {
+      "file": "tests/lua/evidence/test_ui_evidence.lua",
+      "line": 102,
+      "marker": "lurek.ui.loadLayout"
+    },
+    {
+      "file": "tests/lua/evidence/test_ui_evidence.lua",
+      "line": 103,
+      "marker": "lurek.ui.renderToImage"
+    },
+    {
+      "file": "tests/lua/evidence/test_ui_evidence.lua",
+      "line": 128,
+      "marker": "lurek.ui.loadLayout"
+    },
+    {
+      "file": "tests/lua/evidence/test_ui_evidence.lua",
+      "line": 129,
+      "marker": "lurek.ui.renderToImage"
+    },
+    {
+      "file": "tests/lua/evidence/test_ui_evidence.lua",
+      "line": 173,
+      "marker": "lurek.ui.newLineChart"
+    },
+    {
+      "file": "tests/lua/evidence/test_ui_evidence.lua",
       "line": 174,
       "marker": "LineChart:setYMax"
     },
@@ -5024,6 +5113,31 @@
     },
     {
       "file": "tests/lua/evidence/test_ui_evidence.lua",
+      "line": 180,
+      "marker": "lurek.ui.newBarChart"
+    },
+    {
+      "file": "tests/lua/evidence/test_ui_evidence.lua",
+      "line": 181,
+      "marker": "lurek.ui.newScatterPlot"
+    },
+    {
+      "file": "tests/lua/evidence/test_ui_evidence.lua",
+      "line": 182,
+      "marker": "lurek.ui.newPieChart"
+    },
+    {
+      "file": "tests/lua/evidence/test_ui_evidence.lua",
+      "line": 183,
+      "marker": "lurek.ui.newAreaChart"
+    },
+    {
+      "file": "tests/lua/evidence/test_ui_evidence.lua",
+      "line": 196,
+      "marker": "lurek.ui.newBarChart"
+    },
+    {
+      "file": "tests/lua/evidence/test_ui_evidence.lua",
       "line": 197,
       "marker": "BarChart:addSeries"
     },
@@ -5036,6 +5150,11 @@
       "file": "tests/lua/evidence/test_ui_evidence.lua",
       "line": 199,
       "marker": "Chart:drawToImage"
+    },
+    {
+      "file": "tests/lua/evidence/test_ui_evidence.lua",
+      "line": 216,
+      "marker": "lurek.ui.newScatterPlot"
     },
     {
       "file": "tests/lua/evidence/test_ui_evidence.lua",
@@ -5059,6 +5178,11 @@
     },
     {
       "file": "tests/lua/evidence/test_ui_evidence.lua",
+      "line": 241,
+      "marker": "lurek.ui.newPieChart"
+    },
+    {
+      "file": "tests/lua/evidence/test_ui_evidence.lua",
       "line": 242,
       "marker": "PieChart:addSegment"
     },
@@ -5066,6 +5190,11 @@
       "file": "tests/lua/evidence/test_ui_evidence.lua",
       "line": 243,
       "marker": "Chart:drawToImage"
+    },
+    {
+      "file": "tests/lua/evidence/test_ui_evidence.lua",
+      "line": 258,
+      "marker": "lurek.ui.newAreaChart"
     },
     {
       "file": "tests/lua/evidence/test_ui_evidence.lua",
@@ -5081,6 +5210,11 @@
       "file": "tests/lua/evidence/test_ui_evidence.lua",
       "line": 261,
       "marker": "Chart:drawToImage"
+    },
+    {
+      "file": "tests/lua/evidence/test_ui_evidence.lua",
+      "line": 292,
+      "marker": "lurek.ui.newLineChart"
     },
     {
       "file": "tests/lua/evidence/test_ui_evidence.lua",
@@ -5104,6 +5238,31 @@
     },
     {
       "file": "tests/lua/evidence/test_ui_evidence.lua",
+      "line": 299,
+      "marker": "lurek.ui.newBarChart"
+    },
+    {
+      "file": "tests/lua/evidence/test_ui_evidence.lua",
+      "line": 300,
+      "marker": "lurek.ui.newScatterPlot"
+    },
+    {
+      "file": "tests/lua/evidence/test_ui_evidence.lua",
+      "line": 301,
+      "marker": "lurek.ui.newPieChart"
+    },
+    {
+      "file": "tests/lua/evidence/test_ui_evidence.lua",
+      "line": 302,
+      "marker": "lurek.ui.newAreaChart"
+    },
+    {
+      "file": "tests/lua/evidence/test_ui_evidence.lua",
+      "line": 315,
+      "marker": "lurek.ui.newBarChart"
+    },
+    {
+      "file": "tests/lua/evidence/test_ui_evidence.lua",
       "line": 316,
       "marker": "BarChart:addSeries"
     },
@@ -5116,6 +5275,11 @@
       "file": "tests/lua/evidence/test_ui_evidence.lua",
       "line": 318,
       "marker": "Chart:drawToImage"
+    },
+    {
+      "file": "tests/lua/evidence/test_ui_evidence.lua",
+      "line": 335,
+      "marker": "lurek.ui.newScatterPlot"
     },
     {
       "file": "tests/lua/evidence/test_ui_evidence.lua",
@@ -5139,6 +5303,11 @@
     },
     {
       "file": "tests/lua/evidence/test_ui_evidence.lua",
+      "line": 360,
+      "marker": "lurek.ui.newPieChart"
+    },
+    {
+      "file": "tests/lua/evidence/test_ui_evidence.lua",
       "line": 361,
       "marker": "PieChart:addSegment"
     },
@@ -5146,6 +5315,11 @@
       "file": "tests/lua/evidence/test_ui_evidence.lua",
       "line": 362,
       "marker": "Chart:drawToImage"
+    },
+    {
+      "file": "tests/lua/evidence/test_ui_evidence.lua",
+      "line": 377,
+      "marker": "lurek.ui.newAreaChart"
     },
     {
       "file": "tests/lua/evidence/test_ui_evidence.lua",
@@ -5161,6 +5335,136 @@
       "file": "tests/lua/evidence/test_ui_evidence.lua",
       "line": 380,
       "marker": "Chart:drawToImage"
+    },
+    {
+      "file": "tests/lua/evidence/test_ui_evidence.lua",
+      "line": 414,
+      "marker": "lurek.ui.drawToImage"
+    },
+    {
+      "file": "tests/lua/evidence/test_ui_evidence.lua",
+      "line": 415,
+      "marker": "lurek.ui.getRoot"
+    },
+    {
+      "file": "tests/lua/evidence/test_ui_evidence.lua",
+      "line": 416,
+      "marker": "lurek.ui.newButton"
+    },
+    {
+      "file": "tests/lua/evidence/test_ui_evidence.lua",
+      "line": 417,
+      "marker": "lurek.ui.newLabel"
+    },
+    {
+      "file": "tests/lua/evidence/test_ui_evidence.lua",
+      "line": 448,
+      "marker": "lurek.ui.drawToImage"
+    },
+    {
+      "file": "tests/lua/evidence/test_ui_evidence.lua",
+      "line": 449,
+      "marker": "lurek.ui.getRoot"
+    },
+    {
+      "file": "tests/lua/evidence/test_ui_evidence.lua",
+      "line": 450,
+      "marker": "lurek.ui.newProgressBar"
+    },
+    {
+      "file": "tests/lua/evidence/test_ui_evidence.lua",
+      "line": 484,
+      "marker": "lurek.ui.drawToImage"
+    },
+    {
+      "file": "tests/lua/evidence/test_ui_evidence.lua",
+      "line": 485,
+      "marker": "lurek.ui.getRoot"
+    },
+    {
+      "file": "tests/lua/evidence/test_ui_evidence.lua",
+      "line": 486,
+      "marker": "lurek.ui.newButton"
+    },
+    {
+      "file": "tests/lua/evidence/test_ui_evidence.lua",
+      "line": 487,
+      "marker": "lurek.ui.newLabel"
+    },
+    {
+      "file": "tests/lua/evidence/test_ui_evidence.lua",
+      "line": 488,
+      "marker": "lurek.ui.newPanel"
+    },
+    {
+      "file": "tests/lua/evidence/test_ui_evidence.lua",
+      "line": 489,
+      "marker": "lurek.ui.newSlider"
+    },
+    {
+      "file": "tests/lua/evidence/test_ui_evidence.lua",
+      "line": 545,
+      "marker": "lurek.ui.drawToImage"
+    },
+    {
+      "file": "tests/lua/evidence/test_ui_evidence.lua",
+      "line": 546,
+      "marker": "lurek.ui.getRoot"
+    },
+    {
+      "file": "tests/lua/evidence/test_ui_evidence.lua",
+      "line": 547,
+      "marker": "lurek.ui.newButton"
+    },
+    {
+      "file": "tests/lua/evidence/test_ui_evidence.lua",
+      "line": 548,
+      "marker": "lurek.ui.newLabel"
+    },
+    {
+      "file": "tests/lua/evidence/test_ui_evidence.lua",
+      "line": 579,
+      "marker": "lurek.ui.drawToImage"
+    },
+    {
+      "file": "tests/lua/evidence/test_ui_evidence.lua",
+      "line": 580,
+      "marker": "lurek.ui.getRoot"
+    },
+    {
+      "file": "tests/lua/evidence/test_ui_evidence.lua",
+      "line": 581,
+      "marker": "lurek.ui.newProgressBar"
+    },
+    {
+      "file": "tests/lua/evidence/test_ui_evidence.lua",
+      "line": 615,
+      "marker": "lurek.ui.drawToImage"
+    },
+    {
+      "file": "tests/lua/evidence/test_ui_evidence.lua",
+      "line": 616,
+      "marker": "lurek.ui.getRoot"
+    },
+    {
+      "file": "tests/lua/evidence/test_ui_evidence.lua",
+      "line": 617,
+      "marker": "lurek.ui.newButton"
+    },
+    {
+      "file": "tests/lua/evidence/test_ui_evidence.lua",
+      "line": 618,
+      "marker": "lurek.ui.newLabel"
+    },
+    {
+      "file": "tests/lua/evidence/test_ui_evidence.lua",
+      "line": 619,
+      "marker": "lurek.ui.newPanel"
+    },
+    {
+      "file": "tests/lua/evidence/test_ui_evidence.lua",
+      "line": 620,
+      "marker": "lurek.ui.newSlider"
     },
     {
       "file": "tests/lua/integration/test_ai_ecs_scene.lua",
@@ -5276,6 +5580,11 @@
       "file": "tests/lua/integration/test_i18n_ui.lua",
       "line": 9,
       "marker": "lurek.i18n.setLocale"
+    },
+    {
+      "file": "tests/lua/integration/test_i18n_ui.lua",
+      "line": 10,
+      "marker": "lurek.ui.newLabel"
     },
     {
       "file": "tests/lua/integration/test_i18n_ui.lua",

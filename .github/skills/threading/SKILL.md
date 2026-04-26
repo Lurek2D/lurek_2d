@@ -1,4 +1,4 @@
----
+﻿---
 name: threading
 description: "Load this skill when designing or implementing multi-threaded Lua behaviour in Lurek2D using the lurek.thread API: spawning worker threads, using Channel for inter-VM communication, handling errors in background threads, or understanding which lurek.* modules are safe to use in worker VMs. Use for: background computation, async file I/O in workers, producer-consumer patterns, parallel data processing. Skip it for Rust-side thread management internals (see docs/specs/thread.md), or for general game scripting (use lua-scripting)."
 ---
@@ -6,105 +6,44 @@ description: "Load this skill when designing or implementing multi-threaded Lua 
 
 ## Mission
 
-# Threading — Lurek2D
+Own the lurek.thread API patterns: one-VM-per-thread model, Channel-based communication, worker VM module availability, and thread lifecycle management.
 
 ## When To Load
 
-- Adding background computation or I/O to a game via `lurek.thread.newThread()`
-- Designing a producer-consumer or work-queue pattern with `Channel`
-- Working out which `lurek.*` API is safe to call from a worker thread Lua VM
-- Handling errors thrown in a background thread
-- Explaining the threading model to a new contributor
+- Spawning Lua worker threads for background computation
+- Using Channel for inter-VM communication
+- Determining which lurek.* modules are safe in worker VMs
+- Implementing producer-consumer or parallel processing patterns
 
 ## When To Skip
 
-- Skip it for Rust-side thread management internals (see docs/specs/thread.
+- Rust-side thread management -> see docs/specs/thread.md
+- General game scripting -> use lua-scripting skill
 
 ## Domain Knowledge
 
-### Owns
-- Lurek2D threading model: one Lua VM per thread, no shared state
-- `lurek.thread.*` Lua API patterns
-- `Channel` communication patterns (push / pop / demand)
-- Worker VM module restrictions
-- Error reporting from worker VMs back to the main VM
-- When to use threads vs when to stay single-threaded
+**Core model:** one Lua VM per thread, no shared state between VMs. All cross-VM communication uses Channel objects. This is a hard constraint from LuaJIT's design (binding constraint B-04).
 
----
+**Thread creation:** lurek.thread.newThread(code_string) creates a new thread with an isolated Lua VM. The code string is compiled and executed in the new VM.
 
-### Threading Model
-Lurek2D uses **one Lua VM per thread**. Worker threads cannot share `SharedState` with the main game thread. This eliminates data races at the cost of requiring explicit message passing for all cross-thread communication.
+**Channel API:** push(value) is non-blocking, adds to queue. pop() is non-blocking, returns value or nil. demand() BLOCKS until a value is available. peek() reads without removing. getCount() returns queue length. clear() empties the queue.
 
-> See [snippets/threading-model.txt](snippets/threading-model.txt) for the example.
+**ChannelValue types:** only nil, boolean, number, and string can be sent through channels. For structured data, serialize to string (e.g., JSON via lurek.data) before pushing.
 
-**Key consequence**: The main thread is the only thread that can call `lurek.render.*`, `lurek.audio.*`, `lurek.physics.*`, and `lurek.input.*`. Workers send results back via `Channel` and the main thread applies them.
+**Worker-safe modules (available in worker VMs):** math, thread, timer (read-only), filesystem (read-only), runtime (read-only), data, image.
 
----
+**Worker-unsafe modules (main thread only):** render, audio, physics, input. Calling these from a worker thread will error.
 
-### Core API
-### Spawning a thread
+**Critical anti-pattern:** NEVER call demand() in update() or draw() — it blocks the main thread and freezes the game. Use pop() (non-blocking) in the main thread, demand() only in worker threads.
 
-> See [examples/spawning-a-thread.lua](examples/spawning-a-thread.lua) for the example.
-
-### Creating a channel
-
-> See [examples/creating-a-channel.lua](examples/creating-a-channel.lua) for the example.
-
-### Starting a thread
-
-> See [examples/starting-a-thread.lua](examples/starting-a-thread.lua) for the example.
-
-### Channel operations
-
-> See [examples/channel-operations.lua](examples/channel-operations.lua) for the example.
-
----
-
-### ChannelValue Constraint
-**Channels carry only these Lua types:**
-
-| Lua type | Transmitted as |
-|----------|---------------|
-| `nil` | nil |
-| `boolean` | bool |
-| `number` | f64 |
-| `string` | heap-copied string |
-| UserData | **NOT supported** — will error |
-| table | **NOT supported** — serialize to string first |
-
-To pass structured data:
-> See [examples/channelvalue-constraint.lua](examples/channelvalue-constraint.lua) for the example.
-
----
-
-### Worker VM — Safe Modules
-Worker threads get an isolated VM with only these `lurek.*` modules available:
-
-| Module | Available in worker? | Notes |
-|--------|---------------------|-------|
-| `lurek.math` | ✅ Full | Safe (pure computation) |
-| `lurek.thread` | ✅ Full | Channels, thread control |
-| `lurek.timer` | ✅ Read-only | `lurek.timer.getTime()`, `lurek.timer.getDelta()` |
-| `lurek.filesystem` | ✅ Read-only | File reads only; no write |
-| `lurek.runtime` | ✅ Read-only | OS info, `getProcessorCount()` |
-| `lurek.render` | ❌ | GPU resources are main-thread only |
-
-> See [snippets/extended-notes.md](snippets/extended-notes.md) for additional notes.
+**Thread lifecycle:** threads do not auto-stop when the game exits. Always send a "quit" message through the channel and have workers check for it in their main loop.
 
 ## Companion File Index
 
-- [snippets/threading-model.txt](snippets/threading-model.txt) — Threading Model
-- [examples/spawning-a-thread.lua](examples/spawning-a-thread.lua) — Spawning a thread
-- [examples/creating-a-channel.lua](examples/creating-a-channel.lua) — Creating a channel
-- [examples/starting-a-thread.lua](examples/starting-a-thread.lua) — Starting a thread
-- [examples/channel-operations.lua](examples/channel-operations.lua) — Channel operations
-- [examples/channelvalue-constraint.lua](examples/channelvalue-constraint.lua) — ChannelValue Constraint
-- [examples/error-handling-in-workers.lua](examples/error-handling-in-workers.lua) — Error Handling in Workers
-- [examples/error-handling-in-workers-2.lua](examples/error-handling-in-workers-2.lua) — Error Handling in Workers
-- [examples/work-queue.lua](examples/work-queue.lua) — Work Queue
-- [examples/background-save.lua](examples/background-save.lua) — Background Save
-- [snippets/extended-notes.md](snippets/extended-notes.md) — extended notes (overflow)
+None - all guidance is inline.
 
 ## References
 
-- See related skills in `.github/skills/`.
+- src/thread/ - Rust thread module
+- src/lua_api/thread_api.rs - Lua thread bindings
+- docs/specs/thread.md - thread module specification

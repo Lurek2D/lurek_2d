@@ -6,105 +6,53 @@ description: "Load this skill when working with the Lurek2D CAG (Copilot Agent C
 
 ## Mission
 
-# CAG Workflow — Lurek2D
+Own .github/ folder taxonomy, CAG artifact type decisions, skill/agent/prompt file format requirements, validation workflow, and agent routing.
 
 ## When To Load
 
 - Adding or editing an agent, skill, or prompt
-- Deciding whether a new piece of knowledge should be a skill, an agent, a prompt, or AGENT.md
-- Running `cag_validate.py` to check schema compliance
+- Deciding whether knowledge should be a skill, agent, prompt, or module spec
+- Running cag_validate.py to check schema compliance
 - Understanding how agents route work to each other
-- Maintaining the system prompt (`copilot-instructions.md`) — e.g., adding new skills to the list
+- Maintaining copilot-instructions.md
 
 ## When To Skip
 
-- Skip it for general code implementation, game scripting, or roadmap planning.
+- General code implementation, game scripting, or roadmap planning
 
 ## Domain Knowledge
 
-### Owns
-- `.github/` folder taxonomy (agents / skills / prompts)
-- CAG artifact type decision rules (AGENT.md vs Skill vs Prompt)
-- Skill and agent file format requirements
-- `cag_validate.py` validation workflow
-- `copilot-instructions.md` maintenance rules
-- Agent routing table and load order
+**CAG artifact taxonomy:**
 
-### .github/ Layout
-> See [snippets/github-layout.txt](snippets/github-layout.txt) for the example.
+| Artifact | When to use | Loaded by |
+|----------|-------------|-----------|
+| Module spec (docs/specs/<module>.md) | Module-specific architecture, types, constraints | Agents reading domain context |
+| Skill (.github/skills/) | Cross-cutting reusable knowledge across modules | Explicitly via read_file |
+| Agent (.github/agents/) | Specialist role with defined mission and scope | Via runSubagent or @AgentName |
+| Prompt (.github/prompts/) | Task-driven playbook for a specific operation | Operator selection |
 
-### CAG Artifact Taxonomy
-| Artifact | When to use | Loaded |
-|----------|-------------|--------|
-| **Module spec** (`docs/specs/<module>.md`) | Module-specific architecture, types, constraints, patterns | By agents reading domain context |
-| **Skill** (`.github/skills/`) | Cross-cutting reusable workflow — used across multiple modules | Explicitly with `read_file` before task |
-| **Agent** (`.github/agents/`) | Specialist role with a defined mission and restricted scope | Via `runSubagent` or `@AgentName` |
-| **Prompt** (`.github/prompts/`) | Task-driven playbook for a specific operation type | Operator selection |
+**Decision rule:** If knowledge is specific to one module → module spec. If cross-cutting pattern used across modules → skill. If it defines a role with routing → agent. If it is a user-invocable task playbook → prompt.
 
-### Decision Rule: Module Spec vs Skill vs Prompt
-> See [snippets/decision-rule-module-spec-vs-skill.txt](snippets/decision-rule-module-spec-vs-skill.txt) for the example.
+**Skill file format:** YAML frontmatter (name, description with "Load this skill when"/"Skip it for" clauses). Required sections: Mission, When To Load, When To Skip, Domain Knowledge, Companion File Index, References. No fenced code blocks (E201). Max 120 lines (W206).
 
-### Skill File Format
-> See [snippets/skill-file-format.md](snippets/skill-file-format.md) for the example.
+**Agent file format:** YAML frontmatter (name, mission, personas, primary_skills, secondary_skills, routes_to, loads_tools). Required sections: Mission, Scope, Inputs, Outputs, Workflow, Routing Table, Anti-patterns. Max 200 lines.
 
-**Rules:**
-- First H2 must be `## Load When`
-- Description frontmatter must include "Load this skill when", "Use for:", and "Skip it for:" clauses
-- Content must be actionable and Lurek2D-specific — no generic advice that is not tied to this codebase
-- Update `copilot-instructions.md` skills list whenever a skill is added/removed
+**Prompt file format:** YAML frontmatter (description, mode, loads_skills, loads_tools, expected_agent, inputs_required). Required sections: Goal, Inputs, Steps, Success Criteria, Anti-patterns, Example Invocation. Approved verbs: analyze, create, fix, run, review, design, doc, workflow, op, implement, generate, audit.
 
-### Agent File Format
-> See [snippets/agent-file-format.md](snippets/agent-file-format.md) for the example.
+**Validation:** run tools/validate/cag_validate.py (--type agent|skill|prompt, --file PATH, --baseline). Exit 1 = failures. Full rule details in tools-cag-validation skill.
 
-### Validation
-> See [snippets/validation.ps1](snippets/validation.ps1) for the example.
+**Load order:** copilot-instructions.md (always) → docs/specs/ (explicit) → Skills (explicit read_file) → Prompts (operator) → Agents (runSubagent).
 
-- Exit 1 = validation failures (schema errors, missing required sections)
-- `tools-cag-validation` skill contains full rule details and severity model
+**Agent routing — Manager routes to:** Developer (Rust), Lua-Designer (API), Renderer (GPU), Physicist (physics), Tester (tests), Doc-Writer (docs), Debugger (bugs).
 
-### Load Order (Runtime)
-1. `copilot-instructions.md` — always loaded, system backbone
-2. `docs/specs/<module>.md` — read explicitly when working in that module
-3. **Skills** — must be explicitly loaded via `read_file` BEFORE working on task
-4. **Prompts** — operator selects a playbook
-5. **Agents** — spawned via `runSubagent` for specialist work
-
-`copilot-instructions.md` contains:
-- The skills list in the `<skills>` section (describes each skill and its trigger condition)
-- The agents routing table
-- Critical rules and architecture constraints
-
-**When to update it:**
-- Adding/removing a skill → update the `<skill>` entries in the instructions
-- Adding a new agent → add a row to the agent routing table
-- Adding/changing an architecture constraint → update the corresponding table
-
-**How to update**: Use `replace_string_in_file` to change the specific section — never rewrite the whole file.
-
-### Agent Routing
-The `Manager` agent owns the session start and routes work to specialist agents:
-
-| Signal | Agent |
-|--------|-------|
-| Write Rust code | Developer |
-| Design Lua `lurek.*` API | Lua-Designer |
-| GPU/rendering work | Renderer |
-| Physics work | Physicist |
-| Write tests | Tester |
-| Write docs | Doc-Writer |
-| Diagnose bug | Debugger |
-
-> See [snippets/extended-notes.md](snippets/extended-notes.md) for additional notes.
+**Updating copilot-instructions.md:** add/remove skill → update skills list; add agent → update agents list; change constraint → update table. Use replace_string_in_file on the specific section, never rewrite the whole file.
 
 ## Companion File Index
 
-- [snippets/github-layout.txt](snippets/github-layout.txt) — .github/ Layout
-- [snippets/decision-rule-module-spec-vs-skill.txt](snippets/decision-rule-module-spec-vs-skill.txt) — Decision Rule: Module Spec vs Skill vs Prompt
-- [snippets/skill-file-format.md](snippets/skill-file-format.md) — Skill File Format
-- [snippets/agent-file-format.md](snippets/agent-file-format.md) — Agent File Format
-- [snippets/validation.ps1](snippets/validation.ps1) — Validation
-- [snippets/extended-notes.md](snippets/extended-notes.md) — extended notes (overflow)
+None — all guidance is inline.
 
 ## References
 
-- See related skills in `.github/skills/`.
+- .github/copilot-instructions.md — system prompt backbone
+- docs/architecture/cag-system.md — full CAG system documentation
+- tools/validate/cag_validate.py — schema validator

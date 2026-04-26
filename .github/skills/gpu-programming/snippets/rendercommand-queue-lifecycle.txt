@@ -1,8 +1,0 @@
-lua.draw() callback:
-  → Lua calls lurek.render.drawImage(img, x, y)
-  → lua_api pushes RenderCommand::DrawImage { ... } into SharedState::render_commands
-
-After lurek.draw() returns:
-  → GpuRenderer::render_frame(render_commands) processes the queue
-  → Each variant maps to wgpu render pass calls
-  → swapchain present

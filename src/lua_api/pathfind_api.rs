@@ -103,9 +103,7 @@ impl LuaUserData for LuaNavGrid {
         /// @param y integer
         /// @param blocked boolean
         /// @return nil
-        methods.add_method(
-            "setBlocked",
-            |_, this, (x, y, blocked): (u32, u32, bool)| {
+        methods.add_method("setBlocked", |_, this, (x, y, blocked): (u32, u32, bool)| {
                 this.inner.borrow_mut().set_blocked(x - 1, y - 1, blocked);
                 Ok(())
             },
@@ -126,9 +124,7 @@ impl LuaUserData for LuaNavGrid {
         /// @param y integer
         /// @param unitSize integer?
         /// @return boolean
-        methods.add_method(
-            "isWalkable",
-            |_, this, (x, y, unit_size): (u32, u32, Option<u32>)| {
+        methods.add_method("isWalkable", |_, this, (x, y, unit_size): (u32, u32, Option<u32>)| {
                 Ok(this
                     .inner
                     .borrow()
@@ -153,9 +149,7 @@ impl LuaUserData for LuaNavGrid {
         /// @param h integer
         /// @param cost integer
         /// @return nil
-        methods.add_method(
-            "fillRect",
-            |_, this, (x, y, w, h, cost): (u32, u32, u32, u32, u8)| {
+        methods.add_method("fillRect", |_, this, (x, y, w, h, cost): (u32, u32, u32, u32, u8)| {
                 this.inner.borrow_mut().fill_rect(x - 1, y - 1, w, h, cost);
                 Ok(())
             },
@@ -287,9 +281,7 @@ impl LuaUserData for LuaUnitPathfinder {
         /// @param y2 integer
         /// @param unitSize integer?
         /// @return table?
-        methods.add_method(
-            "findPath",
-            |lua, this, (x1, y1, x2, y2, unit_size): (u32, u32, u32, u32, Option<u32>)| {
+        methods.add_method("findPath", |lua, this, (x1, y1, x2, y2, unit_size): (u32, u32, u32, u32, Option<u32>)| {
                 let result = this.inner.borrow_mut().find_path(
                     x1 - 1,
                     y1 - 1,
@@ -312,9 +304,7 @@ impl LuaUserData for LuaUnitPathfinder {
         /// @param y2 integer
         /// @param unitSize integer?
         /// @return table?
-        methods.add_method(
-            "findPathSmooth",
-            |lua, this, (x1, y1, x2, y2, unit_size): (u32, u32, u32, u32, Option<u32>)| {
+        methods.add_method("findPathSmooth", |lua, this, (x1, y1, x2, y2, unit_size): (u32, u32, u32, u32, Option<u32>)| {
                 let result = this.inner.borrow_mut().find_path_smooth(
                     x1 - 1,
                     y1 - 1,
@@ -340,11 +330,8 @@ impl LuaUserData for LuaUnitPathfinder {
         /// @param y2 integer
         /// @param unitSize integer?
         /// @param maxNodes integer?
-        /// @return nil
-        /// table?, boolean
-        methods.add_method(
-            "findPathBidirectional",
-            |lua,
+        /// @return table?, boolean
+        methods.add_method("findPathBidirectional", |lua,
              this,
              (x1, y1, x2, y2, unit_size, max_nodes): (
                 u32,
@@ -406,9 +393,7 @@ impl LuaUserData for LuaUnitPathfinder {
         /// @param maxNodes integer
         /// @param unitSize integer?
         /// @return table, boolean
-        methods.add_method(
-            "findPartialPath",
-            |lua,
+        methods.add_method("findPartialPath", |lua,
              this,
              (x1, y1, x2, y2, max_nodes, unit_size): (
                 u32,
@@ -438,9 +423,7 @@ impl LuaUserData for LuaUnitPathfinder {
         /// @param unitSize integer?
         /// @return nil
         /// integer?, integer?
-        methods.add_method(
-            "findNearestWalkable",
-            |_, this, (x, y, max_radius, unit_size): (u32, u32, u32, Option<u32>)| match this
+        methods.add_method("findNearestWalkable", |_, this, (x, y, max_radius, unit_size): (u32, u32, u32, Option<u32>)| match this
                 .inner
                 .borrow()
                 .find_nearest_walkable(x - 1, y - 1, max_radius, unit_size.unwrap_or(1))
@@ -461,9 +444,7 @@ impl LuaUserData for LuaUnitPathfinder {
         /// @param y2 integer
         /// @param unitSize integer?
         /// @return boolean
-        methods.add_method(
-            "isReachable",
-            |_, this, (x1, y1, x2, y2, unit_size): (u32, u32, u32, u32, Option<u32>)| {
+        methods.add_method("isReachable", |_, this, (x1, y1, x2, y2, unit_size): (u32, u32, u32, u32, Option<u32>)| {
                 Ok(this.inner.borrow().is_reachable(
                     x1 - 1,
                     y1 - 1,
@@ -481,9 +462,7 @@ impl LuaUserData for LuaUnitPathfinder {
         /// @param x2 integer
         /// @param y2 integer
         /// @return number
-        methods.add_method(
-            "heuristicDistance",
-            |_, _this, (x1, y1, x2, y2): (u32, u32, u32, u32)| {
+        methods.add_method("heuristicDistance", |_, _this, (x1, y1, x2, y2): (u32, u32, u32, u32)| {
                 Ok(UnitPathfinder::heuristic_distance(
                     x1 - 1,
                     y1 - 1,
@@ -501,9 +480,7 @@ impl LuaUserData for LuaUnitPathfinder {
         /// @param y2 integer
         /// @param unitSize integer?
         /// @return boolean
-        methods.add_method(
-            "lineOfSight",
-            |_, this, (x1, y1, x2, y2, unit_size): (u32, u32, u32, u32, Option<u32>)| {
+        methods.add_method("lineOfSight", |_, this, (x1, y1, x2, y2, unit_size): (u32, u32, u32, u32, Option<u32>)| {
                 Ok(this.inner.borrow().line_of_sight(
                     x1 - 1,
                     y1 - 1,
@@ -586,9 +563,7 @@ impl LuaUserData for LuaFlowField {
         /// @param ty integer
         /// @param unitSize integer?
         /// @return nil
-        methods.add_method(
-            "calculate",
-            |_, this, (tx, ty, unit_size): (u32, u32, Option<u32>)| {
+        methods.add_method("calculate", |_, this, (tx, ty, unit_size): (u32, u32, Option<u32>)| {
                 this.inner
                     .borrow_mut()
                     .calculate(tx - 1, ty - 1, unit_size.unwrap_or(1));
@@ -601,9 +576,7 @@ impl LuaUserData for LuaFlowField {
         /// @param targets table
         /// @param unitSize integer?
         /// @return nil
-        methods.add_method(
-            "calculateMulti",
-            |_, this, (targets, unit_size): (LuaTable, Option<u32>)| {
+        methods.add_method("calculateMulti", |_, this, (targets, unit_size): (LuaTable, Option<u32>)| {
                 let mut pts = Vec::new();
                 for pair in targets.sequence_values::<LuaTable>() {
                     let entry = pair?;
@@ -675,9 +648,7 @@ impl LuaUserData for LuaFlowField {
         /// @param tw number
         /// @param th number
         /// @return number, number
-        methods.add_method(
-            "steer",
-            |_, this, (wx, wy, speed, tw, th): (f32, f32, f32, f32, f32)| {
+        methods.add_method("steer", |_, this, (wx, wy, speed, tw, th): (f32, f32, f32, f32, f32)| {
                 Ok(this.inner.borrow().steer(wx, wy, speed, tw, th))
             },
         );
@@ -776,9 +747,7 @@ impl LuaUserData for LuaPathGrid {
         /// @param gx integer
         /// @param gy integer
         /// @return table?
-        methods.add_method(
-            "findPath",
-            |lua, this, (sx, sy, gx, gy): (usize, usize, usize, usize)| -> LuaResult<LuaValue> {
+        methods.add_method("findPath", |lua, this, (sx, sy, gx, gy): (usize, usize, usize, usize)| -> LuaResult<LuaValue> {
                 match this
                     .inner
                     .borrow()
@@ -806,9 +775,7 @@ impl LuaUserData for LuaPathGrid {
         /// @param gx integer
         /// @param gy integer
         /// @return table?
-        methods.add_method(
-            "findPathSmoothed",
-            |lua, this, (sx, sy, gx, gy): (usize, usize, usize, usize)| -> LuaResult<LuaValue> {
+        methods.add_method("findPathSmoothed", |lua, this, (sx, sy, gx, gy): (usize, usize, usize, usize)| -> LuaResult<LuaValue> {
                 match this
                     .inner
                     .borrow()
@@ -890,9 +857,7 @@ impl LuaUserData for LuaAiFlowField {
         /// Returns the goal cell (1-based coordinates) or nil if unset.
         /// integer?, integer?
         /// @return nil
-        methods.add_method(
-            "getGoal",
-            |_, this, ()| -> LuaResult<(LuaValue, LuaValue)> {
+        methods.add_method("getGoal", |_, this, ()| -> LuaResult<(LuaValue, LuaValue)> {
                 match this.inner.borrow().goal {
                     None => Ok((LuaValue::Nil, LuaValue::Nil)),
                     Some((gx, gy)) => Ok((
@@ -953,9 +918,7 @@ impl LuaUserData for LuaHexGrid {
         /// @param row integer
         /// @param blocked boolean
         /// @return nil
-        methods.add_method_mut(
-            "setBlocked",
-            |_, this, (col, row, blocked): (u32, u32, bool)| {
+        methods.add_method_mut("setBlocked", |_, this, (col, row, blocked): (u32, u32, bool)| {
                 this.inner
                     .borrow_mut()
                     .set_blocked(col - 1, row - 1, blocked);
@@ -990,9 +953,7 @@ impl LuaUserData for LuaHexGrid {
         /// @param to_col integer
         /// @param to_row integer
         /// @return table?
-        methods.add_method(
-            "findPath",
-            |lua, this, (fc, fr, tc, tr): (u32, u32, u32, u32)| match this
+        methods.add_method("findPath", |lua, this, (fc, fr, tc, tr): (u32, u32, u32, u32)| match this
                 .inner
                 .borrow()
                 .find_path((fc - 1, fr - 1), (tc - 1, tr - 1))
@@ -1018,9 +979,7 @@ impl LuaUserData for LuaHexGrid {
         /// @param to_col integer
         /// @param to_row integer
         /// @return boolean
-        methods.add_method(
-            "lineOfSight",
-            |_, this, (fc, fr, tc, tr): (u32, u32, u32, u32)| {
+        methods.add_method("lineOfSight", |_, this, (fc, fr, tc, tr): (u32, u32, u32, u32)| {
                 Ok(this
                     .inner
                     .borrow()
@@ -1034,9 +993,7 @@ impl LuaUserData for LuaHexGrid {
         /// @param row integer
         /// @param max_range integer
         /// @return table
-        methods.add_method(
-            "fieldOfView",
-            |lua, this, (col, row, max_range): (u32, u32, u32)| {
+        methods.add_method("fieldOfView", |lua, this, (col, row, max_range): (u32, u32, u32)| {
                 let cells = this
                     .inner
                     .borrow()
@@ -1058,9 +1015,7 @@ impl LuaUserData for LuaHexGrid {
         /// @param row integer
         /// @param budget number
         /// @return table
-        methods.add_method(
-            "rangeOfMovement",
-            |lua, this, (col, row, budget): (u32, u32, f32)| {
+        methods.add_method("rangeOfMovement", |lua, this, (col, row, budget): (u32, u32, f32)| {
                 let cells = this
                     .inner
                     .borrow()
@@ -1083,9 +1038,7 @@ impl LuaUserData for LuaHexGrid {
         /// @param col2 integer
         /// @param row2 integer
         /// @return integer
-        methods.add_method(
-            "distance",
-            |_, this, (c1, r1, c2, r2): (u32, u32, u32, u32)| {
+        methods.add_method("distance", |_, this, (c1, r1, c2, r2): (u32, u32, u32, u32)| {
                 Ok(this
                     .inner
                     .borrow()
@@ -1125,9 +1078,7 @@ impl LuaUserData for LuaJpsGrid {
         /// @param y integer
         /// @param blocked boolean
         /// @return nil
-        methods.add_method_mut(
-            "setBlocked",
-            |_, this, (x, y, blocked): (u32, u32, bool)| {
+        methods.add_method_mut("setBlocked", |_, this, (x, y, blocked): (u32, u32, bool)| {
                 this.inner.borrow_mut().set_blocked(x - 1, y - 1, blocked);
                 Ok(())
             },
@@ -1149,9 +1100,7 @@ impl LuaUserData for LuaJpsGrid {
         /// @param to_x integer
         /// @param to_y integer
         /// @return table?
-        methods.add_method(
-            "findPath",
-            |lua, this, (fx, fy, tx, ty): (u32, u32, u32, u32)| match this
+        methods.add_method("findPath", |lua, this, (fx, fy, tx, ty): (u32, u32, u32, u32)| match this
                 .inner
                 .borrow()
                 .find_path((fx - 1, fy - 1), (tx - 1, ty - 1))
@@ -1203,9 +1152,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// @param width integer
     /// @param height integer
     /// @return NavGrid
-    tbl.set(
-        "newNavGrid",
-        lua.create_function(|_, (width, height): (u32, u32)| {
+    tbl.set("newNavGrid", lua.create_function(|_, (width, height): (u32, u32)| {
             Ok(LuaNavGrid {
                 inner: Rc::new(RefCell::new(NavGrid::new(width, height))),
                 abstract_graph: Rc::new(RefCell::new(None)),
@@ -1217,9 +1164,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// Creates a new UnitPathfinder backed by a NavGrid.
     /// @param grid NavGrid
     /// @return UnitPathfinder
-    tbl.set(
-        "newPathfinder",
-        lua.create_function(|_, grid_ud: LuaAnyUserData| {
+    tbl.set("newPathfinder", lua.create_function(|_, grid_ud: LuaAnyUserData| {
             let grid = grid_ud.borrow::<LuaNavGrid>()?;
             Ok(LuaUnitPathfinder {
                 inner: Rc::new(RefCell::new(UnitPathfinder::new(grid.inner.clone()))),
@@ -1231,9 +1176,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// Creates a new FlowField backed by a NavGrid.
     /// @param grid NavGrid
     /// @return FlowField
-    tbl.set(
-        "newFlowField",
-        lua.create_function(|_, grid_ud: LuaAnyUserData| {
+    tbl.set("newFlowField", lua.create_function(|_, grid_ud: LuaAnyUserData| {
             let grid = grid_ud.borrow::<LuaNavGrid>()?;
             Ok(LuaFlowField {
                 inner: Rc::new(RefCell::new(FlowField::new(grid.inner.clone()))),
@@ -1247,9 +1190,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// @param h integer
     /// @param cellSize number
     /// @return PathGrid
-    tbl.set(
-        "newPathGrid",
-        lua.create_function(|_, (w, h, cell_size): (usize, usize, f32)| {
+    tbl.set("newPathGrid", lua.create_function(|_, (w, h, cell_size): (usize, usize, f32)| {
             Ok(LuaPathGrid {
                 inner: Rc::new(RefCell::new(PathGrid::new(w, h, cell_size))),
             })
@@ -1260,9 +1201,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// Creates a new BFS flow field from a PathGrid.
     /// @param grid PathGrid
     /// @return AiFlowField
-    tbl.set(
-        "newPathFlowField",
-        lua.create_function(|_, grid_ud: LuaAnyUserData| {
+    tbl.set("newPathFlowField", lua.create_function(|_, grid_ud: LuaAnyUserData| {
             let grid = grid_ud.borrow::<LuaPathGrid>()?;
             let g = grid.inner.borrow();
             let walkable: Vec<bool> = (0..g.height)
@@ -1279,9 +1218,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// Sets the background pathfinding thread count (currently a no-op).
     /// @param count integer
     /// @return nil
-    tbl.set(
-        "setThreadCount",
-        lua.create_function(|_, _count: u32| {
+    tbl.set("setThreadCount", lua.create_function(|_, _count: u32| {
             log_msg!(warn, LA08_PATHFINDING_THREAD_UNIMPL);
             Ok(())
         })?,
@@ -1290,9 +1227,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     // -- getThreadCount --
     /// Returns the background pathfinding thread count (currently always 0).
     /// @return integer
-    tbl.set(
-        "getThreadCount",
-        lua.create_function(|_, ()| -> LuaResult<u32> { Ok(0) })?,
+    tbl.set("getThreadCount", lua.create_function(|_, ()| -> LuaResult<u32> { Ok(0) })?,
     )?;
 
     // -- newNavGridFromTileMap --
@@ -1306,9 +1241,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// @param layer_index integer  1-based layer index
     /// @param blocked_gids table    list of GID integers that are impassable
     /// @return NavGrid
-    tbl.set(
-        "newNavGridFromTileMap",
-        lua.create_function(
+    tbl.set("newNavGridFromTileMap", lua.create_function(
             |_, (tm_ud, layer_index, blocked_table): (LuaAnyUserData, usize, mlua::Table)| {
                 let tilemap_ud = tm_ud.borrow::<LuaTileMap>()?;
                 let tm = tilemap_ud.inner.borrow();
@@ -1347,9 +1280,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// @param height integer
     /// @param layout string?  "flat" | "pointy"  (default "flat")
     /// @return HexGrid
-    tbl.set(
-        "newHexGrid",
-        lua.create_function(
+    tbl.set("newHexGrid", lua.create_function(
             |_, (width, height, layout_str): (u32, u32, Option<String>)| {
                 let layout = match layout_str.as_deref().unwrap_or("flat") {
                     "pointy" => HexLayout::PointyTop,
@@ -1367,9 +1298,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// @param width integer
     /// @param height integer
     /// @return JpsGrid
-    tbl.set(
-        "newJpsGrid",
-        lua.create_function(|_, (width, height): (u32, u32)| {
+    tbl.set("newJpsGrid", lua.create_function(|_, (width, height): (u32, u32)| {
             Ok(LuaJpsGrid {
                 inner: Rc::new(RefCell::new(JpsGrid::new(width, height))),
             })
@@ -1381,9 +1310,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// @return table
     /// @param opts table  {width, height, costs, blocked, origin_x, origin_y, budget, diagonal?}
     /// table  {cells = [{x, y, cost},...], width, height}
-    tbl.set(
-        "rangeMap",
-        lua.create_function(|lua, opts: LuaTable| {
+    tbl.set("rangeMap", lua.create_function(|lua, opts: LuaTable| {
             let width: u32 = opts.get("width")?;
             let height: u32 = opts.get("height")?;
             let ox: u32 = opts.get("origin_x")?;

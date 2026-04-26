@@ -421,7 +421,7 @@
       },
       {
         "command": "lurek2d.scanAllGames",
-        "title": "Scan All Games for Errors",
+        "title": "Scan Lua Workspace for Errors",
         "category": "Lurek2D"
       }
     ],

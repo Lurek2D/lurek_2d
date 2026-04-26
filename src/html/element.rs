@@ -50,6 +50,7 @@ pub struct HtmlElement {
 }
 
 impl HtmlElement {
+    /// Creates a new element with the given `id`, `tag_name`, and optional `parent` link.
     pub(crate) fn new(
         id: HtmlElementId,
         tag_name: impl Into<String>,
@@ -100,6 +101,7 @@ impl HtmlElement {
             .map(String::as_str)
     }
 
+    /// Sets or removes the named attribute; also syncs inline style when `name` is `"style"`.
     pub(crate) fn set_attribute(&mut self, name: &str, value: Option<String>) {
         let key = normalise_name(name);
         match value {
@@ -123,6 +125,7 @@ impl HtmlElement {
         self.attribute("id")
     }
 
+    /// Sets or removes the `id` attribute.
     pub(crate) fn set_id_attribute(&mut self, value: Option<String>) {
         self.set_attribute("id", value);
     }
@@ -132,6 +135,7 @@ impl HtmlElement {
         self.class_names().any(|name| name == class_name)
     }
 
+    /// Appends `class_name` to the element's `class` attribute if not already present.
     pub(crate) fn add_class(&mut self, class_name: &str) {
         if class_name.is_empty() || self.has_class(class_name) {
             return;
@@ -147,6 +151,7 @@ impl HtmlElement {
         self.set_attribute("class", Some(classes));
     }
 
+    /// Removes `class_name` from the element's `class` attribute.
     pub(crate) fn remove_class(&mut self, class_name: &str) {
         let classes = self
             .class_names()
@@ -160,6 +165,7 @@ impl HtmlElement {
         }
     }
 
+    /// Adds or removes `class_name`; `force` pins the target state. Returns the new presence state.
     pub(crate) fn toggle_class(&mut self, class_name: &str, force: Option<bool>) -> bool {
         let should_have = force.unwrap_or_else(|| !self.has_class(class_name));
         if should_have {
@@ -177,6 +183,7 @@ impl HtmlElement {
             .map(String::as_str)
     }
 
+    /// Sets or removes the inline CSS property `name`, keeping the `style` attribute in sync.
     pub(crate) fn set_style(&mut self, name: &str, value: Option<String>) {
         let key = normalise_name(name);
         match value {
@@ -205,10 +212,12 @@ impl HtmlElement {
         self.removed
     }
 
+    /// Returns `true` if this tag is self-closing (br, img, input).
     pub(crate) fn is_void_tag(&self) -> bool {
         matches!(self.tag_name.as_str(), "br" | "img" | "input")
     }
 
+    /// Iterates over space-separated class tokens in the `class` attribute.
     pub(crate) fn class_names(&self) -> impl Iterator<Item = &str> {
         self.attribute("class")
             .unwrap_or_default()
@@ -216,6 +225,7 @@ impl HtmlElement {
     }
 }
 
+/// Trims and lowercases `name` for consistent attribute / property map keying.
 pub(crate) fn normalise_name(name: &str) -> String {
     name.trim().to_ascii_lowercase()
 }

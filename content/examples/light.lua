@@ -833,7 +833,7 @@ end
 -- Returns the type name of this object.
 -- Useful for runtime type inspection.
 do  -- LLight:type
-  local light_obj = lurek.light.newLight(0, 0, nil, nil)
+  local light_obj = lurek.light.newLight(0, 0, 80)
   local t = light_obj:type()
   lurek.log.info("LLight:type = " .. t, "light")
 end
@@ -841,7 +841,7 @@ end
 -- Returns true if this object is of the given type.
 -- Use for runtime type checks.
 do  -- LLight:typeOf
-  local light_obj = lurek.light.newLight(0, 0, nil, nil)
+  local light_obj = lurek.light.newLight(0, 0, 80)
   lurek.log.info("is LLight: " .. tostring(light_obj:typeOf("LLight")), "light")
   lurek.log.info("is wrong: " .. tostring(light_obj:typeOf("Unknown")), "light")
 end
@@ -849,7 +849,7 @@ end
 -- Returns the type name of this object.
 -- Useful for runtime type inspection.
 do  -- LOccluder:type
-  local occluder_obj = lurek.light.newOccluder(nil, nil)
+  local occluder_obj = lurek.light.newOccluder({0,0,100,0,100,50,0,50})
   local t = occluder_obj:type()
   lurek.log.info("LOccluder:type = " .. t, "light")
 end
@@ -857,7 +857,7 @@ end
 -- Returns true if this object is of the given type.
 -- Use for runtime type checks.
 do  -- LOccluder:typeOf
-  local occluder_obj = lurek.light.newOccluder(nil, nil)
+  local occluder_obj = lurek.light.newOccluder({0,0,100,0,100,50,0,50})
   lurek.log.info("is LOccluder: " .. tostring(occluder_obj:typeOf("LOccluder")), "light")
   lurek.log.info("is wrong: " .. tostring(occluder_obj:typeOf("Unknown")), "light")
 end
@@ -1236,7 +1236,7 @@ end
 -- Lights in the same group can be dimmed or coloured together.
 do  -- LLight:setGroupId
   local lt = lurek.light.newLight(400, 300, 200)
-  lt:setGroupId("dungeon_torches")
+  lt:setGroupId(1)
   lurek.log.info("group_id=" .. lt:getGroupId(), "light")
 end
 --@api-stub: LLight:getGroupId
@@ -1244,7 +1244,7 @@ end
 -- Use when building batch light controllers.
 do  -- LLight:getGroupId
   local lt = lurek.light.newLight(400, 300, 200)
-  lt:setGroupId("cave_ambience")
+  lt:setGroupId(2)
   lurek.log.info("group_id=" .. lt:getGroupId(), "light")
 end
 --@api-stub: LLight:setVolumetric

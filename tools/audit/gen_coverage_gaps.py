@@ -151,6 +151,12 @@ _INTERNAL_MODULES = {
     # Widget tree builder helpers — load_layout_def / load_layout_toml are called
     # inside lurek.ui.loadLayout / .loadLayoutToml closures in ui_api.rs
     "ui::layout_loader",
+    # html sub-modules are pub(crate) engine internals; exposed to Lua only via
+    # lurek.html.newDocument / loadDocument (html_api.rs) — never as free functions
+    "html::element",
+    "html::parser",
+    "html::selector",
+    "html::style",
     # Animation state-machine internals — compare_nums / parse_condition are private
     # helpers used by the Lua-facing state machine transition evaluator
     "animation::state_machine",

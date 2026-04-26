@@ -124,7 +124,8 @@ def _convert_function(raw: dict) -> dict:
         pname = (tp[0] if tp else "arg").rstrip("?")
         ptype = (tp[1] if len(tp) > 1 else "any").rstrip("?")
         optional = bool(tp[2]) if len(tp) > 2 else False
-        params.append({"name": pname, "type": ptype, "description": "", "optional": optional})
+        param_desc = tp[3] if len(tp) > 3 else ""
+        params.append({"name": pname, "type": ptype, "description": param_desc, "optional": optional})
 
     ret = raw.get("inferred_return") or "nil"
     sig = raw.get("inferred_sig") or _build_signature(full_path, params)

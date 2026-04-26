@@ -73,8 +73,8 @@ end
 -- Blocks until the next event arrives or the optional timeout elapses.
 -- Use only in headless tools / editor modes; in a game loop it stalls rendering.
 do  -- lurek.event.wait
-  local name = lurek.event.wait(0.5)
-  if name then
+  local ok, name, args = lurek.event.wait(0.5)
+  if ok then
     lurek.log.info("got event '" .. name .. "' within timeout", "tool")
   else
     lurek.log.info("wait timed out, continuing idle", "tool")

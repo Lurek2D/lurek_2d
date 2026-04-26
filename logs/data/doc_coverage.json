@@ -1,11 +1,11 @@
 {
-  "generated_at": "2026-04-25T22:43:11.231156+00:00",
+  "generated_at": "2026-04-26T13:35:19.532263+00:00",
   "summary": {
     "rust": {
       "total": 5412,
-      "covered": 5394,
-      "missing": 18,
-      "pct": 99.7
+      "covered": 5412,
+      "missing": 0,
+      "pct": 100.0
     },
     "lua_api": {
       "total": 53,
@@ -15,175 +15,12 @@
     },
     "total": {
       "total": 5465,
-      "covered": 5447,
-      "missing": 18,
-      "pct": 99.7
+      "covered": 5465,
+      "missing": 0,
+      "pct": 100.0
     }
   },
-  "missing": [
-    {
-      "source": "rust",
-      "module": "html",
-      "file": "src/html/element.rs",
-      "line": 53,
-      "kind": "fn",
-      "name": "new",
-      "has_doc": false
-    },
-    {
-      "source": "rust",
-      "module": "html",
-      "file": "src/html/element.rs",
-      "line": 103,
-      "kind": "fn",
-      "name": "set_attribute",
-      "has_doc": false
-    },
-    {
-      "source": "rust",
-      "module": "html",
-      "file": "src/html/element.rs",
-      "line": 126,
-      "kind": "fn",
-      "name": "set_id_attribute",
-      "has_doc": false
-    },
-    {
-      "source": "rust",
-      "module": "html",
-      "file": "src/html/element.rs",
-      "line": 135,
-      "kind": "fn",
-      "name": "add_class",
-      "has_doc": false
-    },
-    {
-      "source": "rust",
-      "module": "html",
-      "file": "src/html/element.rs",
-      "line": 150,
-      "kind": "fn",
-      "name": "remove_class",
-      "has_doc": false
-    },
-    {
-      "source": "rust",
-      "module": "html",
-      "file": "src/html/element.rs",
-      "line": 163,
-      "kind": "fn",
-      "name": "toggle_class",
-      "has_doc": false
-    },
-    {
-      "source": "rust",
-      "module": "html",
-      "file": "src/html/element.rs",
-      "line": 180,
-      "kind": "fn",
-      "name": "set_style",
-      "has_doc": false
-    },
-    {
-      "source": "rust",
-      "module": "html",
-      "file": "src/html/element.rs",
-      "line": 208,
-      "kind": "fn",
-      "name": "is_void_tag",
-      "has_doc": false
-    },
-    {
-      "source": "rust",
-      "module": "html",
-      "file": "src/html/element.rs",
-      "line": 212,
-      "kind": "fn",
-      "name": "class_names",
-      "has_doc": false
-    },
-    {
-      "source": "rust",
-      "module": "html",
-      "file": "src/html/element.rs",
-      "line": 219,
-      "kind": "fn",
-      "name": "normalise_name",
-      "has_doc": false
-    },
-    {
-      "source": "rust",
-      "module": "html",
-      "file": "src/html/parser.rs",
-      "line": 12,
-      "kind": "fn",
-      "name": "parse_into",
-      "has_doc": false
-    },
-    {
-      "source": "rust",
-      "module": "html",
-      "file": "src/html/parser.rs",
-      "line": 160,
-      "kind": "fn",
-      "name": "escape_text",
-      "has_doc": false
-    },
-    {
-      "source": "rust",
-      "module": "html",
-      "file": "src/html/parser.rs",
-      "line": 166,
-      "kind": "fn",
-      "name": "escape_attribute",
-      "has_doc": false
-    },
-    {
-      "source": "rust",
-      "module": "html",
-      "file": "src/html/selector.rs",
-      "line": 28,
-      "kind": "fn",
-      "name": "matches_selector",
-      "has_doc": false
-    },
-    {
-      "source": "rust",
-      "module": "html",
-      "file": "src/html/style.rs",
-      "line": 23,
-      "kind": "struct",
-      "name": "CssParseResult",
-      "has_doc": false
-    },
-    {
-      "source": "rust",
-      "module": "html",
-      "file": "src/html/style.rs",
-      "line": 28,
-      "kind": "fn",
-      "name": "parse_stylesheets",
-      "has_doc": false
-    },
-    {
-      "source": "rust",
-      "module": "html",
-      "file": "src/html/style.rs",
-      "line": 54,
-      "kind": "fn",
-      "name": "parse_declarations",
-      "has_doc": false
-    },
-    {
-      "source": "rust",
-      "module": "html",
-      "file": "src/html/style.rs",
-      "line": 76,
-      "kind": "fn",
-      "name": "parse_length",
-      "has_doc": false
-    }
-  ],
+  "missing": [],
   "items": [
     {
       "source": "rust",
@@ -17370,16 +17207,16 @@
       "source": "rust",
       "module": "html",
       "file": "src/html/element.rs",
-      "line": 53,
+      "line": 54,
       "kind": "fn",
       "name": "new",
-      "has_doc": false
+      "has_doc": true
     },
     {
       "source": "rust",
       "module": "html",
       "file": "src/html/element.rs",
-      "line": 72,
+      "line": 73,
       "kind": "fn",
       "name": "id",
       "has_doc": true
@@ -17388,7 +17225,7 @@
       "source": "rust",
       "module": "html",
       "file": "src/html/element.rs",
-      "line": 77,
+      "line": 78,
       "kind": "fn",
       "name": "tag_name",
       "has_doc": true
@@ -17397,7 +17234,7 @@
       "source": "rust",
       "module": "html",
       "file": "src/html/element.rs",
-      "line": 82,
+      "line": 83,
       "kind": "fn",
       "name": "parent",
       "has_doc": true
@@ -17406,7 +17243,7 @@
       "source": "rust",
       "module": "html",
       "file": "src/html/element.rs",
-      "line": 87,
+      "line": 88,
       "kind": "fn",
       "name": "children",
       "has_doc": true
@@ -17415,7 +17252,7 @@
       "source": "rust",
       "module": "html",
       "file": "src/html/element.rs",
-      "line": 92,
+      "line": 93,
       "kind": "fn",
       "name": "rect",
       "has_doc": true
@@ -17424,7 +17261,7 @@
       "source": "rust",
       "module": "html",
       "file": "src/html/element.rs",
-      "line": 97,
+      "line": 98,
       "kind": "fn",
       "name": "attribute",
       "has_doc": true
@@ -17433,16 +17270,16 @@
       "source": "rust",
       "module": "html",
       "file": "src/html/element.rs",
-      "line": 103,
+      "line": 105,
       "kind": "fn",
       "name": "set_attribute",
-      "has_doc": false
+      "has_doc": true
     },
     {
       "source": "rust",
       "module": "html",
       "file": "src/html/element.rs",
-      "line": 122,
+      "line": 124,
       "kind": "fn",
       "name": "id_attribute",
       "has_doc": true
@@ -17451,16 +17288,16 @@
       "source": "rust",
       "module": "html",
       "file": "src/html/element.rs",
-      "line": 126,
+      "line": 129,
       "kind": "fn",
       "name": "set_id_attribute",
-      "has_doc": false
+      "has_doc": true
     },
     {
       "source": "rust",
       "module": "html",
       "file": "src/html/element.rs",
-      "line": 131,
+      "line": 134,
       "kind": "fn",
       "name": "has_class",
       "has_doc": true
@@ -17469,36 +17306,27 @@
       "source": "rust",
       "module": "html",
       "file": "src/html/element.rs",
-      "line": 135,
+      "line": 139,
       "kind": "fn",
       "name": "add_class",
-      "has_doc": false
+      "has_doc": true
     },
     {
       "source": "rust",
       "module": "html",
       "file": "src/html/element.rs",
-      "line": 150,
+      "line": 155,
       "kind": "fn",
       "name": "remove_class",
-      "has_doc": false
+      "has_doc": true
     },
     {
       "source": "rust",
       "module": "html",
       "file": "src/html/element.rs",
-      "line": 163,
+      "line": 169,
       "kind": "fn",
       "name": "toggle_class",
-      "has_doc": false
-    },
-    {
-      "source": "rust",
-      "module": "html",
-      "file": "src/html/element.rs",
-      "line": 174,
-      "kind": "fn",
-      "name": "style",
       "has_doc": true
     },
     {
@@ -17507,14 +17335,23 @@
       "file": "src/html/element.rs",
       "line": 180,
       "kind": "fn",
-      "name": "set_style",
-      "has_doc": false
+      "name": "style",
+      "has_doc": true
     },
     {
       "source": "rust",
       "module": "html",
       "file": "src/html/element.rs",
-      "line": 204,
+      "line": 187,
+      "kind": "fn",
+      "name": "set_style",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "html",
+      "file": "src/html/element.rs",
+      "line": 211,
       "kind": "fn",
       "name": "is_removed",
       "has_doc": true
@@ -17523,64 +17360,64 @@
       "source": "rust",
       "module": "html",
       "file": "src/html/element.rs",
-      "line": 208,
+      "line": 216,
       "kind": "fn",
       "name": "is_void_tag",
-      "has_doc": false
+      "has_doc": true
     },
     {
       "source": "rust",
       "module": "html",
       "file": "src/html/element.rs",
-      "line": 212,
+      "line": 221,
       "kind": "fn",
       "name": "class_names",
-      "has_doc": false
+      "has_doc": true
     },
     {
       "source": "rust",
       "module": "html",
       "file": "src/html/element.rs",
-      "line": 219,
+      "line": 229,
       "kind": "fn",
       "name": "normalise_name",
-      "has_doc": false
+      "has_doc": true
     },
     {
       "source": "rust",
       "module": "html",
       "file": "src/html/parser.rs",
-      "line": 12,
+      "line": 13,
       "kind": "fn",
       "name": "parse_into",
-      "has_doc": false
+      "has_doc": true
     },
     {
       "source": "rust",
       "module": "html",
       "file": "src/html/parser.rs",
-      "line": 160,
+      "line": 162,
       "kind": "fn",
       "name": "escape_text",
-      "has_doc": false
+      "has_doc": true
     },
     {
       "source": "rust",
       "module": "html",
       "file": "src/html/parser.rs",
-      "line": 166,
+      "line": 169,
       "kind": "fn",
       "name": "escape_attribute",
-      "has_doc": false
+      "has_doc": true
     },
     {
       "source": "rust",
       "module": "html",
       "file": "src/html/selector.rs",
-      "line": 28,
+      "line": 29,
       "kind": "fn",
       "name": "matches_selector",
-      "has_doc": false
+      "has_doc": true
     },
     {
       "source": "rust",
@@ -17595,37 +17432,37 @@
       "source": "rust",
       "module": "html",
       "file": "src/html/style.rs",
-      "line": 23,
+      "line": 24,
       "kind": "struct",
       "name": "CssParseResult",
-      "has_doc": false
+      "has_doc": true
     },
     {
       "source": "rust",
       "module": "html",
       "file": "src/html/style.rs",
-      "line": 28,
+      "line": 30,
       "kind": "fn",
       "name": "parse_stylesheets",
-      "has_doc": false
+      "has_doc": true
     },
     {
       "source": "rust",
       "module": "html",
       "file": "src/html/style.rs",
-      "line": 54,
+      "line": 57,
       "kind": "fn",
       "name": "parse_declarations",
-      "has_doc": false
+      "has_doc": true
     },
     {
       "source": "rust",
       "module": "html",
       "file": "src/html/style.rs",
-      "line": 76,
+      "line": 80,
       "kind": "fn",
       "name": "parse_length",
-      "has_doc": false
+      "has_doc": true
     },
     {
       "source": "rust",
@@ -22104,7 +21941,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/html_api.rs",
-      "line": 921,
+      "line": 945,
       "kind": "fn",
       "name": "register",
       "has_doc": true
@@ -22500,7 +22337,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/particle_api.rs",
-      "line": 1350,
+      "line": 1351,
       "kind": "struct",
       "name": "LuaTrail",
       "has_doc": true
@@ -22509,7 +22346,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/particle_api.rs",
-      "line": 1498,
+      "line": 1499,
       "kind": "fn",
       "name": "register",
       "has_doc": true
@@ -22518,7 +22355,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/particle_api.rs",
-      "line": 1673,
+      "line": 1675,
       "kind": "fn",
       "name": "from_lua_opts",
       "has_doc": true
@@ -23346,7 +23183,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/ui_api.rs",
-      "line": 4740,
+      "line": 9480,
       "kind": "fn",
       "name": "register",
       "has_doc": true
@@ -23355,7 +23192,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/ui_api.rs",
-      "line": 6180,
+      "line": 12360,
       "kind": "struct",
       "name": "LuaLineChart",
       "has_doc": true
@@ -23364,7 +23201,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/ui_api.rs",
-      "line": 6257,
+      "line": 12514,
       "kind": "struct",
       "name": "LuaBarChart",
       "has_doc": true
@@ -23373,7 +23210,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/ui_api.rs",
-      "line": 6326,
+      "line": 12652,
       "kind": "struct",
       "name": "LuaScatterPlot",
       "has_doc": true
@@ -23382,7 +23219,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/ui_api.rs",
-      "line": 6405,
+      "line": 12810,
       "kind": "struct",
       "name": "LuaPieChart",
       "has_doc": true
@@ -23391,7 +23228,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/ui_api.rs",
-      "line": 6459,
+      "line": 12918,
       "kind": "struct",
       "name": "LuaAreaChart",
       "has_doc": true

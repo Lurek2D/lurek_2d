@@ -579,9 +579,7 @@ impl LuaUserData for LuaTerminal {
         /// @param py number
         /// @param button integer?
         /// @return nil
-        methods.add_method(
-            "mousepressed",
-            |lua, this, (px, py, button): (f32, f32, Option<usize>)| {
+        methods.add_method("mousepressed", |lua, this, (px, py, button): (f32, f32, Option<usize>)| {
                 let (cell_w, cell_h) = font_cell_size(&this.binding.shared_state.borrow());
                 let col = (px / cell_w).floor() as usize + 1;
                 let row = (py / cell_h).floor() as usize + 1;
@@ -862,9 +860,7 @@ impl LuaUserData for LuaWidget {
         /// @param b number
         /// @param a number?
         /// @return nil
-        methods.add_method(
-            "setColor",
-            |_, this, (r, g, b, a): (f32, f32, f32, Option<f32>)| {
+        methods.add_method("setColor", |_, this, (r, g, b, a): (f32, f32, f32, Option<f32>)| {
                 with_widget_mut(&this.binding, "Widget:setColor", |widget| {
                     widget
                         .set_color([r, g, b, a.unwrap_or(1.0)])
@@ -1304,9 +1300,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     /// @param rows integer?
     /// @return Terminal
     let s = state.clone();
-    tbl.set(
-        "newTerminal",
-        lua.create_function(move |lua, (cols, rows): (Option<usize>, Option<usize>)| {
+    tbl.set("newTerminal", lua.create_function(move |lua, (cols, rows): (Option<usize>, Option<usize>)| {
             let binding = Rc::new(TerminalBinding {
                 terminal: Rc::new(RefCell::new(Terminal::new(
                     cols.unwrap_or(80),
@@ -1325,9 +1319,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     /// @param row integer
     /// @param text string?
     /// @return Widget
-    tbl.set(
-        "newLabel",
-        lua.create_function(
+    tbl.set("newLabel", lua.create_function(
             move |lua, (col, row, text): (usize, usize, Option<String>)| {
                 let binding = Rc::new(RefCell::new(WidgetBinding::new(Widget::new_label(
                     col,
@@ -1347,9 +1339,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     /// @param height integer?
     /// @param text string?
     /// @return Widget
-    tbl.set(
-        "newButton",
-        lua.create_function(
+    tbl.set("newButton", lua.create_function(
             move |lua,
                   (col, row, width, height, text): (
                 usize,
@@ -1376,9 +1366,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     /// @param row integer
     /// @param width integer
     /// @return Widget
-    tbl.set(
-        "newTextBox",
-        lua.create_function(move |lua, (col, row, width): (usize, usize, usize)| {
+    tbl.set("newTextBox", lua.create_function(move |lua, (col, row, width): (usize, usize, usize)| {
             let binding = Rc::new(RefCell::new(WidgetBinding::new(Widget::new_text_box(
                 col, row, width,
             ))));
@@ -1393,9 +1381,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     /// @param width integer
     /// @param height integer
     /// @return Widget
-    tbl.set(
-        "newList",
-        lua.create_function(
+    tbl.set("newList", lua.create_function(
             move |lua, (col, row, width, height): (usize, usize, usize, usize)| {
                 let binding = Rc::new(RefCell::new(WidgetBinding::new(Widget::new_list(
                     col, row, width, height,
@@ -1412,9 +1398,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     /// @param width integer
     /// @param height integer
     /// @return Widget
-    tbl.set(
-        "newBorder",
-        lua.create_function(
+    tbl.set("newBorder", lua.create_function(
             move |lua, (col, row, width, height): (usize, usize, usize, usize)| {
                 let binding = Rc::new(RefCell::new(WidgetBinding::new(Widget::new_border(
                     col, row, width, height,
@@ -1431,9 +1415,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     /// @param width integer?
     /// @param height integer?
     /// @return Widget
-    tbl.set(
-        "newPanel",
-        lua.create_function(
+    tbl.set("newPanel", lua.create_function(
             move |lua, (col, row, width, height): (usize, usize, Option<usize>, Option<usize>)| {
                 let binding = Rc::new(RefCell::new(WidgetBinding::new(Widget::new_panel(
                     col,
@@ -1458,9 +1440,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     /// @param line string
     /// @return nil
     let s = state.clone();
-    tbl.set(
-        "pushScrollback",
-        lua.create_function(move |_, (term_ud, line): (LuaAnyUserData, String)| {
+    tbl.set("pushScrollback", lua.create_function(move |_, (term_ud, line): (LuaAnyUserData, String)| {
             let term_ref = term_ud.borrow_mut::<LuaTerminal>()?;
             let _ = s.borrow();
             term_ref
@@ -1484,9 +1464,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     /// table  array of strings
     let s = state.clone();
     /// @return table|nil
-    tbl.set(
-        "getScrollback",
-        lua.create_function(
+    tbl.set("getScrollback", lua.create_function(
             move |lua, (term_ud, offset, count): (LuaAnyUserData, usize, usize)| {
                 let term_ref = term_ud.borrow::<LuaTerminal>()?;
                 let _ = s.borrow();
@@ -1506,9 +1484,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     ///
     /// @param terminal Terminal
     /// @return integer
-    tbl.set(
-        "scrollbackLen",
-        lua.create_function(|_, term_ud: LuaAnyUserData| {
+    tbl.set("scrollbackLen", lua.create_function(|_, term_ud: LuaAnyUserData| {
             let term_ref = term_ud.borrow::<LuaTerminal>()?;
             let binding = term_ref.binding.terminal.borrow_mut();
             Ok(binding.scrollback_len())
@@ -1523,9 +1499,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     /// @param terminal Terminal
     /// @param cap integer
     /// @return nil
-    tbl.set(
-        "setScrollbackCap",
-        lua.create_function(|_, (term_ud, cap): (LuaAnyUserData, usize)| {
+    tbl.set("setScrollbackCap", lua.create_function(|_, (term_ud, cap): (LuaAnyUserData, usize)| {
             let term_ref = term_ud.borrow_mut::<LuaTerminal>()?;
             term_ref
                 .binding
@@ -1547,9 +1521,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     /// @param terminal Terminal
     /// @param cmd string
     /// @return nil
-    tbl.set(
-        "pushCmdHistory",
-        lua.create_function(|_, (term_ud, cmd): (LuaAnyUserData, String)| {
+    tbl.set("pushCmdHistory", lua.create_function(|_, (term_ud, cmd): (LuaAnyUserData, String)| {
             let term_ref = term_ud.borrow_mut::<LuaTerminal>()?;
             term_ref
                 .binding
@@ -1567,9 +1539,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     ///
     /// @param terminal Terminal
     /// @return string|nil
-    tbl.set(
-        "prevCmd",
-        lua.create_function(|_, term_ud: LuaAnyUserData| {
+    tbl.set("prevCmd", lua.create_function(|_, term_ud: LuaAnyUserData| {
             let term_ref = term_ud.borrow_mut::<LuaTerminal>()?;
             let mut binding = term_ref.binding.terminal.borrow_mut();
             Ok(binding.prev_cmd().map(|s| s.to_owned()))
@@ -1583,9 +1553,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     ///
     /// @param terminal Terminal
     /// @return string|nil
-    tbl.set(
-        "nextCmd",
-        lua.create_function(|_, term_ud: LuaAnyUserData| {
+    tbl.set("nextCmd", lua.create_function(|_, term_ud: LuaAnyUserData| {
             let term_ref = term_ud.borrow_mut::<LuaTerminal>()?;
             let mut binding = term_ref.binding.terminal.borrow_mut();
             Ok(binding.next_cmd().map(|s| s.to_owned()))
@@ -1597,9 +1565,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     ///
     /// @param terminal Terminal
     /// @return integer
-    tbl.set(
-        "cmdHistoryLen",
-        lua.create_function(|_, term_ud: LuaAnyUserData| {
+    tbl.set("cmdHistoryLen", lua.create_function(|_, term_ud: LuaAnyUserData| {
             let term_ref = term_ud.borrow::<LuaTerminal>()?;
             let binding = term_ref.binding.terminal.borrow_mut();
             Ok(binding.cmd_history_len())
@@ -1611,9 +1577,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     ///
     /// @param terminal Terminal
     /// @return nil
-    tbl.set(
-        "clearCmdHistory",
-        lua.create_function(|_, term_ud: LuaAnyUserData| {
+    tbl.set("clearCmdHistory", lua.create_function(|_, term_ud: LuaAnyUserData| {
             let term_ref = term_ud.borrow_mut::<LuaTerminal>()?;
             term_ref.binding.terminal.borrow_mut().clear_cmd_history();
             Ok(())
@@ -1631,9 +1595,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     /// @param terminal Terminal
     /// @param theme string
     /// @return nil
-    tbl.set(
-        "applyTheme",
-        lua.create_function(|_, (term_ud, theme): (LuaAnyUserData, String)| {
+    tbl.set("applyTheme", lua.create_function(|_, (term_ud, theme): (LuaAnyUserData, String)| {
             // (fg_r, fg_g, fg_b, bg_r, bg_g, bg_b) in 0-255
             let (fr, fg_c, fb, br, bg_c, bb): (u8, u8, u8, u8, u8, u8) = match theme.as_str() {
                 "solarized_dark" => (131, 148, 150, 0, 43, 54),
@@ -1672,9 +1634,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     /// @param text string
     /// @param rules table
     /// @return nil
-    tbl.set(
-        "printHighlighted",
-        lua.create_function(
+    tbl.set("printHighlighted", lua.create_function(
             |_,
              (term_ud, col, row, text, rules_t): (
                 LuaAnyUserData,
@@ -1736,9 +1696,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     /// Strips all ANSI escape codes from `text` and returns the plain string.
     /// @param text string
     /// @return string
-    tbl.set(
-        "stripAnsi",
-        lua.create_function(|_, text: String| Ok(strip_ansi_codes(&text)))?,
+    tbl.set("stripAnsi", lua.create_function(|_, text: String| Ok(strip_ansi_codes(&text)))?,
     )?;
 
     /// Parses `text` into coloured spans.  Returns an array of tables, each with
@@ -1746,9 +1704,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     /// `text`, `bold`, and optional `fg`/`bg` sub-tables `{r,g,b}`.
     /// @param text string
     /// table   array of span tables
-    tbl.set(
-        "parseAnsi",
-        lua.create_function(|lua, text: String| {
+    tbl.set("parseAnsi", lua.create_function(|lua, text: String| {
             let spans = parse_ansi_spans(&text);
             let arr = lua.create_table()?;
             for (i, span) in spans.iter().enumerate() {
@@ -1783,9 +1739,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     /// @param row integer
     /// @param text string
     /// @return nil
-    tbl.set(
-        "printAnsi",
-        lua.create_function(
+    tbl.set("printAnsi", lua.create_function(
             |_, (t_ud, col, row, text): (LuaAnyUserData, i64, i64, String)| {
                 let t = t_ud.borrow_mut::<LuaTerminal>()?;
                 let spans = parse_ansi_spans(&text);
@@ -1837,9 +1791,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     /// Adds a candidate string to the tab-completion engine.
     /// @param candidate string
     /// @return nil
-    tbl.set(
-        "addCompletion",
-        lua.create_function(move |_, candidate: String| {
+    tbl.set("addCompletion", lua.create_function(move |_, candidate: String| {
             crc.borrow_mut().add_candidate(&candidate);
             Ok(())
         })?,
@@ -1849,9 +1801,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     /// Removes a candidate string from the tab-completion engine.
     /// @param candidate string
     /// @return nil
-    tbl.set(
-        "removeCompletion",
-        lua.create_function(move |_, candidate: String| {
+    tbl.set("removeCompletion", lua.create_function(move |_, candidate: String| {
             crc.borrow_mut().remove_candidate(&candidate);
             Ok(())
         })?,
@@ -1860,9 +1810,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     let crc = comp_rc.clone();
     /// Clears all completion candidates.
     /// @return nil
-    tbl.set(
-        "clearCompletions",
-        lua.create_function(move |_, ()| {
+    tbl.set("clearCompletions", lua.create_function(move |_, ()| {
             crc.borrow_mut().clear();
             Ok(())
         })?,
@@ -1872,9 +1820,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     /// Returns all registered candidates that start with `prefix`, as a sorted array.
     /// @param prefix string
     /// @return table
-    tbl.set(
-        "getCompletions",
-        lua.create_function(move |lua, prefix: String| {
+    tbl.set("getCompletions", lua.create_function(move |lua, prefix: String| {
             let matches = crc.borrow().completions_for(&prefix);
             let t = lua.create_table()?;
             for (i, m) in matches.iter().enumerate() {
@@ -1889,9 +1835,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     /// Returns nil when there are no matches.
     /// @param prefix string
     /// @return string|nil
-    tbl.set(
-        "nextCompletion",
-        lua.create_function(move |_, prefix: String| {
+    tbl.set("nextCompletion", lua.create_function(move |_, prefix: String| {
             Ok(crc.borrow_mut().next_completion(&prefix))
         })?,
     )?;
@@ -1899,9 +1843,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     let crc = comp_rc.clone();
     /// Resets the cycling cursor without clearing the candidate list.
     /// @return nil
-    tbl.set(
-        "resetCompletion",
-        lua.create_function(move |_, ()| {
+    tbl.set("resetCompletion", lua.create_function(move |_, ()| {
             crc.borrow_mut().reset();
             Ok(())
         })?,
@@ -1910,17 +1852,13 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     // -- getMaxCols --
     /// Returns the maximum number of columns a Terminal can be constructed with.
     /// @return integer
-    tbl.set(
-        "getMaxCols",
-        lua.create_function(|_, ()| Ok(crate::terminal::MAX_COLS as u32))?,
+    tbl.set("getMaxCols", lua.create_function(|_, ()| Ok(crate::terminal::MAX_COLS as u32))?,
     )?;
 
     // -- getMaxRows --
     /// Returns the maximum number of rows a Terminal can be constructed with.
     /// @return integer
-    tbl.set(
-        "getMaxRows",
-        lua.create_function(|_, ()| Ok(crate::terminal::MAX_ROWS as u32))?,
+    tbl.set("getMaxRows", lua.create_function(|_, ()| Ok(crate::terminal::MAX_ROWS as u32))?,
     )?;
 
     luna.set("terminal", tbl)?;

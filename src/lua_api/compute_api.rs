@@ -380,9 +380,7 @@ impl LuaUserData for LuaArray {
         /// @param mask : Array
         /// @param other : Array
         /// @return Array
-        methods.add_method(
-            "where",
-            |lua, this, (mask, other): (LuaAnyUserData, LuaAnyUserData)| {
+        methods.add_method("where", |lua, this, (mask, other): (LuaAnyUserData, LuaAnyUserData)| {
                 let mask_arr = mask.borrow::<LuaArray>()?;
                 let other_arr = other.borrow::<LuaArray>()?;
                 let result = ops::where_mask(&mask_arr.inner, &this.inner, &other_arr.inner)
@@ -598,9 +596,7 @@ impl LuaUserData for LuaArray {
         /// @param col : integer
         /// @param val : number
         /// @return Array
-        methods.add_method(
-            "floodFill",
-            |lua, this, (row, col, val): (usize, usize, f64)| {
+        methods.add_method("floodFill", |lua, this, (row, col, val): (usize, usize, f64)| {
                 let result = spatial::flood_fill(&this.inner, row - 1, col - 1, val)
                     .map_err(LuaError::RuntimeError)?;
                 lua.create_userdata(LuaArray { inner: result })
@@ -614,9 +610,7 @@ impl LuaUserData for LuaArray {
         /// @param rows : integer
         /// @param cols : integer
         /// @return Array
-        methods.add_method(
-            "getRegion",
-            |lua, this, (row, col, rows, cols): (usize, usize, usize, usize)| {
+        methods.add_method("getRegion", |lua, this, (row, col, rows, cols): (usize, usize, usize, usize)| {
                 let result = spatial::get_region(&this.inner, row - 1, col - 1, rows, cols)
                     .map_err(LuaError::RuntimeError)?;
                 lua.create_userdata(LuaArray { inner: result })
@@ -629,9 +623,7 @@ impl LuaUserData for LuaArray {
         /// @param col : integer
         /// @param source : Array
         /// @return nil
-        methods.add_method_mut(
-            "setRegion",
-            |_, this, (row, col, source): (usize, usize, LuaAnyUserData)| {
+        methods.add_method_mut("setRegion", |_, this, (row, col, source): (usize, usize, LuaAnyUserData)| {
                 let src = source.borrow::<LuaArray>()?;
                 spatial::set_region(&mut this.inner, row - 1, col - 1, &src.inner)
                     .map_err(LuaError::RuntimeError)?;
@@ -672,9 +664,7 @@ impl LuaUserData for LuaArray {
         /// @param lo : number?
         /// @param hi : number?
         /// @return table
-        methods.add_method(
-            "histogram",
-            |lua, this, (bins, lo, hi): (usize, Option<f64>, Option<f64>)| {
+        methods.add_method("histogram", |lua, this, (bins, lo, hi): (usize, Option<f64>, Option<f64>)| {
                 let bins_data = analytics::histogram(&this.inner, bins, lo, hi)
                     .map_err(LuaError::RuntimeError)?;
                 let out = lua.create_table()?;
@@ -852,9 +842,7 @@ impl LuaUserData for LuaArray {
         /// @param max_iter : int?   (default 1000)
         /// @param tol      : number? (default 1e-10)
         /// @return table
-        methods.add_method(
-            "eigenPower",
-            |lua, this, (max_iter, tol): (Option<u32>, Option<f64>)| {
+        methods.add_method("eigenPower", |lua, this, (max_iter, tol): (Option<u32>, Option<f64>)| {
                 let (eigenvalue, vec) = crate::compute::linalg::eigenvalue_power(
                     &this.inner,
                     max_iter.unwrap_or(0),
@@ -982,9 +970,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// @param shape : table
     /// @param dtype : string?
     /// @return Array
-    tbl.set(
-        "newArray",
-        lua.create_function(|lua, (shape, dtype): (LuaValue, Option<String>)| {
+    tbl.set("newArray", lua.create_function(|lua, (shape, dtype): (LuaValue, Option<String>)| {
             let s = parse_shape(shape)?;
             let dt = parse_dtype(dtype)?;
             let arr = NdArray::zeros(&s, dt).map_err(LuaError::RuntimeError)?;
@@ -997,9 +983,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// @param shape : table
     /// @param dtype : string?
     /// @return Array
-    tbl.set(
-        "zeros",
-        lua.create_function(|lua, (shape, dtype): (LuaValue, Option<String>)| {
+    tbl.set("zeros", lua.create_function(|lua, (shape, dtype): (LuaValue, Option<String>)| {
             let s = parse_shape(shape)?;
             let dt = parse_dtype(dtype)?;
             let arr = NdArray::zeros(&s, dt).map_err(LuaError::RuntimeError)?;
@@ -1012,9 +996,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// @param shape : table
     /// @param dtype : string?
     /// @return Array
-    tbl.set(
-        "ones",
-        lua.create_function(|lua, (shape, dtype): (LuaValue, Option<String>)| {
+    tbl.set("ones", lua.create_function(|lua, (shape, dtype): (LuaValue, Option<String>)| {
             let s = parse_shape(shape)?;
             let dt = parse_dtype(dtype)?;
             let arr = NdArray::ones(&s, dt).map_err(LuaError::RuntimeError)?;
@@ -1029,9 +1011,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// @param step : number?
     /// @param dtype : string?
     /// @return Array
-    tbl.set(
-        "range",
-        lua.create_function(
+    tbl.set("range", lua.create_function(
             |lua, (start, stop, step, dtype): (f64, f64, Option<f64>, Option<String>)| {
                 let st = step.unwrap_or(1.0);
                 let dt = parse_dtype(dtype)?;
@@ -1047,9 +1027,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// @param shape : table?
     /// @param dtype : string?
     /// @return Array
-    tbl.set(
-        "fromTable",
-        lua.create_function(
+    tbl.set("fromTable", lua.create_function(
             |lua, (data, shape, dtype): (LuaTable, Option<LuaValue>, Option<String>)| {
                 let mut values = Vec::new();
                 for i in 1..=data.len()? {
@@ -1072,9 +1050,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// @param size : integer
     /// @param sigma : number
     /// @return Array
-    tbl.set(
-        "gaussianKernel",
-        lua.create_function(|lua, (size, sigma): (usize, f64)| {
+    tbl.set("gaussianKernel", lua.create_function(|lua, (size, sigma): (usize, f64)| {
             let k = linalg::gaussian_kernel(size, sigma).map_err(LuaError::RuntimeError)?;
             lua.create_userdata(LuaArray { inner: k })
         })?,
@@ -1084,9 +1060,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// Creates a 2Ă—2 rotation matrix for the given angle in radians.
     /// @param angle_rad : number
     /// @return Array
-    tbl.set(
-        "rotate2dMatrix",
-        lua.create_function(|lua, angle_rad: f64| {
+    tbl.set("rotate2dMatrix", lua.create_function(|lua, angle_rad: f64| {
             let m = linalg::rotate2d_matrix(angle_rad).map_err(LuaError::RuntimeError)?;
             lua.create_userdata(LuaArray { inner: m })
         })?,
@@ -1100,9 +1074,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// @param sx : number
     /// @param sy : number
     /// @return Array
-    tbl.set(
-        "affine2d",
-        lua.create_function(
+    tbl.set("affine2d", lua.create_function(
             |lua, (tx, ty, angle_rad, sx, sy): (f64, f64, f64, f64, f64)| {
                 let m =
                     linalg::affine2d(tx, ty, angle_rad, sx, sy).map_err(LuaError::RuntimeError)?;
@@ -1119,9 +1091,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     ///
     /// @param samples : table
     /// @return table
-    tbl.set(
-        "fft",
-        lua.create_function(|lua, samples: LuaTable| {
+    tbl.set("fft", lua.create_function(|lua, samples: LuaTable| {
             let data: Vec<f64> = samples.sequence_values::<f64>().flatten().collect();
             let output = crate::compute::fft::fft(&data);
             let t = lua.create_table()?;
@@ -1143,9 +1113,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     ///
     /// @param freqs : table
     /// @return table
-    tbl.set(
-        "ifft",
-        lua.create_function(|lua, freqs: LuaTable| {
+    tbl.set("ifft", lua.create_function(|lua, freqs: LuaTable| {
             let pairs: Vec<(f64, f64)> = freqs
                 .sequence_values::<LuaTable>()
                 .flatten()
@@ -1172,9 +1140,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     ///
     /// @param samples : table
     /// @return table
-    tbl.set(
-        "fftMagnitude",
-        lua.create_function(|lua, samples: LuaTable| {
+    tbl.set("fftMagnitude", lua.create_function(|lua, samples: LuaTable| {
             let data: Vec<f64> = samples.sequence_values::<f64>().flatten().collect();
             let mag = crate::compute::fft::fft_magnitude(&data);
             let t = lua.create_table()?;

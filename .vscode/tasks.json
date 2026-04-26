@@ -1,4 +1,4 @@
-﻿{
+{
     "version": "2.0.0",
     "tasks": [
 
@@ -199,6 +199,13 @@
             "detail": "📖 Regenerate docs/reports/lib-api.md from content/library/*/init.lua LDoc tags.",
             "type": "shell",
             "command": "python tools/docs/gen_lib_docs.py",
+            "problemMatcher": []
+        },
+        {
+            "label": "Docs: Validate Lua Stubs",
+            "detail": "📖 Verify logs/data/lua_api_data.json plus docs/api/lurek.lua and docs/api/library.lua still match fresh generator output.",
+            "type": "shell",
+            "command": "python tools/validate/validate_generated_lua_stubs.py",
             "problemMatcher": []
         },
 

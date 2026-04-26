@@ -5,7 +5,7 @@
 | Category | Covered | Total | Coverage |
 |----------|---------|-------|----------|
 | Rust public functions | 3253 | 4229 | 76.9% |
-| Lua API functions | 4353 | 4379 | 99.4% |
+| Lua API functions | 3997 | 4022 | 99.4% |
 
 ## Rust Coverage by Module
 
@@ -113,10 +113,10 @@
 | system | 26 | 26 | 100.0% |
 | terminal | 87 | 87 | 100.0% |
 | thread | 37 | 37 | 100.0% |
-| tilemap | 186 | 188 | 98.9% |
+| tilemap | 187 | 188 | 99.5% |
 | timer | 49 | 49 | 100.0% |
 | tween | 58 | 58 | 100.0% |
-| ui | 380 | 380 | 100.0% |
+| ui | 23 | 23 | 100.0% |
 | window | 50 | 50 | 100.0% |
 
 ## Uncovered Rust Functions (top 50)
@@ -181,14 +181,14 @@
 - `LDataFrame:withRollingMin` (method) in `src/lua_api/dataframe_api.rs:740`
 - `LDataFrame:withRollingMax` (method) in `src/lua_api/dataframe_api.rs:757`
 - `LOverlay:triggerShake` (method) in `src/lua_api/effect_api.rs:743`
-- `lurek.html.preventDefault` (function) in `src/lua_api/html_api.rs:891`
-- `lurek.html.stopPropagation` (function) in `src/lua_api/html_api.rs:900`
-- `lurek.html.isDefaultPrevented` (function) in `src/lua_api/html_api.rs:909`
+- `lurek.html.preventDefault` (function) in `src/lua_api/html_api.rs:915`
+- `lurek.html.stopPropagation` (function) in `src/lua_api/html_api.rs:924`
+- `lurek.html.isDefaultPrevented` (function) in `src/lua_api/html_api.rs:933`
 - `LNoiseGenerator:worley3d` (method) in `src/lua_api/math_api.rs:1309`
 - `LNoiseGenerator:warpDomain` (method) in `src/lua_api/math_api.rs:1434`
 - `LNoiseGenerator:generateMap` (method) in `src/lua_api/math_api.rs:1445`
-- `LTrail:setHeadColor` (method) in `src/lua_api/particle_api.rs:1420`
-- `LTrail:setTailColor` (method) in `src/lua_api/particle_api.rs:1436`
+- `LTrail:setHeadColor` (method) in `src/lua_api/particle_api.rs:1421`
+- `LTrail:setTailColor` (method) in `src/lua_api/particle_api.rs:1437`
 - `LFlowField:calculateMulti` (method) in `src/lua_api/pathfind_api.rs:604`
 - `LWorld:setJointMotorSpeed` (method) in `src/lua_api/physics_api.rs:690`
 - `LWorld:setJointLimitsEnabled` (method) in `src/lua_api/physics_api.rs:711`
@@ -200,4 +200,3 @@
 - `LRaycaster:drawLineOfSight` (method) in `src/lua_api/raycaster_api.rs:602`
 - `LRaycaster:drawCameraSweep` (method) in `src/lua_api/raycaster_api.rs:622`
 - `LChunkMap:getChunksInView` (method) in `src/lua_api/tilemap_api.rs:1199`
-- `LMapBlock:setSide` (method) in `src/lua_api/tilemap_api.rs:1680`

@@ -49,9 +49,7 @@ impl LuaUserData for LuaSkeleton {
         /// @param name string
         /// @param opts table?
         /// @return integer
-        methods.add_method_mut(
-            "addBone",
-            |_, this, (name, opts): (String, Option<LuaTable>)| {
+        methods.add_method_mut("addBone", |_, this, (name, opts): (String, Option<LuaTable>)| {
                 let (x, y, rot, sx, sy) = parse_bone_opts(&opts)?;
                 Ok(this.inner.add_bone_full(BoneParams {
                     name,
@@ -71,9 +69,7 @@ impl LuaUserData for LuaSkeleton {
         /// @param parent_idx integer
         /// @param opts table?
         /// @return integer
-        methods.add_method_mut(
-            "addChildBone",
-            |_, this, (name, parent_idx, opts): (String, usize, Option<LuaTable>)| {
+        methods.add_method_mut("addChildBone", |_, this, (name, parent_idx, opts): (String, usize, Option<LuaTable>)| {
                 let (x, y, rot, sx, sy) = parse_bone_opts(&opts)?;
                 Ok(this.inner.add_bone_full(BoneParams {
                     name,
@@ -93,9 +89,7 @@ impl LuaUserData for LuaSkeleton {
         /// @param bone_idx integer
         /// @param attachment string?
         /// @return integer
-        methods.add_method_mut(
-            "addSlot",
-            |_, this, (name, bone_idx, attachment): (String, usize, Option<String>)| {
+        methods.add_method_mut("addSlot", |_, this, (name, bone_idx, attachment): (String, usize, Option<String>)| {
                 Ok(this.inner.add_slot_full(&name, bone_idx, attachment))
             },
         );
@@ -178,9 +172,7 @@ impl LuaUserData for LuaSkeleton {
         /// @param name string
         /// @param looping boolean?
         /// @return boolean
-        methods.add_method_mut(
-            "playAnimation",
-            |_, this, (name, looping): (String, Option<bool>)| {
+        methods.add_method_mut("playAnimation", |_, this, (name, looping): (String, Option<bool>)| {
                 Ok(this.inner.play_animation(&name, looping.unwrap_or(true)))
             },
         );
@@ -225,9 +217,7 @@ impl LuaUserData for LuaSkeleton {
         /// @param bone_chain table
         /// @param bend_positive boolean?
         /// @return integer
-        methods.add_method_mut(
-            "addIKConstraint",
-            |_, this, (name, chain_tbl, bend_positive): (String, LuaTable, Option<bool>)| {
+        methods.add_method_mut("addIKConstraint", |_, this, (name, chain_tbl, bend_positive): (String, LuaTable, Option<bool>)| {
                 let mut chain: Vec<usize> = Vec::new();
                 for v in chain_tbl.sequence_values::<usize>() {
                     chain.push(v?);
@@ -243,9 +233,7 @@ impl LuaUserData for LuaSkeleton {
         /// @param x number
         /// @param y number
         /// @return boolean
-        methods.add_method_mut(
-            "setIKTarget",
-            |_, this, (name, x, y): (String, f32, f32)| Ok(this.inner.set_ik_target(&name, x, y)),
+        methods.add_method_mut("setIKTarget", |_, this, (name, x, y): (String, f32, f32)| Ok(this.inner.set_ik_target(&name, x, y)),
         );
 
         // -- addSkin --
@@ -278,9 +266,7 @@ impl LuaUserData for LuaSkeleton {
         /// @param slot string
         /// @param attachment string
         /// @return nil
-        methods.add_method_mut(
-            "setSkinMapping",
-            |_, this, (skin, slot, attachment): (String, String, String)| {
+        methods.add_method_mut("setSkinMapping", |_, this, (skin, slot, attachment): (String, String, String)| {
                 this.inner.set_skin_mapping(&skin, &slot, &attachment);
                 Ok(())
             },
@@ -299,9 +285,7 @@ impl LuaUserData for LuaSkeleton {
         /// @param time number
         /// @param blend_weight number?
         /// @return nil
-        methods.add_method_mut(
-            "blendAnimation",
-            |_, this, (anim_ud, time, blend_weight): (mlua::AnyUserData, f32, Option<f32>)| {
+        methods.add_method_mut("blendAnimation", |_, this, (anim_ud, time, blend_weight): (mlua::AnyUserData, f32, Option<f32>)| {
                 let anim_ref = anim_ud
                     .borrow::<LuaSkeletonAnimation>()
                     .map_err(mlua::Error::external)?;
@@ -349,9 +333,7 @@ impl LuaUserData for LuaSkeletonAnimation {
         /// @param value number
         /// @param easing string?
         /// @return nil
-        methods.add_method_mut(
-            "addKeyframe",
-            |_,
+        methods.add_method_mut("addKeyframe", |_,
              this,
              (bone_idx, prop_str, time, value, easing_str): (
                 usize,
@@ -424,9 +406,7 @@ impl LuaUserData for LuaSkeletonAnimation {
         /// @param name string
         /// @param value number?
         /// @return nil
-        methods.add_method_mut(
-            "addEventKey",
-            |_, this, (time, name, value): (f32, String, Option<f32>)| {
+        methods.add_method_mut("addEventKey", |_, this, (time, name, value): (f32, String, Option<f32>)| {
                 this.inner.add_event_key(time, name, value.unwrap_or(0.0));
                 Ok(())
             },
@@ -491,9 +471,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     /// Creates a new empty skeleton with the given name.
     /// @param name string
     /// @return Skeleton
-    tbl.set(
-        "newSkeleton",
-        lua.create_function(|lua, name: String| {
+    tbl.set("newSkeleton", lua.create_function(|lua, name: String| {
             lua.create_userdata(LuaSkeleton {
                 inner: Skeleton::new(&name),
             })
@@ -505,9 +483,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     /// @param name string
     /// @param duration number
     /// @return SkeletonAnimation
-    tbl.set(
-        "newSkeletonAnimation",
-        lua.create_function(|lua, (name, duration): (String, f32)| {
+    tbl.set("newSkeletonAnimation", lua.create_function(|lua, (name, duration): (String, f32)| {
             lua.create_userdata(LuaSkeletonAnimation {
                 inner: SkeletonAnimation {
                     name,

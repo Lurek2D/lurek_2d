@@ -147,9 +147,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     // lurek.platform.getOS() -> string
     /// Returns the host operating system name ('Windows', 'Linux', 'macOS').
     /// @return string
-    system.set(
-        "getOS",
-        lua.create_function(|_, ()| {
+    system.set("getOS", lua.create_function(|_, ()| {
             Ok(if cfg!(target_os = "windows") {
                 "Windows"
             } else if cfg!(target_os = "linux") {
@@ -169,44 +167,34 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     // lurek.platform.getVersion() -> string
     /// Returns the Lurek2D engine version string.
     /// @return string
-    system.set(
-        "getVersion",
-        lua.create_function(|_, ()| Ok(env!("CARGO_PKG_VERSION").to_string()))?,
+    system.set("getVersion", lua.create_function(|_, ()| Ok(env!("CARGO_PKG_VERSION").to_string()))?,
     )?;
 
     // lurek.platform.getProcessorCount() -> integer
     /// Returns the number of logical CPU cores available.
     /// @return integer
-    system.set(
-        "getProcessorCount",
-        lua.create_function(|_, ()| Ok(get_processor_count()))?,
+    system.set("getProcessorCount", lua.create_function(|_, ()| Ok(get_processor_count()))?,
     )?;
 
     // lurek.platform.getMemorySize() -> integer (MiB)
     /// Returns the total amount of installed system RAM in megabytes.
     /// @return integer
     /// RAM size in megabytes as an integer.
-    system.set(
-        "getMemorySize",
-        lua.create_function(|_, ()| Ok(get_memory_size()))?,
+    system.set("getMemorySize", lua.create_function(|_, ()| Ok(get_memory_size()))?,
     )?;
 
     // lurek.platform.openURL(url) -> bool
     /// Opens a URL in the system's default browser.
     /// @param url string
     /// @return boolean
-    system.set(
-        "openURL",
-        lua.create_function(|_, url: String| Ok(open_url(&url)))?,
+    system.set("openURL", lua.create_function(|_, url: String| Ok(open_url(&url)))?,
     )?;
 
     // lurek.platform.getPreferredLocales() -> table of strings
     /// Returns an ordered list of the user's preferred locale strings (e.g. 'en-US').
     /// @return table
     /// Table of locale strings ordered from most to least preferred.
-    system.set(
-        "getPreferredLocales",
-        lua.create_function(|_, ()| Ok(get_preferred_locales()))?,
+    system.set("getPreferredLocales", lua.create_function(|_, ()| Ok(get_preferred_locales()))?,
     )?;
 
     // lurek.platform.getPowerInfo() -> state, percent_or_nil, seconds_or_nil
@@ -214,9 +202,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @return table
     /// string, integer?, integer?
     /// Table with fields state ('battery','charging','charged','unknown'), percent, and seconds.
-    system.set(
-        "getPowerInfo",
-        lua.create_function(|_, ()| {
+    system.set("getPowerInfo", lua.create_function(|_, ()| {
             let (state, percent, seconds) = get_power_info();
             Ok((state.as_str().to_string(), percent, seconds))
         })?,
@@ -226,9 +212,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// Returns a table of system information including OS name, CPU model, and installed RAM.
     /// @return table
     /// Table with fields os, cpu, cores, and ram.
-    system.set(
-        "getInfo",
-        lua.create_function(|lua, ()| {
+    system.set("getInfo", lua.create_function(|lua, ()| {
             let info = lua.create_table()?;
             /// Engine.
             info.set("engine", "Lurek2D")?;
@@ -239,9 +223,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
             /// Renderer.
             info.set("renderer", "wgpu")?;
             /// Os.
-            info.set(
-                "os",
-                if cfg!(target_os = "windows") {
+            info.set("os", if cfg!(target_os = "windows") {
                     "Windows"
                 } else if cfg!(target_os = "linux") {
                     "Linux"
@@ -263,34 +245,26 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// Resolves a stable runtime message ID such as 'L001' to its human-readable text.
     /// @param id string
     /// @return string
-    system.set(
-        "getMessage",
-        lua.create_function(|_, id: String| Ok(messages::resolve_message(&id)))?,
+    system.set("getMessage", lua.create_function(|_, id: String| Ok(messages::resolve_message(&id)))?,
     )?;
 
     // lurek.platform.hasMessage(id) -> boolean
     /// Returns true when the runtime message catalog contains the given stable message ID.
     /// @param id string
     /// @return boolean
-    system.set(
-        "hasMessage",
-        lua.create_function(|_, id: String| Ok(messages::has_message(&id)))?,
+    system.set("hasMessage", lua.create_function(|_, id: String| Ok(messages::has_message(&id)))?,
     )?;
 
     // lurek.platform.getMessageCount() -> integer
     /// Returns the total number of message entries loaded into the runtime message catalog.
     /// @return integer
-    system.set(
-        "getMessageCount",
-        lua.create_function(|_, ()| Ok(messages::message_count()))?,
+    system.set("getMessageCount", lua.create_function(|_, ()| Ok(messages::message_count()))?,
     )?;
 
     // lurek.platform.setClipboardText(text) Ă”Ă‡Ă¶ writes text to the system clipboard.
     /// Replaces the system clipboard contents with the given string.
     /// @param text string
-    system.set(
-        "setClipboardText",
-        lua.create_function(|_, text: String| {
+    system.set("setClipboardText", lua.create_function(|_, text: String| {
             match arboard::Clipboard::new() {
                 Ok(mut cb) => {
                     if let Err(e) = cb.set_text(text) {
@@ -308,9 +282,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     // lurek.platform.getClipboardText() -> string Ă”Ă‡Ă¶ reads text from the system clipboard.
     /// Returns the current contents of the system clipboard.
     /// @return string
-    system.set(
-        "getClipboardText",
-        lua.create_function(|_, ()| match arboard::Clipboard::new() {
+    system.set("getClipboardText", lua.create_function(|_, ()| match arboard::Clipboard::new() {
             Ok(mut cb) => match cb.get_text() {
                 Ok(text) => Ok(text),
                 Err(e) => {
@@ -332,9 +304,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// Shows or hides the FPS/draw-call debug overlay.
     let s = state.clone();
     /// @param enabled boolean
-    system.set(
-        "setDebugOverlay",
-        lua.create_function(move |_, enabled: bool| {
+    system.set("setDebugOverlay", lua.create_function(move |_, enabled: bool| {
             s.borrow_mut().debug_overlay_enabled = enabled;
             Ok(())
         })?,
@@ -343,9 +313,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     // lurek.platform.getDebugOverlay() -> bool
     let s = state;
     /// Returns whether the debug overlay is currently visible.
-    system.set(
-        "getDebugOverlay",
-        lua.create_function(move |_, ()| Ok(s.borrow().debug_overlay_enabled))?,
+    system.set("getDebugOverlay", lua.create_function(move |_, ()| Ok(s.borrow().debug_overlay_enabled))?,
     )?;
 
     // -----------------------------------------------------------------------
@@ -357,9 +325,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// - `level` Ă”Ă‡Ă¶ One of 'debug', 'info', 'warn', or 'error'.
     // lurek.platform.setLogLevel(level)
     /// @param level string
-    system.set(
-        "setLogLevel",
-        lua.create_function(|_, level: String| {
+    system.set("setLogLevel", lua.create_function(|_, level: String| {
             log_messages::set_log_level(&level);
             Ok(())
         })?,
@@ -369,9 +335,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// Returns the name of the current minimum log level for runtime messages.
     /// One of 'debug', 'info', 'warn', or 'error'.
     // lurek.platform.getLogLevel()
-    system.set(
-        "getLogLevel",
-        lua.create_function(|_, ()| Ok(log_messages::get_log_level().to_string()))?,
+    system.set("getLogLevel", lua.create_function(|_, ()| Ok(log_messages::get_log_level().to_string()))?,
     )?;
 
     #[allow(unused_doc_comments)]
@@ -379,9 +343,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     // lurek.platform.log(level, message)
     /// @param level string
     /// @param message string
-    system.set(
-        "log",
-        lua.create_function(|_, (level, message): (String, String)| {
+    system.set("log", lua.create_function(|_, (level, message): (String, String)| {
             match level.to_lowercase().as_str() {
                 "error" => log::error!("[Lua] {}", message),
                 "warn" | "warning" => log::warn!("[Lua] {}", message),
@@ -401,9 +363,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         /// Returns the last unhandled error message, or nil.
         let s = state_for_error.clone();
         /// @return table?
-        system.set(
-            "getLastError",
-            lua.create_function(move |lua, ()| {
+        system.set("getLastError", lua.create_function(move |lua, ()| {
                 let state = s.borrow();
                 if let Some(ref err_info) = state.last_error {
                     let tbl = lua.create_table()?;
@@ -433,9 +393,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     ///
     /// @param err string  Error message (e.g. the second return of `pcall`).
     /// @return string  JSON: `{"message":"...","code":"...","category":"...","hint":"..."}`.
-    system.set(
-        "errorSnapshot",
-        lua.create_function(|_, msg: String| {
+    system.set("errorSnapshot", lua.create_function(|_, msg: String| {
             use crate::runtime::EngineError;
             let snap = EngineError::LuaError(msg).snapshot();
             Ok(snap.to_json())
@@ -446,18 +404,14 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// Returns the CPU architecture string for the current machine.
     /// @return string
     /// One of 'x86_64', 'aarch64', 'arm', etc.
-    system.set(
-        "getArch",
-        lua.create_function(|_, ()| Ok(std::env::consts::ARCH.to_string()))?,
+    system.set("getArch", lua.create_function(|_, ()| Ok(std::env::consts::ARCH.to_string()))?,
     )?;
 
     // lurek.platform.getEnv(name) -> string?
     /// Returns the value of an environment variable, or nil if not set.
     /// @param name string Environment variable name (case-sensitive on Linux/macOS).
     /// @return string? String value of the variable, or nil if it is not set.
-    system.set(
-        "getEnv",
-        lua.create_function(|_, name: String| match std::env::var(&name) {
+    system.set("getEnv", lua.create_function(|_, name: String| match std::env::var(&name) {
             Ok(val) => Ok(Some(val)),
             Err(_) => Ok(None),
         })?,
@@ -466,9 +420,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     // lurek.platform.getArgs() -> table
     /// Returns the command-line arguments as a table.
     /// @return table
-    system.set(
-        "getArgs",
-        lua.create_function(|lua, ()| {
+    system.set("getArgs", lua.create_function(|lua, ()| {
             let args: Vec<String> = std::env::args().collect();
             let tbl = lua.create_table()?;
             for (i, arg) in args.iter().enumerate() {
@@ -484,9 +436,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @return table
     /// - `args` Ă”Ă‡Ă¶ Argument string or table (e.g. '--flag=value --bool').
     /// Table mapping flag names to their values or true for boolean flags.
-    system.set(
-        "parseArgs",
-        lua.create_function(|lua, args: Option<LuaTable>| {
+    system.set("parseArgs", lua.create_function(|lua, args: Option<LuaTable>| {
             let raw_args: Vec<String> = if let Some(tbl) = args {
                 let mut v = Vec::new();
                 for i in 1..=tbl.len()? {
@@ -553,9 +503,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @return table
     /// - `commands` Ă”Ă‡Ă¶ Table of command strings to execute concurrently.
     /// A batch handle ID used to retrieve results with getBatchResults.
-    system.set(
-        "runBatch",
-        lua.create_function(|lua, (tasks, opts): (LuaTable, Option<LuaTable>)| {
+    system.set("runBatch", lua.create_function(|lua, (tasks, opts): (LuaTable, Option<LuaTable>)| {
             let stop_on_error = opts
                 .as_ref()
                 .and_then(|o| o.get::<_, bool>("stopOnError").ok())
@@ -606,9 +554,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @return integer, integer, integer
     /// - `handle` Ă”Ă‡Ă¶ Batch handle returned by runBatch.
     /// Table mapping each command to its stdout string, or nil if not yet done.
-    system.set(
-        "getBatchResults",
-        lua.create_function(|_, results: LuaTable| {
+    system.set("getBatchResults", lua.create_function(|_, results: LuaTable| {
             let mut passed = 0i64;
             let mut failed = 0i64;
             let mut skipped = 0i64;

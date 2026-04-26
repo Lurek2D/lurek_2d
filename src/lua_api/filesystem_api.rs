@@ -249,9 +249,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @param archive_path string
     /// @param prefix string  (virtual mount point, e.g. "mods/extra")
     /// @return ZipMount
-    tbl.set(
-        "mountZip",
-        lua.create_function(|lua, (archive_path, prefix): (String, String)| {
+    tbl.set("mountZip", lua.create_function(|lua, (archive_path, prefix): (String, String)| {
             let mount = ZipMount::new(&archive_path, &prefix).map_err(LuaError::RuntimeError)?;
             lua.create_userdata(LuaZipMount { inner: mount })
         })?,
@@ -265,9 +263,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// Adds `path` to the polled file-watch list.
     /// @param path string
     /// @return nil
-    tbl.set(
-        "watchPath",
-        lua.create_function(move |_, path: String| {
+    tbl.set("watchPath", lua.create_function(move |_, path: String| {
             wrc.borrow_mut().watch(&path);
             Ok(())
         })?,
@@ -277,9 +273,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// Removes `path` from the polled file-watch list.  No-op if not watched.
     /// @param path string
     /// @return nil
-    tbl.set(
-        "unwatchPath",
-        lua.create_function(move |_, path: String| {
+    tbl.set("unwatchPath", lua.create_function(move |_, path: String| {
             wrc.borrow_mut().unwatch(&path);
             Ok(())
         })?,
@@ -290,9 +284,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @return table
     /// last call.  Call once per second or per slow-update tick for hot reload.
     /// table   array of changed path strings
-    tbl.set(
-        "pollWatchers",
-        lua.create_function(move |lua, ()| {
+    tbl.set("pollWatchers", lua.create_function(move |lua, ()| {
             let changed = wrc.borrow_mut().poll();
             let tbl = lua.create_table()?;
             for (i, p) in changed.iter().enumerate() {
@@ -307,9 +299,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @param path string
     /// @return string
     let s = state.clone();
-    tbl.set(
-        "read",
-        lua.create_function(move |_, path: String| {
+    tbl.set("read", lua.create_function(move |_, path: String| {
             s.borrow().fs.read_string(&path).map_err(LuaError::external)
         })?,
     )?;
@@ -320,9 +310,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @param data string
     /// @return nil
     let s = state.clone();
-    tbl.set(
-        "write",
-        lua.create_function(move |_, (path, data): (String, String)| {
+    tbl.set("write", lua.create_function(move |_, (path, data): (String, String)| {
             s.borrow()
                 .fs
                 .write_string(&path, &data)
@@ -335,9 +323,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @param path string
     /// @return boolean
     let s = state.clone();
-    tbl.set(
-        "exists",
-        lua.create_function(move |_, path: String| Ok(s.borrow().fs.exists(&path)))?,
+    tbl.set("exists", lua.create_function(move |_, path: String| Ok(s.borrow().fs.exists(&path)))?,
     )?;
 
     // -- append --
@@ -346,9 +332,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @param data string
     /// @return nil
     let s = state.clone();
-    tbl.set(
-        "append",
-        lua.create_function(move |_, (path, data): (String, String)| {
+    tbl.set("append", lua.create_function(move |_, (path, data): (String, String)| {
             s.borrow()
                 .fs
                 .append_string(&path, &data)
@@ -362,9 +346,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @param mode string
     /// @return FileHandle
     let s = state.clone();
-    tbl.set(
-        "openFile",
-        lua.create_function(move |_, (path, mode): (String, String)| {
+    tbl.set("openFile", lua.create_function(move |_, (path, mode): (String, String)| {
             let handle = s
                 .borrow()
                 .fs
@@ -381,9 +363,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @param path string
     /// @return table
     let s = state.clone();
-    tbl.set(
-        "getDirectoryItems",
-        lua.create_function(move |_, path: String| {
+    tbl.set("getDirectoryItems", lua.create_function(move |_, path: String| {
             s.borrow()
                 .fs
                 .get_directory_items(&path)
@@ -396,9 +376,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @param path string
     /// @return boolean
     let s = state.clone();
-    tbl.set(
-        "isFile",
-        lua.create_function(move |_, path: String| Ok(s.borrow().fs.is_file(&path)))?,
+    tbl.set("isFile", lua.create_function(move |_, path: String| Ok(s.borrow().fs.is_file(&path)))?,
     )?;
 
     // -- isDirectory --
@@ -406,9 +384,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @param path string
     /// @return boolean
     let s = state.clone();
-    tbl.set(
-        "isDirectory",
-        lua.create_function(move |_, path: String| Ok(s.borrow().fs.is_directory(&path)))?,
+    tbl.set("isDirectory", lua.create_function(move |_, path: String| Ok(s.borrow().fs.is_directory(&path)))?,
     )?;
 
     // -- createDirectory --
@@ -416,9 +392,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @param path string
     /// @return nil
     let s = state.clone();
-    tbl.set(
-        "createDirectory",
-        lua.create_function(move |_, path: String| {
+    tbl.set("createDirectory", lua.create_function(move |_, path: String| {
             s.borrow()
                 .fs
                 .create_directory(&path)
@@ -431,9 +405,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @param path string
     /// @return nil
     let s = state.clone();
-    tbl.set(
-        "remove",
-        lua.create_function(move |_, path: String| {
+    tbl.set("remove", lua.create_function(move |_, path: String| {
             s.borrow().fs.remove(&path).map_err(LuaError::external)
         })?,
     )?;
@@ -443,9 +415,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @param path string
     /// @return table?
     let s = state.clone();
-    tbl.set(
-        "getInfo",
-        lua.create_function(
+    tbl.set("getInfo", lua.create_function(
             move |lua, path: String| match s.borrow().fs.get_info(&path) {
                 Ok(info) => {
                     let t = lua.create_table()?;
@@ -464,18 +434,14 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// Returns the absolute path of the directory the game was loaded from.
     /// @return string
     let s = state.clone();
-    tbl.set(
-        "getSource",
-        lua.create_function(move |_, ()| Ok(s.borrow().fs.get_source()))?,
+    tbl.set("getSource", lua.create_function(move |_, ()| Ok(s.borrow().fs.get_source()))?,
     )?;
 
     // -- getSaveDirectory --
     /// Returns the sandboxed save data directory path.
     /// @return string
     let s = state.clone();
-    tbl.set(
-        "getSaveDirectory",
-        lua.create_function(move |_, ()| {
+    tbl.set("getSaveDirectory", lua.create_function(move |_, ()| {
             Ok(s.borrow()
                 .fs
                 .get_save_directory()
@@ -487,9 +453,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     // -- getWorkingDirectory --
     /// Returns the current working directory path.
     /// @return string
-    tbl.set(
-        "getWorkingDirectory",
-        lua.create_function(move |_, ()| {
+    tbl.set("getWorkingDirectory", lua.create_function(move |_, ()| {
             GameFS::get_working_directory().map_err(LuaError::external)
         })?,
     )?;
@@ -497,18 +461,14 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     // -- getUserDirectory --
     /// Returns the current user's home directory path.
     /// @return string
-    tbl.set(
-        "getUserDirectory",
-        lua.create_function(move |_, ()| Ok(GameFS::get_user_directory()))?,
+    tbl.set("getUserDirectory", lua.create_function(move |_, ()| Ok(GameFS::get_user_directory()))?,
     )?;
 
     // -- getIdentity --
     /// Returns the identity string used to locate the game's save directory.
     /// @return string
     let s = state.clone();
-    tbl.set(
-        "getIdentity",
-        lua.create_function(move |_, ()| Ok(s.borrow().filesystem_identity.clone()))?,
+    tbl.set("getIdentity", lua.create_function(move |_, ()| Ok(s.borrow().filesystem_identity.clone()))?,
     )?;
 
     // -- setIdentity --
@@ -516,9 +476,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @param name string
     /// @return nil
     let s = state.clone();
-    tbl.set(
-        "setIdentity",
-        lua.create_function(move |_, name: String| {
+    tbl.set("setIdentity", lua.create_function(move |_, name: String| {
             s.borrow_mut().filesystem_identity = name;
             Ok(())
         })?,
@@ -529,9 +487,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @param path string
     /// @return function
     let s = state.clone();
-    tbl.set(
-        "lines",
-        lua.create_function(move |lua, path: String| {
+    tbl.set("lines", lua.create_function(move |lua, path: String| {
             let lines = s
                 .borrow()
                 .fs
@@ -548,9 +504,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @param path string
     /// @return integer
     let s = state.clone();
-    tbl.set(
-        "readAsync",
-        lua.create_function(move |_, path: String| {
+    tbl.set("readAsync", lua.create_function(move |_, path: String| {
             s.borrow_mut()
                 .request_async_load(&path)
                 .map_err(LuaError::external)
@@ -563,9 +517,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// string, string?
     let s = state.clone();
     /// @return string|nil
-    tbl.set(
-        "pollAsync",
-        lua.create_function(move |_, handle_id: u64| Ok(s.borrow().poll_async_load(handle_id)))?,
+    tbl.set("pollAsync", lua.create_function(move |_, handle_id: u64| Ok(s.borrow().poll_async_load(handle_id)))?,
     )?;
 
     // -- mount --
@@ -574,9 +526,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @param mountpoint string
     /// @return boolean
     let s = state.clone();
-    tbl.set(
-        "mount",
-        lua.create_function(move |_, (src, mp): (String, String)| {
+    tbl.set("mount", lua.create_function(move |_, (src, mp): (String, String)| {
             s.borrow_mut()
                 .fs
                 .mount(&src, &mp)
@@ -590,9 +540,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @param mountpoint string
     /// @return boolean
     let s = state.clone();
-    tbl.set(
-        "unmount",
-        lua.create_function(move |_, mp: String| Ok(s.borrow_mut().fs.unmount(&mp)))?,
+    tbl.set("unmount", lua.create_function(move |_, mp: String| Ok(s.borrow_mut().fs.unmount(&mp)))?,
     )?;
 
     // -- load --
@@ -600,9 +548,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @param path string
     /// @return function
     let s = state.clone();
-    tbl.set(
-        "load",
-        lua.create_function(move |ctx, path: String| {
+    tbl.set("load", lua.create_function(move |ctx, path: String| {
             let bytes = s
                 .borrow()
                 .fs
@@ -617,9 +563,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @param path string
     /// @return FileData
     let s = state.clone();
-    tbl.set(
-        "newFileData",
-        lua.create_function(move |_, path: String| {
+    tbl.set("newFileData", lua.create_function(move |_, path: String| {
             let bytes = s
                 .borrow()
                 .fs
@@ -640,9 +584,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @param dst string
     /// @return nil
     let s = state.clone();
-    tbl.set(
-        "copy",
-        lua.create_function(move |_, (src, dst): (String, String)| {
+    tbl.set("copy", lua.create_function(move |_, (src, dst): (String, String)| {
             s.borrow()
                 .fs
                 .copy_file(&src, &dst)
@@ -659,9 +601,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @param dst string
     /// @return nil
     let s = state.clone();
-    tbl.set(
-        "move",
-        lua.create_function(move |_, (src, dst): (String, String)| {
+    tbl.set("move", lua.create_function(move |_, (src, dst): (String, String)| {
             s.borrow()
                 .fs
                 .move_file(&src, &dst)
@@ -675,9 +615,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @param path string
     /// @return nil
     let s = state.clone();
-    tbl.set(
-        "removeDir",
-        lua.create_function(move |_, path: String| {
+    tbl.set("removeDir", lua.create_function(move |_, path: String| {
             s.borrow().fs.remove_dir(&path).map_err(LuaError::external)
         })?,
     )?;
@@ -694,9 +632,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// table  array of matching relative paths
     let s = state.clone();
     /// @return table
-    tbl.set(
-        "glob",
-        lua.create_function(move |lua, pattern: String| {
+    tbl.set("glob", lua.create_function(move |lua, pattern: String| {
             let paths = s.borrow().fs.glob(&pattern).map_err(LuaError::external)?;
             let tbl = lua.create_table()?;
             for (i, p) in paths.iter().enumerate() {
@@ -714,9 +650,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @param path string
     /// @return table  array of relative file paths
     let s = state.clone();
-    tbl.set(
-        "listRecursive",
-        lua.create_function(move |lua, path: String| {
+    tbl.set("listRecursive", lua.create_function(move |lua, path: String| {
             let paths = s
                 .borrow()
                 .fs
@@ -743,9 +677,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @param path string
     /// @return table  { size: integer, isFile: boolean, isDir: boolean }
     let s = state.clone();
-    tbl.set(
-        "stat",
-        lua.create_function(move |lua, path: String| {
+    tbl.set("stat", lua.create_function(move |lua, path: String| {
             let (size, is_file, is_dir) = s.borrow().fs.stat(&path).map_err(LuaError::external)?;
             let t = lua.create_table()?;
             t.set("size", size)?;
@@ -764,9 +696,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @param prefix string?  Optional name prefix (default `"tmp"`).
     /// @return string  Relative path of the created temp file (e.g. `"save/tmp123.tmp"`).
     let s = state.clone();
-    tbl.set(
-        "createTempFile",
-        lua.create_function(move |_, prefix: Option<String>| {
+    tbl.set("createTempFile", lua.create_function(move |_, prefix: Option<String>| {
             let prefix = prefix.as_deref().unwrap_or("tmp");
             s.borrow()
                 .fs
@@ -782,9 +712,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @param path string
     /// @return nil
     let s = state.clone();
-    tbl.set(
-        "mkdir",
-        lua.create_function(move |_, path: String| {
+    tbl.set("mkdir", lua.create_function(move |_, path: String| {
             let abs = s.borrow().fs.base_dir().join(&path);
             std::fs::create_dir_all(&abs).map_err(|e| {
                 LuaError::RuntimeError(format!("mkdir '{}': {}", path, e))
@@ -798,9 +726,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @param path string
     /// @return string
     let s = state.clone();
-    tbl.set(
-        "toAbsolutePath",
-        lua.create_function(move |_, path: String| {
+    tbl.set("toAbsolutePath", lua.create_function(move |_, path: String| {
             let abs = s.borrow().fs.base_dir().join(&path);
             Ok(abs.to_string_lossy().to_string())
         })?,

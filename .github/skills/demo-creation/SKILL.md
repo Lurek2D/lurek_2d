@@ -6,105 +6,59 @@ description: "Load this skill when creating one or more new demo projects in con
 
 ## Mission
 
-# Demo Creation — Lurek2D
+Own the content/games/<name>/ folder scaffold, 4-file bundle, library integration, registration, and batch creation workflow.
 
 ## When To Load
 
-- Generating a new `content/games/<name>/` project from scratch
+- Generating a new content/games/<name>/ project from scratch
 - Scaffolding multiple demos in one pass (batch creation)
-- A demo uses `library/` modules alongside `lurek.*`
-- You need the full 4-file bundle: `conf.toml`, `main.lua`, `README.md`, `screen.png`
-- Registering a newly created demo in `content/games/README.md`
+- A demo uses library/ modules alongside lurek.*
+- Registering a newly created demo in content/games/README.md
 
 ## When To Skip
 
-- `content/examples/` single-file scripts → use `examples-management` skill
-- Engine Rust changes needed by a demo → use `rust-coding` + `lua-rust-bridge` skills
-- Physics simulation internals → use `lua-scripting` skill alongside this one
-- Stubs and incomplete `library/` modules (check [library-integration](./references/library-integration.md) before picking a module)
+- content/examples/ single-file scripts → use examples-management skill
+- Engine Rust code → use rust-coding + lua-rust-bridge skills
+- Test writing → use testing-rust skill
 
 ## Domain Knowledge
 
-### Owns
-- `content/games/<name>/` folder scaffold and 4-file bundle
-- `conf.toml` resolution variants and module flag conventions
-- `main.lua` canonical section order and mandatory invariants
-- `README.md` 5-section template and accuracy rules
-- `screen.png` generation via `tools/demos/gen_demo_screenshots.py`
-- `content/games/README.md` table entry and detail block registration
-- `library/` module integration patterns (`dialog`, `item`, `inventory`)
-- Genre-to-API mapping guidance
-- Batch demo creation workflow
+**Required 4-file bundle — every demo must produce exactly:**
 
-### Required Output — 4-File Bundle
-Every demo **must** produce exactly these four artifacts (no more, no fewer unless assets folder is needed):
+| File | Purpose |
+|------|---------|
+| conf.toml | Window config: title, resolution, module flags |
+| main.lua | Game entry point with canonical section order |
+| README.md | 5-section doc: Overview, Controls, Features, API, Notes |
+| screen.png | Auto-generated via tools/demos/gen_demo_screenshots.py |
 
-| File | Required | Notes |
-|------|----------|-------|
-| `content/games/<name>/conf.toml` | Yes | Window config, title, resolution, modules |
-| `content/games/<name>/main.lua` | Yes | Game entry point — canonical structure below |
-| `content/games/<name>/README.md` | Yes | 5-section doc, see template |
-| `content/games/<name>/screen.png` | Yes | Auto-generated via screenshot tool |
+Optional: assets/ folder (sprites, sounds, tilemaps). Never scaffold save/ — auto-created at runtime.
 
-Optional additions:
-- `content/games/<name>/assets/` — sprites, sounds, tilemaps (commit only what the demo runs)
-- `content/games/<name>/save/` — auto-created at runtime by smoke tests; never scaffold this manually
+**Demo naming:** lowercase_underscore (tower_defense, bullet_hell). No spaces, hyphens, or version numbers. Check existing folders first.
 
----
+**conf.toml resolutions:** 800x600 (default for most), 960x540 (16:9 platformers), 800x640 (message logs), 1024x768 (strategy/maps). Add module flags (physics=true, audio=true) only when actually needed.
 
-### Step-by-Step Procedure
-### Step 1 — Derive the Demo Name
+**main.lua canonical section order (never rearrange):** (1) state locals, (2) helpers, (3) lurek.load (init), (4) lurek.update (process), (5) lurek.draw (draw), (6) lurek.keypressed.
 
-- Format: `lowercase_underscore` (e.g., `tower_defense`, `bullet_hell`)
-- No spaces, no hyphens, no version numbers
-- Must not duplicate an existing `content/games/` folder — check with `Get-ChildItem content/games/`
+**Mandatory invariants:** all state in module-level locals — no globals except callbacks; lurek.window.setTitle() first in load; lurek.render.setBackgroundColor() in load; movement multiplied by dt; escape → lurek.event.quit() always; all 4 callbacks defined even if empty; no print() — use lurek.render.print() for on-screen text.
 
-### Step 2 — Write `conf.toml`
+**Library integration:** only dialog, item, and inventory are "Full" status and safe to depend on. Other library/ modules may be stubs — check library/README.md status before using.
 
-See [conf-templates](./references/conf-templates.md) for TOML resolution templates and module flags.
+**README.md template:** 5 sections in order: Overview (1-2 sentences), Controls (table), Features Used (bullet list of lurek.* modules), API Highlights (key functions), Notes (gotchas, limitations).
 
-**Minimal template** (use this unless the demo needs a non-standard size):
-> See [templates/step-2-write-conf-toml.toml](templates/step-2-write-conf-toml.toml) for the example.
+**Registration:** add table row + detail block in content/games/README.md. Generate screenshot: tools/demos/gen_demo_screenshots.py.
 
-Acceptable non-standard resolutions (must leave a comment explaining why):
-- `960 × 540` — 16:9 sidescrollers or platformers
-- `800 × 640` — demos with on-screen message logs or status strips
-- `1024 × 768` — strategy overviews, maps, tactical views
+**Smoke testing:** every demo must include an escape→quit path. For CI: if lurek.runtime.getArgs()["--smoke"] then lurek.event.quit() end.
 
-Add module flags only when the demo actually needs them:
-> See [templates/step-2-write-conf-toml-2.toml](templates/step-2-write-conf-toml-2.toml) for the example.
-
-### Step 3 — Write `main.lua`
-
-**Canonical section order — never rearrange:**
-> See [examples/step-3-write-main-lua.lua](examples/step-3-write-main-lua.lua) for the example.
-
-**Mandatory invariants:**
-- All state in module-level `local` variables — no globals except callbacks
-- `lurek.window.setTitle()` called first in `lurek.load()`
-- `lurek.render.setBackgroundColor()` called in `lurek.load()`
-- Movement multiplied by `dt` for frame-rate independence
-- `escape` → `lurek.event.quit()` always present in `lurek.keypressed`
-- All 4 callbacks defined, even if `update` is empty
-- No `print()` — use `lurek.render.print()` for on-screen text, `lurek.log.debug()` for diagnostics
-
-
-> See [snippets/extended-notes.md](snippets/extended-notes.md) for additional notes.
+**Genre-to-API mapping:** platformer→physics+input+animation; puzzle→tilemap+input; shooter→physics+particle+audio; RPG→dialog+inventory+save+tilemap; strategy→tilemap+ai+minimap.
 
 ## Companion File Index
 
-- [templates/step-2-write-conf-toml.toml](templates/step-2-write-conf-toml.toml) — Step 2 — Write `conf.toml`
-- [templates/step-2-write-conf-toml-2.toml](templates/step-2-write-conf-toml-2.toml) — Step 2 — Write `conf.toml`
-- [examples/step-3-write-main-lua.lua](examples/step-3-write-main-lua.lua) — Step 3 — Write `main.lua`
-- [examples/step-4-library-modules.lua](examples/step-4-library-modules.lua) — Step 4 — Library Modules
-- [examples/step-4-library-modules-2.lua](examples/step-4-library-modules-2.lua) — Step 4 — Library Modules
-- [snippets/step-5-write-readme-md.md](snippets/step-5-write-readme-md.md) — Step 5 — Write `README.md`
-- [snippets/notes.txt](snippets/notes.txt) — Notes
-- [snippets/notes-2.ps1](snippets/notes-2.ps1) — Notes
-- [snippets/step-7-register-in-content-demos.md](snippets/step-7-register-in-content-demos.md) — Step 7 — Register in `content/games/README.md`
-- [snippets/step-7-register-in-content-demos-2.md](snippets/step-7-register-in-content-demos-2.md) — Step 7 — Register in `content/games/README.md`
-- [snippets/extended-notes.md](snippets/extended-notes.md) — extended notes (overflow)
+None — all guidance is inline.
 
 ## References
 
-- See related skills in `.github/skills/`.
+- content/games/ — existing demos (reference for patterns)
+- content/games/README.md — demo registry
+- tools/demos/ — screenshot generation and smoke testing scripts
+- library/ — Lunasome pure-Lua game libraries

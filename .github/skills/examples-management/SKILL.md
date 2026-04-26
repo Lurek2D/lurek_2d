@@ -6,105 +6,49 @@ description: "Load this skill when adding, modifying, or reviewing content in th
 
 ## Mission
 
-# Examples Management — Lurek2D
+Own the content/examples/ and content/games/ directories: file structure, naming, quality standards, smoke test support, and API documentation pipeline integration.
 
 ## When To Load
 
-- Adding a new Lua example to `content/examples/` or demo to `content/games/`
+- Adding a new Lua example to content/examples/ or demo to content/games/
 - Reviewing an existing example for correctness or code quality
-- Understanding the difference between `content/examples/` and `content/games/`
-- Writing conf.toml for a demo
+- Understanding the difference between content/examples/ and content/games/
 - Linking an example to the API documentation pipeline
-- Setting up an example to work as a smoke test
 
 ## When To Skip
 
-- Skip it for engine Rust code, tests, documentation under docs/, or CAG work.
+- Engine Rust code, tests, documentation under docs/, or CAG work
 
 ## Domain Knowledge
 
-### Owns
-- `content/examples/` vs `content/games/` structure and naming rules
-- Example file self-contained requirement and comment style
-- Demo folder layout (conf.lua, main.lua, assets, README)
-- Examples ↔ API documentation pipeline integration
-- Smoke test support pattern (`--smoke` flag + `lurek.event.quit()`)
-- `content/examples/README.md` and `content/games/README.md` maintenance
+**Two-folder model:**
 
-### Two-Folder Model
-| Folder | Purpose | Scope | Format |
-|--------|---------|-------|--------|
-| `content/examples/` | Minimal single-file API demonstrations | One `.lua` file per API area | ~30–100 lines, no conf.lua |
-| `content/games/` | Larger showcase games/feature demos | Full game directory (conf.toml + main.lua + assets) | 100–500+ lines, multiple files |
+| Folder | Purpose | Format |
+|--------|---------|--------|
+| content/examples/ | Minimal single-file API demonstrations | One .lua file per API area, 30-100 lines, no conf.lua |
+| content/games/ | Larger showcase games/feature demos | Full directory: conf.toml + main.lua + assets, 100-500+ lines |
 
-**Rule**: An `content/examples/` file shows one API namespace in the simplest possible way. A `content/games/` folder is a small, complete game or feature showcase.
+**What makes a good example:** scenario-driven (name sections by game task, not function name); self-contained (runs without extra setup); answers WHY (reader understands when to use each function); uses realistic game values (hp=100, "hero_walk.png", not 0 or nil); example_coverage.py passing is the floor, not the ceiling.
 
-### content/examples/ File Structure
-> See [snippets/content-examples-file-structure.txt](snippets/content-examples-file-structure.txt) for the example.
+**Forbidden patterns:** function-name scenarios (e.g. "test_newTimer" instead of "schedule bullet despawn"); lone constructors with nil/zero args; examples that require external assets not shipped with the engine.
 
-**Example file template:**
+**Canonical types:** colors are 0.0-1.0 floats (not 0-255); keys are lowercase strings ("space", "escape"); draw modes are "fill" or "line".
 
-> See [examples/content-examples-file-structure-2.lua](examples/content-examples-file-structure-2.lua) for the example.
+**content/examples/ file structure:** top comment block (file path, one-line purpose, run command), small section comments before load/update/draw, no conf.lua, self-contained with no external assets.
 
-**Required elements:**
-- Top comment block: file path, one-line purpose, run command
-- Small section comments `-- ── section ──` before `load`, `update`, `draw`
-- No `conf.toml` (uses default window settings)
-- Self-contained: no external assets unless they are embedded in the engine
+**Smoke test support:** every example should support: if lurek.runtime.getArgs()["--smoke"] then lurek.event.quit() end for CI validation.
 
-### content/games/ Folder Structure
-> See [snippets/content-demos-folder-structure.txt](snippets/content-demos-folder-structure.txt) for the example.
+**Coverage tools:** tools/audit/example_coverage.py (check gaps), tools/audit/example_add_missing.py (append stubs for uncovered API). Run example_coverage.py first, then add_missing with --dry-run, then flesh out stubs with real scenario-driven code.
 
-**conf.toml template:**
-> See [examples/content-demos-folder-structure-2.lua](examples/content-demos-folder-structure-2.lua) for the example.
-
-### What Makes a Good Example
-| Quality | Description |
-|---------|-------------|
-| **Scenario-driven** | Each section is a named game task ("schedule bullet despawn"), not a function name |
-| **Self-contained** | Runs with `cargo run -- content/examples/<file>` without extra setup |
-| **Answers WHY** | The reader understands when and why they would reach for each function |
-| **Game values** | All arguments are realistic: `hp=100`, `"hero_walk.png"`, not `0`, `""`, `nil` |
-| **Coverage + clarity** | `example_coverage.py` passing is the floor, not the ceiling |
-
-### The scenario pattern — ALWAYS write this way
-
-> See [examples/the-scenario-pattern-always-write-this.lua](examples/the-scenario-pattern-always-write-this.lua) for the example.
-
-### FORBIDDEN patterns — never write these
-
-> See [examples/forbidden-patterns-never-write-these.lua](examples/forbidden-patterns-never-write-these.lua) for the example.
-
-The test: "if I showed this to a developer who has never heard of this engine, would they
-understand what game problem this solves?" If NO, rewrite it as a scenario.
-
-### Adding a New Example (Checklist)
-**Minimal example** (one `.lua` file):
-
-> See [snippets/extended-notes.md](snippets/extended-notes.md) for additional notes.
+**Adding a new example checklist:** (1) check gaps with example_coverage.py, (2) write scenario-driven .lua file, (3) verify it runs standalone, (4) update content/examples/README.md if needed, (5) run example_coverage.py again to confirm coverage.
 
 ## Companion File Index
 
-- [snippets/content-examples-file-structure.txt](snippets/content-examples-file-structure.txt) — content/examples/ File Structure
-- [examples/content-examples-file-structure-2.lua](examples/content-examples-file-structure-2.lua) — content/examples/ File Structure
-- [snippets/content-demos-folder-structure.txt](snippets/content-demos-folder-structure.txt) — content/games/ Folder Structure
-- [examples/content-demos-folder-structure-2.lua](examples/content-demos-folder-structure-2.lua) — content/games/ Folder Structure
-- [examples/the-scenario-pattern-always-write-this.lua](examples/the-scenario-pattern-always-write-this.lua) — The scenario pattern — ALWAYS write this way
-- [examples/forbidden-patterns-never-write-these.lua](examples/forbidden-patterns-never-write-these.lua) — FORBIDDEN patterns — never write these
-- [snippets/examples-and-api-documentation.ps1](snippets/examples-and-api-documentation.ps1) — Examples and API Documentation
-- [snippets/smoke-testing.ps1](snippets/smoke-testing.ps1) — Smoke Testing
-- [examples/smoke-testing-2.lua](examples/smoke-testing-2.lua) — Smoke Testing
-- [snippets/examples-readme.md](snippets/examples-readme.md) — Examples README
-- [examples/input-key-names.lua](examples/input-key-names.lua) — Input Key Names
-- [examples/color-values.lua](examples/color-values.lua) — Color Values
-- [examples/rectangle-draw-mode.lua](examples/rectangle-draw-mode.lua) — Rectangle Draw Mode
-- [examples/physics-body-types.lua](examples/physics-body-types.lua) — Physics Body Types
-- [snippets/step-1-check-gaps.ps1](snippets/step-1-check-gaps.ps1) — Step 1 — Check gaps
-- [snippets/step-2-append-stubs-for-missing.ps1](snippets/step-2-append-stubs-for-missing.ps1) — Step 2 — Append stubs for missing API
-- [snippets/step-3-flesh-out-stubs-with.txt](snippets/step-3-flesh-out-stubs-with.txt) — Step 3 — Flesh out stubs with real code
-- [snippets/step-3-flesh-out-stubs-with-2.txt](snippets/step-3-flesh-out-stubs-with-2.txt) — Step 3 — Flesh out stubs with real code
-- [snippets/extended-notes.md](snippets/extended-notes.md) — extended notes (overflow)
+None — all guidance is inline.
 
 ## References
 
-- See related skills in `.github/skills/`.
+- content/examples/ — existing examples (reference for patterns)
+- content/games/ — existing demo projects
+- tools/audit/example_coverage.py — coverage gap checker
+- tools/audit/example_add_missing.py — stub generator for missing API coverage

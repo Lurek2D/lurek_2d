@@ -352,9 +352,7 @@ impl LuaUserData for LuaParallaxLayer {
         /// @param max_x number
         /// @param max_y number
         /// @return nil
-        methods.add_method(
-            "setClamp",
-            |_, this, (min_x, min_y, max_x, max_y): (f32, f32, f32, f32)| {
+        methods.add_method("setClamp", |_, this, (min_x, min_y, max_x, max_y): (f32, f32, f32, f32)| {
                 let mut l = this.layer.borrow_mut();
                 l.clamp_min = Some([min_x, min_y]);
                 l.clamp_max = Some([max_x, max_y]);
@@ -614,11 +612,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// `scale_x`, `scale_y`.
     ///
     /// @param opts table
-    /// @return LuaParallaxLayer
+    /// @return LParallaxLayer
     let s = state.clone();
-    parallax.set(
-        "newLayer",
-        lua.create_function(move |_, opts: LuaTable| {
+    parallax.set("newLayer", lua.create_function(move |_, opts: LuaTable| {
             // --- mandatory: texture ---
             let img_ud: LuaAnyUserData = opts
                 .get::<_, LuaAnyUserData>("texture")
@@ -708,11 +704,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// A set groups multiple layers for scene-level management: update all and
     /// draw all in one call.
     /// @param name string
-    /// @return LuaParallaxSet
+    /// @return LParallaxSet
     let s = state.clone();
-    parallax.set(
-        "newSet",
-        lua.create_function(move |_, name: String| Ok(LuaParallaxSet::new(name, s.clone())))?,
+    parallax.set("newSet", lua.create_function(move |_, name: String| Ok(LuaParallaxSet::new(name, s.clone())))?,
     )?;
 
     lurek.set("parallax", parallax)?;

@@ -2,7 +2,40 @@
 
 All notable changes to Lurek2D are recorded here.
 
+## [1.0.9-fix.7] - 2026-04-29
+
+### chore(cag): simplify all skills — inline companion knowledge, remove companion folders
+
+- Rewrote 26 SKILL.md files that had companion subdirectories (examples/, snippets/, templates/, references/), inlining the key domain knowledge as prose, tables, and bullet points into the Domain Knowledge section.
+- Deleted all companion subdirectories from all 34 skill folders — each skill now contains only SKILL.md.
+- 8 skills without companions (asset-pipeline, ci-cd-pipeline, cross-platform, documentation, error-handling, lua-scripting, module-architecture, tools-cag-validation) were left unchanged.
+- All tool references now point to tools/ folder paths rather than companion files.
+- CAG validator passes with 0 errors, 0 warnings.
+
 ## [1.0.9-fix.6] - 2026-04-29
+
+### fix(lua-api): normalize Rust docstrings that feed Lua API generators
+
+- Replaced malformed and Rust-leaking `///` tags in `src/lua_api/*.rs` with parseable Lua-facing types, including multi-return lines, `LuaResult<...>`, `Self`, `LuaValue`, and stale wrapper names such as `Mod`, `DataFrame`, `ParticleSystem`, and `ParallaxSet`.
+- Corrected root-source docstrings in `patterns_api.rs`, `serial_api.rs`, `parallax_api.rs`, `mods_api.rs`, `save_api.rs`, `scene_api.rs`, `dataframe_api.rs`, `particle_api.rs`, `pipeline_api.rs`, `procgen_api.rs`, `tween_api.rs`, and `register.rs` so generated API data and LuaCATS stubs no longer need those module-specific exceptions.
+- Removed the now-unneeded `gen_luadoc.py` overrides for `patterns`, `serial`, and `parallax`, then regenerated `logs/data/lua_api_data.json`, `docs/api/lurek.lua`, and `docs/api/lurek.md` from the cleaned Rust source.
+- Fixed `tools/validate/validate_lua_api.py` to recognize real module registration patterns and to print warnings safely on Windows consoles that cannot encode box-drawing characters.
+
+### feat(tools): regenerate Lua docstring raw data from Rust definitions only
+
+- Added `tools/docs/gen_lua_docstring_skeletons.py` to rebuild Lua API docstring skeletons directly from `src/lua_api/*.rs` definitions while explicitly ignoring current `///` blocks.
+- The generator writes structured raw data to `logs/data/lua_docstring_skeletons.json` by default and can also emit a reviewable Markdown variant at `logs/reports/lua_docstring_skeletons.md`.
+- JSON entries now include item kind, owner/namespace, Rust signature, generated description, parameters with raw Rust types plus mapped Lua types, returns, and ready-to-paste `doc_lines`.
+
+### fix(vscode): expose real LuaLS diagnostics and validate agent-facing examples
+
+- Re-enabled LuaLS scanning for `.github/`, `logs/`, `save/`, `work/`, and `references/`; only technical build outputs remain excluded.
+- Removed the `lurek` LuaLS global allowlist so the generated API stub is the source of truth for the namespace.
+- Broadened the legacy `lurek2d.scanAllGames` bulk diagnostic command into a workspace Lua scan across `src/`, `library/`, `content/`, `.github/`, and `tests/`, while keeping the old command id for compatibility.
+- Added `tools/validate/validate_generated_lua_stubs.py` plus the `Docs: Validate Lua Stubs` task to prove committed `logs/data/lua_api_data.json`, `docs/api/lurek.lua`, and `docs/api/library.lua` still match fresh generator output.
+- Updated `.github/skills/testing-rust` headless pixel-readback examples/snippets to the current API; headless pixel assertions now use CPU `ImageData` surfaces because `Canvas` no longer exposes public `renderTo()` / `getPixel()` readback.
+- Generalized the legacy `expect_canvas_pixel()` helper/docs so it works with any `getPixel()` surface, including `ImageData`, while preserving the helper name for compatibility.
+- Corrected the render Lua unit test to use current Rust-registered API names and call shapes instead of stale aliases such as `lurek.particle.new`, `lurek.ui.panel`, and snake_case `draw_to_image` methods.
 
 ### fix(docs): resolve ~150 LuaLS warnings across 12 Lua unit test files
 

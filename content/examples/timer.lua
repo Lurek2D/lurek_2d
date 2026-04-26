@@ -365,8 +365,8 @@ end
 do  -- Scheduler:getRemaining
   local sched = lurek.timer.newScheduler()
   local id = sched:after(3.0, function() end)
-  local remaining = sched:getRemaining(id)
-  if remaining then
+  local found, remaining = sched:getRemaining(id)
+  if found then
     lurek.log.debug(string.format("ready in %.1fs", remaining), "cooldown")
   end
 end
@@ -377,7 +377,8 @@ end
 do  -- Scheduler:getInterval
   local sched = lurek.timer.newScheduler()
   local id = sched:every(2.5, function() end)
-  local interval = sched:getInterval(id) or 0
+  local found, interval = sched:getInterval(id)
+  if not found then interval = 0 end
   lurek.log.debug("event interval = " .. interval .. "s", "timer")
 end
 
@@ -387,7 +388,8 @@ end
 do  -- Scheduler:getRepeatCount
   local sched = lurek.timer.newScheduler()
   local id = sched:every(1.0, function() end)
-  local left = sched:getRepeatCount(id) or 0
+  local found, left = sched:getRepeatCount(id)
+  if not found then left = 0 end
   lurek.log.debug("charges left = " .. left, "ability")
 end
 

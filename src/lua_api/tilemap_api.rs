@@ -127,9 +127,7 @@ impl LuaUserData for LuaTileSet {
         /// @param tileId integer
         /// @param frames table
         /// @return nil
-        methods.add_method(
-            "setAnimation",
-            |_, this, (tile_id, frames): (u32, LuaTable)| {
+        methods.add_method("setAnimation", |_, this, (tile_id, frames): (u32, LuaTable)| {
                 if tile_id == 0 {
                     return Err(LuaError::RuntimeError(
                         "setAnimation: tile_id must be >= 1".to_string(),
@@ -218,9 +216,7 @@ impl LuaUserData for LuaTileSet {
         /// @param bitmask integer
         /// @param tileId integer
         /// @return nil
-        methods.add_method(
-            "setAutoTileRule",
-            |_, this, (type_name, bitmask, tile_id): (String, u8, u32)| {
+        methods.add_method("setAutoTileRule", |_, this, (type_name, bitmask, tile_id): (String, u8, u32)| {
                 if tile_id == 0 {
                     return Err(LuaError::RuntimeError(
                         "setAutoTileRule: tileId must be >= 1".to_string(),
@@ -238,9 +234,7 @@ impl LuaUserData for LuaTileSet {
         /// @param typeName string
         /// @param bitmask integer
         /// @return integer?
-        methods.add_method(
-            "getAutoTileId",
-            |_, this, (type_name, bitmask): (String, u8)| {
+        methods.add_method("getAutoTileId", |_, this, (type_name, bitmask): (String, u8)| {
                 Ok(this
                     .inner
                     .borrow()
@@ -255,9 +249,7 @@ impl LuaUserData for LuaTileSet {
         /// @param bitmask integer
         /// @param tileId integer
         /// @return nil
-        methods.add_method(
-            "setAutoTileRule8",
-            |_, this, (type_name, bitmask, tile_id): (String, u16, u32)| {
+        methods.add_method("setAutoTileRule8", |_, this, (type_name, bitmask, tile_id): (String, u16, u32)| {
                 if tile_id == 0 {
                     return Err(LuaError::RuntimeError(
                         "setAutoTileRule8: tileId must be >= 1".to_string(),
@@ -275,9 +267,7 @@ impl LuaUserData for LuaTileSet {
         /// @param typeName string
         /// @param bitmask integer
         /// @return integer?
-        methods.add_method(
-            "getAutoTileId8",
-            |_, this, (type_name, bitmask): (String, u16)| {
+        methods.add_method("getAutoTileId8", |_, this, (type_name, bitmask): (String, u16)| {
                 Ok(this
                     .inner
                     .borrow()
@@ -395,9 +385,7 @@ impl LuaUserData for LuaTileMap {
         /// @param idx integer
         /// @param visible boolean
         /// @return nil
-        methods.add_method(
-            "setLayerVisible",
-            |_, this, (idx, visible): (usize, bool)| {
+        methods.add_method("setLayerVisible", |_, this, (idx, visible): (usize, bool)| {
                 this.inner.borrow_mut().set_layer_visible(idx - 1, visible);
                 Ok(())
             },
@@ -419,9 +407,7 @@ impl LuaUserData for LuaTileMap {
         /// @param b number
         /// @param a number
         /// @return nil
-        methods.add_method(
-            "setLayerColor",
-            |_, this, (idx, r, g, b, a): (usize, f32, f32, f32, f32)| {
+        methods.add_method("setLayerColor", |_, this, (idx, r, g, b, a): (usize, f32, f32, f32, f32)| {
                 this.inner.borrow_mut().set_layer_color(idx - 1, r, g, b, a);
                 Ok(())
             },
@@ -442,9 +428,7 @@ impl LuaUserData for LuaTileMap {
         /// @param ox number
         /// @param oy number
         /// @return nil
-        methods.add_method(
-            "setLayerOffset",
-            |_, this, (idx, ox, oy): (usize, f32, f32)| {
+        methods.add_method("setLayerOffset", |_, this, (idx, ox, oy): (usize, f32, f32)| {
                 this.inner.borrow_mut().set_layer_offset(idx - 1, ox, oy);
                 Ok(())
             },
@@ -465,9 +449,7 @@ impl LuaUserData for LuaTileMap {
         /// @param px number
         /// @param py number
         /// @return nil
-        methods.add_method(
-            "setLayerParallax",
-            |_, this, (idx, px, py): (usize, f32, f32)| {
+        methods.add_method("setLayerParallax", |_, this, (idx, px, py): (usize, f32, f32)| {
                 this.inner.borrow_mut().set_layer_parallax(idx - 1, px, py);
                 Ok(())
             },
@@ -489,9 +471,7 @@ impl LuaUserData for LuaTileMap {
         /// @param y integer
         /// @param gid integer
         /// @return nil
-        methods.add_method(
-            "setTile",
-            |_, this, (layer, x, y, gid): (usize, u32, u32, u32)| {
+        methods.add_method("setTile", |_, this, (layer, x, y, gid): (usize, u32, u32, u32)| {
                 this.inner
                     .borrow_mut()
                     .set_tile(layer - 1, x - 1, y - 1, gid);
@@ -537,9 +517,7 @@ impl LuaUserData for LuaTileMap {
         /// @param w number
         /// @param h number
         /// @return nil
-        methods.add_method(
-            "setViewport",
-            |_, this, (x, y, w, h): (f32, f32, f32, f32)| {
+        methods.add_method("setViewport", |_, this, (x, y, w, h): (f32, f32, f32, f32)| {
                 this.inner.borrow_mut().set_viewport(x, y, w, h);
                 Ok(())
             },
@@ -628,9 +606,7 @@ impl LuaUserData for LuaTileMap {
         /// @param layer integer
         /// @param typeName string
         /// @return nil
-        methods.add_method(
-            "applyAutoTile",
-            |_, this, (layer, type_name): (usize, String)| {
+        methods.add_method("applyAutoTile", |_, this, (layer, type_name): (usize, String)| {
                 this.inner
                     .borrow_mut()
                     .apply_autotile(layer - 1, &type_name);
@@ -645,9 +621,7 @@ impl LuaUserData for LuaTileMap {
         /// @param y integer
         /// @param typeName string
         /// @return nil
-        methods.add_method(
-            "applyAutoTileAt",
-            |_, this, (layer, x, y, type_name): (usize, u32, u32, String)| {
+        methods.add_method("applyAutoTileAt", |_, this, (layer, x, y, type_name): (usize, u32, u32, String)| {
                 this.inner
                     .borrow_mut()
                     .apply_autotile_at(layer - 1, x - 1, y - 1, &type_name);
@@ -660,9 +634,7 @@ impl LuaUserData for LuaTileMap {
         /// @param layer integer
         /// @param typeName string
         /// @return nil
-        methods.add_method(
-            "applyAutoTile8",
-            |_, this, (layer, type_name): (usize, String)| {
+        methods.add_method("applyAutoTile8", |_, this, (layer, type_name): (usize, String)| {
                 this.inner
                     .borrow_mut()
                     .apply_autotile_8(layer - 1, &type_name);
@@ -677,9 +649,7 @@ impl LuaUserData for LuaTileMap {
         /// @param y integer
         /// @param typeName string
         /// @return nil
-        methods.add_method(
-            "applyAutoTile8At",
-            |_, this, (layer, x, y, type_name): (usize, u32, u32, String)| {
+        methods.add_method("applyAutoTile8At", |_, this, (layer, x, y, type_name): (usize, u32, u32, String)| {
                 this.inner
                     .borrow_mut()
                     .apply_autotile_8_at(layer - 1, x - 1, y - 1, &type_name);
@@ -695,9 +665,7 @@ impl LuaUserData for LuaTileMap {
         /// @param w number
         /// @param h number
         /// @return boolean
-        methods.add_method(
-            "rectOverlapsSolid",
-            |_, this, (layer, x, y, w, h): (usize, f32, f32, f32, f32)| {
+        methods.add_method("rectOverlapsSolid", |_, this, (layer, x, y, w, h): (usize, f32, f32, f32, f32)| {
                 Ok(this
                     .inner
                     .borrow()
@@ -718,9 +686,7 @@ impl LuaUserData for LuaTileMap {
         /// @param dy number
         /// @return nil
         /// number, number, number, number, number, number
-        methods.add_method(
-            "sweepRect",
-            |_, this, (layer, x, y, w, h, dx, dy): (usize, f32, f32, f32, f32, f32, f32)| match this
+        methods.add_method("sweepRect", |_, this, (layer, x, y, w, h, dx, dy): (usize, f32, f32, f32, f32, f32, f32)| match this
                 .inner
                 .borrow()
                 .sweep_rect(layer - 1, Rect::new(x, y, w, h), dx, dy)
@@ -781,9 +747,7 @@ impl LuaUserData for LuaTileMap {
         /// @param b number
         /// @param a number
         /// @return nil
-        methods.add_method(
-            "setTileTint",
-            |_, this, (layer, x, y, r, g, b, a): (usize, u32, u32, f32, f32, f32, f32)| {
+        methods.add_method("setTileTint", |_, this, (layer, x, y, r, g, b, a): (usize, u32, u32, f32, f32, f32, f32)| {
                 this.inner
                     .borrow_mut()
                     .set_tile_tint(layer - 1, x - 1, y - 1, r, g, b, a);
@@ -821,9 +785,7 @@ impl LuaUserData for LuaTileMap {
         /// @param layer integer
         /// @param walkable_gids table
         /// @return table
-        methods.add_method(
-            "toNavGrid",
-            |lua, this, (layer, gids_tbl): (usize, LuaTable)| {
+        methods.add_method("toNavGrid", |lua, this, (layer, gids_tbl): (usize, LuaTable)| {
                 let mut gids: Vec<u32> = Vec::new();
                 for v in gids_tbl.sequence_values::<u32>() {
                     gids.push(v?);
@@ -848,9 +810,7 @@ impl LuaUserData for LuaTileMap {
         /// @param gid integer
         /// @param func function
         /// @return nil
-        methods.add_method_mut(
-            "onTileEnter",
-            |lua, this, (gid, func): (u32, LuaFunction)| {
+        methods.add_method_mut("onTileEnter", |lua, this, (gid, func): (u32, LuaFunction)| {
                 let key = lua.create_registry_value(func)?;
                 this.tile_callbacks.borrow_mut().push((gid, key));
                 Ok(())
@@ -863,9 +823,7 @@ impl LuaUserData for LuaTileMap {
         /// @param layer integer
         /// @param entities table
         /// @return nil
-        methods.add_method(
-            "checkEntities",
-            |lua, this, (layer, entities): (usize, LuaTable)| {
+        methods.add_method("checkEntities", |lua, this, (layer, entities): (usize, LuaTable)| {
                 let callbacks = this.tile_callbacks.borrow();
                 if callbacks.is_empty() {
                     return Ok(());
@@ -895,9 +853,7 @@ impl LuaUserData for LuaTileMap {
         /// @param gid integer — tile global ID
         /// @param fn function(entity: table, tile_x: integer, tile_y: integer)
         /// @return nil
-        methods.add_method_mut(
-            "onTileStep",
-            |lua, this, (gid, func): (u32, LuaFunction)| {
+        methods.add_method_mut("onTileStep", |lua, this, (gid, func): (u32, LuaFunction)| {
                 let key = lua.create_registry_value(func)?;
                 this.tile_step_callbacks.borrow_mut().insert(gid, key);
                 Ok(())
@@ -909,9 +865,7 @@ impl LuaUserData for LuaTileMap {
         /// @param gid integer — tile global ID
         /// @param fn function(entity: table, tile_x: integer, tile_y: integer)
         /// @return nil
-        methods.add_method_mut(
-            "onTileExit",
-            |lua, this, (gid, func): (u32, LuaFunction)| {
+        methods.add_method_mut("onTileExit", |lua, this, (gid, func): (u32, LuaFunction)| {
                 let key = lua.create_registry_value(func)?;
                 this.tile_exit_callbacks.borrow_mut().insert(gid, key);
                 Ok(())
@@ -925,9 +879,7 @@ impl LuaUserData for LuaTileMap {
         /// @param tile_x integer — tile column
         /// @param tile_y integer — tile row
         /// @return nil
-        methods.add_method(
-            "fireTileStep",
-            |lua, this, (gid, entity, tx, ty): (u32, LuaTable, i32, i32)| {
+        methods.add_method("fireTileStep", |lua, this, (gid, entity, tx, ty): (u32, LuaTable, i32, i32)| {
                 if let Some(key) = this.tile_step_callbacks.borrow().get(&gid) {
                     let func: mlua::Function = lua.registry_value(key)?;
                     let _: () = func.call((entity, tx, ty))?;
@@ -943,9 +895,7 @@ impl LuaUserData for LuaTileMap {
         /// @param tile_x integer — tile column
         /// @param tile_y integer — tile row
         /// @return nil
-        methods.add_method(
-            "fireTileExit",
-            |lua, this, (gid, entity, tx, ty): (u32, LuaTable, i32, i32)| {
+        methods.add_method("fireTileExit", |lua, this, (gid, entity, tx, ty): (u32, LuaTable, i32, i32)| {
                 if let Some(key) = this.tile_exit_callbacks.borrow().get(&gid) {
                     let func: mlua::Function = lua.registry_value(key)?;
                     let _: () = func.call((entity, tx, ty))?;
@@ -1020,9 +970,7 @@ impl LuaUserData for LuaAutoTileSheet {
         /// @param typeName string
         /// @param startGid integer?
         /// @return nil
-        methods.add_method(
-            "applyToTileSet",
-            |_, this, (ts_ud, type_name, start_gid): (LuaAnyUserData, String, Option<u32>)| {
+        methods.add_method("applyToTileSet", |_, this, (ts_ud, type_name, start_gid): (LuaAnyUserData, String, Option<u32>)| {
                 let ts = ts_ud.borrow::<LuaTileSet>()?;
                 this.inner.borrow().apply_to_tileset(
                     &mut ts.inner.borrow_mut(),
@@ -1137,9 +1085,7 @@ impl LuaUserData for LuaChunkMap {
         /// @param y1 integer
         /// @param gid integer
         /// @return nil
-        methods.add_method(
-            "fillRect",
-            |_, this, (x0, y0, x1, y1, gid): (i32, i32, i32, i32, u32)| {
+        methods.add_method("fillRect", |_, this, (x0, y0, x1, y1, gid): (i32, i32, i32, i32, u32)| {
                 this.inner.borrow_mut().fill_rect(x0, y0, x1, y1, gid);
                 Ok(())
             },
@@ -1196,9 +1142,7 @@ impl LuaUserData for LuaChunkMap {
         /// @param tw number
         /// @param th number
         /// @return table
-        methods.add_method(
-            "getChunksInView",
-            |lua, this, (vx, vy, vw, vh, tw, th): (f32, f32, f32, f32, f32, f32)| {
+        methods.add_method("getChunksInView", |lua, this, (vx, vy, vw, vh, tw, th): (f32, f32, f32, f32, f32, f32)| {
                 let chunks = this
                     .inner
                     .borrow()
@@ -1261,9 +1205,7 @@ impl LuaUserData for LuaLargeMapRenderer {
         /// @param width integer
         /// @param height integer
         /// @return nil
-        methods.add_method_mut(
-            "setMapData",
-            |_, this, (data, width, height): (LuaTable, u32, u32)| {
+        methods.add_method_mut("setMapData", |_, this, (data, width, height): (LuaTable, u32, u32)| {
                 let mut ids: Vec<u32> = Vec::new();
                 for v in data.sequence_values::<u32>() {
                     ids.push(v?);
@@ -1486,9 +1428,7 @@ impl LuaUserData for LuaIsoMap {
         /// @param part integer
         /// @param gid integer
         /// @return nil
-        methods.add_method(
-            "setTilePart",
-            |_, this, (z, x, y, part, gid): (usize, u32, u32, u32, u32)| {
+        methods.add_method("setTilePart", |_, this, (z, x, y, part, gid): (usize, u32, u32, u32, u32)| {
                 let z = one_based_usize("z", z)?;
                 let x = one_based_u32("x", x)?;
                 let y = one_based_u32("y", y)?;
@@ -1504,9 +1444,7 @@ impl LuaUserData for LuaIsoMap {
         /// @param y integer
         /// @param part integer
         /// @return integer
-        methods.add_method(
-            "getTilePart",
-            |_, this, (z, x, y, part): (usize, u32, u32, u32)| {
+        methods.add_method("getTilePart", |_, this, (z, x, y, part): (usize, u32, u32, u32)| {
                 let z = one_based_usize("z", z)?;
                 let x = one_based_u32("x", x)?;
                 let y = one_based_u32("y", y)?;
@@ -1651,9 +1589,7 @@ impl LuaUserData for LuaMapBlock {
         /// @param y integer
         /// @param gid integer
         /// @return nil
-        methods.add_method(
-            "setTile",
-            |_, this, (layer, x, y, gid): (u32, u32, u32, u32)| {
+        methods.add_method("setTile", |_, this, (layer, x, y, gid): (u32, u32, u32, u32)| {
                 this.inner
                     .borrow_mut()
                     .set_tile(layer - 1, x - 1, y - 1, gid);
@@ -1677,9 +1613,7 @@ impl LuaUserData for LuaMapBlock {
         /// @param segment integer
         /// @param sideId integer
         /// @return nil
-        methods.add_method(
-            "setSide",
-            |_, this, (edge_str, segment, side_id): (String, u32, u32)| {
+        methods.add_method("setSide", |_, this, (edge_str, segment, side_id): (String, u32, u32)| {
                 let edge = Edge::from_str(&edge_str)
                     .ok_or_else(|| LuaError::external("invalid edge: use north/east/south/west"))?;
                 this.inner.borrow_mut().set_side(edge, segment - 1, side_id);
@@ -2005,9 +1939,7 @@ impl LuaUserData for LuaMapGen {
         /// @param seed integer?
         /// @param layerName string?
         /// @return TileMap
-        methods.add_method(
-            "generate",
-            |_, this, (script_idx, seed, layer_name): (Option<usize>, Option<u64>, Option<String>)| {
+        methods.add_method("generate", |_, this, (script_idx, seed, layer_name): (Option<usize>, Option<u64>, Option<String>)| {
                 let script_index = script_idx.map(|i| if i == 0 { 0 } else { i - 1 });
                 let name = layer_name.as_deref().unwrap_or("main");
                 let tm = this
@@ -2067,9 +1999,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @param spacing integer?
     /// @param margin integer?
     /// @return TileSet
-    tbl.set(
-        "newTileSet",
-        lua.create_function(
+    tbl.set("newTileSet", lua.create_function(
             |lua,
              (first_gid, tile_count, columns, tile_width, tile_height, spacing, margin): (
                 u32,
@@ -2102,9 +2032,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @param chunkSize integer?
     /// @return TileMap
     let s = state.clone();
-    tbl.set(
-        "newTileMap",
-        lua.create_function(
+    tbl.set("newTileMap", lua.create_function(
             move |lua, (tile_width, tile_height, chunk_size): (u32, u32, Option<u32>)| {
                 let inner_rc = Rc::new(RefCell::new(TileMap::new(
                     tile_width,
@@ -2130,9 +2058,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @param tileHeight integer
     /// @param layout string?
     /// @return AutoTileSheet
-    tbl.set(
-        "newAutoTileSheet",
-        lua.create_function(
+    tbl.set("newAutoTileSheet", lua.create_function(
             |lua, (tile_w, tile_h, layout_str): (u32, u32, String)| {
                 let layout = match layout_str.as_str() {
                     "blob47" => AutoTileLayout::Blob47,
@@ -2156,9 +2082,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// Creates a new ChunkMap with the given chunk size.
     /// @param chunkSize integer?
     /// @return ChunkMap
-    tbl.set(
-        "newChunkMap",
-        lua.create_function(|lua, chunk_size: Option<u32>| {
+    tbl.set("newChunkMap", lua.create_function(|lua, chunk_size: Option<u32>| {
             lua.create_userdata(LuaChunkMap {
                 inner: Rc::new(RefCell::new(ChunkMap::new(chunk_size.unwrap_or(16)))),
             })
@@ -2174,9 +2098,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @param levelHeight integer
     /// @param partCount integer?   (default 4)
     /// @return IsoMap
-    tbl.set(
-        "newIsoMap",
-        lua.create_function(
+    tbl.set("newIsoMap", lua.create_function(
             |lua,
              (width, height, tile_w, tile_h, level_height, part_count): (
                 u32,
@@ -2207,9 +2129,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @param layers integer?
     /// @param segmentSize integer?
     /// @return MapBlock
-    tbl.set(
-        "newMapBlock",
-        lua.create_function(
+    tbl.set("newMapBlock", lua.create_function(
             |lua, (width, height, layers, segment_size): (u32, u32, Option<u32>, Option<u32>)| {
                 lua.create_userdata(LuaMapBlock {
                     inner: Rc::new(RefCell::new(MapBlock::new(
@@ -2227,9 +2147,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// Creates a new empty MapGroup with the given name.
     /// @param name string
     /// @return MapGroup
-    tbl.set(
-        "newMapGroup",
-        lua.create_function(|lua, name: String| {
+    tbl.set("newMapGroup", lua.create_function(|lua, name: String| {
             lua.create_userdata(LuaMapGroup {
                 inner: Rc::new(RefCell::new(MapGroup::new(&name))),
             })
@@ -2245,9 +2163,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @param tileW number
     /// @param tileH number
     /// @return number, number
-    tbl.set(
-        "toScreenIso",
-        lua.create_function(|_, (tx, ty, tw, th): (f32, f32, f32, f32)| {
+    tbl.set("toScreenIso", lua.create_function(|_, (tx, ty, tw, th): (f32, f32, f32, f32)| {
             let v = coords::to_screen_iso(tx, ty, tw, th);
             Ok((v.x, v.y))
         })?,
@@ -2260,9 +2176,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @param tileW number
     /// @param tileH number
     /// @return number, number
-    tbl.set(
-        "fromScreenIso",
-        lua.create_function(|_, (sx, sy, tw, th): (f32, f32, f32, f32)| {
+    tbl.set("fromScreenIso", lua.create_function(|_, (sx, sy, tw, th): (f32, f32, f32, f32)| {
             let v = coords::from_screen_iso(sx, sy, tw, th);
             Ok((v.x, v.y))
         })?,
@@ -2274,9 +2188,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @param r integer
     /// @param size number
     /// @return number, number
-    tbl.set(
-        "toScreenHex",
-        lua.create_function(|_, (q, r, size): (i32, i32, f32)| {
+    tbl.set("toScreenHex", lua.create_function(|_, (q, r, size): (i32, i32, f32)| {
             let v = coords::to_screen_hex(q, r, size);
             Ok((v.x, v.y))
         })?,
@@ -2288,9 +2200,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @param sy number
     /// @param size number
     /// @return integer, integer
-    tbl.set(
-        "fromScreenHex",
-        lua.create_function(|_, (sx, sy, size): (f32, f32, f32)| {
+    tbl.set("fromScreenHex", lua.create_function(|_, (sx, sy, size): (f32, f32, f32)| {
             let (q, r) = coords::from_screen_hex(sx, sy, size);
             Ok((q, r))
         })?,
@@ -2301,9 +2211,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @param q integer
     /// @param r integer
     /// @return table
-    tbl.set(
-        "hexNeighbors",
-        lua.create_function(|lua, (q, r): (i32, i32)| {
+    tbl.set("hexNeighbors", lua.create_function(|lua, (q, r): (i32, i32)| {
             let n = coords::hex_neighbors(q, r);
             let tbl = lua.create_table()?;
             for (i, (nq, nr)) in n.iter().enumerate() {
@@ -2323,9 +2231,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @param q2 integer
     /// @param r2 integer
     /// @return integer
-    tbl.set(
-        "hexDistance",
-        lua.create_function(|_, (q1, r1, q2, r2): (i32, i32, i32, i32)| {
+    tbl.set("hexDistance", lua.create_function(|_, (q1, r1, q2, r2): (i32, i32, i32, i32)| {
             Ok(coords::hex_distance(q1, r1, q2, r2))
         })?,
     )?;
@@ -2335,9 +2241,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @param q number
     /// @param r number
     /// @return integer, integer
-    tbl.set(
-        "hexRound",
-        lua.create_function(|_, (q, r): (f32, f32)| {
+    tbl.set("hexRound", lua.create_function(|_, (q, r): (f32, f32)| {
             let (rq, rr) = coords::hex_round(q, r);
             Ok((rq, rr))
         })?,
@@ -2350,9 +2254,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @param q2 integer
     /// @param r2 integer
     /// @return table
-    tbl.set(
-        "hexLine",
-        lua.create_function(|lua, (q1, r1, q2, r2): (i32, i32, i32, i32)| {
+    tbl.set("hexLine", lua.create_function(|lua, (q1, r1, q2, r2): (i32, i32, i32, i32)| {
             let cells = coords::hex_line(q1, r1, q2, r2);
             let tbl = lua.create_table()?;
             for (i, (q, r)) in cells.iter().enumerate() {
@@ -2371,9 +2273,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @param r integer
     /// @param radius integer
     /// @return table
-    tbl.set(
-        "hexRing",
-        lua.create_function(|lua, (q, r, radius): (i32, i32, i32)| {
+    tbl.set("hexRing", lua.create_function(|lua, (q, r, radius): (i32, i32, i32)| {
             let cells = coords::hex_ring(q, r, radius);
             let tbl = lua.create_table()?;
             for (i, (cq, cr)) in cells.iter().enumerate() {
@@ -2392,9 +2292,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @param r integer
     /// @param radius integer
     /// @return table
-    tbl.set(
-        "hexSpiral",
-        lua.create_function(|lua, (q, r, radius): (i32, i32, i32)| {
+    tbl.set("hexSpiral", lua.create_function(|lua, (q, r, radius): (i32, i32, i32)| {
             let cells = coords::hex_spiral(q, r, radius);
             let tbl = lua.create_table()?;
             for (i, (cq, cr)) in cells.iter().enumerate() {
@@ -2413,9 +2311,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @param r integer
     /// @param radius integer
     /// @return table
-    tbl.set(
-        "hexArea",
-        lua.create_function(|lua, (q, r, radius): (i32, i32, i32)| {
+    tbl.set("hexArea", lua.create_function(|lua, (q, r, radius): (i32, i32, i32)| {
             let cells = coords::hex_area(q, r, radius);
             let tbl = lua.create_table()?;
             for (i, (cq, cr)) in cells.iter().enumerate() {
@@ -2436,9 +2332,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @param centerR integer
     /// @param steps integer
     /// @return integer, integer
-    tbl.set(
-        "hexRotate",
-        lua.create_function(
+    tbl.set("hexRotate", lua.create_function(
             |_, (q, r, center_q, center_r, steps): (i32, i32, i32, i32, i32)| {
                 let (rq, rr) = coords::hex_rotate(q, r, center_q, center_r, steps);
                 Ok((rq, rr))
@@ -2454,9 +2348,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @param centerR integer
     /// @param axis string
     /// @return integer, integer
-    tbl.set(
-        "hexReflect",
-        lua.create_function(
+    tbl.set("hexReflect", lua.create_function(
             |_, (q, r, center_q, center_r, axis): (i32, i32, i32, i32, String)| {
                 let (rq, rr) = coords::hex_reflect(q, r, center_q, center_r, &axis);
                 Ok((rq, rr))
@@ -2469,9 +2361,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @param direction integer
     /// @param steps integer
     /// @return integer
-    tbl.set(
-        "isoRotate",
-        lua.create_function(|_, (direction, steps): (i32, i32)| {
+    tbl.set("isoRotate", lua.create_function(|_, (direction, steps): (i32, i32)| {
             Ok(coords::iso_rotate(direction, steps))
         })?,
     )?;
@@ -2480,18 +2370,24 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// Returns the name of an isometric direction (1-4).
     /// @param direction integer
     /// @return string
-    tbl.set(
-        "isoDirectionName",
-        lua.create_function(|_, direction: i32| Ok(coords::iso_direction_name(direction)))?,
+    tbl.set("isoDirectionName", lua.create_function(|_, direction: i32| Ok(coords::iso_direction_name(direction)))?,
     )?;
 
     // -- isoDirectionFromAngle --
     /// Snaps an angle (in radians) to the nearest isometric direction (1-4).
     /// @param angle number
     /// @return integer
-    tbl.set(
-        "isoDirectionFromAngle",
-        lua.create_function(|_, angle: f32| Ok(coords::iso_direction_from_angle(angle)))?,
+    tbl.set("isoDirectionFromAngle", lua.create_function(|_, angle: f32| Ok(coords::iso_direction_from_angle(angle)))?,
+    )?;
+
+    // -- newMapScript --
+    /// Creates a new empty MapScript procedural generation script.
+    /// @return MapScript
+    tbl.set("newMapScript", lua.create_function(|_, ()| {
+            Ok(LuaMapScript {
+                inner: Rc::new(RefCell::new(MapScript::new("lua_script"))),
+            })
+        })?,
     )?;
 
     // -- IsoMap layer constants --
@@ -2505,18 +2401,6 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// IsoMap object layer index (4).
     tbl.set("OBJECT", 4u32)?;
 
-    // -- newMapScript --
-    /// Creates a new empty MapScript procedural generation script.
-    /// @return MapScript
-    tbl.set(
-        "newMapScript",
-        lua.create_function(|_, ()| {
-            Ok(LuaMapScript {
-                inner: Rc::new(RefCell::new(MapScript::new("lua_script"))),
-            })
-        })?,
-    )?;
-
     let s3 = state.clone();
     // -- newMapGen --
     /// Creates a MapGen from a MapGroup, a preset name or dimensions, and a segment size.
@@ -2525,9 +2409,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @param segmentSize integer  OR  h : integer
     /// @param segmentSize integer?   (only used when w,h form)
     /// @return MapGen
-    tbl.set(
-        "newMapGen",
-        lua.create_function(move |_, args: mlua::Variadic<LuaValue>| {
+    tbl.set("newMapGen", lua.create_function(move |_, args: mlua::Variadic<LuaValue>| {
             if args.len() < 3 {
                 return Err(LuaError::RuntimeError(
                     "newMapGen: expected (group, preset, segmentSize) or (group, w, h, segmentSize)"
@@ -2649,9 +2531,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @return table|nil
     /// @param xml string
     /// table, string?  â€” (result_table, nil) on success; (nil, error_message) on failure
-    tbl.set(
-        "loadTMX",
-        lua.create_function(|lua, xml: String| {
+    tbl.set("loadTMX", lua.create_function(|lua, xml: String| {
             let tmx = crate::tilemap::tmx::load_tmx(&xml).map_err(LuaError::RuntimeError)?;
             let result = lua.create_table()?;
             result.set("width", tmx.width)?;
@@ -2699,9 +2579,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @param json_str string
     /// @param level_name string?
     /// @return TileMap
-    tbl.set(
-        "fromLDtk",
-        lua.create_function({
+    tbl.set("fromLDtk", lua.create_function({
             let state = state.clone();
             move |lua, (json_str, level_name): (String, Option<String>)| match load_ldtk(
                 &json_str,
@@ -2728,9 +2606,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @param tileW integer
     /// @param tileH integer
     /// @return LargeMapRenderer
-    tbl.set(
-        "newLargeMapRenderer",
-        lua.create_function(|lua, (tile_w, tile_h): (u32, u32)| {
+    tbl.set("newLargeMapRenderer", lua.create_function(|lua, (tile_w, tile_h): (u32, u32)| {
             if tile_w == 0 || tile_h == 0 {
                 return Err(LuaError::RuntimeError(
                     "newLargeMapRenderer: tileW and tileH must be > 0".to_string(),

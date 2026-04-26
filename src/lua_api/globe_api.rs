@@ -134,9 +134,7 @@ impl LuaUserData for LuaGlobe {
         /// @param id integer
         /// @param key string
         /// @param value string
-        methods.add_method_mut(
-            "setProvinceAttr",
-            |_, this, (id, key, val): (u32, String, String)| {
+        methods.add_method_mut("setProvinceAttr", |_, this, (id, key, val): (u32, String, String)| {
                 this.with_mut(|g| {
                     if let Some(p) = g.get_province_mut(id) {
                         p.attrs.insert(key, val);
@@ -292,9 +290,7 @@ impl LuaUserData for LuaGlobe {
         /// @param lon number
         /// @param label string?
         /// @return integer
-        methods.add_method_mut(
-            "addMarker",
-            |_, this, (mtype, lat, lon, label): (String, f32, f32, Option<String>)| {
+        methods.add_method_mut("addMarker", |_, this, (mtype, lat, lon, label): (String, f32, f32, Option<String>)| {
                 this.with_mut(|g| {
                     g.markers
                         .add(mtype, lat, lon, label, MarkerStyle::default())
@@ -332,9 +328,7 @@ impl LuaUserData for LuaGlobe {
         /// @param id integer
         /// @param key string
         /// @param value string
-        methods.add_method_mut(
-            "setMarkerAttr",
-            |_, this, (id, key, val): (u32, String, String)| {
+        methods.add_method_mut("setMarkerAttr", |_, this, (id, key, val): (u32, String, String)| {
                 this.with_mut(|g| g.markers.set_attr(id, key, val))
             },
         );
@@ -357,9 +351,7 @@ impl LuaUserData for LuaGlobe {
         /// @param lon number
         /// @param text string
         /// @return integer
-        methods.add_method_mut(
-            "addLabel",
-            |_, this, (ltype, lat, lon, text): (String, f32, f32, String)| {
+        methods.add_method_mut("addLabel", |_, this, (ltype, lat, lon, text): (String, f32, f32, String)| {
                 this.with_mut(|g| {
                     g.labels
                         .add(ltype, lat, lon, text, LabelStyle::default(), 0)
@@ -396,9 +388,7 @@ impl LuaUserData for LuaGlobe {
         /// Add or replace a named thematic layer.
         /// @param name string
         /// @param z_order integer?
-        methods.add_method_mut(
-            "addLayer",
-            |_, this, (name, z_order): (String, Option<i32>)| {
+        methods.add_method_mut("addLayer", |_, this, (name, z_order): (String, Option<i32>)| {
                 this.with_mut(|g| {
                     g.layers.add(Layer {
                         name,
@@ -427,9 +417,7 @@ impl LuaUserData for LuaGlobe {
         /// @param g number
         /// @param b number
         /// @param a number
-        methods.add_method_mut(
-            "setLayerColor",
-            |_, this, (layer, id, r, g, b, a): (String, u32, f32, f32, f32, f32)| {
+        methods.add_method_mut("setLayerColor", |_, this, (layer, id, r, g, b, a): (String, u32, f32, f32, f32, f32)| {
                 this.with_mut(|globe| globe.layers.set_province_color(&layer, id, [r, g, b, a]))
             },
         );
@@ -512,9 +500,7 @@ impl LuaUserData for LuaGlobe {
         /// @param start_id integer
         /// @param max_cost number
         /// @return table<integer, number>
-        methods.add_method(
-            "reachable",
-            |lua, this, (start_id, max_cost): (u32, f64)| {
+        methods.add_method("reachable", |lua, this, (start_id, max_cost): (u32, f64)| {
                 let reached = this.with(|g| g.graph.reachable_default(start_id, max_cost))?;
                 let t = lua.create_table()?;
                 for (id, cost) in reached {
@@ -534,9 +520,7 @@ impl LuaUserData for LuaGlobe {
         /// @param lon2 number
         /// @param steps integer?
         /// @return integer
-        methods.add_method_mut(
-            "addArc",
-            |_, this, (lat1, lon1, lat2, lon2, steps): (f32, f32, f32, f32, Option<u32>)| {
+        methods.add_method_mut("addArc", |_, this, (lat1, lon1, lat2, lon2, steps): (f32, f32, f32, f32, Option<u32>)| {
                 let steps = steps.unwrap_or(24);
                 this.with_mut(|g| {
                     let arc_id = g.arc_next_id;
@@ -607,9 +591,7 @@ impl LuaUserData for LuaGlobeRegistry {
         /// @param name string
         /// @param spec table?
         /// @return Globe
-        methods.add_method_mut(
-            "new",
-            |_, this, (name, spec_tbl): (String, Option<LuaTable>)| {
+        methods.add_method_mut("new", |_, this, (name, spec_tbl): (String, Option<LuaTable>)| {
                 let spec = parse_globe_spec(spec_tbl);
                 {
                     let mut guard = this.reg.lock().map_err(|e| {
@@ -736,9 +718,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         /// @param name string
         /// @param spec table?
         /// @return Globe
-        tbl.set(
-            "new",
-            lua.create_function(move |_, (name, spec_tbl): (String, Option<LuaTable>)| {
+        tbl.set("new", lua.create_function(move |_, (name, spec_tbl): (String, Option<LuaTable>)| {
                 let spec = parse_globe_spec(spec_tbl);
                 {
                     let mut guard = reg.lock().map_err(|e| {
@@ -762,9 +742,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         /// Get an existing globe by name, or nil.
         /// @param name string
         /// @return Globe?
-        tbl.set(
-            "get",
-            lua.create_function(move |_, name: String| {
+        tbl.set("get", lua.create_function(move |_, name: String| {
                 let exists = {
                     let guard = reg.lock().map_err(|e| {
                         mlua::Error::RuntimeError(format!("registry lock poisoned: {e}"))
@@ -793,9 +771,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         /// @param toml_src string
         /// @param spec table?
         /// @return Globe
-        tbl.set(
-            "loadFromTOML",
-            lua.create_function(
+        tbl.set("loadFromTOML", lua.create_function(
                 move |_, (name, toml_src, spec_tbl): (String, String, Option<LuaTable>)| {
                     let spec = parse_globe_spec(spec_tbl);
                     let provinces = loader::load_from_toml_str(&toml_src)
@@ -826,9 +802,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     /// @param lat2 number
     /// @param lon2 number
     /// @return number
-    tbl.set(
-        "greatCircleDistance",
-        lua.create_function(|_, (la, lo, lb, lo2): (f32, f32, f32, f32)| {
+    tbl.set("greatCircleDistance", lua.create_function(|_, (la, lo, lb, lo2): (f32, f32, f32, f32)| {
             Ok(great_circle_distance(la, lo, lb, lo2))
         })?,
     )?;
@@ -841,9 +815,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     /// @param lon2 number
     /// @param steps integer
     /// @return table
-    tbl.set(
-        "greatCirclePath",
-        lua.create_function(|lua, (la, lo, lb, lo2, n): (f32, f32, f32, f32, u32)| {
+    tbl.set("greatCirclePath", lua.create_function(|lua, (la, lo, lb, lo2, n): (f32, f32, f32, f32, u32)| {
             let pts = great_circle_path(la, lo, lb, lo2, n);
             let t = lua.create_table()?;
             for (i, (lat, lon)) in pts.iter().enumerate() {
@@ -861,9 +833,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     /// @param lat number
     /// @param lon number
     /// @return table
-    tbl.set(
-        "latLonToUnit",
-        lua.create_function(|lua, (lat, lon): (f32, f32)| {
+    tbl.set("latLonToUnit", lua.create_function(|lua, (lat, lon): (f32, f32)| {
             let v = lat_lon_to_unit(lat, lon);
             let t = lua.create_table()?;
             t.set(1, v.x)?;

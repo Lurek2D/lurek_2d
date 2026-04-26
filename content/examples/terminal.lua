@@ -836,7 +836,7 @@ end
 -- Returns the type name of this object.
 -- Useful for runtime type inspection.
 do  -- LTerminal:type
-  local terminal_obj = lurek.terminal.newTerminal(nil, nil)
+  local terminal_obj = lurek.terminal.newTerminal(80, 24)
   local t = terminal_obj:type()
   lurek.log.info("LTerminal:type = " .. t, "terminal")
 end
@@ -844,15 +844,15 @@ end
 -- Returns true if this object is of the given type.
 -- Use for runtime type checks.
 do  -- LTerminal:typeOf
-  local terminal_obj = lurek.terminal.newTerminal(nil, nil)
-  lurek.log.info("is LTerminal: " .. tostring(terminal_obj:typeOf("LTerminal")), "terminal")
-  lurek.log.info("is wrong: " .. tostring(terminal_obj:typeOf("Unknown")), "terminal")
+  local terminal_obj2 = lurek.terminal.newTerminal(80, 24)
+  lurek.log.info("is LTerminal: " .. tostring(terminal_obj2 and terminal_obj2:typeOf("LTerminal") or false), "terminal")
+  lurek.log.info("is wrong: " .. tostring(terminal_obj2 and terminal_obj2:typeOf("Unknown") or false), "terminal")
 end
 --@api-stub: LWidget:type
 -- Returns the type name of this object.
 -- Useful for runtime type inspection.
 do  -- LWidget:type
-  local widget_obj = lurek.terminal.newLabel(nil, nil, "hello")
+  local widget_obj = lurek.terminal.newLabel(0, 0, "hello")
   local t = widget_obj:type()
   lurek.log.info("LWidget:type = " .. t, "terminal")
 end
@@ -860,9 +860,9 @@ end
 -- Returns true if this object is of the given type.
 -- Use for runtime type checks.
 do  -- LWidget:typeOf
-  local widget_obj = lurek.terminal.newLabel(nil, nil, "hello")
-  lurek.log.info("is LWidget: " .. tostring(widget_obj:typeOf("LWidget")), "terminal")
-  lurek.log.info("is wrong: " .. tostring(widget_obj:typeOf("Unknown")), "terminal")
+  local widget_obj2 = lurek.terminal.newLabel(0, 0, "hello")
+  lurek.log.info("is LWidget: " .. tostring(widget_obj2 and widget_obj2:typeOf("LWidget") or false), "terminal")
+  lurek.log.info("is wrong: " .. tostring(widget_obj2 and widget_obj2:typeOf("Unknown") or false), "terminal")
 end
 --@api-stub: block below with a real scenario.
 -- Run .github/prompts/flesh-out-example.prompt.md for instructions.

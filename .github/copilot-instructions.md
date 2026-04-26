@@ -1,5 +1,13 @@
 # Lurek2D Engine — System Prompt
 
+## Communitcation
+
+!! Mandatory !!
+
+Use only simple english, no slang, no idioms, no metaphors. Be direct and literal. Avoid technical jargon where possible; when necessary, define terms in plain language.
+
+After each compaction please reload system prompt, load agent definition, and check if skills are needed to be loaded again.
+
 ## Engine Identity
 
 Lurek2D is a 2D game engine written in Rust that loads and executes Lua game scripts via LuaJIT (`mlua` 0.9; `lua54` is a non-shipping fallback). Tech baseline: Rust stable ≥1.78, wgpu 22, winit 0.30, rapier2d 0.32, rodio 0.17, fontdue 0.9. Public API namespace is `lurek.*`. Desktop only (Windows / Linux / macOS, x86_64 + ARM). MIT licensed. Single-binary distribution; no embedded editor.

@@ -2106,7 +2106,7 @@ do  -- LGraphNode:enqueue
   local g = lurek.graph.newGraph()
   local n = g:addNode("buffer", 32)
   n:setQueueEnabled(true)
-  n:enqueue("iron_ingot")
+  n:enqueue(g:createItem("iron_ingot", 1))
   lurek.log.info("queue_size=" .. n:getQueueSize(), "graph")
 end
 --@api-stub: LGraphNode:dequeue
@@ -2116,7 +2116,7 @@ do  -- LGraphNode:dequeue
   local g = lurek.graph.newGraph()
   local n = g:addNode("buffer", 32)
   n:setQueueEnabled(true)
-  n:enqueue("coal")
+  n:enqueue(g:createItem("coal", 1))
   local item = n:dequeue()
   lurek.log.info("dequeued=" .. tostring(item), "graph")
 end

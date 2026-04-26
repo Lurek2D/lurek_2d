@@ -233,9 +233,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// @param code string
     /// @return Thread
     let ch = named_channels.clone();
-    tbl.set(
-        "newThread",
-        lua.create_function(move |_, code: String| {
+    tbl.set("newThread", lua.create_function(move |_, code: String| {
             Ok(LuaThreadHandle {
                 inner: Arc::new(Mutex::new(LuaThread::new(code, ch.clone()))),
             })
@@ -246,9 +244,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// Creates an unnamed thread-safe channel for inter-thread communication.
     /// @param name? string
     /// @return Channel
-    tbl.set(
-        "newChannel",
-        lua.create_function(|_, ()| {
+    tbl.set("newChannel", lua.create_function(|_, ()| {
             Ok(LuaChannel {
                 inner: Channel::new(),
             })
@@ -260,9 +256,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// @param name string
     /// @return Channel
     let ch = named_channels.clone();
-    tbl.set(
-        "getChannel",
-        lua.create_function(move |_, name: String| {
+    tbl.set("getChannel", lua.create_function(move |_, name: String| {
             let mut channels = ch.lock().unwrap();
             let channel = channels
                 .entry(name.clone())
@@ -279,9 +273,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// @param size integer
     /// @param code string
     /// @return ThreadPool
-    tbl.set(
-        "newPool",
-        lua.create_function(|_, (size, code): (usize, String)| {
+    tbl.set("newPool", lua.create_function(|_, (size, code): (usize, String)| {
             Ok(LuaThreadPool {
                 inner: Arc::new(Mutex::new(ThreadPool::new(size, code))),
             })
@@ -295,9 +287,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// @param code string
     /// @param args MultiValue
     /// @return Promise
-    tbl.set(
-        "async",
-        lua.create_function(|_, (code, args): (String, LuaMultiValue)| {
+    tbl.set("async", lua.create_function(|_, (code, args): (String, LuaMultiValue)| {
             let channel_args = args
                 .into_iter()
                 .map(lua_to_channel_value)

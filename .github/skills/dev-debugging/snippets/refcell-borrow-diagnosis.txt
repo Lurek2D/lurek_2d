@@ -1,2 +1,0 @@
-thread 'main' panicked at 'already borrowed: BorrowMutError'
-  src/lua_api/render_api.rs:42

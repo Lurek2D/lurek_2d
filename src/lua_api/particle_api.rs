@@ -1057,7 +1057,7 @@ impl LuaUserData for LuaParticleSystem {
 
         // -- clone --
         /// Creates a copy of this particle system (config only, no live particles).
-        /// @return ParticleSystem
+        /// @return LParticleSystem
         methods.add_method("clone", |lua, this, ()| {
             let (state, new_ps) = {
                 let st = this.state.borrow();
@@ -1080,7 +1080,7 @@ impl LuaUserData for LuaParticleSystem {
         /// Renders all live particles to a CPU ImageData.
         /// @param width integer
         /// @param height integer
-        /// @return ImageData
+        /// @return LImageData
         methods.add_method("drawToImage", |_, this, (w, h): (u32, u32)| {
             let st = this.state.borrow();
             let ps = st
@@ -1095,7 +1095,7 @@ impl LuaUserData for LuaParticleSystem {
         /// Alias for `drawToImage`. Renders all live particles to a CPU ImageData.
         /// @param width integer
         /// @param height integer
-        /// @return ImageData
+        /// @return LImageData
         methods.add_method("toImage", |_, this, (w, h): (u32, u32)| {
             let st = this.state.borrow();
             let ps = st
@@ -1492,17 +1492,13 @@ impl LuaUserData for LuaTrail {
 /// @param lua &Lua
 /// @param lurek &LuaTable
 /// @param state Rc<RefCell<SharedState>>
-/// @param lua &Lua
-/// @param lurek &LuaTable
-/// @param state Rc<RefCell<SharedState>>
-/// @return LuaResult<()>
 pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
 
     // -- newSystem --
     /// Creates a new particle system and stores it in the engine pool.
     /// @param config table
-    /// @return ParticleSystem
+    /// @return LParticleSystem
     let s = state.clone();
     tbl.set(
         "newSystem",
@@ -1528,7 +1524,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// Creates a new trail ribbon effect.
     /// @param lifetime number
     /// @param start_width number
-    /// @return Trail
+    /// @return LTrail
     tbl.set(
         "newTrail",
         lua.create_function(|lua, (lifetime, start_width): (f32, f32)| {
@@ -1541,7 +1537,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     // -- fromTOML --
     /// Creates a new particle system from a TOML config file.
     /// @param path string  Path to the TOML config file.
-    /// @return ParticleSystem
+    /// @return LParticleSystem
     let s_toml = state.clone();
     tbl.set(
         "fromTOML",
@@ -1667,11 +1663,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
 }
 
 impl ParticleConfig {
-    /// from_lua_opts.
-    ///
-    /// @param t &LuaTable
-    ///
-    /// @return LuaResult<Self>
+    /// Parses an optional Lua config table into a concrete [`ParticleConfig`].
     pub fn from_lua_opts(t: &LuaTable) -> LuaResult<Self> {
         let mut c = ParticleConfig::default();
         if let Ok(v) = t.get::<_, u32>("maxParticles") {

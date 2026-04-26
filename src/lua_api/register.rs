@@ -300,7 +300,6 @@ pub fn create_lua_vm(state: Rc<RefCell<SharedState>>, modules: &ModulesConfig) -
 }
 
 /// Creates a test Lua VM with the BDD test framework loaded and all available API modules registered
-/// @return LuaResult<Lua>
 pub fn create_test_vm() -> LuaResult<Lua> {
     use crate::runtime::config::Config;
     use std::path::PathBuf;

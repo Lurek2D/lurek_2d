@@ -114,9 +114,7 @@ impl LuaUserData for LuaWorld {
         /// @param b : number? [default=0]
         /// @param a : number? [default=255]
         /// @return nil
-        methods.add_method(
-            "drawDebug",
-            |_,
+        methods.add_method("drawDebug", |_,
              this,
              (target, r, g, b, a): (
                 mlua::AnyUserData,
@@ -267,9 +265,7 @@ impl LuaUserData for LuaWorld {
         /// @param radius : number
         /// @param bodyType : string
         /// @return Body
-        methods.add_method(
-            "newCircleBody",
-            |_, this, (x, y, radius, bt): (f32, f32, f32, String)| {
+        methods.add_method("newCircleBody", |_, this, (x, y, radius, bt): (f32, f32, f32, String)| {
                 let body_type = parse_body_type(&bt)?;
                 let body = Body::new_circle(x, y, radius, body_type);
                 let id = this.world.borrow_mut().add_body(body);
@@ -287,9 +283,7 @@ impl LuaUserData for LuaWorld {
         /// @param vertices : table
         /// @param bodyType : string
         /// @return Body
-        methods.add_method(
-            "newPolygonBody",
-            |_, this, (x, y, tbl, bt): (f32, f32, LuaTable, String)| {
+        methods.add_method("newPolygonBody", |_, this, (x, y, tbl, bt): (f32, f32, LuaTable, String)| {
                 let body_type = parse_body_type(&bt)?;
                 let mut verts = Vec::new();
                 let len = tbl.raw_len();
@@ -320,9 +314,7 @@ impl LuaUserData for LuaWorld {
         /// @param bodyType : string
         /// @return Body
         #[allow(clippy::too_many_arguments)]
-        methods.add_method(
-            "newEdgeBody",
-            |_, this, (x, y, x1, y1, x2, y2, bt): (f32, f32, f32, f32, f32, f32, String)| {
+        methods.add_method("newEdgeBody", |_, this, (x, y, x1, y1, x2, y2, bt): (f32, f32, f32, f32, f32, f32, String)| {
                 let body_type = parse_body_type(&bt)?;
                 let body = Body::new_edge(x, y, Vec2::new(x1, y1), Vec2::new(x2, y2), body_type);
                 let id = this.world.borrow_mut().add_body(body);
@@ -341,9 +333,7 @@ impl LuaUserData for LuaWorld {
         /// @param closed : boolean
         /// @param bodyType : string
         /// @return Body
-        methods.add_method(
-            "newChainBody",
-            |_, this, (x, y, tbl, closed, bt): (f32, f32, LuaTable, bool, String)| {
+        methods.add_method("newChainBody", |_, this, (x, y, tbl, closed, bt): (f32, f32, LuaTable, bool, String)| {
                 let body_type = parse_body_type(&bt)?;
                 let mut verts = Vec::new();
                 let len = tbl.raw_len();
@@ -369,9 +359,7 @@ impl LuaUserData for LuaWorld {
         /// @param shapeType : string
         /// @param ... : any
         /// @return integer
-        methods.add_method(
-            "addFixture",
-            |lua,
+        methods.add_method("addFixture", |lua,
              this,
              (body_id, shape_type, density, friction, restitution, sensor, args): (
                 usize,
@@ -409,9 +397,7 @@ impl LuaUserData for LuaWorld {
         /// @param fixtureIdx : integer
         /// @param friction : number
         /// @return nil
-        methods.add_method(
-            "setFixtureFriction",
-            |_, this, (body_id, fix_idx, friction): (usize, usize, f32)| {
+        methods.add_method("setFixtureFriction", |_, this, (body_id, fix_idx, friction): (usize, usize, f32)| {
                 this.world
                     .borrow_mut()
                     .set_fixture_friction(body_id, fix_idx, friction);
@@ -425,9 +411,7 @@ impl LuaUserData for LuaWorld {
         /// @param fixtureIdx : integer
         /// @param restitution : number
         /// @return nil
-        methods.add_method(
-            "setFixtureRestitution",
-            |_, this, (body_id, fix_idx, restitution): (usize, usize, f32)| {
+        methods.add_method("setFixtureRestitution", |_, this, (body_id, fix_idx, restitution): (usize, usize, f32)| {
                 this.world
                     .borrow_mut()
                     .set_fixture_restitution(body_id, fix_idx, restitution);
@@ -441,9 +425,7 @@ impl LuaUserData for LuaWorld {
         /// @param fixtureIdx : integer
         /// @param sensor : boolean
         /// @return nil
-        methods.add_method(
-            "setFixtureSensor",
-            |_, this, (body_id, fix_idx, sensor): (usize, usize, bool)| {
+        methods.add_method("setFixtureSensor", |_, this, (body_id, fix_idx, sensor): (usize, usize, bool)| {
                 this.world
                     .borrow_mut()
                     .set_fixture_sensor(body_id, fix_idx, sensor);
@@ -460,9 +442,7 @@ impl LuaUserData for LuaWorld {
         /// @param anchorX : number
         /// @param anchorY : number
         /// @return integer
-        methods.add_method(
-            "addRevoluteJoint",
-            |_, this, (a, b, ax, ay): (usize, usize, f32, f32)| {
+        methods.add_method("addRevoluteJoint", |_, this, (a, b, ax, ay): (usize, usize, f32, f32)| {
                 Ok(this.world.borrow_mut().add_revolute_joint(a, b, ax, ay))
             },
         );
@@ -478,9 +458,7 @@ impl LuaUserData for LuaWorld {
         /// @param length : number
         /// @return integer
         #[allow(clippy::too_many_arguments)]
-        methods.add_method(
-            "addDistanceJoint",
-            |_, this, (a, b, ax1, ay1, ax2, ay2, len): (usize, usize, f32, f32, f32, f32, f32)| {
+        methods.add_method("addDistanceJoint", |_, this, (a, b, ax1, ay1, ax2, ay2, len): (usize, usize, f32, f32, f32, f32, f32)| {
                 Ok(this
                     .world
                     .borrow_mut()
@@ -497,9 +475,7 @@ impl LuaUserData for LuaWorld {
         /// @param axisX : number
         /// @param axisY : number
         /// @return integer
-        methods.add_method(
-            "addPrismaticJoint",
-            |_, this, (a, b, ax, ay, axis_x, axis_y): (usize, usize, f32, f32, f32, f32)| {
+        methods.add_method("addPrismaticJoint", |_, this, (a, b, ax, ay, axis_x, axis_y): (usize, usize, f32, f32, f32, f32)| {
                 Ok(this
                     .world
                     .borrow_mut()
@@ -514,9 +490,7 @@ impl LuaUserData for LuaWorld {
         /// @param anchorX : number
         /// @param anchorY : number
         /// @return integer
-        methods.add_method(
-            "addWeldJoint",
-            |_, this, (a, b, ax, ay): (usize, usize, f32, f32)| {
+        methods.add_method("addWeldJoint", |_, this, (a, b, ax, ay): (usize, usize, f32, f32)| {
                 Ok(this.world.borrow_mut().add_weld_joint(a, b, ax, ay))
             },
         );
@@ -532,9 +506,7 @@ impl LuaUserData for LuaWorld {
         /// @param maxLength : number
         /// @return integer
         #[allow(clippy::too_many_arguments)]
-        methods.add_method(
-            "addRopeJoint",
-            |_, this, (a, b, ax1, ay1, ax2, ay2, max): (usize, usize, f32, f32, f32, f32, f32)| {
+        methods.add_method("addRopeJoint", |_, this, (a, b, ax1, ay1, ax2, ay2, max): (usize, usize, f32, f32, f32, f32, f32)| {
                 Ok(this
                     .world
                     .borrow_mut()
@@ -551,9 +523,7 @@ impl LuaUserData for LuaWorld {
         /// @param axisX : number
         /// @param axisY : number
         /// @return integer
-        methods.add_method(
-            "addWheelJoint",
-            |_, this, (a, b, ax, ay, axis_x, axis_y): (usize, usize, f32, f32, f32, f32)| {
+        methods.add_method("addWheelJoint", |_, this, (a, b, ax, ay, axis_x, axis_y): (usize, usize, f32, f32, f32, f32)| {
                 Ok(this
                     .world
                     .borrow_mut()
@@ -570,9 +540,7 @@ impl LuaUserData for LuaWorld {
         /// @param maxForce : number
         /// @param maxTorque : number
         /// @return integer
-        methods.add_method(
-            "addFrictionJoint",
-            |_, this, (a, b, ax, ay, max_f, max_t): (usize, usize, f32, f32, f32, f32)| {
+        methods.add_method("addFrictionJoint", |_, this, (a, b, ax, ay, max_f, max_t): (usize, usize, f32, f32, f32, f32)| {
                 Ok(this
                     .world
                     .borrow_mut()
@@ -586,9 +554,7 @@ impl LuaUserData for LuaWorld {
         /// @param bodyB : integer
         /// @param correctionFactor : number
         /// @return integer
-        methods.add_method(
-            "addMotorJoint",
-            |_, this, (a, b, factor): (usize, usize, f32)| {
+        methods.add_method("addMotorJoint", |_, this, (a, b, factor): (usize, usize, f32)| {
                 Ok(this.world.borrow_mut().add_motor_joint(a, b, factor))
             },
         );
@@ -600,9 +566,7 @@ impl LuaUserData for LuaWorld {
         /// @param targetY : number
         /// @param maxForce : number
         /// @return integer
-        methods.add_method(
-            "addMouseJoint",
-            |_, this, (body_id, tx, ty, max_f): (usize, f32, f32, f32)| {
+        methods.add_method("addMouseJoint", |_, this, (body_id, tx, ty, max_f): (usize, f32, f32, f32)| {
                 Ok(this
                     .world
                     .borrow_mut()
@@ -617,9 +581,7 @@ impl LuaUserData for LuaWorld {
         /// @param anchorX : number
         /// @param anchorY : number
         /// @return integer
-        methods.add_method(
-            "addPulleyJoint",
-            |_, this, (a, b, ax, ay): (usize, usize, f32, f32)| {
+        methods.add_method("addPulleyJoint", |_, this, (a, b, ax, ay): (usize, usize, f32, f32)| {
                 Ok(this.world.borrow_mut().add_pulley_joint(a, b, ax, ay))
             },
         );
@@ -631,9 +593,7 @@ impl LuaUserData for LuaWorld {
         /// @param anchorX : number
         /// @param anchorY : number
         /// @return integer
-        methods.add_method(
-            "addGearJoint",
-            |_, this, (a, b, ax, ay): (usize, usize, f32, f32)| {
+        methods.add_method("addGearJoint", |_, this, (a, b, ax, ay): (usize, usize, f32, f32)| {
                 Ok(this.world.borrow_mut().add_gear_joint(a, b, ax, ay))
             },
         );
@@ -687,9 +647,7 @@ impl LuaUserData for LuaWorld {
         /// @param jointId : integer
         /// @param speed : number
         /// @return nil
-        methods.add_method(
-            "setJointMotorSpeed",
-            |_, this, (jid, speed): (usize, f32)| {
+        methods.add_method("setJointMotorSpeed", |_, this, (jid, speed): (usize, f32)| {
                 this.world.borrow_mut().set_joint_motor_speed(jid, speed);
                 Ok(())
             },
@@ -708,9 +666,7 @@ impl LuaUserData for LuaWorld {
         /// @param jointId : integer
         /// @param enabled : boolean
         /// @return nil
-        methods.add_method(
-            "setJointLimitsEnabled",
-            |_, this, (jid, enabled): (usize, bool)| {
+        methods.add_method("setJointLimitsEnabled", |_, this, (jid, enabled): (usize, bool)| {
                 this.world
                     .borrow_mut()
                     .set_joint_limits_enabled(jid, enabled);
@@ -724,9 +680,7 @@ impl LuaUserData for LuaWorld {
         /// @param lower : number
         /// @param upper : number
         /// @return nil
-        methods.add_method(
-            "setJointLimits",
-            |_, this, (jid, lower, upper): (usize, f32, f32)| {
+        methods.add_method("setJointLimits", |_, this, (jid, lower, upper): (usize, f32, f32)| {
                 this.world.borrow_mut().set_joint_limits(jid, lower, upper);
                 Ok(())
             },
@@ -746,9 +700,7 @@ impl LuaUserData for LuaWorld {
         /// @param x : number
         /// @param y : number
         /// @return nil
-        methods.add_method(
-            "setMouseJointTarget",
-            |_, this, (jid, x, y): (usize, f32, f32)| {
+        methods.add_method("setMouseJointTarget", |_, this, (jid, x, y): (usize, f32, f32)| {
                 this.world.borrow_mut().set_mouse_joint_target(jid, x, y);
                 Ok(())
             },
@@ -763,9 +715,7 @@ impl LuaUserData for LuaWorld {
         /// @param x2 : number
         /// @param y2 : number
         /// @return table|nil
-        methods.add_method(
-            "raycast",
-            |lua, this, (x1, y1, x2, y2): (f32, f32, f32, f32)| match this
+        methods.add_method("raycast", |lua, this, (x1, y1, x2, y2): (f32, f32, f32, f32)| match this
                 .world
                 .borrow()
                 .raycast(x1, y1, x2, y2)
@@ -783,9 +733,7 @@ impl LuaUserData for LuaWorld {
         /// @param dy : number
         /// @param maxDist : number
         /// @return table|nil
-        methods.add_method(
-            "raycastClosest",
-            |lua, this, (x1, y1, dx, dy, max_dist): (f32, f32, f32, f32, f32)| match this
+        methods.add_method("raycastClosest", |lua, this, (x1, y1, dx, dy, max_dist): (f32, f32, f32, f32, f32)| match this
                 .world
                 .borrow()
                 .raycast_closest(x1, y1, dx, dy, max_dist)
@@ -803,9 +751,7 @@ impl LuaUserData for LuaWorld {
         /// @param dy : number
         /// @param maxDist : number
         /// @return table
-        methods.add_method(
-            "raycastAll",
-            |lua, this, (x1, y1, dx, dy, max_dist): (f32, f32, f32, f32, f32)| {
+        methods.add_method("raycastAll", |lua, this, (x1, y1, dx, dy, max_dist): (f32, f32, f32, f32, f32)| {
                 let hits = this.world.borrow().raycast_all(x1, y1, dx, dy, max_dist);
                 let result = lua.create_table()?;
                 for (i, hit) in hits.iter().enumerate() {
@@ -822,9 +768,7 @@ impl LuaUserData for LuaWorld {
         /// @param w : number
         /// @param h : number
         /// @return table
-        methods.add_method(
-            "queryAABB",
-            |_, this, (x, y, w, h): (f32, f32, f32, f32)| {
+        methods.add_method("queryAABB", |_, this, (x, y, w, h): (f32, f32, f32, f32)| {
                 Ok(this.world.borrow().query_aabb(x, y, w, h))
             },
         );
@@ -990,9 +934,7 @@ impl LuaUserData for LuaWorld {
         /// @param bodyId : integer
         /// @param data : any
         /// @return nil
-        methods.add_method(
-            "setBodyData",
-            |lua, this, (id, value): (usize, LuaValue)| {
+        methods.add_method("setBodyData", |lua, this, (id, value): (usize, LuaValue)| {
                 let key = lua.create_registry_value(value)?;
                 this.body_data.borrow_mut().insert(id, key);
                 Ok(())
@@ -1049,9 +991,7 @@ impl LuaUserData for LuaWorld {
         /// @param nx : number
         /// @param ny : number
         /// @return nil
-        methods.add_method(
-            "setBodyOneWay",
-            |_, this, (id, nx, ny): (usize, f32, f32)| {
+        methods.add_method("setBodyOneWay", |_, this, (id, nx, ny): (usize, f32, f32)| {
                 this.world.borrow_mut().set_body_one_way(id, nx, ny);
                 Ok(())
             },
@@ -1167,9 +1107,7 @@ impl LuaUserData for LuaWorld {
         /// @param max_steps : integer  -- safety cap on sub-steps per call
         /// @return nil
         /// number  -- unconsumed remainder (pass back next frame)
-        methods.add_method_mut(
-            "stepFixed",
-            |_, this, (accum, step_dt, max_steps): (f32, f32, u32)| {
+        methods.add_method_mut("stepFixed", |_, this, (accum, step_dt, max_steps): (f32, f32, u32)| {
                 let (_, remainder) = this
                     .world
                     .borrow_mut()
@@ -1211,9 +1149,7 @@ impl LuaUserData for LuaWorld {
                 let row = lua.create_table()?;
                 row.set("zone_id", evt.zone_id)?;
                 row.set("body_id", evt.body_id)?;
-                row.set(
-                    "kind",
-                    match evt.kind {
+                row.set("kind", match evt.kind {
                         crate::physics::ZoneEventKind::Enter => "enter",
                         crate::physics::ZoneEventKind::Leave => "leave",
                     },
@@ -1331,9 +1267,7 @@ impl LuaUserData for LuaZone {
         /// @param cy : number  -- attractor centre Y
         /// @param strength : number  -- force constant k (F = k / r²)
         /// @return nil
-        methods.add_method(
-            "setGravityPoint",
-            |_, this, (cx, cy, strength): (f32, f32, f32)| {
+        methods.add_method("setGravityPoint", |_, this, (cx, cy, strength): (f32, f32, f32)| {
                 let mut w = this.world.borrow_mut();
                 if let Some(z) = w.zone_mut(this.zone_id) {
                     z.set_gravity_point(cx, cy, strength);
@@ -1349,9 +1283,7 @@ impl LuaUserData for LuaZone {
         /// @param cy : number  -- repulsor centre Y
         /// @param strength : number  -- force constant k (F = k / r²)
         /// @return nil
-        methods.add_method(
-            "setGravityRepulsor",
-            |_, this, (cx, cy, strength): (f32, f32, f32)| {
+        methods.add_method("setGravityRepulsor", |_, this, (cx, cy, strength): (f32, f32, f32)| {
                 let mut w = this.world.borrow_mut();
                 if let Some(z) = w.zone_mut(this.zone_id) {
                     z.set_gravity_repulsor(cx, cy, strength);
@@ -1394,9 +1326,7 @@ impl LuaUserData for LuaZone {
         ///
         /// @param value : number | nil
         /// @return nil
-        methods.add_method(
-            "setAngularDampingOverride",
-            |_, this, value: Option<f32>| {
+        methods.add_method("setAngularDampingOverride", |_, this, value: Option<f32>| {
                 let mut w = this.world.borrow_mut();
                 if let Some(z) = w.zone_mut(this.zone_id) {
                     z.angular_damping_override = value;
@@ -1472,9 +1402,7 @@ impl LuaUserData for LuaTerrain {
         /// @param radius : number  -- world-space radius
         /// @param solid : boolean  -- true = fill, false = dig
         /// @return nil
-        methods.add_method_mut(
-            "fillCircle",
-            |_, this, (wx, wy, radius, solid): (f32, f32, f32, bool)| {
+        methods.add_method_mut("fillCircle", |_, this, (wx, wy, radius, solid): (f32, f32, f32, bool)| {
                 this.terrain.borrow_mut().fill_circle(wx, wy, radius, solid);
                 Ok(())
             },
@@ -1489,9 +1417,7 @@ impl LuaUserData for LuaTerrain {
         /// @param h : number  -- height (world pixels)
         /// @param solid : boolean
         /// @return nil
-        methods.add_method_mut(
-            "fillRect",
-            |_, this, (wx, wy, w, h, solid): (f32, f32, f32, f32, bool)| {
+        methods.add_method_mut("fillRect", |_, this, (wx, wy, w, h, solid): (f32, f32, f32, f32, bool)| {
                 this.terrain.borrow_mut().fill_rect(wx, wy, w, h, solid);
                 Ok(())
             },
@@ -1564,9 +1490,7 @@ impl LuaUserData for LuaTerrain {
         /// @param mass : number
         /// @param restitution : number
         /// @return table  -- array of body IDs (integers)
-        methods.add_method_mut(
-            "spawnDebris",
-            |lua, this, (positions, mass, restitution): (LuaTable, f32, f32)| {
+        methods.add_method_mut("spawnDebris", |lua, this, (positions, mass, restitution): (LuaTable, f32, f32)| {
                 let mut pts: Vec<(f32, f32)> = Vec::new();
                 for i in 1..=positions.raw_len() {
                     let row: LuaTable = positions.raw_get(i)?;
@@ -1600,9 +1524,7 @@ impl LuaUserData for LuaTerrain {
         /// @param eg : integer  -- empty G
         /// @param eb : integer  -- empty B
         /// @return string  -- RGBA bytes (width × height × 4)
-        methods.add_method(
-            "toImageData",
-            |lua, this, (sr, sg, sb, er, eg, eb): (u8, u8, u8, u8, u8, u8)| {
+        methods.add_method("toImageData", |lua, this, (sr, sg, sb, er, eg, eb): (u8, u8, u8, u8, u8, u8)| {
                 let buf = this
                     .terrain
                     .borrow()
@@ -1689,9 +1611,7 @@ impl LuaUserData for LuaCellular {
         /// @param ch : integer  -- height in cells
         /// @param cell_type : integer
         /// @return nil
-        methods.add_method_mut(
-            "fillRect",
-            |_, this, (cx0, cy0, cw, ch, t): (u32, u32, u32, u32, u8)| {
+        methods.add_method_mut("fillRect", |_, this, (cx0, cy0, cw, ch, t): (u32, u32, u32, u32, u8)| {
                 this.sim
                     .borrow_mut()
                     .fill_rect(cx0, cy0, cw, ch, CellType::from_u8(t));
@@ -1707,9 +1627,7 @@ impl LuaUserData for LuaCellular {
         /// @param r_cells : integer  -- radius in cells
         /// @param cell_type : integer
         /// @return nil
-        methods.add_method_mut(
-            "fillCircle",
-            |_, this, (cx, cy, r, t): (u32, u32, u32, u8)| {
+        methods.add_method_mut("fillCircle", |_, this, (cx, cy, r, t): (u32, u32, u32, u8)| {
                 this.sim
                     .borrow_mut()
                     .fill_circle(cx, cy, r, CellType::from_u8(t));
@@ -1757,9 +1675,7 @@ impl LuaUserData for LuaCellular {
         /// @param cw : integer  -- region width
         /// @param ch : integer  -- region height
         /// @return string  -- RGBA bytes (cw × ch × 4)
-        methods.add_method(
-            "toImageDataRegion",
-            |lua, this, (cx0, cy0, cw, ch): (u32, u32, u32, u32)| {
+        methods.add_method("toImageDataRegion", |lua, this, (cx0, cy0, cw, ch): (u32, u32, u32, u32)| {
                 let buf = this.sim.borrow().to_image_data_region(
                     cx0,
                     cy0,
@@ -2109,9 +2025,7 @@ impl LuaUserData for LuaBody {
         /// @param px : number
         /// @param py : number
         /// @return nil
-        methods.add_method(
-            "applyForceAtPoint",
-            |_, this, (fx, fy, px, py): (f32, f32, f32, f32)| {
+        methods.add_method("applyForceAtPoint", |_, this, (fx, fy, px, py): (f32, f32, f32, f32)| {
                 this.world
                     .borrow_mut()
                     .apply_force_at_point(this.id, fx, fy, px, py);
@@ -2466,9 +2380,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     /// @param gx : number
     /// @param gy : number
     /// @return World
-    tbl.set(
-        "newWorld",
-        lua.create_function(|_, (gx, gy): (f32, f32)| {
+    tbl.set("newWorld", lua.create_function(|_, (gx, gy): (f32, f32)| {
             Ok(LuaWorld {
                 world: Rc::new(RefCell::new(World::new(gx, gy))),
                 begin_contact_key: Rc::new(RefCell::new(None)),
@@ -2483,9 +2395,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     /// @param world : World
     /// @param dt : number
     /// @return nil
-    tbl.set(
-        "step",
-        lua.create_function(|_, (world_ud, dt): (LuaAnyUserData, f32)| {
+    tbl.set("step", lua.create_function(|_, (world_ud, dt): (LuaAnyUserData, f32)| {
             let world = world_ud.borrow::<LuaWorld>()?;
             world.world.borrow_mut().step(dt);
             Ok(())
@@ -2497,9 +2407,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     /// will be no-ops or return gracefully.
     /// @param world : World
     /// @return nil
-    tbl.set(
-        "destroyWorld",
-        lua.create_function(|_, _world_ud: LuaAnyUserData| {
+    tbl.set("destroyWorld", lua.create_function(|_, _world_ud: LuaAnyUserData| {
             // No-op: the world is garbage-collected when all references drop.
             Ok(())
         })?,
@@ -2512,9 +2420,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     /// @param y : number
     /// @param bodyType : string
     /// @return Body
-    tbl.set(
-        "newBody",
-        lua.create_function(
+    tbl.set("newBody", lua.create_function(
             |_, (world_ud, x, y, bt): (LuaAnyUserData, f32, f32, String)| {
                 let world = world_ud.borrow::<LuaWorld>()?;
                 let body_type = parse_body_type_lenient(&bt);
@@ -2533,9 +2439,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     /// @param world : World  (kept for API symmetry; body already holds the world ref)
     /// @param body : Body
     /// @return number, number, number, number
-    tbl.set(
-        "getBody",
-        lua.create_function(
+    tbl.set("getBody", lua.create_function(
             |_, (_world_ud, body_ud): (LuaAnyUserData, LuaAnyUserData)| {
                 let body = body_ud.borrow::<LuaBody>()?;
                 let w = body.world.borrow();
@@ -2557,9 +2461,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     /// @param vx : number
     /// @param vy : number
     /// @return nil
-    tbl.set(
-        "setBodyVelocity",
-        lua.create_function(
+    tbl.set("setBodyVelocity", lua.create_function(
             |_, (_world_ud, body_ud, vx, vy): (LuaAnyUserData, LuaAnyUserData, f32, f32)| {
                 let body = body_ud.borrow::<LuaBody>()?;
                 let mut w = body.world.borrow_mut();
@@ -2577,9 +2479,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     /// @param world : World  (kept for API symmetry)
     /// @param body : Body
     /// @return boolean
-    tbl.set(
-        "isSleepingAllowed",
-        lua.create_function(
+    tbl.set("isSleepingAllowed", lua.create_function(
             |_, (_world_ud, body_ud): (LuaAnyUserData, LuaAnyUserData)| {
                 let body = body_ud.borrow::<LuaBody>()?;
                 let allowed = body.world.borrow().is_sleeping_allowed(body.id);
@@ -2594,9 +2494,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     /// @param body : Body
     /// @param allowed : boolean
     /// @return nil
-    tbl.set(
-        "setSleepingAllowed",
-        lua.create_function(
+    tbl.set("setSleepingAllowed", lua.create_function(
             |_, (_world_ud, body_ud, allowed): (LuaAnyUserData, LuaAnyUserData, bool)| {
                 let body = body_ud.borrow::<LuaBody>()?;
                 body.world
@@ -2612,9 +2510,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     /// @param width : number
     /// @param height : number
     /// @return PhysicsShape
-    tbl.set(
-        "newRectangleShape",
-        lua.create_function(|_, (w, h): (f32, f32)| {
+    tbl.set("newRectangleShape", lua.create_function(|_, (w, h): (f32, f32)| {
             Ok(LuaPhysicsShape::new(Shape::Rect {
                 width: w,
                 height: h,
@@ -2626,9 +2522,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     /// Creates a circle shape userdata.
     /// @param radius : number
     /// @return PhysicsShape
-    tbl.set(
-        "newCircleShape",
-        lua.create_function(|_, r: f32| Ok(LuaPhysicsShape::new(Shape::Circle { radius: r })))?,
+    tbl.set("newCircleShape", lua.create_function(|_, r: f32| Ok(LuaPhysicsShape::new(Shape::Circle { radius: r })))?,
     )?;
 
     // -- newEdgeShape --
@@ -2638,9 +2532,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     /// @param x2 : number
     /// @param y2 : number
     /// @return PhysicsShape
-    tbl.set(
-        "newEdgeShape",
-        lua.create_function(|_, (x1, y1, x2, y2): (f32, f32, f32, f32)| {
+    tbl.set("newEdgeShape", lua.create_function(|_, (x1, y1, x2, y2): (f32, f32, f32, f32)| {
             Ok(LuaPhysicsShape::new(Shape::Edge {
                 v1: crate::math::Vec2::new(x1, y1),
                 v2: crate::math::Vec2::new(x2, y2),
@@ -2653,9 +2545,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     /// Requires at least 3 vertices (6 numbers).
     /// @param ... : number  flat x,y pairs (at least 3 pairs = 6 numbers)
     /// @return PhysicsShape
-    tbl.set(
-        "newPolygonShape",
-        lua.create_function(|_, coords: mlua::Variadic<f32>| {
+    tbl.set("newPolygonShape", lua.create_function(|_, coords: mlua::Variadic<f32>| {
             if coords.len() < 6 || !coords.len().is_multiple_of(2) {
                 return Err(LuaError::RuntimeError(
                     "newPolygonShape: requires at least 3 vertex pairs (6 numbers)".to_string(),
@@ -2674,9 +2564,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     /// @param closed : boolean  whether the chain closes back to start
     /// @param ... : number  flat x,y pairs (at least 2 pairs = 4 numbers)
     /// @return PhysicsShape
-    tbl.set(
-        "newChainShape",
-        lua.create_function(|_, (closed, coords): (bool, mlua::Variadic<f32>)| {
+    tbl.set("newChainShape", lua.create_function(|_, (closed, coords): (bool, mlua::Variadic<f32>)| {
             if coords.len() < 4 || coords.len() % 2 != 0 {
                 return Err(LuaError::RuntimeError(
                     "newChainShape: requires at least 2 vertex pairs (4 numbers)".to_string(),
@@ -2695,9 +2583,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     /// @param body : Body
     /// @param shape : PhysicsShape
     /// @return nil
-    tbl.set(
-        "attachShape",
-        lua.create_function(|_, (body_ud, shape_ud): (LuaAnyUserData, LuaAnyUserData)| {
+    tbl.set("attachShape", lua.create_function(|_, (body_ud, shape_ud): (LuaAnyUserData, LuaAnyUserData)| {
             let body = body_ud.borrow::<LuaBody>()?;
             let shape_lua = shape_ud.borrow::<LuaPhysicsShape>()?;
             let d = shape_lua.inner.borrow();
@@ -2718,9 +2604,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     /// Each entry is a table with keys: body_a, body_b.
     /// @param world : World
     /// @return table
-    tbl.set(
-        "getCollisions",
-        lua.create_function(|lua, world_ud: LuaAnyUserData| {
+    tbl.set("getCollisions", lua.create_function(|lua, world_ud: LuaAnyUserData| {
             let world_lua = world_ud.borrow::<LuaWorld>()?;
             let world = world_lua.world.borrow();
             let events = world.get_collision_events();
@@ -2740,9 +2624,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     /// @param enable : boolean
     /// @return nil
     let s = state.clone();
-    tbl.set(
-        "debugDraw",
-        lua.create_function(move |_, enable: bool| {
+    tbl.set("debugDraw", lua.create_function(move |_, enable: bool| {
             s.borrow_mut().physics_debug_draw = enable;
             Ok(())
         })?,
@@ -2761,9 +2643,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     ///   lineWidth   f32      outline thickness    (default 1.0)
     /// @return nil
     let s = state.clone();
-    tbl.set(
-        "drawDebugGpu",
-        lua.create_function(
+    tbl.set("drawDebugGpu", lua.create_function(
             move |_, (world_ud, config_val): (LuaAnyUserData, LuaValue)| {
                 let world_ref = world_ud.borrow::<LuaWorld>()?;
                 let shapes: Vec<crate::render::renderer::PhysicsDebugShape> = world_ref
@@ -2833,9 +2713,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     /// @param cell_size : number  -- world units per cell (e.g. 8.0)
     /// @param world_handle : World  -- the physics world to push colliders into
     /// @return Terrain
-    tbl.set(
-        "newTerrain",
-        lua.create_function({
+    tbl.set("newTerrain", lua.create_function({
             move |_, (width, height, cell_size, world_ud): (u32, u32, f32, mlua::AnyUserData)| {
                 let world_handle: std::cell::Ref<LuaWorld> = world_ud.borrow::<LuaWorld>()?;
                 let terrain = TerrainMap::new(width, height, cell_size);
@@ -2854,9 +2732,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     /// @param width : integer  -- grid width in cells
     /// @param height : integer  -- grid height in cells
     /// @return Cellular
-    tbl.set(
-        "newCellular",
-        lua.create_function(move |_, (width, height): (u32, u32)| {
+    tbl.set("newCellular", lua.create_function(move |_, (width, height): (u32, u32)| {
             Ok(LuaCellular {
                 sim: Rc::new(RefCell::new(CellularWorld::new(width, height))),
             })
@@ -2887,9 +2763,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     /// @param bw : number  -- width of box B
     /// @param bh : number  -- height of box B
     /// @return boolean
-    tbl.set(
-        "testAABB",
-        lua.create_function(
+    tbl.set("testAABB", lua.create_function(
             |_, (ax, ay, aw, ah, bx, by, bw, bh): (f32, f32, f32, f32, f32, f32, f32, f32)| {
                 Ok(crate::physics::collision_helpers::test_aabb(
                     ax, ay, aw, ah, bx, by, bw, bh,
@@ -2907,9 +2781,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     /// @param by : number  -- centre Y of circle B
     /// @param br : number  -- radius of circle B
     /// @return boolean
-    tbl.set(
-        "testCircles",
-        lua.create_function(
+    tbl.set("testCircles", lua.create_function(
             |_, (ax, ay, ar, bx, by, br): (f32, f32, f32, f32, f32, f32)| {
                 Ok(crate::physics::collision_helpers::test_circles(
                     ax, ay, ar, bx, by, br,
@@ -2927,9 +2799,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     /// @param aw : number  -- width of AABB
     /// @param ah : number  -- height of AABB
     /// @return boolean
-    tbl.set(
-        "testPoint",
-        lua.create_function(
+    tbl.set("testPoint", lua.create_function(
             |_, (px, py, ax, ay, aw, ah): (f32, f32, f32, f32, f32, f32)| {
                 Ok(crate::physics::collision_helpers::test_point_aabb(
                     px, py, ax, ay, aw, ah,
@@ -2948,9 +2818,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     /// @param aw : number  -- width of AABB
     /// @param ah : number  -- height of AABB
     /// @return boolean
-    tbl.set(
-        "testCircleAABB",
-        lua.create_function(
+    tbl.set("testCircleAABB", lua.create_function(
             |_, (cx, cy, cr, ax, ay, aw, ah): (f32, f32, f32, f32, f32, f32, f32)| {
                 Ok(crate::physics::collision_helpers::test_circle_aabb(
                     cx, cy, cr, ax, ay, aw, ah,

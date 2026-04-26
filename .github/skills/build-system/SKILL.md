@@ -6,105 +6,58 @@ description: "Load this skill when working with the Lurek2D build system: Cargo 
 
 ## Mission
 
-# Build System — Lurek2D
+Own Cargo profile definitions, output directory override, feature flags, development loop commands, and distribution packaging scripts.
 
 ## When To Load
 
 - Building or running the engine locally for the first time
-- Choosing between `cargo build`, `cargo check`, `cargo build --release`, or `cargo build --profile dist`
+- Choosing between cargo build, cargo check, cargo build --release, or cargo build --profile dist
 - Tuning binary size or runtime speed via Cargo profile settings
-- Packaging a distribution release with `tools/dist/dist.ps1` or `tools/dist/dist.sh`
-- Installing the engine binary locally with `tools/dist/install.ps1` or `tools/dist/install.sh`
-- Building an NSIS Windows installer with `tools/dist/installer.nsi`
+- Packaging a distribution release or installing locally
 - Switching between the LuaJIT and Lua 5.4 scripting backends
 
 ## When To Skip
 
-- Skip it for CI/CD pipeline setup (use ci-cd-pipeline skill) or writing Rust code.
+- CI/CD pipeline setup → use ci-cd-pipeline skill
+- Writing Rust code → use rust-coding skill
 
 ## Domain Knowledge
 
-### Owns
-- Cargo profile definitions (`dev`, `release`, `dist`) and their trade-offs
-- `build/` output directory override (`.cargo/config.toml`)
-- Feature flags: `lua-jit` (default) vs `lua54`
-- `cargo check` vs `cargo build` during development loop
-- Distribution packaging scripts and installer tooling
-- VS Code task shortcuts for common build operations
+**Output directory:** Lurek2D redirects Cargo output from target/ to build/ via .cargo/config.toml. Binaries at build/debug/, build/release/, build/dist/. Never reference target/.
 
----
+**Cargo profiles:**
 
-### Output Directory Override
-Lurek2D redirects Cargo output from the default `target/` to **`build/`** via `.cargo/config.toml`:
-
-> See [templates/output-directory-override.toml](templates/output-directory-override.toml) for the example.
-
-| Binary | Path |
-|--------|------|
-| Debug | `build/debug/lurek2d.exe` (Windows) / `build/debug/lurek2d` (Unix) |
-| Release | `build/release/lurek2d.exe` / `build/release/lurek2d` |
-| Dist | `build/dist/lurek2d.exe` / `build/dist/lurek2d` |
-
-**Never reference `target/`** — the binaries are not there.
-
----
-
-### Cargo Profiles
-Three profiles are defined in `Cargo.toml`. Use the right one for the task:
-
-| Profile | Command | Use When |
+| Profile | Command | Use when |
 |---------|---------|----------|
-| `dev` | `cargo build` | Active development — fast incremental rebuild, debuggable |
-| `release` | `cargo build --release` | Performance testing, running demos with full speed |
-| `dist` | `cargo build --profile dist` | Packaging a release — smaller binary, fat LTO |
+| dev | cargo build | Active development — fast incremental, debuggable |
+| release | cargo build --release | Performance testing, running demos at full speed |
+| dist | cargo build --profile dist | Packaging — smallest binary, fat LTO, longer build |
 
-### `[profile.dev]` — what it does
+- dev: opt-level 0 for engine, opt-level 3 for deps (wgpu/rapier/rodio run fast). Add debug=true locally for debugger.
+- release: small fast binary, symbols stripped. Do NOT use for debugging panics.
+- dist: fat LTO, single codegen unit, strip=true. Use for installer/ZIP packages only.
 
-> See [templates/profile-dev-what-it-does.toml](templates/profile-dev-what-it-does.toml) for the example.
+**Feature flags — Lua backend:**
 
-- `debug = true` locally when you need to inspect variables in a debugger (heavier binary)
-- Dependencies at `opt-level = 3` = wgpu/rapier/rodio run fast even in dev builds
+| Feature | Backend | Notes |
+|---------|---------|-------|
+| lua-jit (default) | LuaJIT vendored | Ship this. Windows/Linux/macOS x86_64+ARM |
+| lua54 | Lua 5.4 vendored | CI fallback only. cargo build --no-default-features --features lua54 |
 
-### `[profile.release]` — what it does
+Never ship lua54 builds. Use lua54 only for cross-backend CI checks.
 
-> See [templates/profile-release-what-it-does.toml](templates/profile-release-what-it-does.toml) for the example.
+**Development loop:** cargo check (2-5s, type-check only) → cargo build (5-15s) → cargo run. Use cargo check for rapid iteration; full build only when running.
 
-- Produces a small, fast binary suitable for end-user runs
-- Do NOT use `release` to debug panics — symbols are stripped
+**Distribution packaging:** see tools/dist/ for all scripts — dist.ps1 (Windows ZIP+folder), dist.sh (Linux/macOS tar.gz), installer.nsi (NSIS Windows installer), install.ps1/install.sh (local install to user bin), pack.ps1/pack.py (game folder to .lurek archive).
 
-### `[profile.dist]` — what it does
-
-> See [templates/profile-dist-what-it-does.toml](templates/profile-dist-what-it-does.toml) for the example.
-
-- Use for installer/ZIP packages where download size matters
-- Build time is longer than release (fat LTO link) — acceptable for one-shot packaging
-
----
-
-### Feature Flags — Lua Backend
-Lurek2D ships two Lua runtime backends. Select at build time with a Cargo feature flag.
-
-| Feature | Command | Backend | Platform |
-|---------|---------|---------|----------|
-| `lua-jit` *(default)* | `cargo build` | LuaJIT (vendored) | Windows/Linux/macOS x86_64 + ARM |
-
-> See [snippets/extended-notes.md](snippets/extended-notes.md) for additional notes.
+**Common issues:** Missing lua.h → ensure vendored feature; LINK error → clean rebuild (cargo clean); binaries not in target/ → they are in build/ per .cargo/config.toml.
 
 ## Companion File Index
 
-- [templates/output-directory-override.toml](templates/output-directory-override.toml) — Output Directory Override
-- [templates/profile-dev-what-it-does.toml](templates/profile-dev-what-it-does.toml) — `[profile.dev]` — what it does
-- [templates/profile-release-what-it-does.toml](templates/profile-release-what-it-does.toml) — `[profile.release]` — what it does
-- [templates/profile-dist-what-it-does.toml](templates/profile-dist-what-it-does.toml) — `[profile.dist]` — what it does
-- [templates/feature-flags-lua-backend.toml](templates/feature-flags-lua-backend.toml) — Feature Flags — Lua Backend
-- [snippets/development-loop-commands.ps1](snippets/development-loop-commands.ps1) — Development Loop Commands
-- [snippets/windows-zip-folder.ps1](snippets/windows-zip-folder.ps1) — Windows — ZIP + Folder
-- [snippets/linux-macos-tar-gz.sh](snippets/linux-macos-tar-gz.sh) — Linux / macOS — TAR.GZ
-- [snippets/windows-installer-nsis.ps1](snippets/windows-installer-nsis.ps1) — Windows Installer (NSIS)
-- [snippets/local-install-uninstall.ps1](snippets/local-install-uninstall.ps1) — Local Install / Uninstall
-- [snippets/local-install-uninstall-2.sh](snippets/local-install-uninstall-2.sh) — Local Install / Uninstall
-- [snippets/extended-notes.md](snippets/extended-notes.md) — extended notes (overflow)
+None — all guidance is inline.
 
 ## References
 
-- See related skills in `.github/skills/`.
+- .cargo/config.toml — output directory override
+- Cargo.toml — profile definitions and feature flags
+- tools/dist/ — distribution scripts (dist.ps1, dist.sh, installer.nsi, install.ps1, install.sh, pack.py)

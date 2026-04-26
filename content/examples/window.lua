@@ -481,12 +481,12 @@ end
 -- Opens a blocking native file-open dialog.
 -- Use for "Load mod" or "Import save" buttons; pass filters and multiple=true to allow batch selection.
 do  -- lurek.window.openFileDialog
-  local path = lurek.window.openFileDialog({
+  local paths = lurek.window.openFileDialog({
     title = "My Game - Load save",
     defaultPath = "save",
     filters = { { name = "Save files", extensions = { "dat", "sav" } } },
   })
-  if path then
-    lurek.log.info("user picked save: " .. path, "save")
+  if #paths > 0 then
+    lurek.log.info("user picked save: " .. paths[1], "save")
   end
 end

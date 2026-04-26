@@ -1,4 +1,4 @@
----
+﻿---
 name: testing-rust
 description: "Load this skill when writing Rust unit tests in tests/rust/unit/ for internal Rust code not reachable via lurek.*. Skip it for writing Lua tests (use lua-scripting), implementing features, or Rust tests of public lurek.* behaviour (those MUST be Lua tests per TST-01)."
 ---
@@ -6,187 +6,47 @@ description: "Load this skill when writing Rust unit tests in tests/rust/unit/ f
 
 ## Mission
 
-Own the non-Lua-reachable slice of the Lurek2D test architecture: centralised Rust unit tests under `tests/rust/unit/<module>_tests.rs`, integration / stress / golden binaries under `tests/rust/`, and harness registration for Lua BDD files. Enforces TST-01..TST-04 from [philosophy.md § Testing Constraints](../../../docs/architecture/philosophy.md#testing-constraints).
+Own the testing strategy, file layout, assertion patterns, and coverage tooling for both Rust unit tests and Lua binding tests.
 
 ## When To Load
 
-- Writing a Rust unit test for private / crate-private internals not exposed through `lurek.*`.
-- Adding a new `tests/rust/unit/<module>_tests.rs` file.
-- Registering a Lua test binary in `tests/lua/harness.rs`.
-- Organising or auditing `tests/rust/` layout.
-- Running scoped `cargo test` gates before a commit.
+- Writing Rust unit tests for internal code in tests/rust/unit/
+- Writing Lua tests for lurek.* API surface in tests/lua/
+- Understanding which test layer to use for a given behaviour
+- Checking test coverage metrics
 
 ## When To Skip
 
-- Writing tests for `lurek.*`-reachable behaviour — those MUST be Lua tests under `tests/lua/` per **TST-01**. Use the `lua-scripting` skill.
-- Implementing features or fixing production bugs — route to `Developer`.
-- Performance benchmarking — use `performance-profiling`.
-- CI/CD pipeline setup — use `ci-cd-pipeline`.
-- Lua API design — use `lua-api-design`.
+- Implementing features -> use rust-coding skill
+- Lua scripting unrelated to tests -> use lua-scripting skill
 
 ## Domain Knowledge
 
-### Binding testing constraints (TST-01..TST-04)
+**TST-01 (critical rule):** any behaviour reachable via lurek.* MUST be tested in Lua under tests/lua/. Rust unit tests are reserved for internal code not exposed to Lua.
 
-Full text: [philosophy.md § Testing Constraints](../../../docs/architecture/philosophy.md#testing-constraints). Short form:
+**TST-02:** no #[cfg(test)] blocks in src/. All Rust unit tests live in tests/rust/unit/<module>_tests.rs.
 
-- **TST-01** Any behaviour reachable through `lurek.*` MUST be tested in `tests/lua/`. Rust tests MUST NOT duplicate `lurek.*`-reachable coverage.
-- **TST-02** Inline `#[cfg(test)] mod tests` blocks in `src/**/*.rs` are **banned**. All Rust unit tests live in `tests/rust/unit/<module>_tests.rs` (centralised, one file per `src/` module).
-- **TST-03** `src/lua_api/<module>_api.rs` holds only `impl LuaUserData`, registration, and conversions. Business logic lives in `src/<module>/` and is tested there.
-- **TST-04** `mod.rs` is declarations only; helpers, types, and impls go in sibling files and are tested by module name.
-- **TST-06** Every Lua test layer has exactly **one file per module** (`test_<module>_<layer>.lua`). Applies to `unit/`, `evidence/`, `golden/`, `stress/`, `security/`, and `config/`. No split per-sub-feature files. Merge into the single canonical file.
+**TST-06:** one file per module per test layer. Files named test_<module>_<layer>.lua. Layers: unit/, evidence/, golden/, stress/, security/, config/.
 
-### Placement decision tree
+**Lua test pattern (BDD):** describe("module", function() ... it("does X", function() ... end) ... end). End every test file with test_summary(). Assertions: expect_equal(a, b), expect_near(a, b, tolerance), expect_true(x), expect_error(fn), expect_contains(str, sub).
 
-1. Is the behaviour reachable through any `lurek.*` API? Yes -> **Lua test** in `tests/lua/{unit,integration,stress,evidence,golden,security,config}/test_<module>_<layer>.lua`.
-   - ONE file per module per layer (TST-06). Never create `test_effect_overlay_evidence.lua` alongside `test_effect_evidence.lua`.
-   - Evidence artefact output goes to `tests/output/`; golden baselines live in `tests/samples/`.
-2. Otherwise, is it a public or `pub(crate)` Rust symbol with internal-only callers? Yes -> **Rust unit test** in `tests/rust/unit/<module>_tests.rs`.
-3. Cross-module / end-to-end Rust behaviour? -> `tests/rust/ext/` or a registered `[[test]]` binary under `tests/rust/`.
+**@covers markers:** every Lua test function includes -- @covers lurek.<module>.<function> for coverage tracking by tools/audit/lua_api_test_coverage.py.
 
-### Owns
-- Rust integration patterns (`tests/rust/ext/<module>_tests.rs`).
-- Rust unit patterns (`tests/rust/unit/<module>_tests.rs`) — the sole legal home for `#[test]` fns covering internals.
-- Lua BDD harness registration (`tests/lua/harness.rs`).
-- Float-comparison strategy (Rust and Lua).
-- `<subject>_<scenario>_<expected>` naming; no `test_` prefix.
-- Coverage tools (`tools/audit/test_coverage.py`, `tools/audit/unit_test_api_coverage.py`).
+**Float comparison:** never assert_eq! on floats. Use (actual - expected).abs() < 1e-5 in Rust. In Lua use expect_near(a, b, 0.001).
 
-### Two-layer test system
+**Evidence tiers (strongest to weakest):** (1) Headless state readback - call API, read state back, assert. (2) Canvas pixel readback - render to canvas, read pixels, check values. (3) Runtime smoke - call API and assert no error (weakest).
 
-See [snippets/1-test-architecture-overview.txt](snippets/1-test-architecture-overview.txt) for the layout table. Every layer runs via `cargo test` and must be headless.
+**Headless VM availability:** math, thread, timer (read-only), filesystem (read-only), data, image, ecs, tilemap, ai are available in headless tests. render, audio, physics, input require a window and are NOT available headless.
 
-### Adding a Rust unit test (TST-02-compliant)
-
-- File: `tests/rust/unit/<module>_tests.rs` (create if absent; register in `Cargo.toml` if the file is a new `[[test]]` target).
-- Body skeleton and a migrate-from-inline before/after pair are in [examples/2-adding-a-new-rust-integration.rs](examples/2-adding-a-new-rust-integration.rs) and [snippets/extended-notes.md](snippets/extended-notes.md).
-- Run scoped: see [snippets/2-adding-a-new-rust-integration-2.ps1](snippets/2-adding-a-new-rust-integration-2.ps1).
-
-### Adding a Lua test
-
-- File + `@covers` + summary contract: [examples/3-1-create-the-lua-file.lua](examples/3-1-create-the-lua-file.lua).
-- Harness registration (manual; no auto-discovery): [examples/3-2-harness-registration.rs](examples/3-2-harness-registration.rs).
-
-### Banned patterns
-
-- `#[cfg(test)] mod tests` (or any `#[test]` fn) anywhere under `src/**/*.rs` — **TST-02** violation; Reviewer rejects.
-- Rust integration tests that exercise `lurek.*` behaviour reachable from Lua — **TST-01** violation; rewrite as a Lua BDD test.
-- Adding logic (math, branching, loops) to a `src/lua_api/*_api.rs` closure solely to make it testable — **TST-03** violation; extract to `src/<module>/` first, then test the domain function.
-- Registering tests against symbols defined inside `mod.rs` — **TST-04** violation; move the definition into a sibling file first.
-- Creating a second Lua test file for a module layer that already has one — **TST-06** violation. E.g. do NOT create `test_audio_effects_evidence.lua` if `test_audio_evidence.lua` exists. Merge content instead.
-- Writing a placeholder `it()` in an `evidence/` file that only calls `pending(...)` — **evidence artifact contract** violation. Every `it()` in an evidence file MUST call `expect_evidence_created(path)` on a real artifact. Replace with a real test or use `xit()` with a `-- @evidence skip` comment if the operation requires GPU/audio.
-- Referencing `conf.lua` in tests or scripts — `conf.lua` support has been removed; use `conf.toml` only.
-
-See [snippets/extended-notes.md](snippets/extended-notes.md) for extended guidance on naming, float comparison, evidence vs golden contracts, and coverage tooling.
+**Coverage tools:** tools/audit/test_coverage.py (cross-reference pub items vs test files), tools/audit/lua_api_test_coverage.py --report (Lua API coverage via @covers markers).
 
 ## Companion File Index
 
-- [snippets/1-test-architecture-overview.txt](snippets/1-test-architecture-overview.txt) — two-layer test architecture.
-- [examples/2-adding-a-new-rust-integration.rs](examples/2-adding-a-new-rust-integration.rs) — Rust unit test skeleton (TST-02).
-- [snippets/2-adding-a-new-rust-integration-2.ps1](snippets/2-adding-a-new-rust-integration-2.ps1) — scoped `cargo test` invocations.
-- [examples/3-1-create-the-lua-file.lua](examples/3-1-create-the-lua-file.lua) — Lua BDD test file skeleton.
-- [examples/3-2-harness-registration.rs](examples/3-2-harness-registration.rs) — harness registration pattern.
-- [examples/test-structure.lua](examples/test-structure.lua) — describe/it nesting.
-- [examples/6-test-vm-helpers-rust-side.rs](examples/6-test-vm-helpers-rust-side.rs) — test-VM helpers (Rust side).
-- [snippets/running-quality-gates.ps1](snippets/running-quality-gates.ps1) — gate commands.
-- [snippets/extended-notes.md](snippets/extended-notes.md) — extended notes (naming, float comparison, evidence/golden contracts, coverage).
+None - all guidance is inline.
 
 ## References
 
-- [docs/architecture/philosophy.md § Testing Constraints](../../../docs/architecture/philosophy.md#testing-constraints) — canonical text of TST-01..TST-04.
-- [docs/architecture/test-framework.md](../../../docs/architecture/test-framework.md) — placement decision tree and banned-patterns list.
-- [tools/audit/test_coverage.py](../../../tools/audit/test_coverage.py) — Rust+Lua test-coverage cross-reference report.
-- [tools/audit/unit_test_api_coverage.py](../../../tools/audit/unit_test_api_coverage.py) — unit-level API coverage metrics.
-- [tools/audit/lua_evidence_golden_contract_audit.py](../../../tools/audit/lua_evidence_golden_contract_audit.py) — evidence/golden contract enforcement.
----
-name: testing-rust
-description: "Load this skill when writing Rust unit tests in tests/rust/unit/ for internal Rust code not reachable via lurek.*. Skip it for writing Lua tests (use lua-scripting), implementing features, or Rust tests of public lurek.* behaviour (those MUST be Lua tests per TST-01)."
----
-# testing-rust
-
-## Mission
-
-Own the non-Lua-reachable slice of the Lurek2D test architecture: centralised Rust unit tests under `tests/rust/unit/<module>_tests.rs`, integration / stress / golden binaries under `tests/rust/`, and harness registration for Lua BDD files. Enforces TST-01..TST-04 from [philosophy.md § Testing Constraints](../../../docs/architecture/philosophy.md#testing-constraints).
-
-## When To Load
-
-- Writing a Rust unit test for private / crate-private internals not exposed through `lurek.*`
-- Adding a new `tests/rust/unit/<module>_tests.rs` file
-- Registering a Lua test binary in `tests/lua/harness.rs`
-- Organising or auditing `tests/rust/` layout
-- Running scoped `cargo test` gates before a commit
-
-## When To Skip
-
-- Writing tests for `lurek.*`-reachable behaviour â€” those MUST be Lua tests under `tests/lua/` per **TST-01**. Use the `lua-scripting` skill.
-- Implementing features or fixing production bugs â€” route to `Developer`.
-- Performance benchmarking â€” use `performance-profiling`.
-- CI/CD pipeline setup â€” use `ci-cd-pipeline`.
-- Lua API design â€” use `lua-api-design`.
-
-## Domain Knowledge
-
-### Binding testing constraints (TST-01..TST-04)
-
-Full text: [philosophy.md § Testing Constraints](../../../docs/architecture/philosophy.md#testing-constraints). Short form:
-
-- **TST-01** Any behaviour reachable through `lurek.*` MUST be tested in `tests/lua/`. Rust tests MUST NOT duplicate `lurek.*`-reachable coverage.
-- **TST-02** Inline `#[cfg(test)] mod tests` blocks in `src/**/*.rs` are **banned**. All Rust unit tests live in `tests/rust/unit/<module>_tests.rs` (centralised, one file per `src/` module).
-- **TST-03** `src/lua_api/<module>_api.rs` holds only `impl LuaUserData`, registration, and conversions. Business logic lives in `src/<module>/` and is tested there.
-- **TST-04** `mod.rs` is declarations only; helpers/types/impls go in sibling files and are tested by module-name.
-
-### Placement decision tree
-
-1. Is the behaviour reachable through any `lurek.*` API? â†’ **Lua test** in `tests/lua/{unit,integration,stress,evidence,golden,security}/test_<...>.lua`.
-2. Otherwise, is it a public or `pub(crate)` Rust symbol with internal-only callers? â†’ **Rust unit test** in `tests/rust/unit/<module>_tests.rs`.
-3. Cross-module / end-to-end Rust behaviour? â†’ `tests/rust/ext/` or a registered `[[test]]` binary under `tests/rust/`.
-
-### Owns
-- Rust integration test patterns (`tests/rust/ext/<module>_tests.rs`)
-- Rust unit patterns (`tests/rust/unit/<module>_tests.rs`) â€” the sole legal home for `#[test]` fns covering internals
-- Lua BDD harness registration (`tests/lua/harness.rs`)
-- Float-comparison strategy (Rust and Lua)
-- `<subject>_<scenario>_<expected>` naming; no `test_` prefix
-- Coverage tools (`tools/audit/test_coverage.py`, `tools/audit/unit_test_api_coverage.py`)
-
-### Two-layer test system
-See [snippets/1-test-architecture-overview.txt](snippets/1-test-architecture-overview.txt) for the layout table. Every layer runs via `cargo test` and must be headless.
-
-### Adding a Rust unit test (TST-02-compliant)
-- File: `tests/rust/unit/<module>_tests.rs` (create if absent; register in `Cargo.toml` if the file is a new `[[test]]` target).
-- Body skeleton and a "migrate from inline" before/after pair are in [examples/2-adding-a-new-rust-integration.rs](examples/2-adding-a-new-rust-integration.rs) and [snippets/extended-notes.md](snippets/extended-notes.md).
-- Run scoped: see [snippets/2-adding-a-new-rust-integration-2.ps1](snippets/2-adding-a-new-rust-integration-2.ps1).
-
-### Adding a Lua test
-- File + `@covers` + summary contract: [examples/3-1-create-the-lua-file.lua](examples/3-1-create-the-lua-file.lua).
-- Harness registration (manual â€” no auto-discovery): [examples/3-2-harness-registration.rs](examples/3-2-harness-registration.rs).
-
-### Banned patterns
-
-- `#[cfg(test)] mod tests` (or any `#[test]` fn) anywhere under `src/**/*.rs` â€” **TST-02** violation; Reviewer rejects.
-- Rust integration tests that exercise `lurek.*` behaviour reachable from Lua â€” **TST-01** violation; rewrite as a Lua BDD test.
-- Adding logic (math, branching, loops) to a `src/lua_api/*_api.rs` closure solely to make it testable â€” **TST-03** violation; extract to `src/<module>/` first, then test the domain function.
-- Registering tests against symbols defined inside `mod.rs` â€” **TST-04** violation; move the definition into a sibling file first.
-
-See [snippets/extended-notes.md](snippets/extended-notes.md) for extended guidance on naming, float comparison, evidence vs golden contracts, and coverage tooling.
-
-## Companion File Index
-
-- [snippets/1-test-architecture-overview.txt](snippets/1-test-architecture-overview.txt) â€” two-layer test architecture
-- [examples/2-adding-a-new-rust-integration.rs](examples/2-adding-a-new-rust-integration.rs) â€” Rust unit test skeleton (TST-02)
-- [snippets/2-adding-a-new-rust-integration-2.ps1](snippets/2-adding-a-new-rust-integration-2.ps1) â€” scoped `cargo test` invocations
-- [examples/3-1-create-the-lua-file.lua](examples/3-1-create-the-lua-file.lua) â€” Lua BDD test file skeleton
-- [examples/3-2-harness-registration.rs](examples/3-2-harness-registration.rs) â€” harness registration pattern
-- [examples/test-structure.lua](examples/test-structure.lua) â€” describe/it nesting
-- [examples/6-test-vm-helpers-rust-side.rs](examples/6-test-vm-helpers-rust-side.rs) â€” test-VM helpers (Rust side)
-- [snippets/running-quality-gates.ps1](snippets/running-quality-gates.ps1) â€” gate commands
-- [snippets/extended-notes.md](snippets/extended-notes.md) â€” extended notes (naming, float comparison, evidence/golden contracts, coverage)
-
-## References
-
-- [docs/architecture/philosophy.md § Testing Constraints](../../../docs/architecture/philosophy.md#testing-constraints) — canonical text of TST-01..TST-04.
-- [docs/architecture/test-framework.md](../../../docs/architecture/test-framework.md) — placement decision tree and banned-patterns list.
-- [tools/audit/test_coverage.py](../../../tools/audit/test_coverage.py) — Rust+Lua test-coverage cross-reference report.
-- [tools/audit/unit_test_api_coverage.py](../../../tools/audit/unit_test_api_coverage.py) — unit-level API coverage metrics.
-- [tools/audit/lua_evidence_golden_contract_audit.py](../../../tools/audit/lua_evidence_golden_contract_audit.py) — evidence/golden contract enforcement.
-
+- tests/lua/ - Lua test suites
+- tests/rust/unit/ - Rust unit test files
+- tools/audit/test_coverage.py - test coverage metrics
+- tools/audit/lua_api_test_coverage.py - Lua @covers coverage

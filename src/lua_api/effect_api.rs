@@ -88,9 +88,7 @@ impl LuaUserData for LuaPostFxEffect {
         /// @param name string
         /// @param default number
         /// @return number
-        methods.add_method(
-            "getParameter",
-            |_, this, (name, default): (String, Option<f32>)| {
+        methods.add_method("getParameter", |_, this, (name, default): (String, Option<f32>)| {
                 Ok(this
                     .inner
                     .borrow()
@@ -289,9 +287,7 @@ impl LuaUserData for LuaPostFxStack {
         /// @param position integer
         /// @param effect PostFxEffect
         /// @return nil
-        methods.add_method_mut(
-            "insert",
-            |_, this, (position, effect_ud): (usize, LuaAnyUserData)| {
+        methods.add_method_mut("insert", |_, this, (position, effect_ud): (usize, LuaAnyUserData)| {
                 let effect = effect_ud.borrow::<LuaPostFxEffect>()?;
                 let idx = (position.saturating_sub(1)).min(this.effects.len());
                 this.effects.insert(idx, Rc::clone(&effect.inner));
@@ -307,9 +303,7 @@ impl LuaUserData for LuaPostFxStack {
         /// @param position integer
         /// @param enabled boolean
         /// @return nil
-        methods.add_method_mut(
-            "setEnabled",
-            |_, this, (position, enabled): (usize, bool)| {
+        methods.add_method_mut("setEnabled", |_, this, (position, enabled): (usize, bool)| {
                 let idx = position.saturating_sub(1);
                 if idx < this.inner.enabled.len() {
                     this.inner.enabled[idx] = enabled;
@@ -335,8 +329,7 @@ impl LuaUserData for LuaPostFxStack {
         // -- getEffect --
         /// Returns the effect at the given 1-based position, or nil.
         /// @param index integer
-        /// @return nil
-        /// PostFxEffect?
+        /// @return PostFxEffect|nil
         methods.add_method("getEffect", |lua, this, index: usize| {
             let idx = index.saturating_sub(1);
             match this.effects.get(idx) {
@@ -587,8 +580,7 @@ impl LuaUserData for LuaImageEffect {
         // -- getEffect --
         /// Returns the effect at the given 1-based index or with the given type name.
         /// @param key integer|string
-        /// @return nil
-        /// PostFxEffect|nil
+        /// @return PostFxEffect|nil
         methods.add_method("getEffect", |lua, this, key: LuaValue| {
             let rc_opt = match &key {
                 LuaValue::Integer(i) => this
@@ -727,9 +719,7 @@ impl LuaUserData for LuaOverlay {
         /// @param a number
         /// @param duration number
         /// @return nil
-        methods.add_method_mut(
-            "triggerFlash",
-            |_, this, (r, g, b, a, duration): (f32, f32, f32, f32, f32)| {
+        methods.add_method_mut("triggerFlash", |_, this, (r, g, b, a, duration): (f32, f32, f32, f32, f32)| {
                 this.inner.trigger_flash(r, g, b, a, duration);
                 Ok(())
             },
@@ -740,9 +730,7 @@ impl LuaUserData for LuaOverlay {
         /// @param intensity number
         /// @param duration number
         /// @return nil
-        methods.add_method_mut(
-            "triggerShake",
-            |_, this, (intensity, duration): (f32, f32)| {
+        methods.add_method_mut("triggerShake", |_, this, (intensity, duration): (f32, f32)| {
                 this.inner.trigger_shake(intensity, duration);
                 Ok(())
             },
@@ -756,9 +744,7 @@ impl LuaUserData for LuaOverlay {
         /// @param target_alpha number
         /// @param duration number
         /// @return nil
-        methods.add_method_mut(
-            "triggerFade",
-            |_, this, (r, g, b, target_alpha, duration): (f32, f32, f32, f32, f32)| {
+        methods.add_method_mut("triggerFade", |_, this, (r, g, b, target_alpha, duration): (f32, f32, f32, f32, f32)| {
                 this.inner.trigger_fade(r, g, b, target_alpha, duration);
                 Ok(())
             },
@@ -858,9 +844,7 @@ impl LuaUserData for LuaOverlay {
         /// @param b number
         /// @param a number
         /// @return nil
-        methods.add_method_mut(
-            "setAmbientColor",
-            |_, this, (r, g, b, a): (f32, f32, f32, Option<f32>)| {
+        methods.add_method_mut("setAmbientColor", |_, this, (r, g, b, a): (f32, f32, f32, Option<f32>)| {
                 this.inner.ambient.color = [r, g, b, a.unwrap_or(1.0)];
                 Ok(())
             },
@@ -927,9 +911,7 @@ impl LuaUserData for LuaOverlay {
         /// @param b number
         /// @param a number
         /// @return nil
-        methods.add_method_mut(
-            "setFogColor",
-            |_, this, (r, g, b, a): (f32, f32, f32, Option<f32>)| {
+        methods.add_method_mut("setFogColor", |_, this, (r, g, b, a): (f32, f32, f32, Option<f32>)| {
                 this.inner.fog.color = [r, g, b, a.unwrap_or(1.0)];
                 Ok(())
             },
@@ -1213,9 +1195,7 @@ impl LuaUserData for LuaOverlay {
         /// @param b number
         /// @param a number
         /// @return nil
-        methods.add_method_mut(
-            "setLightningColor",
-            |_, this, (r, g, b, a): (f32, f32, f32, Option<f32>)| {
+        methods.add_method_mut("setLightningColor", |_, this, (r, g, b, a): (f32, f32, f32, Option<f32>)| {
                 this.inner.lightning.color = [r, g, b, a.unwrap_or(1.0)];
                 Ok(())
             },
@@ -1239,9 +1219,7 @@ impl LuaUserData for LuaOverlay {
         /// @param a number
         /// @param duration number
         /// @return nil
-        methods.add_method_mut(
-            "flash",
-            |_, this, (r, g, b, a, dur): (f32, f32, f32, Option<f32>, Option<f32>)| {
+        methods.add_method_mut("flash", |_, this, (r, g, b, a, dur): (f32, f32, f32, Option<f32>, Option<f32>)| {
                 this.inner
                     .trigger_flash(r, g, b, a.unwrap_or(1.0), dur.unwrap_or(0.2));
                 Ok(())
@@ -1276,9 +1254,7 @@ impl LuaUserData for LuaOverlay {
         /// @param alpha number
         /// @param duration number
         /// @return nil
-        methods.add_method_mut(
-            "fade",
-            |_, this, (r, g, b, a, dur): (f32, f32, f32, Option<f32>, Option<f32>)| {
+        methods.add_method_mut("fade", |_, this, (r, g, b, a, dur): (f32, f32, f32, Option<f32>, Option<f32>)| {
                 this.inner
                     .trigger_fade(r, g, b, a.unwrap_or(1.0), dur.unwrap_or(1.0));
                 Ok(())
@@ -1323,9 +1299,7 @@ impl LuaUserData for LuaOverlay {
         /// @param frequency number  â€” Wave spatial frequency in cycles/unit (default 3.0).
         /// @param speed number      â€” Wave animation speed in cycles/second (default 1.0).
         /// @return nil
-        methods.add_method_mut(
-            "setWater",
-            |_, this, (amplitude, frequency, speed): (f32, f32, f32)| {
+        methods.add_method_mut("setWater", |_, this, (amplitude, frequency, speed): (f32, f32, f32)| {
                 this.inner.water.amplitude = amplitude;
                 this.inner.water.frequency = frequency;
                 this.inner.water.speed = speed;
@@ -1342,9 +1316,7 @@ impl LuaUserData for LuaOverlay {
         /// @param b number       â€” Blue channel [0.0, 1.0].
         /// @param strength number â€” Tint blend factor [0.0, 1.0].
         /// @return nil
-        methods.add_method_mut(
-            "setWaterTint",
-            |_, this, (r, g, b, strength): (f32, f32, f32, f32)| {
+        methods.add_method_mut("setWaterTint", |_, this, (r, g, b, strength): (f32, f32, f32, f32)| {
                 this.inner.water.tint_r = r;
                 this.inner.water.tint_g = g;
                 this.inner.water.tint_b = b;
@@ -1514,9 +1486,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// Creates a new built-in post-processing effect by type name.
     /// @param type_name string
     /// @return PostFxEffect
-    tbl.set(
-        "newEffect",
-        lua.create_function(|lua, type_name: String| {
+    tbl.set("newEffect", lua.create_function(|lua, type_name: String| {
             let effect_type = PostFxEffectType::from_name(&type_name).ok_or_else(|| {
                 LuaError::RuntimeError(format!("unknown effect type: {type_name}"))
             })?;
@@ -1528,9 +1498,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// Creates a custom shader post-processing effect.
     /// @param shader_id integer
     /// @return PostFxEffect
-    tbl.set(
-        "newCustomEffect",
-        lua.create_function(|lua, shader_id: usize| {
+    tbl.set("newCustomEffect", lua.create_function(|lua, shader_id: usize| {
             lua.create_userdata(LuaPostFxEffect::from_owned(PostFxEffect::new_custom(
                 shader_id,
             )))
@@ -1544,9 +1512,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @param height integer?
     /// @return PostFxStack
     let s = state.clone();
-    tbl.set(
-        "newStack",
-        lua.create_function(move |lua, (w, h): (Option<u32>, Option<u32>)| {
+    tbl.set("newStack", lua.create_function(move |lua, (w, h): (Option<u32>, Option<u32>)| {
             let (default_w, default_h) = {
                 let s = s.borrow();
                 (s.window_width, s.window_height)
@@ -1574,9 +1540,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @param height integer?
     /// @return PostFxStack
     let s = state.clone();
-    tbl.set(
-        "newPresetStack",
-        lua.create_function(
+    tbl.set("newPresetStack", lua.create_function(
             move |lua, (name, w, h): (String, Option<u32>, Option<u32>)| {
                 let (default_w, default_h) = {
                     let borrow = s.borrow();
@@ -1606,9 +1570,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// Creates a custom-shader post-processing effect (alias for newCustomEffect).
     /// @param shader_id integer
     /// @return PostFxEffect
-    tbl.set(
-        "newPass",
-        lua.create_function(|lua, shader_id: usize| {
+    tbl.set("newPass", lua.create_function(|lua, shader_id: usize| {
             lua.create_userdata(LuaPostFxEffect::from_owned(PostFxEffect::new_custom(
                 shader_id,
             )))
@@ -1618,9 +1580,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     // -- getEffectTypes --
     /// Returns the list of all built-in effect type names.
     /// @return table
-    tbl.set(
-        "getEffectTypes",
-        lua.create_function(|_, ()| {
+    tbl.set("getEffectTypes", lua.create_function(|_, ()| {
             Ok(vec![
                 "bloom",
                 "blur",
@@ -1657,9 +1617,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     ///   - "name", {params}  â†’ single effect with parameters
     ///   - {{type="name",...}, ...}  â†’ effect chain
     /// @return ImageEffect
-    tbl.set(
-        "newImageEffect",
-        lua.create_function(|lua, args: LuaMultiValue| {
+    tbl.set("newImageEffect", lua.create_function(|lua, args: LuaMultiValue| {
             let mut ie = ImageEffect::new("");
             match args.iter().next() {
                 None => {}
@@ -1715,9 +1673,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @param height integer
     /// @return Overlay
     let s = state.clone();
-    tbl.set(
-        "newOverlay",
-        lua.create_function(move |lua, (w, h): (Option<u32>, Option<u32>)| {
+    tbl.set("newOverlay", lua.create_function(move |lua, (w, h): (Option<u32>, Option<u32>)| {
             let width = w.unwrap_or(800);
             let height = h.unwrap_or(600);
             lua.create_userdata(LuaOverlay {
@@ -1738,9 +1694,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @param duration number?
     /// @param color table?  â€” `{r, g, b, a?}` in 0..1
     /// @return ScreenTransition
-    tbl.set(
-        "newTransition",
-        lua.create_function(move |lua, (kind, duration, color_tbl): (Option<String>, Option<f32>, Option<LuaTable>)| {
+    tbl.set("newTransition", lua.create_function(move |lua, (kind, duration, color_tbl): (Option<String>, Option<f32>, Option<LuaTable>)| {
             let k = crate::effect::TransitionKind::from_str(
                 kind.as_deref().unwrap_or("fade"),
             );
@@ -1770,9 +1724,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// in the top-left corner of the screen.  Intended for dev builds only.
     /// @param enabled boolean
     /// @return nil
-    tbl.set(
-        "setShaderErrorDisplay",
-        lua.create_function(move |_, enabled: bool| {
+    tbl.set("setShaderErrorDisplay", lua.create_function(move |_, enabled: bool| {
             *sed.borrow_mut() = enabled;
             Ok(())
         })?,
@@ -1781,9 +1733,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     let sed = shader_err_display.clone();
     /// Returns whether shader error display is currently enabled.
     /// @return boolean
-    tbl.set(
-        "getShaderErrorDisplay",
-        lua.create_function(move |_, ()| Ok(*sed.borrow()))?,
+    tbl.set("getShaderErrorDisplay", lua.create_function(move |_, ()| Ok(*sed.borrow()))?,
     )?;
 
     lurek.set("effect", tbl)?;

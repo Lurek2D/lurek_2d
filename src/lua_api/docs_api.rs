@@ -836,9 +836,7 @@ pub fn register(lua: &Lua, lurek_table: &LuaTable) -> LuaResult<()> {
     /// Scan the lurek.* namespace to build an API catalog from live bindings.
     /// @param opts table?
     /// @return ApiCatalog
-    docs_tbl.set(
-        "scan",
-        lua.create_function(|lua, _opts: Option<LuaTable>| {
+    docs_tbl.set("scan", lua.create_function(|lua, _opts: Option<LuaTable>| {
             let globals = lua.globals();
             let luna_tbl: LuaTable = globals.get("lurek")?;
             let mut entries = Vec::new();
@@ -851,9 +849,7 @@ pub fn register(lua: &Lua, lurek_table: &LuaTable) -> LuaResult<()> {
     /// Scan a single module's bindings.
     /// @param module_name string
     /// @return ApiCatalog
-    docs_tbl.set(
-        "scanModule",
-        lua.create_function(|lua, module_name: String| {
+    docs_tbl.set("scanModule", lua.create_function(|lua, module_name: String| {
             let globals = lua.globals();
             let luna_tbl: LuaTable = globals.get("lurek")?;
             let sub: LuaTable = luna_tbl.get(module_name.clone())?;
@@ -868,9 +864,7 @@ pub fn register(lua: &Lua, lurek_table: &LuaTable) -> LuaResult<()> {
     /// Load a TOML doc file into an ApiCatalog.
     /// @param path string
     /// @return ApiCatalog
-    docs_tbl.set(
-        "loadToml",
-        lua.create_function(|lua, path: String| {
+    docs_tbl.set("loadToml", lua.create_function(|lua, path: String| {
             let content = std::fs::read_to_string(&path)
                 .map_err(|e| LuaError::RuntimeError(format!("failed to read {}: {}", path, e)))?;
             let globals = lua.globals();
@@ -902,9 +896,7 @@ pub fn register(lua: &Lua, lurek_table: &LuaTable) -> LuaResult<()> {
     /// Load all .toml files in a directory and merge into a single ApiCatalog.
     /// @param directory string
     /// @return ApiCatalog
-    docs_tbl.set(
-        "loadAll",
-        lua.create_function(|lua, directory: String| {
+    docs_tbl.set("loadAll", lua.create_function(|lua, directory: String| {
             let mut all_entries = Vec::new();
             if let Ok(read_dir) = std::fs::read_dir(&directory) {
                 for item in read_dir.flatten() {
@@ -949,9 +941,7 @@ pub fn register(lua: &Lua, lurek_table: &LuaTable) -> LuaResult<()> {
     /// @param qualified_name string
     /// @param description string
     let s = state.clone();
-    docs_tbl.set(
-        "describe",
-        lua.create_function(move |_, (qualified_name, description): (String, String)| {
+    docs_tbl.set("describe", lua.create_function(move |_, (qualified_name, description): (String, String)| {
             let mut st = s.borrow_mut();
             if let Some(entry) = st
                 .entries
@@ -985,9 +975,7 @@ pub fn register(lua: &Lua, lurek_table: &LuaTable) -> LuaResult<()> {
     /// @param qualified_name string
     /// @param params table
     let s = state.clone();
-    docs_tbl.set(
-        "setParamInfo",
-        lua.create_function(move |_, (qualified_name, params): (String, LuaTable)| {
+    docs_tbl.set("setParamInfo", lua.create_function(move |_, (qualified_name, params): (String, LuaTable)| {
             let mut st = s.borrow_mut();
             let mut param_list = Vec::new();
             for (_, pt) in params.pairs::<i64, LuaTable>().flatten() {
@@ -1015,9 +1003,7 @@ pub fn register(lua: &Lua, lurek_table: &LuaTable) -> LuaResult<()> {
     /// @param qualified_name string
     /// @param returns table
     let s = state.clone();
-    docs_tbl.set(
-        "setReturnInfo",
-        lua.create_function(move |_, (qualified_name, returns): (String, LuaTable)| {
+    docs_tbl.set("setReturnInfo", lua.create_function(move |_, (qualified_name, returns): (String, LuaTable)| {
             let mut st = s.borrow_mut();
             let mut return_list = Vec::new();
             for (_, rt) in returns.pairs::<i64, LuaTable>().flatten() {
@@ -1039,18 +1025,15 @@ pub fn register(lua: &Lua, lurek_table: &LuaTable) -> LuaResult<()> {
 
     // -- getCatalog --------------------------------------------------------
     /// Return the current internal catalog as an ApiCatalog userdata.
+    /// @return ApiCatalog
     let s = state.clone();
-    docs_tbl.set(
-        "getCatalog",
-        lua.create_function(move |_, ()| Ok(ApiCatalog(s.borrow().entries.clone())))?,
+    docs_tbl.set("getCatalog", lua.create_function(move |_, ()| Ok(ApiCatalog(s.borrow().entries.clone())))?,
     )?;
 
     // -- resetCatalog ------------------------------------------------------
     /// Clear all entries from the internal catalog.
     let s = state.clone();
-    docs_tbl.set(
-        "resetCatalog",
-        lua.create_function(move |_, ()| {
+    docs_tbl.set("resetCatalog", lua.create_function(move |_, ()| {
             s.borrow_mut().entries.clear();
             Ok(())
         })?,
@@ -1060,11 +1043,9 @@ pub fn register(lua: &Lua, lurek_table: &LuaTable) -> LuaResult<()> {
 
     // -- validate ----------------------------------------------------------
     /// Validate catalog completeness against the live lurek.* bindings.
-    /// @param catalog_ud userdata?
+    /// @param catalog_ud ApiCatalog?
     /// @return ValidationReport
-    docs_tbl.set(
-        "validate",
-        lua.create_function(|lua, catalog_ud: Option<LuaAnyUserData>| {
+    docs_tbl.set("validate", lua.create_function(|lua, catalog_ud: Option<LuaAnyUserData>| {
             let doc_entries = catalog_ud
                 .map(|ud| ud.borrow::<ApiCatalog>().map(|c| c.0.clone()))
                 .transpose()?
@@ -1105,11 +1086,9 @@ pub fn register(lua: &Lua, lurek_table: &LuaTable) -> LuaResult<()> {
     // -- validateModule ----------------------------------------------------
     /// Validate a single module against the live lurek.<module>.* bindings.
     /// @param module_name string
-    /// @param catalog_ud userdata?
+    /// @param catalog_ud ApiCatalog?
     /// @return ValidationReport
-    docs_tbl.set(
-        "validateModule",
-        lua.create_function(
+    docs_tbl.set("validateModule", lua.create_function(
             |lua, (module_name, catalog_ud): (String, Option<LuaAnyUserData>)| {
                 let doc_entries = catalog_ud
                     .map(|ud| ud.borrow::<ApiCatalog>().map(|c| c.0.clone()))
@@ -1157,12 +1136,10 @@ pub fn register(lua: &Lua, lurek_table: &LuaTable) -> LuaResult<()> {
 
     // -- checkStaleness ----------------------------------------------------
     /// Compare catalog entries against source files in a directory for staleness.
-    /// @param catalog_ud userdata
+    /// @param catalog_ud ApiCatalog
     /// @param source_dir string
     /// @return table
-    docs_tbl.set(
-        "checkStaleness",
-        lua.create_function(|lua, (_catalog_ud, source_dir): (LuaAnyUserData, String)| {
+    docs_tbl.set("checkStaleness", lua.create_function(|lua, (_catalog_ud, source_dir): (LuaAnyUserData, String)| {
             let tbl = lua.create_table()?;
             let stale = lua.create_table()?;
             let current = lua.create_table()?;
@@ -1191,12 +1168,10 @@ pub fn register(lua: &Lua, lurek_table: &LuaTable) -> LuaResult<()> {
 
     // -- quality -----------------------------------------------------------
     /// Calculate quality metrics for a catalog or the internal catalog.
-    /// @param catalog_ud userdata?
+    /// @param catalog_ud ApiCatalog?
     /// @return table
     let s = state.clone();
-    docs_tbl.set(
-        "quality",
-        lua.create_function(move |_, catalog_ud: Option<LuaAnyUserData>| {
+    docs_tbl.set("quality", lua.create_function(move |_, catalog_ud: Option<LuaAnyUserData>| {
             let entries = match catalog_ud {
                 Some(ud) => ud.borrow::<ApiCatalog>()?.0.clone(),
                 None => s.borrow().entries.clone(),
@@ -1208,12 +1183,10 @@ pub fn register(lua: &Lua, lurek_table: &LuaTable) -> LuaResult<()> {
     // -- qualityModule -----------------------------------------------------
     /// Calculate quality metrics for a single module.
     /// @param module_name string
-    /// @param catalog_ud userdata?
+    /// @param catalog_ud ApiCatalog?
     /// @return table
     let s = state.clone();
-    docs_tbl.set(
-        "qualityModule",
-        lua.create_function(
+    docs_tbl.set("qualityModule", lua.create_function(
             move |_, (module_name, catalog_ud): (String, Option<LuaAnyUserData>)| {
                 let all = match catalog_ud {
                     Some(ud) => ud.borrow::<ApiCatalog>()?.0.clone(),
@@ -1230,11 +1203,9 @@ pub fn register(lua: &Lua, lurek_table: &LuaTable) -> LuaResult<()> {
 
     // -- coverage ----------------------------------------------------------
     /// Return (documented_count, total_live_count) coverage tuple.
-    /// @param catalog_ud userdata?
+    /// @param catalog_ud ApiCatalog?
     /// @return integer, integer
-    docs_tbl.set(
-        "coverage",
-        lua.create_function(|lua, catalog_ud: Option<LuaAnyUserData>| {
+    docs_tbl.set("coverage", lua.create_function(|lua, catalog_ud: Option<LuaAnyUserData>| {
             let globals = lua.globals();
             let luna_tbl: LuaTable = globals.get("lurek")?;
             let mut live = Vec::new();
@@ -1251,11 +1222,9 @@ pub fn register(lua: &Lua, lurek_table: &LuaTable) -> LuaResult<()> {
     // -- coverageModule ----------------------------------------------------
     /// Return (documented_count, total_live_count) for a single module.
     /// @param module_name string
-    /// @param catalog_ud userdata?
+    /// @param catalog_ud ApiCatalog?
     /// @return integer, integer
-    docs_tbl.set(
-        "coverageModule",
-        lua.create_function(
+    docs_tbl.set("coverageModule", lua.create_function(
             |lua, (module_name, catalog_ud): (String, Option<LuaAnyUserData>)| {
                 let globals = lua.globals();
                 let luna_tbl: LuaTable = globals.get("lurek")?;
@@ -1282,11 +1251,9 @@ pub fn register(lua: &Lua, lurek_table: &LuaTable) -> LuaResult<()> {
 
     // -- exportCompletions -------------------------------------------------
     /// Export VS Code IntelliSense completions JSON to a file.
-    /// @param catalog_ud userdata
+    /// @param catalog_ud ApiCatalog
     /// @param path string
-    docs_tbl.set(
-        "exportCompletions",
-        lua.create_function(|_, (catalog_ud, path): (LuaAnyUserData, String)| {
+    docs_tbl.set("exportCompletions", lua.create_function(|_, (catalog_ud, path): (LuaAnyUserData, String)| {
             let catalog = catalog_ud.borrow::<ApiCatalog>()?;
             docs::export_completions(&catalog.0, &path).map_err(LuaError::RuntimeError)
         })?,
@@ -1294,11 +1261,9 @@ pub fn register(lua: &Lua, lurek_table: &LuaTable) -> LuaResult<()> {
 
     // -- exportHover -------------------------------------------------------
     /// Export VS Code hover JSON to a file.
-    /// @param catalog_ud userdata
+    /// @param catalog_ud ApiCatalog
     /// @param path string
-    docs_tbl.set(
-        "exportHover",
-        lua.create_function(|_, (catalog_ud, path): (LuaAnyUserData, String)| {
+    docs_tbl.set("exportHover", lua.create_function(|_, (catalog_ud, path): (LuaAnyUserData, String)| {
             let catalog = catalog_ud.borrow::<ApiCatalog>()?;
             docs::export_hover(&catalog.0, &path).map_err(LuaError::RuntimeError)
         })?,
@@ -1306,11 +1271,9 @@ pub fn register(lua: &Lua, lurek_table: &LuaTable) -> LuaResult<()> {
 
     // -- exportSignatures --------------------------------------------------
     /// Export VS Code signature-help JSON to a file.
-    /// @param catalog_ud userdata
+    /// @param catalog_ud ApiCatalog
     /// @param path string
-    docs_tbl.set(
-        "exportSignatures",
-        lua.create_function(|_, (catalog_ud, path): (LuaAnyUserData, String)| {
+    docs_tbl.set("exportSignatures", lua.create_function(|_, (catalog_ud, path): (LuaAnyUserData, String)| {
             let catalog = catalog_ud.borrow::<ApiCatalog>()?;
             docs::export_signatures(&catalog.0, &path).map_err(LuaError::RuntimeError)
         })?,
@@ -1318,11 +1281,9 @@ pub fn register(lua: &Lua, lurek_table: &LuaTable) -> LuaResult<()> {
 
     // -- exportAll ---------------------------------------------------------
     /// Export completions.json, hover.json, and signatures.json to a directory.
-    /// @param catalog_ud userdata
+    /// @param catalog_ud ApiCatalog
     /// @param output_dir string
-    docs_tbl.set(
-        "exportAll",
-        lua.create_function(|_, (catalog_ud, output_dir): (LuaAnyUserData, String)| {
+    docs_tbl.set("exportAll", lua.create_function(|_, (catalog_ud, output_dir): (LuaAnyUserData, String)| {
             let catalog = catalog_ud.borrow::<ApiCatalog>()?;
             docs::export_all(&catalog.0, &output_dir).map_err(LuaError::RuntimeError)
         })?,
@@ -1330,11 +1291,9 @@ pub fn register(lua: &Lua, lurek_table: &LuaTable) -> LuaResult<()> {
 
     // -- exportMarkdown ----------------------------------------------------
     /// Export a Markdown API reference file.
-    /// @param catalog_ud userdata
+    /// @param catalog_ud ApiCatalog
     /// @param path string
-    docs_tbl.set(
-        "exportMarkdown",
-        lua.create_function(|_, (catalog_ud, path): (LuaAnyUserData, String)| {
+    docs_tbl.set("exportMarkdown", lua.create_function(|_, (catalog_ud, path): (LuaAnyUserData, String)| {
             let catalog = catalog_ud.borrow::<ApiCatalog>()?;
             let mut md = String::from("# API Reference\n\n");
             let mods = catalog.modules();
@@ -1378,11 +1337,9 @@ pub fn register(lua: &Lua, lurek_table: &LuaTable) -> LuaResult<()> {
 
     // -- exportCheatsheet --------------------------------------------------
     /// Export a one-line-per-function plain-text cheatsheet.
-    /// @param catalog_ud userdata
+    /// @param catalog_ud ApiCatalog
     /// @param path string
-    docs_tbl.set(
-        "exportCheatsheet",
-        lua.create_function(|_, (catalog_ud, path): (LuaAnyUserData, String)| {
+    docs_tbl.set("exportCheatsheet", lua.create_function(|_, (catalog_ud, path): (LuaAnyUserData, String)| {
             let catalog = catalog_ud.borrow::<ApiCatalog>()?;
             let mut lines = Vec::new();
             let mods = catalog.modules();
@@ -1428,9 +1385,7 @@ pub fn register(lua: &Lua, lurek_table: &LuaTable) -> LuaResult<()> {
     /// @param rules table
     /// @param name string?
     /// @return userdata
-    docs_tbl.set(
-        "schema",
-        lua.create_function(|_, (rules, name): (LuaTable, Option<String>)| {
+    docs_tbl.set("schema", lua.create_function(|_, (rules, name): (LuaTable, Option<String>)| {
             use crate::docs::{FieldRule, FieldType, Schema};
             let schema_name = name.unwrap_or_else(|| "schema".to_string());
             let mut schema = Schema::new(&schema_name);
@@ -1474,9 +1429,7 @@ pub fn register(lua: &Lua, lurek_table: &LuaTable) -> LuaResult<()> {
     ///
     /// @param ns string?  (if provided, reflects only lurek.<ns>)
     /// @return table
-    docs_tbl.set(
-        "reflectLive",
-        lua.create_function(|lua, ns: Option<String>| {
+    docs_tbl.set("reflectLive", lua.create_function(|lua, ns: Option<String>| {
             let globals = lua.globals();
             let luna_tbl: LuaTable = globals.get("lurek")?;
             let result = lua.create_table()?;
@@ -1536,9 +1489,7 @@ pub fn register(lua: &Lua, lurek_table: &LuaTable) -> LuaResult<()> {
     /// @param tbl table
     /// @param name string?  (prefix for qualified names, optional)
     /// @return table
-    docs_tbl.set(
-        "reflectTable",
-        lua.create_function(|lua, (tbl, name): (LuaTable, Option<String>)| {
+    docs_tbl.set("reflectTable", lua.create_function(|lua, (tbl, name): (LuaTable, Option<String>)| {
             let prefix = name.unwrap_or_default();
             let items = lua.create_table()?;
             let mut idx = 1usize;

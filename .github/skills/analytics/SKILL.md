@@ -6,105 +6,46 @@ description: "Load this skill when collecting, parsing, or acting on diagnostic 
 
 ## Mission
 
-# Analytics — Lurek2D
+Own in-game event recording, log parsing, performance counter collection, session event schema, and data-driven decision heuristics.
 
 ## When To Load
 
-- Parsing `RUST_LOG` output or `game.log` files to find crash patterns or regressions
-- Designing an in-game telemetry event pipeline (what to record, how to store it)
-- Analysing performance data to find frame spikes or slow sections
-- Using play data to make game balance or design decisions
-- Correlating player behaviour with game design outcomes
-- Reporting session statistics after a playtest
+- Parsing RUST_LOG output or game.log files for crash patterns or regressions
+- Designing an in-game telemetry event pipeline
+- Analysing performance data for frame spikes or slow sections
+- Using play data for game balance or design decisions
 
 ## When To Skip
 
-- Skip it for live runtime debugging (use dev-debugging skill) or setting up log output (use logging skill).
+- Live runtime debugging → use dev-debugging skill
+- Setting up log output → use logging skill
 
 ## Domain Knowledge
 
-### Owns
-- In-game event recording pipeline (Lua side)
-- Log file parsing strategies for Rust engine output
-- Performance counter collection (FPS, draw calls, GC, physics step time)
-- Session event schema conventions
-- Offline analysis workflow (PowerShell / Python scripts on log files)
-- Decision heuristics: what data to collect, how to act on findings
+**Two tiers of analytics:**
 
----
+| Tier | Source | Analysis method | Use for |
+|------|--------|----------------|---------|
+| Engine telemetry | RUST_LOG output, debug overlay | Offline grep/Python | Performance regressions, crash frequency |
+| Game telemetry | lurek.filesystem.append() in scripts | Offline parse + visualise | Balance, funnel analysis, UX issues |
 
-### Two Tiers of Analytics
-| Tier | Source | Analysis | Use for |
-|------|--------|----------|---------|
-| **Engine telemetry** | `RUST_LOG` output, debug overlay | Offline grep/awk/Python | Performance regressions, crash frequency |
-| **Game telemetry** | Custom `lua.filesystem.append()` calls in scripts | Offline parse + visualise | Balance, funnel analysis, UX issues |
+**Engine log analysis** — collect with RUST_LOG="lurek2d=debug" and Tee-Object to file. Extract frame times with Select-String for "frame_time" lines. Find errors/warnings by filtering log levels. Use Python for spike detection (parse frame times, flag values above threshold).
 
----
+**Game telemetry pipeline** — record events as flat TOML-style lines with timestamp, event name, and key-value pairs via lurek.filesystem.append(). Keep events flat and human-readable.
 
-### Tier 1: Engine Log Analysis
-### Collecting engine logs
+**Mandatory events:** game_start (level, version), player_died (x, y, cause), level_complete (level, duration, attempts), game_quit (reason). Additional tuning events: item_used, enemy_killed, shop_purchase, ability_unlocked.
 
-> See [snippets/collecting-engine-logs.ps1](snippets/collecting-engine-logs.ps1) for the example.
+**Performance events:** record frame_time, draw_calls, gc_count, physics_step periodically for offline histogram analysis.
 
-### Extracting frame times
+**Acting on findings:** death clusters suggest invisible hazards; low completion rates suggest difficulty spikes; frame spikes correlate with GC or physics complexity; item usage imbalances reveal meta problems.
 
-> See [snippets/extracting-frame-times.ps1](snippets/extracting-frame-times.ps1) for the example.
-
-### Finding errors and warnings
-
-> See [snippets/finding-errors-and-warnings.ps1](snippets/finding-errors-and-warnings.ps1) for the example.
-
-### Finding performance spikes (Python)
-
-> See [examples/finding-performance-spikes-python.py](examples/finding-performance-spikes-python.py) for the example.
-
----
-
-### Tier 2: Game Telemetry Pipeline
-### Event schema
-
-Define events as TOML structures recorded per-session. Keep it flat and human-readable:
-
-> See [snippets/event-schema.txt](snippets/event-schema.txt) for the example.
-
-### Lua recording helpers
-
-> See [examples/lua-recording-helpers.lua](examples/lua-recording-helpers.lua) for the example.
-
-> See [examples/lua-recording-helpers-2.lua](examples/lua-recording-helpers-2.lua) for the example.
-
----
-
-### What Events to Record
-### Always record
-
-| Event | Key fields | Use for |
-|-------|-----------|---------|
-| `game_start` | level, version | Session funnel |
-| `player_died` | x, y, cause | Death heatmaps, difficulty spikes |
-| `level_complete` | level, duration, attempts | Pacing analysis |
-| `game_quit` | reason (menu/esc/crash) | Drop-off funnel |
-
-### Record when tuning balance
-
-| Event | Key fields | Use for |
-
-> See [snippets/extended-notes.md](snippets/extended-notes.md) for additional notes.
+**Privacy:** never record personal info; all logs stay local. No network telemetry in core engine.
 
 ## Companion File Index
 
-- [snippets/collecting-engine-logs.ps1](snippets/collecting-engine-logs.ps1) — Collecting engine logs
-- [snippets/extracting-frame-times.ps1](snippets/extracting-frame-times.ps1) — Extracting frame times
-- [snippets/finding-errors-and-warnings.ps1](snippets/finding-errors-and-warnings.ps1) — Finding errors and warnings
-- [examples/finding-performance-spikes-python.py](examples/finding-performance-spikes-python.py) — Finding performance spikes (Python)
-- [snippets/event-schema.txt](snippets/event-schema.txt) — Event schema
-- [examples/lua-recording-helpers.lua](examples/lua-recording-helpers.lua) — Lua recording helpers
-- [examples/lua-recording-helpers-2.lua](examples/lua-recording-helpers-2.lua) — Lua recording helpers
-- [examples/record-for-performance-analysis.lua](examples/record-for-performance-analysis.lua) — Record for performance analysis
-- [examples/death-heatmap-python.py](examples/death-heatmap-python.py) — Death heatmap (Python)
-- [snippets/level-completion-funnel-powershell.ps1](snippets/level-completion-funnel-powershell.ps1) — Level completion funnel (PowerShell)
-- [snippets/extended-notes.md](snippets/extended-notes.md) — extended notes (overflow)
+None — all guidance is inline.
 
 ## References
 
-- See related skills in `.github/skills/`.
+- tools/audit/ — quality and coverage analysis scripts
+- docs/specs/ — module reference files

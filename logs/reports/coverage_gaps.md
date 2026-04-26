@@ -10,82 +10,30 @@ This report identifies three categories of coverage issues:
 
 ---
 
-## 1. Rust→Lua Gaps (8 items)
+## 1. Rust→Lua Gaps (0 items)
 
 These public Rust functions are **not exposed** to the `lurek.*` Lua API.
 This may be intentional (engine internals) or an oversight.
 
-### `html::element`
-
-- `normalise_name` `src/html/element.rs:219`
-
-### `html::parser`
-
-- `escape_attribute` `src/html/parser.rs:166`
-- `escape_text` `src/html/parser.rs:160`
-- `parse_into` `src/html/parser.rs:12`
-
-### `html::selector`
-
-- `matches_selector` `src/html/selector.rs:28`
-
-### `html::style`
-
-- `parse_declarations` `src/html/style.rs:54`
-- `parse_length` `src/html/style.rs:76`
-- `parse_stylesheets` `src/html/style.rs:28`
+*All public Rust functions appear to be exposed to Lua.*
 
 ---
 
-## 2. Rust Docstring Issues (14 items)
+## 2. Rust Docstring Issues (0 items)
 
 Public Rust items with missing or very short descriptions (< 25 chars).
 These appear as `// (undocumented)` in `docs/api/rust.md`.
 
-### `html`
-
-- `mod` **document** `src/html/mod.rs:3`
-- `mod` **element** `src/html/mod.rs:4`
-- `mod` **parser** `src/html/mod.rs:5`
-- `mod` **selector** `src/html/mod.rs:6`
-- `mod` **style** `src/html/mod.rs:7`
-
-### `html::element`
-
-- `fn` **normalise_name** `src/html/element.rs:219`
-
-### `html::parser`
-
-- `fn` **escape_attribute** `src/html/parser.rs:166`
-- `fn` **escape_text** `src/html/parser.rs:160`
-- `fn` **parse_into** `src/html/parser.rs:12`
-
-### `html::selector`
-
-- `fn` **matches_selector** `src/html/selector.rs:28`
-
-### `html::style`
-
-- `fn` **parse_declarations** `src/html/style.rs:54`
-- `fn` **parse_length** `src/html/style.rs:76`
-- `fn` **parse_stylesheets** `src/html/style.rs:28`
-- `struct` **CssParseResult** `src/html/style.rs:23`
+*All public Rust items have adequate docstrings.*
 
 ---
 
-## 3. Lua Docstring Issues (3 items)
+## 3. Lua Docstring Issues (0 items)
 
 Lua API items with missing or very short descriptions (< 25 chars).
 These appear without documentation in `docs/api/lurek.md` and IntelliSense.
 
-### `html`
-
-- `method` **`LHtmlDocument:getElementById`** — *"Finds one element by id."* (too short)
-- `method` **`LHtmlElement:removeAttribute`** — *"Removes an attribute."* (too short)
-
-### `ui`
-
-- `module` **`lurek.ui`** — *(no description)*
+*All Lua API items have adequate descriptions.*
 
 ---
 

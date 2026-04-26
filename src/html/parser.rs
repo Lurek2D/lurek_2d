@@ -9,6 +9,7 @@ use std::collections::BTreeMap;
 
 use crate::html::element::{HtmlElement, HtmlElementId};
 
+/// Parses `html` and appends new elements under `parent`, returning the direct child ids.
 pub(crate) fn parse_into(
     html: &str,
     elements: &mut Vec<HtmlElement>,
@@ -157,12 +158,14 @@ fn push_text(elements: &mut [HtmlElement], element_id: HtmlElementId, text: &str
     element.text.push_str(&collapsed);
 }
 
+/// Escapes `&`, `<`, and `>` for safe inclusion in HTML text content.
 pub(crate) fn escape_text(text: &str) -> String {
     text.replace('&', "&amp;")
         .replace('<', "&lt;")
         .replace('>', "&gt;")
 }
 
+/// Escapes `&`, `<`, `>`, and `"` for safe inclusion in HTML attribute values.
 pub(crate) fn escape_attribute(text: &str) -> String {
     escape_text(text).replace('"', "&quot;")
 }

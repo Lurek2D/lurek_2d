@@ -55,9 +55,7 @@ impl LuaUserData for LuaUniverse {
         /// @param name string
         /// @param value any
         /// @return nil
-        methods.add_method(
-            "set",
-            |lua, this, (id, name, value): (u32, String, LuaValue)| {
+        methods.add_method("set", |lua, this, (id, name, value): (u32, String, LuaValue)| {
                 this.inner.borrow_mut().set_component(lua, id, &name, value)
             },
         );
@@ -117,9 +115,7 @@ impl LuaUserData for LuaUniverse {
         /// @param name string
         /// @param callback function
         /// @return nil
-        methods.add_method(
-            "each",
-            |lua, this, (name, callback): (String, LuaFunction)| {
+        methods.add_method("each", |lua, this, (name, callback): (String, LuaFunction)| {
                 this.inner.borrow().each(lua, &name, callback)
             },
         );
@@ -143,9 +139,7 @@ impl LuaUserData for LuaUniverse {
         /// @param system table
         /// @param opts table? â€” {priority: integer}
         /// @return nil
-        methods.add_method(
-            "addSystem",
-            |lua, this, (system, opts): (LuaTable, Option<LuaTable>)| {
+        methods.add_method("addSystem", |lua, this, (system, opts): (LuaTable, Option<LuaTable>)| {
                 let priority = opts
                     .and_then(|o| o.get::<_, i32>("priority").ok())
                     .unwrap_or(0);
@@ -417,9 +411,7 @@ impl LuaUserData for LuaUniverse {
         /// @param name string
         /// @param components table
         /// @return nil
-        methods.add_method(
-            "defineBlueprint",
-            |lua, this, (name, components): (String, LuaTable)| {
+        methods.add_method("defineBlueprint", |lua, this, (name, components): (String, LuaTable)| {
                 this.inner
                     .borrow_mut()
                     .define_blueprint(lua, &name, components)
@@ -432,9 +424,7 @@ impl LuaUserData for LuaUniverse {
         /// @param parent string
         /// @param overrides table
         /// @return nil
-        methods.add_method(
-            "extendBlueprint",
-            |lua, this, (name, parent, overrides): (String, String, LuaTable)| {
+        methods.add_method("extendBlueprint", |lua, this, (name, parent, overrides): (String, String, LuaTable)| {
                 this.inner
                     .borrow_mut()
                     .extend_blueprint(lua, &name, &parent, overrides)
@@ -446,9 +436,7 @@ impl LuaUserData for LuaUniverse {
         /// @param name string
         /// @param overrides table?
         /// @return integer
-        methods.add_method(
-            "spawnBlueprint",
-            |lua, this, (name, overrides): (String, Option<LuaTable>)| {
+        methods.add_method("spawnBlueprint", |lua, this, (name, overrides): (String, Option<LuaTable>)| {
                 this.inner
                     .borrow_mut()
                     .spawn_blueprint(lua, &name, overrides)
@@ -491,9 +479,7 @@ impl LuaUserData for LuaUniverse {
         /// @param child_id integer
         /// @param parent_id integer?
         /// @return nil
-        methods.add_method(
-            "setParent",
-            |_, this, (child_id, parent_id): (u32, Option<u32>)| {
+        methods.add_method("setParent", |_, this, (child_id, parent_id): (u32, Option<u32>)| {
                 this.inner.borrow_mut().set_parent(child_id, parent_id);
                 Ok(())
             },
@@ -528,9 +514,7 @@ impl LuaUserData for LuaUniverse {
         /// @param with_table table
         /// @param without_table table
         /// @return table
-        methods.add_method(
-            "queryNot",
-            |lua, this, (with_tbl, without_tbl): (LuaTable, LuaTable)| {
+        methods.add_method("queryNot", |lua, this, (with_tbl, without_tbl): (LuaTable, LuaTable)| {
                 let with_names: Vec<String> = with_tbl
                     .sequence_values::<String>()
                     .collect::<LuaResult<_>>()?;
@@ -567,9 +551,7 @@ impl LuaUserData for LuaUniverse {
         /// @param name string
         /// @param callback function
         /// @return nil
-        methods.add_method(
-            "onComponentAdded",
-            |lua, this, (name, cb): (String, LuaFunction)| {
+        methods.add_method("onComponentAdded", |lua, this, (name, cb): (String, LuaFunction)| {
                 let key = lua.create_registry_value(cb)?;
                 this.add_observers
                     .borrow_mut()
@@ -586,9 +568,7 @@ impl LuaUserData for LuaUniverse {
         /// @param name string
         /// @param callback function
         /// @return nil
-        methods.add_method(
-            "onComponentRemoved",
-            |lua, this, (name, cb): (String, LuaFunction)| {
+        methods.add_method("onComponentRemoved", |lua, this, (name, cb): (String, LuaFunction)| {
                 let key = lua.create_registry_value(cb)?;
                 this.remove_observers
                     .borrow_mut()
@@ -651,9 +631,7 @@ impl LuaUserData for LuaUniverse {
         /// @param count integer
         /// @param overrides table?
         /// @return table
-        methods.add_method(
-            "spawnBulk",
-            |lua, this, (name, count, overrides): (String, usize, Option<LuaTable>)| {
+        methods.add_method("spawnBulk", |lua, this, (name, count, overrides): (String, usize, Option<LuaTable>)| {
                 this.inner
                     .borrow_mut()
                     .spawn_bulk(lua, &name, count, overrides)
@@ -667,9 +645,7 @@ impl LuaUserData for LuaUniverse {
         /// @param name string
         /// @param to integer
         /// @return nil
-        methods.add_method(
-            "addRelation",
-            |_, this, (from, name, to): (u32, String, u32)| {
+        methods.add_method("addRelation", |_, this, (from, name, to): (u32, String, u32)| {
                 this.inner
                     .borrow_mut()
                     .relationships
@@ -699,9 +675,7 @@ impl LuaUserData for LuaUniverse {
         /// @param name string
         /// @param to integer
         /// @return nil
-        methods.add_method(
-            "removeRelation",
-            |_, this, (from, name, to): (u32, String, u32)| {
+        methods.add_method("removeRelation", |_, this, (from, name, to): (u32, String, u32)| {
                 this.inner
                     .borrow_mut()
                     .relationships
@@ -729,9 +703,7 @@ impl LuaUserData for LuaUniverse {
         /// @param name string
         /// @param to integer
         /// @return boolean
-        methods.add_method(
-            "hasRelation",
-            |_, this, (from, name, to): (u32, String, u32)| {
+        methods.add_method("hasRelation", |_, this, (from, name, to): (u32, String, u32)| {
                 Ok(this.inner.borrow().relationships.has_link(from, &name, to))
             },
         );
@@ -767,9 +739,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     // -- newUniverse --
     /// Creates a new empty ECS universe.
     /// @return Universe
-    tbl.set(
-        "newUniverse",
-        lua.create_function(|_, ()| {
+    tbl.set("newUniverse", lua.create_function(|_, ()| {
             Ok(LuaUniverse {
                 inner: Rc::new(RefCell::new(Universe::new())),
                 add_observers: Rc::new(RefCell::new(HashMap::new())),

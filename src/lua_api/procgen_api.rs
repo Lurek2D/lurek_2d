@@ -35,9 +35,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     /// @param h integer
     /// @param opts table?
     /// @return table
-    tbl.set(
-        "cellularAutomata",
-        lua.create_function(|lua, (w, h, opts): (u32, u32, Option<LuaTable>)| {
+    tbl.set("cellularAutomata", lua.create_function(|lua, (w, h, opts): (u32, u32, Option<LuaTable>)| {
             let cfg = opts
                 .map(|t| CellularOpts::from_lua_table(&t))
                 .transpose()?
@@ -61,9 +59,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     /// @param threshold integer?
     /// @param above boolean?
     /// @return table
-    tbl.set(
-        "floodFill",
-        lua.create_function(
+    tbl.set("floodFill", lua.create_function(
             |lua,
              (data_tbl, w, h, sx, sy, threshold, above): (
                 LuaTable,
@@ -103,9 +99,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     /// @param px number
     /// @param py number
     /// @return number
-    tbl.set(
-        "perlinNoise",
-        lua.create_function(|_, (x, y, px, py): (f64, f64, f64, f64)| {
+    tbl.set("perlinNoise", lua.create_function(|_, (x, y, px, py): (f64, f64, f64, f64)| {
             Ok(perlin_noise_periodic(x, y, px, py))
         })?,
     )?;
@@ -118,9 +112,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     /// @param max_attempts integer?
     /// @param seed integer?
     /// @return table
-    tbl.set(
-        "poissonDisk",
-        lua.create_function(
+    tbl.set("poissonDisk", lua.create_function(
             |lua, (w, h, min_dist, max_attempts, seed): (f32, f32, f32, Option<u32>, Option<u64>)| {
                 let points = poisson_disk(w, h, min_dist, max_attempts.unwrap_or(30), seed.unwrap_or(0));
                 let out = lua.create_table()?;
@@ -143,9 +135,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     /// @param pts table
     /// @param opts table?
     /// table, table, table
-    tbl.set(
-        "voronoi",
-        lua.create_function(
+    tbl.set("voronoi", lua.create_function(
             |lua, (w, h, pts_tbl, opts_tbl): (u32, u32, LuaTable, Option<LuaTable>)| {
                 let mut points: Vec<(f32, f32)> = Vec::new();
                 for v in pts_tbl.sequence_values::<LuaTable>() {
@@ -181,9 +171,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     /// Generates a dungeon using Binary Space Partitioning.
     /// @param opts table?
     /// @return table
-    tbl.set(
-        "bspDungeon",
-        lua.create_function(|lua, opts: Option<LuaTable>| {
+    tbl.set("bspDungeon", lua.create_function(|lua, opts: Option<LuaTable>| {
             let mut cfg = BspOpts::default();
             if let Some(t) = opts {
                 if let Ok(v) = t.get::<_, u32>("width") {
@@ -235,9 +223,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     /// Generates a rooms-and-corridors dungeon.
     /// @param opts table?
     /// @return table
-    tbl.set(
-        "roomsDungeon",
-        lua.create_function(|lua, opts: Option<LuaTable>| {
+    tbl.set("roomsDungeon", lua.create_function(|lua, opts: Option<LuaTable>| {
             let mut cfg = RoomsOpts::default();
             if let Some(t) = opts {
                 if let Ok(v) = t.get::<_, u32>("width") {
@@ -296,9 +282,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     /// Generates a heightmap using fractal noise.
     /// @param opts table?
     /// @return table
-    tbl.set(
-        "heightmap",
-        lua.create_function(|lua, opts: Option<LuaTable>| {
+    tbl.set("heightmap", lua.create_function(|lua, opts: Option<LuaTable>| {
             let mut cfg = HeightmapOpts::default();
             if let Some(t) = opts {
                 if let Ok(v) = t.get::<_, u32>("width") {
@@ -343,9 +327,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     /// Generates a tile grid using Wave Function Collapse.
     /// @param opts table
     /// @return table
-    tbl.set(
-        "wfcGenerate",
-        lua.create_function(|lua, opts: LuaTable| {
+    tbl.set("wfcGenerate", lua.create_function(|lua, opts: LuaTable| {
             let width: u32 = opts.get("width").unwrap_or(16);
             let height: u32 = opts.get("height").unwrap_or(16);
             let seed: u64 = opts.get("seed").unwrap_or(0);
@@ -402,9 +384,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     /// @param opts table
     /// @param iterations integer?
     /// @return string
-    tbl.set(
-        "lsystem",
-        lua.create_function(|_, opts: LuaTable| {
+    tbl.set("lsystem", lua.create_function(|_, opts: LuaTable| {
             let axiom: String = opts.get("axiom").unwrap_or_else(|_| String::from("F"));
             let iterations: u32 = opts.get("iterations").unwrap_or(3);
             let rules: Vec<(char, &'static str)> = Vec::new();
@@ -437,9 +417,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     /// @param angle_deg number?
     /// @param step number?
     /// @return table
-    tbl.set(
-        "lsystemSegments",
-        lua.create_function(
+    tbl.set("lsystemSegments", lua.create_function(
             |lua, (opts, angle_deg, step): (LuaTable, Option<f32>, Option<f32>)| {
                 let axiom: String = opts.get("axiom").unwrap_or_else(|_| String::from("F"));
                 let iterations: u32 = opts.get("iterations").unwrap_or(3);
@@ -485,9 +463,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     /// @param max_len integer?
     /// @param seed integer?
     /// @return string
-    tbl.set(
-        "generateName",
-        lua.create_function(
+    tbl.set("generateName", lua.create_function(
             |_,
              (samples_tbl, min_len, max_len, seed): (
                 LuaTable,
@@ -514,9 +490,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     /// @param max_len integer?
     /// @param seed integer?
     /// @return table
-    tbl.set(
-        "generateNames",
-        lua.create_function(
+    tbl.set("generateNames", lua.create_function(
             |lua,
              (samples_tbl, n, min_len, max_len, seed): (
                 LuaTable,
@@ -548,9 +522,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     /// @param region_count integer
     /// @param seed integer?
     /// @return table
-    tbl.set(
-        "worldGraph",
-        lua.create_function(
+    tbl.set("worldGraph", lua.create_function(
             |lua, (width, height, region_count, seed): (f32, f32, u32, Option<u64>)| {
                 let wg = generate_world_graph(width, height, region_count, seed.unwrap_or(0));
                 let regions_tbl = lua.create_table()?;
@@ -590,9 +562,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     /// @param height integer
     /// @param opts table?
     /// @return table
-    tbl.set(
-        "noiseMap",
-        lua.create_function(|lua, (width, height, opts): (u32, u32, Option<LuaTable>)| {
+    tbl.set("noiseMap", lua.create_function(|lua, (width, height, opts): (u32, u32, Option<LuaTable>)| {
             let mut cfg = MapGenOptions::default();
             if let Some(t) = opts {
                 if let Ok(v) = t.get::<_, f64>("scale_x") {
@@ -642,9 +612,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     /// @param height integer
     /// @param opts table?
     /// @return table
-    tbl.set(
-        "noiseMapParallel",
-        lua.create_function(|lua, (width, height, opts): (u32, u32, Option<LuaTable>)| {
+    tbl.set("noiseMapParallel", lua.create_function(|lua, (width, height, opts): (u32, u32, Option<LuaTable>)| {
             let mut cfg = MapGenOptions::default();
             if let Some(t) = opts {
                 if let Ok(v) = t.get::<_, f64>("scale_x") {
@@ -683,9 +651,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     /// @param x number
     /// @param y number
     /// @return number
-    tbl.set(
-        "simplex2d",
-        lua.create_function(|_, (x, y): (f32, f32)| Ok(simplex_noise_2d(x, y)))?,
+    tbl.set("simplex2d", lua.create_function(|_, (x, y): (f32, f32)| Ok(simplex_noise_2d(x, y)))?,
     )?;
 
     // -- simplex3d --
@@ -694,9 +660,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     /// @param y number
     /// @param z number
     /// @return number
-    tbl.set(
-        "simplex3d",
-        lua.create_function(|_, (x, y, z): (f32, f32, f32)| Ok(simplex_noise_3d(x, y, z)))?,
+    tbl.set("simplex3d", lua.create_function(|_, (x, y, z): (f32, f32, f32)| Ok(simplex_noise_3d(x, y, z)))?,
     )?;
 
     luna.set("procgen", tbl)?;
@@ -704,11 +668,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
 }
 
 impl CellularOpts {
-    /// from_lua_table.
-    ///
-    /// @param t &LuaTable
-    ///
-    /// @return LuaResult<Self>
+    /// Parses a Lua options table into [`CellularOpts`].
     pub fn from_lua_table(t: &LuaTable) -> LuaResult<Self> {
         let mut opts = Self::default();
         if let Ok(v) = t.get::<_, f32>("fill") {
@@ -734,9 +694,6 @@ impl VoronoiOpts {
     /// Parses a Lua options table into [`VoronoiOpts`].
     ///
     /// Supported keys: `warp_scale`, `warp_strength`, `seed`.
-    ///
-    /// @param t &LuaTable
-    /// @return LuaResult<Self>
     pub fn from_lua_table(t: &LuaTable) -> LuaResult<Self> {
         let mut opts = Self::default();
         if let Ok(v) = t.get::<_, f32>("warp_scale") {

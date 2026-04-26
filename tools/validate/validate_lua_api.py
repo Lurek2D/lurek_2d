@@ -80,13 +80,34 @@ def check_module_registration(content: str) -> None:
     - ``lurek.set("name", tbl.clone())`` — clone variant
     - ``luna_table.set("name", ...)`` — alternate parameter name
     """
-    # Match any identifier (possibly named luna_table, lurek, etc.) calling .set("name", expr)
-    # where expr is an identifier with an optional .clone() call.
-    if not re.search(
-        r'\bluna(?:_\w+)?\s*\.\s*set\s*\(\s*"[\w]+"\s*,\s*\w+(?:\.clone\(\))?\s*\)',
+    register_match = re.search(
+        r'pub\s+fn\s+register\s*\(\s*\w+\s*:\s*&Lua\s*,\s*(\w+)\s*:\s*&LuaTable',
         content,
-    ):
+        re.DOTALL,
+    )
+    created_tables = set(
+        re.findall(r'\blet\s+(\w+)\s*=\s*lua\.create_table\(\)\?\s*;', content)
+    )
+    if register_match:
+        root_name = register_match.group(1)
+        registration_re = re.compile(
+            rf'\b{re.escape(root_name)}\s*\.\s*set\s*\(\s*"[\w]+"\s*,\s*(\w+)(?:\.clone\(\))?\s*\)\s*\?\s*;'
+        )
+        if any(match.group(1) in created_tables for match in registration_re.finditer(content)):
+            return
+
+    # Fallback for older files: accept any table parameter receiving a freshly created table.
+    fallback_re = re.compile(
+        r'\b\w+\s*\.\s*set\s*\(\s*"[\w]+"\s*,\s*(\w+)(?:\.clone\(\))?\s*\)\s*\?\s*;'
+    )
+    if any(match.group(1) in created_tables for match in fallback_re.finditer(content)):
+        return
+
+    if not created_tables:
         _err(0, 'No `lurek.set("module", tbl)?;` found -- module is not registered in the lurek global table')
+        return
+
+    _err(0, 'No `lurek.set("module", tbl)?;` found -- module is not registered in the lurek global table')
 
 
 def check_no_rustdoc_sections(lines: list[str]) -> None:
@@ -96,11 +117,11 @@ def check_no_rustdoc_sections(lines: list[str]) -> None:
         if stripped == "/// # Parameters":
             _err(i + 1,
                  "FORBIDDEN `/// # Parameters` in lua_api -- "
-                 "use `/// @param name : type` instead")
+                 "use `/// @param | name | type | description` instead")
         elif stripped == "/// # Returns":
             _err(i + 1,
                  "FORBIDDEN `/// # Returns` in lua_api -- "
-                 "use `/// @return type` instead")
+                 "use `/// @return | type | description` instead")
 
 
 def check_no_embedded_lua(lines: list[str]) -> None:
@@ -142,10 +163,45 @@ def check_no_embedded_lua(lines: list[str]) -> None:
 def check_no_return_any(lines: list[str]) -> None:
     """`@return any` / `@return Any` is too vague."""
     for i, line in enumerate(lines):
-        if re.search(r'///\s+@return\s+[Aa]ny\b', line):
+        if re.search(r'///\s+@return\s*\|\s*[Aa]ny\b', line):
             _err(i + 1,
                  '`@return any` is too vague -- replace with a specific Lua type '
                  '(e.g., Agent, integer, boolean, table, nil)')
+
+
+def check_no_optional_or_union_returns(lines: list[str]) -> None:
+    """Return types must be fixed; reject `?` and nil-union patterns."""
+    return_re = re.compile(r'^\s*///\s+@return\s*\|\s*([^|]+?)\s*\|')
+    for i, line in enumerate(lines):
+        match = return_re.match(line)
+        if not match:
+            continue
+        type_part = match.group(1).strip()
+        if '?' in type_part:
+            _err(i + 1,
+                 'optional return type is forbidden -- use fixed return values like `boolean, number`')
+        if re.search(r'(^|,)\s*nil\s*(,|$)', type_part) or '|nil' in type_part.replace(' ', ''):
+            _err(i + 1,
+                 'nil-union return type is forbidden -- use fixed return values like `boolean, table`')
+
+
+def check_doc_tag_format(lines: list[str]) -> None:
+    """Enforce the only allowed tagged docstring format.
+
+    Allowed:
+    - /// @param | name | type | description
+    - /// @return | type | description
+    """
+    param_re = re.compile(r'^\s*///\s+@param\s*\|\s*[^|]+\s*\|\s*[^|]+\s*\|\s*.+$')
+    return_re = re.compile(r'^\s*///\s+@return\s*\|\s*[^|]+\s*\|\s*.+$')
+    for i, line in enumerate(lines):
+        stripped = line.strip()
+        if stripped.startswith('/// @param') and not param_re.match(line):
+            _err(i + 1,
+                 'invalid `@param` format -- use `/// @param | name | type | description`')
+        if stripped.startswith('/// @return') and not return_re.match(line):
+            _err(i + 1,
+                 'invalid `@return` format -- use `/// @return | type | description`')
 
 
 def check_no_block_pattern(lines: list[str]) -> None:
@@ -168,6 +224,12 @@ def _get_doc_block(lines: list[str], pos: int) -> list[str]:
         stripped = lines[i].strip()
         if stripped.startswith("///"):
             doc.insert(0, stripped)
+        elif re.match(r'^let\s+\w+\s*=\s*.+;\s*$', stripped):
+            continue
+        elif stripped.startswith("//") and not stripped.startswith("///"):
+            continue
+        elif stripped == "" or stripped.startswith("#"):
+            continue
         else:
             break
     return doc
@@ -211,7 +273,7 @@ def check_docstring_coverage(lines: list[str]) -> None:
         has_return = any("@return" in l for l in doc_lines)
         if not has_return:
             _err(i + 1,
-                 f'`{name}` ({kind}): missing `/// @return type` docstring above this entry')
+                 f'`{name}` ({kind}): missing `/// @return | type | description` docstring above this entry')
 
         # @param must come before @return if both exist (within same doc block)
         if doc_lines:
@@ -300,8 +362,10 @@ def check_file(path: Path) -> tuple[int, int]:
     check_register_signature(lines)
     check_module_registration(content)
     check_no_rustdoc_sections(lines)
+    check_doc_tag_format(lines)
     check_no_embedded_lua(lines)
     check_no_return_any(lines)
+    check_no_optional_or_union_returns(lines)
     check_no_block_pattern(lines)
     check_docstring_coverage(lines)
     check_section_headers(lines)
@@ -312,16 +376,23 @@ def check_file(path: Path) -> tuple[int, int]:
 
 # ─── reporting ────────────────────────────────────────────────────────────────
 
+def _safe_print(text: str = "") -> None:
+    try:
+        print(text)
+    except UnicodeEncodeError:
+        encoded = (text + "\n").encode(sys.stdout.encoding or "utf-8", errors="replace")
+        sys.stdout.buffer.write(encoded)
+
 def report(path: Path, ec: int, wc: int, errors_only: bool) -> None:
     status = "PASS" if ec == 0 else "FAIL"
-    print(f"[{status}]  {path}  ({ec} error(s), {wc} warning(s))")
+    _safe_print(f"[{status}]  {path}  ({ec} error(s), {wc} warning(s))")
     for ln, msg in _errors:
-        print(f"    [ERROR] L{ln}: {msg}")
+        _safe_print(f"    [ERROR] L{ln}: {msg}")
     if not errors_only:
         for ln, msg in _warnings:
-            print(f"    [WARN]  L{ln}: {msg}")
+            _safe_print(f"    [WARN]  L{ln}: {msg}")
     if ec > 0 or (not errors_only and wc > 0):
-        print()
+        _safe_print()
 
 
 # ─── entry point ──────────────────────────────────────────────────────────────

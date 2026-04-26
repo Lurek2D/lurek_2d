@@ -415,9 +415,9 @@ end
 pcall(function()
 --        Body sleeping
 local dyn = lurek.physics.newBody(world, 0, 0, "dynamic")
-world:sleepBody(dyn)
+world:sleepBody(dyn:getId())
 log("after_sleep=" .. tostring(world:isBodySleeping(dyn)))
-world:wakeUpBody(dyn)
+world:wakeUpBody(dyn:getId())
 log("after_wake=" .. tostring(world:isBodySleeping(dyn)))
 
 --        CCD

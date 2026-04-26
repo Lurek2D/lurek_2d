@@ -33,6 +33,10 @@ description: "Load this skill when writing or updating Lurek2D documentation: AP
 
 ### Live Repository Contracts
 - `docs/api/lurek.md` — generated Lua API reference (do not hand-edit)
+- `docs/specs/lua-api-file-standard.md` — canonical structure and docstring contract for `src/lua_api/*_api.rs`
+- `src/lua_api/mod.rs` — thin bridge module surface only
+- `src/lua_api/register.rs` — Lua VM factory and module registration order
+- `src/lua_api/lua_types.rs` — shared Lua-visible type helpers and type-name conventions
 - `docs/architecture/engine-architecture.md` — module structure, tier system, rendering pipeline
 - `docs/architecture/philosophy.md` — design assumptions, binding constraints, Zen of Luna
 - `docs/architecture/test-framework.md` — test suite architecture and quality gates
@@ -71,6 +75,10 @@ Never conflate these. A failing integration test and a failing cargo run are dif
 - **One source of truth**: Don't duplicate information across doc files — cross-reference
 - **Lua perspective**: API reference written for Lua script authors, not Rust developers
 - **Function format**: `lurek.module.function(param1, param2)` — Returns: description
+- **Lua API docstring format**: In `src/lua_api/*_api.rs`, use exactly one description line, then `@param | name | type | description`, then `@return | type[, type...] | description`
+- **Lua-visible types only**: For userdata, write the type exactly as Lua users see it, such as `LButton` or `LCamera`, not the Rust wrapper name like `LuaButton`
+- **Fixed returns only**: Return docs may describe one fixed type or a fixed tuple like `boolean, number`; do not document `?`, `|nil`, or union returns
+- **Docs-only means docs-only**: When the task is docstrings/specs/prompts/skills, do not change Rust logic or run runtime tests just to validate documentation edits
 - **Group model terms**: Always use the exact terms from the table above (e.g., "Platform Services", "Edge/Integration")
 - **require("library.*)**: In code examples, `require("library.combat")` etc. refer to shipped Lua modules under `library/` — never describe `library/` as Rust source
 - **Example paths**: Run commands must use real directory names from `content/games/` or `examples/` — not invented paths

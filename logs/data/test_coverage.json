@@ -7611,49 +7611,49 @@
         "module": "html",
         "name": "HtmlElement::new",
         "file": "src/html/element.rs",
-        "line": 53
+        "line": 54
       },
       {
         "module": "html",
         "name": "HtmlElement::id",
         "file": "src/html/element.rs",
-        "line": 72
+        "line": 73
       },
       {
         "module": "html",
         "name": "HtmlElement::parent",
         "file": "src/html/element.rs",
-        "line": 82
+        "line": 83
       },
       {
         "module": "html",
         "name": "HtmlElement::children",
         "file": "src/html/element.rs",
-        "line": 87
+        "line": 88
       },
       {
         "module": "html",
         "name": "HtmlElement::rect",
         "file": "src/html/element.rs",
-        "line": 92
+        "line": 93
       },
       {
         "module": "html",
         "name": "HtmlElement::attribute",
         "file": "src/html/element.rs",
-        "line": 97
+        "line": 98
       },
       {
         "module": "html",
         "name": "HtmlElement::style",
         "file": "src/html/element.rs",
-        "line": 174
+        "line": 180
       },
       {
         "module": "html",
         "name": "HtmlElement::set_style",
         "file": "src/html/element.rs",
-        "line": 180
+        "line": 187
       },
       {
         "module": "i18n",
@@ -9435,7 +9435,7 @@
         "module": "lua_api",
         "name": "register",
         "file": "src/lua_api/html_api.rs",
-        "line": 921
+        "line": 945
       },
       {
         "module": "lua_api",
@@ -9519,7 +9519,7 @@
         "module": "lua_api",
         "name": "register",
         "file": "src/lua_api/particle_api.rs",
-        "line": 1498
+        "line": 1499
       },
       {
         "module": "lua_api",
@@ -9663,7 +9663,7 @@
         "module": "lua_api",
         "name": "register",
         "file": "src/lua_api/ui_api.rs",
-        "line": 4740
+        "line": 9480
       },
       {
         "module": "lua_api",
@@ -21737,115 +21737,115 @@
         "module": "html",
         "name": "HtmlElement::tag_name",
         "file": "src/html/element.rs",
-        "line": 77
+        "line": 78
       },
       {
         "module": "html",
         "name": "HtmlElement::set_attribute",
         "file": "src/html/element.rs",
-        "line": 103
+        "line": 105
       },
       {
         "module": "html",
         "name": "HtmlElement::id_attribute",
         "file": "src/html/element.rs",
-        "line": 122
+        "line": 124
       },
       {
         "module": "html",
         "name": "HtmlElement::set_id_attribute",
         "file": "src/html/element.rs",
-        "line": 126
+        "line": 129
       },
       {
         "module": "html",
         "name": "HtmlElement::has_class",
         "file": "src/html/element.rs",
-        "line": 131
+        "line": 134
       },
       {
         "module": "html",
         "name": "HtmlElement::add_class",
         "file": "src/html/element.rs",
-        "line": 135
+        "line": 139
       },
       {
         "module": "html",
         "name": "HtmlElement::remove_class",
         "file": "src/html/element.rs",
-        "line": 150
+        "line": 155
       },
       {
         "module": "html",
         "name": "HtmlElement::toggle_class",
         "file": "src/html/element.rs",
-        "line": 163
+        "line": 169
       },
       {
         "module": "html",
         "name": "HtmlElement::is_removed",
         "file": "src/html/element.rs",
-        "line": 204
+        "line": 211
       },
       {
         "module": "html",
         "name": "HtmlElement::is_void_tag",
         "file": "src/html/element.rs",
-        "line": 208
+        "line": 216
       },
       {
         "module": "html",
         "name": "HtmlElement::class_names",
         "file": "src/html/element.rs",
-        "line": 212
+        "line": 221
       },
       {
         "module": "html",
         "name": "normalise_name",
         "file": "src/html/element.rs",
-        "line": 219
+        "line": 229
       },
       {
         "module": "html",
         "name": "parse_into",
         "file": "src/html/parser.rs",
-        "line": 12
+        "line": 13
       },
       {
         "module": "html",
         "name": "escape_text",
         "file": "src/html/parser.rs",
-        "line": 160
+        "line": 162
       },
       {
         "module": "html",
         "name": "escape_attribute",
         "file": "src/html/parser.rs",
-        "line": 166
+        "line": 169
       },
       {
         "module": "html",
         "name": "matches_selector",
         "file": "src/html/selector.rs",
-        "line": 28
+        "line": 29
       },
       {
         "module": "html",
         "name": "parse_stylesheets",
         "file": "src/html/style.rs",
-        "line": 28
+        "line": 30
       },
       {
         "module": "html",
         "name": "parse_declarations",
         "file": "src/html/style.rs",
-        "line": 54
+        "line": 57
       },
       {
         "module": "html",
         "name": "parse_length",
         "file": "src/html/style.rs",
-        "line": 76
+        "line": 80
       },
       {
         "module": "i18n",
@@ -22571,7 +22571,7 @@
         "module": "lua_api",
         "name": "ParticleConfig::from_lua_opts",
         "file": "src/lua_api/particle_api.rs",
-        "line": 1673
+        "line": 1675
       },
       {
         "module": "lua_api",
@@ -25384,9 +25384,9 @@
     ]
   },
   "lua": {
-    "total": 4379,
-    "covered": 4353,
-    "uncovered": 26,
+    "total": 4022,
+    "covered": 3997,
+    "uncovered": 25,
     "coverage_pct": 99.4,
     "covered_items": [
       {
@@ -36608,343 +36608,343 @@
         "lua_name": "LHtmlDocument:update",
         "kind": "method",
         "file": "src/lua_api/html_api.rs",
-        "line": 166
+        "line": 168
       },
       {
         "module": "html",
         "lua_name": "LHtmlDocument:draw",
         "kind": "method",
         "file": "src/lua_api/html_api.rs",
-        "line": 176
+        "line": 178
       },
       {
         "module": "html",
         "lua_name": "LHtmlDocument:relayout",
         "kind": "method",
         "file": "src/lua_api/html_api.rs",
-        "line": 186
+        "line": 188
       },
       {
         "module": "html",
         "lua_name": "LHtmlDocument:isDirty",
         "kind": "method",
         "file": "src/lua_api/html_api.rs",
-        "line": 194
+        "line": 196
       },
       {
         "module": "html",
         "lua_name": "LHtmlDocument:getRoot",
         "kind": "method",
         "file": "src/lua_api/html_api.rs",
-        "line": 199
+        "line": 201
       },
       {
         "module": "html",
         "lua_name": "LHtmlDocument:getElementById",
         "kind": "method",
         "file": "src/lua_api/html_api.rs",
-        "line": 207
+        "line": 209
       },
       {
         "module": "html",
         "lua_name": "LHtmlDocument:query",
         "kind": "method",
         "file": "src/lua_api/html_api.rs",
-        "line": 215
+        "line": 217
       },
       {
         "module": "html",
         "lua_name": "LHtmlDocument:queryAll",
         "kind": "method",
         "file": "src/lua_api/html_api.rs",
-        "line": 223
+        "line": 225
       },
       {
         "module": "html",
         "lua_name": "LHtmlDocument:on",
         "kind": "method",
         "file": "src/lua_api/html_api.rs",
-        "line": 232
+        "line": 234
       },
       {
         "module": "html",
         "lua_name": "LHtmlDocument:off",
         "kind": "method",
         "file": "src/lua_api/html_api.rs",
-        "line": 245
+        "line": 249
       },
       {
         "module": "html",
         "lua_name": "LHtmlDocument:mousepressed",
         "kind": "method",
         "file": "src/lua_api/html_api.rs",
-        "line": 258
+        "line": 262
       },
       {
         "module": "html",
         "lua_name": "LHtmlDocument:mousereleased",
         "kind": "method",
         "file": "src/lua_api/html_api.rs",
-        "line": 286
+        "line": 290
       },
       {
         "module": "html",
         "lua_name": "LHtmlDocument:mousemoved",
         "kind": "method",
         "file": "src/lua_api/html_api.rs",
-        "line": 302
+        "line": 306
       },
       {
         "module": "html",
         "lua_name": "LHtmlDocument:wheelmoved",
         "kind": "method",
         "file": "src/lua_api/html_api.rs",
-        "line": 311
+        "line": 315
       },
       {
         "module": "html",
         "lua_name": "LHtmlDocument:keypressed",
         "kind": "method",
         "file": "src/lua_api/html_api.rs",
-        "line": 319
+        "line": 323
       },
       {
         "module": "html",
         "lua_name": "LHtmlDocument:textinput",
         "kind": "method",
         "file": "src/lua_api/html_api.rs",
-        "line": 339
+        "line": 343
       },
       {
         "module": "html",
         "lua_name": "LHtmlDocument:type",
         "kind": "method",
         "file": "src/lua_api/html_api.rs",
-        "line": 360
+        "line": 364
       },
       {
         "module": "html",
         "lua_name": "LHtmlDocument:typeOf",
         "kind": "method",
         "file": "src/lua_api/html_api.rs",
-        "line": 366
+        "line": 370
       },
       {
         "module": "html",
         "lua_name": "LHtmlElement:getDocument",
         "kind": "method",
         "file": "src/lua_api/html_api.rs",
-        "line": 381
+        "line": 385
       },
       {
         "module": "html",
         "lua_name": "LHtmlElement:getTagName",
         "kind": "method",
         "file": "src/lua_api/html_api.rs",
-        "line": 391
+        "line": 395
       },
       {
         "module": "html",
         "lua_name": "LHtmlElement:getId",
         "kind": "method",
         "file": "src/lua_api/html_api.rs",
-        "line": 404
+        "line": 408
       },
       {
         "module": "html",
         "lua_name": "LHtmlElement:setId",
         "kind": "method",
         "file": "src/lua_api/html_api.rs",
-        "line": 417
+        "line": 421
       },
       {
         "module": "html",
         "lua_name": "LHtmlElement:getText",
         "kind": "method",
         "file": "src/lua_api/html_api.rs",
-        "line": 428
+        "line": 432
       },
       {
         "module": "html",
         "lua_name": "LHtmlElement:setText",
         "kind": "method",
         "file": "src/lua_api/html_api.rs",
-        "line": 441
+        "line": 445
       },
       {
         "module": "html",
         "lua_name": "LHtmlElement:getHtml",
         "kind": "method",
         "file": "src/lua_api/html_api.rs",
-        "line": 450
+        "line": 454
       },
       {
         "module": "html",
         "lua_name": "LHtmlElement:setHtml",
         "kind": "method",
         "file": "src/lua_api/html_api.rs",
-        "line": 463
+        "line": 467
       },
       {
         "module": "html",
         "lua_name": "LHtmlElement:appendHtml",
         "kind": "method",
         "file": "src/lua_api/html_api.rs",
-        "line": 475
+        "line": 479
       },
       {
         "module": "html",
         "lua_name": "LHtmlElement:remove",
         "kind": "method",
         "file": "src/lua_api/html_api.rs",
-        "line": 486
+        "line": 490
       },
       {
         "module": "html",
         "lua_name": "LHtmlElement:getAttribute",
         "kind": "method",
         "file": "src/lua_api/html_api.rs",
-        "line": 496
+        "line": 500
       },
       {
         "module": "html",
         "lua_name": "LHtmlElement:setAttribute",
         "kind": "method",
         "file": "src/lua_api/html_api.rs",
-        "line": 510
+        "line": 514
       },
       {
         "module": "html",
         "lua_name": "LHtmlElement:removeAttribute",
         "kind": "method",
         "file": "src/lua_api/html_api.rs",
-        "line": 522
+        "line": 529
       },
       {
         "module": "html",
         "lua_name": "LHtmlElement:hasClass",
         "kind": "method",
         "file": "src/lua_api/html_api.rs",
-        "line": 534
+        "line": 541
       },
       {
         "module": "html",
         "lua_name": "LHtmlElement:addClass",
         "kind": "method",
         "file": "src/lua_api/html_api.rs",
-        "line": 547
+        "line": 554
       },
       {
         "module": "html",
         "lua_name": "LHtmlElement:removeClass",
         "kind": "method",
         "file": "src/lua_api/html_api.rs",
-        "line": 557
+        "line": 564
       },
       {
         "module": "html",
         "lua_name": "LHtmlElement:toggleClass",
         "kind": "method",
         "file": "src/lua_api/html_api.rs",
-        "line": 570
+        "line": 577
       },
       {
         "module": "html",
         "lua_name": "LHtmlElement:getStyle",
         "kind": "method",
         "file": "src/lua_api/html_api.rs",
-        "line": 583
+        "line": 593
       },
       {
         "module": "html",
         "lua_name": "LHtmlElement:setStyle",
         "kind": "method",
         "file": "src/lua_api/html_api.rs",
-        "line": 593
+        "line": 603
       },
       {
         "module": "html",
         "lua_name": "LHtmlElement:getRect",
         "kind": "method",
         "file": "src/lua_api/html_api.rs",
-        "line": 604
+        "line": 617
       },
       {
         "module": "html",
         "lua_name": "LHtmlElement:focus",
         "kind": "method",
         "file": "src/lua_api/html_api.rs",
-        "line": 620
+        "line": 633
       },
       {
         "module": "html",
         "lua_name": "LHtmlElement:blur",
         "kind": "method",
         "file": "src/lua_api/html_api.rs",
-        "line": 629
+        "line": 642
       },
       {
         "module": "html",
         "lua_name": "LHtmlElement:query",
         "kind": "method",
         "file": "src/lua_api/html_api.rs",
-        "line": 639
+        "line": 652
       },
       {
         "module": "html",
         "lua_name": "LHtmlElement:queryAll",
         "kind": "method",
         "file": "src/lua_api/html_api.rs",
-        "line": 656
+        "line": 671
       },
       {
         "module": "html",
         "lua_name": "LHtmlElement:on",
         "kind": "method",
         "file": "src/lua_api/html_api.rs",
-        "line": 674
+        "line": 691
       },
       {
         "module": "html",
         "lua_name": "LHtmlElement:off",
         "kind": "method",
         "file": "src/lua_api/html_api.rs",
-        "line": 692
+        "line": 709
       },
       {
         "module": "html",
         "lua_name": "LHtmlElement:type",
         "kind": "method",
         "file": "src/lua_api/html_api.rs",
-        "line": 704
+        "line": 726
       },
       {
         "module": "html",
         "lua_name": "LHtmlElement:typeOf",
         "kind": "method",
         "file": "src/lua_api/html_api.rs",
-        "line": 710
+        "line": 732
       },
       {
         "module": "html",
         "lua_name": "lurek.html.newDocument",
         "kind": "function",
         "file": "src/lua_api/html_api.rs",
-        "line": 929
+        "line": 953
       },
       {
         "module": "html",
         "lua_name": "lurek.html.loadDocument",
         "kind": "function",
         "file": "src/lua_api/html_api.rs",
-        "line": 954
+        "line": 978
       },
       {
         "module": "html",
         "lua_name": "lurek.html.supports",
         "kind": "function",
         "file": "src/lua_api/html_api.rs",
-        "line": 969
+        "line": 993
       },
       {
         "module": "i18n",
@@ -42992,126 +42992,126 @@
         "lua_name": "LParticleSystem:subSystemCount",
         "kind": "method",
         "file": "src/lua_api/particle_api.rs",
-        "line": 1305
+        "line": 1306
       },
       {
         "module": "particle",
         "lua_name": "LParticleSystem:setCustomEmissionShape",
         "kind": "method",
         "file": "src/lua_api/particle_api.rs",
-        "line": 1319
+        "line": 1320
       },
       {
         "module": "particle",
         "lua_name": "LParticleSystem:setOnDeathBatch",
         "kind": "method",
         "file": "src/lua_api/particle_api.rs",
-        "line": 1336
+        "line": 1337
       },
       {
         "module": "particle",
         "lua_name": "LTrail:pushPoint",
         "kind": "method",
         "file": "src/lua_api/particle_api.rs",
-        "line": 1361
+        "line": 1362
       },
       {
         "module": "particle",
         "lua_name": "LTrail:update",
         "kind": "method",
         "file": "src/lua_api/particle_api.rs",
-        "line": 1370
+        "line": 1371
       },
       {
         "module": "particle",
         "lua_name": "LTrail:setWidth",
         "kind": "method",
         "file": "src/lua_api/particle_api.rs",
-        "line": 1380
+        "line": 1381
       },
       {
         "module": "particle",
         "lua_name": "LTrail:getWidth",
         "kind": "method",
         "file": "src/lua_api/particle_api.rs",
-        "line": 1388
+        "line": 1389
       },
       {
         "module": "particle",
         "lua_name": "LTrail:setLifetime",
         "kind": "method",
         "file": "src/lua_api/particle_api.rs",
-        "line": 1394
+        "line": 1395
       },
       {
         "module": "particle",
         "lua_name": "LTrail:getLifetime",
         "kind": "method",
         "file": "src/lua_api/particle_api.rs",
-        "line": 1402
+        "line": 1403
       },
       {
         "module": "particle",
         "lua_name": "LTrail:setMinDistance",
         "kind": "method",
         "file": "src/lua_api/particle_api.rs",
-        "line": 1408
+        "line": 1409
       },
       {
         "module": "particle",
         "lua_name": "LTrail:getPointCount",
         "kind": "method",
         "file": "src/lua_api/particle_api.rs",
-        "line": 1448
+        "line": 1449
       },
       {
         "module": "particle",
         "lua_name": "LTrail:clear",
         "kind": "method",
         "file": "src/lua_api/particle_api.rs",
-        "line": 1455
+        "line": 1456
       },
       {
         "module": "particle",
         "lua_name": "LTrail:drawToImage",
         "kind": "method",
         "file": "src/lua_api/particle_api.rs",
-        "line": 1465
+        "line": 1466
       },
       {
         "module": "particle",
         "lua_name": "LTrail:type",
         "kind": "method",
         "file": "src/lua_api/particle_api.rs",
-        "line": 1473
+        "line": 1474
       },
       {
         "module": "particle",
         "lua_name": "LTrail:typeOf",
         "kind": "method",
         "file": "src/lua_api/particle_api.rs",
-        "line": 1479
+        "line": 1480
       },
       {
         "module": "particle",
         "lua_name": "lurek.particle.newSystem",
         "kind": "function",
         "file": "src/lua_api/particle_api.rs",
-        "line": 1506
+        "line": 1507
       },
       {
         "module": "particle",
         "lua_name": "lurek.particle.newTrail",
         "kind": "function",
         "file": "src/lua_api/particle_api.rs",
-        "line": 1531
+        "line": 1532
       },
       {
         "module": "particle",
         "lua_name": "lurek.particle.fromTOML",
         "kind": "function",
         "file": "src/lua_api/particle_api.rs",
-        "line": 1545
+        "line": 1546
       },
       {
         "module": "pathfind",
@@ -51704,6 +51704,13 @@
       },
       {
         "module": "tilemap",
+        "lua_name": "LMapBlock:setSide",
+        "kind": "method",
+        "file": "src/lua_api/tilemap_api.rs",
+        "line": 1680
+      },
+      {
+        "module": "tilemap",
         "lua_name": "LMapBlock:getSide",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
@@ -52855,2660 +52862,161 @@
         "lua_name": "lurek.ui.type",
         "kind": "function",
         "file": "src/lua_api/ui_api.rs",
-        "line": 56
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.typeOf",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 62
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.setPosition",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 75
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.getPosition",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 93
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.setSize",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
         "line": 112
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.getSize",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 130
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.getRect",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 147
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.setVisible",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 165
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.isVisible",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 181
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.setEnabled",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 194
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.isEnabled",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 216
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.setId",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 229
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.getId",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 245
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.setTooltip",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 260
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.getTooltip",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 276
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.getState",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 291
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.addChild",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 307
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.removeChild",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 330
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.getChildCount",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 353
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.getChildren",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 365
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.findById",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 393
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.setOnClick",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 413
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.setOnChange",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 427
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.setOnDraw",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 441
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.containsPoint",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 457
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.setPadding",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 475
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.getPadding",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 496
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.setMargin",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 517
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.getMargin",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 538
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.setZOrder",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 556
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.getZOrder",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 572
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.setMinSize",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 586
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.getMinSize",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 604
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.setMaxSize",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 622
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.getMaxSize",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 640
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.setAnchor",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 660
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.setAnchorCenter",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 689
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.clearAnchor",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 706
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.setFlexGrow",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 722
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.getFlexGrow",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 738
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.setFlexShrink",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 751
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.getFlexShrink",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 766
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.bind",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 789
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.unbind",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 804
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.setAlpha",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 819
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.getAlpha",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 834
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.fadeIn",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 848
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.fadeOut",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 866
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.slideIn",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 885
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.slideOut",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 903
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.attachToEntity",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 923
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.detachFromEntity",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 938
-      },
-      {
-        "module": "ui",
-        "lua_name": "LButton:setText",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 968
-      },
-      {
-        "module": "ui",
-        "lua_name": "LButton:getText",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 982
-      },
-      {
-        "module": "ui",
-        "lua_name": "LLabel:setText",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 1006
-      },
-      {
-        "module": "ui",
-        "lua_name": "LLabel:getText",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 1019
-      },
-      {
-        "module": "ui",
-        "lua_name": "LTextInput:setText",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 1043
-      },
-      {
-        "module": "ui",
-        "lua_name": "LTextInput:getText",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 1057
-      },
-      {
-        "module": "ui",
-        "lua_name": "LTextInput:setPlaceholder",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 1071
-      },
-      {
-        "module": "ui",
-        "lua_name": "LTextInput:getPlaceholder",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 1084
-      },
-      {
-        "module": "ui",
-        "lua_name": "LTextInput:setMaxLength",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 1098
-      },
-      {
-        "module": "ui",
-        "lua_name": "LTextInput:isFocused",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 1111
-      },
-      {
-        "module": "ui",
-        "lua_name": "LTextInput:getCursorPosition",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 1124
-      },
-      {
-        "module": "ui",
-        "lua_name": "LCheckbox:setChecked",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 1148
-      },
-      {
-        "module": "ui",
-        "lua_name": "LCheckbox:isChecked",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 1161
-      },
-      {
-        "module": "ui",
-        "lua_name": "LCheckbox:setText",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 1175
-      },
-      {
-        "module": "ui",
-        "lua_name": "LCheckbox:getText",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 1188
-      },
-      {
-        "module": "ui",
-        "lua_name": "LSlider:setValue",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 1212
-      },
-      {
-        "module": "ui",
-        "lua_name": "LSlider:getValue",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 1225
-      },
-      {
-        "module": "ui",
-        "lua_name": "LSlider:setRange",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 1240
-      },
-      {
-        "module": "ui",
-        "lua_name": "LSlider:setStep",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 1256
-      },
-      {
-        "module": "ui",
-        "lua_name": "LSlider:getMin",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 1269
-      },
-      {
-        "module": "ui",
-        "lua_name": "LSlider:getMax",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 1282
-      },
-      {
-        "module": "ui",
-        "lua_name": "LProgressBar:setValue",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 1306
-      },
-      {
-        "module": "ui",
-        "lua_name": "LProgressBar:getValue",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 1319
-      },
-      {
-        "module": "ui",
-        "lua_name": "LProgressBar:getProgress",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 1332
-      },
-      {
-        "module": "ui",
-        "lua_name": "LProgressBar:setRange",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 1347
-      },
-      {
-        "module": "ui",
-        "lua_name": "LProgressBar:getMin",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 1362
-      },
-      {
-        "module": "ui",
-        "lua_name": "LProgressBar:getMax",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 1375
-      },
-      {
-        "module": "ui",
-        "lua_name": "LComboBox:addItem",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 1399
-      },
-      {
-        "module": "ui",
-        "lua_name": "LComboBox:removeItem",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 1413
-      },
-      {
-        "module": "ui",
-        "lua_name": "LComboBox:clearItems",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 1429
-      },
-      {
-        "module": "ui",
-        "lua_name": "LComboBox:getItemCount",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 1442
-      },
-      {
-        "module": "ui",
-        "lua_name": "LComboBox:getItem",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 1456
-      },
-      {
-        "module": "ui",
-        "lua_name": "LComboBox:setSelectedIndex",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 1476
-      },
-      {
-        "module": "ui",
-        "lua_name": "LComboBox:getSelectedIndex",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 1491
-      },
-      {
-        "module": "ui",
-        "lua_name": "LComboBox:getSelectedItem",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 1504
-      },
-      {
-        "module": "ui",
-        "lua_name": "LListBox:addItem",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 1528
-      },
-      {
-        "module": "ui",
-        "lua_name": "LListBox:removeItem",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 1542
-      },
-      {
-        "module": "ui",
-        "lua_name": "LListBox:clearItems",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 1557
-      },
-      {
-        "module": "ui",
-        "lua_name": "LListBox:getItemCount",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 1570
-      },
-      {
-        "module": "ui",
-        "lua_name": "LListBox:getItem",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 1584
-      },
-      {
-        "module": "ui",
-        "lua_name": "LListBox:setSelectedIndex",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 1604
-      },
-      {
-        "module": "ui",
-        "lua_name": "LListBox:getSelectedIndex",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 1619
-      },
-      {
-        "module": "ui",
-        "lua_name": "LListBox:setItemHeight",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 1633
-      },
-      {
-        "module": "ui",
-        "lua_name": "LTabBar:addTab",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 1657
-      },
-      {
-        "module": "ui",
-        "lua_name": "LTabBar:removeTab",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 1671
-      },
-      {
-        "module": "ui",
-        "lua_name": "LTabBar:getTab",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 1688
-      },
-      {
-        "module": "ui",
-        "lua_name": "LTabBar:getTabCount",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 1707
-      },
-      {
-        "module": "ui",
-        "lua_name": "LTabBar:setActiveTab",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 1721
-      },
-      {
-        "module": "ui",
-        "lua_name": "LTabBar:getActiveTab",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 1736
-      },
-      {
-        "module": "ui",
-        "lua_name": "LSpinBox:setValue",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 1760
-      },
-      {
-        "module": "ui",
-        "lua_name": "LSpinBox:getValue",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 1773
-      },
-      {
-        "module": "ui",
-        "lua_name": "LSpinBox:increment",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 1786
-      },
-      {
-        "module": "ui",
-        "lua_name": "LSpinBox:decrement",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 1799
-      },
-      {
-        "module": "ui",
-        "lua_name": "LSpinBox:setRange",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 1814
-      },
-      {
-        "module": "ui",
-        "lua_name": "LSpinBox:setStep",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 1828
-      },
-      {
-        "module": "ui",
-        "lua_name": "LSwitch:setOn",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 1852
-      },
-      {
-        "module": "ui",
-        "lua_name": "LSwitch:isOn",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 1865
-      },
-      {
-        "module": "ui",
-        "lua_name": "LSwitch:toggle",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 1878
-      },
-      {
-        "module": "ui",
-        "lua_name": "LBadge:setCount",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 1902
-      },
-      {
-        "module": "ui",
-        "lua_name": "LBadge:getCount",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 1915
-      },
-      {
-        "module": "ui",
-        "lua_name": "LBadge:getDisplayText",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 1928
-      },
-      {
-        "module": "ui",
-        "lua_name": "LPanel:setTitle",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 1952
-      },
-      {
-        "module": "ui",
-        "lua_name": "LPanel:getTitle",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 1965
-      },
-      {
-        "module": "ui",
-        "lua_name": "LPanel:setScrollable",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 1979
-      },
-      {
-        "module": "ui",
-        "lua_name": "LLayout:setDirection",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 2003
-      },
-      {
-        "module": "ui",
-        "lua_name": "LLayout:getDirection",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 2018
-      },
-      {
-        "module": "ui",
-        "lua_name": "LLayout:setSpacing",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 2032
-      },
-      {
-        "module": "ui",
-        "lua_name": "LLayout:getSpacing",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 2045
-      },
-      {
-        "module": "ui",
-        "lua_name": "LLayout:setColumns",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 2059
-      },
-      {
-        "module": "ui",
-        "lua_name": "LLayout:setWrap",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 2073
-      },
-      {
-        "module": "ui",
-        "lua_name": "LLayout:getWrap",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 2086
-      },
-      {
-        "module": "ui",
-        "lua_name": "LLayout:setAlign",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 2100
-      },
-      {
-        "module": "ui",
-        "lua_name": "LLayout:getAlign",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 2113
-      },
-      {
-        "module": "ui",
-        "lua_name": "LLayout:setJustify",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 2127
-      },
-      {
-        "module": "ui",
-        "lua_name": "LLayout:getJustify",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 2140
-      },
-      {
-        "module": "ui",
-        "lua_name": "LScrollPanel:setContentSize",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 2165
-      },
-      {
-        "module": "ui",
-        "lua_name": "LScrollPanel:getContentSize",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 2180
-      },
-      {
-        "module": "ui",
-        "lua_name": "LScrollPanel:setScrollPosition",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 2195
-      },
-      {
-        "module": "ui",
-        "lua_name": "LScrollPanel:getScrollPosition",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 2210
-      },
-      {
-        "module": "ui",
-        "lua_name": "LScrollPanel:getMaxScroll",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 2223
-      },
-      {
-        "module": "ui",
-        "lua_name": "LScrollPanel:setScrollSpeed",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 2237
-      },
-      {
-        "module": "ui",
-        "lua_name": "LScrollPanel:getScrollSpeed",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 2250
-      },
-      {
-        "module": "ui",
-        "lua_name": "LNinePatch:setInsets",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 2277
-      },
-      {
-        "module": "ui",
-        "lua_name": "LNinePatch:getInsets",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 2293
-      },
-      {
-        "module": "ui",
-        "lua_name": "LNinePatch:setImageDimensions",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 2310
-      },
-      {
-        "module": "ui",
-        "lua_name": "LNinePatch:getImageDimensions",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 2324
-      },
-      {
-        "module": "ui",
-        "lua_name": "LNinePatch:getSlices",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 2337
-      },
-      {
-        "module": "ui",
-        "lua_name": "LToast:setMessage",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 2377
-      },
-      {
-        "module": "ui",
-        "lua_name": "LToast:getMessage",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 2390
-      },
-      {
-        "module": "ui",
-        "lua_name": "LToast:setDuration",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 2404
-      },
-      {
-        "module": "ui",
-        "lua_name": "LToast:getDuration",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 2417
-      },
-      {
-        "module": "ui",
-        "lua_name": "LToast:getProgress",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 2430
-      },
-      {
-        "module": "ui",
-        "lua_name": "LToast:isExpired",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 2443
-      },
-      {
-        "module": "ui",
-        "lua_name": "LSeparator:setVertical",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 2467
-      },
-      {
-        "module": "ui",
-        "lua_name": "LSeparator:isVertical",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 2480
-      },
-      {
-        "module": "ui",
-        "lua_name": "LSeparator:setThickness",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 2494
-      },
-      {
-        "module": "ui",
-        "lua_name": "LSeparator:getThickness",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 2507
-      },
-      {
-        "module": "ui",
-        "lua_name": "LTreeView:addNode",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 2532
-      },
-      {
-        "module": "ui",
-        "lua_name": "LTreeView:toggleNode",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 2548
-      },
-      {
-        "module": "ui",
-        "lua_name": "LTreeView:isExpanded",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 2565
-      },
-      {
-        "module": "ui",
-        "lua_name": "LTreeView:getNodeCount",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 2580
-      },
-      {
-        "module": "ui",
-        "lua_name": "LTreeView:removeNode",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 2594
-      },
-      {
-        "module": "ui",
-        "lua_name": "LTreeView:clearNodes",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 2608
-      },
-      {
-        "module": "ui",
-        "lua_name": "LTreeView:getNodeText",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 2622
-      },
-      {
-        "module": "ui",
-        "lua_name": "LTreeView:setNodeText",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 2641
-      },
-      {
-        "module": "ui",
-        "lua_name": "LTreeView:setNodeIcon",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 2659
-      },
-      {
-        "module": "ui",
-        "lua_name": "LTreeView:expandNode",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 2676
-      },
-      {
-        "module": "ui",
-        "lua_name": "LTreeView:collapseNode",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 2691
-      },
-      {
-        "module": "ui",
-        "lua_name": "LTreeView:isNodeExpanded",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 2706
-      },
-      {
-        "module": "ui",
-        "lua_name": "LTreeView:expandAll",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 2720
-      },
-      {
-        "module": "ui",
-        "lua_name": "LTreeView:collapseAll",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 2733
-      },
-      {
-        "module": "ui",
-        "lua_name": "LTreeView:setSelectedNode",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 2747
-      },
-      {
-        "module": "ui",
-        "lua_name": "LTreeView:getSelectedNode",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 2763
-      },
-      {
-        "module": "ui",
-        "lua_name": "LTreeView:getChildNodes",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 2778
-      },
-      {
-        "module": "ui",
-        "lua_name": "LTreeView:getParentNode",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 2797
-      },
-      {
-        "module": "ui",
-        "lua_name": "LTreeView:getNodeDepth",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 2816
-      },
-      {
-        "module": "ui",
-        "lua_name": "LRadioButton:getText",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 2841
-      },
-      {
-        "module": "ui",
-        "lua_name": "LRadioButton:setText",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 2855
-      },
-      {
-        "module": "ui",
-        "lua_name": "LRadioButton:isSelected",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 2868
-      },
-      {
-        "module": "ui",
-        "lua_name": "LRadioButton:setSelected",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 2882
-      },
-      {
-        "module": "ui",
-        "lua_name": "LRadioButton:getGroup",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 2895
-      },
-      {
-        "module": "ui",
-        "lua_name": "LRadioButton:setGroup",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 2909
-      },
-      {
-        "module": "ui",
-        "lua_name": "LRadioButton:setOnChange",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 2923
-      },
-      {
-        "module": "ui",
-        "lua_name": "LScrollBar:getScrollPosition",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 2945
-      },
-      {
-        "module": "ui",
-        "lua_name": "LScrollBar:setScrollPosition",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 2959
-      },
-      {
-        "module": "ui",
-        "lua_name": "LScrollBar:getContentSize",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 2972
-      },
-      {
-        "module": "ui",
-        "lua_name": "LScrollBar:setContentSize",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 2986
-      },
-      {
-        "module": "ui",
-        "lua_name": "LScrollBar:getViewSize",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 2999
-      },
-      {
-        "module": "ui",
-        "lua_name": "LScrollBar:setViewSize",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 3013
-      },
-      {
-        "module": "ui",
-        "lua_name": "LScrollBar:isVertical",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 3026
-      },
-      {
-        "module": "ui",
-        "lua_name": "LScrollBar:setOnChange",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 3040
-      },
-      {
-        "module": "ui",
-        "lua_name": "LGuiWindow:getTitle",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 3062
-      },
-      {
-        "module": "ui",
-        "lua_name": "LGuiWindow:setTitle",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 3076
-      },
-      {
-        "module": "ui",
-        "lua_name": "LGuiWindow:isCloseable",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 3089
-      },
-      {
-        "module": "ui",
-        "lua_name": "LGuiWindow:setCloseable",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 3103
-      },
-      {
-        "module": "ui",
-        "lua_name": "LGuiWindow:isDraggable",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 3116
-      },
-      {
-        "module": "ui",
-        "lua_name": "LGuiWindow:setDraggable",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 3130
-      },
-      {
-        "module": "ui",
-        "lua_name": "LGuiWindow:isResizable",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 3143
-      },
-      {
-        "module": "ui",
-        "lua_name": "LGuiWindow:setResizable",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 3157
-      },
-      {
-        "module": "ui",
-        "lua_name": "LGuiWindow:setOnClose",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 3171
-      },
-      {
-        "module": "ui",
-        "lua_name": "LSplitPanel:getOrientation",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 3192
-      },
-      {
-        "module": "ui",
-        "lua_name": "LSplitPanel:setOrientation",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 3206
-      },
-      {
-        "module": "ui",
-        "lua_name": "LSplitPanel:getSplitPosition",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 3219
-      },
-      {
-        "module": "ui",
-        "lua_name": "LSplitPanel:setSplitPosition",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 3233
-      },
-      {
-        "module": "ui",
-        "lua_name": "LSplitPanel:getMinPanelSize",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 3246
-      },
-      {
-        "module": "ui",
-        "lua_name": "LSplitPanel:setMinPanelSize",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 3260
-      },
-      {
-        "module": "ui",
-        "lua_name": "LSplitPanel:setFirstChild",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 3274
-      },
-      {
-        "module": "ui",
-        "lua_name": "LSplitPanel:setSecondChild",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 3288
-      },
-      {
-        "module": "ui",
-        "lua_name": "LSplitPanel:getFirstChild",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 3301
-      },
-      {
-        "module": "ui",
-        "lua_name": "LSplitPanel:getSecondChild",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 3314
-      },
-      {
-        "module": "ui",
-        "lua_name": "LDockPanel:dock",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 3339
-      },
-      {
-        "module": "ui",
-        "lua_name": "LDockPanel:undock",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 3353
-      },
-      {
-        "module": "ui",
-        "lua_name": "LDockPanel:getDockedCount",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 3366
-      },
-      {
-        "module": "ui",
-        "lua_name": "LDockPanel:setSplitSize",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 3381
-      },
-      {
-        "module": "ui",
-        "lua_name": "LDockPanel:getSplitSize",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 3399
-      },
-      {
-        "module": "ui",
-        "lua_name": "LToolbar:getOrientation",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 3426
-      },
-      {
-        "module": "ui",
-        "lua_name": "LToolbar:setOrientation",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 3440
-      },
-      {
-        "module": "ui",
-        "lua_name": "LToolbar:addButton",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 3455
-      },
-      {
-        "module": "ui",
-        "lua_name": "LToolbar:addSeparator",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 3469
-      },
-      {
-        "module": "ui",
-        "lua_name": "LToolbar:addSpacer",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 3480
-      },
-      {
-        "module": "ui",
-        "lua_name": "LToolbar:getButton",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 3491
-      },
-      {
-        "module": "ui",
-        "lua_name": "LToolbar:setButtonEnabled",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 3513
-      },
-      {
-        "module": "ui",
-        "lua_name": "LToolbar:setButtonToggled",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 3528
-      },
-      {
-        "module": "ui",
-        "lua_name": "LToolbar:isButtonToggled",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 3542
-      },
-      {
-        "module": "ui",
-        "lua_name": "LMenuBar:addMenu",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 3566
-      },
-      {
-        "module": "ui",
-        "lua_name": "LMenuBar:removeMenu",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 3582
-      },
-      {
-        "module": "ui",
-        "lua_name": "LMenuBar:getMenus",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 3597
-      },
-      {
-        "module": "ui",
-        "lua_name": "LMenuBar:getMenuCount",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 3610
-      },
-      {
-        "module": "ui",
-        "lua_name": "LMenuItem:getText",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 3634
-      },
-      {
-        "module": "ui",
-        "lua_name": "LMenuItem:setText",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 3648
-      },
-      {
-        "module": "ui",
-        "lua_name": "LMenuItem:getShortcut",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 3661
-      },
-      {
-        "module": "ui",
-        "lua_name": "LMenuItem:setShortcut",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 3675
-      },
-      {
-        "module": "ui",
-        "lua_name": "LMenuItem:isChecked",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 3688
-      },
-      {
-        "module": "ui",
-        "lua_name": "LMenuItem:setChecked",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 3702
-      },
-      {
-        "module": "ui",
-        "lua_name": "LMenuItem:addSubItem",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 3716
-      },
-      {
-        "module": "ui",
-        "lua_name": "LMenuItem:getSubItems",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 3731
-      },
-      {
-        "module": "ui",
-        "lua_name": "LMenuItem:setOnClick",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 3745
-      },
-      {
-        "module": "ui",
-        "lua_name": "LDialog:getTitle",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 3767
-      },
-      {
-        "module": "ui",
-        "lua_name": "LDialog:setTitle",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 3781
-      },
-      {
-        "module": "ui",
-        "lua_name": "LDialog:isModal",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 3794
-      },
-      {
-        "module": "ui",
-        "lua_name": "LDialog:setModal",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 3808
-      },
-      {
-        "module": "ui",
-        "lua_name": "LDialog:isOpen",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 3821
-      },
-      {
-        "module": "ui",
-        "lua_name": "LDialog:open",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 3834
-      },
-      {
-        "module": "ui",
-        "lua_name": "LDialog:close",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 3847
-      },
-      {
-        "module": "ui",
-        "lua_name": "LDialog:setOnClose",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 3865
-      },
-      {
-        "module": "ui",
-        "lua_name": "LDialog:setContent",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 3877
-      },
-      {
-        "module": "ui",
-        "lua_name": "LDialog:getContent",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 3890
-      },
-      {
-        "module": "ui",
-        "lua_name": "LDialog:addButton",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 3905
-      },
-      {
-        "module": "ui",
-        "lua_name": "LStatusBar:addSection",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 3932
-      },
-      {
-        "module": "ui",
-        "lua_name": "LStatusBar:setSectionText",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 3947
-      },
-      {
-        "module": "ui",
-        "lua_name": "LStatusBar:getSectionText",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 3963
-      },
-      {
-        "module": "ui",
-        "lua_name": "LStatusBar:getSectionCount",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 3982
-      },
-      {
-        "module": "ui",
-        "lua_name": "LStatusBar:setSectionCount",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 3996
-      },
-      {
-        "module": "ui",
-        "lua_name": "LStatusBar:setSectionWidget",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 4017
-      },
-      {
-        "module": "ui",
-        "lua_name": "LAccordion:addSection",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 4039
-      },
-      {
-        "module": "ui",
-        "lua_name": "LAccordion:getSectionCount",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 4056
-      },
-      {
-        "module": "ui",
-        "lua_name": "LAccordion:toggleSection",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 4070
-      },
-      {
-        "module": "ui",
-        "lua_name": "LAccordion:isSectionExpanded",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 4093
-      },
-      {
-        "module": "ui",
-        "lua_name": "LAccordion:isExclusive",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 4110
-      },
-      {
-        "module": "ui",
-        "lua_name": "LAccordion:setExclusive",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 4124
-      },
-      {
-        "module": "ui",
-        "lua_name": "LAccordion:getSectionTitle",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 4138
-      },
-      {
-        "module": "ui",
-        "lua_name": "LTooltipPanel:getText",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 4167
-      },
-      {
-        "module": "ui",
-        "lua_name": "LTooltipPanel:setText",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 4181
-      },
-      {
-        "module": "ui",
-        "lua_name": "LTooltipPanel:getDelay",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 4194
-      },
-      {
-        "module": "ui",
-        "lua_name": "LTooltipPanel:setDelay",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 4208
-      },
-      {
-        "module": "ui",
-        "lua_name": "LTooltipPanel:getTarget",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 4221
-      },
-      {
-        "module": "ui",
-        "lua_name": "LTooltipPanel:setTarget",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 4235
-      },
-      {
-        "module": "ui",
-        "lua_name": "LColorPicker:getColor",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 4259
-      },
-      {
-        "module": "ui",
-        "lua_name": "LColorPicker:setColor",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 4276
-      },
-      {
-        "module": "ui",
-        "lua_name": "LColorPicker:getShowAlpha",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 4292
-      },
-      {
-        "module": "ui",
-        "lua_name": "LColorPicker:setShowAlpha",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 4306
-      },
-      {
-        "module": "ui",
-        "lua_name": "LColorPicker:getColorMode",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 4319
-      },
-      {
-        "module": "ui",
-        "lua_name": "LColorPicker:setColorMode",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 4333
-      },
-      {
-        "module": "ui",
-        "lua_name": "LColorPicker:setOnChange",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 4347
-      },
-      {
-        "module": "ui",
-        "lua_name": "LGuiTable:addColumn",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 4371
-      },
-      {
-        "module": "ui",
-        "lua_name": "LGuiTable:getColumnCount",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 4387
-      },
-      {
-        "module": "ui",
-        "lua_name": "LGuiTable:addRow",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 4401
-      },
-      {
-        "module": "ui",
-        "lua_name": "LGuiTable:getRowCount",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 4414
-      },
-      {
-        "module": "ui",
-        "lua_name": "LGuiTable:getCell",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 4429
-      },
-      {
-        "module": "ui",
-        "lua_name": "LGuiTable:setCell",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 4455
-      },
-      {
-        "module": "ui",
-        "lua_name": "LGuiTable:getSelectedRow",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 4470
-      },
-      {
-        "module": "ui",
-        "lua_name": "LGuiTable:setSelectedRow",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 4484
-      },
-      {
-        "module": "ui",
-        "lua_name": "LGuiTable:isSortable",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 4497
-      },
-      {
-        "module": "ui",
-        "lua_name": "LGuiTable:setSortable",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 4511
-      },
-      {
-        "module": "ui",
-        "lua_name": "LGuiTable:setOnSelect",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 4525
-      },
-      {
-        "module": "ui",
-        "lua_name": "LImageWidget:getScaleMode",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 4546
-      },
-      {
-        "module": "ui",
-        "lua_name": "LImageWidget:setScaleMode",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 4560
-      },
-      {
-        "module": "ui",
-        "lua_name": "LImageWidget:getTint",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 4573
-      },
-      {
-        "module": "ui",
-        "lua_name": "LImageWidget:setTint",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 4590
-      },
-      {
-        "module": "ui",
-        "lua_name": "LTheme:setStyle",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 4620
       },
       {
         "module": "ui",
         "lua_name": "LTheme:type",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 4640
+        "line": 9280
       },
       {
         "module": "ui",
         "lua_name": "LTheme:typeOf",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 4646
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.newButton",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 4754
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.newLabel",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 4773
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.newTextInput",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 4791
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.newCheckbox",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 4810
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.newSlider",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 4830
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.newProgressBar",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 4850
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.newComboBox",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 4868
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.newList",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 4886
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.newPanel",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 4904
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.newLayout",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 4923
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.newScrollPanel",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 4945
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.newNinePatch",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 4963
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.newTabBar",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 4981
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.newSeparator",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 5000
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.newSpacer",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 5020
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.newToast",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 5039
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.newTreeView",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 5061
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.newRadioButton",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 5081
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.newScrollBar",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 5102
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.newWindow",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 5121
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.newSplitPanel",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 5140
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.newDockPanel",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 5158
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.newToolbar",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 5177
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.newMenuBar",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 5195
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.newMenuItem",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 5214
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.newDialog",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 5233
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.newStatusBar",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 5251
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.newAccordion",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 5269
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.newTooltipPanel",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 5288
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.newColorPicker",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 5306
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.newTable",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 5324
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.newImageWidget",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 5342
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.newTheme",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 5357
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.setTheme",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 5372
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.getTheme",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 5388
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.getRoot",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 5399
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.setFocus",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 5414
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.getFocus",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 5432
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.focusNext",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 5442
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.focusPrev",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 5455
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.clearFocus",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 5468
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.addToast",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 5482
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.getToastCount",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 5503
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.mousepressed",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 5517
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.mousereleased",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 5533
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.mousemoved",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 5548
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.keypressed",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 5560
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.textinput",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 5572
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.wheelmoved",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 5585
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.update",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 5596
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.draw",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 5639
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.newCustomWidget",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 5680
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.getWidgetCount",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 5722
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.drawToImage",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 5733
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.newLineChart",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 5745
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.newBarChart",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 5767
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.newScatterPlot",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 5789
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.newPieChart",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 5811
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.newAreaChart",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 5833
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.parseWidgetState",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 5856
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.newSpinBox",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 5870
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.newSwitch",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 5888
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.newBadge",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 5906
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.setDefaultTheme",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 5922
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.setViewport",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 5936
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.flushCache",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 5948
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.update_bindings",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 5967
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.loadLayout",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 6038
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.loadLayoutFile",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 6067
-      },
-      {
-        "module": "ui",
-        "lua_name": "lurek.ui.renderToImage",
-        "kind": "function",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 6102
-      },
-      {
-        "module": "ui",
-        "lua_name": "LLineChart:addSeries",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 6195
+        "line": 9292
       },
       {
         "module": "ui",
         "lua_name": "LLineChart:setYMax",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 6214
+        "line": 12428
       },
       {
         "module": "ui",
         "lua_name": "LLineChart:setXMax",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 6222
+        "line": 12444
       },
       {
         "module": "ui",
         "lua_name": "LLineChart:drawToImage",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 6230
+        "line": 12460
       },
       {
         "module": "ui",
         "lua_name": "LLineChart:type",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 6239
+        "line": 12478
       },
       {
         "module": "ui",
         "lua_name": "LLineChart:typeOf",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 6245
-      },
-      {
-        "module": "ui",
-        "lua_name": "LBarChart:addSeries",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 6271
-      },
-      {
-        "module": "ui",
-        "lua_name": "LBarChart:addCategory",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 6284
+        "line": 12490
       },
       {
         "module": "ui",
         "lua_name": "LBarChart:drawToImage",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 6299
+        "line": 12598
       },
       {
         "module": "ui",
         "lua_name": "LBarChart:type",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 6308
+        "line": 12616
       },
       {
         "module": "ui",
         "lua_name": "LBarChart:typeOf",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 6314
-      },
-      {
-        "module": "ui",
-        "lua_name": "LScatterPlot:addSeries",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 6341
+        "line": 12628
       },
       {
         "module": "ui",
         "lua_name": "LScatterPlot:setXRange",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 6361
+        "line": 12722
       },
       {
         "module": "ui",
         "lua_name": "LScatterPlot:setYRange",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 6370
+        "line": 12740
       },
       {
         "module": "ui",
         "lua_name": "LScatterPlot:drawToImage",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 6378
+        "line": 12756
       },
       {
         "module": "ui",
         "lua_name": "LScatterPlot:type",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 6387
+        "line": 12774
       },
       {
         "module": "ui",
         "lua_name": "LScatterPlot:typeOf",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 6393
-      },
-      {
-        "module": "ui",
-        "lua_name": "LPieChart:addSegment",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 6420
+        "line": 12786
       },
       {
         "module": "ui",
         "lua_name": "LPieChart:drawToImage",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 6432
+        "line": 12864
       },
       {
         "module": "ui",
         "lua_name": "LPieChart:type",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 6441
+        "line": 12882
       },
       {
         "module": "ui",
         "lua_name": "LPieChart:typeOf",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 6447
-      },
-      {
-        "module": "ui",
-        "lua_name": "LAreaChart:addLayer",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 6474
+        "line": 12894
       },
       {
         "module": "ui",
         "lua_name": "LAreaChart:setYMax",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 6490
+        "line": 12980
       },
       {
         "module": "ui",
         "lua_name": "LAreaChart:drawToImage",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 6498
+        "line": 12996
       },
       {
         "module": "ui",
         "lua_name": "LAreaChart:type",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 6507
+        "line": 13014
       },
       {
         "module": "ui",
         "lua_name": "LAreaChart:typeOf",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 6513
+        "line": 13026
       },
       {
         "module": "window",
@@ -55909,21 +53417,21 @@
         "lua_name": "lurek.html.preventDefault",
         "kind": "function",
         "file": "src/lua_api/html_api.rs",
-        "line": 891
+        "line": 915
       },
       {
         "module": "html",
         "lua_name": "lurek.html.stopPropagation",
         "kind": "function",
         "file": "src/lua_api/html_api.rs",
-        "line": 900
+        "line": 924
       },
       {
         "module": "html",
         "lua_name": "lurek.html.isDefaultPrevented",
         "kind": "function",
         "file": "src/lua_api/html_api.rs",
-        "line": 909
+        "line": 933
       },
       {
         "module": "math",
@@ -55951,14 +53459,14 @@
         "lua_name": "LTrail:setHeadColor",
         "kind": "method",
         "file": "src/lua_api/particle_api.rs",
-        "line": 1420
+        "line": 1421
       },
       {
         "module": "particle",
         "lua_name": "LTrail:setTailColor",
         "kind": "method",
         "file": "src/lua_api/particle_api.rs",
-        "line": 1436
+        "line": 1437
       },
       {
         "module": "pathfind",
@@ -56036,13 +53544,6 @@
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
         "line": 1199
-      },
-      {
-        "module": "tilemap",
-        "lua_name": "LMapBlock:setSide",
-        "kind": "method",
-        "file": "src/lua_api/tilemap_api.rs",
-        "line": 1680
       }
     ]
   }

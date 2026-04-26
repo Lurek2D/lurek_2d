@@ -50,9 +50,7 @@ impl LuaUserData for LuaDoorManager {
         /// @param direction string         â€” "horizontal" or "vertical".
         /// @param speed number         â€” Animation speed (units/s).
         /// @return integer  -- Door index for open/close calls.
-        methods.add_method_mut(
-            "addDoor",
-            |_, this, (x, y, dir_str, speed): (u32, u32, String, f32)| {
+        methods.add_method_mut("addDoor", |_, this, (x, y, dir_str, speed): (u32, u32, String, f32)| {
                 let dir = match dir_str.as_str() {
                     "vertical" => DoorDirection::Vertical,
                     _ => DoorDirection::Horizontal,
@@ -244,9 +242,7 @@ impl LuaUserData for LuaPointLight {
         /// @param radius number
         /// @param intensity number
         /// @return nil
-        methods.add_method_mut(
-            "set",
-            |_, this, (x, y, r, g, b, radius, intensity): (f32, f32, f32, f32, f32, f32, f32)| {
+        methods.add_method_mut("set", |_, this, (x, y, r, g, b, radius, intensity): (f32, f32, f32, f32, f32, f32, f32)| {
                 this.inner.x = x;
                 this.inner.y = y;
                 this.inner.color = [r, g, b];
@@ -338,9 +334,7 @@ impl LuaUserData for LuaRaycaster {
         /// @param angle number
         /// @param max_dist number
         /// @return table|nil
-        methods.add_method(
-            "castRay",
-            |lua, this, (ox, oy, angle, max_dist): (f32, f32, f32, f32)| match this
+        methods.add_method("castRay", |lua, this, (ox, oy, angle, max_dist): (f32, f32, f32, f32)| match this
                 .inner
                 .cast_ray(ox, oy, angle, max_dist)
             {
@@ -358,9 +352,7 @@ impl LuaUserData for LuaRaycaster {
         /// @param count integer
         /// @param max_dist number
         /// @return table
-        methods.add_method(
-            "castRays",
-            |lua, this, (ox, oy, angle, fov, count, max_dist): (f32, f32, f32, f32, u32, f32)| {
+        methods.add_method("castRays", |lua, this, (ox, oy, angle, fov, count, max_dist): (f32, f32, f32, f32, u32, f32)| {
                 let hits = this.inner.cast_rays(ox, oy, angle, fov, count, max_dist);
                 let tbl = lua.create_table()?;
                 for (i, hit) in hits.iter().enumerate() {
@@ -379,9 +371,7 @@ impl LuaUserData for LuaRaycaster {
         /// @param count integer
         /// @param max_dist number
         /// @return table
-        methods.add_method(
-            "castRaysFlat",
-            |lua, this, (ox, oy, angle, fov, count, max_dist): (f32, f32, f32, f32, u32, f32)| {
+        methods.add_method("castRaysFlat", |lua, this, (ox, oy, angle, fov, count, max_dist): (f32, f32, f32, f32, u32, f32)| {
                 let flat = this
                     .inner
                     .cast_rays_flat(ox, oy, angle, fov, count, max_dist);
@@ -396,9 +386,7 @@ impl LuaUserData for LuaRaycaster {
         /// @param x2 number
         /// @param y2 number
         /// @return boolean
-        methods.add_method(
-            "lineOfSight",
-            |_, this, (x1, y1, x2, y2): (f32, f32, f32, f32)| {
+        methods.add_method("lineOfSight", |_, this, (x1, y1, x2, y2): (f32, f32, f32, f32)| {
                 Ok(this.inner.line_of_sight(x1, y1, x2, y2))
             },
         );
@@ -432,9 +420,7 @@ impl LuaUserData for LuaRaycaster {
         /// @param max_dist number
         /// @param max_hits integer  â€” layers to collect (default 4, max 8)
         /// @return table
-        methods.add_method(
-            "castRayMulti",
-            |lua, this, (ox, oy, angle, max_dist, max_hits): (f32, f32, f32, f32, Option<u32>)| {
+        methods.add_method("castRayMulti", |lua, this, (ox, oy, angle, max_dist, max_hits): (f32, f32, f32, f32, Option<u32>)| {
                 let cap = max_hits.unwrap_or(4).min(8);
                 let hits = this.inner.cast_ray_multi(ox, oy, angle, max_dist, cap);
                 let tbl = lua.create_table()?;
@@ -472,9 +458,7 @@ impl LuaUserData for LuaRaycaster {
         /// @param plane_y number
         /// @param row integer
         /// @return table
-        methods.add_method(
-            "castFloorRow",
-            |lua,
+        methods.add_method("castFloorRow", |lua,
              this,
              (cam_x, cam_y, dir_x, dir_y, plane_x, plane_y, row): (
                 f32,
@@ -509,9 +493,7 @@ impl LuaUserData for LuaRaycaster {
         /// @param fov number
         /// @param screen_w number
         /// @return table
-        methods.add_method(
-            "projectSprite",
-            |lua,
+        methods.add_method("projectSprite", |lua,
              this,
              (sx, sy, px, py, pa, fov, screen_w): (f32, f32, f32, f32, f32, f32, f32)| {
                 let sp = this.inner.project_sprite(sx, sy, px, py, pa, fov, screen_w);
@@ -531,9 +513,7 @@ impl LuaUserData for LuaRaycaster {
         /// @param angle number
         /// @param scale integer
         /// @return ImageData
-        methods.add_method(
-            "drawTopDown",
-            |_, this, (px, py, angle, scale): (f32, f32, f32, u32)| {
+        methods.add_method("drawTopDown", |_, this, (px, py, angle, scale): (f32, f32, f32, u32)| {
                 let img = this.inner.draw_top_down_to_image(px, py, angle, scale);
                 Ok(img)
             },
@@ -549,9 +529,7 @@ impl LuaUserData for LuaRaycaster {
         /// @param height integer
         /// @param max_dist number
         /// @return ImageData
-        methods.add_method(
-            "drawView",
-            |_, this, (px, py, angle, fov, w, h, max_dist): (f32, f32, f32, f32, u32, u32, f32)| {
+        methods.add_method("drawView", |_, this, (px, py, angle, fov, w, h, max_dist): (f32, f32, f32, f32, u32, u32, f32)| {
                 let img = this
                     .inner
                     .draw_view_to_image(px, py, angle, fov, w, h, max_dist);
@@ -570,9 +548,7 @@ impl LuaUserData for LuaRaycaster {
         /// @param height integer
         /// @param max_dist number
         /// @return ImageData
-        methods.add_method(
-            "drawDepthMap",
-            |_,
+        methods.add_method("drawDepthMap", |_,
              this,
              (px, py, angle, fov, num_rays, w, h, max_dist): (
                 f32,
@@ -599,9 +575,7 @@ impl LuaUserData for LuaRaycaster {
         /// @param by number
         /// @param scale integer
         /// @return ImageData
-        methods.add_method(
-            "drawLineOfSight",
-            |_, this, (ax, ay, bx, by, scale): (f32, f32, f32, f32, u32)| {
+        methods.add_method("drawLineOfSight", |_, this, (ax, ay, bx, by, scale): (f32, f32, f32, f32, u32)| {
                 let img = this
                     .inner
                     .draw_line_of_sight_to_image(ax, ay, bx, by, scale);
@@ -619,9 +593,7 @@ impl LuaUserData for LuaRaycaster {
         /// @param frame_w integer
         /// @param frame_h integer
         /// @return ImageData
-        methods.add_method(
-            "drawCameraSweep",
-            |_, this, (x, y, fov, max_dist, num_frames, fw, fh): (f32, f32, f32, f32, u32, u32, u32)| {
+        methods.add_method("drawCameraSweep", |_, this, (x, y, fov, max_dist, num_frames, fw, fh): (f32, f32, f32, f32, u32, u32, u32)| {
                 let img = this.inner.draw_camera_sweep_to_image(x, y, fov, max_dist, num_frames, fw, fh);
                 Ok(img)
             },
@@ -635,9 +607,7 @@ impl LuaUserData for LuaRaycaster {
         /// @param wall_textures table|nil â€” { [cell_value] = TextureKey }
         /// @return nil
         /// integer â€” quad count
-        methods.add_method(
-            "buildScene",
-            |_,
+        methods.add_method("buildScene", |_,
              this,
              (params_tbl, lights_tbl, sprites_tbl, wall_tex_tbl): (
                 LuaTable,
@@ -781,9 +751,7 @@ impl LuaUserData for LuaSpriteManager {
         /// @param texture string
         /// @param scale number  (optional, default 1.0)
         /// @return integer
-        methods.add_method_mut(
-            "add",
-            |_, this, (x, y, texture, scale): (f32, f32, String, Option<f32>)| {
+        methods.add_method_mut("add", |_, this, (x, y, texture, scale): (f32, f32, String, Option<f32>)| {
                 Ok(this.inner.add(x, y, &texture, scale.unwrap_or(1.0)))
             },
         );
@@ -834,9 +802,7 @@ impl LuaUserData for LuaSpriteManager {
         /// @param cam_y number
         /// @param cam_angle number
         /// @return table
-        methods.add_method(
-            "sortAndProject",
-            |lua, this, (cam_x, cam_y, _cam_angle): (f32, f32, f32)| {
+        methods.add_method("sortAndProject", |lua, this, (cam_x, cam_y, _cam_angle): (f32, f32, f32)| {
                 let sorted = this.inner.sort_by_distance(cam_x, cam_y);
                 let tbl = lua.create_table()?;
                 for (i, s) in sorted.iter().enumerate() {
@@ -887,9 +853,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @param height integer
     /// @return Raycaster
     let s = state.clone();
-    tbl.set(
-        "new",
-        lua.create_function(move |_, (w, h): (u32, u32)| {
+    tbl.set("new", lua.create_function(move |_, (w, h): (u32, u32)| {
             Ok(LuaRaycaster {
                 inner: Raycaster2D::new(w, h),
                 state: s.clone(),
@@ -903,9 +867,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @param height integer
     /// @return Raycaster
     let s = state.clone();
-    tbl.set(
-        "newMap",
-        lua.create_function(move |_, (w, h): (u32, u32)| {
+    tbl.set("newMap", lua.create_function(move |_, (w, h): (u32, u32)| {
             Ok(LuaRaycaster {
                 inner: Raycaster2D::new(w, h),
                 state: s.clone(),
@@ -919,9 +881,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @param fov number
     /// @param screen_height number
     /// @return number, number, number
-    tbl.set(
-        "projectColumn",
-        lua.create_function(|_, (distance, fov, screen_height): (f32, f32, f32)| {
+    tbl.set("projectColumn", lua.create_function(|_, (distance, fov, screen_height): (f32, f32, f32)| {
             Ok(project_column(distance, fov, screen_height))
         })?,
     )?;
@@ -931,9 +891,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @param distance number
     /// @param max_distance number
     /// @return number
-    tbl.set(
-        "distanceShade",
-        lua.create_function(|_, (distance, max_distance): (f32, f32)| {
+    tbl.set("distanceShade", lua.create_function(|_, (distance, max_distance): (f32, f32)| {
             Ok(distance_shade(distance, max_distance))
         })?,
     )?;
@@ -941,9 +899,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     // -- newDoorManager --
     /// Creates a new empty door manager.
     /// @return DoorManager
-    tbl.set(
-        "newDoorManager",
-        lua.create_function(|_, ()| {
+    tbl.set("newDoorManager", lua.create_function(|_, ()| {
             Ok(LuaDoorManager {
                 inner: Rc::new(RefCell::new(DoorManager::new())),
             })
@@ -955,9 +911,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @param width integer
     /// @param height integer
     /// @return HeightMap
-    tbl.set(
-        "newHeightMap",
-        lua.create_function(|_, (w, h): (u32, u32)| {
+    tbl.set("newHeightMap", lua.create_function(|_, (w, h): (u32, u32)| {
             Ok(LuaHeightMap {
                 inner: Rc::new(RefCell::new(HeightMap::new(w, h))),
             })
@@ -974,9 +928,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @param radius number   â€” Maximum illumination radius.
     /// @param intensity number   â€” Brightness multiplier.
     /// @return PointLight
-    tbl.set(
-        "newPointLight",
-        lua.create_function(
+    tbl.set("newPointLight", lua.create_function(
             |_, (x, y, r, g, b, radius, intensity): (f32, f32, f32, f32, f32, f32, f32)| {
                 Ok(LuaPointLight {
                     inner: PointLight {
@@ -994,9 +946,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     // -- newSpriteManager --
     /// Creates a new empty batch sprite manager for depth-sorted projection.
     /// @return SpriteManager
-    tbl.set(
-        "newSpriteManager",
-        lua.create_function(|_, ()| {
+    tbl.set("newSpriteManager", lua.create_function(|_, ()| {
             Ok(LuaSpriteManager {
                 inner: SpriteManager::new(),
             })

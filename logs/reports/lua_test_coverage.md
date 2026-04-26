@@ -1,17 +1,17 @@
 # Lua API Test Coverage Report
 
-**Generated**: 2026-04-25
+**Generated**: 2026-04-26
 **Mode**: hybrid
-**Total API functions**: 4379
+**Total API functions**: 4022
 
 ## Summary
 
 | Metric | Value |
 |--------|-------|
-| Marker-covered | 229 |
-| Heuristic-covered | 4002 |
-| Total covered | 4255 |
-| Coverage | 97.2% |
+| Marker-covered | 215 |
+| Heuristic-covered | 3660 |
+| Total covered | 3899 |
+| Coverage | 96.9% |
 
 ## Per-Module Coverage
 
@@ -43,8 +43,8 @@
 | tween | 58 | 7 | 50 | 57 | 98.3% |
 | graph | 126 | 1 | 123 | 124 | 98.4% |
 | pathfind | 94 | 3 | 90 | 93 | 98.9% |
-| tilemap | 188 | 3 | 183 | 186 | 98.9% |
 | audio | 219 | 19 | 199 | 218 | 99.5% |
+| tilemap | 188 | 3 | 184 | 187 | 99.5% |
 | automation | 28 | 0 | 28 | 28 | 100.0% |
 | camera | 49 | 2 | 47 | 49 | 100.0% |
 | debugbridge | 14 | 14 | 0 | 14 | 100.0% |
@@ -65,7 +65,7 @@
 | spine | 34 | 1 | 33 | 34 | 100.0% |
 | sprite | 24 | 0 | 24 | 24 | 100.0% |
 | timer | 49 | 4 | 45 | 49 | 100.0% |
-| ui | 380 | 14 | 366 | 380 | 100.0% |
+| ui | 23 | 0 | 23 | 23 | 100.0% |
 | window | 50 | 5 | 45 | 50 | 100.0% |
 
 ## Uncovered Functions (lowest coverage first)
@@ -276,18 +276,23 @@
 - `Camera:shake` in `tests/lua/evidence/test_camera_evidence.lua:178`
 - `Camera:update` in `tests/lua/evidence/test_camera_evidence.lua:179`
 - `Camera:getPosition` in `tests/lua/evidence/test_camera_evidence.lua:180`
+- `lurek.ui.newLineChart` in `tests/lua/evidence/test_charts_evidence.lua:11`
 - `LineChart:addSeries` in `tests/lua/evidence/test_charts_evidence.lua:12`
 - `LineChart:setYMax` in `tests/lua/evidence/test_charts_evidence.lua:13`
 - `LineChart:drawToImage` in `tests/lua/evidence/test_charts_evidence.lua:14`
+- `lurek.ui.newBarChart` in `tests/lua/evidence/test_charts_evidence.lua:35`
 - `BarChart:addSeries` in `tests/lua/evidence/test_charts_evidence.lua:36`
 - `BarChart:addCategory` in `tests/lua/evidence/test_charts_evidence.lua:37`
 - `BarChart:drawToImage` in `tests/lua/evidence/test_charts_evidence.lua:38`
+- `lurek.ui.newScatterPlot` in `tests/lua/evidence/test_charts_evidence.lua:58`
 - `ScatterPlot:addSeries` in `tests/lua/evidence/test_charts_evidence.lua:59`
 - `ScatterPlot:setXRange` in `tests/lua/evidence/test_charts_evidence.lua:60`
 - `ScatterPlot:setYRange` in `tests/lua/evidence/test_charts_evidence.lua:61`
 - `ScatterPlot:drawToImage` in `tests/lua/evidence/test_charts_evidence.lua:62`
+- `lurek.ui.newPieChart` in `tests/lua/evidence/test_charts_evidence.lua:85`
 - `PieChart:addSegment` in `tests/lua/evidence/test_charts_evidence.lua:86`
 - `PieChart:drawToImage` in `tests/lua/evidence/test_charts_evidence.lua:87`
+- `lurek.ui.newAreaChart` in `tests/lua/evidence/test_charts_evidence.lua:105`
 - `AreaChart:addLayer` in `tests/lua/evidence/test_charts_evidence.lua:106`
 - `AreaChart:setYMax` in `tests/lua/evidence/test_charts_evidence.lua:107`
 - `AreaChart:drawToImage` in `tests/lua/evidence/test_charts_evidence.lua:108`
@@ -353,6 +358,12 @@
 - `Graph:addNode` in `tests/lua/evidence/test_graph_evidence.lua:80`
 - `Graph:addEdge` in `tests/lua/evidence/test_graph_evidence.lua:81`
 - `Graph:findPath` in `tests/lua/evidence/test_graph_evidence.lua:110`
+- `lurek.ui.loadLayout` in `tests/lua/evidence/test_gui_evidence.lua:11`
+- `lurek.ui.renderToImage` in `tests/lua/evidence/test_gui_evidence.lua:12`
+- `lurek.ui.loadLayout` in `tests/lua/evidence/test_gui_evidence.lua:32`
+- `lurek.ui.renderToImage` in `tests/lua/evidence/test_gui_evidence.lua:33`
+- `lurek.ui.loadLayout` in `tests/lua/evidence/test_gui_evidence.lua:66`
+- `lurek.ui.renderToImage` in `tests/lua/evidence/test_gui_evidence.lua:67`
 - `HtmlDocument:getHtml` in `tests/lua/evidence/test_html_evidence.lua:13`
 - `HtmlDocument:setCss` in `tests/lua/evidence/test_html_evidence.lua:31`
 - `HtmlDocument:relayout` in `tests/lua/evidence/test_html_evidence.lua:32`
@@ -911,38 +922,90 @@
 - `TileMap:fill` in `tests/lua/evidence/test_tilemap_evidence.lua:163`
 - `TileMap:addLayer` in `tests/lua/evidence/test_tilemap_evidence.lua:215`
 - `TileMap:getLayerName` in `tests/lua/evidence/test_tilemap_evidence.lua:216`
+- `lurek.ui.loadLayout` in `tests/lua/evidence/test_ui_evidence.lua:20`
+- `lurek.ui.renderToImage` in `tests/lua/evidence/test_ui_evidence.lua:21`
+- `lurek.ui.loadLayout` in `tests/lua/evidence/test_ui_evidence.lua:46`
+- `lurek.ui.renderToImage` in `tests/lua/evidence/test_ui_evidence.lua:47`
+- `lurek.ui.loadLayout` in `tests/lua/evidence/test_ui_evidence.lua:102`
+- `lurek.ui.renderToImage` in `tests/lua/evidence/test_ui_evidence.lua:103`
+- `lurek.ui.loadLayout` in `tests/lua/evidence/test_ui_evidence.lua:128`
+- `lurek.ui.renderToImage` in `tests/lua/evidence/test_ui_evidence.lua:129`
+- `lurek.ui.newLineChart` in `tests/lua/evidence/test_ui_evidence.lua:173`
 - `LineChart:setYMax` in `tests/lua/evidence/test_ui_evidence.lua:174`
 - `LineChart:setXMax` in `tests/lua/evidence/test_ui_evidence.lua:175`
 - `LineChart:addSeries` in `tests/lua/evidence/test_ui_evidence.lua:176`
 - `Chart:drawToImage` in `tests/lua/evidence/test_ui_evidence.lua:177`
+- `lurek.ui.newBarChart` in `tests/lua/evidence/test_ui_evidence.lua:180`
+- `lurek.ui.newScatterPlot` in `tests/lua/evidence/test_ui_evidence.lua:181`
+- `lurek.ui.newPieChart` in `tests/lua/evidence/test_ui_evidence.lua:182`
+- `lurek.ui.newAreaChart` in `tests/lua/evidence/test_ui_evidence.lua:183`
+- `lurek.ui.newBarChart` in `tests/lua/evidence/test_ui_evidence.lua:196`
 - `BarChart:addSeries` in `tests/lua/evidence/test_ui_evidence.lua:197`
 - `BarChart:addCategory` in `tests/lua/evidence/test_ui_evidence.lua:198`
 - `Chart:drawToImage` in `tests/lua/evidence/test_ui_evidence.lua:199`
+- `lurek.ui.newScatterPlot` in `tests/lua/evidence/test_ui_evidence.lua:216`
 - `ScatterPlot:setXRange` in `tests/lua/evidence/test_ui_evidence.lua:217`
 - `ScatterPlot:setYRange` in `tests/lua/evidence/test_ui_evidence.lua:218`
 - `ScatterPlot:addSeries` in `tests/lua/evidence/test_ui_evidence.lua:219`
 - `Chart:drawToImage` in `tests/lua/evidence/test_ui_evidence.lua:220`
+- `lurek.ui.newPieChart` in `tests/lua/evidence/test_ui_evidence.lua:241`
 - `PieChart:addSegment` in `tests/lua/evidence/test_ui_evidence.lua:242`
 - `Chart:drawToImage` in `tests/lua/evidence/test_ui_evidence.lua:243`
+- `lurek.ui.newAreaChart` in `tests/lua/evidence/test_ui_evidence.lua:258`
 - `AreaChart:setYMax` in `tests/lua/evidence/test_ui_evidence.lua:259`
 - `AreaChart:addLayer` in `tests/lua/evidence/test_ui_evidence.lua:260`
 - `Chart:drawToImage` in `tests/lua/evidence/test_ui_evidence.lua:261`
+- `lurek.ui.newLineChart` in `tests/lua/evidence/test_ui_evidence.lua:292`
 - `LineChart:setYMax` in `tests/lua/evidence/test_ui_evidence.lua:293`
 - `LineChart:setXMax` in `tests/lua/evidence/test_ui_evidence.lua:294`
 - `LineChart:addSeries` in `tests/lua/evidence/test_ui_evidence.lua:295`
 - `Chart:drawToImage` in `tests/lua/evidence/test_ui_evidence.lua:296`
+- `lurek.ui.newBarChart` in `tests/lua/evidence/test_ui_evidence.lua:299`
+- `lurek.ui.newScatterPlot` in `tests/lua/evidence/test_ui_evidence.lua:300`
+- `lurek.ui.newPieChart` in `tests/lua/evidence/test_ui_evidence.lua:301`
+- `lurek.ui.newAreaChart` in `tests/lua/evidence/test_ui_evidence.lua:302`
+- `lurek.ui.newBarChart` in `tests/lua/evidence/test_ui_evidence.lua:315`
 - `BarChart:addSeries` in `tests/lua/evidence/test_ui_evidence.lua:316`
 - `BarChart:addCategory` in `tests/lua/evidence/test_ui_evidence.lua:317`
 - `Chart:drawToImage` in `tests/lua/evidence/test_ui_evidence.lua:318`
+- `lurek.ui.newScatterPlot` in `tests/lua/evidence/test_ui_evidence.lua:335`
 - `ScatterPlot:setXRange` in `tests/lua/evidence/test_ui_evidence.lua:336`
 - `ScatterPlot:setYRange` in `tests/lua/evidence/test_ui_evidence.lua:337`
 - `ScatterPlot:addSeries` in `tests/lua/evidence/test_ui_evidence.lua:338`
 - `Chart:drawToImage` in `tests/lua/evidence/test_ui_evidence.lua:339`
+- `lurek.ui.newPieChart` in `tests/lua/evidence/test_ui_evidence.lua:360`
 - `PieChart:addSegment` in `tests/lua/evidence/test_ui_evidence.lua:361`
 - `Chart:drawToImage` in `tests/lua/evidence/test_ui_evidence.lua:362`
+- `lurek.ui.newAreaChart` in `tests/lua/evidence/test_ui_evidence.lua:377`
 - `AreaChart:setYMax` in `tests/lua/evidence/test_ui_evidence.lua:378`
 - `AreaChart:addLayer` in `tests/lua/evidence/test_ui_evidence.lua:379`
 - `Chart:drawToImage` in `tests/lua/evidence/test_ui_evidence.lua:380`
+- `lurek.ui.drawToImage` in `tests/lua/evidence/test_ui_evidence.lua:414`
+- `lurek.ui.getRoot` in `tests/lua/evidence/test_ui_evidence.lua:415`
+- `lurek.ui.newButton` in `tests/lua/evidence/test_ui_evidence.lua:416`
+- `lurek.ui.newLabel` in `tests/lua/evidence/test_ui_evidence.lua:417`
+- `lurek.ui.drawToImage` in `tests/lua/evidence/test_ui_evidence.lua:448`
+- `lurek.ui.getRoot` in `tests/lua/evidence/test_ui_evidence.lua:449`
+- `lurek.ui.newProgressBar` in `tests/lua/evidence/test_ui_evidence.lua:450`
+- `lurek.ui.drawToImage` in `tests/lua/evidence/test_ui_evidence.lua:484`
+- `lurek.ui.getRoot` in `tests/lua/evidence/test_ui_evidence.lua:485`
+- `lurek.ui.newButton` in `tests/lua/evidence/test_ui_evidence.lua:486`
+- `lurek.ui.newLabel` in `tests/lua/evidence/test_ui_evidence.lua:487`
+- `lurek.ui.newPanel` in `tests/lua/evidence/test_ui_evidence.lua:488`
+- `lurek.ui.newSlider` in `tests/lua/evidence/test_ui_evidence.lua:489`
+- `lurek.ui.drawToImage` in `tests/lua/evidence/test_ui_evidence.lua:545`
+- `lurek.ui.getRoot` in `tests/lua/evidence/test_ui_evidence.lua:546`
+- `lurek.ui.newButton` in `tests/lua/evidence/test_ui_evidence.lua:547`
+- `lurek.ui.newLabel` in `tests/lua/evidence/test_ui_evidence.lua:548`
+- `lurek.ui.drawToImage` in `tests/lua/evidence/test_ui_evidence.lua:579`
+- `lurek.ui.getRoot` in `tests/lua/evidence/test_ui_evidence.lua:580`
+- `lurek.ui.newProgressBar` in `tests/lua/evidence/test_ui_evidence.lua:581`
+- `lurek.ui.drawToImage` in `tests/lua/evidence/test_ui_evidence.lua:615`
+- `lurek.ui.getRoot` in `tests/lua/evidence/test_ui_evidence.lua:616`
+- `lurek.ui.newButton` in `tests/lua/evidence/test_ui_evidence.lua:617`
+- `lurek.ui.newLabel` in `tests/lua/evidence/test_ui_evidence.lua:618`
+- `lurek.ui.newPanel` in `tests/lua/evidence/test_ui_evidence.lua:619`
+- `lurek.ui.newSlider` in `tests/lua/evidence/test_ui_evidence.lua:620`
 - `lurek.ecs.Universe` in `tests/lua/integration/test_ai_ecs_scene.lua:7`
 - `lurek.ecs.Universe` in `tests/lua/integration/test_ai_ecs_scene.lua:58`
 - `lurek.compute.newBuffer` in `tests/lua/integration/test_data_compute.lua:9`
@@ -966,6 +1029,7 @@
 - `lurek.ui.setText` in `tests/lua/integration/test_i18n_ui.lua:7`
 - `lurek.i18n.load` in `tests/lua/integration/test_i18n_ui.lua:8`
 - `lurek.i18n.setLocale` in `tests/lua/integration/test_i18n_ui.lua:9`
+- `lurek.ui.newLabel` in `tests/lua/integration/test_i18n_ui.lua:10`
 - `lurek.i18n.setLocale` in `tests/lua/integration/test_i18n_ui.lua:37`
 - `lurek.ui.setText` in `tests/lua/integration/test_i18n_ui.lua:38`
 - `lurek.i18n.get` in `tests/lua/integration/test_i18n_ui.lua:59`

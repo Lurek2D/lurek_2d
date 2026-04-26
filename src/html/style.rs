@@ -19,12 +19,14 @@ pub(crate) struct CssRule {
     pub(crate) order: usize,
 }
 
+/// Output of [`parse_declarations`] — a property map and any parse warnings.
 #[derive(Clone, Debug, Default)]
 pub(crate) struct CssParseResult {
     pub(crate) declarations: BTreeMap<String, String>,
     pub(crate) warnings: Vec<String>,
 }
 
+/// Parses multiple stylesheet source strings into a flat list of [`CssRule`]s and any warnings.
 pub(crate) fn parse_stylesheets(sources: &[String]) -> (Vec<CssRule>, Vec<String>) {
     let mut rules = Vec::new();
     let mut warnings = Vec::new();
@@ -51,6 +53,7 @@ pub(crate) fn parse_stylesheets(sources: &[String]) -> (Vec<CssRule>, Vec<String
     (rules, warnings)
 }
 
+/// Parses a single CSS declaration block (e.g. `"color: red; margin: 0"`) into a [`CssParseResult`].
 pub(crate) fn parse_declarations(source: &str) -> CssParseResult {
     let mut result = CssParseResult::default();
     for declaration in source.split(';') {
@@ -73,6 +76,7 @@ pub(crate) fn parse_declarations(source: &str) -> CssParseResult {
     result
 }
 
+/// Parses a CSS length value (`px`, `%` relative to `basis`, or bare `f32`). Returns `None` for unparseable values.
 pub(crate) fn parse_length(value: Option<&str>, basis: f32) -> Option<f32> {
     let value = value?.trim();
     if value == "0" {

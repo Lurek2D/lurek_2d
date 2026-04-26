@@ -905,9 +905,7 @@ impl LuaUserData for LuaNode {
         /// @param in_count integer?
         /// @param out_count integer?
         /// @return nil
-        methods.add_method(
-            "setConversion",
-            |_,
+        methods.add_method("setConversion", |_,
              this,
              (in_type, out_type, in_count, out_count): (
                 String,
@@ -1009,9 +1007,7 @@ impl LuaUserData for LuaNode {
         /// @param item_type string
         /// @param quantity integer
         /// @return nil
-        methods.add_method(
-            "addSupply",
-            |_, this, (item_type, quantity): (String, i32)| {
+        methods.add_method("addSupply", |_, this, (item_type, quantity): (String, i32)| {
                 with_node_mut!(this, g, node, {
                     node.add_supply(&item_type, quantity);
                     Ok(())
@@ -1043,9 +1039,7 @@ impl LuaUserData for LuaNode {
         /// @param quantity integer
         /// @param priority integer?
         /// @return nil
-        methods.add_method(
-            "addDemand",
-            |_, this, (item_type, quantity, priority): (String, i32, Option<i32>)| {
+        methods.add_method("addDemand", |_, this, (item_type, quantity, priority): (String, i32, Option<i32>)| {
                 let p = priority.unwrap_or(0);
                 with_node_mut!(this, g, node, {
                     node.add_demand(&item_type, quantity, p);
@@ -1140,9 +1134,7 @@ impl LuaUserData for LuaGraph {
         /// @param node_type string?
         /// @param capacity integer?
         /// @return Node
-        methods.add_method(
-            "addNode",
-            |_, this, (node_type, capacity): (Option<String>, Option<i32>)| {
+        methods.add_method("addNode", |_, this, (node_type, capacity): (Option<String>, Option<i32>)| {
                 let t = node_type.as_deref().unwrap_or("default");
                 let c = capacity.unwrap_or(-1);
                 let id = this.inner.borrow_mut().add_node(t, c);
@@ -1205,9 +1197,7 @@ impl LuaUserData for LuaGraph {
         /// @param to_ud Node
         /// @param edge_type string?
         /// @return Edge
-        methods.add_method(
-            "addEdge",
-            |_, this, (from_ud, to_ud, edge_type): (LuaAnyUserData, LuaAnyUserData, Option<String>)| {
+        methods.add_method("addEdge", |_, this, (from_ud, to_ud, edge_type): (LuaAnyUserData, LuaAnyUserData, Option<String>)| {
                 let from = from_ud.borrow::<LuaNode>()?;
                 let to = to_ud.borrow::<LuaNode>()?;
                 let id = this
@@ -1272,9 +1262,7 @@ impl LuaUserData for LuaGraph {
         /// @param to_ud Node
         /// @return nil
         /// Edge?
-        methods.add_method(
-            "getEdgeBetween",
-            |_, this, (from_ud, to_ud): (LuaAnyUserData, LuaAnyUserData)| {
+        methods.add_method("getEdgeBetween", |_, this, (from_ud, to_ud): (LuaAnyUserData, LuaAnyUserData)| {
                 let from = from_ud.borrow::<LuaNode>()?;
                 let to = to_ud.borrow::<LuaNode>()?;
                 let graph = this.inner.borrow();
@@ -1295,9 +1283,7 @@ impl LuaUserData for LuaGraph {
         /// @param item_type string?
         /// @param decay_time number?
         /// @return GraphItem
-        methods.add_method(
-            "createItem",
-            |_, this, (item_type, decay_time): (Option<String>, Option<f64>)| {
+        methods.add_method("createItem", |_, this, (item_type, decay_time): (Option<String>, Option<f64>)| {
                 let t = item_type.as_deref().unwrap_or("default");
                 let d = decay_time.unwrap_or(-1.0);
                 let id = this.inner.borrow_mut().create_item(t, d);
@@ -1313,9 +1299,7 @@ impl LuaUserData for LuaGraph {
         /// @param item_ud GraphItem
         /// @param node_ud Node
         /// @return boolean
-        methods.add_method(
-            "addItem",
-            |_, this, (item_ud, node_ud): (LuaAnyUserData, LuaAnyUserData)| {
+        methods.add_method("addItem", |_, this, (item_ud, node_ud): (LuaAnyUserData, LuaAnyUserData)| {
                 let item = item_ud.borrow::<LuaGraphItem>()?;
                 let node = node_ud.borrow::<LuaNode>()?;
                 this.inner
@@ -1374,9 +1358,7 @@ impl LuaUserData for LuaGraph {
         /// @param item_ud GraphItem
         /// @param edge_ud Edge
         /// @return boolean
-        methods.add_method(
-            "sendItem",
-            |_, this, (item_ud, edge_ud): (LuaAnyUserData, LuaAnyUserData)| {
+        methods.add_method("sendItem", |_, this, (item_ud, edge_ud): (LuaAnyUserData, LuaAnyUserData)| {
                 let item = item_ud.borrow::<LuaGraphItem>()?;
                 let edge = edge_ud.borrow::<LuaEdge>()?;
                 this.inner
@@ -1435,9 +1417,7 @@ impl LuaUserData for LuaGraph {
         /// @param from_ud Node
         /// @param to_ud Node
         /// @return table?
-        methods.add_method(
-            "findPath",
-            |lua, this, (from_ud, to_ud): (LuaAnyUserData, LuaAnyUserData)| {
+        methods.add_method("findPath", |lua, this, (from_ud, to_ud): (LuaAnyUserData, LuaAnyUserData)| {
                 let from = from_ud.borrow::<LuaNode>()?;
                 let to = to_ud.borrow::<LuaNode>()?;
                 let graph = this.inner.borrow();
@@ -1455,9 +1435,7 @@ impl LuaUserData for LuaGraph {
         /// @param from_ud Node
         /// @param to_ud Node
         /// @return table?
-        methods.add_method(
-            "findPathForItem",
-            |lua, this, (item_ud, from_ud, to_ud): (LuaAnyUserData, LuaAnyUserData, LuaAnyUserData)| {
+        methods.add_method("findPathForItem", |lua, this, (item_ud, from_ud, to_ud): (LuaAnyUserData, LuaAnyUserData, LuaAnyUserData)| {
                 let item = item_ud.borrow::<LuaGraphItem>()?;
                 let from = from_ud.borrow::<LuaNode>()?;
                 let to = to_ud.borrow::<LuaNode>()?;
@@ -1474,9 +1452,7 @@ impl LuaUserData for LuaGraph {
         /// @param from_ud Node
         /// @param to_ud Node
         /// @return number?
-        methods.add_method(
-            "getDistance",
-            |_, this, (from_ud, to_ud): (LuaAnyUserData, LuaAnyUserData)| {
+        methods.add_method("getDistance", |_, this, (from_ud, to_ud): (LuaAnyUserData, LuaAnyUserData)| {
                 let from = from_ud.borrow::<LuaNode>()?;
                 let to = to_ud.borrow::<LuaNode>()?;
                 Ok(this.inner.borrow().get_distance(from.id, to.id))
@@ -1488,9 +1464,7 @@ impl LuaUserData for LuaGraph {
         /// @param from_ud Node
         /// @param max_dist number?
         /// @return table
-        methods.add_method(
-            "getReachable",
-            |lua, this, (from_ud, max_dist): (LuaAnyUserData, Option<f64>)| {
+        methods.add_method("getReachable", |lua, this, (from_ud, max_dist): (LuaAnyUserData, Option<f64>)| {
                 let from = from_ud.borrow::<LuaNode>()?;
                 let ids = this.inner.borrow().get_reachable(from.id, max_dist);
                 let table = lua.create_table()?;
@@ -1621,9 +1595,7 @@ impl LuaUserData for LuaGraph {
         /// @param from_node Node
         /// @param to_node Node
         /// @return table?
-        methods.add_method(
-            "astar",
-            |lua, this, (from_node, to_node): (LuaAnyUserData, LuaAnyUserData)| {
+        methods.add_method("astar", |lua, this, (from_node, to_node): (LuaAnyUserData, LuaAnyUserData)| {
                 let from_id = from_node.borrow::<LuaNode>()?.id;
                 let to_id = to_node.borrow::<LuaNode>()?.id;
                 let positions = HashMap::new();
@@ -1685,9 +1657,7 @@ impl LuaUserData for LuaGraph {
         /// @param event_name string
         /// @param func function
         /// @return nil
-        methods.add_method(
-            "on",
-            |lua, this, (event_name, func): (String, LuaFunction)| {
+        methods.add_method("on", |lua, this, (event_name, func): (String, LuaFunction)| {
                 if !VALID_EVENTS.contains(&event_name.as_str()) {
                     return Err(LuaError::RuntimeError(format!(
                         "unknown graph event: '{}'. Valid events: {}",
@@ -1914,9 +1884,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// Creates a new empty directed graph for item flow simulation.
     /// @param opts? table
     /// @return Graph
-    tbl.set(
-        "newGraph",
-        lua.create_function(|_, ()| {
+    tbl.set("newGraph", lua.create_function(|_, ()| {
             Ok(LuaGraph {
                 inner: Rc::new(RefCell::new(Graph::new())),
                 callbacks: Rc::new(RefCell::new(HashMap::new())),
