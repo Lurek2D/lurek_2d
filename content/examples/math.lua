@@ -2067,184 +2067,164 @@ end
 -- ---- Stub: LAabbTree:type ------------------------------------------------
 --@api-stub: LAabbTree:type
 -- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAabbTree_stub:type()  -- -> string
--- (replace lAabbTree_stub with your real LAabbTree instance above)
-
--- ---- Stub: LAabbTree:typeOf ----------------------------------------------
+-- Useful for runtime type inspection.
+do  -- LAabbTree:type
+  local aabb_tree_obj = lurek.math.aabbTree()
+  local t = aabb_tree_obj:type()
+  lurek.log.info("LAabbTree:type = " .. t, "math")
+end
 --@api-stub: LAabbTree:typeOf
 -- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAabbTree_stub:typeOf("hero")  -- -> boolean
--- (replace lAabbTree_stub with your real LAabbTree instance above)
-
--- -----------------------------------------------------------------------------
--- LBezierCurve methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LBezierCurve:type ---------------------------------------------
+-- Use for runtime type checks.
+do  -- LAabbTree:typeOf
+  local aabb_tree_obj = lurek.math.aabbTree()
+  lurek.log.info("is LAabbTree: " .. tostring(aabb_tree_obj:typeOf("LAabbTree")), "math")
+  lurek.log.info("is wrong: " .. tostring(aabb_tree_obj:typeOf("Unknown")), "math")
+end
 --@api-stub: LBezierCurve:type
 -- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBezierCurve_stub:type()  -- -> string
--- (replace lBezierCurve_stub with your real LBezierCurve instance above)
-
--- ---- Stub: LBezierCurve:typeOf -------------------------------------------
+-- Useful for runtime type inspection.
+do  -- LBezierCurve:type
+  local bezier_curve_obj = lurek.math.newBezierCurve(nil)
+  local t = bezier_curve_obj:type()
+  lurek.log.info("LBezierCurve:type = " .. t, "math")
+end
 --@api-stub: LBezierCurve:typeOf
 -- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBezierCurve_stub:typeOf("hero")  -- -> boolean
--- (replace lBezierCurve_stub with your real LBezierCurve instance above)
-
--- -----------------------------------------------------------------------------
--- LCatmullRom methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LCatmullRom:type ----------------------------------------------
+-- Use for runtime type checks.
+do  -- LBezierCurve:typeOf
+  local bezier_curve_obj = lurek.math.newBezierCurve(nil)
+  lurek.log.info("is LBezierCurve: " .. tostring(bezier_curve_obj:typeOf("LBezierCurve")), "math")
+  lurek.log.info("is wrong: " .. tostring(bezier_curve_obj:typeOf("Unknown")), "math")
+end
 --@api-stub: LCatmullRom:type
 -- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lCatmullRom_stub:type()  -- -> string
--- (replace lCatmullRom_stub with your real LCatmullRom instance above)
-
--- ---- Stub: LCatmullRom:typeOf --------------------------------------------
+-- Useful for runtime type inspection.
+do  -- LCatmullRom:type
+  local catmull_rom_obj = lurek.math.catmullRom(nil)
+  local t = catmull_rom_obj:type()
+  lurek.log.info("LCatmullRom:type = " .. t, "math")
+end
 --@api-stub: LCatmullRom:typeOf
 -- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lCatmullRom_stub:typeOf("hero")  -- -> boolean
--- (replace lCatmullRom_stub with your real LCatmullRom instance above)
-
--- -----------------------------------------------------------------------------
--- LCircle methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LCircle:type --------------------------------------------------
+-- Use for runtime type checks.
+do  -- LCatmullRom:typeOf
+  local catmull_rom_obj = lurek.math.catmullRom(nil)
+  lurek.log.info("is LCatmullRom: " .. tostring(catmull_rom_obj:typeOf("LCatmullRom")), "math")
+  lurek.log.info("is wrong: " .. tostring(catmull_rom_obj:typeOf("Unknown")), "math")
+end
 --@api-stub: LCircle:type
 -- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lCircle_stub:type()  -- -> string
--- (replace lCircle_stub with your real LCircle instance above)
-
--- ---- Stub: LCircle:typeOf ------------------------------------------------
+-- Useful for runtime type inspection.
+do  -- LCircle:type
+  local circle_obj = lurek.math.newCircle(0, 0, nil)
+  local t = circle_obj:type()
+  lurek.log.info("LCircle:type = " .. t, "math")
+end
 --@api-stub: LCircle:typeOf
 -- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lCircle_stub:typeOf("hero")  -- -> boolean
--- (replace lCircle_stub with your real LCircle instance above)
-
--- -----------------------------------------------------------------------------
--- LHermite methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LHermite:type -------------------------------------------------
+-- Use for runtime type checks.
+do  -- LCircle:typeOf
+  local circle_obj = lurek.math.newCircle(0, 0, nil)
+  lurek.log.info("is LCircle: " .. tostring(circle_obj:typeOf("LCircle")), "math")
+  lurek.log.info("is wrong: " .. tostring(circle_obj:typeOf("Unknown")), "math")
+end
 --@api-stub: LHermite:type
 -- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lHermite_stub:type()  -- -> string
--- (replace lHermite_stub with your real LHermite instance above)
-
--- ---- Stub: LHermite:typeOf -----------------------------------------------
+-- Useful for runtime type inspection.
+do  -- LHermite:type
+  local hermite_obj = lurek.math.hermite(nil, nil, nil, nil, nil, nil, nil, nil)
+  local t = hermite_obj:type()
+  lurek.log.info("LHermite:type = " .. t, "math")
+end
 --@api-stub: LHermite:typeOf
 -- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lHermite_stub:typeOf("hero")  -- -> boolean
--- (replace lHermite_stub with your real LHermite instance above)
-
--- -----------------------------------------------------------------------------
--- LNoiseGenerator methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LNoiseGenerator:type ------------------------------------------
+-- Use for runtime type checks.
+do  -- LHermite:typeOf
+  local hermite_obj = lurek.math.hermite(nil, nil, nil, nil, nil, nil, nil, nil)
+  lurek.log.info("is LHermite: " .. tostring(hermite_obj:typeOf("LHermite")), "math")
+  lurek.log.info("is wrong: " .. tostring(hermite_obj:typeOf("Unknown")), "math")
+end
 --@api-stub: LNoiseGenerator:type
 -- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lNoiseGenerator_stub:type()  -- -> string
--- (replace lNoiseGenerator_stub with your real LNoiseGenerator instance above)
-
--- ---- Stub: LNoiseGenerator:typeOf ----------------------------------------
+-- Useful for runtime type inspection.
+do  -- LNoiseGenerator:type
+  local noise_generator_obj = lurek.math.newNoiseGenerator(42)
+  local t = noise_generator_obj:type()
+  lurek.log.info("LNoiseGenerator:type = " .. t, "math")
+end
 --@api-stub: LNoiseGenerator:typeOf
 -- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lNoiseGenerator_stub:typeOf("hero")  -- -> boolean
--- (replace lNoiseGenerator_stub with your real LNoiseGenerator instance above)
-
--- -----------------------------------------------------------------------------
--- LRandomGenerator methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LRandomGenerator:type -----------------------------------------
+-- Use for runtime type checks.
+do  -- LNoiseGenerator:typeOf
+  local noise_generator_obj = lurek.math.newNoiseGenerator(42)
+  lurek.log.info("is LNoiseGenerator: " .. tostring(noise_generator_obj:typeOf("LNoiseGenerator")), "math")
+  lurek.log.info("is wrong: " .. tostring(noise_generator_obj:typeOf("Unknown")), "math")
+end
 --@api-stub: LRandomGenerator:type
 -- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lRandomGenerator_stub:type()  -- -> string
--- (replace lRandomGenerator_stub with your real LRandomGenerator instance above)
-
--- ---- Stub: LRandomGenerator:typeOf ---------------------------------------
+-- Useful for runtime type inspection.
+do  -- LRandomGenerator:type
+  local random_generator_obj = lurek.math.newRandomGenerator(42)
+  local t = random_generator_obj:type()
+  lurek.log.info("LRandomGenerator:type = " .. t, "math")
+end
 --@api-stub: LRandomGenerator:typeOf
 -- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lRandomGenerator_stub:typeOf("hero")  -- -> boolean
--- (replace lRandomGenerator_stub with your real LRandomGenerator instance above)
-
--- -----------------------------------------------------------------------------
--- LSpatialHash methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LSpatialHash:type ---------------------------------------------
+-- Use for runtime type checks.
+do  -- LRandomGenerator:typeOf
+  local random_generator_obj = lurek.math.newRandomGenerator(42)
+  lurek.log.info("is LRandomGenerator: " .. tostring(random_generator_obj:typeOf("LRandomGenerator")), "math")
+  lurek.log.info("is wrong: " .. tostring(random_generator_obj:typeOf("Unknown")), "math")
+end
 --@api-stub: LSpatialHash:type
 -- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSpatialHash_stub:type()  -- -> string
--- (replace lSpatialHash_stub with your real LSpatialHash instance above)
-
--- ---- Stub: LSpatialHash:typeOf -------------------------------------------
+-- Useful for runtime type inspection.
+do  -- LSpatialHash:type
+  local spatial_hash_obj = lurek.math.newSpatialHash(nil)
+  local t = spatial_hash_obj:type()
+  lurek.log.info("LSpatialHash:type = " .. t, "math")
+end
 --@api-stub: LSpatialHash:typeOf
 -- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSpatialHash_stub:typeOf("hero")  -- -> boolean
--- (replace lSpatialHash_stub with your real LSpatialHash instance above)
-
--- -----------------------------------------------------------------------------
--- LTransform methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LTransform:type -----------------------------------------------
+-- Use for runtime type checks.
+do  -- LSpatialHash:typeOf
+  local spatial_hash_obj = lurek.math.newSpatialHash(nil)
+  lurek.log.info("is LSpatialHash: " .. tostring(spatial_hash_obj:typeOf("LSpatialHash")), "math")
+  lurek.log.info("is wrong: " .. tostring(spatial_hash_obj:typeOf("Unknown")), "math")
+end
 --@api-stub: LTransform:type
 -- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTransform_stub:type()  -- -> string
--- (replace lTransform_stub with your real LTransform instance above)
-
--- ---- Stub: LTransform:typeOf ---------------------------------------------
+-- Useful for runtime type inspection.
+do  -- LTransform:type
+  local transform_obj = lurek.math.newTransform()
+  local t = transform_obj:type()
+  lurek.log.info("LTransform:type = " .. t, "math")
+end
 --@api-stub: LTransform:typeOf
 -- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTransform_stub:typeOf("hero")  -- -> boolean
--- (replace lTransform_stub with your real LTransform instance above)
-
--- -----------------------------------------------------------------------------
--- LTween methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LTween:type ---------------------------------------------------
+-- Use for runtime type checks.
+do  -- LTransform:typeOf
+  local transform_obj = lurek.math.newTransform()
+  lurek.log.info("is LTransform: " .. tostring(transform_obj:typeOf("LTransform")), "math")
+  lurek.log.info("is wrong: " .. tostring(transform_obj:typeOf("Unknown")), "math")
+end
 --@api-stub: LTween:type
 -- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTween_stub:type()  -- -> string
--- (replace lTween_stub with your real LTween instance above)
-
--- ---- Stub: LTween:typeOf -------------------------------------------------
+-- Useful for runtime type inspection.
+do  -- LTween:type
+  local tween_obj = lurek.tween.tween()
+  local t = tween_obj:type()
+  lurek.log.info("LTween:type = " .. t, "math")
+end
 --@api-stub: LTween:typeOf
 -- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTween_stub:typeOf("hero")  -- -> boolean
--- (replace lTween_stub with your real LTween instance above)
-
--- -----------------------------------------------------------------------------
--- LVec2 methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LVec2:fromAngle -----------------------------------------------
+-- Use for runtime type checks.
+do  -- LTween:typeOf
+  local tween_obj = lurek.tween.tween()
+  lurek.log.info("is LTween: " .. tostring(tween_obj:typeOf("LTween")), "math")
+  lurek.log.info("is wrong: " .. tostring(tween_obj:typeOf("Unknown")), "math")
+end
 --@api-stub: LVec2:fromAngle
 -- Creates a unit vector from an angle in radians.
 -- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
@@ -2254,22 +2234,20 @@ end
 -- ---- Stub: LVec2:type ----------------------------------------------------
 --@api-stub: LVec2:type
 -- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lVec2_stub:type()  -- -> string
--- (replace lVec2_stub with your real LVec2 instance above)
-
--- ---- Stub: LVec2:typeOf --------------------------------------------------
+-- Useful for runtime type inspection.
+do  -- LVec2:type
+  local vec2_obj = lurek.math.vec2(0, 0)
+  local t = vec2_obj:type()
+  lurek.log.info("LVec2:type = " .. t, "math")
+end
 --@api-stub: LVec2:typeOf
 -- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lVec2_stub:typeOf("hero")  -- -> boolean
--- (replace lVec2_stub with your real LVec2 instance above)
-
--- -----------------------------------------------------------------------------
--- LVec3 methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LVec3:splat ---------------------------------------------------
+-- Use for runtime type checks.
+do  -- LVec2:typeOf
+  local vec2_obj = lurek.math.vec2(0, 0)
+  lurek.log.info("is LVec2: " .. tostring(vec2_obj:typeOf("LVec2")), "math")
+  lurek.log.info("is wrong: " .. tostring(vec2_obj:typeOf("Unknown")), "math")
+end
 --@api-stub: LVec3:splat
 -- Creates a Vec3 with all components set to `v`.
 -- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
@@ -2279,21 +2257,21 @@ end
 -- ---- Stub: LVec3:type ----------------------------------------------------
 --@api-stub: LVec3:type
 -- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lVec3_stub:type()  -- -> string
--- (replace lVec3_stub with your real LVec3 instance above)
-
--- ---- Stub: LVec3:typeOf --------------------------------------------------
+-- Useful for runtime type inspection.
+do  -- LVec3:type
+  local vec3_obj = lurek.math.vec3(0, 0, 0)
+  local t = vec3_obj:type()
+  lurek.log.info("LVec3:type = " .. t, "math")
+end
 --@api-stub: LVec3:typeOf
 -- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lVec3_stub:typeOf("hero")  -- -> boolean
--- (replace lVec3_stub with your real LVec3 instance above)
-
--- =============================================================================
--- STUBS: 117 uncovered lurek.math API item(s)
--- Generated by tools/audit/example_add_missing.py
--- REQUIRED: replace every --@api-stub: block below with a real scenario.
+-- Use for runtime type checks.
+do  -- LVec3:typeOf
+  local vec3_obj = lurek.math.vec3(0, 0, 0)
+  lurek.log.info("is LVec3: " .. tostring(vec3_obj:typeOf("LVec3")), "math")
+  lurek.log.info("is wrong: " .. tostring(vec3_obj:typeOf("Unknown")), "math")
+end
+--@api-stub: block below with a real scenario.
 -- Run .github/prompts/flesh-out-example.prompt.md for instructions.
 -- The final committed file must contain ZERO --@api-stub: lines.
 -- =============================================================================

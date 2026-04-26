@@ -1670,13 +1670,17 @@ end
 -- ---- Stub: LScreenTransition:type ----------------------------------------
 --@api-stub: LScreenTransition:type
 -- Returns the type name of this object ("ScreenTransition").
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lScreenTransition_stub:type()  -- -> string
--- (replace lScreenTransition_stub with your real LScreenTransition instance above)
-
--- ---- Stub: LScreenTransition:typeOf --------------------------------------
+-- Useful for runtime type inspection.
+do  -- LScreenTransition:type
+  local screen_transition_obj = lurek.effect.newTransition(nil, nil, nil)
+  local t = screen_transition_obj:type()
+  lurek.log.info("LScreenTransition:type = " .. t, "effect")
+end
 --@api-stub: LScreenTransition:typeOf
 -- Returns true if this object is of the given type name or a parent type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lScreenTransition_stub:typeOf("hero")  -- -> boolean
--- (replace lScreenTransition_stub with your real LScreenTransition instance above)
+-- Use for runtime type checks.
+do  -- LScreenTransition:typeOf
+  local screen_transition_obj = lurek.effect.newTransition(nil, nil, nil)
+  lurek.log.info("is LScreenTransition: " .. tostring(screen_transition_obj:typeOf("LScreenTransition")), "effect")
+  lurek.log.info("is wrong: " .. tostring(screen_transition_obj:typeOf("Unknown")), "effect")
+end

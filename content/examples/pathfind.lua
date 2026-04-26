@@ -1011,33 +1011,33 @@ end
 -- ---- Stub: LHexGrid:type -------------------------------------------------
 --@api-stub: LHexGrid:type
 -- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lHexGrid_stub:type()  -- -> string
--- (replace lHexGrid_stub with your real LHexGrid instance above)
-
--- ---- Stub: LHexGrid:typeOf -----------------------------------------------
+-- Useful for runtime type inspection.
+do  -- LHexGrid:type
+  local hex_grid_obj = lurek.pathfind.newHexGrid(32, 32, nil)
+  local t = hex_grid_obj:type()
+  lurek.log.info("LHexGrid:type = " .. t, "pathfind")
+end
 --@api-stub: LHexGrid:typeOf
 -- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lHexGrid_stub:typeOf("hero")  -- -> boolean
--- (replace lHexGrid_stub with your real LHexGrid instance above)
-
--- -----------------------------------------------------------------------------
--- LJpsGrid methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LJpsGrid:type -------------------------------------------------
+-- Use for runtime type checks.
+do  -- LHexGrid:typeOf
+  local hex_grid_obj = lurek.pathfind.newHexGrid(32, 32, nil)
+  lurek.log.info("is LHexGrid: " .. tostring(hex_grid_obj:typeOf("LHexGrid")), "pathfind")
+  lurek.log.info("is wrong: " .. tostring(hex_grid_obj:typeOf("Unknown")), "pathfind")
+end
 --@api-stub: LJpsGrid:type
 -- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lJpsGrid_stub:type()  -- -> string
--- (replace lJpsGrid_stub with your real LJpsGrid instance above)
-
--- ---- Stub: LJpsGrid:typeOf -----------------------------------------------
+-- Useful for runtime type inspection.
+do  -- LJpsGrid:type
+  local jps_grid_obj = lurek.pathfind.newJpsGrid(32, 32)
+  local t = jps_grid_obj:type()
+  lurek.log.info("LJpsGrid:type = " .. t, "pathfind")
+end
 --@api-stub: LJpsGrid:typeOf
 -- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lJpsGrid_stub:typeOf("hero")  -- -> boolean
--- (replace lJpsGrid_stub with your real LJpsGrid instance above)
-
-
+-- Use for runtime type checks.
+do  -- LJpsGrid:typeOf
+  local jps_grid_obj = lurek.pathfind.newJpsGrid(32, 32)
+  lurek.log.info("is LJpsGrid: " .. tostring(jps_grid_obj:typeOf("LJpsGrid")), "pathfind")
+  lurek.log.info("is wrong: " .. tostring(jps_grid_obj:typeOf("Unknown")), "pathfind")
+end

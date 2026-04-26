@@ -1048,13 +1048,19 @@ end
 -- ---- Stub: LTrail:type ---------------------------------------------------
 --@api-stub: LTrail:type
 -- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
 -- lTrail_stub:type()  -- -> string
--- (replace lTrail_stub with your real LTrail instance above)
-
--- ---- Stub: LTrail:typeOf -------------------------------------------------
+-- Useful for runtime type inspection and debug logging.
+do  -- LTrail:type
+  local trail = lurek.particle.newTrail(0.4, 8.0)
+  local t = trail:type()
+  lurek.log.info("LTrail:type = " .. t, "particle")
+end
 --@api-stub: LTrail:typeOf
 -- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
 -- lTrail_stub:typeOf("hero")  -- -> boolean
--- (replace lTrail_stub with your real LTrail instance above)
+-- Use for runtime polymorphism and defensive checks.
+do  -- LTrail:typeOf
+  local trail = lurek.particle.newTrail(0.4, 8.0)
+  lurek.log.info("is LTrail: " .. tostring(trail:typeOf("LTrail")), "particle")
+  lurek.log.info("is unknown: " .. tostring(trail:typeOf("Unknown")), "particle")
+end

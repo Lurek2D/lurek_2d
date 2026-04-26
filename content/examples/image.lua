@@ -990,22 +990,20 @@ lurek.image.newProvinceGrid(filename)  -- -> ProvinceGrid
 -- ---- Stub: LCompressedImageData:type -------------------------------------
 --@api-stub: LCompressedImageData:type
 -- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lCompressedImageData_stub:type()  -- -> string
--- (replace lCompressedImageData_stub with your real LCompressedImageData instance above)
-
--- ---- Stub: LCompressedImageData:typeOf -----------------------------------
+-- Useful for runtime type inspection.
+do  -- LCompressedImageData:type
+  local compressed_image_data_obj = lurek.image.newCompressedData(nil)
+  local t = compressed_image_data_obj:type()
+  lurek.log.info("LCompressedImageData:type = " .. t, "image")
+end
 --@api-stub: LCompressedImageData:typeOf
 -- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lCompressedImageData_stub:typeOf("hero")  -- -> boolean
--- (replace lCompressedImageData_stub with your real LCompressedImageData instance above)
-
--- -----------------------------------------------------------------------------
--- LImageData methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LImageData:getWidth -------------------------------------------
+-- Use for runtime type checks.
+do  -- LCompressedImageData:typeOf
+  local compressed_image_data_obj = lurek.image.newCompressedData(nil)
+  lurek.log.info("is LCompressedImageData: " .. tostring(compressed_image_data_obj:typeOf("LCompressedImageData")), "image")
+  lurek.log.info("is wrong: " .. tostring(compressed_image_data_obj:typeOf("Unknown")), "image")
+end
 --@api-stub: LImageData:getWidth
 -- Returns the width of the image in pixels.
 -- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
@@ -1411,49 +1409,49 @@ lurek.image.newProvinceGrid(filename)  -- -> ProvinceGrid
 -- ---- Stub: LLayeredImage:type --------------------------------------------
 --@api-stub: LLayeredImage:type
 -- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lLayeredImage_stub:type()  -- -> string
--- (replace lLayeredImage_stub with your real LLayeredImage instance above)
-
--- ---- Stub: LLayeredImage:typeOf ------------------------------------------
+-- Useful for runtime type inspection.
+do  -- LLayeredImage:type
+  local layered_image_obj = lurek.image.newLayeredImage(32, 32)
+  local t = layered_image_obj:type()
+  lurek.log.info("LLayeredImage:type = " .. t, "image")
+end
 --@api-stub: LLayeredImage:typeOf
 -- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lLayeredImage_stub:typeOf("hero")  -- -> boolean
--- (replace lLayeredImage_stub with your real LLayeredImage instance above)
-
--- -----------------------------------------------------------------------------
--- LPaletteLUT methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LPaletteLUT:type ----------------------------------------------
+-- Use for runtime type checks.
+do  -- LLayeredImage:typeOf
+  local layered_image_obj = lurek.image.newLayeredImage(32, 32)
+  lurek.log.info("is LLayeredImage: " .. tostring(layered_image_obj:typeOf("LLayeredImage")), "image")
+  lurek.log.info("is wrong: " .. tostring(layered_image_obj:typeOf("Unknown")), "image")
+end
 --@api-stub: LPaletteLUT:type
 -- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lPaletteLUT_stub:type()  -- -> string
--- (replace lPaletteLUT_stub with your real LPaletteLUT instance above)
-
--- ---- Stub: LPaletteLUT:typeOf --------------------------------------------
+-- Useful for runtime type inspection.
+do  -- LPaletteLUT:type
+  local palette_l_u_t_obj = lurek.image.newPaletteLut()
+  local t = palette_l_u_t_obj:type()
+  lurek.log.info("LPaletteLUT:type = " .. t, "image")
+end
 --@api-stub: LPaletteLUT:typeOf
 -- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lPaletteLUT_stub:typeOf("hero")  -- -> boolean
--- (replace lPaletteLUT_stub with your real LPaletteLUT instance above)
-
--- -----------------------------------------------------------------------------
--- LProvinceGrid methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LProvinceGrid:type --------------------------------------------
+-- Use for runtime type checks.
+do  -- LPaletteLUT:typeOf
+  local palette_l_u_t_obj = lurek.image.newPaletteLut()
+  lurek.log.info("is LPaletteLUT: " .. tostring(palette_l_u_t_obj:typeOf("LPaletteLUT")), "image")
+  lurek.log.info("is wrong: " .. tostring(palette_l_u_t_obj:typeOf("Unknown")), "image")
+end
 --@api-stub: LProvinceGrid:type
 -- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lProvinceGrid_stub:type()  -- -> string
--- (replace lProvinceGrid_stub with your real LProvinceGrid instance above)
-
--- ---- Stub: LProvinceGrid:typeOf ------------------------------------------
+-- Useful for runtime type inspection.
+do  -- LProvinceGrid:type
+  local province_grid_obj = lurek.image.newProvinceGrid(nil)
+  local t = province_grid_obj:type()
+  lurek.log.info("LProvinceGrid:type = " .. t, "image")
+end
 --@api-stub: LProvinceGrid:typeOf
 -- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lProvinceGrid_stub:typeOf("hero")  -- -> boolean
--- (replace lProvinceGrid_stub with your real LProvinceGrid instance above)
+-- Use for runtime type checks.
+do  -- LProvinceGrid:typeOf
+  local province_grid_obj = lurek.image.newProvinceGrid(nil)
+  lurek.log.info("is LProvinceGrid: " .. tostring(province_grid_obj:typeOf("LProvinceGrid")), "image")
+  lurek.log.info("is wrong: " .. tostring(province_grid_obj:typeOf("Unknown")), "image")
+end

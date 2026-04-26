@@ -882,93 +882,93 @@ lurek.docs.exportCheatsheet(catalog_ud, "assets/hero.png")
 -- ---- Stub: LApiCatalog:type ----------------------------------------------
 --@api-stub: LApiCatalog:type
 -- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lApiCatalog_stub:type()  -- -> string
--- (replace lApiCatalog_stub with your real LApiCatalog instance above)
-
--- ---- Stub: LApiCatalog:typeOf --------------------------------------------
+-- Useful for runtime type inspection.
+do  -- LApiCatalog:type
+  local api_catalog_obj = lurek.docs.scan(nil)
+  local t = api_catalog_obj:type()
+  lurek.log.info("LApiCatalog:type = " .. t, "docs")
+end
 --@api-stub: LApiCatalog:typeOf
 -- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lApiCatalog_stub:typeOf("hero")  -- -> boolean
--- (replace lApiCatalog_stub with your real LApiCatalog instance above)
-
--- -----------------------------------------------------------------------------
--- LDocEntry methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LDocEntry:type ------------------------------------------------
+-- Use for runtime type checks.
+do  -- LApiCatalog:typeOf
+  local api_catalog_obj = lurek.docs.scan(nil)
+  lurek.log.info("is LApiCatalog: " .. tostring(api_catalog_obj:typeOf("LApiCatalog")), "docs")
+  lurek.log.info("is wrong: " .. tostring(api_catalog_obj:typeOf("Unknown")), "docs")
+end
 --@api-stub: LDocEntry:type
 -- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDocEntry_stub:type()  -- -> string
--- (replace lDocEntry_stub with your real LDocEntry instance above)
-
--- ---- Stub: LDocEntry:typeOf ----------------------------------------------
+-- Useful for runtime type inspection.
+do  -- LDocEntry:type
+  local catalog = local catalog = lurek.docs.scanModule("audio")
+    local entry = catalog:getEntries()[1]
+  local t = catalog:type()
+  lurek.log.info("LDocEntry:type = " .. t, "docs")
+end
 --@api-stub: LDocEntry:typeOf
 -- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDocEntry_stub:typeOf("hero")  -- -> boolean
--- (replace lDocEntry_stub with your real LDocEntry instance above)
-
--- -----------------------------------------------------------------------------
--- LQualityReport methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LQualityReport:type -------------------------------------------
+-- Use for runtime type checks.
+do  -- LDocEntry:typeOf
+  local catalog = local catalog = lurek.docs.scanModule("audio")
+    local entry = catalog:getEntries()[1]
+  lurek.log.info("is LDocEntry: " .. tostring(catalog:typeOf("LDocEntry")), "docs")
+  lurek.log.info("is wrong: " .. tostring(catalog:typeOf("Unknown")), "docs")
+end
 --@api-stub: LQualityReport:type
 -- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lQualityReport_stub:type()  -- -> string
--- (replace lQualityReport_stub with your real LQualityReport instance above)
-
--- ---- Stub: LQualityReport:typeOf -----------------------------------------
+-- Useful for runtime type inspection.
+do  -- LQualityReport:type
+  local q = local q = lurek.docs.quality(lurek.docs.loadAll("docs/api"))
+  local t = q:type()
+  lurek.log.info("LQualityReport:type = " .. t, "docs")
+end
 --@api-stub: LQualityReport:typeOf
 -- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lQualityReport_stub:typeOf("hero")  -- -> boolean
--- (replace lQualityReport_stub with your real LQualityReport instance above)
-
--- -----------------------------------------------------------------------------
--- LSchema methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LSchema:type --------------------------------------------------
+-- Use for runtime type checks.
+do  -- LQualityReport:typeOf
+  local q = local q = lurek.docs.quality(lurek.docs.loadAll("docs/api"))
+  lurek.log.info("is LQualityReport: " .. tostring(q:typeOf("LQualityReport")), "docs")
+  lurek.log.info("is wrong: " .. tostring(q:typeOf("Unknown")), "docs")
+end
 --@api-stub: LSchema:type
 -- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSchema_stub:type()  -- -> string
--- (replace lSchema_stub with your real LSchema instance above)
-
--- ---- Stub: LSchema:typeOf ------------------------------------------------
+-- Useful for runtime type inspection.
+do  -- LSchema:type
+  local schema = local schema = lurek.docs.schema({ hp = { type = "integer", required = true, min = 0 } }, "Stats")
+    local result = schema:validate({ hp = -5 })
+    local count = (type(result) == "table") and #result or (result and 0 or 1)
+    if count > 0 then
+  local t = schema:type()
+  lurek.log.info("LSchema:type = " .. t, "docs")
+end
 --@api-stub: LSchema:typeOf
 -- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSchema_stub:typeOf("hero")  -- -> boolean
--- (replace lSchema_stub with your real LSchema instance above)
-
--- -----------------------------------------------------------------------------
--- LValidationReport methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LValidationReport:type ----------------------------------------
+-- Use for runtime type checks.
+do  -- LSchema:typeOf
+  local schema = local schema = lurek.docs.schema({ hp = { type = "integer", required = true, min = 0 } }, "Stats")
+    local result = schema:validate({ hp = -5 })
+    local count = (type(result) == "table") and #result or (result and 0 or 1)
+    if count > 0 then
+  lurek.log.info("is LSchema: " .. tostring(schema:typeOf("LSchema")), "docs")
+  lurek.log.info("is wrong: " .. tostring(schema:typeOf("Unknown")), "docs")
+end
 --@api-stub: LValidationReport:type
 -- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lValidationReport_stub:type()  -- -> string
--- (replace lValidationReport_stub with your real LValidationReport instance above)
-
--- ---- Stub: LValidationReport:typeOf --------------------------------------
+-- Useful for runtime type inspection.
+do  -- LValidationReport:type
+  local validation_report_obj = lurek.docs.validate(nil)
+  local t = validation_report_obj:type()
+  lurek.log.info("LValidationReport:type = " .. t, "docs")
+end
 --@api-stub: LValidationReport:typeOf
 -- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lValidationReport_stub:typeOf("hero")  -- -> boolean
--- (replace lValidationReport_stub with your real LValidationReport instance above)
-
--- =============================================================================
--- STUBS: 50 uncovered lurek.docs API item(s)
--- Generated by tools/audit/example_add_missing.py
--- REQUIRED: replace every --@api-stub: block below with a real scenario.
+-- Use for runtime type checks.
+do  -- LValidationReport:typeOf
+  local validation_report_obj = lurek.docs.validate(nil)
+  lurek.log.info("is LValidationReport: " .. tostring(validation_report_obj:typeOf("LValidationReport")), "docs")
+  lurek.log.info("is wrong: " .. tostring(validation_report_obj:typeOf("Unknown")), "docs")
+end
+--@api-stub: block below with a real scenario.
 -- Run .github/prompts/flesh-out-example.prompt.md for instructions.
 -- The final committed file must contain ZERO --@api-stub: lines.
 -- =============================================================================

@@ -1207,14 +1207,25 @@ end
 -- ---- Stub: LGroupedFrame:type --------------------------------------------
 --@api-stub: LGroupedFrame:type
 -- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
 -- lGroupedFrame_stub:type()  -- -> string
--- (replace lGroupedFrame_stub with your real LGroupedFrame instance above)
-
--- ---- Stub: LGroupedFrame:typeOf ------------------------------------------
+-- Useful for runtime type inspection and debug logging.
+do  -- LGroupedFrame:type
+local df = lurek.dataframe.newDataFrame()
+  df:addColumn("score", 0) ; df:addColumn("team", "")
+  df:addRow({score=10, team="red"}) ; df:addRow({score=20, team="blue"}) ; df:addRow({score=15, team="red"})
+  local grouped = df:groupBy("team")
+  local t = grouped:type()
+  lurek.log.info("LGroupedFrame:type = " .. t, "dataframe")
+end
 --@api-stub: LGroupedFrame:typeOf
 -- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
 -- lGroupedFrame_stub:typeOf("hero")  -- -> boolean
--- (replace lGroupedFrame_stub with your real LGroupedFrame instance above)
-
+-- Use for runtime polymorphism and defensive checks.
+do  -- LGroupedFrame:typeOf
+local df = lurek.dataframe.newDataFrame()
+  df:addColumn("score", 0) ; df:addColumn("team", "")
+  df:addRow({score=10, team="red"}) ; df:addRow({score=20, team="blue"}) ; df:addRow({score=15, team="red"})
+  local grouped = df:groupBy("team")
+  lurek.log.info("is LGroupedFrame: " .. tostring(grouped:typeOf("LGroupedFrame")), "dataframe")
+  lurek.log.info("is unknown: " .. tostring(grouped:typeOf("Unknown")), "dataframe")
+end

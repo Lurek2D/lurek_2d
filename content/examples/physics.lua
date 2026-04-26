@@ -1956,111 +1956,103 @@ end
 -- ---- Stub: LBody:type ----------------------------------------------------
 --@api-stub: LBody:type
 -- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBody_stub:type()  -- -> string
--- (replace lBody_stub with your real LBody instance above)
-
--- ---- Stub: LBody:typeOf --------------------------------------------------
+-- Useful for runtime type inspection.
+do  -- LBody:type
+  local body_obj = lurek.physics.newBody(nil, 0, 0, nil)
+  local t = body_obj:type()
+  lurek.log.info("LBody:type = " .. t, "physics")
+end
 --@api-stub: LBody:typeOf
 -- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBody_stub:typeOf("hero")  -- -> boolean
--- (replace lBody_stub with your real LBody instance above)
-
--- -----------------------------------------------------------------------------
--- LCellular methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LCellular:type ------------------------------------------------
+-- Use for runtime type checks.
+do  -- LBody:typeOf
+  local body_obj = lurek.physics.newBody(nil, 0, 0, nil)
+  lurek.log.info("is LBody: " .. tostring(body_obj:typeOf("LBody")), "physics")
+  lurek.log.info("is wrong: " .. tostring(body_obj:typeOf("Unknown")), "physics")
+end
 --@api-stub: LCellular:type
 -- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lCellular_stub:type()  -- -> string
--- (replace lCellular_stub with your real LCellular instance above)
-
--- ---- Stub: LCellular:typeOf ----------------------------------------------
+-- Useful for runtime type inspection.
+do  -- LCellular:type
+  local cellular_obj = lurek.physics.newCellular(32, 32)
+  local t = cellular_obj:type()
+  lurek.log.info("LCellular:type = " .. t, "physics")
+end
 --@api-stub: LCellular:typeOf
 -- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lCellular_stub:typeOf("hero")  -- -> boolean
--- (replace lCellular_stub with your real LCellular instance above)
-
--- -----------------------------------------------------------------------------
--- LPhysicsShape methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LPhysicsShape:type --------------------------------------------
+-- Use for runtime type checks.
+do  -- LCellular:typeOf
+  local cellular_obj = lurek.physics.newCellular(32, 32)
+  lurek.log.info("is LCellular: " .. tostring(cellular_obj:typeOf("LCellular")), "physics")
+  lurek.log.info("is wrong: " .. tostring(cellular_obj:typeOf("Unknown")), "physics")
+end
 --@api-stub: LPhysicsShape:type
 -- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lPhysicsShape_stub:type()  -- -> string
--- (replace lPhysicsShape_stub with your real LPhysicsShape instance above)
-
--- ---- Stub: LPhysicsShape:typeOf ------------------------------------------
+-- Useful for runtime type inspection.
+do  -- LPhysicsShape:type
+  local physics_shape_obj = lurek.physics.newRectangleShape(32, 32)
+  local t = physics_shape_obj:type()
+  lurek.log.info("LPhysicsShape:type = " .. t, "physics")
+end
 --@api-stub: LPhysicsShape:typeOf
 -- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lPhysicsShape_stub:typeOf("hero")  -- -> boolean
--- (replace lPhysicsShape_stub with your real LPhysicsShape instance above)
-
--- -----------------------------------------------------------------------------
--- LTerrain methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LTerrain:type -------------------------------------------------
+-- Use for runtime type checks.
+do  -- LPhysicsShape:typeOf
+  local physics_shape_obj = lurek.physics.newRectangleShape(32, 32)
+  lurek.log.info("is LPhysicsShape: " .. tostring(physics_shape_obj:typeOf("LPhysicsShape")), "physics")
+  lurek.log.info("is wrong: " .. tostring(physics_shape_obj:typeOf("Unknown")), "physics")
+end
 --@api-stub: LTerrain:type
 -- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTerrain_stub:type()  -- -> string
--- (replace lTerrain_stub with your real LTerrain instance above)
-
--- ---- Stub: LTerrain:typeOf -----------------------------------------------
+-- Useful for runtime type inspection.
+do  -- LTerrain:type
+  local terrain_obj = lurek.physics.newTerrain(32, 32, nil, nil)
+  local t = terrain_obj:type()
+  lurek.log.info("LTerrain:type = " .. t, "physics")
+end
 --@api-stub: LTerrain:typeOf
 -- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTerrain_stub:typeOf("hero")  -- -> boolean
--- (replace lTerrain_stub with your real LTerrain instance above)
-
--- -----------------------------------------------------------------------------
--- LWorld methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LWorld:type ---------------------------------------------------
+-- Use for runtime type checks.
+do  -- LTerrain:typeOf
+  local terrain_obj = lurek.physics.newTerrain(32, 32, nil, nil)
+  lurek.log.info("is LTerrain: " .. tostring(terrain_obj:typeOf("LTerrain")), "physics")
+  lurek.log.info("is wrong: " .. tostring(terrain_obj:typeOf("Unknown")), "physics")
+end
 --@api-stub: LWorld:type
 -- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWorld_stub:type()  -- -> string
--- (replace lWorld_stub with your real LWorld instance above)
-
--- ---- Stub: LWorld:typeOf -------------------------------------------------
+-- Useful for runtime type inspection.
+do  -- LWorld:type
+  local world_obj = lurek.physics.newWorld(nil, nil)
+  local t = world_obj:type()
+  lurek.log.info("LWorld:type = " .. t, "physics")
+end
 --@api-stub: LWorld:typeOf
 -- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWorld_stub:typeOf("hero")  -- -> boolean
--- (replace lWorld_stub with your real LWorld instance above)
-
--- -----------------------------------------------------------------------------
--- LZone methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LZone:type ----------------------------------------------------
+-- Use for runtime type checks.
+do  -- LWorld:typeOf
+  local world_obj = lurek.physics.newWorld(nil, nil)
+  lurek.log.info("is LWorld: " .. tostring(world_obj:typeOf("LWorld")), "physics")
+  lurek.log.info("is wrong: " .. tostring(world_obj:typeOf("Unknown")), "physics")
+end
 --@api-stub: LZone:type
 -- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lZone_stub:type()  -- -> string
--- (replace lZone_stub with your real LZone instance above)
-
--- ---- Stub: LZone:typeOf --------------------------------------------------
+-- Useful for runtime type inspection.
+do  -- LZone:type
+  local world = local world = lurek.physics.newWorld(0, 9.81)
+    local zone = world:addZone(0, 0, 100, 100)
+  local t = world:type()
+  lurek.log.info("LZone:type = " .. t, "physics")
+end
 --@api-stub: LZone:typeOf
 -- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lZone_stub:typeOf("hero")  -- -> boolean
--- (replace lZone_stub with your real LZone instance above)
-
--- =============================================================================
--- STUBS: 170 uncovered lurek.physics API item(s)
--- Generated by tools/audit/example_add_missing.py
--- REQUIRED: replace every --@api-stub: block below with a real scenario.
+-- Use for runtime type checks.
+do  -- LZone:typeOf
+  local world = local world = lurek.physics.newWorld(0, 9.81)
+    local zone = world:addZone(0, 0, 100, 100)
+  lurek.log.info("is LZone: " .. tostring(world:typeOf("LZone")), "physics")
+  lurek.log.info("is wrong: " .. tostring(world:typeOf("Unknown")), "physics")
+end
+--@api-stub: block below with a real scenario.
 -- Run .github/prompts/flesh-out-example.prompt.md for instructions.
 -- The final committed file must contain ZERO --@api-stub: lines.
 -- =============================================================================

@@ -2317,23 +2317,20 @@ end
 -- ---- Stub: LDecoder:type -------------------------------------------------
 --@api-stub: LDecoder:type
 -- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDecoder_stub:type()  -- -> string
--- (replace lDecoder_stub with your real LDecoder instance above)
-
--- ---- Stub: LDecoder:typeOf -----------------------------------------------
+-- Useful for runtime type inspection.
+do  -- LDecoder:type
+  local decoder_obj = lurek.audio.newDecoder("assets/sound.ogg", 4096)
+  local t = decoder_obj:type()
+  lurek.log.info("LDecoder:type = " .. t, "audio")
+end
 --@api-stub: LDecoder:typeOf
 -- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDecoder_stub:typeOf("hero")  -- -> boolean
--- (replace lDecoder_stub with your real LDecoder instance above)
-
-
--- -----------------------------------------------------------------------------
--- LSoundData methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LSoundData:getSampleCount -------------------------------------
+-- Use for runtime type checks.
+do  -- LDecoder:typeOf
+  local decoder_obj = lurek.audio.newDecoder("assets/sound.ogg", 4096)
+  lurek.log.info("is LDecoder: " .. tostring(decoder_obj:typeOf("LDecoder")), "audio")
+  lurek.log.info("is wrong: " .. tostring(decoder_obj:typeOf("Unknown")), "audio")
+end
 --@api-stub: LSoundData:getSampleCount
 -- Get the total number of samples.
 -- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
@@ -2397,13 +2394,17 @@ end
 -- ---- Stub: LSource:type --------------------------------------------------
 --@api-stub: LSource:type
 -- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSource_stub:type()  -- -> string
--- (replace lSource_stub with your real LSource instance above)
-
--- ---- Stub: LSource:typeOf ------------------------------------------------
+-- Useful for runtime type inspection.
+do  -- LSource:type
+  local source_obj = lurek.audio.newSource()
+  local t = source_obj:type()
+  lurek.log.info("LSource:type = " .. t, "audio")
+end
 --@api-stub: LSource:typeOf
 -- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSource_stub:typeOf("hero")  -- -> boolean
--- (replace lSource_stub with your real LSource instance above)
+-- Use for runtime type checks.
+do  -- LSource:typeOf
+  local source_obj = lurek.audio.newSource()
+  lurek.log.info("is LSource: " .. tostring(source_obj:typeOf("LSource")), "audio")
+  lurek.log.info("is wrong: " .. tostring(source_obj:typeOf("Unknown")), "audio")
+end

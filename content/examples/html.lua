@@ -360,22 +360,20 @@ lurek.html.loadDocument("assets/hero.png", [opts])  -- -> HtmlDocument
 -- ---- Stub: LHtmlDocument:type --------------------------------------------
 --@api-stub: LHtmlDocument:type
 -- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lHtmlDocument_stub:type()  -- -> string
--- (replace lHtmlDocument_stub with your real LHtmlDocument instance above)
-
--- ---- Stub: LHtmlDocument:typeOf ------------------------------------------
+-- Useful for runtime type inspection.
+do  -- LHtmlDocument:type
+  local html_document_obj = lurek.html.newDocument("assets/sound.ogg", nil)
+  local t = html_document_obj:type()
+  lurek.log.info("LHtmlDocument:type = " .. t, "html")
+end
 --@api-stub: LHtmlDocument:typeOf
 -- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lHtmlDocument_stub:typeOf("hero")  -- -> boolean
--- (replace lHtmlDocument_stub with your real LHtmlDocument instance above)
-
--- -----------------------------------------------------------------------------
--- LHtmlElement methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LHtmlElement:type ---------------------------------------------
+-- Use for runtime type checks.
+do  -- LHtmlDocument:typeOf
+  local html_document_obj = lurek.html.newDocument("assets/sound.ogg", nil)
+  lurek.log.info("is LHtmlDocument: " .. tostring(html_document_obj:typeOf("LHtmlDocument")), "html")
+  lurek.log.info("is wrong: " .. tostring(html_document_obj:typeOf("Unknown")), "html")
+end
 --@api-stub: LHtmlElement:type
 -- Returns the type name of this object.
 -- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md

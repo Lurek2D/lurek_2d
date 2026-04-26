@@ -583,13 +583,17 @@ end
 -- ---- Stub: LTweenState:type ----------------------------------------------
 --@api-stub: LTweenState:type
 -- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTweenState_stub:type()  -- -> string
--- (replace lTweenState_stub with your real LTweenState instance above)
-
--- ---- Stub: LTweenState:typeOf --------------------------------------------
+-- Useful for runtime type inspection.
+do  -- LTweenState:type
+  local tween_state_obj = lurek.tween.newState(nil, nil)
+  local t = tween_state_obj:type()
+  lurek.log.info("LTweenState:type = " .. t, "tween")
+end
 --@api-stub: LTweenState:typeOf
 -- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTweenState_stub:typeOf("hero")  -- -> boolean
--- (replace lTweenState_stub with your real LTweenState instance above)
+-- Use for runtime type checks.
+do  -- LTweenState:typeOf
+  local tween_state_obj = lurek.tween.newState(nil, nil)
+  lurek.log.info("is LTweenState: " .. tostring(tween_state_obj:typeOf("LTweenState")), "tween")
+  lurek.log.info("is wrong: " .. tostring(tween_state_obj:typeOf("Unknown")), "tween")
+end

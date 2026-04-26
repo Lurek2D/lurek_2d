@@ -631,93 +631,85 @@ end
 -- ---- Stub: LAnimCurve:type -----------------------------------------------
 --@api-stub: LAnimCurve:type
 -- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAnimCurve_stub:type()  -- -> string
--- (replace lAnimCurve_stub with your real LAnimCurve instance above)
-
--- ---- Stub: LAnimCurve:typeOf ---------------------------------------------
+-- Useful for runtime type inspection.
+do  -- LAnimCurve:type
+  local anim_curve_obj = lurek.animation.newCurve()
+  local t = anim_curve_obj:type()
+  lurek.log.info("LAnimCurve:type = " .. t, "animation")
+end
 --@api-stub: LAnimCurve:typeOf
 -- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAnimCurve_stub:typeOf("hero")  -- -> boolean
--- (replace lAnimCurve_stub with your real LAnimCurve instance above)
-
--- -----------------------------------------------------------------------------
--- LAnimStateMachine methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LAnimStateMachine:type ----------------------------------------
+-- Use for runtime type checks.
+do  -- LAnimCurve:typeOf
+  local anim_curve_obj = lurek.animation.newCurve()
+  lurek.log.info("is LAnimCurve: " .. tostring(anim_curve_obj:typeOf("LAnimCurve")), "animation")
+  lurek.log.info("is wrong: " .. tostring(anim_curve_obj:typeOf("Unknown")), "animation")
+end
 --@api-stub: LAnimStateMachine:type
 -- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAnimStateMachine_stub:type()  -- -> string
--- (replace lAnimStateMachine_stub with your real LAnimStateMachine instance above)
-
--- ---- Stub: LAnimStateMachine:typeOf --------------------------------------
+-- Useful for runtime type inspection.
+do  -- LAnimStateMachine:type
+  local anim_state_machine_obj = lurek.animation.newStateMachine(lurek.animation.new(), "idle")
+  local t = anim_state_machine_obj:type()
+  lurek.log.info("LAnimStateMachine:type = " .. t, "animation")
+end
 --@api-stub: LAnimStateMachine:typeOf
 -- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAnimStateMachine_stub:typeOf("hero")  -- -> boolean
--- (replace lAnimStateMachine_stub with your real LAnimStateMachine instance above)
-
--- -----------------------------------------------------------------------------
--- LAnimSyncGroup methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LAnimSyncGroup:type -------------------------------------------
+-- Use for runtime type checks.
+do  -- LAnimStateMachine:typeOf
+  local anim_state_machine_obj = lurek.animation.newStateMachine(lurek.animation.new(), "idle")
+  lurek.log.info("is LAnimStateMachine: " .. tostring(anim_state_machine_obj:typeOf("LAnimStateMachine")), "animation")
+  lurek.log.info("is wrong: " .. tostring(anim_state_machine_obj:typeOf("Unknown")), "animation")
+end
 --@api-stub: LAnimSyncGroup:type
 -- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAnimSyncGroup_stub:type()  -- -> string
--- (replace lAnimSyncGroup_stub with your real LAnimSyncGroup instance above)
-
--- ---- Stub: LAnimSyncGroup:typeOf -----------------------------------------
+-- Useful for runtime type inspection.
+do  -- LAnimSyncGroup:type
+  local anim_sync_group_obj = lurek.animation.newSyncGroup()
+  local t = anim_sync_group_obj:type()
+  lurek.log.info("LAnimSyncGroup:type = " .. t, "animation")
+end
 --@api-stub: LAnimSyncGroup:typeOf
 -- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAnimSyncGroup_stub:typeOf("hero")  -- -> boolean
--- (replace lAnimSyncGroup_stub with your real LAnimSyncGroup instance above)
-
--- -----------------------------------------------------------------------------
--- LAnimation methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LAnimation:type -----------------------------------------------
+-- Use for runtime type checks.
+do  -- LAnimSyncGroup:typeOf
+  local anim_sync_group_obj = lurek.animation.newSyncGroup()
+  lurek.log.info("is LAnimSyncGroup: " .. tostring(anim_sync_group_obj:typeOf("LAnimSyncGroup")), "animation")
+  lurek.log.info("is wrong: " .. tostring(anim_sync_group_obj:typeOf("Unknown")), "animation")
+end
 --@api-stub: LAnimation:type
 -- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAnimation_stub:type()  -- -> string
--- (replace lAnimation_stub with your real LAnimation instance above)
-
--- ---- Stub: LAnimation:typeOf ---------------------------------------------
+-- Useful for runtime type inspection.
+do  -- LAnimation:type
+  local animation_obj = lurek.animation.new()
+  local t = animation_obj:type()
+  lurek.log.info("LAnimation:type = " .. t, "animation")
+end
 --@api-stub: LAnimation:typeOf
 -- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAnimation_stub:typeOf("hero")  -- -> boolean
--- (replace lAnimation_stub with your real LAnimation instance above)
-
--- -----------------------------------------------------------------------------
--- LBlendLayerSet methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LBlendLayerSet:type -------------------------------------------
+-- Use for runtime type checks.
+do  -- LAnimation:typeOf
+  local animation_obj = lurek.animation.new()
+  lurek.log.info("is LAnimation: " .. tostring(animation_obj:typeOf("LAnimation")), "animation")
+  lurek.log.info("is wrong: " .. tostring(animation_obj:typeOf("Unknown")), "animation")
+end
 --@api-stub: LBlendLayerSet:type
 -- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBlendLayerSet_stub:type()  -- -> string
--- (replace lBlendLayerSet_stub with your real LBlendLayerSet instance above)
-
--- ---- Stub: LBlendLayerSet:typeOf -----------------------------------------
+-- Useful for runtime type inspection.
+do  -- LBlendLayerSet:type
+  local blend_layer_set_obj = lurek.animation.newBlendLayerSet()
+  local t = blend_layer_set_obj:type()
+  lurek.log.info("LBlendLayerSet:type = " .. t, "animation")
+end
 --@api-stub: LBlendLayerSet:typeOf
 -- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBlendLayerSet_stub:typeOf("hero")  -- -> boolean
--- (replace lBlendLayerSet_stub with your real LBlendLayerSet instance above)
-
--- =============================================================================
--- STUBS: 47 uncovered lurek.animation API item(s)
--- Generated by tools/audit/example_add_missing.py
--- REQUIRED: replace every --@api-stub: block below with a real scenario.
+-- Use for runtime type checks.
+do  -- LBlendLayerSet:typeOf
+  local blend_layer_set_obj = lurek.animation.newBlendLayerSet()
+  lurek.log.info("is LBlendLayerSet: " .. tostring(blend_layer_set_obj:typeOf("LBlendLayerSet")), "animation")
+  lurek.log.info("is wrong: " .. tostring(blend_layer_set_obj:typeOf("Unknown")), "animation")
+end
+--@api-stub: block below with a real scenario.
 -- Run .github/prompts/flesh-out-example.prompt.md for instructions.
 -- The final committed file must contain ZERO --@api-stub: lines.
 -- =============================================================================

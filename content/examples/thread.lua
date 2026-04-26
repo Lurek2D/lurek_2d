@@ -418,18 +418,20 @@ end
 -- ---- Stub: LThread:type --------------------------------------------------
 --@api-stub: LThread:type
 -- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lThread_stub:type()  -- -> string
--- (replace lThread_stub with your real LThread instance above)
-
--- ---- Stub: LThread:typeOf ------------------------------------------------
+-- Useful for runtime type inspection.
+do  -- LThread:type
+  local thread_obj = lurek.thread.newThread(nil)
+  local t = thread_obj:type()
+  lurek.log.info("LThread:type = " .. t, "thread")
+end
 --@api-stub: LThread:typeOf
 -- Returns whether this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lThread_stub:typeOf("hero")  -- -> boolean
--- (replace lThread_stub with your real LThread instance above)
-
--- ---- Stub: LThread:start -------------------------------------------------
+-- Use for runtime type checks.
+do  -- LThread:typeOf
+  local thread_obj = lurek.thread.newThread(nil)
+  lurek.log.info("is LThread: " .. tostring(thread_obj:typeOf("LThread")), "thread")
+  lurek.log.info("is wrong: " .. tostring(thread_obj:typeOf("Unknown")), "thread")
+end
 --@api-stub: LThread:start
 -- Launches the background thread, passing optional arguments via varargs.
 -- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md

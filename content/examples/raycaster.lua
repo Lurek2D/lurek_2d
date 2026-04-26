@@ -599,14 +599,19 @@ end
 -- ---- Stub: LRaycaster:type -----------------------------------------------
 --@api-stub: LRaycaster:type
 -- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
 -- lRaycaster_stub:type()  -- -> string
--- (replace lRaycaster_stub with your real LRaycaster instance above)
-
--- ---- Stub: LRaycaster:typeOf ---------------------------------------------
+-- Useful for runtime type inspection and debug logging.
+do  -- LRaycaster:type
+  local rc = lurek.raycaster.new(8, 8)
+  local t = rc:type()
+  lurek.log.info("LRaycaster:type = " .. t, "raycaster")
+end
 --@api-stub: LRaycaster:typeOf
 -- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
 -- lRaycaster_stub:typeOf("hero")  -- -> boolean
--- (replace lRaycaster_stub with your real LRaycaster instance above)
-
+-- Use for runtime polymorphism and defensive checks.
+do  -- LRaycaster:typeOf
+  local rc = lurek.raycaster.new(8, 8)
+  lurek.log.info("is LRaycaster: " .. tostring(rc:typeOf("LRaycaster")), "raycaster")
+  lurek.log.info("is unknown: " .. tostring(rc:typeOf("Unknown")), "raycaster")
+end

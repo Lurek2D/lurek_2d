@@ -2892,289 +2892,257 @@ end
 -- ---- Stub: LAIBlackboard:type --------------------------------------------
 --@api-stub: LAIBlackboard:type
 -- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAIBlackboard_stub:type()  -- -> string
--- (replace lAIBlackboard_stub with your real LAIBlackboard instance above)
-
--- ---- Stub: LAIBlackboard:typeOf ------------------------------------------
+-- Useful for runtime type inspection.
+do  -- LAIBlackboard:type
+  local a_i_blackboard_obj = lurek.ai.newBlackboard()
+  local t = a_i_blackboard_obj:type()
+  lurek.log.info("LAIBlackboard:type = " .. t, "ai")
+end
 --@api-stub: LAIBlackboard:typeOf
 -- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAIBlackboard_stub:typeOf("hero")  -- -> boolean
--- (replace lAIBlackboard_stub with your real LAIBlackboard instance above)
-
--- -----------------------------------------------------------------------------
--- LAIDirector methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LAIDirector:type ----------------------------------------------
+-- Use for runtime type checks.
+do  -- LAIBlackboard:typeOf
+  local a_i_blackboard_obj = lurek.ai.newBlackboard()
+  lurek.log.info("is LAIBlackboard: " .. tostring(a_i_blackboard_obj:typeOf("LAIBlackboard")), "ai")
+  lurek.log.info("is wrong: " .. tostring(a_i_blackboard_obj:typeOf("Unknown")), "ai")
+end
 --@api-stub: LAIDirector:type
 -- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAIDirector_stub:type()  -- -> string
--- (replace lAIDirector_stub with your real LAIDirector instance above)
-
--- ---- Stub: LAIDirector:typeOf --------------------------------------------
+-- Useful for runtime type inspection.
+do  -- LAIDirector:type
+  local a_i_director_obj = lurek.ai.newAIDirector()
+  local t = a_i_director_obj:type()
+  lurek.log.info("LAIDirector:type = " .. t, "ai")
+end
 --@api-stub: LAIDirector:typeOf
 -- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAIDirector_stub:typeOf("hero")  -- -> boolean
--- (replace lAIDirector_stub with your real LAIDirector instance above)
-
--- -----------------------------------------------------------------------------
--- LAILod methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LAILod:type ---------------------------------------------------
+-- Use for runtime type checks.
+do  -- LAIDirector:typeOf
+  local a_i_director_obj = lurek.ai.newAIDirector()
+  lurek.log.info("is LAIDirector: " .. tostring(a_i_director_obj:typeOf("LAIDirector")), "ai")
+  lurek.log.info("is wrong: " .. tostring(a_i_director_obj:typeOf("Unknown")), "ai")
+end
 --@api-stub: LAILod:type
 -- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAILod_stub:type()  -- -> string
--- (replace lAILod_stub with your real LAILod instance above)
-
--- ---- Stub: LAILod:typeOf -------------------------------------------------
+-- Useful for runtime type inspection.
+do  -- LAILod:type
+  local a_i_lod_obj = lurek.ai.newAILod()
+  local t = a_i_lod_obj:type()
+  lurek.log.info("LAILod:type = " .. t, "ai")
+end
 --@api-stub: LAILod:typeOf
 -- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAILod_stub:typeOf("hero")  -- -> boolean
--- (replace lAILod_stub with your real LAILod instance above)
-
-
--- -----------------------------------------------------------------------------
--- LBandit methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LBandit:type --------------------------------------------------
+-- Use for runtime type checks.
+do  -- LAILod:typeOf
+  local a_i_lod_obj = lurek.ai.newAILod()
+  lurek.log.info("is LAILod: " .. tostring(a_i_lod_obj:typeOf("LAILod")), "ai")
+  lurek.log.info("is wrong: " .. tostring(a_i_lod_obj:typeOf("Unknown")), "ai")
+end
 --@api-stub: LBandit:type
 -- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBandit_stub:type()  -- -> string
--- (replace lBandit_stub with your real LBandit instance above)
-
--- ---- Stub: LBandit:typeOf ------------------------------------------------
+-- Useful for runtime type inspection.
+do  -- LBandit:type
+  local bandit_obj = lurek.ai.newBandit(4, "epsilon-greedy", 0.1, 42)
+  local t = bandit_obj:type()
+  lurek.log.info("LBandit:type = " .. t, "ai")
+end
 --@api-stub: LBandit:typeOf
 -- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBandit_stub:typeOf("hero")  -- -> boolean
--- (replace lBandit_stub with your real LBandit instance above)
-
-
--- -----------------------------------------------------------------------------
--- LContextSteering methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LContextSteering:type -----------------------------------------
+-- Use for runtime type checks.
+do  -- LBandit:typeOf
+  local bandit_obj = lurek.ai.newBandit(4, "epsilon-greedy", 0.1, 42)
+  lurek.log.info("is LBandit: " .. tostring(bandit_obj:typeOf("LBandit")), "ai")
+  lurek.log.info("is wrong: " .. tostring(bandit_obj:typeOf("Unknown")), "ai")
+end
 --@api-stub: LContextSteering:type
 -- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lContextSteering_stub:type()  -- -> string
--- (replace lContextSteering_stub with your real LContextSteering instance above)
-
--- ---- Stub: LContextSteering:typeOf ---------------------------------------
+-- Useful for runtime type inspection.
+do  -- LContextSteering:type
+  local context_steering_obj = lurek.ai.newContextSteering(8)
+  local t = context_steering_obj:type()
+  lurek.log.info("LContextSteering:type = " .. t, "ai")
+end
 --@api-stub: LContextSteering:typeOf
 -- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lContextSteering_stub:typeOf("hero")  -- -> boolean
--- (replace lContextSteering_stub with your real LContextSteering instance above)
-
--- -----------------------------------------------------------------------------
--- LEmotionModel methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LEmotionModel:type --------------------------------------------
+-- Use for runtime type checks.
+do  -- LContextSteering:typeOf
+  local context_steering_obj = lurek.ai.newContextSteering(8)
+  lurek.log.info("is LContextSteering: " .. tostring(context_steering_obj:typeOf("LContextSteering")), "ai")
+  lurek.log.info("is wrong: " .. tostring(context_steering_obj:typeOf("Unknown")), "ai")
+end
 --@api-stub: LEmotionModel:type
 -- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lEmotionModel_stub:type()  -- -> string
--- (replace lEmotionModel_stub with your real LEmotionModel instance above)
-
--- ---- Stub: LEmotionModel:typeOf ------------------------------------------
+-- Useful for runtime type inspection.
+do  -- LEmotionModel:type
+  local emotion_model_obj = lurek.ai.newEmotionModel()
+  local t = emotion_model_obj:type()
+  lurek.log.info("LEmotionModel:type = " .. t, "ai")
+end
 --@api-stub: LEmotionModel:typeOf
 -- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lEmotionModel_stub:typeOf("hero")  -- -> boolean
--- (replace lEmotionModel_stub with your real LEmotionModel instance above)
-
-
--- -----------------------------------------------------------------------------
--- LGeneticAlgorithm methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LGeneticAlgorithm:type ----------------------------------------
+-- Use for runtime type checks.
+do  -- LEmotionModel:typeOf
+  local emotion_model_obj = lurek.ai.newEmotionModel()
+  lurek.log.info("is LEmotionModel: " .. tostring(emotion_model_obj:typeOf("LEmotionModel")), "ai")
+  lurek.log.info("is wrong: " .. tostring(emotion_model_obj:typeOf("Unknown")), "ai")
+end
 --@api-stub: LGeneticAlgorithm:type
 -- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lGeneticAlgorithm_stub:type()  -- -> string
--- (replace lGeneticAlgorithm_stub with your real LGeneticAlgorithm instance above)
-
--- ---- Stub: LGeneticAlgorithm:typeOf --------------------------------------
+-- Useful for runtime type inspection.
+do  -- LGeneticAlgorithm:type
+  local genetic_algorithm_obj = lurek.ai.newGeneticAlgorithm(20, 8, 42)
+  local t = genetic_algorithm_obj:type()
+  lurek.log.info("LGeneticAlgorithm:type = " .. t, "ai")
+end
 --@api-stub: LGeneticAlgorithm:typeOf
 -- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lGeneticAlgorithm_stub:typeOf("hero")  -- -> boolean
--- (replace lGeneticAlgorithm_stub with your real LGeneticAlgorithm instance above)
-
--- -----------------------------------------------------------------------------
--- LHTNDomain methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LHTNDomain:type -----------------------------------------------
+-- Use for runtime type checks.
+do  -- LGeneticAlgorithm:typeOf
+  local genetic_algorithm_obj = lurek.ai.newGeneticAlgorithm(20, 8, 42)
+  lurek.log.info("is LGeneticAlgorithm: " .. tostring(genetic_algorithm_obj:typeOf("LGeneticAlgorithm")), "ai")
+  lurek.log.info("is wrong: " .. tostring(genetic_algorithm_obj:typeOf("Unknown")), "ai")
+end
 --@api-stub: LHTNDomain:type
 -- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lHTNDomain_stub:type()  -- -> string
--- (replace lHTNDomain_stub with your real LHTNDomain instance above)
-
--- ---- Stub: LHTNDomain:typeOf ---------------------------------------------
+-- Useful for runtime type inspection.
+do  -- LHTNDomain:type
+  local h_t_n_domain_obj = lurek.ai.newHTNDomain()
+  local t = h_t_n_domain_obj:type()
+  lurek.log.info("LHTNDomain:type = " .. t, "ai")
+end
 --@api-stub: LHTNDomain:typeOf
 -- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lHTNDomain_stub:typeOf("hero")  -- -> boolean
--- (replace lHTNDomain_stub with your real LHTNDomain instance above)
-
-
--- -----------------------------------------------------------------------------
--- LMCTSEngine methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LMCTSEngine:type ----------------------------------------------
+-- Use for runtime type checks.
+do  -- LHTNDomain:typeOf
+  local h_t_n_domain_obj = lurek.ai.newHTNDomain()
+  lurek.log.info("is LHTNDomain: " .. tostring(h_t_n_domain_obj:typeOf("LHTNDomain")), "ai")
+  lurek.log.info("is wrong: " .. tostring(h_t_n_domain_obj:typeOf("Unknown")), "ai")
+end
 --@api-stub: LMCTSEngine:type
 -- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lMCTSEngine_stub:type()  -- -> string
--- (replace lMCTSEngine_stub with your real LMCTSEngine instance above)
-
--- ---- Stub: LMCTSEngine:typeOf --------------------------------------------
+-- Useful for runtime type inspection.
+do  -- LMCTSEngine:type
+  local m_c_t_s_engine_obj = lurek.ai.newMCTSEngine(100, 1.41, 5, 42)
+  local t = m_c_t_s_engine_obj:type()
+  lurek.log.info("LMCTSEngine:type = " .. t, "ai")
+end
 --@api-stub: LMCTSEngine:typeOf
 -- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lMCTSEngine_stub:typeOf("hero")  -- -> boolean
--- (replace lMCTSEngine_stub with your real LMCTSEngine instance above)
-
--- -----------------------------------------------------------------------------
--- LNeedSystem methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LNeedSystem:type ----------------------------------------------
+-- Use for runtime type checks.
+do  -- LMCTSEngine:typeOf
+  local m_c_t_s_engine_obj = lurek.ai.newMCTSEngine(100, 1.41, 5, 42)
+  lurek.log.info("is LMCTSEngine: " .. tostring(m_c_t_s_engine_obj:typeOf("LMCTSEngine")), "ai")
+  lurek.log.info("is wrong: " .. tostring(m_c_t_s_engine_obj:typeOf("Unknown")), "ai")
+end
 --@api-stub: LNeedSystem:type
 -- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lNeedSystem_stub:type()  -- -> string
--- (replace lNeedSystem_stub with your real LNeedSystem instance above)
-
--- ---- Stub: LNeedSystem:typeOf --------------------------------------------
+-- Useful for runtime type inspection.
+do  -- LNeedSystem:type
+  local need_system_obj = lurek.ai.newNeedSystem()
+  local t = need_system_obj:type()
+  lurek.log.info("LNeedSystem:type = " .. t, "ai")
+end
 --@api-stub: LNeedSystem:typeOf
 -- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lNeedSystem_stub:typeOf("hero")  -- -> boolean
--- (replace lNeedSystem_stub with your real LNeedSystem instance above)
-
--- -----------------------------------------------------------------------------
--- LNeuralNet methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LNeuralNet:type -----------------------------------------------
+-- Use for runtime type checks.
+do  -- LNeedSystem:typeOf
+  local need_system_obj = lurek.ai.newNeedSystem()
+  lurek.log.info("is LNeedSystem: " .. tostring(need_system_obj:typeOf("LNeedSystem")), "ai")
+  lurek.log.info("is wrong: " .. tostring(need_system_obj:typeOf("Unknown")), "ai")
+end
 --@api-stub: LNeuralNet:type
 -- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lNeuralNet_stub:type()  -- -> string
--- (replace lNeuralNet_stub with your real LNeuralNet instance above)
-
--- ---- Stub: LNeuralNet:typeOf ---------------------------------------------
+-- Useful for runtime type inspection.
+do  -- LNeuralNet:type
+  local neural_net_obj = lurek.ai.newNeuralNet()
+  local t = neural_net_obj:type()
+  lurek.log.info("LNeuralNet:type = " .. t, "ai")
+end
 --@api-stub: LNeuralNet:typeOf
 -- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lNeuralNet_stub:typeOf("hero")  -- -> boolean
--- (replace lNeuralNet_stub with your real LNeuralNet instance above)
-
--- -----------------------------------------------------------------------------
--- LNeuroevolution methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LNeuroevolution:type ------------------------------------------
+-- Use for runtime type checks.
+do  -- LNeuralNet:typeOf
+  local neural_net_obj = lurek.ai.newNeuralNet()
+  lurek.log.info("is LNeuralNet: " .. tostring(neural_net_obj:typeOf("LNeuralNet")), "ai")
+  lurek.log.info("is wrong: " .. tostring(neural_net_obj:typeOf("Unknown")), "ai")
+end
 --@api-stub: LNeuroevolution:type
 -- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lNeuroevolution_stub:type()  -- -> string
--- (replace lNeuroevolution_stub with your real LNeuroevolution instance above)
-
--- ---- Stub: LNeuroevolution:typeOf ----------------------------------------
+-- Useful for runtime type inspection.
+do  -- LNeuroevolution:type
+  local neuroevolution_obj = lurek.ai.newNeuroevolution({4, 8, 4}, 20, 42)
+  local t = neuroevolution_obj:type()
+  lurek.log.info("LNeuroevolution:type = " .. t, "ai")
+end
 --@api-stub: LNeuroevolution:typeOf
 -- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lNeuroevolution_stub:typeOf("hero")  -- -> boolean
--- (replace lNeuroevolution_stub with your real LNeuroevolution instance above)
-
--- -----------------------------------------------------------------------------
--- LORCASolver methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LORCASolver:type ----------------------------------------------
+-- Use for runtime type checks.
+do  -- LNeuroevolution:typeOf
+  local neuroevolution_obj = lurek.ai.newNeuroevolution({4, 8, 4}, 20, 42)
+  lurek.log.info("is LNeuroevolution: " .. tostring(neuroevolution_obj:typeOf("LNeuroevolution")), "ai")
+  lurek.log.info("is wrong: " .. tostring(neuroevolution_obj:typeOf("Unknown")), "ai")
+end
 --@api-stub: LORCASolver:type
 -- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lORCASolver_stub:type()  -- -> string
--- (replace lORCASolver_stub with your real LORCASolver instance above)
-
--- ---- Stub: LORCASolver:typeOf --------------------------------------------
+-- Useful for runtime type inspection.
+do  -- LORCASolver:type
+  local o_r_c_a_solver_obj = lurek.ai.newORCASolver(0.5)
+  local t = o_r_c_a_solver_obj:type()
+  lurek.log.info("LORCASolver:type = " .. t, "ai")
+end
 --@api-stub: LORCASolver:typeOf
 -- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lORCASolver_stub:typeOf("hero")  -- -> boolean
--- (replace lORCASolver_stub with your real LORCASolver instance above)
-
-
--- -----------------------------------------------------------------------------
--- LStimulusWorld methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LStimulusWorld:type -------------------------------------------
+-- Use for runtime type checks.
+do  -- LORCASolver:typeOf
+  local o_r_c_a_solver_obj = lurek.ai.newORCASolver(0.5)
+  lurek.log.info("is LORCASolver: " .. tostring(o_r_c_a_solver_obj:typeOf("LORCASolver")), "ai")
+  lurek.log.info("is wrong: " .. tostring(o_r_c_a_solver_obj:typeOf("Unknown")), "ai")
+end
 --@api-stub: LStimulusWorld:type
 -- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lStimulusWorld_stub:type()  -- -> string
--- (replace lStimulusWorld_stub with your real LStimulusWorld instance above)
-
--- ---- Stub: LStimulusWorld:typeOf -----------------------------------------
+-- Useful for runtime type inspection.
+do  -- LStimulusWorld:type
+  local stimulus_world_obj = lurek.ai.newStimulusWorld()
+  local t = stimulus_world_obj:type()
+  lurek.log.info("LStimulusWorld:type = " .. t, "ai")
+end
 --@api-stub: LStimulusWorld:typeOf
 -- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lStimulusWorld_stub:typeOf("hero")  -- -> boolean
--- (replace lStimulusWorld_stub with your real LStimulusWorld instance above)
-
--- -----------------------------------------------------------------------------
--- LStrategyAI methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LStrategyAI:type ----------------------------------------------
+-- Use for runtime type checks.
+do  -- LStimulusWorld:typeOf
+  local stimulus_world_obj = lurek.ai.newStimulusWorld()
+  lurek.log.info("is LStimulusWorld: " .. tostring(stimulus_world_obj:typeOf("LStimulusWorld")), "ai")
+  lurek.log.info("is wrong: " .. tostring(stimulus_world_obj:typeOf("Unknown")), "ai")
+end
 --@api-stub: LStrategyAI:type
 -- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lStrategyAI_stub:type()  -- -> string
--- (replace lStrategyAI_stub with your real LStrategyAI instance above)
-
--- ---- Stub: LStrategyAI:typeOf --------------------------------------------
+-- Useful for runtime type inspection.
+do  -- LStrategyAI:type
+  local strategy_a_i_obj = lurek.ai.newStrategyAI(0.25)
+  local t = strategy_a_i_obj:type()
+  lurek.log.info("LStrategyAI:type = " .. t, "ai")
+end
 --@api-stub: LStrategyAI:typeOf
 -- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lStrategyAI_stub:typeOf("hero")  -- -> boolean
--- (replace lStrategyAI_stub with your real LStrategyAI instance above)
-
--- -----------------------------------------------------------------------------
--- LTraitProfile methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LTraitProfile:type --------------------------------------------
+-- Use for runtime type checks.
+do  -- LStrategyAI:typeOf
+  local strategy_a_i_obj = lurek.ai.newStrategyAI(0.25)
+  lurek.log.info("is LStrategyAI: " .. tostring(strategy_a_i_obj:typeOf("LStrategyAI")), "ai")
+  lurek.log.info("is wrong: " .. tostring(strategy_a_i_obj:typeOf("Unknown")), "ai")
+end
 --@api-stub: LTraitProfile:type
 -- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTraitProfile_stub:type()  -- -> string
--- (replace lTraitProfile_stub with your real LTraitProfile instance above)
-
--- ---- Stub: LTraitProfile:typeOf ------------------------------------------
+-- Useful for runtime type inspection.
+do  -- LTraitProfile:type
+  local trait_profile_obj = lurek.ai.newTraitProfile()
+  local t = trait_profile_obj:type()
+  lurek.log.info("LTraitProfile:type = " .. t, "ai")
+end
 --@api-stub: LTraitProfile:typeOf
 -- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTraitProfile_stub:typeOf("hero")  -- -> boolean
--- (replace lTraitProfile_stub with your real LTraitProfile instance above)
-
+-- Use for runtime type checks.
+do  -- LTraitProfile:typeOf
+  local trait_profile_obj = lurek.ai.newTraitProfile()
+  lurek.log.info("is LTraitProfile: " .. tostring(trait_profile_obj:typeOf("LTraitProfile")), "ai")
+  lurek.log.info("is wrong: " .. tostring(trait_profile_obj:typeOf("Unknown")), "ai")
+end
