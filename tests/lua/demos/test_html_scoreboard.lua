@@ -1,5 +1,7 @@
 ﻿-- tests/lua/demos/test_html_scoreboard.lua
 -- Static-analysis checks for the html-scoreboard showcase demo.
+-- read_file is injected by the test harness; not visible to LuaLS.
+---@diagnostic disable: undefined-global
 
 local PATH      = "content/games/showcase/html-scoreboard/main.lua"
 local CONF_PATH = "content/games/showcase/html-scoreboard/conf.lua"

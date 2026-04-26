@@ -2,7 +2,26 @@
 
 All notable changes to Lurek2D are recorded here.
 
-## [1.0.9-fix.3] - 2026-04-27
+## [1.0.9-fix.4] - 2026-04-28
+
+### fix(examples): resolve Lua Language Server warnings across examples, tests, and stub generator
+
+- **`tools/docs/gen_luadoc.py`**: multi-return fix — collect all `@return` lines per function (not just the first) and join comma-separated; detect comma-separated primitive lists before collapsing types; add `_MODULE_CONSTANTS` entries for `math` (pi, tau), `tilemap` (FLOOR, NORTH_WALL, WEST_WALL, OBJECT), and `input` (keyboard, mouse, gamepad, touch sub-tables); emit `---@field x/y/z number` for `LVec2`/`LVec3` classes; add `_SKIP_ALIAS` to suppress duplicate `---@alias` for `EventBus`, `Scheduler`, `Stack` (already defined in `library.lua`).
+- **`src/lua_api/physics_api.rs`**: corrected `attachShape` docstring `@param shape` type from `Shape` → `PhysicsShape`.
+- **`content/examples/render.lua`**: `drawBevelRect` — removed spurious first `'fill'` mode arg; `pushLayer` — changed string IDs to integer IDs; `DrawLayer:queue` — corrected to `(z_depth, callback)` signature.
+- **`content/examples/raycaster.lua`**: `typeOf()` — removed incorrect argument (takes no args, returns string).
+- **`content/examples/ui.lua`**: `lurek.ui.type(chart)` → `chart:type()` (per-widget method).
+- **`content/examples/audio.lua`**: suppressed pcall nil-guard `cast-local-type` pattern; fixed `getSample`/`setSample` call arg counts.
+- **`content/examples/data.lua`**: `lurek.data.pack` returns a Lua string directly — replaced three `pcall(key:getString())` patterns with direct assignment; fixed `setBit(0, 3, true)` to include the required `boolean` value arg.
+- **`content/examples/spine.lua`**: `getEvents(prev, now) or {}` guard for nil-safe `ipairs`.
+- **`content/examples/mods.lua`**: replaced `---@cast obj LMod|nil` with `---@diagnostic disable-line: cast-local-type` on nil-assignments (LuaLS cannot widen typed values to include nil via cast).
+- **`content/examples/input.lua`**: `LCombo` pcall nil-guard — added `disable-line: cast-local-type`.
+- **`content/examples/thread.lua`**: `msg.event` and `next_job.priority` — added `disable-line: undefined-field` (user-defined table fields not in stubs).
+- **`content/examples/docs.lua`**: suppressed `undefined-field`, `param-type-mismatch`, `need-check-nil` (LApiCatalog methods and generic `userdata?` param types not in generated stubs).
+- **`content/examples/filesystem.lua`**, **`sprite.lua`**, **`network.lua`**: added `disable: cast-local-type` for pcall nil-guard pattern.
+- **`tests/lua/demos/test_html_{dialog,hud,inventory,scoreboard,settings}.lua`**: added `disable: undefined-global` — `read_file` is injected by test harness at runtime, invisible to LuaLS.
+
+
 
 ### fix(examples): fix runtime errors across 10 example files — 50/50 pass
 

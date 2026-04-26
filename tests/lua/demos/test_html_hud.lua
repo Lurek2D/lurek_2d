@@ -1,6 +1,8 @@
 ﻿-- tests/lua/demos/test_html_hud.lua
 -- Static-analysis checks for the html-hud showcase demo.
 -- Verifies that the game script exists and uses the expected lurek.html API.
+-- read_file is injected by the test harness; not visible to LuaLS.
+---@diagnostic disable: undefined-global
 
 local PATH      = "content/games/showcase/html-hud/main.lua"
 local CONF_PATH = "content/games/showcase/html-hud/conf.lua"

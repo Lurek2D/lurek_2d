@@ -67,9 +67,8 @@ end
 -- Encodes binary data using the given format (base64, hex).
 -- Use "base64" for embedding bytes in JSON / TOML / network text, "hex" for hashes and debug logs.
 do  -- lurek.data.encode
-  local key = lurek.data.pack("<I", 0xCAFEF00D)
-  local ok_ks, key_str = pcall(function() return key:getString() end)
-  if not ok_ks then key_str = "" end
+  local key = lurek.data.pack("<I", 0xCAFEF00D)  -- returns a binary Lua string directly
+  local key_str = key
   local ok_e1, hex = pcall(lurek.data.encode, "hex", key_str)
   local ok_e2, b64 = pcall(lurek.data.encode, "base64", key_str)
   lurek.log.info("hex=" .. (ok_e1 and hex or "n/a") .. " b64=" .. (ok_e2 and b64 or "n/a"), "data")
@@ -96,9 +95,8 @@ end
 -- Returns the CRC-32 checksum of the input data as an integer.
 -- Cheap integrity check for chunk streams or replay frames; not cryptographically safe — use hash() for tamper detection.
 do  -- lurek.data.crc32
-  local payload = lurek.data.pack("<II", 1024, 768)
-  local ok_ps, payload_str = pcall(function() return payload:getString() end)
-  if not ok_ps then payload_str = "" end
+  local payload = lurek.data.pack("<II", 1024, 768)  -- returns a binary Lua string directly
+  local payload_str = payload
   local ok_c, sum = pcall(lurek.data.crc32, payload_str)
   local sum_val = ok_c and sum or 0
   lurek.log.info(string.format("payload crc32 = 0x%08X", sum_val), "data")
@@ -108,9 +106,8 @@ end
 -- Creates a read-only windowed view into a byte string.
 -- Cheap alternative to slicing strings; reads are zero-copy and bounds-checked, ideal for parsing fixed binary headers.
 do  -- lurek.data.newDataView
-  local blob = lurek.data.pack("<HHI", 0xBEEF, 0xCAFE, 12345)
-  local ok_bs, blob_str = pcall(function() return blob:getString() end)
-  if not ok_bs then blob_str = "" end
+  local blob = lurek.data.pack("<HHI", 0xBEEF, 0xCAFE, 12345)  -- returns a binary Lua string directly
+  local blob_str = blob
   local ok_v, view = pcall(lurek.data.newDataView, blob_str, 0, #blob_str)
   local size = 0
   if ok_v and view then size = view:getSize() end
@@ -618,7 +615,7 @@ end
 -- Leaves all other bits in the byte unchanged.
 do  -- mlua:setBit
   local fd = lurek.data.newByteData(16)
-  fd:setBit(3, 1)
+  fd:setBit(0, 3, true)  -- byte_offset=0, bit_offset=3, value=true (set)
   lurek.log.info("bit 3 set to 1", "data")
 end
 

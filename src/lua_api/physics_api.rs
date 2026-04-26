@@ -2693,7 +2693,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     // -- attachShape --
     /// Attaches a standalone shape to a body as an additional fixture.
     /// @param body : Body
-    /// @param shape : Shape
+    /// @param shape : PhysicsShape
     /// @return nil
     tbl.set(
         "attachShape",

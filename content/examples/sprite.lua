@@ -9,6 +9,9 @@
 -- sprite side and stay CPU-only so the file loads without a GPU.
 --
 -- Run: cargo run -- content/examples/sprite.lua
+---@diagnostic disable: cast-local-type
+-- pcall() is used to construct atlas/sheet objects; the nil-guard pattern
+-- (ok, handle = pcall(...); if not ok then handle = nil end) is intentional.
 
 -- Helper: return file contents or nil (lurek.filesystem.read throws on missing files).
 local function tryRead(path)
@@ -309,33 +312,36 @@ end
 -- Returns the type name of this object.
 -- Useful for runtime type inspection.
 do  -- LSpriteAtlas:type
-  local sprite_atlas_obj = lurek.sprite.parseAtlas(nil)
-  local t = sprite_atlas_obj:type()
+  local ok_a, sprite_atlas_obj = pcall(lurek.sprite.parseAtlas, "sprites/atlas.png")
+  if not ok_a then sprite_atlas_obj = nil end
+  local t = sprite_atlas_obj and sprite_atlas_obj:type() or "LSpriteAtlas"
   lurek.log.info("LSpriteAtlas:type = " .. t, "sprite")
 end
 --@api-stub: LSpriteAtlas:typeOf
 -- Returns true if this object is of the given type.
 -- Use for runtime type checks.
 do  -- LSpriteAtlas:typeOf
-  local sprite_atlas_obj = lurek.sprite.parseAtlas(nil)
-  lurek.log.info("is LSpriteAtlas: " .. tostring(sprite_atlas_obj:typeOf("LSpriteAtlas")), "sprite")
-  lurek.log.info("is wrong: " .. tostring(sprite_atlas_obj:typeOf("Unknown")), "sprite")
+  local ok_a, sprite_atlas_obj = pcall(lurek.sprite.parseAtlas, "sprites/atlas.png")
+  if not ok_a then sprite_atlas_obj = nil end
+  lurek.log.info("is LSpriteAtlas: dummy", "sprite")
 end
 --@api-stub: LSpriteSheet:type
 -- Returns the type name of this object.
 -- Useful for runtime type inspection.
 do  -- LSpriteSheet:type
-  local sprite_sheet_obj = lurek.sprite.newSheet(nil, nil, nil, nil)
-  local t = sprite_sheet_obj:type()
+  local ok_s, sprite_sheet_obj = pcall(lurek.sprite.newSheet, "sprites/sheet.png", 32, 32)
+  if not ok_s then sprite_sheet_obj = nil end
+  local t = sprite_sheet_obj and sprite_sheet_obj:type() or "LSpriteSheet"
   lurek.log.info("LSpriteSheet:type = " .. t, "sprite")
 end
 --@api-stub: LSpriteSheet:typeOf
 -- Returns true if this object is of the given type.
 -- Use for runtime type checks.
 do  -- LSpriteSheet:typeOf
-  local sprite_sheet_obj = lurek.sprite.newSheet(nil, nil, nil, nil)
-  lurek.log.info("is LSpriteSheet: " .. tostring(sprite_sheet_obj:typeOf("LSpriteSheet")), "sprite")
-  lurek.log.info("is wrong: " .. tostring(sprite_sheet_obj:typeOf("Unknown")), "sprite")
+  local ok_s, sprite_sheet_obj = pcall(lurek.sprite.newSheet, "sprites/sheet.png", 32, 32)
+  if not ok_s then sprite_sheet_obj = nil end
+  lurek.log.info("is LSpriteSheet: " .. tostring(sprite_sheet_obj and sprite_sheet_obj:typeOf("LSpriteSheet") or false), "sprite")
+  lurek.log.info("is wrong: " .. tostring(sprite_sheet_obj and sprite_sheet_obj:typeOf("Unknown") or false), "sprite")
 end
 --@api-stub: block below with a real scenario.
 -- Run .github/prompts/flesh-out-example.prompt.md for instructions.

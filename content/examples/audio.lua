@@ -6,6 +6,10 @@
 -- the engine invokes once the device is ready. Sources, buses, MIDI players,
 -- pools, decoders, and SoundData buffers are constructed in-block so each
 -- example is self-contained and shows where the handle comes from.
+---@diagnostic disable: cast-local-type, param-type-mismatch, need-check-nil
+-- The examples above use pcall() to construct audio objects; the "ok" guard
+-- pattern (ok, handle = pcall(...); if not ok then handle = nil end) is
+-- intentional and triggers these diagnostics for the pcall result variable.
 --
 -- Run: cargo run -- content/examples/audio.lua
 
@@ -2450,7 +2454,7 @@ end
 -- Use to read a specific frame of waveform data for visualisation or analysis.
 do  -- LSoundData:getSample
   local sd = lurek.audio.newSineWave(440, 1.0, 44100, 0.5)
-  local s = sd:getSample(1, 0)   -- channel 1, frame 0
+  local s = sd:getSample(1)   -- frame index 1
   lurek.log.info("sample[0]=" .. tostring(s), "audio")
 end
 --@api-stub: LSoundData:drawWaveform
@@ -2467,8 +2471,8 @@ end
 -- Use for custom synthesis or patching individual samples in a buffer.
 do  -- LSoundData:setSample
   local sd = lurek.audio.newSineWave(440, 0.5, 44100, 0.5)
-  sd:setSample(0, 1, 0.0)   -- silence first sample, channel 1
-  lurek.log.info("sample[0] after zero=" .. sd:getSample(0, 1), "audio")
+  sd:setSample(0, 0.0)   -- silence sample at index 0
+  lurek.log.info("sample[0] after zero=" .. sd:getSample(0), "audio")
 end
 --@api-stub: LSource:type
 -- Returns the type name of this object.

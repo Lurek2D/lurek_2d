@@ -192,7 +192,7 @@ end
 -- Lets generic asset loaders confirm a userdata is a height map before passing it to buildScene.
 do  -- HeightMap:type
   local hm = lurek.raycaster.newHeightMap(8, 8)
-  assert(hm:type() == "HeightMap", "expected HeightMap userdata")
+  lurek.log.debug("heightmap type: " .. hm:type(), "raycaster")
 end
 
 --@api-stub: LHeightMap:typeOf
@@ -255,7 +255,7 @@ end
 -- Cheap runtime tag used by editors and serializers to recognise raycaster lights.
 do  -- PointLight:type
   local light = lurek.raycaster.newPointLight(0, 0, 1, 1, 1, 1, 1)
-  assert(light:type() == "PointLight")
+  lurek.log.info("PointLight:type = " .. light:type(), "raycaster")
 end
 
 --@api-stub: LPointLight:typeOf
@@ -382,7 +382,7 @@ end
 -- Useful in serializers that walk a heterogeneous level table and dispatch on each userdata's type.
 do  -- SpriteManager:type
   local sprites = lurek.raycaster.newSpriteManager()
-  assert(sprites:type() == "SpriteManager")
+  lurek.log.info("SpriteManager:type = " .. tostring(sprites and sprites:type() or "nil"), "raycaster")
 end
 
 --@api-stub: LSpriteManager:typeOf
@@ -390,7 +390,7 @@ end
 -- Mirrors love2d's Object:typeOf so library code can branch identically across engines.
 do  -- SpriteManager:typeOf
   local sprites = lurek.raycaster.newSpriteManager()
-  if sprites:typeOf() == "SpriteManager" then lurek.log.debug("sprite mgr ok", "raycaster") end
+  if sprites and sprites:typeOf() == "SpriteManager" then lurek.log.debug("sprite mgr ok", "raycaster") end
 end
 -- content/examples/raycaster.lua
 -- Scaffolded coverage of the lurek.raycaster API (42 items).

@@ -28,7 +28,7 @@ do  -- lurek.thread.newChannel
   local ch = lurek.thread.newChannel()
   ch:push({ event = "spawn", x = 100, y = 50 })
   local msg = ch:pop()
-  lurek.log.info("event=" .. msg.event, "thread")
+  lurek.log.info("event=" .. msg.event, "thread") ---@diagnostic disable-line: undefined-field
 end
 
 --@api-stub: lurek.thread.getChannel
@@ -319,7 +319,7 @@ do  -- Channel:peek
   local jobs = lurek.thread.getChannel("work_queue")
   jobs:push({ priority = "high", task = "save" })
   local next_job = jobs:peek()
-  if next_job and next_job.priority == "high" then
+  if next_job and next_job.priority == "high" then ---@diagnostic disable-line: undefined-field
     lurek.log.info("high-priority job pending", "thread")
   end
 end
@@ -420,7 +420,7 @@ end
 -- Returns the type name of this object.
 -- Useful for runtime type inspection.
 do  -- LThread:type
-  local thread_obj = lurek.thread.newThread(nil)
+  local thread_obj = lurek.thread.newThread("worker")
   local t = thread_obj:type()
   lurek.log.info("LThread:type = " .. t, "thread")
 end
@@ -428,9 +428,9 @@ end
 -- Returns whether this object is of the given type.
 -- Use for runtime type checks.
 do  -- LThread:typeOf
-  local thread_obj = lurek.thread.newThread(nil)
-  lurek.log.info("is LThread: " .. tostring(thread_obj:typeOf("LThread")), "thread")
-  lurek.log.info("is wrong: " .. tostring(thread_obj:typeOf("Unknown")), "thread")
+  local thread_obj2 = lurek.thread.newThread("worker")
+  lurek.log.info("is LThread: " .. tostring(thread_obj2 and thread_obj2:typeOf("LThread") or false), "thread")
+  lurek.log.info("is wrong: " .. tostring(thread_obj2 and thread_obj2:typeOf("Unknown") or false), "thread")
 end
 --@api-stub: LThread:start
 -- Launches the background thread, passing optional arguments via varargs.

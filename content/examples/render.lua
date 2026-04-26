@@ -855,7 +855,7 @@ end
 -- Rectangle with chamfered corners; pass corner-cut size in pixels.
 do  -- lurek.render.drawBevelRect
   function lurek.draw()
-    lurek.render.drawBevelRect('fill', 50, 50, 200, 80, 8)
+    lurek.render.drawBevelRect(50, 50, 200, 80, 8)
   end
 end
 
@@ -864,7 +864,7 @@ end
 -- Push a named layer onto the layer stack so subsequent draws are tagged into it.
 do  -- lurek.render.pushLayer
   function lurek.draw()
-    lurek.render.pushLayer('hud')
+    lurek.render.pushLayer(1)
     lurek.render.print('HP 100', 10, 10)
     lurek.render.popLayer(1)
   end
@@ -874,7 +874,7 @@ end
 -- Ends and composites the named layer back to its parent.
 -- Pop the most recently pushed layer; balance pushes per frame.
 do  -- lurek.render.popLayer
-  function lurek.draw() lurek.render.pushLayer('overlay'); lurek.render.rectangle('fill', 0, 0, 32, 32); lurek.render.popLayer(1) end
+  function lurek.draw() lurek.render.pushLayer(2); lurek.render.rectangle('fill', 0, 0, 32, 32); lurek.render.popLayer(2) end
 end
 
 --@api-stub: lurek.render.drawQuadBezier
@@ -979,7 +979,7 @@ end
 -- Rectangle with chamfered corners; pass corner-cut size in pixels.
 do  -- lurek.render.drawBevelRect
   function lurek.draw()
-    lurek.render.drawBevelRect('fill', 50, 50, 200, 80, 8)
+    lurek.render.drawBevelRect(50, 50, 200, 80, 8)
   end
 end
 
@@ -988,7 +988,7 @@ end
 -- Push a named layer onto the layer stack so subsequent draws are tagged into it.
 do  -- lurek.render.pushLayer
   function lurek.draw()
-    lurek.render.pushLayer('hud')
+    lurek.render.pushLayer(1)
     lurek.render.print('HP 100', 10, 10)
     lurek.render.popLayer(1)
   end
@@ -998,7 +998,7 @@ end
 -- Ends and composites the named layer.
 -- Pop the most recently pushed layer; balance pushes per frame.
 do  -- lurek.render.popLayer
-  function lurek.draw() lurek.render.pushLayer('overlay'); lurek.render.rectangle('fill', 0, 0, 32, 32); lurek.render.popLayer(1) end
+  function lurek.draw() lurek.render.pushLayer(2); lurek.render.rectangle('fill', 0, 0, 32, 32); lurek.render.popLayer(2) end
 end
 
 --@api-stub: lurek.render.newLayer
@@ -1639,7 +1639,7 @@ end
 -- Number of queued draws; sample for HUD debug or budget enforcement.
 do  -- DrawLayer:getCount
   local dl
-  function lurek.init() dl = lurek.render.newDrawLayer(); dl:queue('rect', 'fill', 0, 0, 8, 8); lurek.log.debug('queued=' .. dl:getCount()) end
+  function lurek.init() dl = lurek.render.newDrawLayer(); dl:queue(0, function() lurek.render.rectangle('fill', 0, 0, 8, 8) end); lurek.log.debug('queued=' .. dl:getCount()) end
 end
 
 --@api-stub: LDrawLayer:type

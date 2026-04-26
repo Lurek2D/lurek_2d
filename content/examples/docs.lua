@@ -8,6 +8,10 @@
 --
 -- Run: cargo run -- content/examples/docs.lua
 
+-- LApiCatalog / LSchema / LDocEntry have many methods not captured in generated stubs.
+-- Docs API functions accept specific classes but stubs use generic userdata? types.
+---@diagnostic disable: undefined-field, param-type-mismatch, need-check-nil
+
 -- ── lurek.docs.* functions ──
 
 --@api-stub: lurek.docs.scan

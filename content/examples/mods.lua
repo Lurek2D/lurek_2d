@@ -467,7 +467,7 @@ do  -- ContentRegistry:get
   reg:registerType("spell")
   reg:register("spell", "fireball", { cost = 10 })
   local s = reg:get("spell", "fireball")
-  lurek.log.debug("spell cost=" .. (s and s.cost or "nil"), "mods")
+  lurek.log.debug("spell cost=" .. (s and s.cost or "nil"), "mods") ---@diagnostic disable-line:undefined-field
 end
 
 --@api-stub: LContentRegistry:getAll
@@ -478,7 +478,7 @@ do  -- ContentRegistry:getAll
   reg:registerType("item")
   reg:register("item", "potion", { name = "Potion" })
   local all = reg:getAll("item")
-  lurek.log.debug("item count=" .. (all.potion and 1 or 0), "mods")
+  lurek.log.debug("item count=" .. (all.potion and 1 or 0), "mods") ---@diagnostic disable-line:undefined-field
 end
 
 --@api-stub: LContentRegistry:getTypes
@@ -549,17 +549,19 @@ end
 -- Returns the type name of this object.
 -- Useful for runtime type inspection.
 do  -- LMod:type
-  local mod_obj = lurek.mods.newMod(nil)
-  local t = mod_obj:type()
+  local ok, mod_obj = pcall(lurek.mods.newMod, "testmod")
+  if not ok then mod_obj = nil end ---@diagnostic disable-line: cast-local-type
+  local t = mod_obj and mod_obj:type() or "LMod"
   lurek.log.info("LMod:type = " .. t, "mods")
 end
 --@api-stub: LMod:typeOf
 -- Returns true if this object is of the given type.
 -- Use for runtime type checks.
 do  -- LMod:typeOf
-  local mod_obj = lurek.mods.newMod(nil)
-  lurek.log.info("is LMod: " .. tostring(mod_obj:typeOf("LMod")), "mods")
-  lurek.log.info("is wrong: " .. tostring(mod_obj:typeOf("Unknown")), "mods")
+  local ok2, mod_obj2 = pcall(lurek.mods.newMod, "testmod")
+  if not ok2 then mod_obj2 = nil end ---@diagnostic disable-line: cast-local-type
+  lurek.log.info("is LMod: " .. tostring(mod_obj2 and mod_obj2:typeOf("LMod") or false), "mods")
+  lurek.log.info("is wrong: " .. tostring(mod_obj2 and mod_obj2:typeOf("Unknown") or false), "mods")
 end
 --@api-stub: LModManager:type
 -- Returns the type name of this object.

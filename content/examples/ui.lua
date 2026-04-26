@@ -3383,7 +3383,7 @@ end
 -- Use for runtime type dispatch in generic widget handlers.
 do  -- lurek.ui.type
   local chart = lurek.ui.newLineChart({ width = 200, height = 150, title = "FPS" })
-  local t = lurek.ui.type(chart)
+  local t = chart:type()
   lurek.log.info("ui.type=" .. tostring(t), "ui")
 end
 --@api-stub: LLineChart:setYMax

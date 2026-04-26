@@ -880,7 +880,7 @@ end
 -- Useful for runtime type inspection.
 do  -- LCombo:type
   local ok, combo_obj = pcall(lurek.input.newCombo, {"a","b"}, {})
-  if not ok then combo_obj = nil end
+  if not ok then combo_obj = nil end ---@diagnostic disable-line: cast-local-type
   local t = combo_obj and combo_obj:type() or "LInputCombo"
   lurek.log.info("LCombo:type = " .. t, "input")
 end
@@ -889,7 +889,7 @@ end
 -- Use for runtime type checks.
 do  -- LCombo:typeOf
   local ok_c2, combo_obj2 = pcall(lurek.input.newCombo, {"a","b"}, {})
-  if not ok_c2 then combo_obj2 = nil end
+  if not ok_c2 then combo_obj2 = nil end ---@diagnostic disable-line: cast-local-type
   lurek.log.info("is LCombo: " .. tostring(combo_obj2 and combo_obj2:typeOf("LCombo") or false), "input")
   lurek.log.info("is wrong: " .. tostring(combo_obj2 and combo_obj2:typeOf("Unknown") or false), "input")
 end

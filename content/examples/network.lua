@@ -7,6 +7,9 @@
 -- off the main thread. Both must be polled every frame to surface events.
 --
 -- Run: cargo run -- content/examples/network.lua
+---@diagnostic disable: cast-local-type
+-- pcall() is used throughout to construct host objects; the nil-guard pattern
+-- (ok, handle = pcall(...); if not ok then handle = nil end) is intentional.
 
 -- ── lurek.network.* functions ──
 
@@ -497,17 +500,19 @@ end
 -- Returns the type name of this object.
 -- Useful for runtime type inspection.
 do  -- LNetworkHost:type
-  local network_host_obj = lurek.network.newHost(nil)
-  local t = network_host_obj:type()
+  local ok, network_host_obj = pcall(lurek.network.newHost, 7777)
+  if not ok then network_host_obj = nil end
+  local t = network_host_obj and network_host_obj:type() or "LNetworkHost"
   lurek.log.info("LNetworkHost:type = " .. t, "network")
 end
 --@api-stub: LNetworkHost:typeOf
 -- Returns true if this object is of the given type.
 -- Use for runtime type checks.
 do  -- LNetworkHost:typeOf
-  local network_host_obj = lurek.network.newHost(nil)
-  lurek.log.info("is LNetworkHost: " .. tostring(network_host_obj:typeOf("LNetworkHost")), "network")
-  lurek.log.info("is wrong: " .. tostring(network_host_obj:typeOf("Unknown")), "network")
+  local ok2, network_host_obj2 = pcall(lurek.network.newHost, 7778)
+  if not ok2 then network_host_obj2 = nil end
+  lurek.log.info("is LNetworkHost: " .. tostring(network_host_obj2 and network_host_obj2:typeOf("LNetworkHost") or false), "network")
+  lurek.log.info("is wrong: " .. tostring(network_host_obj2 and network_host_obj2:typeOf("Unknown") or false), "network")
 end
 --@api-stub: LNetworkRuntime:type
 -- Returns the type name of this object.

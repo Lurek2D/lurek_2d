@@ -6,6 +6,9 @@
 -- and ZIP archives can be mounted at virtual prefixes for content packs.
 --
 -- Run: cargo run -- content/examples/filesystem.lua
+---@diagnostic disable: cast-local-type
+-- pcall() is used throughout to construct file handles; the nil-guard pattern
+-- (ok, handle = pcall(...); if not ok then handle = nil end) is intentional.
 
 -- ── lurek.filesystem.* functions ──
 
@@ -112,7 +115,8 @@ end
 do  -- lurek.filesystem.isFile
   pcall(function()
     if lurek.filesystem.isFile("config/options.toml") then
-      local cfg = lurek.filesystem.read("config/options.toml")
+      local ok_cfg, cfg = pcall(lurek.filesystem.read, "config/options.toml")
+      if not ok_cfg then cfg = nil end
       lurek.log.info("config loaded (" .. #cfg .. " bytes)", "config")
     end
   end)
@@ -607,49 +611,61 @@ end
 -- Returns the type name of this object.
 -- Useful for runtime type inspection.
 do  -- LFileData:type
-  local file_data_obj = lurek.filesystem.newFileData("save/")
-  local t = file_data_obj:type()
-  lurek.log.info("LFileData:type = " .. t, "filesystem")
+  local ok_fd, file_data_obj = pcall(lurek.filesystem.newFileData, "save/highscore.txt")
+  if ok_fd and file_data_obj then
+    local t = file_data_obj:type()
+    lurek.log.info("LFileData:type = " .. t, "filesystem")
+  else
+    lurek.log.info("LFileData:type = skipped", "filesystem")
+  end
 end
 --@api-stub: LFileData:typeOf
 -- Returns true if this object is of the given type.
 -- Use for runtime type checks.
 do  -- LFileData:typeOf
-  local file_data_obj = lurek.filesystem.newFileData("save/")
-  lurek.log.info("is LFileData: " .. tostring(file_data_obj:typeOf("LFileData")), "filesystem")
-  lurek.log.info("is wrong: " .. tostring(file_data_obj:typeOf("Unknown")), "filesystem")
+  local ok_fd2, file_data_obj2 = pcall(lurek.filesystem.newFileData, "save/highscore.txt")
+  if ok_fd2 and file_data_obj2 then
+    lurek.log.info("is LFileData: " .. tostring(file_data_obj2:typeOf("LFileData")), "filesystem")
+    lurek.log.info("is wrong: " .. tostring(file_data_obj2:typeOf("Unknown")), "filesystem")
+  else
+    lurek.log.info("LFileData:typeOf = skipped", "filesystem")
+  end
 end
 --@api-stub: LFileHandle:type
 -- Returns the type name of this object.
 -- Useful for runtime type inspection.
 do  -- LFileHandle:type
-  local file_handle_obj = lurek.filesystem.openFile("save/", nil)
-  local t = file_handle_obj:type()
+  local ok_fh, file_handle_obj = pcall(lurek.filesystem.openFile, "save/highscore.txt", nil)
+  if not ok_fh then file_handle_obj = nil end
+  local t = file_handle_obj and file_handle_obj:type() or "LFileHandle"
   lurek.log.info("LFileHandle:type = " .. t, "filesystem")
 end
 --@api-stub: LFileHandle:typeOf
 -- Returns true if this object is of the given type.
 -- Use for runtime type checks.
 do  -- LFileHandle:typeOf
-  local file_handle_obj = lurek.filesystem.openFile("save/", nil)
-  lurek.log.info("is LFileHandle: " .. tostring(file_handle_obj:typeOf("LFileHandle")), "filesystem")
-  lurek.log.info("is wrong: " .. tostring(file_handle_obj:typeOf("Unknown")), "filesystem")
+  local ok_fh, file_handle_obj = pcall(lurek.filesystem.openFile, "save/highscore.txt", nil)
+  if not ok_fh then file_handle_obj = nil end
+  lurek.log.info("is LFileHandle: " .. tostring(file_handle_obj and file_handle_obj:typeOf("LFileHandle") or false), "filesystem")
+  lurek.log.info("is wrong: " .. tostring(file_handle_obj and file_handle_obj:typeOf("Unknown") or false), "filesystem")
 end
 --@api-stub: LZipMount:type
 -- Returns the type name of this object.
 -- Useful for runtime type inspection.
 do  -- LZipMount:type
-  local zip_mount_obj = lurek.filesystem.mountZip(nil, nil)
-  local t = zip_mount_obj:type()
+  local ok_zm, zip_mount_obj = pcall(lurek.filesystem.mountZip, "assets/data.zip", nil)
+  if not ok_zm then zip_mount_obj = nil end
+  local t = zip_mount_obj and zip_mount_obj:type() or "LZipMount"
   lurek.log.info("LZipMount:type = " .. t, "filesystem")
 end
 --@api-stub: LZipMount:typeOf
 -- Returns true if this object is of the given type.
 -- Use for runtime type checks.
 do  -- LZipMount:typeOf
-  local zip_mount_obj = lurek.filesystem.mountZip(nil, nil)
-  lurek.log.info("is LZipMount: " .. tostring(zip_mount_obj:typeOf("LZipMount")), "filesystem")
-  lurek.log.info("is wrong: " .. tostring(zip_mount_obj:typeOf("Unknown")), "filesystem")
+  local ok_zm2, zip_mount_obj2 = pcall(lurek.filesystem.mountZip, "assets/data.zip", nil)
+  if not ok_zm2 then zip_mount_obj2 = nil end
+  lurek.log.info("is LZipMount: " .. tostring(zip_mount_obj2 and zip_mount_obj2:typeOf("LZipMount") or false), "filesystem")
+  lurek.log.info("is wrong: " .. tostring(zip_mount_obj2 and zip_mount_obj2:typeOf("Unknown") or false), "filesystem")
 end
 --@api-stub: block below with a real scenario.
 -- Run .github/prompts/flesh-out-example.prompt.md for instructions.

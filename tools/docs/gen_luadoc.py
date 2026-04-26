@@ -102,11 +102,25 @@ def normalize_type(type_name):
 
 
 def extract_return_from_full_doc(full_doc):
+    """Extract @return type(s) from a full docstring.
+
+    When multiple ``@return`` lines are present (e.g. one per return value), collect all
+    type tokens and join them as a comma-separated list so that write_function_doc can
+    emit one ``---@return`` annotation per value.
+    """
+    types = []
     for line in full_doc.splitlines():
         match = re.match(r"^@return\s+(.+?)\s*$", line.strip())
         if match:
-            return match.group(1).strip()
-    return ""
+            # Strip description (2+ spaces separate type from description text).
+            type_part = re.split(r"\s{2,}", match.group(1).strip())[0].strip()
+            types.append(type_part)
+    if not types:
+        return ""
+    if len(types) == 1:
+        return types[0]
+    # Multiple @return lines → join as comma-separated so parse_returns can split them.
+    return ", ".join(types)
 
 
 def normalize_param_type(type_name, is_optional=False):
@@ -279,6 +293,10 @@ def parse_returns(fn):
         # e.g. "table  {x, y, width, height}" → "table" to avoid heuristic
         # false-matches on description words (e.g. "width, height" → "number, number").
         type_token = re.split(r'\s{2,}', ret_doc)[0].strip()
+        # Handle comma-separated primitive type lists, e.g. "@return number, number, number".
+        # Without this, guess_type collapses "number, number" to just "number".
+        if ',' in type_token and re.match(r'^[a-z][a-z0-9_?|]*(?:,\s*[a-z][a-z0-9_?|]*)*$', type_token):
+            return type_token
         res = guess_type(type_token, is_return=True)
         if res != "any":
             return normalize_type(res)
@@ -412,7 +430,13 @@ def main():
             if candidate in _l_declared_lower:
                 _OPAQUE_ALIASES[type_name] = _l_declared_lower[candidate]
 
+    # Types defined as @class in docs/api/library.lua — skip generating aliases for them
+    # to avoid 'duplicate-doc-alias' warnings from the Lua language server.
+    _SKIP_ALIAS = {"EventBus", "Scheduler", "Stack"}
+
     for type_name in opaque_types:
+        if type_name in _SKIP_ALIAS:
+            continue
         if type_name in _OPAQUE_ALIASES:
             out.append(f"---@alias {type_name} {_OPAQUE_ALIASES[type_name]}")
             out.append("")
@@ -430,6 +454,22 @@ def main():
             ("CELL_ROCK",  "integer", "rock cell (3)"),
             ("CELL_FIRE",  "integer", "fire cell (4)"),
             ("CELL_GAS",   "integer", "gas cell (5)"),
+        ],
+        "math": [
+            ("pi",  "number", "\u03c0 \u2248 3.14159265358979"),
+            ("tau", "number", "\u03c4 = 2\u03c0 \u2248 6.28318530717959"),
+        ],
+        "tilemap": [
+            ("FLOOR",      "integer", "solid floor tile type (1)"),
+            ("NORTH_WALL", "integer", "north-facing wall tile type (2)"),
+            ("WEST_WALL",  "integer", "west-facing wall tile type (3)"),
+            ("OBJECT",     "integer", "object tile type (4)"),
+        ],
+        "input": [
+            ("keyboard", "LInputKeyboard", "keyboard state subtable"),
+            ("mouse",    "LInputMouse",    "mouse state subtable"),
+            ("gamepad",  "LInputGamepad",  "gamepad state subtable"),
+            ("touch",    "LInputTouch",    "touch state subtable"),
         ],
     }
 
@@ -450,6 +490,15 @@ def main():
                 for line in desc.splitlines():
                     out.append(f"--- {line}")
             out.append(f"---@class {class_name}")
+            # Hardcoded field annotations for types whose fields are Rust struct members
+            # not visible to the Rust parser (registered via add_field_method_get).
+            if class_name == "LVec2":
+                out.append("---@field x number  x component")
+                out.append("---@field y number  y component")
+            elif class_name == "LVec3":
+                out.append("---@field x number  x component")
+                out.append("---@field y number  y component")
+                out.append("---@field z number  z component")
             out.append(f"{class_name} = {{}}")
             out.append("")
 

@@ -27,8 +27,6 @@ lurek = {}
 
 ---@alias ApiCatalog LApiCatalog
 
----@alias AreaChart LAreaChart
-
 ---@alias Array LArray
 
 ---@alias AutoTileSheet LAutoTileSheet
@@ -36,8 +34,6 @@ lurek = {}
 ---@alias BTNode LBTNode
 
 ---@alias Bandit LBandit
-
----@alias BarChart LBarChart
 
 ---@alias BehaviorTree LBehaviorTree
 
@@ -105,8 +101,6 @@ lurek = {}
 
 ---@alias Environment any
 
----@alias EventBus LEventBus
-
 ---@alias Factory LFactory
 
 ---@alias FileData LFileData
@@ -166,8 +160,6 @@ lurek = {}
 ---@alias LayeredImage LLayeredImage
 
 ---@alias Light LLight
-
----@alias LineChart LLineChart
 
 ---@class Linux
 Linux = {}
@@ -245,8 +237,6 @@ LuaParallaxSet = {}
 
 ---@alias PhysicsShape LPhysicsShape
 
----@alias PieChart LPieChart
-
 ---@alias Pipeline LPipeline
 
 ---@alias PointLight LPointLight
@@ -282,10 +272,6 @@ LuaParallaxSet = {}
 ---@alias RingBuffer LRingBuffer
 
 ---@alias SaveManager LSaveManager
-
----@alias ScatterPlot LScatterPlot
-
----@alias Scheduler LScheduler
 
 ---@alias ScreenTransition LScreenTransition
 
@@ -325,8 +311,6 @@ LuaParallaxSet = {}
 
 ---@alias Squad LSquad
 
----@alias Stack LStack
-
 ---@alias StateMachine LStateMachine
 
 ---@alias SteeringManager LSteeringManager
@@ -344,8 +328,6 @@ LuaParallaxSet = {}
 ---@alias Terrain LTerrain
 
 ---@alias TextureKey any
-
----@alias Theme LTheme
 
 ---@alias ThreadHandle LThread
 
@@ -629,6 +611,7 @@ function LAgent:getName() end
 
 --- Returns the agent's current position.
 ---@return number
+---@return number
 function LAgent:getPosition() end
 
 --- Returns the agent's scheduling priority.
@@ -636,6 +619,7 @@ function LAgent:getPosition() end
 function LAgent:getPriority() end
 
 --- Returns the agent's current velocity.
+---@return number
 ---@return number
 function LAgent:getVelocity() end
 
@@ -839,6 +823,7 @@ function LCommandQueue:getCount() end
 
 --- Returns the target coordinates of the front command.
 ---@return number
+---@return number
 function LCommandQueue:getCurrentTarget() end
 
 --- Returns the kind of the front command, or nil.
@@ -920,6 +905,7 @@ function LContextSteering:clearBehaviors() end
 ---@param ay number
 ---@param vx number
 ---@param vy number
+---@return number
 ---@return number
 function LContextSteering:evaluate(ax, ay, vx, vy) end
 
@@ -1184,10 +1170,12 @@ function LInfluenceMap:getInfluence(layer, x, y) end
 --- Returns the world-space position of the maximum value.
 ---@param layer string
 ---@return number
+---@return number
 function LInfluenceMap:getMaxPosition(layer) end
 
 --- Returns the world-space position of the minimum value.
 ---@param layer string
+---@return number
 ---@return number
 function LInfluenceMap:getMinPosition(layer) end
 
@@ -1414,6 +1402,7 @@ function LORCASolver:compute(dt) end
 --- Returns the safe velocity.
 ---@param index integer
 ---@return number
+---@return number
 function LORCASolver:getSafeVelocity(index) end
 
 --- Sets the agent's current world-space position for ORCA velocity computation.
@@ -1565,6 +1554,7 @@ function LSquad:getFormation() end
 ---@param memberIdx integer
 ---@param leaderX number
 ---@param leaderY number
+---@return number
 ---@return number
 function LSquad:getFormationPosition(memberIdx, leaderX, leaderY) end
 
@@ -1724,6 +1714,7 @@ function LSteeringManager:addWander(radius, dist, jitter, weight) end
 ---@param agent Agent
 ---@param dt number
 ---@return number
+---@return number
 function LSteeringManager:applyCustomSteering(agent, dt) end
 
 --- Computes the combined steering force for the given agent state.
@@ -1734,6 +1725,7 @@ function LSteeringManager:applyCustomSteering(agent, dt) end
 ---@param maxSpeed number
 ---@param maxForce number
 ---@param dt number
+---@return number
 ---@return number
 function LSteeringManager:calculate(px, py, vx, vy, maxSpeed, maxForce, dt) end
 
@@ -1751,6 +1743,7 @@ function LSteeringManager:getBehaviorCount() end
 function LSteeringManager:getCombineMode() end
 
 --- Returns the last computed steering force.
+---@return number
 ---@return number
 function LSteeringManager:getLastSteering() end
 
@@ -3166,9 +3159,12 @@ lurek.audio.getHighpass = function(source) end
 
 --- Returns the 3D listener position (x, y, z).
 ---@return number
+---@return number
+---@return number
 lurek.audio.getListener = function() end
 
 --- Returns the 2D listener position (x, y).
+---@return number
 ---@return number
 lurek.audio.getListener2D = function() end
 
@@ -3215,6 +3211,8 @@ lurek.audio.getPlaybackDevices = function() end
 --- Returns the 3D position of a source (x, y, z).
 ---@param source Source
 ---@return number
+---@return number
+---@return number
 lurek.audio.getPosition = function(source) end
 
 --- Returns the bus a source is assigned to, or nil.
@@ -3238,6 +3236,8 @@ lurek.audio.getStereoWidth = function(src) end
 
 --- Returns the velocity of a source (x, y, z).
 ---@param source Source
+---@return number
+---@return number
 ---@return number
 lurek.audio.getVelocity = function(source) end
 
@@ -3776,6 +3776,7 @@ function LCamera:followPath(points, duration) end
 
 --- Returns the current sway x, y world-space offset.
 ---@return number
+---@return number
 function LCamera:getEffectOffset() end
 
 --- Returns the current zoom level including zoom pulse and breathing deltas.
@@ -3789,6 +3790,7 @@ function LCamera:getParallaxFactor(layer) end
 
 --- Returns the camera's world-space position as x, y.
 ---@return number
+---@return number
 function LCamera:getPosition() end
 
 --- Returns the rotation in radians.
@@ -3797,9 +3799,15 @@ function LCamera:getRotation() end
 
 --- Returns the current viewport as x, y, w, h.
 ---@return number
+---@return number
+---@return number
+---@return number
 function LCamera:getViewport() end
 
 --- Returns the visible world area as x, y, w, h.
+---@return number
+---@return number
+---@return number
 ---@return number
 function LCamera:getVisibleArea() end
 
@@ -3939,11 +3947,13 @@ function LCamera:stopZoom() end
 ---@param wx number
 ---@param wy number
 ---@return number
+---@return number
 function LCamera:toScreen(wx, wy) end
 
 --- Converts screen coordinates to world coordinates.
 ---@param sx number
 ---@param sy number
+---@return number
 ---@return number
 function LCamera:toWorld(sx, sy) end
 
@@ -6005,13 +6015,15 @@ lurek.docs.checkStaleness = function(catalog_ud, source_dir) end
 
 --- Return (documented_count, total_live_count) coverage tuple.
 ---@param catalog_ud? userdata
----@return number
+---@return integer
+---@return integer
 lurek.docs.coverage = function(catalog_ud) end
 
 --- Return (documented_count, total_live_count) for a single module.
 ---@param module_name string
 ---@param catalog_ud? userdata
----@return number
+---@return integer
+---@return integer
 lurek.docs.coverageModule = function(module_name, catalog_ud) end
 
 --- Inject or update a description for a named API entry.
@@ -6564,6 +6576,9 @@ function LOverlay:flash(r, g, b, a, duration) end
 
 --- Returns the current ambient tint as r, g, b, a components.
 ---@return number
+---@return number
+---@return number
+---@return number
 function LOverlay:getAmbientColor() end
 
 --- Returns the current cloud shadow instance count.
@@ -6583,7 +6598,8 @@ function LOverlay:getCloudScale() end
 function LOverlay:getCloudSpeed() end
 
 --- Returns the effect width and height.
----@return number
+---@return integer
+---@return integer
 function LOverlay:getDimensions() end
 
 --- Returns the current film-grain intensity.
@@ -6595,6 +6611,9 @@ function LOverlay:getFilmGrainIntensity() end
 function LOverlay:getFlashAlpha() end
 
 --- Returns the current fog tint as r, g, b, a components.
+---@return number
+---@return number
+---@return number
 ---@return number
 function LOverlay:getFogColor() end
 
@@ -6616,9 +6635,13 @@ function LOverlay:getLightningAlpha() end
 
 --- Returns the lightning flash tint as r, g, b, a components.
 ---@return number
+---@return number
+---@return number
+---@return number
 function LOverlay:getLightningColor() end
 
 --- Returns the current shake displacement as x, y.
+---@return number
 ---@return number
 function LOverlay:getShakeOffset() end
 
@@ -7050,7 +7073,8 @@ function LPostFxStack:dedup() end
 function LPostFxStack:endCapture() end
 
 --- Returns width and height of the render target.
----@return number
+---@return integer
+---@return integer
 function LPostFxStack:getDimensions() end
 
 --- Returns the effect at the given 1-based position, or nil.
@@ -7137,6 +7161,9 @@ function LPostFxStack:typeOf(name) end
 LScreenTransition = {}
 
 --- Returns the fill color as four numbers: `r, g, b, a`.
+---@return number
+---@return number
+---@return number
 ---@return number
 function LScreenTransition:color() end
 
@@ -7764,6 +7791,8 @@ function LGlobe:addProvince(p) end
 function LGlobe:findPath(from_id, to_id) end
 
 --- Get the current camera (lat, lon, zoom).
+---@return number
+---@return number
 ---@return number
 function LGlobe:getCamera() end
 
@@ -8659,7 +8688,7 @@ function LHtmlDocument:clearCss() end
 ---@return nil
 function LHtmlDocument:draw(x, y) end
 
---- Finds one element by id.
+--- Finds the first element whose id attribute matches the given value, or nil.
 ---@param id string
 ---@return HtmlElement?
 function LHtmlDocument:getElementById(id) end
@@ -8673,6 +8702,7 @@ function LHtmlDocument:getHtml() end
 function LHtmlDocument:getRoot() end
 
 --- Returns the document layout viewport in UI pixels.
+---@return number
 ---@return number
 function LHtmlDocument:getViewport() end
 
@@ -8812,6 +8842,9 @@ function LHtmlElement:getId() end
 
 --- Returns this element's last computed layout rectangle.
 ---@return number
+---@return number
+---@return number
+---@return number
 function LHtmlElement:getRect() end
 
 --- Returns an inline or stylesheet value for a property.
@@ -8857,7 +8890,7 @@ function LHtmlElement:queryAll(selector) end
 ---@return nil
 function LHtmlElement:remove() end
 
---- Removes an attribute.
+--- Removes the named attribute from this element; does nothing if absent.
 ---@param name string
 ---@return nil
 function LHtmlElement:removeAttribute(name) end
@@ -9106,7 +9139,8 @@ lurek.image = {}
 LCompressedImageData = {}
 
 --- Returns the width and height of the base mip level.
----@return number
+---@return integer
+---@return integer
 function LCompressedImageData:getDimensions() end
 
 --- Returns the compressed format name string.
@@ -9251,7 +9285,8 @@ function LImageData:flipVertical() end
 function LImageData:gamma(gamma) end
 
 --- Returns the width and height of the image as two integers.
----@return number
+---@return integer
+---@return integer
 function LImageData:getDimensions() end
 
 --- Returns the height of the image in pixels.
@@ -9261,7 +9296,10 @@ function LImageData:getHeight() end
 --- Returns the RGBA colour components of the pixel at (x, y) as four integers (0-255).
 ---@param x integer
 ---@param y integer
----@return number
+---@return integer
+---@return integer
+---@return integer
+---@return integer
 function LImageData:getPixel(x, y) end
 
 --- Returns a copy of the rectangular sub-region as a new ImageData.
@@ -9602,6 +9640,10 @@ lurek.image.saveImage = function(imagedata, path) end
 lurek.image.savePNG = function(imagedata, path) end
 
 ---@class lurek.input
+---@field keyboard LInputKeyboard  keyboard state subtable
+---@field mouse LInputMouse  mouse state subtable
+---@field gamepad LInputGamepad  gamepad state subtable
+---@field touch LInputTouch  touch state subtable
 lurek.input = {}
 
 --- Lua-side wrapper for a [`ComboDetector`] with an integrated millisecond clock.
@@ -9780,10 +9822,12 @@ lurek.input.getPlaybackFrame = function() end
 
 --- Returns the current cursor position as (x, y).
 ---@return number
+---@return number
 lurek.input.getPosition = function() end
 
 --- Returns the position (x, y) of the touch with the given ID.
 ---@param id integer
+---@return number
 ---@return number
 lurek.input.getPosition = function(id) end
 
@@ -9815,6 +9859,7 @@ lurek.input.getTouchCount = function() end
 lurek.input.getTouches = function() end
 
 --- Returns the mouse scroll wheel delta (dx, dy) since last frame.
+---@return number
 ---@return number
 lurek.input.getWheelDelta = function() end
 
@@ -10047,6 +10092,8 @@ function LLight:clearCookie() end
 
 --- Returns the custom attenuation coefficients as (constant, linear, quadratic).
 ---@return number
+---@return number
+---@return number
 function LLight:getAttenuation() end
 
 --- Returns the blend mode as a string.
@@ -10054,6 +10101,9 @@ function LLight:getAttenuation() end
 function LLight:getBlendMode() end
 
 --- Returns the light's tint color as (r, g, b, a).
+---@return number
+---@return number
+---@return number
 ---@return number
 function LLight:getColor() end
 
@@ -10074,6 +10124,7 @@ function LLight:getEnergy() end
 function LLight:getFalloff() end
 
 --- Returns the flicker effect speed and strength.
+---@return number
 ---@return number
 function LLight:getFlicker() end
 
@@ -10103,6 +10154,7 @@ function LLight:getOuterAngle() end
 
 --- Returns the light's world-space position.
 ---@return number
+---@return number
 function LLight:getPosition() end
 
 --- Returns the light's influence radius.
@@ -10110,6 +10162,9 @@ function LLight:getPosition() end
 function LLight:getRadius() end
 
 --- Returns the shadow region color as (r, g, b, a).
+---@return number
+---@return number
+---@return number
 ---@return number
 function LLight:getShadowColor() end
 
@@ -10321,6 +10376,7 @@ function LOccluder:getOpacity() end
 
 --- Returns the translation offset as (x, y).
 ---@return number
+---@return number
 function LOccluder:getPosition() end
 
 --- Returns the polygon vertices as a flat table {x1,y1,x2,y2,...}.
@@ -10384,6 +10440,9 @@ lurek.light.advanceFlickers = function(dt) end
 lurek.light.clear = function() end
 
 --- Returns the global ambient light color as (r, g, b, a).
+---@return number
+---@return number
+---@return number
 ---@return number
 lurek.light.getAmbient = function() end
 
@@ -10466,6 +10525,9 @@ lurek.light.setGroupIntensity = function(groupId, intensity) end
 lurek.light.setMaxLights = function(n) end
 
 --- Returns the current ambient light colour as (r, g, b, a).
+---@return number
+---@return number
+---@return number
 ---@return number
 lurek.light.syncAmbient = function() end
 
@@ -10573,6 +10635,8 @@ lurek.log.warn = function(message, tag) end
 lurek.log.warn_fields = function(message, fields_table) end
 
 ---@class lurek.math
+---@field pi number  π ≈ 3.14159265358979
+---@field tau number  τ = 2π ≈ 6.28318530717959
 lurek.math = {}
 
 --- Lua-side wrapper around an [`AabbTree`].
@@ -10648,6 +10712,7 @@ LBezierCurve = {}
 
 --- Evaluates the curve at parameter t, returning (x, y).
 ---@param t number
+---@return number
 ---@return number
 function LBezierCurve:evaluate(t) end
 
@@ -10737,16 +10802,19 @@ function LCatmullRom:len() end
 --- Removes the control point at `index` (0-based) and returns it.
 ---@param index integer
 ---@return number
+---@return number
 function LCatmullRom:removePoint(index) end
 
 --- Sample the spline at global t in [0, 1].
 ---@param t number
+---@return number
 ---@return number
 function LCatmullRom:sample(t) end
 
 --- Sample a specific segment at local t in [0, 1].
 ---@param seg integer
 ---@param t number
+---@return number
 ---@return number
 function LCatmullRom:sampleSegment(seg, t) end
 
@@ -10764,6 +10832,9 @@ function LCatmullRom:typeOf(name) end
 LCircle = {}
 
 --- Returns the axis-aligned bounding box as (min_x, min_y, max_x, max_y).
+---@return number
+---@return number
+---@return number
 ---@return number
 function LCircle:aabb() end
 
@@ -10813,6 +10884,7 @@ LHermite = {}
 
 --- Evaluate the spline at parameter t in [0, 1].
 ---@param t number
+---@return number
 ---@return number
 function LHermite:sample(t) end
 
@@ -10932,6 +11004,7 @@ function LNoiseGenerator:typeOf(name) end
 ---@param x number
 ---@param y number
 ---@param strength number
+---@return number
 ---@return number
 function LNoiseGenerator:warpDomain(x, y, strength) end
 
@@ -11101,6 +11174,7 @@ function LTransform:inverse() end
 ---@param x number
 ---@param y number
 ---@return number
+---@return number
 function LTransform:inverseTransformPoint(x, y) end
 
 --- Resets the transform to identity.
@@ -11139,6 +11213,7 @@ function LTransform:shear(kx, ky) end
 --- Transforms a point from local space to world space.
 ---@param x number
 ---@param y number
+---@return number
 ---@return number
 function LTransform:transformPoint(x, y) end
 
@@ -11230,6 +11305,8 @@ function LTween:update(dt) end
 
 --- Lua-side wrapper around a [`Vec2`] value type.
 ---@class LVec2
+---@field x number  x component
+---@field y number  y component
 LVec2 = {}
 
 --- Returns the angle of this vector in radians (atan2(y, x)).
@@ -11311,6 +11388,9 @@ function LVec2:y() end
 
 --- Lua-side wrapper around a [`Vec3`] value type.
 ---@class LVec3
+---@field x number  x component
+---@field y number  y component
+---@field z number  z component
 LVec3 = {}
 
 --- Add another Vec3 and return the result.
@@ -11507,6 +11587,7 @@ lurek.math.clamp = function(v, min, max) end
 ---@param x2 number
 ---@param y2 number
 ---@return number
+---@return number
 lurek.math.closestPointOnSegment = function(px, py, x1, y1, x2, y2) end
 
 --- Computes the convex hull of a flat {x1,y1,...} point list. Returns a flat table.
@@ -11574,6 +11655,9 @@ lurek.math.fmod = function(x, y) end
 --- Parses a hex color string (#RRGGBB or #RRGGBBAA) into (r, g, b, a) floats.
 ---@param hex string
 ---@return number
+---@return number
+---@return number
+---@return number
 lurek.math.fromHex = function(hex) end
 
 --- Converts a gamma-encoded sRGB value to linear space.
@@ -11597,6 +11681,9 @@ lurek.math.hermite = function(p0x, p0y, p1x, p1y, m0x, m0y, m1x, m1y) end
 ---@param h number
 ---@param s number
 ---@param l number
+---@return number
+---@return number
+---@return number
 ---@return number
 lurek.math.hslToRgb = function(h, s, l) end
 
@@ -11853,6 +11940,7 @@ lurek.math.polygonArea = function(polygon) end
 --- Returns the centroid (cx, cy) of a polygon given as a flat {x1,y1,...} table.
 ---@param polygon table
 ---@return number
+---@return number
 lurek.math.polygonCentroid = function(polygon) end
 
 --- Clips a polygon against a single half-plane using the Sutherland-Hodgman algorithm.
@@ -11910,6 +11998,9 @@ lurek.math.randomInt = function(lo, hi) end
 ---@param w number
 ---@param h number
 ---@return number
+---@return number
+---@return number
+---@return number
 lurek.math.rectFromCenter = function(cx, cy, w, h) end
 
 --- Returns the union (bounding box) of two rectangles.
@@ -11921,6 +12012,9 @@ lurek.math.rectFromCenter = function(cx, cy, w, h) end
 ---@param y2 number
 ---@param w2 number
 ---@param h2 number
+---@return number
+---@return number
+---@return number
 ---@return number
 lurek.math.rectUnion = function(x1, y1, w1, h1, x2, y2, w2, h2) end
 
@@ -11937,6 +12031,8 @@ lurek.math.remap = function(v, in_min, in_max, out_min, out_max) end
 ---@param r number
 ---@param g number
 ---@param b number
+---@return number
+---@return number
 ---@return number
 lurek.math.rgbToHsl = function(r, g, b) end
 
@@ -12106,6 +12202,7 @@ function LMinimap:drawToImage(pixel_size) end
 
 --- Returns the center coordinates as x, y.
 ---@return number
+---@return number
 function LMinimap:getCenter() end
 
 --- Returns the center X coordinate.
@@ -12125,7 +12222,8 @@ function LMinimap:getColorMode() end
 function LMinimap:getDisplayHeight() end
 
 --- Returns the display width and height as two values.
----@return number
+---@return integer
+---@return integer
 function LMinimap:getDisplaySize() end
 
 --- Returns the display width in pixels.
@@ -12133,6 +12231,9 @@ function LMinimap:getDisplaySize() end
 function LMinimap:getDisplayWidth() end
 
 --- Returns the fog overlay color as r, g, b, a.
+---@return number
+---@return number
+---@return number
 ---@return number
 function LMinimap:getFogColor() end
 
@@ -12147,7 +12248,8 @@ function LMinimap:getFogLevel(x, y) end
 function LMinimap:getGridHeight() end
 
 --- Returns the grid width and height as two values.
----@return number
+---@return integer
+---@return integer
 function LMinimap:getGridSize() end
 
 --- Returns the grid width in cells.
@@ -12186,6 +12288,9 @@ function LMinimap:getObjectTypeCount() end
 --- Returns the display color for an owner/faction as r, g, b, a.
 ---@param owner integer
 ---@return number
+---@return number
+---@return number
+---@return number
 function LMinimap:getOwnerColor(owner) end
 
 --- Returns the number of active pings.
@@ -12201,6 +12306,9 @@ function LMinimap:getTerrain(x, y) end
 --- Returns the display color for a terrain type as r, g, b, a.
 ---@param terrain_type integer
 ---@return number
+---@return number
+---@return number
+---@return number
 function LMinimap:getTerrainColor(terrain_type) end
 
 --- Returns the hover tooltip string for a terrain type ID, or nil.
@@ -12209,6 +12317,9 @@ function LMinimap:getTerrainColor(terrain_type) end
 function LMinimap:getTileDescription(type_id) end
 
 --- Returns the viewport rectangle color as r, g, b, a.
+---@return number
+---@return number
+---@return number
 ---@return number
 function LMinimap:getViewportColor() end
 
@@ -12225,6 +12336,7 @@ function LMinimap:getZoom() end
 ---@param gy number
 ---@param minimap_x number
 ---@param minimap_y number
+---@return number
 ---@return number
 function LMinimap:gridToScreen(gx, gy, minimap_x, minimap_y) end
 
@@ -12275,6 +12387,7 @@ function LMinimap:render(x, y) end
 ---@param sy number
 ---@param minimap_x number
 ---@param minimap_y number
+---@return number
 ---@return number
 function LMinimap:screenToGrid(sx, sy, minimap_x, minimap_y) end
 
@@ -12994,6 +13107,7 @@ function LParallaxLayer:clearClamp() end
 
 --- Returns the autoscroll velocity as `(vx, vy)`.
 ---@return number
+---@return number
 function LParallaxLayer:getAutoscroll() end
 
 --- Returns the current blend mode as a string.
@@ -13006,6 +13120,7 @@ function LParallaxLayer:getDepth() end
 
 --- Returns the static offset as `(x, y)`.
 ---@return number
+---@return number
 function LParallaxLayer:getOffset() end
 
 --- Returns the current opacity.
@@ -13014,6 +13129,7 @@ function LParallaxLayer:getOpacity() end
 
 --- Returns the scroll factor as `(x, y)`.
 ---@return number
+---@return number
 function LParallaxLayer:getScrollFactor() end
 
 --- Returns `true` if seamless infinite tiling is enabled.
@@ -13021,6 +13137,9 @@ function LParallaxLayer:getScrollFactor() end
 function LParallaxLayer:getTiling() end
 
 --- Returns the current tint as `(r, g, b, a)`.
+---@return number
+---@return number
+---@return number
 ---@return number
 function LParallaxLayer:getTint() end
 
@@ -13297,6 +13416,7 @@ function LParticleSystem:getFlipbook() end
 
 --- Returns the gravity acceleration applied to particles as two numbers `gx, gy`.
 ---@return number
+---@return number
 function LParticleSystem:getGravity() end
 
 --- Returns the insert mode as a string.
@@ -13305,29 +13425,38 @@ function LParticleSystem:getInsertMode() end
 
 --- Returns linear acceleration range.
 ---@return number
+---@return number
+---@return number
+---@return number
 function LParticleSystem:getLinearAcceleration() end
 
 --- Returns linear damping range.
+---@return number
 ---@return number
 function LParticleSystem:getLinearDamping() end
 
 --- Returns the render origin offset.
 ---@return number
+---@return number
 function LParticleSystem:getOffset() end
 
 --- Returns min and max particle lifetime.
+---@return number
 ---@return number
 function LParticleSystem:getParticleLifetime() end
 
 --- Returns the emitter world position.
 ---@return number
+---@return number
 function LParticleSystem:getPosition() end
 
 --- Returns radial acceleration range.
 ---@return number
+---@return number
 function LParticleSystem:getRadialAcceleration() end
 
 --- Returns initial rotation range.
+---@return number
 ---@return number
 function LParticleSystem:getRotation() end
 
@@ -13345,9 +13474,11 @@ function LParticleSystem:getSizes() end
 
 --- Returns min/max initial speed.
 ---@return number
+---@return number
 function LParticleSystem:getSpeed() end
 
 --- Returns angular velocity range.
+---@return number
 ---@return number
 function LParticleSystem:getSpin() end
 
@@ -13360,6 +13491,7 @@ function LParticleSystem:getSpinVariation() end
 function LParticleSystem:getSpread() end
 
 --- Returns tangential acceleration range.
+---@return number
 ---@return number
 function LParticleSystem:getTangentialAcceleration() end
 
@@ -13639,6 +13771,7 @@ function LTrail:getPointCount() end
 
 --- Returns the start and end width.
 ---@return number
+---@return number
 function LTrail:getWidth() end
 
 --- Appends a new point to the trail head.
@@ -13720,6 +13853,7 @@ LAIFlowField = {}
 ---@param x integer
 ---@param y integer
 ---@return number
+---@return number
 function LAIFlowField:getDirection(x, y) end
 
 --- Returns the BFS distance to the goal (1-based coordinates).
@@ -13786,6 +13920,7 @@ function LFlowField:getCostToTarget(x, y) end
 ---@param x integer
 ---@param y integer
 ---@return number
+---@return number
 function LFlowField:getDirection(x, y) end
 
 --- Returns the flow direction as an angle in radians (1-based coordinates).
@@ -13808,6 +13943,7 @@ function LFlowField:isCalculated() end
 ---@param speed number
 ---@param tw number
 ---@param th number
+---@return number
 ---@return number
 function LFlowField:steer(wx, wy, speed, tw, th) end
 
@@ -13962,7 +14098,8 @@ function LNavGrid:getCost(x, y) end
 function LNavGrid:getDiagonalMode() end
 
 --- Returns the grid dimensions as width, height.
----@return number
+---@return integer
+---@return integer
 function LNavGrid:getDimensions() end
 
 --- Returns the grid height in cells.
@@ -14130,6 +14267,7 @@ function LUnitPathfinder:findNearestWalkable(x, y, maxRadius, unitSize) end
 ---@param y2 integer
 ---@param maxNodes integer
 ---@param unitSize? integer
+---@return table
 ---@return boolean
 function LUnitPathfinder:findPartialPath(x1, y1, x2, y2, maxNodes, unitSize) end
 
@@ -15265,6 +15403,7 @@ function LBody:getMass() end
 
 --- Returns the body position (x, y).
 ---@return number
+---@return number
 function LBody:getPosition() end
 
 --- Returns the body restitution (bounciness).
@@ -15276,6 +15415,7 @@ function LBody:getRestitution() end
 function LBody:getType() end
 
 --- Returns the body velocity (vx, vy).
+---@return number
 ---@return number
 function LBody:getVelocity() end
 
@@ -15498,6 +15638,9 @@ LPhysicsShape = {}
 function LPhysicsShape:destroy() end
 
 --- Returns the axis-aligned bounding box (x1, y1, x2, y2).
+---@return number
+---@return number
+---@return number
 ---@return number
 function LPhysicsShape:getBoundingBox() end
 
@@ -15849,11 +15992,13 @@ function LWorld:getEndContactEvents() end
 
 --- Returns the gravity vector (gx, gy).
 ---@return number
+---@return number
 function LWorld:getGravity() end
 
 --- Returns the two body IDs connected by a joint.
 ---@param jointId integer
----@return number
+---@return integer
+---@return integer
 function LWorld:getJointBodies(jointId) end
 
 --- Returns the break threshold for a joint, or nil if not set.
@@ -15867,6 +16012,7 @@ function LWorld:getJointIds() end
 
 --- Returns the angular limits on a joint.
 ---@param jointId integer
+---@return number
 ---@return number
 function LWorld:getJointLimits(jointId) end
 
@@ -16207,7 +16353,7 @@ function LZone:typeOf(name) end
 
 --- Attaches a standalone shape to a body as an additional fixture.
 ---@param body Body
----@param shape Shape
+---@param shape PhysicsShape
 ---@return nil
 lurek.physics.attachShape = function(body, shape) end
 
@@ -16230,6 +16376,9 @@ lurek.physics.drawDebugGpu = function(world, config) end
 --- Returns the position and velocity of a body (x, y, vx, vy).
 ---@param world World
 ---@param body Body
+---@return number
+---@return number
+---@return number
 ---@return number
 lurek.physics.getBody = function(world, body) end
 
@@ -16886,6 +17035,8 @@ LPointLight = {}
 
 --- Returns the RGB color as three separate values.
 ---@return number
+---@return number
+---@return number
 function LPointLight:color() end
 
 --- Returns the intensity multiplier.
@@ -17202,6 +17353,8 @@ lurek.raycaster.newSpriteManager = function() end
 ---@param fov number
 ---@param screen_height number
 ---@return number
+---@return number
+---@return number
 lurek.raycaster.projectColumn = function(distance, fov, screen_height) end
 
 ---@class lurek.render
@@ -17212,7 +17365,8 @@ lurek.render = {}
 LCanvas = {}
 
 --- Returns width and height of this canvas.
----@return number
+---@return integer
+---@return integer
 function LCanvas:getDimensions() end
 
 --- Returns the height of this canvas in pixels.
@@ -17321,7 +17475,8 @@ function LFont:typeOf(name) end
 LImage = {}
 
 --- Returns width and height of this image.
----@return number
+---@return integer
+---@return integer
 function LImage:getDimensions() end
 
 --- Returns the height of this image in pixels.
@@ -17448,10 +17603,14 @@ function LNineSlice:draw(x, y, w, h) end
 
 --- Returns the four inset values as (top, right, bottom, left).
 ---@return number
+---@return number
+---@return number
+---@return number
 function LNineSlice:getInsets() end
 
 --- Returns the width and height of the source texture.
----@return number
+---@return integer
+---@return integer
 function LNineSlice:getTextureSize() end
 
 --- Returns the type name "NineSlice".
@@ -17469,9 +17628,13 @@ LQuad = {}
 
 --- Returns the reference texture dimensions.
 ---@return number
+---@return number
 function LQuad:getTextureDimensions() end
 
 --- Returns the quad viewport rectangle.
+---@return number
+---@return number
+---@return number
 ---@return number
 function LQuad:getViewport() end
 
@@ -17915,6 +18078,9 @@ lurek.render.flushSortGroup = function(id) end
 
 --- Returns the current background color.
 ---@return number
+---@return number
+---@return number
+---@return number
 lurek.render.getBackgroundColor = function() end
 
 --- Returns the current blend mode as a string.
@@ -17927,10 +18093,14 @@ lurek.render.getCanvas = function() end
 
 --- Returns the dimensions of a canvas.
 ---@param canvas Canvas
----@return number
+---@return integer
+---@return integer
 lurek.render.getCanvasSize = function(canvas) end
 
 --- Returns the current drawing color.
+---@return number
+---@return number
+---@return number
 ---@return number
 lurek.render.getColor = function() end
 
@@ -17951,7 +18121,8 @@ lurek.render.getDefaultFont = function(pixel_height) end
 lurek.render.getDepthMode = function() end
 
 --- Returns window width and height.
----@return number
+---@return integer
+---@return integer
 lurek.render.getDimensions = function() end
 
 --- Returns the currently active font, or nil.
@@ -19072,11 +19243,13 @@ function LSpriteSheet:getFrame(index) end
 function LSpriteSheet:getFrameCount() end
 
 --- Returns the width and height of a single frame cell in pixels.
----@return number
+---@return integer
+---@return integer
 function LSpriteSheet:getFrameSize() end
 
 --- Returns the number of columns and rows in the grid.
----@return number
+---@return integer
+---@return integer
 function LSpriteSheet:getGridSize() end
 
 --- Returns a sequential table of quad tables for the named frame group, or nil.
@@ -19158,7 +19331,9 @@ lurek.runtime.getArgs = function() end
 
 --- Returns the output table from the most recently completed runBatch call.
 ---@param results table
----@return number
+---@return integer
+---@return integer
+---@return integer
 lurek.runtime.getBatchResults = function(results) end
 
 --- Returns the current contents of the system clipboard.
@@ -19290,7 +19465,8 @@ function LTerminal:get(col, row) end
 function LTerminal:getCellSize() end
 
 --- Returns the terminal grid dimensions.
----@return number
+---@return integer
+---@return integer
 function LTerminal:getDimensions() end
 
 --- Returns the currently focused widget, or nil.
@@ -19396,6 +19572,9 @@ function LWidget:getChildCount() end
 
 --- Returns the colour of a label or border widget.
 ---@return number
+---@return number
+---@return number
+---@return number
 function LWidget:getColor() end
 
 --- Returns a list item by 1-based index.
@@ -19412,7 +19591,8 @@ function LWidget:getItemCount() end
 function LWidget:getMaxLength() end
 
 --- Returns the widget position as 1-based coordinates.
----@return number
+---@return integer
+---@return integer
 function LWidget:getPosition() end
 
 --- Returns the selected item index (1-based) in a list widget, or nil.
@@ -19420,7 +19600,8 @@ function LWidget:getPosition() end
 function LWidget:getSelected() end
 
 --- Returns the widget size in cells.
----@return number
+---@return integer
+---@return integer
 function LWidget:getSize() end
 
 --- Returns the border style name of a border widget.
@@ -19899,6 +20080,10 @@ lurek.thread.newPool = function(size, code) end
 lurek.thread.newThread = function(code) end
 
 ---@class lurek.tilemap
+---@field FLOOR integer  solid floor tile type (1)
+---@field NORTH_WALL integer  north-facing wall tile type (2)
+---@field WEST_WALL integer  west-facing wall tile type (3)
+---@field OBJECT integer  object tile type (4)
 lurek.tilemap = {}
 
 --- Lua-side wrapper around an [`AutoTileSheet`].
@@ -19923,6 +20108,9 @@ function LAutoTileSheet:getLayout() end
 
 --- Returns the atlas region rectangle for the 1-based tile ID.
 ---@param tileId integer
+---@return number
+---@return number
+---@return number
 ---@return number
 function LAutoTileSheet:getQuad(tileId) end
 
@@ -19959,7 +20147,10 @@ LChunkMap = {}
 --- Returns the tile coordinate range for chunk (cx, cy) as (x0, y0, x1, y1).
 ---@param cx integer
 ---@param cy integer
----@return number
+---@return integer
+---@return integer
+---@return integer
+---@return integer
 function LChunkMap:chunkTileRange(cx, cy) end
 
 --- Clears the tile at (x, y) by setting its GID to 0.
@@ -20093,6 +20284,7 @@ function LIsoMap:isLevelVisible(z) end
 ---@param sx number
 ---@param sy number
 ---@return number
+---@return number
 function LIsoMap:screenToTile(sx, sy) end
 
 --- Sets the visibility of a level (1-based z).
@@ -20126,6 +20318,7 @@ function LIsoMap:setTilePart(z, x, y, part, gid) end
 ---@param ty number
 ---@param tz number
 ---@return number
+---@return number
 function LIsoMap:tileToScreen(tx, ty, tz) end
 
 --- Returns the type name of this object.
@@ -20146,7 +20339,8 @@ LLargeMapRenderer = {}
 function LLargeMapRenderer:getChunkSize() end
 
 --- Returns the map dimensions as (width, height) in tiles.
----@return number
+---@return integer
+---@return integer
 function LLargeMapRenderer:getMapSize() end
 
 --- Returns the tile ID at (x, y), or nil if out of bounds.
@@ -20242,7 +20436,8 @@ function LLargeMapRenderer:typeOf(name) end
 LMapBlock = {}
 
 --- Returns the block dimensions as (width, height) in tiles.
----@return number
+---@return integer
+---@return integer
 function LMapBlock:getDimensions() end
 
 --- Returns the block height in tiles.
@@ -20497,6 +20692,9 @@ function LTileMap:getChunkSize() end
 --- Returns the RGBA tint color of a layer.
 ---@param idx integer
 ---@return number
+---@return number
+---@return number
+---@return number
 function LTileMap:getLayerColor(idx) end
 
 --- Returns the number of layers.
@@ -20511,10 +20709,12 @@ function LTileMap:getLayerName(idx) end
 --- Returns the pixel offset of a layer.
 ---@param idx integer
 ---@return number
+---@return number
 function LTileMap:getLayerOffset(idx) end
 
 --- Returns the parallax factor of a layer.
 ---@param idx integer
+---@return number
 ---@return number
 function LTileMap:getLayerParallax(idx) end
 
@@ -20535,7 +20735,8 @@ function LTileMap:getOrientation() end
 function LTileMap:getTile(layer, x, y) end
 
 --- Returns tile dimensions as (width, height).
----@return number
+---@return integer
+---@return integer
 function LTileMap:getTileDimensions() end
 
 --- Returns the tile height in pixels.
@@ -20556,6 +20757,9 @@ function LTileMap:getTileSetCount() end
 function LTileMap:getTileWidth() end
 
 --- Returns the viewport as (x, y, w, h) or nil if not set.
+---@return number
+---@return number
+---@return number
 ---@return number
 function LTileMap:getViewport() end
 
@@ -20675,6 +20879,7 @@ function LTileMap:sweepRect(layer, x, y, w, h, dx, dy) end
 ---@param tx integer
 ---@param ty integer
 ---@return number
+---@return number
 function LTileMap:tileToWorld(tx, ty) end
 
 --- Converts the given layer into a 2D navigation grid.
@@ -20700,7 +20905,8 @@ function LTileMap:update(dt) end
 --- Converts world pixel coordinates to tile coordinates.
 ---@param wx number
 ---@param wy number
----@return number
+---@return integer
+---@return integer
 function LTileMap:worldToTile(wx, wy) end
 
 --- Lua-side wrapper around a [`TileSet`].
@@ -20750,7 +20956,8 @@ function LTileSet:getSpacing() end
 function LTileSet:getTileCount() end
 
 --- Returns the tile dimensions as (width, height).
----@return number
+---@return integer
+---@return integer
 function LTileSet:getTileDimensions() end
 
 --- Returns the height of a single tile in pixels.
@@ -20811,7 +21018,8 @@ lurek.tilemap.fromLDtk = function(json_str, level_name) end
 ---@param sx number
 ---@param sy number
 ---@param size number
----@return number
+---@return integer
+---@return integer
 lurek.tilemap.fromScreenHex = function(sx, sy, size) end
 
 --- Converts screen position back to tile coordinates for diamond isometric projection.
@@ -20819,6 +21027,7 @@ lurek.tilemap.fromScreenHex = function(sx, sy, size) end
 ---@param sy number
 ---@param tileW number
 ---@param tileH number
+---@return number
 ---@return number
 lurek.tilemap.fromScreenIso = function(sx, sy, tileW, tileH) end
 
@@ -20857,7 +21066,8 @@ lurek.tilemap.hexNeighbors = function(q, r) end
 ---@param centerQ integer
 ---@param centerR integer
 ---@param axis string
----@return number
+---@return integer
+---@return integer
 lurek.tilemap.hexReflect = function(q, r, centerQ, centerR, axis) end
 
 --- Returns all cells at exactly radius distance from (q, r) as a table.
@@ -20873,13 +21083,15 @@ lurek.tilemap.hexRing = function(q, r, radius) end
 ---@param centerQ integer
 ---@param centerR integer
 ---@param steps integer
----@return number
+---@return integer
+---@return integer
 lurek.tilemap.hexRotate = function(q, r, centerQ, centerR, steps) end
 
 --- Rounds fractional axial coordinates to the nearest hex cell.
 ---@param q number
 ---@param r number
----@return number
+---@return integer
+---@return integer
 lurek.tilemap.hexRound = function(q, r) end
 
 --- Returns all hex cells from center outward to radius, ring by ring, as a table.
@@ -20985,6 +21197,7 @@ lurek.tilemap.newTileSet = function(firstGid, tileCount, columns, tileWidth, til
 ---@param r integer
 ---@param size number
 ---@return number
+---@return number
 lurek.tilemap.toScreenHex = function(q, r, size) end
 
 --- Converts tile coordinates to screen position using diamond isometric projection.
@@ -20992,6 +21205,7 @@ lurek.tilemap.toScreenHex = function(q, r, size) end
 ---@param ty number
 ---@param tileW number
 ---@param tileH number
+---@return number
 ---@return number
 lurek.tilemap.toScreenIso = function(tx, ty, tileW, tileH) end
 
@@ -21561,56 +21775,9 @@ lurek.tween.update = function(dt) end
 ---@class lurek.ui
 lurek.ui = {}
 
---- Adds Accordion-specific methods (1-based sections in Lua).
----@class LAccordion
-LAccordion = {}
-
---- Adds a section entry to this Accordion widget.
----@param title string
----@param content_idx? integer
----@return nil
-function LAccordion:addSection(title, content_idx) end
-
---- Returns the section count of this Accordion widget.
----@return number
-function LAccordion:getSectionCount() end
-
---- Returns the section title of this Accordion widget.
----@param section_idx integer
----@return nil
-function LAccordion:getSectionTitle(section_idx) end
-
---- Returns true if exclusive is enabled for this Accordion widget.
----@return boolean
-function LAccordion:isExclusive() end
-
---- Returns true if section expanded is enabled for this Accordion widget.
----@param section_idx integer
----@return boolean
-function LAccordion:isSectionExpanded(section_idx) end
-
---- Sets the exclusive for this Accordion widget.
----@param v boolean
----@return nil
-function LAccordion:setExclusive(v) end
-
---- Toggles the expanded/collapsed status of an Accordion section.
----@param section_idx integer
----@return nil
-function LAccordion:toggleSection(section_idx) end
-
 --- Lua wrapper for a stacked area chart renderer.
 ---@class LAreaChart
 LAreaChart = {}
-
---- Adds a stacked layer with values and colour.
----@param name string
----@param values table
----@param r number
----@param g number
----@param b number
----@return nil
-function LAreaChart:addLayer(name, values, r, g, b) end
 
 --- Renders the area chart into an existing ImageData.
 ---@param target ImageData
@@ -21631,40 +21798,9 @@ function LAreaChart:type() end
 ---@return boolean
 function LAreaChart:typeOf(name) end
 
---- Adds Badge-specific methods to a widget table.
----@class LBadge
-LBadge = {}
-
---- Returns the raw count of this Badge widget.
----@return number
-function LBadge:getCount() end
-
---- Returns the display text of this Badge widget, e.g. "99+" when over the max.
----@return string
-function LBadge:getDisplayText() end
-
---- Sets the count displayed on this Badge widget.
----@param count integer
----@return nil
-function LBadge:setCount(count) end
-
 --- Lua wrapper for a grouped bar chart renderer.
 ---@class LBarChart
 LBarChart = {}
-
---- Adds a category group with per-series values.
----@param label string
----@param values table
----@return nil
-function LBarChart:addCategory(label, values) end
-
---- Adds a bar series with a name and colour.
----@param name string
----@param r number
----@param g number
----@param b number
----@return nil
-function LBarChart:addSeries(name, r, g, b) end
 
 --- Renders the bar chart into an existing ImageData.
 ---@param target ImageData
@@ -21680,412 +21816,9 @@ function LBarChart:type() end
 ---@return boolean
 function LBarChart:typeOf(name) end
 
---- Adds Button-specific methods to a widget table.
----@class LButton
-LButton = {}
-
---- Returns the text of this Button widget.
----@return string
-function LButton:getText() end
-
---- Sets the text for this Button widget.
----@param text string
----@return nil
-function LButton:setText(text) end
-
---- Adds CheckBox-specific methods to a widget table.
----@class LCheckbox
-LCheckbox = {}
-
---- Returns the text of this Checkbox widget.
----@return string
-function LCheckbox:getText() end
-
---- Returns true if checked is enabled for this Checkbox widget.
----@return boolean
-function LCheckbox:isChecked() end
-
---- Sets the checked for this Checkbox widget.
----@param checked boolean
----@return nil
-function LCheckbox:setChecked(checked) end
-
---- Sets the text for this Checkbox widget.
----@param text string
----@return nil
-function LCheckbox:setText(text) end
-
---- Adds ColorPicker-specific methods.
----@class LColorPicker
-LColorPicker = {}
-
---- Returns the color of this Color_Picker widget.
----@return number
-function LColorPicker:getColor() end
-
---- Returns the color mode of this Color_Picker widget.
----@return string
-function LColorPicker:getColorMode() end
-
---- Returns the show alpha of this Color_Picker widget.
----@return boolean
-function LColorPicker:getShowAlpha() end
-
---- Sets the color for this Color_Picker widget.
----@param r number
----@param green number
----@param b number
----@param a? number
----@return nil
-function LColorPicker:setColor(r, green, b, a) end
-
---- Sets the color mode for this Color_Picker widget.
----@param mode string
----@return nil
-function LColorPicker:setColorMode(mode) end
-
---- Registers a callback invoked when this widget's value changes.
----@param fn function
----@return nil
-function LColorPicker:setOnChange(fn) end
-
---- Sets the show alpha for this Color_Picker widget.
----@param v boolean
----@return nil
-function LColorPicker:setShowAlpha(v) end
-
---- Adds ComboBox-specific methods (1-based indices in Lua).
----@class LComboBox
-LComboBox = {}
-
---- Adds a item entry to this Combo_Box widget.
----@param text string
----@return nil
-function LComboBox:addItem(text) end
-
---- Clears all items entries from this Combo_Box widget.
----@return nil
-function LComboBox:clearItems() end
-
---- Returns the item of this Combo_Box widget.
----@param index integer
----@return string
-function LComboBox:getItem(index) end
-
---- Returns the item count of this Combo_Box widget.
----@return number
-function LComboBox:getItemCount() end
-
---- Returns the selected index of this Combo_Box widget.
----@return number
-function LComboBox:getSelectedIndex() end
-
---- Returns the selected item of this Combo_Box widget.
----@return string
-function LComboBox:getSelectedItem() end
-
---- Removes the item from this Combo_Box widget.
----@param index integer
----@return nil
-function LComboBox:removeItem(index) end
-
---- Sets the selected index for this Combo_Box widget.
----@param index integer
----@return nil
-function LComboBox:setSelectedIndex(index) end
-
---- Adds Dialog-specific methods.
----@class LDialog
-LDialog = {}
-
---- Adds a button entry to this Dialog widget.
----@param text string
----@param cb? function
----@return nil
-function LDialog:addButton(text, cb) end
-
---- Closes and removes this dialog from the screen.
----@return nil
-function LDialog:close() end
-
---- Returns the content of this Dialog widget.
----@return number
-function LDialog:getContent() end
-
---- Returns the title of this Dialog widget.
----@return string
-function LDialog:getTitle() end
-
---- Returns true if modal is enabled for this Dialog widget.
----@return boolean
-function LDialog:isModal() end
-
---- Returns true if open is enabled for this Dialog widget.
----@return boolean
-function LDialog:isOpen() end
-
---- Performs the open operation on this Dialog widget.
----@return nil
-function LDialog:open() end
-
---- Sets the content for this Dialog widget.
----@param content_idx? integer
----@return nil
-function LDialog:setContent(content_idx) end
-
---- Sets the modal for this Dialog widget.
----@param v boolean
----@return nil
-function LDialog:setModal(v) end
-
---- Registers a callback invoked when this dialog is closed.
----@param fn function
----@return nil
-function LDialog:setOnClose(fn) end
-
---- Sets the title for this Dialog widget.
----@param title string
----@return nil
-function LDialog:setTitle(title) end
-
---- Adds DockPanel-specific methods.
----@class LDockPanel
-LDockPanel = {}
-
---- Performs the dock operation on this Dock_Panel widget.
----@param child_idx integer
----@param side string
----@return nil
-function LDockPanel:dock(child_idx, side) end
-
---- Returns the docked count of this Dock_Panel widget.
----@return number
-function LDockPanel:getDockedCount() end
-
---- Returns the split size of this Dock_Panel widget.
----@param side string
----@return nil
-function LDockPanel:getSplitSize(side) end
-
---- Sets the split size for this Dock_Panel widget.
----@param side string
----@param size number
----@return nil
-function LDockPanel:setSplitSize(side, size) end
-
---- Performs the undock operation on this Dock_Panel widget.
----@param child_idx integer
----@return nil
-function LDockPanel:undock(child_idx) end
-
---- Adds GUITable-specific methods (1-based rows/cols in Lua).
----@class LGuiTable
-LGuiTable = {}
-
---- Adds a column entry to this Gui_Table widget.
----@param header string
----@param width? number
----@return nil
-function LGuiTable:addColumn(header, width) end
-
---- Adds a row entry to this Gui_Table widget.
----@param cells table
----@return nil
-function LGuiTable:addRow(cells) end
-
---- Returns the cell of this Gui_Table widget.
----@param row integer
----@param col integer
----@return nil
-function LGuiTable:getCell(row, col) end
-
---- Returns the column count of this Gui_Table widget.
----@return number
-function LGuiTable:getColumnCount() end
-
---- Returns the row count of this Gui_Table widget.
----@return number
-function LGuiTable:getRowCount() end
-
---- Returns the selected row of this Gui_Table widget.
----@return nil
-function LGuiTable:getSelectedRow() end
-
---- Returns true if sortable is enabled for this Gui_Table widget.
----@return boolean
-function LGuiTable:isSortable() end
-
---- Sets the cell for this Gui_Table widget.
----@param row integer
----@param col integer
----@param text string
----@return nil
-function LGuiTable:setCell(row, col, text) end
-
---- Registers a callback invoked when a table row is selected.
----@param fn function
----@return nil
-function LGuiTable:setOnSelect(fn) end
-
---- Sets the selected row for this Gui_Table widget.
----@param row? integer
----@return nil
-function LGuiTable:setSelectedRow(row) end
-
---- Sets the sortable for this Gui_Table widget.
----@param v boolean
----@return nil
-function LGuiTable:setSortable(v) end
-
---- Adds GUIWindow-specific methods.
----@class LGuiWindow
-LGuiWindow = {}
-
---- Returns the title of this Gui_Window widget.
----@return string
-function LGuiWindow:getTitle() end
-
---- Returns true if closeable is enabled for this Gui_Window widget.
----@return boolean
-function LGuiWindow:isCloseable() end
-
---- Returns true if draggable is enabled for this Gui_Window widget.
----@return boolean
-function LGuiWindow:isDraggable() end
-
---- Returns true if resizable is enabled for this Gui_Window widget.
----@return boolean
-function LGuiWindow:isResizable() end
-
---- Sets the closeable for this Gui_Window widget.
----@param v boolean
----@return nil
-function LGuiWindow:setCloseable(v) end
-
---- Sets the draggable for this Gui_Window widget.
----@param v boolean
----@return nil
-function LGuiWindow:setDraggable(v) end
-
---- Registers a callback invoked when this window is closed.
----@param fn function
----@return nil
-function LGuiWindow:setOnClose(fn) end
-
---- Sets the resizable for this Gui_Window widget.
----@param v boolean
----@return nil
-function LGuiWindow:setResizable(v) end
-
---- Sets the title for this Gui_Window widget.
----@param title string
----@return nil
-function LGuiWindow:setTitle(title) end
-
---- Adds ImageWidget-specific methods.
----@class LImageWidget
-LImageWidget = {}
-
---- Returns the scale mode of this Image_Widget widget.
----@return string
-function LImageWidget:getScaleMode() end
-
---- Returns the tint of this Image_Widget widget.
----@return number
-function LImageWidget:getTint() end
-
---- Sets the scale mode for this Image_Widget widget.
----@param mode string
----@return nil
-function LImageWidget:setScaleMode(mode) end
-
---- Sets the tint for this Image_Widget widget.
----@param r number
----@param green number
----@param b number
----@param a? number
----@return nil
-function LImageWidget:setTint(r, green, b, a) end
-
---- Adds Label-specific methods to a widget table.
----@class LLabel
-LLabel = {}
-
---- Returns the text of this Label widget.
----@return string
-function LLabel:getText() end
-
---- Sets the text for this Label widget.
----@param text string
----@return nil
-function LLabel:setText(text) end
-
---- Adds Layout-specific methods.
----@class LLayout
-LLayout = {}
-
---- Returns the align of this Layout widget.
----@return string
-function LLayout:getAlign() end
-
---- Returns the direction of this Layout widget.
----@return string
-function LLayout:getDirection() end
-
---- Returns the justify of this Layout widget.
----@return string
-function LLayout:getJustify() end
-
---- Returns the spacing of this Layout widget.
----@return number
-function LLayout:getSpacing() end
-
---- Returns the wrap of this Layout widget.
----@return boolean
-function LLayout:getWrap() end
-
---- Sets the align for this Layout widget.
----@param align string
----@return nil
-function LLayout:setAlign(align) end
-
---- Sets the columns for this Layout widget.
----@param n integer
----@return nil
-function LLayout:setColumns(n) end
-
---- Sets the direction for this Layout widget.
----@param dir string
----@return nil
-function LLayout:setDirection(dir) end
-
---- Sets the justify for this Layout widget.
----@param justify string
----@return nil
-function LLayout:setJustify(justify) end
-
---- Sets the spacing for this Layout widget.
----@param spacing number
----@return nil
-function LLayout:setSpacing(spacing) end
-
---- Sets the wrap for this Layout widget.
----@param wrap boolean
----@return nil
-function LLayout:setWrap(wrap) end
-
 --- Lua wrapper for a line chart renderer.
 ---@class LLineChart
 LLineChart = {}
-
---- Adds a named data series to the chart.
----@param name string
----@param points table
----@param r number
----@param g number
----@param b number
----@return nil
-function LLineChart:addSeries(name, points, r, g, b) end
 
 --- Renders the line chart into an existing ImageData.
 ---@param target ImageData
@@ -22111,174 +21844,9 @@ function LLineChart:type() end
 ---@return boolean
 function LLineChart:typeOf(name) end
 
---- Adds ListBox-specific methods (1-based indices in Lua).
----@class LListBox
-LListBox = {}
-
---- Adds a item entry to this List_Box widget.
----@param text string
----@return nil
-function LListBox:addItem(text) end
-
---- Clears all items entries from this List_Box widget.
----@return nil
-function LListBox:clearItems() end
-
---- Returns the item of this List_Box widget.
----@param index integer
----@return string
-function LListBox:getItem(index) end
-
---- Returns the item count of this List_Box widget.
----@return number
-function LListBox:getItemCount() end
-
---- Returns the selected index of this List_Box widget.
----@return number
-function LListBox:getSelectedIndex() end
-
---- Removes the item from this List_Box widget.
----@param index integer
----@return nil
-function LListBox:removeItem(index) end
-
---- Sets the item height for this List_Box widget.
----@param h number
----@return nil
-function LListBox:setItemHeight(h) end
-
---- Sets the selected index for this List_Box widget.
----@param index integer
----@return nil
-function LListBox:setSelectedIndex(index) end
-
---- Adds MenuBar-specific methods.
----@class LMenuBar
-LMenuBar = {}
-
---- Adds a menu entry to this Menu_Bar widget.
----@param menu_idx integer
----@return nil
-function LMenuBar:addMenu(menu_idx) end
-
---- Returns the menu count of this Menu_Bar widget.
----@return number
-function LMenuBar:getMenuCount() end
-
---- Returns the menus of this Menu_Bar widget.
----@return nil
-function LMenuBar:getMenus() end
-
---- Removes the menu from this Menu_Bar widget.
----@param menu_idx integer
----@return nil
-function LMenuBar:removeMenu(menu_idx) end
-
---- Adds MenuItem-specific methods.
----@class LMenuItem
-LMenuItem = {}
-
---- Adds a sub item entry to this Menu_Item widget.
----@param child_idx integer
----@return nil
-function LMenuItem:addSubItem(child_idx) end
-
---- Returns the shortcut of this Menu_Item widget.
----@return string
-function LMenuItem:getShortcut() end
-
---- Returns the sub items of this Menu_Item widget.
----@return nil
-function LMenuItem:getSubItems() end
-
---- Returns the text of this Menu_Item widget.
----@return string
-function LMenuItem:getText() end
-
---- Returns true if checked is enabled for this Menu_Item widget.
----@return boolean
-function LMenuItem:isChecked() end
-
---- Sets the checked for this Menu_Item widget.
----@param v boolean
----@return nil
-function LMenuItem:setChecked(v) end
-
---- Registers a callback invoked when this menu item is clicked.
----@param fn function
----@return nil
-function LMenuItem:setOnClick(fn) end
-
---- Sets the shortcut for this Menu_Item widget.
----@param shortcut string
----@return nil
-function LMenuItem:setShortcut(shortcut) end
-
---- Sets the text for this Menu_Item widget.
----@param text string
----@return nil
-function LMenuItem:setText(text) end
-
---- Adds NinePatch-specific methods.
----@class LNinePatch
-LNinePatch = {}
-
---- Returns the image dimensions of this Nine_Patch widget.
----@return number
-function LNinePatch:getImageDimensions() end
-
---- Returns the insets of this Nine_Patch widget.
----@return number
-function LNinePatch:getInsets() end
-
---- Returns the slices of this Nine_Patch widget.
----@return table
-function LNinePatch:getSlices() end
-
---- Sets the image dimensions for this Nine_Patch widget.
----@param w integer
----@param h integer
----@return nil
-function LNinePatch:setImageDimensions(w, h) end
-
---- Sets the insets for this Nine_Patch widget.
----@param left integer
----@param top integer
----@param right integer
----@param bottom integer
----@return nil
-function LNinePatch:setInsets(left, top, right, bottom) end
-
---- Adds Panel-specific methods.
----@class LPanel
-LPanel = {}
-
---- Returns the title of this Panel widget.
----@return string
-function LPanel:getTitle() end
-
---- Sets the scrollable for this Panel widget.
----@param scrollable boolean
----@return nil
-function LPanel:setScrollable(scrollable) end
-
---- Sets the title for this Panel widget.
----@param title string
----@return nil
-function LPanel:setTitle(title) end
-
 --- Lua wrapper for a pie chart renderer.
 ---@class LPieChart
 LPieChart = {}
-
---- Adds a labelled pie segment.
----@param label string
----@param value number
----@param r number
----@param g number
----@param b number
----@return nil
-function LPieChart:addSegment(label, value, r, g, b) end
 
 --- Renders the pie chart into an existing ImageData.
 ---@param target ImageData
@@ -22294,85 +21862,9 @@ function LPieChart:type() end
 ---@return boolean
 function LPieChart:typeOf(name) end
 
---- Adds ProgressBar-specific methods to a widget table.
----@class LProgressBar
-LProgressBar = {}
-
---- Returns the max of this Progress_Bar widget.
----@return number
-function LProgressBar:getMax() end
-
---- Returns the min of this Progress_Bar widget.
----@return number
-function LProgressBar:getMin() end
-
---- Returns the progress of this Progress_Bar widget.
----@return number
-function LProgressBar:getProgress() end
-
---- Returns the value of this Progress_Bar widget.
----@return number
-function LProgressBar:getValue() end
-
---- Sets the range for this Progress_Bar widget.
----@param min number
----@param max number
----@return nil
-function LProgressBar:setRange(min, max) end
-
---- Sets the value for this Progress_Bar widget.
----@param v number
----@return nil
-function LProgressBar:setValue(v) end
-
---- Adds RadioButton-specific methods.
----@class LRadioButton
-LRadioButton = {}
-
---- Returns the group of this Radio_Button widget.
----@return string
-function LRadioButton:getGroup() end
-
---- Returns the text of this Radio_Button widget.
----@return string
-function LRadioButton:getText() end
-
---- Returns true if selected is enabled for this Radio_Button widget.
----@return boolean
-function LRadioButton:isSelected() end
-
---- Sets the group for this Radio_Button widget.
----@param group string
----@return nil
-function LRadioButton:setGroup(group) end
-
---- Registers a callback invoked when this widget's value changes.
----@param fn function
----@return nil
-function LRadioButton:setOnChange(fn) end
-
---- Sets the selected for this Radio_Button widget.
----@param v boolean
----@return nil
-function LRadioButton:setSelected(v) end
-
---- Sets the text for this Radio_Button widget.
----@param text string
----@return nil
-function LRadioButton:setText(text) end
-
 --- Lua wrapper for a scatter plot renderer.
 ---@class LScatterPlot
 LScatterPlot = {}
-
---- Adds a named data series.
----@param name string
----@param points table
----@param r number
----@param g number
----@param b number
----@return nil
-function LScatterPlot:addSeries(name, points, r, g, b) end
 
 --- Renders the scatter plot into an existing ImageData.
 ---@param target ImageData
@@ -22400,348 +21892,9 @@ function LScatterPlot:type() end
 ---@return boolean
 function LScatterPlot:typeOf(name) end
 
---- Adds ScrollBar-specific methods.
----@class LScrollBar
-LScrollBar = {}
-
---- Returns the content size of this Scroll_Bar widget.
----@return number
-function LScrollBar:getContentSize() end
-
---- Returns the scroll position of this Scroll_Bar widget.
----@return number
-function LScrollBar:getScrollPosition() end
-
---- Returns the view size of this Scroll_Bar widget.
----@return number
-function LScrollBar:getViewSize() end
-
---- Returns true if vertical is enabled for this Scroll_Bar widget.
----@return boolean
-function LScrollBar:isVertical() end
-
---- Sets the content size for this Scroll_Bar widget.
----@param v number
----@return nil
-function LScrollBar:setContentSize(v) end
-
---- Registers a callback invoked when this widget's value changes.
----@param fn function
----@return nil
-function LScrollBar:setOnChange(fn) end
-
---- Sets the scroll position for this Scroll_Bar widget.
----@param v number
----@return nil
-function LScrollBar:setScrollPosition(v) end
-
---- Sets the view size for this Scroll_Bar widget.
----@param v number
----@return nil
-function LScrollBar:setViewSize(v) end
-
---- Adds ScrollPanel-specific methods.
----@class LScrollPanel
-LScrollPanel = {}
-
---- Returns the content size of this Scroll_Panel widget.
----@return number
-function LScrollPanel:getContentSize() end
-
---- Returns the max scroll of this Scroll_Panel widget.
----@return number
-function LScrollPanel:getMaxScroll() end
-
---- Returns the scroll position of this Scroll_Panel widget.
----@return number
-function LScrollPanel:getScrollPosition() end
-
---- Returns the scroll speed of this Scroll_Panel widget.
----@return number
-function LScrollPanel:getScrollSpeed() end
-
---- Sets the content size for this Scroll_Panel widget.
----@param w number
----@param h number
----@return nil
-function LScrollPanel:setContentSize(w, h) end
-
---- Sets the scroll position for this Scroll_Panel widget.
----@param x number
----@param y number
----@return nil
-function LScrollPanel:setScrollPosition(x, y) end
-
---- Sets the scroll speed for this Scroll_Panel widget.
----@param speed number
----@return nil
-function LScrollPanel:setScrollSpeed(speed) end
-
---- Adds Separator-specific methods.
----@class LSeparator
-LSeparator = {}
-
---- Returns the thickness of this Separator widget.
----@return number
-function LSeparator:getThickness() end
-
---- Returns true if vertical is enabled for this Separator widget.
----@return boolean
-function LSeparator:isVertical() end
-
---- Sets the thickness for this Separator widget.
----@param thickness number
----@return nil
-function LSeparator:setThickness(thickness) end
-
---- Sets the vertical for this Separator widget.
----@param v boolean
----@return nil
-function LSeparator:setVertical(v) end
-
---- Adds Slider-specific methods to a widget table.
----@class LSlider
-LSlider = {}
-
---- Returns the max of this Slider widget.
----@return number
-function LSlider:getMax() end
-
---- Returns the min of this Slider widget.
----@return number
-function LSlider:getMin() end
-
---- Returns the value of this Slider widget.
----@return number
-function LSlider:getValue() end
-
---- Sets the range for this Slider widget.
----@param min number
----@param max number
----@return nil
-function LSlider:setRange(min, max) end
-
---- Sets the step for this Slider widget.
----@param step number
----@return nil
-function LSlider:setStep(step) end
-
---- Sets the value for this Slider widget.
----@param v number
----@return nil
-function LSlider:setValue(v) end
-
---- Adds SpinBox-specific methods to a widget table.
----@class LSpinBox
-LSpinBox = {}
-
---- Decrements the value by one step.
----@return nil
-function LSpinBox:decrement() end
-
---- Returns the current value of this SpinBox widget.
----@return number
-function LSpinBox:getValue() end
-
---- Increments the value by one step.
----@return nil
-function LSpinBox:increment() end
-
---- Sets the valid range for this SpinBox widget.
----@param min number
----@param max number
----@return nil
-function LSpinBox:setRange(min, max) end
-
---- Sets the increment step for this SpinBox widget.
----@param step number
----@return nil
-function LSpinBox:setStep(step) end
-
---- Sets the value for this SpinBox widget.
----@param v number
----@return nil
-function LSpinBox:setValue(v) end
-
---- Adds SplitPanel-specific methods.
----@class LSplitPanel
-LSplitPanel = {}
-
---- Returns the first child of this Split_Panel widget.
----@return nil
-function LSplitPanel:getFirstChild() end
-
---- Returns the min panel size of this Split_Panel widget.
----@return number
-function LSplitPanel:getMinPanelSize() end
-
---- Returns the orientation of this Split_Panel widget.
----@return string
-function LSplitPanel:getOrientation() end
-
---- Returns the second child of this Split_Panel widget.
----@return nil
-function LSplitPanel:getSecondChild() end
-
---- Returns the split position of this Split_Panel widget.
----@return number
-function LSplitPanel:getSplitPosition() end
-
---- Sets the first child for this Split_Panel widget.
----@param child_idx integer
----@return nil
-function LSplitPanel:setFirstChild(child_idx) end
-
---- Sets the min panel size for this Split_Panel widget.
----@param v number
----@return nil
-function LSplitPanel:setMinPanelSize(v) end
-
---- Sets the orientation for this Split_Panel widget.
----@param v string
----@return nil
-function LSplitPanel:setOrientation(v) end
-
---- Sets the second child for this Split_Panel widget.
----@param child_idx integer
----@return nil
-function LSplitPanel:setSecondChild(child_idx) end
-
---- Sets the split position for this Split_Panel widget.
----@param v number
----@return nil
-function LSplitPanel:setSplitPosition(v) end
-
---- Adds StatusBar-specific methods.
----@class LStatusBar
-LStatusBar = {}
-
---- Adds a section entry to this Status_Bar widget.
----@param text string
----@param width? number
----@return nil
-function LStatusBar:addSection(text, width) end
-
---- Returns the section count of this Status_Bar widget.
----@return number
-function LStatusBar:getSectionCount() end
-
---- Returns the section text of this Status_Bar widget.
----@param section_idx integer
----@return number
-function LStatusBar:getSectionText(section_idx) end
-
---- Resizes the section list for this Status_Bar widget.
----@param count integer
----@return nil
-function LStatusBar:setSectionCount(count) end
-
---- Sets the section text for this Status_Bar widget.
----@param section_idx integer
----@param text string
----@return nil
-function LStatusBar:setSectionText(section_idx, text) end
-
---- Compatibility shim for assigning a widget to a section.
----@param section_idx integer
----@param widget any
----@return nil
-function LStatusBar:setSectionWidget(section_idx, widget) end
-
---- Adds Switch-specific methods to a widget table.
----@class LSwitch
-LSwitch = {}
-
---- Returns the on/off state of this Switch widget.
----@return boolean
-function LSwitch:isOn() end
-
---- Sets the on/off state of this Switch widget.
----@param on boolean
----@return nil
-function LSwitch:setOn(on) end
-
---- Toggles the on/off state of this Switch widget.
----@return nil
-function LSwitch:toggle() end
-
---- Adds TabBar-specific methods (1-based indices in Lua).
----@class LTabBar
-LTabBar = {}
-
---- Adds a tab entry to this Tab_Bar widget.
----@param label string
----@return nil
-function LTabBar:addTab(label) end
-
---- Returns the active tab of this Tab_Bar widget.
----@return number
-function LTabBar:getActiveTab() end
-
---- Returns the tab of this Tab_Bar widget.
----@param index integer
----@return number
-function LTabBar:getTab(index) end
-
---- Returns the tab count of this Tab_Bar widget.
----@return number
-function LTabBar:getTabCount() end
-
---- Removes the tab from this Tab_Bar widget.
----@param index integer
----@return nil
-function LTabBar:removeTab(index) end
-
---- Sets the active tab for this Tab_Bar widget.
----@param index integer
----@return nil
-function LTabBar:setActiveTab(index) end
-
---- Adds TextInput-specific methods to a widget table.
----@class LTextInput
-LTextInput = {}
-
---- Returns the cursor position of this Text_Input widget.
----@return number
-function LTextInput:getCursorPosition() end
-
---- Returns the placeholder of this Text_Input widget.
----@return string
-function LTextInput:getPlaceholder() end
-
---- Returns the text of this Text_Input widget.
----@return string
-function LTextInput:getText() end
-
---- Returns true if focused is enabled for this Text_Input widget.
----@return boolean
-function LTextInput:isFocused() end
-
---- Sets the max length for this Text_Input widget.
----@param n integer
----@return nil
-function LTextInput:setMaxLength(n) end
-
---- Sets the placeholder for this Text_Input widget.
----@param text string
----@return nil
-function LTextInput:setPlaceholder(text) end
-
---- Sets the text for this Text_Input widget.
----@param text string
----@return nil
-function LTextInput:setText(text) end
-
 --- Lua-side wrapper around a GUI [`Theme`].
 ---@class LTheme
 LTheme = {}
-
---- Sets a style for a (widget_type, state) pair.
----@param widgetType string
----@param state string
----@param style table
----@return nil
-function LTheme:setStyle(widgetType, state, style) end
 
 --- Returns the type name of this object.
 ---@return string
@@ -22752,799 +21905,9 @@ function LTheme:type() end
 ---@return boolean
 function LTheme:typeOf(name) end
 
---- Adds Toast-specific methods.
----@class LToast
-LToast = {}
-
---- Returns the duration of this Toast widget.
----@return number
-function LToast:getDuration() end
-
---- Returns the message of this Toast widget.
----@return string
-function LToast:getMessage() end
-
---- Returns the progress of this Toast widget.
----@return number
-function LToast:getProgress() end
-
---- Returns true if expired is enabled for this Toast widget.
----@return boolean
-function LToast:isExpired() end
-
---- Sets the duration for this Toast widget.
----@param d number
----@return nil
-function LToast:setDuration(d) end
-
---- Sets the message for this Toast widget.
----@param msg string
----@return nil
-function LToast:setMessage(msg) end
-
---- Adds Toolbar-specific methods.
----@class LToolbar
-LToolbar = {}
-
---- Adds a button entry to this Toolbar widget.
----@param id string
----@param tooltip? string
----@return nil
-function LToolbar:addButton(id, tooltip) end
-
---- Adds a separator entry to this Toolbar widget.
----@return nil
-function LToolbar:addSeparator() end
-
---- Adds a spacer entry to this Toolbar widget.
----@param size? number
----@return nil
-function LToolbar:addSpacer(size) end
-
---- Returns the button of this Toolbar widget.
----@param id string
----@return boolean
-function LToolbar:getButton(id) end
-
---- Returns the orientation of this Toolbar widget.
----@return string
-function LToolbar:getOrientation() end
-
---- Returns true if button toggled is enabled for this Toolbar widget.
----@param id string
----@return boolean
-function LToolbar:isButtonToggled(id) end
-
---- Sets the button enabled for this Toolbar widget.
----@param id string
----@param enabled boolean
----@return nil
-function LToolbar:setButtonEnabled(id, enabled) end
-
---- Sets the button toggled for this Toolbar widget.
----@param id string
----@param toggled boolean
----@return nil
-function LToolbar:setButtonToggled(id, toggled) end
-
---- Sets the orientation for this Toolbar widget.
----@param v string
----@return nil
-function LToolbar:setOrientation(v) end
-
---- Adds TooltipPanel-specific methods.
----@class LTooltipPanel
-LTooltipPanel = {}
-
---- Returns the delay of this Tooltip_Panel widget.
----@return number
-function LTooltipPanel:getDelay() end
-
---- Returns the target of this Tooltip_Panel widget.
----@return nil
-function LTooltipPanel:getTarget() end
-
---- Returns the text of this Tooltip_Panel widget.
----@return string
-function LTooltipPanel:getText() end
-
---- Sets the delay for this Tooltip_Panel widget.
----@param v number
----@return nil
-function LTooltipPanel:setDelay(v) end
-
---- Sets the target for this Tooltip_Panel widget.
----@param target? integer
----@return nil
-function LTooltipPanel:setTarget(target) end
-
---- Sets the text for this Tooltip_Panel widget.
----@param text string
----@return nil
-function LTooltipPanel:setText(text) end
-
---- Adds TreeView-specific methods (1-based indices in Lua).
----@class LTreeView
-LTreeView = {}
-
---- Adds a node entry to this Tree_View widget.
----@param text string
----@param parent_index? integer
----@return nil
-function LTreeView:addNode(text, parent_index) end
-
---- Clears all nodes entries from this Tree_View widget.
----@return nil
-function LTreeView:clearNodes() end
-
---- Performs the collapse all operation on this Tree_View widget.
----@return nil
-function LTreeView:collapseAll() end
-
---- Performs the collapse node operation on this Tree_View widget.
----@param index integer
----@return nil
-function LTreeView:collapseNode(index) end
-
---- Performs the expand all operation on this Tree_View widget.
----@return nil
-function LTreeView:expandAll() end
-
---- Performs the expand node operation on this Tree_View widget.
----@param index integer
----@return nil
-function LTreeView:expandNode(index) end
-
---- Returns the child nodes of this Tree_View widget.
----@param index integer
----@return nil
-function LTreeView:getChildNodes(index) end
-
---- Returns the node count of this Tree_View widget.
----@return number
-function LTreeView:getNodeCount() end
-
---- Returns the node depth of this Tree_View widget.
----@param index integer
----@return nil
-function LTreeView:getNodeDepth(index) end
-
---- Returns the node text of this Tree_View widget.
----@param index integer
----@return string
-function LTreeView:getNodeText(index) end
-
---- Returns the parent node of this Tree_View widget.
----@param index integer
----@return nil
-function LTreeView:getParentNode(index) end
-
---- Returns the selected node of this Tree_View widget.
----@return number
-function LTreeView:getSelectedNode() end
-
---- Returns true if expanded is enabled for this Tree_View widget.
----@param index integer
----@return boolean
-function LTreeView:isExpanded(index) end
-
---- Returns true if node expanded is enabled for this Tree_View widget.
----@param index integer
----@return boolean
-function LTreeView:isNodeExpanded(index) end
-
---- Removes the node from this Tree_View widget.
----@param index integer
----@return nil
-function LTreeView:removeNode(index) end
-
---- Sets the node icon for this Tree_View widget.
----@param index integer
----@param icon string
----@return nil
-function LTreeView:setNodeIcon(index, icon) end
-
---- Sets the node text for this Tree_View widget.
----@param index integer
----@param text string
----@return nil
-function LTreeView:setNodeText(index, text) end
-
---- Sets the selected node for this Tree_View widget.
----@param index integer
----@return nil
-function LTreeView:setSelectedNode(index) end
-
---- Toggles the expanded/collapsed status of a Tree_View node.
----@param index integer
----@return nil
-function LTreeView:toggleNode(index) end
-
---- Adds a child widget to this container.
----@param child table|integer
----@return nil
-lurek.ui.addChild = function(child) end
-
---- Queues a toast notification from a table.
----@param toast table
----@return nil
-lurek.ui.addToast = function(toast) end
-
---- Anchors this widget to a world-space entity by its numeric ID.
----@param entity_id integer
-lurek.ui.attachToEntity = function(entity_id) end
-
---- Registers a data-binding key on this widget.
----@param key string
-lurek.ui.bind = function(key) end
-
---- Removes all anchor constraints.
----@return nil
-lurek.ui.clearAnchor = function() end
-
---- Removes keyboard focus from this widget so key events go to the next focusable.
----@return nil
-lurek.ui.clearFocus = function() end
-
---- Returns whether (x, y) is inside this widget.
----@param x number
----@param y number
----@return boolean
-lurek.ui.containsPoint = function(x, y) end
-
---- Removes the entity anchor from this widget, restoring normal layout positioning.
----@return nil
-lurek.ui.detachFromEntity = function() end
-
---- Invokes all registered on_draw callbacks, each receiving the widget's
----@return nil
-lurek.ui.draw = function() end
-
---- Renders the UI widget tree to a CPU ImageData at the given resolution.
----@param w integer
----@param h integer
----@return ImageData
-lurek.ui.drawToImage = function(w, h) end
-
---- Instantly fades the widget in (sets alpha to `1.0`).
----@return nil
-lurek.ui.fadeIn = function() end
-
---- Instantly fades the widget out (sets alpha to `0.0` and hides it).
----@return nil
-lurek.ui.fadeOut = function() end
-
---- Recursively searches for a widget by id starting from this widget.
----@param id string
----@return table
-lurek.ui.findById = function(id) end
-
---- Returns true if the widget tree changed since the last call, then resets the flag.
----@return boolean
-lurek.ui.flushCache = function() end
-
---- Moves focus to the next focusable widget.
----@return nil
-lurek.ui.focusNext = function() end
-
---- Moves focus to the previous focusable widget.
----@return nil
-lurek.ui.focusPrev = function() end
-
---- Returns the widget's current alpha transparency.
----@return number
-lurek.ui.getAlpha = function() end
-
---- Returns the number of children in this container.
----@return number
-lurek.ui.getChildCount = function() end
-
---- Returns this container's children as widget-handle tables.
----@return table
-lurek.ui.getChildren = function() end
-
---- Returns the flex-grow factor.
----@return number
-lurek.ui.getFlexGrow = function() end
-
---- Returns the flex-shrink factor.
----@return number
-lurek.ui.getFlexShrink = function() end
-
---- Returns the focused widget index or nil.
----@return number
-lurek.ui.getFocus = function() end
-
---- Returns the widget string identifier.
----@return string
-lurek.ui.getId = function() end
-
---- Returns the widget margin (top, right, bottom, left).
----@return number
-lurek.ui.getMargin = function() end
-
---- Returns the maximum widget size.
----@return number
-lurek.ui.getMaxSize = function() end
-
---- Returns the minimum widget size.
----@return number
-lurek.ui.getMinSize = function() end
-
---- Returns the widget padding (top, right, bottom, left).
----@return number
-lurek.ui.getPadding = function() end
-
---- Returns the widget position.
----@return number
-lurek.ui.getPosition = function() end
-
---- Returns the computed screen-space rectangle after layout.
----@return number
-lurek.ui.getRect = function() end
-
---- Returns the root panel widget table.
----@return table
-lurek.ui.getRoot = function() end
-
---- Returns the current width and height of the widget in UI pixels.
----@return number
-lurek.ui.getSize = function() end
-
---- Returns the widget interaction state name.
----@return string
-lurek.ui.getState = function() end
-
---- Returns whether a theme is set.
----@return boolean
-lurek.ui.getTheme = function() end
-
---- Returns the number of active toasts.
----@return number
-lurek.ui.getToastCount = function() end
-
---- Returns the widget tooltip text.
----@return string
-lurek.ui.getTooltip = function() end
-
---- Returns the total widget count in the context.
----@return number
-lurek.ui.getWidgetCount = function() end
-
---- Returns the widget z-order.
----@return number
-lurek.ui.getZOrder = function() end
-
---- Returns whether the widget is enabled.
----@return boolean
-lurek.ui.isEnabled = function() end
-
---- Returns whether the widget is visible.
----@return boolean
-lurek.ui.isVisible = function() end
-
---- Forwards a key press event to the GUI.
----@param key string
----@return boolean
-lurek.ui.keypressed = function(key) end
-
---- Load a widget tree from a Lua table definition and attach it to the UI
----@param def table
----@return number
-lurek.ui.loadLayout = function(def) end
-
---- Load a widget tree from a TOML layout file and attach it to the UI root.
----@param path string
----@return number
-lurek.ui.loadLayoutFile = function(path) end
-
---- Forwards a mouse move event to the GUI.
----@param x number
----@param y number
----@return boolean
-lurek.ui.mousemoved = function(x, y) end
-
---- Forwards a mouse press event to the GUI.
----@param x number
----@param y number
----@param button? number
----@return boolean
-lurek.ui.mousepressed = function(x, y, button) end
-
---- Forwards a mouse release event to the GUI.
----@param x number
----@param y number
----@param button? number
----@return boolean
-lurek.ui.mousereleased = function(x, y, button) end
-
---- Creates a collapsible accordion widget.
----@return table
-lurek.ui.newAccordion = function() end
-
---- Creates a new stacked-area chart.
----@param opts table
----@return AreaChart
-lurek.ui.newAreaChart = function(opts) end
-
---- Creates a badge widget displaying a numeric count.
----@param count? integer
----@return table
-lurek.ui.newBadge = function(count) end
-
---- Creates and returns a new bar chart widget attached to this image widget.
----@param opts table
----@return BarChart
-lurek.ui.newBarChart = function(opts) end
-
---- Creates and returns a new interactive button widget as a child of this widget.
----@param text? string
----@return table
-lurek.ui.newButton = function(text) end
-
---- Creates a checkbox widget.
----@param text? string
----@return table
-lurek.ui.newCheckbox = function(text) end
-
---- Creates a color picker widget.
----@return table
-lurek.ui.newColorPicker = function() end
-
---- Creates a dropdown combo box widget.
----@return table
-lurek.ui.newComboBox = function() end
-
---- Creates a new widget with custom Lua-driven rendering.
----@param config? table
----@return table
-lurek.ui.newCustomWidget = function(config) end
-
---- Creates a modal dialog widget.
----@param title? string
----@return table
-lurek.ui.newDialog = function(title) end
-
---- Creates and returns a new docking panel that arranges children along its edges.
----@return table
-lurek.ui.newDockPanel = function() end
-
---- Creates an image display widget.
----@return table
-lurek.ui.newImageWidget = function() end
-
---- Creates a text label widget.
----@param text? string
----@return table
-lurek.ui.newLabel = function(text) end
-
---- Creates a flexbox layout container.
----@param direction? string
----@return table
-lurek.ui.newLayout = function(direction) end
-
---- Creates a new line chart.
----@param opts table
----@return LineChart
-lurek.ui.newLineChart = function(opts) end
-
---- Creates a selectable list widget.
----@return table
-lurek.ui.newList = function() end
-
---- Creates a menu bar widget.
----@return table
-lurek.ui.newMenuBar = function() end
-
---- Creates a menu item widget.
----@param text? string
----@return table
-lurek.ui.newMenuItem = function(text) end
-
---- Creates a 9-patch slicer widget.
----@return table
-lurek.ui.newNinePatch = function() end
-
---- Creates a container panel widget.
----@return table
-lurek.ui.newPanel = function() end
-
---- Creates and returns a new pie chart widget attached to this image widget.
----@param opts table
----@return PieChart
-lurek.ui.newPieChart = function(opts) end
-
---- Creates a progress bar widget.
----@param min? number
----@param max? number
----@return table
-lurek.ui.newProgressBar = function(min, max) end
-
---- Creates a grouped radio button widget.
----@param text? string
----@param group? string
----@return table
-lurek.ui.newRadioButton = function(text, group) end
-
---- Creates a new scatter plot.
----@param opts table
----@return ScatterPlot
-lurek.ui.newScatterPlot = function(opts) end
-
---- Creates a scroll bar widget.
----@param vertical? boolean
----@return table
-lurek.ui.newScrollBar = function(vertical) end
-
---- Creates a scrollable panel widget.
----@return table
-lurek.ui.newScrollPanel = function() end
-
---- Creates a separator line.
----@param vertical? boolean
----@return table
-lurek.ui.newSeparator = function(vertical) end
-
---- Creates a value slider widget.
----@param min? number
----@param max? number
----@return table
-lurek.ui.newSlider = function(min, max) end
-
---- Creates a spacing filler widget.
----@param w? number
----@param h? number
----@return table
-lurek.ui.newSpacer = function(w, h) end
-
---- Creates a numeric spin box widget with increment and decrement buttons.
----@param min? number
----@param max? number
----@return table
-lurek.ui.newSpinBox = function(min, max) end
-
---- Creates a resizable split panel.
----@param orientation? string
----@return table
-lurek.ui.newSplitPanel = function(orientation) end
-
---- Creates a status bar widget.
----@return table
-lurek.ui.newStatusBar = function() end
-
---- Creates a toggle switch widget.
----@param on? boolean
----@return table
-lurek.ui.newSwitch = function(on) end
-
---- Creates a tab bar widget.
----@return table
-lurek.ui.newTabBar = function() end
-
---- Creates a data table widget.
----@return table
-lurek.ui.newTable = function() end
-
---- Creates a text input widget.
----@return table
-lurek.ui.newTextInput = function() end
-
---- Creates a new theme instance.
----@return Theme
-lurek.ui.newTheme = function() end
-
---- Creates a toast notification widget.
----@param message? string
----@param duration? number
----@return table
-lurek.ui.newToast = function(message, duration) end
-
---- Creates a toolbar widget.
----@param orientation? string
----@return table
-lurek.ui.newToolbar = function(orientation) end
-
---- Creates a tooltip panel widget.
----@param text? string
----@return table
-lurek.ui.newTooltipPanel = function(text) end
-
---- Creates a collapsible tree view widget.
----@return table
-lurek.ui.newTreeView = function() end
-
---- Creates a draggable window widget.
----@param title? string
----@return table
-lurek.ui.newWindow = function(title) end
-
---- Parses a widget state string, returning the canonical form or nil if invalid.
----@param state string
----@return string
-lurek.ui.parseWidgetState = function(state) end
-
---- Removes a child widget from this container.
----@param child table|integer
----@return nil
-lurek.ui.removeChild = function(child) end
-
---- Render the current UI widget tree to a PNG file for testing purposes.
----@param width number
----@param height number
----@param path string
-lurek.ui.renderToImage = function(width, height, path) end
-
---- Sets the widget's alpha transparency (`0.0` fully transparent, `1.0` opaque).
----@param alpha number
-lurek.ui.setAlpha = function(alpha) end
-
---- Sets anchor edges (left, top, right, bottom).
----@param left number
----@param top number
----@param right number
----@param bottom number
----@return nil
-lurek.ui.setAnchor = function(left, top, right, bottom) end
-
---- Sets center anchor offsets.
----@param cx? number
----@param cy? number
----@return nil
-lurek.ui.setAnchorCenter = function(cx, cy) end
-
---- Installs the built-in dark theme as the active GUI theme.
----@return nil
-lurek.ui.setDefaultTheme = function() end
-
---- Sets whether the widget is enabled.
----@param enabled boolean
----@return nil
-lurek.ui.setEnabled = function(enabled) end
-
---- Sets the flex-grow factor.
----@param grow number
----@return nil
-lurek.ui.setFlexGrow = function(grow) end
-
---- Sets the flex-shrink factor.
----@param shrink number
----@return nil
-lurek.ui.setFlexShrink = function(shrink) end
-
---- Sets keyboard focus to a widget or clears it.
----@param widget? table
----@return nil
-lurek.ui.setFocus = function(widget) end
-
---- Sets the widget string identifier.
----@param id string
----@return nil
-lurek.ui.setId = function(id) end
-
---- Sets widget margin (CSS-like: top, right?, bottom?, left?).
----@param top number
----@param right? number
----@param bottom? number
----@param left? number
----@return nil
-lurek.ui.setMargin = function(top, right, bottom, left) end
-
---- Sets the maximum widget size.
----@param w number
----@param h number
----@return nil
-lurek.ui.setMaxSize = function(w, h) end
-
---- Sets the minimum widget size.
----@param w number
----@param h number
----@return nil
-lurek.ui.setMinSize = function(w, h) end
-
---- Registers a callback invoked when this widget's value changes.
----@param fn function
----@return nil
-lurek.ui.setOnChange = function(fn) end
-
---- Registers a callback invoked when this widget is clicked.
----@param fn function
----@return nil
-lurek.ui.setOnClick = function(fn) end
-
---- Stores a custom draw callback for later invocation.
----@param fn function
----@param f any
----@return nil
-lurek.ui.setOnDraw = function(fn, f) end
-
---- Sets widget padding (CSS-like: top, right?, bottom?, left?).
----@param top number
----@param right? number
----@param bottom? number
----@param left? number
----@return nil
-lurek.ui.setPadding = function(top, right, bottom, left) end
-
---- Sets the widget position.
----@param x number
----@param y number
----@return nil
-lurek.ui.setPosition = function(x, y) end
-
---- Sets the width and height of the widget in UI pixels.
----@param w number
----@param h number
----@return nil
-lurek.ui.setSize = function(w, h) end
-
---- Sets the active GUI theme.
----@param theme Theme
----@return nil
-lurek.ui.setTheme = function(theme) end
-
---- Sets the widget tooltip text.
----@param text string
----@return nil
-lurek.ui.setTooltip = function(text) end
-
---- Sets the viewport dimensions used for anchor constraints and layout.
----@param w number
----@param h number
----@return nil
-lurek.ui.setViewport = function(w, h) end
-
---- Shows or hides the widget; hidden widgets are not rendered or interactive.
----@param visible boolean
----@return nil
-lurek.ui.setVisible = function(visible) end
-
---- Sets the widget z-order for draw sorting.
----@param z number
----@return nil
-lurek.ui.setZOrder = function(z) end
-
---- Instantly moves the widget to `(x, y)` and makes it visible.
----@param x number
----@param y number
-lurek.ui.slideIn = function(x, y) end
-
---- Instantly moves the widget to the off-screen position `(x, y)` and hides it.
----@param x number
----@param y number
-lurek.ui.slideOut = function(x, y) end
-
---- Forwards text input to the focused text input widget.
----@param text string
----@return boolean
-lurek.ui.textinput = function(text) end
-
 --- Returns the Lua type name of this widget (e.g. "LButton").
 ---@return string
 lurek.ui.type = function() end
-
---- Returns true if this widget is of the given type, "LWidget", or "Object".
----@param name string
----@return boolean
-lurek.ui.typeOf = function(name) end
-
---- Removes the data-binding key from this widget.
----@return nil
-lurek.ui.unbind = function() end
-
---- Advances toast timers, removes expired toasts, and dispatches pending GUI events.
----@param dt number
----@return nil
-lurek.ui.update = function(dt) end
-
---- Updates all widgets that have a data-binding key registered via `:bind(key)`.
----@param data table
-lurek.ui.update_bindings = function(data) end
-
---- Forwards a mouse wheel event to the GUI.
----@param x number
----@param y number
----@return boolean
-lurek.ui.wheelmoved = function(x, y) end
 
 ---@class lurek.window
 lurek.window = {}
@@ -23567,11 +21930,13 @@ lurek.window.fromPixels = function(value) end
 lurek.window.getDPIScale = function() end
 
 --- Returns the desktop resolution as width, height.
----@return number
+---@return integer
+---@return integer
 lurek.window.getDesktopDimensions = function() end
 
 --- Returns the window dimensions as width, height.
----@return number
+---@return integer
+---@return integer
 lurek.window.getDimensions = function() end
 
 --- Returns the number of connected displays.
@@ -23588,6 +21953,7 @@ lurek.window.getDisplayName = function(display) end
 lurek.window.getDisplayOrientation = function() end
 
 --- Returns the fullscreen state and type string.
+---@return boolean
 ---@return string
 lurek.window.getFullscreen = function() end
 
@@ -23608,7 +21974,9 @@ lurek.window.getGameWidth = function() end
 lurek.window.getHeight = function() end
 
 --- Returns the window dimensions and mode flags as width, height, flags.
----@return number
+---@return integer
+---@return integer
+---@return table
 lurek.window.getMode = function() end
 
 --- Returns the native DPI scale factor.
@@ -23616,14 +21984,19 @@ lurek.window.getMode = function() end
 lurek.window.getNativeDPIScale = function() end
 
 --- Returns the window dimensions in physical pixels.
----@return number
+---@return integer
+---@return integer
 lurek.window.getPixelDimensions = function() end
 
 --- Returns the window position as x, y in screen coordinates.
----@return number
+---@return integer
+---@return integer
 lurek.window.getPosition = function() end
 
 --- Returns the safe display area as x, y, w, h.
+---@return number
+---@return number
+---@return number
 ---@return number
 lurek.window.getSafeArea = function() end
 
