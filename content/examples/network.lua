@@ -97,7 +97,7 @@ end
 
 -- ── NetworkHost methods ──
 
---@api-stub: NetworkHost:service
+--@api-stub: LNetworkHost:service
 -- Polls the network for one event, returning an event table or nil.
 -- Call this in lurek.process every frame and dispatch on event.type ("connect", "disconnect", "receive").
 do  -- NetworkHost:service
@@ -108,7 +108,7 @@ do  -- NetworkHost:service
   end
 end
 
---@api-stub: NetworkHost:flush
+--@api-stub: LNetworkHost:flush
 -- Flushes all pending sends immediately.
 -- Call after a burst of urgent sends (e.g. end-of-frame state) to push packets out without waiting for service().
 do  -- NetworkHost:flush
@@ -117,7 +117,7 @@ do  -- NetworkHost:flush
   host:flush()
 end
 
---@api-stub: NetworkHost:resetPeer
+--@api-stub: LNetworkHost:resetPeer
 -- Resets a peer connection immediately without notifying the remote side.
 -- Use for misbehaving peers you want gone immediately; the remote side will not get a clean disconnect notice.
 do  -- NetworkHost:resetPeer
@@ -127,7 +127,7 @@ do  -- NetworkHost:resetPeer
   lurek.log.warn("force-reset peer " .. cheater_peer_id, "net")
 end
 
---@api-stub: NetworkHost:ping
+--@api-stub: LNetworkHost:ping
 -- Sends a ping to a peer to measure round-trip time.
 -- Pings are normally automatic; call this only to force an immediate RTT update before reading getRoundTripTime.
 do  -- NetworkHost:ping
@@ -136,7 +136,7 @@ do  -- NetworkHost:ping
   host:ping(peer_id)
 end
 
---@api-stub: NetworkHost:getRoundTripTime
+--@api-stub: LNetworkHost:getRoundTripTime
 -- Returns the round-trip time estimate for a peer in milliseconds.
 -- Read this each second to render a latency meter; the value is in milliseconds.
 do  -- NetworkHost:getRoundTripTime
@@ -145,7 +145,7 @@ do  -- NetworkHost:getRoundTripTime
   if rtt_ms > 150 then lurek.log.warn("high latency: " .. rtt_ms .. " ms", "net") end
 end
 
---@api-stub: NetworkHost:getPeerState
+--@api-stub: LNetworkHost:getPeerState
 -- Returns the connection state of a peer as a string.
 -- Branch on the state string before sending; sends to a non-"connected" peer raise an error.
 do  -- NetworkHost:getPeerState
@@ -154,7 +154,7 @@ do  -- NetworkHost:getPeerState
   if state == "connected" then host:send(1, 0, "hello", true) end
 end
 
---@api-stub: NetworkHost:getPeerAddress
+--@api-stub: LNetworkHost:getPeerAddress
 -- Returns the remote address of a peer, or nil if unavailable.
 -- Useful for logging and ban lists; returns nil if the peer slot is empty or the address is not yet known.
 do  -- NetworkHost:getPeerAddress
@@ -163,7 +163,7 @@ do  -- NetworkHost:getPeerAddress
   if addr then lurek.log.info("peer 1 at " .. addr, "net") end
 end
 
---@api-stub: NetworkHost:getAddress
+--@api-stub: LNetworkHost:getAddress
 -- Returns the local bind address as a string.
 -- Useful right after newHost{ addr = "0.0.0.0:0" } to discover which ephemeral port the OS picked.
 do  -- NetworkHost:getAddress
@@ -172,7 +172,7 @@ do  -- NetworkHost:getAddress
   lurek.log.info("bound to " .. bound, "net")
 end
 
---@api-stub: NetworkHost:getPeerLimit
+--@api-stub: LNetworkHost:getPeerLimit
 -- Returns the maximum number of peer slots.
 -- Compare against getConnectedPeerCount to decide whether to advertise the lobby as full.
 do  -- NetworkHost:getPeerLimit
@@ -181,7 +181,7 @@ do  -- NetworkHost:getPeerLimit
   lurek.log.info("max players: " .. cap, "net")
 end
 
---@api-stub: NetworkHost:getChannelLimit
+--@api-stub: LNetworkHost:getChannelLimit
 -- Returns the maximum number of channels per connection.
 -- Use when wiring a channel-aware protocol (e.g. channel 0 = state, 1 = chat) to validate your assumed channel count.
 do  -- NetworkHost:getChannelLimit
@@ -190,7 +190,7 @@ do  -- NetworkHost:getChannelLimit
   assert(channels >= 2, "need at least 2 channels for state+chat")
 end
 
---@api-stub: NetworkHost:setChannelLimit
+--@api-stub: LNetworkHost:setChannelLimit
 -- Sets the channel limit for future connections.
 -- Apply before any peer connects; existing connections keep the channel count they negotiated.
 do  -- NetworkHost:setChannelLimit
@@ -199,7 +199,7 @@ do  -- NetworkHost:setChannelLimit
   lurek.log.info("now negotiating " .. host:getChannelLimit() .. " channels", "net")
 end
 
---@api-stub: NetworkHost:getBandwidthLimit
+--@api-stub: LNetworkHost:getBandwidthLimit
 -- Returns the bandwidth limits as a table with incoming and outgoing fields.
 -- Show in a debug overlay; returned values are bytes/second, 0 means unlimited.
 do  -- NetworkHost:getBandwidthLimit
@@ -211,7 +211,7 @@ do  -- NetworkHost:getBandwidthLimit
   end)
 end
 
---@api-stub: NetworkHost:getConnectedPeerCount
+--@api-stub: LNetworkHost:getConnectedPeerCount
 -- Returns the number of currently connected peers.
 -- Poll once per second for a player counter; cheaper than iterating getConnectedPeerIds.
 do  -- NetworkHost:getConnectedPeerCount
@@ -220,7 +220,7 @@ do  -- NetworkHost:getConnectedPeerCount
   lurek.log.info("players online: " .. n, "net")
 end
 
---@api-stub: NetworkHost:getConnectedPeerIds
+--@api-stub: LNetworkHost:getConnectedPeerIds
 -- Returns a table of connected peer IDs.
 -- Iterate to fan-out per-peer messages (e.g. private inventory updates) instead of broadcasting.
 do  -- NetworkHost:getConnectedPeerIds
@@ -230,7 +230,7 @@ do  -- NetworkHost:getConnectedPeerIds
   end
 end
 
---@api-stub: NetworkHost:getPeerStats
+--@api-stub: LNetworkHost:getPeerStats
 -- Returns a statistics table for a peer.
 -- Inspect packets_sent / packets_lost in a debug HUD to spot lossy clients before they desync.
 do  -- NetworkHost:getPeerStats
@@ -239,7 +239,7 @@ do  -- NetworkHost:getPeerStats
   lurek.log.debug("peer 1 sent=" .. stats.packets_sent .. " lost=" .. stats.packets_lost, "net")
 end
 
---@api-stub: NetworkHost:destroy
+--@api-stub: LNetworkHost:destroy
 -- Destroys the host, closing the underlying socket.
 -- Always call from lurek.quit so the OS releases the UDP socket; safe to call once on a host already destroyed.
 do  -- NetworkHost:destroy
@@ -249,7 +249,7 @@ do  -- NetworkHost:destroy
   end
 end
 
---@api-stub: NetworkHost:isDestroyed
+--@api-stub: LNetworkHost:isDestroyed
 -- Returns true if the host has been destroyed.
 -- Guard service / send loops with this so a hot-reload that nukes the host does not crash the next frame.
 do  -- NetworkHost:isDestroyed
@@ -258,7 +258,7 @@ do  -- NetworkHost:isDestroyed
   if host:isDestroyed() then lurek.log.info("host shut down cleanly", "net") end
 end
 
---@api-stub: NetworkHost:getRole
+--@api-stub: LNetworkHost:getRole
 -- Returns the multiplayer role of this host ("server", "client", or "host").
 -- Use to share one update path for client and server while still printing the right diagnostic strings.
 do  -- NetworkHost:getRole
@@ -267,7 +267,7 @@ do  -- NetworkHost:getRole
   lurek.log.info("running as " .. role, "net")
 end
 
---@api-stub: NetworkHost:isServer
+--@api-stub: LNetworkHost:isServer
 -- Returns true if this host was created as a server.
 -- Branch on this when authoritative logic (spawning, scoring) must only run on the server side.
 do  -- NetworkHost:isServer
@@ -277,7 +277,7 @@ do  -- NetworkHost:isServer
   end
 end
 
---@api-stub: NetworkHost:isClient
+--@api-stub: LNetworkHost:isClient
 -- Returns true if this host was created as a client.
 -- Use to skip server-only code paths (spawning, validation) on joiners while still sharing the loop.
 do  -- NetworkHost:isClient
@@ -290,7 +290,7 @@ end
 
 -- ── NetworkRuntime methods ──
 
---@api-stub: NetworkRuntime:httpRequest
+--@api-stub: LNetworkRuntime:httpRequest
 -- Sends an HTTP request asynchronously.
 -- Pass a fully formed table once; correlate the returned request id with poll() responses to read the result.
 do  -- NetworkRuntime:httpRequest
@@ -303,7 +303,7 @@ do  -- NetworkRuntime:httpRequest
   lurek.log.info("submitted score request id=" .. req_id, "net")
 end
 
---@api-stub: NetworkRuntime:tcpConnect
+--@api-stub: LNetworkRuntime:tcpConnect
 -- Opens a TCP connection to a remote address.
 -- Returns a connection id immediately; the actual socket open is signalled by a poll() event with event="connected".
 do  -- NetworkRuntime:tcpConnect
@@ -312,7 +312,7 @@ do  -- NetworkRuntime:tcpConnect
   lurek.log.info("dialling tcp conn=" .. conn, "net")
 end
 
---@api-stub: NetworkRuntime:tcpSend
+--@api-stub: LNetworkRuntime:tcpSend
 -- Sends data over a TCP connection.
 -- Frame your own messages (length prefix or newline) before calling; the runtime sends raw bytes.
 do  -- NetworkRuntime:tcpSend
@@ -321,7 +321,7 @@ do  -- NetworkRuntime:tcpSend
   rt:tcpSend(conn, "LOGIN tom\n")
 end
 
---@api-stub: NetworkRuntime:tcpClose
+--@api-stub: LNetworkRuntime:tcpClose
 -- Closes the TCP connection identified by the given connection handle.
 -- Close as soon as you receive your final response; leaving sockets open leaks file descriptors over long sessions.
 do  -- NetworkRuntime:tcpClose
@@ -330,7 +330,7 @@ do  -- NetworkRuntime:tcpClose
   rt:tcpClose(conn)
 end
 
---@api-stub: NetworkRuntime:wsConnect
+--@api-stub: LNetworkRuntime:wsConnect
 -- Opens a WebSocket connection.
 -- Use ws:// for plaintext (LAN, dev) and wss:// for production; both return a connection id you correlate via poll().
 do  -- NetworkRuntime:wsConnect
@@ -339,7 +339,7 @@ do  -- NetworkRuntime:wsConnect
   lurek.log.info("opening websocket id=" .. ws, "net")
 end
 
---@api-stub: NetworkRuntime:wsSend
+--@api-stub: LNetworkRuntime:wsSend
 -- Sends a text message over a WebSocket connection.
 -- Sends a single text frame; for binary frames serialise with lurek.network.pack and send via the binary channel.
 do  -- NetworkRuntime:wsSend
@@ -348,7 +348,7 @@ do  -- NetworkRuntime:wsSend
   rt:wsSend(ws, '{"chat":"hello"}')
 end
 
---@api-stub: NetworkRuntime:wsClose
+--@api-stub: LNetworkRuntime:wsClose
 -- Closes a WebSocket connection.
 -- Close cleanly when the player leaves the chat screen; the server will send a close frame back via poll().
 do  -- NetworkRuntime:wsClose
@@ -357,7 +357,7 @@ do  -- NetworkRuntime:wsClose
   rt:wsClose(ws)
 end
 
---@api-stub: NetworkRuntime:poll
+--@api-stub: LNetworkRuntime:poll
 -- Polls for completed async responses (HTTP, TCP events, WebSocket events).
 -- Drain every frame in lurek.process; each entry has a .type ("http", "tcp", "websocket") and event-specific fields.
 do  -- NetworkRuntime:poll
@@ -369,7 +369,7 @@ do  -- NetworkRuntime:poll
   end
 end
 
---@api-stub: NetworkRuntime:shutdown
+--@api-stub: LNetworkRuntime:shutdown
 -- Shuts down the background network thread.
 -- Call from lurek.quit so the worker thread joins cleanly; the runtime is unusable after this.
 do  -- NetworkRuntime:shutdown
@@ -379,7 +379,7 @@ do  -- NetworkRuntime:shutdown
   end
 end
 
---@api-stub: NetworkHost:broadcast
+--@api-stub: LNetworkHost:broadcast
 -- Sends a message to all connected peers on the specified channel.
 -- Efficient for authoritative-state updates; peers filter by channel number.
 do  -- NetworkHost:broadcast
@@ -388,7 +388,7 @@ do  -- NetworkHost:broadcast
   lurek.log.info("broadcast sent", "network")
 end
 
---@api-stub: NetworkHost:connect
+--@api-stub: LNetworkHost:connect
 -- Attempts to connect this client host to a remote server address and port.
 -- Returns a peer handle; the connection is established asynchronously via service().
 do  -- NetworkHost:connect
@@ -400,7 +400,7 @@ do  -- NetworkHost:connect
   if not ok then lurek.log.info("connect: no server available", "network") end
 end
 
---@api-stub: NetworkHost:disconnect
+--@api-stub: LNetworkHost:disconnect
 -- Sends a disconnect notification and flushes all queued data before closing.
 -- Graceful disconnect; peer receives ENet disconnect event after data drains.
 do  -- NetworkHost:disconnect
@@ -409,7 +409,7 @@ do  -- NetworkHost:disconnect
   lurek.log.info("disconnect requested", "network")
 end
 
---@api-stub: NetworkHost:disconnectLater
+--@api-stub: LNetworkHost:disconnectLater
 -- Queues a disconnect that fires only after all outgoing packets are delivered.
 -- Use when you need the remote to receive a final message before the channel closes.
 do  -- NetworkHost:disconnectLater
@@ -419,7 +419,7 @@ do  -- NetworkHost:disconnectLater
   lurek.log.info("disconnect-later queued", "network")
 end
 
---@api-stub: NetworkHost:disconnectNow
+--@api-stub: LNetworkHost:disconnectNow
 -- Closes the connection immediately without waiting for queued packets.
 -- Use for timeout handling or when the connection is already known to be dead.
 do  -- NetworkHost:disconnectNow
@@ -428,7 +428,7 @@ do  -- NetworkHost:disconnectNow
   lurek.log.info("disconnect-now issued", "network")
 end
 
---@api-stub: NetworkRuntime:httpGet
+--@api-stub: LNetworkRuntime:httpGet
 -- Issues an asynchronous HTTP GET request to the given URL.
 -- poll() returns the response; subscribe to its result in the next frame.
 do  -- NetworkRuntime:httpGet
@@ -437,7 +437,7 @@ do  -- NetworkRuntime:httpGet
   lurek.log.info("GET id=" .. id, "network")
 end
 
---@api-stub: NetworkRuntime:httpPost
+--@api-stub: LNetworkRuntime:httpPost
 -- Issues an asynchronous HTTP POST request with a JSON or form body.
 -- Pass headers table and body string; response arrives via the callback.
 do  -- NetworkRuntime:httpPost
@@ -446,7 +446,7 @@ do  -- NetworkRuntime:httpPost
   lurek.log.info("POST id=" .. id, "network")
 end
 
---@api-stub: NetworkHost:send
+--@api-stub: LNetworkHost:send
 -- Sends a packet to a single peer on the given channel.
 -- channel is a 0-based integer; mode is "reliable", "unsequenced", or "unreliable".
 do  -- NetworkHost:send
@@ -455,7 +455,7 @@ do  -- NetworkHost:send
   lurek.log.info("packet sent to peer 1", "network")
 end
 
---@api-stub: NetworkHost:setBandwidthLimit
+--@api-stub: LNetworkHost:setBandwidthLimit
 -- Sets incoming and outgoing bandwidth caps (bytes/sec) on the host.
 -- 0 = unlimited; use to simulate poor network conditions during testing.
 do  -- NetworkHost:setBandwidthLimit
@@ -483,13 +483,6 @@ end
 -- -----------------------------------------------------------------------------
 -- NetworkRuntime methods
 -- -----------------------------------------------------------------------------
-
--- ---- Stub: NetworkRuntime:httpRequest ------------------------------------
---@api-stub: NetworkRuntime:httpRequest
--- Sends an HTTP request asynchronously. Poll with `poll()` for the response.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- networkRuntime_stub:httpRequest(opts)
--- (replace networkRuntime_stub with your real NetworkRuntime instance above)
 
 -- =============================================================================
 -- STUBS: 6 uncovered lurek.network API item(s)
@@ -527,13 +520,6 @@ lurek.network.newHost(opts)  -- -> NetworkHost
 -- LNetworkRuntime methods
 -- -----------------------------------------------------------------------------
 
--- ---- Stub: LNetworkRuntime:httpRequest -----------------------------------
---@api-stub: LNetworkRuntime:httpRequest
--- Sends an HTTP request asynchronously. Poll with `poll()` for the response.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lNetworkRuntime_stub:httpRequest(opts)
--- (replace lNetworkRuntime_stub with your real LNetworkRuntime instance above)
-
 -- ---- Stub: LNetworkRuntime:type ------------------------------------------
 --@api-stub: LNetworkRuntime:type
 -- Returns the type name of this object.
@@ -556,269 +542,4 @@ lurek.network.newHost(opts)  -- -> NetworkHost
 -- The final committed file must contain ZERO --@api-stub: lines.
 -- =============================================================================
 
--- -----------------------------------------------------------------------------
--- LNetworkHost methods
--- -----------------------------------------------------------------------------
 
--- ---- Stub: LNetworkHost:service ------------------------------------------
---@api-stub: LNetworkHost:service
--- Polls the network for one event, returning an event table or nil.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lNetworkHost_stub:service()  -- -> table?
--- (replace lNetworkHost_stub with your real LNetworkHost instance above)
-
--- ---- Stub: LNetworkHost:connect ------------------------------------------
---@api-stub: LNetworkHost:connect
--- Initiates a connection to a remote host, returning the peer ID.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lNetworkHost_stub:connect(addr_str, [channels], [data])  -- -> integer
--- (replace lNetworkHost_stub with your real LNetworkHost instance above)
-
--- ---- Stub: LNetworkHost:send ---------------------------------------------
---@api-stub: LNetworkHost:send
--- Sends data to a specific peer on a channel.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lNetworkHost_stub:send(peer_id, channel_id, data, [reliable])
--- (replace lNetworkHost_stub with your real LNetworkHost instance above)
-
--- ---- Stub: LNetworkHost:broadcast ----------------------------------------
---@api-stub: LNetworkHost:broadcast
--- Broadcasts data to all connected peers on a channel.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lNetworkHost_stub:broadcast(channel_id, data, [reliable])
--- (replace lNetworkHost_stub with your real LNetworkHost instance above)
-
--- ---- Stub: LNetworkHost:flush --------------------------------------------
---@api-stub: LNetworkHost:flush
--- Flushes all pending sends immediately.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lNetworkHost_stub:flush()
--- (replace lNetworkHost_stub with your real LNetworkHost instance above)
-
--- ---- Stub: LNetworkHost:disconnect ---------------------------------------
---@api-stub: LNetworkHost:disconnect
--- Gracefully disconnects a peer.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lNetworkHost_stub:disconnect(peer_id, [data])
--- (replace lNetworkHost_stub with your real LNetworkHost instance above)
-
--- ---- Stub: LNetworkHost:disconnectNow ------------------------------------
---@api-stub: LNetworkHost:disconnectNow
--- Immediately disconnects a peer without handshake.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lNetworkHost_stub:disconnectNow(peer_id, [data])
--- (replace lNetworkHost_stub with your real LNetworkHost instance above)
-
--- ---- Stub: LNetworkHost:disconnectLater ----------------------------------
---@api-stub: LNetworkHost:disconnectLater
--- Disconnects a peer after all queued packets have been sent.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lNetworkHost_stub:disconnectLater(peer_id, [data])
--- (replace lNetworkHost_stub with your real LNetworkHost instance above)
-
--- ---- Stub: LNetworkHost:resetPeer ----------------------------------------
---@api-stub: LNetworkHost:resetPeer
--- Resets a peer connection immediately without notifying the remote side.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lNetworkHost_stub:resetPeer(peer_id)
--- (replace lNetworkHost_stub with your real LNetworkHost instance above)
-
--- ---- Stub: LNetworkHost:ping ---------------------------------------------
---@api-stub: LNetworkHost:ping
--- Sends a ping to a peer to measure round-trip time.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lNetworkHost_stub:ping(peer_id)
--- (replace lNetworkHost_stub with your real LNetworkHost instance above)
-
--- ---- Stub: LNetworkHost:getRoundTripTime ---------------------------------
---@api-stub: LNetworkHost:getRoundTripTime
--- Returns the round-trip time estimate for a peer in milliseconds.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lNetworkHost_stub:getRoundTripTime(peer_id)  -- -> number
--- (replace lNetworkHost_stub with your real LNetworkHost instance above)
-
--- ---- Stub: LNetworkHost:getPeerState -------------------------------------
---@api-stub: LNetworkHost:getPeerState
--- Returns the connection state of a peer as a string.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lNetworkHost_stub:getPeerState(peer_id)  -- -> string
--- (replace lNetworkHost_stub with your real LNetworkHost instance above)
-
--- ---- Stub: LNetworkHost:getPeerAddress -----------------------------------
---@api-stub: LNetworkHost:getPeerAddress
--- Returns the remote address of a peer, or nil if unavailable.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lNetworkHost_stub:getPeerAddress(peer_id)  -- -> string?
--- (replace lNetworkHost_stub with your real LNetworkHost instance above)
-
--- ---- Stub: LNetworkHost:getAddress ---------------------------------------
---@api-stub: LNetworkHost:getAddress
--- Returns the local bind address as a string.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lNetworkHost_stub:getAddress()  -- -> string
--- (replace lNetworkHost_stub with your real LNetworkHost instance above)
-
--- ---- Stub: LNetworkHost:getPeerLimit -------------------------------------
---@api-stub: LNetworkHost:getPeerLimit
--- Returns the maximum number of peer slots.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lNetworkHost_stub:getPeerLimit()  -- -> integer
--- (replace lNetworkHost_stub with your real LNetworkHost instance above)
-
--- ---- Stub: LNetworkHost:getChannelLimit ----------------------------------
---@api-stub: LNetworkHost:getChannelLimit
--- Returns the maximum number of channels per connection.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lNetworkHost_stub:getChannelLimit()  -- -> integer
--- (replace lNetworkHost_stub with your real LNetworkHost instance above)
-
--- ---- Stub: LNetworkHost:setChannelLimit ----------------------------------
---@api-stub: LNetworkHost:setChannelLimit
--- Sets the channel limit for future connections.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lNetworkHost_stub:setChannelLimit(limit)
--- (replace lNetworkHost_stub with your real LNetworkHost instance above)
-
--- ---- Stub: LNetworkHost:getBandwidthLimit --------------------------------
---@api-stub: LNetworkHost:getBandwidthLimit
--- Returns the bandwidth limits as a table with incoming and outgoing fields.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lNetworkHost_stub:getBandwidthLimit()  -- -> table
--- (replace lNetworkHost_stub with your real LNetworkHost instance above)
-
--- ---- Stub: LNetworkHost:setBandwidthLimit --------------------------------
---@api-stub: LNetworkHost:setBandwidthLimit
--- Sets the bandwidth limits in bytes per second.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lNetworkHost_stub:setBandwidthLimit([incoming], [outgoing])
--- (replace lNetworkHost_stub with your real LNetworkHost instance above)
-
--- ---- Stub: LNetworkHost:getConnectedPeerCount ----------------------------
---@api-stub: LNetworkHost:getConnectedPeerCount
--- Returns the number of currently connected peers.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lNetworkHost_stub:getConnectedPeerCount()  -- -> integer
--- (replace lNetworkHost_stub with your real LNetworkHost instance above)
-
--- ---- Stub: LNetworkHost:getConnectedPeerIds ------------------------------
---@api-stub: LNetworkHost:getConnectedPeerIds
--- Returns a table of connected peer IDs.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lNetworkHost_stub:getConnectedPeerIds()  -- -> table
--- (replace lNetworkHost_stub with your real LNetworkHost instance above)
-
--- ---- Stub: LNetworkHost:getPeerStats -------------------------------------
---@api-stub: LNetworkHost:getPeerStats
--- Returns a statistics table for a peer.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lNetworkHost_stub:getPeerStats(peer_id)  -- -> table
--- (replace lNetworkHost_stub with your real LNetworkHost instance above)
-
--- ---- Stub: LNetworkHost:destroy ------------------------------------------
---@api-stub: LNetworkHost:destroy
--- Destroys the host, closing the underlying socket.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lNetworkHost_stub:destroy()
--- (replace lNetworkHost_stub with your real LNetworkHost instance above)
-
--- ---- Stub: LNetworkHost:isDestroyed --------------------------------------
---@api-stub: LNetworkHost:isDestroyed
--- Returns true if the host has been destroyed.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lNetworkHost_stub:isDestroyed()  -- -> boolean
--- (replace lNetworkHost_stub with your real LNetworkHost instance above)
-
--- ---- Stub: LNetworkHost:getRole ------------------------------------------
---@api-stub: LNetworkHost:getRole
--- Returns the multiplayer role of this host ("server", "client", or "host").
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lNetworkHost_stub:getRole()  -- -> string
--- (replace lNetworkHost_stub with your real LNetworkHost instance above)
-
--- ---- Stub: LNetworkHost:isServer -----------------------------------------
---@api-stub: LNetworkHost:isServer
--- Returns true if this host was created as a server.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lNetworkHost_stub:isServer()  -- -> boolean
--- (replace lNetworkHost_stub with your real LNetworkHost instance above)
-
--- ---- Stub: LNetworkHost:isClient -----------------------------------------
---@api-stub: LNetworkHost:isClient
--- Returns true if this host was created as a client.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lNetworkHost_stub:isClient()  -- -> boolean
--- (replace lNetworkHost_stub with your real LNetworkHost instance above)
-
--- -----------------------------------------------------------------------------
--- LNetworkRuntime methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LNetworkRuntime:httpGet ---------------------------------------
---@api-stub: LNetworkRuntime:httpGet
--- Convenience: sends an HTTP GET request.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lNetworkRuntime_stub:httpGet(url, [headers])  -- -> integer
--- (replace lNetworkRuntime_stub with your real LNetworkRuntime instance above)
-
--- ---- Stub: LNetworkRuntime:httpPost --------------------------------------
---@api-stub: LNetworkRuntime:httpPost
--- Convenience: sends an HTTP POST request.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lNetworkRuntime_stub:httpPost(url, body, [headers])  -- -> integer
--- (replace lNetworkRuntime_stub with your real LNetworkRuntime instance above)
-
--- ---- Stub: LNetworkRuntime:tcpConnect ------------------------------------
---@api-stub: LNetworkRuntime:tcpConnect
--- Opens a TCP connection to a remote address.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lNetworkRuntime_stub:tcpConnect(addr)  -- -> integer
--- (replace lNetworkRuntime_stub with your real LNetworkRuntime instance above)
-
--- ---- Stub: LNetworkRuntime:tcpSend ---------------------------------------
---@api-stub: LNetworkRuntime:tcpSend
--- Sends data over a TCP connection.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lNetworkRuntime_stub:tcpSend(1, data)
--- (replace lNetworkRuntime_stub with your real LNetworkRuntime instance above)
-
--- ---- Stub: LNetworkRuntime:tcpClose --------------------------------------
---@api-stub: LNetworkRuntime:tcpClose
--- Closes the TCP connection identified by the given connection handle.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lNetworkRuntime_stub:tcpClose(1)
--- (replace lNetworkRuntime_stub with your real LNetworkRuntime instance above)
-
--- ---- Stub: LNetworkRuntime:wsConnect -------------------------------------
---@api-stub: LNetworkRuntime:wsConnect
--- Opens a WebSocket connection.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lNetworkRuntime_stub:wsConnect(url)  -- -> integer
--- (replace lNetworkRuntime_stub with your real LNetworkRuntime instance above)
-
--- ---- Stub: LNetworkRuntime:wsSend ----------------------------------------
---@api-stub: LNetworkRuntime:wsSend
--- Sends a text message over a WebSocket connection.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lNetworkRuntime_stub:wsSend(1, data)
--- (replace lNetworkRuntime_stub with your real LNetworkRuntime instance above)
-
--- ---- Stub: LNetworkRuntime:wsClose ---------------------------------------
---@api-stub: LNetworkRuntime:wsClose
--- Closes a WebSocket connection.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lNetworkRuntime_stub:wsClose(1)
--- (replace lNetworkRuntime_stub with your real LNetworkRuntime instance above)
-
--- ---- Stub: LNetworkRuntime:poll ------------------------------------------
---@api-stub: LNetworkRuntime:poll
--- Polls for completed async responses (HTTP, TCP events, WebSocket events).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lNetworkRuntime_stub:poll()  -- -> table
--- (replace lNetworkRuntime_stub with your real LNetworkRuntime instance above)
-
--- ---- Stub: LNetworkRuntime:shutdown --------------------------------------
---@api-stub: LNetworkRuntime:shutdown
--- Shuts down the background network thread.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lNetworkRuntime_stub:shutdown()
--- (replace lNetworkRuntime_stub with your real LNetworkRuntime instance above)

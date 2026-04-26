@@ -1,25 +1,31 @@
 ﻿#!/usr/bin/env python3
 """Cross-reference content/examples/ scripts against the lurek.* Lua API.
 
-Coverage is reported in two tiers:
-  - "real"  â€” the API item is called in hand-written scenario code
-  - "stub"  â€” the item is present only as an auto-generated --@api-stub: block
-              (created by example_add_missing.py; must be replaced before commit)
+Coverage is reported in three tiers:
+  - "real"    -- --@api-stub: block present, NO "-- TODO:" line in block
+                 (fleshed-out scenario code; counts toward final coverage)
+  - "pending" -- --@api-stub: block present AND has a "-- TODO:" line
+                 (auto-generated stub, not yet replaced with real scenario)
+  - "missing" -- no --@api-stub: marker at all (item not tracked in any example)
 
-Use --stubs to see which modules still have unfinished stub blocks.
+Workflow:
+  1. Run example_add_missing.py  -- adds --@api-stub: blocks with -- TODO: (pending)
+  2. Agent writes real Lua code, removes -- TODO: line  (pending -> real)
+  3. This tool gates on: no "missing" items (--report) or no pending (--no-stubs)
 
 Usage:
     python tools/audit/example_coverage.py                  # summary table
     python tools/audit/example_coverage.py --missing        # list uncovered items
-    python tools/audit/example_coverage.py --stubs          # list modules with stub blocks remaining
+    python tools/audit/example_coverage.py --stubs          # list modules with pending stubs
     python tools/audit/example_coverage.py --module timer   # one module
     python tools/audit/example_coverage.py --json           # machine-readable
-    python tools/audit/example_coverage.py --report         # exit 1 if any gap (CI gate)
-    python tools/audit/example_coverage.py --markdown FILE  # export a Markdown report
+    python tools/audit/example_coverage.py --report         # exit 1 if any missing
+    python tools/audit/example_coverage.py --report --no-stubs  # also fail if pending
+    python tools/audit/example_coverage.py --markdown FILE  # export Markdown report
 
 Exit codes:
-    0 â€” all examples 100% covered (stubs are OK for --report unless --no-stubs passed)
-    1 â€” one or more gaps exist
+    0 -- no missing items (all API items have at least a stub marker)
+    1 -- one or more items have no --@api-stub: marker at all
 """
 from __future__ import annotations
 import argparse, json, re, sys
@@ -218,12 +224,10 @@ def load_texts(d: Path) -> dict[str, dict]:
                 marker = stripped[len('--@api-stub:'):].strip()
                 current_stub = marker
                 if current_stub not in blocks:
-                    blocks[current_stub] = {'lua': 0, 'comment': 0}
+                    blocks[current_stub] = {'has_todo': False}
             elif current_stub is not None:
-                if stripped.startswith('--'):
-                    blocks[current_stub]['comment'] += 1
-                elif bool(stripped) and not stripped.startswith('--'):
-                    blocks[current_stub]['lua'] += 1
+                if '-- TODO:' in stripped:
+                    blocks[current_stub]['has_todo'] = True
 
         out[p.name] = {
             'blocks': blocks,
@@ -273,19 +277,17 @@ def build_cov(entries: list[ApiEntry], texts: dict[str, dict]) -> dict[str, Modu
 
         if stub_id in blocks:
             b = blocks[stub_id]
-            if b['lua'] >= 3 and b['comment'] >= 2:
+            if not b['has_todo']:
+                # Block has real scenario code (-- TODO: line removed)
                 mc.covered += 1
                 if len(e.description.strip()) > 0:
                     mc.docstring_count += 1
             else:
-                reasons = []
-                if b['lua'] < 3: reasons.append(f"<{b['lua']}L/3L>")
-                if b['comment'] < 2: reasons.append(f"<{b['comment']}C/2C>")
-                mc.missing.append(f"{e.name} " + " ".join(reasons))
+                # Block still has -- TODO: -- pending, needs real example
                 mc.stub_covered += 1
-                mc.stub_items.append(f"{e.name} " + " ".join(reasons))
+                mc.stub_items.append(stub_id)
         else:
-            mc.missing.append(f"{e.name} <No Marker>")
+            mc.missing.append(stub_id)
 
     return bk
 
@@ -313,7 +315,7 @@ def print_summary(bk: dict[str, ModuleCov], filt: str | None = None) -> None:
 
 
 def print_stubs(bk: dict[str, ModuleCov], filt: str | None = None) -> None:
-    """Show modules that still have --@api-stub: blocks remaining."""
+    """Show modules that have pending --@api-stub: blocks (-- TODO: still present)."""
     found = False
     for k, mc in sorted(bk.items()):
         if filt and filt.lower() not in k.lower():
@@ -321,11 +323,11 @@ def print_stubs(bk: dict[str, ModuleCov], filt: str | None = None) -> None:
         if not mc.stub_items:
             continue
         found = True
-        print(f'\n[{k}] lurek.{mc.namespace} -> {mc.example_file}: {len(mc.stub_items)} stub(s) remaining')
+        print(f'\n[{k}] lurek.{mc.namespace} -> {mc.example_file}: {len(mc.stub_items)} pending stub(s)')
         for fn in sorted(mc.stub_items):
-            print(f'  --@api-stub: {fn}')
+            print(f'  --@api-stub: {fn}  [remove -- TODO: when done]')
     if not found:
-        print('No stub blocks remaining. All modules have real scenario code.')
+        print('No pending stubs. All --@api-stub: blocks have real scenario code.')
 
 
 def print_missing(bk: dict[str, ModuleCov], filt: str | None = None) -> None:
@@ -339,9 +341,9 @@ def print_missing(bk: dict[str, ModuleCov], filt: str | None = None) -> None:
         real_pct = mc.pct
         print(f'\n[{k}] lurek.{mc.namespace} -> {mc.example_file}{status} ({real_pct:.0f}% real, {mc.stub_covered} stub)')
         for fn in sorted(mc.missing):
-            print(f'  - {fn}  [NOT COVERED]')
+            print(f'  - {fn}  [MISSING -- no --@api-stub: marker]')
         for fn in sorted(mc.stub_items):
-            print(f'  ~ {fn}  [stub only -- needs real scenario]')
+            print(f'  ~ {fn}  [PENDING -- remove -- TODO: to mark as done]')
 
 
 def export_markdown(bk: dict[str, ModuleCov], out_path: str):

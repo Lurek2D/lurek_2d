@@ -430,7 +430,7 @@ end
 
 -- ── DepthSorter methods ──
 
---@api-stub: DepthSorter:add
+--@api-stub: LDepthSorter:add
 -- Registers a draw callback at the given depth layer.
 -- Lower depth draws first (background); reuse one sorter per scene and clear() between frames.
 do  -- DepthSorter:add
@@ -440,7 +440,7 @@ do  -- DepthSorter:add
   sorter:add(function() lurek.log.debug("draw fog", "render") end, 100)
 end
 
---@api-stub: DepthSorter:addObject
+--@api-stub: LDepthSorter:addObject
 -- Registers a table object with a draw method at the given depth.
 -- Object's `depth` field selects the layer; its `drawSorted` method is invoked on flush.
 do  -- DepthSorter:addObject
@@ -449,7 +449,7 @@ do  -- DepthSorter:addObject
   sorter:addObject(enemy)
 end
 
---@api-stub: DepthSorter:sort
+--@api-stub: LDepthSorter:sort
 -- Sorts all registered callbacks by depth ascending.
 -- Call manually only if you want to inspect order before flush; flush() also sorts.
 do  -- DepthSorter:sort
@@ -459,7 +459,7 @@ do  -- DepthSorter:sort
   sorter:sort()
 end
 
---@api-stub: DepthSorter:flush
+--@api-stub: LDepthSorter:flush
 -- Calls all draw callbacks in sorted depth order, then clears.
 -- Drive this from `lurek.render`: rebuild + flush every frame so depth is always current.
 do  -- DepthSorter:flush
@@ -470,7 +470,7 @@ do  -- DepthSorter:flush
   end
 end
 
---@api-stub: DepthSorter:setStable
+--@api-stub: LDepthSorter:setStable
 -- Sets whether equal-depth entries preserve insertion order.
 -- Enable when sprites at the same depth must draw in submission order (UI lists, particle bursts).
 do  -- DepthSorter:setStable
@@ -480,7 +480,7 @@ do  -- DepthSorter:setStable
   sorter:add(function() lurek.log.debug("b", "render") end, 0)
 end
 
---@api-stub: DepthSorter:isStable
+--@api-stub: LDepthSorter:isStable
 -- Returns true if stable sort mode is enabled.
 -- Branch on this in tests or in code that conditionally relies on insertion-order semantics.
 do  -- DepthSorter:isStable
@@ -490,7 +490,7 @@ do  -- DepthSorter:isStable
   end
 end
 
---@api-stub: DepthSorter:clear
+--@api-stub: LDepthSorter:clear
 -- Removes all registered callbacks without calling them.
 -- Use to abandon a frame mid-build (e.g. paused) without drawing partial content.
 do  -- DepthSorter:clear
@@ -500,7 +500,7 @@ do  -- DepthSorter:clear
   lurek.log.debug("cleared, count=" .. sorter:getCount(), "render")
 end
 
---@api-stub: DepthSorter:getCount
+--@api-stub: LDepthSorter:getCount
 -- Returns the number of registered draw entries.
 -- Use in debug overlays to detect runaway add() calls (forgot to flush?).
 do  -- DepthSorter:getCount
@@ -521,20 +521,6 @@ end
 -- -----------------------------------------------------------------------------
 -- DepthSorter methods
 -- -----------------------------------------------------------------------------
-
--- ---- Stub: DepthSorter:type ----------------------------------------------
---@api-stub: DepthSorter:type
--- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- depthSorter_stub:type()  -- -> string
--- (replace depthSorter_stub with your real DepthSorter instance above)
-
--- ---- Stub: DepthSorter:typeOf --------------------------------------------
---@api-stub: DepthSorter:typeOf
--- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- depthSorter_stub:typeOf("hero")  -- -> boolean
--- (replace depthSorter_stub with your real DepthSorter instance above)
 
 -- =============================================================================
 -- STUBS: 2 uncovered lurek.scene API item(s)
@@ -570,62 +556,3 @@ end
 -- The final committed file must contain ZERO --@api-stub: lines.
 -- =============================================================================
 
--- -----------------------------------------------------------------------------
--- LDepthSorter methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LDepthSorter:add ----------------------------------------------
---@api-stub: LDepthSorter:add
--- Registers a draw callback at the given depth layer.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDepthSorter_stub:add(function() end, depth)
--- (replace lDepthSorter_stub with your real LDepthSorter instance above)
-
--- ---- Stub: LDepthSorter:addObject ----------------------------------------
---@api-stub: LDepthSorter:addObject
--- Registers a table object with a draw method at the given depth.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDepthSorter_stub:addObject(obj)
--- (replace lDepthSorter_stub with your real LDepthSorter instance above)
-
--- ---- Stub: LDepthSorter:sort ---------------------------------------------
---@api-stub: LDepthSorter:sort
--- Sorts all registered callbacks by depth ascending.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDepthSorter_stub:sort()
--- (replace lDepthSorter_stub with your real LDepthSorter instance above)
-
--- ---- Stub: LDepthSorter:flush --------------------------------------------
---@api-stub: LDepthSorter:flush
--- Calls all draw callbacks in sorted depth order, then clears.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDepthSorter_stub:flush()
--- (replace lDepthSorter_stub with your real LDepthSorter instance above)
-
--- ---- Stub: LDepthSorter:setStable ----------------------------------------
---@api-stub: LDepthSorter:setStable
--- Sets whether equal-depth entries preserve insertion order.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDepthSorter_stub:setStable(stable)
--- (replace lDepthSorter_stub with your real LDepthSorter instance above)
-
--- ---- Stub: LDepthSorter:isStable -----------------------------------------
---@api-stub: LDepthSorter:isStable
--- Returns true if stable sort mode is enabled.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDepthSorter_stub:isStable()  -- -> boolean
--- (replace lDepthSorter_stub with your real LDepthSorter instance above)
-
--- ---- Stub: LDepthSorter:clear --------------------------------------------
---@api-stub: LDepthSorter:clear
--- Removes all registered callbacks without calling them.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDepthSorter_stub:clear()
--- (replace lDepthSorter_stub with your real LDepthSorter instance above)
-
--- ---- Stub: LDepthSorter:getCount -----------------------------------------
---@api-stub: LDepthSorter:getCount
--- Returns the number of registered draw entries.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDepthSorter_stub:getCount()  -- -> integer
--- (replace lDepthSorter_stub with your real LDepthSorter instance above)

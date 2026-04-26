@@ -24,7 +24,7 @@ end
 
 -- ── SaveManager methods ──
 
---@api-stub: SaveManager:unregister
+--@api-stub: LSaveManager:unregister
 -- Removes a named module and its callbacks.
 -- Call when a subsystem shuts down mid-game (e.g. minigame ends) so its data is no longer collected.
 do  -- SaveManager:unregister
@@ -35,7 +35,7 @@ do  -- SaveManager:unregister
   mgr:unregister("minigame")
 end
 
---@api-stub: SaveManager:setSchemaVersion
+--@api-stub: LSaveManager:setSchemaVersion
 -- Sets the current schema version for new saves.
 -- Bump this whenever the persisted shape changes and add a matching migration via addMigration.
 do  -- SaveManager:setSchemaVersion
@@ -44,7 +44,7 @@ do  -- SaveManager:setSchemaVersion
   lurek.log.info("save schema is now v" .. mgr:getSchemaVersion(), "save")
 end
 
---@api-stub: SaveManager:getSchemaVersion
+--@api-stub: LSaveManager:getSchemaVersion
 -- Returns the current schema version.
 -- Use during boot to log the active version or to gate compatibility checks against older slots.
 do  -- SaveManager:getSchemaVersion
@@ -54,7 +54,7 @@ do  -- SaveManager:getSchemaVersion
   if ver < 2 then lurek.log.warn("schema older than expected", "save") end
 end
 
---@api-stub: SaveManager:collect
+--@api-stub: LSaveManager:collect
 -- Collects data from all registered collectors into a table with metadata.
 -- Use to snapshot game state without writing to disk — handy for in-memory checkpoints or replays.
 do  -- SaveManager:collect
@@ -66,7 +66,7 @@ do  -- SaveManager:collect
   lurek.log.info("snapshot has " .. tostring(snapshot.inventory.gold) .. " gold", "save")
 end
 
---@api-stub: SaveManager:restore
+--@api-stub: LSaveManager:restore
 -- Restores data from a table, applying migrations and calling restorers.
 -- Use to roll back to a checkpoint table previously returned by collect().
 do  -- SaveManager:restore
@@ -79,7 +79,7 @@ do  -- SaveManager:restore
   mgr:restore(checkpoint)
 end
 
---@api-stub: SaveManager:markDirty
+--@api-stub: LSaveManager:markDirty
 -- Marks data as modified since the last save or load.
 -- Call from gameplay events (item picked up, level cleared) so auto-save knows there is work to do.
 do  -- SaveManager:markDirty
@@ -90,7 +90,7 @@ do  -- SaveManager:markDirty
   on_item_picked_up()
 end
 
---@api-stub: SaveManager:isDirty
+--@api-stub: LSaveManager:isDirty
 -- Returns whether data has been modified since the last save or load.
 -- Branch on this before showing a "save now?" prompt or quitting to disk.
 do  -- SaveManager:isDirty
@@ -101,7 +101,7 @@ do  -- SaveManager:isDirty
   end
 end
 
---@api-stub: SaveManager:disableAutoSave
+--@api-stub: LSaveManager:disableAutoSave
 -- Disables automatic periodic saving; manual `write()` calls still work.
 -- Call before cutscenes or boss fights to prevent the auto-save tick from interrupting flow.
 do  -- SaveManager:disableAutoSave
@@ -111,7 +111,7 @@ do  -- SaveManager:disableAutoSave
   lurek.log.info("auto-save paused for cutscene", "save")
 end
 
---@api-stub: SaveManager:update
+--@api-stub: LSaveManager:update
 -- Advances the auto-save timer, returning the slot name if a save should trigger.
 -- Drive from lurek.process(dt) — when it returns a slot name, call save(slot) on that frame.
 do  -- SaveManager:update
@@ -123,7 +123,7 @@ do  -- SaveManager:update
   end
 end
 
---@api-stub: SaveManager:setSummary
+--@api-stub: LSaveManager:setSummary
 -- Sets the summary string included in save metadata.
 -- Refresh on level/area change so the load-game UI can show a friendly "Forest — 12:30" line per slot.
 do  -- SaveManager:setSummary
@@ -132,7 +132,7 @@ do  -- SaveManager:setSummary
   mgr:setSummary(area .. " — " .. playtime)
 end
 
---@api-stub: SaveManager:getSummary
+--@api-stub: LSaveManager:getSummary
 -- Returns the current summary string.
 -- Useful for echoing the active summary into HUD overlays or debug panels.
 do  -- SaveManager:getSummary
@@ -142,7 +142,7 @@ do  -- SaveManager:getSummary
   lurek.log.info("current summary: " .. label, "save")
 end
 
---@api-stub: SaveManager:reset
+--@api-stub: LSaveManager:reset
 -- Resets all state, removing callbacks and clearing the manager.
 -- Call when returning to the main menu so a fresh New Game starts with no stale registrations.
 do  -- SaveManager:reset
@@ -152,7 +152,7 @@ do  -- SaveManager:reset
   lurek.log.info("save manager cleared for main menu", "save")
 end
 
---@api-stub: SaveManager:setCompress
+--@api-stub: LSaveManager:setCompress
 -- Enables or disables LZ4 compression for saved data.
 -- Turn on for large worlds or many slots — base64 + LZ4 trades a little CPU for much smaller files.
 do  -- SaveManager:setCompress
@@ -161,7 +161,7 @@ do  -- SaveManager:setCompress
   lurek.log.info("compressed saves enabled", "save")
 end
 
---@api-stub: SaveManager:isCompressed
+--@api-stub: LSaveManager:isCompressed
 -- Returns whether compression is currently enabled.
 -- Useful for diagnostics screens or for tests that assert the configured save format.
 do  -- SaveManager:isCompressed
@@ -172,7 +172,7 @@ do  -- SaveManager:isCompressed
   end
 end
 
---@api-stub: SaveManager:onBeforeSave
+--@api-stub: LSaveManager:onBeforeSave
 -- Registers a callback that fires before every save operation.
 -- Use to refresh the summary, flush in-flight buffers, or stamp a final timestamp into game state.
 do  -- SaveManager:onBeforeSave
@@ -183,7 +183,7 @@ do  -- SaveManager:onBeforeSave
   end)
 end
 
---@api-stub: SaveManager:onAfterLoad
+--@api-stub: LSaveManager:onAfterLoad
 -- Registers a callback that fires after every successful load operation.
 -- Use to rebuild derived state (cached lookups, scene graph) once all restorers have finished.
 do  -- SaveManager:onAfterLoad
@@ -193,7 +193,7 @@ do  -- SaveManager:onAfterLoad
   end)
 end
 
---@api-stub: SaveManager:save
+--@api-stub: LSaveManager:save
 -- Collects data and writes it to a slot file.
 -- Call from a player-driven action (menu Save button, F5 hotkey) on a manager registered at startup.
 do  -- SaveManager:save
@@ -207,7 +207,7 @@ do  -- SaveManager:save
   end
 end
 
---@api-stub: SaveManager:load
+--@api-stub: LSaveManager:load
 -- Loads data from a slot file, applies migrations, and restores.
 -- Returns ok, err — branch on the failure path to show the player a "corrupt save" message.
 do  -- SaveManager:load
@@ -220,7 +220,7 @@ do  -- SaveManager:load
   end
 end
 
---@api-stub: SaveManager:delete
+--@api-stub: LSaveManager:delete
 -- Deletes a save file for the given slot.
 -- Wire to a "Delete slot" UI button after a confirmation prompt — the file is removed immediately.
 do  -- SaveManager:delete
@@ -232,7 +232,7 @@ do  -- SaveManager:delete
   end
 end
 
---@api-stub: SaveManager:getSlots
+--@api-stub: LSaveManager:getSlots
 -- Returns a list of all save slots with metadata.
 -- Iterate the result to populate a load-game menu showing slot name, summary, and timestamp.
 do  -- SaveManager:getSlots
@@ -245,7 +245,7 @@ do  -- SaveManager:getSlots
   end
 end
 
---@api-stub: SaveManager:getSlotInfo
+--@api-stub: LSaveManager:getSlotInfo
 -- Returns metadata for a single slot, or nil if not found.
 -- Use to preview a slot's summary/version on hover before the player commits to loading it.
 do  -- SaveManager:getSlotInfo
@@ -257,7 +257,7 @@ do  -- SaveManager:getSlotInfo
   end
 end
 
---@api-stub: SaveManager:addMigration
+--@api-stub: LSaveManager:addMigration
 -- Registers a migration function for upgrading save data from an older schema version.
 -- Migrations run in version order on load; use to add/rename/remove fields safely.
 do  -- SaveManager:addMigration
@@ -270,7 +270,7 @@ do  -- SaveManager:addMigration
   lurek.log.info("migration registered", "save")
 end
 
---@api-stub: SaveManager:enableAutoSave
+--@api-stub: LSaveManager:enableAutoSave
 -- Enables automatic saving after every markDirty() call, with an optional cooldown.
 -- cooldown_secs prevents thrashing; 0 saves immediately on every dirty event.
 do  -- SaveManager:enableAutoSave
@@ -280,7 +280,7 @@ do  -- SaveManager:enableAutoSave
   lurek.log.info("auto-save enabled", "save")
 end
 
---@api-stub: SaveManager:exists
+--@api-stub: LSaveManager:exists
 -- Returns true if a save file exists for the given slot name.
 -- Use before loading to provide appropriate UI (New Game vs Continue).
 do  -- SaveManager:exists
@@ -289,7 +289,7 @@ do  -- SaveManager:exists
   lurek.log.info("slot1 exists: " .. tostring(present), "save")
 end
 
---@api-stub: SaveManager:register
+--@api-stub: LSaveManager:register
 -- Registers a named serializable component with collect and restore callbacks.
 -- collect() returns the data table; restore(data) applies it to the game state.
 do  -- SaveManager:register
@@ -312,20 +312,6 @@ end
 -- -----------------------------------------------------------------------------
 -- SaveManager methods
 -- -----------------------------------------------------------------------------
-
--- ---- Stub: SaveManager:type ----------------------------------------------
---@api-stub: SaveManager:type
--- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- saveManager_stub:type()  -- -> string
--- (replace saveManager_stub with your real SaveManager instance above)
-
--- ---- Stub: SaveManager:typeOf --------------------------------------------
---@api-stub: SaveManager:typeOf
--- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- saveManager_stub:typeOf("hero")  -- -> boolean
--- (replace saveManager_stub with your real SaveManager instance above)
 
 -- =============================================================================
 -- STUBS: 2 uncovered lurek.save API item(s)
@@ -361,181 +347,3 @@ end
 -- The final committed file must contain ZERO --@api-stub: lines.
 -- =============================================================================
 
--- -----------------------------------------------------------------------------
--- LSaveManager methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LSaveManager:register -----------------------------------------
---@api-stub: LSaveManager:register
--- Registers a named module with collector and restorer callbacks
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSaveManager_stub:register("hero", collect_fn, restore_fn)
--- (replace lSaveManager_stub with your real LSaveManager instance above)
-
--- ---- Stub: LSaveManager:unregister ---------------------------------------
---@api-stub: LSaveManager:unregister
--- Removes a named module and its callbacks
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSaveManager_stub:unregister("hero")
--- (replace lSaveManager_stub with your real LSaveManager instance above)
-
--- ---- Stub: LSaveManager:setSchemaVersion ---------------------------------
---@api-stub: LSaveManager:setSchemaVersion
--- Sets the current schema version for new saves
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSaveManager_stub:setSchemaVersion(version)
--- (replace lSaveManager_stub with your real LSaveManager instance above)
-
--- ---- Stub: LSaveManager:getSchemaVersion ---------------------------------
---@api-stub: LSaveManager:getSchemaVersion
--- Returns the current schema version
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSaveManager_stub:getSchemaVersion()  -- -> integer
--- (replace lSaveManager_stub with your real LSaveManager instance above)
-
--- ---- Stub: LSaveManager:addMigration -------------------------------------
---@api-stub: LSaveManager:addMigration
--- Registers a migration function for upgrading from a schema version
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSaveManager_stub:addMigration(from_ver, func)
--- (replace lSaveManager_stub with your real LSaveManager instance above)
-
--- ---- Stub: LSaveManager:collect ------------------------------------------
---@api-stub: LSaveManager:collect
--- Collects data from all registered collectors into a table with metadata
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSaveManager_stub:collect()  -- -> table
--- (replace lSaveManager_stub with your real LSaveManager instance above)
-
--- ---- Stub: LSaveManager:restore ------------------------------------------
---@api-stub: LSaveManager:restore
--- Restores data from a table, applying migrations and calling restorers
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSaveManager_stub:restore(data)
--- (replace lSaveManager_stub with your real LSaveManager instance above)
-
--- ---- Stub: LSaveManager:markDirty ----------------------------------------
---@api-stub: LSaveManager:markDirty
--- Marks data as modified since the last save or load
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSaveManager_stub:markDirty()
--- (replace lSaveManager_stub with your real LSaveManager instance above)
-
--- ---- Stub: LSaveManager:isDirty ------------------------------------------
---@api-stub: LSaveManager:isDirty
--- Returns whether data has been modified since the last save or load
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSaveManager_stub:isDirty()  -- -> boolean
--- (replace lSaveManager_stub with your real LSaveManager instance above)
-
--- ---- Stub: LSaveManager:enableAutoSave -----------------------------------
---@api-stub: LSaveManager:enableAutoSave
--- Enables auto-save with a given interval and target slot
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSaveManager_stub:enableAutoSave(interval, "slot1")
--- (replace lSaveManager_stub with your real LSaveManager instance above)
-
--- ---- Stub: LSaveManager:disableAutoSave ----------------------------------
---@api-stub: LSaveManager:disableAutoSave
--- Disables automatic periodic saving; manual `write()` calls still work.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSaveManager_stub:disableAutoSave()
--- (replace lSaveManager_stub with your real LSaveManager instance above)
-
--- ---- Stub: LSaveManager:update -------------------------------------------
---@api-stub: LSaveManager:update
--- Advances the auto-save timer, returning the slot name if a save should trigger
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSaveManager_stub:update(0.016)  -- -> string?
--- (replace lSaveManager_stub with your real LSaveManager instance above)
-
--- ---- Stub: LSaveManager:setSummary ---------------------------------------
---@api-stub: LSaveManager:setSummary
--- Sets the summary string included in save metadata
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSaveManager_stub:setSummary(summary)
--- (replace lSaveManager_stub with your real LSaveManager instance above)
-
--- ---- Stub: LSaveManager:getSummary ---------------------------------------
---@api-stub: LSaveManager:getSummary
--- Returns the current summary string
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSaveManager_stub:getSummary()  -- -> string
--- (replace lSaveManager_stub with your real LSaveManager instance above)
-
--- ---- Stub: LSaveManager:reset --------------------------------------------
---@api-stub: LSaveManager:reset
--- Resets all state, removing callbacks and clearing the manager
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSaveManager_stub:reset()
--- (replace lSaveManager_stub with your real LSaveManager instance above)
-
--- ---- Stub: LSaveManager:setCompress --------------------------------------
---@api-stub: LSaveManager:setCompress
--- Enables or disables LZ4 compression for saved data
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSaveManager_stub:setCompress(true)
--- (replace lSaveManager_stub with your real LSaveManager instance above)
-
--- ---- Stub: LSaveManager:isCompressed -------------------------------------
---@api-stub: LSaveManager:isCompressed
--- Returns whether compression is currently enabled.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSaveManager_stub:isCompressed()  -- -> boolean
--- (replace lSaveManager_stub with your real LSaveManager instance above)
-
--- ---- Stub: LSaveManager:onBeforeSave -------------------------------------
---@api-stub: LSaveManager:onBeforeSave
--- Registers a callback that fires before every save operation.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSaveManager_stub:onBeforeSave(func)
--- (replace lSaveManager_stub with your real LSaveManager instance above)
-
--- ---- Stub: LSaveManager:onAfterLoad --------------------------------------
---@api-stub: LSaveManager:onAfterLoad
--- Registers a callback that fires after every successful load operation.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSaveManager_stub:onAfterLoad(func)
--- (replace lSaveManager_stub with your real LSaveManager instance above)
-
--- ---- Stub: LSaveManager:save ---------------------------------------------
---@api-stub: LSaveManager:save
--- Collects data and writes it to a slot file.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSaveManager_stub:save("slot1")
--- (replace lSaveManager_stub with your real LSaveManager instance above)
-
--- ---- Stub: LSaveManager:load ---------------------------------------------
---@api-stub: LSaveManager:load
--- Loads data from a slot file, applies migrations, and restores.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSaveManager_stub:load("slot1")
--- (replace lSaveManager_stub with your real LSaveManager instance above)
-
--- ---- Stub: LSaveManager:delete -------------------------------------------
---@api-stub: LSaveManager:delete
--- Deletes a save file for the given slot.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSaveManager_stub:delete("slot1")
--- (replace lSaveManager_stub with your real LSaveManager instance above)
-
--- ---- Stub: LSaveManager:exists -------------------------------------------
---@api-stub: LSaveManager:exists
--- Returns whether a save file exists for the given slot.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSaveManager_stub:exists("slot1")  -- -> boolean
--- (replace lSaveManager_stub with your real LSaveManager instance above)
-
--- ---- Stub: LSaveManager:getSlots -----------------------------------------
---@api-stub: LSaveManager:getSlots
--- Returns a list of all save slots with metadata.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSaveManager_stub:getSlots()  -- -> table
--- (replace lSaveManager_stub with your real LSaveManager instance above)
-
--- ---- Stub: LSaveManager:getSlotInfo --------------------------------------
---@api-stub: LSaveManager:getSlotInfo
--- Returns metadata for a single slot, or nil if not found.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSaveManager_stub:getSlotInfo("slot1")  -- -> table?
--- (replace lSaveManager_stub with your real LSaveManager instance above)

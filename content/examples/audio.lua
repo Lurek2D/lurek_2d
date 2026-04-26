@@ -1074,7 +1074,7 @@ end
 
 -- ── Source methods ──
 
---@api-stub: Source:play
+--@api-stub: LSource:play
 -- Starts or resumes playback.
 -- Method form is identical to `lurek.audio.play(src)` — pick whichever style your script favours.
 do  -- Source:play
@@ -1084,7 +1084,7 @@ do  -- Source:play
   end
 end
 
---@api-stub: Source:stop
+--@api-stub: LSource:stop
 -- Stops playback and resets seek position.
 -- Resets the playhead; use when the player cancels an action mid-cue (e.g. weapon swap).
 do  -- Source:stop
@@ -1094,7 +1094,7 @@ do  -- Source:stop
   end
 end
 
---@api-stub: Source:pause
+--@api-stub: LSource:pause
 -- Pauses playback at the current position.
 -- Keeps the seek position so `:resume()` continues from the same sample frame.
 do  -- Source:pause
@@ -1104,7 +1104,7 @@ do  -- Source:pause
   end
 end
 
---@api-stub: Source:resume
+--@api-stub: LSource:resume
 -- Resumes playback from the paused position.
 -- Pair with `:pause()` for in-game pause menus that don't restart cues.
 do  -- Source:resume
@@ -1114,7 +1114,7 @@ do  -- Source:resume
   end
 end
 
---@api-stub: Source:setVolume
+--@api-stub: LSource:setVolume
 -- Sets playback volume (0.0 = silent, 1.0 = full).
 -- Linear 0–1 multiplier; combined multiplicatively with bus volume and master volume.
 do  -- Source:setVolume
@@ -1124,7 +1124,7 @@ do  -- Source:setVolume
   end
 end
 
---@api-stub: Source:getVolume
+--@api-stub: LSource:getVolume
 -- Returns the current volume multiplier.
 -- Save and restore per-source gain across application restarts to remember mixer state.
 do  -- Source:getVolume
@@ -1135,7 +1135,7 @@ do  -- Source:getVolume
   end
 end
 
---@api-stub: Source:setPitch
+--@api-stub: LSource:setPitch
 -- Sets the pitch multiplier (1.0 = normal).
 -- Pitch also alters duration; if you need length-preserving shifts, render offline with a phase vocoder.
 do  -- Source:setPitch
@@ -1145,7 +1145,7 @@ do  -- Source:setPitch
   end
 end
 
---@api-stub: Source:getPitch
+--@api-stub: LSource:getPitch
 -- Returns the current pitch multiplier.
 -- Read the current multiplier when chaining tweens that animate engine pitch over time.
 do  -- Source:getPitch
@@ -1156,7 +1156,7 @@ do  -- Source:getPitch
   end
 end
 
---@api-stub: Source:setLooping
+--@api-stub: LSource:setLooping
 -- Enables or disables looping playback.
 -- Set before `:play()` for music; setting it on a clip already playing applies on the next loop point.
 do  -- Source:setLooping
@@ -1166,7 +1166,7 @@ do  -- Source:setLooping
   end
 end
 
---@api-stub: Source:isLooping
+--@api-stub: LSource:isLooping
 -- Returns true if looping is enabled.
 -- Branch in your save routine to skip persisting one-shot SFX flags.
 do  -- Source:isLooping
@@ -1177,7 +1177,7 @@ do  -- Source:isLooping
   end
 end
 
---@api-stub: Source:isPlaying
+--@api-stub: LSource:isPlaying
 -- Returns true if currently playing.
 -- Use to detect natural end-of-stream so you can chain the next track in a queue.
 do  -- Source:isPlaying
@@ -1188,7 +1188,7 @@ do  -- Source:isPlaying
   end
 end
 
---@api-stub: Source:isPaused
+--@api-stub: LSource:isPaused
 -- Returns true if playback is paused.
 -- Distinguishes paused-but-positioned from fully stopped, which matters for resume UI.
 do  -- Source:isPaused
@@ -1199,7 +1199,7 @@ do  -- Source:isPaused
   end
 end
 
---@api-stub: Source:isStopped
+--@api-stub: LSource:isStopped
 -- Returns true if playback has stopped.
 -- Returns true when the playhead is at zero (after `:stop()` or natural end-of-stream).
 do  -- Source:isStopped
@@ -1210,7 +1210,7 @@ do  -- Source:isStopped
   end
 end
 
---@api-stub: Source:setPan
+--@api-stub: LSource:setPan
 -- Sets stereo panning (-1.0 left to 1.0 right).
 -- Range -1 (left) to 1 (right). Apply each frame from `(emitter.x - listener.x) / range`.
 do  -- Source:setPan
@@ -1220,7 +1220,7 @@ do  -- Source:setPan
   end
 end
 
---@api-stub: Source:getPan
+--@api-stub: LSource:getPan
 -- Returns the current stereo panning value.
 -- Read back to keep a debug overlay in sync with computed pan values.
 do  -- Source:getPan
@@ -1231,7 +1231,7 @@ do  -- Source:getPan
   end
 end
 
---@api-stub: Source:clone
+--@api-stub: LSource:clone
 -- Creates an independent copy of this source.
 -- Cheap way to play overlapping copies of a static SFX without restarting the original.
 do  -- Source:clone
@@ -1242,7 +1242,7 @@ do  -- Source:clone
   end
 end
 
---@api-stub: Source:getType
+--@api-stub: LSource:getType
 -- Returns the source type ("static" or "stream").
 -- Returns "static" for fully decoded clips and "stream" for on-the-fly decoders.
 do  -- Source:getType
@@ -1252,7 +1252,7 @@ do  -- Source:getType
   end
 end
 
---@api-stub: Source:getDuration
+--@api-stub: LSource:getDuration
 -- Returns the total duration in seconds.
 -- Total length in seconds — divide by `:tell()` for a 0-1 progress value.
 do  -- Source:getDuration
@@ -1262,7 +1262,7 @@ do  -- Source:getDuration
   end
 end
 
---@api-stub: Source:tell
+--@api-stub: LSource:tell
 -- Returns the current playback position in seconds.
 -- Read the current playhead each frame to drive a karaoke or rhythm-game cursor.
 do  -- Source:tell
@@ -1273,7 +1273,7 @@ do  -- Source:tell
   end
 end
 
---@api-stub: Source:seek
+--@api-stub: LSource:seek
 -- Seeks to a time position in seconds.
 -- Position is in seconds; clamp to `:getDuration()` before calling to avoid silent no-ops.
 do  -- Source:seek
@@ -1283,7 +1283,7 @@ do  -- Source:seek
   end
 end
 
---@api-stub: Source:setLowpass
+--@api-stub: LSource:setLowpass
 -- Applies a low-pass filter at the given cutoff frequency.
 -- Drop high frequencies for muffled effect — try 800 Hz for underwater, 3000 Hz for behind-walls.
 do  -- Source:setLowpass
@@ -1293,7 +1293,7 @@ do  -- Source:setLowpass
   end
 end
 
---@api-stub: Source:setHighpass
+--@api-stub: LSource:setHighpass
 -- Applies a high-pass filter at the given cutoff frequency.
 -- Strip rumble before mixing this source into a reverb bus — cleans up bass-heavy material.
 do  -- Source:setHighpass
@@ -1303,7 +1303,7 @@ do  -- Source:setHighpass
   end
 end
 
---@api-stub: Source:getLowpass
+--@api-stub: LSource:getLowpass
 -- Returns the low-pass filter cutoff frequency.
 -- Read the cutoff so an in-game UI can tween it back to 0 when the player surfaces.
 do  -- Source:getLowpass
@@ -1314,7 +1314,7 @@ do  -- Source:getLowpass
   end
 end
 
---@api-stub: Source:getHighpass
+--@api-stub: LSource:getHighpass
 -- Returns the high-pass filter cutoff frequency.
 -- Mirror of `getLowpass`; together let you save and restore filter state on a per-source basis.
 do  -- Source:getHighpass
@@ -1325,7 +1325,7 @@ do  -- Source:getHighpass
   end
 end
 
---@api-stub: Source:clearFilter
+--@api-stub: LSource:clearFilter
 -- Removes any active filter from this source.
 -- Clears both filters; cheaper than tweening cutoffs back to default values.
 do  -- Source:clearFilter
@@ -1335,7 +1335,7 @@ do  -- Source:clearFilter
   end
 end
 
---@api-stub: Source:fadeIn
+--@api-stub: LSource:fadeIn
 -- Fades in from silence over the given duration in seconds.
 -- Schedules a 0→volume fade over `dur` seconds; call before `:play()` for a clean entry.
 do  -- Source:fadeIn
@@ -1345,7 +1345,7 @@ do  -- Source:fadeIn
   end
 end
 
---@api-stub: Source:getFadeIn
+--@api-stub: LSource:getFadeIn
 -- Returns the current fade-in duration in seconds.
 -- Read the configured fade duration when persisting cue settings to a save file.
 do  -- Source:getFadeIn
@@ -1358,7 +1358,7 @@ end
 
 -- ── Bus methods ──
 
---@api-stub: Bus:getName
+--@api-stub: LBus:getName
 -- Returns the unique name string assigned to this audio bus.
 -- Returns the name passed to `newBus`; useful when iterating mixed bus collections.
 do  -- Bus:getName
@@ -1368,7 +1368,7 @@ do  -- Bus:getName
   end
 end
 
---@api-stub: Bus:setVolume
+--@api-stub: LBus:setVolume
 -- Sets the volume for all sources on this bus.
 -- Bus volume is multiplied with each source's own volume — drive a settings slider here.
 do  -- Bus:setVolume
@@ -1378,7 +1378,7 @@ do  -- Bus:setVolume
   end
 end
 
---@api-stub: Bus:getVolume
+--@api-stub: LBus:getVolume
 -- Returns the current volume multiplier applied to all sources on this bus.
 -- Read back the current bus gain to populate a settings menu on first open.
 do  -- Bus:getVolume
@@ -1389,7 +1389,7 @@ do  -- Bus:getVolume
   end
 end
 
---@api-stub: Bus:setPitch
+--@api-stub: LBus:setPitch
 -- Sets the pitch multiplier for all sources on this bus.
 -- Affects every source on the bus; use 0.85 for slow-motion, 1.15 for hectic combat moments.
 do  -- Bus:setPitch
@@ -1399,7 +1399,7 @@ do  -- Bus:setPitch
   end
 end
 
---@api-stub: Bus:getPitch
+--@api-stub: LBus:getPitch
 -- Returns the bus pitch multiplier.
 -- Inspect during a tween that interpolates pitch back to 1.0 over time.
 do  -- Bus:getPitch
@@ -1410,7 +1410,7 @@ do  -- Bus:getPitch
   end
 end
 
---@api-stub: Bus:pause
+--@api-stub: LBus:pause
 -- Pauses all sources on this bus.
 -- Pause every source assigned to this bus in one call — handy for category-specific mute toggles.
 do  -- Bus:pause
@@ -1420,7 +1420,7 @@ do  -- Bus:pause
   end
 end
 
---@api-stub: Bus:resume
+--@api-stub: LBus:resume
 -- Resumes all sources on this bus.
 -- Mirrors `:pause()`; the engine remembers each source's playhead so resume is glitch-free.
 do  -- Bus:resume
@@ -1430,7 +1430,7 @@ do  -- Bus:resume
   end
 end
 
---@api-stub: Bus:isPaused
+--@api-stub: LBus:isPaused
 -- Returns true if this bus is paused.
 -- Read the bus state to keep a UI mute icon in sync with the mixer.
 do  -- Bus:isPaused
@@ -1441,7 +1441,7 @@ do  -- Bus:isPaused
   end
 end
 
---@api-stub: Bus:type
+--@api-stub: LBus:type
 -- Returns the type name of this object.
 -- Returns "Bus" — useful in generic mixer-state inspector code that walks userdata.
 do  -- Bus:type
@@ -1451,7 +1451,7 @@ do  -- Bus:type
   end
 end
 
---@api-stub: Bus:typeOf
+--@api-stub: LBus:typeOf
 -- Returns true if this object is of the given type.
 -- Returns true for "Bus" or the catch-all "Object" — the love2d-style class hierarchy check.
 do  -- Bus:typeOf
@@ -1461,7 +1461,7 @@ do  -- Bus:typeOf
   end
 end
 
---@api-stub: Bus:clearDuck
+--@api-stub: LBus:clearDuck
 -- Removes the ducking target from this bus, restoring the target bus.
 -- Stops this bus from ducking another; pair with `:setDuckTarget` (not exposed through stub) at startup.
 do  -- Bus:clearDuck
@@ -1471,7 +1471,7 @@ do  -- Bus:clearDuck
   end
 end
 
---@api-stub: Bus:getPeak
+--@api-stub: LBus:getPeak
 -- Returns the average peak amplitude of all sources currently on this bus.
 -- Returns the average peak across all sources on the bus — drive a per-bus VU meter.
 do  -- Bus:getPeak
@@ -1483,7 +1483,7 @@ end
 
 -- ── MidiPlayer methods ──
 
---@api-stub: MidiPlayer:load
+--@api-stub: LMidiPlayer:load
 -- Loads a MIDI file from the given path.
 -- Loads a `.mid` file from disk; pass an empty MidiPlayer (no path arg) when you intend to swap files.
 do  -- MidiPlayer:load
@@ -1493,7 +1493,7 @@ do  -- MidiPlayer:load
   end
 end
 
---@api-stub: MidiPlayer:loadData
+--@api-stub: LMidiPlayer:loadData
 -- Loads MIDI data from a Lua string.
 -- Loads MIDI from an in-memory string — useful for procedurally generated sequences.
 do  -- MidiPlayer:loadData
@@ -1504,7 +1504,7 @@ do  -- MidiPlayer:loadData
   end
 end
 
---@api-stub: MidiPlayer:isLoaded
+--@api-stub: LMidiPlayer:isLoaded
 -- Returns true if a MIDI sequence is loaded.
 -- Branch before `:play()` to fall back to a recorded track when the MIDI is missing.
 do  -- MidiPlayer:isLoaded
@@ -1514,7 +1514,7 @@ do  -- MidiPlayer:isLoaded
   end
 end
 
---@api-stub: MidiPlayer:getFilePath
+--@api-stub: LMidiPlayer:getFilePath
 -- Returns the file path of the loaded MIDI, or nil.
 -- Returns the loaded file path (or nil) — log when debugging which song is currently active.
 do  -- MidiPlayer:getFilePath
@@ -1525,7 +1525,7 @@ do  -- MidiPlayer:getFilePath
   end
 end
 
---@api-stub: MidiPlayer:setSoundFont
+--@api-stub: LMidiPlayer:setSoundFont
 -- Loads a SoundFont file into this player (stub).
 -- Per-player SoundFont override; stub today, future versions will swap the synthesis bank.
 do  -- MidiPlayer:setSoundFont
@@ -1535,7 +1535,7 @@ do  -- MidiPlayer:setSoundFont
   end
 end
 
---@api-stub: MidiPlayer:getSoundFontPath
+--@api-stub: LMidiPlayer:getSoundFontPath
 -- Returns the SoundFont file path, or nil (stub).
 -- Returns the per-player SoundFont path (currently always nil); log to confirm wiring later.
 do  -- MidiPlayer:getSoundFontPath
@@ -1546,7 +1546,7 @@ do  -- MidiPlayer:getSoundFontPath
   end
 end
 
---@api-stub: MidiPlayer:useDefaultSoundFont
+--@api-stub: LMidiPlayer:useDefaultSoundFont
 -- Reverts to the built-in default SoundFont (stub).
 -- Reverts to the engine's built-in GM bank; safe to call on every level start to undo overrides.
 do  -- MidiPlayer:useDefaultSoundFont
@@ -1556,7 +1556,7 @@ do  -- MidiPlayer:useDefaultSoundFont
   end
 end
 
---@api-stub: MidiPlayer:play
+--@api-stub: LMidiPlayer:play
 -- Starts or resumes MIDI sequence playback from the current position.
 -- Starts or resumes from the current playhead; works only after `setMidiSoundFont` is configured.
 do  -- MidiPlayer:play
@@ -1566,7 +1566,7 @@ do  -- MidiPlayer:play
   end
 end
 
---@api-stub: MidiPlayer:pause
+--@api-stub: LMidiPlayer:pause
 -- Pauses the MIDI sequence at the current position; resume with `play()`.
 -- Pauses without resetting; pair with `:play()` for an in-game pause menu.
 do  -- MidiPlayer:pause
@@ -1576,7 +1576,7 @@ do  -- MidiPlayer:pause
   end
 end
 
---@api-stub: MidiPlayer:stop
+--@api-stub: LMidiPlayer:stop
 -- Stops MIDI playback and resets the playhead to the beginning.
 -- Stops and rewinds the playhead to bar 1, beat 1.
 do  -- MidiPlayer:stop
@@ -1586,7 +1586,7 @@ do  -- MidiPlayer:stop
   end
 end
 
---@api-stub: MidiPlayer:isPlaying
+--@api-stub: LMidiPlayer:isPlaying
 -- Returns true if MIDI is currently playing.
 -- Use to chain into the next sequence when the current one ends naturally.
 do  -- MidiPlayer:isPlaying
@@ -1597,7 +1597,7 @@ do  -- MidiPlayer:isPlaying
   end
 end
 
---@api-stub: MidiPlayer:isPaused
+--@api-stub: LMidiPlayer:isPaused
 -- Returns true if MIDI playback is paused.
 -- Distinguishes paused from stopped — affects whether `:play()` resumes or restarts.
 do  -- MidiPlayer:isPaused
@@ -1608,7 +1608,7 @@ do  -- MidiPlayer:isPaused
   end
 end
 
---@api-stub: MidiPlayer:seek
+--@api-stub: LMidiPlayer:seek
 -- Seeks to a time position in seconds.
 -- Time is in seconds; combine with `:getDuration()` to make percentage-based scrubbing.
 do  -- MidiPlayer:seek
@@ -1618,7 +1618,7 @@ do  -- MidiPlayer:seek
   end
 end
 
---@api-stub: MidiPlayer:tell
+--@api-stub: LMidiPlayer:tell
 -- Returns the current playback position in seconds.
 -- Read each frame to drive a beat-synced visualiser overlaid on the game world.
 do  -- MidiPlayer:tell
@@ -1629,7 +1629,7 @@ do  -- MidiPlayer:tell
   end
 end
 
---@api-stub: MidiPlayer:getDuration
+--@api-stub: LMidiPlayer:getDuration
 -- Returns the total MIDI duration in seconds.
 -- Returns the full sequence length in seconds for progress bars or end-of-track triggers.
 do  -- MidiPlayer:getDuration
@@ -1639,7 +1639,7 @@ do  -- MidiPlayer:getDuration
   end
 end
 
---@api-stub: MidiPlayer:setLooping
+--@api-stub: LMidiPlayer:setLooping
 -- Enables or disables looping.
 -- Toggle for menu music; off for cutscenes that should fall through to a follow-up cue.
 do  -- MidiPlayer:setLooping
@@ -1649,7 +1649,7 @@ do  -- MidiPlayer:setLooping
   end
 end
 
---@api-stub: MidiPlayer:isLooping
+--@api-stub: LMidiPlayer:isLooping
 -- Returns true if looping is enabled.
 -- Read back to drive a UI checkbox in a music-debug panel.
 do  -- MidiPlayer:isLooping
@@ -1660,7 +1660,7 @@ do  -- MidiPlayer:isLooping
   end
 end
 
---@api-stub: MidiPlayer:setVolume
+--@api-stub: LMidiPlayer:setVolume
 -- Sets MIDI playback volume.
 -- Independent of master and bus volumes; multiplied with both during synthesis.
 do  -- MidiPlayer:setVolume
@@ -1670,7 +1670,7 @@ do  -- MidiPlayer:setVolume
   end
 end
 
---@api-stub: MidiPlayer:getVolume
+--@api-stub: LMidiPlayer:getVolume
 -- Returns the current MIDI volume.
 -- Read back the per-player gain when persisting mixer state to a save file.
 do  -- MidiPlayer:getVolume
@@ -1681,7 +1681,7 @@ do  -- MidiPlayer:getVolume
   end
 end
 
---@api-stub: MidiPlayer:setBus
+--@api-stub: LMidiPlayer:setBus
 -- Routes MIDI output through a bus (or nil to clear).
 -- Routes synthesis output through a bus so MIDI can be ducked or filtered like any other source.
 do  -- MidiPlayer:setBus
@@ -1692,7 +1692,7 @@ do  -- MidiPlayer:setBus
   end
 end
 
---@api-stub: MidiPlayer:getBus
+--@api-stub: LMidiPlayer:getBus
 -- Returns the assigned bus, or nil.
 -- Returns the routed Bus userdata (or nil); useful when reusing players across scenes with different mixes.
 do  -- MidiPlayer:getBus
@@ -1705,7 +1705,7 @@ do  -- MidiPlayer:getBus
   end
 end
 
---@api-stub: MidiPlayer:setTempo
+--@api-stub: LMidiPlayer:setTempo
 -- Sets playback tempo in BPM.
 -- Tempo is BPM; internally stored as a scale of the file's original tempo.
 do  -- MidiPlayer:setTempo
@@ -1715,7 +1715,7 @@ do  -- MidiPlayer:setTempo
   end
 end
 
---@api-stub: MidiPlayer:getTempo
+--@api-stub: LMidiPlayer:getTempo
 -- Returns the current tempo in BPM.
 -- Returns the current effective BPM; useful for syncing visuals to playback speed.
 do  -- MidiPlayer:getTempo
@@ -1726,7 +1726,7 @@ do  -- MidiPlayer:getTempo
   end
 end
 
---@api-stub: MidiPlayer:getOriginalTempo
+--@api-stub: LMidiPlayer:getOriginalTempo
 -- Returns the original MIDI file tempo in BPM.
 -- Returns the BPM stored in the MIDI file header — the reference value for the tempo scale.
 do  -- MidiPlayer:getOriginalTempo
@@ -1736,7 +1736,7 @@ do  -- MidiPlayer:getOriginalTempo
   end
 end
 
---@api-stub: MidiPlayer:setTempoScale
+--@api-stub: LMidiPlayer:setTempoScale
 -- Sets the tempo scale factor (1.0 = original speed).
 -- Multiplier on top of the file tempo — 0.5 plays half-speed, 2.0 doubles.
 do  -- MidiPlayer:setTempoScale
@@ -1746,7 +1746,7 @@ do  -- MidiPlayer:setTempoScale
   end
 end
 
---@api-stub: MidiPlayer:getTempoScale
+--@api-stub: LMidiPlayer:getTempoScale
 -- Returns the current tempo scale factor.
 -- Read the current scale factor when chaining tempo tweens.
 do  -- MidiPlayer:getTempoScale
@@ -1757,7 +1757,7 @@ do  -- MidiPlayer:getTempoScale
   end
 end
 
---@api-stub: MidiPlayer:getTicksPerBeat
+--@api-stub: LMidiPlayer:getTicksPerBeat
 -- Returns the PPQ resolution from the MIDI header.
 -- MIDI PPQ resolution — divide `:tell()` ticks by this to get beat positions.
 do  -- MidiPlayer:getTicksPerBeat
@@ -1767,7 +1767,7 @@ do  -- MidiPlayer:getTicksPerBeat
   end
 end
 
---@api-stub: MidiPlayer:setChannelVolume
+--@api-stub: LMidiPlayer:setChannelVolume
 -- Sets volume for a MIDI channel (1-indexed).
 -- Channels are 1-indexed (1-16); use to mix down a single instrument like the drums.
 do  -- MidiPlayer:setChannelVolume
@@ -1777,7 +1777,7 @@ do  -- MidiPlayer:setChannelVolume
   end
 end
 
---@api-stub: MidiPlayer:getChannelVolume
+--@api-stub: LMidiPlayer:getChannelVolume
 -- Returns the volume for a MIDI channel (1-indexed).
 -- Read per-channel gain when restoring mixer state across save files.
 do  -- MidiPlayer:getChannelVolume
@@ -1788,7 +1788,7 @@ do  -- MidiPlayer:getChannelVolume
   end
 end
 
---@api-stub: MidiPlayer:setChannelMuted
+--@api-stub: LMidiPlayer:setChannelMuted
 -- Mutes or unmutes a MIDI channel (1-indexed).
 -- Mute a single MIDI channel — useful for letting players solo individual instruments in a music-room.
 do  -- MidiPlayer:setChannelMuted
@@ -1798,7 +1798,7 @@ do  -- MidiPlayer:setChannelMuted
   end
 end
 
---@api-stub: MidiPlayer:isChannelMuted
+--@api-stub: LMidiPlayer:isChannelMuted
 -- Returns true if a MIDI channel is muted (1-indexed).
 -- Branch when drawing a per-channel mute toggle in a music-debug overlay.
 do  -- MidiPlayer:isChannelMuted
@@ -1809,7 +1809,7 @@ do  -- MidiPlayer:isChannelMuted
   end
 end
 
---@api-stub: MidiPlayer:getChannelInstrument
+--@api-stub: LMidiPlayer:getChannelInstrument
 -- Returns the GM instrument for a MIDI channel (1-indexed).
 -- Returns the GM program (0-127) — drive a UI that shows instrument names per channel.
 do  -- MidiPlayer:getChannelInstrument
@@ -1820,7 +1820,7 @@ do  -- MidiPlayer:getChannelInstrument
   end
 end
 
---@api-stub: MidiPlayer:getChannelCount
+--@api-stub: LMidiPlayer:getChannelCount
 -- Returns the number of MIDI channels.
 -- Always 16 today; loop from 1..count when iterating channels in a UI.
 do  -- MidiPlayer:getChannelCount
@@ -1830,7 +1830,7 @@ do  -- MidiPlayer:getChannelCount
   end
 end
 
---@api-stub: MidiPlayer:soloChannel
+--@api-stub: LMidiPlayer:soloChannel
 -- Solos a MIDI channel (1-indexed).
 -- Mutes every other channel — useful in a music-room demo where the player can isolate parts.
 do  -- MidiPlayer:soloChannel
@@ -1840,7 +1840,7 @@ do  -- MidiPlayer:soloChannel
   end
 end
 
---@api-stub: MidiPlayer:unsoloAll
+--@api-stub: LMidiPlayer:unsoloAll
 -- Clears solo on all channels.
 -- Counterpart to `soloChannel`; restores the full mix in one call.
 do  -- MidiPlayer:unsoloAll
@@ -1850,7 +1850,7 @@ do  -- MidiPlayer:unsoloAll
   end
 end
 
---@api-stub: MidiPlayer:getTrackCount
+--@api-stub: LMidiPlayer:getTrackCount
 -- Returns the number of tracks in the MIDI sequence.
 -- Returns the number of MIDI tracks (often 1 per instrument in a multi-track export).
 do  -- MidiPlayer:getTrackCount
@@ -1860,7 +1860,7 @@ do  -- MidiPlayer:getTrackCount
   end
 end
 
---@api-stub: MidiPlayer:getTrackName
+--@api-stub: LMidiPlayer:getTrackName
 -- Returns the name of a MIDI track (1-indexed), or nil.
 -- Tracks are 1-indexed; nil means the file did not embed a name for that track.
 do  -- MidiPlayer:getTrackName
@@ -1871,7 +1871,7 @@ do  -- MidiPlayer:getTrackName
   end
 end
 
---@api-stub: MidiPlayer:setTrackMuted
+--@api-stub: LMidiPlayer:setTrackMuted
 -- Mutes or unmutes a track (1-indexed).
 -- Mute by track instead of channel; handy when one track holds multi-instrument sections.
 do  -- MidiPlayer:setTrackMuted
@@ -1881,7 +1881,7 @@ do  -- MidiPlayer:setTrackMuted
   end
 end
 
---@api-stub: MidiPlayer:isTrackMuted
+--@api-stub: LMidiPlayer:isTrackMuted
 -- Returns true if a track is muted (1-indexed).
 -- Drive a per-track mute checkbox in a music editor; pair with `getTrackName` for labelling.
 do  -- MidiPlayer:isTrackMuted
@@ -1892,7 +1892,7 @@ do  -- MidiPlayer:isTrackMuted
   end
 end
 
---@api-stub: MidiPlayer:getNoteCount
+--@api-stub: LMidiPlayer:getNoteCount
 -- Returns the total note count in the MIDI sequence.
 -- Total note-on events across all tracks; useful for difficulty estimation in rhythm games.
 do  -- MidiPlayer:getNoteCount
@@ -1902,7 +1902,7 @@ do  -- MidiPlayer:getNoteCount
   end
 end
 
---@api-stub: MidiPlayer:setOnNoteOn
+--@api-stub: LMidiPlayer:setOnNoteOn
 -- Registers a note-on callback (stub).
 -- Stub today — future versions will fire `cb(channel, note, velocity)` on each note-on event.
 do  -- MidiPlayer:setOnNoteOn
@@ -1912,7 +1912,7 @@ do  -- MidiPlayer:setOnNoteOn
   end
 end
 
---@api-stub: MidiPlayer:setOnNoteOff
+--@api-stub: LMidiPlayer:setOnNoteOff
 -- Registers a note-off callback (stub).
 -- Mirror of `setOnNoteOn`; receives the same arguments when a note ends.
 do  -- MidiPlayer:setOnNoteOff
@@ -1922,7 +1922,7 @@ do  -- MidiPlayer:setOnNoteOff
   end
 end
 
---@api-stub: MidiPlayer:setOnEnd
+--@api-stub: LMidiPlayer:setOnEnd
 -- Registers a playback-end callback (stub).
 -- Fires once when the sequence reaches the final tick — chain into the next song here.
 do  -- MidiPlayer:setOnEnd
@@ -1932,7 +1932,7 @@ do  -- MidiPlayer:setOnEnd
   end
 end
 
---@api-stub: MidiPlayer:getSampleRate
+--@api-stub: LMidiPlayer:getSampleRate
 -- Returns the PCM output sample rate in Hz.
 -- PCM output rate in Hz (default 44100); informational unless you tap raw samples.
 do  -- MidiPlayer:getSampleRate
@@ -1942,7 +1942,7 @@ do  -- MidiPlayer:getSampleRate
   end
 end
 
---@api-stub: MidiPlayer:setSampleRate
+--@api-stub: LMidiPlayer:setSampleRate
 -- Sets the PCM output sample rate in Hz (clamped 8000â€“192000).
 -- Clamped to 8000–192000; lower for chiptune effects, higher for mastering output.
 do  -- MidiPlayer:setSampleRate
@@ -1952,7 +1952,7 @@ do  -- MidiPlayer:setSampleRate
   end
 end
 
---@api-stub: MidiPlayer:getChannels
+--@api-stub: LMidiPlayer:getChannels
 -- Returns the PCM output channel count (1 = mono, 2 = stereo).
 -- Returns 1 (mono) or 2 (stereo); affects how the synthesised PCM is mixed into the rodio sink.
 do  -- MidiPlayer:getChannels
@@ -1962,7 +1962,7 @@ do  -- MidiPlayer:getChannels
   end
 end
 
---@api-stub: MidiPlayer:setChannels
+--@api-stub: LMidiPlayer:setChannels
 -- Sets the PCM output channel count (clamped 1â€“2).
 -- Pass 1 for mono playback (saves bandwidth) or 2 for stereo (the default).
 do  -- MidiPlayer:setChannels
@@ -1972,7 +1972,7 @@ do  -- MidiPlayer:setChannels
   end
 end
 
---@api-stub: MidiPlayer:type
+--@api-stub: LMidiPlayer:type
 -- Returns the type name of this object.
 -- Returns the literal string "MidiPlayer"; useful in mixed-userdata inspection helpers.
 do  -- MidiPlayer:type
@@ -1982,7 +1982,7 @@ do  -- MidiPlayer:type
   end
 end
 
---@api-stub: MidiPlayer:typeOf
+--@api-stub: LMidiPlayer:typeOf
 -- Returns true if this object is of the given type.
 -- Returns true for "MidiPlayer" or "Object" — the love2d-style class hierarchy check.
 do  -- MidiPlayer:typeOf
@@ -1994,7 +1994,7 @@ end
 
 -- ── SoundPool methods ──
 
---@api-stub: SoundPool:play
+--@api-stub: LSoundPool:play
 -- Plays the next available voice and returns its SoundKey as an integer.
 -- Returns the integer SoundKey of the next free voice — pass to `lurek.audio.setPan` etc. for variation.
 do  -- SoundPool:play
@@ -2005,7 +2005,7 @@ do  -- SoundPool:play
   end
 end
 
---@api-stub: SoundPool:stopAll
+--@api-stub: LSoundPool:stopAll
 -- Stops all voices in this pool.
 -- Stops every voice in the pool — call on level transition to avoid bleed-over.
 do  -- SoundPool:stopAll
@@ -2015,7 +2015,7 @@ do  -- SoundPool:stopAll
   end
 end
 
---@api-stub: SoundPool:setVolume
+--@api-stub: LSoundPool:setVolume
 -- Sets the volume for all voices in this pool.
 -- Sets one volume for every voice in the pool (and for any voices created later).
 do  -- SoundPool:setVolume
@@ -2025,7 +2025,7 @@ do  -- SoundPool:setVolume
   end
 end
 
---@api-stub: SoundPool:setBus
+--@api-stub: LSoundPool:setBus
 -- Routes all voices through the named bus.
 -- Routes every voice through the named bus; pair with `lurek.audio.create_bus("sfx")` at startup.
 do  -- SoundPool:setBus
@@ -2036,7 +2036,7 @@ do  -- SoundPool:setBus
   end
 end
 
---@api-stub: SoundPool:release
+--@api-stub: LSoundPool:release
 -- Releases all voices from the mixer and invalidates this pool.
 -- Frees every voice handle in the pool; the pool itself becomes unusable afterwards.
 do  -- SoundPool:release
@@ -2046,7 +2046,7 @@ do  -- SoundPool:release
   end
 end
 
---@api-stub: SoundPool:getVoiceCount
+--@api-stub: LSoundPool:getVoiceCount
 -- Returns the total number of voices in this pool.
 -- Returns the configured polyphony — log on startup to confirm pool sizing matches design intent.
 do  -- SoundPool:getVoiceCount
@@ -2056,7 +2056,7 @@ do  -- SoundPool:getVoiceCount
   end
 end
 
---@api-stub: SoundPool:type
+--@api-stub: LSoundPool:type
 -- Returns the type name of this object.
 -- Returns the literal string "SoundPool"; useful in generic mixer-state inspector code.
 do  -- SoundPool:type
@@ -2066,7 +2066,7 @@ do  -- SoundPool:type
   end
 end
 
---@api-stub: SoundPool:typeOf
+--@api-stub: LSoundPool:typeOf
 -- Returns true if the type name matches.
 -- Returns true for "SoundPool" or the catch-all "Object".
 do  -- SoundPool:typeOf
@@ -2078,7 +2078,7 @@ end
 
 -- ── Decoder methods ──
 
---@api-stub: Decoder:decode
+--@api-stub: LDecoder:decode
 -- Decodes the next chunk of samples, or nil at EOF.
 -- Returns a SoundData chunk (about `buffersize` samples) or nil at EOF — drive a streaming visualiser.
 do  -- Decoder:decode
@@ -2089,7 +2089,7 @@ do  -- Decoder:decode
   end
 end
 
---@api-stub: Decoder:getChannelCount
+--@api-stub: LDecoder:getChannelCount
 -- Returns the number of audio channels.
 -- Returns 1 for mono streams, 2 for stereo — plan your visualiser bins accordingly.
 do  -- Decoder:getChannelCount
@@ -2099,7 +2099,7 @@ do  -- Decoder:getChannelCount
   end
 end
 
---@api-stub: Decoder:getBitDepth
+--@api-stub: LDecoder:getBitDepth
 -- Returns the per-sample bit depth of this decoded audio stream.
 -- Returns the per-sample bit depth (typically 16); use to size raw PCM buffers manually.
 do  -- Decoder:getBitDepth
@@ -2109,7 +2109,7 @@ do  -- Decoder:getBitDepth
   end
 end
 
---@api-stub: Decoder:getSampleRate
+--@api-stub: LDecoder:getSampleRate
 -- Returns the sample rate in Hz.
 -- Hz output rate; pair with `getChannelCount` when feeding samples into a custom DSP path.
 do  -- Decoder:getSampleRate
@@ -2119,7 +2119,7 @@ do  -- Decoder:getSampleRate
   end
 end
 
---@api-stub: Decoder:getDuration
+--@api-stub: LDecoder:getDuration
 -- Returns the total duration in seconds.
 -- Total stream length in seconds — drives a scrub bar above your custom decode loop.
 do  -- Decoder:getDuration
@@ -2129,7 +2129,7 @@ do  -- Decoder:getDuration
   end
 end
 
---@api-stub: Decoder:seek
+--@api-stub: LDecoder:seek
 -- Seeks to a time offset in seconds.
 -- Offset in seconds; combine with `:rewind` and `:tell` for a manual streaming UI.
 do  -- Decoder:seek
@@ -2139,7 +2139,7 @@ do  -- Decoder:seek
   end
 end
 
---@api-stub: Decoder:rewind
+--@api-stub: LDecoder:rewind
 -- Rewinds to the beginning.
 -- Shortcut equivalent to `:seek(0)` — handy when a streaming visualiser loops.
 do  -- Decoder:rewind
@@ -2149,7 +2149,7 @@ do  -- Decoder:rewind
   end
 end
 
---@api-stub: Decoder:tell
+--@api-stub: LDecoder:tell
 -- Returns the current position in seconds.
 -- Read each frame to drive the playhead in your custom-decode visualiser.
 do  -- Decoder:tell
@@ -2159,7 +2159,7 @@ do  -- Decoder:tell
   end
 end
 
---@api-stub: Decoder:isSeekable
+--@api-stub: LDecoder:isSeekable
 -- Returns true if seeking is supported.
 -- Some compressed streams forbid seeking; branch to disable scrub UI when the answer is false.
 do  -- Decoder:isSeekable
@@ -2169,7 +2169,7 @@ do  -- Decoder:isSeekable
   end
 end
 
---@api-stub: Decoder:release
+--@api-stub: LDecoder:release
 -- Releases the decoder (no-op).
 -- No-op today (the decoder drops on GC) but call it explicitly to make ownership intent clear.
 do  -- Decoder:release
@@ -2264,7 +2264,7 @@ do  -- mlua (SoundData):drawWaveform
   end
 end
 
---@api-stub: MidiPlayer:setChannelInstrument
+--@api-stub: LMidiPlayer:setChannelInstrument
 -- Sets the General MIDI program number (instrument) for a MIDI channel.
 -- Channel 9 is drums by convention; all others use GM program numbers 1-128.
 do  -- MidiPlayer:setChannelInstrument
@@ -2275,7 +2275,7 @@ do  -- MidiPlayer:setChannelInstrument
   end
 end
 
---@api-stub: Bus:setDuckTarget
+--@api-stub: LBus:setDuckTarget
 -- Configures automatic ducking: when this bus is active, the target bus volume is reduced.
 -- Pass the target bus name and a duck factor (0=silence, 1=no duck) and release time.
 do  -- Bus:setDuckTarget
@@ -2309,174 +2309,10 @@ end
 -- The final committed file must contain ZERO --@api-stub: lines.
 -- =============================================================================
 
--- -----------------------------------------------------------------------------
--- LBus methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LBus:getName --------------------------------------------------
---@api-stub: LBus:getName
--- Returns the unique name string assigned to this audio bus.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBus_stub:getName()  -- -> string
--- (replace lBus_stub with your real LBus instance above)
-
--- ---- Stub: LBus:setVolume ------------------------------------------------
---@api-stub: LBus:setVolume
--- Sets the volume for all sources on this bus.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBus_stub:setVolume(vol)
--- (replace lBus_stub with your real LBus instance above)
-
--- ---- Stub: LBus:getVolume ------------------------------------------------
---@api-stub: LBus:getVolume
--- Returns the current volume multiplier applied to all sources on this bus.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBus_stub:getVolume()  -- -> number
--- (replace lBus_stub with your real LBus instance above)
-
--- ---- Stub: LBus:setPitch -------------------------------------------------
---@api-stub: LBus:setPitch
--- Sets the pitch multiplier for all sources on this bus.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBus_stub:setPitch(pitch)
--- (replace lBus_stub with your real LBus instance above)
-
--- ---- Stub: LBus:getPitch -------------------------------------------------
---@api-stub: LBus:getPitch
--- Returns the bus pitch multiplier.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBus_stub:getPitch()  -- -> number
--- (replace lBus_stub with your real LBus instance above)
-
--- ---- Stub: LBus:pause ----------------------------------------------------
---@api-stub: LBus:pause
--- Pauses all sources on this bus.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBus_stub:pause()
--- (replace lBus_stub with your real LBus instance above)
-
--- ---- Stub: LBus:resume ---------------------------------------------------
---@api-stub: LBus:resume
--- Resumes all sources on this bus.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBus_stub:resume()
--- (replace lBus_stub with your real LBus instance above)
-
--- ---- Stub: LBus:isPaused -------------------------------------------------
---@api-stub: LBus:isPaused
--- Returns true if this bus is paused.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBus_stub:isPaused()  -- -> boolean
--- (replace lBus_stub with your real LBus instance above)
-
--- ---- Stub: LBus:type -----------------------------------------------------
---@api-stub: LBus:type
--- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBus_stub:type()  -- -> string
--- (replace lBus_stub with your real LBus instance above)
-
--- ---- Stub: LBus:typeOf ---------------------------------------------------
---@api-stub: LBus:typeOf
--- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBus_stub:typeOf("hero")  -- -> boolean
--- (replace lBus_stub with your real LBus instance above)
-
--- ---- Stub: LBus:setDuckTarget --------------------------------------------
---@api-stub: LBus:setDuckTarget
--- Configures this bus to duck (lower the volume of) another bus when
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBus_stub:setDuckTarget(target_name, duck_vol)
--- (replace lBus_stub with your real LBus instance above)
-
--- ---- Stub: LBus:clearDuck ------------------------------------------------
---@api-stub: LBus:clearDuck
--- Removes the ducking target from this bus, restoring the target bus
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBus_stub:clearDuck()
--- (replace lBus_stub with your real LBus instance above)
-
--- ---- Stub: LBus:getPeak --------------------------------------------------
---@api-stub: LBus:getPeak
--- Returns the average peak amplitude of all sources currently on this bus.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBus_stub:getPeak()
--- (replace lBus_stub with your real LBus instance above)
 
 -- -----------------------------------------------------------------------------
 -- LDecoder methods
 -- -----------------------------------------------------------------------------
-
--- ---- Stub: LDecoder:decode -----------------------------------------------
---@api-stub: LDecoder:decode
--- Decodes the next chunk of samples, or nil at EOF.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDecoder_stub:decode()  -- -> SoundData
--- (replace lDecoder_stub with your real LDecoder instance above)
-
--- ---- Stub: LDecoder:getChannelCount --------------------------------------
---@api-stub: LDecoder:getChannelCount
--- Returns the number of audio channels.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDecoder_stub:getChannelCount()  -- -> integer
--- (replace lDecoder_stub with your real LDecoder instance above)
-
--- ---- Stub: LDecoder:getBitDepth ------------------------------------------
---@api-stub: LDecoder:getBitDepth
--- Returns the per-sample bit depth of this decoded audio stream.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDecoder_stub:getBitDepth()  -- -> integer
--- (replace lDecoder_stub with your real LDecoder instance above)
-
--- ---- Stub: LDecoder:getSampleRate ----------------------------------------
---@api-stub: LDecoder:getSampleRate
--- Returns the sample rate in Hz.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDecoder_stub:getSampleRate()  -- -> integer
--- (replace lDecoder_stub with your real LDecoder instance above)
-
--- ---- Stub: LDecoder:getDuration ------------------------------------------
---@api-stub: LDecoder:getDuration
--- Returns the total duration in seconds.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDecoder_stub:getDuration()  -- -> number
--- (replace lDecoder_stub with your real LDecoder instance above)
-
--- ---- Stub: LDecoder:seek -------------------------------------------------
---@api-stub: LDecoder:seek
--- Seeks to a time offset in seconds.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDecoder_stub:seek(offset)
--- (replace lDecoder_stub with your real LDecoder instance above)
-
--- ---- Stub: LDecoder:rewind -----------------------------------------------
---@api-stub: LDecoder:rewind
--- Rewinds to the beginning.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDecoder_stub:rewind()
--- (replace lDecoder_stub with your real LDecoder instance above)
-
--- ---- Stub: LDecoder:tell -------------------------------------------------
---@api-stub: LDecoder:tell
--- Returns the current position in seconds.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDecoder_stub:tell()  -- -> number
--- (replace lDecoder_stub with your real LDecoder instance above)
-
--- ---- Stub: LDecoder:isSeekable -------------------------------------------
---@api-stub: LDecoder:isSeekable
--- Returns true if seeking is supported.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDecoder_stub:isSeekable()  -- -> boolean
--- (replace lDecoder_stub with your real LDecoder instance above)
-
--- ---- Stub: LDecoder:release ----------------------------------------------
---@api-stub: LDecoder:release
--- Releases the decoder (no-op).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDecoder_stub:release()
--- (replace lDecoder_stub with your real LDecoder instance above)
 
 -- ---- Stub: LDecoder:type -------------------------------------------------
 --@api-stub: LDecoder:type
@@ -2492,359 +2328,6 @@ end
 -- lDecoder_stub:typeOf("hero")  -- -> boolean
 -- (replace lDecoder_stub with your real LDecoder instance above)
 
--- -----------------------------------------------------------------------------
--- LMidiPlayer methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LMidiPlayer:load ----------------------------------------------
---@api-stub: LMidiPlayer:load
--- Loads a MIDI file from the given path.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lMidiPlayer_stub:load("assets/hero.png")  -- -> boolean
--- (replace lMidiPlayer_stub with your real LMidiPlayer instance above)
-
--- ---- Stub: LMidiPlayer:loadData ------------------------------------------
---@api-stub: LMidiPlayer:loadData
--- Loads MIDI data from a Lua string.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lMidiPlayer_stub:loadData()  -- -> boolean
--- (replace lMidiPlayer_stub with your real LMidiPlayer instance above)
-
--- ---- Stub: LMidiPlayer:isLoaded ------------------------------------------
---@api-stub: LMidiPlayer:isLoaded
--- Returns true if a MIDI sequence is loaded.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lMidiPlayer_stub:isLoaded()  -- -> boolean
--- (replace lMidiPlayer_stub with your real LMidiPlayer instance above)
-
--- ---- Stub: LMidiPlayer:getFilePath ---------------------------------------
---@api-stub: LMidiPlayer:getFilePath
--- Returns the file path of the loaded MIDI, or nil.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lMidiPlayer_stub:getFilePath()  -- -> string
--- (replace lMidiPlayer_stub with your real LMidiPlayer instance above)
-
--- ---- Stub: LMidiPlayer:setSoundFont --------------------------------------
---@api-stub: LMidiPlayer:setSoundFont
--- Loads a SoundFont file into this player (stub).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lMidiPlayer_stub:setSoundFont("assets/hero.png")
--- (replace lMidiPlayer_stub with your real LMidiPlayer instance above)
-
--- ---- Stub: LMidiPlayer:getSoundFontPath ----------------------------------
---@api-stub: LMidiPlayer:getSoundFontPath
--- Returns the SoundFont file path, or nil (stub).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lMidiPlayer_stub:getSoundFontPath()  -- -> string
--- (replace lMidiPlayer_stub with your real LMidiPlayer instance above)
-
--- ---- Stub: LMidiPlayer:useDefaultSoundFont -------------------------------
---@api-stub: LMidiPlayer:useDefaultSoundFont
--- Reverts to the built-in default SoundFont (stub).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lMidiPlayer_stub:useDefaultSoundFont()
--- (replace lMidiPlayer_stub with your real LMidiPlayer instance above)
-
--- ---- Stub: LMidiPlayer:play ----------------------------------------------
---@api-stub: LMidiPlayer:play
--- Starts or resumes MIDI sequence playback from the current position.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lMidiPlayer_stub:play()
--- (replace lMidiPlayer_stub with your real LMidiPlayer instance above)
-
--- ---- Stub: LMidiPlayer:pause ---------------------------------------------
---@api-stub: LMidiPlayer:pause
--- Pauses the MIDI sequence at the current position; resume with `play()`.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lMidiPlayer_stub:pause()
--- (replace lMidiPlayer_stub with your real LMidiPlayer instance above)
-
--- ---- Stub: LMidiPlayer:stop ----------------------------------------------
---@api-stub: LMidiPlayer:stop
--- Stops MIDI playback and resets the playhead to the beginning.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lMidiPlayer_stub:stop()
--- (replace lMidiPlayer_stub with your real LMidiPlayer instance above)
-
--- ---- Stub: LMidiPlayer:isPlaying -----------------------------------------
---@api-stub: LMidiPlayer:isPlaying
--- Returns true if MIDI is currently playing.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lMidiPlayer_stub:isPlaying()  -- -> boolean
--- (replace lMidiPlayer_stub with your real LMidiPlayer instance above)
-
--- ---- Stub: LMidiPlayer:isPaused ------------------------------------------
---@api-stub: LMidiPlayer:isPaused
--- Returns true if MIDI playback is paused.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lMidiPlayer_stub:isPaused()  -- -> boolean
--- (replace lMidiPlayer_stub with your real LMidiPlayer instance above)
-
--- ---- Stub: LMidiPlayer:seek ----------------------------------------------
---@api-stub: LMidiPlayer:seek
--- Seeks to a time position in seconds.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lMidiPlayer_stub:seek(secs)
--- (replace lMidiPlayer_stub with your real LMidiPlayer instance above)
-
--- ---- Stub: LMidiPlayer:tell ----------------------------------------------
---@api-stub: LMidiPlayer:tell
--- Returns the current playback position in seconds.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lMidiPlayer_stub:tell()  -- -> number
--- (replace lMidiPlayer_stub with your real LMidiPlayer instance above)
-
--- ---- Stub: LMidiPlayer:getDuration ---------------------------------------
---@api-stub: LMidiPlayer:getDuration
--- Returns the total MIDI duration in seconds.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lMidiPlayer_stub:getDuration()  -- -> number
--- (replace lMidiPlayer_stub with your real LMidiPlayer instance above)
-
--- ---- Stub: LMidiPlayer:setLooping ----------------------------------------
---@api-stub: LMidiPlayer:setLooping
--- Enables or disables looping.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lMidiPlayer_stub:setLooping(looping)
--- (replace lMidiPlayer_stub with your real LMidiPlayer instance above)
-
--- ---- Stub: LMidiPlayer:isLooping -----------------------------------------
---@api-stub: LMidiPlayer:isLooping
--- Returns true if looping is enabled.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lMidiPlayer_stub:isLooping()  -- -> boolean
--- (replace lMidiPlayer_stub with your real LMidiPlayer instance above)
-
--- ---- Stub: LMidiPlayer:setVolume -----------------------------------------
---@api-stub: LMidiPlayer:setVolume
--- Sets MIDI playback volume.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lMidiPlayer_stub:setVolume(vol)
--- (replace lMidiPlayer_stub with your real LMidiPlayer instance above)
-
--- ---- Stub: LMidiPlayer:getVolume -----------------------------------------
---@api-stub: LMidiPlayer:getVolume
--- Returns the current MIDI volume.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lMidiPlayer_stub:getVolume()  -- -> number
--- (replace lMidiPlayer_stub with your real LMidiPlayer instance above)
-
--- ---- Stub: LMidiPlayer:setBus --------------------------------------------
---@api-stub: LMidiPlayer:setBus
--- Routes MIDI output through a bus (or nil to clear).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lMidiPlayer_stub:setBus(bus_val)
--- (replace lMidiPlayer_stub with your real LMidiPlayer instance above)
-
--- ---- Stub: LMidiPlayer:getBus --------------------------------------------
---@api-stub: LMidiPlayer:getBus
--- Returns the assigned bus, or nil.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lMidiPlayer_stub:getBus()  -- -> Bus
--- (replace lMidiPlayer_stub with your real LMidiPlayer instance above)
-
--- ---- Stub: LMidiPlayer:setTempo ------------------------------------------
---@api-stub: LMidiPlayer:setTempo
--- Sets playback tempo in BPM.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lMidiPlayer_stub:setTempo(bpm)
--- (replace lMidiPlayer_stub with your real LMidiPlayer instance above)
-
--- ---- Stub: LMidiPlayer:getTempo ------------------------------------------
---@api-stub: LMidiPlayer:getTempo
--- Returns the current tempo in BPM.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lMidiPlayer_stub:getTempo()  -- -> number
--- (replace lMidiPlayer_stub with your real LMidiPlayer instance above)
-
--- ---- Stub: LMidiPlayer:getOriginalTempo ----------------------------------
---@api-stub: LMidiPlayer:getOriginalTempo
--- Returns the original MIDI file tempo in BPM.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lMidiPlayer_stub:getOriginalTempo()  -- -> number
--- (replace lMidiPlayer_stub with your real LMidiPlayer instance above)
-
--- ---- Stub: LMidiPlayer:setTempoScale -------------------------------------
---@api-stub: LMidiPlayer:setTempoScale
--- Sets the tempo scale factor (1.0 = original speed).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lMidiPlayer_stub:setTempoScale(1.0)
--- (replace lMidiPlayer_stub with your real LMidiPlayer instance above)
-
--- ---- Stub: LMidiPlayer:getTempoScale -------------------------------------
---@api-stub: LMidiPlayer:getTempoScale
--- Returns the current tempo scale factor.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lMidiPlayer_stub:getTempoScale()  -- -> number
--- (replace lMidiPlayer_stub with your real LMidiPlayer instance above)
-
--- ---- Stub: LMidiPlayer:getTicksPerBeat -----------------------------------
---@api-stub: LMidiPlayer:getTicksPerBeat
--- Returns the PPQ resolution from the MIDI header.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lMidiPlayer_stub:getTicksPerBeat()  -- -> integer
--- (replace lMidiPlayer_stub with your real LMidiPlayer instance above)
-
--- ---- Stub: LMidiPlayer:setChannelVolume ----------------------------------
---@api-stub: LMidiPlayer:setChannelVolume
--- Sets volume for a MIDI channel (1-indexed).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lMidiPlayer_stub:setChannelVolume(ch, vol)
--- (replace lMidiPlayer_stub with your real LMidiPlayer instance above)
-
--- ---- Stub: LMidiPlayer:getChannelVolume ----------------------------------
---@api-stub: LMidiPlayer:getChannelVolume
--- Returns the volume for a MIDI channel (1-indexed).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lMidiPlayer_stub:getChannelVolume(ch)  -- -> number
--- (replace lMidiPlayer_stub with your real LMidiPlayer instance above)
-
--- ---- Stub: LMidiPlayer:setChannelMuted -----------------------------------
---@api-stub: LMidiPlayer:setChannelMuted
--- Mutes or unmutes a MIDI channel (1-indexed).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lMidiPlayer_stub:setChannelMuted(ch, muted)
--- (replace lMidiPlayer_stub with your real LMidiPlayer instance above)
-
--- ---- Stub: LMidiPlayer:isChannelMuted ------------------------------------
---@api-stub: LMidiPlayer:isChannelMuted
--- Returns true if a MIDI channel is muted (1-indexed).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lMidiPlayer_stub:isChannelMuted(ch)  -- -> boolean
--- (replace lMidiPlayer_stub with your real LMidiPlayer instance above)
-
--- ---- Stub: LMidiPlayer:setChannelInstrument ------------------------------
---@api-stub: LMidiPlayer:setChannelInstrument
--- Sets the GM instrument for a MIDI channel (1-indexed).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lMidiPlayer_stub:setChannelInstrument(ch, inst)
--- (replace lMidiPlayer_stub with your real LMidiPlayer instance above)
-
--- ---- Stub: LMidiPlayer:getChannelInstrument ------------------------------
---@api-stub: LMidiPlayer:getChannelInstrument
--- Returns the GM instrument for a MIDI channel (1-indexed).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lMidiPlayer_stub:getChannelInstrument(ch)  -- -> integer
--- (replace lMidiPlayer_stub with your real LMidiPlayer instance above)
-
--- ---- Stub: LMidiPlayer:getChannelCount -----------------------------------
---@api-stub: LMidiPlayer:getChannelCount
--- Returns the number of MIDI channels.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lMidiPlayer_stub:getChannelCount()  -- -> integer
--- (replace lMidiPlayer_stub with your real LMidiPlayer instance above)
-
--- ---- Stub: LMidiPlayer:soloChannel ---------------------------------------
---@api-stub: LMidiPlayer:soloChannel
--- Solos a MIDI channel (1-indexed).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lMidiPlayer_stub:soloChannel(ch)
--- (replace lMidiPlayer_stub with your real LMidiPlayer instance above)
-
--- ---- Stub: LMidiPlayer:unsoloAll -----------------------------------------
---@api-stub: LMidiPlayer:unsoloAll
--- Clears solo on all channels.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lMidiPlayer_stub:unsoloAll()
--- (replace lMidiPlayer_stub with your real LMidiPlayer instance above)
-
--- ---- Stub: LMidiPlayer:getTrackCount -------------------------------------
---@api-stub: LMidiPlayer:getTrackCount
--- Returns the number of tracks in the MIDI sequence.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lMidiPlayer_stub:getTrackCount()  -- -> integer
--- (replace lMidiPlayer_stub with your real LMidiPlayer instance above)
-
--- ---- Stub: LMidiPlayer:getTrackName --------------------------------------
---@api-stub: LMidiPlayer:getTrackName
--- Returns the name of a MIDI track (1-indexed), or nil.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lMidiPlayer_stub:getTrackName(1)  -- -> string
--- (replace lMidiPlayer_stub with your real LMidiPlayer instance above)
-
--- ---- Stub: LMidiPlayer:setTrackMuted -------------------------------------
---@api-stub: LMidiPlayer:setTrackMuted
--- Mutes or unmutes a track (1-indexed).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lMidiPlayer_stub:setTrackMuted(1, muted)
--- (replace lMidiPlayer_stub with your real LMidiPlayer instance above)
-
--- ---- Stub: LMidiPlayer:isTrackMuted --------------------------------------
---@api-stub: LMidiPlayer:isTrackMuted
--- Returns true if a track is muted (1-indexed).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lMidiPlayer_stub:isTrackMuted(1)  -- -> boolean
--- (replace lMidiPlayer_stub with your real LMidiPlayer instance above)
-
--- ---- Stub: LMidiPlayer:getNoteCount --------------------------------------
---@api-stub: LMidiPlayer:getNoteCount
--- Returns the total note count in the MIDI sequence.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lMidiPlayer_stub:getNoteCount()  -- -> integer
--- (replace lMidiPlayer_stub with your real LMidiPlayer instance above)
-
--- ---- Stub: LMidiPlayer:setOnNoteOn ---------------------------------------
---@api-stub: LMidiPlayer:setOnNoteOn
--- Registers a note-on callback (stub).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lMidiPlayer_stub:setOnNoteOn(cb)
--- (replace lMidiPlayer_stub with your real LMidiPlayer instance above)
-
--- ---- Stub: LMidiPlayer:setOnNoteOff --------------------------------------
---@api-stub: LMidiPlayer:setOnNoteOff
--- Registers a note-off callback (stub).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lMidiPlayer_stub:setOnNoteOff(cb)
--- (replace lMidiPlayer_stub with your real LMidiPlayer instance above)
-
--- ---- Stub: LMidiPlayer:setOnEnd ------------------------------------------
---@api-stub: LMidiPlayer:setOnEnd
--- Registers a playback-end callback (stub).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lMidiPlayer_stub:setOnEnd(cb)
--- (replace lMidiPlayer_stub with your real LMidiPlayer instance above)
-
--- ---- Stub: LMidiPlayer:getSampleRate -------------------------------------
---@api-stub: LMidiPlayer:getSampleRate
--- Returns the PCM output sample rate in Hz.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lMidiPlayer_stub:getSampleRate()  -- -> integer
--- (replace lMidiPlayer_stub with your real LMidiPlayer instance above)
-
--- ---- Stub: LMidiPlayer:setSampleRate -------------------------------------
---@api-stub: LMidiPlayer:setSampleRate
--- Sets the PCM output sample rate in Hz (clamped 8000â€“192000).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lMidiPlayer_stub:setSampleRate(rate)
--- (replace lMidiPlayer_stub with your real LMidiPlayer instance above)
-
--- ---- Stub: LMidiPlayer:getChannels ---------------------------------------
---@api-stub: LMidiPlayer:getChannels
--- Returns the PCM output channel count (1 = mono, 2 = stereo).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lMidiPlayer_stub:getChannels()  -- -> integer
--- (replace lMidiPlayer_stub with your real LMidiPlayer instance above)
-
--- ---- Stub: LMidiPlayer:setChannels ---------------------------------------
---@api-stub: LMidiPlayer:setChannels
--- Sets the PCM output channel count (clamped 1â€“2).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lMidiPlayer_stub:setChannels(channels)
--- (replace lMidiPlayer_stub with your real LMidiPlayer instance above)
-
--- ---- Stub: LMidiPlayer:type ----------------------------------------------
---@api-stub: LMidiPlayer:type
--- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lMidiPlayer_stub:type()  -- -> string
--- (replace lMidiPlayer_stub with your real LMidiPlayer instance above)
-
--- ---- Stub: LMidiPlayer:typeOf --------------------------------------------
---@api-stub: LMidiPlayer:typeOf
--- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lMidiPlayer_stub:typeOf("hero")  -- -> boolean
--- (replace lMidiPlayer_stub with your real LMidiPlayer instance above)
 
 -- -----------------------------------------------------------------------------
 -- LSoundData methods
@@ -2906,258 +2389,10 @@ end
 -- lSoundData_stub:setSample(1, 42)
 -- (replace lSoundData_stub with your real LSoundData instance above)
 
--- -----------------------------------------------------------------------------
--- LSoundPool methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LSoundPool:play -----------------------------------------------
---@api-stub: LSoundPool:play
--- Plays the next available voice and returns its SoundKey as an integer.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSoundPool_stub:play()  -- -> integer
--- (replace lSoundPool_stub with your real LSoundPool instance above)
-
--- ---- Stub: LSoundPool:stopAll --------------------------------------------
---@api-stub: LSoundPool:stopAll
--- Stops all voices in this pool.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSoundPool_stub:stopAll()
--- (replace lSoundPool_stub with your real LSoundPool instance above)
-
--- ---- Stub: LSoundPool:setVolume ------------------------------------------
---@api-stub: LSoundPool:setVolume
--- Sets the volume for all voices in this pool.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSoundPool_stub:setVolume(vol)
--- (replace lSoundPool_stub with your real LSoundPool instance above)
-
--- ---- Stub: LSoundPool:setBus ---------------------------------------------
---@api-stub: LSoundPool:setBus
--- Routes all voices through the named bus.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSoundPool_stub:setBus("hero")
--- (replace lSoundPool_stub with your real LSoundPool instance above)
-
--- ---- Stub: LSoundPool:release --------------------------------------------
---@api-stub: LSoundPool:release
--- Releases all voices from the mixer and invalidates this pool.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSoundPool_stub:release()
--- (replace lSoundPool_stub with your real LSoundPool instance above)
-
--- ---- Stub: LSoundPool:getVoiceCount --------------------------------------
---@api-stub: LSoundPool:getVoiceCount
--- Returns the total number of voices in this pool.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSoundPool_stub:getVoiceCount()  -- -> integer
--- (replace lSoundPool_stub with your real LSoundPool instance above)
-
--- ---- Stub: LSoundPool:type -----------------------------------------------
---@api-stub: LSoundPool:type
--- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSoundPool_stub:type()  -- -> string
--- (replace lSoundPool_stub with your real LSoundPool instance above)
-
--- ---- Stub: LSoundPool:typeOf ---------------------------------------------
---@api-stub: LSoundPool:typeOf
--- Returns true if the type name matches.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSoundPool_stub:typeOf("hero")  -- -> boolean
--- (replace lSoundPool_stub with your real LSoundPool instance above)
 
 -- -----------------------------------------------------------------------------
 -- LSource methods
 -- -----------------------------------------------------------------------------
-
--- ---- Stub: LSource:play --------------------------------------------------
---@api-stub: LSource:play
--- Starts or resumes playback.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSource_stub:play()
--- (replace lSource_stub with your real LSource instance above)
-
--- ---- Stub: LSource:stop --------------------------------------------------
---@api-stub: LSource:stop
--- Stops playback and resets seek position.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSource_stub:stop()
--- (replace lSource_stub with your real LSource instance above)
-
--- ---- Stub: LSource:pause -------------------------------------------------
---@api-stub: LSource:pause
--- Pauses playback at the current position.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSource_stub:pause()
--- (replace lSource_stub with your real LSource instance above)
-
--- ---- Stub: LSource:resume ------------------------------------------------
---@api-stub: LSource:resume
--- Resumes playback from the paused position.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSource_stub:resume()
--- (replace lSource_stub with your real LSource instance above)
-
--- ---- Stub: LSource:setVolume ---------------------------------------------
---@api-stub: LSource:setVolume
--- Sets playback volume (0.0 = silent, 1.0 = full).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSource_stub:setVolume(vol)
--- (replace lSource_stub with your real LSource instance above)
-
--- ---- Stub: LSource:getVolume ---------------------------------------------
---@api-stub: LSource:getVolume
--- Returns the current volume multiplier.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSource_stub:getVolume()  -- -> number
--- (replace lSource_stub with your real LSource instance above)
-
--- ---- Stub: LSource:setPitch ----------------------------------------------
---@api-stub: LSource:setPitch
--- Sets the pitch multiplier (1.0 = normal).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSource_stub:setPitch(pitch)
--- (replace lSource_stub with your real LSource instance above)
-
--- ---- Stub: LSource:getPitch ----------------------------------------------
---@api-stub: LSource:getPitch
--- Returns the current pitch multiplier.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSource_stub:getPitch()  -- -> number
--- (replace lSource_stub with your real LSource instance above)
-
--- ---- Stub: LSource:setLooping --------------------------------------------
---@api-stub: LSource:setLooping
--- Enables or disables looping playback.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSource_stub:setLooping(looping)
--- (replace lSource_stub with your real LSource instance above)
-
--- ---- Stub: LSource:isLooping ---------------------------------------------
---@api-stub: LSource:isLooping
--- Returns true if looping is enabled.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSource_stub:isLooping()  -- -> boolean
--- (replace lSource_stub with your real LSource instance above)
-
--- ---- Stub: LSource:isPlaying ---------------------------------------------
---@api-stub: LSource:isPlaying
--- Returns true if currently playing.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSource_stub:isPlaying()  -- -> boolean
--- (replace lSource_stub with your real LSource instance above)
-
--- ---- Stub: LSource:isPaused ----------------------------------------------
---@api-stub: LSource:isPaused
--- Returns true if playback is paused.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSource_stub:isPaused()  -- -> boolean
--- (replace lSource_stub with your real LSource instance above)
-
--- ---- Stub: LSource:isStopped ---------------------------------------------
---@api-stub: LSource:isStopped
--- Returns true if playback has stopped.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSource_stub:isStopped()  -- -> boolean
--- (replace lSource_stub with your real LSource instance above)
-
--- ---- Stub: LSource:setPan ------------------------------------------------
---@api-stub: LSource:setPan
--- Sets stereo panning (-1.0 left to 1.0 right).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSource_stub:setPan(pan)
--- (replace lSource_stub with your real LSource instance above)
-
--- ---- Stub: LSource:getPan ------------------------------------------------
---@api-stub: LSource:getPan
--- Returns the current stereo panning value.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSource_stub:getPan()  -- -> number
--- (replace lSource_stub with your real LSource instance above)
-
--- ---- Stub: LSource:clone -------------------------------------------------
---@api-stub: LSource:clone
--- Creates an independent copy of this source.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSource_stub:clone()  -- -> Source
--- (replace lSource_stub with your real LSource instance above)
-
--- ---- Stub: LSource:getType -----------------------------------------------
---@api-stub: LSource:getType
--- Returns the source type ("static" or "stream").
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSource_stub:getType()  -- -> string
--- (replace lSource_stub with your real LSource instance above)
-
--- ---- Stub: LSource:getDuration -------------------------------------------
---@api-stub: LSource:getDuration
--- Returns the total duration in seconds.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSource_stub:getDuration()  -- -> number
--- (replace lSource_stub with your real LSource instance above)
-
--- ---- Stub: LSource:tell --------------------------------------------------
---@api-stub: LSource:tell
--- Returns the current playback position in seconds.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSource_stub:tell()  -- -> number
--- (replace lSource_stub with your real LSource instance above)
-
--- ---- Stub: LSource:seek --------------------------------------------------
---@api-stub: LSource:seek
--- Seeks to a time position in seconds.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSource_stub:seek(pos)
--- (replace lSource_stub with your real LSource instance above)
-
--- ---- Stub: LSource:setLowpass --------------------------------------------
---@api-stub: LSource:setLowpass
--- Applies a low-pass filter at the given cutoff frequency.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSource_stub:setLowpass(cutoff_hz)
--- (replace lSource_stub with your real LSource instance above)
-
--- ---- Stub: LSource:setHighpass -------------------------------------------
---@api-stub: LSource:setHighpass
--- Applies a high-pass filter at the given cutoff frequency.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSource_stub:setHighpass(cutoff_hz)
--- (replace lSource_stub with your real LSource instance above)
-
--- ---- Stub: LSource:getLowpass --------------------------------------------
---@api-stub: LSource:getLowpass
--- Returns the low-pass filter cutoff frequency.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSource_stub:getLowpass()  -- -> number
--- (replace lSource_stub with your real LSource instance above)
-
--- ---- Stub: LSource:getHighpass -------------------------------------------
---@api-stub: LSource:getHighpass
--- Returns the high-pass filter cutoff frequency.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSource_stub:getHighpass()  -- -> number
--- (replace lSource_stub with your real LSource instance above)
-
--- ---- Stub: LSource:clearFilter -------------------------------------------
---@api-stub: LSource:clearFilter
--- Removes any active filter from this source.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSource_stub:clearFilter()
--- (replace lSource_stub with your real LSource instance above)
-
--- ---- Stub: LSource:fadeIn ------------------------------------------------
---@api-stub: LSource:fadeIn
--- Fades in from silence over the given duration in seconds.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSource_stub:fadeIn(dur)
--- (replace lSource_stub with your real LSource instance above)
-
--- ---- Stub: LSource:getFadeIn ---------------------------------------------
---@api-stub: LSource:getFadeIn
--- Returns the current fade-in duration in seconds.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSource_stub:getFadeIn()  -- -> number
--- (replace lSource_stub with your real LSource instance above)
 
 -- ---- Stub: LSource:type --------------------------------------------------
 --@api-stub: LSource:type

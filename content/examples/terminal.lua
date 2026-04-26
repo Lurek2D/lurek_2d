@@ -290,7 +290,7 @@ end
 
 -- ── Terminal methods ──
 
---@api-stub: Terminal:set
+--@api-stub: LTerminal:set
 -- Sets a cell at 1-based coordinates with character FG and BG colours.
 -- Pass char as a 1-char string or codepoint; colours are 0..1 floats.
 do  -- Terminal:set
@@ -299,7 +299,7 @@ do  -- Terminal:set
   term:set(11, 5, "!", 1, 0.4, 0.4, 1)
 end
 
---@api-stub: Terminal:get
+--@api-stub: LTerminal:get
 -- Returns the cell data at 1-based coordinates.
 -- Returns 9 values: codepoint, fg rgba, bg rgba; useful for save/restore of cells.
 do  -- Terminal:get
@@ -309,7 +309,7 @@ do  -- Terminal:get
   lurek.log.debug("cell " .. ch .. " fg=" .. r .. "," .. g .. "," .. b, "term")
 end
 
---@api-stub: Terminal:clear
+--@api-stub: LTerminal:clear
 -- Clears all cells to defaults.
 -- Call before redrawing a frame from scratch instead of overwriting cell-by-cell.
 do  -- Terminal:clear
@@ -318,7 +318,7 @@ do  -- Terminal:clear
   term:clear()
 end
 
---@api-stub: Terminal:getDimensions
+--@api-stub: LTerminal:getDimensions
 -- Returns the terminal grid dimensions.
 -- Use to centre widgets or to clamp draw coordinates within bounds.
 do  -- Terminal:getDimensions
@@ -327,10 +327,6 @@ do  -- Terminal:getDimensions
   local centre = lurek.terminal.newLabel(math.floor(cols / 2) - 3, math.floor(rows / 2), "HELLO")
   term:addWidget(centre)
 end
-
---@api-stub: Terminal:getCellSize
--- Returns the current cell size in pixels derived from the active font.
--- Use to position external sprites in pixel space aligned with the grid.
 do  -- Terminal:getCellSize
   pcall(function()
     local term = lurek.terminal.newTerminal(80, 25)
@@ -339,7 +335,7 @@ do  -- Terminal:getCellSize
   end)
 end
 
---@api-stub: Terminal:addWidget
+--@api-stub: LTerminal:addWidget
 -- Attaches a widget to this terminal.
 -- Widgets render in attach order; add backgrounds before foreground labels.
 do  -- Terminal:addWidget
@@ -348,7 +344,7 @@ do  -- Terminal:addWidget
   term:addWidget(hp_label)
 end
 
---@api-stub: Terminal:removeWidget
+--@api-stub: LTerminal:removeWidget
 -- Detaches a widget from this terminal.
 -- Use to hide HUD elements when entering menus without destroying the widget handle.
 do  -- Terminal:removeWidget
@@ -358,7 +354,7 @@ do  -- Terminal:removeWidget
   term:removeWidget(toast)
 end
 
---@api-stub: Terminal:clearWidgets
+--@api-stub: LTerminal:clearWidgets
 -- Detaches all widgets from this terminal.
 -- Call when switching between game screens to wipe the previous UI state.
 do  -- Terminal:clearWidgets
@@ -367,7 +363,7 @@ do  -- Terminal:clearWidgets
   term:clearWidgets()
 end
 
---@api-stub: Terminal:getWidgetCount
+--@api-stub: LTerminal:getWidgetCount
 -- Returns the number of attached widgets.
 -- Useful to assert UI state in tests or to cap dynamically spawned tooltips.
 do  -- Terminal:getWidgetCount
@@ -378,7 +374,7 @@ do  -- Terminal:getWidgetCount
   end
 end
 
---@api-stub: Terminal:setFocus
+--@api-stub: LTerminal:setFocus
 -- Sets the focused widget, or clears focus if nil is passed.
 -- Only the focused widget receives keypressed/textinput; pass nil to release.
 do  -- Terminal:setFocus
@@ -388,7 +384,7 @@ do  -- Terminal:setFocus
   term:setFocus(input)
 end
 
---@api-stub: Terminal:getFocused
+--@api-stub: LTerminal:getFocused
 -- Returns the currently focused widget, or nil.
 -- Use to detect whether key events should reach gameplay or stay in the UI.
 do  -- Terminal:getFocused
@@ -401,7 +397,7 @@ do  -- Terminal:getFocused
   end
 end
 
---@api-stub: Terminal:keypressed
+--@api-stub: LTerminal:keypressed
 -- Routes a key press to the focused widget and fires callbacks.
 -- Forward from your global key handler; returns true if the widget consumed the key.
 do  -- Terminal:keypressed
@@ -414,7 +410,7 @@ do  -- Terminal:keypressed
   lurek.log.debug("consumed=" .. tostring(consumed), "term")
 end
 
---@api-stub: Terminal:textinput
+--@api-stub: LTerminal:textinput
 -- Routes text input to the focused widget and fires callbacks.
 -- Forward from a textinput hook so text boxes accept typed characters.
 do  -- Terminal:textinput
@@ -426,7 +422,7 @@ do  -- Terminal:textinput
   term:textinput("i")
 end
 
---@api-stub: Terminal:render
+--@api-stub: LTerminal:render
 -- Renders the terminal grid and widgets as render commands.
 -- Call from lurek.render after game-world drawing so the terminal sits on top.
 do  -- Terminal:render
@@ -435,7 +431,7 @@ do  -- Terminal:render
   function lurek.draw() term:render(0, 0) end
 end
 
---@api-stub: Terminal:setFont
+--@api-stub: LTerminal:setFont
 -- Sets the terminal font by pixel height, snapping to the nearest built-in size.
 -- Use to scale UI text for hi-DPI displays or accessibility settings.
 do  -- Terminal:setFont
@@ -443,7 +439,7 @@ do  -- Terminal:setFont
   term:setFont(24)
 end
 
---@api-stub: Terminal:setCellSize
+--@api-stub: LTerminal:setCellSize
 -- Sets a per-terminal cell pixel size override, bypassing the font-derived size.
 -- Use to align cells to a sprite atlas grid; values are clamped to >= 1 pixel.
 do  -- Terminal:setCellSize
@@ -451,7 +447,7 @@ do  -- Terminal:setCellSize
   term:setCellSize(16, 16)
 end
 
---@api-stub: Terminal:resetCellSize
+--@api-stub: LTerminal:resetCellSize
 -- Removes the cell size override, restoring font-derived cell dimensions.
 -- Call after a temporary override (e.g. cinematic zoom) to return to normal.
 do  -- Terminal:resetCellSize
@@ -460,7 +456,7 @@ do  -- Terminal:resetCellSize
   term:resetCellSize()
 end
 
---@api-stub: Terminal:getCellSize
+--@api-stub: LTerminal:getCellSize
 -- Returns the active cell size override as `{w, h}`, or `nil` if none is set.
 -- Use to detect whether the terminal is using a custom grid before resetting.
 do  -- Terminal:getCellSize
@@ -470,7 +466,7 @@ do  -- Terminal:getCellSize
   if override then lurek.log.debug("override " .. override.w .. "x" .. override.h, "term") end
 end
 
---@api-stub: Terminal:autoResize
+--@api-stub: LTerminal:autoResize
 -- Resizes the window to exactly fit the terminal grid at the current font size.
 -- Call after setFont when you want the OS window to hug the grid bounds.
 do  -- Terminal:autoResize
@@ -481,7 +477,7 @@ end
 
 -- ── Widget methods ──
 
---@api-stub: Widget:setPosition
+--@api-stub: LWidget:setPosition
 -- Sets the widget position from 1-based coordinates.
 -- Use to reposition tooltips or floating windows in response to game state.
 do  -- Widget:setPosition
@@ -489,7 +485,7 @@ do  -- Widget:setPosition
   label:setPosition(40, 12)
 end
 
---@api-stub: Widget:getPosition
+--@api-stub: LWidget:getPosition
 -- Returns the widget position as 1-based coordinates.
 -- Use to anchor a child element relative to an existing widget.
 do  -- Widget:getPosition
@@ -499,7 +495,7 @@ do  -- Widget:getPosition
   lurek.log.debug("arrow at " .. (col + 8) .. "," .. row, "term")
 end
 
---@api-stub: Widget:setSize
+--@api-stub: LWidget:setSize
 -- Sets the widget size in cells.
 -- Use to grow a list as items are added or to expand a panel for content.
 do  -- Widget:setSize
@@ -509,7 +505,7 @@ do  -- Widget:setSize
   list:setSize(20, 8)
 end
 
---@api-stub: Widget:getSize
+--@api-stub: LWidget:getSize
 -- Returns the widget size in cells.
 -- Use to compute layout offsets for sibling widgets.
 do  -- Widget:getSize
@@ -518,7 +514,7 @@ do  -- Widget:getSize
   lurek.log.info("panel " .. w .. "x" .. h, "term")
 end
 
---@api-stub: Widget:setVisible
+--@api-stub: LWidget:setVisible
 -- Sets the widget visibility.
 -- Toggle to show/hide overlays without removing them from the terminal.
 do  -- Widget:setVisible
@@ -526,7 +522,7 @@ do  -- Widget:setVisible
   hint:setVisible(false)
 end
 
---@api-stub: Widget:isVisible
+--@api-stub: LWidget:isVisible
 -- Returns whether the widget is visible.
 -- Branch on visibility before computing expensive label text updates.
 do  -- Widget:isVisible
@@ -537,7 +533,7 @@ do  -- Widget:isVisible
   end
 end
 
---@api-stub: Widget:setEnabled
+--@api-stub: LWidget:setEnabled
 -- Sets whether the widget accepts input.
 -- Disable buttons during async operations to prevent double-clicks.
 do  -- Widget:setEnabled
@@ -545,7 +541,7 @@ do  -- Widget:setEnabled
   save_btn:setEnabled(false)
 end
 
---@api-stub: Widget:isEnabled
+--@api-stub: LWidget:isEnabled
 -- Returns whether the widget accepts input.
 -- Check before re-enabling so you do not clobber an explicit disabled state.
 do  -- Widget:isEnabled
@@ -556,7 +552,7 @@ do  -- Widget:isEnabled
   end
 end
 
---@api-stub: Widget:setTag
+--@api-stub: LWidget:setTag
 -- Sets the free-form identification tag.
 -- Use a stable string id so event handlers can identify widgets without table refs.
 do  -- Widget:setTag
@@ -564,7 +560,7 @@ do  -- Widget:setTag
   btn:setTag("menu.quit")
 end
 
---@api-stub: Widget:getTag
+--@api-stub: LWidget:getTag
 -- Returns the free-form identification tag.
 -- Use in click callbacks to dispatch by tag instead of comparing widget refs.
 do  -- Widget:getTag
@@ -575,7 +571,7 @@ do  -- Widget:getTag
   end
 end
 
---@api-stub: Widget:setText
+--@api-stub: LWidget:setText
 -- Sets the text content of a label, button, or text box widget.
 -- Reuse a single label widget and update its text every frame instead of recreating.
 do  -- Widget:setText
@@ -583,7 +579,7 @@ do  -- Widget:setText
   fps_label:setText("FPS: 60")
 end
 
---@api-stub: Widget:getText
+--@api-stub: LWidget:getText
 -- Returns the text content of a label, button, or text box widget.
 -- Read after textinput to grab what the user typed.
 do  -- Widget:getText
@@ -593,7 +589,7 @@ do  -- Widget:getText
   lurek.log.info("submit: " .. typed, "term")
 end
 
---@api-stub: Widget:getColor
+--@api-stub: LWidget:getColor
 -- Returns the colour of a label or border widget.
 -- Use to fade widgets by reading the current colour and animating the alpha.
 do  -- Widget:getColor
@@ -602,7 +598,7 @@ do  -- Widget:getColor
   lurek.log.debug("colour rgba " .. r .. "," .. g .. "," .. b .. "," .. a, "term")
 end
 
---@api-stub: Widget:setOnClick
+--@api-stub: LWidget:setOnClick
 -- Registers a click callback for a button widget.
 -- The callback runs on Enter when focused or on a mouse click on the button cells.
 do  -- Widget:setOnClick
@@ -610,7 +606,7 @@ do  -- Widget:setOnClick
   btn:setOnClick(function() lurek.log.info("starting game", "menu") end)
 end
 
---@api-stub: Widget:setMaxLength
+--@api-stub: LWidget:setMaxLength
 -- Sets the maximum character length of a text box widget.
 -- Cap so player names or chat lines fit your network packet limits.
 do  -- Widget:setMaxLength
@@ -618,7 +614,7 @@ do  -- Widget:setMaxLength
   name_box:setMaxLength(16)
 end
 
---@api-stub: Widget:getMaxLength
+--@api-stub: LWidget:getMaxLength
 -- Returns the maximum character length of a text box widget.
 -- Use to drive a "12/16" character counter beside the input.
 do  -- Widget:getMaxLength
@@ -628,7 +624,7 @@ do  -- Widget:getMaxLength
   lurek.log.info("max name length " .. cap, "term")
 end
 
---@api-stub: Widget:setOnChange
+--@api-stub: LWidget:setOnChange
 -- Registers a text change callback for a text box widget.
 -- Use for live filtering (search boxes) or to validate input as it is typed.
 do  -- Widget:setOnChange
@@ -638,7 +634,7 @@ do  -- Widget:setOnChange
   end)
 end
 
---@api-stub: Widget:addItem
+--@api-stub: LWidget:addItem
 -- Adds an item to a list widget.
 -- Use during inventory refreshes; items appear in insertion order.
 do  -- Widget:addItem
@@ -648,7 +644,7 @@ do  -- Widget:addItem
   inv:addItem("Lockpick x5")
 end
 
---@api-stub: Widget:removeItem
+--@api-stub: LWidget:removeItem
 -- Removes an item from a list widget by 1-based index.
 -- Use after the player drops or consumes the corresponding inventory entry.
 do  -- Widget:removeItem
@@ -658,7 +654,7 @@ do  -- Widget:removeItem
   inv:removeItem(2)
 end
 
---@api-stub: Widget:clearItems
+--@api-stub: LWidget:clearItems
 -- Removes all items from a list widget.
 -- Call before refilling the list from a fresh inventory snapshot.
 do  -- Widget:clearItems
@@ -668,7 +664,7 @@ do  -- Widget:clearItems
   inv:addItem("fresh")
 end
 
---@api-stub: Widget:getItemCount
+--@api-stub: LWidget:getItemCount
 -- Returns the number of items in a list widget.
 -- Use to drive an "Empty" placeholder label when the list has no entries.
 do  -- Widget:getItemCount
@@ -678,7 +674,7 @@ do  -- Widget:getItemCount
   end
 end
 
---@api-stub: Widget:getItem
+--@api-stub: LWidget:getItem
 -- Returns a list item by 1-based index.
 -- Use with getSelected to fetch the highlighted entry on Enter.
 do  -- Widget:getItem
@@ -689,7 +685,7 @@ do  -- Widget:getItem
   lurek.log.debug("first item: " .. first, "term")
 end
 
---@api-stub: Widget:setSelected
+--@api-stub: LWidget:setSelected
 -- Sets the selected item in a list widget by 1-based index.
 -- Pass nil to clear; useful when programmatically restoring a saved selection.
 do  -- Widget:setSelected
@@ -699,7 +695,7 @@ do  -- Widget:setSelected
   saves:setSelected(2)
 end
 
---@api-stub: Widget:getSelected
+--@api-stub: LWidget:getSelected
 -- Returns the selected item index (1-based) in a list widget, or nil.
 -- Read on confirm to know which entry the player highlighted.
 do  -- Widget:getSelected
@@ -710,7 +706,7 @@ do  -- Widget:getSelected
   if idx then lurek.log.info("loaded slot " .. idx, "save") end
 end
 
---@api-stub: Widget:setOnSelect
+--@api-stub: LWidget:setOnSelect
 -- Registers a selection change callback for a list widget.
 -- Use to update a preview pane whenever the highlight moves.
 do  -- Widget:setOnSelect
@@ -721,7 +717,7 @@ do  -- Widget:setOnSelect
   end)
 end
 
---@api-stub: Widget:setStyle
+--@api-stub: LWidget:setStyle
 -- Sets the border style of a border widget.
 -- Valid styles: "single", "double", "ascii"; choose ascii for low-glyph fonts.
 do  -- Widget:setStyle
@@ -729,7 +725,7 @@ do  -- Widget:setStyle
   frame:setStyle("single")
 end
 
---@api-stub: Widget:getStyle
+--@api-stub: LWidget:getStyle
 -- Returns the border style name of a border widget.
 -- Use to round-trip the style when persisting UI preferences.
 do  -- Widget:getStyle
@@ -739,7 +735,7 @@ do  -- Widget:getStyle
   lurek.log.info("border style: " .. style, "term")
 end
 
---@api-stub: Widget:setTitle
+--@api-stub: LWidget:setTitle
 -- Sets the title of a border widget.
 -- The title overlays the top edge; use a leading/trailing space for breathing room.
 do  -- Widget:setTitle
@@ -747,7 +743,7 @@ do  -- Widget:setTitle
   frame:setTitle(" Inventory ")
 end
 
---@api-stub: Widget:getTitle
+--@api-stub: LWidget:getTitle
 -- Returns the title of a border widget.
 -- Use when rebuilding a panel to preserve the previously displayed heading.
 do  -- Widget:getTitle
@@ -757,7 +753,7 @@ do  -- Widget:getTitle
   lurek.log.debug("frame titled: " .. title, "term")
 end
 
---@api-stub: Widget:addChild
+--@api-stub: LWidget:addChild
 -- Adds a child widget to a panel widget.
 -- Children draw with the panel; toggling panel visibility cascades to all children.
 do  -- Widget:addChild
@@ -766,7 +762,7 @@ do  -- Widget:addChild
   panel:addChild(lurek.terminal.newButton(1, 3, 10, 1, "Resume"))
 end
 
---@api-stub: Widget:removeChild
+--@api-stub: LWidget:removeChild
 -- Removes a child widget from a panel widget.
 -- Use to hot-swap a single subview without rebuilding the entire panel.
 do  -- Widget:removeChild
@@ -776,7 +772,7 @@ do  -- Widget:removeChild
   panel:removeChild(hint)
 end
 
---@api-stub: Widget:clearChildren
+--@api-stub: LWidget:clearChildren
 -- Removes all children from a panel widget.
 -- Call before rebuilding a panel's contents from a fresh data source.
 do  -- Widget:clearChildren
@@ -785,7 +781,7 @@ do  -- Widget:clearChildren
   panel:clearChildren()
 end
 
---@api-stub: Widget:getChildCount
+--@api-stub: LWidget:getChildCount
 -- Returns the number of children in a panel widget.
 -- Use to lay out children dynamically (e.g. position the next at row N+1).
 do  -- Widget:getChildCount
@@ -795,7 +791,7 @@ do  -- Widget:getChildCount
   lurek.log.debug("panel children: " .. n, "term")
 end
 
---@api-stub: Widget:getChild
+--@api-stub: LWidget:getChild
 -- Returns a child widget from a panel by 1-based index, or nil.
 -- Iterate from 1 to getChildCount to walk all children for layout passes.
 do  -- Widget:getChild
@@ -805,7 +801,7 @@ do  -- Widget:getChild
   if first then lurek.log.debug("got first child", "term") end
 end
 
---@api-stub: Terminal:mousepressed
+--@api-stub: LTerminal:mousepressed
 -- Forwards a mouse-press event to the terminal UI for widget interaction.
 -- Call from lurek's mouse callback or equivalent input handler each frame.
 do  -- Terminal:mousepressed
@@ -814,7 +810,7 @@ do  -- Terminal:mousepressed
   lurek.log.info("mouse event forwarded", "terminal")
 end
 
---@api-stub: Widget:setColor
+--@api-stub: LWidget:setColor
 -- Sets the foreground text or icon colour for a terminal widget.
 -- Use ANSI-style RGB values in [0,1] to theme individual widgets.
 do  -- Widget:setColor
@@ -875,388 +871,4 @@ end
 -- The final committed file must contain ZERO --@api-stub: lines.
 -- =============================================================================
 
--- -----------------------------------------------------------------------------
--- LTerminal methods
--- -----------------------------------------------------------------------------
 
--- ---- Stub: LTerminal:set -------------------------------------------------
---@api-stub: LTerminal:set
--- Sets a cell at 1-based coordinates with character FG and BG colours.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTerminal_stub:set(...)
--- (replace lTerminal_stub with your real LTerminal instance above)
-
--- ---- Stub: LTerminal:get -------------------------------------------------
---@api-stub: LTerminal:get
--- Returns the cell data at 1-based coordinates.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTerminal_stub:get(col, row)
--- (replace lTerminal_stub with your real LTerminal instance above)
-
--- ---- Stub: LTerminal:clear -----------------------------------------------
---@api-stub: LTerminal:clear
--- Clears all cells to defaults.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTerminal_stub:clear()
--- (replace lTerminal_stub with your real LTerminal instance above)
-
--- ---- Stub: LTerminal:getDimensions ---------------------------------------
---@api-stub: LTerminal:getDimensions
--- Returns the terminal grid dimensions.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTerminal_stub:getDimensions()  -- -> integer, integer
--- (replace lTerminal_stub with your real LTerminal instance above)
-
--- ---- Stub: LTerminal:addWidget -------------------------------------------
---@api-stub: LTerminal:addWidget
--- Attaches a widget to this terminal.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTerminal_stub:addWidget(widget_ud)
--- (replace lTerminal_stub with your real LTerminal instance above)
-
--- ---- Stub: LTerminal:removeWidget ----------------------------------------
---@api-stub: LTerminal:removeWidget
--- Detaches a widget from this terminal.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTerminal_stub:removeWidget(widget_ud)
--- (replace lTerminal_stub with your real LTerminal instance above)
-
--- ---- Stub: LTerminal:clearWidgets ----------------------------------------
---@api-stub: LTerminal:clearWidgets
--- Detaches all widgets from this terminal.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTerminal_stub:clearWidgets()
--- (replace lTerminal_stub with your real LTerminal instance above)
-
--- ---- Stub: LTerminal:getWidgetCount --------------------------------------
---@api-stub: LTerminal:getWidgetCount
--- Returns the number of attached widgets.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTerminal_stub:getWidgetCount()  -- -> integer
--- (replace lTerminal_stub with your real LTerminal instance above)
-
--- ---- Stub: LTerminal:setFocus --------------------------------------------
---@api-stub: LTerminal:setFocus
--- Sets the focused widget, or clears focus if nil is passed.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTerminal_stub:setFocus(42)
--- (replace lTerminal_stub with your real LTerminal instance above)
-
--- ---- Stub: LTerminal:getFocused ------------------------------------------
---@api-stub: LTerminal:getFocused
--- Returns the currently focused widget, or nil.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTerminal_stub:getFocused()
--- (replace lTerminal_stub with your real LTerminal instance above)
-
--- ---- Stub: LTerminal:keypressed ------------------------------------------
---@api-stub: LTerminal:keypressed
--- Routes a key press to the focused widget and fires callbacks.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTerminal_stub:keypressed("player_score")  -- -> boolean
--- (replace lTerminal_stub with your real LTerminal instance above)
-
--- ---- Stub: LTerminal:textinput -------------------------------------------
---@api-stub: LTerminal:textinput
--- Routes text input to the focused widget and fires callbacks.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTerminal_stub:textinput("Hello, world!")  -- -> boolean
--- (replace lTerminal_stub with your real LTerminal instance above)
-
--- ---- Stub: LTerminal:mousepressed ----------------------------------------
---@api-stub: LTerminal:mousepressed
--- Routes a mouse press to widgets using pixel coordinates.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTerminal_stub:mousepressed(px, py, [button])
--- (replace lTerminal_stub with your real LTerminal instance above)
-
--- ---- Stub: LTerminal:render ----------------------------------------------
---@api-stub: LTerminal:render
--- Renders the terminal grid and widgets as render commands.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTerminal_stub:render([x], [y])
--- (replace lTerminal_stub with your real LTerminal instance above)
-
--- ---- Stub: LTerminal:setFont ---------------------------------------------
---@api-stub: LTerminal:setFont
--- Sets the terminal font by pixel height, snapping to the nearest built-in size.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTerminal_stub:setFont(256)
--- (replace lTerminal_stub with your real LTerminal instance above)
-
--- ---- Stub: LTerminal:setCellSize -----------------------------------------
---@api-stub: LTerminal:setCellSize
--- Sets a per-terminal cell pixel size override, bypassing the font-derived size.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTerminal_stub:setCellSize(64.0, 64.0)
--- (replace lTerminal_stub with your real LTerminal instance above)
-
--- ---- Stub: LTerminal:resetCellSize ---------------------------------------
---@api-stub: LTerminal:resetCellSize
--- Removes the cell size override, restoring font-derived cell dimensions.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTerminal_stub:resetCellSize()
--- (replace lTerminal_stub with your real LTerminal instance above)
-
--- ---- Stub: LTerminal:getCellSize -----------------------------------------
---@api-stub: LTerminal:getCellSize
--- Returns the active cell size override as `{w, h}`, or `nil` if none is set.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTerminal_stub:getCellSize()  -- -> table?
--- (replace lTerminal_stub with your real LTerminal instance above)
-
--- ---- Stub: LTerminal:autoResize ------------------------------------------
---@api-stub: LTerminal:autoResize
--- Resizes the window to exactly fit the terminal grid at the current font size.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTerminal_stub:autoResize()
--- (replace lTerminal_stub with your real LTerminal instance above)
-
--- -----------------------------------------------------------------------------
--- LWidget methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LWidget:setPosition -------------------------------------------
---@api-stub: LWidget:setPosition
--- Sets the widget position from 1-based coordinates.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWidget_stub:setPosition(col, row)
--- (replace lWidget_stub with your real LWidget instance above)
-
--- ---- Stub: LWidget:getPosition -------------------------------------------
---@api-stub: LWidget:getPosition
--- Returns the widget position as 1-based coordinates.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWidget_stub:getPosition()  -- -> integer, integer
--- (replace lWidget_stub with your real LWidget instance above)
-
--- ---- Stub: LWidget:setSize -----------------------------------------------
---@api-stub: LWidget:setSize
--- Sets the widget size in cells.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWidget_stub:setSize(256, 256)
--- (replace lWidget_stub with your real LWidget instance above)
-
--- ---- Stub: LWidget:getSize -----------------------------------------------
---@api-stub: LWidget:getSize
--- Returns the widget size in cells.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWidget_stub:getSize()  -- -> integer, integer
--- (replace lWidget_stub with your real LWidget instance above)
-
--- ---- Stub: LWidget:setVisible --------------------------------------------
---@api-stub: LWidget:setVisible
--- Sets the widget visibility.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWidget_stub:setVisible(true)
--- (replace lWidget_stub with your real LWidget instance above)
-
--- ---- Stub: LWidget:isVisible ---------------------------------------------
---@api-stub: LWidget:isVisible
--- Returns whether the widget is visible.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWidget_stub:isVisible()  -- -> boolean
--- (replace lWidget_stub with your real LWidget instance above)
-
--- ---- Stub: LWidget:setEnabled --------------------------------------------
---@api-stub: LWidget:setEnabled
--- Sets whether the widget accepts input.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWidget_stub:setEnabled(true)
--- (replace lWidget_stub with your real LWidget instance above)
-
--- ---- Stub: LWidget:isEnabled ---------------------------------------------
---@api-stub: LWidget:isEnabled
--- Returns whether the widget accepts input.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWidget_stub:isEnabled()  -- -> boolean
--- (replace lWidget_stub with your real LWidget instance above)
-
--- ---- Stub: LWidget:setTag ------------------------------------------------
---@api-stub: LWidget:setTag
--- Sets the free-form identification tag.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWidget_stub:setTag("enemy")
--- (replace lWidget_stub with your real LWidget instance above)
-
--- ---- Stub: LWidget:getTag ------------------------------------------------
---@api-stub: LWidget:getTag
--- Returns the free-form identification tag.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWidget_stub:getTag()  -- -> string
--- (replace lWidget_stub with your real LWidget instance above)
-
--- ---- Stub: LWidget:setText -----------------------------------------------
---@api-stub: LWidget:setText
--- Sets the text content of a label, button, or text box widget.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWidget_stub:setText("Hello, world!")
--- (replace lWidget_stub with your real LWidget instance above)
-
--- ---- Stub: LWidget:getText -----------------------------------------------
---@api-stub: LWidget:getText
--- Returns the text content of a label, button, or text box widget.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWidget_stub:getText()  -- -> string
--- (replace lWidget_stub with your real LWidget instance above)
-
--- ---- Stub: LWidget:setColor ----------------------------------------------
---@api-stub: LWidget:setColor
--- Sets the colour of a label or border widget.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWidget_stub:setColor(1.0, 0.8, 0.2, [a])
--- (replace lWidget_stub with your real LWidget instance above)
-
--- ---- Stub: LWidget:getColor ----------------------------------------------
---@api-stub: LWidget:getColor
--- Returns the colour of a label or border widget.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWidget_stub:getColor()  -- -> number, number, number, number
--- (replace lWidget_stub with your real LWidget instance above)
-
--- ---- Stub: LWidget:setOnClick --------------------------------------------
---@api-stub: LWidget:setOnClick
--- Registers a click callback for a button widget.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWidget_stub:setOnClick([callback])
--- (replace lWidget_stub with your real LWidget instance above)
-
--- ---- Stub: LWidget:setMaxLength ------------------------------------------
---@api-stub: LWidget:setMaxLength
--- Sets the maximum character length of a text box widget.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWidget_stub:setMaxLength(max_length)
--- (replace lWidget_stub with your real LWidget instance above)
-
--- ---- Stub: LWidget:getMaxLength ------------------------------------------
---@api-stub: LWidget:getMaxLength
--- Returns the maximum character length of a text box widget.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWidget_stub:getMaxLength()  -- -> integer
--- (replace lWidget_stub with your real LWidget instance above)
-
--- ---- Stub: LWidget:setOnChange -------------------------------------------
---@api-stub: LWidget:setOnChange
--- Registers a text change callback for a text box widget.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWidget_stub:setOnChange([callback])
--- (replace lWidget_stub with your real LWidget instance above)
-
--- ---- Stub: LWidget:addItem -----------------------------------------------
---@api-stub: LWidget:addItem
--- Adds an item to a list widget.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWidget_stub:addItem(item)
--- (replace lWidget_stub with your real LWidget instance above)
-
--- ---- Stub: LWidget:removeItem --------------------------------------------
---@api-stub: LWidget:removeItem
--- Removes an item from a list widget by 1-based index.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWidget_stub:removeItem(1)
--- (replace lWidget_stub with your real LWidget instance above)
-
--- ---- Stub: LWidget:clearItems --------------------------------------------
---@api-stub: LWidget:clearItems
--- Removes all items from a list widget.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWidget_stub:clearItems()
--- (replace lWidget_stub with your real LWidget instance above)
-
--- ---- Stub: LWidget:getItemCount ------------------------------------------
---@api-stub: LWidget:getItemCount
--- Returns the number of items in a list widget.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWidget_stub:getItemCount()  -- -> integer
--- (replace lWidget_stub with your real LWidget instance above)
-
--- ---- Stub: LWidget:getItem -----------------------------------------------
---@api-stub: LWidget:getItem
--- Returns a list item by 1-based index.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWidget_stub:getItem(1)  -- -> string
--- (replace lWidget_stub with your real LWidget instance above)
-
--- ---- Stub: LWidget:setSelected -------------------------------------------
---@api-stub: LWidget:setSelected
--- Sets the selected item in a list widget by 1-based index.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWidget_stub:setSelected([index])
--- (replace lWidget_stub with your real LWidget instance above)
-
--- ---- Stub: LWidget:getSelected -------------------------------------------
---@api-stub: LWidget:getSelected
--- Returns the selected item index (1-based) in a list widget, or nil.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWidget_stub:getSelected()  -- -> integer?
--- (replace lWidget_stub with your real LWidget instance above)
-
--- ---- Stub: LWidget:setOnSelect -------------------------------------------
---@api-stub: LWidget:setOnSelect
--- Registers a selection change callback for a list widget.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWidget_stub:setOnSelect([callback])
--- (replace lWidget_stub with your real LWidget instance above)
-
--- ---- Stub: LWidget:setStyle ----------------------------------------------
---@api-stub: LWidget:setStyle
--- Sets the border style of a border widget.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWidget_stub:setStyle(style_name)
--- (replace lWidget_stub with your real LWidget instance above)
-
--- ---- Stub: LWidget:getStyle ----------------------------------------------
---@api-stub: LWidget:getStyle
--- Returns the border style name of a border widget.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWidget_stub:getStyle()  -- -> string
--- (replace lWidget_stub with your real LWidget instance above)
-
--- ---- Stub: LWidget:setTitle ----------------------------------------------
---@api-stub: LWidget:setTitle
--- Sets the title of a border widget.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWidget_stub:setTitle(title)
--- (replace lWidget_stub with your real LWidget instance above)
-
--- ---- Stub: LWidget:getTitle ----------------------------------------------
---@api-stub: LWidget:getTitle
--- Returns the title of a border widget.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWidget_stub:getTitle()  -- -> string
--- (replace lWidget_stub with your real LWidget instance above)
-
--- ---- Stub: LWidget:addChild ----------------------------------------------
---@api-stub: LWidget:addChild
--- Adds a child widget to a panel widget.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWidget_stub:addChild(child_ud)
--- (replace lWidget_stub with your real LWidget instance above)
-
--- ---- Stub: LWidget:removeChild -------------------------------------------
---@api-stub: LWidget:removeChild
--- Removes a child widget from a panel widget.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWidget_stub:removeChild(child_ud)
--- (replace lWidget_stub with your real LWidget instance above)
-
--- ---- Stub: LWidget:clearChildren -----------------------------------------
---@api-stub: LWidget:clearChildren
--- Removes all children from a panel widget.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWidget_stub:clearChildren()
--- (replace lWidget_stub with your real LWidget instance above)
-
--- ---- Stub: LWidget:getChildCount -----------------------------------------
---@api-stub: LWidget:getChildCount
--- Returns the number of children in a panel widget.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWidget_stub:getChildCount()  -- -> integer
--- (replace lWidget_stub with your real LWidget instance above)
-
--- ---- Stub: LWidget:getChild ----------------------------------------------
---@api-stub: LWidget:getChild
--- Returns a child widget from a panel by 1-based index, or nil.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWidget_stub:getChild(1)
--- (replace lWidget_stub with your real LWidget instance above)

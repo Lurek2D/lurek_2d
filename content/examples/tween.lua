@@ -124,7 +124,7 @@ end
 
 -- ── TweenState methods ──
 
---@api-stub: TweenState:tick
+--@api-stub: LTweenState:tick
 -- Advances the tween state by `dt` seconds.
 -- Drive a standalone state when you do not want the engine to own its lifecycle.
 do  -- TweenState:tick
@@ -132,7 +132,7 @@ do  -- TweenState:tick
   function lurek.process(dt) s:tick(dt) end
 end
 
---@api-stub: TweenState:isComplete
+--@api-stub: LTweenState:isComplete
 -- Returns whether the tween state has completed.
 -- Poll inside a process callback to react when a hand-driven state finishes its run.
 do  -- TweenState:isComplete
@@ -143,7 +143,7 @@ do  -- TweenState:isComplete
   end
 end
 
---@api-stub: TweenState:t
+--@api-stub: LTweenState:t
 -- Returns the raw 0..1 playback progress.
 -- Use the raw 0..1 progress when you need the linear input to a custom easing curve.
 do  -- TweenState:t
@@ -153,7 +153,7 @@ do  -- TweenState:t
   lurek.log.debug("raw t=" .. raw, "tween")
 end
 
---@api-stub: TweenState:lerp
+--@api-stub: LTweenState:lerp
 -- Interpolates from `start` to `finish` using the eased tween progress.
 -- Apply the eased progress to a numeric range; one state can drive several lerps per frame.
 do  -- TweenState:lerp
@@ -164,7 +164,7 @@ do  -- TweenState:lerp
   lurek.log.debug("ease x=" .. x .. " y=" .. y, "tween")
 end
 
---@api-stub: TweenState:reset
+--@api-stub: LTweenState:reset
 -- Resets the tween state to elapsed time zero.
 -- Call when you want to replay the same animation without allocating a fresh state object.
 do  -- TweenState:reset
@@ -176,7 +176,7 @@ end
 
 -- ── Tween methods ──
 
---@api-stub: Tween:pause
+--@api-stub: LTween:pause
 -- Pauses this tween; time stops advancing but the tween is not cancelled.
 -- Pause when the player opens a menu so the in-game tween freezes exactly mid-flight.
 do  -- Tween:pause
@@ -185,7 +185,7 @@ do  -- Tween:pause
   tw:pause()
 end
 
---@api-stub: Tween:resume
+--@api-stub: LTween:resume
 -- Resumes a paused tween, continuing from the position where it was paused.
 -- Pair with :pause; :resume picks up exactly where the tween was suspended.
 do  -- Tween:resume
@@ -195,7 +195,7 @@ do  -- Tween:resume
   tw:resume()
 end
 
---@api-stub: Tween:isActive
+--@api-stub: LTween:isActive
 -- Returns true if the tween is still running (not completed or cancelled).
 -- Check before queueing a follow-up to avoid stacking duplicate animations on the same target.
 do  -- Tween:isActive
@@ -206,7 +206,7 @@ do  -- Tween:isActive
   end
 end
 
---@api-stub: Tween:getProgress
+--@api-stub: LTween:getProgress
 -- Returns raw 0..1 playback progress (not eased, not accounting for yoyo).
 -- Pair with isActive to drive a UI element like a loading bar that mirrors the tween.
 do  -- Tween:getProgress
@@ -216,7 +216,7 @@ do  -- Tween:getProgress
   lurek.log.debug("loading=" .. p, "ui")
 end
 
---@api-stub: Tween:setRepeat
+--@api-stub: LTween:setRepeat
 -- Sets the number of extra play cycles after the first (0 = play once, -1 = infinite).
 -- Pass -1 for infinite; useful for idle loops like a heartbeat glow or a beacon flash.
 do  -- Tween:setRepeat
@@ -225,7 +225,7 @@ do  -- Tween:setRepeat
   tw:setRepeat(-1)
 end
 
---@api-stub: Tween:setYoyo
+--@api-stub: LTween:setYoyo
 -- Enables or disables yoyo (ping-pong) on each repeat cycle.
 -- Combine with setRepeat so the value bounces back-and-forth rather than snapping to start.
 do  -- Tween:setYoyo
@@ -238,7 +238,7 @@ end
 
 -- ── TweenSequence methods ──
 
---@api-stub: TweenSequence:cancel
+--@api-stub: LTweenSequence:cancel
 -- Cancels the sequence and stops all pending steps.
 -- Stop a chained intro animation when the player skips the cinematic mid-playback.
 do  -- TweenSequence:cancel
@@ -247,7 +247,7 @@ do  -- TweenSequence:cancel
   seq:cancel()
 end
 
---@api-stub: TweenSequence:isActive
+--@api-stub: LTweenSequence:isActive
 -- Returns true if the sequence has been started and has not yet completed.
 -- Gate input on isActive so the player cannot interrupt a critical mid-sequence step.
 do  -- TweenSequence:isActive
@@ -261,7 +261,7 @@ end
 
 -- ── TweenParallel methods ──
 
---@api-stub: TweenParallel:cancel
+--@api-stub: LTweenParallel:cancel
 -- Cancels the parallel group immediately.
 -- Cancel the group as a unit; do not iterate child tweens and cancel them one at a time.
 do  -- TweenParallel:cancel
@@ -273,7 +273,7 @@ do  -- TweenParallel:cancel
   par:cancel()
 end
 
---@api-stub: TweenParallel:isActive
+--@api-stub: LTweenParallel:isActive
 -- Returns true if the parallel is running and not yet complete.
 -- Check before chaining a follow-up so two groups do not race each other on shared fields.
 do  -- TweenParallel:isActive
@@ -290,7 +290,7 @@ end
 
 -- ── Spring methods ──
 
---@api-stub: Spring:update
+--@api-stub: LSpring:update
 -- Advances the spring by `dt` seconds and writes positions to the target table.
 -- Tick manually only when you skipped lurek.tween.update; otherwise let the engine drive it.
 do  -- Spring:update
@@ -299,7 +299,7 @@ do  -- Spring:update
   function lurek.process(dt) sp:update(dt) end
 end
 
---@api-stub: Spring:isSettled
+--@api-stub: LSpring:isSettled
 -- Returns `true` when all spring axes have converged within `precision`.
 -- Detect convergence by precision rather than by waiting on a fixed duration as with tweens.
 do  -- Spring:isSettled
@@ -310,7 +310,7 @@ do  -- Spring:isSettled
   end
 end
 
---@api-stub: Spring:isActive
+--@api-stub: LSpring:isActive
 -- Returns `true` if the spring has not been cancelled or settled.
 -- isActive flips false after the spring settles or is cancelled; safer than checking isSettled.
 do  -- Spring:isActive
@@ -321,7 +321,7 @@ do  -- Spring:isActive
   end
 end
 
---@api-stub: Spring:setTarget
+--@api-stub: LSpring:setTarget
 -- Updates target values for all fields present in `fields_table`.
 -- Update mid-flight to chase a moving point; the spring keeps its current velocity for smoothness.
 do  -- Spring:setTarget
@@ -330,7 +330,7 @@ do  -- Spring:setTarget
   sp:setTarget({ x = 480, y = 240 })
 end
 
---@api-stub: Spring:setStiffness
+--@api-stub: LSpring:setStiffness
 -- Updates the stiffness constant on all axes.
 -- Higher stiffness reaches the target faster but overshoots more unless damping rises with it.
 do  -- Spring:setStiffness
@@ -339,7 +339,7 @@ do  -- Spring:setStiffness
   sp:setStiffness(240)
 end
 
---@api-stub: Spring:setDamping
+--@api-stub: LSpring:setDamping
 -- Updates the damping coefficient on all axes.
 -- Raise damping alongside stiffness to keep the spring near-critical; under-damped springs ring.
 do  -- Spring:setDamping
@@ -348,7 +348,7 @@ do  -- Spring:setDamping
   sp:setDamping(24)
 end
 
---@api-stub: Spring:cancel
+--@api-stub: LSpring:cancel
 -- Stops the spring.
 -- Cancel does not snap the field to the target; clamp the value yourself if you need it landed.
 do  -- Spring:cancel
@@ -357,7 +357,7 @@ do  -- Spring:cancel
   sp:cancel()
 end
 
---@api-stub: Spring:getPosition
+--@api-stub: LSpring:getPosition
 -- Returns the current interpolated position for the named field, or `nil`.
 -- Returns nil for unknown field names; useful for debug overlays without writing to the table.
 do  -- Spring:getPosition
@@ -370,7 +370,7 @@ do  -- Spring:getPosition
 end
 
 -- ---- Stub: Spring:type ---------------------------------------------------
---@api-stub: Spring:type
+--@api-stub: LSpring:type
 do  -- Spring:type
   local cam = { x = 0 }
   local sp = lurek.tween.spring(cam, { x = 320 })
@@ -378,7 +378,7 @@ do  -- Spring:type
 end
 
 -- ---- Stub: Spring:typeOf -------------------------------------------------
---@api-stub: Spring:typeOf
+--@api-stub: LSpring:typeOf
 do  -- Spring:typeOf
   local cam = { x = 0 }
   local sp = lurek.tween.spring(cam, { x = 320 })
@@ -390,7 +390,7 @@ end
 -- -----------------------------------------------------------------------------
 
 -- ---- Stub: Tween:onComplete ----------------------------------------------
---@api-stub: Tween:onComplete
+--@api-stub: LTween:onComplete
 do  -- Tween:onComplete
   local box = { x = 0 }
   -- onComplete registers a callback; tween auto-starts via lurek.tween.tween.
@@ -400,7 +400,7 @@ do  -- Tween:onComplete
 end
 
 -- ---- Stub: Tween:onUpdate ------------------------------------------------
---@api-stub: Tween:onUpdate
+--@api-stub: LTween:onUpdate
 do  -- Tween:onUpdate
   local box = { x = 0 }
   lurek.tween.tween(0.5, box, { x = 100 }):onUpdate(function(t)
@@ -409,7 +409,7 @@ do  -- Tween:onUpdate
 end
 
 -- ---- Stub: Tween:onCancel ------------------------------------------------
---@api-stub: Tween:onCancel
+--@api-stub: LTween:onCancel
 do  -- Tween:onCancel
   local box = { x = 0 }
   local tw = lurek.tween.tween(0.5, box, { x = 100 })
@@ -418,7 +418,7 @@ do  -- Tween:onCancel
 end
 
 -- ---- Stub: Tween:type ----------------------------------------------------
---@api-stub: Tween:type
+--@api-stub: LTween:type
 do  -- Tween:type
   local box = { x = 0 }
   local tw = lurek.tween.tween(0.5, box, { x = 100 })
@@ -426,7 +426,7 @@ do  -- Tween:type
 end
 
 -- ---- Stub: Tween:typeOf --------------------------------------------------
---@api-stub: Tween:typeOf
+--@api-stub: LTween:typeOf
 do  -- Tween:typeOf
   local box = { x = 0 }
   local tw = lurek.tween.tween(0.5, box, { x = 100 })
@@ -438,7 +438,7 @@ end
 -- -----------------------------------------------------------------------------
 
 -- ---- Stub: TweenParallel:add ---------------------------------------------
---@api-stub: TweenParallel:add
+--@api-stub: LTweenParallel:add
 do  -- TweenParallel:add
   local a = { x = 0 }
   local b = { y = 0 }
@@ -450,7 +450,7 @@ do  -- TweenParallel:add
 end
 
 -- ---- Stub: TweenParallel:onComplete --------------------------------------
---@api-stub: TweenParallel:onComplete
+--@api-stub: LTweenParallel:onComplete
 do  -- TweenParallel:onComplete
   local actor = { x = 0, alpha = 1 }
   lurek.tween.parallel()
@@ -461,14 +461,14 @@ do  -- TweenParallel:onComplete
 end
 
 -- ---- Stub: TweenParallel:type --------------------------------------------
---@api-stub: TweenParallel:type
+--@api-stub: LTweenParallel:type
 do  -- TweenParallel:type
   local par = lurek.tween.parallel()
   assert(par:type() == "TweenParallel")
 end
 
 -- ---- Stub: TweenParallel:typeOf ------------------------------------------
---@api-stub: TweenParallel:typeOf
+--@api-stub: LTweenParallel:typeOf
 do  -- TweenParallel:typeOf
   local par = lurek.tween.parallel()
   assert(par:typeOf("TweenParallel") == true)
@@ -479,7 +479,7 @@ end
 -- -----------------------------------------------------------------------------
 
 -- ---- Stub: TweenSequence:callback ----------------------------------------
---@api-stub: TweenSequence:callback
+--@api-stub: LTweenSequence:callback
 do  -- TweenSequence:callback
   local door = { y = 0 }
   lurek.tween.sequence()
@@ -490,7 +490,7 @@ do  -- TweenSequence:callback
 end
 
 -- ---- Stub: TweenSequence:onComplete --------------------------------------
---@api-stub: TweenSequence:onComplete
+--@api-stub: LTweenSequence:onComplete
 do  -- TweenSequence:onComplete
   local door = { y = 0 }
   lurek.tween.sequence()
@@ -500,14 +500,14 @@ do  -- TweenSequence:onComplete
 end
 
 -- ---- Stub: TweenSequence:type --------------------------------------------
---@api-stub: TweenSequence:type
+--@api-stub: LTweenSequence:type
 do  -- TweenSequence:type
   local seq = lurek.tween.sequence()
   assert(seq:type() == "TweenSequence")
 end
 
 -- ---- Stub: TweenSequence:typeOf ------------------------------------------
---@api-stub: TweenSequence:typeOf
+--@api-stub: LTweenSequence:typeOf
 do  -- TweenSequence:typeOf
   local seq = lurek.tween.sequence()
   assert(seq:typeOf("TweenSequence") == true)
@@ -521,79 +521,6 @@ end
 -- The final committed file must contain ZERO --@api-stub: lines.
 -- =============================================================================
 
--- -----------------------------------------------------------------------------
--- LSpring methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LSpring:update ------------------------------------------------
---@api-stub: LSpring:update
--- Advances the spring by `dt` seconds and writes positions to the target table.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSpring_stub:update(0.016)  -- -> boolean
--- (replace lSpring_stub with your real LSpring instance above)
-
--- ---- Stub: LSpring:isSettled ---------------------------------------------
---@api-stub: LSpring:isSettled
--- Returns `true` when all spring axes have converged within `precision`.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSpring_stub:isSettled()  -- -> boolean
--- (replace lSpring_stub with your real LSpring instance above)
-
--- ---- Stub: LSpring:isActive ----------------------------------------------
---@api-stub: LSpring:isActive
--- Returns `true` if the spring has not been cancelled or settled.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSpring_stub:isActive()  -- -> boolean
--- (replace lSpring_stub with your real LSpring instance above)
-
--- ---- Stub: LSpring:setTarget ---------------------------------------------
---@api-stub: LSpring:setTarget
--- Updates target values for all fields present in `fields_table`.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSpring_stub:setTarget(fields_tbl)
--- (replace lSpring_stub with your real LSpring instance above)
-
--- ---- Stub: LSpring:setStiffness ------------------------------------------
---@api-stub: LSpring:setStiffness
--- Updates the stiffness constant on all axes.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSpring_stub:setStiffness(42)
--- (replace lSpring_stub with your real LSpring instance above)
-
--- ---- Stub: LSpring:setDamping --------------------------------------------
---@api-stub: LSpring:setDamping
--- Updates the damping coefficient on all axes.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSpring_stub:setDamping(42)
--- (replace lSpring_stub with your real LSpring instance above)
-
--- ---- Stub: LSpring:cancel ------------------------------------------------
---@api-stub: LSpring:cancel
--- Stops the spring. The engine will drop it on the next `update(dt)` call.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSpring_stub:cancel()
--- (replace lSpring_stub with your real LSpring instance above)
-
--- ---- Stub: LSpring:getPosition -------------------------------------------
---@api-stub: LSpring:getPosition
--- Returns the current interpolated position for the named field, or `nil`.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSpring_stub:getPosition(field)  -- -> number?
--- (replace lSpring_stub with your real LSpring instance above)
-
--- ---- Stub: LSpring:type --------------------------------------------------
---@api-stub: LSpring:type
--- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSpring_stub:type()  -- -> string
--- (replace lSpring_stub with your real LSpring instance above)
-
--- ---- Stub: LSpring:typeOf ------------------------------------------------
---@api-stub: LSpring:typeOf
--- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSpring_stub:typeOf("hero")  -- -> boolean
--- (replace lSpring_stub with your real LSpring instance above)
 
 -- -----------------------------------------------------------------------------
 -- LTween methods
@@ -606,93 +533,9 @@ end
 -- lTween_stub:cancel(ud)
 -- (replace lTween_stub with your real LTween instance above)
 
--- ---- Stub: LTween:pause --------------------------------------------------
---@api-stub: LTween:pause
--- Pauses this tween; time stops advancing but the tween is not cancelled.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTween_stub:pause()
--- (replace lTween_stub with your real LTween instance above)
-
--- ---- Stub: LTween:resume -------------------------------------------------
---@api-stub: LTween:resume
--- Resumes a paused tween, continuing from the position where it was paused.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTween_stub:resume()
--- (replace lTween_stub with your real LTween instance above)
-
--- ---- Stub: LTween:isActive -----------------------------------------------
---@api-stub: LTween:isActive
--- Returns true if the tween is still running (not completed or cancelled).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTween_stub:isActive()  -- -> boolean
--- (replace lTween_stub with your real LTween instance above)
-
--- ---- Stub: LTween:getProgress --------------------------------------------
---@api-stub: LTween:getProgress
--- Returns raw 0..1 playback progress (not eased, not accounting for yoyo).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTween_stub:getProgress()  -- -> number
--- (replace lTween_stub with your real LTween instance above)
-
--- ---- Stub: LTween:setRepeat ----------------------------------------------
---@api-stub: LTween:setRepeat
--- Sets the number of extra play cycles after the first (0 = play once, -1 = infinite).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTween_stub:setRepeat(5)
--- (replace lTween_stub with your real LTween instance above)
-
--- ---- Stub: LTween:setYoyo ------------------------------------------------
---@api-stub: LTween:setYoyo
--- Enables or disables yoyo (ping-pong) on each repeat cycle.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTween_stub:setYoyo(true)
--- (replace lTween_stub with your real LTween instance above)
-
--- ---- Stub: LTween:onComplete ---------------------------------------------
---@api-stub: LTween:onComplete
--- Sets a callback to fire when the tween finishes all cycles. Returns self for chaining.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTween_stub:onComplete(ud, f)  -- -> Tween
--- (replace lTween_stub with your real LTween instance above)
-
--- ---- Stub: LTween:onUpdate -----------------------------------------------
---@api-stub: LTween:onUpdate
--- Sets a callback called every tick with the current eased `t` (0..=1). Returns self.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTween_stub:onUpdate(ud, f)  -- -> Tween
--- (replace lTween_stub with your real LTween instance above)
-
--- ---- Stub: LTween:onCancel -----------------------------------------------
---@api-stub: LTween:onCancel
--- Sets a callback called when the tween is cancelled. Returns self.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTween_stub:onCancel(ud, f)  -- -> Tween
--- (replace lTween_stub with your real LTween instance above)
-
--- ---- Stub: LTween:type ---------------------------------------------------
---@api-stub: LTween:type
--- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTween_stub:type()  -- -> string
--- (replace lTween_stub with your real LTween instance above)
-
--- ---- Stub: LTween:typeOf -------------------------------------------------
---@api-stub: LTween:typeOf
--- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTween_stub:typeOf("hero")  -- -> boolean
--- (replace lTween_stub with your real LTween instance above)
-
 -- -----------------------------------------------------------------------------
 -- LTweenParallel methods
 -- -----------------------------------------------------------------------------
-
--- ---- Stub: LTweenParallel:add --------------------------------------------
---@api-stub: LTweenParallel:add
--- Adds an existing LuaTween to the parallel group; marks the tween as owned.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTweenParallel_stub:add(par_ud, tw_ud)
--- (replace lTweenParallel_stub with your real LTweenParallel instance above)
 
 -- ---- Stub: LTweenParallel:tween ------------------------------------------
 --@api-stub: LTweenParallel:tween
@@ -706,41 +549,6 @@ end
 -- Marks the parallel as active. Returns self.
 -- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
 -- lTweenParallel_stub:start(ud)  -- -> TweenParallel
--- (replace lTweenParallel_stub with your real LTweenParallel instance above)
-
--- ---- Stub: LTweenParallel:cancel -----------------------------------------
---@api-stub: LTweenParallel:cancel
--- Cancels the parallel group immediately.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTweenParallel_stub:cancel()
--- (replace lTweenParallel_stub with your real LTweenParallel instance above)
-
--- ---- Stub: LTweenParallel:isActive ---------------------------------------
---@api-stub: LTweenParallel:isActive
--- Returns true if the parallel is running and not yet complete.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTweenParallel_stub:isActive()  -- -> boolean
--- (replace lTweenParallel_stub with your real LTweenParallel instance above)
-
--- ---- Stub: LTweenParallel:onComplete -------------------------------------
---@api-stub: LTweenParallel:onComplete
--- Sets a callback fired when all child tweens finish. Returns self.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTweenParallel_stub:onComplete(ud, f)  -- -> TweenParallel
--- (replace lTweenParallel_stub with your real LTweenParallel instance above)
-
--- ---- Stub: LTweenParallel:type -------------------------------------------
---@api-stub: LTweenParallel:type
--- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTweenParallel_stub:type()  -- -> string
--- (replace lTweenParallel_stub with your real LTweenParallel instance above)
-
--- ---- Stub: LTweenParallel:typeOf -----------------------------------------
---@api-stub: LTweenParallel:typeOf
--- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTweenParallel_stub:typeOf("hero")  -- -> boolean
 -- (replace lTweenParallel_stub with your real LTweenParallel instance above)
 
 -- -----------------------------------------------------------------------------
@@ -761,13 +569,6 @@ end
 -- lTweenSequence_stub:delay(ud, seconds, [cb])  -- -> TweenSequence
 -- (replace lTweenSequence_stub with your real LTweenSequence instance above)
 
--- ---- Stub: LTweenSequence:callback ---------------------------------------
---@api-stub: LTweenSequence:callback
--- Appends an immediate callback step. Returns self.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTweenSequence_stub:callback(ud, f)  -- -> TweenSequence
--- (replace lTweenSequence_stub with your real LTweenSequence instance above)
-
 -- ---- Stub: LTweenSequence:start ------------------------------------------
 --@api-stub: LTweenSequence:start
 -- Marks the sequence as active so `lurek.tween.update(dt)` begins ticking it. Returns self.
@@ -775,79 +576,9 @@ end
 -- lTweenSequence_stub:start(ud)  -- -> TweenSequence
 -- (replace lTweenSequence_stub with your real LTweenSequence instance above)
 
--- ---- Stub: LTweenSequence:cancel -----------------------------------------
---@api-stub: LTweenSequence:cancel
--- Cancels the sequence and stops all pending steps.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTweenSequence_stub:cancel()
--- (replace lTweenSequence_stub with your real LTweenSequence instance above)
-
--- ---- Stub: LTweenSequence:isActive ---------------------------------------
---@api-stub: LTweenSequence:isActive
--- Returns true if the sequence has been started and has not yet completed.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTweenSequence_stub:isActive()  -- -> boolean
--- (replace lTweenSequence_stub with your real LTweenSequence instance above)
-
--- ---- Stub: LTweenSequence:onComplete -------------------------------------
---@api-stub: LTweenSequence:onComplete
--- Sets a callback fired when all steps complete. Returns self.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTweenSequence_stub:onComplete(ud, f)  -- -> TweenSequence
--- (replace lTweenSequence_stub with your real LTweenSequence instance above)
-
--- ---- Stub: LTweenSequence:type -------------------------------------------
---@api-stub: LTweenSequence:type
--- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTweenSequence_stub:type()  -- -> string
--- (replace lTweenSequence_stub with your real LTweenSequence instance above)
-
--- ---- Stub: LTweenSequence:typeOf -----------------------------------------
---@api-stub: LTweenSequence:typeOf
--- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTweenSequence_stub:typeOf("hero")  -- -> boolean
--- (replace lTweenSequence_stub with your real LTweenSequence instance above)
-
 -- -----------------------------------------------------------------------------
 -- LTweenState methods
 -- -----------------------------------------------------------------------------
-
--- ---- Stub: LTweenState:tick ----------------------------------------------
---@api-stub: LTweenState:tick
--- Advances the tween state by `dt` seconds.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTweenState_stub:tick(0.016)  -- -> boolean
--- (replace lTweenState_stub with your real LTweenState instance above)
-
--- ---- Stub: LTweenState:isComplete ----------------------------------------
---@api-stub: LTweenState:isComplete
--- Returns whether the tween state has completed.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTweenState_stub:isComplete()  -- -> boolean
--- (replace lTweenState_stub with your real LTweenState instance above)
-
--- ---- Stub: LTweenState:t -------------------------------------------------
---@api-stub: LTweenState:t
--- Returns the raw 0..1 playback progress.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTweenState_stub:t()  -- -> number
--- (replace lTweenState_stub with your real LTweenState instance above)
-
--- ---- Stub: LTweenState:lerp ----------------------------------------------
---@api-stub: LTweenState:lerp
--- Interpolates from `start` to `finish` using the eased tween progress.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTweenState_stub:lerp(start, finish)  -- -> number
--- (replace lTweenState_stub with your real LTweenState instance above)
-
--- ---- Stub: LTweenState:reset ---------------------------------------------
---@api-stub: LTweenState:reset
--- Resets the tween state to elapsed time zero.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTweenState_stub:reset()
--- (replace lTweenState_stub with your real LTweenState instance above)
 
 -- ---- Stub: LTweenState:type ----------------------------------------------
 --@api-stub: LTweenState:type

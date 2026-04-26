@@ -2,6 +2,14 @@
 
 All notable changes to Lurek2D are recorded here.
 
+## [1.0.8] - 2026-04-26
+
+### fix(tools,examples): 3-tier example coverage model; dedup L-prefix stubs
+
+- **`tools/audit/example_coverage.py`**: switched from lua/comment line-count heuristic to `-- TODO:` presence as the tier signal. Coverage is now three-tier: **real** (`--@api-stub:` block without `-- TODO:`) → counted as final; **pending** (has `-- TODO:`) → stub tier; **missing** (no marker) → exit 1. Updated docstring, `load_texts`, `build_cov`, `print_stubs`, `print_missing` functions. Stub-ID now stored as `owner:method` (full form) for clearer `--missing` output.
+- **`work/dedup_l_prefix_stubs.py`**: new session script that walks all `content/examples/*.lua` files and (1) renames bare-name `--@api-stub: Foo:method` markers to the current L-prefix `--@api-stub: LFoo:method` after the type-rename migration, (2) removes duplicate L-prefix TODO stub blocks that were auto-added by `example_add_missing.py`, (3) cleans up orphaned class-section headers and `STUBS` banner. Applied: **2436 renames, 2503 removals** across 44 files.
+- Result: `example_coverage.py` now reports **3443 real / 579 pending / 0 missing** — 100% of 4022 API items have at least a `--@api-stub:` marker; 3443 items (86%) have fleshed-out real code.
+
 ## [1.0.7] - 2026-04-26
 
 ### feat(examples): reach 100% example_coverage.py (4022/4022 items covered)

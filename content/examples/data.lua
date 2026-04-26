@@ -180,7 +180,7 @@ end
 
 -- ── RingBuffer methods ──
 
---@api-stub: RingBuffer:push
+--@api-stub: LRingBuffer:push
 -- Pushes a value onto the ring buffer.
 -- When the buffer is full the oldest element is dropped silently — read len() before pushing if you need to detect that.
 do  -- RingBuffer:push
@@ -190,7 +190,7 @@ do  -- RingBuffer:push
   lurek.log.info("samples buffered: " .. frame_times:len(), "perf")
 end
 
---@api-stub: RingBuffer:pop
+--@api-stub: LRingBuffer:pop
 -- Removes and returns the oldest element, or nil if the buffer is empty.
 -- FIFO order; pair with push() to use the buffer as a bounded job queue.
 do  -- RingBuffer:pop
@@ -200,7 +200,7 @@ do  -- RingBuffer:pop
   lurek.log.info("running job: " .. tostring(next_job), "jobs")
 end
 
---@api-stub: RingBuffer:peek
+--@api-stub: LRingBuffer:peek
 -- Returns the oldest element without removing it, or nil if empty.
 -- Use to inspect the head of a queue (e.g. preview the next replay event) without consuming it.
 do  -- RingBuffer:peek
@@ -210,7 +210,7 @@ do  -- RingBuffer:peek
   lurek.log.info("next event kind=" .. head.kind, "replay")
 end
 
---@api-stub: RingBuffer:peekNewest
+--@api-stub: LRingBuffer:peekNewest
 -- Returns the newest element without removing it, or nil if empty.
 -- Handy for "most recent input" queries — e.g. checking the last keypress for combo detection.
 do  -- RingBuffer:peekNewest
@@ -219,7 +219,7 @@ do  -- RingBuffer:peekNewest
   lurek.log.info("last input: " .. tostring(recent:peekNewest()), "input")
 end
 
---@api-stub: RingBuffer:len
+--@api-stub: LRingBuffer:len
 -- Returns the number of elements currently in the buffer.
 -- Use before peek/pop to avoid nil returns; capped at capacity().
 do  -- RingBuffer:len
@@ -228,7 +228,7 @@ do  -- RingBuffer:len
   if rb:len() >= 3 then lurek.log.info("buffered enough samples", "data") end
 end
 
---@api-stub: RingBuffer:capacity
+--@api-stub: LRingBuffer:capacity
 -- Returns the maximum number of elements the buffer can hold.
 -- Constant for the lifetime of the buffer — useful for percent-full diagnostics.
 do  -- RingBuffer:capacity
@@ -238,7 +238,7 @@ do  -- RingBuffer:capacity
   lurek.log.info(string.format("buffer %.1f%% full", pct), "perf")
 end
 
---@api-stub: RingBuffer:isEmpty
+--@api-stub: LRingBuffer:isEmpty
 -- Returns true if the buffer contains no elements.
 -- Cheaper than len() == 0 in hot loops; idiomatic guard before pop().
 do  -- RingBuffer:isEmpty
@@ -248,7 +248,7 @@ do  -- RingBuffer:isEmpty
   end
 end
 
---@api-stub: RingBuffer:clear
+--@api-stub: LRingBuffer:clear
 -- Removes all elements from the buffer, releasing their registry entries.
 -- Call on scene transition to release Lua references the buffer is keeping alive.
 do  -- RingBuffer:clear
@@ -258,7 +258,7 @@ do  -- RingBuffer:clear
   lurek.log.info("trail cleared, len=" .. trail:len(), "fx")
 end
 
---@api-stub: RingBuffer:toTable
+--@api-stub: LRingBuffer:toTable
 -- Returns all elements as an array table ordered oldest-first.
 -- Use for snapshotting state into a save file or feeding the contents to a Lua `for ipairs` consumer.
 do  -- RingBuffer:toTable
@@ -270,7 +270,7 @@ end
 
 -- ── DataView methods ──
 
---@api-stub: DataView:getUInt8
+--@api-stub: LDataView:getUInt8
 -- Reads an unsigned 8-bit integer at the given offset.
 -- Offsets are 0-based; out-of-range reads raise an error rather than returning garbage.
 do  -- DataView:getUInt8
@@ -279,7 +279,7 @@ do  -- DataView:getUInt8
   lurek.log.info("first byte = " .. first, "data")
 end
 
---@api-stub: DataView:getInt8
+--@api-stub: LDataView:getInt8
 -- Reads a signed 8-bit integer at the given offset.
 -- Two's-complement: 0xFF reads back as -1; pair with getUInt8 if you need unsigned semantics.
 do  -- DataView:getInt8
@@ -288,7 +288,7 @@ do  -- DataView:getInt8
   lurek.log.info("signed byte = " .. v, "data")
 end
 
---@api-stub: DataView:getInt16
+--@api-stub: LDataView:getInt16
 -- Reads a signed 16-bit integer at the given offset.
 -- Endianness follows whatever the underlying buffer uses; default DataView reads are little-endian.
 do  -- DataView:getInt16
@@ -297,7 +297,7 @@ do  -- DataView:getInt16
   lurek.log.info("signed16 = " .. v, "data")
 end
 
---@api-stub: DataView:getUInt16
+--@api-stub: LDataView:getUInt16
 -- Reads an unsigned 16-bit integer at the given offset.
 -- Common for tile IDs, sprite indices, or 16-bit colour channels packed into a binary asset.
 do  -- DataView:getUInt16
@@ -306,7 +306,7 @@ do  -- DataView:getUInt16
   lurek.log.info(string.format("u16 = 0x%04X", v), "data")
 end
 
---@api-stub: DataView:getInt32
+--@api-stub: LDataView:getInt32
 -- Reads a signed 32-bit integer at the given offset.
 -- Use for chunk lengths or world coordinates; for unsigned IDs prefer getUInt32 to avoid sign-bit surprises.
 do  -- DataView:getInt32
@@ -315,7 +315,7 @@ do  -- DataView:getInt32
   lurek.log.info("signed32 = " .. v, "data")
 end
 
---@api-stub: DataView:getUInt32
+--@api-stub: LDataView:getUInt32
 -- Reads an unsigned 32-bit integer at the given offset.
 -- Returned as a Lua integer; safe to compare against magic constants like 0x4C524B32.
 do  -- DataView:getUInt32
@@ -324,7 +324,7 @@ do  -- DataView:getUInt32
   if magic == 0x4C524B32 then lurek.log.info("save magic ok", "save") end
 end
 
---@api-stub: DataView:getFloat
+--@api-stub: LDataView:getFloat
 -- Reads a 32-bit float at the given offset.
 -- Returned as a Lua number (f64-promoted); fine for storing positions, rotations, or normalised colour channels.
 do  -- DataView:getFloat
@@ -333,7 +333,7 @@ do  -- DataView:getFloat
   lurek.log.info(string.format("f32 = %.4f", v), "data")
 end
 
---@api-stub: DataView:getDouble
+--@api-stub: LDataView:getDouble
 -- Reads a 64-bit float at the given offset.
 -- Use for high-precision values like timestamps, accumulated game time, or world-space simulation state.
 do  -- DataView:getDouble
@@ -342,7 +342,7 @@ do  -- DataView:getDouble
   lurek.log.info("timestamp = " .. t, "data")
 end
 
---@api-stub: DataView:getSize
+--@api-stub: LDataView:getSize
 -- Returns the size of this view in bytes.
 -- Loop bound for streaming readers; the view never extends past this even if the source string is longer.
 do  -- DataView:getSize
@@ -354,7 +354,7 @@ end
 
 -- ── DataWriter methods ──
 
---@api-stub: DataWriter:writeU8
+--@api-stub: LDataWriter:writeU8
 -- Writes an unsigned 8-bit integer.
 -- Cursor advances by 1 byte; value must fit in [0, 255] or mlua coerces / errors.
 do  -- DataWriter:writeU8
@@ -363,7 +363,7 @@ do  -- DataWriter:writeU8
   lurek.log.info("wrote " .. w:len() .. " bytes", "data")
 end
 
---@api-stub: DataWriter:writeI8
+--@api-stub: LDataWriter:writeI8
 -- Writes a signed 8-bit integer.
 -- Range [-128, 127]; useful for compact deltas like per-frame velocity tweaks.
 do  -- DataWriter:writeI8
@@ -372,7 +372,7 @@ do  -- DataWriter:writeI8
   lurek.log.info("signed bytes len=" .. w:len(), "data")
 end
 
---@api-stub: DataWriter:writeU16LE
+--@api-stub: LDataWriter:writeU16LE
 -- Writes an unsigned 16-bit LE integer.
 -- Standard layout for most binary save formats and network packets in this engine.
 do  -- DataWriter:writeU16LE
@@ -381,7 +381,7 @@ do  -- DataWriter:writeU16LE
   lurek.log.info("resolution record = " .. w:len() .. " bytes", "data")
 end
 
---@api-stub: DataWriter:writeU16BE
+--@api-stub: LDataWriter:writeU16BE
 -- Writes an unsigned 16-bit BE integer.
 -- Use when interoperating with network protocols or file formats that mandate big-endian (PNG chunks, BMP fields).
 do  -- DataWriter:writeU16BE
@@ -390,7 +390,7 @@ do  -- DataWriter:writeU16BE
   lurek.log.info("BE bytes hex = " .. lurek.data.encode("hex", w:toBytes()), "data")
 end
 
---@api-stub: DataWriter:writeI16LE
+--@api-stub: LDataWriter:writeI16LE
 -- Writes a signed 16-bit LE integer.
 -- Range [-32768, 32767]; ideal for tile-grid offsets or audio sample data.
 do  -- DataWriter:writeI16LE
@@ -399,7 +399,7 @@ do  -- DataWriter:writeI16LE
   lurek.log.info("signed16 record = " .. w:len() .. " bytes", "data")
 end
 
---@api-stub: DataWriter:writeU32LE
+--@api-stub: LDataWriter:writeU32LE
 -- Writes an unsigned 32-bit LE integer.
 -- Common for entity IDs, file offsets, and 32-bit colour values (RGBA8).
 do  -- DataWriter:writeU32LE
@@ -408,7 +408,7 @@ do  -- DataWriter:writeU32LE
   lurek.log.info("magic written, len=" .. w:len(), "save")
 end
 
---@api-stub: DataWriter:writeI32LE
+--@api-stub: LDataWriter:writeI32LE
 -- Writes a signed 32-bit LE integer.
 -- Use for world coordinates that may go negative or for accumulator deltas.
 do  -- DataWriter:writeI32LE
@@ -417,7 +417,7 @@ do  -- DataWriter:writeI32LE
   lurek.log.info("delta record bytes=" .. w:len(), "data")
 end
 
---@api-stub: DataWriter:writeF32LE
+--@api-stub: LDataWriter:writeF32LE
 -- Writes a 32-bit LE float.
 -- Half the size of f64 with enough precision for positions and per-vertex attributes.
 do  -- DataWriter:writeF32LE
@@ -426,7 +426,7 @@ do  -- DataWriter:writeF32LE
   lurek.log.info("vec2 bytes=" .. w:len(), "data")
 end
 
---@api-stub: DataWriter:writeF64LE
+--@api-stub: LDataWriter:writeF64LE
 -- Writes a 64-bit LE float.
 -- Use for timestamps, simulation time, or any value where f32 rounding would be visible.
 do  -- DataWriter:writeF64LE
@@ -435,7 +435,7 @@ do  -- DataWriter:writeF64LE
   lurek.log.info("timestamp record bytes=" .. w:len(), "save")
 end
 
---@api-stub: DataWriter:writeString
+--@api-stub: LDataWriter:writeString
 -- Writes a length-prefixed UTF-8 string (4-byte LE length + bytes).
 -- Self-describing — pairs with a matching `str` token in lurek.data.read for round-trip parsing.
 do  -- DataWriter:writeString
@@ -444,7 +444,7 @@ do  -- DataWriter:writeString
   lurek.log.info("string record total bytes=" .. w:len(), "save")
 end
 
---@api-stub: DataWriter:writeBytes
+--@api-stub: LDataWriter:writeBytes
 -- Writes raw bytes from a Lua string.
 -- No length prefix — caller is responsible for tracking the size separately if it needs to be read back.
 do  -- DataWriter:writeBytes
@@ -453,7 +453,7 @@ do  -- DataWriter:writeBytes
   lurek.log.info("raw bytes hex=" .. lurek.data.encode("hex", w:toBytes()), "data")
 end
 
---@api-stub: DataWriter:seek
+--@api-stub: LDataWriter:seek
 -- Moves the write cursor to the given position.
 -- Use for back-patching a length or checksum field after writing the payload it covers.
 do  -- DataWriter:seek
@@ -463,7 +463,7 @@ do  -- DataWriter:seek
   w:seek(0); w:writeU32LE(w:len())  -- patch length back at offset 0
 end
 
---@api-stub: DataWriter:tell
+--@api-stub: LDataWriter:tell
 -- Returns the current write cursor position.
 -- Capture before writing a sub-section so you can later seek back and patch a length or offset.
 do  -- DataWriter:tell
@@ -474,7 +474,7 @@ do  -- DataWriter:tell
   lurek.log.info("section started at offset " .. section_start, "data")
 end
 
---@api-stub: DataWriter:len
+--@api-stub: LDataWriter:len
 -- Returns the total buffer length.
 -- Differs from tell() only after a seek; len() always reports the high-water mark.
 do  -- DataWriter:len
@@ -483,7 +483,7 @@ do  -- DataWriter:len
   if w:len() == 6 then lurek.log.info("buffer fully populated", "data") end
 end
 
---@api-stub: DataWriter:toBytes
+--@api-stub: LDataWriter:toBytes
 -- Returns the buffer contents as a Lua string.
 -- Call once after all writes are done; the returned string is independent of the writer (safe to keep after GC).
 do  -- DataWriter:toBytes
@@ -550,7 +550,7 @@ do  -- mlua (FileData):getBit
   lurek.log.info("getBit available", "data")
 end
 
---@api-stub: RingBuffer:isFull
+--@api-stub: LRingBuffer:isFull
 -- Returns true if the ring buffer is at capacity and the next push will overwrite.
 -- Check before pushing to avoid silent data loss in fixed-size event queues.
 do  -- RingBuffer:isFull
@@ -614,59 +614,10 @@ end
 -- The final committed file must contain ZERO --@api-stub: lines.
 -- =============================================================================
 
--- -----------------------------------------------------------------------------
--- DataView methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: DataView:type -------------------------------------------------
---@api-stub: DataView:type
--- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- dataView_stub:type()  -- -> string
--- (replace dataView_stub with your real DataView instance above)
-
--- ---- Stub: DataView:typeOf -----------------------------------------------
---@api-stub: DataView:typeOf
--- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- dataView_stub:typeOf("hero")  -- -> boolean
--- (replace dataView_stub with your real DataView instance above)
-
--- -----------------------------------------------------------------------------
--- DataWriter methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: DataWriter:type -----------------------------------------------
---@api-stub: DataWriter:type
--- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- dataWriter_stub:type()  -- -> string
--- (replace dataWriter_stub with your real DataWriter instance above)
-
--- ---- Stub: DataWriter:typeOf ---------------------------------------------
---@api-stub: DataWriter:typeOf
--- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- dataWriter_stub:typeOf("hero")  -- -> boolean
--- (replace dataWriter_stub with your real DataWriter instance above)
 
 -- -----------------------------------------------------------------------------
 -- RingBuffer methods
 -- -----------------------------------------------------------------------------
-
--- ---- Stub: RingBuffer:type -----------------------------------------------
---@api-stub: RingBuffer:type
--- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- ringBuffer_stub:type()  -- -> string
--- (replace ringBuffer_stub with your real RingBuffer instance above)
-
--- ---- Stub: RingBuffer:typeOf ---------------------------------------------
---@api-stub: RingBuffer:typeOf
--- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- ringBuffer_stub:typeOf("hero")  -- -> boolean
--- (replace ringBuffer_stub with your real RingBuffer instance above)
 
 -- =============================================================================
 -- STUBS: 6 uncovered lurek.data API item(s)
@@ -804,252 +755,4 @@ lurek.data.newByteData(42)  -- -> ByteData
 -- lByteData_stub:readBits(byte_offset, bit_offset, 10)
 -- (replace lByteData_stub with your real LByteData instance above)
 
--- -----------------------------------------------------------------------------
--- LDataView methods
--- -----------------------------------------------------------------------------
 
--- ---- Stub: LDataView:getUInt8 --------------------------------------------
---@api-stub: LDataView:getUInt8
--- Reads an unsigned 8-bit integer at the given offset.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDataView_stub:getUInt8(offset)  -- -> integer
--- (replace lDataView_stub with your real LDataView instance above)
-
--- ---- Stub: LDataView:getInt8 ---------------------------------------------
---@api-stub: LDataView:getInt8
--- Reads a signed 8-bit integer at the given offset.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDataView_stub:getInt8(offset)  -- -> integer
--- (replace lDataView_stub with your real LDataView instance above)
-
--- ---- Stub: LDataView:getInt16 --------------------------------------------
---@api-stub: LDataView:getInt16
--- Reads a signed 16-bit integer at the given offset.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDataView_stub:getInt16(offset)  -- -> integer
--- (replace lDataView_stub with your real LDataView instance above)
-
--- ---- Stub: LDataView:getUInt16 -------------------------------------------
---@api-stub: LDataView:getUInt16
--- Reads an unsigned 16-bit integer at the given offset.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDataView_stub:getUInt16(offset)  -- -> integer
--- (replace lDataView_stub with your real LDataView instance above)
-
--- ---- Stub: LDataView:getInt32 --------------------------------------------
---@api-stub: LDataView:getInt32
--- Reads a signed 32-bit integer at the given offset.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDataView_stub:getInt32(offset)  -- -> integer
--- (replace lDataView_stub with your real LDataView instance above)
-
--- ---- Stub: LDataView:getUInt32 -------------------------------------------
---@api-stub: LDataView:getUInt32
--- Reads an unsigned 32-bit integer at the given offset.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDataView_stub:getUInt32(offset)  -- -> integer
--- (replace lDataView_stub with your real LDataView instance above)
-
--- ---- Stub: LDataView:getFloat --------------------------------------------
---@api-stub: LDataView:getFloat
--- Reads a 32-bit float at the given offset.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDataView_stub:getFloat(offset)  -- -> number
--- (replace lDataView_stub with your real LDataView instance above)
-
--- ---- Stub: LDataView:getDouble -------------------------------------------
---@api-stub: LDataView:getDouble
--- Reads a 64-bit float at the given offset.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDataView_stub:getDouble(offset)  -- -> number
--- (replace lDataView_stub with your real LDataView instance above)
-
--- ---- Stub: LDataView:getSize ---------------------------------------------
---@api-stub: LDataView:getSize
--- Returns the size of this view in bytes.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDataView_stub:getSize()  -- -> integer
--- (replace lDataView_stub with your real LDataView instance above)
-
--- -----------------------------------------------------------------------------
--- LDataWriter methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LDataWriter:writeU8 -------------------------------------------
---@api-stub: LDataWriter:writeU8
--- Writes an unsigned 8-bit integer.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDataWriter_stub:writeU8(1.0)
--- (replace lDataWriter_stub with your real LDataWriter instance above)
-
--- ---- Stub: LDataWriter:writeI8 -------------------------------------------
---@api-stub: LDataWriter:writeI8
--- Writes a signed 8-bit integer.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDataWriter_stub:writeI8(1.0)
--- (replace lDataWriter_stub with your real LDataWriter instance above)
-
--- ---- Stub: LDataWriter:writeU16LE ----------------------------------------
---@api-stub: LDataWriter:writeU16LE
--- Writes an unsigned 16-bit LE integer.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDataWriter_stub:writeU16LE(1.0)
--- (replace lDataWriter_stub with your real LDataWriter instance above)
-
--- ---- Stub: LDataWriter:writeU16BE ----------------------------------------
---@api-stub: LDataWriter:writeU16BE
--- Writes an unsigned 16-bit BE integer.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDataWriter_stub:writeU16BE(1.0)
--- (replace lDataWriter_stub with your real LDataWriter instance above)
-
--- ---- Stub: LDataWriter:writeI16LE ----------------------------------------
---@api-stub: LDataWriter:writeI16LE
--- Writes a signed 16-bit LE integer.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDataWriter_stub:writeI16LE(1.0)
--- (replace lDataWriter_stub with your real LDataWriter instance above)
-
--- ---- Stub: LDataWriter:writeU32LE ----------------------------------------
---@api-stub: LDataWriter:writeU32LE
--- Writes an unsigned 32-bit LE integer.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDataWriter_stub:writeU32LE(1.0)
--- (replace lDataWriter_stub with your real LDataWriter instance above)
-
--- ---- Stub: LDataWriter:writeI32LE ----------------------------------------
---@api-stub: LDataWriter:writeI32LE
--- Writes a signed 32-bit LE integer.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDataWriter_stub:writeI32LE(1.0)
--- (replace lDataWriter_stub with your real LDataWriter instance above)
-
--- ---- Stub: LDataWriter:writeF32LE ----------------------------------------
---@api-stub: LDataWriter:writeF32LE
--- Writes a 32-bit LE float.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDataWriter_stub:writeF32LE(1.0)
--- (replace lDataWriter_stub with your real LDataWriter instance above)
-
--- ---- Stub: LDataWriter:writeF64LE ----------------------------------------
---@api-stub: LDataWriter:writeF64LE
--- Writes a 64-bit LE float.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDataWriter_stub:writeF64LE(1.0)
--- (replace lDataWriter_stub with your real LDataWriter instance above)
-
--- ---- Stub: LDataWriter:writeString ---------------------------------------
---@api-stub: LDataWriter:writeString
--- Writes a length-prefixed UTF-8 string (4-byte LE length + bytes).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDataWriter_stub:writeString(s)
--- (replace lDataWriter_stub with your real LDataWriter instance above)
-
--- ---- Stub: LDataWriter:writeBytes ----------------------------------------
---@api-stub: LDataWriter:writeBytes
--- Writes raw bytes from a Lua string.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDataWriter_stub:writeBytes()
--- (replace lDataWriter_stub with your real LDataWriter instance above)
-
--- ---- Stub: LDataWriter:seek ----------------------------------------------
---@api-stub: LDataWriter:seek
--- Moves the write cursor to the given position.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDataWriter_stub:seek(pos)
--- (replace lDataWriter_stub with your real LDataWriter instance above)
-
--- ---- Stub: LDataWriter:tell ----------------------------------------------
---@api-stub: LDataWriter:tell
--- Returns the current write cursor position.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDataWriter_stub:tell()  -- -> integer
--- (replace lDataWriter_stub with your real LDataWriter instance above)
-
--- ---- Stub: LDataWriter:len -----------------------------------------------
---@api-stub: LDataWriter:len
--- Returns the total buffer length.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDataWriter_stub:len()  -- -> integer
--- (replace lDataWriter_stub with your real LDataWriter instance above)
-
--- ---- Stub: LDataWriter:toBytes -------------------------------------------
---@api-stub: LDataWriter:toBytes
--- Returns the buffer contents as a Lua string.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDataWriter_stub:toBytes()  -- -> string
--- (replace lDataWriter_stub with your real LDataWriter instance above)
-
--- -----------------------------------------------------------------------------
--- LRingBuffer methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LRingBuffer:push ----------------------------------------------
---@api-stub: LRingBuffer:push
--- Pushes a value onto the ring buffer.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lRingBuffer_stub:push(42)  -- -> boolean
--- (replace lRingBuffer_stub with your real LRingBuffer instance above)
-
--- ---- Stub: LRingBuffer:pop -----------------------------------------------
---@api-stub: LRingBuffer:pop
--- Removes and returns the oldest element, or nil if the buffer is empty.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lRingBuffer_stub:pop()  -- -> table|nil
--- (replace lRingBuffer_stub with your real LRingBuffer instance above)
-
--- ---- Stub: LRingBuffer:peek ----------------------------------------------
---@api-stub: LRingBuffer:peek
--- Returns the oldest element without removing it, or nil if empty.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lRingBuffer_stub:peek()  -- -> table|nil
--- (replace lRingBuffer_stub with your real LRingBuffer instance above)
-
--- ---- Stub: LRingBuffer:peekNewest ----------------------------------------
---@api-stub: LRingBuffer:peekNewest
--- Returns the newest element without removing it, or nil if empty.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lRingBuffer_stub:peekNewest()  -- -> table|nil
--- (replace lRingBuffer_stub with your real LRingBuffer instance above)
-
--- ---- Stub: LRingBuffer:len -----------------------------------------------
---@api-stub: LRingBuffer:len
--- Returns the number of elements currently in the buffer.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lRingBuffer_stub:len()  -- -> integer
--- (replace lRingBuffer_stub with your real LRingBuffer instance above)
-
--- ---- Stub: LRingBuffer:capacity ------------------------------------------
---@api-stub: LRingBuffer:capacity
--- Returns the maximum number of elements the buffer can hold.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lRingBuffer_stub:capacity()  -- -> integer
--- (replace lRingBuffer_stub with your real LRingBuffer instance above)
-
--- ---- Stub: LRingBuffer:isEmpty -------------------------------------------
---@api-stub: LRingBuffer:isEmpty
--- Returns true if the buffer contains no elements.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lRingBuffer_stub:isEmpty()  -- -> boolean
--- (replace lRingBuffer_stub with your real LRingBuffer instance above)
-
--- ---- Stub: LRingBuffer:isFull --------------------------------------------
---@api-stub: LRingBuffer:isFull
--- Returns true if the buffer has reached its capacity.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lRingBuffer_stub:isFull()  -- -> boolean
--- (replace lRingBuffer_stub with your real LRingBuffer instance above)
-
--- ---- Stub: LRingBuffer:clear ---------------------------------------------
---@api-stub: LRingBuffer:clear
--- Removes all elements from the buffer, releasing their registry entries.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lRingBuffer_stub:clear()
--- (replace lRingBuffer_stub with your real LRingBuffer instance above)
-
--- ---- Stub: LRingBuffer:toTable -------------------------------------------
---@api-stub: LRingBuffer:toTable
--- Returns all elements as an array table ordered oldest-first.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lRingBuffer_stub:toTable()  -- -> table
--- (replace lRingBuffer_stub with your real LRingBuffer instance above)

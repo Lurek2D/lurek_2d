@@ -715,7 +715,7 @@ end
 
 -- ── Cursor methods ──
 
---@api-stub: Cursor:release
+--@api-stub: LCursor:release
 -- Releases the cursor resource (no-op on desktop).
 -- Provided for love2d API parity; safe to call but does nothing on Windows/Linux/macOS targets.
 do  -- Cursor:release
@@ -724,7 +724,7 @@ do  -- Cursor:release
   lurek.log.debug("cursor handle released (no-op on desktop)", "input")
 end
 
---@api-stub: Cursor:getType
+--@api-stub: LCursor:getType
 -- Returns the cursor type as "system" or "custom".
 -- Use to choose between a name-string update path and a pixel-data update path when refreshing a saved cursor.
 do  -- Cursor:getType
@@ -735,7 +735,7 @@ end
 
 -- ── Combo methods ──
 
---@api-stub: Combo:feed
+--@api-stub: LCombo:feed
 -- Feed a key-press event into the combo detector.
 -- Returns "idle"/"advanced"/"completed"/"broken"; call from a key-down event handler, not every frame.
 do  -- Combo:feed
@@ -744,7 +744,7 @@ do  -- Combo:feed
   lurek.log.debug("combo step result: " .. progress, "combat")
 end
 
---@api-stub: Combo:tick
+--@api-stub: LCombo:tick
 -- Advance the internal clock by `dt` seconds and check for timeouts.
 -- Call once per frame even when no key is pressed so partially-entered combos can expire on time.
 do  -- Combo:tick
@@ -757,7 +757,7 @@ do  -- Combo:tick
   end
 end
 
---@api-stub: Combo:reset
+--@api-stub: LCombo:reset
 -- Reset the detector to its initial idle state, cancelling any in-progress sequence.
 -- Call when the player gets hit or pauses so a buffered partial combo does not fire after the interruption.
 do  -- Combo:reset
@@ -767,7 +767,7 @@ do  -- Combo:reset
   lurek.log.debug("combo cleared after stagger", "combat")
 end
 
---@api-stub: Combo:totalSteps
+--@api-stub: LCombo:totalSteps
 -- Returns the total number of steps in the combo sequence.
 -- Use to drive a UI progress bar: combo:progress() / combo:totalSteps().
 do  -- Combo:totalSteps
@@ -776,7 +776,7 @@ do  -- Combo:totalSteps
   lurek.log.debug("combo length: " .. total, "combat")
 end
 
---@api-stub: Combo:isInProgress
+--@api-stub: LCombo:isInProgress
 -- Returns true if the detector is currently mid-sequence.
 -- Read in lurek.render to draw a glowing combo HUD only while the player has actually started entering a sequence.
 do  -- Combo:isInProgress
@@ -787,7 +787,7 @@ do  -- Combo:isInProgress
   end
 end
 
---@api-stub: Combo:getStep
+--@api-stub: LCombo:getStep
 -- Returns the step at the given 1-based index as `{key=..., gap_ms=...}`.
 -- Returns nil for out-of-range indices; iterate 1..combo:totalSteps() to render combo notation in a tutorial.
 do  -- Combo:getStep
@@ -800,7 +800,7 @@ end
 
 -- ── InputRecording methods ──
 
---@api-stub: InputRecording:toJson
+--@api-stub: LInputRecording:toJson
 -- Serializes this recording to a JSON string for saving to disk.
 -- Pair with lurek.fs.write to persist a take; reload via lurek.input.loadRecording on the next session.
 do  -- InputRecording:toJson
@@ -812,7 +812,7 @@ do  -- InputRecording:toJson
   end
 end
 
---@api-stub: InputRecording:totalFrames
+--@api-stub: LInputRecording:totalFrames
 -- Returns the total frame count when recording was stopped.
 -- Use as the denominator for a playback scrubber: lurek.input.getPlaybackFrame() / rec:totalFrames().
 do  -- InputRecording:totalFrames
@@ -823,7 +823,7 @@ do  -- InputRecording:totalFrames
   end
 end
 
---@api-stub: InputRecording:frameCount
+--@api-stub: LInputRecording:frameCount
 -- Returns the number of sparse event frames stored in this recording.
 -- Cheaper than totalFrames as a quality signal: a 600-frame recording with frameCount() == 0 captured nothing.
 do  -- InputRecording:frameCount
@@ -834,7 +834,7 @@ do  -- InputRecording:frameCount
   end
 end
 
---@api-stub: Combo:progress
+--@api-stub: LCombo:progress
 -- Returns a value in [0,1] representing how far through the combo the player is.
 -- Use to drive a progress bar or visual indicator during combo window.
 do  -- Combo:progress
@@ -861,59 +861,10 @@ do  -- lurek.input.loadGamepadMappings
   lurek.log.info("loadGamepadMappings ok=" .. tostring(ok), "input")
 end
 
--- -----------------------------------------------------------------------------
--- Combo methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: Combo:type ----------------------------------------------------
---@api-stub: Combo:type
--- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- combo_stub:type()  -- -> string
--- (replace combo_stub with your real Combo instance above)
-
--- ---- Stub: Combo:typeOf --------------------------------------------------
---@api-stub: Combo:typeOf
--- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- combo_stub:typeOf("hero")  -- -> boolean
--- (replace combo_stub with your real Combo instance above)
-
--- -----------------------------------------------------------------------------
--- Cursor methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: Cursor:type ---------------------------------------------------
---@api-stub: Cursor:type
--- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- cursor_stub:type()  -- -> string
--- (replace cursor_stub with your real Cursor instance above)
-
--- ---- Stub: Cursor:typeOf -------------------------------------------------
---@api-stub: Cursor:typeOf
--- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- cursor_stub:typeOf("hero")  -- -> boolean
--- (replace cursor_stub with your real Cursor instance above)
 
 -- -----------------------------------------------------------------------------
 -- InputRecording methods
 -- -----------------------------------------------------------------------------
-
--- ---- Stub: InputRecording:type -------------------------------------------
---@api-stub: InputRecording:type
--- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- inputRecording_stub:type()  -- -> string
--- (replace inputRecording_stub with your real InputRecording instance above)
-
--- ---- Stub: InputRecording:typeOf -----------------------------------------
---@api-stub: InputRecording:typeOf
--- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- inputRecording_stub:typeOf("hero")  -- -> boolean
--- (replace inputRecording_stub with your real InputRecording instance above)
 
 -- =============================================================================
 -- STUBS: 7 uncovered lurek.input API item(s)
@@ -991,98 +942,4 @@ lurek.input.loadGamepadMappings("assets/hero.png")  -- -> integer
 -- The final committed file must contain ZERO --@api-stub: lines.
 -- =============================================================================
 
--- -----------------------------------------------------------------------------
--- LCombo methods
--- -----------------------------------------------------------------------------
 
--- ---- Stub: LCombo:feed ---------------------------------------------------
---@api-stub: LCombo:feed
--- Feed a key-press event into the combo detector.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lCombo_stub:feed("player_score")
--- (replace lCombo_stub with your real LCombo instance above)
-
--- ---- Stub: LCombo:tick ---------------------------------------------------
---@api-stub: LCombo:tick
--- Advance the internal clock by `dt` seconds and check for timeouts.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lCombo_stub:tick(0.016)
--- (replace lCombo_stub with your real LCombo instance above)
-
--- ---- Stub: LCombo:reset --------------------------------------------------
---@api-stub: LCombo:reset
--- Reset the detector to its initial idle state, cancelling any in-progress sequence.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lCombo_stub:reset()
--- (replace lCombo_stub with your real LCombo instance above)
-
--- ---- Stub: LCombo:progress -----------------------------------------------
---@api-stub: LCombo:progress
--- Returns the number of steps matched so far (0 when idle).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lCombo_stub:progress()  -- -> integer
--- (replace lCombo_stub with your real LCombo instance above)
-
--- ---- Stub: LCombo:totalSteps ---------------------------------------------
---@api-stub: LCombo:totalSteps
--- Returns the total number of steps in the combo sequence.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lCombo_stub:totalSteps()  -- -> integer
--- (replace lCombo_stub with your real LCombo instance above)
-
--- ---- Stub: LCombo:isInProgress -------------------------------------------
---@api-stub: LCombo:isInProgress
--- Returns true if the detector is currently mid-sequence.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lCombo_stub:isInProgress()  -- -> boolean
--- (replace lCombo_stub with your real LCombo instance above)
-
--- ---- Stub: LCombo:getStep ------------------------------------------------
---@api-stub: LCombo:getStep
--- Returns the step at the given 1-based index as `{key=..., gap_ms=...}`.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lCombo_stub:getStep(1)
--- (replace lCombo_stub with your real LCombo instance above)
-
--- -----------------------------------------------------------------------------
--- LCursor methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LCursor:release -----------------------------------------------
---@api-stub: LCursor:release
--- Releases the cursor resource (no-op on desktop).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lCursor_stub:release()
--- (replace lCursor_stub with your real LCursor instance above)
-
--- ---- Stub: LCursor:getType -----------------------------------------------
---@api-stub: LCursor:getType
--- Returns the cursor type as "system" or "custom".
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lCursor_stub:getType()  -- -> string
--- (replace lCursor_stub with your real LCursor instance above)
-
--- -----------------------------------------------------------------------------
--- LInputRecording methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LInputRecording:toJson ----------------------------------------
---@api-stub: LInputRecording:toJson
--- Serializes this recording to a JSON string for saving to disk.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lInputRecording_stub:toJson()  -- -> string
--- (replace lInputRecording_stub with your real LInputRecording instance above)
-
--- ---- Stub: LInputRecording:totalFrames -----------------------------------
---@api-stub: LInputRecording:totalFrames
--- Returns the total frame count when recording was stopped.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lInputRecording_stub:totalFrames()  -- -> integer
--- (replace lInputRecording_stub with your real LInputRecording instance above)
-
--- ---- Stub: LInputRecording:frameCount ------------------------------------
---@api-stub: LInputRecording:frameCount
--- Returns the number of sparse event frames stored in this recording.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lInputRecording_stub:frameCount()  -- -> integer
--- (replace lInputRecording_stub with your real LInputRecording instance above)

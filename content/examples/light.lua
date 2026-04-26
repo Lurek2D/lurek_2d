@@ -651,7 +651,7 @@ end
 
 -- ── Occluder methods ──
 
---@api-stub: Occluder:setVertices
+--@api-stub: LOccluder:setVertices
 -- Replaces the polygon vertices from a flat table {x1,y1,x2,y2,...}.
 -- Use to morph the silhouette of a destructible wall after damage without recreating the occluder.
 do  -- Occluder:setVertices
@@ -659,7 +659,7 @@ do  -- Occluder:setVertices
   wall:setVertices({ 0, 0, 200, 0, 200, 20, 0, 20 })
 end
 
---@api-stub: Occluder:getVertices
+--@api-stub: LOccluder:getVertices
 -- Returns the polygon vertices as a flat table {x1,y1,x2,y2,...}.
 -- Useful for collision-debug overlays or for serialising procedural geometry.
 do  -- Occluder:getVertices
@@ -668,7 +668,7 @@ do  -- Occluder:getVertices
   lurek.log.debug("crate has " .. (#v / 2) .. " vertices", "light")
 end
 
---@api-stub: Occluder:setPosition
+--@api-stub: LOccluder:setPosition
 -- Sets the translation offset applied to all vertices.
 -- Cheaper than rewriting the vertex table when an occluder slides with a moving platform.
 do  -- Occluder:setPosition
@@ -676,7 +676,7 @@ do  -- Occluder:setPosition
   crate:setPosition(200, 150)
 end
 
---@api-stub: Occluder:getPosition
+--@api-stub: LOccluder:getPosition
 -- Returns the translation offset as (x, y).
 -- Read to keep a cosmetic sprite aligned with the invisible occluder it represents.
 do  -- Occluder:getPosition
@@ -686,7 +686,7 @@ do  -- Occluder:getPosition
   lurek.log.debug("crate at (" .. x .. "," .. y .. ")", "light")
 end
 
---@api-stub: Occluder:setOpacity
+--@api-stub: LOccluder:setOpacity
 -- Sets the shadow opacity (0.0–1.0).
 -- Drop below 1.0 for translucent obstacles like fences or stained glass.
 do  -- Occluder:setOpacity
@@ -694,7 +694,7 @@ do  -- Occluder:setOpacity
   fence:setOpacity(0.4)
 end
 
---@api-stub: Occluder:getOpacity
+--@api-stub: LOccluder:getOpacity
 -- Returns the shadow opacity.
 -- Branch on the value to flag translucent occluders for special rendering or sound (clinking glass).
 do  -- Occluder:getOpacity
@@ -704,7 +704,7 @@ do  -- Occluder:getOpacity
   end
 end
 
---@api-stub: Occluder:setLightMask
+--@api-stub: LOccluder:setLightMask
 -- Sets the light interaction bitmask.
 -- Match this against light:setLightMask so each occluder only blocks the layers it should.
 do  -- Occluder:setLightMask
@@ -713,7 +713,7 @@ do  -- Occluder:setLightMask
   wall:setLightMask(FOREGROUND_LIGHTS)
 end
 
---@api-stub: Occluder:getLightMask
+--@api-stub: LOccluder:getLightMask
 -- Returns the light interaction bitmask.
 -- Read after loading a level to assert occluders are tagged into the layers you expect.
 do  -- Occluder:getLightMask
@@ -722,7 +722,7 @@ do  -- Occluder:getLightMask
   lurek.log.debug("wall mask=" .. mask, "light")
 end
 
---@api-stub: Occluder:setEnabled
+--@api-stub: LOccluder:setEnabled
 -- Sets whether this occluder is active.
 -- Toggle a doorway off when the door opens so light can spill through without rebuilding geometry.
 do  -- Occluder:setEnabled
@@ -731,7 +731,7 @@ do  -- Occluder:setEnabled
   door:setEnabled(not door_open)
 end
 
---@api-stub: Occluder:isEnabled
+--@api-stub: LOccluder:isEnabled
 -- Returns whether this occluder is active.
 -- Inspect before piping debug-overlay rendering so disabled occluders are drawn dimmer.
 do  -- Occluder:isEnabled
@@ -741,7 +741,7 @@ do  -- Occluder:isEnabled
   end
 end
 
---@api-stub: Occluder:remove
+--@api-stub: LOccluder:remove
 -- Removes this occluder from the world.
 -- Use when destructible cover is shattered; the handle becomes invalid afterwards.
 do  -- Occluder:remove
@@ -749,7 +749,7 @@ do  -- Occluder:remove
   debris:remove()
 end
 
---@api-stub: Occluder:isValid
+--@api-stub: LOccluder:isValid
 -- Returns whether this occluder handle is still valid.
 -- Always check before reusing a saved handle that another system may have removed.
 do  -- Occluder:isValid
@@ -817,20 +817,6 @@ end
 -- -----------------------------------------------------------------------------
 -- Occluder methods
 -- -----------------------------------------------------------------------------
-
--- ---- Stub: Occluder:type -------------------------------------------------
---@api-stub: Occluder:type
--- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- occluder_stub:type()  -- -> string
--- (replace occluder_stub with your real Occluder instance above)
-
--- ---- Stub: Occluder:typeOf -----------------------------------------------
---@api-stub: Occluder:typeOf
--- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- occluder_stub:typeOf("hero")  -- -> boolean
--- (replace occluder_stub with your real Occluder instance above)
 
 -- =============================================================================
 -- STUBS: 4 uncovered lurek.light API item(s)
@@ -1280,90 +1266,3 @@ end
 -- lLight_stub:clearCookie()
 -- (replace lLight_stub with your real LLight instance above)
 
--- -----------------------------------------------------------------------------
--- LOccluder methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LOccluder:setVertices -----------------------------------------
---@api-stub: LOccluder:setVertices
--- Replaces the polygon vertices from a flat table {x1,y1,x2,y2,...}.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lOccluder_stub:setVertices(tbl)
--- (replace lOccluder_stub with your real LOccluder instance above)
-
--- ---- Stub: LOccluder:getVertices -----------------------------------------
---@api-stub: LOccluder:getVertices
--- Returns the polygon vertices as a flat table {x1,y1,x2,y2,...}.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lOccluder_stub:getVertices()  -- -> table
--- (replace lOccluder_stub with your real LOccluder instance above)
-
--- ---- Stub: LOccluder:setPosition -----------------------------------------
---@api-stub: LOccluder:setPosition
--- Sets the translation offset applied to all vertices.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lOccluder_stub:setPosition(0.0, 0.0)
--- (replace lOccluder_stub with your real LOccluder instance above)
-
--- ---- Stub: LOccluder:getPosition -----------------------------------------
---@api-stub: LOccluder:getPosition
--- Returns the translation offset as (x, y).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lOccluder_stub:getPosition()  -- -> number, number
--- (replace lOccluder_stub with your real LOccluder instance above)
-
--- ---- Stub: LOccluder:setOpacity ------------------------------------------
---@api-stub: LOccluder:setOpacity
--- Sets the shadow opacity (0.0â€“1.0).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lOccluder_stub:setOpacity(o)
--- (replace lOccluder_stub with your real LOccluder instance above)
-
--- ---- Stub: LOccluder:getOpacity ------------------------------------------
---@api-stub: LOccluder:getOpacity
--- Returns the shadow opacity.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lOccluder_stub:getOpacity()  -- -> number
--- (replace lOccluder_stub with your real LOccluder instance above)
-
--- ---- Stub: LOccluder:setLightMask ----------------------------------------
---@api-stub: LOccluder:setLightMask
--- Sets the light interaction bitmask.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lOccluder_stub:setLightMask(mask)
--- (replace lOccluder_stub with your real LOccluder instance above)
-
--- ---- Stub: LOccluder:getLightMask ----------------------------------------
---@api-stub: LOccluder:getLightMask
--- Returns the light interaction bitmask.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lOccluder_stub:getLightMask()  -- -> integer
--- (replace lOccluder_stub with your real LOccluder instance above)
-
--- ---- Stub: LOccluder:setEnabled ------------------------------------------
---@api-stub: LOccluder:setEnabled
--- Sets whether this occluder is active.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lOccluder_stub:setEnabled(0.2)
--- (replace lOccluder_stub with your real LOccluder instance above)
-
--- ---- Stub: LOccluder:isEnabled -------------------------------------------
---@api-stub: LOccluder:isEnabled
--- Returns whether this occluder is active.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lOccluder_stub:isEnabled()  -- -> boolean
--- (replace lOccluder_stub with your real LOccluder instance above)
-
--- ---- Stub: LOccluder:remove ----------------------------------------------
---@api-stub: LOccluder:remove
--- Removes this occluder from the world.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lOccluder_stub:remove()
--- (replace lOccluder_stub with your real LOccluder instance above)
-
--- ---- Stub: LOccluder:isValid ---------------------------------------------
---@api-stub: LOccluder:isValid
--- Returns whether this occluder handle is still valid.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lOccluder_stub:isValid()  -- -> boolean
--- (replace lOccluder_stub with your real LOccluder instance above)

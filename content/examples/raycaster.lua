@@ -84,7 +84,7 @@ end
 
 -- ── DoorManager methods ──
 
---@api-stub: DoorManager:openDoor
+--@api-stub: LDoorManager:openDoor
 -- Begins opening the door at the given index.
 -- Indices are 0-based and come from `addDoor`; calling on an already-open door is a no-op.
 do  -- DoorManager:openDoor
@@ -93,7 +93,7 @@ do  -- DoorManager:openDoor
   doors:openDoor(idx)
 end
 
---@api-stub: DoorManager:closeDoor
+--@api-stub: LDoorManager:closeDoor
 -- Begins closing the door at the given index.
 -- Pair with proximity checks each frame so doors auto-close when the player walks away.
 do  -- DoorManager:closeDoor
@@ -103,7 +103,7 @@ do  -- DoorManager:closeDoor
   doors:closeDoor(idx)
 end
 
---@api-stub: DoorManager:update
+--@api-stub: LDoorManager:update
 -- Advances all door animations by dt seconds.
 -- Call once per frame in lurek.process(dt); skipping it freezes every door mid-animation.
 do  -- DoorManager:update
@@ -112,7 +112,7 @@ do  -- DoorManager:update
   function lurek.process(dt) doors:update(dt) end
 end
 
---@api-stub: DoorManager:getDoor
+--@api-stub: LDoorManager:getDoor
 -- Returns the state table for door at index, or nil if out of range.
 -- Read `openAmount` (0..1) to decide whether the player can pass; check `state` for "closed"/"opening"/"open"/"closing".
 do  -- DoorManager:getDoor
@@ -122,7 +122,7 @@ do  -- DoorManager:getDoor
   if d and d.openAmount > 0.9 then lurek.log.info("door " .. d.x .. "," .. d.y .. " passable", "doors") end
 end
 
---@api-stub: DoorManager:count
+--@api-stub: LDoorManager:count
 -- Returns the number of registered doors.
 -- Useful for level summaries, save snapshots, or pre-allocating a Lua array of door state.
 do  -- DoorManager:count
@@ -132,7 +132,7 @@ do  -- DoorManager:count
   lurek.log.info("level has " .. doors:count() .. " doors", "doors")
 end
 
---@api-stub: DoorManager:type
+--@api-stub: LDoorManager:type
 -- Returns the type string "DoorManager".
 -- Use in defensive helpers that accept multiple userdata shapes and need to dispatch by name.
 do  -- DoorManager:type
@@ -140,7 +140,7 @@ do  -- DoorManager:type
   if doors:type() == "DoorManager" then lurek.log.debug("door manager OK", "raycaster") end
 end
 
---@api-stub: DoorManager:typeOf
+--@api-stub: LDoorManager:typeOf
 -- Returns the type string "DoorManager".
 -- Mirrors love2d's Object:typeOf naming so reusable utility libraries can branch the same way.
 do  -- DoorManager:typeOf
@@ -151,7 +151,7 @@ end
 
 -- ── HeightMap methods ──
 
---@api-stub: HeightMap:setFloor
+--@api-stub: LHeightMap:setFloor
 -- Sets the floor height at (x, y).
 -- Negative values dig pits; pair with setCeiling to carve cavities the player can drop into.
 do  -- HeightMap:setFloor
@@ -160,7 +160,7 @@ do  -- HeightMap:setFloor
   hm:setFloor(8, 6, -0.25)
 end
 
---@api-stub: HeightMap:setCeiling
+--@api-stub: LHeightMap:setCeiling
 -- Sets the ceiling height at (x, y).
 -- Lower values create crawl-spaces; the renderer clips wall columns to floorAt..ceilingAt.
 do  -- HeightMap:setCeiling
@@ -168,7 +168,7 @@ do  -- HeightMap:setCeiling
   for x = 0, 15 do hm:setCeiling(x, 0, 0.6) end
 end
 
---@api-stub: HeightMap:floorAt
+--@api-stub: LHeightMap:floorAt
 -- Returns the floor height at (x, y).
 -- Out-of-bounds reads return 0.0; use this for player gravity / jump landing checks.
 do  -- HeightMap:floorAt
@@ -178,7 +178,7 @@ do  -- HeightMap:floorAt
   if h < 0 then lurek.log.debug("pit depth " .. -h, "raycaster") end
 end
 
---@api-stub: HeightMap:ceilingAt
+--@api-stub: LHeightMap:ceilingAt
 -- Returns the ceiling height at (x, y).
 -- Default for unset cells is 1.0; subtract floorAt to get available headroom for entity placement.
 do  -- HeightMap:ceilingAt
@@ -187,7 +187,7 @@ do  -- HeightMap:ceilingAt
   lurek.log.debug("cell headroom=" .. headroom, "raycaster")
 end
 
---@api-stub: HeightMap:type
+--@api-stub: LHeightMap:type
 -- Returns the type string "HeightMap".
 -- Lets generic asset loaders confirm a userdata is a height map before passing it to buildScene.
 do  -- HeightMap:type
@@ -195,7 +195,7 @@ do  -- HeightMap:type
   assert(hm:type() == "HeightMap", "expected HeightMap userdata")
 end
 
---@api-stub: HeightMap:typeOf
+--@api-stub: LHeightMap:typeOf
 -- Returns the type string "HeightMap".
 -- Identical to `:type()`; provided for love2d-style code that uses `:typeOf()` everywhere.
 do  -- HeightMap:typeOf
@@ -205,7 +205,7 @@ end
 
 -- ── PointLight methods ──
 
---@api-stub: PointLight:x
+--@api-stub: LPointLight:x
 -- Returns the world-space X position.
 -- Read alongside `:y()` to drive light-follows-actor patterns or fade lights based on player proximity.
 do  -- PointLight:x
@@ -214,7 +214,7 @@ do  -- PointLight:x
   if px > 8 then lurek.log.debug("light is east of midpoint at x=" .. px, "raycaster") end
 end
 
---@api-stub: PointLight:y
+--@api-stub: LPointLight:y
 -- Returns the world-space Y position.
 -- Combine with `:x()` and `:radius()` for cull tests against the camera bounds before submitting to buildScene.
 do  -- PointLight:y
@@ -223,7 +223,7 @@ do  -- PointLight:y
   lurek.log.debug("light row " .. math.floor(py), "raycaster")
 end
 
---@api-stub: PointLight:radius
+--@api-stub: LPointLight:radius
 -- Returns the illumination radius.
 -- Use the radius to skip illumination math for cells outside the bounding square `(x±r, y±r)`.
 do  -- PointLight:radius
@@ -232,7 +232,7 @@ do  -- PointLight:radius
   if r > 5 then lurek.log.info("large light radius=" .. r, "raycaster") end
 end
 
---@api-stub: PointLight:intensity
+--@api-stub: LPointLight:intensity
 -- Returns the intensity multiplier.
 -- Multiply this against `distanceShade` to attenuate per-pixel without rebuilding the light.
 do  -- PointLight:intensity
@@ -241,7 +241,7 @@ do  -- PointLight:intensity
   lurek.log.debug("contrib=" .. mul, "raycaster")
 end
 
---@api-stub: PointLight:color
+--@api-stub: LPointLight:color
 -- Returns the RGB color as three separate values.
 -- Use the multi-return form to tint debug overlays of the light or to feed back into buildScene's lights array.
 do  -- PointLight:color
@@ -250,7 +250,7 @@ do  -- PointLight:color
   lurek.log.debug("torch tint " .. r .. "," .. g .. "," .. b, "raycaster")
 end
 
---@api-stub: PointLight:type
+--@api-stub: LPointLight:type
 -- Returns the type string "PointLight".
 -- Cheap runtime tag used by editors and serializers to recognise raycaster lights.
 do  -- PointLight:type
@@ -258,7 +258,7 @@ do  -- PointLight:type
   assert(light:type() == "PointLight")
 end
 
---@api-stub: PointLight:typeOf
+--@api-stub: LPointLight:typeOf
 -- Returns the type string "PointLight".
 -- Same value as `:type()`; provided for parity with love2d-style userdata.
 do  -- PointLight:typeOf
@@ -267,17 +267,13 @@ do  -- PointLight:typeOf
 end
 
 -- ── Raycaster methods ──
-
---@api-stub: Raycaster:setCell
--- Sets the cell value at grid position (x, y).
--- Value 0 means empty; non-zero is a wall whose value picks the texture from buildScene's `wall_textures`.
 do  -- Raycaster:setCell
   local rc = lurek.raycaster.new(8, 8)
   for x = 0, 7 do rc:setCell(x, 0, 1); rc:setCell(x, 7, 1) end
   rc:setCell(3, 3, 2)
 end
 
---@api-stub: Raycaster:getCell
+--@api-stub: LRaycaster:getCell
 -- Returns the cell value at (x, y).
 -- Returns 0 for both empty cells and out-of-bounds; combine with `:isBlocked` if you need the distinction.
 do  -- Raycaster:getCell
@@ -286,7 +282,7 @@ do  -- Raycaster:getCell
   if rc:getCell(2, 2) == 3 then lurek.log.debug("cell holds tile id 3", "raycaster") end
 end
 
---@api-stub: Raycaster:setCells
+--@api-stub: LRaycaster:setCells
 -- Replaces all grid cells from a flat array of values in row-major order.
 -- Length must equal width*height; this is the fastest way to load a level from a TOML or JSON map.
 do  -- Raycaster:setCells
@@ -298,7 +294,7 @@ do  -- Raycaster:setCells
   })
 end
 
---@api-stub: Raycaster:isBlocked
+--@api-stub: LRaycaster:isBlocked
 -- Returns true when the cell at (x, y) is a wall (value > 0).
 -- The canonical move-collision test: gate any prospective player position through this before applying it.
 do  -- Raycaster:isBlocked
@@ -307,7 +303,7 @@ do  -- Raycaster:isBlocked
   if not rc:isBlocked(3, 4) then lurek.log.debug("(3,4) is walkable", "raycaster") end
 end
 
---@api-stub: Raycaster:width
+--@api-stub: LRaycaster:width
 -- Returns the grid width in cells.
 -- Use with `:height()` to clamp player coordinates and bound minimap drawing rectangles.
 do  -- Raycaster:width
@@ -315,7 +311,7 @@ do  -- Raycaster:width
   for x = 0, rc:width() - 1 do rc:setCell(x, 0, 1) end
 end
 
---@api-stub: Raycaster:height
+--@api-stub: LRaycaster:height
 -- Returns the grid height in cells.
 -- Pair with `:width()` to iterate every cell when serialising the level for save/load.
 do  -- Raycaster:height
@@ -323,7 +319,7 @@ do  -- Raycaster:height
   for y = 0, rc:height() - 1 do rc:setCell(0, y, 1) end
 end
 
---@api-stub: Raycaster:setWallAlpha
+--@api-stub: LRaycaster:setWallAlpha
 -- Sets the opacity for a wall tile type.
 -- Values < 1.0 mark the tile as translucent so castRayMulti collects layered hits (glass, fences, force-fields).
 do  -- Raycaster:setWallAlpha
@@ -332,7 +328,7 @@ do  -- Raycaster:setWallAlpha
   rc:setWallAlpha(5, 0.4)
 end
 
---@api-stub: Raycaster:getWallAlpha
+--@api-stub: LRaycaster:getWallAlpha
 -- Returns the opacity for a wall tile type.
 -- Defaults to 1.0 when never set; use it to debug-overlay translucent tiles in the level editor.
 do  -- Raycaster:getWallAlpha
@@ -344,7 +340,7 @@ end
 
 -- ── SpriteManager methods ──
 
---@api-stub: SpriteManager:remove
+--@api-stub: LSpriteManager:remove
 -- Removes the sprite with the given id.
 -- Ids are returned from `:add(...)`; call this when an enemy dies or a pickup is collected.
 do  -- SpriteManager:remove
@@ -353,7 +349,7 @@ do  -- SpriteManager:remove
   sprites:remove(id)
 end
 
---@api-stub: SpriteManager:setPosition
+--@api-stub: LSpriteManager:setPosition
 -- Moves the sprite with the given id to world (x, y).
 -- Cheap per-frame call; use it to drive moving NPCs without re-allocating sprite entries.
 do  -- SpriteManager:setPosition
@@ -362,7 +358,7 @@ do  -- SpriteManager:setPosition
   function lurek.process(dt) sprites:setPosition(id, 2.0 + dt, 2.0) end
 end
 
---@api-stub: SpriteManager:setVisible
+--@api-stub: LSpriteManager:setVisible
 -- Shows or hides the sprite with the given id.
 -- Prefer this over remove/add for sprites that flicker (invulnerability frames, fog-of-war reveals).
 do  -- SpriteManager:setVisible
@@ -371,7 +367,7 @@ do  -- SpriteManager:setVisible
   sprites:setVisible(id, false)
 end
 
---@api-stub: SpriteManager:clear
+--@api-stub: LSpriteManager:clear
 -- Removes all sprites from the manager.
 -- Call between level transitions to drop every billboard before populating the next room.
 do  -- SpriteManager:clear
@@ -381,7 +377,7 @@ do  -- SpriteManager:clear
   sprites:clear()
 end
 
---@api-stub: SpriteManager:type
+--@api-stub: LSpriteManager:type
 -- Returns the type string "SpriteManager".
 -- Useful in serializers that walk a heterogeneous level table and dispatch on each userdata's type.
 do  -- SpriteManager:type
@@ -389,7 +385,7 @@ do  -- SpriteManager:type
   assert(sprites:type() == "SpriteManager")
 end
 
---@api-stub: SpriteManager:typeOf
+--@api-stub: LSpriteManager:typeOf
 -- Returns the type string "SpriteManager".
 -- Mirrors love2d's Object:typeOf so library code can branch identically across engines.
 do  -- SpriteManager:typeOf
@@ -421,7 +417,7 @@ end
 
 -- ── lurek.raycaster.* functions ──
 
---@api-stub: SpriteManager:add
+--@api-stub: LSpriteManager:add
 -- Registers a sprite in the sprite manager at a world-space position.
 -- Returns a sprite id; update position each frame with setPosition(id, x, y).
 do  -- SpriteManager:add
@@ -430,7 +426,7 @@ do  -- SpriteManager:add
   lurek.log.info("sprite id: " .. id, "raycaster")
 end
 
---@api-stub: DoorManager:addDoor
+--@api-stub: LDoorManager:addDoor
 -- Registers a door at a specific map cell with open/close state and animation speed.
 -- DoorManager.update() advances door animations each frame automatically.
 do  -- DoorManager:addDoor
@@ -440,7 +436,7 @@ do  -- DoorManager:addDoor
   lurek.log.info("door id: " .. did, "raycaster")
 end
 
---@api-stub: Raycaster:buildScene
+--@api-stub: LRaycaster:buildScene
 -- Precomputes a scene description from the current cell map for column-order rendering.
 -- Call after setCell() changes; subsequent castRays use the compiled scene.
 do  -- Raycaster:buildScene
@@ -451,7 +447,7 @@ do  -- Raycaster:buildScene
   lurek.log.info("scene built", "raycaster")
 end
 
---@api-stub: Raycaster:castFloorRow
+--@api-stub: LRaycaster:castFloorRow
 -- Casts a single floor/ceiling row and returns depth and texture-coordinate tables.
 -- Call for each screen row between the horizon and the floor to build the floor plane.
 do  -- Raycaster:castFloorRow
@@ -460,7 +456,7 @@ do  -- Raycaster:castFloorRow
   lurek.log.info("floor row uv count: " .. (uvs and #uvs or 0), "raycaster")
 end
 
---@api-stub: Raycaster:castRay
+--@api-stub: LRaycaster:castRay
 -- Casts a single ray from origin in direction angle and returns the hit data.
 -- Returns distance, wallType, side, and texture coordinates for the hit cell.
 do  -- Raycaster:castRay
@@ -469,7 +465,7 @@ do  -- Raycaster:castRay
   lurek.log.info("ray dist: " .. (hit and hit.dist or -1), "raycaster")
 end
 
---@api-stub: Raycaster:castRayMulti
+--@api-stub: LRaycaster:castRayMulti
 -- Casts multiple rays from different positions and returns a results table.
 -- Useful for multi-camera setups or custom rendering passes.
 do  -- Raycaster:castRayMulti
@@ -478,7 +474,7 @@ do  -- Raycaster:castRayMulti
   lurek.log.info("multi-ray results: " .. #results, "raycaster")
 end
 
---@api-stub: Raycaster:castRays
+--@api-stub: LRaycaster:castRays
 -- Casts a full fan of rays for the current camera view and returns the column buffer.
 -- Returns a table of per-column hit data; used by drawView() internally.
 do  -- Raycaster:castRays
@@ -487,7 +483,7 @@ do  -- Raycaster:castRays
   lurek.log.info("columns: " .. (cols and #cols or 0), "raycaster")
 end
 
---@api-stub: Raycaster:castRaysFlat
+--@api-stub: LRaycaster:castRaysFlat
 -- Casts rays and returns results in a flat array format for GPU upload.
 -- More cache-friendly than castRays for large column counts.
 do  -- Raycaster:castRaysFlat
@@ -496,7 +492,7 @@ do  -- Raycaster:castRaysFlat
   lurek.log.info("flat ray count: " .. (flat and #flat or 0), "raycaster")
 end
 
---@api-stub: Raycaster:drawCameraSweep
+--@api-stub: LRaycaster:drawCameraSweep
 -- Renders a top-down camera FOV arc onto an ImageData for a minimap overlay.
 -- fov and range control the visible arc; useful for guard-vision debugging.
 do  -- Raycaster:drawCameraSweep
@@ -505,7 +501,7 @@ do  -- Raycaster:drawCameraSweep
   lurek.log.info("camera sweep drawn", "raycaster")
 end
 
---@api-stub: Raycaster:drawDepthMap
+--@api-stub: LRaycaster:drawDepthMap
 -- Renders the per-column depth buffer as a greyscale gradient into an ImageData.
 -- Useful for debugging occlusion and rendering artefacts.
 do  -- Raycaster:drawDepthMap
@@ -514,7 +510,7 @@ do  -- Raycaster:drawDepthMap
   lurek.log.info("depth map drawn", "raycaster")
 end
 
---@api-stub: Raycaster:drawLineOfSight
+--@api-stub: LRaycaster:drawLineOfSight
 -- Draws a filled line-of-sight polygon onto a top-down ImageData.
 -- Shows visible area from a guard's perspective for minimap or debugging.
 do  -- Raycaster:drawLineOfSight
@@ -523,7 +519,7 @@ do  -- Raycaster:drawLineOfSight
   lurek.log.info("LOS drawn", "raycaster")
 end
 
---@api-stub: Raycaster:drawTopDown
+--@api-stub: LRaycaster:drawTopDown
 -- Renders the map grid and optionally objects as a 2D top-down view.
 -- Use for minimaps, editor overlays, or debugging spatial relationships.
 do  -- Raycaster:drawTopDown
@@ -532,7 +528,7 @@ do  -- Raycaster:drawTopDown
   lurek.log.info("top-down drawn", "raycaster")
 end
 
---@api-stub: Raycaster:drawView
+--@api-stub: LRaycaster:drawView
 -- Renders the full pseudo-3D first-person view from the camera position and angle.
 -- Writes column-by-column into an ImageData; call once per frame in lurek.render().
 do  -- Raycaster:drawView
@@ -541,7 +537,7 @@ do  -- Raycaster:drawView
   lurek.log.info("view rendered", "raycaster")
 end
 
---@api-stub: Raycaster:lineOfSight
+--@api-stub: LRaycaster:lineOfSight
 -- Returns true if there is unobstructed sight between two map-space positions.
 -- Uses DDA; blocked cells with non-zero wall values break the line.
 do  -- Raycaster:lineOfSight
@@ -550,7 +546,7 @@ do  -- Raycaster:lineOfSight
   lurek.log.info("LOS result: " .. tostring(los), "raycaster")
 end
 
---@api-stub: Raycaster:projectSprite
+--@api-stub: LRaycaster:projectSprite
 -- Projects a world-space sprite into screen-space column/height data.
 -- Returns screen_x, screen_y, height, and a visibility mask for the sprite.
 do  -- Raycaster:projectSprite
@@ -559,7 +555,7 @@ do  -- Raycaster:projectSprite
   lurek.log.info("projected: " .. (sp and sp.screen_x or -1), "raycaster")
 end
 
---@api-stub: Raycaster:setCell
+--@api-stub: LRaycaster:setCell
 -- Sets the wall type of a single cell in the map grid.
 -- type=0 means empty (walkable); non-zero values index the texture atlas.
 do  -- Raycaster:setCell
@@ -568,7 +564,7 @@ do  -- Raycaster:setCell
   lurek.log.info("cell 4,4 = 2", "raycaster")
 end
 
---@api-stub: SpriteManager:sortAndProject
+--@api-stub: LSpriteManager:sortAndProject
 -- Sorts sprites by distance from the camera and projects them into screen-space.
 -- Call after castRays() each frame; returns sorted projection data table.
 do  -- SpriteManager:sortAndProject
@@ -578,7 +574,7 @@ do  -- SpriteManager:sortAndProject
   lurek.log.info("projected sprites: " .. #projs, "raycaster")
 end
 
---@api-stub: PointLight:set
+--@api-stub: LPointLight:set
 -- Configures a PointLight's position, colour, and radius in one call.
 -- Use instead of separate property setters when updating all fields each frame.
 do  -- PointLight:set
@@ -595,322 +591,10 @@ end
 -- The final committed file must contain ZERO --@api-stub: lines.
 -- =============================================================================
 
--- -----------------------------------------------------------------------------
--- LDoorManager methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LDoorManager:addDoor ------------------------------------------
---@api-stub: LDoorManager:addDoor
--- Registers a door at grid position (x, y).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDoorManager_stub:addDoor(0.0, 0.0, dir_str, 120.0)  -- -> integer
--- (replace lDoorManager_stub with your real LDoorManager instance above)
-
--- ---- Stub: LDoorManager:openDoor -----------------------------------------
---@api-stub: LDoorManager:openDoor
--- Begins opening the door at the given index.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDoorManager_stub:openDoor(1)
--- (replace lDoorManager_stub with your real LDoorManager instance above)
-
--- ---- Stub: LDoorManager:closeDoor ----------------------------------------
---@api-stub: LDoorManager:closeDoor
--- Begins closing the door at the given index.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDoorManager_stub:closeDoor(1)
--- (replace lDoorManager_stub with your real LDoorManager instance above)
-
--- ---- Stub: LDoorManager:update -------------------------------------------
---@api-stub: LDoorManager:update
--- Advances all door animations by dt seconds.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDoorManager_stub:update(0.016)
--- (replace lDoorManager_stub with your real LDoorManager instance above)
-
--- ---- Stub: LDoorManager:getDoor ------------------------------------------
---@api-stub: LDoorManager:getDoor
--- Returns the state table for door at index, or nil if out of range.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDoorManager_stub:getDoor(1)
--- (replace lDoorManager_stub with your real LDoorManager instance above)
-
--- ---- Stub: LDoorManager:count --------------------------------------------
---@api-stub: LDoorManager:count
--- Returns the number of registered doors.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDoorManager_stub:count()  -- -> integer
--- (replace lDoorManager_stub with your real LDoorManager instance above)
-
--- ---- Stub: LDoorManager:type ---------------------------------------------
---@api-stub: LDoorManager:type
--- Returns the type string "DoorManager".
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDoorManager_stub:type()  -- -> string
--- (replace lDoorManager_stub with your real LDoorManager instance above)
-
--- ---- Stub: LDoorManager:typeOf -------------------------------------------
---@api-stub: LDoorManager:typeOf
--- Returns the type string "DoorManager".
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDoorManager_stub:typeOf()  -- -> string
--- (replace lDoorManager_stub with your real LDoorManager instance above)
-
--- -----------------------------------------------------------------------------
--- LHeightMap methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LHeightMap:setFloor -------------------------------------------
---@api-stub: LHeightMap:setFloor
--- Sets the floor height at (x, y).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lHeightMap_stub:setFloor(0.0, 0.0, 64.0)
--- (replace lHeightMap_stub with your real LHeightMap instance above)
-
--- ---- Stub: LHeightMap:setCeiling -----------------------------------------
---@api-stub: LHeightMap:setCeiling
--- Sets the ceiling height at (x, y).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lHeightMap_stub:setCeiling(0.0, 0.0, 64.0)
--- (replace lHeightMap_stub with your real LHeightMap instance above)
-
--- ---- Stub: LHeightMap:floorAt --------------------------------------------
---@api-stub: LHeightMap:floorAt
--- Returns the floor height at (x, y). Returns 0.0 for out-of-bounds.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lHeightMap_stub:floorAt(0.0, 0.0)  -- -> number
--- (replace lHeightMap_stub with your real LHeightMap instance above)
-
--- ---- Stub: LHeightMap:ceilingAt ------------------------------------------
---@api-stub: LHeightMap:ceilingAt
--- Returns the ceiling height at (x, y). Returns 1.0 for out-of-bounds.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lHeightMap_stub:ceilingAt(0.0, 0.0)  -- -> number
--- (replace lHeightMap_stub with your real LHeightMap instance above)
-
--- ---- Stub: LHeightMap:type -----------------------------------------------
---@api-stub: LHeightMap:type
--- Returns the type string "HeightMap".
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lHeightMap_stub:type()  -- -> string
--- (replace lHeightMap_stub with your real LHeightMap instance above)
-
--- ---- Stub: LHeightMap:typeOf ---------------------------------------------
---@api-stub: LHeightMap:typeOf
--- Returns the type string "HeightMap".
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lHeightMap_stub:typeOf()  -- -> string
--- (replace lHeightMap_stub with your real LHeightMap instance above)
-
--- -----------------------------------------------------------------------------
--- LPointLight methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LPointLight:x -------------------------------------------------
---@api-stub: LPointLight:x
--- Returns the world-space X position.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lPointLight_stub:x()  -- -> number
--- (replace lPointLight_stub with your real LPointLight instance above)
-
--- ---- Stub: LPointLight:y -------------------------------------------------
---@api-stub: LPointLight:y
--- Returns the world-space Y position.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lPointLight_stub:y()  -- -> number
--- (replace lPointLight_stub with your real LPointLight instance above)
-
--- ---- Stub: LPointLight:radius --------------------------------------------
---@api-stub: LPointLight:radius
--- Returns the illumination radius.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lPointLight_stub:radius()  -- -> number
--- (replace lPointLight_stub with your real LPointLight instance above)
-
--- ---- Stub: LPointLight:intensity -----------------------------------------
---@api-stub: LPointLight:intensity
--- Returns the intensity multiplier.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lPointLight_stub:intensity()  -- -> number
--- (replace lPointLight_stub with your real LPointLight instance above)
-
--- ---- Stub: LPointLight:color ---------------------------------------------
---@api-stub: LPointLight:color
--- Returns the RGB color as three separate values.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lPointLight_stub:color()  -- -> number, number, number
--- (replace lPointLight_stub with your real LPointLight instance above)
-
--- ---- Stub: LPointLight:set -----------------------------------------------
---@api-stub: LPointLight:set
--- Updates all light properties at once.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lPointLight_stub:set(0.0, 0.0, 1.0, 0.8, 0.2, 24.0, intensity)
--- (replace lPointLight_stub with your real LPointLight instance above)
-
--- ---- Stub: LPointLight:type ----------------------------------------------
---@api-stub: LPointLight:type
--- Returns the type string "PointLight".
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lPointLight_stub:type()  -- -> string
--- (replace lPointLight_stub with your real LPointLight instance above)
-
--- ---- Stub: LPointLight:typeOf --------------------------------------------
---@api-stub: LPointLight:typeOf
--- Returns the type string "PointLight".
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lPointLight_stub:typeOf()  -- -> string
--- (replace lPointLight_stub with your real LPointLight instance above)
 
 -- -----------------------------------------------------------------------------
 -- LRaycaster methods
 -- -----------------------------------------------------------------------------
-
--- ---- Stub: LRaycaster:setCell --------------------------------------------
---@api-stub: LRaycaster:setCell
--- Sets the cell value at grid position (x, y).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lRaycaster_stub:setCell(0.0, 0.0, val)
--- (replace lRaycaster_stub with your real LRaycaster instance above)
-
--- ---- Stub: LRaycaster:getCell --------------------------------------------
---@api-stub: LRaycaster:getCell
--- Returns the cell value at (x, y).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lRaycaster_stub:getCell(0.0, 0.0)  -- -> integer
--- (replace lRaycaster_stub with your real LRaycaster instance above)
-
--- ---- Stub: LRaycaster:setCells -------------------------------------------
---@api-stub: LRaycaster:setCells
--- Replaces all grid cells from a flat array of values in row-major order.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lRaycaster_stub:setCells(cells_tbl)
--- (replace lRaycaster_stub with your real LRaycaster instance above)
-
--- ---- Stub: LRaycaster:isBlocked ------------------------------------------
---@api-stub: LRaycaster:isBlocked
--- Returns true when the cell at (x, y) is a wall (value > 0).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lRaycaster_stub:isBlocked(0.0, 0.0)  -- -> boolean
--- (replace lRaycaster_stub with your real LRaycaster instance above)
-
--- ---- Stub: LRaycaster:width ----------------------------------------------
---@api-stub: LRaycaster:width
--- Returns the grid width in cells.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lRaycaster_stub:width()  -- -> integer
--- (replace lRaycaster_stub with your real LRaycaster instance above)
-
--- ---- Stub: LRaycaster:height ---------------------------------------------
---@api-stub: LRaycaster:height
--- Returns the grid height in cells.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lRaycaster_stub:height()  -- -> integer
--- (replace lRaycaster_stub with your real LRaycaster instance above)
-
--- ---- Stub: LRaycaster:castRay --------------------------------------------
---@api-stub: LRaycaster:castRay
--- Casts a single ray and returns a hit table, or nil if nothing was hit.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lRaycaster_stub:castRay(ox, oy, 0.0, max_dist)  -- -> table|nil
--- (replace lRaycaster_stub with your real LRaycaster instance above)
-
--- ---- Stub: LRaycaster:castRays -------------------------------------------
---@api-stub: LRaycaster:castRays
--- Casts multiple rays across a field of view, returns an array of hit tables.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lRaycaster_stub:castRays(ox, oy, 0.0, fov, 10, max_dist)  -- -> table
--- (replace lRaycaster_stub with your real LRaycaster instance above)
-
--- ---- Stub: LRaycaster:castRaysFlat ---------------------------------------
---@api-stub: LRaycaster:castRaysFlat
--- Casts multiple rays and returns a flat array of 5 floats per ray.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lRaycaster_stub:castRaysFlat(ox, oy, 0.0, fov, 10, max_dist)  -- -> table
--- (replace lRaycaster_stub with your real LRaycaster instance above)
-
--- ---- Stub: LRaycaster:lineOfSight ----------------------------------------
---@api-stub: LRaycaster:lineOfSight
--- Checks line of sight between two points using DDA traversal.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lRaycaster_stub:lineOfSight(x1, y1, x2, y2)  -- -> boolean
--- (replace lRaycaster_stub with your real LRaycaster instance above)
-
--- ---- Stub: LRaycaster:setWallAlpha ---------------------------------------
---@api-stub: LRaycaster:setWallAlpha
--- Sets the opacity for a wall tile type. Alpha is clamped to [0, 1].
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lRaycaster_stub:setWallAlpha(tile_type, alpha)
--- (replace lRaycaster_stub with your real LRaycaster instance above)
-
--- ---- Stub: LRaycaster:getWallAlpha ---------------------------------------
---@api-stub: LRaycaster:getWallAlpha
--- Returns the opacity for a wall tile type. Returns 1.0 if not set.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lRaycaster_stub:getWallAlpha(tile_type)  -- -> number
--- (replace lRaycaster_stub with your real LRaycaster instance above)
-
--- ---- Stub: LRaycaster:castRayMulti ---------------------------------------
---@api-stub: LRaycaster:castRayMulti
--- Casts a ray collecting up to max_hits wall layers, continuing through
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lRaycaster_stub:castRayMulti(ox, oy, 0.0, max_dist, [max_hits])  -- -> table
--- (replace lRaycaster_stub with your real LRaycaster instance above)
-
--- ---- Stub: LRaycaster:castFloorRow ---------------------------------------
---@api-stub: LRaycaster:castFloorRow
--- Computes floor (or ceiling) texture UV coordinates for one horizontal screen row.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lRaycaster_stub:castFloorRow()  -- -> table
--- (replace lRaycaster_stub with your real LRaycaster instance above)
-
--- ---- Stub: LRaycaster:projectSprite --------------------------------------
---@api-stub: LRaycaster:projectSprite
--- Projects a world-space sprite onto screen space.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lRaycaster_stub:projectSprite(1.0, 1.0, px, py, pa, fov, screen_w)  -- -> table
--- (replace lRaycaster_stub with your real LRaycaster instance above)
-
--- ---- Stub: LRaycaster:drawTopDown ----------------------------------------
---@api-stub: LRaycaster:drawTopDown
--- Renders a top-down grid view with player marker to an ImageData.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lRaycaster_stub:drawTopDown(px, py, 0.0, 1.0)  -- -> ImageData
--- (replace lRaycaster_stub with your real LRaycaster instance above)
-
--- ---- Stub: LRaycaster:drawView -------------------------------------------
---@api-stub: LRaycaster:drawView
--- Renders a first-person column view to an ImageData.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lRaycaster_stub:drawView(px, py, 0.0, fov, 64.0, 64.0, max_dist)  -- -> ImageData
--- (replace lRaycaster_stub with your real LRaycaster instance above)
-
--- ---- Stub: LRaycaster:drawDepthMap ---------------------------------------
---@api-stub: LRaycaster:drawDepthMap
--- Renders a depth-map column view to an ImageData.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lRaycaster_stub:drawDepthMap()  -- -> ImageData
--- (replace lRaycaster_stub with your real LRaycaster instance above)
-
--- ---- Stub: LRaycaster:drawLineOfSight ------------------------------------
---@api-stub: LRaycaster:drawLineOfSight
--- Renders a line-of-sight test between two points to an ImageData.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lRaycaster_stub:drawLineOfSight(ax, ay, bx, by, 1.0)  -- -> ImageData
--- (replace lRaycaster_stub with your real LRaycaster instance above)
-
--- ---- Stub: LRaycaster:drawCameraSweep ------------------------------------
---@api-stub: LRaycaster:drawCameraSweep
--- Renders a mosaic of first-person views from evenly spaced angles to an ImageData.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lRaycaster_stub:drawCameraSweep(0.0, 0.0, fov, max_dist, num_frames, fw, fh)  -- -> ImageData
--- (replace lRaycaster_stub with your real LRaycaster instance above)
-
--- ---- Stub: LRaycaster:buildScene -----------------------------------------
---@api-stub: LRaycaster:buildScene
--- Builds a raycaster scene and stores it in SharedState for GPU rendering.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lRaycaster_stub:buildScene()
--- (replace lRaycaster_stub with your real LRaycaster instance above)
 
 -- ---- Stub: LRaycaster:type -----------------------------------------------
 --@api-stub: LRaycaster:type
@@ -926,62 +610,3 @@ end
 -- lRaycaster_stub:typeOf("hero")  -- -> boolean
 -- (replace lRaycaster_stub with your real LRaycaster instance above)
 
--- -----------------------------------------------------------------------------
--- LSpriteManager methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LSpriteManager:add --------------------------------------------
---@api-stub: LSpriteManager:add
--- Adds a sprite at world position (x, y) and returns its unique id.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSpriteManager_stub:add(0.0, 0.0, texture, [scale])  -- -> integer
--- (replace lSpriteManager_stub with your real LSpriteManager instance above)
-
--- ---- Stub: LSpriteManager:remove -----------------------------------------
---@api-stub: LSpriteManager:remove
--- Removes the sprite with the given id. No-op if not found.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSpriteManager_stub:remove(1)
--- (replace lSpriteManager_stub with your real LSpriteManager instance above)
-
--- ---- Stub: LSpriteManager:setPosition ------------------------------------
---@api-stub: LSpriteManager:setPosition
--- Moves the sprite with the given id to world (x, y).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSpriteManager_stub:setPosition(1, 0.0, 0.0)
--- (replace lSpriteManager_stub with your real LSpriteManager instance above)
-
--- ---- Stub: LSpriteManager:setVisible -------------------------------------
---@api-stub: LSpriteManager:setVisible
--- Shows or hides the sprite with the given id.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSpriteManager_stub:setVisible(1, true)
--- (replace lSpriteManager_stub with your real LSpriteManager instance above)
-
--- ---- Stub: LSpriteManager:clear ------------------------------------------
---@api-stub: LSpriteManager:clear
--- Removes all sprites from the manager.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSpriteManager_stub:clear()
--- (replace lSpriteManager_stub with your real LSpriteManager instance above)
-
--- ---- Stub: LSpriteManager:sortAndProject ---------------------------------
---@api-stub: LSpriteManager:sortAndProject
--- Returns an array of visible sprites sorted back-to-front from camera position.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSpriteManager_stub:sortAndProject(cam_x, cam_y, cam_angle)  -- -> table
--- (replace lSpriteManager_stub with your real LSpriteManager instance above)
-
--- ---- Stub: LSpriteManager:type -------------------------------------------
---@api-stub: LSpriteManager:type
--- Returns the type string "SpriteManager".
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSpriteManager_stub:type()  -- -> string
--- (replace lSpriteManager_stub with your real LSpriteManager instance above)
-
--- ---- Stub: LSpriteManager:typeOf -----------------------------------------
---@api-stub: LSpriteManager:typeOf
--- Returns the type string "SpriteManager".
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSpriteManager_stub:typeOf()  -- -> string
--- (replace lSpriteManager_stub with your real LSpriteManager instance above)

@@ -82,7 +82,7 @@ end
 
 -- ── DataFrame methods ──
 
---@api-stub: DataFrame:nrows
+--@api-stub: LDataFrame:nrows
 -- Returns the number of rows.
 -- Branch on row count to skip empty-frame work like rendering or stat aggregation.
 do  -- DataFrame:nrows
@@ -92,7 +92,7 @@ do  -- DataFrame:nrows
   end
 end
 
---@api-stub: DataFrame:ncols
+--@api-stub: LDataFrame:ncols
 -- Returns the number of columns.
 -- Use when iterating columns by index or validating an imported schema.
 do  -- DataFrame:ncols
@@ -102,7 +102,7 @@ do  -- DataFrame:ncols
   end
 end
 
---@api-stub: DataFrame:columns
+--@api-stub: LDataFrame:columns
 -- Returns a table of column names.
 -- Fetch the header list once when building UI tables or driving column selectors.
 do  -- DataFrame:columns
@@ -113,7 +113,7 @@ do  -- DataFrame:columns
   end
 end
 
---@api-stub: DataFrame:count
+--@api-stub: LDataFrame:count
 -- Returns the row count (alias for nrows).
 -- Same as nrows — handy when reading code that pretends DataFrames are SQL tables.
 do  -- DataFrame:count
@@ -122,7 +122,7 @@ do  -- DataFrame:count
   lurek.log.info("session kills: " .. kills)
 end
 
---@api-stub: DataFrame:removeColumn
+--@api-stub: LDataFrame:removeColumn
 -- Removes a column by name or index.
 -- Drop sensitive or oversized columns before serialising for the network or save.
 do  -- DataFrame:removeColumn
@@ -131,7 +131,7 @@ do  -- DataFrame:removeColumn
   lurek.log.info(df:toCSV())
 end
 
---@api-stub: DataFrame:rename
+--@api-stub: LDataFrame:rename
 -- Renames the column `old_name` to `new_name` in this DataFrame.
 -- Rename imported columns to engine-internal names so downstream code stays stable.
 do  -- DataFrame:rename
@@ -140,7 +140,7 @@ do  -- DataFrame:rename
   lurek.log.info("first column is now " .. df:columns()[1])
 end
 
---@api-stub: DataFrame:getColumn
+--@api-stub: LDataFrame:getColumn
 -- Returns all values in a column as a table.
 -- Pull one column out as a plain array for use with lurek.math or table iteration.
 do  -- DataFrame:getColumn
@@ -149,7 +149,7 @@ do  -- DataFrame:getColumn
   lurek.log.info("first x = " .. xs[1] .. ", last x = " .. xs[#xs])
 end
 
---@api-stub: DataFrame:addRow
+--@api-stub: LDataFrame:addRow
 -- Adds a row from an optional table of name-value pairs, returns 1-based index.
 -- Use for incremental logging — return value is the 1-based index of the new row.
 do  -- DataFrame:addRow
@@ -160,7 +160,7 @@ do  -- DataFrame:addRow
   lurek.log.info("logged at row " .. row)
 end
 
---@api-stub: DataFrame:removeRow
+--@api-stub: LDataFrame:removeRow
 -- Removes a row by 1-based index.
 -- Drop a single row by 1-based index — useful when an entity dies in a stats frame.
 do  -- DataFrame:removeRow
@@ -169,7 +169,7 @@ do  -- DataFrame:removeRow
   lurek.log.info("rows left: " .. df:nrows())
 end
 
---@api-stub: DataFrame:getRow
+--@api-stub: LDataFrame:getRow
 -- Returns a row as a table of name-value pairs.
 -- Fetch a row as a name-keyed table to feed UI panels or per-entity logic.
 do  -- DataFrame:getRow
@@ -178,7 +178,7 @@ do  -- DataFrame:getRow
   lurek.log.info(row.name .. " has " .. row.hp .. " hp")
 end
 
---@api-stub: DataFrame:getValue
+--@api-stub: LDataFrame:getValue
 -- Returns a single cell value.
 -- Cell-level read for tooltips, HUD numbers, or single-stat lookups.
 do  -- DataFrame:getValue
@@ -187,7 +187,7 @@ do  -- DataFrame:getValue
   if hp < 30 then lurek.log.warn("low hp: " .. hp) end
 end
 
---@api-stub: DataFrame:head
+--@api-stub: LDataFrame:head
 -- Returns the first n rows (default 5).
 -- Preview the top of a frame in logs or a debug HUD without dumping everything.
 do  -- DataFrame:head
@@ -196,7 +196,7 @@ do  -- DataFrame:head
   lurek.log.info("preview:\n" .. top:toString())
 end
 
---@api-stub: DataFrame:tail
+--@api-stub: LDataFrame:tail
 -- Returns the last n rows (default 5).
 -- Inspect the most recent rows — e.g. last few entries in a rolling event log.
 do  -- DataFrame:tail
@@ -205,7 +205,7 @@ do  -- DataFrame:tail
   lurek.log.info("last 5:\n" .. recent:toString())
 end
 
---@api-stub: DataFrame:slice
+--@api-stub: LDataFrame:slice
 -- Returns rows from start to end (1-based, inclusive).
 -- Extract a fixed window for paging UI or chart segments (1-based inclusive).
 do  -- DataFrame:slice
@@ -214,7 +214,7 @@ do  -- DataFrame:slice
   lurek.log.info("page rows: " .. page:nrows())
 end
 
---@api-stub: DataFrame:select
+--@api-stub: LDataFrame:select
 -- Selects a subset of columns, returns a new DataFrame.
 -- Project to just the columns you need before sending to a chart or save file.
 do  -- DataFrame:select
@@ -223,7 +223,7 @@ do  -- DataFrame:select
   lurek.log.info(hud_view:toString())
 end
 
---@api-stub: DataFrame:unique
+--@api-stub: LDataFrame:unique
 -- Returns unique values in a column as a table.
 -- List distinct values to populate a filter dropdown or dedupe spawn pools.
 do  -- DataFrame:unique
@@ -232,7 +232,7 @@ do  -- DataFrame:unique
   lurek.log.info("distinct types: " .. #kinds)
 end
 
---@api-stub: DataFrame:groupBy
+--@api-stub: LDataFrame:groupBy
 -- Groups rows by column value, returns a table of DataFrames keyed by value.
 -- Bucket rows by category to feed per-team scoreboards or per-region tallies.
 do  -- DataFrame:groupBy
@@ -243,7 +243,7 @@ do  -- DataFrame:groupBy
   lurek.log.info("red rows: " .. groups["red"]:nrows())
 end
 
---@api-stub: DataFrame:merge
+--@api-stub: LDataFrame:merge
 -- Appends rows from another DataFrame in-place.
 -- Append rows from a compatible frame in-place — handy when concatenating logs.
 do  -- DataFrame:merge
@@ -253,7 +253,7 @@ do  -- DataFrame:merge
   lurek.log.info("merged rows: " .. a:nrows())
 end
 
---@api-stub: DataFrame:countBy
+--@api-stub: LDataFrame:countBy
 -- Counts distinct values in a column, returns a DataFrame with value and count columns.
 -- Build a quick frequency table — perfect for kill-by-weapon or item-by-rarity charts.
 do  -- DataFrame:countBy
@@ -262,7 +262,7 @@ do  -- DataFrame:countBy
   lurek.log.info(counts:toString())
 end
 
---@api-stub: DataFrame:dropNil
+--@api-stub: LDataFrame:dropNil
 -- Removes rows where the given column is nil, returns a new DataFrame.
 -- Strip incomplete rows before computing statistics that cannot tolerate gaps.
 do  -- DataFrame:dropNil
@@ -271,7 +271,7 @@ do  -- DataFrame:dropNil
   lurek.log.info("clean rows: " .. clean:nrows())
 end
 
---@api-stub: DataFrame:sample
+--@api-stub: LDataFrame:sample
 -- Returns a random sample of n rows.
 -- Pull a deterministic random subset for A/B tests or telemetry sampling.
 do  -- DataFrame:sample
@@ -280,7 +280,7 @@ do  -- DataFrame:sample
   lurek.log.info("sampled " .. subset:nrows() .. " rows")
 end
 
---@api-stub: DataFrame:describe
+--@api-stub: LDataFrame:describe
 -- Returns descriptive statistics for all numeric columns.
 -- Summary stats per numeric column — drop into a debug overlay for live tuning.
 do  -- DataFrame:describe
@@ -289,7 +289,7 @@ do  -- DataFrame:describe
   lurek.log.info(summary:toString())
 end
 
---@api-stub: DataFrame:sum
+--@api-stub: LDataFrame:sum
 -- Returns the sum of numeric values in a column.
 -- Total a numeric column — total damage, total gold earned, etc.
 do  -- DataFrame:sum
@@ -298,7 +298,7 @@ do  -- DataFrame:sum
   lurek.log.info("total damage: " .. total)
 end
 
---@api-stub: DataFrame:mean
+--@api-stub: LDataFrame:mean
 -- Returns the mean of numeric values in a column.
 -- Average a numeric column — average DPS, average session length, etc.
 do  -- DataFrame:mean
@@ -307,7 +307,7 @@ do  -- DataFrame:mean
   lurek.log.info("avg dps: " .. avg)
 end
 
---@api-stub: DataFrame:min
+--@api-stub: LDataFrame:min
 -- Returns the minimum numeric value in a column.
 -- Find the lowest value to spotlight worst-performing weapons or slowest frames.
 do  -- DataFrame:min
@@ -316,7 +316,7 @@ do  -- DataFrame:min
   lurek.log.info("best frame ms: " .. fastest)
 end
 
---@api-stub: DataFrame:max
+--@api-stub: LDataFrame:max
 -- Returns the maximum numeric value in a column.
 -- Find the highest value — top score, slowest frame, peak memory.
 do  -- DataFrame:max
@@ -325,7 +325,7 @@ do  -- DataFrame:max
   lurek.log.info("high score: " .. best)
 end
 
---@api-stub: DataFrame:median
+--@api-stub: LDataFrame:median
 -- Returns the median of numeric values in a column.
 -- More robust than mean when outliers (lag spikes, super-rare drops) skew the data.
 do  -- DataFrame:median
@@ -334,7 +334,7 @@ do  -- DataFrame:median
   lurek.log.info("typical ms: " .. typical)
 end
 
---@api-stub: DataFrame:stddev
+--@api-stub: LDataFrame:stddev
 -- Returns the population standard deviation of numeric values in a column.
 -- Measure dispersion — high stddev on frame time means inconsistent performance.
 do  -- DataFrame:stddev
@@ -343,7 +343,7 @@ do  -- DataFrame:stddev
   lurek.log.info("ms stddev: " .. s)
 end
 
---@api-stub: DataFrame:variance
+--@api-stub: LDataFrame:variance
 -- Returns the population variance of numeric values in a column.
 -- Squared dispersion — useful when feeding statistics into z-score or risk maths.
 do  -- DataFrame:variance
@@ -352,7 +352,7 @@ do  -- DataFrame:variance
   lurek.log.info("dmg variance: " .. v)
 end
 
---@api-stub: DataFrame:fillNil
+--@api-stub: LDataFrame:fillNil
 -- Replaces nil values in a column with the given value.
 -- Substitute a sentinel before stats — e.g. replace nil scores with 0.
 do  -- DataFrame:fillNil
@@ -361,7 +361,7 @@ do  -- DataFrame:fillNil
   lurek.log.info("sum after fill: " .. df:sum("score"))
 end
 
---@api-stub: DataFrame:toCSV
+--@api-stub: LDataFrame:toCSV
 -- Serializes this DataFrame to a CSV string.
 -- Export to a clipboard-friendly text format for spreadsheets and bug reports.
 do  -- DataFrame:toCSV
@@ -370,7 +370,7 @@ do  -- DataFrame:toCSV
   if lurek.fs then lurek.fs.write("save/scores.csv", csv) end
 end
 
---@api-stub: DataFrame:toJSON
+--@api-stub: LDataFrame:toJSON
 -- Serializes this DataFrame to a JSON string.
 -- Use when posting data to a web service or saving to a human-readable file.
 do  -- DataFrame:toJSON
@@ -379,7 +379,7 @@ do  -- DataFrame:toJSON
   if lurek.fs then lurek.fs.write("save/players.json", json) end
 end
 
---@api-stub: DataFrame:toBinary
+--@api-stub: LDataFrame:toBinary
 -- Serializes this DataFrame to a binary LVDF string.
 -- Smallest, fastest format — prefer for production save files and network packets.
 do  -- DataFrame:toBinary
@@ -388,7 +388,7 @@ do  -- DataFrame:toBinary
   if lurek.fs then lurek.fs.write("save/state.lvdf", blob) end
 end
 
---@api-stub: DataFrame:toTable
+--@api-stub: LDataFrame:toTable
 -- Converts this DataFrame to a Lua table of row tables.
 -- Round-trip back to plain Lua tables for code that does not speak DataFrame.
 do  -- DataFrame:toTable
@@ -399,7 +399,7 @@ do  -- DataFrame:toTable
   end
 end
 
---@api-stub: DataFrame:toString
+--@api-stub: LDataFrame:toString
 -- Returns a formatted string table representation.
 -- Pretty-printed table — drop straight into the log or an in-game console.
 do  -- DataFrame:toString
@@ -407,7 +407,7 @@ do  -- DataFrame:toString
   lurek.log.info("party:\n" .. df:toString())
 end
 
---@api-stub: DataFrame:query
+--@api-stub: LDataFrame:query
 -- Executes a SQL query against this DataFrame.
 -- Run a SQL query against a single frame — alias `t` is implicit in the FROM clause.
 do  -- DataFrame:query
@@ -416,7 +416,7 @@ do  -- DataFrame:query
   lurek.log.info("hurt rows: " .. hurt:nrows())
 end
 
---@api-stub: DataFrame:clone
+--@api-stub: LDataFrame:clone
 -- Returns a deep copy of this DataFrame.
 -- Make an independent copy before destructive ops like fillNil or merge.
 do  -- DataFrame:clone
@@ -426,7 +426,7 @@ do  -- DataFrame:clone
   lurek.log.info("orig=" .. original:nrows() .. " copy=" .. working:nrows())
 end
 
---@api-stub: DataFrame:correlationMatrix
+--@api-stub: LDataFrame:correlationMatrix
 -- Compute a correlation matrix for all numeric columns.
 -- Spot relationships between numeric stats (does damage correlate with cost?).
 do  -- DataFrame:correlationMatrix
@@ -435,7 +435,7 @@ do  -- DataFrame:correlationMatrix
   lurek.log.info("correlation:\n" .. matrix:toString())
 end
 
---@api-stub: DataFrame:modeVal
+--@api-stub: LDataFrame:modeVal
 -- Return the most frequent value in a column (nil if empty).
 -- Find the most common value — favourite weapon, most-used skill, etc.
 do  -- DataFrame:modeVal
@@ -444,7 +444,7 @@ do  -- DataFrame:modeVal
   lurek.log.info("most-picked: " .. tostring(favourite))
 end
 
---@api-stub: DataFrame:entropy
+--@api-stub: LDataFrame:entropy
 -- Shannon entropy (bits) of the value distribution in a column.
 -- Measure variety — low entropy means everyone picks the same thing (balance issue).
 do  -- DataFrame:entropy
@@ -453,7 +453,7 @@ do  -- DataFrame:entropy
   lurek.log.info("class entropy bits: " .. h)
 end
 
---@api-stub: DataFrame:addRowBatch
+--@api-stub: LDataFrame:addRowBatch
 -- Add multiple rows at once from a table of row tables.
 -- Bulk-insert positional rows — much faster than calling addRow in a loop.
 do  -- DataFrame:addRowBatch
@@ -464,7 +464,7 @@ do  -- DataFrame:addRowBatch
   lurek.log.info("rows now: " .. df:nrows())
 end
 
---@api-stub: DataFrame:getColumnAsF64
+--@api-stub: LDataFrame:getColumnAsF64
 -- Return a numeric column as a Lua array of numbers (nils → 0/nan).
 -- Optimised numeric extract — feed straight into FFT, signal smoothing, or graphs.
 do  -- DataFrame:getColumnAsF64
@@ -473,7 +473,7 @@ do  -- DataFrame:getColumnAsF64
   lurek.log.info("first hp = " .. nums[1])
 end
 
---@api-stub: DataFrame:setColumnFromF64
+--@api-stub: LDataFrame:setColumnFromF64
 -- Set a numeric column from a Lua array of numbers.
 -- Bulk-replace a numeric column — useful after running smoothing or filtering off-frame.
 do  -- DataFrame:setColumnFromF64
@@ -482,7 +482,7 @@ do  -- DataFrame:setColumnFromF64
   lurek.log.info("sum x = " .. df:sum("x"))
 end
 
---@api-stub: DataFrame:type
+--@api-stub: LDataFrame:type
 -- Returns the type name of this object.
 -- Use in generic dispatch code that handles both DataFrame and Database userdata.
 do  -- DataFrame:type
@@ -492,7 +492,7 @@ do  -- DataFrame:type
   end
 end
 
---@api-stub: DataFrame:typeOf
+--@api-stub: LDataFrame:typeOf
 -- Returns true if this object is of the given type.
 -- Inheritance-style check — also returns true for the generic "Object" supertype.
 do  -- DataFrame:typeOf
@@ -502,7 +502,7 @@ do  -- DataFrame:typeOf
   end
 end
 
---@api-stub: DataFrame:withEval
+--@api-stub: LDataFrame:withEval
 -- Returns a new DataFrame with an additional computed column named `col_name`.
 -- Add derived columns with a simple `+ - * /` expression over existing columns.
 do  -- DataFrame:withEval
@@ -513,7 +513,7 @@ end
 
 -- ── Database methods ──
 
---@api-stub: Database:getTable
+--@api-stub: LDatabase:getTable
 -- Returns a copy of a table by name, or nil if not found.
 -- Returns a deep copy — modify it freely without touching the database state.
 do  -- Database:getTable
@@ -525,7 +525,7 @@ do  -- Database:getTable
   end
 end
 
---@api-stub: Database:removeTable
+--@api-stub: LDatabase:removeTable
 -- Drops the named table from this in-memory database if it exists.
 -- Drop a table when the corresponding game system shuts down (e.g. lobby closes).
 do  -- Database:removeTable
@@ -535,7 +535,7 @@ do  -- Database:removeTable
   lurek.log.info("table count: " .. db:tableCount())
 end
 
---@api-stub: Database:hasTable
+--@api-stub: LDatabase:hasTable
 -- Returns true if a table with the given name exists.
 -- Guard against missing tables before querying — avoids a runtime SQL error.
 do  -- Database:hasTable
@@ -545,7 +545,7 @@ do  -- Database:hasTable
   end
 end
 
---@api-stub: Database:listTables
+--@api-stub: LDatabase:listTables
 -- Returns a table of all table names.
 -- Iterate every table for a debug overlay or to drive an export-all command.
 do  -- Database:listTables
@@ -557,7 +557,7 @@ do  -- Database:listTables
   end
 end
 
---@api-stub: Database:tableCount
+--@api-stub: LDatabase:tableCount
 -- Returns the number of tables.
 -- Quick sanity check — branch on this to skip empty-database UI rendering.
 do  -- Database:tableCount
@@ -568,7 +568,7 @@ do  -- Database:tableCount
   end
 end
 
---@api-stub: Database:clear
+--@api-stub: LDatabase:clear
 -- Drops every table from this in-memory database, leaving it empty.
 -- Wipe everything between matches or when loading a fresh save file.
 do  -- Database:clear
@@ -578,7 +578,7 @@ do  -- Database:clear
   lurek.log.info("cleared, count=" .. db:tableCount())
 end
 
---@api-stub: Database:merge
+--@api-stub: LDatabase:merge
 -- Merges all tables from another Database into this one.
 -- Pull every table from another Database — useful when stitching together mod data.
 do  -- Database:merge
@@ -589,7 +589,7 @@ do  -- Database:merge
   lurek.log.info("after merge: " .. base:tableCount() .. " tables")
 end
 
---@api-stub: Database:toJSON
+--@api-stub: LDatabase:toJSON
 -- Serializes all tables to a JSON object string.
 -- Serialise the whole database — handy for full-game save files or debug dumps.
 do  -- Database:toJSON
@@ -598,7 +598,7 @@ do  -- Database:toJSON
   if lurek.fs then lurek.fs.write("save/world.json", db:toJSON()) end
 end
 
---@api-stub: Database:query
+--@api-stub: LDatabase:query
 -- Executes a SQL query against the database tables.
 -- Run SQL across multiple tables — JOINs work because each table is named.
 do  -- Database:query
@@ -611,7 +611,7 @@ do  -- Database:query
   end)
 end
 
---@api-stub: Database:type
+--@api-stub: LDatabase:type
 -- Returns the type name of this object.
 -- Use in generic code that introspects either DataFrame or Database userdata.
 do  -- Database:type
@@ -621,7 +621,7 @@ do  -- Database:type
   end
 end
 
---@api-stub: Database:typeOf
+--@api-stub: LDatabase:typeOf
 -- Returns true if this object is of the given type.
 -- Inheritance-style check — also returns true for the generic "Object" supertype.
 do  -- Database:typeOf
@@ -631,7 +631,7 @@ do  -- Database:typeOf
   end
 end
 
---@api-stub: GroupedFrame:aggregate
+--@api-stub: LGroupedFrame:aggregate
 -- Apply a Lua aggregator function to a column within each group.
 -- fn(values_table) -> number  -- receives all column values for the group, returns one number.
 do  -- GroupedFrame:aggregate
@@ -650,7 +650,7 @@ do  -- GroupedFrame:aggregate
   end
 end
 
---@api-stub: DataFrame:groupByObj
+--@api-stub: LDataFrame:groupByObj
 -- Group the frame by an object-type column (uses identity comparison).
 -- Returns a GroupedFrame; call :aggregate() on it to reduce per-group.
 do  -- DataFrame:groupByObj
@@ -692,7 +692,7 @@ do  -- lurek.dataframe.fromVec
   lurek.log.info("first HP after halving: " .. tostring(df2:getValue(1, "hp")))
 end
 
---@api-stub: VecFrame:colAdd
+--@api-stub: LVecFrame:colAdd
 -- Add a scalar to every element of a Float64 column.
 -- All rows are processed in a single vectorized Rust loop.
 do  -- VecFrame:colAdd
@@ -702,7 +702,7 @@ do  -- VecFrame:colAdd
   lurek.log.info("score[0] = " .. tostring(df:getValue(1, "score")))
 end
 
---@api-stub: VecFrame:colMul
+--@api-stub: LVecFrame:colMul
 -- Multiply every element of a Float64 column by a scalar.
 -- Useful for applying damage multipliers or stat scaling across all rows at once.
 do  -- VecFrame:colMul
@@ -710,7 +710,7 @@ do  -- VecFrame:colMul
   vf:colMul("dmg", 1.5)    -- apply 1.5x damage multiplier to all rows
 end
 
---@api-stub: VecFrame:colClamp
+--@api-stub: LVecFrame:colClamp
 -- Clamp every element of a Float64 column to [min, max].
 -- Useful for enforcing stat caps (e.g. HP cannot exceed 100).
 do  -- VecFrame:colClamp
@@ -720,7 +720,7 @@ do  -- VecFrame:colClamp
   lurek.log.info("hp[2] clamped to " .. tostring(df:getValue(2, "hp")))  -- 100
 end
 
---@api-stub: VecFrame:colAbs
+--@api-stub: LVecFrame:colAbs
 -- Replace every element with its absolute value.
 -- Useful for converting signed deltas (e.g. position offsets) to distances.
 do  -- VecFrame:colAbs
@@ -730,7 +730,7 @@ do  -- VecFrame:colAbs
   lurek.log.info("abs delta[0] = " .. tostring(df:getValue(1, "delta")))
 end
 
---@api-stub: VecFrame:colSqrt
+--@api-stub: LVecFrame:colSqrt
 -- Apply square root to every element of a Float64 column.
 -- Convert squared distances to Euclidean distances without a Lua loop.
 do  -- VecFrame:colSqrt
@@ -740,7 +740,7 @@ do  -- VecFrame:colSqrt
   lurek.log.info("dist[0] = " .. tostring(df:getValue(1, "dist_sq")))
 end
 
---@api-stub: VecFrame:colOp
+--@api-stub: LVecFrame:colOp
 -- Element-wise binary operation between two Float64 columns.
 -- op: "add" | "sub" | "mul" | "div" | "min" | "max"
 do  -- VecFrame:colOp
@@ -751,7 +751,7 @@ do  -- VecFrame:colOp
   lurek.log.info("net_dmg[0] = " .. tostring(df2:getValue(1, "net_dmg")))  -- 20
 end
 
---@api-stub: VecFrame:reduce
+--@api-stub: LVecFrame:reduce
 -- Reduce an entire numeric column to a single scalar.
 -- op: "sum" | "mean" | "min" | "max" | "std" | "var" | "count"
 do  -- VecFrame:reduce
@@ -761,7 +761,7 @@ do  -- VecFrame:reduce
   lurek.log.info("sum=" .. total .. " mean=" .. avg)
 end
 
---@api-stub: VecFrame:filterMask
+--@api-stub: LVecFrame:filterMask
 -- Build a boolean row mask: mask[i] = (col[i] op val).
 -- op: "<" | "<=" | ">" | ">=" | "==" | "!="
 do  -- VecFrame:filterMask
@@ -770,7 +770,7 @@ do  -- VecFrame:filterMask
   lurek.log.info("rows with hp >= 50: " .. tostring(mask[2]) .. ", " .. tostring(mask[3]))
 end
 
---@api-stub: VecFrame:applyMask
+--@api-stub: LVecFrame:applyMask
 -- Return a new VecFrame with only the rows where mask[i] is true.
 -- Combine with filterMask for fast predicate-based row selection.
 do  -- VecFrame:applyMask
@@ -780,7 +780,7 @@ do  -- VecFrame:applyMask
   lurek.log.info("alive rows: " .. alive:nrows())  -- 2
 end
 
---@api-stub: VecFrame:colType
+--@api-stub: LVecFrame:colType
 -- Return the dtype name of a column: "float64" | "int64" | "bool" | "text".
 -- Inspect the column type before choosing a scalar op or cast target.
 do  -- VecFrame:colType
@@ -789,7 +789,7 @@ do  -- VecFrame:colType
   lurek.log.info("hp dtype: " .. dtype)  -- "float64"
 end
 
---@api-stub: VecFrame:parReduce
+--@api-stub: LVecFrame:parReduce
 -- Reduce multiple columns in parallel using rayon, returning {col → value}.
 -- Useful for computing per-stat totals across large enemy tables in one call.
 do  -- VecFrame:parReduce
@@ -799,9 +799,6 @@ do  -- VecFrame:parReduce
     lurek.log.info(col .. " sum = " .. tostring(s))
   end
 end
-
---@api-stub: VecFrame:parScalarOp
--- Apply a scalar op in parallel to multiple Float64 columns.
 do  -- VecFrame:parScalarOp
   local vf = lurek.dataframe.toVec(lurek.dataframe.fromCSV("hp,mp\n100,50\n200,80\n"))
   vf:parScalarOp({"hp", "mp"}, "mul", 0.5)   -- halve all stats at once
@@ -809,7 +806,7 @@ do  -- VecFrame:parScalarOp
   lurek.log.info("hp[0]=" .. df2:getValue(1,"hp") .. " mp[0]=" .. df2:getValue(1,"mp"))
 end
 
---@api-stub: VecFrame:toDataFrame
+--@api-stub: LVecFrame:toDataFrame
 -- Convert a VecFrame back to a DataFrame (same as lurek.dataframe.fromVec).
 -- Use as the last step after bulk VecFrame ops before displaying or saving data.
 do  -- VecFrame:toDataFrame
@@ -819,7 +816,7 @@ do  -- VecFrame:toDataFrame
   lurek.log.info("v[0] = " .. tostring(df2:getValue(1, "v")))  -- 11
 end
 
---@api-stub: VecFrame:colSub
+--@api-stub: LVecFrame:colSub
 -- Subtract a scalar from every element of a Float64 column.
 -- Useful for reducing stats by a fixed amount (e.g. applying stamina drain).
 do  -- VecFrame:colSub
@@ -829,7 +826,7 @@ do  -- VecFrame:colSub
   lurek.log.info("stamina[0] after drain = " .. tostring(df2:getValue(1, "stamina")))  -- 90
 end
 
---@api-stub: VecFrame:colDiv
+--@api-stub: LVecFrame:colDiv
 -- Divide every element of a Float64 column by a scalar.
 -- Normalise a column to a [0, 1] range by dividing by its maximum value.
 do  -- VecFrame:colDiv
@@ -839,7 +836,7 @@ do  -- VecFrame:colDiv
   lurek.log.info("normalised score[1] = " .. tostring(df2:getValue(1, "score")))  -- 1.0
 end
 
---@api-stub: VecFrame:colFloor
+--@api-stub: LVecFrame:colFloor
 -- Round every element of a Float64 column down to the nearest integer.
 -- Snap fractional coordinates to tile positions without a Lua loop.
 do  -- VecFrame:colFloor
@@ -849,7 +846,7 @@ do  -- VecFrame:colFloor
   lurek.log.info("floored x[2] = " .. tostring(df2:getValue(2, "x")))  -- 3
 end
 
---@api-stub: VecFrame:colCeil
+--@api-stub: LVecFrame:colCeil
 -- Round every element of a Float64 column up to the nearest integer.
 -- Compute minimum tile coverage for fractional world coordinates.
 do  -- VecFrame:colCeil
@@ -859,7 +856,7 @@ do  -- VecFrame:colCeil
   lurek.log.info("ceiled y[0] = " .. tostring(df2:getValue(1, "y")))  -- 2
 end
 
---@api-stub: VecFrame:colNeg
+--@api-stub: LVecFrame:colNeg
 -- Negate every element of a Float64 column (multiply by -1).
 -- Flip velocity or force columns to reverse direction without a loop.
 do  -- VecFrame:colNeg
@@ -869,7 +866,7 @@ do  -- VecFrame:colNeg
   lurek.log.info("negated vy[0] = " .. tostring(df2:getValue(1, "vy")))  -- -3
 end
 
---@api-stub: VecFrame:colCast
+--@api-stub: LVecFrame:colCast
 -- Cast a column to a new dtype: "float64" | "int64" | "bool" | "text".
 -- Convert an integer column to float before arithmetic, or text for display.
 do  -- VecFrame:colCast
@@ -880,7 +877,7 @@ do  -- VecFrame:colCast
   lurek.log.info("level[0] as float = " .. tostring(df2:getValue(1, "level")))
 end
 
---@api-stub: VecFrame:nrows
+--@api-stub: LVecFrame:nrows
 -- Return the number of rows in this VecFrame.
 -- Use to guard slice/applyMask calls or to log frame dimensions.
 do  -- VecFrame:nrows
@@ -890,7 +887,7 @@ do  -- VecFrame:nrows
   assert(vf:nrows() == df2:nrows())
 end
 
---@api-stub: VecFrame:ncols
+--@api-stub: LVecFrame:ncols
 -- Return the number of columns in this VecFrame.
 -- Check column count after toVec to confirm all DataFrame columns were kept.
 do  -- VecFrame:ncols
@@ -900,7 +897,7 @@ do  -- VecFrame:ncols
   assert(vf:ncols() == df:ncols())
 end
 
---@api-stub: VecFrame:columns
+--@api-stub: LVecFrame:columns
 -- Return a table of column name strings in this VecFrame.
 -- Iterate column names to build dynamic UI headers or log schemas.
 do  -- VecFrame:columns
@@ -911,7 +908,7 @@ do  -- VecFrame:columns
   end
 end
 
---@api-stub: VecFrame:type
+--@api-stub: LVecFrame:type
 -- Return the type name of this object ("VecFrame").
 -- Use in generic dispatch code that handles both VecFrame and DataFrame userdata.
 do  -- VecFrame:type
@@ -921,7 +918,7 @@ do  -- VecFrame:type
   end
 end
 
---@api-stub: VecFrame:typeOf
+--@api-stub: LVecFrame:typeOf
 -- Return true if this object is of the given type.
 -- Inheritance-style check — also returns true for the generic "Object" supertype.
 do  -- VecFrame:typeOf
@@ -931,7 +928,7 @@ do  -- VecFrame:typeOf
   end
 end
 
---@api-stub: DataFrame:addColumn
+--@api-stub: LDataFrame:addColumn
 -- Adds a new column to the DataFrame from a Lua table of values.
 -- Column length must match nrows(); use nil to append an empty column.
 do  -- DataFrame:addColumn
@@ -941,7 +938,7 @@ do  -- DataFrame:addColumn
   lurek.log.info("cols: " .. df:ncols(), "dataframe")
 end
 
---@api-stub: Database:addTable
+--@api-stub: LDatabase:addTable
 -- Adds a named DataFrame to the Database for SQL-style querying.
 -- Table name must be unique; adding a duplicate name replaces the previous table.
 do  -- Database:addTable
@@ -952,7 +949,7 @@ do  -- Database:addTable
   lurek.log.info("tables: " .. db:tableCount(), "dataframe")
 end
 
---@api-stub: DataFrame:apply
+--@api-stub: LDataFrame:apply
 -- Applies a Lua function to every element of a column and stores results in a new column.
 -- Signature: fn(value) -> new_value; nil return keeps the original value.
 do  -- DataFrame:apply
@@ -963,7 +960,7 @@ do  -- DataFrame:apply
   lurek.log.info("grade col added", "dataframe")
 end
 
---@api-stub: DataFrame:corr
+--@api-stub: LDataFrame:corr
 -- Returns the Pearson correlation coefficient between two numeric columns.
 -- Values near 1 indicate strong positive correlation, near -1 strong negative.
 do  -- DataFrame:corr
@@ -975,7 +972,7 @@ do  -- DataFrame:corr
   lurek.log.info("correlation: " .. r, "dataframe")
 end
 
---@api-stub: DataFrame:filter
+--@api-stub: LDataFrame:filter
 -- Returns a new DataFrame containing only rows where the predicate function returns true.
 -- Predicate receives the row table; does not modify the original frame.
 do  -- DataFrame:filter
@@ -986,7 +983,7 @@ do  -- DataFrame:filter
   lurek.log.info("adults: " .. adults:nrows(), "dataframe")
 end
 
---@api-stub: DataFrame:groupAgg
+--@api-stub: LDataFrame:groupAgg
 -- Groups rows by a column and aggregates another column using a named function.
 -- Supported aggregators: "sum", "mean", "count", "min", "max".
 do  -- DataFrame:groupAgg
@@ -998,7 +995,7 @@ do  -- DataFrame:groupAgg
   lurek.log.info("group agg rows: " .. out:nrows(), "dataframe")
 end
 
---@api-stub: DataFrame:join
+--@api-stub: LDataFrame:join
 -- Joins two DataFrames on a shared key column, returning a new merged frame.
 -- join_type: "inner" (default), "left", "right", or "outer".
 do  -- DataFrame:join
@@ -1010,7 +1007,7 @@ do  -- DataFrame:join
   lurek.log.info("joined rows: " .. merged:nrows(), "dataframe")
 end
 
---@api-stub: DataFrame:normalizeCol
+--@api-stub: LDataFrame:normalizeCol
 -- Normalises a numeric column to the [0, 1] range in-place.
 -- Uses min-max scaling; column min and max are computed from the data.
 do  -- DataFrame:normalizeCol
@@ -1020,7 +1017,7 @@ do  -- DataFrame:normalizeCol
   lurek.log.info("normalized col", "dataframe")
 end
 
---@api-stub: DataFrame:outliers
+--@api-stub: LDataFrame:outliers
 -- Returns a new DataFrame containing rows whose column value is an outlier.
 -- Outliers are defined as more than threshold standard deviations from the mean.
 do  -- DataFrame:outliers
@@ -1031,7 +1028,7 @@ do  -- DataFrame:outliers
   lurek.log.info("outliers: " .. out:nrows(), "dataframe")
 end
 
---@api-stub: VecFrame:parScalarOp
+--@api-stub: LVecFrame:parScalarOp
 -- Applies a scalar operation to all cells of a VecFrame in parallel.
 -- op is one of "+", "-", "*", "/"; faster than loop-based column iteration.
 do  -- VecFrame:parScalarOp
@@ -1042,7 +1039,7 @@ do  -- VecFrame:parScalarOp
   lurek.log.info("par scalar done", "dataframe")
 end
 
---@api-stub: DataFrame:pivot
+--@api-stub: LDataFrame:pivot
 -- Pivots the DataFrame: unique values of pivot_col become new columns.
 -- values_col provides the cell values; aggregation is "first" by default.
 do  -- DataFrame:pivot
@@ -1053,7 +1050,7 @@ do  -- DataFrame:pivot
   lurek.log.info("pivot cols: " .. p:ncols(), "dataframe")
 end
 
---@api-stub: DataFrame:pivotTable
+--@api-stub: LDataFrame:pivotTable
 -- Creates a pivot table with row/column grouping and an aggregation function.
 -- More powerful than pivot(); supports multi-index and custom aggregators.
 do  -- DataFrame:pivotTable
@@ -1064,7 +1061,7 @@ do  -- DataFrame:pivotTable
   lurek.log.info("pivot table rows: " .. pt:nrows(), "dataframe")
 end
 
---@api-stub: DataFrame:rank
+--@api-stub: LDataFrame:rank
 -- Returns a new DataFrame with a rank column added, ranked by the given column.
 -- Ties use the "average" method by default; method can be "min", "max", "first".
 do  -- DataFrame:rank
@@ -1074,7 +1071,7 @@ do  -- DataFrame:rank
   lurek.log.info("rank col added", "dataframe")
 end
 
---@api-stub: DataFrame:rollingMean
+--@api-stub: LDataFrame:rollingMean
 -- Returns a new DataFrame with rolling mean applied to a numeric column.
 -- window is the number of preceding rows (inclusive); edge rows get nil/NaN.
 do  -- DataFrame:rollingMean
@@ -1084,7 +1081,7 @@ do  -- DataFrame:rollingMean
   lurek.log.info("rolling mean rows: " .. out:nrows(), "dataframe")
 end
 
---@api-stub: DataFrame:rollingSum
+--@api-stub: LDataFrame:rollingSum
 -- Returns a new DataFrame with rolling sum applied to a numeric column.
 -- Useful for computing moving-window totals such as rolling revenue sums.
 do  -- DataFrame:rollingSum
@@ -1094,7 +1091,7 @@ do  -- DataFrame:rollingSum
   lurek.log.info("rolling sum rows: " .. out:nrows(), "dataframe")
 end
 
---@api-stub: DataFrame:setValue
+--@api-stub: LDataFrame:setValue
 -- Sets the value at (row_index, column_name) in place.
 -- row_index is 1-based; raises an error for out-of-bounds or unknown column.
 do  -- DataFrame:setValue
@@ -1104,7 +1101,7 @@ do  -- DataFrame:setValue
   lurek.log.info("updated score: " .. df:getValue(1, "score"), "dataframe")
 end
 
---@api-stub: DataFrame:sort
+--@api-stub: LDataFrame:sort
 -- Sorts the DataFrame in-place by one or more columns.
 -- Pass asc=true for ascending (default); multi-key sort via a table of column names.
 do  -- DataFrame:sort
@@ -1114,7 +1111,7 @@ do  -- DataFrame:sort
   lurek.log.info("sorted first: " .. df:getValue(1, "score"), "dataframe")
 end
 
---@api-stub: DataFrame:withCumsum
+--@api-stub: LDataFrame:withCumsum
 -- Returns a new DataFrame with a cumulative-sum column derived from a source column.
 -- The resulting column is appended with the suffix "_cumsum" by default.
 do  -- DataFrame:withCumsum
@@ -1124,7 +1121,7 @@ do  -- DataFrame:withCumsum
   lurek.log.info("cumsum col added", "dataframe")
 end
 
---@api-stub: DataFrame:withPctChange
+--@api-stub: LDataFrame:withPctChange
 -- Returns a new DataFrame with a percentage-change column derived from a source column.
 -- First row is nil/NaN; subsequent rows show (current-prev)/prev*100.
 do  -- DataFrame:withPctChange
@@ -1134,7 +1131,7 @@ do  -- DataFrame:withPctChange
   lurek.log.info("pct change col added", "dataframe")
 end
 
---@api-stub: DataFrame:withRank
+--@api-stub: LDataFrame:withRank
 -- Returns a new DataFrame with a rank column added for a numeric source column.
 -- Ties default to average ranking; the new column is named source.."_rank".
 do  -- DataFrame:withRank
@@ -1144,7 +1141,7 @@ do  -- DataFrame:withRank
   lurek.log.info("rank col added", "dataframe")
 end
 
---@api-stub: DataFrame:withRollingMax
+--@api-stub: LDataFrame:withRollingMax
 -- Returns a new DataFrame with a rolling-maximum column derived from a source column.
 -- Useful for computing peak values within a sliding time window.
 do  -- DataFrame:withRollingMax
@@ -1154,7 +1151,7 @@ do  -- DataFrame:withRollingMax
   lurek.log.info("rolling max col added", "dataframe")
 end
 
---@api-stub: DataFrame:withRollingMean
+--@api-stub: LDataFrame:withRollingMean
 -- Returns a new DataFrame with a rolling-mean column appended for a source column.
 -- Equivalent to rolling mean but returns a new frame instead of mutating in place.
 do  -- DataFrame:withRollingMean
@@ -1164,7 +1161,7 @@ do  -- DataFrame:withRollingMean
   lurek.log.info("rolling mean col added", "dataframe")
 end
 
---@api-stub: DataFrame:withRollingMin
+--@api-stub: LDataFrame:withRollingMin
 -- Returns a new DataFrame with a rolling-minimum column derived from a source column.
 -- Useful for tracking the recent low value of a time series.
 do  -- DataFrame:withRollingMin
@@ -1174,7 +1171,7 @@ do  -- DataFrame:withRollingMin
   lurek.log.info("rolling min col added", "dataframe")
 end
 
---@api-stub: DataFrame:withRollingSum
+--@api-stub: LDataFrame:withRollingSum
 -- Returns a new DataFrame with a rolling-sum column derived from a source column.
 -- Useful for sliding-window revenue totals or event-count aggregations.
 do  -- DataFrame:withRollingSum
@@ -1184,7 +1181,7 @@ do  -- DataFrame:withRollingSum
   lurek.log.info("rolling sum col added", "dataframe")
 end
 
---@api-stub: DataFrame:zscoreCol
+--@api-stub: LDataFrame:zscoreCol
 -- Z-score normalises a numeric column in-place: (x-mean)/stddev.
 -- After normalisation the column has mean≈0 and stddev≈1.
 do  -- DataFrame:zscoreCol
@@ -1202,598 +1199,10 @@ end
 -- The final committed file must contain ZERO --@api-stub: lines.
 -- =============================================================================
 
--- -----------------------------------------------------------------------------
--- LDataFrame methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LDataFrame:nrows ----------------------------------------------
---@api-stub: LDataFrame:nrows
--- Returns the number of rows.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDataFrame_stub:nrows()  -- -> integer
--- (replace lDataFrame_stub with your real LDataFrame instance above)
-
--- ---- Stub: LDataFrame:ncols ----------------------------------------------
---@api-stub: LDataFrame:ncols
--- Returns the number of columns.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDataFrame_stub:ncols()  -- -> integer
--- (replace lDataFrame_stub with your real LDataFrame instance above)
-
--- ---- Stub: LDataFrame:columns --------------------------------------------
---@api-stub: LDataFrame:columns
--- Returns a table of column names.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDataFrame_stub:columns()  -- -> table
--- (replace lDataFrame_stub with your real LDataFrame instance above)
-
--- ---- Stub: LDataFrame:count ----------------------------------------------
---@api-stub: LDataFrame:count
--- Returns the row count (alias for nrows).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDataFrame_stub:count()  -- -> integer
--- (replace lDataFrame_stub with your real LDataFrame instance above)
-
--- ---- Stub: LDataFrame:addColumn ------------------------------------------
---@api-stub: LDataFrame:addColumn
--- Adds a new column with an optional default value.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDataFrame_stub:addColumn("hero", [default])
--- (replace lDataFrame_stub with your real LDataFrame instance above)
-
--- ---- Stub: LDataFrame:removeColumn ---------------------------------------
---@api-stub: LDataFrame:removeColumn
--- Removes a column by name or index.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDataFrame_stub:removeColumn(col)
--- (replace lDataFrame_stub with your real LDataFrame instance above)
-
--- ---- Stub: LDataFrame:rename ---------------------------------------------
---@api-stub: LDataFrame:rename
--- Renames the column `old_name` to `new_name` in this DataFrame.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDataFrame_stub:rename(col, new_name)
--- (replace lDataFrame_stub with your real LDataFrame instance above)
-
--- ---- Stub: LDataFrame:getColumn ------------------------------------------
---@api-stub: LDataFrame:getColumn
--- Returns all values in a column as a table.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDataFrame_stub:getColumn(col)  -- -> table
--- (replace lDataFrame_stub with your real LDataFrame instance above)
-
--- ---- Stub: LDataFrame:addRow ---------------------------------------------
---@api-stub: LDataFrame:addRow
--- Adds a row from an optional table of name-value pairs, returns 1-based index.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDataFrame_stub:addRow([row_tbl])  -- -> integer
--- (replace lDataFrame_stub with your real LDataFrame instance above)
-
--- ---- Stub: LDataFrame:removeRow ------------------------------------------
---@api-stub: LDataFrame:removeRow
--- Removes a row by 1-based index.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDataFrame_stub:removeRow(row)
--- (replace lDataFrame_stub with your real LDataFrame instance above)
-
--- ---- Stub: LDataFrame:getRow ---------------------------------------------
---@api-stub: LDataFrame:getRow
--- Returns a row as a table of name-value pairs.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDataFrame_stub:getRow(row)  -- -> table
--- (replace lDataFrame_stub with your real LDataFrame instance above)
-
--- ---- Stub: LDataFrame:getValue -------------------------------------------
---@api-stub: LDataFrame:getValue
--- Returns a single cell value.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDataFrame_stub:getValue(row, col)  -- -> LuaValue
--- (replace lDataFrame_stub with your real LDataFrame instance above)
-
--- ---- Stub: LDataFrame:setValue -------------------------------------------
---@api-stub: LDataFrame:setValue
--- Sets a single cell value.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDataFrame_stub:setValue(row, col, val)
--- (replace lDataFrame_stub with your real LDataFrame instance above)
-
--- ---- Stub: LDataFrame:filter ---------------------------------------------
---@api-stub: LDataFrame:filter
--- Filters rows where column matches a condition, returns a new DataFrame.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDataFrame_stub:filter(col, op, val)  -- -> DataFrame
--- (replace lDataFrame_stub with your real LDataFrame instance above)
-
--- ---- Stub: LDataFrame:sort -----------------------------------------------
---@api-stub: LDataFrame:sort
--- Sorts by column, returns a new DataFrame.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDataFrame_stub:sort(col, [ascending])  -- -> DataFrame
--- (replace lDataFrame_stub with your real LDataFrame instance above)
-
--- ---- Stub: LDataFrame:head -----------------------------------------------
---@api-stub: LDataFrame:head
--- Returns the first n rows (default 5).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDataFrame_stub:head([n])  -- -> DataFrame
--- (replace lDataFrame_stub with your real LDataFrame instance above)
-
--- ---- Stub: LDataFrame:tail -----------------------------------------------
---@api-stub: LDataFrame:tail
--- Returns the last n rows (default 5).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDataFrame_stub:tail([n])  -- -> DataFrame
--- (replace lDataFrame_stub with your real LDataFrame instance above)
-
--- ---- Stub: LDataFrame:slice ----------------------------------------------
---@api-stub: LDataFrame:slice
--- Returns rows from start to end (1-based, inclusive).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDataFrame_stub:slice(start, end)  -- -> DataFrame
--- (replace lDataFrame_stub with your real LDataFrame instance above)
-
--- ---- Stub: LDataFrame:select ---------------------------------------------
---@api-stub: LDataFrame:select
--- Selects a subset of columns, returns a new DataFrame.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDataFrame_stub:select(...)  -- -> DataFrame
--- (replace lDataFrame_stub with your real LDataFrame instance above)
-
--- ---- Stub: LDataFrame:unique ---------------------------------------------
---@api-stub: LDataFrame:unique
--- Returns unique values in a column as a table.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDataFrame_stub:unique(col)  -- -> table
--- (replace lDataFrame_stub with your real LDataFrame instance above)
-
--- ---- Stub: LDataFrame:groupBy --------------------------------------------
---@api-stub: LDataFrame:groupBy
--- Groups rows by column value, returns a table of DataFrames keyed by value.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDataFrame_stub:groupBy(col)  -- -> table
--- (replace lDataFrame_stub with your real LDataFrame instance above)
-
--- ---- Stub: LDataFrame:groupByObj -----------------------------------------
---@api-stub: LDataFrame:groupByObj
--- Groups rows by column value, returns a GroupedFrame object supporting aggregate().
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDataFrame_stub:groupByObj(col)  -- -> GroupedFrame
--- (replace lDataFrame_stub with your real LDataFrame instance above)
-
--- ---- Stub: LDataFrame:join -----------------------------------------------
---@api-stub: LDataFrame:join
--- Joins with another DataFrame on matching columns.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDataFrame_stub:join()  -- -> DataFrame
--- (replace lDataFrame_stub with your real LDataFrame instance above)
-
--- ---- Stub: LDataFrame:merge ----------------------------------------------
---@api-stub: LDataFrame:merge
--- Appends rows from another DataFrame in-place.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDataFrame_stub:merge(other)
--- (replace lDataFrame_stub with your real LDataFrame instance above)
-
--- ---- Stub: LDataFrame:countBy --------------------------------------------
---@api-stub: LDataFrame:countBy
--- Counts distinct values in a column, returns a DataFrame with value and count columns.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDataFrame_stub:countBy(col)  -- -> DataFrame
--- (replace lDataFrame_stub with your real LDataFrame instance above)
-
--- ---- Stub: LDataFrame:dropNil --------------------------------------------
---@api-stub: LDataFrame:dropNil
--- Removes rows where the given column is nil, returns a new DataFrame.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDataFrame_stub:dropNil(col)  -- -> DataFrame
--- (replace lDataFrame_stub with your real LDataFrame instance above)
-
--- ---- Stub: LDataFrame:sample ---------------------------------------------
---@api-stub: LDataFrame:sample
--- Returns a random sample of n rows.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDataFrame_stub:sample(5, [seed])  -- -> DataFrame
--- (replace lDataFrame_stub with your real LDataFrame instance above)
-
--- ---- Stub: LDataFrame:describe -------------------------------------------
---@api-stub: LDataFrame:describe
--- Returns descriptive statistics for all numeric columns.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDataFrame_stub:describe()  -- -> DataFrame
--- (replace lDataFrame_stub with your real LDataFrame instance above)
-
--- ---- Stub: LDataFrame:sum ------------------------------------------------
---@api-stub: LDataFrame:sum
--- Returns the sum of numeric values in a column.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDataFrame_stub:sum(col)  -- -> number
--- (replace lDataFrame_stub with your real LDataFrame instance above)
-
--- ---- Stub: LDataFrame:mean -----------------------------------------------
---@api-stub: LDataFrame:mean
--- Returns the mean of numeric values in a column.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDataFrame_stub:mean(col)  -- -> number
--- (replace lDataFrame_stub with your real LDataFrame instance above)
-
--- ---- Stub: LDataFrame:min ------------------------------------------------
---@api-stub: LDataFrame:min
--- Returns the minimum numeric value in a column.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDataFrame_stub:min(col)  -- -> number
--- (replace lDataFrame_stub with your real LDataFrame instance above)
-
--- ---- Stub: LDataFrame:max ------------------------------------------------
---@api-stub: LDataFrame:max
--- Returns the maximum numeric value in a column.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDataFrame_stub:max(col)  -- -> number
--- (replace lDataFrame_stub with your real LDataFrame instance above)
-
--- ---- Stub: LDataFrame:median ---------------------------------------------
---@api-stub: LDataFrame:median
--- Returns the median of numeric values in a column.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDataFrame_stub:median(col)  -- -> number
--- (replace lDataFrame_stub with your real LDataFrame instance above)
-
--- ---- Stub: LDataFrame:stddev ---------------------------------------------
---@api-stub: LDataFrame:stddev
--- Returns the population standard deviation of numeric values in a column.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDataFrame_stub:stddev(col)  -- -> number
--- (replace lDataFrame_stub with your real LDataFrame instance above)
-
--- ---- Stub: LDataFrame:variance -------------------------------------------
---@api-stub: LDataFrame:variance
--- Returns the population variance of numeric values in a column.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDataFrame_stub:variance(col)  -- -> number
--- (replace lDataFrame_stub with your real LDataFrame instance above)
-
--- ---- Stub: LDataFrame:fillNil --------------------------------------------
---@api-stub: LDataFrame:fillNil
--- Replaces nil values in a column with the given value.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDataFrame_stub:fillNil(col, val)
--- (replace lDataFrame_stub with your real LDataFrame instance above)
-
--- ---- Stub: LDataFrame:apply ----------------------------------------------
---@api-stub: LDataFrame:apply
--- Applies a function to each value in a column, replacing cells with results.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDataFrame_stub:apply(col_val, func)
--- (replace lDataFrame_stub with your real LDataFrame instance above)
-
--- ---- Stub: LDataFrame:toCSV ----------------------------------------------
---@api-stub: LDataFrame:toCSV
--- Serializes this DataFrame to a CSV string.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDataFrame_stub:toCSV()  -- -> string
--- (replace lDataFrame_stub with your real LDataFrame instance above)
-
--- ---- Stub: LDataFrame:toJSON ---------------------------------------------
---@api-stub: LDataFrame:toJSON
--- Serializes this DataFrame to a JSON string.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDataFrame_stub:toJSON()  -- -> string
--- (replace lDataFrame_stub with your real LDataFrame instance above)
-
--- ---- Stub: LDataFrame:toBinary -------------------------------------------
---@api-stub: LDataFrame:toBinary
--- Serializes this DataFrame to a binary LVDF string.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDataFrame_stub:toBinary()  -- -> string
--- (replace lDataFrame_stub with your real LDataFrame instance above)
-
--- ---- Stub: LDataFrame:toTable --------------------------------------------
---@api-stub: LDataFrame:toTable
--- Converts this DataFrame to a Lua table of row tables.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDataFrame_stub:toTable()  -- -> table
--- (replace lDataFrame_stub with your real LDataFrame instance above)
-
--- ---- Stub: LDataFrame:toString -------------------------------------------
---@api-stub: LDataFrame:toString
--- Returns a formatted string table representation.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDataFrame_stub:toString()  -- -> string
--- (replace lDataFrame_stub with your real LDataFrame instance above)
-
--- ---- Stub: LDataFrame:query ----------------------------------------------
---@api-stub: LDataFrame:query
--- Executes a SQL query against this DataFrame.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDataFrame_stub:query(sql_str)  -- -> DataFrame
--- (replace lDataFrame_stub with your real LDataFrame instance above)
-
--- ---- Stub: LDataFrame:clone ----------------------------------------------
---@api-stub: LDataFrame:clone
--- Returns a deep copy of this DataFrame.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDataFrame_stub:clone()  -- -> DataFrame
--- (replace lDataFrame_stub with your real LDataFrame instance above)
-
--- ---- Stub: LDataFrame:withRollingMean ------------------------------------
---@api-stub: LDataFrame:withRollingMean
--- Add a rolling mean column. Rows with insufficient history get nil.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDataFrame_stub:withRollingMean(col, window, "hero")
--- (replace lDataFrame_stub with your real LDataFrame instance above)
-
--- ---- Stub: LDataFrame:withRollingSum -------------------------------------
---@api-stub: LDataFrame:withRollingSum
--- Add a rolling sum column.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDataFrame_stub:withRollingSum(col, window, "hero")
--- (replace lDataFrame_stub with your real LDataFrame instance above)
-
--- ---- Stub: LDataFrame:withRollingMin -------------------------------------
---@api-stub: LDataFrame:withRollingMin
--- Add a rolling minimum column.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDataFrame_stub:withRollingMin(col, window, "hero")
--- (replace lDataFrame_stub with your real LDataFrame instance above)
-
--- ---- Stub: LDataFrame:withRollingMax -------------------------------------
---@api-stub: LDataFrame:withRollingMax
--- Add a rolling maximum column.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDataFrame_stub:withRollingMax(col, window, "hero")
--- (replace lDataFrame_stub with your real LDataFrame instance above)
-
--- ---- Stub: LDataFrame:withRank -------------------------------------------
---@api-stub: LDataFrame:withRank
--- Add a rank column (1-based, ties averaged).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDataFrame_stub:withRank(col, [asc], "hero")
--- (replace lDataFrame_stub with your real LDataFrame instance above)
-
--- ---- Stub: LDataFrame:withPctChange --------------------------------------
---@api-stub: LDataFrame:withPctChange
--- Add a percent-change-from-previous-row column.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDataFrame_stub:withPctChange(col, "hero")
--- (replace lDataFrame_stub with your real LDataFrame instance above)
-
--- ---- Stub: LDataFrame:withCumsum -----------------------------------------
---@api-stub: LDataFrame:withCumsum
--- Add a cumulative-sum column.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDataFrame_stub:withCumsum(col, "hero")
--- (replace lDataFrame_stub with your real LDataFrame instance above)
-
--- ---- Stub: LDataFrame:groupAgg -------------------------------------------
---@api-stub: LDataFrame:groupAgg
--- Aggregate agg_col grouped by group_col using the named function.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDataFrame_stub:groupAgg(group_col, agg_col, fn_name)  -- -> DataFrame
--- (replace lDataFrame_stub with your real LDataFrame instance above)
-
--- ---- Stub: LDataFrame:pivot ----------------------------------------------
---@api-stub: LDataFrame:pivot
--- Creates a wide pivot table by reshaping rows into columns.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDataFrame_stub:pivot(row_col, col_col, val_col)  -- -> DataFrame
--- (replace lDataFrame_stub with your real LDataFrame instance above)
-
--- ---- Stub: LDataFrame:corr -----------------------------------------------
---@api-stub: LDataFrame:corr
--- Pearson correlation coefficient between two numeric columns.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDataFrame_stub:corr(col_a, col_b)  -- -> number
--- (replace lDataFrame_stub with your real LDataFrame instance above)
-
--- ---- Stub: LDataFrame:correlationMatrix ----------------------------------
---@api-stub: LDataFrame:correlationMatrix
--- Compute a correlation matrix for all numeric columns.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDataFrame_stub:correlationMatrix()  -- -> DataFrame
--- (replace lDataFrame_stub with your real LDataFrame instance above)
-
--- ---- Stub: LDataFrame:zscoreCol ------------------------------------------
---@api-stub: LDataFrame:zscoreCol
--- Add a z-score column for the given numeric column.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDataFrame_stub:zscoreCol(col, "hero")
--- (replace lDataFrame_stub with your real LDataFrame instance above)
-
--- ---- Stub: LDataFrame:normalizeCol ---------------------------------------
---@api-stub: LDataFrame:normalizeCol
--- Add a min-max normalized column scaled to [out_min, out_max].
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDataFrame_stub:normalizeCol(col, out_min, out_max, "hero")
--- (replace lDataFrame_stub with your real LDataFrame instance above)
-
--- ---- Stub: LDataFrame:outliers -------------------------------------------
---@api-stub: LDataFrame:outliers
--- Return a new DataFrame with only outlier rows (|z-score| > threshold).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDataFrame_stub:outliers(col, [threshold])  -- -> DataFrame
--- (replace lDataFrame_stub with your real LDataFrame instance above)
-
--- ---- Stub: LDataFrame:modeVal --------------------------------------------
---@api-stub: LDataFrame:modeVal
--- Return the most frequent value in a column (nil if empty).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDataFrame_stub:modeVal(col)  -- -> table|nil
--- (replace lDataFrame_stub with your real LDataFrame instance above)
-
--- ---- Stub: LDataFrame:entropy --------------------------------------------
---@api-stub: LDataFrame:entropy
--- Shannon entropy (bits) of the value distribution in a column.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDataFrame_stub:entropy(col)  -- -> number
--- (replace lDataFrame_stub with your real LDataFrame instance above)
-
--- ---- Stub: LDataFrame:addRowBatch ----------------------------------------
---@api-stub: LDataFrame:addRowBatch
--- Add multiple rows at once from a table of row tables.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDataFrame_stub:addRowBatch(rows)
--- (replace lDataFrame_stub with your real LDataFrame instance above)
-
--- ---- Stub: LDataFrame:getColumnAsF64 -------------------------------------
---@api-stub: LDataFrame:getColumnAsF64
--- Return a numeric column as a Lua array of numbers (nils → 0/nan).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDataFrame_stub:getColumnAsF64(col)  -- -> table
--- (replace lDataFrame_stub with your real LDataFrame instance above)
-
--- ---- Stub: LDataFrame:setColumnFromF64 -----------------------------------
---@api-stub: LDataFrame:setColumnFromF64
--- Set a numeric column from a Lua array of numbers.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDataFrame_stub:setColumnFromF64(col, values)
--- (replace lDataFrame_stub with your real LDataFrame instance above)
-
--- ---- Stub: LDataFrame:type -----------------------------------------------
---@api-stub: LDataFrame:type
--- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDataFrame_stub:type()  -- -> string
--- (replace lDataFrame_stub with your real LDataFrame instance above)
-
--- ---- Stub: LDataFrame:typeOf ---------------------------------------------
---@api-stub: LDataFrame:typeOf
--- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDataFrame_stub:typeOf("hero")  -- -> boolean
--- (replace lDataFrame_stub with your real LDataFrame instance above)
-
--- ---- Stub: LDataFrame:withEval -------------------------------------------
---@api-stub: LDataFrame:withEval
--- Returns a new DataFrame with an additional computed column named `col_name`.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDataFrame_stub:withEval(col_name, expr)  -- -> DataFrame
--- (replace lDataFrame_stub with your real LDataFrame instance above)
-
--- ---- Stub: LDataFrame:pivotTable -----------------------------------------
---@api-stub: LDataFrame:pivotTable
--- Reshapes a long-format DataFrame into wide format.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDataFrame_stub:pivotTable()  -- -> DataFrame
--- (replace lDataFrame_stub with your real LDataFrame instance above)
-
--- ---- Stub: LDataFrame:rollingMean ----------------------------------------
---@api-stub: LDataFrame:rollingMean
--- Returns a new DataFrame with a rolling mean column appended.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDataFrame_stub:rollingMean(col, window, [result_col])  -- -> DataFrame
--- (replace lDataFrame_stub with your real LDataFrame instance above)
-
--- ---- Stub: LDataFrame:rollingSum -----------------------------------------
---@api-stub: LDataFrame:rollingSum
--- Returns a new DataFrame with a rolling sum column appended.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDataFrame_stub:rollingSum(col, window, [result_col])  -- -> DataFrame
--- (replace lDataFrame_stub with your real LDataFrame instance above)
-
--- ---- Stub: LDataFrame:rank -----------------------------------------------
---@api-stub: LDataFrame:rank
--- Returns a new DataFrame with a dense-rank column appended.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDataFrame_stub:rank(col, [order], [result_col])  -- -> DataFrame
--- (replace lDataFrame_stub with your real LDataFrame instance above)
-
--- -----------------------------------------------------------------------------
--- LDatabase methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LDatabase:addTable --------------------------------------------
---@api-stub: LDatabase:addTable
--- Adds or replaces a table by cloning the given DataFrame.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDatabase_stub:addTable("hero", df_ud)
--- (replace lDatabase_stub with your real LDatabase instance above)
-
--- ---- Stub: LDatabase:getTable --------------------------------------------
---@api-stub: LDatabase:getTable
--- Returns a copy of a table by name, or nil if not found.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDatabase_stub:getTable("hero")  -- -> DataFrame?
--- (replace lDatabase_stub with your real LDatabase instance above)
-
--- ---- Stub: LDatabase:removeTable -----------------------------------------
---@api-stub: LDatabase:removeTable
--- Drops the named table from this in-memory database if it exists.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDatabase_stub:removeTable("hero")
--- (replace lDatabase_stub with your real LDatabase instance above)
-
--- ---- Stub: LDatabase:hasTable --------------------------------------------
---@api-stub: LDatabase:hasTable
--- Returns true if a table with the given name exists.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDatabase_stub:hasTable("hero")  -- -> boolean
--- (replace lDatabase_stub with your real LDatabase instance above)
-
--- ---- Stub: LDatabase:listTables ------------------------------------------
---@api-stub: LDatabase:listTables
--- Returns a table of all table names.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDatabase_stub:listTables()  -- -> table
--- (replace lDatabase_stub with your real LDatabase instance above)
-
--- ---- Stub: LDatabase:tableCount ------------------------------------------
---@api-stub: LDatabase:tableCount
--- Returns the number of tables.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDatabase_stub:tableCount()  -- -> integer
--- (replace lDatabase_stub with your real LDatabase instance above)
-
--- ---- Stub: LDatabase:clear -----------------------------------------------
---@api-stub: LDatabase:clear
--- Drops every table from this in-memory database, leaving it empty.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDatabase_stub:clear()
--- (replace lDatabase_stub with your real LDatabase instance above)
-
--- ---- Stub: LDatabase:merge -----------------------------------------------
---@api-stub: LDatabase:merge
--- Merges all tables from another Database into this one.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDatabase_stub:merge(other)
--- (replace lDatabase_stub with your real LDatabase instance above)
-
--- ---- Stub: LDatabase:toJSON ----------------------------------------------
---@api-stub: LDatabase:toJSON
--- Serializes all tables to a JSON object string.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDatabase_stub:toJSON()  -- -> string
--- (replace lDatabase_stub with your real LDatabase instance above)
-
--- ---- Stub: LDatabase:query -----------------------------------------------
---@api-stub: LDatabase:query
--- Executes a SQL query against the database tables.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDatabase_stub:query(sql_str)  -- -> DataFrame
--- (replace lDatabase_stub with your real LDatabase instance above)
-
--- ---- Stub: LDatabase:type ------------------------------------------------
---@api-stub: LDatabase:type
--- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDatabase_stub:type()  -- -> string
--- (replace lDatabase_stub with your real LDatabase instance above)
-
--- ---- Stub: LDatabase:typeOf ----------------------------------------------
---@api-stub: LDatabase:typeOf
--- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDatabase_stub:typeOf("hero")  -- -> boolean
--- (replace lDatabase_stub with your real LDatabase instance above)
 
 -- -----------------------------------------------------------------------------
 -- LGroupedFrame methods
 -- -----------------------------------------------------------------------------
-
--- ---- Stub: LGroupedFrame:aggregate ---------------------------------------
---@api-stub: LGroupedFrame:aggregate
--- Apply a Lua function to aggregate a column's values per group.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lGroupedFrame_stub:aggregate(col_name, func)  -- -> DataFrame — new dataframe with group keys and aggregated values
--- (replace lGroupedFrame_stub with your real LGroupedFrame instance above)
 
 -- ---- Stub: LGroupedFrame:type --------------------------------------------
 --@api-stub: LGroupedFrame:type
@@ -1809,174 +1218,3 @@ end
 -- lGroupedFrame_stub:typeOf("hero")  -- -> boolean
 -- (replace lGroupedFrame_stub with your real LGroupedFrame instance above)
 
--- -----------------------------------------------------------------------------
--- LVecFrame methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LVecFrame:colAdd ----------------------------------------------
---@api-stub: LVecFrame:colAdd
--- Add a scalar to every element of a Float64 column.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lVecFrame_stub:colAdd(col, val)
--- (replace lVecFrame_stub with your real LVecFrame instance above)
-
--- ---- Stub: LVecFrame:colSub ----------------------------------------------
---@api-stub: LVecFrame:colSub
--- Subtract a scalar from every element of a Float64 column.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lVecFrame_stub:colSub(col, val)
--- (replace lVecFrame_stub with your real LVecFrame instance above)
-
--- ---- Stub: LVecFrame:colMul ----------------------------------------------
---@api-stub: LVecFrame:colMul
--- Multiply every element of a Float64 column by a scalar.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lVecFrame_stub:colMul(col, val)
--- (replace lVecFrame_stub with your real LVecFrame instance above)
-
--- ---- Stub: LVecFrame:colDiv ----------------------------------------------
---@api-stub: LVecFrame:colDiv
--- Divide every element of a Float64 column by a scalar.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lVecFrame_stub:colDiv(col, val)
--- (replace lVecFrame_stub with your real LVecFrame instance above)
-
--- ---- Stub: LVecFrame:colAbs ----------------------------------------------
---@api-stub: LVecFrame:colAbs
--- Apply absolute value to every element of a Float64 column.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lVecFrame_stub:colAbs(col)
--- (replace lVecFrame_stub with your real LVecFrame instance above)
-
--- ---- Stub: LVecFrame:colSqrt ---------------------------------------------
---@api-stub: LVecFrame:colSqrt
--- Apply square root to every element of a Float64 column.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lVecFrame_stub:colSqrt(col)
--- (replace lVecFrame_stub with your real LVecFrame instance above)
-
--- ---- Stub: LVecFrame:colFloor --------------------------------------------
---@api-stub: LVecFrame:colFloor
--- Apply floor to every element of a Float64 column.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lVecFrame_stub:colFloor(col)
--- (replace lVecFrame_stub with your real LVecFrame instance above)
-
--- ---- Stub: LVecFrame:colCeil ---------------------------------------------
---@api-stub: LVecFrame:colCeil
--- Apply ceiling to every element of a Float64 column.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lVecFrame_stub:colCeil(col)
--- (replace lVecFrame_stub with your real LVecFrame instance above)
-
--- ---- Stub: LVecFrame:colNeg ----------------------------------------------
---@api-stub: LVecFrame:colNeg
--- Negate every element of a Float64 column.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lVecFrame_stub:colNeg(col)
--- (replace lVecFrame_stub with your real LVecFrame instance above)
-
--- ---- Stub: LVecFrame:colClamp --------------------------------------------
---@api-stub: LVecFrame:colClamp
--- Clamp every element of a Float64 column to [min, max].
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lVecFrame_stub:colClamp(col, min_val, max_val)
--- (replace lVecFrame_stub with your real LVecFrame instance above)
-
--- ---- Stub: LVecFrame:colOp -----------------------------------------------
---@api-stub: LVecFrame:colOp
--- Compute out[i] = left[i] op right[i] for every row.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lVecFrame_stub:colOp(out_col, left_col, op, right_col)
--- (replace lVecFrame_stub with your real LVecFrame instance above)
-
--- ---- Stub: LVecFrame:reduce ----------------------------------------------
---@api-stub: LVecFrame:reduce
--- Reduce an entire numeric column to a single value.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lVecFrame_stub:reduce(col, op)  -- -> number|nil
--- (replace lVecFrame_stub with your real LVecFrame instance above)
-
--- ---- Stub: LVecFrame:filterMask ------------------------------------------
---@api-stub: LVecFrame:filterMask
--- Build a boolean row mask: mask[i] = col[i] cmp_op val.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lVecFrame_stub:filterMask(col, cmp_op, val)  -- -> table
--- (replace lVecFrame_stub with your real LVecFrame instance above)
-
--- ---- Stub: LVecFrame:applyMask -------------------------------------------
---@api-stub: LVecFrame:applyMask
--- Return a new VecFrame containing only the rows where mask[i] is true.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lVecFrame_stub:applyMask(mask_tbl)  -- -> VecFrame
--- (replace lVecFrame_stub with your real LVecFrame instance above)
-
--- ---- Stub: LVecFrame:colType ---------------------------------------------
---@api-stub: LVecFrame:colType
--- Return the dtype name of a column: "float64", "int64", "bool", or "text".
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lVecFrame_stub:colType(col)  -- -> string|nil
--- (replace lVecFrame_stub with your real LVecFrame instance above)
-
--- ---- Stub: LVecFrame:colCast ---------------------------------------------
---@api-stub: LVecFrame:colCast
--- Cast a column to a new dtype: "float64", "int64", or "text".
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lVecFrame_stub:colCast(col, dtype)
--- (replace lVecFrame_stub with your real LVecFrame instance above)
-
--- ---- Stub: LVecFrame:nrows -----------------------------------------------
---@api-stub: LVecFrame:nrows
--- Return the number of rows.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lVecFrame_stub:nrows()  -- -> integer
--- (replace lVecFrame_stub with your real LVecFrame instance above)
-
--- ---- Stub: LVecFrame:ncols -----------------------------------------------
---@api-stub: LVecFrame:ncols
--- Return the number of columns.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lVecFrame_stub:ncols()  -- -> integer
--- (replace lVecFrame_stub with your real LVecFrame instance above)
-
--- ---- Stub: LVecFrame:columns ---------------------------------------------
---@api-stub: LVecFrame:columns
--- Return a table of column names.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lVecFrame_stub:columns()  -- -> table
--- (replace lVecFrame_stub with your real LVecFrame instance above)
-
--- ---- Stub: LVecFrame:parReduce -------------------------------------------
---@api-stub: LVecFrame:parReduce
--- Reduce multiple columns in parallel, returning {col → value} table.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lVecFrame_stub:parReduce(cols_tbl, op)  -- -> table
--- (replace lVecFrame_stub with your real LVecFrame instance above)
-
--- ---- Stub: LVecFrame:parScalarOp -----------------------------------------
---@api-stub: LVecFrame:parScalarOp
--- Apply a scalar op in parallel to multiple Float64 columns.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lVecFrame_stub:parScalarOp(cols_tbl, op, val)
--- (replace lVecFrame_stub with your real LVecFrame instance above)
-
--- ---- Stub: LVecFrame:toDataFrame -----------------------------------------
---@api-stub: LVecFrame:toDataFrame
--- Convert this VecFrame back to a DataFrame.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lVecFrame_stub:toDataFrame()  -- -> DataFrame
--- (replace lVecFrame_stub with your real LVecFrame instance above)
-
--- ---- Stub: LVecFrame:type ------------------------------------------------
---@api-stub: LVecFrame:type
--- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lVecFrame_stub:type()  -- -> string
--- (replace lVecFrame_stub with your real LVecFrame instance above)
-
--- ---- Stub: LVecFrame:typeOf ----------------------------------------------
---@api-stub: LVecFrame:typeOf
--- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lVecFrame_stub:typeOf("hero")  -- -> boolean
--- (replace lVecFrame_stub with your real LVecFrame instance above)

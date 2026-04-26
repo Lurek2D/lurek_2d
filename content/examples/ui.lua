@@ -3060,7 +3060,7 @@ end
 
 -- â”€â”€ BarChart methods â”€â”€
 
---@api-stub: BarChart:drawToImage
+--@api-stub: LBarChart:drawToImage
 -- Renders the bar chart into an existing ImageData.
 -- Call this on the BarChart instance to drive its behaviour at runtime.
 do  -- BarChart:drawToImage
@@ -3070,7 +3070,7 @@ end
 
 -- â”€â”€ ScatterPlot methods â”€â”€
 
---@api-stub: ScatterPlot:setXRange
+--@api-stub: LScatterPlot:setXRange
 -- Sets the X-axis data range.
 -- Configure the widget once after creation, before adding it to a layout.
 do  -- ScatterPlot:setXRange
@@ -3078,7 +3078,7 @@ do  -- ScatterPlot:setXRange
   plot:setXRange(1)
 end
 
---@api-stub: ScatterPlot:setYRange
+--@api-stub: LScatterPlot:setYRange
 -- Sets the Y-axis data range.
 -- Configure the widget once after creation, before adding it to a layout.
 do  -- ScatterPlot:setYRange
@@ -3086,7 +3086,7 @@ do  -- ScatterPlot:setYRange
   plot:setYRange(1)
 end
 
---@api-stub: ScatterPlot:drawToImage
+--@api-stub: LScatterPlot:drawToImage
 -- Renders the scatter plot into an existing ImageData.
 -- Call this on the ScatterPlot instance to drive its behaviour at runtime.
 do  -- ScatterPlot:drawToImage
@@ -3096,7 +3096,7 @@ end
 
 -- â”€â”€ PieChart methods â”€â”€
 
---@api-stub: PieChart:drawToImage
+--@api-stub: LPieChart:drawToImage
 -- Renders the pie chart into an existing ImageData.
 -- Call this on the PieChart instance to drive its behaviour at runtime.
 do  -- PieChart:drawToImage
@@ -3106,7 +3106,7 @@ end
 
 -- â”€â”€ AreaChart methods â”€â”€
 
---@api-stub: AreaChart:setYMax
+--@api-stub: LAreaChart:setYMax
 -- Sets the maximum Y value for axis scaling.
 -- Configure the widget once after creation, before adding it to a layout.
 do  -- AreaChart:setYMax
@@ -3114,7 +3114,7 @@ do  -- AreaChart:setYMax
   w:setYMax(100)
 end
 
---@api-stub: AreaChart:drawToImage
+--@api-stub: LAreaChart:drawToImage
 -- Renders the area chart into an existing ImageData.
 -- Call this on the AreaChart instance to drive its behaviour at runtime.
 do  -- AreaChart:drawToImage
@@ -3149,7 +3149,7 @@ do  -- Image_Widget:newCustomWidget
 end
 
 
---@api-stub: BarChart:addCategory
+--@api-stub: LBarChart:addCategory
 -- Adds a named category (x-axis label) to the bar chart.
 -- Each series value maps to one category; add categories before adding series data.
 do  -- BarChart:addCategory
@@ -3160,7 +3160,7 @@ do  -- BarChart:addCategory
   lurek.log.info("categories added", "ui")
 end
 
---@api-stub: AreaChart:addLayer
+--@api-stub: LAreaChart:addLayer
 -- Adds a new stacked area series layer to the area chart.
 -- Multiple layers stack vertically; each is filled with a distinct colour.
 do  -- AreaChart:addLayer
@@ -3170,7 +3170,7 @@ do  -- AreaChart:addLayer
   lurek.log.info("area layers added", "ui")
 end
 
---@api-stub: PieChart:addSegment
+--@api-stub: LPieChart:addSegment
 -- Adds a named slice to the pie chart with a value and colour.
 -- Values are relative; the chart normalises them to 360 degrees automatically.
 do  -- PieChart:addSegment
@@ -3191,7 +3191,7 @@ do  -- LineChart:addSeries
   lurek.log.info("line series added", "ui")
 end
 
---@api-stub: BarChart:addSeries
+--@api-stub: LBarChart:addSeries
 -- Adds a named data series to the bar chart with a colour and values.
 -- Each value in the table maps to the corresponding category index.
 do  -- BarChart:addSeries
@@ -3202,7 +3202,7 @@ do  -- BarChart:addSeries
   lurek.log.info("bar series added", "ui")
 end
 
---@api-stub: ScatterPlot:addSeries
+--@api-stub: LScatterPlot:addSeries
 -- Adds a named point series to the scatter plot with colour and (x, y) data pairs.
 -- Each series is a flat table {x1,y1, x2,y2, ...} of coordinate pairs.
 do  -- ScatterPlot:addSeries
@@ -3212,7 +3212,7 @@ do  -- ScatterPlot:addSeries
   lurek.log.info("scatter series added", "ui")
 end
 
---@api-stub: Theme:setStyle
+--@api-stub: LTheme:setStyle
 -- Sets a named style property on the theme (e.g., button colour, font size).
 -- Themes apply hierarchically; widget-level styles override theme defaults.
 do  -- Theme:setStyle
@@ -3230,41 +3230,6 @@ end
 -- The final committed file must contain ZERO --@api-stub: lines.
 -- =============================================================================
 
--- -----------------------------------------------------------------------------
--- AreaChart methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: AreaChart:type ------------------------------------------------
---@api-stub: AreaChart:type
--- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- areaChart_stub:type()  -- -> string
--- (replace areaChart_stub with your real AreaChart instance above)
-
--- ---- Stub: AreaChart:typeOf ----------------------------------------------
---@api-stub: AreaChart:typeOf
--- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- areaChart_stub:typeOf("hero")  -- -> boolean
--- (replace areaChart_stub with your real AreaChart instance above)
-
--- -----------------------------------------------------------------------------
--- BarChart methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: BarChart:type -------------------------------------------------
---@api-stub: BarChart:type
--- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- barChart_stub:type()  -- -> string
--- (replace barChart_stub with your real BarChart instance above)
-
--- ---- Stub: BarChart:typeOf -----------------------------------------------
---@api-stub: BarChart:typeOf
--- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- barChart_stub:typeOf("hero")  -- -> boolean
--- (replace barChart_stub with your real BarChart instance above)
 
 -- -----------------------------------------------------------------------------
 -- LineChart methods
@@ -3284,59 +3249,10 @@ end
 -- lineChart_stub:typeOf("hero")  -- -> boolean
 -- (replace lineChart_stub with your real LineChart instance above)
 
--- -----------------------------------------------------------------------------
--- PieChart methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: PieChart:type -------------------------------------------------
---@api-stub: PieChart:type
--- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- pieChart_stub:type()  -- -> string
--- (replace pieChart_stub with your real PieChart instance above)
-
--- ---- Stub: PieChart:typeOf -----------------------------------------------
---@api-stub: PieChart:typeOf
--- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- pieChart_stub:typeOf("hero")  -- -> boolean
--- (replace pieChart_stub with your real PieChart instance above)
-
--- -----------------------------------------------------------------------------
--- ScatterPlot methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: ScatterPlot:type ----------------------------------------------
---@api-stub: ScatterPlot:type
--- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- scatterPlot_stub:type()  -- -> string
--- (replace scatterPlot_stub with your real ScatterPlot instance above)
-
--- ---- Stub: ScatterPlot:typeOf --------------------------------------------
---@api-stub: ScatterPlot:typeOf
--- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- scatterPlot_stub:typeOf("hero")  -- -> boolean
--- (replace scatterPlot_stub with your real ScatterPlot instance above)
 
 -- -----------------------------------------------------------------------------
 -- Theme methods
 -- -----------------------------------------------------------------------------
-
--- ---- Stub: Theme:type ----------------------------------------------------
---@api-stub: Theme:type
--- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- theme_stub:type()  -- -> string
--- (replace theme_stub with your real Theme instance above)
-
--- ---- Stub: Theme:typeOf --------------------------------------------------
---@api-stub: Theme:typeOf
--- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- theme_stub:typeOf("hero")  -- -> boolean
--- (replace theme_stub with your real Theme instance above)
 
 -- =============================================================================
 -- STUBS: 12 uncovered lurek.ui API item(s)
@@ -3468,34 +3384,6 @@ end
 -- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
 lurek.ui.type()  -- -> string
 
--- -----------------------------------------------------------------------------
--- LAreaChart methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LAreaChart:setYMax --------------------------------------------
---@api-stub: LAreaChart:setYMax
--- Sets the maximum Y value for axis scaling.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAreaChart_stub:setYMax(1.0)
--- (replace lAreaChart_stub with your real LAreaChart instance above)
-
--- ---- Stub: LAreaChart:drawToImage ----------------------------------------
---@api-stub: LAreaChart:drawToImage
--- Renders the area chart into an existing ImageData.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAreaChart_stub:drawToImage()
--- (replace lAreaChart_stub with your real LAreaChart instance above)
-
--- -----------------------------------------------------------------------------
--- LBarChart methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LBarChart:drawToImage -----------------------------------------
---@api-stub: LBarChart:drawToImage
--- Renders the bar chart into an existing ImageData.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBarChart_stub:drawToImage()
--- (replace lBarChart_stub with your real LBarChart instance above)
 
 -- -----------------------------------------------------------------------------
 -- LLineChart methods
@@ -3522,38 +3410,4 @@ lurek.ui.type()  -- -> string
 -- lLineChart_stub:drawToImage()
 -- (replace lLineChart_stub with your real LLineChart instance above)
 
--- -----------------------------------------------------------------------------
--- LPieChart methods
--- -----------------------------------------------------------------------------
 
--- ---- Stub: LPieChart:drawToImage -----------------------------------------
---@api-stub: LPieChart:drawToImage
--- Renders the pie chart into an existing ImageData.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lPieChart_stub:drawToImage()
--- (replace lPieChart_stub with your real LPieChart instance above)
-
--- -----------------------------------------------------------------------------
--- LScatterPlot methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LScatterPlot:setXRange ----------------------------------------
---@api-stub: LScatterPlot:setXRange
--- Sets the X-axis data range.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lScatterPlot_stub:setXRange(mn, mx)
--- (replace lScatterPlot_stub with your real LScatterPlot instance above)
-
--- ---- Stub: LScatterPlot:setYRange ----------------------------------------
---@api-stub: LScatterPlot:setYRange
--- Sets the Y-axis data range.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lScatterPlot_stub:setYRange(mn, mx)
--- (replace lScatterPlot_stub with your real LScatterPlot instance above)
-
--- ---- Stub: LScatterPlot:drawToImage --------------------------------------
---@api-stub: LScatterPlot:drawToImage
--- Renders the scatter plot into an existing ImageData.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lScatterPlot_stub:drawToImage()
--- (replace lScatterPlot_stub with your real LScatterPlot instance above)

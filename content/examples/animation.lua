@@ -74,7 +74,7 @@ end
 
 -- ── Animation methods ──
 
---@api-stub: Animation:addFrame
+--@api-stub: LAnimation:addFrame
 -- Adds a single frame to the frame pool by source rectangle.
 -- Use when frames are irregular sizes; for uniform grids prefer `:addFramesFromGrid`.
 do  -- Animation:addFrame
@@ -84,7 +84,7 @@ do  -- Animation:addFrame
   lurek.log.debug("added frame index=" .. idx, "anim")
 end
 
---@api-stub: Animation:play
+--@api-stub: LAnimation:play
 -- Starts playback of the named clip.
 -- Returns true on success; check the result before assuming the clip name was registered.
 do  -- Animation:play
@@ -96,7 +96,7 @@ do  -- Animation:play
   end
 end
 
---@api-stub: Animation:stop
+--@api-stub: LAnimation:stop
 -- Stops playback and resets to frame 0.
 -- Call when leaving a state (e.g. enemy died) so the next `:play` starts cleanly.
 do  -- Animation:stop
@@ -107,7 +107,7 @@ do  -- Animation:stop
   anim:stop()
 end
 
---@api-stub: Animation:pause
+--@api-stub: LAnimation:pause
 -- Pauses playback at the current frame.
 -- Use when the game opens a menu or a cutscene; resume later with `:resume`.
 do  -- Animation:pause
@@ -118,7 +118,7 @@ do  -- Animation:pause
   anim:pause()
 end
 
---@api-stub: Animation:resume
+--@api-stub: LAnimation:resume
 -- Resumes playback from the current frame.
 -- Pair with `:pause` around menu/dialog screens so animations pick up exactly where they stopped.
 do  -- Animation:resume
@@ -130,7 +130,7 @@ do  -- Animation:resume
   anim:resume()
 end
 
---@api-stub: Animation:update
+--@api-stub: LAnimation:update
 -- Advances the animation by dt seconds.
 -- Call once per frame from `lurek.process(dt)`; never from `lurek.render` or you skew with the framerate.
 do  -- Animation:update
@@ -141,7 +141,7 @@ do  -- Animation:update
   function lurek.process(dt) anim:update(dt) end
 end
 
---@api-stub: Animation:getQuad
+--@api-stub: LAnimation:getQuad
 -- Returns the source quad (x, y, w, h) for the current frame, or nil.
 -- Use the returned table directly as the source rect for `lurek.render.drawQuad` of the sprite-sheet.
 do  -- Animation:getQuad
@@ -153,7 +153,7 @@ do  -- Animation:getQuad
   if q then lurek.log.debug("frame quad w=" .. q.w .. " h=" .. q.h, "anim") end
 end
 
---@api-stub: Animation:pollEvents
+--@api-stub: LAnimation:pollEvents
 -- Drains and returns all pending animation events as a table.
 -- Drain every frame; events include `frame_changed` and `clip_finished` and are dropped if not read.
 do  -- Animation:pollEvents
@@ -169,7 +169,7 @@ do  -- Animation:pollEvents
   end
 end
 
---@api-stub: Animation:isPlaying
+--@api-stub: LAnimation:isPlaying
 -- Returns true if a clip is currently playing.
 -- Use to gate input: don't accept a new attack command while the previous swing is still playing.
 do  -- Animation:isPlaying
@@ -180,7 +180,7 @@ do  -- Animation:isPlaying
   if anim:isPlaying() then lurek.log.debug("swing in progress, ignoring input", "combat") end
 end
 
---@api-stub: Animation:isLooping
+--@api-stub: LAnimation:isLooping
 -- Returns true if the current clip is set to loop.
 -- Branch on this when deciding whether the AI should switch states automatically when the clip ends.
 do  -- Animation:isLooping
@@ -191,7 +191,7 @@ do  -- Animation:isLooping
   if not anim:isLooping() then lurek.log.warn("idle clip should loop but does not", "anim") end
 end
 
---@api-stub: Animation:getClip
+--@api-stub: LAnimation:getClip
 -- Returns the name of the currently playing clip, or nil.
 -- Useful for debug overlays and for asserting state-machine transitions actually fired.
 do  -- Animation:getClip
@@ -203,7 +203,7 @@ do  -- Animation:getClip
   if clip then lurek.log.debug("now playing: " .. clip, "anim") end
 end
 
---@api-stub: Animation:getSpeed
+--@api-stub: LAnimation:getSpeed
 -- Returns the playback speed multiplier.
 -- Read before changing it so you can restore the original after a brief slow-mo effect.
 do  -- Animation:getSpeed
@@ -214,7 +214,7 @@ do  -- Animation:getSpeed
   anim:setSpeed(previous * 0.5)
 end
 
---@api-stub: Animation:setSpeed
+--@api-stub: LAnimation:setSpeed
 -- Sets the playback speed multiplier.
 -- 1.0 is normal, 2.0 doubles fps, 0.0 freezes; negative values are clamped to 0.
 do  -- Animation:setSpeed
@@ -225,7 +225,7 @@ do  -- Animation:setSpeed
   anim:setSpeed(2.0)
 end
 
---@api-stub: Animation:getFrameCount
+--@api-stub: LAnimation:getFrameCount
 -- Returns the total number of frames in the frame pool.
 -- Use as a sanity check after `:addFramesFromGrid` to confirm the sheet was sliced correctly.
 do  -- Animation:getFrameCount
@@ -235,7 +235,7 @@ do  -- Animation:getFrameCount
   if anim:getFrameCount() ~= 2 then lurek.log.error("frame pool wrong size", "anim") end
 end
 
---@api-stub: Animation:getClipCount
+--@api-stub: LAnimation:getClipCount
 -- Returns the number of registered clips.
 -- Helpful in tooling to verify an Aseprite import populated all expected clips.
 do  -- Animation:getClipCount
@@ -245,7 +245,7 @@ do  -- Animation:getClipCount
   lurek.log.info("clips registered: " .. anim:getClipCount(), "anim")
 end
 
---@api-stub: Animation:getCurrentFrame
+--@api-stub: LAnimation:getCurrentFrame
 -- Returns the current position within the active clip (0-based).
 -- Use to drive frame-locked logic such as triggering a footstep sound on frame 3 of "walk".
 do  -- Animation:getCurrentFrame
@@ -256,7 +256,7 @@ do  -- Animation:getCurrentFrame
   if anim:getCurrentFrame() == 3 then lurek.audio.play(lurek.audio.newSource("tests/rust/fixtures/sine_mono_44100.wav")) end
 end
 
---@api-stub: Animation:setFrame
+--@api-stub: LAnimation:setFrame
 -- Sets the playback position within the current clip.
 -- Use to scrub an editor timeline or to align two animations at a specific frame.
 do  -- Animation:setFrame
@@ -267,7 +267,7 @@ do  -- Animation:setFrame
   anim:setFrame(0)
 end
 
---@api-stub: Animation:getBlendState
+--@api-stub: LAnimation:getBlendState
 -- Returns the two quads and blend factor during a crossfade, or nil when not blending.
 -- During a crossfade, draw both quads with alpha = blend / (1 - blend) for a soft transition.
 do  -- Animation:getBlendState
@@ -279,7 +279,7 @@ do  -- Animation:getBlendState
   if bs then lurek.log.debug("crossfade blend=" .. bs.blend, "anim") end
 end
 
---@api-stub: Animation:drawToImage
+--@api-stub: LAnimation:drawToImage
 -- Renders the current animation frame into a new ImageData (white bg, blue frame rect).
 -- Use to bake a debug thumbnail of the current frame for tooling or screenshot tests.
 do  -- Animation:drawToImage
@@ -295,7 +295,7 @@ end
 
 -- ── AnimStateMachine methods ──
 
---@api-stub: AnimStateMachine:update
+--@api-stub: LAnimStateMachine:update
 -- Advances the FSM by `dt` seconds, evaluating transitions.
 -- Call from `lurek.process(dt)`; transitions fire only here, never inside `setParam`.
 do  -- AnimStateMachine:update
@@ -306,7 +306,7 @@ do  -- AnimStateMachine:update
   function lurek.process(dt) fsm:update(dt) end
 end
 
---@api-stub: AnimStateMachine:getState
+--@api-stub: LAnimStateMachine:getState
 -- Returns the name of the currently active state.
 -- Use for HUD overlays and for asserting that gameplay parameter changes flipped the state as expected.
 do  -- AnimStateMachine:getState
@@ -317,7 +317,7 @@ do  -- AnimStateMachine:getState
   if fsm:getState() ~= "idle" then lurek.log.warn("unexpected initial state", "anim") end
 end
 
---@api-stub: AnimStateMachine:forceState
+--@api-stub: LAnimStateMachine:forceState
 -- Immediately jumps to the named state, bypassing transition conditions.
 -- Use sparingly — for spawn, respawn, and cutscene exits. Returns true if the target state existed.
 do  -- AnimStateMachine:forceState
@@ -328,7 +328,7 @@ do  -- AnimStateMachine:forceState
   if not fsm:forceState("dead") then lurek.log.error("dead state missing", "anim") end
 end
 
---@api-stub: AnimStateMachine:setParam
+--@api-stub: LAnimStateMachine:setParam
 -- Sets an FSM parameter value (number, boolean, or integer supported).
 -- Push gameplay variables (speed, hp, jumping) here every frame so registered transitions can react.
 do  -- AnimStateMachine:setParam
@@ -340,7 +340,7 @@ do  -- AnimStateMachine:setParam
   function lurek.process(dt) fsm:setParam("speed", 1.2); fsm:update(dt) end
 end
 
---@api-stub: AnimStateMachine:getQuad
+--@api-stub: LAnimStateMachine:getQuad
 -- Returns the source quad for the current animation frame, or nil.
 -- Drive sprite rendering off this rather than the underlying Animation; the FSM owns the active clip.
 do  -- AnimStateMachine:getQuad
@@ -353,7 +353,7 @@ end
 
 -- ── BlendLayerSet methods ──
 
---@api-stub: BlendLayerSet:removeLayer
+--@api-stub: LBlendLayerSet:removeLayer
 -- Removes a blend layer by name.
 -- Call when a body part is destroyed (e.g. arm severed) so its clip stops contributing.
 do  -- BlendLayerSet:removeLayer
@@ -363,7 +363,7 @@ do  -- BlendLayerSet:removeLayer
   bls:removeLayer("upper")
 end
 
---@api-stub: BlendLayerSet:setWeight
+--@api-stub: LBlendLayerSet:setWeight
 -- Sets the blend weight of a named layer (clamped to [0, 1]).
 -- Drive this from gameplay (e.g. crouch amount, aim strength) for smooth blend transitions.
 do  -- BlendLayerSet:setWeight
@@ -374,7 +374,7 @@ do  -- BlendLayerSet:setWeight
   bls:setWeight("aim", aim_strength)
 end
 
---@api-stub: BlendLayerSet:getWeight
+--@api-stub: LBlendLayerSet:getWeight
 -- Returns the blend weight of a named layer, or nil if not found.
 -- Use to read back the current blend after `setWeight` has clamped your input.
 do  -- BlendLayerSet:getWeight
@@ -384,7 +384,7 @@ do  -- BlendLayerSet:getWeight
   if w and w > 0.5 then lurek.log.debug("aim layer dominant", "anim") end
 end
 
---@api-stub: BlendLayerSet:setMask
+--@api-stub: LBlendLayerSet:setMask
 -- Replaces the bone mask of a layer.
 -- Call when the active weapon changes — pistol uses {arm_r}, rifle uses {spine, arm_l, arm_r}.
 do  -- BlendLayerSet:setMask
@@ -393,7 +393,7 @@ do  -- BlendLayerSet:setMask
   bls:setMask("aim", {"spine", "arm_l", "arm_r"})
 end
 
---@api-stub: BlendLayerSet:listLayers
+--@api-stub: LBlendLayerSet:listLayers
 -- Returns an ordered array of layer info tables: {name, clip_name, weight, bones}.
 -- Iterate this from your skeletal animator to drive each layer's contribution to the final pose.
 do  -- BlendLayerSet:listLayers
@@ -405,7 +405,7 @@ do  -- BlendLayerSet:listLayers
   end
 end
 
---@api-stub: BlendLayerSet:len
+--@api-stub: LBlendLayerSet:len
 -- Returns the number of blend layers.
 -- Cheap probe for editor/debug HUDs without iterating the full layer list.
 do  -- BlendLayerSet:len
@@ -416,7 +416,7 @@ end
 
 -- ── AnimCurve methods ──
 
---@api-stub: AnimCurve:addKeyframe
+--@api-stub: LAnimCurve:addKeyframe
 -- Inserts a keyframe at the given time.
 -- Times do not need to be sorted; the curve sorts and de-duplicates them on insert.
 do  -- AnimCurve:addKeyframe
@@ -426,7 +426,7 @@ do  -- AnimCurve:addKeyframe
   fade:addKeyframe(1.0, 0.0)
 end
 
---@api-stub: AnimCurve:eval
+--@api-stub: LAnimCurve:eval
 -- Returns the interpolated value at the given time using the curve's easing.
 -- Out-of-range `t` is clamped to the first/last keyframe value; an empty curve returns 0.
 do  -- AnimCurve:eval
@@ -436,7 +436,7 @@ do  -- AnimCurve:eval
   function lurek.draw() lurek.render.setColor(1, 1, 1, alpha) end
 end
 
---@api-stub: AnimCurve:setEasing
+--@api-stub: LAnimCurve:setEasing
 -- Sets the easing kind applied between all keyframe segments.
 -- Accepts "step", "linear", "ease_in", "ease_out", "ease_in_out"; unknown names raise an error.
 do  -- AnimCurve:setEasing
@@ -445,7 +445,7 @@ do  -- AnimCurve:setEasing
   curve:setEasing("ease_in_out")
 end
 
---@api-stub: AnimCurve:keyframeCount
+--@api-stub: LAnimCurve:keyframeCount
 -- Returns the number of keyframes currently stored.
 -- Useful as a guard before `:eval` to avoid relying on the empty-curve 0.0 fallback.
 do  -- AnimCurve:keyframeCount
@@ -454,7 +454,7 @@ do  -- AnimCurve:keyframeCount
   if curve:keyframeCount() < 2 then lurek.log.warn("curve needs at least two keyframes", "anim") end
 end
 
---@api-stub: AnimCurve:clear
+--@api-stub: LAnimCurve:clear
 -- Removes all keyframes from this animation curve, resetting it to empty.
 -- Call when a new sequence loads so the curve can be rebuilt without allocating a new instance.
 do  -- AnimCurve:clear
@@ -465,7 +465,7 @@ end
 
 -- ── AnimSyncGroup methods ──
 
---@api-stub: AnimSyncGroup:add
+--@api-stub: LAnimSyncGroup:add
 -- Adds an animation handle to the group.
 -- Handles are integers returned by `lurek.animation.new()`; duplicates are silently ignored.
 do  -- AnimSyncGroup:add
@@ -475,7 +475,7 @@ do  -- AnimSyncGroup:add
   squad:add(3)
 end
 
---@api-stub: AnimSyncGroup:remove
+--@api-stub: LAnimSyncGroup:remove
 -- Removes an animation handle from the group.
 -- Call when an entity is despawned so the group does not try to advance a stale handle.
 do  -- AnimSyncGroup:remove
@@ -484,7 +484,7 @@ do  -- AnimSyncGroup:remove
   squad:remove(1)
 end
 
---@api-stub: AnimSyncGroup:clear
+--@api-stub: LAnimSyncGroup:clear
 -- Removes all animation handles from the group.
 -- Call on scene change so the next level starts with an empty sync group.
 do  -- AnimSyncGroup:clear
@@ -493,7 +493,7 @@ do  -- AnimSyncGroup:clear
   squad:clear()
 end
 
---@api-stub: AnimSyncGroup:memberCount
+--@api-stub: LAnimSyncGroup:memberCount
 -- Returns the number of animations currently in the group.
 -- Use for HUD debug ("X enemies marching") and to skip processing when the group is empty.
 do  -- AnimSyncGroup:memberCount
@@ -502,7 +502,7 @@ do  -- AnimSyncGroup:memberCount
   if squad:memberCount() > 0 then lurek.log.info("squad alive: " .. squad:memberCount(), "anim") end
 end
 
---@api-stub: AnimCurve:setCustomEasing
+--@api-stub: LAnimCurve:setCustomEasing
 -- Attach a Lua function as the easing for this curve. The function receives a
 -- normalised t in [0,1] and must return the eased value (also in [0,1]).
 do  -- AnimCurve:setCustomEasing
@@ -516,7 +516,7 @@ do  -- AnimCurve:setCustomEasing
   end
 end
 
---@api-stub: Animation:addClip
+--@api-stub: LAnimation:addClip
 -- Adds a named clip defined by a sequence of frame indices, FPS, and looping flag.
 -- Clips reference frames already in the pool; multiple clips can share frames.
 do  -- Animation:addClip
@@ -528,7 +528,7 @@ do  -- Animation:addClip
   lurek.log.info("clip count: " .. anim:getClipCount(), "anim")
 end
 
---@api-stub: Animation:addClipFromGrid
+--@api-stub: LAnimation:addClipFromGrid
 -- Adds a named clip by specifying the row (or range) in a sprite-sheet grid.
 -- Calculates frame indices automatically from the grid layout registered via addFramesFromGrid.
 do  -- Animation:addClipFromGrid
@@ -539,7 +539,7 @@ do  -- Animation:addClipFromGrid
   lurek.log.info("clip from grid added", "anim")
 end
 
---@api-stub: Animation:addFramesFromGrid
+--@api-stub: LAnimation:addFramesFromGrid
 -- Populates the frame pool from a uniform grid, adding count frames starting at offset.
 -- Use instead of addFrame when the sprite sheet has regular tile-size cells.
 do  -- Animation:addFramesFromGrid
@@ -548,7 +548,7 @@ do  -- Animation:addFramesFromGrid
   lurek.log.info("frames added: " .. n, "anim")
 end
 
---@api-stub: BlendLayerSet:addLayer
+--@api-stub: LBlendLayerSet:addLayer
 -- Adds a named blend layer with a clip name, initial weight, and optional bone mask.
 -- Layers above index 0 blend onto the base; use masks to restrict to upper-body bones.
 do  -- BlendLayerSet:addLayer
@@ -561,7 +561,7 @@ do  -- BlendLayerSet:addLayer
   lurek.log.info("layers: " .. bls:len(), "anim")
 end
 
---@api-stub: AnimStateMachine:addState
+--@api-stub: LAnimStateMachine:addState
 -- Adds a named state to the FSM with an associated clip name and looping flag.
 -- States drive Animation playback; transitions switch between them automatically.
 do  -- AnimStateMachine:addState
@@ -575,7 +575,7 @@ do  -- AnimStateMachine:addState
   lurek.log.info("state machine ready", "anim")
 end
 
---@api-stub: AnimStateMachine:addTransition
+--@api-stub: LAnimStateMachine:addTransition
 -- Adds a parameter-driven transition from one FSM state to another.
 -- The transition fires when setParam changes the named parameter to match the trigger value.
 do  -- AnimStateMachine:addTransition
@@ -590,7 +590,7 @@ do  -- AnimStateMachine:addTransition
   lurek.log.info("transition added", "anim")
 end
 
---@api-stub: Animation:crossfade
+--@api-stub: LAnimation:crossfade
 -- Blends from the current clip to a new clip over a given duration in seconds.
 -- Smoother than an instant play() switch; the blend weight transitions linearly.
 do  -- Animation:crossfade
@@ -611,95 +611,10 @@ end
 -- The final committed file must contain ZERO --@api-stub: lines.
 -- =============================================================================
 
--- -----------------------------------------------------------------------------
--- AnimCurve methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: AnimCurve:type ------------------------------------------------
---@api-stub: AnimCurve:type
--- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- animCurve_stub:type()  -- -> string
--- (replace animCurve_stub with your real AnimCurve instance above)
-
--- ---- Stub: AnimCurve:typeOf ----------------------------------------------
---@api-stub: AnimCurve:typeOf
--- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- animCurve_stub:typeOf("hero")  -- -> boolean
--- (replace animCurve_stub with your real AnimCurve instance above)
-
--- -----------------------------------------------------------------------------
--- AnimStateMachine methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: AnimStateMachine:type -----------------------------------------
---@api-stub: AnimStateMachine:type
--- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- animStateMachine_stub:type()  -- -> string
--- (replace animStateMachine_stub with your real AnimStateMachine instance above)
-
--- ---- Stub: AnimStateMachine:typeOf ---------------------------------------
---@api-stub: AnimStateMachine:typeOf
--- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- animStateMachine_stub:typeOf("hero")  -- -> boolean
--- (replace animStateMachine_stub with your real AnimStateMachine instance above)
-
--- -----------------------------------------------------------------------------
--- AnimSyncGroup methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: AnimSyncGroup:type --------------------------------------------
---@api-stub: AnimSyncGroup:type
--- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- animSyncGroup_stub:type()  -- -> string
--- (replace animSyncGroup_stub with your real AnimSyncGroup instance above)
-
--- ---- Stub: AnimSyncGroup:typeOf ------------------------------------------
---@api-stub: AnimSyncGroup:typeOf
--- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- animSyncGroup_stub:typeOf("hero")  -- -> boolean
--- (replace animSyncGroup_stub with your real AnimSyncGroup instance above)
-
--- -----------------------------------------------------------------------------
--- Animation methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: Animation:type ------------------------------------------------
---@api-stub: Animation:type
--- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- animation_stub:type()  -- -> string
--- (replace animation_stub with your real Animation instance above)
-
--- ---- Stub: Animation:typeOf ----------------------------------------------
---@api-stub: Animation:typeOf
--- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- animation_stub:typeOf("hero")  -- -> boolean
--- (replace animation_stub with your real Animation instance above)
 
 -- -----------------------------------------------------------------------------
 -- BlendLayerSet methods
 -- -----------------------------------------------------------------------------
-
--- ---- Stub: BlendLayerSet:type --------------------------------------------
---@api-stub: BlendLayerSet:type
--- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- blendLayerSet_stub:type()  -- -> string
--- (replace blendLayerSet_stub with your real BlendLayerSet instance above)
-
--- ---- Stub: BlendLayerSet:typeOf ------------------------------------------
---@api-stub: BlendLayerSet:typeOf
--- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- blendLayerSet_stub:typeOf("hero")  -- -> boolean
--- (replace blendLayerSet_stub with your real BlendLayerSet instance above)
 
 -- =============================================================================
 -- STUBS: 10 uncovered lurek.animation API item(s)
@@ -807,351 +722,4 @@ end
 -- The final committed file must contain ZERO --@api-stub: lines.
 -- =============================================================================
 
--- -----------------------------------------------------------------------------
--- LAnimCurve methods
--- -----------------------------------------------------------------------------
 
--- ---- Stub: LAnimCurve:addKeyframe ----------------------------------------
---@api-stub: LAnimCurve:addKeyframe
--- Inserts a keyframe at the given time. If a keyframe at the same time already
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAnimCurve_stub:addKeyframe(t, 1.0)
--- (replace lAnimCurve_stub with your real LAnimCurve instance above)
-
--- ---- Stub: LAnimCurve:eval -----------------------------------------------
---@api-stub: LAnimCurve:eval
--- Returns the interpolated value at the given time using the curve's easing.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAnimCurve_stub:eval(t)  -- -> number
--- (replace lAnimCurve_stub with your real LAnimCurve instance above)
-
--- ---- Stub: LAnimCurve:setEasing ------------------------------------------
---@api-stub: LAnimCurve:setEasing
--- Sets the easing kind applied between all keyframe segments.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAnimCurve_stub:setEasing(mode)
--- (replace lAnimCurve_stub with your real LAnimCurve instance above)
-
--- ---- Stub: LAnimCurve:keyframeCount --------------------------------------
---@api-stub: LAnimCurve:keyframeCount
--- Returns the number of keyframes currently stored.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAnimCurve_stub:keyframeCount()  -- -> integer
--- (replace lAnimCurve_stub with your real LAnimCurve instance above)
-
--- ---- Stub: LAnimCurve:setCustomEasing ------------------------------------
---@api-stub: LAnimCurve:setCustomEasing
--- Set a custom Lua easing function for this curve.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAnimCurve_stub:setCustomEasing(func)
--- (replace lAnimCurve_stub with your real LAnimCurve instance above)
-
--- ---- Stub: LAnimCurve:clear ----------------------------------------------
---@api-stub: LAnimCurve:clear
--- Removes all keyframes from this animation curve, resetting it to empty.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAnimCurve_stub:clear()
--- (replace lAnimCurve_stub with your real LAnimCurve instance above)
-
--- -----------------------------------------------------------------------------
--- LAnimStateMachine methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LAnimStateMachine:update --------------------------------------
---@api-stub: LAnimStateMachine:update
--- Advances the FSM by `dt` seconds, evaluating transitions.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAnimStateMachine_stub:update(0.016)
--- (replace lAnimStateMachine_stub with your real LAnimStateMachine instance above)
-
--- ---- Stub: LAnimStateMachine:getState ------------------------------------
---@api-stub: LAnimStateMachine:getState
--- Returns the name of the currently active state.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAnimStateMachine_stub:getState()  -- -> string
--- (replace lAnimStateMachine_stub with your real LAnimStateMachine instance above)
-
--- ---- Stub: LAnimStateMachine:forceState ----------------------------------
---@api-stub: LAnimStateMachine:forceState
--- Immediately jumps to the named state, bypassing transition conditions.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAnimStateMachine_stub:forceState("hero")  -- -> boolean
--- (replace lAnimStateMachine_stub with your real LAnimStateMachine instance above)
-
--- ---- Stub: LAnimStateMachine:addState ------------------------------------
---@api-stub: LAnimStateMachine:addState
--- Registers a new named state that plays a clip from the embedded animation.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAnimStateMachine_stub:addState("hero", clip, looping)
--- (replace lAnimStateMachine_stub with your real LAnimStateMachine instance above)
-
--- ---- Stub: LAnimStateMachine:addTransition -------------------------------
---@api-stub: LAnimStateMachine:addTransition
--- Adds a conditional transition between two states.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAnimStateMachine_stub:addTransition(from_state, to_state, condition)
--- (replace lAnimStateMachine_stub with your real LAnimStateMachine instance above)
-
--- ---- Stub: LAnimStateMachine:setParam ------------------------------------
---@api-stub: LAnimStateMachine:setParam
--- Sets an FSM parameter value (number, boolean, or integer supported).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAnimStateMachine_stub:setParam("hero", 42)
--- (replace lAnimStateMachine_stub with your real LAnimStateMachine instance above)
-
--- ---- Stub: LAnimStateMachine:getQuad -------------------------------------
---@api-stub: LAnimStateMachine:getQuad
--- Returns the source quad for the current animation frame, or nil.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAnimStateMachine_stub:getQuad()  -- -> table?
--- (replace lAnimStateMachine_stub with your real LAnimStateMachine instance above)
-
--- -----------------------------------------------------------------------------
--- LAnimSyncGroup methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LAnimSyncGroup:add --------------------------------------------
---@api-stub: LAnimSyncGroup:add
--- Adds an animation handle to the group.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAnimSyncGroup_stub:add(handle)
--- (replace lAnimSyncGroup_stub with your real LAnimSyncGroup instance above)
-
--- ---- Stub: LAnimSyncGroup:remove -----------------------------------------
---@api-stub: LAnimSyncGroup:remove
--- Removes an animation handle from the group.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAnimSyncGroup_stub:remove(handle)
--- (replace lAnimSyncGroup_stub with your real LAnimSyncGroup instance above)
-
--- ---- Stub: LAnimSyncGroup:clear ------------------------------------------
---@api-stub: LAnimSyncGroup:clear
--- Removes all animation handles from the group.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAnimSyncGroup_stub:clear()
--- (replace lAnimSyncGroup_stub with your real LAnimSyncGroup instance above)
-
--- ---- Stub: LAnimSyncGroup:memberCount ------------------------------------
---@api-stub: LAnimSyncGroup:memberCount
--- Returns the number of animations currently in the group.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAnimSyncGroup_stub:memberCount()  -- -> integer
--- (replace lAnimSyncGroup_stub with your real LAnimSyncGroup instance above)
-
--- -----------------------------------------------------------------------------
--- LAnimation methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LAnimation:addFrame -------------------------------------------
---@api-stub: LAnimation:addFrame
--- Adds a single frame to the frame pool by source rectangle.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAnimation_stub:addFrame(0.0, 0.0, 64.0, 64.0)  -- -> integer
--- (replace lAnimation_stub with your real LAnimation instance above)
-
--- ---- Stub: LAnimation:addFramesFromGrid ----------------------------------
---@api-stub: LAnimation:addFramesFromGrid
--- Slices a sprite-sheet grid into frames and appends them.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAnimation_stub:addFramesFromGrid(tw, th, fw, fh, start, 10)  -- -> integer
--- (replace lAnimation_stub with your real LAnimation instance above)
-
--- ---- Stub: LAnimation:addClip --------------------------------------------
---@api-stub: LAnimation:addClip
--- Adds a named clip from explicit frame indices.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAnimation_stub:addClip("hero", indices_tbl, fps, looping)
--- (replace lAnimation_stub with your real LAnimation instance above)
-
--- ---- Stub: LAnimation:addClipFromGrid ------------------------------------
---@api-stub: LAnimation:addClipFromGrid
--- Adds a named clip sliced from a sprite-sheet grid.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAnimation_stub:addClipFromGrid()
--- (replace lAnimation_stub with your real LAnimation instance above)
-
--- ---- Stub: LAnimation:play -----------------------------------------------
---@api-stub: LAnimation:play
--- Starts playback of the named clip.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAnimation_stub:play("hero")  -- -> boolean
--- (replace lAnimation_stub with your real LAnimation instance above)
-
--- ---- Stub: LAnimation:stop -----------------------------------------------
---@api-stub: LAnimation:stop
--- Stops playback and resets to frame 0.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAnimation_stub:stop()
--- (replace lAnimation_stub with your real LAnimation instance above)
-
--- ---- Stub: LAnimation:pause ----------------------------------------------
---@api-stub: LAnimation:pause
--- Pauses playback at the current frame.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAnimation_stub:pause()
--- (replace lAnimation_stub with your real LAnimation instance above)
-
--- ---- Stub: LAnimation:resume ---------------------------------------------
---@api-stub: LAnimation:resume
--- Resumes playback from the current frame.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAnimation_stub:resume()
--- (replace lAnimation_stub with your real LAnimation instance above)
-
--- ---- Stub: LAnimation:update ---------------------------------------------
---@api-stub: LAnimation:update
--- Advances the animation by dt seconds.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAnimation_stub:update(0.016)
--- (replace lAnimation_stub with your real LAnimation instance above)
-
--- ---- Stub: LAnimation:getQuad --------------------------------------------
---@api-stub: LAnimation:getQuad
--- Returns the source quad (x, y, w, h) for the current frame, or nil.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAnimation_stub:getQuad()  -- -> table?
--- (replace lAnimation_stub with your real LAnimation instance above)
-
--- ---- Stub: LAnimation:pollEvents -----------------------------------------
---@api-stub: LAnimation:pollEvents
--- Drains and returns all pending animation events as a table.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAnimation_stub:pollEvents()  -- -> table
--- (replace lAnimation_stub with your real LAnimation instance above)
-
--- ---- Stub: LAnimation:isPlaying ------------------------------------------
---@api-stub: LAnimation:isPlaying
--- Returns true if a clip is currently playing.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAnimation_stub:isPlaying()  -- -> boolean
--- (replace lAnimation_stub with your real LAnimation instance above)
-
--- ---- Stub: LAnimation:isLooping ------------------------------------------
---@api-stub: LAnimation:isLooping
--- Returns true if the current clip is set to loop.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAnimation_stub:isLooping()  -- -> boolean
--- (replace lAnimation_stub with your real LAnimation instance above)
-
--- ---- Stub: LAnimation:getClip --------------------------------------------
---@api-stub: LAnimation:getClip
--- Returns the name of the currently playing clip, or nil.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAnimation_stub:getClip()  -- -> string?
--- (replace lAnimation_stub with your real LAnimation instance above)
-
--- ---- Stub: LAnimation:getSpeed -------------------------------------------
---@api-stub: LAnimation:getSpeed
--- Returns the playback speed multiplier.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAnimation_stub:getSpeed()  -- -> number
--- (replace lAnimation_stub with your real LAnimation instance above)
-
--- ---- Stub: LAnimation:setSpeed -------------------------------------------
---@api-stub: LAnimation:setSpeed
--- Sets the playback speed multiplier.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAnimation_stub:setSpeed(120.0)
--- (replace lAnimation_stub with your real LAnimation instance above)
-
--- ---- Stub: LAnimation:getFrameCount --------------------------------------
---@api-stub: LAnimation:getFrameCount
--- Returns the total number of frames in the frame pool.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAnimation_stub:getFrameCount()  -- -> integer
--- (replace lAnimation_stub with your real LAnimation instance above)
-
--- ---- Stub: LAnimation:getClipCount ---------------------------------------
---@api-stub: LAnimation:getClipCount
--- Returns the number of registered clips.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAnimation_stub:getClipCount()  -- -> integer
--- (replace lAnimation_stub with your real LAnimation instance above)
-
--- ---- Stub: LAnimation:getCurrentFrame ------------------------------------
---@api-stub: LAnimation:getCurrentFrame
--- Returns the current position within the active clip (0-based).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAnimation_stub:getCurrentFrame()  -- -> integer
--- (replace lAnimation_stub with your real LAnimation instance above)
-
--- ---- Stub: LAnimation:setFrame -------------------------------------------
---@api-stub: LAnimation:setFrame
--- Sets the playback position within the current clip.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAnimation_stub:setFrame(1)
--- (replace lAnimation_stub with your real LAnimation instance above)
-
--- ---- Stub: LAnimation:crossfade ------------------------------------------
---@api-stub: LAnimation:crossfade
--- Begins a smooth crossfade from the current clip to a new named clip.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAnimation_stub:crossfade(clip_name, duration)  -- -> boolean
--- (replace lAnimation_stub with your real LAnimation instance above)
-
--- ---- Stub: LAnimation:getBlendState --------------------------------------
---@api-stub: LAnimation:getBlendState
--- Returns the two quads and blend factor during a crossfade, or nil when not blending.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAnimation_stub:getBlendState()  -- -> table?
--- (replace lAnimation_stub with your real LAnimation instance above)
-
--- ---- Stub: LAnimation:drawToImage ----------------------------------------
---@api-stub: LAnimation:drawToImage
--- Renders the current animation frame into a new ImageData (white bg, blue frame rect).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAnimation_stub:drawToImage(64.0, 64.0)  -- -> ImageData
--- (replace lAnimation_stub with your real LAnimation instance above)
-
--- -----------------------------------------------------------------------------
--- LBlendLayerSet methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LBlendLayerSet:addLayer ---------------------------------------
---@api-stub: LBlendLayerSet:addLayer
--- Appends a new blend layer.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBlendLayerSet_stub:addLayer("hero", clip_name, weight, [bones])  -- -> boolean
--- (replace lBlendLayerSet_stub with your real LBlendLayerSet instance above)
-
--- ---- Stub: LBlendLayerSet:removeLayer ------------------------------------
---@api-stub: LBlendLayerSet:removeLayer
--- Removes a blend layer by name.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBlendLayerSet_stub:removeLayer("hero")  -- -> boolean
--- (replace lBlendLayerSet_stub with your real LBlendLayerSet instance above)
-
--- ---- Stub: LBlendLayerSet:setWeight --------------------------------------
---@api-stub: LBlendLayerSet:setWeight
--- Sets the blend weight of a named layer (clamped to [0, 1]).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBlendLayerSet_stub:setWeight("hero", weight)  -- -> boolean
--- (replace lBlendLayerSet_stub with your real LBlendLayerSet instance above)
-
--- ---- Stub: LBlendLayerSet:getWeight --------------------------------------
---@api-stub: LBlendLayerSet:getWeight
--- Returns the blend weight of a named layer, or nil if not found.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBlendLayerSet_stub:getWeight("hero")  -- -> number?
--- (replace lBlendLayerSet_stub with your real LBlendLayerSet instance above)
-
--- ---- Stub: LBlendLayerSet:setMask ----------------------------------------
---@api-stub: LBlendLayerSet:setMask
--- Replaces the bone mask of a layer.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBlendLayerSet_stub:setMask("hero", bones)  -- -> boolean
--- (replace lBlendLayerSet_stub with your real LBlendLayerSet instance above)
-
--- ---- Stub: LBlendLayerSet:listLayers -------------------------------------
---@api-stub: LBlendLayerSet:listLayers
--- Returns an ordered array of layer info tables: {name, clip_name, weight, bones}.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBlendLayerSet_stub:listLayers()  -- -> table
--- (replace lBlendLayerSet_stub with your real LBlendLayerSet instance above)
-
--- ---- Stub: LBlendLayerSet:len --------------------------------------------
---@api-stub: LBlendLayerSet:len
--- Returns the number of blend layers.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBlendLayerSet_stub:len()  -- -> integer
--- (replace lBlendLayerSet_stub with your real LBlendLayerSet instance above)

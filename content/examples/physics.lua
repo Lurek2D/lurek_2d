@@ -190,7 +190,7 @@ end
 
 -- â”€â”€ World methods â”€â”€
 
---@api-stub: World:step
+--@api-stub: LWorld:step
 -- Advances the physics simulation by dt seconds, firing onBeginContact /.
 -- Call every frame from lurek.process(dt); contact callbacks fire as a side effect.
 do  -- World:step
@@ -200,7 +200,7 @@ do  -- World:step
   end
 end
 
---@api-stub: World:clear
+--@api-stub: LWorld:clear
 -- Resets the world, removing all bodies and joints.
 -- Use when transitioning between levels to wipe all bodies and joints in one call.
 do  -- World:clear
@@ -210,7 +210,7 @@ do  -- World:clear
   lurek.log.info("world cleared, body count=" .. world:getBodyCount(), "scene")
 end
 
---@api-stub: World:getGravity
+--@api-stub: LWorld:getGravity
 -- Returns the gravity vector (gx, gy).
 -- Read the current gravity vector â€” useful when toggling underwater / zero-g modes.
 do  -- World:getGravity
@@ -219,7 +219,7 @@ do  -- World:getGravity
   lurek.log.info("gravity=" .. gx .. "," .. gy, "phys")
 end
 
---@api-stub: World:setGravity
+--@api-stub: LWorld:setGravity
 -- Sets the world gravity vector; default is `(0, 9.81)` (downward).
 -- Mutate gravity at runtime to enter water (gy=2.0), zero-g (0,0), or invert it (0,-9.81).
 do  -- World:setGravity
@@ -229,7 +229,7 @@ do  -- World:setGravity
   end
 end
 
---@api-stub: World:setMeter
+--@api-stub: LWorld:setMeter
 -- Sets the pixels-per-meter scaling factor.
 -- Tune pixels-per-meter once at startup so 1 game-meter matches your sprite size.
 do  -- World:setMeter
@@ -238,7 +238,7 @@ do  -- World:setMeter
   lurek.log.info("ppm=" .. world:getMeter(), "phys")
 end
 
---@api-stub: World:getMeter
+--@api-stub: LWorld:getMeter
 -- Returns the pixels-per-meter scaling factor.
 -- Read PPM when converting between sprite pixel sizes and physics-world units.
 do  -- World:getMeter
@@ -247,7 +247,7 @@ do  -- World:getMeter
   lurek.log.debug("1 meter = " .. ppm .. " pixels", "phys")
 end
 
---@api-stub: World:toPhysics
+--@api-stub: LWorld:toPhysics
 -- Converts a pixel value to physics units.
 -- Convert pixel measurements (sprite size, mouse position) into physics units before passing in.
 do  -- World:toPhysics
@@ -257,7 +257,7 @@ do  -- World:toPhysics
   lurek.log.debug(px .. " px = " .. meters .. " m", "phys")
 end
 
---@api-stub: World:toPixels
+--@api-stub: LWorld:toPixels
 -- Converts a physics-unit value to pixels.
 -- Convert physics-unit body positions back to pixels for sprite drawing.
 do  -- World:toPixels
@@ -266,7 +266,7 @@ do  -- World:toPixels
   lurek.log.debug("2.5 m = " .. pixels .. " px", "phys")
 end
 
---@api-stub: World:getBodyCount
+--@api-stub: LWorld:getBodyCount
 -- Returns the total number of bodies in the world.
 -- Use as a sanity check when loading levels or to gate spawning under a cap.
 do  -- World:getBodyCount
@@ -275,7 +275,7 @@ do  -- World:getBodyCount
   if world:getBodyCount() < 1000 then world:newBody(150, 200, "dynamic") end
 end
 
---@api-stub: World:getBodyIds
+--@api-stub: LWorld:getBodyIds
 -- Returns all body IDs in the world.
 -- Iterate to query or destroy every body; each id can be passed to setBodyType etc.
 do  -- World:getBodyIds
@@ -286,7 +286,7 @@ do  -- World:getBodyIds
   end
 end
 
---@api-stub: World:destroyBody
+--@api-stub: LWorld:destroyBody
 -- Removes a body from the world.
 -- Remove a body when its game entity dies; subsequent operations on the id are no-ops.
 do  -- World:destroyBody
@@ -295,7 +295,7 @@ do  -- World:destroyBody
   world:destroyBody(enemy:getId())
 end
 
---@api-stub: World:newBody
+--@api-stub: LWorld:newBody
 -- Creates a new rectangular body and adds it to the world.
 -- Returns a Body userdata you can call methods on; type is dynamic/static/kinematic.
 do  -- World:newBody
@@ -305,7 +305,7 @@ do  -- World:newBody
   crate:setRestitution(0.3)
 end
 
---@api-stub: World:fixtureCount
+--@api-stub: LWorld:fixtureCount
 -- Returns the number of fixtures on a body.
 -- Use to verify a body has all expected colliders attached after attachShape calls.
 do  -- World:fixtureCount
@@ -315,7 +315,7 @@ do  -- World:fixtureCount
   lurek.log.debug("body has " .. n .. " fixtures", "phys")
 end
 
---@api-stub: World:jointCount
+--@api-stub: LWorld:jointCount
 -- Returns the total number of joints.
 -- Useful when serialising a level to allocate the joint table up-front.
 do  -- World:jointCount
@@ -323,7 +323,7 @@ do  -- World:jointCount
   lurek.log.info("joints=" .. world:jointCount(), "phys")
 end
 
---@api-stub: World:getJointIds
+--@api-stub: LWorld:getJointIds
 -- Returns a table of integer IDs for every joint attached to this world.
 -- Iterate to inspect or destroy every joint (e.g. when respawning a vehicle).
 do  -- World:getJointIds
@@ -333,7 +333,7 @@ do  -- World:getJointIds
   end
 end
 
---@api-stub: World:getJointBodies
+--@api-stub: LWorld:getJointBodies
 -- Returns the two body IDs connected by a joint.
 -- Use to find which bodies a joint connects when reacting to a break event.
 do  -- World:getJointBodies
@@ -345,7 +345,7 @@ do  -- World:getJointBodies
   lurek.log.debug("joint " .. jid .. " links " .. a .. " <-> " .. b, "phys")
 end
 
---@api-stub: World:destroyJoint
+--@api-stub: LWorld:destroyJoint
 -- Removes a joint from the world.
 -- Call when an entity disassembles (vehicle wreck, broken chain) to free constraint solver work.
 do  -- World:destroyJoint
@@ -356,7 +356,7 @@ do  -- World:destroyJoint
   world:destroyJoint(jid)
 end
 
---@api-stub: World:getJointType
+--@api-stub: LWorld:getJointType
 -- Returns the type name of a joint.
 -- Branch on the type string when you have a heterogeneous joint registry.
 do  -- World:getJointType
@@ -368,7 +368,7 @@ do  -- World:getJointType
   if kind == "revolute" then lurek.log.debug("hinge joint", "phys") end
 end
 
---@api-stub: World:getJointMotorSpeed
+--@api-stub: LWorld:getJointMotorSpeed
 -- Returns the motor speed on a joint's angular axis.
 -- Read motor speed for HUD telemetry or to drive sound pitch on a powered joint.
 do  -- World:getJointMotorSpeed
@@ -380,7 +380,7 @@ do  -- World:getJointMotorSpeed
   lurek.log.debug("motor speed=" .. rpm, "phys")
 end
 
---@api-stub: World:getJointLimits
+--@api-stub: LWorld:getJointLimits
 -- Returns the angular limits on a joint.
 -- Use when serialising joint state or rendering a limit indicator in editor mode.
 do  -- World:getJointLimits
@@ -392,7 +392,7 @@ do  -- World:getJointLimits
   lurek.log.debug("limits=[" .. lo .. ", " .. hi .. "]", "phys")
 end
 
---@api-stub: World:getBodyAtPoint
+--@api-stub: LWorld:getBodyAtPoint
 -- Returns the body ID at a world-space point, or nil.
 -- Use for click-to-select tools; returns nil when nothing under the cursor.
 do  -- World:getBodyAtPoint
@@ -401,7 +401,7 @@ do  -- World:getBodyAtPoint
   if hit then lurek.log.debug("clicked body=" .. hit, "phys") end
 end
 
---@api-stub: World:getCollisionEvents
+--@api-stub: LWorld:getCollisionEvents
 -- Returns collision events from the last step.
 -- Drain once per step and react to gameplay-meaningful pairs (player vs pickup etc.).
 do  -- World:getCollisionEvents
@@ -414,7 +414,7 @@ do  -- World:getCollisionEvents
   end
 end
 
---@api-stub: World:getBeginContactEvents
+--@api-stub: LWorld:getBeginContactEvents
 -- Returns begin-contact events from the last step.
 -- Use the begin-only stream for one-shot triggers like pickup-on-touch logic.
 do  -- World:getBeginContactEvents
@@ -427,7 +427,7 @@ do  -- World:getBeginContactEvents
   end
 end
 
---@api-stub: World:getEndContactEvents
+--@api-stub: LWorld:getEndContactEvents
 -- Returns end-contact events from the last step.
 -- Use to detect when objects part â€” e.g. removing a temporary glue effect.
 do  -- World:getEndContactEvents
@@ -440,7 +440,7 @@ do  -- World:getEndContactEvents
   end
 end
 
---@api-stub: World:getContacts
+--@api-stub: LWorld:getContacts
 -- Returns all contact pairs from the narrow phase.
 -- Includes contact normals â€” use to push bodies apart manually or to spawn impact FX.
 do  -- World:getContacts
@@ -452,7 +452,7 @@ do  -- World:getContacts
   end
 end
 
---@api-stub: World:getBodyContacts
+--@api-stub: LWorld:getBodyContacts
 -- Returns contacts involving a specific body.
 -- Filter to one body when you only care about a specific entity (player ground check).
 do  -- World:getBodyContacts
@@ -462,7 +462,7 @@ do  -- World:getBodyContacts
   lurek.log.debug("player contacts=" .. #touches, "phys")
 end
 
---@api-stub: World:setBodyType
+--@api-stub: LWorld:setBodyType
 -- Changes the simulation type of the body: `"dynamic"`, `"static"`, or `"kinematic"`.
 -- Switch a body to kinematic for cutscenes, then back to dynamic when control resumes.
 do  -- World:setBodyType
@@ -471,7 +471,7 @@ do  -- World:setBodyType
   world:setBodyType(door:getId(), "kinematic")
 end
 
---@api-stub: World:getBodyType
+--@api-stub: LWorld:getBodyType
 -- Returns the body type as a string.
 -- Read before mutating mass or velocity â€” only dynamic bodies respond to those.
 do  -- World:getBodyType
@@ -480,7 +480,7 @@ do  -- World:getBodyType
   if world:getBodyType(body:getId()) == "dynamic" then body:setMass(1.0) end
 end
 
---@api-stub: World:setBeginContact
+--@api-stub: LWorld:setBeginContact
 -- Registers a Lua function called with (bodyIdA, bodyIdB) when two.
 -- Register once at boot; the callback runs from inside step() so do minimal work there.
 do  -- World:setBeginContact
@@ -490,7 +490,7 @@ do  -- World:setBeginContact
   end)
 end
 
---@api-stub: World:clearBeginContact
+--@api-stub: LWorld:clearBeginContact
 -- Removes the begin-contact callback.
 -- Call when leaving a scene to drop the closure and any captured upvalues.
 do  -- World:clearBeginContact
@@ -499,7 +499,7 @@ do  -- World:clearBeginContact
   world:clearBeginContact()
 end
 
---@api-stub: World:setEndContact
+--@api-stub: LWorld:setEndContact
 -- Registers a Lua function called with (bodyIdA, bodyIdB) when two.
 -- Use to clean up state attached on begin (sound stops, particle emitter off).
 do  -- World:setEndContact
@@ -509,7 +509,7 @@ do  -- World:setEndContact
   end)
 end
 
---@api-stub: World:clearEndContact
+--@api-stub: LWorld:clearEndContact
 -- Removes the end-contact callback.
 -- Pair with clearBeginContact when unloading a level to drop callbacks.
 do  -- World:clearEndContact
@@ -518,7 +518,7 @@ do  -- World:clearEndContact
   world:clearEndContact()
 end
 
---@api-stub: World:getBodyData
+--@api-stub: LWorld:getBodyData
 -- Returns the Lua data previously attached to a body, or nil if none is set.
 -- Use to recover the Lua entity (table, name) from a body id inside a contact callback.
 do  -- World:getBodyData
@@ -529,7 +529,7 @@ do  -- World:getBodyData
   if data then lurek.log.debug("entity kind=" .. data.kind, "phys") end
 end
 
---@api-stub: World:clearBodyData
+--@api-stub: LWorld:clearBodyData
 -- Removes the Lua data attached to a body.
 -- Call when an entity dies but the body is recycled, to avoid stale references.
 do  -- World:clearBodyData
@@ -539,7 +539,7 @@ do  -- World:clearBodyData
   world:clearBodyData(body:getId())
 end
 
---@api-stub: World:setBodyCCD
+--@api-stub: LWorld:setBodyCCD
 -- Enables or disables Continuous Collision Detection for a body.
 -- Enable on bullets and fast-moving projectiles to prevent tunnelling through walls.
 do  -- World:setBodyCCD
@@ -548,7 +548,7 @@ do  -- World:setBodyCCD
   world:setBodyCCD(bullet:getId(), true)
 end
 
---@api-stub: World:getBodyCCD
+--@api-stub: LWorld:getBodyCCD
 -- Returns whether CCD is enabled for a body.
 -- Branch on this when applying very high impulses to prefer CCD-enabled bodies.
 do  -- World:getBodyCCD
@@ -557,7 +557,7 @@ do  -- World:getBodyCCD
   if not world:getBodyCCD(body:getId()) then world:setBodyCCD(body:getId(), true) end
 end
 
---@api-stub: World:clearBodyOneWay
+--@api-stub: LWorld:clearBodyOneWay
 -- Removes the one-way platform flag from a body.
 -- Call when a one-way platform should become solid from both sides (e.g. boss arena).
 do  -- World:clearBodyOneWay
@@ -566,7 +566,7 @@ do  -- World:clearBodyOneWay
   world:clearBodyOneWay(platform:getId())
 end
 
---@api-stub: World:getBodyOneWay
+--@api-stub: LWorld:getBodyOneWay
 -- Returns the one-way normal for a body, or nil if not configured.
 -- Use to render an indicator arrow showing which way bodies pass through the platform.
 do  -- World:getBodyOneWay
@@ -576,7 +576,7 @@ do  -- World:getBodyOneWay
   if nx then lurek.log.debug("one-way n=" .. nx .. "," .. ny, "phys") end
 end
 
---@api-stub: World:setJointBreakForce
+--@api-stub: LWorld:setJointBreakForce
 -- Sets the relative-velocity threshold above which a joint breaks.
 -- Use to model destructible vehicle joints â€” the engine destroys the joint when exceeded.
 do  -- World:setJointBreakForce
@@ -587,7 +587,7 @@ do  -- World:setJointBreakForce
   world:setJointBreakForce(jid, 5000.0)
 end
 
---@api-stub: World:getJointBreakForce
+--@api-stub: LWorld:getJointBreakForce
 -- Returns the break threshold for a joint, or nil if not set.
 -- Read for HUD / damage display; returns nil when no break threshold has been set.
 do  -- World:getJointBreakForce
@@ -599,7 +599,7 @@ do  -- World:getJointBreakForce
   if f then lurek.log.debug("breaks at " .. f .. " N", "phys") end
 end
 
---@api-stub: World:isBodySleeping
+--@api-stub: LWorld:isBodySleeping
 -- Returns true if a body is currently sleeping (inactive).
 -- Use to skip per-frame work on inactive bodies (AI updates, sound emission).
 do  -- World:isBodySleeping
@@ -610,7 +610,7 @@ do  -- World:isBodySleeping
   end
 end
 
---@api-stub: World:wakeUpBody
+--@api-stub: LWorld:wakeUpBody
 -- Forcibly wakes up a sleeping body.
 -- Wake before applying impulses or forces â€” sleeping bodies ignore them.
 do  -- World:wakeUpBody
@@ -620,7 +620,7 @@ do  -- World:wakeUpBody
   body:applyImpulse(0, -100)
 end
 
---@api-stub: World:sleepBody
+--@api-stub: LWorld:sleepBody
 -- Puts a body to sleep immediately.
 -- Force-sleep statically positioned dynamic bodies (a settled debris pile) to save CPU.
 do  -- World:sleepBody
@@ -629,7 +629,7 @@ do  -- World:sleepBody
   world:sleepBody(rubble:getId())
 end
 
---@api-stub: World:setSolverIterations
+--@api-stub: LWorld:setSolverIterations
 -- Sets the number of constraint solver iterations per step.
 -- Bump for stacking-heavy scenes; 8 is the default, 16 trades CPU for stability.
 do  -- World:setSolverIterations
@@ -637,7 +637,7 @@ do  -- World:setSolverIterations
   world:setSolverIterations(12)
 end
 
---@api-stub: World:getSolverIterations
+--@api-stub: LWorld:getSolverIterations
 -- Returns the current number of solver iterations per step.
 -- Read for tuning UI or to log the current accuracy budget at startup.
 do  -- World:getSolverIterations
@@ -646,7 +646,7 @@ do  -- World:getSolverIterations
   lurek.log.info("solver iterations=" .. iters, "phys")
 end
 
---@api-stub: World:newBodies
+--@api-stub: LWorld:newBodies
 -- Creates multiple bodies in one call.
 -- Use for bulk spawning a particle storm or grid of crates with a single round-trip.
 do  -- World:newBodies
@@ -659,7 +659,7 @@ do  -- World:newBodies
   lurek.log.info("spawned " .. #ids .. " crates", "phys")
 end
 
---@api-stub: World:addZone
+--@api-stub: LWorld:addZone
 -- Creates a rectangular gravity/damping zone and returns a LuaZone handle.
 -- Returns a Zone handle; configure gravity / damping override before bodies enter it.
 do  -- World:addZone
@@ -668,7 +668,7 @@ do  -- World:addZone
   water:setGravityDirectional(0, 2.0)
 end
 
---@api-stub: World:getZoneEvents
+--@api-stub: LWorld:getZoneEvents
 -- Returns zone enter/leave events produced by the most recent step.
 -- Drain after step to spawn splash particles on enter and bubble trails on leave.
 do  -- World:getZoneEvents
@@ -684,7 +684,7 @@ end
 
 -- â”€â”€ Zone methods â”€â”€
 
---@api-stub: Zone:getId
+--@api-stub: LZone:getId
 -- Returns the zone's integer ID.
 -- Capture the id at startup so you can match it against zone events later.
 do  -- Zone:getId
@@ -693,7 +693,7 @@ do  -- Zone:getId
   lurek.log.info("water zone id=" .. zone:getId(), "phys")
 end
 
---@api-stub: Zone:setEnabled
+--@api-stub: LZone:setEnabled
 -- Enables or disables the zone.
 -- Toggle from gameplay (close a force-field gate) without destroying the zone.
 do  -- Zone:setEnabled
@@ -702,7 +702,7 @@ do  -- Zone:setEnabled
   field:setEnabled(false)
 end
 
---@api-stub: Zone:setPriority
+--@api-stub: LZone:setPriority
 -- Sets the zone priority; higher values win over lower when zones overlap.
 -- Higher priority wins when zones overlap â€” use to layer a wind tunnel above ambient water.
 do  -- Zone:setPriority
@@ -711,7 +711,7 @@ do  -- Zone:setPriority
   wind:setPriority(10)
 end
 
---@api-stub: Zone:setLayerMask
+--@api-stub: LZone:setLayerMask
 -- Sets the layer bitmask; only bodies whose `layer & mask != 0` are affected.
 -- Restrict the zone to certain body layers (e.g. only enemies feel the slow field).
 do  -- Zone:setLayerMask
@@ -720,7 +720,7 @@ do  -- Zone:setLayerMask
   slow:setLayerMask(0x02)
 end
 
---@api-stub: Zone:setCircle
+--@api-stub: LZone:setCircle
 -- Replaces the zone boundary with a circle.
 -- Switch from rectangle to circular boundary â€” useful for blast radii or planet wells.
 do  -- Zone:setCircle
@@ -729,7 +729,7 @@ do  -- Zone:setCircle
   well:setCircle(400, 300, 120)
 end
 
---@api-stub: Zone:setGravityDirectional
+--@api-stub: LZone:setGravityDirectional
 -- Sets directional gravity inside the zone.
 -- Use for water (light downward pull) or wind tunnels (sideways pull).
 do  -- Zone:setGravityDirectional
@@ -738,7 +738,7 @@ do  -- Zone:setGravityDirectional
   water:setGravityDirectional(0, 2.0)
 end
 
---@api-stub: Zone:setGravityZero
+--@api-stub: LZone:setGravityZero
 -- Suppresses gravity inside the zone (zero-g pocket).
 -- Make a zero-g pocket inside the level (space station chamber, magic bubble).
 do  -- Zone:setGravityZero
@@ -747,7 +747,7 @@ do  -- Zone:setGravityZero
   bubble:setGravityZero()
 end
 
---@api-stub: Zone:setLinearDampingOverride
+--@api-stub: LZone:setLinearDampingOverride
 -- Sets an optional linear damping override for bodies inside the zone.
 -- Use to slow projectiles inside molasses; pass nil to clear and restore body damping.
 do  -- Zone:setLinearDampingOverride
@@ -756,7 +756,7 @@ do  -- Zone:setLinearDampingOverride
   glue:setLinearDampingOverride(5.0)
 end
 
---@api-stub: Zone:destroy
+--@api-stub: LZone:destroy
 -- Removes the zone from the world.
 -- Call when the trigger area despawns (door closed, level changed) to free zone memory.
 do  -- Zone:destroy
@@ -768,7 +768,7 @@ end
 
 -- â”€â”€ Terrain methods â”€â”€
 
---@api-stub: Terrain:setCell
+--@api-stub: LTerrain:setCell
 -- Sets a single terrain cell to solid or empty.
 -- Use for surgical edits like spawning a single block; bulk dig with fillCircle.
 do  -- Terrain:setCell
@@ -778,7 +778,7 @@ do  -- Terrain:setCell
   terrain:flush()
 end
 
---@api-stub: Terrain:getCell
+--@api-stub: LTerrain:getCell
 -- Returns whether a cell is solid.
 -- Probe before placing a structure â€” fail early when target cells are not solid.
 do  -- Terrain:getCell
@@ -787,7 +787,7 @@ do  -- Terrain:getCell
   if terrain:getCell(10, 5) then lurek.log.debug("solid cell", "terrain") end
 end
 
---@api-stub: Terrain:fillAll
+--@api-stub: LTerrain:fillAll
 -- Sets every cell in the grid to `solid`.
 -- Initialise an empty world (false) or a fully-buried one (true) before sculpting.
 do  -- Terrain:fillAll
@@ -796,7 +796,7 @@ do  -- Terrain:fillAll
   terrain:fillAll(true)
 end
 
---@api-stub: Terrain:flush
+--@api-stub: LTerrain:flush
 -- Rebuilds physics bodies for all dirty chunks.
 -- Call after every batch of edits, before world:step, to push collider changes to physics.
 do  -- Terrain:flush
@@ -806,7 +806,7 @@ do  -- Terrain:flush
   terrain:flush()
 end
 
---@api-stub: Terrain:isDirty
+--@api-stub: LTerrain:isDirty
 -- Returns `true` when at least one chunk needs flushing.
 -- Skip flush() when nothing changed this frame â€” saves chunk rebuild work.
 do  -- Terrain:isDirty
@@ -815,7 +815,7 @@ do  -- Terrain:isDirty
   if terrain:isDirty() then terrain:flush() end
 end
 
---@api-stub: Terrain:collapseColumns
+--@api-stub: LTerrain:collapseColumns
 -- Removes unsupported cells, returning the number of cells that fell.
 -- Run after explosions / digging to drop unsupported cells; returns count for VFX scaling.
 do  -- Terrain:collapseColumns
@@ -826,7 +826,7 @@ do  -- Terrain:collapseColumns
   terrain:flush()
 end
 
---@api-stub: Terrain:solidPositions
+--@api-stub: LTerrain:solidPositions
 -- Returns the world-space centres of all solid cells as an array of `{x, y}` tables.
 -- Iterate result to snapshot the terrain (e.g. spawn debris from a dug-out region).
 do  -- Terrain:solidPositions
@@ -837,7 +837,7 @@ do  -- Terrain:solidPositions
   lurek.log.debug("solid cells=" .. #positions, "terrain")
 end
 
---@api-stub: Terrain:toBytes
+--@api-stub: LTerrain:toBytes
 -- Serialises the terrain grid to a byte string for save/load.
 -- Serialize the terrain grid; pair with lurek.fs.write to persist to a save slot.
 do  -- Terrain:toBytes
@@ -847,7 +847,7 @@ do  -- Terrain:toBytes
   lurek.log.info("terrain blob=" .. #bytes .. " bytes", "save")
 end
 
---@api-stub: Terrain:loadFromBytes
+--@api-stub: LTerrain:loadFromBytes
 -- Loads terrain cell data from bytes produced by `toBytes`.
 -- Restore from a save blob; remember to flush() afterwards to rebuild colliders.
 do  -- Terrain:loadFromBytes
@@ -861,7 +861,7 @@ end
 
 -- â”€â”€ Cellular methods â”€â”€
 
---@api-stub: Cellular:setCell
+--@api-stub: LCellular:setCell
 -- Sets the material of a cell.
 -- Use to spawn material (sand, water) at a specific cell â€” typically from a player tool.
 do  -- Cellular:setCell
@@ -870,7 +870,7 @@ do  -- Cellular:setCell
   sand:setCell(65, 0, lurek.physics.CELL_WATER)
 end
 
---@api-stub: Cellular:getCell
+--@api-stub: LCellular:getCell
 -- Returns the material at `(cx, cy)` as an integer constant.
 -- Probe before placing a barrier â€” only act when the source cell is empty.
 do  -- Cellular:getCell
@@ -880,7 +880,7 @@ do  -- Cellular:getCell
   end
 end
 
---@api-stub: Cellular:step
+--@api-stub: LCellular:step
 -- Advances the simulation by one tick.
 -- Drive the simulation each frame from lurek.process â€” sand falls, water spreads.
 do  -- Cellular:step
@@ -890,7 +890,7 @@ do  -- Cellular:step
   end
 end
 
---@api-stub: Cellular:stepN
+--@api-stub: LCellular:stepN
 -- Advances the simulation by `n` ticks.
 -- Use to fast-forward (e.g. 30 ticks at scene load) to settle freshly poured material.
 do  -- Cellular:stepN
@@ -898,7 +898,7 @@ do  -- Cellular:stepN
   sand:stepN(30)
 end
 
---@api-stub: Cellular:toImageData
+--@api-stub: LCellular:toImageData
 -- Returns the full grid as an RGBA byte string using the default colour palette.
 -- Render the grid as a texture each frame for cheap visualisation of millions of cells.
 do  -- Cellular:toImageData
@@ -907,7 +907,7 @@ do  -- Cellular:toImageData
   lurek.log.debug("cellular bytes=" .. #rgba, "cell")
 end
 
---@api-stub: Cellular:countCells
+--@api-stub: LCellular:countCells
 -- Counts cells of the given material type.
 -- Use for HUD counters (water level, sand remaining) or victory conditions.
 do  -- Cellular:countCells
@@ -916,7 +916,7 @@ do  -- Cellular:countCells
   lurek.log.debug("water cells=" .. water, "cell")
 end
 
---@api-stub: Cellular:findCells
+--@api-stub: LCellular:findCells
 -- Returns positions of all cells of the given material as an array of `{x, y}` tables.
 -- Iterate to spawn dynamic bodies on every fire cell (e.g. flame particle system).
 do  -- Cellular:findCells
@@ -926,7 +926,7 @@ do  -- Cellular:findCells
   end
 end
 
---@api-stub: Cellular:toBytes
+--@api-stub: LCellular:toBytes
 -- Serialises the grid to a byte string.
 -- Serialize for save game; pairs with loadFromBytes to round-trip the grid.
 do  -- Cellular:toBytes
@@ -935,7 +935,7 @@ do  -- Cellular:toBytes
   lurek.log.info("cellular blob=" .. #blob .. " bytes", "save")
 end
 
---@api-stub: Cellular:loadFromBytes
+--@api-stub: LCellular:loadFromBytes
 -- Loads grid data from bytes produced by `toBytes`.
 -- Restore on level load; returns false when the byte string is corrupt or wrong size.
 do  -- Cellular:loadFromBytes
@@ -948,7 +948,7 @@ end
 
 -- â”€â”€ Body methods â”€â”€
 
---@api-stub: Body:getId
+--@api-stub: LBody:getId
 -- Returns the body's integer ID.
 -- Capture the id when you need to refer to the body across save/load or RPC boundaries.
 do  -- Body:getId
@@ -957,7 +957,7 @@ do  -- Body:getId
   lurek.log.debug("crate id=" .. crate:getId(), "phys")
 end
 
---@api-stub: Body:getPosition
+--@api-stub: LBody:getPosition
 -- Returns the body position (x, y).
 -- Read inside lurek.process to sync sprite position to physics every frame.
 do  -- Body:getPosition
@@ -967,7 +967,7 @@ do  -- Body:getPosition
   lurek.log.debug("crate at " .. x .. "," .. y, "phys")
 end
 
---@api-stub: Body:setPosition
+--@api-stub: LBody:setPosition
 -- Teleports the body to the given world-space position, bypassing collision.
 -- Use for teleports / respawns; bypasses collision so prefer applyImpulse for normal motion.
 do  -- Body:setPosition
@@ -976,7 +976,7 @@ do  -- Body:setPosition
   player:setPosition(400, 300)
 end
 
---@api-stub: Body:getX
+--@api-stub: LBody:getX
 -- Returns the body X position.
 -- Use the single-axis form when you only need one coordinate (left/right culling check).
 do  -- Body:getX
@@ -985,7 +985,7 @@ do  -- Body:getX
   if enemy:getX() > 800 then enemy:destroy() end
 end
 
---@api-stub: Body:getY
+--@api-stub: LBody:getY
 -- Returns the body Y position.
 -- Use to detect falling out of the world (death plane below screen).
 do  -- Body:getY
@@ -994,7 +994,7 @@ do  -- Body:getY
   if player:getY() > 1000 then player:setPosition(100, 200) end
 end
 
---@api-stub: Body:getVelocity
+--@api-stub: LBody:getVelocity
 -- Returns the body velocity (vx, vy).
 -- Use to compute screen-shake intensity, motion blur, or attack-direction logic.
 do  -- Body:getVelocity
@@ -1004,7 +1004,7 @@ do  -- Body:getVelocity
   lurek.log.debug("v=" .. vx .. "," .. vy, "phys")
 end
 
---@api-stub: Body:setVelocity
+--@api-stub: LBody:setVelocity
 -- Sets the body's linear velocity in world units per second.
 -- Use for character controllers that override physics each frame (top-down movement).
 do  -- Body:setVelocity
@@ -1015,7 +1015,7 @@ do  -- Body:setVelocity
   end
 end
 
---@api-stub: Body:getAngle
+--@api-stub: LBody:getAngle
 -- Returns the body angle in radians.
 -- Use to drive sprite rotation; angle is in radians, multiply by math.deg if needed.
 do  -- Body:getAngle
@@ -1025,7 +1025,7 @@ do  -- Body:getAngle
   lurek.log.debug("angle=" .. rad .. " rad", "phys")
 end
 
---@api-stub: Body:setAngle
+--@api-stub: LBody:setAngle
 -- Sets the body angle in radians.
 -- Snap orientation for cutscenes; pair with setAngularVelocity(0) to stop spin.
 do  -- Body:setAngle
@@ -1034,7 +1034,7 @@ do  -- Body:setAngle
   sign:setAngle(math.pi / 4)
 end
 
---@api-stub: Body:getAngularVelocity
+--@api-stub: LBody:getAngularVelocity
 -- Returns the angular velocity in radians/s.
 -- Use to detect overspin (e.g. a top-down car drifting) and apply braking torque.
 do  -- Body:getAngularVelocity
@@ -1045,7 +1045,7 @@ do  -- Body:getAngularVelocity
   end
 end
 
---@api-stub: Body:setAngularVelocity
+--@api-stub: LBody:setAngularVelocity
 -- Sets the angular velocity.
 -- Use to spin a turret to a target rate without applying torque every frame.
 do  -- Body:setAngularVelocity
@@ -1054,7 +1054,7 @@ do  -- Body:setAngularVelocity
   turret:setAngularVelocity(1.5)
 end
 
---@api-stub: Body:getMass
+--@api-stub: LBody:getMass
 -- Returns the body mass in kilograms used for force and impulse calculations.
 -- Use to compute kinetic energy or HUD weight readouts (forklift demo).
 do  -- Body:getMass
@@ -1063,7 +1063,7 @@ do  -- Body:getMass
   lurek.log.debug("crate mass=" .. crate:getMass() .. " kg", "phys")
 end
 
---@api-stub: Body:setMass
+--@api-stub: LBody:setMass
 -- Sets the body mass; affects how forces and impulses change velocity.
 -- Override the mass derived from shape density â€” use for game-feel tuning.
 do  -- Body:setMass
@@ -1072,7 +1072,7 @@ do  -- Body:setMass
   heavy:setMass(50.0)
 end
 
---@api-stub: Body:getType
+--@api-stub: LBody:getType
 -- Returns the body type as a string.
 -- Branch on the type before applying impulses â€” only dynamic bodies respond.
 do  -- Body:getType
@@ -1081,7 +1081,7 @@ do  -- Body:getType
   if body:getType() == "dynamic" then body:applyImpulse(0, -50) end
 end
 
---@api-stub: Body:setType
+--@api-stub: LBody:setType
 -- Changes the body type: `"dynamic"`, `"static"`, or `"kinematic"`.
 -- Promote a static prop to dynamic when destroyed (a wall becomes rubble).
 do  -- Body:setType
@@ -1090,7 +1090,7 @@ do  -- Body:setType
   wall:setType("dynamic")
 end
 
---@api-stub: Body:getWidth
+--@api-stub: LBody:getWidth
 -- Returns the width of this body's primary collider shape in world units.
 -- Use to size a debug AABB or to centre a sprite over a body of unknown extent.
 do  -- Body:getWidth
@@ -1099,7 +1099,7 @@ do  -- Body:getWidth
   lurek.log.debug("body width=" .. body:getWidth(), "phys")
 end
 
---@api-stub: Body:getHeight
+--@api-stub: LBody:getHeight
 -- Returns the height of this body's primary collider shape in world units.
 -- Pair with getWidth to drive sprite scale or bounding-box outline rendering.
 do  -- Body:getHeight
@@ -1108,7 +1108,7 @@ do  -- Body:getHeight
   lurek.log.debug("body height=" .. body:getHeight(), "phys")
 end
 
---@api-stub: Body:getFriction
+--@api-stub: LBody:getFriction
 -- Returns the body friction coefficient.
 -- Compare to a target value before mutating â€” avoid wakes on bodies already at the right value.
 do  -- Body:getFriction
@@ -1117,7 +1117,7 @@ do  -- Body:getFriction
   if crate:getFriction() < 0.5 then crate:setFriction(0.7) end
 end
 
---@api-stub: Body:setFriction
+--@api-stub: LBody:setFriction
 -- Sets the body friction coefficient.
 -- Use 0.0 for ice, 0.7 for wood, 1.0+ for rubber â€” tune for the surface material.
 do  -- Body:setFriction
@@ -1126,7 +1126,7 @@ do  -- Body:setFriction
   ice:setFriction(0.05)
 end
 
---@api-stub: Body:getRestitution
+--@api-stub: LBody:getRestitution
 -- Returns the body restitution (bounciness).
 -- Use to drive impact sound volume: bouncier collisions deserve louder thuds.
 do  -- Body:getRestitution
@@ -1135,7 +1135,7 @@ do  -- Body:getRestitution
   lurek.log.debug("ball bounce=" .. ball:getRestitution(), "phys")
 end
 
---@api-stub: Body:setRestitution
+--@api-stub: LBody:setRestitution
 -- Sets the body restitution (bounciness).
 -- 0.0 = no bounce, 1.0 = perfectly elastic; rubber balls sit around 0.8.
 do  -- Body:setRestitution
@@ -1144,7 +1144,7 @@ do  -- Body:setRestitution
   ball:setRestitution(0.8)
 end
 
---@api-stub: Body:getLayer
+--@api-stub: LBody:getLayer
 -- Returns the collision layer bitmask.
 -- Read to verify a body is on the right collision layer (pickup vs solid).
 do  -- Body:getLayer
@@ -1153,7 +1153,7 @@ do  -- Body:getLayer
   lurek.log.debug("layer=" .. pickup:getLayer(), "phys")
 end
 
---@api-stub: Body:setLayer
+--@api-stub: LBody:setLayer
 -- Sets the collision layer bitmask.
 -- Use bitmask layers (1=player, 2=enemy, 4=pickup) for filterable collision groups.
 do  -- Body:setLayer
@@ -1162,7 +1162,7 @@ do  -- Body:setLayer
   pickup:setLayer(0x04)
 end
 
---@api-stub: Body:getMask
+--@api-stub: LBody:getMask
 -- Returns the collision mask bitmask.
 -- Read to debug collision filtering â€” body sees layers in the mask, ignores others.
 do  -- Body:getMask
@@ -1171,7 +1171,7 @@ do  -- Body:getMask
   lurek.log.debug("mask=" .. body:getMask(), "phys")
 end
 
---@api-stub: Body:setMask
+--@api-stub: LBody:setMask
 -- Sets the collision mask bitmask.
 -- Restrict who this body collides with (e.g. ghost passes through enemies but hits walls).
 do  -- Body:setMask
@@ -1180,7 +1180,7 @@ do  -- Body:setMask
   ghost:setMask(0x01)
 end
 
---@api-stub: Body:applyImpulse
+--@api-stub: LBody:applyImpulse
 -- Applies a linear impulse to the body.
 -- Use for instantaneous velocity changes (jump, blast knockback, projectile fire).
 do  -- Body:applyImpulse
@@ -1191,7 +1191,7 @@ do  -- Body:applyImpulse
   end
 end
 
---@api-stub: Body:applyForce
+--@api-stub: LBody:applyForce
 -- Applies a continuous force to the body.
 -- Use for continuous forces (thrust, wind); call every frame inside lurek.process.
 do  -- Body:applyForce
@@ -1202,7 +1202,7 @@ do  -- Body:applyForce
   end
 end
 
---@api-stub: Body:applyTorque
+--@api-stub: LBody:applyTorque
 -- Applies a torque (rotational force).
 -- Use to spin up a wheel or give a thrown object a tumble â€” accumulates over the step.
 do  -- Body:applyTorque
@@ -1211,7 +1211,7 @@ do  -- Body:applyTorque
   wheel:applyTorque(50.0)
 end
 
---@api-stub: Body:applyAngularImpulse
+--@api-stub: LBody:applyAngularImpulse
 -- Applies an angular impulse.
 -- Use for one-shot spin changes (e.g. a hit that sends a top spinning).
 do  -- Body:applyAngularImpulse
@@ -1220,7 +1220,7 @@ do  -- Body:applyAngularImpulse
   top:applyAngularImpulse(2.5)
 end
 
---@api-stub: Body:getGravityScale
+--@api-stub: LBody:getGravityScale
 -- Returns the per-body gravity multiplier.
 -- Read for HUD (gravity boots indicator) or to verify a buoyancy effect was applied.
 do  -- Body:getGravityScale
@@ -1229,7 +1229,7 @@ do  -- Body:getGravityScale
   lurek.log.debug("g-scale=" .. body:getGravityScale(), "phys")
 end
 
---@api-stub: Body:setGravityScale
+--@api-stub: LBody:setGravityScale
 -- Sets the per-body gravity multiplier.
 -- Use 0 for floaty objects (balloons, magic), 2 for heavy ones (anvils).
 do  -- Body:setGravityScale
@@ -1238,7 +1238,7 @@ do  -- Body:setGravityScale
   balloon:setGravityScale(-0.5)
 end
 
---@api-stub: Body:isFixedRotation
+--@api-stub: LBody:isFixedRotation
 -- Returns whether rotation is locked.
 -- Branch before setting; locking rotation again is a no-op but force adjustments are not.
 do  -- Body:isFixedRotation
@@ -1247,7 +1247,7 @@ do  -- Body:isFixedRotation
   if not player:isFixedRotation() then player:setFixedRotation(true) end
 end
 
---@api-stub: Body:setFixedRotation
+--@api-stub: LBody:setFixedRotation
 -- Locks or unlocks rotation.
 -- Lock player / NPC bodies upright so they do not topple over after a hit.
 do  -- Body:setFixedRotation
@@ -1256,7 +1256,7 @@ do  -- Body:setFixedRotation
   player:setFixedRotation(true)
 end
 
---@api-stub: Body:getLinearDamping
+--@api-stub: LBody:getLinearDamping
 -- Returns the linear damping coefficient.
 -- Read for tuning UI; higher damping bleeds velocity faster (drag).
 do  -- Body:getLinearDamping
@@ -1265,7 +1265,7 @@ do  -- Body:getLinearDamping
   lurek.log.debug("damping=" .. body:getLinearDamping(), "phys")
 end
 
---@api-stub: Body:setLinearDamping
+--@api-stub: LBody:setLinearDamping
 -- Sets the linear damping coefficient.
 -- Use 0 for vacuum, 0.5 for air, 5+ for water â€” simulates fluid drag without a zone.
 do  -- Body:setLinearDamping
@@ -1274,7 +1274,7 @@ do  -- Body:setLinearDamping
   fish:setLinearDamping(2.0)
 end
 
---@api-stub: Body:getAngularDamping
+--@api-stub: LBody:getAngularDamping
 -- Returns the angular damping coefficient.
 -- Read to debug bodies that keep spinning forever â€” usually damping=0 is the cause.
 do  -- Body:getAngularDamping
@@ -1283,7 +1283,7 @@ do  -- Body:getAngularDamping
   lurek.log.debug("ang damping=" .. top:getAngularDamping(), "phys")
 end
 
---@api-stub: Body:setAngularDamping
+--@api-stub: LBody:setAngularDamping
 -- Sets the angular damping coefficient.
 -- Apply moderate damping (0.5) to thrown objects so they settle within a few seconds.
 do  -- Body:setAngularDamping
@@ -1292,7 +1292,7 @@ do  -- Body:setAngularDamping
   crate:setAngularDamping(0.5)
 end
 
---@api-stub: Body:isBullet
+--@api-stub: LBody:isBullet
 -- Returns whether CCD is enabled.
 -- Check before relying on CCD-only logic (e.g. armour-piercing rules).
 do  -- Body:isBullet
@@ -1301,7 +1301,7 @@ do  -- Body:isBullet
   if proj:isBullet() then lurek.log.debug("CCD on", "phys") end
 end
 
---@api-stub: Body:setBullet
+--@api-stub: LBody:setBullet
 -- Enables or disables continuous collision detection (CCD) for fast-moving bodies.
 -- Enable on bullets, arrows, and high-velocity debris to prevent tunnelling.
 do  -- Body:setBullet
@@ -1310,7 +1310,7 @@ do  -- Body:setBullet
   arrow:setBullet(true)
 end
 
---@api-stub: Body:isSleepingAllowed
+--@api-stub: LBody:isSleepingAllowed
 -- Returns whether the body can sleep.
 -- Read before disabling â€” gameplay-critical bodies should never sleep.
 do  -- Body:isSleepingAllowed
@@ -1319,7 +1319,7 @@ do  -- Body:isSleepingAllowed
   if body:isSleepingAllowed() then body:setSleepingAllowed(false) end
 end
 
---@api-stub: Body:setSleepingAllowed
+--@api-stub: LBody:setSleepingAllowed
 -- Sets whether the body can sleep.
 -- Disable on the player and active enemies; allow on world clutter to save CPU.
 do  -- Body:setSleepingAllowed
@@ -1328,7 +1328,7 @@ do  -- Body:setSleepingAllowed
   player:setSleepingAllowed(false)
 end
 
---@api-stub: Body:destroy
+--@api-stub: LBody:destroy
 -- Removes this body from the world.
 -- Call on entity death; the underlying world body is removed and id becomes invalid.
 do  -- Body:destroy
@@ -1337,7 +1337,7 @@ do  -- Body:destroy
   enemy:destroy()
 end
 
---@api-stub: Body:isSleeping
+--@api-stub: LBody:isSleeping
 -- Returns true if this body is currently sleeping (inactive).
 -- Use to gate per-frame work (AI, sound) on inactive bodies â€” saves frame budget.
 do  -- Body:isSleeping
@@ -1346,7 +1346,7 @@ do  -- Body:isSleeping
   if not body:isSleeping() then lurek.log.debug("active", "phys") end
 end
 
---@api-stub: Body:wakeUp
+--@api-stub: LBody:wakeUp
 -- Forcibly wakes up this body.
 -- Call before applyForce / setVelocity if a body might be sleeping; otherwise the call is ignored.
 do  -- Body:wakeUp
@@ -1356,7 +1356,7 @@ do  -- Body:wakeUp
   body:applyImpulse(0, -100)
 end
 
---@api-stub: Body:sleep
+--@api-stub: LBody:sleep
 -- Puts this body to sleep immediately.
 -- Force-sleep stationary debris piles to remove them from the active solver set.
 do  -- Body:sleep
@@ -1368,7 +1368,7 @@ end
 
 -- â”€â”€ PhysicsShape methods â”€â”€
 
---@api-stub: PhysicsShape:getType
+--@api-stub: LPhysicsShape:getType
 -- Returns the shape type string: "circle", "rectangle", "polygon", "edge", or "chain".
 -- Branch on the type string when serialising or rendering shape-specific debug overlays.
 do  -- PhysicsShape:getType
@@ -1378,7 +1378,7 @@ do  -- PhysicsShape:getType
   end
 end
 
---@api-stub: PhysicsShape:getRadius
+--@api-stub: LPhysicsShape:getRadius
 -- Returns the radius.
 -- Only meaningful for circle shapes; returns 0 (or fails) on rectangles and polygons.
 do  -- PhysicsShape:getRadius
@@ -1386,7 +1386,7 @@ do  -- PhysicsShape:getRadius
   lurek.log.debug("radius=" .. ball:getRadius(), "phys")
 end
 
---@api-stub: PhysicsShape:getBoundingBox
+--@api-stub: LPhysicsShape:getBoundingBox
 -- Returns the axis-aligned bounding box (x1, y1, x2, y2).
 -- Use to size an outline draw or to test broad-phase overlap before doing a precise check.
 do  -- PhysicsShape:getBoundingBox
@@ -1395,7 +1395,7 @@ do  -- PhysicsShape:getBoundingBox
   lurek.log.debug("aabb " .. x1 .. "," .. y1 .. "->" .. x2 .. "," .. y2, "phys")
 end
 
---@api-stub: PhysicsShape:setDensity
+--@api-stub: LPhysicsShape:setDensity
 -- Sets the density for this shape (used when attaching to a body).
 -- Set BEFORE attachShape â€” once attached, density does not retro-actively re-derive mass.
 do  -- PhysicsShape:setDensity
@@ -1403,7 +1403,7 @@ do  -- PhysicsShape:setDensity
   shape:setDensity(2.0)
 end
 
---@api-stub: PhysicsShape:setFriction
+--@api-stub: LPhysicsShape:setFriction
 -- Sets the friction coefficient.
 -- Use to make ice (0.05), wood (0.7), or rubber (1.2) shape-by-shape.
 do  -- PhysicsShape:setFriction
@@ -1411,7 +1411,7 @@ do  -- PhysicsShape:setFriction
   shape:setFriction(0.7)
 end
 
---@api-stub: PhysicsShape:setRestitution
+--@api-stub: LPhysicsShape:setRestitution
 -- Sets the restitution (bounciness) coefficient.
 -- 0.0 for no bounce, 0.8 for rubber ball; usually paired with low friction for physics toys.
 do  -- PhysicsShape:setRestitution
@@ -1419,7 +1419,7 @@ do  -- PhysicsShape:setRestitution
   ball:setRestitution(0.85)
 end
 
---@api-stub: PhysicsShape:setSensor
+--@api-stub: LPhysicsShape:setSensor
 -- Sets whether this shape is a sensor (non-colliding trigger).
 -- Use for trigger volumes (pickup zones, kill planes) â€” fires events but does not block.
 do  -- PhysicsShape:setSensor
@@ -1427,7 +1427,7 @@ do  -- PhysicsShape:setSensor
   trigger:setSensor(true)
 end
 
---@api-stub: PhysicsShape:destroy
+--@api-stub: LPhysicsShape:destroy
 -- Releases this shape handle (GC handles cleanup).
 -- Manual destroy is rarely needed; GC drops the shape when no Lua / body holds a reference.
 do  -- PhysicsShape:destroy
@@ -1476,7 +1476,7 @@ do  -- lurek.physics.testPoint
   end
 end
 
---@api-stub: World:addDistanceJoint
+--@api-stub: LWorld:addDistanceJoint
 -- Creates a distance joint keeping two bodies at a fixed separation.
 -- damping and frequency control spring-like oscillation; 0 damping = rigid rod.
 do  -- World:addDistanceJoint
@@ -1487,7 +1487,7 @@ do  -- World:addDistanceJoint
   lurek.log.info("distance joint: " .. jid, "physics")
 end
 
---@api-stub: World:addFixture
+--@api-stub: LWorld:addFixture
 -- Attaches a shape fixture to an existing body with friction and restitution.
 -- Multiple fixtures give a body a composite collision shape.
 do  -- World:addFixture
@@ -1497,7 +1497,7 @@ do  -- World:addFixture
   lurek.log.info("fixture id: " .. fid, "physics")
 end
 
---@api-stub: World:addFrictionJoint
+--@api-stub: LWorld:addFrictionJoint
 -- Creates a friction joint that resists relative linear and angular motion.
 -- maxForce and maxTorque cap the damping; use for ice-skating or surface drag.
 do  -- World:addFrictionJoint
@@ -1508,7 +1508,7 @@ do  -- World:addFrictionJoint
   lurek.log.info("friction joint: " .. jid, "physics")
 end
 
---@api-stub: World:addGearJoint
+--@api-stub: LWorld:addGearJoint
 -- Links two revolute or prismatic joints so their motion stays coupled by a ratio.
 -- Simulates gear trains; both joints must already exist in the same world.
 do  -- World:addGearJoint
@@ -1522,7 +1522,7 @@ do  -- World:addGearJoint
   lurek.log.info("gear joint: " .. jid, "physics")
 end
 
---@api-stub: World:addMotorJoint
+--@api-stub: LWorld:addMotorJoint
 -- Creates a motor joint that drives one body to match the position/angle of another.
 -- maxForce and maxTorque control how aggressively the motor corrects offset.
 do  -- World:addMotorJoint
@@ -1533,7 +1533,7 @@ do  -- World:addMotorJoint
   lurek.log.info("motor joint: " .. jid, "physics")
 end
 
---@api-stub: World:addMouseJoint
+--@api-stub: LWorld:addMouseJoint
 -- Creates a spring-like joint from a body to a moving screen position (drag-and-drop).
 -- maxForce prevents the joint from exploding when the target moves quickly.
 do  -- World:addMouseJoint
@@ -1543,7 +1543,7 @@ do  -- World:addMouseJoint
   lurek.log.info("mouse joint: " .. jid, "physics")
 end
 
---@api-stub: World:addPrismaticJoint
+--@api-stub: LWorld:addPrismaticJoint
 -- Creates a prismatic joint allowing translation along one axis only.
 -- Use for sliding doors, pistons, or elevator platforms.
 do  -- World:addPrismaticJoint
@@ -1554,7 +1554,7 @@ do  -- World:addPrismaticJoint
   lurek.log.info("prismatic joint: " .. jid, "physics")
 end
 
---@api-stub: World:addPulleyJoint
+--@api-stub: LWorld:addPulleyJoint
 -- Creates a pulley joint constraining two bodies through a fixed rope length.
 -- lengthA + lengthB == total rope; a ratio != 1 simulates a block-and-tackle.
 do  -- World:addPulleyJoint
@@ -1565,7 +1565,7 @@ do  -- World:addPulleyJoint
   lurek.log.info("pulley joint: " .. jid, "physics")
 end
 
---@api-stub: World:addRevoluteJoint
+--@api-stub: LWorld:addRevoluteJoint
 -- Creates a revolute (hinge) joint at a world-space anchor point.
 -- Bodies can rotate freely about the anchor; add limits to constrain the angle.
 do  -- World:addRevoluteJoint
@@ -1576,7 +1576,7 @@ do  -- World:addRevoluteJoint
   lurek.log.info("revolute joint: " .. jid, "physics")
 end
 
---@api-stub: World:addRopeJoint
+--@api-stub: LWorld:addRopeJoint
 -- Creates a rope joint that prevents two bodies from exceeding a max distance.
 -- Slack means bodies can be closer; maxLength is the hard upper limit.
 do  -- World:addRopeJoint
@@ -1587,7 +1587,7 @@ do  -- World:addRopeJoint
   lurek.log.info("rope joint: " .. jid, "physics")
 end
 
---@api-stub: World:addWeldJoint
+--@api-stub: LWorld:addWeldJoint
 -- Welds two bodies together at their current relative positions.
 -- frequency and damping add slight spring flexibility to prevent solver jitter.
 do  -- World:addWeldJoint
@@ -1598,7 +1598,7 @@ do  -- World:addWeldJoint
   lurek.log.info("weld joint: " .. jid, "physics")
 end
 
---@api-stub: World:addWheelJoint
+--@api-stub: LWorld:addWheelJoint
 -- Creates a wheel joint for vehicle suspension: translation + rotation + motor.
 -- Adjust frequency and damping to tune suspension stiffness and bounce.
 do  -- World:addWheelJoint
@@ -1609,7 +1609,7 @@ do  -- World:addWheelJoint
   lurek.log.info("wheel joint: " .. jid, "physics")
 end
 
---@api-stub: Body:applyForceAtPoint
+--@api-stub: LBody:applyForceAtPoint
 -- Applies a force at an off-centre world-space point, generating torque.
 -- Use for realistic drag, thrust, or projectile impact forces.
 do  -- Body:applyForceAtPoint
@@ -1619,7 +1619,7 @@ do  -- Body:applyForceAtPoint
   lurek.log.info("force at point applied", "physics")
 end
 
---@api-stub: World:drawDebug
+--@api-stub: LWorld:drawDebug
 -- Renders physics shapes, joints, and AABBs using the engine's debug draw API.
 -- Call inside lurek.draw() to overlay the physics debug visualisation.
 do  -- World:drawDebug
@@ -1632,7 +1632,7 @@ do  -- World:drawDebug
   lurek.log.info("drawDebug hooked", "physics")
 end
 
---@api-stub: Terrain:fillCircle
+--@api-stub: LTerrain:fillCircle
 -- Fills a circular region of the destructible terrain with a given cell value.
 -- Used to create craters; value=0 makes cells empty (air), 1=solid.
 do  -- Terrain:fillCircle
@@ -1644,7 +1644,7 @@ do  -- Terrain:fillCircle
   lurek.log.info("terrain crater dug", "physics")
 end
 
---@api-stub: Cellular:fillCircle
+--@api-stub: LCellular:fillCircle
 -- Fills a circular region of a cellular automaton grid with a given state value.
 -- Useful for initialising cave seeds or spawning growth patches.
 do  -- Cellular:fillCircle
@@ -1653,7 +1653,7 @@ do  -- Cellular:fillCircle
   lurek.log.info("cellular circle filled", "physics")
 end
 
---@api-stub: Terrain:fillRect
+--@api-stub: LTerrain:fillRect
 -- Fills a rectangular region of the destructible terrain with the given cell value.
 -- value=1 places solid material; value=0 removes it.
 do  -- Terrain:fillRect
@@ -1664,7 +1664,7 @@ do  -- Terrain:fillRect
   lurek.log.info("terrain rect filled", "physics")
 end
 
---@api-stub: Cellular:fillRect
+--@api-stub: LCellular:fillRect
 -- Fills a rectangular region of a cellular automaton grid with a given state.
 -- Use to create initial conditions for cave generation or life simulations.
 do  -- Cellular:fillRect
@@ -1673,7 +1673,7 @@ do  -- Cellular:fillRect
   lurek.log.info("cellular rect filled", "physics")
 end
 
---@api-stub: World:newChainBody
+--@api-stub: LWorld:newChainBody
 -- Creates a chain-shape body from a sequence of vertices.
 -- Chain shapes are one-sided and ideal for long terrain contours or platforms.
 do  -- World:newChainBody
@@ -1683,7 +1683,7 @@ do  -- World:newChainBody
   lurek.log.info("chain body: " .. b:getId(), "physics")
 end
 
---@api-stub: World:newCircleBody
+--@api-stub: LWorld:newCircleBody
 -- Creates a circle-shaped body at (x, y) with the given radius and type.
 -- Faster and more stable than polygon approximations for round objects.
 do  -- World:newCircleBody
@@ -1692,7 +1692,7 @@ do  -- World:newCircleBody
   lurek.log.info("circle body: " .. b:getId(), "physics")
 end
 
---@api-stub: World:newEdgeBody
+--@api-stub: LWorld:newEdgeBody
 -- Creates a single one-sided edge between two points as a static body.
 -- Use for thin walls, platforms, or invisible boundaries.
 do  -- World:newEdgeBody
@@ -1701,7 +1701,7 @@ do  -- World:newEdgeBody
   lurek.log.info("edge body: " .. b:getId(), "physics")
 end
 
---@api-stub: World:newPolygonBody
+--@api-stub: LWorld:newPolygonBody
 -- Creates a convex polygon body from a vertex table (max 8 vertices).
 -- Vertices must be in counter-clockwise order; Box2D auto-computes the centroid.
 do  -- World:newPolygonBody
@@ -1711,7 +1711,7 @@ do  -- World:newPolygonBody
   lurek.log.info("polygon body: " .. b:getId(), "physics")
 end
 
---@api-stub: World:queryAABB
+--@api-stub: LWorld:queryAABB
 -- Returns all body IDs whose fixtures overlap the given axis-aligned bounding box.
 -- Use for cheap broad-phase spatial queries before narrow-phase shape tests.
 do  -- World:queryAABB
@@ -1721,7 +1721,7 @@ do  -- World:queryAABB
   lurek.log.info("AABB hits: " .. #hits, "physics")
 end
 
---@api-stub: World:raycast
+--@api-stub: LWorld:raycast
 -- Fires a ray and returns the first hit body id, normal, and fraction.
 -- Returns nil if no body is hit; fraction is in [0,1] along the ray.
 do  -- World:raycast
@@ -1731,7 +1731,7 @@ do  -- World:raycast
   lurek.log.info("raycast hit: " .. tostring(id), "physics")
 end
 
---@api-stub: World:raycastAll
+--@api-stub: LWorld:raycastAll
 -- Returns all bodies hit by a ray as a table of {id, normal, fraction} records.
 -- Sorted by fraction (nearest first); useful for piercing shots.
 do  -- World:raycastAll
@@ -1742,7 +1742,7 @@ do  -- World:raycastAll
   lurek.log.info("all hits: " .. #hits, "physics")
 end
 
---@api-stub: World:raycastClosest
+--@api-stub: LWorld:raycastClosest
 -- Returns only the closest body hit by a ray as {id, normal, fraction}.
 -- Faster than raycastAll when only the nearest obstacle matters.
 do  -- World:raycastClosest
@@ -1752,7 +1752,7 @@ do  -- World:raycastClosest
   lurek.log.info("closest hit: " .. tostring(hit and hit.id), "physics")
 end
 
---@api-stub: Zone:setAngularDampingOverride
+--@api-stub: LZone:setAngularDampingOverride
 -- Sets an angular damping coefficient applied to all bodies inside this zone.
 -- Override is only active while the body remains within the zone boundary.
 do  -- Zone:setAngularDampingOverride
@@ -1762,7 +1762,7 @@ do  -- Zone:setAngularDampingOverride
   lurek.log.info("zone angular damping set", "physics")
 end
 
---@api-stub: World:setBodyData
+--@api-stub: LWorld:setBodyData
 -- Attaches arbitrary Lua data to a body for retrieval in collision callbacks.
 -- Common use: store the entity id or component table that owns the body.
 do  -- World:setBodyData
@@ -1772,7 +1772,7 @@ do  -- World:setBodyData
   lurek.log.info("body data set", "physics")
 end
 
---@api-stub: World:setBodyOneWay
+--@api-stub: LWorld:setBodyOneWay
 -- Marks a body as a one-way platform: only collides from one direction.
 -- Pass the allowed normal direction (0,-1 = top surface; 0,1 = bottom).
 do  -- World:setBodyOneWay
@@ -1782,7 +1782,7 @@ do  -- World:setBodyOneWay
   lurek.log.info("one-way platform set", "physics")
 end
 
---@api-stub: World:setFixtureFriction
+--@api-stub: LWorld:setFixtureFriction
 -- Sets the friction coefficient on an existing fixture by its id.
 -- Values in [0,1]; 0=ice, 1=rubber; default is 0.5.
 do  -- World:setFixtureFriction
@@ -1793,7 +1793,7 @@ do  -- World:setFixtureFriction
   lurek.log.info("fixture friction set", "physics")
 end
 
---@api-stub: World:setFixtureRestitution
+--@api-stub: LWorld:setFixtureRestitution
 -- Sets the restitution (bounciness) on an existing fixture.
 -- 0 = completely inelastic; 1 = perfectly elastic bounce.
 do  -- World:setFixtureRestitution
@@ -1804,7 +1804,7 @@ do  -- World:setFixtureRestitution
   lurek.log.info("restitution set", "physics")
 end
 
---@api-stub: World:setFixtureSensor
+--@api-stub: LWorld:setFixtureSensor
 -- Marks a fixture as a sensor so it receives collision events but exerts no force.
 -- Sensors detect overlaps without preventing movement; ideal for trigger zones.
 do  -- World:setFixtureSensor
@@ -1815,7 +1815,7 @@ do  -- World:setFixtureSensor
   lurek.log.info("sensor fixture set", "physics")
 end
 
---@api-stub: Zone:setGravityPoint
+--@api-stub: LZone:setGravityPoint
 -- Sets gravity in the zone to pull bodies toward a point attractor.
 -- strength > 0 pulls inward (planet gravity); < 0 pushes outward (explosion).
 do  -- Zone:setGravityPoint
@@ -1825,7 +1825,7 @@ do  -- Zone:setGravityPoint
   lurek.log.info("gravity point set", "physics")
 end
 
---@api-stub: Zone:setGravityRepulsor
+--@api-stub: LZone:setGravityRepulsor
 -- Sets gravity in the zone to push bodies away from a repulsor point.
 -- strength controls force magnitude; useful for explosive force zones.
 do  -- Zone:setGravityRepulsor
@@ -1835,7 +1835,7 @@ do  -- Zone:setGravityRepulsor
   lurek.log.info("gravity repulsor set", "physics")
 end
 
---@api-stub: World:setJointLimits
+--@api-stub: LWorld:setJointLimits
 -- Sets the angular or linear limits for an existing constrained joint.
 -- For revolute joints: min/max are angles in radians; for prismatic: metres.
 do  -- World:setJointLimits
@@ -1847,7 +1847,7 @@ do  -- World:setJointLimits
   lurek.log.info("joint limits set", "physics")
 end
 
---@api-stub: World:setJointLimitsEnabled
+--@api-stub: LWorld:setJointLimitsEnabled
 -- Enables or disables the angular/linear limits on an existing joint.
 -- Toggle without removing the joint to implement retractable constraints.
 do  -- World:setJointLimitsEnabled
@@ -1859,7 +1859,7 @@ do  -- World:setJointLimitsEnabled
   lurek.log.info("joint limits enabled", "physics")
 end
 
---@api-stub: World:setJointMotorSpeed
+--@api-stub: LWorld:setJointMotorSpeed
 -- Sets the motor speed for a revolute or prismatic joint motor.
 -- Positive and negative values drive in opposite directions.
 do  -- World:setJointMotorSpeed
@@ -1871,7 +1871,7 @@ do  -- World:setJointMotorSpeed
   lurek.log.info("motor speed: 2.0 rad/s", "physics")
 end
 
---@api-stub: World:setMouseJointTarget
+--@api-stub: LWorld:setMouseJointTarget
 -- Updates the target world position for an existing mouse joint each frame.
 -- Call inside lurek.process(dt) with the current mouse world coordinates.
 do  -- World:setMouseJointTarget
@@ -1882,7 +1882,7 @@ do  -- World:setMouseJointTarget
   lurek.log.info("mouse joint target updated", "physics")
 end
 
---@api-stub: Terrain:spawnDebris
+--@api-stub: LTerrain:spawnDebris
 -- Spawns dynamic debris bodies for cells removed from the terrain.
 -- Returns a table of new body ids; debris bodies settle under gravity.
 do  -- Terrain:spawnDebris
@@ -1896,7 +1896,7 @@ do  -- Terrain:spawnDebris
   lurek.log.info("debris count: " .. #debris, "physics")
 end
 
---@api-stub: World:stepFixed
+--@api-stub: LWorld:stepFixed
 -- Advances the physics world by a fixed timestep with an optional substep count.
 -- Use instead of step() for deterministic simulations requiring fixed-rate updates.
 do  -- World:stepFixed
@@ -1905,7 +1905,7 @@ do  -- World:stepFixed
   lurek.log.info("fixed step done", "physics")
 end
 
---@api-stub: Terrain:toImageData
+--@api-stub: LTerrain:toImageData
 -- Converts the terrain cell grid to an ImageData for rendering or saving.
 -- Solid cells are opaque white; empty cells are transparent black.
 do  -- Terrain:toImageData
@@ -1918,7 +1918,7 @@ do  -- Terrain:toImageData
   lurek.log.info("terrain image: " .. #bytes .. " bytes", "physics")
 end
 
---@api-stub: Cellular:toImageDataRegion
+--@api-stub: LCellular:toImageDataRegion
 -- Converts a rectangular sub-region of the cellular grid to an ImageData.
 -- More efficient than toImageData() when only part of the grid needs rendering.
 do  -- Cellular:toImageDataRegion
@@ -1936,113 +1936,10 @@ end
 -- The final committed file must contain ZERO --@api-stub: lines.
 -- =============================================================================
 
--- -----------------------------------------------------------------------------
--- Body methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: Body:type -----------------------------------------------------
---@api-stub: Body:type
--- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- body_stub:type()  -- -> string
--- (replace body_stub with your real Body instance above)
-
--- ---- Stub: Body:typeOf ---------------------------------------------------
---@api-stub: Body:typeOf
--- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- body_stub:typeOf("hero")  -- -> boolean
--- (replace body_stub with your real Body instance above)
-
--- -----------------------------------------------------------------------------
--- Cellular methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: Cellular:type -------------------------------------------------
---@api-stub: Cellular:type
--- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- cellular_stub:type()  -- -> string
--- (replace cellular_stub with your real Cellular instance above)
-
--- ---- Stub: Cellular:typeOf -----------------------------------------------
---@api-stub: Cellular:typeOf
--- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- cellular_stub:typeOf("hero")  -- -> boolean
--- (replace cellular_stub with your real Cellular instance above)
-
--- -----------------------------------------------------------------------------
--- PhysicsShape methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: PhysicsShape:type ---------------------------------------------
---@api-stub: PhysicsShape:type
--- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- physicsShape_stub:type()  -- -> string
--- (replace physicsShape_stub with your real PhysicsShape instance above)
-
--- ---- Stub: PhysicsShape:typeOf -------------------------------------------
---@api-stub: PhysicsShape:typeOf
--- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- physicsShape_stub:typeOf("hero")  -- -> boolean
--- (replace physicsShape_stub with your real PhysicsShape instance above)
-
--- -----------------------------------------------------------------------------
--- Terrain methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: Terrain:type --------------------------------------------------
---@api-stub: Terrain:type
--- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- terrain_stub:type()  -- -> string
--- (replace terrain_stub with your real Terrain instance above)
-
--- ---- Stub: Terrain:typeOf ------------------------------------------------
---@api-stub: Terrain:typeOf
--- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- terrain_stub:typeOf("hero")  -- -> boolean
--- (replace terrain_stub with your real Terrain instance above)
-
--- -----------------------------------------------------------------------------
--- World methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: World:type ----------------------------------------------------
---@api-stub: World:type
--- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- world_stub:type()  -- -> string
--- (replace world_stub with your real World instance above)
-
--- ---- Stub: World:typeOf --------------------------------------------------
---@api-stub: World:typeOf
--- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- world_stub:typeOf("hero")  -- -> boolean
--- (replace world_stub with your real World instance above)
 
 -- -----------------------------------------------------------------------------
 -- Zone methods
 -- -----------------------------------------------------------------------------
-
--- ---- Stub: Zone:type -----------------------------------------------------
---@api-stub: Zone:type
--- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- zone_stub:type()  -- -> string
--- (replace zone_stub with your real Zone instance above)
-
--- ---- Stub: Zone:typeOf ---------------------------------------------------
---@api-stub: Zone:typeOf
--- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- zone_stub:typeOf("hero")  -- -> boolean
--- (replace zone_stub with your real Zone instance above)
 
 -- =============================================================================
 -- STUBS: 12 uncovered lurek.physics API item(s)
@@ -2168,1216 +2065,4 @@ end
 -- The final committed file must contain ZERO --@api-stub: lines.
 -- =============================================================================
 
--- -----------------------------------------------------------------------------
--- LBody methods
--- -----------------------------------------------------------------------------
 
--- ---- Stub: LBody:getId ---------------------------------------------------
---@api-stub: LBody:getId
--- Returns the body's integer ID.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBody_stub:getId()  -- -> integer
--- (replace lBody_stub with your real LBody instance above)
-
--- ---- Stub: LBody:getPosition ---------------------------------------------
---@api-stub: LBody:getPosition
--- Returns the body position (x, y).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBody_stub:getPosition()  -- -> number, number
--- (replace lBody_stub with your real LBody instance above)
-
--- ---- Stub: LBody:setPosition ---------------------------------------------
---@api-stub: LBody:setPosition
--- Teleports the body to the given world-space position, bypassing collision.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBody_stub:setPosition(0.0, 0.0)
--- (replace lBody_stub with your real LBody instance above)
-
--- ---- Stub: LBody:getX ----------------------------------------------------
---@api-stub: LBody:getX
--- Returns the body X position.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBody_stub:getX()  -- -> number
--- (replace lBody_stub with your real LBody instance above)
-
--- ---- Stub: LBody:getY ----------------------------------------------------
---@api-stub: LBody:getY
--- Returns the body Y position.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBody_stub:getY()  -- -> number
--- (replace lBody_stub with your real LBody instance above)
-
--- ---- Stub: LBody:getVelocity ---------------------------------------------
---@api-stub: LBody:getVelocity
--- Returns the body velocity (vx, vy).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBody_stub:getVelocity()  -- -> number, number
--- (replace lBody_stub with your real LBody instance above)
-
--- ---- Stub: LBody:setVelocity ---------------------------------------------
---@api-stub: LBody:setVelocity
--- Sets the body's linear velocity in world units per second.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBody_stub:setVelocity(vx, vy)
--- (replace lBody_stub with your real LBody instance above)
-
--- ---- Stub: LBody:getAngle ------------------------------------------------
---@api-stub: LBody:getAngle
--- Returns the body angle in radians.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBody_stub:getAngle()  -- -> number
--- (replace lBody_stub with your real LBody instance above)
-
--- ---- Stub: LBody:setAngle ------------------------------------------------
---@api-stub: LBody:setAngle
--- Sets the body angle in radians.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBody_stub:setAngle(0.0)
--- (replace lBody_stub with your real LBody instance above)
-
--- ---- Stub: LBody:getAngularVelocity --------------------------------------
---@api-stub: LBody:getAngularVelocity
--- Returns the angular velocity in radians/s.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBody_stub:getAngularVelocity()  -- -> number
--- (replace lBody_stub with your real LBody instance above)
-
--- ---- Stub: LBody:setAngularVelocity --------------------------------------
---@api-stub: LBody:setAngularVelocity
--- Sets the angular velocity.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBody_stub:setAngularVelocity(omega)
--- (replace lBody_stub with your real LBody instance above)
-
--- ---- Stub: LBody:getMass -------------------------------------------------
---@api-stub: LBody:getMass
--- Returns the body mass in kilograms used for force and impulse calculations.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBody_stub:getMass()  -- -> number
--- (replace lBody_stub with your real LBody instance above)
-
--- ---- Stub: LBody:setMass -------------------------------------------------
---@api-stub: LBody:setMass
--- Sets the body mass; affects how forces and impulses change velocity.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBody_stub:setMass(mass)
--- (replace lBody_stub with your real LBody instance above)
-
--- ---- Stub: LBody:getType -------------------------------------------------
---@api-stub: LBody:getType
--- Returns the body type as a string.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBody_stub:getType()  -- -> string
--- (replace lBody_stub with your real LBody instance above)
-
--- ---- Stub: LBody:setType -------------------------------------------------
---@api-stub: LBody:setType
--- Changes the body type: `"dynamic"`, `"static"`, or `"kinematic"`.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBody_stub:setType(bt)
--- (replace lBody_stub with your real LBody instance above)
-
--- ---- Stub: LBody:getWidth ------------------------------------------------
---@api-stub: LBody:getWidth
--- Returns the width of this body's primary collider shape in world units.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBody_stub:getWidth()  -- -> number
--- (replace lBody_stub with your real LBody instance above)
-
--- ---- Stub: LBody:getHeight -----------------------------------------------
---@api-stub: LBody:getHeight
--- Returns the height of this body's primary collider shape in world units.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBody_stub:getHeight()  -- -> number
--- (replace lBody_stub with your real LBody instance above)
-
--- ---- Stub: LBody:getFriction ---------------------------------------------
---@api-stub: LBody:getFriction
--- Returns the body friction coefficient.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBody_stub:getFriction()  -- -> number
--- (replace lBody_stub with your real LBody instance above)
-
--- ---- Stub: LBody:setFriction ---------------------------------------------
---@api-stub: LBody:setFriction
--- Sets the body friction coefficient.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBody_stub:setFriction(friction)
--- (replace lBody_stub with your real LBody instance above)
-
--- ---- Stub: LBody:getRestitution ------------------------------------------
---@api-stub: LBody:getRestitution
--- Returns the body restitution (bounciness).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBody_stub:getRestitution()  -- -> number
--- (replace lBody_stub with your real LBody instance above)
-
--- ---- Stub: LBody:setRestitution ------------------------------------------
---@api-stub: LBody:setRestitution
--- Sets the body restitution (bounciness).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBody_stub:setRestitution(restitution)
--- (replace lBody_stub with your real LBody instance above)
-
--- ---- Stub: LBody:getLayer ------------------------------------------------
---@api-stub: LBody:getLayer
--- Returns the collision layer bitmask.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBody_stub:getLayer()  -- -> integer
--- (replace lBody_stub with your real LBody instance above)
-
--- ---- Stub: LBody:setLayer ------------------------------------------------
---@api-stub: LBody:setLayer
--- Sets the collision layer bitmask.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBody_stub:setLayer(1)
--- (replace lBody_stub with your real LBody instance above)
-
--- ---- Stub: LBody:getMask -------------------------------------------------
---@api-stub: LBody:getMask
--- Returns the collision mask bitmask.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBody_stub:getMask()  -- -> integer
--- (replace lBody_stub with your real LBody instance above)
-
--- ---- Stub: LBody:setMask -------------------------------------------------
---@api-stub: LBody:setMask
--- Sets the collision mask bitmask.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBody_stub:setMask(mask)
--- (replace lBody_stub with your real LBody instance above)
-
--- ---- Stub: LBody:applyImpulse --------------------------------------------
---@api-stub: LBody:applyImpulse
--- Applies a linear impulse to the body.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBody_stub:applyImpulse(ix, iy)
--- (replace lBody_stub with your real LBody instance above)
-
--- ---- Stub: LBody:applyForce ----------------------------------------------
---@api-stub: LBody:applyForce
--- Applies a continuous force to the body.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBody_stub:applyForce(fx, fy)
--- (replace lBody_stub with your real LBody instance above)
-
--- ---- Stub: LBody:applyTorque ---------------------------------------------
---@api-stub: LBody:applyTorque
--- Applies a torque (rotational force).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBody_stub:applyTorque(torque)
--- (replace lBody_stub with your real LBody instance above)
-
--- ---- Stub: LBody:applyForceAtPoint ---------------------------------------
---@api-stub: LBody:applyForceAtPoint
--- Applies a force at a specific world-space point.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBody_stub:applyForceAtPoint(fx, fy, px, py)
--- (replace lBody_stub with your real LBody instance above)
-
--- ---- Stub: LBody:applyAngularImpulse -------------------------------------
---@api-stub: LBody:applyAngularImpulse
--- Applies an angular impulse.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBody_stub:applyAngularImpulse(impulse)
--- (replace lBody_stub with your real LBody instance above)
-
--- ---- Stub: LBody:getGravityScale -----------------------------------------
---@api-stub: LBody:getGravityScale
--- Returns the per-body gravity multiplier.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBody_stub:getGravityScale()  -- -> number
--- (replace lBody_stub with your real LBody instance above)
-
--- ---- Stub: LBody:setGravityScale -----------------------------------------
---@api-stub: LBody:setGravityScale
--- Sets the per-body gravity multiplier.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBody_stub:setGravityScale(1.0)
--- (replace lBody_stub with your real LBody instance above)
-
--- ---- Stub: LBody:isFixedRotation -----------------------------------------
---@api-stub: LBody:isFixedRotation
--- Returns whether rotation is locked.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBody_stub:isFixedRotation()  -- -> boolean
--- (replace lBody_stub with your real LBody instance above)
-
--- ---- Stub: LBody:setFixedRotation ----------------------------------------
---@api-stub: LBody:setFixedRotation
--- Locks or unlocks rotation.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBody_stub:setFixedRotation(fixed)
--- (replace lBody_stub with your real LBody instance above)
-
--- ---- Stub: LBody:getLinearDamping ----------------------------------------
---@api-stub: LBody:getLinearDamping
--- Returns the linear damping coefficient.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBody_stub:getLinearDamping()  -- -> number
--- (replace lBody_stub with your real LBody instance above)
-
--- ---- Stub: LBody:setLinearDamping ----------------------------------------
---@api-stub: LBody:setLinearDamping
--- Sets the linear damping coefficient.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBody_stub:setLinearDamping(damping)
--- (replace lBody_stub with your real LBody instance above)
-
--- ---- Stub: LBody:getAngularDamping ---------------------------------------
---@api-stub: LBody:getAngularDamping
--- Returns the angular damping coefficient.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBody_stub:getAngularDamping()  -- -> number
--- (replace lBody_stub with your real LBody instance above)
-
--- ---- Stub: LBody:setAngularDamping ---------------------------------------
---@api-stub: LBody:setAngularDamping
--- Sets the angular damping coefficient.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBody_stub:setAngularDamping(damping)
--- (replace lBody_stub with your real LBody instance above)
-
--- ---- Stub: LBody:isBullet ------------------------------------------------
---@api-stub: LBody:isBullet
--- Returns whether CCD is enabled.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBody_stub:isBullet()  -- -> boolean
--- (replace lBody_stub with your real LBody instance above)
-
--- ---- Stub: LBody:setBullet -----------------------------------------------
---@api-stub: LBody:setBullet
--- Enables or disables continuous collision detection (CCD) for fast-moving bodies.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBody_stub:setBullet(bullet)
--- (replace lBody_stub with your real LBody instance above)
-
--- ---- Stub: LBody:isSleepingAllowed ---------------------------------------
---@api-stub: LBody:isSleepingAllowed
--- Returns whether the body can sleep.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBody_stub:isSleepingAllowed()  -- -> boolean
--- (replace lBody_stub with your real LBody instance above)
-
--- ---- Stub: LBody:setSleepingAllowed --------------------------------------
---@api-stub: LBody:setSleepingAllowed
--- Sets whether the body can sleep.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBody_stub:setSleepingAllowed(allowed)
--- (replace lBody_stub with your real LBody instance above)
-
--- ---- Stub: LBody:destroy -------------------------------------------------
---@api-stub: LBody:destroy
--- Removes this body from the world.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBody_stub:destroy()
--- (replace lBody_stub with your real LBody instance above)
-
--- ---- Stub: LBody:isSleeping ----------------------------------------------
---@api-stub: LBody:isSleeping
--- Returns true if this body is currently sleeping (inactive).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBody_stub:isSleeping()  -- -> boolean
--- (replace lBody_stub with your real LBody instance above)
-
--- ---- Stub: LBody:wakeUp --------------------------------------------------
---@api-stub: LBody:wakeUp
--- Forcibly wakes up this body.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBody_stub:wakeUp()
--- (replace lBody_stub with your real LBody instance above)
-
--- ---- Stub: LBody:sleep ---------------------------------------------------
---@api-stub: LBody:sleep
--- Puts this body to sleep immediately.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBody_stub:sleep()
--- (replace lBody_stub with your real LBody instance above)
-
--- -----------------------------------------------------------------------------
--- LCellular methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LCellular:setCell ---------------------------------------------
---@api-stub: LCellular:setCell
--- Sets the material of a cell.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lCellular_stub:setCell(cx, cy, t)
--- (replace lCellular_stub with your real LCellular instance above)
-
--- ---- Stub: LCellular:getCell ---------------------------------------------
---@api-stub: LCellular:getCell
--- Returns the material at `(cx, cy)` as an integer constant.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lCellular_stub:getCell(cx, cy)  -- -> integer
--- (replace lCellular_stub with your real LCellular instance above)
-
--- ---- Stub: LCellular:fillRect --------------------------------------------
---@api-stub: LCellular:fillRect
--- Fills a rectangular region of cells with the given material.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lCellular_stub:fillRect(cx0, cy0, cw, ch, t)
--- (replace lCellular_stub with your real LCellular instance above)
-
--- ---- Stub: LCellular:fillCircle ------------------------------------------
---@api-stub: LCellular:fillCircle
--- Fills a circle of cells with the given material.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lCellular_stub:fillCircle(cx, cy, 1.0, t)
--- (replace lCellular_stub with your real LCellular instance above)
-
--- ---- Stub: LCellular:step ------------------------------------------------
---@api-stub: LCellular:step
--- Advances the simulation by one tick.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lCellular_stub:step()
--- (replace lCellular_stub with your real LCellular instance above)
-
--- ---- Stub: LCellular:stepN -----------------------------------------------
---@api-stub: LCellular:stepN
--- Advances the simulation by `n` ticks.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lCellular_stub:stepN(5)
--- (replace lCellular_stub with your real LCellular instance above)
-
--- ---- Stub: LCellular:toImageData -----------------------------------------
---@api-stub: LCellular:toImageData
--- Returns the full grid as an RGBA byte string using the default colour palette.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lCellular_stub:toImageData()
--- (replace lCellular_stub with your real LCellular instance above)
-
--- ---- Stub: LCellular:toImageDataRegion -----------------------------------
---@api-stub: LCellular:toImageDataRegion
--- Returns a sub-region as an RGBA byte string.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lCellular_stub:toImageDataRegion(cx0, cy0, cw, ch)  -- -> string
--- (replace lCellular_stub with your real LCellular instance above)
-
--- ---- Stub: LCellular:countCells ------------------------------------------
---@api-stub: LCellular:countCells
--- Counts cells of the given material type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lCellular_stub:countCells(t)  -- -> integer
--- (replace lCellular_stub with your real LCellular instance above)
-
--- ---- Stub: LCellular:findCells -------------------------------------------
---@api-stub: LCellular:findCells
--- Returns positions of all cells of the given material as an array of `{x, y}` tables.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lCellular_stub:findCells(t)  -- -> table
--- (replace lCellular_stub with your real LCellular instance above)
-
--- ---- Stub: LCellular:toBytes ---------------------------------------------
---@api-stub: LCellular:toBytes
--- Serialises the grid to a byte string.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lCellular_stub:toBytes()  -- -> string
--- (replace lCellular_stub with your real LCellular instance above)
-
--- ---- Stub: LCellular:loadFromBytes ---------------------------------------
---@api-stub: LCellular:loadFromBytes
--- Loads grid data from bytes produced by `toBytes`.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lCellular_stub:loadFromBytes(data)
--- (replace lCellular_stub with your real LCellular instance above)
-
--- -----------------------------------------------------------------------------
--- LPhysicsShape methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LPhysicsShape:getType -----------------------------------------
---@api-stub: LPhysicsShape:getType
--- Returns the shape type string: "circle", "rectangle", "polygon", "edge", or "chain".
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lPhysicsShape_stub:getType()  -- -> string
--- (replace lPhysicsShape_stub with your real LPhysicsShape instance above)
-
--- ---- Stub: LPhysicsShape:getRadius ---------------------------------------
---@api-stub: LPhysicsShape:getRadius
--- Returns the radius. Only valid for circle shapes.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lPhysicsShape_stub:getRadius()  -- -> number
--- (replace lPhysicsShape_stub with your real LPhysicsShape instance above)
-
--- ---- Stub: LPhysicsShape:getBoundingBox ----------------------------------
---@api-stub: LPhysicsShape:getBoundingBox
--- Returns the axis-aligned bounding box (x1, y1, x2, y2).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lPhysicsShape_stub:getBoundingBox()  -- -> number, number, number, number
--- (replace lPhysicsShape_stub with your real LPhysicsShape instance above)
-
--- ---- Stub: LPhysicsShape:setDensity --------------------------------------
---@api-stub: LPhysicsShape:setDensity
--- Sets the density for this shape (used when attaching to a body).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lPhysicsShape_stub:setDensity(density)
--- (replace lPhysicsShape_stub with your real LPhysicsShape instance above)
-
--- ---- Stub: LPhysicsShape:setFriction -------------------------------------
---@api-stub: LPhysicsShape:setFriction
--- Sets the friction coefficient.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lPhysicsShape_stub:setFriction(friction)
--- (replace lPhysicsShape_stub with your real LPhysicsShape instance above)
-
--- ---- Stub: LPhysicsShape:setRestitution ----------------------------------
---@api-stub: LPhysicsShape:setRestitution
--- Sets the restitution (bounciness) coefficient.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lPhysicsShape_stub:setRestitution(restitution)
--- (replace lPhysicsShape_stub with your real LPhysicsShape instance above)
-
--- ---- Stub: LPhysicsShape:setSensor ---------------------------------------
---@api-stub: LPhysicsShape:setSensor
--- Sets whether this shape is a sensor (non-colliding trigger).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lPhysicsShape_stub:setSensor(sensor)
--- (replace lPhysicsShape_stub with your real LPhysicsShape instance above)
-
--- ---- Stub: LPhysicsShape:destroy -----------------------------------------
---@api-stub: LPhysicsShape:destroy
--- Releases this shape handle (GC handles cleanup).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lPhysicsShape_stub:destroy()
--- (replace lPhysicsShape_stub with your real LPhysicsShape instance above)
-
--- -----------------------------------------------------------------------------
--- LTerrain methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LTerrain:setCell ----------------------------------------------
---@api-stub: LTerrain:setCell
--- Sets a single terrain cell to solid or empty.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTerrain_stub:setCell(cx, cy, solid)
--- (replace lTerrain_stub with your real LTerrain instance above)
-
--- ---- Stub: LTerrain:getCell ----------------------------------------------
---@api-stub: LTerrain:getCell
--- Returns whether a cell is solid.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTerrain_stub:getCell(cx, cy)  -- -> boolean
--- (replace lTerrain_stub with your real LTerrain instance above)
-
--- ---- Stub: LTerrain:fillCircle -------------------------------------------
---@api-stub: LTerrain:fillCircle
--- Fills a circle of cells centred at world position `(wx, wy)`.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTerrain_stub:fillCircle(wx, wy, 24.0, solid)
--- (replace lTerrain_stub with your real LTerrain instance above)
-
--- ---- Stub: LTerrain:fillRect ---------------------------------------------
---@api-stub: LTerrain:fillRect
--- Fills a rectangular region of cells.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTerrain_stub:fillRect(wx, wy, 64.0, 64.0, solid)
--- (replace lTerrain_stub with your real LTerrain instance above)
-
--- ---- Stub: LTerrain:fillAll ----------------------------------------------
---@api-stub: LTerrain:fillAll
--- Sets every cell in the grid to `solid`.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTerrain_stub:fillAll(solid)
--- (replace lTerrain_stub with your real LTerrain instance above)
-
--- ---- Stub: LTerrain:flush ------------------------------------------------
---@api-stub: LTerrain:flush
--- Rebuilds physics bodies for all dirty chunks.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTerrain_stub:flush()
--- (replace lTerrain_stub with your real LTerrain instance above)
-
--- ---- Stub: LTerrain:isDirty ----------------------------------------------
---@api-stub: LTerrain:isDirty
--- Returns `true` when at least one chunk needs flushing.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTerrain_stub:isDirty()  -- -> boolean
--- (replace lTerrain_stub with your real LTerrain instance above)
-
--- ---- Stub: LTerrain:collapseColumns --------------------------------------
---@api-stub: LTerrain:collapseColumns
--- Removes unsupported cells, returning the number of cells that fell.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTerrain_stub:collapseColumns()
--- (replace lTerrain_stub with your real LTerrain instance above)
-
--- ---- Stub: LTerrain:solidPositions ---------------------------------------
---@api-stub: LTerrain:solidPositions
--- Returns the world-space centres of all solid cells as an array of `{x, y}` tables.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTerrain_stub:solidPositions()  -- -> table
--- (replace lTerrain_stub with your real LTerrain instance above)
-
--- ---- Stub: LTerrain:spawnDebris ------------------------------------------
---@api-stub: LTerrain:spawnDebris
--- Spawns dynamic debris bodies at the given positions.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTerrain_stub:spawnDebris(positions, mass, restitution)  -- -> table
--- (replace lTerrain_stub with your real LTerrain instance above)
-
--- ---- Stub: LTerrain:toImageData ------------------------------------------
---@api-stub: LTerrain:toImageData
--- Returns the terrain as an RGBA byte string.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTerrain_stub:toImageData(sr, sg, sb, er, eg, eb)  -- -> string
--- (replace lTerrain_stub with your real LTerrain instance above)
-
--- ---- Stub: LTerrain:toBytes ----------------------------------------------
---@api-stub: LTerrain:toBytes
--- Serialises the terrain grid to a byte string for save/load.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTerrain_stub:toBytes()  -- -> string
--- (replace lTerrain_stub with your real LTerrain instance above)
-
--- ---- Stub: LTerrain:loadFromBytes ----------------------------------------
---@api-stub: LTerrain:loadFromBytes
--- Loads terrain cell data from bytes produced by `toBytes`.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTerrain_stub:loadFromBytes(data)
--- (replace lTerrain_stub with your real LTerrain instance above)
-
--- -----------------------------------------------------------------------------
--- LWorld methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LWorld:drawDebug ----------------------------------------------
---@api-stub: LWorld:drawDebug
--- Draws physics objects for debugging
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWorld_stub:drawDebug()
--- (replace lWorld_stub with your real LWorld instance above)
-
--- ---- Stub: LWorld:step ---------------------------------------------------
---@api-stub: LWorld:step
--- Advances the physics simulation by dt seconds, firing onBeginContact /
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWorld_stub:step(0.016)
--- (replace lWorld_stub with your real LWorld instance above)
-
--- ---- Stub: LWorld:clear --------------------------------------------------
---@api-stub: LWorld:clear
--- Resets the world, removing all bodies and joints.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWorld_stub:clear()
--- (replace lWorld_stub with your real LWorld instance above)
-
--- ---- Stub: LWorld:getGravity ---------------------------------------------
---@api-stub: LWorld:getGravity
--- Returns the gravity vector (gx, gy).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWorld_stub:getGravity()  -- -> number, number
--- (replace lWorld_stub with your real LWorld instance above)
-
--- ---- Stub: LWorld:setGravity ---------------------------------------------
---@api-stub: LWorld:setGravity
--- Sets the world gravity vector; default is `(0, 9.81)` (downward).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWorld_stub:setGravity(gx, gy)
--- (replace lWorld_stub with your real LWorld instance above)
-
--- ---- Stub: LWorld:setMeter -----------------------------------------------
---@api-stub: LWorld:setMeter
--- Sets the pixels-per-meter scaling factor.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWorld_stub:setMeter(ppm)
--- (replace lWorld_stub with your real LWorld instance above)
-
--- ---- Stub: LWorld:getMeter -----------------------------------------------
---@api-stub: LWorld:getMeter
--- Returns the pixels-per-meter scaling factor.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWorld_stub:getMeter()  -- -> number
--- (replace lWorld_stub with your real LWorld instance above)
-
--- ---- Stub: LWorld:toPhysics ----------------------------------------------
---@api-stub: LWorld:toPhysics
--- Converts a pixel value to physics units.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWorld_stub:toPhysics(px)  -- -> number
--- (replace lWorld_stub with your real LWorld instance above)
-
--- ---- Stub: LWorld:toPixels -----------------------------------------------
---@api-stub: LWorld:toPixels
--- Converts a physics-unit value to pixels.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWorld_stub:toPixels(m)  -- -> number
--- (replace lWorld_stub with your real LWorld instance above)
-
--- ---- Stub: LWorld:getBodyCount -------------------------------------------
---@api-stub: LWorld:getBodyCount
--- Returns the total number of bodies in the world.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWorld_stub:getBodyCount()  -- -> integer
--- (replace lWorld_stub with your real LWorld instance above)
-
--- ---- Stub: LWorld:getBodyIds ---------------------------------------------
---@api-stub: LWorld:getBodyIds
--- Returns all body IDs in the world.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWorld_stub:getBodyIds()  -- -> table
--- (replace lWorld_stub with your real LWorld instance above)
-
--- ---- Stub: LWorld:destroyBody --------------------------------------------
---@api-stub: LWorld:destroyBody
--- Removes a body from the world.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWorld_stub:destroyBody(1)
--- (replace lWorld_stub with your real LWorld instance above)
-
--- ---- Stub: LWorld:newBody ------------------------------------------------
---@api-stub: LWorld:newBody
--- Creates a new rectangular body and adds it to the world.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWorld_stub:newBody(0.0, 0.0, bt)  -- -> Body
--- (replace lWorld_stub with your real LWorld instance above)
-
--- ---- Stub: LWorld:newCircleBody ------------------------------------------
---@api-stub: LWorld:newCircleBody
--- Creates a new circular body and adds it to the world.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWorld_stub:newCircleBody(0.0, 0.0, 24.0, bt)  -- -> Body
--- (replace lWorld_stub with your real LWorld instance above)
-
--- ---- Stub: LWorld:newPolygonBody -----------------------------------------
---@api-stub: LWorld:newPolygonBody
--- Creates a new polygon body from a flat vertex table and adds it to the world.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWorld_stub:newPolygonBody(0.0, 0.0, tbl, bt)  -- -> Body
--- (replace lWorld_stub with your real LWorld instance above)
-
--- ---- Stub: LWorld:newEdgeBody --------------------------------------------
---@api-stub: LWorld:newEdgeBody
--- Creates a new edge (line segment) body and adds it to the world.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWorld_stub:newEdgeBody(0.0, 0.0, x1, y1, x2, y2, bt)  -- -> Body
--- (replace lWorld_stub with your real LWorld instance above)
-
--- ---- Stub: LWorld:newChainBody -------------------------------------------
---@api-stub: LWorld:newChainBody
--- Creates a new chain body from a flat vertex table and adds it to the world.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWorld_stub:newChainBody(0.0, 0.0, tbl, closed, bt)  -- -> Body
--- (replace lWorld_stub with your real LWorld instance above)
-
--- ---- Stub: LWorld:addFixture ---------------------------------------------
---@api-stub: LWorld:addFixture
--- Adds an extra fixture (collider) to a body.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWorld_stub:addFixture()  -- -> integer
--- (replace lWorld_stub with your real LWorld instance above)
-
--- ---- Stub: LWorld:fixtureCount -------------------------------------------
---@api-stub: LWorld:fixtureCount
--- Returns the number of fixtures on a body.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWorld_stub:fixtureCount(body_id)  -- -> integer
--- (replace lWorld_stub with your real LWorld instance above)
-
--- ---- Stub: LWorld:setFixtureFriction -------------------------------------
---@api-stub: LWorld:setFixtureFriction
--- Sets friction on a fixture by index.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWorld_stub:setFixtureFriction(body_id, fix_idx, friction)
--- (replace lWorld_stub with your real LWorld instance above)
-
--- ---- Stub: LWorld:setFixtureRestitution ----------------------------------
---@api-stub: LWorld:setFixtureRestitution
--- Sets restitution on a fixture by index.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWorld_stub:setFixtureRestitution(body_id, fix_idx, restitution)
--- (replace lWorld_stub with your real LWorld instance above)
-
--- ---- Stub: LWorld:setFixtureSensor ---------------------------------------
---@api-stub: LWorld:setFixtureSensor
--- Sets whether a fixture is a sensor.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWorld_stub:setFixtureSensor(body_id, fix_idx, sensor)
--- (replace lWorld_stub with your real LWorld instance above)
-
--- ---- Stub: LWorld:addRevoluteJoint ---------------------------------------
---@api-stub: LWorld:addRevoluteJoint
--- Creates a revolute (pin) joint between two bodies.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWorld_stub:addRevoluteJoint(1.0, 0.2, ax, ay)  -- -> integer
--- (replace lWorld_stub with your real LWorld instance above)
-
--- ---- Stub: LWorld:addDistanceJoint ---------------------------------------
---@api-stub: LWorld:addDistanceJoint
--- Creates a distance joint between two bodies.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWorld_stub:addDistanceJoint(1.0, 0.2, ax1, ay1, ax2, ay2, len)  -- -> integer
--- (replace lWorld_stub with your real LWorld instance above)
-
--- ---- Stub: LWorld:addPrismaticJoint --------------------------------------
---@api-stub: LWorld:addPrismaticJoint
--- Creates a prismatic (slider) joint between two bodies.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWorld_stub:addPrismaticJoint(1.0, 0.2, ax, ay, axis_x, axis_y)  -- -> integer
--- (replace lWorld_stub with your real LWorld instance above)
-
--- ---- Stub: LWorld:addWeldJoint -------------------------------------------
---@api-stub: LWorld:addWeldJoint
--- Creates a weld (rigid) joint between two bodies.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWorld_stub:addWeldJoint(1.0, 0.2, ax, ay)  -- -> integer
--- (replace lWorld_stub with your real LWorld instance above)
-
--- ---- Stub: LWorld:addRopeJoint -------------------------------------------
---@api-stub: LWorld:addRopeJoint
--- Creates a rope joint with a maximum distance.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWorld_stub:addRopeJoint(1.0, 0.2, ax1, ay1, ax2, ay2, max)  -- -> integer
--- (replace lWorld_stub with your real LWorld instance above)
-
--- ---- Stub: LWorld:addWheelJoint ------------------------------------------
---@api-stub: LWorld:addWheelJoint
--- Creates a wheel joint (prismatic + rotation).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWorld_stub:addWheelJoint(1.0, 0.2, ax, ay, axis_x, axis_y)  -- -> integer
--- (replace lWorld_stub with your real LWorld instance above)
-
--- ---- Stub: LWorld:addFrictionJoint ---------------------------------------
---@api-stub: LWorld:addFrictionJoint
--- Creates a friction joint that resists relative motion.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWorld_stub:addFrictionJoint(1.0, 0.2, ax, ay, max_f, max_t)  -- -> integer
--- (replace lWorld_stub with your real LWorld instance above)
-
--- ---- Stub: LWorld:addMotorJoint ------------------------------------------
---@api-stub: LWorld:addMotorJoint
--- Creates a motor joint that drives body_b toward body_a.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWorld_stub:addMotorJoint(1.0, 0.2, factor)  -- -> integer
--- (replace lWorld_stub with your real LWorld instance above)
-
--- ---- Stub: LWorld:addMouseJoint ------------------------------------------
---@api-stub: LWorld:addMouseJoint
--- Creates a mouse joint connecting a body to a target point.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWorld_stub:addMouseJoint(body_id, tx, ty, max_f)  -- -> integer
--- (replace lWorld_stub with your real LWorld instance above)
-
--- ---- Stub: LWorld:addPulleyJoint -----------------------------------------
---@api-stub: LWorld:addPulleyJoint
--- Creates a pulley joint (stub — falls back to weld joint).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWorld_stub:addPulleyJoint(1.0, 0.2, ax, ay)  -- -> integer
--- (replace lWorld_stub with your real LWorld instance above)
-
--- ---- Stub: LWorld:addGearJoint -------------------------------------------
---@api-stub: LWorld:addGearJoint
--- Creates a gear joint (stub — falls back to weld joint).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWorld_stub:addGearJoint(1.0, 0.2, ax, ay)  -- -> integer
--- (replace lWorld_stub with your real LWorld instance above)
-
--- ---- Stub: LWorld:jointCount ---------------------------------------------
---@api-stub: LWorld:jointCount
--- Returns the total number of joints.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWorld_stub:jointCount()  -- -> integer
--- (replace lWorld_stub with your real LWorld instance above)
-
--- ---- Stub: LWorld:getJointIds --------------------------------------------
---@api-stub: LWorld:getJointIds
--- Returns a table of integer IDs for every joint attached to this world.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWorld_stub:getJointIds()  -- -> table
--- (replace lWorld_stub with your real LWorld instance above)
-
--- ---- Stub: LWorld:getJointBodies -----------------------------------------
---@api-stub: LWorld:getJointBodies
--- Returns the two body IDs connected by a joint.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWorld_stub:getJointBodies(jid)  -- -> integer, integer
--- (replace lWorld_stub with your real LWorld instance above)
-
--- ---- Stub: LWorld:destroyJoint -------------------------------------------
---@api-stub: LWorld:destroyJoint
--- Removes a joint from the world.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWorld_stub:destroyJoint(jid)
--- (replace lWorld_stub with your real LWorld instance above)
-
--- ---- Stub: LWorld:getJointType -------------------------------------------
---@api-stub: LWorld:getJointType
--- Returns the type name of a joint.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWorld_stub:getJointType(jid)  -- -> string
--- (replace lWorld_stub with your real LWorld instance above)
-
--- ---- Stub: LWorld:setJointMotorSpeed -------------------------------------
---@api-stub: LWorld:setJointMotorSpeed
--- Sets the motor speed on a joint's angular axis.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWorld_stub:setJointMotorSpeed(jid, 120.0)
--- (replace lWorld_stub with your real LWorld instance above)
-
--- ---- Stub: LWorld:getJointMotorSpeed -------------------------------------
---@api-stub: LWorld:getJointMotorSpeed
--- Returns the motor speed on a joint's angular axis.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWorld_stub:getJointMotorSpeed(jid)  -- -> number
--- (replace lWorld_stub with your real LWorld instance above)
-
--- ---- Stub: LWorld:setJointLimitsEnabled ----------------------------------
---@api-stub: LWorld:setJointLimitsEnabled
--- Enables or disables angular limits on a joint.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWorld_stub:setJointLimitsEnabled(jid, true)
--- (replace lWorld_stub with your real LWorld instance above)
-
--- ---- Stub: LWorld:setJointLimits -----------------------------------------
---@api-stub: LWorld:setJointLimits
--- Sets the angular limits on a joint.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWorld_stub:setJointLimits(jid, lower, upper)
--- (replace lWorld_stub with your real LWorld instance above)
-
--- ---- Stub: LWorld:getJointLimits -----------------------------------------
---@api-stub: LWorld:getJointLimits
--- Returns the angular limits on a joint.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWorld_stub:getJointLimits(jid)  -- -> number, number
--- (replace lWorld_stub with your real LWorld instance above)
-
--- ---- Stub: LWorld:setMouseJointTarget ------------------------------------
---@api-stub: LWorld:setMouseJointTarget
--- Updates the target position of a mouse joint.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWorld_stub:setMouseJointTarget(jid, 0.0, 0.0)
--- (replace lWorld_stub with your real LWorld instance above)
-
--- ---- Stub: LWorld:raycast ------------------------------------------------
---@api-stub: LWorld:raycast
--- Casts a ray and returns the nearest hit, or nil.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWorld_stub:raycast(x1, y1, x2, y2)  -- -> table|nil
--- (replace lWorld_stub with your real LWorld instance above)
-
--- ---- Stub: LWorld:raycastClosest -----------------------------------------
---@api-stub: LWorld:raycastClosest
--- Casts a ray and returns the closest hit using the query pipeline.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWorld_stub:raycastClosest(x1, y1, dx, dy, max_dist)  -- -> table|nil
--- (replace lWorld_stub with your real LWorld instance above)
-
--- ---- Stub: LWorld:raycastAll ---------------------------------------------
---@api-stub: LWorld:raycastAll
--- Casts a ray and returns all hits.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWorld_stub:raycastAll(x1, y1, dx, dy, max_dist)  -- -> table
--- (replace lWorld_stub with your real LWorld instance above)
-
--- ---- Stub: LWorld:queryAABB ----------------------------------------------
---@api-stub: LWorld:queryAABB
--- Returns body IDs within an axis-aligned bounding box.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWorld_stub:queryAABB(0.0, 0.0, 64.0, 64.0)  -- -> table
--- (replace lWorld_stub with your real LWorld instance above)
-
--- ---- Stub: LWorld:getBodyAtPoint -----------------------------------------
---@api-stub: LWorld:getBodyAtPoint
--- Returns the body ID at a world-space point, or nil.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWorld_stub:getBodyAtPoint(0.0, 0.0)  -- -> integer|nil
--- (replace lWorld_stub with your real LWorld instance above)
-
--- ---- Stub: LWorld:getCollisionEvents -------------------------------------
---@api-stub: LWorld:getCollisionEvents
--- Returns collision events from the last step.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWorld_stub:getCollisionEvents()  -- -> table
--- (replace lWorld_stub with your real LWorld instance above)
-
--- ---- Stub: LWorld:getBeginContactEvents ----------------------------------
---@api-stub: LWorld:getBeginContactEvents
--- Returns begin-contact events from the last step.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWorld_stub:getBeginContactEvents()  -- -> table
--- (replace lWorld_stub with your real LWorld instance above)
-
--- ---- Stub: LWorld:getEndContactEvents ------------------------------------
---@api-stub: LWorld:getEndContactEvents
--- Returns end-contact events from the last step.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWorld_stub:getEndContactEvents()  -- -> table
--- (replace lWorld_stub with your real LWorld instance above)
-
--- ---- Stub: LWorld:getContacts --------------------------------------------
---@api-stub: LWorld:getContacts
--- Returns all contact pairs from the narrow phase.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWorld_stub:getContacts()  -- -> table
--- (replace lWorld_stub with your real LWorld instance above)
-
--- ---- Stub: LWorld:getBodyContacts ----------------------------------------
---@api-stub: LWorld:getBodyContacts
--- Returns contacts involving a specific body.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWorld_stub:getBodyContacts(body_id)  -- -> table
--- (replace lWorld_stub with your real LWorld instance above)
-
--- ---- Stub: LWorld:setBodyType --------------------------------------------
---@api-stub: LWorld:setBodyType
--- Changes the simulation type of the body: `"dynamic"`, `"static"`, or `"kinematic"`.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWorld_stub:setBodyType(1, bt)
--- (replace lWorld_stub with your real LWorld instance above)
-
--- ---- Stub: LWorld:getBodyType --------------------------------------------
---@api-stub: LWorld:getBodyType
--- Returns the body type as a string.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWorld_stub:getBodyType(1)  -- -> string
--- (replace lWorld_stub with your real LWorld instance above)
-
--- ---- Stub: LWorld:setBeginContact ----------------------------------------
---@api-stub: LWorld:setBeginContact
--- Registers a Lua function called with (bodyIdA, bodyIdB) when two
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWorld_stub:setBeginContact(f)
--- (replace lWorld_stub with your real LWorld instance above)
-
--- ---- Stub: LWorld:clearBeginContact --------------------------------------
---@api-stub: LWorld:clearBeginContact
--- Removes the begin-contact callback.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWorld_stub:clearBeginContact()
--- (replace lWorld_stub with your real LWorld instance above)
-
--- ---- Stub: LWorld:setEndContact ------------------------------------------
---@api-stub: LWorld:setEndContact
--- Registers a Lua function called with (bodyIdA, bodyIdB) when two
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWorld_stub:setEndContact(f)
--- (replace lWorld_stub with your real LWorld instance above)
-
--- ---- Stub: LWorld:clearEndContact ----------------------------------------
---@api-stub: LWorld:clearEndContact
--- Removes the end-contact callback.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWorld_stub:clearEndContact()
--- (replace lWorld_stub with your real LWorld instance above)
-
--- ---- Stub: LWorld:setBodyData --------------------------------------------
---@api-stub: LWorld:setBodyData
--- Attaches arbitrary Lua data to a body for retrieval in collision callbacks.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWorld_stub:setBodyData(1, 42)
--- (replace lWorld_stub with your real LWorld instance above)
-
--- ---- Stub: LWorld:getBodyData --------------------------------------------
---@api-stub: LWorld:getBodyData
--- Returns the Lua data previously attached to a body, or nil if none is set.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWorld_stub:getBodyData(1)
--- (replace lWorld_stub with your real LWorld instance above)
-
--- ---- Stub: LWorld:clearBodyData ------------------------------------------
---@api-stub: LWorld:clearBodyData
--- Removes the Lua data attached to a body.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWorld_stub:clearBodyData(1)
--- (replace lWorld_stub with your real LWorld instance above)
-
--- ---- Stub: LWorld:setBodyCCD ---------------------------------------------
---@api-stub: LWorld:setBodyCCD
--- Enables or disables Continuous Collision Detection for a body.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWorld_stub:setBodyCCD(1, true)
--- (replace lWorld_stub with your real LWorld instance above)
-
--- ---- Stub: LWorld:getBodyCCD ---------------------------------------------
---@api-stub: LWorld:getBodyCCD
--- Returns whether CCD is enabled for a body.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWorld_stub:getBodyCCD(1)  -- -> boolean
--- (replace lWorld_stub with your real LWorld instance above)
-
--- ---- Stub: LWorld:setBodyOneWay ------------------------------------------
---@api-stub: LWorld:setBodyOneWay
--- Marks a body as a one-way platform.  Bodies approaching from the
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWorld_stub:setBodyOneWay(1, nx, ny)
--- (replace lWorld_stub with your real LWorld instance above)
-
--- ---- Stub: LWorld:clearBodyOneWay ----------------------------------------
---@api-stub: LWorld:clearBodyOneWay
--- Removes the one-way platform flag from a body.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWorld_stub:clearBodyOneWay(1)
--- (replace lWorld_stub with your real LWorld instance above)
-
--- ---- Stub: LWorld:getBodyOneWay ------------------------------------------
---@api-stub: LWorld:getBodyOneWay
--- Returns the one-way normal for a body, or nil if not configured.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWorld_stub:getBodyOneWay(1)
--- (replace lWorld_stub with your real LWorld instance above)
-
--- ---- Stub: LWorld:setJointBreakForce -------------------------------------
---@api-stub: LWorld:setJointBreakForce
--- Sets the relative-velocity threshold above which a joint breaks.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWorld_stub:setJointBreakForce(jid, f)
--- (replace lWorld_stub with your real LWorld instance above)
-
--- ---- Stub: LWorld:getJointBreakForce -------------------------------------
---@api-stub: LWorld:getJointBreakForce
--- Returns the break threshold for a joint, or nil if not set.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWorld_stub:getJointBreakForce(jid)
--- (replace lWorld_stub with your real LWorld instance above)
-
--- ---- Stub: LWorld:isBodySleeping -----------------------------------------
---@api-stub: LWorld:isBodySleeping
--- Returns true if a body is currently sleeping (inactive).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWorld_stub:isBodySleeping(1)  -- -> boolean
--- (replace lWorld_stub with your real LWorld instance above)
-
--- ---- Stub: LWorld:wakeUpBody ---------------------------------------------
---@api-stub: LWorld:wakeUpBody
--- Forcibly wakes up a sleeping body.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWorld_stub:wakeUpBody(1)
--- (replace lWorld_stub with your real LWorld instance above)
-
--- ---- Stub: LWorld:sleepBody ----------------------------------------------
---@api-stub: LWorld:sleepBody
--- Puts a body to sleep immediately.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWorld_stub:sleepBody(1)
--- (replace lWorld_stub with your real LWorld instance above)
-
--- ---- Stub: LWorld:setSolverIterations ------------------------------------
---@api-stub: LWorld:setSolverIterations
--- Sets the number of constraint solver iterations per step.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWorld_stub:setSolverIterations(5)
--- (replace lWorld_stub with your real LWorld instance above)
-
--- ---- Stub: LWorld:getSolverIterations ------------------------------------
---@api-stub: LWorld:getSolverIterations
--- Returns the current number of solver iterations per step.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWorld_stub:getSolverIterations()  -- -> integer
--- (replace lWorld_stub with your real LWorld instance above)
-
--- ---- Stub: LWorld:newBodies ----------------------------------------------
---@api-stub: LWorld:newBodies
--- Creates multiple bodies in one call.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWorld_stub:newBodies(specs)
--- (replace lWorld_stub with your real LWorld instance above)
-
--- ---- Stub: LWorld:stepFixed ----------------------------------------------
---@api-stub: LWorld:stepFixed
--- Steps the world using a fixed sub-step size to consume accumulated time.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWorld_stub:stepFixed(accum, step_dt, max_steps)
--- (replace lWorld_stub with your real LWorld instance above)
-
--- ---- Stub: LWorld:addZone ------------------------------------------------
---@api-stub: LWorld:addZone
--- Creates a rectangular gravity/damping zone and returns a LuaZone handle.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWorld_stub:addZone(0.0, 0.0, 64.0, 64.0)  -- -> Zone
--- (replace lWorld_stub with your real LWorld instance above)
-
--- ---- Stub: LWorld:getZoneEvents ------------------------------------------
---@api-stub: LWorld:getZoneEvents
--- Returns zone enter/leave events produced by the most recent step.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lWorld_stub:getZoneEvents()  -- -> table
--- (replace lWorld_stub with your real LWorld instance above)
-
--- -----------------------------------------------------------------------------
--- LZone methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LZone:getId ---------------------------------------------------
---@api-stub: LZone:getId
--- Returns the zone's integer ID.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lZone_stub:getId()  -- -> integer
--- (replace lZone_stub with your real LZone instance above)
-
--- ---- Stub: LZone:setEnabled ----------------------------------------------
---@api-stub: LZone:setEnabled
--- Enables or disables the zone.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lZone_stub:setEnabled(true)
--- (replace lZone_stub with your real LZone instance above)
-
--- ---- Stub: LZone:setPriority ---------------------------------------------
---@api-stub: LZone:setPriority
--- Sets the zone priority; higher values win over lower when zones overlap.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lZone_stub:setPriority(priority)
--- (replace lZone_stub with your real LZone instance above)
-
--- ---- Stub: LZone:setLayerMask --------------------------------------------
---@api-stub: LZone:setLayerMask
--- Sets the layer bitmask; only bodies whose `layer & mask != 0` are affected.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lZone_stub:setLayerMask(mask)
--- (replace lZone_stub with your real LZone instance above)
-
--- ---- Stub: LZone:setCircle -----------------------------------------------
---@api-stub: LZone:setCircle
--- Replaces the zone boundary with a circle.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lZone_stub:setCircle(cx, cy, 24.0)
--- (replace lZone_stub with your real LZone instance above)
-
--- ---- Stub: LZone:setGravityDirectional -----------------------------------
---@api-stub: LZone:setGravityDirectional
--- Sets directional gravity inside the zone.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lZone_stub:setGravityDirectional(gx, gy)
--- (replace lZone_stub with your real LZone instance above)
-
--- ---- Stub: LZone:setGravityPoint -----------------------------------------
---@api-stub: LZone:setGravityPoint
--- Sets point-attractor gravity inside the zone.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lZone_stub:setGravityPoint(cx, cy, strength)
--- (replace lZone_stub with your real LZone instance above)
-
--- ---- Stub: LZone:setGravityRepulsor --------------------------------------
---@api-stub: LZone:setGravityRepulsor
--- Sets point-repulsor gravity inside the zone.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lZone_stub:setGravityRepulsor(cx, cy, strength)
--- (replace lZone_stub with your real LZone instance above)
-
--- ---- Stub: LZone:setGravityZero ------------------------------------------
---@api-stub: LZone:setGravityZero
--- Suppresses gravity inside the zone (zero-g pocket).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lZone_stub:setGravityZero()
--- (replace lZone_stub with your real LZone instance above)
-
--- ---- Stub: LZone:setLinearDampingOverride --------------------------------
---@api-stub: LZone:setLinearDampingOverride
--- Sets an optional linear damping override for bodies inside the zone.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lZone_stub:setLinearDampingOverride([value])
--- (replace lZone_stub with your real LZone instance above)
-
--- ---- Stub: LZone:setAngularDampingOverride -------------------------------
---@api-stub: LZone:setAngularDampingOverride
--- Sets an optional angular damping override for bodies inside the zone.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lZone_stub:setAngularDampingOverride([value])
--- (replace lZone_stub with your real LZone instance above)
-
--- ---- Stub: LZone:destroy -------------------------------------------------
---@api-stub: LZone:destroy
--- Removes the zone from the world.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lZone_stub:destroy()
--- (replace lZone_stub with your real LZone instance above)

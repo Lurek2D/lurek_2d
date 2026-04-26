@@ -402,7 +402,7 @@ end
 
 -- ── FileWatcher methods ──
 
---@api-stub: FileWatcher:onChanged
+--@api-stub: LFileWatcher:onChanged
 -- Registers a callback invoked (with no arguments) when the watched path changes.
 -- Calling onChanged again replaces the previous callback; pass nothing-arg closures that capture state via upvalues.
 do  -- FileWatcher:onChanged
@@ -411,7 +411,7 @@ do  -- FileWatcher:onChanged
   fw:onChanged(function() reloads = reloads + 1; lurek.devtools.info("reload #" .. reloads) end)
 end
 
---@api-stub: FileWatcher:check
+--@api-stub: LFileWatcher:check
 -- Polls the watcher.
 -- Returns true when the file changed (and fires onChanged); call once per frame from lurek.process for live reload.
 do  -- FileWatcher:check
@@ -421,7 +421,7 @@ do  -- FileWatcher:check
   end
 end
 
---@api-stub: FileWatcher:getPath
+--@api-stub: LFileWatcher:getPath
 -- Returns the watched path string.
 -- Useful when one log handler manages many watchers and needs to label which file fired the change.
 do  -- FileWatcher:getPath
@@ -429,7 +429,7 @@ do  -- FileWatcher:getPath
   fw:onChanged(function() lurek.devtools.info("changed: " .. fw:getPath()) end)
 end
 
---@api-stub: FileWatcher:cancel
+--@api-stub: LFileWatcher:cancel
 -- Removes the stored `onChanged` callback and stops future notifications.
 -- Call when the consuming subsystem shuts down so the captured upvalues can be garbage collected.
 do  -- FileWatcher:cancel
@@ -441,7 +441,7 @@ end
 
 -- ── ReplConsole methods ──
 
---@api-stub: ReplConsole:eval
+--@api-stub: LReplConsole:eval
 -- Evaluates a Lua snippet and records the input in history.
 -- Expressions return their value as a string; statements return "(ok)"; errors return the error text — always safe to display.
 do  -- ReplConsole:eval
@@ -450,7 +450,7 @@ do  -- ReplConsole:eval
   lurek.devtools.info("> " .. out)
 end
 
---@api-stub: ReplConsole:history
+--@api-stub: LReplConsole:history
 -- Returns an ordered array of past inputs (oldest first).
 -- Drive an Up/Down arrow recall in your console UI; iterate in reverse for most-recent-first display.
 do  -- ReplConsole:history
@@ -462,7 +462,7 @@ do  -- ReplConsole:history
   end
 end
 
---@api-stub: ReplConsole:clear
+--@api-stub: LReplConsole:clear
 -- Clears the REPL history buffer.
 -- Wire to a `:clear` command or a button in the console UI; the live Lua VM state is untouched.
 do  -- ReplConsole:clear
@@ -472,7 +472,7 @@ do  -- ReplConsole:clear
   lurek.devtools.debug("history len after clear = " .. repl:len())
 end
 
---@api-stub: ReplConsole:len
+--@api-stub: LReplConsole:len
 -- Returns the number of history entries.
 -- Use to render "N/Max" status in the REPL UI or to decide when to auto-trim before saving a session log.
 do  -- ReplConsole:len
@@ -522,41 +522,10 @@ do  -- lurek.devtools.fatal
   -- fatal is informational; does not itself raise
 end
 
--- -----------------------------------------------------------------------------
--- FileWatcher methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: FileWatcher:type ----------------------------------------------
---@api-stub: FileWatcher:type
--- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- fileWatcher_stub:type()  -- -> string
--- (replace fileWatcher_stub with your real FileWatcher instance above)
-
--- ---- Stub: FileWatcher:typeOf --------------------------------------------
---@api-stub: FileWatcher:typeOf
--- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- fileWatcher_stub:typeOf("hero")  -- -> boolean
--- (replace fileWatcher_stub with your real FileWatcher instance above)
 
 -- -----------------------------------------------------------------------------
 -- ReplConsole methods
 -- -----------------------------------------------------------------------------
-
--- ---- Stub: ReplConsole:type ----------------------------------------------
---@api-stub: ReplConsole:type
--- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- replConsole_stub:type()  -- -> string
--- (replace replConsole_stub with your real ReplConsole instance above)
-
--- ---- Stub: ReplConsole:typeOf --------------------------------------------
---@api-stub: ReplConsole:typeOf
--- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- replConsole_stub:typeOf("hero")  -- -> boolean
--- (replace replConsole_stub with your real ReplConsole instance above)
 
 -- =============================================================================
 -- STUBS: 4 uncovered lurek.devtools API item(s)
@@ -628,66 +597,4 @@ lurek.devtools.info(message)
 -- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
 lurek.devtools.warn(message)
 
--- -----------------------------------------------------------------------------
--- LFileWatcher methods
--- -----------------------------------------------------------------------------
 
--- ---- Stub: LFileWatcher:onChanged ----------------------------------------
---@api-stub: LFileWatcher:onChanged
--- Registers a callback invoked (with no arguments) when the watched path changes.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lFileWatcher_stub:onChanged(func)
--- (replace lFileWatcher_stub with your real LFileWatcher instance above)
-
--- ---- Stub: LFileWatcher:check --------------------------------------------
---@api-stub: LFileWatcher:check
--- Polls the watcher. If the file has changed since the last call, fires the
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lFileWatcher_stub:check()  -- -> boolean
--- (replace lFileWatcher_stub with your real LFileWatcher instance above)
-
--- ---- Stub: LFileWatcher:getPath ------------------------------------------
---@api-stub: LFileWatcher:getPath
--- Returns the watched path string.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lFileWatcher_stub:getPath()  -- -> string
--- (replace lFileWatcher_stub with your real LFileWatcher instance above)
-
--- ---- Stub: LFileWatcher:cancel -------------------------------------------
---@api-stub: LFileWatcher:cancel
--- Removes the stored `onChanged` callback and stops future notifications.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lFileWatcher_stub:cancel()
--- (replace lFileWatcher_stub with your real LFileWatcher instance above)
-
--- -----------------------------------------------------------------------------
--- LReplConsole methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LReplConsole:eval ---------------------------------------------
---@api-stub: LReplConsole:eval
--- Evaluates a Lua snippet and records the input in history.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lReplConsole_stub:eval(code)  -- -> string
--- (replace lReplConsole_stub with your real LReplConsole instance above)
-
--- ---- Stub: LReplConsole:history ------------------------------------------
---@api-stub: LReplConsole:history
--- Returns an ordered array of past inputs (oldest first).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lReplConsole_stub:history()  -- -> table
--- (replace lReplConsole_stub with your real LReplConsole instance above)
-
--- ---- Stub: LReplConsole:clear --------------------------------------------
---@api-stub: LReplConsole:clear
--- Clears the REPL history buffer.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lReplConsole_stub:clear()
--- (replace lReplConsole_stub with your real LReplConsole instance above)
-
--- ---- Stub: LReplConsole:len ----------------------------------------------
---@api-stub: LReplConsole:len
--- Returns the number of history entries.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lReplConsole_stub:len()  -- -> integer
--- (replace lReplConsole_stub with your real LReplConsole instance above)

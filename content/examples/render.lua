@@ -1048,7 +1048,7 @@ end
 
 -- Ä‚ËĂ˘â‚¬ĹĄĂ˘â€šÂ¬Ä‚ËĂ˘â‚¬ĹĄĂ˘â€šÂ¬ ImageData methods Ä‚ËĂ˘â‚¬ĹĄĂ˘â€šÂ¬Ä‚ËĂ˘â‚¬ĹĄĂ˘â€šÂ¬
 
---@api-stub: ImageData:getWidth
+--@api-stub: LImageData:getWidth
 -- Returns the pixel width of this image buffer.
 -- Width in pixels of the captured or loaded image data.
 do  -- ImageData:getWidth
@@ -1056,7 +1056,7 @@ do  -- ImageData:getWidth
   lurek.log.debug('width=' .. tostring(data:getWidth()))
 end
 
---@api-stub: ImageData:getHeight
+--@api-stub: LImageData:getHeight
 -- Returns the pixel height of this image buffer.
 -- Height in pixels; pair with getWidth when uploading to a Canvas of matching size.
 do  -- ImageData:getHeight
@@ -1064,7 +1064,7 @@ do  -- ImageData:getHeight
   lurek.log.debug('height=' .. tostring(data:getHeight()))
 end
 
---@api-stub: ImageData:resize
+--@api-stub: LImageData:resize
 -- Returns a new ImageData scaled to the given dimensions using bilinear interpolation.
 -- Resamples the underlying pixel buffer to new dimensions in place.
 do  -- ImageData:resize
@@ -1072,7 +1072,7 @@ do  -- ImageData:resize
   if data then data:resize(64, 64); lurek.log.info('resized to 64x64') end
 end
 
---@api-stub: ImageData:diff
+--@api-stub: LImageData:diff
 -- Returns the sum of absolute per-channel differences between this image and `other`.
 -- Return per-pixel diff against another ImageData; useful for golden tests.
 do  -- ImageData:diff
@@ -1081,7 +1081,7 @@ do  -- ImageData:diff
   if a and b then lurek.log.debug('diff=' .. tostring(a:diff(b))) end
 end
 
---@api-stub: ImageData:mapPixels
+--@api-stub: LImageData:mapPixels
 -- Applies a Lua function to every pixel in-place.
 -- Iterate every pixel via a callback (x, y, r, g, b, a) -> r, g, b, a.
 do  -- ImageData:mapPixels
@@ -1089,7 +1089,7 @@ do  -- ImageData:mapPixels
   if data then data:mapPixels(function(x, y, r, g, b, a) return 1 - r, 1 - g, 1 - b, a end) end
 end
 
---@api-stub: ImageData:type
+--@api-stub: LImageData:type
 -- Returns the type name "ImageData".
 -- Returns the literal string 'ImageData'; useful in generic helpers.
 do  -- ImageData:type
@@ -1097,7 +1097,7 @@ do  -- ImageData:type
   if data then lurek.log.debug(data:type()) end
 end
 
---@api-stub: ImageData:typeOf
+--@api-stub: LImageData:typeOf
 -- Returns true when the given name matches "ImageData" or a parent type.
 -- Boolean: is this object the named class? Mirrors love2d's typeOf semantics.
 do  -- ImageData:typeOf
@@ -1107,7 +1107,7 @@ end
 
 -- Ä‚ËĂ˘â‚¬ĹĄĂ˘â€šÂ¬Ä‚ËĂ˘â‚¬ĹĄĂ˘â€šÂ¬ NineSlice methods Ä‚ËĂ˘â‚¬ĹĄĂ˘â€šÂ¬Ä‚ËĂ˘â‚¬ĹĄĂ˘â€šÂ¬
 
---@api-stub: NineSlice:getInsets
+--@api-stub: LNineSlice:getInsets
 -- Returns the four inset values as (top, right, bottom, left).
 -- Returns left, top, right, bottom inset pixels packaged at construction.
 do  -- NineSlice:getInsets
@@ -1118,7 +1118,7 @@ do  -- NineSlice:getInsets
   end
 end
 
---@api-stub: NineSlice:getTextureSize
+--@api-stub: LNineSlice:getTextureSize
 -- Returns the width and height of the source texture.
 -- Returns w, h of the source texture; useful when computing a min-size constraint.
 do  -- NineSlice:getTextureSize
@@ -1129,7 +1129,7 @@ do  -- NineSlice:getTextureSize
   end
 end
 
---@api-stub: NineSlice:type
+--@api-stub: LNineSlice:type
 -- Returns the type name "NineSlice".
 -- Returns 'NineSlice'; for runtime type dispatch.
 do  -- NineSlice:type
@@ -1137,7 +1137,7 @@ do  -- NineSlice:type
   function lurek.init() panel = lurek.render.newNineSlice('img/panel.png', 8, 8, 8, 8); lurek.log.debug(panel:type()) end
 end
 
---@api-stub: NineSlice:typeOf
+--@api-stub: LNineSlice:typeOf
 -- Returns true when the given name matches "NineSlice" or a parent type.
 -- Boolean class check.
 do  -- NineSlice:typeOf
@@ -1147,7 +1147,7 @@ end
 
 -- Ä‚ËĂ˘â‚¬ĹĄĂ˘â€šÂ¬Ä‚ËĂ˘â‚¬ĹĄĂ˘â€šÂ¬ Image methods Ä‚ËĂ˘â‚¬ĹĄĂ˘â€šÂ¬Ä‚ËĂ˘â‚¬ĹĄĂ˘â€šÂ¬
 
---@api-stub: Image:getWidth
+--@api-stub: LImage:getWidth
 -- Returns the width of this image in pixels.
 -- Texture width in pixels; cache once after newImage rather than per-frame.
 do  -- Image:getWidth
@@ -1155,7 +1155,7 @@ do  -- Image:getWidth
   function lurek.init() img = lurek.render.newImage('img/hero.png'); lurek.log.debug('w=' .. img:getWidth()) end
 end
 
---@api-stub: Image:getHeight
+--@api-stub: LImage:getHeight
 -- Returns the height of this image in pixels.
 -- Texture height; pair with getWidth for centring.
 do  -- Image:getHeight
@@ -1163,7 +1163,7 @@ do  -- Image:getHeight
   function lurek.init() img = lurek.render.newImage('img/hero.png'); lurek.log.debug('h=' .. img:getHeight()) end
 end
 
---@api-stub: Image:getDimensions
+--@api-stub: LImage:getDimensions
 -- Returns width and height of this image.
 -- Returns w, h; preferred over two calls.
 do  -- Image:getDimensions
@@ -1171,7 +1171,7 @@ do  -- Image:getDimensions
   function lurek.init() img = lurek.render.newImage('img/hero.png'); local w, h = img:getDimensions(); lurek.log.debug(w .. 'x' .. h) end
 end
 
---@api-stub: Image:release
+--@api-stub: LImage:release
 -- Releases the GPU texture memory for this image.
 -- Free the GPU texture eagerly (otherwise GC handles it).
 do  -- Image:release
@@ -1180,7 +1180,7 @@ do  -- Image:release
   function lurek.quit() if img then img:release() end end
 end
 
---@api-stub: Image:typeOf
+--@api-stub: LImage:typeOf
 -- Returns the type name of this object.
 -- Boolean: returns true when name == 'Image' or 'Drawable'.
 do  -- Image:typeOf
@@ -1188,7 +1188,7 @@ do  -- Image:typeOf
   function lurek.init() img = lurek.render.newImage('img/hero.png'); if img:typeOf('Image') then lurek.log.debug('image') end end
 end
 
---@api-stub: Image:type
+--@api-stub: LImage:type
 -- Returns the type name of this object.
 -- Returns 'Image'; lets generic code branch by class.
 do  -- Image:type
@@ -1198,7 +1198,7 @@ end
 
 -- Ä‚ËĂ˘â‚¬ĹĄĂ˘â€šÂ¬Ä‚ËĂ˘â‚¬ĹĄĂ˘â€šÂ¬ Font methods Ä‚ËĂ˘â‚¬ĹĄĂ˘â€šÂ¬Ä‚ËĂ˘â‚¬ĹĄĂ˘â€šÂ¬
 
---@api-stub: Font:getWidth
+--@api-stub: LFont:getWidth
 -- Returns the rendered width of the given text string.
 -- Pixel width of the given string in this font; layouts call it on labels.
 do  -- Font:getWidth
@@ -1206,7 +1206,7 @@ do  -- Font:getWidth
   function lurek.init() f = lurek.render.newFont('assets/fonts/Inter.ttf', 18); lurek.log.debug('w=' .. f:getWidth('Hello')) end
 end
 
---@api-stub: Font:getHeight
+--@api-stub: LFont:getHeight
 -- Returns the line height of this font.
 -- Single-line pixel height; multiply by line count for paragraph height.
 do  -- Font:getHeight
@@ -1214,7 +1214,7 @@ do  -- Font:getHeight
   function lurek.init() f = lurek.render.newFont('assets/fonts/Inter.ttf', 18); lurek.log.debug('h=' .. f:getHeight()) end
 end
 
---@api-stub: Font:getLineHeight
+--@api-stub: LFont:getLineHeight
 -- Returns the line height multiplier of this font.
 -- Returns the line-height multiplier set on this font.
 do  -- Font:getLineHeight
@@ -1222,7 +1222,7 @@ do  -- Font:getLineHeight
   function lurek.init() f = lurek.render.newFont('assets/fonts/Inter.ttf', 18); lurek.log.debug('lh=' .. f:getLineHeight()) end
 end
 
---@api-stub: Font:setLineHeight
+--@api-stub: LFont:setLineHeight
 -- Sets the line height multiplier for this font.
 -- Set 1.25 for paragraphs, 1.0 for tight HUD; per-font setting.
 do  -- Font:setLineHeight
@@ -1230,7 +1230,7 @@ do  -- Font:setLineHeight
   function lurek.init() f = lurek.render.newFont('assets/fonts/Inter.ttf', 18); f:setLineHeight(1.25) end
 end
 
---@api-stub: Font:getAscent
+--@api-stub: LFont:getAscent
 -- Returns the ascent of this font in pixels.
 -- Pixels above baseline; combine with descent to size a tooltip box.
 do  -- Font:getAscent
@@ -1238,7 +1238,7 @@ do  -- Font:getAscent
   function lurek.init() f = lurek.render.newFont('assets/fonts/Inter.ttf', 18); lurek.log.debug('asc=' .. tostring(f:getAscent())) end
 end
 
---@api-stub: Font:getDescent
+--@api-stub: LFont:getDescent
 -- Returns the descent of this font in pixels.
 -- Pixels below baseline (often negative).
 do  -- Font:getDescent
@@ -1246,7 +1246,7 @@ do  -- Font:getDescent
   function lurek.init() f = lurek.render.newFont('assets/fonts/Inter.ttf', 18); lurek.log.debug('desc=' .. tostring(f:getDescent())) end
 end
 
---@api-stub: Font:getWrap
+--@api-stub: LFont:getWrap
 -- Wraps text to the given width and returns the lines.
 -- Wraps a string to a width and returns lines, max width.
 do  -- Font:getWrap
@@ -1257,7 +1257,7 @@ do  -- Font:getWrap
   end
 end
 
---@api-stub: Font:release
+--@api-stub: LFont:release
 -- Releases this font and frees its atlas memory.
 -- Free the rasterised glyph cache; call when switching scenes.
 do  -- Font:release
@@ -1266,7 +1266,7 @@ do  -- Font:release
   function lurek.quit() if f then f:release() end end
 end
 
---@api-stub: Font:typeOf
+--@api-stub: LFont:typeOf
 -- Returns the type name of this object.
 -- Boolean class check; useful in helpers that accept Font or string path.
 do  -- Font:typeOf
@@ -1274,7 +1274,7 @@ do  -- Font:typeOf
   function lurek.init() f = lurek.render.newFont('assets/fonts/Inter.ttf', 18); if f:typeOf('Font') then lurek.log.debug('font') end end
 end
 
---@api-stub: Font:type
+--@api-stub: LFont:type
 -- Returns the type name of this object.
 -- Returns 'Font'.
 do  -- Font:type
@@ -1284,7 +1284,7 @@ end
 
 -- Ä‚ËĂ˘â‚¬ĹĄĂ˘â€šÂ¬Ä‚ËĂ˘â‚¬ĹĄĂ˘â€šÂ¬ Canvas methods Ä‚ËĂ˘â‚¬ĹĄĂ˘â€šÂ¬Ä‚ËĂ˘â‚¬ĹĄĂ˘â€šÂ¬
 
---@api-stub: Canvas:getWidth
+--@api-stub: LCanvas:getWidth
 -- Returns the width of this canvas in pixels.
 -- Width of the off-screen target in pixels.
 do  -- Canvas:getWidth
@@ -1292,7 +1292,7 @@ do  -- Canvas:getWidth
   function lurek.init() c = lurek.render.newCanvas(320, 240); lurek.log.debug('cw=' .. c:getWidth()) end
 end
 
---@api-stub: Canvas:getHeight
+--@api-stub: LCanvas:getHeight
 -- Returns the height of this canvas in pixels.
 -- Height of the off-screen target.
 do  -- Canvas:getHeight
@@ -1300,7 +1300,7 @@ do  -- Canvas:getHeight
   function lurek.init() c = lurek.render.newCanvas(320, 240); lurek.log.debug('ch=' .. c:getHeight()) end
 end
 
---@api-stub: Canvas:getDimensions
+--@api-stub: LCanvas:getDimensions
 -- Returns width and height of this canvas.
 -- Returns w, h together; useful when rendering full-screen passes.
 do  -- Canvas:getDimensions
@@ -1308,7 +1308,7 @@ do  -- Canvas:getDimensions
   function lurek.init() c = lurek.render.newCanvas(320, 240); local w, h = c:getDimensions(); lurek.log.debug(w .. 'x' .. h) end
 end
 
---@api-stub: Canvas:release
+--@api-stub: LCanvas:release
 -- Releases GPU framebuffer memory for this canvas.
 -- Drop the GPU texture immediately rather than waiting for GC.
 do  -- Canvas:release
@@ -1317,7 +1317,7 @@ do  -- Canvas:release
   function lurek.quit() if c then c:release() end end
 end
 
---@api-stub: Canvas:typeOf
+--@api-stub: LCanvas:typeOf
 -- Returns the type name of this object.
 -- Boolean class check (also matches 'Drawable').
 do  -- Canvas:typeOf
@@ -1325,7 +1325,7 @@ do  -- Canvas:typeOf
   function lurek.init() c = lurek.render.newCanvas(320, 240); if c:typeOf('Canvas') then lurek.log.debug('canvas') end end
 end
 
---@api-stub: Canvas:type
+--@api-stub: LCanvas:type
 -- Returns the type name of this object.
 -- Returns 'Canvas'.
 do  -- Canvas:type
@@ -1335,7 +1335,7 @@ end
 
 -- Ä‚ËĂ˘â‚¬ĹĄĂ˘â€šÂ¬Ä‚ËĂ˘â‚¬ĹĄĂ˘â€šÂ¬ SpriteBatch methods Ä‚ËĂ˘â‚¬ĹĄĂ˘â€šÂ¬Ä‚ËĂ˘â‚¬ĹĄĂ˘â€šÂ¬
 
---@api-stub: SpriteBatch:clear
+--@api-stub: LSpriteBatch:clear
 -- Removes all sprites from this batch.
 -- Wipe queued sprites; call at the start of each frame before re-queueing.
 do  -- SpriteBatch:clear
@@ -1344,7 +1344,7 @@ do  -- SpriteBatch:clear
   function lurek.process(dt) batch:clear() end
 end
 
---@api-stub: SpriteBatch:getCount
+--@api-stub: LSpriteBatch:getCount
 -- Returns the number of sprites in this batch.
 -- Number of sprites currently queued; useful as a debug HUD readout.
 do  -- SpriteBatch:getCount
@@ -1353,7 +1353,7 @@ do  -- SpriteBatch:getCount
   function lurek.draw() lurek.log.debug('batched=' .. batch:getCount()) end
 end
 
---@api-stub: SpriteBatch:getBufferSize
+--@api-stub: LSpriteBatch:getBufferSize
 -- Returns the maximum capacity of this batch.
 -- Returns the configured max sprite capacity.
 do  -- SpriteBatch:getBufferSize
@@ -1361,7 +1361,7 @@ do  -- SpriteBatch:getBufferSize
   function lurek.init() batch = lurek.render.newSpriteBatch(lurek.render.newImage('img/tiles.png'), 256); lurek.log.debug('cap=' .. batch:getBufferSize()) end
 end
 
---@api-stub: SpriteBatch:release
+--@api-stub: LSpriteBatch:release
 -- Releases this sprite batch.
 -- Free GPU memory; call when leaving a level.
 do  -- SpriteBatch:release
@@ -1370,7 +1370,7 @@ do  -- SpriteBatch:release
   function lurek.quit() if batch then batch:release() end end
 end
 
---@api-stub: SpriteBatch:typeOf
+--@api-stub: LSpriteBatch:typeOf
 -- Returns the type name of this object.
 -- Boolean class check.
 do  -- SpriteBatch:typeOf
@@ -1378,7 +1378,7 @@ do  -- SpriteBatch:typeOf
   function lurek.init() batch = lurek.render.newSpriteBatch(lurek.render.newImage('img/tiles.png'), 64); if batch:typeOf('SpriteBatch') then lurek.log.debug('batch') end end
 end
 
---@api-stub: SpriteBatch:type
+--@api-stub: LSpriteBatch:type
 -- Returns the type name of this object.
 -- Returns 'SpriteBatch'.
 do  -- SpriteBatch:type
@@ -1388,7 +1388,7 @@ end
 
 -- Ä‚ËĂ˘â‚¬ĹĄĂ˘â€šÂ¬Ä‚ËĂ˘â‚¬ĹĄĂ˘â€šÂ¬ Mesh methods Ä‚ËĂ˘â‚¬ĹĄĂ˘â€šÂ¬Ä‚ËĂ˘â‚¬ĹĄĂ˘â€šÂ¬
 
---@api-stub: Mesh:getVertexCount
+--@api-stub: LMesh:getVertexCount
 -- Returns the number of vertices in this mesh.
 -- Number of vertices in the mesh; useful as a sanity check.
 do  -- Mesh:getVertexCount
@@ -1396,7 +1396,7 @@ do  -- Mesh:getVertexCount
   function lurek.init() m = lurek.render.newMesh({ {0,0,0,0,1,1,1,1}, {64,0,1,0,1,1,1,1}, {32,64,0.5,1,1,1,1,1} }); lurek.log.debug('verts=' .. m:getVertexCount()) end
 end
 
---@api-stub: Mesh:getVertex
+--@api-stub: LMesh:getVertex
 -- Returns vertex data at the given 1-based index.
 -- Read one vertex by index; returns a table {x, y, u, v, r, g, b, a}.
 do  -- Mesh:getVertex
@@ -1407,7 +1407,7 @@ do  -- Mesh:getVertex
   end
 end
 
---@api-stub: Mesh:setVertex
+--@api-stub: LMesh:setVertex
 -- Sets vertex data at the given 1-based index.
 -- Mutate one vertex in place; useful for per-frame ribbon morphing.
 do  -- Mesh:setVertex
@@ -1416,7 +1416,7 @@ do  -- Mesh:setVertex
   function lurek.process(dt) if m then m:setVertex(1, {0, 0, 0, 0, 1, 1, 1, 1}) end end
 end
 
---@api-stub: Mesh:setTexture
+--@api-stub: LMesh:setTexture
 -- Assigns a texture to this mesh.
 -- Bind an Image to sample from; pass nil to draw the mesh with vertex colors only.
 do  -- Mesh:setTexture
@@ -1427,7 +1427,7 @@ do  -- Mesh:setTexture
   end
 end
 
---@api-stub: Mesh:release
+--@api-stub: LMesh:release
 -- Releases the GPU mesh resource, freeing VRAM immediately.
 -- Free GPU vertex buffers immediately.
 do  -- Mesh:release
@@ -1436,7 +1436,7 @@ do  -- Mesh:release
   function lurek.quit() if m then m:release() end end
 end
 
---@api-stub: Mesh:typeOf
+--@api-stub: LMesh:typeOf
 -- Returns the type name of this object.
 -- Boolean class check.
 do  -- Mesh:typeOf
@@ -1444,7 +1444,7 @@ do  -- Mesh:typeOf
   function lurek.init() m = lurek.render.newMesh({ {0,0,0,0,1,1,1,1}, {64,0,1,0,1,1,1,1}, {32,64,0.5,1,1,1,1,1} }); if m:typeOf('Mesh') then lurek.log.debug('mesh') end end
 end
 
---@api-stub: Mesh:type
+--@api-stub: LMesh:type
 -- Returns the type name of this object.
 -- Returns 'Mesh'.
 do  -- Mesh:type
@@ -1454,7 +1454,7 @@ end
 
 -- Ä‚ËĂ˘â‚¬ĹĄĂ˘â€šÂ¬Ä‚ËĂ˘â‚¬ĹĄĂ˘â€šÂ¬ Shader methods Ä‚ËĂ˘â‚¬ĹĄĂ˘â€šÂ¬Ä‚ËĂ˘â‚¬ĹĄĂ˘â€šÂ¬
 
---@api-stub: Shader:send
+--@api-stub: LShader:send
 -- Sends a uniform value to this shader.
 -- Set a uniform by name; supports number, vec2/3/4, matrix table, color table, etc.
 do  -- Shader:send
@@ -1463,7 +1463,7 @@ do  -- Shader:send
   function lurek.process(dt) if sh then sh:send('time', lurek.time and lurek.time.getTime() or 0.0) end end
 end
 
---@api-stub: Shader:hasUniform
+--@api-stub: LShader:hasUniform
 -- Returns whether this shader has a uniform with the given name.
 -- Probe whether a uniform exists before sending; useful for optional shader inputs.
 do  -- Shader:hasUniform
@@ -1471,7 +1471,7 @@ do  -- Shader:hasUniform
   function lurek.init() sh = lurek.render.newShader('// shader source'); if sh:hasUniform('time') then sh:send('time', 0.0) end end
 end
 
---@api-stub: Shader:release
+--@api-stub: LShader:release
 -- Releases the compiled GPU shader, freeing VRAM and shader slots.
 -- Free the GPU pipeline; call when unloading a shader-heavy effect.
 do  -- Shader:release
@@ -1480,7 +1480,7 @@ do  -- Shader:release
   function lurek.quit() if sh then sh:release() end end
 end
 
---@api-stub: Shader:typeOf
+--@api-stub: LShader:typeOf
 -- Returns the type name of this object.
 -- Boolean class check.
 do  -- Shader:typeOf
@@ -1488,7 +1488,7 @@ do  -- Shader:typeOf
   function lurek.init() sh = lurek.render.newShader('// shader source'); if sh:typeOf('Shader') then lurek.log.debug('shader') end end
 end
 
---@api-stub: Shader:type
+--@api-stub: LShader:type
 -- Returns the type name of this object.
 -- Returns 'Shader'.
 do  -- Shader:type
@@ -1498,7 +1498,7 @@ end
 
 -- Ä‚ËĂ˘â‚¬ĹĄĂ˘â€šÂ¬Ä‚ËĂ˘â‚¬ĹĄĂ˘â€šÂ¬ Quad methods Ä‚ËĂ˘â‚¬ĹĄĂ˘â€šÂ¬Ä‚ËĂ˘â‚¬ĹĄĂ˘â€šÂ¬
 
---@api-stub: Quad:getViewport
+--@api-stub: LQuad:getViewport
 -- Returns the quad viewport rectangle.
 -- Returns x, y, w, h of the sub-region defined at construction.
 do  -- Quad:getViewport
@@ -1506,7 +1506,7 @@ do  -- Quad:getViewport
   function lurek.init() q = lurek.render.newQuad(0, 0, 32, 32, 256, 256); local x, y, w, h = q:getViewport(); lurek.log.debug(x .. ',' .. y .. ',' .. w .. ',' .. h) end
 end
 
---@api-stub: Quad:getTextureDimensions
+--@api-stub: LQuad:getTextureDimensions
 -- Returns the reference texture dimensions.
 -- Returns the source texture size that the Quad was created against.
 do  -- Quad:getTextureDimensions
@@ -1514,7 +1514,7 @@ do  -- Quad:getTextureDimensions
   function lurek.init() q = lurek.render.newQuad(0, 0, 32, 32, 256, 256); local sw, sh = q:getTextureDimensions(); lurek.log.debug(sw .. 'x' .. sh) end
 end
 
---@api-stub: Quad:typeOf
+--@api-stub: LQuad:typeOf
 -- Returns the type name of this object.
 -- Boolean class check.
 do  -- Quad:typeOf
@@ -1522,7 +1522,7 @@ do  -- Quad:typeOf
   function lurek.init() q = lurek.render.newQuad(0, 0, 32, 32, 256, 256); if q:typeOf('Quad') then lurek.log.debug('quad') end end
 end
 
---@api-stub: Quad:type
+--@api-stub: LQuad:type
 -- Returns the type name of this object.
 -- Returns 'Quad'.
 do  -- Quad:type
@@ -1532,7 +1532,7 @@ end
 
 -- Ä‚ËĂ˘â‚¬ĹĄĂ˘â€šÂ¬Ä‚ËĂ˘â‚¬ĹĄĂ˘â€šÂ¬ Shape methods Ä‚ËĂ˘â‚¬ĹĄĂ˘â€šÂ¬Ä‚ËĂ˘â‚¬ĹĄĂ˘â€šÂ¬
 
---@api-stub: Shape:getCommandCount
+--@api-stub: LShape:getCommandCount
 -- Returns the number of drawing commands currently stored.
 -- Number of recorded sub-commands; sanity check before flushing.
 do  -- Shape:getCommandCount
@@ -1540,7 +1540,7 @@ do  -- Shape:getCommandCount
   function lurek.init() s = lurek.render.newShape(); s:line(0, 0, 50, 50); lurek.log.debug('cmds=' .. s:getCommandCount()) end
 end
 
---@api-stub: Shape:clear
+--@api-stub: LShape:clear
 -- Removes all commands and resets the shape to empty.
 -- Wipe recorded commands; call before re-recording at the start of a frame.
 do  -- Shape:clear
@@ -1549,7 +1549,7 @@ do  -- Shape:clear
   function lurek.process(dt) if s then s:clear(); s:line(0, 0, 100 * dt, 50) end end
 end
 
---@api-stub: Shape:setLineWidth
+--@api-stub: LShape:setLineWidth
 -- Sets the stroke width for subsequent outlined primitives.
 -- Width applied to subsequent line/polyline commands recorded into this shape.
 do  -- Shape:setLineWidth
@@ -1557,7 +1557,7 @@ do  -- Shape:setLineWidth
   function lurek.init() s = lurek.render.newShape(); s:setLineWidth(3); s:line(0, 0, 80, 0) end
 end
 
---@api-stub: Shape:line
+--@api-stub: LShape:line
 -- Queues a line segment command.
 -- Append a line segment; each call adds one segment to the shape.
 do  -- Shape:line
@@ -1565,7 +1565,7 @@ do  -- Shape:line
   function lurek.init() s = lurek.render.newShape(); s:line(0, 0, 100, 0); s:line(100, 0, 100, 100) end
 end
 
---@api-stub: Shape:polyline
+--@api-stub: LShape:polyline
 -- Queues a polyline command from variadic (x, y) coordinate pairs.
 -- Append a connected polyline from a flat coord list.
 do  -- Shape:polyline
@@ -1573,7 +1573,7 @@ do  -- Shape:polyline
   function lurek.init() s = lurek.render.newShape(); s:polyline(0, 0, 50, 80, 100, 20, 150, 100) end
 end
 
---@api-stub: Shape:typeOf
+--@api-stub: LShape:typeOf
 -- Returns true if the given type name matches this object's type or any parent type.
 -- Boolean class check.
 do  -- Shape:typeOf
@@ -1581,7 +1581,7 @@ do  -- Shape:typeOf
   function lurek.init() s = lurek.render.newShape(); if s:typeOf('Shape') then lurek.log.debug('shape') end end
 end
 
---@api-stub: Shape:type
+--@api-stub: LShape:type
 -- Returns the type name of this object.
 -- Returns 'Shape'.
 do  -- Shape:type
@@ -1591,7 +1591,7 @@ end
 
 -- Ä‚ËĂ˘â‚¬ĹĄĂ˘â€šÂ¬Ä‚ËĂ˘â‚¬ĹĄĂ˘â€šÂ¬ DrawLayer methods Ä‚ËĂ˘â‚¬ĹĄĂ˘â€šÂ¬Ä‚ËĂ˘â‚¬ĹĄĂ˘â€šÂ¬
 
---@api-stub: DrawLayer:queue
+--@api-stub: LDrawLayer:queue
 -- Queues a draw callback at the given z-order.
 -- Append a draw command (e.g. 'rect' / 'circle' / 'image') with positional args.
 do  -- DrawLayer:queue
@@ -1600,7 +1600,7 @@ do  -- DrawLayer:queue
   function lurek.draw() dl:queue('rect', 'fill', 50, 50, 100, 60); dl:flush() end
 end
 
---@api-stub: DrawLayer:flush
+--@api-stub: LDrawLayer:flush
 -- Sorts and calls all queued callbacks, then empties the queue.
 -- Emit all queued draws in insertion (or sort) order, then internally clears the queue.
 do  -- DrawLayer:flush
@@ -1609,7 +1609,7 @@ do  -- DrawLayer:flush
   function lurek.draw() dl:queue('circle', 'fill', 100, 100, 16); dl:flush() end
 end
 
---@api-stub: DrawLayer:clear
+--@api-stub: LDrawLayer:clear
 -- Removes all queued callbacks without calling them.
 -- Drop all queued draws without flushing (e.g. when a frame is skipped).
 do  -- DrawLayer:clear
@@ -1618,7 +1618,7 @@ do  -- DrawLayer:clear
   function lurek.process(dt) dl:clear() end
 end
 
---@api-stub: DrawLayer:getCount
+--@api-stub: LDrawLayer:getCount
 -- Returns the number of queued callbacks.
 -- Number of queued draws; sample for HUD debug or budget enforcement.
 do  -- DrawLayer:getCount
@@ -1626,7 +1626,7 @@ do  -- DrawLayer:getCount
   function lurek.init() dl = lurek.render.newDrawLayer(); dl:queue('rect', 'fill', 0, 0, 8, 8); lurek.log.debug('queued=' .. dl:getCount()) end
 end
 
---@api-stub: DrawLayer:type
+--@api-stub: LDrawLayer:type
 -- Returns the string type identifier of this draw layer (e.g.
 -- Returns 'DrawLayer'.
 do  -- DrawLayer:type
@@ -1634,7 +1634,7 @@ do  -- DrawLayer:type
   function lurek.init() dl = lurek.render.newDrawLayer(); lurek.log.debug(dl:type()) end
 end
 
---@api-stub: DrawLayer:typeOf
+--@api-stub: LDrawLayer:typeOf
 -- Returns true if this object is an instance of the given type name.
 -- Boolean class check.
 do  -- DrawLayer:typeOf
@@ -1643,7 +1643,7 @@ do  -- DrawLayer:typeOf
 end
 
 
---@api-stub: SpriteBatch:add
+--@api-stub: LSpriteBatch:add
 -- Adds a quad to the sprite batch at the given position and optional transform.
 -- Batching many sprites in one draw call reduces GPU command overhead.
 do  -- SpriteBatch:add
@@ -1658,7 +1658,7 @@ do  -- SpriteBatch:add
   end
 end
 
---@api-stub: Shape:arc
+--@api-stub: LShape:arc
 -- Adds an arc segment to the Shape command list.
 -- Useful for progress bars, pie charts, or radar sweeps.
 do  -- Shape:arc
@@ -1669,7 +1669,7 @@ do  -- Shape:arc
   lurek.log.info("arc shape drawn", "render")
 end
 
---@api-stub: ImageData:blit
+--@api-stub: LImageData:blit
 -- Copies pixels from a source ImageData onto this one at destination offset.
 -- Pixels outside the destination boundary are clipped silently.
 do  -- ImageData:blit
@@ -1677,7 +1677,7 @@ do  -- ImageData:blit
   lurek.log.info("ImageData blit available", "render")
 end
 
---@api-stub: Shape:circle
+--@api-stub: LShape:circle
 -- Adds a circle to the Shape command list at (cx, cy) with the given radius.
 -- Pass "fill" or "line" as the first argument for solid or outlined circle.
 do  -- Shape:circle
@@ -1688,7 +1688,7 @@ do  -- Shape:circle
   lurek.log.info("circle shape drawn", "render")
 end
 
---@api-stub: NineSlice:draw
+--@api-stub: LNineSlice:draw
 -- Draws the nine-slice image at (x, y) stretched to (w, h) with intact corners.
 -- Use for dialog boxes, HUD panels, and button backgrounds.
 do  -- NineSlice:draw
@@ -1697,7 +1697,7 @@ do  -- NineSlice:draw
   lurek.log.info("nine-slice drawn", "render")
 end
 
---@api-stub: Shape:draw
+--@api-stub: LShape:draw
 -- Issues all queued Shape draw commands at an optional (ox, oy) world offset.
 -- Call inside lurek.render() after building the command list with arc/circle/etc.
 do  -- Shape:draw
@@ -1708,7 +1708,7 @@ do  -- Shape:draw
   lurek.log.info("shape drawn", "render")
 end
 
---@api-stub: Shape:ellipse
+--@api-stub: LShape:ellipse
 -- Adds an ellipse to the Shape command list with given semi-axes.
 -- radiusX and radiusY control the horizontal and vertical extents.
 do  -- Shape:ellipse
@@ -1719,14 +1719,14 @@ do  -- Shape:ellipse
   lurek.log.info("ellipse shape drawn", "render")
 end
 
---@api-stub: ImageData:getRegion
+--@api-stub: LImageData:getRegion
 -- Returns a new ImageData containing a rectangular sub-region of this image.
 -- Useful for atlas slicing or extracting tiles for further processing.
 do  -- ImageData:getRegion
   lurek.log.info("ImageData:getRegion available for atlas slicing", "render")
 end
 
---@api-stub: Shape:polygon
+--@api-stub: LShape:polygon
 -- Adds a filled or outlined polygon to the Shape command list.
 -- vertices is a flat table of alternating x,y pairs in order.
 do  -- Shape:polygon
@@ -1737,7 +1737,7 @@ do  -- Shape:polygon
   lurek.log.info("polygon shape drawn", "render")
 end
 
---@api-stub: Shape:rectangle
+--@api-stub: LShape:rectangle
 -- Adds a rectangle to the Shape command list at (x, y) with given dimensions.
 -- First argument is "fill" or "line"; line mode draws only the outline.
 do  -- Shape:rectangle
@@ -1748,7 +1748,7 @@ do  -- Shape:rectangle
   lurek.log.info("rectangle shape drawn", "render")
 end
 
---@api-stub: Shape:roundedRectangle
+--@api-stub: LShape:roundedRectangle
 -- Adds a rounded-corner rectangle to the Shape command list.
 -- rx and ry are the horizontal and vertical corner radii in pixels.
 do  -- Shape:roundedRectangle
@@ -1759,7 +1759,7 @@ do  -- Shape:roundedRectangle
   lurek.log.info("rounded rect drawn", "render")
 end
 
---@api-stub: Shape:setColor
+--@api-stub: LShape:setColor
 -- Sets the active draw colour for subsequent Shape commands.
 -- Must be called before each arc/circle/etc. that needs a different colour.
 do  -- Shape:setColor
@@ -1770,7 +1770,7 @@ do  -- Shape:setColor
   lurek.log.info("shape colour set", "render")
 end
 
---@api-stub: Quad:setViewport
+--@api-stub: LQuad:setViewport
 -- Updates the source rectangle of an existing Quad.
 -- Use to change frame in an animation atlas without creating a new Quad.
 do  -- Quad:setViewport
@@ -1780,7 +1780,7 @@ do  -- Quad:setViewport
   lurek.log.info("quad viewport updated", "render")
 end
 
---@api-stub: Shape:triangle
+--@api-stub: LShape:triangle
 -- Adds a triangle to the Shape command list with three vertex positions.
 -- Pass three (x, y) pairs; "fill" or "line" controls rendering style.
 do  -- Shape:triangle
@@ -1803,20 +1803,6 @@ end
 -- ImageData methods
 -- -----------------------------------------------------------------------------
 
--- ---- Stub: ImageData:blit ------------------------------------------------
---@api-stub: ImageData:blit
--- Blits the source ImageData onto this image at (dst_x, dst_y) using Porter-Duff `over`.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- imageData_stub:blit(src_ud, dst_x, dst_y)
--- (replace imageData_stub with your real ImageData instance above)
-
--- ---- Stub: ImageData:getRegion -------------------------------------------
---@api-stub: ImageData:getRegion
--- Returns a copy of the rectangular sub-region as a new ImageData.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- imageData_stub:getRegion(0.0, 0.0, 64.0, 64.0)
--- (replace imageData_stub with your real ImageData instance above)
-
 -- =============================================================================
 -- STUBS: 2 uncovered lurek.render API item(s)
 -- Generated by tools/audit/example_add_missing.py
@@ -1829,20 +1815,6 @@ end
 -- LImageData methods
 -- -----------------------------------------------------------------------------
 
--- ---- Stub: LImageData:blit -----------------------------------------------
---@api-stub: LImageData:blit
--- Blits the source ImageData onto this image at (dst_x, dst_y) using Porter-Duff `over`.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lImageData_stub:blit(src_ud, dst_x, dst_y)
--- (replace lImageData_stub with your real LImageData instance above)
-
--- ---- Stub: LImageData:getRegion ------------------------------------------
---@api-stub: LImageData:getRegion
--- Returns a copy of the rectangular sub-region as a new ImageData.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lImageData_stub:getRegion(0.0, 0.0, 64.0, 64.0)
--- (replace lImageData_stub with your real LImageData instance above)
-
 -- =============================================================================
 -- STUBS: 80 uncovered lurek.render API item(s)
 -- Generated by tools/audit/example_add_missing.py
@@ -1851,606 +1823,4 @@ end
 -- The final committed file must contain ZERO --@api-stub: lines.
 -- =============================================================================
 
--- -----------------------------------------------------------------------------
--- LCanvas methods
--- -----------------------------------------------------------------------------
 
--- ---- Stub: LCanvas:getWidth ----------------------------------------------
---@api-stub: LCanvas:getWidth
--- Returns the width of this canvas in pixels.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lCanvas_stub:getWidth()  -- -> integer
--- (replace lCanvas_stub with your real LCanvas instance above)
-
--- ---- Stub: LCanvas:getHeight ---------------------------------------------
---@api-stub: LCanvas:getHeight
--- Returns the height of this canvas in pixels.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lCanvas_stub:getHeight()  -- -> integer
--- (replace lCanvas_stub with your real LCanvas instance above)
-
--- ---- Stub: LCanvas:getDimensions -----------------------------------------
---@api-stub: LCanvas:getDimensions
--- Returns width and height of this canvas.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lCanvas_stub:getDimensions()  -- -> integer, integer
--- (replace lCanvas_stub with your real LCanvas instance above)
-
--- ---- Stub: LCanvas:release -----------------------------------------------
---@api-stub: LCanvas:release
--- Releases GPU framebuffer memory for this canvas.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lCanvas_stub:release()  -- -> boolean
--- (replace lCanvas_stub with your real LCanvas instance above)
-
--- ---- Stub: LCanvas:typeOf ------------------------------------------------
---@api-stub: LCanvas:typeOf
--- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lCanvas_stub:typeOf()  -- -> string
--- (replace lCanvas_stub with your real LCanvas instance above)
-
--- ---- Stub: LCanvas:type --------------------------------------------------
---@api-stub: LCanvas:type
--- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lCanvas_stub:type()  -- -> string
--- (replace lCanvas_stub with your real LCanvas instance above)
-
--- -----------------------------------------------------------------------------
--- LDrawLayer methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LDrawLayer:queue ----------------------------------------------
---@api-stub: LDrawLayer:queue
--- Queues a draw callback at the given z-order.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDrawLayer_stub:queue(0, f)
--- (replace lDrawLayer_stub with your real LDrawLayer instance above)
-
--- ---- Stub: LDrawLayer:flush ----------------------------------------------
---@api-stub: LDrawLayer:flush
--- Sorts and calls all queued callbacks, then empties the queue.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDrawLayer_stub:flush()
--- (replace lDrawLayer_stub with your real LDrawLayer instance above)
-
--- ---- Stub: LDrawLayer:clear ----------------------------------------------
---@api-stub: LDrawLayer:clear
--- Removes all queued callbacks without calling them.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDrawLayer_stub:clear()  -- -> void
--- (replace lDrawLayer_stub with your real LDrawLayer instance above)
-
--- ---- Stub: LDrawLayer:getCount -------------------------------------------
---@api-stub: LDrawLayer:getCount
--- Returns the number of queued callbacks.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDrawLayer_stub:getCount()  -- -> number
--- (replace lDrawLayer_stub with your real LDrawLayer instance above)
-
--- ---- Stub: LDrawLayer:type -----------------------------------------------
---@api-stub: LDrawLayer:type
--- Returns the string type identifier of this draw layer (e.g. `'sprite'`).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDrawLayer_stub:type()  -- -> string
--- (replace lDrawLayer_stub with your real LDrawLayer instance above)
-
--- ---- Stub: LDrawLayer:typeOf ---------------------------------------------
---@api-stub: LDrawLayer:typeOf
--- Returns true if this object is an instance of the given type name.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDrawLayer_stub:typeOf("hero")  -- -> boolean
--- (replace lDrawLayer_stub with your real LDrawLayer instance above)
-
--- -----------------------------------------------------------------------------
--- LFont methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LFont:getWidth ------------------------------------------------
---@api-stub: LFont:getWidth
--- Returns the rendered width of the given text string.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lFont_stub:getWidth("Hello, world!")  -- -> number
--- (replace lFont_stub with your real LFont instance above)
-
--- ---- Stub: LFont:getHeight -----------------------------------------------
---@api-stub: LFont:getHeight
--- Returns the line height of this font.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lFont_stub:getHeight()  -- -> number
--- (replace lFont_stub with your real LFont instance above)
-
--- ---- Stub: LFont:getLineHeight -------------------------------------------
---@api-stub: LFont:getLineHeight
--- Returns the line height multiplier of this font.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lFont_stub:getLineHeight()  -- -> number
--- (replace lFont_stub with your real LFont instance above)
-
--- ---- Stub: LFont:setLineHeight -------------------------------------------
---@api-stub: LFont:setLineHeight
--- Sets the line height multiplier for this font.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lFont_stub:setLineHeight(256)
--- (replace lFont_stub with your real LFont instance above)
-
--- ---- Stub: LFont:getAscent -----------------------------------------------
---@api-stub: LFont:getAscent
--- Returns the ascent of this font in pixels.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lFont_stub:getAscent()  -- -> number
--- (replace lFont_stub with your real LFont instance above)
-
--- ---- Stub: LFont:getDescent ----------------------------------------------
---@api-stub: LFont:getDescent
--- Returns the descent of this font in pixels.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lFont_stub:getDescent()  -- -> number
--- (replace lFont_stub with your real LFont instance above)
-
--- ---- Stub: LFont:getWrap -------------------------------------------------
---@api-stub: LFont:getWrap
--- Wraps text to the given width and returns the lines.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lFont_stub:getWrap("Hello, world!", limit)
--- (replace lFont_stub with your real LFont instance above)
-
--- ---- Stub: LFont:release -------------------------------------------------
---@api-stub: LFont:release
--- Releases this font and frees its atlas memory.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lFont_stub:release()  -- -> boolean
--- (replace lFont_stub with your real LFont instance above)
-
--- ---- Stub: LFont:typeOf --------------------------------------------------
---@api-stub: LFont:typeOf
--- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lFont_stub:typeOf()  -- -> string
--- (replace lFont_stub with your real LFont instance above)
-
--- ---- Stub: LFont:type ----------------------------------------------------
---@api-stub: LFont:type
--- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lFont_stub:type()  -- -> string
--- (replace lFont_stub with your real LFont instance above)
-
--- -----------------------------------------------------------------------------
--- LImage methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LImage:getWidth -----------------------------------------------
---@api-stub: LImage:getWidth
--- Returns the width of this image in pixels.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lImage_stub:getWidth()  -- -> integer
--- (replace lImage_stub with your real LImage instance above)
-
--- ---- Stub: LImage:getHeight ----------------------------------------------
---@api-stub: LImage:getHeight
--- Returns the height of this image in pixels.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lImage_stub:getHeight()  -- -> integer
--- (replace lImage_stub with your real LImage instance above)
-
--- ---- Stub: LImage:getDimensions ------------------------------------------
---@api-stub: LImage:getDimensions
--- Returns width and height of this image.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lImage_stub:getDimensions()  -- -> integer, integer
--- (replace lImage_stub with your real LImage instance above)
-
--- ---- Stub: LImage:release ------------------------------------------------
---@api-stub: LImage:release
--- Releases the GPU texture memory for this image.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lImage_stub:release()  -- -> boolean
--- (replace lImage_stub with your real LImage instance above)
-
--- ---- Stub: LImage:typeOf -------------------------------------------------
---@api-stub: LImage:typeOf
--- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lImage_stub:typeOf()  -- -> string
--- (replace lImage_stub with your real LImage instance above)
-
--- ---- Stub: LImage:type ---------------------------------------------------
---@api-stub: LImage:type
--- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lImage_stub:type()  -- -> string
--- (replace lImage_stub with your real LImage instance above)
-
--- -----------------------------------------------------------------------------
--- LImageData methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LImageData:getWidth -------------------------------------------
---@api-stub: LImageData:getWidth
--- Returns the pixel width of this image buffer.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lImageData_stub:getWidth()  -- -> integer
--- (replace lImageData_stub with your real LImageData instance above)
-
--- ---- Stub: LImageData:getHeight ------------------------------------------
---@api-stub: LImageData:getHeight
--- Returns the pixel height of this image buffer.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lImageData_stub:getHeight()  -- -> integer
--- (replace lImageData_stub with your real LImageData instance above)
-
--- ---- Stub: LImageData:resize ---------------------------------------------
---@api-stub: LImageData:resize
--- Returns a new ImageData scaled to the given dimensions using bilinear interpolation.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lImageData_stub:resize(64.0, 64.0)
--- (replace lImageData_stub with your real LImageData instance above)
-
--- ---- Stub: LImageData:diff -----------------------------------------------
---@api-stub: LImageData:diff
--- Returns the sum of absolute per-channel differences between this image and `other`.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lImageData_stub:diff(other_ud)  -- -> integer
--- (replace lImageData_stub with your real LImageData instance above)
-
--- ---- Stub: LImageData:mapPixels ------------------------------------------
---@api-stub: LImageData:mapPixels
--- Applies a Lua function to every pixel in-place.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lImageData_stub:mapPixels(function() end)
--- (replace lImageData_stub with your real LImageData instance above)
-
--- ---- Stub: LImageData:type -----------------------------------------------
---@api-stub: LImageData:type
--- Returns the type name "ImageData".
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lImageData_stub:type()  -- -> string
--- (replace lImageData_stub with your real LImageData instance above)
-
--- ---- Stub: LImageData:typeOf ---------------------------------------------
---@api-stub: LImageData:typeOf
--- Returns true when the given name matches "ImageData" or a parent type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lImageData_stub:typeOf("hero")  -- -> boolean
--- (replace lImageData_stub with your real LImageData instance above)
-
--- -----------------------------------------------------------------------------
--- LMesh methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LMesh:getVertexCount ------------------------------------------
---@api-stub: LMesh:getVertexCount
--- Returns the number of vertices in this mesh.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lMesh_stub:getVertexCount()  -- -> integer
--- (replace lMesh_stub with your real LMesh instance above)
-
--- ---- Stub: LMesh:getVertex -----------------------------------------------
---@api-stub: LMesh:getVertex
--- Returns vertex data at the given 1-based index.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lMesh_stub:getVertex(1)
--- (replace lMesh_stub with your real LMesh instance above)
-
--- ---- Stub: LMesh:setVertex -----------------------------------------------
---@api-stub: LMesh:setVertex
--- Sets vertex data at the given 1-based index.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lMesh_stub:setVertex(1, data)
--- (replace lMesh_stub with your real LMesh instance above)
-
--- ---- Stub: LMesh:setTexture ----------------------------------------------
---@api-stub: LMesh:setTexture
--- Assigns a texture to this mesh.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lMesh_stub:setTexture([ud])
--- (replace lMesh_stub with your real LMesh instance above)
-
--- ---- Stub: LMesh:release -------------------------------------------------
---@api-stub: LMesh:release
--- Releases the GPU mesh resource, freeing VRAM immediately.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lMesh_stub:release()  -- -> boolean
--- (replace lMesh_stub with your real LMesh instance above)
-
--- ---- Stub: LMesh:typeOf --------------------------------------------------
---@api-stub: LMesh:typeOf
--- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lMesh_stub:typeOf()  -- -> string
--- (replace lMesh_stub with your real LMesh instance above)
-
--- ---- Stub: LMesh:type ----------------------------------------------------
---@api-stub: LMesh:type
--- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lMesh_stub:type()  -- -> string
--- (replace lMesh_stub with your real LMesh instance above)
-
--- -----------------------------------------------------------------------------
--- LNineSlice methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LNineSlice:getInsets ------------------------------------------
---@api-stub: LNineSlice:getInsets
--- Returns the four inset values as (top, right, bottom, left).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lNineSlice_stub:getInsets()  -- -> number, number, number, number
--- (replace lNineSlice_stub with your real LNineSlice instance above)
-
--- ---- Stub: LNineSlice:getTextureSize -------------------------------------
---@api-stub: LNineSlice:getTextureSize
--- Returns the width and height of the source texture.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lNineSlice_stub:getTextureSize()  -- -> integer, integer
--- (replace lNineSlice_stub with your real LNineSlice instance above)
-
--- ---- Stub: LNineSlice:draw -----------------------------------------------
---@api-stub: LNineSlice:draw
--- Compatibility stub: queuing handled by lurek.graphic.drawNineSlice.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lNineSlice_stub:draw(0.0, 0.0, 64.0, 64.0)
--- (replace lNineSlice_stub with your real LNineSlice instance above)
-
--- ---- Stub: LNineSlice:type -----------------------------------------------
---@api-stub: LNineSlice:type
--- Returns the type name "NineSlice".
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lNineSlice_stub:type()  -- -> string
--- (replace lNineSlice_stub with your real LNineSlice instance above)
-
--- ---- Stub: LNineSlice:typeOf ---------------------------------------------
---@api-stub: LNineSlice:typeOf
--- Returns true when the given name matches "NineSlice" or a parent type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lNineSlice_stub:typeOf("hero")  -- -> boolean
--- (replace lNineSlice_stub with your real LNineSlice instance above)
-
--- -----------------------------------------------------------------------------
--- LQuad methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LQuad:getViewport ---------------------------------------------
---@api-stub: LQuad:getViewport
--- Returns the quad viewport rectangle.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lQuad_stub:getViewport()  -- -> number, number, number, number
--- (replace lQuad_stub with your real LQuad instance above)
-
--- ---- Stub: LQuad:setViewport ---------------------------------------------
---@api-stub: LQuad:setViewport
--- Sets the quad viewport rectangle.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lQuad_stub:setViewport(0.0, 0.0, 64.0, 64.0)
--- (replace lQuad_stub with your real LQuad instance above)
-
--- ---- Stub: LQuad:getTextureDimensions ------------------------------------
---@api-stub: LQuad:getTextureDimensions
--- Returns the reference texture dimensions.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lQuad_stub:getTextureDimensions()  -- -> number, number
--- (replace lQuad_stub with your real LQuad instance above)
-
--- ---- Stub: LQuad:typeOf --------------------------------------------------
---@api-stub: LQuad:typeOf
--- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lQuad_stub:typeOf()  -- -> string
--- (replace lQuad_stub with your real LQuad instance above)
-
--- ---- Stub: LQuad:type ----------------------------------------------------
---@api-stub: LQuad:type
--- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lQuad_stub:type()  -- -> string
--- (replace lQuad_stub with your real LQuad instance above)
-
--- -----------------------------------------------------------------------------
--- LShader methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LShader:send --------------------------------------------------
---@api-stub: LShader:send
--- Sends a uniform value to this shader.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lShader_stub:send("hero", 42)
--- (replace lShader_stub with your real LShader instance above)
-
--- ---- Stub: LShader:hasUniform --------------------------------------------
---@api-stub: LShader:hasUniform
--- Returns whether this shader has a uniform with the given name.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lShader_stub:hasUniform("hero")  -- -> boolean
--- (replace lShader_stub with your real LShader instance above)
-
--- ---- Stub: LShader:release -----------------------------------------------
---@api-stub: LShader:release
--- Releases the compiled GPU shader, freeing VRAM and shader slots.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lShader_stub:release()  -- -> boolean
--- (replace lShader_stub with your real LShader instance above)
-
--- ---- Stub: LShader:typeOf ------------------------------------------------
---@api-stub: LShader:typeOf
--- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lShader_stub:typeOf()  -- -> string
--- (replace lShader_stub with your real LShader instance above)
-
--- ---- Stub: LShader:type --------------------------------------------------
---@api-stub: LShader:type
--- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lShader_stub:type()  -- -> string
--- (replace lShader_stub with your real LShader instance above)
-
--- -----------------------------------------------------------------------------
--- LShape methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LShape:getCommandCount ----------------------------------------
---@api-stub: LShape:getCommandCount
--- Returns the number of drawing commands currently stored.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lShape_stub:getCommandCount()  -- -> integer
--- (replace lShape_stub with your real LShape instance above)
-
--- ---- Stub: LShape:clear --------------------------------------------------
---@api-stub: LShape:clear
--- Removes all commands and resets the shape to empty.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lShape_stub:clear()
--- (replace lShape_stub with your real LShape instance above)
-
--- ---- Stub: LShape:setColor -----------------------------------------------
---@api-stub: LShape:setColor
--- Sets the drawing color for subsequent primitives.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lShape_stub:setColor(1.0, 0.8, 0.2, [a])
--- (replace lShape_stub with your real LShape instance above)
-
--- ---- Stub: LShape:setLineWidth -------------------------------------------
---@api-stub: LShape:setLineWidth
--- Sets the stroke width for subsequent outlined primitives.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lShape_stub:setLineWidth(64.0)
--- (replace lShape_stub with your real LShape instance above)
-
--- ---- Stub: LShape:rectangle ----------------------------------------------
---@api-stub: LShape:rectangle
--- Queues a rectangle command.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lShape_stub:rectangle(mode, 0.0, 0.0, 64.0, 64.0)
--- (replace lShape_stub with your real LShape instance above)
-
--- ---- Stub: LShape:roundedRectangle ---------------------------------------
---@api-stub: LShape:roundedRectangle
--- Queues a rounded rectangle command.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lShape_stub:roundedRectangle(mode, 0.0, 0.0, 64.0, 64.0, rx, [ry])
--- (replace lShape_stub with your real LShape instance above)
-
--- ---- Stub: LShape:circle -------------------------------------------------
---@api-stub: LShape:circle
--- Queues a filled or outlined circle draw command onto this shape.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lShape_stub:circle(mode, 0.0, 0.0, 1.0)
--- (replace lShape_stub with your real LShape instance above)
-
--- ---- Stub: LShape:ellipse ------------------------------------------------
---@api-stub: LShape:ellipse
--- Queues an ellipse command.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lShape_stub:ellipse(mode, 0.0, 0.0, rx, ry)
--- (replace lShape_stub with your real LShape instance above)
-
--- ---- Stub: LShape:triangle -----------------------------------------------
---@api-stub: LShape:triangle
--- Queues a triangle command.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lShape_stub:triangle(mode, x1, y1, x2, y2, x3, y3)
--- (replace lShape_stub with your real LShape instance above)
-
--- ---- Stub: LShape:polygon ------------------------------------------------
---@api-stub: LShape:polygon
--- Queues a polygon command from variadic (x, y) coordinate pairs.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lShape_stub:polygon(mode, coords)
--- (replace lShape_stub with your real LShape instance above)
-
--- ---- Stub: LShape:line ---------------------------------------------------
---@api-stub: LShape:line
--- Queues a line segment command.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lShape_stub:line(x1, y1, x2, y2)
--- (replace lShape_stub with your real LShape instance above)
-
--- ---- Stub: LShape:polyline -----------------------------------------------
---@api-stub: LShape:polyline
--- Queues a polyline command from variadic (x, y) coordinate pairs.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lShape_stub:polyline()
--- (replace lShape_stub with your real LShape instance above)
-
--- ---- Stub: LShape:arc ----------------------------------------------------
---@api-stub: LShape:arc
--- Queues a filled or outlined arc draw command onto this shape.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lShape_stub:arc()
--- (replace lShape_stub with your real LShape instance above)
-
--- ---- Stub: LShape:draw ---------------------------------------------------
---@api-stub: LShape:draw
--- Queues a draw command for this shape at the given position.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lShape_stub:draw()
--- (replace lShape_stub with your real LShape instance above)
-
--- ---- Stub: LShape:typeOf -------------------------------------------------
---@api-stub: LShape:typeOf
--- Returns true if the given type name matches this object's type or any parent type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lShape_stub:typeOf("hero")  -- -> boolean
--- (replace lShape_stub with your real LShape instance above)
-
--- ---- Stub: LShape:type ---------------------------------------------------
---@api-stub: LShape:type
--- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lShape_stub:type()  -- -> string
--- (replace lShape_stub with your real LShape instance above)
-
--- -----------------------------------------------------------------------------
--- LSpriteBatch methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LSpriteBatch:add ----------------------------------------------
---@api-stub: LSpriteBatch:add
--- Adds a sprite entry to this batch.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSpriteBatch_stub:add()  -- -> integer?
--- (replace lSpriteBatch_stub with your real LSpriteBatch instance above)
-
--- ---- Stub: LSpriteBatch:clear --------------------------------------------
---@api-stub: LSpriteBatch:clear
--- Removes all sprites from this batch.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSpriteBatch_stub:clear()
--- (replace lSpriteBatch_stub with your real LSpriteBatch instance above)
-
--- ---- Stub: LSpriteBatch:getCount -----------------------------------------
---@api-stub: LSpriteBatch:getCount
--- Returns the number of sprites in this batch.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSpriteBatch_stub:getCount()  -- -> integer
--- (replace lSpriteBatch_stub with your real LSpriteBatch instance above)
-
--- ---- Stub: LSpriteBatch:getBufferSize ------------------------------------
---@api-stub: LSpriteBatch:getBufferSize
--- Returns the maximum capacity of this batch.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSpriteBatch_stub:getBufferSize()  -- -> integer
--- (replace lSpriteBatch_stub with your real LSpriteBatch instance above)
-
--- ---- Stub: LSpriteBatch:release ------------------------------------------
---@api-stub: LSpriteBatch:release
--- Releases this sprite batch.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSpriteBatch_stub:release()  -- -> boolean
--- (replace lSpriteBatch_stub with your real LSpriteBatch instance above)
-
--- ---- Stub: LSpriteBatch:typeOf -------------------------------------------
---@api-stub: LSpriteBatch:typeOf
--- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSpriteBatch_stub:typeOf()  -- -> string
--- (replace lSpriteBatch_stub with your real LSpriteBatch instance above)
-
--- ---- Stub: LSpriteBatch:type ---------------------------------------------
---@api-stub: LSpriteBatch:type
--- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSpriteBatch_stub:type()  -- -> string
--- (replace lSpriteBatch_stub with your real LSpriteBatch instance above)

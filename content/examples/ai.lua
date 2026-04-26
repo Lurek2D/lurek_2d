@@ -320,17 +320,13 @@ do  -- lurek.ai.newAILod
   local lod = lurek.ai.newAILod()
   if lod:shouldUpdate(1, 60) then lurek.log.debug("tier 1 update", "ai") end
 end
-
---@api-stub: AIWorld:addAgent
--- Registers a new named agent and returns its handle.
--- Returns an Agent userdata bound to this world; store it for setPosition/addTag/etc.
 do  -- AIWorld:addAgent
   local world = lurek.ai.newWorld()
   local guard = world:addAgent("guard_01")
   guard:setPosition(100, 100)
 end
 
---@api-stub: AIWorld:getAgent
+--@api-stub: LAIWorld:getAgent
 -- Returns the agent handle for the given name, or nil.
 -- Returns nil if the name is unknown; always check before dereferencing.
 do  -- AIWorld:getAgent
@@ -340,7 +336,7 @@ do  -- AIWorld:getAgent
   if a then a:addTag("alive") end
 end
 
---@api-stub: AIWorld:removeAgent
+--@api-stub: LAIWorld:removeAgent
 -- Removes an agent by its userdata handle.
 -- Pass the Agent handle (not the name string); the world drops it from scheduling immediately.
 do  -- AIWorld:removeAgent
@@ -349,7 +345,7 @@ do  -- AIWorld:removeAgent
   world:removeAgent(tmp)
 end
 
---@api-stub: AIWorld:getAgentCount
+--@api-stub: LAIWorld:getAgentCount
 -- Returns the number of registered agents.
 -- Useful for HUD readouts and crowd density caps; cheap O(1) lookup on the agent vector.
 do  -- AIWorld:getAgentCount
@@ -358,7 +354,7 @@ do  -- AIWorld:getAgentCount
   lurek.log.info("agents=" .. world:getAgentCount(), "ai")
 end
 
---@api-stub: AIWorld:getGlobalBlackboard
+--@api-stub: LAIWorld:getGlobalBlackboard
 -- Returns a snapshot of the world-level blackboard.
 -- Snapshot of the world-level shared blackboard; mutate it for cross-agent state like alarm levels.
 do  -- AIWorld:getGlobalBlackboard
@@ -367,7 +363,7 @@ do  -- AIWorld:getGlobalBlackboard
   bb:setNumber("alarm", 0.0)
 end
 
---@api-stub: AIWorld:update
+--@api-stub: LAIWorld:update
 -- Advances all agents by dt seconds.
 -- Call once per frame from lurek.process; ticks every agent's FSM/BT/steering in one go.
 do  -- AIWorld:update
@@ -376,7 +372,7 @@ do  -- AIWorld:update
   function lurek.process(dt) world:update(dt) end
 end
 
---@api-stub: AIWorld:type
+--@api-stub: LAIWorld:type
 -- Returns the type name of this object.
 -- Returns the literal string "AIWorld"; useful for runtime type guards in generic helpers.
 do  -- AIWorld:type
@@ -384,7 +380,7 @@ do  -- AIWorld:type
   if world:type() == "AIWorld" then lurek.log.debug("got world", "ai") end
 end
 
---@api-stub: AIWorld:typeOf
+--@api-stub: LAIWorld:typeOf
 -- Returns true if this object is of the given type.
 -- Both the exact type and "Object" return true; everything in lurek.ai inherits the Object root.
 do  -- AIWorld:typeOf
@@ -392,7 +388,7 @@ do  -- AIWorld:typeOf
   if world:typeOf("Object") then lurek.log.debug("inherits Object", "ai") end
 end
 
---@api-stub: Agent:getName
+--@api-stub: LAgent:getName
 -- Returns the agent's registered name.
 -- Returns the registered name string; use it as a stable id when serialising or logging.
 do  -- Agent:getName
@@ -402,7 +398,7 @@ do  -- Agent:getName
   lurek.log.debug("agent=" .. name, "ai")
 end
 
---@api-stub: Agent:setPosition
+--@api-stub: LAgent:setPosition
 -- Sets the agent's world-space position.
 -- World-space pixels; pair with setVelocity each tick if you are simulating movement manually.
 do  -- Agent:setPosition
@@ -411,7 +407,7 @@ do  -- Agent:setPosition
   agent:setPosition(320, 240)
 end
 
---@api-stub: Agent:getPosition
+--@api-stub: LAgent:getPosition
 -- Returns the agent's current position.
 -- Returns two values (x, y); destructure with multi-assign to avoid an extra table allocation.
 do  -- Agent:getPosition
@@ -422,7 +418,7 @@ do  -- Agent:getPosition
   lurek.log.debug("pos=" .. x .. "," .. y, "ai")
 end
 
---@api-stub: Agent:setVelocity
+--@api-stub: LAgent:setVelocity
 -- Sets the agent's velocity vector.
 -- Set per frame from steering output; the world does not integrate velocity for you automatically.
 do  -- Agent:setVelocity
@@ -431,7 +427,7 @@ do  -- Agent:setVelocity
   agent:setVelocity(40, 0)
 end
 
---@api-stub: Agent:getVelocity
+--@api-stub: LAgent:getVelocity
 -- Returns the agent's current velocity.
 -- Returns (vx, vy); useful to seed the next steering calculation or play sound based on speed.
 do  -- Agent:getVelocity
@@ -442,7 +438,7 @@ do  -- Agent:getVelocity
   if vx*vx + vy*vy > 100 then lurek.log.debug("moving", "ai") end
 end
 
---@api-stub: Agent:setMaxSpeed
+--@api-stub: LAgent:setMaxSpeed
 -- Sets the maximum speed cap.
 -- Used by steering to clamp output; pick units consistent with your delta-time scale (px/sec).
 do  -- Agent:setMaxSpeed
@@ -451,7 +447,7 @@ do  -- Agent:setMaxSpeed
   agent:setMaxSpeed(150)
 end
 
---@api-stub: Agent:getMaxSpeed
+--@api-stub: LAgent:getMaxSpeed
 -- Returns the maximum speed cap.
 -- Default is 100 px/sec; read it back if behaviour-tree leaves need to scale by movement budget.
 do  -- Agent:getMaxSpeed
@@ -461,7 +457,7 @@ do  -- Agent:getMaxSpeed
   agent:setVelocity(cap, 0)
 end
 
---@api-stub: Agent:setMaxForce
+--@api-stub: LAgent:setMaxForce
 -- Sets the maximum steering force cap.
 -- Caps steering acceleration so agents do not snap to target instantly; tune alongside maxSpeed.
 do  -- Agent:setMaxForce
@@ -470,7 +466,7 @@ do  -- Agent:setMaxForce
   agent:setMaxForce(300)
 end
 
---@api-stub: Agent:getMaxForce
+--@api-stub: LAgent:getMaxForce
 -- Returns the maximum steering force cap.
 -- Default is 200; raise for nimble enemies, lower for lumbering tanks.
 do  -- Agent:getMaxForce
@@ -480,7 +476,7 @@ do  -- Agent:getMaxForce
   lurek.log.debug("max force=" .. f, "ai")
 end
 
---@api-stub: Agent:setPriority
+--@api-stub: LAgent:setPriority
 -- Sets the scheduling priority (higher = earlier).
 -- Higher priority agents are scheduled first; useful for boss enemies that should never be skipped.
 do  -- Agent:setPriority
@@ -489,7 +485,7 @@ do  -- Agent:setPriority
   agent:setPriority(10)
 end
 
---@api-stub: Agent:getPriority
+--@api-stub: LAgent:getPriority
 -- Returns the agent's scheduling priority.
 -- Defaults to 0; query when sorting agents into LOD buckets.
 do  -- Agent:getPriority
@@ -499,7 +495,7 @@ do  -- Agent:getPriority
   if agent:getPriority() > 0 then lurek.log.debug("prio agent", "ai") end
 end
 
---@api-stub: Agent:setDecisionModel
+--@api-stub: LAgent:setDecisionModel
 -- Sets the active decision model.
 -- Accepts "fsm", "bt", "utility", "goap" strings; unknown values are silently ignored.
 do  -- Agent:setDecisionModel
@@ -508,7 +504,7 @@ do  -- Agent:setDecisionModel
   agent:setDecisionModel("bt")
 end
 
---@api-stub: Agent:getDecisionModel
+--@api-stub: LAgent:getDecisionModel
 -- Returns the name of the current decision model.
 -- Returns the string name (default "fsm"); branch on it to pick the right per-agent tick.
 do  -- Agent:getDecisionModel
@@ -517,7 +513,7 @@ do  -- Agent:getDecisionModel
   if agent:getDecisionModel() == "fsm" then lurek.log.debug("uses fsm", "ai") end
 end
 
---@api-stub: Agent:addTag
+--@api-stub: LAgent:addTag
 -- Adds a tag to this agent.
 -- Tags are arbitrary strings used for filtering; e.g. "flammable", "boss", "friendly".
 do  -- Agent:addTag
@@ -527,7 +523,7 @@ do  -- Agent:addTag
   agent:addTag("scout")
 end
 
---@api-stub: Agent:removeTag
+--@api-stub: LAgent:removeTag
 -- Removes a tag from this agent.
 -- Silent no-op if the tag was not present; safe to call defensively.
 do  -- Agent:removeTag
@@ -537,7 +533,7 @@ do  -- Agent:removeTag
   agent:removeTag("burning")
 end
 
---@api-stub: Agent:hasTag
+--@api-stub: LAgent:hasTag
 -- Returns true if the agent has the given tag.
 -- Cheap hashed lookup; use to drive AOE filters or save/load eligibility checks.
 do  -- Agent:hasTag
@@ -547,7 +543,7 @@ do  -- Agent:hasTag
   if agent:hasTag("boss") then lurek.log.info("boss alert", "ai") end
 end
 
---@api-stub: Agent:getBlackboard
+--@api-stub: LAgent:getBlackboard
 -- Returns the agent's local blackboard.
 -- Per-agent local blackboard distinct from the world-global one; survives across ticks.
 do  -- Agent:getBlackboard
@@ -557,7 +553,7 @@ do  -- Agent:getBlackboard
   bb:setNumber("hp", 100)
 end
 
---@api-stub: Agent:type
+--@api-stub: LAgent:type
 -- Returns the type name of this object.
 -- Returns the literal string "Agent"; pair with typeOf in generic dispatch helpers.
 do  -- Agent:type
@@ -566,7 +562,7 @@ do  -- Agent:type
   if agent:type() == "Agent" then lurek.log.debug("ok", "ai") end
 end
 
---@api-stub: Agent:typeOf
+--@api-stub: LAgent:typeOf
 -- Returns true if this object is of the given type.
 -- Returns true for "Agent" and "Object"; mirrors the Lurek2D type-tag pattern.
 do  -- Agent:typeOf
@@ -575,7 +571,7 @@ do  -- Agent:typeOf
   if agent:typeOf("Object") then lurek.log.debug("inherits Object", "ai") end
 end
 
---@api-stub: Blackboard:setNumber
+--@api-stub: LBlackboard:setNumber
 -- Stores a number under the given key.
 -- Overwrites any existing entry; numbers are stored as f64 so beware of integer-precision loss past 2^53.
 do  -- Blackboard:setNumber
@@ -584,7 +580,7 @@ do  -- Blackboard:setNumber
   bb:setNumber("alert_level", 0.6)
 end
 
---@api-stub: Blackboard:setBool
+--@api-stub: LBlackboard:setBool
 -- Stores a boolean under the given key.
 -- Use for binary flags like "player_seen" or "is_armed" so behaviour trees can branch cheaply.
 do  -- Blackboard:setBool
@@ -593,7 +589,7 @@ do  -- Blackboard:setBool
   bb:setBool("door_open", false)
 end
 
---@api-stub: Blackboard:setString
+--@api-stub: LBlackboard:setString
 -- Stores a string under the given key.
 -- Strings are interned by Lua so repeated keys are cheap; use for state names and target ids.
 do  -- Blackboard:setString
@@ -602,7 +598,7 @@ do  -- Blackboard:setString
   bb:setString("last_state", "patrol")
 end
 
---@api-stub: Blackboard:has
+--@api-stub: LBlackboard:has
 -- Returns true if a value exists under the key.
 -- Returns true if any value-typed entry is stored under the key, regardless of its type.
 do  -- Blackboard:has
@@ -611,7 +607,7 @@ do  -- Blackboard:has
   if bb:has("alive") then lurek.log.debug("entry exists", "ai") end
 end
 
---@api-stub: Blackboard:remove
+--@api-stub: LBlackboard:remove
 -- Removes the entry at key.
 -- Silent no-op if the key was missing; cheaper than has + remove if you do not need the result.
 do  -- Blackboard:remove
@@ -620,7 +616,7 @@ do  -- Blackboard:remove
   bb:remove("temp")
 end
 
---@api-stub: Blackboard:clear
+--@api-stub: LBlackboard:clear
 -- Removes all local entries.
 -- Wipes all local entries (linked parent boards are unaffected); use at scene boundaries.
 do  -- Blackboard:clear
@@ -629,7 +625,7 @@ do  -- Blackboard:clear
   bb:clear()
 end
 
---@api-stub: Blackboard:getKeys
+--@api-stub: LBlackboard:getKeys
 -- Returns all local keys as a table.
 -- Returns a 1-based array of strings; iterate with ipairs to enumerate every local entry.
 do  -- Blackboard:getKeys
@@ -638,7 +634,7 @@ do  -- Blackboard:getKeys
   for _, k in ipairs(bb:getKeys()) do lurek.log.debug("key=" .. k, "ai") end
 end
 
---@api-stub: Blackboard:getSize
+--@api-stub: LBlackboard:getSize
 -- Returns the number of local entries.
 -- Counts only local entries; if you also care about parent entries, walk the chain manually.
 do  -- Blackboard:getSize
@@ -647,7 +643,7 @@ do  -- Blackboard:getSize
   lurek.log.debug("entries=" .. bb:getSize(), "ai")
 end
 
---@api-stub: Blackboard:type
+--@api-stub: LBlackboard:type
 -- Returns the type name of this object.
 -- Returns the literal string "Blackboard"; handy when bb is passed in via a generic callback.
 do  -- Blackboard:type
@@ -655,7 +651,7 @@ do  -- Blackboard:type
   if bb:type() == "Blackboard" then lurek.log.debug("got bb", "ai") end
 end
 
---@api-stub: Blackboard:typeOf
+--@api-stub: LBlackboard:typeOf
 -- Returns true if this object is of the given type.
 -- True for "Blackboard" and "Object"; mirrors the type-hierarchy convention.
 do  -- Blackboard:typeOf
@@ -663,7 +659,7 @@ do  -- Blackboard:typeOf
   if bb:typeOf("Object") then lurek.log.debug("ok", "ai") end
 end
 
---@api-stub: StateMachine:addState
+--@api-stub: LStateMachine:addState
 -- Registers a named state with optional lifecycle callbacks.
 -- opts may contain onEnter / onUpdate / onExit Lua callbacks; omit any you do not need.
 do  -- StateMachine:addState
@@ -672,7 +668,7 @@ do  -- StateMachine:addState
   fsm:addState("chase", { onUpdate = function(dt) end })
 end
 
---@api-stub: StateMachine:setInitialState
+--@api-stub: LStateMachine:setInitialState
 -- Sets the FSM's initial state; must be called before the first update.
 -- Must be called before the first update or the FSM has no current state to tick.
 do  -- StateMachine:setInitialState
@@ -681,7 +677,7 @@ do  -- StateMachine:setInitialState
   fsm:setInitialState("idle")
 end
 
---@api-stub: StateMachine:getCurrentState
+--@api-stub: LStateMachine:getCurrentState
 -- Returns the current state name, or nil.
 -- Returns nil before setInitialState; use to drive HUD overlays or save/load.
 do  -- StateMachine:getCurrentState
@@ -691,7 +687,7 @@ do  -- StateMachine:getCurrentState
   if s then lurek.log.debug("state=" .. s, "ai") end
 end
 
---@api-stub: StateMachine:forceState
+--@api-stub: LStateMachine:forceState
 -- Forces a transition to the named state.
 -- Bypasses transition guards and resets time-in-state; use sparingly for cutscenes or stuns.
 do  -- StateMachine:forceState
@@ -700,7 +696,7 @@ do  -- StateMachine:forceState
   fsm:forceState("stunned")
 end
 
---@api-stub: StateMachine:getTimeInState
+--@api-stub: LStateMachine:getTimeInState
 -- Returns seconds spent in the current state.
 -- Seconds since the last transition; useful for timeout-based exits inside onUpdate.
 do  -- StateMachine:getTimeInState
@@ -709,7 +705,7 @@ do  -- StateMachine:getTimeInState
   if fsm:getTimeInState() > 5.0 then fsm:forceState("idle") end
 end
 
---@api-stub: StateMachine:type
+--@api-stub: LStateMachine:type
 -- Returns the type name of this object.
 -- Returns the literal string "StateMachine"; pair with typeOf in generic AI helpers.
 do  -- StateMachine:type
@@ -717,7 +713,7 @@ do  -- StateMachine:type
   if fsm:type() == "StateMachine" then lurek.log.debug("ok", "ai") end
 end
 
---@api-stub: StateMachine:typeOf
+--@api-stub: LStateMachine:typeOf
 -- Returns true if this object is of the given type.
 -- True for "StateMachine" and "Object"; standard type-tag check.
 do  -- StateMachine:typeOf
@@ -725,7 +721,7 @@ do  -- StateMachine:typeOf
   if fsm:typeOf("Object") then lurek.log.debug("ok", "ai") end
 end
 
---@api-stub: BehaviorTree:setRoot
+--@api-stub: LBehaviorTree:setRoot
 -- Sets the root node of this behavior tree.
 -- Take ownership of the node by move; do not reuse the BTNode handle after setRoot.
 do  -- BehaviorTree:setRoot
@@ -735,7 +731,7 @@ do  -- BehaviorTree:setRoot
   bt:setRoot(root)
 end
 
---@api-stub: BehaviorTree:getLastStatus
+--@api-stub: LBehaviorTree:getLastStatus
 -- Returns the status from the last tick.
 -- Returns "success", "failure", or "running" from the last tick; default is "failure".
 do  -- BehaviorTree:getLastStatus
@@ -747,7 +743,7 @@ do  -- BehaviorTree:getLastStatus
   lurek.log.debug("bt status=" .. s, "ai")
 end
 
---@api-stub: BehaviorTree:getDebugState
+--@api-stub: LBehaviorTree:getDebugState
 -- Returns a diagnostic snapshot of this behavior tree.
 -- Diagnostic table { node_count, last_status }; useful for in-game AI debug overlays.
 do  -- BehaviorTree:getDebugState
@@ -759,7 +755,7 @@ do  -- BehaviorTree:getDebugState
   lurek.log.debug("nodes=" .. dbg.node_count .. " status=" .. dbg.last_status, "ai")
 end
 
---@api-stub: BehaviorTree:type
+--@api-stub: LBehaviorTree:type
 -- Returns the type name of this object.
 -- Returns the literal string "BehaviorTree"; standard introspection helper.
 do  -- BehaviorTree:type
@@ -767,7 +763,7 @@ do  -- BehaviorTree:type
   if bt:type() == "BehaviorTree" then lurek.log.debug("ok", "ai") end
 end
 
---@api-stub: BehaviorTree:typeOf
+--@api-stub: LBehaviorTree:typeOf
 -- Returns true if this object is of the given type.
 -- True for "BehaviorTree" and "Object".
 do  -- BehaviorTree:typeOf
@@ -775,7 +771,7 @@ do  -- BehaviorTree:typeOf
   if bt:typeOf("Object") then lurek.log.debug("ok", "ai") end
 end
 
---@api-stub: BTNode:addChild
+--@api-stub: LBTNode:addChild
 -- Adds a child node (Selector, Sequence, or Parallel only).
 -- Only valid for Selector / Sequence / Parallel nodes; raises an error on decorators or leaves.
 do  -- BTNode:addChild
@@ -784,7 +780,7 @@ do  -- BTNode:addChild
   seq:addChild(lurek.ai.newAction(function() return "success" end))
 end
 
---@api-stub: BTNode:getChildCount
+--@api-stub: LBTNode:getChildCount
 -- Returns the number of direct children.
 -- Returns 0 for leaves; useful when serialising or visualising the tree shape.
 do  -- BTNode:getChildCount
@@ -793,7 +789,7 @@ do  -- BTNode:getChildCount
   lurek.log.debug("children=" .. seq:getChildCount(), "ai")
 end
 
---@api-stub: BTNode:reset
+--@api-stub: LBTNode:reset
 -- Resets all running-child memos and repeater counters.
 -- Clears running-child memos and repeater counters; call when re-entering a tree from scratch.
 do  -- BTNode:reset
@@ -802,7 +798,7 @@ do  -- BTNode:reset
   rep:reset()
 end
 
---@api-stub: BTNode:setChild
+--@api-stub: LBTNode:setChild
 -- Sets the single child of a decorator node.
 -- Decorator-only (Inverter / Repeater / Succeeder); takes ownership of the child node.
 do  -- BTNode:setChild
@@ -811,7 +807,7 @@ do  -- BTNode:setChild
   local bt = lurek.ai.newBehaviorTree(); bt:setRoot(inv)
 end
 
---@api-stub: BTNode:setCount
+--@api-stub: LBTNode:setCount
 -- Sets the repeat count for a Repeater node.
 -- Repeater-only; 0 means infinite repetition until child returns running stops.
 do  -- BTNode:setCount
@@ -820,7 +816,7 @@ do  -- BTNode:setCount
   rep:setChild(lurek.ai.newAction(function() return "success" end))
 end
 
---@api-stub: BTNode:getCount
+--@api-stub: LBTNode:getCount
 -- Returns the repeat count, or 0 if not a Repeater.
 -- Returns 0 if called on a non-Repeater; useful when introspecting unknown nodes.
 do  -- BTNode:getCount
@@ -828,7 +824,7 @@ do  -- BTNode:getCount
   if rep:getCount() == 7 then lurek.log.debug("count ok", "ai") end
 end
 
---@api-stub: BTNode:setSuccessPolicy
+--@api-stub: LBTNode:setSuccessPolicy
 -- Sets the success policy for a Parallel node.
 -- Parallel-only; "require_one" or "require_all" controls when the node reports success.
 do  -- BTNode:setSuccessPolicy
@@ -837,7 +833,7 @@ do  -- BTNode:setSuccessPolicy
   par:addChild(lurek.ai.newAction(function() return "success" end))
 end
 
---@api-stub: BTNode:setFailurePolicy
+--@api-stub: LBTNode:setFailurePolicy
 -- Sets the failure policy for a Parallel node.
 -- Parallel-only; "require_one" fails fast, "require_all" waits until every child fails.
 do  -- BTNode:setFailurePolicy
@@ -846,7 +842,7 @@ do  -- BTNode:setFailurePolicy
   par:addChild(lurek.ai.newAction(function() return "running" end))
 end
 
---@api-stub: BTNode:getNodeType
+--@api-stub: LBTNode:getNodeType
 -- Returns the node type as a string.
 -- Returns one of "selector", "sequence", "parallel", "inverter", "repeater", "succeeder", "action", "condition".
 do  -- BTNode:getNodeType
@@ -854,7 +850,7 @@ do  -- BTNode:getNodeType
   if seq:getNodeType() == "sequence" then lurek.log.debug("seq ok", "ai") end
 end
 
---@api-stub: BTNode:type
+--@api-stub: LBTNode:type
 -- Returns the type name of this object.
 -- Returns the literal string "BTNode"; orthogonal to the node-shape returned by getNodeType.
 do  -- BTNode:type
@@ -862,7 +858,7 @@ do  -- BTNode:type
   if seq:type() == "BTNode" then lurek.log.debug("ok", "ai") end
 end
 
---@api-stub: BTNode:typeOf
+--@api-stub: LBTNode:typeOf
 -- Returns true if this object is of the given type.
 -- True for "BTNode" and "Object".
 do  -- BTNode:typeOf
@@ -870,7 +866,7 @@ do  -- BTNode:typeOf
   if sel:typeOf("Object") then lurek.log.debug("ok", "ai") end
 end
 
---@api-stub: SteeringManager:getBehaviorCount
+--@api-stub: LSteeringManager:getBehaviorCount
 -- Returns the number of active behaviors.
 -- Use to verify your add* calls actually registered behaviours, especially after dynamic changes.
 do  -- SteeringManager:getBehaviorCount
@@ -880,7 +876,7 @@ do  -- SteeringManager:getBehaviorCount
   lurek.log.debug("behaviours=" .. sm:getBehaviorCount(), "ai")
 end
 
---@api-stub: SteeringManager:setCombineMode
+--@api-stub: LSteeringManager:setCombineMode
 -- Sets the force combination mode.
 -- "weighted_sum" blends all behaviours, "priority" picks the first non-zero one in order.
 do  -- SteeringManager:setCombineMode
@@ -889,7 +885,7 @@ do  -- SteeringManager:setCombineMode
   sm:setCombineMode("priority")
 end
 
---@api-stub: SteeringManager:getCombineMode
+--@api-stub: LSteeringManager:getCombineMode
 -- Returns the current combination mode.
 -- Returns the current mode string; default is "weighted_sum".
 do  -- SteeringManager:getCombineMode
@@ -898,7 +894,7 @@ do  -- SteeringManager:getCombineMode
   if sm:getCombineMode() == "weighted_sum" then lurek.log.debug("blend mode", "ai") end
 end
 
---@api-stub: SteeringManager:getLastSteering
+--@api-stub: LSteeringManager:getLastSteering
 -- Returns the last computed steering force.
 -- Returns the (fx, fy) force vector from the most recent calculate() call; zero before first tick.
 do  -- SteeringManager:getLastSteering
@@ -908,7 +904,7 @@ do  -- SteeringManager:getLastSteering
   if fx ~= 0 or fy ~= 0 then lurek.log.debug("steering active", "ai") end
 end
 
---@api-stub: SteeringManager:type
+--@api-stub: LSteeringManager:type
 -- Returns the type name of this object.
 -- Returns the literal string "SteeringManager".
 do  -- SteeringManager:type
@@ -917,7 +913,7 @@ do  -- SteeringManager:type
   if sm:type() == "SteeringManager" then lurek.log.debug("ok", "ai") end
 end
 
---@api-stub: SteeringManager:typeOf
+--@api-stub: LSteeringManager:typeOf
 -- Returns true if this object is of the given type.
 -- True for "SteeringManager" and "Object".
 do  -- SteeringManager:typeOf
@@ -926,7 +922,7 @@ do  -- SteeringManager:typeOf
   if sm:typeOf("Object") then lurek.log.debug("ok", "ai") end
 end
 
---@api-stub: SteeringManager:setSpatialHashCellSize
+--@api-stub: LSteeringManager:setSpatialHashCellSize
 -- Sets the cell size used by the spatial-hash neighbourhood search.
 -- Pick roughly 2x your max neighbour query radius; smaller cells use more memory but fewer false positives.
 do  -- SteeringManager:setSpatialHashCellSize
@@ -936,7 +932,7 @@ do  -- SteeringManager:setSpatialHashCellSize
   sm:setSpatialHashCellSize(64)
 end
 
---@api-stub: SteeringManager:enableSpatialHash
+--@api-stub: LSteeringManager:enableSpatialHash
 -- Enables or disables spatial-hash bucketing for neighbourhood queries.
 -- Toggles bucketing for flock/separation queries; off by default for tiny crowds (<32 agents).
 do  -- SteeringManager:enableSpatialHash
@@ -945,7 +941,7 @@ do  -- SteeringManager:enableSpatialHash
   sm:enableSpatialHash(true)
 end
 
---@api-stub: QLearner:chooseAction
+--@api-stub: LQLearner:chooseAction
 -- Selects an action using epsilon-greedy policy (1-based).
 -- Epsilon-greedy: explores randomly with prob epsilon, exploits otherwise; returns 1-based action index.
 do  -- QLearner:chooseAction
@@ -954,7 +950,7 @@ do  -- QLearner:chooseAction
   lurek.log.debug("action=" .. action, "ai")
 end
 
---@api-stub: QLearner:bestAction
+--@api-stub: LQLearner:bestAction
 -- Returns the greedy-best action for the state (1-based).
 -- Pure greedy choice with no exploration; useful when deploying a trained model.
 do  -- QLearner:bestAction
@@ -963,7 +959,7 @@ do  -- QLearner:bestAction
   if action >= 1 then lurek.log.debug("greedy=" .. action, "ai") end
 end
 
---@api-stub: QLearner:getQValue
+--@api-stub: LQLearner:getQValue
 -- Returns the Q-value for a state-action pair (1-based).
 -- Returns the current Q-estimate for (state, action); both indices are 1-based.
 do  -- QLearner:getQValue
@@ -973,7 +969,7 @@ do  -- QLearner:getQValue
   lurek.log.debug("Q(1,2)=" .. q, "ai")
 end
 
---@api-stub: QLearner:endEpisode
+--@api-stub: LQLearner:endEpisode
 -- Ends the current episode, applying epsilon decay.
 -- Call at end of each training episode to apply epsilon decay (less exploration over time).
 do  -- QLearner:endEpisode
@@ -982,7 +978,7 @@ do  -- QLearner:endEpisode
   ql:endEpisode()
 end
 
---@api-stub: QLearner:getEpisodeCount
+--@api-stub: LQLearner:getEpisodeCount
 -- Returns the number of completed episodes.
 -- Number of completed episodes; useful for epsilon decay schedules and learning-curve plots.
 do  -- QLearner:getEpisodeCount
@@ -991,7 +987,7 @@ do  -- QLearner:getEpisodeCount
   lurek.log.debug("episodes=" .. ql:getEpisodeCount(), "ai")
 end
 
---@api-stub: QLearner:getStateCount
+--@api-stub: LQLearner:getStateCount
 -- Returns the number of discrete states.
 -- Returns the value passed to newQLearner; immutable after construction.
 do  -- QLearner:getStateCount
@@ -999,7 +995,7 @@ do  -- QLearner:getStateCount
   lurek.log.debug("states=" .. ql:getStateCount(), "ai")
 end
 
---@api-stub: QLearner:getActionCount
+--@api-stub: LQLearner:getActionCount
 -- Returns the number of discrete actions.
 -- Returns the value passed to newQLearner; loop bound for action enumeration.
 do  -- QLearner:getActionCount
@@ -1007,7 +1003,7 @@ do  -- QLearner:getActionCount
   for a = 1, ql:getActionCount() do lurek.log.debug("a=" .. a, "ai") end
 end
 
---@api-stub: QLearner:setLearningRate
+--@api-stub: LQLearner:setLearningRate
 -- Sets the learning rate alpha.
 -- Alpha in (0, 1]; higher values learn faster but are noisier. 0.1 is a common starting point.
 do  -- QLearner:setLearningRate
@@ -1015,7 +1011,7 @@ do  -- QLearner:setLearningRate
   ql:setLearningRate(0.05)
 end
 
---@api-stub: QLearner:getLearningRate
+--@api-stub: LQLearner:getLearningRate
 -- Returns the current learning rate.
 -- Returns the current alpha; read after schedule adjustments to verify the new value.
 do  -- QLearner:getLearningRate
@@ -1023,7 +1019,7 @@ do  -- QLearner:getLearningRate
   lurek.log.debug("alpha=" .. ql:getLearningRate(), "ai")
 end
 
---@api-stub: QLearner:setDiscountFactor
+--@api-stub: LQLearner:setDiscountFactor
 -- Sets the discount factor gamma.
 -- Gamma in [0, 1]; closer to 1 values future rewards more heavily. 0.9-0.99 is typical.
 do  -- QLearner:setDiscountFactor
@@ -1031,7 +1027,7 @@ do  -- QLearner:setDiscountFactor
   ql:setDiscountFactor(0.95)
 end
 
---@api-stub: QLearner:getDiscountFactor
+--@api-stub: LQLearner:getDiscountFactor
 -- Returns the current discount factor.
 -- Default gamma is 0.9; read back when serialising training hyperparameters.
 do  -- QLearner:getDiscountFactor
@@ -1039,7 +1035,7 @@ do  -- QLearner:getDiscountFactor
   lurek.log.debug("gamma=" .. ql:getDiscountFactor(), "ai")
 end
 
---@api-stub: QLearner:setExplorationRate
+--@api-stub: LQLearner:setExplorationRate
 -- Sets the exploration rate epsilon.
 -- Epsilon in [0, 1]; 1.0 is fully random, 0.0 is pure greedy. Decay over training.
 do  -- QLearner:setExplorationRate
@@ -1047,7 +1043,7 @@ do  -- QLearner:setExplorationRate
   ql:setExplorationRate(0.1)
 end
 
---@api-stub: QLearner:getExplorationRate
+--@api-stub: LQLearner:getExplorationRate
 -- Returns the current exploration rate.
 -- Read after each endEpisode to monitor decay schedule progress.
 do  -- QLearner:getExplorationRate
@@ -1055,7 +1051,7 @@ do  -- QLearner:getExplorationRate
   if ql:getExplorationRate() < 0.05 then lurek.log.info("exploit phase", "ai") end
 end
 
---@api-stub: QLearner:setExplorationDecay
+--@api-stub: LQLearner:setExplorationDecay
 -- Sets the epsilon decay multiplier.
 -- Multiplied into epsilon every endEpisode; 0.999 gives slow decay, 0.99 gives faster.
 do  -- QLearner:setExplorationDecay
@@ -1063,7 +1059,7 @@ do  -- QLearner:setExplorationDecay
   ql:setExplorationDecay(0.995)
 end
 
---@api-stub: QLearner:getExplorationDecay
+--@api-stub: LQLearner:getExplorationDecay
 -- Returns the epsilon decay multiplier.
 -- Read back when serialising training config.
 do  -- QLearner:getExplorationDecay
@@ -1071,7 +1067,7 @@ do  -- QLearner:getExplorationDecay
   lurek.log.debug("decay=" .. ql:getExplorationDecay(), "ai")
 end
 
---@api-stub: QLearner:serialize
+--@api-stub: LQLearner:serialize
 -- Serializes the Q-table to a JSON string.
 -- Returns a JSON string of the full Q-table; pair with lurek.fs.write to persist trained weights.
 do  -- QLearner:serialize
@@ -1081,7 +1077,7 @@ do  -- QLearner:serialize
   lurek.log.info("saved " .. #json .. " bytes", "ai")
 end
 
---@api-stub: QLearner:deserialize
+--@api-stub: LQLearner:deserialize
 -- Restores the Q-table from a JSON string.
 -- Restores a Q-table from JSON produced by serialize(); raises an error on shape mismatch.
 do  -- QLearner:deserialize
@@ -1090,7 +1086,7 @@ do  -- QLearner:deserialize
   ql:deserialize(saved)
 end
 
---@api-stub: QLearner:type
+--@api-stub: LQLearner:type
 -- Returns the type name of this object.
 -- Returns the literal string "QLearner".
 do  -- QLearner:type
@@ -1098,7 +1094,7 @@ do  -- QLearner:type
   if ql:type() == "QLearner" then lurek.log.debug("ok", "ai") end
 end
 
---@api-stub: QLearner:typeOf
+--@api-stub: LQLearner:typeOf
 -- Returns true if this object is of the given type.
 -- True for "QLearner" and "Object".
 do  -- QLearner:typeOf
@@ -1106,7 +1102,7 @@ do  -- QLearner:typeOf
   if ql:typeOf("Object") then lurek.log.debug("ok", "ai") end
 end
 
---@api-stub: UtilityAI:evaluate
+--@api-stub: LUtilityAI:evaluate
 -- Evaluates all actions and returns the best action name, or nil.
 -- Runs every scorer and returns the highest-scoring action name; returns nil if no actions registered.
 do  -- UtilityAI:evaluate
@@ -1117,7 +1113,7 @@ do  -- UtilityAI:evaluate
   if choice then lurek.log.info("chose " .. choice, "ai") end
 end
 
---@api-stub: UtilityAI:getActionCount
+--@api-stub: LUtilityAI:getActionCount
 -- Returns the number of registered actions.
 -- Returns the number of addAction registrations; sanity-check after dynamic registration.
 do  -- UtilityAI:getActionCount
@@ -1127,7 +1123,7 @@ do  -- UtilityAI:getActionCount
   lurek.log.debug("actions=" .. uai:getActionCount(), "ai")
 end
 
---@api-stub: UtilityAI:getLastAction
+--@api-stub: LUtilityAI:getLastAction
 -- Returns the name of the last chosen action, or nil.
 -- Returns the name of the most recently chosen action, or nil before the first evaluate().
 do  -- UtilityAI:getLastAction
@@ -1139,7 +1135,7 @@ do  -- UtilityAI:getLastAction
   if last then lurek.log.debug("last=" .. last, "ai") end
 end
 
---@api-stub: UtilityAI:type
+--@api-stub: LUtilityAI:type
 -- Returns the type name of this object.
 -- Returns the literal string "UtilityAI".
 do  -- UtilityAI:type
@@ -1149,7 +1145,7 @@ do  -- UtilityAI:type
   if uai:type() == "UtilityAI" then lurek.log.debug("ok", "ai") end
 end
 
---@api-stub: UtilityAI:typeOf
+--@api-stub: LUtilityAI:typeOf
 -- Returns true if this object is of the given type.
 -- True for "UtilityAI" and "Object".
 do  -- UtilityAI:typeOf
@@ -1159,7 +1155,7 @@ do  -- UtilityAI:typeOf
   if uai:typeOf("Object") then lurek.log.debug("ok", "ai") end
 end
 
---@api-stub: GOAPPlanner:getActionCount
+--@api-stub: LGOAPPlanner:getActionCount
 -- Returns the number of registered actions.
 -- Sanity-check after dynamic action wiring; useful in level-load tests.
 do  -- GOAPPlanner:getActionCount
@@ -1169,7 +1165,7 @@ do  -- GOAPPlanner:getActionCount
   lurek.log.debug("actions=" .. p:getActionCount(), "ai")
 end
 
---@api-stub: GOAPPlanner:getGoalCount
+--@api-stub: LGOAPPlanner:getGoalCount
 -- Returns the number of registered goals.
 -- Use to verify your goal-generation step actually populated the planner.
 do  -- GOAPPlanner:getGoalCount
@@ -1179,7 +1175,7 @@ do  -- GOAPPlanner:getGoalCount
   if p:getGoalCount() == 0 then lurek.log.warn("no goals", "ai") end
 end
 
---@api-stub: GOAPPlanner:getMaxIterations
+--@api-stub: LGOAPPlanner:getMaxIterations
 -- Returns the maximum A* planning iterations.
 -- A* iteration cap; default is 0 (unlimited). Read back when tuning planning latency.
 do  -- GOAPPlanner:getMaxIterations
@@ -1189,7 +1185,7 @@ do  -- GOAPPlanner:getMaxIterations
   lurek.log.debug("max iters=" .. p:getMaxIterations(), "ai")
 end
 
---@api-stub: GOAPPlanner:setMaxIterations
+--@api-stub: LGOAPPlanner:setMaxIterations
 -- Sets the maximum A* planning iterations (0 = unlimited).
 -- Pass 0 for unlimited; set a finite cap (e.g. 1000) to bound worst-case planning cost per frame.
 do  -- GOAPPlanner:setMaxIterations
@@ -1199,7 +1195,7 @@ do  -- GOAPPlanner:setMaxIterations
   p:setMaxIterations(500)
 end
 
---@api-stub: GOAPPlanner:type
+--@api-stub: LGOAPPlanner:type
 -- Returns the type name of this object.
 -- Returns the literal string "GOAPPlanner".
 do  -- GOAPPlanner:type
@@ -1209,7 +1205,7 @@ do  -- GOAPPlanner:type
   if p:type() == "GOAPPlanner" then lurek.log.debug("ok", "ai") end
 end
 
---@api-stub: GOAPPlanner:typeOf
+--@api-stub: LGOAPPlanner:typeOf
 -- Returns true if this object is of the given type.
 -- True for "GOAPPlanner" and "Object".
 do  -- GOAPPlanner:typeOf
@@ -1218,17 +1214,13 @@ do  -- GOAPPlanner:typeOf
   p:addGoal("not_hungry", 1.0)
   if p:typeOf("Object") then lurek.log.debug("ok", "ai") end
 end
-
---@api-stub: InfluenceMap:addLayer
--- Adds a named influence layer.
--- Layers are independent grids; stamp / decay / propagate operate on a single named layer.
 do  -- InfluenceMap:addLayer
   local im = lurek.ai.newInfluenceMap(32, 32, 16)
   im:addLayer("threat")
   im:addLayer("loot")
 end
 
---@api-stub: InfluenceMap:hasLayer
+--@api-stub: LInfluenceMap:hasLayer
 -- Returns true if the named layer exists.
 -- Cheap hash lookup; check before stamping to avoid silently writing into the wrong layer.
 do  -- InfluenceMap:hasLayer
@@ -1237,7 +1229,7 @@ do  -- InfluenceMap:hasLayer
   if im:hasLayer("threat") then lurek.log.debug("layer ok", "ai") end
 end
 
---@api-stub: InfluenceMap:decay
+--@api-stub: LInfluenceMap:decay
 -- Multiplies all influences by a decay factor.
 -- Multiplies every cell by factor each call; use 0.95-0.99 per frame for gentle fade-out.
 do  -- InfluenceMap:decay
@@ -1247,7 +1239,7 @@ do  -- InfluenceMap:decay
   function lurek.process(dt) im:decay("threat", 0.97) end
 end
 
---@api-stub: InfluenceMap:clearLayer
+--@api-stub: LInfluenceMap:clearLayer
 -- Clears all influence in a layer.
 -- Zeroes the entire layer in one call; cheaper than stamping over with a negative value.
 do  -- InfluenceMap:clearLayer
@@ -1257,7 +1249,7 @@ do  -- InfluenceMap:clearLayer
   im:clearLayer("threat")
 end
 
---@api-stub: InfluenceMap:clearAll
+--@api-stub: LInfluenceMap:clearAll
 -- Removes all influence values from every layer in the map.
 -- Zeroes every layer; use at scene boundaries to start fresh.
 do  -- InfluenceMap:clearAll
@@ -1266,7 +1258,7 @@ do  -- InfluenceMap:clearAll
   im:clearAll()
 end
 
---@api-stub: InfluenceMap:getMaxPosition
+--@api-stub: LInfluenceMap:getMaxPosition
 -- Returns the world-space position of the maximum value.
 -- World-space (x, y) of the maximum value cell; useful for seeking the most-influenced point.
 do  -- InfluenceMap:getMaxPosition
@@ -1277,7 +1269,7 @@ do  -- InfluenceMap:getMaxPosition
   lurek.log.debug("hot=" .. mx .. "," .. my, "ai")
 end
 
---@api-stub: InfluenceMap:getMinPosition
+--@api-stub: LInfluenceMap:getMinPosition
 -- Returns the world-space position of the minimum value.
 -- World-space (x, y) of the minimum value cell; pair with getMaxPosition for safe-vs-danger lookups.
 do  -- InfluenceMap:getMinPosition
@@ -1288,7 +1280,7 @@ do  -- InfluenceMap:getMinPosition
   lurek.log.debug("safe=" .. sx .. "," .. sy, "ai")
 end
 
---@api-stub: InfluenceMap:getWidth
+--@api-stub: LInfluenceMap:getWidth
 -- Returns the influence map width in grid cells.
 -- Width in grid cells (not world units); multiply by getCellSize for world extent.
 do  -- InfluenceMap:getWidth
@@ -1297,7 +1289,7 @@ do  -- InfluenceMap:getWidth
   lurek.log.debug("w=" .. im:getWidth(), "ai")
 end
 
---@api-stub: InfluenceMap:getHeight
+--@api-stub: LInfluenceMap:getHeight
 -- Returns the influence map height in grid cells.
 -- Height in grid cells; pair with getWidth and getCellSize to compute world AABB.
 do  -- InfluenceMap:getHeight
@@ -1306,7 +1298,7 @@ do  -- InfluenceMap:getHeight
   lurek.log.debug("h=" .. im:getHeight(), "ai")
 end
 
---@api-stub: InfluenceMap:getCellSize
+--@api-stub: LInfluenceMap:getCellSize
 -- Returns the cell size in world units.
 -- World units per cell; pick to match your tile pitch for clean visualisation overlap.
 do  -- InfluenceMap:getCellSize
@@ -1315,7 +1307,7 @@ do  -- InfluenceMap:getCellSize
   lurek.log.debug("cell=" .. im:getCellSize(), "ai")
 end
 
---@api-stub: InfluenceMap:type
+--@api-stub: LInfluenceMap:type
 -- Returns the type name of this object.
 -- Returns the literal string "InfluenceMap".
 do  -- InfluenceMap:type
@@ -1324,7 +1316,7 @@ do  -- InfluenceMap:type
   if im:type() == "InfluenceMap" then lurek.log.debug("ok", "ai") end
 end
 
---@api-stub: InfluenceMap:typeOf
+--@api-stub: LInfluenceMap:typeOf
 -- Returns true if this object is of the given type.
 -- True for "InfluenceMap" and "Object".
 do  -- InfluenceMap:typeOf
@@ -1333,7 +1325,7 @@ do  -- InfluenceMap:typeOf
   if im:typeOf("Object") then lurek.log.debug("ok", "ai") end
 end
 
---@api-stub: Squad:getName
+--@api-stub: LSquad:getName
 -- Returns the unique name string assigned to this squad.
 -- Returns the unique name passed to newSquad; useful when looking up squads in a registry.
 do  -- Squad:getName
@@ -1342,7 +1334,7 @@ do  -- Squad:getName
   lurek.log.debug("squad=" .. sq:getName(), "ai")
 end
 
---@api-stub: Squad:addMember
+--@api-stub: LSquad:addMember
 -- Adds an agent by name to this squad.
 -- Adds an agent by name; the squad does NOT verify the name exists in any world, that is your job.
 do  -- Squad:addMember
@@ -1352,7 +1344,7 @@ do  -- Squad:addMember
   sq:addMember("scout_03")
 end
 
---@api-stub: Squad:removeMember
+--@api-stub: LSquad:removeMember
 -- Removes an agent by name from this squad.
 -- Silent no-op if the name was not present; safe to call after deaths.
 do  -- Squad:removeMember
@@ -1362,7 +1354,7 @@ do  -- Squad:removeMember
   sq:removeMember("doomed")
 end
 
---@api-stub: Squad:getMemberCount
+--@api-stub: LSquad:getMemberCount
 -- Returns the number of squad members.
 -- Use for HUD readouts and "squad wiped" detection (count == 0).
 do  -- Squad:getMemberCount
@@ -1371,7 +1363,7 @@ do  -- Squad:getMemberCount
   if sq:getMemberCount() == 0 then lurek.log.warn("squad wiped", "ai") end
 end
 
---@api-stub: Squad:getMembers
+--@api-stub: LSquad:getMembers
 -- Returns the member names as a table.
 -- Returns a 1-based array of member name strings; iterate with ipairs for stable order.
 do  -- Squad:getMembers
@@ -1381,7 +1373,7 @@ do  -- Squad:getMembers
   for _, m in ipairs(sq:getMembers()) do lurek.log.debug("m=" .. m, "ai") end
 end
 
---@api-stub: Squad:setLeader
+--@api-stub: LSquad:setLeader
 -- Sets the squad leader by name.
 -- Pass nil to clear the leader; formations re-anchor on the new leader the next tick.
 do  -- Squad:setLeader
@@ -1390,7 +1382,7 @@ do  -- Squad:setLeader
   sq:setLeader("guard_01")
 end
 
---@api-stub: Squad:getLeader
+--@api-stub: LSquad:getLeader
 -- Returns the leader name, or nil.
 -- Returns the leader name or nil; check before computing leader-relative formation positions.
 do  -- Squad:getLeader
@@ -1401,7 +1393,7 @@ do  -- Squad:getLeader
   if l then lurek.log.debug("leader=" .. l, "ai") end
 end
 
---@api-stub: Squad:getFormation
+--@api-stub: LSquad:getFormation
 -- Returns the current formation type name.
 -- Returns the formation type string ("line", "wedge", "column", etc.).
 do  -- Squad:getFormation
@@ -1411,7 +1403,7 @@ do  -- Squad:getFormation
   if sq:getFormation() == "wedge" then lurek.log.debug("v formation", "ai") end
 end
 
---@api-stub: Squad:getFormationSpacing
+--@api-stub: LSquad:getFormationSpacing
 -- Returns the formation spacing in world units.
 -- World-unit gap between formation slots; tune to your sprite size to avoid overlap.
 do  -- Squad:getFormationSpacing
@@ -1421,7 +1413,7 @@ do  -- Squad:getFormationSpacing
   lurek.log.debug("spacing=" .. sq:getFormationSpacing(), "ai")
 end
 
---@api-stub: Squad:getBlackboard
+--@api-stub: LSquad:getBlackboard
 -- Returns the squad's shared blackboard.
 -- Squad-shared blackboard distinct from each agent's local board; use for fire-team objectives.
 do  -- Squad:getBlackboard
@@ -1431,7 +1423,7 @@ do  -- Squad:getBlackboard
   bb:setString("objective", "capture_point_a")
 end
 
---@api-stub: Squad:type
+--@api-stub: LSquad:type
 -- Returns the type name of this object.
 -- Returns the literal string "Squad".
 do  -- Squad:type
@@ -1440,7 +1432,7 @@ do  -- Squad:type
   if sq:type() == "Squad" then lurek.log.debug("ok", "ai") end
 end
 
---@api-stub: Squad:typeOf
+--@api-stub: LSquad:typeOf
 -- Returns true if this object is of the given type.
 -- True for "Squad" and "Object".
 do  -- Squad:typeOf
@@ -1449,7 +1441,7 @@ do  -- Squad:typeOf
   if sq:typeOf("Object") then lurek.log.debug("ok", "ai") end
 end
 
---@api-stub: CommandQueue:cancelCurrent
+--@api-stub: LCommandQueue:cancelCurrent
 -- Cancels the front command if it is interruptible.
 -- Cancels only if the front command has interruptible = true; returns whether it was cancelled.
 do  -- CommandQueue:cancelCurrent
@@ -1458,7 +1450,7 @@ do  -- CommandQueue:cancelCurrent
   if cq:cancelCurrent() then lurek.log.debug("cancelled", "ai") end
 end
 
---@api-stub: CommandQueue:clear
+--@api-stub: LCommandQueue:clear
 -- Discards all queued commands.
 -- Wipes every queued command including the running one; use on death or on objective change.
 do  -- CommandQueue:clear
@@ -1468,7 +1460,7 @@ do  -- CommandQueue:clear
   cq:clear()
 end
 
---@api-stub: CommandQueue:getCount
+--@api-stub: LCommandQueue:getCount
 -- Returns the number of queued commands.
 -- Includes the currently executing command; pair with isEmpty to drive an idle state.
 do  -- CommandQueue:getCount
@@ -1477,7 +1469,7 @@ do  -- CommandQueue:getCount
   lurek.log.debug("queue=" .. cq:getCount(), "ai")
 end
 
---@api-stub: CommandQueue:isEmpty
+--@api-stub: LCommandQueue:isEmpty
 -- Returns true if there are no queued commands.
 -- True iff getCount() == 0; cheaper to call than getCount when you only need a boolean.
 do  -- CommandQueue:isEmpty
@@ -1487,7 +1479,7 @@ do  -- CommandQueue:isEmpty
   if cq:isEmpty() then lurek.log.debug("idle", "ai") end
 end
 
---@api-stub: CommandQueue:getCurrentType
+--@api-stub: LCommandQueue:getCurrentType
 -- Returns the kind of the front command, or nil.
 -- Returns the kind string passed to enqueue (e.g. "move", "attack"); nil if queue empty.
 do  -- CommandQueue:getCurrentType
@@ -1497,7 +1489,7 @@ do  -- CommandQueue:getCurrentType
   if kind then lurek.log.debug("doing " .. kind, "ai") end
 end
 
---@api-stub: CommandQueue:getCurrentTarget
+--@api-stub: LCommandQueue:getCurrentTarget
 -- Returns the target coordinates of the front command.
 -- Returns (tx, ty) from the opts table of the front command; (0, 0) if no target.
 do  -- CommandQueue:getCurrentTarget
@@ -1507,7 +1499,7 @@ do  -- CommandQueue:getCurrentTarget
   lurek.log.debug("target=" .. tx .. "," .. ty, "ai")
 end
 
---@api-stub: CommandQueue:type
+--@api-stub: LCommandQueue:type
 -- Returns the type name of this object.
 -- Returns the literal string "CommandQueue".
 do  -- CommandQueue:type
@@ -1516,7 +1508,7 @@ do  -- CommandQueue:type
   if cq:type() == "CommandQueue" then lurek.log.debug("ok", "ai") end
 end
 
---@api-stub: CommandQueue:typeOf
+--@api-stub: LCommandQueue:typeOf
 -- Returns true if this object is of the given type.
 -- True for "CommandQueue" and "Object".
 do  -- CommandQueue:typeOf
@@ -1525,7 +1517,7 @@ do  -- CommandQueue:typeOf
   if cq:typeOf("Object") then lurek.log.debug("ok", "ai") end
 end
 
---@api-stub: TraitProfile:set
+--@api-stub: LTraitProfile:set
 -- Sets the base value of this trait, replacing any previous base.
 -- Sets the unmodified base value; any modifiers stack on top via addModifier.
 do  -- TraitProfile:set
@@ -1534,7 +1526,7 @@ do  -- TraitProfile:set
   tp:set("courage", 0.5)
 end
 
---@api-stub: TraitProfile:get
+--@api-stub: LTraitProfile:get
 -- Returns the current float value of this emotion dimension.
 -- Returns base + summed modifiers (clamped to the trait's min/max if defined).
 do  -- TraitProfile:get
@@ -1544,7 +1536,7 @@ do  -- TraitProfile:get
   if v > 0.6 then lurek.log.debug("aggressive", "ai") end
 end
 
---@api-stub: TraitProfile:getBase
+--@api-stub: LTraitProfile:getBase
 -- Returns the unmodified base value of this trait before modifiers.
 -- Returns the unmodified base value before any modifiers; useful for save/load.
 do  -- TraitProfile:getBase
@@ -1554,7 +1546,7 @@ do  -- TraitProfile:getBase
   lurek.log.debug("base=" .. base, "ai")
 end
 
---@api-stub: TraitProfile:removeModifiers
+--@api-stub: LTraitProfile:removeModifiers
 -- Removes the specified modifiers.
 -- Removes every modifier matching the source string; safe no-op if none match.
 do  -- TraitProfile:removeModifiers
@@ -1564,7 +1556,7 @@ do  -- TraitProfile:removeModifiers
   tp:removeModifiers("rage_potion")
 end
 
---@api-stub: TraitProfile:update
+--@api-stub: LTraitProfile:update
 -- Advances the simulation by one time step.
 -- Decrements timed modifiers and removes expired ones; call from lurek.process(dt).
 do  -- TraitProfile:update
@@ -1574,7 +1566,7 @@ do  -- TraitProfile:update
   function lurek.process(dt) tp:update(dt) end
 end
 
---@api-stub: TraitProfile:has
+--@api-stub: LTraitProfile:has
 -- Returns true if a item is present.
 -- Returns true if the trait was ever set; useful before reading to avoid 0.0 default confusion.
 do  -- TraitProfile:has
@@ -1583,7 +1575,7 @@ do  -- TraitProfile:has
   if tp:has("aggression") then lurek.log.debug("trait set", "ai") end
 end
 
---@api-stub: TraitProfile:traitCount
+--@api-stub: LTraitProfile:traitCount
 -- Returns or performs trait count.
 -- Returns the number of distinct trait names currently registered.
 do  -- TraitProfile:traitCount
@@ -1592,7 +1584,7 @@ do  -- TraitProfile:traitCount
   lurek.log.debug("traits=" .. tp:traitCount(), "ai")
 end
 
---@api-stub: TraitProfile:archetype
+--@api-stub: LTraitProfile:archetype
 -- Returns or performs archetype.
 -- Returns the closest matching archetype name ("warrior", "sage", etc.) or nil if none configured.
 do  -- TraitProfile:archetype
@@ -1602,7 +1594,7 @@ do  -- TraitProfile:archetype
   if arch then lurek.log.info("archetype=" .. arch, "ai") end
 end
 
---@api-stub: StimulusWorld:remove
+--@api-stub: LStimulusWorld:remove
 -- Removes the specified item.
 -- Returns true if the id was found and removed; ids are returned by addVisual / addAuditory.
 do  -- StimulusWorld:remove
@@ -1611,7 +1603,7 @@ do  -- StimulusWorld:remove
   if sw:remove(id) then lurek.log.debug("removed " .. id, "ai") end
 end
 
---@api-stub: StimulusWorld:update
+--@api-stub: LStimulusWorld:update
 -- Advances the simulation by one time step.
 -- Advances decay and removes faded stimuli; call once per frame from lurek.process(dt).
 do  -- StimulusWorld:update
@@ -1620,7 +1612,7 @@ do  -- StimulusWorld:update
   function lurek.process(dt) sw:update(dt) end
 end
 
---@api-stub: StimulusWorld:clear
+--@api-stub: LStimulusWorld:clear
 -- Resets or clears the state.
 -- Drops every stimulus in one call; use on scene transitions.
 do  -- StimulusWorld:clear
@@ -1629,7 +1621,7 @@ do  -- StimulusWorld:clear
   sw:clear()
 end
 
---@api-stub: ContextSteering:addWander
+--@api-stub: LContextSteering:addWander
 -- Adds a wander behavior with jitter and weight to the context steering evaluator.
 -- Jitter is the per-tick angle randomisation in radians; weight scales the contribution.
 do  -- ContextSteering:addWander
@@ -1638,7 +1630,7 @@ do  -- ContextSteering:addWander
   cs:addWander(0.5, 0.3)
 end
 
---@api-stub: ContextSteering:addAvoidBounds
+--@api-stub: LContextSteering:addAvoidBounds
 -- Registers a rectangular region this agent must avoid.
 -- AABB to steer away from; margin is the soft-zone width inside which avoidance ramps in.
 do  -- ContextSteering:addAvoidBounds
@@ -1647,7 +1639,7 @@ do  -- ContextSteering:addAvoidBounds
   cs:addAvoidBounds(0, 0, 1280, 720, 32, 1.0)
 end
 
---@api-stub: ContextSteering:clearBehaviors
+--@api-stub: LContextSteering:clearBehaviors
 -- Resets or clears the behaviors.
 -- Wipes every registered behaviour; use when switching the agent's tactical mode.
 do  -- ContextSteering:clearBehaviors
@@ -1656,7 +1648,7 @@ do  -- ContextSteering:clearBehaviors
   cs:clearBehaviors()
 end
 
---@api-stub: ContextSteering:chosenMagnitude
+--@api-stub: LContextSteering:chosenMagnitude
 -- Returns or performs chosen magnitude.
 -- Returns the strength of the slot picked by the last evaluate(); useful for movement scaling.
 do  -- ContextSteering:chosenMagnitude
@@ -1666,7 +1658,7 @@ do  -- ContextSteering:chosenMagnitude
   lurek.log.debug("mag=" .. cs:chosenMagnitude(), "ai")
 end
 
---@api-stub: ContextSteering:slotCount
+--@api-stub: LContextSteering:slotCount
 -- Returns or performs slot count.
 -- Returns the slot count passed to newContextSteering; immutable after construction.
 do  -- ContextSteering:slotCount
@@ -1675,7 +1667,7 @@ do  -- ContextSteering:slotCount
   lurek.log.debug("slots=" .. cs:slotCount(), "ai")
 end
 
---@api-stub: NeedSystem:addNeed
+--@api-stub: LNeedSystem:addNeed
 -- Registers a new need with the specified name, urgency, and decay rate in the system.
 -- Args: name, decay_rate (per second), urgency_threshold, urgency_factor (multiplier above threshold).
 do  -- NeedSystem:addNeed
@@ -1684,7 +1676,7 @@ do  -- NeedSystem:addNeed
   ns:addNeed("thirst", 0.08, 0.5, 2.0)
 end
 
---@api-stub: NeedSystem:update
+--@api-stub: LNeedSystem:update
 -- Advances the simulation by one time step.
 -- Decays every need by its decay_rate * dt; call once per frame from lurek.process.
 do  -- NeedSystem:update
@@ -1693,7 +1685,7 @@ do  -- NeedSystem:update
   function lurek.process(dt) ns:update(dt) end
 end
 
---@api-stub: NeedSystem:mostUrgent
+--@api-stub: LNeedSystem:mostUrgent
 -- Returns or performs most urgent.
 -- Returns the name of the highest-urgency need, or nil if none are above threshold.
 do  -- NeedSystem:mostUrgent
@@ -1703,7 +1695,7 @@ do  -- NeedSystem:mostUrgent
   if n then lurek.log.debug("urgent: " .. n, "ai") end
 end
 
---@api-stub: NeedSystem:satisfy
+--@api-stub: LNeedSystem:satisfy
 -- Returns or performs satisfy.
 -- Reduces the named need by amount, clamped to zero; call when the agent eats / drinks / rests.
 do  -- NeedSystem:satisfy
@@ -1712,7 +1704,7 @@ do  -- NeedSystem:satisfy
   ns:satisfy("hunger", 0.4)
 end
 
---@api-stub: NeedSystem:valueOf
+--@api-stub: LNeedSystem:valueOf
 -- Returns or performs value of.
 -- Returns the current need value in [0, 1]; 1.0 is fully unsatisfied / desperate.
 do  -- NeedSystem:valueOf
@@ -1721,7 +1713,7 @@ do  -- NeedSystem:valueOf
   if ns:valueOf("hunger") > 0.8 then lurek.log.warn("starving", "ai") end
 end
 
---@api-stub: AIDirector:pushEvent
+--@api-stub: LAIDirector:pushEvent
 -- Pushes a gameplay event with the given intensity to the director for awareness analysis.
 -- Intensity in [0, 1]; combat bursts push tension up, calm exploration lets it decay.
 do  -- AIDirector:pushEvent
@@ -1729,7 +1721,7 @@ do  -- AIDirector:pushEvent
   dir:pushEvent(0.7)
 end
 
---@api-stub: AIDirector:update
+--@api-stub: LAIDirector:update
 -- Advances the simulation by one time step.
 -- Drives tension decay and phase transitions; call once per frame.
 do  -- AIDirector:update
@@ -1737,7 +1729,7 @@ do  -- AIDirector:update
   function lurek.process(dt) dir:update(dt) end
 end
 
---@api-stub: AIDirector:tension
+--@api-stub: LAIDirector:tension
 -- Returns or performs tension.
 -- Returns the current narrative tension in [0, 1]; drives spawnRateFactor and ambient mood.
 do  -- AIDirector:tension
@@ -1746,7 +1738,7 @@ do  -- AIDirector:tension
   lurek.log.debug("tension=" .. dir:tension(), "ai")
 end
 
---@api-stub: AIDirector:phase
+--@api-stub: LAIDirector:phase
 -- Returns or performs phase.
 -- Returns the phase string ("buildup", "peak", "relax", "calm"); use for music transitions.
 do  -- AIDirector:phase
@@ -1754,7 +1746,7 @@ do  -- AIDirector:phase
   if dir:phase() == "peak" then lurek.log.info("intense moment", "ai") end
 end
 
---@api-stub: AIDirector:spawnRateFactor
+--@api-stub: LAIDirector:spawnRateFactor
 -- Returns or performs spawn rate factor.
 -- Multiplier in roughly [0, 2] you apply to your base spawn rate; bursts during peak phase.
 do  -- AIDirector:spawnRateFactor
@@ -1763,7 +1755,7 @@ do  -- AIDirector:spawnRateFactor
   lurek.log.debug("spawn x" .. mult, "ai")
 end
 
---@api-stub: AIDirector:lootFactor
+--@api-stub: LAIDirector:lootFactor
 -- Returns or performs loot factor.
 -- Multiplier on loot drop rates; rises during relax phase to reward the player after stress.
 do  -- AIDirector:lootFactor
@@ -1771,7 +1763,7 @@ do  -- AIDirector:lootFactor
   lurek.log.debug("loot x" .. dir:lootFactor(), "ai")
 end
 
---@api-stub: AIDirector:ambientIntensity
+--@api-stub: LAIDirector:ambientIntensity
 -- Returns or performs ambient intensity.
 -- Drives ambient SFX / shader effects; 0 = quiet, 1 = peak intensity.
 do  -- AIDirector:ambientIntensity
@@ -1780,7 +1772,7 @@ do  -- AIDirector:ambientIntensity
   if amb > 0.5 then lurek.log.debug("loud ambience", "ai") end
 end
 
---@api-stub: AIDirector:setTension
+--@api-stub: LAIDirector:setTension
 -- Sets the global narrative tension level (0â€“1 scale).
 -- Force-overrides tension (e.g. for cutscenes); subsequent updates resume natural decay.
 do  -- AIDirector:setTension
@@ -1788,7 +1780,7 @@ do  -- AIDirector:setTension
   dir:setTension(0.9)
 end
 
---@api-stub: AIDirector:reset
+--@api-stub: LAIDirector:reset
 -- Resets or clears the state.
 -- Zeroes tension and resets phase to "calm"; use on scene transitions.
 do  -- AIDirector:reset
@@ -1796,7 +1788,7 @@ do  -- AIDirector:reset
   dir:reset()
 end
 
---@api-stub: HTNDomain:addPrimitive
+--@api-stub: LHTNDomain:addPrimitive
 -- Registers a primitive HTN task with a direct operator function.
 -- Args: name, preconds list, effects list (set true), clears list (set false). Use for atomic actions.
 do  -- HTNDomain:addPrimitive
@@ -1804,7 +1796,7 @@ do  -- HTNDomain:addPrimitive
   d:addPrimitive("attack", { "has_weapon", "in_range" }, { "enemy_dead" }, { "in_range" })
 end
 
---@api-stub: HTNDomain:taskCount
+--@api-stub: LHTNDomain:taskCount
 -- Returns or performs task count.
 -- Total number of tasks (primitive + compound); useful for domain-size diagnostics.
 do  -- HTNDomain:taskCount
@@ -1813,7 +1805,7 @@ do  -- HTNDomain:taskCount
   lurek.log.debug("tasks=" .. d:taskCount(), "ai")
 end
 
---@api-stub: EmotionModel:trigger
+--@api-stub: LEmotionModel:trigger
 -- Returns or performs trigger.
 -- Adds amount to the named emotion; clamped to the emotion's max. Call on stimulus events.
 do  -- EmotionModel:trigger
@@ -1822,7 +1814,7 @@ do  -- EmotionModel:trigger
   em:trigger("fear", 0.5)
 end
 
---@api-stub: EmotionModel:get
+--@api-stub: LEmotionModel:get
 -- Returns the current float value of this emotion dimension.
 -- Returns the current intensity in [0, 1]; 0 means at resting level.
 do  -- EmotionModel:get
@@ -1832,7 +1824,7 @@ do  -- EmotionModel:get
   if em:get("fear") > 0.3 then lurek.log.debug("scared", "ai") end
 end
 
---@api-stub: EmotionModel:dominant
+--@api-stub: LEmotionModel:dominant
 -- Returns or performs dominant.
 -- Returns the name of the emotion with the highest intensity, or nil if all at rest.
 do  -- EmotionModel:dominant
@@ -1843,7 +1835,7 @@ do  -- EmotionModel:dominant
   if d then lurek.log.info("feeling " .. d, "ai") end
 end
 
---@api-stub: EmotionModel:isActive
+--@api-stub: LEmotionModel:isActive
 -- Returns `true` if the emotion dimension is currently active and above threshold.
 -- True if the emotion is above its min_visible threshold; use to drive facial expression swaps.
 do  -- EmotionModel:isActive
@@ -1853,7 +1845,7 @@ do  -- EmotionModel:isActive
   if em:isActive("fear") then lurek.log.debug("show fear face", "ai") end
 end
 
---@api-stub: EmotionModel:update
+--@api-stub: LEmotionModel:update
 -- Advances the simulation by one time step.
 -- Decays each emotion toward its resting level by decay_rate * dt; call from lurek.process(dt).
 do  -- EmotionModel:update
@@ -1862,7 +1854,7 @@ do  -- EmotionModel:update
   function lurek.process(dt) em:update(dt) end
 end
 
---@api-stub: EmotionModel:reset
+--@api-stub: LEmotionModel:reset
 -- Resets or clears the state.
 -- Snaps every emotion back to its resting level; use on scene transitions.
 do  -- EmotionModel:reset
@@ -1871,7 +1863,7 @@ do  -- EmotionModel:reset
   em:reset()
 end
 
---@api-stub: ORCASolver:setPosition
+--@api-stub: LORCASolver:setPosition
 -- Sets the agent's current world-space position for ORCA velocity computation.
 -- Update each ORCA agent's position from your physics step before calling compute.
 do  -- ORCASolver:setPosition
@@ -1880,7 +1872,7 @@ do  -- ORCASolver:setPosition
   orca:setPosition(idx, 120, 100)
 end
 
---@api-stub: ORCASolver:compute
+--@api-stub: LORCASolver:compute
 -- Computes and returns the result.
 -- Runs the ORCA half-plane intersection; produces safe velocities readable via getSafeVelocity.
 do  -- ORCASolver:compute
@@ -1889,7 +1881,7 @@ do  -- ORCASolver:compute
   function lurek.process(dt) orca:compute(dt) end
 end
 
---@api-stub: ORCASolver:getSafeVelocity
+--@api-stub: LORCASolver:getSafeVelocity
 -- Returns the safe velocity.
 -- Returns (vx, vy) collision-free velocity for the agent; apply to your movement integrator.
 do  -- ORCASolver:getSafeVelocity
@@ -1900,7 +1892,7 @@ do  -- ORCASolver:getSafeVelocity
   lurek.log.debug("safe v=" .. vx .. "," .. vy, "ai")
 end
 
---@api-stub: ORCASolver:agentCount
+--@api-stub: LORCASolver:agentCount
 -- Returns or performs agent count.
 -- Returns the number of registered ORCA agents; sanity-check for crowd populations.
 do  -- ORCASolver:agentCount
@@ -1909,7 +1901,7 @@ do  -- ORCASolver:agentCount
   lurek.log.debug("agents=" .. orca:agentCount(), "ai")
 end
 
---@api-stub: NeuralNet:forward
+--@api-stub: LNeuralNet:forward
 -- Returns or performs forward.
 -- Input table length must equal the first layer's input size; output length matches the last layer.
 do  -- NeuralNet:forward
@@ -1920,7 +1912,7 @@ do  -- NeuralNet:forward
   lurek.log.debug("y=" .. out[1] .. "," .. out[2], "ai")
 end
 
---@api-stub: NeuralNet:setWeights
+--@api-stub: LNeuralNet:setWeights
 -- Overwrites all connection weights with values from a flat table.
 -- Pass a flat table of all weights in layer-major order; returns false on size mismatch.
 do  -- NeuralNet:setWeights
@@ -1932,7 +1924,7 @@ do  -- NeuralNet:setWeights
   nn:setWeights(zeros)
 end
 
---@api-stub: NeuralNet:getWeights
+--@api-stub: LNeuralNet:getWeights
 -- Returns a flat table of all connection weight values in the network.
 -- Returns a flat table of every weight in the network; use to checkpoint trained models.
 do  -- NeuralNet:getWeights
@@ -1943,7 +1935,7 @@ do  -- NeuralNet:getWeights
   lurek.log.debug("weights=" .. #w, "ai")
 end
 
---@api-stub: NeuralNet:paramCount
+--@api-stub: LNeuralNet:paramCount
 -- Returns or performs param count.
 -- Total number of weights + biases; needed when sizing the array passed to setWeights.
 do  -- NeuralNet:paramCount
@@ -1953,7 +1945,7 @@ do  -- NeuralNet:paramCount
   lurek.log.debug("params=" .. nn:paramCount(), "ai")
 end
 
---@api-stub: NeuralNet:layerCount
+--@api-stub: LNeuralNet:layerCount
 -- Returns or performs layer count.
 -- Number of layers added so far; one per addLayer call.
 do  -- NeuralNet:layerCount
@@ -1963,7 +1955,7 @@ do  -- NeuralNet:layerCount
   lurek.log.debug("layers=" .. nn:layerCount(), "ai")
 end
 
---@api-stub: GeneticAlgorithm:evolve
+--@api-stub: LGeneticAlgorithm:evolve
 -- Runs one generation of the evolutionary algorithm.
 -- Performs selection / crossover / mutation; call once per generation, after setting all fitnesses.
 do  -- GeneticAlgorithm:evolve
@@ -1972,7 +1964,7 @@ do  -- GeneticAlgorithm:evolve
   ga:evolve()
 end
 
---@api-stub: GeneticAlgorithm:generation
+--@api-stub: LGeneticAlgorithm:generation
 -- Returns or performs generation.
 -- Number of completed evolve() calls; useful as a stop condition or for logging.
 do  -- GeneticAlgorithm:generation
@@ -1980,7 +1972,7 @@ do  -- GeneticAlgorithm:generation
   if ga:generation() >= 100 then lurek.log.info("done", "ai") end
 end
 
---@api-stub: GeneticAlgorithm:popSize
+--@api-stub: LGeneticAlgorithm:popSize
 -- Returns or performs pop size.
 -- Returns the population size passed to newGeneticAlgorithm; immutable.
 do  -- GeneticAlgorithm:popSize
@@ -1988,7 +1980,7 @@ do  -- GeneticAlgorithm:popSize
   lurek.log.debug("pop=" .. ga:popSize(), "ai")
 end
 
---@api-stub: GeneticAlgorithm:setFitness
+--@api-stub: LGeneticAlgorithm:setFitness
 -- Sets the fitness score used by the genetic algorithm selection step.
 -- 0-based index; set every individual's fitness before calling evolve().
 do  -- GeneticAlgorithm:setFitness
@@ -1996,7 +1988,7 @@ do  -- GeneticAlgorithm:setFitness
   for i = 0, ga:popSize() - 1 do ga:setFitness(i, math.random()) end
 end
 
---@api-stub: GeneticAlgorithm:getGenes
+--@api-stub: LGeneticAlgorithm:getGenes
 -- Returns the chromosome as an ordered table of gene values.
 -- Returns the gene table for the 0-based individual; gene values are floats in [-1, 1].
 do  -- GeneticAlgorithm:getGenes
@@ -2005,7 +1997,7 @@ do  -- GeneticAlgorithm:getGenes
   lurek.log.debug("g0=" .. genes[1], "ai")
 end
 
---@api-stub: GeneticAlgorithm:bestGenes
+--@api-stub: LGeneticAlgorithm:bestGenes
 -- Returns or performs best genes.
 -- Returns the gene table for the highest-fitness individual; use to deploy the best solution.
 do  -- GeneticAlgorithm:bestGenes
@@ -2015,7 +2007,7 @@ do  -- GeneticAlgorithm:bestGenes
   lurek.log.debug("best[1]=" .. best[1], "ai")
 end
 
---@api-stub: Bandit:select
+--@api-stub: LBandit:select
 -- Returns or performs select.
 -- Picks an arm via the configured strategy; returns 0-based index. Reward via update.
 do  -- Bandit:select
@@ -2024,7 +2016,7 @@ do  -- Bandit:select
   lurek.log.debug("arm=" .. arm, "ai")
 end
 
---@api-stub: Bandit:update
+--@api-stub: LBandit:update
 -- Advances the simulation by one time step.
 -- Records reward for a previously-selected arm; required for the bandit to learn.
 do  -- Bandit:update
@@ -2033,7 +2025,7 @@ do  -- Bandit:update
   b:update(arm, 1.0)
 end
 
---@api-stub: Bandit:bestArm
+--@api-stub: LBandit:bestArm
 -- Returns or performs best arm.
 -- Returns the arm index with the highest empirical mean; use for greedy exploitation.
 do  -- Bandit:bestArm
@@ -2042,7 +2034,7 @@ do  -- Bandit:bestArm
   lurek.log.debug("best arm=" .. b:bestArm(), "ai")
 end
 
---@api-stub: Bandit:reset
+--@api-stub: LBandit:reset
 -- Resets or clears the state.
 -- Clears all pull counts and reward history; use to start a fresh experiment.
 do  -- Bandit:reset
@@ -2050,7 +2042,7 @@ do  -- Bandit:reset
   b:reset()
 end
 
---@api-stub: Bandit:armCount
+--@api-stub: LBandit:armCount
 -- Returns or performs arm count.
 -- Returns the arm count passed to newBandit; immutable.
 do  -- Bandit:armCount
@@ -2058,7 +2050,7 @@ do  -- Bandit:armCount
   lurek.log.debug("arms=" .. b:armCount(), "ai")
 end
 
---@api-stub: Bandit:totalPulls
+--@api-stub: LBandit:totalPulls
 -- Returns or performs total pulls.
 -- Sum of all arm pulls so far; useful for stopping rules and convergence checks.
 do  -- Bandit:totalPulls
@@ -2067,7 +2059,7 @@ do  -- Bandit:totalPulls
   lurek.log.debug("pulls=" .. b:totalPulls(), "ai")
 end
 
---@api-stub: Neuroevolution:evolve
+--@api-stub: LNeuroevolution:evolve
 -- Runs one generation of the evolutionary algorithm.
 -- Runs one generation; remember to set fitnesses for every individual first via setFitness.
 do  -- Neuroevolution:evolve
@@ -2077,7 +2069,7 @@ do  -- Neuroevolution:evolve
   ne:evolve()
 end
 
---@api-stub: Neuroevolution:setFitness
+--@api-stub: LNeuroevolution:setFitness
 -- Sets the fitness score used by the genetic algorithm selection step.
 -- 0-based individual index; raise to favour, drop to discard. Higher is always better.
 do  -- Neuroevolution:setFitness
@@ -2086,7 +2078,7 @@ do  -- Neuroevolution:setFitness
   ne:setFitness(0, 0.85)
 end
 
---@api-stub: Neuroevolution:chromosomeToNet
+--@api-stub: LNeuroevolution:chromosomeToNet
 -- Returns or performs chromosome to net.
 -- Materialises a NeuralNet for the 0-based individual; nil if index out of range.
 do  -- Neuroevolution:chromosomeToNet
@@ -2096,7 +2088,7 @@ do  -- Neuroevolution:chromosomeToNet
   if net then lurek.log.debug("net layers=" .. net:layerCount(), "ai") end
 end
 
---@api-stub: Neuroevolution:bestNetwork
+--@api-stub: LNeuroevolution:bestNetwork
 -- Returns or performs best network.
 -- Returns a NeuralNet built from the highest-fitness chromosome; use for deployment.
 do  -- Neuroevolution:bestNetwork
@@ -2107,7 +2099,7 @@ do  -- Neuroevolution:bestNetwork
   if best then lurek.log.debug("ok", "ai") end
 end
 
---@api-stub: Neuroevolution:bestFitness
+--@api-stub: LNeuroevolution:bestFitness
 -- Returns or performs best fitness.
 -- Returns the highest fitness across the current population; useful for early stopping.
 do  -- Neuroevolution:bestFitness
@@ -2117,7 +2109,7 @@ do  -- Neuroevolution:bestFitness
   lurek.log.debug("best=" .. ne:bestFitness(), "ai")
 end
 
---@api-stub: Neuroevolution:popSize
+--@api-stub: LNeuroevolution:popSize
 -- Returns or performs pop size.
 -- Returns the population size passed to newNeuroevolution; immutable.
 do  -- Neuroevolution:popSize
@@ -2126,7 +2118,7 @@ do  -- Neuroevolution:popSize
   lurek.log.debug("pop=" .. ne:popSize(), "ai")
 end
 
---@api-stub: Neuroevolution:generation
+--@api-stub: LNeuroevolution:generation
 -- Returns or performs generation.
 -- Number of evolve() calls so far; use as the termination gate.
 do  -- Neuroevolution:generation
@@ -2135,7 +2127,7 @@ do  -- Neuroevolution:generation
   if ne:generation() >= 50 then lurek.log.info("converged", "ai") end
 end
 
---@api-stub: StrategyAI:addGoal
+--@api-stub: LStrategyAI:addGoal
 -- Adds a strategic goal with priority score to the planner for future evaluation.
 -- Goal names are arbitrary strings; the scorer callback you pass to update will receive them.
 do  -- StrategyAI:addGoal
@@ -2144,7 +2136,7 @@ do  -- StrategyAI:addGoal
   s:addGoal("defend")
 end
 
---@api-stub: StrategyAI:addTag
+--@api-stub: LStrategyAI:addTag
 -- Adds a string tag to the strategy AI instance for goal filtering and categorization.
 -- Tags filter goals by context; e.g. "early_game" excludes goals with "late_game" tags.
 do  -- StrategyAI:addTag
@@ -2152,7 +2144,7 @@ do  -- StrategyAI:addTag
   s:addTag("early_game")
 end
 
---@api-stub: StrategyAI:removeTag
+--@api-stub: LStrategyAI:removeTag
 -- Removes the specified tag.
 -- Silent no-op if absent; safe to call on phase transitions.
 do  -- StrategyAI:removeTag
@@ -2161,7 +2153,7 @@ do  -- StrategyAI:removeTag
   s:removeTag("scout_phase")
 end
 
---@api-stub: StrategyAI:update
+--@api-stub: LStrategyAI:update
 -- Advances the simulation by one time step.
 -- Re-evaluates every update_interval seconds; scorer callback receives goal name and returns a float.
 do  -- StrategyAI:update
@@ -2170,7 +2162,7 @@ do  -- StrategyAI:update
   function lurek.process(dt) s:update(dt, function(goal) return 0.5 end) end
 end
 
---@api-stub: StrategyAI:forceEvaluate
+--@api-stub: LStrategyAI:forceEvaluate
 -- Returns or performs force evaluate.
 -- Bypasses the throttle and re-scores immediately; use after major game events.
 do  -- StrategyAI:forceEvaluate
@@ -2179,7 +2171,7 @@ do  -- StrategyAI:forceEvaluate
   s:forceEvaluate(function(goal) return goal == "retreat" and 1.0 or 0.0 end)
 end
 
---@api-stub: StrategyAI:activeGoal
+--@api-stub: LStrategyAI:activeGoal
 -- Returns or performs active goal.
 -- Returns the name of the current best-scoring goal, or nil before the first evaluate.
 do  -- StrategyAI:activeGoal
@@ -2189,7 +2181,7 @@ do  -- StrategyAI:activeGoal
   if g then lurek.log.info("strategy=" .. g, "ai") end
 end
 
---@api-stub: StrategyAI:timeUntilNext
+--@api-stub: LStrategyAI:timeUntilNext
 -- Returns or performs time until next.
 -- Seconds until the next throttled re-evaluation; useful for HUD countdowns.
 do  -- StrategyAI:timeUntilNext
@@ -2197,7 +2189,7 @@ do  -- StrategyAI:timeUntilNext
   lurek.log.debug("next eval in " .. s:timeUntilNext(), "ai")
 end
 
---@api-stub: AILod:shouldUpdate
+--@api-stub: LAILod:shouldUpdate
 -- Returns or performs should update.
 -- Returns true if the (tier, frame_number) combination is due for a tick this frame.
 do  -- AILod:shouldUpdate
@@ -2205,7 +2197,7 @@ do  -- AILod:shouldUpdate
   if lod:shouldUpdate(1, 60) then lurek.log.debug("tier 1 tick", "ai") end
 end
 
---@api-stub: AILod:tierCount
+--@api-stub: LAILod:tierCount
 -- Returns or performs tier count.
 -- Number of LOD tiers configured; default config has 3 (near / mid / far).
 do  -- AILod:tierCount
@@ -2213,7 +2205,7 @@ do  -- AILod:tierCount
   lurek.log.debug("tiers=" .. lod:tierCount(), "ai")
 end
 
---@api-stub: AILod:tierName
+--@api-stub: LAILod:tierName
 -- Returns or performs tier name.
 -- Returns the tier's name string (e.g. "near", "mid", "far") or nil if out of range.
 do  -- AILod:tierName
@@ -2227,7 +2219,7 @@ end
 -- Lua Extensibility Hooks (Phase 01)
 -- =============================================================================
 
---@api-stub: Agent:setCustomModel
+--@api-stub: LAgent:setCustomModel
 -- Sets a Lua-driven decision model on an agent.
 -- The callback fn(agent, blackboard, dt) is called each frame by world:update(dt).
 do  -- Agent:setCustomModel
@@ -2257,7 +2249,7 @@ do  -- lurek.ai.newGuard
   lurek.log.debug("guard children=" .. guard:getChildCount(), "ai")
 end
 
---@api-stub: UtilityAI:addConsideration
+--@api-stub: LUtilityAI:addConsideration
 -- Adds a multi-axis consideration with optional custom Lua curve function.
 -- Accepts either a string curve name or a fn(x)->y for a custom response curve.
 do  -- UtilityAI:addConsideration (custom curve)
@@ -2272,7 +2264,7 @@ do  -- UtilityAI:addConsideration (custom curve)
   lurek.log.debug("considerations registered without error", "ai")
 end
 
---@api-stub: SteeringManager:addCustomBehavior
+--@api-stub: LSteeringManager:addCustomBehavior
 -- Registers a Lua callback fn(agent, dt)->dx,dy as a custom steering force.
 -- Weight multiplies the returned force before combination.
 do  -- SteeringManager:addCustomBehavior
@@ -2283,7 +2275,7 @@ do  -- SteeringManager:addCustomBehavior
   lurek.log.debug("custom behaviors=" .. sm:getBehaviorCount(), "ai")
 end
 
---@api-stub: SteeringManager:applyCustomSteering
+--@api-stub: LSteeringManager:applyCustomSteering
 -- Invokes all custom steering callbacks and returns the combined (fx, fy) force.
 -- Call each frame and add the result to the agent's velocity manually.
 do  -- SteeringManager:applyCustomSteering
@@ -2298,7 +2290,7 @@ do  -- SteeringManager:applyCustomSteering
   lurek.log.debug("custom force=" .. fx .. "," .. fy, "ai")
 end
 
---@api-stub: EmotionModel:add
+--@api-stub: LEmotionModel:add
 -- Registers a named emotion dimension with initial value, decay rate, and max intensity.
 -- Call once per emotion at init; trigger() adds intensity, update() decays it each frame.
 do  -- EmotionModel:add
@@ -2308,7 +2300,7 @@ do  -- EmotionModel:add
   lurek.log.info("emotions registered", "ai")
 end
 
---@api-stub: GOAPPlanner:addAction
+--@api-stub: LGOAPPlanner:addAction
 -- Registers a GOAP action with a cost, execution callback, and optional tags.
 -- Actions form the GOAP action space; the planner selects sequences by minimising total cost.
 do  -- GOAPPlanner:addAction
@@ -2318,7 +2310,7 @@ do  -- GOAPPlanner:addAction
   planner:addGoal("door_open", 1.0)
 end
 
---@api-stub: UtilityAI:addAction
+--@api-stub: LUtilityAI:addAction
 -- Registers a named utility action with a scoring function.
 -- The evaluator calls all score functions and returns the action with the highest result.
 do  -- UtilityAI:addAction
@@ -2329,7 +2321,7 @@ do  -- UtilityAI:addAction
   lurek.log.info("best action: " .. (best or "none"), "ai")
 end
 
---@api-stub: AIWorld:addAgent
+--@api-stub: LAIWorld:addAgent
 -- Adds a named agent to the AI world and returns an Agent handle.
 -- Agents are ticked each world:update(dt); name must be unique within the world.
 do  -- AIWorld:addAgent
@@ -2339,7 +2331,7 @@ do  -- AIWorld:addAgent
   lurek.log.info("agents: " .. world:getAgentCount(), "ai")
 end
 
---@api-stub: SteeringManager:addArrive
+--@api-stub: LSteeringManager:addArrive
 -- Adds an arrive behaviour that decelerates the agent as it approaches the target.
 -- Slower final approach than addSeek; use for parking-style movement to a destination.
 do  -- SteeringManager:addArrive
@@ -2349,7 +2341,7 @@ do  -- SteeringManager:addArrive
   lurek.log.info("arrive: " .. fx .. "," .. fy, "ai")
 end
 
---@api-stub: StimulusWorld:addAuditory
+--@api-stub: LStimulusWorld:addAuditory
 -- Adds an auditory stimulus at the given position with radius and loudness.
 -- Agents query the StimulusWorld for nearby sounds rather than iterating each other.
 do  -- StimulusWorld:addAuditory
@@ -2358,7 +2350,7 @@ do  -- StimulusWorld:addAuditory
   lurek.log.info("stimuli: " .. sw:count(), "ai")
 end
 
---@api-stub: ContextSteering:addAvoidPoint
+--@api-stub: LContextSteering:addAvoidPoint
 -- Adds a repulsor point to the context steering danger map.
 -- Increase weight to create stronger avoidance of pillars, hazard tiles, etc.
 do  -- ContextSteering:addAvoidPoint
@@ -2369,7 +2361,7 @@ do  -- ContextSteering:addAvoidPoint
   lurek.log.info("context steer: " .. fx .. "," .. fy, "ai")
 end
 
---@api-stub: HTNDomain:addCompound
+--@api-stub: LHTNDomain:addCompound
 -- Adds a compound task (method list) to the HTN domain.
 -- Compound tasks decompose into primitives; the planner tries methods in order until one succeeds.
 do  -- HTNDomain:addCompound
@@ -2379,7 +2371,7 @@ do  -- HTNDomain:addCompound
   lurek.log.info("htn tasks: " .. d:taskCount(), "ai")
 end
 
---@api-stub: SteeringManager:addEvade
+--@api-stub: LSteeringManager:addEvade
 -- Adds an evade behaviour that flees from a predicted future target position.
 -- Predicts where the target will be and steers away from that projected point.
 do  -- SteeringManager:addEvade
@@ -2389,7 +2381,7 @@ do  -- SteeringManager:addEvade
   lurek.log.info("evade: " .. fx .. "," .. fy, "ai")
 end
 
---@api-stub: SteeringManager:addFlee
+--@api-stub: LSteeringManager:addFlee
 -- Adds a flee behaviour that steers directly away from the threat position.
 -- Unlike addEvade, flee reacts to current position not predicted future position.
 do  -- SteeringManager:addFlee
@@ -2399,7 +2391,7 @@ do  -- SteeringManager:addFlee
   lurek.log.info("flee: " .. fx .. "," .. fy, "ai")
 end
 
---@api-stub: SteeringManager:addFlock
+--@api-stub: LSteeringManager:addFlock
 -- Adds a flocking behaviour combining separation, alignment, and cohesion.
 -- Pass a neighbour radius and the per-component weights as a table or individual args.
 do  -- SteeringManager:addFlock
@@ -2409,7 +2401,7 @@ do  -- SteeringManager:addFlock
   lurek.log.info("flock: " .. fx .. "," .. fy, "ai")
 end
 
---@api-stub: GOAPPlanner:addGoal
+--@api-stub: LGOAPPlanner:addGoal
 -- Adds a named world-state goal with a priority weight.
 -- Higher-priority goals are preferred when multiple goals are satisfiable simultaneously.
 do  -- GOAPPlanner:addGoal
@@ -2420,7 +2412,7 @@ do  -- GOAPPlanner:addGoal
   lurek.log.info("goal count: " .. planner:getGoalCount(), "ai")
 end
 
---@api-stub: InfluenceMap:addLayer
+--@api-stub: LInfluenceMap:addLayer
 -- Adds a named influence layer to the map grid.
 -- Layers are independent float grids; each can represent threat, resource, or patrol density.
 do  -- InfluenceMap:addLayer
@@ -2430,7 +2422,7 @@ do  -- InfluenceMap:addLayer
   lurek.log.info("has threat layer: " .. tostring(im:hasLayer("threat")), "ai")
 end
 
---@api-stub: TraitProfile:addModifier
+--@api-stub: LTraitProfile:addModifier
 -- Adds a named transient modifier to a trait value.
 -- Modifiers stack additively; remove them by tag when the buff/debuff expires.
 do  -- TraitProfile:addModifier
@@ -2440,7 +2432,7 @@ do  -- TraitProfile:addModifier
   lurek.log.info("effective courage: " .. traits:get("courage"), "ai")
 end
 
---@api-stub: SteeringManager:addPursue
+--@api-stub: LSteeringManager:addPursue
 -- Adds a pursue behaviour that steers toward the predicted future position of a target.
 -- More effective than addSeek against moving targets; uses linear prediction.
 do  -- SteeringManager:addPursue
@@ -2450,7 +2442,7 @@ do  -- SteeringManager:addPursue
   lurek.log.info("pursue: " .. fx .. "," .. fy, "ai")
 end
 
---@api-stub: SteeringManager:addSeek
+--@api-stub: LSteeringManager:addSeek
 -- Adds a seek behaviour that steers directly toward the target position.
 -- The simplest steering force; weight=1.0 uses the full max-force budget.
 do  -- SteeringManager:addSeek
@@ -2460,7 +2452,7 @@ do  -- SteeringManager:addSeek
   lurek.log.info("seek force: " .. fx .. "," .. fy, "ai")
 end
 
---@api-stub: ContextSteering:addSeekTarget
+--@api-stub: LContextSteering:addSeekTarget
 -- Adds a seek target to the context steering desire map.
 -- Multiple seek targets blend via the slot weights; the final direction maximises total desire.
 do  -- ContextSteering:addSeekTarget
@@ -2471,7 +2463,7 @@ do  -- ContextSteering:addSeekTarget
   lurek.log.info("context direction: " .. fx .. "," .. fy, "ai")
 end
 
---@api-stub: StateMachine:addTransition
+--@api-stub: LStateMachine:addTransition
 -- Adds a conditional transition between two states.
 -- Transition fires when the predicate returns true during the FSM's update pass.
 do  -- StateMachine:addTransition
@@ -2483,7 +2475,7 @@ do  -- StateMachine:addTransition
   lurek.log.info("state: " .. (fsm:getCurrentState() or "nil"), "ai")
 end
 
---@api-stub: StimulusWorld:addVisual
+--@api-stub: LStimulusWorld:addVisual
 -- Adds a visual stimulus at the given position with a view cone and distance.
 -- Agents can query for nearby visuals in their perception radius each tick.
 do  -- StimulusWorld:addVisual
@@ -2493,7 +2485,7 @@ do  -- StimulusWorld:addVisual
   lurek.log.info("stimuli count: " .. sw:count(), "ai")
 end
 
---@api-stub: SteeringManager:addWander
+--@api-stub: LSteeringManager:addWander
 -- Adds a wander behaviour producing smooth random-direction steering.
 -- Adjust circleRadius and maxTurnRate to control how erratic the wandering appears.
 do  -- SteeringManager:addWander
@@ -2503,7 +2495,7 @@ do  -- SteeringManager:addWander
   lurek.log.info("wander: " .. fx .. "," .. fy, "ai")
 end
 
---@api-stub: InfluenceMap:blend
+--@api-stub: LInfluenceMap:blend
 -- Blends a source layer into a destination layer by weight.
 -- Use to combine threat and resource maps into a single priority surface for decision-making.
 do  -- InfluenceMap:blend
@@ -2515,7 +2507,7 @@ do  -- InfluenceMap:blend
   lurek.log.info("blend complete", "ai")
 end
 
---@api-stub: SteeringManager:calculate
+--@api-stub: LSteeringManager:calculate
 -- Calculates the combined steering force for the current agent state.
 -- Returns two floats (fx, fy); apply them to the agent's velocity each physics step.
 do  -- SteeringManager:calculate
@@ -2525,7 +2517,7 @@ do  -- SteeringManager:calculate
   lurek.log.info("steering force: " .. fx .. "," .. fy, "ai")
 end
 
---@api-stub: StimulusWorld:count
+--@api-stub: LStimulusWorld:count
 -- Returns the total number of active stimuli in the perception world.
 -- Use to check whether any stimulus exists before querying agents.
 do  -- StimulusWorld:count
@@ -2535,7 +2527,7 @@ do  -- StimulusWorld:count
   lurek.log.info("active stimuli: " .. n, "ai")
 end
 
---@api-stub: CommandQueue:enqueue
+--@api-stub: LCommandQueue:enqueue
 -- Appends a command to the back of the queue.
 -- The first argument is the command type tag; the callback fires when it becomes active.
 do  -- CommandQueue:enqueue
@@ -2545,7 +2537,7 @@ do  -- CommandQueue:enqueue
   lurek.log.info("queue count: " .. q:getCount(), "ai")
 end
 
---@api-stub: ContextSteering:evaluate
+--@api-stub: LContextSteering:evaluate
 -- Evaluates all context slots and returns the best-fit steering direction as (fx, fy).
 -- Call once per frame after adding seek/avoid behaviours; reads the combined context map.
 do  -- ContextSteering:evaluate
@@ -2556,7 +2548,7 @@ do  -- ContextSteering:evaluate
   lurek.log.info("evaluated: " .. fx .. "," .. fy, "ai")
 end
 
---@api-stub: Blackboard:getBool
+--@api-stub: LBlackboard:getBool
 -- Retrieves a boolean value by key; returns false if the key does not exist.
 -- Pair with setBool to drive FSM transitions from shared perception data.
 do  -- Blackboard:getBool
@@ -2566,7 +2558,7 @@ do  -- Blackboard:getBool
   lurek.log.info("player spotted: " .. tostring(spotted), "ai")
 end
 
---@api-stub: Squad:getFormationPosition
+--@api-stub: LSquad:getFormationPosition
 -- Returns the world-space position for a named member in the current formation.
 -- Drive each member agent toward their formation slot each frame.
 do  -- Squad:getFormationPosition
@@ -2577,7 +2569,7 @@ do  -- Squad:getFormationPosition
   lurek.log.info("slot: " .. px .. "," .. py, "ai")
 end
 
---@api-stub: InfluenceMap:getInfluence
+--@api-stub: LInfluenceMap:getInfluence
 -- Returns the influence value at the specified grid cell.
 -- Returns 0 for cells outside the grid boundary or unpopulated layers.
 do  -- InfluenceMap:getInfluence
@@ -2588,7 +2580,7 @@ do  -- InfluenceMap:getInfluence
   lurek.log.info("influence at centre: " .. v, "ai")
 end
 
---@api-stub: Blackboard:getNumber
+--@api-stub: LBlackboard:getNumber
 -- Retrieves a numeric value by key; returns 0 if the key does not exist.
 -- Persistent across frames; ideal for caching sensor readings between ticks.
 do  -- Blackboard:getNumber
@@ -2598,7 +2590,7 @@ do  -- Blackboard:getNumber
   lurek.log.info("threat: " .. t, "ai")
 end
 
---@api-stub: Blackboard:getString
+--@api-stub: LBlackboard:getString
 -- Retrieves a string value by key; returns an empty string if not set.
 -- Use to store target names, state tags, or short command strings.
 do  -- Blackboard:getString
@@ -2608,7 +2600,7 @@ do  -- Blackboard:getString
   lurek.log.info("last enemy: " .. name, "ai")
 end
 
---@api-stub: QLearner:learn
+--@api-stub: LQLearner:learn
 -- Updates the Q-value for a (state, action) pair using the Bellman equation.
 -- Call after receiving a reward signal; negative rewards teach avoidance.
 do  -- QLearner:learn
@@ -2619,7 +2611,7 @@ do  -- QLearner:learn
   lurek.log.info("Q(2,1)=" .. qv, "ai")
 end
 
---@api-stub: GOAPPlanner:plan
+--@api-stub: LGOAPPlanner:plan
 -- Runs the GOAP solver and returns an ordered list of action names to achieve goals.
 -- Pass the current world state as a key/value table; returns nil if no plan is found.
 do  -- GOAPPlanner:plan
@@ -2630,7 +2622,7 @@ do  -- GOAPPlanner:plan
   lurek.log.info("plan length: " .. (actions and #actions or 0), "ai")
 end
 
---@api-stub: HTNDomain:plan
+--@api-stub: LHTNDomain:plan
 -- Decomposes the root compound task into a primitive task sequence using HTN planning.
 -- Returns an ordered list of primitive task names or nil if decomposition fails.
 do  -- HTNDomain:plan
@@ -2641,7 +2633,7 @@ do  -- HTNDomain:plan
   lurek.log.info("htn plan steps: " .. (plan and #plan or 0), "ai")
 end
 
---@api-stub: InfluenceMap:propagate
+--@api-stub: LInfluenceMap:propagate
 -- Propagates influence values across the grid using an exponential decay kernel.
 -- Higher decay makes influence spread farther; call each AI tick or on stimulus events.
 do  -- InfluenceMap:propagate
@@ -2652,7 +2644,7 @@ do  -- InfluenceMap:propagate
   lurek.log.info("propagation done", "ai")
 end
 
---@api-stub: CommandQueue:pushFront
+--@api-stub: LCommandQueue:pushFront
 -- Inserts a high-priority command at the front of the queue, bypassing queued orders.
 -- Use for interrupt commands (take cover, flee) that must execute immediately.
 do  -- CommandQueue:pushFront
@@ -2662,7 +2654,7 @@ do  -- CommandQueue:pushFront
   lurek.log.info("front command: " .. q:getCurrentType(), "ai")
 end
 
---@api-stub: InfluenceMap:queryRect
+--@api-stub: LInfluenceMap:queryRect
 -- Returns a table of cells with influence above a threshold within a world-space rect.
 -- Use for tactical decisions: find the safest or most resource-rich region to move toward.
 do  -- InfluenceMap:queryRect
@@ -2673,7 +2665,7 @@ do  -- InfluenceMap:queryRect
   lurek.log.info("influence sum: " .. total, "ai")
 end
 
---@api-stub: CommandQueue:replace
+--@api-stub: LCommandQueue:replace
 -- Replaces the current front command with a new one without discarding the rest of the queue.
 -- Useful for retargeting the active order (update move destination mid-execution).
 do  -- CommandQueue:replace
@@ -2683,7 +2675,7 @@ do  -- CommandQueue:replace
   lurek.log.info("replaced: " .. q:getCurrentType(), "ai")
 end
 
---@api-stub: MCTSEngine:search
+--@api-stub: LMCTSEngine:search
 -- Runs Monte Carlo Tree Search and returns the best action index from the root state.
 -- iterations (set at construction) controls quality vs. latency; more = better decisions.
 do  -- MCTSEngine:search
@@ -2695,7 +2687,7 @@ do  -- MCTSEngine:search
   lurek.log.info("best action: " .. best, "ai")
 end
 
---@api-stub: GOAPPlanner:setEffect
+--@api-stub: LGOAPPlanner:setEffect
 -- Defines the world-state effect of an action (what changes after it executes).
 -- Effects are key/value pairs applied to the world state when the action completes.
 do  -- GOAPPlanner:setEffect
@@ -2705,7 +2697,7 @@ do  -- GOAPPlanner:setEffect
   lurek.log.info("effect registered", "ai")
 end
 
---@api-stub: Squad:setFormation
+--@api-stub: LSquad:setFormation
 -- Sets the formation type and inter-agent spacing for the squad.
 -- Supported types include "line", "wedge", "column", "circle", "scatter".
 do  -- Squad:setFormation
@@ -2716,7 +2708,7 @@ do  -- Squad:setFormation
   lurek.log.info("formation: " .. squad:getFormation(), "ai")
 end
 
---@api-stub: GOAPPlanner:setGoalState
+--@api-stub: LGOAPPlanner:setGoalState
 -- Sets the required world-state value for a named goal key.
 -- The planner tries to satisfy all registered goals; only goals with matching state are active.
 do  -- GOAPPlanner:setGoalState
@@ -2726,7 +2718,7 @@ do  -- GOAPPlanner:setGoalState
   lurek.log.info("goal state set", "ai")
 end
 
---@api-stub: InfluenceMap:setInfluence
+--@api-stub: LInfluenceMap:setInfluence
 -- Sets the influence value at a specific grid cell directly.
 -- Use for hard-coded obstacles or guaranteed zones without radius spreading.
 do  -- InfluenceMap:setInfluence
@@ -2736,7 +2728,7 @@ do  -- InfluenceMap:setInfluence
   lurek.log.info("cell 8,8 hazard: " .. im:getInfluence("hazard", 8, 8), "ai")
 end
 
---@api-stub: GOAPPlanner:setPrecondition
+--@api-stub: LGOAPPlanner:setPrecondition
 -- Sets a world-state precondition on an action (what must be true before it can run).
 -- An action is only selected when all its preconditions are satisfied by the current state.
 do  -- GOAPPlanner:setPrecondition
@@ -2746,7 +2738,7 @@ do  -- GOAPPlanner:setPrecondition
   lurek.log.info("precondition set", "ai")
 end
 
---@api-stub: ORCASolver:setPreferredVelocity
+--@api-stub: LORCASolver:setPreferredVelocity
 -- Sets the desired velocity for a registered ORCA agent before each solve step.
 -- Call once per agent per frame, then call compute() to get safe velocities.
 do  -- ORCASolver:setPreferredVelocity
@@ -2758,7 +2750,7 @@ do  -- ORCASolver:setPreferredVelocity
   lurek.log.info("safe vel: " .. vx .. "," .. vy, "ai")
 end
 
---@api-stub: QLearner:setQValue
+--@api-stub: LQLearner:setQValue
 -- Directly sets a Q-table entry, bypassing the Bellman update.
 -- Use to seed the Q-table from designer-authored data or a loaded checkpoint.
 do  -- QLearner:setQValue
@@ -2768,7 +2760,7 @@ do  -- QLearner:setQValue
   lurek.log.info("Q(0,2)=" .. v, "ai")
 end
 
---@api-stub: InfluenceMap:stampInfluence
+--@api-stub: LInfluenceMap:stampInfluence
 -- Stamps a radial influence blob centred on world-space (cx, cy) with given radius.
 -- decay controls how fast influence falls off with distance from centre (0=flat, 1=sharp).
 do  -- InfluenceMap:stampInfluence
@@ -2778,7 +2770,7 @@ do  -- InfluenceMap:stampInfluence
   lurek.log.info("stamped threat blob", "ai")
 end
 
---@api-stub: AILod:tierFor
+--@api-stub: LAILod:tierFor
 -- Returns the LOD tier index (0=highest, N=lowest) for a given world-space distance.
 -- Use to throttle AI update rate for distant agents and save CPU budget.
 do  -- AILod:tierFor
@@ -2787,7 +2779,7 @@ do  -- AILod:tierFor
   lurek.log.info("lod tier at 350: " .. tier, "ai")
 end
 
---@api-stub: ORCASolver:addAgent
+--@api-stub: LORCASolver:addAgent
 -- Registers an agent with the ORCA solver so it participates in velocity planning.
 -- Each agent needs a position, preferred velocity, radius, and max speed.
 do  -- ORCASolver:addAgent
@@ -2797,7 +2789,7 @@ do  -- ORCASolver:addAgent
   lurek.log.info("ORCA agent added", "ai")
 end
 
---@api-stub: NeuralNet:addLayer
+--@api-stub: LNeuralNet:addLayer
 -- Adds a hidden layer with the specified neuron count and activation function.
 -- Call before NeuralNet:build() to define the network architecture.
 do  -- NeuralNet:addLayer
@@ -2915,69 +2907,6 @@ end
 -- LAIDirector methods
 -- -----------------------------------------------------------------------------
 
--- ---- Stub: LAIDirector:pushEvent -----------------------------------------
---@api-stub: LAIDirector:pushEvent
--- Pushes a gameplay event with the given intensity to the director for awareness analysis.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAIDirector_stub:pushEvent(intensity)
--- (replace lAIDirector_stub with your real LAIDirector instance above)
-
--- ---- Stub: LAIDirector:update --------------------------------------------
---@api-stub: LAIDirector:update
--- Advances the simulation by one time step.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAIDirector_stub:update(0.016)
--- (replace lAIDirector_stub with your real LAIDirector instance above)
-
--- ---- Stub: LAIDirector:tension -------------------------------------------
---@api-stub: LAIDirector:tension
--- Returns or performs tension.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAIDirector_stub:tension()  -- -> number
--- (replace lAIDirector_stub with your real LAIDirector instance above)
-
--- ---- Stub: LAIDirector:phase ---------------------------------------------
---@api-stub: LAIDirector:phase
--- Returns or performs phase.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAIDirector_stub:phase()  -- -> string
--- (replace lAIDirector_stub with your real LAIDirector instance above)
-
--- ---- Stub: LAIDirector:spawnRateFactor -----------------------------------
---@api-stub: LAIDirector:spawnRateFactor
--- Returns or performs spawn rate factor.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAIDirector_stub:spawnRateFactor()  -- -> number
--- (replace lAIDirector_stub with your real LAIDirector instance above)
-
--- ---- Stub: LAIDirector:lootFactor ----------------------------------------
---@api-stub: LAIDirector:lootFactor
--- Returns or performs loot factor.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAIDirector_stub:lootFactor()  -- -> number
--- (replace lAIDirector_stub with your real LAIDirector instance above)
-
--- ---- Stub: LAIDirector:ambientIntensity ----------------------------------
---@api-stub: LAIDirector:ambientIntensity
--- Returns or performs ambient intensity.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAIDirector_stub:ambientIntensity()  -- -> number
--- (replace lAIDirector_stub with your real LAIDirector instance above)
-
--- ---- Stub: LAIDirector:setTension ----------------------------------------
---@api-stub: LAIDirector:setTension
--- Sets the global narrative tension level (0â€“1 scale).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAIDirector_stub:setTension(42)
--- (replace lAIDirector_stub with your real LAIDirector instance above)
-
--- ---- Stub: LAIDirector:reset ---------------------------------------------
---@api-stub: LAIDirector:reset
--- Resets or clears the state.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAIDirector_stub:reset()
--- (replace lAIDirector_stub with your real LAIDirector instance above)
-
 -- ---- Stub: LAIDirector:type ----------------------------------------------
 --@api-stub: LAIDirector:type
 -- Returns the type name of this object.
@@ -2996,34 +2925,6 @@ end
 -- LAILod methods
 -- -----------------------------------------------------------------------------
 
--- ---- Stub: LAILod:tierFor ------------------------------------------------
---@api-stub: LAILod:tierFor
--- Returns or performs tier for.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAILod_stub:tierFor(ax, ay, rx, ry)  -- -> integer
--- (replace lAILod_stub with your real LAILod instance above)
-
--- ---- Stub: LAILod:shouldUpdate -------------------------------------------
---@api-stub: LAILod:shouldUpdate
--- Returns or performs should update.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAILod_stub:shouldUpdate(tier, frame)  -- -> boolean
--- (replace lAILod_stub with your real LAILod instance above)
-
--- ---- Stub: LAILod:tierCount ----------------------------------------------
---@api-stub: LAILod:tierCount
--- Returns or performs tier count.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAILod_stub:tierCount()  -- -> integer
--- (replace lAILod_stub with your real LAILod instance above)
-
--- ---- Stub: LAILod:tierName -----------------------------------------------
---@api-stub: LAILod:tierName
--- Returns or performs tier name.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAILod_stub:tierName(tier)  -- -> string
--- (replace lAILod_stub with your real LAILod instance above)
-
 -- ---- Stub: LAILod:type ---------------------------------------------------
 --@api-stub: LAILod:type
 -- Returns the type name of this object.
@@ -3038,336 +2939,10 @@ end
 -- lAILod_stub:typeOf("hero")  -- -> boolean
 -- (replace lAILod_stub with your real LAILod instance above)
 
--- -----------------------------------------------------------------------------
--- LAIWorld methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LAIWorld:addAgent ---------------------------------------------
---@api-stub: LAIWorld:addAgent
--- Registers a new named agent and returns its handle.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAIWorld_stub:addAgent("hero")  -- -> Agent
--- (replace lAIWorld_stub with your real LAIWorld instance above)
-
--- ---- Stub: LAIWorld:getAgent ---------------------------------------------
---@api-stub: LAIWorld:getAgent
--- Returns the agent handle for the given name, or nil.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAIWorld_stub:getAgent("hero")
--- (replace lAIWorld_stub with your real LAIWorld instance above)
-
--- ---- Stub: LAIWorld:removeAgent ------------------------------------------
---@api-stub: LAIWorld:removeAgent
--- Removes an agent by its userdata handle.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAIWorld_stub:removeAgent(agent)
--- (replace lAIWorld_stub with your real LAIWorld instance above)
-
--- ---- Stub: LAIWorld:getAgentCount ----------------------------------------
---@api-stub: LAIWorld:getAgentCount
--- Returns the number of registered agents.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAIWorld_stub:getAgentCount()  -- -> integer
--- (replace lAIWorld_stub with your real LAIWorld instance above)
-
--- ---- Stub: LAIWorld:getGlobalBlackboard ----------------------------------
---@api-stub: LAIWorld:getGlobalBlackboard
--- Returns a snapshot of the world-level blackboard.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAIWorld_stub:getGlobalBlackboard()  -- -> AIBlackboard
--- (replace lAIWorld_stub with your real LAIWorld instance above)
-
--- ---- Stub: LAIWorld:update -----------------------------------------------
---@api-stub: LAIWorld:update
--- Advances all agents by dt seconds, then invokes any custom-model callbacks.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAIWorld_stub:update(0.016)
--- (replace lAIWorld_stub with your real LAIWorld instance above)
-
--- ---- Stub: LAIWorld:type -------------------------------------------------
---@api-stub: LAIWorld:type
--- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAIWorld_stub:type()  -- -> string
--- (replace lAIWorld_stub with your real LAIWorld instance above)
-
--- ---- Stub: LAIWorld:typeOf -----------------------------------------------
---@api-stub: LAIWorld:typeOf
--- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAIWorld_stub:typeOf("hero")  -- -> boolean
--- (replace lAIWorld_stub with your real LAIWorld instance above)
-
--- -----------------------------------------------------------------------------
--- LAgent methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LAgent:getName ------------------------------------------------
---@api-stub: LAgent:getName
--- Returns the agent's registered name.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAgent_stub:getName()  -- -> string
--- (replace lAgent_stub with your real LAgent instance above)
-
--- ---- Stub: LAgent:setPosition --------------------------------------------
---@api-stub: LAgent:setPosition
--- Sets the agent's world-space position.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAgent_stub:setPosition(0.0, 0.0)
--- (replace lAgent_stub with your real LAgent instance above)
-
--- ---- Stub: LAgent:getPosition --------------------------------------------
---@api-stub: LAgent:getPosition
--- Returns the agent's current position.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAgent_stub:getPosition()  -- -> number, number
--- (replace lAgent_stub with your real LAgent instance above)
-
--- ---- Stub: LAgent:setVelocity --------------------------------------------
---@api-stub: LAgent:setVelocity
--- Sets the agent's velocity vector.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAgent_stub:setVelocity(0.0, 0.0)
--- (replace lAgent_stub with your real LAgent instance above)
-
--- ---- Stub: LAgent:getVelocity --------------------------------------------
---@api-stub: LAgent:getVelocity
--- Returns the agent's current velocity.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAgent_stub:getVelocity()  -- -> number, number
--- (replace lAgent_stub with your real LAgent instance above)
-
--- ---- Stub: LAgent:setMaxSpeed --------------------------------------------
---@api-stub: LAgent:setMaxSpeed
--- Sets the maximum speed cap.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAgent_stub:setMaxSpeed(1.0)
--- (replace lAgent_stub with your real LAgent instance above)
-
--- ---- Stub: LAgent:getMaxSpeed --------------------------------------------
---@api-stub: LAgent:getMaxSpeed
--- Returns the maximum speed cap.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAgent_stub:getMaxSpeed()  -- -> number
--- (replace lAgent_stub with your real LAgent instance above)
-
--- ---- Stub: LAgent:setMaxForce --------------------------------------------
---@api-stub: LAgent:setMaxForce
--- Sets the maximum steering force cap.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAgent_stub:setMaxForce(1.0)
--- (replace lAgent_stub with your real LAgent instance above)
-
--- ---- Stub: LAgent:getMaxForce --------------------------------------------
---@api-stub: LAgent:getMaxForce
--- Returns the maximum steering force cap.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAgent_stub:getMaxForce()  -- -> number
--- (replace lAgent_stub with your real LAgent instance above)
-
--- ---- Stub: LAgent:setPriority --------------------------------------------
---@api-stub: LAgent:setPriority
--- Sets the scheduling priority (higher = earlier).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAgent_stub:setPriority(p)
--- (replace lAgent_stub with your real LAgent instance above)
-
--- ---- Stub: LAgent:getPriority --------------------------------------------
---@api-stub: LAgent:getPriority
--- Returns the agent's scheduling priority.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAgent_stub:getPriority()  -- -> integer
--- (replace lAgent_stub with your real LAgent instance above)
-
--- ---- Stub: LAgent:setDecisionModel ---------------------------------------
---@api-stub: LAgent:setDecisionModel
--- Sets the active decision model.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAgent_stub:setDecisionModel(model)
--- (replace lAgent_stub with your real LAgent instance above)
-
--- ---- Stub: LAgent:getDecisionModel ---------------------------------------
---@api-stub: LAgent:getDecisionModel
--- Returns the name of the current decision model.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAgent_stub:getDecisionModel()  -- -> string
--- (replace lAgent_stub with your real LAgent instance above)
-
--- ---- Stub: LAgent:setCustomModel -----------------------------------------
---@api-stub: LAgent:setCustomModel
--- Installs a Lua-driven decision model on this agent.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAgent_stub:setCustomModel(function() end)
--- (replace lAgent_stub with your real LAgent instance above)
-
--- ---- Stub: LAgent:addTag -------------------------------------------------
---@api-stub: LAgent:addTag
--- Adds a tag to this agent.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAgent_stub:addTag("enemy")
--- (replace lAgent_stub with your real LAgent instance above)
-
--- ---- Stub: LAgent:removeTag ----------------------------------------------
---@api-stub: LAgent:removeTag
--- Removes a tag from this agent.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAgent_stub:removeTag("enemy")
--- (replace lAgent_stub with your real LAgent instance above)
-
--- ---- Stub: LAgent:hasTag -------------------------------------------------
---@api-stub: LAgent:hasTag
--- Returns true if the agent has the given tag.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAgent_stub:hasTag("enemy")  -- -> boolean
--- (replace lAgent_stub with your real LAgent instance above)
-
--- ---- Stub: LAgent:getBlackboard ------------------------------------------
---@api-stub: LAgent:getBlackboard
--- Returns the agent's local blackboard.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAgent_stub:getBlackboard()  -- -> AIBlackboard
--- (replace lAgent_stub with your real LAgent instance above)
-
--- ---- Stub: LAgent:type ---------------------------------------------------
---@api-stub: LAgent:type
--- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAgent_stub:type()  -- -> string
--- (replace lAgent_stub with your real LAgent instance above)
-
--- ---- Stub: LAgent:typeOf -------------------------------------------------
---@api-stub: LAgent:typeOf
--- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAgent_stub:typeOf("hero")  -- -> boolean
--- (replace lAgent_stub with your real LAgent instance above)
-
--- -----------------------------------------------------------------------------
--- LBTNode methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LBTNode:addChild ----------------------------------------------
---@api-stub: LBTNode:addChild
--- Adds a child node (Selector, Sequence, or Parallel only).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBTNode_stub:addChild(child_ud)
--- (replace lBTNode_stub with your real LBTNode instance above)
-
--- ---- Stub: LBTNode:getChildCount -----------------------------------------
---@api-stub: LBTNode:getChildCount
--- Returns the number of direct children.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBTNode_stub:getChildCount()  -- -> integer
--- (replace lBTNode_stub with your real LBTNode instance above)
-
--- ---- Stub: LBTNode:reset -------------------------------------------------
---@api-stub: LBTNode:reset
--- Resets all running-child memos and repeater counters.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBTNode_stub:reset()
--- (replace lBTNode_stub with your real LBTNode instance above)
-
--- ---- Stub: LBTNode:setChild ----------------------------------------------
---@api-stub: LBTNode:setChild
--- Sets the single child of a decorator node.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBTNode_stub:setChild(child_ud)
--- (replace lBTNode_stub with your real LBTNode instance above)
-
--- ---- Stub: LBTNode:setCount ----------------------------------------------
---@api-stub: LBTNode:setCount
--- Sets the repeat count for a Repeater node.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBTNode_stub:setCount(5)
--- (replace lBTNode_stub with your real LBTNode instance above)
-
--- ---- Stub: LBTNode:getCount ----------------------------------------------
---@api-stub: LBTNode:getCount
--- Returns the repeat count, or 0 if not a Repeater.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBTNode_stub:getCount()  -- -> integer
--- (replace lBTNode_stub with your real LBTNode instance above)
-
--- ---- Stub: LBTNode:setSuccessPolicy --------------------------------------
---@api-stub: LBTNode:setSuccessPolicy
--- Sets the success policy for a Parallel node.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBTNode_stub:setSuccessPolicy(policy)
--- (replace lBTNode_stub with your real LBTNode instance above)
-
--- ---- Stub: LBTNode:setFailurePolicy --------------------------------------
---@api-stub: LBTNode:setFailurePolicy
--- Sets the failure policy for a Parallel node.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBTNode_stub:setFailurePolicy(policy)
--- (replace lBTNode_stub with your real LBTNode instance above)
-
--- ---- Stub: LBTNode:getNodeType -------------------------------------------
---@api-stub: LBTNode:getNodeType
--- Returns the node type as a string.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBTNode_stub:getNodeType()  -- -> string
--- (replace lBTNode_stub with your real LBTNode instance above)
-
--- ---- Stub: LBTNode:type --------------------------------------------------
---@api-stub: LBTNode:type
--- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBTNode_stub:type()  -- -> string
--- (replace lBTNode_stub with your real LBTNode instance above)
-
--- ---- Stub: LBTNode:typeOf ------------------------------------------------
---@api-stub: LBTNode:typeOf
--- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBTNode_stub:typeOf("hero")  -- -> boolean
--- (replace lBTNode_stub with your real LBTNode instance above)
 
 -- -----------------------------------------------------------------------------
 -- LBandit methods
 -- -----------------------------------------------------------------------------
-
--- ---- Stub: LBandit:select ------------------------------------------------
---@api-stub: LBandit:select
--- Returns or performs select.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBandit_stub:select()  -- -> integer
--- (replace lBandit_stub with your real LBandit instance above)
-
--- ---- Stub: LBandit:update ------------------------------------------------
---@api-stub: LBandit:update
--- Advances the simulation by one time step.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBandit_stub:update(1, reward)
--- (replace lBandit_stub with your real LBandit instance above)
-
--- ---- Stub: LBandit:bestArm -----------------------------------------------
---@api-stub: LBandit:bestArm
--- Returns or performs best arm.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBandit_stub:bestArm()  -- -> integer
--- (replace lBandit_stub with your real LBandit instance above)
-
--- ---- Stub: LBandit:reset -------------------------------------------------
---@api-stub: LBandit:reset
--- Resets or clears the state.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBandit_stub:reset()
--- (replace lBandit_stub with your real LBandit instance above)
-
--- ---- Stub: LBandit:armCount ----------------------------------------------
---@api-stub: LBandit:armCount
--- Returns or performs arm count.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBandit_stub:armCount()  -- -> integer
--- (replace lBandit_stub with your real LBandit instance above)
-
--- ---- Stub: LBandit:totalPulls --------------------------------------------
---@api-stub: LBandit:totalPulls
--- Returns or performs total pulls.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBandit_stub:totalPulls()  -- -> integer
--- (replace lBandit_stub with your real LBandit instance above)
 
 -- ---- Stub: LBandit:type --------------------------------------------------
 --@api-stub: LBandit:type
@@ -3383,185 +2958,10 @@ end
 -- lBandit_stub:typeOf("hero")  -- -> boolean
 -- (replace lBandit_stub with your real LBandit instance above)
 
--- -----------------------------------------------------------------------------
--- LBehaviorTree methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LBehaviorTree:setRoot -----------------------------------------
---@api-stub: LBehaviorTree:setRoot
--- Sets the root node of this behavior tree.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBehaviorTree_stub:setRoot(node_ud)
--- (replace lBehaviorTree_stub with your real LBehaviorTree instance above)
-
--- ---- Stub: LBehaviorTree:getLastStatus -----------------------------------
---@api-stub: LBehaviorTree:getLastStatus
--- Returns the status from the last tick.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBehaviorTree_stub:getLastStatus()  -- -> string
--- (replace lBehaviorTree_stub with your real LBehaviorTree instance above)
-
--- ---- Stub: LBehaviorTree:getDebugState -----------------------------------
---@api-stub: LBehaviorTree:getDebugState
--- Returns a diagnostic snapshot of this behavior tree.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBehaviorTree_stub:getDebugState()  -- -> table
--- (replace lBehaviorTree_stub with your real LBehaviorTree instance above)
-
--- ---- Stub: LBehaviorTree:type --------------------------------------------
---@api-stub: LBehaviorTree:type
--- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBehaviorTree_stub:type()  -- -> string
--- (replace lBehaviorTree_stub with your real LBehaviorTree instance above)
-
--- ---- Stub: LBehaviorTree:typeOf ------------------------------------------
---@api-stub: LBehaviorTree:typeOf
--- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBehaviorTree_stub:typeOf("hero")  -- -> boolean
--- (replace lBehaviorTree_stub with your real LBehaviorTree instance above)
-
--- -----------------------------------------------------------------------------
--- LCommandQueue methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LCommandQueue:enqueue -----------------------------------------
---@api-stub: LCommandQueue:enqueue
--- Appends a command to the back of the queue.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lCommandQueue_stub:enqueue(kind, function() end, [opts])
--- (replace lCommandQueue_stub with your real LCommandQueue instance above)
-
--- ---- Stub: LCommandQueue:pushFront ---------------------------------------
---@api-stub: LCommandQueue:pushFront
--- Inserts a command at the front, interrupting the current one.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lCommandQueue_stub:pushFront(kind, function() end, [opts])
--- (replace lCommandQueue_stub with your real LCommandQueue instance above)
-
--- ---- Stub: LCommandQueue:replace -----------------------------------------
---@api-stub: LCommandQueue:replace
--- Clears the queue and enqueues one new command.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lCommandQueue_stub:replace(kind, function() end, [opts])
--- (replace lCommandQueue_stub with your real LCommandQueue instance above)
-
--- ---- Stub: LCommandQueue:cancelCurrent -----------------------------------
---@api-stub: LCommandQueue:cancelCurrent
--- Cancels the front command if it is interruptible.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lCommandQueue_stub:cancelCurrent()  -- -> boolean
--- (replace lCommandQueue_stub with your real LCommandQueue instance above)
-
--- ---- Stub: LCommandQueue:clear -------------------------------------------
---@api-stub: LCommandQueue:clear
--- Discards all queued commands.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lCommandQueue_stub:clear()
--- (replace lCommandQueue_stub with your real LCommandQueue instance above)
-
--- ---- Stub: LCommandQueue:getCount ----------------------------------------
---@api-stub: LCommandQueue:getCount
--- Returns the number of queued commands.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lCommandQueue_stub:getCount()  -- -> integer
--- (replace lCommandQueue_stub with your real LCommandQueue instance above)
-
--- ---- Stub: LCommandQueue:isEmpty -----------------------------------------
---@api-stub: LCommandQueue:isEmpty
--- Returns true if there are no queued commands.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lCommandQueue_stub:isEmpty()  -- -> boolean
--- (replace lCommandQueue_stub with your real LCommandQueue instance above)
-
--- ---- Stub: LCommandQueue:getCurrentType ----------------------------------
---@api-stub: LCommandQueue:getCurrentType
--- Returns the kind of the front command, or nil.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lCommandQueue_stub:getCurrentType()  -- -> string?
--- (replace lCommandQueue_stub with your real LCommandQueue instance above)
-
--- ---- Stub: LCommandQueue:getCurrentTarget --------------------------------
---@api-stub: LCommandQueue:getCurrentTarget
--- Returns the target coordinates of the front command.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lCommandQueue_stub:getCurrentTarget()  -- -> number, number
--- (replace lCommandQueue_stub with your real LCommandQueue instance above)
-
--- ---- Stub: LCommandQueue:type --------------------------------------------
---@api-stub: LCommandQueue:type
--- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lCommandQueue_stub:type()  -- -> string
--- (replace lCommandQueue_stub with your real LCommandQueue instance above)
-
--- ---- Stub: LCommandQueue:typeOf ------------------------------------------
---@api-stub: LCommandQueue:typeOf
--- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lCommandQueue_stub:typeOf("hero")  -- -> boolean
--- (replace lCommandQueue_stub with your real LCommandQueue instance above)
 
 -- -----------------------------------------------------------------------------
 -- LContextSteering methods
 -- -----------------------------------------------------------------------------
-
--- ---- Stub: LContextSteering:addSeekTarget --------------------------------
---@api-stub: LContextSteering:addSeekTarget
--- Adds a world-space target that this agent steers towards.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lContextSteering_stub:addSeekTarget(tx, ty, weight)
--- (replace lContextSteering_stub with your real LContextSteering instance above)
-
--- ---- Stub: LContextSteering:addWander ------------------------------------
---@api-stub: LContextSteering:addWander
--- Adds a wander behavior with jitter and weight to the context steering evaluator.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lContextSteering_stub:addWander(jitter, weight)
--- (replace lContextSteering_stub with your real LContextSteering instance above)
-
--- ---- Stub: LContextSteering:addAvoidPoint --------------------------------
---@api-stub: LContextSteering:addAvoidPoint
--- Adds a world-space point that this agent steers away from.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lContextSteering_stub:addAvoidPoint(0.0, 0.0, 24.0, weight)
--- (replace lContextSteering_stub with your real LContextSteering instance above)
-
--- ---- Stub: LContextSteering:addAvoidBounds -------------------------------
---@api-stub: LContextSteering:addAvoidBounds
--- Registers a rectangular region this agent must avoid.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lContextSteering_stub:addAvoidBounds(min_x, min_y, max_x, max_y, margin, weight)
--- (replace lContextSteering_stub with your real LContextSteering instance above)
-
--- ---- Stub: LContextSteering:clearBehaviors -------------------------------
---@api-stub: LContextSteering:clearBehaviors
--- Resets or clears the behaviors.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lContextSteering_stub:clearBehaviors()
--- (replace lContextSteering_stub with your real LContextSteering instance above)
-
--- ---- Stub: LContextSteering:evaluate -------------------------------------
---@api-stub: LContextSteering:evaluate
--- Evaluates and returns the computed result.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lContextSteering_stub:evaluate(ax, ay, vx, vy)  -- -> number, number
--- (replace lContextSteering_stub with your real LContextSteering instance above)
-
--- ---- Stub: LContextSteering:chosenMagnitude ------------------------------
---@api-stub: LContextSteering:chosenMagnitude
--- Returns or performs chosen magnitude.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lContextSteering_stub:chosenMagnitude()  -- -> number
--- (replace lContextSteering_stub with your real LContextSteering instance above)
-
--- ---- Stub: LContextSteering:slotCount ------------------------------------
---@api-stub: LContextSteering:slotCount
--- Returns or performs slot count.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lContextSteering_stub:slotCount()  -- -> integer
--- (replace lContextSteering_stub with your real LContextSteering instance above)
 
 -- ---- Stub: LContextSteering:type -----------------------------------------
 --@api-stub: LContextSteering:type
@@ -3581,55 +2981,6 @@ end
 -- LEmotionModel methods
 -- -----------------------------------------------------------------------------
 
--- ---- Stub: LEmotionModel:add ---------------------------------------------
---@api-stub: LEmotionModel:add
--- Adds an emotion category with the given name and initial intensity to the model.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lEmotionModel_stub:add("hero", rest, decay, min_vis)
--- (replace lEmotionModel_stub with your real LEmotionModel instance above)
-
--- ---- Stub: LEmotionModel:trigger -----------------------------------------
---@api-stub: LEmotionModel:trigger
--- Returns or performs trigger.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lEmotionModel_stub:trigger("hero", amount)
--- (replace lEmotionModel_stub with your real LEmotionModel instance above)
-
--- ---- Stub: LEmotionModel:get ---------------------------------------------
---@api-stub: LEmotionModel:get
--- Returns the current float value of this emotion dimension.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lEmotionModel_stub:get("hero")  -- -> number
--- (replace lEmotionModel_stub with your real LEmotionModel instance above)
-
--- ---- Stub: LEmotionModel:dominant ----------------------------------------
---@api-stub: LEmotionModel:dominant
--- Returns or performs dominant.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lEmotionModel_stub:dominant()  -- -> string|nil
--- (replace lEmotionModel_stub with your real LEmotionModel instance above)
-
--- ---- Stub: LEmotionModel:isActive ----------------------------------------
---@api-stub: LEmotionModel:isActive
--- Returns `true` if the emotion dimension is currently active and above threshold.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lEmotionModel_stub:isActive("hero")  -- -> boolean
--- (replace lEmotionModel_stub with your real LEmotionModel instance above)
-
--- ---- Stub: LEmotionModel:update ------------------------------------------
---@api-stub: LEmotionModel:update
--- Advances the simulation by one time step.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lEmotionModel_stub:update(0.016)
--- (replace lEmotionModel_stub with your real LEmotionModel instance above)
-
--- ---- Stub: LEmotionModel:reset -------------------------------------------
---@api-stub: LEmotionModel:reset
--- Resets or clears the state.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lEmotionModel_stub:reset()
--- (replace lEmotionModel_stub with your real LEmotionModel instance above)
-
 -- ---- Stub: LEmotionModel:type --------------------------------------------
 --@api-stub: LEmotionModel:type
 -- Returns the type name of this object.
@@ -3644,139 +2995,10 @@ end
 -- lEmotionModel_stub:typeOf("hero")  -- -> boolean
 -- (replace lEmotionModel_stub with your real LEmotionModel instance above)
 
--- -----------------------------------------------------------------------------
--- LGOAPPlanner methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LGOAPPlanner:addAction ----------------------------------------
---@api-stub: LGOAPPlanner:addAction
--- Adds a GOAP action with optional cost and callback.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lGOAPPlanner_stub:addAction("hero", [cost], [callback])
--- (replace lGOAPPlanner_stub with your real LGOAPPlanner instance above)
-
--- ---- Stub: LGOAPPlanner:setPrecondition ----------------------------------
---@api-stub: LGOAPPlanner:setPrecondition
--- Sets a boolean precondition on an action.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lGOAPPlanner_stub:setPrecondition(action_name, "player_score", 42)
--- (replace lGOAPPlanner_stub with your real LGOAPPlanner instance above)
-
--- ---- Stub: LGOAPPlanner:setEffect ----------------------------------------
---@api-stub: LGOAPPlanner:setEffect
--- Sets a boolean effect on an action.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lGOAPPlanner_stub:setEffect(action_name, "player_score", 42)
--- (replace lGOAPPlanner_stub with your real LGOAPPlanner instance above)
-
--- ---- Stub: LGOAPPlanner:addGoal ------------------------------------------
---@api-stub: LGOAPPlanner:addGoal
--- Adds a planning goal with optional priority.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lGOAPPlanner_stub:addGoal("hero", [priority])
--- (replace lGOAPPlanner_stub with your real LGOAPPlanner instance above)
-
--- ---- Stub: LGOAPPlanner:setGoalState -------------------------------------
---@api-stub: LGOAPPlanner:setGoalState
--- Sets a boolean condition on a goal.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lGOAPPlanner_stub:setGoalState(goal_name, "player_score", 42)
--- (replace lGOAPPlanner_stub with your real LGOAPPlanner instance above)
-
--- ---- Stub: LGOAPPlanner:plan ---------------------------------------------
---@api-stub: LGOAPPlanner:plan
--- Runs A* planning and returns an action sequence table.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lGOAPPlanner_stub:plan(world_state_tbl, [max_depth])  -- -> table
--- (replace lGOAPPlanner_stub with your real LGOAPPlanner instance above)
-
--- ---- Stub: LGOAPPlanner:getActionCount -----------------------------------
---@api-stub: LGOAPPlanner:getActionCount
--- Returns the number of registered actions.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lGOAPPlanner_stub:getActionCount()  -- -> integer
--- (replace lGOAPPlanner_stub with your real LGOAPPlanner instance above)
-
--- ---- Stub: LGOAPPlanner:getGoalCount -------------------------------------
---@api-stub: LGOAPPlanner:getGoalCount
--- Returns the number of registered goals.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lGOAPPlanner_stub:getGoalCount()  -- -> integer
--- (replace lGOAPPlanner_stub with your real LGOAPPlanner instance above)
-
--- ---- Stub: LGOAPPlanner:getMaxIterations ---------------------------------
---@api-stub: LGOAPPlanner:getMaxIterations
--- Returns the maximum A* planning iterations.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lGOAPPlanner_stub:getMaxIterations()  -- -> integer
--- (replace lGOAPPlanner_stub with your real LGOAPPlanner instance above)
-
--- ---- Stub: LGOAPPlanner:setMaxIterations ---------------------------------
---@api-stub: LGOAPPlanner:setMaxIterations
--- Sets the maximum A* planning iterations (0 = unlimited).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lGOAPPlanner_stub:setMaxIterations(5)
--- (replace lGOAPPlanner_stub with your real LGOAPPlanner instance above)
-
--- ---- Stub: LGOAPPlanner:type ---------------------------------------------
---@api-stub: LGOAPPlanner:type
--- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lGOAPPlanner_stub:type()  -- -> string
--- (replace lGOAPPlanner_stub with your real LGOAPPlanner instance above)
-
--- ---- Stub: LGOAPPlanner:typeOf -------------------------------------------
---@api-stub: LGOAPPlanner:typeOf
--- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lGOAPPlanner_stub:typeOf("hero")  -- -> boolean
--- (replace lGOAPPlanner_stub with your real LGOAPPlanner instance above)
 
 -- -----------------------------------------------------------------------------
 -- LGeneticAlgorithm methods
 -- -----------------------------------------------------------------------------
-
--- ---- Stub: LGeneticAlgorithm:evolve --------------------------------------
---@api-stub: LGeneticAlgorithm:evolve
--- Runs one generation of the evolutionary algorithm.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lGeneticAlgorithm_stub:evolve()
--- (replace lGeneticAlgorithm_stub with your real LGeneticAlgorithm instance above)
-
--- ---- Stub: LGeneticAlgorithm:generation ----------------------------------
---@api-stub: LGeneticAlgorithm:generation
--- Returns or performs generation.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lGeneticAlgorithm_stub:generation()  -- -> integer
--- (replace lGeneticAlgorithm_stub with your real LGeneticAlgorithm instance above)
-
--- ---- Stub: LGeneticAlgorithm:popSize -------------------------------------
---@api-stub: LGeneticAlgorithm:popSize
--- Returns or performs pop size.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lGeneticAlgorithm_stub:popSize()  -- -> integer
--- (replace lGeneticAlgorithm_stub with your real LGeneticAlgorithm instance above)
-
--- ---- Stub: LGeneticAlgorithm:setFitness ----------------------------------
---@api-stub: LGeneticAlgorithm:setFitness
--- Sets the fitness score used by the genetic algorithm selection step.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lGeneticAlgorithm_stub:setFitness(1, fitness)
--- (replace lGeneticAlgorithm_stub with your real LGeneticAlgorithm instance above)
-
--- ---- Stub: LGeneticAlgorithm:getGenes ------------------------------------
---@api-stub: LGeneticAlgorithm:getGenes
--- Returns the chromosome as an ordered table of gene values.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lGeneticAlgorithm_stub:getGenes(1)  -- -> table
--- (replace lGeneticAlgorithm_stub with your real LGeneticAlgorithm instance above)
-
--- ---- Stub: LGeneticAlgorithm:bestGenes -----------------------------------
---@api-stub: LGeneticAlgorithm:bestGenes
--- Returns or performs best genes.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lGeneticAlgorithm_stub:bestGenes()  -- -> table
--- (replace lGeneticAlgorithm_stub with your real LGeneticAlgorithm instance above)
 
 -- ---- Stub: LGeneticAlgorithm:type ----------------------------------------
 --@api-stub: LGeneticAlgorithm:type
@@ -3796,34 +3018,6 @@ end
 -- LHTNDomain methods
 -- -----------------------------------------------------------------------------
 
--- ---- Stub: LHTNDomain:addPrimitive ---------------------------------------
---@api-stub: LHTNDomain:addPrimitive
--- Registers a primitive HTN task with a direct operator function.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lHTNDomain_stub:addPrimitive("hero", preconds, effects, clears)
--- (replace lHTNDomain_stub with your real LHTNDomain instance above)
-
--- ---- Stub: LHTNDomain:addCompound ----------------------------------------
---@api-stub: LHTNDomain:addCompound
--- Registers a compound HTN task that decomposes into sub-tasks.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lHTNDomain_stub:addCompound(comp_name, methods_table)
--- (replace lHTNDomain_stub with your real LHTNDomain instance above)
-
--- ---- Stub: LHTNDomain:plan -----------------------------------------------
---@api-stub: LHTNDomain:plan
--- Runs planning and returns the resulting action sequence.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lHTNDomain_stub:plan(root_task, state_table)  -- -> table|nil
--- (replace lHTNDomain_stub with your real LHTNDomain instance above)
-
--- ---- Stub: LHTNDomain:taskCount ------------------------------------------
---@api-stub: LHTNDomain:taskCount
--- Returns or performs task count.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lHTNDomain_stub:taskCount()  -- -> integer
--- (replace lHTNDomain_stub with your real LHTNDomain instance above)
-
 -- ---- Stub: LHTNDomain:type -----------------------------------------------
 --@api-stub: LHTNDomain:type
 -- Returns the type name of this object.
@@ -3838,146 +3032,10 @@ end
 -- lHTNDomain_stub:typeOf("hero")  -- -> boolean
 -- (replace lHTNDomain_stub with your real LHTNDomain instance above)
 
--- -----------------------------------------------------------------------------
--- LInfluenceMap methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LInfluenceMap:addLayer ----------------------------------------
---@api-stub: LInfluenceMap:addLayer
--- Adds a named influence layer.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lInfluenceMap_stub:addLayer("hero")
--- (replace lInfluenceMap_stub with your real LInfluenceMap instance above)
-
--- ---- Stub: LInfluenceMap:hasLayer ----------------------------------------
---@api-stub: LInfluenceMap:hasLayer
--- Returns true if the named layer exists.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lInfluenceMap_stub:hasLayer("hero")  -- -> boolean
--- (replace lInfluenceMap_stub with your real LInfluenceMap instance above)
-
--- ---- Stub: LInfluenceMap:setInfluence ------------------------------------
---@api-stub: LInfluenceMap:setInfluence
--- Sets the influence value at a cell (1-based).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lInfluenceMap_stub:setInfluence(1, 0.0, 0.0, 42)
--- (replace lInfluenceMap_stub with your real LInfluenceMap instance above)
-
--- ---- Stub: LInfluenceMap:getInfluence ------------------------------------
---@api-stub: LInfluenceMap:getInfluence
--- Returns the influence value at a cell (1-based).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lInfluenceMap_stub:getInfluence(1, 0.0, 0.0)  -- -> number
--- (replace lInfluenceMap_stub with your real LInfluenceMap instance above)
-
--- ---- Stub: LInfluenceMap:stampInfluence ----------------------------------
---@api-stub: LInfluenceMap:stampInfluence
--- Stamps influence in a radial area.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lInfluenceMap_stub:stampInfluence(1, wx, wy, 24.0, 42, [falloff])
--- (replace lInfluenceMap_stub with your real LInfluenceMap instance above)
-
--- ---- Stub: LInfluenceMap:propagate ---------------------------------------
---@api-stub: LInfluenceMap:propagate
--- Propagates influence values with momentum.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lInfluenceMap_stub:propagate(1, [momentum])
--- (replace lInfluenceMap_stub with your real LInfluenceMap instance above)
-
--- ---- Stub: LInfluenceMap:decay -------------------------------------------
---@api-stub: LInfluenceMap:decay
--- Multiplies all influences by a decay factor.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lInfluenceMap_stub:decay(1, factor)
--- (replace lInfluenceMap_stub with your real LInfluenceMap instance above)
-
--- ---- Stub: LInfluenceMap:clearLayer --------------------------------------
---@api-stub: LInfluenceMap:clearLayer
--- Clears all influence in a layer.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lInfluenceMap_stub:clearLayer(1)
--- (replace lInfluenceMap_stub with your real LInfluenceMap instance above)
-
--- ---- Stub: LInfluenceMap:clearAll ----------------------------------------
---@api-stub: LInfluenceMap:clearAll
--- Removes all influence values from every layer in the map.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lInfluenceMap_stub:clearAll()
--- (replace lInfluenceMap_stub with your real LInfluenceMap instance above)
-
--- ---- Stub: LInfluenceMap:getMaxPosition ----------------------------------
---@api-stub: LInfluenceMap:getMaxPosition
--- Returns the world-space position of the maximum value.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lInfluenceMap_stub:getMaxPosition(1)  -- -> number, number
--- (replace lInfluenceMap_stub with your real LInfluenceMap instance above)
-
--- ---- Stub: LInfluenceMap:getMinPosition ----------------------------------
---@api-stub: LInfluenceMap:getMinPosition
--- Returns the world-space position of the minimum value.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lInfluenceMap_stub:getMinPosition(1)  -- -> number, number
--- (replace lInfluenceMap_stub with your real LInfluenceMap instance above)
-
--- ---- Stub: LInfluenceMap:queryRect ---------------------------------------
---@api-stub: LInfluenceMap:queryRect
--- Returns the summed influence in a world-space rectangle.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lInfluenceMap_stub:queryRect(1, wx, wy, ww, wh)  -- -> number
--- (replace lInfluenceMap_stub with your real LInfluenceMap instance above)
-
--- ---- Stub: LInfluenceMap:blend -------------------------------------------
---@api-stub: LInfluenceMap:blend
--- Blends two layers into a destination layer.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lInfluenceMap_stub:blend(layer_a, weight_a, layer_b, weight_b, dest)
--- (replace lInfluenceMap_stub with your real LInfluenceMap instance above)
-
--- ---- Stub: LInfluenceMap:getWidth ----------------------------------------
---@api-stub: LInfluenceMap:getWidth
--- Returns the influence map width in grid cells.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lInfluenceMap_stub:getWidth()  -- -> integer
--- (replace lInfluenceMap_stub with your real LInfluenceMap instance above)
-
--- ---- Stub: LInfluenceMap:getHeight ---------------------------------------
---@api-stub: LInfluenceMap:getHeight
--- Returns the influence map height in grid cells.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lInfluenceMap_stub:getHeight()  -- -> integer
--- (replace lInfluenceMap_stub with your real LInfluenceMap instance above)
-
--- ---- Stub: LInfluenceMap:getCellSize -------------------------------------
---@api-stub: LInfluenceMap:getCellSize
--- Returns the cell size in world units.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lInfluenceMap_stub:getCellSize()  -- -> number
--- (replace lInfluenceMap_stub with your real LInfluenceMap instance above)
-
--- ---- Stub: LInfluenceMap:type --------------------------------------------
---@api-stub: LInfluenceMap:type
--- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lInfluenceMap_stub:type()  -- -> string
--- (replace lInfluenceMap_stub with your real LInfluenceMap instance above)
-
--- ---- Stub: LInfluenceMap:typeOf ------------------------------------------
---@api-stub: LInfluenceMap:typeOf
--- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lInfluenceMap_stub:typeOf("hero")  -- -> boolean
--- (replace lInfluenceMap_stub with your real LInfluenceMap instance above)
 
 -- -----------------------------------------------------------------------------
 -- LMCTSEngine methods
 -- -----------------------------------------------------------------------------
-
--- ---- Stub: LMCTSEngine:search --------------------------------------------
---@api-stub: LMCTSEngine:search
--- Uses Lua closures for game logic. All closures receive/return integer states.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lMCTSEngine_stub:search()  -- -> integer|nil
--- (replace lMCTSEngine_stub with your real LMCTSEngine instance above)
 
 -- ---- Stub: LMCTSEngine:type ----------------------------------------------
 --@api-stub: LMCTSEngine:type
@@ -3997,41 +3055,6 @@ end
 -- LNeedSystem methods
 -- -----------------------------------------------------------------------------
 
--- ---- Stub: LNeedSystem:addNeed -------------------------------------------
---@api-stub: LNeedSystem:addNeed
--- Registers a new need with the specified name, urgency, and decay rate in the system.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lNeedSystem_stub:addNeed("hero", decay_rate, urgency_threshold, urgency_factor)
--- (replace lNeedSystem_stub with your real LNeedSystem instance above)
-
--- ---- Stub: LNeedSystem:update --------------------------------------------
---@api-stub: LNeedSystem:update
--- Advances the simulation by one time step.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lNeedSystem_stub:update(0.016)
--- (replace lNeedSystem_stub with your real LNeedSystem instance above)
-
--- ---- Stub: LNeedSystem:mostUrgent ----------------------------------------
---@api-stub: LNeedSystem:mostUrgent
--- Returns or performs most urgent.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lNeedSystem_stub:mostUrgent()  -- -> string|nil
--- (replace lNeedSystem_stub with your real LNeedSystem instance above)
-
--- ---- Stub: LNeedSystem:satisfy -------------------------------------------
---@api-stub: LNeedSystem:satisfy
--- Returns or performs satisfy.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lNeedSystem_stub:satisfy("hero", amount)
--- (replace lNeedSystem_stub with your real LNeedSystem instance above)
-
--- ---- Stub: LNeedSystem:valueOf -------------------------------------------
---@api-stub: LNeedSystem:valueOf
--- Returns or performs value of.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lNeedSystem_stub:valueOf("hero")  -- -> number
--- (replace lNeedSystem_stub with your real LNeedSystem instance above)
-
 -- ---- Stub: LNeedSystem:type ----------------------------------------------
 --@api-stub: LNeedSystem:type
 -- Returns the type name of this object.
@@ -4049,48 +3072,6 @@ end
 -- -----------------------------------------------------------------------------
 -- LNeuralNet methods
 -- -----------------------------------------------------------------------------
-
--- ---- Stub: LNeuralNet:addLayer -------------------------------------------
---@api-stub: LNeuralNet:addLayer
--- Adds a neural network layer with inputs, outputs, and an activation function.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lNeuralNet_stub:addLayer(inputs, outputs, activation)
--- (replace lNeuralNet_stub with your real LNeuralNet instance above)
-
--- ---- Stub: LNeuralNet:forward --------------------------------------------
---@api-stub: LNeuralNet:forward
--- Returns or performs forward.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lNeuralNet_stub:forward(input)  -- -> table
--- (replace lNeuralNet_stub with your real LNeuralNet instance above)
-
--- ---- Stub: LNeuralNet:setWeights -----------------------------------------
---@api-stub: LNeuralNet:setWeights
--- Overwrites all connection weights with values from a flat table.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lNeuralNet_stub:setWeights(weights)  -- -> boolean
--- (replace lNeuralNet_stub with your real LNeuralNet instance above)
-
--- ---- Stub: LNeuralNet:getWeights -----------------------------------------
---@api-stub: LNeuralNet:getWeights
--- Returns a flat table of all connection weight values in the network.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lNeuralNet_stub:getWeights()  -- -> table
--- (replace lNeuralNet_stub with your real LNeuralNet instance above)
-
--- ---- Stub: LNeuralNet:paramCount -----------------------------------------
---@api-stub: LNeuralNet:paramCount
--- Returns or performs param count.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lNeuralNet_stub:paramCount()  -- -> integer
--- (replace lNeuralNet_stub with your real LNeuralNet instance above)
-
--- ---- Stub: LNeuralNet:layerCount -----------------------------------------
---@api-stub: LNeuralNet:layerCount
--- Returns or performs layer count.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lNeuralNet_stub:layerCount()  -- -> integer
--- (replace lNeuralNet_stub with your real LNeuralNet instance above)
 
 -- ---- Stub: LNeuralNet:type -----------------------------------------------
 --@api-stub: LNeuralNet:type
@@ -4110,55 +3091,6 @@ end
 -- LNeuroevolution methods
 -- -----------------------------------------------------------------------------
 
--- ---- Stub: LNeuroevolution:evolve ----------------------------------------
---@api-stub: LNeuroevolution:evolve
--- Runs one generation of the evolutionary algorithm.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lNeuroevolution_stub:evolve()
--- (replace lNeuroevolution_stub with your real LNeuroevolution instance above)
-
--- ---- Stub: LNeuroevolution:setFitness ------------------------------------
---@api-stub: LNeuroevolution:setFitness
--- Sets the fitness score used by the genetic algorithm selection step.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lNeuroevolution_stub:setFitness(1, fitness)
--- (replace lNeuroevolution_stub with your real LNeuroevolution instance above)
-
--- ---- Stub: LNeuroevolution:chromosomeToNet -------------------------------
---@api-stub: LNeuroevolution:chromosomeToNet
--- Returns or performs chromosome to net.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lNeuroevolution_stub:chromosomeToNet(1)
--- (replace lNeuroevolution_stub with your real LNeuroevolution instance above)
-
--- ---- Stub: LNeuroevolution:bestNetwork -----------------------------------
---@api-stub: LNeuroevolution:bestNetwork
--- Returns or performs best network.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lNeuroevolution_stub:bestNetwork()
--- (replace lNeuroevolution_stub with your real LNeuroevolution instance above)
-
--- ---- Stub: LNeuroevolution:bestFitness -----------------------------------
---@api-stub: LNeuroevolution:bestFitness
--- Returns or performs best fitness.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lNeuroevolution_stub:bestFitness()  -- -> number
--- (replace lNeuroevolution_stub with your real LNeuroevolution instance above)
-
--- ---- Stub: LNeuroevolution:popSize ---------------------------------------
---@api-stub: LNeuroevolution:popSize
--- Returns or performs pop size.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lNeuroevolution_stub:popSize()  -- -> integer
--- (replace lNeuroevolution_stub with your real LNeuroevolution instance above)
-
--- ---- Stub: LNeuroevolution:generation ------------------------------------
---@api-stub: LNeuroevolution:generation
--- Returns or performs generation.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lNeuroevolution_stub:generation()  -- -> integer
--- (replace lNeuroevolution_stub with your real LNeuroevolution instance above)
-
 -- ---- Stub: LNeuroevolution:type ------------------------------------------
 --@api-stub: LNeuroevolution:type
 -- Returns the type name of this object.
@@ -4177,48 +3109,6 @@ end
 -- LORCASolver methods
 -- -----------------------------------------------------------------------------
 
--- ---- Stub: LORCASolver:addAgent ------------------------------------------
---@api-stub: LORCASolver:addAgent
--- Adds an ORCA agent at the given position with radius and max speed to the solver.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lORCASolver_stub:addAgent(0.0, 0.0, 24.0, max_speed)  -- -> integer
--- (replace lORCASolver_stub with your real LORCASolver instance above)
-
--- ---- Stub: LORCASolver:setPreferredVelocity ------------------------------
---@api-stub: LORCASolver:setPreferredVelocity
--- Sets the preferred velocity.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lORCASolver_stub:setPreferredVelocity(1, pvx, pvy)
--- (replace lORCASolver_stub with your real LORCASolver instance above)
-
--- ---- Stub: LORCASolver:setPosition ---------------------------------------
---@api-stub: LORCASolver:setPosition
--- Sets the agent's current world-space position for ORCA velocity computation.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lORCASolver_stub:setPosition(1, 0.0, 0.0)
--- (replace lORCASolver_stub with your real LORCASolver instance above)
-
--- ---- Stub: LORCASolver:compute -------------------------------------------
---@api-stub: LORCASolver:compute
--- Computes and returns the result.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lORCASolver_stub:compute(0.016)
--- (replace lORCASolver_stub with your real LORCASolver instance above)
-
--- ---- Stub: LORCASolver:getSafeVelocity -----------------------------------
---@api-stub: LORCASolver:getSafeVelocity
--- Returns the safe velocity.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lORCASolver_stub:getSafeVelocity(1)  -- -> number, number
--- (replace lORCASolver_stub with your real LORCASolver instance above)
-
--- ---- Stub: LORCASolver:agentCount ----------------------------------------
---@api-stub: LORCASolver:agentCount
--- Returns or performs agent count.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lORCASolver_stub:agentCount()  -- -> integer
--- (replace lORCASolver_stub with your real LORCASolver instance above)
-
 -- ---- Stub: LORCASolver:type ----------------------------------------------
 --@api-stub: LORCASolver:type
 -- Returns the type name of this object.
@@ -4233,494 +3123,10 @@ end
 -- lORCASolver_stub:typeOf("hero")  -- -> boolean
 -- (replace lORCASolver_stub with your real LORCASolver instance above)
 
--- -----------------------------------------------------------------------------
--- LQLearner methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LQLearner:chooseAction ----------------------------------------
---@api-stub: LQLearner:chooseAction
--- Selects an action using epsilon-greedy policy (1-based).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lQLearner_stub:chooseAction(state)  -- -> integer
--- (replace lQLearner_stub with your real LQLearner instance above)
-
--- ---- Stub: LQLearner:bestAction ------------------------------------------
---@api-stub: LQLearner:bestAction
--- Returns the greedy-best action for the state (1-based).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lQLearner_stub:bestAction(state)  -- -> integer
--- (replace lQLearner_stub with your real LQLearner instance above)
-
--- ---- Stub: LQLearner:learn -----------------------------------------------
---@api-stub: LQLearner:learn
--- Performs one Bellman Q-learning update (1-based indices).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lQLearner_stub:learn(state, action, reward, next_state)
--- (replace lQLearner_stub with your real LQLearner instance above)
-
--- ---- Stub: LQLearner:getQValue -------------------------------------------
---@api-stub: LQLearner:getQValue
--- Returns the Q-value for a state-action pair (1-based).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lQLearner_stub:getQValue(state, action)  -- -> number
--- (replace lQLearner_stub with your real LQLearner instance above)
-
--- ---- Stub: LQLearner:setQValue -------------------------------------------
---@api-stub: LQLearner:setQValue
--- Overwrites the Q-value for a state-action pair (1-based).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lQLearner_stub:setQValue(state, action, 42)
--- (replace lQLearner_stub with your real LQLearner instance above)
-
--- ---- Stub: LQLearner:endEpisode ------------------------------------------
---@api-stub: LQLearner:endEpisode
--- Ends the current episode, applying epsilon decay.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lQLearner_stub:endEpisode()
--- (replace lQLearner_stub with your real LQLearner instance above)
-
--- ---- Stub: LQLearner:getEpisodeCount -------------------------------------
---@api-stub: LQLearner:getEpisodeCount
--- Returns the number of completed episodes.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lQLearner_stub:getEpisodeCount()  -- -> integer
--- (replace lQLearner_stub with your real LQLearner instance above)
-
--- ---- Stub: LQLearner:getStateCount ---------------------------------------
---@api-stub: LQLearner:getStateCount
--- Returns the number of discrete states.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lQLearner_stub:getStateCount()  -- -> integer
--- (replace lQLearner_stub with your real LQLearner instance above)
-
--- ---- Stub: LQLearner:getActionCount --------------------------------------
---@api-stub: LQLearner:getActionCount
--- Returns the number of discrete actions.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lQLearner_stub:getActionCount()  -- -> integer
--- (replace lQLearner_stub with your real LQLearner instance above)
-
--- ---- Stub: LQLearner:setLearningRate -------------------------------------
---@api-stub: LQLearner:setLearningRate
--- Sets the learning rate alpha.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lQLearner_stub:setLearningRate(1.0)
--- (replace lQLearner_stub with your real LQLearner instance above)
-
--- ---- Stub: LQLearner:getLearningRate -------------------------------------
---@api-stub: LQLearner:getLearningRate
--- Returns the current learning rate.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lQLearner_stub:getLearningRate()  -- -> number
--- (replace lQLearner_stub with your real LQLearner instance above)
-
--- ---- Stub: LQLearner:setDiscountFactor -----------------------------------
---@api-stub: LQLearner:setDiscountFactor
--- Sets the discount factor gamma.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lQLearner_stub:setDiscountFactor(1.0)
--- (replace lQLearner_stub with your real LQLearner instance above)
-
--- ---- Stub: LQLearner:getDiscountFactor -----------------------------------
---@api-stub: LQLearner:getDiscountFactor
--- Returns the current discount factor.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lQLearner_stub:getDiscountFactor()  -- -> number
--- (replace lQLearner_stub with your real LQLearner instance above)
-
--- ---- Stub: LQLearner:setExplorationRate ----------------------------------
---@api-stub: LQLearner:setExplorationRate
--- Sets the exploration rate epsilon.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lQLearner_stub:setExplorationRate(1.0)
--- (replace lQLearner_stub with your real LQLearner instance above)
-
--- ---- Stub: LQLearner:getExplorationRate ----------------------------------
---@api-stub: LQLearner:getExplorationRate
--- Returns the current exploration rate.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lQLearner_stub:getExplorationRate()  -- -> number
--- (replace lQLearner_stub with your real LQLearner instance above)
-
--- ---- Stub: LQLearner:setExplorationDecay ---------------------------------
---@api-stub: LQLearner:setExplorationDecay
--- Sets the epsilon decay multiplier.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lQLearner_stub:setExplorationDecay(1.0)
--- (replace lQLearner_stub with your real LQLearner instance above)
-
--- ---- Stub: LQLearner:getExplorationDecay ---------------------------------
---@api-stub: LQLearner:getExplorationDecay
--- Returns the epsilon decay multiplier.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lQLearner_stub:getExplorationDecay()  -- -> number
--- (replace lQLearner_stub with your real LQLearner instance above)
-
--- ---- Stub: LQLearner:serialize -------------------------------------------
---@api-stub: LQLearner:serialize
--- Serializes the Q-table to a JSON string.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lQLearner_stub:serialize()  -- -> string
--- (replace lQLearner_stub with your real LQLearner instance above)
-
--- ---- Stub: LQLearner:deserialize -----------------------------------------
---@api-stub: LQLearner:deserialize
--- Restores the Q-table from a JSON string.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lQLearner_stub:deserialize(json)
--- (replace lQLearner_stub with your real LQLearner instance above)
-
--- ---- Stub: LQLearner:type ------------------------------------------------
---@api-stub: LQLearner:type
--- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lQLearner_stub:type()  -- -> string
--- (replace lQLearner_stub with your real LQLearner instance above)
-
--- ---- Stub: LQLearner:typeOf ----------------------------------------------
---@api-stub: LQLearner:typeOf
--- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lQLearner_stub:typeOf("hero")  -- -> boolean
--- (replace lQLearner_stub with your real LQLearner instance above)
-
--- -----------------------------------------------------------------------------
--- LSquad methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LSquad:getName ------------------------------------------------
---@api-stub: LSquad:getName
--- Returns the unique name string assigned to this squad.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSquad_stub:getName()  -- -> string
--- (replace lSquad_stub with your real LSquad instance above)
-
--- ---- Stub: LSquad:addMember ----------------------------------------------
---@api-stub: LSquad:addMember
--- Adds an agent by name to this squad.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSquad_stub:addMember("hero")
--- (replace lSquad_stub with your real LSquad instance above)
-
--- ---- Stub: LSquad:removeMember -------------------------------------------
---@api-stub: LSquad:removeMember
--- Removes an agent by name from this squad.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSquad_stub:removeMember("hero")
--- (replace lSquad_stub with your real LSquad instance above)
-
--- ---- Stub: LSquad:getMemberCount -----------------------------------------
---@api-stub: LSquad:getMemberCount
--- Returns the number of squad members.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSquad_stub:getMemberCount()  -- -> integer
--- (replace lSquad_stub with your real LSquad instance above)
-
--- ---- Stub: LSquad:getMembers ---------------------------------------------
---@api-stub: LSquad:getMembers
--- Returns the member names as a table.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSquad_stub:getMembers()  -- -> table
--- (replace lSquad_stub with your real LSquad instance above)
-
--- ---- Stub: LSquad:setLeader ----------------------------------------------
---@api-stub: LSquad:setLeader
--- Sets the squad leader by name.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSquad_stub:setLeader("hero")
--- (replace lSquad_stub with your real LSquad instance above)
-
--- ---- Stub: LSquad:getLeader ----------------------------------------------
---@api-stub: LSquad:getLeader
--- Returns the leader name, or nil.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSquad_stub:getLeader()  -- -> string?
--- (replace lSquad_stub with your real LSquad instance above)
-
--- ---- Stub: LSquad:setFormation -------------------------------------------
---@api-stub: LSquad:setFormation
--- Sets the formation type and optional spacing.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSquad_stub:setFormation(ftype, [spacing])
--- (replace lSquad_stub with your real LSquad instance above)
-
--- ---- Stub: LSquad:getFormation -------------------------------------------
---@api-stub: LSquad:getFormation
--- Returns the current formation type name.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSquad_stub:getFormation()  -- -> string
--- (replace lSquad_stub with your real LSquad instance above)
-
--- ---- Stub: LSquad:getFormationSpacing ------------------------------------
---@api-stub: LSquad:getFormationSpacing
--- Returns the formation spacing in world units.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSquad_stub:getFormationSpacing()  -- -> number
--- (replace lSquad_stub with your real LSquad instance above)
-
--- ---- Stub: LSquad:getFormationPosition -----------------------------------
---@api-stub: LSquad:getFormationPosition
--- Computes the world-space position for a member index (1-based).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSquad_stub:getFormationPosition(member_idx, leader_x, leader_y)  -- -> number, number
--- (replace lSquad_stub with your real LSquad instance above)
-
--- ---- Stub: LSquad:getBlackboard ------------------------------------------
---@api-stub: LSquad:getBlackboard
--- Returns the squad's shared blackboard.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSquad_stub:getBlackboard()  -- -> AIBlackboard
--- (replace lSquad_stub with your real LSquad instance above)
-
--- ---- Stub: LSquad:type ---------------------------------------------------
---@api-stub: LSquad:type
--- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSquad_stub:type()  -- -> string
--- (replace lSquad_stub with your real LSquad instance above)
-
--- ---- Stub: LSquad:typeOf -------------------------------------------------
---@api-stub: LSquad:typeOf
--- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSquad_stub:typeOf("hero")  -- -> boolean
--- (replace lSquad_stub with your real LSquad instance above)
-
--- -----------------------------------------------------------------------------
--- LStateMachine methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LStateMachine:addState ----------------------------------------
---@api-stub: LStateMachine:addState
--- Registers a named state with optional lifecycle callbacks.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lStateMachine_stub:addState("hero", opts)
--- (replace lStateMachine_stub with your real LStateMachine instance above)
-
--- ---- Stub: LStateMachine:addTransition -----------------------------------
---@api-stub: LStateMachine:addTransition
--- Adds a guarded transition between states.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lStateMachine_stub:addTransition(from, to, [guard], [priority])
--- (replace lStateMachine_stub with your real LStateMachine instance above)
-
--- ---- Stub: LStateMachine:setInitialState ---------------------------------
---@api-stub: LStateMachine:setInitialState
--- Sets the FSM's initial state; must be called before the first update.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lStateMachine_stub:setInitialState("hero")
--- (replace lStateMachine_stub with your real LStateMachine instance above)
-
--- ---- Stub: LStateMachine:getCurrentState ---------------------------------
---@api-stub: LStateMachine:getCurrentState
--- Returns the current state name, or nil.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lStateMachine_stub:getCurrentState()  -- -> string?
--- (replace lStateMachine_stub with your real LStateMachine instance above)
-
--- ---- Stub: LStateMachine:forceState --------------------------------------
---@api-stub: LStateMachine:forceState
--- Forces a transition to the named state.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lStateMachine_stub:forceState("hero")
--- (replace lStateMachine_stub with your real LStateMachine instance above)
-
--- ---- Stub: LStateMachine:getTimeInState ----------------------------------
---@api-stub: LStateMachine:getTimeInState
--- Returns seconds spent in the current state.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lStateMachine_stub:getTimeInState()  -- -> number
--- (replace lStateMachine_stub with your real LStateMachine instance above)
-
--- ---- Stub: LStateMachine:type --------------------------------------------
---@api-stub: LStateMachine:type
--- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lStateMachine_stub:type()  -- -> string
--- (replace lStateMachine_stub with your real LStateMachine instance above)
-
--- ---- Stub: LStateMachine:typeOf ------------------------------------------
---@api-stub: LStateMachine:typeOf
--- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lStateMachine_stub:typeOf("hero")  -- -> boolean
--- (replace lStateMachine_stub with your real LStateMachine instance above)
-
--- -----------------------------------------------------------------------------
--- LSteeringManager methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LSteeringManager:addSeek --------------------------------------
---@api-stub: LSteeringManager:addSeek
--- Adds a Seek behavior toward the target.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSteeringManager_stub:addSeek(tx, ty, [weight])
--- (replace lSteeringManager_stub with your real LSteeringManager instance above)
-
--- ---- Stub: LSteeringManager:addFlee --------------------------------------
---@api-stub: LSteeringManager:addFlee
--- Adds a Flee behavior away from the target.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSteeringManager_stub:addFlee(tx, ty, [panic_dist], [weight])
--- (replace lSteeringManager_stub with your real LSteeringManager instance above)
-
--- ---- Stub: LSteeringManager:addArrive ------------------------------------
---@api-stub: LSteeringManager:addArrive
--- Adds an Arrive behavior with deceleration.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSteeringManager_stub:addArrive(tx, ty, [slowing], [weight])
--- (replace lSteeringManager_stub with your real LSteeringManager instance above)
-
--- ---- Stub: LSteeringManager:addWander ------------------------------------
---@api-stub: LSteeringManager:addWander
--- Adds a Wander behavior for random meandering.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSteeringManager_stub:addWander()
--- (replace lSteeringManager_stub with your real LSteeringManager instance above)
-
--- ---- Stub: LSteeringManager:addPursue ------------------------------------
---@api-stub: LSteeringManager:addPursue
--- Adds a Pursue behavior targeting a named agent.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSteeringManager_stub:addPursue([target_name], [weight])
--- (replace lSteeringManager_stub with your real LSteeringManager instance above)
-
--- ---- Stub: LSteeringManager:addEvade -------------------------------------
---@api-stub: LSteeringManager:addEvade
--- Adds an Evade behavior fleeing from a named agent.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSteeringManager_stub:addEvade([threat_name], [weight])
--- (replace lSteeringManager_stub with your real LSteeringManager instance above)
-
--- ---- Stub: LSteeringManager:addFlock -------------------------------------
---@api-stub: LSteeringManager:addFlock
--- Adds a Flock behavior for group movement.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSteeringManager_stub:addFlock()
--- (replace lSteeringManager_stub with your real LSteeringManager instance above)
-
--- ---- Stub: LSteeringManager:getBehaviorCount -----------------------------
---@api-stub: LSteeringManager:getBehaviorCount
--- Returns the number of active behaviors.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSteeringManager_stub:getBehaviorCount()  -- -> integer
--- (replace lSteeringManager_stub with your real LSteeringManager instance above)
-
--- ---- Stub: LSteeringManager:setCombineMode -------------------------------
---@api-stub: LSteeringManager:setCombineMode
--- Sets the force combination mode.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSteeringManager_stub:setCombineMode(mode)
--- (replace lSteeringManager_stub with your real LSteeringManager instance above)
-
--- ---- Stub: LSteeringManager:getCombineMode -------------------------------
---@api-stub: LSteeringManager:getCombineMode
--- Returns the current combination mode.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSteeringManager_stub:getCombineMode()  -- -> string
--- (replace lSteeringManager_stub with your real LSteeringManager instance above)
-
--- ---- Stub: LSteeringManager:getLastSteering ------------------------------
---@api-stub: LSteeringManager:getLastSteering
--- Returns the last computed steering force.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSteeringManager_stub:getLastSteering()  -- -> number, number
--- (replace lSteeringManager_stub with your real LSteeringManager instance above)
-
--- ---- Stub: LSteeringManager:calculate ------------------------------------
---@api-stub: LSteeringManager:calculate
--- Computes the combined steering force for the given agent state.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSteeringManager_stub:calculate(px, py, vx, vy, max_speed, max_force, 0.016)  -- -> number, number
--- (replace lSteeringManager_stub with your real LSteeringManager instance above)
-
--- ---- Stub: LSteeringManager:type -----------------------------------------
---@api-stub: LSteeringManager:type
--- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSteeringManager_stub:type()  -- -> string
--- (replace lSteeringManager_stub with your real LSteeringManager instance above)
-
--- ---- Stub: LSteeringManager:typeOf ---------------------------------------
---@api-stub: LSteeringManager:typeOf
--- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSteeringManager_stub:typeOf("hero")  -- -> boolean
--- (replace lSteeringManager_stub with your real LSteeringManager instance above)
-
--- ---- Stub: LSteeringManager:setSpatialHashCellSize -----------------------
---@api-stub: LSteeringManager:setSpatialHashCellSize
--- Sets the cell size used by the spatial-hash neighbourhood search.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSteeringManager_stub:setSpatialHashCellSize(size)
--- (replace lSteeringManager_stub with your real LSteeringManager instance above)
-
--- ---- Stub: LSteeringManager:enableSpatialHash ----------------------------
---@api-stub: LSteeringManager:enableSpatialHash
--- Enables or disables spatial-hash bucketing for neighbourhood queries.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSteeringManager_stub:enableSpatialHash(true)
--- (replace lSteeringManager_stub with your real LSteeringManager instance above)
-
--- ---- Stub: LSteeringManager:addCustomBehavior ----------------------------
---@api-stub: LSteeringManager:addCustomBehavior
--- Registers a Lua callback as a custom steering behavior.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSteeringManager_stub:addCustomBehavior(func, [weight])
--- (replace lSteeringManager_stub with your real LSteeringManager instance above)
-
--- ---- Stub: LSteeringManager:applyCustomSteering --------------------------
---@api-stub: LSteeringManager:applyCustomSteering
--- Invokes all registered custom steering callbacks and returns the combined force.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSteeringManager_stub:applyCustomSteering(agent_ud, 0.016)  -- -> number, number
--- (replace lSteeringManager_stub with your real LSteeringManager instance above)
 
 -- -----------------------------------------------------------------------------
 -- LStimulusWorld methods
 -- -----------------------------------------------------------------------------
-
--- ---- Stub: LStimulusWorld:addVisual --------------------------------------
---@api-stub: LStimulusWorld:addVisual
--- Adds a visual stimulus at the specified world position with radius and intensity.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lStimulusWorld_stub:addVisual(0.0, 0.0, intensity, 24.0, [tag])  -- -> integer
--- (replace lStimulusWorld_stub with your real LStimulusWorld instance above)
-
--- ---- Stub: LStimulusWorld:addAuditory ------------------------------------
---@api-stub: LStimulusWorld:addAuditory
--- Registers an auditory stimulus at a world-space position.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lStimulusWorld_stub:addAuditory()  -- -> integer
--- (replace lStimulusWorld_stub with your real LStimulusWorld instance above)
-
--- ---- Stub: LStimulusWorld:remove -----------------------------------------
---@api-stub: LStimulusWorld:remove
--- Removes the specified item.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lStimulusWorld_stub:remove(1)  -- -> boolean
--- (replace lStimulusWorld_stub with your real LStimulusWorld instance above)
-
--- ---- Stub: LStimulusWorld:update -----------------------------------------
---@api-stub: LStimulusWorld:update
--- Advances the simulation by one time step.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lStimulusWorld_stub:update(0.016)
--- (replace lStimulusWorld_stub with your real LStimulusWorld instance above)
-
--- ---- Stub: LStimulusWorld:count ------------------------------------------
---@api-stub: LStimulusWorld:count
--- Returns or performs count.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lStimulusWorld_stub:count()  -- -> integer
--- (replace lStimulusWorld_stub with your real LStimulusWorld instance above)
-
--- ---- Stub: LStimulusWorld:clear ------------------------------------------
---@api-stub: LStimulusWorld:clear
--- Resets or clears the state.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lStimulusWorld_stub:clear()
--- (replace lStimulusWorld_stub with your real LStimulusWorld instance above)
 
 -- ---- Stub: LStimulusWorld:type -------------------------------------------
 --@api-stub: LStimulusWorld:type
@@ -4740,55 +3146,6 @@ end
 -- LStrategyAI methods
 -- -----------------------------------------------------------------------------
 
--- ---- Stub: LStrategyAI:addGoal -------------------------------------------
---@api-stub: LStrategyAI:addGoal
--- Adds a strategic goal with priority score to the planner for future evaluation.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lStrategyAI_stub:addGoal("hero")
--- (replace lStrategyAI_stub with your real LStrategyAI instance above)
-
--- ---- Stub: LStrategyAI:addTag --------------------------------------------
---@api-stub: LStrategyAI:addTag
--- Adds a string tag to the strategy AI instance for goal filtering and categorization.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lStrategyAI_stub:addTag("enemy")
--- (replace lStrategyAI_stub with your real LStrategyAI instance above)
-
--- ---- Stub: LStrategyAI:removeTag -----------------------------------------
---@api-stub: LStrategyAI:removeTag
--- Removes the specified tag.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lStrategyAI_stub:removeTag("enemy")
--- (replace lStrategyAI_stub with your real LStrategyAI instance above)
-
--- ---- Stub: LStrategyAI:update --------------------------------------------
---@api-stub: LStrategyAI:update
--- Advances the simulation by one time step.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lStrategyAI_stub:update(0.016, scorer_fn)
--- (replace lStrategyAI_stub with your real LStrategyAI instance above)
-
--- ---- Stub: LStrategyAI:forceEvaluate -------------------------------------
---@api-stub: LStrategyAI:forceEvaluate
--- Returns or performs force evaluate.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lStrategyAI_stub:forceEvaluate(scorer_fn)
--- (replace lStrategyAI_stub with your real LStrategyAI instance above)
-
--- ---- Stub: LStrategyAI:activeGoal ----------------------------------------
---@api-stub: LStrategyAI:activeGoal
--- Returns or performs active goal.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lStrategyAI_stub:activeGoal()  -- -> string|nil
--- (replace lStrategyAI_stub with your real LStrategyAI instance above)
-
--- ---- Stub: LStrategyAI:timeUntilNext -------------------------------------
---@api-stub: LStrategyAI:timeUntilNext
--- Returns or performs time until next.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lStrategyAI_stub:timeUntilNext()  -- -> number
--- (replace lStrategyAI_stub with your real LStrategyAI instance above)
-
 -- ---- Stub: LStrategyAI:type ----------------------------------------------
 --@api-stub: LStrategyAI:type
 -- Returns the type name of this object.
@@ -4807,69 +3164,6 @@ end
 -- LTraitProfile methods
 -- -----------------------------------------------------------------------------
 
--- ---- Stub: LTraitProfile:set ---------------------------------------------
---@api-stub: LTraitProfile:set
--- Sets the base value of this trait, replacing any previous base.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTraitProfile_stub:set("hero", 42)
--- (replace lTraitProfile_stub with your real LTraitProfile instance above)
-
--- ---- Stub: LTraitProfile:get ---------------------------------------------
---@api-stub: LTraitProfile:get
--- Returns the current float value of this emotion dimension.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTraitProfile_stub:get("hero")  -- -> number
--- (replace lTraitProfile_stub with your real LTraitProfile instance above)
-
--- ---- Stub: LTraitProfile:getBase -----------------------------------------
---@api-stub: LTraitProfile:getBase
--- Returns the unmodified base value of this trait before modifiers.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTraitProfile_stub:getBase("hero")  -- -> number
--- (replace lTraitProfile_stub with your real LTraitProfile instance above)
-
--- ---- Stub: LTraitProfile:addModifier -------------------------------------
---@api-stub: LTraitProfile:addModifier
--- Adds a named modifier that adjusts the trait value by a delta.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTraitProfile_stub:addModifier(trait_name, 0.016, [duration], source)
--- (replace lTraitProfile_stub with your real LTraitProfile instance above)
-
--- ---- Stub: LTraitProfile:removeModifiers ---------------------------------
---@api-stub: LTraitProfile:removeModifiers
--- Removes the specified modifiers.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTraitProfile_stub:removeModifiers(source)
--- (replace lTraitProfile_stub with your real LTraitProfile instance above)
-
--- ---- Stub: LTraitProfile:update ------------------------------------------
---@api-stub: LTraitProfile:update
--- Advances the simulation by one time step.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTraitProfile_stub:update(0.016)
--- (replace lTraitProfile_stub with your real LTraitProfile instance above)
-
--- ---- Stub: LTraitProfile:has ---------------------------------------------
---@api-stub: LTraitProfile:has
--- Returns true if a item is present.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTraitProfile_stub:has("hero")  -- -> boolean
--- (replace lTraitProfile_stub with your real LTraitProfile instance above)
-
--- ---- Stub: LTraitProfile:traitCount --------------------------------------
---@api-stub: LTraitProfile:traitCount
--- Returns or performs trait count.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTraitProfile_stub:traitCount()  -- -> number
--- (replace lTraitProfile_stub with your real LTraitProfile instance above)
-
--- ---- Stub: LTraitProfile:archetype ---------------------------------------
---@api-stub: LTraitProfile:archetype
--- Returns or performs archetype.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTraitProfile_stub:archetype()  -- -> string|nil
--- (replace lTraitProfile_stub with your real LTraitProfile instance above)
-
 -- ---- Stub: LTraitProfile:type --------------------------------------------
 --@api-stub: LTraitProfile:type
 -- Returns the type name of this object.
@@ -4884,55 +3178,3 @@ end
 -- lTraitProfile_stub:typeOf("hero")  -- -> boolean
 -- (replace lTraitProfile_stub with your real LTraitProfile instance above)
 
--- -----------------------------------------------------------------------------
--- LUtilityAI methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LUtilityAI:addAction ------------------------------------------
---@api-stub: LUtilityAI:addAction
--- Adds a scored action with optional momentum weight.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lUtilityAI_stub:addAction("hero", scorer_fn, [weight])
--- (replace lUtilityAI_stub with your real LUtilityAI instance above)
-
--- ---- Stub: LUtilityAI:evaluate -------------------------------------------
---@api-stub: LUtilityAI:evaluate
--- Evaluates all actions and returns the best action name, or nil.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lUtilityAI_stub:evaluate()  -- -> string?
--- (replace lUtilityAI_stub with your real LUtilityAI instance above)
-
--- ---- Stub: LUtilityAI:getActionCount -------------------------------------
---@api-stub: LUtilityAI:getActionCount
--- Returns the number of registered actions.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lUtilityAI_stub:getActionCount()  -- -> integer
--- (replace lUtilityAI_stub with your real LUtilityAI instance above)
-
--- ---- Stub: LUtilityAI:getLastAction --------------------------------------
---@api-stub: LUtilityAI:getLastAction
--- Returns the name of the last chosen action, or nil.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lUtilityAI_stub:getLastAction()  -- -> string?
--- (replace lUtilityAI_stub with your real LUtilityAI instance above)
-
--- ---- Stub: LUtilityAI:addConsideration -----------------------------------
---@api-stub: LUtilityAI:addConsideration
--- Adds a multi-axis consideration to a named action.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lUtilityAI_stub:addConsideration()
--- (replace lUtilityAI_stub with your real LUtilityAI instance above)
-
--- ---- Stub: LUtilityAI:type -----------------------------------------------
---@api-stub: LUtilityAI:type
--- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lUtilityAI_stub:type()  -- -> string
--- (replace lUtilityAI_stub with your real LUtilityAI instance above)
-
--- ---- Stub: LUtilityAI:typeOf ---------------------------------------------
---@api-stub: LUtilityAI:typeOf
--- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lUtilityAI_stub:typeOf("hero")  -- -> boolean
--- (replace lUtilityAI_stub with your real LUtilityAI instance above)

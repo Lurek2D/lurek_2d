@@ -243,7 +243,7 @@ end
 
 -- ── Scheduler methods ──
 
---@api-stub: Scheduler:after
+--@api-stub: LScheduler:after
 -- Schedules a callback to fire once after a delay.
 -- Returned id can be passed to cancel/pause/resume; nil callback is a noop slot.
 do  -- Scheduler:after
@@ -253,7 +253,7 @@ do  -- Scheduler:after
   function lurek.process(dt) sched:update(dt) end
 end
 
---@api-stub: Scheduler:afterFrames
+--@api-stub: LScheduler:afterFrames
 -- Schedules a callback to fire once after `n` frames.
 -- Frame-based variant; immune to time-scale, advances via :updateFrames() each frame.
 do  -- Scheduler:afterFrames
@@ -262,7 +262,7 @@ do  -- Scheduler:afterFrames
   function lurek.process() sched:updateFrames() end
 end
 
---@api-stub: Scheduler:cancel
+--@api-stub: LScheduler:cancel
 -- Cancels a scheduled event by its numeric ID.
 -- Returns true if it was active; safe to call on already-fired or unknown ids.
 do  -- Scheduler:cancel
@@ -272,7 +272,7 @@ do  -- Scheduler:cancel
   lurek.log.debug("cancel returned " .. tostring(ok), "timer")
 end
 
---@api-stub: Scheduler:cancelNamed
+--@api-stub: LScheduler:cancelNamed
 -- Cancels a scheduled event by its string name.
 -- Use named events to cancel without tracking ids; great for per-entity timers.
 do  -- Scheduler:cancelNamed
@@ -282,7 +282,7 @@ do  -- Scheduler:cancelNamed
   lurek.log.debug("invuln cancelled=" .. tostring(cancelled), "combat")
 end
 
---@api-stub: Scheduler:cancelAll
+--@api-stub: LScheduler:cancelAll
 -- Cancels all scheduled events and returns the count removed.
 -- Call on scene unload to drop pending callbacks before swapping state.
 do  -- Scheduler:cancelAll
@@ -293,7 +293,7 @@ do  -- Scheduler:cancelAll
   lurek.log.info("dropped " .. removed .. " timers on scene exit", "scene")
 end
 
---@api-stub: Scheduler:pause
+--@api-stub: LScheduler:pause
 -- Pauses a scheduled event by its ID.
 -- Pair with :resume(id); paused events keep their remaining time intact.
 do  -- Scheduler:pause
@@ -303,7 +303,7 @@ do  -- Scheduler:pause
   lurek.log.debug("paused id=" .. id, "ai")
 end
 
---@api-stub: Scheduler:resume
+--@api-stub: LScheduler:resume
 -- Resumes a paused event by its ID.
 -- Returns true if the event existed and was paused; mirror of :pause().
 do  -- Scheduler:resume
@@ -314,7 +314,7 @@ do  -- Scheduler:resume
   lurek.log.debug("resume returned " .. tostring(ok), "timer")
 end
 
---@api-stub: Scheduler:isPaused
+--@api-stub: LScheduler:isPaused
 -- Returns whether the given event is currently paused.
 -- Useful to drive UI state (greyed-out icon) without tracking the flag yourself.
 do  -- Scheduler:isPaused
@@ -326,7 +326,7 @@ do  -- Scheduler:isPaused
   end
 end
 
---@api-stub: Scheduler:pauseNamed
+--@api-stub: LScheduler:pauseNamed
 -- Pauses a scheduled event by its string name.
 -- Named-key analogue of :pause(); use when you only have the name in scope.
 do  -- Scheduler:pauseNamed
@@ -336,7 +336,7 @@ do  -- Scheduler:pauseNamed
   lurek.log.debug("regen paused", "rpg")
 end
 
---@api-stub: Scheduler:resumeNamed
+--@api-stub: LScheduler:resumeNamed
 -- Resumes a paused event by its string name.
 -- Returns true if the named event was paused before the call.
 do  -- Scheduler:resumeNamed
@@ -347,7 +347,7 @@ do  -- Scheduler:resumeNamed
   lurek.log.debug("regen resumed=" .. tostring(ok), "rpg")
 end
 
---@api-stub: Scheduler:isPausedNamed
+--@api-stub: LScheduler:isPausedNamed
 -- Returns whether the named event is currently paused.
 -- Lets UI code query state by name without retaining the numeric id.
 do  -- Scheduler:isPausedNamed
@@ -359,7 +359,7 @@ do  -- Scheduler:isPausedNamed
   end
 end
 
---@api-stub: Scheduler:getRemaining
+--@api-stub: LScheduler:getRemaining
 -- Returns the seconds remaining until the next fire for an event, or nil.
 -- Drive cooldown UI bars: divide by getInterval(id) to get a 0..1 progress value.
 do  -- Scheduler:getRemaining
@@ -371,7 +371,7 @@ do  -- Scheduler:getRemaining
   end
 end
 
---@api-stub: Scheduler:getInterval
+--@api-stub: LScheduler:getInterval
 -- Returns the base interval in seconds for an event, or nil.
 -- Combine with getRemaining to compute progress; nil means the id is unknown.
 do  -- Scheduler:getInterval
@@ -381,7 +381,7 @@ do  -- Scheduler:getInterval
   lurek.log.debug("event interval = " .. interval .. "s", "timer")
 end
 
---@api-stub: Scheduler:getRepeatCount
+--@api-stub: LScheduler:getRepeatCount
 -- Returns the repeat count remaining for an event, or nil.
 -- -1 means infinite; use to display "3 charges left" style HUD elements.
 do  -- Scheduler:getRepeatCount
@@ -391,7 +391,7 @@ do  -- Scheduler:getRepeatCount
   lurek.log.debug("charges left = " .. left, "ability")
 end
 
---@api-stub: Scheduler:getCount
+--@api-stub: LScheduler:getCount
 -- Returns the number of active scheduled events.
 -- Useful for sanity checks and leak detection in long-running scenes.
 do  -- Scheduler:getCount
@@ -402,7 +402,7 @@ do  -- Scheduler:getCount
   lurek.log.debug("active timers = " .. n, "timer")
 end
 
---@api-stub: Scheduler:isEmpty
+--@api-stub: LScheduler:isEmpty
 -- Returns whether the scheduler has no active events.
 -- Cheap early-out before calling :update(dt) on a scheduler that's almost always idle.
 do  -- Scheduler:isEmpty
@@ -412,7 +412,7 @@ do  -- Scheduler:isEmpty
   end
 end
 
---@api-stub: Scheduler:setInterval
+--@api-stub: LScheduler:setInterval
 -- Changes the repeat interval of an existing event.
 -- Use to ramp difficulty: shorten the spawn interval as the wave progresses.
 do  -- Scheduler:setInterval
@@ -422,7 +422,7 @@ do  -- Scheduler:setInterval
   lurek.log.info("spawn rate increased", "ai")
 end
 
---@api-stub: Scheduler:resetEvent
+--@api-stub: LScheduler:resetEvent
 -- Resets an event's remaining time back to its original interval.
 -- Use to refresh a buff's duration when a new pickup is collected.
 do  -- Scheduler:resetEvent
@@ -432,7 +432,7 @@ do  -- Scheduler:resetEvent
   lurek.log.debug("buff timer refreshed", "rpg")
 end
 
---@api-stub: Scheduler:setTimeScale
+--@api-stub: LScheduler:setTimeScale
 -- Sets a global time-scale multiplier for this scheduler.
 -- 0.5 = bullet-time, 2.0 = fast-forward; affects every event in the scheduler.
 do  -- Scheduler:setTimeScale
@@ -442,7 +442,7 @@ do  -- Scheduler:setTimeScale
   lurek.log.info("enemies in slow-motion", "fx")
 end
 
---@api-stub: Scheduler:getTimeScale
+--@api-stub: LScheduler:getTimeScale
 -- Returns the current time-scale multiplier.
 -- Read to display a slow-mo indicator or to tune dependent systems.
 do  -- Scheduler:getTimeScale
@@ -454,7 +454,7 @@ do  -- Scheduler:getTimeScale
   end
 end
 
---@api-stub: Scheduler:update
+--@api-stub: LScheduler:update
 -- Advances all timers by dt seconds, firing due callbacks.
 -- Call once per frame in lurek.process; pass the engine delta from getDelta() or arg.
 do  -- Scheduler:update
@@ -463,7 +463,7 @@ do  -- Scheduler:update
   function lurek.process(dt) sched:update(dt) end
 end
 
---@api-stub: Scheduler:updateFrames
+--@api-stub: LScheduler:updateFrames
 -- Advances frame-based events by one frame, firing due callbacks.
 -- Pair with :afterFrames / :everyFrames; takes no dt because steps are discrete.
 do  -- Scheduler:updateFrames
@@ -472,7 +472,7 @@ do  -- Scheduler:updateFrames
   function lurek.process() sched:updateFrames() end
 end
 
---@api-stub: Scheduler:afterNamed
+--@api-stub: LScheduler:afterNamed
 -- Schedules a named one-shot callback after a delay; cancel by name with cancelNamed().
 -- Named timers can be reset or cancelled without keeping a numeric id.
 do  -- Scheduler:afterNamed
@@ -483,7 +483,7 @@ do  -- Scheduler:afterNamed
   lurek.log.info("named timer registered", "timer")
 end
 
---@api-stub: Scheduler:every
+--@api-stub: LScheduler:every
 -- Schedules a repeating callback at a given interval in seconds.
 -- Returns a numeric id for cancellation; repeat continues until cancel() is called.
 do  -- Scheduler:every
@@ -494,7 +494,7 @@ do  -- Scheduler:every
   lurek.log.info("repeating id: " .. id, "timer")
 end
 
---@api-stub: Scheduler:everyFrames
+--@api-stub: LScheduler:everyFrames
 -- Schedules a repeating callback every N game frames.
 -- Frame-based timers are unaffected by delta-time spikes; useful for fixed-rate effects.
 do  -- Scheduler:everyFrames
@@ -505,7 +505,7 @@ do  -- Scheduler:everyFrames
   lurek.log.info("frame-rate timer id: " .. id, "timer")
 end
 
---@api-stub: Scheduler:everyNamed
+--@api-stub: LScheduler:everyNamed
 -- Schedules a named repeating callback at the given interval.
 -- Named repeating timers can be paused, resumed, or cancelled by name.
 do  -- Scheduler:everyNamed
@@ -527,20 +527,6 @@ end
 -- -----------------------------------------------------------------------------
 -- Scheduler methods
 -- -----------------------------------------------------------------------------
-
--- ---- Stub: Scheduler:type ------------------------------------------------
---@api-stub: Scheduler:type
--- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- scheduler_stub:type()  -- -> string
--- (replace scheduler_stub with your real Scheduler instance above)
-
--- ---- Stub: Scheduler:typeOf ----------------------------------------------
---@api-stub: Scheduler:typeOf
--- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- scheduler_stub:typeOf("hero")  -- -> boolean
--- (replace scheduler_stub with your real Scheduler instance above)
 
 -- =============================================================================
 -- STUBS: 2 uncovered lurek.timer API item(s)
@@ -576,188 +562,3 @@ end
 -- The final committed file must contain ZERO --@api-stub: lines.
 -- =============================================================================
 
--- -----------------------------------------------------------------------------
--- LScheduler methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LScheduler:after ----------------------------------------------
---@api-stub: LScheduler:after
--- Schedules a callback to fire once after a delay.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lScheduler_stub:after(delay, func)  -- -> integer
--- (replace lScheduler_stub with your real LScheduler instance above)
-
--- ---- Stub: LScheduler:afterFrames ----------------------------------------
---@api-stub: LScheduler:afterFrames
--- Schedules a callback to fire once after `n` frames.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lScheduler_stub:afterFrames(5, func)  -- -> integer
--- (replace lScheduler_stub with your real LScheduler instance above)
-
--- ---- Stub: LScheduler:afterNamed -----------------------------------------
---@api-stub: LScheduler:afterNamed
--- Schedules a named one-shot callback, replacing any existing event with the same name.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lScheduler_stub:afterNamed("hero", delay, func)  -- -> integer
--- (replace lScheduler_stub with your real LScheduler instance above)
-
--- ---- Stub: LScheduler:every ----------------------------------------------
---@api-stub: LScheduler:every
--- Schedules a callback to fire repeatedly at the given interval.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lScheduler_stub:every(interval, func, [count])  -- -> integer
--- (replace lScheduler_stub with your real LScheduler instance above)
-
--- ---- Stub: LScheduler:everyFrames ----------------------------------------
---@api-stub: LScheduler:everyFrames
--- Schedules a callback to fire every `n` frames.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lScheduler_stub:everyFrames(5, func, [count])  -- -> integer â€” event ID
--- (replace lScheduler_stub with your real LScheduler instance above)
-
--- ---- Stub: LScheduler:everyNamed -----------------------------------------
---@api-stub: LScheduler:everyNamed
--- Schedules a named repeating callback, replacing any existing event with the same name.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lScheduler_stub:everyNamed("hero", interval, func, [count])  -- -> integer
--- (replace lScheduler_stub with your real LScheduler instance above)
-
--- ---- Stub: LScheduler:cancel ---------------------------------------------
---@api-stub: LScheduler:cancel
--- Cancels a scheduled event by its numeric ID.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lScheduler_stub:cancel(1)  -- -> boolean
--- (replace lScheduler_stub with your real LScheduler instance above)
-
--- ---- Stub: LScheduler:cancelNamed ----------------------------------------
---@api-stub: LScheduler:cancelNamed
--- Cancels a scheduled event by its string name.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lScheduler_stub:cancelNamed("hero")  -- -> boolean
--- (replace lScheduler_stub with your real LScheduler instance above)
-
--- ---- Stub: LScheduler:cancelAll ------------------------------------------
---@api-stub: LScheduler:cancelAll
--- Cancels all scheduled events and returns the count removed.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lScheduler_stub:cancelAll()  -- -> integer
--- (replace lScheduler_stub with your real LScheduler instance above)
-
--- ---- Stub: LScheduler:pause ----------------------------------------------
---@api-stub: LScheduler:pause
--- Pauses a scheduled event by its ID.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lScheduler_stub:pause(1)  -- -> boolean
--- (replace lScheduler_stub with your real LScheduler instance above)
-
--- ---- Stub: LScheduler:resume ---------------------------------------------
---@api-stub: LScheduler:resume
--- Resumes a paused event by its ID.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lScheduler_stub:resume(1)  -- -> boolean
--- (replace lScheduler_stub with your real LScheduler instance above)
-
--- ---- Stub: LScheduler:isPaused -------------------------------------------
---@api-stub: LScheduler:isPaused
--- Returns whether the given event is currently paused.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lScheduler_stub:isPaused(1)  -- -> boolean
--- (replace lScheduler_stub with your real LScheduler instance above)
-
--- ---- Stub: LScheduler:pauseNamed -----------------------------------------
---@api-stub: LScheduler:pauseNamed
--- Pauses a scheduled event by its string name.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lScheduler_stub:pauseNamed("hero")  -- -> boolean
--- (replace lScheduler_stub with your real LScheduler instance above)
-
--- ---- Stub: LScheduler:resumeNamed ----------------------------------------
---@api-stub: LScheduler:resumeNamed
--- Resumes a paused event by its string name.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lScheduler_stub:resumeNamed("hero")  -- -> boolean
--- (replace lScheduler_stub with your real LScheduler instance above)
-
--- ---- Stub: LScheduler:isPausedNamed --------------------------------------
---@api-stub: LScheduler:isPausedNamed
--- Returns whether the named event is currently paused.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lScheduler_stub:isPausedNamed("hero")  -- -> boolean
--- (replace lScheduler_stub with your real LScheduler instance above)
-
--- ---- Stub: LScheduler:getRemaining ---------------------------------------
---@api-stub: LScheduler:getRemaining
--- Returns the seconds remaining until the next fire for an event, or nil.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lScheduler_stub:getRemaining(1)  -- -> number?
--- (replace lScheduler_stub with your real LScheduler instance above)
-
--- ---- Stub: LScheduler:getInterval ----------------------------------------
---@api-stub: LScheduler:getInterval
--- Returns the base interval in seconds for an event, or nil.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lScheduler_stub:getInterval(1)  -- -> number?
--- (replace lScheduler_stub with your real LScheduler instance above)
-
--- ---- Stub: LScheduler:getRepeatCount -------------------------------------
---@api-stub: LScheduler:getRepeatCount
--- Returns the repeat count remaining for an event, or nil.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lScheduler_stub:getRepeatCount(1)  -- -> integer?
--- (replace lScheduler_stub with your real LScheduler instance above)
-
--- ---- Stub: LScheduler:getCount -------------------------------------------
---@api-stub: LScheduler:getCount
--- Returns the number of active scheduled events.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lScheduler_stub:getCount()  -- -> integer
--- (replace lScheduler_stub with your real LScheduler instance above)
-
--- ---- Stub: LScheduler:isEmpty --------------------------------------------
---@api-stub: LScheduler:isEmpty
--- Returns whether the scheduler has no active events.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lScheduler_stub:isEmpty()  -- -> boolean
--- (replace lScheduler_stub with your real LScheduler instance above)
-
--- ---- Stub: LScheduler:setInterval ----------------------------------------
---@api-stub: LScheduler:setInterval
--- Changes the repeat interval of an existing event.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lScheduler_stub:setInterval(1, interval)  -- -> boolean
--- (replace lScheduler_stub with your real LScheduler instance above)
-
--- ---- Stub: LScheduler:resetEvent -----------------------------------------
---@api-stub: LScheduler:resetEvent
--- Resets an event's remaining time back to its original interval.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lScheduler_stub:resetEvent(1)  -- -> boolean
--- (replace lScheduler_stub with your real LScheduler instance above)
-
--- ---- Stub: LScheduler:setTimeScale ---------------------------------------
---@api-stub: LScheduler:setTimeScale
--- Sets a global time-scale multiplier for this scheduler.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lScheduler_stub:setTimeScale(1.0)
--- (replace lScheduler_stub with your real LScheduler instance above)
-
--- ---- Stub: LScheduler:getTimeScale ---------------------------------------
---@api-stub: LScheduler:getTimeScale
--- Returns the current time-scale multiplier.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lScheduler_stub:getTimeScale()  -- -> number
--- (replace lScheduler_stub with your real LScheduler instance above)
-
--- ---- Stub: LScheduler:update ---------------------------------------------
---@api-stub: LScheduler:update
--- Advances all timers by dt seconds, firing due callbacks.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lScheduler_stub:update(0.016)  -- -> integer
--- (replace lScheduler_stub with your real LScheduler instance above)
-
--- ---- Stub: LScheduler:updateFrames ---------------------------------------
---@api-stub: LScheduler:updateFrames
--- Advances frame-based events by one frame, firing due callbacks.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lScheduler_stub:updateFrames()  -- -> integer â€” number of callbacks fired
--- (replace lScheduler_stub with your real LScheduler instance above)

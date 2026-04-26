@@ -36,7 +36,7 @@ end
 
 -- ── ParticleSystem methods ──
 
---@api-stub: ParticleSystem:update
+--@api-stub: LParticleSystem:update
 -- Advances the particle simulation by dt seconds.
 -- Call inside lurek.process(dt); skip when the system isStopped to save the borrow.
 do  -- ParticleSystem:update
@@ -47,7 +47,7 @@ do  -- ParticleSystem:update
   end
 end
 
---@api-stub: ParticleSystem:emit
+--@api-stub: LParticleSystem:emit
 -- Emits a burst of the given number of particles.
 -- Use for one-shot bursts (explosions, hit sparks); does not require start() to be running.
 do  -- ParticleSystem:emit
@@ -56,7 +56,7 @@ do  -- ParticleSystem:emit
   hit:emit(24)
 end
 
---@api-stub: ParticleSystem:start
+--@api-stub: LParticleSystem:start
 -- Starts or restarts particle emission.
 -- Begins continuous emission at emissionRate; idempotent if already running.
 do  -- ParticleSystem:start
@@ -66,7 +66,7 @@ do  -- ParticleSystem:start
   rain:start()
 end
 
---@api-stub: ParticleSystem:stop
+--@api-stub: LParticleSystem:stop
 -- Stops particle emission immediately.
 -- Stops new emission immediately; live particles continue until their lifetime expires.
 do  -- ParticleSystem:stop
@@ -77,7 +77,7 @@ do  -- ParticleSystem:stop
   end
 end
 
---@api-stub: ParticleSystem:pause
+--@api-stub: LParticleSystem:pause
 -- Pauses particle emission; existing particles continue to simulate.
 -- Freezes both emission and simulation; useful when a menu opens mid-game.
 do  -- ParticleSystem:pause
@@ -86,7 +86,7 @@ do  -- ParticleSystem:pause
   if lurek.input.keyboard.isDown("escape") then steam:pause() end
 end
 
---@api-stub: ParticleSystem:resume
+--@api-stub: LParticleSystem:resume
 -- Resumes a paused emitter.
 -- Restarts a paused system from where it left off; no-op if it was never paused.
 do  -- ParticleSystem:resume
@@ -96,7 +96,7 @@ do  -- ParticleSystem:resume
   fog:resume()
 end
 
---@api-stub: ParticleSystem:reset
+--@api-stub: LParticleSystem:reset
 -- Removes all particles and resets the emitter.
 -- Drops every live particle and rewinds the emitter; use on level reload.
 do  -- ParticleSystem:reset
@@ -106,7 +106,7 @@ do  -- ParticleSystem:reset
   sparks:reset()
 end
 
---@api-stub: ParticleSystem:moveTo
+--@api-stub: LParticleSystem:moveTo
 -- Moves the emitter to the given world position.
 -- Snap the emitter to a new world position; track an entity by calling each frame.
 do  -- ParticleSystem:moveTo
@@ -119,7 +119,7 @@ do  -- ParticleSystem:moveTo
   end
 end
 
---@api-stub: ParticleSystem:count
+--@api-stub: LParticleSystem:count
 -- Returns the number of living particles.
 -- Branch on this to spawn extra effects only when the pool has headroom.
 do  -- ParticleSystem:count
@@ -128,7 +128,7 @@ do  -- ParticleSystem:count
   if smoke:count() < 50 then smoke:emit(10) end
 end
 
---@api-stub: ParticleSystem:isActive
+--@api-stub: LParticleSystem:isActive
 -- Returns true if the emitter is currently emitting or has live particles.
 -- True while emitting OR while particles remain alive; use to delay scene cleanup.
 do  -- ParticleSystem:isActive
@@ -139,7 +139,7 @@ do  -- ParticleSystem:isActive
   end
 end
 
---@api-stub: ParticleSystem:isPaused
+--@api-stub: LParticleSystem:isPaused
 -- Returns true if the emitter is paused.
 -- Use to display a paused-overlay icon over the emitter without polling state externally.
 do  -- ParticleSystem:isPaused
@@ -149,7 +149,7 @@ do  -- ParticleSystem:isPaused
   if fountain:isPaused() then lurek.log.info("fountain frozen", "fx") end
 end
 
---@api-stub: ParticleSystem:isStopped
+--@api-stub: LParticleSystem:isStopped
 -- Returns true if the emitter is stopped.
 -- Returns true after stop() and before start(); also true for a never-started new system.
 do  -- ParticleSystem:isStopped
@@ -157,7 +157,7 @@ do  -- ParticleSystem:isStopped
   if burst:isStopped() then burst:start() end
 end
 
---@api-stub: ParticleSystem:isEmpty
+--@api-stub: LParticleSystem:isEmpty
 -- Returns true if there are no live particles.
 -- True when no particles are alive; pair with isStopped to know it is safe to release.
 do  -- ParticleSystem:isEmpty
@@ -166,7 +166,7 @@ do  -- ParticleSystem:isEmpty
   if trail_fx:isEmpty() then trail_fx:release() end
 end
 
---@api-stub: ParticleSystem:isFull
+--@api-stub: LParticleSystem:isFull
 -- Returns true if the system has reached max_particles.
 -- Buffer is at maxParticles; new emissions overwrite the oldest particle.
 do  -- ParticleSystem:isFull
@@ -178,7 +178,7 @@ do  -- ParticleSystem:isFull
   end
 end
 
---@api-stub: ParticleSystem:release
+--@api-stub: LParticleSystem:release
 -- Removes the particle system from the engine, freeing its slot.
 -- Frees the engine slot; the userdata becomes a dead handle and further calls error.
 do  -- ParticleSystem:release
@@ -187,7 +187,7 @@ do  -- ParticleSystem:release
   oneshot:release()
 end
 
---@api-stub: ParticleSystem:getCount
+--@api-stub: LParticleSystem:getCount
 -- Returns the number of living particles (alias for count).
 -- Same value as count(); errors if the system was released, so wrap in a check.
 do  -- ParticleSystem:getCount
@@ -197,7 +197,7 @@ do  -- ParticleSystem:getCount
   lurek.log.debug("plume live=" .. n, "fx")
 end
 
---@api-stub: ParticleSystem:type
+--@api-stub: LParticleSystem:type
 -- Returns the type name "ParticleSystem".
 -- Discriminator string useful when a callback receives a generic Drawable userdata.
 do  -- ParticleSystem:type
@@ -207,7 +207,7 @@ do  -- ParticleSystem:type
   end
 end
 
---@api-stub: ParticleSystem:typeOf
+--@api-stub: LParticleSystem:typeOf
 -- Returns true if this matches the given type name.
 -- Accepts "ParticleSystem", "Drawable", or "Object" — matches the love2d type hierarchy.
 do  -- ParticleSystem:typeOf
@@ -217,7 +217,7 @@ do  -- ParticleSystem:typeOf
   end
 end
 
---@api-stub: ParticleSystem:setPosition
+--@api-stub: LParticleSystem:setPosition
 -- Sets the emitter world position.
 -- Equivalent to moveTo; use whichever reads better in your code.
 do  -- ParticleSystem:setPosition
@@ -226,7 +226,7 @@ do  -- ParticleSystem:setPosition
   muzzle:emit(12)
 end
 
---@api-stub: ParticleSystem:getPosition
+--@api-stub: LParticleSystem:getPosition
 -- Returns the emitter world position.
 -- Returns two numbers (x, y); useful for aligning UI tooltips with the emitter.
 do  -- ParticleSystem:getPosition
@@ -236,7 +236,7 @@ do  -- ParticleSystem:getPosition
   lurek.log.debug("emitter at " .. x .. "," .. y, "fx")
 end
 
---@api-stub: ParticleSystem:setEmissionRate
+--@api-stub: LParticleSystem:setEmissionRate
 -- Sets particles emitted per second.
 -- Particles per second; ramp up/down for engine throttle, weather intensity, etc.
 do  -- ParticleSystem:setEmissionRate
@@ -246,7 +246,7 @@ do  -- ParticleSystem:setEmissionRate
   rain:setEmissionRate(150 * intensity)
 end
 
---@api-stub: ParticleSystem:getEmissionRate
+--@api-stub: LParticleSystem:getEmissionRate
 -- Returns particles emitted per second.
 -- Read it back to drive a debug overlay or validate that a config load took effect.
 do  -- ParticleSystem:getEmissionRate
@@ -256,7 +256,7 @@ do  -- ParticleSystem:getEmissionRate
   end
 end
 
---@api-stub: ParticleSystem:setParticleLifetime
+--@api-stub: LParticleSystem:setParticleLifetime
 -- Sets min and max particle lifetime in seconds.
 -- Pass min == max for uniform lifetimes; range adds visual variety.
 do  -- ParticleSystem:setParticleLifetime
@@ -266,7 +266,7 @@ do  -- ParticleSystem:setParticleLifetime
   smoke:start()
 end
 
---@api-stub: ParticleSystem:getParticleLifetime
+--@api-stub: LParticleSystem:getParticleLifetime
 -- Returns min and max particle lifetime.
 -- Returns (min, max) seconds; use to pre-allocate trails sized to the longest lifetime.
 do  -- ParticleSystem:getParticleLifetime
@@ -275,7 +275,7 @@ do  -- ParticleSystem:getParticleLifetime
   lurek.log.debug("lifetime " .. lo .. " to " .. hi, "fx")
 end
 
---@api-stub: ParticleSystem:setEmitterLifetime
+--@api-stub: LParticleSystem:setEmitterLifetime
 -- Sets how long the emitter runs before auto-stopping.
 -- Negative = infinite (the default); positive auto-stops the emitter after N seconds.
 do  -- ParticleSystem:setEmitterLifetime
@@ -284,7 +284,7 @@ do  -- ParticleSystem:setEmitterLifetime
   explosion:start()
 end
 
---@api-stub: ParticleSystem:getEmitterLifetime
+--@api-stub: LParticleSystem:getEmitterLifetime
 -- Returns the emitter lifetime.
 -- Read back the configured run-time; -1 indicates infinite emission.
 do  -- ParticleSystem:getEmitterLifetime
@@ -294,7 +294,7 @@ do  -- ParticleSystem:getEmitterLifetime
   end
 end
 
---@api-stub: ParticleSystem:setSpeed
+--@api-stub: LParticleSystem:setSpeed
 -- Sets min/max initial speed.
 -- Initial speed range in pixels per second; combine with setDirection / setSpread.
 do  -- ParticleSystem:setSpeed
@@ -305,7 +305,7 @@ do  -- ParticleSystem:setSpeed
   geyser:start()
 end
 
---@api-stub: ParticleSystem:getSpeed
+--@api-stub: LParticleSystem:getSpeed
 -- Returns min/max initial speed.
 -- Returns (min, max); use to tune dependent visuals like trail length.
 do  -- ParticleSystem:getSpeed
@@ -315,7 +315,7 @@ do  -- ParticleSystem:getSpeed
   lurek.log.debug("derived trail len " .. trail_len, "fx")
 end
 
---@api-stub: ParticleSystem:setDirection
+--@api-stub: LParticleSystem:setDirection
 -- Sets emission direction in radians.
 -- Radians; 0 = right, -pi/2 = up, pi/2 = down. Matches math.atan2 conventions.
 do  -- ParticleSystem:setDirection
@@ -325,7 +325,7 @@ do  -- ParticleSystem:setDirection
   jet:start()
 end
 
---@api-stub: ParticleSystem:getDirection
+--@api-stub: LParticleSystem:getDirection
 -- Returns emission direction in radians.
 -- Useful when you want to mirror the direction onto another emitter or a hitbox.
 do  -- ParticleSystem:getDirection
@@ -334,7 +334,7 @@ do  -- ParticleSystem:getDirection
   lurek.log.debug("emit dir rad=" .. dir, "fx")
 end
 
---@api-stub: ParticleSystem:setSpread
+--@api-stub: LParticleSystem:setSpread
 -- Sets emission spread (half-angle cone) in radians.
 -- Half-angle of the cone (radians); 0 = pencil-tight, math.pi = full circle.
 do  -- ParticleSystem:setSpread
@@ -344,7 +344,7 @@ do  -- ParticleSystem:setSpread
   snow:start()
 end
 
---@api-stub: ParticleSystem:getSpread
+--@api-stub: LParticleSystem:getSpread
 -- Returns the half-angle spread in radians for the emission cone.
 -- Read to compute the worst-case bounding cone for occlusion culling.
 do  -- ParticleSystem:getSpread
@@ -353,7 +353,7 @@ do  -- ParticleSystem:getSpread
   lurek.log.debug("full cone rad=" .. cone, "fx")
 end
 
---@api-stub: ParticleSystem:getLinearAcceleration
+--@api-stub: LParticleSystem:getLinearAcceleration
 -- Returns linear acceleration range.
 -- Returns (xmin, ymin, xmax, ymax) per-second^2; gravity-like world forces.
 do  -- ParticleSystem:getLinearAcceleration
@@ -362,7 +362,7 @@ do  -- ParticleSystem:getLinearAcceleration
   lurek.log.debug("accel x=[" .. xmn .. "," .. xmx .. "]", "fx")
 end
 
---@api-stub: ParticleSystem:getRadialAcceleration
+--@api-stub: LParticleSystem:getRadialAcceleration
 -- Returns radial acceleration range.
 -- Returns (min, max); positive pushes particles outward from the emitter, negative inward.
 do  -- ParticleSystem:getRadialAcceleration
@@ -371,7 +371,7 @@ do  -- ParticleSystem:getRadialAcceleration
   if hi < 0 then lurek.log.info("particles implode", "fx") end
 end
 
---@api-stub: ParticleSystem:getTangentialAcceleration
+--@api-stub: LParticleSystem:getTangentialAcceleration
 -- Returns tangential acceleration range.
 -- Returns (min, max); positive makes particles spiral counter-clockwise around the emitter.
 do  -- ParticleSystem:getTangentialAcceleration
@@ -380,7 +380,7 @@ do  -- ParticleSystem:getTangentialAcceleration
   lurek.log.debug("swirl " .. lo .. ".." .. hi, "fx")
 end
 
---@api-stub: ParticleSystem:setLinearDamping
+--@api-stub: LParticleSystem:setLinearDamping
 -- Sets linear damping range.
 -- Per-second drag coefficient range; 0 = no damping, 5 = particles slow rapidly.
 do  -- ParticleSystem:setLinearDamping
@@ -390,7 +390,7 @@ do  -- ParticleSystem:setLinearDamping
   dust:start()
 end
 
---@api-stub: ParticleSystem:getLinearDamping
+--@api-stub: LParticleSystem:getLinearDamping
 -- Returns linear damping range.
 -- Read to display tooltips or to clamp damping when stacking with other forces.
 do  -- ParticleSystem:getLinearDamping
@@ -399,7 +399,7 @@ do  -- ParticleSystem:getLinearDamping
   lurek.log.debug("damping " .. lo .. ".." .. hi, "fx")
 end
 
---@api-stub: ParticleSystem:setSizes
+--@api-stub: LParticleSystem:setSizes
 -- Sets size keyframes (varargs: each number is one keyframe).
 -- Varargs of size keyframes interpolated over particle life; first = birth, last = death.
 do  -- ParticleSystem:setSizes
@@ -409,7 +409,7 @@ do  -- ParticleSystem:setSizes
   puff:start()
 end
 
---@api-stub: ParticleSystem:getSizes
+--@api-stub: LParticleSystem:getSizes
 -- Returns size keyframes as a Lua table.
 -- Returns a 1-indexed table; iterate with ipairs to render keyframe markers in a tool.
 do  -- ParticleSystem:getSizes
@@ -419,7 +419,7 @@ do  -- ParticleSystem:getSizes
   lurek.log.debug("size keyframes=" .. #sizes, "fx")
 end
 
---@api-stub: ParticleSystem:setSizeVariation
+--@api-stub: LParticleSystem:setSizeVariation
 -- Sets size variation (0â€“1).
 -- 0 = identical sizes, 1 = full random scaling per particle around the keyframe value.
 do  -- ParticleSystem:setSizeVariation
@@ -429,7 +429,7 @@ do  -- ParticleSystem:setSizeVariation
   sparks:start()
 end
 
---@api-stub: ParticleSystem:getSizeVariation
+--@api-stub: LParticleSystem:getSizeVariation
 -- Returns the maximum random size variation applied to newly emitted particles.
 -- Read it back when serialising emitter presets to JSON or TOML.
 do  -- ParticleSystem:getSizeVariation
@@ -438,7 +438,7 @@ do  -- ParticleSystem:getSizeVariation
   lurek.log.debug("size variation=" .. v, "fx")
 end
 
---@api-stub: ParticleSystem:setRotation
+--@api-stub: LParticleSystem:setRotation
 -- Sets initial rotation range in radians.
 -- Initial rotation range in radians; randomised at emission, then evolved by spin.
 do  -- ParticleSystem:setRotation
@@ -448,7 +448,7 @@ do  -- ParticleSystem:setRotation
   leaves:start()
 end
 
---@api-stub: ParticleSystem:getRotation
+--@api-stub: LParticleSystem:getRotation
 -- Returns initial rotation range.
 -- Returns (min, max) radians; useful when copying configuration to a clone.
 do  -- ParticleSystem:getRotation
@@ -457,7 +457,7 @@ do  -- ParticleSystem:getRotation
   lurek.log.debug("rot " .. lo .. ".." .. hi, "fx")
 end
 
---@api-stub: ParticleSystem:setSpin
+--@api-stub: LParticleSystem:setSpin
 -- Sets angular velocity range.
 -- Angular velocity range in radians/second applied for the particle lifetime.
 do  -- ParticleSystem:setSpin
@@ -467,7 +467,7 @@ do  -- ParticleSystem:setSpin
   coins:start()
 end
 
---@api-stub: ParticleSystem:getSpin
+--@api-stub: LParticleSystem:getSpin
 -- Returns angular velocity range.
 -- Returns (min, max) radians/second; report on a debug HUD to tune motion feel.
 do  -- ParticleSystem:getSpin
@@ -476,7 +476,7 @@ do  -- ParticleSystem:getSpin
   lurek.log.debug("spin " .. lo .. ".." .. hi, "fx")
 end
 
---@api-stub: ParticleSystem:setSpinVariation
+--@api-stub: LParticleSystem:setSpinVariation
 -- Sets spin variation (0â€“1).
 -- 0 = uniform spin, 1 = full random per particle around the configured range.
 do  -- ParticleSystem:setSpinVariation
@@ -486,7 +486,7 @@ do  -- ParticleSystem:setSpinVariation
   debris:start()
 end
 
---@api-stub: ParticleSystem:getSpinVariation
+--@api-stub: LParticleSystem:getSpinVariation
 -- Returns the maximum random angular velocity variation for new particles.
 -- Read after setting to confirm value persisted (useful in unit tests).
 do  -- ParticleSystem:getSpinVariation
@@ -496,7 +496,7 @@ do  -- ParticleSystem:getSpinVariation
   end
 end
 
---@api-stub: ParticleSystem:setRelativeRotation
+--@api-stub: LParticleSystem:setRelativeRotation
 -- Sets whether particle rotation follows velocity direction.
 -- When true, particles rotate to face their velocity vector — ideal for arrows or sparks.
 do  -- ParticleSystem:setRelativeRotation
@@ -507,7 +507,7 @@ do  -- ParticleSystem:setRelativeRotation
   arrows:start()
 end
 
---@api-stub: ParticleSystem:hasRelativeRotation
+--@api-stub: LParticleSystem:hasRelativeRotation
 -- Returns whether relative rotation is enabled.
 -- Branch on this to choose between billboard and oriented rendering paths.
 do  -- ParticleSystem:hasRelativeRotation
@@ -518,7 +518,7 @@ do  -- ParticleSystem:hasRelativeRotation
   end
 end
 
---@api-stub: ParticleSystem:setColors
+--@api-stub: LParticleSystem:setColors
 -- Sets color keyframes.
 -- Each arg is a {r,g,b,a} table interpolated over particle life; 0..1 channel range.
 do  -- ParticleSystem:setColors
@@ -528,7 +528,7 @@ do  -- ParticleSystem:setColors
   fire:start()
 end
 
---@api-stub: ParticleSystem:getColors
+--@api-stub: LParticleSystem:getColors
 -- Returns color keyframes as a table of {r,g,b,a} tables.
 -- Returns a list of {r,g,b,a} tables; iterate to render a colour-ramp swatch.
 do  -- ParticleSystem:getColors
@@ -538,7 +538,7 @@ do  -- ParticleSystem:getColors
   lurek.log.debug("color stops=" .. #colors, "fx")
 end
 
---@api-stub: ParticleSystem:setOffset
+--@api-stub: LParticleSystem:setOffset
 -- Sets the render origin offset.
 -- Per-particle render-origin offset in pixels; centre by default but useful for tail sprites.
 do  -- ParticleSystem:setOffset
@@ -548,7 +548,7 @@ do  -- ParticleSystem:setOffset
   glow:start()
 end
 
---@api-stub: ParticleSystem:getOffset
+--@api-stub: LParticleSystem:getOffset
 -- Returns the render origin offset.
 -- Returns (ox, oy); use when re-applying an asset preset to a cloned system.
 do  -- ParticleSystem:getOffset
@@ -557,7 +557,7 @@ do  -- ParticleSystem:getOffset
   lurek.log.debug("offset " .. ox .. "," .. oy, "fx")
 end
 
---@api-stub: ParticleSystem:setInsertMode
+--@api-stub: LParticleSystem:setInsertMode
 -- Sets the insert mode: "top", "bottom", or "random".
 -- "top" (newest in front), "bottom" (newest behind), "random" — affects draw ordering only.
 do  -- ParticleSystem:setInsertMode
@@ -567,7 +567,7 @@ do  -- ParticleSystem:setInsertMode
   smoke:start()
 end
 
---@api-stub: ParticleSystem:getInsertMode
+--@api-stub: LParticleSystem:getInsertMode
 -- Returns the insert mode as a string.
 -- One of "top" / "bottom" / "random"; persist across sessions when serialising presets.
 do  -- ParticleSystem:getInsertMode
@@ -577,7 +577,7 @@ do  -- ParticleSystem:getInsertMode
   lurek.log.debug("insert mode=" .. mode, "fx")
 end
 
---@api-stub: ParticleSystem:setBufferSize
+--@api-stub: LParticleSystem:setBufferSize
 -- Sets the maximum number of particles (resizes the pool).
 -- Resizes the underlying particle pool; do this once at startup, not per frame.
 do  -- ParticleSystem:setBufferSize
@@ -587,7 +587,7 @@ do  -- ParticleSystem:setBufferSize
   rain:start()
 end
 
---@api-stub: ParticleSystem:getBufferSize
+--@api-stub: LParticleSystem:getBufferSize
 -- Returns the maximum particle count.
 -- Read to size dependent buffers (e.g. trail history) without hard-coding the number.
 do  -- ParticleSystem:getBufferSize
@@ -596,7 +596,7 @@ do  -- ParticleSystem:getBufferSize
   lurek.log.debug("pool capacity=" .. cap, "fx")
 end
 
---@api-stub: ParticleSystem:setEmissionArea
+--@api-stub: LParticleSystem:setEmissionArea
 -- Sets emission area distribution and size.
 -- Distribution + (w, h) in pixels; use "uniform" for rectangles, "ellipse" for soft spawns.
 do  -- ParticleSystem:setEmissionArea
@@ -606,7 +606,7 @@ do  -- ParticleSystem:setEmissionArea
   fog:start()
 end
 
---@api-stub: ParticleSystem:getEmissionArea
+--@api-stub: LParticleSystem:getEmissionArea
 -- Returns emission area: dist-string, w, h.
 -- Returns (dist_string, w, h); use to render a debug rectangle around the emitter.
 do  -- ParticleSystem:getEmissionArea
@@ -616,7 +616,7 @@ do  -- ParticleSystem:getEmissionArea
   lurek.log.debug("area=" .. kind .. " " .. w .. "x" .. h, "fx")
 end
 
---@api-stub: ParticleSystem:setShape
+--@api-stub: LParticleSystem:setShape
 -- Sets the particle draw shape.
 -- One of "square","circle","triangle","spark","diamond","shrapnel","ray","puff","ring","capsule".
 do  -- ParticleSystem:setShape
@@ -626,7 +626,7 @@ do  -- ParticleSystem:setShape
   stars:start()
 end
 
---@api-stub: ParticleSystem:getShape
+--@api-stub: LParticleSystem:getShape
 -- Returns the particle draw shape as a string.
 -- Returns the shape name; useful when rebuilding a UI selector to reflect current state.
 do  -- ParticleSystem:getShape
@@ -637,7 +637,7 @@ do  -- ParticleSystem:getShape
   end
 end
 
---@api-stub: ParticleSystem:getGravity
+--@api-stub: LParticleSystem:getGravity
 -- Returns the gravity acceleration applied to particles as two numbers `gx, gy`.
 -- Returns (gx, gy); useful when synchronising particle gravity with world physics.
 do  -- ParticleSystem:getGravity
@@ -646,7 +646,7 @@ do  -- ParticleSystem:getGravity
   lurek.log.debug("g=" .. gx .. "," .. gy, "fx")
 end
 
---@api-stub: ParticleSystem:setGravity
+--@api-stub: LParticleSystem:setGravity
 -- Sets the gravity acceleration applied to all active particles each frame.
 -- Pixels per second^2; positive Y is downward in screen space.
 do  -- ParticleSystem:setGravity
@@ -657,7 +657,7 @@ do  -- ParticleSystem:setGravity
   debris:start()
 end
 
---@api-stub: ParticleSystem:render
+--@api-stub: LParticleSystem:render
 -- Renders all live particles to the GPU command queue.
 -- Must be called inside lurek.render(); optional (ox, oy) shift the whole system in world space.
 do  -- ParticleSystem:render
@@ -668,7 +668,7 @@ do  -- ParticleSystem:render
   function lurek.draw() fx:render() end
 end
 
---@api-stub: ParticleSystem:clone
+--@api-stub: LParticleSystem:clone
 -- Creates a copy of this particle system (config only, no live particles).
 -- Copies config only — no live particles — so you can spawn N synchronised emitters cheaply.
 do  -- ParticleSystem:clone
@@ -678,7 +678,7 @@ do  -- ParticleSystem:clone
   copy:start()
 end
 
---@api-stub: ParticleSystem:drawToImage
+--@api-stub: LParticleSystem:drawToImage
 -- Renders all live particles to a CPU ImageData.
 -- CPU rasterises live particles into ImageData of (w, h); useful for thumbnails and tests.
 do  -- ParticleSystem:drawToImage
@@ -689,7 +689,7 @@ do  -- ParticleSystem:drawToImage
   lurek.log.debug("baked thumbnail " .. img:getWidth() .. "x" .. img:getHeight(), "fx")
 end
 
---@api-stub: ParticleSystem:toImage
+--@api-stub: LParticleSystem:toImage
 -- Alias for `drawToImage`.
 -- Alias for drawToImage; same arguments and return type.
 do  -- ParticleSystem:toImage
@@ -699,7 +699,7 @@ do  -- ParticleSystem:toImage
   lurek.log.debug("preview ready " .. img:getWidth() .. "px", "fx")
 end
 
---@api-stub: ParticleSystem:warmUp
+--@api-stub: LParticleSystem:warmUp
 -- Pre-simulates the particle system for `seconds` so it appears fully.
 -- Pre-simulates `seconds` so the emitter looks established at first render; clamped to 30 s.
 do  -- ParticleSystem:warmUp
@@ -709,7 +709,7 @@ do  -- ParticleSystem:warmUp
   fountain:warmUp(2.0)
 end
 
---@api-stub: ParticleSystem:clearAttractors
+--@api-stub: LParticleSystem:clearAttractors
 -- Removes all attractors from this particle system.
 -- Drops every gravity well; pair with addAttractor when scene context changes.
 do  -- ParticleSystem:clearAttractors
@@ -719,7 +719,7 @@ do  -- ParticleSystem:clearAttractors
   sys:start()
 end
 
---@api-stub: ParticleSystem:getAttractorCount
+--@api-stub: LParticleSystem:getAttractorCount
 -- Returns the number of attractors currently registered on this system.
 -- Branch to skip force application logic when the system has no attractors.
 do  -- ParticleSystem:getAttractorCount
@@ -730,7 +730,7 @@ do  -- ParticleSystem:getAttractorCount
   end
 end
 
---@api-stub: ParticleSystem:clearBounds
+--@api-stub: LParticleSystem:clearBounds
 -- Removes the bounding rectangle so particles can move freely.
 -- Removes the bounding box added by setBounds; call when switching rooms.
 do  -- ParticleSystem:clearBounds
@@ -740,7 +740,7 @@ do  -- ParticleSystem:clearBounds
   sys:start()
 end
 
---@api-stub: ParticleSystem:getFlipbook
+--@api-stub: LParticleSystem:getFlipbook
 -- Returns the current flipbook configuration as `(cols, rows, fps)`, or `nil` if not set.
 -- Returns (cols, rows, fps) or all nil if no flipbook is configured.
 do  -- ParticleSystem:getFlipbook
@@ -752,7 +752,7 @@ end
 
 -- ── Trail methods ──
 
---@api-stub: Trail:pushPoint
+--@api-stub: LTrail:pushPoint
 -- Appends a new point to the trail head.
 -- Append at the head once per frame; the trail interpolates a ribbon between successive points.
 do  -- Trail:pushPoint
@@ -764,7 +764,7 @@ do  -- Trail:pushPoint
   end
 end
 
---@api-stub: Trail:update
+--@api-stub: LTrail:update
 -- Ages trail points and removes expired ones.
 -- Ages every point; call once per frame inside lurek.process(dt) before rendering.
 do  -- Trail:update
@@ -775,7 +775,7 @@ do  -- Trail:update
   end
 end
 
---@api-stub: Trail:setWidth
+--@api-stub: LTrail:setWidth
 -- Sets the start and end width of the trail ribbon.
 -- (start_px, end_px) — controls ribbon thickness from head to tail; pass nil end to keep current.
 do  -- Trail:setWidth
@@ -784,7 +784,7 @@ do  -- Trail:setWidth
   trail:pushPoint(50, 50)
 end
 
---@api-stub: Trail:getWidth
+--@api-stub: LTrail:getWidth
 -- Returns the start and end width.
 -- Returns (start_px, end_px); use for HUD readouts or to drive a tweening animation.
 do  -- Trail:getWidth
@@ -794,7 +794,7 @@ do  -- Trail:getWidth
   lurek.log.debug("trail w=" .. sw .. "->" .. ew, "fx")
 end
 
---@api-stub: Trail:setLifetime
+--@api-stub: LTrail:setLifetime
 -- Sets how long each trail point persists in seconds.
 -- Seconds each point persists; longer = smoother long-tail ribbons but more vertices.
 do  -- Trail:setLifetime
@@ -803,7 +803,7 @@ do  -- Trail:setLifetime
   trail:pushPoint(120, 80)
 end
 
---@api-stub: Trail:getLifetime
+--@api-stub: LTrail:getLifetime
 -- Returns the trail point lifetime in seconds.
 -- Read it to derive a sensible point cap or auto-clear when it changes.
 do  -- Trail:getLifetime
@@ -812,7 +812,7 @@ do  -- Trail:getLifetime
   if life > 1.0 then trail:setLifetime(1.0) end
 end
 
---@api-stub: Trail:setMinDistance
+--@api-stub: LTrail:setMinDistance
 -- Sets the minimum distance between trail points.
 -- Minimum pixel gap between points; raise it to skip duplicates when an entity stalls.
 do  -- Trail:setMinDistance
@@ -822,7 +822,7 @@ do  -- Trail:setMinDistance
   trail:pushPoint(201, 100)  -- ignored: too close
 end
 
---@api-stub: Trail:getPointCount
+--@api-stub: LTrail:getPointCount
 -- Returns the number of active trail points.
 -- Use to pre-size GPU buffers or to skip the render call when the trail is empty.
 do  -- Trail:getPointCount
@@ -833,7 +833,7 @@ do  -- Trail:getPointCount
   lurek.log.debug("trail points=" .. trail:getPointCount(), "fx")
 end
 
---@api-stub: Trail:clear
+--@api-stub: LTrail:clear
 -- Removes all trail points.
 -- Removes every point instantly; call on player respawn or scene transition.
 do  -- Trail:clear
@@ -843,7 +843,7 @@ do  -- Trail:clear
   trail:clear()
 end
 
---@api-stub: Trail:drawToImage
+--@api-stub: LTrail:drawToImage
 -- Renders the trail ribbon to a CPU ImageData.
 -- Bakes the ribbon into ImageData(w, h); useful for capturing screenshots in tests.
 do  -- Trail:drawToImage
@@ -856,7 +856,7 @@ end
 
 -- ── Phase 03: Lua Extensibility Hooks ──
 
---@api-stub: ParticleSystem:addSubSystem
+--@api-stub: LParticleSystem:addSubSystem
 -- Attaches a child emitter that updates and renders alongside the parent.
 -- Use to build layered effects: e.g. fire with a smoke sub-emitter running at half the rate.
 do  -- ParticleSystem:addSubSystem
@@ -878,7 +878,7 @@ do  -- ParticleSystem:addSubSystem
   fire:start()
 end
 
---@api-stub: ParticleSystem:subSystemCount
+--@api-stub: LParticleSystem:subSystemCount
 -- Returns the number of direct child sub-systems attached to this emitter.
 -- Check before indexing to avoid out-of-range accesses.
 do  -- ParticleSystem:subSystemCount
@@ -888,7 +888,7 @@ do  -- ParticleSystem:subSystemCount
   lurek.log.debug("sub count: " .. ps:subSystemCount(), "fx")  -- 2
 end
 
---@api-stub: ParticleSystem:setCustomEmissionShape
+--@api-stub: LParticleSystem:setCustomEmissionShape
 -- Registers a Lua callback that returns (offset_x, offset_y) for each new particle.
 -- The callback fires once per spawned particle; return pixel offsets relative to the emitter.
 do  -- ParticleSystem:setCustomEmissionShape
@@ -907,7 +907,7 @@ do  -- ParticleSystem:setCustomEmissionShape
   ps:start()
 end
 
---@api-stub: ParticleSystem:setOnDeathBatch
+--@api-stub: LParticleSystem:setOnDeathBatch
 -- Registers a Lua callback fired after each update() with all particles that died that frame.
 -- Each entry in the batch table has fields: x, y, vx, vy (world-space position and velocity).
 do  -- ParticleSystem:setOnDeathBatch
@@ -941,7 +941,7 @@ do  -- lurek.particle.fromTOML
   end
 end
 
---@api-stub: ParticleSystem:addAttractor
+--@api-stub: LParticleSystem:addAttractor
 -- Adds a point attractor that pulls or repels particles during their lifetime.
 -- Negative strength repels; call multiple times to create complex force fields.
 do  -- ParticleSystem:addAttractor
@@ -951,7 +951,7 @@ do  -- ParticleSystem:addAttractor
   lurek.log.info("attractor added", "particle")
 end
 
---@api-stub: ParticleSystem:addSubEmitter
+--@api-stub: LParticleSystem:addSubEmitter
 -- Attaches a child emitter that spawns when each particle from the parent dies.
 -- Use for chain explosions: each fragment spawns a spark sub-emitter on death.
 do  -- ParticleSystem:addSubEmitter
@@ -962,7 +962,7 @@ do  -- ParticleSystem:addSubEmitter
   lurek.log.info("sub emitter count: " .. parent:subSystemCount(), "particle")
 end
 
---@api-stub: ParticleSystem:setBounds
+--@api-stub: LParticleSystem:setBounds
 -- Constrains particle movement to a world-space rectangle; particles bounce or die at edges.
 -- Pass bounce=true to reflect velocity; false causes particles to be killed on contact.
 do  -- ParticleSystem:setBounds
@@ -972,7 +972,7 @@ do  -- ParticleSystem:setBounds
   lurek.log.info("bounds set", "particle")
 end
 
---@api-stub: ParticleSystem:setFlipbook
+--@api-stub: LParticleSystem:setFlipbook
 -- Sets a flipbook animation sheet so particles cycle through sprite frames over their lifetime.
 -- cols*rows must equal or exceed the desired frame count.
 do  -- ParticleSystem:setFlipbook
@@ -982,7 +982,7 @@ do  -- ParticleSystem:setFlipbook
   lurek.log.info("flipbook set", "particle")
 end
 
---@api-stub: Trail:setHeadColor
+--@api-stub: LTrail:setHeadColor
 -- Sets the RGBA colour at the start (head) of a particle trail.
 -- The trail interpolates between head and tail colour along its length.
 do  -- Trail:setHeadColor
@@ -992,7 +992,7 @@ do  -- Trail:setHeadColor
   lurek.log.info("trail head colour set", "particle")
 end
 
---@api-stub: ParticleSystem:setLinearAcceleration
+--@api-stub: LParticleSystem:setLinearAcceleration
 -- Sets a constant linear (x, y) acceleration applied to all particles each frame.
 -- Use for gravity (0, 200) or wind effects with a positive x component.
 do  -- ParticleSystem:setLinearAcceleration
@@ -1002,7 +1002,7 @@ do  -- ParticleSystem:setLinearAcceleration
   lurek.log.info("linear accel set", "particle")
 end
 
---@api-stub: ParticleSystem:setRadialAcceleration
+--@api-stub: LParticleSystem:setRadialAcceleration
 -- Sets a centripetal/centrifugal acceleration along the particle's radial direction.
 -- Positive pushes outward from the emitter origin; negative pulls inward.
 do  -- ParticleSystem:setRadialAcceleration
@@ -1012,7 +1012,7 @@ do  -- ParticleSystem:setRadialAcceleration
   lurek.log.info("radial accel set", "particle")
 end
 
---@api-stub: Trail:setTailColor
+--@api-stub: LTrail:setTailColor
 -- Sets the RGBA colour at the end (tail) of a particle trail.
 -- Fade the alpha to 0 for a natural dissipating effect.
 do  -- Trail:setTailColor
@@ -1022,7 +1022,7 @@ do  -- Trail:setTailColor
   lurek.log.info("trail tail colour set", "particle")
 end
 
---@api-stub: ParticleSystem:setTangentialAcceleration
+--@api-stub: LParticleSystem:setTangentialAcceleration
 -- Sets a tangential (perpendicular to radius) acceleration that curves particle paths.
 -- Positive rotates clockwise; negative rotates anticlockwise for spiral effects.
 do  -- ParticleSystem:setTangentialAcceleration
@@ -1040,678 +1040,10 @@ end
 -- The final committed file must contain ZERO --@api-stub: lines.
 -- =============================================================================
 
--- -----------------------------------------------------------------------------
--- LParticleSystem methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LParticleSystem:update ----------------------------------------
---@api-stub: LParticleSystem:update
--- Advances the particle simulation by dt seconds.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lParticleSystem_stub:update(0.016)
--- (replace lParticleSystem_stub with your real LParticleSystem instance above)
-
--- ---- Stub: LParticleSystem:emit ------------------------------------------
---@api-stub: LParticleSystem:emit
--- Emits a burst of the given number of particles.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lParticleSystem_stub:emit(10)
--- (replace lParticleSystem_stub with your real LParticleSystem instance above)
-
--- ---- Stub: LParticleSystem:start -----------------------------------------
---@api-stub: LParticleSystem:start
--- Starts or restarts particle emission.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lParticleSystem_stub:start()
--- (replace lParticleSystem_stub with your real LParticleSystem instance above)
-
--- ---- Stub: LParticleSystem:stop ------------------------------------------
---@api-stub: LParticleSystem:stop
--- Stops particle emission immediately.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lParticleSystem_stub:stop()
--- (replace lParticleSystem_stub with your real LParticleSystem instance above)
-
--- ---- Stub: LParticleSystem:pause -----------------------------------------
---@api-stub: LParticleSystem:pause
--- Pauses particle emission; existing particles continue to simulate.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lParticleSystem_stub:pause()
--- (replace lParticleSystem_stub with your real LParticleSystem instance above)
-
--- ---- Stub: LParticleSystem:resume ----------------------------------------
---@api-stub: LParticleSystem:resume
--- Resumes a paused emitter.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lParticleSystem_stub:resume()
--- (replace lParticleSystem_stub with your real LParticleSystem instance above)
-
--- ---- Stub: LParticleSystem:reset -----------------------------------------
---@api-stub: LParticleSystem:reset
--- Removes all particles and resets the emitter.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lParticleSystem_stub:reset()
--- (replace lParticleSystem_stub with your real LParticleSystem instance above)
-
--- ---- Stub: LParticleSystem:moveTo ----------------------------------------
---@api-stub: LParticleSystem:moveTo
--- Moves the emitter to the given world position.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lParticleSystem_stub:moveTo(0.0, 0.0)
--- (replace lParticleSystem_stub with your real LParticleSystem instance above)
-
--- ---- Stub: LParticleSystem:count -----------------------------------------
---@api-stub: LParticleSystem:count
--- Returns the number of living particles.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lParticleSystem_stub:count()  -- -> integer
--- (replace lParticleSystem_stub with your real LParticleSystem instance above)
-
--- ---- Stub: LParticleSystem:isActive --------------------------------------
---@api-stub: LParticleSystem:isActive
--- Returns true if the emitter is currently emitting or has live particles.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lParticleSystem_stub:isActive()  -- -> boolean
--- (replace lParticleSystem_stub with your real LParticleSystem instance above)
-
--- ---- Stub: LParticleSystem:isPaused --------------------------------------
---@api-stub: LParticleSystem:isPaused
--- Returns true if the emitter is paused.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lParticleSystem_stub:isPaused()  -- -> boolean
--- (replace lParticleSystem_stub with your real LParticleSystem instance above)
-
--- ---- Stub: LParticleSystem:isStopped -------------------------------------
---@api-stub: LParticleSystem:isStopped
--- Returns true if the emitter is stopped.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lParticleSystem_stub:isStopped()  -- -> boolean
--- (replace lParticleSystem_stub with your real LParticleSystem instance above)
-
--- ---- Stub: LParticleSystem:isEmpty ---------------------------------------
---@api-stub: LParticleSystem:isEmpty
--- Returns true if there are no live particles.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lParticleSystem_stub:isEmpty()  -- -> boolean
--- (replace lParticleSystem_stub with your real LParticleSystem instance above)
-
--- ---- Stub: LParticleSystem:isFull ----------------------------------------
---@api-stub: LParticleSystem:isFull
--- Returns true if the system has reached max_particles.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lParticleSystem_stub:isFull()  -- -> boolean
--- (replace lParticleSystem_stub with your real LParticleSystem instance above)
-
--- ---- Stub: LParticleSystem:release ---------------------------------------
---@api-stub: LParticleSystem:release
--- Removes the particle system from the engine, freeing its slot.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lParticleSystem_stub:release()
--- (replace lParticleSystem_stub with your real LParticleSystem instance above)
-
--- ---- Stub: LParticleSystem:getCount --------------------------------------
---@api-stub: LParticleSystem:getCount
--- Returns the number of living particles (alias for count).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lParticleSystem_stub:getCount()  -- -> integer
--- (replace lParticleSystem_stub with your real LParticleSystem instance above)
-
--- ---- Stub: LParticleSystem:type ------------------------------------------
---@api-stub: LParticleSystem:type
--- Returns the type name "ParticleSystem".
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lParticleSystem_stub:type()  -- -> string
--- (replace lParticleSystem_stub with your real LParticleSystem instance above)
-
--- ---- Stub: LParticleSystem:typeOf ----------------------------------------
---@api-stub: LParticleSystem:typeOf
--- Returns true if this matches the given type name.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lParticleSystem_stub:typeOf("hero")  -- -> boolean
--- (replace lParticleSystem_stub with your real LParticleSystem instance above)
-
--- ---- Stub: LParticleSystem:setPosition -----------------------------------
---@api-stub: LParticleSystem:setPosition
--- Sets the emitter world position.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lParticleSystem_stub:setPosition(0.0, 0.0)
--- (replace lParticleSystem_stub with your real LParticleSystem instance above)
-
--- ---- Stub: LParticleSystem:getPosition -----------------------------------
---@api-stub: LParticleSystem:getPosition
--- Returns the emitter world position.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lParticleSystem_stub:getPosition()  -- -> number, number
--- (replace lParticleSystem_stub with your real LParticleSystem instance above)
-
--- ---- Stub: LParticleSystem:setEmissionRate -------------------------------
---@api-stub: LParticleSystem:setEmissionRate
--- Sets particles emitted per second.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lParticleSystem_stub:setEmissionRate(rate)
--- (replace lParticleSystem_stub with your real LParticleSystem instance above)
-
--- ---- Stub: LParticleSystem:getEmissionRate -------------------------------
---@api-stub: LParticleSystem:getEmissionRate
--- Returns particles emitted per second.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lParticleSystem_stub:getEmissionRate()  -- -> number
--- (replace lParticleSystem_stub with your real LParticleSystem instance above)
-
--- ---- Stub: LParticleSystem:setParticleLifetime ---------------------------
---@api-stub: LParticleSystem:setParticleLifetime
--- Sets min and max particle lifetime in seconds.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lParticleSystem_stub:setParticleLifetime(min, max)
--- (replace lParticleSystem_stub with your real LParticleSystem instance above)
-
--- ---- Stub: LParticleSystem:getParticleLifetime ---------------------------
---@api-stub: LParticleSystem:getParticleLifetime
--- Returns min and max particle lifetime.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lParticleSystem_stub:getParticleLifetime()  -- -> number, number
--- (replace lParticleSystem_stub with your real LParticleSystem instance above)
-
--- ---- Stub: LParticleSystem:setEmitterLifetime ----------------------------
---@api-stub: LParticleSystem:setEmitterLifetime
--- Sets how long the emitter runs before auto-stopping. Negative = infinite.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lParticleSystem_stub:setEmitterLifetime(t)
--- (replace lParticleSystem_stub with your real LParticleSystem instance above)
-
--- ---- Stub: LParticleSystem:getEmitterLifetime ----------------------------
---@api-stub: LParticleSystem:getEmitterLifetime
--- Returns the emitter lifetime.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lParticleSystem_stub:getEmitterLifetime()  -- -> number
--- (replace lParticleSystem_stub with your real LParticleSystem instance above)
-
--- ---- Stub: LParticleSystem:setSpeed --------------------------------------
---@api-stub: LParticleSystem:setSpeed
--- Sets min/max initial speed.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lParticleSystem_stub:setSpeed(min, max)
--- (replace lParticleSystem_stub with your real LParticleSystem instance above)
-
--- ---- Stub: LParticleSystem:getSpeed --------------------------------------
---@api-stub: LParticleSystem:getSpeed
--- Returns min/max initial speed.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lParticleSystem_stub:getSpeed()  -- -> number, number
--- (replace lParticleSystem_stub with your real LParticleSystem instance above)
-
--- ---- Stub: LParticleSystem:setDirection ----------------------------------
---@api-stub: LParticleSystem:setDirection
--- Sets emission direction in radians.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lParticleSystem_stub:setDirection(dir)
--- (replace lParticleSystem_stub with your real LParticleSystem instance above)
-
--- ---- Stub: LParticleSystem:getDirection ----------------------------------
---@api-stub: LParticleSystem:getDirection
--- Returns emission direction in radians.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lParticleSystem_stub:getDirection()  -- -> number
--- (replace lParticleSystem_stub with your real LParticleSystem instance above)
-
--- ---- Stub: LParticleSystem:setSpread -------------------------------------
---@api-stub: LParticleSystem:setSpread
--- Sets emission spread (half-angle cone) in radians.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lParticleSystem_stub:setSpread(spread)
--- (replace lParticleSystem_stub with your real LParticleSystem instance above)
-
--- ---- Stub: LParticleSystem:getSpread -------------------------------------
---@api-stub: LParticleSystem:getSpread
--- Returns the half-angle spread in radians for the emission cone.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lParticleSystem_stub:getSpread()  -- -> number
--- (replace lParticleSystem_stub with your real LParticleSystem instance above)
-
--- ---- Stub: LParticleSystem:setLinearAcceleration -------------------------
---@api-stub: LParticleSystem:setLinearAcceleration
--- Sets linear acceleration range.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lParticleSystem_stub:setLinearAcceleration(xmin, ymin, xmax, ymax)
--- (replace lParticleSystem_stub with your real LParticleSystem instance above)
-
--- ---- Stub: LParticleSystem:getLinearAcceleration -------------------------
---@api-stub: LParticleSystem:getLinearAcceleration
--- Returns linear acceleration range.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lParticleSystem_stub:getLinearAcceleration()  -- -> number, number, number, number
--- (replace lParticleSystem_stub with your real LParticleSystem instance above)
-
--- ---- Stub: LParticleSystem:setRadialAcceleration -------------------------
---@api-stub: LParticleSystem:setRadialAcceleration
--- Sets radial acceleration range.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lParticleSystem_stub:setRadialAcceleration(min, max)
--- (replace lParticleSystem_stub with your real LParticleSystem instance above)
-
--- ---- Stub: LParticleSystem:getRadialAcceleration -------------------------
---@api-stub: LParticleSystem:getRadialAcceleration
--- Returns radial acceleration range.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lParticleSystem_stub:getRadialAcceleration()  -- -> number, number
--- (replace lParticleSystem_stub with your real LParticleSystem instance above)
-
--- ---- Stub: LParticleSystem:setTangentialAcceleration ---------------------
---@api-stub: LParticleSystem:setTangentialAcceleration
--- Sets tangential acceleration range.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lParticleSystem_stub:setTangentialAcceleration(min, max)
--- (replace lParticleSystem_stub with your real LParticleSystem instance above)
-
--- ---- Stub: LParticleSystem:getTangentialAcceleration ---------------------
---@api-stub: LParticleSystem:getTangentialAcceleration
--- Returns tangential acceleration range.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lParticleSystem_stub:getTangentialAcceleration()  -- -> number, number
--- (replace lParticleSystem_stub with your real LParticleSystem instance above)
-
--- ---- Stub: LParticleSystem:setLinearDamping ------------------------------
---@api-stub: LParticleSystem:setLinearDamping
--- Sets linear damping range.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lParticleSystem_stub:setLinearDamping(min, max)
--- (replace lParticleSystem_stub with your real LParticleSystem instance above)
-
--- ---- Stub: LParticleSystem:getLinearDamping ------------------------------
---@api-stub: LParticleSystem:getLinearDamping
--- Returns linear damping range.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lParticleSystem_stub:getLinearDamping()  -- -> number, number
--- (replace lParticleSystem_stub with your real LParticleSystem instance above)
-
--- ---- Stub: LParticleSystem:setSizes --------------------------------------
---@api-stub: LParticleSystem:setSizes
--- Sets size keyframes (varargs: each number is one keyframe).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lParticleSystem_stub:setSizes(...)
--- (replace lParticleSystem_stub with your real LParticleSystem instance above)
-
--- ---- Stub: LParticleSystem:getSizes --------------------------------------
---@api-stub: LParticleSystem:getSizes
--- Returns size keyframes as a Lua table.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lParticleSystem_stub:getSizes()  -- -> table
--- (replace lParticleSystem_stub with your real LParticleSystem instance above)
-
--- ---- Stub: LParticleSystem:setSizeVariation ------------------------------
---@api-stub: LParticleSystem:setSizeVariation
--- Sets size variation (0â€“1).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lParticleSystem_stub:setSizeVariation(1.0)
--- (replace lParticleSystem_stub with your real LParticleSystem instance above)
-
--- ---- Stub: LParticleSystem:getSizeVariation ------------------------------
---@api-stub: LParticleSystem:getSizeVariation
--- Returns the maximum random size variation applied to newly emitted particles.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lParticleSystem_stub:getSizeVariation()  -- -> number
--- (replace lParticleSystem_stub with your real LParticleSystem instance above)
-
--- ---- Stub: LParticleSystem:setRotation -----------------------------------
---@api-stub: LParticleSystem:setRotation
--- Sets initial rotation range in radians.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lParticleSystem_stub:setRotation(min, max)
--- (replace lParticleSystem_stub with your real LParticleSystem instance above)
-
--- ---- Stub: LParticleSystem:getRotation -----------------------------------
---@api-stub: LParticleSystem:getRotation
--- Returns initial rotation range.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lParticleSystem_stub:getRotation()  -- -> number, number
--- (replace lParticleSystem_stub with your real LParticleSystem instance above)
-
--- ---- Stub: LParticleSystem:setSpin ---------------------------------------
---@api-stub: LParticleSystem:setSpin
--- Sets angular velocity range.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lParticleSystem_stub:setSpin(min, max)
--- (replace lParticleSystem_stub with your real LParticleSystem instance above)
-
--- ---- Stub: LParticleSystem:getSpin ---------------------------------------
---@api-stub: LParticleSystem:getSpin
--- Returns angular velocity range.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lParticleSystem_stub:getSpin()  -- -> number, number
--- (replace lParticleSystem_stub with your real LParticleSystem instance above)
-
--- ---- Stub: LParticleSystem:setSpinVariation ------------------------------
---@api-stub: LParticleSystem:setSpinVariation
--- Sets spin variation (0â€“1).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lParticleSystem_stub:setSpinVariation(1.0)
--- (replace lParticleSystem_stub with your real LParticleSystem instance above)
-
--- ---- Stub: LParticleSystem:getSpinVariation ------------------------------
---@api-stub: LParticleSystem:getSpinVariation
--- Returns the maximum random angular velocity variation for new particles.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lParticleSystem_stub:getSpinVariation()  -- -> number
--- (replace lParticleSystem_stub with your real LParticleSystem instance above)
-
--- ---- Stub: LParticleSystem:setRelativeRotation ---------------------------
---@api-stub: LParticleSystem:setRelativeRotation
--- Sets whether particle rotation follows velocity direction.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lParticleSystem_stub:setRelativeRotation(1.0)
--- (replace lParticleSystem_stub with your real LParticleSystem instance above)
-
--- ---- Stub: LParticleSystem:hasRelativeRotation ---------------------------
---@api-stub: LParticleSystem:hasRelativeRotation
--- Returns whether relative rotation is enabled.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lParticleSystem_stub:hasRelativeRotation()  -- -> boolean
--- (replace lParticleSystem_stub with your real LParticleSystem instance above)
-
--- ---- Stub: LParticleSystem:setColors -------------------------------------
---@api-stub: LParticleSystem:setColors
--- Sets color keyframes. Each arg is a table {r, g, b, a}.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lParticleSystem_stub:setColors(...)
--- (replace lParticleSystem_stub with your real LParticleSystem instance above)
-
--- ---- Stub: LParticleSystem:getColors -------------------------------------
---@api-stub: LParticleSystem:getColors
--- Returns color keyframes as a table of {r,g,b,a} tables.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lParticleSystem_stub:getColors()  -- -> table
--- (replace lParticleSystem_stub with your real LParticleSystem instance above)
-
--- ---- Stub: LParticleSystem:setOffset -------------------------------------
---@api-stub: LParticleSystem:setOffset
--- Sets the render origin offset.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lParticleSystem_stub:setOffset(ox, oy)
--- (replace lParticleSystem_stub with your real LParticleSystem instance above)
-
--- ---- Stub: LParticleSystem:getOffset -------------------------------------
---@api-stub: LParticleSystem:getOffset
--- Returns the render origin offset.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lParticleSystem_stub:getOffset()  -- -> number, number
--- (replace lParticleSystem_stub with your real LParticleSystem instance above)
-
--- ---- Stub: LParticleSystem:setInsertMode ---------------------------------
---@api-stub: LParticleSystem:setInsertMode
--- Sets the insert mode: "top", "bottom", or "random".
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lParticleSystem_stub:setInsertMode(mode)
--- (replace lParticleSystem_stub with your real LParticleSystem instance above)
-
--- ---- Stub: LParticleSystem:getInsertMode ---------------------------------
---@api-stub: LParticleSystem:getInsertMode
--- Returns the insert mode as a string.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lParticleSystem_stub:getInsertMode()  -- -> string
--- (replace lParticleSystem_stub with your real LParticleSystem instance above)
-
--- ---- Stub: LParticleSystem:setBufferSize ---------------------------------
---@api-stub: LParticleSystem:setBufferSize
--- Sets the maximum number of particles (resizes the pool).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lParticleSystem_stub:setBufferSize(5)
--- (replace lParticleSystem_stub with your real LParticleSystem instance above)
-
--- ---- Stub: LParticleSystem:getBufferSize ---------------------------------
---@api-stub: LParticleSystem:getBufferSize
--- Returns the maximum particle count.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lParticleSystem_stub:getBufferSize()  -- -> integer
--- (replace lParticleSystem_stub with your real LParticleSystem instance above)
-
--- ---- Stub: LParticleSystem:setEmissionArea -------------------------------
---@api-stub: LParticleSystem:setEmissionArea
--- Sets emission area distribution and size.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lParticleSystem_stub:setEmissionArea(dist, 64.0, 64.0, [angle], [dir_rel])
--- (replace lParticleSystem_stub with your real LParticleSystem instance above)
-
--- ---- Stub: LParticleSystem:getEmissionArea -------------------------------
---@api-stub: LParticleSystem:getEmissionArea
--- Returns emission area: dist-string, w, h.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lParticleSystem_stub:getEmissionArea()
--- (replace lParticleSystem_stub with your real LParticleSystem instance above)
-
--- ---- Stub: LParticleSystem:setShape --------------------------------------
---@api-stub: LParticleSystem:setShape
--- Sets the particle draw shape.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lParticleSystem_stub:setShape(shape)
--- (replace lParticleSystem_stub with your real LParticleSystem instance above)
-
--- ---- Stub: LParticleSystem:getShape --------------------------------------
---@api-stub: LParticleSystem:getShape
--- Returns the particle draw shape as a string.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lParticleSystem_stub:getShape()  -- -> string
--- (replace lParticleSystem_stub with your real LParticleSystem instance above)
-
--- ---- Stub: LParticleSystem:getGravity ------------------------------------
---@api-stub: LParticleSystem:getGravity
--- Returns the gravity acceleration applied to particles as two numbers `gx, gy`.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lParticleSystem_stub:getGravity()  -- -> number, number
--- (replace lParticleSystem_stub with your real LParticleSystem instance above)
-
--- ---- Stub: LParticleSystem:setGravity ------------------------------------
---@api-stub: LParticleSystem:setGravity
--- Sets the gravity acceleration applied to all active particles each frame.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lParticleSystem_stub:setGravity(gx, gy)
--- (replace lParticleSystem_stub with your real LParticleSystem instance above)
-
--- ---- Stub: LParticleSystem:render ----------------------------------------
---@api-stub: LParticleSystem:render
--- Renders all live particles to the GPU command queue.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lParticleSystem_stub:render([ox], [oy])
--- (replace lParticleSystem_stub with your real LParticleSystem instance above)
-
--- ---- Stub: LParticleSystem:clone -----------------------------------------
---@api-stub: LParticleSystem:clone
--- Creates a copy of this particle system (config only, no live particles).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lParticleSystem_stub:clone()  -- -> ParticleSystem
--- (replace lParticleSystem_stub with your real LParticleSystem instance above)
-
--- ---- Stub: LParticleSystem:drawToImage -----------------------------------
---@api-stub: LParticleSystem:drawToImage
--- Renders all live particles to a CPU ImageData.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lParticleSystem_stub:drawToImage(64.0, 64.0)  -- -> ImageData
--- (replace lParticleSystem_stub with your real LParticleSystem instance above)
-
--- ---- Stub: LParticleSystem:toImage ---------------------------------------
---@api-stub: LParticleSystem:toImage
--- Alias for `drawToImage`. Renders all live particles to a CPU ImageData.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lParticleSystem_stub:toImage(64.0, 64.0)  -- -> ImageData
--- (replace lParticleSystem_stub with your real LParticleSystem instance above)
-
--- ---- Stub: LParticleSystem:warmUp ----------------------------------------
---@api-stub: LParticleSystem:warmUp
--- Pre-simulates the particle system for `seconds` so it appears fully
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lParticleSystem_stub:warmUp(seconds)
--- (replace lParticleSystem_stub with your real LParticleSystem instance above)
-
--- ---- Stub: LParticleSystem:addAttractor ----------------------------------
---@api-stub: LParticleSystem:addAttractor
--- Adds a gravity well that pulls (positive strength) or repels
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lParticleSystem_stub:addAttractor(0.0, 0.0, strength, 24.0)
--- (replace lParticleSystem_stub with your real LParticleSystem instance above)
-
--- ---- Stub: LParticleSystem:clearAttractors -------------------------------
---@api-stub: LParticleSystem:clearAttractors
--- Removes all attractors from this particle system.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lParticleSystem_stub:clearAttractors()
--- (replace lParticleSystem_stub with your real LParticleSystem instance above)
-
--- ---- Stub: LParticleSystem:getAttractorCount -----------------------------
---@api-stub: LParticleSystem:getAttractorCount
--- Returns the number of attractors currently registered on this system.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lParticleSystem_stub:getAttractorCount()  -- -> integer
--- (replace lParticleSystem_stub with your real LParticleSystem instance above)
-
--- ---- Stub: LParticleSystem:setBounds -------------------------------------
---@api-stub: LParticleSystem:setBounds
--- Constrains all particles to an axis-aligned bounding rectangle.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lParticleSystem_stub:setBounds(xmin, xmax, ymin, ymax, restitution)
--- (replace lParticleSystem_stub with your real LParticleSystem instance above)
-
--- ---- Stub: LParticleSystem:clearBounds -----------------------------------
---@api-stub: LParticleSystem:clearBounds
--- Removes the bounding rectangle so particles can move freely.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lParticleSystem_stub:clearBounds()
--- (replace lParticleSystem_stub with your real LParticleSystem instance above)
-
--- ---- Stub: LParticleSystem:addSubEmitter ---------------------------------
---@api-stub: LParticleSystem:addSubEmitter
--- Attaches a sub-emitter that bursts when a particle dies.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lParticleSystem_stub:addSubEmitter(config_tbl, [burst_count])
--- (replace lParticleSystem_stub with your real LParticleSystem instance above)
-
--- ---- Stub: LParticleSystem:setFlipbook -----------------------------------
---@api-stub: LParticleSystem:setFlipbook
--- Configures sprite-sheet flipbook animation by dividing the texture into a grid.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lParticleSystem_stub:setFlipbook(cols, rows, fps)
--- (replace lParticleSystem_stub with your real LParticleSystem instance above)
-
--- ---- Stub: LParticleSystem:getFlipbook -----------------------------------
---@api-stub: LParticleSystem:getFlipbook
--- Returns the current flipbook configuration as `(cols, rows, fps)`, or `nil` if not set.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lParticleSystem_stub:getFlipbook()
--- (replace lParticleSystem_stub with your real LParticleSystem instance above)
-
--- ---- Stub: LParticleSystem:addSubSystem ----------------------------------
---@api-stub: LParticleSystem:addSubSystem
--- Adds a child emitter that updates and renders with this system.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lParticleSystem_stub:addSubSystem(config_tbl)  -- -> index : integer
--- (replace lParticleSystem_stub with your real LParticleSystem instance above)
-
--- ---- Stub: LParticleSystem:subSystemCount --------------------------------
---@api-stub: LParticleSystem:subSystemCount
--- Returns the number of direct child sub-systems attached to this emitter.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lParticleSystem_stub:subSystemCount()  -- -> count : integer
--- (replace lParticleSystem_stub with your real LParticleSystem instance above)
-
--- ---- Stub: LParticleSystem:setCustomEmissionShape ------------------------
---@api-stub: LParticleSystem:setCustomEmissionShape
--- Sets a Lua function that returns (offset_x, offset_y) for each newly spawned
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lParticleSystem_stub:setCustomEmissionShape(cb)
--- (replace lParticleSystem_stub with your real LParticleSystem instance above)
-
--- ---- Stub: LParticleSystem:setOnDeathBatch -------------------------------
---@api-stub: LParticleSystem:setOnDeathBatch
--- Sets a Lua function called after each update() with all particles that died
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lParticleSystem_stub:setOnDeathBatch(cb)
--- (replace lParticleSystem_stub with your real LParticleSystem instance above)
 
 -- -----------------------------------------------------------------------------
 -- LTrail methods
 -- -----------------------------------------------------------------------------
-
--- ---- Stub: LTrail:pushPoint ----------------------------------------------
---@api-stub: LTrail:pushPoint
--- Appends a new point to the trail head.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTrail_stub:pushPoint(0.0, 0.0)
--- (replace lTrail_stub with your real LTrail instance above)
-
--- ---- Stub: LTrail:update -------------------------------------------------
---@api-stub: LTrail:update
--- Ages trail points and removes expired ones.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTrail_stub:update(0.016)
--- (replace lTrail_stub with your real LTrail instance above)
-
--- ---- Stub: LTrail:setWidth -----------------------------------------------
---@api-stub: LTrail:setWidth
--- Sets the start and end width of the trail ribbon.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTrail_stub:setWidth(start, [end])
--- (replace lTrail_stub with your real LTrail instance above)
-
--- ---- Stub: LTrail:getWidth -----------------------------------------------
---@api-stub: LTrail:getWidth
--- Returns the start and end width.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTrail_stub:getWidth()  -- -> number, number
--- (replace lTrail_stub with your real LTrail instance above)
-
--- ---- Stub: LTrail:setLifetime --------------------------------------------
---@api-stub: LTrail:setLifetime
--- Sets how long each trail point persists in seconds.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTrail_stub:setLifetime(lifetime)
--- (replace lTrail_stub with your real LTrail instance above)
-
--- ---- Stub: LTrail:getLifetime --------------------------------------------
---@api-stub: LTrail:getLifetime
--- Returns the trail point lifetime in seconds.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTrail_stub:getLifetime()  -- -> number
--- (replace lTrail_stub with your real LTrail instance above)
-
--- ---- Stub: LTrail:setMinDistance -----------------------------------------
---@api-stub: LTrail:setMinDistance
--- Sets the minimum distance between trail points.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTrail_stub:setMinDistance(distance)
--- (replace lTrail_stub with your real LTrail instance above)
-
--- ---- Stub: LTrail:setHeadColor -------------------------------------------
---@api-stub: LTrail:setHeadColor
--- Sets the colour at the newest end of the trail.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTrail_stub:setHeadColor(1.0, 0.8, 0.2, 1.0)
--- (replace lTrail_stub with your real LTrail instance above)
-
--- ---- Stub: LTrail:setTailColor -------------------------------------------
---@api-stub: LTrail:setTailColor
--- Sets the colour at the oldest end of the trail.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTrail_stub:setTailColor(1.0, 0.8, 0.2, 1.0)
--- (replace lTrail_stub with your real LTrail instance above)
-
--- ---- Stub: LTrail:getPointCount ------------------------------------------
---@api-stub: LTrail:getPointCount
--- Returns the number of active trail points.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTrail_stub:getPointCount()  -- -> integer
--- (replace lTrail_stub with your real LTrail instance above)
-
--- ---- Stub: LTrail:clear --------------------------------------------------
---@api-stub: LTrail:clear
--- Removes all trail points.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTrail_stub:clear()
--- (replace lTrail_stub with your real LTrail instance above)
-
--- ---- Stub: LTrail:drawToImage --------------------------------------------
---@api-stub: LTrail:drawToImage
--- Renders the trail ribbon to a CPU ImageData.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTrail_stub:drawToImage(64.0, 64.0)  -- -> ImageData
--- (replace lTrail_stub with your real LTrail instance above)
 
 -- ---- Stub: LTrail:type ---------------------------------------------------
 --@api-stub: LTrail:type

@@ -125,7 +125,7 @@ end
 
 -- ── PostFxEffect methods ──
 
---@api-stub: PostFxEffect:getTypeName
+--@api-stub: LPostFxEffect:getTypeName
 -- Returns the display name of this effect type.
 -- Use to label effects in a debug overlay or to write the active pipeline to a save file.
 do  -- PostFxEffect:getTypeName
@@ -134,7 +134,7 @@ do  -- PostFxEffect:getTypeName
   lurek.log.info("active fx: " .. name, "fx")
 end
 
---@api-stub: PostFxEffect:isBuiltIn
+--@api-stub: LPostFxEffect:isBuiltIn
 -- Returns true if this is a built-in effect, false if custom.
 -- Branch on the result before serialising — custom shader effects can't be persisted by name alone.
 do  -- PostFxEffect:isBuiltIn
@@ -144,7 +144,7 @@ do  -- PostFxEffect:isBuiltIn
   end
 end
 
---@api-stub: PostFxEffect:isEnabled
+--@api-stub: LPostFxEffect:isEnabled
 -- Returns whether this effect is currently active.
 -- Read it before reapplying parameters so you don't waste GPU work on a disabled pass.
 do  -- PostFxEffect:isEnabled
@@ -155,7 +155,7 @@ do  -- PostFxEffect:isEnabled
   end
 end
 
---@api-stub: PostFxEffect:setEnabled
+--@api-stub: LPostFxEffect:setEnabled
 -- Enables or disables this effect.
 -- Toggle from a settings menu; cheaper than removing the effect from the stack since the GPU pass is just skipped.
 do  -- PostFxEffect:setEnabled
@@ -164,7 +164,7 @@ do  -- PostFxEffect:setEnabled
   crt:setEnabled(not low_quality)
 end
 
---@api-stub: PostFxEffect:setParameter
+--@api-stub: LPostFxEffect:setParameter
 -- Sets a named float parameter on this effect.
 -- Parameter names are documented per effect (e.g. bloom: 'threshold', 'intensity'); call once at startup or animate per frame.
 do  -- PostFxEffect:setParameter
@@ -174,7 +174,7 @@ do  -- PostFxEffect:setParameter
   lurek.log.debug("bloom configured", "fx")
 end
 
---@api-stub: PostFxEffect:hasParameter
+--@api-stub: LPostFxEffect:hasParameter
 -- Returns true if the named parameter exists on this effect.
 -- Probe before calling setParameter when the effect type is loaded from config and the param set isn't known statically.
 do  -- PostFxEffect:hasParameter
@@ -184,7 +184,7 @@ do  -- PostFxEffect:hasParameter
   end
 end
 
---@api-stub: PostFxEffect:getParameterNames
+--@api-stub: LPostFxEffect:getParameterNames
 -- Returns a list of all parameter names on this effect.
 -- Use to build a generic 'tweak this effect' editor panel without hard-coding param names per type.
 do  -- PostFxEffect:getParameterNames
@@ -194,7 +194,7 @@ do  -- PostFxEffect:getParameterNames
   end
 end
 
---@api-stub: PostFxEffect:getEffectType
+--@api-stub: LPostFxEffect:getEffectType
 -- Returns the type name of this effect (alias for getTypeName).
 -- Alias of getTypeName; use whichever reads better in your call site.
 do  -- PostFxEffect:getEffectType
@@ -203,7 +203,7 @@ do  -- PostFxEffect:getEffectType
   lurek.log.info("kind=" .. kind, "fx")
 end
 
---@api-stub: PostFxEffect:getType
+--@api-stub: LPostFxEffect:getType
 -- Returns the type name of this effect (alias for getTypeName).
 -- Another alias of getTypeName retained for compatibility with code generated against the older API.
 do  -- PostFxEffect:getType
@@ -213,7 +213,7 @@ do  -- PostFxEffect:getType
   end
 end
 
---@api-stub: PostFxEffect:type
+--@api-stub: LPostFxEffect:type
 -- Returns the type name "PostFxEffect".
 -- Use the Lurek2D type/typeOf protocol to assert the userdata kind before passing it across module boundaries.
 do  -- PostFxEffect:type
@@ -221,7 +221,7 @@ do  -- PostFxEffect:type
   assert(eff:type() == "PostFxEffect", "expected a PostFxEffect")
 end
 
---@api-stub: PostFxEffect:typeOf
+--@api-stub: LPostFxEffect:typeOf
 -- Returns true when the given name matches "PostFxEffect" or a parent type.
 -- Returns true for the type name itself or 'Object'; useful in generic dispatch tables keyed on type.
 do  -- PostFxEffect:typeOf
@@ -231,7 +231,7 @@ do  -- PostFxEffect:typeOf
   end
 end
 
---@api-stub: PostFxEffect:setThreshold
+--@api-stub: LPostFxEffect:setThreshold
 -- Sets the threshold parameter of this effect.
 -- Convenience for setParameter('threshold', v); for bloom this is the brightness cutoff that begins to glow.
 do  -- PostFxEffect:setThreshold
@@ -240,7 +240,7 @@ do  -- PostFxEffect:setThreshold
   lurek.log.debug("bloom threshold set", "fx")
 end
 
---@api-stub: PostFxEffect:setIntensity
+--@api-stub: LPostFxEffect:setIntensity
 -- Sets the intensity parameter of this effect.
 -- Common knob shared by bloom, godrays, film grain, etc.; safe range is roughly 0.0 to 2.0.
 do  -- PostFxEffect:setIntensity
@@ -248,7 +248,7 @@ do  -- PostFxEffect:setIntensity
   godrays:setIntensity(1.4)
 end
 
---@api-stub: PostFxEffect:setRadius
+--@api-stub: LPostFxEffect:setRadius
 -- Sets the radius parameter of this effect.
 -- For blur/bloom this controls the kernel size in pixels; larger values cost more GPU time.
 do  -- PostFxEffect:setRadius
@@ -256,7 +256,7 @@ do  -- PostFxEffect:setRadius
   blur:setRadius(4.0)
 end
 
---@api-stub: PostFxEffect:setStrength
+--@api-stub: LPostFxEffect:setStrength
 -- Sets the strength parameter of this effect.
 -- Generic intensity-like knob used by vignette, sharpen, dither; clamp from a settings slider before passing in.
 do  -- PostFxEffect:setStrength
@@ -265,7 +265,7 @@ do  -- PostFxEffect:setStrength
   vig:setStrength(math.max(0.0, math.min(1.0, from_slider)))
 end
 
---@api-stub: PostFxEffect:setScanlineStrength
+--@api-stub: LPostFxEffect:setScanlineStrength
 -- Sets the scanline strength parameter of this effect.
 -- CRT-specific darkening of horizontal scanlines; pair with setIntensity to dial in the retro look.
 do  -- PostFxEffect:setScanlineStrength
@@ -274,7 +274,7 @@ do  -- PostFxEffect:setScanlineStrength
   crt:setIntensity(1.0)
 end
 
---@api-stub: PostFxEffect:setOffset
+--@api-stub: LPostFxEffect:setOffset
 -- Sets the offset parameter of this effect.
 -- For chromatic aberration this shifts R/B channels in pixels; small values (1–4) are most pleasing.
 do  -- PostFxEffect:setOffset
@@ -282,7 +282,7 @@ do  -- PostFxEffect:setOffset
   chroma:setOffset(2.0)
 end
 
---@api-stub: PostFxEffect:setBrightness
+--@api-stub: LPostFxEffect:setBrightness
 -- Sets the brightness parameter of this effect.
 -- Used by colourgrade; 0.0 is no change, positive brightens, negative darkens.
 do  -- PostFxEffect:setBrightness
@@ -290,7 +290,7 @@ do  -- PostFxEffect:setBrightness
   grade:setBrightness(0.05)
 end
 
---@api-stub: PostFxEffect:setContrast
+--@api-stub: LPostFxEffect:setContrast
 -- Sets the contrast parameter of this effect.
 -- Pairs with setBrightness/setSaturation; multiplicative around 0.5 grey, 1.0 = unchanged.
 do  -- PostFxEffect:setContrast
@@ -298,7 +298,7 @@ do  -- PostFxEffect:setContrast
   grade:setContrast(1.15)
 end
 
---@api-stub: PostFxEffect:setSaturation
+--@api-stub: LPostFxEffect:setSaturation
 -- Sets the saturation parameter of this effect.
 -- Drop to 0.0 for full grayscale via colourgrade instead of swapping in the dedicated grayscale effect.
 do  -- PostFxEffect:setSaturation
@@ -308,7 +308,7 @@ end
 
 -- ── PostFxStack methods ──
 
---@api-stub: PostFxStack:add
+--@api-stub: LPostFxStack:add
 -- Appends a PostFxEffect to the end of the pipeline.
 -- Order matters: blur before bloom is different from bloom before blur; build the chain bottom-up.
 do  -- PostFxStack:add
@@ -318,7 +318,7 @@ do  -- PostFxStack:add
   lurek.log.info("stack size=" .. stack:getEffectCount(), "fx")
 end
 
---@api-stub: PostFxStack:remove
+--@api-stub: LPostFxStack:remove
 -- Removes the given PostFxEffect from the pipeline.
 -- Pass the original effect handle returned by newEffect; returns true when an effect was actually removed.
 do  -- PostFxStack:remove
@@ -329,7 +329,7 @@ do  -- PostFxStack:remove
   lurek.log.debug("crt removed=" .. tostring(removed), "fx")
 end
 
---@api-stub: PostFxStack:isEnabled
+--@api-stub: LPostFxStack:isEnabled
 -- Returns whether the effect at the given 1-based position is enabled.
 -- Index is 1-based like Lua tables; check before triggering an expensive parameter retune.
 do  -- PostFxStack:isEnabled
@@ -340,7 +340,7 @@ do  -- PostFxStack:isEnabled
   end
 end
 
---@api-stub: PostFxStack:getEffectCount
+--@api-stub: LPostFxStack:getEffectCount
 -- Returns the number of effects in the pipeline.
 -- Iterate from 1..count to walk the pipeline, or compare against an expected size in tests.
 do  -- PostFxStack:getEffectCount
@@ -353,7 +353,7 @@ do  -- PostFxStack:getEffectCount
   end
 end
 
---@api-stub: PostFxStack:getEffect
+--@api-stub: LPostFxStack:getEffect
 -- Returns the effect at the given 1-based position, or nil.
 -- Returns nil when the index is out of range; pair with getEffectCount when iterating.
 do  -- PostFxStack:getEffect
@@ -363,7 +363,7 @@ do  -- PostFxStack:getEffect
   if first then first:setStrength(0.8) end
 end
 
---@api-stub: PostFxStack:getEnabledEffects
+--@api-stub: LPostFxStack:getEnabledEffects
 -- Returns a list of currently enabled effect objects.
 -- Skips disabled slots so you don't have to filter manually; useful when serialising the active pipeline.
 do  -- PostFxStack:getEnabledEffects
@@ -374,7 +374,7 @@ do  -- PostFxStack:getEnabledEffects
   end
 end
 
---@api-stub: PostFxStack:getWidth
+--@api-stub: LPostFxStack:getWidth
 -- Returns the width of the render target.
 -- Read after a window resize to confirm the stack picked up the new dimensions.
 do  -- PostFxStack:getWidth
@@ -384,7 +384,7 @@ do  -- PostFxStack:getWidth
   end
 end
 
---@api-stub: PostFxStack:getHeight
+--@api-stub: LPostFxStack:getHeight
 -- Returns the height of the render target.
 -- Pair with getWidth or use getDimensions to fetch both at once.
 do  -- PostFxStack:getHeight
@@ -394,7 +394,7 @@ do  -- PostFxStack:getHeight
   end
 end
 
---@api-stub: PostFxStack:getDimensions
+--@api-stub: LPostFxStack:getDimensions
 -- Returns width and height of the render target.
 -- Multi-return convenience for resizing dependent render targets in lock-step with the stack.
 do  -- PostFxStack:getDimensions
@@ -403,7 +403,7 @@ do  -- PostFxStack:getDimensions
   lurek.log.info("stack target = " .. w .. "x" .. h, "fx")
 end
 
---@api-stub: PostFxStack:resize
+--@api-stub: LPostFxStack:resize
 -- Resizes the render target to the given dimensions.
 -- Call from your window-resize handler so the post-fx capture texture matches the new framebuffer size.
 do  -- PostFxStack:resize
@@ -413,7 +413,7 @@ do  -- PostFxStack:resize
   lurek.log.info("stack resized to " .. new_w .. "x" .. new_h, "fx")
 end
 
---@api-stub: PostFxStack:len
+--@api-stub: LPostFxStack:len
 -- Returns the total number of effect slots in the pipeline.
 -- Same value as getEffectCount, kept so Lua code can use #-style intent for stacks.
 do  -- PostFxStack:len
@@ -422,7 +422,7 @@ do  -- PostFxStack:len
   lurek.log.debug("stack len=" .. stack:len(), "fx")
 end
 
---@api-stub: PostFxStack:isEmpty
+--@api-stub: LPostFxStack:isEmpty
 -- Returns true if the pipeline has no effect slots.
 -- Skip the begin/end/apply triplet entirely when the pipeline has no effects to spare a wasted GPU render pass.
 do  -- PostFxStack:isEmpty
@@ -432,7 +432,7 @@ do  -- PostFxStack:isEmpty
   end
 end
 
---@api-stub: PostFxStack:clear
+--@api-stub: LPostFxStack:clear
 -- Removes all effects from the pipeline.
 -- Use at scene boundaries to drop the previous level's pipeline before adding the new one.
 do  -- PostFxStack:clear
@@ -442,7 +442,7 @@ do  -- PostFxStack:clear
   lurek.log.info("pipeline cleared, count=" .. stack:getEffectCount(), "fx")
 end
 
---@api-stub: PostFxStack:dedup
+--@api-stub: LPostFxStack:dedup
 -- Removes duplicate effects from the pipeline, keeping the first occurrence.
 -- Returns the number of slots removed; safe to call after dynamic composition that might add the same effect twice.
 do  -- PostFxStack:dedup
@@ -453,7 +453,7 @@ do  -- PostFxStack:dedup
   lurek.log.info("dedup removed " .. tostring(removed) .. " duplicate slot(s)", "fx")
 end
 
---@api-stub: PostFxStack:isCapturing
+--@api-stub: LPostFxStack:isCapturing
 -- Returns whether the stack is currently capturing the scene.
 -- Use as an assertion inside your render code to make sure beginCapture/endCapture are correctly paired.
 do  -- PostFxStack:isCapturing
@@ -465,7 +465,7 @@ do  -- PostFxStack:isCapturing
   end
 end
 
---@api-stub: PostFxStack:beginCapture
+--@api-stub: LPostFxStack:beginCapture
 -- Begins capturing the scene for post-processing.
 -- Call FIRST in lurek.render to redirect all subsequent draws into the capture texture.
 do  -- PostFxStack:beginCapture
@@ -478,7 +478,7 @@ do  -- PostFxStack:beginCapture
   end
 end
 
---@api-stub: PostFxStack:endCapture
+--@api-stub: LPostFxStack:endCapture
 -- Ends scene capture for post-processing.
 -- Closes the capture started by beginCapture; must come BEFORE apply() so the GPU knows the source is finalised.
 do  -- PostFxStack:endCapture
@@ -490,7 +490,7 @@ do  -- PostFxStack:endCapture
   end
 end
 
---@api-stub: PostFxStack:apply
+--@api-stub: LPostFxStack:apply
 -- Applies all enabled effects in the stack and composites the result to screen.
 -- Composites the processed result back to screen; this is where the GPU actually runs the shaders.
 do  -- PostFxStack:apply
@@ -502,7 +502,7 @@ do  -- PostFxStack:apply
   end
 end
 
---@api-stub: PostFxStack:type
+--@api-stub: LPostFxStack:type
 -- Returns the type name "PostFxStack".
 -- Type-check before passing a stack into a generic render helper that also accepts ImageEffect.
 do  -- PostFxStack:type
@@ -512,7 +512,7 @@ do  -- PostFxStack:type
   end
 end
 
---@api-stub: PostFxStack:typeOf
+--@api-stub: LPostFxStack:typeOf
 -- Returns true when the given name matches "PostFxStack" or a parent type.
 -- Returns true for 'PostFxStack' or 'Object'; use in dispatch tables that key on parent class.
 do  -- PostFxStack:typeOf
@@ -520,7 +520,7 @@ do  -- PostFxStack:typeOf
   assert(stack:typeOf("Object"), "PostFxStack should inherit Object")
 end
 
---@api-stub: PostFxStack:setFeedback
+--@api-stub: LPostFxStack:setFeedback
 -- Sets the feedback loop intensity.
 -- Values near 1.0 produce phosphor / motion-trail looks; clamp from a 0..1 settings slider.
 do  -- PostFxStack:setFeedback
@@ -529,7 +529,7 @@ do  -- PostFxStack:setFeedback
   lurek.log.info("feedback=" .. stack:getFeedback(), "fx")
 end
 
---@api-stub: PostFxStack:getFeedback
+--@api-stub: LPostFxStack:getFeedback
 -- Returns the current feedback loop intensity `[0.0, 1.0]`.
 -- Read once after configuration to confirm the slider value clamped into the [0,1] range.
 do  -- PostFxStack:getFeedback
@@ -538,7 +538,7 @@ do  -- PostFxStack:getFeedback
   lurek.log.info("clamped feedback=" .. stack:getFeedback(), "fx")
 end
 
---@api-stub: PostFxStack:clearFeedback
+--@api-stub: LPostFxStack:clearFeedback
 -- Resets the feedback intensity to `0.0` (disables feedback).
 -- Equivalent to setFeedback(0); use when leaving the dream scene back to normal play.
 do  -- PostFxStack:clearFeedback
@@ -550,7 +550,7 @@ end
 
 -- ── ImageEffect methods ──
 
---@api-stub: ImageEffect:addEffect
+--@api-stub: LImageEffect:addEffect
 -- Creates a new effect by type name, appends it, and returns the shared PostFxEffect.
 -- Returns the shared PostFxEffect handle so you can tweak parameters in the same expression chain.
 do  -- ImageEffect:addEffect
@@ -560,7 +560,7 @@ do  -- ImageEffect:addEffect
   lurek.log.info("chain size=" .. chain:effectCount(), "fx")
 end
 
---@api-stub: ImageEffect:getEffect
+--@api-stub: LImageEffect:getEffect
 -- Returns the effect at the given 1-based index or with the given type name.
 -- Look up by 1-based index OR by effect type name; returns nil when not present.
 do  -- ImageEffect:getEffect
@@ -569,7 +569,7 @@ do  -- ImageEffect:getEffect
   if vig then vig:setStrength(0.5) end
 end
 
---@api-stub: ImageEffect:removeEffect
+--@api-stub: LImageEffect:removeEffect
 -- Removes the effect at the given 1-based index or with the given type name.
 -- Accepts an integer index or a type-name string; returns true on success.
 do  -- ImageEffect:removeEffect
@@ -578,7 +578,7 @@ do  -- ImageEffect:removeEffect
   lurek.log.debug("blur removed=" .. tostring(removed) .. " count=" .. chain:effectCount(), "fx")
 end
 
---@api-stub: ImageEffect:clearEffects
+--@api-stub: LImageEffect:clearEffects
 -- Removes all effects from the chain.
 -- Wipe the chain before re-populating with a different preset set.
 do  -- ImageEffect:clearEffects
@@ -587,7 +587,7 @@ do  -- ImageEffect:clearEffects
   assert(chain:effectCount() == 0, "chain should be empty")
 end
 
---@api-stub: ImageEffect:clear
+--@api-stub: LImageEffect:clear
 -- Removes all effects from the chain (alias for clearEffects).
 -- Alias for clearEffects; use whichever reads better in your call site.
 do  -- ImageEffect:clear
@@ -596,7 +596,7 @@ do  -- ImageEffect:clear
   lurek.log.debug("chain cleared", "fx")
 end
 
---@api-stub: ImageEffect:effectCount
+--@api-stub: LImageEffect:effectCount
 -- Returns the number of effects in the chain.
 -- Use to walk the chain or to early-exit when there is nothing to apply.
 do  -- ImageEffect:effectCount
@@ -606,7 +606,7 @@ do  -- ImageEffect:effectCount
   end
 end
 
---@api-stub: ImageEffect:getEffectCount
+--@api-stub: LImageEffect:getEffectCount
 -- Returns the number of effects in the chain (alias for effectCount).
 -- Alias for effectCount; both names are kept so older example code keeps working.
 do  -- ImageEffect:getEffectCount
@@ -614,7 +614,7 @@ do  -- ImageEffect:getEffectCount
   lurek.log.debug("count=" .. chain:getEffectCount(), "fx")
 end
 
---@api-stub: ImageEffect:clone
+--@api-stub: LImageEffect:clone
 -- Returns a deep copy of this ImageEffect chain.
 -- Useful when one chain serves as a template — clone, then tweak the copy without affecting the original.
 do  -- ImageEffect:clone
@@ -623,7 +623,7 @@ do  -- ImageEffect:clone
   night:addEffect("colourgrade"):setBrightness(-0.1)
 end
 
---@api-stub: ImageEffect:save
+--@api-stub: LImageEffect:save
 -- Stub: no-op serialisation placeholder.
 -- Currently a no-op placeholder that always returns true; reserved for future on-disk serialisation.
 do  -- ImageEffect:save
@@ -633,7 +633,7 @@ do  -- ImageEffect:save
   end
 end
 
---@api-stub: ImageEffect:type
+--@api-stub: LImageEffect:type
 -- Returns the type name "ImageEffect".
 -- Use when a function accepts both ImageEffect and PostFxStack and must dispatch on the userdata kind.
 do  -- ImageEffect:type
@@ -643,7 +643,7 @@ do  -- ImageEffect:type
   end
 end
 
---@api-stub: ImageEffect:typeOf
+--@api-stub: LImageEffect:typeOf
 -- Returns true when the given name matches "ImageEffect" or a parent type.
 -- Returns true for 'ImageEffect' or 'Object'; check the parent name in generic frameworks.
 do  -- ImageEffect:typeOf
@@ -651,7 +651,7 @@ do  -- ImageEffect:typeOf
   assert(chain:typeOf("Object"), "ImageEffect should be an Object")
 end
 
---@api-stub: ImageEffect:removeByIndex
+--@api-stub: LImageEffect:removeByIndex
 -- Removes the effect at the given 0-based index from the chain.
 -- Legacy 0-based variant of removeEffect; prefer removeEffect for new code.
 do  -- ImageEffect:removeByIndex
@@ -660,7 +660,7 @@ do  -- ImageEffect:removeByIndex
   lurek.log.debug("by-index removed=" .. tostring(removed), "fx")
 end
 
---@api-stub: ImageEffect:removeByName
+--@api-stub: LImageEffect:removeByName
 -- Removes the first effect matching the given type name.
 -- Legacy variant of removeEffect that only takes a type name.
 do  -- ImageEffect:removeByName
@@ -671,7 +671,7 @@ end
 
 -- ── Overlay methods ──
 
---@api-stub: Overlay:update
+--@api-stub: LOverlay:update
 -- Advances all effect subsystems by the given delta time.
 -- Call once per simulation step from lurek.process; advances flash/fade/shake/weather animations.
 do  -- Overlay:update
@@ -681,7 +681,7 @@ do  -- Overlay:update
   end
 end
 
---@api-stub: Overlay:triggerLightning
+--@api-stub: LOverlay:triggerLightning
 -- Triggers a lightning flash effect.
 -- Fires a one-shot bright flash; pair with audio:play('sfx/thunder.ogg') for the full effect.
 do  -- Overlay:triggerLightning
@@ -690,7 +690,7 @@ do  -- Overlay:triggerLightning
   lurek.log.info("lightning fired alpha=" .. overlay:getLightningAlpha(), "weather")
 end
 
---@api-stub: Overlay:getShakeOffset
+--@api-stub: LOverlay:getShakeOffset
 -- Returns the current shake displacement as x, y.
 -- Returned x,y are pixel offsets to apply to the camera or the world transform during render.
 do  -- Overlay:getShakeOffset
@@ -702,7 +702,7 @@ do  -- Overlay:getShakeOffset
   end
 end
 
---@api-stub: Overlay:isActive
+--@api-stub: LOverlay:isActive
 -- Returns true if any effect subsystem is currently active.
 -- Use as an early-exit so you skip the overlay:render() call when nothing is going on.
 do  -- Overlay:isActive
@@ -712,7 +712,7 @@ do  -- Overlay:isActive
   end
 end
 
---@api-stub: Overlay:clear
+--@api-stub: LOverlay:clear
 -- Resets all effect subsystems to their default inactive state.
 -- Resets shake/flash/fade/lightning to inactive — use when teleporting the player to a calm scene.
 do  -- Overlay:clear
@@ -722,7 +722,7 @@ do  -- Overlay:clear
   assert(not overlay:isFlashing(), "flash should be cancelled")
 end
 
---@api-stub: Overlay:resize
+--@api-stub: LOverlay:resize
 -- Resizes the effect to match new window dimensions.
 -- Call from your window-resize handler so weather particles cover the new viewport.
 do  -- Overlay:resize
@@ -731,7 +731,7 @@ do  -- Overlay:resize
   lurek.log.info("overlay resized to " .. overlay:getWidth() .. "x" .. overlay:getHeight(), "fx")
 end
 
---@api-stub: Overlay:getWidth
+--@api-stub: LOverlay:getWidth
 -- Returns the effect width.
 -- Read after resize() to confirm the overlay matches the active framebuffer width.
 do  -- Overlay:getWidth
@@ -739,7 +739,7 @@ do  -- Overlay:getWidth
   lurek.log.debug("overlay w=" .. overlay:getWidth(), "fx")
 end
 
---@api-stub: Overlay:getHeight
+--@api-stub: LOverlay:getHeight
 -- Returns the effect height.
 -- Pair with getWidth or use getDimensions for both in one call.
 do  -- Overlay:getHeight
@@ -747,7 +747,7 @@ do  -- Overlay:getHeight
   lurek.log.debug("overlay h=" .. overlay:getHeight(), "fx")
 end
 
---@api-stub: Overlay:getDimensions
+--@api-stub: LOverlay:getDimensions
 -- Returns the effect width and height.
 -- Multi-return convenience to keep dependent render targets aligned with the overlay size.
 do  -- Overlay:getDimensions
@@ -756,7 +756,7 @@ do  -- Overlay:getDimensions
   lurek.log.info("overlay = " .. w .. "x" .. h, "fx")
 end
 
---@api-stub: Overlay:getFlashAlpha
+--@api-stub: LOverlay:getFlashAlpha
 -- Returns the current flash overlay alpha value.
 -- Use to drive secondary effects like camera bloom that should peak in sync with the flash.
 do  -- Overlay:getFlashAlpha
@@ -768,7 +768,7 @@ do  -- Overlay:getFlashAlpha
   end
 end
 
---@api-stub: Overlay:getLightningAlpha
+--@api-stub: LOverlay:getLightningAlpha
 -- Returns the current lightning overlay alpha value.
 -- Read each frame to brighten the level's ambient light in time with the lightning bolt.
 do  -- Overlay:getLightningAlpha
@@ -781,7 +781,7 @@ do  -- Overlay:getLightningAlpha
   end
 end
 
---@api-stub: Overlay:setAmbientEnabled
+--@api-stub: LOverlay:setAmbientEnabled
 -- Enables or disables the ambient light layer.
 -- Disable in the title menu where time-of-day tinting would distort the logo colours.
 do  -- Overlay:setAmbientEnabled
@@ -790,7 +790,7 @@ do  -- Overlay:setAmbientEnabled
   overlay:setTimeOfDay(20.0)  -- evening
 end
 
---@api-stub: Overlay:isAmbientEnabled
+--@api-stub: LOverlay:isAmbientEnabled
 -- Returns whether the ambient light layer is active.
 -- Branch on it before reading getAmbientColor — the value is meaningless when ambient is off.
 do  -- Overlay:isAmbientEnabled
@@ -800,7 +800,7 @@ do  -- Overlay:isAmbientEnabled
   end
 end
 
---@api-stub: Overlay:getAmbientColor
+--@api-stub: LOverlay:getAmbientColor
 -- Returns the current ambient tint as r, g, b, a components.
 -- Returns r,g,b,a as four numbers in 0..1; combine with light tints for a colour-graded look.
 do  -- Overlay:getAmbientColor
@@ -810,7 +810,7 @@ do  -- Overlay:getAmbientColor
   lurek.log.info(string.format("ambient %.2f %.2f %.2f a=%.2f", r, g, b, a), "fx")
 end
 
---@api-stub: Overlay:setTimeOfDay
+--@api-stub: LOverlay:setTimeOfDay
 -- Sets the simulated time-of-day (0â€“24) which drives ambient colour.
 -- Pass an hour 0..24 — 0 and 24 are midnight, 12 is noon; the overlay drives ambient colour from this.
 do  -- Overlay:setTimeOfDay
@@ -819,7 +819,7 @@ do  -- Overlay:setTimeOfDay
   overlay:setTimeOfDay(7.5)  -- early morning
 end
 
---@api-stub: Overlay:getTimeOfDay
+--@api-stub: LOverlay:getTimeOfDay
 -- Returns the current simulated time-of-day (0â€“24).
 -- Read to drive game logic that depends on the in-world clock, e.g. NPC schedules.
 do  -- Overlay:getTimeOfDay
@@ -830,7 +830,7 @@ do  -- Overlay:getTimeOfDay
   end
 end
 
---@api-stub: Overlay:setFogEnabled
+--@api-stub: LOverlay:setFogEnabled
 -- Enables or disables the fog layer.
 -- Toggle for cinematic moments or to indicate weather change; combine with setFogDensity for ramping in.
 do  -- Overlay:setFogEnabled
@@ -839,7 +839,7 @@ do  -- Overlay:setFogEnabled
   overlay:setFogDensity(0.4)
 end
 
---@api-stub: Overlay:isFogEnabled
+--@api-stub: LOverlay:isFogEnabled
 -- Returns whether the fog layer is active.
 -- Use as a guard before tuning fog density so you don't enable it accidentally.
 do  -- Overlay:isFogEnabled
@@ -849,7 +849,7 @@ do  -- Overlay:isFogEnabled
   end
 end
 
---@api-stub: Overlay:setFogDensity
+--@api-stub: LOverlay:setFogDensity
 -- Sets the fog density (0.0 = clear, 1.0 = fully opaque).
 -- 0.0 is clear, 1.0 is fully opaque; ramp gradually to avoid a jarring transition.
 do  -- Overlay:setFogDensity
@@ -859,7 +859,7 @@ do  -- Overlay:setFogDensity
   overlay:setFogDensity(target)
 end
 
---@api-stub: Overlay:getFogDensity
+--@api-stub: LOverlay:getFogDensity
 -- Returns the current fog density.
 -- Read each frame when ramping fog from the current density toward a target.
 do  -- Overlay:getFogDensity
@@ -868,7 +868,7 @@ do  -- Overlay:getFogDensity
   lurek.log.debug("fog density=" .. overlay:getFogDensity(), "fx")
 end
 
---@api-stub: Overlay:getFogColor
+--@api-stub: LOverlay:getFogColor
 -- Returns the current fog tint as r, g, b, a components.
 -- Returns r,g,b,a in 0..1; tint pixel-perfect to your level's palette to avoid a 'green soup' look.
 do  -- Overlay:getFogColor
@@ -878,7 +878,7 @@ do  -- Overlay:getFogColor
   lurek.log.info(string.format("fog rgb %.2f %.2f %.2f", r, g, b), "fx")
 end
 
---@api-stub: Overlay:setHeatHazeEnabled
+--@api-stub: LOverlay:setHeatHazeEnabled
 -- Enables or disables the heat-haze distortion layer.
 -- Switch on inside desert / volcano biomes; pair with rising heat haze intensity for a layering effect.
 do  -- Overlay:setHeatHazeEnabled
@@ -887,7 +887,7 @@ do  -- Overlay:setHeatHazeEnabled
   overlay:setHeatHazeIntensity(0.5)
 end
 
---@api-stub: Overlay:isHeatHazeEnabled
+--@api-stub: LOverlay:isHeatHazeEnabled
 -- Returns whether the heat-haze layer is active.
 -- Branch on it before changing intensity to avoid waking up a dormant subsystem unintentionally.
 do  -- Overlay:isHeatHazeEnabled
@@ -897,7 +897,7 @@ do  -- Overlay:isHeatHazeEnabled
   end
 end
 
---@api-stub: Overlay:setHeatHazeIntensity
+--@api-stub: LOverlay:setHeatHazeIntensity
 -- Sets the heat-haze distortion intensity (0.0â€“1.0).
 -- Range is 0.0..1.0; tie to ambient temperature so the visual matches the simulation.
 do  -- Overlay:setHeatHazeIntensity
@@ -907,7 +907,7 @@ do  -- Overlay:setHeatHazeIntensity
   overlay:setHeatHazeIntensity(math.min(1.0, math.max(0.0, (temp_c - 30) / 20)))
 end
 
---@api-stub: Overlay:getHeatHazeIntensity
+--@api-stub: LOverlay:getHeatHazeIntensity
 -- Returns the current heat-haze distortion intensity.
 -- Read to drive secondary effects like increased visual blur on top of the haze.
 do  -- Overlay:getHeatHazeIntensity
@@ -916,7 +916,7 @@ do  -- Overlay:getHeatHazeIntensity
   lurek.log.debug("heat haze i=" .. overlay:getHeatHazeIntensity(), "fx")
 end
 
---@api-stub: Overlay:setVignetteEnabled
+--@api-stub: LOverlay:setVignetteEnabled
 -- Enables or disables the screen-edge vignette layer.
 -- Most cinematic shots want this on; performance cost is negligible.
 do  -- Overlay:setVignetteEnabled
@@ -925,7 +925,7 @@ do  -- Overlay:setVignetteEnabled
   overlay:setVignetteStrength(0.55)
 end
 
---@api-stub: Overlay:isVignetteEnabled
+--@api-stub: LOverlay:isVignetteEnabled
 -- Returns whether the vignette layer is active.
 -- Use to skip vignette tuning code when the player has disabled it from the settings menu.
 do  -- Overlay:isVignetteEnabled
@@ -935,7 +935,7 @@ do  -- Overlay:isVignetteEnabled
   end
 end
 
---@api-stub: Overlay:setVignetteStrength
+--@api-stub: LOverlay:setVignetteStrength
 -- Sets the vignette darkening strength (0.0â€“1.0).
 -- 0.0 is no darkening, 1.0 fully blacks out the corners; 0.3..0.6 reads as 'cinematic'.
 do  -- Overlay:setVignetteStrength
@@ -944,7 +944,7 @@ do  -- Overlay:setVignetteStrength
   overlay:setVignetteStrength(0.45)
 end
 
---@api-stub: Overlay:getVignetteStrength
+--@api-stub: LOverlay:getVignetteStrength
 -- Returns the current vignette strength.
 -- Read to confirm what the player picked in their settings menu.
 do  -- Overlay:getVignetteStrength
@@ -953,7 +953,7 @@ do  -- Overlay:getVignetteStrength
   lurek.log.debug("vignette s=" .. overlay:getVignetteStrength(), "fx")
 end
 
---@api-stub: Overlay:setFilmGrainEnabled
+--@api-stub: LOverlay:setFilmGrainEnabled
 -- Enables or disables the film-grain noise layer.
 -- Adds a subtle noise overlay; useful for horror or 'old film' aesthetics.
 do  -- Overlay:setFilmGrainEnabled
@@ -962,7 +962,7 @@ do  -- Overlay:setFilmGrainEnabled
   overlay:setFilmGrainIntensity(0.25)
 end
 
---@api-stub: Overlay:isFilmGrainEnabled
+--@api-stub: LOverlay:isFilmGrainEnabled
 -- Returns whether the film-grain layer is active.
 -- Branch on it to expose a 'grain on/off' toggle in the player's accessibility menu.
 do  -- Overlay:isFilmGrainEnabled
@@ -972,7 +972,7 @@ do  -- Overlay:isFilmGrainEnabled
   end
 end
 
---@api-stub: Overlay:setFilmGrainIntensity
+--@api-stub: LOverlay:setFilmGrainIntensity
 -- Sets the film-grain noise intensity (0.0â€“1.0).
 -- Keep below 0.4 to avoid making text hard to read.
 do  -- Overlay:setFilmGrainIntensity
@@ -981,7 +981,7 @@ do  -- Overlay:setFilmGrainIntensity
   overlay:setFilmGrainIntensity(0.18)
 end
 
---@api-stub: Overlay:getFilmGrainIntensity
+--@api-stub: LOverlay:getFilmGrainIntensity
 -- Returns the current film-grain intensity.
 -- Read after applying a player setting to confirm the value was accepted.
 do  -- Overlay:getFilmGrainIntensity
@@ -990,7 +990,7 @@ do  -- Overlay:getFilmGrainIntensity
   lurek.log.debug("grain i=" .. overlay:getFilmGrainIntensity(), "fx")
 end
 
---@api-stub: Overlay:setCloudShadows
+--@api-stub: LOverlay:setCloudShadows
 -- Enables or disables scrolling cloud-shadow projection.
 -- Drifting cloud shadows hide tile seams in outdoor scenes; pair with setCloudCount and setCloudSpeed.
 do  -- Overlay:setCloudShadows
@@ -999,7 +999,7 @@ do  -- Overlay:setCloudShadows
   overlay:setCloudCount(8)
 end
 
---@api-stub: Overlay:isCloudShadowsEnabled
+--@api-stub: LOverlay:isCloudShadowsEnabled
 -- Returns whether cloud shadows are active.
 -- Use to gate the rest of the cloud setup so disabled clouds don't waste config calls.
 do  -- Overlay:isCloudShadowsEnabled
@@ -1009,7 +1009,7 @@ do  -- Overlay:isCloudShadowsEnabled
   end
 end
 
---@api-stub: Overlay:setCloudCount
+--@api-stub: LOverlay:setCloudCount
 -- Sets the number of cloud shadow instances to render.
 -- Higher counts cost more GPU; 4..16 is a sweet spot for a busy sky.
 do  -- Overlay:setCloudCount
@@ -1018,7 +1018,7 @@ do  -- Overlay:setCloudCount
   overlay:setCloudCount(12)
 end
 
---@api-stub: Overlay:getCloudCount
+--@api-stub: LOverlay:getCloudCount
 -- Returns the current cloud shadow instance count.
 -- Read once to confirm config; the value is the number of shadow instances actually being drawn.
 do  -- Overlay:getCloudCount
@@ -1027,7 +1027,7 @@ do  -- Overlay:getCloudCount
   lurek.log.debug("clouds=" .. overlay:getCloudCount(), "fx")
 end
 
---@api-stub: Overlay:setCloudSpeed
+--@api-stub: LOverlay:setCloudSpeed
 -- Sets the horizontal scroll speed of cloud shadows in pixels per second.
 -- Pixels per second; tie to wind speed for a coherent weather look.
 do  -- Overlay:setCloudSpeed
@@ -1036,7 +1036,7 @@ do  -- Overlay:setCloudSpeed
   overlay:setCloudSpeed(40.0)
 end
 
---@api-stub: Overlay:getCloudSpeed
+--@api-stub: LOverlay:getCloudSpeed
 -- Returns the current cloud shadow scroll speed.
 -- Read for a debug overlay or to ramp speed during weather changes.
 do  -- Overlay:getCloudSpeed
@@ -1045,7 +1045,7 @@ do  -- Overlay:getCloudSpeed
   lurek.log.debug("cloud px/s=" .. overlay:getCloudSpeed(), "fx")
 end
 
---@api-stub: Overlay:setCloudScale
+--@api-stub: LOverlay:setCloudScale
 -- Sets the scale multiplier applied to each cloud shadow.
 -- 1.0 is the texture's native size; <1 makes them small and busy, >1 makes them broad.
 do  -- Overlay:setCloudScale
@@ -1054,7 +1054,7 @@ do  -- Overlay:setCloudScale
   overlay:setCloudScale(1.5)
 end
 
---@api-stub: Overlay:getCloudScale
+--@api-stub: LOverlay:getCloudScale
 -- Returns the current cloud shadow scale.
 -- Read after a config-load to confirm the saved scale was applied.
 do  -- Overlay:getCloudScale
@@ -1063,7 +1063,7 @@ do  -- Overlay:getCloudScale
   lurek.log.debug("cloud scale=" .. overlay:getCloudScale(), "fx")
 end
 
---@api-stub: Overlay:setCloudOpacity
+--@api-stub: LOverlay:setCloudOpacity
 -- Sets the opacity of cloud shadows (0.0 = invisible, 1.0 = fully dark).
 -- 0.0 invisible, 1.0 fully dark; 0.2..0.5 is most natural.
 do  -- Overlay:setCloudOpacity
@@ -1072,7 +1072,7 @@ do  -- Overlay:setCloudOpacity
   overlay:setCloudOpacity(0.35)
 end
 
---@api-stub: Overlay:getCloudOpacity
+--@api-stub: LOverlay:getCloudOpacity
 -- Returns the current cloud shadow opacity.
 -- Read to drive a 'sunny vs overcast' state machine.
 do  -- Overlay:getCloudOpacity
@@ -1083,7 +1083,7 @@ do  -- Overlay:getCloudOpacity
   end
 end
 
---@api-stub: Overlay:setWeatherEnabled
+--@api-stub: LOverlay:setWeatherEnabled
 -- Enables or disables the weather particle system.
 -- Master toggle; setWeather chooses the type and setWeatherIntensity dials it in.
 do  -- Overlay:setWeatherEnabled
@@ -1092,7 +1092,7 @@ do  -- Overlay:setWeatherEnabled
   overlay:setWeatherEnabled(true)
 end
 
---@api-stub: Overlay:isWeatherEnabled
+--@api-stub: LOverlay:isWeatherEnabled
 -- Returns whether the weather particle system is active.
 -- Use to gate the weather-driven gameplay logic (e.g. slippery floors when raining).
 do  -- Overlay:isWeatherEnabled
@@ -1102,7 +1102,7 @@ do  -- Overlay:isWeatherEnabled
   end
 end
 
---@api-stub: Overlay:setWeather
+--@api-stub: LOverlay:setWeather
 -- Sets the active weather type by name ("none", "rain", "snow", "hail", "dust", "leaves", "ash", "pollen").
 -- Names: 'none', 'rain', 'snow', 'hail', 'dust', 'leaves', 'ash', 'pollen'; raises an error on an unknown name.
 do  -- Overlay:setWeather
@@ -1112,7 +1112,7 @@ do  -- Overlay:setWeather
   overlay:setWeatherIntensity(0.7)
 end
 
---@api-stub: Overlay:getWeather
+--@api-stub: LOverlay:getWeather
 -- Returns the name of the current weather type.
 -- Returns the active weather name; useful for HUD widgets or for save-game serialisation.
 do  -- Overlay:getWeather
@@ -1121,7 +1121,7 @@ do  -- Overlay:getWeather
   lurek.log.info("current weather: " .. overlay:getWeather(), "weather")
 end
 
---@api-stub: Overlay:setWeatherIntensity
+--@api-stub: LOverlay:setWeatherIntensity
 -- Sets the particle spawn rate multiplier (0.0â€“1.0).
 -- Spawn-rate multiplier 0..1; 0 stops new particles, 1 is a downpour.
 do  -- Overlay:setWeatherIntensity
@@ -1130,7 +1130,7 @@ do  -- Overlay:setWeatherIntensity
   overlay:setWeatherIntensity(0.85)
 end
 
---@api-stub: Overlay:getWeatherIntensity
+--@api-stub: LOverlay:getWeatherIntensity
 -- Returns the current weather intensity.
 -- Read to ramp intensity smoothly toward a target instead of snapping.
 do  -- Overlay:getWeatherIntensity
@@ -1139,7 +1139,7 @@ do  -- Overlay:getWeatherIntensity
   lurek.log.debug("weather i=" .. overlay:getWeatherIntensity(), "weather")
 end
 
---@api-stub: Overlay:setWindDirection
+--@api-stub: LOverlay:setWindDirection
 -- Sets the wind direction in radians (0 = right, Ď€/2 = down).
 -- Radians: 0 right, π/2 down, π left, 3π/2 up; affects how weather particles travel.
 do  -- Overlay:setWindDirection
@@ -1148,7 +1148,7 @@ do  -- Overlay:setWindDirection
   overlay:setWindSpeed(60.0)
 end
 
---@api-stub: Overlay:getWindDirection
+--@api-stub: LOverlay:getWindDirection
 -- Returns the current wind direction in radians.
 -- Read to point a HUD wind-vane indicator or to compute affected gameplay angles.
 do  -- Overlay:getWindDirection
@@ -1157,7 +1157,7 @@ do  -- Overlay:getWindDirection
   lurek.log.debug("wind dir rad=" .. overlay:getWindDirection(), "weather")
 end
 
---@api-stub: Overlay:setWindSpeed
+--@api-stub: LOverlay:setWindSpeed
 -- Sets the wind speed applied to weather particles in units per second.
 -- Units per second applied to weather particles; pair with setCloudSpeed to keep visuals coherent.
 do  -- Overlay:setWindSpeed
@@ -1166,7 +1166,7 @@ do  -- Overlay:setWindSpeed
   overlay:setCloudSpeed(60.0)
 end
 
---@api-stub: Overlay:getWindSpeed
+--@api-stub: LOverlay:getWindSpeed
 -- Returns the current wind speed.
 -- Read for HUD wind speed display or to drive screen-shake intensity in storms.
 do  -- Overlay:getWindSpeed
@@ -1175,7 +1175,7 @@ do  -- Overlay:getWindSpeed
   lurek.log.debug("wind=" .. overlay:getWindSpeed(), "weather")
 end
 
---@api-stub: Overlay:getLightningColor
+--@api-stub: LOverlay:getLightningColor
 -- Returns the lightning flash tint as r, g, b, a components.
 -- Returns r,g,b,a; usually keep near white for natural lightning, shift toward purple for sci-fi storms.
 do  -- Overlay:getLightningColor
@@ -1184,7 +1184,7 @@ do  -- Overlay:getLightningColor
   lurek.log.info(string.format("lightning rgba %.2f %.2f %.2f %.2f", r, g, b, a), "fx")
 end
 
---@api-stub: Overlay:isFlashing
+--@api-stub: LOverlay:isFlashing
 -- Returns true while a flash effect is in progress.
 -- Use to suppress player input during a hit-stun flash.
 do  -- Overlay:isFlashing
@@ -1195,7 +1195,7 @@ do  -- Overlay:isFlashing
   end
 end
 
---@api-stub: Overlay:shake
+--@api-stub: LOverlay:shake
 -- Triggers a camera shake; duration defaults to 0.5 s.
 -- Convenience wrapper; default duration is 0.5 s. Pair with audio to sell impacts.
 do  -- Overlay:shake
@@ -1204,7 +1204,7 @@ do  -- Overlay:shake
   function lurek.process(dt) overlay:update(dt) end
 end
 
---@api-stub: Overlay:isShaking
+--@api-stub: LOverlay:isShaking
 -- Returns true while a shake effect is in progress.
 -- Read to drive secondary effects like camera blur during the shake interval.
 do  -- Overlay:isShaking
@@ -1215,7 +1215,7 @@ do  -- Overlay:isShaking
   end
 end
 
---@api-stub: Overlay:isFading
+--@api-stub: LOverlay:isFading
 -- Returns true while a fade effect is in progress.
 -- Branch on it to chain into a scene change once the fade completes.
 do  -- Overlay:isFading
@@ -1227,7 +1227,7 @@ do  -- Overlay:isFading
   end
 end
 
---@api-stub: Overlay:render
+--@api-stub: LOverlay:render
 -- Emits GPU render commands for all active overlay effects (flash, fade, lightning, vignette).
 -- Call inside lurek.render_ui after world geometry; emits the overlay's screen-space passes.
 do  -- Overlay:render
@@ -1237,7 +1237,7 @@ do  -- Overlay:render
   end
 end
 
---@api-stub: Overlay:drawToImage
+--@api-stub: LOverlay:drawToImage
 -- Renders the effect state (flash, fade, effects) to a CPU ImageData.
 -- Returns a CPU ImageData of the overlay state; useful for screenshots or for offscreen compositing.
 do  -- Overlay:drawToImage
@@ -1247,7 +1247,7 @@ do  -- Overlay:drawToImage
   lurek.log.info("overlay snapshot taken", "fx")
 end
 
---@api-stub: Overlay:setCustomShader
+--@api-stub: LOverlay:setCustomShader
 -- Assigns a custom shader name to the effect, or clears it when `nil` is passed.
 -- Pass a shader name registered via lurek.render, or nil to clear the override.
 do  -- Overlay:setCustomShader
@@ -1256,7 +1256,7 @@ do  -- Overlay:setCustomShader
   -- overlay:setCustomShader(nil)  -- to revert later
 end
 
---@api-stub: Overlay:getWater
+--@api-stub: LOverlay:getWater
 -- Returns a table describing the current water overlay state.
 -- Returns a table of all water-overlay fields (enabled, amplitude, frequency, speed, tint, depth, time).
 do  -- Overlay:getWater
@@ -1265,7 +1265,7 @@ do  -- Overlay:getWater
   lurek.log.info("water enabled=" .. tostring(w.enabled) .. " amp=" .. w.amplitude, "fx")
 end
 
---@api-stub: Overlay:type
+--@api-stub: LOverlay:type
 -- Returns the type name of this object ("Overlay").
 -- Type-check before passing the overlay into a generic render helper.
 do  -- Overlay:type
@@ -1273,7 +1273,7 @@ do  -- Overlay:type
   assert(overlay:type() == "Overlay", "expected Overlay userdata")
 end
 
---@api-stub: Overlay:typeOf
+--@api-stub: LOverlay:typeOf
 -- Returns true if this object is of the given type ("Object" or "Overlay").
 -- Returns true for 'Overlay' or 'Object'; useful in dispatch tables.
 do  -- Overlay:typeOf
@@ -1439,7 +1439,7 @@ do  -- enableAutoUniforms
   end
 end
 
---@api-stub: PostFxEffect:enableAutoUniforms
+--@api-stub: LPostFxEffect:enableAutoUniforms
 -- Enable auto-uniform injection for this effect.
 -- The engine writes (time, frame, width, height) into p[3] each frame.
 do  -- PostFxEffect:enableAutoUniforms
@@ -1448,7 +1448,7 @@ do  -- PostFxEffect:enableAutoUniforms
   lurek.log.debug("enableAutoUniforms called", "fx")
 end
 
---@api-stub: PostFxEffect:isAutoUniforms
+--@api-stub: LPostFxEffect:isAutoUniforms
 -- Returns true if auto-uniform injection is currently enabled for this effect.
 -- Check before relying on p[3] values in WGSL.
 do  -- PostFxEffect:isAutoUniforms
@@ -1457,7 +1457,7 @@ do  -- PostFxEffect:isAutoUniforms
   lurek.log.debug("isAutoUniforms=" .. tostring(fx:isAutoUniforms()), "fx")
 end
 
---@api-stub: PostFxEffect:disableAutoUniforms
+--@api-stub: LPostFxEffect:disableAutoUniforms
 -- Disable auto-uniform injection (reverts enableAutoUniforms). p[3] will not be written.
 -- Call before manually supplying custom p[3] values via setParam.
 do  -- PostFxEffect:disableAutoUniforms
@@ -1467,7 +1467,7 @@ do  -- PostFxEffect:disableAutoUniforms
   lurek.log.debug("auto_uniforms=" .. tostring(fx:isAutoUniforms()), "fx")
 end
 
---@api-stub: Overlay:fade
+--@api-stub: LOverlay:fade
 -- Starts a fade effect on the overlay (typically a screen-fade to/from black).
 -- duration controls the fade time; callback fires when the fade completes.
 do  -- Overlay:fade
@@ -1476,7 +1476,7 @@ do  -- Overlay:fade
   lurek.log.info("fade started", "effect")
 end
 
---@api-stub: Overlay:flash
+--@api-stub: LOverlay:flash
 -- Triggers a quick full-screen flash at the given colour and duration.
 -- Use for muzzle flash, impact hits, or screen-blind on explosion.
 do  -- Overlay:flash
@@ -1485,7 +1485,7 @@ do  -- Overlay:flash
   lurek.log.info("flash triggered", "effect")
 end
 
---@api-stub: PostFxEffect:getParameter
+--@api-stub: LPostFxEffect:getParameter
 -- Returns the current value of a named shader parameter on the effect.
 -- Use to inspect or save effect state before applying a temporary override.
 do  -- PostFxEffect:getParameter
@@ -1496,7 +1496,7 @@ do  -- PostFxEffect:getParameter
   lurek.log.info("bloom intensity: " .. tostring(intensity), "effect")
 end
 
---@api-stub: PostFxStack:insert
+--@api-stub: LPostFxStack:insert
 -- Inserts an effect at a specific index position in the post-fx stack.
 -- Existing effects at that index and above are shifted up by one position.
 do  -- PostFxStack:insert
@@ -1506,7 +1506,7 @@ do  -- PostFxStack:insert
   lurek.log.info("stack count: " .. stack:getEffectCount(), "effect")
 end
 
---@api-stub: Overlay:setAmbientColor
+--@api-stub: LOverlay:setAmbientColor
 -- Sets the ambient light colour used by the overlay's 2D lighting pass.
 -- RGBA values in [0,1]; lower alpha brightens the scene through the ambient layer.
 do  -- Overlay:setAmbientColor
@@ -1516,7 +1516,7 @@ do  -- Overlay:setAmbientColor
   lurek.log.info("ambient colour set", "effect")
 end
 
---@api-stub: PostFxStack:setEnabled
+--@api-stub: LPostFxStack:setEnabled
 -- Enables or disables the entire post-fx stack without removing any effects.
 -- Useful for toggling all post-processing via a graphics quality setting.
 do  -- PostFxStack:setEnabled
@@ -1526,7 +1526,7 @@ do  -- PostFxStack:setEnabled
   lurek.log.info("stack enabled: " .. tostring(stack:isEnabled(1)), "effect")
 end
 
---@api-stub: Overlay:setFogColor
+--@api-stub: LOverlay:setFogColor
 -- Sets the RGB colour of the atmospheric fog overlay.
 -- Enable fog first with setFogEnabled(true); colour affects both near and far fog.
 do  -- Overlay:setFogColor
@@ -1536,7 +1536,7 @@ do  -- Overlay:setFogColor
   lurek.log.info("fog colour set", "effect")
 end
 
---@api-stub: Overlay:setLightningColor
+--@api-stub: LOverlay:setLightningColor
 -- Sets the colour of lightning flash bursts on the overlay.
 -- White-blue (1, 0.95, 0.8) mimics natural lightning; called before triggerLightning.
 do  -- Overlay:setLightningColor
@@ -1545,7 +1545,7 @@ do  -- Overlay:setLightningColor
   lurek.log.info("lightning colour set", "effect")
 end
 
---@api-stub: Overlay:setWater
+--@api-stub: LOverlay:setWater
 -- Enables and configures the water distortion shader on the overlay.
 -- amplitude and frequency control the ripple waviness; speed controls animation rate.
 do  -- Overlay:setWater
@@ -1554,7 +1554,7 @@ do  -- Overlay:setWater
   lurek.log.info("water effect set", "effect")
 end
 
---@api-stub: Overlay:setWaterTint
+--@api-stub: LOverlay:setWaterTint
 -- Sets the RGBA tint applied to the water distortion pass.
 -- Use a blue-green tint to simulate being underwater.
 do  -- Overlay:setWaterTint
@@ -1564,7 +1564,7 @@ do  -- Overlay:setWaterTint
   lurek.log.info("water tint set", "effect")
 end
 
---@api-stub: Overlay:triggerFade
+--@api-stub: LOverlay:triggerFade
 -- Immediately starts a screen fade-in or fade-out with given duration and colour.
 -- direction: "in" fades to transparent, "out" fades to the target colour.
 do  -- Overlay:triggerFade
@@ -1573,7 +1573,7 @@ do  -- Overlay:triggerFade
   lurek.log.info("fade out triggered", "effect")
 end
 
---@api-stub: Overlay:triggerFlash
+--@api-stub: LOverlay:triggerFlash
 -- Triggers a one-shot full-screen colour flash, useful for explosions or damage feedback.
 -- Pass RGBA and duration in seconds; alpha starts at 1 and fades to 0.
 do  -- Overlay:triggerFlash
@@ -1582,7 +1582,7 @@ do  -- Overlay:triggerFlash
   lurek.log.info("flash triggered", "effect")
 end
 
---@api-stub: Overlay:triggerShake
+--@api-stub: LOverlay:triggerShake
 -- Triggers a screen shake effect with given magnitude and duration.
 -- magnitude is in world-pixels; combine with triggerFlash for big impacts.
 do  -- Overlay:triggerShake
@@ -1599,973 +1599,6 @@ end
 -- The final committed file must contain ZERO --@api-stub: lines.
 -- =============================================================================
 
--- -----------------------------------------------------------------------------
--- LImageEffect methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LImageEffect:addEffect ----------------------------------------
---@api-stub: LImageEffect:addEffect
--- Creates a new effect by type name, appends it, and returns the shared PostFxEffect.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lImageEffect_stub:addEffect("hero")  -- -> PostFxEffect
--- (replace lImageEffect_stub with your real LImageEffect instance above)
-
--- ---- Stub: LImageEffect:getEffect ----------------------------------------
---@api-stub: LImageEffect:getEffect
--- Returns the effect at the given 1-based index or with the given type name.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lImageEffect_stub:getEffect("player_score")
--- (replace lImageEffect_stub with your real LImageEffect instance above)
-
--- ---- Stub: LImageEffect:removeEffect -------------------------------------
---@api-stub: LImageEffect:removeEffect
--- Removes the effect at the given 1-based index or with the given type name.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lImageEffect_stub:removeEffect("player_score")  -- -> boolean
--- (replace lImageEffect_stub with your real LImageEffect instance above)
-
--- ---- Stub: LImageEffect:clearEffects -------------------------------------
---@api-stub: LImageEffect:clearEffects
--- Removes all effects from the chain.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lImageEffect_stub:clearEffects()
--- (replace lImageEffect_stub with your real LImageEffect instance above)
-
--- ---- Stub: LImageEffect:clear --------------------------------------------
---@api-stub: LImageEffect:clear
--- Removes all effects from the chain (alias for clearEffects).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lImageEffect_stub:clear()
--- (replace lImageEffect_stub with your real LImageEffect instance above)
-
--- ---- Stub: LImageEffect:effectCount --------------------------------------
---@api-stub: LImageEffect:effectCount
--- Returns the number of effects in the chain.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lImageEffect_stub:effectCount()  -- -> integer
--- (replace lImageEffect_stub with your real LImageEffect instance above)
-
--- ---- Stub: LImageEffect:getEffectCount -----------------------------------
---@api-stub: LImageEffect:getEffectCount
--- Returns the number of effects in the chain (alias for effectCount).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lImageEffect_stub:getEffectCount()  -- -> integer
--- (replace lImageEffect_stub with your real LImageEffect instance above)
-
--- ---- Stub: LImageEffect:clone --------------------------------------------
---@api-stub: LImageEffect:clone
--- Returns a deep copy of this ImageEffect chain.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lImageEffect_stub:clone()  -- -> ImageEffect
--- (replace lImageEffect_stub with your real LImageEffect instance above)
-
--- ---- Stub: LImageEffect:save ---------------------------------------------
---@api-stub: LImageEffect:save
--- Stub: no-op serialisation placeholder.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lImageEffect_stub:save()  -- -> boolean
--- (replace lImageEffect_stub with your real LImageEffect instance above)
-
--- ---- Stub: LImageEffect:type ---------------------------------------------
---@api-stub: LImageEffect:type
--- Returns the type name "ImageEffect".
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lImageEffect_stub:type()  -- -> string
--- (replace lImageEffect_stub with your real LImageEffect instance above)
-
--- ---- Stub: LImageEffect:typeOf -------------------------------------------
---@api-stub: LImageEffect:typeOf
--- Returns true when the given name matches "ImageEffect" or a parent type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lImageEffect_stub:typeOf("hero")  -- -> boolean
--- (replace lImageEffect_stub with your real LImageEffect instance above)
-
--- ---- Stub: LImageEffect:removeByIndex ------------------------------------
---@api-stub: LImageEffect:removeByIndex
--- Removes the effect at the given 0-based index from the chain.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lImageEffect_stub:removeByIndex(1)  -- -> boolean
--- (replace lImageEffect_stub with your real LImageEffect instance above)
-
--- ---- Stub: LImageEffect:removeByName -------------------------------------
---@api-stub: LImageEffect:removeByName
--- Removes the first effect matching the given type name.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lImageEffect_stub:removeByName("hero")  -- -> boolean
--- (replace lImageEffect_stub with your real LImageEffect instance above)
-
--- -----------------------------------------------------------------------------
--- LOverlay methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LOverlay:update -----------------------------------------------
---@api-stub: LOverlay:update
--- Advances all effect subsystems by the given delta time.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lOverlay_stub:update(0.016)
--- (replace lOverlay_stub with your real LOverlay instance above)
-
--- ---- Stub: LOverlay:triggerFlash -----------------------------------------
---@api-stub: LOverlay:triggerFlash
--- Triggers a screen-wide colour flash effect.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lOverlay_stub:triggerFlash(1.0, 0.8, 0.2, 1.0, duration)
--- (replace lOverlay_stub with your real LOverlay instance above)
-
--- ---- Stub: LOverlay:triggerShake -----------------------------------------
---@api-stub: LOverlay:triggerShake
--- Triggers a screen shake effect with the given intensity and duration.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lOverlay_stub:triggerShake(intensity, duration)
--- (replace lOverlay_stub with your real LOverlay instance above)
-
--- ---- Stub: LOverlay:triggerFade ------------------------------------------
---@api-stub: LOverlay:triggerFade
--- Triggers a screen fade effect to the given colour and alpha.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lOverlay_stub:triggerFade(1.0, 0.8, 0.2, target_alpha, duration)
--- (replace lOverlay_stub with your real LOverlay instance above)
-
--- ---- Stub: LOverlay:triggerLightning -------------------------------------
---@api-stub: LOverlay:triggerLightning
--- Triggers a lightning flash effect.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lOverlay_stub:triggerLightning()
--- (replace lOverlay_stub with your real LOverlay instance above)
-
--- ---- Stub: LOverlay:getShakeOffset ---------------------------------------
---@api-stub: LOverlay:getShakeOffset
--- Returns the current shake displacement as x, y.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lOverlay_stub:getShakeOffset()  -- -> number, number
--- (replace lOverlay_stub with your real LOverlay instance above)
-
--- ---- Stub: LOverlay:isActive ---------------------------------------------
---@api-stub: LOverlay:isActive
--- Returns true if any effect subsystem is currently active.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lOverlay_stub:isActive()  -- -> boolean
--- (replace lOverlay_stub with your real LOverlay instance above)
-
--- ---- Stub: LOverlay:clear ------------------------------------------------
---@api-stub: LOverlay:clear
--- Resets all effect subsystems to their default inactive state.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lOverlay_stub:clear()
--- (replace lOverlay_stub with your real LOverlay instance above)
-
--- ---- Stub: LOverlay:resize -----------------------------------------------
---@api-stub: LOverlay:resize
--- Resizes the effect to match new window dimensions.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lOverlay_stub:resize(64.0, 64.0)
--- (replace lOverlay_stub with your real LOverlay instance above)
-
--- ---- Stub: LOverlay:getWidth ---------------------------------------------
---@api-stub: LOverlay:getWidth
--- Returns the effect width.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lOverlay_stub:getWidth()  -- -> integer
--- (replace lOverlay_stub with your real LOverlay instance above)
-
--- ---- Stub: LOverlay:getHeight --------------------------------------------
---@api-stub: LOverlay:getHeight
--- Returns the effect height.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lOverlay_stub:getHeight()  -- -> integer
--- (replace lOverlay_stub with your real LOverlay instance above)
-
--- ---- Stub: LOverlay:getDimensions ----------------------------------------
---@api-stub: LOverlay:getDimensions
--- Returns the effect width and height.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lOverlay_stub:getDimensions()  -- -> integer, integer
--- (replace lOverlay_stub with your real LOverlay instance above)
-
--- ---- Stub: LOverlay:getFlashAlpha ----------------------------------------
---@api-stub: LOverlay:getFlashAlpha
--- Returns the current flash overlay alpha value.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lOverlay_stub:getFlashAlpha()  -- -> number
--- (replace lOverlay_stub with your real LOverlay instance above)
-
--- ---- Stub: LOverlay:getLightningAlpha ------------------------------------
---@api-stub: LOverlay:getLightningAlpha
--- Returns the current lightning overlay alpha value.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lOverlay_stub:getLightningAlpha()  -- -> number
--- (replace lOverlay_stub with your real LOverlay instance above)
-
--- ---- Stub: LOverlay:setAmbientEnabled ------------------------------------
---@api-stub: LOverlay:setAmbientEnabled
--- Enables or disables the ambient light layer.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lOverlay_stub:setAmbientEnabled(1.0)
--- (replace lOverlay_stub with your real LOverlay instance above)
-
--- ---- Stub: LOverlay:isAmbientEnabled -------------------------------------
---@api-stub: LOverlay:isAmbientEnabled
--- Returns whether the ambient light layer is active.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lOverlay_stub:isAmbientEnabled()  -- -> boolean
--- (replace lOverlay_stub with your real LOverlay instance above)
-
--- ---- Stub: LOverlay:setAmbientColor --------------------------------------
---@api-stub: LOverlay:setAmbientColor
--- Sets the ambient light tint colour; alpha defaults to 1.0.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lOverlay_stub:setAmbientColor(1.0, 0.8, 0.2, [a])
--- (replace lOverlay_stub with your real LOverlay instance above)
-
--- ---- Stub: LOverlay:getAmbientColor --------------------------------------
---@api-stub: LOverlay:getAmbientColor
--- Returns the current ambient tint as r, g, b, a components.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lOverlay_stub:getAmbientColor()  -- -> number, number, number, number
--- (replace lOverlay_stub with your real LOverlay instance above)
-
--- ---- Stub: LOverlay:setTimeOfDay -----------------------------------------
---@api-stub: LOverlay:setTimeOfDay
--- Sets the simulated time-of-day (0â€“24) which drives ambient colour.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lOverlay_stub:setTimeOfDay(1.0)
--- (replace lOverlay_stub with your real LOverlay instance above)
-
--- ---- Stub: LOverlay:getTimeOfDay -----------------------------------------
---@api-stub: LOverlay:getTimeOfDay
--- Returns the current simulated time-of-day (0â€“24).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lOverlay_stub:getTimeOfDay()  -- -> number
--- (replace lOverlay_stub with your real LOverlay instance above)
-
--- ---- Stub: LOverlay:setFogEnabled ----------------------------------------
---@api-stub: LOverlay:setFogEnabled
--- Enables or disables the fog layer.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lOverlay_stub:setFogEnabled(1.0)
--- (replace lOverlay_stub with your real LOverlay instance above)
-
--- ---- Stub: LOverlay:isFogEnabled -----------------------------------------
---@api-stub: LOverlay:isFogEnabled
--- Returns whether the fog layer is active.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lOverlay_stub:isFogEnabled()  -- -> boolean
--- (replace lOverlay_stub with your real LOverlay instance above)
-
--- ---- Stub: LOverlay:setFogDensity ----------------------------------------
---@api-stub: LOverlay:setFogDensity
--- Sets the fog density (0.0 = clear, 1.0 = fully opaque).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lOverlay_stub:setFogDensity(1.0)
--- (replace lOverlay_stub with your real LOverlay instance above)
-
--- ---- Stub: LOverlay:getFogDensity ----------------------------------------
---@api-stub: LOverlay:getFogDensity
--- Returns the current fog density.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lOverlay_stub:getFogDensity()  -- -> number
--- (replace lOverlay_stub with your real LOverlay instance above)
-
--- ---- Stub: LOverlay:setFogColor ------------------------------------------
---@api-stub: LOverlay:setFogColor
--- Sets the fog tint colour; alpha defaults to 1.0.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lOverlay_stub:setFogColor(1.0, 0.8, 0.2, [a])
--- (replace lOverlay_stub with your real LOverlay instance above)
-
--- ---- Stub: LOverlay:getFogColor ------------------------------------------
---@api-stub: LOverlay:getFogColor
--- Returns the current fog tint as r, g, b, a components.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lOverlay_stub:getFogColor()  -- -> number, number, number, number
--- (replace lOverlay_stub with your real LOverlay instance above)
-
--- ---- Stub: LOverlay:setHeatHazeEnabled -----------------------------------
---@api-stub: LOverlay:setHeatHazeEnabled
--- Enables or disables the heat-haze distortion layer.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lOverlay_stub:setHeatHazeEnabled(1.0)
--- (replace lOverlay_stub with your real LOverlay instance above)
-
--- ---- Stub: LOverlay:isHeatHazeEnabled ------------------------------------
---@api-stub: LOverlay:isHeatHazeEnabled
--- Returns whether the heat-haze layer is active.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lOverlay_stub:isHeatHazeEnabled()  -- -> boolean
--- (replace lOverlay_stub with your real LOverlay instance above)
-
--- ---- Stub: LOverlay:setHeatHazeIntensity ---------------------------------
---@api-stub: LOverlay:setHeatHazeIntensity
--- Sets the heat-haze distortion intensity (0.0â€“1.0).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lOverlay_stub:setHeatHazeIntensity(1.0)
--- (replace lOverlay_stub with your real LOverlay instance above)
-
--- ---- Stub: LOverlay:getHeatHazeIntensity ---------------------------------
---@api-stub: LOverlay:getHeatHazeIntensity
--- Returns the current heat-haze distortion intensity.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lOverlay_stub:getHeatHazeIntensity()  -- -> number
--- (replace lOverlay_stub with your real LOverlay instance above)
-
--- ---- Stub: LOverlay:setVignetteEnabled -----------------------------------
---@api-stub: LOverlay:setVignetteEnabled
--- Enables or disables the screen-edge vignette layer.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lOverlay_stub:setVignetteEnabled(1.0)
--- (replace lOverlay_stub with your real LOverlay instance above)
-
--- ---- Stub: LOverlay:isVignetteEnabled ------------------------------------
---@api-stub: LOverlay:isVignetteEnabled
--- Returns whether the vignette layer is active.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lOverlay_stub:isVignetteEnabled()  -- -> boolean
--- (replace lOverlay_stub with your real LOverlay instance above)
-
--- ---- Stub: LOverlay:setVignetteStrength ----------------------------------
---@api-stub: LOverlay:setVignetteStrength
--- Sets the vignette darkening strength (0.0â€“1.0).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lOverlay_stub:setVignetteStrength(1.0)
--- (replace lOverlay_stub with your real LOverlay instance above)
-
--- ---- Stub: LOverlay:getVignetteStrength ----------------------------------
---@api-stub: LOverlay:getVignetteStrength
--- Returns the current vignette strength.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lOverlay_stub:getVignetteStrength()  -- -> number
--- (replace lOverlay_stub with your real LOverlay instance above)
-
--- ---- Stub: LOverlay:setFilmGrainEnabled ----------------------------------
---@api-stub: LOverlay:setFilmGrainEnabled
--- Enables or disables the film-grain noise layer.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lOverlay_stub:setFilmGrainEnabled(1.0)
--- (replace lOverlay_stub with your real LOverlay instance above)
-
--- ---- Stub: LOverlay:isFilmGrainEnabled -----------------------------------
---@api-stub: LOverlay:isFilmGrainEnabled
--- Returns whether the film-grain layer is active.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lOverlay_stub:isFilmGrainEnabled()  -- -> boolean
--- (replace lOverlay_stub with your real LOverlay instance above)
-
--- ---- Stub: LOverlay:setFilmGrainIntensity --------------------------------
---@api-stub: LOverlay:setFilmGrainIntensity
--- Sets the film-grain noise intensity (0.0â€“1.0).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lOverlay_stub:setFilmGrainIntensity(1.0)
--- (replace lOverlay_stub with your real LOverlay instance above)
-
--- ---- Stub: LOverlay:getFilmGrainIntensity --------------------------------
---@api-stub: LOverlay:getFilmGrainIntensity
--- Returns the current film-grain intensity.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lOverlay_stub:getFilmGrainIntensity()  -- -> number
--- (replace lOverlay_stub with your real LOverlay instance above)
-
--- ---- Stub: LOverlay:setCloudShadows --------------------------------------
---@api-stub: LOverlay:setCloudShadows
--- Enables or disables scrolling cloud-shadow projection.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lOverlay_stub:setCloudShadows(1.0)
--- (replace lOverlay_stub with your real LOverlay instance above)
-
--- ---- Stub: LOverlay:isCloudShadowsEnabled --------------------------------
---@api-stub: LOverlay:isCloudShadowsEnabled
--- Returns whether cloud shadows are active.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lOverlay_stub:isCloudShadowsEnabled()  -- -> boolean
--- (replace lOverlay_stub with your real LOverlay instance above)
-
--- ---- Stub: LOverlay:setCloudCount ----------------------------------------
---@api-stub: LOverlay:setCloudCount
--- Sets the number of cloud shadow instances to render.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lOverlay_stub:setCloudCount(1.0)
--- (replace lOverlay_stub with your real LOverlay instance above)
-
--- ---- Stub: LOverlay:getCloudCount ----------------------------------------
---@api-stub: LOverlay:getCloudCount
--- Returns the current cloud shadow instance count.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lOverlay_stub:getCloudCount()  -- -> integer
--- (replace lOverlay_stub with your real LOverlay instance above)
-
--- ---- Stub: LOverlay:setCloudSpeed ----------------------------------------
---@api-stub: LOverlay:setCloudSpeed
--- Sets the horizontal scroll speed of cloud shadows in pixels per second.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lOverlay_stub:setCloudSpeed(1.0)
--- (replace lOverlay_stub with your real LOverlay instance above)
-
--- ---- Stub: LOverlay:getCloudSpeed ----------------------------------------
---@api-stub: LOverlay:getCloudSpeed
--- Returns the current cloud shadow scroll speed.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lOverlay_stub:getCloudSpeed()  -- -> number
--- (replace lOverlay_stub with your real LOverlay instance above)
-
--- ---- Stub: LOverlay:setCloudScale ----------------------------------------
---@api-stub: LOverlay:setCloudScale
--- Sets the scale multiplier applied to each cloud shadow.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lOverlay_stub:setCloudScale(1.0)
--- (replace lOverlay_stub with your real LOverlay instance above)
-
--- ---- Stub: LOverlay:getCloudScale ----------------------------------------
---@api-stub: LOverlay:getCloudScale
--- Returns the current cloud shadow scale.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lOverlay_stub:getCloudScale()  -- -> number
--- (replace lOverlay_stub with your real LOverlay instance above)
-
--- ---- Stub: LOverlay:setCloudOpacity --------------------------------------
---@api-stub: LOverlay:setCloudOpacity
--- Sets the opacity of cloud shadows (0.0 = invisible, 1.0 = fully dark).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lOverlay_stub:setCloudOpacity(1.0)
--- (replace lOverlay_stub with your real LOverlay instance above)
-
--- ---- Stub: LOverlay:getCloudOpacity --------------------------------------
---@api-stub: LOverlay:getCloudOpacity
--- Returns the current cloud shadow opacity.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lOverlay_stub:getCloudOpacity()  -- -> number
--- (replace lOverlay_stub with your real LOverlay instance above)
-
--- ---- Stub: LOverlay:setWeatherEnabled ------------------------------------
---@api-stub: LOverlay:setWeatherEnabled
--- Enables or disables the weather particle system.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lOverlay_stub:setWeatherEnabled(1.0)
--- (replace lOverlay_stub with your real LOverlay instance above)
-
--- ---- Stub: LOverlay:isWeatherEnabled -------------------------------------
---@api-stub: LOverlay:isWeatherEnabled
--- Returns whether the weather particle system is active.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lOverlay_stub:isWeatherEnabled()  -- -> boolean
--- (replace lOverlay_stub with your real LOverlay instance above)
-
--- ---- Stub: LOverlay:setWeather -------------------------------------------
---@api-stub: LOverlay:setWeather
--- Sets the active weather type by name ("none", "rain", "snow", "hail", "dust", "leaves", "ash", "pollen").
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lOverlay_stub:setWeather("hero")
--- (replace lOverlay_stub with your real LOverlay instance above)
-
--- ---- Stub: LOverlay:getWeather -------------------------------------------
---@api-stub: LOverlay:getWeather
--- Returns the name of the current weather type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lOverlay_stub:getWeather()  -- -> string
--- (replace lOverlay_stub with your real LOverlay instance above)
-
--- ---- Stub: LOverlay:setWeatherIntensity ----------------------------------
---@api-stub: LOverlay:setWeatherIntensity
--- Sets the particle spawn rate multiplier (0.0â€“1.0).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lOverlay_stub:setWeatherIntensity(1.0)
--- (replace lOverlay_stub with your real LOverlay instance above)
-
--- ---- Stub: LOverlay:getWeatherIntensity ----------------------------------
---@api-stub: LOverlay:getWeatherIntensity
--- Returns the current weather intensity.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lOverlay_stub:getWeatherIntensity()  -- -> number
--- (replace lOverlay_stub with your real LOverlay instance above)
-
--- ---- Stub: LOverlay:setWindDirection -------------------------------------
---@api-stub: LOverlay:setWindDirection
--- Sets the wind direction in radians (0 = right, Ď€/2 = down).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lOverlay_stub:setWindDirection(1.0)
--- (replace lOverlay_stub with your real LOverlay instance above)
-
--- ---- Stub: LOverlay:getWindDirection -------------------------------------
---@api-stub: LOverlay:getWindDirection
--- Returns the current wind direction in radians.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lOverlay_stub:getWindDirection()  -- -> number
--- (replace lOverlay_stub with your real LOverlay instance above)
-
--- ---- Stub: LOverlay:setWindSpeed -----------------------------------------
---@api-stub: LOverlay:setWindSpeed
--- Sets the wind speed applied to weather particles in units per second.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lOverlay_stub:setWindSpeed(1.0)
--- (replace lOverlay_stub with your real LOverlay instance above)
-
--- ---- Stub: LOverlay:getWindSpeed -----------------------------------------
---@api-stub: LOverlay:getWindSpeed
--- Returns the current wind speed.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lOverlay_stub:getWindSpeed()  -- -> number
--- (replace lOverlay_stub with your real LOverlay instance above)
-
--- ---- Stub: LOverlay:setLightningColor ------------------------------------
---@api-stub: LOverlay:setLightningColor
--- Sets the lightning flash tint colour; alpha defaults to 1.0.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lOverlay_stub:setLightningColor(1.0, 0.8, 0.2, [a])
--- (replace lOverlay_stub with your real LOverlay instance above)
-
--- ---- Stub: LOverlay:getLightningColor ------------------------------------
---@api-stub: LOverlay:getLightningColor
--- Returns the lightning flash tint as r, g, b, a components.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lOverlay_stub:getLightningColor()  -- -> number, number, number, number
--- (replace lOverlay_stub with your real LOverlay instance above)
-
--- ---- Stub: LOverlay:flash ------------------------------------------------
---@api-stub: LOverlay:flash
--- Triggers a full-screen colour flash; alpha defaults to 1.0, duration to 0.2 s.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lOverlay_stub:flash(1.0, 0.8, 0.2, [a], [dur])
--- (replace lOverlay_stub with your real LOverlay instance above)
-
--- ---- Stub: LOverlay:isFlashing -------------------------------------------
---@api-stub: LOverlay:isFlashing
--- Returns true while a flash effect is in progress.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lOverlay_stub:isFlashing()  -- -> boolean
--- (replace lOverlay_stub with your real LOverlay instance above)
-
--- ---- Stub: LOverlay:shake ------------------------------------------------
---@api-stub: LOverlay:shake
--- Triggers a camera shake; duration defaults to 0.5 s.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lOverlay_stub:shake(intensity, [dur])
--- (replace lOverlay_stub with your real LOverlay instance above)
-
--- ---- Stub: LOverlay:isShaking --------------------------------------------
---@api-stub: LOverlay:isShaking
--- Returns true while a shake effect is in progress.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lOverlay_stub:isShaking()  -- -> boolean
--- (replace lOverlay_stub with your real LOverlay instance above)
-
--- ---- Stub: LOverlay:fade -------------------------------------------------
---@api-stub: LOverlay:fade
--- Animates a full-screen colour fade; alpha defaults to 1.0, duration to 1.0 s.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lOverlay_stub:fade(1.0, 0.8, 0.2, [a], [dur])
--- (replace lOverlay_stub with your real LOverlay instance above)
-
--- ---- Stub: LOverlay:isFading ---------------------------------------------
---@api-stub: LOverlay:isFading
--- Returns true while a fade effect is in progress.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lOverlay_stub:isFading()  -- -> boolean
--- (replace lOverlay_stub with your real LOverlay instance above)
-
--- ---- Stub: LOverlay:render -----------------------------------------------
---@api-stub: LOverlay:render
--- Emits GPU render commands for all active overlay effects (flash, fade, lightning, vignette).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lOverlay_stub:render()
--- (replace lOverlay_stub with your real LOverlay instance above)
-
--- ---- Stub: LOverlay:drawToImage ------------------------------------------
---@api-stub: LOverlay:drawToImage
--- Renders the effect state (flash, fade, effects) to a CPU ImageData.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lOverlay_stub:drawToImage(64.0, 64.0)  -- -> ImageData
--- (replace lOverlay_stub with your real LOverlay instance above)
-
--- ---- Stub: LOverlay:setWater ---------------------------------------------
---@api-stub: LOverlay:setWater
--- Enables the water UV-distortion overlay and sets its wave parameters.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lOverlay_stub:setWater(amplitude, frequency, 120.0)
--- (replace lOverlay_stub with your real LOverlay instance above)
-
--- ---- Stub: LOverlay:setWaterTint -----------------------------------------
---@api-stub: LOverlay:setWaterTint
--- Sets the water tint colour and blend strength.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lOverlay_stub:setWaterTint(1.0, 0.8, 0.2, strength)
--- (replace lOverlay_stub with your real LOverlay instance above)
-
--- ---- Stub: LOverlay:setCustomShader --------------------------------------
---@api-stub: LOverlay:setCustomShader
--- Assigns a custom shader name to the effect, or clears it when `nil` is passed.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lOverlay_stub:setCustomShader([name])
--- (replace lOverlay_stub with your real LOverlay instance above)
-
--- ---- Stub: LOverlay:getWater ---------------------------------------------
---@api-stub: LOverlay:getWater
--- Returns a table describing the current water overlay state.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lOverlay_stub:getWater()  -- -> table
--- (replace lOverlay_stub with your real LOverlay instance above)
-
--- ---- Stub: LOverlay:type -------------------------------------------------
---@api-stub: LOverlay:type
--- Returns the type name of this object ("Overlay").
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lOverlay_stub:type()  -- -> string
--- (replace lOverlay_stub with your real LOverlay instance above)
-
--- ---- Stub: LOverlay:typeOf -----------------------------------------------
---@api-stub: LOverlay:typeOf
--- Returns true if this object is of the given type ("Object" or "Overlay").
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lOverlay_stub:typeOf("hero")  -- -> boolean
--- (replace lOverlay_stub with your real LOverlay instance above)
-
--- -----------------------------------------------------------------------------
--- LPostFxEffect methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LPostFxEffect:getTypeName -------------------------------------
---@api-stub: LPostFxEffect:getTypeName
--- Returns the display name of this effect type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lPostFxEffect_stub:getTypeName()  -- -> string
--- (replace lPostFxEffect_stub with your real LPostFxEffect instance above)
-
--- ---- Stub: LPostFxEffect:isBuiltIn ---------------------------------------
---@api-stub: LPostFxEffect:isBuiltIn
--- Returns true if this is a built-in effect, false if custom.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lPostFxEffect_stub:isBuiltIn()  -- -> boolean
--- (replace lPostFxEffect_stub with your real LPostFxEffect instance above)
-
--- ---- Stub: LPostFxEffect:isEnabled ---------------------------------------
---@api-stub: LPostFxEffect:isEnabled
--- Returns whether this effect is currently active.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lPostFxEffect_stub:isEnabled()  -- -> boolean
--- (replace lPostFxEffect_stub with your real LPostFxEffect instance above)
-
--- ---- Stub: LPostFxEffect:setEnabled --------------------------------------
---@api-stub: LPostFxEffect:setEnabled
--- Enables or disables this effect.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lPostFxEffect_stub:setEnabled(true)
--- (replace lPostFxEffect_stub with your real LPostFxEffect instance above)
-
--- ---- Stub: LPostFxEffect:setParameter ------------------------------------
---@api-stub: LPostFxEffect:setParameter
--- Sets a named float parameter on this effect.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lPostFxEffect_stub:setParameter("hero", 42)
--- (replace lPostFxEffect_stub with your real LPostFxEffect instance above)
-
--- ---- Stub: LPostFxEffect:getParameter ------------------------------------
---@api-stub: LPostFxEffect:getParameter
--- Returns a named parameter value, or the default if not set.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lPostFxEffect_stub:getParameter("hero", [default])  -- -> number
--- (replace lPostFxEffect_stub with your real LPostFxEffect instance above)
-
--- ---- Stub: LPostFxEffect:hasParameter ------------------------------------
---@api-stub: LPostFxEffect:hasParameter
--- Returns true if the named parameter exists on this effect.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lPostFxEffect_stub:hasParameter("hero")  -- -> boolean
--- (replace lPostFxEffect_stub with your real LPostFxEffect instance above)
-
--- ---- Stub: LPostFxEffect:getParameterNames -------------------------------
---@api-stub: LPostFxEffect:getParameterNames
--- Returns a list of all parameter names on this effect.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lPostFxEffect_stub:getParameterNames()  -- -> table
--- (replace lPostFxEffect_stub with your real LPostFxEffect instance above)
-
--- ---- Stub: LPostFxEffect:getEffectType -----------------------------------
---@api-stub: LPostFxEffect:getEffectType
--- Returns the type name of this effect (alias for getTypeName).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lPostFxEffect_stub:getEffectType()  -- -> string
--- (replace lPostFxEffect_stub with your real LPostFxEffect instance above)
-
--- ---- Stub: LPostFxEffect:getType -----------------------------------------
---@api-stub: LPostFxEffect:getType
--- Returns the type name of this effect (alias for getTypeName).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lPostFxEffect_stub:getType()  -- -> string
--- (replace lPostFxEffect_stub with your real LPostFxEffect instance above)
-
--- ---- Stub: LPostFxEffect:type --------------------------------------------
---@api-stub: LPostFxEffect:type
--- Returns the type name "PostFxEffect".
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lPostFxEffect_stub:type()  -- -> string
--- (replace lPostFxEffect_stub with your real LPostFxEffect instance above)
-
--- ---- Stub: LPostFxEffect:typeOf ------------------------------------------
---@api-stub: LPostFxEffect:typeOf
--- Returns true when the given name matches "PostFxEffect" or a parent type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lPostFxEffect_stub:typeOf("hero")  -- -> boolean
--- (replace lPostFxEffect_stub with your real LPostFxEffect instance above)
-
--- ---- Stub: LPostFxEffect:setThreshold ------------------------------------
---@api-stub: LPostFxEffect:setThreshold
--- Sets the threshold parameter of this effect.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lPostFxEffect_stub:setThreshold(1.0)
--- (replace lPostFxEffect_stub with your real LPostFxEffect instance above)
-
--- ---- Stub: LPostFxEffect:setIntensity ------------------------------------
---@api-stub: LPostFxEffect:setIntensity
--- Sets the intensity parameter of this effect.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lPostFxEffect_stub:setIntensity(1.0)
--- (replace lPostFxEffect_stub with your real LPostFxEffect instance above)
-
--- ---- Stub: LPostFxEffect:setRadius ---------------------------------------
---@api-stub: LPostFxEffect:setRadius
--- Sets the radius parameter of this effect.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lPostFxEffect_stub:setRadius(1.0)
--- (replace lPostFxEffect_stub with your real LPostFxEffect instance above)
-
--- ---- Stub: LPostFxEffect:setStrength -------------------------------------
---@api-stub: LPostFxEffect:setStrength
--- Sets the strength parameter of this effect.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lPostFxEffect_stub:setStrength(1.0)
--- (replace lPostFxEffect_stub with your real LPostFxEffect instance above)
-
--- ---- Stub: LPostFxEffect:setScanlineStrength -----------------------------
---@api-stub: LPostFxEffect:setScanlineStrength
--- Sets the scanline strength parameter of this effect.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lPostFxEffect_stub:setScanlineStrength(1.0)
--- (replace lPostFxEffect_stub with your real LPostFxEffect instance above)
-
--- ---- Stub: LPostFxEffect:setOffset ---------------------------------------
---@api-stub: LPostFxEffect:setOffset
--- Sets the offset parameter of this effect.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lPostFxEffect_stub:setOffset(1.0)
--- (replace lPostFxEffect_stub with your real LPostFxEffect instance above)
-
--- ---- Stub: LPostFxEffect:setBrightness -----------------------------------
---@api-stub: LPostFxEffect:setBrightness
--- Sets the brightness parameter of this effect.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lPostFxEffect_stub:setBrightness(1.0)
--- (replace lPostFxEffect_stub with your real LPostFxEffect instance above)
-
--- ---- Stub: LPostFxEffect:setContrast -------------------------------------
---@api-stub: LPostFxEffect:setContrast
--- Sets the contrast parameter of this effect.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lPostFxEffect_stub:setContrast(1.0)
--- (replace lPostFxEffect_stub with your real LPostFxEffect instance above)
-
--- ---- Stub: LPostFxEffect:setSaturation -----------------------------------
---@api-stub: LPostFxEffect:setSaturation
--- Sets the saturation parameter of this effect.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lPostFxEffect_stub:setSaturation(1.0)
--- (replace lPostFxEffect_stub with your real LPostFxEffect instance above)
-
--- ---- Stub: LPostFxEffect:enableAutoUniforms ------------------------------
---@api-stub: LPostFxEffect:enableAutoUniforms
--- Enables auto-injection of common uniforms into shader slot p[3] each frame.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lPostFxEffect_stub:enableAutoUniforms()
--- (replace lPostFxEffect_stub with your real LPostFxEffect instance above)
-
--- ---- Stub: LPostFxEffect:disableAutoUniforms -----------------------------
---@api-stub: LPostFxEffect:disableAutoUniforms
--- Disables auto-injection of common uniforms into shader slot p[3].
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lPostFxEffect_stub:disableAutoUniforms()
--- (replace lPostFxEffect_stub with your real LPostFxEffect instance above)
-
--- ---- Stub: LPostFxEffect:isAutoUniforms ----------------------------------
---@api-stub: LPostFxEffect:isAutoUniforms
--- Returns whether auto-uniform injection is enabled for this effect.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lPostFxEffect_stub:isAutoUniforms()  -- -> boolean
--- (replace lPostFxEffect_stub with your real LPostFxEffect instance above)
-
--- -----------------------------------------------------------------------------
--- LPostFxStack methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LPostFxStack:add ----------------------------------------------
---@api-stub: LPostFxStack:add
--- Appends a PostFxEffect to the end of the pipeline.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lPostFxStack_stub:add(effect_ud)
--- (replace lPostFxStack_stub with your real LPostFxStack instance above)
-
--- ---- Stub: LPostFxStack:remove -------------------------------------------
---@api-stub: LPostFxStack:remove
--- Removes the given PostFxEffect from the pipeline.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lPostFxStack_stub:remove(effect_ud)  -- -> boolean
--- (replace lPostFxStack_stub with your real LPostFxStack instance above)
-
--- ---- Stub: LPostFxStack:insert -------------------------------------------
---@api-stub: LPostFxStack:insert
--- Inserts a PostFxEffect at a specific 1-based position in the pipeline.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lPostFxStack_stub:insert(position, effect_ud)
--- (replace lPostFxStack_stub with your real LPostFxStack instance above)
-
--- ---- Stub: LPostFxStack:setEnabled ---------------------------------------
---@api-stub: LPostFxStack:setEnabled
--- Enables or disables the effect at the given 1-based position.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lPostFxStack_stub:setEnabled(position, true)
--- (replace lPostFxStack_stub with your real LPostFxStack instance above)
-
--- ---- Stub: LPostFxStack:isEnabled ----------------------------------------
---@api-stub: LPostFxStack:isEnabled
--- Returns whether the effect at the given 1-based position is enabled.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lPostFxStack_stub:isEnabled(position)  -- -> boolean
--- (replace lPostFxStack_stub with your real LPostFxStack instance above)
-
--- ---- Stub: LPostFxStack:getEffectCount -----------------------------------
---@api-stub: LPostFxStack:getEffectCount
--- Returns the number of effects in the pipeline.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lPostFxStack_stub:getEffectCount()  -- -> integer
--- (replace lPostFxStack_stub with your real LPostFxStack instance above)
-
--- ---- Stub: LPostFxStack:getEffect ----------------------------------------
---@api-stub: LPostFxStack:getEffect
--- Returns the effect at the given 1-based position, or nil.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lPostFxStack_stub:getEffect(1)
--- (replace lPostFxStack_stub with your real LPostFxStack instance above)
-
--- ---- Stub: LPostFxStack:getEnabledEffects --------------------------------
---@api-stub: LPostFxStack:getEnabledEffects
--- Returns a list of currently enabled effect objects.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lPostFxStack_stub:getEnabledEffects()  -- -> table
--- (replace lPostFxStack_stub with your real LPostFxStack instance above)
-
--- ---- Stub: LPostFxStack:getWidth -----------------------------------------
---@api-stub: LPostFxStack:getWidth
--- Returns the width of the render target.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lPostFxStack_stub:getWidth()  -- -> integer
--- (replace lPostFxStack_stub with your real LPostFxStack instance above)
-
--- ---- Stub: LPostFxStack:getHeight ----------------------------------------
---@api-stub: LPostFxStack:getHeight
--- Returns the height of the render target.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lPostFxStack_stub:getHeight()  -- -> integer
--- (replace lPostFxStack_stub with your real LPostFxStack instance above)
-
--- ---- Stub: LPostFxStack:getDimensions ------------------------------------
---@api-stub: LPostFxStack:getDimensions
--- Returns width and height of the render target.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lPostFxStack_stub:getDimensions()  -- -> integer, integer
--- (replace lPostFxStack_stub with your real LPostFxStack instance above)
-
--- ---- Stub: LPostFxStack:resize -------------------------------------------
---@api-stub: LPostFxStack:resize
--- Resizes the render target to the given dimensions.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lPostFxStack_stub:resize(64.0, 64.0)
--- (replace lPostFxStack_stub with your real LPostFxStack instance above)
-
--- ---- Stub: LPostFxStack:len ----------------------------------------------
---@api-stub: LPostFxStack:len
--- Returns the total number of effect slots in the pipeline.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lPostFxStack_stub:len()  -- -> integer
--- (replace lPostFxStack_stub with your real LPostFxStack instance above)
-
--- ---- Stub: LPostFxStack:isEmpty ------------------------------------------
---@api-stub: LPostFxStack:isEmpty
--- Returns true if the pipeline has no effect slots.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lPostFxStack_stub:isEmpty()  -- -> boolean
--- (replace lPostFxStack_stub with your real LPostFxStack instance above)
-
--- ---- Stub: LPostFxStack:clear --------------------------------------------
---@api-stub: LPostFxStack:clear
--- Removes all effects from the pipeline.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lPostFxStack_stub:clear()
--- (replace lPostFxStack_stub with your real LPostFxStack instance above)
-
--- ---- Stub: LPostFxStack:dedup --------------------------------------------
---@api-stub: LPostFxStack:dedup
--- Removes duplicate effects from the pipeline, keeping the first occurrence
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lPostFxStack_stub:dedup()
--- (replace lPostFxStack_stub with your real LPostFxStack instance above)
-
--- ---- Stub: LPostFxStack:isCapturing --------------------------------------
---@api-stub: LPostFxStack:isCapturing
--- Returns whether the stack is currently capturing the scene.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lPostFxStack_stub:isCapturing()  -- -> boolean
--- (replace lPostFxStack_stub with your real LPostFxStack instance above)
-
--- ---- Stub: LPostFxStack:beginCapture -------------------------------------
---@api-stub: LPostFxStack:beginCapture
--- Begins capturing the scene for post-processing.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lPostFxStack_stub:beginCapture()
--- (replace lPostFxStack_stub with your real LPostFxStack instance above)
-
--- ---- Stub: LPostFxStack:endCapture ---------------------------------------
---@api-stub: LPostFxStack:endCapture
--- Ends scene capture for post-processing.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lPostFxStack_stub:endCapture()
--- (replace lPostFxStack_stub with your real LPostFxStack instance above)
-
--- ---- Stub: LPostFxStack:apply --------------------------------------------
---@api-stub: LPostFxStack:apply
--- Applies all enabled effects in the stack and composites the result to screen.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lPostFxStack_stub:apply()
--- (replace lPostFxStack_stub with your real LPostFxStack instance above)
-
--- ---- Stub: LPostFxStack:type ---------------------------------------------
---@api-stub: LPostFxStack:type
--- Returns the type name "PostFxStack".
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lPostFxStack_stub:type()  -- -> string
--- (replace lPostFxStack_stub with your real LPostFxStack instance above)
-
--- ---- Stub: LPostFxStack:typeOf -------------------------------------------
---@api-stub: LPostFxStack:typeOf
--- Returns true when the given name matches "PostFxStack" or a parent type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lPostFxStack_stub:typeOf("hero")  -- -> boolean
--- (replace lPostFxStack_stub with your real LPostFxStack instance above)
-
--- ---- Stub: LPostFxStack:setFeedback --------------------------------------
---@api-stub: LPostFxStack:setFeedback
--- Sets the feedback loop intensity. At `0.0` (default) there is no
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lPostFxStack_stub:setFeedback(factor)
--- (replace lPostFxStack_stub with your real LPostFxStack instance above)
-
--- ---- Stub: LPostFxStack:getFeedback --------------------------------------
---@api-stub: LPostFxStack:getFeedback
--- Returns the current feedback loop intensity `[0.0, 1.0]`.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lPostFxStack_stub:getFeedback()  -- -> number
--- (replace lPostFxStack_stub with your real LPostFxStack instance above)
-
--- ---- Stub: LPostFxStack:clearFeedback ------------------------------------
---@api-stub: LPostFxStack:clearFeedback
--- Resets the feedback intensity to `0.0` (disables feedback).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lPostFxStack_stub:clearFeedback()
--- (replace lPostFxStack_stub with your real LPostFxStack instance above)
 
 -- -----------------------------------------------------------------------------
 -- LScreenTransition methods

@@ -220,7 +220,7 @@ do  -- lurek.patterns.newSet
   if unlocked:has("level_2") then print("portal open") end
 end
 
---@api-stub: EventBus:on
+--@api-stub: LEventBus:on
 -- Registers a listener callback for an event.
 -- Capture the returned id so you can later remove this exact listener with bus:off(id).
 do  -- EventBus:on
@@ -230,7 +230,7 @@ do  -- EventBus:on
   bus:off(id)
 end
 
---@api-stub: EventBus:off
+--@api-stub: LEventBus:off
 -- Removes a previously registered event listener by subscription ID.
 -- Always pair every on() in a scene with an off() in scene teardown to avoid stale closures firing.
 do  -- EventBus:off
@@ -241,7 +241,7 @@ do  -- EventBus:off
   print("listeners=" .. bus:getListenerCount("ping"))
 end
 
---@api-stub: EventBus:emit
+--@api-stub: LEventBus:emit
 -- Dispatches an event, calling all registered listeners in priority order.
 -- Pass any extra args after the event name; they are forwarded verbatim to every listener.
 do  -- EventBus:emit
@@ -251,7 +251,7 @@ do  -- EventBus:emit
   bus:emit("damage", 30, "boss")
 end
 
---@api-stub: EventBus:clear
+--@api-stub: LEventBus:clear
 -- Removes all listeners for a specific event.
 -- Use when retiring a single feature (e.g. unloading a minigame) without disturbing other event channels.
 do  -- EventBus:clear
@@ -262,7 +262,7 @@ do  -- EventBus:clear
   print("after clear: " .. bus:getListenerCount("minigame_score"))
 end
 
---@api-stub: EventBus:clearAll
+--@api-stub: LEventBus:clearAll
 -- Removes all listeners on this EventBus.
 -- Call on full scene unload to release every closure registered since the bus was created.
 do  -- EventBus:clearAll
@@ -273,7 +273,7 @@ do  -- EventBus:clearAll
   print("events left=" .. #bus:getEvents())
 end
 
---@api-stub: EventBus:getListenerCount
+--@api-stub: LEventBus:getListenerCount
 -- Returns the number of listeners registered for an event.
 -- Useful in tests and HUDs to verify hot-reload didn’t double-subscribe handlers.
 do  -- EventBus:getListenerCount
@@ -284,7 +284,7 @@ do  -- EventBus:getListenerCount
   if n > 1 then print("warning: " .. n .. " hit listeners") end
 end
 
---@api-stub: EventBus:getEvents
+--@api-stub: LEventBus:getEvents
 -- Returns all event names that have at least one listener.
 -- Great for a debug HUD listing live event channels; iterate the returned array with ipairs.
 do  -- EventBus:getEvents
@@ -294,7 +294,7 @@ do  -- EventBus:getEvents
   for _, name in ipairs(bus:getEvents()) do print("ch:" .. name) end
 end
 
---@api-stub: ObjectPool:add
+--@api-stub: LObjectPool:add
 -- Inserts a pre-built object into the available pool.
 -- Call repeatedly at boot to prewarm the pool with the maximum number of concurrent objects you expect.
 do  -- ObjectPool:add
@@ -303,7 +303,7 @@ do  -- ObjectPool:add
   print("pre-warmed bullets=" .. bullets:getAvailableCount())
 end
 
---@api-stub: ObjectPool:acquire
+--@api-stub: LObjectPool:acquire
 -- Acquires an available object from the pool; returns nil if empty.
 -- Always nil-check the result; reset the borrowed object’s fields before use because state is not auto-cleared.
 do  -- ObjectPool:acquire
@@ -314,7 +314,7 @@ do  -- ObjectPool:acquire
   print("active=" .. pool:getActiveCount())
 end
 
---@api-stub: ObjectPool:release
+--@api-stub: LObjectPool:release
 -- Returns an object to the available pool.
 -- Pass back the SAME object reference you got from acquire(); the pool tracks oldest-first via an internal queue.
 do  -- ObjectPool:release
@@ -326,7 +326,7 @@ do  -- ObjectPool:release
   print("idle=" .. pool:getAvailableCount())
 end
 
---@api-stub: ObjectPool:getActiveCount
+--@api-stub: LObjectPool:getActiveCount
 -- Returns the number of currently active (acquired) objects.
 -- Display in a debug HUD to spot pool leaks (acquire without matching release).
 do  -- ObjectPool:getActiveCount
@@ -337,7 +337,7 @@ do  -- ObjectPool:getActiveCount
   if n > 100 then print("WARN pool leak: " .. n) end
 end
 
---@api-stub: ObjectPool:getAvailableCount
+--@api-stub: LObjectPool:getAvailableCount
 -- Returns the number of available (idle) objects in the pool.
 -- Use to decide whether to grow the pool with another add() before acquiring under load.
 do  -- ObjectPool:getAvailableCount
@@ -348,7 +348,7 @@ do  -- ObjectPool:getAvailableCount
   print("idle now=" .. pool:getAvailableCount())
 end
 
---@api-stub: ObjectPool:getTotalCount
+--@api-stub: LObjectPool:getTotalCount
 -- Returns the total number of tracked objects (active + available).
 -- Reflects the pool’s peak allocation; useful for budgeting and tuning the prewarm count.
 do  -- ObjectPool:getTotalCount
@@ -358,7 +358,7 @@ do  -- ObjectPool:getTotalCount
   print("total=" .. pool:getTotalCount() .. " active=" .. pool:getActiveCount())
 end
 
---@api-stub: ObjectPool:clearAll
+--@api-stub: LObjectPool:clearAll
 -- Clears all objects from the pool, releasing Lua registry values.
 -- Call on scene change to drop every borrowed and idle object so they can be garbage-collected.
 do  -- ObjectPool:clearAll
@@ -368,7 +368,7 @@ do  -- ObjectPool:clearAll
   print("after clear total=" .. pool:getTotalCount())
 end
 
---@api-stub: CommandStack:execute
+--@api-stub: LCommandStack:execute
 -- Executes a named command and records it in undo/redo history.
 -- Both closures should capture the data they need; the exec runs immediately, the undo runs only on stack:undo().
 do  -- CommandStack:execute
@@ -380,7 +380,7 @@ do  -- CommandStack:execute
   print("doc=" .. doc.text)
 end
 
---@api-stub: CommandStack:undo
+--@api-stub: LCommandStack:undo
 -- Undoes the most recent command. Returns true if successful.
 -- Returns false when the history is empty or the last command was registered without an undo closure.
 do  -- CommandStack:undo
@@ -391,7 +391,7 @@ do  -- CommandStack:undo
   print("undone=" .. tostring(ok) .. " x=" .. x)
 end
 
---@api-stub: CommandStack:redo
+--@api-stub: LCommandStack:redo
 -- Re-executes the next undone command. Returns true if successful.
 -- Calling execute() after an undo wipes the redo branch, mirroring most editor undo trees.
 do  -- CommandStack:redo
@@ -403,7 +403,7 @@ do  -- CommandStack:redo
   print("after redo n=" .. n)
 end
 
---@api-stub: CommandStack:canUndo
+--@api-stub: LCommandStack:canUndo
 -- Returns true if the most recent command can be undone.
 -- Bind to your Edit > Undo menu item’s enabled state so users see when there’s nothing to undo.
 do  -- CommandStack:canUndo
@@ -412,7 +412,7 @@ do  -- CommandStack:canUndo
   if stack:canUndo() then print("undo enabled") else print("undo disabled") end
 end
 
---@api-stub: CommandStack:canRedo
+--@api-stub: LCommandStack:canRedo
 -- Returns true if there is a command available to redo.
 -- Pair with canUndo() to drive Edit > Redo menu state in editors and level designers.
 do  -- CommandStack:canRedo
@@ -422,7 +422,7 @@ do  -- CommandStack:canRedo
   if stack:canRedo() then print("redo enabled") end
 end
 
---@api-stub: CommandStack:getHistorySize
+--@api-stub: LCommandStack:getHistorySize
 -- Returns the total number of recorded commands (undo + redo).
 -- Useful for HUD breadcrumbs (“step 7 of 12”) and to detect accidental memory growth.
 do  -- CommandStack:getHistorySize
@@ -431,7 +431,7 @@ do  -- CommandStack:getHistorySize
   print("history=" .. stack:getHistorySize())
 end
 
---@api-stub: CommandStack:getCurrentName
+--@api-stub: LCommandStack:getCurrentName
 -- Returns the name of the most recently executed command, or nil.
 -- Display in the status bar so the next undo’s effect is visible to the user before they press it.
 do  -- CommandStack:getCurrentName
@@ -441,7 +441,7 @@ do  -- CommandStack:getCurrentName
   if name then print("undo will revert: " .. name) end
 end
 
---@api-stub: CommandStack:clearAll
+--@api-stub: LCommandStack:clearAll
 -- Clears all command history, releasing Lua registry values.
 -- Call when loading a fresh document so the previous file’s undo history is dropped.
 do  -- CommandStack:clearAll
@@ -451,7 +451,7 @@ do  -- CommandStack:clearAll
   print("history after clear=" .. stack:getHistorySize())
 end
 
---@api-stub: ServiceLocator:provide
+--@api-stub: LServiceLocator:provide
 -- Registers a named service with an associated Lua value.
 -- Call once at boot per service; providing the same name again replaces the previous registration.
 do  -- ServiceLocator:provide
@@ -461,7 +461,7 @@ do  -- ServiceLocator:provide
   print("services=" .. #sl:getServices())
 end
 
---@api-stub: ServiceLocator:locate
+--@api-stub: LServiceLocator:locate
 -- Retrieves a registered service by name; returns nil if not found.
 -- Always nil-check before use so unregistered subsystems fail loudly instead of crashing on a method call.
 do  -- ServiceLocator:locate
@@ -471,7 +471,7 @@ do  -- ServiceLocator:locate
   if audio then print("vol=" .. audio.volume) end
 end
 
---@api-stub: ServiceLocator:has
+--@api-stub: LServiceLocator:has
 -- Returns true if a service with the given name is registered.
 -- Branch on this for optional dependencies (analytics, mod loader) so the game runs without them too.
 do  -- ServiceLocator:has
@@ -480,7 +480,7 @@ do  -- ServiceLocator:has
   if sl:has("analytics") then print("telemetry on") end
 end
 
---@api-stub: ServiceLocator:remove
+--@api-stub: LServiceLocator:remove
 -- Unregisters and removes a named service.
 -- Call on shutdown of the providing module so other systems checking has() see the truth.
 do  -- ServiceLocator:remove
@@ -490,7 +490,7 @@ do  -- ServiceLocator:remove
   print("net registered=" .. tostring(sl:has("net")))
 end
 
---@api-stub: ServiceLocator:getServices
+--@api-stub: LServiceLocator:getServices
 -- Returns a table of all registered service names.
 -- Iterate with ipairs to render a debug overlay of every active subsystem.
 do  -- ServiceLocator:getServices
@@ -499,7 +499,7 @@ do  -- ServiceLocator:getServices
   for _, name in ipairs(sl:getServices()) do print("svc: " .. name) end
 end
 
---@api-stub: ServiceLocator:clearAll
+--@api-stub: LServiceLocator:clearAll
 -- Removes all registered services.
 -- Use during integration tests to reset the container between cases.
 do  -- ServiceLocator:clearAll
@@ -509,7 +509,7 @@ do  -- ServiceLocator:clearAll
   print("count=" .. #sl:getServices())
 end
 
---@api-stub: Factory:register
+--@api-stub: LFactory:register
 -- Registers a named type constructor function.
 -- Wire prototypes at boot from a single data table; constructors should be pure factories returning a new instance.
 do  -- Factory:register
@@ -519,7 +519,7 @@ do  -- Factory:register
   print("registered=" .. #f:getTypes())
 end
 
---@api-stub: Factory:create
+--@api-stub: LFactory:create
 -- Creates an instance of the named type by invoking its constructor.
 -- Accepts both canonical names and aliases; extra arguments are forwarded to the constructor verbatim.
 do  -- Factory:create
@@ -529,7 +529,7 @@ do  -- Factory:create
   print("dropped " .. c.value .. " gold")
 end
 
---@api-stub: Factory:has
+--@api-stub: LFactory:has
 -- Returns true if the named type (or alias) is registered.
 -- Use as an early guard to keep create() from raising on data-driven spawns from level files.
 do  -- Factory:has
@@ -538,7 +538,7 @@ do  -- Factory:has
   if f:has("npc") then print("npc factory ready") end
 end
 
---@api-stub: Factory:alias
+--@api-stub: LFactory:alias
 -- Registers an alias pointing to an existing canonical type name.
 -- Use to support legacy level data: alias “monster_v1” → “goblin” without rewriting save files.
 do  -- Factory:alias
@@ -549,7 +549,7 @@ do  -- Factory:alias
   print("created via alias: " .. m.kind)
 end
 
---@api-stub: Factory:getTypes
+--@api-stub: LFactory:getTypes
 -- Returns a table of all registered type names.
 -- Render in level-editor dropdowns so designers always see the live list of spawnable types.
 do  -- Factory:getTypes
@@ -558,7 +558,7 @@ do  -- Factory:getTypes
   for _, name in ipairs(f:getTypes()) do print("type:" .. name) end
 end
 
---@api-stub: Factory:remove
+--@api-stub: LFactory:remove
 -- Unregisters a type constructor (and any aliases pointing to it).
 -- Use during hot-reload to drop the old constructor before re-registering the new one.
 do  -- Factory:remove
@@ -568,7 +568,7 @@ do  -- Factory:remove
   print("temp still registered=" .. tostring(f:has("temp")))
 end
 
---@api-stub: Factory:clearAll
+--@api-stub: LFactory:clearAll
 -- Removes all registered type constructors and aliases.
 -- Ideal for test setup to reset between cases without rebuilding the factory object.
 do  -- Factory:clearAll
@@ -578,7 +578,7 @@ do  -- Factory:clearAll
   print("types after clear=" .. #f:getTypes())
 end
 
---@api-stub: SimpleState:addState
+--@api-stub: LSimpleState:addState
 -- Registers a named state with optional enter, exit, and update callbacks.
 -- Pass a callbacks table with any combination of enter/exit/update; re-adding the same name replaces the callbacks.
 do  -- SimpleState:addState
@@ -588,7 +588,7 @@ do  -- SimpleState:addState
   print("states=" .. #sm:getStates())
 end
 
---@api-stub: SimpleState:transitionTo
+--@api-stub: LSimpleState:transitionTo
 -- Transitions to a named state, calling exit/enter callbacks as needed.
 -- Returns false when the target state is not registered, so guard transitions read from data.
 do  -- SimpleState:transitionTo
@@ -599,7 +599,7 @@ do  -- SimpleState:transitionTo
   sm:transitionTo("game")
 end
 
---@api-stub: SimpleState:update
+--@api-stub: LSimpleState:update
 -- Calls the update callback of the current state with the given delta time.
 -- Drive once per frame from lurek.process(dt); states without an update callback are no-ops.
 do  -- SimpleState:update
@@ -609,7 +609,7 @@ do  -- SimpleState:update
   function lurek.process(dt) sm:update(dt) end
 end
 
---@api-stub: SimpleState:getCurrent
+--@api-stub: LSimpleState:getCurrent
 -- Returns the name of the current state, or nil if none is active.
 -- Branch on this for HUD labels and to drive input mapping (menu vs combat vs cutscene).
 do  -- SimpleState:getCurrent
@@ -619,7 +619,7 @@ do  -- SimpleState:getCurrent
   if sm:getCurrent() == "paused" then print("game is paused") end
 end
 
---@api-stub: SimpleState:hasState
+--@api-stub: LSimpleState:hasState
 -- Returns true if a state with the given name is registered.
 -- Useful when transitions are driven by save data — test the name before calling transitionTo.
 do  -- SimpleState:hasState
@@ -628,7 +628,7 @@ do  -- SimpleState:hasState
   if sm:hasState("boss") then sm:transitionTo("boss") end
 end
 
---@api-stub: SimpleState:getStates
+--@api-stub: LSimpleState:getStates
 -- Returns a table of all registered state names.
 -- Render in a debug overlay so designers see exactly which states this FSM owns.
 do  -- SimpleState:getStates
@@ -637,7 +637,7 @@ do  -- SimpleState:getStates
   for _, name in ipairs(sm:getStates()) do print("state:" .. name) end
 end
 
---@api-stub: SimpleState:clearAll
+--@api-stub: LSimpleState:clearAll
 -- Removes all states and callbacks from this state machine.
 -- Call on scene unload so closures captured by enter/exit/update are released.
 do  -- SimpleState:clearAll
@@ -647,7 +647,7 @@ do  -- SimpleState:clearAll
   print("states left=" .. #sm:getStates())
 end
 
---@api-stub: Blackboard:set
+--@api-stub: LBlackboard:set
 -- Sets a fact on the blackboard. Accepts boolean, number, or string values.
 -- Setting nil clears the key; tables/userdata raise an error so keep the schema flat.
 do  -- Blackboard:set
@@ -658,7 +658,7 @@ do  -- Blackboard:set
   print("name=" .. bb:get("name"))
 end
 
---@api-stub: Blackboard:get
+--@api-stub: LBlackboard:get
 -- Gets a fact from the blackboard. Returns nil if not set.
 -- Type-narrow at the call site; a missing key reads as nil so guard with `or` for defaults.
 do  -- Blackboard:get
@@ -668,7 +668,7 @@ do  -- Blackboard:get
   if ammo <= 0 then print("reload!") else print("ammo=" .. ammo) end
 end
 
---@api-stub: Blackboard:has
+--@api-stub: LBlackboard:has
 -- Returns true when the key has a non-nil value.
 -- Distinguishes “never set” from “set to nil” when you need that semantics for AI conditions.
 do  -- Blackboard:has
@@ -677,7 +677,7 @@ do  -- Blackboard:has
   if bb:has("seen_player") then print("AI is alerted") end
 end
 
---@api-stub: Blackboard:clear
+--@api-stub: LBlackboard:clear
 -- Removes a fact from the blackboard.
 -- Use to reset transient AI state (target, last_seen_at) on level transitions.
 do  -- Blackboard:clear
@@ -687,7 +687,7 @@ do  -- Blackboard:clear
   print("target set=" .. tostring(bb:has("target")))
 end
 
---@api-stub: Blackboard:keys
+--@api-stub: LBlackboard:keys
 -- Returns all set fact keys as a table.
 -- Iterate with ipairs to dump the AI world state for debug overlays or save snapshots.
 do  -- Blackboard:keys
@@ -696,7 +696,7 @@ do  -- Blackboard:keys
   for _, k in ipairs(bb:keys()) do print(k .. "=" .. tostring(bb:get(k))) end
 end
 
---@api-stub: Blackboard:watch
+--@api-stub: LBlackboard:watch
 -- Subscribes to changes on a specific key (or "*" for all changes).
 -- Capture the returned id and pass to unwatch on teardown; pass “*” as the key to log every write.
 do  -- Blackboard:watch
@@ -706,7 +706,7 @@ do  -- Blackboard:watch
   bb:unwatch(id)
 end
 
---@api-stub: Blackboard:unwatch
+--@api-stub: LBlackboard:unwatch
 -- Removes a watcher subscription by id.
 -- Always call from the same scope that set up watch() so closures don’t survive a scene unload.
 do  -- Blackboard:unwatch
@@ -716,7 +716,7 @@ do  -- Blackboard:unwatch
   bb:unwatch(id)
 end
 
---@api-stub: Blackboard:getRevision
+--@api-stub: LBlackboard:getRevision
 -- Returns the monotonic revision counter (incremented on every write).
 -- Use to skip expensive recomputation — cache the rev seen and only recompute when it bumps.
 do  -- Blackboard:getRevision
@@ -726,7 +726,7 @@ do  -- Blackboard:getRevision
   if bb:getRevision() ~= last_rev then print("dirty") end
 end
 
---@api-stub: Blackboard:snapshot
+--@api-stub: LBlackboard:snapshot
 -- Returns all facts as a flat key→value table.
 -- Use for save files or to diff state across frames; only scalar values are emitted.
 do  -- Blackboard:snapshot
@@ -736,7 +736,7 @@ do  -- Blackboard:snapshot
   for k, v in pairs(snap) do print(k .. "=" .. tostring(v)) end
 end
 
---@api-stub: Blackboard:clearAll
+--@api-stub: LBlackboard:clearAll
 -- Clears all facts from the blackboard.
 -- Call between integration test cases or when starting a fresh game to reset the world fact store.
 do  -- Blackboard:clearAll
@@ -746,7 +746,7 @@ do  -- Blackboard:clearAll
   print("keys after clear=" .. #bb:keys())
 end
 
---@api-stub: Observer:set
+--@api-stub: LObserver:set
 -- Sets a property value and fires subscribed watchers.
 -- Lighter than Blackboard — accepts any Lua value; useful for HUD-bound reactive properties.
 do  -- Observer:set
@@ -756,7 +756,7 @@ do  -- Observer:set
   o:set("hp", 75)
 end
 
---@api-stub: Observer:get
+--@api-stub: LObserver:get
 -- Gets a property value, or nil if not set.
 -- Pair with set() for one-way data binding from game state to HUD widgets.
 do  -- Observer:get
@@ -766,7 +766,7 @@ do  -- Observer:get
   print("score now " .. s)
 end
 
---@api-stub: Observer:subscribe
+--@api-stub: LObserver:subscribe
 -- Subscribes to changes on a property key (or "*" for all).
 -- Pass once=true to receive a single notification then auto-unsubscribe — great for one-shot tutorial triggers.
 do  -- Observer:subscribe
@@ -776,7 +776,7 @@ do  -- Observer:subscribe
   o:unsubscribe(id)
 end
 
---@api-stub: Observer:unsubscribe
+--@api-stub: LObserver:unsubscribe
 -- Removes a subscription by id.
 -- Tear down all per-scene subscriptions in lurek.quit or scene_exit so callbacks don’t leak.
 do  -- Observer:unsubscribe
@@ -786,7 +786,7 @@ do  -- Observer:unsubscribe
   print("subs left=" .. o:getCount())
 end
 
---@api-stub: Observer:getCount
+--@api-stub: LObserver:getCount
 -- Returns the total number of active subscriptions.
 -- Show in a debug HUD to spot reactive subscription leaks after hot-reloading scripts.
 do  -- Observer:getCount
@@ -796,7 +796,7 @@ do  -- Observer:getCount
   print("active subs=" .. o:getCount())
 end
 
---@api-stub: Throttle:onFire
+--@api-stub: LThrottle:onFire
 -- Sets the callback invoked when the throttle fires.
 -- Calling onFire again replaces the previous callback; pass a no-op to disable without dropping the throttle.
 do  -- Throttle:onFire
@@ -805,7 +805,7 @@ do  -- Throttle:onFire
   function lurek.process(dt) t:update(dt) end
 end
 
---@api-stub: Throttle:update
+--@api-stub: LThrottle:update
 -- Advances the timer by dt seconds; fires the callback if the interval elapsed.
 -- Returns true on the frame the callback fires; call from lurek.process so timing follows the engine clock.
 do  -- Throttle:update
@@ -814,7 +814,7 @@ do  -- Throttle:update
   function lurek.process(dt) if t:update(dt) then print("just fired") end end
 end
 
---@api-stub: Throttle:reset
+--@api-stub: LThrottle:reset
 -- Resets the elapsed counter without firing.
 -- Use after a manual save or scene change so the next throttled save isn’t triggered too soon.
 do  -- Throttle:reset
@@ -825,7 +825,7 @@ do  -- Throttle:reset
   print("progress after reset=" .. t:getProgress())
 end
 
---@api-stub: Throttle:getProgress
+--@api-stub: LThrottle:getProgress
 -- Returns the normalised progress through the current interval [0, 1].
 -- Drive cooldown ring HUDs (1 - progress) so the player sees how soon the action becomes available.
 do  -- Throttle:getProgress
@@ -836,7 +836,7 @@ do  -- Throttle:getProgress
   print("cooldown filled " .. pct .. "%")
 end
 
---@api-stub: Throttle:getFireCount
+--@api-stub: LThrottle:getFireCount
 -- Returns the total number of times this throttle has fired.
 -- Use in tests and analytics to verify the throttle ran exactly N times across a scenario.
 do  -- Throttle:getFireCount
@@ -846,7 +846,7 @@ do  -- Throttle:getFireCount
   print("fires=" .. t:getFireCount())
 end
 
---@api-stub: Throttle:setEnabled
+--@api-stub: LThrottle:setEnabled
 -- Enables or disables the throttle.
 -- Disable while the player is on the menu so background timers don’t accumulate fires.
 do  -- Throttle:setEnabled
@@ -857,7 +857,7 @@ do  -- Throttle:setEnabled
   print("fires=" .. t:getFireCount())
 end
 
---@api-stub: Debounce:onFire
+--@api-stub: LDebounce:onFire
 -- Sets the callback invoked when the debounce fires.
 -- Replace the callback any time — the most recent registration wins on the next idle expiration.
 do  -- Debounce:onFire
@@ -867,7 +867,7 @@ do  -- Debounce:onFire
   function lurek.process(dt) d:update(dt) end
 end
 
---@api-stub: Debounce:trigger
+--@api-stub: LDebounce:trigger
 -- Records an input event, resetting the idle timer.
 -- Call on every keystroke / drag tick — the callback only fires once the stream has been idle for `wait` seconds.
 do  -- Debounce:trigger
@@ -878,7 +878,7 @@ do  -- Debounce:trigger
   print("pending=" .. tostring(d:isPending()))
 end
 
---@api-stub: Debounce:update
+--@api-stub: LDebounce:update
 -- Advances the idle timer by dt seconds; fires the callback if idle wait expired.
 -- Returns true on the frame the callback runs; mirror Throttle:update by calling from lurek.process.
 do  -- Debounce:update
@@ -888,7 +888,7 @@ do  -- Debounce:update
   function lurek.process(dt) if d:update(dt) then print("fired") end end
 end
 
---@api-stub: Debounce:cancel
+--@api-stub: LDebounce:cancel
 -- Cancels the pending trigger without firing.
 -- Call when the user explicitly aborts (e.g. closes the dialog) so the deferred action never runs.
 do  -- Debounce:cancel
@@ -899,7 +899,7 @@ do  -- Debounce:cancel
   print("pending after cancel=" .. tostring(d:isPending()))
 end
 
---@api-stub: Debounce:isPending
+--@api-stub: LDebounce:isPending
 -- Returns true when a trigger is pending.
 -- Use in HUD (“saving…” spinner) to indicate the debounced action is queued but not yet committed.
 do  -- Debounce:isPending
@@ -909,7 +909,7 @@ do  -- Debounce:isPending
   if d:isPending() then print("waiting for idle") end
 end
 
---@api-stub: Debounce:getFireCount
+--@api-stub: LDebounce:getFireCount
 -- Returns the total number of times this debounce has fired.
 -- Track in tests to confirm a noisy stream collapses into the expected single fire per quiet period.
 do  -- Debounce:getFireCount
@@ -920,7 +920,7 @@ do  -- Debounce:getFireCount
   print("fires=" .. d:getFireCount())
 end
 
---@api-stub: PriorityQueue:push
+--@api-stub: LPriorityQueue:push
 -- Inserts an item with a priority. Higher priorities are dequeued first.
 -- Pass an optional label to make queue dumps human-readable; ties keep insertion order (stable).
 do  -- PriorityQueue:push
@@ -931,7 +931,7 @@ do  -- PriorityQueue:push
   print("queued=" .. pq:len())
 end
 
---@api-stub: PriorityQueue:pop
+--@api-stub: LPriorityQueue:pop
 -- Removes and returns the highest-priority item, or nil if empty.
 -- Always nil-check; used in main loop tickers to drain ready jobs each frame.
 do  -- PriorityQueue:pop
@@ -941,7 +941,7 @@ do  -- PriorityQueue:pop
   if job then print("running " .. job) end
 end
 
---@api-stub: PriorityQueue:peek
+--@api-stub: LPriorityQueue:peek
 -- Returns the highest-priority item without removing it, or nil if empty.
 -- Use to glance at the next job (HUD: “next: rebuild lighting”) without consuming it.
 do  -- PriorityQueue:peek
@@ -951,7 +951,7 @@ do  -- PriorityQueue:peek
   if next_job then print("next: " .. next_job) end
 end
 
---@api-stub: PriorityQueue:len
+--@api-stub: LPriorityQueue:len
 -- Returns the number of items in the queue.
 -- Use for backpressure: if len exceeds a threshold, defer enqueuing more low-priority work.
 do  -- PriorityQueue:len
@@ -961,7 +961,7 @@ do  -- PriorityQueue:len
   print("size=" .. pq:len())
 end
 
---@api-stub: PriorityQueue:isEmpty
+--@api-stub: LPriorityQueue:isEmpty
 -- Returns true when the queue has no items.
 -- Use as the loop guard: `while not pq:isEmpty() do local job = pq:pop() ... end`.
 do  -- PriorityQueue:isEmpty
@@ -970,7 +970,7 @@ do  -- PriorityQueue:isEmpty
   while not pq:isEmpty() do print("processing " .. pq:pop()) end
 end
 
---@api-stub: PriorityQueue:clearAll
+--@api-stub: LPriorityQueue:clearAll
 -- Removes all items from the queue.
 -- Use on scene/level reset to drop pending jobs that no longer apply to the new context.
 do  -- PriorityQueue:clearAll
@@ -980,7 +980,7 @@ do  -- PriorityQueue:clearAll
   print("after clear len=" .. pq:len())
 end
 
---@api-stub: Ring:push
+--@api-stub: LRing:push
 -- Pushes a value (number or string) with an optional tag. Overwrites oldest on overflow.
 -- Tag entries by source (“frame”, “net”) so toArray dumps stay readable.
 do  -- Ring:push
@@ -989,7 +989,7 @@ do  -- Ring:push
   print("len=" .. r:len() .. " full=" .. tostring(r:isFull()))
 end
 
---@api-stub: Ring:latest
+--@api-stub: LRing:latest
 -- Returns the most recently pushed entry, or nil.
 -- Returns a table with id/tag/value/text fields; use for last-event HUDs (last damage, last error).
 do  -- Ring:latest
@@ -1000,7 +1000,7 @@ do  -- Ring:latest
   if last then print("last text=" .. last.text) end
 end
 
---@api-stub: Ring:toArray
+--@api-stub: LRing:toArray
 -- Returns all entries (oldest first) as an array of {id, tag, value?, text?} tables.
 -- Iterate with ipairs to render a scrolling history view (chat, damage log, FPS graph).
 do  -- Ring:toArray
@@ -1009,7 +1009,7 @@ do  -- Ring:toArray
   for _, e in ipairs(r:toArray()) do print(e.tag .. "=" .. e.value) end
 end
 
---@api-stub: Ring:sum
+--@api-stub: LRing:sum
 -- Returns the sum of all numeric values in the ring.
 -- Combine with len() to compute custom stats (median is not provided; use sum/len for mean).
 do  -- Ring:sum
@@ -1018,7 +1018,7 @@ do  -- Ring:sum
   print("total latency=" .. r:sum() .. "s")
 end
 
---@api-stub: Ring:average
+--@api-stub: LRing:average
 -- Returns the average of all numeric values, or 0 if empty.
 -- Cheaper than computing on the Lua side; perfect for rolling FPS or ms-per-frame readouts.
 do  -- Ring:average
@@ -1027,7 +1027,7 @@ do  -- Ring:average
   print("avg fps=" .. string.format("%.1f", r:average()))
 end
 
---@api-stub: Ring:len
+--@api-stub: LRing:len
 -- Returns the number of entries currently in the ring.
 -- Use to check how much history has accumulated before computing statistics.
 do  -- Ring:len
@@ -1036,7 +1036,7 @@ do  -- Ring:len
   if r:len() >= 3 then print("got enough samples") end
 end
 
---@api-stub: Ring:isFull
+--@api-stub: LRing:isFull
 -- Returns true when the ring is at capacity.
 -- Use to avoid recomputing rolling averages until the ring has wrapped at least once.
 do  -- Ring:isFull
@@ -1045,7 +1045,7 @@ do  -- Ring:isFull
   if r:isFull() then print("warm: avg=" .. r:average()) end
 end
 
---@api-stub: Ring:clear
+--@api-stub: LRing:clear
 -- Removes all entries from the ring.
 -- Call on level transition so the new scene’s rolling stats start clean.
 do  -- Ring:clear
@@ -1055,7 +1055,7 @@ do  -- Ring:clear
   print("len after clear=" .. r:len())
 end
 
---@api-stub: Funnel:onFlush
+--@api-stub: LFunnel:onFlush
 -- Sets a callback invoked when the funnel flushes. Receives a table of {tag, value} entries.
 -- Set this once at boot; the callback receives the full batch so handle bulk inserts (DB writes, network sends) here.
 do  -- Funnel:onFlush
@@ -1064,7 +1064,7 @@ do  -- Funnel:onFlush
   function lurek.process(dt) f:update(dt) end
 end
 
---@api-stub: Funnel:push
+--@api-stub: LFunnel:push
 -- Adds an event to the funnel. Immediately flushes if max_entries reached or window is 0.
 -- Pass a numeric value alongside the tag so onFlush sees per-event metrics, not just counts.
 do  -- Funnel:push
@@ -1074,7 +1074,7 @@ do  -- Funnel:push
   print("pending=" .. f:pendingCount())
 end
 
---@api-stub: Funnel:update
+--@api-stub: LFunnel:update
 -- Advances the window timer by dt seconds; flushes when window expires.
 -- Returns true on the frame the flush happens; call from lurek.process so timing tracks the engine clock.
 do  -- Funnel:update
@@ -1084,7 +1084,7 @@ do  -- Funnel:update
   function lurek.process(dt) if f:update(dt) then print("fired") end end
 end
 
---@api-stub: Funnel:flush
+--@api-stub: LFunnel:flush
 -- Manually flushes all pending entries, invoking the onFlush callback.
 -- Call on app quit or scene change so no buffered events get dropped without delivery.
 do  -- Funnel:flush
@@ -1094,7 +1094,7 @@ do  -- Funnel:flush
   f:flush()
 end
 
---@api-stub: Funnel:discard
+--@api-stub: LFunnel:discard
 -- Discards all buffered entries without flushing.
 -- Use when an error invalidates the buffered batch (e.g. session became invalid mid-aggregation).
 do  -- Funnel:discard
@@ -1105,7 +1105,7 @@ do  -- Funnel:discard
   print("pending after discard=" .. f:pendingCount())
 end
 
---@api-stub: Funnel:pendingCount
+--@api-stub: LFunnel:pendingCount
 -- Returns the number of buffered entries not yet flushed.
 -- Display in a debug overlay to monitor backpressure on analytics or networking pipelines.
 do  -- Funnel:pendingCount
@@ -1115,7 +1115,7 @@ do  -- Funnel:pendingCount
   print("buffered=" .. f:pendingCount())
 end
 
---@api-stub: Funnel:getFlushCount
+--@api-stub: LFunnel:getFlushCount
 -- Returns the total number of flushes performed.
 -- Useful in tests and metrics: assert that an N-second run produced exactly N/window flushes.
 do  -- Funnel:getFlushCount
@@ -1125,7 +1125,7 @@ do  -- Funnel:getFlushCount
   print("flushes=" .. f:getFlushCount())
 end
 
---@api-stub: RelationshipManager:defineType
+--@api-stub: LRelationshipManager:defineType
 -- Defines a relationship type with ordered levels.
 -- Pass levels in escalation order (“hostile” → “ally”) and an optional default applied to new pairs.
 do  -- RelationshipManager:defineType
@@ -1135,7 +1135,7 @@ do  -- RelationshipManager:defineType
   print("types=" .. #rm:typeNames())
 end
 
---@api-stub: RelationshipManager:removeType
+--@api-stub: LRelationshipManager:removeType
 -- Removes a relationship type definition.
 -- Use during hot-reload to drop a stale rule set before re-defining it from updated data.
 do  -- RelationshipManager:removeType
@@ -1145,7 +1145,7 @@ do  -- RelationshipManager:removeType
   print("types left=" .. #rm:typeNames())
 end
 
---@api-stub: RelationshipManager:typeNames
+--@api-stub: LRelationshipManager:typeNames
 -- Returns all defined relationship type names.
 -- Iterate to render a debug panel showing every diplomatic axis the game tracks.
 do  -- RelationshipManager:typeNames
@@ -1155,7 +1155,7 @@ do  -- RelationshipManager:typeNames
   for _, t in ipairs(rm:typeNames()) do print("type:" .. t) end
 end
 
---@api-stub: RelationshipManager:setValue
+--@api-stub: LRelationshipManager:setValue
 -- Sets the numeric relationship value between two entities.
 -- Pair entity ids are unordered: setValue(a,b,v) is the same edge as setValue(b,a,v).
 do  -- RelationshipManager:setValue
@@ -1165,7 +1165,7 @@ do  -- RelationshipManager:setValue
   print("pairs=" .. rm:pairCount())
 end
 
---@api-stub: RelationshipManager:getValue
+--@api-stub: LRelationshipManager:getValue
 -- Returns the numeric relationship value between two entities (default 0.0).
 -- Use as an input to AI utility scoring or shop price modifiers.
 do  -- RelationshipManager:getValue
@@ -1175,7 +1175,7 @@ do  -- RelationshipManager:getValue
   print("multiplier=" .. price_mult)
 end
 
---@api-stub: RelationshipManager:adjustValue
+--@api-stub: LRelationshipManager:adjustValue
 -- Adjusts the numeric relationship value by a delta.
 -- Drive from gameplay events: kill -> -50, gift -> +20; clamp on your side if you need bounds.
 do  -- RelationshipManager:adjustValue
@@ -1186,7 +1186,7 @@ do  -- RelationshipManager:adjustValue
   print("net=" .. rm:getValue(1, 2))
 end
 
---@api-stub: RelationshipManager:setLevel
+--@api-stub: LRelationshipManager:setLevel
 -- Sets a named level for a typed relationship between two entities.
 -- Returns false when the type or level isn’t in the definition; useful as a validation guard.
 do  -- RelationshipManager:setLevel
@@ -1196,7 +1196,7 @@ do  -- RelationshipManager:setLevel
   print("set ok=" .. tostring(ok))
 end
 
---@api-stub: RelationshipManager:getLevel
+--@api-stub: LRelationshipManager:getLevel
 -- Returns the named level for a typed relationship, or nil.
 -- Branch AI behaviour on the level string (“hostile” -> attack, “ally” -> defend).
 do  -- RelationshipManager:getLevel
@@ -1207,7 +1207,7 @@ do  -- RelationshipManager:getLevel
   if lvl == "ally" then print("hold fire") end
 end
 
---@api-stub: RelationshipManager:removePair
+--@api-stub: LRelationshipManager:removePair
 -- Removes all relationship data between two entities.
 -- Call when an entity dies or leaves the simulation so stale pairs don’t accumulate.
 do  -- RelationshipManager:removePair
@@ -1217,7 +1217,7 @@ do  -- RelationshipManager:removePair
   print("pairs=" .. rm:pairCount())
 end
 
---@api-stub: RelationshipManager:pairCount
+--@api-stub: LRelationshipManager:pairCount
 -- Returns the total number of stored relationship pairs.
 -- Watch in a debug HUD; large worlds with O(n²) growth become a memory red flag.
 do  -- RelationshipManager:pairCount
@@ -1227,7 +1227,7 @@ do  -- RelationshipManager:pairCount
   print("pairs=" .. rm:pairCount())
 end
 
---@api-stub: Mediator:on
+--@api-stub: LMediator:on
 -- Registers a handler callback on a channel; returns handler ID.
 -- Capture the id and pass to off() for targeted unregister; one channel can have many handlers.
 do  -- Mediator:on
@@ -1237,7 +1237,7 @@ do  -- Mediator:on
   m:off("net", id)
 end
 
---@api-stub: Mediator:off
+--@api-stub: LMediator:off
 -- Unregisters a handler by ID.
 -- Both the channel name and the id are required; calling off on a missing id is a silent no-op.
 do  -- Mediator:off
@@ -1247,7 +1247,7 @@ do  -- Mediator:off
   print("handlers=" .. m:handlerCount("ui"))
 end
 
---@api-stub: Mediator:send
+--@api-stub: LMediator:send
 -- Dispatches a message to all handlers on a channel.
 -- Extra args after the channel name are forwarded to every handler verbatim, just like EventBus.
 do  -- Mediator:send
@@ -1256,7 +1256,7 @@ do  -- Mediator:send
   m:send("damage", 12, "spike_trap")
 end
 
---@api-stub: Mediator:broadcast
+--@api-stub: LMediator:broadcast
 -- Dispatches a message to all handlers across all channels.
 -- Use sparingly — ideal for global signals like “pause” or “save” that every system listens for.
 do  -- Mediator:broadcast
@@ -1266,7 +1266,7 @@ do  -- Mediator:broadcast
   m:broadcast("pause")
 end
 
---@api-stub: Mediator:handlerCount
+--@api-stub: LMediator:handlerCount
 -- Returns the number of handlers on a channel.
 -- Useful in tests to assert subscription bookkeeping; also reveals listener leaks after hot-reload.
 do  -- Mediator:handlerCount
@@ -1276,7 +1276,7 @@ do  -- Mediator:handlerCount
   print("save handlers=" .. m:handlerCount("save"))
 end
 
---@api-stub: Mediator:channels
+--@api-stub: LMediator:channels
 -- Returns all registered channel names.
 -- Iterate to render a debug overlay listing every active topic on the mediator.
 do  -- Mediator:channels
@@ -1285,7 +1285,7 @@ do  -- Mediator:channels
   for _, c in ipairs(m:channels()) do print("ch:" .. c) end
 end
 
---@api-stub: Mediator:removeChannel
+--@api-stub: LMediator:removeChannel
 -- Removes a channel and all its handlers.
 -- Use when a feature module unloads; cheaper than walking handlers and calling off() one by one.
 do  -- Mediator:removeChannel
@@ -1295,7 +1295,7 @@ do  -- Mediator:removeChannel
   print("temp handlers=" .. m:handlerCount("temp"))
 end
 
---@api-stub: Mediator:clear
+--@api-stub: LMediator:clear
 -- Removes all channels and handlers.
 -- Call on full app teardown so no closures captured by handlers survive into the next session.
 do  -- Mediator:clear
@@ -1305,7 +1305,7 @@ do  -- Mediator:clear
   print("channels left=" .. #m:channels())
 end
 
---@api-stub: Strategy:register
+--@api-stub: LStrategy:register
 -- Registers a named strategy function.
 -- Wire all algorithms at boot; later set() picks the active one by name without re-registration.
 do  -- Strategy:register
@@ -1315,7 +1315,7 @@ do  -- Strategy:register
   print("strategies=" .. #s:names())
 end
 
---@api-stub: Strategy:set
+--@api-stub: LStrategy:set
 -- Sets the active strategy by name. Returns false if not registered.
 -- Always check the boolean return when the name comes from config or save data.
 do  -- Strategy:set
@@ -1325,7 +1325,7 @@ do  -- Strategy:set
   if not ok then print("strategy missing!") end
 end
 
---@api-stub: Strategy:execute
+--@api-stub: LStrategy:execute
 -- Calls the currently active strategy function with the given arguments.
 -- Forwards every arg to the active strategy; returns whatever the strategy returns (including multiple values).
 do  -- Strategy:execute
@@ -1336,7 +1336,7 @@ do  -- Strategy:execute
   print("dmg=" .. dmg)
 end
 
---@api-stub: Strategy:getCurrent
+--@api-stub: LStrategy:getCurrent
 -- Returns the name of the active strategy, or nil.
 -- Display in a debug HUD or settings dropdown so the player sees the current AI/damage formula.
 do  -- Strategy:getCurrent
@@ -1347,7 +1347,7 @@ do  -- Strategy:getCurrent
   if name then print("active strategy: " .. name) end
 end
 
---@api-stub: Strategy:has
+--@api-stub: LStrategy:has
 -- Returns true if a strategy with this name is registered.
 -- Guard config-driven set() calls so a typo in TOML doesn’t crash on the first execute().
 do  -- Strategy:has
@@ -1356,7 +1356,7 @@ do  -- Strategy:has
   if s:has("legacy") then s:set("legacy") end
 end
 
---@api-stub: Strategy:remove
+--@api-stub: LStrategy:remove
 -- Removes a strategy by name.
 -- Use when retiring an old algorithm during hot-reload; returns true if the strategy was actually removed.
 do  -- Strategy:remove
@@ -1366,7 +1366,7 @@ do  -- Strategy:remove
   print("removed=" .. tostring(removed))
 end
 
---@api-stub: Strategy:names
+--@api-stub: LStrategy:names
 -- Returns all registered strategy names.
 -- Render in option menus so the player can pick the active variant by name at runtime.
 do  -- Strategy:names
@@ -1375,7 +1375,7 @@ do  -- Strategy:names
   for _, n in ipairs(s:names()) do print("strat:" .. n) end
 end
 
---@api-stub: Strategy:clear
+--@api-stub: LStrategy:clear
 -- Removes all strategies and clears the active selection.
 -- Use in tests to reset the registry between cases without rebuilding the Strategy object.
 do  -- Strategy:clear
@@ -1385,7 +1385,7 @@ do  -- Strategy:clear
   print("strategies=" .. #s:names())
 end
 
---@api-stub: Stack:push
+--@api-stub: LStack:push
 -- Pushes a value onto the stack. Returns false if capacity is full.
 -- Always check the boolean return when the stack has a capacity cap; full stacks reject silently otherwise.
 do  -- Stack:push
@@ -1396,7 +1396,7 @@ do  -- Stack:push
   print("ok=" .. tostring(ok) .. " depth=" .. s:len())
 end
 
---@api-stub: Stack:pop
+--@api-stub: LStack:pop
 -- Removes and returns the top value, or nil if empty.
 -- Drives back-button navigation: pop the current scene to return to the previous one.
 do  -- Stack:pop
@@ -1406,7 +1406,7 @@ do  -- Stack:pop
   print("popped " .. top .. ", new top=" .. (s:peek() or "<empty>"))
 end
 
---@api-stub: Stack:peek
+--@api-stub: LStack:peek
 -- Returns the top value without removing it, or nil if empty.
 -- Use to inspect the active scene/screen without disturbing the navigation history.
 do  -- Stack:peek
@@ -1416,7 +1416,7 @@ do  -- Stack:peek
   if top == "dialog" then print("dialog is showing") end
 end
 
---@api-stub: Stack:len
+--@api-stub: LStack:len
 -- Returns the number of items on the stack.
 -- Show as a HUD breadcrumb depth (“back x3”) so users know how deep their navigation goes.
 do  -- Stack:len
@@ -1425,7 +1425,7 @@ do  -- Stack:len
   print("depth=" .. s:len())
 end
 
---@api-stub: Stack:isEmpty
+--@api-stub: LStack:isEmpty
 -- Returns true if the stack is empty.
 -- Use as a back-action guard: if isEmpty(), exit to the title instead of popping.
 do  -- Stack:isEmpty
@@ -1435,7 +1435,7 @@ do  -- Stack:isEmpty
   if s:isEmpty() then print("at root — quit to menu") end
 end
 
---@api-stub: Stack:isFull
+--@api-stub: LStack:isFull
 -- Returns true if the stack is at its capacity limit.
 -- Useful when sizing modal dialog stacks; show “too many dialogs” before pushing.
 do  -- Stack:isFull
@@ -1444,7 +1444,7 @@ do  -- Stack:isFull
   if s:isFull() then print("dialog stack saturated") end
 end
 
---@api-stub: Stack:clear
+--@api-stub: LStack:clear
 -- Removes all values from the stack.
 -- Call on hard scene reset so leftover navigation history doesn’t survive.
 do  -- Stack:clear
@@ -1454,7 +1454,7 @@ do  -- Stack:clear
   print("len after clear=" .. s:len())
 end
 
---@api-stub: Stack:toArray
+--@api-stub: LStack:toArray
 -- Returns all items as a Lua table (bottom to top).
 -- Iterate with ipairs to render a breadcrumb trail (Main > Options > Audio).
 do  -- Stack:toArray
@@ -1463,7 +1463,7 @@ do  -- Stack:toArray
   for i, v in ipairs(s:toArray()) do print(i .. ": " .. v) end
 end
 
---@api-stub: Queue:enqueue
+--@api-stub: LQueue:enqueue
 -- Adds a value to the back of the queue. Returns false if capacity is full.
 -- Capacity 0 means unbounded; with a cap, callers should branch on the boolean to drop or retry.
 do  -- Queue:enqueue
@@ -1473,7 +1473,7 @@ do  -- Queue:enqueue
   print("ok=" .. tostring(ok) .. " size=" .. q:len())
 end
 
---@api-stub: Queue:dequeue
+--@api-stub: LQueue:dequeue
 -- Removes and returns the front value, or nil if empty.
 -- Drain in batches inside lurek.process so back-pressured systems don’t starve the frame.
 do  -- Queue:dequeue
@@ -1483,7 +1483,7 @@ do  -- Queue:dequeue
   if m then print("processed " .. m) end
 end
 
---@api-stub: Queue:front
+--@api-stub: LQueue:front
 -- Returns the front value without removing it, or nil if empty.
 -- Use to peek at the next packet for prioritisation logic without consuming it.
 do  -- Queue:front
@@ -1493,7 +1493,7 @@ do  -- Queue:front
   if f then print("next is " .. f) end
 end
 
---@api-stub: Queue:len
+--@api-stub: LQueue:len
 -- Returns the number of items in the queue.
 -- Show in a network or chat HUD to indicate how many messages are still queued for processing.
 do  -- Queue:len
@@ -1502,7 +1502,7 @@ do  -- Queue:len
   print("queue size=" .. q:len())
 end
 
---@api-stub: Queue:isEmpty
+--@api-stub: LQueue:isEmpty
 -- Returns true if the queue is empty.
 -- Use as the drain loop guard: while not q:isEmpty() do handle(q:dequeue()) end.
 do  -- Queue:isEmpty
@@ -1511,7 +1511,7 @@ do  -- Queue:isEmpty
   while not q:isEmpty() do print("got " .. q:dequeue()) end
 end
 
---@api-stub: Queue:isFull
+--@api-stub: LQueue:isFull
 -- Returns true if the queue is at its capacity limit.
 -- Use to apply backpressure: drop or coalesce inputs once the queue is saturated.
 do  -- Queue:isFull
@@ -1520,7 +1520,7 @@ do  -- Queue:isFull
   if q:isFull() then print("dropping new inputs") end
 end
 
---@api-stub: Queue:clear
+--@api-stub: LQueue:clear
 -- Removes all values from the queue.
 -- Call on disconnect / scene change so stale messages from the previous session don’t process.
 do  -- Queue:clear
@@ -1530,7 +1530,7 @@ do  -- Queue:clear
   print("size after clear=" .. q:len())
 end
 
---@api-stub: Queue:toArray
+--@api-stub: LQueue:toArray
 -- Returns all items as a Lua table (front to back).
 -- Iterate with ipairs to render the queue contents in a debug HUD without consuming them.
 do  -- Queue:toArray
@@ -1625,7 +1625,7 @@ do  -- List:toArray
   for i, v in ipairs(l:toArray()) do print(i .. "=" .. v) end
 end
 
---@api-stub: Set:add
+--@api-stub: LSet:add
 -- Adds a string key to the set. Returns true if it was not already present.
 -- Use the boolean return to detect first-time pickups (achievements, tutorial flags).
 do  -- Set:add
@@ -1635,7 +1635,7 @@ do  -- Set:add
   s:add("collected_gem")  -- returns false on second add
 end
 
---@api-stub: Set:remove
+--@api-stub: LSet:remove
 -- Removes a key from the set. Returns true if it was present.
 -- Use the return value to confirm the removal actually happened (prevents double-revoke bugs).
 do  -- Set:remove
@@ -1645,7 +1645,7 @@ do  -- Set:remove
   print("removed=" .. tostring(existed) .. " size=" .. s:len())
 end
 
---@api-stub: Set:has
+--@api-stub: LSet:has
 -- Returns true if the key is in the set.
 -- Cheaper than List:contains for hot membership checks (frame-by-frame ability checks).
 do  -- Set:has
@@ -1654,7 +1654,7 @@ do  -- Set:has
   if s:has("flying") then print("ignore gravity") end
 end
 
---@api-stub: Set:len
+--@api-stub: LSet:len
 -- Returns the number of distinct keys in the set.
 -- Show in stats screens (“47/100 monsters defeated”) by counting unique kill keys.
 do  -- Set:len
@@ -1663,7 +1663,7 @@ do  -- Set:len
   print("unique enemies killed=" .. s:len())
 end
 
---@api-stub: Set:isEmpty
+--@api-stub: LSet:isEmpty
 -- Returns true if the set is empty.
 -- Cleaner than `len() == 0` when guarding feature unlocks (“door opens when keys set is non-empty”).
 do  -- Set:isEmpty
@@ -1673,7 +1673,7 @@ do  -- Set:isEmpty
   print("empty=" .. tostring(s:isEmpty()))
 end
 
---@api-stub: Set:toArray
+--@api-stub: LSet:toArray
 -- Returns all keys as a Lua table (unordered).
 -- Iteration order is undefined — sort the resulting array if you need a deterministic display.
 do  -- Set:toArray
@@ -1682,7 +1682,7 @@ do  -- Set:toArray
   for _, k in ipairs(s:toArray()) do print("color:" .. k) end
 end
 
---@api-stub: Set:clear
+--@api-stub: LSet:clear
 -- Removes all keys from the set.
 -- Use on level transition to reset transient flags without rebuilding the Set.
 do  -- Set:clear
@@ -1692,7 +1692,7 @@ do  -- Set:clear
   print("size=" .. s:len())
 end
 
---@api-stub: Set:union
+--@api-stub: LSet:union
 -- Returns the union of this set and another as a new Set.
 -- Combine “inventory” + “quest items” into one membership check without mutating either source.
 do  -- Set:union
@@ -1702,7 +1702,7 @@ do  -- Set:union
   print("union size=" .. both:len())
 end
 
---@api-stub: Set:intersection
+--@api-stub: LSet:intersection
 -- Returns the intersection of this set and another as a new Set.
 -- Use to find common items between two collections (player items vs quest required items).
 do  -- Set:intersection
@@ -1720,344 +1720,6 @@ end
 -- The final committed file must contain ZERO --@api-stub: lines.
 -- =============================================================================
 
--- -----------------------------------------------------------------------------
--- LBlackboard methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LBlackboard:set -----------------------------------------------
---@api-stub: LBlackboard:set
--- Sets a fact on the blackboard. Accepts boolean, number, or string values.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBlackboard_stub:set("player_score", 42)
--- (replace lBlackboard_stub with your real LBlackboard instance above)
-
--- ---- Stub: LBlackboard:get -----------------------------------------------
---@api-stub: LBlackboard:get
--- Gets a fact from the blackboard. Returns nil if not set.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBlackboard_stub:get("player_score")  -- -> boolean|number|string|nil
--- (replace lBlackboard_stub with your real LBlackboard instance above)
-
--- ---- Stub: LBlackboard:has -----------------------------------------------
---@api-stub: LBlackboard:has
--- Returns true when the key has a non-nil value.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBlackboard_stub:has("player_score")  -- -> boolean
--- (replace lBlackboard_stub with your real LBlackboard instance above)
-
--- ---- Stub: LBlackboard:clear ---------------------------------------------
---@api-stub: LBlackboard:clear
--- Removes a fact from the blackboard.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBlackboard_stub:clear("player_score")
--- (replace lBlackboard_stub with your real LBlackboard instance above)
-
--- ---- Stub: LBlackboard:keys ----------------------------------------------
---@api-stub: LBlackboard:keys
--- Returns all set fact keys as a table.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBlackboard_stub:keys()  -- -> table
--- (replace lBlackboard_stub with your real LBlackboard instance above)
-
--- ---- Stub: LBlackboard:watch ---------------------------------------------
---@api-stub: LBlackboard:watch
--- Subscribes to changes on a specific key (or "*" for all changes).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBlackboard_stub:watch("player_score", function() end)  -- -> integer
--- (replace lBlackboard_stub with your real LBlackboard instance above)
-
--- ---- Stub: LBlackboard:unwatch -------------------------------------------
---@api-stub: LBlackboard:unwatch
--- Removes a watcher subscription by id.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBlackboard_stub:unwatch(1)
--- (replace lBlackboard_stub with your real LBlackboard instance above)
-
--- ---- Stub: LBlackboard:getRevision ---------------------------------------
---@api-stub: LBlackboard:getRevision
--- Returns the monotonic revision counter (incremented on every write).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBlackboard_stub:getRevision()  -- -> integer
--- (replace lBlackboard_stub with your real LBlackboard instance above)
-
--- ---- Stub: LBlackboard:snapshot ------------------------------------------
---@api-stub: LBlackboard:snapshot
--- Returns all facts as a flat keyâ†’value table.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBlackboard_stub:snapshot()  -- -> table
--- (replace lBlackboard_stub with your real LBlackboard instance above)
-
--- ---- Stub: LBlackboard:clearAll ------------------------------------------
---@api-stub: LBlackboard:clearAll
--- Clears all facts from the blackboard.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBlackboard_stub:clearAll()
--- (replace lBlackboard_stub with your real LBlackboard instance above)
-
--- -----------------------------------------------------------------------------
--- LCommandStack methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LCommandStack:execute -----------------------------------------
---@api-stub: LCommandStack:execute
--- Executes a named command and records it in undo/redo history.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lCommandStack_stub:execute("hero", exec_fn, [undo_fn])
--- (replace lCommandStack_stub with your real LCommandStack instance above)
-
--- ---- Stub: LCommandStack:undo --------------------------------------------
---@api-stub: LCommandStack:undo
--- Undoes the most recent command. Returns true if successful.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lCommandStack_stub:undo()  -- -> boolean
--- (replace lCommandStack_stub with your real LCommandStack instance above)
-
--- ---- Stub: LCommandStack:redo --------------------------------------------
---@api-stub: LCommandStack:redo
--- Re-executes the next undone command. Returns true if successful.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lCommandStack_stub:redo()  -- -> boolean
--- (replace lCommandStack_stub with your real LCommandStack instance above)
-
--- ---- Stub: LCommandStack:canUndo -----------------------------------------
---@api-stub: LCommandStack:canUndo
--- Returns true if the most recent command can be undone.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lCommandStack_stub:canUndo()  -- -> boolean
--- (replace lCommandStack_stub with your real LCommandStack instance above)
-
--- ---- Stub: LCommandStack:canRedo -----------------------------------------
---@api-stub: LCommandStack:canRedo
--- Returns true if there is a command available to redo.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lCommandStack_stub:canRedo()  -- -> boolean
--- (replace lCommandStack_stub with your real LCommandStack instance above)
-
--- ---- Stub: LCommandStack:getHistorySize ----------------------------------
---@api-stub: LCommandStack:getHistorySize
--- Returns the total number of recorded commands (undo + redo).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lCommandStack_stub:getHistorySize()  -- -> integer
--- (replace lCommandStack_stub with your real LCommandStack instance above)
-
--- ---- Stub: LCommandStack:getCurrentName ----------------------------------
---@api-stub: LCommandStack:getCurrentName
--- Returns the name of the most recently executed command, or nil.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lCommandStack_stub:getCurrentName()  -- -> string?
--- (replace lCommandStack_stub with your real LCommandStack instance above)
-
--- ---- Stub: LCommandStack:clearAll ----------------------------------------
---@api-stub: LCommandStack:clearAll
--- Clears all command history, releasing Lua registry values.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lCommandStack_stub:clearAll()
--- (replace lCommandStack_stub with your real LCommandStack instance above)
-
--- -----------------------------------------------------------------------------
--- LDebounce methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LDebounce:onFire ----------------------------------------------
---@api-stub: LDebounce:onFire
--- Sets the callback invoked when the debounce fires.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDebounce_stub:onFire(f)
--- (replace lDebounce_stub with your real LDebounce instance above)
-
--- ---- Stub: LDebounce:trigger ---------------------------------------------
---@api-stub: LDebounce:trigger
--- Records an input event, resetting the idle timer.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDebounce_stub:trigger()
--- (replace lDebounce_stub with your real LDebounce instance above)
-
--- ---- Stub: LDebounce:update ----------------------------------------------
---@api-stub: LDebounce:update
--- Advances the idle timer by dt seconds; fires the callback if idle wait expired.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDebounce_stub:update(0.016)  -- -> boolean
--- (replace lDebounce_stub with your real LDebounce instance above)
-
--- ---- Stub: LDebounce:cancel ----------------------------------------------
---@api-stub: LDebounce:cancel
--- Cancels the pending trigger without firing.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDebounce_stub:cancel()
--- (replace lDebounce_stub with your real LDebounce instance above)
-
--- ---- Stub: LDebounce:isPending -------------------------------------------
---@api-stub: LDebounce:isPending
--- Returns true when a trigger is pending.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDebounce_stub:isPending()  -- -> boolean
--- (replace lDebounce_stub with your real LDebounce instance above)
-
--- ---- Stub: LDebounce:getFireCount ----------------------------------------
---@api-stub: LDebounce:getFireCount
--- Returns the total number of times this debounce has fired.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lDebounce_stub:getFireCount()  -- -> integer
--- (replace lDebounce_stub with your real LDebounce instance above)
-
--- -----------------------------------------------------------------------------
--- LEventBus methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LEventBus:on --------------------------------------------------
---@api-stub: LEventBus:on
--- Registers a listener callback for an event.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lEventBus_stub:on(event, function() end, [priority])  -- -> integer
--- (replace lEventBus_stub with your real LEventBus instance above)
-
--- ---- Stub: LEventBus:off -------------------------------------------------
---@api-stub: LEventBus:off
--- Removes a previously registered event listener by subscription ID.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lEventBus_stub:off(1)
--- (replace lEventBus_stub with your real LEventBus instance above)
-
--- ---- Stub: LEventBus:emit ------------------------------------------------
---@api-stub: LEventBus:emit
--- Dispatches an event, calling all registered listeners in priority order.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lEventBus_stub:emit(...)
--- (replace lEventBus_stub with your real LEventBus instance above)
-
--- ---- Stub: LEventBus:clear -----------------------------------------------
---@api-stub: LEventBus:clear
--- Removes all listeners for a specific event.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lEventBus_stub:clear(event)
--- (replace lEventBus_stub with your real LEventBus instance above)
-
--- ---- Stub: LEventBus:clearAll --------------------------------------------
---@api-stub: LEventBus:clearAll
--- Removes all listeners on this EventBus.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lEventBus_stub:clearAll()
--- (replace lEventBus_stub with your real LEventBus instance above)
-
--- ---- Stub: LEventBus:getListenerCount ------------------------------------
---@api-stub: LEventBus:getListenerCount
--- Returns the number of listeners registered for an event.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lEventBus_stub:getListenerCount(event)  -- -> integer
--- (replace lEventBus_stub with your real LEventBus instance above)
-
--- ---- Stub: LEventBus:getEvents -------------------------------------------
---@api-stub: LEventBus:getEvents
--- Returns all event names that have at least one listener.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lEventBus_stub:getEvents()  -- -> table
--- (replace lEventBus_stub with your real LEventBus instance above)
-
--- -----------------------------------------------------------------------------
--- LFactory methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LFactory:register ---------------------------------------------
---@api-stub: LFactory:register
--- Registers a named type constructor function.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lFactory_stub:register(type_name, ctor)
--- (replace lFactory_stub with your real LFactory instance above)
-
--- ---- Stub: LFactory:create -----------------------------------------------
---@api-stub: LFactory:create
--- Creates an instance of the named type by invoking its constructor.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lFactory_stub:create(...)  -- -> table|userdata
--- (replace lFactory_stub with your real LFactory instance above)
-
--- ---- Stub: LFactory:has --------------------------------------------------
---@api-stub: LFactory:has
--- Returns true if the named type (or alias) is registered.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lFactory_stub:has(type_name)  -- -> boolean
--- (replace lFactory_stub with your real LFactory instance above)
-
--- ---- Stub: LFactory:alias ------------------------------------------------
---@api-stub: LFactory:alias
--- Registers an alias pointing to an existing canonical type name.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lFactory_stub:alias(alias, canonical)
--- (replace lFactory_stub with your real LFactory instance above)
-
--- ---- Stub: LFactory:getTypes ---------------------------------------------
---@api-stub: LFactory:getTypes
--- Returns a table of all registered type names.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lFactory_stub:getTypes()  -- -> table
--- (replace lFactory_stub with your real LFactory instance above)
-
--- ---- Stub: LFactory:remove -----------------------------------------------
---@api-stub: LFactory:remove
--- Unregisters a type constructor (and any aliases pointing to it).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lFactory_stub:remove(type_name)
--- (replace lFactory_stub with your real LFactory instance above)
-
--- ---- Stub: LFactory:clearAll ---------------------------------------------
---@api-stub: LFactory:clearAll
--- Removes all registered type constructors and aliases.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lFactory_stub:clearAll()
--- (replace lFactory_stub with your real LFactory instance above)
-
--- -----------------------------------------------------------------------------
--- LFunnel methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LFunnel:onFlush -----------------------------------------------
---@api-stub: LFunnel:onFlush
--- Sets a callback invoked when the funnel flushes. Receives a table of {tag, value} entries.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lFunnel_stub:onFlush(f)
--- (replace lFunnel_stub with your real LFunnel instance above)
-
--- ---- Stub: LFunnel:push --------------------------------------------------
---@api-stub: LFunnel:push
--- Adds an event to the funnel. Immediately flushes if max_entries reached or window is 0.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lFunnel_stub:push("enemy", [value])
--- (replace lFunnel_stub with your real LFunnel instance above)
-
--- ---- Stub: LFunnel:update ------------------------------------------------
---@api-stub: LFunnel:update
--- Advances the window timer by dt seconds; flushes when window expires.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lFunnel_stub:update(0.016)  -- -> boolean
--- (replace lFunnel_stub with your real LFunnel instance above)
-
--- ---- Stub: LFunnel:flush -------------------------------------------------
---@api-stub: LFunnel:flush
--- Manually flushes all pending entries, invoking the onFlush callback.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lFunnel_stub:flush()
--- (replace lFunnel_stub with your real LFunnel instance above)
-
--- ---- Stub: LFunnel:discard -----------------------------------------------
---@api-stub: LFunnel:discard
--- Discards all buffered entries without flushing.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lFunnel_stub:discard()
--- (replace lFunnel_stub with your real LFunnel instance above)
-
--- ---- Stub: LFunnel:pendingCount ------------------------------------------
---@api-stub: LFunnel:pendingCount
--- Returns the number of buffered entries not yet flushed.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lFunnel_stub:pendingCount()  -- -> integer
--- (replace lFunnel_stub with your real LFunnel instance above)
-
--- ---- Stub: LFunnel:getFlushCount -----------------------------------------
---@api-stub: LFunnel:getFlushCount
--- Returns the total number of flushes performed.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lFunnel_stub:getFlushCount()  -- -> integer
--- (replace lFunnel_stub with your real LFunnel instance above)
 
 -- -----------------------------------------------------------------------------
 -- LList methods
@@ -2126,726 +1788,4 @@ end
 -- lList_stub:toArray()  -- -> table
 -- (replace lList_stub with your real LList instance above)
 
--- -----------------------------------------------------------------------------
--- LMediator methods
--- -----------------------------------------------------------------------------
 
--- ---- Stub: LMediator:on --------------------------------------------------
---@api-stub: LMediator:on
--- Registers a handler callback on a channel; returns handler ID.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lMediator_stub:on(channel, function() end)  -- -> integer
--- (replace lMediator_stub with your real LMediator instance above)
-
--- ---- Stub: LMediator:off -------------------------------------------------
---@api-stub: LMediator:off
--- Unregisters a handler by ID.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lMediator_stub:off(channel, 1)
--- (replace lMediator_stub with your real LMediator instance above)
-
--- ---- Stub: LMediator:send ------------------------------------------------
---@api-stub: LMediator:send
--- Dispatches a message to all handlers on a channel.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lMediator_stub:send(...)
--- (replace lMediator_stub with your real LMediator instance above)
-
--- ---- Stub: LMediator:broadcast -------------------------------------------
---@api-stub: LMediator:broadcast
--- Dispatches a message to all handlers across all channels.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lMediator_stub:broadcast(...)
--- (replace lMediator_stub with your real LMediator instance above)
-
--- ---- Stub: LMediator:handlerCount ----------------------------------------
---@api-stub: LMediator:handlerCount
--- Returns the number of handlers on a channel.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lMediator_stub:handlerCount(channel)  -- -> integer
--- (replace lMediator_stub with your real LMediator instance above)
-
--- ---- Stub: LMediator:channels --------------------------------------------
---@api-stub: LMediator:channels
--- Returns all registered channel names.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lMediator_stub:channels()  -- -> table
--- (replace lMediator_stub with your real LMediator instance above)
-
--- ---- Stub: LMediator:removeChannel ---------------------------------------
---@api-stub: LMediator:removeChannel
--- Removes a channel and all its handlers.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lMediator_stub:removeChannel(channel)
--- (replace lMediator_stub with your real LMediator instance above)
-
--- ---- Stub: LMediator:clear -----------------------------------------------
---@api-stub: LMediator:clear
--- Removes all channels and handlers.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lMediator_stub:clear()
--- (replace lMediator_stub with your real LMediator instance above)
-
--- -----------------------------------------------------------------------------
--- LObjectPool methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LObjectPool:add -----------------------------------------------
---@api-stub: LObjectPool:add
--- Inserts a pre-built object into the available pool.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lObjectPool_stub:add(42)
--- (replace lObjectPool_stub with your real LObjectPool instance above)
-
--- ---- Stub: LObjectPool:acquire -------------------------------------------
---@api-stub: LObjectPool:acquire
--- Acquires an available object from the pool; returns nil if empty.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lObjectPool_stub:acquire()  -- -> string|number|boolean|table|nil
--- (replace lObjectPool_stub with your real LObjectPool instance above)
-
--- ---- Stub: LObjectPool:release -------------------------------------------
---@api-stub: LObjectPool:release
--- Returns an object to the available pool.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lObjectPool_stub:release(42)
--- (replace lObjectPool_stub with your real LObjectPool instance above)
-
--- ---- Stub: LObjectPool:getActiveCount ------------------------------------
---@api-stub: LObjectPool:getActiveCount
--- Returns the number of currently active (acquired) objects.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lObjectPool_stub:getActiveCount()  -- -> integer
--- (replace lObjectPool_stub with your real LObjectPool instance above)
-
--- ---- Stub: LObjectPool:getAvailableCount ---------------------------------
---@api-stub: LObjectPool:getAvailableCount
--- Returns the number of available (idle) objects in the pool.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lObjectPool_stub:getAvailableCount()  -- -> integer
--- (replace lObjectPool_stub with your real LObjectPool instance above)
-
--- ---- Stub: LObjectPool:getTotalCount -------------------------------------
---@api-stub: LObjectPool:getTotalCount
--- Returns the total number of tracked objects (active + available).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lObjectPool_stub:getTotalCount()  -- -> integer
--- (replace lObjectPool_stub with your real LObjectPool instance above)
-
--- ---- Stub: LObjectPool:clearAll ------------------------------------------
---@api-stub: LObjectPool:clearAll
--- Clears all objects from the pool, releasing Lua registry values.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lObjectPool_stub:clearAll()
--- (replace lObjectPool_stub with your real LObjectPool instance above)
-
--- -----------------------------------------------------------------------------
--- LObserver methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LObserver:set -------------------------------------------------
---@api-stub: LObserver:set
--- Sets a property value and fires subscribed watchers.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lObserver_stub:set("player_score", new_val)
--- (replace lObserver_stub with your real LObserver instance above)
-
--- ---- Stub: LObserver:get -------------------------------------------------
---@api-stub: LObserver:get
--- Gets a property value, or nil if not set.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lObserver_stub:get("player_score")  -- -> string|number|boolean|table|nil
--- (replace lObserver_stub with your real LObserver instance above)
-
--- ---- Stub: LObserver:subscribe -------------------------------------------
---@api-stub: LObserver:subscribe
--- Subscribes to changes on a property key (or "*" for all).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lObserver_stub:subscribe("player_score", function() end, [once])  -- -> integer
--- (replace lObserver_stub with your real LObserver instance above)
-
--- ---- Stub: LObserver:unsubscribe -----------------------------------------
---@api-stub: LObserver:unsubscribe
--- Removes a subscription by id.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lObserver_stub:unsubscribe(1)
--- (replace lObserver_stub with your real LObserver instance above)
-
--- ---- Stub: LObserver:getCount --------------------------------------------
---@api-stub: LObserver:getCount
--- Returns the total number of active subscriptions.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lObserver_stub:getCount()  -- -> integer
--- (replace lObserver_stub with your real LObserver instance above)
-
--- -----------------------------------------------------------------------------
--- LPriorityQueue methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LPriorityQueue:push -------------------------------------------
---@api-stub: LPriorityQueue:push
--- Inserts an item with a priority. Higher priorities are dequeued first.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lPriorityQueue_stub:push(priority, 42, [label])  -- -> integer
--- (replace lPriorityQueue_stub with your real LPriorityQueue instance above)
-
--- ---- Stub: LPriorityQueue:pop --------------------------------------------
---@api-stub: LPriorityQueue:pop
--- Removes and returns the highest-priority item, or nil if empty.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lPriorityQueue_stub:pop()  -- -> string|number|boolean|table|nil
--- (replace lPriorityQueue_stub with your real LPriorityQueue instance above)
-
--- ---- Stub: LPriorityQueue:peek -------------------------------------------
---@api-stub: LPriorityQueue:peek
--- Returns the highest-priority item without removing it, or nil if empty.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lPriorityQueue_stub:peek()  -- -> string|number|boolean|table|nil
--- (replace lPriorityQueue_stub with your real LPriorityQueue instance above)
-
--- ---- Stub: LPriorityQueue:len --------------------------------------------
---@api-stub: LPriorityQueue:len
--- Returns the number of items in the queue.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lPriorityQueue_stub:len()  -- -> integer
--- (replace lPriorityQueue_stub with your real LPriorityQueue instance above)
-
--- ---- Stub: LPriorityQueue:isEmpty ----------------------------------------
---@api-stub: LPriorityQueue:isEmpty
--- Returns true when the queue has no items.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lPriorityQueue_stub:isEmpty()  -- -> boolean
--- (replace lPriorityQueue_stub with your real LPriorityQueue instance above)
-
--- ---- Stub: LPriorityQueue:clearAll ---------------------------------------
---@api-stub: LPriorityQueue:clearAll
--- Removes all items from the queue.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lPriorityQueue_stub:clearAll()
--- (replace lPriorityQueue_stub with your real LPriorityQueue instance above)
-
--- -----------------------------------------------------------------------------
--- LQueue methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LQueue:enqueue ------------------------------------------------
---@api-stub: LQueue:enqueue
--- Adds a value to the back of the queue. Returns false if capacity is full.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lQueue_stub:enqueue(42)  -- -> boolean
--- (replace lQueue_stub with your real LQueue instance above)
-
--- ---- Stub: LQueue:dequeue ------------------------------------------------
---@api-stub: LQueue:dequeue
--- Removes and returns the front value, or nil if empty.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lQueue_stub:dequeue()  -- -> table|nil
--- (replace lQueue_stub with your real LQueue instance above)
-
--- ---- Stub: LQueue:front --------------------------------------------------
---@api-stub: LQueue:front
--- Returns the front value without removing it, or nil if empty.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lQueue_stub:front()  -- -> table|nil
--- (replace lQueue_stub with your real LQueue instance above)
-
--- ---- Stub: LQueue:len ----------------------------------------------------
---@api-stub: LQueue:len
--- Returns the number of items in the queue.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lQueue_stub:len()  -- -> integer
--- (replace lQueue_stub with your real LQueue instance above)
-
--- ---- Stub: LQueue:isEmpty ------------------------------------------------
---@api-stub: LQueue:isEmpty
--- Returns true if the queue is empty.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lQueue_stub:isEmpty()  -- -> boolean
--- (replace lQueue_stub with your real LQueue instance above)
-
--- ---- Stub: LQueue:isFull -------------------------------------------------
---@api-stub: LQueue:isFull
--- Returns true if the queue is at its capacity limit.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lQueue_stub:isFull()  -- -> boolean
--- (replace lQueue_stub with your real LQueue instance above)
-
--- ---- Stub: LQueue:clear --------------------------------------------------
---@api-stub: LQueue:clear
--- Removes all values from the queue.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lQueue_stub:clear()
--- (replace lQueue_stub with your real LQueue instance above)
-
--- ---- Stub: LQueue:toArray ------------------------------------------------
---@api-stub: LQueue:toArray
--- Returns all items as a Lua table (front to back).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lQueue_stub:toArray()  -- -> table
--- (replace lQueue_stub with your real LQueue instance above)
-
--- -----------------------------------------------------------------------------
--- LRelationshipManager methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LRelationshipManager:defineType -------------------------------
---@api-stub: LRelationshipManager:defineType
--- Defines a relationship type with ordered levels.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lRelationshipManager_stub:defineType("hero", levels, [default_level])
--- (replace lRelationshipManager_stub with your real LRelationshipManager instance above)
-
--- ---- Stub: LRelationshipManager:removeType -------------------------------
---@api-stub: LRelationshipManager:removeType
--- Removes a relationship type definition.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lRelationshipManager_stub:removeType("hero")
--- (replace lRelationshipManager_stub with your real LRelationshipManager instance above)
-
--- ---- Stub: LRelationshipManager:typeNames --------------------------------
---@api-stub: LRelationshipManager:typeNames
--- Returns all defined relationship type names.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lRelationshipManager_stub:typeNames()  -- -> table
--- (replace lRelationshipManager_stub with your real LRelationshipManager instance above)
-
--- ---- Stub: LRelationshipManager:setValue ---------------------------------
---@api-stub: LRelationshipManager:setValue
--- Sets the numeric relationship value between two entities.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lRelationshipManager_stub:setValue(1.0, 0.2, 42)
--- (replace lRelationshipManager_stub with your real LRelationshipManager instance above)
-
--- ---- Stub: LRelationshipManager:getValue ---------------------------------
---@api-stub: LRelationshipManager:getValue
--- Returns the numeric relationship value between two entities (default 0.0).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lRelationshipManager_stub:getValue(1.0, 0.2)  -- -> number
--- (replace lRelationshipManager_stub with your real LRelationshipManager instance above)
-
--- ---- Stub: LRelationshipManager:adjustValue ------------------------------
---@api-stub: LRelationshipManager:adjustValue
--- Adjusts the numeric relationship value by a delta.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lRelationshipManager_stub:adjustValue(1.0, 0.2, 0.016)
--- (replace lRelationshipManager_stub with your real LRelationshipManager instance above)
-
--- ---- Stub: LRelationshipManager:setLevel ---------------------------------
---@api-stub: LRelationshipManager:setLevel
--- Sets a named level for a typed relationship between two entities.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lRelationshipManager_stub:setLevel(1.0, 0.2, type_name, level)  -- -> boolean
--- (replace lRelationshipManager_stub with your real LRelationshipManager instance above)
-
--- ---- Stub: LRelationshipManager:getLevel ---------------------------------
---@api-stub: LRelationshipManager:getLevel
--- Returns the named level for a typed relationship, or nil.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lRelationshipManager_stub:getLevel(1.0, 0.2, type_name)  -- -> string?
--- (replace lRelationshipManager_stub with your real LRelationshipManager instance above)
-
--- ---- Stub: LRelationshipManager:removePair -------------------------------
---@api-stub: LRelationshipManager:removePair
--- Removes all relationship data between two entities.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lRelationshipManager_stub:removePair(1.0, 0.2)
--- (replace lRelationshipManager_stub with your real LRelationshipManager instance above)
-
--- ---- Stub: LRelationshipManager:pairCount --------------------------------
---@api-stub: LRelationshipManager:pairCount
--- Returns the total number of stored relationship pairs.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lRelationshipManager_stub:pairCount()  -- -> integer
--- (replace lRelationshipManager_stub with your real LRelationshipManager instance above)
-
--- -----------------------------------------------------------------------------
--- LRing methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LRing:push ----------------------------------------------------
---@api-stub: LRing:push
--- Pushes a value (number or string) with an optional tag. Overwrites oldest on overflow.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lRing_stub:push(42, [tag])  -- -> integer
--- (replace lRing_stub with your real LRing instance above)
-
--- ---- Stub: LRing:latest --------------------------------------------------
---@api-stub: LRing:latest
--- Returns the most recently pushed entry, or nil.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lRing_stub:latest()  -- -> table?
--- (replace lRing_stub with your real LRing instance above)
-
--- ---- Stub: LRing:toArray -------------------------------------------------
---@api-stub: LRing:toArray
--- Returns all entries (oldest first) as an array of {id, tag, value?, text?} tables.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lRing_stub:toArray()  -- -> table
--- (replace lRing_stub with your real LRing instance above)
-
--- ---- Stub: LRing:sum -----------------------------------------------------
---@api-stub: LRing:sum
--- Returns the sum of all numeric values in the ring.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lRing_stub:sum()  -- -> number
--- (replace lRing_stub with your real LRing instance above)
-
--- ---- Stub: LRing:average -------------------------------------------------
---@api-stub: LRing:average
--- Returns the average of all numeric values, or 0 if empty.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lRing_stub:average()  -- -> number
--- (replace lRing_stub with your real LRing instance above)
-
--- ---- Stub: LRing:len -----------------------------------------------------
---@api-stub: LRing:len
--- Returns the number of entries currently in the ring.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lRing_stub:len()  -- -> integer
--- (replace lRing_stub with your real LRing instance above)
-
--- ---- Stub: LRing:isFull --------------------------------------------------
---@api-stub: LRing:isFull
--- Returns true when the ring is at capacity.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lRing_stub:isFull()  -- -> boolean
--- (replace lRing_stub with your real LRing instance above)
-
--- ---- Stub: LRing:clear ---------------------------------------------------
---@api-stub: LRing:clear
--- Removes all entries from the ring.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lRing_stub:clear()
--- (replace lRing_stub with your real LRing instance above)
-
--- -----------------------------------------------------------------------------
--- LServiceLocator methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LServiceLocator:provide ---------------------------------------
---@api-stub: LServiceLocator:provide
--- Registers a named service with an associated Lua value.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lServiceLocator_stub:provide("hero", 42)
--- (replace lServiceLocator_stub with your real LServiceLocator instance above)
-
--- ---- Stub: LServiceLocator:locate ----------------------------------------
---@api-stub: LServiceLocator:locate
--- Retrieves a registered service by name; returns nil if not found.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lServiceLocator_stub:locate("hero")  -- -> string|number|boolean|table|nil
--- (replace lServiceLocator_stub with your real LServiceLocator instance above)
-
--- ---- Stub: LServiceLocator:has -------------------------------------------
---@api-stub: LServiceLocator:has
--- Returns true if a service with the given name is registered.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lServiceLocator_stub:has("hero")  -- -> boolean
--- (replace lServiceLocator_stub with your real LServiceLocator instance above)
-
--- ---- Stub: LServiceLocator:remove ----------------------------------------
---@api-stub: LServiceLocator:remove
--- Unregisters and removes a named service.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lServiceLocator_stub:remove("hero")
--- (replace lServiceLocator_stub with your real LServiceLocator instance above)
-
--- ---- Stub: LServiceLocator:getServices -----------------------------------
---@api-stub: LServiceLocator:getServices
--- Returns a table of all registered service names.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lServiceLocator_stub:getServices()  -- -> table
--- (replace lServiceLocator_stub with your real LServiceLocator instance above)
-
--- ---- Stub: LServiceLocator:clearAll --------------------------------------
---@api-stub: LServiceLocator:clearAll
--- Removes all registered services.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lServiceLocator_stub:clearAll()
--- (replace lServiceLocator_stub with your real LServiceLocator instance above)
-
--- -----------------------------------------------------------------------------
--- LSet methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LSet:add ------------------------------------------------------
---@api-stub: LSet:add
--- Adds a string key to the set. Returns true if it was not already present.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSet_stub:add("player_score")  -- -> boolean
--- (replace lSet_stub with your real LSet instance above)
-
--- ---- Stub: LSet:remove ---------------------------------------------------
---@api-stub: LSet:remove
--- Removes a key from the set. Returns true if it was present.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSet_stub:remove("player_score")  -- -> boolean
--- (replace lSet_stub with your real LSet instance above)
-
--- ---- Stub: LSet:has ------------------------------------------------------
---@api-stub: LSet:has
--- Returns true if the key is in the set.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSet_stub:has("player_score")  -- -> boolean
--- (replace lSet_stub with your real LSet instance above)
-
--- ---- Stub: LSet:len ------------------------------------------------------
---@api-stub: LSet:len
--- Returns the number of distinct keys in the set.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSet_stub:len()  -- -> integer
--- (replace lSet_stub with your real LSet instance above)
-
--- ---- Stub: LSet:isEmpty --------------------------------------------------
---@api-stub: LSet:isEmpty
--- Returns true if the set is empty.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSet_stub:isEmpty()  -- -> boolean
--- (replace lSet_stub with your real LSet instance above)
-
--- ---- Stub: LSet:toArray --------------------------------------------------
---@api-stub: LSet:toArray
--- Returns all keys as a Lua table (unordered).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSet_stub:toArray()  -- -> table
--- (replace lSet_stub with your real LSet instance above)
-
--- ---- Stub: LSet:clear ----------------------------------------------------
---@api-stub: LSet:clear
--- Removes all keys from the set.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSet_stub:clear()
--- (replace lSet_stub with your real LSet instance above)
-
--- ---- Stub: LSet:union ----------------------------------------------------
---@api-stub: LSet:union
--- Returns the union of this set and another as a new Set.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSet_stub:union(other)  -- -> Set
--- (replace lSet_stub with your real LSet instance above)
-
--- ---- Stub: LSet:intersection ---------------------------------------------
---@api-stub: LSet:intersection
--- Returns the intersection of this set and another as a new Set.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSet_stub:intersection(other)  -- -> Set
--- (replace lSet_stub with your real LSet instance above)
-
--- -----------------------------------------------------------------------------
--- LSimpleState methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LSimpleState:addState -----------------------------------------
---@api-stub: LSimpleState:addState
--- Registers a named state with optional enter, exit, and update callbacks.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSimpleState_stub:addState("hero", [callbacks])
--- (replace lSimpleState_stub with your real LSimpleState instance above)
-
--- ---- Stub: LSimpleState:transitionTo -------------------------------------
---@api-stub: LSimpleState:transitionTo
--- Transitions to a named state, calling exit/enter callbacks as needed.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSimpleState_stub:transitionTo("hero")  -- -> boolean
--- (replace lSimpleState_stub with your real LSimpleState instance above)
-
--- ---- Stub: LSimpleState:update -------------------------------------------
---@api-stub: LSimpleState:update
--- Calls the update callback of the current state with the given delta time.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSimpleState_stub:update(0.016)
--- (replace lSimpleState_stub with your real LSimpleState instance above)
-
--- ---- Stub: LSimpleState:getCurrent ---------------------------------------
---@api-stub: LSimpleState:getCurrent
--- Returns the name of the current state, or nil if none is active.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSimpleState_stub:getCurrent()  -- -> string?
--- (replace lSimpleState_stub with your real LSimpleState instance above)
-
--- ---- Stub: LSimpleState:hasState -----------------------------------------
---@api-stub: LSimpleState:hasState
--- Returns true if a state with the given name is registered.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSimpleState_stub:hasState("hero")  -- -> boolean
--- (replace lSimpleState_stub with your real LSimpleState instance above)
-
--- ---- Stub: LSimpleState:getStates ----------------------------------------
---@api-stub: LSimpleState:getStates
--- Returns a table of all registered state names.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSimpleState_stub:getStates()  -- -> table
--- (replace lSimpleState_stub with your real LSimpleState instance above)
-
--- ---- Stub: LSimpleState:clearAll -----------------------------------------
---@api-stub: LSimpleState:clearAll
--- Removes all states and callbacks from this state machine.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSimpleState_stub:clearAll()
--- (replace lSimpleState_stub with your real LSimpleState instance above)
-
--- -----------------------------------------------------------------------------
--- LStack methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LStack:push ---------------------------------------------------
---@api-stub: LStack:push
--- Pushes a value onto the stack. Returns false if capacity is full.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lStack_stub:push(42)  -- -> boolean
--- (replace lStack_stub with your real LStack instance above)
-
--- ---- Stub: LStack:pop ----------------------------------------------------
---@api-stub: LStack:pop
--- Removes and returns the top value, or nil if empty.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lStack_stub:pop()  -- -> table|nil
--- (replace lStack_stub with your real LStack instance above)
-
--- ---- Stub: LStack:peek ---------------------------------------------------
---@api-stub: LStack:peek
--- Returns the top value without removing it, or nil if empty.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lStack_stub:peek()  -- -> table|nil
--- (replace lStack_stub with your real LStack instance above)
-
--- ---- Stub: LStack:len ----------------------------------------------------
---@api-stub: LStack:len
--- Returns the number of items on the stack.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lStack_stub:len()  -- -> integer
--- (replace lStack_stub with your real LStack instance above)
-
--- ---- Stub: LStack:isEmpty ------------------------------------------------
---@api-stub: LStack:isEmpty
--- Returns true if the stack is empty.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lStack_stub:isEmpty()  -- -> boolean
--- (replace lStack_stub with your real LStack instance above)
-
--- ---- Stub: LStack:isFull -------------------------------------------------
---@api-stub: LStack:isFull
--- Returns true if the stack is at its capacity limit.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lStack_stub:isFull()  -- -> boolean
--- (replace lStack_stub with your real LStack instance above)
-
--- ---- Stub: LStack:clear --------------------------------------------------
---@api-stub: LStack:clear
--- Removes all values from the stack.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lStack_stub:clear()
--- (replace lStack_stub with your real LStack instance above)
-
--- ---- Stub: LStack:toArray ------------------------------------------------
---@api-stub: LStack:toArray
--- Returns all items as a Lua table (bottom to top).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lStack_stub:toArray()  -- -> table
--- (replace lStack_stub with your real LStack instance above)
-
--- -----------------------------------------------------------------------------
--- LStrategy methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LStrategy:register --------------------------------------------
---@api-stub: LStrategy:register
--- Registers a named strategy function.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lStrategy_stub:register("hero", function() end)
--- (replace lStrategy_stub with your real LStrategy instance above)
-
--- ---- Stub: LStrategy:set -------------------------------------------------
---@api-stub: LStrategy:set
--- Sets the active strategy by name. Returns false if not registered.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lStrategy_stub:set("hero")  -- -> boolean
--- (replace lStrategy_stub with your real LStrategy instance above)
-
--- ---- Stub: LStrategy:execute ---------------------------------------------
---@api-stub: LStrategy:execute
--- Calls the currently active strategy function with the given arguments.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lStrategy_stub:execute(...)  -- -> table|nil
--- (replace lStrategy_stub with your real LStrategy instance above)
-
--- ---- Stub: LStrategy:getCurrent ------------------------------------------
---@api-stub: LStrategy:getCurrent
--- Returns the name of the active strategy, or nil.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lStrategy_stub:getCurrent()  -- -> string?
--- (replace lStrategy_stub with your real LStrategy instance above)
-
--- ---- Stub: LStrategy:has -------------------------------------------------
---@api-stub: LStrategy:has
--- Returns true if a strategy with this name is registered.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lStrategy_stub:has("hero")  -- -> boolean
--- (replace lStrategy_stub with your real LStrategy instance above)
-
--- ---- Stub: LStrategy:remove ----------------------------------------------
---@api-stub: LStrategy:remove
--- Removes a strategy by name.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lStrategy_stub:remove("hero")  -- -> boolean
--- (replace lStrategy_stub with your real LStrategy instance above)
-
--- ---- Stub: LStrategy:names -----------------------------------------------
---@api-stub: LStrategy:names
--- Returns all registered strategy names.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lStrategy_stub:names()  -- -> table
--- (replace lStrategy_stub with your real LStrategy instance above)
-
--- ---- Stub: LStrategy:clear -----------------------------------------------
---@api-stub: LStrategy:clear
--- Removes all strategies and clears the active selection.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lStrategy_stub:clear()
--- (replace lStrategy_stub with your real LStrategy instance above)
-
--- -----------------------------------------------------------------------------
--- LThrottle methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LThrottle:onFire ----------------------------------------------
---@api-stub: LThrottle:onFire
--- Sets the callback invoked when the throttle fires.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lThrottle_stub:onFire(f)
--- (replace lThrottle_stub with your real LThrottle instance above)
-
--- ---- Stub: LThrottle:update ----------------------------------------------
---@api-stub: LThrottle:update
--- Advances the timer by dt seconds; fires the callback if the interval elapsed.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lThrottle_stub:update(0.016)  -- -> boolean
--- (replace lThrottle_stub with your real LThrottle instance above)
-
--- ---- Stub: LThrottle:reset -----------------------------------------------
---@api-stub: LThrottle:reset
--- Resets the elapsed counter without firing.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lThrottle_stub:reset()
--- (replace lThrottle_stub with your real LThrottle instance above)
-
--- ---- Stub: LThrottle:getProgress -----------------------------------------
---@api-stub: LThrottle:getProgress
--- Returns the normalised progress through the current interval [0, 1].
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lThrottle_stub:getProgress()  -- -> number
--- (replace lThrottle_stub with your real LThrottle instance above)
-
--- ---- Stub: LThrottle:getFireCount ----------------------------------------
---@api-stub: LThrottle:getFireCount
--- Returns the total number of times this throttle has fired.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lThrottle_stub:getFireCount()  -- -> integer
--- (replace lThrottle_stub with your real LThrottle instance above)
-
--- ---- Stub: LThrottle:setEnabled ------------------------------------------
---@api-stub: LThrottle:setEnabled
--- Enables or disables the throttle.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lThrottle_stub:setEnabled(1.0)
--- (replace lThrottle_stub with your real LThrottle instance above)

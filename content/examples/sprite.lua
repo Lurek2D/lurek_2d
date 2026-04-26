@@ -84,7 +84,7 @@ end
 
 -- ── SpriteSheet methods ──
 
---@api-stub: SpriteSheet:getFrame
+--@api-stub: LSpriteSheet:getFrame
 -- Returns the quad for the 0-based frame index, or nil if out of range.
 -- Index 0 is the top-left frame; pair with lurek.render.draw(image, quad, x, y) to blit a single frame.
 do  -- SpriteSheet:getFrame
@@ -95,7 +95,7 @@ do  -- SpriteSheet:getFrame
   end
 end
 
---@api-stub: SpriteSheet:getFrameCount
+--@api-stub: LSpriteSheet:getFrameCount
 -- Returns the total number of frames in the sheet.
 -- Use to drive an animation index modulo: `local f = math.floor(t * fps) % sheet:getFrameCount()`.
 do  -- SpriteSheet:getFrameCount
@@ -105,7 +105,7 @@ do  -- SpriteSheet:getFrameCount
   lurek.log.info("animating " .. count .. " frames; current=" .. frame_at_t, "sprite")
 end
 
---@api-stub: SpriteSheet:getRow
+--@api-stub: LSpriteSheet:getRow
 -- Returns a sequential table of quad tables for every frame in the given row.
 -- Handy for direction strips: row 0 = walk-down, row 1 = walk-left, etc. — pass the row a character is facing.
 do  -- SpriteSheet:getRow
@@ -116,7 +116,7 @@ do  -- SpriteSheet:getRow
   end
 end
 
---@api-stub: SpriteSheet:getColumn
+--@api-stub: LSpriteSheet:getColumn
 -- Returns a sequential table of quad tables for every frame in the given column.
 -- Useful for "stance" strips where each column stacks one pose across animation states (idle/run/jump).
 do  -- SpriteSheet:getColumn
@@ -125,7 +125,7 @@ do  -- SpriteSheet:getColumn
   lurek.log.info("column 0 holds " .. #first_col .. " stacked poses", "sprite")
 end
 
---@api-stub: SpriteSheet:getGroupFrames
+--@api-stub: LSpriteSheet:getGroupFrames
 -- Returns a sequential table of quad tables for the named frame group, or nil.
 -- Returns nil if the group was never registered — guard with `if frames then` before iterating.
 do  -- SpriteSheet:getGroupFrames
@@ -137,7 +137,7 @@ do  -- SpriteSheet:getGroupFrames
   end
 end
 
---@api-stub: SpriteSheet:getGroupNames
+--@api-stub: LSpriteSheet:getGroupNames
 -- Returns a sequential table of all defined group names.
 -- Iterate to build a debug menu of available animations or to validate that an artist named every clip.
 do  -- SpriteSheet:getGroupNames
@@ -147,7 +147,7 @@ do  -- SpriteSheet:getGroupNames
   lurek.log.info("animation groups: " .. table.concat(names, ", "), "sprite")
 end
 
---@api-stub: SpriteSheet:getFrameSize
+--@api-stub: LSpriteSheet:getFrameSize
 -- Returns the width and height of a single frame cell in pixels.
 -- Use as the draw size when computing hitboxes or centring sprites around their pivot.
 do  -- SpriteSheet:getFrameSize
@@ -157,7 +157,7 @@ do  -- SpriteSheet:getFrameSize
   lurek.log.info("hitbox derived: " .. hitbox.w .. "x" .. hitbox.h, "sprite")
 end
 
---@api-stub: SpriteSheet:getGridSize
+--@api-stub: LSpriteSheet:getGridSize
 -- Returns the number of columns and rows in the grid.
 -- Validate at load time that the artist's sheet matches expected dimensions before using row/column lookups.
 do  -- SpriteSheet:getGridSize
@@ -168,7 +168,7 @@ do  -- SpriteSheet:getGridSize
   end
 end
 
---@api-stub: SpriteSheet:drawToImage
+--@api-stub: LSpriteSheet:drawToImage
 -- Renders the sheet grid as a debug view into a new ImageData.
 -- Frame borders are red, group-start frames green; save with imgdata:encode("png", path) for an offline overview.
 do  -- SpriteSheet:drawToImage
@@ -179,7 +179,7 @@ end
 
 -- ── SpriteAtlas methods ──
 
---@api-stub: SpriteAtlas:getEntry
+--@api-stub: LSpriteAtlas:getEntry
 -- Returns the named region as a table `{name, x, y, w, h, rotated}`, or nil.
 -- The `rotated` flag tells the renderer to draw the source quad 90° CCW (TexturePacker rotation packing).
 do  -- SpriteAtlas:getEntry
@@ -193,7 +193,7 @@ do  -- SpriteAtlas:getEntry
   end
 end
 
---@api-stub: SpriteAtlas:getByIndex
+--@api-stub: LSpriteAtlas:getByIndex
 -- Returns the region at the given 1-based insertion index, or nil.
 -- Use to iterate atlas regions in export order (handy for cycling through tiles in a tileset preview).
 do  -- SpriteAtlas:getByIndex
@@ -207,7 +207,7 @@ do  -- SpriteAtlas:getByIndex
   end
 end
 
---@api-stub: SpriteAtlas:entryCount
+--@api-stub: LSpriteAtlas:entryCount
 -- Returns the total number of named regions in the atlas.
 -- Use to size preallocated tables, paginate a debug atlas viewer, or sanity-check that an export was complete.
 do  -- SpriteAtlas:entryCount
@@ -220,7 +220,7 @@ do  -- SpriteAtlas:entryCount
   end
 end
 
---@api-stub: SpriteAtlas:entryNames
+--@api-stub: LSpriteAtlas:entryNames
 -- Returns a sequential table of all region names.
 -- Build an in-game asset browser by sorting these names and filtering by prefix (e.g. "icon_*").
 do  -- SpriteAtlas:entryNames
@@ -259,7 +259,7 @@ end
 
 -- ── lurek.sprite.* functions ──
 
---@api-stub: SpriteAtlas:getFlipped
+--@api-stub: LSpriteAtlas:getFlipped
 -- Returns a flipped variant entry (flipped-X, flipped-Y, or both) for a sprite name.
 -- Use for mirroring walk cycles without duplicate atlas entries.
 do  -- SpriteAtlas:getFlipped
@@ -268,7 +268,7 @@ do  -- SpriteAtlas:getFlipped
   lurek.log.info("flipped entry: " .. tostring(entry ~= nil), "sprite")
 end
 
---@api-stub: SpriteSheet:nameGroup
+--@api-stub: LSpriteSheet:nameGroup
 -- Assigns a friendly group name to a row of frames for convenient clip building.
 -- After naming, getGroupFrames("walk") returns that row's frame indices.
 do  -- SpriteSheet:nameGroup
@@ -287,41 +287,10 @@ end
 -- The final committed file must contain ZERO --@api-stub: lines.
 -- =============================================================================
 
--- -----------------------------------------------------------------------------
--- SpriteAtlas methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: SpriteAtlas:type ----------------------------------------------
---@api-stub: SpriteAtlas:type
--- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- spriteAtlas_stub:type()  -- -> string
--- (replace spriteAtlas_stub with your real SpriteAtlas instance above)
-
--- ---- Stub: SpriteAtlas:typeOf --------------------------------------------
---@api-stub: SpriteAtlas:typeOf
--- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- spriteAtlas_stub:typeOf("hero")  -- -> boolean
--- (replace spriteAtlas_stub with your real SpriteAtlas instance above)
 
 -- -----------------------------------------------------------------------------
 -- SpriteSheet methods
 -- -----------------------------------------------------------------------------
-
--- ---- Stub: SpriteSheet:type ----------------------------------------------
---@api-stub: SpriteSheet:type
--- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- spriteSheet_stub:type()  -- -> string
--- (replace spriteSheet_stub with your real SpriteSheet instance above)
-
--- ---- Stub: SpriteSheet:typeOf --------------------------------------------
---@api-stub: SpriteSheet:typeOf
--- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- spriteSheet_stub:typeOf("hero")  -- -> boolean
--- (replace spriteSheet_stub with your real SpriteSheet instance above)
 
 -- =============================================================================
 -- STUBS: 4 uncovered lurek.sprite API item(s)
@@ -375,115 +344,4 @@ end
 -- The final committed file must contain ZERO --@api-stub: lines.
 -- =============================================================================
 
--- -----------------------------------------------------------------------------
--- LSpriteAtlas methods
--- -----------------------------------------------------------------------------
 
--- ---- Stub: LSpriteAtlas:getEntry -----------------------------------------
---@api-stub: LSpriteAtlas:getEntry
--- Returns the named region as a table `{name, x, y, w, h, rotated}`, or nil.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSpriteAtlas_stub:getEntry("hero")  -- -> table?
--- (replace lSpriteAtlas_stub with your real LSpriteAtlas instance above)
-
--- ---- Stub: LSpriteAtlas:getByIndex ---------------------------------------
---@api-stub: LSpriteAtlas:getByIndex
--- Returns the region at the given 1-based insertion index, or nil.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSpriteAtlas_stub:getByIndex(1)  -- -> table?
--- (replace lSpriteAtlas_stub with your real LSpriteAtlas instance above)
-
--- ---- Stub: LSpriteAtlas:entryCount ---------------------------------------
---@api-stub: LSpriteAtlas:entryCount
--- Returns the total number of named regions in the atlas.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSpriteAtlas_stub:entryCount()  -- -> integer
--- (replace lSpriteAtlas_stub with your real LSpriteAtlas instance above)
-
--- ---- Stub: LSpriteAtlas:entryNames ---------------------------------------
---@api-stub: LSpriteAtlas:entryNames
--- Returns a sequential table of all region names.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSpriteAtlas_stub:entryNames()  -- -> table
--- (replace lSpriteAtlas_stub with your real LSpriteAtlas instance above)
-
--- ---- Stub: LSpriteAtlas:getFlipped ---------------------------------------
---@api-stub: LSpriteAtlas:getFlipped
--- Returns a copy of the named region with `flip_x` and `flip_y` flags set.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSpriteAtlas_stub:getFlipped("hero", flip_x, flip_y)  -- -> table?
--- (replace lSpriteAtlas_stub with your real LSpriteAtlas instance above)
-
--- -----------------------------------------------------------------------------
--- LSpriteSheet methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LSpriteSheet:getFrame -----------------------------------------
---@api-stub: LSpriteSheet:getFrame
--- Returns the quad for the 0-based frame index, or nil if out of range.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSpriteSheet_stub:getFrame(1)  -- -> table?
--- (replace lSpriteSheet_stub with your real LSpriteSheet instance above)
-
--- ---- Stub: LSpriteSheet:getFrameCount ------------------------------------
---@api-stub: LSpriteSheet:getFrameCount
--- Returns the total number of frames in the sheet.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSpriteSheet_stub:getFrameCount()  -- -> integer
--- (replace lSpriteSheet_stub with your real LSpriteSheet instance above)
-
--- ---- Stub: LSpriteSheet:getRow -------------------------------------------
---@api-stub: LSpriteSheet:getRow
--- Returns a sequential table of quad tables for every frame in the given row.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSpriteSheet_stub:getRow(row)  -- -> table
--- (replace lSpriteSheet_stub with your real LSpriteSheet instance above)
-
--- ---- Stub: LSpriteSheet:getColumn ----------------------------------------
---@api-stub: LSpriteSheet:getColumn
--- Returns a sequential table of quad tables for every frame in the given column.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSpriteSheet_stub:getColumn(col)  -- -> table
--- (replace lSpriteSheet_stub with your real LSpriteSheet instance above)
-
--- ---- Stub: LSpriteSheet:getGroupFrames -----------------------------------
---@api-stub: LSpriteSheet:getGroupFrames
--- Returns a sequential table of quad tables for the named frame group, or nil.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSpriteSheet_stub:getGroupFrames("hero")  -- -> table?
--- (replace lSpriteSheet_stub with your real LSpriteSheet instance above)
-
--- ---- Stub: LSpriteSheet:getGroupNames ------------------------------------
---@api-stub: LSpriteSheet:getGroupNames
--- Returns a sequential table of all defined group names.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSpriteSheet_stub:getGroupNames()  -- -> table
--- (replace lSpriteSheet_stub with your real LSpriteSheet instance above)
-
--- ---- Stub: LSpriteSheet:nameGroup ----------------------------------------
---@api-stub: LSpriteSheet:nameGroup
--- Registers a named frame group starting at `start_frame` with `count` frames.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSpriteSheet_stub:nameGroup("hero", start, 10)
--- (replace lSpriteSheet_stub with your real LSpriteSheet instance above)
-
--- ---- Stub: LSpriteSheet:getFrameSize -------------------------------------
---@api-stub: LSpriteSheet:getFrameSize
--- Returns the width and height of a single frame cell in pixels.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSpriteSheet_stub:getFrameSize()  -- -> integer, integer
--- (replace lSpriteSheet_stub with your real LSpriteSheet instance above)
-
--- ---- Stub: LSpriteSheet:getGridSize --------------------------------------
---@api-stub: LSpriteSheet:getGridSize
--- Returns the number of columns and rows in the grid.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSpriteSheet_stub:getGridSize()  -- -> integer, integer
--- (replace lSpriteSheet_stub with your real LSpriteSheet instance above)
-
--- ---- Stub: LSpriteSheet:drawToImage --------------------------------------
---@api-stub: LSpriteSheet:drawToImage
--- Renders the sheet grid as a debug view into a new ImageData.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSpriteSheet_stub:drawToImage(64.0, 64.0)  -- -> ImageData
--- (replace lSpriteSheet_stub with your real LSpriteSheet instance above)

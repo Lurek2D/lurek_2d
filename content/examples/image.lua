@@ -113,7 +113,7 @@ end
 
 -- ── ProvinceGrid methods ──
 
---@api-stub: ProvinceGrid:getWidth
+--@api-stub: LProvinceGrid:getWidth
 -- Returns the grid width in pixels.
 -- Pair with getHeight() to clamp mouse coordinates before calling getAt().
 do  -- ProvinceGrid:getWidth
@@ -125,7 +125,7 @@ do  -- ProvinceGrid:getWidth
   end
 end
 
---@api-stub: ProvinceGrid:getHeight
+--@api-stub: LProvinceGrid:getHeight
 -- Returns the grid height in pixels.
 -- Use alongside getWidth() to size the rendered minimap or perform bounds checks.
 do  -- ProvinceGrid:getHeight
@@ -135,7 +135,7 @@ do  -- ProvinceGrid:getHeight
   lurek.log.info("province map height=" .. h, "map")
 end
 
---@api-stub: ProvinceGrid:getAt
+--@api-stub: LProvinceGrid:getAt
 -- Returns the province ID at pixel coordinates (x, y).
 -- Returns 0 for the background; check for non-zero before treating the click as a province.
 do  -- ProvinceGrid:getAt
@@ -147,7 +147,7 @@ do  -- ProvinceGrid:getAt
   end
 end
 
---@api-stub: ProvinceGrid:provinceCount
+--@api-stub: LProvinceGrid:provinceCount
 -- Returns the number of unique non-zero province IDs detected in the map.
 -- Pre-allocate per-province arrays (owners, populations) using this count at startup.
 do  -- ProvinceGrid:provinceCount
@@ -159,7 +159,7 @@ do  -- ProvinceGrid:provinceCount
   lurek.log.info("allocated owner table for " .. count .. " provinces", "map")
 end
 
---@api-stub: ProvinceGrid:adjacencies
+--@api-stub: LProvinceGrid:adjacencies
 -- Returns an array of adjacency records.
 -- Walk the result to build a graph for AI invasion planning or border rendering.
 do  -- ProvinceGrid:adjacencies
@@ -318,7 +318,7 @@ end
 
 -- ── CompressedImageData methods ──
 
---@api-stub: CompressedImageData:getWidth
+--@api-stub: LCompressedImageData:getWidth
 -- Returns the width of the base mip level in pixels.
 -- Use to validate atlases or to compute UV coordinates for compressed textures.
 do  -- CompressedImageData:getWidth
@@ -328,7 +328,7 @@ do  -- CompressedImageData:getWidth
   lurek.log.info("dds base width=" .. w, "image")
 end
 
---@api-stub: CompressedImageData:getHeight
+--@api-stub: LCompressedImageData:getHeight
 -- Returns the height of the base mip level in pixels.
 -- Pair with getWidth() to size the destination quad before drawing.
 do  -- CompressedImageData:getHeight
@@ -338,7 +338,7 @@ do  -- CompressedImageData:getHeight
   lurek.log.info("dds base height=" .. h, "image")
 end
 
---@api-stub: CompressedImageData:getDimensions
+--@api-stub: LCompressedImageData:getDimensions
 -- Returns the width and height of the base mip level.
 -- One call instead of two when you need both dimensions in a single statement.
 do  -- CompressedImageData:getDimensions
@@ -349,7 +349,7 @@ do  -- CompressedImageData:getDimensions
   lurek.log.info("dds " .. w .. "x" .. h, "image")
 end
 
---@api-stub: CompressedImageData:getMipmapCount
+--@api-stub: LCompressedImageData:getMipmapCount
 -- Returns the number of mipmap levels stored.
 -- Branch on >1 to enable trilinear sampling; use 1 for pixel-art atlases that ship without mips.
 do  -- CompressedImageData:getMipmapCount
@@ -361,7 +361,7 @@ do  -- CompressedImageData:getMipmapCount
   end
 end
 
---@api-stub: CompressedImageData:getFormat
+--@api-stub: LCompressedImageData:getFormat
 -- Returns the compressed format name string.
 -- Inspect to confirm the DDS uses an expected BCn variant before uploading.
 do  -- CompressedImageData:getFormat
@@ -664,7 +664,7 @@ end
 
 -- ── PaletteLUT methods ──
 
---@api-stub: PaletteLUT:getColorCount
+--@api-stub: LPaletteLUT:getColorCount
 -- Returns the number of colour mapping entries.
 -- Read to size a UI list of remap entries or to detect an empty LUT before applying.
 do  -- PaletteLUT:getColorCount
@@ -675,7 +675,7 @@ do  -- PaletteLUT:getColorCount
   end
 end
 
---@api-stub: PaletteLUT:clear
+--@api-stub: LPaletteLUT:clear
 -- Removes all colour mapping entries.
 -- Call before rebuilding a LUT from a new palette so old entries are not accidentally retained.
 do  -- PaletteLUT:clear
@@ -770,7 +770,7 @@ do  -- mlua (ImageData):paste
   lurek.log.info("paste complete", "image")
 end
 
---@api-stub: PaletteLUT:setColor
+--@api-stub: LPaletteLUT:setColor
 -- Sets a palette remap entry: pixels matching from_r,g,b,a are replaced with to_r,g,b,a.
 -- applyPaletteLut() on ImageData uses all registered entries in one GPU pass.
 do  -- PaletteLUT:setColor
@@ -938,7 +938,7 @@ end
 -- -----------------------------------------------------------------------------
 
 -- ---- Stub: ImageData:type ------------------------------------------------
---@api-stub: ImageData:type
+--@api-stub: LImageData:type
 -- Returns the type name of this object (always "ImageData").
 -- Useful for runtime type dispatch when a function accepts multiple image types.
 do  -- ImageData:type
@@ -947,7 +947,7 @@ do  -- ImageData:type
 end
 
 -- ---- Stub: ImageData:typeOf ----------------------------------------------
---@api-stub: ImageData:typeOf
+--@api-stub: LImageData:typeOf
 -- Returns true if this object is of the named type; false otherwise.
 -- Pass "ImageData" for an exact match; broader parent types also return true.
 do  -- ImageData:typeOf
@@ -986,41 +986,6 @@ lurek.image.newProvinceGrid(filename)  -- -> ProvinceGrid
 -- -----------------------------------------------------------------------------
 -- LCompressedImageData methods
 -- -----------------------------------------------------------------------------
-
--- ---- Stub: LCompressedImageData:getWidth ---------------------------------
---@api-stub: LCompressedImageData:getWidth
--- Returns the width of the base mip level in pixels.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lCompressedImageData_stub:getWidth()  -- -> integer
--- (replace lCompressedImageData_stub with your real LCompressedImageData instance above)
-
--- ---- Stub: LCompressedImageData:getHeight --------------------------------
---@api-stub: LCompressedImageData:getHeight
--- Returns the height of the base mip level in pixels.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lCompressedImageData_stub:getHeight()  -- -> integer
--- (replace lCompressedImageData_stub with your real LCompressedImageData instance above)
-
--- ---- Stub: LCompressedImageData:getDimensions ----------------------------
---@api-stub: LCompressedImageData:getDimensions
--- Returns the width and height of the base mip level.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lCompressedImageData_stub:getDimensions()  -- -> integer, integer
--- (replace lCompressedImageData_stub with your real LCompressedImageData instance above)
-
--- ---- Stub: LCompressedImageData:getMipmapCount ---------------------------
---@api-stub: LCompressedImageData:getMipmapCount
--- Returns the number of mipmap levels stored.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lCompressedImageData_stub:getMipmapCount()  -- -> integer
--- (replace lCompressedImageData_stub with your real LCompressedImageData instance above)
-
--- ---- Stub: LCompressedImageData:getFormat --------------------------------
---@api-stub: LCompressedImageData:getFormat
--- Returns the compressed format name string.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lCompressedImageData_stub:getFormat()  -- -> string
--- (replace lCompressedImageData_stub with your real LCompressedImageData instance above)
 
 -- ---- Stub: LCompressedImageData:type -------------------------------------
 --@api-stub: LCompressedImageData:type
@@ -1320,20 +1285,6 @@ lurek.image.newProvinceGrid(filename)  -- -> ProvinceGrid
 -- lImageData_stub:paste(src_ud, dx, dy)
 -- (replace lImageData_stub with your real LImageData instance above)
 
--- ---- Stub: LImageData:type -----------------------------------------------
---@api-stub: LImageData:type
--- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lImageData_stub:type()  -- -> string
--- (replace lImageData_stub with your real LImageData instance above)
-
--- ---- Stub: LImageData:typeOf ---------------------------------------------
---@api-stub: LImageData:typeOf
--- Returns true if this object is of the given type name.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lImageData_stub:typeOf("hero")  -- -> boolean
--- (replace lImageData_stub with your real LImageData instance above)
-
 -- -----------------------------------------------------------------------------
 -- LLayeredImage methods
 -- -----------------------------------------------------------------------------
@@ -1475,27 +1426,6 @@ lurek.image.newProvinceGrid(filename)  -- -> ProvinceGrid
 -- LPaletteLUT methods
 -- -----------------------------------------------------------------------------
 
--- ---- Stub: LPaletteLUT:setColor ------------------------------------------
---@api-stub: LPaletteLUT:setColor
--- Appends a colour mapping entry to the palette: when a pixel exactly matching
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lPaletteLUT_stub:setColor(fr, fg, fb, fa, tr, tg, tb, ta)
--- (replace lPaletteLUT_stub with your real LPaletteLUT instance above)
-
--- ---- Stub: LPaletteLUT:getColorCount -------------------------------------
---@api-stub: LPaletteLUT:getColorCount
--- Returns the number of colour mapping entries.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lPaletteLUT_stub:getColorCount()  -- -> integer
--- (replace lPaletteLUT_stub with your real LPaletteLUT instance above)
-
--- ---- Stub: LPaletteLUT:clear ---------------------------------------------
---@api-stub: LPaletteLUT:clear
--- Removes all colour mapping entries.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lPaletteLUT_stub:clear()
--- (replace lPaletteLUT_stub with your real LPaletteLUT instance above)
-
 -- ---- Stub: LPaletteLUT:type ----------------------------------------------
 --@api-stub: LPaletteLUT:type
 -- Returns the type name of this object.
@@ -1513,41 +1443,6 @@ lurek.image.newProvinceGrid(filename)  -- -> ProvinceGrid
 -- -----------------------------------------------------------------------------
 -- LProvinceGrid methods
 -- -----------------------------------------------------------------------------
-
--- ---- Stub: LProvinceGrid:getWidth ----------------------------------------
---@api-stub: LProvinceGrid:getWidth
--- Returns the grid width in pixels.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lProvinceGrid_stub:getWidth()  -- -> integer
--- (replace lProvinceGrid_stub with your real LProvinceGrid instance above)
-
--- ---- Stub: LProvinceGrid:getHeight ---------------------------------------
---@api-stub: LProvinceGrid:getHeight
--- Returns the grid height in pixels.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lProvinceGrid_stub:getHeight()  -- -> integer
--- (replace lProvinceGrid_stub with your real LProvinceGrid instance above)
-
--- ---- Stub: LProvinceGrid:getAt -------------------------------------------
---@api-stub: LProvinceGrid:getAt
--- Returns the province ID at pixel coordinates (x, y). Returns 0 for background or out-of-bounds.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lProvinceGrid_stub:getAt(0.0, 0.0)  -- -> integer
--- (replace lProvinceGrid_stub with your real LProvinceGrid instance above)
-
--- ---- Stub: LProvinceGrid:provinceCount -----------------------------------
---@api-stub: LProvinceGrid:provinceCount
--- Returns the number of unique non-zero province IDs detected in the map.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lProvinceGrid_stub:provinceCount()  -- -> integer
--- (replace lProvinceGrid_stub with your real LProvinceGrid instance above)
-
--- ---- Stub: LProvinceGrid:adjacencies -------------------------------------
---@api-stub: LProvinceGrid:adjacencies
--- Returns an array of adjacency records. Each record is {province_a, province_b, border_pixels}.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lProvinceGrid_stub:adjacencies()  -- -> table
--- (replace lProvinceGrid_stub with your real LProvinceGrid instance above)
 
 -- ---- Stub: LProvinceGrid:type --------------------------------------------
 --@api-stub: LProvinceGrid:type

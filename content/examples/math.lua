@@ -938,7 +938,7 @@ do  -- lurek.math.voronoi
   lurek.log.info("voronoi cells=" .. #cells, "geo")
 end
 
---@api-stub: Vec2:dot
+--@api-stub: LVec2:dot
 -- Returns the dot product with another vector.
 -- Dot product of two unit vectors gives cos(angle); use for view-cone tests.
 do  -- Vec2:dot
@@ -947,7 +947,7 @@ do  -- Vec2:dot
   lurek.log.debug("dot=" .. a:dot(b), "math")
 end
 
---@api-stub: Vec2:length
+--@api-stub: LVec2:length
 -- Returns the Euclidean length of the vector.
 -- O(sqrt) — prefer lengthSquared for ordering comparisons.
 do  -- Vec2:length
@@ -956,7 +956,7 @@ do  -- Vec2:length
   lurek.log.info("len=" .. len, "math")
 end
 
---@api-stub: Vec2:x
+--@api-stub: LVec2:x
 -- Returns the horizontal component of the vector.
 -- Method form of the x field; useful when chaining or storing accessors.
 do  -- Vec2:x
@@ -965,7 +965,7 @@ do  -- Vec2:x
   lurek.log.debug("x=" .. x, "math")
 end
 
---@api-stub: Vec2:y
+--@api-stub: LVec2:y
 -- Returns the vertical component of the vector.
 -- Method form of the y field; mirrors :x() for consistency.
 do  -- Vec2:y
@@ -974,7 +974,7 @@ do  -- Vec2:y
   lurek.log.debug("y=" .. y, "math")
 end
 
---@api-stub: Vec2:lengthSquared
+--@api-stub: LVec2:lengthSquared
 -- Returns the squared length of the vector (faster than length).
 -- Avoids the sqrt; ideal for radius-squared comparisons inside hot loops.
 do  -- Vec2:lengthSquared
@@ -984,7 +984,7 @@ do  -- Vec2:lengthSquared
   end
 end
 
---@api-stub: Vec2:normalize
+--@api-stub: LVec2:normalize
 -- Returns a unit-length copy of this vector.
 -- Returns a new unit-length vector; zero-length input yields the zero vector.
 do  -- Vec2:normalize
@@ -992,7 +992,7 @@ do  -- Vec2:normalize
   lurek.log.debug("dir x=" .. dir.x, "math")
 end
 
---@api-stub: Vec2:normalized
+--@api-stub: LVec2:normalized
 -- Compatibility alias for `normalize`.
 -- Compatibility alias for normalize() to ease porting code from other engines.
 do  -- Vec2:normalized
@@ -1000,7 +1000,7 @@ do  -- Vec2:normalized
   lurek.log.debug("n.y=" .. n.y, "math")
 end
 
---@api-stub: Vec2:lerp
+--@api-stub: LVec2:lerp
 -- Returns a linearly interpolated vector between this and other at parameter t.
 -- Returns a new vector blending self toward other by parameter t.
 do  -- Vec2:lerp
@@ -1010,7 +1010,7 @@ do  -- Vec2:lerp
   lurek.log.debug("mid x=" .. mid.x, "math")
 end
 
---@api-stub: Vec2:distance
+--@api-stub: LVec2:distance
 -- Returns the Euclidean distance from this vector to another.
 -- Convenience wrapper for (other - self):length().
 do  -- Vec2:distance
@@ -1019,7 +1019,7 @@ do  -- Vec2:distance
   lurek.log.info("dist=" .. a:distance(b), "math")
 end
 
---@api-stub: Vec2:angle
+--@api-stub: LVec2:angle
 -- Returns the angle of this vector in radians (atan2(y, x)).
 -- Returns atan2(y, x) in radians; useful for sprite facing.
 do  -- Vec2:angle
@@ -1027,7 +1027,7 @@ do  -- Vec2:angle
   lurek.log.debug("angle=" .. lurek.math.deg(v:angle()), "math")
 end
 
---@api-stub: Vec2:rotate
+--@api-stub: LVec2:rotate
 -- Returns a new vector rotated by the given angle in radians.
 -- Returns a new vector; positive angle rotates counter-clockwise in screen-up space.
 do  -- Vec2:rotate
@@ -1036,7 +1036,7 @@ do  -- Vec2:rotate
   lurek.log.debug("rotated x=" .. r.x .. " y=" .. r.y, "math")
 end
 
---@api-stub: Vec2:perpendicular
+--@api-stub: LVec2:perpendicular
 -- Returns the perpendicular vector (-y, x).
 -- Returns (-y, x) — a 90-degree CCW rotation; double-apply to get the negation.
 do  -- Vec2:perpendicular
@@ -1044,7 +1044,7 @@ do  -- Vec2:perpendicular
   lurek.log.debug("perp y=" .. n.y, "math")
 end
 
---@api-stub: Vec2:cross
+--@api-stub: LVec2:cross
 -- Returns the 2D cross product (scalar) with another vector.
 -- 2D cross is a scalar; sign tells you which side of self the other vector is on.
 do  -- Vec2:cross
@@ -1053,7 +1053,7 @@ do  -- Vec2:cross
   lurek.log.debug("cross=" .. a:cross(b), "math")
 end
 
---@api-stub: Vec2:reflect
+--@api-stub: LVec2:reflect
 -- Reflects this vector off a surface with the given normal.
 -- Reflects self off a surface with the given (unit) normal — used for bouncing balls.
 do  -- Vec2:reflect
@@ -1063,7 +1063,7 @@ do  -- Vec2:reflect
   lurek.log.debug("bounce y=" .. bounced.y, "physics")
 end
 
---@api-stub: Vec3:length
+--@api-stub: LVec3:length
 -- Returns the Euclidean length of the vector.
 -- Euclidean length in 3D; use for camera-to-actor distance in 2.5D scenes.
 do  -- Vec3:length
@@ -1072,7 +1072,7 @@ do  -- Vec3:length
   lurek.log.debug("len=" .. v:length(), "math")
 end
 
---@api-stub: Vec3:lengthSquared
+--@api-stub: LVec3:lengthSquared
 -- Returns the squared Euclidean length (avoids sqrt).
 -- Squared length — avoid the sqrt when sorting things by distance.
 do  -- Vec3:lengthSquared
@@ -1081,7 +1081,7 @@ do  -- Vec3:lengthSquared
   lurek.log.debug("len2=" .. v:lengthSquared(), "math")
 end
 
---@api-stub: Vec3:normalize
+--@api-stub: LVec3:normalize
 -- Returns a unit-length version of this vector.
 -- Returns a new unit-length Vec3; required when computing reflection or lighting.
 do  -- Vec3:normalize
@@ -1091,7 +1091,7 @@ do  -- Vec3:normalize
   lurek.log.debug("n.z=" .. n.z, "math")
 end
 
---@api-stub: Vec3:dot
+--@api-stub: LVec3:dot
 -- Dot product with another Vec3.
 -- Cosine of angle between unit vectors; use for diffuse light shading.
 do  -- Vec3:dot
@@ -1102,7 +1102,7 @@ do  -- Vec3:dot
   lurek.log.debug("ndotl=" .. n:dot(l), "light")
 end
 
---@api-stub: Vec3:cross
+--@api-stub: LVec3:cross
 -- Cross product with another Vec3.
 -- Right-hand rule cross; use to derive a perpendicular axis for rotations.
 do  -- Vec3:cross
@@ -1114,7 +1114,7 @@ do  -- Vec3:cross
   lurek.log.debug("z.z=" .. z.z, "math")
 end
 
---@api-stub: Vec3:lerp
+--@api-stub: LVec3:lerp
 -- Linear interpolation towards another Vec3.
 -- Returns a new vector; component-wise linear blend.
 do  -- Vec3:lerp
@@ -1126,7 +1126,7 @@ do  -- Vec3:lerp
   lurek.log.debug("mid.x=" .. m.x, "math")
 end
 
---@api-stub: Vec3:distance
+--@api-stub: LVec3:distance
 -- Euclidean distance to another Vec3.
 -- Plain Euclidean distance between two Vec3.
 do  -- Vec3:distance
@@ -1137,7 +1137,7 @@ do  -- Vec3:distance
   lurek.log.info("dist=" .. a:distance(b), "math")
 end
 
---@api-stub: Vec3:add
+--@api-stub: LVec3:add
 -- Add another Vec3 and return the result.
 -- Returns a new Vec3 — does not mutate self.
 do  -- Vec3:add
@@ -1149,7 +1149,7 @@ do  -- Vec3:add
   lurek.log.debug("sum.x=" .. s.x, "math")
 end
 
---@api-stub: Vec3:sub
+--@api-stub: LVec3:sub
 -- Subtract another Vec3 and return the result.
 -- Returns a new Vec3 representing self - other.
 do  -- Vec3:sub
@@ -1161,7 +1161,7 @@ do  -- Vec3:sub
   lurek.log.debug("diff.z=" .. d.z, "math")
 end
 
---@api-stub: Vec3:scale
+--@api-stub: LVec3:scale
 -- Scale this vector by a scalar and return the result.
 -- Returns self * scalar without mutating; useful in physics impulse calc.
 do  -- Vec3:scale
@@ -1171,7 +1171,7 @@ do  -- Vec3:scale
   lurek.log.debug("scaled.x=" .. v.x, "physics")
 end
 
---@api-stub: CatmullRom:sample
+--@api-stub: LCatmullRom:sample
 -- Sample the spline at global t in [0, 1].
 -- t in [0, 1] runs the whole curve; useful for moving an actor along a path.
 do  -- CatmullRom:sample
@@ -1181,7 +1181,7 @@ do  -- CatmullRom:sample
   lurek.log.debug("sample " .. x .. "," .. y, "spline")
 end
 
---@api-stub: CatmullRom:sampleSegment
+--@api-stub: LCatmullRom:sampleSegment
 -- Sample a specific segment at local t in [0, 1].
 -- 0-based segment index; useful when stepping per segment for variable speed.
 do  -- CatmullRom:sampleSegment
@@ -1191,7 +1191,7 @@ do  -- CatmullRom:sampleSegment
   lurek.log.debug("seg0 mid " .. x .. "," .. y, "spline")
 end
 
---@api-stub: CatmullRom:len
+--@api-stub: LCatmullRom:len
 -- Number of control points.
 -- Returns the control-point count, not arc length; pre-allocate dot arrays from this.
 do  -- CatmullRom:len
@@ -1200,7 +1200,7 @@ do  -- CatmullRom:len
   lurek.log.info("control points=" .. cr:len(), "spline")
 end
 
---@api-stub: CatmullRom:addPoint
+--@api-stub: LCatmullRom:addPoint
 -- Appends a control point to the spline.
 -- Appends a control point; the curve auto-extends so plan tangent continuity at the join.
 do  -- CatmullRom:addPoint
@@ -1210,7 +1210,7 @@ do  -- CatmullRom:addPoint
   lurek.log.debug("after add count=" .. cr:len(), "spline")
 end
 
---@api-stub: CatmullRom:removePoint
+--@api-stub: LCatmullRom:removePoint
 -- Removes the control point at `index` (0-based) and returns it.
 -- 0-based index; returns the removed (x, y) pair or errors if out of bounds.
 do  -- CatmullRom:removePoint
@@ -1220,7 +1220,7 @@ do  -- CatmullRom:removePoint
   lurek.log.debug("removed " .. rx .. "," .. ry, "spline")
 end
 
---@api-stub: Hermite:sample
+--@api-stub: LHermite:sample
 -- Evaluate the spline at parameter t in [0, 1].
 -- t in [0, 1] traverses the segment; outside that range extrapolates the polynomial.
 do  -- Hermite:sample
@@ -1230,7 +1230,7 @@ do  -- Hermite:sample
   lurek.log.debug("hermite mid " .. x .. "," .. y, "spline")
 end
 
---@api-stub: RandomGenerator:random
+--@api-stub: LRandomGenerator:random
 -- Returns a uniform random number in [0, 1).
 -- Uniform [0,1) — bedrock for everything else; combine with multipliers for ranges.
 do  -- RandomGenerator:random
@@ -1239,7 +1239,7 @@ do  -- RandomGenerator:random
   lurek.log.debug("u01=" .. v, "rng")
 end
 
---@api-stub: RandomGenerator:randomFloat
+--@api-stub: LRandomGenerator:randomFloat
 -- Returns a uniform random float in [min, max).
 -- Inclusive lower bound, exclusive upper — matches Python's random.uniform half-open.
 do  -- RandomGenerator:randomFloat
@@ -1248,7 +1248,7 @@ do  -- RandomGenerator:randomFloat
   lurek.log.debug("angle=" .. angle, "rng")
 end
 
---@api-stub: RandomGenerator:randomInt
+--@api-stub: LRandomGenerator:randomInt
 -- Returns a uniform random integer in [min, max].
 -- Inclusive on both ends — perfect for d20 rolls and grid coordinates.
 do  -- RandomGenerator:randomInt
@@ -1257,7 +1257,7 @@ do  -- RandomGenerator:randomInt
   lurek.log.info("d20=" .. roll, "rng")
 end
 
---@api-stub: RandomGenerator:getSeed
+--@api-stub: LRandomGenerator:getSeed
 -- Returns the seed used to initialise this generator.
 -- Returns the seed used at construction; useful to log for replay reproduction.
 do  -- RandomGenerator:getSeed
@@ -1266,7 +1266,7 @@ do  -- RandomGenerator:getSeed
   lurek.log.info("rng seed=" .. seed, "rng")
 end
 
---@api-stub: RandomGenerator:setSeed
+--@api-stub: LRandomGenerator:setSeed
 -- Sets the seed, fully resetting the generator state.
 -- Resets internal state — call before deterministic sequences like proc-gen rooms.
 do  -- RandomGenerator:setSeed
@@ -1275,7 +1275,7 @@ do  -- RandomGenerator:setSeed
   lurek.log.debug("after reseed=" .. rng:randomInt(1, 6), "rng")
 end
 
---@api-stub: RandomGenerator:getState
+--@api-stub: LRandomGenerator:getState
 -- Serialises the generator state as a string for later restoration.
 -- Returns an opaque string; pair with setState for save/load checkpoints.
 do  -- RandomGenerator:getState
@@ -1284,7 +1284,7 @@ do  -- RandomGenerator:getState
   lurek.log.debug("state bytes=" .. #snapshot, "rng")
 end
 
---@api-stub: RandomGenerator:setState
+--@api-stub: LRandomGenerator:setState
 -- Restores the generator state from a previously serialised string.
 -- Restores a previously captured state; enables deterministic re-roll on save load.
 do  -- RandomGenerator:setState
@@ -1294,7 +1294,7 @@ do  -- RandomGenerator:setState
   rng:setState(snap)
 end
 
---@api-stub: Transform:translate
+--@api-stub: LTransform:translate
 -- Applies translation to the transform.
 -- Mutates the transform — apply each frame to drift a sprite's local origin.
 do  -- Transform:translate
@@ -1303,7 +1303,7 @@ do  -- Transform:translate
   lurek.log.debug("translated", "xform")
 end
 
---@api-stub: Transform:rotate
+--@api-stub: LTransform:rotate
 -- Applies a rotation in radians.
 -- Angle in radians; rotation is post-multiplied so order with translate matters.
 do  -- Transform:rotate
@@ -1312,7 +1312,7 @@ do  -- Transform:rotate
   lurek.log.debug("rotated 45deg", "xform")
 end
 
---@api-stub: Transform:scale
+--@api-stub: LTransform:scale
 -- Applies non-uniform scaling.
 -- Pass one arg for uniform scale; two args for non-uniform (sx, sy).
 do  -- Transform:scale
@@ -1321,7 +1321,7 @@ do  -- Transform:scale
   lurek.log.debug("scaled", "xform")
 end
 
---@api-stub: Transform:shear
+--@api-stub: LTransform:shear
 -- Applies horizontal and vertical shear factors to this transform matrix.
 -- Shears the matrix by (kx, ky); rarely used outside of italic-text tricks.
 do  -- Transform:shear
@@ -1330,7 +1330,7 @@ do  -- Transform:shear
   lurek.log.debug("sheared", "xform")
 end
 
---@api-stub: Transform:reset
+--@api-stub: LTransform:reset
 -- Resets the transform to identity.
 -- Drops back to identity — call to recycle a transform across frames without re-allocating.
 do  -- Transform:reset
@@ -1339,7 +1339,7 @@ do  -- Transform:reset
   lurek.log.debug("reset to identity", "xform")
 end
 
---@api-stub: Transform:transformPoint
+--@api-stub: LTransform:transformPoint
 -- Transforms a point from local space to world space.
 -- Goes local -> world; pair with inverseTransformPoint for hit-testing rotated sprites.
 do  -- Transform:transformPoint
@@ -1348,7 +1348,7 @@ do  -- Transform:transformPoint
   lurek.log.debug("world " .. wx .. "," .. wy, "xform")
 end
 
---@api-stub: Transform:inverseTransformPoint
+--@api-stub: LTransform:inverseTransformPoint
 -- Transforms a point from world space back to local space.
 -- Goes world -> local; use to convert mouse coords into the sprite's frame.
 do  -- Transform:inverseTransformPoint
@@ -1357,7 +1357,7 @@ do  -- Transform:inverseTransformPoint
   lurek.log.debug("local " .. lx .. "," .. ly, "xform")
 end
 
---@api-stub: Transform:inverse
+--@api-stub: LTransform:inverse
 -- Returns a new Transform that undoes this transform.
 -- Returns a fresh inverse Transform; useful to undo a chain of transformations.
 do  -- Transform:inverse
@@ -1366,7 +1366,7 @@ do  -- Transform:inverse
   lurek.log.debug("got inverse", "xform")
 end
 
---@api-stub: Transform:clone
+--@api-stub: LTransform:clone
 -- Returns a copy of this transform.
 -- Returns a deep copy so the original is not mutated by subsequent ops.
 do  -- Transform:clone
@@ -1375,7 +1375,7 @@ do  -- Transform:clone
   dup:translate(5, 0)
 end
 
---@api-stub: Transform:getMatrix
+--@api-stub: LTransform:getMatrix
 -- Returns the 3x3 matrix as a flat table of 9 numbers (row-major).
 -- Flat 9-element row-major table; pass to a custom shader as a uniform.
 do  -- Transform:getMatrix
@@ -1384,7 +1384,7 @@ do  -- Transform:getMatrix
   lurek.log.debug("matrix elems=" .. #m, "xform")
 end
 
---@api-stub: Transform:decompose
+--@api-stub: LTransform:decompose
 -- Decomposes this transform into translation, rotation, and scale.
 -- Returns (x, y, angle, sx, sy); handy for serialising a transform back into config.
 do  -- Transform:decompose
@@ -1393,7 +1393,7 @@ do  -- Transform:decompose
   lurek.log.info("xform " .. x .. "," .. y .. " a=" .. angle, "xform")
 end
 
---@api-stub: BezierCurve:evaluate
+--@api-stub: LBezierCurve:evaluate
 -- Evaluates the curve at parameter t, returning (x, y).
 -- Returns (x, y) at parameter t; t may run outside [0,1] but the curve extrapolates.
 do  -- BezierCurve:evaluate
@@ -1402,7 +1402,7 @@ do  -- BezierCurve:evaluate
   lurek.log.debug("eval " .. x .. "," .. y, "spline")
 end
 
---@api-stub: BezierCurve:render
+--@api-stub: LBezierCurve:render
 -- Renders the curve as a polyline with the given number of segments.
 -- Returns a polyline as an array of 2-element tables; pass enough segments for visual smoothness.
 do  -- BezierCurve:render
@@ -1411,7 +1411,7 @@ do  -- BezierCurve:render
   lurek.log.info("polyline points=" .. #pts, "spline")
 end
 
---@api-stub: BezierCurve:getDerivative
+--@api-stub: LBezierCurve:getDerivative
 -- Returns a new BezierCurve representing the first derivative.
 -- Returns a new curve that, when evaluated, gives the tangent vector of the original.
 do  -- BezierCurve:getDerivative
@@ -1420,7 +1420,7 @@ do  -- BezierCurve:getDerivative
   lurek.log.debug("derivative ready", "spline")
 end
 
---@api-stub: BezierCurve:getControlPoint
+--@api-stub: LBezierCurve:getControlPoint
 -- Returns the control point at 1-based index as (x, y), or nil.
 -- 1-based index; returns nil, nil when out of range so guard before use.
 do  -- BezierCurve:getControlPoint
@@ -1429,7 +1429,7 @@ do  -- BezierCurve:getControlPoint
   lurek.log.debug("cp2=" .. x .. "," .. y, "spline")
 end
 
---@api-stub: BezierCurve:removeControlPoint
+--@api-stub: LBezierCurve:removeControlPoint
 -- Removes a control point at 1-based index.
 -- 1-based; returns true on success, false if the index was out of range.
 do  -- BezierCurve:removeControlPoint
@@ -1438,7 +1438,7 @@ do  -- BezierCurve:removeControlPoint
   lurek.log.debug("removed=" .. tostring(ok), "spline")
 end
 
---@api-stub: BezierCurve:getControlPointCount
+--@api-stub: LBezierCurve:getControlPointCount
 -- Returns the number of control points.
 -- Useful before iterating control points or when choosing a render segment count.
 do  -- BezierCurve:getControlPointCount
@@ -1447,7 +1447,7 @@ do  -- BezierCurve:getControlPointCount
   lurek.log.info("cp count=" .. n, "spline")
 end
 
---@api-stub: BezierCurve:length
+--@api-stub: LBezierCurve:length
 -- Returns the approximate arc length of the curve.
 -- Approximate arc length using internal subdivision; do not call every frame.
 do  -- BezierCurve:length
@@ -1456,7 +1456,7 @@ do  -- BezierCurve:length
   lurek.log.info("arc len=" .. len, "spline")
 end
 
---@api-stub: BezierCurve:translate
+--@api-stub: LBezierCurve:translate
 -- Translates all control points by (dx, dy).
 -- Mutates by shifting every control point by (dx, dy); use for moving an entire path.
 do  -- BezierCurve:translate
@@ -1465,7 +1465,7 @@ do  -- BezierCurve:translate
   lurek.log.debug("translated", "spline")
 end
 
---@api-stub: BezierCurve:rotate
+--@api-stub: LBezierCurve:rotate
 -- Rotates all control points around a pivot by angle radians.
 -- Rotates around (ox, oy) by angle radians; useful for animating a swung path.
 do  -- BezierCurve:rotate
@@ -1474,7 +1474,7 @@ do  -- BezierCurve:rotate
   lurek.log.debug("rotated", "spline")
 end
 
---@api-stub: BezierCurve:scale
+--@api-stub: LBezierCurve:scale
 -- Scales all control points around a pivot by factor s.
 -- Scales around (ox, oy) by factor s; combine with translate for arbitrary affine effects.
 do  -- BezierCurve:scale
@@ -1482,10 +1482,6 @@ do  -- BezierCurve:scale
   c:scale(2.0, 0, 0)
   lurek.log.debug("scaled", "spline")
 end
-
---@api-stub: Tween:update
--- Advances the clock by dt seconds.
--- Returns true on the frame the tween completes — chain follow-ups from that.
 do  -- Tween:update
   local tw = lurek.math.newTween(1.0, "outQuad")
   function lurek.process(dt)
@@ -1493,7 +1489,7 @@ do  -- Tween:update
   end
 end
 
---@api-stub: Tween:reset
+--@api-stub: LTween:reset
 -- Resets the tween elapsed time to zero, restarting the animation.
 -- Re-runs the same animation from t=0; call on respawn or animation loop.
 do  -- Tween:reset
@@ -1502,7 +1498,7 @@ do  -- Tween:reset
   tw:reset()
 end
 
---@api-stub: Tween:getValue
+--@api-stub: LTween:getValue
 -- Returns the interpolated value at 1-based index, or all values as a.
 -- Pass nil for a list of all values, or 1-based index for a single one.
 do  -- Tween:getValue
@@ -1512,7 +1508,7 @@ do  -- Tween:getValue
   lurek.log.debug("value=" .. v, "tween")
 end
 
---@api-stub: Tween:getAllValues
+--@api-stub: LTween:getAllValues
 -- Returns all interpolated values as a table.
 -- Returns a flat table; useful when binding many properties to one shared clock.
 do  -- Tween:getAllValues
@@ -1522,7 +1518,7 @@ do  -- Tween:getAllValues
   lurek.log.debug("count=" .. #all, "tween")
 end
 
---@api-stub: Tween:isComplete
+--@api-stub: LTween:isComplete
 -- Returns true if the tween has finished.
 -- Branch on this to enable a button or trigger a follow-up animation.
 do  -- Tween:isComplete
@@ -1532,7 +1528,7 @@ do  -- Tween:isComplete
   end
 end
 
---@api-stub: Tween:getValueCount
+--@api-stub: LTween:getValueCount
 -- Returns the number of values in this tween.
 -- Returns the number of (start, target) pairs added; pre-iterate before getValue.
 do  -- Tween:getValueCount
@@ -1541,7 +1537,7 @@ do  -- Tween:getValueCount
   lurek.log.info("count=" .. tw:getValueCount(), "tween")
 end
 
---@api-stub: Tween:getEasingName
+--@api-stub: LTween:getEasingName
 -- Returns the easing function name.
 -- Returns the easing string passed to newTween — useful in debug overlays.
 do  -- Tween:getEasingName
@@ -1549,7 +1545,7 @@ do  -- Tween:getEasingName
   lurek.log.debug("easing=" .. tw:getEasingName(), "tween")
 end
 
---@api-stub: Tween:getDuration
+--@api-stub: LTween:getDuration
 -- Returns the tween duration in seconds.
 -- Returns the duration in seconds; pair with getTime to compute progress percentage.
 do  -- Tween:getDuration
@@ -1557,7 +1553,7 @@ do  -- Tween:getDuration
   lurek.log.info("duration=" .. tw:getDuration(), "tween")
 end
 
---@api-stub: Tween:getTime
+--@api-stub: LTween:getTime
 -- Returns the current clock time.
 -- Returns elapsed seconds clamped to duration; divide to get [0, 1] progress.
 do  -- Tween:getTime
@@ -1566,7 +1562,7 @@ do  -- Tween:getTime
   lurek.log.debug("pct=" .. pct, "tween")
 end
 
---@api-stub: Tween:getClock
+--@api-stub: LTween:getClock
 -- Alias for getTime().
 -- Alias of getTime() preserved for older scripts.
 do  -- Tween:getClock
@@ -1575,7 +1571,7 @@ do  -- Tween:getClock
   lurek.log.debug("now=" .. now, "tween")
 end
 
---@api-stub: Tween:setTime
+--@api-stub: LTween:setTime
 -- Sets the clock to a specific time, clamped to [0, duration].
 -- Hard-seek the clock; useful for timeline scrubbers in editors.
 do  -- Tween:setTime
@@ -1584,7 +1580,7 @@ do  -- Tween:setTime
   lurek.log.debug("seeked to 0.5", "tween")
 end
 
---@api-stub: Tween:set
+--@api-stub: LTween:set
 -- Alias for setTime().
 -- Alias for setTime; both clamp into [0, duration].
 do  -- Tween:set
@@ -1593,7 +1589,7 @@ do  -- Tween:set
   lurek.log.debug("clock set", "tween")
 end
 
---@api-stub: Tween:addValue
+--@api-stub: LTween:addValue
 -- Adds a start/target value pair.
 -- Adds a (start, target) pair and returns the 1-based index for later getValue.
 do  -- Tween:addValue
@@ -1602,7 +1598,7 @@ do  -- Tween:addValue
   lurek.log.info("value idx=" .. idx, "tween")
 end
 
---@api-stub: SpatialHash:remove
+--@api-stub: LSpatialHash:remove
 -- Removes an item by its ID.
 -- Pair every insert with a remove on entity death so stale ids do not leak into queries.
 do  -- SpatialHash:remove
@@ -1611,7 +1607,7 @@ do  -- SpatialHash:remove
   h:remove("npc")
 end
 
---@api-stub: SpatialHash:clear
+--@api-stub: LSpatialHash:clear
 -- Removes all registered items from this spatial hash, leaving it empty.
 -- Drops every entry — useful at scene transitions to start with a fresh grid.
 do  -- SpatialHash:clear
@@ -1620,7 +1616,7 @@ do  -- SpatialHash:clear
   h:clear()
 end
 
---@api-stub: SpatialHash:getCellSize
+--@api-stub: LSpatialHash:getCellSize
 -- Returns the cell size used to partition the spatial hash grid.
 -- Echo back the cell size so debug HUDs can align grid lines without external storage.
 do  -- SpatialHash:getCellSize
@@ -1629,7 +1625,7 @@ do  -- SpatialHash:getCellSize
   lurek.log.debug("cell=" .. cs, "spatial")
 end
 
---@api-stub: SpatialHash:getItemCount
+--@api-stub: LSpatialHash:getItemCount
 -- Returns the number of items in the hash.
 -- Cheap occupancy meter; helpful when tuning cell size against entity density.
 do  -- SpatialHash:getItemCount
@@ -1638,7 +1634,7 @@ do  -- SpatialHash:getItemCount
   lurek.log.info("items=" .. h:getItemCount(), "spatial")
 end
 
---@api-stub: NoiseGenerator:perlin1d
+--@api-stub: LNoiseGenerator:perlin1d
 -- Returns 1D Perlin noise at x.
 -- Use 1D for animating a single varying parameter like wind strength over time.
 do  -- NoiseGenerator:perlin1d
@@ -1647,7 +1643,7 @@ do  -- NoiseGenerator:perlin1d
   lurek.log.debug("wind=" .. wind, "weather")
 end
 
---@api-stub: NoiseGenerator:perlin2d
+--@api-stub: LNoiseGenerator:perlin2d
 -- Returns 2D Perlin noise at (x, y).
 -- Standard terrain Perlin; same seed always returns same result for a given (x, y).
 do  -- NoiseGenerator:perlin2d
@@ -1656,7 +1652,7 @@ do  -- NoiseGenerator:perlin2d
   lurek.log.debug("h=" .. h, "noise")
 end
 
---@api-stub: NoiseGenerator:perlin3d
+--@api-stub: LNoiseGenerator:perlin3d
 -- Returns 3D Perlin noise at (x, y, z).
 -- Use the third axis for time to seamlessly animate a noise field.
 do  -- NoiseGenerator:perlin3d
@@ -1665,7 +1661,7 @@ do  -- NoiseGenerator:perlin3d
   lurek.log.debug("v=" .. v, "noise")
 end
 
---@api-stub: NoiseGenerator:perlin4d
+--@api-stub: LNoiseGenerator:perlin4d
 -- Returns 4D Perlin noise at (x, y, z, w).
 -- Useful for tiling 3D textures or for noise that animates AND wraps.
 do  -- NoiseGenerator:perlin4d
@@ -1674,7 +1670,7 @@ do  -- NoiseGenerator:perlin4d
   lurek.log.debug("v4=" .. v, "noise")
 end
 
---@api-stub: NoiseGenerator:simplex1d
+--@api-stub: LNoiseGenerator:simplex1d
 -- Returns 1D Simplex noise at x.
 -- Faster 1D variant; great for animating a single ambient parameter.
 do  -- NoiseGenerator:simplex1d
@@ -1683,7 +1679,7 @@ do  -- NoiseGenerator:simplex1d
   lurek.log.debug("s1=" .. s, "noise")
 end
 
---@api-stub: NoiseGenerator:simplex2d
+--@api-stub: LNoiseGenerator:simplex2d
 -- Returns 2D Simplex noise at (x, y).
 -- Faster than perlin2d with fewer directional artefacts; preferred for organic shapes.
 do  -- NoiseGenerator:simplex2d
@@ -1692,7 +1688,7 @@ do  -- NoiseGenerator:simplex2d
   lurek.log.debug("s2=" .. s, "noise")
 end
 
---@api-stub: NoiseGenerator:simplex3d
+--@api-stub: LNoiseGenerator:simplex3d
 -- Returns 3D Simplex noise at (x, y, z).
 -- Use the z dimension for time when you want isotropic 2D animation.
 do  -- NoiseGenerator:simplex3d
@@ -1701,7 +1697,7 @@ do  -- NoiseGenerator:simplex3d
   lurek.log.debug("s3=" .. s, "noise")
 end
 
---@api-stub: NoiseGenerator:getSeed
+--@api-stub: LNoiseGenerator:getSeed
 -- Returns the current seed.
 -- Echoes back the active seed; useful for logging deterministic worlds.
 do  -- NoiseGenerator:getSeed
@@ -1709,7 +1705,7 @@ do  -- NoiseGenerator:getSeed
   lurek.log.info("noise seed=" .. n:getSeed(), "noise")
 end
 
---@api-stub: NoiseGenerator:setSeed
+--@api-stub: LNoiseGenerator:setSeed
 -- Sets the seed and rebuilds the permutation table.
 -- Re-seeds AND rebuilds the permutation table — costlier than a number assignment.
 do  -- NoiseGenerator:setSeed
@@ -1718,7 +1714,7 @@ do  -- NoiseGenerator:setSeed
   lurek.log.debug("re-seeded", "noise")
 end
 
---@api-stub: Circle:area
+--@api-stub: LCircle:area
 -- Returns the area of the circle (π r²).
 -- Returns pi * r^2; useful when comparing influence radii of abilities.
 do  -- Circle:area
@@ -1726,7 +1722,7 @@ do  -- Circle:area
   lurek.log.debug("area=" .. c:area(), "geo")
 end
 
---@api-stub: Circle:perimeter
+--@api-stub: LCircle:perimeter
 -- Returns the circumference of the circle (2 π r).
 -- Returns 2 * pi * r; useful when computing the loop length of a ring path.
 do  -- Circle:perimeter
@@ -1734,7 +1730,7 @@ do  -- Circle:perimeter
   lurek.log.debug("perimeter=" .. c:perimeter(), "geo")
 end
 
---@api-stub: Circle:contains
+--@api-stub: LCircle:contains
 -- Returns true if the point (px, py) lies inside or on the boundary.
 -- Inclusive of the boundary — a point exactly on the rim returns true.
 do  -- Circle:contains
@@ -1744,7 +1740,7 @@ do  -- Circle:contains
   end
 end
 
---@api-stub: Circle:intersects
+--@api-stub: LCircle:intersects
 -- Returns true if this circle overlaps another circle.
 -- Pass another Circle; equivalent to circleIntersectsCircle but operates on userdata.
 do  -- Circle:intersects
@@ -1753,7 +1749,7 @@ do  -- Circle:intersects
   lurek.log.debug("hit=" .. tostring(a:intersects(b)), "geo")
 end
 
---@api-stub: Circle:aabb
+--@api-stub: LCircle:aabb
 -- Returns the axis-aligned bounding box as (min_x, min_y, max_x, max_y).
 -- Returns (min_x, min_y, max_x, max_y); convenient for feeding broad-phase trees.
 do  -- Circle:aabb
@@ -1762,7 +1758,7 @@ do  -- Circle:aabb
   lurek.log.debug("aabb " .. x1 .. "," .. y1 .. " to " .. x2 .. "," .. y2, "geo")
 end
 
---@api-stub: Circle:x
+--@api-stub: LCircle:x
 -- Returns the circle centre X.
 -- Returns the centre X coord; mirrors Circle.x field for code that prefers methods.
 do  -- Circle:x
@@ -1770,7 +1766,7 @@ do  -- Circle:x
   lurek.log.debug("x=" .. c:x(), "geo")
 end
 
---@api-stub: Circle:y
+--@api-stub: LCircle:y
 -- Returns the circle centre Y.
 -- Returns the centre Y coord; pairs with :x().
 do  -- Circle:y
@@ -1778,7 +1774,7 @@ do  -- Circle:y
   lurek.log.debug("y=" .. c:y(), "geo")
 end
 
---@api-stub: Circle:radius
+--@api-stub: LCircle:radius
 -- Returns the circle radius.
 -- Returns the radius value; clamped to 0 if negative was passed at construction.
 do  -- Circle:radius
@@ -1786,7 +1782,7 @@ do  -- Circle:radius
   lurek.log.info("radius=" .. c:radius(), "geo")
 end
 
---@api-stub: AabbTree:remove
+--@api-stub: LAabbTree:remove
 -- Removes the entry with the given id.
 -- Returns true if the id existed; pair every insert with a remove on entity destruction.
 do  -- AabbTree:remove
@@ -1796,7 +1792,7 @@ do  -- AabbTree:remove
   lurek.log.debug("removed=" .. tostring(ok), "physics")
 end
 
---@api-stub: AabbTree:queryPoint
+--@api-stub: LAabbTree:queryPoint
 -- Returns the ids of all entries whose AABBs contain the given point.
 -- Returns ids of every AABB containing the point; iterate to drive hover detection.
 do  -- AabbTree:queryPoint
@@ -1806,7 +1802,7 @@ do  -- AabbTree:queryPoint
   lurek.log.info("hits=" .. #ids, "physics")
 end
 
---@api-stub: AabbTree:contains
+--@api-stub: LAabbTree:contains
 -- Returns true if an entry with the given id exists in the tree.
 -- Cheap presence test; faster than a full query when you only need 'does this id exist?'.
 do  -- AabbTree:contains
@@ -1817,7 +1813,7 @@ do  -- AabbTree:contains
   end
 end
 
---@api-stub: AabbTree:len
+--@api-stub: LAabbTree:len
 -- Returns the number of entries in the tree.
 -- Returns the number of entries; useful for a debug HUD entity counter.
 do  -- AabbTree:len
@@ -1826,7 +1822,7 @@ do  -- AabbTree:len
   lurek.log.info("aabb tree size=" .. t:len(), "physics")
 end
 
---@api-stub: AabbTree:isEmpty
+--@api-stub: LAabbTree:isEmpty
 -- Returns true if the tree contains no entries.
 -- Branch on isEmpty() before iterating to avoid setting up unused query state.
 do  -- AabbTree:isEmpty
@@ -1836,7 +1832,7 @@ do  -- AabbTree:isEmpty
   end
 end
 
---@api-stub: AabbTree:clear
+--@api-stub: LAabbTree:clear
 -- Removes all entries from the tree.
 -- Drops every entry; call between scenes to reset broad-phase data.
 do  -- AabbTree:clear
@@ -1845,7 +1841,7 @@ do  -- AabbTree:clear
   t:clear()
 end
 
---@api-stub: NoiseGenerator:fbm
+--@api-stub: LNoiseGenerator:fbm
 -- Generates fractional Brownian motion noise at (x, y) using multiple octaves.
 -- octaves, lacunarity, and gain control detail, frequency growth, and amplitude decay.
 do  -- NoiseGenerator:fbm
@@ -1854,7 +1850,7 @@ do  -- NoiseGenerator:fbm
   lurek.log.info("fbm noise: " .. v, "math")
 end
 
---@api-stub: NoiseGenerator:generateMap
+--@api-stub: LNoiseGenerator:generateMap
 -- Generates a 2D noise map into a flat table of width*height floats.
 -- scale controls zoom; offsets shift the sample window across the noise field.
 do  -- NoiseGenerator:generateMap
@@ -1863,7 +1859,7 @@ do  -- NoiseGenerator:generateMap
   lurek.log.info("map size: " .. #map, "math")
 end
 
---@api-stub: SpatialHash:insert
+--@api-stub: LSpatialHash:insert
 -- Inserts an item with a bounding rectangle into the spatial hash.
 -- item can be any value (entity id, table); duplicate inserts accumulate.
 do  -- SpatialHash:insert
@@ -1873,7 +1869,7 @@ do  -- SpatialHash:insert
   lurek.log.info("items: " .. sh:getItemCount(), "math")
 end
 
---@api-stub: AabbTree:insert
+--@api-stub: LAabbTree:insert
 -- Inserts an axis-aligned bounding box into the dynamic AABB tree.
 -- Returns a proxy id for later update() or remove() calls.
 do  -- AabbTree:insert
@@ -1883,7 +1879,7 @@ do  -- AabbTree:insert
   lurek.log.info("tree len: " .. tree:len(), "math")
 end
 
---@api-stub: BezierCurve:insertControlPoint
+--@api-stub: LBezierCurve:insertControlPoint
 -- Inserts a new control point at the given parameter t along the curve.
 -- The curve order increases by 1; use for interactive path editing.
 do  -- BezierCurve:insertControlPoint
@@ -1892,7 +1888,7 @@ do  -- BezierCurve:insertControlPoint
   lurek.log.info("ctrl pts: " .. bc:getControlPointCount(), "math")
 end
 
---@api-stub: AabbTree:query
+--@api-stub: LAabbTree:query
 -- Returns all proxies whose bounding boxes overlap the given AABB query rectangle.
 -- Result is a table of user-data values passed to insert().
 do  -- AabbTree:query
@@ -1903,7 +1899,7 @@ do  -- AabbTree:query
   lurek.log.info("hits: " .. #hits, "math")
 end
 
---@api-stub: SpatialHash:queryCircle
+--@api-stub: LSpatialHash:queryCircle
 -- Returns all items whose AABB overlaps a circle with given centre and radius.
 -- Faster than a broad-phase distance check for sparse grids of large objects.
 do  -- SpatialHash:queryCircle
@@ -1914,7 +1910,7 @@ do  -- SpatialHash:queryCircle
   lurek.log.info("circle hits: " .. #hits, "math")
 end
 
---@api-stub: SpatialHash:queryRect
+--@api-stub: LSpatialHash:queryRect
 -- Returns all items whose bounding rectangles overlap the query AABB.
 -- Use for broad-phase collision detection before narrow-phase checks.
 do  -- SpatialHash:queryRect
@@ -1925,7 +1921,7 @@ do  -- SpatialHash:queryRect
   lurek.log.info("rect hits: " .. #hits, "math")
 end
 
---@api-stub: SpatialHash:querySegment
+--@api-stub: LSpatialHash:querySegment
 -- Returns all items whose bounding rectangles are crossed by a line segment.
 -- Use for bullet-traces, line-of-sight culling, and ray-vs-entity checks.
 do  -- SpatialHash:querySegment
@@ -1935,7 +1931,7 @@ do  -- SpatialHash:querySegment
   lurek.log.info("segment hits: " .. #hits, "math")
 end
 
---@api-stub: RandomGenerator:randomNormal
+--@api-stub: LRandomGenerator:randomNormal
 -- Returns a normally-distributed random float with the given mean and stddev.
 -- Uses the Box-Muller transform; negative values are possible.
 do  -- RandomGenerator:randomNormal
@@ -1944,7 +1940,7 @@ do  -- RandomGenerator:randomNormal
   lurek.log.info("normal sample: " .. v, "math")
 end
 
---@api-stub: NoiseGenerator:ridged
+--@api-stub: LNoiseGenerator:ridged
 -- Returns ridged multifractal noise value at (x, y); ridge lines appear as sharp peaks.
 -- Useful for mountain ranges, lightning bolt textures, and cracks.
 do  -- NoiseGenerator:ridged
@@ -1953,7 +1949,7 @@ do  -- NoiseGenerator:ridged
   lurek.log.info("ridged: " .. v, "math")
 end
 
---@api-stub: BezierCurve:setControlPoint
+--@api-stub: LBezierCurve:setControlPoint
 -- Moves the control point at the given index to a new (x, y) position.
 -- Index is 1-based; changes the curve shape without altering the degree.
 do  -- BezierCurve:setControlPoint
@@ -1963,7 +1959,7 @@ do  -- BezierCurve:setControlPoint
   lurek.log.info("ctrl pt 2: " .. cx .. "," .. cy, "math")
 end
 
---@api-stub: Transform:setTransformation
+--@api-stub: LTransform:setTransformation
 -- Resets and sets all transformation parameters (tx,ty, r, sx,sy, ox,oy, kx,ky).
 -- Equivalent to reset() + translate() + rotate() + scale() in one call.
 do  -- Transform:setTransformation
@@ -1973,7 +1969,7 @@ do  -- Transform:setTransformation
   lurek.log.info("transformed origin: " .. x .. "," .. y, "math")
 end
 
---@api-stub: NoiseGenerator:turbulence
+--@api-stub: LNoiseGenerator:turbulence
 -- Returns turbulence noise: sum of |perlin(x*f^i, y*f^i)| across octaves.
 -- Produces cloudy, billowing textures suitable for fog or smoke.
 do  -- NoiseGenerator:turbulence
@@ -1982,7 +1978,7 @@ do  -- NoiseGenerator:turbulence
   lurek.log.info("turbulence: " .. v, "math")
 end
 
---@api-stub: Tween:update
+--@api-stub: LTween:update
 -- Advances the tween by dt seconds and returns the current interpolated value.
 -- Call each frame; tween reports isComplete() = true when it reaches the end.
 do  -- Tween:update
@@ -1992,7 +1988,7 @@ do  -- Tween:update
   lurek.log.info("x at t=0.5: " .. tw:getValue(1), "math")
 end
 
---@api-stub: SpatialHash:update
+--@api-stub: LSpatialHash:update
 -- Updates the stored AABB for an item already in the hash.
 -- Must be called each frame for moving objects to keep queries accurate.
 do  -- SpatialHash:update
@@ -2002,7 +1998,7 @@ do  -- SpatialHash:update
   lurek.log.info("player position updated", "math")
 end
 
---@api-stub: NoiseGenerator:warpDomain
+--@api-stub: LNoiseGenerator:warpDomain
 -- Returns domain-warped noise by distorting (x,y) with a secondary noise field.
 -- Produces swirling, organic shapes; warp_scale controls the distortion magnitude.
 do  -- NoiseGenerator:warpDomain
@@ -2014,7 +2010,7 @@ do  -- NoiseGenerator:warpDomain
   lurek.log.info("warped: " .. v, "math")
 end
 
---@api-stub: NoiseGenerator:worley2d
+--@api-stub: LNoiseGenerator:worley2d
 -- Returns the 2D Worley (cellular) noise F1 distance at (x, y).
 -- Lower values near cell centres; use for stone textures, voronoi patterns.
 do  -- NoiseGenerator:worley2d
@@ -2023,7 +2019,7 @@ do  -- NoiseGenerator:worley2d
   lurek.log.info("worley2d: " .. v, "math")
 end
 
---@api-stub: NoiseGenerator:worley3d
+--@api-stub: LNoiseGenerator:worley3d
 -- Returns the 3D Worley (cellular) noise F1 distance at (x, y, z).
 -- Use for volumetric textures, animated flowing patterns, or fog density fields.
 do  -- NoiseGenerator:worley3d
@@ -2032,7 +2028,7 @@ do  -- NoiseGenerator:worley3d
   lurek.log.info("worley3d: " .. v, "math")
 end
 
---@api-stub: AabbTree:update
+--@api-stub: LAabbTree:update
 -- Advances the dynamic bounding-volume tree, refreshing moved body bounds.
 -- Call once per frame after updating body positions to maintain query accuracy.
 do  -- AabbTree:update
@@ -2051,217 +2047,10 @@ end
 -- The final committed file must contain ZERO --@api-stub: lines.
 -- =============================================================================
 
--- -----------------------------------------------------------------------------
--- AabbTree methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: AabbTree:type -------------------------------------------------
---@api-stub: AabbTree:type
--- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- aabbTree_stub:type()  -- -> string
--- (replace aabbTree_stub with your real AabbTree instance above)
-
--- ---- Stub: AabbTree:typeOf -----------------------------------------------
---@api-stub: AabbTree:typeOf
--- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- aabbTree_stub:typeOf("hero")  -- -> boolean
--- (replace aabbTree_stub with your real AabbTree instance above)
-
--- -----------------------------------------------------------------------------
--- BezierCurve methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: BezierCurve:type ----------------------------------------------
---@api-stub: BezierCurve:type
--- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- bezierCurve_stub:type()  -- -> string
--- (replace bezierCurve_stub with your real BezierCurve instance above)
-
--- ---- Stub: BezierCurve:typeOf --------------------------------------------
---@api-stub: BezierCurve:typeOf
--- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- bezierCurve_stub:typeOf("hero")  -- -> boolean
--- (replace bezierCurve_stub with your real BezierCurve instance above)
-
--- -----------------------------------------------------------------------------
--- CatmullRom methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: CatmullRom:type -----------------------------------------------
---@api-stub: CatmullRom:type
--- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- catmullRom_stub:type()  -- -> string
--- (replace catmullRom_stub with your real CatmullRom instance above)
-
--- ---- Stub: CatmullRom:typeOf ---------------------------------------------
---@api-stub: CatmullRom:typeOf
--- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- catmullRom_stub:typeOf("hero")  -- -> boolean
--- (replace catmullRom_stub with your real CatmullRom instance above)
-
--- -----------------------------------------------------------------------------
--- Circle methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: Circle:type ---------------------------------------------------
---@api-stub: Circle:type
--- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- circle_stub:type()  -- -> string
--- (replace circle_stub with your real Circle instance above)
-
--- ---- Stub: Circle:typeOf -------------------------------------------------
---@api-stub: Circle:typeOf
--- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- circle_stub:typeOf("hero")  -- -> boolean
--- (replace circle_stub with your real Circle instance above)
-
--- -----------------------------------------------------------------------------
--- Hermite methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: Hermite:type --------------------------------------------------
---@api-stub: Hermite:type
--- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- hermite_stub:type()  -- -> string
--- (replace hermite_stub with your real Hermite instance above)
-
--- ---- Stub: Hermite:typeOf ------------------------------------------------
---@api-stub: Hermite:typeOf
--- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- hermite_stub:typeOf("hero")  -- -> boolean
--- (replace hermite_stub with your real Hermite instance above)
-
--- -----------------------------------------------------------------------------
--- NoiseGenerator methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: NoiseGenerator:type -------------------------------------------
---@api-stub: NoiseGenerator:type
--- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- noiseGenerator_stub:type()  -- -> string
--- (replace noiseGenerator_stub with your real NoiseGenerator instance above)
-
--- ---- Stub: NoiseGenerator:typeOf -----------------------------------------
---@api-stub: NoiseGenerator:typeOf
--- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- noiseGenerator_stub:typeOf("hero")  -- -> boolean
--- (replace noiseGenerator_stub with your real NoiseGenerator instance above)
-
--- -----------------------------------------------------------------------------
--- RandomGenerator methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: RandomGenerator:type ------------------------------------------
---@api-stub: RandomGenerator:type
--- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- randomGenerator_stub:type()  -- -> string
--- (replace randomGenerator_stub with your real RandomGenerator instance above)
-
--- ---- Stub: RandomGenerator:typeOf ----------------------------------------
---@api-stub: RandomGenerator:typeOf
--- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- randomGenerator_stub:typeOf("hero")  -- -> boolean
--- (replace randomGenerator_stub with your real RandomGenerator instance above)
-
--- -----------------------------------------------------------------------------
--- SpatialHash methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: SpatialHash:type ----------------------------------------------
---@api-stub: SpatialHash:type
--- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- spatialHash_stub:type()  -- -> string
--- (replace spatialHash_stub with your real SpatialHash instance above)
-
--- ---- Stub: SpatialHash:typeOf --------------------------------------------
---@api-stub: SpatialHash:typeOf
--- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- spatialHash_stub:typeOf("hero")  -- -> boolean
--- (replace spatialHash_stub with your real SpatialHash instance above)
-
--- -----------------------------------------------------------------------------
--- Transform methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: Transform:type ------------------------------------------------
---@api-stub: Transform:type
--- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- transform_stub:type()  -- -> string
--- (replace transform_stub with your real Transform instance above)
-
--- ---- Stub: Transform:typeOf ----------------------------------------------
---@api-stub: Transform:typeOf
--- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- transform_stub:typeOf("hero")  -- -> boolean
--- (replace transform_stub with your real Transform instance above)
-
--- -----------------------------------------------------------------------------
--- Vec2 methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: Vec2:fromAngle ------------------------------------------------
---@api-stub: Vec2:fromAngle
--- Creates a unit vector from an angle in radians.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- vec2_stub:fromAngle(radians)  -- -> Vec2
--- (replace vec2_stub with your real Vec2 instance above)
-
--- ---- Stub: Vec2:type -----------------------------------------------------
---@api-stub: Vec2:type
--- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- vec2_stub:type()  -- -> string
--- (replace vec2_stub with your real Vec2 instance above)
-
--- ---- Stub: Vec2:typeOf ---------------------------------------------------
---@api-stub: Vec2:typeOf
--- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- vec2_stub:typeOf("hero")  -- -> boolean
--- (replace vec2_stub with your real Vec2 instance above)
 
 -- -----------------------------------------------------------------------------
 -- Vec3 methods
 -- -----------------------------------------------------------------------------
-
--- ---- Stub: Vec3:splat ----------------------------------------------------
---@api-stub: Vec3:splat
--- Creates a Vec3 with all components set to `v`.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- vec3_stub:splat(1.0)  -- -> Vec3
--- (replace vec3_stub with your real Vec3 instance above)
-
--- ---- Stub: Vec3:type -----------------------------------------------------
---@api-stub: Vec3:type
--- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- vec3_stub:type()  -- -> string
--- (replace vec3_stub with your real Vec3 instance above)
-
--- ---- Stub: Vec3:typeOf ---------------------------------------------------
---@api-stub: Vec3:typeOf
--- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- vec3_stub:typeOf("hero")  -- -> boolean
--- (replace vec3_stub with your real Vec3 instance above)
 
 -- =============================================================================
 -- STUBS: 26 uncovered lurek.math API item(s)
@@ -2509,869 +2298,4 @@ end
 -- The final committed file must contain ZERO --@api-stub: lines.
 -- =============================================================================
 
--- -----------------------------------------------------------------------------
--- LAabbTree methods
--- -----------------------------------------------------------------------------
 
--- ---- Stub: LAabbTree:insert ----------------------------------------------
---@api-stub: LAabbTree:insert
--- Inserts an entry with the given AABB into the tree.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAabbTree_stub:insert(1, min_x, min_y, max_x, max_y)
--- (replace lAabbTree_stub with your real LAabbTree instance above)
-
--- ---- Stub: LAabbTree:remove ----------------------------------------------
---@api-stub: LAabbTree:remove
--- Removes the entry with the given id.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAabbTree_stub:remove(1)  -- -> boolean
--- (replace lAabbTree_stub with your real LAabbTree instance above)
-
--- ---- Stub: LAabbTree:query -----------------------------------------------
---@api-stub: LAabbTree:query
--- Returns the ids of all entries whose AABBs overlap the query rectangle.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAabbTree_stub:query(min_x, min_y, max_x, max_y)  -- -> table
--- (replace lAabbTree_stub with your real LAabbTree instance above)
-
--- ---- Stub: LAabbTree:queryPoint ------------------------------------------
---@api-stub: LAabbTree:queryPoint
--- Returns the ids of all entries whose AABBs contain the given point.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAabbTree_stub:queryPoint(0.0, 0.0)  -- -> table
--- (replace lAabbTree_stub with your real LAabbTree instance above)
-
--- ---- Stub: LAabbTree:update ----------------------------------------------
---@api-stub: LAabbTree:update
--- Updates the AABB for an existing entry.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAabbTree_stub:update(1, min_x, min_y, max_x, max_y)  -- -> boolean
--- (replace lAabbTree_stub with your real LAabbTree instance above)
-
--- ---- Stub: LAabbTree:contains --------------------------------------------
---@api-stub: LAabbTree:contains
--- Returns true if an entry with the given id exists in the tree.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAabbTree_stub:contains(1)  -- -> boolean
--- (replace lAabbTree_stub with your real LAabbTree instance above)
-
--- ---- Stub: LAabbTree:len -------------------------------------------------
---@api-stub: LAabbTree:len
--- Returns the number of entries in the tree.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAabbTree_stub:len()  -- -> integer
--- (replace lAabbTree_stub with your real LAabbTree instance above)
-
--- ---- Stub: LAabbTree:isEmpty ---------------------------------------------
---@api-stub: LAabbTree:isEmpty
--- Returns true if the tree contains no entries.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAabbTree_stub:isEmpty()  -- -> boolean
--- (replace lAabbTree_stub with your real LAabbTree instance above)
-
--- ---- Stub: LAabbTree:clear -----------------------------------------------
---@api-stub: LAabbTree:clear
--- Removes all entries from the tree.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lAabbTree_stub:clear()
--- (replace lAabbTree_stub with your real LAabbTree instance above)
-
--- -----------------------------------------------------------------------------
--- LBezierCurve methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LBezierCurve:evaluate -----------------------------------------
---@api-stub: LBezierCurve:evaluate
--- Evaluates the curve at parameter t, returning (x, y).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBezierCurve_stub:evaluate(t)  -- -> number, number
--- (replace lBezierCurve_stub with your real LBezierCurve instance above)
-
--- ---- Stub: LBezierCurve:render -------------------------------------------
---@api-stub: LBezierCurve:render
--- Renders the curve as a polyline with the given number of segments.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBezierCurve_stub:render(segments)  -- -> table
--- (replace lBezierCurve_stub with your real LBezierCurve instance above)
-
--- ---- Stub: LBezierCurve:getDerivative ------------------------------------
---@api-stub: LBezierCurve:getDerivative
--- Returns a new BezierCurve representing the first derivative.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBezierCurve_stub:getDerivative()  -- -> BezierCurve
--- (replace lBezierCurve_stub with your real LBezierCurve instance above)
-
--- ---- Stub: LBezierCurve:getControlPoint ----------------------------------
---@api-stub: LBezierCurve:getControlPoint
--- Returns the control point at 1-based index as (x, y), or nil.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBezierCurve_stub:getControlPoint(1)
--- (replace lBezierCurve_stub with your real LBezierCurve instance above)
-
--- ---- Stub: LBezierCurve:setControlPoint ----------------------------------
---@api-stub: LBezierCurve:setControlPoint
--- Sets the control point at 1-based index.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBezierCurve_stub:setControlPoint(1, 0.0, 0.0)  -- -> boolean
--- (replace lBezierCurve_stub with your real LBezierCurve instance above)
-
--- ---- Stub: LBezierCurve:insertControlPoint -------------------------------
---@api-stub: LBezierCurve:insertControlPoint
--- Inserts a control point. If index is given (1-based), inserts at that position.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBezierCurve_stub:insertControlPoint(0.0, 0.0, [index])
--- (replace lBezierCurve_stub with your real LBezierCurve instance above)
-
--- ---- Stub: LBezierCurve:removeControlPoint -------------------------------
---@api-stub: LBezierCurve:removeControlPoint
--- Removes a control point at 1-based index.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBezierCurve_stub:removeControlPoint(1)  -- -> boolean
--- (replace lBezierCurve_stub with your real LBezierCurve instance above)
-
--- ---- Stub: LBezierCurve:getControlPointCount -----------------------------
---@api-stub: LBezierCurve:getControlPointCount
--- Returns the number of control points.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBezierCurve_stub:getControlPointCount()  -- -> integer
--- (replace lBezierCurve_stub with your real LBezierCurve instance above)
-
--- ---- Stub: LBezierCurve:length -------------------------------------------
---@api-stub: LBezierCurve:length
--- Returns the approximate arc length of the curve.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBezierCurve_stub:length()  -- -> number
--- (replace lBezierCurve_stub with your real LBezierCurve instance above)
-
--- ---- Stub: LBezierCurve:translate ----------------------------------------
---@api-stub: LBezierCurve:translate
--- Translates all control points by (dx, dy).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBezierCurve_stub:translate(dx, dy)
--- (replace lBezierCurve_stub with your real LBezierCurve instance above)
-
--- ---- Stub: LBezierCurve:rotate -------------------------------------------
---@api-stub: LBezierCurve:rotate
--- Rotates all control points around a pivot by angle radians.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBezierCurve_stub:rotate(0.0, ox, oy)
--- (replace lBezierCurve_stub with your real LBezierCurve instance above)
-
--- ---- Stub: LBezierCurve:scale --------------------------------------------
---@api-stub: LBezierCurve:scale
--- Scales all control points around a pivot by factor s.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lBezierCurve_stub:scale(s, ox, oy)
--- (replace lBezierCurve_stub with your real LBezierCurve instance above)
-
--- -----------------------------------------------------------------------------
--- LCatmullRom methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LCatmullRom:sample --------------------------------------------
---@api-stub: LCatmullRom:sample
--- Sample the spline at global t in [0, 1].
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lCatmullRom_stub:sample(t)  -- -> number, number
--- (replace lCatmullRom_stub with your real LCatmullRom instance above)
-
--- ---- Stub: LCatmullRom:sampleSegment -------------------------------------
---@api-stub: LCatmullRom:sampleSegment
--- Sample a specific segment at local t in [0, 1].
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lCatmullRom_stub:sampleSegment(seg, t)  -- -> number, number
--- (replace lCatmullRom_stub with your real LCatmullRom instance above)
-
--- ---- Stub: LCatmullRom:len -----------------------------------------------
---@api-stub: LCatmullRom:len
--- Number of control points.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lCatmullRom_stub:len()  -- -> integer
--- (replace lCatmullRom_stub with your real LCatmullRom instance above)
-
--- ---- Stub: LCatmullRom:addPoint ------------------------------------------
---@api-stub: LCatmullRom:addPoint
--- Appends a control point to the spline.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lCatmullRom_stub:addPoint(0.0, 0.0)
--- (replace lCatmullRom_stub with your real LCatmullRom instance above)
-
--- ---- Stub: LCatmullRom:removePoint ---------------------------------------
---@api-stub: LCatmullRom:removePoint
--- Removes the control point at `index` (0-based) and returns it.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lCatmullRom_stub:removePoint(1)  -- -> number, number
--- (replace lCatmullRom_stub with your real LCatmullRom instance above)
-
--- -----------------------------------------------------------------------------
--- LCircle methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LCircle:area --------------------------------------------------
---@api-stub: LCircle:area
--- Returns the area of the circle (π r²).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lCircle_stub:area()  -- -> number
--- (replace lCircle_stub with your real LCircle instance above)
-
--- ---- Stub: LCircle:perimeter ---------------------------------------------
---@api-stub: LCircle:perimeter
--- Returns the circumference of the circle (2 π r).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lCircle_stub:perimeter()  -- -> number
--- (replace lCircle_stub with your real LCircle instance above)
-
--- ---- Stub: LCircle:contains ----------------------------------------------
---@api-stub: LCircle:contains
--- Returns true if the point (px, py) lies inside or on the boundary.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lCircle_stub:contains(px, py)  -- -> boolean
--- (replace lCircle_stub with your real LCircle instance above)
-
--- ---- Stub: LCircle:intersects --------------------------------------------
---@api-stub: LCircle:intersects
--- Returns true if this circle overlaps another circle.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lCircle_stub:intersects(other)  -- -> boolean
--- (replace lCircle_stub with your real LCircle instance above)
-
--- ---- Stub: LCircle:aabb --------------------------------------------------
---@api-stub: LCircle:aabb
--- Returns the axis-aligned bounding box as (min_x, min_y, max_x, max_y).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lCircle_stub:aabb()  -- -> number, number, number, number
--- (replace lCircle_stub with your real LCircle instance above)
-
--- ---- Stub: LCircle:x -----------------------------------------------------
---@api-stub: LCircle:x
--- Returns the circle centre X.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lCircle_stub:x()  -- -> number
--- (replace lCircle_stub with your real LCircle instance above)
-
--- ---- Stub: LCircle:y -----------------------------------------------------
---@api-stub: LCircle:y
--- Returns the circle centre Y.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lCircle_stub:y()  -- -> number
--- (replace lCircle_stub with your real LCircle instance above)
-
--- ---- Stub: LCircle:radius ------------------------------------------------
---@api-stub: LCircle:radius
--- Returns the circle radius.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lCircle_stub:radius()  -- -> number
--- (replace lCircle_stub with your real LCircle instance above)
-
--- -----------------------------------------------------------------------------
--- LHermite methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LHermite:sample -----------------------------------------------
---@api-stub: LHermite:sample
--- Evaluate the spline at parameter t in [0, 1].
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lHermite_stub:sample(t)  -- -> number, number
--- (replace lHermite_stub with your real LHermite instance above)
-
--- -----------------------------------------------------------------------------
--- LNoiseGenerator methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LNoiseGenerator:perlin1d --------------------------------------
---@api-stub: LNoiseGenerator:perlin1d
--- Returns 1D Perlin noise at x.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lNoiseGenerator_stub:perlin1d(0.0)  -- -> number
--- (replace lNoiseGenerator_stub with your real LNoiseGenerator instance above)
-
--- ---- Stub: LNoiseGenerator:perlin2d --------------------------------------
---@api-stub: LNoiseGenerator:perlin2d
--- Returns 2D Perlin noise at (x, y).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lNoiseGenerator_stub:perlin2d(0.0, 0.0)  -- -> number
--- (replace lNoiseGenerator_stub with your real LNoiseGenerator instance above)
-
--- ---- Stub: LNoiseGenerator:perlin3d --------------------------------------
---@api-stub: LNoiseGenerator:perlin3d
--- Returns 3D Perlin noise at (x, y, z).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lNoiseGenerator_stub:perlin3d(0.0, 0.0, 0)  -- -> number
--- (replace lNoiseGenerator_stub with your real LNoiseGenerator instance above)
-
--- ---- Stub: LNoiseGenerator:perlin4d --------------------------------------
---@api-stub: LNoiseGenerator:perlin4d
--- Returns 4D Perlin noise at (x, y, z, w).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lNoiseGenerator_stub:perlin4d(0.0, 0.0, 0, 64.0)  -- -> number
--- (replace lNoiseGenerator_stub with your real LNoiseGenerator instance above)
-
--- ---- Stub: LNoiseGenerator:simplex1d -------------------------------------
---@api-stub: LNoiseGenerator:simplex1d
--- Returns 1D Simplex noise at x.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lNoiseGenerator_stub:simplex1d(0.0)  -- -> number
--- (replace lNoiseGenerator_stub with your real LNoiseGenerator instance above)
-
--- ---- Stub: LNoiseGenerator:simplex2d -------------------------------------
---@api-stub: LNoiseGenerator:simplex2d
--- Returns 2D Simplex noise at (x, y).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lNoiseGenerator_stub:simplex2d(0.0, 0.0)  -- -> number
--- (replace lNoiseGenerator_stub with your real LNoiseGenerator instance above)
-
--- ---- Stub: LNoiseGenerator:simplex3d -------------------------------------
---@api-stub: LNoiseGenerator:simplex3d
--- Returns 3D Simplex noise at (x, y, z).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lNoiseGenerator_stub:simplex3d(0.0, 0.0, 0)  -- -> number
--- (replace lNoiseGenerator_stub with your real LNoiseGenerator instance above)
-
--- ---- Stub: LNoiseGenerator:worley2d --------------------------------------
---@api-stub: LNoiseGenerator:worley2d
--- Returns 2D Worley (cellular) noise at (x, y).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lNoiseGenerator_stub:worley2d(0.0, 0.0, [dist_name], [f2])  -- -> number
--- (replace lNoiseGenerator_stub with your real LNoiseGenerator instance above)
-
--- ---- Stub: LNoiseGenerator:worley3d --------------------------------------
---@api-stub: LNoiseGenerator:worley3d
--- Returns 3D Worley (cellular) noise at (x, y, z).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lNoiseGenerator_stub:worley3d(0.0, 0.0, 0, [dist_name], [f2])  -- -> number
--- (replace lNoiseGenerator_stub with your real LNoiseGenerator instance above)
-
--- ---- Stub: LNoiseGenerator:fbm -------------------------------------------
---@api-stub: LNoiseGenerator:fbm
--- Returns fractal Brownian motion noise at (x, y).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lNoiseGenerator_stub:fbm()  -- -> number
--- (replace lNoiseGenerator_stub with your real LNoiseGenerator instance above)
-
--- ---- Stub: LNoiseGenerator:ridged ----------------------------------------
---@api-stub: LNoiseGenerator:ridged
--- Returns ridged multi-fractal noise at (x, y).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lNoiseGenerator_stub:ridged()  -- -> number
--- (replace lNoiseGenerator_stub with your real LNoiseGenerator instance above)
-
--- ---- Stub: LNoiseGenerator:turbulence ------------------------------------
---@api-stub: LNoiseGenerator:turbulence
--- Returns turbulence noise at (x, y).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lNoiseGenerator_stub:turbulence()  -- -> number
--- (replace lNoiseGenerator_stub with your real LNoiseGenerator instance above)
-
--- ---- Stub: LNoiseGenerator:warpDomain ------------------------------------
---@api-stub: LNoiseGenerator:warpDomain
--- Applies domain warping, returning offset (x, y).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lNoiseGenerator_stub:warpDomain(0.0, 0.0, strength)  -- -> number, number
--- (replace lNoiseGenerator_stub with your real LNoiseGenerator instance above)
-
--- ---- Stub: LNoiseGenerator:generateMap -----------------------------------
---@api-stub: LNoiseGenerator:generateMap
--- Generates a 2D noise map as a flat table (row-major).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lNoiseGenerator_stub:generateMap(64.0, 64.0, [opts])  -- -> table
--- (replace lNoiseGenerator_stub with your real LNoiseGenerator instance above)
-
--- ---- Stub: LNoiseGenerator:getSeed ---------------------------------------
---@api-stub: LNoiseGenerator:getSeed
--- Returns the current seed.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lNoiseGenerator_stub:getSeed()  -- -> integer
--- (replace lNoiseGenerator_stub with your real LNoiseGenerator instance above)
-
--- ---- Stub: LNoiseGenerator:setSeed ---------------------------------------
---@api-stub: LNoiseGenerator:setSeed
--- Sets the seed and rebuilds the permutation table.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lNoiseGenerator_stub:setSeed(seed)
--- (replace lNoiseGenerator_stub with your real LNoiseGenerator instance above)
-
--- -----------------------------------------------------------------------------
--- LRandomGenerator methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LRandomGenerator:random ---------------------------------------
---@api-stub: LRandomGenerator:random
--- Returns a uniform random number in [0, 1).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lRandomGenerator_stub:random()  -- -> number
--- (replace lRandomGenerator_stub with your real LRandomGenerator instance above)
-
--- ---- Stub: LRandomGenerator:randomFloat ----------------------------------
---@api-stub: LRandomGenerator:randomFloat
--- Returns a uniform random float in [min, max).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lRandomGenerator_stub:randomFloat(min, max)  -- -> number
--- (replace lRandomGenerator_stub with your real LRandomGenerator instance above)
-
--- ---- Stub: LRandomGenerator:randomInt ------------------------------------
---@api-stub: LRandomGenerator:randomInt
--- Returns a uniform random integer in [min, max].
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lRandomGenerator_stub:randomInt(min, max)  -- -> integer
--- (replace lRandomGenerator_stub with your real LRandomGenerator instance above)
-
--- ---- Stub: LRandomGenerator:randomNormal ---------------------------------
---@api-stub: LRandomGenerator:randomNormal
--- Returns a random number from a normal (Gaussian) distribution.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lRandomGenerator_stub:randomNormal([stddev], [mean])  -- -> number
--- (replace lRandomGenerator_stub with your real LRandomGenerator instance above)
-
--- ---- Stub: LRandomGenerator:getSeed --------------------------------------
---@api-stub: LRandomGenerator:getSeed
--- Returns the seed used to initialise this generator.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lRandomGenerator_stub:getSeed()  -- -> integer
--- (replace lRandomGenerator_stub with your real LRandomGenerator instance above)
-
--- ---- Stub: LRandomGenerator:setSeed --------------------------------------
---@api-stub: LRandomGenerator:setSeed
--- Sets the seed, fully resetting the generator state.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lRandomGenerator_stub:setSeed(seed)
--- (replace lRandomGenerator_stub with your real LRandomGenerator instance above)
-
--- ---- Stub: LRandomGenerator:getState -------------------------------------
---@api-stub: LRandomGenerator:getState
--- Serialises the generator state as a string for later restoration.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lRandomGenerator_stub:getState()  -- -> string
--- (replace lRandomGenerator_stub with your real LRandomGenerator instance above)
-
--- ---- Stub: LRandomGenerator:setState -------------------------------------
---@api-stub: LRandomGenerator:setState
--- Restores the generator state from a previously serialised string.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lRandomGenerator_stub:setState(state)
--- (replace lRandomGenerator_stub with your real LRandomGenerator instance above)
-
--- -----------------------------------------------------------------------------
--- LSpatialHash methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LSpatialHash:insert -------------------------------------------
---@api-stub: LSpatialHash:insert
--- Inserts an item with the given AABB.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSpatialHash_stub:insert(1, 0.0, 0.0, 64.0, 64.0)
--- (replace lSpatialHash_stub with your real LSpatialHash instance above)
-
--- ---- Stub: LSpatialHash:update -------------------------------------------
---@api-stub: LSpatialHash:update
--- Updates an existing item's AABB.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSpatialHash_stub:update(1, 0.0, 0.0, 64.0, 64.0)
--- (replace lSpatialHash_stub with your real LSpatialHash instance above)
-
--- ---- Stub: LSpatialHash:remove -------------------------------------------
---@api-stub: LSpatialHash:remove
--- Removes an item by its ID.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSpatialHash_stub:remove(1)
--- (replace lSpatialHash_stub with your real LSpatialHash instance above)
-
--- ---- Stub: LSpatialHash:clear --------------------------------------------
---@api-stub: LSpatialHash:clear
--- Removes all registered items from this spatial hash, leaving it empty.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSpatialHash_stub:clear()
--- (replace lSpatialHash_stub with your real LSpatialHash instance above)
-
--- ---- Stub: LSpatialHash:queryRect ----------------------------------------
---@api-stub: LSpatialHash:queryRect
--- Returns IDs of items overlapping the query rectangle.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSpatialHash_stub:queryRect(0.0, 0.0, 64.0, 64.0)  -- -> table
--- (replace lSpatialHash_stub with your real LSpatialHash instance above)
-
--- ---- Stub: LSpatialHash:queryCircle --------------------------------------
---@api-stub: LSpatialHash:queryCircle
--- Returns IDs of items overlapping the query circle.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSpatialHash_stub:queryCircle(cx, cy, 24.0)  -- -> table
--- (replace lSpatialHash_stub with your real LSpatialHash instance above)
-
--- ---- Stub: LSpatialHash:querySegment -------------------------------------
---@api-stub: LSpatialHash:querySegment
--- Returns IDs of items whose AABBs are intersected by the line segment.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSpatialHash_stub:querySegment(x1, y1, x2, y2)  -- -> table
--- (replace lSpatialHash_stub with your real LSpatialHash instance above)
-
--- ---- Stub: LSpatialHash:getCellSize --------------------------------------
---@api-stub: LSpatialHash:getCellSize
--- Returns the cell size used to partition the spatial hash grid.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSpatialHash_stub:getCellSize()  -- -> number
--- (replace lSpatialHash_stub with your real LSpatialHash instance above)
-
--- ---- Stub: LSpatialHash:getItemCount -------------------------------------
---@api-stub: LSpatialHash:getItemCount
--- Returns the number of items in the hash.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lSpatialHash_stub:getItemCount()  -- -> integer
--- (replace lSpatialHash_stub with your real LSpatialHash instance above)
-
--- -----------------------------------------------------------------------------
--- LTransform methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LTransform:translate ------------------------------------------
---@api-stub: LTransform:translate
--- Applies translation to the transform.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTransform_stub:translate(dx, dy)
--- (replace lTransform_stub with your real LTransform instance above)
-
--- ---- Stub: LTransform:rotate ---------------------------------------------
---@api-stub: LTransform:rotate
--- Applies a rotation in radians.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTransform_stub:rotate(0.0)
--- (replace lTransform_stub with your real LTransform instance above)
-
--- ---- Stub: LTransform:scale ----------------------------------------------
---@api-stub: LTransform:scale
--- Applies non-uniform scaling.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTransform_stub:scale(1.0, [sy])
--- (replace lTransform_stub with your real LTransform instance above)
-
--- ---- Stub: LTransform:shear ----------------------------------------------
---@api-stub: LTransform:shear
--- Applies horizontal and vertical shear factors to this transform matrix.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTransform_stub:shear(kx, ky)
--- (replace lTransform_stub with your real LTransform instance above)
-
--- ---- Stub: LTransform:reset ----------------------------------------------
---@api-stub: LTransform:reset
--- Resets the transform to identity.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTransform_stub:reset()
--- (replace lTransform_stub with your real LTransform instance above)
-
--- ---- Stub: LTransform:setTransformation ----------------------------------
---@api-stub: LTransform:setTransformation
--- Replaces the transform with full transformation parameters.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTransform_stub:setTransformation()
--- (replace lTransform_stub with your real LTransform instance above)
-
--- ---- Stub: LTransform:transformPoint -------------------------------------
---@api-stub: LTransform:transformPoint
--- Transforms a point from local space to world space.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTransform_stub:transformPoint(0.0, 0.0)  -- -> number, number
--- (replace lTransform_stub with your real LTransform instance above)
-
--- ---- Stub: LTransform:inverseTransformPoint ------------------------------
---@api-stub: LTransform:inverseTransformPoint
--- Transforms a point from world space back to local space.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTransform_stub:inverseTransformPoint(0.0, 0.0)  -- -> number, number
--- (replace lTransform_stub with your real LTransform instance above)
-
--- ---- Stub: LTransform:inverse --------------------------------------------
---@api-stub: LTransform:inverse
--- Returns a new Transform that undoes this transform.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTransform_stub:inverse()  -- -> Transform
--- (replace lTransform_stub with your real LTransform instance above)
-
--- ---- Stub: LTransform:clone ----------------------------------------------
---@api-stub: LTransform:clone
--- Returns a copy of this transform.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTransform_stub:clone()  -- -> Transform
--- (replace lTransform_stub with your real LTransform instance above)
-
--- ---- Stub: LTransform:getMatrix ------------------------------------------
---@api-stub: LTransform:getMatrix
--- Returns the 3x3 matrix as a flat table of 9 numbers (row-major).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTransform_stub:getMatrix()  -- -> table
--- (replace lTransform_stub with your real LTransform instance above)
-
--- ---- Stub: LTransform:decompose ------------------------------------------
---@api-stub: LTransform:decompose
--- Decomposes this transform into translation, rotation, and scale.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTransform_stub:decompose()  -- -> number, number, number, number, number — x, y, angle, scaleX, scaleY
--- (replace lTransform_stub with your real LTransform instance above)
-
--- -----------------------------------------------------------------------------
--- LTween methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LTween:update -------------------------------------------------
---@api-stub: LTween:update
--- Advances the clock by dt seconds. Returns true when complete.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTween_stub:update(0.016)  -- -> boolean
--- (replace lTween_stub with your real LTween instance above)
-
--- ---- Stub: LTween:reset --------------------------------------------------
---@api-stub: LTween:reset
--- Resets the tween elapsed time to zero, restarting the animation.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTween_stub:reset()
--- (replace lTween_stub with your real LTween instance above)
-
--- ---- Stub: LTween:getValue -----------------------------------------------
---@api-stub: LTween:getValue
--- Returns the interpolated value at 1-based index, or all values as a
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTween_stub:getValue([index])
--- (replace lTween_stub with your real LTween instance above)
-
--- ---- Stub: LTween:getAllValues -------------------------------------------
---@api-stub: LTween:getAllValues
--- Returns all interpolated values as a table.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTween_stub:getAllValues()  -- -> table
--- (replace lTween_stub with your real LTween instance above)
-
--- ---- Stub: LTween:isComplete ---------------------------------------------
---@api-stub: LTween:isComplete
--- Returns true if the tween has finished.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTween_stub:isComplete()  -- -> boolean
--- (replace lTween_stub with your real LTween instance above)
-
--- ---- Stub: LTween:getValueCount ------------------------------------------
---@api-stub: LTween:getValueCount
--- Returns the number of values in this tween.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTween_stub:getValueCount()  -- -> integer
--- (replace lTween_stub with your real LTween instance above)
-
--- ---- Stub: LTween:getEasingName ------------------------------------------
---@api-stub: LTween:getEasingName
--- Returns the easing function name.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTween_stub:getEasingName()  -- -> string
--- (replace lTween_stub with your real LTween instance above)
-
--- ---- Stub: LTween:getDuration --------------------------------------------
---@api-stub: LTween:getDuration
--- Returns the tween duration in seconds.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTween_stub:getDuration()  -- -> number
--- (replace lTween_stub with your real LTween instance above)
-
--- ---- Stub: LTween:getTime ------------------------------------------------
---@api-stub: LTween:getTime
--- Returns the current clock time.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTween_stub:getTime()  -- -> number
--- (replace lTween_stub with your real LTween instance above)
-
--- ---- Stub: LTween:getClock -----------------------------------------------
---@api-stub: LTween:getClock
--- Alias for getTime(). Returns the current clock time.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTween_stub:getClock()  -- -> number
--- (replace lTween_stub with your real LTween instance above)
-
--- ---- Stub: LTween:setTime ------------------------------------------------
---@api-stub: LTween:setTime
--- Sets the clock to a specific time, clamped to [0, duration].
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTween_stub:setTime(t)
--- (replace lTween_stub with your real LTween instance above)
-
--- ---- Stub: LTween:set ----------------------------------------------------
---@api-stub: LTween:set
--- Alias for setTime(). Sets the clock to t, clamped to [0, duration].
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTween_stub:set(t)
--- (replace lTween_stub with your real LTween instance above)
-
--- ---- Stub: LTween:addValue -----------------------------------------------
---@api-stub: LTween:addValue
--- Adds a start/target value pair. Returns the 1-based index.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lTween_stub:addValue(start, target)  -- -> integer
--- (replace lTween_stub with your real LTween instance above)
-
--- -----------------------------------------------------------------------------
--- LVec2 methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LVec2:dot -----------------------------------------------------
---@api-stub: LVec2:dot
--- Returns the dot product with another vector.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lVec2_stub:dot(other)  -- -> number
--- (replace lVec2_stub with your real LVec2 instance above)
-
--- ---- Stub: LVec2:length --------------------------------------------------
---@api-stub: LVec2:length
--- Returns the Euclidean length of the vector.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lVec2_stub:length()  -- -> number
--- (replace lVec2_stub with your real LVec2 instance above)
-
--- ---- Stub: LVec2:x -------------------------------------------------------
---@api-stub: LVec2:x
--- Returns the horizontal component of the vector.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lVec2_stub:x()  -- -> number
--- (replace lVec2_stub with your real LVec2 instance above)
-
--- ---- Stub: LVec2:y -------------------------------------------------------
---@api-stub: LVec2:y
--- Returns the vertical component of the vector.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lVec2_stub:y()  -- -> number
--- (replace lVec2_stub with your real LVec2 instance above)
-
--- ---- Stub: LVec2:lengthSquared -------------------------------------------
---@api-stub: LVec2:lengthSquared
--- Returns the squared length of the vector (faster than length).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lVec2_stub:lengthSquared()  -- -> number
--- (replace lVec2_stub with your real LVec2 instance above)
-
--- ---- Stub: LVec2:normalize -----------------------------------------------
---@api-stub: LVec2:normalize
--- Returns a unit-length copy of this vector. Returns zero if length is zero.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lVec2_stub:normalize()  -- -> Vec2
--- (replace lVec2_stub with your real LVec2 instance above)
-
--- ---- Stub: LVec2:normalized ----------------------------------------------
---@api-stub: LVec2:normalized
--- Compatibility alias for `normalize`.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lVec2_stub:normalized()  -- -> Vec2
--- (replace lVec2_stub with your real LVec2 instance above)
-
--- ---- Stub: LVec2:lerp ----------------------------------------------------
---@api-stub: LVec2:lerp
--- Returns a linearly interpolated vector between this and other at parameter t.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lVec2_stub:lerp(other, t)  -- -> Vec2
--- (replace lVec2_stub with your real LVec2 instance above)
-
--- ---- Stub: LVec2:distance ------------------------------------------------
---@api-stub: LVec2:distance
--- Returns the Euclidean distance from this vector to another.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lVec2_stub:distance(other)  -- -> number
--- (replace lVec2_stub with your real LVec2 instance above)
-
--- ---- Stub: LVec2:angle ---------------------------------------------------
---@api-stub: LVec2:angle
--- Returns the angle of this vector in radians (atan2(y, x)).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lVec2_stub:angle()  -- -> number
--- (replace lVec2_stub with your real LVec2 instance above)
-
--- ---- Stub: LVec2:rotate --------------------------------------------------
---@api-stub: LVec2:rotate
--- Returns a new vector rotated by the given angle in radians.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lVec2_stub:rotate(0.0)  -- -> Vec2
--- (replace lVec2_stub with your real LVec2 instance above)
-
--- ---- Stub: LVec2:perpendicular -------------------------------------------
---@api-stub: LVec2:perpendicular
--- Returns the perpendicular vector (-y, x).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lVec2_stub:perpendicular()  -- -> Vec2
--- (replace lVec2_stub with your real LVec2 instance above)
-
--- ---- Stub: LVec2:cross ---------------------------------------------------
---@api-stub: LVec2:cross
--- Returns the 2D cross product (scalar) with another vector.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lVec2_stub:cross(other)  -- -> number
--- (replace lVec2_stub with your real LVec2 instance above)
-
--- ---- Stub: LVec2:reflect -------------------------------------------------
---@api-stub: LVec2:reflect
--- Reflects this vector off a surface with the given normal.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lVec2_stub:reflect(normal)  -- -> Vec2
--- (replace lVec2_stub with your real LVec2 instance above)
-
--- -----------------------------------------------------------------------------
--- LVec3 methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LVec3:length --------------------------------------------------
---@api-stub: LVec3:length
--- Returns the Euclidean length of the vector.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lVec3_stub:length()  -- -> number
--- (replace lVec3_stub with your real LVec3 instance above)
-
--- ---- Stub: LVec3:lengthSquared -------------------------------------------
---@api-stub: LVec3:lengthSquared
--- Returns the squared Euclidean length (avoids sqrt).
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lVec3_stub:lengthSquared()  -- -> number
--- (replace lVec3_stub with your real LVec3 instance above)
-
--- ---- Stub: LVec3:normalize -----------------------------------------------
---@api-stub: LVec3:normalize
--- Returns a unit-length version of this vector.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lVec3_stub:normalize()  -- -> Vec3
--- (replace lVec3_stub with your real LVec3 instance above)
-
--- ---- Stub: LVec3:dot -----------------------------------------------------
---@api-stub: LVec3:dot
--- Dot product with another Vec3.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lVec3_stub:dot(other)  -- -> number
--- (replace lVec3_stub with your real LVec3 instance above)
-
--- ---- Stub: LVec3:cross ---------------------------------------------------
---@api-stub: LVec3:cross
--- Cross product with another Vec3.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lVec3_stub:cross(other)  -- -> Vec3
--- (replace lVec3_stub with your real LVec3 instance above)
-
--- ---- Stub: LVec3:lerp ----------------------------------------------------
---@api-stub: LVec3:lerp
--- Linear interpolation towards another Vec3.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lVec3_stub:lerp(other, t)  -- -> Vec3
--- (replace lVec3_stub with your real LVec3 instance above)
-
--- ---- Stub: LVec3:distance ------------------------------------------------
---@api-stub: LVec3:distance
--- Euclidean distance to another Vec3.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lVec3_stub:distance(other)  -- -> number
--- (replace lVec3_stub with your real LVec3 instance above)
-
--- ---- Stub: LVec3:add -----------------------------------------------------
---@api-stub: LVec3:add
--- Add another Vec3 and return the result.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lVec3_stub:add(other)  -- -> Vec3
--- (replace lVec3_stub with your real LVec3 instance above)
-
--- ---- Stub: LVec3:sub -----------------------------------------------------
---@api-stub: LVec3:sub
--- Subtract another Vec3 and return the result.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lVec3_stub:sub(other)  -- -> Vec3
--- (replace lVec3_stub with your real LVec3 instance above)
-
--- ---- Stub: LVec3:scale ---------------------------------------------------
---@api-stub: LVec3:scale
--- Scale this vector by a scalar and return the result.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lVec3_stub:scale(s)  -- -> Vec3
--- (replace lVec3_stub with your real LVec3 instance above)

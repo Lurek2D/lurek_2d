@@ -367,7 +367,7 @@ end
 
 -- ── FileData methods ──
 
---@api-stub: FileData:getSize
+--@api-stub: LFileData:getSize
 -- Returns the file size in bytes.
 -- Combine with getFilename for a one-line load report when streaming many assets.
 do  -- FileData:getSize
@@ -378,7 +378,7 @@ do  -- FileData:getSize
   end)
 end
 
---@api-stub: FileData:getString
+--@api-stub: LFileData:getString
 -- Returns the file content as a Lua string.
 -- Use to hand binary buffers to a custom decoder, or to compute a checksum over the bytes.
 do  -- FileData:getString
@@ -389,7 +389,7 @@ do  -- FileData:getString
   end)
 end
 
---@api-stub: FileData:getFilename
+--@api-stub: LFileData:getFilename
 -- Returns the virtual path this data was loaded from.
 -- Useful when a generic loader pipes FileData into a registry keyed by source path.
 do  -- FileData:getFilename
@@ -402,7 +402,7 @@ end
 
 -- ── FileHandle methods ──
 
---@api-stub: FileHandle:read
+--@api-stub: LFileHandle:read
 -- Reads bytes from the file, returning them as a string.
 -- Pass a count to read at most N bytes; omit to read until EOF in one call.
 do  -- FileHandle:read
@@ -412,7 +412,7 @@ do  -- FileHandle:read
   lurek.log.info("slot1 size: " .. #body .. " bytes", "save")
 end
 
---@api-stub: FileHandle:readLine
+--@api-stub: LFileHandle:readLine
 -- Reads the next line from the file without the trailing newline.
 -- Returns nil at EOF; loop while non-nil to walk a text file one line at a time.
 do  -- FileHandle:readLine
@@ -424,7 +424,7 @@ do  -- FileHandle:readLine
   end)
 end
 
---@api-stub: FileHandle:write
+--@api-stub: LFileHandle:write
 -- Writes a string to the file and returns the number of bytes written.
 -- Open with mode "w" to truncate, "a" to append; remember to close() to flush.
 do  -- FileHandle:write
@@ -434,7 +434,7 @@ do  -- FileHandle:write
   lurek.log.info("wrote " .. n .. " bytes to score.txt", "save")
 end
 
---@api-stub: FileHandle:seek
+--@api-stub: LFileHandle:seek
 -- Seeks the file position to the given byte offset from the start.
 -- Use for fixed-record save files where you want to update one slot without rewriting the rest.
 do  -- FileHandle:seek
@@ -445,7 +445,7 @@ do  -- FileHandle:seek
   lurek.log.debug("bytes 16..23 = " .. chunk, "save")
 end
 
---@api-stub: FileHandle:tell
+--@api-stub: LFileHandle:tell
 -- Returns the current read/write byte offset from the start of the file.
 -- Call after a partial read to remember where to resume on the next pass.
 do  -- FileHandle:tell
@@ -457,7 +457,7 @@ do  -- FileHandle:tell
   end)
 end
 
---@api-stub: FileHandle:getSize
+--@api-stub: LFileHandle:getSize
 -- Returns the size of the open file in bytes.
 -- Use to pre-allocate buffers or to drive a load progress bar.
 do  -- FileHandle:getSize
@@ -468,7 +468,7 @@ do  -- FileHandle:getSize
   end)
 end
 
---@api-stub: FileHandle:getMode
+--@api-stub: LFileHandle:getMode
 -- Returns the access mode the file was opened with.
 -- Useful in helper functions that branch on whether the handle is readable or writable.
 do  -- FileHandle:getMode
@@ -477,7 +477,7 @@ do  -- FileHandle:getMode
   fh:close()
 end
 
---@api-stub: FileHandle:flush
+--@api-stub: LFileHandle:flush
 -- Flushes all buffered writes to disk without closing the handle.
 -- Call after each completed game-state checkpoint so a crash loses at most one round.
 do  -- FileHandle:flush
@@ -487,7 +487,7 @@ do  -- FileHandle:flush
   fh:close()
 end
 
---@api-stub: FileHandle:close
+--@api-stub: LFileHandle:close
 -- Flushes any pending writes and closes the file handle.
 -- Always close handles when done; leaking them holds OS file descriptors and locks.
 do  -- FileHandle:close
@@ -496,7 +496,7 @@ do  -- FileHandle:close
   fh:close()
 end
 
---@api-stub: FileHandle:isEOF
+--@api-stub: LFileHandle:isEOF
 -- Returns whether the read cursor has reached the end of the file.
 -- Use as a loop condition when reading a file in fixed-size chunks.
 do  -- FileHandle:isEOF
@@ -513,7 +513,7 @@ end
 
 -- ── ZipMount methods ──
 
---@api-stub: ZipMount:readFile
+--@api-stub: LZipMount:readFile
 -- Reads a file from the ZIP and returns it as a string of bytes.
 -- Cheaper than mounting + lurek.filesystem.read when you need exactly one file out of the archive.
 do  -- ZipMount:readFile
@@ -524,7 +524,7 @@ do  -- ZipMount:readFile
   end)
 end
 
---@api-stub: ZipMount:contains
+--@api-stub: LZipMount:contains
 -- Returns true if `virtual_path` exists inside this ZIP mount.
 -- Probe before readFile so a missing optional asset does not raise an error.
 do  -- ZipMount:contains
@@ -536,7 +536,7 @@ do  -- ZipMount:contains
   end)
 end
 
---@api-stub: ZipMount:listFiles
+--@api-stub: LZipMount:listFiles
 -- Returns a sorted array of all virtual paths exposed by this ZIP mount.
 -- Use to enumerate every asset shipped by a content pack at startup.
 do  -- ZipMount:listFiles
@@ -547,7 +547,7 @@ do  -- ZipMount:listFiles
   end)
 end
 
---@api-stub: ZipMount:prefix
+--@api-stub: LZipMount:prefix
 -- Returns the virtual path prefix this archive was mounted under.
 -- Useful for building absolute virtual paths or reporting which prefix a mount owns.
 do  -- ZipMount:prefix
@@ -589,59 +589,10 @@ do  -- lurek.filesystem.stat
   if ok and info then lurek.log.info("stat type=" .. tostring(info.type), "filesystem") end
 end
 
--- -----------------------------------------------------------------------------
--- FileData methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: FileData:type -------------------------------------------------
---@api-stub: FileData:type
--- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- fileData_stub:type()  -- -> string
--- (replace fileData_stub with your real FileData instance above)
-
--- ---- Stub: FileData:typeOf -----------------------------------------------
---@api-stub: FileData:typeOf
--- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- fileData_stub:typeOf("hero")  -- -> boolean
--- (replace fileData_stub with your real FileData instance above)
-
--- -----------------------------------------------------------------------------
--- FileHandle methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: FileHandle:type -----------------------------------------------
---@api-stub: FileHandle:type
--- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- fileHandle_stub:type()  -- -> string
--- (replace fileHandle_stub with your real FileHandle instance above)
-
--- ---- Stub: FileHandle:typeOf ---------------------------------------------
---@api-stub: FileHandle:typeOf
--- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- fileHandle_stub:typeOf("hero")  -- -> boolean
--- (replace fileHandle_stub with your real FileHandle instance above)
 
 -- -----------------------------------------------------------------------------
 -- ZipMount methods
 -- -----------------------------------------------------------------------------
-
--- ---- Stub: ZipMount:type -------------------------------------------------
---@api-stub: ZipMount:type
--- Returns the type name of this object.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- zipMount_stub:type()  -- -> string
--- (replace zipMount_stub with your real ZipMount instance above)
-
--- ---- Stub: ZipMount:typeOf -----------------------------------------------
---@api-stub: ZipMount:typeOf
--- Returns true if this object is of the given type.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- zipMount_stub:typeOf("hero")  -- -> boolean
--- (replace zipMount_stub with your real ZipMount instance above)
 
 -- =============================================================================
 -- STUBS: 9 uncovered lurek.filesystem API item(s)
@@ -731,133 +682,4 @@ lurek.filesystem.stat("assets/hero.png")  -- -> table
 -- The final committed file must contain ZERO --@api-stub: lines.
 -- =============================================================================
 
--- -----------------------------------------------------------------------------
--- LFileData methods
--- -----------------------------------------------------------------------------
 
--- ---- Stub: LFileData:getSize ---------------------------------------------
---@api-stub: LFileData:getSize
--- Returns the file size in bytes.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lFileData_stub:getSize()  -- -> integer
--- (replace lFileData_stub with your real LFileData instance above)
-
--- ---- Stub: LFileData:getString -------------------------------------------
---@api-stub: LFileData:getString
--- Returns the file content as a Lua string.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lFileData_stub:getString()  -- -> string
--- (replace lFileData_stub with your real LFileData instance above)
-
--- ---- Stub: LFileData:getFilename -----------------------------------------
---@api-stub: LFileData:getFilename
--- Returns the virtual path this data was loaded from.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lFileData_stub:getFilename()  -- -> string
--- (replace lFileData_stub with your real LFileData instance above)
-
--- -----------------------------------------------------------------------------
--- LFileHandle methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LFileHandle:read ----------------------------------------------
---@api-stub: LFileHandle:read
--- Reads bytes from the file, returning them as a string.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lFileHandle_stub:read([count])  -- -> string
--- (replace lFileHandle_stub with your real LFileHandle instance above)
-
--- ---- Stub: LFileHandle:readLine ------------------------------------------
---@api-stub: LFileHandle:readLine
--- Reads the next line from the file without the trailing newline.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lFileHandle_stub:readLine()  -- -> string?
--- (replace lFileHandle_stub with your real LFileHandle instance above)
-
--- ---- Stub: LFileHandle:write ---------------------------------------------
---@api-stub: LFileHandle:write
--- Writes a string to the file and returns the number of bytes written.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lFileHandle_stub:write(data)  -- -> integer
--- (replace lFileHandle_stub with your real LFileHandle instance above)
-
--- ---- Stub: LFileHandle:seek ----------------------------------------------
---@api-stub: LFileHandle:seek
--- Seeks the file position to the given byte offset from the start.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lFileHandle_stub:seek(pos)  -- -> integer
--- (replace lFileHandle_stub with your real LFileHandle instance above)
-
--- ---- Stub: LFileHandle:tell ----------------------------------------------
---@api-stub: LFileHandle:tell
--- Returns the current read/write byte offset from the start of the file.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lFileHandle_stub:tell()  -- -> integer
--- (replace lFileHandle_stub with your real LFileHandle instance above)
-
--- ---- Stub: LFileHandle:getSize -------------------------------------------
---@api-stub: LFileHandle:getSize
--- Returns the size of the open file in bytes.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lFileHandle_stub:getSize()  -- -> integer
--- (replace lFileHandle_stub with your real LFileHandle instance above)
-
--- ---- Stub: LFileHandle:getMode -------------------------------------------
---@api-stub: LFileHandle:getMode
--- Returns the access mode the file was opened with.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lFileHandle_stub:getMode()  -- -> string
--- (replace lFileHandle_stub with your real LFileHandle instance above)
-
--- ---- Stub: LFileHandle:flush ---------------------------------------------
---@api-stub: LFileHandle:flush
--- Flushes all buffered writes to disk without closing the handle.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lFileHandle_stub:flush()
--- (replace lFileHandle_stub with your real LFileHandle instance above)
-
--- ---- Stub: LFileHandle:close ---------------------------------------------
---@api-stub: LFileHandle:close
--- Flushes any pending writes and closes the file handle.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lFileHandle_stub:close()
--- (replace lFileHandle_stub with your real LFileHandle instance above)
-
--- ---- Stub: LFileHandle:isEOF ---------------------------------------------
---@api-stub: LFileHandle:isEOF
--- Returns whether the read cursor has reached the end of the file.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lFileHandle_stub:isEOF()  -- -> boolean
--- (replace lFileHandle_stub with your real LFileHandle instance above)
-
--- -----------------------------------------------------------------------------
--- LZipMount methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LZipMount:readFile --------------------------------------------
---@api-stub: LZipMount:readFile
--- Reads a file from the ZIP and returns it as a string of bytes.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lZipMount_stub:readFile(virtual_path)  -- -> string
--- (replace lZipMount_stub with your real LZipMount instance above)
-
--- ---- Stub: LZipMount:contains --------------------------------------------
---@api-stub: LZipMount:contains
--- Returns true if `virtual_path` exists inside this ZIP mount.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lZipMount_stub:contains(virtual_path)  -- -> boolean
--- (replace lZipMount_stub with your real LZipMount instance above)
-
--- ---- Stub: LZipMount:listFiles -------------------------------------------
---@api-stub: LZipMount:listFiles
--- Returns a sorted array of all virtual paths exposed by this ZIP mount.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lZipMount_stub:listFiles()  -- -> table
--- (replace lZipMount_stub with your real LZipMount instance above)
-
--- ---- Stub: LZipMount:prefix ----------------------------------------------
---@api-stub: LZipMount:prefix
--- Returns the virtual path prefix this archive was mounted under.
--- TODO: replace this stub with a real scenario. See flesh-out-example.prompt.md
--- lZipMount_stub:prefix()  -- -> string
--- (replace lZipMount_stub with your real LZipMount instance above)
