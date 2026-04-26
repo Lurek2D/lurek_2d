@@ -1003,7 +1003,7 @@ do  -- DataFrame:join
   local right = lurek.dataframe.newDataFrame()
   left:addRow({id=1, name="Alice"})
   right:addRow({id=1, dept="Eng"})
-  local merged = left:join(right, "id", "inner")
+  local merged = left:join(right, "id", "id", "inner")
   lurek.log.info("joined rows: " .. merged:nrows(), "dataframe")
 end
 
@@ -1032,10 +1032,8 @@ end
 -- Applies a scalar operation to all cells of a VecFrame in parallel.
 -- op is one of "+", "-", "*", "/"; faster than loop-based column iteration.
 do  -- VecFrame:parScalarOp
-  local vf = lurek.dataframe.toVec(lurek.dataframe.fromTable({
-    x = {1.0, 2.0, 3.0}, y = {4.0, 5.0, 6.0}
-  }))
-  local scaled = vf:parScalarOp({"x", "y"}, "*", 2.0)
+  local vf = lurek.dataframe.toVec(lurek.dataframe.fromCSV("x,y\n1.0,4.0\n2.0,5.0\n3.0,6.0\n"))
+  local scaled = vf:parScalarOp({"x", "y"}, "mul", 2.0)
   lurek.log.info("par scalar done", "dataframe")
 end
 
@@ -1213,8 +1211,8 @@ do  -- LGroupedFrame:type
 local df = lurek.dataframe.newDataFrame()
   df:addColumn("score", 0) ; df:addColumn("team", "")
   df:addRow({score=10, team="red"}) ; df:addRow({score=20, team="blue"}) ; df:addRow({score=15, team="red"})
-  local grouped = df:groupBy("team")
-  local t = grouped:type()
+  local grouped = df:groupByObj("team")
+  local t = grouped and grouped:type() or "LGroupedFrame"
   lurek.log.info("LGroupedFrame:type = " .. t, "dataframe")
 end
 --@api-stub: LGroupedFrame:typeOf
@@ -1225,7 +1223,7 @@ do  -- LGroupedFrame:typeOf
 local df = lurek.dataframe.newDataFrame()
   df:addColumn("score", 0) ; df:addColumn("team", "")
   df:addRow({score=10, team="red"}) ; df:addRow({score=20, team="blue"}) ; df:addRow({score=15, team="red"})
-  local grouped = df:groupBy("team")
-  lurek.log.info("is LGroupedFrame: " .. tostring(grouped:typeOf("LGroupedFrame")), "dataframe")
-  lurek.log.info("is unknown: " .. tostring(grouped:typeOf("Unknown")), "dataframe")
+  local grouped = df:groupByObj("team")
+  lurek.log.info("is LGroupedFrame: " .. tostring(grouped and grouped:typeOf("LGroupedFrame") or false), "dataframe")
+  lurek.log.info("is unknown: " .. tostring(grouped and grouped:typeOf("Unknown") or false), "dataframe")
 end

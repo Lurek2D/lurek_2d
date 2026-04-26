@@ -1493,7 +1493,7 @@ end
 do  -- World:addFixture
   local world = lurek.physics.newWorld(0, 9.81)
   local b = world:newBody(200, 200, "dynamic")
-  local fid = world:addFixture(b:getId(), "circle", {radius=16, friction=0.4, restitution=0.3})
+  local fid = world:addFixture(b:getId(), "circle", 1.0, 0.4, 0.3, false, 16.0)
   lurek.log.info("fixture id: " .. fid, "physics")
 end
 
@@ -1788,7 +1788,7 @@ end
 do  -- World:setFixtureFriction
   local world = lurek.physics.newWorld(0, 9.81)
   local b = world:newBody(200, 200, "dynamic")
-  local fid = world:addFixture(b:getId(), "box", {width=32,height=32})
+  local fid = world:addFixture(b:getId(), "rectangle", 1.0, 0.5, 0.0, false, 32.0, 32.0)
   world:setFixtureFriction(b:getId(), fid, 0.1)
   lurek.log.info("fixture friction set", "physics")
 end
@@ -1799,7 +1799,7 @@ end
 do  -- World:setFixtureRestitution
   local world = lurek.physics.newWorld(0, 9.81)
   local b = world:newBody(200, 200, "dynamic")
-  local fid = world:addFixture(b:getId(), "circle", {radius=16})
+  local fid = world:addFixture(b:getId(), "circle", 1.0, 0.5, 0.8, false, 16.0)
   world:setFixtureRestitution(b:getId(), fid, 0.8)
   lurek.log.info("restitution set", "physics")
 end
@@ -1810,7 +1810,7 @@ end
 do  -- World:setFixtureSensor
   local world = lurek.physics.newWorld(0, 9.81)
   local b = world:newBody(200, 200, "static")
-  local fid = world:addFixture(b:getId(), "circle", {radius=40})
+  local fid = world:addFixture(b:getId(), "circle", 0.0, 0.0, 0.0, true, 40.0)
   world:setFixtureSensor(b:getId(), fid, true)
   lurek.log.info("sensor fixture set", "physics")
 end
@@ -1958,7 +1958,8 @@ end
 -- Returns the type name of this object.
 -- Useful for runtime type inspection.
 do  -- LBody:type
-  local body_obj = lurek.physics.newBody(nil, 0, 0, nil)
+  local w = lurek.physics.newWorld(0, 9.81)
+  local body_obj = w:newBody(0, 0, "dynamic")
   local t = body_obj:type()
   lurek.log.info("LBody:type = " .. t, "physics")
 end
@@ -1966,9 +1967,10 @@ end
 -- Returns true if this object is of the given type.
 -- Use for runtime type checks.
 do  -- LBody:typeOf
-  local body_obj = lurek.physics.newBody(nil, 0, 0, nil)
-  lurek.log.info("is LBody: " .. tostring(body_obj:typeOf("LBody")), "physics")
-  lurek.log.info("is wrong: " .. tostring(body_obj:typeOf("Unknown")), "physics")
+  local w2 = lurek.physics.newWorld(0, 9.81)
+  local body_obj2 = w2:newBody(0, 0, "dynamic")
+  lurek.log.info("is LBody: " .. tostring(body_obj2 and body_obj2:typeOf("LBody") or false), "physics")
+  lurek.log.info("is wrong: " .. tostring(body_obj2 and body_obj2:typeOf("Unknown") or false), "physics")
 end
 --@api-stub: LCellular:type
 -- Returns the type name of this object.
@@ -2006,7 +2008,8 @@ end
 -- Returns the type name of this object.
 -- Useful for runtime type inspection.
 do  -- LTerrain:type
-  local terrain_obj = lurek.physics.newTerrain(32, 32, nil, nil)
+  local _tw = lurek.physics.newWorld(0, 9.81)
+  local terrain_obj = lurek.physics.newTerrain(32, 32, 1.0, _tw)
   local t = terrain_obj:type()
   lurek.log.info("LTerrain:type = " .. t, "physics")
 end
@@ -2014,7 +2017,8 @@ end
 -- Returns true if this object is of the given type.
 -- Use for runtime type checks.
 do  -- LTerrain:typeOf
-  local terrain_obj = lurek.physics.newTerrain(32, 32, nil, nil)
+  local _tw2 = lurek.physics.newWorld(0, 9.81)
+  local terrain_obj = lurek.physics.newTerrain(32, 32, 1.0, _tw2)
   lurek.log.info("is LTerrain: " .. tostring(terrain_obj:typeOf("LTerrain")), "physics")
   lurek.log.info("is wrong: " .. tostring(terrain_obj:typeOf("Unknown")), "physics")
 end
@@ -2022,7 +2026,7 @@ end
 -- Returns the type name of this object.
 -- Useful for runtime type inspection.
 do  -- LWorld:type
-  local world_obj = lurek.physics.newWorld(nil, nil)
+  local world_obj = lurek.physics.newWorld(0, 9.81)
   local t = world_obj:type()
   lurek.log.info("LWorld:type = " .. t, "physics")
 end
@@ -2030,7 +2034,7 @@ end
 -- Returns true if this object is of the given type.
 -- Use for runtime type checks.
 do  -- LWorld:typeOf
-  local world_obj = lurek.physics.newWorld(nil, nil)
+  local world_obj = lurek.physics.newWorld(0, 9.81)
   lurek.log.info("is LWorld: " .. tostring(world_obj:typeOf("LWorld")), "physics")
   lurek.log.info("is wrong: " .. tostring(world_obj:typeOf("Unknown")), "physics")
 end

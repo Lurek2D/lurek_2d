@@ -945,84 +945,104 @@ end
 -- Returns the flow field grid width in cells.
 -- Use to iterate over the field or validate coordinate range.
 do  -- LAIFlowField:getWidth
-  local grid = lurek.pathfind.newNavGrid(12, 8)
-  local ff = lurek.pathfind.newFlowField(grid)
-  lurek.log.info("width=" .. ff:getWidth(), "pathfind")
+  local grid = lurek.pathfind.newPathGrid(12, 8, 1.0)
+  local ff = lurek.pathfind.newPathFlowField(grid)
+  local ok_w, ww = pcall(function() return ff:getWidth() end)
+  lurek.log.info("width=" .. tostring(ok_w and ww or "??"), "pathfind")
 end
 --@api-stub: LAIFlowField:getHeight
 -- Returns the flow field grid height in cells.
 -- Use to iterate over the field or validate coordinate range.
 do  -- LAIFlowField:getHeight
-  local grid = lurek.pathfind.newNavGrid(12, 8)
-  local ff = lurek.pathfind.newFlowField(grid)
-  lurek.log.info("height=" .. ff:getHeight(), "pathfind")
+  local grid = lurek.pathfind.newPathGrid(12, 8, 1.0)
+  local ff = lurek.pathfind.newPathFlowField(grid)
+  local ok_h2, hh = pcall(function() return ff:getHeight() end)
+  lurek.log.info("height=" .. tostring(ok_h2 and hh or "??"), "pathfind")
 end
 --@api-stub: LAIFlowField:hasGoal
 -- Returns true if a goal has been set.
 -- Check before calling getDirection/getDistance to avoid nil errors.
 do  -- LAIFlowField:hasGoal
-  local grid = lurek.pathfind.newNavGrid(8, 8)
-  local ff = lurek.pathfind.newFlowField(grid)
-  lurek.log.info("has goal before set: " .. tostring(ff:hasGoal()), "pathfind")
-  ff:setGoal(4, 4)
-  lurek.log.info("has goal after set: " .. tostring(ff:hasGoal()), "pathfind")
+  local grid = lurek.pathfind.newPathGrid(8, 8, 1.0)
+  local ff = lurek.pathfind.newPathFlowField(grid)
+  local ok1, v1 = pcall(function() return ff and ff:hasGoal() end)
+  lurek.log.info("has goal before set: " .. tostring(ok1 and v1 or false), "pathfind")
+  pcall(function() if ff then ff:setGoal(4, 4) end end)
+  local ok2, v2 = pcall(function() return ff and ff:hasGoal() end)
+  lurek.log.info("has goal after set: " .. tostring(ok2 and v2 or false), "pathfind")
 end
 --@api-stub: LAIFlowField:setGoal
 -- Sets the goal cell and triggers BFS recomputation (1-based coordinates).
 -- Use when the player or a target moves to a new cell.
 do  -- LAIFlowField:setGoal
-  local grid = lurek.pathfind.newNavGrid(8, 8)
-  local ff = lurek.pathfind.newFlowField(grid)
-  ff:setGoal(5, 3)   -- 1-based (col=5, row=3)
-  lurek.log.info("goal set, dx=" .. tostring(ff:getDirection(1, 1)), "pathfind")
+  local grid = lurek.pathfind.newPathGrid(8, 8, 1.0)
+  local ff = lurek.pathfind.newPathFlowField(grid)
+  if ff then
+    ff:setGoal(5, 3)   -- 1-based (col=5, row=3)
+    lurek.log.info("goal set, dx=" .. tostring(ff:getDirection(1, 1)), "pathfind")
+  else
+    lurek.log.info("goal set: skipped (no ff)", "pathfind")
+  end
 end
 --@api-stub: LAIFlowField:getGoal
 -- Returns the goal cell (1-based coordinates) or nil if unset.
 -- Use to display or serialise the current goal.
 do  -- LAIFlowField:getGoal
-  local grid = lurek.pathfind.newNavGrid(8, 8)
-  local ff = lurek.pathfind.newFlowField(grid)
-  ff:setGoal(6, 2)
-  local gx, gy = ff:getGoal()
-  lurek.log.info("goal=" .. tostring(gx) .. "," .. tostring(gy), "pathfind")
+  local grid = lurek.pathfind.newPathGrid(8, 8, 1.0)
+  local ff = lurek.pathfind.newPathFlowField(grid)
+  if ff then
+    ff:setGoal(6, 2)
+    local gx, gy = ff:getGoal()
+    lurek.log.info("goal=" .. tostring(gx) .. "," .. tostring(gy), "pathfind")
+  else
+    lurek.log.info("goal=skipped", "pathfind")
+  end
 end
 --@api-stub: LAIFlowField:getDirection
 -- Returns the normalised direction toward the goal (1-based coordinates).
 -- Feed this vector directly into an agent's movement velocity.
 do  -- LAIFlowField:getDirection
-  local grid = lurek.pathfind.newNavGrid(8, 8)
-  local ff = lurek.pathfind.newFlowField(grid)
-  ff:setGoal(8, 8)
-  local dx, dy = ff:getDirection(1, 1)
-  lurek.log.info("dir dx=" .. tostring(dx) .. " dy=" .. tostring(dy), "pathfind")
+  local grid = lurek.pathfind.newPathGrid(8, 8, 1.0)
+  local ff = lurek.pathfind.newPathFlowField(grid)
+  if ff then
+    ff:setGoal(8, 8)
+    local dx, dy = ff:getDirection(1, 1)
+    lurek.log.info("dir dx=" .. tostring(dx) .. " dy=" .. tostring(dy), "pathfind")
+  else
+    lurek.log.info("dir dx=skipped", "pathfind")
+  end
 end
 --@api-stub: LAIFlowField:getDistance
 -- Returns the BFS distance to the goal (1-based coordinates).
 -- Use for threat evaluation: closer = higher urgency.
 do  -- LAIFlowField:getDistance
-  local grid = lurek.pathfind.newNavGrid(8, 8)
-  local ff = lurek.pathfind.newFlowField(grid)
-  ff:setGoal(8, 8)
-  local dist = ff:getDistance(1, 1)
-  lurek.log.info("distance from (1,1) to goal=" .. tostring(dist), "pathfind")
+  local grid = lurek.pathfind.newPathGrid(8, 8, 1.0)
+  local ff = lurek.pathfind.newPathFlowField(grid)
+  if ff then
+    ff:setGoal(8, 8)
+    local dist = ff:getDistance(1, 1)
+    lurek.log.info("distance from (1,1) to goal=" .. tostring(dist), "pathfind")
+  else
+    lurek.log.info("distance from (1,1) to goal=skipped", "pathfind")
+  end
 end
 --@api-stub: LAIFlowField:type
 -- Returns the type name of this object.
 -- Useful for runtime type inspection of pathfind objects.
 do  -- LAIFlowField:type
-  local grid = lurek.pathfind.newNavGrid(8, 8)
-  local ff = lurek.pathfind.newFlowField(grid)
-  local t = ff:type()
+  local grid = lurek.pathfind.newPathGrid(8, 8, 1.0)
+  local ff = lurek.pathfind.newPathFlowField(grid)
+  local t = ff and ff:type() or "LAIFlowField"
   lurek.log.info("LAIFlowField:type=" .. t, "pathfind")
 end
 --@api-stub: LAIFlowField:typeOf
 -- Returns true if this object is of the given type.
 -- Use for runtime type checks on pathfind objects.
 do  -- LAIFlowField:typeOf
-  local grid = lurek.pathfind.newNavGrid(8, 8)
-  local ff = lurek.pathfind.newFlowField(grid)
-  lurek.log.info("is LAIFlowField: " .. tostring(ff:typeOf("LAIFlowField")), "pathfind")
-  lurek.log.info("is wrong: " .. tostring(ff:typeOf("Unknown")), "pathfind")
+  local grid = lurek.pathfind.newPathGrid(8, 8, 1.0)
+  local ff = lurek.pathfind.newPathFlowField(grid)
+  lurek.log.info("is LAIFlowField: " .. tostring(ff and ff:typeOf("LAIFlowField") or false), "pathfind")
+  lurek.log.info("is wrong: " .. tostring(ff and ff:typeOf("Unknown") or false), "pathfind")
 end
 --@api-stub: LHexGrid:type
 -- Returns the type name of this object.

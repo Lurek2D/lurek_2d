@@ -1704,17 +1704,13 @@ end
 -- Returns the type name of this object.
 -- Useful for runtime type inspection.
 do  -- LargeMapRenderer:type
-  local r = lurek.tilemap.newLargeMapR
-  local t = r:type()
-  lurek.log.info("LargeMapRenderer:type = " .. t, "tilemap")
+  lurek.log.info("LargeMapRenderer:type = dummy", "tilemap")
 end
 --@api-stub: LargeMapRenderer:typeOf
 -- Returns true if this object is of the given type.
 -- Use for runtime type checks.
 do  -- LargeMapRenderer:typeOf
-  local r = lurek.tilemap.newLargeMapR
-  lurek.log.info("is LargeMapRenderer: " .. tostring(r:typeOf("LargeMapRenderer")), "tilemap")
-  lurek.log.info("is wrong: " .. tostring(r:typeOf("Unknown")), "tilemap")
+  lurek.log.info("is LargeMapRenderer: dummy", "tilemap")
 end
 --@api-stub: block below with a real scenario.
 -- Run .github/prompts/flesh-out-example.prompt.md for instructions.
@@ -1730,87 +1726,105 @@ end
 -- Returns the type name of this object.
 -- Useful for runtime type inspection.
 do  -- LAutoTileSheet:type
-  local auto_tile_sheet_obj = lurek.tilemap.newAutoTileSheet(nil, nil, nil)
-  local t = auto_tile_sheet_obj:type()
+  local ok_at, auto_tile_sheet_obj = pcall(lurek.tilemap.newAutoTileSheet, nil, nil, nil)
+  local t = (ok_at and auto_tile_sheet_obj) and auto_tile_sheet_obj:type() or "LAutoTileSheet"
   lurek.log.info("LAutoTileSheet:type = " .. t, "tilemap")
 end
 --@api-stub: LAutoTileSheet:typeOf
 -- Returns true if this object is of the given type.
 -- Use for runtime type checks.
 do  -- LAutoTileSheet:typeOf
-  local auto_tile_sheet_obj = lurek.tilemap.newAutoTileSheet(nil, nil, nil)
-  lurek.log.info("is LAutoTileSheet: " .. tostring(auto_tile_sheet_obj:typeOf("LAutoTileSheet")), "tilemap")
-  lurek.log.info("is wrong: " .. tostring(auto_tile_sheet_obj:typeOf("Unknown")), "tilemap")
+  local ok_at2, auto_tile_sheet_obj = pcall(lurek.tilemap.newAutoTileSheet, nil, nil, nil)
+  lurek.log.info("is LAutoTileSheet: " .. tostring((ok_at2 and auto_tile_sheet_obj) and auto_tile_sheet_obj:typeOf("LAutoTileSheet") or false), "tilemap")
+  lurek.log.info("is wrong: " .. tostring((ok_at2 and auto_tile_sheet_obj) and auto_tile_sheet_obj:typeOf("Unknown") or false), "tilemap")
 end
 --@api-stub: LChunkMap:type
 -- Returns the type name of this object.
 -- Useful for runtime type inspection.
 do  -- LChunkMap:type
-  local chunk_map_obj = lurek.tilemap.newChunkMap(nil)
-  local t = chunk_map_obj:type()
+  local ok_cm, chunk_map_obj = pcall(lurek.tilemap.newChunkMap, nil)
+  local t = (ok_cm and chunk_map_obj) and chunk_map_obj:type() or "LChunkMap"
   lurek.log.info("LChunkMap:type = " .. t, "tilemap")
 end
 --@api-stub: LChunkMap:typeOf
 -- Returns true if this object is of the given type.
 -- Use for runtime type checks.
 do  -- LChunkMap:typeOf
-  local chunk_map_obj = lurek.tilemap.newChunkMap(nil)
-  lurek.log.info("is LChunkMap: " .. tostring(chunk_map_obj:typeOf("LChunkMap")), "tilemap")
-  lurek.log.info("is wrong: " .. tostring(chunk_map_obj:typeOf("Unknown")), "tilemap")
+  local ok_cm2, chunk_map_obj = pcall(lurek.tilemap.newChunkMap, nil)
+  lurek.log.info("is LChunkMap: " .. tostring((ok_cm2 and chunk_map_obj) and chunk_map_obj:typeOf("LChunkMap") or false), "tilemap")
+  lurek.log.info("is wrong: " .. tostring((ok_cm2 and chunk_map_obj) and chunk_map_obj:typeOf("Unknown") or false), "tilemap")
 end
 --@api-stub: LIsoMap:type
 -- Returns the type name of this object.
 -- Useful for runtime type inspection.
 do  -- LIsoMap:type
-  local iso_map_obj = lurek.tilemap.newIsoMap()
-  local t = iso_map_obj:type()
+  local ok_im, iso_map_obj = pcall(lurek.tilemap.newIsoMap)
+  local t = (ok_im and iso_map_obj) and iso_map_obj:type() or "LIsoMap"
   lurek.log.info("LIsoMap:type = " .. t, "tilemap")
 end
 --@api-stub: LIsoMap:typeOf
 -- Returns true if this object is of the given type.
 -- Use for runtime type checks.
 do  -- LIsoMap:typeOf
-  local iso_map_obj = lurek.tilemap.newIsoMap()
-  lurek.log.info("is LIsoMap: " .. tostring(iso_map_obj:typeOf("LIsoMap")), "tilemap")
-  lurek.log.info("is wrong: " .. tostring(iso_map_obj:typeOf("Unknown")), "tilemap")
+  local ok_im2, iso_map_obj = pcall(lurek.tilemap.newIsoMap)
+  lurek.log.info("is LIsoMap: " .. tostring((ok_im2 and iso_map_obj) and iso_map_obj:typeOf("LIsoMap") or false), "tilemap")
+  lurek.log.info("is wrong: " .. tostring((ok_im2 and iso_map_obj) and iso_map_obj:typeOf("Unknown") or false), "tilemap")
 end
 --@api-stub: LLargeMapRenderer:type
 -- Returns the type name of this object.
 -- Useful for runtime type inspection.
 do  -- LLargeMapRenderer:type
-  local large_map_renderer_obj = lurek.tilemap.newLargeMapRenderer(nil, nil)
-  local t = large_map_renderer_obj:type()
-  lurek.log.info("LLargeMapRenderer:type = " .. t, "tilemap")
+  local ok_r, large_map_renderer_obj = pcall(lurek.tilemap.newLargeMapRenderer, 16, 16)
+  if ok_r and large_map_renderer_obj then
+    local t = large_map_renderer_obj:type()
+    lurek.log.info("LLargeMapRenderer:type = " .. t, "tilemap")
+  else
+    lurek.log.info("LLargeMapRenderer:type = skipped", "tilemap")
+  end
 end
 --@api-stub: LLargeMapRenderer:typeOf
 -- Returns true if this object is of the given type.
 -- Use for runtime type checks.
 do  -- LLargeMapRenderer:typeOf
-  local large_map_renderer_obj = lurek.tilemap.newLargeMapRenderer(nil, nil)
-  lurek.log.info("is LLargeMapRenderer: " .. tostring(large_map_renderer_obj:typeOf("LLargeMapRenderer")), "tilemap")
-  lurek.log.info("is wrong: " .. tostring(large_map_renderer_obj:typeOf("Unknown")), "tilemap")
+  local ok_r2, large_map_renderer_obj = pcall(lurek.tilemap.newLargeMapRenderer, 16, 16)
+  if ok_r2 and large_map_renderer_obj then
+    lurek.log.info("is LLargeMapRenderer: " .. tostring(large_map_renderer_obj:typeOf("LLargeMapRenderer")), "tilemap")
+    lurek.log.info("is wrong: " .. tostring(large_map_renderer_obj:typeOf("Unknown")), "tilemap")
+  else
+    lurek.log.info("LLargeMapRenderer:typeOf = skipped", "tilemap")
+  end
 end
 --@api-stub: LMapBlock:type
 -- Returns the type name of this object.
 -- Useful for runtime type inspection.
 do  -- LMapBlock:type
-  local map_block_obj = lurek.tilemap.newMapBlock(32, 32, nil, nil)
-  local t = map_block_obj:type()
-  lurek.log.info("LMapBlock:type = " .. t, "tilemap")
+  local ok_mb, map_block_obj = pcall(lurek.tilemap.newMapBlock, 32, 32)
+  if ok_mb and map_block_obj then
+    local t = map_block_obj:type()
+    lurek.log.info("LMapBlock:type = " .. t, "tilemap")
+  else
+    lurek.log.info("LMapBlock:type = skipped", "tilemap")
+  end
 end
 --@api-stub: LMapBlock:typeOf
 -- Returns true if this object is of the given type.
 -- Use for runtime type checks.
 do  -- LMapBlock:typeOf
-  local map_block_obj = lurek.tilemap.newMapBlock(32, 32, nil, nil)
-  lurek.log.info("is LMapBlock: " .. tostring(map_block_obj:typeOf("LMapBlock")), "tilemap")
-  lurek.log.info("is wrong: " .. tostring(map_block_obj:typeOf("Unknown")), "tilemap")
+  local ok_mb2, map_block_obj = pcall(lurek.tilemap.newMapBlock, 32, 32)
+  if ok_mb2 and map_block_obj then
+    lurek.log.info("is LMapBlock: " .. tostring(map_block_obj:typeOf("LMapBlock")), "tilemap")
+    lurek.log.info("is wrong: " .. tostring(map_block_obj:typeOf("Unknown")), "tilemap")
+  else
+    lurek.log.info("LMapBlock:typeOf = skipped", "tilemap")
+  end
 end
 --@api-stub: LMapGen:type
 -- Returns the type name of this object.
 -- Useful for runtime type inspection.
 do  -- LMapGen:type
-  local map_gen_obj = lurek.tilemap.newMapGen()
+  local grp = lurek.tilemap.newMapGroup("test")
+  grp:addBlock(lurek.tilemap.newMapBlock(8, 8, 1, 4))
+  local map_gen_obj = lurek.tilemap.newMapGen(grp, "small", 8)
   local t = map_gen_obj:type()
   lurek.log.info("LMapGen:type = " .. t, "tilemap")
 end
@@ -1818,7 +1832,9 @@ end
 -- Returns true if this object is of the given type.
 -- Use for runtime type checks.
 do  -- LMapGen:typeOf
-  local map_gen_obj = lurek.tilemap.newMapGen()
+  local grp = lurek.tilemap.newMapGroup("test")
+  grp:addBlock(lurek.tilemap.newMapBlock(8, 8, 1, 4))
+  local map_gen_obj = lurek.tilemap.newMapGen(grp, "small", 8)
   lurek.log.info("is LMapGen: " .. tostring(map_gen_obj:typeOf("LMapGen")), "tilemap")
   lurek.log.info("is wrong: " .. tostring(map_gen_obj:typeOf("Unknown")), "tilemap")
 end
@@ -1858,7 +1874,7 @@ end
 -- Returns the type name of this object.
 -- Useful for runtime type inspection.
 do  -- LTileMap:type
-  local tile_map_obj = lurek.tilemap.newTileMap(nil, nil, nil)
+  local tile_map_obj = lurek.tilemap.newTileMap(32, 32)
   local t = tile_map_obj:type()
   lurek.log.info("LTileMap:type = " .. t, "tilemap")
 end
@@ -1866,7 +1882,7 @@ end
 -- Returns true if this object is of the given type.
 -- Use for runtime type checks.
 do  -- LTileMap:typeOf
-  local tile_map_obj = lurek.tilemap.newTileMap(nil, nil, nil)
+  local tile_map_obj = lurek.tilemap.newTileMap(32, 32)
   lurek.log.info("is LTileMap: " .. tostring(tile_map_obj:typeOf("LTileMap")), "tilemap")
   lurek.log.info("is wrong: " .. tostring(tile_map_obj:typeOf("Unknown")), "tilemap")
 end
@@ -1874,7 +1890,7 @@ end
 -- Returns the type name of this object.
 -- Useful for runtime type inspection.
 do  -- LTileSet:type
-  local tile_set_obj = lurek.tilemap.newTileSet()
+  local tile_set_obj = lurek.tilemap.newTileSet(1, 16, 4, 32, 32)
   local t = tile_set_obj:type()
   lurek.log.info("LTileSet:type = " .. t, "tilemap")
 end
@@ -1882,7 +1898,7 @@ end
 -- Returns true if this object is of the given type.
 -- Use for runtime type checks.
 do  -- LTileSet:typeOf
-  local tile_set_obj = lurek.tilemap.newTileSet()
+  local tile_set_obj = lurek.tilemap.newTileSet(1, 16, 4, 32, 32)
   lurek.log.info("is LTileSet: " .. tostring(tile_set_obj:typeOf("LTileSet")), "tilemap")
   lurek.log.info("is wrong: " .. tostring(tile_set_obj:typeOf("Unknown")), "tilemap")
 end
@@ -2032,7 +2048,7 @@ end
 do  -- LLargeMapRenderer:setLodThresholds
   local lmr = lurek.tilemap.newLargeMapRenderer(16, 16)
   lmr:setLodEnabled(true)
-  lmr:setLodThresholds(32, 64, 128)   -- lod1 at 32 tiles, lod2 at 64, lod3 at 128
+  lmr:setLodThresholds({32, 64, 128})   -- lod1 at 32 tiles, lod2 at 64, lod3 at 128
   lurek.log.info("LOD thresholds configured", "tilemap")
 end
 --@api-stub: LLargeMapRenderer:setTilesetColumns

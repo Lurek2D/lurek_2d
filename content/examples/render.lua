@@ -715,7 +715,10 @@ end
 -- Slice a UI panel texture into 9 regions via inset pixels; the centre stretches.
 do  -- lurek.render.newNineSlice
   local panel
-  function lurek.init() panel = lurek.render.newNineSlice('img/panel.png', 8, 8, 8, 8) end
+  function lurek.init()
+    local ok_img, img = pcall(lurek.render.newImage, "img/panel.png")
+    if ok_img then panel = lurek.render.newNineSlice(img, 8, 8, 8, 8) end
+  end
 end
 
 --@api-stub: lurek.render.drawNineSlice
@@ -723,8 +726,11 @@ end
 -- Stretch the prepared NineSlice to a target rect; ideal for resizable HUD frames.
 do  -- lurek.render.drawNineSlice
   local panel
-  function lurek.init() panel = lurek.render.newNineSlice('img/panel.png', 8, 8, 8, 8) end
-  function lurek.draw() lurek.render.drawNineSlice(panel, 50, 50, 200, 120) end
+  function lurek.init()
+    local ok_img, img = pcall(lurek.render.newImage, "img/panel.png")
+    if ok_img then panel = lurek.render.newNineSlice(img, 8, 8, 8, 8) end
+  end
+  function lurek.draw() if panel then lurek.render.drawNineSlice(panel, 50, 50, 200, 120) end end
 end
 
 --@api-stub: lurek.render.newShape
@@ -1113,8 +1119,9 @@ end
 do  -- NineSlice:getInsets
   local panel
   function lurek.init()
-    panel = lurek.render.newNineSlice('img/panel.png', 8, 8, 8, 8)
-    local l, t, r, b = panel:getInsets(); lurek.log.debug('insets ' .. l .. ',' .. t .. ',' .. r .. ',' .. b)
+    local ok_img, img = pcall(lurek.render.newImage, "img/panel.png")
+    if ok_img then panel = lurek.render.newNineSlice(img, 8, 8, 8, 8) end
+    if panel then local l, t, r, b = panel:getInsets(); lurek.log.debug('insets ' .. l .. ',' .. t .. ',' .. r .. ',' .. b) end
   end
 end
 
@@ -1124,8 +1131,9 @@ end
 do  -- NineSlice:getTextureSize
   local panel
   function lurek.init()
-    panel = lurek.render.newNineSlice('img/panel.png', 8, 8, 8, 8)
-    local w, h = panel:getTextureSize(); lurek.log.debug('panel src ' .. w .. 'x' .. h)
+    local ok_img, img = pcall(lurek.render.newImage, "img/panel.png")
+    if ok_img then panel = lurek.render.newNineSlice(img, 8, 8, 8, 8) end
+    if panel then local w, h = panel:getTextureSize(); lurek.log.debug('panel src ' .. w .. 'x' .. h) end
   end
 end
 
@@ -1134,7 +1142,11 @@ end
 -- Returns 'NineSlice'; for runtime type dispatch.
 do  -- NineSlice:type
   local panel
-  function lurek.init() panel = lurek.render.newNineSlice('img/panel.png', 8, 8, 8, 8); lurek.log.debug(panel:type()) end
+  function lurek.init()
+    local ok_img, img = pcall(lurek.render.newImage, "img/panel.png")
+    if ok_img then panel = lurek.render.newNineSlice(img, 8, 8, 8, 8) end
+    if panel then lurek.log.debug(panel:type()) end
+  end
 end
 
 --@api-stub: LNineSlice:typeOf
@@ -1142,7 +1154,11 @@ end
 -- Boolean class check.
 do  -- NineSlice:typeOf
   local panel
-  function lurek.init() panel = lurek.render.newNineSlice('img/panel.png', 8, 8, 8, 8); if panel:typeOf('NineSlice') then lurek.log.debug('ok') end end
+  function lurek.init()
+    local ok_img, img = pcall(lurek.render.newImage, "img/panel.png")
+    if ok_img then panel = lurek.render.newNineSlice(img, 8, 8, 8, 8) end
+    if panel and panel:typeOf('NineSlice') then lurek.log.debug('ok') end
+  end
 end
 
 -- Ä‚ËĂ˘â‚¬ĹĄĂ˘â€šÂ¬Ä‚ËĂ˘â‚¬ĹĄĂ˘â€šÂ¬ Image methods Ä‚ËĂ˘â‚¬ĹĄĂ˘â€šÂ¬Ä‚ËĂ˘â‚¬ĹĄĂ˘â€šÂ¬
@@ -1692,8 +1708,9 @@ end
 -- Draws the nine-slice image at (x, y) stretched to (w, h) with intact corners.
 -- Use for dialog boxes, HUD panels, and button backgrounds.
 do  -- NineSlice:draw
-  local ns = lurek.render.newNineSlice("ui/panel.png", 8, 8, 8, 8)
-  ns:draw(100, 100, 300, 200)
+  local ok_img, img = pcall(lurek.render.newImage, "ui/panel.png")
+  local ns = ok_img and lurek.render.newNineSlice(img, 8, 8, 8, 8) or nil
+  if ns then ns:draw(100, 100, 300, 200) end
   lurek.log.info("nine-slice drawn", "render")
 end
 
@@ -1732,7 +1749,7 @@ end
 do  -- Shape:polygon
   local s = lurek.render.newShape()
   s:setColor(0.5, 0.2, 0.8, 1)
-  s:polygon("fill", {200,100, 250,150, 200,200, 150,150})
+  s:polygon("fill", 200,100, 250,150, 200,200, 150,150)
   s:draw(0, 0)
   lurek.log.info("polygon shape drawn", "render")
 end
@@ -1774,7 +1791,7 @@ end
 -- Updates the source rectangle of an existing Quad.
 -- Use to change frame in an animation atlas without creating a new Quad.
 do  -- Quad:setViewport
-  local img = lurek.render.newImage("atlas.png")
+  local ok_img, img = pcall(lurek.render.newImage, "atlas.png")
   local q = lurek.render.newQuad(0, 0, 32, 32, 256, 256)
   q:setViewport(32, 0, 32, 32)
   lurek.log.info("quad viewport updated", "render")

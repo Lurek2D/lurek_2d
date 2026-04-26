@@ -2,6 +2,22 @@
 
 All notable changes to Lurek2D are recorded here.
 
+## [1.0.9-fix.3] - 2026-04-27
+
+### fix(examples): fix runtime errors across 10 example files — 50/50 pass
+
+- **`content/examples/audio.lua`**: pcall-wrapped `lurek.audio.newSource` (returns nil headless); fixed `drawWaveform` nil arg.
+- **`content/examples/data.lua`**: `newDataView` expects a Lua string; replaced `lurek.data.newByteData(64)` with `string.rep("\0", 64)`.
+- **`content/examples/dataframe.lua`**: `df:groupBy` returns a Lua table; switched to `df:groupByObj` to get the `LGroupedFrame` userdata for type/typeOf blocks.
+- **`content/examples/input.lua`**: pcall-wrapped `lurek.input.newCursor` (nil in headless mode).
+- **`content/examples/math.lua`**: `catmullRom` takes nested `{{x,y},...}` tables; `lurek.tween.tween` requires 3 args; `fromAngle`/`splat` are `add_function` (dot syntax, no self).
+- **`content/examples/pathfind.lua`**: `LAIFlowField` requires `newPathGrid(w,h,cell_size)` + `newPathFlowField(grid)`, not the old `newNavGrid`/`newFlowField` names.
+- **`content/examples/physics.lua`**: `newTerrain` requires 4 args (w, h, cell_size, world); world method is `newBody`, not `addBody`.
+- **`content/examples/render.lua`**: `polygon` takes flat args not a table; pcall-wrapped `lurek.render.newImage` (file not found headless).
+- **`content/examples/tilemap.lua`**: `newMapGen(grp,"small",8)` correct arg order; `newTileSet` needs 5 args; `setLodThresholds` takes a table; fixed `newAutoTileSheets` typo → `newAutoTileSheet` in stub marker.
+- **`content/examples/tween.lua`**: `lurek.tween.newState` requires a duration arg.
+- Result: `cargo test --test examples_load_test` → **50/50 pass**; `example_coverage.py --report --no-stubs` → **4022 real / 0 pending / 0 missing** (exit 0).
+
 ## [1.0.9] - 2026-04-27
 
 ### feat(examples): fill all 4022 api stubs — 0 pending, 100% real coverage

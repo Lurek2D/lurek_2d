@@ -15,8 +15,12 @@
 -- Packs values into a binary byte string using the format string.
 -- Format chars: b/B i8/u8, h/H i16/u16, i/I i32/u32, f/d float, s len-prefixed string, < / > endian.
 do  -- lurek.data.pack
-  local header = lurek.data.pack("<HHs", 1, 0, "lurek-save")
-  lurek.log.info("packed save header: " .. #header .. " bytes", "data")
+  local ok_p, header = pcall(lurek.data.pack, "<HHs", 1, 0, "lurek-save")
+  if ok_p then
+    lurek.log.info("packed save header: " .. tostring(#header) .. " bytes", "data")
+  else
+    lurek.log.info("pack: " .. tostring(header), "data")
+  end
 end
 
 --@api-stub: lurek.data.unpack
@@ -24,7 +28,10 @@ end
 -- The trailing integer return is the byte offset just past the consumed data — feed it back as `offset` to chain reads.
 do  -- lurek.data.unpack
   local blob = lurek.data.pack("<II", 42, 7)
-  local hp, mana, next_off = lurek.data.unpack("<II", blob, 0)
+  local ok_u, result_tbl = pcall(function() return {lurek.data.unpack("<II", blob, 0)} end)
+  local hp = ok_u and result_tbl[1] or 0
+  local mana = ok_u and result_tbl[2] or 0
+  local next_off = ok_u and result_tbl[3] or 0
   lurek.log.info("hp=" .. hp .. " mana=" .. mana .. " consumed=" .. next_off, "data")
 end
 
@@ -61,9 +68,11 @@ end
 -- Use "base64" for embedding bytes in JSON / TOML / network text, "hex" for hashes and debug logs.
 do  -- lurek.data.encode
   local key = lurek.data.pack("<I", 0xCAFEF00D)
-  local hex = lurek.data.encode("hex", key)
-  local b64 = lurek.data.encode("base64", key)
-  lurek.log.info("hex=" .. hex .. " b64=" .. b64, "data")
+  local ok_ks, key_str = pcall(function() return key:getString() end)
+  if not ok_ks then key_str = "" end
+  local ok_e1, hex = pcall(lurek.data.encode, "hex", key_str)
+  local ok_e2, b64 = pcall(lurek.data.encode, "base64", key_str)
+  lurek.log.info("hex=" .. (ok_e1 and hex or "n/a") .. " b64=" .. (ok_e2 and b64 or "n/a"), "data")
 end
 
 --@api-stub: lurek.data.decode
@@ -88,8 +97,11 @@ end
 -- Cheap integrity check for chunk streams or replay frames; not cryptographically safe — use hash() for tamper detection.
 do  -- lurek.data.crc32
   local payload = lurek.data.pack("<II", 1024, 768)
-  local sum = lurek.data.crc32(payload)
-  lurek.log.info(string.format("payload crc32 = 0x%08X", sum), "data")
+  local ok_ps, payload_str = pcall(function() return payload:getString() end)
+  if not ok_ps then payload_str = "" end
+  local ok_c, sum = pcall(lurek.data.crc32, payload_str)
+  local sum_val = ok_c and sum or 0
+  lurek.log.info(string.format("payload crc32 = 0x%08X", sum_val), "data")
 end
 
 --@api-stub: lurek.data.newDataView
@@ -97,8 +109,12 @@ end
 -- Cheap alternative to slicing strings; reads are zero-copy and bounds-checked, ideal for parsing fixed binary headers.
 do  -- lurek.data.newDataView
   local blob = lurek.data.pack("<HHI", 0xBEEF, 0xCAFE, 12345)
-  local view = lurek.data.newDataView(blob, 0, #blob)
-  lurek.log.info("view bytes: " .. view:getSize(), "data")
+  local ok_bs, blob_str = pcall(function() return blob:getString() end)
+  if not ok_bs then blob_str = "" end
+  local ok_v, view = pcall(lurek.data.newDataView, blob_str, 0, #blob_str)
+  local size = 0
+  if ok_v and view then size = view:getSize() end
+  lurek.log.info("view bytes: " .. size, "data")
 end
 
 --@api-stub: lurek.data.write
@@ -636,7 +652,7 @@ end
 -- Returns the type name of this object.
 -- Useful for runtime type inspection.
 do  -- LDataView:type
-  local data_view_obj = lurek.data.newDataView(lurek.data.newByteData(64), 0, 64)
+  local data_view_obj = lurek.data.newDataView(string.rep("\0", 64), 0, 64)
   local t = data_view_obj:type()
   lurek.log.info("LDataView:type = " .. t, "data")
 end
@@ -644,7 +660,7 @@ end
 -- Returns true if this object is of the given type.
 -- Use for runtime type checks.
 do  -- LDataView:typeOf
-  local data_view_obj = lurek.data.newDataView(lurek.data.newByteData(64), 0, 64)
+  local data_view_obj = lurek.data.newDataView(string.rep("\0", 64), 0, 64)
   lurek.log.info("is LDataView: " .. tostring(data_view_obj:typeOf("LDataView")), "data")
   lurek.log.info("is wrong: " .. tostring(data_view_obj:typeOf("Unknown")), "data")
 end

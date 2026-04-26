@@ -2085,7 +2085,7 @@ end
 -- Returns the type name of this object.
 -- Useful for runtime type inspection.
 do  -- LBezierCurve:type
-  local bezier_curve_obj = lurek.math.newBezierCurve(nil)
+  local bezier_curve_obj = lurek.math.newBezierCurve({0,0, 100,50, 200,0})
   local t = bezier_curve_obj:type()
   lurek.log.info("LBezierCurve:type = " .. t, "math")
 end
@@ -2093,7 +2093,7 @@ end
 -- Returns true if this object is of the given type.
 -- Use for runtime type checks.
 do  -- LBezierCurve:typeOf
-  local bezier_curve_obj = lurek.math.newBezierCurve(nil)
+  local bezier_curve_obj = lurek.math.newBezierCurve({0,0, 100,50, 200,0})
   lurek.log.info("is LBezierCurve: " .. tostring(bezier_curve_obj:typeOf("LBezierCurve")), "math")
   lurek.log.info("is wrong: " .. tostring(bezier_curve_obj:typeOf("Unknown")), "math")
 end
@@ -2101,7 +2101,7 @@ end
 -- Returns the type name of this object.
 -- Useful for runtime type inspection.
 do  -- LCatmullRom:type
-  local catmull_rom_obj = lurek.math.catmullRom(nil)
+  local catmull_rom_obj = lurek.math.catmullRom({{0,0},{100,50},{200,0},{300,50}})
   local t = catmull_rom_obj:type()
   lurek.log.info("LCatmullRom:type = " .. t, "math")
 end
@@ -2109,7 +2109,7 @@ end
 -- Returns true if this object is of the given type.
 -- Use for runtime type checks.
 do  -- LCatmullRom:typeOf
-  local catmull_rom_obj = lurek.math.catmullRom(nil)
+  local catmull_rom_obj = lurek.math.catmullRom({{0,0},{100,50},{200,0},{300,50}})
   lurek.log.info("is LCatmullRom: " .. tostring(catmull_rom_obj:typeOf("LCatmullRom")), "math")
   lurek.log.info("is wrong: " .. tostring(catmull_rom_obj:typeOf("Unknown")), "math")
 end
@@ -2117,7 +2117,7 @@ end
 -- Returns the type name of this object.
 -- Useful for runtime type inspection.
 do  -- LCircle:type
-  local circle_obj = lurek.math.newCircle(0, 0, nil)
+  local circle_obj = lurek.math.newCircle(0, 0, 50)
   local t = circle_obj:type()
   lurek.log.info("LCircle:type = " .. t, "math")
 end
@@ -2125,7 +2125,7 @@ end
 -- Returns true if this object is of the given type.
 -- Use for runtime type checks.
 do  -- LCircle:typeOf
-  local circle_obj = lurek.math.newCircle(0, 0, nil)
+  local circle_obj = lurek.math.newCircle(0, 0, 50)
   lurek.log.info("is LCircle: " .. tostring(circle_obj:typeOf("LCircle")), "math")
   lurek.log.info("is wrong: " .. tostring(circle_obj:typeOf("Unknown")), "math")
 end
@@ -2133,7 +2133,7 @@ end
 -- Returns the type name of this object.
 -- Useful for runtime type inspection.
 do  -- LHermite:type
-  local hermite_obj = lurek.math.hermite(nil, nil, nil, nil, nil, nil, nil, nil)
+  local hermite_obj = lurek.math.hermite(0, 0, 1, 0, 100, 0, 1, 0)
   local t = hermite_obj:type()
   lurek.log.info("LHermite:type = " .. t, "math")
 end
@@ -2141,7 +2141,7 @@ end
 -- Returns true if this object is of the given type.
 -- Use for runtime type checks.
 do  -- LHermite:typeOf
-  local hermite_obj = lurek.math.hermite(nil, nil, nil, nil, nil, nil, nil, nil)
+  local hermite_obj = lurek.math.hermite(0, 0, 1, 0, 100, 0, 1, 0)
   lurek.log.info("is LHermite: " .. tostring(hermite_obj:typeOf("LHermite")), "math")
   lurek.log.info("is wrong: " .. tostring(hermite_obj:typeOf("Unknown")), "math")
 end
@@ -2181,7 +2181,7 @@ end
 -- Returns the type name of this object.
 -- Useful for runtime type inspection.
 do  -- LSpatialHash:type
-  local spatial_hash_obj = lurek.math.newSpatialHash(nil)
+  local spatial_hash_obj = lurek.math.newSpatialHash(64)
   local t = spatial_hash_obj:type()
   lurek.log.info("LSpatialHash:type = " .. t, "math")
 end
@@ -2189,7 +2189,7 @@ end
 -- Returns true if this object is of the given type.
 -- Use for runtime type checks.
 do  -- LSpatialHash:typeOf
-  local spatial_hash_obj = lurek.math.newSpatialHash(nil)
+  local spatial_hash_obj = lurek.math.newSpatialHash(64)
   lurek.log.info("is LSpatialHash: " .. tostring(spatial_hash_obj:typeOf("LSpatialHash")), "math")
   lurek.log.info("is wrong: " .. tostring(spatial_hash_obj:typeOf("Unknown")), "math")
 end
@@ -2213,7 +2213,7 @@ end
 -- Returns the type name of this object.
 -- Useful for runtime type inspection.
 do  -- LTween:type
-  local tween_obj = lurek.tween.tween()
+  local tween_obj = lurek.tween.tween(0.5, {x=0}, {x=100})
   local t = tween_obj:type()
   lurek.log.info("LTween:type = " .. t, "math")
 end
@@ -2221,7 +2221,7 @@ end
 -- Returns true if this object is of the given type.
 -- Use for runtime type checks.
 do  -- LTween:typeOf
-  local tween_obj = lurek.tween.tween()
+  local tween_obj = lurek.tween.tween(0.5, {x=0}, {x=100})
   lurek.log.info("is LTween: " .. tostring(tween_obj:typeOf("LTween")), "math")
   lurek.log.info("is wrong: " .. tostring(tween_obj:typeOf("Unknown")), "math")
 end
@@ -2231,7 +2231,7 @@ end
 do  -- LVec2:fromAngle
   local v = lurek.math.vec2(1, 0)
   local angle = math.pi / 4   -- 45 degrees (northeast)
-  local dir = v:fromAngle(angle)
+  local dir = lurek.math.vec2(1, 0).fromAngle(angle)
   lurek.log.info("dir.x=" .. dir.x .. " dir.y=" .. dir.y, "math")
 end
 --@api-stub: LVec2:type
@@ -2255,7 +2255,7 @@ end
 -- Useful for uniform scale vectors or initialising colour triples.
 do  -- LVec3:splat
   local v = lurek.math.vec3(0, 0, 0)
-  local ones = v:splat(1.0)
+  local ones = lurek.math.vec3(1.0, 1.0, 1.0).splat(1.0)
   lurek.log.info("splat=" .. ones.x .. "," .. ones.y .. "," .. ones.z, "math")
 end
 --@api-stub: LVec3:type

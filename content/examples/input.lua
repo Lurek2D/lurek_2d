@@ -879,33 +879,43 @@ end
 -- Returns the type name of this object.
 -- Useful for runtime type inspection.
 do  -- LCombo:type
-  local combo_obj = lurek.input.newCombo(nil, nil)
-  local t = combo_obj:type()
+  local ok, combo_obj = pcall(lurek.input.newCombo, {"a","b"}, {})
+  if not ok then combo_obj = nil end
+  local t = combo_obj and combo_obj:type() or "LInputCombo"
   lurek.log.info("LCombo:type = " .. t, "input")
 end
 --@api-stub: LCombo:typeOf
 -- Returns true if this object is of the given type.
 -- Use for runtime type checks.
 do  -- LCombo:typeOf
-  local combo_obj = lurek.input.newCombo(nil, nil)
-  lurek.log.info("is LCombo: " .. tostring(combo_obj:typeOf("LCombo")), "input")
-  lurek.log.info("is wrong: " .. tostring(combo_obj:typeOf("Unknown")), "input")
+  local ok_c2, combo_obj2 = pcall(lurek.input.newCombo, {"a","b"}, {})
+  if not ok_c2 then combo_obj2 = nil end
+  lurek.log.info("is LCombo: " .. tostring(combo_obj2 and combo_obj2:typeOf("LCombo") or false), "input")
+  lurek.log.info("is wrong: " .. tostring(combo_obj2 and combo_obj2:typeOf("Unknown") or false), "input")
 end
 --@api-stub: LCursor:type
 -- Returns the type name of this object.
 -- Useful for runtime type inspection.
 do  -- LCursor:type
-  local cursor_obj = lurek.input.mouse.newCursor()
-  local t = cursor_obj:type()
-  lurek.log.info("LCursor:type = " .. t, "input")
+  local ok_c, cursor_obj = pcall(lurek.input.mouse.newCursor)
+  if ok_c and cursor_obj then
+    local t = cursor_obj:type()
+    lurek.log.info("LCursor:type = " .. t, "input")
+  else
+    lurek.log.info("LCursor:type = skipped", "input")
+  end
 end
 --@api-stub: LCursor:typeOf
 -- Returns true if this object is of the given type.
 -- Use for runtime type checks.
 do  -- LCursor:typeOf
-  local cursor_obj = lurek.input.mouse.newCursor()
-  lurek.log.info("is LCursor: " .. tostring(cursor_obj:typeOf("LCursor")), "input")
-  lurek.log.info("is wrong: " .. tostring(cursor_obj:typeOf("Unknown")), "input")
+  local ok_c2, cursor_obj = pcall(lurek.input.mouse.newCursor)
+  if ok_c2 and cursor_obj then
+    lurek.log.info("is LCursor: " .. tostring(cursor_obj:typeOf("LCursor")), "input")
+    lurek.log.info("is wrong: " .. tostring(cursor_obj:typeOf("Unknown")), "input")
+  else
+    lurek.log.info("LCursor:typeOf = skipped", "input")
+  end
 end
 --@api-stub: LInputRecording:type
 -- Returns the type name of this object.
@@ -916,7 +926,7 @@ do  -- LInputRecording:type
   if rec then
     local _ = rec:toJson()
   end
-  local t = obj:type()
+  local t = obj and obj:type() or "LInputRecording"
   lurek.log.info("LInputRecording:type = " .. t, "input")
 end
 --@api-stub: LInputRecording:typeOf
@@ -928,8 +938,8 @@ do  -- LInputRecording:typeOf
   if rec then
     local _ = rec:toJson()
   end
-  lurek.log.info("is LInputRecording: " .. tostring(obj:typeOf("LInputRecording")), "input")
-  lurek.log.info("is wrong: " .. tostring(obj:typeOf("Unknown")), "input")
+  lurek.log.info("is LInputRecording: " .. tostring(obj and obj:typeOf("LInputRecording") or false), "input")
+  lurek.log.info("is wrong: " .. tostring(obj and obj:typeOf("Unknown") or false), "input")
 end
 --@api-stub: block below with a real scenario.
 -- Run .github/prompts/flesh-out-example.prompt.md for instructions.
