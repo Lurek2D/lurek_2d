@@ -2,6 +2,20 @@
 
 All notable changes to Lurek2D are recorded here.
 
+## [1.0.9-fix.10] - 2026-04-27
+
+### fix(lua-api): fix all LuaLS type errors in content/games and docs/api/lurek.lua
+
+- Fixed `@return | value |` invalid LuaLS type in `data_api.rs` (6 places), `patterns_api.rs` (13 places), `physics_api.rs` (1 place), `network_api.rs` (1 place) — changed to `@return | any |`.
+- Added `---@type LParticleSystem` annotations for `sparks`, `burst`, and `spider_sparks` in `centipede/main.lua` to resolve "Need check nil" and "Undefined field" errors.
+- Fixed `---@type Camera2D?` annotations to `---@type LCamera?` in `roguelite`, `soulslike`, `another_world`, `light_showcase`, `rhythm_game`, and `tennis_classic`.
+- Fixed `---@type ParticleSystem|nil` to `---@type LParticleSystem|nil` in `debugbridge_demo` and `tennis_classic`.
+- Fixed `platform_fighter/main.lua`: `proj_trail_ps:emit(x, y, 1)` → `moveTo(x, y)` + `emit(1)`.
+- Fixed `devtools_demo/main.lua`: `animate_panel()` rewrote callback-based tween to `lurek.tween.to(panel_offsets, {[index]=target}, 0.35, "outQuad")`.
+- Fixed `wildlife_photo/main.lua`: converted `zoom_display` from plain number to `{ value = 1 }` table so `lurek.tween.to` can animate it; restored missing `tod_timer = 0` in `reset_game()`.
+- Fixed `farming_sim/main.lua`: removed broken `lurek.tween.to(gold_display, ...)` call (passing plain number); the existing manual lerp already handles the display animation.
+- Regenerated `logs/data/lua_api_data.json` and `docs/api/lurek.lua`.
+
 ## [1.0.9-fix.9] - 2026-05-01
 
 ### fix(quality): silence pre-existing clippy lints with targeted `#[allow]` attributes

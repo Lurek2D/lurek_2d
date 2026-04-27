@@ -293,7 +293,7 @@ local function ln(x1, y1, x2, y2, c)
     _gfx.line(x1, y1, x2, y2)
 end
 
-local _cam = nil ---@type Camera2D?
+local _cam = nil ---@type LCamera?
 
 function lurek.init()
     lurek.window.setTitle("Light Showcase — Lurek2D")

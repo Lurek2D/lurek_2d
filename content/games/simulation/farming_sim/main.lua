@@ -321,8 +321,7 @@ function lurek.process(dt)
                 gold = gold - CROP_SEED_COST[CROP_TOMATO]
                 inventory.seeds[CROP_TOMATO] = inventory.seeds[CROP_TOMATO] + 1
             end
-            -- Tween gold display
-            lurek.tween.to(gold_display, { [1] = gold }, 0.3)
+            -- gold display will follow via lerp in update
         end
         -- Update tweens / particles even in market
         lurek.tween.update(dt)

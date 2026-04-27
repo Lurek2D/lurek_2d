@@ -68,7 +68,7 @@ local SKY_MAX_Y = 120
 local cam_x = 0
 local cam_y = 0
 local zoom_index = 1
-local zoom_display = 1 -- tweened
+local zoom_display = { value = 1 } -- tweened
 local tod_timer = 0
 local tod_phase = TOD_DAWN
 local bg_r, bg_g, bg_b = TOD_BG[1][1], TOD_BG[1][2], TOD_BG[1][3]
@@ -159,7 +159,7 @@ local function reset_game()
     cam_x = WORLD_W * 0.5 - SCREEN_W * 0.5
     cam_y = 0
     zoom_index = 1
-    zoom_display = 1
+    zoom_display.value = 1
     tod_timer = 0
     tod_phase = TOD_DAWN
     bg_r, bg_g, bg_b = TOD_BG[1][1], TOD_BG[1][2], TOD_BG[1][3]
@@ -545,11 +545,11 @@ function lurek.process(dt)
     -- Zoom
     if lurek.input.wasActionPressed("zoom_in") then
         zoom_index = math.min(#ZOOM_LEVELS, zoom_index + 1)
-        lurek.tween.to(zoom_display, { [1] = ZOOM_LEVELS[zoom_index] }, 0.3)
+        lurek.tween.to(zoom_display, { value = ZOOM_LEVELS[zoom_index] }, 0.3)
     end
     if lurek.input.wasActionPressed("zoom_out") then
         zoom_index = math.max(1, zoom_index - 1)
-        lurek.tween.to(zoom_display, { [1] = ZOOM_LEVELS[zoom_index] }, 0.3)
+        lurek.tween.to(zoom_display, { value = ZOOM_LEVELS[zoom_index] }, 0.3)
     end
 
     -- Take photo

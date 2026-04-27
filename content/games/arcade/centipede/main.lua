@@ -56,8 +56,11 @@ local flea_timer      = 0
 local scorpion_timer  = 0
 
 -- Particle systems
+---@type LParticleSystem
 local sparks          = nil  -- mushroom poof
+---@type LParticleSystem
 local burst           = nil  -- centipede hit
+---@type LParticleSystem
 local spider_sparks   = nil  -- spider death
 
 -- Tween: score pop

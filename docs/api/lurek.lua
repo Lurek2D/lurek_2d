@@ -4480,15 +4480,15 @@ function LRingBuffer:isFull() end
 function LRingBuffer:len() end
 
 --- Returns the oldest element without removing it, or nil if empty.
----@return value Oldest stored value, or nil when the buffer is empty.
+---@return number Oldest stored value, or nil when the buffer is empty.
 function LRingBuffer:peek() end
 
 --- Returns the newest element without removing it, or nil if empty.
----@return value Newest stored value, or nil when the buffer is empty.
+---@return number Newest stored value, or nil when the buffer is empty.
 function LRingBuffer:peekNewest() end
 
 --- Removes and returns the oldest element, or nil if the buffer is empty.
----@return value Oldest stored value, or nil when the buffer is empty.
+---@return number Oldest stored value, or nil when the buffer is empty.
 function LRingBuffer:pop() end
 
 --- Pushes a value onto the ring buffer.
@@ -4546,7 +4546,7 @@ lurek.data.encodeToml = function(tbl) end
 
 --- Deserializes a MessagePack binary string back into a Lua value.
 ---@param bytes string MessagePack bytes to decode.
----@return value Decoded Lua value.
+---@return number Decoded Lua value.
 lurek.data.fromMsgPack = function(bytes) end
 
 --- Returns the number of bytes the given format and values would occupy.
@@ -4597,7 +4597,7 @@ lurek.data.parseToml = function(text) end
 ---@param format string Binary pack format string.
 ---@param data string Packed byte string to read from.
 ---@param offset integer|nil Optional starting byte offset.
----@return value Decoded Lua values.
+---@return number Decoded Lua values.
 lurek.data.read = function(format, data, offset) end
 
 --- Returns the byte size of a Lurek2D Binary Pack Format string.
@@ -4614,7 +4614,7 @@ lurek.data.toMsgPack = function(value) end
 ---@param format string Pack format string.
 ---@param data string Packed byte string to read from.
 ---@param offset integer|nil Optional starting byte offset.
----@return value
+---@return any
 ---@return integer
 lurek.data.unpack = function(format, data, offset) end
 
@@ -12985,7 +12985,7 @@ lurek.network.syncEntity = function(host, entity_id, data, channel, reliable) en
 
 --- Deserializes a MessagePack binary string back to a Lua value.
 ---@param data string Binary MessagePack payload.
----@return value Deserialized Lua value.
+---@return number Deserialized Lua value.
 lurek.network.unpack = function(data) end
 
 ---@class lurek.parallax
@@ -14424,7 +14424,7 @@ function LBlackboard:clearAll() end
 
 --- Gets a fact from the blackboard.
 ---@param key string Fact key to read.
----@return value Stored fact value, or nil if the key is unset.
+---@return number Stored fact value, or nil if the key is unset.
 function LBlackboard:get(key) end
 
 --- Returns the monotonic revision counter (incremented on every write).
@@ -14587,7 +14587,7 @@ function LFactory:clearAll() end
 --- Creates an instance of the named type by invoking its constructor.
 ---@param type_name string Type or alias name to construct.
 ---@param ... any Arguments passed to the constructor.
----@return value Constructed value.
+---@return number Constructed value.
 function LFactory:create(type_name, ...) end
 
 --- Returns a table of all registered type names.
@@ -14666,7 +14666,7 @@ function LList:contains(value) end
 
 --- Returns the value at a 1-based index.
 ---@param index integer 1-based list index to read.
----@return value Value at the index, or nil if the index is out of range.
+---@return number Value at the index, or nil if the index is out of range.
 function LList:get(index) end
 
 --- Returns true if the list is empty.
@@ -14679,7 +14679,7 @@ function LList:len() end
 
 --- Removes and returns the value at a 1-based index.
 ---@param index integer 1-based list index to remove.
----@return value Removed value, or nil if the index is out of range.
+---@return number Removed value, or nil if the index is out of range.
 function LList:remove(index) end
 
 --- Replaces the value at a 1-based index.
@@ -14742,7 +14742,7 @@ function LMediator:send(channel, ...) end
 LObjectPool = {}
 
 --- Acquires an available object from the pool.
----@return value Acquired value, or nil if the pool is empty.
+---@return number Acquired value, or nil if the pool is empty.
 function LObjectPool:acquire() end
 
 --- Inserts a pre-built object into the available pool.
@@ -14777,7 +14777,7 @@ LObserver = {}
 
 --- Gets a property value.
 ---@param key string Property key to read.
----@return value Stored property value, or nil if the key is unset.
+---@return number Stored property value, or nil if the key is unset.
 function LObserver:get(key) end
 
 --- Returns the total number of active subscriptions.
@@ -14819,11 +14819,11 @@ function LPriorityQueue:isEmpty() end
 function LPriorityQueue:len() end
 
 --- Returns the highest-priority item without removing it.
----@return value Highest-priority value, or nil if the queue is empty.
+---@return number Highest-priority value, or nil if the queue is empty.
 function LPriorityQueue:peek() end
 
 --- Removes and returns the highest-priority item.
----@return value Dequeued value, or nil if the queue is empty.
+---@return number Dequeued value, or nil if the queue is empty.
 function LPriorityQueue:pop() end
 
 --- Inserts an item with a priority. Higher priorities are dequeued first.
@@ -14842,7 +14842,7 @@ LQueue = {}
 function LQueue:clear() end
 
 --- Removes and returns the front value.
----@return value Front value, or nil if the queue is empty.
+---@return number Front value, or nil if the queue is empty.
 function LQueue:dequeue() end
 
 --- Adds a value to the back of the queue.
@@ -14851,7 +14851,7 @@ function LQueue:dequeue() end
 function LQueue:enqueue(value) end
 
 --- Returns the front value without removing it.
----@return value Front value, or nil if the queue is empty.
+---@return number Front value, or nil if the queue is empty.
 function LQueue:front() end
 
 --- Returns true if the queue is empty.
@@ -14992,7 +14992,7 @@ function LServiceLocator:has(name) end
 
 --- Retrieves a registered service by name.
 ---@param name string Service name to look up.
----@return value Stored service value, or nil if the service is missing.
+---@return number Stored service value, or nil if the service is missing.
 function LServiceLocator:locate(name) end
 
 --- Registers a named service with an associated Lua value.
@@ -15109,11 +15109,11 @@ function LStack:isFull() end
 function LStack:len() end
 
 --- Returns the top value without removing it.
----@return value Top value, or nil if the stack is empty.
+---@return number Top value, or nil if the stack is empty.
 function LStack:peek() end
 
 --- Removes and returns the top value.
----@return value Popped value, or nil if the stack is empty.
+---@return number Popped value, or nil if the stack is empty.
 function LStack:pop() end
 
 --- Pushes a value onto the stack.
@@ -15135,7 +15135,7 @@ function LStrategy:clear() end
 
 --- Calls the currently active strategy function with the given arguments.
 ---@param ... any Arguments passed to the active strategy.
----@return value Values returned by the active strategy.
+---@return number Values returned by the active strategy.
 function LStrategy:execute(...) end
 
 --- Returns the name of the active strategy.
@@ -15947,7 +15947,7 @@ function LWorld:getBodyCount() end
 
 --- Returns the Lua data previously attached to a body, or nil if none is set.
 ---@param bodyId integer Body ID to inspect.
----@return value Stored Lua value, or nil when no value is attached.
+---@return number Stored Lua value, or nil when no value is attached.
 function LWorld:getBodyData(bodyId) end
 
 --- Returns all body IDs in the world.

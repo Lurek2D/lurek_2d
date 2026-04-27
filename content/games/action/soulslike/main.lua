@@ -68,7 +68,7 @@ local death_timer  = 0
 local death_alpha  = 0
 local victory_timer = 0
 local title_blink  = 0
-local _cam         = nil ---@type Camera2D?
+local _cam         = nil ---@type LCamera?
 
 -- ── Helpers ───────────────────────────────────────────────────────────────
 local function clamp(v, lo, hi) return math.max(lo, math.min(hi, v)) end

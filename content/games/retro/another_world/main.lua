@@ -112,7 +112,7 @@ local intro_line = 1
 local aliens = {}
 local alien_projectiles = {}
 local particles = {}
-local cam = nil ---@type Camera2D?
+local cam = nil ---@type LCamera?
 
 -- ---------------------------------------------------------------------------
 -- Scene definitions (5 scenes)

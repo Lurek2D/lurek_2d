@@ -865,7 +865,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     // -- unpack --
     /// Deserializes a MessagePack binary string back to a Lua value.
     /// @param | data | string | Binary MessagePack payload.
-    /// @return | value | Deserialized Lua value.
+    /// @return | any | Deserialized Lua value.
     tbl.set("unpack", lua.create_function(|lua, data: LuaString| {
             let net_val =
                 crate::network::message::unpack(data.as_bytes()).map_err(LuaError::external)?;

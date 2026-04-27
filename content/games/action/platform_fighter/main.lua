@@ -563,8 +563,9 @@ function lurek.process(dt)
             proj.life = proj.life - dt
             -- Trail particles
             if proj_trail_ps then
-                proj_trail_ps:emit(proj.x + PROJECTILE_SIZE * 0.5,
-                                     proj.y + PROJECTILE_SIZE * 0.5, 1)
+                proj_trail_ps:moveTo(proj.x + PROJECTILE_SIZE * 0.5,
+                                     proj.y + PROJECTILE_SIZE * 0.5)
+                proj_trail_ps:emit(1)
             end
             if proj.life <= 0 or proj.x < BLAST_LEFT or proj.x > BLAST_RIGHT then
                 table.insert(dead, i)

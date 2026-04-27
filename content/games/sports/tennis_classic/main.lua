@@ -57,7 +57,7 @@ end
 
 -- ── Game state ────────────────────────────────────────────────────
 local state = ST.TITLE
-local camera = nil  ---@type Camera2D
+local camera = nil  ---@type LCamera
 local title_timer = 0
 local point_timer = 0
 local point_msg = ""
@@ -94,9 +94,9 @@ local rally_count = 0
 local last_hitter = 0
 
 -- Particles
-local dust_particles = nil  ---@type ParticleSystem
-local ace_particles  = nil  ---@type ParticleSystem
-local net_particles  = nil  ---@type ParticleSystem
+local dust_particles = nil  ---@type LParticleSystem
+local ace_particles  = nil  ---@type LParticleSystem
+local net_particles  = nil  ---@type LParticleSystem
 
 -- Tweens
 local score_popup = { text = "", alpha = 0, y = 0 }

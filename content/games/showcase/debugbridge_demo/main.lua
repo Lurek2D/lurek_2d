@@ -87,9 +87,9 @@ local title_timer     = 0
 local graph_scroll = { offset = 0 }
 
 -- Particle systems
----@type ParticleSystem|nil
+---@type LParticleSystem|nil
 local ps_log_pulse  = nil
----@type ParticleSystem|nil
+---@type LParticleSystem|nil
 local ps_breakpoint = nil
 
 -- Tween highlight

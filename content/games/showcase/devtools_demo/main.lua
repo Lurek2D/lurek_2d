@@ -132,9 +132,7 @@ end
 
 local function animate_panel(index, visible)
     local target = visible and 0 or (-PANEL_W - 20)
-    lurek.tween.to(0.35, function(t)
-        panel_offsets[index] = lerp(panel_offsets[index], target, t)
-    end, { ease = "outQuad" })
+    lurek.tween.to(panel_offsets, { [index] = target }, 0.35, "outQuad")
 end
 
 -- ---------------------------------------------------------------------------

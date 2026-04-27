@@ -85,7 +85,7 @@ local SONGS = {
 -- ---------------------------------------------------------------------------
 -- Game state
 -- ---------------------------------------------------------------------------
-local camera = nil  ---@type Camera2D
+local camera = nil  ---@type LCamera
 local title_timer = 0
 local selected_song = 1
 local song_speed = 200
