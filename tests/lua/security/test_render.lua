@@ -5,50 +5,62 @@
 -- Tests that core APIs handle nil, wrong types, and edge cases gracefully
 ---@diagnostic disable: param-type-mismatch
 
+-- @describe fuzz: nil arguments to core APIs
 describe("fuzz: nil arguments to core APIs", function()
+    -- @security lurek.render.setColor
     it("lurek.render.setColor handles nil gracefully", function()
         expect_error(function()
             lurek.render.setColor(nil, nil, nil)
         end)
     end)
 
+    -- @security lurek.render.rectangle
     it("lurek.render.rectangle handles nil gracefully", function()
         expect_error(function()
             lurek.render.rectangle(nil, nil, nil, nil, nil)
         end)
     end)
 
+    -- @security lurek.render.circle
     it("lurek.render.circle handles nil gracefully", function()
         expect_error(function()
             lurek.render.circle(nil, nil, nil, nil)
         end)
     end)
 
+    -- @security lurek.render.line
     it("lurek.render.line with nil args is silently ignored", function()
         -- Should not error — nil coords are filtered out, the draw call is just skipped
         lurek.render.line(nil, nil, nil, nil)
     end)
 end)
 
+-- @describe fuzz: wrong types to physics
 describe("fuzz: wrong types to physics", function()
+    -- @security lurek.physics.newWorld
     it("lurek.physics.newWorld rejects string gravity", function()
         expect_error(function()
             lurek.physics.newWorld("hello", "world")
         end)
     end)
 
+    -- @security lurek.physics.newBody
     it("lurek.physics.newBody rejects nil world", function()
         expect_error(function()
             lurek.physics.newBody(nil, 0, 0, "dynamic")
         end)
     end)
 
+    -- @security lurek.physics.step
     it("lurek.physics.step rejects nil world", function()
         expect_error(function()
             lurek.physics.step(nil, 0.016)
         end)
     end)
 
+    -- @security lurek.physics.destroyWorld
+    -- @security lurek.physics.newWorld
+    -- @security lurek.physics.step
     it("lurek.physics.step rejects string dt", function()
         local world = lurek.physics.newWorld(0, 10)
         expect_error(function()
@@ -58,7 +70,10 @@ describe("fuzz: wrong types to physics", function()
     end)
 end)
 
+-- @describe fuzz: wrong types to entity system
 describe("fuzz: wrong types to entity system", function()
+    -- @security LUniverse:set
+    -- @security lurek.ecs.newUniverse
     it("universe:set with nil entity id", function()
         local universe = lurek.ecs.newUniverse()
         expect_error(function()
@@ -66,6 +81,8 @@ describe("fuzz: wrong types to entity system", function()
         end)
     end)
 
+    -- @security LUniverse:get
+    -- @security lurek.ecs.newUniverse
     it("universe:get with nil entity id", function()
         local universe = lurek.ecs.newUniverse()
         expect_error(function()
@@ -73,6 +90,8 @@ describe("fuzz: wrong types to entity system", function()
         end)
     end)
 
+    -- @security LUniverse:kill
+    -- @security lurek.ecs.newUniverse
     it("universe:kill with nil entity id", function()
         local universe = lurek.ecs.newUniverse()
         expect_error(function()
@@ -80,6 +99,8 @@ describe("fuzz: wrong types to entity system", function()
         end)
     end)
 
+    -- @security LUniverse:isAlive
+    -- @security lurek.ecs.newUniverse
     it("universe:isAlive with nil entity id", function()
         local universe = lurek.ecs.newUniverse()
         expect_error(function()
@@ -88,31 +109,37 @@ describe("fuzz: wrong types to entity system", function()
     end)
 end)
 
+-- @describe fuzz: wrong types to data module
 describe("fuzz: wrong types to data module", function()
+    -- @security lurek.data.encode
     it("lurek.data.encode rejects nil format", function()
         expect_error(function()
             lurek.data.encode(nil, { a = 1 })
         end)
     end)
 
+    -- @security lurek.data.decode
     it("lurek.data.decode rejects nil format", function()
         expect_error(function()
             lurek.data.decode(nil, "{}")
         end)
     end)
 
+    -- @security lurek.data.decode
     it("lurek.data.decode rejects malformed JSON", function()
         expect_error(function()
             lurek.data.decode("json", "{{{{not json!!!")
         end)
     end)
 
+    -- @security lurek.data.compress
     it("lurek.data.compress rejects nil", function()
         expect_error(function()
             lurek.data.compress("deflate", nil)
         end)
     end)
 
+    -- @security lurek.data.decompress
     it("lurek.data.decompress rejects garbage", function()
         expect_error(function()
             lurek.data.decompress("deflate", "not compressed data at all!!")
@@ -120,7 +147,10 @@ describe("fuzz: wrong types to data module", function()
     end)
 end)
 
+-- @describe fuzz: wrong types to AI module
 describe("fuzz: wrong types to AI module", function()
+    -- @security LStateMachine:addState
+    -- @security lurek.ai.newStateMachine
     it("fsm:addState with nil name", function()
         local fsm = lurek.ai.newStateMachine()
         expect_error(function()
@@ -128,6 +158,9 @@ describe("fuzz: wrong types to AI module", function()
         end)
     end)
 
+    -- @security LStateMachine:addState
+    -- @security LStateMachine:forceState
+    -- @security lurek.ai.newStateMachine
     it("fsm:forceState with non-existent state does not error", function()
         local fsm = lurek.ai.newStateMachine()
         fsm:addState("idle", { onUpdate = function() end })
@@ -136,19 +169,23 @@ describe("fuzz: wrong types to AI module", function()
     end)
 end)
 
+-- @describe fuzz: wrong types to math module
 describe("fuzz: wrong types to math module", function()
+    -- @security lurek.math.Vec2
     it("Vec2 rejects string args", function()
         expect_error(function()
             lurek.math.Vec2("hello", "world")
         end)
     end)
 
+    -- @security lurek.math.sin
     it("sin rejects nil", function()
         expect_error(function()
             lurek.math.sin(nil)
         end)
     end)
 
+    -- @security lurek.math.lerp
     it("lerp rejects nil", function()
         expect_error(function()
             lurek.math.lerp(nil, nil, nil)
@@ -156,13 +193,16 @@ describe("fuzz: wrong types to math module", function()
     end)
 end)
 
+-- @describe fuzz: wrong types to audio module
 describe("fuzz: wrong types to audio module", function()
+    -- @security lurek.audio.setMasterVolume
     it("setMasterVolume rejects string", function()
         expect_error(function()
             lurek.audio.setMasterVolume("loud")
         end)
     end)
 
+    -- @security lurek.audio.setMasterVolume
     it("setMasterVolume rejects nil", function()
         expect_error(function()
             lurek.audio.setMasterVolume(nil)
@@ -170,7 +210,10 @@ describe("fuzz: wrong types to audio module", function()
     end)
 end)
 
+-- @describe fuzz: edge case numbers
 describe("fuzz: edge case numbers", function()
+    -- @security lurek.math.cos
+    -- @security lurek.math.sin
     it("math handles very large numbers", function()
         expect_no_error(function()
             lurek.math.sin(1e15)
@@ -178,6 +221,8 @@ describe("fuzz: edge case numbers", function()
         end)
     end)
 
+    -- @security lurek.math.cos
+    -- @security lurek.math.sin
     it("math handles very small numbers", function()
         expect_no_error(function()
             lurek.math.sin(1e-15)
@@ -185,6 +230,8 @@ describe("fuzz: edge case numbers", function()
         end)
     end)
 
+    -- @security lurek.math.sin
+    -- @security lurek.math.sqrt
     it("math handles negative zero", function()
         expect_no_error(function()
             lurek.math.sin(-0.0)
@@ -192,6 +239,7 @@ describe("fuzz: edge case numbers", function()
         end)
     end)
 
+    -- @security lurek.math.Vec2
     it("Vec2 handles inf", function()
         -- Should not crash even with inf
         expect_no_error(function()
@@ -208,6 +256,7 @@ end)
 
 -- Lurek2D Fuzz Tests (Sandbox Boundary)
 
+-- @describe sandbox boundary fuzzing
 describe("sandbox boundary fuzzing", function()
     it("handles random inputs without crashing the engine", function()
         -- Extract a few engine API tables
@@ -251,13 +300,17 @@ end)
 -- Lurek2D Validation Test: Invalid API Arguments
 -- Tests that API functions handle bad inputs without crashing
 
+-- @describe validation: physics invalid args
 describe("validation: physics invalid args", function()
+    -- @security lurek.physics.step
     it("rejects nil world ID", function()
         expect_error(function()
             lurek.physics.step(nil, 0.016)
         end, "nil world ID")
     end)
 
+    -- @security lurek.physics.newWorld
+    -- @security lurek.physics.step
     it("handles negative dt without crash", function()
         local world_id = lurek.physics.newWorld(0, 100)
         -- Negative dt should not crash
@@ -266,6 +319,8 @@ describe("validation: physics invalid args", function()
         end, "negative dt should not crash")
     end)
 
+    -- @security lurek.physics.newBody
+    -- @security lurek.physics.newWorld
     it("handles invalid body type string", function()
         local world_id = lurek.physics.newWorld(0, 100)
         -- Engine may accept or coerce invalid types
@@ -275,6 +330,8 @@ describe("validation: physics invalid args", function()
         end, "invalid body type should not crash")
     end)
 
+    -- @security lurek.physics.newBody
+    -- @security lurek.physics.newWorld
     it("handles NaN position gracefully", function()
         local world_id = lurek.physics.newWorld(0, 100)
         expect_no_error(function()
@@ -282,6 +339,10 @@ describe("validation: physics invalid args", function()
         end)
     end)
 
+    -- @security lurek.physics.newBody
+    -- @security lurek.physics.newWorld
+    -- @security lurek.physics.setBodyVelocity
+    -- @security lurek.physics.step
     it("handles huge velocity without crash", function()
         local world_id = lurek.physics.newWorld(0, 100)
         local body = lurek.physics.newBody(world_id, 0, 0, "dynamic")
@@ -291,6 +352,9 @@ describe("validation: physics invalid args", function()
         end, "huge velocity should not crash")
     end)
 
+    -- @security lurek.physics.destroyWorld
+    -- @security lurek.physics.newWorld
+    -- @security lurek.physics.step
     it("handles destroyed world gracefully", function()
         local world_id = lurek.physics.newWorld(0, 100)
         lurek.physics.destroyWorld(world_id)
@@ -301,25 +365,30 @@ describe("validation: physics invalid args", function()
     end)
 end)
 
+-- @describe validation: compute invalid args
 describe("validation: compute invalid args", function()
+    -- @security lurek.compute.zeros
     it("rejects zero-dimension array", function()
         expect_error(function()
             lurek.compute.zeros({0}, "float32")
         end, "zero dimension should error")
     end)
 
+    -- @security lurek.compute.zeros
     it("rejects negative dimension", function()
         expect_error(function()
             lurek.compute.zeros({-5}, "float32")
         end, "negative dimension should error")
     end)
 
+    -- @security lurek.compute.zeros
     it("rejects invalid dtype string", function()
         expect_error(function()
             lurek.compute.zeros({10}, "invalid_type")
         end, "invalid dtype should error")
     end)
 
+    -- @security lurek.compute.zeros
     it("rejects too many dimensions", function()
         expect_error(function()
             lurek.compute.zeros({2, 3, 4, 5}, "float32")
@@ -327,7 +396,11 @@ describe("validation: compute invalid args", function()
     end)
 end)
 
+-- @describe validation: dataframe invalid ops
 describe("validation: dataframe invalid ops", function()
+    -- @security LDataFrame:addColumn
+    -- @security LDataFrame:removeColumn
+    -- @security lurek.dataframe.newDataFrame
     it("rejects removing nonexistent column", function()
         local df = lurek.dataframe.newDataFrame()
         df:addColumn("real", 0)
@@ -336,6 +409,10 @@ describe("validation: dataframe invalid ops", function()
         end, "remove nonexistent column should error")
     end)
 
+    -- @security LDataFrame:addColumn
+    -- @security LDataFrame:addRow
+    -- @security LDataFrame:getValue
+    -- @security lurek.dataframe.newDataFrame
     it("rejects out-of-range row access", function()
         local df = lurek.dataframe.newDataFrame()
         df:addColumn("val", 0)
@@ -345,6 +422,8 @@ describe("validation: dataframe invalid ops", function()
         end, "out of range row should error")
     end)
 
+    -- @security LDataFrame:addColumn
+    -- @security lurek.dataframe.newDataFrame
     it("rejects duplicate column names", function()
         local df = lurek.dataframe.newDataFrame()
         df:addColumn("name", "")
@@ -354,7 +433,11 @@ describe("validation: dataframe invalid ops", function()
     end)
 end)
 
+-- @describe validation: graph invalid operations
 describe("validation: graph invalid operations", function()
+    -- @security LGraph:addEdge
+    -- @security LGraph:addNode
+    -- @security lurek.graph.newGraph
     it("rejects edge with invalid node", function()
         local g = lurek.graph.newGraph()
         local n1 = g:addNode("processor", 100)
@@ -364,6 +447,8 @@ describe("validation: graph invalid operations", function()
         end, "edge to invalid node should error")
     end)
 
+    -- @security LGraph:addNode
+    -- @security lurek.graph.newGraph
     it("accepts negative capacity", function()
         local g = lurek.graph.newGraph()
         expect_no_error(function()
@@ -372,7 +457,10 @@ describe("validation: graph invalid operations", function()
     end)
 end)
 
+-- @describe validation: entity invalid operations
 describe("validation: entity invalid operations", function()
+    -- @security LUniverse:kill
+    -- @security lurek.ecs.newUniverse
     it("handles kill of nonexistent entity", function()
         local universe = lurek.ecs.newUniverse()
         expect_no_error(function()
@@ -380,6 +468,10 @@ describe("validation: entity invalid operations", function()
         end, "kill nonexistent should not crash")
     end)
 
+    -- @security LUniverse:isAlive
+    -- @security LUniverse:kill
+    -- @security LUniverse:spawn
+    -- @security lurek.ecs.newUniverse
     it("handles get on dead entity", function()
         local universe = lurek.ecs.newUniverse()
         local id = universe:spawn()
@@ -387,6 +479,10 @@ describe("validation: entity invalid operations", function()
         expect_false(universe:isAlive(id), "dead entity is not alive")
     end)
 
+    -- @security LUniverse:kill
+    -- @security LUniverse:set
+    -- @security LUniverse:spawn
+    -- @security lurek.ecs.newUniverse
     it("handles set on dead entity", function()
         local universe = lurek.ecs.newUniverse()
         local id = universe:spawn()
@@ -397,7 +493,9 @@ describe("validation: entity invalid operations", function()
     end)
 end)
 
+-- @describe validation: image invalid operations
 describe("validation: image invalid operations", function()
+    -- @security lurek.image.newImageData
     it("handles zero-size image gracefully", function()
         -- Engine may accept zero-size image without error
         expect_no_error(function()
@@ -405,6 +503,7 @@ describe("validation: image invalid operations", function()
         end, "zero size image should not crash")
     end)
 
+    -- @security lurek.image.newImageData
     it("rejects loading nonexistent file", function()
         expect_error(function()
             lurek.image.newImageData("nonexistent_file.png")
@@ -412,7 +511,13 @@ describe("validation: image invalid operations", function()
     end)
 end)
 
+-- @describe validation: tilemap invalid operations
 describe("validation: tilemap invalid operations", function()
+    -- @security LTileMap:addLayer
+    -- @security LTileMap:addTileSet
+    -- @security LTileMap:getTile
+    -- @security lurek.tilemap.newTileMap
+    -- @security lurek.tilemap.newTileSet
     it("handles out-of-bounds tile access", function()
         local map = lurek.tilemap.newTileMap(32, 32, 16)
         local ts = lurek.tilemap.newTileSet(1, 16, 4, 32, 32, 0, 0)

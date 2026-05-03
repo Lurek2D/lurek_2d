@@ -1,7 +1,9 @@
 -- Lurek2D Integration Test: Timer + Math.
 -- Covers game-loop style scenarios where timer deltas and math helpers are consumed together from the Lua runtime.
 
+-- @describe timer + math integration
 describe("timer + math integration", function()
+    -- @integration lurek.timer.getDelta
     it("getDelta returns a number", function()
         local dt = lurek.timer.getDelta()
         expect_not_nil(dt, "getDelta returns a value")
@@ -24,6 +26,8 @@ describe("timer + math integration", function()
         expect_near(50, smooth_result, 0.001, "smoothstep at t=0.5")
     end)
 
+    -- @integration lurek.math.pi
+    -- @integration lurek.math.sin
     it("oscillation with sin and time", function()
         -- Simulate oscillating value: sin(time * frequency)
         local frequency = 2.0
@@ -50,6 +54,7 @@ describe("timer + math integration", function()
     end)
 end)
 
+-- @describe timer + math easing
 describe("timer + math easing", function()
     it("ease-in quadratic", function()
         local t = 0.5

@@ -3,24 +3,32 @@
 
 -- ===== Lifecycle =====
 
+-- @describe lurek.debugbridge lifecycle
 describe("lurek.debugbridge lifecycle", function()
 
     it("namespace exists", function()
         expect_not_nil(lurek.debugbridge)
     end)
 
+    -- @integration lurek.debugbridge.isRunning
     it("isRunning returns false initially", function()
         expect_equal(false, lurek.debugbridge.isRunning())
     end)
 
+    -- @integration lurek.debugbridge.getPort
     it("getPort returns 0 when not running", function()
         expect_equal(0, lurek.debugbridge.getPort())
     end)
 
+    -- @integration lurek.debugbridge.getClientCount
     it("getClientCount returns 0 when not running", function()
         expect_equal(0, lurek.debugbridge.getClientCount())
     end)
 
+    -- @integration lurek.debugbridge.getPort
+    -- @integration lurek.debugbridge.isRunning
+    -- @integration lurek.debugbridge.start
+    -- @integration lurek.debugbridge.stop
     it("start and stop work on a high port", function()
         -- Use a high port unlikely to conflict
         local ok = lurek.debugbridge.start(49740)
@@ -32,6 +40,8 @@ describe("lurek.debugbridge lifecycle", function()
         expect_equal(false, lurek.debugbridge.isRunning())
     end)
 
+    -- @integration lurek.debugbridge.start
+    -- @integration lurek.debugbridge.stop
     it("start returns false if already running", function()
         lurek.debugbridge.start(49741)
         local second = lurek.debugbridge.start(49742)
@@ -39,6 +49,7 @@ describe("lurek.debugbridge lifecycle", function()
         lurek.debugbridge.stop()
     end)
 
+    -- @integration lurek.debugbridge.poll
     it("poll does not error when not running", function()
         lurek.debugbridge.poll()  -- should be a no-op
     end)
@@ -47,8 +58,11 @@ end)
 
 -- ===== Print Capture =====
 
+-- @describe lurek.debugbridge print capture
 describe("lurek.debugbridge print capture", function()
 
+    -- @integration lurek.debugbridge.capturePrint
+    -- @integration lurek.debugbridge.getPrintHistory
     it("capturePrint records a message", function()
         lurek.debugbridge.capturePrint("hello world")
         local history = lurek.debugbridge.getPrintHistory()
@@ -57,6 +71,8 @@ describe("lurek.debugbridge print capture", function()
         expect_equal("hello world", last.message)
     end)
 
+    -- @integration lurek.debugbridge.capturePrint
+    -- @integration lurek.debugbridge.getPrintHistory
     it("capturePrint with source and line", function()
         lurek.debugbridge.capturePrint("test msg", "main.lua", 42)
         local history = lurek.debugbridge.getPrintHistory()
@@ -66,6 +82,9 @@ describe("lurek.debugbridge print capture", function()
         expect_equal(42, last.line)
     end)
 
+    -- @integration lurek.debugbridge.capturePrint
+    -- @integration lurek.debugbridge.clearPrintHistory
+    -- @integration lurek.debugbridge.getPrintHistory
     it("clearPrintHistory clears all entries", function()
         lurek.debugbridge.capturePrint("before clear")
         lurek.debugbridge.clearPrintHistory()
@@ -73,6 +92,10 @@ describe("lurek.debugbridge print capture", function()
         expect_equal(0, #history)
     end)
 
+    -- @integration lurek.debugbridge.capturePrint
+    -- @integration lurek.debugbridge.clearPrintHistory
+    -- @integration lurek.debugbridge.getPrintHistory
+    -- @integration lurek.debugbridge.setMaxPrintHistory
     it("setMaxPrintHistory limits history size", function()
         lurek.debugbridge.clearPrintHistory()
         lurek.debugbridge.setMaxPrintHistory(3)
@@ -86,6 +109,9 @@ describe("lurek.debugbridge print capture", function()
         lurek.debugbridge.setMaxPrintHistory(2000)
     end)
 
+    -- @integration lurek.debugbridge.capturePrint
+    -- @integration lurek.debugbridge.clearPrintHistory
+    -- @integration lurek.debugbridge.getPrintHistory
     it("getPrintHistory with count returns last N", function()
         lurek.debugbridge.clearPrintHistory()
         for i = 1, 10 do
@@ -100,8 +126,10 @@ end)
 
 -- ===== Performance =====
 
+-- @describe lurek.debugbridge performance
 describe("lurek.debugbridge performance", function()
 
+    -- @integration lurek.debugbridge.getPerformance
     it("getPerformance returns a table with expected keys", function()
         -- poll() auto-records frame time; in tests there is no game loop so
         -- we just verify the shape of the returned table.
@@ -111,6 +139,7 @@ describe("lurek.debugbridge performance", function()
         expect_not_nil(perf.avgDt)
     end)
 
+    -- @integration lurek.debugbridge.getPerformance
     it("getPerformance returns zero stats when empty", function()
         -- Start fresh (can't easily clear, but test initial state logic)
         local perf = lurek.debugbridge.getPerformance()
@@ -121,12 +150,16 @@ end)
 
 -- ===== Screenshots =====
 
+-- @describe lurek.debugbridge screenshots
 describe("lurek.debugbridge screenshots", function()
 
+    -- @integration lurek.debugbridge.isScreenshotRequested
     it("isScreenshotRequested returns false initially", function()
         expect_equal(false, lurek.debugbridge.isScreenshotRequested())
     end)
 
+    -- @integration lurek.debugbridge.isScreenshotRequested
+    -- @integration lurek.debugbridge.requestScreenshot
     it("requestScreenshot sets the flag", function()
         lurek.debugbridge.requestScreenshot(2)
         expect_equal(true, lurek.debugbridge.isScreenshotRequested())
@@ -136,8 +169,10 @@ end)
 
 -- ===== Broadcast =====
 
+-- @describe lurek.debugbridge broadcast
 describe("lurek.debugbridge broadcast", function()
 
+    -- @integration lurek.debugbridge.broadcast
     it("broadcast does not error without connected clients", function()
         lurek.debugbridge.broadcast("test_event", '{"key": "value"}')
         -- No error means success          no clients to receive it
@@ -147,8 +182,12 @@ end)
 
 -- ===== Poll =====
 
+-- @describe lurek.debugbridge poll
 describe("lurek.debugbridge poll", function()
 
+    -- @integration lurek.debugbridge.poll
+    -- @integration lurek.debugbridge.start
+    -- @integration lurek.debugbridge.stop
     it("poll processes without error when server is running", function()
         lurek.debugbridge.start(49743)
         lurek.debugbridge.poll()

@@ -3,8 +3,9 @@
 
 local quest = require("library.quest")
 
---                          Objective                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
+--                          Objective
 
+-- @describe Objective
 describe("Objective", function()
     it("creates with correct defaults", function()
         local obj = quest.newObjective("kill_wolves", "Kill 3 wolves", 3)
@@ -79,6 +80,7 @@ describe("Objective", function()
         expect_equal(obj:isComplete(), false)
     end)
 
+    -- @library lurek.library_quest
     it("addTag and hasTag work", function()
         local obj = quest.newObjective("task", "Task", 1)
         expect_equal(obj:hasTag("kill"), false)
@@ -90,8 +92,9 @@ describe("Objective", function()
     end)
 end)
 
---                          QuestStage                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+--                          QuestStage
 
+-- @describe QuestStage
 describe("QuestStage", function()
     it("creates with correct defaults", function()
         local stage = quest.newQuestStage("s1", "Stage One")
@@ -106,6 +109,7 @@ describe("QuestStage", function()
         stage:addObjective(obj)
         expect_equal(stage:objectiveCount(), 1)
         local found = stage:getObjective("task1")
+        if found == nil then error("expected objective task1") end
         expect_equal(found.id, "task1")
         expect_equal(stage:getObjective("nope"), nil)
     end)
@@ -144,8 +148,9 @@ describe("QuestStage", function()
     end)
 end)
 
---                          Quest                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
+--                          Quest
 
+-- @describe Quest
 describe("Quest", function()
     it("creates with correct defaults", function()
         local q = quest.newQuest("tutorial", "Tutorial")
@@ -207,6 +212,7 @@ describe("Quest", function()
         q:addStage(quest.newQuestStage("s1", "Stage 1"))
         q:addStage(quest.newQuestStage("s2", "Stage 2"))
         local s = q:getStage("s2")
+        if s == nil then error("expected stage s2") end
         expect_equal(s.name, "Stage 2")
         expect_equal(q:getStage("nope"), nil)
     end)
@@ -218,6 +224,7 @@ describe("Quest", function()
         q:addStage(s1)
         expect_equal(q:advanceObjective("obj1", 2), true)
         local obj = s1:getObjective("obj1")
+        if obj == nil then error("expected objective obj1") end
         expect_equal(obj.current, 2)
         expect_equal(q:advanceObjective("nope"), false)
     end)
@@ -308,8 +315,9 @@ describe("Quest", function()
     end)
 end)
 
---                          QuestLog                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+--                          QuestLog
 
+-- @describe QuestLog
 describe("QuestLog", function()
     it("creates empty", function()
         local log = quest.newQuestLog()
@@ -414,9 +422,11 @@ describe("QuestLog", function()
     end)
 end)
 
---                          Objective:removeTag                                                                                                                                                                                                                                                                                                                                                                                                                                                 
+--                          Objective:removeTag
 
+-- @describe Objective:removeTag
 describe("Objective:removeTag", function()
+    -- @library lurek.library_quest
     it("removes an existing tag and returns true", function()
         local obj = quest.newObjective("task", "Task", 1)
         obj:addTag("kill")
@@ -424,11 +434,13 @@ describe("Objective:removeTag", function()
         expect_equal(obj:hasTag("kill"), false)
     end)
 
+    -- @library lurek.library_quest
     it("returns false for a tag that is not present", function()
         local obj = quest.newObjective("task", "Task", 1)
         expect_equal(obj:removeTag("nope"), false)
     end)
 
+    -- @library lurek.library_quest
     it("removing one tag leaves others intact", function()
         local obj = quest.newObjective("task", "Task", 1)
         obj:addTag("kill")
@@ -439,8 +451,9 @@ describe("Objective:removeTag", function()
     end)
 end)
 
---                          QuestStage:getObjectives                                                                                                                                                                                                                                                                                                                                                                                                         
+--                          QuestStage:getObjectives
 
+-- @describe QuestStage:getObjectives
 describe("QuestStage:getObjectives", function()
     it("returns all objectives in insertion order", function()
         local stage = quest.newQuestStage("s1", "Stage One")
@@ -458,8 +471,9 @@ describe("QuestStage:getObjectives", function()
     end)
 end)
 
---                          QuestLog extended                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
+--                          QuestLog extended
 
+-- @describe QuestLog:resetQuest
 describe("QuestLog:resetQuest", function()
     it("resets status, stage index, and objective progress", function()
         local log = quest.newQuestLog()
@@ -491,6 +505,7 @@ describe("QuestLog:resetQuest", function()
     end)
 end)
 
+-- @describe QuestLog:setQuestReward / getQuestReward
 describe("QuestLog:setQuestReward / getQuestReward", function()
     it("sets and retrieves reward string", function()
         local log = quest.newQuestLog()
@@ -513,6 +528,7 @@ describe("QuestLog:setQuestReward / getQuestReward", function()
     end)
 end)
 
+-- @describe QuestLog:activeCount / completedCount
 describe("QuestLog:activeCount / completedCount", function()
     it("counts active and completed quests correctly", function()
         local log = quest.newQuestLog()
@@ -533,8 +549,9 @@ describe("QuestLog:activeCount / completedCount", function()
     end)
 end)
 
---                          Status enum tables                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+--                          Status enum tables
 
+-- @describe M.QuestStatus enum
 describe("M.QuestStatus enum", function()
     it("has expected string constants", function()
         expect_equal(quest.QuestStatus.LOCKED,    "locked")
@@ -544,6 +561,7 @@ describe("M.QuestStatus enum", function()
     end)
 end)
 
+-- @describe M.ObjectiveStatus enum
 describe("M.ObjectiveStatus enum", function()
     it("has expected string constants", function()
         expect_equal(quest.ObjectiveStatus.LOCKED,    "locked")
@@ -552,8 +570,9 @@ describe("M.ObjectiveStatus enum", function()
         expect_equal(quest.ObjectiveStatus.FAILED,    "failed")
     end)
 end)
---           Bug-fix regression tests                                                                                                                                                    
+--           Bug-fix regression tests
 
+-- @describe Quest:advanceObjective current-stage scoping
 describe("Quest:advanceObjective current-stage scoping", function()
     it("does not advance objective in a non-current stage", function()
         local q = quest.newQuest("main", "Main Quest")
@@ -597,6 +616,7 @@ describe("Quest:advanceObjective current-stage scoping", function()
     end)
 end)
 
+-- @describe Quest:completionPercent zero objectives
 describe("Quest:completionPercent zero objectives", function()
     it("returns 0 for quest with no stages", function()
         local q = quest.newQuest("empty", "Empty")
@@ -614,6 +634,7 @@ describe("Quest:completionPercent zero objectives", function()
     end)
 end)
 
+-- @describe Quest state machine enforcement
 describe("Quest state machine enforcement", function()
     it("complete from available is rejected", function()
         local q = quest.newQuest("q1", "Quest 1")
@@ -667,6 +688,7 @@ describe("Quest state machine enforcement", function()
     end)
 end)
 
+-- @describe Quest journal max-entry limit
 describe("Quest journal max-entry limit", function()
     it("trims oldest entries when exceeding limit", function()
         local q = quest.newQuest("q1", "Quest 1", 3)
@@ -698,6 +720,7 @@ describe("Quest journal max-entry limit", function()
     end)
 end)
 
+-- @describe Input validation
 describe("Input validation", function()
     it("newQuest rejects empty id", function()
         expect_error(function() quest.newQuest("", "Title") end)

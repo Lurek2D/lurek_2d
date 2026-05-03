@@ -1,12 +1,18 @@
 -- Evidence tests: imagedata module
 -- Produces PNG artifacts from lurek.image.newImageData pixel manipulation.
 
+-- @describe evidence: imagedata
 describe("evidence: imagedata", function()
     before_each(function()
         ensure_evidence_dir("imagedata")
     end)
 
     -- @evidence file
+    -- @covers LImageData:fill
+    -- @covers LImageData:getPixel
+    -- @covers LImageData:setPixel
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
     it("produces a pixel-grid PNG from setPixel", function()
         local dir  = evidence_output_dir("imagedata")
         local path = dir .. "pixel_grid.png"
@@ -33,6 +39,12 @@ describe("evidence: imagedata", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:drawCircle
+    -- @covers LImageData:drawLine
+    -- @covers LImageData:drawRect
+    -- @covers LImageData:fill
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
     it("produces a shapes PNG from drawRect, drawCircle, drawLine", function()
         local dir  = evidence_output_dir("imagedata")
         local path = dir .. "shapes.png"
@@ -48,6 +60,13 @@ describe("evidence: imagedata", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:brightness
+    -- @covers LImageData:drawCircle
+    -- @covers LImageData:drawRect
+    -- @covers LImageData:fill
+    -- @covers LImageData:grayscale
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
     it("produces a filtered images PNG", function()
         local dir  = evidence_output_dir("imagedata")
         -- Save four variations side-by-side in separate files for clarity
@@ -79,6 +98,12 @@ describe("evidence: imagedata", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:crop
+    -- @covers LImageData:drawRect
+    -- @covers LImageData:fill
+    -- @covers LImageData:getDimensions
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
     it("produces a cropped image PNG", function()
         local dir  = evidence_output_dir("imagedata")
         local path = dir .. "cropped.png"

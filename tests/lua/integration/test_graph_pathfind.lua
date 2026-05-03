@@ -6,6 +6,7 @@
 --
 -- Graph MST (Minimum Spanning Tree)
 --
+-- @describe graph.mst
 describe("graph.mst", function()
 
     local function build_simple_graph()
@@ -22,12 +23,14 @@ describe("graph.mst", function()
         return g, n1, n2, n3, n4
     end
 
+    -- @integration LGraph:mst
     it("mst returns a table of edge IDs", function()
         local g = build_simple_graph()
         local tree = g:mst()
         expect_type("table", tree)
     end)
 
+    -- @integration LGraph:mst
     it("mst has N-1 edges for N nodes", function()
         local g = build_simple_graph()
         local tree = g:mst()
@@ -35,6 +38,7 @@ describe("graph.mst", function()
         expect_equal(3, #tree)
     end)
 
+    -- @integration LGraph:mst
     it("mst edge IDs are numbers", function()
         local g = build_simple_graph()
         local tree = g:mst()
@@ -43,6 +47,10 @@ describe("graph.mst", function()
         end
     end)
 
+    -- @integration LGraph:addEdge
+    -- @integration LGraph:addNode
+    -- @integration LGraph:mst
+    -- @integration lurek.graph.newGraph
     it("two-node graph has one MST edge", function()
         local g = lurek.graph.newGraph()
         local a = g:addNode()
@@ -52,6 +60,9 @@ describe("graph.mst", function()
         expect_equal(1, #tree)
     end)
 
+    -- @integration LGraph:addNode
+    -- @integration LGraph:mst
+    -- @integration lurek.graph.newGraph
     it("single node graph has empty MST", function()
         local g = lurek.graph.newGraph()
         g:addNode()
@@ -63,6 +74,7 @@ end)
 --
 -- Graph A* (astar)
 --
+-- @describe graph.astar
 describe("graph.astar", function()
 
     local function build_chain(n)
@@ -77,12 +89,14 @@ describe("graph.astar", function()
         return g, nodes
     end
 
+    -- @integration LGraph:astar
     it("finds path between connected nodes", function()
         local g, nodes = build_chain(5)
         local path = g:astar(nodes[1], nodes[5])
         expect_true(path ~= nil, "should find path in linear chain")
     end)
 
+    -- @integration LGraph:astar
     it("path visits nodes in order for a chain", function()
         local g, nodes = build_chain(4)
         local path = g:astar(nodes[1], nodes[4])
@@ -91,6 +105,9 @@ describe("graph.astar", function()
         end
     end)
 
+    -- @integration LGraph:addNode
+    -- @integration LGraph:astar
+    -- @integration lurek.graph.newGraph
     it("returns nil when no path exists", function()
         local g = lurek.graph.newGraph()
         local a = g:addNode()
@@ -100,6 +117,10 @@ describe("graph.astar", function()
         expect_equal(nil, path)
     end)
 
+    -- @integration LGraph:addEdge
+    -- @integration LGraph:addNode
+    -- @integration LGraph:astar
+    -- @integration lurek.graph.newGraph
     it("astar path starts and ends at expected nodes", function()
         local g = lurek.graph.newGraph()
         local a   = g:addNode("start")
@@ -114,6 +135,9 @@ describe("graph.astar", function()
         end
     end)
 
+    -- @integration LGraph:addNode
+    -- @integration LGraph:astar
+    -- @integration lurek.graph.newGraph
     it("same-node astar path has length 1", function()
         local g = lurek.graph.newGraph()
         local a = g:addNode()
@@ -126,8 +150,10 @@ end)
 --
 -- Graph + pathfinding integration
 --
+-- @describe graph + JPS integration
 describe("graph + JPS integration", function()
 
+    -- @integration lurek.procgen.worldGraph
     it("worldGraph edge costs match procgen expectations", function()
         local wg = lurek.procgen.worldGraph(200, 150, 6, 5)
         for _, e in ipairs(wg.edges) do
@@ -135,6 +161,12 @@ describe("graph + JPS integration", function()
         end
     end)
 
+    -- @integration LGraph:addEdge
+    -- @integration LGraph:addNode
+    -- @integration LGraph:astar
+    -- @integration LGraph:mst
+    -- @integration lurek.graph.newGraph
+    -- @integration lurek.procgen.worldGraph
     it("procgen then graph then pathfind pipeline completes", function()
         -- Build a world graph from procgen
         local wg = lurek.procgen.worldGraph(200, 150, 8, 10)

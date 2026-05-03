@@ -1,5 +1,6 @@
 -- Golden test: tilemap          compare evidence output against golden samples
 
+-- @describe golden: tilemap evidence comparison
 describe("golden: tilemap evidence comparison", function()
     it("matches golden sample for tilemap_render.png", function()
         local evidence = evidence_output_dir("tilemap") .. "tilemap_render.png"

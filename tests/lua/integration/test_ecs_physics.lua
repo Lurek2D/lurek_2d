@@ -1,7 +1,15 @@
 -- Lurek2D Integration Test: Entity + Physics
 -- Tests physics bodies attached to entities and position sync.
 
+-- @describe integration: entity + physics body lifecycle
 describe("integration: entity + physics body lifecycle", function()
+    -- @integration LUniverse:get
+    -- @integration LUniverse:set
+    -- @integration LUniverse:spawn
+    -- @integration lurek.ecs.newUniverse
+    -- @integration lurek.physics.destroyWorld
+    -- @integration lurek.physics.newBody
+    -- @integration lurek.physics.newWorld
     it("creates entity and attaches physics body in same world", function()
         local universe = lurek.ecs.newUniverse()
         local world    = lurek.physics.newWorld(0, 9.8)
@@ -18,6 +26,14 @@ describe("integration: entity + physics body lifecycle", function()
         lurek.physics.destroyWorld(world)
     end)
 
+    -- @integration LUniverse:set
+    -- @integration LUniverse:spawn
+    -- @integration lurek.ecs.newUniverse
+    -- @integration lurek.physics.destroyWorld
+    -- @integration lurek.physics.getBody
+    -- @integration lurek.physics.newBody
+    -- @integration lurek.physics.newWorld
+    -- @integration lurek.physics.step
     it("physics step moves dynamic body, entity position updated manually", function()
         local universe = lurek.ecs.newUniverse()
         local world    = lurek.physics.newWorld(0, 9.8)
@@ -40,6 +56,13 @@ describe("integration: entity + physics body lifecycle", function()
         lurek.physics.destroyWorld(world)
     end)
 
+    -- @integration LUniverse:kill
+    -- @integration LUniverse:set
+    -- @integration LUniverse:spawn
+    -- @integration lurek.ecs.newUniverse
+    -- @integration lurek.physics.destroyWorld
+    -- @integration lurek.physics.newBody
+    -- @integration lurek.physics.newWorld
     it("killing entity while physics body exists does not crash", function()
         local universe = lurek.ecs.newUniverse()
         local world    = lurek.physics.newWorld(0, 0)

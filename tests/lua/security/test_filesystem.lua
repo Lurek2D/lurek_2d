@@ -9,6 +9,7 @@ local aa = {}
 aa.__index = aa
 aa.toemk = 10
 
+-- @describe sandbox: blocked globals
 describe("sandbox: blocked globals", function()
     it("os.execute is not accessible", function()
         local result = (os == nil) or (os.execute == nil)
@@ -31,6 +32,7 @@ describe("sandbox: blocked globals", function()
     end)
 end)
 
+-- @describe sandbox: restricted require
 describe("sandbox: restricted require", function()
     it("require('socket') fails gracefully", function()
         -- External network libraries must be blocked or absent in the sandbox.
@@ -48,6 +50,7 @@ describe("sandbox: restricted require", function()
     end)
 end)
 
+-- @describe sandbox: runtime safety
 describe("sandbox: runtime safety", function()
     it("pcall catches errors without crashing the VM", function()
         -- Verify pcall can catch errors (VM is stable under error conditions)
@@ -85,7 +88,9 @@ end)
 -- Lurek2D Security Test: Mount traversal rejection.
 -- Verifies that lurek.filesystem.mount refuses sandbox-escape paths and rejects traversal attempts before they can bind hostile sources.
 
+-- @describe filesystem security: mount traversal
 describe("filesystem security: mount traversal", function()
+    -- @security lurek.filesystem.mount
     it("rejects ../../../etc as mount source", function()
         local ok, err = pcall(function()
             lurek.filesystem.mount("../../../etc", "/evil")
@@ -94,6 +99,7 @@ describe("filesystem security: mount traversal", function()
         expect_true(err ~= nil)
     end)
 
+    -- @security lurek.filesystem.mount
     it("rejects .. component in source path", function()
         local ok, err = pcall(function()
             lurek.filesystem.mount("sub/../../../secret", "/leak")

@@ -2,8 +2,15 @@
 -- Exercises CellularWorld step simulation: sand falling, water spreading,
 -- and serialisation round-trip with non-trivial state.
 
+-- @describe cellular world simulation integration
 describe("cellular world simulation integration", function()
     --              over 50 steps, reducing sand count at the original row.
+    -- @integration LCellular:countCells
+    -- @integration LCellular:fillRect
+    -- @integration LCellular:getCell
+    -- @integration LCellular:stepN
+    -- @integration lurek.physics.CELL_SAND
+    -- @integration lurek.physics.newCellular
     it("sand migrates downward over 50 steps", function()
         local sim = lurek.physics.newCellular(8, 32)
 
@@ -28,6 +35,8 @@ describe("cellular world simulation integration", function()
         expect_equal(0, top_sand)
     end)
 
+    -- @integration LCellular:toImageData
+    -- @integration lurek.physics.newCellular
     it("toImageData returns correct byte count", function()
         local w, h = 16, 16
         local sim = lurek.physics.newCellular(w, h)
@@ -35,12 +44,21 @@ describe("cellular world simulation integration", function()
         expect_equal(w * h * 4, #img)
     end)
 
+    -- @integration LCellular:toImageDataRegion
+    -- @integration lurek.physics.newCellular
     it("toImageDataRegion returns sub-region byte count", function()
         local sim = lurek.physics.newCellular(64, 64)
         local img = sim:toImageDataRegion(0, 0, 8, 8)
         expect_equal(8 * 8 * 4, #img)
     end)
 
+    -- @integration LCellular:countCells
+    -- @integration LCellular:fillRect
+    -- @integration LCellular:loadFromBytes
+    -- @integration LCellular:stepN
+    -- @integration LCellular:toBytes
+    -- @integration lurek.physics.CELL_SAND
+    -- @integration lurek.physics.newCellular
     it("serialisation after 20 steps is lossless", function()
         local sim1 = lurek.physics.newCellular(16, 16)
         sim1:fillRect(0, 0, 16, 1, lurek.physics.CELL_SAND)
@@ -57,6 +75,10 @@ describe("cellular world simulation integration", function()
         )
     end)
 
+    -- @integration LCellular:countCells
+    -- @integration LCellular:fillCircle
+    -- @integration lurek.physics.CELL_ROCK
+    -- @integration lurek.physics.newCellular
     it("fillCircle count matches countCells after fill", function()
         local sim = lurek.physics.newCellular(32, 32)
         sim:fillCircle(16, 16, 4, lurek.physics.CELL_ROCK)

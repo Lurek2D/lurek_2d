@@ -5,6 +5,7 @@ local lobby_mod = require("library.lobby")
 -- Room Creation
 ---------------------------------------------------------------------------
 
+-- @describe Room Creation
 describe("Room Creation", function()
     it("creates a room with defaults", function()
         local L = lobby_mod.new(nil)
@@ -62,6 +63,7 @@ end)
 -- Room Removal
 ---------------------------------------------------------------------------
 
+-- @describe Room Removal
 describe("Room Removal", function()
     it("removes an existing room", function()
         local L = lobby_mod.new(nil)
@@ -82,6 +84,7 @@ end)
 -- Join / Leave
 ---------------------------------------------------------------------------
 
+-- @describe Join / Leave
 describe("Join / Leave", function()
     it("local player joins a room", function()
         local L = lobby_mod.new(nil)
@@ -172,6 +175,7 @@ end)
 -- Password Protection
 ---------------------------------------------------------------------------
 
+-- @describe Password Protection
 describe("Password Protection", function()
     it("rejects join without password", function()
         local L = lobby_mod.new(nil)
@@ -209,6 +213,7 @@ end)
 -- Ready State
 ---------------------------------------------------------------------------
 
+-- @describe Ready State
 describe("Ready State", function()
     it("sets local player ready", function()
         local L = lobby_mod.new(nil)
@@ -271,6 +276,7 @@ end)
 -- Host Election
 ---------------------------------------------------------------------------
 
+-- @describe Host Election
 describe("Host Election", function()
     it("first joiner becomes host", function()
         local L = lobby_mod.new(nil)
@@ -318,6 +324,7 @@ end)
 -- Events
 ---------------------------------------------------------------------------
 
+-- @describe Events
 describe("Events", function()
     it("fires events for room lifecycle", function()
         local L = lobby_mod.new(nil)
@@ -349,6 +356,7 @@ end)
 -- Listing & Querying
 ---------------------------------------------------------------------------
 
+-- @describe Listing
 describe("Listing", function()
     it("lists multiple rooms", function()
         local L = lobby_mod.new(nil)
@@ -386,6 +394,7 @@ end)
 -- Player Name
 ---------------------------------------------------------------------------
 
+-- @describe Player Name
 describe("Player Name", function()
     it("rejects empty name", function()
         local L = lobby_mod.new(nil)
@@ -413,6 +422,7 @@ end)
 -- Input Validation
 ---------------------------------------------------------------------------
 
+-- @describe Input Validation
 describe("Input Validation", function()
     it("rejects empty room name on join", function()
         local L = lobby_mod.new(nil)

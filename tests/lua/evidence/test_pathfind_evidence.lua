@@ -2,11 +2,15 @@
 -- lurek.pathfind NavGrid and A* path-finding evidence.
 -- Full path-finding operations require a configured NavGrid; those cases are xit'd pending API stabilisation.
 
+-- @describe evidence: pathfind
 describe("evidence: pathfind", function()
     before_each(function()
         ensure_evidence_dir("pathfind")
     end)
 
+    -- @covers LImageData:drawRect
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
     it("records pathfind API surface as PNG evidence", function()
         local dir  = evidence_output_dir("pathfind")
         local path = dir .. "pathfind_api_surface.png"
@@ -77,8 +81,14 @@ end
 
 -- â”€â”€ tests â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
+-- @describe Evidence: lurek.pathfind A* basic
 describe("Evidence: lurek.pathfind A* basic", function()
     -- @evidence file
+    -- @covers LNavGrid:setBlocked
+    -- @covers LUnitPathfinder:findPath
+    -- @covers lurek.image.savePNG
+    -- @covers lurek.pathfind.newNavGrid
+    -- @covers lurek.pathfind.newPathfinder
     it("path avoids walls -\" PNG evidence: astar_basic", function()
         local W, H = 20, 15
         local grid = lurek.pathfind.newNavGrid(W, H)
@@ -98,9 +108,15 @@ describe("Evidence: lurek.pathfind A* basic", function()
     end)
 end)
 
+-- @describe Evidence: lurek.pathfind weighted terrain
 describe("Evidence: lurek.pathfind weighted terrain", function()
 
     -- @evidence file
+    -- @covers LNavGrid:setCost
+    -- @covers LUnitPathfinder:findPath
+    -- @covers lurek.image.savePNG
+    -- @covers lurek.pathfind.newNavGrid
+    -- @covers lurek.pathfind.newPathfinder
     it("higher-cost terrain is avoided when cheaper route exists -\" PNG evidence", function()
         local W, H = 12, 12
         local grid = lurek.pathfind.newNavGrid(W, H)
@@ -119,8 +135,20 @@ describe("Evidence: lurek.pathfind weighted terrain", function()
     end)
 end)
 
+-- @describe Evidence: lurek.pathfind FlowField
 describe("Evidence: lurek.pathfind FlowField", function()
     -- @evidence file
+    -- @covers LFlowField:calculate
+    -- @covers LFlowField:getDirection
+    -- @covers LImageData:drawLine
+    -- @covers LImageData:drawRect
+    -- @covers LImageData:fill
+    -- @covers LNavGrid:isBlocked
+    -- @covers LNavGrid:setBlocked
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
+    -- @covers lurek.pathfind.newFlowField
+    -- @covers lurek.pathfind.newNavGrid
     it("flow field PNG evidence: astar_flow_field", function()
         local W, H = 16, 16
         local grid = lurek.pathfind.newNavGrid(W, H)
@@ -170,11 +198,15 @@ end)
 -- those tests are xit'd in the extended block above.
 -- This block records which pathfind functions are exposed as an API surface manifest.
 
+-- @describe evidence: pathfind manifest
 describe("evidence: pathfind manifest", function()
     before_each(function()
         ensure_evidence_dir("pathfind")
     end)
 
+    -- @covers LImageData:drawRect
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
     it("records pathfind heatmap API surface as PNG evidence", function()
         local dir  = evidence_output_dir("pathfind")
         local path = dir .. "pathfind_heatmap_surface.png"

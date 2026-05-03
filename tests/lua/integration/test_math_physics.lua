@@ -1,7 +1,15 @@
 -- Lurek2D Integration Test: Math + Physics
 -- Tests that math functions work correctly with physics bodies
 
+-- @describe math + physics integration
 describe("math + physics integration", function()
+    -- @integration LBody:getPosition
+    -- @integration LBody:setPosition
+    -- @integration lurek.math.cos
+    -- @integration lurek.math.sin
+    -- @integration lurek.physics.destroyWorld
+    -- @integration lurek.physics.newBody
+    -- @integration lurek.physics.newWorld
     it("Vec2 can be used for body positions", function()
         local world_id = lurek.physics.newWorld(0, 100)
         local body_id = lurek.physics.newBody(world_id, 50, 50, "dynamic")
@@ -25,6 +33,11 @@ describe("math + physics integration", function()
         lurek.physics.destroyWorld(world_id)
     end)
 
+    -- @integration LBody:getPosition
+    -- @integration lurek.math.sqrt
+    -- @integration lurek.physics.destroyWorld
+    -- @integration lurek.physics.newBody
+    -- @integration lurek.physics.newWorld
     it("distance formula works with body positions", function()
         local world_id = lurek.physics.newWorld(0, 0)
         local b1 = lurek.physics.newBody(world_id, 0, 0, "static")
@@ -39,6 +52,11 @@ describe("math + physics integration", function()
         lurek.physics.destroyWorld(world_id)
     end)
 
+    -- @integration LBody:getPosition
+    -- @integration lurek.physics.destroyWorld
+    -- @integration lurek.physics.newBody
+    -- @integration lurek.physics.newWorld
+    -- @integration lurek.physics.step
     it("physics step uses delta time correctly", function()
         local world_id = lurek.physics.newWorld(0, 100)
         local body_id = lurek.physics.newBody(world_id, 0, 0, "dynamic")
@@ -54,7 +72,10 @@ describe("math + physics integration", function()
     end)
 end)
 
+-- @describe math + physics collision geometry
 describe("math + physics collision geometry", function()
+    -- @integration lurek.math.max
+    -- @integration lurek.math.min
     it("AABB overlap check using math", function()
         -- Two rectangles that overlap
         local ax, ay, aw, ah = 0, 0, 10, 10
@@ -71,7 +92,10 @@ describe("math + physics collision geometry", function()
     end)
 end)
 
+-- @describe math trigonometry for physics angles
 describe("math trigonometry for physics angles", function()
+    -- @integration lurek.math.atan2
+    -- @integration lurek.math.pi
     it("angle between two points", function()
         local x1, y1 = 0, 0
         local x2, y2 = 1, 1
@@ -80,6 +104,8 @@ describe("math trigonometry for physics angles", function()
         expect_near(lurek.math.pi / 4, angle, 0.001, "45 degree angle")
     end)
 
+    -- @integration lurek.math.cos
+    -- @integration lurek.math.sin
     it("rotate a velocity vector", function()
         local speed = 10
         local angle = math.rad(90)

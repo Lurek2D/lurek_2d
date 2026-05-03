@@ -1,7 +1,12 @@
 -- Lurek2D Integration Test: Localization + UI
 -- Tests localized text flowing into UI elements.
 
+-- @describe integration: localized strings in UI labels
 describe("integration: localized strings in UI labels", function()
+    -- @integration lurek.i18n.loadTable
+    -- @integration lurek.i18n.setLanguage
+    -- @integration lurek.i18n.t
+    -- @integration lurek.ui.newLabel
     it("localization provides string and UI label stores it", function()
         -- Load English locale inline
         lurek.i18n.setLanguage("en")
@@ -27,6 +32,10 @@ describe("integration: localized strings in UI labels", function()
         end)
     end)
 
+    -- @integration lurek.i18n.loadTable
+    -- @integration lurek.i18n.setLanguage
+    -- @integration lurek.i18n.t
+    -- @integration lurek.ui.newLabel
     it("switching locale updates UI text", function()
         lurek.i18n.loadTable("en", { greeting = "Hello" })
         lurek.i18n.loadTable("pl", { greeting = "Cze    " })
@@ -46,6 +55,8 @@ describe("integration: localized strings in UI labels", function()
         end)
     end)
 
+    -- @integration lurek.i18n.setLanguage
+    -- @integration lurek.i18n.t
     it("missing key returns key name as fallback", function()
         lurek.i18n.setLanguage("en")
         local val = lurek.i18n.t("non_existent_key_xyz")

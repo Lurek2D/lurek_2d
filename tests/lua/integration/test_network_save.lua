@@ -4,6 +4,7 @@
 
 local describe = describe or function(n,f) f() end
 local it = it or function(n,f) f() end
+-- @describe network + save integration
 describe("network + save integration", function()
     it("serialises save slot to network packet format", function()
         expect_true(true)

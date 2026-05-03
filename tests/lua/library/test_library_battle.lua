@@ -5,7 +5,9 @@ local battle = require("library.battle")
 -- StatusEffect
 ---------------------------------------------------------------------------
 
+-- @describe StatusEffect
 describe("StatusEffect", function()
+    -- @library lurek.library_battle
     it("creates with defaults", function()
         local e = battle.newStatusEffect("burn", 3)
         expect_equal(e:getName(), "burn")
@@ -14,6 +16,7 @@ describe("StatusEffect", function()
         expect_equal(e:isExpired(), false)
     end)
 
+    -- @library lurek.library_battle
     it("permanent when duration -1", function()
         local e = battle.newStatusEffect("shield")
         expect_equal(e:getDuration(), -1)
@@ -36,7 +39,9 @@ end)
 -- CombatAction
 ---------------------------------------------------------------------------
 
+-- @describe CombatAction
 describe("CombatAction", function()
+    -- @library lurek.library_battle
     it("creates with defaults", function()
         local a = battle.newAction("slash")
         expect_equal(a:getName(), "slash")
@@ -46,6 +51,7 @@ describe("CombatAction", function()
         expect_equal(a:isReady(), true)
     end)
 
+    -- @library LGraphEdge:setCooldown
     it("cooldown cycle", function()
         local a = battle.newAction("fireball")
         a:setCooldown(3)
@@ -71,7 +77,9 @@ end)
 -- Combatant
 ---------------------------------------------------------------------------
 
+-- @describe Combatant
 describe("Combatant", function()
+    -- @library lurek.library_battle
     it("creates with defaults", function()
         local c = battle.newCombatant("hero")
         expect_equal(c:getName(), "hero")
@@ -92,6 +100,7 @@ describe("Combatant", function()
         expect_equal(c:getHp(), 80)
     end)
 
+    -- @library lurek.library_battle
     it("dies when hp reaches 0", function()
         local c = battle.newCombatant("hero")
         c:setHp(10)
@@ -154,6 +163,7 @@ describe("Combatant", function()
         c:addAction(a)
         expect_equal(c:hasAction("slash"), true)
         local got = c:getAction("slash")
+        if got == nil then error("expected action slash") end
         expect_equal(got:getBaseDamage(), 10)
     end)
 
@@ -184,7 +194,9 @@ end)
 -- CombatBattle
 ---------------------------------------------------------------------------
 
+-- @describe CombatBattle
 describe("CombatBattle", function()
+    -- @library lurek.library_battle
     it("creates empty battle", function()
         local b = battle.newBattle("arena")
         expect_equal(b:getName(), "arena")
@@ -193,6 +205,7 @@ describe("CombatBattle", function()
         expect_equal(b:isOver(), false)
     end)
 
+    -- @library lurek.library_battle
     it("add and get combatants", function()
         local b = battle.newBattle()
         local c1 = battle.newCombatant("hero")
@@ -202,9 +215,11 @@ describe("CombatBattle", function()
         b:addCombatant(c2)
         expect_equal(b:getCount(), 2)
         local found = b:getCombatant("hero")
+        if found == nil then error("expected combatant hero") end
         expect_equal(found:getName(), "hero")
     end)
 
+    -- @library lurek.library_battle
     it("sort initiative by speed", function()
         local b = battle.newBattle()
         local slow = battle.newCombatant("slow")
@@ -221,6 +236,7 @@ describe("CombatBattle", function()
         expect_equal(names[2], "slow")
     end)
 
+    -- @library lurek.library_battle
     it("turn cycling", function()
         local b = battle.newBattle()
         local c1 = battle.newCombatant("a")
@@ -230,9 +246,11 @@ describe("CombatBattle", function()
         b:addCombatant(c1)
         b:addCombatant(c2)
         local first = b:getCurrentCombatant()
+        if first == nil then error("expected first combatant") end
         expect_equal(first:getName(), "a")
         b:nextTurn()
         local second = b:getCurrentCombatant()
+        if second == nil then error("expected second combatant") end
         expect_equal(second:getName(), "b")
     end)
 
@@ -250,10 +268,12 @@ describe("CombatBattle", function()
         b:addCombatant(goblin)
 
         local result = b:attack("hero", "slash", "goblin")
+    if result == nil then error("expected attack result") end
         expect_equal(result.hit, true)
         expect_equal(result.damage, 25)
         expect_equal(result.damageType, "physical")
         local g = b:getCombatant("goblin")
+    if g == nil then error("expected goblin combatant") end
         expect_equal(g:getHp(), 75)
     end)
 
@@ -279,6 +299,7 @@ describe("CombatBattle", function()
         expect_equal(b:getWinner(), "player")
     end)
 
+    -- @library lurek.library_battle
     it("remove combatant", function()
         local b = battle.newBattle()
         b:addCombatant(battle.newCombatant("hero"))
@@ -316,6 +337,7 @@ describe("CombatBattle", function()
         expect_equal(b:getLog()[1], "Battle started")
     end)
 
+    -- @library LGraphEdge:setCooldown
     it("tick all statuses and actions", function()
         local b = battle.newBattle()
         local c = battle.newCombatant("hero")
@@ -329,8 +351,11 @@ describe("CombatBattle", function()
         b:tickAllStatuses()
         b:tickAllActions()
         local hero = b:getCombatant("hero")
+        if hero == nil then error("expected hero combatant") end
         expect_equal(hero:hasStatus("burn"), false)
-        expect_equal(hero:getAction("slash"):getCurrentCooldown(), 1)
+        local hero_slash = hero:getAction("slash")
+        if hero_slash == nil then error("expected slash action") end
+        expect_equal(hero_slash:getCurrentCooldown(), 1)
     end)
 
     it("attack result contains attacker and target field names", function()
@@ -346,10 +371,12 @@ describe("CombatBattle", function()
         b:addCombatant(hero)
         b:addCombatant(enemy)
         local result = b:attack("hero", "slash", "enemy")
+        if result == nil then error("expected attack result") end
         expect_equal("hero", result.attacker)
         expect_equal("enemy", result.target)
     end)
 
+    -- @library LGraphEdge:setCooldown
     it("attack returns nil when action is on cooldown", function()
         local b = battle.newBattle()
         local hero = battle.newCombatant("hero")
@@ -393,6 +420,7 @@ end)
 -- DamageType enum
 ---------------------------------------------------------------------------
 
+-- @describe DamageType
 describe("DamageType", function()
     it("exports named constants", function()
         expect_equal(battle.DamageType.Physical,  "physical")
@@ -409,7 +437,9 @@ end)
 -- CombatAction          tags and metadata
 ---------------------------------------------------------------------------
 
+-- @describe CombatAction tags and metadata
 describe("CombatAction tags and metadata", function()
+    -- @library lurek.library_battle
     it("addTag / hasTag / removeTag", function()
         local a = battle.newAction("fireball")
         a:addTag("aoe")
@@ -424,6 +454,7 @@ describe("CombatAction tags and metadata", function()
         expect_equal(removed_again, false)
     end)
 
+    -- @library lurek.library_battle
     it("getTags returns sorted list", function()
         local a = battle.newAction("combo")
         a:addTag("magic")
@@ -448,6 +479,7 @@ end)
 -- StatusEffect          metadata
 ---------------------------------------------------------------------------
 
+-- @describe StatusEffect metadata
 describe("StatusEffect metadata", function()
     it("getMeta / setMeta", function()
         local e = battle.newStatusEffect("burn", 3)
@@ -467,7 +499,10 @@ end)
 -- Combatant          setLevel
 ---------------------------------------------------------------------------
 
+-- @describe Combatant setLevel
 describe("Combatant setLevel", function()
+    -- @library LRelationshipManager:getLevel
+    -- @library LRelationshipManager:setLevel
     it("can set and get level", function()
         local c = battle.newCombatant("hero")
         expect_equal(c:getLevel(), 1)
@@ -479,6 +514,7 @@ end)
 -- Input validation
 ---------------------------------------------------------------------------
 
+-- @describe Input validation
 describe("Input validation", function()
     it("newCombatant rejects nil name", function()
         expect_error(function() battle.newCombatant(nil) end)
@@ -532,6 +568,7 @@ describe("Input validation", function()
         expect_error(function() battle.newBattle(123) end)
     end)
 
+    -- @library lurek.library_battle
     it("newBattle accepts nil name", function()
         local b = battle.newBattle(nil)
         expect_equal(b:getName(), "")
@@ -542,7 +579,9 @@ end)
 -- Edge cases
 ---------------------------------------------------------------------------
 
+-- @describe Edge cases
 describe("Edge cases", function()
+    -- @library lurek.library_battle
     it("zero damage does not reduce HP", function()
         local c = battle.newCombatant("hero")
         local dmg = c:takeDamage(0, "physical")
@@ -602,6 +641,7 @@ end)
 -- Deep clone (metadata)
 ---------------------------------------------------------------------------
 
+-- @describe Deep clone metadata
 describe("Deep clone metadata", function()
     it("addAction deep-clones nested metadata", function()
         local a = battle.newAction("fireball")
@@ -610,7 +650,10 @@ describe("Deep clone metadata", function()
         c:addAction(a)
         -- mutate the clone's metadata
         local cloned = c:getAction("fireball")
-        cloned:getMeta("scaling").str = 999
+        if cloned == nil then error("expected cloned fireball") end
+        local scaling = cloned:getMeta("scaling")
+        if scaling == nil then error("expected scaling metadata") end
+        scaling.str = 999
         -- original must be unchanged
         expect_equal(a:getMeta("scaling").str, 1.5)
     end)
@@ -622,7 +665,10 @@ describe("Deep clone metadata", function()
         b:addCombatant(c)
         -- mutate the clone's metadata inside the battle
         local cloned = b:getCombatant("hero")
-        cloned:getMeta("perks").bonus = 999
+        if cloned == nil then error("expected cloned hero") end
+        local perks = cloned:getMeta("perks")
+        if perks == nil then error("expected perks metadata") end
+        perks.bonus = 999
         -- original must be unchanged
         expect_equal(c:getMeta("perks").bonus, 10)
     end)
@@ -636,7 +682,12 @@ describe("Deep clone metadata", function()
         b:addCombatant(c)
         -- mutate inside battle
         local battle_hero = b:getCombatant("hero")
-        battle_hero:getAction("slash"):getMeta("effects").bleed = false
+        if battle_hero == nil then error("expected battle hero") end
+        local battle_slash = battle_hero:getAction("slash")
+        if battle_slash == nil then error("expected battle slash") end
+        local effects = battle_slash:getMeta("effects")
+        if effects == nil then error("expected effects metadata") end
+        effects.bleed = false
         -- original action on original combatant must be unchanged
         expect_equal(c:getAction("slash"):getMeta("effects").bleed, true)
     end)
@@ -646,7 +697,9 @@ end)
 -- resolve() method
 ---------------------------------------------------------------------------
 
+-- @describe CombatBattle resolve
 describe("CombatBattle resolve", function()
+    -- @library LGraphEdge:setCooldown
     it("ticks statuses and cooldowns in one call", function()
         local b = battle.newBattle("arena")
         local c = battle.newCombatant("hero")
@@ -661,9 +714,12 @@ describe("CombatBattle resolve", function()
         -- resolve returns false when only one team remains (battle over)
         expect_equal(false, still_going)
         local hero = b:getCombatant("hero")
+        if hero == nil then error("expected hero combatant") end
         -- burn status with duration=1 is still present after first resolve;
         -- resolve ticks the counter but status remains until fully expired
-        expect_equal(hero:getAction("slash"):getCurrentCooldown(), 1)
+        local hero_slash = hero:getAction("slash")
+        if hero_slash == nil then error("expected slash action") end
+        expect_equal(hero_slash:getCurrentCooldown(), 1)
     end)
 
     it("detects battle over after resolve", function()
@@ -687,6 +743,7 @@ end)
 -- getWinner auto-detect
 ---------------------------------------------------------------------------
 
+-- @describe getWinner auto-detect
 describe("getWinner auto-detect", function()
     it("auto-detects winner when one team alive", function()
         local b = battle.newBattle("arena")

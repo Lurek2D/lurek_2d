@@ -1,7 +1,11 @@
 -- Lurek2D Stress Test: Scene Graph / Entity Hierarchy
 -- Measures entity create/destroy and component access throughput.
 
+-- @describe stress: massive entity spawn and kill
 describe("stress: massive entity spawn and kill", function()
+    -- @stress LUniverse:kill
+    -- @stress LUniverse:spawn
+    -- @stress lurek.ecs.newUniverse
     it("spawn and kill 5000 entities in <10s", function()
         local COUNT = 5000
 
@@ -14,6 +18,10 @@ describe("stress: massive entity spawn and kill", function()
         expect_true(elapsed < 10.0, "entity lifecycle budget: " .. elapsed .. "s")
     end)
 
+    -- @stress LUniverse:get
+    -- @stress LUniverse:set
+    -- @stress LUniverse:spawn
+    -- @stress lurek.ecs.newUniverse
     it("spawn 1000 entities, set+get 5 components each: <10s", function()
         local COUNT      = 1000
         local universe   = lurek.ecs.newUniverse()
@@ -57,12 +65,16 @@ end)
 -- Lurek2D Lua stress test for lurek.scene DepthSorter with large item count
 -- Headless: no GPU, no audio, no window.
 
+-- @describe lurek.scene.DepthSorter stress
 describe("lurek.scene.DepthSorter stress", function()
+    -- @stress lurek.scene.newDepthSorter
     it("newDepthSorter creates a sorter object", function()
         local ds = lurek.scene.newDepthSorter()
         expect_not_nil(ds)
     end)
 
+    -- @stress LDepthSorter:sort
+    -- @stress lurek.scene.newDepthSorter
     it("sort returns a table on empty sorter", function()
         local ds = lurek.scene.newDepthSorter()
         local sorted = ds:sort()
@@ -73,6 +85,8 @@ describe("lurek.scene.DepthSorter stress", function()
         expect_type("table", sorted)
     end)
 
+    -- @stress LDepthSorter:clear
+    -- @stress lurek.scene.newDepthSorter
     it("clear is callable", function()
         local ds = lurek.scene.newDepthSorter()
         expect_no_error(function()

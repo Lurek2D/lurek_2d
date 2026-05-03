@@ -8,6 +8,7 @@ Rules:
 Accepted marker forms:
 - -- @covers lurek.module.func
 - -- @covers Type:method
+- -- @covers Type.method
 
 Type:method is resolved through aliases from docs/api/lurek.lua:
   ---@alias Type LType
@@ -37,9 +38,14 @@ TESTS_ROOT = ROOT / "tests" / "lua"
 BLOCK_RE = re.compile(r'^(?P<indent>\s*)it\s*\(\s*["\'](?P<label>.*?)["\']\s*,\s*function\s*\(')
 COVERS_RE = re.compile(r'^(?P<indent>\s*)--\s*@covers\s+(?P<sym>\S+)\s*$')
 ALIAS_RE = re.compile(r'^---@alias\s+(?P<alias>[A-Za-z][A-Za-z0-9_]*)\s+(?P<target>L[A-Za-z][A-Za-z0-9_]*)\s*$')
-FUNC_LUREK_RE = re.compile(r'^function\s+(?P<name>lurek\.[A-Za-z0-9_\.]+)\s*\(')
+FUNC_LUREK_RE = re.compile(
+    r'^(?:function\s+)?(?P<name>lurek\.[A-Za-z0-9_\.]+)\s*(?:\(|=\s*function\s*\()'
+)
 MODULE_RE = re.compile(r'^(?P<name>lurek\.[A-Za-z0-9_]+)\s*=\s*\{\}\s*$')
-FUNC_CLASS_RE = re.compile(r'^function\s+(?P<class>L[A-Za-z][A-Za-z0-9_]*)[:\.]' + r'(?P<method>[A-Za-z][A-Za-z0-9_]*)\s*\(')
+FUNC_CLASS_RE = re.compile(
+    r'^(?:function\s+)?(?P<class>L[A-Za-z][A-Za-z0-9_]*)[:\.]'
+    + r'(?P<method>[A-Za-z][A-Za-z0-9_]*)\s*(?:\(|=\s*function\s*\()'
+)
 
 
 @dataclass
@@ -93,9 +99,16 @@ def parse_api_stub(path: Path) -> Tuple[Set[str], Set[str], Set[str], Dict[str, 
 
 
 def normalize_method_symbol(sym: str, alias_to_ltype: Dict[str, str]) -> str:
-    if ":" not in sym:
+    separator = None
+    if ":" in sym:
+        separator = ":"
+    elif "." in sym:
+        separator = "."
+
+    if separator is None:
         return sym
-    typ, meth = sym.split(":", 1)
+
+    typ, meth = sym.split(separator, 1)
     if typ.startswith("L"):
         return f"{typ}:{meth}"
     ltype = alias_to_ltype.get(typ)
@@ -149,7 +162,7 @@ def audit_file(path: Path, lurek_funcs: Set[str], lurek_modules: Set[str], class
             if sym.startswith("lurek."):
                 if sym not in lurek_funcs and sym not in lurek_modules:
                     findings.append(Finding(path, line_no, "unknown-covers-symbol", f"Unknown lurek API in @covers: '{sym}' (not found in docs/api/lurek.lua)."))
-            elif ":" in sym:
+            elif ":" in sym or "." in sym:
                 canon = normalize_method_symbol(sym, alias_to_ltype)
                 if canon not in class_methods:
                     findings.append(Finding(path, line_no, "unknown-covers-symbol", f"Unknown method API in @covers: '{sym}' (resolved '{canon}') not found in docs/api/lurek.lua."))
@@ -162,7 +175,7 @@ def audit_file(path: Path, lurek_funcs: Set[str], lurek_modules: Set[str], class
 def is_valid_symbol(sym: str, lurek_funcs: Set[str], lurek_modules: Set[str], class_methods: Set[str], alias_to_ltype: Dict[str, str]) -> bool:
     if sym.startswith("lurek."):
         return sym in lurek_funcs or sym in lurek_modules
-    if ":" in sym:
+    if ":" in sym or "." in sym:
         canon = normalize_method_symbol(sym, alias_to_ltype)
         return canon in class_methods
     return False

@@ -1,7 +1,9 @@
 -- Lurek2D Stress Test: Light System Operations
 -- Measures light create, update, and query throughput.
 
+-- @describe stress: light creation throughput
 describe("stress: light creation throughput", function()
+    -- @stress lurek.light.newLight
     it("create 1000 point lights in <5s", function()
         local COUNT  = 1000
         local lights = {}
@@ -16,7 +18,11 @@ describe("stress: light creation throughput", function()
     end)
 end)
 
+-- @describe stress: light position update throughput
 describe("stress: light position update throughput", function()
+    -- @stress LLight:setIntensity
+    -- @stress LLight:setPosition
+    -- @stress lurek.light.newLight
     it("1000 lights       100 position updates each: <10s", function()
         local N_LIGHTS  = 1000
         local N_UPDATES = 100
@@ -56,7 +62,13 @@ describe("stress: light position update throughput", function()
     end)
 end)
 
+-- @describe stress: mixed light operations
 describe("stress: mixed light operations", function()
+    -- @stress LLight:setColor
+    -- @stress LLight:setIntensity
+    -- @stress LLight:setPosition
+    -- @stress LLight:setRadius
+    -- @stress lurek.light.newLight
     it("1000 create + setPosition + setRadius + setColor cycles: <5s", function()
         local COUNT   = 1000
         local set_position = rawget(lurek.light, "setPosition")

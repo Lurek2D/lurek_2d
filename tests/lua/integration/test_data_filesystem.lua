@@ -2,9 +2,16 @@
 -- Tests saving JSON data to a file and reading it back.
 -- Uses lurek.serial.toJson/fromJson (not lurek.data.encode which is binary-only).
 
+-- @describe integration: data serialization with filesystem I/O
 describe("integration: data serialization with filesystem I/O", function()
     local TMP_PATH = "save/test_data_fs_tmp.json"
 
+    -- @integration lurek.filesystem.exists
+    -- @integration lurek.filesystem.read
+    -- @integration lurek.filesystem.remove
+    -- @integration lurek.filesystem.write
+    -- @integration lurek.serial.fromJson
+    -- @integration lurek.serial.toJson
     it("encodes table to JSON, writes, and reads back", function()
         local record = {
             name  = "player1",
@@ -38,6 +45,8 @@ describe("integration: data serialization with filesystem I/O", function()
         end
     end)
 
+    -- @integration lurek.serial.fromJson
+    -- @integration lurek.serial.toJson
     it("round-trips nested data correctly", function()
         local nested = {
             meta = { version = 2, engine = "lurek" },
@@ -51,6 +60,8 @@ describe("integration: data serialization with filesystem I/O", function()
         expect_equal("lurek", decoded.meta.engine, "nested engine")
     end)
 
+    -- @integration lurek.serial.fromJson
+    -- @integration lurek.serial.toJson
     it("large table serialization stress", function()
         local big = {}
         for i = 1, 200 do

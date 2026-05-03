@@ -1,7 +1,10 @@
 -- Lurek2D Stress Test: Serial Module
 -- Tests encode/decode throughput under high volume
 
+-- @describe serial stress: base64 throughput
 describe("serial stress: base64 throughput", function()
+    -- @stress lurek.data.decode
+    -- @stress lurek.data.encode
     it("1000 base64 encode-decode cycles", function()
         local input = string.rep("Stress test payload for serialization. ", 10)
 
@@ -12,6 +15,8 @@ describe("serial stress: base64 throughput", function()
         expect_true(true, "1000 base64 cycles completed")
     end)
 
+    -- @stress lurek.data.decode
+    -- @stress lurek.data.encode
     it("increasing payload sizes", function()
         for size = 1, 10 do
             local payload = string.rep("X", size * 100)
@@ -22,7 +27,10 @@ describe("serial stress: base64 throughput", function()
     end)
 end)
 
+-- @describe serial stress: data encode throughput
 describe("serial stress: data encode throughput", function()
+    -- @stress lurek.serial.fromJson
+    -- @stress lurek.serial.toJson
     it("1000 JSON encode-decode cycles", function()
         local input = { x = 1.5, y = 2.5, name = "stress", items = { 1, 2, 3 } }
 
@@ -38,6 +46,8 @@ describe("serial stress: data encode throughput", function()
         expect_true(true, "1000 JSON cycles completed")
     end)
 
+    -- @stress lurek.data.compress
+    -- @stress lurek.data.decompress
     it("100 compression cycles on 10KB data", function()
         local input = string.rep("ABCDEFGHIJ", 1000)  -- 10KB
         for i = 1, 100 do

@@ -1,7 +1,10 @@
 -- Lurek2D Integration Test: Data + System.
 -- Exercises data encoding, hashing, and TOML helpers alongside platform-facing system queries exposed to Lua.
 
+-- @describe data + filesystem integration
 describe("data + filesystem integration", function()
+    -- @integration lurek.data.decode
+    -- @integration lurek.data.encode
     it("can encode and decode data", function()
         -- Test basic data operations
         if lurek.data and lurek.data.encode then
@@ -15,6 +18,7 @@ describe("data + filesystem integration", function()
         end
     end)
 
+    -- @integration lurek.data.hash
     it("can hash data", function()
         if lurek.data and lurek.data.hash then
             local hash1 = lurek.data.hash("md5", "test")
@@ -26,6 +30,8 @@ describe("data + filesystem integration", function()
         end
     end)
 
+    -- @integration lurek.data.encodeToml
+    -- @integration lurek.data.parseToml
     it("can parse and encode TOML", function()
         if lurek.data and lurek.data.parseToml and lurek.data.encodeToml then
             local decoded = lurek.data.parseToml('title = "Lurek2D"\nenabled = true\ncount = 3')
@@ -41,6 +47,8 @@ describe("data + filesystem integration", function()
         end
     end)
 
+    -- @integration lurek.data.encodeToml
+    -- @integration lurek.data.parseToml
     it("reports TOML errors with full function names", function()
         if lurek.data and lurek.data.parseToml and lurek.data.encodeToml then
             local ok_parse, parse_err = pcall(function()
@@ -61,7 +69,9 @@ describe("data + filesystem integration", function()
     end)
 end)
 
+-- @describe system info integration
 describe("system info integration", function()
+    -- @integration lurek.runtime.getOS
     it("system provides OS info", function()
         if lurek.runtime and lurek.runtime.getOS then
             local os_name = lurek.runtime.getOS()
@@ -70,6 +80,8 @@ describe("system info integration", function()
         end
     end)
 
+    -- @integration lurek.runtime.getClipboardText
+    -- @integration lurek.runtime.setClipboardText
     it("system clipboard operations", function()
         if lurek.runtime and lurek.runtime.setClipboardText then
             lurek.runtime.setClipboardText("Lurek2D test")

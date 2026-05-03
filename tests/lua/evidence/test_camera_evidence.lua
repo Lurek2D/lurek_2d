@@ -47,14 +47,26 @@ end
 
 -- â”€â”€ tests â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
+-- @describe Evidence: lurek.camera creation and defaults
 describe("Evidence: lurek.camera creation and defaults", function()
 end)
 
+-- @describe Evidence: lurek.camera setPosition / getPosition
 describe("Evidence: lurek.camera setPosition / getPosition", function()
 end)
 
+-- @describe Evidence: lurek.camera zoom and coordinate transforms
 describe("Evidence: lurek.camera zoom and coordinate transforms", function()
     -- @evidence file
+    -- @covers LCamera:setPosition
+    -- @covers LCamera:setViewport
+    -- @covers LCamera:setZoom
+    -- @covers LImageData:fill
+    -- @covers LImageData:getPixel
+    -- @covers LImageData:setPixel
+    -- @covers lurek.camera.newCamera
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
     it("zoom 2x makes objects appear closer -” PNG evidence: zoom_compare", function()
         local VW, VH = 160, 120
         local WW, WH = 320, 240
@@ -94,8 +106,15 @@ describe("Evidence: lurek.camera zoom and coordinate transforms", function()
     end)
 end)
 
+-- @describe Evidence: lurek.camera rotation
 describe("Evidence: lurek.camera rotation", function()
     -- @evidence file
+    -- @covers LCamera:setPosition
+    -- @covers LCamera:setRotation
+    -- @covers LCamera:setViewport
+    -- @covers LCamera:setZoom
+    -- @covers lurek.camera.newCamera
+    -- @covers lurek.image.savePNG
     it("rotation 45 ° -” PNG evidence: rotation", function()
         local VW, VH = 160, 120
         local WW, WH = 320, 240
@@ -111,9 +130,21 @@ describe("Evidence: lurek.camera rotation", function()
     end)
 end)
 
+-- @describe Evidence: lurek.camera follow behaviour
 describe("Evidence: lurek.camera follow behaviour", function()
 
     -- @evidence file
+    -- @covers LCamera:getPosition
+    -- @covers LCamera:setFollowSmooth
+    -- @covers LCamera:setPosition
+    -- @covers LCamera:setTarget
+    -- @covers LCamera:setViewport
+    -- @covers LCamera:update
+    -- @covers LImageData:fill
+    -- @covers LImageData:setPixel
+    -- @covers lurek.camera.newCamera
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
     it("setTarget causes camera to track -” PNG evidence: follow_trail", function()
         local VW, VH = 200, 80
         local img = lurek.image.newImageData(VW, VH)
@@ -144,9 +175,20 @@ describe("Evidence: lurek.camera follow behaviour", function()
     end)
 end)
 
+-- @describe Evidence: lurek.camera shake
 describe("Evidence: lurek.camera shake", function()
 
     -- @evidence file
+    -- @covers LCamera:getPosition
+    -- @covers LCamera:setPosition
+    -- @covers LCamera:setViewport
+    -- @covers LCamera:shake
+    -- @covers LCamera:update
+    -- @covers LImageData:fill
+    -- @covers LImageData:setPixel
+    -- @covers lurek.camera.newCamera
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
     it("shake causes non-zero offset -” PNG evidence: shake_trail", function()
         local VW, VH = 200, 60
         local img = lurek.image.newImageData(VW, VH)

@@ -1,7 +1,21 @@
 -- Lurek2D Integration Test: AI + Entity + Scene (3-way)
 -- Tests AI FSM controlling entities within a scene
 
+-- @describe ai + entity + scene integration
 describe("ai + entity + scene integration", function()
+    -- @integration LStateMachine:addState
+    -- @integration LStateMachine:addTransition
+    -- @integration LStateMachine:forceState
+    -- @integration LStateMachine:getCurrentState
+    -- @integration LUniverse:addTag
+    -- @integration LUniverse:get
+    -- @integration LUniverse:getEntityCount
+    -- @integration LUniverse:isAlive
+    -- @integration LUniverse:set
+    -- @integration LUniverse:spawn
+    -- @integration lurek.ai.newStateMachine
+    -- @integration lurek.ecs.newUniverse
+    -- @integration lurek.scene.newScene
     it("AI FSM drives entity state in scene", function()
         local universe = lurek.ecs.newUniverse()
         local scene = lurek.scene.newScene()
@@ -48,6 +62,13 @@ describe("ai + entity + scene integration", function()
         expect_equal(1, universe:getEntityCount(), "one entity in universe")
     end)
 
+    -- @integration LStateMachine:addState
+    -- @integration LStateMachine:addTransition
+    -- @integration LUniverse:getEntityCount
+    -- @integration LUniverse:set
+    -- @integration LUniverse:spawn
+    -- @integration lurek.ai.newStateMachine
+    -- @integration lurek.ecs.newUniverse
     it("multiple entities with independent FSMs", function()
         local universe = lurek.ecs.newUniverse()
 

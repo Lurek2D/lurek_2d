@@ -2,7 +2,13 @@
 -- Tests audio playback triggered by event dispatching.
 -- Rewritten: lurek.event.newDispatcher does not exist; uses newSignal instead.
 
+-- @describe audio + event integration
 describe("audio + event integration", function()
+    -- @integration LSignal:connect
+    -- @integration LSignal:emit
+    -- @integration lurek.audio.getMasterVolume
+    -- @integration lurek.audio.setMasterVolume
+    -- @integration lurek.event.newSignal
     it("event triggers volume change", function()
         local mute_sig  = lurek.event.newSignal()
         local volume_set = false
@@ -20,6 +26,11 @@ describe("audio + event integration", function()
         lurek.audio.setMasterVolume(1.0)
     end)
 
+    -- @integration LSignal:connect
+    -- @integration LSignal:emit
+    -- @integration lurek.audio.getMasterVolume
+    -- @integration lurek.audio.setMasterVolume
+    -- @integration lurek.event.newSignal
     it("unmute event restores volume", function()
         local saved_volume = 0.8
         local unmute_sig  = lurek.event.newSignal()
@@ -36,6 +47,11 @@ describe("audio + event integration", function()
         lurek.audio.setMasterVolume(1.0)
     end)
 
+    -- @integration LSignal:connect
+    -- @integration LSignal:emit
+    -- @integration lurek.audio.getMasterVolume
+    -- @integration lurek.audio.setMasterVolume
+    -- @integration lurek.event.newSignal
     it("volume slider event applies value from data", function()
         local vol_sig = lurek.event.newSignal()
 
@@ -50,6 +66,9 @@ describe("audio + event integration", function()
         lurek.audio.setMasterVolume(1.0)
     end)
 
+    -- @integration LSignal:connect
+    -- @integration LSignal:emit
+    -- @integration lurek.event.newSignal
     it("multiple event listeners on same event", function()
         local sfx_sig   = lurek.event.newSignal()
         local call_count = 0

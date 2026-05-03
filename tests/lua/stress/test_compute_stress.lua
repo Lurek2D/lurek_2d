@@ -1,7 +1,11 @@
 -- Lurek2D Stress Test: Heavy Compute Operations
 -- Tests NdArray at scale: large matrix ops, reductions, broadcasting
 
+-- @describe compute stress: large array creation
 describe("compute stress: large array creation", function()
+    -- @stress LArray:getShape
+    -- @stress LArray:getSize
+    -- @stress lurek.compute.zeros
     it("creates and fills a 1000-element array", function()
         local arr = lurek.compute.zeros({1000}, "float32")
         local shape = arr:getShape()
@@ -10,6 +14,9 @@ describe("compute stress: large array creation", function()
         expect_equal(1000, arr:getSize(), "total elements")
     end)
 
+    -- @stress LArray:getSize
+    -- @stress LArray:sum
+    -- @stress lurek.compute.ones
     it("creates a 100x100 matrix", function()
         local arr = lurek.compute.ones({100, 100}, "float32")
         expect_equal(10000, arr:getSize(), "100x100 = 10000 elements")
@@ -19,13 +26,18 @@ describe("compute stress: large array creation", function()
         expect_near(10000, sum, 0.1, "sum of ones = 10000")
     end)
 
+    -- @stress LArray:getSize
+    -- @stress lurek.compute.range
     it("range creates large sequence", function()
         local arr = lurek.compute.range(0, 5000, 1, "float32")
         expect_equal(5000, arr:getSize(), "5000 element range")
     end)
 end)
 
+-- @describe compute stress: element-wise operations
 describe("compute stress: element-wise operations", function()
+    -- @stress LArray:add
+    -- @stress lurek.compute.ones
     it("adds two 10000-element arrays", function()
         local a = lurek.compute.ones({10000}, "float32")
         local b = lurek.compute.ones({10000}, "float32")
@@ -37,6 +49,8 @@ describe("compute stress: element-wise operations", function()
         expect_near(20000, sum, 1.0, "1+1 summed 10000 times")
     end)
 
+    -- @stress LArray:mul
+    -- @stress lurek.compute.range
     it("multiplies large arrays element-wise", function()
         local a = lurek.compute.range(1, 1001, 1, "float32")
         local b = lurek.compute.range(1, 1001, 1, "float32")
@@ -44,6 +58,9 @@ describe("compute stress: element-wise operations", function()
         expect_equal(1000, c:getSize(), "result has 1000 elements")
     end)
 
+    -- @stress LArray:add
+    -- @stress LArray:mul
+    -- @stress lurek.compute.ones
     it("chains multiple operations", function()
         local a = lurek.compute.ones({5000}, "float32")
         -- Chain: add        mul        sub
@@ -55,18 +72,26 @@ describe("compute stress: element-wise operations", function()
     end)
 end)
 
+-- @describe compute stress: reductions
 describe("compute stress: reductions", function()
+    -- @stress LArray:sum
+    -- @stress lurek.compute.ones
     it("sum of large array", function()
         local arr = lurek.compute.ones({10000}, "float32")
         expect_near(10000, arr:sum(), 1.0, "sum of 10000 ones")
     end)
 
+    -- @stress LArray:max
+    -- @stress LArray:min
+    -- @stress lurek.compute.range
     it("min/max of range", function()
         local arr = lurek.compute.range(1, 10001, 1, "float32")
         expect_near(1, arr:min(), 0.1, "min of range")
         expect_near(10000, arr:max(), 0.1, "max of range")
     end)
 
+    -- @stress LArray:mean
+    -- @stress lurek.compute.ones
     it("mean of uniform array", function()
         local arr = lurek.compute.ones({5000}, "float32")
         local mean = arr:mean()

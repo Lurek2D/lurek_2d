@@ -6,6 +6,8 @@ local DEMO_PATH = "content/games/showcase/tween_demo/main.lua"
 dofile("tests/lua/content/demos/_common_checks.lua")
 demo_common_checks("tween_demo", DEMO_PATH)
 
+-- @describe describe block
+-- @describe tween_demo: tween API usage
 describe("tween_demo: tween API usage", function()
     local src
 

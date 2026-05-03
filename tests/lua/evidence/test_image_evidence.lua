@@ -1,5 +1,6 @@
 -- Keeps pending image, minimap, and raycaster evidence ports visible until each migrated Rust case is translated into real Lua artifact generation.
 
+-- @describe Evidence: image
 describe("Evidence: image", function()
 end)
 
@@ -14,9 +15,14 @@ end)
 
 local OUT = "tests/output/image/"
 
+-- @describe Evidence: ImageData drawing methods
 describe("Evidence: ImageData drawing methods", function()
 
     -- @evidence file
+    -- @covers LImageData:drawRect
+    -- @covers LImageData:getPixel
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
     it("drawRect - grid of colored rectangles", function()
         local W, H = 256, 256
         local img = lurek.image.newImageData(W, H)
@@ -46,6 +52,11 @@ describe("Evidence: ImageData drawing methods", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:drawLine
+    -- @covers LImageData:drawRect
+    -- @covers LImageData:getPixel
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
     it("drawLine - star pattern from center", function()
         local W, H = 256, 256
         local img = lurek.image.newImageData(W, H)
@@ -67,6 +78,11 @@ describe("Evidence: ImageData drawing methods", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:drawCircle
+    -- @covers LImageData:drawRect
+    -- @covers LImageData:getPixel
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
     it("drawCircle - concentric circles", function()
         local W, H = 256, 256
         local img = lurek.image.newImageData(W, H)
@@ -89,6 +105,12 @@ describe("Evidence: ImageData drawing methods", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:drawCircle
+    -- @covers LImageData:drawLine
+    -- @covers LImageData:drawRect
+    -- @covers LImageData:setPixel
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
     it("combined scene with all drawing methods", function()
         local W, H = 512, 512
         local img = lurek.image.newImageData(W, H)
@@ -179,15 +201,20 @@ local function make_base(w, h)
     return img
 end
 
+-- @describe Evidence: ImageData effects
 describe("Evidence: ImageData effects", function()
 
     -- @evidence file
+    -- @covers lurek.image.savePNG
     it("saves base test image", function()
         local img = make_base(256, 256)
         lurek.image.savePNG(img, OUT .. "effects_base.png")
     end)
 
     -- @evidence file
+    -- @covers LImageData:brightness
+    -- @covers LImageData:getPixel
+    -- @covers lurek.image.savePNG
     it("brightness increase (1.5)", function()
         local img = make_base(256, 256)
         local r_before, _, _, _ = img:getPixel(128, 128)
@@ -198,6 +225,8 @@ describe("Evidence: ImageData effects", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:brightness
+    -- @covers lurek.image.savePNG
     it("brightness decrease (0.5)", function()
         local img = make_base(256, 256)
         img:brightness(0.5)
@@ -205,6 +234,8 @@ describe("Evidence: ImageData effects", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:contrast
+    -- @covers lurek.image.savePNG
     it("contrast increase (1.5)", function()
         local img = make_base(256, 256)
         img:contrast(1.5)
@@ -212,6 +243,8 @@ describe("Evidence: ImageData effects", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:contrast
+    -- @covers lurek.image.savePNG
     it("contrast decrease (0.5)", function()
         local img = make_base(256, 256)
         img:contrast(0.5)
@@ -219,6 +252,8 @@ describe("Evidence: ImageData effects", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:saturation
+    -- @covers lurek.image.savePNG
     it("saturation zero (grayscale-like)", function()
         local img = make_base(256, 256)
         img:saturation(0)
@@ -226,6 +261,8 @@ describe("Evidence: ImageData effects", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:saturation
+    -- @covers lurek.image.savePNG
     it("saturation boost (2.0)", function()
         local img = make_base(256, 256)
         img:saturation(2)
@@ -233,6 +270,9 @@ describe("Evidence: ImageData effects", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:getPixel
+    -- @covers LImageData:grayscale
+    -- @covers lurek.image.savePNG
     it("grayscale", function()
         local img = make_base(256, 256)
         img:grayscale()
@@ -241,6 +281,8 @@ describe("Evidence: ImageData effects", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:sepia
+    -- @covers lurek.image.savePNG
     it("sepia", function()
         local img = make_base(256, 256)
         img:sepia()
@@ -248,6 +290,8 @@ describe("Evidence: ImageData effects", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:invert
+    -- @covers lurek.image.savePNG
     it("invert", function()
         local img = make_base(256, 256)
         img:invert()
@@ -255,6 +299,7 @@ describe("Evidence: ImageData effects", function()
     end)
 
     -- @evidence file
+    -- @covers lurek.image.savePNG
     it("threshold (128)", function()
         local img = make_base(256, 256)
         img:threshold(128)
@@ -262,6 +307,8 @@ describe("Evidence: ImageData effects", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:posterize
+    -- @covers lurek.image.savePNG
     it("posterize (4 levels)", function()
         local img = make_base(256, 256)
         img:posterize(4)
@@ -269,6 +316,7 @@ describe("Evidence: ImageData effects", function()
     end)
 
     -- @evidence file
+    -- @covers lurek.image.savePNG
     it("blur (radius 3)", function()
         local img = make_base(256, 256)
         local blurred = img:blur(3)
@@ -276,6 +324,8 @@ describe("Evidence: ImageData effects", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:sharpen
+    -- @covers lurek.image.savePNG
     it("sharpen", function()
         local img = make_base(256, 256)
         local sharp = img:sharpen()
@@ -283,6 +333,8 @@ describe("Evidence: ImageData effects", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:gamma
+    -- @covers lurek.image.savePNG
     it("gamma correction (0.5 and 2.0)", function()
         local img1 = make_base(256, 256)
         img1:gamma(0.5)
@@ -294,6 +346,8 @@ describe("Evidence: ImageData effects", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:tint
+    -- @covers lurek.image.savePNG
     it("tint red 50%", function()
         local img = make_base(256, 256)
         img:tint(255, 0, 0, 0.5)
@@ -310,6 +364,7 @@ end)
 
 -- Keeps pending image, minimap, and raycaster evidence ports visible until each migrated Rust case is translated into real Lua artifact generation.
 
+-- @describe Evidence: image
 describe("Evidence: image", function()
 end)
 
@@ -324,9 +379,14 @@ end)
 
 local OUT = "tests/output/image/"
 
+-- @describe Evidence: ImageData drawing methods
 describe("Evidence: ImageData drawing methods", function()
 
     -- @evidence file
+    -- @covers LImageData:drawRect
+    -- @covers LImageData:getPixel
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
     it("drawRect - grid of colored rectangles", function()
         local W, H = 256, 256
         local img = lurek.image.newImageData(W, H)
@@ -356,6 +416,11 @@ describe("Evidence: ImageData drawing methods", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:drawLine
+    -- @covers LImageData:drawRect
+    -- @covers LImageData:getPixel
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
     it("drawLine - star pattern from center", function()
         local W, H = 256, 256
         local img = lurek.image.newImageData(W, H)
@@ -377,6 +442,11 @@ describe("Evidence: ImageData drawing methods", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:drawCircle
+    -- @covers LImageData:drawRect
+    -- @covers LImageData:getPixel
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
     it("drawCircle - concentric circles", function()
         local W, H = 256, 256
         local img = lurek.image.newImageData(W, H)
@@ -399,6 +469,12 @@ describe("Evidence: ImageData drawing methods", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:drawCircle
+    -- @covers LImageData:drawLine
+    -- @covers LImageData:drawRect
+    -- @covers LImageData:setPixel
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
     it("combined scene with all drawing methods", function()
         local W, H = 512, 512
         local img = lurek.image.newImageData(W, H)
@@ -489,15 +565,20 @@ local function make_base(w, h)
     return img
 end
 
+-- @describe Evidence: ImageData effects
 describe("Evidence: ImageData effects", function()
 
     -- @evidence file
+    -- @covers lurek.image.savePNG
     it("saves base test image", function()
         local img = make_base(256, 256)
         lurek.image.savePNG(img, OUT .. "effects_base.png")
     end)
 
     -- @evidence file
+    -- @covers LImageData:brightness
+    -- @covers LImageData:getPixel
+    -- @covers lurek.image.savePNG
     it("brightness increase (1.5)", function()
         local img = make_base(256, 256)
         local r_before, _, _, _ = img:getPixel(128, 128)
@@ -508,6 +589,8 @@ describe("Evidence: ImageData effects", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:brightness
+    -- @covers lurek.image.savePNG
     it("brightness decrease (0.5)", function()
         local img = make_base(256, 256)
         img:brightness(0.5)
@@ -515,6 +598,8 @@ describe("Evidence: ImageData effects", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:contrast
+    -- @covers lurek.image.savePNG
     it("contrast increase (1.5)", function()
         local img = make_base(256, 256)
         img:contrast(1.5)
@@ -522,6 +607,8 @@ describe("Evidence: ImageData effects", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:contrast
+    -- @covers lurek.image.savePNG
     it("contrast decrease (0.5)", function()
         local img = make_base(256, 256)
         img:contrast(0.5)
@@ -529,6 +616,8 @@ describe("Evidence: ImageData effects", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:saturation
+    -- @covers lurek.image.savePNG
     it("saturation zero (grayscale-like)", function()
         local img = make_base(256, 256)
         img:saturation(0)
@@ -536,6 +625,8 @@ describe("Evidence: ImageData effects", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:saturation
+    -- @covers lurek.image.savePNG
     it("saturation boost (2.0)", function()
         local img = make_base(256, 256)
         img:saturation(2)
@@ -543,6 +634,9 @@ describe("Evidence: ImageData effects", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:getPixel
+    -- @covers LImageData:grayscale
+    -- @covers lurek.image.savePNG
     it("grayscale", function()
         local img = make_base(256, 256)
         img:grayscale()
@@ -551,6 +645,8 @@ describe("Evidence: ImageData effects", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:sepia
+    -- @covers lurek.image.savePNG
     it("sepia", function()
         local img = make_base(256, 256)
         img:sepia()
@@ -558,6 +654,8 @@ describe("Evidence: ImageData effects", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:invert
+    -- @covers lurek.image.savePNG
     it("invert", function()
         local img = make_base(256, 256)
         img:invert()
@@ -565,6 +663,7 @@ describe("Evidence: ImageData effects", function()
     end)
 
     -- @evidence file
+    -- @covers lurek.image.savePNG
     it("threshold (128)", function()
         local img = make_base(256, 256)
         img:threshold(128)
@@ -572,6 +671,8 @@ describe("Evidence: ImageData effects", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:posterize
+    -- @covers lurek.image.savePNG
     it("posterize (4 levels)", function()
         local img = make_base(256, 256)
         img:posterize(4)
@@ -579,6 +680,7 @@ describe("Evidence: ImageData effects", function()
     end)
 
     -- @evidence file
+    -- @covers lurek.image.savePNG
     it("blur (radius 3)", function()
         local img = make_base(256, 256)
         local blurred = img:blur(3)
@@ -586,6 +688,8 @@ describe("Evidence: ImageData effects", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:sharpen
+    -- @covers lurek.image.savePNG
     it("sharpen", function()
         local img = make_base(256, 256)
         local sharp = img:sharpen()
@@ -593,6 +697,8 @@ describe("Evidence: ImageData effects", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:gamma
+    -- @covers lurek.image.savePNG
     it("gamma correction (0.5 and 2.0)", function()
         local img1 = make_base(256, 256)
         img1:gamma(0.5)
@@ -604,6 +710,8 @@ describe("Evidence: ImageData effects", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:tint
+    -- @covers lurek.image.savePNG
     it("tint red 50%", function()
         local img = make_base(256, 256)
         img:tint(255, 0, 0, 0.5)
@@ -621,6 +729,7 @@ end)
 --           imagedata_cropped.png, imagedata_resized.png, imagedata_flipped.png,
 --           imagedata_rotated.png
 
+-- @describe evidence: imagedata creation and manipulation
 describe("evidence: imagedata creation and manipulation", function()
     local OUT
 
@@ -630,6 +739,9 @@ describe("evidence: imagedata creation and manipulation", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:setPixel
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
     it("creates basic pixel-painted image", function()
         local img = lurek.image.newImageData(16, 16)
         img:setPixel(0,  0,  255, 0,   0,   255)
@@ -642,6 +754,9 @@ describe("evidence: imagedata creation and manipulation", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:fill
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
     it("creates fill image", function()
         local img = lurek.image.newImageData(16, 16)
         img:fill(100, 150, 200, 255)
@@ -651,6 +766,10 @@ describe("evidence: imagedata creation and manipulation", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:fill
+    -- @covers LImageData:mapPixel
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
     it("creates mapPixel inverted image", function()
         local img = lurek.image.newImageData(16, 16)
         img:fill(50, 100, 150, 255)
@@ -663,6 +782,10 @@ describe("evidence: imagedata creation and manipulation", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:crop
+    -- @covers LImageData:fill
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
     it("creates cropped sub-image", function()
         local img = lurek.image.newImageData(16, 16)
         img:fill(200, 100, 50, 255)
@@ -673,6 +796,10 @@ describe("evidence: imagedata creation and manipulation", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:fill
+    -- @covers LImageData:resizeNearest
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
     it("creates resized image", function()
         local img = lurek.image.newImageData(4, 4)
         img:fill(255, 0, 0, 255)
@@ -683,6 +810,11 @@ describe("evidence: imagedata creation and manipulation", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:fill
+    -- @covers LImageData:flipHorizontal
+    -- @covers LImageData:setPixel
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
     it("creates horizontally flipped image", function()
         local img = lurek.image.newImageData(8, 8)
         img:fill(0, 0, 0, 255)
@@ -698,6 +830,10 @@ describe("evidence: imagedata creation and manipulation", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:fill
+    -- @covers LImageData:rotate90cw
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
     it("creates rotated image", function()
         local img = lurek.image.newImageData(4, 8)
         img:fill(255, 128, 0, 255)
@@ -726,6 +862,7 @@ local function solid(w, h, r, g, b, a)
     return img
 end
 
+-- @describe evidence: imagedata effect filters
 describe("evidence: imagedata effect filters", function()
     local OUT
 
@@ -735,6 +872,8 @@ describe("evidence: imagedata effect filters", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:grayscale
+    -- @covers lurek.image.savePNG
     it("creates grayscale effect PNG", function()
         local img = solid(32, 32, 200, 100, 50, 255)
         img:grayscale()
@@ -744,6 +883,8 @@ describe("evidence: imagedata effect filters", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:invert
+    -- @covers lurek.image.savePNG
     it("creates inverted effect PNG", function()
         local img = solid(32, 32, 100, 150, 200, 255)
         img:invert()
@@ -753,6 +894,8 @@ describe("evidence: imagedata effect filters", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:sepia
+    -- @covers lurek.image.savePNG
     it("creates sepia effect PNG", function()
         local img = solid(32, 32, 200, 200, 200, 255)
         img:sepia()
@@ -762,6 +905,8 @@ describe("evidence: imagedata effect filters", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:brightness
+    -- @covers lurek.image.savePNG
     it("creates brightness effect PNG", function()
         local img = solid(32, 32, 100, 100, 100, 255)
         img:brightness(1.5)
@@ -771,6 +916,7 @@ describe("evidence: imagedata effect filters", function()
     end)
 
     -- @evidence file
+    -- @covers lurek.image.savePNG
     it("creates threshold effect PNG", function()
         local img = solid(32, 32, 179, 134, 89, 255)
         img:threshold(128)
@@ -780,6 +926,8 @@ describe("evidence: imagedata effect filters", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:posterize
+    -- @covers lurek.image.savePNG
     it("creates posterize effect PNG", function()
         local img = solid(32, 32, 200, 200, 200, 255)
         img:posterize(4)
@@ -789,6 +937,8 @@ describe("evidence: imagedata effect filters", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:tint
+    -- @covers lurek.image.savePNG
     it("creates tint effect PNG", function()
         local img = solid(32, 32, 200, 200, 200, 255)
         img:tint(255, 0, 0, 0.5)
@@ -798,6 +948,8 @@ describe("evidence: imagedata effect filters", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:noise
+    -- @covers lurek.image.savePNG
     it("creates noise effect PNG", function()
         local img = solid(32, 32, 128, 128, 128, 255)
         img:noise(30)
@@ -807,6 +959,7 @@ describe("evidence: imagedata effect filters", function()
     end)
 
     -- @evidence file
+    -- @covers lurek.image.savePNG
     it("creates blur effect PNG", function()
         local img = solid(32, 32, 200, 100, 50, 255)
         local blurred = img:blur(2)
@@ -816,6 +969,8 @@ describe("evidence: imagedata effect filters", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:sharpen
+    -- @covers lurek.image.savePNG
     it("creates sharpen effect PNG", function()
         local img = solid(32, 32, 200, 100, 50, 255)
         local sharpened = img:sharpen()
@@ -836,6 +991,7 @@ end)
 --           imagedata_cropped.png, imagedata_resized.png, imagedata_flipped.png,
 --           imagedata_rotated.png
 
+-- @describe evidence: imagedata creation and manipulation
 describe("evidence: imagedata creation and manipulation", function()
     local OUT
 
@@ -845,6 +1001,9 @@ describe("evidence: imagedata creation and manipulation", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:setPixel
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
     it("creates basic pixel-painted image", function()
         local img = lurek.image.newImageData(16, 16)
         img:setPixel(0,  0,  255, 0,   0,   255)
@@ -857,6 +1016,9 @@ describe("evidence: imagedata creation and manipulation", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:fill
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
     it("creates fill image", function()
         local img = lurek.image.newImageData(16, 16)
         img:fill(100, 150, 200, 255)
@@ -866,6 +1028,10 @@ describe("evidence: imagedata creation and manipulation", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:fill
+    -- @covers LImageData:mapPixel
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
     it("creates mapPixel inverted image", function()
         local img = lurek.image.newImageData(16, 16)
         img:fill(50, 100, 150, 255)
@@ -878,6 +1044,10 @@ describe("evidence: imagedata creation and manipulation", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:crop
+    -- @covers LImageData:fill
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
     it("creates cropped sub-image", function()
         local img = lurek.image.newImageData(16, 16)
         img:fill(200, 100, 50, 255)
@@ -888,6 +1058,10 @@ describe("evidence: imagedata creation and manipulation", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:fill
+    -- @covers LImageData:resizeNearest
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
     it("creates resized image", function()
         local img = lurek.image.newImageData(4, 4)
         img:fill(255, 0, 0, 255)
@@ -898,6 +1072,11 @@ describe("evidence: imagedata creation and manipulation", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:fill
+    -- @covers LImageData:flipHorizontal
+    -- @covers LImageData:setPixel
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
     it("creates horizontally flipped image", function()
         local img = lurek.image.newImageData(8, 8)
         img:fill(0, 0, 0, 255)
@@ -913,6 +1092,10 @@ describe("evidence: imagedata creation and manipulation", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:fill
+    -- @covers LImageData:rotate90cw
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
     it("creates rotated image", function()
         local img = lurek.image.newImageData(4, 8)
         img:fill(255, 128, 0, 255)
@@ -941,6 +1124,7 @@ local function solid(w, h, r, g, b, a)
     return img
 end
 
+-- @describe evidence: imagedata effect filters
 describe("evidence: imagedata effect filters", function()
     local OUT
 
@@ -950,6 +1134,8 @@ describe("evidence: imagedata effect filters", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:grayscale
+    -- @covers lurek.image.savePNG
     it("creates grayscale effect PNG", function()
         local img = solid(32, 32, 200, 100, 50, 255)
         img:grayscale()
@@ -959,6 +1145,8 @@ describe("evidence: imagedata effect filters", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:invert
+    -- @covers lurek.image.savePNG
     it("creates inverted effect PNG", function()
         local img = solid(32, 32, 100, 150, 200, 255)
         img:invert()
@@ -968,6 +1156,8 @@ describe("evidence: imagedata effect filters", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:sepia
+    -- @covers lurek.image.savePNG
     it("creates sepia effect PNG", function()
         local img = solid(32, 32, 200, 200, 200, 255)
         img:sepia()
@@ -977,6 +1167,8 @@ describe("evidence: imagedata effect filters", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:brightness
+    -- @covers lurek.image.savePNG
     it("creates brightness effect PNG", function()
         local img = solid(32, 32, 100, 100, 100, 255)
         img:brightness(1.5)
@@ -986,6 +1178,7 @@ describe("evidence: imagedata effect filters", function()
     end)
 
     -- @evidence file
+    -- @covers lurek.image.savePNG
     it("creates threshold effect PNG", function()
         local img = solid(32, 32, 179, 134, 89, 255)
         img:threshold(128)
@@ -995,6 +1188,8 @@ describe("evidence: imagedata effect filters", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:posterize
+    -- @covers lurek.image.savePNG
     it("creates posterize effect PNG", function()
         local img = solid(32, 32, 200, 200, 200, 255)
         img:posterize(4)
@@ -1004,6 +1199,8 @@ describe("evidence: imagedata effect filters", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:tint
+    -- @covers lurek.image.savePNG
     it("creates tint effect PNG", function()
         local img = solid(32, 32, 200, 200, 200, 255)
         img:tint(255, 0, 0, 0.5)
@@ -1013,6 +1210,8 @@ describe("evidence: imagedata effect filters", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:noise
+    -- @covers lurek.image.savePNG
     it("creates noise effect PNG", function()
         local img = solid(32, 32, 128, 128, 128, 255)
         img:noise(30)
@@ -1022,6 +1221,7 @@ describe("evidence: imagedata effect filters", function()
     end)
 
     -- @evidence file
+    -- @covers lurek.image.savePNG
     it("creates blur effect PNG", function()
         local img = solid(32, 32, 200, 100, 50, 255)
         local blurred = img:blur(2)
@@ -1031,6 +1231,8 @@ describe("evidence: imagedata effect filters", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:sharpen
+    -- @covers lurek.image.savePNG
     it("creates sharpen effect PNG", function()
         local img = solid(32, 32, 200, 100, 50, 255)
         local sharpened = img:sharpen()

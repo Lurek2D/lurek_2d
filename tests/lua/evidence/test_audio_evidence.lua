@@ -4,8 +4,16 @@
 
 local OUT = "tests/output/audio/"
 
+-- @describe Evidence: lurek.audio API + WAV output
 describe("Evidence: lurek.audio API + WAV output", function()
     -- @evidence file
+    -- @covers LSoundData:drawWaveform
+    -- @covers LSoundData:getSample
+    -- @covers LSoundData:setSample
+    -- @covers lurek.audio.newSoundData
+    -- @covers lurek.audio.saveWAV
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
     it("WAV: 440 Hz sine wave (1 second, mono)", function()
         local RATE = 44100
         local DURATION = 1.0
@@ -35,6 +43,12 @@ describe("Evidence: lurek.audio API + WAV output", function()
     end)
 
     -- @evidence file
+    -- @covers LSoundData:drawWaveform
+    -- @covers LSoundData:setSample
+    -- @covers lurek.audio.newSoundData
+    -- @covers lurek.audio.saveWAV
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
     it("WAV: three-note chord (C4+E4+G4, 2 seconds)", function()
         local RATE = 44100
         local DURATION = 2.0
@@ -62,6 +76,12 @@ describe("Evidence: lurek.audio API + WAV output", function()
     end)
 
     -- @evidence file
+    -- @covers LSoundData:drawWaveform
+    -- @covers LSoundData:setSample
+    -- @covers lurek.audio.newSoundData
+    -- @covers lurek.audio.saveWAV
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
     it("WAV: frequency sweep 200        2000 Hz (2 seconds)", function()
         local RATE = 44100
         local DURATION = 2.0
@@ -85,6 +105,12 @@ describe("Evidence: lurek.audio API + WAV output", function()
     end)
 
     -- @evidence file
+    -- @covers LSoundData:drawWaveform
+    -- @covers LSoundData:setSample
+    -- @covers lurek.audio.newSoundData
+    -- @covers lurek.audio.saveWAV
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
     it("WAV: stereo ping-pong (left/right alternating)", function()
         local RATE = 44100
         local DURATION = 1.0
@@ -141,8 +167,15 @@ local function make_sine(freq, duration, rate)
     return sd
 end
 
+-- @describe Evidence: lurek.audio Bus API + WAV output
 describe("Evidence: lurek.audio Bus API + WAV output", function()
     -- @evidence file
+    -- @covers LBus:getVolume
+    -- @covers LBus:setVolume
+    -- @covers LSoundData:setSample
+    -- @covers lurek.audio.newBus
+    -- @covers lurek.audio.newSoundData
+    -- @covers lurek.audio.saveWAV
     it("WAV: volume-scaled sine -    simulates bus volume", function()
         -- Generate a 440 Hz sine at full amplitude, then create a
         -- half-volume version to demonstrate bus volume effect
@@ -170,6 +203,12 @@ describe("Evidence: lurek.audio Bus API + WAV output", function()
     end)
 
     -- @evidence file
+    -- @covers LBus:getPitch
+    -- @covers LBus:setPitch
+    -- @covers LSoundData:setSample
+    -- @covers lurek.audio.newBus
+    -- @covers lurek.audio.newSoundData
+    -- @covers lurek.audio.saveWAV
     it("WAV: pitch-shifted sine -    simulates bus pitch", function()
         -- Generate a sine where frequency is multiplied by bus pitch
         local RATE = 44100
@@ -194,6 +233,12 @@ describe("Evidence: lurek.audio Bus API + WAV output", function()
     end)
 
     -- @evidence file
+    -- @covers LBus:setVolume
+    -- @covers LSoundData:getSample
+    -- @covers LSoundData:setSample
+    -- @covers lurek.audio.newBus
+    -- @covers lurek.audio.newSoundData
+    -- @covers lurek.audio.saveWAV
     it("WAV: fade-out envelope simulating bus volume ramp", function()
         local RATE = 44100
         local DURATION = 2.0
@@ -267,8 +312,11 @@ end
 
 --                  Low-pass filter
 
+-- @describe Evidence: lurek.audio applyLowpass
 describe("Evidence: lurek.audio applyLowpass", function()
     -- @evidence file
+    -- @covers lurek.audio.applyLowpass
+    -- @covers lurek.audio.newSineWave
     it("PNG evidence: low-pass filter before vs after", function()
         local raw = lurek.audio.newSineWave(4000, 0.05, SR, 0.8)
         -- Clone via saveWAV round-trip is not available headlessly;
@@ -283,8 +331,11 @@ end)
 
 --                  High-pass filter
 
+-- @describe Evidence: lurek.audio applyHighpass
 describe("Evidence: lurek.audio applyHighpass", function()
     -- @evidence file
+    -- @covers lurek.audio.applyHighpass
+    -- @covers lurek.audio.newSineWave
     it("PNG evidence: high-pass filter before vs after", function()
         local raw  = lurek.audio.newSineWave(300, 0.05, SR, 0.8)
         local raw2 = lurek.audio.newSineWave(300, 0.05, SR, 0.8)
@@ -297,8 +348,11 @@ end)
 
 --                  Bandpass filter
 
+-- @describe Evidence: lurek.audio applyBandpass
 describe("Evidence: lurek.audio applyBandpass", function()
     -- @evidence file
+    -- @covers lurek.audio.applyBandpass
+    -- @covers lurek.audio.newWhiteNoise
     it("PNG evidence: bandpass filter on white noise", function()
         local raw  = lurek.audio.newWhiteNoise(0.05, SR, 0.8, 42)
         local raw2 = lurek.audio.newWhiteNoise(0.05, SR, 0.8, 42)
@@ -311,13 +365,17 @@ end)
 
 --                  Gain
 
+-- @describe Evidence: lurek.audio applyGain
 describe("Evidence: lurek.audio applyGain", function()
 end)
 
 --                  Mix
 
+-- @describe Evidence: lurek.audio mixInto
 describe("Evidence: lurek.audio mixInto", function()
     -- @evidence file
+    -- @covers lurek.audio.mixInto
+    -- @covers lurek.audio.newSineWave
     it("PNG evidence: two sine waves mixed together", function()
         local a = lurek.audio.newSineWave(440,  0.05, SR, 0.5)
         local b = lurek.audio.newSineWave(880,  0.05, SR, 0.5)
@@ -331,9 +389,16 @@ end)
 
 --                  Filter sweep visual
 
+-- @describe Evidence: lurek.audio filter sweep PNG
 describe("Evidence: lurek.audio filter sweep PNG", function()
 
     -- @evidence file
+    -- @covers LImageData:fill
+    -- @covers LSoundData:drawWaveform
+    -- @covers lurek.audio.applyLowpass
+    -- @covers lurek.audio.newWhiteNoise
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
     it("renders a low-pass filter sweep across white noise as a spectrogram strip", function()
         -- Produce 8 strips: cutoff = 200, 500, 1000, 2000, 4000, 6000, 8000, 10000 Hz
         local CUTS = {200, 500, 1000, 2000, 4000, 6000, 8000, 10000}
@@ -403,35 +468,50 @@ end
 
 --                  Sine wave
 
+-- @describe Evidence: lurek.audio newSineWave
 describe("Evidence: lurek.audio newSineWave", function()
 end)
 
 --                  Square wave
 
+-- @describe Evidence: lurek.audio newSquareWave
 describe("Evidence: lurek.audio newSquareWave", function()
 end)
 
 --                  Sawtooth wave
 
+-- @describe Evidence: lurek.audio newSawtoothWave
 describe("Evidence: lurek.audio newSawtoothWave", function()
 end)
 
 --                  Triangle wave
 
+-- @describe Evidence: lurek.audio newTriangleWave
 describe("Evidence: lurek.audio newTriangleWave", function()
 end)
 
 --                  White noise
 
+-- @describe Evidence: lurek.audio newWhiteNoise
 describe("Evidence: lurek.audio newWhiteNoise", function()
 end)
 
 
 --                  Visual evidence: all five waveforms on one PNG
 
+-- @describe Evidence: lurek.audio waveform PNG
 describe("Evidence: lurek.audio waveform PNG", function()
 
     -- @evidence file
+    -- @covers LImageData:fill
+    -- @covers LImageData:setPixel
+    -- @covers lurek.audio.newSawtoothWave
+    -- @covers lurek.audio.newSineWave
+    -- @covers lurek.audio.newSquareWave
+    -- @covers lurek.audio.newTriangleWave
+    -- @covers lurek.audio.newWhiteNoise
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
     it("renders all five waveforms in a single comparison image", function()
         local WAVES = {
             {fn = function() return lurek.audio.newSineWave(    440, DUR, SR, 0.8) end, col = {80, 180, 240}},
@@ -462,6 +542,12 @@ describe("Evidence: lurek.audio waveform PNG", function()
     end)
 
     -- @evidence file
+    -- @covers lurek.audio.newSawtoothWave
+    -- @covers lurek.audio.newSineWave
+    -- @covers lurek.audio.newSquareWave
+    -- @covers lurek.audio.newTriangleWave
+    -- @covers lurek.audio.newWhiteNoise
+    -- @covers lurek.audio.saveWAV
     it("WAV files: saves each waveform as a WAV file", function()
         lurek.audio.saveWAV(lurek.audio.newSineWave(    440, 1.0, SR, 0.8),
             OUT .. "evidence_wave_sine.wav")
@@ -479,9 +565,13 @@ end)
 
 --                  Manual sample synthesis (FM / ADSR / drum)
 
+-- @describe Evidence: lurek.audio manual sample synthesis
 describe("Evidence: lurek.audio manual sample synthesis", function()
 
     -- @evidence file
+    -- @covers LSoundData:setSample
+    -- @covers lurek.audio.newSoundData
+    -- @covers lurek.audio.saveWAV
     it("FM synthesis -    2-operator FM produces a richer waveform than a sine", function()
         local mod_freq = 880.0
         local car_freq = 440.0
@@ -498,6 +588,10 @@ describe("Evidence: lurek.audio manual sample synthesis", function()
     end)
 
     -- @evidence file
+    -- @covers LSoundData:getSample
+    -- @covers LSoundData:setSample
+    -- @covers lurek.audio.newSoundData
+    -- @covers lurek.audio.saveWAV
     it("ADSR envelope applied to sine creates natural attack/release shape", function()
         local dur_full = 0.5
         local n = math.floor(dur_full * SR)
@@ -531,6 +625,9 @@ describe("Evidence: lurek.audio manual sample synthesis", function()
     end)
 
     -- @evidence file
+    -- @covers LSoundData:setSample
+    -- @covers lurek.audio.newSoundData
+    -- @covers lurek.audio.saveWAV
     it("drum kick synthesis -    exponential pitch decay for kick transient", function()
         local dur_k = 0.3
         local n_k   = math.floor(dur_k * SR)
@@ -547,6 +644,11 @@ describe("Evidence: lurek.audio manual sample synthesis", function()
     end)
 
     -- @evidence file
+    -- @covers LSoundData:getSample
+    -- @covers LSoundData:setSample
+    -- @covers lurek.audio.applyHighpass
+    -- @covers lurek.audio.newWhiteNoise
+    -- @covers lurek.audio.saveWAV
     it("drum hi-hat synthesis -    filtered white noise with exponential decay", function()
         local dur_h = 0.1
         local n_h   = math.floor(dur_h * SR)
@@ -578,8 +680,16 @@ end)
 
 local OUT = "tests/output/audio/"
 
+-- @describe Evidence: lurek.audio API + WAV output
 describe("Evidence: lurek.audio API + WAV output", function()
     -- @evidence file
+    -- @covers LSoundData:drawWaveform
+    -- @covers LSoundData:getSample
+    -- @covers LSoundData:setSample
+    -- @covers lurek.audio.newSoundData
+    -- @covers lurek.audio.saveWAV
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
     it("WAV: 440 Hz sine wave (1 second, mono)", function()
         local RATE = 44100
         local DURATION = 1.0
@@ -609,6 +719,12 @@ describe("Evidence: lurek.audio API + WAV output", function()
     end)
 
     -- @evidence file
+    -- @covers LSoundData:drawWaveform
+    -- @covers LSoundData:setSample
+    -- @covers lurek.audio.newSoundData
+    -- @covers lurek.audio.saveWAV
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
     it("WAV: three-note chord (C4+E4+G4, 2 seconds)", function()
         local RATE = 44100
         local DURATION = 2.0
@@ -636,6 +752,12 @@ describe("Evidence: lurek.audio API + WAV output", function()
     end)
 
     -- @evidence file
+    -- @covers LSoundData:drawWaveform
+    -- @covers LSoundData:setSample
+    -- @covers lurek.audio.newSoundData
+    -- @covers lurek.audio.saveWAV
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
     it("WAV: frequency sweep 200        2000 Hz (2 seconds)", function()
         local RATE = 44100
         local DURATION = 2.0
@@ -659,6 +781,12 @@ describe("Evidence: lurek.audio API + WAV output", function()
     end)
 
     -- @evidence file
+    -- @covers LSoundData:drawWaveform
+    -- @covers LSoundData:setSample
+    -- @covers lurek.audio.newSoundData
+    -- @covers lurek.audio.saveWAV
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
     it("WAV: stereo ping-pong (left/right alternating)", function()
         local RATE = 44100
         local DURATION = 1.0
@@ -715,8 +843,15 @@ local function make_sine(freq, duration, rate)
     return sd
 end
 
+-- @describe Evidence: lurek.audio Bus API + WAV output
 describe("Evidence: lurek.audio Bus API + WAV output", function()
     -- @evidence file
+    -- @covers LBus:getVolume
+    -- @covers LBus:setVolume
+    -- @covers LSoundData:setSample
+    -- @covers lurek.audio.newBus
+    -- @covers lurek.audio.newSoundData
+    -- @covers lurek.audio.saveWAV
     it("WAV: volume-scaled sine -    simulates bus volume", function()
         -- Generate a 440 Hz sine at full amplitude, then create a
         -- half-volume version to demonstrate bus volume effect
@@ -744,6 +879,12 @@ describe("Evidence: lurek.audio Bus API + WAV output", function()
     end)
 
     -- @evidence file
+    -- @covers LBus:getPitch
+    -- @covers LBus:setPitch
+    -- @covers LSoundData:setSample
+    -- @covers lurek.audio.newBus
+    -- @covers lurek.audio.newSoundData
+    -- @covers lurek.audio.saveWAV
     it("WAV: pitch-shifted sine -    simulates bus pitch", function()
         -- Generate a sine where frequency is multiplied by bus pitch
         local RATE = 44100
@@ -768,6 +909,12 @@ describe("Evidence: lurek.audio Bus API + WAV output", function()
     end)
 
     -- @evidence file
+    -- @covers LBus:setVolume
+    -- @covers LSoundData:getSample
+    -- @covers LSoundData:setSample
+    -- @covers lurek.audio.newBus
+    -- @covers lurek.audio.newSoundData
+    -- @covers lurek.audio.saveWAV
     it("WAV: fade-out envelope simulating bus volume ramp", function()
         local RATE = 44100
         local DURATION = 2.0
@@ -813,8 +960,10 @@ end)
 local WAVE    = "tests/fixtures/sine_mono_44100.wav"
 local OUT_DIR = evidence_output_dir("audio")
 
+-- @describe Evidence: lurek.audio.processOffline
 describe("Evidence: lurek.audio.processOffline", function()
     -- @evidence file
+    -- @covers lurek.audio.processOffline
     it("lowpass at 1 kHz produces a WAV file larger than 44 bytes", function()
         local out = OUT_DIR .. "evidence_offline_lowpass.wav"
         lurek.audio.processOffline(WAVE, out, { { type = "lowpass", cutoff = 1000.0 } })
@@ -822,6 +971,7 @@ describe("Evidence: lurek.audio.processOffline", function()
     end)
 
     -- @evidence file
+    -- @covers lurek.audio.processOffline
     it("reverb produces a WAV file larger than 44 bytes", function()
         local out = OUT_DIR .. "evidence_offline_reverb.wav"
         lurek.audio.processOffline(WAVE, out, { { type = "reverb", room_size = 0.7, mix = 0.4 } })
@@ -829,6 +979,7 @@ describe("Evidence: lurek.audio.processOffline", function()
     end)
 
     -- @evidence file
+    -- @covers lurek.audio.processOffline
     it("chained effects produce a WAV file larger than 44 bytes", function()
         local out = OUT_DIR .. "evidence_offline_chain.wav"
         lurek.audio.processOffline(WAVE, out, {
@@ -839,8 +990,10 @@ describe("Evidence: lurek.audio.processOffline", function()
     end)
 end)
 
+-- @describe Evidence: lurek.audio.normalizeFile
 describe("Evidence: lurek.audio.normalizeFile", function()
     -- @evidence file
+    -- @covers lurek.audio.normalizeFile
     it("normalizeFile at 0.9 produces a WAV file larger than 44 bytes", function()
         local out = OUT_DIR .. "evidence_normalized.wav"
         lurek.audio.normalizeFile(WAVE, out, 0.9)
@@ -862,8 +1015,10 @@ end)
 local WAVE    = "tests/fixtures/sine_mono_44100.wav"
 local OUT_DIR = evidence_output_dir("audio")
 
+-- @describe Evidence: lurek.audio.waveformToPng
 describe("Evidence: lurek.audio.waveformToPng", function()
     -- @evidence file
+    -- @covers lurek.audio.waveformToPng
     it("produces a 512x128 PNG waveform file larger than 100 bytes", function()
         local out = OUT_DIR .. "evidence_waveform.png"
         lurek.audio.waveformToPng(WAVE, out, 512, 128)
@@ -871,6 +1026,7 @@ describe("Evidence: lurek.audio.waveformToPng", function()
     end)
 
     -- @evidence file
+    -- @covers lurek.audio.waveformToPng
     it("produces a 1024x256 PNG waveform file", function()
         local out = OUT_DIR .. "evidence_waveform_large.png"
         lurek.audio.waveformToPng(WAVE, out, 1024, 256)
@@ -878,8 +1034,10 @@ describe("Evidence: lurek.audio.waveformToPng", function()
     end)
 end)
 
+-- @describe Evidence: lurek.audio.spectrogramToPng
 describe("Evidence: lurek.audio.spectrogramToPng", function()
     -- @evidence file
+    -- @covers lurek.audio.spectrogramToPng
     it("produces a 512x256 PNG spectrogram file larger than 100 bytes", function()
         local out = OUT_DIR .. "evidence_spectrogram.png"
         lurek.audio.spectrogramToPng(WAVE, out, 512, 256)

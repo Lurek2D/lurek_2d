@@ -1,7 +1,14 @@
 -- Lurek2D Stress Test: Large Tilemap Operations
 -- Tests creating and manipulating large tilemaps at scale
 
+-- @describe tilemap stress: large map creation
 describe("tilemap stress: large map creation", function()
+    -- @stress LTileMap:addLayer
+    -- @stress LTileMap:addTileSet
+    -- @stress LTileMap:getTile
+    -- @stress LTileMap:setTile
+    -- @stress lurek.tilemap.newTileMap
+    -- @stress lurek.tilemap.newTileSet
     it("creates a 500x500 tilemap and fills it", function()
         local map = lurek.tilemap.newTileMap(32, 32, 16)
         local ts = lurek.tilemap.newTileSet(1, 256, 16, 32, 32, 0, 0)
@@ -21,6 +28,12 @@ describe("tilemap stress: large map creation", function()
         expect_equal(1, map:getTile(1, 250, 250), "center tile")
     end)
 
+    -- @stress LTileMap:addLayer
+    -- @stress LTileMap:addTileSet
+    -- @stress LTileMap:getTile
+    -- @stress LTileMap:setTile
+    -- @stress lurek.tilemap.newTileMap
+    -- @stress lurek.tilemap.newTileSet
     it("reads back all tiles from a 200x200 map", function()
         local map = lurek.tilemap.newTileMap(32, 32, 16)
         local ts = lurek.tilemap.newTileSet(1, 256, 16, 32, 32, 0, 0)
@@ -48,6 +61,12 @@ describe("tilemap stress: large map creation", function()
         expect_equal(0, mismatches, "all tiles match expected pattern")
     end)
 
+    -- @stress LTileMap:addLayer
+    -- @stress LTileMap:addTileSet
+    -- @stress LTileMap:getTile
+    -- @stress LTileMap:setTile
+    -- @stress lurek.tilemap.newTileMap
+    -- @stress lurek.tilemap.newTileSet
     it("handles multiple layers on a 100x100 map", function()
         local map = lurek.tilemap.newTileMap(32, 32, 16)
         local ts = lurek.tilemap.newTileSet(1, 256, 16, 32, 32, 0, 0)
@@ -74,7 +93,14 @@ describe("tilemap stress: large map creation", function()
     end)
 end)
 
+-- @describe tilemap stress: fill operations
 describe("tilemap stress: fill operations", function()
+    -- @stress LTileMap:addLayer
+    -- @stress LTileMap:addTileSet
+    -- @stress LTileMap:fill
+    -- @stress LTileMap:getTile
+    -- @stress lurek.tilemap.newTileMap
+    -- @stress lurek.tilemap.newTileSet
     it("fills entire layer with one GID", function()
         local map = lurek.tilemap.newTileMap(32, 32, 16)
         local ts = lurek.tilemap.newTileSet(1, 256, 16, 32, 32, 0, 0)
@@ -88,6 +114,13 @@ describe("tilemap stress: fill operations", function()
         expect_equal(42, map:getTile(1, 50, 50), "fill center")
     end)
 
+    -- @stress LTileMap:addLayer
+    -- @stress LTileMap:addTileSet
+    -- @stress LTileMap:fill
+    -- @stress LTileMap:getTile
+    -- @stress LTileMap:setTile
+    -- @stress lurek.tilemap.newTileMap
+    -- @stress lurek.tilemap.newTileSet
     it("setTile overwrites filled area", function()
         local map = lurek.tilemap.newTileMap(32, 32, 16)
         local ts = lurek.tilemap.newTileSet(1, 256, 16, 32, 32, 0, 0)
@@ -100,6 +133,9 @@ describe("tilemap stress: fill operations", function()
         expect_equal(42, map:getTile(1, 49, 49), "untouched tile")
     end)
 
+    -- @stress LChunkMap:getTile
+    -- @stress LChunkMap:setTile
+    -- @stress lurek.tilemap.newChunkMap
     it("ChunkMap setTile/getTile roundtrip", function()
         -- ChunkMap: no layer param, 0-based coords
         local cm = lurek.tilemap.newChunkMap(16)

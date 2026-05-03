@@ -1,7 +1,13 @@
 -- Lurek2D Integration Test: Procgen + Tilemap
 -- Tests procedural generation feeding tilemap placement
 
+-- @describe procgen + tilemap integration
 describe("procgen + tilemap integration", function()
+    -- @integration LTileMap:addLayer
+    -- @integration LTileMap:getTile
+    -- @integration LTileMap:setTile
+    -- @integration lurek.procgen.perlinNoise
+    -- @integration lurek.tilemap.newTileMap
     it("noise2d generates tile terrain", function()
         local map = lurek.tilemap.newTileMap(32, 32)
         map:addLayer("tiles", 16, 16)
@@ -28,6 +34,10 @@ describe("procgen + tilemap integration", function()
         expect_true(center_tile >= 0 and center_tile <= 2, "tile in valid range")
     end)
 
+    -- @integration LTileMap:addLayer
+    -- @integration LTileMap:setTile
+    -- @integration lurek.procgen.perlinNoise
+    -- @integration lurek.tilemap.newTileMap
     it("seeded noise produces same tilemap", function()
         local function generate_map(seed)
             local map = lurek.tilemap.newTileMap(32, 32)
@@ -55,6 +65,7 @@ describe("procgen + tilemap integration", function()
         end
     end)
 
+    -- @integration lurek.procgen.perlinNoise
     it("different seeds produce different tilemaps", function()
         local map1_tiles = {}
         local map2_tiles = {}
@@ -83,8 +94,10 @@ end)
 --                                                                                                                                                                                                                                                                                                                                                                         
 -- BSP Dungeon          Tilemap passability
 --                                                                                                                                                                                                                                                                                                                                                                         
+-- @describe bspDungeon          tilemap grid passability
 describe("bspDungeon          tilemap grid passability", function()
 
+    -- @integration lurek.procgen.bspDungeon
     it("BSP rooms can map to walkable tile IDs", function()
         local d = lurek.procgen.bspDungeon({ width = 40, height = 30, seed = 42 })
         -- Mark room cells as tile 1 (walkable), rest as tile 0 (wall)
@@ -109,11 +122,13 @@ describe("bspDungeon          tilemap grid passability", function()
         expect_true(has_walkable, "expected at least one walkable cell from rooms")
     end)
 
+    -- @integration lurek.procgen.roomsDungeon
     it("roomsDungeon grid matches dimensions", function()
         local d = lurek.procgen.roomsDungeon({ width = 24, height = 16, max_rooms = 6, seed = 11 })
         expect_equal(24 * 16, #d.grid)
     end)
 
+    -- @integration lurek.procgen.wfcGenerate
     it("WFC grid stays within tile ID set", function()
         local tiles = { { id = 0, weight = 1 }, { id = 1, weight = 1 }, { id = 2, weight = 0.5 } }
         local adj = { [0] = { 0, 1 }, [1] = { 0, 1, 2 }, [2] = { 1, 2 } }
@@ -123,6 +138,7 @@ describe("bspDungeon          tilemap grid passability", function()
         end
     end)
 
+    -- @integration lurek.procgen.heightmap
     it("heightmap drives biome layer assignment", function()
         local hm = lurek.procgen.heightmap({ width = 12, height = 12, seed = 77 })
         local biomes = { "deep_water", "water", "sand", "grass", "forest", "mountain", "snow" }

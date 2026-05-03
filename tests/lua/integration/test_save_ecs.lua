@@ -1,7 +1,13 @@
 -- Lurek2D Integration Test: Save + Entity
 -- Tests saving and restoring entity state
 
+-- @describe integration: save entity world state
 describe("integration: save entity world state", function()
+    -- @integration LUniverse:get
+    -- @integration LUniverse:isAlive
+    -- @integration LUniverse:set
+    -- @integration LUniverse:spawn
+    -- @integration lurek.ecs.newUniverse
     it("collects entity data for save", function()
         local universe = lurek.ecs.newUniverse()
 
@@ -37,6 +43,13 @@ describe("integration: save entity world state", function()
         expect_equal("Dragon", save_data[3].name, "dragon name preserved")
     end)
 
+    -- @integration LSaveManager:isDirty
+    -- @integration LSaveManager:markDirty
+    -- @integration LSaveManager:register
+    -- @integration LUniverse:set
+    -- @integration LUniverse:spawn
+    -- @integration lurek.ecs.newUniverse
+    -- @integration lurek.save.newSaveManager
     it("save manager tracks entity dirty state", function()
         local mgr = lurek.save.newSaveManager()
         local universe = lurek.ecs.newUniverse()
@@ -53,7 +66,14 @@ describe("integration: save entity world state", function()
     end)
 end)
 
+-- @describe integration: TOML config for entities
 describe("integration: TOML config for entities", function()
+    -- @integration LUniverse:get
+    -- @integration LUniverse:getEntityCount
+    -- @integration LUniverse:set
+    -- @integration LUniverse:spawn
+    -- @integration lurek.data.parseToml
+    -- @integration lurek.ecs.newUniverse
     it("entity blueprints from TOML", function()
         local toml_str = [[
             [player]

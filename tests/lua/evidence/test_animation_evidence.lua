@@ -43,12 +43,38 @@ end
 
 --                  tests
 
+-- @describe describe block
+-- @describe Evidence: lurek.animation Animator creation
 describe("Evidence: lurek.animation Animator creation", function()
 end)
+-- @describe describe block
 
+-- @describe Evidence: lurek.animation addClipFromGrid quad selection
 describe("Evidence: lurek.animation addClipFromGrid quad selection", function()
+    -- @covers LAnimation:addClipFromGrid
+    -- @covers LAnimation:getQuad
+    -- @covers LAnimation:play
+    -- @covers LAnimation:pollEvents
+    -- @covers LAnimation:update
+    -- @covers LImageData:fill
+    -- @covers LImageData:getPixel
+    -- @covers LImageData:setPixel
+    -- @covers lurek.animation.new
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
 
     -- @evidence file
+    -- @covers LAnimation:addClipFromGrid
+    -- @covers LAnimation:getQuad
+    -- @covers LAnimation:play
+    -- @covers LAnimation:pollEvents
+    -- @covers LAnimation:update
+    -- @covers LImageData:fill
+    -- @covers LImageData:getPixel
+    -- @covers LImageData:setPixel
+    -- @covers lurek.animation.new
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
     it("addClipFromGrid produces correct UV quads -    PNG evidence: frame_grid", function()
         local img, FW, FH, TW, TH = make_sprite_sheet()
 
@@ -93,9 +119,20 @@ describe("Evidence: lurek.animation addClipFromGrid quad selection", function()
                     end
                 end
             end
+        -- @describe describe block
         end
 
         lurek.image.savePNG(out, OUT .. "evidence_animation_frame_grid.png")
+            -- @covers LAnimation:addClip
+            -- @covers LAnimation:getQuad
+            -- @covers LAnimation:play
+            -- @covers LAnimation:setSpeed
+            -- @covers LAnimation:update
+            -- @covers LImageData:fill
+            -- @covers LImageData:setPixel
+            -- @covers lurek.animation.new
+            -- @covers lurek.image.newImageData
+            -- @covers lurek.image.savePNG
             local events = anim:pollEvents()
         local found_done = false
         for _, ev in ipairs(events) do
@@ -107,9 +144,20 @@ describe("Evidence: lurek.animation addClipFromGrid quad selection", function()
     end)
 end)
 
+-- @describe Evidence: animation speed scaling visual
 describe("Evidence: animation speed scaling visual", function()
 
     -- @evidence file
+    -- @covers LAnimation:addClip
+    -- @covers LAnimation:getQuad
+    -- @covers LAnimation:play
+    -- @covers LAnimation:setSpeed
+    -- @covers LAnimation:update
+    -- @covers LImageData:fill
+    -- @covers LImageData:setPixel
+    -- @covers lurek.animation.new
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
     it("speed 2x advances twice as fast -    PNG evidence: speed_compare", function()
         local W = 120
         local img = lurek.image.newImageData(W, 20)

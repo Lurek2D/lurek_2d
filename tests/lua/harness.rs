@@ -418,282 +418,277 @@ fn lua_config_config() {
 
 #[test]
 fn lua_unit_ai_unit() {
-    run_lua_test("unit/test_ai_unit.lua");
+    run_lua_test("unit/test_ai_core_unit.lua");
 }
 
 #[test]
 fn lua_unit_animation_unit() {
-    run_lua_test("unit/test_animation_unit.lua");
+    run_lua_test("unit/test_animation_core_unit.lua");
 }
 
 #[test]
 fn lua_unit_audio_unit() {
-    run_lua_test("unit/test_audio_unit.lua");
+    run_lua_test("unit/test_audio_core_unit.lua");
 }
 
 #[test]
 fn lua_unit_automation_unit() {
-    run_lua_test("unit/test_automation_unit.lua");
+    run_lua_test("unit/test_automation_core_unit.lua");
 }
 
 #[test]
 fn lua_unit_battle_unit() {
-    run_lua_test("unit/test_battle_unit.lua");
+    run_lua_test("unit/test_battle_core_unit.lua");
 }
 
 #[test]
 fn lua_unit_camera_unit() {
-    run_lua_test("unit/test_camera_unit.lua");
+    run_lua_test("unit/test_camera_core_unit.lua");
 }
 
 #[test]
 fn lua_unit_compute_unit() {
-    run_lua_test("unit/test_compute_unit.lua");
+    run_lua_test("unit/test_compute_core_unit.lua");
 }
 
 #[test]
 fn lua_unit_crafting_unit() {
-    run_lua_test("unit/test_crafting_unit.lua");
+    run_lua_test("unit/test_crafting_core_unit.lua");
 }
 
 #[test]
 fn lua_unit_data_unit() {
-    run_lua_test("unit/test_data_unit.lua");
+    run_lua_test("unit/test_data_core_unit.lua");
 }
 
 #[test]
 fn lua_unit_dataframe_unit() {
-    run_lua_test("unit/test_dataframe_unit.lua");
+    run_lua_test("unit/test_dataframe_core_unit.lua");
 }
 
 #[test]
 fn lua_unit_debugbridge_unit() {
-    run_lua_test("unit/test_debugbridge_unit.lua");
+    run_lua_test("unit/test_debugbridge_core_unit.lua");
 }
 
 #[test]
 fn lua_unit_devtools_unit() {
-    run_lua_test("unit/test_devtools_unit.lua");
+    run_lua_test("unit/test_devtools_core_unit.lua");
 }
 
 #[test]
 fn lua_unit_dialog_unit() {
-    run_lua_test("unit/test_dialog_unit.lua");
+    run_lua_test("unit/test_dialog_core_unit.lua");
 }
 
 #[test]
 fn lua_unit_docs_unit() {
-    run_lua_test("unit/test_docs_unit.lua");
+    run_lua_test("unit/test_docs_core_unit.lua");
 }
 
 #[test]
 fn lua_unit_drawlayer_unit() {
-    run_lua_test("unit/test_drawlayer_unit.lua");
+    run_lua_test("unit/test_render_drawlayer_unit.lua");
 }
 
 #[test]
 fn lua_unit_ecs_unit() {
-    run_lua_test("unit/test_ecs_unit.lua");
+    run_lua_test("unit/test_ecs_core_unit.lua");
 }
 
 #[test]
 fn lua_unit_effect_unit() {
-    run_lua_test("unit/test_effect_unit.lua");
+    run_lua_test("unit/test_effect_core_unit.lua");
 }
 
 #[test]
 fn lua_unit_event_unit() {
-    run_lua_test("unit/test_event_unit.lua");
+    run_lua_test("unit/test_event_core_unit.lua");
 }
 
 #[test]
 fn lua_unit_filesystem_unit() {
-    run_lua_test("unit/test_filesystem_unit.lua");
+    run_lua_test("unit/test_filesystem_core_unit.lua");
 }
 
 #[test]
 fn lua_unit_font_unit() {
-    run_lua_test("unit/test_font_unit.lua");
+    run_lua_test("unit/test_render_font_unit.lua");
 }
 
 #[test]
 fn lua_unit_globe_unit() {
-    run_lua_test("unit/test_globe_unit.lua");
+    run_lua_test("unit/test_globe_core_unit.lua");
 }
 
 #[test]
 fn lua_unit_graph_unit() {
-    run_lua_test("unit/test_graph_unit.lua");
-}
-
-#[test]
-fn lua_unit_gui_unit() {
-    run_lua_test("unit/test_gui_unit.lua");
+    run_lua_test("unit/test_graph_core_unit.lua");
 }
 
 #[test]
 fn lua_unit_i18n_unit() {
-    run_lua_test("unit/test_i18n_unit.lua");
+    run_lua_test("unit/test_i18n_core_unit.lua");
 }
 
 #[test]
 fn lua_unit_image_unit() {
-    run_lua_test("unit/test_image_unit.lua");
+    run_lua_test("unit/test_image_core_unit.lua");
 }
 
 #[test]
 fn lua_unit_input_unit() {
-    run_lua_test("unit/test_input_unit.lua");
+    run_lua_test("unit/test_input_core_unit.lua");
 }
 
 #[test]
 fn lua_unit_light_unit() {
-    run_lua_test("unit/test_light_unit.lua");
+    run_lua_test("unit/test_light_core_unit.lua");
 }
 
 #[test]
 fn lua_unit_log_unit() {
-    run_lua_test("unit/test_log_unit.lua");
+    run_lua_test("unit/test_log_core_unit.lua");
 }
 
 #[test]
 fn lua_unit_math_unit() {
-    run_lua_test("unit/test_math_unit.lua");
+    run_lua_test("unit/test_math_core_unit.lua");
 }
 
 #[test]
 fn lua_unit_minimap_unit() {
-    run_lua_test("unit/test_minimap_unit.lua");
+    run_lua_test("unit/test_minimap_core_unit.lua");
 }
 
 #[test]
 fn lua_unit_mods_unit() {
-    run_lua_test("unit/test_mods_unit.lua");
+    run_lua_test("unit/test_mods_core_unit.lua");
 }
 
 #[test]
 fn lua_unit_network_unit() {
-    run_lua_test("unit/test_network_unit.lua");
+    run_lua_test("unit/test_network_core_unit.lua");
 }
 
 #[test]
 fn lua_unit_parallax_unit() {
-    run_lua_test("unit/test_parallax_unit.lua");
+    run_lua_test("unit/test_parallax_core_unit.lua");
 }
 
 #[test]
 fn lua_unit_particle_unit() {
-    run_lua_test("unit/test_particle_unit.lua");
+    run_lua_test("unit/test_particle_core_unit.lua");
 }
 
 #[test]
 fn lua_unit_pathfind_unit() {
-    run_lua_test("unit/test_pathfind_unit.lua");
+    run_lua_test("unit/test_pathfind_core_unit.lua");
 }
 
 #[test]
 fn lua_unit_patterns_unit() {
-    run_lua_test("unit/test_patterns_unit.lua");
+    run_lua_test("unit/test_patterns_core_unit.lua");
 }
 
 #[test]
 fn lua_unit_physics_unit() {
-    run_lua_test("unit/test_physics_unit.lua");
+    run_lua_test("unit/test_physics_core_unit.lua");
 }
 
 #[test]
 fn lua_unit_pipeline_unit() {
-    run_lua_test("unit/test_pipeline_unit.lua");
+    run_lua_test("unit/test_pipeline_core_unit.lua");
 }
 
 #[test]
 fn lua_unit_procgen_unit() {
-    run_lua_test("unit/test_procgen_unit.lua");
+    run_lua_test("unit/test_procgen_core_unit.lua");
 }
 
 #[test]
 fn lua_unit_raycaster_unit() {
-    run_lua_test("unit/test_raycaster_unit.lua");
+    run_lua_test("unit/test_raycaster_core_unit.lua");
 }
 
 #[test]
 fn lua_unit_render_unit() {
-    run_lua_test("unit/test_render_unit.lua");
+    run_lua_test("unit/test_render_core_unit.lua");
 }
 
 #[test]
 fn lua_unit_runtime_unit() {
-    run_lua_test("unit/test_runtime_unit.lua");
+    run_lua_test("unit/test_runtime_core_unit.lua");
 }
 
 #[test]
 fn lua_unit_save_unit() {
-    run_lua_test("unit/test_save_unit.lua");
+    run_lua_test("unit/test_save_core_unit.lua");
 }
 
 #[test]
 fn lua_unit_scene_unit() {
-    run_lua_test("unit/test_scene_unit.lua");
+    run_lua_test("unit/test_scene_core_unit.lua");
 }
 
 #[test]
 fn lua_unit_serial_unit() {
-    run_lua_test("unit/test_serial_unit.lua");
+    run_lua_test("unit/test_serial_core_unit.lua");
 }
 
 #[test]
 fn lua_unit_shape_unit() {
-    run_lua_test("unit/test_shape_unit.lua");
+    run_lua_test("unit/test_shape_core_unit.lua");
 }
 
 #[test]
 fn lua_unit_spine_unit() {
-    run_lua_test("unit/test_spine_unit.lua");
+    run_lua_test("unit/test_spine_core_unit.lua");
 }
 
 #[test]
 fn lua_unit_sprite_unit() {
-    run_lua_test("unit/test_sprite_unit.lua");
+    run_lua_test("unit/test_sprite_core_unit.lua");
 }
 
 #[test]
 fn lua_unit_terminal_unit() {
-    run_lua_test("unit/test_terminal_unit.lua");
+    run_lua_test("unit/test_terminal_core_unit.lua");
 }
 
 #[test]
 fn lua_unit_thread_unit() {
-    run_lua_test("unit/test_thread_unit.lua");
+    run_lua_test("unit/test_thread_core_unit.lua");
 }
 
 #[test]
 fn lua_unit_tilemap_unit() {
-    run_lua_test("unit/test_tilemap_unit.lua");
+    run_lua_test("unit/test_tilemap_core_unit.lua");
 }
 
 #[test]
 fn lua_unit_timer_unit() {
-    run_lua_test("unit/test_timer_unit.lua");
+    run_lua_test("unit/test_timer_core_unit.lua");
 }
 
 #[test]
 fn lua_unit_tween_unit() {
-    run_lua_test("unit/test_tween_unit.lua");
+    run_lua_test("unit/test_tween_core_unit.lua");
 }
 
 #[test]
 fn lua_unit_ui_unit() {
-    run_lua_test("unit/test_ui_unit.lua");
+    run_lua_test("unit/test_ui_core_unit.lua");
 }
 
 #[test]
 fn lua_unit_html_unit() {
-    run_lua_test("unit/test_html_unit.lua");
+    run_lua_test("unit/test_html_core_unit.lua");
 }
 
 #[test]
 fn lua_unit_window_unit() {
-    run_lua_test("unit/test_window_unit.lua");
+    run_lua_test("unit/test_window_core_unit.lua");
 }
 
 // ── evidence layer ──
@@ -1337,15 +1332,15 @@ fn lua_library_scheduler() {
 
 #[test]
 fn lua_unit_engine_unit() {
-    run_lua_test("unit/test_engine_unit.lua");
+    run_lua_test("unit/test_engine_core_unit.lua");
 }
 
 #[test]
 fn lua_unit_system_unit() {
-    run_lua_test("unit/test_system_unit.lua");
+    run_lua_test("unit/test_system_core_unit.lua");
 }
 
 #[test]
 fn lua_unit_collision_unit() {
-    run_lua_test("unit/test_collision_unit.lua");
+    run_lua_test("unit/test_collision_core_unit.lua");
 }

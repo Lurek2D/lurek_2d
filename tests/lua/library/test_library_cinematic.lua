@@ -4,7 +4,9 @@
 local cine = require("library.cinematic")
 
 
+-- @describe clip firing
 describe("clip firing", function()
+    -- @library lurek.library_cinematic
     it("clips fire in declared order across multiple tracks", function()
         local fired = {}
         local tl = cine.newTimeline()
@@ -21,6 +23,7 @@ describe("clip firing", function()
         expect_equal("b@0.2", fired[3])
     end)
 
+    -- @library LTween:setTime
     it("setTime(t) seeks past clips and applies them", function()
         local hit = false
         local tl = cine.newTimeline()
@@ -31,7 +34,9 @@ describe("clip firing", function()
     end)
 end)
 
+-- @describe pause / resume
 describe("pause / resume", function()
+    -- @library LTween:getTime
     it("pause then resume preserves elapsed time", function()
         local tl = cine.newTimeline()
         tl:track("x"):call(2.0, function() end)
@@ -43,7 +48,9 @@ describe("pause / resume", function()
     end)
 end)
 
+-- @describe onComplete
 describe("onComplete", function()
+    -- @library lurek.library_cinematic
     it("fires once at duration", function()
         local n = 0
         local tl = cine.newTimeline()
@@ -55,7 +62,9 @@ describe("onComplete", function()
     end)
 end)
 
+-- @describe labels & skip
 describe("labels & skip", function()
+    -- @library LTween:getTime
     it("skipTo jumps the playhead to the labelled time", function()
         local tl = cine.newTimeline()
         tl:track("x"):call(2.0, function() end)
@@ -70,7 +79,9 @@ describe("labels & skip", function()
     end)
 end)
 
+-- @describe branch
 describe("branch", function()
+    -- @library lurek.library_cinematic
     it("only runs when predicate is true at branch time", function()
         local tl    = cine.newTimeline()
         local child = cine.newTimeline()
@@ -83,7 +94,9 @@ describe("branch", function()
     end)
 end)
 
+-- @describe scrubbing
 describe("scrubbing", function()
+    -- @library LTween:setTime
     it("backward scrub past non-reversible clip raises", function()
         local tl = cine.newTimeline()
         tl:track("x"):audio(0.5, "song.ogg")
@@ -91,6 +104,7 @@ describe("scrubbing", function()
         expect_error(function() tl:setTime(0.0) end)
     end)
 
+    -- @library LTween:setTime
     it("backward scrub through reversible call clip is allowed", function()
         local applied
         local tl = cine.newTimeline()
@@ -101,7 +115,9 @@ describe("scrubbing", function()
     end)
 end)
 
+-- @describe export
 describe("export", function()
+    -- @library lurek.library_cinematic
     it("export returns playhead state", function()
         local tl = cine.newTimeline()
         tl:track("x"):call(2.0, function() end)
@@ -112,6 +128,7 @@ describe("export", function()
     end)
 end)
 
+-- @describe error paths
 describe("error paths", function()
     it("track:add raises on missing 'at'", function()
         local tl = cine.newTimeline()

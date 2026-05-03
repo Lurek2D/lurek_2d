@@ -4,20 +4,25 @@
 local dialog = require("library.dialog")
 
 
+-- @describe newSequencer
 describe("newSequencer", function()
+    -- @library lurek.library_dialog
     it("creates a sequencer in idle state", function()
         local seq = dialog.newSequencer()
         expect_equal(seq:getState(), "idle")
         expect_equal(seq:isActive(), false)
     end)
 
+    -- @library lurek.library_dialog
     it("default speed is 20", function()
         local seq = dialog.newSequencer()
         expect_equal(20, seq:getSpeed())
     end)
 end)
 
+-- @describe say node
 describe("say node", function()
+    -- @library lurek.library_dialog
     it("transitions idle -> typing on start", function()
         local seq = dialog.newSequencer()
         seq:load({
@@ -28,6 +33,7 @@ describe("say node", function()
         expect_equal(seq:currentSpeaker(), "NPC")
     end)
 
+    -- @library lurek.library_dialog
     it("reveals text over time", function()
         local seq = dialog.newSequencer()
         seq:setSpeed(100) -- 100 cps          1 char per 0.01s
@@ -43,6 +49,7 @@ describe("say node", function()
         expect_equal(seq:getState(), "waiting")
     end)
 
+    -- @library lurek.library_dialog
     it("advance moves to next node", function()
         local seq = dialog.newSequencer()
         seq:load({
@@ -57,6 +64,7 @@ describe("say node", function()
         expect_equal(seq:currentSpeaker(), "B")
     end)
 
+    -- @library lurek.library_dialog
     it("skip instantly reveals text", function()
         local seq = dialog.newSequencer()
         seq:load({
@@ -69,7 +77,9 @@ describe("say node", function()
     end)
 end)
 
+-- @describe choice node
 describe("choice node", function()
+    -- @library lurek.library_dialog
     it("enters choice state with labels", function()
         local seq = dialog.newSequencer()
         seq:load({
@@ -87,6 +97,7 @@ describe("choice node", function()
         expect_equal(labels[2], "No")
     end)
 
+    -- @library lurek.library_dialog
     it("choosing a branch executes its nodes", function()
         local seq = dialog.newSequencer()
         seq:load({
@@ -104,7 +115,9 @@ describe("choice node", function()
     end)
 end)
 
+-- @describe wait node
 describe("wait node", function()
+    -- @library lurek.library_dialog
     it("pauses for the specified duration", function()
         local seq = dialog.newSequencer()
         seq:load({
@@ -121,7 +134,9 @@ describe("wait node", function()
     end)
 end)
 
+-- @describe call node
 describe("call node", function()
+    -- @library lurek.library_dialog
     it("executes the function and continues", function()
         local called = false
         local seq = dialog.newSequencer()
@@ -136,7 +151,9 @@ describe("call node", function()
     end)
 end)
 
+-- @describe events
 describe("events", function()
+    -- @library lurek.library_dialog
     it("fires line event on say node", function()
         local fired_speaker, fired_text
         local seq = dialog.newSequencer()
@@ -152,6 +169,7 @@ describe("events", function()
         expect_equal(fired_text, "Hello")
     end)
 
+    -- @library lurek.library_dialog
     it("fires finished event when done", function()
         local finished = false
         local seq = dialog.newSequencer()
@@ -166,6 +184,7 @@ describe("events", function()
         expect_equal(seq:getState(), "done")
     end)
 
+    -- @library lurek.library_dialog
     it("fires choice event", function()
         local fired = false
         local seq = dialog.newSequencer()
@@ -179,6 +198,7 @@ describe("events", function()
         expect_equal(true, fired)
     end)
 
+    -- @library lurek.library_dialog
     it("off removes event handler", function()
         local count = 0
         local seq = dialog.newSequencer()
@@ -195,7 +215,9 @@ describe("events", function()
         expect_equal(1, count)   -- count unchanged
     end)
 
+    -- @describe edge cases
     describe("edge cases", function()
+        -- @library lurek.library_dialog
         it("empty script immediately finishes", function()
             local seq = dialog.newSequencer()
             seq:load({})
@@ -204,6 +226,7 @@ describe("events", function()
             expect_equal(false, seq:isActive())
         end)
 
+        -- @library lurek.library_dialog
         it("partial text reveal via update", function()
             local seq = dialog.newSequencer()
             seq:setSpeed(10)  -- 10 cps
@@ -219,7 +242,9 @@ describe("events", function()
         end)
     end)
 
+    -- @describe full sequence
     describe("full sequence", function()
+        -- @library lurek.library_dialog
         it("plays through multiple nodes to done", function()
             local seq = dialog.newSequencer()
             seq:setSpeed(1000)
@@ -240,6 +265,7 @@ end)
 
 --                          Node constructor helpers                                                                                                                                                                                                                                                                                                                                                                                                                 
 
+-- @describe node constructors
 describe("node constructors", function()
     it("M.say creates a say node", function()
         local node = dialog.say("Alice", "Hello")
@@ -320,7 +346,9 @@ end)
 
 --                          event node                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
 
+-- @describe event node
 describe("event node", function()
+    -- @library lurek.library_dialog
     it("fires the event callback with name and data then continues", function()
         local fired_name, fired_data
         local seq = dialog.newSequencer()
@@ -339,6 +367,7 @@ describe("event node", function()
         expect_equal(seq:currentSpeaker(), "A")
     end)
 
+    -- @library lurek.library_dialog
     it("M.event node fires correctly through constructor", function()
         local fired = false
         local seq = dialog.newSequencer()
@@ -352,6 +381,7 @@ end)
 
 --                          jump node                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
 
+-- @describe jump node
 describe("jump node", function()
     it("jumps to the labeled node, skipping intermediate nodes", function()
         local seq = dialog.newSequencer()
@@ -376,6 +406,7 @@ describe("jump node", function()
         expect_equal(seq:currentSpeaker(), "B")
     end)
 
+    -- @library lurek.library_dialog
     it("jump to unknown label advances normally", function()
         local seq = dialog.newSequencer()
         seq:load({
@@ -391,6 +422,7 @@ end)
 
 --                          cond predicate                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
 
+-- @describe cond predicate
 describe("cond predicate", function()
     it("skips a node when cond returns false", function()
         local seq = dialog.newSequencer()
@@ -430,7 +462,9 @@ end)
 
 --                          typewrite per-char event                                                                                                                                                                                                                                                                                                                                                                                                                 
 
+-- @describe typewrite event
 describe("typewrite event", function()
+    -- @library lurek.library_dialog
     it("fires once per newly revealed character", function()
         local chars = {}
         local seq = dialog.newSequencer()
@@ -449,6 +483,7 @@ describe("typewrite event", function()
         expect_equal(seq:getState(), "waiting")
     end)
 
+    -- @library lurek.library_dialog
     it("does not fire typewrite when speed=0 (text never advances)", function()
         local chars = {}
         local seq = dialog.newSequencer()
@@ -464,7 +499,9 @@ end)
 
 --                          done event alias                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
 
+-- @describe done event
 describe("done event", function()
+    -- @library lurek.library_dialog
     it("fires done alongside finished when sequence ends", function()
         local done_fired     = false
         local finished_fired = false
@@ -479,6 +516,7 @@ describe("done event", function()
         expect_equal(finished_fired, true)
     end)
 
+    -- @library lurek.library_dialog
     it("done fires when empty script starts", function()
         local fired = false
         local seq = dialog.newSequencer()
@@ -492,7 +530,9 @@ end)
 --           bug fixes                                                                                                                                                                                     
 
 
+-- @describe jump loop detection
 describe("jump loop detection", function()
+    -- @library lurek.library_dialog
     it("direct self-jump loop forces done", function()
         local seq = dialog.newSequencer()
         local done_fired = false
@@ -505,6 +545,7 @@ describe("jump loop detection", function()
         expect_equal(done_fired, true)
     end)
 
+    -- @library lurek.library_dialog
     it("stops infinite A->B->A loop and forces done", function()
         local seq = dialog.newSequencer()
         local done_fired = false
@@ -534,7 +575,9 @@ describe("jump loop detection", function()
     end)
 end)
 
+-- @describe choice index validation
 describe("choice index validation", function()
+    -- @library lurek.library_dialog
     it("errors on non-number index", function()
         local seq = dialog.newSequencer()
         seq:load({
@@ -570,6 +613,7 @@ describe("choice index validation", function()
         expect_error(function() seq:choose(3) end)
     end)
 
+    -- @library lurek.library_dialog
     it("ignores choose when not in choice state", function()
         local seq = dialog.newSequencer()
         seq:load({
@@ -581,7 +625,9 @@ describe("choice index validation", function()
     end)
 end)
 
+-- @describe dt validation
 describe("dt validation", function()
+    -- @library lurek.library_dialog
     it("clamps negative dt to no-op", function()
         local seq = dialog.newSequencer()
         seq:setSpeed(100)
@@ -594,6 +640,7 @@ describe("dt validation", function()
         expect_equal(seq:getState(), "typing")
     end)
 
+    -- @library lurek.library_dialog
     it("clamps zero dt to no-op", function()
         local seq = dialog.newSequencer()
         seq:setSpeed(100)
@@ -606,6 +653,7 @@ describe("dt validation", function()
         expect_equal(seq:getState(), "typing")
     end)
 
+    -- @library lurek.library_dialog
     it("errors on non-number dt", function()
         local seq = dialog.newSequencer()
         seq:load({
@@ -617,7 +665,9 @@ describe("dt validation", function()
     end)
 end)
 
+-- @describe load validation
 describe("load validation", function()
+    -- @library lurek.library_dialog
     it("treats nil as empty script", function()
         local seq = dialog.newSequencer()
         seq:load(nil)
@@ -632,6 +682,7 @@ describe("load validation", function()
     end)
 end)
 
+-- @describe cond error recovery
 describe("cond error recovery", function()
     it("skips node when cond() throws an error", function()
         local seq = dialog.newSequencer()

@@ -1,7 +1,13 @@
 -- Lurek2D Integration Test: Signal + Entity
 -- Tests entities emitting and receiving signals.
 
+-- @describe integration: entity events via signal
 describe("integration: entity events via signal", function()
+    -- @integration LSignal:connect
+    -- @integration LSignal:emit
+    -- @integration LUniverse:spawn
+    -- @integration lurek.ecs.newUniverse
+    -- @integration lurek.event.newSignal
     it("entity creation triggers signal", function()
         local universe    = lurek.ecs.newUniverse()
         local on_spawn    = lurek.event.newSignal()
@@ -21,6 +27,13 @@ describe("integration: entity events via signal", function()
         expect_equal(5, spawn_count, "spawn signal emitted 5 times")
     end)
 
+    -- @integration LSignal:connect
+    -- @integration LSignal:emit
+    -- @integration LUniverse:kill
+    -- @integration LUniverse:set
+    -- @integration LUniverse:spawn
+    -- @integration lurek.ecs.newUniverse
+    -- @integration lurek.event.newSignal
     it("entity kill triggers destroy signal", function()
         local universe     = lurek.ecs.newUniverse()
         local on_destroy   = lurek.event.newSignal()
@@ -45,6 +58,13 @@ describe("integration: entity events via signal", function()
         expect_equal(3, #destroy_log, "destroy signal emitted for each entity")
     end)
 
+    -- @integration LSignal:connect
+    -- @integration LSignal:emit
+    -- @integration LUniverse:get
+    -- @integration LUniverse:set
+    -- @integration LUniverse:spawn
+    -- @integration lurek.ecs.newUniverse
+    -- @integration lurek.event.newSignal
     it("signal listener receives entity component data", function()
         local universe   = lurek.ecs.newUniverse()
         local on_damaged = lurek.event.newSignal()
@@ -67,6 +87,10 @@ describe("integration: entity events via signal", function()
         expect_equal(55, universe:get(id, "hp"), "entity hp reduced correctly")
     end)
 
+    -- @integration LSignal:connect
+    -- @integration LSignal:emit
+    -- @integration LSignal:remove
+    -- @integration lurek.event.newSignal
     it("disconnected signal listener not called", function()
         local sig   = lurek.event.newSignal()
         local count = 0

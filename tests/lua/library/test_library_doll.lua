@@ -5,7 +5,9 @@ local doll = require("library.doll")
 
 --                  Part
 
+-- @describe Part
 describe("Part", function()
+    -- @library lurek.library_doll
     it("creates with default values", function()
         local p = doll.newPart()
         expect_not_nil(p, "newPart returns object")
@@ -24,6 +26,7 @@ describe("Part", function()
         expect_true(p:getFollowsRotation(), "followsRotation by default")
     end)
 
+    -- @library LMesh:setTexture
     it("sets and gets texture", function()
         local p = doll.newPart()
         p:setTexture("hero.png")
@@ -38,6 +41,7 @@ describe("Part", function()
         expect_equal(20, oy)
     end)
 
+    -- @library LParallaxLayer:setScale
     it("sets and gets scale with single arg", function()
         local p = doll.newPart()
         p:setScale(2)
@@ -46,6 +50,7 @@ describe("Part", function()
         expect_equal(2, sy)
     end)
 
+    -- @library LParallaxLayer:setScale
     it("sets and gets scale with two args", function()
         local p = doll.newPart()
         p:setScale(3, 4)
@@ -54,6 +59,7 @@ describe("Part", function()
         expect_equal(4, sy)
     end)
 
+    -- @library lurek.library_doll
     it("sets and gets color", function()
         local p = doll.newPart()
         p:setColor(0.5, 0.6, 0.7, 0.8)
@@ -64,6 +70,7 @@ describe("Part", function()
         expect_near(0.8, a, 0.001)
     end)
 
+    -- @library lurek.library_doll
     it("default color alpha = 1 when omitted", function()
         local p = doll.newPart()
         p:setColor(1, 0, 0)
@@ -87,6 +94,8 @@ describe("Part", function()
         expect_false(fy)
     end)
 
+    -- @library LHtmlElement:getAttribute
+    -- @library LHtmlElement:setAttribute
     it("sets and gets attributes", function()
         local p = doll.newPart()
         p:setAttribute("material", "steel")
@@ -96,6 +105,7 @@ describe("Part", function()
         expect_nil(p:getAttribute("nonexist"))
     end)
 
+    -- @library LHtmlElement:setAttribute
     it("returns attribute keys", function()
         local p = doll.newPart()
         p:setAttribute("a", 1)
@@ -118,6 +128,7 @@ describe("Part", function()
         expect_false(p:getFollowsRotation())
     end)
 
+    -- @library LIsoMap:setOrigin
     it("sets and gets origin", function()
         local p = doll.newPart()
         p:setOrigin(16, 32)
@@ -129,12 +140,15 @@ end)
 
 --                  DollTemplate
 
+-- @describe DollTemplate
 describe("DollTemplate", function()
+    -- @library lurek.library_doll
     it("creates with name", function()
         local t = doll.newTemplate("player")
         expect_equal("player", t:getName())
     end)
 
+    -- @library lurek.library_doll
     it("renames", function()
         local t = doll.newTemplate("old")
         t:setName("new")
@@ -225,6 +239,7 @@ end)
 
 --                  Doll
 
+-- @describe Doll
 describe("Doll", function()
     local function make_template()
         local t = doll.newTemplate("vehicle")
@@ -241,6 +256,7 @@ describe("Doll", function()
         expect_equal(t, d:getTemplate())
     end)
 
+    -- @library lurek.library_doll
     it("default transform", function()
         local d = doll.newDoll(make_template())
         local x, y = d:getPosition()
@@ -253,6 +269,7 @@ describe("Doll", function()
         expect_true(d:isVisible())
     end)
 
+    -- @library lurek.library_doll
     it("sets position and rotation", function()
         local d = doll.newDoll(make_template())
         d:setPosition(100, 200)
@@ -263,6 +280,7 @@ describe("Doll", function()
         expect_near(1.5, d:getRotation(), 0.001)
     end)
 
+    -- @library LCamera:attach
     it("attaches part to matching socket", function()
         local d = doll.newDoll(make_template())
         local part = doll.newPart()
@@ -271,6 +289,7 @@ describe("Doll", function()
         expect_equal(part, d:getPartAt("chassis"))
     end)
 
+    -- @library LCamera:attach
     it("rejects attach with wrong type", function()
         local d = doll.newDoll(make_template())
         local part = doll.newPart()
@@ -278,6 +297,7 @@ describe("Doll", function()
         expect_false(d:attach("chassis", part), "chassis accepts 'chassis' type only")
     end)
 
+    -- @library LCamera:attach
     it("accepts any type on empty acceptType socket", function()
         local d = doll.newDoll(make_template())
         local part = doll.newPart()
@@ -285,12 +305,15 @@ describe("Doll", function()
         expect_true(d:attach("exhaust", part), "exhaust accepts anything")
     end)
 
+    -- @library LCamera:attach
     it("rejects attach to nonexistent socket", function()
         local d = doll.newDoll(make_template())
         local part = doll.newPart()
         expect_false(d:attach("nonexist", part))
     end)
 
+    -- @library LCamera:attach
+    -- @library LCamera:detach
     it("detaches part", function()
         local d = doll.newDoll(make_template())
         local part = doll.newPart()
@@ -301,11 +324,13 @@ describe("Doll", function()
         expect_nil(d:getPartAt("chassis"))
     end)
 
+    -- @library LCamera:detach
     it("detach nonexistent returns nil", function()
         local d = doll.newDoll(make_template())
         expect_nil(d:detach("nonexist"))
     end)
 
+    -- @library LCamera:attach
     it("detachAll clears slots", function()
         local d = doll.newDoll(make_template())
         local p1 = doll.newPart()
@@ -318,6 +343,7 @@ describe("Doll", function()
         expect_equal(0, #d:getAttachedSockets())
     end)
 
+    -- @library LCamera:attach
     it("findSocket returns socket name for a part", function()
         local d = doll.newDoll(make_template())
         local part = doll.newPart()
@@ -332,6 +358,7 @@ describe("Doll", function()
         expect_nil(d:findSocket(part))
     end)
 
+    -- @library LCamera:attach
     it("lists attached and empty sockets", function()
         local d = doll.newDoll(make_template())
         local part = doll.newPart()
@@ -354,6 +381,7 @@ end)
 
 --                  getDrawList
 
+-- @describe Doll:getDrawList
 describe("Doll:getDrawList", function()
     it("empty doll returns empty list", function()
         local t = doll.newTemplate("empty")
@@ -363,6 +391,7 @@ describe("Doll:getDrawList", function()
         expect_equal(0, #dl)
     end)
 
+    -- @library LCamera:attach
     it("returns entries for attached parts", function()
         local t = doll.newTemplate("char")
         t:addSocket("head", "", 0, -20, 0, 10)
@@ -379,6 +408,7 @@ describe("Doll:getDrawList", function()
         expect_equal(2, #dl, "two entries")
     end)
 
+    -- @library LCamera:attach
     it("sorts by combined drawOrder", function()
         local t = doll.newTemplate("char")
         t:addSocket("bg",   "", 0, 0, 0, 0)
@@ -399,6 +429,7 @@ describe("Doll:getDrawList", function()
         expect_equal("fg",  dl[3].socketName)
     end)
 
+    -- @library LCamera:attach
     it("computes world position at doll origin", function()
         local t = doll.newTemplate("simple")
         t:addSocket("s", "", 10, 20, 0, 0)
@@ -413,6 +444,7 @@ describe("Doll:getDrawList", function()
         expect_near(220, dl[1].y, 0.01, "y = doll.y + socket.y")
     end)
 
+    -- @library LCamera:attach
     it("applies doll rotation to socket positions", function()
         local t = doll.newTemplate("rot")
         t:addSocket("right", "", 10, 0, 0, 0)  -- 10 px to the right
@@ -429,6 +461,8 @@ describe("Doll:getDrawList", function()
         expect_near(10, dl[1].y, 0.01, "rotated y")
     end)
 
+    -- @library LCamera:attach
+    -- @library LParallaxLayer:setScale
     it("applies doll scale", function()
         local t = doll.newTemplate("scaled")
         t:addSocket("s", "", 10, 20, 0, 0)
@@ -446,6 +480,7 @@ describe("Doll:getDrawList", function()
         expect_near(2, dl[1].scaleY, 0.01)
     end)
 
+    -- @library LCamera:attach
     it("part.followsRotation=false excludes doll rotation", function()
         local t = doll.newTemplate("nofr")
         t:addSocket("s", "", 0, 0, 0.5, 0)
@@ -461,6 +496,7 @@ describe("Doll:getDrawList", function()
         expect_near(0.5, dl[1].rotation, 0.001)
     end)
 
+    -- @library LCamera:attach
     it("part.followsRotation=true includes doll rotation", function()
         local t = doll.newTemplate("fr")
         t:addSocket("s", "", 0, 0, 0.5, 0)
@@ -476,6 +512,7 @@ describe("Doll:getDrawList", function()
         expect_near(1.5, dl[1].rotation, 0.001)
     end)
 
+    -- @library LCamera:attach
     it("flip negates scale in draw list", function()
         local t = doll.newTemplate("flip")
         t:addSocket("s", "", 0, 0, 0, 0)
@@ -490,6 +527,7 @@ describe("Doll:getDrawList", function()
         expect_near(1,  dl[1].scaleY, 0.01, "no flipY")
     end)
 
+    -- @library LCamera:attach
     it("part drawOrder adds to socket drawOrder", function()
         local t = doll.newTemplate("order")
         t:addSocket("s1", "", 0, 0, 0, 10)
@@ -509,6 +547,7 @@ describe("Doll:getDrawList", function()
         expect_equal("s2", dl[2].socketName, "s2 drawOrder 5 comes second")
     end)
 
+    -- @library LCamera:attach
     it("includes part offset in world position", function()
         local t = doll.newTemplate("offset")
         t:addSocket("s", "", 10, 0, 0, 0)
@@ -527,7 +566,9 @@ end)
 
 --                  Hot-swap
 
+-- @describe Doll hot-swap
 describe("Doll hot-swap", function()
+    -- @library LCamera:attach
     it("replaces part at socket", function()
         local t = doll.newTemplate("swap")
         t:addSocket("weapon", "", 0, 0, 0, 0)
@@ -547,6 +588,7 @@ end)
 
 --        Input Validation
 
+-- @describe Input Validation
 describe("Input Validation", function()
     it("addSocket returns false for duplicate name", function()
         local t = doll.newTemplate("val")
@@ -570,6 +612,7 @@ describe("Input Validation", function()
         expect_not_nil(msg, "returns error message")
     end)
 
+    -- @library LParallaxLayer:setScale
     it("setScale rejects non-number", function()
         local p = doll.newPart()
         local ok = pcall(function() p:setScale("big") end)
@@ -582,6 +625,7 @@ describe("Input Validation", function()
         expect_false(ok, "string drawOrder rejected")
     end)
 
+    -- @library LCamera:attach
     it("attach rejects empty string socketName", function()
         local t = doll.newTemplate("valatt")
         t:addSocket("s", "", 0, 0)
@@ -593,7 +637,9 @@ end)
 
 --        Part:getAbsoluteScale
 
+-- @describe Part:getAbsoluteScale
 describe("Part:getAbsoluteScale", function()
+    -- @library LParallaxLayer:setScale
     it("returns positive scale regardless of flip", function()
         local p = doll.newPart()
         p:setScale(3, 4)
@@ -603,6 +649,7 @@ describe("Part:getAbsoluteScale", function()
         expect_equal(4, asy, "absolute scaleY")
     end)
 
+    -- @library LParallaxLayer:setScale
     it("returns absolute of negative scale values", function()
         local p = doll.newPart()
         p:setScale(-2, -5)
@@ -614,6 +661,7 @@ end)
 
 --        Part:getAttributes
 
+-- @describe Part:getAttributes
 describe("Part:getAttributes", function()
     it("returns empty table when no attributes set", function()
         local p = doll.newPart()
@@ -625,6 +673,8 @@ describe("Part:getAttributes", function()
         expect_equal(0, count)
     end)
 
+    -- @library LHtmlElement:getAttribute
+    -- @library LHtmlElement:setAttribute
     it("returns shallow copy of all attributes", function()
         local p = doll.newPart()
         p:setAttribute("color", "red")
@@ -640,7 +690,10 @@ end)
 
 --        doll.getAbsoluteScale (module function)
 
+-- @describe doll.getAbsoluteScale
 describe("doll.getAbsoluteScale", function()
+    -- @library LCamera:attach
+    -- @library LParallaxLayer:setScale
     it("returns positive magnitude from flipped draw entry", function()
         local t = doll.newTemplate("abs")
         t:addSocket("s", "", 0, 0, 0, 0)
@@ -657,6 +710,8 @@ describe("doll.getAbsoluteScale", function()
         expect_near(3, asy, 0.01, "abs scaleY = 3")
     end)
 
+    -- @library LCamera:attach
+    -- @library LParallaxLayer:setScale
     it("compounds doll+part scale with flip correctly", function()
         local t = doll.newTemplate("abs2")
         t:addSocket("s", "", 0, 0, 0, 0)
@@ -680,7 +735,9 @@ end)
 
 --        Socket rotation transforms
 
+-- @describe Socket rotation transforms
 describe("Socket rotation transforms", function()
+    -- @library LCamera:attach
     it("rotates part offset by socket rotation", function()
         local t = doll.newTemplate("sockrot")
         -- socket at (0,0) rotated 90 degrees
@@ -698,6 +755,8 @@ describe("Socket rotation transforms", function()
         expect_near(110, dl[1].y, 0.01, "y shifted by rotated offset")
     end)
 
+    -- @library LCamera:attach
+    -- @library LIsoMap:setOrigin
     it("draw list includes part origin", function()
         local t = doll.newTemplate("origin")
         t:addSocket("s", "", 0, 0, 0, 0)
@@ -712,6 +771,7 @@ describe("Socket rotation transforms", function()
         expect_equal(32, dl[1].originY, "originY in draw entry")
     end)
 
+    -- @library LCamera:attach
     it("default origin is zero in draw list", function()
         local t = doll.newTemplate("deforigin")
         t:addSocket("s", "", 0, 0, 0, 0)
@@ -728,7 +788,10 @@ end)
 
 --        Flip behaviour
 
+-- @describe Flip behaviour
 describe("Flip behaviour", function()
+    -- @library LCamera:attach
+    -- @library LParallaxLayer:setScale
     it("flipX + flipY both negate corresponding scales", function()
         local t = doll.newTemplate("flip2")
         t:addSocket("s", "", 0, 0, 0, 0)
@@ -744,6 +807,8 @@ describe("Flip behaviour", function()
         expect_near(-3, dl[1].scaleY, 0.01, "flipY negates")
     end)
 
+    -- @library LCamera:attach
+    -- @library LParallaxLayer:setScale
     it("flip with part scale compounds correctly", function()
         local t = doll.newTemplate("flipscale")
         t:addSocket("s", "", 0, 0, 0, 0)
@@ -761,6 +826,8 @@ describe("Flip behaviour", function()
         expect_near(6,  dl[1].scaleY, 0.01, "no flip on Y")
     end)
 
+    -- @library LCamera:attach
+    -- @library LParallaxLayer:setScale
     it("no flip means positive scale", function()
         local t = doll.newTemplate("noflip")
         t:addSocket("s", "", 0, 0, 0, 0)

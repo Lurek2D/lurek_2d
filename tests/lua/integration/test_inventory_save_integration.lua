@@ -29,8 +29,11 @@ local function snapshot(inv)
     return snap
 end
 
+-- @describe integration: library.inventory    lurek.serial
 describe("integration: library.inventory    lurek.serial", function()
 
+    -- @integration lurek.serial.fromJson
+    -- @integration lurek.serial.toJson
     it("snapshot round-trips through codec.toJson/fromJson", function()
         local inv = inventory.newInventory()
         local bag = inventory.newContainer("bag", "fixed", 8, 8)
@@ -51,6 +54,8 @@ describe("integration: library.inventory    lurek.serial", function()
         expect_equal(3, decoded.containers[1].items[1].qty)
     end)
 
+    -- @integration lurek.serial.fromJson
+    -- @integration lurek.serial.toJson
     it("stack counts survive round-trip", function()
         local inv = inventory.newInventory()
         local box = inventory.newContainer("box", "fixed", 4, 4)
@@ -64,6 +69,8 @@ describe("integration: library.inventory    lurek.serial", function()
         expect_equal(12, back.containers[1].items[1].qty)
     end)
 
+    -- @integration lurek.serial.fromJson
+    -- @integration lurek.serial.toJson
     it("container order is preserved across round-trip", function()
         local inv = inventory.newInventory()
         for _, name in ipairs({ "alpha", "bravo", "charlie" }) do
@@ -76,6 +83,7 @@ describe("integration: library.inventory    lurek.serial", function()
     end)
 
     -- instead of raising     restoration code can fall back to an empty inventory.
+    -- @integration lurek.serial.fromJson
     it("missing containers field decodes to empty list with sensible default", function()
         local back = lurek.serial.fromJson("{}")
         expect_type("table", back)
@@ -83,12 +91,15 @@ describe("integration: library.inventory    lurek.serial", function()
         expect_equal(0, #containers)
     end)
 
+    -- @integration lurek.serial.fromJson
     it("corrupt JSON raises an error when decoded", function()
         expect_error(function()
             lurek.serial.fromJson("{not valid json")
         end)
     end)
 
+    -- @integration lurek.serial.fromJson
+    -- @integration lurek.serial.toJson
     it("empty inventory round-trips without loss", function()
         local inv = inventory.newInventory()
         local json = lurek.serial.toJson(snapshot(inv))
@@ -137,8 +148,11 @@ local function snapshot(inv)
     return snap
 end
 
+-- @describe integration: library.inventory    lurek.serial
 describe("integration: library.inventory    lurek.serial", function()
 
+    -- @integration lurek.serial.fromJson
+    -- @integration lurek.serial.toJson
     it("snapshot round-trips through codec.toJson/fromJson", function()
         local inv = inventory.newInventory()
         local bag = inventory.newContainer("bag", "fixed", 8, 8)
@@ -159,6 +173,8 @@ describe("integration: library.inventory    lurek.serial", function()
         expect_equal(3, decoded.containers[1].items[1].qty)
     end)
 
+    -- @integration lurek.serial.fromJson
+    -- @integration lurek.serial.toJson
     it("stack counts survive round-trip", function()
         local inv = inventory.newInventory()
         local box = inventory.newContainer("box", "fixed", 4, 4)
@@ -172,6 +188,8 @@ describe("integration: library.inventory    lurek.serial", function()
         expect_equal(12, back.containers[1].items[1].qty)
     end)
 
+    -- @integration lurek.serial.fromJson
+    -- @integration lurek.serial.toJson
     it("container order is preserved across round-trip", function()
         local inv = inventory.newInventory()
         for _, name in ipairs({ "alpha", "bravo", "charlie" }) do
@@ -184,6 +202,7 @@ describe("integration: library.inventory    lurek.serial", function()
     end)
 
     -- instead of raising     restoration code can fall back to an empty inventory.
+    -- @integration lurek.serial.fromJson
     it("missing containers field decodes to empty list with sensible default", function()
         local back = lurek.serial.fromJson("{}")
         expect_type("table", back)
@@ -191,12 +210,15 @@ describe("integration: library.inventory    lurek.serial", function()
         expect_equal(0, #containers)
     end)
 
+    -- @integration lurek.serial.fromJson
     it("corrupt JSON raises an error when decoded", function()
         expect_error(function()
             lurek.serial.fromJson("{not valid json")
         end)
     end)
 
+    -- @integration lurek.serial.fromJson
+    -- @integration lurek.serial.toJson
     it("empty inventory round-trips without loss", function()
         local inv = inventory.newInventory()
         local json = lurek.serial.toJson(snapshot(inv))

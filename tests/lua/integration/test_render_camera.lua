@@ -1,7 +1,13 @@
 -- Lurek2D Integration Test: Graphics + Camera
 -- Tests graphics rendering commands with camera transforms
 
+-- @describe graphics + camera integration
 describe("graphics + camera integration", function()
+    -- @integration LCamera:getPosition
+    -- @integration LCamera:setPosition
+    -- @integration lurek.camera.newCamera
+    -- @integration lurek.render.rectangle
+    -- @integration lurek.render.setColor
     it("camera transforms affect draw command coordinates", function()
         local cam = lurek.camera.newCamera()
         cam:setPosition(100, 200)
@@ -18,6 +24,10 @@ describe("graphics + camera integration", function()
         end)
     end)
 
+    -- @integration LCamera:getZoom
+    -- @integration LCamera:setZoom
+    -- @integration lurek.camera.newCamera
+    -- @integration lurek.render.circle
     it("camera zoom scales the viewport", function()
         local cam = lurek.camera.newCamera()
         cam:setZoom(2.0)
@@ -31,6 +41,10 @@ describe("graphics + camera integration", function()
         end)
     end)
 
+    -- @integration LCamera:getRotation
+    -- @integration LCamera:setRotation
+    -- @integration lurek.camera.newCamera
+    -- @integration lurek.render.line
     it("camera rotation combines with graphics transforms", function()
         local cam = lurek.camera.newCamera()
         cam:setRotation(math.pi / 4)
@@ -44,6 +58,9 @@ describe("graphics + camera integration", function()
         end)
     end)
 
+    -- @integration LCamera:setPosition
+    -- @integration LCamera:setZoom
+    -- @integration lurek.camera.newCamera
     it("camera worldToScreen and screenToWorld round-trip", function()
         local cam = lurek.camera.newCamera()
         cam:setPosition(200, 150)

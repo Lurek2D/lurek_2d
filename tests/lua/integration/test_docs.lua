@@ -1,15 +1,19 @@
 -- tests/lua/test_docs.lua
 -- BDD tests for lurek.docs.* documentation management API
 
+-- @describe lurek.docs
 describe("lurek.docs", function()
 
     -- ============= scan =============
 
+    -- @integration lurek.docs.scan
     it("should scan the lurek namespace", function()
         local catalog = lurek.docs.scan()
         expect_not_nil(catalog, "scan() should return an ApiCatalog")
     end)
 
+    -- @integration LApiCatalog:getModules
+    -- @integration lurek.docs.scan
     it("scan should return catalog with getModules", function()
         local catalog = lurek.docs.scan()
         local modules = catalog:getModules()
@@ -18,6 +22,8 @@ describe("lurek.docs", function()
         expect_true(#modules > 0, "should have found at least one module")
     end)
 
+    -- @integration LApiCatalog:getEntries
+    -- @integration lurek.docs.scan
     it("scan should find lurek.render functions", function()
         local catalog = lurek.docs.scan()
         local entries = catalog:getEntries("render")
@@ -27,6 +33,8 @@ describe("lurek.docs", function()
 
     -- ============= scanModule =============
 
+    -- @integration LApiCatalog:entryCount
+    -- @integration lurek.docs.scanModule
     it("should scan a single module", function()
         local catalog = lurek.docs.scanModule("render")
         expect_not_nil(catalog, "scanModule should return a catalog")
@@ -35,6 +43,10 @@ describe("lurek.docs", function()
     end)
     -- ============= describe / getCatalog / resetCatalog =============
 
+    -- @integration LApiCatalog:getEntry
+    -- @integration lurek.docs.describe
+    -- @integration lurek.docs.getCatalog
+    -- @integration lurek.docs.resetCatalog
     it("should describe and getCatalog", function()
         lurek.docs.resetCatalog()
         lurek.docs.describe("lurek.test.foo", "A test function")
@@ -44,6 +56,10 @@ describe("lurek.docs", function()
         expect_equal("A test function", entry:getDescription())
         lurek.docs.resetCatalog()
     end)
+    -- @integration LApiCatalog:entryCount
+    -- @integration lurek.docs.describe
+    -- @integration lurek.docs.getCatalog
+    -- @integration lurek.docs.resetCatalog
     it("should reset the internal catalog", function()
         lurek.docs.describe("lurek.test.bar", "Another test")
         lurek.docs.resetCatalog()
@@ -53,6 +69,12 @@ describe("lurek.docs", function()
 
     -- ============= setParamInfo / setReturnInfo =============
 
+    -- @integration LApiCatalog:getEntry
+    -- @integration LDocEntry:getParameters
+    -- @integration lurek.docs.describe
+    -- @integration lurek.docs.getCatalog
+    -- @integration lurek.docs.resetCatalog
+    -- @integration lurek.docs.setParamInfo
     it("should set parameter info", function()
         lurek.docs.resetCatalog()
         lurek.docs.describe("lurek.test.func", "A function")
@@ -70,6 +92,12 @@ describe("lurek.docs", function()
         expect_equal(true, params[2].optional)
         lurek.docs.resetCatalog()
     end)
+    -- @integration LApiCatalog:getEntry
+    -- @integration LDocEntry:getReturns
+    -- @integration lurek.docs.describe
+    -- @integration lurek.docs.getCatalog
+    -- @integration lurek.docs.resetCatalog
+    -- @integration lurek.docs.setReturnInfo
     it("should set return info", function()
         lurek.docs.resetCatalog()
         lurek.docs.describe("lurek.test.func2", "Another function")
@@ -87,6 +115,15 @@ describe("lurek.docs", function()
 
     -- ============= DocEntry methods =============
 
+    -- @integration LApiCatalog:getEntry
+    -- @integration LDocEntry:getScore
+    -- @integration LDocEntry:hasDescription
+    -- @integration LDocEntry:hasExample
+    -- @integration LDocEntry:hasParameters
+    -- @integration LDocEntry:hasReturnType
+    -- @integration lurek.docs.describe
+    -- @integration lurek.docs.getCatalog
+    -- @integration lurek.docs.resetCatalog
     it("DocEntry should report score correctly", function()
         lurek.docs.resetCatalog()
         -- Entry with description only = 40%
@@ -103,11 +140,15 @@ describe("lurek.docs", function()
     end)
     -- ============= ApiCatalog methods =============
 
+    -- @integration LApiCatalog:entryCount
+    -- @integration lurek.docs.scanModule
     it("catalog should support entryCount", function()
         local catalog = lurek.docs.scanModule("math")
         local count = catalog:entryCount()
         expect_true(count >= 0, "entryCount should return a number")
     end)
+    -- @integration LApiCatalog:search
+    -- @integration lurek.docs.scan
     it("catalog should support search", function()
         local catalog = lurek.docs.scan()
         local results = catalog:search("render")
@@ -116,6 +157,10 @@ describe("lurek.docs", function()
         expect_true(#results > 0, "should find render entries")
     end)
 
+    -- @integration LApiCatalog:toTable
+    -- @integration lurek.docs.describe
+    -- @integration lurek.docs.getCatalog
+    -- @integration lurek.docs.resetCatalog
     it("catalog should support toTable", function()
         lurek.docs.resetCatalog()
         lurek.docs.describe("lurek.test.tt", "Test toTable")
@@ -126,6 +171,10 @@ describe("lurek.docs", function()
         lurek.docs.resetCatalog()
     end)
 
+    -- @integration LApiCatalog:toJSON
+    -- @integration lurek.docs.describe
+    -- @integration lurek.docs.getCatalog
+    -- @integration lurek.docs.resetCatalog
     it("catalog should support toJSON", function()
         lurek.docs.resetCatalog()
         lurek.docs.describe("lurek.test.json", "Test JSON")
@@ -136,6 +185,9 @@ describe("lurek.docs", function()
         lurek.docs.resetCatalog()
     end)
 
+    -- @integration LApiCatalog:filter
+    -- @integration LApiCatalog:getEntries
+    -- @integration lurek.docs.scan
     it("catalog should support filter", function()
         local catalog = lurek.docs.scan()
         local filtered = catalog:filter(function(entry)
@@ -149,6 +201,7 @@ describe("lurek.docs", function()
         end
     end)
 
+    -- @integration lurek.docs.scanModule
     it("catalog should support merge", function()
         local cat1 = lurek.docs.scanModule("math")
         expect_type("function", cat1.merge)
@@ -156,6 +209,9 @@ describe("lurek.docs", function()
 
     -- ============= validate =============
 
+    -- @integration LValidationReport:isValid
+    -- @integration LValidationReport:missingCount
+    -- @integration lurek.docs.validate
     it("should validate completeness", function()
         -- Validating with no catalog should report many missing
         local report = lurek.docs.validate()
@@ -163,6 +219,8 @@ describe("lurek.docs", function()
         expect_true(report:missingCount() > 0, "should have missing entries with empty catalog")
         expect_true(not report:isValid(), "should not be valid with empty catalog")
     end)
+    -- @integration LValidationReport:getSummary
+    -- @integration lurek.docs.validateModule
     it("should validate a single module", function()
         local report = lurek.docs.validateModule("math")
         expect_not_nil(report, "validateModule should return a report")
@@ -170,6 +228,8 @@ describe("lurek.docs", function()
         expect_not_nil(summary, "getSummary should return a string")
     end)
 
+    -- @integration LValidationReport:toTable
+    -- @integration lurek.docs.validate
     it("validation report should support toTable", function()
         local report = lurek.docs.validate()
         local tbl = report:toTable()
@@ -178,6 +238,8 @@ describe("lurek.docs", function()
         expect_not_nil(tbl.incomplete, "toTable should have incomplete field")
     end)
 
+    -- @integration LValidationReport:toJSON
+    -- @integration lurek.docs.validate
     it("validation report should support toJSON", function()
         local report = lurek.docs.validate()
         local json = report:toJSON()
@@ -187,6 +249,14 @@ describe("lurek.docs", function()
 
     -- ============= quality =============
 
+    -- @integration LQualityReport:getGrade
+    -- @integration LQualityReport:getOverallScore
+    -- @integration lurek.docs.describe
+    -- @integration lurek.docs.getCatalog
+    -- @integration lurek.docs.quality
+    -- @integration lurek.docs.resetCatalog
+    -- @integration lurek.docs.setParamInfo
+    -- @integration lurek.docs.setReturnInfo
     it("should compute quality metrics", function()
         lurek.docs.resetCatalog()
         lurek.docs.describe("lurek.test.q1", "Good entry")
@@ -206,6 +276,11 @@ describe("lurek.docs", function()
         expect_equal("C", grade)
         lurek.docs.resetCatalog()
     end)
+    -- @integration LQualityReport:getModuleScores
+    -- @integration lurek.docs.describe
+    -- @integration lurek.docs.getCatalog
+    -- @integration lurek.docs.quality
+    -- @integration lurek.docs.resetCatalog
     it("quality should support getModuleScores", function()
         lurek.docs.resetCatalog()
         lurek.docs.describe("lurek.test.ms", "Module score test")
@@ -216,6 +291,12 @@ describe("lurek.docs", function()
         lurek.docs.resetCatalog()
     end)
 
+    -- @integration LQualityReport:getBest
+    -- @integration LQualityReport:getWorst
+    -- @integration lurek.docs.describe
+    -- @integration lurek.docs.getCatalog
+    -- @integration lurek.docs.quality
+    -- @integration lurek.docs.resetCatalog
     it("quality should support getWorst and getBest", function()
         lurek.docs.resetCatalog()
         lurek.docs.describe("lurek.test.w1", "Good")
@@ -229,6 +310,11 @@ describe("lurek.docs", function()
         lurek.docs.resetCatalog()
     end)
 
+    -- @integration LQualityReport:getByGrade
+    -- @integration lurek.docs.describe
+    -- @integration lurek.docs.getCatalog
+    -- @integration lurek.docs.quality
+    -- @integration lurek.docs.resetCatalog
     it("quality should support getByGrade", function()
         lurek.docs.resetCatalog()
         lurek.docs.describe("lurek.test.g1", "Has desc only")
@@ -241,6 +327,11 @@ describe("lurek.docs", function()
         lurek.docs.resetCatalog()
     end)
 
+    -- @integration LQualityReport:getSummary
+    -- @integration lurek.docs.describe
+    -- @integration lurek.docs.getCatalog
+    -- @integration lurek.docs.quality
+    -- @integration lurek.docs.resetCatalog
     it("quality should support getSummary", function()
         lurek.docs.resetCatalog()
         lurek.docs.describe("lurek.test.sum", "Summary test")
@@ -254,11 +345,14 @@ describe("lurek.docs", function()
 
     -- ============= coverage =============
 
+    -- @integration lurek.docs.coverage
     it("should compute coverage", function()
         local documented, total = lurek.docs.coverage()
         expect_true(total > 0, "total should be > 0")
         expect_equal(0, documented, "documented should be 0 with no catalog")
     end)
+    -- @integration lurek.docs.coverage
+    -- @integration lurek.docs.scan
     it("should compute coverage with catalog", function()
         local catalog = lurek.docs.scan()
         local documented, total = lurek.docs.coverage(catalog)
@@ -269,6 +363,7 @@ describe("lurek.docs", function()
 
     -- ============= coverageModule =============
 
+    -- @integration lurek.docs.coverageModule
     it("should compute module coverage", function()
         local documented, total = lurek.docs.coverageModule("math")
         expect_true(total >= 0, "total should be >= 0")

@@ -7,8 +7,17 @@
 
 local OUT = "tests/output/raycaster/"
 
+-- @describe Evidence: lurek.raycaster API contracts
 describe("Evidence: lurek.raycaster API contracts", function()
     -- @evidence file
+    -- @covers LImageData:setPixel
+    -- @covers LRaycaster:castRaysFlat
+    -- @covers LRaycaster:setCell
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
+    -- @covers lurek.raycaster.distanceShade
+    -- @covers lurek.raycaster.new
+    -- @covers lurek.raycaster.projectColumn
     it("saves raycaster depth-buffer as PNG evidence", function()
         local W, H = 128, 64
         local FOV = math.pi / 2
@@ -47,6 +56,7 @@ describe("Evidence: lurek.raycaster API contracts", function()
     end)
 end)
 
+-- @describe Evidence: lurek.raycaster extended API
 describe("Evidence: lurek.raycaster extended API", function()
 end)
 test_summary()

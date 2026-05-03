@@ -1,5 +1,6 @@
 -- Golden test: minimap
 
+-- @describe golden: minimap evidence comparison
 describe("golden: minimap evidence comparison", function()
     local OUT = evidence_output_dir("minimap")
     local SAMP = "tests/samples/minimap/"

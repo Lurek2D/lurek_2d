@@ -1,5 +1,6 @@
 -- Golden test: math compare-only evidence validation.
 
+-- @describe golden: math Math constants and trig identities
 describe("golden: math Math constants and trig identities", function()
     it("matches golden sample", function()
         expect_golden_file_match(evidence_output_dir("math") .. "all_curves_gallery.png", "tests/samples/math/all_curves_gallery.png")
@@ -36,6 +37,7 @@ local function verify_wav(name)
     expect_golden_file_match(out, sample)
 end
 
+-- @describe Migrated Golden Tests 20
 describe("Migrated Golden Tests 20", function()
     it("matches fixture_sprite_8x8", function() verify_png("sprite_8x8") end)
     it("matches fixture_sprite_16x16", function() verify_png("sprite_16x16") end)
@@ -67,6 +69,7 @@ end)
 
 -- Documents the compare-only golden slots that still need real evidence artifacts and committed samples.
 
+-- @describe Golden misc
 describe('Golden misc', function()
     it('matches evidence_effect_brightness', function() end)
     it('matches evidence_effect_contrast', function() end)
@@ -83,6 +86,7 @@ end)
 
 -- Golden test: migrated 15
 
+-- @describe golden: migrated 15 evidence comparison
 describe("golden: migrated 15 evidence comparison", function()
     local OUT = evidence_output_dir("migrated_15") ---@diagnostic disable-line: redundant-parameter
     local SAMP = "tests/samples/migrated_15/"

@@ -1,7 +1,11 @@
 -- tests/lua/integration/test_timer_event.lua
 -- Integration: lurek.timer scheduler callbacks interact with lurek.event signals.
 
+-- @describe timer + event integration
 describe("timer + event integration", function()
+    -- @integration LScheduler:after
+    -- @integration LScheduler:update
+    -- @integration lurek.timer.newScheduler
     it("timer fires once after update accumulates enough dt", function()
         local sched = lurek.timer.newScheduler()
         local fired = false
@@ -17,6 +21,10 @@ describe("timer + event integration", function()
         expect_true(fired, "fired after 0.11 s total")
     end)
 
+    -- @integration LScheduler:after
+    -- @integration LScheduler:getCount
+    -- @integration LScheduler:update
+    -- @integration lurek.timer.newScheduler
     it("timer count decrements after firing once", function()
         local sched = lurek.timer.newScheduler()
         sched:after(0.01, function() end)
@@ -25,6 +33,9 @@ describe("timer + event integration", function()
         expect_equal(sched:getCount(), 0, "0 timers after firing")
     end)
 
+    -- @integration LSignal:connect
+    -- @integration LSignal:emit
+    -- @integration lurek.event.newSignal
     it("event signal emits and receives value", function()
         local sig = lurek.event.newSignal()
         local received = nil
@@ -38,6 +49,12 @@ describe("timer + event integration", function()
         expect_equal(received, 42, "signal delivers value to listener")
     end)
 
+    -- @integration LScheduler:after
+    -- @integration LScheduler:update
+    -- @integration LSignal:connect
+    -- @integration LSignal:emit
+    -- @integration lurek.event.newSignal
+    -- @integration lurek.timer.newScheduler
     it("timer callback can emit a signal", function()
         local sched = lurek.timer.newScheduler()
         local sig = lurek.event.newSignal()

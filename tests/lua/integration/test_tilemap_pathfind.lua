@@ -1,7 +1,15 @@
 -- Lurek2D Integration Test: Tilemap + Pathfinding
 -- Tests using a tilemap grid as the navigation surface for A* pathfinding.
 
+-- @describe integration: tilemap feeds into pathfinding grid
 describe("integration: tilemap feeds into pathfinding grid", function()
+    -- @integration LNavGrid:setBlocked
+    -- @integration LTileMap:addLayer
+    -- @integration LTileMap:setTile
+    -- @integration LUnitPathfinder:findPath
+    -- @integration lurek.pathfind.newNavGrid
+    -- @integration lurek.pathfind.newPathfinder
+    -- @integration lurek.tilemap.newTileMap
     it("builds navgrid from tilemap: walkable tiles passable, wall tiles blocked", function()
         local tm   = lurek.tilemap.newTileMap(16, 16)
         tm:addLayer("tiles", 10, 10)
@@ -25,6 +33,13 @@ describe("integration: tilemap feeds into pathfinding grid", function()
         expect_true(#path > 1, "path has multiple steps: got " .. tostring(#path))
     end)
 
+    -- @integration LNavGrid:setBlocked
+    -- @integration LTileMap:addLayer
+    -- @integration LTileMap:setTile
+    -- @integration LUnitPathfinder:findPath
+    -- @integration lurek.pathfind.newNavGrid
+    -- @integration lurek.pathfind.newPathfinder
+    -- @integration lurek.tilemap.newTileMap
     it("completely blocked tilemap yields no path", function()
         local tm   = lurek.tilemap.newTileMap(16, 16)
         tm:addLayer("tiles", 5, 5)
@@ -48,6 +63,13 @@ describe("integration: tilemap feeds into pathfinding grid", function()
         expect_equal(0, len, "no path through completely blocked map")
     end)
 
+    -- @integration LNavGrid:setBlocked
+    -- @integration LTileMap:addLayer
+    -- @integration LTileMap:setTile
+    -- @integration LUnitPathfinder:findPath
+    -- @integration lurek.pathfind.newNavGrid
+    -- @integration lurek.pathfind.newPathfinder
+    -- @integration lurek.tilemap.newTileMap
     it("open tilemap floor gives short direct path", function()
         local tm   = lurek.tilemap.newTileMap(16, 16)
         tm:addLayer("tiles", 10, 10)

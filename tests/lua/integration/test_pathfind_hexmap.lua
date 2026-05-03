@@ -6,23 +6,30 @@
 --                                                                                                                                        
 -- Hex Grid
 --                                                                                                                                        
+-- @describe pathfinding.newHexGrid
 describe("pathfinding.newHexGrid", function()
 
+    -- @integration lurek.pathfind.newHexGrid
     it("creates a hex grid without error", function()
         local g = lurek.pathfind.newHexGrid(10, 10, "flat")
         expect_type("userdata", g)
     end)
 
+    -- @integration lurek.pathfind.newHexGrid
     it("pointy layout also works", function()
         local g = lurek.pathfind.newHexGrid(8, 8, "pointy")
         expect_type("userdata", g)
     end)
 
+    -- @integration lurek.pathfind.newHexGrid
     it("default layout works with no third argument", function()
         local g = lurek.pathfind.newHexGrid(6, 6)
         expect_type("userdata", g)
     end)
 
+    -- @integration LHexGrid:isBlocked
+    -- @integration LHexGrid:setBlocked
+    -- @integration lurek.pathfind.newHexGrid
     it("setBlocked and isBlocked round-trip", function()
         local g = lurek.pathfind.newHexGrid(8, 8)
         g:setBlocked(3, 3, true)
@@ -31,6 +38,9 @@ describe("pathfinding.newHexGrid", function()
         expect_equal(false, g:isBlocked(3, 3))
     end)
 
+    -- @integration LHexGrid:findPath
+    -- @integration LHexGrid:setBlocked
+    -- @integration lurek.pathfind.newHexGrid
     it("findPath returns nil when blocked", function()
         local g = lurek.pathfind.newHexGrid(6, 6)
         -- Block every path from (1,1) to (6,6)
@@ -44,6 +54,8 @@ describe("pathfinding.newHexGrid", function()
         expect_true(path == nil or type(path) == "table", "findPath should return nil or table")
     end)
 
+    -- @integration LHexGrid:findPath
+    -- @integration lurek.pathfind.newHexGrid
     it("findPath returns a path on an open grid", function()
         local g = lurek.pathfind.newHexGrid(10, 10)
         local path = g:findPath(1, 1, 5, 5)
@@ -51,6 +63,8 @@ describe("pathfinding.newHexGrid", function()
         expect_true(#path >= 1, "path must have at least one step")
     end)
 
+    -- @integration LHexGrid:findPath
+    -- @integration lurek.pathfind.newHexGrid
     it("path cells have col and row fields", function()
         local g = lurek.pathfind.newHexGrid(8, 8)
         local path = g:findPath(1, 1, 4, 4)
@@ -61,6 +75,9 @@ describe("pathfinding.newHexGrid", function()
         end
     end)
 
+    -- @integration LHexGrid:lineOfSight
+    -- @integration LHexGrid:setBlocked
+    -- @integration lurek.pathfind.newHexGrid
     it("lineOfSight returns false through a blocked wall", function()
         local g = lurek.pathfind.newHexGrid(8, 8)
         for row = 1, 8 do
@@ -70,12 +87,16 @@ describe("pathfinding.newHexGrid", function()
         expect_equal(false, los)
     end)
 
+    -- @integration LHexGrid:lineOfSight
+    -- @integration lurek.pathfind.newHexGrid
     it("lineOfSight returns true in open space", function()
         local g = lurek.pathfind.newHexGrid(8, 8)
         local los = g:lineOfSight(1, 1, 2, 2)
         expect_equal(true, los)
     end)
 
+    -- @integration LHexGrid:fieldOfView
+    -- @integration lurek.pathfind.newHexGrid
     it("fieldOfView returns cells within radius", function()
         local g = lurek.pathfind.newHexGrid(10, 10)
         local fov = g:fieldOfView(5, 5, 2)
@@ -87,6 +108,8 @@ describe("pathfinding.newHexGrid", function()
         end
     end)
 
+    -- @integration LHexGrid:rangeOfMovement
+    -- @integration lurek.pathfind.newHexGrid
     it("rangeOfMovement returns cells within budget", function()
         local g = lurek.pathfind.newHexGrid(10, 10)
         local cells = g:rangeOfMovement(5, 5, 3.0)
@@ -94,6 +117,9 @@ describe("pathfinding.newHexGrid", function()
         expect_true(#cells > 0, "expected at least one reachable cell")
     end)
 
+    -- @integration LHexGrid:rangeOfMovement
+    -- @integration LHexGrid:setBlocked
+    -- @integration lurek.pathfind.newHexGrid
     it("rangeOfMovement limited by walls", function()
         local g = lurek.pathfind.newHexGrid(8, 8)
         -- Completely surround origin
@@ -109,6 +135,8 @@ describe("pathfinding.newHexGrid", function()
         expect_true(#cells_blocked <= #cells_open, "blocked grid should have fewer reachable cells")
     end)
 
+    -- @integration LHexGrid:distance
+    -- @integration lurek.pathfind.newHexGrid
     it("distance between adjacent cells is 1", function()
         local g = lurek.pathfind.newHexGrid(8, 8)
         local d = g:distance(3, 3, 4, 3)
@@ -119,8 +147,10 @@ end)
 --                                                                                                                                        
 -- Range Map
 --                                                                                                                                        
+-- @describe pathfinding.rangeMap
 describe("pathfinding.rangeMap", function()
 
+    -- @integration lurek.pathfind.rangeMap
     it("returns cells, width, height", function()
         local result = lurek.pathfind.rangeMap({
             width = 10, height = 10,
@@ -132,6 +162,7 @@ describe("pathfinding.rangeMap", function()
         expect_equal(10, result.height)
     end)
 
+    -- @integration lurek.pathfind.rangeMap
     it("cells have x, y, cost fields", function()
         local result = lurek.pathfind.rangeMap({
             width = 8, height = 8,
@@ -146,6 +177,7 @@ describe("pathfinding.rangeMap", function()
         end
     end)
 
+    -- @integration lurek.pathfind.rangeMap
     it("origin cell has cost 0", function()
         local result = lurek.pathfind.rangeMap({
             width = 8, height = 8,
@@ -162,6 +194,7 @@ describe("pathfinding.rangeMap", function()
         expect_true(found_origin, "origin cell should be in reachable list")
     end)
 
+    -- @integration lurek.pathfind.rangeMap
     it("blocked cells are excluded", function()
         local blocked = {}
         for i = 1, 8 * 8 do blocked[i] = false end
@@ -187,6 +220,7 @@ describe("pathfinding.rangeMap", function()
         expect_equal(false, outside_origin)
     end)
 
+    -- @integration lurek.pathfind.rangeMap
     it("budget constrains reachable distance", function()
         local r3 = lurek.pathfind.rangeMap({ width = 12, height = 12, origin_x = 6, origin_y = 6, budget = 3.0 })
         local r6 = lurek.pathfind.rangeMap({ width = 12, height = 12, origin_x = 6, origin_y = 6, budget = 6.0 })

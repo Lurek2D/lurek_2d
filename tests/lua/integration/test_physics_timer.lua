@@ -1,7 +1,13 @@
 -- Lurek2D Integration Test: Physics + Timer
 -- Tests physics simulation stepping with time management
 
+-- @describe physics + timer integration
 describe("physics + timer integration", function()
+    -- @integration LBody:getPosition
+    -- @integration lurek.physics.destroyWorld
+    -- @integration lurek.physics.newBody
+    -- @integration lurek.physics.newWorld
+    -- @integration lurek.physics.step
     it("physics world step with timer delta", function()
         local world_id = lurek.physics.newWorld(0, 100)
         local body_id = lurek.physics.newBody(world_id, 0, 0, "dynamic")
@@ -16,6 +22,11 @@ describe("physics + timer integration", function()
         lurek.physics.destroyWorld(world_id)
     end)
 
+    -- @integration LBody:getPosition
+    -- @integration lurek.physics.destroyWorld
+    -- @integration lurek.physics.newBody
+    -- @integration lurek.physics.newWorld
+    -- @integration lurek.physics.step
     it("accumulating multiple physics steps", function()
         local world_id = lurek.physics.newWorld(0, 100)
         local body_id = lurek.physics.newBody(world_id, 0, 0, "dynamic")
@@ -51,7 +62,13 @@ describe("physics + timer integration", function()
     end)
 end)
 
+-- @describe physics multi-body + math
 describe("physics multi-body + math", function()
+    -- @integration LBody:getPosition
+    -- @integration lurek.physics.destroyWorld
+    -- @integration lurek.physics.newBody
+    -- @integration lurek.physics.newWorld
+    -- @integration lurek.physics.step
     it("two bodies with different masses fall at same rate", function()
         local world_id = lurek.physics.newWorld(0, 100)
         local b1 = lurek.physics.newBody(world_id, 0, 0, "dynamic")
@@ -71,6 +88,11 @@ describe("physics multi-body + math", function()
         lurek.physics.destroyWorld(world_id)
     end)
 
+    -- @integration LBody:getPosition
+    -- @integration lurek.physics.destroyWorld
+    -- @integration lurek.physics.newBody
+    -- @integration lurek.physics.newWorld
+    -- @integration lurek.physics.step
     it("static body doesn't move under gravity", function()
         local world_id = lurek.physics.newWorld(0, 100)
         local body_id = lurek.physics.newBody(world_id, 50, 300, "static")

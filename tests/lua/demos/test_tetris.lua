@@ -6,6 +6,7 @@ local DEMO_PATH = "content/games/arcade/tetris/main.lua"
 dofile("tests/lua/content/demos/_common_checks.lua")
 demo_common_checks("tetris", DEMO_PATH)
 
+-- @describe tetris: game mechanics
 describe("tetris: game mechanics", function()
     local src
 

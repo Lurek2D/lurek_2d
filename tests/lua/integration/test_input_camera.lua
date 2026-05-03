@@ -1,7 +1,13 @@
 -- Lurek2D Integration Test: Input + Camera
 -- Tests screen-to-world coordinate transforms via camera.
 
+-- @describe integration: input coordinates mapped through camera
 describe("integration: input coordinates mapped through camera", function()
+    -- @integration LCamera:getPosition
+    -- @integration LCamera:getZoom
+    -- @integration LCamera:setPosition
+    -- @integration LCamera:setZoom
+    -- @integration lurek.camera.newCamera
     it("camera at origin: screen coords equal world coords", function()
         local cam = lurek.camera.newCamera()
         cam:setPosition(0, 0)
@@ -24,6 +30,11 @@ describe("integration: input coordinates mapped through camera", function()
         expect_near(240.0, world_y, 0.001, "world y matches screen y")
     end)
 
+    -- @integration LCamera:getPosition
+    -- @integration LCamera:getZoom
+    -- @integration LCamera:setPosition
+    -- @integration LCamera:setZoom
+    -- @integration lurek.camera.newCamera
     it("camera panned: world coords offset from screen", function()
         local cam = lurek.camera.newCamera()
         cam:setPosition(100, 50)
@@ -40,6 +51,10 @@ describe("integration: input coordinates mapped through camera", function()
         expect_near(50.0,  world_y, 0.001, "world y offset by cam pan")
     end)
 
+    -- @integration LCamera:getZoom
+    -- @integration LCamera:setPosition
+    -- @integration LCamera:setZoom
+    -- @integration lurek.camera.newCamera
     it("camera zoomed 2x: world coords halved relative to screen", function()
         local cam = lurek.camera.newCamera()
         cam:setPosition(0, 0)
@@ -52,6 +67,7 @@ describe("integration: input coordinates mapped through camera", function()
         expect_near(100.0, world_x, 0.001, "zoom 2x halves screen x to world x")
     end)
 
+    -- @integration lurek.input.mouse
     it("getMousePosition returns two numbers", function()
         expect_no_error(function()
             local mx, my = lurek.input.mouse.getPosition()

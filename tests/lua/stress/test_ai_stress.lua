@@ -1,7 +1,12 @@
 -- Lurek2D Stress Test: AI Agent Processing
 -- Measures FSM and behavior tree throughput under heavy load.
 
+-- @describe stress: AI FSM evaluation throughput
 describe("stress: AI FSM evaluation throughput", function()
+    -- @stress LStateMachine:addState
+    -- @stress LStateMachine:addTransition
+    -- @stress LStateMachine:forceState
+    -- @stress lurek.ai.newStateMachine
     it("1000 FSM ticks in <10s", function()
         local COUNT = 1000
         local sm    = lurek.ai.newStateMachine()
@@ -26,6 +31,10 @@ describe("stress: AI FSM evaluation throughput", function()
         expect_true(elapsed < 10.0, "FSM tick budget: " .. elapsed .. "s")
     end)
 
+    -- @stress LStateMachine:addState
+    -- @stress LStateMachine:addTransition
+    -- @stress LStateMachine:forceState
+    -- @stress lurek.ai.newStateMachine
     it("100 agents       10 FSM updates each: <10s", function()
         local AGENTS    = 100
         local UPDATES   = 10

@@ -4,7 +4,10 @@
 local loot = require("library.loot")
 
 
+-- @describe LootTable.sample distribution
 describe("LootTable.sample distribution", function()
+    -- @library LRandomGenerator:setSeed
+    -- @library lurek.math.newRandomGenerator
     it("samples respect declared weights within   3% over 50k draws", function()
         local rng = lurek.math.newRandomGenerator()
         rng:setSeed(424242)
@@ -26,6 +29,7 @@ describe("LootTable.sample distribution", function()
         expect_near(0.10, hits.c / N, 0.03)
     end)
 
+    -- @library lurek.library_loot
     it("alias rebuilds after add/remove", function()
         local tbl = loot.newTable()
         tbl:add("x", 10)
@@ -42,6 +46,7 @@ describe("LootTable.sample distribution", function()
     end)
 end)
 
+-- @describe LootTable.sampleN unique
 describe("LootTable.sampleN unique", function()
     it("never repeats with unique=true", function()
         local tbl = loot.fromList({
@@ -64,6 +69,7 @@ describe("LootTable.sampleN unique", function()
         end)
     end)
 
+    -- @describe LootTable utilities
     describe("LootTable utilities", function()
         it("probability returns normalised weight", function()
             local t = loot.fromList({{id="a",weight=30},{id="b",weight=70}})
@@ -72,6 +78,7 @@ describe("LootTable.sampleN unique", function()
             expect_equal(0, t:probability("nope"))
         end)
 
+        -- @library lurek.library_loot
         it("clone produces independent copy", function()
             local t = loot.fromList({{id="a",weight=10},{id="b",weight=20}})
             local c = t:clone()
@@ -90,6 +97,7 @@ describe("LootTable.sampleN unique", function()
         end)
     end)
 
+    -- @describe DropSet
     describe("DropSet", function()
         it("guarantee always emits the requested count", function()
             local drop = loot.newDrop():guarantee("recall", 3)
@@ -110,6 +118,7 @@ describe("LootTable.sampleN unique", function()
         end)
     end)
 
+    -- @describe Pity
     describe("Pity", function()
         it("primes after threshold misses and resets on hit", function()
             local p = loot.newPity("rare", 3)
@@ -121,6 +130,7 @@ describe("LootTable.sampleN unique", function()
             expect_equal(0, p:getCounter())
         end)
 
+        -- @library lurek.library_loot
         it("save/restore round-trips counter", function()
             local p = loot.newPity("rare", 5)
             p:notice("a"); p:notice("b")
@@ -130,6 +140,7 @@ describe("LootTable.sampleN unique", function()
         end)
     end)
 
+    -- @describe Modifier
     describe("Modifier", function()
         it("apply yields independent table     original untouched", function()
             local base = loot.fromList({{id="a",weight=10},{id="b",weight=10}})
@@ -142,6 +153,7 @@ describe("LootTable.sampleN unique", function()
         end)
     end)
 
+    -- @describe error paths
     describe("error paths", function()
         it("fromToml raises on missing engine bindings", function()
             -- lurek.filesystem.read may not be wired in headless test VM     either way it must error
@@ -151,6 +163,7 @@ describe("LootTable.sampleN unique", function()
             end)
         end)
 
+        -- @library lurek.library_loot
         it("add raises on non-positive weight", function()
             local t = loot.newTable()
             expect_error(function() t:add("x", 0) end)

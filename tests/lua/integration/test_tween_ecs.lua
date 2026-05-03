@@ -2,7 +2,15 @@
 -- Tests tweening entity position and rotation properties.
 -- Rewritten to use lurek.tween.newState(duration, easing) API.
 
+-- @describe integration: tween drives entity transform
 describe("integration: tween drives entity transform", function()
+    -- @integration LTweenState:lerp
+    -- @integration LTweenState:tick
+    -- @integration LUniverse:get
+    -- @integration LUniverse:set
+    -- @integration LUniverse:spawn
+    -- @integration lurek.ecs.newUniverse
+    -- @integration lurek.tween.newState
     it("entity x position tweened from 0 to 300", function()
         local universe = lurek.ecs.newUniverse()
         local id = universe:spawn()
@@ -23,6 +31,11 @@ describe("integration: tween drives entity transform", function()
         expect_near(300, x, 5.0, "entity x reached target after 1s")
     end)
 
+    -- @integration LUniverse:get
+    -- @integration LUniverse:set
+    -- @integration LUniverse:spawn
+    -- @integration lurek.ecs.newUniverse
+    -- @integration lurek.tween.newState
     it("multiple entities tweened simultaneously", function()
         local universe = lurek.ecs.newUniverse()
         local ids, states, targets = {}, {}, {}
@@ -49,6 +62,9 @@ describe("integration: tween drives entity transform", function()
         end
     end)
 
+    -- @integration LTweenState:lerp
+    -- @integration LTweenState:tick
+    -- @integration lurek.tween.newState
     it("ease-in tween moves slowly at start, fast at end", function()
         local from_val, to_val = 0.0, 100.0
         local st_linear  = lurek.tween.newState(1.0, "linear")

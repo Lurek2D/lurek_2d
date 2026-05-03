@@ -1,8 +1,15 @@
 -- Lurek2D Integration Test: Space-style Zone Gravity
 -- Exercises World zones with point-attractor gravity together with dynamic bodies.
 
+-- @describe space zone gravity integration
 describe("space zone gravity integration", function()
     --              and receives a zone enter event after the first step.
+    -- @integration LWorld:addZone
+    -- @integration LWorld:getZoneEvents
+    -- @integration LWorld:newBody
+    -- @integration LWorld:step
+    -- @integration LZone:setGravityPoint
+    -- @integration lurek.physics.newWorld
     it("body inside point-gravity zone gets enter event", function()
         local world = lurek.physics.newWorld(0, 0)  -- no global gravity
         -- Create a large zone covering the whole arena.
@@ -20,6 +27,11 @@ describe("space zone gravity integration", function()
     end)
 
     --              (position remains approximately constant over multiple steps).
+    -- @integration LWorld:addZone
+    -- @integration LWorld:newBody
+    -- @integration LWorld:step
+    -- @integration LZone:setGravityZero
+    -- @integration lurek.physics.newWorld
     it("body in zero-g zone stays put", function()
         local world = lurek.physics.newWorld(0, 500) -- strong global gravity
         local zone = world:addZone(-500, -500, 1000, 1000)
@@ -39,6 +51,11 @@ describe("space zone gravity integration", function()
     end)
 
     --              can both be created and stepped without error.
+    -- @integration LWorld:addZone
+    -- @integration LWorld:newBody
+    -- @integration LWorld:step
+    -- @integration LZone:setGravityDirectional
+    -- @integration lurek.physics.newWorld
     it("overlapping zones with different priorities step without error", function()
         local world = lurek.physics.newWorld(0, 0)
         local z1 = world:addZone(-200, -200, 400, 400)

@@ -1,5 +1,6 @@
 -- Golden test: procgen          compare evidence output against golden samples
 
+-- @describe golden: procgen evidence comparison
 describe("golden: procgen evidence comparison", function()
     it("matches golden sample for noise_map.png", function()
         local evidence = evidence_output_dir("procgen") .. "noise_map.png"

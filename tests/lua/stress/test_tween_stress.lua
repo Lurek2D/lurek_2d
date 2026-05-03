@@ -1,7 +1,9 @@
 -- Lurek2D Stress Test: Tween Update Throughput
 -- Measures active tween update rate under heavy load.
 
+-- @describe stress: many active tweens updated simultaneously
 describe("stress: many active tweens updated simultaneously", function()
+    -- @stress LAnimCurve:setEasing
     it("1000 tweens       100 updates each: <5s", function()
         local new_tween = rawget(lurek.tween, "newTween")
         if type(new_tween) ~= "function" then
@@ -35,6 +37,7 @@ describe("stress: many active tweens updated simultaneously", function()
         expect_true(elapsed < 5.0, "tween update budget: " .. elapsed .. "s")
     end)
 
+    -- @stress LAnimCurve:setEasing
     it("5000 instant tween seek calls: <5s", function()
         local new_tween = rawget(lurek.tween, "newTween")
         if type(new_tween) ~= "function" then
@@ -56,6 +59,7 @@ describe("stress: many active tweens updated simultaneously", function()
         expect_true(elapsed < 5.0, "tween seek budget: " .. elapsed .. "s")
     end)
 
+    -- @stress LAnimCurve:setEasing
     it("tween onComplete callbacks fire exactly once each", function()
         local new_tween = rawget(lurek.tween, "newTween")
         if type(new_tween) ~= "function" then

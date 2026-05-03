@@ -1,5 +1,6 @@
 -- Golden test: pathfind
 
+-- @describe golden: pathfind evidence comparison
 describe("golden: pathfind evidence comparison", function()
     local OUT = evidence_output_dir("pathfind")
     local SAMP = "tests/samples/pathfind/"
@@ -20,6 +21,7 @@ end)
 
 -- Golden test: pathfinding          compare evidence output against golden samples
 
+-- @describe golden: pathfinding evidence comparison
 describe("golden: pathfinding evidence comparison", function()
     it("matches golden sample for pathfinding_grid.png", function()
         local evidence = evidence_output_dir("pathfind") .. "pathfinding_grid.png"

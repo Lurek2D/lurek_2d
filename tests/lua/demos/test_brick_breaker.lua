@@ -6,6 +6,7 @@ local DEMO_PATH = "content/games/action/brick_breaker/main.lua"
 dofile("tests/lua/content/demos/_common_checks.lua")
 demo_common_checks("brick_breaker", DEMO_PATH)
 
+-- @describe brick_breaker: mechanics checks
 describe("brick_breaker: mechanics checks", function()
     local src
 

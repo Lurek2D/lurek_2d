@@ -5,7 +5,9 @@ local eco = require("library.economy")
 -- Resource
 ---------------------------------------------------------------------------
 
+-- @describe Resource
 describe("Resource", function()
+    -- @library lurek.library_economy
     it("creates with defaults", function()
         local r = eco.newResource("gold", 1000)
         expect_equal(r:getName(), "gold")
@@ -32,6 +34,7 @@ describe("Resource", function()
         expect_equal(r:getValue(), 10)
     end)
 
+    -- @library lurek.library_economy
     it("add returns excess with clamp overflow", function()
         local r = eco.newResource("gold", 100)
         r:setValue(90)
@@ -40,6 +43,7 @@ describe("Resource", function()
         expect_equal(excess, 10)
     end)
 
+    -- @library lurek.library_economy
     it("add rejects all with lose overflow", function()
         local r = eco.newResource("gold", 100)
         r:setOverflow("lose")
@@ -49,6 +53,7 @@ describe("Resource", function()
         expect_equal(excess, 20) -- full amount returned
     end)
 
+    -- @library lurek.library_economy
     it("add wraps with wrap overflow", function()
         local r = eco.newResource("gold", 100)
         r:setOverflow("wrap")
@@ -59,6 +64,7 @@ describe("Resource", function()
         expect_equal(excess, 0)
     end)
 
+    -- @library lurek.library_economy
     it("spend checks available", function()
         local r = eco.newResource("gold", 100)
         r:add(50)
@@ -67,6 +73,7 @@ describe("Resource", function()
         expect_equal(r:spend(30), false) -- can't afford
     end)
 
+    -- @library lurek.library_economy
     it("spend respects reservations", function()
         local r = eco.newResource("gold", 100)
         r:add(50)
@@ -76,6 +83,7 @@ describe("Resource", function()
         expect_equal(r:spend(20), true)
     end)
 
+    -- @library lurek.library_economy
     it("locked resource rejects add and spend", function()
         local r = eco.newResource("gold", 100)
         r:add(50)
@@ -85,6 +93,7 @@ describe("Resource", function()
         expect_equal(r:spend(10), false) -- rejected
     end)
 
+    -- @library lurek.library_economy
     it("tick applies net rate", function()
         local r = eco.newResource("gold", 1000)
         r:add(100)
@@ -93,6 +102,7 @@ describe("Resource", function()
         expect_equal(r:getValue(), 110)
     end)
 
+    -- @library lurek.library_economy
     it("tick applies decay and interest", function()
         local r = eco.newResource("gold", 1000)
         r:add(100)
@@ -103,6 +113,7 @@ describe("Resource", function()
         expect_equal(r:getValue(), 105)
     end)
 
+    -- @library lurek.library_economy
     it("tick does nothing when disabled", function()
         local r = eco.newResource("gold", 1000)
         r:add(100)
@@ -112,6 +123,7 @@ describe("Resource", function()
         expect_equal(r:getValue(), 100)
     end)
 
+    -- @library lurek.library_economy
     it("canAfford checks available", function()
         local r = eco.newResource("gold", 100)
         r:add(50)
@@ -126,12 +138,14 @@ describe("Resource", function()
         expect_equal(r:getReserved(), 0)
     end)
 
+    -- @library lurek.library_economy
     it("unlimited capacity (-1)", function()
         local r = eco.newResource("xp", -1)
         r:add(999999)
         expect_equal(r:getValue(), 999999)
     end)
 
+    -- @library lurek.library_economy
     it("net rate formula correct", function()
         local r = eco.newResource("gold", 1000)
         r:add(200)
@@ -144,6 +158,7 @@ describe("Resource", function()
         expect_equal(r:getNetRate(), 13)
     end)
 
+    -- @library lurek.library_economy
     it("setCapacity reclamps value", function()
         local r = eco.newResource("gold", 200)
         r:add(150)
@@ -163,7 +178,9 @@ end)
 -- Modifier
 ---------------------------------------------------------------------------
 
+-- @describe Modifier
 describe("Modifier", function()
+    -- @library lurek.library_economy
     it("creates with defaults", function()
         local m = eco.newModifier("add", 5, -1, "buff")
         expect_equal(m:getType(), "add")
@@ -173,6 +190,7 @@ describe("Modifier", function()
         expect_equal(m:isExpired(), false)
     end)
 
+    -- @library LScheduler:getRemaining
     it("expires after duration", function()
         local m = eco.newModifier("multiply", 1.5, 3, "potion")
         expect_equal(m:isExpired(), false)
@@ -190,6 +208,7 @@ describe("Modifier", function()
         expect_equal(m:getTarget(), "gold")
     end)
 
+    -- @library lurek.library_economy
     it("unknown type defaults to multiply", function()
         local m = eco.newModifier("bogus", 2, -1, "")
         expect_equal(m:getType(), "multiply")
@@ -200,7 +219,11 @@ end)
 -- ConversionRule
 ---------------------------------------------------------------------------
 
+-- @describe ConversionRule
 describe("ConversionRule", function()
+    -- @library LGraphEdge:getFrom
+    -- @library LGraphEdge:getTo
+    -- @library LGraphEdge:isOnCooldown
     it("creates with defaults", function()
         local rule = eco.newConversionRule("gold", "gems", 0.1)
         expect_equal(rule:getFrom(), "gold")
@@ -210,6 +233,8 @@ describe("ConversionRule", function()
         expect_equal(rule:isOnCooldown(), false)
     end)
 
+    -- @library LGraphEdge:isOnCooldown
+    -- @library LGraphEdge:setCooldown
     it("cooldown cycle", function()
         local rule = eco.newConversionRule("a", "b", 1)
         rule:setCooldown(5)
@@ -221,6 +246,7 @@ describe("ConversionRule", function()
         expect_equal(rule:isOnCooldown(), false)
     end)
 
+    -- @library LTraitProfile:addModifier
     it("effectiveRate with modifiers", function()
         local rule = eco.newConversionRule("a", "b", 10)
         rule:addModifier(eco.newModifier("add", 5, -1, ""))
@@ -229,6 +255,7 @@ describe("ConversionRule", function()
         expect_equal(rule:effectiveRate(), 30)
     end)
 
+    -- @library LTraitProfile:addModifier
     it("effectiveRate set modifier wins", function()
         local rule = eco.newConversionRule("a", "b", 10)
         rule:addModifier(eco.newModifier("add", 5, -1, ""))
@@ -236,6 +263,7 @@ describe("ConversionRule", function()
         expect_equal(rule:effectiveRate(), 42)
     end)
 
+    -- @library LTraitProfile:addModifier
     it("expired modifiers ignored", function()
         local rule = eco.newConversionRule("a", "b", 10)
         local m = eco.newModifier("add", 100, 1, "")
@@ -244,6 +272,7 @@ describe("ConversionRule", function()
         expect_equal(rule:effectiveRate(), 10) -- only base
     end)
 
+    -- @library LTraitProfile:addModifier
     it("removeModifier and clearModifiers", function()
         local rule = eco.newConversionRule("a", "b", 10)
         rule:addModifier(eco.newModifier("add", 1, -1, ""))
@@ -268,6 +297,7 @@ end)
 -- ResourceManager
 ---------------------------------------------------------------------------
 
+-- @describe ResourceManager
 describe("ResourceManager", function()
     it("creates and manages resources", function()
         local mgr = eco.newManager()
@@ -278,6 +308,7 @@ describe("ResourceManager", function()
         expect_equal(#mgr:getResourceNames(), 2)
     end)
 
+    -- @library lurek.library_economy
     it("add and spend through manager", function()
         local mgr = eco.newManager()
         mgr:newResource("gold", 100)
@@ -287,6 +318,7 @@ describe("ResourceManager", function()
         expect_equal(mgr:getValue("gold"), 20)
     end)
 
+    -- @library lurek.library_economy
     it("conversion with rule", function()
         local mgr = eco.newManager()
         mgr:newResource("gold", 1000)
@@ -300,6 +332,7 @@ describe("ResourceManager", function()
         expect_equal(mgr:getValue("gems"), 10)
     end)
 
+    -- @library lurek.library_economy
     it("conversion respects fee", function()
         local mgr = eco.newManager()
         mgr:newResource("gold", 1000)
@@ -315,6 +348,7 @@ describe("ResourceManager", function()
         expect_equal(mgr:getValue("gems"), 10)
     end)
 
+    -- @library LGraphEdge:setCooldown
     it("conversion fails on cooldown", function()
         local mgr = eco.newManager()
         mgr:newResource("gold", 1000)
@@ -327,6 +361,7 @@ describe("ResourceManager", function()
         expect_equal(mgr:convert("gold", "gems", 100), false) -- on cooldown
     end)
 
+    -- @library lurek.library_economy
     it("conversion fails outside min/max amount", function()
         local mgr = eco.newManager()
         mgr:newResource("gold", 1000)
@@ -341,6 +376,7 @@ describe("ResourceManager", function()
         expect_equal(mgr:convert("gold", "gems", 20), true) -- within range
     end)
 
+    -- @library lurek.library_economy
     it("tick advances all resources", function()
         local mgr = eco.newManager()
         local r = mgr:newResource("gold", 1000)
@@ -350,6 +386,7 @@ describe("ResourceManager", function()
         expect_equal(mgr:getValue("gold"), 110)
     end)
 
+    -- @library LGraphEdge:setCooldown
     it("tick advances cooldowns", function()
         local mgr = eco.newManager()
         mgr:newResource("gold", 1000)
@@ -364,6 +401,7 @@ describe("ResourceManager", function()
         expect_equal(mgr:convert("gold", "gems", 10), true)
     end)
 
+    -- @library lurek.library_economy
     it("totalByGroup sums correctly", function()
         local mgr = eco.newManager()
         local r1 = mgr:newResource("gold", 1000)
@@ -379,6 +417,7 @@ describe("ResourceManager", function()
         expect_equal(mgr:totalByGroup("material"), 200)
     end)
 
+    -- @library lurek.library_economy
     it("getPercent returns value/cap * 100", function()
         local mgr = eco.newManager()
         mgr:newResource("hp", 200)
@@ -386,6 +425,7 @@ describe("ResourceManager", function()
         expect_equal(mgr:getPercent("hp"), 50)
     end)
 
+    -- @library lurek.library_economy
     it("isFull and isEmpty", function()
         local mgr = eco.newManager()
         mgr:newResource("hp", 100)
@@ -396,6 +436,7 @@ describe("ResourceManager", function()
         expect_equal(mgr:isEmpty("hp"), false)
     end)
 
+    -- @library lurek.library_economy
     it("canAffordAll and spendAll", function()
         local mgr = eco.newManager()
         mgr:newResource("gold", 1000)
@@ -428,6 +469,7 @@ describe("ResourceManager", function()
         expect_equal(#mgr:getConversionRules(), 0)
     end)
 
+    -- @library lurek.library_economy
     it("exchange atomically swaps", function()
         local mgr1 = eco.newManager()
         local mgr2 = eco.newManager()
@@ -445,6 +487,7 @@ describe("ResourceManager", function()
         expect_equal(mgr2:getValue("gold"), 50)
     end)
 
+    -- @library lurek.library_economy
     it("exchange fails if either side can't afford", function()
         local mgr1 = eco.newManager()
         local mgr2 = eco.newManager()
@@ -455,6 +498,7 @@ describe("ResourceManager", function()
         expect_equal(mgr1:exchange(mgr2, "gold", 100, "wood", 5), false)
     end)
 
+    -- @library lurek.library_economy
     it("manager delegation: overflow, group, enabled, locked", function()
         local mgr = eco.newManager()
         mgr:newResource("gold", 100)
@@ -468,6 +512,7 @@ describe("ResourceManager", function()
         expect_equal(mgr:isLocked("gold"), true)
     end)
 
+    -- @library lurek.library_economy
     it("manager delegation: reserve/unreserve", function()
         local mgr = eco.newManager()
         mgr:newResource("gold", 100)
@@ -484,6 +529,7 @@ end)
 -- Additional coverage tests
 ---------------------------------------------------------------------------
 
+-- @describe Modifier (extra coverage)
 describe("Modifier (extra coverage)", function()
     it("getSource returns source tag", function()
         local m = eco.newModifier("add", 5, -1, "ironforge")
@@ -497,7 +543,10 @@ describe("Modifier (extra coverage)", function()
     end)
 end)
 
+-- @describe ConversionRule (extra coverage)
 describe("ConversionRule (extra coverage)", function()
+    -- @library LGraphEdge:getCooldown
+    -- @library LGraphEdge:setCooldown
     it("getCooldown returns configured cooldown", function()
         local rule = eco.newConversionRule("a", "b", 1)
         rule:setCooldown(3)
@@ -511,6 +560,8 @@ describe("ConversionRule (extra coverage)", function()
         expect_equal(rule:effectiveRate(), 5)
     end)
 
+    -- @library LGraphEdge:isOnCooldown
+    -- @library LGraphEdge:setCooldown
     it("resetCooldown clears mid-cooldown timer", function()
         local rule = eco.newConversionRule("a", "b", 1)
         rule:setCooldown(10)
@@ -521,7 +572,9 @@ describe("ConversionRule (extra coverage)", function()
     end)
 end)
 
+-- @describe ResourceManager (extra coverage)
 describe("ResourceManager (extra coverage)", function()
+    -- @library lurek.library_economy
     it("turn() advances resources by one second", function()
         local mgr = eco.newManager()
         mgr:newResource("gold", 1000)
@@ -531,6 +584,7 @@ describe("ResourceManager (extra coverage)", function()
         expect_equal(mgr:getValue("gold"), 110)
     end)
 
+    -- @library lurek.library_economy
     it("getNetRate delegates to resource", function()
         local mgr = eco.newManager()
         mgr:newResource("gold", 1000)
@@ -541,6 +595,7 @@ describe("ResourceManager (extra coverage)", function()
         expect_equal(mgr:getNetRate("gold"), 7)
     end)
 
+    -- @library lurek.library_economy
     it("isVisible and setVisible delegate correctly", function()
         local mgr = eco.newManager()
         mgr:newResource("gold", 100)
@@ -549,6 +604,7 @@ describe("ResourceManager (extra coverage)", function()
         expect_equal(mgr:isVisible("gold"), false)
     end)
 
+    -- @library lurek.library_economy
     it("canAfford delegates to resource available", function()
         local mgr = eco.newManager()
         mgr:newResource("gold", 100)
@@ -580,6 +636,7 @@ describe("ResourceManager (extra coverage)", function()
         expect_equal(mgr:getUpkeep("food"), 5)
     end)
 
+    -- @library lurek.library_economy
     it("getCapacity/setCapacity delegate", function()
         local mgr = eco.newManager()
         mgr:newResource("wood", 100)
@@ -594,6 +651,7 @@ describe("ResourceManager (extra coverage)", function()
         expect_equal(mgr:getMinimum("hp"), 10)
     end)
 
+    -- @library lurek.library_economy
     it("getReserved/getAvailable consistent with reserveAmount/unreserveAmount", function()
         local mgr = eco.newManager()
         mgr:newResource("gold", 1000)
@@ -606,6 +664,7 @@ describe("ResourceManager (extra coverage)", function()
     end)
 end)
 
+-- @describe Enum constants
 describe("Enum constants", function()
     it("OverflowPolicy values are correct strings", function()
         expect_equal(eco.OverflowPolicy.CLAMP, "clamp")
@@ -625,7 +684,9 @@ end)
 ---------------------------------------------------------------------------
 
 -- expired conversion rates, wrap overflow edge case, and reserve bounds.
+-- @describe Bug-fix regressions
 describe("Bug-fix regressions", function()
+    -- @library lurek.library_economy
     it("getNetRate clamps to prevent going below minimum", function()
         local r = eco.newResource("energy", 100)
         r:add(10)
@@ -639,6 +700,7 @@ describe("Bug-fix regressions", function()
         expect_equal(r:getValue(), 0)
     end)
 
+    -- @library lurek.library_economy
     it("getNetRate clamps to non-zero minimum", function()
         local r = eco.newResource("hp", 100)
         r:add(15)
@@ -651,6 +713,7 @@ describe("Bug-fix regressions", function()
         expect_equal(r:getValue(), 10)
     end)
 
+    -- @library LTraitProfile:addModifier
     it("effectiveRate short-circuits on set modifier", function()
         local rule = eco.newConversionRule("a", "b", 10)
         rule:addModifier(eco.newModifier("add", 100, -1, "big_add"))
@@ -660,6 +723,7 @@ describe("Bug-fix regressions", function()
         expect_equal(rule:effectiveRate(), 7)
     end)
 
+    -- @library LTraitProfile:addModifier
     it("expired set modifier does not override rate", function()
         local rule = eco.newConversionRule("a", "b", 10)
         local m = eco.newModifier("set", 999, 1, "temp_override")
@@ -669,6 +733,7 @@ describe("Bug-fix regressions", function()
         expect_equal(rule:effectiveRate(), 10)
     end)
 
+    -- @library LTraitProfile:addModifier
     it("effectiveRate with mixed expired set and live add", function()
         local rule = eco.newConversionRule("a", "b", 10)
         local set_mod = eco.newModifier("set", 999, 1, "expired_set")
@@ -679,6 +744,7 @@ describe("Bug-fix regressions", function()
         expect_equal(rule:effectiveRate(), 15)
     end)
 
+    -- @library lurek.library_economy
     it("wrap overflow with capacity < minimum clamps safely", function()
         local r = eco.newResource("test", 5)
         r:setOverflow("wrap")
@@ -693,6 +759,7 @@ describe("Bug-fix regressions", function()
         expect_equal(v == v, true) -- not NaN
     end)
 
+    -- @library lurek.library_economy
     it("wrap overflow with zero range (capacity == minimum)", function()
         local r = eco.newResource("test", 10)
         r:setOverflow("wrap")
@@ -703,6 +770,7 @@ describe("Bug-fix regressions", function()
         expect_equal(r:getValue(), 10)
     end)
 
+    -- @library lurek.library_economy
     it("reserve clamps to value", function()
         local r = eco.newResource("gold", 100)
         r:add(30)
@@ -711,6 +779,7 @@ describe("Bug-fix regressions", function()
         expect_equal(r:getAvailable(), 0)
     end)
 
+    -- @library lurek.library_economy
     it("unreserve clamps reserved to value", function()
         local r = eco.newResource("gold", 100)
         r:add(50)
@@ -726,6 +795,7 @@ end)
 -- Input validation tests
 ---------------------------------------------------------------------------
 
+-- @describe Input validation
 describe("Input validation", function()
     it("newResource rejects nil name", function()
         expect_error(function() eco.newResource(nil, 100) end)
@@ -739,11 +809,13 @@ describe("Input validation", function()
         expect_error(function() eco.newResource("gold", -2) end)
     end)
 
+    -- @library lurek.library_economy
     it("add rejects negative amount", function()
         local r = eco.newResource("gold", 100)
         expect_error(function() r:add(-5) end)
     end)
 
+    -- @library lurek.library_economy
     it("spend rejects negative amount", function()
         local r = eco.newResource("gold", 100)
         r:add(50)

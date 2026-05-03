@@ -4,6 +4,7 @@
 
 local describe = describe or function(n,f) f() end
 local it = it or function(n,f) f() end
+-- @describe particle + render integration
 describe("particle + render integration", function()
     it("spawned particles emit draw_image commands to render queue", function()
         expect_true(true)

@@ -1,7 +1,12 @@
 -- Lurek2D Integration Test: Particle + Timer
 -- Tests time-based particle emission control.
 
+-- @describe integration: particle emitter driven by timer
 describe("integration: particle emitter driven by timer", function()
+    -- @integration LParticleSystem:setEmissionRate
+    -- @integration LParticleSystem:setParticleLifetime
+    -- @integration LParticleSystem:setPosition
+    -- @integration lurek.particle.newSystem
     it("emitter created and configured without error", function()
         expect_no_error(function()
             local pe = lurek.particle.newSystem()
@@ -12,6 +17,11 @@ describe("integration: particle emitter driven by timer", function()
         end)
     end)
 
+    -- @integration LParticleSystem:emit
+    -- @integration LParticleSystem:setEmissionRate
+    -- @integration LParticleSystem:setPosition
+    -- @integration lurek.particle.newSystem
+    -- @integration lurek.timer.getTime
     it("emitter tracks time between bursts", function()
         local pe             = lurek.particle.newSystem()
         local burst_interval = 0.5  -- seconds
@@ -43,6 +53,10 @@ describe("integration: particle emitter driven by timer", function()
         expect_true(t1 >= t0, "timer is monotonic")
     end)
 
+    -- @integration LParticleSystem:setEmissionRate
+    -- @integration LParticleSystem:setParticleLifetime
+    -- @integration LParticleSystem:setPosition
+    -- @integration lurek.particle.newSystem
     it("emitter position can be updated each frame", function()
         local pe    = lurek.particle.newSystem()
         local trail = {}

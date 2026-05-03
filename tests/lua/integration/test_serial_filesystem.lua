@@ -1,6 +1,7 @@
 -- tests/lua/integration/test_serial_fileapp.lua
 -- Integration: lurek.serial (JSON/TOML/CSV) used alongside lurek.filesystem for round-trip persistence.
 
+-- @describe serial + filesystem integration
 describe("serial + filesystem integration", function()
     local tmp = "save/integration_serial_fs/"
 
@@ -8,6 +9,10 @@ describe("serial + filesystem integration", function()
         lurek.filesystem.mkdir(tmp)
     end)
 
+    -- @integration lurek.filesystem.read
+    -- @integration lurek.filesystem.write
+    -- @integration lurek.serial.fromJson
+    -- @integration lurek.serial.toJson
     it("round-trips a Lua table through JSON via the filesystem", function()
         local data = { name = "Luna", version = 2, active = true }
         local json_str = lurek.serial.toJson(data)
@@ -22,6 +27,10 @@ describe("serial + filesystem integration", function()
         expect_equal(restored.version, 2, "number round-trips")
     end)
 
+    -- @integration lurek.filesystem.read
+    -- @integration lurek.filesystem.write
+    -- @integration lurek.serial.fromToml
+    -- @integration lurek.serial.toToml
     it("round-trips a Lua table through TOML via the filesystem", function()
         local data = { engine = "lurek2d", revision = 5 }
         local toml_str = lurek.serial.toToml(data)
@@ -34,6 +43,9 @@ describe("serial + filesystem integration", function()
         expect_equal(restored.revision, 5, "number TOML round-trip")
     end)
 
+    -- @integration lurek.filesystem.read
+    -- @integration lurek.filesystem.write
+    -- @integration lurek.serial.fromCsv
     it("parses CSV rows from a file written by serial.toCsv", function()
         local rows = { { "x", "y" }, { "1", "2" }, { "3", "4" } }
         local csv_str = rows[1][1] .. "," .. rows[1][2] .. "\n"
@@ -45,6 +57,8 @@ describe("serial + filesystem integration", function()
         expect_true(#parsed >= 2, "CSV parse returns at least 2 data rows")
     end)
 
+    -- @integration lurek.filesystem.exists
+    -- @integration lurek.filesystem.write
     it("filesystem.exists returns true after write", function()
         local path = tmp .. "exists_check.txt"
         lurek.filesystem.write(path, "ping")

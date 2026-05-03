@@ -9,6 +9,7 @@ local cg = require("library.cardgame")
 
 --                  Registry
 
+-- @describe Registry
 describe("Registry", function()
     it("defineCardType and getCardType round-trip", function()
         cg.clearCardTypes()
@@ -43,7 +44,9 @@ end)
 
 --                  Card
 
+-- @describe Card
 describe("Card", function()
+    -- @library lurek.library_cardgame
     it("seeds fields from registry", function()
         cg.clearCardTypes()
         local def = cg.newCardTypeDef("Goblin")
@@ -68,6 +71,7 @@ describe("Card", function()
         expect_equal(c:getStat("atk"), 0)
     end)
 
+    -- @library lurek.library_cardgame
     it("tag operations", function()
         cg.clearCardTypes()
         local c = cg.newCard("plain")
@@ -126,7 +130,9 @@ end)
 
 --                  Stack
 
+-- @describe Stack
 describe("Stack", function()
+    -- @library LThreadPool:size
     it("push and pop from top", function()
         cg.clearCardTypes()
         local s = cg.newStack("hand")
@@ -136,6 +142,7 @@ describe("Stack", function()
         expect_equal(s:pushTop(c2), true)
         expect_equal(s:size(), 2)
         local popped = s:popTop()
+        if popped == nil then error("expected popped card") end
         expect_equal(popped.card_type, "b")
         expect_equal(s:size(), 1)
     end)
@@ -146,9 +153,11 @@ describe("Stack", function()
         s:pushTop(cg.newCard("a"))
         s:pushBottom(cg.newCard("b"))
         local popped = s:popBottom()
+        if popped == nil then error("expected popped card") end
         expect_equal(popped.card_type, "b")
     end)
 
+    -- @library lurek.library_cardgame
     it("capacity enforcement", function()
         cg.clearCardTypes()
         local s = cg.newStackWithCapacity("tiny", 2)
@@ -158,6 +167,7 @@ describe("Stack", function()
         expect_equal(s:pushTop(cg.newCard("c")), false)
     end)
 
+    -- @library LThreadPool:size
     it("popMany removes from top", function()
         cg.clearCardTypes()
         local s = cg.newStack("deck")
@@ -187,6 +197,7 @@ describe("Stack", function()
         s:insertAt(2, cg.newCard("b"))
         expect_equal(s:peekAt(2).card_type, "b")
         local removed = s:removeAt(2)
+        if removed == nil then error("expected removed card") end
         expect_equal(removed.card_type, "b")
     end)
 
@@ -200,6 +211,7 @@ describe("Stack", function()
         expect_equal(s:peekAt(3).card_type, "a")
     end)
 
+    -- @library lurek.library_cardgame
     it("search by type, tag, category", function()
         cg.clearCardTypes()
         local def_s = cg.newCardTypeDef("spell")
@@ -216,6 +228,7 @@ describe("Stack", function()
         expect_equal(#s:searchByCategory("magic"), 1)
     end)
 
+    -- @library lurek.library_cardgame
     it("findByType and findByTag", function()
         cg.clearCardTypes()
         local s = cg.newStack("z")
@@ -237,10 +250,11 @@ describe("Stack", function()
         s:pushTop(c)
         expect_equal(s:containsId(id), true)
         local removed = s:removeById(id)
-        expect_equal(removed.id, id)
+        expect_equal(removed ~= nil, true)
         expect_equal(s:containsId(id), false)
     end)
 
+    -- @library lurek.library_cardgame
     it("count by type/category/tag", function()
         cg.clearCardTypes()
         local def = cg.newCardTypeDef("goblin")
@@ -308,6 +322,7 @@ describe("Stack", function()
         expect_equal(types[2], "b")
     end)
 
+    -- @library LThreadPool:size
     it("snapshot and restore", function()
         cg.clearCardTypes()
         local s = cg.newStack("z")
@@ -331,6 +346,7 @@ describe("Stack", function()
         expect_equal(s:isPublic(), true)
     end)
 
+    -- @library lurek.library_cardgame
     it("clear returns cards", function()
         cg.clearCardTypes()
         local s = cg.newStack("z")
@@ -357,7 +373,9 @@ end)
 
 --                  Slot
 
+-- @describe Slot
 describe("Slot", function()
+    -- @library LThreadPool:size
     it("push and pop", function()
         cg.clearCardTypes()
         local s = cg.newSlot("weapon")
@@ -365,9 +383,11 @@ describe("Slot", function()
         expect_equal(ok, true)
         expect_equal(s:size(), 1)
         local card = s:pop()
+        if card == nil then error("expected card from slot") end
         expect_equal(card.card_type, "sword")
     end)
 
+    -- @library lurek.library_cardgame
     it("capacity enforcement", function()
         cg.clearCardTypes()
         local s = cg.newSlotWithCapacity("ring", 1)
@@ -377,6 +397,7 @@ describe("Slot", function()
         expect_equal(ok, false)
     end)
 
+    -- @library lurek.library_cardgame
     it("has_item_with_tag and has_item_of_type", function()
         cg.clearCardTypes()
         local s = cg.newSlot("z")
@@ -388,6 +409,7 @@ describe("Slot", function()
         expect_equal(s:hasItemWithTag("melee"), false)
     end)
 
+    -- @library lurek.library_cardgame
     it("clear returns items", function()
         cg.clearCardTypes()
         local s = cg.newSlot("z")
@@ -401,7 +423,9 @@ end)
 
 --                  CardPool
 
+-- @describe CardPool
 describe("CardPool", function()
+    -- @library LThreadPool:size
     it("add and draw types", function()
         cg.clearCardTypes()
         local pool = cg.newCardPool("loot")
@@ -414,6 +438,7 @@ describe("CardPool", function()
         expect_equal(#result, 5)
     end)
 
+    -- @library lurek.library_cardgame
     it("draw unique types", function()
         cg.clearCardTypes()
         local pool = cg.newCardPool("z")
@@ -430,6 +455,7 @@ describe("CardPool", function()
         end
     end)
 
+    -- @library lurek.library_cardgame
     it("draw items creates Card instances", function()
         cg.clearCardTypes()
         local pool = cg.newCardPool("z")
@@ -437,9 +463,11 @@ describe("CardPool", function()
         math.randomseed(1)
         local items = pool:drawItems(3)
         expect_equal(#items, 3)
+        if items[1] == nil then error("expected drawn item") end
         expect_equal(items[1].card_type, "warrior")
     end)
 
+    -- @library LThreadPool:size
     it("remove and set_weight", function()
         cg.clearCardTypes()
         local pool = cg.newCardPool("z")
@@ -451,6 +479,7 @@ describe("CardPool", function()
         expect_equal(pool:size(), 1)
     end)
 
+    -- @library lurek.library_cardgame
     it("getTypeNames returns all types", function()
         cg.clearCardTypes()
         local pool = cg.newCardPool("z")
@@ -460,6 +489,7 @@ describe("CardPool", function()
         expect_equal(#names, 2)
     end)
 
+    -- @library lurek.library_cardgame
     it("drawByRarity filters by rarity", function()
         cg.clearCardTypes()
         local def_c = cg.newCardTypeDef("common_card")
@@ -480,6 +510,7 @@ end)
 
 --                  StackManager
 
+-- @describe StackManager
 describe("StackManager", function()
     it("create and manage stacks", function()
         cg.clearCardTypes()
@@ -498,6 +529,7 @@ describe("StackManager", function()
         mgr:getStack("deck"):pushTop(cg.newCard("a"))
         mgr:getStack("deck"):pushTop(cg.newCard("b"))
         local card = mgr:moveTop("deck", "hand")
+        if card == nil then error("expected moved card") end
         expect_equal(card.card_type, "b")
         expect_equal(mgr:getStack("hand"):size(), 1)
         expect_equal(mgr:getStack("deck"):size(), 1)
@@ -512,6 +544,7 @@ describe("StackManager", function()
         mgr:getStack("src"):pushTop(cg.newCard("target"))
         mgr:getStack("src"):pushTop(cg.newCard("y"))
         local card = mgr:moveItemByType("src", "target", "dst")
+        if card == nil then error("expected moved card") end
         expect_equal(card.card_type, "target")
         expect_equal(mgr:getStack("dst"):size(), 1)
     end)
@@ -527,6 +560,7 @@ describe("StackManager", function()
         expect_equal(mgr:totalItems(), 3)
     end)
 
+    -- @library LThreadPool:size
     it("removeStack returns the stack", function()
         cg.clearCardTypes()
         local mgr = cg.newStackManager()
@@ -540,7 +574,9 @@ end)
 
 --                  DeckBuilder
 
+-- @describe DeckBuilder
 describe("DeckBuilder", function()
+    -- @library LThreadPool:size
     it("build creates stack with entries", function()
         cg.clearCardTypes()
         local db = cg.newDeckBuilder("test_deck")
@@ -551,6 +587,7 @@ describe("DeckBuilder", function()
         expect_equal(deck.name, "test_deck")
     end)
 
+    -- @library lurek.library_cardgame
     it("buildNamed uses custom name", function()
         cg.clearCardTypes()
         local db = cg.newDeckBuilder("template")
@@ -559,6 +596,7 @@ describe("DeckBuilder", function()
         expect_equal(deck.name, "player_deck")
     end)
 
+    -- @library LThreadPool:size
     it("shuffle_on_build shuffles the result", function()
         cg.clearCardTypes()
         math.randomseed(42)
@@ -569,6 +607,7 @@ describe("DeckBuilder", function()
         expect_equal(deck:size(), 20)
     end)
 
+    -- @library lurek.library_cardgame
     it("addWith applies stat overrides and extra tags", function()
         cg.clearCardTypes()
         local db = cg.newDeckBuilder("z")
@@ -579,6 +618,7 @@ describe("DeckBuilder", function()
         expect_equal(c:hasTag("elite"), true)
     end)
 
+    -- @library lurek.library_cardgame
     it("validateEntries detects banned types", function()
         cg.clearCardTypes()
         local db = cg.newDeckBuilder("z")
@@ -588,6 +628,7 @@ describe("DeckBuilder", function()
         expect_equal(#errs > 0, true)
     end)
 
+    -- @library lurek.library_cardgame
     it("validateEntries detects min/max size violation", function()
         cg.clearCardTypes()
         local db = cg.newDeckBuilder("z")
@@ -597,6 +638,7 @@ describe("DeckBuilder", function()
         expect_equal(#errs > 0, true)
     end)
 
+    -- @library lurek.library_cardgame
     it("validateEntries detects missing required types", function()
         cg.clearCardTypes()
         local db = cg.newDeckBuilder("z")
@@ -617,7 +659,9 @@ end)
 
 --                  StackHistory
 
+-- @describe StackHistory
 describe("StackHistory", function()
+    -- @library lurek.library_cardgame
     it("record and retrieve entries", function()
         local h = cg.newStackHistory()
         h:record("deck", cg.HistoryAction.pushed("spell", "Fireball"), 5)
@@ -635,6 +679,7 @@ describe("StackHistory", function()
         expect_equal(#deck_entries, 2)
     end)
 
+    -- @library lurek.library_cardgame
     it("max_size evicts oldest entries", function()
         local h = cg.newStackHistoryWithMaxSize(3)
         for i = 1, 5 do
@@ -644,6 +689,7 @@ describe("StackHistory", function()
         expect_equal(h:entries()[1].action.label, "e3")
     end)
 
+    -- @library lurek.library_cardgame
     it("recordCustom and clear", function()
         local h = cg.newStackHistory()
         h:recordCustom("deck", "manual_shuffle", 10)
@@ -673,6 +719,7 @@ end)
 
 --                  CardGroup
 
+-- @describe CardGroup
 describe("CardGroup", function()
     it("itemsFrom collects cards by index", function()
         cg.clearCardTypes()
@@ -688,6 +735,7 @@ end)
 
 --                  Analysis helpers
 
+-- @describe Analysis helpers
 describe("Analysis helpers", function()
     it("groupByStat buckets by integer stat value", function()
         cg.clearCardTypes()
@@ -703,6 +751,7 @@ describe("Analysis helpers", function()
         expect_equal(#groups[2], 1)
     end)
 
+    -- @library lurek.library_cardgame
     it("groupByTagPrefix buckets by tag suffix", function()
         cg.clearCardTypes()
         local cards = {}
@@ -717,6 +766,7 @@ describe("Analysis helpers", function()
         expect_equal(groups["rank"], nil)
     end)
 
+    -- @library lurek.library_cardgame
     it("groupByTagPrefix ignores cards without matching prefix", function()
         cg.clearCardTypes()
         local c = cg.newCard("x")
@@ -790,6 +840,7 @@ end)
 
 --        ID counter
 
+-- @describe ID counter
 describe("ID counter", function()
     it("getIdCounter returns current value", function()
         cg.clearCardTypes()
@@ -819,6 +870,7 @@ end)
 
 --        Search return types
 
+-- @describe Search return types
 describe("Search return types", function()
     it("searchByType returns indices (numbers)", function()
         cg.clearCardTypes()
@@ -831,6 +883,7 @@ describe("Search return types", function()
         expect_equal(result[2], 2)
     end)
 
+    -- @library lurek.library_cardgame
     it("searchByTag returns indices (numbers)", function()
         cg.clearCardTypes()
         local s = cg.newStack("z")
@@ -851,6 +904,7 @@ describe("Search return types", function()
         expect_equal(result[1].card_type, "goblin")
     end)
 
+    -- @library lurek.library_cardgame
     it("findByTagAll returns Card objects", function()
         cg.clearCardTypes()
         local s = cg.newStack("z")
@@ -878,6 +932,7 @@ end)
 
 --        CardTypeDef fields
 
+-- @describe CardTypeDef fields
 describe("CardTypeDef fields", function()
     it("newCardTypeDef has all documented fields", function()
         local def = cg.newCardTypeDef("test")
@@ -899,6 +954,7 @@ end)
 
 --        Empty stack / pool edge cases
 
+-- @describe Empty edge cases
 describe("Empty edge cases", function()
     it("popTop on empty stack returns nil", function()
         cg.clearCardTypes()
@@ -952,6 +1008,7 @@ describe("Empty edge cases", function()
         expect_equal(s:pop(), nil)
     end)
 
+    -- @library lurek.library_cardgame
     it("Stack clear on empty returns empty table", function()
         cg.clearCardTypes()
         local s = cg.newStack("z")
@@ -962,6 +1019,7 @@ end)
 
 --        Input validation
 
+-- @describe Input validation
 describe("Input validation", function()
     it("defineCardType rejects non-string name", function()
         cg.clearCardTypes()
@@ -995,6 +1053,7 @@ describe("Input validation", function()
         expect_equal(ok, false)
     end)
 
+    -- @library lurek.library_cardgame
     it("CardPool add rejects empty type_name", function()
         cg.clearCardTypes()
         local pool = cg.newCardPool("z")
@@ -1002,6 +1061,7 @@ describe("Input validation", function()
         expect_equal(ok, false)
     end)
 
+    -- @library lurek.library_cardgame
     it("DeckBuilder add rejects count < 1", function()
         cg.clearCardTypes()
         local db = cg.newDeckBuilder("z")

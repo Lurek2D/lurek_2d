@@ -1,7 +1,13 @@
 -- Lurek2D Integration Test: Light + Graphics
 -- Tests light API alongside graphics draw commands.
 
+-- @describe integration: light placement alongside scene geometry
 describe("integration: light placement alongside scene geometry", function()
+    -- @integration LLight:setColor
+    -- @integration LLight:setIntensity
+    -- @integration lurek.light.newLight
+    -- @integration lurek.render.rectangle
+    -- @integration lurek.render.setColor
     it("creates lights and draws geometry to same scene", function()
         expect_no_error(function()
             -- Create lights with correct API: newLight(x, y, radius)
@@ -22,6 +28,8 @@ describe("integration: light placement alongside scene geometry", function()
         end)
     end)
 
+    -- @integration LLight:setIntensity
+    -- @integration lurek.light.newLight
     it("light intensity range is clamped correctly", function()
         local light = lurek.light.newLight(100, 100, 50)
         light:setIntensity(0.5)
@@ -31,6 +39,8 @@ describe("integration: light placement alongside scene geometry", function()
         end)
     end)
 
+    -- @integration LLight:setIntensity
+    -- @integration lurek.light.newLight
     it("multiple lights of different types created without error", function()
         expect_no_error(function()
             -- Create multiple lights of different positions/sizes
@@ -41,6 +51,8 @@ describe("integration: light placement alongside scene geometry", function()
         end)
     end)
 
+    -- @integration LLight:setColor
+    -- @integration lurek.light.newLight
     it("light color components are in 0..1 range", function()
         local light = lurek.light.newLight(100, 100, 50)
         expect_no_error(function()

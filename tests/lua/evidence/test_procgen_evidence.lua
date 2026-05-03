@@ -3,9 +3,14 @@
 
 local OUT = "tests/output/procgen/"
 
+-- @describe Evidence: Procedural generation
 describe("Evidence: Procedural generation", function()
 
     -- @evidence file
+    -- @covers LImageData:drawRect
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
+    -- @covers lurek.procgen.cellularAutomata
     it("visualises cellular automata cave map", function()
         local gw, gh = 64, 64
         local scale = 4
@@ -36,6 +41,11 @@ describe("Evidence: Procedural generation", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:drawCircle
+    -- @covers LImageData:drawRect
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
+    -- @covers lurek.procgen.poissonDisk
     it("visualises Poisson disk sampling", function()
         local W, H = 256, 256
         local minDist = 12
@@ -70,9 +80,14 @@ end)
 
 local OUT = "tests/output/procgen/"
 
+-- @describe Evidence: Procedural generation
 describe("Evidence: Procedural generation", function()
 
     -- @evidence file
+    -- @covers LImageData:drawRect
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
+    -- @covers lurek.procgen.cellularAutomata
     it("visualises cellular automata cave map", function()
         local gw, gh = 64, 64
         local scale = 4
@@ -103,6 +118,11 @@ describe("Evidence: Procedural generation", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:drawCircle
+    -- @covers LImageData:drawRect
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
+    -- @covers lurek.procgen.poissonDisk
     it("visualises Poisson disk sampling", function()
         local W, H = 256, 256
         local minDist = 12

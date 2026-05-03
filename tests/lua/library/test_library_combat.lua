@@ -9,6 +9,7 @@ local combat = require("library.combat")
 
 --                  CollisionGroupSet
 
+-- @describe CollisionGroupSet
 describe("CollisionGroupSet", function()
     it("defineGroup assigns power-of-2 bits", function()
         local cgs = combat.newCollisionGroupSet()
@@ -74,6 +75,7 @@ end)
 
 --                  MountSlot
 
+-- @describe MountSlot
 describe("MountSlot", function()
     it("creates with defaults", function()
         local s = combat.newMountSlot("turret_1", 10, 20, "large")
@@ -93,6 +95,7 @@ end)
 
 --                  Chassis
 
+-- @describe Chassis
 describe("Chassis", function()
     it("new with max_hp", function()
         local c = combat.newChassis(1, 100)
@@ -125,6 +128,8 @@ describe("Chassis", function()
         expect_equal(c.hp, 100)
     end)
 
+    -- @library LSaveManager:getSlots
+    -- @library LSkeleton:addSlot
     it("addSlot and getSlot", function()
         local c = combat.newChassis(1, 100)
         c:addSlot(combat.newMountSlot("s1", 0, 0, "small"))
@@ -143,6 +148,7 @@ end)
 
 --                  Turret
 
+-- @describe Turret
 describe("Turret", function()
     it("new with defaults", function()
         local t = combat.newTurret(10, 20)
@@ -167,6 +173,7 @@ describe("Turret", function()
         expect_equal(t:clampToArc(0.5), 0.5)
     end)
 
+    -- @library lurek.library_combat
     it("update returns angular velocity", function()
         local t = combat.newTurret(1, 2)
         t.turn_speed = 2.0
@@ -176,6 +183,7 @@ describe("Turret", function()
         expect_equal(vel, 2.0)
     end)
 
+    -- @library lurek.library_combat
     it("update returns nil without target", function()
         local t = combat.newTurret(1, 2)
         expect_equal(t:update(0.1, 0), nil)
@@ -202,6 +210,7 @@ describe("Turret", function()
         expect_equal(t:isAimed(0.01), false)
     end)
 
+    -- @library LNetworkHost:isDestroyed
     it("Turret getters and setters", function()
         local t = combat.newTurret(5, 6)
         t:setTurnSpeed(3.0)
@@ -225,6 +234,7 @@ end)
 
 --                  Weapon
 
+-- @describe Weapon
 describe("Weapon", function()
     it("new with defaults", function()
         local w = combat.newWeapon("Laser")
@@ -315,6 +325,8 @@ describe("Weapon", function()
         expect_equal(w:isFiring(), false)
     end)
 
+    -- @library LParticleSystem:getSpread
+    -- @library LParticleSystem:setSpread
     it("Weapon getters and setters", function()
         local w = combat.newWeapon("Test")
         expect_equal(w:getName(), "Test")
@@ -349,7 +361,9 @@ end)
 
 --                  Projectile
 
+-- @describe Projectile
 describe("Projectile", function()
+    -- @library LUniverse:spawn
     it("reset clears all fields and restores projectile_type to Ballistic", function()
         local pool = combat.newProjectilePool(2, combat.ProjectileType.Homing)
         local idx = pool:spawn(0, 0, 0, 100, 10, "kinetic", 500)
@@ -364,6 +378,7 @@ describe("Projectile", function()
         expect_equal(p.projectile_type, combat.ProjectileType.Ballistic)
     end)
 
+    -- @library LUniverse:spawn
     it("update does nothing when projectile is inactive", function()
         local pool = combat.newProjectilePool(2)
         local idx = pool:spawn(0, 0, 0, 100, 10, "k", 500)
@@ -373,6 +388,7 @@ describe("Projectile", function()
         expect_equal(p.distance_traveled, 0)
     end)
 
+    -- @library LUniverse:spawn
     it("update advances lifetime and distance when active", function()
         local pool = combat.newProjectilePool(2)
         local idx = pool:spawn(0, 0, 0, 200, 10, "k", 500)
@@ -385,6 +401,7 @@ end)
 
 --                  ProjectilePool
 
+-- @describe ProjectilePool
 describe("ProjectilePool", function()
     it("new creates pool with free slots", function()
         local pool = combat.newProjectilePool(10)
@@ -392,6 +409,7 @@ describe("ProjectilePool", function()
         expect_equal(pool:activeCount(), 0)
     end)
 
+    -- @library LUniverse:spawn
     it("spawn and release", function()
         local pool = combat.newProjectilePool(5)
         local idx = pool:spawn(0, 0, 0, 100, 10, "kinetic", 500)
@@ -403,6 +421,7 @@ describe("ProjectilePool", function()
         expect_equal(pool:freeCount(), 5)
     end)
 
+    -- @library LUniverse:spawn
     it("getActive returns active indices", function()
         local pool = combat.newProjectilePool(5)
         pool:spawn(0, 0, 0, 100, 10, "k", 500)
@@ -411,6 +430,7 @@ describe("ProjectilePool", function()
         expect_equal(#active, 2)
     end)
 
+    -- @library LUniverse:spawn
     it("resetAll releases all", function()
         local pool = combat.newProjectilePool(5)
         pool:spawn(0, 0, 0, 100, 10, "k", 500)
@@ -425,6 +445,7 @@ describe("ProjectilePool", function()
         expect_equal(pool.pool_size, 1024)
     end)
 
+    -- @library LUniverse:spawn
     it("spawn returns nil when exhausted", function()
         local pool = combat.newProjectilePool(2)
         pool:spawn(0, 0, 0, 100, 10, "k", 500)
@@ -433,6 +454,7 @@ describe("ProjectilePool", function()
         expect_equal(idx, nil)
     end)
 
+    -- @library LUniverse:spawn
     it("get returns projectile data", function()
         local pool = combat.newProjectilePool(5)
         local idx = pool:spawn(0, 0, 0, 200, 25, "explosive", 800)
@@ -442,6 +464,7 @@ describe("ProjectilePool", function()
         expect_equal(p.damage_type, "explosive")
     end)
 
+    -- @library LUniverse:spawn
     it("release of already-inactive slot is a no-op", function()
         local pool = combat.newProjectilePool(3)
         local idx = pool:spawn(0, 0, 0, 100, 10, "k", 500)
@@ -454,6 +477,7 @@ end)
 
 --                  CombatWorld
 
+-- @describe CombatWorld
 describe("CombatWorld", function()
     it("new creates empty world", function()
         local w = combat.newCombatWorld()
@@ -501,6 +525,7 @@ describe("CombatWorld", function()
         expect_equal(w:activeChassisCount(), 1)
     end)
 
+    -- @library LUniverse:spawn
     it("activeProjectileCount sums across pools", function()
         local w = combat.newCombatWorld()
         local pool = combat.newProjectilePool(10)
@@ -510,6 +535,7 @@ describe("CombatWorld", function()
         expect_equal(w:activeProjectileCount(), 2)
     end)
 
+    -- @library lurek.library_combat
     it("update ticks weapon cooldowns", function()
         local w = combat.newCombatWorld()
         local wpn = combat.newWeapon("Gun")
@@ -542,6 +568,7 @@ end)
 
 --                  Enums
 
+-- @describe Enums
 describe("Enums", function()
     it("ProjectileType has all variants", function()
         expect_equal(combat.ProjectileType.Ballistic, "ballistic")
@@ -560,6 +587,7 @@ end)
 
 --        Bug fix: collision group overflow error message
 
+-- @describe CollisionGroupSet overflow
 describe("CollisionGroupSet overflow", function()
     it("returns descriptive error when exceeding 16 groups", function()
         local cgs = combat.newCollisionGroupSet()
@@ -570,6 +598,7 @@ describe("CollisionGroupSet overflow", function()
         local b, err = cgs:defineGroup("g17")
         expect_equal(b, nil)
         expect_equal(type(err), "string")
+        if err == nil then error("expected overflow error") end
         -- Error should mention limit and overflow
         expect_equal(err:find("16") ~= nil, true)
         expect_equal(err:find("overflow") ~= nil, true)
@@ -579,13 +608,16 @@ describe("CollisionGroupSet overflow", function()
         local cgs = combat.newCollisionGroupSet()
         local b, err = cgs:defineGroup("")
         expect_equal(b, nil)
+        if err == nil then error("expected validation error") end
         expect_equal(err:find("non%-empty") ~= nil, true)
     end)
 end)
 
 --        Bug fix: turret arc snapping
 
+-- @describe Turret arc snapping
 describe("Turret arc snapping", function()
+    -- @library lurek.library_combat
     it("update snaps to arc_max when target exceeds arc", function()
         local t = combat.newTurret(1, 2)
         t.turn_speed = 10.0
@@ -599,6 +631,7 @@ describe("Turret arc snapping", function()
         expect_equal(vel, 10.0)
     end)
 
+    -- @library lurek.library_combat
     it("update snaps to arc_min when target is below arc", function()
         local t = combat.newTurret(1, 2)
         t.turn_speed = 10.0
@@ -611,6 +644,7 @@ describe("Turret arc snapping", function()
         expect_equal(vel, -10.0)
     end)
 
+    -- @library lurek.library_combat
     it("update reaches clamped boundary exactly", function()
         local t = combat.newTurret(1, 2)
         t.turn_speed = 10.0
@@ -625,6 +659,7 @@ end)
 
 --        Bug fix: weapon burst inter-burst cooldown
 
+-- @describe Weapon burst cooldown
 describe("Weapon burst cooldown", function()
     it("last burst shot applies fire_rate cooldown, not burst_delay", function()
         local w = combat.newWeapon("BurstGun")
@@ -665,6 +700,7 @@ end)
 
 --        Input validation
 
+-- @describe Input validation
 describe("Input validation", function()
     it("newWeapon rejects empty name", function()
         expect_error(function() combat.newWeapon("") end)
@@ -702,6 +738,7 @@ end)
 
 --        Pool exhaustion and DEFAULT_POOL_SIZE
 
+-- @describe ProjectilePool defaults
 describe("ProjectilePool defaults", function()
     it("DEFAULT_POOL_SIZE is 64 and used when pool_size is nil", function()
         expect_equal(combat.DEFAULT_POOL_SIZE, 64)

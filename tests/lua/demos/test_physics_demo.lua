@@ -6,6 +6,7 @@ local DEMO_PATH = "content/games/simulation/physics_demo/main.lua"
 dofile("tests/lua/content/demos/_common_checks.lua")
 demo_common_checks("physics_demo", DEMO_PATH)
 
+-- @describe physics_demo: physics API usage
 describe("physics_demo: physics API usage", function()
     local src
 

@@ -1,7 +1,13 @@
 -- Lurek2D Stress Test: DataFrame Bulk Operations
 -- Tests large DataFrames with many rows and columns
 
+-- @describe dataframe stress: bulk row insertion
 describe("dataframe stress: bulk row insertion", function()
+    -- @stress LDataFrame:addColumn
+    -- @stress LDataFrame:addRow
+    -- @stress LDataFrame:ncols
+    -- @stress LDataFrame:nrows
+    -- @stress lurek.dataframe.newDataFrame
     it("inserts 5000 rows", function()
         local df = lurek.dataframe.newDataFrame()
         df:addColumn("id", 0)
@@ -16,6 +22,10 @@ describe("dataframe stress: bulk row insertion", function()
         expect_equal(3, df:ncols(), "3 columns")
     end)
 
+    -- @stress LDataFrame:addColumn
+    -- @stress LDataFrame:addRow
+    -- @stress LDataFrame:getValue
+    -- @stress lurek.dataframe.newDataFrame
     it("reads back all 5000 rows correctly", function()
         local df = lurek.dataframe.newDataFrame()
         df:addColumn("value", 0)
@@ -35,7 +45,14 @@ describe("dataframe stress: bulk row insertion", function()
     end)
 end)
 
+-- @describe dataframe stress: many columns
 describe("dataframe stress: many columns", function()
+    -- @stress LDataFrame:addColumn
+    -- @stress LDataFrame:addRow
+    -- @stress LDataFrame:getValue
+    -- @stress LDataFrame:ncols
+    -- @stress LDataFrame:nrows
+    -- @stress lurek.dataframe.newDataFrame
     it("creates DataFrame with 50 columns", function()
         local df = lurek.dataframe.newDataFrame()
 
@@ -61,7 +78,14 @@ describe("dataframe stress: many columns", function()
     end)
 end)
 
+-- @describe dataframe stress: column operations
 describe("dataframe stress: column operations", function()
+    -- @stress LDataFrame:addColumn
+    -- @stress LDataFrame:addRow
+    -- @stress LDataFrame:ncols
+    -- @stress LDataFrame:nrows
+    -- @stress LDataFrame:removeColumn
+    -- @stress lurek.dataframe.newDataFrame
     it("adds and removes columns repeatedly", function()
         local df = lurek.dataframe.newDataFrame()
 

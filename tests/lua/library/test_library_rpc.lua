@@ -79,6 +79,7 @@ local rpc_mod = require("library.rpc")
 -- Construction & Basics
 ---------------------------------------------------------------------------
 
+-- @describe RPC Construction
 describe("RPC Construction", function()
     it("creates with defaults", function()
         local host = MockHost.new()
@@ -112,6 +113,7 @@ end)
 -- Register / Unregister
 ---------------------------------------------------------------------------
 
+-- @describe RPC Register/Unregister
 describe("RPC Register/Unregister", function()
     it("registers a handler", function()
         local host = MockHost.new()
@@ -154,6 +156,7 @@ end)
 -- Call (request/response)
 ---------------------------------------------------------------------------
 
+-- @describe RPC Call
 describe("RPC Call", function()
     it("sends an rpc_call message", function()
         local host = MockHost.new()
@@ -202,6 +205,7 @@ end)
 -- Response Matching
 ---------------------------------------------------------------------------
 
+-- @describe RPC Response Matching
 describe("RPC Response Matching", function()
     it("matches response to pending callback by ID", function()
         local host = MockHost.new()
@@ -246,6 +250,7 @@ end)
 -- Notify
 ---------------------------------------------------------------------------
 
+-- @describe RPC Notify
 describe("RPC Notify", function()
     it("sends an rpc_notify with peer_id context", function()
         local host = MockHost.new()
@@ -271,6 +276,7 @@ end)
 -- Broadcast
 ---------------------------------------------------------------------------
 
+-- @describe RPC Broadcast
 describe("RPC Broadcast", function()
     it("broadcasts rpc_notify with peer_id=0", function()
         local host = MockHost.new()
@@ -296,6 +302,7 @@ end)
 -- Dispatch (incoming calls)
 ---------------------------------------------------------------------------
 
+-- @describe RPC Incoming Call Dispatch
 describe("RPC Incoming Call Dispatch", function()
     it("dispatches an incoming rpc_call and sends response", function()
         local host = MockHost.new()
@@ -393,7 +400,9 @@ end)
 -- Unpack Failure
 ---------------------------------------------------------------------------
 
+-- @describe RPC Unpack Failure
 describe("RPC Unpack Failure", function()
+    -- @library lurek.network.unpack
     it("fires error callback with peer context on unpack failure", function()
         local host = MockHost.new()
         local R = rpc_mod.new(host)
@@ -420,6 +429,7 @@ end)
 -- Timeout
 ---------------------------------------------------------------------------
 
+-- @describe RPC Timeout
 describe("RPC Timeout", function()
     it("expires pending calls after timeout", function()
         local host = MockHost.new()
@@ -485,6 +495,7 @@ end)
 -- ID Counter Management
 ---------------------------------------------------------------------------
 
+-- @describe RPC ID Counter
 describe("RPC ID Counter", function()
     it("resetIdCounter resets to 1", function()
         local host = MockHost.new()
@@ -509,6 +520,7 @@ end)
 -- Error Handler Validation
 ---------------------------------------------------------------------------
 
+-- @describe RPC onError Validation
 describe("RPC onError Validation", function()
     it("accepts a function", function()
         local host = MockHost.new()
@@ -538,6 +550,7 @@ end)
 -- Logging
 ---------------------------------------------------------------------------
 
+-- @describe RPC Logging
 describe("RPC Logging", function()
     it("setLogging toggles log flag", function()
         local host = MockHost.new()
@@ -580,6 +593,7 @@ end)
 -- Edge Cases
 ---------------------------------------------------------------------------
 
+-- @describe RPC Edge Cases
 describe("RPC Edge Cases", function()
     it("poll returns empty table when no messages", function()
         local host = MockHost.new()

@@ -6,6 +6,7 @@ local Stats = require("library.stats")
 
 --                  Attribute
 
+-- @describe Attribute
 describe("Attribute", function()
     it("should create with base value", function()
         local a = Stats.newAttribute(50)
@@ -22,6 +23,7 @@ end)
 
 --                  Buff
 
+-- @describe Buff
 describe("Buff", function()
     it("should create with defaults", function()
         local b = Stats.newBuff("hp", 10)
@@ -49,6 +51,7 @@ end)
 
 --                  Skill
 
+-- @describe Skill
 describe("Skill", function()
     it("should create with defaults", function()
         local sk = Stats.newSkill()
@@ -70,6 +73,7 @@ end)
 
 --                  Perk
 
+-- @describe Perk
 describe("Perk", function()
     it("should create with defaults", function()
         local p = Stats.newPerk()
@@ -87,6 +91,7 @@ end)
 
 --                  ActionPoints
 
+-- @describe ActionPoints
 describe("ActionPoints", function()
     it("should start at max", function()
         local ap = Stats.newActionPoints(6)
@@ -97,6 +102,7 @@ end)
 
 --                  Morale
 
+-- @describe Morale
 describe("Morale", function()
     it("should start at max", function()
         local m = Stats.newMorale(100)
@@ -109,6 +115,7 @@ end)
 
 --                  LevelThresholds
 
+-- @describe LevelThresholds
 describe("LevelThresholds", function()
     it("table thresholds", function()
         local t = Stats.newTableThresholds({ 100, 200, 400 })
@@ -128,6 +135,7 @@ end)
 
 --                  Sheet basics
 
+-- @describe Sheet basics
 describe("Sheet basics", function()
     it("should create empty sheet", function()
         local s = Stats.newSheet()
@@ -135,6 +143,7 @@ describe("Sheet basics", function()
         expect_equal(s.xp, 0)
     end)
 
+    -- @library LTraitProfile:getBase
     it("should define and get attribute", function()
         local s = Stats.newSheet()
         s:define("hp", 100)
@@ -142,12 +151,14 @@ describe("Sheet basics", function()
         expect_equal(s:getBase("hp"), 100)
     end)
 
+    -- @library LTraitProfile:getBase
     it("should return nil for undefined attribute", function()
         local s = Stats.newSheet()
         expect_equal(s:get("nope"), nil)
         expect_equal(s:getBase("nope"), nil)
     end)
 
+    -- @library LTraitProfile:getBase
     it("should set base value", function()
         local s = Stats.newSheet()
         s:define("hp", 100, { max = 200 })
@@ -155,6 +166,7 @@ describe("Sheet basics", function()
         expect_equal(s:getBase("hp"), 150)
     end)
 
+    -- @library LTraitProfile:getBase
     it("should clamp base to min/max", function()
         local s = Stats.newSheet()
         s:define("hp", 50, { min = 0, max = 100 })
@@ -189,7 +201,9 @@ end)
 
 --                  Buffs on Sheet
 
+-- @describe Sheet buffs
 describe("Sheet buffs", function()
+    -- @library lurek.library_stats
     it("addBuff adjusts effective value", function()
         local s = Stats.newSheet()
         s:define("str", 10)
@@ -197,6 +211,7 @@ describe("Sheet buffs", function()
         expect_equal(s:get("str"), 15)
     end)
 
+    -- @library lurek.library_stats
     it("multiplicative buff", function()
         local s = Stats.newSheet()
         s:define("str", 10)
@@ -204,6 +219,7 @@ describe("Sheet buffs", function()
         expect_equal(s:get("str"), 20)
     end)
 
+    -- @library lurek.library_stats
     it("removeBuff restores value", function()
         local s = Stats.newSheet()
         s:define("str", 10)
@@ -213,6 +229,7 @@ describe("Sheet buffs", function()
         expect_equal(s:get("str"), 10)
     end)
 
+    -- @library lurek.library_stats
     it("clearBuffs removes all", function()
         local s = Stats.newSheet()
         s:define("str", 10)
@@ -222,6 +239,7 @@ describe("Sheet buffs", function()
         expect_equal(s:get("str"), 10)
     end)
 
+    -- @library lurek.library_stats
     it("clearBuffs by stat", function()
         local s = Stats.newSheet()
         s:define("str", 10)
@@ -255,7 +273,9 @@ end)
 
 --                  Traits
 
+-- @describe Traits
 describe("Traits", function()
+    -- @library lurek.library_stats
     it("apply and remove trait buffs", function()
         Stats.defineTrait("tough", { buffs = { { stat = "hp", add = 20, mul = 1 } } })
         local s = Stats.newSheet()
@@ -282,6 +302,7 @@ end)
 
 --                  Skills
 
+-- @describe Skills
 describe("Skills", function()
     it("define and learn skill", function()
         local s = Stats.newSheet()
@@ -298,6 +319,7 @@ describe("Skills", function()
         expect_equal(s:learnSkill("slash"), false)
     end)
 
+    -- @library LTraitProfile:getBase
     it("useSkill costs resource and starts cooldown", function()
         local s = Stats.newSheet()
         s:define("mana", 100)
@@ -333,6 +355,7 @@ end)
 
 --                  Perks
 
+-- @describe Perks
 describe("Perks", function()
     it("define and acquire perk", function()
         local s = Stats.newSheet()
@@ -356,6 +379,7 @@ describe("Perks", function()
         expect_equal(s:acquirePerk("lucky"), false)
     end)
 
+    -- @library lurek.library_stats
     it("perk with trait applies buffs", function()
         Stats.defineTrait("armor_up", { buffs = { { stat = "def", add = 10, mul = 1 } } })
         local s = Stats.newSheet()
@@ -368,6 +392,7 @@ end)
 
 --                  Flags
 
+-- @describe Flags
 describe("Flags", function()
     it("set/clear/has/get", function()
         local s = Stats.newSheet()
@@ -389,7 +414,9 @@ end)
 
 --                  XP / Level
 
+-- @describe XP and Levelling
 describe("XP and Levelling", function()
+    -- @library LRelationshipManager:getLevel
     it("addXP gains levels with linear thresholds", function()
         local s = Stats.newSheet()
         s:setLevelThresholds(Stats.newLinearThresholds(100, 100))
@@ -401,6 +428,7 @@ describe("XP and Levelling", function()
         expect_equal(s:getXP(), 150)
     end)
 
+    -- @library LRelationshipManager:getLevel
     it("addXP gains levels with table thresholds", function()
         local s = Stats.newSheet()
         s:setLevelThresholds(Stats.newTableThresholds({ 50, 100, 200 }))
@@ -410,6 +438,8 @@ describe("XP and Levelling", function()
         expect_equal(s:getXP(), 10)
     end)
 
+    -- @library LRelationshipManager:getLevel
+    -- @library LRelationshipManager:setLevel
     it("setXP and setLevel directly", function()
         local s = Stats.newSheet()
         s:setXP(42)
@@ -421,6 +451,7 @@ end)
 
 --                  Use tracking
 
+-- @describe Use tracking
 describe("Use tracking", function()
     it("recordUse increments count", function()
         local s = Stats.newSheet()
@@ -430,6 +461,7 @@ describe("Use tracking", function()
         expect_equal(s:getUseCount("str"), 2)
     end)
 
+    -- @library LTraitProfile:getBase
     it("recordUse applies growth", function()
         local s = Stats.newSheet()
         s:define("str", 10, { growth = 0.5, max = 12 })
@@ -446,6 +478,7 @@ end)
 
 --                  Action Points
 
+-- @describe Action Points
 describe("Action Points", function()
     it("setActionPoints and spend", function()
         local s = Stats.newSheet()
@@ -485,6 +518,7 @@ end)
 
 --                  Morale
 
+-- @describe Morale system
 describe("Morale system", function()
     it("adjustMorale and checkMorale", function()
         local s = Stats.newSheet()
@@ -526,6 +560,7 @@ end)
 
 --                  Resistances
 
+-- @describe Resistances
 describe("Resistances", function()
     it("setResistance and getResistance", function()
         local s = Stats.newSheet()
@@ -534,6 +569,7 @@ describe("Resistances", function()
         expect_near(s:getResistance("ice"), 0.0, 0.01)
     end)
 
+    -- @library LTraitProfile:getBase
     it("applyDamage reduced by resistance", function()
         local s = Stats.newSheet()
         s:define("hp", 100)
@@ -543,6 +579,7 @@ describe("Resistances", function()
         expect_near(s:getBase("hp"), 70, 0.01)
     end)
 
+    -- @library LTraitProfile:getBase
     it("applyDamage without type ignores resistances", function()
         local s = Stats.newSheet()
         s:define("hp", 100)
@@ -555,6 +592,7 @@ end)
 
 --                  Encumbrance
 
+-- @describe Encumbrance
 describe("Encumbrance", function()
     it("setEncumbrance and isEncumbered", function()
         local s = Stats.newSheet()
@@ -574,6 +612,7 @@ end)
 
 --                  Initiative
 
+-- @describe Initiative
 describe("Initiative", function()
     it("setInitiative and getInitiative", function()
         local s = Stats.newSheet()
@@ -585,7 +624,9 @@ end)
 
 --                  Update (tick)
 
+-- @describe Update tick
 describe("Update tick", function()
+    -- @library lurek.library_stats
     it("expires timed buffs", function()
         local s = Stats.newSheet()
         s:define("str", 10)
@@ -595,6 +636,7 @@ describe("Update tick", function()
         expect_equal(s:get("str"), 10)
     end)
 
+    -- @library lurek.library_stats
     it("ticks skill cooldowns", function()
         local s = Stats.newSheet()
         s:defineSkill("heal", { max_level = 5, cooldown = 5 })
@@ -606,6 +648,7 @@ describe("Update tick", function()
         expect_near(s:getCooldownRemaining("heal"), 0, 0.01)
     end)
 
+    -- @library LTraitProfile:getBase
     it("applies regen", function()
         local s = Stats.newSheet()
         s:define("hp", 80, { max = 100, regen = 10 })
@@ -613,6 +656,7 @@ describe("Update tick", function()
         expect_near(s:getBase("hp"), 90, 0.01)
     end)
 
+    -- @library LTraitProfile:getBase
     it("regen clamped to max", function()
         local s = Stats.newSheet()
         s:define("hp", 95, { max = 100, regen = 10 })
@@ -623,7 +667,11 @@ end)
 
 --                  Snapshot/Restore
 
+-- @describe Snapshot and Restore
 describe("Snapshot and Restore", function()
+    -- @library LBlackboard:snapshot
+    -- @library LSaveManager:restore
+    -- @library LTraitProfile:getBase
     it("snapshot captures and restores state", function()
         local s = Stats.newSheet()
         s:define("hp", 100, { min = 0, max = 200 })
@@ -653,6 +701,7 @@ end)
 
 --                  Registry
 
+-- @describe StatsRegistry
 describe("StatsRegistry", function()
     it("defineTrait and getTraitNames", function()
         Stats.defineTrait("brawler", { buffs = { { stat = "str", add = 3, mul = 1 } } })
@@ -671,6 +720,7 @@ describe("StatsRegistry", function()
         expect_equal(found, true)
     end)
 
+    -- @library LTraitProfile:getBase
     it("applyArchetypes applies race bases", function()
         Stats.defineRace("dwarf", { bases = { hp = 20, str = 5 }, traits = {} })
         local s = Stats.newSheet()
@@ -681,6 +731,7 @@ describe("StatsRegistry", function()
         expect_equal(s:getBase("str"), 15)
     end)
 
+    -- @library LTraitProfile:getBase
     it("applyArchetypes applies class", function()
         Stats.defineClass("warrior", { bases = { str = 10 }, traits = {} })
         local s = Stats.newSheet()
@@ -689,6 +740,7 @@ describe("StatsRegistry", function()
         expect_equal(s:getBase("str"), 20)
     end)
 
+    -- @library lurek.library_stats
     it("applyArchetypes applies race traits", function()
         Stats.defineTrait("nimble", { buffs = { { stat = "agi", add = 8, mul = 1 } } })
         Stats.defineRace("catfolk", { bases = {}, traits = { "nimble" } })
@@ -721,7 +773,9 @@ end)
 
 --        Buff formula correctness
 
+-- @describe Buff formula
 describe("Buff formula", function()
+    -- @library lurek.library_stats
     it("zero multiplier preserves additive buffs", function()
         local s = Stats.newSheet()
         s:define("str", 10)
@@ -730,6 +784,7 @@ describe("Buff formula", function()
         expect_equal(s:get("str"), 5)
     end)
 
+    -- @library lurek.library_stats
     it("combined add and mul uses correct order", function()
         local s = Stats.newSheet()
         s:define("str", 10)
@@ -738,6 +793,7 @@ describe("Buff formula", function()
         expect_equal(s:get("str"), 25)
     end)
 
+    -- @library lurek.library_stats
     it("multiple buffs stack correctly", function()
         local s = Stats.newSheet()
         s:define("str", 10)
@@ -748,6 +804,7 @@ describe("Buff formula", function()
         expect_near(s:get("str"), 20, 0.01)
     end)
 
+    -- @library lurek.library_stats
     it("pure multiplicative only", function()
         local s = Stats.newSheet()
         s:define("str", 10)
@@ -758,7 +815,9 @@ end)
 
 --        Stack mode enforcement
 
+-- @describe Buff stack modes
 describe("Buff stack modes", function()
+    -- @library lurek.library_stats
     it("None rejects duplicate", function()
         local s = Stats.newSheet()
         s:define("str", 10)
@@ -785,6 +844,7 @@ describe("Buff stack modes", function()
         expect_equal(buffs[1].remaining, 15) -- 10 + 5
     end)
 
+    -- @library lurek.library_stats
     it("Intensity increases add value", function()
         local s = Stats.newSheet()
         s:define("str", 10)
@@ -798,6 +858,7 @@ describe("Buff stack modes", function()
         expect_equal(s:get("str"), 18)
     end)
 
+    -- @library lurek.library_stats
     it("nil stack_mode allows duplicates", function()
         local s = Stats.newSheet()
         s:define("str", 10)
@@ -818,7 +879,9 @@ end)
 
 --        Encumbrance update
 
+-- @describe Encumbrance update
 describe("Encumbrance update", function()
+    -- @library lurek.library_stats
     it("sets encumbered flag when over limit", function()
         local s = Stats.newSheet()
         s:setEncumbrance(150, 100)
@@ -826,6 +889,7 @@ describe("Encumbrance update", function()
         expect_equal(s:hasFlag("encumbered"), true)
     end)
 
+    -- @library lurek.library_stats
     it("clears encumbered flag when under limit", function()
         local s = Stats.newSheet()
         s:setEncumbrance(150, 100)
@@ -836,6 +900,7 @@ describe("Encumbrance update", function()
         expect_equal(s:hasFlag("encumbered"), false)
     end)
 
+    -- @library lurek.library_stats
     it("no encumbrance means no flag", function()
         local s = Stats.newSheet()
         s:update(0)
@@ -845,6 +910,7 @@ end)
 
 --        Input validation
 
+-- @describe Input validation
 describe("Input validation", function()
     it("define ignores nil name", function()
         local s = Stats.newSheet()

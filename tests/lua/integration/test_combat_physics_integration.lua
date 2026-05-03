@@ -56,8 +56,10 @@ local function resolve_targets(world, targets, sx, sy, range, mask)
     return out
 end
 
+-- @describe integration: library.combat    lurek.physics
 describe("integration: library.combat    lurek.physics", function()
 
+    -- @integration lurek.physics.newWorld
     it("damage is applied to a chassis whose physics body is in range", function()
         local world = lurek.physics.newWorld(0, 0)
         local cgs = combat.newCollisionGroupSet()
@@ -71,6 +73,7 @@ describe("integration: library.combat    lurek.physics", function()
         expect_equal(75, t.chassis.hp)
     end)
 
+    -- @integration lurek.physics.newWorld
     it("no-op when the only target is outside attack range", function()
         local world = lurek.physics.newWorld(0, 0)
         local cgs = combat.newCollisionGroupSet()
@@ -82,6 +85,7 @@ describe("integration: library.combat    lurek.physics", function()
         expect_equal(100, t.chassis.hp)
     end)
 
+    -- @integration lurek.physics.newWorld
     it("multiple targets are sorted nearest-first", function()
         local world = lurek.physics.newWorld(0, 0)
         local cgs = combat.newCollisionGroupSet()
@@ -102,6 +106,7 @@ describe("integration: library.combat    lurek.physics", function()
     end)
 
     -- a player chassis at point-blank range receives no damage.
+    -- @integration lurek.physics.newWorld
     it("friendly-fire OFF spares same-group chassis", function()
         local world = lurek.physics.newWorld(0, 0)
         local cgs = combat.newCollisionGroupSet()
@@ -117,6 +122,7 @@ describe("integration: library.combat    lurek.physics", function()
         expect_equal(enemy, hits[1].target)
     end)
 
+    -- @integration lurek.physics.newWorld
     it("friendly-fire ON includes same-group chassis", function()
         local world = lurek.physics.newWorld(0, 0)
         local cgs = combat.newCollisionGroupSet()
@@ -131,6 +137,8 @@ describe("integration: library.combat    lurek.physics", function()
         expect_equal(2, #hits)
     end)
 
+    -- @integration lurek.physics.newWorld
+    -- @integration lurek.physics.step
     it("physics.step rejects a non-numeric dt", function()
         local world = lurek.physics.newWorld(0, 0)
         expect_error(function()
@@ -204,8 +212,10 @@ local function resolve_targets(world, targets, sx, sy, range, mask)
     return out
 end
 
+-- @describe integration: library.combat    lurek.physics
 describe("integration: library.combat    lurek.physics", function()
 
+    -- @integration lurek.physics.newWorld
     it("damage is applied to a chassis whose physics body is in range", function()
         local world = lurek.physics.newWorld(0, 0)
         local cgs = combat.newCollisionGroupSet()
@@ -219,6 +229,7 @@ describe("integration: library.combat    lurek.physics", function()
         expect_equal(75, t.chassis.hp)
     end)
 
+    -- @integration lurek.physics.newWorld
     it("no-op when the only target is outside attack range", function()
         local world = lurek.physics.newWorld(0, 0)
         local cgs = combat.newCollisionGroupSet()
@@ -230,6 +241,7 @@ describe("integration: library.combat    lurek.physics", function()
         expect_equal(100, t.chassis.hp)
     end)
 
+    -- @integration lurek.physics.newWorld
     it("multiple targets are sorted nearest-first", function()
         local world = lurek.physics.newWorld(0, 0)
         local cgs = combat.newCollisionGroupSet()
@@ -250,6 +262,7 @@ describe("integration: library.combat    lurek.physics", function()
     end)
 
     -- a player chassis at point-blank range receives no damage.
+    -- @integration lurek.physics.newWorld
     it("friendly-fire OFF spares same-group chassis", function()
         local world = lurek.physics.newWorld(0, 0)
         local cgs = combat.newCollisionGroupSet()
@@ -265,6 +278,7 @@ describe("integration: library.combat    lurek.physics", function()
         expect_equal(enemy, hits[1].target)
     end)
 
+    -- @integration lurek.physics.newWorld
     it("friendly-fire ON includes same-group chassis", function()
         local world = lurek.physics.newWorld(0, 0)
         local cgs = combat.newCollisionGroupSet()
@@ -279,6 +293,8 @@ describe("integration: library.combat    lurek.physics", function()
         expect_equal(2, #hits)
     end)
 
+    -- @integration lurek.physics.newWorld
+    -- @integration lurek.physics.step
     it("physics.step rejects a non-numeric dt", function()
         local world = lurek.physics.newWorld(0, 0)
         expect_error(function()

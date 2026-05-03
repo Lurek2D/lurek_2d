@@ -4,6 +4,7 @@
 local narrative = require("library.narrative")
 
 
+-- @describe compile + continue
 describe("compile + continue", function()
     it("compiles and runs a single-knot prose-only story", function()
         local s = narrative.compile([[
@@ -43,6 +44,7 @@ You went right.
     end)
 end)
 
+-- @describe conditional choices
 describe("conditional choices", function()
     it("hides choices guarded by failing conditions", function()
         local s = narrative.compile([[
@@ -74,6 +76,7 @@ Door.
     end)
 end)
 
+-- @describe variables & inline substitution
 describe("variables & inline substitution", function()
     it("substitutes Lua-bound function values inside {fn()} markers", function()
         local s = narrative.compile([[
@@ -96,6 +99,7 @@ Hello {who}.
     end)
 end)
 
+-- @describe tags
 describe("tags", function()
     it("tag handlers fire when their tag appears", function()
         local seen = {}
@@ -112,6 +116,7 @@ Quiet line.
     end)
 end)
 
+-- @describe flow control
 describe("flow control", function()
     it("visit counter increments across diverts", function()
         local s = narrative.compile([[
@@ -133,7 +138,9 @@ At court.
     end)
 end)
 
+-- @describe save / resume
 describe("save / resume", function()
+    -- @library lurek.library_narrative
     it("round-trips variables and turn counter", function()
         local src = [[
 VAR mood = "happy"
@@ -152,6 +159,7 @@ Greetings.
     end)
 end)
 
+-- @describe error paths
 describe("error paths", function()
     it("raises descriptive error on unknown knot divert", function()
         expect_error(function()
@@ -169,6 +177,7 @@ Hi.
         end)
     end)
 
+    -- @describe module helpers
     describe("module helpers", function()
         it("formatList emits Oxford-style enumeration", function()
             expect_equal("a", narrative.formatList({"a"}))

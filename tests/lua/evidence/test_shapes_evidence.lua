@@ -1,12 +1,17 @@
 -- Evidence tests: shapes module
 -- Produces PNG artifacts from ImageData shape drawing primitives.
 
+-- @describe evidence: shapes
 describe("evidence: shapes", function()
     before_each(function()
         ensure_evidence_dir("shapes")
     end)
 
     -- @evidence file
+    -- @covers LImageData:drawRect
+    -- @covers LImageData:fill
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
     it("draws a colour rectangle grid PNG", function()
         local dir  = evidence_output_dir("shapes")
         local path = dir .. "rect_grid.png"
@@ -45,6 +50,10 @@ describe("evidence: shapes", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:drawCircle
+    -- @covers LImageData:fill
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
     it("draws concentric circles PNG", function()
         local dir  = evidence_output_dir("shapes")
         local path = dir .. "circles.png"
@@ -68,6 +77,10 @@ describe("evidence: shapes", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:drawLine
+    -- @covers LImageData:fill
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
     it("draws radiating lines PNG", function()
         local dir  = evidence_output_dir("shapes")
         local path = dir .. "radiating_lines.png"
@@ -90,6 +103,12 @@ describe("evidence: shapes", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:drawCircle
+    -- @covers LImageData:drawRect
+    -- @covers LImageData:fill
+    -- @covers LImageData:paste
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
     it("produces a paste composite PNG", function()
         local dir  = evidence_output_dir("shapes")
         local path = dir .. "paste_composite.png"

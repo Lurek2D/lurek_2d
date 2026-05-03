@@ -4,6 +4,7 @@
 
 local describe = describe or function(n,f) f() end
 local it = it or function(n,f) f() end
+-- @describe automation + event integration
 describe("automation + event integration", function()
     it("automation script fires custom event via lurek.event.emit", function()
         expect_true(true)

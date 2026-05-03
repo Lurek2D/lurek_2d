@@ -4,6 +4,7 @@
 
 local describe = describe or function(n,f) f() end
 local it = it or function(n,f) f() end
+-- @describe terminal + input integration
 describe("terminal + input integration", function()
     it("terminal opens on configured toggle key press", function()
         expect_true(true)

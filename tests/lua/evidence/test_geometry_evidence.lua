@@ -1,12 +1,19 @@
 -- Evidence tests: geometry module
 -- Produces PNG and JSON artifacts from lurek.math geometry functions.
 
+-- @describe evidence: geometry
 describe("evidence: geometry", function()
     before_each(function()
         ensure_evidence_dir("geometry")
     end)
 
     -- @evidence file
+    -- @covers LImageData:drawCircle
+    -- @covers LImageData:drawLine
+    -- @covers LImageData:fill
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
+    -- @covers lurek.math.lineIntersect
     it("plots line intersection to PNG", function()
         local dir  = evidence_output_dir("geometry")
         local path = dir .. "line_intersect.png"
@@ -27,6 +34,12 @@ describe("evidence: geometry", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:drawCircle
+    -- @covers LImageData:drawLine
+    -- @covers LImageData:fill
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
+    -- @covers lurek.math.pointInPolygon
     it("renders pointInPolygon classification PNG", function()
         local dir  = evidence_output_dir("geometry")
         local path = dir .. "point_in_polygon.png"
@@ -54,6 +67,12 @@ describe("evidence: geometry", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:drawLine
+    -- @covers LImageData:drawRect
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
+    -- @covers lurek.math.polygonArea
+    -- @covers lurek.math.polygonCentroid
     it("renders polygon area and centroid as PNG evidence", function()
         local dir  = evidence_output_dir("geometry")
         local path = dir .. "polygon_metrics.png"

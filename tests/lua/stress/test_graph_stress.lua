@@ -1,7 +1,12 @@
 -- Lurek2D Stress Test: Graph Flow Simulation
 -- Tests large graph creation, edge traversal, and simulation ticks
 
+-- @describe graph stress: large graph creation
 describe("graph stress: large graph creation", function()
+    -- @stress LGraph:addEdge
+    -- @stress LGraph:addNode
+    -- @stress LGraph:getStats
+    -- @stress lurek.graph.newGraph
     it("creates a 500-node chain graph", function()
         local g = lurek.graph.newGraph()
 
@@ -20,6 +25,10 @@ describe("graph stress: large graph creation", function()
         expect_equal(499, stats.edges, "499 edges created")
     end)
 
+    -- @stress LGraph:addEdge
+    -- @stress LGraph:addNode
+    -- @stress LGraph:getStats
+    -- @stress lurek.graph.newGraph
     it("creates a mesh-connected graph", function()
         local g = lurek.graph.newGraph()
 
@@ -52,7 +61,14 @@ describe("graph stress: large graph creation", function()
     end)
 end)
 
+-- @describe graph stress: simulation ticks
 describe("graph stress: simulation ticks", function()
+    -- @stress LGraph:addEdge
+    -- @stress LGraph:addItem
+    -- @stress LGraph:addNode
+    -- @stress LGraph:createItem
+    -- @stress LGraph:update
+    -- @stress lurek.graph.newGraph
     it("runs 100 ticks on a 200-node pipeline", function()
         local g = lurek.graph.newGraph()
 

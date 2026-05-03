@@ -3,9 +3,18 @@
 
 local OUT = "tests/output/spine/"
 
+-- @describe Evidence: Spine skeleton
 describe("Evidence: Spine skeleton", function()
 
     -- @evidence file
+    -- @covers LSkeleton:addBone
+    -- @covers LSkeleton:addChildBone
+    -- @covers LSkeleton:addSlot
+    -- @covers LSkeleton:drawToImage
+    -- @covers LSkeleton:setPosition
+    -- @covers LSkeleton:updateWorldTransforms
+    -- @covers lurek.image.savePNG
+    -- @covers lurek.spine.newSkeleton
     it("renders a stick figure skeleton", function()
         local sk = lurek.spine.newSkeleton("stick_figure")
 
@@ -32,6 +41,14 @@ describe("Evidence: Spine skeleton", function()
     end)
 
     -- @evidence file
+    -- @covers LSkeleton:addBone
+    -- @covers LSkeleton:addChildBone
+    -- @covers LSkeleton:drawToImage
+    -- @covers LSkeleton:getBoneWorld
+    -- @covers LSkeleton:setPosition
+    -- @covers LSkeleton:updateWorldTransforms
+    -- @covers lurek.image.savePNG
+    -- @covers lurek.spine.newSkeleton
     it("demonstrates bone world-transform queries", function()
         local sk = lurek.spine.newSkeleton("query_test")
         local root = sk:addBone("root",  { length = 40 })
@@ -61,9 +78,18 @@ end)
 
 local OUT = "tests/output/spine/"
 
+-- @describe Evidence: Spine skeleton
 describe("Evidence: Spine skeleton", function()
 
     -- @evidence file
+    -- @covers LSkeleton:addBone
+    -- @covers LSkeleton:addChildBone
+    -- @covers LSkeleton:addSlot
+    -- @covers LSkeleton:drawToImage
+    -- @covers LSkeleton:setPosition
+    -- @covers LSkeleton:updateWorldTransforms
+    -- @covers lurek.image.savePNG
+    -- @covers lurek.spine.newSkeleton
     it("renders a stick figure skeleton", function()
         local sk = lurek.spine.newSkeleton("stick_figure")
 
@@ -90,6 +116,14 @@ describe("Evidence: Spine skeleton", function()
     end)
 
     -- @evidence file
+    -- @covers LSkeleton:addBone
+    -- @covers LSkeleton:addChildBone
+    -- @covers LSkeleton:drawToImage
+    -- @covers LSkeleton:getBoneWorld
+    -- @covers LSkeleton:setPosition
+    -- @covers LSkeleton:updateWorldTransforms
+    -- @covers lurek.image.savePNG
+    -- @covers lurek.spine.newSkeleton
     it("demonstrates bone world-transform queries", function()
         local sk = lurek.spine.newSkeleton("query_test")
         local root = sk:addBone("root",  { length = 40 })

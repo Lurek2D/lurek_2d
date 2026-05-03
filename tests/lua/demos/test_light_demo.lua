@@ -6,6 +6,7 @@ local DEMO_PATH = "content/games/showcase/light_demo/main.lua"
 dofile("tests/lua/content/demos/_common_checks.lua")
 demo_common_checks("light_demo", DEMO_PATH)
 
+-- @describe light_demo: lighting API usage
 describe("light_demo: lighting API usage", function()
     local src
 

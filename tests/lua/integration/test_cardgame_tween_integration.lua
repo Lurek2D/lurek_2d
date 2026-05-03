@@ -19,8 +19,12 @@ local function fresh_card()
     return cg.newCard("knight")
 end
 
+-- @describe integration: library.cardgame    lurek.tween
 describe("integration: library.cardgame    lurek.tween", function()
 
+    -- @integration lurek.tween.cancelAll
+    -- @integration lurek.tween.tween
+    -- @integration lurek.tween.update
     it("tween updates card tile_x toward target over multiple updates", function()
         lurek.tween.cancelAll()
         local card = fresh_card()
@@ -38,6 +42,9 @@ describe("integration: library.cardgame    lurek.tween", function()
         expect_near(10.0, card.tile_x, 1e-5)
     end)
 
+    -- @integration lurek.tween.cancelAll
+    -- @integration lurek.tween.tween
+    -- @integration lurek.tween.update
     it("finished tween triggers a cardgame onComplete callback once", function()
         lurek.tween.cancelAll()
         local card = fresh_card()
@@ -57,6 +64,9 @@ describe("integration: library.cardgame    lurek.tween", function()
         expect_near(5.0, card.tile_x, 1e-5)
     end)
 
+    -- @integration lurek.tween.cancelAll
+    -- @integration lurek.tween.tween
+    -- @integration lurek.tween.update
     it("sequence chains two card movement tweens", function()
         lurek.tween.cancelAll()
         local card = fresh_card()
@@ -74,6 +84,9 @@ describe("integration: library.cardgame    lurek.tween", function()
         expect_near(10.0, card.tile_x, 0.5)
     end)
 
+    -- @integration lurek.tween.cancelAll
+    -- @integration lurek.tween.tween
+    -- @integration lurek.tween.update
     it("inOutQuad easing reaches midpoint value at half duration", function()
         lurek.tween.cancelAll()
         local card = fresh_card()
@@ -84,6 +97,9 @@ describe("integration: library.cardgame    lurek.tween", function()
         expect_near(0.5, card.tile_x, 1e-5)
     end)
 
+    -- @integration lurek.tween.cancelAll
+    -- @integration lurek.tween.tween
+    -- @integration lurek.tween.update
     it("tween animates tile_x and tile_y simultaneously", function()
         lurek.tween.cancelAll()
         local card = fresh_card()
@@ -96,6 +112,8 @@ describe("integration: library.cardgame    lurek.tween", function()
         expect_near(6.0, y, 1e-5)
     end)
 
+    -- @integration lurek.tween.cancelAll
+    -- @integration lurek.tween.tween
     it("tween rejects a non-numeric duration", function()
         lurek.tween.cancelAll()
         local card = fresh_card()
@@ -134,8 +152,12 @@ local function fresh_card()
     return cg.newCard("knight")
 end
 
+-- @describe integration: library.cardgame    lurek.tween
 describe("integration: library.cardgame    lurek.tween", function()
 
+    -- @integration lurek.tween.cancelAll
+    -- @integration lurek.tween.tween
+    -- @integration lurek.tween.update
     it("tween updates card tile_x toward target over multiple updates", function()
         lurek.tween.cancelAll()
         local card = fresh_card()
@@ -153,6 +175,9 @@ describe("integration: library.cardgame    lurek.tween", function()
         expect_near(10.0, card.tile_x, 1e-5)
     end)
 
+    -- @integration lurek.tween.cancelAll
+    -- @integration lurek.tween.tween
+    -- @integration lurek.tween.update
     it("finished tween triggers a cardgame onComplete callback once", function()
         lurek.tween.cancelAll()
         local card = fresh_card()
@@ -171,6 +196,9 @@ describe("integration: library.cardgame    lurek.tween", function()
         expect_near(5.0, card.tile_x, 1e-5)
     end)
 
+    -- @integration lurek.tween.cancelAll
+    -- @integration lurek.tween.tween
+    -- @integration lurek.tween.update
     it("sequence chains two card movement tweens", function()
         lurek.tween.cancelAll()
         local card = fresh_card()
@@ -186,6 +214,9 @@ describe("integration: library.cardgame    lurek.tween", function()
         expect_near(10.0, card.tile_x, 0.5)
     end)
 
+    -- @integration lurek.tween.cancelAll
+    -- @integration lurek.tween.tween
+    -- @integration lurek.tween.update
     it("inOutQuad easing reaches midpoint value at half duration", function()
         lurek.tween.cancelAll()
         local card = fresh_card()
@@ -196,6 +227,9 @@ describe("integration: library.cardgame    lurek.tween", function()
         expect_near(0.5, card.tile_x, 1e-5)
     end)
 
+    -- @integration lurek.tween.cancelAll
+    -- @integration lurek.tween.tween
+    -- @integration lurek.tween.update
     it("tween animates tile_x and tile_y simultaneously", function()
         lurek.tween.cancelAll()
         local card = fresh_card()
@@ -208,6 +242,8 @@ describe("integration: library.cardgame    lurek.tween", function()
         expect_near(6.0, y, 1e-5)
     end)
 
+    -- @integration lurek.tween.cancelAll
+    -- @integration lurek.tween.tween
     it("tween rejects a non-numeric duration", function()
         lurek.tween.cancelAll()
         local card = fresh_card()

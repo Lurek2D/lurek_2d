@@ -1,7 +1,10 @@
 -- Lurek2D Stress Test: Math Operations
 -- Performs thousands of math operations to test throughput
 
+-- @describe math stress: trigonometry throughput
 describe("math stress: trigonometry throughput", function()
+    -- @stress lurek.math.cos
+    -- @stress lurek.math.sin
     it("10000 sin/cos pairs", function()
         local sum = 0
         for i = 1, 10000 do
@@ -11,6 +14,7 @@ describe("math stress: trigonometry throughput", function()
         expect_true(type(sum) == "number", "computed 10000 sin+cos pairs")
     end)
 
+    -- @stress lurek.math.atan2
     it("10000 atan2 calls", function()
         local sum = 0
         for i = 1, 10000 do
@@ -19,6 +23,7 @@ describe("math stress: trigonometry throughput", function()
         expect_true(type(sum) == "number", "computed 10000 atan2 calls")
     end)
 
+    -- @stress lurek.math.sqrt
     it("10000 sqrt calls", function()
         local sum = 0
         for i = 1, 10000 do
@@ -28,7 +33,9 @@ describe("math stress: trigonometry throughput", function()
     end)
 end)
 
+-- @describe math stress: random number generation
 describe("math stress: random number generation", function()
+    -- @stress lurek.math.random
     it("10000 random numbers", function()
         local count = 0
         for i = 1, 10000 do
@@ -40,6 +47,7 @@ describe("math stress: random number generation", function()
         expect_equal(10000, count, "all random numbers in [0,1]")
     end)
 
+    -- @stress lurek.math.random
     it("random integer range", function()
         local min_seen = 100
         local max_seen = 0
@@ -57,7 +65,9 @@ describe("math stress: random number generation", function()
     end)
 end)
 
+-- @describe math stress: vector operations
 describe("math stress: vector operations", function()
+    -- @stress lurek.math.sqrt
     it("10000 distance calculations", function()
         local sum = 0
         for i = 1, 10000 do
@@ -68,6 +78,8 @@ describe("math stress: vector operations", function()
         expect_true(sum > 0, "computed 10000 distances")
     end)
 
+    -- @stress lurek.math.abs
+    -- @stress lurek.math.sqrt
     it("10000 normalize operations", function()
         local count = 0
         for i = 1, 10000 do

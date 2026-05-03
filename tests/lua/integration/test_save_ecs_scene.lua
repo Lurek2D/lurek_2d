@@ -1,7 +1,16 @@
 -- Lurek2D Integration Test: SaveGame + Entity + Scene (3-way)
 -- Tests save/load cycle preserving entity state across scene boundaries
 
+-- @describe savegame + entity + scene integration
 describe("savegame + entity + scene integration", function()
+    -- @integration LSaveManager:collect
+    -- @integration LSaveManager:register
+    -- @integration LUniverse:get
+    -- @integration LUniverse:getEntityCount
+    -- @integration LUniverse:set
+    -- @integration LUniverse:spawn
+    -- @integration lurek.ecs.newUniverse
+    -- @integration lurek.save.newSaveManager
     it("save manager collects entity state", function()
         local universe = lurek.ecs.newUniverse()
         local sm = lurek.save.newSaveManager()
@@ -37,6 +46,13 @@ describe("savegame + entity + scene integration", function()
         expect_true(snapshot ~= nil, "snapshot is not nil")
     end)
 
+    -- @integration LSaveManager:collect
+    -- @integration LSaveManager:register
+    -- @integration LUniverse:getEntityCount
+    -- @integration LUniverse:set
+    -- @integration LUniverse:spawn
+    -- @integration lurek.ecs.newUniverse
+    -- @integration lurek.save.newSaveManager
     it("save-load round-trip preserves entity count", function()
         local universe = lurek.ecs.newUniverse()
         local sm = lurek.save.newSaveManager()
@@ -61,6 +77,9 @@ describe("savegame + entity + scene integration", function()
         expect_equal(10, save_count, "collected 10 entities")
     end)
 
+    -- @integration LSaveManager:getSummary
+    -- @integration LSaveManager:setSummary
+    -- @integration lurek.save.newSaveManager
     it("save metadata tracks scene name", function()
         local sm = lurek.save.newSaveManager()
         sm:setSummary("Forest Temple - Floor 3")
@@ -69,6 +88,8 @@ describe("savegame + entity + scene integration", function()
         expect_equal("Forest Temple - Floor 3", summary, "summary preserved")
     end)
 
+    -- @integration LSaveManager:getSchemaVersion
+    -- @integration lurek.save.newSaveManager
     it("schema version preserved across save cycles", function()
         local sm = lurek.save.newSaveManager()
         local v = sm:getSchemaVersion()

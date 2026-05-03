@@ -1,7 +1,14 @@
 -- Lurek2D Integration Test: Entity + Graphics
 -- Tests entity position syncing to draw commands.
 
+-- @describe integration: entity position drives draw coordinates
 describe("integration: entity position drives draw coordinates", function()
+    -- @integration LUniverse:get
+    -- @integration LUniverse:set
+    -- @integration LUniverse:spawn
+    -- @integration lurek.ecs.newUniverse
+    -- @integration lurek.render.rectangle
+    -- @integration lurek.render.setColor
     it("entity position stored and usable for rectangle draw", function()
         local universe = lurek.ecs.newUniverse()
         local id = universe:spawn()
@@ -25,6 +32,12 @@ describe("integration: entity position drives draw coordinates", function()
         end)
     end)
 
+    -- @integration LUniverse:get
+    -- @integration LUniverse:set
+    -- @integration LUniverse:spawn
+    -- @integration lurek.ecs.newUniverse
+    -- @integration lurek.render.rectangle
+    -- @integration lurek.render.setColor
     it("multiple entities draw at different positions", function()
         local universe = lurek.ecs.newUniverse()
         local positions = {{10, 20}, {100, 200}, {300, 400}}
@@ -49,6 +62,12 @@ describe("integration: entity position drives draw coordinates", function()
         end
     end)
 
+    -- @integration LUniverse:get
+    -- @integration LUniverse:set
+    -- @integration LUniverse:spawn
+    -- @integration lurek.ecs.newUniverse
+    -- @integration lurek.render.rectangle
+    -- @integration lurek.render.setColor
     it("entity visibility flag gates draw commands", function()
         local universe = lurek.ecs.newUniverse()
         local id = universe:spawn()

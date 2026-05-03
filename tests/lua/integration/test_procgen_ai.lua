@@ -6,8 +6,10 @@
 --                                                                                                                                        
 -- WorldGraph Reachability (AI-style BFS)
 --                                                                                                                                        
+-- @describe procgen worldGraph + ai navigation concepts
 describe("procgen worldGraph + ai navigation concepts", function()
 
+    -- @integration lurek.procgen.worldGraph
     it("worldGraph edges form a connected-ish graph", function()
         local wg = lurek.procgen.worldGraph(300, 200, 10, 1)
         -- Build adjacency list from edges
@@ -39,6 +41,7 @@ describe("procgen worldGraph + ai navigation concepts", function()
             "expected at least half of regions reachable, got " .. reachable_count)
     end)
 
+    -- @integration lurek.procgen.bspDungeon
     it("BSP rooms can host spawn points (room centers)", function()
         local d = lurek.procgen.bspDungeon({ width = 60, height = 40, seed = 3 })
         local spawns = {}
@@ -57,6 +60,7 @@ describe("procgen worldGraph + ai navigation concepts", function()
         end
     end)
 
+    -- @integration lurek.procgen.heightmap
     it("heightmap can define zone biomes for AI awareness", function()
         local hm = lurek.procgen.heightmap({ width = 16, height = 16, seed = 5 })
         -- Classify zones: < 0.3 = water, 0.3..0.7 = land, > 0.7 = mountain
@@ -70,6 +74,7 @@ describe("procgen worldGraph + ai navigation concepts", function()
         expect_true(water_count + land_count + mountain_count == 16 * 16)
     end)
 
+    -- @integration lurek.procgen.generateNames
     it("name generator produces unique names for AI actors", function()
         local training = { "Goblin", "Orc", "Troll", "Bandit", "Knight", "Archer", "Mage", "Warrior" }
         local names = lurek.procgen.generateNames(training, 20, 3, 10, 42)
@@ -86,6 +91,7 @@ describe("procgen worldGraph + ai navigation concepts", function()
         expect_true(unique > 1, "expected some variety in generated names, got " .. unique)
     end)
 
+    -- @integration lurek.procgen.lsystemSegments
     it("L-system produces patrol path segments for AI movement", function()
         local segs = lurek.procgen.lsystemSegments(
             { axiom = "F+F+F+F", rules = { F = "F+F-F-FF+F+F-F" }, iterations = 1 },
@@ -101,6 +107,7 @@ describe("procgen worldGraph + ai navigation concepts", function()
         end
     end)
 
+    -- @integration lurek.procgen.noiseMap
     it("noise map can initialize AI threat/cover grid", function()
         local m = lurek.procgen.noiseMap(20, 20, { seed = 11, scale_x = 0.2, scale_y = 0.2 })
         local threat = {}
@@ -115,8 +122,10 @@ end)
 --                                                                                                                                        
 -- WFC grid as AI domain knowledge layout
 --                                                                                                                                        
+-- @describe wfcGenerate provides tile layout for AI
 describe("wfcGenerate provides tile layout for AI", function()
 
+    -- @integration lurek.procgen.wfcGenerate
     it("tile counts are within expected range", function()
         local tiles = {
             { id = 0, weight = 1.0 },  -- floor

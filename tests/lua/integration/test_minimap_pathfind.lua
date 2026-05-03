@@ -4,6 +4,7 @@
 
 local describe = describe or function(n,f) f() end
 local it = it or function(n,f) f() end
+-- @describe minimap + pathfind integration
 describe("minimap + pathfind integration", function()
     it("computed path nodes are drawn as route overlay on minimap", function()
         expect_true(true)

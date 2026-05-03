@@ -31,8 +31,15 @@ local function gid_to_color(gid)
     return math.floor(r * 200 + 55), math.floor(g * 200 + 55), math.floor(b * 200 + 55)
 end
 
+-- @describe Evidence: lurek.tilemap API + PNG visualization
 describe("Evidence: lurek.tilemap API + PNG visualization", function()
     -- @evidence file
+    -- @covers LImageData:fill
+    -- @covers LTileMap:addLayer
+    -- @covers LTileMap:fill
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
+    -- @covers lurek.tilemap.newTileMap
     it("PNG: tilemap grid with 6 different tile GIDs", function()
         local TILE = 8  -- pixel size per tile in output
         local MAP_W, MAP_H = 16, 12
@@ -81,6 +88,10 @@ describe("Evidence: lurek.tilemap API + PNG visualization", function()
     end)
 
     -- @evidence file
+    -- @covers LTileMap:addLayer
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
+    -- @covers lurek.tilemap.newTileMap
     it("PNG: checkerboard tilemap pattern", function()
         local TILE = 8
         local MAP_W, MAP_H = 16, 16
@@ -145,8 +156,15 @@ local function gid_to_color(gid)
     return math.floor(r * 200 + 55), math.floor(g * 200 + 55), math.floor(b * 200 + 55)
 end
 
+-- @describe Evidence: lurek.tilemap API + PNG visualization
 describe("Evidence: lurek.tilemap API + PNG visualization", function()
     -- @evidence file
+    -- @covers LImageData:fill
+    -- @covers LTileMap:addLayer
+    -- @covers LTileMap:fill
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
+    -- @covers lurek.tilemap.newTileMap
     it("PNG: tilemap grid with 6 different tile GIDs", function()
         local TILE = 8  -- pixel size per tile in output
         local MAP_W, MAP_H = 16, 12
@@ -195,6 +213,10 @@ describe("Evidence: lurek.tilemap API + PNG visualization", function()
     end)
 
     -- @evidence file
+    -- @covers LTileMap:addLayer
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
+    -- @covers lurek.tilemap.newTileMap
     it("PNG: checkerboard tilemap pattern", function()
         local TILE = 8
         local MAP_W, MAP_H = 16, 16

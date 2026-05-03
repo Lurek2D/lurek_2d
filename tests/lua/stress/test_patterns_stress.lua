@@ -1,7 +1,11 @@
 -- Lurek2D Stress Test: Patterns Module Operations
 -- Measures observer, state machine, and command queue throughput.
 
+-- @describe stress: patterns observer throughput
 describe("stress: patterns observer throughput", function()
+    -- @stress LObserver:set
+    -- @stress LObserver:subscribe
+    -- @stress lurek.patterns.newObserver
     it("1000 observers       100 notifications: <10s", function()
         local obs   = lurek.patterns.newObserver()
         local SUBS  = 1000
@@ -26,7 +30,11 @@ describe("stress: patterns observer throughput", function()
     end)
 end)
 
+-- @describe stress: patterns command queue throughput
 describe("stress: patterns command queue throughput", function()
+    -- @stress LCommandQueue:enqueue
+    -- @stress LCommandQueue:getCount
+    -- @stress lurek.ai.newCommandQueue
     it("10000 commands enqueued and executed: <10s", function()
         local queue = lurek.ai.newCommandQueue()
         local COUNT = 10000
@@ -44,7 +52,13 @@ describe("stress: patterns command queue throughput", function()
     end)
 end)
 
+-- @describe stress: patterns state machine throughput
 describe("stress: patterns state machine throughput", function()
+    -- @stress LStateMachine:addState
+    -- @stress LStateMachine:forceState
+    -- @stress LStateMachine:getCurrentState
+    -- @stress LStateMachine:setInitialState
+    -- @stress lurek.ai.newStateMachine
     it("5000 state transitions in <10s", function()
         local sm    = lurek.ai.newStateMachine()
         local COUNT = 5000

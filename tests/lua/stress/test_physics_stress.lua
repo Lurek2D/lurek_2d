@@ -1,7 +1,12 @@
 -- Lurek2D Stress Test: Mass Body Creation
 -- Creates 1000 physics bodies and steps the world
 
+-- @describe physics stress: 1000 bodies
 describe("physics stress: 1000 bodies", function()
+    -- @stress lurek.math.floor
+    -- @stress lurek.physics.destroyWorld
+    -- @stress lurek.physics.newBody
+    -- @stress lurek.physics.newWorld
     it("creates 1000 bodies without error", function()
         local world_id = lurek.physics.newWorld(0, 100)
         local bodies = {}
@@ -23,6 +28,10 @@ describe("physics stress: 1000 bodies", function()
         lurek.physics.destroyWorld(world_id)
     end)
 
+    -- @stress lurek.physics.destroyWorld
+    -- @stress lurek.physics.newBody
+    -- @stress lurek.physics.newWorld
+    -- @stress lurek.physics.step
     it("steps 1000-body world 60 times", function()
         local world_id = lurek.physics.newWorld(0, 100)
 
@@ -51,8 +60,16 @@ end)
 -- Stress test: large cellular world simulation
 -- Steps a 128x128 CellularWorld 500 times and verifies no crash.
 
+-- @describe stress: cellular world simulation
 describe("stress: cellular world simulation", function()
     --              and verifies simulation completes without error.
+    -- @stress LCellular:countCells
+    -- @stress LCellular:fillRect
+    -- @stress LCellular:stepN
+    -- @stress lurek.physics.CELL_ROCK
+    -- @stress lurek.physics.CELL_SAND
+    -- @stress lurek.physics.CELL_WATER
+    -- @stress lurek.physics.newCellular
     it("128x128 cellular steps 500 ticks without error", function()
         local W, H = 128, 128
         local sim = lurek.physics.newCellular(W, H)
@@ -79,6 +96,11 @@ describe("stress: cellular world simulation", function()
     end)
 
     --              after a long simulation run.
+    -- @stress LCellular:fillRect
+    -- @stress LCellular:stepN
+    -- @stress LCellular:toImageData
+    -- @stress lurek.physics.CELL_SAND
+    -- @stress lurek.physics.newCellular
     it("toImageData returns correct size after 200 steps", function()
         local W, H = 128, 128
         local sim = lurek.physics.newCellular(W, H)
@@ -99,7 +121,12 @@ end)
 -- Lurek2D Stress Test: Physics Collision Storm
 -- Tests mass body creation, extended simulation, and collision detection
 
+-- @describe physics stress: collision storm
 describe("physics stress: collision storm", function()
+    -- @stress lurek.physics.getBody
+    -- @stress lurek.physics.newBody
+    -- @stress lurek.physics.newWorld
+    -- @stress lurek.physics.step
     it("creates 500 bodies in a confined space", function()
         local world = lurek.physics.newWorld(0, 200)
 
@@ -126,6 +153,11 @@ describe("physics stress: collision storm", function()
         expect_true(y > -500 * 5, "body moved under gravity")
     end)
 
+    -- @stress lurek.physics.getCollisions
+    -- @stress lurek.physics.newBody
+    -- @stress lurek.physics.newWorld
+    -- @stress lurek.physics.setBodyVelocity
+    -- @stress lurek.physics.step
     it("detects collisions between moving bodies", function()
         local world = lurek.physics.newWorld(0, 100)
 
@@ -152,6 +184,9 @@ describe("physics stress: collision storm", function()
         expect_true(true, "collision simulation completed without crash")
     end)
 
+    -- @stress LWorld:newCircleBody
+    -- @stress lurek.physics.newWorld
+    -- @stress lurek.physics.step
     it("circle bodies handle mass collision", function()
         local world = lurek.physics.newWorld(0, 100)
 
@@ -171,7 +206,12 @@ describe("physics stress: collision storm", function()
     end)
 end)
 
+-- @describe physics stress: determinism
 describe("physics stress: determinism", function()
+    -- @stress lurek.physics.getBody
+    -- @stress lurek.physics.newBody
+    -- @stress lurek.physics.newWorld
+    -- @stress lurek.physics.step
     it("same initial state produces same result", function()
         local function run_simulation()
             local world = lurek.physics.newWorld(0, 100)
@@ -202,8 +242,15 @@ end)
 -- Stress test: large terrain fill/dig/flush cycle
 -- Exercises TerrainMap with a 128x128 grid, multiple fill + dig + flush iterations.
 
+-- @describe stress: physics terrain fill/dig/flush
 describe("stress: physics terrain fill/dig/flush", function()
     --              and verifies the dirty flag is cleared each time.
+    -- @stress LTerrain:fillAll
+    -- @stress LTerrain:fillCircle
+    -- @stress LTerrain:flush
+    -- @stress LTerrain:isDirty
+    -- @stress lurek.physics.newTerrain
+    -- @stress lurek.physics.newWorld
     it("20 fill/dig/flush cycles complete without error on 128x128", function()
         local world = lurek.physics.newWorld(0, 0)
         local terrain = lurek.physics.newTerrain(128, 128, 4, world)
@@ -222,6 +269,11 @@ describe("stress: physics terrain fill/dig/flush", function()
     end)
 
     --              counts on a partially-filled grid.
+    -- @stress LTerrain:collapseColumns
+    -- @stress LTerrain:fillRect
+    -- @stress LTerrain:solidPositions
+    -- @stress lurek.physics.newTerrain
+    -- @stress lurek.physics.newWorld
     it("collapse then solidPositions is consistent", function()
         local world = lurek.physics.newWorld(0, 0)
         local terrain = lurek.physics.newTerrain(64, 64, 4, world)
@@ -246,8 +298,15 @@ end)
 -- Creates 50 zones and 500 dynamic bodies, steps 60 times.
 -- Verifies no crash and reasonable zone-event throughput.
 
+-- @describe stress: physics zones throughput
 describe("stress: physics zones throughput", function()
     --              without error. Verifies event table is returned.
+    -- @stress LWorld:addZone
+    -- @stress LWorld:getZoneEvents
+    -- @stress LWorld:newBody
+    -- @stress LWorld:step
+    -- @stress LZone:setGravityZero
+    -- @stress lurek.physics.newWorld
     it("50 zones + 500 bodies steps 60 frames without error", function()
         local world = lurek.physics.newWorld(0, 0)
 
@@ -288,8 +347,16 @@ end)
 -- Stress test: large cellular world simulation
 -- Steps a 128x128 CellularWorld 500 times and verifies no crash.
 
+-- @describe stress: cellular world simulation
 describe("stress: cellular world simulation", function()
     --              and verifies simulation completes without error.
+    -- @stress LCellular:countCells
+    -- @stress LCellular:fillRect
+    -- @stress LCellular:stepN
+    -- @stress lurek.physics.CELL_ROCK
+    -- @stress lurek.physics.CELL_SAND
+    -- @stress lurek.physics.CELL_WATER
+    -- @stress lurek.physics.newCellular
     it("128x128 cellular steps 500 ticks without error", function()
         local W, H = 128, 128
         local sim = lurek.physics.newCellular(W, H)
@@ -316,6 +383,11 @@ describe("stress: cellular world simulation", function()
     end)
 
     --              after a long simulation run.
+    -- @stress LCellular:fillRect
+    -- @stress LCellular:stepN
+    -- @stress LCellular:toImageData
+    -- @stress lurek.physics.CELL_SAND
+    -- @stress lurek.physics.newCellular
     it("toImageData returns correct size after 200 steps", function()
         local W, H = 128, 128
         local sim = lurek.physics.newCellular(W, H)
@@ -336,8 +408,15 @@ end)
 -- Stress test: large terrain fill/dig/flush cycle
 -- Exercises TerrainMap with a 128x128 grid, multiple fill + dig + flush iterations.
 
+-- @describe stress: physics terrain fill/dig/flush
 describe("stress: physics terrain fill/dig/flush", function()
     --              and verifies the dirty flag is cleared each time.
+    -- @stress LTerrain:fillAll
+    -- @stress LTerrain:fillCircle
+    -- @stress LTerrain:flush
+    -- @stress LTerrain:isDirty
+    -- @stress lurek.physics.newTerrain
+    -- @stress lurek.physics.newWorld
     it("20 fill/dig/flush cycles complete without error on 128x128", function()
         local world = lurek.physics.newWorld(0, 0)
         local terrain = lurek.physics.newTerrain(128, 128, 4, world)
@@ -356,6 +435,11 @@ describe("stress: physics terrain fill/dig/flush", function()
     end)
 
     --              counts on a partially-filled grid.
+    -- @stress LTerrain:collapseColumns
+    -- @stress LTerrain:fillRect
+    -- @stress LTerrain:solidPositions
+    -- @stress lurek.physics.newTerrain
+    -- @stress lurek.physics.newWorld
     it("collapse then solidPositions is consistent", function()
         local world = lurek.physics.newWorld(0, 0)
         local terrain = lurek.physics.newTerrain(64, 64, 4, world)
@@ -380,8 +464,15 @@ end)
 -- Creates 50 zones and 500 dynamic bodies, steps 60 times.
 -- Verifies no crash and reasonable zone-event throughput.
 
+-- @describe stress: physics zones throughput
 describe("stress: physics zones throughput", function()
     --              without error. Verifies event table is returned.
+    -- @stress LWorld:addZone
+    -- @stress LWorld:getZoneEvents
+    -- @stress LWorld:newBody
+    -- @stress LWorld:step
+    -- @stress LZone:setGravityZero
+    -- @stress lurek.physics.newWorld
     it("50 zones + 500 bodies steps 60 frames without error", function()
         local world = lurek.physics.newWorld(0, 0)
 

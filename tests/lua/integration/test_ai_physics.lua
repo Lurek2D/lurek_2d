@@ -1,7 +1,16 @@
 -- Lurek2D Integration Test: AI + Physics
 -- Tests AI agents making decisions that affect physics bodies
 
+-- @describe integration: AI steering with physics bodies
 describe("integration: AI steering with physics bodies", function()
+    -- @integration LSteeringManager:addSeek
+    -- @integration LSteeringManager:calculate
+    -- @integration lurek.ai.newSteeringManager
+    -- @integration lurek.physics.getBody
+    -- @integration lurek.physics.newBody
+    -- @integration lurek.physics.newWorld
+    -- @integration lurek.physics.setBodyVelocity
+    -- @integration lurek.physics.step
     it("agent seeks target in physics world", function()
         -- Create physics world (no gravity for top-down)
         local world_id = lurek.physics.newWorld(0, 0)
@@ -39,7 +48,12 @@ describe("integration: AI steering with physics bodies", function()
     end)
 end)
 
+-- @describe integration: AI pathfinding with navgrid
 describe("integration: AI pathfinding with navgrid", function()
+    -- @integration LNavGrid:setBlocked
+    -- @integration LUnitPathfinder:findPath
+    -- @integration lurek.pathfind.newNavGrid
+    -- @integration lurek.pathfind.newPathfinder
     it("agent follows A* path", function()
         local grid = lurek.pathfind.newNavGrid(50, 50)
 

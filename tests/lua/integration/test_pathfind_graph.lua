@@ -6,13 +6,18 @@
 --                                                                                                                                        
 -- JPS Grid
 --                                                                                                                                        
+-- @describe pathfinding.newJpsGrid
 describe("pathfinding.newJpsGrid", function()
 
+    -- @integration lurek.pathfind.newJpsGrid
     it("creates a JPS grid without error", function()
         local g = lurek.pathfind.newJpsGrid(12, 12)
         expect_type("userdata", g)
     end)
 
+    -- @integration LJpsGrid:isBlocked
+    -- @integration LJpsGrid:setBlocked
+    -- @integration lurek.pathfind.newJpsGrid
     it("setBlocked / isBlocked round-trip", function()
         local g = lurek.pathfind.newJpsGrid(8, 8)
         g:setBlocked(5, 3, true)
@@ -21,6 +26,9 @@ describe("pathfinding.newJpsGrid", function()
         expect_equal(false, g:isBlocked(5, 3))
     end)
 
+    -- @integration LJpsGrid:findPath
+    -- @integration LJpsGrid:setBlocked
+    -- @integration lurek.pathfind.newJpsGrid
     it("findPath returns nil when start is blocked", function()
         local g = lurek.pathfind.newJpsGrid(6, 6)
         g:setBlocked(1, 1, true)
@@ -29,12 +37,16 @@ describe("pathfinding.newJpsGrid", function()
         expect_true(path == nil or type(path) == "table", "should return nil or table")
     end)
 
+    -- @integration LJpsGrid:findPath
+    -- @integration lurek.pathfind.newJpsGrid
     it("findPath on open grid returns a path", function()
         local g = lurek.pathfind.newJpsGrid(10, 10)
         local path = g:findPath(1, 1, 8, 8)
         expect_true(path ~= nil, "expected a valid path on open grid")
     end)
 
+    -- @integration LJpsGrid:findPath
+    -- @integration lurek.pathfind.newJpsGrid
     it("path cells have x and y fields", function()
         local g = lurek.pathfind.newJpsGrid(8, 8)
         local path = g:findPath(1, 1, 6, 6)
@@ -44,6 +56,8 @@ describe("pathfinding.newJpsGrid", function()
         end
     end)
 
+    -- @integration LJpsGrid:findPath
+    -- @integration lurek.pathfind.newJpsGrid
     it("path starts and ends at expected coordinates", function()
         local g = lurek.pathfind.newJpsGrid(10, 10)
         local path = g:findPath(1, 1, 5, 5)
@@ -58,6 +72,9 @@ describe("pathfinding.newJpsGrid", function()
         end
     end)
 
+    -- @integration LJpsGrid:findPath
+    -- @integration LJpsGrid:setBlocked
+    -- @integration lurek.pathfind.newJpsGrid
     it("blocking a cell removes it from the path", function()
         local g = lurek.pathfind.newJpsGrid(8, 8)
         -- Block cell (4, 4) which is on the diagonal from (1,1) to (7,7)
@@ -70,6 +87,9 @@ describe("pathfinding.newJpsGrid", function()
         end
     end)
 
+    -- @integration LJpsGrid:isBlocked
+    -- @integration LJpsGrid:setBlocked
+    -- @integration lurek.pathfind.newJpsGrid
     it("multiple independent grids don't share state", function()
         local g1 = lurek.pathfind.newJpsGrid(8, 8)
         local g2 = lurek.pathfind.newJpsGrid(8, 8)
@@ -82,8 +102,10 @@ end)
 --                                                                                                                                        
 -- JPS Grid + WorldGraph produced by procgen
 --                                                                                                                                        
+-- @describe procgen worldGraph + JPS grid integration
 describe("procgen worldGraph + JPS grid integration", function()
 
+    -- @integration lurek.procgen.worldGraph
     it("worldGraph region coordinates stay within world bounds", function()
         local wg = lurek.procgen.worldGraph(200, 100, 10, 1)
         for _, r in ipairs(wg.regions) do
@@ -92,6 +114,7 @@ describe("procgen worldGraph + JPS grid integration", function()
         end
     end)
 
+    -- @integration lurek.procgen.worldGraph
     it("worldGraph edge endpoints are valid region IDs", function()
         local wg = lurek.procgen.worldGraph(200, 100, 8, 2)
         local id_set = {}
@@ -102,6 +125,7 @@ describe("procgen worldGraph + JPS grid integration", function()
         end
     end)
 
+    -- @integration lurek.procgen.bspDungeon
     it("BSP dungeon width/height matches requested size", function()
         local d = lurek.procgen.bspDungeon({ width = 30, height = 20, seed = 5 })
         -- All rooms must be inside the dungeon bounds
@@ -111,6 +135,10 @@ describe("procgen worldGraph + JPS grid integration", function()
         end
     end)
 
+    -- @integration LJpsGrid:findPath
+    -- @integration LJpsGrid:setBlocked
+    -- @integration lurek.pathfind.newJpsGrid
+    -- @integration lurek.procgen.roomsDungeon
     it("room floors are navigable via JPS grid", function()
         local d = lurek.procgen.roomsDungeon({ width = 20, height = 16, max_rooms = 4, seed = 7 })
         -- Build a JPS grid from the dungeon's floor plan

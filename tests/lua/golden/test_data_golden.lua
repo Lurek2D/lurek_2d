@@ -1,5 +1,6 @@
 -- Golden test: data compare-only evidence validation.
 
+-- @describe golden: data TOML round-trip
 describe("golden: data TOML round-trip", function()
     it("matches migrated Rust TOML sample", function()
         local evidence = "save/golden_text/migrated_rust/data/toml_roundtrip.toml"
@@ -16,6 +17,7 @@ end)
 
 -- Golden test: migrated Rust text and binary baselines now compared from the Lua golden layer only.
 
+-- @describe golden: migrated Rust baselines
 describe("golden: migrated Rust baselines", function()
     it("matches migrated Rust TOML sample", function()
         expect_golden_text_match("save/golden_text/migrated_rust/data/toml_roundtrip.toml", "tests/samples/migrated_rust/data/toml_roundtrip.toml")
@@ -44,6 +46,7 @@ end)
 
 -- Golden test: migrated 15
 
+-- @describe golden: migrated 15 evidence comparison
 describe("golden: migrated 15 evidence comparison", function()
     local OUT = evidence_output_dir("migrated_15")
     local SAMP = "tests/samples/migrated_15/"

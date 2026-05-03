@@ -1,5 +1,6 @@
 -- Golden test: raycaster
 
+-- @describe golden: raycaster evidence comparison
 describe("golden: raycaster evidence comparison", function()
     local OUT = evidence_output_dir("raycaster")
     local SAMP = "tests/samples/raycaster/"

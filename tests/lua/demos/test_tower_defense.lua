@@ -6,6 +6,8 @@ local DEMO_PATH = "content/games/strategy/tower_defense/main.lua"
 dofile("tests/lua/content/demos/_common_checks.lua")
 demo_common_checks("tower_defense", DEMO_PATH)
 
+-- @describe describe block
+-- @describe tower_defense: mechanics checks
 describe("tower_defense: mechanics checks", function()
     local src
 

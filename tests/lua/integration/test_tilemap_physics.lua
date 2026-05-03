@@ -1,7 +1,21 @@
 -- Lurek2D Integration Test: Tilemap + Physics
 -- Tests using tilemap solid tiles to create physics collision boundaries
 
+-- @describe integration: tilemap solid tiles as physics boundaries
 describe("integration: tilemap solid tiles as physics boundaries", function()
+    -- @integration LBody:getPosition
+    -- @integration LTileMap:addLayer
+    -- @integration LTileMap:addTileSet
+    -- @integration LTileMap:getTile
+    -- @integration LTileMap:setTile
+    -- @integration LTileSet:isSolid
+    -- @integration LTileSet:setSolid
+    -- @integration lurek.physics.destroyWorld
+    -- @integration lurek.physics.newBody
+    -- @integration lurek.physics.newWorld
+    -- @integration lurek.physics.step
+    -- @integration lurek.tilemap.newTileMap
+    -- @integration lurek.tilemap.newTileSet
     it("creates physics bodies from solid tiles", function()
         -- Create a small tilemap with ground
         local map = lurek.tilemap.newTileMap(32, 32, 16)
@@ -50,7 +64,21 @@ describe("integration: tilemap solid tiles as physics boundaries", function()
     end)
 end)
 
+-- @describe integration: tilemap + pathfinding from solid tiles
 describe("integration: tilemap + pathfinding from solid tiles", function()
+    -- @integration LNavGrid:setBlocked
+    -- @integration LTileMap:addLayer
+    -- @integration LTileMap:addTileSet
+    -- @integration LTileMap:clearTile
+    -- @integration LTileMap:getTile
+    -- @integration LTileMap:setTile
+    -- @integration LTileSet:isSolid
+    -- @integration LTileSet:setSolid
+    -- @integration LUnitPathfinder:findPath
+    -- @integration lurek.pathfind.newNavGrid
+    -- @integration lurek.pathfind.newPathfinder
+    -- @integration lurek.tilemap.newTileMap
+    -- @integration lurek.tilemap.newTileSet
     it("creates navgrid from tilemap solids", function()
         local map = lurek.tilemap.newTileMap(32, 32, 16)
         local ts = lurek.tilemap.newTileSet(1, 16, 4, 32, 32)

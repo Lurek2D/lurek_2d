@@ -1,7 +1,18 @@
 -- Lurek2D Integration Test: Entity + AI
 -- Tests entity system with AI decision-making components
 
+-- @describe integration: entity with AI state machine
 describe("integration: entity with AI state machine", function()
+    -- @integration LStateMachine:addState
+    -- @integration LStateMachine:addTransition
+    -- @integration LStateMachine:forceState
+    -- @integration LStateMachine:getCurrentState
+    -- @integration LUniverse:getEntityCount
+    -- @integration LUniverse:isAlive
+    -- @integration LUniverse:set
+    -- @integration LUniverse:spawn
+    -- @integration lurek.ai.newStateMachine
+    -- @integration lurek.ecs.newUniverse
     it("entities change state based on FSM", function()
         local universe = lurek.ecs.newUniverse()
 
@@ -44,7 +55,13 @@ describe("integration: entity with AI state machine", function()
     end)
 end)
 
+-- @describe integration: entity tags with AI agents
 describe("integration: entity tags with AI agents", function()
+    -- @integration LUniverse:addTag
+    -- @integration LUniverse:getEntitiesByTag
+    -- @integration LUniverse:set
+    -- @integration LUniverse:spawn
+    -- @integration lurek.ecs.newUniverse
     it("entity tags drive AI behavior", function()
         local universe = lurek.ecs.newUniverse()
 

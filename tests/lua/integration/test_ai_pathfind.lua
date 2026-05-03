@@ -1,7 +1,16 @@
 -- Lurek2D Integration Test: AI + Pathfinding
 -- Tests AI agents requesting and following A* paths.
 
+-- @describe integration: AI agent uses pathfinding to navigate
 describe("integration: AI agent uses pathfinding to navigate", function()
+    -- @integration LStateMachine:addState
+    -- @integration LStateMachine:addTransition
+    -- @integration LStateMachine:forceState
+    -- @integration LStateMachine:getCurrentState
+    -- @integration LUnitPathfinder:findPath
+    -- @integration lurek.ai.newStateMachine
+    -- @integration lurek.pathfind.newNavGrid
+    -- @integration lurek.pathfind.newPathfinder
     it("AI state machine requests path and transitions to moving state", function()
         local grid = lurek.pathfind.newNavGrid(20, 20)
         local pf   = lurek.pathfind.newPathfinder(grid)
@@ -28,6 +37,9 @@ describe("integration: AI agent uses pathfinding to navigate", function()
         expect_equal("MOVING", sm:getCurrentState(), "transitioned to MOVING after path found")
     end)
 
+    -- @integration LUnitPathfinder:findPath
+    -- @integration lurek.pathfind.newNavGrid
+    -- @integration lurek.pathfind.newPathfinder
     it("AI agent follows path waypoints step by step", function()
         local grid = lurek.pathfind.newNavGrid(10, 10)
         local pf   = lurek.pathfind.newPathfinder(grid)
@@ -49,6 +61,10 @@ describe("integration: AI agent uses pathfinding to navigate", function()
         end
     end)
 
+    -- @integration LNavGrid:setBlocked
+    -- @integration LUnitPathfinder:findPath
+    -- @integration lurek.pathfind.newNavGrid
+    -- @integration lurek.pathfind.newPathfinder
     it("AI requests path around wall, gets detour", function()
         local grid = lurek.pathfind.newNavGrid(10, 10)
         -- Place vertical wall at column 5 (rows 2..8, 1-based)     uses setBlocked

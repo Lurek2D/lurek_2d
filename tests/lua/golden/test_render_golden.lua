@@ -1,5 +1,6 @@
 -- Keeps the graphics golden registration in place until each migrated evidence artifact has a real compare-only assertion.
 
+-- @describe Golden graphics
 describe('Golden graphics', function()
     it('matches fixture_sprite_8x8', function() end)
     it('matches fixture_sprite_16x16', function() end)

@@ -33,9 +33,12 @@ LUA_API_DATA = WORKSPACE_ROOT / "logs" / "data" / "lua_api_data.json"
 LUA_TESTS_DIR = WORKSPACE_ROOT / "tests" / "lua"
 OUTPUT_JSON = WORKSPACE_ROOT / "logs" / "data" / "lua_api_test_coverage.json"
 
-# Regex for @covers markers: -- @covers lurek.math.sin  OR  -- @covers Vec2:length
+# Regex for @covers markers:
+#   -- @covers lurek.math.sin
+#   -- @covers Vec2:length
+#   -- @covers LUiWidget.setPosition
 COVERS_RE = re.compile(
-    r"^--\s*@covers\s+((?:lurek\.\w+(?:\.\w+)+)|(?:\w+:\w+))\s*$"
+    r"^--\s*@covers\s+((?:lurek\.\w+(?:\.\w+)+)|(?:\w+:\w+)|(?:\w+\.\w+))\s*$"
 )
 
 # Regex for @evidence markers
@@ -102,13 +105,18 @@ def collect_api_functions(api_data: Dict, module_filter: Optional[str] = None) -
 
 
 def scan_markers(tests_dir: Path) -> Dict[str, List[Dict]]:
-    """Scan all Lua test files for @covers markers.
+    """Scan only unit/ Lua test files for @covers markers.
+
+    Only tests/lua/unit/ files count toward coverage.
+    Library, stress, integration and security tests use @library / @stress /
+    @integration / @security markers and are intentionally excluded here.
 
     Returns: {test_file_rel_path: [{"marker": "lurek.math.sin", "line": 5}, ...]}
     """
     results: Dict[str, List[Dict]] = {}
 
-    for lua_file in sorted(tests_dir.rglob("*.lua")):
+    unit_dir = tests_dir / "unit"
+    for lua_file in sorted(unit_dir.rglob("*.lua")):
         rel = str(lua_file.relative_to(WORKSPACE_ROOT)).replace("\\", "/")
         markers = []
 
@@ -158,19 +166,29 @@ def build_marker_coverage(
     """
     # Build canonical lookup and alias mappings
     canonical_names: Set[str] = set()
-    # Maps no-L alias -> canonical lua_name  (e.g. "Channel:push" -> "LChannel:push")
+    # Maps aliases -> canonical lua_name  (e.g. "Channel:push" -> "LChannel:push")
     alias_map: Dict[str, str] = {}
 
     for fn in api_functions:
         lua_name = fn["lua_name"]
         canonical_names.add(lua_name)
 
-        # Build alias for class methods: LFoo:bar -> Foo:bar
+        # Build aliases for class methods.
+        # Canonical may be either LFoo:bar or LFoo.bar depending on module.
         if ":" in lua_name:
             cls, sep, meth = lua_name.partition(":")
             if cls.startswith("L") and len(cls) > 1:
-                alias = cls[1:] + sep + meth  # strip leading L
-                alias_map[alias] = lua_name
+                alias_map[cls[1:] + sep + meth] = lua_name  # Foo:bar
+                alias_map[cls + "." + meth] = lua_name     # LFoo.bar
+                alias_map[cls[1:] + "." + meth] = lua_name # Foo.bar
+        elif "." in lua_name and lua_name.startswith("L"):
+            cls, _, meth = lua_name.rpartition(".")
+            if cls and meth:
+                alias_map[cls + ":" + meth] = lua_name      # LFoo:bar
+                if cls.startswith("L") and len(cls) > 1:
+                    base = cls[1:]
+                    alias_map[base + ":" + meth] = lua_name # Foo:bar
+                    alias_map[base + "." + meth] = lua_name # Foo.bar
 
     covered_names: Set[str] = set()
     coverage_map: Dict[str, List[str]] = {}
@@ -186,7 +204,7 @@ def build_marker_coverage(
                 # Try alias (e.g. Channel:push -> LChannel:push)
                 if marker in alias_map:
                     resolved = alias_map[marker]
-                # Try lurek.module.Class.method -> LClass:method
+                # Try lurek.module.Class.method -> class-method canonical forms
                 elif marker.startswith("lurek."):
                     parts = marker.split(".")
                     if len(parts) >= 4:
@@ -195,10 +213,18 @@ def build_marker_coverage(
                         meth_name = parts[-1]
                         dotted_alias = cls_name + ":" + meth_name
                         l_alias = "L" + cls_name + ":" + meth_name
+                        l_dot_alias = "L" + cls_name + "." + meth_name
+                        cls_dot_alias = cls_name + "." + meth_name
                         if dotted_alias in alias_map:
                             resolved = alias_map[dotted_alias]
                         elif l_alias in canonical_names:
                             resolved = l_alias
+                        elif l_dot_alias in canonical_names:
+                            resolved = l_dot_alias
+                        elif l_dot_alias in alias_map:
+                            resolved = alias_map[l_dot_alias]
+                        elif cls_dot_alias in alias_map:
+                            resolved = alias_map[cls_dot_alias]
 
             if resolved in canonical_names:
                 covered_names.add(resolved)
@@ -224,7 +250,8 @@ def heuristic_coverage(
     """
     # Load all test file contents
     test_contents: Dict[str, str] = {}
-    for lua_file in sorted(tests_dir.rglob("*.lua")):
+    unit_dir = tests_dir / "unit"
+    for lua_file in sorted(unit_dir.rglob("*.lua")):
         try:
             test_contents[lua_file.stem] = lua_file.read_text(encoding="utf-8").lower()
         except OSError:

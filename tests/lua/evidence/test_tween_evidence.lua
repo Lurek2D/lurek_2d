@@ -24,9 +24,15 @@ local COLORS = {
     {200, 100, 200}, {180, 180, 180},
 }
 
+-- @describe Evidence: Easing curves
 describe("Evidence: Easing curves", function()
 
     -- @evidence file
+    -- @covers LImageData:drawRect
+    -- @covers LImageData:setPixel
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
+    -- @covers lurek.math.applyEasing
     it("plots all easing curves on combined image", function()
         local W, H = 800, 600
         local margin = 40
@@ -68,6 +74,11 @@ describe("Evidence: Easing curves", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:drawLine
+    -- @covers LImageData:drawRect
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
+    -- @covers lurek.math.applyEasing
     it("saves individual easing curve images", function()
         local W, H = 256, 128
         local margin = 8
@@ -137,9 +148,15 @@ local COLORS = {
     {200, 100, 200}, {180, 180, 180},
 }
 
+-- @describe Evidence: Easing curves
 describe("Evidence: Easing curves", function()
 
     -- @evidence file
+    -- @covers LImageData:drawRect
+    -- @covers LImageData:setPixel
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
+    -- @covers lurek.math.applyEasing
     it("plots all easing curves on combined image", function()
         local W, H = 800, 600
         local margin = 40
@@ -181,6 +198,11 @@ describe("Evidence: Easing curves", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:drawLine
+    -- @covers LImageData:drawRect
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
+    -- @covers lurek.math.applyEasing
     it("saves individual easing curve images", function()
         local W, H = 256, 128
         local margin = 8
@@ -248,9 +270,15 @@ local COLORS = {
     {200, 100, 200}, {180, 180, 180},
 }
 
+-- @describe Evidence: Easing curves
 describe("Evidence: Easing curves", function()
 
     -- @evidence file
+    -- @covers LImageData:drawRect
+    -- @covers LImageData:setPixel
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
+    -- @covers lurek.math.applyEasing
     it("plots all easing curves on combined image", function()
         local W, H = 800, 600
         local margin = 40
@@ -292,6 +320,11 @@ describe("Evidence: Easing curves", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:drawLine
+    -- @covers LImageData:drawRect
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
+    -- @covers lurek.math.applyEasing
     it("saves individual easing curve images", function()
         local W, H = 256, 128
         local margin = 8
@@ -361,9 +394,15 @@ local COLORS = {
     {200, 100, 200}, {180, 180, 180},
 }
 
+-- @describe Evidence: Easing curves
 describe("Evidence: Easing curves", function()
 
     -- @evidence file
+    -- @covers LImageData:drawRect
+    -- @covers LImageData:setPixel
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
+    -- @covers lurek.math.applyEasing
     it("plots all easing curves on combined image", function()
         local W, H = 800, 600
         local margin = 40
@@ -405,6 +444,11 @@ describe("Evidence: Easing curves", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:drawLine
+    -- @covers LImageData:drawRect
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
+    -- @covers lurek.math.applyEasing
     it("saves individual easing curve images", function()
         local W, H = 256, 128
         local margin = 8

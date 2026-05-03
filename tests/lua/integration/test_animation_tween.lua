@@ -1,7 +1,17 @@
 -- tests/lua/integration/test_animation_tween.lua
 -- Integration: lurek.animation frame logic combined with lurek.tween interpolation.
 
+-- @describe animation + tween integration
 describe("animation + tween integration", function()
+    -- @integration LAnimation:addClip
+    -- @integration LAnimation:addFramesFromGrid
+    -- @integration LAnimation:getCurrentFrame
+    -- @integration LAnimation:isPlaying
+    -- @integration LAnimation:play
+    -- @integration LAnimation:update
+    -- @integration lurek.animation.new
+    -- @integration lurek.tween.tween
+    -- @integration lurek.tween.update
     it("animation plays frames while tween advances a value", function()
         local anim = lurek.animation.new()
         -- addFramesFromGrid(tex_w, tex_h, frame_w, frame_h, start, count)
@@ -27,6 +37,15 @@ describe("animation + tween integration", function()
             "tween is in-progress after 0.4 s of 0.8 s duration")
     end)
 
+    -- @integration LAnimation:addClip
+    -- @integration LAnimation:addFramesFromGrid
+    -- @integration LAnimation:isLooping
+    -- @integration LAnimation:isPlaying
+    -- @integration LAnimation:play
+    -- @integration LAnimation:update
+    -- @integration lurek.animation.new
+    -- @integration lurek.tween.tween
+    -- @integration lurek.tween.update
     it("tween reaches target before animation loops", function()
         local anim = lurek.animation.new()
         anim:addFramesFromGrid(64, 16, 16, 16, 0, 4)
@@ -46,6 +65,13 @@ describe("animation + tween integration", function()
         expect_true(anim:isLooping(), "animation clip is looping")
     end)
 
+    -- @integration LAnimation:addClip
+    -- @integration LAnimation:addFrame
+    -- @integration LAnimation:getCurrentFrame
+    -- @integration LAnimation:play
+    -- @integration lurek.animation.new
+    -- @integration lurek.tween.tween
+    -- @integration lurek.tween.update
     it("animation addFrame and tween compose without error", function()
         local anim = lurek.animation.new()
         -- addFrame(x, y, w, h)     no duration param

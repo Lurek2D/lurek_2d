@@ -1,7 +1,11 @@
 -- Lurek2D Stress Test: Signal Dispatch Throughput
 -- Measures signal emit performance under high listener counts.
 
+-- @describe stress: signal emit to many listeners
 describe("stress: signal emit to many listeners", function()
+    -- @stress LSignal:connect
+    -- @stress LSignal:emit
+    -- @stress lurek.event.newSignal
     it("1 signal       1000 listeners       100 emits: <5s", function()
         local sig      = lurek.event.newSignal()
         local LISTENERS = 100
@@ -27,6 +31,9 @@ describe("stress: signal emit to many listeners", function()
         expect_equal(dispatches, count, "all listeners fired")
     end)
 
+    -- @stress LSignal:connect
+    -- @stress LSignal:remove
+    -- @stress lurek.event.newSignal
     it("signal connect/disconnect 5000 times in <5s", function()
         local sig   = lurek.event.newSignal()
         local COUNT = 5000
@@ -39,6 +46,9 @@ describe("stress: signal emit to many listeners", function()
         expect_true(elapsed < 5.0, "connect/disconnect budget: " .. elapsed .. "s")
     end)
 
+    -- @stress LSignal:connect
+    -- @stress LSignal:emit
+    -- @stress lurek.event.newSignal
     it("10 signals       100 listeners       1000 emits each: <10s", function()
         local N_SIGS    = 10
         local N_LISTEN  = 100

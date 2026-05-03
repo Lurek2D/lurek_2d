@@ -1,7 +1,11 @@
 -- Lurek2D Stress Test: Entity Mass Spawn
 -- Tests entity creation, tag assignment, and component operations at scale
 
+-- @describe entity stress: mass spawn
 describe("entity stress: mass spawn", function()
+    -- @stress LUniverse:getEntityCount
+    -- @stress LUniverse:spawn
+    -- @stress lurek.ecs.newUniverse
     it("spawns 10000 entities", function()
         local universe = lurek.ecs.newUniverse()
 
@@ -12,6 +16,10 @@ describe("entity stress: mass spawn", function()
         expect_equal(10000, universe:getEntityCount(), "10000 entities alive")
     end)
 
+    -- @stress LUniverse:getEntityCount
+    -- @stress LUniverse:kill
+    -- @stress LUniverse:spawn
+    -- @stress lurek.ecs.newUniverse
     it("spawns and kills 5000 entities", function()
         local universe = lurek.ecs.newUniverse()
         local ids = {}
@@ -29,6 +37,10 @@ describe("entity stress: mass spawn", function()
         expect_equal(2500, universe:getEntityCount(), "2500 remaining")
     end)
 
+    -- @stress LUniverse:getEntityCount
+    -- @stress LUniverse:set
+    -- @stress LUniverse:spawn
+    -- @stress lurek.ecs.newUniverse
     it("adds components to 5000 entities", function()
         local universe = lurek.ecs.newUniverse()
 
@@ -42,6 +54,10 @@ describe("entity stress: mass spawn", function()
         expect_equal(5000, universe:getEntityCount(), "5000 with components")
     end)
 
+    -- @stress LUniverse:getEntityCount
+    -- @stress LUniverse:kill
+    -- @stress LUniverse:spawn
+    -- @stress lurek.ecs.newUniverse
     it("ID recycling works after mass kill", function()
         local universe = lurek.ecs.newUniverse()
         local old_ids = {}
@@ -62,6 +78,10 @@ describe("entity stress: mass spawn", function()
         expect_equal(1000, universe:getEntityCount(), "1000 respawned")
     end)
 
+    -- @stress LUniverse:addTag
+    -- @stress LUniverse:getEntityCount
+    -- @stress LUniverse:spawn
+    -- @stress lurek.ecs.newUniverse
     it("tag operations at scale", function()
         local universe = lurek.ecs.newUniverse()
 
@@ -91,7 +111,12 @@ end)
 -- Lurek2D Lua stress test for lurek.ecs spawnBulk
 -- Headless: no GPU, no audio, no window.
 
+-- @describe lurek.ecs.spawnBulk
 describe("lurek.ecs.spawnBulk", function()
+    -- @stress LUniverse:defineBlueprint
+    -- @stress LUniverse:getEntityCount
+    -- @stress LUniverse:spawnBulk
+    -- @stress lurek.ecs.newUniverse
     it("spawnBulk creates correct entity count from blueprint", function()
         local w = lurek.ecs.newUniverse()
         w:defineBlueprint("Enemy", {hp = 10, speed = 5, alive = true})
@@ -100,6 +125,10 @@ describe("lurek.ecs.spawnBulk", function()
         expect_equal(100, w:getEntityCount())
     end)
 
+    -- @stress LUniverse:defineBlueprint
+    -- @stress LUniverse:get
+    -- @stress LUniverse:spawnBulk
+    -- @stress lurek.ecs.newUniverse
     it("each bulk-spawned entity has blueprint components", function()
         local w = lurek.ecs.newUniverse()
         w:defineBlueprint("Bullet", {dmg = 5, vel = 20})
@@ -109,6 +138,9 @@ describe("lurek.ecs.spawnBulk", function()
         end
     end)
 
+    -- @stress LUniverse:defineBlueprint
+    -- @stress LUniverse:spawnBulk
+    -- @stress lurek.ecs.newUniverse
     it("spawning 500 entities completes without error", function()
         local w = lurek.ecs.newUniverse()
         w:defineBlueprint("Particle", {life = 1.0, x = 0, y = 0})
@@ -116,6 +148,10 @@ describe("lurek.ecs.spawnBulk", function()
         expect_equal(500, #ids)
     end)
 
+    -- @stress LUniverse:defineBlueprint
+    -- @stress LUniverse:getEntityCount
+    -- @stress LUniverse:spawnBulk
+    -- @stress lurek.ecs.newUniverse
     it("spawnBulk with count 0 returns empty table", function()
         local w = lurek.ecs.newUniverse()
         w:defineBlueprint("X", {a = 1})

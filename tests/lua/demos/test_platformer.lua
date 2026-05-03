@@ -6,6 +6,7 @@ local DEMO_PATH = "content/games/action/platformer/main.lua"
 dofile("tests/lua/content/demos/_common_checks.lua")
 demo_common_checks("platformer", DEMO_PATH)
 
+-- @describe platformer: mechanics checks
 describe("platformer: mechanics checks", function()
     local src
 

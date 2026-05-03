@@ -6,6 +6,7 @@ local DEMO_PATH = "content/games/arcade/asteroids/main.lua"
 dofile("tests/lua/content/demos/_common_checks.lua")
 demo_common_checks("asteroids", DEMO_PATH)
 
+-- @describe asteroids: game mechanics
 describe("asteroids: game mechanics", function()
     local src
 

@@ -1,10 +1,14 @@
 -- Evidence suite for math module core operations.
 
+-- @describe evidence: math
 describe("evidence: math", function()
     before_each(function()
         ensure_evidence_dir("math")
     end)
 
+    -- @covers LFileHandle:close
+    -- @covers LFileHandle:write
+    -- @covers lurek.math.newVec2
     it("records Vec2 arithmetic results as CSV", function()
         local dir  = evidence_output_dir("math")
         local path = dir .. "vec2_arithmetic.csv"
@@ -27,6 +31,12 @@ describe("evidence: math", function()
         expect_evidence_created(path)
     end)
 
+    -- @covers LImageData:drawCircle
+    -- @covers LImageData:fill
+    -- @covers LImageData:setPixel
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
+    -- @covers lurek.math.newVec2
     it("renders Vec2 normalize on unit circle PNG", function()
         local dir  = evidence_output_dir("math")
         local path = dir .. "vec2_unit_circle.png"
@@ -47,6 +57,10 @@ describe("evidence: math", function()
         expect_evidence_created(path)
     end)
 
+    -- @covers LFileHandle:close
+    -- @covers LFileHandle:write
+    -- @covers lurek.math.random
+    -- @covers lurek.math.randomSeed
     it("records seeded random sequences as CSV", function()
         local dir  = evidence_output_dir("math")
         local path = dir .. "random_sequences.csv"
@@ -75,12 +89,15 @@ end)
 -- Migrated 15 tests from Rust evidence
 local OUT = "tests/output/migrated_15/"
 
+-- @describe evidence: migrated 15
 describe("evidence: migrated 15", function()
     before_each(function()
         ensure_evidence_dir("migrated_15")
     end)
 
     -- @evidence file
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
     it("evidence_image_new_blank", function()
         local img = lurek.image.newImageData(64, 64)
         local path = OUT .. "new_blank_64x64.png"
@@ -89,6 +106,9 @@ describe("evidence: migrated 15", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:fill
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
     it("evidence_image_fill_solid", function()
         local img = lurek.image.newImageData(64, 64)
         img:fill(255, 128, 0, 255)
@@ -98,6 +118,10 @@ describe("evidence: migrated 15", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:fill
+    -- @covers LImageData:setPixel
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
     it("evidence_image_set_pixel_pattern", function()
         local img = lurek.image.newImageData(64, 64)
         img:fill(0, 0, 0, 255)
@@ -113,6 +137,12 @@ describe("evidence: migrated 15", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:drawCircle
+    -- @covers LImageData:drawLine
+    -- @covers LImageData:drawRect
+    -- @covers LImageData:fill
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
     it("evidence_image_draw_shapes_combined", function()
         local img = lurek.image.newImageData(256, 256)
         img:fill(20, 20, 40, 255)
@@ -141,6 +171,11 @@ describe("evidence: migrated 15", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:drawCircle
+    -- @covers LImageData:fill
+    -- @covers LImageData:paste
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
     it("evidence_image_paste_composite", function()
         local bg = lurek.image.newImageData(128, 128)
         bg:fill(40, 40, 80, 255)
@@ -155,6 +190,11 @@ describe("evidence: migrated 15", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:crop
+    -- @covers LImageData:fill
+    -- @covers LImageData:noise
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
     it("evidence_effect_noise", function()
         local img = lurek.image.newImageData(128, 128)
         img:fill(128, 128, 128, 255)
@@ -166,6 +206,11 @@ describe("evidence: migrated 15", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:crop
+    -- @covers LImageData:flipHorizontal
+    -- @covers LImageData:setPixel
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
     it("evidence_effect_flip_horizontal", function()
         local img = lurek.image.newImageData(64, 64)
         for y = 0, 63 do
@@ -180,6 +225,11 @@ describe("evidence: migrated 15", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:crop
+    -- @covers LImageData:flipVertical
+    -- @covers LImageData:setPixel
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
     it("evidence_effect_flip_vertical", function()
         local img = lurek.image.newImageData(64, 64)
         for y = 0, 31 do
@@ -196,6 +246,10 @@ describe("evidence: migrated 15", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:fill
+    -- @covers LImageData:rotate90cw
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
     it("evidence_effect_rotate", function()
         local img = lurek.image.newImageData(64, 32)
         img:fill(255, 255, 0, 255)
@@ -206,6 +260,11 @@ describe("evidence: migrated 15", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:crop
+    -- @covers LImageData:drawRect
+    -- @covers LImageData:fill
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
     it("evidence_effect_crop", function()
         local img = lurek.image.newImageData(128, 128)
         img:fill(200, 200, 200, 255)
@@ -217,6 +276,11 @@ describe("evidence: migrated 15", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:drawCircle
+    -- @covers LImageData:fill
+    -- @covers LImageData:resizeNearest
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
     it("evidence_effect_resize", function()
         local img = lurek.image.newImageData(32, 32)
         img:fill(255, 0, 255, 255)
@@ -228,6 +292,12 @@ describe("evidence: migrated 15", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:crop
+    -- @covers LImageData:fill
+    -- @covers LImageData:getPixel
+    -- @covers LImageData:mapPixel
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
     it("evidence_effect_alpha_mask", function()
         local img = lurek.image.newImageData(64, 64)
         img:fill(0, 255, 0, 255)
@@ -245,6 +315,11 @@ describe("evidence: migrated 15", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:crop
+    -- @covers LImageData:drawCircle
+    -- @covers LImageData:fill
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
     it("evidence_effect_pipeline", function()
         local img = lurek.image.newImageData(64, 64)
         img:fill(100, 100, 100, 255)
@@ -257,6 +332,10 @@ describe("evidence: migrated 15", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:setPixel
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
+    -- @covers lurek.math.perlinFast
     it("evidence_math_noise_colored_terrain", function()
         local img = lurek.image.newImageData(64, 64)
         for y = 0, 63 do
@@ -275,6 +354,10 @@ describe("evidence: migrated 15", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:setPixel
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
+    -- @covers lurek.math.simplex
     it("evidence_math_generate_map", function()
         local img = lurek.image.newImageData(64, 64)
         for y = 0, 63 do
@@ -299,12 +382,15 @@ end)
 -- Migrated 15 tests from Rust evidence
 local OUT = "tests/output/migrated_15/"
 
+-- @describe evidence: migrated 15
 describe("evidence: migrated 15", function()
     before_each(function()
         ensure_evidence_dir("migrated_15")
     end)
 
     -- @evidence file
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
     it("evidence_image_new_blank", function()
         local img = lurek.image.newImageData(64, 64)
         local path = OUT .. "new_blank_64x64.png"
@@ -313,6 +399,9 @@ describe("evidence: migrated 15", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:fill
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
     it("evidence_image_fill_solid", function()
         local img = lurek.image.newImageData(64, 64)
         img:fill(255, 128, 0, 255)
@@ -322,6 +411,10 @@ describe("evidence: migrated 15", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:fill
+    -- @covers LImageData:setPixel
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
     it("evidence_image_set_pixel_pattern", function()
         local img = lurek.image.newImageData(64, 64)
         img:fill(0, 0, 0, 255)
@@ -337,6 +430,12 @@ describe("evidence: migrated 15", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:drawCircle
+    -- @covers LImageData:drawLine
+    -- @covers LImageData:drawRect
+    -- @covers LImageData:fill
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
     it("evidence_image_draw_shapes_combined", function()
         local img = lurek.image.newImageData(256, 256)
         img:fill(20, 20, 40, 255)
@@ -365,6 +464,11 @@ describe("evidence: migrated 15", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:drawCircle
+    -- @covers LImageData:fill
+    -- @covers LImageData:paste
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
     it("evidence_image_paste_composite", function()
         local bg = lurek.image.newImageData(128, 128)
         bg:fill(40, 40, 80, 255)
@@ -379,6 +483,11 @@ describe("evidence: migrated 15", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:crop
+    -- @covers LImageData:fill
+    -- @covers LImageData:noise
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
     it("evidence_effect_noise", function()
         local img = lurek.image.newImageData(128, 128)
         img:fill(128, 128, 128, 255)
@@ -390,6 +499,11 @@ describe("evidence: migrated 15", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:crop
+    -- @covers LImageData:flipHorizontal
+    -- @covers LImageData:setPixel
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
     it("evidence_effect_flip_horizontal", function()
         local img = lurek.image.newImageData(64, 64)
         for y = 0, 63 do
@@ -404,6 +518,11 @@ describe("evidence: migrated 15", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:crop
+    -- @covers LImageData:flipVertical
+    -- @covers LImageData:setPixel
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
     it("evidence_effect_flip_vertical", function()
         local img = lurek.image.newImageData(64, 64)
         for y = 0, 31 do
@@ -420,6 +539,10 @@ describe("evidence: migrated 15", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:fill
+    -- @covers LImageData:rotate90cw
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
     it("evidence_effect_rotate", function()
         local img = lurek.image.newImageData(64, 32)
         img:fill(255, 255, 0, 255)
@@ -430,6 +553,11 @@ describe("evidence: migrated 15", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:crop
+    -- @covers LImageData:drawRect
+    -- @covers LImageData:fill
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
     it("evidence_effect_crop", function()
         local img = lurek.image.newImageData(128, 128)
         img:fill(200, 200, 200, 255)
@@ -441,6 +569,11 @@ describe("evidence: migrated 15", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:drawCircle
+    -- @covers LImageData:fill
+    -- @covers LImageData:resizeNearest
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
     it("evidence_effect_resize", function()
         local img = lurek.image.newImageData(32, 32)
         img:fill(255, 0, 255, 255)
@@ -452,6 +585,12 @@ describe("evidence: migrated 15", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:crop
+    -- @covers LImageData:fill
+    -- @covers LImageData:getPixel
+    -- @covers LImageData:mapPixel
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
     it("evidence_effect_alpha_mask", function()
         local img = lurek.image.newImageData(64, 64)
         img:fill(0, 255, 0, 255)
@@ -469,6 +608,11 @@ describe("evidence: migrated 15", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:crop
+    -- @covers LImageData:drawCircle
+    -- @covers LImageData:fill
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
     it("evidence_effect_pipeline", function()
         local img = lurek.image.newImageData(64, 64)
         img:fill(100, 100, 100, 255)
@@ -481,6 +625,10 @@ describe("evidence: migrated 15", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:setPixel
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
+    -- @covers lurek.math.perlinFast
     it("evidence_math_noise_colored_terrain", function()
         local img = lurek.image.newImageData(64, 64)
         for y = 0, 63 do
@@ -499,6 +647,10 @@ describe("evidence: migrated 15", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:setPixel
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
+    -- @covers lurek.math.simplex
     it("evidence_math_generate_map", function()
         local img = lurek.image.newImageData(64, 64)
         for y = 0, 63 do
@@ -521,6 +673,7 @@ end)
 -- ================================================================
 
 
+-- @describe Evidence misc
 describe('Evidence misc', function()
 end)
 
@@ -531,6 +684,7 @@ end)
 -- ================================================================
 
 
+-- @describe Evidence misc
 describe('Evidence misc', function()
 end)
 
@@ -560,9 +714,16 @@ local function plot_control_points(img, curve)
     end
 end
 
+-- @describe Evidence: Bezier curves
 describe("Evidence: Bezier curves", function()
 
     -- @evidence file
+    -- @covers LBezierCurve:evaluate
+    -- @covers LImageData:drawLine
+    -- @covers LImageData:drawRect
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
+    -- @covers lurek.math.newBezierCurve
     it("quadratic bezier (3 control points)", function()
         local W, H = 400, 300
         local img = lurek.image.newImageData(W, H)
@@ -589,6 +750,12 @@ describe("Evidence: Bezier curves", function()
     end)
 
     -- @evidence file
+    -- @covers LBezierCurve:evaluate
+    -- @covers LImageData:drawLine
+    -- @covers LImageData:drawRect
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
+    -- @covers lurek.math.newBezierCurve
     it("cubic bezier (4 control points)", function()
         local W, H = 400, 300
         local img = lurek.image.newImageData(W, H)
@@ -614,6 +781,14 @@ describe("Evidence: Bezier curves", function()
     end)
 
     -- @evidence file
+    -- @covers LBezierCurve:evaluate
+    -- @covers LBezierCurve:getControlPoint
+    -- @covers LBezierCurve:getControlPointCount
+    -- @covers LImageData:drawLine
+    -- @covers LImageData:drawRect
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
+    -- @covers lurek.math.newBezierCurve
     it("complex bezier (7 control points)", function()
         local W, H = 500, 400
         local img = lurek.image.newImageData(W, H)
@@ -656,6 +831,14 @@ describe("Evidence: Bezier curves", function()
     end)
 
     -- @evidence file
+    -- @covers LBezierCurve:evaluate
+    -- @covers LBezierCurve:getDerivative
+    -- @covers LImageData:drawCircle
+    -- @covers LImageData:drawLine
+    -- @covers LImageData:drawRect
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
+    -- @covers lurek.math.newBezierCurve
     it("derivative visualisation (tangent lines)", function()
         local W, H = 400, 300
         local img = lurek.image.newImageData(W, H)
@@ -729,9 +912,16 @@ local function plot_control_points(img, curve)
     end
 end
 
+-- @describe Evidence: Bezier curves
 describe("Evidence: Bezier curves", function()
 
     -- @evidence file
+    -- @covers LBezierCurve:evaluate
+    -- @covers LImageData:drawLine
+    -- @covers LImageData:drawRect
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
+    -- @covers lurek.math.newBezierCurve
     it("quadratic bezier (3 control points)", function()
         local W, H = 400, 300
         local img = lurek.image.newImageData(W, H)
@@ -758,6 +948,12 @@ describe("Evidence: Bezier curves", function()
     end)
 
     -- @evidence file
+    -- @covers LBezierCurve:evaluate
+    -- @covers LImageData:drawLine
+    -- @covers LImageData:drawRect
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
+    -- @covers lurek.math.newBezierCurve
     it("cubic bezier (4 control points)", function()
         local W, H = 400, 300
         local img = lurek.image.newImageData(W, H)
@@ -783,6 +979,14 @@ describe("Evidence: Bezier curves", function()
     end)
 
     -- @evidence file
+    -- @covers LBezierCurve:evaluate
+    -- @covers LBezierCurve:getControlPoint
+    -- @covers LBezierCurve:getControlPointCount
+    -- @covers LImageData:drawLine
+    -- @covers LImageData:drawRect
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
+    -- @covers lurek.math.newBezierCurve
     it("complex bezier (7 control points)", function()
         local W, H = 500, 400
         local img = lurek.image.newImageData(W, H)
@@ -825,6 +1029,14 @@ describe("Evidence: Bezier curves", function()
     end)
 
     -- @evidence file
+    -- @covers LBezierCurve:evaluate
+    -- @covers LBezierCurve:getDerivative
+    -- @covers LImageData:drawCircle
+    -- @covers LImageData:drawLine
+    -- @covers LImageData:drawRect
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
+    -- @covers lurek.math.newBezierCurve
     it("derivative visualisation (tangent lines)", function()
         local W, H = 400, 300
         local img = lurek.image.newImageData(W, H)
@@ -893,9 +1105,14 @@ local function draw_dot(img, cx, cy, radius, r, g, b)
     end
 end
 
+-- @describe Evidence: geometry shapes and queries
 describe("Evidence: geometry shapes and queries", function()
 
     -- @evidence file
+    -- @covers LImageData:fill
+    -- @covers LImageData:setPixel
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
     it("polygon gallery (triangle, quad, pentagon, hexagon)", function()
         local W, H = 256, 256
         local img = lurek.image.newImageData(W, H)
@@ -929,6 +1146,10 @@ describe("Evidence: geometry shapes and queries", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:fill
+    -- @covers LImageData:setPixel
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
     it("filled primitives (circles and rectangles)", function()
         local W, H = 256, 256
         local img = lurek.image.newImageData(W, H)
@@ -947,6 +1168,10 @@ describe("Evidence: geometry shapes and queries", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:fill
+    -- @covers LImageData:setPixel
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
     it("spirals (Archimedean spiral)", function()
         local W, H = 256, 256
         local img = lurek.image.newImageData(W, H)
@@ -990,9 +1215,14 @@ local function draw_dot(img, cx, cy, radius, r, g, b)
     end
 end
 
+-- @describe Evidence: geometry shapes and queries
 describe("Evidence: geometry shapes and queries", function()
 
     -- @evidence file
+    -- @covers LImageData:fill
+    -- @covers LImageData:setPixel
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
     it("polygon gallery (triangle, quad, pentagon, hexagon)", function()
         local W, H = 256, 256
         local img = lurek.image.newImageData(W, H)
@@ -1026,6 +1256,10 @@ describe("Evidence: geometry shapes and queries", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:fill
+    -- @covers LImageData:setPixel
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
     it("filled primitives (circles and rectangles)", function()
         local W, H = 256, 256
         local img = lurek.image.newImageData(W, H)
@@ -1044,6 +1278,10 @@ describe("Evidence: geometry shapes and queries", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:fill
+    -- @covers LImageData:setPixel
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
     it("spirals (Archimedean spiral)", function()
         local W, H = 256, 256
         local img = lurek.image.newImageData(W, H)
@@ -1078,9 +1316,15 @@ local function noise_to_byte(v)
     return math.floor((clamped + 1) * 0.5 * 255 + 0.5)
 end
 
+-- @describe Evidence: Noise generation
 describe("Evidence: Noise generation", function()
 
     -- @evidence file
+    -- @covers LImageData:setPixel
+    -- @covers LNoiseGenerator:perlin2d
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
+    -- @covers lurek.math.newNoiseGenerator
     it("generates Perlin 2D noise image", function()
         local size = 256
         local scale = 50
@@ -1097,6 +1341,11 @@ describe("Evidence: Noise generation", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:setPixel
+    -- @covers LNoiseGenerator:simplex2d
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
+    -- @covers lurek.math.newNoiseGenerator
     it("generates Simplex 2D noise image", function()
         local size = 256
         local scale = 50
@@ -1113,6 +1362,11 @@ describe("Evidence: Noise generation", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:setPixel
+    -- @covers LNoiseGenerator:fbm
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
+    -- @covers lurek.math.newNoiseGenerator
     it("generates FBM noise image", function()
         local size = 256
         local scale = 50
@@ -1129,6 +1383,11 @@ describe("Evidence: Noise generation", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:setPixel
+    -- @covers LNoiseGenerator:worley2d
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
+    -- @covers lurek.math.newNoiseGenerator
     it("generates Worley 2D noise image", function()
         local size = 256
         local scale = 30
@@ -1145,6 +1404,11 @@ describe("Evidence: Noise generation", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:setPixel
+    -- @covers LNoiseGenerator:ridged
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
+    -- @covers lurek.math.newNoiseGenerator
     it("generates Ridged noise image", function()
         local size = 256
         local scale = 50
@@ -1161,6 +1425,11 @@ describe("Evidence: Noise generation", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:setPixel
+    -- @covers LNoiseGenerator:turbulence
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
+    -- @covers lurek.math.newNoiseGenerator
     it("generates Turbulence noise image", function()
         local size = 256
         local scale = 50
@@ -1195,9 +1464,15 @@ local function noise_to_byte(v)
     return math.floor((clamped + 1) * 0.5 * 255 + 0.5)
 end
 
+-- @describe Evidence: Noise generation
 describe("Evidence: Noise generation", function()
 
     -- @evidence file
+    -- @covers LImageData:setPixel
+    -- @covers LNoiseGenerator:perlin2d
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
+    -- @covers lurek.math.newNoiseGenerator
     it("generates Perlin 2D noise image", function()
         local size = 256
         local scale = 50
@@ -1214,6 +1489,11 @@ describe("Evidence: Noise generation", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:setPixel
+    -- @covers LNoiseGenerator:simplex2d
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
+    -- @covers lurek.math.newNoiseGenerator
     it("generates Simplex 2D noise image", function()
         local size = 256
         local scale = 50
@@ -1230,6 +1510,11 @@ describe("Evidence: Noise generation", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:setPixel
+    -- @covers LNoiseGenerator:fbm
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
+    -- @covers lurek.math.newNoiseGenerator
     it("generates FBM noise image", function()
         local size = 256
         local scale = 50
@@ -1246,6 +1531,11 @@ describe("Evidence: Noise generation", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:setPixel
+    -- @covers LNoiseGenerator:worley2d
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
+    -- @covers lurek.math.newNoiseGenerator
     it("generates Worley 2D noise image", function()
         local size = 256
         local scale = 30
@@ -1262,6 +1552,11 @@ describe("Evidence: Noise generation", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:setPixel
+    -- @covers LNoiseGenerator:ridged
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
+    -- @covers lurek.math.newNoiseGenerator
     it("generates Ridged noise image", function()
         local size = 256
         local scale = 50
@@ -1278,6 +1573,11 @@ describe("Evidence: Noise generation", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:setPixel
+    -- @covers LNoiseGenerator:turbulence
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
+    -- @covers lurek.math.newNoiseGenerator
     it("generates Turbulence noise image", function()
         local size = 256
         local scale = 50

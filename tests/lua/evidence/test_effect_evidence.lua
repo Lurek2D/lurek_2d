@@ -26,8 +26,16 @@ local function blend(base_r, base_g, base_b, over_r, over_g, over_b, alpha)
            math.floor(base_b * ia + over_b * a)
 end
 
+-- @describe Evidence: lurek.effect effect API + PNG visualization
 describe("Evidence: lurek.effect effect API + PNG visualization", function()
     -- @evidence file
+    -- @covers LImageData:setPixel
+    -- @covers LOverlay:getFlashAlpha
+    -- @covers LOverlay:triggerFlash
+    -- @covers LOverlay:update
+    -- @covers lurek.effect.newOverlay
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
     it("PNG: flash effect at multiple time steps", function()
         local W, H = 256, 64
         local img = lurek.image.newImageData(W, H)
@@ -54,6 +62,13 @@ describe("Evidence: lurek.effect effect API + PNG visualization", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:setPixel
+    -- @covers LOverlay:getFlashAlpha
+    -- @covers LOverlay:triggerFade
+    -- @covers LOverlay:update
+    -- @covers lurek.effect.newOverlay
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
     it("PNG: fade-to-black effect over time", function()
         local W, H = 256, 64
         local img = lurek.image.newImageData(W, H)
@@ -80,6 +95,16 @@ describe("Evidence: lurek.effect effect API + PNG visualization", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:fill
+    -- @covers LImageData:setPixel
+    -- @covers LOverlay:clear
+    -- @covers LOverlay:getFlashAlpha
+    -- @covers LOverlay:getLightningAlpha
+    -- @covers LOverlay:triggerFlash
+    -- @covers LOverlay:triggerLightning
+    -- @covers lurek.effect.newOverlay
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
     it("PNG: combined effects -    flash + lightning visualization", function()
         local W, H = 128, 128
         local img = lurek.image.newImageData(W, H)
@@ -149,8 +174,12 @@ local function draw_rect(img, x0, y0, w, h, r, g, b)
     end
 end
 
+-- @describe Evidence: PostFx + ImageData effects          PNG output
 describe("Evidence: PostFx + ImageData effects          PNG output", function()
     -- @evidence file
+    -- @covers LImageData:getPixel
+    -- @covers LImageData:grayscale
+    -- @covers lurek.image.savePNG
     it("PNG: grayscale effect on color gradient", function()
         local img = make_test_pattern(128, 128)
         img:grayscale()
@@ -160,6 +189,9 @@ describe("Evidence: PostFx + ImageData effects          PNG output", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:getPixel
+    -- @covers LImageData:invert
+    -- @covers lurek.image.savePNG
     it("PNG: invert effect on color gradient", function()
         local img = make_test_pattern(128, 128)
         -- Read a pixel before invert
@@ -171,6 +203,7 @@ describe("Evidence: PostFx + ImageData effects          PNG output", function()
     end)
 
     -- @evidence file
+    -- @covers lurek.image.savePNG
     it("PNG: blur effect on color gradient", function()
         local img = make_test_pattern(128, 128)
         img:blur(3)
@@ -178,6 +211,8 @@ describe("Evidence: PostFx + ImageData effects          PNG output", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:sepia
+    -- @covers lurek.image.savePNG
     it("PNG: sepia effect on color gradient", function()
         local img = make_test_pattern(128, 128)
         img:sepia()
@@ -185,6 +220,17 @@ describe("Evidence: PostFx + ImageData effects          PNG output", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:brightness
+    -- @covers LImageData:contrast
+    -- @covers LImageData:fill
+    -- @covers LImageData:getPixel
+    -- @covers LImageData:grayscale
+    -- @covers LImageData:invert
+    -- @covers LImageData:sepia
+    -- @covers LImageData:setPixel
+    -- @covers LImageData:sharpen
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
     it("PNG: effect strip -    original + 8 effects side by side", function()
         local CELL = 64
         local effects = {"original", "grayscale", "sepia", "invert", "blur", "sharpen", "brightness", "contrast", "threshold"}
@@ -219,6 +265,10 @@ describe("Evidence: PostFx + ImageData effects          PNG output", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:gamma
+    -- @covers LImageData:posterize
+    -- @covers LImageData:tint
+    -- @covers lurek.image.savePNG
     it("PNG: posterize + gamma + tint combined", function()
         local img = make_test_pattern(128, 128)
         img:posterize(4)
@@ -228,6 +278,9 @@ describe("Evidence: PostFx + ImageData effects          PNG output", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:flipHorizontal
+    -- @covers LImageData:saturation
+    -- @covers lurek.image.savePNG
     it("PNG: saturation and flipHorizontal", function()
         local img = make_test_pattern(128, 128)
         img:saturation(2.0)
@@ -267,17 +320,21 @@ local NEW_TYPES = {
 local evidence_lines = {}
 local function record(line) evidence_lines[#evidence_lines + 1] = line end
 
+-- @describe New PostFxEffectType construction evidence
 describe("New PostFxEffectType construction evidence", function()
     for _, type_name in ipairs(NEW_TYPES) do
     end
 end)
 
+-- @describe New effect types appear in getEffectTypes()
 describe("New effect types appear in getEffectTypes()", function()
 end)
 
+-- @describe New effect types in a PostFxStack
 describe("New effect types in a PostFxStack", function()
 end)
 
+-- @describe newPresetStack evidence
 describe("newPresetStack evidence", function()
     local PRESETS = { "retro_tv", "horror", "dream", "neon", "sepia_age" }
     end)
@@ -330,8 +387,16 @@ local function blend(base_r, base_g, base_b, over_r, over_g, over_b, alpha)
            math.floor(base_b * ia + over_b * a)
 end
 
+-- @describe Evidence: lurek.effect effect API + PNG visualization
 describe("Evidence: lurek.effect effect API + PNG visualization", function()
     -- @evidence file
+    -- @covers LImageData:setPixel
+    -- @covers LOverlay:getFlashAlpha
+    -- @covers LOverlay:triggerFlash
+    -- @covers LOverlay:update
+    -- @covers lurek.effect.newOverlay
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
     it("PNG: flash effect at multiple time steps", function()
         local W, H = 256, 64
         local img = lurek.image.newImageData(W, H)
@@ -358,6 +423,13 @@ describe("Evidence: lurek.effect effect API + PNG visualization", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:setPixel
+    -- @covers LOverlay:getFlashAlpha
+    -- @covers LOverlay:triggerFade
+    -- @covers LOverlay:update
+    -- @covers lurek.effect.newOverlay
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
     it("PNG: fade-to-black effect over time", function()
         local W, H = 256, 64
         local img = lurek.image.newImageData(W, H)
@@ -384,6 +456,16 @@ describe("Evidence: lurek.effect effect API + PNG visualization", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:fill
+    -- @covers LImageData:setPixel
+    -- @covers LOverlay:clear
+    -- @covers LOverlay:getFlashAlpha
+    -- @covers LOverlay:getLightningAlpha
+    -- @covers LOverlay:triggerFlash
+    -- @covers LOverlay:triggerLightning
+    -- @covers lurek.effect.newOverlay
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
     it("PNG: combined effects -    flash + lightning visualization", function()
         local W, H = 128, 128
         local img = lurek.image.newImageData(W, H)
@@ -453,8 +535,12 @@ local function draw_rect(img, x0, y0, w, h, r, g, b)
     end
 end
 
+-- @describe Evidence: PostFx + ImageData effects          PNG output
 describe("Evidence: PostFx + ImageData effects          PNG output", function()
     -- @evidence file
+    -- @covers LImageData:getPixel
+    -- @covers LImageData:grayscale
+    -- @covers lurek.image.savePNG
     it("PNG: grayscale effect on color gradient", function()
         local img = make_test_pattern(128, 128)
         img:grayscale()
@@ -464,6 +550,9 @@ describe("Evidence: PostFx + ImageData effects          PNG output", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:getPixel
+    -- @covers LImageData:invert
+    -- @covers lurek.image.savePNG
     it("PNG: invert effect on color gradient", function()
         local img = make_test_pattern(128, 128)
         -- Read a pixel before invert
@@ -475,6 +564,7 @@ describe("Evidence: PostFx + ImageData effects          PNG output", function()
     end)
 
     -- @evidence file
+    -- @covers lurek.image.savePNG
     it("PNG: blur effect on color gradient", function()
         local img = make_test_pattern(128, 128)
         img:blur(3)
@@ -482,6 +572,8 @@ describe("Evidence: PostFx + ImageData effects          PNG output", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:sepia
+    -- @covers lurek.image.savePNG
     it("PNG: sepia effect on color gradient", function()
         local img = make_test_pattern(128, 128)
         img:sepia()
@@ -489,6 +581,17 @@ describe("Evidence: PostFx + ImageData effects          PNG output", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:brightness
+    -- @covers LImageData:contrast
+    -- @covers LImageData:fill
+    -- @covers LImageData:getPixel
+    -- @covers LImageData:grayscale
+    -- @covers LImageData:invert
+    -- @covers LImageData:sepia
+    -- @covers LImageData:setPixel
+    -- @covers LImageData:sharpen
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
     it("PNG: effect strip -    original + 8 effects side by side", function()
         local CELL = 64
         local effects = {"original", "grayscale", "sepia", "invert", "blur", "sharpen", "brightness", "contrast", "threshold"}
@@ -523,6 +626,10 @@ describe("Evidence: PostFx + ImageData effects          PNG output", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:gamma
+    -- @covers LImageData:posterize
+    -- @covers LImageData:tint
+    -- @covers lurek.image.savePNG
     it("PNG: posterize + gamma + tint combined", function()
         local img = make_test_pattern(128, 128)
         img:posterize(4)
@@ -532,6 +639,9 @@ describe("Evidence: PostFx + ImageData effects          PNG output", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:flipHorizontal
+    -- @covers LImageData:saturation
+    -- @covers lurek.image.savePNG
     it("PNG: saturation and flipHorizontal", function()
         local img = make_test_pattern(128, 128)
         img:saturation(2.0)

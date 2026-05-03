@@ -5,7 +5,9 @@ local netstate_mod = require("library.netstate")
 -- Construction & Authority
 ---------------------------------------------------------------------------
 
+-- @describe Construction & Authority
 describe("Construction & Authority", function()
+    -- @library LMod:getVersion
     it("creates with nil host and defaults", function()
         local ns = netstate_mod.new(nil)
         expect_equal(ns:isAuthority(), false)
@@ -58,7 +60,9 @@ end)
 -- State Get / Set
 ---------------------------------------------------------------------------
 
+-- @describe State Get / Set
 describe("State Get / Set", function()
+    -- @library lurek.library_netstate
     it("set and get a value as authority", function()
         local ns = netstate_mod.new(nil, { authority = true })
         local ok, err = ns:set("health", 100)
@@ -67,6 +71,7 @@ describe("State Get / Set", function()
         expect_equal(ns:get("health"), 100)
     end)
 
+    -- @library lurek.library_netstate
     it("set rejects non-authority", function()
         local ns = netstate_mod.new(nil, { authority = false })
         local ok, err = ns:set("health", 100)
@@ -75,6 +80,7 @@ describe("State Get / Set", function()
         expect_equal(ns:get("health"), nil)
     end)
 
+    -- @library lurek.library_netstate
     it("set rejects invalid key types", function()
         local ns = netstate_mod.new(nil, { authority = true })
         local ok, err = ns:set(123, "value")
@@ -90,16 +96,19 @@ describe("State Get / Set", function()
         expect_equal(err, "key must be a non-empty string")
     end)
 
+    -- @library lurek.library_netstate
     it("get returns nil for non-existent key", function()
         local ns = netstate_mod.new(nil, { authority = true })
         expect_equal(ns:get("missing"), nil)
     end)
 
+    -- @library lurek.library_netstate
     it("get returns nil for non-string key", function()
         local ns = netstate_mod.new(nil, { authority = true })
         expect_equal(ns:get(42), nil)
     end)
 
+    -- @library lurek.library_netstate
     it("overwrites existing key", function()
         local ns = netstate_mod.new(nil, { authority = true })
         ns:set("score", 10)
@@ -107,6 +116,7 @@ describe("State Get / Set", function()
         expect_equal(ns:get("score"), 20)
     end)
 
+    -- @library lurek.library_netstate
     it("sets multiple distinct keys", function()
         local ns = netstate_mod.new(nil, { authority = true })
         ns:set("a", 1)
@@ -118,6 +128,7 @@ describe("State Get / Set", function()
         expect_equal(ns:get("c"), 3)
     end)
 
+    -- @library lurek.library_netstate
     it("hasKey works correctly", function()
         local ns = netstate_mod.new(nil, { authority = true })
         expect_equal(ns:hasKey("x"), false)
@@ -126,6 +137,7 @@ describe("State Get / Set", function()
         expect_equal(ns:hasKey(123), false)  -- non-string
     end)
 
+    -- @library LContentRegistry:getAll
     it("getAll returns flat snapshot", function()
         local ns = netstate_mod.new(nil, { authority = true })
         ns:set("hp", 100)
@@ -140,12 +152,14 @@ end)
 -- Per-Key Versioning
 ---------------------------------------------------------------------------
 
+-- @describe Per-Key Versioning
 describe("Per-Key Versioning", function()
     it("each key starts at version 0", function()
         local ns = netstate_mod.new(nil, { authority = true })
         expect_equal(ns:getKeyVersion("x"), 0)
     end)
 
+    -- @library lurek.library_netstate
     it("version increments independently per key", function()
         local ns = netstate_mod.new(nil, { authority = true })
         ns:set("a", 1)
@@ -162,6 +176,7 @@ describe("Per-Key Versioning", function()
         expect_equal(ns:getKeyVersion("b"), 1)
     end)
 
+    -- @library LMod:getVersion
     it("getVersion returns max across all keys", function()
         local ns = netstate_mod.new(nil, { authority = true })
         ns:set("a", 1)
@@ -183,7 +198,9 @@ end)
 -- Callbacks
 ---------------------------------------------------------------------------
 
+-- @describe Callbacks
 describe("Callbacks", function()
+    -- @library LFileWatcher:onChanged
     it("fires key-specific callback on set", function()
         local ns = netstate_mod.new(nil, { authority = true })
         local fired = {}
@@ -202,6 +219,7 @@ describe("Callbacks", function()
         expect_equal(fired[2].old, 100)
     end)
 
+    -- @library lurek.library_netstate
     it("fires global onChange callback", function()
         local ns = netstate_mod.new(nil, { authority = true })
         local fired = {}
@@ -214,6 +232,7 @@ describe("Callbacks", function()
         expect_equal(fired[1].val, 42)
     end)
 
+    -- @library LFileWatcher:onChanged
     it("does not fire callback for other keys", function()
         local ns = netstate_mod.new(nil, { authority = true })
         local count = 0
@@ -222,6 +241,7 @@ describe("Callbacks", function()
         expect_equal(count, 0)
     end)
 
+    -- @library LFileWatcher:onChanged
     it("clearCallbacks removes key callbacks", function()
         local ns = netstate_mod.new(nil, { authority = true })
         local count = 0
@@ -233,6 +253,7 @@ describe("Callbacks", function()
         expect_equal(count, 1)  -- no longer fires
     end)
 
+    -- @library LFileWatcher:onChanged
     it("onChanged rejects non-function", function()
         local ns = netstate_mod.new(nil, { authority = true })
         ns:onChanged("hp", "not a function")
@@ -241,6 +262,7 @@ describe("Callbacks", function()
         expect_equal(ns:get("hp"), 100)
     end)
 
+    -- @library LFileWatcher:onChanged
     it("onChanged rejects empty key", function()
         local ns = netstate_mod.new(nil, { authority = true })
         local count = 0
@@ -249,6 +271,7 @@ describe("Callbacks", function()
         expect_equal(count, 0)  -- callback not registered
     end)
 
+    -- @library lurek.library_netstate
     it("onChange rejects non-function", function()
         local ns = netstate_mod.new(nil, { authority = true })
         ns:onChange("not a function")
@@ -262,7 +285,9 @@ end)
 -- Dirty Set & Max Dirty Keys
 ---------------------------------------------------------------------------
 
+-- @describe Dirty Set
 describe("Dirty Set", function()
+    -- @library lurek.library_netstate
     it("tracks dirty keys after set", function()
         local ns = netstate_mod.new(nil, { authority = true })
         expect_equal(ns:getDirtyCount(), 0)
@@ -272,6 +297,7 @@ describe("Dirty Set", function()
         expect_equal(ns:getDirtyCount(), 2)
     end)
 
+    -- @library lurek.library_netstate
     it("same key set twice counts as one dirty", function()
         local ns = netstate_mod.new(nil, { authority = true })
         ns:set("a", 1)
@@ -279,6 +305,7 @@ describe("Dirty Set", function()
         expect_equal(ns:getDirtyCount(), 1)
     end)
 
+    -- @library lurek.library_netstate
     it("maxDirtyKeys limits dirty set size", function()
         local ns = netstate_mod.new(nil, { authority = true, maxDirtyKeys = 3 })
         ns:set("a", 1)
@@ -291,6 +318,7 @@ describe("Dirty Set", function()
         expect_equal(ns:getDirtyCount(), 3)
     end)
 
+    -- @library lurek.library_netstate
     it("maxDirtyKeys=1 keeps only the latest", function()
         local ns = netstate_mod.new(nil, { authority = true, maxDirtyKeys = 1 })
         ns:set("first", 1)
@@ -299,6 +327,7 @@ describe("Dirty Set", function()
         expect_equal(ns:getDirtyCount(), 1)
     end)
 
+    -- @library lurek.library_netstate
     it("no maxDirtyKeys allows unlimited", function()
         local ns = netstate_mod.new(nil, { authority = true })
         for i = 1, 100 do
@@ -307,6 +336,7 @@ describe("Dirty Set", function()
         expect_equal(ns:getDirtyCount(), 100)
     end)
 
+    -- @library lurek.library_netstate
     it("invalid maxDirtyKeys is ignored", function()
         local ns = netstate_mod.new(nil, { authority = true, maxDirtyKeys = 0 })
         ns:set("a", 1)
@@ -319,7 +349,9 @@ end)
 -- Remove Key
 ---------------------------------------------------------------------------
 
+-- @describe Remove Key
 describe("Remove Key", function()
+    -- @library lurek.library_netstate
     it("removes an existing key", function()
         local ns = netstate_mod.new(nil, { authority = true })
         ns:set("hp", 100)
@@ -331,6 +363,7 @@ describe("Remove Key", function()
         expect_equal(ns:get("hp"), nil)
     end)
 
+    -- @library LFileWatcher:onChanged
     it("remove fires callback with nil value", function()
         local ns = netstate_mod.new(nil, { authority = true })
         ns:set("hp", 100)
@@ -342,6 +375,7 @@ describe("Remove Key", function()
         expect_equal(removed_val, nil)
     end)
 
+    -- @library lurek.library_netstate
     it("remove rejects non-authority", function()
         local ns = netstate_mod.new(nil, { authority = false })
         local ok, err = ns:remove("hp")
@@ -349,6 +383,7 @@ describe("Remove Key", function()
         expect_equal(err, "not authority")
     end)
 
+    -- @library lurek.library_netstate
     it("remove rejects invalid key", function()
         local ns = netstate_mod.new(nil, { authority = true })
         local ok, err = ns:remove("")
@@ -356,6 +391,7 @@ describe("Remove Key", function()
         expect_equal(err, "key must be a non-empty string")
     end)
 
+    -- @library lurek.library_netstate
     it("remove rejects non-existent key", function()
         local ns = netstate_mod.new(nil, { authority = true })
         local ok, err = ns:remove("ghost")
@@ -368,6 +404,7 @@ end)
 -- Turn-Based Support
 ---------------------------------------------------------------------------
 
+-- @describe Turn-Based Support
 describe("Turn-Based Support", function()
     it("beginTurn advances turn counter", function()
         local ns = netstate_mod.new(nil, { authority = true, turnBased = true })
@@ -512,7 +549,9 @@ end)
 -- Delta Handling (simulated via _handle)
 ---------------------------------------------------------------------------
 
+-- @describe Delta Handling
 describe("Delta Handling", function()
+    -- @library lurek.library_netstate
     it("applies delta update on non-authority", function()
         local ns = netstate_mod.new(nil, { authority = false })
         local changes = {}
@@ -528,6 +567,7 @@ describe("Delta Handling", function()
         expect_equal(#changes, 2)
     end)
 
+    -- @library lurek.library_netstate
     it("rejects stale delta (per-key version)", function()
         local ns = netstate_mod.new(nil, { authority = false })
         -- Apply version 5
@@ -547,6 +587,7 @@ describe("Delta Handling", function()
         expect_equal(#changes, 0)
     end)
 
+    -- @library lurek.library_netstate
     it("accepts newer version delta", function()
         local ns = netstate_mod.new(nil, { authority = false })
         ns:_handle(1, {
@@ -564,6 +605,7 @@ describe("Delta Handling", function()
         expect_equal(changes[1].old_value, 100)
     end)
 
+    -- @library lurek.library_netstate
     it("ignores delta on authority", function()
         local ns = netstate_mod.new(nil, { authority = true })
         ns:_handle(1, {
@@ -590,6 +632,7 @@ describe("Delta Handling", function()
         expect_equal(#changes, 1)
     end)
 
+    -- @library lurek.library_netstate
     it("skips non-string keys in delta", function()
         local ns = netstate_mod.new(nil, { authority = false })
         local changes = {}
@@ -602,6 +645,7 @@ describe("Delta Handling", function()
         expect_equal(ns:get("valid"), 1)
     end)
 
+    -- @library LFileWatcher:onChanged
     it("fires callbacks on delta apply", function()
         local ns = netstate_mod.new(nil, { authority = false })
         local fired = {}
@@ -622,7 +666,9 @@ end)
 -- Full State Handling (simulated via _handle)
 ---------------------------------------------------------------------------
 
+-- @describe Full State Handling
 describe("Full State Handling", function()
+    -- @library lurek.library_netstate
     it("applies full state snapshot", function()
         local ns = netstate_mod.new(nil, { authority = false })
         ns:_handle(1, {
@@ -638,6 +684,7 @@ describe("Full State Handling", function()
         expect_equal(ns:getKeyVersion("mp"), 3)
     end)
 
+    -- @library lurek.library_netstate
     it("ignores full state on authority", function()
         local ns = netstate_mod.new(nil, { authority = true })
         ns:_handle(1, {
@@ -652,6 +699,7 @@ end)
 -- Turn Message Handling (simulated via _handle)
 ---------------------------------------------------------------------------
 
+-- @describe Turn Message Handling
 describe("Turn Message Handling", function()
     it("applies turn update from network", function()
         local ns = netstate_mod.new(nil, { authority = false, turnBased = true })
@@ -696,7 +744,9 @@ end)
 -- Sync & Poll with nil host (no-op safety)
 ---------------------------------------------------------------------------
 
+-- @describe Sync & Poll nil host
 describe("Sync & Poll nil host", function()
+    -- @library lurek.library_netstate
     it("sync is no-op with nil host", function()
         local ns = netstate_mod.new(nil, { authority = true })
         ns:set("x", 1)
@@ -705,6 +755,7 @@ describe("Sync & Poll nil host", function()
         expect_equal(ns:getDirtyCount(), 1)
     end)
 
+    -- @library LNetworkRuntime:poll
     it("poll returns empty table with nil host", function()
         local ns = netstate_mod.new(nil, { authority = false })
         local changes = ns:poll()
@@ -728,7 +779,9 @@ end)
 -- Logging
 ---------------------------------------------------------------------------
 
+-- @describe Logging
 describe("Logging", function()
+    -- @library lurek.library_netstate
     it("custom log function receives messages", function()
         local logs = {}
         netstate_mod.setLogging(true, function(msg) table.insert(logs, msg) end)
@@ -743,6 +796,7 @@ describe("Logging", function()
         netstate_mod.setLogging(false)
     end)
 
+    -- @library lurek.library_netstate
     it("logging disabled produces no output", function()
         local logs = {}
         netstate_mod.setLogging(false)
@@ -758,7 +812,9 @@ end)
 -- Edge Cases
 ---------------------------------------------------------------------------
 
+-- @describe Edge Cases
 describe("Edge Cases", function()
+    -- @library lurek.library_netstate
     it("set nil value is valid", function()
         local ns = netstate_mod.new(nil, { authority = true })
         ns:set("x", 42)
@@ -768,6 +824,7 @@ describe("Edge Cases", function()
         expect_equal(ns:get("x"), nil)
     end)
 
+    -- @library lurek.library_netstate
     it("set boolean value", function()
         local ns = netstate_mod.new(nil, { authority = true })
         ns:set("flag", true)
@@ -776,14 +833,17 @@ describe("Edge Cases", function()
         expect_equal(ns:get("flag"), false)
     end)
 
+    -- @library lurek.library_netstate
     it("set table value", function()
         local ns = netstate_mod.new(nil, { authority = true })
         ns:set("pos", { x = 10, y = 20 })
         local pos = ns:get("pos")
+        if pos == nil then error("expected pos table") end
         expect_equal(pos.x, 10)
         expect_equal(pos.y, 20)
     end)
 
+    -- @library lurek.library_netstate
     it("set string value", function()
         local ns = netstate_mod.new(nil, { authority = true })
         ns:set("name", "player1")
@@ -798,6 +858,7 @@ describe("Edge Cases", function()
         expect_equal(called, false)
     end)
 
+    -- @library lurek.library_netstate
     it("getKeyCount after removes", function()
         local ns = netstate_mod.new(nil, { authority = true })
         ns:set("a", 1)
@@ -808,6 +869,7 @@ describe("Edge Cases", function()
         expect_equal(ns:getKeyCount(), 2)
     end)
 
+    -- @library LFileWatcher:onChanged
     it("multiple callbacks on same key all fire", function()
         local ns = netstate_mod.new(nil, { authority = true })
         local count_a = 0
@@ -819,6 +881,7 @@ describe("Edge Cases", function()
         expect_equal(count_b, 1)
     end)
 
+    -- @library lurek.library_netstate
     it("concurrent key updates use independent versions", function()
         local ns = netstate_mod.new(nil, { authority = false })
         -- Simulate receiving interleaved updates for two keys

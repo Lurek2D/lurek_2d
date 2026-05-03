@@ -45,6 +45,7 @@ from typing import Iterable, List
 ROOT = Path(__file__).resolve().parents[2]
 TESTS_ROOT = ROOT / "tests" / "lua"
 API_STUB = ROOT / "docs" / "api" / "lurek.lua"
+API_JSON = ROOT / "logs" / "data" / "lua_api_data.json"
 UTF8_BOM = b"\xef\xbb\xbf"
 
 BLOCK_RE = re.compile(r'^(?P<indent>\s*)(?P<kind>describe|it)\(\s*["\'](?P<label>.*?)["\']\s*,\s*function\s*\(')
@@ -63,6 +64,8 @@ LUREK_NAMESPACE_RE = re.compile(r'\blurek\.[A-Za-z0-9_]+\b')
 # Matches method calls on local variables returned from lurek factories, e.g. seq:load(), hero:setHp()
 # We capture <var>:<method> but cannot statically know the type, so we report the raw call form
 OBJECT_METHOD_RE = re.compile(r'\b([a-z_][A-Za-z0-9_]*):([ \t]*)([A-Za-z][A-Za-z0-9_]*)\s*\(')
+OBJECT_METHOD_DOT_RE = re.compile(r'\b([a-z_][A-Za-z0-9_]*)\.([A-Za-z][A-Za-z0-9_]*)\s*\(')
+OBJECT_METHOD_INDEX_RE = re.compile(r'\b([a-z_][A-Za-z0-9_]*)\[\s*["\']([A-Za-z][A-Za-z0-9_]*)["\']\s*\]\s*\(')
 FACTORY_ASSIGN_RE = re.compile(r'\blocal\s+(?P<var>[a-z_][A-Za-z0-9_]*)\s*=\s*lurek\.[A-Za-z0-9_]+\.[A-Za-z0-9_]+\s*\(')
 ALIAS_RE = re.compile(r'^---@alias\s+(?P<alias>[A-Za-z][A-Za-z0-9_]*)\s+(?P<target>L[A-Za-z][A-Za-z0-9_]*)\s*$')
 FUNC_LUREK_RE = re.compile(r'^function\s+(?P<name>lurek\.[A-Za-z0-9_\.]+)\s*\(')
@@ -119,6 +122,56 @@ for class_method in KNOWN_CLASS_METHODS:
     aliases = LTYPE_TO_ALIASES.get(ltype)
     if aliases:
         METHOD_TO_ALIASES.setdefault(method, set()).update(aliases)
+
+METHOD_TO_LTYPES: dict[str, set[str]] = {}
+for class_method in KNOWN_CLASS_METHODS:
+    ltype, method = class_method.split(":", 1)
+    METHOD_TO_LTYPES.setdefault(method, set()).add(ltype)
+
+
+def normalize_return_to_ltype(ret: str | None) -> str | None:
+    if not ret:
+        return None
+
+    # Most generated values are single-type strings, but keep this robust.
+    for token in re.split(r"[|, /]+", ret):
+        t = token.strip().rstrip("?")
+        if not t:
+            continue
+        if t in ALIAS_TO_LTYPE:
+            return ALIAS_TO_LTYPE[t]
+        if t.startswith("L") and any(cm.startswith(t + ":") for cm in KNOWN_CLASS_METHODS):
+            return t
+    return None
+
+
+def parse_function_return_types() -> dict[str, str]:
+    """Map lurek.module.function -> canonical LType return, when available."""
+    result: dict[str, str] = {}
+
+    if not API_JSON.exists():
+        return result
+
+    try:
+        data = json.loads(API_JSON.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return result
+
+    modules = data.get("lua_api", {}).get("modules", {})
+    for _mod_name, mod_data in modules.items():
+        for fn in mod_data.get("functions", []):
+            lua_name = fn.get("lua_name")
+            if not lua_name:
+                continue
+            ret = fn.get("inferred_return") or fn.get("returns_doc")
+            ltype = normalize_return_to_ltype(ret)
+            if ltype:
+                result[lua_name] = ltype
+
+    return result
+
+
+FUNCTION_RETURN_LTYPES = parse_function_return_types()
 
 
 def resolve_type_to_ltype(type_name: str) -> str | None:
@@ -266,12 +319,25 @@ def collect_it_required_symbols(lines: List[str], index: int) -> set[str]:
     line0 = strip_lua_comments_and_strings(lines[index])
     indent = len(line0) - len(line0.lstrip())
 
-    var_alias: dict[str, str] = {}
+    var_ltype: dict[str, str] = {}
+    active_chain_ltype: str | None = None
+
+    def add_method_symbol(ltype: str, method: str) -> None:
+        if f"{ltype}:{method}" in KNOWN_CLASS_METHODS:
+            required.add(f"{ltype}:{method}")
 
     def scan_line(code_line: str) -> None:
-        for m in LUREK_CALL_RE.finditer(code_line):
+        call_matches = list(LUREK_CALL_RE.finditer(code_line))
+        for m in call_matches:
             symbol = m.group(0)
             required.add(symbol)
+
+            # Handle chained calls on the same line, e.g. lurek.tween.sequence():start()
+            ret_ltype = FUNCTION_RETURN_LTYPES.get(symbol)
+            if ret_ltype:
+                tail = code_line[m.end():]
+                for chain in re.finditer(r':\s*([A-Za-z][A-Za-z0-9_]*)\s*\(', tail):
+                    add_method_symbol(ret_ltype, chain.group(1))
 
         # Capture local var assignments from lurek factories.
         # Example: local fsm = lurek.animation.newStateMachine(a, "idle")
@@ -280,23 +346,40 @@ def collect_it_required_symbols(lines: List[str], index: int) -> set[str]:
             code_line,
         ):
             call_symbol = assign.group("call")
-            alias = infer_factory_alias_from_call(call_symbol)
-            if alias:
-                var_alias[assign.group("var")] = alias
+            ltype = FUNCTION_RETURN_LTYPES.get(call_symbol)
+            if not ltype:
+                alias = infer_factory_alias_from_call(call_symbol)
+                if alias:
+                    ltype = resolve_type_to_ltype(alias)
+            if ltype:
+                var_ltype[assign.group("var")] = ltype
 
+        # Track chain context for the next line(s), e.g.
+        # lurek.tween.sequence()
+        #   :delay(...)
+        if call_matches:
+            last_call_symbol = call_matches[-1].group(0)
+            active_chain_ltype = FUNCTION_RETURN_LTYPES.get(last_call_symbol)
+
+        method_calls: list[tuple[str, str]] = []
         for mm in OBJECT_METHOD_RE.finditer(code_line):
-            var = mm.group(1)
-            method = mm.group(3)
-            alias = var_alias.get(var)
-            if alias:
-                required.add(f"{alias}:{method}")
+            method_calls.append((mm.group(1), mm.group(3)))
+        for mm in OBJECT_METHOD_DOT_RE.finditer(code_line):
+            method_calls.append((mm.group(1), mm.group(2)))
+        for mm in OBJECT_METHOD_INDEX_RE.finditer(code_line):
+            method_calls.append((mm.group(1), mm.group(2)))
+
+        for var, method in method_calls:
+            ltype = var_ltype.get(var)
+            if ltype:
+                add_method_symbol(ltype, method)
                 continue
 
             # Fallback: if method maps uniquely to one API type, use it.
-            aliases = METHOD_TO_ALIASES.get(method)
-            if aliases and len(aliases) == 1:
-                only = next(iter(aliases))
-                required.add(f"{only}:{method}")
+            ltypes = METHOD_TO_LTYPES.get(method)
+            if ltypes and len(ltypes) == 1:
+                only = next(iter(ltypes))
+                add_method_symbol(only, method)
 
     scan_line(line0)
     cursor = index + 1
@@ -305,6 +388,12 @@ def collect_it_required_symbols(lines: List[str], index: int) -> set[str]:
         code_line = strip_lua_comments_and_strings(raw_line)
         stripped = code_line.lstrip()
         cur_indent = len(code_line) - len(stripped)
+
+        if active_chain_ltype and stripped.startswith(":"):
+            for chain in re.finditer(r':\s*([A-Za-z][A-Za-z0-9_]*)\s*\(', stripped):
+                add_method_symbol(active_chain_ltype, chain.group(1))
+        elif stripped and not stripped.startswith("--"):
+            active_chain_ltype = None
 
         scan_line(code_line)
 
@@ -342,10 +431,16 @@ def it_block_uses_lurek(lines: List[str], index: int) -> bool:
         if assign:
             lurek_vars.add(assign.group("var"))
 
+        method_calls: list[tuple[str, str]] = []
         for m in OBJECT_METHOD_RE.finditer(line):
-            var = m.group(1)
+            method_calls.append((m.group(1), m.group(3)))
+        for m in OBJECT_METHOD_DOT_RE.finditer(line):
+            method_calls.append((m.group(1), m.group(2)))
+        for m in OBJECT_METHOD_INDEX_RE.finditer(line):
+            method_calls.append((m.group(1), m.group(2)))
+
+        for var, method in method_calls:
             if var in lurek_vars:
-                method = m.group(3)
                 # if we can infer the type from factory assignment, validate against canonical methods
                 assign_line = next((ln for ln in lines[max(index, cursor - 6):cursor + 1] if FACTORY_ASSIGN_RE.search(strip_lua_comments_and_strings(ln))), None)
                 if assign_line:
@@ -364,7 +459,6 @@ def it_block_uses_lurek(lines: List[str], index: int) -> bool:
                 return True
             # Also treat known API object methods as lurek-relevant even when
             # the variable was created by a helper (e.g., make_anim()).
-            method = m.group(3)
             if method in METHOD_TO_ALIASES:
                 return True
 
@@ -413,13 +507,22 @@ def has_plain_file_header(lines: List[str]) -> bool:
     return False
 
 
-def audit_file(path: Path, strict_describe_docstrings: bool = True) -> List[Finding]:
+def audit_file(
+    path: Path,
+    strict_describe_docstrings: bool = True,
+    validate_cover_symbols: bool = False,
+) -> List[Finding]:
     findings: List[Finding] = []
     raw = path.read_bytes()
     lines = raw.decode("utf-8-sig").splitlines()
 
     if path.name == "init.lua":
         return findings
+
+    # Determine whether this file must have @covers on every it() that calls lurek.*.
+    # Only unit/ tests are required to have @covers markers; other folders
+    # (library/, stress/, integration/, security/) use folder-specific markers.
+    is_unit_test = (TESTS_ROOT / "unit") in path.parents
 
     if raw.startswith(UTF8_BOM):
         findings.append(Finding(path, 1, "utf8-bom", "Remove the UTF-8 BOM; Lua test files must be plain UTF-8."))
@@ -467,18 +570,19 @@ def audit_file(path: Path, strict_describe_docstrings: bool = True) -> List[Find
             )
 
         if kind == "it" and it_block_uses_lurek(lines, index) and not has_covers_before(lines, index):
-            findings.append(
-                Finding(
-                    path,
-                    index + 1,
-                    "missing-it-covers",
-                    f"Add -- @covers directly above it(\"{label}\", ...) because this case calls lurek.* API.",
+            if is_unit_test:
+                findings.append(
+                    Finding(
+                        path,
+                        index + 1,
+                        "missing-it-covers",
+                        f"Add -- @covers directly above it(\"{label}\", ...) because this case calls lurek.* API.",
+                    )
                 )
-            )
 
         if kind == "it":
             cover_symbols = get_preceding_cover_symbols(lines, index)
-            required_symbols = collect_it_required_symbols(lines, index)
+            required_symbols = collect_it_required_symbols(lines, index) if validate_cover_symbols else set()
 
             cover_by_canonical: dict[str, set[str]] = {}
             for sym in cover_symbols:
@@ -517,7 +621,7 @@ def audit_file(path: Path, strict_describe_docstrings: bool = True) -> List[Find
                     continue
                 break
 
-            if required_symbols:
+            if validate_cover_symbols and required_symbols:
                 missing_canonicals = sorted(set(required_by_canonical.keys()) - set(cover_by_canonical.keys()))
                 for canonical in missing_canonicals:
                     symbol = sorted(required_by_canonical[canonical])[0]
@@ -682,6 +786,7 @@ def main() -> int:
     parser.add_argument("--path", help="File or directory to audit relative to repo root.")
     parser.add_argument("--fix", action="store_true", help="Apply safe structural fixes (category markers, description colon form, test_summary placement).")
     parser.add_argument("--allow-legacy-describe-markers", action="store_true", help="Temporarily relax the default rule that describe() docstring blocks may contain only @describe.")
+    parser.add_argument("--validate-cover-symbols", action="store_true", help="Enable strict per-symbol @covers validation (may report false positives on dynamic calls).")
     parser.add_argument("--json", action="store_true", help="Print findings as JSON.")
     args = parser.parse_args()
 
@@ -699,7 +804,13 @@ def main() -> int:
 
     findings: List[Finding] = []
     for path in files:
-        findings.extend(audit_file(path, strict_describe_docstrings=not args.allow_legacy_describe_markers))
+        findings.extend(
+            audit_file(
+                path,
+                strict_describe_docstrings=not args.allow_legacy_describe_markers,
+                validate_cover_symbols=args.validate_cover_symbols,
+            )
+        )
 
     if args.json:
         payload = {

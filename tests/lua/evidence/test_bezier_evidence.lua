@@ -1,12 +1,23 @@
 -- Evidence tests: bezier module
 -- Produces PNG artifacts from lurek.math.newBezierCurve curve evaluation.
 
+-- @describe evidence: bezier
 describe("evidence: bezier", function()
     before_each(function()
         ensure_evidence_dir("bezier")
     end)
 
     -- @evidence file
+    -- @covers LBezierCurve:evaluate
+    -- @covers LBezierCurve:getControlPoint
+    -- @covers LBezierCurve:getControlPointCount
+    -- @covers LImageData:drawCircle
+    -- @covers LImageData:drawLine
+    -- @covers LImageData:fill
+    -- @covers LImageData:setPixel
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
+    -- @covers lurek.math.newBezierCurve
     it("plots a quadratic Bezier curve PNG", function()
         local dir  = evidence_output_dir("bezier")
         local path = dir .. "bezier_quadratic.png"
@@ -44,6 +55,14 @@ describe("evidence: bezier", function()
     end)
 
     -- @evidence file
+    -- @covers LBezierCurve:evaluate
+    -- @covers LBezierCurve:getControlPointCount
+    -- @covers LBezierCurve:getDerivative
+    -- @covers LImageData:drawLine
+    -- @covers LImageData:fill
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
+    -- @covers lurek.math.newBezierCurve
     it("plots a cubic Bezier curve with tangents PNG", function()
         local dir  = evidence_output_dir("bezier")
         local path = dir .. "bezier_cubic.png"

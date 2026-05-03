@@ -1,7 +1,16 @@
 -- tests/lua/integration/test_image_dataframe.lua
 -- Integration: lurek.image pixel data and lurek.dataframe tabular analysis combined.
 
+-- @describe image + dataframe integration
 describe("image + dataframe integration", function()
+    -- @integration LDataFrame:addColumn
+    -- @integration LDataFrame:addRow
+    -- @integration LDataFrame:ncols
+    -- @integration LDataFrame:nrows
+    -- @integration LImageData:getPixel
+    -- @integration LImageData:setPixel
+    -- @integration lurek.dataframe.newDataFrame
+    -- @integration lurek.image.newImageData
     it("creates ImageData and records pixel stats in a DataFrame", function()
         local img = lurek.image.newImageData(4, 4)
         -- fill with known pixels
@@ -27,12 +36,19 @@ describe("image + dataframe integration", function()
         expect_equal(3, df:ncols(), "r/g/b columns present")
     end)
 
+    -- @integration LImageData:getHeight
+    -- @integration LImageData:getWidth
+    -- @integration lurek.image.newImageData
     it("ImageData width/height round-trips", function()
         local img = lurek.image.newImageData(32, 16)
         expect_equal(img:getWidth(), 32, "width is 32")
         expect_equal(img:getHeight(), 16, "height is 16")
     end)
 
+    -- @integration LDataFrame:addColumn
+    -- @integration LDataFrame:addRow
+    -- @integration LDataFrame:nrows
+    -- @integration lurek.dataframe.newDataFrame
     it("DataFrame can hold numeric pixel data without overflow", function()
         local df = lurek.dataframe.newDataFrame()
         df:addColumn("value")

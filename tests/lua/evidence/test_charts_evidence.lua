@@ -1,12 +1,20 @@
 -- Evidence tests: charts module
 -- Produces PNG artifacts for each chart type (line, bar, scatter, pie, area).
 
+-- @describe evidence: charts
 describe("evidence: charts", function()
     before_each(function()
         ensure_evidence_dir("charts")
     end)
 
     -- @evidence file
+    -- @covers LImageData:fill
+    -- @covers LLineChart:addSeries
+    -- @covers LLineChart:drawToImage
+    -- @covers LLineChart:setYMax
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
+    -- @covers lurek.ui.newLineChart
     it("produces a line chart PNG", function()
         local dir = evidence_output_dir("charts")
         local path = dir .. "line_chart.png"
@@ -26,6 +34,13 @@ describe("evidence: charts", function()
     end)
 
     -- @evidence file
+    -- @covers LBarChart:addCategory
+    -- @covers LBarChart:addSeries
+    -- @covers LBarChart:drawToImage
+    -- @covers LImageData:fill
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
+    -- @covers lurek.ui.newBarChart
     it("produces a bar chart PNG", function()
         local dir = evidence_output_dir("charts")
         local path = dir .. "bar_chart.png"
@@ -44,6 +59,14 @@ describe("evidence: charts", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:fill
+    -- @covers LScatterPlot:addSeries
+    -- @covers LScatterPlot:drawToImage
+    -- @covers LScatterPlot:setXRange
+    -- @covers LScatterPlot:setYRange
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
+    -- @covers lurek.ui.newScatterPlot
     it("produces a scatter plot PNG", function()
         local dir = evidence_output_dir("charts")
         local path = dir .. "scatter_plot.png"
@@ -65,6 +88,12 @@ describe("evidence: charts", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:fill
+    -- @covers LPieChart:addSegment
+    -- @covers LPieChart:drawToImage
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
+    -- @covers lurek.ui.newPieChart
     it("produces a pie chart PNG", function()
         local dir = evidence_output_dir("charts")
         local path = dir .. "pie_chart.png"
@@ -81,6 +110,13 @@ describe("evidence: charts", function()
     end)
 
     -- @evidence file
+    -- @covers LAreaChart:addLayer
+    -- @covers LAreaChart:drawToImage
+    -- @covers LAreaChart:setYMax
+    -- @covers LImageData:fill
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
+    -- @covers lurek.ui.newAreaChart
     it("produces an area chart PNG", function()
         local dir = evidence_output_dir("charts")
         local path = dir .. "area_chart.png"

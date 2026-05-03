@@ -1,7 +1,16 @@
 -- Lurek2D Integration Test: Compute + DataFrame
 -- Tests NdArray statistical operations feeding into DataFrame reports
 
+-- @describe integration: compute statistics to dataframe
 describe("integration: compute statistics to dataframe", function()
+    -- @integration LDataFrame:addColumn
+    -- @integration LDataFrame:addRow
+    -- @integration LDataFrame:getValue
+    -- @integration LDataFrame:ncols
+    -- @integration LDataFrame:nrows
+    -- @integration lurek.compute.ones
+    -- @integration lurek.compute.range
+    -- @integration lurek.dataframe.newDataFrame
     it("compute array stats populate dataframe", function()
         -- Create arrays with known distributions
         local datasets = {
@@ -47,7 +56,15 @@ describe("integration: compute statistics to dataframe", function()
     end)
 end)
 
+-- @describe integration: image data to compute array
 describe("integration: image data to compute array", function()
+    -- @integration LArray:getSize
+    -- @integration LArray:max
+    -- @integration LArray:min
+    -- @integration LImageData:getPixel
+    -- @integration LImageData:setPixel
+    -- @integration lurek.compute.fromTable
+    -- @integration lurek.image.newImageData
     it("image pixel data can be analyzed with compute", function()
         -- Create a gradient image
         local width, height = 16, 16
@@ -79,7 +96,12 @@ describe("integration: image data to compute array", function()
     end)
 end)
 
+-- @describe integration: data encoding pipeline
 describe("integration: data encoding pipeline", function()
+    -- @integration lurek.data.compress
+    -- @integration lurek.data.decode
+    -- @integration lurek.data.decompress
+    -- @integration lurek.data.encode
     it("compress -> encode -> decode -> decompress roundtrip", function()
         local original = "Lurek2D integration test: compress then encode then decode then decompress."
 
@@ -99,6 +121,8 @@ describe("integration: data encoding pipeline", function()
         expect_equal(original, result, "full pipeline preserves data")
     end)
 
+    -- @integration lurek.data.compress
+    -- @integration lurek.data.hash
     it("hash of compressed data is stable", function()
         local data = "Hash stability test vector"
         local compressed = lurek.data.compress("zlib", data, 6)

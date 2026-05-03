@@ -1,5 +1,6 @@
 -- Golden test: graph          compare evidence output against golden samples
 
+-- @describe golden: graph evidence comparison
 describe("golden: graph evidence comparison", function()
     it("matches golden sample for graph_traversal.png", function()
         local evidence = evidence_output_dir("graph") .. "graph_traversal.png"

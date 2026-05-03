@@ -6,6 +6,7 @@ local DEMO_PATH = "content/games/showcase/hello_world/main.lua"
 dofile("tests/lua/content/demos/_common_checks.lua")
 demo_common_checks("hello_world", DEMO_PATH)
 
+-- @describe hello_world: content checks
 describe("hello_world: content checks", function()
     local src
 

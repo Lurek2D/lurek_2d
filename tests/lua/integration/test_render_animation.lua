@@ -1,7 +1,14 @@
 -- Lurek2D Integration Test: Graphics + Animation
 -- Tests drawing primitives with animation frame progression
 
+-- @describe graphics + animation integration
 describe("graphics + animation integration", function()
+    -- @integration LAnimation:addClip
+    -- @integration LAnimation:addFramesFromGrid
+    -- @integration LAnimation:getCurrentFrame
+    -- @integration LAnimation:play
+    -- @integration LAnimation:update
+    -- @integration lurek.animation.new
     it("animation clip current frame advances with time", function()
         local anim = lurek.animation.new()
         anim:addFramesFromGrid(128, 16, 16, 16, 0, 4)
@@ -16,6 +23,14 @@ describe("graphics + animation integration", function()
         expect_true(f1 >= 0, "frame is valid after 0.15s")
     end)
 
+    -- @integration LAnimation:addClip
+    -- @integration LAnimation:addFramesFromGrid
+    -- @integration LAnimation:getCurrentFrame
+    -- @integration LAnimation:play
+    -- @integration LAnimation:update
+    -- @integration lurek.animation.new
+    -- @integration lurek.render.rectangle
+    -- @integration lurek.render.setColor
     it("animation frame drives sprite draw parameters", function()
         local anim = lurek.animation.new()
         anim:addFramesFromGrid(64, 16, 16, 16, 0, 4)
@@ -34,6 +49,13 @@ describe("graphics + animation integration", function()
         end)
     end)
 
+    -- @integration LAnimation:addClip
+    -- @integration LAnimation:addFramesFromGrid
+    -- @integration LAnimation:isLooping
+    -- @integration LAnimation:isPlaying
+    -- @integration LAnimation:play
+    -- @integration LAnimation:update
+    -- @integration lurek.animation.new
     it("looping animation clip isLooping is true", function()
         local anim = lurek.animation.new()
         anim:addFramesFromGrid(48, 16, 16, 16, 0, 3)
@@ -47,6 +69,13 @@ describe("graphics + animation integration", function()
         expect_true(anim:isPlaying(), "still playing after looping past end")
     end)
 
+    -- @integration LAnimation:addClip
+    -- @integration LAnimation:addFramesFromGrid
+    -- @integration LAnimation:getCurrentFrame
+    -- @integration LAnimation:pause
+    -- @integration LAnimation:play
+    -- @integration LAnimation:update
+    -- @integration lurek.animation.new
     it("paused animation does not advance frames", function()
         local anim = lurek.animation.new()
         anim:addFramesFromGrid(32, 16, 16, 16, 0, 2)

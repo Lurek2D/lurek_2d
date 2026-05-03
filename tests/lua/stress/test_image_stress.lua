@@ -1,6 +1,7 @@
 -- Lurek2D Stress Test: Image Operations
 -- Measures image creation and pixel operation throughput.
 
+-- @describe stress: image creation throughput
 describe("stress: image creation throughput", function()
     local function new_img(w, h)
         local new_image = rawget(lurek.image, "newImage")
@@ -26,6 +27,7 @@ describe("stress: image creation throughput", function()
         expect_equal(COUNT, #images, "all images created")
     end)
 
+    -- @stress LImageData:getPixel
     it("pixel read 10000 times on single image: <5s", function()
         local img   = new_img(64, 64)
         if img == nil or type(img.getPixel) ~= "function" then
@@ -41,6 +43,7 @@ describe("stress: image creation throughput", function()
         expect_true(elapsed < 5.0, "pixel read budget: " .. elapsed .. "s")
     end)
 
+    -- @stress LImageData:setPixel
     it("pixel write 10000 times on single image: <5s", function()
         local img   = new_img(64, 64)
         if img == nil or type(img.setPixel) ~= "function" then

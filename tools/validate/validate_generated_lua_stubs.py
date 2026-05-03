@@ -35,6 +35,10 @@ LUA_API_JSON_PATH = ROOT / "logs" / "data" / "lua_api_data.json"
 LUREK_STUB_PATH = ROOT / "docs" / "api" / "lurek.lua"
 LIBRARY_STUB_PATH = ROOT / "docs" / "api" / "library.lua"
 EXTENSION_API_PATH = ROOT / "extensions" / "vscode" / "data" / "lurek-api.json"
+DOCS_TOOLS_DIR = ROOT / "tools" / "docs"
+
+if str(DOCS_TOOLS_DIR) not in sys.path:
+    sys.path.insert(0, str(DOCS_TOOLS_DIR))
 
 METHOD_CALL_START = re.compile(r"\bmethods\.add_(?:method|method_mut|function|function_mut)\s*\(")
 SET_CALL_START = re.compile(r"\b\w+\s*\.\s*set\s*\(")
@@ -60,7 +64,10 @@ METHOD_ASSIGN_RE = re.compile(
     re.MULTILINE,
 )
 ALIAS_RE = re.compile(r"^---@alias\s+(\w+)\s+(\w+)\s*$", re.MULTILINE)
-CLASS_RE = re.compile(r"^---@class\s+([A-Za-z_][A-Za-z0-9_]*)\s*$", re.MULTILINE)
+CLASS_RE = re.compile(
+    r"^---@class\s+([A-Za-z_][A-Za-z0-9_]*)(?:\s*:\s*[A-Za-z_][A-Za-z0-9_,\s]*)?\s*$",
+    re.MULTILINE,
+)
 GENERIC_ALIAS_RE = re.compile(r"^---@alias\s+(\w+)\s+(.+)$", re.MULTILINE)
 
 

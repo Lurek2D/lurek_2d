@@ -4,6 +4,7 @@
 
 local describe = describe or function(n,f) f() end
 local it = it or function(n,f) f() end
+-- @describe effect + camera integration
 describe("effect + camera integration", function()
     it("vignette effect scales to camera viewport dimensions", function()
         expect_true(true)

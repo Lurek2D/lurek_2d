@@ -1,6 +1,7 @@
 -- Lurek2D Stress Test: Data Structure Operations
 -- Tests large tables, string operations, and data encoding at scale
 
+-- @describe data stress: large tables
 describe("data stress: large tables", function()
     it("creates table with 10000 entries", function()
         local t = {}
@@ -11,6 +12,7 @@ describe("data stress: large tables", function()
         expect_equal(5000, t[5000].x, "middle entry is correct")
     end)
 
+    -- @stress lurek.math.random
     it("sorts 5000 entries", function()
         local t = {}
         for i = 1, 5000 do
@@ -43,6 +45,7 @@ describe("data stress: large tables", function()
     end)
 end)
 
+-- @describe data stress: string operations
 describe("data stress: string operations", function()
     it("builds 1000 strings", function()
         local parts = {}
@@ -65,6 +68,7 @@ describe("data stress: string operations", function()
     end)
 end)
 
+-- @describe data stress: nested structures
 describe("data stress: nested structures", function()
     it("10 levels of nesting", function()
         local root = {}
@@ -97,7 +101,9 @@ end)
 -- Lurek2D Stress Test: Data Compression, Hash, and Encoding Throughput
 -- Tests compression output, hashing, and encode/decode at scale
 
+-- @describe data stress: compression creates output
 describe("data stress: compression creates output", function()
+    -- @stress lurek.data.compress
     it("compresses a large string with deflate", function()
         local big_string = string.rep("Lurek2D engine test data with repetition. ", 1000)
         expect_true(#big_string > 30000, "data is large enough: " .. #big_string)
@@ -109,6 +115,7 @@ describe("data stress: compression creates output", function()
         expect_true(#compressed < #big_string, "compression reduces size")
     end)
 
+    -- @stress lurek.data.compress
     it("compresses with all supported formats", function()
         local data = string.rep("ABCDEFGHIJ", 1000) -- 10KB
         local formats = {"deflate", "gzip", "zlib", "lz4"}
@@ -120,6 +127,7 @@ describe("data stress: compression creates output", function()
         end
     end)
 
+    -- @stress lurek.data.compress
     it("handles all compression levels", function()
         local data = string.rep("Test data for level comparison. ", 500)
 
@@ -130,7 +138,9 @@ describe("data stress: compression creates output", function()
     end)
 end)
 
+-- @describe data stress: hashing throughput
 describe("data stress: hashing throughput", function()
+    -- @stress lurek.data.hash
     it("hashes 10KB data with all algorithms", function()
         local data = string.rep("Hash benchmark data. ", 500)
 
@@ -141,6 +151,7 @@ describe("data stress: hashing throughput", function()
         end
     end)
 
+    -- @stress lurek.data.hash
     it("hash is deterministic across 100 calls", function()
         local data = "Determinism test vector"
         local first = lurek.data.hash("sha256", data)
@@ -151,6 +162,7 @@ describe("data stress: hashing throughput", function()
         end
     end)
 
+    -- @stress lurek.data.hash
     it("different data produces different hashes", function()
         local h1 = lurek.data.hash("sha256", "data1")
         local h2 = lurek.data.hash("sha256", "data2")
@@ -158,7 +170,10 @@ describe("data stress: hashing throughput", function()
     end)
 end)
 
+-- @describe data stress: encoding throughput
 describe("data stress: encoding throughput", function()
+    -- @stress lurek.data.decode
+    -- @stress lurek.data.encode
     it("base64 encodes 50KB", function()
         local data = string.rep("Base64 benchmark. ", 2778) -- ~50KB
         local encoded = lurek.data.encode("base64", data)
@@ -170,6 +185,8 @@ describe("data stress: encoding throughput", function()
         expect_equal(#data, #decoded, "base64 roundtrip preserves length")
     end)
 
+    -- @stress lurek.data.decode
+    -- @stress lurek.data.encode
     it("hex encode/decode 10KB", function()
         local data = string.rep("HexData!", 1250) -- 10KB
         local encoded = lurek.data.encode("hex", data)

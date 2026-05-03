@@ -4,13 +4,16 @@
 local rhythm = require("library.rhythm")
 
 
+-- @describe Clock.getBeat
 describe("Clock.getBeat", function()
+    -- @library lurek.library_rhythm
     it("advances at the declared BPM     120bpm = 2 beats/sec", function()
         local c = rhythm.newClock(120):start()
         for _ = 1, 100 do c:update(0.01) end  -- 1.0s
         expect_near(2.0, c:getBeat(), 0.05)
     end)
 
+    -- @library lurek.library_rhythm
     it("zero before start", function()
         local c = rhythm.newClock(120)
         c:update(1.0)
@@ -18,7 +21,9 @@ describe("Clock.getBeat", function()
     end)
 end)
 
+-- @describe rampBpm
 describe("rampBpm", function()
+    -- @library lurek.library_rhythm
     it("interpolates over the requested duration", function()
         local c = rhythm.newClock(60):start()
         c:rampBpm(120, 1.0)
@@ -29,7 +34,9 @@ describe("rampBpm", function()
     end)
 end)
 
+-- @describe every / pattern / at
 describe("every / pattern / at", function()
+    -- @library LScheduler:every
     it("every(4) fires roughly N times per N quarter notes", function()
         local hits = 0
         local c = rhythm.newClock(120, { subdivision = 4 }):start()
@@ -38,6 +45,7 @@ describe("every / pattern / at", function()
         expect_in_range(hits, 3, 5)
     end)
 
+    -- @library lurek.library_rhythm
     it("pattern 'x..x' fires on beats 0 and 3 only over one bar", function()
         local hits = {}
         local c = rhythm.newClock(120, { subdivision = 4 }):start()
@@ -48,12 +56,14 @@ describe("every / pattern / at", function()
         expect_true(#hits >= 2, "expected >=2 pattern hits, got "..#hits)
     end)
 
+    -- @library lurek.library_rhythm
     it("at(beat) for past beat raises", function()
         local c = rhythm.newClock(120):start()
         for _ = 1, 200 do c:update(0.01) end  -- ~4 beats elapsed
         expect_error(function() c:at(0.5, function() end) end)
     end)
 
+    -- @library LScheduler:every
     it("cancel(handle) stops further firing", function()
         local hits = 0
         local c = rhythm.newClock(120):start()
@@ -66,7 +76,9 @@ describe("every / pattern / at", function()
     end)
 end)
 
+-- @describe phase queries
 describe("phase queries", function()
+    -- @library lurek.library_rhythm
     it("getPhase returns a value in [0, 1)", function()
         local c = rhythm.newClock(120):start()
         for _ = 1, 13 do c:update(0.01) end
@@ -74,6 +86,7 @@ describe("phase queries", function()
         expect_true(p >= 0 and p < 1, "phase out of range: "..p)
     end)
 
+    -- @library lurek.library_rhythm
     it("beatTimeRemaining drops as we approach the next beat", function()
         local c = rhythm.newClock(60):start()  -- 1 beat per second
         local r0 = c:beatTimeRemaining(4)
@@ -83,7 +96,9 @@ describe("phase queries", function()
     end)
 end)
 
+-- @describe judge
 describe("judge", function()
+    -- @library lurek.library_rhythm
     it("returns 'perfect' inside the perfect window", function()
         rhythm.setJudgementWindows({ perfect = 0.025, great = 0.05, good = 0.10 })
         local c = rhythm.newClock(120):start()
@@ -94,6 +109,7 @@ describe("judge", function()
     end)
 end)
 
+-- @describe error paths
 describe("error paths", function()
     it("newClock with non-positive bpm raises", function()
         expect_error(function() rhythm.newClock(0) end)

@@ -6,7 +6,7 @@ Each Lua unit-test `it()` block can declare which API(s) it exercises with an
 explicit annotation:
 
     it("getDelta returns a number", function()
-        -- @tests lurek.timer.getDelta
+        -- @covers lurek.timer.getDelta
         local dt = lurek.timer.getDelta()
         expect_type("number", dt)
     end)
@@ -14,11 +14,11 @@ explicit annotation:
 For class methods use the bare ClassName:method form:
 
     it("World:step advances physics", function()
-        -- @tests World:step
+        -- @covers World:step
         world:step(1/60)
     end)
 
-Multiple @tests lines are allowed in one it() block if the block exercises
+Multiple @covers lines are allowed in one it() block if the block exercises
 several APIs.
 
 The script also runs a heuristic pass: inside it() blocks it looks for
@@ -79,7 +79,7 @@ class CoverageResult(NamedTuple):
     """Coverage status of a single API entry."""
 
     api: ApiEntry
-    explicit: bool              # has a -- @tests annotation
+    explicit: bool              # has an explicit marker (-- @covers, legacy -- @tests)
     heuristic: bool             # referenced in test code (no annotation)
     test_locations: List[str]   # "file.lua:it_description" entries
 
@@ -133,10 +133,14 @@ def load_api(module_filter: Optional[str] = None) -> List[ApiEntry]:
 
 # ── Test file scanner ─────────────────────────────────────────────────────────
 
-# Matches:  -- @tests lurek.module.funcname
-#           -- @tests ClassName:methodname
+# Matches explicit markers:
+#   -- @covers lurek.module.funcname
+#   -- @covers ClassName:methodname
+# Legacy support:
+#   -- @tests lurek.module.funcname
+#   -- @tests ClassName:methodname
 _EXPLICIT_RE = re.compile(
-    r"--\s*@tests\s+([a-zA-Z_][\w.:]*(?::[a-zA-Z_]\w*)?)",
+    r"--\s*@(covers|tests)\s+([a-zA-Z_][\w.:]*(?::[a-zA-Z_]\w*)?)",
     re.IGNORECASE,
 )
 
@@ -249,7 +253,7 @@ def scan_file(
 
     # ── Explicit annotations (scan full file) ──────────────────────────────
     for m in _EXPLICIT_RE.finditer(content):
-        api_ref = m.group(1).strip()
+        api_ref = m.group(2).strip()
         # Normalise: strip trailing punctuation
         api_ref = api_ref.rstrip(".,;")
         if api_ref in known_lua_names:

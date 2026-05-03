@@ -1,7 +1,10 @@
 -- Lurek2D Integration Test: Data + Compute
 -- Tests data encoding/decoding with compute processing
 
+-- @describe data + compute integration
 describe("data + compute integration", function()
+    -- @integration lurek.serial.fromJson
+    -- @integration lurek.serial.toJson
     it("JSON round-trip preserves data for compute", function()
         local original = {
             values = { 1.5, 2.7, 3.14, 4.0 },
@@ -18,6 +21,8 @@ describe("data + compute integration", function()
         expect_near(3.14, decoded.values[3], 0.01, "pi value preserved")
     end)
 
+    -- @integration lurek.serial.fromToml
+    -- @integration lurek.serial.toToml
     it("TOML round-trip preserves typed data", function()
         local config = {
             compute = {
@@ -37,6 +42,8 @@ describe("data + compute integration", function()
         expect_equal(true, decoded.compute.enabled, "enabled preserved")
     end)
 
+    -- @integration lurek.serial.fromJson
+    -- @integration lurek.serial.toJson
     it("serial round-trip preserves compute config", function()
         -- lurek.data.compress is not available headless; test serial round-trip instead
         local payload = {
@@ -52,6 +59,8 @@ describe("data + compute integration", function()
         expect_equal(64, decoded.dispatch.x, "dispatch.x preserved")
     end)
 
+    -- @integration lurek.serial.fromJson
+    -- @integration lurek.serial.toJson
     it("large table serialization stress", function()
         local big = {}
         for i = 1, 1000 do

@@ -1,12 +1,17 @@
 -- Evidence tests: cellular_sand module
 -- Produces PNG artifacts from lurek.procgen.cellularAutomata.
 
+-- @describe evidence: cellular_sand
 describe("evidence: cellular_sand", function()
     before_each(function()
         ensure_evidence_dir("cellular_sand")
     end)
 
     -- @evidence file
+    -- @covers LImageData:setPixel
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
+    -- @covers lurek.procgen.cellularAutomata
     it("generates a cellular automata cave map PNG", function()
         local dir  = evidence_output_dir("cellular_sand")
         local path = dir .. "cave_map.png"
@@ -35,6 +40,10 @@ describe("evidence: cellular_sand", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:setPixel
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
+    -- @covers lurek.procgen.cellularAutomata
     it("generates a high-density cellular automata map PNG", function()
         local dir  = evidence_output_dir("cellular_sand")
         local path = dir .. "dense_map.png"

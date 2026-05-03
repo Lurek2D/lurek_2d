@@ -1,7 +1,9 @@
 -- Lurek2D Stress Test: Animation Timelines
 -- Tests mass creation and updating of animation timelines
 
+-- @describe animation stress: mass timeline creation
 describe("animation stress: mass timeline creation", function()
+    -- @stress LAnimation:addFrame
     it("creates 1000 timelines", function()
         local new_timeline = rawget(lurek.animation, "newTimeline")
         if type(new_timeline) ~= "function" then
@@ -18,6 +20,7 @@ describe("animation stress: mass timeline creation", function()
         expect_equal(1000, #timelines, "1000 timelines created")
     end)
 
+    -- @stress LAnimation:addFrame
     it("updates 1000 timelines per frame", function()
         local new_timeline = rawget(lurek.animation, "newTimeline")
         if type(new_timeline) ~= "function" then
@@ -46,7 +49,10 @@ describe("animation stress: mass timeline creation", function()
     end)
 end)
 
+-- @describe animation stress: many keyframes
 describe("animation stress: many keyframes", function()
+    -- @stress LAnimation:addFrame
+    -- @stress LAnimation:getCurrentFrame
     it("timeline with 100 keyframes", function()
         local new_timeline = rawget(lurek.animation, "newTimeline")
         if type(new_timeline) ~= "function" then

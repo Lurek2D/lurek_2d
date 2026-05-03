@@ -1,7 +1,11 @@
 -- Lurek2D Stress Test: Pathfinding on Large Grids
 -- Tests A* and flow field computation at scale
 
+-- @describe pathfinding stress: large grid A*
 describe("pathfinding stress: large grid A*", function()
+    -- @stress LUnitPathfinder:findPath
+    -- @stress lurek.pathfind.newNavGrid
+    -- @stress lurek.pathfind.newPathfinder
     it("pathfinds on a 200x200 open grid", function()
         local grid = lurek.pathfind.newNavGrid(200, 200)
         local pf = lurek.pathfind.newPathfinder(grid)
@@ -11,6 +15,10 @@ describe("pathfinding stress: large grid A*", function()
         expect_true(#path > 0, "path has waypoints")
     end)
 
+    -- @stress LNavGrid:setBlocked
+    -- @stress LUnitPathfinder:findPath
+    -- @stress lurek.pathfind.newNavGrid
+    -- @stress lurek.pathfind.newPathfinder
     it("pathfinds around obstacles on 100x100 grid", function()
         local grid = lurek.pathfind.newNavGrid(100, 100)
 
@@ -25,6 +33,10 @@ describe("pathfinding stress: large grid A*", function()
         expect_true(#path > 50, "path goes around obstacle")
     end)
 
+    -- @stress LNavGrid:setBlocked
+    -- @stress LUnitPathfinder:findPath
+    -- @stress lurek.pathfind.newNavGrid
+    -- @stress lurek.pathfind.newPathfinder
     it("handles fully blocked path gracefully", function()
         local grid = lurek.pathfind.newNavGrid(50, 50)
 
@@ -44,6 +56,10 @@ describe("pathfinding stress: large grid A*", function()
         -- If path is nil or empty, that's also acceptable
     end)
 
+    -- @stress LNavGrid:setCost
+    -- @stress LUnitPathfinder:findPath
+    -- @stress lurek.pathfind.newNavGrid
+    -- @stress lurek.pathfind.newPathfinder
     it("costs affect pathfinding", function()
         local grid = lurek.pathfind.newNavGrid(50, 50)
 
@@ -60,7 +76,12 @@ describe("pathfinding stress: large grid A*", function()
     end)
 end)
 
+-- @describe pathfinding stress: repeated pathfinding
 describe("pathfinding stress: repeated pathfinding", function()
+    -- @stress LNavGrid:setBlocked
+    -- @stress LUnitPathfinder:findPath
+    -- @stress lurek.pathfind.newNavGrid
+    -- @stress lurek.pathfind.newPathfinder
     it("finds 500 paths on same grid", function()
         local grid = lurek.pathfind.newNavGrid(100, 100)
 
@@ -88,7 +109,13 @@ describe("pathfinding stress: repeated pathfinding", function()
     end)
 end)
 
+-- @describe pathfinding stress: flow field
 describe("pathfinding stress: flow field", function()
+    -- @stress LFlowField:calculate
+    -- @stress LFlowField:getDirection
+    -- @stress LFlowField:isCalculated
+    -- @stress lurek.pathfind.newFlowField
+    -- @stress lurek.pathfind.newNavGrid
     it("computes flow field on 100x100 grid", function()
         local grid = lurek.pathfind.newNavGrid(100, 100)
         local ff = lurek.pathfind.newFlowField(grid)

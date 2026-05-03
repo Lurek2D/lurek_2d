@@ -4,6 +4,7 @@
 
 local describe = describe or function(n,f) f() end
 local it = it or function(n,f) f() end
+-- @describe i18n + dialog integration
 describe("i18n + dialog integration", function()
     it("resolves dialog line key through i18n locale table", function()
         expect_true(true)

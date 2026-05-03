@@ -1,7 +1,12 @@
 -- Lurek2D Integration Test: Tilemap + Camera
 -- Tests camera position affecting which tiles are in view.
 
+-- @describe integration: tilemap visibility through camera
 describe("integration: tilemap visibility through camera", function()
+    -- @integration LTileMap:addLayer
+    -- @integration LTileMap:getTile
+    -- @integration LTileMap:setTile
+    -- @integration lurek.tilemap.newTileMap
     it("creates tilemap and fills tiles", function()
         local tm = lurek.tilemap.newTileMap(20, 20, 16)
         tm:addLayer("tiles", 20, 20)
@@ -23,6 +28,13 @@ describe("integration: tilemap visibility through camera", function()
         expect_equal(3, t99, "tile (9,9): (9+9)%4+1=3")
     end)
 
+    -- @integration LCamera:getPosition
+    -- @integration LCamera:setPosition
+    -- @integration LTileMap:addLayer
+    -- @integration LTileMap:getTile
+    -- @integration LTileMap:setTile
+    -- @integration lurek.camera.newCamera
+    -- @integration lurek.tilemap.newTileMap
     it("camera scrolling reads different tiles (coordinate math)", function()
         local tm  = lurek.tilemap.newTileMap(50, 50, 32)
         tm:addLayer("tiles", 50, 50)
@@ -48,6 +60,9 @@ describe("integration: tilemap visibility through camera", function()
         expect_equal(tile_col + 1, tile_id, "tile id matches shifted camera column")
     end)
 
+    -- @integration LTileMap:addLayer
+    -- @integration LTileMap:getTile
+    -- @integration lurek.tilemap.newTileMap
     it("out-of-bounds tile read returns nil without crashing", function()
         local tm = lurek.tilemap.newTileMap(10, 10, 16)
         tm:addLayer("tiles", 10, 10)

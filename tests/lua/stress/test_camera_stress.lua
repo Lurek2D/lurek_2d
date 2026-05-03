@@ -1,7 +1,10 @@
 -- Lurek2D Stress Test: Camera Transform Throughput
 -- Measures camera position, zoom, and rotation update performance.
 
+-- @describe stress: camera position updates
 describe("stress: camera position updates", function()
+    -- @stress LCamera:setPosition
+    -- @stress lurek.camera.newCamera
     it("100000 camera setPosition calls in <5s", function()
         local cam   = lurek.camera.newCamera()
         local COUNT = 100000
@@ -13,6 +16,8 @@ describe("stress: camera position updates", function()
         expect_true(elapsed < 5.0, "camera position budget: " .. elapsed .. "s")
     end)
 
+    -- @stress LCamera:setZoom
+    -- @stress lurek.camera.newCamera
     it("100000 camera zoom updates in <5s", function()
         local cam   = lurek.camera.newCamera()
         local COUNT = 100000
@@ -24,6 +29,7 @@ describe("stress: camera position updates", function()
         expect_true(elapsed < 5.0, "camera zoom budget: " .. elapsed .. "s")
     end)
 
+    -- @stress lurek.camera.newCamera
     it("100 cameras       1000 updates each in <5s", function()
         local CAMS    = 100
         local UPDATES = 1000

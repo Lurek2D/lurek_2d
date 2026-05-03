@@ -1,7 +1,11 @@
 -- Lurek2D Stress Test: Savegame Collect/Restore Cycles
 -- Measures serialization throughput for large game state.
 
+-- @describe stress: savegame collect cycles
 describe("stress: savegame collect cycles", function()
+    -- @stress LSaveManager:collect
+    -- @stress LSaveManager:register
+    -- @stress lurek.save.newSaveManager
     it("100 savegame collect cycles in <10s", function()
         local COUNT = 100
         local sm    = lurek.save.newSaveManager()
@@ -33,6 +37,9 @@ describe("stress: savegame collect cycles", function()
         expect_true(elapsed < 10.0, "savegame collect budget: " .. elapsed .. "s")
     end)
 
+    -- @stress LSaveManager:getSummary
+    -- @stress LSaveManager:setSummary
+    -- @stress lurek.save.newSaveManager
     it("summary set/get 1000 times in <5s", function()
         local COUNT = 1000
         local sm    = lurek.save.newSaveManager()

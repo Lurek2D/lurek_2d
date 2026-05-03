@@ -23,6 +23,7 @@ local read_file = read_file ---@diagnostic disable-line: undefined-global
 -- Inline common checks (dofile and io.open are sandboxed; use read_file helper).
 local _demo_src = nil
 
+-- @describe globe_demo: file and load
 describe("globe_demo: file and load", function()
     it("source file exists and is non-empty", function()
         _demo_src = read_file(DEMO_PATH)
@@ -31,6 +32,7 @@ describe("globe_demo: file and load", function()
     end)
 end)
 
+-- @describe globe_demo: callback names
 describe("globe_demo: callback names", function()
     before_each(function() if not _demo_src then _demo_src = read_file(DEMO_PATH) end end)
 
@@ -60,6 +62,7 @@ describe("globe_demo: callback names", function()
     end)
 end)
 
+-- @describe globe_demo: API correctness
 describe("globe_demo: API correctness", function()
     before_each(function() if not _demo_src then _demo_src = read_file(DEMO_PATH) end end)
 
@@ -81,6 +84,7 @@ end)
 -- -----------------------------------------------------------------
 -- Globe-specific static checks
 -- -----------------------------------------------------------------
+-- @describe globe_demo: globe API usage
 describe("globe_demo: globe API usage", function()
     local src
 
@@ -179,6 +183,7 @@ end)
 -- -----------------------------------------------------------------
 -- Globe-specific: no wrong globe API calls
 -- -----------------------------------------------------------------
+-- @describe globe_demo: no invalid globe API
 describe("globe_demo: no invalid globe API", function()
     local src
 

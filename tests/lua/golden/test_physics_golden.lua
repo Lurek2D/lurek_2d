@@ -1,5 +1,6 @@
 -- Golden test: physics          compare evidence output against golden samples
 
+-- @describe golden: physics evidence comparison
 describe("golden: physics evidence comparison", function()
     it("matches golden sample for draw_debug.png", function()
         local evidence = evidence_output_dir("physics") .. "draw_debug.png"

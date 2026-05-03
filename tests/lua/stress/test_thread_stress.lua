@@ -11,7 +11,9 @@ local function pop_msg(ch)
     return nil
 end
 
+-- @describe thread stress: channel creation
 describe("thread stress: channel creation", function()
+    -- @stress lurek.thread.newChannel
     it("creates 100 channels", function()
         local channels = {}
         for i = 1, 100 do
@@ -20,6 +22,8 @@ describe("thread stress: channel creation", function()
         expect_equal(100, #channels, "100 channels created")
     end)
 
+    -- @stress LChannel:push
+    -- @stress lurek.thread.newChannel
     it("single channel handles 10000 messages", function()
         local ch = lurek.thread.newChannel()
 
@@ -41,7 +45,10 @@ describe("thread stress: channel creation", function()
     end)
 end)
 
+-- @describe thread stress: mixed message types
 describe("thread stress: mixed message types", function()
+    -- @stress LChannel:push
+    -- @stress lurek.thread.newChannel
     it("channel handles mixed types", function()
         local ch = lurek.thread.newChannel()
 
@@ -70,7 +77,9 @@ describe("thread stress: mixed message types", function()
     end)
 end)
 
+-- @describe thread stress: multi-channel fanout
 describe("thread stress: multi-channel fanout", function()
+    -- @stress lurek.thread.newChannel
     it("broadcast to 10 channels", function()
         local channels = {}
         for i = 1, 10 do

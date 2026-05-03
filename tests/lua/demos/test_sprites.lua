@@ -6,6 +6,7 @@ local DEMO_PATH = "content/games/showcase/sprites/main.lua"
 dofile("tests/lua/content/demos/_common_checks.lua")
 demo_common_checks("sprites", DEMO_PATH)
 
+-- @describe sprites: sprite API usage
 describe("sprites: sprite API usage", function()
     local src
 

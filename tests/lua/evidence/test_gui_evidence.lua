@@ -1,12 +1,15 @@
 -- Evidence tests: gui module
 -- Produces PNG artifacts from lurek.ui layout rendering.
 
+-- @describe evidence: gui
 describe("evidence: gui", function()
     before_each(function()
         ensure_evidence_dir("gui")
     end)
 
     -- @evidence file
+    -- @covers lurek.ui.loadLayout
+    -- @covers lurek.ui.renderToImage
     it("renders a basic vertical layout to PNG", function()
         local dir  = evidence_output_dir("gui")
         local path = dir .. "basic_layout.png"
@@ -25,6 +28,8 @@ describe("evidence: gui", function()
     end)
 
     -- @evidence file
+    -- @covers lurek.ui.loadLayout
+    -- @covers lurek.ui.renderToImage
     it("renders a horizontal two-panel layout to PNG", function()
         local dir  = evidence_output_dir("gui")
         local path = dir .. "horizontal_layout.png"
@@ -56,6 +61,8 @@ describe("evidence: gui", function()
     end)
 
     -- @evidence file
+    -- @covers lurek.ui.loadLayout
+    -- @covers lurek.ui.renderToImage
     it("renders a form layout with multiple widget types to PNG", function()
         local dir  = evidence_output_dir("gui")
         local path = dir .. "form_layout.png"

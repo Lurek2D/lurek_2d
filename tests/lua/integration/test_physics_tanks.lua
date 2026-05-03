@@ -1,8 +1,18 @@
 -- Lurek2D Integration Test: Tanks-style Terrain Collapse + Debris
 -- Exercises TerrainMap column collapse and debris spawning together with World.
 
+-- @describe tanks terrain collapse + debris integration
 describe("tanks terrain collapse + debris integration", function()
     --              can be spawned and the physics world can step without error.
+    -- @integration LTerrain:collapseColumns
+    -- @integration LTerrain:fillRect
+    -- @integration LTerrain:flush
+    -- @integration LTerrain:setCell
+    -- @integration LTerrain:solidPositions
+    -- @integration LTerrain:spawnDebris
+    -- @integration LWorld:step
+    -- @integration lurek.physics.newTerrain
+    -- @integration lurek.physics.newWorld
     it("collapse then spawn debris and step without error", function()
         local world = lurek.physics.newWorld(0, 200)
         local terrain = lurek.physics.newTerrain(16, 16, 8, world)
@@ -35,6 +45,9 @@ describe("tanks terrain collapse + debris integration", function()
         end)
     end)
 
+    -- @integration LTerrain:toImageData
+    -- @integration lurek.physics.newTerrain
+    -- @integration lurek.physics.newWorld
     it("toImageData returns expected byte count", function()
         local world = lurek.physics.newWorld(0, 0)
         local w, h = 8, 8

@@ -14,6 +14,7 @@
 
 local dialog = require("library.dialog")
 
+-- @describe integration: library.dialog    lurek.event
 describe("integration: library.dialog    lurek.event", function()
 
     local function bridge(seq, sig, events)
@@ -22,6 +23,8 @@ describe("integration: library.dialog    lurek.event", function()
         end
     end
 
+    -- @integration LSignal:connect
+    -- @integration lurek.event.newSignal
     it("line event fires through Signal with payload", function()
         local seq = dialog.newSequencer()
         local sig = lurek.event.newSignal()
@@ -41,6 +44,8 @@ describe("integration: library.dialog    lurek.event", function()
         expect_equal("Hi!", got_text)
     end)
 
+    -- @integration LSignal:connect
+    -- @integration lurek.event.newSignal
     it("multiple Signal subscribers each receive the event", function()
         local seq = dialog.newSequencer()
         local sig = lurek.event.newSignal()
@@ -59,6 +64,8 @@ describe("integration: library.dialog    lurek.event", function()
         expect_equal(1, count_b)
     end)
 
+    -- @integration LSignal:connect
+    -- @integration lurek.event.newSignal
     it("finished event fires through Signal at end of script", function()
         local seq = dialog.newSequencer()
         local sig = lurek.event.newSignal()
@@ -75,6 +82,8 @@ describe("integration: library.dialog    lurek.event", function()
         expect_true(finished)
     end)
 
+    -- @integration LSignal:connect
+    -- @integration lurek.event.newSignal
     it("choice event fires through Signal when reaching a choice node", function()
         local seq = dialog.newSequencer()
         local sig = lurek.event.newSignal()
@@ -95,6 +104,8 @@ describe("integration: library.dialog    lurek.event", function()
     end)
 
     -- no longer reach the Signal subscribers.
+    -- @integration LSignal:connect
+    -- @integration lurek.event.newSignal
     it("seq:off stops further events from reaching Signal subscribers", function()
         local seq = dialog.newSequencer()
         local sig = lurek.event.newSignal()
@@ -118,6 +129,7 @@ describe("integration: library.dialog    lurek.event", function()
         expect_equal(1, count)
     end)
 
+    -- @integration lurek.dialog_event_integration
     it("seq:on rejects non-string event names with a clear error", function()
         local seq = dialog.newSequencer()
         local err = expect_error(function()
@@ -151,6 +163,7 @@ end)
 
 local dialog = require("library.dialog")
 
+-- @describe integration: library.dialog    lurek.event
 describe("integration: library.dialog    lurek.event", function()
 
     local function bridge(seq, sig, events)
@@ -159,6 +172,8 @@ describe("integration: library.dialog    lurek.event", function()
         end
     end
 
+    -- @integration LSignal:connect
+    -- @integration lurek.event.newSignal
     it("line event fires through Signal with payload", function()
         local seq = dialog.newSequencer()
         local sig = lurek.event.newSignal()
@@ -178,6 +193,8 @@ describe("integration: library.dialog    lurek.event", function()
         expect_equal("Hi!", got_text)
     end)
 
+    -- @integration LSignal:connect
+    -- @integration lurek.event.newSignal
     it("multiple Signal subscribers each receive the event", function()
         local seq = dialog.newSequencer()
         local sig = lurek.event.newSignal()
@@ -196,6 +213,8 @@ describe("integration: library.dialog    lurek.event", function()
         expect_equal(1, count_b)
     end)
 
+    -- @integration LSignal:connect
+    -- @integration lurek.event.newSignal
     it("finished event fires through Signal at end of script", function()
         local seq = dialog.newSequencer()
         local sig = lurek.event.newSignal()
@@ -212,6 +231,8 @@ describe("integration: library.dialog    lurek.event", function()
         expect_true(finished)
     end)
 
+    -- @integration LSignal:connect
+    -- @integration lurek.event.newSignal
     it("choice event fires through Signal when reaching a choice node", function()
         local seq = dialog.newSequencer()
         local sig = lurek.event.newSignal()
@@ -232,6 +253,8 @@ describe("integration: library.dialog    lurek.event", function()
     end)
 
     -- no longer reach the Signal subscribers.
+    -- @integration LSignal:connect
+    -- @integration lurek.event.newSignal
     it("seq:off stops further events from reaching Signal subscribers", function()
         local seq = dialog.newSequencer()
         local sig = lurek.event.newSignal()
@@ -255,6 +278,7 @@ describe("integration: library.dialog    lurek.event", function()
         expect_equal(1, count)
     end)
 
+    -- @integration lurek.dialog_event_integration
     it("seq:on rejects non-string event names with a clear error", function()
         local seq = dialog.newSequencer()
         local err = expect_error(function()

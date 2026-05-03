@@ -6,6 +6,7 @@ local DEMO_PATH = "content/games/showcase/postfx_demo/main.lua"
 dofile("tests/lua/content/demos/_common_checks.lua")
 demo_common_checks("postfx_demo", DEMO_PATH)
 
+-- @describe postfx_demo: post-processing API usage
 describe("postfx_demo: post-processing API usage", function()
     local src
 

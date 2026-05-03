@@ -26,8 +26,12 @@ local function build_log_with_quest(qid, deadline_obj_required)
     return log, q
 end
 
+-- @describe integration: library.quest    lurek.timer.Scheduler
 describe("integration: library.quest    lurek.timer.Scheduler", function()
 
+    -- @integration LScheduler:after
+    -- @integration LScheduler:update
+    -- @integration lurek.timer.newScheduler
     it("scheduler:after deadline auto-fails an active quest", function()
         local log, q = build_log_with_quest("ticking")
         local sched = lurek.timer.newScheduler()
@@ -40,6 +44,9 @@ describe("integration: library.quest    lurek.timer.Scheduler", function()
         expect_equal("failed", q.status)
     end)
 
+    -- @integration LScheduler:every
+    -- @integration LScheduler:update
+    -- @integration lurek.timer.newScheduler
     it("scheduler:every advances objective progress and completes it", function()
         local log = quest.newQuestLog()
         local q = quest.newQuest("hunt", "Hunt")
@@ -59,6 +66,11 @@ describe("integration: library.quest    lurek.timer.Scheduler", function()
         expect_true(stage:getObjective("kills"):isComplete())
     end)
 
+    -- @integration LScheduler:after
+    -- @integration LScheduler:cancel
+    -- @integration LScheduler:getCount
+    -- @integration LScheduler:update
+    -- @integration lurek.timer.newScheduler
     it("cancel aborts the deadline and the quest stays active", function()
         local log, q = build_log_with_quest("cancellable")
         local sched = lurek.timer.newScheduler()
@@ -72,6 +84,11 @@ describe("integration: library.quest    lurek.timer.Scheduler", function()
     end)
 
     -- resuming lets it fire after the remaining wall time elapses.
+    -- @integration LScheduler:after
+    -- @integration LScheduler:pause
+    -- @integration LScheduler:resume
+    -- @integration LScheduler:update
+    -- @integration lurek.timer.newScheduler
     it("pause and resume preserves the remaining deadline window", function()
         local log, q = build_log_with_quest("pausable")
         local sched = lurek.timer.newScheduler()
@@ -86,6 +103,9 @@ describe("integration: library.quest    lurek.timer.Scheduler", function()
         expect_equal("failed", q.status)
     end)
 
+    -- @integration LScheduler:after
+    -- @integration LScheduler:update
+    -- @integration lurek.timer.newScheduler
     it("zero-delay deadline fires on the next update", function()
         local log, q = build_log_with_quest("instant")
         local sched = lurek.timer.newScheduler()
@@ -94,6 +114,8 @@ describe("integration: library.quest    lurek.timer.Scheduler", function()
         expect_equal("failed", q.status)
     end)
 
+    -- @integration LScheduler:after
+    -- @integration lurek.timer.newScheduler
     it("scheduler:after rejects a non-function callback", function()
         local sched = lurek.timer.newScheduler()
         expect_error(function()
@@ -138,8 +160,12 @@ local function build_log_with_quest(qid, deadline_obj_required)
     return log, q
 end
 
+-- @describe integration: library.quest    lurek.timer.Scheduler
 describe("integration: library.quest    lurek.timer.Scheduler", function()
 
+    -- @integration LScheduler:after
+    -- @integration LScheduler:update
+    -- @integration lurek.timer.newScheduler
     it("scheduler:after deadline auto-fails an active quest", function()
         local log, q = build_log_with_quest("ticking")
         local sched = lurek.timer.newScheduler()
@@ -152,6 +178,9 @@ describe("integration: library.quest    lurek.timer.Scheduler", function()
         expect_equal("failed", q.status)
     end)
 
+    -- @integration LScheduler:every
+    -- @integration LScheduler:update
+    -- @integration lurek.timer.newScheduler
     it("scheduler:every advances objective progress and completes it", function()
         local log = quest.newQuestLog()
         local q = quest.newQuest("hunt", "Hunt")
@@ -171,6 +200,11 @@ describe("integration: library.quest    lurek.timer.Scheduler", function()
         expect_true(stage:getObjective("kills"):isComplete())
     end)
 
+    -- @integration LScheduler:after
+    -- @integration LScheduler:cancel
+    -- @integration LScheduler:getCount
+    -- @integration LScheduler:update
+    -- @integration lurek.timer.newScheduler
     it("cancel aborts the deadline and the quest stays active", function()
         local log, q = build_log_with_quest("cancellable")
         local sched = lurek.timer.newScheduler()
@@ -184,6 +218,11 @@ describe("integration: library.quest    lurek.timer.Scheduler", function()
     end)
 
     -- resuming lets it fire after the remaining wall time elapses.
+    -- @integration LScheduler:after
+    -- @integration LScheduler:pause
+    -- @integration LScheduler:resume
+    -- @integration LScheduler:update
+    -- @integration lurek.timer.newScheduler
     it("pause and resume preserves the remaining deadline window", function()
         local log, q = build_log_with_quest("pausable")
         local sched = lurek.timer.newScheduler()
@@ -198,6 +237,9 @@ describe("integration: library.quest    lurek.timer.Scheduler", function()
         expect_equal("failed", q.status)
     end)
 
+    -- @integration LScheduler:after
+    -- @integration LScheduler:update
+    -- @integration lurek.timer.newScheduler
     it("zero-delay deadline fires on the next update", function()
         local log, q = build_log_with_quest("instant")
         local sched = lurek.timer.newScheduler()
@@ -206,6 +248,8 @@ describe("integration: library.quest    lurek.timer.Scheduler", function()
         expect_equal("failed", q.status)
     end)
 
+    -- @integration LScheduler:after
+    -- @integration lurek.timer.newScheduler
     it("scheduler:after rejects a non-function callback", function()
         local sched = lurek.timer.newScheduler()
         expect_error(function()

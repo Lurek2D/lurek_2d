@@ -4,14 +4,17 @@
 local rl = require("library.roguelike")
 
 
+-- @describe Fov
 describe("Fov", function()
     local function open_blocker(_, _) return false end
 
+    -- @library lurek.library_roguelike
     it("origin cell is always visible", function()
         local fov = rl.newFov({range=5}):setBlocker(open_blocker):compute(0, 0)
         expect_true(fov:isVisible(0, 0))
     end)
 
+    -- @library lurek.library_roguelike
     it("respects blocker     wall hides cells behind it", function()
         -- Vertical wall at x=2 between origin and target (3,0).
         local function blk(x, _) return x == 2 end
@@ -25,6 +28,7 @@ describe("Fov", function()
         expect_false(fov:isVisible(4, 0))
     end)
 
+    -- @library LORCASolver:compute
     it("explored set persists after recompute from a new origin", function()
         local fov = rl.newFov({range=3}):setBlocker(open_blocker):compute(0, 0)
         expect_true(fov:isExplored(2, 0))
@@ -40,7 +44,9 @@ describe("Fov", function()
     end)
 end)
 
+-- @describe Scheduler
 describe("Scheduler", function()
+    -- @library lurek.library_roguelike
     it("faster actor acts more often over many turns", function()
         local sch = rl.newScheduler()
         local fast = { id = "fast" }
@@ -58,6 +64,7 @@ describe("Scheduler", function()
         expect_in_range(slow_count / 600, 0.25, 0.45)
     end)
 
+    -- @library lurek.library_roguelike
     it("remove(actor) prevents future picks", function()
         local sch = rl.newScheduler()
         local a, b = {}, {}
@@ -68,6 +75,7 @@ describe("Scheduler", function()
         end
     end)
 
+    -- @library LSaveManager:restore
     it("save / restore round-trips actor energies", function()
         local sch = rl.newScheduler()
         local a = {}; sch:add(a, 25)
@@ -80,6 +88,7 @@ describe("Scheduler", function()
         expect_not_nil(blob.clock)
     end)
 
+    -- @library lurek.library_roguelike
     it("add raises on non-positive speed", function()
         local sch = rl.newScheduler()
         expect_error(function() sch:add({}, 0) end)
@@ -87,6 +96,7 @@ describe("Scheduler", function()
     end)
 end)
 
+-- @describe GoalMap
 describe("GoalMap", function()
     it("gradient points toward nearest source", function()
         local g = rl.newGoalMap(10, 10)
@@ -118,6 +128,7 @@ describe("GoalMap", function()
     end)
 end)
 
+-- @describe module helpers
 describe("module helpers", function()
     it("bresenham produces continuous endpoints", function()
         local pts = rl.bresenham(0, 0, 3, 2)

@@ -6,6 +6,7 @@
 local PATH      = "content/games/showcase/html-dialog/main.lua"
 local CONF_PATH = "content/games/showcase/html-dialog/conf.lua"
 
+-- @describe demo html-dialog â€” static analysis
 describe("demo html-dialog â€” static analysis", function()
     local src, conf_src
 

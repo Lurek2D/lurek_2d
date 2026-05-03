@@ -1,7 +1,10 @@
 -- Lurek2D Integration Test: Audio + Timer
 -- Tests audio volume timing with timer delta
 
+-- @describe audio + timer integration
 describe("audio + timer integration", function()
+    -- @integration lurek.audio.getMasterVolume
+    -- @integration lurek.audio.setMasterVolume
     it("audio volume can be ramped over time", function()
         -- Start at zero
         lurek.audio.setMasterVolume(0.0)
@@ -25,12 +28,14 @@ describe("audio + timer integration", function()
         lurek.audio.setMasterVolume(1.0)
     end)
 
+    -- @integration lurek.timer.getDelta
     it("timer delta provides consistent timestep", function()
         local dt = lurek.timer.getDelta()
         expect_type("number", dt)
         expect_true(dt >= 0, "delta is non-negative")
     end)
 
+    -- @integration lurek.timer.getTime
     it("timer getTime returns increasing values", function()
         local t1 = lurek.timer.getTime()
         expect_type("number", t1)
@@ -38,6 +43,8 @@ describe("audio + timer integration", function()
         expect_true(t1 >= 0, "time is non-negative")
     end)
 
+    -- @integration lurek.audio.getMasterVolume
+    -- @integration lurek.audio.setMasterVolume
     it("audio volume fade-out follows exponential decay", function()
         lurek.audio.setMasterVolume(1.0)
 

@@ -6,8 +6,11 @@
 --                                                                                                                                        
 -- HexGrid: AI turn-based movement patterns
 --                                                                                                                                        
+-- @describe hexGrid + AI turn-based movement
 describe("hexGrid + AI turn-based movement", function()
 
+    -- @integration LHexGrid:findPath
+    -- @integration lurek.pathfind.newHexGrid
     it("AI unit can find path to target", function()
         local map = lurek.pathfind.newHexGrid(12, 12)
         -- Simulate AI agent at (1,1) targeting (10,10)
@@ -16,6 +19,8 @@ describe("hexGrid + AI turn-based movement", function()
         expect_true(#path >= 1, "path must have length >= 1")
     end)
 
+    -- @integration LHexGrid:rangeOfMovement
+    -- @integration lurek.pathfind.newHexGrid
     it("AI units compute their movement range with budget", function()
         local map = lurek.pathfind.newHexGrid(10, 10)
         -- Typical turn-based unit with movement of 3
@@ -25,6 +30,9 @@ describe("hexGrid + AI turn-based movement", function()
         expect_true(#reachable >= 6, "with budget=3, should reach at least 6 hex cells")
     end)
 
+    -- @integration LHexGrid:lineOfSight
+    -- @integration LHexGrid:setBlocked
+    -- @integration lurek.pathfind.newHexGrid
     it("AI units check line of sight before shooting", function()
         local map = lurek.pathfind.newHexGrid(10, 10)
         local los_clear = map:lineOfSight(1, 1, 5, 5)
@@ -38,6 +46,8 @@ describe("hexGrid + AI turn-based movement", function()
         expect_equal(false, los_blocked, "wall should block LOS")
     end)
 
+    -- @integration LHexGrid:fieldOfView
+    -- @integration lurek.pathfind.newHexGrid
     it("AI computes FOV for visibility grid", function()
         local map = lurek.pathfind.newHexGrid(10, 10)
         local visible = map:fieldOfView(5, 5, 3)
@@ -46,6 +56,8 @@ describe("hexGrid + AI turn-based movement", function()
         expect_true(#visible >= 7, "expected at least 7 visible cells with radius 3")
     end)
 
+    -- @integration LHexGrid:distance
+    -- @integration lurek.pathfind.newHexGrid
     it("enemy AI chooses closest walkable cell to player", function()
         local map = lurek.pathfind.newHexGrid(10, 10)
         local player = { col = 8, row = 8 }
@@ -69,6 +81,9 @@ describe("hexGrid + AI turn-based movement", function()
         expect_equal(9, closest.row)
     end)
 
+    -- @integration LHexGrid:findPath
+    -- @integration LHexGrid:setBlocked
+    -- @integration lurek.pathfind.newHexGrid
     it("AI blocked by terrain uses alternative path", function()
         local map = lurek.pathfind.newHexGrid(8, 8)
         -- Block direct corridor from (1,4) to (8,4)
@@ -87,14 +102,20 @@ end)
 --                                                                                                                                        
 -- JPS Grid: AI real-time movement
 --                                                                                                                                        
+-- @describe jpsGrid + AI real-time movement
 describe("jpsGrid + AI real-time movement", function()
 
+    -- @integration LJpsGrid:findPath
+    -- @integration lurek.pathfind.newJpsGrid
     it("AI pathfinding request returns a route", function()
         local map = lurek.pathfind.newJpsGrid(20, 20)
         local path = map:findPath(1, 1, 18, 18)
         expect_true(path ~= nil or true, "should return path or nil without crash")
     end)
 
+    -- @integration LJpsGrid:findPath
+    -- @integration LJpsGrid:setBlocked
+    -- @integration lurek.pathfind.newJpsGrid
     it("shorter path when obstacles removed", function()
         local open = lurek.pathfind.newJpsGrid(10, 10)
         local blocked = lurek.pathfind.newJpsGrid(10, 10)
@@ -108,6 +129,8 @@ describe("jpsGrid + AI real-time movement", function()
         end
     end)
 
+    -- @integration LJpsGrid:findPath
+    -- @integration lurek.pathfind.newJpsGrid
     it("AI can place multiple units without conflicts", function()
         local map = lurek.pathfind.newJpsGrid(10, 10)
         -- Simulate 3 AI units with different start/end positions
@@ -125,8 +148,10 @@ end)
 --                                                                                                                                        
 -- RangeMap: AI tactical movement zones
 --                                                                                                                                        
+-- @describe rangeMap + AI tactical analysis
 describe("rangeMap + AI tactical analysis", function()
 
+    -- @integration lurek.pathfind.rangeMap
     it("AI identifies cells within movement budget", function()
         local result = lurek.pathfind.rangeMap({
             width = 10, height = 10,
@@ -137,6 +162,7 @@ describe("rangeMap + AI tactical analysis", function()
         expect_true(#result.cells >= 5, "expected at least 5 cells with budget=2")
     end)
 
+    -- @integration lurek.pathfind.rangeMap
     it("AI avoids high-cost terrain", function()
         -- Build a cost grid with high-cost center column
         local costs = {}
@@ -156,6 +182,7 @@ describe("rangeMap + AI tactical analysis", function()
         expect_true(#expensive.cells <= #cheap.cells, "high-cost terrain should reduce reachable area")
     end)
 
+    -- @integration lurek.pathfind.rangeMap
     it("surrounded AI unit can only reach origin", function()
         -- Block all adjacent cells
         local blocked = {}

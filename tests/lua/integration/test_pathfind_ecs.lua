@@ -1,7 +1,15 @@
 -- Lurek2D Integration Test: Pathfinding + Entity
 -- Tests pathfinding results driving entity positioning
 
+-- @describe pathfinding + entity integration
 describe("pathfinding + entity integration", function()
+    -- @integration LUnitPathfinder:findPath
+    -- @integration LUniverse:get
+    -- @integration LUniverse:set
+    -- @integration LUniverse:spawn
+    -- @integration lurek.ecs.newUniverse
+    -- @integration lurek.pathfind.newNavGrid
+    -- @integration lurek.pathfind.newPathfinder
     it("pathfinding result moves entity along path", function()
         local universe = lurek.ecs.newUniverse()
         local entity = universe:spawn()
@@ -30,6 +38,10 @@ describe("pathfinding + entity integration", function()
         end
     end)
 
+    -- @integration LNavGrid:setBlocked
+    -- @integration LUnitPathfinder:findPath
+    -- @integration lurek.pathfind.newNavGrid
+    -- @integration lurek.pathfind.newPathfinder
     it("blocked cells force path around obstacle", function()
         local grid = lurek.pathfind.newNavGrid(10, 10)
         local pf   = lurek.pathfind.newPathfinder(grid)
@@ -49,6 +61,10 @@ describe("pathfinding + entity integration", function()
         end
     end)
 
+    -- @integration LNavGrid:setBlocked
+    -- @integration LUnitPathfinder:findPath
+    -- @integration lurek.pathfind.newNavGrid
+    -- @integration lurek.pathfind.newPathfinder
     it("no path returns nil for unreachable goal", function()
         local grid = lurek.pathfind.newNavGrid(10, 10)
         local pf   = lurek.pathfind.newPathfinder(grid)
@@ -62,6 +78,14 @@ describe("pathfinding + entity integration", function()
         expect_true(path == nil, "no path to unreachable goal (got " .. tostring(path) .. ")")
     end)
 
+    -- @integration LUnitPathfinder:findPath
+    -- @integration LUniverse:get
+    -- @integration LUniverse:isAlive
+    -- @integration LUniverse:set
+    -- @integration LUniverse:spawn
+    -- @integration lurek.ecs.newUniverse
+    -- @integration lurek.pathfind.newNavGrid
+    -- @integration lurek.pathfind.newPathfinder
     it("entity follows multi-step path", function()
         local universe = lurek.ecs.newUniverse()
         local entity = universe:spawn()

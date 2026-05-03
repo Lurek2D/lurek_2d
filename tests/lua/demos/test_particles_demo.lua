@@ -6,6 +6,7 @@ local DEMO_PATH = "content/games/showcase/particles_demo/main.lua"
 dofile("tests/lua/content/demos/_common_checks.lua")
 demo_common_checks("particles_demo", DEMO_PATH)
 
+-- @describe particles_demo: particle API usage
 describe("particles_demo: particle API usage", function()
     local src
 

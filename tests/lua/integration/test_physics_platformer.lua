@@ -3,6 +3,7 @@
 -- a dynamic body falls toward a one-way static platform.
 -- Requires both lurek.physics and the extension methods.
 
+-- @describe one-way platform integration
 describe("one-way platform integration", function()
     local world, floor, player
 
@@ -18,12 +19,14 @@ describe("one-way platform integration", function()
         player = lurek.physics.newBody(world, 400, 100, "dynamic")
     end)
 
+    -- @integration LWorld:getBodyOneWay
     it("floor has correct one-way normal", function()
         local nx, ny = world:getBodyOneWay(floor:getId())
         expect_near(0,  nx, 1e-5)
         expect_near(-1, ny, 1e-5)
     end)
 
+    -- @integration lurek.physics_platformer
     it("world steps without error with one-way bodies", function()
         expect_no_error(function()
             for _ = 1, 10 do
@@ -33,6 +36,7 @@ describe("one-way platform integration", function()
     end)
 end)
 
+-- @describe contact callbacks and sleeping integration
 describe("contact callbacks and sleeping integration", function()
     local world
     local began, ended
@@ -49,6 +53,7 @@ describe("contact callbacks and sleeping integration", function()
         end)
     end)
 
+    -- @integration lurek.physics.newBody
     it("world steps without error when callbacks are registered", function()
         local b1 = lurek.physics.newBody(world, 0, 0, "dynamic")
         local b2 = lurek.physics.newBody(world, 50, 0, "static")
@@ -59,6 +64,8 @@ describe("contact callbacks and sleeping integration", function()
         end)
     end)
 
+    -- @integration LWorld:clearBeginContact
+    -- @integration LWorld:clearEndContact
     it("stepping after clearing callbacks does not error", function()
         world:clearBeginContact()
         world:clearEndContact()
@@ -67,6 +74,10 @@ describe("contact callbacks and sleeping integration", function()
         end)
     end)
 
+    -- @integration LBody:getId
+    -- @integration LWorld:sleepBody
+    -- @integration LWorld:wakeUpBody
+    -- @integration lurek.physics.newBody
     it("sleep then wake then step does not error", function()
         local b = lurek.physics.newBody(world, 0, 0, "dynamic")
         world:sleepBody(b:getId())
@@ -77,6 +88,7 @@ describe("contact callbacks and sleeping integration", function()
     end)
 end)
 
+-- @describe batch body creation integration
 describe("batch body creation integration", function()
     local world
 
@@ -84,6 +96,7 @@ describe("batch body creation integration", function()
         world = lurek.physics.newWorld(0, 9.81)
     end)
 
+    -- @integration LWorld:newBodies
     it("batch-created bodies can be stepped", function()
         local ids = world:newBodies({
             {0,   0, "dynamic"},
@@ -98,6 +111,9 @@ describe("batch body creation integration", function()
         end)
     end)
 
+    -- @integration LWorld:getSolverIterations
+    -- @integration LWorld:newBodies
+    -- @integration LWorld:setSolverIterations
     it("batch creation works with custom solver iterations", function()
         world:setSolverIterations(6)
         local ids = world:newBodies({{0, 0, "dynamic"}, {50, 0, "dynamic"}})

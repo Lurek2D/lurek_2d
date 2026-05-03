@@ -1,7 +1,9 @@
 -- Lurek2D Stress Test: Graphics Draw Commands
 -- Tests throughput of draw command generation (headless, no GPU)
 
+-- @describe graphics stress: shape throughput
 describe("graphics stress: shape throughput", function()
+    -- @stress lurek.render.rectangle
     it("10000 rectangles do not error", function()
         for i = 1, 10000 do
             lurek.render.rectangle("fill", i % 800, i % 600, 10, 10)
@@ -9,6 +11,7 @@ describe("graphics stress: shape throughput", function()
         expect_true(true, "10000 rectangles queued")
     end)
 
+    -- @stress lurek.render.circle
     it("10000 circles do not error", function()
         for i = 1, 10000 do
             lurek.render.circle("fill", i % 800, i % 600, 5)
@@ -16,6 +19,7 @@ describe("graphics stress: shape throughput", function()
         expect_true(true, "10000 circles queued")
     end)
 
+    -- @stress lurek.render.line
     it("10000 lines do not error", function()
         for i = 1, 10000 do
             lurek.render.line(0, 0, i % 800, i % 600)
@@ -23,6 +27,7 @@ describe("graphics stress: shape throughput", function()
         expect_true(true, "10000 lines queued")
     end)
 
+    -- @stress lurek.render.setColor
     it("rapid color changes do not error", function()
         for i = 1, 10000 do
             local r = (i % 256) / 255
@@ -34,7 +39,11 @@ describe("graphics stress: shape throughput", function()
     end)
 end)
 
+-- @describe graphics stress: mixed draw commands
 describe("graphics stress: mixed draw commands", function()
+    -- @stress lurek.render.circle
+    -- @stress lurek.render.line
+    -- @stress lurek.render.rectangle
     it("alternating shapes at 5000 iterations", function()
         for i = 1, 5000 do
             if i % 3 == 0 then

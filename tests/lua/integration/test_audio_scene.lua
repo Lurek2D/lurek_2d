@@ -4,6 +4,7 @@
 
 local describe = describe or function(n,f) f() end
 local it = it or function(n,f) f() end
+-- @describe audio + scene integration
 describe("audio + scene integration", function()
     it("plays background music when scene loads", function()
         expect_true(true)

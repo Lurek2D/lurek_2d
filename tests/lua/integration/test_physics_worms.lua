@@ -3,8 +3,15 @@
 -- flush the terrain, then drop a body and verify it lands rather than
 -- falling through.
 
+-- @describe worms terrain + physics integration
 describe("worms terrain + physics integration", function()
     --              does not fall indefinitely (terrain colliders are present).
+    -- @integration LTerrain:fillRect
+    -- @integration LTerrain:flush
+    -- @integration LWorld:newBody
+    -- @integration LWorld:step
+    -- @integration lurek.physics.newTerrain
+    -- @integration lurek.physics.newWorld
     it("rigid body rests on terrain after dig and flush", function()
         local world = lurek.physics.newWorld(0, 300)
         local terrain = lurek.physics.newTerrain(64, 64, 8, world)
@@ -26,6 +33,12 @@ describe("worms terrain + physics integration", function()
         expect_true(true)
     end)
 
+    -- @integration LTerrain:fillAll
+    -- @integration LTerrain:fillCircle
+    -- @integration LTerrain:flush
+    -- @integration LTerrain:isDirty
+    -- @integration lurek.physics.newTerrain
+    -- @integration lurek.physics.newWorld
     it("terrain is clean after dig and flush", function()
         local world = lurek.physics.newWorld(0, 0)
         local terrain = lurek.physics.newTerrain(32, 32, 8, world)

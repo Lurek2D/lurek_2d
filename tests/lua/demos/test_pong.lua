@@ -6,6 +6,7 @@ local DEMO_PATH = "content/games/arcade/pong/main.lua"
 dofile("tests/lua/content/demos/_common_checks.lua")
 demo_common_checks("pong", DEMO_PATH)
 
+-- @describe pong: game mechanics
 describe("pong: game mechanics", function()
     local src
 

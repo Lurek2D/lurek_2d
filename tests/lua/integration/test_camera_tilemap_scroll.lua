@@ -4,6 +4,7 @@
 
 local describe = describe or function(n,f) f() end
 local it = it or function(n,f) f() end
+-- @describe camera + tilemap scroll integration
 describe("camera + tilemap scroll integration", function()
     it("loads tilemap chunk when camera moves into range", function()
         expect_true(true)

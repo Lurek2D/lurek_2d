@@ -6,6 +6,7 @@
 local PATH      = "content/games/showcase/html-scoreboard/main.lua"
 local CONF_PATH = "content/games/showcase/html-scoreboard/conf.lua"
 
+-- @describe demo html-scoreboard â€” static analysis
 describe("demo html-scoreboard â€” static analysis", function()
     local src, conf_src
 

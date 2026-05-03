@@ -6,6 +6,7 @@ local DEMO_PATH = "content/games/showcase/minimap_demo/main.lua"
 dofile("tests/lua/content/demos/_common_checks.lua")
 demo_common_checks("minimap_demo", DEMO_PATH)
 
+-- @describe minimap_demo: minimap API usage
 describe("minimap_demo: minimap API usage", function()
     local src
 

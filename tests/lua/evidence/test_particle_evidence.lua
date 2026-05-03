@@ -16,8 +16,17 @@ local function draw_dot(img, cx, cy, radius, r, g, b)
     end
 end
 
+-- @describe Evidence: lurek.particle API + PNG visualization
 describe("Evidence: lurek.particle API + PNG visualization", function()
     -- @evidence file
+    -- @covers LImageData:fill
+    -- @covers LParticleSystem:emit
+    -- @covers LParticleSystem:getPosition
+    -- @covers LParticleSystem:setPosition
+    -- @covers LParticleSystem:start
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
+    -- @covers lurek.particle.newSystem
     it("PNG: particle emitter positions as colored dots", function()
         local W, H = 256, 256
         local img = lurek.image.newImageData(W, H)
@@ -70,6 +79,15 @@ describe("Evidence: lurek.particle API + PNG visualization", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:fill
+    -- @covers LImageData:setPixel
+    -- @covers LParticleSystem:count
+    -- @covers LParticleSystem:emit
+    -- @covers LParticleSystem:setPosition
+    -- @covers LParticleSystem:start
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
+    -- @covers lurek.particle.newSystem
     it("PNG: burst emission visualized over time", function()
         local W, H = 128, 128
         local img = lurek.image.newImageData(W, H)
@@ -105,6 +123,17 @@ describe("Evidence: lurek.particle API + PNG visualization", function()
     -- @evidence file
     -- warms each up, renders via toImage(), and writes the composite as a PNG.
     -- If any shape's tessellation code was deleted, its column of the output PNG would differ.
+    -- @covers LImageData:fill
+    -- @covers LImageData:getPixel
+    -- @covers LImageData:setPixel
+    -- @covers LParticleSystem:setPosition
+    -- @covers LParticleSystem:start
+    -- @covers LParticleSystem:toImage
+    -- @covers LParticleSystem:warmUp
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
+    -- @covers lurek.particle.newSystem
+    -- @covers lurek.particle.release
     it("PNG: new shapes rendered via toImage", function()
         local W, H = 256, 64
         local img = lurek.image.newImageData(W, H)
@@ -149,6 +178,14 @@ describe("Evidence: lurek.particle API + PNG visualization", function()
     -- inward, simulates 1 second, and saves the result via toImage().
     -- If the attractor force-computation was removed, the particle distribution
     -- in the output PNG would be more spread-out.
+    -- @covers LParticleSystem:addAttractor
+    -- @covers LParticleSystem:setPosition
+    -- @covers LParticleSystem:start
+    -- @covers LParticleSystem:toImage
+    -- @covers LParticleSystem:update
+    -- @covers lurek.image.savePNG
+    -- @covers lurek.particle.newSystem
+    -- @covers lurek.particle.release
     it("PNG: attractor pulls particles to center", function()
         local W, H = 128, 128
         local ps = lurek.particle.newSystem({
@@ -200,8 +237,17 @@ local function draw_dot(img, cx, cy, radius, r, g, b)
     end
 end
 
+-- @describe Evidence: lurek.particle API + PNG visualization
 describe("Evidence: lurek.particle API + PNG visualization", function()
     -- @evidence file
+    -- @covers LImageData:fill
+    -- @covers LParticleSystem:emit
+    -- @covers LParticleSystem:getPosition
+    -- @covers LParticleSystem:setPosition
+    -- @covers LParticleSystem:start
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
+    -- @covers lurek.particle.newSystem
     it("PNG: particle emitter positions as colored dots", function()
         local W, H = 256, 256
         local img = lurek.image.newImageData(W, H)
@@ -254,6 +300,15 @@ describe("Evidence: lurek.particle API + PNG visualization", function()
     end)
 
     -- @evidence file
+    -- @covers LImageData:fill
+    -- @covers LImageData:setPixel
+    -- @covers LParticleSystem:count
+    -- @covers LParticleSystem:emit
+    -- @covers LParticleSystem:setPosition
+    -- @covers LParticleSystem:start
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
+    -- @covers lurek.particle.newSystem
     it("PNG: burst emission visualized over time", function()
         local W, H = 128, 128
         local img = lurek.image.newImageData(W, H)
@@ -289,6 +344,17 @@ describe("Evidence: lurek.particle API + PNG visualization", function()
     -- @evidence file
     -- warms each up, renders via toImage(), and writes the composite as a PNG.
     -- If any shape's tessellation code was deleted, its column of the output PNG would differ.
+    -- @covers LImageData:fill
+    -- @covers LImageData:getPixel
+    -- @covers LImageData:setPixel
+    -- @covers LParticleSystem:setPosition
+    -- @covers LParticleSystem:start
+    -- @covers LParticleSystem:toImage
+    -- @covers LParticleSystem:warmUp
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.image.savePNG
+    -- @covers lurek.particle.newSystem
+    -- @covers lurek.particle.release
     it("PNG: new shapes rendered via toImage", function()
         local W, H = 256, 64
         local img = lurek.image.newImageData(W, H)
@@ -333,6 +399,14 @@ describe("Evidence: lurek.particle API + PNG visualization", function()
     -- inward, simulates 1 second, and saves the result via toImage().
     -- If the attractor force-computation was removed, the particle distribution
     -- in the output PNG would be more spread-out.
+    -- @covers LParticleSystem:addAttractor
+    -- @covers LParticleSystem:setPosition
+    -- @covers LParticleSystem:start
+    -- @covers LParticleSystem:toImage
+    -- @covers LParticleSystem:update
+    -- @covers lurek.image.savePNG
+    -- @covers lurek.particle.newSystem
+    -- @covers lurek.particle.release
     it("PNG: attractor pulls particles to center", function()
         local W, H = 128, 128
         local ps = lurek.particle.newSystem({

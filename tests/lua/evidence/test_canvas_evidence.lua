@@ -2,12 +2,15 @@
 -- Canvas is GPU-backed; GPU rendering ops are xit in headless mode.
 -- Headless-safe tests verify API surface and dimension queries.
 
+-- @describe evidence: canvas
 describe("evidence: canvas", function()
     before_each(function()
         ensure_evidence_dir("canvas")
     end)
 
     -- @evidence skip
+    -- @covers LFileHandle:close
+    -- @covers LFileHandle:write
     it("canvas API functions are exposed as functions", function()
         if type(io) ~= "table" or type(io.open) ~= "function" then
             expect_true(true)
@@ -32,6 +35,9 @@ describe("evidence: canvas", function()
     end)
 
     -- @evidence skip
+    -- @covers LFileHandle:close
+    -- @covers LFileHandle:write
+    -- @covers lurek.render.newCanvas
     it("canvas dimension accessors return correct values", function()
         if type(io) ~= "table" or type(io.open) ~= "function" then
             expect_true(true)
@@ -69,6 +75,8 @@ describe("evidence: canvas", function()
     end)
 
     -- @evidence skip
+    -- @covers lurek.render.newCanvas
+    -- @covers lurek.render.setCanvas
     it("canvas renders a scene to texture (requires GPU)", function()
         if type(lurek.render.newCanvas) ~= "function" or type(lurek.render.setCanvas) ~= "function" then
             expect_true(true)

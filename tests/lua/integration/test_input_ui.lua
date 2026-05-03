@@ -4,6 +4,7 @@
 
 local describe = describe or function(n,f) f() end
 local it = it or function(n,f) f() end
+-- @describe input + ui integration
 describe("input + ui integration", function()
     it("processes keyboard focus to ui widget", function()
         expect_true(true)

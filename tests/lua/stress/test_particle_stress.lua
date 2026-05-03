@@ -1,7 +1,11 @@
 -- Lurek2D Stress Test: Particle System Burst Emission
 -- Tests large particle counts and extended lifecycle simulation
 
+-- @describe particle stress: burst emission
 describe("particle stress: burst emission", function()
+    -- @stress LParticleSystem:emit
+    -- @stress LParticleSystem:getCount
+    -- @stress lurek.particle.newSystem
     it("emits 5000 particles", function()
         local sys = lurek.particle.newSystem({
             maxParticles = 5000,
@@ -18,6 +22,10 @@ describe("particle stress: burst emission", function()
         expect_true(sys:getCount() > 0, "particles emitted")
     end)
 
+    -- @stress LParticleSystem:start
+    -- @stress LParticleSystem:update
+    -- @stress lurek.particle.isActive
+    -- @stress lurek.particle.newSystem
     it("simulates 120 frames of particle lifecycle", function()
         local sys = lurek.particle.newSystem({
             maxParticles = 2000,
@@ -39,6 +47,12 @@ describe("particle stress: burst emission", function()
         expect_true(lurek.particle.isActive(sys), "system still active")
     end)
 
+    -- @stress LParticleSystem:getCount
+    -- @stress LParticleSystem:reset
+    -- @stress LParticleSystem:start
+    -- @stress LParticleSystem:stop
+    -- @stress LParticleSystem:update
+    -- @stress lurek.particle.newSystem
     it("stop and reset clears all particles", function()
         local sys = lurek.particle.newSystem({
             maxParticles = 1000,

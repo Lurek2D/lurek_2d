@@ -1,7 +1,15 @@
 -- Lurek2D Integration Test: Savegame + Tilemap
 -- Tests saving and restoring tilemap state via savegame.
 
+-- @describe integration: savegame collects and restores tilemap state
 describe("integration: savegame collects and restores tilemap state", function()
+    -- @integration LSaveManager:collect
+    -- @integration LSaveManager:register
+    -- @integration LTileMap:addLayer
+    -- @integration LTileMap:getTile
+    -- @integration LTileMap:setTile
+    -- @integration lurek.save.newSaveManager
+    -- @integration lurek.tilemap.newTileMap
     it("registers tilemap handler and collects tile data", function()
         local sm = lurek.save.newSaveManager()
         local tm = lurek.tilemap.newTileMap(16, 16)
@@ -42,6 +50,9 @@ describe("integration: savegame collects and restores tilemap state", function()
         expect_true(#saved_tiles >= 3, "at least 3 non-zero tiles collected")
     end)
 
+    -- @integration LSaveManager:getSummary
+    -- @integration LSaveManager:setSummary
+    -- @integration lurek.save.newSaveManager
     it("save summary contains tilemap metadata", function()
         local sm = lurek.save.newSaveManager()
         sm:setSummary("level_01")
@@ -49,6 +60,8 @@ describe("integration: savegame collects and restores tilemap state", function()
         expect_equal("level_01", summary, "summary stores map name")
     end)
 
+    -- @integration LSaveManager:getSchemaVersion
+    -- @integration lurek.save.newSaveManager
     it("schema version is accessible", function()
         local sm = lurek.save.newSaveManager()
         local ver = sm:getSchemaVersion()

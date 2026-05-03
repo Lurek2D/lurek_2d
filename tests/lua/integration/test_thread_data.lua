@@ -1,7 +1,11 @@
 -- Lurek2D Integration Test: Thread + Data
 -- Tests passing data between threads via Channel.
 
+-- @describe integration: thread channel with serialized data
 describe("integration: thread channel with serialized data", function()
+    -- @integration LChannel:pop
+    -- @integration LChannel:push
+    -- @integration lurek.thread.newChannel
     it("pushes and pops plain value via channel", function()
         local ch = lurek.thread.newChannel()
         expect_not_nil(ch, "channel created")
@@ -11,6 +15,11 @@ describe("integration: thread channel with serialized data", function()
         expect_equal(42, val, "integer round-tripped through channel")
     end)
 
+    -- @integration LChannel:pop
+    -- @integration LChannel:push
+    -- @integration lurek.serial.fromJson
+    -- @integration lurek.serial.toJson
+    -- @integration lurek.thread.newChannel
     it("pushes JSON-encoded table and receives raw string", function()
         local ch      = lurek.thread.newChannel()
         local payload = {x = 10, y = 20, label = "pos"}
@@ -27,6 +36,9 @@ describe("integration: thread channel with serialized data", function()
         expect_equal("pos", decoded.label, "label round-tripped through channel")
     end)
 
+    -- @integration LChannel:pop
+    -- @integration LChannel:push
+    -- @integration lurek.thread.newChannel
     it("channel is FIFO for multiple pushes", function()
         local ch = lurek.thread.newChannel()
 
@@ -39,12 +51,19 @@ describe("integration: thread channel with serialized data", function()
         expect_equal(3, ch:pop(), "third out is 3")
     end)
 
+    -- @integration LChannel:pop
+    -- @integration lurek.thread.newChannel
     it("tryPop on empty channel returns nil", function()
         local ch  = lurek.thread.newChannel()
         local val = ch:pop()
         expect_nil(val, "empty channel returns nil")
     end)
 
+    -- @integration LChannel:pop
+    -- @integration LChannel:push
+    -- @integration lurek.serial.fromJson
+    -- @integration lurek.serial.toJson
+    -- @integration lurek.thread.newChannel
     it("large payload round-trips via channel", function()
         local ch = lurek.thread.newChannel()
         local big = {}

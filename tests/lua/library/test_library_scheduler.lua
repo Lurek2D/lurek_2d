@@ -3,13 +3,16 @@
 
 local scheduler = require("library.scheduler")
 
+-- @describe scheduler library     newScheduler
 describe("scheduler library     newScheduler", function()
+    -- @library lurek.library_scheduler
     it("returns a scheduler with zero tasks by default", function()
         local s = scheduler.newScheduler()
         expect_true(s ~= nil, "newScheduler() must return non-nil")
         expect_true(s:getCount() == 0, "fresh scheduler must have 0 tasks")
     end)
 
+    -- @library lurek.library_scheduler
     it("accepts opts.max_iterations", function()
         local s = scheduler.newScheduler({ max_iterations = 500 })
         expect_true(s ~= nil)
@@ -17,7 +20,9 @@ describe("scheduler library     newScheduler", function()
     end)
 end)
 
+-- @describe scheduler library     add and immediate execution
 describe("scheduler library     add and immediate execution", function()
+    -- @library lurek.library_scheduler
     it("runs a non-yielding task immediately on add", function()
         local s = scheduler.newScheduler()
         local ran = false
@@ -30,6 +35,7 @@ describe("scheduler library     add and immediate execution", function()
         expect_true(s:getCount() == 0, "completed task must be removed after update")
     end)
 
+    -- @library lurek.library_scheduler
     it("returns incrementing ids", function()
         local s = scheduler.newScheduler()
         local id1 = s:add(function(y) y(999) end)
@@ -38,6 +44,7 @@ describe("scheduler library     add and immediate execution", function()
         expect_true(id2 == id1 + 1, "ids must be sequential")
     end)
 
+    -- @library lurek.library_scheduler
     it("errors on non-function argument", function()
         local s = scheduler.newScheduler()
         local ok = pcall(function() s:add("not a function") end)
@@ -45,7 +52,9 @@ describe("scheduler library     add and immediate execution", function()
     end)
 end)
 
+-- @describe scheduler library     yield and update timing
 describe("scheduler library     yield and update timing", function()
+    -- @library lurek.library_scheduler
     it("task is still pending after partial dt", function()
         local s = scheduler.newScheduler()
         local done = false
@@ -58,6 +67,7 @@ describe("scheduler library     yield and update timing", function()
         expect_true(s:getCount() == 1, "task must still be active")
     end)
 
+    -- @library lurek.library_scheduler
     it("task resumes after enough dt", function()
         local s = scheduler.newScheduler()
         local done = false
@@ -71,6 +81,7 @@ describe("scheduler library     yield and update timing", function()
         expect_true(s:getCount() == 0, "task must be removed after completion")
     end)
 
+    -- @library lurek.library_scheduler
     it("multi-yield task resumes at each step", function()
         local s = scheduler.newScheduler()
         local step = 0
@@ -88,7 +99,9 @@ describe("scheduler library     yield and update timing", function()
     end)
 end)
 
+-- @describe scheduler library     remove
 describe("scheduler library     remove", function()
+    -- @library lurek.library_scheduler
     it("removes a pending task before it resumes", function()
         local s = scheduler.newScheduler()
         local done = false
@@ -103,7 +116,9 @@ describe("scheduler library     remove", function()
     end)
 end)
 
+-- @describe scheduler library     pause and resume
 describe("scheduler library     pause and resume", function()
+    -- @library lurek.library_scheduler
     it("paused task does not advance", function()
         local s = scheduler.newScheduler()
         local done = false
@@ -116,6 +131,7 @@ describe("scheduler library     pause and resume", function()
         expect_true(not done, "paused task must not advance")
     end)
 
+    -- @library lurek.library_scheduler
     it("resumed task completes after unpausing", function()
         local s = scheduler.newScheduler()
         local done = false
@@ -132,7 +148,9 @@ describe("scheduler library     pause and resume", function()
     end)
 end)
 
+-- @describe scheduler library     getStatus
 describe("scheduler library     getStatus", function()
+    -- @library LPipelineStep:getStatus
     it("returns running for an active task", function()
         local s = scheduler.newScheduler()
         local id = s:add(function(y) y(999) end)
@@ -140,6 +158,7 @@ describe("scheduler library     getStatus", function()
         expect_true(st == "running" or st ~= nil, "status must be a string for active task")
     end)
 
+    -- @library LPipelineStep:getStatus
     it("returns nil or done for unknown id", function()
         local s = scheduler.newScheduler()
         local st = s:getStatus(999)
@@ -147,7 +166,9 @@ describe("scheduler library     getStatus", function()
     end)
 end)
 
+-- @describe scheduler library     getCount and clear
 describe("scheduler library     getCount and clear", function()
+    -- @library lurek.library_scheduler
     it("getCount increments on add", function()
         local s = scheduler.newScheduler()
         s:add(function(y) y(999) end)
@@ -155,6 +176,7 @@ describe("scheduler library     getCount and clear", function()
         expect_true(s:getCount() == 2)
     end)
 
+    -- @library lurek.library_scheduler
     it("clear removes all tasks", function()
         local s = scheduler.newScheduler()
         s:add(function(y) y(999) end)
@@ -164,7 +186,9 @@ describe("scheduler library     getCount and clear", function()
     end)
 end)
 
+-- @describe scheduler library     error handling
 describe("scheduler library     error handling", function()
+    -- @library lurek.library_scheduler
     it("captures erroring task in getErrors", function()
         local s = scheduler.newScheduler()
         local id = s:add(function(_y)
@@ -178,6 +202,7 @@ describe("scheduler library     error handling", function()
         expect_true(s:getCount() == 0, "errored task must be removed")
     end)
 
+    -- @library lurek.library_scheduler
     it("clearErrors empties the error list", function()
         local s = scheduler.newScheduler()
         s:add(function(_y) error("boom") end)

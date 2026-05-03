@@ -6,6 +6,7 @@ local C = require("library.crafting")
 
 --                  Quality
 
+-- @describe Quality
 describe("Quality", function()
     it("has six tiers", function()
         expect_equal(C.Quality.Normal, "normal")
@@ -20,6 +21,7 @@ end)
 
 --                  Ingredient
 
+-- @describe Ingredient
 describe("Ingredient", function()
     it("by item type", function()
         local ing = C.newIngredient("wood", 3)
@@ -38,6 +40,7 @@ end)
 
 --                  RecipeOutput
 
+-- @describe RecipeOutput
 describe("RecipeOutput", function()
     it("default output", function()
         local o = C.newRecipeOutput("sword", 1)
@@ -61,6 +64,7 @@ end)
 
 --                  Recipe
 
+-- @describe Recipe
 describe("Recipe", function()
     it("creates with defaults", function()
         local r = C.newRecipe("iron_sword")
@@ -88,6 +92,7 @@ describe("Recipe", function()
         expect_equal(#r.outputs, 0)
     end)
 
+    -- @library lurek.library_crafting
     it("tags", function()
         local r = C.newRecipe("blade")
         r.tags = { "weapon", "melee" }
@@ -124,6 +129,7 @@ end)
 
 --                  RecipeRegistry
 
+-- @describe RecipeRegistry
 describe("RecipeRegistry", function()
     local function make_registry()
         local reg = C.newRecipeRegistry()
@@ -150,12 +156,14 @@ describe("RecipeRegistry", function()
         return reg
     end
 
+    -- @library lurek.library_crafting
     it("add/get/count", function()
         local reg = make_registry()
         expect_equal(reg:count(), 2)
         expect_equal(reg:get("sword").id, "sword")
     end)
 
+    -- @library lurek.library_crafting
     it("remove", function()
         local reg = make_registry()
         expect_equal(reg:remove("sword"), true)
@@ -225,6 +233,7 @@ end)
 
 --                  CraftJob
 
+-- @describe CraftJob
 describe("CraftJob", function()
     it("create and advance", function()
         local job = C.newCraftJob(1, "sword", 5, 1)
@@ -251,7 +260,9 @@ end)
 
 --                  CraftQueue
 
+-- @describe CraftQueue
 describe("CraftQueue", function()
+    -- @library lurek.library_crafting
     it("enqueue and update", function()
         local q = C.newCraftQueue(5)
         local id = q:enqueue("sword", 3, 1)
@@ -263,6 +274,7 @@ describe("CraftQueue", function()
         expect_equal(completed[1], id)
     end)
 
+    -- @library lurek.library_crafting
     it("respects max_jobs", function()
         local q = C.newCraftQueue(2)
         q:enqueue("a", 1, 1)
@@ -272,6 +284,7 @@ describe("CraftQueue", function()
         expect_equal(q:isFull(), true)
     end)
 
+    -- @library lurek.library_crafting
     it("max_concurrent limits parallel jobs", function()
         local q = C.newCraftQueue(10)
         q:setMaxConcurrent(1)
@@ -287,6 +300,7 @@ describe("CraftQueue", function()
         expect_equal(#done, 1)
     end)
 
+    -- @library lurek.library_crafting
     it("cancel job", function()
         local q = C.newCraftQueue(5)
         local id = q:enqueue("x", 10, 1)
@@ -295,6 +309,7 @@ describe("CraftQueue", function()
         expect_equal(q:cancel(id), false)
     end)
 
+    -- @library lurek.library_crafting
     it("getJob", function()
         local q = C.newCraftQueue(5)
         local id = q:enqueue("y", 5, 1)
@@ -303,6 +318,7 @@ describe("CraftQueue", function()
         expect_equal(job.recipe_id, "y")
     end)
 
+    -- @library lurek.library_crafting
     it("clear", function()
         local q = C.newCraftQueue(5)
         q:enqueue("a", 1, 1)
@@ -319,6 +335,7 @@ end)
 
 --                  Station
 
+-- @describe Station
 describe("Station", function()
     it("create with defaults", function()
         local s = C.newStation("Anvil", "forge")
@@ -398,13 +415,16 @@ end)
 
 --                  CraftSkill
 
+-- @describe CraftSkill
 describe("CraftSkill", function()
+    -- @library LRelationshipManager:getLevel
     it("create and getLevel", function()
         local sk = C.newCraftSkill("smithing")
         expect_equal(sk:getLevel(), 1)
         expect_equal(sk:getXP(), 0)
     end)
 
+    -- @library LRelationshipManager:getLevel
     it("addXP gains levels", function()
         local sk = C.newCraftSkill("smithing")
         -- Level 1 requires 100 XP (linear: level * 100)
@@ -444,6 +464,7 @@ end)
 
 --                  PerkNode
 
+-- @describe PerkNode
 describe("PerkNode", function()
     it("create with defaults", function()
         local p = C.newPerkNode("forge_mastery")
@@ -476,7 +497,9 @@ end)
 
 --                  UpgradeTree
 
+-- @describe UpgradeTree
 describe("UpgradeTree", function()
+    -- @library LGraph:addNode
     it("add and get nodes", function()
         local tree = C.newUpgradeTree("root")
         local n1 = C.newUpgradeNode("root")
@@ -488,6 +511,7 @@ describe("UpgradeTree", function()
         expect_equal(tree:getNode("branch_a").id, "branch_a")
     end)
 
+    -- @library LGraph:addNode
     it("availableUpgrades filters by level and unlocked", function()
         local tree = C.newUpgradeTree("root")
         tree:addNode(C.newUpgradeNode("a"))
@@ -507,12 +531,14 @@ end)
 
 --                  ModifierPool
 
+-- @describe ModifierPool
 describe("ModifierPool", function()
     it("empty pool rolls nil", function()
         local pool = C.newModifierPool()
         expect_equal(pool:roll(), nil)
     end)
 
+    -- @library lurek.library_crafting
     it("single entry always rolls", function()
         local pool = C.newModifierPool()
         pool:add(C.newModifierEntry("sharp", 1))
@@ -524,6 +550,7 @@ end)
 
 --                  RecipeKnowledge
 
+-- @describe RecipeKnowledge
 describe("RecipeKnowledge", function()
     it("discover and isKnown", function()
         local rk = C.newRecipeKnowledge()
@@ -564,6 +591,7 @@ end)
 
 --                  RecipeGroup
 
+-- @describe RecipeGroup
 describe("RecipeGroup", function()
     it("create", function()
         local rg = C.newRecipeGroup("potions", { "heal", "mana", "speed" })
@@ -574,6 +602,7 @@ end)
 
 --                  CraftSkill (extended coverage)
 
+-- @describe CraftSkill specializations
 describe("CraftSkill specializations", function()
     it("register and choose a specialization", function()
         local sk = C.newCraftSkill("smithing")
@@ -590,6 +619,8 @@ describe("CraftSkill specializations", function()
         expect_equal(false, sk:chooseSpecialization("armorsmith"))
     end)
 
+    -- @library LRelationshipManager:getLevel
+    -- @library LRelationshipManager:setLevel
     it("setLevel force-sets level and resets XP to 0", function()
         local sk = C.newCraftSkill("smithing")
         sk:addXP(150)  -- gains at least 1 level
@@ -612,6 +643,7 @@ describe("CraftSkill specializations", function()
         expect_near(0.02, sk:getYieldBonus(),   0.001)
     end)
 
+    -- @library LRelationshipManager:setLevel
     it("recipeColor returns grey for recipe with no thresholds", function()
         local sk = C.newCraftSkill("smithing")
         sk:setLevel(1)
@@ -620,6 +652,7 @@ describe("CraftSkill specializations", function()
         expect_near(0.0, sk:skillUpChance(recipe), 0.001)
     end)
 
+    -- @library LRelationshipManager:setLevel
     it("recipeColor returns orange and skillUpChance is 1.0 for hard recipe", function()
         local sk = C.newCraftSkill("smithing")
         sk:setLevel(1)
@@ -631,6 +664,7 @@ end)
 
 --                  RecipeKnowledge mutations
 
+-- @describe RecipeKnowledge mutations
 describe("RecipeKnowledge mutations", function()
     it("forget removes a known recipe", function()
         local rk = C.newRecipeKnowledge()
@@ -650,6 +684,7 @@ describe("RecipeKnowledge mutations", function()
         expect_equal(false, rk:isAutoDiscover())
     end)
 
+    -- @library lurek.library_crafting
     it("clear wipes all known recipes", function()
         local rk = C.newRecipeKnowledge()
         rk:discover("a")
@@ -663,7 +698,9 @@ end)
 
 --                  RecipeGroup operations
 
+-- @describe RecipeGroup operations
 describe("RecipeGroup operations", function()
+    -- @library lurek.library_crafting
     it("addRecipe, removeRecipe, contains, count", function()
         local rg = C.newRecipeGroup("weapons", {})
         rg:addRecipe("sword")
@@ -688,7 +725,9 @@ end)
 
 --                  ModifierPool operations
 
+-- @describe ModifierPool operations
 describe("ModifierPool operations", function()
+    -- @library lurek.library_crafting
     it("count and getTotalWeight after adding entries", function()
         local pool = C.newModifierPool()
         pool:add(C.newModifierEntry("heavy", 2))
@@ -697,6 +736,7 @@ describe("ModifierPool operations", function()
         expect_near(3.0, pool:getTotalWeight(), 0.001)
     end)
 
+    -- @library lurek.library_crafting
     it("getModifiers returns all entries with names", function()
         local pool = C.newModifierPool()
         pool:add(C.newModifierEntry("sturdy", 1))
@@ -707,6 +747,7 @@ describe("ModifierPool operations", function()
         expect_equal("keen", mods[2].name)
     end)
 
+    -- @library lurek.library_crafting
     it("remove modifier returns true then false", function()
         local pool = C.newModifierPool()
         pool:add(C.newModifierEntry("heavy", 2))
@@ -716,6 +757,7 @@ describe("ModifierPool operations", function()
         expect_equal(false, pool:remove("heavy"))
     end)
 
+    -- @library lurek.library_crafting
     it("getName and setName", function()
         local pool = C.newModifierPool()
         pool:setName("rare_affixes")
@@ -725,7 +767,9 @@ end)
 
 --                  UpgradeTree getAllNodes
 
+-- @describe UpgradeTree getAllNodes
 describe("UpgradeTree getAllNodes", function()
+    -- @library LGraph:addNode
     it("returns all nodes in insertion order", function()
         local tree = C.newUpgradeTree("weapons")
         tree:addNode(C.newUpgradeNode("basic"))
@@ -741,6 +785,7 @@ end)
 
 --                  Station proximity
 
+-- @describe Station isInRange
 describe("Station isInRange", function()
     it("returns true when within proximity_radius and false when outside", function()
         local s = C.newStation("Anvil", "forge")
@@ -754,6 +799,7 @@ end)
 
 --                  Station new fields (active / requires_cover / has_cover)
 
+-- @describe Station active and cover flags
 describe("Station active and cover flags", function()
     it("station is active by default", function()
         local s = C.newStation("Forge", "forge")
@@ -781,6 +827,7 @@ end)
 
 --                  UpgradeNode new fields (required_level / description / prerequisites)
 
+-- @describe UpgradeNode fields
 describe("UpgradeNode fields", function()
     it("required_level defaults to 0", function()
         local n = C.newUpgradeNode("basic")
@@ -801,6 +848,7 @@ end)
 
 --                  CraftSkillRarity enum
 
+-- @describe CraftSkillRarity
 describe("CraftSkillRarity", function()
     it("has four tiers with correct string values", function()
         expect_equal(C.CraftSkillRarity.COMMON,   "common")
@@ -812,7 +860,9 @@ end)
 
 --                  ModifierPool:draw() alias
 
+-- @describe ModifierPool draw
 describe("ModifierPool draw", function()
+    -- @library lurek.library_crafting
     it("draw is equivalent to roll", function()
         local pool = C.newModifierPool()
         pool:add(C.newModifierEntry("brutal", 1))
@@ -831,6 +881,7 @@ end)
 
 --                  RecipeKnowledge auto-discover integration
 
+-- @describe RecipeKnowledge auto-discover isKnown
 describe("RecipeKnowledge auto-discover isKnown", function()
     it("isKnown returns true for any id when auto-discover is on", function()
         local rk = C.newRecipeKnowledge()
@@ -850,6 +901,7 @@ end)
 
 --        Grid slot bounds checking
 
+-- @describe Recipe grid slot bounds
 describe("Recipe grid slot bounds", function()
     it("rejects out-of-bounds x", function()
         local r = C.newRecipe("shaped")
@@ -891,6 +943,7 @@ end)
 
 --        Ingredient tag precedence
 
+-- @describe Ingredient tag precedence
 describe("Ingredient tag precedence", function()
     it("item-type ingredient has empty tag", function()
         local ing = C.newIngredient("wood", 3)
@@ -920,7 +973,9 @@ end)
 
 --        CraftQueue auto-collect
 
+-- @describe CraftQueue auto-collect
 describe("CraftQueue auto-collect", function()
+    -- @library lurek.library_crafting
     it("update auto-removes completed jobs from count", function()
         local q = C.newCraftQueue(5)
         q:enqueue("sword", 2, 1)
@@ -931,6 +986,7 @@ describe("CraftQueue auto-collect", function()
         expect_equal(q:count(), 1)
     end)
 
+    -- @library lurek.library_crafting
     it("collectCompleted still returns IDs after auto-remove", function()
         local q = C.newCraftQueue(5)
         local id = q:enqueue("sword", 2, 1)
@@ -940,6 +996,7 @@ describe("CraftQueue auto-collect", function()
         expect_equal(done[1], id)
     end)
 
+    -- @library lurek.library_crafting
     it("queue slot freed after auto-remove", function()
         local q = C.newCraftQueue(2)
         q:enqueue("a", 1, 1)
@@ -952,6 +1009,7 @@ describe("CraftQueue auto-collect", function()
         expect_equal(id3 ~= nil, true)
     end)
 
+    -- @library lurek.library_crafting
     it("getJob returns nil for completed jobs", function()
         local q = C.newCraftQueue(5)
         local id = q:enqueue("sword", 1, 1)
@@ -962,6 +1020,7 @@ end)
 
 --        Station fuel edge cases
 
+-- @describe Station fuel edge cases
 describe("Station fuel edge cases", function()
     it("addFuel ignores negative amounts", function()
         local s = C.newStation("Forge", "forge")
@@ -1000,6 +1059,7 @@ end)
 
 --        RecipeOutput quantity validation
 
+-- @describe RecipeOutput quantity validation
 describe("RecipeOutput quantity validation", function()
     it("negative quantity defaults to 1", function()
         local o = C.newRecipeOutput("sword", -3)

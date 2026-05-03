@@ -4,7 +4,9 @@
 -- Lurek2D Validation Test: SaveManager Edge Cases
 -- Tests save/load with corrupted data, missing fields, and edge cases
 
+-- @describe validation: savegame edge cases
 describe("validation: savegame edge cases", function()
+    -- @security lurek.save.newSaveManager
     it("creates save manager without crash", function()
         expect_no_error(function()
             local mgr = lurek.save.newSaveManager()
@@ -12,6 +14,9 @@ describe("validation: savegame edge cases", function()
         end)
     end)
 
+    -- @security LSaveManager:register
+    -- @security LSaveManager:unregister
+    -- @security lurek.save.newSaveManager
     it("register and unregister collectors", function()
         local mgr = lurek.save.newSaveManager()
         mgr:register("player", function() return {hp = 100} end, function(data) end)
@@ -23,6 +28,8 @@ describe("validation: savegame edge cases", function()
         end)
     end)
 
+    -- @security LSaveManager:unregister
+    -- @security lurek.save.newSaveManager
     it("unregister nonexistent collector does not crash", function()
         local mgr = lurek.save.newSaveManager()
         expect_no_error(function()
@@ -30,12 +37,18 @@ describe("validation: savegame edge cases", function()
         end, "unregister nonexistent should not crash")
     end)
 
+    -- @security LSaveManager:getSchemaVersion
+    -- @security LSaveManager:setSchemaVersion
+    -- @security lurek.save.newSaveManager
     it("schema versioning works", function()
         local mgr = lurek.save.newSaveManager()
         mgr:setSchemaVersion(5)
         expect_equal(5, mgr:getSchemaVersion(), "version set correctly")
     end)
 
+    -- @security LSaveManager:isDirty
+    -- @security LSaveManager:markDirty
+    -- @security lurek.save.newSaveManager
     it("dirty tracking works", function()
         local mgr = lurek.save.newSaveManager()
         expect_false(mgr:isDirty(), "initially not dirty")
@@ -43,6 +56,10 @@ describe("validation: savegame edge cases", function()
         expect_true(mgr:isDirty(), "dirty after mark")
     end)
 
+    -- @security LSaveManager:disableAutoSave
+    -- @security LSaveManager:enableAutoSave
+    -- @security LSaveManager:update
+    -- @security lurek.save.newSaveManager
     it("auto-save configuration", function()
         local mgr = lurek.save.newSaveManager()
         mgr:enableAutoSave(30.0, "auto")
@@ -55,12 +72,21 @@ describe("validation: savegame edge cases", function()
         mgr:disableAutoSave()
     end)
 
+    -- @security LSaveManager:getSummary
+    -- @security LSaveManager:setSummary
+    -- @security lurek.save.newSaveManager
     it("summary get/set", function()
         local mgr = lurek.save.newSaveManager()
         mgr:setSummary("Test save game")
         expect_equal("Test save game", mgr:getSummary(), "summary preserved")
     end)
 
+    -- @security LSaveManager:isDirty
+    -- @security LSaveManager:markDirty
+    -- @security LSaveManager:register
+    -- @security LSaveManager:reset
+    -- @security LSaveManager:setSummary
+    -- @security lurek.save.newSaveManager
     it("reset clears state", function()
         local mgr = lurek.save.newSaveManager()
         mgr:register("test", function() return {} end, function(data) end)
@@ -71,7 +97,10 @@ describe("validation: savegame edge cases", function()
     end)
 end)
 
+-- @describe validation: savegame migration
 describe("validation: savegame migration", function()
+    -- @security LSaveManager:addMigration
+    -- @security lurek.save.newSaveManager
     it("adds migration functions", function()
         local mgr = lurek.save.newSaveManager()
         mgr:addMigration(1, function(data) return data end)
