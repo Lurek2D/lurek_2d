@@ -1,4 +1,4 @@
-﻿-- ============================================================================
+-- ============================================================================
 -- Province Demo — Lurek2D
 -- Category: showcase
 -- Procedural Voronoi-like province map with terrain, ownership, fog of war,
@@ -76,11 +76,11 @@ local PROVINCE_ROOTS = {
     "crest", "haven", "ford", "brook", "ridge", "peak", "shore", "wood", "stone", "field"
 }
 
-local STATE_TITLE   = "TITLE"
+local STATE_TITLE   = "PLAYING"
 local STATE_VIEWING = "VIEWING"
 
 -- ── State ──────────────────────────────────────────────────────────────
-local state         = STATE_TITLE
+local state         = STATE_VIEWING
 local grid          = {}        -- grid[y][x] = province_id
 local provinces     = {}        -- provinces[id] = {name, terrain, owner, population, cells, cx, cy, neighbors}
 local selected_id   = nil

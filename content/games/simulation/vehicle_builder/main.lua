@@ -21,7 +21,7 @@ local GRID_X = 20
 local GRID_Y = 80
 
 local STATE = { TITLE = 1, BUILDING = 2, TESTING = 3, RESULTS = 4 }
-local current_state = STATE.TITLE
+local current_state = STATE.BUILDING
 
 -- Part types
 local PART = { FRAME = 1, WHEEL = 2, ENGINE = 3, ARMOR = 4, BOOSTER = 5 }
@@ -85,7 +85,7 @@ local grid = {}           -- grid[row][col] = part_type or nil
 local selected_part = PART.FRAME
 local delete_mode   = false
 local total_cost    = 0
-local title_timer   = 0
+local title_timer   = 1
 local track_index   = 1
 
 -- Vehicle stats (computed from grid)

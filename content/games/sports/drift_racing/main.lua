@@ -73,7 +73,7 @@ local CHECKPOINT_RADIUS = 40
 local BOOST_PAD_SIZE = 20
 
 -- State
-local state = "TITLE"
+local state = "TRACK_SELECT"
 local dt = 0
 local track_index = 1
 local tracks = {}

@@ -14,6 +14,7 @@
 //! The SUMMARY line format is: `SUMMARY: total=N passed=N failed=N skipped=N`
 
 use std::cell::RefCell;
+use std::path::Path;
 use std::path::PathBuf;
 use std::rc::Rc;
 use std::time::Instant;
@@ -50,20 +51,46 @@ fn create_test_vm() -> mlua::Lua {
         .set("read_file", read_file_fn)
         .expect("Failed to register read_file");
 
+    // Some Lua tests load shared helpers via dofile().
+    // The sandbox does not expose it by default, so provide a local test-only implementation.
+    let dofile_fn = lua
+        .create_function(|lua, path: String| {
+            let code = std::fs::read_to_string(&path)
+                .map_err(mlua::Error::external)?;
+            lua.load(&code)
+                .set_name(&path)
+                .exec()
+                .map_err(mlua::Error::external)?;
+            Ok(())
+        })
+        .expect("Failed to create dofile helper");
+    lua.globals()
+        .set("dofile", dofile_fn)
+        .expect("Failed to register dofile");
+
     lua
 }
 
 fn run_lua_test(filename: &str) {
+    let rooted = format!("tests/lua/{}", filename);
+    run_lua_test_at_path(filename, &rooted);
+}
+
+fn run_lua_workspace_test(path: &str) {
+    run_lua_test_at_path(path, path);
+}
+
+fn run_lua_test_at_path(display_name: &str, file_path: &str) {
     let start = Instant::now();
     let lua = create_test_vm();
 
-    let code = std::fs::read_to_string(format!("tests/lua/{}", filename))
-        .unwrap_or_else(|e| panic!("Failed to read {}: {}", filename, e));
+    let code = std::fs::read_to_string(file_path)
+        .unwrap_or_else(|e| panic!("Failed to read {}: {}", display_name, e));
 
     lua.load(&code)
-        .set_name(filename)
+        .set_name(display_name)
         .exec()
-        .unwrap_or_else(|e| panic!("Lua error in {}: {}", filename, e));
+        .unwrap_or_else(|e| panic!("Lua error in {}: {}", display_name, e));
 
     // Collect results from _test_results global
     let results: mlua::Table = lua
@@ -81,7 +108,7 @@ fn run_lua_test(filename: &str) {
     // Print structured result line (parseable by parse_test_log.py)
     println!(
         "{}: {}/{} passed, {} failed, {} skipped [{:.2}s]",
-        filename,
+        display_name,
         passed,
         total,
         failed,
@@ -103,12 +130,27 @@ fn run_lua_test(filename: &str) {
         }
     }
 
-    assert_eq!(failed, 0, "{} Lua tests failed in {}", failed, filename);
+    assert_eq!(failed, 0, "{} Lua tests failed in {}", failed, display_name);
     assert!(
         total > 0 || skipped > 0,
         "No tests were run in {}",
-        filename
+        display_name
     );
+}
+
+fn collect_colocated_game_tests(dir: &Path, out: &mut Vec<PathBuf>) {
+    let Ok(entries) = std::fs::read_dir(dir) else {
+        return;
+    };
+
+    for entry in entries.filter_map(|e| e.ok()) {
+        let path = entry.path();
+        if path.is_dir() {
+            collect_colocated_game_tests(&path, out);
+        } else if path.file_name().map(|n| n == "test.lua").unwrap_or(false) {
+            out.push(path);
+        }
+    }
 }
 
 #[test]
@@ -1089,31 +1131,25 @@ fn lua_security_runtime() {
     run_lua_test("security/test_runtime.lua");
 }
 
-// ─── demo layer: html-ui showcase ────────────────────────────────────────────
+// ─── demo layer: colocated game tests (content/games/**/test.lua) ───────────
 
 #[test]
-fn lua_demo_html_hud() {
-    run_lua_test("demos/test_html_hud.lua");
-}
+fn lua_demo_colocated_games() {
+    let mut paths = Vec::new();
+    collect_colocated_game_tests(Path::new("content/games"), &mut paths);
+    paths.sort();
 
-#[test]
-fn lua_demo_html_inventory() {
-    run_lua_test("demos/test_html_inventory.lua");
-}
+    assert!(
+        !paths.is_empty(),
+        "No colocated game tests found under content/games/**/test.lua"
+    );
 
-#[test]
-fn lua_demo_html_dialog() {
-    run_lua_test("demos/test_html_dialog.lua");
-}
-
-#[test]
-fn lua_demo_html_settings() {
-    run_lua_test("demos/test_html_settings.lua");
-}
-
-#[test]
-fn lua_demo_html_scoreboard() {
-    run_lua_test("demos/test_html_scoreboard.lua");
+    for path in paths {
+        let display = path
+            .to_str()
+            .unwrap_or_else(|| panic!("Non-UTF8 path in game tests: {:?}", path));
+        run_lua_workspace_test(display);
+    }
 }
 
 #[test]

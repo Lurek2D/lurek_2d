@@ -31,7 +31,7 @@ The `app` module is Lurek2D's application entry point and engine lifecycle orche
 
 **Gamepad support.** gilrs gamepad discovery and hot-plug events are processed in the winit event handler. Axes and buttons are mapped to `lurek.input` key codes and dispatched to the normal input pipeline — no separate gamepad API is needed.
 
-**CI screenshot.** Auto-screenshot mode (`--screenshot`) renders exactly one frame, saves a PNG to a configured path, and exits. Used by `tests/demo_smoke_tests.rs` `#[ignore]` tests to capture reference screenshots.
+**CI screenshot.** Auto-screenshot mode (`--screenshot`) waits for a configured capture trigger (`--screenshot-time` or `--screenshot-frames`), saves a PNG to a configured path, and exits. Window placement can be controlled with `--window-x`/`--window-y`, and startup window size can be overridden with `--window-width`/`--window-height` for tiled batch runs. Screenshot safety-exit uses a dynamic timeout derived from the configured capture delay (plus grace), so captures at 3s are not terminated prematurely.
 
 **Scope boundary.** Edge/Integration tier. Imports from render, audio, input, lua_api, filesystem, and all other module groups. Nothing in the engine imports from `app`.
 

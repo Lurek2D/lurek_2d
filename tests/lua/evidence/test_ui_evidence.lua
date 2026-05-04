@@ -17,11 +17,9 @@ local OUT = "tests/output/ui_layout/"
 -- @describe Evidence: lurek.ui layout loader renderToImage
 describe("Evidence: lurek.ui layout loader renderToImage", function()
 
-    -- @evidence file
     -- bar) to PNG via renderToImage to prove the layout loader produces visible
     -- widget rectangles.
-    -- @covers lurek.ui.loadLayout
-    -- @covers lurek.ui.renderToImage
+    -- @evidence file
     it("PNG: simple_hud.png -- label, button, progressbar via loadLayout", function()
         local W, H = 320, 120
         lurek.ui.loadLayout({
@@ -42,11 +40,9 @@ describe("Evidence: lurek.ui layout loader renderToImage", function()
         expect_evidence_created(OUT .. "simple_hud.png")
     end)
 
-    -- @evidence file
     -- slider, and checkbox) to PNG to prove recursive child loading works
     -- end-to-end through renderToImage.
-    -- @covers lurek.ui.loadLayout
-    -- @covers lurek.ui.renderToImage
+    -- @evidence file
     it("PNG: nested_panel.png -- nested panel with slider and checkbox", function()
         local W, H = 280, 200
         lurek.ui.loadLayout({
@@ -97,11 +93,9 @@ local OUT = "tests/output/ui_layout/"
 -- @describe Evidence: lurek.ui layout loader renderToImage
 describe("Evidence: lurek.ui layout loader renderToImage", function()
 
-    -- @evidence file
     -- bar) to PNG via renderToImage to prove the layout loader produces visible
     -- widget rectangles.
-    -- @covers lurek.ui.loadLayout
-    -- @covers lurek.ui.renderToImage
+    -- @evidence file
     it("PNG: simple_hud.png -- label, button, progressbar via loadLayout", function()
         local W, H = 320, 120
         lurek.ui.loadLayout({
@@ -122,11 +116,9 @@ describe("Evidence: lurek.ui layout loader renderToImage", function()
         expect_evidence_created(OUT .. "simple_hud.png")
     end)
 
-    -- @evidence file
     -- slider, and checkbox) to PNG to prove recursive child loading works
     -- end-to-end through renderToImage.
-    -- @covers lurek.ui.loadLayout
-    -- @covers lurek.ui.renderToImage
+    -- @evidence file
     it("PNG: nested_panel.png -- nested panel with slider and checkbox", function()
         local W, H = 280, 200
         lurek.ui.loadLayout({
@@ -167,13 +159,6 @@ local OUT = "tests/output/charts/"
 describe("Evidence: Charts", function()
 
     -- @evidence file
-    -- @covers LLineChart:addSeries
-    -- @covers LLineChart:drawToImage
-    -- @covers LLineChart:setXMax
-    -- @covers LLineChart:setYMax
-    -- @covers lurek.image.newImageData
-    -- @covers lurek.image.savePNG
-    -- @covers lurek.ui.newLineChart
     it("renders a line chart", function()
         local chart = lurek.ui.newLineChart({ width = 400, height = 300, title = "Monthly Sales" })
         chart:setYMax(100)
@@ -186,12 +171,6 @@ describe("Evidence: Charts", function()
     end)
 
     -- @evidence file
-    -- @covers LBarChart:addCategory
-    -- @covers LBarChart:addSeries
-    -- @covers LBarChart:drawToImage
-    -- @covers lurek.image.newImageData
-    -- @covers lurek.image.savePNG
-    -- @covers lurek.ui.newBarChart
     it("renders a bar chart", function()
         local chart = lurek.ui.newBarChart({ width = 400, height = 300, title = "Quarterly Revenue" })
         chart:addSeries("2023", 0.22, 0.63, 0.87)
@@ -206,13 +185,6 @@ describe("Evidence: Charts", function()
     end)
 
     -- @evidence file
-    -- @covers LScatterPlot:addSeries
-    -- @covers LScatterPlot:drawToImage
-    -- @covers LScatterPlot:setXRange
-    -- @covers LScatterPlot:setYRange
-    -- @covers lurek.image.newImageData
-    -- @covers lurek.image.savePNG
-    -- @covers lurek.ui.newScatterPlot
     it("renders a scatter plot", function()
         local chart = lurek.ui.newScatterPlot({ width = 400, height = 400, title = "Data Clusters" })
         chart:setXRange(0, 10)
@@ -231,11 +203,6 @@ describe("Evidence: Charts", function()
     end)
 
     -- @evidence file
-    -- @covers LPieChart:addSegment
-    -- @covers LPieChart:drawToImage
-    -- @covers lurek.image.newImageData
-    -- @covers lurek.image.savePNG
-    -- @covers lurek.ui.newPieChart
     it("renders a pie chart", function()
         local chart = lurek.ui.newPieChart({ width = 400, height = 400, title = "Market Share" })
         chart:addSegment("Alpha",   35, 0.22, 0.63, 0.87)
@@ -248,12 +215,6 @@ describe("Evidence: Charts", function()
     end)
 
     -- @evidence file
-    -- @covers LAreaChart:addLayer
-    -- @covers LAreaChart:drawToImage
-    -- @covers LAreaChart:setYMax
-    -- @covers lurek.image.newImageData
-    -- @covers lurek.image.savePNG
-    -- @covers lurek.ui.newAreaChart
     it("renders an area chart", function()
         local chart = lurek.ui.newAreaChart({ width = 400, height = 300, title = "Stacked Area" })
         chart:setYMax(100)
@@ -282,13 +243,6 @@ local OUT = "tests/output/charts/"
 describe("Evidence: Charts", function()
 
     -- @evidence file
-    -- @covers LLineChart:addSeries
-    -- @covers LLineChart:drawToImage
-    -- @covers LLineChart:setXMax
-    -- @covers LLineChart:setYMax
-    -- @covers lurek.image.newImageData
-    -- @covers lurek.image.savePNG
-    -- @covers lurek.ui.newLineChart
     it("renders a line chart", function()
         local chart = lurek.ui.newLineChart({ width = 400, height = 300, title = "Monthly Sales" })
         chart:setYMax(100)
@@ -301,12 +255,6 @@ describe("Evidence: Charts", function()
     end)
 
     -- @evidence file
-    -- @covers LBarChart:addCategory
-    -- @covers LBarChart:addSeries
-    -- @covers LBarChart:drawToImage
-    -- @covers lurek.image.newImageData
-    -- @covers lurek.image.savePNG
-    -- @covers lurek.ui.newBarChart
     it("renders a bar chart", function()
         local chart = lurek.ui.newBarChart({ width = 400, height = 300, title = "Quarterly Revenue" })
         chart:addSeries("2023", 0.22, 0.63, 0.87)
@@ -321,13 +269,6 @@ describe("Evidence: Charts", function()
     end)
 
     -- @evidence file
-    -- @covers LScatterPlot:addSeries
-    -- @covers LScatterPlot:drawToImage
-    -- @covers LScatterPlot:setXRange
-    -- @covers LScatterPlot:setYRange
-    -- @covers lurek.image.newImageData
-    -- @covers lurek.image.savePNG
-    -- @covers lurek.ui.newScatterPlot
     it("renders a scatter plot", function()
         local chart = lurek.ui.newScatterPlot({ width = 400, height = 400, title = "Data Clusters" })
         chart:setXRange(0, 10)
@@ -346,11 +287,6 @@ describe("Evidence: Charts", function()
     end)
 
     -- @evidence file
-    -- @covers LPieChart:addSegment
-    -- @covers LPieChart:drawToImage
-    -- @covers lurek.image.newImageData
-    -- @covers lurek.image.savePNG
-    -- @covers lurek.ui.newPieChart
     it("renders a pie chart", function()
         local chart = lurek.ui.newPieChart({ width = 400, height = 400, title = "Market Share" })
         chart:addSegment("Alpha",   35, 0.22, 0.63, 0.87)
@@ -363,12 +299,6 @@ describe("Evidence: Charts", function()
     end)
 
     -- @evidence file
-    -- @covers LAreaChart:addLayer
-    -- @covers LAreaChart:drawToImage
-    -- @covers LAreaChart:setYMax
-    -- @covers lurek.image.newImageData
-    -- @covers lurek.image.savePNG
-    -- @covers lurek.ui.newAreaChart
     it("renders an area chart", function()
         local chart = lurek.ui.newAreaChart({ width = 400, height = 300, title = "Stacked Area" })
         chart:setYMax(100)
@@ -400,11 +330,6 @@ describe("Evidence: lurek.ui widgets via drawToImage", function()
     -- PNG evidence ---------------------------------------------------------
 
     -- @evidence file
-    -- @covers lurek.image.savePNG
-    -- @covers lurek.ui.drawToImage
-    -- @covers lurek.ui.getRoot
-    -- @covers lurek.ui.newButton
-    -- @covers lurek.ui.newLabel
     it("PNG: button_states.png -- button and label widgets via drawToImage", function()
         local root = lurek.ui.getRoot()
         local W, H = 300, 80
@@ -434,10 +359,6 @@ describe("Evidence: lurek.ui widgets via drawToImage", function()
         root.removeChild(b1)
     end)
     -- @evidence file
-    -- @covers lurek.image.savePNG
-    -- @covers lurek.ui.drawToImage
-    -- @covers lurek.ui.getRoot
-    -- @covers lurek.ui.newProgressBar
     it("PNG: hud_bars.png -- progress bar widgets via drawToImage", function()
         local root = lurek.ui.getRoot()
         local W, H = 220, 90
@@ -471,13 +392,6 @@ describe("Evidence: lurek.ui widgets via drawToImage", function()
     end)
 
     -- @evidence file
-    -- @covers lurek.image.savePNG
-    -- @covers lurek.ui.drawToImage
-    -- @covers lurek.ui.getRoot
-    -- @covers lurek.ui.newButton
-    -- @covers lurek.ui.newLabel
-    -- @covers lurek.ui.newPanel
-    -- @covers lurek.ui.newSlider
     it("PNG: panel_layout.png -- panel with nested button, label, slider", function()
         local root = lurek.ui.getRoot()
         local W, H = 210, 160
@@ -532,11 +446,6 @@ describe("Evidence: lurek.ui widgets via drawToImage", function()
     -- PNG evidence ---------------------------------------------------------
 
     -- @evidence file
-    -- @covers lurek.image.savePNG
-    -- @covers lurek.ui.drawToImage
-    -- @covers lurek.ui.getRoot
-    -- @covers lurek.ui.newButton
-    -- @covers lurek.ui.newLabel
     it("PNG: button_states.png -- button and label widgets via drawToImage", function()
         local root = lurek.ui.getRoot()
         local W, H = 300, 80
@@ -566,10 +475,6 @@ describe("Evidence: lurek.ui widgets via drawToImage", function()
         root.removeChild(b1)
     end)
     -- @evidence file
-    -- @covers lurek.image.savePNG
-    -- @covers lurek.ui.drawToImage
-    -- @covers lurek.ui.getRoot
-    -- @covers lurek.ui.newProgressBar
     it("PNG: hud_bars.png -- progress bar widgets via drawToImage", function()
         local root = lurek.ui.getRoot()
         local W, H = 220, 90
@@ -602,13 +507,6 @@ describe("Evidence: lurek.ui widgets via drawToImage", function()
     end)
 
     -- @evidence file
-    -- @covers lurek.image.savePNG
-    -- @covers lurek.ui.drawToImage
-    -- @covers lurek.ui.getRoot
-    -- @covers lurek.ui.newButton
-    -- @covers lurek.ui.newLabel
-    -- @covers lurek.ui.newPanel
-    -- @covers lurek.ui.newSlider
     it("PNG: panel_layout.png -- panel with nested button, label, slider", function()
         local root = lurek.ui.getRoot()
         local W, H = 210, 160

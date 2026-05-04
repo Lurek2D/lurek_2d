@@ -22,14 +22,14 @@ local ENERGY_DRAIN_BASE = 2
 local TRANSFER_BAR_MAX = 100
 
 -- States
-local STATE_TITLE      = "TITLE"
+local STATE_TITLE      = "PLAYING"
 local STATE_PLAYING    = "PLAYING"
 local STATE_TRANSFER   = "TRANSFER"
 local STATE_LEVEL_CLEAR = "LEVEL_CLEAR"
 local STATE_GAME_OVER  = "GAME_OVER"
 
 -- Game state
-local state = STATE_TITLE
+local state = STATE_PLAYING
 local score = 0
 local level = 1
 local dt = 0

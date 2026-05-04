@@ -28,7 +28,7 @@ local STATE_PLAYING = 1
 local STATE_VICTORY = 2
 
 -- Game data
-local state = STATE_TITLE
+local state = STATE_PLAYING
 local grid = {}
 local tracks = {}
 local stations = {}

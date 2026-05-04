@@ -178,7 +178,9 @@ end
 do  -- lurek.data.fromMsgPack
   local packet = lurek.data.toMsgPack({ id = 17, hp = 90 })
   local msg = lurek.data.fromMsgPack(packet)
-  lurek.log.info("decoded id=" .. msg.id .. " hp=" .. msg.hp, "net")
+  local id = (msg and msg.id) or "nil"
+  local hp = (msg and msg.hp) or "nil"
+  lurek.log.info("decoded id=" .. tostring(id) .. " hp=" .. tostring(hp), "net")
 end
 
 --@api-stub: lurek.data.newWriter
@@ -220,7 +222,8 @@ do  -- RingBuffer:peek
   local events = lurek.data.newRingBuffer(8)
   events:push({ t = 0.0, kind = "spawn" })
   local head = events:peek()
-  lurek.log.info("next event kind=" .. head.kind, "replay")
+  local kind = head and head.kind or "nil"
+  lurek.log.info("next event kind=" .. tostring(kind), "replay")
 end
 
 --@api-stub: LRingBuffer:peekNewest
@@ -512,7 +515,7 @@ end
 -- Get the size.
 -- ByteData::len in bytes — use to bound loops over getByte / setByte.
 do  -- mlua:getSize
-  local bd = lurek.data.newByteData("hello")
+  local bd = lurek.data.newByteData(5)
   lurek.log.info("byte data size = " .. bd:getSize(), "data")
 end
 
@@ -520,7 +523,9 @@ end
 -- Get the string representation.
 -- Returns the underlying bytes as a Lua string — safe to feed straight back into newDataView or hash().
 do  -- mlua:getString
-  local bd = lurek.data.newByteData("save_v1")
+  local bd = lurek.data.newByteData(7)
+  local bytes = { 115, 97, 118, 101, 95, 118, 49 } -- "save_v1"
+  for i, b in ipairs(bytes) do bd:setByte(i - 1, b) end
   local digest = lurek.data.encode("hex", lurek.data.hash("md5", bd:getString()))
   lurek.log.info("md5 = " .. digest, "data")
 end
@@ -529,7 +534,8 @@ end
 -- Get a byte at the specified offset.
 -- Offset is 0-based; out-of-bounds raises an error rather than returning nil — guard with getSize() first.
 do  -- mlua:getByte
-  local bd = lurek.data.newByteData("ABC")
+  local bd = lurek.data.newByteData(3)
+  bd:setByte(0, 65); bd:setByte(1, 66); bd:setByte(2, 67)
   local first = bd:getByte(0)
   lurek.log.info("first byte (A=65) = " .. first, "data")
 end
@@ -538,7 +544,8 @@ end
 -- Set a byte at the specified offset.
 -- In-place mutation; use to patch a single field without reallocating the whole buffer.
 do  -- mlua:setByte
-  local bd = lurek.data.newByteData("AAAA")
+  local bd = lurek.data.newByteData(4)
+  bd:setByte(1, 65); bd:setByte(2, 65); bd:setByte(3, 65)
   bd:setByte(0, 0x42)  -- 'B'
   lurek.log.info("patched: " .. bd:getString(), "data")
 end
@@ -547,7 +554,8 @@ end
 -- Clone the ByteData.
 -- Independent copy — mutating the clone via setByte does not touch the original; use before destructive edits.
 do  -- mlua:clone
-  local original = lurek.data.newByteData("base")
+  local original = lurek.data.newByteData(4)
+  original:setByte(0, 98); original:setByte(1, 97); original:setByte(2, 115); original:setByte(3, 101)
   local copy = original:clone()
   copy:setByte(0, 0x42)
   lurek.log.info("orig=" .. original:getString() .. " copy=" .. copy:getString(), "data")

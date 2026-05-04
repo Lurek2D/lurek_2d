@@ -1,4 +1,4 @@
-﻿-- ============================================================================
+-- ============================================================================
 --  Metroidvania — Side-scrolling exploration platformer with ability unlocks
 -- ----------------------------------------------------------------------------
 --  Category : action
@@ -36,7 +36,7 @@ local INVULN_TIME = 1.0
 
 -- ── State enum ────────────────────────────────────────────────────────────
 local STATE = { TITLE = 1, PLAYING = 2, GAME_OVER = 3 }
-local current_state = STATE.TITLE
+local current_state = STATE.PLAYING
 local title_blink   = 0
 
 -- ── Player state ──────────────────────────────────────────────────────────
@@ -801,10 +801,10 @@ function lurek.draw()
     end
 
     -- Particles (in world space)
-    if death_particles  then lurek.render.draw(death_particles)  end
-    if dash_particles   then lurek.render.draw(dash_particles)   end
-    if land_particles   then lurek.render.draw(land_particles)   end
-    if pickup_particles then lurek.render.draw(pickup_particles) end
+    if death_particles  then death_particles:render()  end
+    if dash_particles   then dash_particles:render()   end
+    if land_particles   then land_particles:render()   end
+    if pickup_particles then pickup_particles:render() end
 
     -- Transition fade overlay
     if fade_alpha > 0 then

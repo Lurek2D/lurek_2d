@@ -58,7 +58,7 @@ end
 -- ── Game state ────────────────────────────────────────────────────
 local state = ST.TITLE
 local camera = nil  ---@type LCamera
-local title_timer = 0
+local title_timer = 1
 local point_timer = 0
 local point_msg = ""
 

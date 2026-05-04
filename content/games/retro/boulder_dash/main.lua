@@ -26,7 +26,7 @@ local LEVEL_COMPLETE = "LEVEL_COMPLETE"
 local GAME_OVER      = "GAME_OVER"
 
 -- Game state
-local state = TITLE
+local state = PLAYING
 local grid = {}
 local px, py = 1, 1
 local lives = 3

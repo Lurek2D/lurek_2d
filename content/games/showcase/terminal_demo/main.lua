@@ -72,7 +72,7 @@ local MAX_NAME  = 16
 -- ---------------------------------------------------------------------------
 -- States
 -- ---------------------------------------------------------------------------
-local STATE_TITLE    = "TITLE"
+local STATE_TITLE    = "PLAYING"
 local STATE_PAGE_1   = "PAGE_1"   -- Name entry
 local STATE_PAGE_2   = "PAGE_2"   -- Class selection
 local STATE_PAGE_3   = "PAGE_3"   -- Stat allocation
@@ -81,7 +81,7 @@ local STATE_PAGE_5   = "PAGE_5"   -- Summary
 local STATE_COMPLETE = "COMPLETE"
 
 local current_state  = STATE_TITLE
-local title_timer    = 0
+local title_timer    = 1
 
 -- ---------------------------------------------------------------------------
 -- Colors

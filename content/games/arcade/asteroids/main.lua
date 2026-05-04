@@ -1,4 +1,4 @@
-﻿-- ============================================================================
+-- ============================================================================
 --  Asteroids — Fly, shoot, and survive the asteroid field
 -- ----------------------------------------------------------------------------
 --  Category : arcade
@@ -38,7 +38,7 @@ local ASTEROID_SCORE  = { large = 25, medium = 50,  small = 100 }
 
 -- ── Scene states ──────────────────────────────────────────────────────────
 local STATE = { TITLE = 1, PLAYING = 2, GAME_OVER = 3 }
-local state = STATE.TITLE
+local state = STATE.PLAYING
 
 -- ── Game state ────────────────────────────────────────────────────────────
 local ship           -- { x, y, angle, vx, vy, thrusting }

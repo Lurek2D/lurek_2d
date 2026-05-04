@@ -1,4 +1,4 @@
-﻿-- ============================================================================
+-- ============================================================================
 -- Hacking Game — Lurek2D
 -- ============================================================================
 -- Category : showcase
@@ -22,7 +22,7 @@ local PROMPT     = "root@target:~$ "
 local TRACE_TIME = 60
 
 local STATE = { TITLE = 1, BOOT = 2, PLAYING = 3, GAME_OVER = 4 }
-local current_state = STATE.TITLE
+local current_state = STATE.PLAYING
 
 -- Colors
 local COL_GREEN      = { 0.0, 1.0, 0.3 }
@@ -119,7 +119,7 @@ local boot_speed   = 0.06
 
 -- Title screen (matrix rain)
 local matrix_columns = {}
-local MATRIX_CHARS = "01アイウエオカキクケコサシスセソタチツテト"
+local MATRIX_CHARS = "01234567890ABCDEF@#*+=-?><:!%&^/\\|"
 
 -- Visual effects
 local flicker_timer = 0

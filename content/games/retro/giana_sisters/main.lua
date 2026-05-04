@@ -21,7 +21,7 @@ local PLAYING = "PLAYING"
 local LEVEL_COMPLETE = "LEVEL_COMPLETE"
 local GAME_OVER = "GAME_OVER"
 
-local state = TITLE
+local state = PLAYING
 local score = 0
 local lives = MAX_LIVES
 local gem_count = 0

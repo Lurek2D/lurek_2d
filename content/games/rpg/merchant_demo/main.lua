@@ -16,7 +16,7 @@
 local SCREEN_W, SCREEN_H = 800, 600
 
 local STATE = { TITLE = 1, TRADING = 2, CUSTOMER = 3, LEDGER = 4, GAME_OVER = 5 }
-local current_state = STATE.TITLE
+local current_state = STATE.TRADING
 
 local STARTING_GOLD    = 200
 local MAX_STOCK        = 5
@@ -377,7 +377,7 @@ function lurek.init()
 end
 
 local function _ready_setup()
-    current_state = STATE.TITLE
+    current_state = STATE.TRADING
 end
 
 function lurek.process(dt)
@@ -396,7 +396,7 @@ function lurek.process(dt)
     if current_state == STATE.GAME_OVER then
         if lurek.input.wasActionPressed("confirm") then
             reset_game()
-            current_state = STATE.TITLE
+            current_state = STATE.TRADING
         end
         if lurek.input.wasActionPressed("quit") then
             lurek.event.push("quit")

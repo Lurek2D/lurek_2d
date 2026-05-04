@@ -8,7 +8,7 @@ First-person grid-based dungeon crawler inspired by Eye of the Beholder and Dung
 ## Run
 
 ```bash
-cargo run -- content/games/retro/dungeon_crawler
+python tools/dev/parallel_cargo.py run debug -- content/games/retro/dungeon_crawler
 ```
 
 ## Controls
@@ -17,27 +17,25 @@ cargo run -- content/games/retro/dungeon_crawler
 | ------ | --------------- |
 | W      | Move forward    |
 | S      | Move backward   |
-| Q      | Turn 90° left   |
-| E      | Turn 90° right  |
+| A      | Turn 90° left   |
+| D      | Turn 90° right  |
 | F1     | Weather: clear  |
 | F2     | Weather: rain   |
 | F3     | Weather: snow   |
-| Enter  | Start / confirm |
 | Escape | Quit            |
 
 ## Gameplay
 
 - Grid-based movement with smooth lerp transitions between cells
 - Raycasting renders a first-person pseudo-3D viewport on the left half of the screen
-- Four wall types (stone, brick, mossy, magic) with distinct colors and procedural patterns
-- Floor and ceiling rendered with depth-shaded gradient bands
-- Distance fog darkens walls further from the player
-- Flickering torches at fixed positions illuminate nearby walls
+- Textured-quad first-person scene built by lurek.raycaster:buildScene
+- Six procedural wall materials (stone, brick, mossy, magic, wood, steel)
+- Floor and ceiling shading from scene parameters
 - Collect all 8 orbs scattered through the dungeon (+100 score each)
 - Minimap on the right panel reveals explored cells, orb locations, and player direction
 - Compass indicator shows current facing direction (N/E/S/W)
-- Weather overlays: clear skies, rain particles, or snow particles (F1–F3)
-- Three states: TITLE → PLAYING → COMPLETE (all orbs collected)
+- Weather mode switch (F1-F3) in HUD
+- Two states: PLAYING -> COMPLETE (all orbs collected)
 
 ## APIs Used
 
@@ -51,13 +49,11 @@ cargo run -- content/games/retro/dungeon_crawler
 ## Changes from Original Demo
 
 - Full rewrite with action-based input system
-- Added raycasting pseudo-3D viewport with four wall types
-- Gradient floor/ceiling with 16 depth bands
-- Procedural wall textures (brick lines, mossy spots, magic pulse)
+- Added raycaster buildScene viewport using textured quads
+- Added six procedural wall textures mapped per tile id
 - Smooth lerp movement and turning animations
 - Minimap with fog-of-war exploration
 - Compass indicator
-- Weather overlay system (rain/snow particles)
-- Torch flicker particles and orb collect sparkle effects
-- Three-state flow: TITLE → PLAYING → COMPLETE
+- Two-state flow: PLAYING -> COMPLETE
+- Keyboard-first controls with WSAD movement/turning
 - Separated render/render_ui callbacks

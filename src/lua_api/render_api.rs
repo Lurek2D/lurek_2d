@@ -196,6 +196,11 @@ impl LuaUserData for LuaNineSlice {
 
 impl LuaUserData for LuaImage {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- getId --
+        /// Returns the internal numeric texture handle used by low-level render systems.
+        /// @return | integer | Opaque texture handle id.
+        methods.add_method("getId", |_, this, ()| Ok(this.key.data().as_ffi()));
+
         // -- getWidth --
         /// Returns the width of this image in pixels.
         /// @return | integer | Image width in pixels.

@@ -223,6 +223,9 @@ local function reset_game()
     damage_flash = 0
     damage_flash_state.val = 0
     upgrade_choices = {}
+    if cam then
+        cam:setPosition(player.x - SCREEN_W / 2, player.y - SCREEN_H / 2)
+    end
 end
 
 -- ── Init ──────────────────────────────────────────────────────────────────
@@ -335,6 +338,7 @@ function lurek.init()
 
     math.randomseed(os.time())
     reset_game()
+    current_state = STATE.PLAYING
 end
 
 -- ── Process ───────────────────────────────────────────────────────────────
@@ -537,7 +541,7 @@ function lurek.process(dt)
     -- Camera follow
     local cam_x = clamp(player.x, SCREEN_W / 2, ARENA_W - SCREEN_W / 2)
     local cam_y = clamp(player.y, SCREEN_H / 2, ARENA_H - SCREEN_H / 2)
-    cam:setPosition(cam_x, cam_y)
+    cam:setPosition(cam_x - SCREEN_W / 2, cam_y - SCREEN_H / 2)
 
     -- Check death
     if hp <= 0 then

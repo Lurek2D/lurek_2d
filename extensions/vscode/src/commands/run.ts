@@ -4,9 +4,21 @@ import * as fs from "fs";
 import { LurekProcessService } from "../services/lurekProcess.js";
 
 /**
- * Runs the game from the workspace root or a chosen directory.
+ * Runs the game from the given URI (Explorer context), configured srcDir, or workspace root.
  */
-export async function runGame(lurekProcess: LurekProcessService): Promise<void> {
+export async function runGame(lurekProcess: LurekProcessService, uri?: vscode.Uri): Promise<void> {
+  // When invoked from the Explorer context menu the folder URI is always a directory
+  // (enforced by `when: "explorerResourceIsFolder"` in package.json).
+  if (uri) {
+    try {
+      await lurekProcess.run(uri.fsPath);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      vscode.window.showErrorMessage(`Failed to run Lurek2D: ${msg}`);
+    }
+    return;
+  }
+
   const root = getWorkspaceRoot();
   if (!root) {
     vscode.window.showErrorMessage("No workspace folder open.");

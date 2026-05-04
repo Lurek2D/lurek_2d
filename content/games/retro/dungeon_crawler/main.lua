@@ -6,10 +6,10 @@
 ------------------------------------------------------------------------
 
 -- Action input bindings:
--- forward(w), back(s), turn_left(q), turn_right(e)
+-- forward(w), back(s), turn_left(a), turn_right(d)
 -- weather1(f1), weather2(f2), weather3(f3), quit(escape)
 
-local STATE = { TITLE = 1, PLAYING = 2, COMPLETE = 3 }
+local STATE = { PLAYING = 1, COMPLETE = 2 }
 
 ------------------------------------------------------------------------
 -- Constants
@@ -23,12 +23,14 @@ local HALF_FOV   = FOV / 2
 local MAP_W, MAP_H = 12, 12
 local MOVE_SPEED = 9.0
 
--- Wall colors: stone(1), brick(2), mossy(3), magic(4)
+-- Wall colors: stone(1), brick(2), mossy(3), magic(4), wood(5), steel(6)
 local WALL_COLORS = {
     { 0.55, 0.55, 0.55 },
     { 0.65, 0.30, 0.18 },
     { 0.28, 0.52, 0.30 },
     { 0.55, 0.20, 0.65 },
+    { 0.62, 0.45, 0.30 },
+    { 0.40, 0.50, 0.60 },
 }
 
 -- Direction tables (indexed dir+1: 1=N, 2=E, 3=S, 4=W)
@@ -45,13 +47,13 @@ local dungeon = {
     { 1,0,0,0,2,0,0,0,0,0,0,1 },
     { 1,0,3,0,2,0,4,4,0,3,0,1 },
     { 1,0,3,0,0,0,0,4,0,3,0,1 },
-    { 1,0,0,0,1,1,0,0,0,0,0,1 },
+    { 1,0,0,0,5,5,0,0,0,0,0,1 },
     { 1,2,2,0,0,1,0,3,3,0,2,1 },
-    { 1,0,0,0,0,0,0,0,3,0,0,1 },
+    { 1,0,0,0,0,0,0,0,6,0,0,1 },
     { 1,0,4,0,1,0,1,0,0,0,0,1 },
-    { 1,0,4,0,1,0,1,0,4,4,0,1 },
+    { 1,0,4,0,1,0,1,0,4,6,0,1 },
     { 1,0,0,0,0,0,0,0,0,4,0,1 },
-    { 1,0,2,2,0,0,0,2,0,0,0,1 },
+    { 1,0,2,2,0,0,0,2,0,5,0,1 },
     { 1,1,1,1,1,1,1,1,1,1,1,1 },
 }
 
@@ -81,7 +83,7 @@ local orbs = {
 local player = {
     gx = 2, gy = 2,
     vx = 1.5, vy = 1.5,
-    dir = 1,
+    dir = 2,
     va  = 0,
     moving  = false,
     turning = false,
@@ -90,16 +92,18 @@ local player = {
 ------------------------------------------------------------------------
 -- Game state
 ------------------------------------------------------------------------
-local state       = STATE.TITLE
+local state       = STATE.PLAYING
 local score       = 0
 local total_orbs  = #orbs
 local explored    = {}
 local weather     = "clear"
-local weather_particles  = {}
-local sparkle_particles  = {}
 local torch_time  = 0
----@type LCamera
 local cam         = nil
+local raycaster   = nil
+local view_tex    = nil
+local view_dirty  = true
+local last_vx, last_vy, last_va = 0, 0, 0
+local PANEL_X, PANEL_Y = 530, 30
 
 for y = 1, MAP_H do explored[y] = {} end
 
@@ -127,56 +131,34 @@ local function reveal_around(gx, gy)
     end
 end
 
-------------------------------------------------------------------------
--- Raycasting
-------------------------------------------------------------------------
-local function cast_ray(ox, oy, angle)
-    local dx = math.cos(angle)
-    local dy = math.sin(angle)
-    local t    = 0
-    local step = 0.03
-    while t < 16 do
-        t = t + step
-        local cx = ox + dx * t
-        local cy = oy + dy * t
-        local gx = math.floor(cx) + 1
-        local gy = math.floor(cy) + 1
-        if gx < 1 or gx > MAP_W or gy < 1 or gy > MAP_H then
-            return t, 1, 0
-        end
-        if dungeon[gy][gx] > 0 then
-            local prev_cx = ox + dx * (t - step)
-            local prev_gx = math.floor(prev_cx) + 1
-            local side = (prev_gx ~= gx) and 1 or 0
-            return t, dungeon[gy][gx], side
-        end
+local function try_move(step)
+    local di = player.dir + 1
+    local nx = player.gx + DIR_DX[di] * step
+    local ny = player.gy + DIR_DY[di] * step
+    if nx >= 1 and nx <= MAP_W and ny >= 1 and ny <= MAP_H
+       and dungeon[ny][nx] == 0 then
+        player.gx = nx
+        player.gy = ny
+        player.moving = true
+        reveal_around(nx, ny)
     end
-    return 16, 0, 0
 end
 
-local function wall_color(wtype, dist, side)
-    local c = WALL_COLORS[wtype] or WALL_COLORS[1]
-    local fog   = math.max(0.1, 1.0 - dist / 14.0)
-    local shade = (side == 1) and 0.75 or 1.0
-    return c[1] * fog * shade, c[2] * fog * shade, c[3] * fog * shade
+local function try_turn(dir_step)
+    player.dir = (player.dir + dir_step) % 4
+    player.turning = true
 end
 
-------------------------------------------------------------------------
--- Weather particle spawner
-------------------------------------------------------------------------
-local function spawn_weather(dt)
-    if weather == "clear" then return end
-    local rate = (weather == "rain") and 40 or 20
-    for _ = 1, math.floor(rate * dt * 60) do
-        weather_particles[#weather_particles + 1] = {
-            x = math.random() * 800, y = -10,
-            vy = (weather == "rain") and (200 + math.random() * 150) or (30 + math.random() * 40),
-            vx = (weather == "rain") and (math.random() * 20 - 10) or (math.random() * 30 - 15),
-            life = 0,
-            max_life = (weather == "rain") and 3.0 or 8.0,
-            size = (weather == "rain") and 1 or (2 + math.random() * 2),
-        }
+local function refresh_view_texture()
+    if not raycaster or not raycaster.drawView or not view_dirty then
+        return
     end
+    local view_img = raycaster:drawView(player.vx, player.vy, player.va, FOV, VP_W, VP_H, 16)
+    if view_tex and view_tex.release then
+        view_tex:release()
+    end
+    view_tex = lurek.render.newImage(view_img)
+    view_dirty = false
 end
 
 ------------------------------------------------------------------------
@@ -236,19 +218,27 @@ function lurek.init()
 
     lurek.input.bind("forward",    { "w" })
     lurek.input.bind("back",       { "s" })
-    lurek.input.bind("turn_left",  { "q" })
-    lurek.input.bind("turn_right", { "e" })
+    lurek.input.bind("turn_left",  { "a" })
+    lurek.input.bind("turn_right", { "d" })
     lurek.input.bind("weather1",   { "f1" })
     lurek.input.bind("weather2",   { "f2" })
     lurek.input.bind("weather3",   { "f3" })
     lurek.input.bind("quit",       { "escape" })
-    lurek.input.bind("start",      { "return" })
 
     cam = lurek.camera.new(800, 600)
     player.vx = player.gx - 0.5
     player.vy = player.gy - 0.5
     player.va = DIR_ANGLE[player.dir + 1]
     reveal_around(player.gx, player.gy)
+
+    if lurek.raycaster and lurek.raycaster.new then
+        raycaster = lurek.raycaster.new(MAP_W, MAP_H)
+        for y = 1, MAP_H do
+            for x = 1, MAP_W do
+                raycaster:setCell(x - 1, y - 1, dungeon[y][x])
+            end
+        end
+    end
 end
 
 local function _ready_setup() end
@@ -259,12 +249,6 @@ local function _ready_setup() end
 function lurek.process(dt)
     if lurek.input.wasActionPressed("quit") then
         lurek.event.quit()
-        return
-    end
-
-    -- TITLE state
-    if state == STATE.TITLE then
-        if lurek.input.wasActionPressed("start") then state = STATE.PLAYING end
         return
     end
 
@@ -281,34 +265,19 @@ function lurek.process(dt)
 
     -- Grid movement (blocked during animation)
     if not player.moving and not player.turning then
-        if lurek.input.wasActionPressed("forward") then
-            local di = player.dir + 1
-            local nx = player.gx + DIR_DX[di]
-            local ny = player.gy + DIR_DY[di]
-            if nx >= 1 and nx <= MAP_W and ny >= 1 and ny <= MAP_H
-               and dungeon[ny][nx] == 0 then
-                player.gx = nx
-                player.gy = ny
-                player.moving = true
-                reveal_around(nx, ny)
-            end
-        elseif lurek.input.wasActionPressed("back") then
-            local di = player.dir + 1
-            local nx = player.gx - DIR_DX[di]
-            local ny = player.gy - DIR_DY[di]
-            if nx >= 1 and nx <= MAP_W and ny >= 1 and ny <= MAP_H
-               and dungeon[ny][nx] == 0 then
-                player.gx = nx
-                player.gy = ny
-                player.moving = true
-                reveal_around(nx, ny)
-            end
-        elseif lurek.input.wasActionPressed("turn_left") then
-            player.dir = (player.dir - 1) % 4
-            player.turning = true
-        elseif lurek.input.wasActionPressed("turn_right") then
-            player.dir = (player.dir + 1) % 4
-            player.turning = true
+        local forward_down = lurek.input.wasActionPressed("forward") or lurek.input.isActionDown("forward")
+        local back_down = lurek.input.wasActionPressed("back") or lurek.input.isActionDown("back")
+        local left_down = lurek.input.wasActionPressed("turn_left") or lurek.input.isActionDown("turn_left")
+        local right_down = lurek.input.wasActionPressed("turn_right") or lurek.input.isActionDown("turn_right")
+
+        if forward_down then
+            try_move(1)
+        elseif back_down then
+            try_move(-1)
+        elseif left_down then
+            try_turn(-1)
+        elseif right_down then
+            try_turn(1)
         end
     end
 
@@ -322,6 +291,13 @@ function lurek.process(dt)
     player.vx = lerp(player.vx, tgt_x, spd)
     player.vy = lerp(player.vy, tgt_y, spd)
     player.va = player.va + da * spd
+
+    if math.abs(player.vx - last_vx) > 0.0005
+       or math.abs(player.vy - last_vy) > 0.0005
+       or math.abs(wrap_angle(player.va - last_va)) > 0.0005 then
+        view_dirty = true
+        last_vx, last_vy, last_va = player.vx, player.vy, player.va
+    end
 
     if math.abs(player.vx - tgt_x) < 0.01 and math.abs(player.vy - tgt_y) < 0.01 then
         player.vx = tgt_x
@@ -338,16 +314,6 @@ function lurek.process(dt)
         if not orb.collected and orb.x == player.gx and orb.y == player.gy then
             orb.collected = true
             score = score + 100
-            for _ = 1, 14 do
-                sparkle_particles[#sparkle_particles + 1] = {
-                    x = VP_X + VP_W / 2 + math.random() * 50 - 25,
-                    y = VP_Y + VP_H / 2 + math.random() * 50 - 25,
-                    vx = math.random() * 200 - 100,
-                    vy = math.random() * 200 - 100,
-                    life = 0, max_life = 0.8,
-                    r = 1.0, g = 0.85, b = 0.2,
-                }
-            end
         end
     end
 
@@ -358,142 +324,40 @@ function lurek.process(dt)
     end
     if all_collected then state = STATE.COMPLETE end
 
-    -- Update weather particles
-    spawn_weather(dt)
-    local i = 1
-    while i <= #weather_particles do
-        local p = weather_particles[i]
-        p.x = p.x + p.vx * dt
-        p.y = p.y + p.vy * dt
-        p.life = p.life + dt
-        if p.life > p.max_life or p.y > 620 then
-            weather_particles[i] = weather_particles[#weather_particles]
-            weather_particles[#weather_particles] = nil
-        else
-            i = i + 1
-        end
+    if cam and cam.update then
+        cam:update(dt)
     end
-
-    -- Update sparkle particles
-    local j = 1
-    while j <= #sparkle_particles do
-        local p = sparkle_particles[j]
-        p.x = p.x + p.vx * dt
-        p.y = p.y + p.vy * dt
-        p.life = p.life + dt
-        if p.life > p.max_life then
-            sparkle_particles[j] = sparkle_particles[#sparkle_particles]
-            sparkle_particles[#sparkle_particles] = nil
-        else
-            j = j + 1
-        end
-    end
-
-    cam:update(dt)
 end
 
-------------------------------------------------------------------------
--- lurek.render — 3D viewport: ceiling, floor, raycasted walls, torches
+-- lurek.render — 3D viewport from built-in raycaster module
 ------------------------------------------------------------------------
 function lurek.draw()
-    if state == STATE.TITLE then return end
-    cam:apply()
-
-    -- Ceiling gradient (16 bands, darker further away)
-    local bands   = 16
-    local band_h  = (VP_H / 2) / bands
-    for i = 0, bands - 1 do
-        local b = 0.08 + 0.07 * (1.0 - i / bands)
-        lurek.render.setColor(b * 0.6, b * 0.7, b * 0.9, 1)
-        rect("fill", VP_X, VP_Y + i * band_h, VP_W, band_h + 1)
+    if cam and cam.apply then
+        cam:apply()
     end
 
-    -- Floor gradient (16 bands, brighter closer)
-    for i = 0, bands - 1 do
-        local b = 0.06 + 0.06 * (i / bands)
-        lurek.render.setColor(b * 0.5, b * 0.35, b * 0.2, 1)
-        rect("fill", VP_X, VP_Y + VP_H / 2 + i * band_h, VP_W, band_h + 1)
-    end
+    lurek.render.setColor(0.05, 0.06, 0.09, 1)
+    rect("fill", VP_X, VP_Y, VP_W, VP_H)
 
-    -- Raycasting wall strips
-    for r = 0, NUM_RAYS - 1 do
-        local ray_a = player.va - HALF_FOV + (r / NUM_RAYS) * FOV
-        local dist, wtype, side = cast_ray(player.vx, player.vy, ray_a)
-
-        local corr = dist * math.cos(ray_a - player.va)
-        if corr < 0.1 then corr = 0.1 end
-
-        local strip_h = (VP_H * 0.9) / corr
-        if strip_h > VP_H then strip_h = VP_H end
-
-        local sx = VP_X + r * STRIP_W
-        local sy = VP_Y + (VP_H - strip_h) / 2
-
-        if wtype > 0 then
-            local cr, cg, cb = wall_color(wtype, corr, side)
-
-            -- Procedural texture variation per wall type
-            if wtype == 2 then
-                local pat = (math.floor(sy) % 8 < 4) and 0.92 or 1.0
-                cr, cg, cb = cr * pat, cg * pat, cb * pat
-            elseif wtype == 3 then
-                local moss = 1.0 + 0.1 * math.sin(r * 0.7 + sy * 0.3)
-                cg = cg * moss
-            elseif wtype == 4 then
-                local pulse = 0.85 + 0.15 * math.sin(torch_time * 3 + r * 0.2)
-                cr, cg, cb = cr * pulse, cg * pulse, cb * pulse
-            end
-
-            lurek.render.setColor(cr, cg, cb, 1)
-            rect("fill", sx, sy, STRIP_W + 0.5, strip_h)
-        end
-    end
-
-    -- Torch glow projected into 3D viewport
-    for _, torch in ipairs(torches) do
-        local tdx  = (torch.x - 0.5) - player.vx
-        local tdy  = (torch.y - 0.5) - player.vy
-        local tdist = math.sqrt(tdx * tdx + tdy * tdy)
-        if tdist < 8 then
-            local ta  = math.atan2(tdy, tdx)
-            local rel = wrap_angle(ta - player.va)
-            if math.abs(rel) < HALF_FOV then
-                local scr_x   = VP_X + ((rel / FOV) + 0.5) * VP_W
-                local flicker  = 8 + 4 * math.sin(torch_time * 8 + torch.x * 3.7 + torch.y * 2.3)
-                local alpha    = math.max(0, 0.25 * (1 - tdist / 8))
-                lurek.render.setColor(1.0, 0.7, 0.2, alpha)
-                circ("fill", scr_x, VP_Y + VP_H / 2 - 20, flicker)
-            end
-        end
+    refresh_view_texture()
+    if view_tex then
+        lurek.render.setColor(1, 1, 1, 1)
+        lurek.render.draw(view_tex, VP_X, VP_Y)
     end
 
     -- Viewport border
     lurek.render.setColor(0.3, 0.3, 0.4, 1)
     rect("line", VP_X, VP_Y, VP_W, VP_H)
 
-    cam:reset()
+    if cam and cam.reset then
+        cam:reset()
+    end
 end
 
 ------------------------------------------------------------------------
 -- lurek.render_ui — minimap, compass, score, weather, particles
 ------------------------------------------------------------------------
 function lurek.draw_ui()
-    -- === TITLE SCREEN ===
-    if state == STATE.TITLE then
-        lurek.render.setColor(0.5, 0.2, 0.7, 1)
-        text_("DUNGEON CRAWLER", 220, 200, 36)
-        lurek.render.setColor(0.7, 0.7, 0.8, 1)
-        text_("First-person grid dungeon with raycasting", 195, 270, 16)
-        local blink = math.sin(lurek.timer.getTime() * 4) > 0
-        if blink then
-            lurek.render.setColor(1, 1, 1, 1)
-            text_("PRESS ENTER", 330, 380, 20)
-        end
-        lurek.render.setColor(0.4, 0.4, 0.5, 1)
-        text_("W/S = Move   Q/E = Turn   F1-F3 = Weather", 190, 440, 14)
-        return
-    end
-
     -- === COMPLETE SCREEN ===
     if state == STATE.COMPLETE then
         lurek.render.setColor(1, 0.85, 0.2, 1)
@@ -506,8 +370,8 @@ function lurek.draw_ui()
     end
 
     -- === RIGHT PANEL ===
-    local PX = 530
-    local PY = 30
+    local PX = PANEL_X
+    local PY = PANEL_Y
 
     lurek.render.setColor(0.8, 0.7, 1, 1)
     text_("DUNGEON CRAWLER", PX, PY, 16)
@@ -601,40 +465,6 @@ function lurek.draw_ui()
     lurek.render.setColor(0.5, 0.5, 0.6, 1)
     text_("MINIMAP", MM_X + MAP_W * MM_CELL / 2 - 25,
         MM_Y + MAP_H * MM_CELL + 6, 11)
-
-    -- === WEATHER OVERLAY ===
-    for _, p in ipairs(weather_particles) do
-        local alpha = 1.0 - p.life / p.max_life
-        if weather == "rain" then
-            lurek.render.setColor(0.5, 0.6, 0.9, alpha * 0.7)
-            ln(p.x, p.y, p.x + p.vx * 0.02, p.y + 6)
-        else
-            lurek.render.setColor(0.9, 0.95, 1, alpha * 0.6)
-            circ("fill", p.x, p.y, p.size)
-        end
-    end
-
-    -- Sparkle particles (orb collect)
-    for _, p in ipairs(sparkle_particles) do
-        local alpha = 1.0 - p.life / p.max_life
-        lurek.render.setColor(p.r, p.g, p.b, alpha)
-        circ("fill", p.x, p.y, 3 * alpha)
-    end
-
-    -- Torch flicker particles near player
-    local fl_alpha = 0.3 + 0.15 * math.sin(torch_time * 10)
-    for _, torch in ipairs(torches) do
-        local tdx = torch.x - player.gx
-        local tdy = torch.y - player.gy
-        if math.abs(tdx) <= 2 and math.abs(tdy) <= 2 then
-            for _ = 1, 2 do
-                local fx = VP_X + VP_W / 2 + tdx * 40 + math.random() * 10 - 5
-                local fy = VP_Y + 40 + math.random() * 20
-                lurek.render.setColor(1, 0.6, 0.1, fl_alpha * 0.5)
-                circ("fill", fx, fy, 2 + math.random() * 2)
-            end
-        end
-    end
 
     -- FPS
     lurek.render.setColor(0.4, 0.4, 0.5, 1)

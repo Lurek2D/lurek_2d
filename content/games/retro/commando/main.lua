@@ -60,7 +60,7 @@ end
 local SCREEN_W, SCREEN_H = 800, 600
 
 local STATE = { TITLE = 1, PLAYING = 2, GAME_OVER = 3 }
-local current_state = STATE.TITLE
+local current_state = STATE.PLAYING
 
 -- Player
 local PLAYER_W, PLAYER_H = 16, 20

@@ -2555,11 +2555,23 @@ impl ApplicationHandler for LurekApp {
     fn about_to_wait(&mut self, event_loop: &ActiveEventLoop) {
         use std::time::Duration;
 
-        // Safety-net: if screenshot mode has been active for > 3 s without a capture,
-        // force-quit so the batch tool never hangs indefinitely.
+        // Safety-net: if screenshot mode has been active too long without a capture,
+        // force-quit so batch tools never hang indefinitely.
+        //
+        // The timeout is derived from the requested capture delay plus a grace
+        // period, so `--screenshot-time=3` is not aborted right at 3 seconds.
         if !self.auto_screenshot_done {
             if let Some(start) = self.auto_screenshot_start {
-                if start.elapsed() > Duration::from_secs(3) {
+                let expected_capture_secs = match self.auto_screenshot_time {
+                    Some(secs) => secs.max(0.0),
+                    None => {
+                        let fps = self.config.performance.target_fps.max(1) as f32;
+                        self.auto_screenshot_frames as f32 / fps
+                    }
+                };
+                let deadline_secs = (expected_capture_secs + 2.0).max(3.0);
+
+                if start.elapsed() > Duration::from_secs_f32(deadline_secs) {
                     if let Some(state) = &self.state {
                         state.borrow_mut().quit_requested = true;
                     } else {

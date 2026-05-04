@@ -1,4 +1,4 @@
-﻿-- ============================================================================
+-- ============================================================================
 -- Light Demo — Lurek2D
 -- ============================================================================
 -- Category : showcase
@@ -22,7 +22,7 @@ local RADIUS_STEP = 20
 local SPOTLIGHT_ANGLE = math.pi / 3  -- 60 degrees
 
 local STATE = { TITLE = 1, RUNNING = 2 }
-local current_state = STATE.TITLE
+local current_state = STATE.RUNNING
 
 -- ---------------------------------------------------------------------------
 -- Light colors
@@ -87,7 +87,7 @@ local TORCH_POSITIONS = {
 -- Tween state for smooth transitions
 local ambient_tween = { r = 0.1, g = 0.1, b = 0.1 }
 local color_tween = { r = 1.0, g = 1.0, b = 1.0 }
-local title_timer = 0
+local title_timer = 1
 
 -- ---------------------------------------------------------------------------
 -- Helpers
@@ -183,7 +183,7 @@ function lurek.init()
     player_light:setRadius(light_radius)
     player_light:setIntensity(1.0)
     player_light:setColor(1.0, 1.0, 1.0)
-    player_light:setBlendMode("additive")
+    player_light:setBlendMode("add")
     player_light:setShadowEnabled(true)
 
     -- Create torches (orange flickering lights)
@@ -194,7 +194,7 @@ function lurek.init()
         t:setRadius(120)
         t:setIntensity(0.85)
         t:setColor(1.0, 0.6, 0.2)
-        t:setBlendMode("additive")
+        t:setBlendMode("add")
         t:setFlicker(5.0, 0.7)
         t:setFlickerEnabled(true)
         torch_lights[i] = t
@@ -335,7 +335,7 @@ function lurek.process(dt)
         light_radius = clamp(light_radius + RADIUS_STEP, MIN_RADIUS, MAX_RADIUS)
         player_light:setRadius(light_radius)
     end
-    local scroll = lurek.input.getWheelDelta()
+    local _, scroll = lurek.input.mouse.getWheelDelta()
     if scroll ~= 0 then
         light_radius = clamp(light_radius + scroll * RADIUS_STEP, MIN_RADIUS, MAX_RADIUS)
         player_light:setRadius(light_radius)

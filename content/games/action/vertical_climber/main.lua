@@ -219,7 +219,7 @@ local function reset_game()
     player.x = SCREEN_W / 2 - PLAYER_W / 2
     player.y = SCREEN_H - 80 - PLAYER_H
     player.vx = 0
-    player.vy = 0
+    player.vy = BOUNCE_VEL
     player.alive = true
     score = 0
     max_height = 0
@@ -337,6 +337,7 @@ function lurek.init()
         colorStart = {1.0, 1.0, 1.0, 0.8},
         colorEnd   = {0.8, 0.8, 0.8, 0.0},
     })
+    reset_game()
 end
 
 local function _ready_setup()

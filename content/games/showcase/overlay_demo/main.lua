@@ -1,4 +1,4 @@
-﻿-- ============================================================================
+-- ============================================================================
 -- Overlay Demo — Lurek2D
 -- ============================================================================
 -- Category : showcase
@@ -21,8 +21,8 @@ local TREE_COUNT  = 8
 local SUN_X, SUN_Y, SUN_R = 650, 80, 40
 
 local STATE = { TITLE = 1, RUNNING = 2 }
-local current_state = STATE.TITLE
-local title_timer   = 0
+local current_state = STATE.RUNNING
+local title_timer   = 1
 
 -- ---------------------------------------------------------------------------
 -- Time-of-day definitions

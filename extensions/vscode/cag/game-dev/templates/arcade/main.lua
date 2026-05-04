@@ -13,8 +13,8 @@ function lurek.process(dt)
     if state ~= "playing" then return end
 
     -- Move paddle
-    if lurek.input.isDown("left")  or lurek.input.isDown("a") then paddle.x = paddle.x - 400 * dt end
-    if lurek.input.isDown("right") or lurek.input.isDown("d") then paddle.x = paddle.x + 400 * dt end
+    if lurek.input.keyboard.isDown("left")  or lurek.input.keyboard.isDown("a") then paddle.x = paddle.x - 400 * dt end
+    if lurek.input.keyboard.isDown("right") or lurek.input.keyboard.isDown("d") then paddle.x = paddle.x + 400 * dt end
     paddle.x = math.max(0, math.min(800 - paddle.w, paddle.x))
 
     -- Move ball

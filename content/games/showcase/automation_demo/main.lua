@@ -22,13 +22,13 @@ local RECT_SIZE = 20
 -- ============================================================
 -- State
 -- ============================================================
-local STATE_TITLE    = "TITLE"
+local STATE_TITLE    = "PLAYING"
 local STATE_IDLE     = "IDLE"
 local STATE_RECORDING = "RECORDING"
 local STATE_PLAYING  = "PLAYING"
 
-local state = STATE_TITLE
-local title_timer = 0
+local state = STATE_PLAYING
+local title_timer = 1
 
 -- Recording
 local recorded_events = {}

@@ -56,7 +56,7 @@ local PLAT_FLOAT = {0.5, 0.5, 0.55}
 
 -- ── Scene state ───────────────────────────────────────────────────────────
 local STATES = { TITLE = 1, FIGHTING = 2, KO = 3, MATCH_OVER = 4 }
-local game_state = STATES.TITLE
+local game_state = STATES.FIGHTING
 
 -- ── Helpers ───────────────────────────────────────────────────────────────
 local function clamp(v, lo, hi) return math.max(lo, math.min(hi, v)) end
@@ -511,6 +511,8 @@ function lurek.init()
         colors     = {{1,1,1,0.6},{0.5,0.5,1,0}},
         sizes      = {3, 1},
     })
+
+    init_match()
 end
 
 -- ── lurek.process ────────────────────────────────────────────────────────

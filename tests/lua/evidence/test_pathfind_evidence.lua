@@ -8,9 +8,7 @@ describe("evidence: pathfind", function()
         ensure_evidence_dir("pathfind")
     end)
 
-    -- @covers LImageData:drawRect
-    -- @covers lurek.image.newImageData
-    -- @covers lurek.image.savePNG
+    -- @evidence file
     it("records pathfind API surface as PNG evidence", function()
         local dir  = evidence_output_dir("pathfind")
         local path = dir .. "pathfind_api_surface.png"
@@ -84,11 +82,6 @@ end
 -- @describe Evidence: lurek.pathfind A* basic
 describe("Evidence: lurek.pathfind A* basic", function()
     -- @evidence file
-    -- @covers LNavGrid:setBlocked
-    -- @covers LUnitPathfinder:findPath
-    -- @covers lurek.image.savePNG
-    -- @covers lurek.pathfind.newNavGrid
-    -- @covers lurek.pathfind.newPathfinder
     it("path avoids walls -\" PNG evidence: astar_basic", function()
         local W, H = 20, 15
         local grid = lurek.pathfind.newNavGrid(W, H)
@@ -112,11 +105,6 @@ end)
 describe("Evidence: lurek.pathfind weighted terrain", function()
 
     -- @evidence file
-    -- @covers LNavGrid:setCost
-    -- @covers LUnitPathfinder:findPath
-    -- @covers lurek.image.savePNG
-    -- @covers lurek.pathfind.newNavGrid
-    -- @covers lurek.pathfind.newPathfinder
     it("higher-cost terrain is avoided when cheaper route exists -\" PNG evidence", function()
         local W, H = 12, 12
         local grid = lurek.pathfind.newNavGrid(W, H)
@@ -138,17 +126,6 @@ end)
 -- @describe Evidence: lurek.pathfind FlowField
 describe("Evidence: lurek.pathfind FlowField", function()
     -- @evidence file
-    -- @covers LFlowField:calculate
-    -- @covers LFlowField:getDirection
-    -- @covers LImageData:drawLine
-    -- @covers LImageData:drawRect
-    -- @covers LImageData:fill
-    -- @covers LNavGrid:isBlocked
-    -- @covers LNavGrid:setBlocked
-    -- @covers lurek.image.newImageData
-    -- @covers lurek.image.savePNG
-    -- @covers lurek.pathfind.newFlowField
-    -- @covers lurek.pathfind.newNavGrid
     it("flow field PNG evidence: astar_flow_field", function()
         local W, H = 16, 16
         local grid = lurek.pathfind.newNavGrid(W, H)
@@ -204,9 +181,7 @@ describe("evidence: pathfind manifest", function()
         ensure_evidence_dir("pathfind")
     end)
 
-    -- @covers LImageData:drawRect
-    -- @covers lurek.image.newImageData
-    -- @covers lurek.image.savePNG
+    -- @evidence file
     it("records pathfind heatmap API surface as PNG evidence", function()
         local dir  = evidence_output_dir("pathfind")
         local path = dir .. "pathfind_heatmap_surface.png"

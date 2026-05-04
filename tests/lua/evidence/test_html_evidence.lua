@@ -17,8 +17,6 @@ describe("evidence: html", function()
     end
 
     -- @evidence file
-    -- @covers LHtmlDocument:getHtml
-    -- @covers lurek.html.newDocument
     it("creates a document and saves markup snapshot", function()
         local dir  = evidence_output_dir("html")
         local path = dir .. "document_markup.txt"
@@ -34,11 +32,6 @@ describe("evidence: html", function()
     end)
 
     -- @evidence file
-    -- @covers LHtmlDocument:getElementById
-    -- @covers LHtmlDocument:relayout
-    -- @covers LHtmlDocument:setCss
-    -- @covers LHtmlElement:getRect
-    -- @covers lurek.html.newDocument
     it("saves element layout rects after CSS", function()
         local dir  = evidence_output_dir("html")
         local path = dir .. "element_rects.json"
@@ -60,8 +53,6 @@ describe("evidence: html", function()
     end)
 
     -- @evidence file
-    -- @covers LHtmlDocument:queryAll
-    -- @covers lurek.html.newDocument
     it("saves query results for list items", function()
         local dir  = evidence_output_dir("html")
         local path = dir .. "list_items.json"
@@ -85,11 +76,6 @@ describe("evidence: html", function()
     end)
 
     -- @evidence file
-    -- @covers LHtmlDocument:getElementById
-    -- @covers LHtmlElement:addClass
-    -- @covers LHtmlElement:hasClass
-    -- @covers LHtmlElement:toggleClass
-    -- @covers lurek.html.newDocument
     it("saves class manipulation evidence", function()
         local dir  = evidence_output_dir("html")
         local path = dir .. "class_state.json"
@@ -109,10 +95,6 @@ describe("evidence: html", function()
     end)
 
     -- @evidence file
-    -- @covers LHtmlDocument:mousepressed
-    -- @covers LHtmlDocument:mousereleased
-    -- @covers LHtmlDocument:on
-    -- @covers lurek.html.newDocument
     it("saves event dispatch evidence", function()
         local dir  = evidence_output_dir("html")
         local path = dir .. "event_log.json"
@@ -131,9 +113,6 @@ describe("evidence: html", function()
     end)
 
     -- @evidence file
-    -- @covers LHtmlDocument:getViewport
-    -- @covers LHtmlDocument:setViewport
-    -- @covers lurek.html.newDocument
     it("saves viewport change evidence", function()
         local dir  = evidence_output_dir("html")
         local path = dir .. "viewport.json"

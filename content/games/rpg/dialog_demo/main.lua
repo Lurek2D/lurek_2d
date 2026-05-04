@@ -34,7 +34,7 @@ local SPEAKER_COLORS = {
 }
 
 -- ── state ─────────────────────────────────────────────────────
-local state = "TITLE"
+local state = "DIALOG"
 local dialog_nodes = {}
 local node_index = 1
 local typewriter_text = ""

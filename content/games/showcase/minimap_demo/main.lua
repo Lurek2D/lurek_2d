@@ -27,7 +27,7 @@ local TILE_FOREST  = 4
 local TILE_SAND    = 5
 
 -- ── State ──────────────────────────────────────────────────────────────
-local state         = "TITLE"
+local state         = "EXPLORING"
 local tiles         = {}
 local explored      = {}
 local visible       = {}

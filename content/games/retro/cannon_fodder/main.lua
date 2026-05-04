@@ -262,6 +262,8 @@ function lurek.init()
     lurek.input.bind("fire",    {"space"})
     lurek.input.bind("grenade", {"g"})
     lurek.input.bind("quit",    {"escape"})
+
+    start_mission(1)
 end
 
 local function _ready_setup()
@@ -348,10 +350,10 @@ function lurek.process(dt)
     -- ---- PLAYING ----
     -- Squad direction
     squad_target_dx, squad_target_dy = 0, 0
-    if lurek.input.wasActionPressed("up")    then squad_target_dy = squad_target_dy - 1 end
-    if lurek.input.wasActionPressed("down")  then squad_target_dy = squad_target_dy + 1 end
-    if lurek.input.wasActionPressed("left")  then squad_target_dx = squad_target_dx - 1 end
-    if lurek.input.wasActionPressed("right") then squad_target_dx = squad_target_dx + 1 end
+    if lurek.input.isActionDown("up")    then squad_target_dy = squad_target_dy - 1 end
+    if lurek.input.isActionDown("down")  then squad_target_dy = squad_target_dy + 1 end
+    if lurek.input.isActionDown("left")  then squad_target_dx = squad_target_dx - 1 end
+    if lurek.input.isActionDown("right") then squad_target_dx = squad_target_dx + 1 end
 
     local ndx, ndy = normalize(squad_target_dx, squad_target_dy)
     if math.abs(ndx) > 0.01 or math.abs(ndy) > 0.01 then

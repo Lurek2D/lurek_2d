@@ -19,7 +19,7 @@ local GRID_X = math.floor((SCREEN_W - GRID_COLS * PLOT_SIZE) / 2)
 local GRID_Y = math.floor((SCREEN_H - GRID_ROWS * PLOT_SIZE) / 2) + 20
 
 local STATE = { TITLE = 1, PLAYING = 2, MARKET = 3, VICTORY = 4 }
-local current_state = STATE.TITLE
+local current_state = STATE.PLAYING
 
 -- Plot states
 local PLOT_EMPTY   = 0

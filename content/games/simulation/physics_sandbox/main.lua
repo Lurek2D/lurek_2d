@@ -44,7 +44,7 @@ local COLOR_NAMES = { "RED", "BLUE", "GREEN", "YELLOW", "WHITE" }
 -- ---------------------------------------------------------------------------
 -- State
 -- ---------------------------------------------------------------------------
-local current_state = STATE.TITLE
+local current_state = STATE.SANDBOX
 local current_mode  = MODE.BUILD
 local color_idx     = 1
 
@@ -62,7 +62,7 @@ local dragging_build = false
 
 local rope_first = nil -- index of first object for rope
 
-local title_timer    = 0
+local title_timer    = 1
 local mode_flash     = 0
 local mode_flash_text = ""
 

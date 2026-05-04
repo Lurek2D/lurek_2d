@@ -1,4 +1,4 @@
-﻿-- ============================================================================
+-- ============================================================================
 --  Donkey Kong — Climb sloped platforms to rescue Pauline
 -- ----------------------------------------------------------------------------
 --  Category : arcade
@@ -31,7 +31,7 @@ local BARREL_THROW_MIN    = 0.9
 
 -- ── Scene state enum ──────────────────────────────────────────────────────
 local STATE = { TITLE = 1, PLAYING = 2, WIN_ANIM = 3, GAME_OVER = 4 }
-local state = STATE.TITLE
+local state = STATE.PLAYING
 
 -- ── Platform definitions ──────────────────────────────────────────────────
 -- Each platform: {x1, y1, x2, y2} — line segment with slope

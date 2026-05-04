@@ -372,6 +372,7 @@ function lurek.init()
     lurek.input.bind("right",    {"d", "right"})
     lurek.input.bind("crouch",   {"lshift", "rshift"})
     lurek.input.bind("interact", {"e"})
+    lurek.input.bind("start",    {"return"})
     lurek.input.bind("quit",     {"escape"})
 
     -- Particle systems
@@ -396,6 +397,8 @@ function lurek.init()
         colorStart = {1.0, 0.95, 0.3, 1.0},
         colorEnd   = {1.0, 0.85, 0.1, 0.0},
     })
+
+    load_level(1)
 end
 
 local function _ready_setup()
@@ -413,7 +416,7 @@ function lurek.process(dt)
     -- Title screen
     if game_state == STATE.TITLE then
         title_blink = title_blink + dt
-        if lurek.input.wasActionPressed("return") then
+        if lurek.input.wasActionPressed("start") then
             current_level = 1
             load_level(1)
         end
@@ -422,7 +425,7 @@ function lurek.process(dt)
 
     -- Game over / level complete — press Enter to restart/continue
     if game_state == STATE.GAME_OVER or game_state == STATE.LEVEL_COMPLETE then
-        if lurek.input.wasActionPressed("return") then
+        if lurek.input.wasActionPressed("start") then
             if game_state == STATE.LEVEL_COMPLETE then
                 current_level = current_level + 1
                 if current_level > #LEVELS then
@@ -658,7 +661,9 @@ function lurek.process(dt)
     susp_bar.value = max_susp
 
     -- Camera
-    _cam:setPosition(0, 0)
+    local cam_x = math.max(0, math.min(MAP_W - SCREEN_W, player.x - SCREEN_W * 0.5))
+    local cam_y = math.max(0, math.min(MAP_H - SCREEN_H, player.y - SCREEN_H * 0.5))
+    _cam:setPosition(cam_x, cam_y)
 
     -- FPS in title
     local fps = lurek.timer.getFPS()
@@ -740,7 +745,7 @@ function lurek.draw()
         for i = 0, segments - 1 do
             local a1 = start_a + i * step
             local a2 = start_a + (i + 1) * step
-            lurek.render.triangle(
+            lurek.render.polygon(
                 "fill",
                 g.x, g.y,
                 g.x + math.cos(a1) * cone_r, g.y + math.sin(a1) * cone_r,

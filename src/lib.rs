@@ -241,11 +241,15 @@ pub fn lurek_run() {
     //                              Takes priority over --screenshot-frames when both are set.
     //   --window-x=<n>             Initial window X position in physical pixels.
     //   --window-y=<n>             Initial window Y position in physical pixels.
+    //   --window-width=<n>         Initial window width in physical pixels.
+    //   --window-height=<n>        Initial window height in physical pixels.
     let mut screenshot_path: Option<std::path::PathBuf> = None;
     let mut screenshot_frames: u32 = 3;
     let mut screenshot_time: Option<f32> = None;
     let mut window_x: Option<i32> = None;
     let mut window_y: Option<i32> = None;
+    let mut window_width: Option<u32> = None;
+    let mut window_height: Option<u32> = None;
     let mut game_arg: Option<String> = None;
 
     for arg in env::args().skip(1) {
@@ -266,6 +270,14 @@ pub fn lurek_run() {
         } else if let Some(val) = arg.strip_prefix("--window-y=") {
             if let Ok(n) = val.parse::<i32>() {
                 window_y = Some(n);
+            }
+        } else if let Some(val) = arg.strip_prefix("--window-width=") {
+            if let Ok(n) = val.parse::<u32>() {
+                window_width = Some(n);
+            }
+        } else if let Some(val) = arg.strip_prefix("--window-height=") {
+            if let Ok(n) = val.parse::<u32>() {
+                window_height = Some(n);
             }
         } else if !arg.starts_with("--") {
             game_arg = Some(arg);
@@ -314,6 +326,12 @@ pub fn lurek_run() {
 
     let (mut config, conf_error) = Config::load(&game_dir);
     config.modules.validate_and_fix();
+    if let Some(width) = window_width {
+        config.window.width = width;
+    }
+    if let Some(height) = window_height {
+        config.window.height = height;
+    }
     let app = App::new(config, conf_error);
     app.run(
         game_dir,

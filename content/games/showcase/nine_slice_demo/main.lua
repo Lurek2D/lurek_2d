@@ -81,7 +81,7 @@ local SCALE_SIZES = {
 }
 
 -- ── State ──────────────────────────────────────────────────────────────
-local state           = "TITLE"
+local state           = "EDITING"
 local current_style   = 1
 local panel_w         = 200
 local panel_h         = 150

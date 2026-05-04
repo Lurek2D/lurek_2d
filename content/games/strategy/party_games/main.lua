@@ -189,6 +189,11 @@ function lurek.init()
         startSize    = 8, endSize = 1,
         spread       = math.pi * 2,
     })
+
+    round    = 1
+    mini_idx = 0
+    scores   = { 0, 0 }
+    next_mini()
 end
 
 -- ── Process ───────────────────────────────────────────────
@@ -270,6 +275,7 @@ function lurek.process(dt)
         if typing.done then
             if lurek.input.wasActionPressed("start") then next_mini() end
         end
+        process_text_input(dt)
         return
     end
 
@@ -278,12 +284,13 @@ function lurek.process(dt)
         if math_game.done then
             if lurek.input.wasActionPressed("start") then next_mini() end
         end
+        process_text_input(dt)
         return
     end
 end
 
 -- Helper to handle text input for math and typing (simplified polling)
-function lurek.process(dt)
+function process_text_input(dt)
     if state ~= "typing" and state ~= "math" then return end
 
     local letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"

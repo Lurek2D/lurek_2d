@@ -24,11 +24,11 @@ local MAX_PARTICLES = 200
 -- ============================================================
 -- States
 -- ============================================================
-local STATE_TITLE   = "TITLE"
+local STATE_TITLE   = "PLAYING"
 local STATE_RUNNING = "RUNNING"
 
-local state       = STATE_TITLE
-local title_timer = 0
+local state       = STATE_RUNNING
+local title_timer = 1
 local title_alpha = 0
 
 -- ============================================================

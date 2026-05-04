@@ -8,12 +8,6 @@ describe("evidence: layers", function()
     end)
 
     -- @evidence file
-    -- @covers LImageData:drawCircle
-    -- @covers LLayeredImage:addLayer
-    -- @covers LLayeredImage:getLayer
-    -- @covers LLayeredImage:merge
-    -- @covers lurek.image.newLayeredImage
-    -- @covers lurek.image.savePNG
     it("produces a merged three-layer PNG", function()
         local dir  = evidence_output_dir("layers")
         local path = dir .. "merged_layers.png"
@@ -42,15 +36,6 @@ describe("evidence: layers", function()
     end)
 
     -- @evidence file
-    -- @covers LLayeredImage:addLayer
-    -- @covers LLayeredImage:getLayer
-    -- @covers LLayeredImage:getOpacity
-    -- @covers LLayeredImage:isVisible
-    -- @covers LLayeredImage:merge
-    -- @covers LLayeredImage:setOpacity
-    -- @covers LLayeredImage:setVisible
-    -- @covers lurek.image.newLayeredImage
-    -- @covers lurek.image.savePNG
     it("produces a composited image respecting opacity and visibility", function()
         local dir  = evidence_output_dir("layers")
         local path = dir .. "opacity_visibility.png"
@@ -79,11 +64,6 @@ describe("evidence: layers", function()
     end)
 
     -- @evidence file
-    -- @covers LLayeredImage:addLayer
-    -- @covers LLayeredImage:getLayer
-    -- @covers LLayeredImage:save
-    -- @covers LLayeredImage:swapLayers
-    -- @covers lurek.image.newLayeredImage
     it("saves a .limg artifact after layer swap", function()
         local dir  = evidence_output_dir("layers")
         local path = dir .. "swapped.limg"

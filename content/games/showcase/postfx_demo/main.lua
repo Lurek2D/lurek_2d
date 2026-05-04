@@ -65,7 +65,7 @@ end
 local SCREEN_W, SCREEN_H = 800, 600
 
 local STATE = { TITLE = 1, RUNNING = 2 }
-local current_state = STATE.TITLE
+local current_state = STATE.RUNNING
 
 -- Effect definitions: index, key name, display name, default intensity
 local EFFECT_DEFS = {
@@ -89,7 +89,7 @@ local selected_idx = 1      -- currently selected effect for intensity control
 local compare_mode = false  -- true while Space held (bypass all effects)
 ---@type LCamera
 local camera = nil
-local title_timer = 0
+local title_timer = 1
 local grain_seed = 0        -- rolling noise seed
 
 -- Particles

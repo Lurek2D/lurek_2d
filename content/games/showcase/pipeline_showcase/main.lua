@@ -27,13 +27,13 @@ local TITLE_FADE_IN = 1.2
 -- ============================================================
 -- States
 -- ============================================================
-local STATE_TITLE = "TITLE"
+local STATE_TITLE = "PLAYING"
 local STATE_SCENE_1 = "SCENE_1"
 local STATE_SCENE_2 = "SCENE_2"
 local STATE_SCENE_3 = "SCENE_3"
 
-local state = STATE_TITLE
-local title_timer = 0
+local state = STATE_SCENE_1
+local title_timer = 1
 
 local scene_names = {
     [STATE_SCENE_1] = "Menu",

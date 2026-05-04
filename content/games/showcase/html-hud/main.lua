@@ -58,56 +58,58 @@ function lurek.update(dt)
   score  = score  + math.floor(dt * 150)
   health = math.max(0, health - dt * 4)
 
-  local pct = health / 100
-  local bar = hud:getElementById("hp-bar")
-  if bar then
-    bar:setStyle("width", math.floor(pct * 100) .. "%")
-    local col = pct > 0.5 and "#2ecc71" or (pct > 0.25 and "#f39c12" or "#e74c3c")
-    bar:setStyle("background", col)
+  if hud then
+    local pct = health / 100
+    local bar = hud:getElementById("hp-bar")
+    if bar then
+      bar:setStyle("width", math.floor(pct * 100) .. "%")
+      local col = pct > 0.5 and "#2ecc71" or (pct > 0.25 and "#f39c12" or "#e74c3c")
+      bar:setStyle("background", col)
+    end
+
+    local hv = hud:getElementById("hp-val")
+    if hv then hv:setText(math.floor(health) .. "") end
+
+    local sv = hud:getElementById("score-val")
+    if sv then sv:setText(tostring(score)) end
+
+    local tv = hud:getElementById("timer-val")
+    if tv then tv:setText(math.floor(timer) .. "s") end
+
+    hud:update(dt)
   end
-
-  local hv = hud:getElementById("hp-val")
-  if hv then hv:setText(math.floor(health) .. "") end
-
-  local sv = hud:getElementById("score-val")
-  if sv then sv:setText(tostring(score)) end
-
-  local tv = hud:getElementById("timer-val")
-  if tv then tv:setText(math.floor(timer) .. "s") end
-
-  hud:update(dt)
 
   if lurek.keyboard.isDown("escape") then lurek.event.quit() end
 end
 
 function lurek.draw()
   -- Background
-  lurek.graphics.setColor(0.1, 0.12, 0.18, 1)
-  lurek.graphics.rectangle("fill", 0, 0, lurek.window.getWidth(), lurek.window.getHeight())
+  lurek.render.setColor(0.1, 0.12, 0.18, 1)
+  lurek.render.rectangle("fill", 0, 0, lurek.window.getWidth(), lurek.window.getHeight())
 
   -- Player dot
-  lurek.graphics.setColor(0.2, 0.65, 1, 1)
-  lurek.graphics.circle("fill", px, py, 20)
-  lurek.graphics.setColor(1, 1, 1, 0.4)
-  lurek.graphics.circle("line", px, py, 20)
+  lurek.render.setColor(0.2, 0.65, 1, 1)
+  lurek.render.circle("fill", px, py, 20)
+  lurek.render.setColor(1, 1, 1, 0.4)
+  lurek.render.circle("line", px, py, 20)
 
   -- HTML HUD on top
-  hud:render()
+  if hud then hud:render() end
 end
 
 function lurek.mousemoved(x, y)
   px, py = x, y
-  hud:mousemoved(x, y)
+  if hud then hud:mousemoved(x, y) end
 end
 
 function lurek.mousepressed(x, y, btn)
-  hud:mousepressed(x, y, btn)
+  if hud then hud:mousepressed(x, y, btn) end
 end
 
 function lurek.mousereleased(x, y, btn)
-  hud:mousereleased(x, y, btn)
+  if hud then hud:mousereleased(x, y, btn) end
 end
 
 function lurek.resize(w, h)
-  hud:setViewport(w, h)
+  if hud then hud:setViewport(w, h) end
 end

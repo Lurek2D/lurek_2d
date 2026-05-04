@@ -71,7 +71,7 @@ local STATE_CRAFTING  = 2
 local STATE_SHOP      = 3
 local STATE_DISCOVERY = 4
 
-local state = STATE_TITLE
+local state = STATE_CRAFTING
 local dt    = 0
 
 -- ── Ingredients ─────────────────────────────────────────────────────────────

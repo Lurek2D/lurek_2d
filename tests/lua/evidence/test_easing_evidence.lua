@@ -8,14 +8,6 @@ describe("evidence: easing", function()
     end)
 
     -- @evidence file
-    -- @covers LImageData:fill
-    -- @covers LImageData:setPixel
-    -- @covers lurek.image.newImageData
-    -- @covers lurek.image.savePNG
-    -- @covers lurek.math.inOutQuad
-    -- @covers lurek.math.inQuad
-    -- @covers lurek.math.linear
-    -- @covers lurek.math.outQuad
     it("plots quad easing curves to PNG", function()
         local dir  = evidence_output_dir("easing")
         local path = dir .. "easing_quad.png"
@@ -47,13 +39,6 @@ describe("evidence: easing", function()
     end)
 
     -- @evidence file
-    -- @covers LImageData:fill
-    -- @covers LImageData:setPixel
-    -- @covers lurek.image.newImageData
-    -- @covers lurek.image.savePNG
-    -- @covers lurek.math.inCubic
-    -- @covers lurek.math.outBounce
-    -- @covers lurek.math.outCubic
     it("plots cubic and bounce easing curves to PNG", function()
         local dir  = evidence_output_dir("easing")
         local path = dir .. "easing_cubic_bounce.png"
@@ -80,10 +65,6 @@ describe("evidence: easing", function()
     end)
 
     -- @evidence file
-    -- @covers LImageData:setPixel
-    -- @covers lurek.image.newImageData
-    -- @covers lurek.image.savePNG
-    -- @covers lurek.math.applyEasing
     it("applyEasing covers all standard names evidence heatmap PNG", function()
         local dir  = evidence_output_dir("easing")
         local path = dir .. "easing_values.png"

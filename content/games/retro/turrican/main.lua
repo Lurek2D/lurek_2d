@@ -1,4 +1,4 @@
-﻿-- ============================================================================
+-- ============================================================================
 -- Turrican — Lurek2D
 -- ============================================================================
 -- Category : retro
@@ -36,7 +36,7 @@ local K = {
     PW=24, PH=28, PSPD=180, GRAV=800, JVEL=-440, MAX_HP=5, MAX_AMMO=100,
     BSPD=360, BW=6, BH=4, FIRE_CD=0.12, BEAM_RANGE=220, BEAM_DRAIN=3, SPREAD=0.18,
 }
-local current_state = STATE.TITLE
+local current_state = STATE.PLAYING
 
 
 

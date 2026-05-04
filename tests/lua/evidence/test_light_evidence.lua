@@ -7,15 +7,6 @@ local OUT = "tests/output/light/"
 -- @describe Evidence: lurek.light API + PNG visualization
 describe("Evidence: lurek.light API + PNG visualization", function()
     -- @evidence file
-    -- @covers LImageData:setPixel
-    -- @covers LLight:getColor
-    -- @covers LLight:getPosition
-    -- @covers LLight:getRadius
-    -- @covers LLight:setColor
-    -- @covers LLight:setIntensity
-    -- @covers lurek.image.newImageData
-    -- @covers lurek.image.savePNG
-    -- @covers lurek.light.newLight
     it("PNG: single point light with radial falloff", function()
         local W, H = 128, 128
         local img = lurek.image.newImageData(W, H)
@@ -45,10 +36,6 @@ describe("Evidence: lurek.light API + PNG visualization", function()
     end)
 
     -- @evidence file
-    -- @covers LImageData:setPixel
-    -- @covers lurek.image.newImageData
-    -- @covers lurek.image.savePNG
-    -- @covers lurek.light.newLight
     it("PNG: multi-light scene with colored point lights", function()
         local W, H = 256, 256
         local img = lurek.image.newImageData(W, H)
@@ -103,15 +90,6 @@ local OUT = "tests/output/light/"
 -- @describe Evidence: lurek.light API + PNG visualization
 describe("Evidence: lurek.light API + PNG visualization", function()
     -- @evidence file
-    -- @covers LImageData:setPixel
-    -- @covers LLight:getColor
-    -- @covers LLight:getPosition
-    -- @covers LLight:getRadius
-    -- @covers LLight:setColor
-    -- @covers LLight:setIntensity
-    -- @covers lurek.image.newImageData
-    -- @covers lurek.image.savePNG
-    -- @covers lurek.light.newLight
     it("PNG: single point light with radial falloff", function()
         local W, H = 128, 128
         local img = lurek.image.newImageData(W, H)
@@ -141,10 +119,6 @@ describe("Evidence: lurek.light API + PNG visualization", function()
     end)
 
     -- @evidence file
-    -- @covers LImageData:setPixel
-    -- @covers lurek.image.newImageData
-    -- @covers lurek.image.savePNG
-    -- @covers lurek.light.newLight
     it("PNG: multi-light scene with colored point lights", function()
         local W, H = 256, 256
         local img = lurek.image.newImageData(W, H)

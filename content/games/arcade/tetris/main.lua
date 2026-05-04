@@ -75,7 +75,7 @@ local BOARD_Y             = 40
 
 -- ── Scene state enum ──────────────────────────────────────────────────────
 local STATE = { TITLE = 1, PLAYING = 2, GAME_OVER = 3 }
-local state = STATE.TITLE
+local state = STATE.PLAYING
 
 -- ── Tetromino definitions ─────────────────────────────────────────────────
 local PIECES = {

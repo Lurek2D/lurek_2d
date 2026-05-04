@@ -54,14 +54,14 @@ local FEED_INTERVAL    = 10
 local HUNGER_INTERVAL  = 8
 local VISITOR_BASE     = 2  -- gold per visitor per cycle
 
-local STATE_TITLE   = "TITLE"
+local STATE_TITLE   = "PLAYING"
 local STATE_PLAYING = "PLAYING"
 local STATE_VICTORY = "VICTORY"
 
 ------------------------------------------------------------
 -- Game state
 ------------------------------------------------------------
-local state       = STATE_TITLE
+local state       = STATE_PLAYING
 local gold        = 300
 local displayGold = 300
 local rating      = 1.0

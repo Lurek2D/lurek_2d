@@ -30,7 +30,7 @@ local actions = {
 local SCREEN_W, SCREEN_H = 800, 600
 
 local STATE = { TITLE = 1, SCENE = 2, CHOICE = 3, ENDING = 4 }
-local current_state = STATE.TITLE
+local current_state = STATE.SCENE
 
 local TYPEWRITER_SPEED   = 0.03
 local AUTO_ADVANCE_DELAY = 3.0

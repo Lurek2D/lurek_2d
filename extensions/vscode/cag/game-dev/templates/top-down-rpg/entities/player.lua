@@ -14,10 +14,10 @@ end
 
 function Player:update(dt)
     local dx, dy = 0, 0
-    if lurek.input.isDown("left")  or lurek.input.isDown("a") then dx = dx - 1 end
-    if lurek.input.isDown("right") or lurek.input.isDown("d") then dx = dx + 1 end
-    if lurek.input.isDown("up")    or lurek.input.isDown("w") then dy = dy - 1 end
-    if lurek.input.isDown("down")  or lurek.input.isDown("s") then dy = dy + 1 end
+    if lurek.input.keyboard.isDown("left")  or lurek.input.keyboard.isDown("a") then dx = dx - 1 end
+    if lurek.input.keyboard.isDown("right") or lurek.input.keyboard.isDown("d") then dx = dx + 1 end
+    if lurek.input.keyboard.isDown("up")    or lurek.input.keyboard.isDown("w") then dy = dy - 1 end
+    if lurek.input.keyboard.isDown("down")  or lurek.input.keyboard.isDown("s") then dy = dy + 1 end
 
     -- Normalize diagonal movement
     if dx ~= 0 and dy ~= 0 then

@@ -77,7 +77,7 @@ local COL_BAR        = { 0.85, 0.85, 0.20 }
 -- ---------------------------------------------------------------------------
 -- Game state
 -- ---------------------------------------------------------------------------
-local current_state  = STATE.TITLE
+local current_state  = STATE.RUNNING
 local current_event  = EVENT.SPRINT_100
 local intro_timer    = 0
 local result_timer   = 0
@@ -790,7 +790,11 @@ end
 -- lurek.ready
 -- ---------------------------------------------------------------------------
 local function _ready_setup()
-    current_state = STATE.TITLE
+    p_stamina = p_max_stamina
+    medals = { gold = 0, silver = 0, bronze = 0 }
+    total_points = 0
+    event_results = {}
+    setup_event(EVENT.SPRINT_100)
 end
 
 -- ---------------------------------------------------------------------------
@@ -989,10 +993,10 @@ function lurek.draw()
 
     -- Particles
     lurek.render.setColor(1, 1, 1)
-    lurek.render.draw(ps_dust)
-    lurek.render.draw(ps_impact)
-    lurek.render.draw(ps_trail)
-    lurek.render.draw(ps_confetti)
+    ps_dust:render()
+    ps_impact:render()
+    ps_trail:render()
+    ps_confetti:render()
 
     if camera then camera:detach() end
 end

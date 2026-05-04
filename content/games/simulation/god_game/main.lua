@@ -27,7 +27,7 @@ local VICTORY   = "VICTORY"
 local GAME_OVER = "GAME_OVER"
 
 -- Game state
-local state = TITLE
+local state = PLAYING
 local grid = {}
 local display_colors = {}
 local villagers = {}

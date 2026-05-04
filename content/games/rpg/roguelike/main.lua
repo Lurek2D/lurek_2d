@@ -17,14 +17,14 @@ local FLOOR  = 0
 local WALL   = 1
 local STAIRS = 2
 
-local STATE_TITLE    = "TITLE"
+local STATE_TITLE    = "PLAYING"
 local STATE_PLAYING  = "PLAYING"
 local STATE_GAMEOVER = "GAME_OVER"
 
 ----------------------------------------
 -- Game state
 ----------------------------------------
-local state        = STATE_TITLE
+local state        = STATE_PLAYING
 local map          = {}
 local visible      = {}
 local explored     = {}

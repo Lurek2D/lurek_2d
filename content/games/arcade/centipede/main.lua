@@ -1,4 +1,4 @@
-﻿-- ============================================================================
+-- ============================================================================
 --  Centipede — Blast a segmented centipede through a mushroom field
 -- ----------------------------------------------------------------------------
 --  Category : arcade
@@ -35,7 +35,7 @@ local MUSH_COLORS = {
 
 -- ── Scene state enum ──────────────────────────────────────────────────────
 local STATE = { TITLE = 1, PLAYING = 2, GAME_OVER = 3 }
-local state = STATE.TITLE
+local state = STATE.PLAYING
 
 -- ── Mutable game state ───────────────────────────────────────────────────
 local mushrooms       = {}   -- mushrooms[row][col] = hp (1-4) or nil

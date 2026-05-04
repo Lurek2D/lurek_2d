@@ -8,10 +8,6 @@ describe("evidence: noise", function()
     end)
 
     -- @evidence file
-    -- @covers LImageData:setPixel
-    -- @covers lurek.image.newImageData
-    -- @covers lurek.image.savePNG
-    -- @covers lurek.math.perlin2d
     it("renders a Perlin noise field PNG", function()
         local dir  = evidence_output_dir("noise")
         local path = dir .. "perlin_field.png"
@@ -30,10 +26,6 @@ describe("evidence: noise", function()
     end)
 
     -- @evidence file
-    -- @covers LImageData:setPixel
-    -- @covers lurek.image.newImageData
-    -- @covers lurek.image.savePNG
-    -- @covers lurek.math.simplex2d
     it("renders a Simplex noise field PNG", function()
         local dir  = evidence_output_dir("noise")
         local path = dir .. "simplex_field.png"
@@ -52,11 +44,6 @@ describe("evidence: noise", function()
     end)
 
     -- @evidence file
-    -- @covers LImageData:setPixel
-    -- @covers LNoiseGenerator:perlin2d
-    -- @covers lurek.image.newImageData
-    -- @covers lurek.image.savePNG
-    -- @covers lurek.math.newNoiseGenerator
     it("renders a seeded NoiseGenerator PNG", function()
         local dir  = evidence_output_dir("noise")
         local path = dir .. "noise_generator_seeded.png"
@@ -76,10 +63,6 @@ describe("evidence: noise", function()
     end)
 
     -- @evidence file
-    -- @covers LImageData:setPixel
-    -- @covers lurek.image.newImageData
-    -- @covers lurek.image.savePNG
-    -- @covers lurek.math.fbm
     it("renders an fBm noise field PNG", function()
         local dir  = evidence_output_dir("noise")
         local path = dir .. "fbm_field.png"

@@ -1,4 +1,4 @@
-﻿-- ============================================================================
+-- ============================================================================
 -- Sensible Soccer — Lurek2D
 -- Category: retro
 -- Fast-paced top-down football inspired by Sensible Software's 1992 Amiga
@@ -14,7 +14,7 @@
 
 
 local STATE = { TITLE = 1, PLAYING = 2, HALFTIME = 3, FULL_TIME = 4 }
-local state = STATE.TITLE
+local state = STATE.PLAYING
 
 -- ── constants ─────────────────────────────────────────────────
 local SCR_W, SCR_H = 800, 600

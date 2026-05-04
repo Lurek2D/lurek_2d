@@ -16,7 +16,7 @@
 local SCREEN_W, SCREEN_H = 800, 600
 
 local STATE = { TITLE = 1, PLAYING = 2, VICTORY = 3, GAME_OVER = 4 }
-local current_state = STATE.TITLE
+local current_state = STATE.PLAYING
 
 -- Department IDs
 local DEPT_ER      = 1

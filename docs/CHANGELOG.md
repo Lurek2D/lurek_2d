@@ -2,6 +2,49 @@
 
 All notable changes to Lurek2D are recorded here.
 
+## [1.0.9-fix.24] - 2026-05-03
+
+### feat(content): rewrite EU2 province map demo core with per-province and border-pair runtime objects
+
+- Renamed `content/games/strategy/eu2_province_map/main.lua` to `main_legacy.lua` as a full backup and replaced `main.lua` with a new implementation built from scratch.
+- New `main.lua` now loads `assets/map.png`, `assets/prov_cols.csv`, and `assets/province.toml`, builds a province ID grid, and creates per-province draw objects with runtime color control.
+- Added per-province fog-of-war overlay (`fog` alpha per province) and mouse picking backed by the ID grid.
+- Added border-pair build (`A:B`) with one draw object per pair plus runtime border color and thickness control.
+- Added runtime debug/demo controls (auto-cycle and manual keys) to prove dynamic province color, fog, and border style updates while preserving usable pan/zoom + mouse picking.
+
+### feat(content): add EU2-style province map demo from RGB province PNG data
+
+- Added `content/games/strategy/eu2_province_map/` with `conf.toml`, `main.lua`, `README.md`, and `test.lua`.
+- Added demo assets under `content/games/strategy/eu2_province_map/assets/`: `map.png`, `prov_cols.csv`, `province_names_all.txt`, and `province.toml`.
+- `main.lua` now loads `prov_cols.csv` and builds an RGB-to-province-ID lookup table, parses province names and sea/land metadata, detects marker colors from the PNG (`255,255,255` for capital and `255,0,255` for label axis), and assigns these markers to owning provinces.
+- The demo builds two cached in-memory layers once at startup (terrain and black borders), then renders them as scaled images (`1 source pixel = 8x8 world pixels`) instead of drawing per-pixel rectangles every frame.
+- Added interactive map controls: mouse-wheel zoom, left-mouse drag panning with snap-to-pixel camera on drag release, hover/select province HUD, capital circles, and rotated province labels from two-point marker axes.
+- Added colocated Lua test `content/games/strategy/eu2_province_map/test.lua` validating known RGB-to-ID mappings and confirming special marker colors are not treated as province colors.
+
+## [1.0.9-fix.23] - 2026-05-03
+
+### fix(app+demos): 6-way screenshot batch workflow, per-game logs, and demo drift fixes
+
+- `src/app/app.rs`: replaced fixed 3-second auto-screenshot safety exit with a dynamic deadline derived from `--screenshot-time` or `--screenshot-frames` plus grace time, preventing premature quit for 3-second captures.
+- `src/lib.rs`: added CLI overrides `--window-width=<n>` and `--window-height=<n>` so batch tools can tile multiple games at deterministic sizes.
+- `tools/demos/gen_demo_screenshots.py`: default capture delay changed to 3.0s; slot size now auto-fits primary monitor (3x2 layout for 6 workers); demos keep native window resolution by default (new `--force-window-size` opt-in), startup-key simulation (`--start-signal auto`, default `enter,space`) was added to pass "press any key" title screens, and each game run writes `screenshot_capture.log` plus `screenshot_capture_status.json` in the game folder.
+- Batch sweep run (`content/games/**`) now reports structured per-game success/error status and PNG presence. On the local validation run, 116/129 demos produced screenshots; 13 initial failures were logged with reasons.
+- Fixed Lua API drift/runtime issues in demos:
+  - `content/games/showcase/html-dialog/main.lua`, `content/games/showcase/html-hud/main.lua`, `content/games/showcase/html-inventory/main.lua`, `content/games/showcase/html-scoreboard/main.lua`, `content/games/showcase/html-settings/main.lua`: migrated remaining `lurek.graphics.*` calls to `lurek.render.*` and added safe nil guards around HTML document usage.
+  - `content/games/showcase/globe_demo/main.lua`: switched mouse-wheel API call to `lurek.input.mouse.getWheelDelta()` and removed obsolete `emitFrame()` call path.
+  - `content/games/showcase/light_demo/main.lua`: switched mouse-wheel API call to `lurek.input.mouse.getWheelDelta()`.
+  - `content/games/arcade/pac_man/main.lua`: guarded ghost draw loop against nil entries before ghost table initialization.
+- Re-test of the originally failing subset improved from 0/13 to 7/13 passing screenshots; remaining failures are crash-class panics in `hacking_game`, `light_demo`, `physics_demo`, `rhythm_game`, `social_deduction`, and `worms_artillery`.
+
+## [1.0.9-fix.22] - 2026-05-03
+
+### test(lua): evidence marker cleanup and colocated game tests
+
+- Reviewed evidence suites and aligned `@evidence` usage to evidence-producing `it()` blocks by adding missing markers in `tests/lua/evidence/test_math_evidence.lua` and `tests/lua/evidence/test_pathfind_evidence.lua`.
+- Updated `tests/lua/harness.rs` so Lua tests can run from both `tests/lua/*` and workspace-relative paths, then added discovery-based execution for colocated game tests under `content/games/**/test.lua`.
+- Migrated existing demo smoke tests from `tests/lua/demos/test_*.lua` into each game folder as `content/games/<category>/<game>/test.lua`.
+- Added missing colocated smoke tests so every game directory with `main.lua` now has a sibling `test.lua` (129/129 coverage).
+
 ## [1.0.9-fix.21] - 2026-05-02
 
 ### chore(build): audit and fix all build, packaging, and install scripts

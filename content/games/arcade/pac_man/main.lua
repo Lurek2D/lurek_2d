@@ -1,4 +1,4 @@
-﻿-- ============================================================================
+-- ============================================================================
 --  Pac-Man — Navigate a maze, eat dots, avoid ghosts
 -- ----------------------------------------------------------------------------
 --  Category : arcade
@@ -26,7 +26,7 @@ local OFFSET_Y = math.floor((SCREEN_H - MAZE_H) / 2) + 14
 
 -- ── Scene state enum ──────────────────────────────────────────────────────
 local STATE = { TITLE = 1, PLAYING = 2, GAME_OVER = 3 }
-local game_state = STATE.TITLE
+local game_state = STATE.PLAYING
 
 -- ── Directions ────────────────────────────────────────────────────────────
 local DIR = {
@@ -816,8 +816,9 @@ function lurek.draw()
 
     -- ── Draw ghosts ───────────────────────────────────────────────────
     for i = 1, 4 do
-        if not ghosts[i].in_house or game_state ~= STATE.PLAYING then
-            draw_ghost(ghosts[i])
+        local ghost = ghosts[i]
+        if ghost and (not ghost.in_house or game_state ~= STATE.PLAYING) then
+            draw_ghost(ghost)
         end
     end
 

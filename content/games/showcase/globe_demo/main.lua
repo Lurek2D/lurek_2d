@@ -318,7 +318,7 @@ end
 function lurek.process(dt)
     local mx, my = lurek.input.mouse.getPosition()
     local lmb    = lurek.input.isActionDown("drag")
-    local _, wdy = lurek.input.getWheelDelta()
+    local _, wdy = lurek.input.mouse.getWheelDelta()
 
     -- ── Mouse wheel zoom ──────────────────────────────────────────────────
     if wdy and wdy ~= 0 then
@@ -424,11 +424,8 @@ end
 function lurek.draw()
     -- (background filled automatically via setBackgroundColor set in init)
 
-    -- ── Globe renders automatically via emitFrame ─────────────────────────
-    -- The engine submits the returned commands to the GPU pipeline.
-    local cmds = g:emitFrame(nil)
-    -- (cmds submitted by engine; we inspect count for debug only)
-    local cmd_count = cmds and #cmds or 0
+    -- Globe renders via the registered layer pipeline.
+    local cmd_count = 0
 
     -- ── HUD strip ─────────────────────────────────────────────────────────
     lurek.render.setColor(0.0, 0.0, 0.0, 0.65)

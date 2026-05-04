@@ -5,7 +5,7 @@
 -- crafting, wall building, and enemy waves at night.
 -- ============================================================================
 
-local STATE_TITLE     = "TITLE"
+local STATE_TITLE     = "PLAYING"
 local STATE_PLAYING   = "PLAYING"
 local STATE_CRAFT     = "CRAFT_MENU"
 local STATE_GAME_OVER = "GAME_OVER"
@@ -35,7 +35,7 @@ local TILE_COLORS = {
 }
 
 -- Game state
-local state = STATE_TITLE
+local state = STATE_PLAYING
 local map = {}
 local player = {}
 local inventory = {}

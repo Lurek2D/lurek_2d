@@ -19,11 +19,11 @@ local MAX_SCALE = 4
 -- ============================================================
 -- States
 -- ============================================================
-local STATE_TITLE   = "TITLE"
+local STATE_TITLE   = "PLAYING"
 local STATE_PLAYING = "PLAYING"
 
-local state = STATE_TITLE
-local title_timer = 0
+local state = STATE_PLAYING
+local title_timer = 1
 local title_alpha = 0
 
 -- ============================================================
@@ -588,7 +588,7 @@ function lurek.draw()
 
     -- Particles
     lurek.render.setColor(1, 1, 1)
-    lurek.render.draw(ps_sparkle)
+    ps_sparkle:render()
 
     -- Score popups
     for _, p in ipairs(popups) do

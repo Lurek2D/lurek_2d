@@ -153,24 +153,29 @@ function lurek.load()
   local w = lurek.window.getWidth()
   local h = lurek.window.getHeight()
   settings_doc = lurek.html.newDocument(build_html(), { css=CSS, width=w, height=h })
+  if not settings_doc then
+    return
+  end
   wire_events()
 end
 
 function lurek.update(dt)
-  settings_doc:update(dt)
+  if settings_doc then
+    settings_doc:update(dt)
+  end
   if lurek.keyboard.isDown("escape") then lurek.event.quit() end
 end
 
 function lurek.draw()
-  lurek.graphics.setColor(0.07, 0.07, 0.13, 1)
-  lurek.graphics.rectangle("fill", 0, 0, lurek.window.getWidth(), lurek.window.getHeight())
-  settings_doc:render()
+  lurek.render.setColor(0.07, 0.07, 0.13, 1)
+  lurek.render.rectangle("fill", 0, 0, lurek.window.getWidth(), lurek.window.getHeight())
+  if settings_doc then settings_doc:render() end
 end
 
-function lurek.mousemoved(x, y)          settings_doc:mousemoved(x, y) end
-function lurek.mousepressed(x, y, btn)   settings_doc:mousepressed(x, y, btn) end
-function lurek.mousereleased(x, y, btn)  settings_doc:mousereleased(x, y, btn) end
-function lurek.wheelmoved(dx, dy)        settings_doc:wheelmoved(dx, dy) end
-function lurek.keypressed(key)           settings_doc:keypressed(key) end
-function lurek.textinput(t)              settings_doc:textinput(t) end
-function lurek.resize(w, h)              settings_doc:setViewport(w, h) end
+function lurek.mousemoved(x, y) if settings_doc then settings_doc:mousemoved(x, y) end end
+function lurek.mousepressed(x, y, btn) if settings_doc then settings_doc:mousepressed(x, y, btn) end end
+function lurek.mousereleased(x, y, btn) if settings_doc then settings_doc:mousereleased(x, y, btn) end end
+function lurek.wheelmoved(dx, dy) if settings_doc then settings_doc:wheelmoved(dx, dy) end end
+function lurek.keypressed(key) if settings_doc then settings_doc:keypressed(key) end end
+function lurek.textinput(t) if settings_doc then settings_doc:textinput(t) end end
+function lurek.resize(w, h) if settings_doc then settings_doc:setViewport(w, h) end end

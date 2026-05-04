@@ -34,7 +34,7 @@ local DIG_TIME   = { [T_DIRT]=0.5, [T_STONE]=1.0, [T_ORE]=1.5, [T_GOLD]=1.5, [T_
 local TILE_VALUE = { [T_DIRT]=1,   [T_STONE]=2,   [T_ORE]=5,   [T_GOLD]=15,  [T_GEM]=50 }
 
 -- Game state
-local state = "TITLE"
+local state = "MINING"
 local mine = {}
 local player = { cx=10, cy=0, hp=100, gold=0, items=0 }
 local upgrades = { pickaxe=false, headlamp=false, cart=false }

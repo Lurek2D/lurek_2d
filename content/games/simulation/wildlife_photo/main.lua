@@ -18,7 +18,7 @@ local WORLD_W, WORLD_H = 2400, 600
 local VIEWFINDER_W, VIEWFINDER_H = 200, 150
 
 local STATES = { TITLE = 1, EXPLORING = 2, ALBUM = 3, COMPLETE = 4 }
-local current_state = STATES.TITLE
+local current_state = STATES.EXPLORING
 
 local ZOOM_LEVELS = { 1, 2, 3 }
 local ZOOM_NAMES  = { "Wide (1x)", "Medium (2x)", "Close (3x)" }

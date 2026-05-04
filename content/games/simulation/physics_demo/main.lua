@@ -20,7 +20,7 @@ local WALL_THICK     = 4
 local RESTITUTION_LEVELS = { 0.3, 0.7, 1.0 }
 
 -- ───────────────────────── state ─────────────────────────────
-local state           = "TITLE"
+local state           = "RUNNING"
 local objects         = {}
 local ramps           = {}
 local particles       = {}
@@ -40,7 +40,7 @@ local prev_mouse_y    = 0
 local throw_vx        = 0
 local throw_vy        = 0
 
-local title_timer     = 0
+local title_timer     = 1
 
 -- ───────────────────────── helpers ───────────────────────────
 local function rand_range(lo, hi)
@@ -369,50 +369,61 @@ function lurek.init()
   _cam = lurek.camera.new()
 
   -- shape selectors
-  lurek.input.bind("key_1", function() spawn_type = 1 end)
-  lurek.input.bind("key_2", function() spawn_type = 2 end)
-  lurek.input.bind("key_3", function() spawn_type = 3 end)
+  lurek.input.bind("key_1", "1")
+  lurek.input.bind("key_2", "2")
+  lurek.input.bind("key_3", "3")
 
   -- gravity toggle
-  lurek.input.bind("key_g", function()
-    gravity_on = not gravity_on
-  end)
+  lurek.input.bind("key_g", "g")
 
   -- bounce cycle
-  lurek.input.bind("key_b", function()
-    restitution_idx = restitution_idx % #RESTITUTION_LEVELS + 1
-  end)
+  lurek.input.bind("key_b", "b")
 
   -- clear
-  lurek.input.bind("key_c", function()
-    objects = {}
-    ramps = {}
-    particles = {}
-  end)
+  lurek.input.bind("key_c", "c")
 
   -- slow-mo toggle
-  lurek.input.bind("key_m", function()
+  lurek.input.bind("key_m", "m")
+
+  -- wind toggle
+  lurek.input.bind("key_w", "w")
+
+  -- ramp placement
+  lurek.input.bind("key_r", "r")
+
+  -- pin nearest object
+  lurek.input.bind("key_p", "p")
+
+  -- quit
+  lurek.input.bind("key_escape", "escape")
+end
+
+local function _ready_setup()
+  _cam:reset()
+end
+
+-- ───────────────────────── keypressed ────────────────────────
+function lurek.keypressed(key)
+  if key == "escape" then lurek.event.quit(); return end
+  if state == "TITLE" then state = "RUNNING"; return end
+  if key == "1" then spawn_type = 1
+  elseif key == "2" then spawn_type = 2
+  elseif key == "3" then spawn_type = 3
+  elseif key == "g" then gravity_on = not gravity_on
+  elseif key == "b" then restitution_idx = restitution_idx % #RESTITUTION_LEVELS + 1
+  elseif key == "c" then objects = {}; ramps = {}; particles = {}
+  elseif key == "m" then
     slow_mo = not slow_mo
     local target = slow_mo and 0.25 or 1.0
     lurek.tween.to(_G, { time_scale = target }, 0.4)
-  end)
-
-  -- wind toggle
-  lurek.input.bind("key_w", function()
-    wind_on = not wind_on
-  end)
-
-  -- ramp placement
-  lurek.input.bind("key_r", function()
+  elseif key == "w" then wind_on = not wind_on
+  elseif key == "r" then
     local mx, my = lurek.input.mouse.getPosition()
     ramps[#ramps + 1] = {
       x = mx - 40, y = my - 10, w = 80, h = 40,
       dir = (math.random() > 0.5) and "right" or "left",
     }
-  end)
-
-  -- pin nearest object
-  lurek.input.bind("key_p", function()
+  elseif key == "p" then
     local mx, my = lurek.input.mouse.getPosition()
     local best_i, best_d = nil, math.huge
     for i, o in ipairs(objects) do
@@ -425,37 +436,25 @@ function lurek.init()
       objects[best_i].vy = 0
       spawn_poof(objects[best_i].x, objects[best_i].y)
     end
-  end)
-
-  -- mouse spawn / drag
-  lurek.input.bind("mouse_1", function()
-    if state == "TITLE" then
-      state = "RUNNING"
-      return
-    end
-    local mx, my = lurek.input.mouse.getPosition()
-    if mx == nil then mx = 0 end
-    if my == nil then my = 0 end
-    local idx = find_at(mx, my)
-    if idx then
-      dragging = idx
-      drag_offset_x = objects[idx].x - mx
-      drag_offset_y = objects[idx].y - my
-      prev_mouse_x = mx
-      prev_mouse_y = my
-    else
-      spawn_object(mx, my)
-    end
-  end)
-
-  -- quit
-  lurek.input.bind("key_escape", function()
-    lurek.event.quit()
-  end)
+  end
 end
 
-local function _ready_setup()
-  _cam:reset()
+-- ───────────────────────── mousepressed ──────────────────────
+function lurek.mousepressed(mx, my, button)
+  if button ~= 1 then return end
+  if state == "TITLE" then state = "RUNNING"; return end
+  if mx == nil then mx = 0 end
+  if my == nil then my = 0 end
+  local idx = find_at(mx, my)
+  if idx then
+    dragging = idx
+    drag_offset_x = objects[idx].x - mx
+    drag_offset_y = objects[idx].y - my
+    prev_mouse_x = mx
+    prev_mouse_y = my
+  else
+    spawn_object(mx, my)
+  end
 end
 
 -- ───────────────────────── process ───────────────────────────

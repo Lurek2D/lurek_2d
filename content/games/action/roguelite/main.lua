@@ -52,7 +52,7 @@ local BOSS_HP_BASE     = 120
 
 -- ── States ────────────────────────────────────────────────────────────────
 local STATE = { TITLE = 1, COMBAT = 2, PERK_SELECT = 3, BOSS = 4, GAME_OVER = 5 }
-local state = STATE.TITLE
+local state = STATE.COMBAT
 
 -- ── Perk definitions ──────────────────────────────────────────────────────
 local PERK_DEFS = {
@@ -245,14 +245,18 @@ local function open_door()
     door_open = true
     if door_pulse_tw then door_pulse_tw:cancel() end
     door_pulse.alpha = 0
-    door_pulse_tw = tween_api.to(door_pulse, 0.6, { alpha = 1 }, { loop = -1, yoyo = true })
+    door_pulse_tw = tween_api.to(door_pulse, { alpha = 1 }, 0.6)
+    door_pulse_tw:setRepeat(-1)
+    door_pulse_tw:setYoyo(true)
 end
 
 local function enter_perk_select()
     perk_choices = random_perk_choices()
     perk_glow.alpha = 0
     if perk_glow_tw then perk_glow_tw:cancel() end
-    perk_glow_tw = tween_api.to(perk_glow, 0.5, { alpha = 1 }, { loop = -1, yoyo = true })
+    perk_glow_tw = tween_api.to(perk_glow, { alpha = 1 }, 0.5)
+    perk_glow_tw:setRepeat(-1)
+    perk_glow_tw:setYoyo(true)
     state = STATE.PERK_SELECT
 end
 
@@ -290,7 +294,7 @@ local function damage_player(amount)
     player.flash = 0.3
 
     if dmg_flash_tw then dmg_flash_tw:cancel() end
-    dmg_flash_tw = tween_api.to(player, 0.3, { flash = 0 })
+    dmg_flash_tw = tween_api.to(player, { flash = 0 }, 0.3)
 
     if death_burst then
         death_burst:moveTo(player.x, player.y)
@@ -590,6 +594,7 @@ function lurek.init()
     lurek.input.bind("quit",   {"escape"})
 
     math.randomseed(os.time())
+    reset_game()
 end
 
 -- ══════════════════════════════════════════════════════════════════════════
@@ -944,10 +949,10 @@ function lurek.draw()
     end
 
     -- ── Particles ─────────────────────────────────────────────────────
-    if death_burst  then lurek.render.draw(death_burst) end
-    if slash_sparks then lurek.render.draw(slash_sparks) end
-    if dash_trail   then lurek.render.draw(dash_trail) end
-    if proj_sparks  then lurek.render.draw(proj_sparks) end
+    if death_burst  then death_burst:render() end
+    if slash_sparks then slash_sparks:render() end
+    if dash_trail   then dash_trail:render() end
+    if proj_sparks  then proj_sparks:render() end
 end
 
 -- ══════════════════════════════════════════════════════════════════════════

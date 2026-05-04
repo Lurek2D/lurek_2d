@@ -43,7 +43,7 @@ local PU_CLR = { W={1.0,0.6,0.1}, M={0.2,0.8,1.0}, S={0.4,1.0,0.4} }
 
 -- ── State ─────────────────────────────────────────────────────────────────
 local STATE = { TITLE=1, PLAYING=2, GAME_OVER=3, LEVEL_COMPLETE=4 }
-local state           = STATE.TITLE
+local state           = STATE.PLAYING
 local paddle_x, pad_w = 0, PADDLE_W
 local balls, bricks, powerups = {}, {}, {}
 local score, lives, level     = 0, 3, 1

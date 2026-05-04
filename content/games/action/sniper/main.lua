@@ -28,14 +28,14 @@ local SCOPE_MIN_X, SCOPE_MAX_X = 100, 750
 local SCOPE_MIN_Y, SCOPE_MAX_Y = 60, 500
 
 -- States
-local STATE_TITLE = "TITLE"
+local STATE_TITLE = "PLAYING"
 local STATE_AIMING = "AIMING"
 local STATE_BULLET_FLIGHT = "BULLET_FLIGHT"
 local STATE_ROUND_END = "ROUND_END"
 local STATE_GAME_OVER = "GAME_OVER"
 
 -- Game state
-local state = STATE_TITLE
+local state = STATE_AIMING
 local scope_x, scope_y = 200, 300
 local sway_time = 0
 local breath_held = false

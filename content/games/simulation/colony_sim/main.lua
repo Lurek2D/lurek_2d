@@ -68,7 +68,7 @@ local BUILD_COLORS = {
 }
 
 -- ── State ───────────────────────────────────────────────────
-local state       = "TITLE"
+local state       = "PLAYING"
 local map         = {}          -- map[row][col] = terrain
 local buildings   = {}          -- {col, row, type}
 local colonists   = {}          -- {x, y, job, selected, anim_t}

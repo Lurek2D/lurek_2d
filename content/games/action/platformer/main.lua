@@ -40,7 +40,7 @@ local T_MOVING  = 7
 
 -- ── Scene state enum ──────────────────────────────────────────────────────
 local STATE = { TITLE = 1, PLAYING = 2, LEVEL_COMPLETE = 3, GAME_OVER = 4 }
-local game_state = STATE.TITLE
+local game_state = STATE.PLAYING
 
 -- ── Mutable game state ───────────────────────────────────────────────────
 local player = {

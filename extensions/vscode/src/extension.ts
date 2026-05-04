@@ -170,7 +170,7 @@ export function activate(context: vscode.ExtensionContext): void {
   );
 
   // ─── Run Commands ────────────────────────────────────────
-  registerCommand(context, "lurek.runGame", () => runGame(lurekProcess));
+  registerCommand(context, "lurek.runGame", (uri?: vscode.Uri) => runGame(lurekProcess, uri));
   registerCommand(context, "lurek.stopGame", () => stopGame(lurekProcess));
   registerCommand(context, "lurek.runWithArgs", () => runWithArgs(lurekProcess));
   registerCommand(context, "lurek.runExample", () => runExample(lurekProcess));

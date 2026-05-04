@@ -20,7 +20,7 @@ local actions = {
 }
 
 -- Game state
-local state = "TITLE"
+local state = "CASE_INTRO"
 local current_case = 1
 local credibility = 100
 local jury_meter = 0

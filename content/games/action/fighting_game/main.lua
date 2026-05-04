@@ -47,7 +47,7 @@ local SHAKE_LIGHT     = 3
 
 -- ── Scene state ───────────────────────────────────────────────────────────
 local STATE = { TITLE = 1, FIGHTING = 2, ROUND_END = 3, MATCH_OVER = 4 }
-local state = STATE.TITLE
+local state = STATE.FIGHTING
 
 -- ── Fighter factory ──────────────────────────────────────────────────────
 local function new_fighter(x, facing, is_ai)
@@ -604,9 +604,9 @@ if _cam then _cam:setPosition(ox, oy) end
     draw_fighter(p2, 0.9, 0.2, 0.2,  1.0, 0.5, 0.2)    -- red body, orange accent
 
     -- Particles
-    lurek.render.draw(hit_sparks)
-    lurek.render.draw(block_sparks)
-    lurek.render.draw(super_flash)
+    hit_sparks:render()
+    block_sparks:render()
+    super_flash:render()
 end
 
 -- ── lurek.render_ui ──────────────────────────────────────────────────────

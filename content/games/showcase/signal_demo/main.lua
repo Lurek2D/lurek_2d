@@ -17,7 +17,7 @@
 local SCREEN_W, SCREEN_H = 800, 600
 
 local STATE = { TITLE = 1, PLAYING = 2, GAME_OVER = 3 }
-local current_state = STATE.TITLE
+local current_state = STATE.PLAYING
 
 -- Layout
 local GAME_AREA_W   = 480
@@ -126,7 +126,7 @@ local score_display   = 0
 local combo           = 0
 local level           = 1
 local game_speed      = 1.0
-local title_timer     = 0
+local title_timer     = 1
 local title_alpha     = 0
 local death_timer     = 0
 

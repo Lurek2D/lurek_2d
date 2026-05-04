@@ -1,4 +1,4 @@
-﻿-- ============================================================================
+-- ============================================================================
 -- Debug Bridge Demo — Lurek2D
 -- ============================================================================
 -- Category : showcase
@@ -17,7 +17,7 @@
 
 local SCREEN_W, SCREEN_H = 800, 600
 local STATE = { TITLE = 1, RUNNING = 2, PAUSED = 3 }
-local current_state = STATE.TITLE
+local current_state = STATE.RUNNING
 
 -- Layout
 local PANEL_LEFT_W  = 380
@@ -81,7 +81,7 @@ local sim_time        = 0
 local sim_memory_used = 42.5
 local sim_memory_max  = 128.0
 local console_input   = ""
-local title_timer     = 0
+local title_timer     = 1
 
 -- Graph tween
 local graph_scroll = { offset = 0 }

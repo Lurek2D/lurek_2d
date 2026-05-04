@@ -90,7 +90,7 @@ local ALIEN_PROJ_SPEED = 200
 -- States
 -- ---------------------------------------------------------------------------
 local STATE = { TITLE = 1, INTRO = 2, PLAYING = 3, DEAD = 4, GAME_OVER = 5 }
-local current_state = STATE.TITLE
+local current_state = STATE.PLAYING
 
 -- ---------------------------------------------------------------------------
 -- Game variables
@@ -666,7 +666,8 @@ function lurek.init()
     cam = lurek.camera.new(SCREEN_W, SCREEN_H)
     math.randomseed(os.time())
     build_scenes()
-    current_state = STATE.TITLE
+    load_scene(1)
+    current_state = STATE.PLAYING
 end
 
 -- ---------------------------------------------------------------------------

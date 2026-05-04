@@ -324,7 +324,7 @@ function lurek.draw()
     -- Sparks
     lurek.render.setColor(1, 1, 1)
     if sparks ~= nil then
-        lurek.render.draw(sparks, 0, 0)
+        sparks:render()
     end
 
     -- HUD

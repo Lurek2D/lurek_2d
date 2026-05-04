@@ -1,4 +1,4 @@
-﻿-- ============================================================================
+-- ============================================================================
 --  Bridge Builder — Engineer bridges across canyons
 -- ----------------------------------------------------------------------------
 --  Category : strategy
@@ -48,7 +48,7 @@ local LEVELS = {
 
 -- ── States ────────────────────────────────────────────────────────────────
 local STATE = { TITLE = 1, BUILDING = 2, TESTING = 3, SUCCESS = 4, FAIL = 5, LEVEL_SELECT = 6 }
-local state = STATE.TITLE
+local state = STATE.BUILDING
 
 -- ── Game data ─────────────────────────────────────────────────────────────
 local nodes          -- array of { x, y, fixed }

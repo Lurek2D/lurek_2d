@@ -1,4 +1,4 @@
-﻿-- ============================================================================
+-- ============================================================================
 -- Hello World — Lurek2D
 -- ============================================================================
 -- Category : showcase
@@ -18,7 +18,7 @@
 local SCREEN_W, SCREEN_H = 800, 600
 
 local STATE = { TITLE = 1, RUNNING = 2 }
-local current_state = STATE.TITLE
+local current_state = STATE.RUNNING
 
 -- 8-color palette
 local PALETTE = {

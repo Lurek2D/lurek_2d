@@ -31,14 +31,14 @@ local HP_BAR_W    = 120
 local HP_BAR_H    = 16
 
 -- States
-local STATE_TITLE       = "TITLE"
+local STATE_TITLE       = "PLAYING"
 local STATE_PLAYER_TURN = "PLAYER_TURN"
 local STATE_ENEMY_TURN  = "ENEMY_TURN"
 local STATE_COMBAT      = "COMBAT"
 local STATE_GAME_OVER   = "GAME_OVER"
 
-local state = STATE_TITLE
-local title_timer = 0
+local state = STATE_PLAYER_TURN
+local title_timer = 1
 
 -- ---------------------------------------------------------------------------
 -- Card definitions

@@ -25,7 +25,7 @@ local LOG_MAX = 20
 -- ============================================================
 -- States
 -- ============================================================
-local STATE_TITLE = "TITLE"
+local STATE_TITLE = "PLAYING"
 local STATE_P1 = "PATTERN_1"
 local STATE_P2 = "PATTERN_2"
 local STATE_P3 = "PATTERN_3"
@@ -33,8 +33,8 @@ local STATE_P4 = "PATTERN_4"
 local STATE_P5 = "PATTERN_5"
 local STATE_P6 = "PATTERN_6"
 
-local state = STATE_TITLE
-local title_timer = 0
+local state = STATE_P1
+local title_timer = 1
 
 local pattern_names = {
     [STATE_P1] = "EventBus",

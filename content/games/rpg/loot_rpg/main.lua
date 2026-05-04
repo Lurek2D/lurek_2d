@@ -5,13 +5,13 @@
 -- ============================================================
 
 -- States
-local STATE_TITLE     = "TITLE"
+local STATE_TITLE     = "PLAYING"
 local STATE_ROOM      = "ROOM"
 local STATE_COMBAT    = "COMBAT"
 local STATE_LOOT      = "LOOT"
 local STATE_GAME_OVER = "GAME_OVER"
 
-local state = STATE_TITLE
+local state = STATE_ROOM
 
 -- Camera & particles
 ---@type LCamera

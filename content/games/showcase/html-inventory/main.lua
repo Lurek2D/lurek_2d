@@ -79,6 +79,9 @@ function lurek.load()
   local w = lurek.window.getWidth()
   local h = lurek.window.getHeight()
   inv_doc = lurek.html.newDocument(build_html(), { css=CSS, width=w, height=h })
+  if not inv_doc then
+    return
+  end
 
   -- Wire up click handlers for all filled slots.
   local slots = inv_doc:queryAll(".slot.filled")
@@ -100,17 +103,19 @@ function lurek.load()
 end
 
 function lurek.update(dt)
-  inv_doc:update(dt)
+  if inv_doc then
+    inv_doc:update(dt)
+  end
   if lurek.keyboard.isDown("escape") then lurek.event.quit() end
 end
 
 function lurek.draw()
-  lurek.graphics.setColor(0.1, 0.1, 0.18, 1)
-  lurek.graphics.rectangle("fill", 0, 0, lurek.window.getWidth(), lurek.window.getHeight())
-  inv_doc:render()
+  lurek.render.setColor(0.1, 0.1, 0.18, 1)
+  lurek.render.rectangle("fill", 0, 0, lurek.window.getWidth(), lurek.window.getHeight())
+  if inv_doc then inv_doc:render() end
 end
 
-function lurek.mousemoved(x, y)   inv_doc:mousemoved(x, y) end
-function lurek.mousepressed(x, y, btn)  inv_doc:mousepressed(x, y, btn) end
-function lurek.mousereleased(x, y, btn) inv_doc:mousereleased(x, y, btn) end
-function lurek.resize(w, h) inv_doc:setViewport(w, h) end
+function lurek.mousemoved(x, y) if inv_doc then inv_doc:mousemoved(x, y) end end
+function lurek.mousepressed(x, y, btn) if inv_doc then inv_doc:mousepressed(x, y, btn) end end
+function lurek.mousereleased(x, y, btn) if inv_doc then inv_doc:mousereleased(x, y, btn) end end
+function lurek.resize(w, h) if inv_doc then inv_doc:setViewport(w, h) end end

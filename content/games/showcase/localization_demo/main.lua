@@ -1,4 +1,4 @@
-﻿-- ============================================================================
+-- ============================================================================
 -- Localization Demo — Lurek2D
 -- ============================================================================
 -- Category : showcase
@@ -17,16 +17,16 @@
 
 local SCREEN_W, SCREEN_H = 800, 600
 
-local STATE_TITLE    = "TITLE"
+local STATE_TITLE    = "PLAYING"
 local STATE_BROWSING = "BROWSING"
-local current_state  = STATE_TITLE
+local current_state  = STATE_BROWSING
 
 local LANGS       = { "en", "fr", "es", "pl" }
 local LANG_NAMES  = { en = "English", fr = "Français", es = "Español", pl = "Polski" }
 local current_lang = "en"
 
 local rtl_mode = false
-local title_timer = 0
+local title_timer = 1
 
 -- Player name for interpolation demo
 local player_name = "Luna"
@@ -424,6 +424,29 @@ function lurek.draw()
             text_("Press ENTER", cx - 55, cy + 130, 16)
         end
     else
+        -- World backdrop so screenshots are meaningful even without draw_ui.
+        for i = 0, 11 do
+            local t = i / 11
+            lurek.render.setColor(0.08 + t * 0.08, 0.06 + t * 0.06, 0.12 + t * 0.10, 1)
+            rect("fill", 0, i * 50, SCREEN_W, 50)
+        end
+
+        lurek.render.setColor(0.95, 0.9, 1.0, 0.9)
+        text_(tr("demo_title") .. " — " .. LANG_NAMES[current_lang], 24, 24, 20)
+        lurek.render.setColor(0.8, 0.8, 0.9, 0.85)
+        text_(tr_interp("welcome", { name = player_name }), 24, 56, 16)
+
+        for _, btn in ipairs(menu_buttons) do
+            local bx = 380
+            local bw, bh = 200, 36
+            lurek.render.setColor(0.15, 0.12, 0.22, btn.alpha)
+            rect("fill", bx, btn.y - 18, bw, bh)
+            lurek.render.setColor(0.4, 0.3, 0.6, btn.alpha * 0.7)
+            rect("line", bx, btn.y - 18, bw, bh)
+            lurek.render.setColor(0.9, 0.85, 1.0, btn.alpha)
+            text_(tr(btn.label_key), bx + 20, btn.y - 8, 18)
+        end
+
         -- Particles in world space
         lurek.render.setColor(1, 1, 1, 1)
         ps_confetti:render()

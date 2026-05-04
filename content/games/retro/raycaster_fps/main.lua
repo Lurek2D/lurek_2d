@@ -125,7 +125,7 @@ local enemies = {
 }
 
 -- ── state ─────────────────────────────────────────────────────
-local current_state = STATE.TITLE
+local current_state = STATE.PLAYING
 local player = { x = 2.5, y = 2.5, angle = 0, hp = 100, ammo = 30 }
 local fire_timer = 0
 local score = 0

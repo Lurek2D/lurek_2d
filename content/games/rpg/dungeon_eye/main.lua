@@ -10,8 +10,35 @@
 -- Controls: W/S move, A/D turn, Space/E interact, I inventory, Escape quit
 -- ============================================================================
 
-local item      = require("library.item")
-local inventory = require("library.inventory")
+-- Minimal inline item / inventory helpers (avoids library API version mismatch)
+local _item_defs = {}
+local item = {
+    clearTypes  = function() _item_defs = {} end,
+    defineType  = function(name, def) _item_defs[name] = def end,
+    create      = function(name)
+        local def = _item_defs[name] or {}
+        return { type_id = name, base_stats = def.base_stats or {}, category = def.category or "misc" }
+    end,
+}
+local inventory = {
+    new = function(cap)
+        local inv = { _cap = cap }
+        for i = 1, cap do inv[i] = nil end
+        return inv
+    end,
+    add = function(inv, it)
+        for i = 1, inv._cap do
+            if not inv[i] then inv[i] = it; return true end
+        end
+        return false
+    end,
+    getSlots = function(inv)
+        return inv
+    end,
+    remove = function(inv, idx)
+        inv[idx] = nil
+    end,
+}
 
 local W, H = 800, 640
 local VIEW_W, VIEW_H = 480, 360   -- raycaster viewport
@@ -154,6 +181,8 @@ end
 function lurek.init()
     lurek.window.setTitle("Dungeon Eye — Lurek2D")
     lurek.render.setBackgroundColor(0.03, 0.02, 0.06)
+    enemies = {}
+    item_drops = {}
 
     -- Define item types
     item.clearTypes()
@@ -209,12 +238,17 @@ function lurek.init()
     spawn_enemies()
 
     -- Raycaster (first-person view)
-    raycaster = lurek.raycaster.new(MAP_W, MAP_H)
-    -- Feed wall data
-    for ry = 1, MAP_H do
-        for rx = 1, MAP_W do
-            raycaster:setCell(rx, ry, is_wall(rx, ry) and 1 or 0)
+    if lurek.raycaster and lurek.raycaster.new then
+        raycaster = lurek.raycaster.new(MAP_W, MAP_H)
+        -- Feed wall data
+        for ry = 1, MAP_H do
+            for rx = 1, MAP_W do
+                raycaster:setCell(rx, ry, is_wall(rx, ry) and 1 or 0)
+            end
         end
+    else
+        raycaster = nil
+        push_log("Raycaster unavailable: fallback view active.")
     end
 
     push_log("You descend into the dungeon...")
@@ -230,6 +264,10 @@ function lurek.update(dt)
             state = STATE.EXPLORE
         end
     end
+end
+
+function lurek.process(dt)
+    lurek.update(dt)
 end
 
 local function try_move(nx, ny)
@@ -295,8 +333,10 @@ function lurek.draw()
     local dir_angle_map = { [0]=math.pi*1.5, [1]=0, [2]=math.pi*0.5, [3]=math.pi }
     local view_angle = dir_angle_map[player.dir]
 
-    local rc = assert(raycaster)
-    rc:drawView(player.mx - 0.5, player.my - 0.5, view_angle, 66, VIEW_W, VIEW_H, 32)
+    local rc = raycaster
+    if rc and rc.drawView then
+        rc:drawView(player.mx - 0.5, player.my - 0.5, view_angle, 66, VIEW_W, VIEW_H, 32)
+    end
 
     -- Floor
     lurek.render.setColor(0.18, 0.14, 0.10)
@@ -309,6 +349,11 @@ function lurek.draw()
     if move_anim > 0 then
         lurek.render.setColor(1, 1, 1, move_anim * 3)
         rect("fill", VIEW_X, VIEW_Y, VIEW_W, VIEW_H)
+    end
+
+    if not rc then
+        lurek.render.setColor(0.9, 0.7, 0.2)
+        text_("Fallback view: raycaster missing", 10, 10)
     end
 
     -- Minimap (top-right corner of view)

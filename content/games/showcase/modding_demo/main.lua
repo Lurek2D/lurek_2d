@@ -16,12 +16,12 @@
 -- ---------------------------------------------------------------------------
 local SCREEN_W, SCREEN_H = 800, 600
 
-local STATE_TITLE   = "TITLE"
+local STATE_TITLE   = "PLAYING"
 local STATE_BROWSER = "BROWSER"
 local STATE_TEST    = "TEST_SCENE"
 local current_state = STATE_TITLE
 
-local title_timer     = 0
+local title_timer     = 1
 local title_hold      = 2.5
 local export_msg      = nil
 local export_timer    = 0

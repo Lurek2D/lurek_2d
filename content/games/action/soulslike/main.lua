@@ -521,6 +521,8 @@ function lurek.init()
         speed = 120, spread = math.pi, colors = {{1,0.2,0,1},{1,0.6,0,0}} })
     death_ps  = lurek.particle.newSystem({ maxParticles = 50, lifetime = 0.8,
         speed = 80, spread = math.pi, colors = {{0.8,0.1,0.1,1},{0.3,0,0,0}} })
+
+    start_combat()
 end
 
 function lurek.process(dt)

@@ -69,7 +69,7 @@ local MAP_W      = MAP_COLS * TILE
 local MAP_H      = MAP_ROWS * TILE
 
 local STATE = { TITLE = 1, PLAYING = 2, VICTORY = 3 }
-local current_state = STATE.TITLE
+local current_state = STATE.PLAYING
 
 -- Directions: 1=right, 2=down, 3=left, 4=up
 local DIR_RIGHT = 1

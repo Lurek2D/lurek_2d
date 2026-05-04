@@ -8,9 +8,24 @@ import { buildRunCommand, buildTerminalCommand } from "./parallelCargo.js";
  * launching, stopping, and reporting status.
  */
 export class LurekProcessService {
-  private terminal: vscode.Terminal | null = null;
+  private readonly terminals = new Set<vscode.Terminal>();
+  private readonly terminalCloseListener: vscode.Disposable;
+  private runCounter = 0;
   private readonly _onStatusChange = new vscode.EventEmitter<boolean>();
   public readonly onStatusChange = this._onStatusChange.event;
+
+  constructor() {
+    this.terminalCloseListener = vscode.window.onDidCloseTerminal((terminal) => {
+      if (!this.terminals.delete(terminal)) {
+        return;
+      }
+
+      if (this.terminals.size === 0) {
+        this._onStatusChange.fire(false);
+        void vscode.commands.executeCommand("setContext", "lurek.gameRunning", false);
+      }
+    });
+  }
 
   /**
    * Finds an installed lurek2d binary. Checks the user setting first,
@@ -53,11 +68,6 @@ export class LurekProcessService {
    * Runs the game in an integrated terminal.
    */
   async run(gameDir: string, args: string[] = []): Promise<void> {
-    if (this.isRunning()) {
-      vscode.window.showWarningMessage("Lurek2D is already running.");
-      return;
-    }
-
     const saveOnRun = vscode.workspace
       .getConfiguration("lurek")
       .get<boolean>("saveOnRun", true);
@@ -71,38 +81,43 @@ export class LurekProcessService {
       ? buildTerminalCommand(binary, launchArgs)
       : buildRunCommand("debug", launchArgs);
 
-    this.terminal = vscode.window.createTerminal({
-      name: "Lurek2D",
+    const terminal = vscode.window.createTerminal({
+      name: `Lurek2D Debug #${++this.runCounter}`,
       cwd: getWorkspaceRoot(),
     });
-    this.terminal.show();
-    this.terminal.sendText(cmd);
+    this.terminals.add(terminal);
+    terminal.show();
+    terminal.sendText(cmd);
 
     this._onStatusChange.fire(true);
-    vscode.commands.executeCommand("setContext", "lurek.gameRunning", true);
+    void vscode.commands.executeCommand("setContext", "lurek.gameRunning", true);
   }
 
   /**
    * Stops the running game process.
    */
   stop(): void {
-    if (this.terminal) {
-      this.terminal.dispose();
-      this.terminal = null;
+    const running = Array.from(this.terminals);
+    this.terminals.clear();
+
+    for (const terminal of running) {
+      terminal.dispose();
     }
+
     this._onStatusChange.fire(false);
-    vscode.commands.executeCommand("setContext", "lurek.gameRunning", false);
+    void vscode.commands.executeCommand("setContext", "lurek.gameRunning", false);
   }
 
   /**
    * Returns whether a game process is currently running.
    */
   isRunning(): boolean {
-    return this.terminal !== null;
+    return this.terminals.size > 0;
   }
 
   dispose(): void {
     this.stop();
+    this.terminalCloseListener.dispose();
     this._onStatusChange.dispose();
   }
 }

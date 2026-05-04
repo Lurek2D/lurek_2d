@@ -97,7 +97,7 @@ ROOMS.attic = {
 ------------------------------------------------------------------------
 -- Game state
 ------------------------------------------------------------------------
-local game_state    = STATE.TITLE
+local game_state    = STATE.EXPLORING
 local current_room  = "bedroom"
 local selected_idx  = 1
 local inventory     = {}

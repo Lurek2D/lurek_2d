@@ -28,14 +28,14 @@ local CLEANER_CAPACITY      = 5
 local ELEVATOR_FEE          = 30
 local DIRTY_THRESHOLD       = 2
 
-local STATE_TITLE   = "TITLE"
+local STATE_TITLE   = "PLAYING"
 local STATE_PLAYING = "PLAYING"
 local STATE_VICTORY = "VICTORY"
 
 ------------------------------------------------------------
 -- Game state
 ------------------------------------------------------------
-local state       = STATE_TITLE
+local state       = STATE_PLAYING
 local gold        = 200
 local displayGold = 200
 local rating      = 3.0

@@ -119,23 +119,23 @@ end
 
 function lurek.draw()
   -- World background.
-  lurek.graphics.setColor(0.13, 0.16, 0.22, 1)
-  lurek.graphics.rectangle("fill", 0, 0, lurek.window.getWidth(), lurek.window.getHeight())
+  lurek.render.setColor(0.13, 0.16, 0.22, 1)
+  lurek.render.rectangle("fill", 0, 0, lurek.window.getWidth(), lurek.window.getHeight())
 
   -- Ground patch.
-  lurek.graphics.setColor(0.2, 0.45, 0.2, 1)
-  lurek.graphics.ellipse("fill", npc_x, npc_y + npc_r, npc_r * 1.6, npc_r * 0.4)
+  lurek.render.setColor(0.2, 0.45, 0.2, 1)
+  lurek.render.ellipse("fill", npc_x, npc_y + npc_r, npc_r * 1.6, npc_r * 0.4)
 
   -- NPC circle body.
-  lurek.graphics.setColor(0.6, 0.4, 0.2, 1)
-  lurek.graphics.circle("fill", npc_x, npc_y, npc_r)
-  lurek.graphics.setColor(1, 0.85, 0.6, 1)
-  lurek.graphics.circle("fill", npc_x, npc_y - npc_r * 0.6, npc_r * 0.45)
+  lurek.render.setColor(0.6, 0.4, 0.2, 1)
+  lurek.render.circle("fill", npc_x, npc_y, npc_r)
+  lurek.render.setColor(1, 0.85, 0.6, 1)
+  lurek.render.circle("fill", npc_x, npc_y - npc_r * 0.6, npc_r * 0.45)
 
   -- Prompt.
-  lurek.graphics.setColor(1, 0.9, 0.3, 1)
+  lurek.render.setColor(1, 0.9, 0.3, 1)
   if not dialog_open then
-    lurek.graphics.print("Click to talk", npc_x - 46, npc_y - npc_r - 22)
+    lurek.render.print("Click to talk", npc_x - 46, npc_y - npc_r - 22)
   end
 
   -- HTML dialog.

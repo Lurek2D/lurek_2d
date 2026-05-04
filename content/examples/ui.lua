@@ -1,4 +1,5 @@
-﻿-- content/examples/ui.lua
+﻿---@diagnostic disable: undefined-field
+-- content/examples/ui.lua
 -- Hand-written coverage of the lurek.ui API (363 items).
 --
 -- Every --@api-stub: block below is a real love2d-wiki-style snippet

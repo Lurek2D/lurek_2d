@@ -1,7 +1,7 @@
 -- Tower Sim — SimTower-style vertical building simulation
 -- Category: simulation
 
-local state = "TITLE"
+local state = "PLAYING"
 local gold = 100
 local display_gold = 100
 local floors = {}

@@ -18,8 +18,8 @@ end
 function Player:update(dt)
     -- Horizontal
     self.vx = 0
-    if lurek.input.isDown("left") or lurek.input.isDown("a") then self.vx = -SPEED end
-    if lurek.input.isDown("right") or lurek.input.isDown("d") then self.vx = SPEED end
+    if lurek.input.keyboard.isDown("left") or lurek.input.keyboard.isDown("a") then self.vx = -SPEED end
+    if lurek.input.keyboard.isDown("right") or lurek.input.keyboard.isDown("d") then self.vx = SPEED end
     self.x = self.x + self.vx * dt
 
     -- Gravity

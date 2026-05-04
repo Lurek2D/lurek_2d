@@ -162,7 +162,7 @@ end
 -- Bind to a hotkey or in-game "send to tray" menu entry; do not call at startup.
 do  -- lurek.window.minimize
   function lurek.process(dt)
-    if lurek.input.isKeyPressed("f11") then
+    if lurek.input.isDown("f11") then
       lurek.window.minimize()
     end
   end
@@ -285,7 +285,7 @@ end
 -- Bind to an in-game "Quit" menu entry; the engine will run lurek.quit before the process exits.
 do  -- lurek.window.close
   function lurek.process(dt)
-    if lurek.input.isKeyPressed("escape") then
+    if lurek.input.isDown("escape") then
       lurek.window.close()
     end
   end

@@ -35,14 +35,14 @@ local T_HEAL   = 4
 ------------------------------------------------------------------------
 -- States
 ------------------------------------------------------------------------
-local STATE_TITLE         = "TITLE"
+local STATE_TITLE         = "PLAYING"
 local STATE_OVERWORLD     = "OVERWORLD"
 local STATE_BATTLE        = "BATTLE"
 local STATE_BATTLE_ACTION = "BATTLE_ACTION"
 local STATE_WIN           = "WIN"
 local STATE_GAME_OVER     = "GAME_OVER"
 
-local state = STATE_TITLE
+local state = STATE_OVERWORLD
 
 ------------------------------------------------------------------------
 -- Type effectiveness: fire>grass>water>fire

@@ -19,14 +19,14 @@ local PLUNGER_Y = TABLE_Y + TABLE_H - 40
 local MAX_LAUNCH_VEL = 800
 
 -- States
-local STATE_TITLE = "TITLE"
+local STATE_TITLE = "PLAYING"
 local STATE_PLUNGING = "PLUNGING"
 local STATE_PLAYING = "PLAYING"
 local STATE_BALL_LOST = "BALL_LOST"
 local STATE_GAME_OVER = "GAME_OVER"
 
 -- Game state
-local state = STATE_TITLE
+local state = STATE_PLAYING
 local score = 0
 local display_score = 0
 local high_score = 0

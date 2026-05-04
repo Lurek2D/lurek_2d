@@ -60,7 +60,7 @@ end
 local SCREEN_W, SCREEN_H = 800, 600
 
 local STATE = { TITLE = 1, PLAYING = 2, GAME_OVER = 3 }
-local current_state = STATE.TITLE
+local current_state = STATE.PLAYING
 
 -- Player
 local PLAYER_SIZE   = 20
@@ -423,7 +423,7 @@ function lurek.init()
     cam = lurek.camera.new(SCREEN_W, SCREEN_H)
     math.randomseed(os.time())
     reset_game()
-    current_state = STATE.TITLE
+    current_state = STATE.PLAYING
 end
 
 -- ---------------------------------------------------------------------------

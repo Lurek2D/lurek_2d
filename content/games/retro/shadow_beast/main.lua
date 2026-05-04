@@ -108,7 +108,7 @@ local PARALLAX = {
 -- States
 -- ---------------------------------------------------------------------------
 local STATE = { TITLE = 1, PLAYING = 2, GAME_OVER = 3 }
-local current_state = STATE.TITLE
+local current_state = STATE.PLAYING
 
 -- ---------------------------------------------------------------------------
 -- Game variables

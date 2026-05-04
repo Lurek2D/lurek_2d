@@ -17,13 +17,6 @@ end
 -- @describe Evidence: lurek.minimap API + PNG visualization
 describe("Evidence: lurek.minimap API + PNG visualization", function()
     -- @evidence file
-    -- @covers LImageData:fill
-    -- @covers LMinimap:getTerrain
-    -- @covers LMinimap:setTerrain
-    -- @covers LMinimap:setTerrainColor
-    -- @covers lurek.image.newImageData
-    -- @covers lurek.image.savePNG
-    -- @covers lurek.minimap.newMinimap
     it("PNG: terrain grid rendered as colored cells", function()
         local GRID = 16
         local CELL = 8
@@ -74,13 +67,6 @@ describe("Evidence: lurek.minimap API + PNG visualization", function()
     end)
 
     -- @evidence file
-    -- @covers LMinimap:getFogLevel
-    -- @covers LMinimap:setFogEnabled
-    -- @covers LMinimap:setFogLevel
-    -- @covers LMinimap:setTerrain
-    -- @covers lurek.image.newImageData
-    -- @covers lurek.image.savePNG
-    -- @covers lurek.minimap.newMinimap
     it("PNG: fog-of-war overlay on terrain", function()
         local GRID = 16
         local CELL = 8
@@ -145,13 +131,6 @@ end
 -- @describe Evidence: lurek.minimap API + PNG visualization
 describe("Evidence: lurek.minimap API + PNG visualization", function()
     -- @evidence file
-    -- @covers LImageData:fill
-    -- @covers LMinimap:getTerrain
-    -- @covers LMinimap:setTerrain
-    -- @covers LMinimap:setTerrainColor
-    -- @covers lurek.image.newImageData
-    -- @covers lurek.image.savePNG
-    -- @covers lurek.minimap.newMinimap
     it("PNG: terrain grid rendered as colored cells", function()
         local GRID = 16
         local CELL = 8
@@ -202,13 +181,6 @@ describe("Evidence: lurek.minimap API + PNG visualization", function()
     end)
 
     -- @evidence file
-    -- @covers LMinimap:getFogLevel
-    -- @covers LMinimap:setFogEnabled
-    -- @covers LMinimap:setFogLevel
-    -- @covers LMinimap:setTerrain
-    -- @covers lurek.image.newImageData
-    -- @covers lurek.image.savePNG
-    -- @covers lurek.minimap.newMinimap
     it("PNG: fog-of-war overlay on terrain", function()
         local GRID = 16
         local CELL = 8

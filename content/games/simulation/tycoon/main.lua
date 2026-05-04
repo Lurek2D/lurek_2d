@@ -5,10 +5,10 @@
 local W, H = 800, 600
 
 -- ── States ──────────────────────────────────────────────────────────────
-local STATE_TITLE    = "TITLE"
+local STATE_TITLE    = "PLAYING"
 local STATE_PLAYING  = "PLAYING"
 local STATE_PRESTIGE = "PRESTIGE_CONFIRM"
-local state = STATE_TITLE
+local state = STATE_PLAYING
 
 -- ── Economy ─────────────────────────────────────────────────────────────
 local gold = 500

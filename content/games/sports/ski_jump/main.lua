@@ -16,7 +16,7 @@ local HILLS = {
 }
 
 -- ─── State ───────────────────────────────────────────────────────────
-local state = "TITLE"
+local state = "AIRBORNE"
 local hill = 2
 local round = 1
 local round_scores = {}

@@ -116,7 +116,7 @@ local ENEMY_PATH = {
 ------------------------------------------------------------------------
 -- Game state
 ------------------------------------------------------------------------
-local game_state     = STATE.TITLE
+local game_state     = STATE.PLAYING
 local player         = { x = 1.5 * TILE_SIZE, y = 1.5 * TILE_SIZE }
 local facing         = { x = 1, y = 0 }  -- flashlight direction
 local flashlight_on  = true

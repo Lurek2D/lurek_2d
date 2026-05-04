@@ -1,4 +1,4 @@
-﻿-- ============================================================================
+-- ============================================================================
 -- Boxing Ring — Lurek2D
 -- ============================================================================
 -- Category : sports
@@ -22,7 +22,7 @@ local RING_FLOOR  = 420
 local RING_TOP    = 160
 
 local STATE = { TITLE = 1, FIGHT = 2, ROUND_END = 3, GAME_OVER = 4 }
-local current_state = STATE.TITLE
+local current_state = STATE.FIGHT
 
 -- Fighter dimensions
 local FIGHTER_W, FIGHTER_H = 40, 70

@@ -16,7 +16,7 @@ local SABOTAGE_DURATION = 8.0
 local tween_api = lurek.tween ---@type any
 
 -- ── States ─────────────────────────────────────────────────────────────────
-local STATE_TITLE = "TITLE"
+local STATE_TITLE = "PLAYING"
 local STATE_TASK_PHASE = "TASK_PHASE"
 local STATE_MEETING = "MEETING"
 local STATE_VOTING = "VOTING"
@@ -58,7 +58,7 @@ local player_colors = {
 local player_names = { "You", "Red", "Green", "Yellow", "Orange", "Purple" }
 
 -- ── Game state ─────────────────────────────────────────────────────────────
-local state = STATE_TITLE
+local state = STATE_TASK_PHASE
 local players = {}
 local tasks = {}
 local tasks_completed = 0
@@ -480,7 +480,7 @@ function lurek.init()
     _cam = lurek.camera.new()
     lurek.window.setTitle("Social Deduction — Lurek2D")
     lurek.render.setBackgroundColor(0.08, 0.08, 0.12)
-    tween_api.to(1.0, function(t) title_alpha = t end, { ease = "outQuad" })
+    title_alpha = 1.0
 end
 
 local function _ready_setup()

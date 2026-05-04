@@ -75,7 +75,6 @@ end)
 describe("Evidence: lurek.graph visual network PNG", function()
 
     -- @evidence file
-    -- @covers lurek.image.savePNG
     it("ring topology -” PNG evidence: ring_graph", function()
         -- 8-node ring
         local N = 8
@@ -104,7 +103,6 @@ describe("Evidence: lurek.graph visual network PNG", function()
     end)
 
     -- @evidence file
-    -- @covers lurek.image.savePNG
     it("hub-and-spoke topology -” PNG evidence: hub_graph", function()
         local CX, CY = 120, 120
         local R = 80

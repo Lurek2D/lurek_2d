@@ -14,13 +14,13 @@ local TOTAL_LEMMINGS = 12
 local NEEDED = 8
 
 -- states
-local STATE_TITLE = "TITLE"
+local STATE_TITLE = "PLAYING"
 local STATE_PLAYING = "PLAYING"
 local STATE_LEVEL_COMPLETE = "LEVEL_COMPLETE"
 local STATE_FAILED = "FAILED"
 local STATE_GAME_OVER = "GAME_OVER"
 
-local state = STATE_TITLE
+local state = STATE_PLAYING
 local terrain = {}
 local lemmings = {}
 local particles = {}

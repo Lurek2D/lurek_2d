@@ -1,4 +1,4 @@
-﻿-- ============================================================================
+-- ============================================================================
 -- Demo Game — Lurek2D
 -- ============================================================================
 -- Category : showcase
@@ -24,7 +24,7 @@ local MAX_ROUNDS = 3
 local MAX_COMBO_MULT = 4
 
 local STATE = { TITLE = 1, PLAYING = 2, ROUND_END = 3, GAME_OVER = 4 }
-local current_state = STATE.TITLE
+local current_state = STATE.PLAYING
 
 local POWERUP = { TRIPLE = 1, BIG = 2, SLOWMO = 3 }
 local POWERUP_COLORS = {

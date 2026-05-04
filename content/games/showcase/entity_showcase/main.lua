@@ -23,7 +23,7 @@ local PANEL_SLIDE_SPEED = 8
 -- ============================================================
 -- States
 -- ============================================================
-local STATE_TITLE = "TITLE"
+local STATE_TITLE = "PLAYING"
 local STATE_CH1   = "CHAPTER_1"
 local STATE_CH2   = "CHAPTER_2"
 local STATE_CH3   = "CHAPTER_3"
@@ -31,8 +31,8 @@ local STATE_CH4   = "CHAPTER_4"
 local STATE_CH5   = "CHAPTER_5"
 local STATE_CH6   = "CHAPTER_6"
 
-local state = STATE_TITLE
-local title_timer = 0
+local state = STATE_CH1
+local title_timer = 1
 local chapter_names = {
     [STATE_CH1] = "Create / Destroy",
     [STATE_CH2] = "Components",

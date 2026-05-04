@@ -29,7 +29,7 @@ local POS_COLORS = {
 }
 
 -- States
-local STATE_TITLE    = "TITLE"
+local STATE_TITLE    = "PLAYING"
 local STATE_OFFICE   = "OFFICE"
 local STATE_ROSTER   = "ROSTER"
 local STATE_MATCH    = "MATCH"
@@ -90,7 +90,7 @@ local function team_avg_skill(players)
 end
 
 -- Game state
-local state = STATE_TITLE
+local state = STATE_OFFICE
 local dt = 0
 local my_team_index = 1
 local budget = START_BUDGET
@@ -811,7 +811,7 @@ function lurek.draw_ui()
       local is_me = (t.name == TEAM_NAMES[my_team_index])
       if is_me then
         lurek.render.setColor(0.2, 0.4, 0.2, 0.5)
-        rect("fill", "fill", 18, y - 2, 550, 20)
+        rect("fill", 18, y - 2, 550, 20)
       end
       if i <= 3 then
         lurek.render.setColor(0.3, 1, 0.5, 1)

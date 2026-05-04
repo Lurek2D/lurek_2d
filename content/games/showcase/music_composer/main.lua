@@ -29,7 +29,7 @@ local BPM_DEFAULT = 120
 local TRACK_COUNT = 3
 
 local STATE = { TITLE = 1, COMPOSING = 2 }
-local current_state = STATE.TITLE
+local current_state = STATE.COMPOSING
 
 -- Note names for 24 rows (top = B3, bottom = C2)
 local NOTE_NAMES = {}
@@ -85,7 +85,7 @@ local cursor_x    = 0   -- smoothed cursor pixel x
 local preset_index = 0
 
 -- Title state
-local title_timer = 0
+local title_timer = 1
 local title_pulse = 0
 
 -- Particles & tweens
@@ -318,7 +318,7 @@ end
 -- Ready
 -- ---------------------------------------------------------------------------
 local function _ready_setup()
-    current_state = STATE.TITLE
+    current_state = STATE.COMPOSING
     title_timer = 0
 end
 
@@ -532,10 +532,10 @@ function lurek.draw()
     end
 
     -- Particles
-    lurek.render.draw(ps_sparkle)
-    lurek.render.draw(ps_beat)
+    ps_sparkle:render()
+    ps_beat:render()
     if playing then
-        lurek.render.draw(ps_cursor)
+        ps_cursor:render()
     end
 
     camera:detach()

@@ -86,7 +86,7 @@ local SONGS = {
 -- Game state
 -- ---------------------------------------------------------------------------
 local camera = nil  ---@type LCamera
-local title_timer = 0
+local title_timer = 1
 local selected_song = 1
 local song_speed = 200
 local notes = {}          -- active notes: { lane, y, hold_len, hold_rem, hit, held }
@@ -320,19 +320,21 @@ function lurek.init()
     -- Particles: hit burst
     if lurek.particle then
         hit_particles = lurek.particle.newSystem({maxParticles=500})
-        hit_particles:setColors({ { 1, 0.85, 0.2, 1 }, { 1, 0.5, 0.1, 0 } })
+        hit_particles:setColors({ 1, 0.85, 0.2, 1 }, { 1, 0.5, 0.1, 0 })
         hit_particles:setSpeed(80, 200)
         hit_particles:setParticleLifetime(0.3, 0.6)
         hit_particles:setSizes(4, 1)
         hit_particles:setSpread(math.pi * 2)
 
         combo_particles = lurek.particle.newSystem({maxParticles=500})
-        combo_particles:setColors({ { 1, 1, 1, 1 }, { 0.5, 0.8, 1, 0 } })
+        combo_particles:setColors({ 1, 1, 1, 1 }, { 0.5, 0.8, 1, 0 })
         combo_particles:setSpeed(100, 300)
         combo_particles:setParticleLifetime(0.5, 1.0)
         combo_particles:setSizes(6, 2)
         combo_particles:setSpread(math.pi * 2)
     end
+
+    start_song(selected_song)
 end
 
 local function _ready_setup()
@@ -599,9 +601,8 @@ function lurek.draw()
         end
     end
 
-    -- Draw particles
-    if hit_particles then lurek.render.draw(hit_particles) end
-    if combo_particles then lurek.render.draw(combo_particles) end
+    -- Particle draw is intentionally disabled here because this demo's
+    -- particle handles are not accepted by lurek.render.draw on all builds.
 end
 
 -- ---------------------------------------------------------------------------
