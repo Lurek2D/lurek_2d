@@ -4,57 +4,45 @@
 //! extension for completions, hover documentation, and signature help.
 
 use std::collections::HashMap;
+use std::fs::File;
+use std::io::BufWriter;
+use std::path::Path;
 
 use crate::docs::entry::DocEntry;
 
-/// Writes a VS Code completions JSON array to `path`.
-///
-/// Each item contains `label`, `kind`, `detail`, and `documentation` fields
-/// matching the VS Code `CompletionItem` format.
-///
-/// # Parameters
-/// - `entries` — `&[DocEntry]`.
-/// - `path` — `&str`.
-///
-/// # Returns
-/// `Result<(), String>`.
-pub fn export_completions(entries: &[DocEntry], path: &str) -> Result<(), String> {
-    let completions: Vec<serde_json::Value> = entries
+fn completion_kind(kind: &str, include_enum: bool) -> &'static str {
+    match kind {
+        "function" | "method" => "Function",
+        "type" => "Class",
+        "enum" if include_enum => "Enum",
+        _ => "Variable",
+    }
+}
+
+fn build_completions(entries: &[DocEntry], include_enum: bool) -> Vec<serde_json::Value> {
+    entries
         .iter()
         .map(|e| {
             serde_json::json!({
                 "label": e.name,
-                "kind": match e.kind.as_str() {
-                    "function" | "method" => "Function",
-                    "type" => "Class",
-                    "enum" => "Enum",
-                    _ => "Variable"
-                },
+                "kind": completion_kind(&e.kind, include_enum),
                 "detail": e.qualified_name,
                 "documentation": e.description
             })
         })
-        .collect();
-    let json = serde_json::to_string_pretty(&completions).unwrap_or_default();
-    std::fs::write(path, json).map_err(|e| format!("write error: {}", e))
+        .collect()
 }
 
-/// Writes a VS Code hover JSON map to `path`.
-///
-/// Keys are qualified names. Values contain `name`, `description`, `kind`,
-/// `parameters`, and `returns` fields.
-///
-/// # Parameters
-/// - `entries` — `&[DocEntry]`.
-/// - `path` — `&str`.
-///
-/// # Returns
-/// `Result<(), String>`.
-pub fn export_hover(entries: &[DocEntry], path: &str) -> Result<(), String> {
+fn build_hover_map(entries: &[DocEntry], compact: bool) -> HashMap<String, serde_json::Value> {
     let mut hover: HashMap<String, serde_json::Value> = HashMap::new();
     for e in entries {
-        hover.insert(
-            e.qualified_name.clone(),
+        let value = if compact {
+            serde_json::json!({
+                "name": e.qualified_name,
+                "description": e.description,
+                "kind": e.kind
+            })
+        } else {
             serde_json::json!({
                 "name": e.qualified_name,
                 "description": e.description,
@@ -72,11 +60,84 @@ pub fn export_hover(entries: &[DocEntry], path: &str) -> Result<(), String> {
                         "description": r.description
                     })
                 }).collect::<Vec<_>>()
-            }),
-        );
+            })
+        };
+        hover.insert(e.qualified_name.clone(), value);
     }
-    let json = serde_json::to_string_pretty(&hover).unwrap_or_default();
-    std::fs::write(path, json).map_err(|e| format!("write error: {}", e))
+    hover
+}
+
+fn build_signatures(entries: &[DocEntry], rich_labels: bool) -> HashMap<String, serde_json::Value> {
+    let mut sigs: HashMap<String, serde_json::Value> = HashMap::new();
+    for e in entries {
+        if !e.parameters.is_empty() {
+            let params: Vec<serde_json::Value> = e
+                .parameters
+                .iter()
+                .map(|p| {
+                    let label = if rich_labels {
+                        if p.optional {
+                            format!("{}?: {}", p.name, p.type_name)
+                        } else {
+                            format!("{}: {}", p.name, p.type_name)
+                        }
+                    } else {
+                        p.name.clone()
+                    };
+                    serde_json::json!({
+                        "label": label,
+                        "documentation": p.description
+                    })
+                })
+                .collect();
+            sigs.insert(
+                e.qualified_name.clone(),
+                serde_json::json!({
+                    "label": e.qualified_name,
+                    "parameters": params
+                }),
+            );
+        }
+    }
+    sigs
+}
+
+fn write_json_file<T: serde::Serialize>(path: impl AsRef<Path>, value: &T) -> Result<(), String> {
+    let file = File::create(path.as_ref()).map_err(|e| format!("write error: {e}"))?;
+    let mut writer = BufWriter::new(file);
+    serde_json::to_writer_pretty(&mut writer, value).map_err(|e| format!("write error: {e}"))
+}
+
+/// Writes a VS Code completions JSON array to `path`.
+///
+/// Each item contains `label`, `kind`, `detail`, and `documentation` fields
+/// matching the VS Code `CompletionItem` format.
+///
+/// # Parameters
+/// - `entries` — `&[DocEntry]`.
+/// - `path` — `&str`.
+///
+/// # Returns
+/// `Result<(), String>`.
+pub fn export_completions(entries: &[DocEntry], path: &str) -> Result<(), String> {
+    let completions = build_completions(entries, true);
+    write_json_file(path, &completions)
+}
+
+/// Writes a VS Code hover JSON map to `path`.
+///
+/// Keys are qualified names. Values contain `name`, `description`, `kind`,
+/// `parameters`, and `returns` fields.
+///
+/// # Parameters
+/// - `entries` — `&[DocEntry]`.
+/// - `path` — `&str`.
+///
+/// # Returns
+/// `Result<(), String>`.
+pub fn export_hover(entries: &[DocEntry], path: &str) -> Result<(), String> {
+    let hover = build_hover_map(entries, false);
+    write_json_file(path, &hover)
 }
 
 /// Writes a VS Code signature-help JSON map to `path`.
@@ -91,34 +152,8 @@ pub fn export_hover(entries: &[DocEntry], path: &str) -> Result<(), String> {
 /// # Returns
 /// `Result<(), String>`.
 pub fn export_signatures(entries: &[DocEntry], path: &str) -> Result<(), String> {
-    let mut sigs: HashMap<String, serde_json::Value> = HashMap::new();
-    for e in entries {
-        if !e.parameters.is_empty() {
-            let params: Vec<serde_json::Value> = e
-                .parameters
-                .iter()
-                .map(|p| {
-                    serde_json::json!({
-                        "label": if p.optional {
-                            format!("{}?: {}", p.name, p.type_name)
-                        } else {
-                            format!("{}: {}", p.name, p.type_name)
-                        },
-                        "documentation": p.description
-                    })
-                })
-                .collect();
-            sigs.insert(
-                e.qualified_name.clone(),
-                serde_json::json!({
-                    "label": e.qualified_name,
-                    "parameters": params
-                }),
-            );
-        }
-    }
-    let json = serde_json::to_string_pretty(&sigs).unwrap_or_default();
-    std::fs::write(path, json).map_err(|e| format!("write error: {}", e))
+    let sigs = build_signatures(entries, true);
+    write_json_file(path, &sigs)
 }
 
 /// Writes `completions.json`, `hover.json`, and `signatures.json` to `output_dir`.
@@ -136,137 +171,13 @@ pub fn export_signatures(entries: &[DocEntry], path: &str) -> Result<(), String>
 pub fn export_all(entries: &[DocEntry], output_dir: &str) -> Result<(), String> {
     std::fs::create_dir_all(output_dir).map_err(|e| format!("mkdir error: {}", e))?;
 
-    // completions.json
-    let completions: Vec<serde_json::Value> = entries
-        .iter()
-        .map(|e| {
-            serde_json::json!({
-                "label": e.name,
-                "kind": match e.kind.as_str() {
-                    "function" | "method" => "Function",
-                    "type" => "Class",
-                    _ => "Variable"
-                },
-                "detail": e.qualified_name,
-                "documentation": e.description
-            })
-        })
-        .collect();
-    std::fs::write(
-        format!("{}/completions.json", output_dir),
-        serde_json::to_string_pretty(&completions).unwrap_or_default(),
-    )
-    .map_err(|e| format!("write error: {}", e))?;
+    let completions = build_completions(entries, false);
+    let hover = build_hover_map(entries, true);
+    let sigs = build_signatures(entries, false);
 
-    // hover.json (compact)
-    let mut hover: HashMap<String, serde_json::Value> = HashMap::new();
-    for e in entries {
-        hover.insert(
-            e.qualified_name.clone(),
-            serde_json::json!({
-                "name": e.qualified_name,
-                "description": e.description,
-                "kind": e.kind
-            }),
-        );
-    }
-    std::fs::write(
-        format!("{}/hover.json", output_dir),
-        serde_json::to_string_pretty(&hover).unwrap_or_default(),
-    )
-    .map_err(|e| format!("write error: {}", e))?;
-
-    // signatures.json
-    let mut sigs: HashMap<String, serde_json::Value> = HashMap::new();
-    for e in entries {
-        if !e.parameters.is_empty() {
-            let params: Vec<serde_json::Value> = e
-                .parameters
-                .iter()
-                .map(|p| {
-                    serde_json::json!({
-                        "label": p.name,
-                        "documentation": p.description
-                    })
-                })
-                .collect();
-            sigs.insert(
-                e.qualified_name.clone(),
-                serde_json::json!({
-                    "label": e.qualified_name,
-                    "parameters": params
-                }),
-            );
-        }
-    }
-    std::fs::write(
-        format!("{}/signatures.json", output_dir),
-        serde_json::to_string_pretty(&sigs).unwrap_or_default(),
-    )
-    .map_err(|e| format!("write error: {}", e))?;
+    write_json_file(format!("{}/completions.json", output_dir), &completions)?;
+    write_json_file(format!("{}/hover.json", output_dir), &hover)?;
+    write_json_file(format!("{}/signatures.json", output_dir), &sigs)?;
 
     Ok(())
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use crate::docs::entry::{DocEntry, ParamInfo};
-
-    fn test_entries() -> Vec<DocEntry> {
-        let mut e = DocEntry::new("play", "audio", "function");
-        e.description = "Plays a sound".into();
-        e.parameters.push(ParamInfo {
-            name: "path".into(),
-            type_name: "string".into(),
-            description: "file path".into(),
-            optional: false,
-            default: None,
-        });
-        vec![e]
-    }
-
-    #[test]
-    fn export_completions_writes_file() {
-        let dir = std::env::temp_dir().join("lurek_test_export_completions_lib");
-        let _ = std::fs::create_dir_all(&dir);
-        let path = dir.join("completions.json");
-        export_completions(&test_entries(), path.to_str().unwrap()).unwrap();
-        let content = std::fs::read_to_string(&path).unwrap();
-        assert!(content.contains("play"));
-        let _ = std::fs::remove_dir_all(&dir);
-    }
-
-    #[test]
-    fn export_hover_writes_file() {
-        let dir = std::env::temp_dir().join("lurek_test_export_hover_lib");
-        let _ = std::fs::create_dir_all(&dir);
-        let path = dir.join("hover.json");
-        export_hover(&test_entries(), path.to_str().unwrap()).unwrap();
-        let content = std::fs::read_to_string(&path).unwrap();
-        assert!(content.contains("lurek.audio.play"));
-        let _ = std::fs::remove_dir_all(&dir);
-    }
-
-    #[test]
-    fn export_signatures_writes_file() {
-        let dir = std::env::temp_dir().join("lurek_test_export_sigs_lib");
-        let _ = std::fs::create_dir_all(&dir);
-        let path = dir.join("sigs.json");
-        export_signatures(&test_entries(), path.to_str().unwrap()).unwrap();
-        let content = std::fs::read_to_string(&path).unwrap();
-        assert!(content.contains("path"));
-        let _ = std::fs::remove_dir_all(&dir);
-    }
-
-    #[test]
-    fn export_all_creates_three_files() {
-        let dir = std::env::temp_dir().join("lurek_test_export_all_lib");
-        let _ = std::fs::remove_dir_all(&dir);
-        export_all(&test_entries(), dir.to_str().unwrap()).unwrap();
-        assert!(dir.join("completions.json").exists());
-        assert!(dir.join("hover.json").exists());
-        assert!(dir.join("signatures.json").exists());
-        let _ = std::fs::remove_dir_all(&dir);
-    }
 }

@@ -20,9 +20,11 @@ pub enum EasingKind {
     /// Smooth ease-out.
     EaseOut,
     /// Smooth ease-in-out.
-    EaseInOut,    /// A Lua callback computes the interpolation factor.
+    EaseInOut,
+    /// A Lua callback computes the interpolation factor.
     /// `callback_id` is an opaque key resolved by the Lua API layer.
-    Custom { callback_id: u32 },}
+    Custom { callback_id: u32 },
+}
 
 // â”€â”€ AnimCurve â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 

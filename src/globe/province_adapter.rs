@@ -22,11 +22,7 @@ pub fn apply_political_colors(globe: &mut Globe, registry: &ProvinceRegistry) {
 /// Policy:
 /// - `visibility_state > 0` => visible,
 /// - otherwise hidden.
-pub fn apply_visibility_to_viewer(
-    globe: &mut Globe,
-    registry: &ProvinceRegistry,
-    viewer: &str,
-) {
+pub fn apply_visibility_to_viewer(globe: &mut Globe, registry: &ProvinceRegistry, viewer: &str) {
     for id in registry.province_ids() {
         if let Some(snap) = registry.get_province(id) {
             if snap.style.visibility_state > 0 {

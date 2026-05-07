@@ -9,6 +9,8 @@
 use lurek2d::runtime::config::Config;
 use lurek2d::runtime::error::{EngineError, ErrorCategory};
 use lurek2d::runtime::log_messages::*;
+use lurek2d::runtime::SharedState;
+use std::path::PathBuf;
 
 // ── log_messages ─────────────────────────────────────────────────────────────
 
@@ -353,6 +355,28 @@ mod config_tests {
         c.modules.validate_and_fix();
         assert!(c.modules.spine);
     }
+
+    #[test]
+    fn load_from_conf_toml_merges_nested_defaults() {
+        let tmp = tempfile::tempdir().expect("tempdir");
+        let conf = r#"
+[window]
+title = "Hot Reload Test"
+
+[performance]
+target_fps = 144
+"#;
+        std::fs::write(tmp.path().join("conf.toml"), conf).expect("write conf.toml");
+
+        let (cfg, err) = Config::load_from_conf_toml(tmp.path());
+        assert!(err.is_none(), "unexpected parse error: {:?}", err);
+        assert_eq!(cfg.window.title, "Hot Reload Test");
+        assert_eq!(cfg.performance.target_fps, 144);
+        // Omitted nested fields should keep defaults.
+        assert_eq!(cfg.window.width, 800);
+        assert_eq!(cfg.window.height, 600);
+        assert_eq!(cfg.performance.physics_tick_rate, 60);
+    }
 }
 
 // ── ErrorCategory::Filesystem ────────────────────────────────────────────────
@@ -375,6 +399,38 @@ mod error_category_filesystem_tests {
     fn filesystem_error_code() {
         let e = EngineError::FileSystemError("test".into());
         assert_eq!(e.code(), "E1006");
+    }
+}
+
+mod resource_memory_stats_tests {
+    use super::*;
+
+    #[test]
+    fn stats_include_extended_resource_fields() {
+        let mut st = SharedState::new(800, 600, "Test", PathBuf::from("."));
+        st.resource_budget_bytes = 1024 * 1024;
+        st.load_default_fonts();
+
+        st.textures.insert(lurek2d::render::renderer::TextureData {
+            pixels: vec![255; 4 * 16 * 16],
+            width: 16,
+            height: 16,
+            color_space: lurek2d::image::TextureColorSpace::Srgb,
+        });
+        st.canvases.insert(lurek2d::render::Canvas::new(32, 32));
+
+        let stats = st.resource_memory_stats();
+        assert_eq!(stats.budget_bytes, 1024 * 1024);
+        assert_eq!(stats.texture_count, 1);
+        assert!(stats.texture_bytes >= 16 * 16 * 4);
+        assert!(stats.font_count >= 1);
+        assert!(stats.font_bytes > 0);
+        assert_eq!(stats.canvas_count, 1);
+        assert_eq!(stats.canvas_bytes, 32 * 32 * 4);
+        assert_eq!(
+            stats.total_bytes,
+            stats.texture_bytes + stats.font_bytes + stats.canvas_bytes + stats.shader_bytes
+        );
     }
 }
 

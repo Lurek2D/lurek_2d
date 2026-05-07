@@ -9,10 +9,14 @@ readme = "README.md"
 
 [features]
 # LuaJIT — default scripting backend; JIT compilation for x86_64 desktop (Windows/Linux/macOS).
-default = ["lua-jit"]
+default = ["lua-jit", "automation-plugin"]
 lua-jit = ["mlua/luajit", "mlua/vendored"]
 # Lua 5.4 fallback — use on platforms where LuaJIT is unavailable (WASM, some ARM targets).
 lua54 = ["mlua/lua54", "mlua/vendored"]
+# Automation module plugin gate (enabled by default).
+automation-plugin = []
+# ECS sparse-index fast path for multi-component queries (opt-in).
+ecs-archetype = []
 
 [dependencies]
 # GPU-accelerated rendering — platform-split; see [target.'cfg(...)'.dependencies] sections near the end.
@@ -254,6 +258,10 @@ name = "app_tests"
 path = "tests/rust/unit/app_tests.rs"
 
 [[test]]
+name = "automation_tests"
+path = "tests/rust/unit/automation_tests.rs"
+
+[[test]]
 name = "audio_tests"
 path = "tests/rust/unit/audio_tests.rs"
 
@@ -276,6 +284,10 @@ path = "tests/rust/unit/dataframe_tests.rs"
 [[test]]
 name = "debugbridge_tests"
 path = "tests/rust/unit/debugbridge_tests.rs"
+
+[[test]]
+name = "docs_tests"
+path = "tests/rust/unit/docs_tests.rs"
 
 [[test]]
 name = "ecs_tests"

@@ -10,12 +10,9 @@ use std::sync::{Arc, Mutex};
 use crate::globe::loader;
 use crate::globe::registry::{Globe, GlobeRegistry};
 use crate::globe::types::{
-    GlobeSpec, LabelStyle, Layer, LodTier, MarkerStyle, Province,
-    MAX_PROVINCES,
+    GlobeSpec, LabelStyle, Layer, LodTier, MarkerStyle, Province, MAX_PROVINCES,
 };
-use crate::math::sphere::{
-    great_circle_distance, great_circle_path, lat_lon_to_unit,
-};
+use crate::math::sphere::{great_circle_distance, great_circle_path, lat_lon_to_unit};
 
 // ── LuaGlobe ────────────────────────────────────────────────────────────────
 
@@ -131,7 +128,9 @@ impl LuaUserData for LuaGlobe {
         /// @param | key | string | Attribute name.
         /// @param | value | string | Attribute value.
         /// @return | boolean | True when the province exists.
-        methods.add_method_mut("setProvinceAttr", |_, this, (id, key, val): (u32, String, String)| {
+        methods.add_method_mut(
+            "setProvinceAttr",
+            |_, this, (id, key, val): (u32, String, String)| {
                 this.with_mut(|g| {
                     if let Some(p) = g.get_province_mut(id) {
                         p.attrs.insert(key, val);
@@ -295,7 +294,9 @@ impl LuaUserData for LuaGlobe {
         /// @param | lon | number | Longitude in degrees.
         /// @param | label | string? | Optional label text.
         /// @return | integer | Marker ID.
-        methods.add_method_mut("addMarker", |_, this, (mtype, lat, lon, label): (String, f32, f32, Option<String>)| {
+        methods.add_method_mut(
+            "addMarker",
+            |_, this, (mtype, lat, lon, label): (String, f32, f32, Option<String>)| {
                 this.with_mut(|g| {
                     g.markers
                         .add(mtype, lat, lon, label, MarkerStyle::default())
@@ -336,7 +337,9 @@ impl LuaUserData for LuaGlobe {
         /// @param | key | string | Attribute name.
         /// @param | value | string | Attribute value.
         /// @return | nil | No value is returned.
-        methods.add_method_mut("setMarkerAttr", |_, this, (id, key, val): (u32, String, String)| {
+        methods.add_method_mut(
+            "setMarkerAttr",
+            |_, this, (id, key, val): (u32, String, String)| {
                 this.with_mut(|g| g.markers.set_attr(id, key, val))
             },
         );
@@ -359,7 +362,9 @@ impl LuaUserData for LuaGlobe {
         /// @param | lon | number | Longitude in degrees.
         /// @param | text | string | Label text.
         /// @return | integer | Label ID.
-        methods.add_method_mut("addLabel", |_, this, (ltype, lat, lon, text): (String, f32, f32, String)| {
+        methods.add_method_mut(
+            "addLabel",
+            |_, this, (ltype, lat, lon, text): (String, f32, f32, String)| {
                 this.with_mut(|g| {
                     g.labels
                         .add(ltype, lat, lon, text, LabelStyle::default(), 0)
@@ -400,7 +405,9 @@ impl LuaUserData for LuaGlobe {
         /// @param | name | string | Layer name.
         /// @param | z_order | integer? | Optional layer draw order.
         /// @return | nil | No value is returned.
-        methods.add_method_mut("addLayer", |_, this, (name, z_order): (String, Option<i32>)| {
+        methods.add_method_mut(
+            "addLayer",
+            |_, this, (name, z_order): (String, Option<i32>)| {
                 this.with_mut(|g| {
                     g.layers.add(Layer {
                         name,
@@ -431,7 +438,9 @@ impl LuaUserData for LuaGlobe {
         /// @param | b | number | Blue channel.
         /// @param | a | number | Alpha channel.
         /// @return | nil | No value is returned.
-        methods.add_method_mut("setLayerColor", |_, this, (layer, id, r, g, b, a): (String, u32, f32, f32, f32, f32)| {
+        methods.add_method_mut(
+            "setLayerColor",
+            |_, this, (layer, id, r, g, b, a): (String, u32, f32, f32, f32, f32)| {
                 this.with_mut(|globe| globe.layers.set_province_color(&layer, id, [r, g, b, a]))
             },
         );
@@ -519,7 +528,9 @@ impl LuaUserData for LuaGlobe {
         /// @param | start_id | integer | Starting province ID.
         /// @param | max_cost | number | Maximum traversal cost.
         /// @return | table | Table mapping province IDs to reach costs.
-        methods.add_method("reachable", |lua, this, (start_id, max_cost): (u32, f64)| {
+        methods.add_method(
+            "reachable",
+            |lua, this, (start_id, max_cost): (u32, f64)| {
                 let reached = this.with(|g| g.graph.reachable_default(start_id, max_cost))?;
                 let t = lua.create_table()?;
                 for (id, cost) in reached {
@@ -539,7 +550,9 @@ impl LuaUserData for LuaGlobe {
         /// @param | lon2 | number | End longitude in degrees.
         /// @param | steps | integer? | Optional point count for the arc.
         /// @return | integer | Arc ID.
-        methods.add_method_mut("addArc", |_, this, (lat1, lon1, lat2, lon2, steps): (f32, f32, f32, f32, Option<u32>)| {
+        methods.add_method_mut(
+            "addArc",
+            |_, this, (lat1, lon1, lat2, lon2, steps): (f32, f32, f32, f32, Option<u32>)| {
                 let steps = steps.unwrap_or(24);
                 this.with_mut(|g| {
                     let arc_id = g.arc_next_id;
@@ -610,7 +623,9 @@ impl LuaUserData for LuaGlobeRegistry {
         /// @param | name | string | Globe name.
         /// @param | spec | table? | Optional globe specification table.
         /// @return | LGlobe | New globe instance.
-        methods.add_method_mut("new", |_, this, (name, spec_tbl): (String, Option<LuaTable>)| {
+        methods.add_method_mut(
+            "new",
+            |_, this, (name, spec_tbl): (String, Option<LuaTable>)| {
                 let spec = parse_globe_spec(spec_tbl);
                 {
                     let mut guard = this.reg.lock().map_err(|e| {
@@ -736,7 +751,9 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         /// @param | name | string | Globe name.
         /// @param | spec | table? | Optional globe specification table.
         /// @return | LGlobe | New globe instance.
-        tbl.set("new", lua.create_function(move |_, (name, spec_tbl): (String, Option<LuaTable>)| {
+        tbl.set(
+            "new",
+            lua.create_function(move |_, (name, spec_tbl): (String, Option<LuaTable>)| {
                 let spec = parse_globe_spec(spec_tbl);
                 {
                     let mut guard = reg.lock().map_err(|e| {
@@ -760,7 +777,9 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         /// Get an existing globe by name, or nil.
         /// @param | name | string | Globe name.
         /// @return | LGlobe | Existing globe instance when found.
-        tbl.set("get", lua.create_function(move |_, name: String| {
+        tbl.set(
+            "get",
+            lua.create_function(move |_, name: String| {
                 let exists = {
                     let guard = reg.lock().map_err(|e| {
                         mlua::Error::RuntimeError(format!("registry lock poisoned: {e}"))
@@ -789,11 +808,13 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         /// @param | toml_src | string | TOML source string.
         /// @param | spec | table? | Optional globe specification table.
         /// @return | LGlobe | Loaded globe instance.
-        tbl.set("loadFromTOML", lua.create_function(
+        tbl.set(
+            "loadFromTOML",
+            lua.create_function(
                 move |_, (name, toml_src, spec_tbl): (String, String, Option<LuaTable>)| {
                     let spec = parse_globe_spec(spec_tbl);
-                    let provinces = loader::load_from_toml_str(&toml_src)
-                        .map_err(mlua::Error::RuntimeError)?;
+                    let provinces =
+                        loader::load_from_toml_str(&toml_src).map_err(mlua::Error::RuntimeError)?;
                     {
                         let mut guard = reg.lock().map_err(|e| {
                             mlua::Error::RuntimeError(format!("registry lock poisoned: {e}"))
@@ -820,7 +841,9 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     /// @param | lat2 | number | End latitude in degrees.
     /// @param | lon2 | number | End longitude in degrees.
     /// @return | number | Great-circle distance in radians.
-    tbl.set("greatCircleDistance", lua.create_function(|_, (la, lo, lb, lo2): (f32, f32, f32, f32)| {
+    tbl.set(
+        "greatCircleDistance",
+        lua.create_function(|_, (la, lo, lb, lo2): (f32, f32, f32, f32)| {
             Ok(great_circle_distance(la, lo, lb, lo2))
         })?,
     )?;
@@ -833,7 +856,9 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     /// @param | lon2 | number | End longitude in degrees.
     /// @param | steps | integer | Number of interpolation steps.
     /// @return | table | Array of latitude and longitude pairs.
-    tbl.set("greatCirclePath", lua.create_function(|lua, (la, lo, lb, lo2, n): (f32, f32, f32, f32, u32)| {
+    tbl.set(
+        "greatCirclePath",
+        lua.create_function(|lua, (la, lo, lb, lo2, n): (f32, f32, f32, f32, u32)| {
             let pts = great_circle_path(la, lo, lb, lo2, n);
             let t = lua.create_table()?;
             for (i, (lat, lon)) in pts.iter().enumerate() {
@@ -851,7 +876,9 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     /// @param | lat | number | Latitude in degrees.
     /// @param | lon | number | Longitude in degrees.
     /// @return | table | Cartesian vector table with x, y, and z values.
-    tbl.set("latLonToUnit", lua.create_function(|lua, (lat, lon): (f32, f32)| {
+    tbl.set(
+        "latLonToUnit",
+        lua.create_function(|lua, (lat, lon): (f32, f32)| {
             let v = lat_lon_to_unit(lat, lon);
             let t = lua.create_table()?;
             t.set(1, v.x)?;

@@ -87,7 +87,11 @@ pub fn decompress(data: &[u8], format: CompressFormat) -> Result<Vec<u8>, String
 ///
 /// # Returns
 /// `Result<Vec<u8>, String>`.
-pub fn compress_chunks(chunks: &[&[u8]], format: CompressFormat, level: u32) -> Result<Vec<u8>, String> {
+pub fn compress_chunks(
+    chunks: &[&[u8]],
+    format: CompressFormat,
+    level: u32,
+) -> Result<Vec<u8>, String> {
     let level = level.min(9);
     let compression = flate2::Compression::new(level);
 

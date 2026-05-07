@@ -465,7 +465,10 @@ impl ImageData {
         if bytes.len() != expected {
             return Err(format!(
                 "setRawData: expected {} bytes for {}x{} RGBA image, got {}",
-                expected, self.width, self.height, bytes.len()
+                expected,
+                self.width,
+                self.height,
+                bytes.len()
             ));
         }
         self.pixels.clear();

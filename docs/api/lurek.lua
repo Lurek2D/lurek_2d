@@ -3475,6 +3475,11 @@ lurek.audio.waveformToPng = function(input_wav, output_png, width, height) end
 ---@class lurek.automation
 lurek.automation = {}
 
+--- Returns a condition value by name, or nil when unset.
+---@param name string Condition name.
+---@return boolean? Condition value.
+lurek.automation.getCondition = function(name) end
+
 --- Returns the name of the active script.
 ---@return string Active script name.
 lurek.automation.getCurrentScript = function() end
@@ -3486,6 +3491,10 @@ lurek.automation.getCurrentStep = function() end
 --- Returns seconds elapsed since playback started.
 ---@return number Elapsed playback time in seconds.
 lurek.automation.getElapsedTime = function() end
+
+--- Returns the last simulator failure string, or nil if none.
+---@return string? Last assertion or visual assertion error.
+lurek.automation.getLastError = function() end
 
 --- Returns the current playback speed multiplier (default 1.0).
 ---@return number Current playback speed multiplier.
@@ -3517,6 +3526,10 @@ lurek.automation.hasScript = function(name) end
 --- Returns true if all steps in the active script have been dispatched.
 ---@return boolean True when the active script has finished.
 lurek.automation.isComplete = function() end
+
+--- Returns true if playback stopped because an assertion failed.
+---@return boolean True when simulator state is failed.
+lurek.automation.isFailed = function() end
 
 --- Returns whether the highlight overlay hint is active.
 ---@return boolean True when highlight mode is enabled.
@@ -3564,6 +3577,12 @@ lurek.automation.resume = function() end
 ---@param script_name string Existing script name to copy.
 ---@return nil No value is returned.
 lurek.automation.saveMacro = function(macro_name, script_name) end
+
+--- Sets a named boolean condition used by `when` and `assert` step fields.
+---@param name string Condition name.
+---@param value boolean Condition value.
+---@return nil No value is returned.
+lurek.automation.setCondition = function(name, value) end
 
 --- Enables or disables the highlight overlay hint.
 ---@param enable boolean True to enable the hint overlay.
@@ -4954,6 +4973,10 @@ function LDataFrame:rollingMean(col, window, result_col) end
 ---@return LDataFrame New DataFrame with a rolling sum column appended.
 function LDataFrame:rollingSum(col, window, result_col) end
 
+--- Returns a streaming row iterator for use with Lua generic for.
+---@return function Iterator function yielding `(index, row)`.
+function LDataFrame:rows() end
+
 --- Returns a random sample of n rows.
 ---@param n integer Number of rows to sample.
 ---@param seed? integer Optional random seed.
@@ -6112,6 +6135,11 @@ lurek.docs.scanModule = function(module_name) end
 ---@return LSchema Schema validator userdata.
 lurek.docs.schema = function(rules, name) end
 
+--- Creates a schema validator from TOML text.
+---@param toml_text string TOML schema definition.
+---@return LSchema Schema validator userdata.
+lurek.docs.schemaFromToml = function(toml_text) end
+
 --- Set the parameter metadata for a catalog entry.
 ---@param qualified_name string Qualified entry name.
 ---@param params table Array of parameter metadata records.
@@ -6149,9 +6177,9 @@ LUniverse = {}
 ---@return nil No value is returned.
 function LUniverse:addRelation(from, name, to) end
 
---- Adds a system table to the universe with an optional priority (lower = earlier).
+--- Adds a system table to the universe with an optional priority (lower = earlier) and phase.
 ---@param system table System table to register.
----@param opts? table Optional table with a `priority` integer field.
+---@param opts? table Optional table with `priority` integer and `phase` string fields.
 ---@return nil No value is returned.
 function LUniverse:addSystem(system, opts) end
 
@@ -6160,6 +6188,11 @@ function LUniverse:addSystem(system, opts) end
 ---@param tag string Tag name to attach.
 ---@return nil No value is returned.
 function LUniverse:addTag(id, tag) end
+
+--- Restores the universe from a snapshot table produced by snapshot.  Alias for deserialize.
+---@param snapshot table Snapshot table previously returned by snapshot.
+---@return nil No value is returned.
+function LUniverse:applySnapshot(snapshot) end
 
 --- Adds a bitmap tag to an entity.
 ---@param id integer Entity ID to update.
@@ -6246,6 +6279,10 @@ function LUniverse:getChildren(parent_id) end
 ---@param id integer Entity ID to inspect.
 ---@return table Array of component names.
 function LUniverse:getComponents(id) end
+
+--- Returns entity IDs whose components changed since the last flushObservers / takeObserverEvents call.
+---@return table Array of entity IDs (integers).
+function LUniverse:getDirtyEntities() end
 
 --- Returns all alive entity IDs.
 ---@return table Array of alive entity IDs.
@@ -6375,6 +6412,12 @@ function LUniverse:queryBitmapAny(names) end
 ---@return table Array of matching entity IDs.
 function LUniverse:queryBitmapTag(name) end
 
+--- Iterates every alive entity that has ALL the listed components and calls the callback with
+---@param names table Array of component name strings.
+---@param callback function Called as `callback(id, val1, val2, …)` for each matching entity.
+---@return nil No value is returned.
+function LUniverse:queryMulti(names, callback) end
+
 --- Returns entity IDs that have all `with` components and none of the `without` components.
 ---@param with_table table Component names that must exist.
 ---@param without_table table Component names that must not exist.
@@ -6414,7 +6457,7 @@ function LUniverse:removeSystem(system) end
 ---@return nil No value is returned.
 function LUniverse:removeTag(id, tag) end
 
---- Calls render(system, world) on each system in priority order and falls back to draw(system, world).
+--- Calls render(system, world) on each system in the "render" phase in priority order; falls back to draw(system, world).
 ---@return nil No value is returned.
 function LUniverse:render() end
 
@@ -6440,6 +6483,10 @@ function LUniverse:setLayer(id, layer) end
 ---@param parent_id? integer Parent entity ID, or nil to clear it.
 ---@return nil No value is returned.
 function LUniverse:setParent(child_id, parent_id) end
+
+--- Serializes the entire universe state to a Lua table.  Alias for serialize.
+---@return table Snapshot table.
+function LUniverse:snapshot() end
 
 --- Creates a new entity and returns its packed ID.
 ---@return integer Packed entity ID.
@@ -6467,10 +6514,16 @@ function LUniverse:type() end
 ---@return boolean True when the type matches.
 function LUniverse:typeOf(name) end
 
---- Calls update(system, world, dt) on each registered system in priority order.
+--- Calls update(system, world, dt) on each system in the "update" phase in priority order.
 ---@param dt number Delta time in seconds.
 ---@return nil No value is returned.
 function LUniverse:update(dt) end
+
+--- Calls the named lifecycle method on each system that belongs to the given phase, in priority order.
+---@param phase string Phase name, e.g. `"pre_update"`, `"update"`, `"post_update"` or any custom name.
+---@param dt number Delta time in seconds.
+---@return nil No value is returned.
+function LUniverse:updatePhase(phase, dt) end
 
 --- Creates a new empty ECS universe.
 ---@return LUniverse New ECS universe wrapper.
@@ -7292,12 +7345,20 @@ lurek.engine.fps = function() end
 ---@return integer Total processed frame count.
 lurek.engine.frameCount = function() end
 
+--- Returns the monotonic config revision counter.
+---@return integer Increments after each successful hot-reload of `conf.toml`.
+lurek.engine.getConfigRevision = function() end
+
 --- Returns the target frame budget in milliseconds (default: 1000 / 60 ~Â 16.667 ms).
 ---@return number Target frame budget in milliseconds.
 lurek.engine.getFrameBudget = function() end
 
+--- Returns CPU callback timing for the most recently completed frame.
+---@return table Table with per-callback millisecond timings and `callback_total_ms`.
+lurek.engine.getFrameProfile = function() end
+
 --- Returns a table with resident resource memory statistics.
----@return table Table with `texture_bytes`, `budget_bytes`, and `texture_count` fields.
+---@return table Table with per-kind bytes/counts and aggregate totals.
 lurek.engine.getResourceStats = function() end
 
 --- Returns the engine version string (from `Cargo.toml`).
@@ -16831,6 +16892,15 @@ lurek.pipeline = {}
 ---@class LPipeline
 LPipeline = {}
 
+--- Adds an if/else branch as two conditional steps that share one predicate result.
+---@param name string Branch base name.
+---@param deps table Array of dependency step names.
+---@param when_fn function Predicate callback evaluated once.
+---@param then_fn function Callback executed when predicate returns true.
+---@param else_fn? function Optional callback executed when predicate returns false.
+---@return LPipeline This pipeline for chaining.
+function LPipeline:addBranch(name, deps, when_fn, then_fn, else_fn) end
+
 --- Adds a conditional step to the pipeline.
 ---@param name string Step name.
 ---@param deps table Array of dependency step names.
@@ -16910,6 +16980,11 @@ function LPipeline:isComplete() end
 --- Returns whether the pipeline is running asynchronously.
 ---@return boolean True when an async run is active.
 function LPipeline:isRunning() end
+
+--- Registers a callback invoked for lifecycle events (`step_started`, `step_finished`).
+---@param fn function Callback called with `(event_name, step_name, status, detail)`.
+---@return nil No value is returned.
+function LPipeline:onEvent(fn) end
 
 --- Registers a callback invoked after every step.
 ---@param fn function Callback called with `(step_name, status)`.
@@ -17045,9 +17120,18 @@ function LPipelineStep:getTag() end
 ---@return number Timeout in seconds, or `0.0` if unset.
 function LPipelineStep:getTimeout() end
 
+--- Returns whether coroutine-based async execution is enabled for this step.
+---@return boolean True when `runAsync` executes this step as a coroutine.
+function LPipelineStep:isAsync() end
+
 --- Returns whether this step is marked as optional.
 ---@return boolean True when the step is optional.
 function LPipelineStep:isOptional() end
+
+--- Enables or disables coroutine-based execution in `Pipeline:runAsync`.
+---@param enabled boolean When true, step callback may `coroutine.yield()` and resume on later `update()` calls.
+---@return nil No value is returned.
+function LPipelineStep:setAsync(enabled) end
 
 --- Stores the execute callback for this step.
 ---@param fn function Callback called with the pipeline context table.

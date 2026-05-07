@@ -1,4 +1,4 @@
-﻿//! Golden file tests — verify deterministic binary output.
+//! Golden file tests — verify deterministic binary output.
 //!
 //! Creates known inputs, generates outputs, and compares against stored baselines
 //! in `tests/rust/golden/expected/`. On first run, baselines are generated automatically.
@@ -72,14 +72,11 @@ fn assert_golden_text(name: &str, actual: &str) {
 
     if std::path::Path::new(&expected_path).exists() {
         let raw = std::fs::read(&expected_path).unwrap();
-        let normalized_expected =
-            String::from_utf8_lossy(&raw).replace("\r\n", "\n");
+        let normalized_expected = String::from_utf8_lossy(&raw).replace("\r\n", "\n");
         assert_eq!(
-            normalized_actual,
-            normalized_expected,
+            normalized_actual, normalized_expected,
             "Golden file mismatch for '{}'. Actual written to '{}'.",
-            name,
-            actual_path
+            name, actual_path
         );
     } else {
         std::fs::create_dir_all(std::path::Path::new(&expected_path).parent().unwrap()).unwrap();

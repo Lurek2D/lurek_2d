@@ -44,15 +44,15 @@ Provide a zero-dependency, in-memory column-major tabular data engine for Lurek2
 - `serial.rs` and `sql.rs` already have inline `#[cfg(test)]` suites.
 - Missing coverage: `with_eval`, `pivot_table`, `rolling_mean`, `rolling_sum`, `rank_column`, `random` edge cases, `Database` multi-table SQL.
 
-## TODO(dedup)
+## TODO(dedup) ✅ DONE
 
-- [ ] Extract the duplicated `Xorshift64` from `frame.rs` and `query.rs` into a shared private helper (e.g. `rng.rs` or `crate::math::xorshift`).
+- [x] Extracted duplicated `Xorshift64` into shared helper `src/dataframe/rng.rs` and reused in `frame.rs` + `query.rs`.
 
 ## TODO(helper)
 
 - [ ] Split `query.rs` (1565L) — extract grouping/aggregation and join logic into dedicated sub-files.
-- [ ] Add `DataFrame::from_rows()` constructor for row-major input (common Lua pattern).
-- [ ] Add streaming iterator API for large tables to avoid full materialisation.
+- [x] Added `DataFrame::from_rows()` constructor for row-major input (common Lua pattern).
+- [x] Added streaming iterator API (`DataFrame::iter_rows()` + Lua `LDataFrame:rows`) to avoid full materialisation in sequential reads.
 
 ## TODO(vectorized) ✅ DONE
 

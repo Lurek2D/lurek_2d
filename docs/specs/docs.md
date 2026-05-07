@@ -66,6 +66,7 @@ These outputs are consumed by the VS Code extension at extension activation time
 - `Catalog::entry_count` (`catalog.rs`): Returns the total number of entries in the catalog.
 - `Catalog::search` (`catalog.rs`): Returns entries whose name or description contains `query` (case-insensitive).
 - `Catalog::filter_by_kind` (`catalog.rs`): Returns entries of the given kind (e.g.
+- `Catalog::merge` (`catalog.rs`): Returns a merged catalog where entries from another catalog override duplicates by qualified name.
 - `Catalog::clear` (`catalog.rs`): Removes all entries from the catalog.
 - `DocEntry::new` (`entry.rs`): Creates a minimal entry with the given name, module, and kind.
 - `DocEntry::is_complete` (`entry.rs`): Returns `true` when the entry has enough information for documentation generation.
@@ -87,6 +88,7 @@ These outputs are consumed by the VS Code extension at extension activation time
 - `SchemaResult::pass` (`schema.rs`): Creates a passing result.
 - `Schema::new` (`schema.rs`): Creates a new schema.
 - `Schema::add_rule` (`schema.rs`): Adds a field rule.
+- `Schema::from_toml` (`schema.rs`): Builds a schema from TOML text using [rules] or [fields] tables.
 - `Schema::validate_pairs` (`schema.rs`): Validates a set of `(field, value_type, value_str)` pairs.
 
 ## Lua API Reference
@@ -118,6 +120,7 @@ These outputs are consumed by the VS Code extension at extension activation time
 - `lurek.docs.exportMarkdown`: Export a Markdown API reference file.
 - `lurek.docs.exportCheatsheet`: Export a one-line-per-function plain-text cheatsheet.
 - `lurek.docs.schema`: Creates a schema validator from a rules table.
+- `lurek.docs.schemaFromToml`: Creates a schema validator from TOML text.
 - `lurek.docs.reflectLive`: Walks the live lurek.* Lua table and returns a structured reflection table.
 - `lurek.docs.reflectTable`: Reflects any Lua table and returns a structure describing its keys and value types.
 

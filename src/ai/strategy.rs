@@ -83,8 +83,11 @@ impl StrategicGoal {
     /// # Returns
     /// `bool`.
     pub fn is_eligible(&self, active_tags: &[String]) -> bool {
-        self.enabled && self.precondition_tags.iter()
-            .all(|t| active_tags.iter().any(|at| at == t))
+        self.enabled
+            && self
+                .precondition_tags
+                .iter()
+                .all(|t| active_tags.iter().any(|at| at == t))
     }
 }
 
@@ -253,7 +256,9 @@ impl StrategyAI {
     ///
     /// # Returns
     /// `usize`.
-    pub fn goal_count(&self) -> usize { self.goals.len() }
+    pub fn goal_count(&self) -> usize {
+        self.goals.len()
+    }
 
     /// Returns seconds remaining until the next scheduled evaluation.
     ///

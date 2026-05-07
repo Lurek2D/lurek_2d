@@ -3,8 +3,8 @@
 //! Computes all cells reachable from an origin within a given movement budget,
 //! taking per-cell costs and blocked cells into account.
 
-use std::collections::BinaryHeap;
 use std::cmp::Ordering;
+use std::collections::BinaryHeap;
 
 /// A precomputed range map: cheapest path costs from a single origin.
 ///
@@ -57,22 +57,43 @@ impl RangeMap {
         let idx = |x: u32, y: u32| (y * width + x) as usize;
 
         if origin_x >= width || origin_y >= height {
-            return Self { width, height, costs: dist };
+            return Self {
+                width,
+                height,
+                costs: dist,
+            };
         }
 
         let origin_idx = idx(origin_x, origin_y);
         if origin_idx < n && blocked.get(origin_idx).copied().unwrap_or(true) {
-            return Self { width, height, costs: dist };
+            return Self {
+                width,
+                height,
+                costs: dist,
+            };
         }
 
         dist[origin_idx] = Some(0.0);
         let mut heap: BinaryHeap<DNode> = BinaryHeap::new();
-        heap.push(DNode { x: origin_x, y: origin_y, cost: 0.0 });
+        heap.push(DNode {
+            x: origin_x,
+            y: origin_y,
+            cost: 0.0,
+        });
 
         let dirs: &[(i32, i32)] = if diagonal {
-            &[(1,0),(-1,0),(0,1),(0,-1),(1,1),(1,-1),(-1,1),(-1,-1)]
+            &[
+                (1, 0),
+                (-1, 0),
+                (0, 1),
+                (0, -1),
+                (1, 1),
+                (1, -1),
+                (-1, 1),
+                (-1, -1),
+            ]
         } else {
-            &[(1,0),(-1,0),(0,1),(0,-1)]
+            &[(1, 0), (-1, 0), (0, 1), (0, -1)]
         };
 
         while let Some(DNode { x, y, cost }) = heap.pop() {
@@ -98,16 +119,28 @@ impl RangeMap {
                     continue;
                 }
                 // Diagonal moves cost sqrt(2) * cell_cost
-                let move_cost = if dx != 0 && dy != 0 { cell_cost * std::f32::consts::SQRT_2 } else { cell_cost };
+                let move_cost = if dx != 0 && dy != 0 {
+                    cell_cost * std::f32::consts::SQRT_2
+                } else {
+                    cell_cost
+                };
                 let new_cost = cost + move_cost;
                 if new_cost <= budget && new_cost < dist[ni].unwrap_or(f32::MAX) {
                     dist[ni] = Some(new_cost);
-                    heap.push(DNode { x: nx, y: ny, cost: new_cost });
+                    heap.push(DNode {
+                        x: nx,
+                        y: ny,
+                        cost: new_cost,
+                    });
                 }
             }
         }
 
-        Self { width, height, costs: dist }
+        Self {
+            width,
+            height,
+            costs: dist,
+        }
     }
 
     /// Returns `true` if the cell at `(x, y)` was reached within the budget.
@@ -182,17 +215,24 @@ struct DNode {
 }
 
 impl PartialEq for DNode {
-    fn eq(&self, other: &Self) -> bool { self.cost == other.cost }
+    fn eq(&self, other: &Self) -> bool {
+        self.cost == other.cost
+    }
 }
 impl Eq for DNode {}
 
 impl PartialOrd for DNode {
-    fn partial_cmp(&self, other: &Self) -> Option<Ordering> { Some(self.cmp(other)) }
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(self.cmp(other))
+    }
 }
 
 impl Ord for DNode {
     fn cmp(&self, other: &Self) -> Ordering {
-        other.cost.partial_cmp(&self.cost).unwrap_or(Ordering::Equal)
+        other
+            .cost
+            .partial_cmp(&self.cost)
+            .unwrap_or(Ordering::Equal)
     }
 }
 
@@ -244,6 +284,8 @@ mod tests {
         let blocked = vec![false; 4];
         let rm = RangeMap::from_grid(2, 2, &costs, &blocked, 0, 0, 5.0, false);
         let cells = rm.reachable_cells_with_cost();
-        assert!(cells.iter().any(|(x, y, c)| *x == 0 && *y == 0 && *c == 0.0));
+        assert!(cells
+            .iter()
+            .any(|(x, y, c)| *x == 0 && *y == 0 && *c == 0.0));
     }
 }

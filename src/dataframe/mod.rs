@@ -8,14 +8,14 @@
 pub mod frame;
 /// Filter, sort, group-by, and aggregate query engine.
 pub mod query;
+/// Shared deterministic pseudo-random generator.
+pub mod rng;
 /// CSV and JSON serialization/deserialization for DataFrames.
 pub mod serial;
 /// SQL query parser and executor for in-memory databases.
 pub mod sql;
 /// Typed columnar storage and vectorized bulk operations.
 pub mod vectorized;
-/// Shared deterministic pseudo-random generator.
-pub mod rng;
 
-pub use frame::{CellValue, ColRef, DataFrame, Database};
+pub use frame::{CellValue, ColRef, DataFrame, DataFrameRowIter, Database};
 pub use vectorized::{BinaryOp, CmpOp, ColumnStore, ReduceOp, ScalarOp, VecFrame};

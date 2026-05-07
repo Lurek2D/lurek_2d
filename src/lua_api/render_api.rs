@@ -1,4 +1,4 @@
-﻿//! `lurek.graphic` - 2D drawing, images, fonts, canvases, meshes, shaders and sprite batches.
+//! `lurek.graphic` - 2D drawing, images, fonts, canvases, meshes, shaders and sprite batches.
 
 use super::SharedState;
 use mlua::prelude::*;
@@ -7,8 +7,8 @@ use std::cell::RefCell;
 use std::rc::Rc;
 
 use crate::image::ImageData;
-use crate::image::TextureColorSpace;
 use crate::image::Texture;
+use crate::image::TextureColorSpace;
 use crate::math::Rect;
 use crate::render::renderer::{BevelStyle, GradientDirection, HexOrientation, PathSegment};
 use crate::render::shape::{CompoundShape, ShapeCommand};
@@ -1987,13 +1987,34 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                     _ => continue,
                 };
                 let img_val: LuaValue = entry.raw_get(1).unwrap_or(LuaValue::Nil);
-                let x: f32 = entry.raw_get::<_, Option<f32>>(2).unwrap_or(None).unwrap_or(0.0);
-                let y: f32 = entry.raw_get::<_, Option<f32>>(3).unwrap_or(None).unwrap_or(0.0);
-                let r: f32 = entry.raw_get::<_, Option<f32>>(4).unwrap_or(None).unwrap_or(0.0);
-                let sx: f32 = entry.raw_get::<_, Option<f32>>(5).unwrap_or(None).unwrap_or(1.0);
-                let sy: f32 = entry.raw_get::<_, Option<f32>>(6).unwrap_or(None).unwrap_or(1.0);
-                let ox: f32 = entry.raw_get::<_, Option<f32>>(7).unwrap_or(None).unwrap_or(0.0);
-                let oy: f32 = entry.raw_get::<_, Option<f32>>(8).unwrap_or(None).unwrap_or(0.0);
+                let x: f32 = entry
+                    .raw_get::<_, Option<f32>>(2)
+                    .unwrap_or(None)
+                    .unwrap_or(0.0);
+                let y: f32 = entry
+                    .raw_get::<_, Option<f32>>(3)
+                    .unwrap_or(None)
+                    .unwrap_or(0.0);
+                let r: f32 = entry
+                    .raw_get::<_, Option<f32>>(4)
+                    .unwrap_or(None)
+                    .unwrap_or(0.0);
+                let sx: f32 = entry
+                    .raw_get::<_, Option<f32>>(5)
+                    .unwrap_or(None)
+                    .unwrap_or(1.0);
+                let sy: f32 = entry
+                    .raw_get::<_, Option<f32>>(6)
+                    .unwrap_or(None)
+                    .unwrap_or(1.0);
+                let ox: f32 = entry
+                    .raw_get::<_, Option<f32>>(7)
+                    .unwrap_or(None)
+                    .unwrap_or(0.0);
+                let oy: f32 = entry
+                    .raw_get::<_, Option<f32>>(8)
+                    .unwrap_or(None)
+                    .unwrap_or(0.0);
                 if let LuaValue::UserData(ud) = img_val {
                     if let Ok(img) = ud.borrow::<LuaImage>() {
                         let key = img.key;
@@ -2001,17 +2022,25 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                         if !st.textures.contains_key(key) {
                             continue;
                         }
-                        let has_transform = r != 0.0 || sx != 1.0 || sy != 1.0 || ox != 0.0 || oy != 0.0;
+                        let has_transform =
+                            r != 0.0 || sx != 1.0 || sy != 1.0 || ox != 0.0 || oy != 0.0;
                         if has_transform {
                             st.render_commands.push(RenderCommand::DrawImageEx {
                                 texture_key: key,
-                                x, y, rotation: r, sx, sy, ox, oy,
+                                x,
+                                y,
+                                rotation: r,
+                                sx,
+                                sy,
+                                ox,
+                                oy,
                                 effect: None,
                             });
                         } else {
                             st.render_commands.push(RenderCommand::DrawImage {
                                 texture_key: key,
-                                x, y,
+                                x,
+                                y,
                                 effect: None,
                             });
                         }
@@ -5082,7 +5111,9 @@ impl LuaUserData for LObjModel {
         // -- getVertexCount --
         /// Returns the number of position vertices stored in this model.
         /// @return | integer | Number of position vertices.
-        methods.add_method("getVertexCount", |_, this, ()| Ok(this.model.vertex_count()));
+        methods.add_method("getVertexCount", |_, this, ()| {
+            Ok(this.model.vertex_count())
+        });
 
         // -- getFaceCount --
         /// Returns the number of triangulated faces available in this model.
@@ -5097,7 +5128,9 @@ impl LuaUserData for LObjModel {
         // -- getNormalCount --
         /// Returns the number of normal vectors stored in this model.
         /// @return | integer | Number of normal vectors.
-        methods.add_method("getNormalCount", |_, this, ()| Ok(this.model.normal_count()));
+        methods.add_method("getNormalCount", |_, this, ()| {
+            Ok(this.model.normal_count())
+        });
 
         // -- renderToImage --
         /// Rasterizes the model into a cached sprite image using material colors from the MTL.
@@ -5161,7 +5194,9 @@ impl LuaUserData for LObjModel {
                     cam_tbl.get::<_, f32>("fov").unwrap_or(60.0),
                 );
                 let (cam_pos, cam_tgt, fov_y) = cam.to_vecs();
-                let mesh = this.model.project_to_mesh(cam_pos, cam_tgt, fov_y, screen_w, screen_h, None);
+                let mesh = this
+                    .model
+                    .project_to_mesh(cam_pos, cam_tgt, fov_y, screen_w, screen_h, None);
 
                 // Convert mesh vertices to a Lua table of rows
                 let out = lua.create_table()?;

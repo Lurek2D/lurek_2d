@@ -17,9 +17,9 @@ use super::body::{Body, BodyShape, BodyType};
 use super::shape::Shape;
 use super::zone::{PhysicsZone, ZoneEvent, ZoneGravityMode, ZoneTracker};
 
-use crate::runtime::log_messages::{P001_PULLEY_JOINT_FALLBACK, P002_GEAR_JOINT_FALLBACK};
 #[allow(unused_imports)]
 use crate::log_msg;
+use crate::runtime::log_messages::{P001_PULLEY_JOINT_FALLBACK, P002_GEAR_JOINT_FALLBACK};
 
 // ── Internal event collector ─────────────────────────────────────────────────
 
@@ -37,7 +37,11 @@ impl LocalEventCollector {
     }
 
     fn drain(&self) -> Vec<CollisionEvent> {
-        self.events.lock().expect("event mutex not poisoned").drain(..).collect()
+        self.events
+            .lock()
+            .expect("event mutex not poisoned")
+            .drain(..)
+            .collect()
     }
 }
 
@@ -49,7 +53,10 @@ impl EventHandler for LocalEventCollector {
         event: CollisionEvent,
         _contact_pair: Option<&ContactPair>,
     ) {
-        self.events.lock().expect("event mutex not poisoned").push(event);
+        self.events
+            .lock()
+            .expect("event mutex not poisoned")
+            .push(event);
     }
 
     fn handle_contact_force_event(
@@ -268,7 +275,6 @@ pub struct World {
 }
 
 impl World {
-
     /// Draw debug physics colliders to an ImageData target.
     ///
     /// # Parameters
@@ -277,7 +283,14 @@ impl World {
     /// - g - Green component [0,255].
     /// -  - Blue component [0,255].
     /// -  - Alpha component [0,255].
-    pub fn draw_debug_to_image(&self, img: &mut crate::image::ImageData, r: u8, g: u8, b: u8, a: u8) {
+    pub fn draw_debug_to_image(
+        &self,
+        img: &mut crate::image::ImageData,
+        r: u8,
+        g: u8,
+        b: u8,
+        a: u8,
+    ) {
         for body in self.bodies.iter() {
             let cx = body.position.x as i32;
             let cy = body.position.y as i32;
@@ -292,10 +305,46 @@ impl World {
                         let p1 = crate::math::Vec2 { x: hw, y: -hh }.rotate(angle) + body.position;
                         let p2 = crate::math::Vec2 { x: hw, y: hh }.rotate(angle) + body.position;
                         let p3 = crate::math::Vec2 { x: -hw, y: hh }.rotate(angle) + body.position;
-                        img.draw_line(p0.x.round() as i32, p0.y.round() as i32, p1.x.round() as i32, p1.y.round() as i32, r, g, b, a);
-                        img.draw_line(p1.x.round() as i32, p1.y.round() as i32, p2.x.round() as i32, p2.y.round() as i32, r, g, b, a);
-                        img.draw_line(p2.x.round() as i32, p2.y.round() as i32, p3.x.round() as i32, p3.y.round() as i32, r, g, b, a);
-                        img.draw_line(p3.x.round() as i32, p3.y.round() as i32, p0.x.round() as i32, p0.y.round() as i32, r, g, b, a);
+                        img.draw_line(
+                            p0.x.round() as i32,
+                            p0.y.round() as i32,
+                            p1.x.round() as i32,
+                            p1.y.round() as i32,
+                            r,
+                            g,
+                            b,
+                            a,
+                        );
+                        img.draw_line(
+                            p1.x.round() as i32,
+                            p1.y.round() as i32,
+                            p2.x.round() as i32,
+                            p2.y.round() as i32,
+                            r,
+                            g,
+                            b,
+                            a,
+                        );
+                        img.draw_line(
+                            p2.x.round() as i32,
+                            p2.y.round() as i32,
+                            p3.x.round() as i32,
+                            p3.y.round() as i32,
+                            r,
+                            g,
+                            b,
+                            a,
+                        );
+                        img.draw_line(
+                            p3.x.round() as i32,
+                            p3.y.round() as i32,
+                            p0.x.round() as i32,
+                            p0.y.round() as i32,
+                            r,
+                            g,
+                            b,
+                            a,
+                        );
                     }
                     crate::physics::shape::Shape::Circle { radius } => {
                         img.draw_circle(cx, cy, *radius as u32, r, g, b, a);
@@ -306,25 +355,62 @@ impl World {
                     crate::physics::shape::Shape::Polygon { vertices } => {
                         for i in 0..vertices.len() {
                             let p0 = vertices[i].rotate(angle) + body.position;
-                            let p1 = vertices[(i + 1) % vertices.len()].rotate(angle) + body.position;
-                            img.draw_line(p0.x.round() as i32, p0.y.round() as i32, p1.x.round() as i32, p1.y.round() as i32, r, g, b, a);
+                            let p1 =
+                                vertices[(i + 1) % vertices.len()].rotate(angle) + body.position;
+                            img.draw_line(
+                                p0.x.round() as i32,
+                                p0.y.round() as i32,
+                                p1.x.round() as i32,
+                                p1.y.round() as i32,
+                                r,
+                                g,
+                                b,
+                                a,
+                            );
                         }
                     }
                     crate::physics::shape::Shape::Edge { v1, v2 } => {
                         let p0 = v1.rotate(angle) + body.position;
                         let p1 = v2.rotate(angle) + body.position;
-                        img.draw_line(p0.x.round() as i32, p0.y.round() as i32, p1.x.round() as i32, p1.y.round() as i32, r, g, b, a);
+                        img.draw_line(
+                            p0.x.round() as i32,
+                            p0.y.round() as i32,
+                            p1.x.round() as i32,
+                            p1.y.round() as i32,
+                            r,
+                            g,
+                            b,
+                            a,
+                        );
                     }
                     crate::physics::shape::Shape::Chain { vertices, closed } => {
                         for i in 0..vertices.len() - 1 {
                             let p0 = vertices[i].rotate(angle) + body.position;
                             let p1 = vertices[i + 1].rotate(angle) + body.position;
-                            img.draw_line(p0.x.round() as i32, p0.y.round() as i32, p1.x.round() as i32, p1.y.round() as i32, r, g, b, a);
+                            img.draw_line(
+                                p0.x.round() as i32,
+                                p0.y.round() as i32,
+                                p1.x.round() as i32,
+                                p1.y.round() as i32,
+                                r,
+                                g,
+                                b,
+                                a,
+                            );
                         }
                         if *closed && vertices.len() > 2 {
                             let p0 = vertices[vertices.len() - 1].rotate(angle) + body.position;
                             let p1 = vertices[0].rotate(angle) + body.position;
-                            img.draw_line(p0.x.round() as i32, p0.y.round() as i32, p1.x.round() as i32, p1.y.round() as i32, r, g, b, a);
+                            img.draw_line(
+                                p0.x.round() as i32,
+                                p0.y.round() as i32,
+                                p1.x.round() as i32,
+                                p1.y.round() as i32,
+                                r,
+                                g,
+                                b,
+                                a,
+                            );
                         }
                     }
                 }
@@ -337,10 +423,46 @@ impl World {
                         let p1 = crate::math::Vec2 { x: hw, y: -hh }.rotate(angle) + body.position;
                         let p2 = crate::math::Vec2 { x: hw, y: hh }.rotate(angle) + body.position;
                         let p3 = crate::math::Vec2 { x: -hw, y: hh }.rotate(angle) + body.position;
-                        img.draw_line(p0.x.round() as i32, p0.y.round() as i32, p1.x.round() as i32, p1.y.round() as i32, r, g, b, a);
-                        img.draw_line(p1.x.round() as i32, p1.y.round() as i32, p2.x.round() as i32, p2.y.round() as i32, r, g, b, a);
-                        img.draw_line(p2.x.round() as i32, p2.y.round() as i32, p3.x.round() as i32, p3.y.round() as i32, r, g, b, a);
-                        img.draw_line(p3.x.round() as i32, p3.y.round() as i32, p0.x.round() as i32, p0.y.round() as i32, r, g, b, a);
+                        img.draw_line(
+                            p0.x.round() as i32,
+                            p0.y.round() as i32,
+                            p1.x.round() as i32,
+                            p1.y.round() as i32,
+                            r,
+                            g,
+                            b,
+                            a,
+                        );
+                        img.draw_line(
+                            p1.x.round() as i32,
+                            p1.y.round() as i32,
+                            p2.x.round() as i32,
+                            p2.y.round() as i32,
+                            r,
+                            g,
+                            b,
+                            a,
+                        );
+                        img.draw_line(
+                            p2.x.round() as i32,
+                            p2.y.round() as i32,
+                            p3.x.round() as i32,
+                            p3.y.round() as i32,
+                            r,
+                            g,
+                            b,
+                            a,
+                        );
+                        img.draw_line(
+                            p3.x.round() as i32,
+                            p3.y.round() as i32,
+                            p0.x.round() as i32,
+                            p0.y.round() as i32,
+                            r,
+                            g,
+                            b,
+                            a,
+                        );
                     }
                     super::body::BodyShape::Circle { radius } => {
                         img.draw_circle(cx, cy, radius as u32, r, g, b, a);
@@ -377,47 +499,44 @@ impl World {
             let is_sensor = body.body_type == crate::physics::body::BodyType::Sensor;
             let angle = body.angle;
 
-            let (is_circle, half_w, half_h, hull_verts) =
-                if let Some(ref ext) = body.shape_ext {
-                    match ext {
-                        crate::physics::shape::Shape::Circle { radius } => {
-                            (true, *radius, *radius, vec![])
-                        }
-                        crate::physics::shape::Shape::Rect { width, height } => {
-                            (false, width / 2.0, height / 2.0, vec![])
-                        }
-                        crate::physics::shape::Shape::Polygon { vertices }
-                        | crate::physics::shape::Shape::Chain { vertices, .. } => {
-                            let verts = vertices
-                                .iter()
-                                .map(|v| [v.x, v.y])
-                                .collect::<Vec<[f32; 2]>>();
-                            let (hw, hh) = if verts.is_empty() {
-                                (8.0, 8.0)
-                            } else {
-                                let max_x = verts.iter().map(|v| v[0].abs()).fold(0.0_f32, f32::max);
-                                let max_y = verts.iter().map(|v| v[1].abs()).fold(0.0_f32, f32::max);
-                                (max_x, max_y)
-                            };
-                            (false, hw, hh, verts)
-                        }
-                        crate::physics::shape::Shape::Edge { v1, v2 } => {
-                            let hw = ((v2.x - v1.x).abs() / 2.0).max(1.0);
-                            let hh = ((v2.y - v1.y).abs() / 2.0).max(1.0);
-                            let verts = vec![[v1.x, v1.y], [v2.x, v2.y]];
-                            (false, hw, hh, verts)
-                        }
+            let (is_circle, half_w, half_h, hull_verts) = if let Some(ref ext) = body.shape_ext {
+                match ext {
+                    crate::physics::shape::Shape::Circle { radius } => {
+                        (true, *radius, *radius, vec![])
                     }
-                } else {
-                    match body.shape {
-                        super::body::BodyShape::Rect { width, height } => {
-                            (false, width / 2.0, height / 2.0, vec![])
-                        }
-                        super::body::BodyShape::Circle { radius } => {
-                            (true, radius, radius, vec![])
-                        }
+                    crate::physics::shape::Shape::Rect { width, height } => {
+                        (false, width / 2.0, height / 2.0, vec![])
                     }
-                };
+                    crate::physics::shape::Shape::Polygon { vertices }
+                    | crate::physics::shape::Shape::Chain { vertices, .. } => {
+                        let verts = vertices
+                            .iter()
+                            .map(|v| [v.x, v.y])
+                            .collect::<Vec<[f32; 2]>>();
+                        let (hw, hh) = if verts.is_empty() {
+                            (8.0, 8.0)
+                        } else {
+                            let max_x = verts.iter().map(|v| v[0].abs()).fold(0.0_f32, f32::max);
+                            let max_y = verts.iter().map(|v| v[1].abs()).fold(0.0_f32, f32::max);
+                            (max_x, max_y)
+                        };
+                        (false, hw, hh, verts)
+                    }
+                    crate::physics::shape::Shape::Edge { v1, v2 } => {
+                        let hw = ((v2.x - v1.x).abs() / 2.0).max(1.0);
+                        let hh = ((v2.y - v1.y).abs() / 2.0).max(1.0);
+                        let verts = vec![[v1.x, v1.y], [v2.x, v2.y]];
+                        (false, hw, hh, verts)
+                    }
+                }
+            } else {
+                match body.shape {
+                    super::body::BodyShape::Rect { width, height } => {
+                        (false, width / 2.0, height / 2.0, vec![])
+                    }
+                    super::body::BodyShape::Circle { radius } => (true, radius, radius, vec![]),
+                }
+            };
 
             out.push(PhysicsShapeSnapshot {
                 x: body.position.x,
@@ -1078,8 +1197,7 @@ impl World {
                                     true,
                                 );
                                 if let Some(body_mut) = self.bodies.get_mut(mover_id) {
-                                    let rv =
-                                        body_mut.velocity.x * nx + body_mut.velocity.y * ny;
+                                    let rv = body_mut.velocity.x * nx + body_mut.velocity.y * ny;
                                     if rv < 0.0 {
                                         body_mut.velocity.x -= rv * nx;
                                         body_mut.velocity.y -= rv * ny;
@@ -1215,11 +1333,7 @@ impl World {
         // Sort zones descending by priority so highest-priority zone is found first.
         // We sort a local index list to avoid moving the Vec.
         let mut sorted_indices: Vec<usize> = (0..self.zones.len()).collect();
-        sorted_indices.sort_by(|&a, &b| {
-            self.zones[b]
-                .priority
-                .cmp(&self.zones[a].priority)
-        });
+        sorted_indices.sort_by(|&a, &b| self.zones[b].priority.cmp(&self.zones[a].priority));
 
         let n = self.bodies.len();
         for body_id in 0..n {
@@ -1273,7 +1387,10 @@ impl World {
                                 let force = strength / dist2;
                                 rb.set_gravity_scale(0.0, true);
                                 rb.add_force(
-                                    Vector::new(rb.mass() * force * dx / dist, rb.mass() * force * dy / dist),
+                                    Vector::new(
+                                        rb.mass() * force * dx / dist,
+                                        rb.mass() * force * dy / dist,
+                                    ),
                                     true,
                                 );
                             }
@@ -1285,7 +1402,10 @@ impl World {
                                 let force = strength / dist2;
                                 rb.set_gravity_scale(0.0, true);
                                 rb.add_force(
-                                    Vector::new(rb.mass() * force * dx / dist, rb.mass() * force * dy / dist),
+                                    Vector::new(
+                                        rb.mass() * force * dx / dist,
+                                        rb.mass() * force * dy / dist,
+                                    ),
                                     true,
                                 );
                             }

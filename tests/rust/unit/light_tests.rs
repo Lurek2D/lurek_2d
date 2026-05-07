@@ -151,7 +151,10 @@ mod light_data_tests {
         light.set_normal_map_path("assets/textures/normals/torch.png".to_string());
         light.set_normal_strength(0.85);
 
-        assert_eq!(light.get_normal_map_path(), Some("assets/textures/normals/torch.png"));
+        assert_eq!(
+            light.get_normal_map_path(),
+            Some("assets/textures/normals/torch.png")
+        );
         assert!((light.get_normal_strength() - 0.85).abs() < 1e-6);
 
         light.clear_normal_map_path();

@@ -1,4 +1,4 @@
-﻿//! Scene builder for textured-quad raycaster rendering.
+//! Scene builder for textured-quad raycaster rendering.
 //!
 //! Builds a [`RaycasterScene`] from a [`Raycaster2D`] grid, camera parameters,
 //! and lighting data. Every surface is represented as a textured quad with
@@ -54,7 +54,11 @@ fn rect_uvs() -> [Vec2; 4] {
 
 fn frac01(v: f32) -> f32 {
     let f = v - v.floor();
-    if f < 0.0 { f + 1.0 } else { f }
+    if f < 0.0 {
+        f + 1.0
+    } else {
+        f
+    }
 }
 
 /// Returns the grid cell (cx, cy) just in front of the wall (on the camera side).
@@ -97,7 +101,6 @@ struct ProjectedGroundPoint {
     cx: f32,
 }
 
-
 #[allow(clippy::too_many_arguments)]
 #[inline]
 fn project_ground_point(
@@ -128,7 +131,7 @@ fn project_ground_point(
         sx: snap_half(sx),
         floor_y: snap_half(sy_floor),
         ceil_y: snap_half(sy_ceil),
-        cx,  // raw camera depth â€” shader w_depth = cx for perspective-correct UV
+        cx, // raw camera depth â€” shader w_depth = cx for perspective-correct UV
     }
 }
 
@@ -215,7 +218,8 @@ fn build_floor_tiles(
     let proj_w = (vx1 - vx0 + 1).max(0) as usize;
     let proj_h = (vy1 - vy0 + 1).max(0) as usize;
     let mut proj: Vec<ProjectedGroundPoint> = Vec::with_capacity(proj_w * proj_h);
-    let proj_idx = |gx: i32, gy: i32| -> usize { ((gy - vy0) as usize) * proj_w + (gx - vx0) as usize };
+    let proj_idx =
+        |gx: i32, gy: i32| -> usize { ((gy - vy0) as usize) * proj_w + (gx - vx0) as usize };
 
     for gy in vy0..=vy1 {
         for gx in vx0..=vx1 {
@@ -301,10 +305,45 @@ fn build_floor_tiles(
             let base_floor_tex = floor_texture_at(tx as u32, ty as u32);
             let floor_tex = lowered.map(|c| c.texture_key).or(base_floor_tex);
 
-            let tp0 = project_horizontal_plane(tx as f32,       ty as f32,       px, py, cos_a, sin_a, proj_dist, sw, horizon, top_plane);
-            let tp1 = project_horizontal_plane(tx as f32 + 1.0, ty as f32,       px, py, cos_a, sin_a, proj_dist, sw, horizon, top_plane);
-            let tp2 = project_horizontal_plane(tx as f32 + 1.0, ty as f32 + 1.0, px, py, cos_a, sin_a, proj_dist, sw, horizon, top_plane);
-            let tp3 = project_horizontal_plane(tx as f32,       ty as f32 + 1.0, px, py, cos_a, sin_a, proj_dist, sw, horizon, top_plane);
+            let tp0 = project_horizontal_plane(
+                tx as f32, ty as f32, px, py, cos_a, sin_a, proj_dist, sw, horizon, top_plane,
+            );
+            let tp1 = project_horizontal_plane(
+                tx as f32 + 1.0,
+                ty as f32,
+                px,
+                py,
+                cos_a,
+                sin_a,
+                proj_dist,
+                sw,
+                horizon,
+                top_plane,
+            );
+            let tp2 = project_horizontal_plane(
+                tx as f32 + 1.0,
+                ty as f32 + 1.0,
+                px,
+                py,
+                cos_a,
+                sin_a,
+                proj_dist,
+                sw,
+                horizon,
+                top_plane,
+            );
+            let tp3 = project_horizontal_plane(
+                tx as f32,
+                ty as f32 + 1.0,
+                px,
+                py,
+                cos_a,
+                sin_a,
+                proj_dist,
+                sw,
+                horizon,
+                top_plane,
+            );
 
             let floor_corners = [
                 Vec2::new(tp0.0, tp0.1),
@@ -349,15 +388,28 @@ fn build_floor_tiles(
                 let top = floor_plane;
                 let bottom = floor_plane + cell.depth_offset;
                 let side_color = color_to_light(&lit_surface_color(
-                    &Color::new(cell.tint[0] * 0.75, cell.tint[1] * 0.75, cell.tint[2] * 0.75, 1.0),
+                    &Color::new(
+                        cell.tint[0] * 0.75,
+                        cell.tint[1] * 0.75,
+                        cell.tint[2] * 0.75,
+                        1.0,
+                    ),
                     light_rgb,
                     1.0,
                 ));
                 let side_tex = base_floor_tex;
-                let neighbour_drop = |nx: i32, ny: i32| lowered_floor_at(nx as u32, ny as u32).map(|c| c.depth_offset).unwrap_or(0.0);
+                let neighbour_drop = |nx: i32, ny: i32| {
+                    lowered_floor_at(nx as u32, ny as u32)
+                        .map(|c| c.depth_offset)
+                        .unwrap_or(0.0)
+                };
                 let render_side = |walls: &mut Vec<WallQuad>,
-                                   ax: f32, ay: f32, bx: f32, by: f32,
-                                   nx: i32, ny: i32| {
+                                   ax: f32,
+                                   ay: f32,
+                                   bx: f32,
+                                   by: f32,
+                                   nx: i32,
+                                   ny: i32| {
                     let should_render = if nx < 0 || ny < 0 || nx >= map_w || ny >= map_h {
                         true
                     } else if raycaster.get_cell(nx as u32, ny as u32) != 0 {
@@ -372,10 +424,18 @@ fn build_floor_tiles(
                             return;
                         }
 
-                        let pta = project_horizontal_plane(ax, ay, px, py, cos_a, sin_a, proj_dist, sw, horizon, top);
-                        let ptb = project_horizontal_plane(bx, by, px, py, cos_a, sin_a, proj_dist, sw, horizon, top);
-                        let pba = project_horizontal_plane(ax, ay, px, py, cos_a, sin_a, proj_dist, sw, horizon, bottom);
-                        let pbb = project_horizontal_plane(bx, by, px, py, cos_a, sin_a, proj_dist, sw, horizon, bottom);
+                        let pta = project_horizontal_plane(
+                            ax, ay, px, py, cos_a, sin_a, proj_dist, sw, horizon, top,
+                        );
+                        let ptb = project_horizontal_plane(
+                            bx, by, px, py, cos_a, sin_a, proj_dist, sw, horizon, top,
+                        );
+                        let pba = project_horizontal_plane(
+                            ax, ay, px, py, cos_a, sin_a, proj_dist, sw, horizon, bottom,
+                        );
+                        let pbb = project_horizontal_plane(
+                            bx, by, px, py, cos_a, sin_a, proj_dist, sw, horizon, bottom,
+                        );
                         walls.push(WallQuad {
                             corners: [
                                 Vec2::new(pta.0, pta.1),
@@ -393,17 +453,52 @@ fn build_floor_tiles(
                     }
                 };
 
-                render_side(walls, tx as f32, ty as f32, tx as f32 + 1.0, ty as f32, tx, ty - 1);
-                render_side(walls, tx as f32 + 1.0, ty as f32 + 1.0, tx as f32, ty as f32 + 1.0, tx, ty + 1);
-                render_side(walls, tx as f32, ty as f32 + 1.0, tx as f32, ty as f32, tx - 1, ty);
-                render_side(walls, tx as f32 + 1.0, ty as f32, tx as f32 + 1.0, ty as f32 + 1.0, tx + 1, ty);
+                render_side(
+                    walls,
+                    tx as f32,
+                    ty as f32,
+                    tx as f32 + 1.0,
+                    ty as f32,
+                    tx,
+                    ty - 1,
+                );
+                render_side(
+                    walls,
+                    tx as f32 + 1.0,
+                    ty as f32 + 1.0,
+                    tx as f32,
+                    ty as f32 + 1.0,
+                    tx,
+                    ty + 1,
+                );
+                render_side(
+                    walls,
+                    tx as f32,
+                    ty as f32 + 1.0,
+                    tx as f32,
+                    ty as f32,
+                    tx - 1,
+                    ty,
+                );
+                render_side(
+                    walls,
+                    tx as f32 + 1.0,
+                    ty as f32,
+                    tx as f32 + 1.0,
+                    ty as f32 + 1.0,
+                    tx + 1,
+                    ty,
+                );
             }
 
             // Roof thickness: draw downward side faces on roof edges so roof
             // appears as a thick slab, analogous to lowered floor thickness.
             if let Some(roof_tex) = ceil_tex {
                 let roof_bottom = ceiling_plane;
-                let roof_thickness = lowered.map(|c| c.depth_offset).unwrap_or(0.25).clamp(0.05, 0.5);
+                let roof_thickness = lowered
+                    .map(|c| c.depth_offset)
+                    .unwrap_or(0.25)
+                    .clamp(0.05, 0.5);
                 let roof_top = roof_bottom - roof_thickness;
                 let roof_side_light = floor_light;
 
@@ -411,13 +506,21 @@ fn build_floor_tiles(
                     if nx < 0 || ny < 0 || nx >= map_w || ny >= map_h {
                         return None;
                     }
-                    ceiling_texture_at(nx as u32, ny as u32)
-                        .map(|_| lowered_floor_at(nx as u32, ny as u32).map(|c| c.depth_offset).unwrap_or(0.25).clamp(0.05, 0.5))
+                    ceiling_texture_at(nx as u32, ny as u32).map(|_| {
+                        lowered_floor_at(nx as u32, ny as u32)
+                            .map(|c| c.depth_offset)
+                            .unwrap_or(0.25)
+                            .clamp(0.05, 0.5)
+                    })
                 };
 
                 let render_roof_side = |walls: &mut Vec<WallQuad>,
-                                        ax: f32, ay: f32, bx: f32, by: f32,
-                                        nx: i32, ny: i32| {
+                                        ax: f32,
+                                        ay: f32,
+                                        bx: f32,
+                                        by: f32,
+                                        nx: i32,
+                                        ny: i32| {
                     let should_render = match neighbour_roof_thickness(nx, ny) {
                         None => true,
                         Some(t) => t + 1e-4 < roof_thickness,
@@ -430,10 +533,36 @@ fn build_floor_tiles(
                             return;
                         }
 
-                        let pta = project_horizontal_plane(ax, ay, px, py, cos_a, sin_a, proj_dist, sw, horizon, roof_top);
-                        let ptb = project_horizontal_plane(bx, by, px, py, cos_a, sin_a, proj_dist, sw, horizon, roof_top);
-                        let pba = project_horizontal_plane(ax, ay, px, py, cos_a, sin_a, proj_dist, sw, horizon, roof_bottom);
-                        let pbb = project_horizontal_plane(bx, by, px, py, cos_a, sin_a, proj_dist, sw, horizon, roof_bottom);
+                        let pta = project_horizontal_plane(
+                            ax, ay, px, py, cos_a, sin_a, proj_dist, sw, horizon, roof_top,
+                        );
+                        let ptb = project_horizontal_plane(
+                            bx, by, px, py, cos_a, sin_a, proj_dist, sw, horizon, roof_top,
+                        );
+                        let pba = project_horizontal_plane(
+                            ax,
+                            ay,
+                            px,
+                            py,
+                            cos_a,
+                            sin_a,
+                            proj_dist,
+                            sw,
+                            horizon,
+                            roof_bottom,
+                        );
+                        let pbb = project_horizontal_plane(
+                            bx,
+                            by,
+                            px,
+                            py,
+                            cos_a,
+                            sin_a,
+                            proj_dist,
+                            sw,
+                            horizon,
+                            roof_bottom,
+                        );
 
                         walls.push(WallQuad {
                             corners: [
@@ -452,10 +581,42 @@ fn build_floor_tiles(
                     }
                 };
 
-                render_roof_side(walls, tx as f32, ty as f32, tx as f32 + 1.0, ty as f32, tx, ty - 1);
-                render_roof_side(walls, tx as f32 + 1.0, ty as f32 + 1.0, tx as f32, ty as f32 + 1.0, tx, ty + 1);
-                render_roof_side(walls, tx as f32, ty as f32 + 1.0, tx as f32, ty as f32, tx - 1, ty);
-                render_roof_side(walls, tx as f32 + 1.0, ty as f32, tx as f32 + 1.0, ty as f32 + 1.0, tx + 1, ty);
+                render_roof_side(
+                    walls,
+                    tx as f32,
+                    ty as f32,
+                    tx as f32 + 1.0,
+                    ty as f32,
+                    tx,
+                    ty - 1,
+                );
+                render_roof_side(
+                    walls,
+                    tx as f32 + 1.0,
+                    ty as f32 + 1.0,
+                    tx as f32,
+                    ty as f32 + 1.0,
+                    tx,
+                    ty + 1,
+                );
+                render_roof_side(
+                    walls,
+                    tx as f32,
+                    ty as f32 + 1.0,
+                    tx as f32,
+                    ty as f32,
+                    tx - 1,
+                    ty,
+                );
+                render_roof_side(
+                    walls,
+                    tx as f32 + 1.0,
+                    ty as f32,
+                    tx as f32 + 1.0,
+                    ty as f32 + 1.0,
+                    tx + 1,
+                    ty,
+                );
             }
         }
     }
@@ -493,7 +654,8 @@ fn build_wall_faces(
     let proj_w = (vx1 - vx0 + 1).max(0) as usize;
     let proj_h = (vy1 - vy0 + 1).max(0) as usize;
     let mut proj: Vec<ProjectedGroundPoint> = Vec::with_capacity(proj_w * proj_h);
-    let proj_idx = |gx: i32, gy: i32| -> usize { ((gy - vy0) as usize) * proj_w + (gx - vx0) as usize };
+    let proj_idx =
+        |gx: i32, gy: i32| -> usize { ((gy - vy0) as usize) * proj_w + (gx - vx0) as usize };
     for gy in vy0..=vy1 {
         for gx in vx0..=vx1 {
             proj.push(project_ground_point(
@@ -512,8 +674,23 @@ fn build_wall_faces(
         }
     }
 
-    let maybe_face = |ax: i32, ay: i32, bx: i32, by: i32, cell_value: u32, face_cx: f32, face_cy: f32| -> Option<WallQuad> {
-        if ax < vx0 || ay < vy0 || bx < vx0 || by < vy0 || ax > vx1 || ay > vy1 || bx > vx1 || by > vy1 {
+    let maybe_face = |ax: i32,
+                      ay: i32,
+                      bx: i32,
+                      by: i32,
+                      cell_value: u32,
+                      face_cx: f32,
+                      face_cy: f32|
+     -> Option<WallQuad> {
+        if ax < vx0
+            || ay < vy0
+            || bx < vx0
+            || by < vy0
+            || ax > vx1
+            || ay > vy1
+            || bx > vx1
+            || by > vy1
+        {
             return None;
         }
         let ca = camera_depth(ax as f32, ay as f32, px, py, cos_a, sin_a);
@@ -571,25 +748,43 @@ fn build_wall_faces(
 
             // North face
             if ty == 0 || raycaster.get_cell(tx as u32, (ty - 1) as u32) == 0 {
-                if let Some(face) = maybe_face(tx, ty, tx + 1, ty, cell_value, center_x, ty as f32) {
+                if let Some(face) = maybe_face(tx, ty, tx + 1, ty, cell_value, center_x, ty as f32)
+                {
                     walls.push(face);
                 }
             }
             // South face
             if ty == map_h - 1 || raycaster.get_cell(tx as u32, (ty + 1) as u32) == 0 {
-                if let Some(face) = maybe_face(tx + 1, ty + 1, tx, ty + 1, cell_value, center_x, ty as f32 + 1.0) {
+                if let Some(face) = maybe_face(
+                    tx + 1,
+                    ty + 1,
+                    tx,
+                    ty + 1,
+                    cell_value,
+                    center_x,
+                    ty as f32 + 1.0,
+                ) {
                     walls.push(face);
                 }
             }
             // West face
             if tx == 0 || raycaster.get_cell((tx - 1) as u32, ty as u32) == 0 {
-                if let Some(face) = maybe_face(tx, ty + 1, tx, ty, cell_value, tx as f32, center_y) {
+                if let Some(face) = maybe_face(tx, ty + 1, tx, ty, cell_value, tx as f32, center_y)
+                {
                     walls.push(face);
                 }
             }
             // East face
             if tx == map_w - 1 || raycaster.get_cell((tx + 1) as u32, ty as u32) == 0 {
-                if let Some(face) = maybe_face(tx + 1, ty, tx + 1, ty + 1, cell_value, tx as f32 + 1.0, center_y) {
+                if let Some(face) = maybe_face(
+                    tx + 1,
+                    ty,
+                    tx + 1,
+                    ty + 1,
+                    cell_value,
+                    tx as f32 + 1.0,
+                    center_y,
+                ) {
                     walls.push(face);
                 }
             }
@@ -614,8 +809,10 @@ fn build_wall_faces(
                     } else {
                         params.ambient_light
                     };
-                    let light_rgb = compute_lighting(center_x, center_y, wall_ambient, lights, wall_at);
-                    let roof_light = color_to_light(&lit_surface_color(&Color::WHITE, light_rgb, 1.0));
+                    let light_rgb =
+                        compute_lighting(center_x, center_y, wall_ambient, lights, wall_at);
+                    let roof_light =
+                        color_to_light(&lit_surface_color(&Color::WHITE, light_rgb, 1.0));
 
                     let neigh_roof = |nx: i32, ny: i32| -> Option<f32> {
                         if nx < 0 || ny < 0 || nx >= map_w || ny >= map_h {
@@ -629,45 +826,86 @@ fn build_wall_faces(
                         })
                     };
 
-                    let mut render_roof_side = |ax: f32, ay: f32, bx: f32, by: f32, nx: i32, ny: i32| {
-                        let should_render = match neigh_roof(nx, ny) {
-                            None => true,
-                            Some(t) => t + 1e-4 < roof_thickness,
+                    let mut render_roof_side =
+                        |ax: f32, ay: f32, bx: f32, by: f32, nx: i32, ny: i32| {
+                            let should_render = match neigh_roof(nx, ny) {
+                                None => true,
+                                Some(t) => t + 1e-4 < roof_thickness,
+                            };
+                            if !should_render {
+                                return;
+                            }
+
+                            let ca = camera_depth(ax, ay, px, py, cos_a, sin_a);
+                            let cb = camera_depth(bx, by, px, py, cos_a, sin_a);
+                            if ca <= FLOOR_NEAR || cb <= FLOOR_NEAR {
+                                return;
+                            }
+
+                            let pta = project_horizontal_plane(
+                                ax, ay, px, py, cos_a, sin_a, proj_dist, sw, horizon, roof_top,
+                            );
+                            let ptb = project_horizontal_plane(
+                                bx, by, px, py, cos_a, sin_a, proj_dist, sw, horizon, roof_top,
+                            );
+                            let pba = project_horizontal_plane(
+                                ax,
+                                ay,
+                                px,
+                                py,
+                                cos_a,
+                                sin_a,
+                                proj_dist,
+                                sw,
+                                horizon,
+                                roof_bottom,
+                            );
+                            let pbb = project_horizontal_plane(
+                                bx,
+                                by,
+                                px,
+                                py,
+                                cos_a,
+                                sin_a,
+                                proj_dist,
+                                sw,
+                                horizon,
+                                roof_bottom,
+                            );
+                            walls.push(WallQuad {
+                                corners: [
+                                    Vec2::new(pta.0, pta.1),
+                                    Vec2::new(ptb.0, ptb.1),
+                                    Vec2::new(pbb.0, pbb.1),
+                                    Vec2::new(pba.0, pba.1),
+                                ],
+                                uvs: rect_uvs(),
+                                texture_key: Some(roof_tex),
+                                light: roof_light,
+                                depth: ((dx * dx + dy * dy).sqrt() - 0.02).max(0.0),
+                                corner_w: [pta.2, ptb.2, pbb.2, pba.2],
+                                cell_value: 0,
+                            });
                         };
-                        if !should_render {
-                            return;
-                        }
-
-                        let ca = camera_depth(ax, ay, px, py, cos_a, sin_a);
-                        let cb = camera_depth(bx, by, px, py, cos_a, sin_a);
-                        if ca <= FLOOR_NEAR || cb <= FLOOR_NEAR {
-                            return;
-                        }
-
-                        let pta = project_horizontal_plane(ax, ay, px, py, cos_a, sin_a, proj_dist, sw, horizon, roof_top);
-                        let ptb = project_horizontal_plane(bx, by, px, py, cos_a, sin_a, proj_dist, sw, horizon, roof_top);
-                        let pba = project_horizontal_plane(ax, ay, px, py, cos_a, sin_a, proj_dist, sw, horizon, roof_bottom);
-                        let pbb = project_horizontal_plane(bx, by, px, py, cos_a, sin_a, proj_dist, sw, horizon, roof_bottom);
-                        walls.push(WallQuad {
-                            corners: [
-                                Vec2::new(pta.0, pta.1),
-                                Vec2::new(ptb.0, ptb.1),
-                                Vec2::new(pbb.0, pbb.1),
-                                Vec2::new(pba.0, pba.1),
-                            ],
-                            uvs: rect_uvs(),
-                            texture_key: Some(roof_tex),
-                            light: roof_light,
-                            depth: ((dx * dx + dy * dy).sqrt() - 0.02).max(0.0),
-                            corner_w: [pta.2, ptb.2, pbb.2, pba.2],
-                            cell_value: 0,
-                        });
-                    };
 
                     render_roof_side(tx as f32, ty as f32, tx as f32 + 1.0, ty as f32, tx, ty - 1);
-                    render_roof_side(tx as f32 + 1.0, ty as f32 + 1.0, tx as f32, ty as f32 + 1.0, tx, ty + 1);
+                    render_roof_side(
+                        tx as f32 + 1.0,
+                        ty as f32 + 1.0,
+                        tx as f32,
+                        ty as f32 + 1.0,
+                        tx,
+                        ty + 1,
+                    );
                     render_roof_side(tx as f32, ty as f32 + 1.0, tx as f32, ty as f32, tx - 1, ty);
-                    render_roof_side(tx as f32 + 1.0, ty as f32, tx as f32 + 1.0, ty as f32 + 1.0, tx + 1, ty);
+                    render_roof_side(
+                        tx as f32 + 1.0,
+                        ty as f32,
+                        tx as f32 + 1.0,
+                        ty as f32 + 1.0,
+                        tx + 1,
+                        ty,
+                    );
                 }
             }
         }
@@ -798,9 +1036,8 @@ impl RaycasterScene {
         let mut scene = RaycasterScene::new(params.screen_width, params.screen_height);
 
         // â”€â”€ Floor and ceiling: per-tile projection (Minecraft-style) â”€â”€â”€â”€â”€â”€â”€â”€â”€
-        let wall_at = |x: i32, y: i32| -> bool {
-            x < 0 || y < 0 || raycaster.is_blocked(x as u32, y as u32)
-        };
+        let wall_at =
+            |x: i32, y: i32| -> bool { x < 0 || y < 0 || raycaster.is_blocked(x as u32, y as u32) };
         build_floor_tiles(
             raycaster,
             params,
@@ -890,8 +1127,16 @@ impl RaycasterScene {
             let (_, top_y, _) = top;
             let projected_size = (base_y - top_y).abs().max(1.0);
 
-            let gx = ws.world_x.floor().clamp(0.0, (raycaster.width().saturating_sub(1)) as f32) as u32;
-            let gy = ws.world_y.floor().clamp(0.0, (raycaster.height().saturating_sub(1)) as f32) as u32;
+            let gx = ws
+                .world_x
+                .floor()
+                .clamp(0.0, (raycaster.width().saturating_sub(1)) as f32)
+                as u32;
+            let gy = ws
+                .world_y
+                .floor()
+                .clamp(0.0, (raycaster.height().saturating_sub(1)) as f32)
+                as u32;
             let sprite_ambient = if ceiling_texture_at(gx, gy).is_some() {
                 params.ambient_light * 0.5
             } else {

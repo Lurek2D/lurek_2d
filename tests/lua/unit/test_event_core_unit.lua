@@ -374,6 +374,28 @@ describe("lurek.event pushDeferred and history", function()
   end)
 
   -- @covers lurek.event.clear
+  -- @covers lurek.event.poll
+  -- @covers lurek.event.push
+  it("push table payload clone is shallow for nested tables", function()
+    lurek.event.clear()
+    lurek.event.push("table_shallow_evt", {
+      hp = 5,
+      alive = true,
+      nested = { score = 99 }
+    })
+
+    local got_payload = nil
+    for _, payload in lurek.event.poll() do
+      got_payload = payload
+    end
+
+    expect_equal(type(got_payload), "table")
+    expect_equal(got_payload.hp, 5)
+    expect_equal(got_payload.alive, true)
+    expect_equal(got_payload.nested, nil)
+  end)
+
+  -- @covers lurek.event.clear
   -- @covers lurek.event.flushDeferred
   -- @covers lurek.event.poll
   -- @covers lurek.event.pushDeferred

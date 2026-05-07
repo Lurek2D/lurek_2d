@@ -846,8 +846,7 @@ impl GuiContext {
     /// `usize`.
     pub fn add_custom_widget(&mut self) -> usize {
         let idx = self.widgets.len();
-        self.widgets
-            .push(WidgetKind::Custom(CustomWidget::new()));
+        self.widgets.push(WidgetKind::Custom(CustomWidget::new()));
         self.dirty = true;
         idx
     }

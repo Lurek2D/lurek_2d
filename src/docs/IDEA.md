@@ -19,9 +19,9 @@ Provide Lurek2D's in-engine API documentation catalog and runtime data-validatio
 
 ## Gaps
 
-- Zero `#[cfg(test)]` coverage existed before this review — now all 5 content files have inline test suites.
-- `export.rs` writes to filesystem synchronously with no buffering — large catalogs will block.
-- `Schema::validate_pairs` takes `&'static str` for type names, limiting the caller to string literals.
+- Tests were moved out of `src/docs/*` into `tests/rust/unit/docs_tests.rs` (policy-compliant, no `#[cfg(test)]` in `src/`).
+- `export.rs` now uses shared JSON builders and buffered writes.
+- `Schema::validate_pairs` now accepts non-static `&str` lifetimes.
 
 ## Features — Competitor Comparison
 
@@ -39,18 +39,22 @@ Provide Lurek2D's in-engine API documentation catalog and runtime data-validatio
 
 ## Test Gaps
 
-- All 5 content files now have `#[cfg(test)]` suites (7 catalog, 4 entry, 7 report, 8 schema, 4 export tests = **30 tests added**).
-- Missing coverage: `ParamInfo` and `ReturnInfo` edge cases, `export_all` compact hover variant, `Schema` string length bounds, `QualityReport::compute` with mixed modules.
+- Added targeted coverage in `tests/rust/unit/docs_tests.rs` for:
+	- `ParamInfo` and `ReturnInfo` edge cases,
+	- `export_all` compact hover variant,
+	- `Schema` string length bounds,
+	- `QualityReport::compute` with mixed modules,
+	- `Catalog::merge` and `Schema::from_toml`.
 
 ## TODO(dedup)
 
-- [ ] `export_all` duplicates the completions/hover JSON building logic from `export_completions`/`export_hover` — extract a shared builder.
+- [x] `export_all` duplicates the completions/hover JSON building logic from `export_completions`/`export_hover` — extract a shared builder.
 
 ## TODO(helper)
 
-- [ ] Relax `validate_pairs` type parameter from `&'static str` to `&str` for flexibility.
-- [ ] Add `Catalog::merge(other: &Catalog)` to combine catalogs from multiple sources (e.g. plugin doc entries).
-- [ ] Add `Schema::from_toml(s: &str)` to load schema rules from TOML files (per binding constraint B-05).
+- [x] Relax `validate_pairs` type parameter from `&'static str` to `&str` for flexibility.
+- [x] Add `Catalog::merge(other: &Catalog)` to combine catalogs from multiple sources (e.g. plugin doc entries).
+- [x] Add `Schema::from_toml(s: &str)` to load schema rules from TOML files (per binding constraint B-05).
 
 ## TODO(plugin)
 

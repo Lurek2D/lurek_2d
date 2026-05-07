@@ -37,9 +37,10 @@ mod channel_tests {
 
     #[test]
     fn channel_value_clone_roundtrip() {
-        let original = ChannelValue::Table(vec![
-            (ChannelValue::String("key".into()), ChannelValue::Number(42.0)),
-        ]);
+        let original = ChannelValue::Table(vec![(
+            ChannelValue::String("key".into()),
+            ChannelValue::Number(42.0),
+        )]);
         let cloned = original.clone();
         match cloned {
             ChannelValue::Table(pairs) => {
@@ -96,7 +97,10 @@ mod worker_tests {
         // Use a script that blocks briefly so the thread is still running
         // when we try to start again.
         let ch = Channel::named("__block".to_string());
-        channels.lock().unwrap().insert("__block".into(), ch.clone());
+        channels
+            .lock()
+            .unwrap()
+            .insert("__block".into(), ch.clone());
         let mut t = LuaThread::new(
             r#"lurek.thread.getChannel("__block"):demand()"#.into(),
             channels,

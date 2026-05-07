@@ -12,14 +12,14 @@ use std::rc::Rc;
 use crate::image::ProvinceGrid;
 use crate::province::events::ProvinceChange;
 use crate::province::map_modes::ProvinceMapMode;
+use crate::province::registry::ProvinceRegistry;
+use crate::province::render::{generate_render_commands, ProvinceRenderOptions};
+use crate::province::types::BorderClass;
+use crate::province::{fit_camera_to_screen, map_to_cell, screen_to_map, zoom_camera_at};
 use crate::province::{
     import_metadata_from_files, sanitize_marked_png, MarkerSanitizeOptions,
     ProvinceMetadataImportOptions,
 };
-use crate::province::{fit_camera_to_screen, map_to_cell, screen_to_map, zoom_camera_at};
-use crate::province::render::{generate_render_commands, ProvinceRenderOptions};
-use crate::province::registry::ProvinceRegistry;
-use crate::province::types::BorderClass;
 
 fn resolve_game_path(state: &Rc<RefCell<SharedState>>, path: &str) -> String {
     let st = state.borrow();
@@ -93,7 +93,9 @@ impl LuaUserData for LuaProvinceRegistry {
         // -- getHeight --
         /// Returns source map height in pixels.
         /// @return | integer | Map height.
-        methods.add_method("getHeight", |_, this, ()| this.with_registry(|r| r.height()));
+        methods.add_method("getHeight", |_, this, ()| {
+            this.with_registry(|r| r.height())
+        });
 
         // -- getAt --
         /// Returns province id at pixel coordinate.
@@ -139,7 +141,16 @@ impl LuaUserData for LuaProvinceRegistry {
         /// @return | number | Map y.
         methods.add_method(
             "screenToMap",
-            |_, _, (screen_x, screen_y, cam_x, cam_y, zoom, pixel_size): (f32, f32, f32, f32, f32, Option<f32>)| {
+            |_,
+             _,
+             (screen_x, screen_y, cam_x, cam_y, zoom, pixel_size): (
+                f32,
+                f32,
+                f32,
+                f32,
+                f32,
+                Option<f32>,
+            )| {
                 let (map_x, map_y) = screen_to_map(
                     screen_x,
                     screen_y,
@@ -163,7 +174,16 @@ impl LuaUserData for LuaProvinceRegistry {
         /// @return | integer|nil | Province id, or nil if outside map bounds.
         methods.add_method(
             "screenToProvince",
-            |_, this, (screen_x, screen_y, cam_x, cam_y, zoom, pixel_size): (f32, f32, f32, f32, f32, Option<f32>)| {
+            |_,
+             this,
+             (screen_x, screen_y, cam_x, cam_y, zoom, pixel_size): (
+                f32,
+                f32,
+                f32,
+                f32,
+                f32,
+                Option<f32>,
+            )| {
                 let (map_w, map_h) = this.with_registry(|r| (r.width(), r.height()))?;
                 let (map_x, map_y) = screen_to_map(
                     screen_x,
@@ -336,13 +356,15 @@ impl LuaUserData for LuaProvinceRegistry {
         /// @param | b | integer | Province B.
         /// @param | class | string | One of: land_land, coast, sea_sea, special.
         /// @return | nil | No value is returned.
-        methods.add_method_mut("setBorderClass", |_, this, (a, b, class): (u32, u32, String)| {
-            let parsed = BorderClass::parse_str(class.as_str()).ok_or_else(|| {
-                LuaError::RuntimeError("invalid border class".to_string())
-            })?;
-            this.with_registry_mut(|r| r.set_border_class(a, b, parsed))?;
-            Ok(())
-        });
+        methods.add_method_mut(
+            "setBorderClass",
+            |_, this, (a, b, class): (u32, u32, String)| {
+                let parsed = BorderClass::parse_str(class.as_str())
+                    .ok_or_else(|| LuaError::RuntimeError("invalid border class".to_string()))?;
+                this.with_registry_mut(|r| r.set_border_class(a, b, parsed))?;
+                Ok(())
+            },
+        );
 
         // -- setPoliticalColor --
         /// Sets political color for one province.
@@ -352,27 +374,38 @@ impl LuaUserData for LuaProvinceRegistry {
         /// @param | b | number | Blue (0..1).
         /// @param | a | number? | Alpha (0..1).
         /// @return | boolean | True when province exists.
-        methods.add_method_mut("setPoliticalColor", |_, this, (id, r, g, b, a): (u32, f32, f32, f32, Option<f32>)| {
-            this.with_registry_mut(|reg| reg.set_political_color(id, [r, g, b, a.unwrap_or(1.0)]))
-        });
+        methods.add_method_mut(
+            "setPoliticalColor",
+            |_, this, (id, r, g, b, a): (u32, f32, f32, f32, Option<f32>)| {
+                this.with_registry_mut(|reg| {
+                    reg.set_political_color(id, [r, g, b, a.unwrap_or(1.0)])
+                })
+            },
+        );
 
         // -- setTerrainType --
         /// Sets terrain type for one province.
         /// @param | id | integer | Province id.
         /// @param | terrain_type | integer | Terrain type id.
         /// @return | boolean | True when province exists.
-        methods.add_method_mut("setTerrainType", |_, this, (id, terrain_type): (u32, u32)| {
-            this.with_registry_mut(|reg| reg.set_terrain_type(id, terrain_type))
-        });
+        methods.add_method_mut(
+            "setTerrainType",
+            |_, this, (id, terrain_type): (u32, u32)| {
+                this.with_registry_mut(|reg| reg.set_terrain_type(id, terrain_type))
+            },
+        );
 
         // -- setBorderStyle --
         /// Sets border style id for one province.
         /// @param | id | integer | Province id.
         /// @param | border_style | integer | Border style id.
         /// @return | boolean | True when province exists.
-        methods.add_method_mut("setBorderStyle", |_, this, (id, border_style): (u32, u32)| {
-            this.with_registry_mut(|reg| reg.set_border_style(id, border_style))
-        });
+        methods.add_method_mut(
+            "setBorderStyle",
+            |_, this, (id, border_style): (u32, u32)| {
+                this.with_registry_mut(|reg| reg.set_border_style(id, border_style))
+            },
+        );
 
         // -- setFogState --
         /// Sets fog state byte for one province.
@@ -388,9 +421,12 @@ impl LuaUserData for LuaProvinceRegistry {
         /// @param | id | integer | Province id.
         /// @param | visibility_state | integer | Visibility byte.
         /// @return | boolean | True when province exists.
-        methods.add_method_mut("setVisibilityState", |_, this, (id, visibility_state): (u32, u8)| {
-            this.with_registry_mut(|reg| reg.set_visibility_state(id, visibility_state))
-        });
+        methods.add_method_mut(
+            "setVisibilityState",
+            |_, this, (id, visibility_state): (u32, u8)| {
+                this.with_registry_mut(|reg| reg.set_visibility_state(id, visibility_state))
+            },
+        );
 
         // -- setAttr --
         /// Sets freeform attribute on a province.
@@ -398,9 +434,12 @@ impl LuaUserData for LuaProvinceRegistry {
         /// @param | key | string | Attribute key.
         /// @param | value | string | Attribute value.
         /// @return | boolean | True when province exists.
-        methods.add_method_mut("setAttr", |_, this, (id, key, value): (u32, String, String)| {
-            this.with_registry_mut(|reg| reg.set_attr(id, key, value))
-        });
+        methods.add_method_mut(
+            "setAttr",
+            |_, this, (id, key, value): (u32, String, String)| {
+                this.with_registry_mut(|reg| reg.set_attr(id, key, value))
+            },
+        );
 
         // -- setCapital --
         /// Sets province capital marker position.
@@ -441,22 +480,20 @@ impl LuaUserData for LuaProvinceRegistry {
         /// @param | opts | table | Import options table.
         /// @return | table | Summary table `{ mapped_provinces, capitals_set, label_lines_set, labels_set }`.
         methods.add_method_mut("importMetadataFromFiles", |lua, this, opts: LuaTable| {
-            let color_map_png = opts
-                .get::<_, Option<String>>("color_map_png")?
-                .ok_or_else(|| {
-                    LuaError::RuntimeError(
+            let color_map_png =
+                opts.get::<_, Option<String>>("color_map_png")?
+                    .ok_or_else(|| {
+                        LuaError::RuntimeError(
                         "lurek.province.importMetadataFromFiles: opts.color_map_png is required"
                             .to_string(),
                     )
-                })?;
-            let color_csv = opts
-                .get::<_, Option<String>>("color_csv")?
-                .ok_or_else(|| {
-                    LuaError::RuntimeError(
-                        "lurek.province.importMetadataFromFiles: opts.color_csv is required"
-                            .to_string(),
-                    )
-                })?;
+                    })?;
+            let color_csv = opts.get::<_, Option<String>>("color_csv")?.ok_or_else(|| {
+                LuaError::RuntimeError(
+                    "lurek.province.importMetadataFromFiles: opts.color_csv is required"
+                        .to_string(),
+                )
+            })?;
 
             let marker_png = opts.get::<_, Option<String>>("marker_png")?;
             let province_toml = opts.get::<_, Option<String>>("province_toml")?;
@@ -500,7 +537,9 @@ impl LuaUserData for LuaProvinceRegistry {
             import_opts.set_label_lines = opts
                 .get::<_, Option<bool>>("set_label_lines")?
                 .unwrap_or(import_opts.set_label_lines);
-            import_opts.marker_options = marker_options_from_lua(opts.get::<_, Option<LuaTable>>("marker_options")?.as_ref());
+            import_opts.marker_options = marker_options_from_lua(
+                opts.get::<_, Option<LuaTable>>("marker_options")?.as_ref(),
+            );
 
             let summary = this
                 .with_registry_mut(|reg| import_metadata_from_files(reg, &import_opts))?
@@ -588,7 +627,8 @@ impl LuaUserData for LuaProvinceRegistry {
                 st.active_font.or(st.default_font)
             };
 
-            let cmds = this.with_registry(|reg| generate_render_commands(reg, &options, font_key))?;
+            let cmds =
+                this.with_registry(|reg| generate_render_commands(reg, &options, font_key))?;
             this.state.borrow_mut().render_commands.extend(cmds);
             Ok(())
         });
@@ -691,8 +731,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         "newFromPng",
         lua.create_function(move |_, (name, png_path): (String, String)| {
             let resolved_path = resolve_game_path(&s, png_path.as_str());
-            let grid = ProvinceGrid::from_file(&resolved_path)
-                .map_err(LuaError::RuntimeError)?;
+            let grid = ProvinceGrid::from_file(&resolved_path).map_err(LuaError::RuntimeError)?;
             let registry = ProvinceRegistry::from_grid(&grid);
 
             {
@@ -717,18 +756,21 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     let s = state.clone();
     tbl.set(
         "sanitizeMarkedPng",
-        lua.create_function(move |lua, (input_png, output_png, opts): (String, String, Option<LuaTable>)| {
-            let in_path = resolve_game_path(&s, input_png.as_str());
-            let out_path = resolve_game_path(&s, output_png.as_str());
-            let marker_opts = marker_options_from_lua(opts.as_ref());
-            let summary = sanitize_marked_png(in_path.as_str(), out_path.as_str(), &marker_opts)
-                .map_err(LuaError::RuntimeError)?;
+        lua.create_function(
+            move |lua, (input_png, output_png, opts): (String, String, Option<LuaTable>)| {
+                let in_path = resolve_game_path(&s, input_png.as_str());
+                let out_path = resolve_game_path(&s, output_png.as_str());
+                let marker_opts = marker_options_from_lua(opts.as_ref());
+                let summary =
+                    sanitize_marked_png(in_path.as_str(), out_path.as_str(), &marker_opts)
+                        .map_err(LuaError::RuntimeError)?;
 
-            let out = lua.create_table()?;
-            out.set("replaced_pixels", summary.replaced_pixels)?;
-            out.set("unresolved_pixels", summary.unresolved_pixels)?;
-            Ok(out)
-        })?,
+                let out = lua.create_table()?;
+                out.set("replaced_pixels", summary.replaced_pixels)?;
+                out.set("unresolved_pixels", summary.unresolved_pixels)?;
+                Ok(out)
+            },
+        )?,
     )?;
 
     // -- get --
@@ -826,14 +868,17 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     tbl.set(
         "zoomCameraAt",
         lua.create_function(
-            move |_, (anchor_x, anchor_y, cam_x, cam_y, old_zoom, new_zoom): (f32, f32, f32, f32, f32, f32)| {
+            move |_,
+                  (anchor_x, anchor_y, cam_x, cam_y, old_zoom, new_zoom): (
+                f32,
+                f32,
+                f32,
+                f32,
+                f32,
+                f32,
+            )| {
                 Ok(zoom_camera_at(
-                    anchor_x,
-                    anchor_y,
-                    cam_x,
-                    cam_y,
-                    old_zoom,
-                    new_zoom,
+                    anchor_x, anchor_y, cam_x, cam_y, old_zoom, new_zoom,
                 ))
             },
         )?,

@@ -1,4 +1,4 @@
-﻿//! `lurek.tween` - Property tweening, sequencing, and spring animation helpers.
+//! `lurek.tween` - Property tweening, sequencing, and spring animation helpers.
 
 use super::SharedState;
 use mlua::prelude::*;
@@ -141,7 +141,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// @return | nil | No value is returned.
     let s = engine.clone();
     // -- Bindings -------------------------------------------------
-    tbl.set("update", lua.create_function(move |lua, dt: f64| {
+    tbl.set(
+        "update",
+        lua.create_function(move |lua, dt: f64| {
             TweenEngine::update(&s, lua, dt)?;
             // -- springs -------------------------------------------------
             let spring_keys = std::mem::take(&mut s.borrow_mut().active_springs);
@@ -176,7 +178,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// @return | LTween | New tween handle.
     let s = engine.clone();
     // Auto-doc: Lua API binding.
-    tbl.set("tween", lua.create_function(
+    tbl.set(
+        "tween",
+        lua.create_function(
             move |lua,
                   (duration, target, fields_tbl, easing): (
                 f64,
@@ -206,7 +210,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// @return | LTweenSequence | New sequence handle.
     let s = engine.clone();
     // Auto-doc: Lua API binding.
-    tbl.set("sequence", lua.create_function(move |lua, ()| {
+    tbl.set(
+        "sequence",
+        lua.create_function(move |lua, ()| {
             let seq = LuaTweenSequence::new();
             let ud = lua.create_userdata(seq)?;
             // Pre-register; :start() activates it (active=false means update skips it).
@@ -221,7 +227,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// @return | LTweenParallel | New parallel handle.
     let s = engine.clone();
     // Auto-doc: Lua API binding.
-    tbl.set("parallel", lua.create_function(move |lua, ()| {
+    tbl.set(
+        "parallel",
+        lua.create_function(move |lua, ()| {
             let par = LuaTweenParallel::new();
             let ud = lua.create_userdata(par)?;
             let key = lua.create_registry_value(ud.clone())?;
@@ -237,7 +245,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// @return | LTweenSequence | Started sequence handle.
     let s = engine.clone();
     // Auto-doc: Lua API binding.
-    tbl.set("delay", lua.create_function(move |lua, (seconds, cb): (f64, Option<LuaFunction>)| {
+    tbl.set(
+        "delay",
+        lua.create_function(move |lua, (seconds, cb): (f64, Option<LuaFunction>)| {
             use crate::tween::SequenceStep;
             let callback = if let Some(f) = cb {
                 Some(lua.create_registry_value(f)?)
@@ -263,7 +273,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// @return | nil | No value is returned.
     let s = engine.clone();
     // Auto-doc: Lua API binding.
-    tbl.set("cancelAll", lua.create_function(move |lua, ()| {
+    tbl.set(
+        "cancelAll",
+        lua.create_function(move |lua, ()| {
             TweenEngine::cancel_all(&s, lua)?;
             let spring_keys = std::mem::take(&mut s.borrow_mut().active_springs);
             for key in spring_keys {
@@ -286,7 +298,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// @return | integer | Count of active tweens, sequences, parallels, and springs.
     let s = engine.clone();
     // Auto-doc: Lua API binding.
-    tbl.set("getActiveCount", lua.create_function(move |_, ()| Ok(s.borrow().active_count()))?,
+    tbl.set(
+        "getActiveCount",
+        lua.create_function(move |_, ()| Ok(s.borrow().active_count()))?,
     )?;
 
     // -- registerEasing -------------------------------------------------
@@ -296,7 +310,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// @return | nil | No value is returned.
     let s = engine.clone();
     // Auto-doc: Lua API binding.
-    tbl.set("registerEasing", lua.create_function(move |lua, (name, f): (String, LuaFunction)| {
+    tbl.set(
+        "registerEasing",
+        lua.create_function(move |lua, (name, f): (String, LuaFunction)| {
             let mut state = s.borrow_mut();
             if let Some(old) = state.custom_easings.remove(&name) {
                 lua.remove_registry_value(old)?;
@@ -312,7 +328,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// @return | table | Array-style table of easing names.
     let s = engine.clone();
     // Auto-doc: Lua API binding.
-    tbl.set("getEasingNames", lua.create_function(move |lua, ()| {
+    tbl.set(
+        "getEasingNames",
+        lua.create_function(move |lua, ()| {
             let out = lua.create_table()?;
             let state = s.borrow();
             let mut i = 1i64;
@@ -333,7 +351,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// @param | duration | number | Tween duration in seconds.
     /// @param | easing | string? | Optional easing name; defaults to `linear`.
     /// @return | LTweenState | New standalone tween state.
-    tbl.set("newState", lua.create_function(|lua, (duration, easing): (f64, Option<String>)| {
+    tbl.set(
+        "newState",
+        lua.create_function(|lua, (duration, easing): (f64, Option<String>)| {
             lua.create_userdata(LuaTweenState {
                 inner: TweenState::new(duration, easing.as_deref().unwrap_or("linear")),
             })
@@ -349,7 +369,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// @return | LTween | New tween handle.
     let s = engine.clone();
     // Auto-doc: Lua API binding.
-    tbl.set("to", lua.create_function(
+    tbl.set(
+        "to",
+        lua.create_function(
             move |lua,
                   (target, fields_tbl, duration, easing): (
                 LuaTable,
@@ -382,7 +404,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// @return | LSpring | New spring handle.
     let s = engine.clone();
     // Auto-doc: Lua API binding.
-    tbl.set("spring", lua.create_function(
+    tbl.set(
+        "spring",
+        lua.create_function(
             move |lua, (target_tbl, fields_tbl, opts): (LuaTable, LuaTable, Option<LuaTable>)| {
                 let stiffness: f32 = opts
                     .as_ref()
@@ -496,7 +520,9 @@ impl LuaUserData for LuaTween {
         /// @param | self | LTween | Tween handle returned for chaining.
         /// @param | f | function | Callback to run when the tween completes.
         /// @return | LTween | The same tween handle.
-        methods.add_function("onComplete", |lua, (ud, f): (LuaAnyUserData, LuaFunction)| {
+        methods.add_function(
+            "onComplete",
+            |lua, (ud, f): (LuaAnyUserData, LuaFunction)| {
                 {
                     let mut tw = ud.borrow_mut::<LuaTween>()?;
                     if let Some(old) = tw.on_complete.take() {
@@ -566,7 +592,9 @@ impl LuaUserData for LuaTweenSequence {
         /// @param | fields | table | Mapping of field names to target values.
         /// @param | easing | string? | Optional easing name; defaults to `linear`.
         /// @return | LTweenSequence | The same sequence handle.
-        methods.add_function("tween", |lua,
+        methods.add_function(
+            "tween",
+            |lua,
              (ud, duration, target, fields_tbl, easing): (
                 LuaAnyUserData,
                 f64,
@@ -604,7 +632,9 @@ impl LuaUserData for LuaTweenSequence {
         /// @param | seconds | number | Delay duration in seconds.
         /// @param | fn | function? | Optional callback to run after the delay.
         /// @return | LTweenSequence | The same sequence handle.
-        methods.add_function("delay", |lua, (ud, seconds, cb): (LuaAnyUserData, f64, Option<LuaFunction>)| {
+        methods.add_function(
+            "delay",
+            |lua, (ud, seconds, cb): (LuaAnyUserData, f64, Option<LuaFunction>)| {
                 let mut seq = ud.borrow_mut::<LuaTweenSequence>()?;
                 let callback = if let Some(f) = cb {
                     Some(lua.create_registry_value(f)?)
@@ -661,7 +691,9 @@ impl LuaUserData for LuaTweenSequence {
         /// @param | self | LTweenSequence | Sequence handle returned for chaining.
         /// @param | fn | function | Callback to run when the sequence completes.
         /// @return | LTweenSequence | The same sequence handle.
-        methods.add_function("onComplete", |lua, (ud, f): (LuaAnyUserData, LuaFunction)| {
+        methods.add_function(
+            "onComplete",
+            |lua, (ud, f): (LuaAnyUserData, LuaFunction)| {
                 {
                     let mut seq = ud.borrow_mut::<LuaTweenSequence>()?;
                     if let Some(old) = seq.on_complete.take() {
@@ -696,7 +728,9 @@ impl LuaUserData for LuaTweenParallel {
         /// @param | self | LTweenParallel | Parallel handle that receives the tween.
         /// @param | tween | LTween | Tween handle to add to the group.
         /// @return | nil | No value is returned.
-        methods.add_function("add", |lua, (par_ud, tw_ud): (LuaAnyUserData, LuaAnyUserData)| {
+        methods.add_function(
+            "add",
+            |lua, (par_ud, tw_ud): (LuaAnyUserData, LuaAnyUserData)| {
                 // Extract tween data into an embedded ParallelEntry, mark original as owned.
                 let entry = {
                     let mut tw = tw_ud.borrow_mut::<LuaTween>()?;
@@ -727,7 +761,9 @@ impl LuaUserData for LuaTweenParallel {
         /// @param | fields | table | Mapping of field names to target values.
         /// @param | easing | string? | Optional easing name; defaults to `linear`.
         /// @return | LTweenParallel | The same parallel handle.
-        methods.add_function("tween", |lua,
+        methods.add_function(
+            "tween",
+            |lua,
              (ud, duration, target, fields_tbl, easing): (
                 LuaAnyUserData,
                 f64,
@@ -787,7 +823,9 @@ impl LuaUserData for LuaTweenParallel {
         /// @param | self | LTweenParallel | Parallel handle returned for chaining.
         /// @param | fn | function | Callback to run when the parallel group completes.
         /// @return | LTweenParallel | The same parallel handle.
-        methods.add_function("onComplete", |lua, (ud, f): (LuaAnyUserData, LuaFunction)| {
+        methods.add_function(
+            "onComplete",
+            |lua, (ud, f): (LuaAnyUserData, LuaFunction)| {
                 {
                     let mut par = ud.borrow_mut::<LuaTweenParallel>()?;
                     if let Some(old) = par.on_complete.take() {

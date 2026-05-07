@@ -16,6 +16,8 @@
 
 use std::collections::HashMap;
 
+use toml::Value;
+
 // ── FieldType ────────────────────────────────────────────────────────────
 
 /// Accepted type for a schema field.
@@ -226,6 +228,112 @@ impl Schema {
         self
     }
 
+    /// Builds a schema from TOML text.
+    ///
+    /// Supported formats:
+    /// - Root keys: `name`, `strict`, and table `rules`.
+    /// - Alternative table name: `fields`.
+    ///
+    /// Example:
+    /// ```toml
+    /// name = "player"
+    /// strict = true
+    ///
+    /// [rules.level]
+    /// type = "integer"
+    /// required = true
+    /// min = 1
+    /// max = 99
+    /// ```
+    pub fn from_toml(input: &str) -> Result<Self, String> {
+        let root: Value = toml::from_str(input).map_err(|e| format!("invalid TOML: {e}"))?;
+        let table = root
+            .as_table()
+            .ok_or_else(|| "schema TOML root must be a table".to_string())?;
+
+        let name = table
+            .get("name")
+            .and_then(Value::as_str)
+            .unwrap_or("schema");
+        let mut schema = Schema::new(name);
+        schema.strict = table
+            .get("strict")
+            .and_then(Value::as_bool)
+            .unwrap_or(false);
+
+        let rules_table = table
+            .get("rules")
+            .or_else(|| table.get("fields"))
+            .and_then(Value::as_table)
+            .ok_or_else(|| "schema TOML must contain [rules] or [fields] table".to_string())?;
+
+        for (field_name, raw_rule) in rules_table {
+            let mut rule = FieldRule::default();
+            if let Some(rule_table) = raw_rule.as_table() {
+                if let Some(kind) = rule_table.get("type").and_then(Value::as_str) {
+                    rule.field_type = FieldType::from_str(kind);
+                }
+                rule.required = rule_table
+                    .get("required")
+                    .and_then(Value::as_bool)
+                    .unwrap_or(false);
+                rule.min = rule_table.get("min").and_then(Value::as_float).or_else(|| {
+                    rule_table
+                        .get("min")
+                        .and_then(Value::as_integer)
+                        .map(|v| v as f64)
+                });
+                rule.max = rule_table.get("max").and_then(Value::as_float).or_else(|| {
+                    rule_table
+                        .get("max")
+                        .and_then(Value::as_integer)
+                        .map(|v| v as f64)
+                });
+                rule.min_len = rule_table
+                    .get("min_len")
+                    .and_then(Value::as_integer)
+                    .map(|v| v as usize)
+                    .or_else(|| {
+                        rule_table
+                            .get("minLen")
+                            .and_then(Value::as_integer)
+                            .map(|v| v as usize)
+                    });
+                rule.max_len = rule_table
+                    .get("max_len")
+                    .and_then(Value::as_integer)
+                    .map(|v| v as usize)
+                    .or_else(|| {
+                        rule_table
+                            .get("maxLen")
+                            .and_then(Value::as_integer)
+                            .map(|v| v as usize)
+                    });
+                if let Some(values) = rule_table.get("enum").and_then(Value::as_array) {
+                    rule.enum_values = values
+                        .iter()
+                        .filter_map(Value::as_str)
+                        .map(str::to_string)
+                        .collect();
+                }
+                rule.pattern = rule_table
+                    .get("pattern")
+                    .and_then(Value::as_str)
+                    .map(str::to_string);
+                rule.description = rule_table
+                    .get("description")
+                    .and_then(Value::as_str)
+                    .unwrap_or_default()
+                    .to_string();
+            } else if let Some(kind) = raw_rule.as_str() {
+                rule.field_type = FieldType::from_str(kind);
+            }
+            schema.add_rule(field_name, rule);
+        }
+
+        Ok(schema)
+    }
+
     /// Validates a set of `(field, value_type, value_str)` pairs.
     ///
     /// Callers convert the Lua table to this intermediate form before calling.
@@ -235,9 +343,9 @@ impl Schema {
     ///
     /// # Returns
     /// `SchemaResult`.
-    pub fn validate_pairs(&self, fields: &[(String, &'static str, String)]) -> SchemaResult {
+    pub fn validate_pairs<'a>(&self, fields: &[(String, &'a str, String)]) -> SchemaResult {
         let mut errors = Vec::new();
-        let field_map: HashMap<&str, (&'static str, &str)> = fields
+        let field_map: HashMap<&str, (&'a str, &str)> = fields
             .iter()
             .map(|(k, t, v)| (k.as_str(), (*t, v.as_str())))
             .collect();

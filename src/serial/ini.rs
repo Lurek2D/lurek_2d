@@ -22,7 +22,10 @@ pub fn from_ini(s: &str) -> Result<SerialValue, String> {
         if line.starts_with('[') && line.ends_with(']') {
             let section = line[1..line.len() - 1].trim();
             if section.is_empty() {
-                return Err(format!("INI parse error at line {}: empty section name", line_no + 1));
+                return Err(format!(
+                    "INI parse error at line {}: empty section name",
+                    line_no + 1
+                ));
             }
             current_section = Some(section.to_string());
             sections.entry(section.to_string()).or_default();
@@ -38,7 +41,10 @@ pub fn from_ini(s: &str) -> Result<SerialValue, String> {
 
         let key = k.trim();
         if key.is_empty() {
-            return Err(format!("INI parse error at line {}: empty key", line_no + 1));
+            return Err(format!(
+                "INI parse error at line {}: empty key",
+                line_no + 1
+            ));
         }
         let value = SerialValue::Str(v.trim().to_string());
 

@@ -688,26 +688,79 @@
 -- -----------------------------------------------------------------------------
 
 -- ---- Stub: LUniverse:type ------------------------------------------------
---@api-stub: LUniverse:type
--- Returns the type name of this object.
--- lUniverse_stub:type()  -- -> string
--- Useful for runtime type inspection and debug logging.
--- do  -- LUniverse:type
+-- LUniverse:type / LUniverse:typeOf
+-- Inspect the runtime type name and confirm object type at runtime.
+-- if false then -- Universe:type typeOf
 --   local world = lurek.ecs.newUniverse()
---   local t = world:type()
---   lurek.log.info("LUniverse:type = " .. t, "ecs")
+--   lurek.log.info("type=" .. world:type(), "ecs")
+--   lurek.log.info("typeOf Universe: " .. tostring(world:typeOf("Universe")), "ecs")
 -- end
---@api-stub: LUniverse:typeOf
--- Returns true if this object is of the given type.
--- lUniverse_stub:typeOf("hero")  -- -> boolean
--- Use for runtime polymorphism and defensive checks.
--- do  -- LUniverse:typeOf
+
+--@api-stub: LUniverse:queryMulti
+-- Iterates every alive entity that has ALL listed components, delivering values to the callback.
+-- queryMulti({"pos","vel"}, cb) avoids a second get() call inside the loop.
+-- if false then -- Universe:queryMulti
 --   local world = lurek.ecs.newUniverse()
---   lurek.log.info("is LUniverse: " .. tostring(world:typeOf("LUniverse")), "ecs")
---   lurek.log.info("is unknown: " .. tostring(world:typeOf("Unknown")), "ecs")
+--   local a = world:spawn()
+--   world:set(a, "pos", { x = 1, y = 2 })
+--   world:set(a, "vel", { x = 3, y = 4 })
+--   world:queryMulti({ "pos", "vel" }, function(id, pos, vel)
+--     pos.x = pos.x + vel.x
+--     pos.y = pos.y + vel.y
+--   end)
 -- end
---@api-stub: block below with a real scenario.
--- Run .github/prompts/flesh-out-example.prompt.md for instructions.
--- The final committed file must contain ZERO --@api-stub: lines.
--- =============================================================================
+
+--@api-stub: LUniverse:getDirtyEntities
+-- Returns entity IDs whose components changed since the last flushObservers call.
+-- Use at the end of a frame to run change-detection systems or sync external state.
+-- if false then -- Universe:getDirtyEntities
+--   local world = lurek.ecs.newUniverse()
+--   local e = world:spawn()
+--   world:set(e, "hp", 50)
+--   local dirty = world:getDirtyEntities()
+--   lurek.log.info("dirty count=" .. #dirty, "ecs")
+--   world:flushObservers()
+--   lurek.log.info("after flush dirty=" .. #world:getDirtyEntities(), "ecs")
+-- end
+
+--@api-stub: LUniverse:updatePhase
+-- Calls update(system, world, dt) on every system registered in the given phase, in priority order.
+-- Use pre_update for input gather, update for logic, post_update for late transforms.
+-- if false then -- Universe:updatePhase
+--   local world = lurek.ecs.newUniverse()
+--   local InputSys = { update = function(self, w, dt) lurek.log.debug("input", "ecs") end }
+--   local LogicSys = { update = function(self, w, dt) lurek.log.debug("logic", "ecs") end }
+--   world:addSystem(InputSys, { phase = "pre_update", priority = 0 })
+--   world:addSystem(LogicSys, { phase = "update",     priority = 10 })
+--   function lurek.process(dt)
+--     world:updatePhase("pre_update", dt)
+--     world:updatePhase("update",     dt)
+--   end
+-- end
+
+--@api-stub: LUniverse:snapshot
+-- Serializes the entire universe state to a Lua table. Alias for serialize().
+-- Pair with applySnapshot() for rollback or mid-session checkpointing.
+-- if false then -- Universe:snapshot
+--   local world = lurek.ecs.newUniverse()
+--   local hero = world:spawn()
+--   world:set(hero, "hp", 42)
+--   local snap = world:snapshot()
+--   world:clear()
+--   world:applySnapshot(snap)
+--   lurek.log.info("restored entity count=" .. world:getEntityCount(), "ecs")
+-- end
+
+--@api-stub: LUniverse:applySnapshot
+-- Restores the universe from a snapshot table produced by snapshot(). Alias for deserialize().
+-- All current entity state is replaced; systems and blueprints are preserved.
+-- if false then -- Universe:applySnapshot
+--   local world = lurek.ecs.newUniverse()
+--   local e = world:spawn(); world:set(e, "score", 99)
+--   local snap = world:snapshot()
+--   world:clear()
+--   world:applySnapshot(snap)
+--   local ids = world:getEntities()
+--   lurek.log.info("score=" .. world:get(ids[1], "score"), "ecs")
+-- end
 

@@ -54,12 +54,8 @@ impl ProvinceGeometryCache {
             if *off + 4 > data.len() {
                 return None;
             }
-            let v = u32::from_le_bytes([
-                data[*off],
-                data[*off + 1],
-                data[*off + 2],
-                data[*off + 3],
-            ]);
+            let v =
+                u32::from_le_bytes([data[*off], data[*off + 1], data[*off + 2], data[*off + 3]]);
             *off += 4;
             Some(v)
         }

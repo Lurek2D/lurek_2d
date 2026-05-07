@@ -14,6 +14,10 @@ use crate::runtime::log_messages::{EN01_UNIVERSE_INIT, EN02_ENTITY_SPAWN};
 use mlua::{Function, Lua, RegistryKey, Result as LuaResult, Table, Value as LuaValue};
 use std::collections::{HashMap, HashSet};
 
+#[path = "universe_ext.rs"]
+mod ext;
+pub use ext::deep_copy_table;
+
 /// Maximum number of bitmap tag definitions per Universe.
 const MAX_BITMAP_TAGS: usize = 63;
 
@@ -61,6 +65,9 @@ pub struct Universe {
     parents: HashMap<u32, u32>,
     children: HashMap<u32, Vec<u32>>,
     component_store: Option<RegistryKey>,
+    /// Optional sparse-set index: component name -> entity slots containing that component.
+    #[cfg(feature = "ecs-archetype")]
+    component_index: HashMap<String, HashSet<u32>>,
     blueprint_store: Option<RegistryKey>,
     system_store: Option<RegistryKey>,
     /// Priority values parallel to the system_store table (1-based indices).
@@ -97,6 +104,8 @@ impl Universe {
             parents: HashMap::new(),
             children: HashMap::new(),
             component_store: None,
+            #[cfg(feature = "ecs-archetype")]
+            component_index: HashMap::new(),
             blueprint_store: None,
             system_store: None,
             system_priorities: Vec::new(),
@@ -205,6 +214,56 @@ impl Universe {
         *self.generations.get(&slot).unwrap_or(&0)
     }
 
+    /// Rebuild the sparse index entries for one component row.
+    #[cfg(feature = "ecs-archetype")]
+    fn reindex_component_row(&mut self, slot: u32, row: &Table) -> LuaResult<()> {
+        for pair in row.clone().pairs::<String, LuaValue>() {
+            let (name, value) = pair?;
+            if !value.is_nil() {
+                self.component_index.entry(name).or_default().insert(slot);
+            }
+        }
+        Ok(())
+    }
+
+    /// Returns candidate slots that have all requested component names.
+    ///
+    /// With `ecs-archetype` enabled this intersects sparse indexes first;
+    /// otherwise it falls back to scanning all alive slots.
+    fn candidate_slots_for_all(&self, names: &[String]) -> Vec<u32> {
+        if names.is_empty() {
+            return self.alive.iter().copied().collect();
+        }
+
+        #[cfg(feature = "ecs-archetype")]
+        {
+            let mut base: Option<HashSet<u32>> = None;
+            for name in names {
+                let Some(slots) = self.component_index.get(name) else {
+                    return Vec::new();
+                };
+                if let Some(ref mut set) = base {
+                    set.retain(|slot| slots.contains(slot));
+                    if set.is_empty() {
+                        return Vec::new();
+                    }
+                } else {
+                    base = Some(slots.clone());
+                }
+            }
+            return base
+                .unwrap_or_default()
+                .into_iter()
+                .filter(|slot| self.alive.contains(slot))
+                .collect();
+        }
+
+        #[cfg(not(feature = "ecs-archetype"))]
+        {
+            self.alive.iter().copied().collect()
+        }
+    }
+
     // === Entity Lifecycle ===
 
     /// Spawns a new entity and returns its ID. Recycles from the free list when possible.
@@ -244,6 +303,12 @@ impl Universe {
         if let Some(ref key) = self.component_store {
             let store: Table = lua.registry_value(key)?;
             store.set(slot, LuaValue::Nil)?;
+        }
+        #[cfg(feature = "ecs-archetype")]
+        {
+            for slots in self.component_index.values_mut() {
+                slots.remove(&slot);
+            }
         }
         // Clean up inverted tag index before removing string_tags
         if let Some(tags) = self.string_tags.remove(&slot) {
@@ -430,6 +495,11 @@ impl Universe {
             }
         };
         entity_table.set(name, value.clone())?;
+        #[cfg(feature = "ecs-archetype")]
+        self.component_index
+            .entry(name.to_string())
+            .or_default()
+            .insert(slot);
         self.add_events.push((id, name.to_string()));
         self.dirty_set.insert(id);
         Ok(())
@@ -504,6 +574,10 @@ impl Universe {
                 let had: LuaValue = entity_table.get(name)?;
                 if !had.is_nil() {
                     entity_table.set(name, LuaValue::Nil)?;
+                    #[cfg(feature = "ecs-archetype")]
+                    if let Some(slots) = self.component_index.get_mut(name) {
+                        slots.remove(&slot);
+                    }
                     self.remove_events.push((id, name.to_string()));
                     self.dirty_set.insert(id);
                 }
@@ -550,7 +624,7 @@ impl Universe {
         }
         if let Some(ref key) = self.component_store {
             let store: Table = lua.registry_value(key)?;
-            for &slot in &self.alive {
+            for slot in self.candidate_slots_for_all(names) {
                 if let Ok(entity_table) = store.get::<_, Table>(slot) {
                     let mut all = true;
                     for name in names {
@@ -670,11 +744,23 @@ impl Universe {
     /// # Returns
     /// `Vec<u32>`.
     pub fn get_entities_by_tag(&self, tag: &str) -> Vec<u32> {
-        // O(1) lookup via inverted index; filter out any stale entries for safety
-        let mut result = self.tag_index.get(tag).cloned().unwrap_or_default();
-        result.retain(|&id| self.is_alive(id));
+        // O(1) lookup via inverted index; avoid cloning the full backing vec first.
+        let mut result: Vec<u32> = self
+            .iter_entities_by_tag(tag)
+            .filter(|&id| self.is_alive(id))
+            .collect();
         result.sort();
         result
+    }
+
+    /// Iterates entity IDs for a string tag from the internal inverted index.
+    ///
+    /// Returned IDs may include stale handles if callers bypass cleanup; use `is_alive` when needed.
+    pub fn iter_entities_by_tag<'a>(&'a self, tag: &'a str) -> impl Iterator<Item = u32> + 'a {
+        self.tag_index
+            .get(tag)
+            .into_iter()
+            .flat_map(|entries| entries.iter().copied())
     }
 
     // === Bitmap Tags ===
@@ -1010,7 +1096,10 @@ impl Universe {
                 entity_comps.set(k, v)?;
             }
         }
-        store.set(Self::unpack_slot(id), entity_comps)?;
+        let slot = Self::unpack_slot(id);
+        #[cfg(feature = "ecs-archetype")]
+        self.reindex_component_row(slot, &entity_comps)?;
+        store.set(slot, entity_comps)?;
         Ok(id)
     }
 
@@ -1104,7 +1193,13 @@ impl Universe {
     ///
     /// # Returns
     /// `LuaResult<()>`.
-    pub fn add_system(&mut self, lua: &Lua, system: Table, priority: i32, phase: String) -> LuaResult<()> {
+    pub fn add_system(
+        &mut self,
+        lua: &Lua,
+        system: Table,
+        priority: i32,
+        phase: String,
+    ) -> LuaResult<()> {
         self.ensure_stores(lua)?;
         let store = self.get_system_store(lua)?;
         let len = store.raw_len();
@@ -1127,7 +1222,10 @@ impl Universe {
     }
 
     /// Returns 1-based system store indices sorted by ascending priority, filtered to the given phase.
-    /// An empty `phase` string matches systems assigned to `"update"` (the default phase).
+    ///
+    /// Backward-compatibility rule:
+    /// Systems registered with no explicit phase (empty phase string) are treated as
+    /// default systems and run in both `"update"` and `"render"` dispatches.
     ///
     /// # Parameters
     /// - `phase` — `&str`: empty string matches `"update"`.
@@ -1140,8 +1238,13 @@ impl Universe {
         let mut order: Vec<usize> = (1..=count)
             .filter(|&i| {
                 let p = &self.system_phases[i - 1];
-                let effective = if p.is_empty() { "update" } else { p.as_str() };
-                effective == target
+                if p.is_empty() {
+                    // Legacy behavior: systems without an explicit phase are active in
+                    // both update() and render().
+                    target == "update" || target == "render"
+                } else {
+                    p == target
+                }
             })
             .collect();
         order.sort_by_key(|&i| self.system_priorities[i - 1]);
@@ -1244,6 +1347,8 @@ impl Universe {
                 store.set(i, LuaValue::Nil)?;
             }
         }
+        #[cfg(feature = "ecs-archetype")]
+        self.component_index.clear();
         // NOTE: blueprints are preserved
         Ok(())
     }
@@ -1274,370 +1379,10 @@ impl Universe {
         ids.sort();
         ids
     }
-
-    // === Query Extensions ===
-
-    /// Returns alive entities that have ALL `with` components and NONE of the `without` components.
-    ///
-    /// # Parameters
-    /// - `lua` — `&Lua`.
-    /// - `with_names` — `&[String]`.
-    /// - `without_names` — `&[String]`.
-    ///
-    /// # Returns
-    /// `LuaResult<Vec<u32>>`.
-    pub fn query_not(
-        &self,
-        lua: &Lua,
-        with_names: &[String],
-        without_names: &[String],
-    ) -> LuaResult<Vec<u32>> {
-        let mut result = Vec::new();
-        if let Some(ref key) = self.component_store {
-            let store: Table = lua.registry_value(key)?;
-            for &slot in &self.alive {
-                if let Ok(entity_table) = store.get::<_, Table>(slot) {
-                    let mut has_all = true;
-                    for name in with_names {
-                        let val: LuaValue = entity_table.get(name.as_str())?;
-                        if val.is_nil() {
-                            has_all = false;
-                            break;
-                        }
-                    }
-                    if !has_all {
-                        continue;
-                    }
-                    let mut has_excluded = false;
-                    for name in without_names {
-                        let val: LuaValue = entity_table.get(name.as_str())?;
-                        if !val.is_nil() {
-                            has_excluded = true;
-                            break;
-                        }
-                    }
-                    if !has_excluded {
-                        result.push(Self::pack_id(slot, self.current_gen(slot)));
-                    }
-                } else if with_names.is_empty() {
-                    // Entity with no components passes if no `with` filter
-                    result.push(Self::pack_id(slot, self.current_gen(slot)));
-                }
-            }
-        } else if with_names.is_empty() {
-            // No component store initialised — return all entities if no `with` filter
-            result = self.get_entities();
-        }
-        result.sort();
-        Ok(result)
-    }
-
-    /// Calls `callback(id, comp1, comp2, …)` for every alive entity that has ALL listed components.
-    ///
-    /// This is a zero-allocation alternative to `query` when you also need the component values in
-    /// the same loop.  The callback receives the entity ID followed by each component value in the
-    /// order the names were supplied.
-    ///
-    /// # Parameters
-    /// - `lua` — `&Lua`.
-    /// - `names` — `&[String]`: component names that must all be present.
-    /// - `callback` — `Function`: called as `callback(id, val1, val2, …)`.
-    ///
-    /// # Returns
-    /// `LuaResult<()>`.
-    pub fn query_multi(&self, lua: &Lua, names: &[String], callback: Function) -> LuaResult<()> {
-        if names.is_empty() {
-            return Ok(());
-        }
-        if let Some(ref key) = self.component_store {
-            let store: Table = lua.registry_value(key)?;
-            let mut slots: Vec<u32> = self.alive.iter().copied().collect();
-            slots.sort();
-            for slot in slots {
-                if let Ok(entity_table) = store.get::<_, Table>(slot) {
-                    let mut vals: Vec<LuaValue> = Vec::with_capacity(names.len());
-                    let mut all = true;
-                    for name in names {
-                        let v: LuaValue = entity_table.get(name.as_str())?;
-                        if v.is_nil() {
-                            all = false;
-                            break;
-                        }
-                        vals.push(v);
-                    }
-                    if all {
-                        let id = Self::pack_id(slot, self.current_gen(slot));
-                        let mut args = Vec::with_capacity(1 + vals.len());
-                        args.push(LuaValue::Integer(id as i64));
-                        args.extend(vals);
-                        callback.call::<_, ()>(mlua::MultiValue::from_vec(args))?;
-                    }
-                }
-            }
-        }
-        Ok(())
-    }
-
-    // === Bulk Spawning ===
-
-    /// Spawns `count` entities from a blueprint, applying the same optional overrides to each.
-    ///
-    /// # Parameters
-    /// - `lua` — `&Lua`.
-    /// - `name` — `&str`.
-    /// - `count` — `usize`.
-    /// - `overrides` — `Option<Table>`.
-    ///
-    /// # Returns
-    /// `LuaResult<Vec<u32>>`.
-    pub fn spawn_bulk(
-        &mut self,
-        lua: &Lua,
-        name: &str,
-        count: usize,
-        overrides: Option<Table>,
-    ) -> LuaResult<Vec<u32>> {
-        let mut ids = Vec::with_capacity(count);
-        for _ in 0..count {
-            let ov_copy = if let Some(ref ov) = overrides {
-                Some(deep_copy_table(lua, ov)?)
-            } else {
-                None
-            };
-            ids.push(self.spawn_blueprint(lua, name, ov_copy)?);
-        }
-        Ok(ids)
-    }
-
-    // === Serialization ===
-
-    /// Serializes all alive entities to a Lua table snapshot.
-    ///
-    /// Snapshot layout: `{ entities = [{id, slot, gen, components, tags, bitmap, layer, parent?}...], bitmap_tags = ["name"...] }`
-    ///
-    /// # Parameters
-    /// - `lua` — `&'lua Lua`.
-    ///
-    /// # Returns
-    /// `LuaResult<Table<'lua>>`.
-    pub fn serialize_to_table<'lua>(&self, lua: &'lua Lua) -> LuaResult<Table<'lua>> {
-        let snapshot = lua.create_table()?;
-
-        let entities_arr = lua.create_table()?;
-        let mut sorted_slots: Vec<u32> = self.alive.iter().copied().collect();
-        sorted_slots.sort();
-
-        for (i, slot) in sorted_slots.iter().enumerate() {
-            let slot = *slot;
-            let gen = self.current_gen(slot);
-            let id = Self::pack_id(slot, gen);
-            let entry = lua.create_table()?;
-            entry.set("id", id)?;
-            entry.set("slot", slot)?;
-            entry.set("gen", gen)?;
-
-            // Components
-            let components = lua.create_table()?;
-            if let Some(ref key) = self.component_store {
-                let store: Table = lua.registry_value(key)?;
-                if let Ok(comp_row) = store.get::<_, Table>(slot) {
-                    for pair in comp_row.clone().pairs::<String, LuaValue>() {
-                        let (k, v) = pair?;
-                        let v_copy = match v {
-                            LuaValue::Table(ref t) => LuaValue::Table(deep_copy_table(lua, t)?),
-                            other => other,
-                        };
-                        components.set(k, v_copy)?;
-                    }
-                }
-            }
-            entry.set("components", components)?;
-
-            // String tags
-            let tags = lua.create_table()?;
-            if let Some(tag_list) = self.string_tags.get(&slot) {
-                for (j, t) in tag_list.iter().enumerate() {
-                    tags.set(j + 1, t.as_str())?;
-                }
-            }
-            entry.set("tags", tags)?;
-
-            // Layer
-            entry.set("layer", self.layers.get(&slot).copied().unwrap_or(0))?;
-
-            // Bitmap mask
-            entry.set(
-                "bitmap",
-                self.bitmap_masks.get(&slot).copied().unwrap_or(0u64) as i64,
-            )?;
-
-            // Parent (pack as valid ID)
-            if let Some(&parent_slot) = self.parents.get(&slot) {
-                if self.alive.contains(&parent_slot) {
-                    entry.set(
-                        "parent",
-                        Self::pack_id(parent_slot, self.current_gen(parent_slot)),
-                    )?;
-                }
-            }
-
-            entities_arr.set(i + 1, entry)?;
-        }
-        snapshot.set("entities", entities_arr)?;
-
-        // Bitmap tag names
-        let btnames = lua.create_table()?;
-        for (j, name) in self.bitmap_tag_names.iter().enumerate() {
-            btnames.set(j + 1, name.as_str())?;
-        }
-        snapshot.set("bitmap_tags", btnames)?;
-
-        Ok(snapshot)
-    }
-
-    /// Restores entity state from a snapshot produced by `serialize_to_table`.
-    ///
-    /// Clears all entities; blueprints and systems are preserved.
-    ///
-    /// # Parameters
-    /// - `lua` — `&Lua`.
-    /// - `snapshot` — `Table`.
-    ///
-    /// # Returns
-    /// `LuaResult<()>`.
-    pub fn deserialize_from_table(&mut self, lua: &Lua, snapshot: Table) -> LuaResult<()> {
-        // Clear entities only; preserve blueprints + systems
-        self.alive.clear();
-        self.free_list.clear();
-        self.next_id = 1;
-        self.string_tags.clear();
-        self.tag_index.clear();
-        self.generations.clear();
-        self.bitmap_masks.clear();
-        self.layers.clear();
-        self.parents.clear();
-        self.children.clear();
-        self.add_events.clear();
-        self.remove_events.clear();
-        if let Some(ref key) = self.component_store {
-            let store: Table = lua.registry_value(key)?;
-            let ks: Vec<u32> = store
-                .clone()
-                .pairs::<u32, LuaValue>()
-                .filter_map(|p| p.ok().map(|(k, _)| k))
-                .collect();
-            for k in ks {
-                store.set(k, LuaValue::Nil)?;
-            }
-        }
-        self.ensure_stores(lua)?;
-        let comp_store = self.get_component_store(lua)?;
-
-        // Restore bitmap tag names
-        if let Ok(btnames) = snapshot.get::<_, Table>("bitmap_tags") {
-            for name in btnames.clone().sequence_values::<String>() {
-                let name = name?;
-                if !self.bitmap_tag_names.contains(&name) {
-                    self.bitmap_tag_names.push(name);
-                }
-            }
-        }
-
-        // First pass: restore entities
-        let entities: Table = snapshot.get("entities")?;
-        let mut parent_data: Vec<(u32, u32)> = Vec::new(); // (child_slot, parent_id)
-        for entry_val in entities.clone().sequence_values::<Table>() {
-            let entry = entry_val?;
-            let id: u32 = entry.get("id")?;
-            let slot = Self::unpack_slot(id);
-            let gen: u8 = entry.get("gen").unwrap_or(0);
-
-            self.alive.insert(slot);
-            *self.generations.entry(slot).or_insert(0) = gen;
-            if slot >= self.next_id {
-                self.next_id = slot + 1;
-            }
-
-            // Components
-            let comp_row = lua.create_table()?;
-            if let Ok(components) = entry.get::<_, Table>("components") {
-                for pair in components.clone().pairs::<LuaValue, LuaValue>() {
-                    let (k, v) = pair?;
-                    comp_row.set(k, v)?;
-                }
-            }
-            comp_store.set(slot, comp_row)?;
-
-            // String tags
-            if let Ok(tags) = entry.get::<_, Table>("tags") {
-                let mut tag_list = Vec::new();
-                for t in tags.sequence_values::<String>() {
-                    let t = t?;
-                    self.tag_index.entry(t.clone()).or_default().push(id);
-                    tag_list.push(t);
-                }
-                if !tag_list.is_empty() {
-                    self.string_tags.insert(slot, tag_list);
-                }
-            }
-
-            // Layer
-            let layer: i32 = entry.get("layer").unwrap_or(0);
-            if layer != 0 {
-                self.layers.insert(slot, layer);
-            }
-
-            // Bitmap mask
-            let bitmap: i64 = entry.get("bitmap").unwrap_or(0);
-            if bitmap != 0 {
-                self.bitmap_masks.insert(slot, bitmap as u64);
-            }
-
-            // Queue parent for second pass
-            if let Ok(parent_id) = entry.get::<_, u32>("parent") {
-                parent_data.push((slot, parent_id));
-            }
-        }
-
-        // Second pass: restore hierarchy
-        for (child_slot, parent_id) in parent_data {
-            let parent_slot = Self::unpack_slot(parent_id);
-            if self.alive.contains(&parent_slot) {
-                self.parents.insert(child_slot, parent_slot);
-                self.children
-                    .entry(parent_slot)
-                    .or_default()
-                    .push(child_slot);
-            }
-        }
-
-        Ok(())
-    }
 }
 
 impl Default for Universe {
     fn default() -> Self {
         Self::new()
     }
-}
-
-/// Deep-copies a Lua table recursively. Consult the module-level documentation for the broader usage context and preconditions.
-///
-/// # Parameters
-/// - `lua` — `&'lua Lua`.
-/// - `t` — `&Table<'lua>`.
-///
-/// # Returns
-/// `LuaResult<Table<'lua>>`.
-pub fn deep_copy_table<'lua>(lua: &'lua Lua, t: &Table<'lua>) -> LuaResult<Table<'lua>> {
-    let copy = lua.create_table()?;
-    for pair in t.clone().pairs::<LuaValue, LuaValue>() {
-        let (k, v) = pair?;
-        let v_copy = match v {
-            LuaValue::Table(ref inner) => LuaValue::Table(deep_copy_table(lua, inner)?),
-            other => other,
-        };
-        copy.set(k, v_copy)?;
-    }
-    Ok(copy)
 }

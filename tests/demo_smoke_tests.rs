@@ -205,8 +205,17 @@ demo_smoke_test!(
 
 // ─── showcase: HTML UI demos ──────────────────────────────────────────────────
 
-demo_smoke_test!(demo_smoke_html_hud,        "content/games/showcase/html-hud");
-demo_smoke_test!(demo_smoke_html_inventory,  "content/games/showcase/html-inventory");
-demo_smoke_test!(demo_smoke_html_dialog,     "content/games/showcase/html-dialog");
-demo_smoke_test!(demo_smoke_html_settings,   "content/games/showcase/html-settings");
-demo_smoke_test!(demo_smoke_html_scoreboard, "content/games/showcase/html-scoreboard");
+demo_smoke_test!(demo_smoke_html_hud, "content/games/showcase/html-hud");
+demo_smoke_test!(
+    demo_smoke_html_inventory,
+    "content/games/showcase/html-inventory"
+);
+demo_smoke_test!(demo_smoke_html_dialog, "content/games/showcase/html-dialog");
+demo_smoke_test!(
+    demo_smoke_html_settings,
+    "content/games/showcase/html-settings"
+);
+demo_smoke_test!(
+    demo_smoke_html_scoreboard,
+    "content/games/showcase/html-scoreboard"
+);

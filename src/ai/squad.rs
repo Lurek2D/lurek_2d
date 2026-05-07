@@ -203,7 +203,10 @@ mod tests {
         let p0 = s.get_formation_position(0, (0.0, 0.0));
         let p1 = s.get_formation_position(1, (0.0, 0.0));
         // Line formation offsets along X axis, not Y
-        assert!((p0.0 - p1.0).abs() > 1.0, "different X positions in line formation");
+        assert!(
+            (p0.0 - p1.0).abs() > 1.0,
+            "different X positions in line formation"
+        );
     }
 
     #[test]

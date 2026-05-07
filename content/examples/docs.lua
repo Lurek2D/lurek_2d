@@ -239,6 +239,24 @@
 --   schema:assert({ name = "Hero", level = 1, class = "warrior" })
 -- end
 
+--@api-stub: lurek.docs.schemaFromToml
+-- Creates a Schema validator directly from TOML text.
+-- Useful when schema definitions are stored as TOML content in tool pipelines.
+-- if false then -- lurek.docs.schemaFromToml
+--   local schema_toml = [[
+-- name = "PlayerSave"
+-- strict = true
+--
+-- [rules.level]
+-- type = "integer"
+-- required = true
+-- min = 1
+-- max = 99
+--   ]]
+--   local schema = lurek.docs.schemaFromToml(schema_toml)
+--   schema:assert({ level = 10 })
+-- end
+
 --@api-stub: lurek.docs.reflectLive
 -- Walks the live lurek.* Lua table and returns a structured reflection of all.
 -- Use for editor tooling that needs the runtime API shape without TOML metadata.

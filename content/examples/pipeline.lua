@@ -131,6 +131,26 @@
 --   step:setRetryDelay(2.0)
 -- end
 
+--@api-stub: Step:setAsync
+-- Enables coroutine mode for this step when the pipeline runs via runAsync/update.
+-- Turn this on when the callback calls coroutine.yield() and should resume next frame.
+-- if false then -- Step:setAsync
+--   local step = lurek.pipeline.newStep("stream_chunks", function(ctx)
+--     coroutine.yield("waiting")
+--     return "done"
+--   end)
+--   step:setAsync(true)
+-- end
+
+--@api-stub: Step:isAsync
+-- Returns whether coroutine mode is enabled for this step.
+-- Useful for validating config-driven pipelines loaded from a table.
+-- if false then -- Step:isAsync
+--   local step = lurek.pipeline.newStep("stream_chunks")
+--   step:setAsync(true)
+--   lurek.log.info("async=" .. tostring(step:isAsync()), "pipeline")
+-- end
+
 --@api-stub: Step:setOptional
 -- Marks whether this step is optional (downstream steps continue on failure).
 -- Use for nice-to-have boot work (achievements, telemetry) so a failure doesn't block gameplay.
@@ -587,6 +607,16 @@
 --   pl:addStep(lurek.pipeline.newStep("a", function() end)); pl:run()
 -- end
 
+--@api-stub: LPipeline:onEvent
+-- Registers a callback invoked for lifecycle events such as `step_started` and `step_finished`.
+-- Use this for telemetry pipelines that need explicit event names and step status in one callback.
+-- if false then -- Pipeline:onEvent
+--   local pl = lurek.pipeline.newPipeline("loader")
+--   pl:onEvent(function(event_name, step_name, status, detail)
+--     lurek.log.debug(event_name .. ":" .. step_name .. ":" .. status, "loader")
+--   end)
+-- end
+
 --@api-stub: LPipeline:toAscii
 -- Returns a multi-line ASCII string visualising the pipeline DAG.
 -- Splat into a debug overlay or build log; each row groups steps that may run in parallel.
@@ -620,6 +650,20 @@
 --     function(ctx) return ctx.debugBuild == true end
 --   )
 --   lurek.log.info("conditional step added", "pipeline")
+-- end
+
+--@api-stub: LPipeline:addBranch
+-- Adds an if/else branch where the predicate is evaluated once and routed to then/else steps.
+-- Branch steps are named `<name>__then` and `<name>__else` for diagnostics.
+-- if false then -- Pipeline:addBranch
+--   local pipe = lurek.pipeline.newPipeline("build")
+--   pipe:addBranch(
+--     "build_mode",
+--     {},
+--     function(ctx) return ctx.debugBuild == true end,
+--     function(ctx) ctx.mode = "debug" end,
+--     function(ctx) ctx.mode = "release" end
+--   )
 -- end
 
 --@api-stub: LPipeline:addSubPipeline

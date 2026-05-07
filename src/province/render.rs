@@ -78,7 +78,10 @@ pub fn generate_render_commands(
     let (left, top, right, bottom) = viewport_bounds(opts);
 
     cmds.push(RenderCommand::PushTransform);
-    cmds.push(RenderCommand::Translate { x: opts.x, y: opts.y });
+    cmds.push(RenderCommand::Translate {
+        x: opts.x,
+        y: opts.y,
+    });
     cmds.push(RenderCommand::Scale {
         sx: opts.zoom,
         sy: opts.zoom,
@@ -191,14 +194,24 @@ pub fn generate_render_commands(
                 continue;
             };
 
-            cmds.push(RenderCommand::SetColor(1.0, 220.0 / 255.0, 70.0 / 255.0, 1.0));
+            cmds.push(RenderCommand::SetColor(
+                1.0,
+                220.0 / 255.0,
+                70.0 / 255.0,
+                1.0,
+            ));
             cmds.push(RenderCommand::Circle {
                 mode: DrawMode::Fill,
                 x: cx * opts.pixel_size,
                 y: cy * opts.pixel_size,
                 r: (opts.pixel_size * 0.42).max(2.0),
             });
-            cmds.push(RenderCommand::SetColor(20.0 / 255.0, 20.0 / 255.0, 20.0 / 255.0, 1.0));
+            cmds.push(RenderCommand::SetColor(
+                20.0 / 255.0,
+                20.0 / 255.0,
+                20.0 / 255.0,
+                1.0,
+            ));
             cmds.push(RenderCommand::Circle {
                 mode: DrawMode::Fill,
                 x: cx * opts.pixel_size,

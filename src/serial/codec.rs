@@ -3,7 +3,9 @@
 //! This module centralizes format parsing/encoding and format detection so
 //! callers can switch codecs at runtime without branching on per-format APIs.
 
-use super::{from_csv, from_ini, from_json, from_toml, from_xml, to_csv, to_json, to_toml, CsvOptions};
+use super::{
+    from_csv, from_ini, from_json, from_toml, from_xml, to_csv, to_json, to_toml, CsvOptions,
+};
 use super::{from_msgpack, to_msgpack, SerialValue};
 
 /// Supported serial codec formats.
@@ -51,36 +53,19 @@ impl SerialFormat {
 }
 
 /// Text codec decode options.
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, Default)]
 pub struct DecodeOptions {
     /// CSV-specific decode options.
     pub csv: CsvOptions,
 }
 
-impl Default for DecodeOptions {
-    fn default() -> Self {
-        Self {
-            csv: CsvOptions::default(),
-        }
-    }
-}
-
 /// Codec encode options.
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, Default)]
 pub struct EncodeOptions {
     /// Pretty-print JSON output when true.
     pub json_pretty: bool,
     /// CSV-specific encode options.
     pub csv: CsvOptions,
-}
-
-impl Default for EncodeOptions {
-    fn default() -> Self {
-        Self {
-            json_pretty: false,
-            csv: CsvOptions::default(),
-        }
-    }
 }
 
 /// Encoded output payload.
@@ -108,7 +93,8 @@ pub fn detect_format(input: &str) -> Option<SerialFormat> {
         return Some(SerialFormat::Toml);
     }
 
-    let looks_like_csv = s.contains('\n') && (s.contains(',') || s.contains(';') || s.contains('\t'));
+    let looks_like_csv =
+        s.contains('\n') && (s.contains(',') || s.contains(';') || s.contains('\t'));
     if looks_like_csv && from_csv(input, CsvOptions::default()).is_ok() {
         return Some(SerialFormat::Csv);
     }
@@ -126,9 +112,9 @@ pub fn decode_text(
     format: Option<SerialFormat>,
     opts: DecodeOptions,
 ) -> Result<SerialValue, String> {
-    let detected = format
-        .or_else(|| detect_format(input))
-        .ok_or_else(|| "decode_text: could not detect format (expected json/toml/csv/xml/ini)".to_string())?;
+    let detected = format.or_else(|| detect_format(input)).ok_or_else(|| {
+        "decode_text: could not detect format (expected json/toml/csv/xml/ini)".to_string()
+    })?;
 
     match detected {
         SerialFormat::Json => from_json(input),

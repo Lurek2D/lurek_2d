@@ -1486,6 +1486,8 @@ Define any of these in `main.lua`. All are optional.
   lurek.event.pump( )  -> nil  -- Synchronises OS-level windowing events into the engine event queue.
   lurek.event.push( ... )  -> nil  -- Pushes a custom named event onto the main engine event queue with optional payload argu...
   lurek.event.pushDeferred( ... )  -> nil  -- Pushes a named event into the deferred buffer instead of the main queue.
+  lurek.event.pushDeferredPriority( ... )  -> nil  -- Pushes a named event into the deferred buffer with explicit queue priority.
+  lurek.event.pushPriority( ... )  -> nil  -- Pushes a custom named event onto a selected queue lane.
   lurek.event.quit( )  -> nil  -- Alias for `exit()` - requests the engine to stop gracefully at the end of the current f...
   lurek.event.restart( )  -> nil  -- Requests that the engine perform a full restart at the beginning of the next frame.
   lurek.event.wait( [timeout] )  -> boolean  -- Blocks the current thread until the next engine event arrives or the optional timeout e...
@@ -2084,8 +2086,9 @@ Define any of these in `main.lua`. All are optional.
 
 ```lua
   LUniverse:addRelation( from, name, to )  -> nil  -- Adds a directed named relationship from entity `from` to entity `to`, ignoring duplicates.
-  LUniverse:addSystem( system, [opts] )  -> nil  -- Adds a system table to the universe with an optional priority (lower = earlier).
+  LUniverse:addSystem( system, [opts] )  -> nil  -- Adds a system table to the universe with an optional priority (lower = earlier) and phase.
   LUniverse:addTag( id, tag )  -> nil  -- Attaches a string tag to an entity.
+  LUniverse:applySnapshot( snapshot )  -> nil  -- Restores the universe from a snapshot table produced by snapshot.  Alias for deserialize.
   LUniverse:bitmapTag( id, name )  -> nil  -- Adds a bitmap tag to an entity.
   LUniverse:bitmapUntag( id, name )  -> nil  -- Removes a bitmap tag from an entity.
   LUniverse:clear( )  -> nil  -- Removes all entities, components, tags, layers, and systems. Blueprints are preserved.
@@ -2102,6 +2105,7 @@ Define any of these in `main.lua`. All are optional.
   LUniverse:getBlueprintComponents( name )  -> table  -- Returns a deep copy of a blueprint's component table, or nil.
   LUniverse:getChildren( parent_id )  -> table  -- Returns all direct child entity IDs.
   LUniverse:getComponents( id )  -> table  -- Returns all component names for an entity.
+  LUniverse:getDirtyEntities( )  -> table  -- Returns entity IDs whose components changed since the last flushObservers / takeObserve...
   LUniverse:getEntities( )  -> table  -- Returns all alive entity IDs.
   LUniverse:getEntitiesByLayer( layer )  -> table  -- Returns all alive entities on a specific layer.
   LUniverse:getEntitiesByTag( tag )  -> table  -- Returns all alive entities with the given string tag.
@@ -2127,6 +2131,7 @@ Define any of these in `main.lua`. All are optional.
   LUniverse:queryBitmapAll( names )  -> table  -- Returns all alive entities with all of the listed bitmap tags.
   LUniverse:queryBitmapAny( names )  -> table  -- Returns all alive entities with any of the listed bitmap tags.
   LUniverse:queryBitmapTag( name )  -> table  -- Returns all alive entities with the given bitmap tag.
+  LUniverse:queryMulti( names_table, callback )  -> nil  -- Iterates every alive entity that has ALL the listed components and calls the callback with
   LUniverse:queryNot( with_tbl, without_tbl )  -> table  -- Returns entity IDs that have all `with` components and none of the `without` components.
   LUniverse:release( )  -> nil  -- Releases all universe state, equivalent to clear.
   LUniverse:remove( id, name )  -> nil  -- Removes a component from an entity.
@@ -2134,17 +2139,19 @@ Define any of these in `main.lua`. All are optional.
   LUniverse:removeRelation( from, name, to )  -> nil  -- Removes the directed named relationship from entity `from` to entity `to`.
   LUniverse:removeSystem( system )  -> nil  -- Removes a system table from the universe.
   LUniverse:removeTag( id, tag )  -> nil  -- Removes a string tag from an entity.
-  LUniverse:render( )  -> nil  -- Calls render(system, world) on each system in priority order and falls back to draw(sys...
+  LUniverse:render( )  -> nil  -- Calls render(system, world) on each system in the "render" phase in priority order; fal...
   LUniverse:serialize( )  -> table  -- Serializes all alive entities to a Lua table snapshot.
   LUniverse:set( id, name, value )  -> nil  -- Sets a component value on an entity.
   LUniverse:setLayer( id, layer )  -> nil  -- Sets the layer for an entity.
   LUniverse:setParent( child_id, [parent_id] )  -> nil  -- Sets or clears the parent of an entity.
+  LUniverse:snapshot( )  -> table  -- Serializes the entire universe state to a Lua table.  Alias for serialize.
   LUniverse:spawn( )  -> integer  -- Creates a new entity and returns its packed ID.
   LUniverse:spawnBlueprint( name, [overrides] )  -> integer  -- Spawns an entity from a blueprint with optional overrides.
   LUniverse:spawnBulk( name, count, [overrides] )  -> table  -- Spawns `count` entities from a blueprint, returns an array of entity IDs.
   LUniverse:type( )  -> string  -- Returns the type name of this object.
   LUniverse:typeOf( name )  -> boolean  -- Returns true if this object is of the given type.
-  LUniverse:update( dt )  -> nil  -- Calls update(system, world, dt) on each registered system in priority order.
+  LUniverse:update( dt )  -> nil  -- Calls update(system, world, dt) on each system in the "update" phase in priority order.
+  LUniverse:updatePhase( phase, dt )  -> nil  -- Calls the named lifecycle method on each system that belongs to the given phase, in pri...
 ```
 
 ## lurek.pathfind {#pathfind}
@@ -3236,6 +3243,7 @@ Define any of these in `main.lua`. All are optional.
   LDataFrame:rename( col, new_name )  -> nil  -- Renames the column `old_name` to `new_name` in this DataFrame.
   LDataFrame:rollingMean( col, window, [result_col] )  -> LDataFrame  -- Returns a new DataFrame with a rolling mean column appended.
   LDataFrame:rollingSum( col, window, [result_col] )  -> LDataFrame  -- Returns a new DataFrame with a rolling sum column appended.
+  LDataFrame:rows( )  -> function  -- Returns a streaming row iterator for use with Lua generic for.
   LDataFrame:sample( n, [seed] )  -> LDataFrame  -- Returns a random sample of n rows.
   LDataFrame:select( ... )  -> LDataFrame  -- Selects a subset of columns, returns a new DataFrame.
   LDataFrame:setColumnFromF64( col, values )  -> nil  -- Set a numeric column from a Lua array of numbers.
@@ -3997,9 +4005,11 @@ Define any of these in `main.lua`. All are optional.
 > `lurek.automation` - Automated input simulation via timed step scripts.
 
 ```lua
+  lurek.automation.getCondition( name )  -> boolean?  -- Returns a condition value by name, or nil when unset.
   lurek.automation.getCurrentScript( )  -> string  -- Returns the name of the active script.
   lurek.automation.getCurrentStep( )  -> integer  -- Returns the index of the next step to be dispatched.
   lurek.automation.getElapsedTime( )  -> number  -- Returns seconds elapsed since playback started.
+  lurek.automation.getLastError( )  -> string?  -- Returns the last simulator failure string, or nil if none.
   lurek.automation.getPlaybackSpeed( )  -> number  -- Returns the current playback speed multiplier (default 1.0).
   lurek.automation.getScripts( )  -> table  -- Returns an array of all registered script names.
   lurek.automation.getStepCount( )  -> integer  -- Returns the total number of steps in the active script.
@@ -4007,6 +4017,7 @@ Define any of these in `main.lua`. All are optional.
   lurek.automation.hasMacro( name )  -> boolean  -- Returns true if a macro with the given name has been saved.
   lurek.automation.hasScript( name )  -> boolean  -- Returns true if a script with the given name is registered.
   lurek.automation.isComplete( )  -> boolean  -- Returns true if all steps in the active script have been dispatched.
+  lurek.automation.isFailed( )  -> boolean  -- Returns true if playback stopped because an assertion failed.
   lurek.automation.isHighlightMode( )  -> boolean  -- Returns whether the highlight overlay hint is active.
   lurek.automation.isPaused( )  -> boolean  -- Returns true if playback is currently paused.
   lurek.automation.isRunning( )  -> boolean  -- Returns true if the simulator is actively playing a script.
@@ -4017,6 +4028,7 @@ Define any of these in `main.lua`. All are optional.
   lurek.automation.playMacro( name )  -> nil  -- Loads and starts playback of a previously saved macro.
   lurek.automation.resume( )  -> nil  -- Resumes playback from a paused position.
   lurek.automation.saveMacro( macro_name, script_name )  -> nil  -- Saves a loaded script under a macro name for fast replay.
+  lurek.automation.setCondition( name, value )  -> nil  -- Sets a named boolean condition used by `when` and `assert` step fields.
   lurek.automation.setHighlightMode( enable )  -> nil  -- Enables or disables the highlight overlay hint.
   lurek.automation.setPlaybackSpeed( factor )  -> nil  -- Sets the playback speed multiplier.
   lurek.automation.setStepLimit( name, n )  -> boolean  -- Sets the step limit for the named script.
@@ -4216,6 +4228,7 @@ Define any of these in `main.lua`. All are optional.
   lurek.docs.scan( [opts] )  -> LApiCatalog  -- Scan the lurek.* namespace to build an API catalog from live bindings.
   lurek.docs.scanModule( module_name )  -> LApiCatalog  -- Scan a single module's bindings.
   lurek.docs.schema( rules, [name] )  -> LSchema  -- Creates a schema validator from a rules table.
+  lurek.docs.schemaFromToml( toml_text )  -> LSchema  -- Creates a schema validator from TOML text.
   lurek.docs.setParamInfo( qualified_name, params )  -> nil  -- Set the parameter metadata for a catalog entry.
   lurek.docs.setReturnInfo( qualified_name, returns )  -> nil  -- Set the return type metadata for a catalog entry.
   lurek.docs.validate( [catalog_ud] )  -> LValidationReport  -- Validate catalog completeness against the live lurek.* bindings.
@@ -4527,7 +4540,9 @@ Define any of these in `main.lua`. All are optional.
 ```lua
   lurek.engine.fps( )  -> number  -- Returns the current measured frames-per-second.
   lurek.engine.frameCount( )  -> integer  -- Returns the total number of frames processed since engine start.
+  lurek.engine.getConfigRevision( )  -> integer  -- Returns the monotonic config revision counter.
   lurek.engine.getFrameBudget( )  -> number  -- Returns the target frame budget in milliseconds (default: 1000 / 60 ~Â 16.667 ms).
+  lurek.engine.getFrameProfile( )  -> table  -- Returns CPU callback timing for the most recently completed frame.
   lurek.engine.getResourceStats( )  -> table  -- Returns a table with resident resource memory statistics.
   lurek.engine.getVersion( )  -> string  -- Returns the engine version string (from `Cargo.toml`).
   lurek.engine.isDebug( )  -> boolean  -- Returns `true` if the engine was compiled in debug mode.
@@ -5283,6 +5298,7 @@ Define any of these in `main.lua`. All are optional.
 > Lua-side wrapper around a [`Pipeline`] DAG.
 
 ```lua
+  LPipeline:addBranch( )  -> LPipeline  -- Adds an if/else branch as two conditional steps that share one predicate result.
   LPipeline:addConditional( name, deps_tbl, cb, cond )  -> LPipeline  -- Adds a conditional step to the pipeline.
   LPipeline:addStep( step_ud )  -> LPipeline  -- Adds a step to the pipeline.
   LPipeline:addSubPipeline( sub_ud, alias, [deps_tbl] )  -> nil  -- Inlines all steps from a sub-pipeline into this pipeline.
@@ -5300,6 +5316,7 @@ Define any of these in `main.lua`. All are optional.
   LPipeline:getStepsByTag( tag )  -> table  -- Returns all steps with a matching tag.
   LPipeline:isComplete( )  -> boolean  -- Returns whether all steps have reached a terminal state.
   LPipeline:isRunning( )  -> boolean  -- Returns whether the pipeline is running asynchronously.
+  LPipeline:onEvent( cb )  -> nil  -- Registers a callback invoked for lifecycle events (`step_started`, `step_finished`).
   LPipeline:onProgress( cb )  -> nil  -- Registers a callback invoked after every step.
   LPipeline:removeStep( name )  -> nil  -- Removes a step from the pipeline by name.
   LPipeline:reset( )  -> nil  -- Resets all step states and clears async pipeline state.
@@ -5336,7 +5353,9 @@ Define any of these in `main.lua`. All are optional.
   LPipelineStep:getStatus( )  -> string  -- Returns the current execution status.
   LPipelineStep:getTag( )  -> string  -- Returns the tag on this step.
   LPipelineStep:getTimeout( )  -> number  -- Returns the timeout stored in metadata.
+  LPipelineStep:isAsync( )  -> boolean  -- Returns whether coroutine-based async execution is enabled for this step.
   LPipelineStep:isOptional( )  -> boolean  -- Returns whether this step is marked as optional.
+  LPipelineStep:setAsync( enabled )  -> nil  -- Enables or disables coroutine-based execution in `Pipeline:runAsync`.
   LPipelineStep:setCallback( cb )  -> nil  -- Stores the execute callback for this step.
   LPipelineStep:setCondition( [cond] )  -> nil  -- Stores the run condition callback for this step.
   LPipelineStep:setData( key, value )  -> nil  -- Stores a metadata string value on this step.
@@ -5388,7 +5407,7 @@ Define any of these in `main.lua`. All are optional.
   lurek.province.remove( name )  -> boolean  -- Removes a named registry.
   lurek.province.sanitizeMarkedPng( input_png, output_png, [opts] )  -> table  -- Sanitizes a marker-rich province map by replacing marker pixels with nearby owner colors.
   lurek.province.setActive( name )  -> boolean  -- Sets active registry name.
-  lurek.province.zoomCameraAt( anchor_x, anchor_y, cam_x, cam_y, old_zoom, new_zoom )  -> number  -- Recomputes camera x/y so zooming stays anchored under the same screen point.
+  lurek.province.zoomCameraAt( )  -> number  -- Recomputes camera x/y so zooming stays anchored under the same screen point.
 ```
 
 **`LProvinceRegistry`** methods:
@@ -5413,8 +5432,8 @@ Define any of these in `main.lua`. All are optional.
   LProvinceRegistry:provinceIds( )  -> table  -- Returns sorted province ids.
   LProvinceRegistry:provinceSpans( )  -> table  -- Returns span geometry records `{ province_id, y, x0, x1 }`.
   LProvinceRegistry:render( [opts] )  -> nil  -- Enqueues Rust-generated GPU draw commands for province rendering.
-  LProvinceRegistry:screenToMap( screen_x, screen_y, cam_x, cam_y, zoom, [pixel_size] )  -> number  -- Converts screen-space coordinates to map-space coordinates.
-  LProvinceRegistry:screenToProvince( screen_x, screen_y, cam_x, cam_y, zoom, [pixel_size] )  -- Returns province id under a screen-space position.
+  LProvinceRegistry:screenToMap( )  -> number  -- Converts screen-space coordinates to map-space coordinates.
+  LProvinceRegistry:screenToProvince( )  -- Returns province id under a screen-space position.
   LProvinceRegistry:setAttr( id, key, value )  -> boolean  -- Sets freeform attribute on a province.
   LProvinceRegistry:setBorderClass( a, b, class )  -> nil  -- Sets border class between provinces.
   LProvinceRegistry:setBorderStyle( id, border_style )  -> boolean  -- Sets border style id for one province.
@@ -5517,7 +5536,7 @@ Define any of these in `main.lua`. All are optional.
   LRaycaster:isWalkBlocked( x, y )  -> boolean  -- Returns true if the cell cannot be entered because of a wall or a blocked lowered floor...
   LRaycaster:lineOfSight( x1, y1, x2, y2 )  -> boolean  -- Checks line of sight between two points using DDA traversal.
   LRaycaster:projectSprite( sx, sy, px, py, pa, fov, screen_w )  -> table  -- Projects a world-space sprite onto screen space.
-  LRaycaster:revealCellsFromRays( ox, oy, angle, fov, count, max_dist, [step] )  -> table  -- Traces multiple rays and returns unique grid cells crossed by those rays.
+  LRaycaster:revealCellsFromRays( )  -> table  -- Traces multiple rays and returns unique grid cells crossed by those rays.
   LRaycaster:setCeilingTextureCell( x, y, texture )  -> nil  -- Sets or clears a ceiling texture override for a map cell.
   LRaycaster:setCell( x, y, val )  -> nil  -- Sets the cell value at grid position (x, y).
   LRaycaster:setCells( cells_tbl )  -> nil  -- Replaces all grid cells from a flat array of values in row-major order.
@@ -5550,10 +5569,15 @@ Define any of these in `main.lua`. All are optional.
 > `lurek.serial` - Format-agnostic string serialization for JSON, TOML, and CSV.
 
 ```lua
+  lurek.serial.applyDefaults( value, schema )  -> table  -- Applies schema `default` values recursively to a Lua value tree.
+  lurek.serial.decode( payload, [format], [opts] )  -> table  -- Decodes input payload with explicit or auto-detected format.
   lurek.serial.decodeMsgPack( )  -> table  -- Decodes a binary MessagePack string into a Lua table.
   lurek.serial.decodeXml( s )  -> table  -- Parses an XML string and returns a nested Lua table.
+  lurek.serial.detectFormat( s )  -> string?  -- Detects input text format (`json`, `toml`, `csv`, or `xml`).
+  lurek.serial.encode( value, format, [opts] )  -> string  -- Encodes a Lua value using the selected format.
   lurek.serial.encodeMsgPack( value )  -> string  -- Encodes a Lua table to a binary MessagePack string.
   lurek.serial.fromCsv( s, [delim], [headers] )  -> table  -- Parses a CSV string and returns a sequence of row tables.
+  lurek.serial.fromIni( s )  -> table  -- Parses an INI string and returns a Lua table.
   lurek.serial.fromJson( s )  -> table  -- Parses a JSON string and returns a Lua table.
   lurek.serial.fromToml( s )  -> table  -- Parses a TOML string and returns a Lua table.
   lurek.serial.toCsv( value, [delim], [headers] )  -> string  -- Serializes a sequence of row tables to a CSV string.

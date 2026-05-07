@@ -31,6 +31,7 @@ pub mod thread_api;
 pub mod tween_api;
 
 /// Registers the `lurek.automation.*` automated input simulation API.
+#[cfg(feature = "automation-plugin")]
 pub mod automation_api;
 
 /// Registers the `lurek.input.keyboard` / `lurek.input.mouse` / `lurek.input.gamepad` / `lurek.input.touch` input API.

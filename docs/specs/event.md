@@ -6,28 +6,34 @@
 - Source path: `src/event/`
 - Lua API path(s): `src/lua_api/event_api.rs`
 - Primary Lua namespace: `lurek.event`
-- Rust test path(s): tests/rust/unit/event_tests.rs, plus inline unit coverage in src/event/event_queue.rs and src/event/signal.rs
+- Rust test path(s): `tests/rust/unit/event_tests.rs`
 - Lua test path(s): tests/lua/unit/test_event.lua, tests/lua/integration/test_audio_event.lua
 
 ## Summary
 
-The `event` module is Lurek2D's centralised event queue — the single channel through which OS input, window state changes, custom Lua events, and automation-injected synthetic input flow before being dispatched to Lua callbacks. It is a Core Runtime tier module with no upstream engine dependencies. All modules that raise or consume events route through this module rather than coupling directly to each other.
+The `event` module is Lurek2D's centralized queue and signal dispatch layer. It owns queue storage, queue ordering semantics, queue wait behavior, and the `Signal` pub-sub primitive used by Lua scripts through `lurek.event`.
 
-**EventQueue — dual-lane FIFO.** `EventQueue` uses two FIFO lanes (`high`, `normal`) backed by `VecDeque`. `poll()` always drains the high lane before the normal lane while preserving FIFO order inside each lane. `push(event)`, `push_with_priority(event, priority)`, `push_event(name, args)`, `push_event_with_priority(name, args, priority)`, `poll()`, `clear()`, `is_empty()`, `len()`. The `wait(timeout_ms)` variant sleeps on a condvar-backed notifier and wakes when new events arrive or timeout expires.
+Event queue behavior:
+- `EventQueue` is a dual-lane FIFO (`high` and `normal`) backed by `VecDeque`.
+- `poll()` always drains `high` before `normal`, while keeping FIFO order inside each lane.
+- `wait(timeout_ms)` blocks on a condvar wake path (no spin loop), returning an event immediately when available.
+- `pump()` is intentionally a no-op in Lurek2D and exists for API parity.
 
-**Event payload model.** `Event` carries `name: String` and `args: Vec<EventArg>`. `EventArg` supports scalar values plus `Table` for shallow-cloned Lua tables (string/number/bool keys; scalar values). This allows Lua producers to pass structured payloads without serialization.
+Payload behavior:
+- `Event` payload is `Vec<EventArg>`.
+- `EventArg` supports scalar values plus shallow-cloned table payloads.
+- Table payload conversion stores only scalar keys (`string`, `number`, `boolean`) and scalar values; nested tables are not deep-cloned.
 
-**Deferred dispatch.** The `EventBus` supports deferred batching: `push_deferred(event)` enqueues into a pending buffer; `flush()` atomically merges the buffer into the main queue; `drain()` discards the pending buffer without dispatching. This enables patterns where multiple events are committed as a group or discarded atomically — useful for undo/redo stacks and transaction-like game-state updates. Lua: `lurek.event.pushDeferred(name, data)`, `lurek.event.flush()`.
+Lua-facing API behavior:
+- Queue APIs: `poll`, `wait`, `clear`, `push`, `pushPriority`, `pushDeferred`, `pushDeferredPriority`, `flushDeferred`.
+- Runtime control APIs: `exit`, `quit`, `restart`.
+- History APIs: `enableHistory`, `getHistory`, `clearHistory`.
+- Signal factory: `newSignal()` returning `LSignal` with methods `register`, `emit`, `remove`, `clear`, `clearAll`, `getCount`, `getTotalCount`, `once`, `registerWithFilter`, `connect`, `type`, `typeOf`.
 
-**Signal — handle-based pub-sub.** `Signal` is a separate pub-sub dispatcher providing handle-based subscriptions with exact-name and glob-wildcard matching. `subscribe(event_name, handler) → handle_id`, `remove(handle_id)`, `clear(event_name)`, `clear_all()`. Glob subscriptions (`"enemy.*"`) match any event whose name begins with the prefix. The Signal is Lua-accessible via `lurek.event.newSignal()`, providing scoped pub-sub within a module without routing through the global queue.
-
-**Automation integration.** The `automation` module injects synthetic events through the same `push()` path as real hardware events, making playback transparent to downstream callbacks — a key property for deterministic test replay.
-
-**Threading note.** `EventQueue` is shared via `Rc<RefCell<EventQueue>>` inside `SharedState` and is only safe on the main thread. Background threads communicate via `lurek.thread.Channel` instead.
-
-**Lua surface.** `lurek.event.emit(name, data)` — emit a custom event. `lurek.event.on(name, callback) → handle` — subscribe. `lurek.event.off(handle)` — unsubscribe. `lurek.event.once(name, callback)` — subscribe for one delivery. `lurek.event.pushDeferred(name, data)`, `flush()`. `lurek.event.newSignal()` → `Signal` userdata: `subscribe(name, fn)`, `remove(handle)`, `clear(name)`, `clearAll()`, `fire(name, ...)`.
-
-**Scope boundary.** Core Runtime tier. No upstream engine dependencies. Lua bridge in `src/lua_api/event_api.rs`; OS event dispatch via `app` module.
+Scope boundary:
+- Core Runtime tier module with thin Lua bridge in `src/lua_api/event_api.rs`.
+- OS/window/input events are pushed from `app`; synthetic events are pushed by `automation`.
+- Cross-thread messaging is out of scope for this module and belongs to `lurek.thread.Channel`.
 
 ## Files
 

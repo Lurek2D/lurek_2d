@@ -213,6 +213,11 @@ impl Pipeline {
     /// # Returns
     /// `Result<Vec<String>, String>`.
     pub fn get_execution_order(&self) -> Result<Vec<String>, String> {
+        let order_refs = self.get_execution_order_refs()?;
+        Ok(order_refs.into_iter().map(str::to_owned).collect())
+    }
+
+    fn get_execution_order_refs(&self) -> Result<Vec<&str>, String> {
         // Build in-degree map and adjacency list (dep → dependents)
         let mut in_degree: HashMap<&str, usize> = HashMap::new();
         let mut dependents: HashMap<&str, Vec<&str>> = HashMap::new();
@@ -242,11 +247,11 @@ impl Pipeline {
             .map(|(&name, _)| name)
             .collect();
 
-        let mut order: Vec<String> = Vec::with_capacity(self.steps.len());
+        let mut order: Vec<&str> = Vec::with_capacity(self.steps.len());
 
         // Drain queue: emit each zero-degree node, then decrement its dependents.
         while let Some(current) = queue.pop_front() {
-            order.push(current.to_owned());
+            order.push(current);
             if let Some(deps_of) = dependents.get(current) {
                 for &dependent in deps_of {
                     // SAFETY: `dependent` was seeded from `self.steps.keys()` above, so it
@@ -290,14 +295,14 @@ impl Pipeline {
     /// `Result<Vec<Vec<String>>, String>`.
     pub fn get_parallel_groups(&self) -> Result<Vec<Vec<String>>, String> {
         // Compute level for each step: max(level of deps) + 1, 0 for no deps
-        let topo = self.get_execution_order()?;
+        let topo = self.get_execution_order_refs()?;
         let mut levels: HashMap<&str, usize> = HashMap::new();
 
         for name in &topo {
             // SAFETY: `name` comes from `topo`, which is built from `self.steps.keys()`.
             let step = self
                 .steps
-                .get(name.as_str())
+                .get(*name)
                 .unwrap_or_else(|| unreachable!("step name from topo order not found in steps"));
             let level = step
                 .deps
@@ -306,7 +311,7 @@ impl Pipeline {
                 .map(|dep| levels.get(dep.as_str()).copied().unwrap_or(0) + 1)
                 .max()
                 .unwrap_or(0);
-            levels.insert(name.as_str(), level);
+            levels.insert(*name, level);
         }
 
         let max_level = levels.values().copied().max().unwrap_or(0);
@@ -317,11 +322,8 @@ impl Pipeline {
         }
 
         // Keep each group's order stable (sort by topo position)
-        let topo_index: HashMap<&str, usize> = topo
-            .iter()
-            .enumerate()
-            .map(|(i, n)| (n.as_str(), i))
-            .collect();
+        let topo_index: HashMap<&str, usize> =
+            topo.iter().enumerate().map(|(i, n)| (*n, i)).collect();
 
         for group in &mut groups {
             group.sort_by_key(|n| topo_index.get(n.as_str()).copied().unwrap_or(0));

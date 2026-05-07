@@ -954,10 +954,10 @@ impl PostFxPipeline {
             // Update params UBO.
             let mut raw = params_to_uniform(&pass.params);
             if pass.auto_uniforms {
-                raw[12] = total_time;           // p[3].x — elapsed time (s)
-                raw[13] = frame_count as f32;   // p[3].y — frame counter
-                raw[14] = width as f32;         // p[3].z — render target width
-                raw[15] = height as f32;        // p[3].w — render target height
+                raw[12] = total_time; // p[3].x — elapsed time (s)
+                raw[13] = frame_count as f32; // p[3].y — frame counter
+                raw[14] = width as f32; // p[3].z — render target width
+                raw[15] = height as f32; // p[3].w — render target height
             }
             queue.write_buffer(&self.params_buf, 0, bytemuck::cast_slice(&raw));
 

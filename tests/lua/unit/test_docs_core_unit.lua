@@ -813,6 +813,31 @@ describe("Missing explicit test for Schema:getName", function()
     end)
 end)
 
+-- @describe docs strict: lurek.docs.schemaFromToml
+describe("docs strict: lurek.docs.schemaFromToml", function()
+    -- @covers LSchema:check
+    -- @covers LSchema:getName
+    -- @covers lurek.docs.schemaFromToml
+    it("creates schema from TOML text", function()
+        local toml = [[
+name = "player"
+strict = true
+
+[rules.level]
+type = "integer"
+required = true
+min = 1
+max = 99
+        ]]
+
+        ---@diagnostic disable-next-line: undefined-field
+        local schema = lurek.docs.schemaFromToml(toml)
+        expect_equal("player", schema:getName())
+        expect_false(schema:check({ level = 100 }))
+        expect_true(schema:check({ level = 50 }))
+    end)
+end)
+
 -- @describe docs strict: LSchema type / typeOf
 describe("docs strict: LSchema type / typeOf", function()
     -- @covers LSchema:type

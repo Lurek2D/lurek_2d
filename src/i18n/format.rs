@@ -9,8 +9,8 @@
 pub fn locale_separators(locale: &str) -> (char, char) {
     // European locales that use comma as decimal separator.
     const COMMA_DECIMAL: &[&str] = &[
-        "de", "fr", "es", "it", "pt", "nl", "pl", "ru", "tr", "sv", "da", "fi",
-        "nb", "cs", "hu", "ro", "hr", "sk", "uk", "bg",
+        "de", "fr", "es", "it", "pt", "nl", "pl", "ru", "tr", "sv", "da", "fi", "nb", "cs", "hu",
+        "ro", "hr", "sk", "uk", "bg",
     ];
     let prefix = locale.split(['-', '_']).next().unwrap_or(locale);
     if COMMA_DECIMAL.contains(&prefix) {
@@ -38,12 +38,23 @@ pub fn format_number(n: f64, decimals: usize, decimal_sep: char, thousands_sep: 
     }
     let int_grouped: String = int_grouped.chars().rev().collect();
 
-    let sign = if n < 0.0 && !(integer_part == 0 && frac_scaled == 0) { "-" } else { "" };
+    let sign = if n < 0.0 && !(integer_part == 0 && frac_scaled == 0) {
+        "-"
+    } else {
+        ""
+    };
 
     if decimals == 0 {
         format!("{}{}", sign, int_grouped)
     } else {
-        format!("{}{}{}{:0>width$}", sign, int_grouped, decimal_sep, frac_scaled, width = decimals)
+        format!(
+            "{}{}{}{:0>width$}",
+            sign,
+            int_grouped,
+            decimal_sep,
+            frac_scaled,
+            width = decimals
+        )
     }
 }
 
@@ -61,8 +72,8 @@ pub fn format_date(timestamp: i64, fmt: &str, locale: &str) -> String {
             let mname = month_names_long[(month - 1) as usize];
             match prefix {
                 "ja" | "ko" | "zh" => format!("{}年{}月{}日", year, month, day),
-                "de" | "fr" | "es" | "it" | "pt" | "nl" | "pl" | "ru" | "sv"
-                | "da" | "fi" | "nb" | "cs" | "hu" | "ro" | "hr" | "sk" | "uk" | "bg" => {
+                "de" | "fr" | "es" | "it" | "pt" | "nl" | "pl" | "ru" | "sv" | "da" | "fi"
+                | "nb" | "cs" | "hu" | "ro" | "hr" | "sk" | "uk" | "bg" => {
                     format!("{} {} {}", day, mname, year)
                 }
                 _ => format!("{} {}, {}", mname, day, year),
@@ -72,8 +83,8 @@ pub fn format_date(timestamp: i64, fmt: &str, locale: &str) -> String {
             let mname_s = month_names_short[(month - 1) as usize];
             match prefix {
                 "ja" | "ko" | "zh" => format!("{}/{}/{}", year, month, day),
-                "de" | "fr" | "es" | "it" | "pt" | "nl" | "pl" | "ru" | "sv"
-                | "da" | "fi" | "nb" | "cs" | "hu" | "ro" | "hr" | "sk" | "uk" | "bg" => {
+                "de" | "fr" | "es" | "it" | "pt" | "nl" | "pl" | "ru" | "sv" | "da" | "fi"
+                | "nb" | "cs" | "hu" | "ro" | "hr" | "sk" | "uk" | "bg" => {
                     format!("{} {} {}", day, mname_s, year)
                 }
                 _ => format!("{} {}, {}", mname_s, day, year),
@@ -101,7 +112,22 @@ pub fn days_to_ymd(days: i64) -> (i32, u32, u32) {
 /// Returns (long_month_names, short_month_names) for English.
 pub fn month_name_tables() -> ([&'static str; 12], [&'static str; 12]) {
     (
-        ["January","February","March","April","May","June","July","August","September","October","November","December"],
-        ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],
+        [
+            "January",
+            "February",
+            "March",
+            "April",
+            "May",
+            "June",
+            "July",
+            "August",
+            "September",
+            "October",
+            "November",
+            "December",
+        ],
+        [
+            "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+        ],
     )
 }

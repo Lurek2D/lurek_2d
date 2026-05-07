@@ -30,8 +30,10 @@ pub struct PointLight {
 /// Returns `true` if there is no wall between `(x0,y0)` and `(x1,y1)`.
 /// The source and destination tiles themselves are not treated as blockers.
 fn has_line_of_sight(
-    x0: i32, y0: i32,
-    x1: i32, y1: i32,
+    x0: i32,
+    y0: i32,
+    x1: i32,
+    y1: i32,
     wall_at: &dyn Fn(i32, i32) -> bool,
 ) -> bool {
     let mut x = x0;
@@ -42,12 +44,22 @@ fn has_line_of_sight(
     let sy = if y0 < y1 { 1i32 } else { -1 };
     let mut err = dx - dy;
     loop {
-        if x == x1 && y == y1 { break; }
+        if x == x1 && y == y1 {
+            break;
+        }
         let e2 = 2 * err;
-        if e2 > -dy { err -= dy; x += sx; }
-        if e2 <  dx { err += dx; y += sy; }
+        if e2 > -dy {
+            err -= dy;
+            x += sx;
+        }
+        if e2 < dx {
+            err += dx;
+            y += sy;
+        }
         // Only intermediate tiles block light (skip source and destination).
-        if (x != x1 || y != y1) && wall_at(x, y) { return false; }
+        if (x != x1 || y != y1) && wall_at(x, y) {
+            return false;
+        }
     }
     true
 }

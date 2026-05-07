@@ -35,5 +35,6 @@ pub use config::Config;
 pub use error::{EngineError, EngineResult, ErrorCategory, ErrorSnapshot};
 pub use messages::MessageCatalog;
 pub use shared_state::{
-    ErrorInfo, FullscreenType, RendererStats, ScreenshotRequest, SharedState, WindowState,
+    ErrorInfo, FrameProfile, FullscreenType, RendererStats, ResourceMemoryStats, ScreenshotRequest,
+    SharedState, WindowState,
 };

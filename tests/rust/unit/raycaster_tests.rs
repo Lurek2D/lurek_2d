@@ -755,7 +755,10 @@ mod build_scene_tests {
         );
 
         assert!(
-            scene.floors.iter().any(|f| f.texture_key == Some(floor_key)),
+            scene
+                .floors
+                .iter()
+                .any(|f| f.texture_key == Some(floor_key)),
             "Expected at least one floor quad to use floor texture override"
         );
         assert!(

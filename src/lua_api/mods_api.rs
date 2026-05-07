@@ -256,8 +256,8 @@ impl LuaUserData for LuaMod {
 
         // -- setConfigSchema --
         /// Replaces the config schema with the given array of `{key, type, default}` tables.
-    /// @param | schema | table | Config schema table.
-    /// @return | nil | No value is returned.
+        /// @param | schema | table | Config schema table.
+        /// @return | nil | No value is returned.
         methods.add_method_mut("setConfigSchema", |_, this, schema: LuaTable| {
             this.inner.config_schema = schema
                 .sequence_values::<LuaTable>()
@@ -273,11 +273,13 @@ impl LuaUserData for LuaMod {
         });
 
         // -- setHook --
-    /// Registers a named hook callback, replacing any existing one.
-    /// @param | name | string | Hook name.
-    /// @param | func | function | Hook callback to store.
-    /// @return | nil | No value is returned.
-        methods.add_method_mut("setHook", |lua, this, (name, func): (String, LuaFunction)| {
+        /// Registers a named hook callback, replacing any existing one.
+        /// @param | name | string | Hook name.
+        /// @param | func | function | Hook callback to store.
+        /// @return | nil | No value is returned.
+        methods.add_method_mut(
+            "setHook",
+            |lua, this, (name, func): (String, LuaFunction)| {
                 if let Some(old_key) = this.hooks.remove(&name) {
                     lua.remove_registry_value(old_key)?;
                 }
@@ -585,14 +587,20 @@ impl LuaUserData for LuaContentRegistry {
         /// @param | id | string | Unique identifier for the entry.
         /// @param | obj | any | Content object to store.
         /// @return | nil | No value is returned.
-        methods.add_method_mut("register", |lua, this, (type_name, id, obj): (String, String, LuaValue)| {
-            if !this.types.contains(&type_name) {
-                return Err(LuaError::RuntimeError(format!("content type '{}' not registered", type_name)));
-            }
-            let key = lua.create_registry_value(obj)?;
-            this.entries.entry(type_name).or_default().insert(id, key);
-            Ok(())
-        });
+        methods.add_method_mut(
+            "register",
+            |lua, this, (type_name, id, obj): (String, String, LuaValue)| {
+                if !this.types.contains(&type_name) {
+                    return Err(LuaError::RuntimeError(format!(
+                        "content type '{}' not registered",
+                        type_name
+                    )));
+                }
+                let key = lua.create_registry_value(obj)?;
+                this.entries.entry(type_name).or_default().insert(id, key);
+                Ok(())
+            },
+        );
 
         // -- get --
         /// Retrieves a content entry.
@@ -600,7 +608,8 @@ impl LuaUserData for LuaContentRegistry {
         /// @param | id | string | Content identifier.
         /// @return | table | Returns the stored content entry.
         methods.add_method("get", |lua, this, (type_name, id): (String, String)| {
-            let val = this.entries
+            let val = this
+                .entries
                 .get(&type_name)
                 .and_then(|m| m.get(&id))
                 .map(|key| lua.registry_value::<LuaValue>(key))
@@ -673,7 +682,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// Creates a new Mod from an info table with at least an `id` field.
     /// @param | info | table | Mod info table.
     /// @return | LMod | Returns the new mod userdata.
-    tbl.set("newMod", lua.create_function(|lua, info: LuaTable| {
+    tbl.set(
+        "newMod",
+        lua.create_function(|lua, info: LuaTable| {
             let mod_info = mod_info_from_table(&info)?;
             lua.create_userdata(LuaMod::new(mod_info))
         })?,
@@ -682,13 +693,17 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     // -- newModManager --
     /// Creates a new empty ModManager.
     /// @return | LModManager | Returns the new mod manager userdata.
-    tbl.set("newModManager", lua.create_function(|lua, ()| lua.create_userdata(LuaModManager::new()))?,
+    tbl.set(
+        "newModManager",
+        lua.create_function(|lua, ()| lua.create_userdata(LuaModManager::new()))?,
     )?;
 
     // -- newRegistry --
     /// Creates a new empty ContentRegistry for mod-contributed assets.
     /// @return | LContentRegistry | Returns the new content registry userdata.
-    tbl.set("newRegistry", lua.create_function(|lua, ()| lua.create_userdata(LuaContentRegistry::new()))?,
+    tbl.set(
+        "newRegistry",
+        lua.create_function(|lua, ()| lua.create_userdata(LuaContentRegistry::new()))?,
     )?;
 
     // -- checkApiVersion --
@@ -697,7 +712,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// @param | host_version | string | Host API version string.
     /// @return | boolean | True when the mod is compatible with the host API version.
     /// @return | string | Incompatibility error message.
-    tbl.set("checkApiVersion", lua.create_function(|lua, (mod_ud, host_version): (LuaAnyUserData, String)| {
+    tbl.set(
+        "checkApiVersion",
+        lua.create_function(|lua, (mod_ud, host_version): (LuaAnyUserData, String)| {
             let api_ver = {
                 let m = mod_ud.borrow::<LuaMod>()?;
                 m.inner.api_version.clone()

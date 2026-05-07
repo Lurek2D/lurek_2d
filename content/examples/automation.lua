@@ -306,27 +306,41 @@
 --     lurek.automation.waitUntil(function() return level_ready end, 5.0)
 --   end
 -- end
--- content/examples/automation.lua
--- Scaffolded coverage of the lurek.automation API (28 items).
---
--- Every --@api-stub: block below is a SCAFFOLD. The body must be
--- replaced by hand with a 3-6 line real usage snippet showing how to
--- call the API in real game context, written by reading:
---   * src/lua_api/automation_api.rs   (Lua binding, arg types, return shape)
---   * src/automation/                 (semantics, side effects)
---   * docs/specs/automation.md        (canonical reference)
---
--- Snippet rules (love2d-wiki style):
---   * NO `return` at top-level (breaks the file).
---   * NO `pcall` defensive wrappers, NO `if false then`.
---   * Wrap GPU / audio / physics calls inside
---     `function lurek.draw() ... end` or
---     `function lurek.update(dt) ... end` callbacks so the file loads.
---   * Use REAL values: paths like "sfx/jump.ogg", keys like "space",
---     colours like {1, 0.5, 0, 1}.
---   * Keep the two `--` comment lines: 1) what the API does (use the
---     existing description), 2) one line of practical advice.
---
--- Run: cargo run -- content/examples/automation.lua
 
--- â”€â”€ lurek.automation.* functions â”€â”€
+--@api-stub: lurek.automation.setCondition
+-- Sets a named condition used by script fields `when` and `assert`.
+-- Drive these conditions from game state in update loops so scripted checks remain deterministic.
+-- if false then -- lurek.automation.setCondition
+--   local boss_dead = false
+--   function lurek.process(dt)
+--     lurek.automation.setCondition("boss_dead", boss_dead)
+--   end
+-- end
+
+--@api-stub: lurek.automation.getCondition
+-- Returns a condition value by name, or nil if never set.
+-- Use this in debug overlays to inspect why a conditional step did not fire.
+-- if false then -- lurek.automation.getCondition
+--   local v = lurek.automation.getCondition("boss_dead")
+--   lurek.log.debug("boss_dead=" .. tostring(v), "automation")
+-- end
+
+--@api-stub: lurek.automation.isFailed
+-- Returns true when playback halted due to a failed assert or visualassert step.
+-- Check this after update calls in CI scripts to fail fast with clear diagnostics.
+-- if false then -- lurek.automation.isFailed
+--   function lurek.process(dt)
+--     lurek.automation.update(dt)
+--     if lurek.automation.isFailed() then
+--       lurek.log.error("automation failed", "automation")
+--     end
+--   end
+-- end
+
+--@api-stub: lurek.automation.getLastError
+-- Returns the failure message from the most recent failed automation run.
+-- Surface this in test logs to make screenshot/assert mismatches actionable.
+-- if false then -- lurek.automation.getLastError
+--   local err = lurek.automation.getLastError()
+--   if err then lurek.log.error(err, "automation") end
+-- end

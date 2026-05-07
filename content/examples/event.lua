@@ -1,5 +1,5 @@
 ﻿-- content/examples/event.lua
--- Hand-written coverage of the lurek.event API (22 items).
+-- Hand-written coverage of the lurek.event API (28 items).
 --
 -- The event module exposes two layers: a per-frame event queue (push / poll /
 -- wait, plus deferred buffering and an optional history ring) and a Signal
@@ -8,7 +8,7 @@
 --
 -- Run: cargo run -- content/examples/event.lua
 
--- â”€â”€ lurek.event.* functions â”€â”€
+-- -- lurek.event.* functions --
 
 --@api-stub: lurek.event.exit
 -- Pushes an exit event, requesting the engine to stop.
@@ -93,7 +93,7 @@
 -- end
 
 --@api-stub: lurek.event.quit
--- Alias for `exit()` â€” requests the engine to stop at the end of the current frame.
+-- Alias for `exit()` - requests the engine to stop at the end of the current frame.
 -- Wire to a confirmed "Quit to desktop" menu button; exit code is always 0.
 -- if false then -- lurek.event.quit
 --   local function on_quit_button()
@@ -185,7 +185,7 @@
 --   end
 -- end
 
--- â”€â”€ Signal methods â”€â”€
+-- -- Signal methods --
 
 --@api-stub: LSignal:emit
 -- Emits the named event, calling all registered callbacks with extra arguments.
@@ -313,12 +313,12 @@
 -- if false then -- Signal:registerWithFilter
 --   local sig = lurek.event.newSignal()
 --   sig:registerWithFilter(
---     "*",
---     function(evt) return evt.type == "damage" end,
---     function(evt) lurek.log.info("damage event", "event") end
+--     "combat.event",
+--     function(evt) lurek.log.info("damage event", "event") end,
+--     function(evt) return evt.type == "damage" end
 --   )
---   sig:emit("*", {type="damage", amount=10})
---   sig:emit("*", {type="heal", amount=5})
+--   sig:emit("combat.event", {type="damage", amount=10})
+--   sig:emit("combat.event", {type="heal", amount=5})
 --   lurek.log.info("filtered listener ok", "event")
 -- end
 

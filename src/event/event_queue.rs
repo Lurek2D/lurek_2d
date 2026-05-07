@@ -349,9 +349,10 @@ impl EventArg {
 
     fn table_value_from_lua_shallow(value: &LuaValue) -> LuaResult<EventArg> {
         match value {
-            LuaValue::String(_) | LuaValue::Integer(_) | LuaValue::Number(_) | LuaValue::Boolean(_) => {
-                Self::from_lua_val(value)
-            }
+            LuaValue::String(_)
+            | LuaValue::Integer(_)
+            | LuaValue::Number(_)
+            | LuaValue::Boolean(_) => Self::from_lua_val(value),
             LuaValue::Table(_) => Ok(EventArg::Nil),
             _ => Ok(EventArg::Nil),
         }

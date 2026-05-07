@@ -1,5 +1,8 @@
 -- Lua BDD tests for lurek.automation (automation module)
 
+---@type any
+local automation = lurek.automation
+
 -- @describe lurek.automation - namespace
 describe("lurek.automation - namespace", function()
     it("should exist as a table", function()
@@ -1009,7 +1012,7 @@ describe("lurek.automation step limit", function()
     end)
 end)
 
---  Automation Highlight (merged from test_automation_highlight.lua) 
+--  Automation Highlight (merged from test_automation_highlight.lua)
 
 -- @describe lurek.automation highlight mode API types
 describe("lurek.automation highlight mode API types", function()
@@ -1070,4 +1073,77 @@ describe("lurek.automation setHighlightMode / isHighlightMode roundtrip", functi
     expect_type("boolean", result)
   end)
 end)
+
+-- @describe lurek.automation extended API
+describe("lurek.automation extended API", function()
+    -- @covers lurek.automation.setCondition
+    it("setCondition is a function", function()
+        expect_type("function", automation.setCondition)
+    end)
+
+    -- @covers lurek.automation.getCondition
+    it("getCondition is a function", function()
+        expect_type("function", automation.getCondition)
+    end)
+
+    -- @covers lurek.automation.isFailed
+    it("isFailed is a function", function()
+        expect_type("function", automation.isFailed)
+    end)
+
+    -- @covers lurek.automation.getLastError
+    it("getLastError is a function", function()
+        expect_type("function", automation.getLastError)
+    end)
+end)
+
+-- @describe lurek.automation extended actions
+describe("lurek.automation extended actions", function()
+    -- @covers lurek.automation.getCurrentStep
+    -- @covers lurek.automation.load
+    -- @covers lurek.automation.start
+    -- @covers lurek.automation.stop
+    -- @covers lurek.automation.unload
+    -- @covers lurek.automation.update
+    it("repeat expands step execution", function()
+        lurek.automation.load("repeat_steps", {
+            steps = {
+                { action = "wait", time = 0.0, ["repeat"] = 2, repeatInterval = 0.1 },
+            }
+        })
+        lurek.automation.start("repeat_steps")
+        lurek.automation.update(0.25)
+        expect_equal(lurek.automation.getCurrentStep(), 3)
+        lurek.automation.stop()
+        lurek.automation.unload("repeat_steps")
+    end)
+
+    -- @covers lurek.automation.isRunning
+    -- @covers lurek.automation.load
+    -- @covers lurek.automation.playMacro
+    -- @covers lurek.automation.saveMacro
+    -- @covers lurek.automation.start
+    -- @covers lurek.automation.stop
+    -- @covers lurek.automation.unload
+    -- @covers lurek.automation.update
+    it("callmacro action expands named macro", function()
+        lurek.automation.load("macro_src_ext", {
+            steps = { { action = "textinput", text = "hello", time = 0.0 } }
+        })
+        lurek.automation.saveMacro("macro_ext", "macro_src_ext")
+
+        lurek.automation.load("macro_call", {
+            steps = { { action = "callmacro", macro = "macro_ext", time = 0.0 } }
+        })
+
+        lurek.automation.start("macro_call")
+        lurek.automation.update(0.05)
+        expect_equal(lurek.automation.isComplete(), true)
+        lurek.automation.update(0.05)
+        lurek.automation.stop()
+        lurek.automation.unload("macro_src_ext")
+        lurek.automation.unload("macro_call")
+    end)
+end)
+
 test_summary()

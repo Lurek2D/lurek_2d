@@ -29,6 +29,7 @@ The `dataframe` module is Lurek2D's in-memory column-major tabular data system â
 - *Statistics*: `describe(col)` returns min, max, mean, std_dev, count for numeric columns.
 - *Type-casting*: `cast_column(col, target_type)` converts a column in-place.
 - *Join*: `join(other, left_col, right_col, join_type)` for INNER, LEFT, RIGHT joins.
+- *Streaming rows*: `iter_rows()` yields borrowed row views lazily to support sequential processing without `toTable` full materialization.
 
 **SQL engine.** `sql.rs` is a hand-written SQL tokenizer, parser, expression evaluator, and execution engine supporting a useful subset of standard SQL: SELECT (column list or `*`), FROM (single table or two-table JOIN with ON clause), WHERE (comparison operators, AND/OR, IS NULL, LIKE), ORDER BY (ASC/DESC), GROUP BY, aggregate functions (SUM, COUNT, AVG, MIN, MAX), and LIMIT. Queries run against `Database` catalogs via `execute(db, sql_string) â†’ Result<DataFrame>`.
 
@@ -87,6 +88,7 @@ The `dataframe` module is Lurek2D's in-memory column-major tabular data system â
 - `DataFrame::add_row` (`frame.rs`): Add a row from name-value pairs.
 - `DataFrame::remove_row` (`frame.rs`): Remove a row by 0-based index.
 - `DataFrame::get_row` (`frame.rs`): Get a full row as name-value pairs (0-based index).
+- `DataFrame::iter_rows` (`frame.rs`): Iterate rows lazily as borrowed `(column_name, cell)` pairs.
 - `DataFrame::get_value` (`frame.rs`): Get a single cell value (0-based row, ColRef for column).
 - `DataFrame::set_value` (`frame.rs`): Set a single cell value (0-based row, ColRef for column).
 - `DataFrame::clone_df` (`frame.rs`): Deep-clone this DataFrame.
@@ -249,6 +251,7 @@ The `dataframe` module is Lurek2D's in-memory column-major tabular data system â
 - `LDataFrame:toJSON`: Serializes this DataFrame to a JSON string.
 - `LDataFrame:toBinary`: Serializes this DataFrame to a binary LVDF string.
 - `LDataFrame:toTable`: Converts this DataFrame to a Lua table of row tables.
+- `LDataFrame:rows`: Returns a streaming row iterator yielding `(row_index, row_table)`.
 - `LDataFrame:toString`: Returns a formatted string table representation.
 - `LDataFrame:query`: Executes a SQL query against this DataFrame.
 - `LDataFrame:clone`: Returns a deep copy of this DataFrame.

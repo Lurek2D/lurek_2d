@@ -2,6 +2,158 @@
 
 All notable changes to Lurek2D are recorded here.
 
+## [1.0.9-fix.52] - 2026-05-07
+
+### feat(pipeline): add coroutine async steps, branch composition, and lifecycle hooks
+
+- Extended Lua pipeline bindings in `src/lua_api/pipeline_api.rs`:
+  - added `LPipelineStep:setAsync(bool)` and `LPipelineStep:isAsync()`,
+  - added `LPipeline:addBranch(name, deps, when_fn, then_fn, else_fn?)`,
+  - added `LPipeline:onEvent(fn)` lifecycle callback,
+  - upgraded `runAsync/update` to support coroutine-yielding async steps and resumed execution across frames,
+  - added per-step duration tracking for sync and async execution paths.
+- Optimized DAG internals in `src/pipeline/dag.rs` by adding a borrowed topological-order helper used by `get_parallel_groups` to reduce unnecessary string cloning.
+- Expanded Lua coverage in `tests/lua/unit/test_pipeline_core_unit.lua` for:
+  - branch routing (`addBranch`),
+  - coroutine async progression with `runAsync/update`,
+  - lifecycle event notifications (`onEvent`).
+- Synced examples and docs:
+  - added API stubs for new pipeline methods in `content/examples/pipeline.lua`,
+  - updated `docs/specs/pipeline.md` with new API surface and corrected Lua test path.
+
+## [1.0.9-fix.51] - 2026-05-07
+
+### feat(runtime): add live conf hot-reload, frame profiling API, and extended resource stats
+
+- Extended runtime state in `src/runtime/shared_state.rs`:
+  - added `FrameProfile` callback timing snapshot,
+  - added `ResourceMemoryStats` with per-kind bytes/counts (`texture`, `font`, `canvas`, `shader`, `total`),
+  - added `config_reload_revision` monotonic counter.
+- Extended engine Lua API in `src/lua_api/engine_api.rs`:
+  - upgraded `lurek.engine.getResourceStats()` to include per-kind bytes/counts and totals,
+  - added `lurek.engine.getFrameProfile()`,
+  - added `lurek.engine.getConfigRevision()`.
+- Extended app loop in `src/app/app.rs`:
+  - added `conf.toml` hot-reload polling via `filesystem::FileWatcher`,
+  - applies mutable settings live (fps cap, physics/fixed tick rates, log level, title, viewport scale fields),
+  - increments runtime config revision on successful reload,
+  - records per-callback frame profile timings each frame.
+- Expanded tests and examples:
+  - Rust unit tests in `tests/rust/unit/runtime_tests.rs` for TOML merge behavior and extended resource stats,
+  - Lua unit tests in `tests/lua/unit/test_engine_core_unit.lua` for new engine runtime diagnostics API,
+  - updated usage examples in `content/examples/engine.lua`.
+- Synced specs:
+  - updated `docs/specs/runtime.md`,
+  - updated `docs/specs/app.md`.
+
+## [1.0.9-fix.50] - 2026-05-07
+
+### feat(dataframe): add streaming rows iterator and sync coverage artifacts
+
+- Extended Rust dataframe core in `src/dataframe/frame.rs`:
+  - added `DataFrameRowIter` and `DataFrame::iter_rows()` for lazy row-by-row iteration without full table materialization.
+- Extended Lua dataframe API in `src/lua_api/dataframe_api.rs`:
+  - added `LDataFrame:rows()` iterator that yields `(row_index, row_table)` for generic `for` loops.
+- Expanded tests:
+  - added Rust unit coverage in `tests/rust/unit/dataframe_tests.rs` for ordered row streaming behavior.
+  - added Lua unit coverage in `tests/lua/unit/test_dataframe_core_unit.lua` for iterator order and empty-frame behavior.
+- Synced docs and examples:
+  - updated `docs/specs/dataframe.md` with streaming API surface,
+  - added `LDataFrame:rows` usage stub in `content/examples/dataframe.lua`,
+  - updated status checkpoints in `src/dataframe/IDEA.md`.
+
+## [1.0.9-fix.49] - 2026-05-07
+
+### feat(event): finalize event module contract sync and coverage artifacts
+
+- Updated Lua API docstrings in `src/lua_api/event_api.rs`:
+  - corrected module header to `lurek.event`,
+  - clarified `pump()` parity no-op behavior,
+  - documented shallow table payload semantics for `push`, `pushPriority`, and deferred push APIs.
+- Expanded Rust event tests in `tests/rust/unit/event_tests.rs` with a shallow table conversion case:
+  - verifies scalar key/value preservation,
+  - verifies nested table values are intentionally stored as `nil` (shallow clone contract).
+- Expanded Lua event tests in `tests/lua/unit/test_event_core_unit.lua` with shallow payload behavior assertion.
+- Refreshed event module spec `docs/specs/event.md` to match current API and runtime behavior:
+  - removed stale `emit/on/off` wording,
+  - documented dual-lane queue ordering, condvar wait semantics, payload model, and current `LSignal` methods.
+- Synced `content/examples/event.lua`:
+  - fixed text encoding artifacts,
+  - corrected API count and `registerWithFilter` usage order.
+
+## [1.0.9-fix.48] - 2026-05-07
+
+### feat(automation): implement loop/macro/assert/visual-assert flow and coverage sync
+
+- Extended `src/automation/step.rs`:
+  - added new action variants: `Repeat`, `CallMacro`, `Assert`, `VisualAssert`,
+  - added step metadata fields for orchestration and checks: `repeat`, `repeatInterval`, `macro`, `when`, `assert`, `baseline`, `actual`, `maxDiff`,
+  - deduplicated action parse/string mapping into a shared static table.
+- Extended `src/automation/script.rs`:
+  - added repeat expansion during script construction (`repeat` + `repeatInterval`),
+  - extended TOML loader with new step fields.
+- Refactored `src/automation/simulator.rs`:
+  - added deterministic microsecond time accumulation,
+  - introduced `StepEventSink` and `update_with_sink` to decouple update logic from `EventQueue`,
+  - added condition table (`set_condition`/`get_condition`), playback failure state, and last-error reporting,
+  - added runtime handling for `callmacro`, `assert`, and `visualassert` actions.
+- Extended Lua API in `src/lua_api/automation_api.rs`:
+  - added `lurek.automation.setCondition`, `getCondition`, `isFailed`, `getLastError`,
+  - extended Lua step parsing with new action fields.
+- Added Rust unit coverage in `tests/rust/unit/automation_tests.rs` and registered `automation_tests` in `Cargo.toml`.
+- Replaced placeholder integration suite `tests/lua/integration/test_automation_event.lua` with real end-to-end checks.
+- Extended Lua unit coverage in `tests/lua/unit/test_automation_core_unit.lua` for new API and action paths.
+- Synced examples/spec docs:
+  - `content/examples/automation.lua`,
+  - `docs/specs/automation.md`.
+
+### feat(docs): implement docs module IDEA gaps, schema TOML loader, and coverage sync
+
+- Extended `src/docs/catalog.rs` with `Catalog::merge(other)` for deterministic catalog union with override-by-qualified-name semantics.
+- Extended `src/docs/schema.rs`:
+  - relaxed `Schema::validate_pairs` type-name lifetime (`&str` instead of `&'static str`),
+  - added `Schema::from_toml(&str)` with support for `[rules]`/`[fields]`, strict mode, numeric/string bounds, enum, and descriptions.
+- Refactored `src/docs/export.rs`:
+  - extracted shared JSON builders used by single-file exports and `export_all`,
+  - switched JSON writes to buffered IO (`BufWriter`) to reduce write-path overhead,
+  - removed inline `#[cfg(test)]` module from `src/` to satisfy test placement policy.
+- Extended Lua docs API in `src/lua_api/docs_api.rs` with `lurek.docs.schemaFromToml(toml_text)`.
+- Added Rust unit coverage in `tests/rust/unit/docs_tests.rs` for:
+  - `Catalog::merge`,
+  - `Schema::from_toml`,
+  - string-length schema bounds,
+  - mixed-module quality scoring,
+  - export output behavior (including compact hover in `export_all`),
+  - `ParamInfo` and `ReturnInfo` edge cases.
+- Extended Lua coverage in `tests/lua/unit/test_docs_core_unit.lua` with `lurek.docs.schemaFromToml` behavior test.
+- Synced docs example coverage in `content/examples/docs.lua` and module spec `docs/specs/docs.md`.
+
+## [1.0.9-fix.47] - 2026-05-07
+
+### feat(ecs): add phase scheduling, query batching, dirty tracking, and snapshot aliases
+
+- Extended `src/ecs/universe.rs`:
+  - added system phase storage and phase-aware ordering (`get_sorted_system_indices_for_phase`, `get_sorted_system_indices_all`),
+  - kept backward compatibility so systems without explicit phase still run in both `update()` and `render()`,
+  - added batched multi-component iteration `query_multi(...)`,
+  - added dirty-entity tracking (`dirty_set`, `get_dirty_entities`) integrated with component add/remove events,
+  - added iterator-based tag traversal (`iter_entities_by_tag`) to avoid cloning tag vectors,
+  - added optional sparse component index behind Cargo feature `ecs-archetype` for query candidate narrowing.
+- Split ECS implementation for maintainability:
+  - extracted query/snapshot/bulk helpers from `src/ecs/universe.rs` into `src/ecs/universe_ext.rs` as extension `impl Universe` blocks.
+- Extended `src/lua_api/ecs_api.rs`:
+  - `addSystem` now supports `opts.phase` in addition to `opts.priority`,
+  - added `updatePhase(phase, dt)`,
+  - added `queryMulti(names, callback)`,
+  - added `getDirtyEntities()`,
+  - added snapshot aliases `snapshot()` and `applySnapshot(snapshot)`.
+- Expanded ECS coverage:
+  - Rust tests in `tests/rust/unit/ecs_tests.rs` for phase-order helpers and relationship manager invariants,
+  - Lua tests in `tests/lua/unit/test_ecs_core_unit.lua` for `queryMulti`, system phases, dirty-entity flow, and snapshot aliases.
+- Synced ECS docs/example:
+  - updated spec `docs/specs/ecs.md`,
+  - updated API example `content/examples/ecs.lua` with missing ECS method stubs/scenarios.
+
 ## [1.0.9-fix.46] - 2026-05-07
 
 ### feat(serial): implement codec dispatch, schema defaults, and serial module coverage sync

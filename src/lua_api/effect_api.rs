@@ -877,7 +877,8 @@ impl LuaUserData for LuaOverlay {
         /// @return | nil | No return value.
         methods.add_method_mut("pushAmbientToLight", |_, this, ()| {
             let c = this.inner.ambient.color;
-            this.state.borrow_mut().light_world.ambient = crate::math::Color::new(c[0], c[1], c[2], c[3]);
+            this.state.borrow_mut().light_world.ambient =
+                crate::math::Color::new(c[0], c[1], c[2], c[3]);
             Ok(())
         });
 

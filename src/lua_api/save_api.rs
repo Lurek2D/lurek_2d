@@ -1,4 +1,4 @@
-﻿//! `lurek.save` - Slot-based save/load system with collectors, schema versioning, and auto-save.
+//! `lurek.save` - Slot-based save/load system with collectors, schema versioning, and auto-save.
 
 use super::SharedState;
 use mlua::prelude::*;
@@ -186,12 +186,7 @@ impl LuaSaveManager {
         };
         let data: LuaTable = match eval_save_content(lua, &content) {
             Ok(t) => t,
-            Err(e) => {
-                return Ok((
-                    false,
-                    Some(format!("lurek.save:load: corrupt save: {}", e)),
-                ))
-            }
+            Err(e) => return Ok((false, Some(format!("lurek.save:load: corrupt save: {}", e)))),
         };
         self.restore_from_table(lua, data)?;
         // Fire onAfterLoad hook.
@@ -280,7 +275,9 @@ impl LuaUserData for LuaSaveManager {
         /// @param | collector | function | Callback that returns the module save data.
         /// @param | restorer | function | Callback that restores the module save data.
         /// @return | nil | No value is returned.
-        methods.add_method_mut("register", |lua, this, (name, collect_fn, restore_fn): (String, LuaFunction, LuaFunction)| {
+        methods.add_method_mut(
+            "register",
+            |lua, this, (name, collect_fn, restore_fn): (String, LuaFunction, LuaFunction)| {
                 Self::remove_key(lua, &mut this.collectors, &name)?;
                 Self::remove_key(lua, &mut this.restorers, &name)?;
                 this.collectors
@@ -324,7 +321,9 @@ impl LuaUserData for LuaSaveManager {
         /// @param | from_version | integer | Source schema version handled by the migration.
         /// @param | func | function | Migration callback that transforms loaded data.
         /// @return | nil | No value is returned.
-        methods.add_method_mut("addMigration", |lua, this, (from_ver, func): (i32, LuaFunction)| {
+        methods.add_method_mut(
+            "addMigration",
+            |lua, this, (from_ver, func): (i32, LuaFunction)| {
                 Self::remove_key(lua, &mut this.migrations, &from_ver)?;
                 this.migrations
                     .insert(from_ver, lua.create_registry_value(func)?);
@@ -364,7 +363,9 @@ impl LuaUserData for LuaSaveManager {
         /// @param | interval | number | Auto-save interval in seconds.
         /// @param | slot | string | Slot name to write when auto-save triggers.
         /// @return | nil | No value is returned.
-        methods.add_method_mut("enableAutoSave", |_, this, (interval, slot): (f64, String)| {
+        methods.add_method_mut(
+            "enableAutoSave",
+            |_, this, (interval, slot): (f64, String)| {
                 this.manager.enable_auto_save(interval, slot);
                 Ok(())
             },
@@ -493,7 +494,9 @@ impl LuaUserData for LuaSaveManager {
         /// Returns whether a save file exists for the given slot.
         /// @param | slot | string | Slot name to check.
         /// @return | boolean | Returns whether the slot file exists.
-        methods.add_method("exists", |_, this, slot: String| Ok(this.slot_exists(&slot)),
+        methods.add_method(
+            "exists",
+            |_, this, slot: String| Ok(this.slot_exists(&slot)),
         );
 
         // -- getSlots --
@@ -544,7 +547,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @return | LSaveManager | Returns a new save manager userdata object.
     let s = state.clone();
     // Auto-doc: Lua API binding.
-    tbl.set("newSaveManager", lua.create_function(move |lua, ()| lua.create_userdata(LuaSaveManager::new(s.clone())))?,
+    tbl.set(
+        "newSaveManager",
+        lua.create_function(move |lua, ()| lua.create_userdata(LuaSaveManager::new(s.clone())))?,
     )?;
 
     /// Namespace containing the save API module.

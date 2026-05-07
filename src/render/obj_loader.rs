@@ -1,4 +1,4 @@
-﻿//! Wavefront OBJ loader for Lurek2D.
+//! Wavefront OBJ loader for Lurek2D.
 //!
 //! Parses `.obj` and associated `.mtl` files into an [`ObjModel`] that holds
 //! the raw 3D geometry (vertices, UVs, normals, indexed faces).
@@ -62,7 +62,7 @@ pub struct Vec3 {
 }
 
 impl Vec3 {
-/// Auto-doc: public item.
+    /// Auto-doc: public item.
     pub fn new(x: f32, y: f32, z: f32) -> Self {
         Self { x, y, z }
     }
@@ -88,12 +88,12 @@ impl Vec3 {
     }
 
     #[allow(clippy::should_implement_trait)]
-/// Auto-doc: public item.
+    /// Auto-doc: public item.
     pub fn sub(self, o: Vec3) -> Vec3 {
         Vec3::new(self.x - o.x, self.y - o.y, self.z - o.z)
     }
 
-/// Auto-doc: public item.
+    /// Auto-doc: public item.
     pub fn cross(self, o: Vec3) -> Vec3 {
         Vec3::new(
             self.y * o.z - self.z * o.y,
@@ -103,13 +103,13 @@ impl Vec3 {
     }
 
     #[allow(clippy::should_implement_trait)]
-/// Auto-doc: public item.
+    /// Auto-doc: public item.
     pub fn add(self, o: Vec3) -> Vec3 {
         Vec3::new(self.x + o.x, self.y + o.y, self.z + o.z)
     }
 
     #[allow(clippy::should_implement_trait)]
-/// Auto-doc: public item.
+    /// Auto-doc: public item.
     pub fn mul(self, s: f32) -> Vec3 {
         Vec3::new(self.x * s, self.y * s, self.z * s)
     }
@@ -203,7 +203,12 @@ impl ObjModel {
         }
 
         let angle = (rotation_quarters % 4) as f32 * std::f32::consts::FRAC_PI_2;
-        let rotated: Vec<Vec3> = self.positions.iter().copied().map(|p| rotate_y(p, angle)).collect();
+        let rotated: Vec<Vec3> = self
+            .positions
+            .iter()
+            .copied()
+            .map(|p| rotate_y(p, angle))
+            .collect();
 
         let mut min = Vec3::new(f32::INFINITY, f32::INFINITY, f32::INFINITY);
         let mut max = Vec3::new(f32::NEG_INFINITY, f32::NEG_INFINITY, f32::NEG_INFINITY);
@@ -222,7 +227,9 @@ impl ObjModel {
             (min.z + max.z) * 0.5,
         );
         let extent = Vec3::new(max.x - min.x, max.y - min.y, max.z - min.z);
-        let radius = ((extent.x * extent.x + extent.y * extent.y + extent.z * extent.z).sqrt() * 0.5).max(0.5);
+        let radius = ((extent.x * extent.x + extent.y * extent.y + extent.z * extent.z).sqrt()
+            * 0.5)
+            .max(0.5);
 
         let cam_pos = center.add(Vec3::new(radius * 1.2, radius * 0.8, radius * 2.4));
         let cam_target = center.add(Vec3::new(0.0, extent.y * 0.15, 0.0));
@@ -296,10 +303,30 @@ impl ObjModel {
                 (c, c, c)
             };
 
-            let min_x = sx.iter().copied().fold(f32::INFINITY, f32::min).floor().max(0.0) as u32;
-            let max_x = sx.iter().copied().fold(f32::NEG_INFINITY, f32::max).ceil().min(width as f32 - 1.0) as u32;
-            let min_y = sy.iter().copied().fold(f32::INFINITY, f32::min).floor().max(0.0) as u32;
-            let max_y = sy.iter().copied().fold(f32::NEG_INFINITY, f32::max).ceil().min(height as f32 - 1.0) as u32;
+            let min_x = sx
+                .iter()
+                .copied()
+                .fold(f32::INFINITY, f32::min)
+                .floor()
+                .max(0.0) as u32;
+            let max_x = sx
+                .iter()
+                .copied()
+                .fold(f32::NEG_INFINITY, f32::max)
+                .ceil()
+                .min(width as f32 - 1.0) as u32;
+            let min_y = sy
+                .iter()
+                .copied()
+                .fold(f32::INFINITY, f32::min)
+                .floor()
+                .max(0.0) as u32;
+            let max_y = sy
+                .iter()
+                .copied()
+                .fold(f32::NEG_INFINITY, f32::max)
+                .ceil()
+                .min(height as f32 - 1.0) as u32;
 
             for py in min_y..=max_y {
                 for px in min_x..=max_x {
@@ -462,10 +489,7 @@ impl ObjModel {
             projected_tris.push((tri_depth, tri));
         }
 
-        projected_tris.sort_by(|a, b| {
-            b.0.partial_cmp(&a.0)
-                .unwrap_or(std::cmp::Ordering::Equal)
-        });
+        projected_tris.sort_by(|a, b| b.0.partial_cmp(&a.0).unwrap_or(std::cmp::Ordering::Equal));
 
         let mut vertices: Vec<MeshVertex> = Vec::with_capacity(projected_tris.len() * 3);
         for (_, tri) in projected_tris {
@@ -615,10 +639,7 @@ impl ObjModel {
             projected_tris.push((tri_depth, tri));
         }
 
-        projected_tris.sort_by(|a, b| {
-            b.0.partial_cmp(&a.0)
-                .unwrap_or(std::cmp::Ordering::Equal)
-        });
+        projected_tris.sort_by(|a, b| b.0.partial_cmp(&a.0).unwrap_or(std::cmp::Ordering::Equal));
 
         let mut vertices: Vec<MeshVertex> = Vec::with_capacity(projected_tris.len() * 3);
         for (_, tri) in projected_tris {
@@ -627,7 +648,10 @@ impl ObjModel {
             vertices.push(tri[2]);
         }
 
-        (Mesh::from_vertices(vertices, MeshDrawMode::Triangles), instance_depth)
+        (
+            Mesh::from_vertices(vertices, MeshDrawMode::Triangles),
+            instance_depth,
+        )
     }
 }
 
@@ -711,7 +735,11 @@ impl ObjLoader {
                 let c = base_pos + tri[2] as usize;
                 let material = mesh.material_id;
                 faces.push(ObjFace {
-                    verts: [(a, Some(a), Some(a)), (b, Some(b), Some(b)), (c, Some(c), Some(c))],
+                    verts: [
+                        (a, Some(a), Some(a)),
+                        (b, Some(b), Some(b)),
+                        (c, Some(c), Some(c)),
+                    ],
                     material,
                 });
             }
@@ -774,8 +802,7 @@ impl ObjLoader {
                 "mtllib" => {
                     let mtl_path = base_dir.join(rest);
                     if let Ok(mtl_src) = std::fs::read_to_string(&mtl_path) {
-                        let loaded =
-                            Self::parse_mtl(&mtl_src, base_dir);
+                        let loaded = Self::parse_mtl(&mtl_src, base_dir);
                         for m in loaded {
                             if !mat_index.contains_key(&m.name) {
                                 mat_index.insert(m.name.clone(), materials.len());
@@ -789,7 +816,8 @@ impl ObjLoader {
                     current_mat = mat_index.get(rest).copied();
                 }
                 "f" => {
-                    let verts = Self::parse_face_verts(rest, positions.len(), uvs.len(), normals.len())?;
+                    let verts =
+                        Self::parse_face_verts(rest, positions.len(), uvs.len(), normals.len())?;
                     // Triangulate as fan
                     for i in 1..(verts.len() - 1) {
                         faces.push(ObjFace {
@@ -870,9 +898,8 @@ impl ObjLoader {
             .split_whitespace()
             .take(expected + 4) // allow extra components
             .map(|t| {
-                t.parse::<f32>().map_err(|_| {
-                    ObjError::Parse(format!("expected float, got '{}'", t))
-                })
+                t.parse::<f32>()
+                    .map_err(|_| ObjError::Parse(format!("expected float, got '{}'", t)))
             })
             .collect::<Result<_, _>>()?;
         if v.len() < expected {
@@ -970,16 +997,20 @@ pub struct ObjCamera {
 }
 
 impl ObjCamera {
-/// Auto-doc: public item.
+    /// Auto-doc: public item.
     pub fn new(x: f32, y: f32, z: f32, tx: f32, ty: f32, tz: f32, fov_y_deg: f32) -> Self {
         Self {
-            x, y, z,
-            target_x: tx, target_y: ty, target_z: tz,
+            x,
+            y,
+            z,
+            target_x: tx,
+            target_y: ty,
+            target_z: tz,
             fov_y_deg,
         }
     }
 
-/// Auto-doc: public item.
+    /// Auto-doc: public item.
     pub fn to_vecs(&self) -> (Vec3, Vec3, f32) {
         (
             Vec3::new(self.x, self.y, self.z),

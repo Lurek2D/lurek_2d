@@ -160,7 +160,10 @@ fn test_import_metadata_from_files_sets_attrs_labels_and_markers() {
     write_png(&marked_path, &marked);
     write_png(&color_path, &color_map);
     write_text(&csv_path, "id,r,g,b\n101,12,34,56\n");
-    write_text(&toml_path, "[101]\nname = \"Alpha_Province\"\nterrain = \"sea\"\n");
+    write_text(
+        &toml_path,
+        "[101]\nname = \"Alpha_Province\"\nterrain = \"sea\"\n",
+    );
 
     let grid = ProvinceGrid::from_image(&color_map);
     let mut reg = ProvinceRegistry::from_grid(&grid);
@@ -181,7 +184,10 @@ fn test_import_metadata_from_files_sets_attrs_labels_and_markers() {
     assert_eq!(snap.style.terrain_type, 0);
     assert_eq!(snap.attrs.get("game_id").map(String::as_str), Some("101"));
     assert_eq!(snap.attrs.get("terrain").map(String::as_str), Some("sea"));
-    assert_eq!(snap.attrs.get("name").map(String::as_str), Some("Alpha Province"));
+    assert_eq!(
+        snap.attrs.get("name").map(String::as_str),
+        Some("Alpha Province")
+    );
     assert_eq!(reg.label_text_for(1), Some("Alpha Province"));
     assert_eq!(reg.capital_for(1), Some((1.5, 0.5)));
 }

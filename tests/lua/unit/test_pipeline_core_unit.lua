@@ -908,4 +908,87 @@ describe("pipeline strict: LPipeline getSteps/cancel/reset/isComplete", function
     end)
 end)
 
+-- @describe pipeline branch and coroutine async coverage
+describe("pipeline branch and coroutine async coverage", function()
+    -- @covers LPipeline:addBranch
+    -- @covers LPipeline:run
+    -- @covers lurek.pipeline.newPipeline
+    it("addBranch executes then branch only when predicate is true", function()
+        local chosen = "none"
+        local p = lurek.pipeline.newPipeline("branch_true")
+        p:addBranch(
+            "gate",
+            {},
+            function(ctx) return true end,
+            function(ctx) chosen = "then" end,
+            function(ctx) chosen = "else" end
+        )
+        local result = p:run()
+        expect_true(result.success)
+        expect_equal("then", chosen)
+        expect_true(table_contains(result.completed, "gate__branch_guard"))
+        expect_true(table_contains(result.completed, "gate__then"))
+        expect_true(table_contains(result.skipped, "gate__else"))
+    end)
+
+    -- @covers LPipeline:addBranch
+    -- @covers LPipeline:run
+    -- @covers lurek.pipeline.newPipeline
+    it("addBranch executes else branch when predicate is false", function()
+        local chosen = "none"
+        local p = lurek.pipeline.newPipeline("branch_false")
+        p:addBranch(
+            "gate",
+            {},
+            function(ctx) return false end,
+            function(ctx) chosen = "then" end,
+            function(ctx) chosen = "else" end
+        )
+        local result = p:run()
+        expect_true(result.success)
+        expect_equal("else", chosen)
+        expect_true(table_contains(result.completed, "gate__else"))
+        expect_true(table_contains(result.skipped, "gate__then"))
+    end)
+
+    -- @covers LPipeline:addStep
+    -- @covers LPipeline:isRunning
+    -- @covers LPipeline:runAsync
+    -- @covers LPipeline:update
+    -- @covers LPipelineStep:isAsync
+    -- @covers LPipelineStep:setAsync
+    -- @covers lurek.pipeline.newPipeline
+    -- @covers lurek.pipeline.newStep
+    it("setAsync/isAsync toggle step async flag", function()
+        local s = lurek.pipeline.newStep("co", function(ctx)
+            return "done"
+        end)
+        expect_false(s:isAsync())
+        s:setAsync(true)
+        expect_true(s:isAsync())
+        s:setAsync(false)
+        expect_false(s:isAsync())
+    end)
+
+    -- @covers LPipeline:addStep
+    -- @covers LPipeline:onEvent
+    -- @covers LPipeline:run
+    -- @covers lurek.pipeline.newPipeline
+    -- @covers lurek.pipeline.newStep
+    it("onEvent receives lifecycle notifications", function()
+        local events = {}
+        local p = lurek.pipeline.newPipeline("events")
+        p:addStep(lurek.pipeline.newStep("ok", function(ctx) return 1 end))
+        p:onEvent(function(event_name, step_name, status, detail)
+            table.insert(events, event_name .. ":" .. step_name .. ":" .. status)
+        end)
+
+        local result = p:run()
+        expect_true(result.success)
+        expect_true(#events >= 2)
+        expect_true(events[1]:find("step_started") ~= nil)
+        expect_true(events[#events]:find("step_finished") ~= nil)
+    end)
+end)
+
 test_summary()

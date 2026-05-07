@@ -61,6 +61,28 @@ pub struct Script {
 }
 
 impl Script {
+    fn expand_repeats(steps: Vec<Step>) -> Vec<Step> {
+        let mut out = Vec::new();
+        for step in steps {
+            let repeat_count = step.repeat.unwrap_or(0);
+            let interval = step.repeat_interval.unwrap_or(0.0);
+
+            let mut base = step.clone();
+            base.repeat = None;
+            base.repeat_interval = None;
+            out.push(base);
+
+            for i in 1..=repeat_count {
+                let mut clone = step.clone();
+                clone.time = step.time + (i as f32 * interval);
+                clone.repeat = None;
+                clone.repeat_interval = None;
+                out.push(clone);
+            }
+        }
+        out
+    }
+
     /// Create a new script with the given name and steps.
     ///
     /// Steps are sorted by `time` in ascending order and then truncated to
@@ -73,7 +95,8 @@ impl Script {
     ///
     /// # Returns
     /// `Script`.
-    pub fn new(name: impl Into<String>, mut steps: Vec<Step>) -> Self {
+    pub fn new(name: impl Into<String>, steps: Vec<Step>) -> Self {
+        let mut steps = Self::expand_repeats(steps);
         steps.sort_by(|a, b| {
             a.time
                 .partial_cmp(&b.time)
@@ -148,7 +171,8 @@ impl Script {
     /// and a `[[steps]]` array where each step has at minimum an `action`
     /// string field. Recognised step fields: `action`, `time`, `key`,
     /// `scancode`, `x`, `y`, `dx`, `dy`, `button`, `text`, `isRepeat`,
-    /// `clicks`.
+    /// `clicks`, `repeat`, `repeatInterval`, `macro`, `when`, `assert`,
+    /// `baseline`, `actual`, and `maxDiff`.
     ///
     /// Returns `Err(String)` if the TOML is malformed, if any `action` value
     /// is unrecognised, or if a step is missing the required `action` field.
@@ -205,6 +229,32 @@ impl Script {
                 .unwrap_or(false);
             step.clicks = sv
                 .get("clicks")
+                .and_then(|v| v.as_integer())
+                .map(|n| n as u32);
+            step.repeat = sv
+                .get("repeat")
+                .and_then(|v| v.as_integer())
+                .map(|n| n as u32);
+            step.repeat_interval = sv
+                .get("repeatInterval")
+                .and_then(|v| v.as_float())
+                .map(|v| v as f32);
+            step.macro_name = sv.get("macro").and_then(|v| v.as_str()).map(str::to_string);
+            step.when = sv.get("when").and_then(|v| v.as_str()).map(str::to_string);
+            step.assert = sv
+                .get("assert")
+                .and_then(|v| v.as_str())
+                .map(str::to_string);
+            step.baseline = sv
+                .get("baseline")
+                .and_then(|v| v.as_str())
+                .map(str::to_string);
+            step.actual = sv
+                .get("actual")
+                .and_then(|v| v.as_str())
+                .map(str::to_string);
+            step.max_diff = sv
+                .get("maxDiff")
                 .and_then(|v| v.as_integer())
                 .map(|n| n as u32);
             steps.push(step);

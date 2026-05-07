@@ -125,6 +125,31 @@ impl Catalog {
         self.entries.iter().filter(|e| e.kind == kind).collect()
     }
 
+    /// Returns a merged catalog where entries from `other` override duplicates.
+    ///
+    /// Duplicates are matched by `qualified_name`. Entries unique to either
+    /// catalog are preserved.
+    ///
+    /// # Parameters
+    /// - `other` - `&Catalog`.
+    ///
+    /// # Returns
+    /// `Catalog`.
+    pub fn merge(&self, other: &Catalog) -> Catalog {
+        let mut merged = self.entries.clone();
+        for entry in &other.entries {
+            if let Some(existing) = merged
+                .iter_mut()
+                .find(|candidate| candidate.qualified_name == entry.qualified_name)
+            {
+                *existing = entry.clone();
+            } else {
+                merged.push(entry.clone());
+            }
+        }
+        Catalog { entries: merged }
+    }
+
     /// Removes all entries from the catalog.
     pub fn clear(&mut self) {
         self.entries.clear();

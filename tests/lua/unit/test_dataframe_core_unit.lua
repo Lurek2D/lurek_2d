@@ -1092,12 +1092,39 @@ describe("serialization", function()
         end
     end)
 
-    -- @covers lurek.dataframe
+    -- @covers LDataFrame:toTable
     it("toTable returns array of row-tables", function()
         local df = make_test_df()
         local t = df:toTable()
         expect_equal(3, #t)
         expect_equal("Alice", t[1].name)
+    end)
+
+    -- @covers LDataFrame:rows
+    -- @covers LDataFrame:toTable
+    it("rows iterator streams index and row table in order", function()
+        local df = make_test_df()
+        local seen = {}
+        for i, row in df:rows() do
+            seen[#seen + 1] = { i = i, name = row.name }
+        end
+
+        expect_equal(3, #seen)
+        expect_equal(1, seen[1].i)
+        expect_equal("Alice", seen[1].name)
+        expect_equal(3, seen[3].i)
+        expect_equal("Charlie", seen[3].name)
+    end)
+
+    -- @covers LDataFrame:rows
+    -- @covers lurek.dataframe.newDataFrame
+    it("rows iterator returns no items for empty dataframe", function()
+        local df = lurek.dataframe.newDataFrame()
+        local count = 0
+        for _, _ in df:rows() do
+            count = count + 1
+        end
+        expect_equal(0, count)
     end)
 
     -- @covers LDataFrame:toString

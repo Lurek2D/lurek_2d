@@ -4,8 +4,8 @@
 //! Public world, body, terrain, cellular, zone, and helper behavior is covered
 //! by `tests/lua/unit/test_physics_unit.lua`.
 
-use lurek2d::physics::*;
 use lurek2d::physics::zone::ZoneTracker;
+use lurek2d::physics::*;
 use std::collections::HashSet;
 
 // ── body ──────────────────────────────────────────────────────────────────────
@@ -16,10 +16,7 @@ use std::collections::HashSet;
 
 mod collision_helpers_tests {
     use lurek2d::physics::collision_helpers::{
-        test_aabb,
-        test_circle_aabb,
-        test_circles,
-        test_point_aabb,
+        test_aabb, test_circle_aabb, test_circles, test_point_aabb,
     };
 
     #[test]

@@ -658,10 +658,7 @@ impl ImageData {
         let sw = src.width as i32;
         let sh = src.height as i32;
 
-        let fully_opaque = src
-            .pixels
-            .chunks_exact(4)
-            .all(|px| px[3] == 255);
+        let fully_opaque = src.pixels.chunks_exact(4).all(|px| px[3] == 255);
 
         if fully_opaque {
             for sy in 0..sh {

@@ -20,8 +20,8 @@ use crate::log_msg;
 use crate::math::{Mat3, Vec2};
 use crate::render::mesh::Mesh;
 use crate::render::renderer::{
-    BevelStyle, BlendMode, DrawMode, GradientDirection, HexOrientation, PathSegment,
-    ParticleRenderShape, RenderCommand, TextAlign, TextureData,
+    BevelStyle, BlendMode, DrawMode, GradientDirection, HexOrientation, ParticleRenderShape,
+    PathSegment, RenderCommand, TextAlign, TextureData,
 };
 use crate::render::shader::{Shader, ShaderFragmentInput, UniformValue};
 use crate::runtime::log_messages::{
@@ -1514,10 +1514,7 @@ impl GpuRenderer {
             }
         }
         const MARGIN: f32 = 4.0;
-        max_x >= -MARGIN
-            && min_x <= vp_w + MARGIN
-            && max_y >= -MARGIN
-            && min_y <= vp_h + MARGIN
+        max_x >= -MARGIN && min_x <= vp_w + MARGIN && max_y >= -MARGIN && min_y <= vp_h + MARGIN
     }
 
     /// Executes one complete GPU render pass, processing the full `RenderCommand` queue into the wgpu surface.
@@ -1645,8 +1642,14 @@ impl GpuRenderer {
                     // Viewport culling: skip tessellation when the rect is entirely off-screen.
                     if current_target == RenderTargetId::Screen
                         && !Self::aabb_visible_2d(
-                            *x, *y, *w, *h, t, camera_matrix,
-                            self.width as f32, self.height as f32,
+                            *x,
+                            *y,
+                            *w,
+                            *h,
+                            t,
+                            camera_matrix,
+                            self.width as f32,
+                            self.height as f32,
                         )
                     {
                         continue;
@@ -1696,8 +1699,14 @@ impl GpuRenderer {
                     // Viewport culling: skip tessellation when the rounded rect is off-screen.
                     if current_target == RenderTargetId::Screen
                         && !Self::aabb_visible_2d(
-                            *x, *y, *w, *h, t, camera_matrix,
-                            self.width as f32, self.height as f32,
+                            *x,
+                            *y,
+                            *w,
+                            *h,
+                            t,
+                            camera_matrix,
+                            self.width as f32,
+                            self.height as f32,
                         )
                     {
                         continue;
@@ -1741,8 +1750,14 @@ impl GpuRenderer {
                     // Viewport culling: skip tessellation when the circle is entirely off-screen.
                     if current_target == RenderTargetId::Screen
                         && !Self::aabb_visible_2d(
-                            x - r, y - r, r * 2.0, r * 2.0, t, camera_matrix,
-                            self.width as f32, self.height as f32,
+                            x - r,
+                            y - r,
+                            r * 2.0,
+                            r * 2.0,
+                            t,
+                            camera_matrix,
+                            self.width as f32,
+                            self.height as f32,
                         )
                     {
                         continue;
@@ -1785,8 +1800,14 @@ impl GpuRenderer {
                     // Viewport culling: skip tessellation when the ellipse is entirely off-screen.
                     if current_target == RenderTargetId::Screen
                         && !Self::aabb_visible_2d(
-                            x - rx, y - ry, rx * 2.0, ry * 2.0, t, camera_matrix,
-                            self.width as f32, self.height as f32,
+                            x - rx,
+                            y - ry,
+                            rx * 2.0,
+                            ry * 2.0,
+                            t,
+                            camera_matrix,
+                            self.width as f32,
+                            self.height as f32,
                         )
                     {
                         continue;
@@ -2103,8 +2124,14 @@ impl GpuRenderer {
                         // Viewport culling: skip tessellation when the image is entirely off-screen.
                         if current_target == RenderTargetId::Screen
                             && !Self::aabb_visible_2d(
-                                *x, *y, w, h, t, camera_matrix,
-                                self.width as f32, self.height as f32,
+                                *x,
+                                *y,
+                                w,
+                                h,
+                                t,
+                                camera_matrix,
+                                self.width as f32,
+                                self.height as f32,
                             )
                         {
                             continue;
@@ -2168,10 +2195,14 @@ impl GpuRenderer {
                         // Scale the AABB by |sx|/|sy| to account for applied scaling.
                         if current_target == RenderTargetId::Screen
                             && !Self::aabb_visible_2d(
-                                *x - *ox * sx.abs(), *y - *oy * sy.abs(),
-                                w * sx.abs(), h * sy.abs(),
-                                t, camera_matrix,
-                                self.width as f32, self.height as f32,
+                                *x - *ox * sx.abs(),
+                                *y - *oy * sy.abs(),
+                                w * sx.abs(),
+                                h * sy.abs(),
+                                t,
+                                camera_matrix,
+                                self.width as f32,
+                                self.height as f32,
                             )
                         {
                             continue;
@@ -2292,13 +2323,7 @@ impl GpuRenderer {
                         let mut verts = Vec::with_capacity(4);
                         let mut idxs = Vec::with_capacity(6);
                         push_tex_quad_corners(
-                            &mut verts,
-                            &mut idxs,
-                            t,
-                            *color,
-                            corners,
-                            uvs,
-                            corner_w,
+                            &mut verts, &mut idxs, t, *color, corners, uvs, corner_w,
                         );
                         let (target_width, target_height) =
                             self.target_dimensions(current_target, canvases);
@@ -2330,8 +2355,16 @@ impl GpuRenderer {
                             let mut verts = Vec::with_capacity(batch.len() * 4);
                             let mut idxs = Vec::with_capacity(batch.len() * 6);
                             for entry in batch.entries() {
-                                let qw = if entry.quad_w > 0.0 { entry.quad_w } else { tex_w };
-                                let qh = if entry.quad_h > 0.0 { entry.quad_h } else { tex_h };
+                                let qw = if entry.quad_w > 0.0 {
+                                    entry.quad_w
+                                } else {
+                                    tex_w
+                                };
+                                let qh = if entry.quad_h > 0.0 {
+                                    entry.quad_h
+                                } else {
+                                    tex_h
+                                };
                                 let u0 = entry.quad_x / tex_w;
                                 let v0 = entry.quad_y / tex_h;
                                 let u1 = (entry.quad_x + qw) / tex_w;
@@ -2902,24 +2935,18 @@ impl GpuRenderer {
                     let (target_width, target_height) =
                         self.target_dimensions(current_target, canvases);
                     let scissor = normalize_scissor(current_scissor, target_width, target_height);
-                    let mut pverts: Vec<ColorVertex> =
-                        Vec::with_capacity(particles.len() * 6);
+                    let mut pverts: Vec<ColorVertex> = Vec::with_capacity(particles.len() * 6);
                     let mut pidxs: Vec<u32> = Vec::with_capacity(particles.len() * 12);
                     use std::f32::consts::PI;
                     for inst in particles {
                         let color = [inst.r, inst.g, inst.b, inst.a];
                         let half = inst.size * 0.5;
                         match &inst.shape {
-                            ParticleRenderShape::Square
-                            | ParticleRenderShape::Diamond => {
+                            ParticleRenderShape::Square | ParticleRenderShape::Diamond => {
                                 let cos_r = inst.rotation.cos();
                                 let sin_r = inst.rotation.sin();
-                                let corners = [
-                                    (-half, -half),
-                                    (half, -half),
-                                    (half, half),
-                                    (-half, half),
-                                ];
+                                let corners =
+                                    [(-half, -half), (half, -half), (half, half), (-half, half)];
                                 let base = pverts.len() as u32;
                                 for (lx, ly) in corners {
                                     let (sx, sy) = apply(
@@ -2933,7 +2960,12 @@ impl GpuRenderer {
                                     });
                                 }
                                 pidxs.extend_from_slice(&[
-                                    base, base + 1, base + 2, base, base + 2, base + 3,
+                                    base,
+                                    base + 1,
+                                    base + 2,
+                                    base,
+                                    base + 2,
+                                    base + 3,
                                 ]);
                             }
                             ParticleRenderShape::Circle => {
@@ -2969,13 +3001,9 @@ impl GpuRenderer {
                             ParticleRenderShape::Triangle => {
                                 let base = pverts.len() as u32;
                                 for i in 0..3u32 {
-                                    let a = inst.rotation - PI * 0.5
-                                        + i as f32 * (2.0 * PI / 3.0);
-                                    let (sx, sy) = apply(
-                                        t,
-                                        inst.x + a.cos() * half,
-                                        inst.y + a.sin() * half,
-                                    );
+                                    let a = inst.rotation - PI * 0.5 + i as f32 * (2.0 * PI / 3.0);
+                                    let (sx, sy) =
+                                        apply(t, inst.x + a.cos() * half, inst.y + a.sin() * half);
                                     pverts.push(ColorVertex {
                                         position: [sx, sy],
                                         color,
@@ -3009,22 +3037,17 @@ impl GpuRenderer {
                                 });
                                 let mut rng = u64::from(*seed);
                                 for i in 0..n {
-                                    let base_angle = inst.rotation
-                                        + i as f32 * (2.0 * PI / n as f32);
+                                    let base_angle =
+                                        inst.rotation + i as f32 * (2.0 * PI / n as f32);
                                     rng = rng
                                         .wrapping_mul(6_364_136_223_846_793_005)
                                         .wrapping_add(1_442_695_040_888_963_407);
-                                    let jitter_a = (rng >> 33) as f32
-                                        / u32::MAX as f32
-                                        * 0.4
-                                        - 0.2;
+                                    let jitter_a = (rng >> 33) as f32 / u32::MAX as f32 * 0.4 - 0.2;
                                     rng = rng
                                         .wrapping_mul(6_364_136_223_846_793_005)
                                         .wrapping_add(1_442_695_040_888_963_407);
-                                    let jitter_r = 0.5
-                                        + (rng >> 33) as f32 / u32::MAX as f32 * 0.5;
-                                    let angle = base_angle
-                                        + jitter_a * (2.0 * PI / n as f32);
+                                    let jitter_r = 0.5 + (rng >> 33) as f32 / u32::MAX as f32 * 0.5;
+                                    let angle = base_angle + jitter_a * (2.0 * PI / n as f32);
                                     let (sx, sy) = apply(
                                         t,
                                         inst.x + angle.cos() * half * jitter_r,
@@ -3066,13 +3089,17 @@ impl GpuRenderer {
                                     });
                                 }
                                 pidxs.extend_from_slice(&[
-                                    base, base + 1, base + 2, base, base + 2, base + 3,
+                                    base,
+                                    base + 1,
+                                    base + 2,
+                                    base,
+                                    base + 2,
+                                    base + 3,
                                 ]);
                             }
                             ParticleRenderShape::Ring { thickness } => {
                                 let outer = half;
-                                let inner =
-                                    outer * (1.0 - (*thickness).clamp(0.05, 1.0));
+                                let inner = outer * (1.0 - (*thickness).clamp(0.05, 1.0));
                                 const N: usize = 20;
                                 let base = pverts.len() as u32;
                                 for i in 0..N {
@@ -3102,9 +3129,7 @@ impl GpuRenderer {
                                     let i0 = base + i * 2 + 1;
                                     let o1 = base + j * 2;
                                     let i1 = base + j * 2 + 1;
-                                    pidxs.extend_from_slice(&[
-                                        o0, o1, i0, i0, o1, i1,
-                                    ]);
+                                    pidxs.extend_from_slice(&[o0, o1, i0, i0, o1, i1]);
                                 }
                             }
                             ParticleRenderShape::Capsule => {
@@ -3132,7 +3157,12 @@ impl GpuRenderer {
                                     });
                                 }
                                 pidxs.extend_from_slice(&[
-                                    base, base + 1, base + 2, base, base + 2, base + 3,
+                                    base,
+                                    base + 1,
+                                    base + 2,
+                                    base,
+                                    base + 2,
+                                    base + 3,
                                 ]);
                                 // Half-circle caps at each end
                                 const N: usize = 8;
@@ -3188,7 +3218,6 @@ impl GpuRenderer {
                     }
                 }
                 // ── Extended RenderCommand variants ─────────────────────────
-
                 RenderCommand::DrawQuadBezier {
                     start,
                     control,
@@ -3203,10 +3232,8 @@ impl GpuRenderer {
                     for i in 1..=n {
                         let tv = i as f32 / n as f32;
                         let mt = 1.0 - tv;
-                        let nx =
-                            mt * mt * start.x + 2.0 * mt * tv * control.x + tv * tv * end.x;
-                        let ny =
-                            mt * mt * start.y + 2.0 * mt * tv * control.y + tv * tv * end.y;
+                        let nx = mt * mt * start.x + 2.0 * mt * tv * control.x + tv * tv * end.x;
+                        let ny = mt * mt * start.y + 2.0 * mt * tv * control.y + tv * tv * end.y;
                         push_thick_line(
                             &mut verts,
                             &mut idxs,
@@ -3457,12 +3484,7 @@ impl GpuRenderer {
                         GradientDirection::Radial => [*color1, *color1, *color2, *color2],
                     };
                     let t = transform_stack.last().unwrap();
-                    let corner_pts = [
-                        (*x, *y),
-                        (*x + w, *y),
-                        (*x + w, *y + h),
-                        (*x, *y + h),
-                    ];
+                    let corner_pts = [(*x, *y), (*x + w, *y), (*x + w, *y + h), (*x, *y + h)];
                     let mut verts: Vec<ColorVertex> = Vec::with_capacity(4);
                     let mut idxs: Vec<u32> = Vec::with_capacity(6);
                     let base = verts.len() as u32;
@@ -3505,8 +3527,7 @@ impl GpuRenderer {
                             DrawMode::Fill => {
                                 let base = verts.len() as u32;
                                 for i in 0..n {
-                                    let (sx, sy) =
-                                        apply(t, vertices[i * 2], vertices[i * 2 + 1]);
+                                    let (sx, sy) = apply(t, vertices[i * 2], vertices[i * 2 + 1]);
                                     verts.push(ColorVertex {
                                         position: [sx, sy],
                                         color: colors[i],
@@ -3632,8 +3653,7 @@ impl GpuRenderer {
                                 );
                             }
                         } else {
-                            let flat: Vec<f32> =
-                                corners.iter().flat_map(|v| [v.x, v.y]).collect();
+                            let flat: Vec<f32> = corners.iter().flat_map(|v| [v.x, v.y]).collect();
                             let mut cv: Vec<ColorVertex> = Vec::new();
                             let mut ci: Vec<u32> = Vec::new();
                             self.tess_polygon(
@@ -3974,19 +3994,22 @@ impl GpuRenderer {
                 // Post-FX capture and apply.
                 RenderCommand::BeginPostFx { stack_id } => {
                     if self.postfx_pipeline.is_none() {
-                        self.postfx_pipeline = Some(
-                            crate::render::postfx_pipeline::PostFxPipeline::new(
+                        self.postfx_pipeline =
+                            Some(crate::render::postfx_pipeline::PostFxPipeline::new(
                                 &self.device,
                                 self.surface_format,
-                            ),
-                        );
+                            ));
                     }
                     let (w, h) = (self.width, self.height);
                     let fmt = self.surface_format;
                     let dev = &self.device;
                     self.postfx_capture.entry(*stack_id).or_insert_with(|| {
                         crate::render::postfx_pipeline::PostFxTexture::new(
-                            dev, w, h, "postfx_capture", fmt,
+                            dev,
+                            w,
+                            h,
+                            "postfx_capture",
+                            fmt,
                         )
                     });
                 }

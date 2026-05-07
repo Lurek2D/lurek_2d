@@ -3,8 +3,8 @@
 //! [`PostFxStack`] manages an ordered chain of effects that captures and
 //! processes the rendered scene each frame.
 
-use crate::runtime::log_messages::{FX01, FX02};
 use crate::log_msg;
+use crate::runtime::log_messages::{FX01, FX02};
 /// An ordered chain of effects that captures and processes the rendered scene.
 ///
 /// The full lifecycle every draw frame is:
@@ -321,7 +321,16 @@ impl PostFxStack {
             };
 
             // Box background
-            img.draw_rect(bx as i32, box_y as i32, box_w, box_h, r / 3, g / 3, b / 3, 200);
+            img.draw_rect(
+                bx as i32,
+                box_y as i32,
+                box_w,
+                box_h,
+                r / 3,
+                g / 3,
+                b / 3,
+                200,
+            );
             // Top/bottom borders
             img.draw_rect(bx as i32, box_y as i32, box_w, 2, r, g, b, 255);
             img.draw_rect(
@@ -398,7 +407,16 @@ impl PostFxStack {
             } else {
                 (200u8, 80u8, 80u8)
             };
-            img.draw_rect(10, y, (width - 20).min(300), 18, cr / 5, cg / 5, cb / 5, 255);
+            img.draw_rect(
+                10,
+                y,
+                (width - 20).min(300),
+                18,
+                cr / 5,
+                cg / 5,
+                cb / 5,
+                255,
+            );
             let label = labels.get(i).copied().unwrap_or("FX");
             let text = format!("{} - {}", label, if enabled { "ON" } else { "OFF" });
             img.draw_label(&text, 14, y + 4, cr, cg, cb);
@@ -442,9 +460,14 @@ impl PostFxStack {
             let px = col * cell_w;
             let py = 20 + row * cell_h;
             img.draw_rect(
-                (px + 2) as i32, (py + 2) as i32,
-                cell_w - 4, cell_h - 4,
-                cr / 5, cg / 5, cb / 5, 200,
+                (px + 2) as i32,
+                (py + 2) as i32,
+                cell_w - 4,
+                cell_h - 4,
+                cr / 5,
+                cg / 5,
+                cb / 5,
+                200,
             );
             img.draw_label(label, (px + 4) as i32, (py + 4) as i32, cr, cg, cb);
         }
@@ -512,9 +535,20 @@ impl PostFxStack {
     ) -> crate::image::ImageData {
         let mut img = crate::image::ImageData::new(width, height);
         img.fill(25, 25, 35, 255);
-        img.draw_label("POSTFX EFFECT TYPES", (width / 2).saturating_sub(60) as i32, 4, 200, 180, 255);
+        img.draw_label(
+            "POSTFX EFFECT TYPES",
+            (width / 2).saturating_sub(60) as i32,
+            4,
+            200,
+            180,
+            255,
+        );
 
-        let row_h = if entries.is_empty() { height } else { (height - 20) / entries.len() as u32 };
+        let row_h = if entries.is_empty() {
+            height
+        } else {
+            (height - 20) / entries.len() as u32
+        };
 
         for (i, &(label, (cr, cg, cb), param_count)) in entries.iter().enumerate() {
             let y_base = (20 + i as u32 * row_h) as i32;
@@ -550,8 +584,14 @@ impl PostFxStack {
         height: u32,
     ) -> crate::image::ImageData {
         let palette: &[(u8, u8, u8)] = &[
-            (180, 80, 80), (80, 180, 80), (80, 80, 180), (180, 180, 80),
-            (180, 80, 180), (80, 180, 180), (200, 130, 60), (130, 60, 200),
+            (180, 80, 80),
+            (80, 180, 80),
+            (80, 80, 180),
+            (180, 180, 80),
+            (180, 80, 180),
+            (80, 180, 180),
+            (200, 130, 60),
+            (130, 60, 200),
         ];
         let entries: Vec<(&str, (u8, u8, u8), usize)> = types
             .iter()
@@ -591,7 +631,6 @@ impl PostFxStack {
             .collect();
         Self::draw_effect_type_bars_to_image(&entries, width, height)
     }
-
 }
 
 #[cfg(test)]

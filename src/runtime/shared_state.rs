@@ -13,8 +13,8 @@ use std::path::PathBuf;
 use std::rc::Weak;
 use std::sync::Arc;
 
-use slotmap::SlotMap;
 use slotmap::Key as SlotmapKey;
+use slotmap::SlotMap;
 use winit::window::Window;
 
 use crate::audio::midi::MidiState;
@@ -23,8 +23,7 @@ use crate::camera::Camera;
 use crate::event::EventQueue;
 use crate::filesystem::GameFS;
 use crate::input::{
-    GamepadMappings, GamepadState, GamepadVibrationRequest, KeyboardState, MouseState,
-    TouchState,
+    GamepadMappings, GamepadState, GamepadVibrationRequest, KeyboardState, MouseState, TouchState,
 };
 use crate::light::LightWorld;
 use crate::parallax::ParallaxLayer;
@@ -234,6 +233,57 @@ pub struct ScreenshotRequest {
     pub path: String,
 }
 
+/// Per-frame callback timing snapshot recorded by the app loop.
+///
+/// All values are wall-clock milliseconds measured on the CPU for the most
+/// recently completed frame.
+#[derive(Debug, Clone, Copy, Default)]
+pub struct FrameProfile {
+    /// `process_physics` callback total time for the frame.
+    pub process_physics_ms: f32,
+    /// `fixedUpdate` callback total time for the frame.
+    pub fixed_update_ms: f32,
+    /// `process(dt)` callback time for the frame.
+    pub process_ms: f32,
+    /// `process_late(dt)` callback time for the frame.
+    pub process_late_ms: f32,
+    /// `draw()` callback time for the frame.
+    pub draw_ms: f32,
+    /// `draw_ui()` callback time for the frame.
+    pub draw_ui_ms: f32,
+    /// Sum of all callback buckets above.
+    pub callback_total_ms: f32,
+}
+
+/// Resource-memory accounting snapshot.
+///
+/// Memory values are approximate byte counts used for budget tracking and
+/// diagnostics. Texture and canvas counts are exact by descriptor size; shader
+/// and font values are based on in-memory source/atlas payloads.
+#[derive(Debug, Clone, Copy, Default)]
+pub struct ResourceMemoryStats {
+    /// Estimated bytes consumed by loaded textures.
+    pub texture_bytes: u64,
+    /// Estimated bytes consumed by loaded font atlases.
+    pub font_bytes: u64,
+    /// Estimated bytes consumed by loaded canvases.
+    pub canvas_bytes: u64,
+    /// Estimated bytes consumed by shader source + uniform maps.
+    pub shader_bytes: u64,
+    /// Sum of all tracked resource bytes.
+    pub total_bytes: u64,
+    /// Configured texture/resource budget (`0` means unlimited).
+    pub budget_bytes: u64,
+    /// Number of loaded textures.
+    pub texture_count: u64,
+    /// Number of loaded fonts.
+    pub font_count: u64,
+    /// Number of loaded canvases.
+    pub canvas_count: u64,
+    /// Number of loaded shaders.
+    pub shader_count: u64,
+}
+
 /// Shared mutable state passed via `Rc<RefCell<SharedState>>` to all Lua API closures and the engine loop.
 ///
 /// # Fields
@@ -426,8 +476,12 @@ pub struct SharedState {
     /// evicts the least-recently-used textures during the next `step_timer` tick.
     /// Set via `lurek.runtime.setResourceBudget`.
     pub resource_budget_bytes: u64,
+    /// Callback timing snapshot for the most recently completed frame.
+    pub frame_profile: FrameProfile,
     /// Monotonically increasing frame counter.  Incremented once per tick in `step_timer`.
     pub frame_counter: u64,
+    /// Monotonic revision that increments after each successful conf.toml hot-reload.
+    pub config_reload_revision: u64,
     /// Maps each live `TextureKey` to the frame on which it was last drawn.
     ///
     /// Updated by the render loop whenever a texture command is submitted.
@@ -529,7 +583,9 @@ impl SharedState {
             auto_ui_ctx: None,
             raycaster_output: None,
             resource_budget_bytes: 0,
+            frame_profile: FrameProfile::default(),
             frame_counter: 0,
+            config_reload_revision: 0,
             texture_last_used: HashMap::new(),
             province_registries: HashMap::new(),
             active_province_registry: None,
@@ -614,15 +670,48 @@ impl SharedState {
     /// Returns a summary of resident resource memory usage.
     ///
     /// # Returns
-    /// `(texture_bytes: u64, budget_bytes: u64)` — Resident texture memory and configured budget.
+    /// [`ResourceMemoryStats`] with per-kind byte estimates and object counts.
     /// A `budget_bytes` of `0` means unlimited.
-    pub fn resource_memory_stats(&self) -> (u64, u64) {
+    pub fn resource_memory_stats(&self) -> ResourceMemoryStats {
         let texture_bytes: u64 = self
             .textures
             .values()
             .map(|t| (t.width as u64) * (t.height as u64) * 4)
             .sum();
-        (texture_bytes, self.resource_budget_bytes)
+        let font_bytes: u64 = self
+            .fonts
+            .values()
+            .map(|font| font.atlas_data().0.len() as u64)
+            .sum();
+        let canvas_bytes: u64 = self
+            .canvases
+            .values()
+            .map(|canvas| (canvas.width as u64) * (canvas.height as u64) * 4)
+            .sum();
+        let shader_bytes: u64 = self
+            .shaders
+            .values()
+            .map(|shader| {
+                let src = shader.source.len() as u64;
+                let wrapper = shader.wrapper_source.len() as u64;
+                let uniforms_overhead = (shader.uniforms.len() as u64) * 32;
+                src + wrapper + uniforms_overhead
+            })
+            .sum();
+        let total_bytes = texture_bytes + font_bytes + canvas_bytes + shader_bytes;
+
+        ResourceMemoryStats {
+            texture_bytes,
+            font_bytes,
+            canvas_bytes,
+            shader_bytes,
+            total_bytes,
+            budget_bytes: self.resource_budget_bytes,
+            texture_count: self.textures.len() as u64,
+            font_count: self.fonts.len() as u64,
+            canvas_count: self.canvases.len() as u64,
+            shader_count: self.shaders.len() as u64,
+        }
     }
 
     /// Submits a background file-read request, lazily creating the async loader.

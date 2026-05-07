@@ -318,9 +318,10 @@ fn draw_bt_image(
         BTNode::Selector { .. } | BTNode::Sequence { .. } | BTNode::Parallel { .. } => {
             (80u8, 120, 200)
         }
-        BTNode::Inverter { .. } | BTNode::Repeater { .. } | BTNode::Succeeder { .. } | BTNode::Guard { .. } => {
-            (200, 140, 60)
-        }
+        BTNode::Inverter { .. }
+        | BTNode::Repeater { .. }
+        | BTNode::Succeeder { .. }
+        | BTNode::Guard { .. } => (200, 140, 60),
         BTNode::Action { .. } | BTNode::Condition { .. } => (80, 200, 80),
     };
     img.draw_rect(

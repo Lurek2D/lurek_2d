@@ -1,4 +1,4 @@
-﻿//! `lurek.automation` - Automated input simulation via timed step scripts.
+//! `lurek.automation` - Automated input simulation via timed step scripts.
 
 use super::SharedState;
 use mlua::prelude::*;
@@ -26,7 +26,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @return | nil | No value is returned.
     let sim = simulator.clone();
     // Auto-doc: Lua API binding.
-    tbl.set("load", lua.create_function(move |_, (name, data): (String, LuaTable)| {
+    tbl.set(
+        "load",
+        lua.create_function(move |_, (name, data): (String, LuaTable)| {
             let steps_table: LuaTable = data.get::<_, LuaTable>("steps").map_err(|_| {
                 LuaError::external("simulator.load: data table must have a 'steps' array")
             })?;
@@ -49,7 +51,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @return | boolean | True when the script existed and was removed.
     let sim = simulator.clone();
     // Auto-doc: Lua API binding.
-    tbl.set("unload", lua.create_function(move |_, name: String| Ok(sim.borrow_mut().unload(&name)))?,
+    tbl.set(
+        "unload",
+        lua.create_function(move |_, name: String| Ok(sim.borrow_mut().unload(&name)))?,
     )?;
 
     // -- hasScript --
@@ -58,7 +62,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @return | boolean | True when the script is registered.
     let sim = simulator.clone();
     // Auto-doc: Lua API binding.
-    tbl.set("hasScript", lua.create_function(move |_, name: String| Ok(sim.borrow().has_script(&name)))?,
+    tbl.set(
+        "hasScript",
+        lua.create_function(move |_, name: String| Ok(sim.borrow().has_script(&name)))?,
     )?;
 
     // -- getScripts --
@@ -66,7 +72,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @return | table | Array of registered script names.
     let sim = simulator.clone();
     // Auto-doc: Lua API binding.
-    tbl.set("getScripts", lua.create_function(move |_, ()| Ok(sim.borrow().get_scripts()))?,
+    tbl.set(
+        "getScripts",
+        lua.create_function(move |_, ()| Ok(sim.borrow().get_scripts()))?,
     )?;
 
     // -- start --
@@ -75,7 +83,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @return | nil | No value is returned.
     let sim = simulator.clone();
     // Auto-doc: Lua API binding.
-    tbl.set("start", lua.create_function(move |_, name: String| {
+    tbl.set(
+        "start",
+        lua.create_function(move |_, name: String| {
             sim.borrow_mut().start(&name).map_err(LuaError::external)
         })?,
     )?;
@@ -85,7 +95,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @return | nil | No value is returned.
     let sim = simulator.clone();
     // Auto-doc: Lua API binding.
-    tbl.set("stop", lua.create_function(move |_, ()| {
+    tbl.set(
+        "stop",
+        lua.create_function(move |_, ()| {
             sim.borrow_mut().stop();
             Ok(())
         })?,
@@ -96,7 +108,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @return | nil | No value is returned.
     let sim = simulator.clone();
     // Auto-doc: Lua API binding.
-    tbl.set("pause", lua.create_function(move |_, ()| {
+    tbl.set(
+        "pause",
+        lua.create_function(move |_, ()| {
             sim.borrow_mut().pause();
             Ok(())
         })?,
@@ -107,7 +121,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @return | nil | No value is returned.
     let sim = simulator.clone();
     // Auto-doc: Lua API binding.
-    tbl.set("resume", lua.create_function(move |_, ()| {
+    tbl.set(
+        "resume",
+        lua.create_function(move |_, ()| {
             sim.borrow_mut().resume();
             Ok(())
         })?,
@@ -121,7 +137,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     let s = state.clone();
     let ws = wait_state.clone();
     // Auto-doc: Lua API binding.
-    tbl.set("update", lua.create_function(move |lua, dt: f32| {
+    tbl.set(
+        "update",
+        lua.create_function(move |lua, dt: f32| {
             // Handle waitUntil gate - poll predicate before advancing.
             if ws.borrow().is_some() {
                 let (resolved, timed_out) = {
@@ -154,7 +172,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @return | boolean | True when a script is currently playing.
     let sim = simulator.clone();
     // Auto-doc: Lua API binding.
-    tbl.set("isRunning", lua.create_function(move |_, ()| Ok(sim.borrow().is_running()))?,
+    tbl.set(
+        "isRunning",
+        lua.create_function(move |_, ()| Ok(sim.borrow().is_running()))?,
     )?;
 
     // -- isPaused --
@@ -162,7 +182,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @return | boolean | True when playback is paused.
     let sim = simulator.clone();
     // Auto-doc: Lua API binding.
-    tbl.set("isPaused", lua.create_function(move |_, ()| Ok(sim.borrow().is_paused()))?,
+    tbl.set(
+        "isPaused",
+        lua.create_function(move |_, ()| Ok(sim.borrow().is_paused()))?,
     )?;
 
     // -- isComplete --
@@ -170,7 +192,55 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @return | boolean | True when the active script has finished.
     let sim = simulator.clone();
     // Auto-doc: Lua API binding.
-    tbl.set("isComplete", lua.create_function(move |_, ()| Ok(sim.borrow().is_complete()))?,
+    tbl.set(
+        "isComplete",
+        lua.create_function(move |_, ()| Ok(sim.borrow().is_complete()))?,
+    )?;
+
+    // -- isFailed --
+    /// Returns true if playback stopped because an assertion failed.
+    /// @return | boolean | True when simulator state is failed.
+    let sim = simulator.clone();
+    // Auto-doc: Lua API binding.
+    tbl.set(
+        "isFailed",
+        lua.create_function(move |_, ()| Ok(sim.borrow().is_failed()))?,
+    )?;
+
+    // -- getLastError --
+    /// Returns the last simulator failure string, or nil if none.
+    /// @return | string? | Last assertion or visual assertion error.
+    let sim = simulator.clone();
+    // Auto-doc: Lua API binding.
+    tbl.set(
+        "getLastError",
+        lua.create_function(move |_, ()| Ok(sim.borrow().last_error().map(|s| s.to_string())))?,
+    )?;
+
+    // -- setCondition --
+    /// Sets a named boolean condition used by `when` and `assert` step fields.
+    /// @param | name | string | Condition name.
+    /// @param | value | boolean | Condition value.
+    /// @return | nil | No value is returned.
+    let sim = simulator.clone();
+    // Auto-doc: Lua API binding.
+    tbl.set(
+        "setCondition",
+        lua.create_function(move |_, (name, value): (String, bool)| {
+            sim.borrow_mut().set_condition(name, value);
+            Ok(())
+        })?,
+    )?;
+
+    // -- getCondition --
+    /// Returns a condition value by name, or nil when unset.
+    /// @param | name | string | Condition name.
+    /// @return | boolean? | Condition value.
+    let sim = simulator.clone();
+    // Auto-doc: Lua API binding.
+    tbl.set(
+        "getCondition",
+        lua.create_function(move |_, name: String| Ok(sim.borrow().get_condition(&name)))?,
     )?;
 
     // -- getCurrentStep --
@@ -178,7 +248,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @return | integer | Zero-based step index.
     let sim = simulator.clone();
     // Auto-doc: Lua API binding.
-    tbl.set("getCurrentStep", lua.create_function(move |_, ()| Ok(sim.borrow().current_step()))?,
+    tbl.set(
+        "getCurrentStep",
+        lua.create_function(move |_, ()| Ok(sim.borrow().current_step()))?,
     )?;
 
     // -- getStepCount --
@@ -186,7 +258,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @return | integer | Total number of steps.
     let sim = simulator.clone();
     // Auto-doc: Lua API binding.
-    tbl.set("getStepCount", lua.create_function(move |_, ()| Ok(sim.borrow().step_count()))?,
+    tbl.set(
+        "getStepCount",
+        lua.create_function(move |_, ()| Ok(sim.borrow().step_count()))?,
     )?;
 
     // -- getCurrentScript --
@@ -194,7 +268,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @return | string | Active script name.
     let sim = simulator.clone();
     // Auto-doc: Lua API binding.
-    tbl.set("getCurrentScript", lua.create_function(move |_, ()| Ok(sim.borrow().current_script().map(|s| s.to_string())))?,
+    tbl.set(
+        "getCurrentScript",
+        lua.create_function(move |_, ()| Ok(sim.borrow().current_script().map(|s| s.to_string())))?,
     )?;
 
     // -- getElapsedTime --
@@ -202,7 +278,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @return | number | Elapsed playback time in seconds.
     let sim = simulator.clone();
     // Auto-doc: Lua API binding.
-    tbl.set("getElapsedTime", lua.create_function(move |_, ()| Ok(sim.borrow().elapsed_time()))?,
+    tbl.set(
+        "getElapsedTime",
+        lua.create_function(move |_, ()| Ok(sim.borrow().elapsed_time()))?,
     )?;
 
     // -- loadFromToml --
@@ -212,7 +290,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @return | nil | No value is returned.
     let sim = simulator.clone();
     // Auto-doc: Lua API binding.
-    tbl.set("loadFromToml", lua.create_function(move |_, (name, toml_str): (String, String)| {
+    tbl.set(
+        "loadFromToml",
+        lua.create_function(move |_, (name, toml_str): (String, String)| {
             let script = Script::from_toml(&name, &toml_str)
                 .map_err(|e| LuaError::external(format!("loadFromToml: {e}")))?;
             sim.borrow_mut().load(script);
@@ -226,7 +306,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @return | integer | Step limit value.
     let sim = simulator.clone();
     // Auto-doc: Lua API binding.
-    tbl.set("getStepLimit", lua.create_function(move |_, name: String| {
+    tbl.set(
+        "getStepLimit",
+        lua.create_function(move |_, name: String| {
             Ok(sim.borrow().get_script_step_limit(&name).map(|v| v as u64))
         })?,
     )?;
@@ -238,7 +320,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @return | boolean | True when the script was found and updated.
     let sim = simulator.clone();
     // Auto-doc: Lua API binding.
-    tbl.set("setStepLimit", lua.create_function(move |_, (name, n): (String, u64)| {
+    tbl.set(
+        "setStepLimit",
+        lua.create_function(move |_, (name, n): (String, u64)| {
             Ok(sim.borrow_mut().set_script_step_limit(&name, n as usize))
         })?,
     )?;
@@ -250,7 +334,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @return | nil | No value is returned.
     let sim = simulator.clone();
     // Auto-doc: Lua API binding.
-    tbl.set("saveMacro", lua.create_function(move |_, (macro_name, script_name): (String, String)| {
+    tbl.set(
+        "saveMacro",
+        lua.create_function(move |_, (macro_name, script_name): (String, String)| {
             let script = sim.borrow().get_script(&script_name).ok_or_else(|| {
                 LuaError::external(format!("saveMacro: script '{}' not found", script_name))
             })?;
@@ -265,7 +351,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @return | nil | No value is returned.
     let sim = simulator.clone();
     // Auto-doc: Lua API binding.
-    tbl.set("playMacro", lua.create_function(move |_, name: String| {
+    tbl.set(
+        "playMacro",
+        lua.create_function(move |_, name: String| {
             sim.borrow_mut()
                 .play_macro(&name)
                 .map_err(LuaError::external)
@@ -278,7 +366,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @return | boolean | True when the macro exists.
     let sim = simulator.clone();
     // Auto-doc: Lua API binding.
-    tbl.set("hasMacro", lua.create_function(move |_, name: String| Ok(sim.borrow().has_macro(&name)))?,
+    tbl.set(
+        "hasMacro",
+        lua.create_function(move |_, name: String| Ok(sim.borrow().has_macro(&name)))?,
     )?;
 
     // -- listMacros --
@@ -286,7 +376,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @return | table | Array of saved macro names.
     let sim = simulator.clone();
     // Auto-doc: Lua API binding.
-    tbl.set("listMacros", lua.create_function(move |_, ()| Ok(sim.borrow().list_macros()))?,
+    tbl.set(
+        "listMacros",
+        lua.create_function(move |_, ()| Ok(sim.borrow().list_macros()))?,
     )?;
 
     // -- setPlaybackSpeed --
@@ -295,7 +387,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @return | nil | No value is returned.
     let sim = simulator.clone();
     // Auto-doc: Lua API binding.
-    tbl.set("setPlaybackSpeed", lua.create_function(move |_, factor: f32| {
+    tbl.set(
+        "setPlaybackSpeed",
+        lua.create_function(move |_, factor: f32| {
             sim.borrow_mut().set_playback_speed(factor);
             Ok(())
         })?,
@@ -306,7 +400,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @return | number | Current playback speed multiplier.
     let sim = simulator.clone();
     // Auto-doc: Lua API binding.
-    tbl.set("getPlaybackSpeed", lua.create_function(move |_, ()| Ok(sim.borrow().get_playback_speed()))?,
+    tbl.set(
+        "getPlaybackSpeed",
+        lua.create_function(move |_, ()| Ok(sim.borrow().get_playback_speed()))?,
     )?;
 
     // -- setHighlightMode --
@@ -315,7 +411,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @return | nil | No value is returned.
     let sim = simulator.clone();
     // Auto-doc: Lua API binding.
-    tbl.set("setHighlightMode", lua.create_function(move |_, enable: bool| {
+    tbl.set(
+        "setHighlightMode",
+        lua.create_function(move |_, enable: bool| {
             sim.borrow_mut().set_highlight_mode(enable);
             Ok(())
         })?,
@@ -326,7 +424,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @return | boolean | True when highlight mode is enabled.
     let sim = simulator.clone();
     // Auto-doc: Lua API binding.
-    tbl.set("isHighlightMode", lua.create_function(move |_, ()| Ok(sim.borrow().is_highlight_mode()))?,
+    tbl.set(
+        "isHighlightMode",
+        lua.create_function(move |_, ()| Ok(sim.borrow().is_highlight_mode()))?,
     )?;
 
     // -- waitUntil --
@@ -336,7 +436,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @return | nil | No value is returned.
     let ws = wait_state.clone();
     // Auto-doc: Lua API binding.
-    tbl.set("waitUntil", lua.create_function(move |lua, (predicate, timeout): (LuaFunction, f32)| {
+    tbl.set(
+        "waitUntil",
+        lua.create_function(move |lua, (predicate, timeout): (LuaFunction, f32)| {
             let key = lua.create_registry_value(predicate)?;
             *ws.borrow_mut() = Some((key, timeout.max(0.0), 0.0));
             Ok(())
@@ -361,7 +463,7 @@ impl Step {
             })?;
             let action = Action::parse_action(&action_str).ok_or_else(|| {
                 LuaError::external(format!(
-                    "simulator.load: unknown action '{}' \u{2014} expected one of: keypress, keyrelease, mousemove, mousepress, mouserelease, mousewheel, textinput, wait",
+                    "simulator.load: unknown action '{}' \u{2014} expected one of: keypress, keyrelease, mousemove, mousepress, mouserelease, mousewheel, textinput, wait, repeat, callmacro, assert, visualassert",
                     action_str
                 ))
             })?;
@@ -377,6 +479,14 @@ impl Step {
             step.text = entry.get::<_, Option<String>>("text")?;
             step.is_repeat = entry.get::<_, Option<bool>>("isRepeat")?.unwrap_or(false);
             step.clicks = entry.get::<_, Option<u32>>("clicks")?;
+            step.repeat = entry.get::<_, Option<u32>>("repeat")?;
+            step.repeat_interval = entry.get::<_, Option<f32>>("repeatInterval")?;
+            step.macro_name = entry.get::<_, Option<String>>("macro")?;
+            step.when = entry.get::<_, Option<String>>("when")?;
+            step.assert = entry.get::<_, Option<String>>("assert")?;
+            step.baseline = entry.get::<_, Option<String>>("baseline")?;
+            step.actual = entry.get::<_, Option<String>>("actual")?;
+            step.max_diff = entry.get::<_, Option<u32>>("maxDiff")?;
             steps.push(step);
         }
         Ok(steps)

@@ -412,6 +412,19 @@
 --   end
 -- end
 
+--@api-stub: LDataFrame:rows
+-- Returns a streaming row iterator `(row_index, row_table)`.
+-- Prefer this for large tables when you want sequential processing without full toTable materialization.
+-- if false then -- DataFrame:rows
+--   local df = lurek.dataframe.fromTable({
+--     {name = "Alice", hp = 80},
+--     {name = "Bob", hp = 50},
+--   })
+--   for i, row in df:rows() do
+--     lurek.log.info("#" .. i .. " " .. row.name .. " hp=" .. row.hp)
+--   end
+-- end
+
 --@api-stub: LDataFrame:toString
 -- Returns a formatted string table representation.
 -- Pretty-printed table â€” drop straight into the log or an in-game console.

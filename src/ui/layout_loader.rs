@@ -549,8 +549,7 @@ fn fill_rect(
                 continue;
             }
             let dst_a = 255u32 - src_a;
-            pixels[off] =
-                ((color[0] as u32 * src_a + pixels[off] as u32 * dst_a) / 255) as u8;
+            pixels[off] = ((color[0] as u32 * src_a + pixels[off] as u32 * dst_a) / 255) as u8;
             pixels[off + 1] =
                 ((color[1] as u32 * src_a + pixels[off + 1] as u32 * dst_a) / 255) as u8;
             pixels[off + 2] =
@@ -559,5 +558,3 @@ fn fill_rect(
         }
     }
 }
-
-

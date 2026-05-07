@@ -6,15 +6,15 @@
 //! TileWalker internals, and tileset/mapgen behavior not yet asserted as
 //! strongly through Lua.
 
-use lurek2d::tilemap::*;
+use lurek2d::math::rect::Rect;
+use lurek2d::math::Color;
+use lurek2d::render::renderer::{DrawMode, RenderCommand};
+use lurek2d::tilemap::ldtk::load_ldtk;
+use lurek2d::tilemap::polygon_map::PolygonMap;
+use lurek2d::tilemap::tile_walker::{Facing, TileWalker};
 use lurek2d::tilemap::tilemap::TileMap;
 use lurek2d::tilemap::tileset::TileSet;
-use lurek2d::tilemap::polygon_map::PolygonMap;
-use lurek2d::tilemap::ldtk::load_ldtk;
-use lurek2d::tilemap::tile_walker::{TileWalker, Facing};
-use lurek2d::render::renderer::{DrawMode, RenderCommand};
-use lurek2d::math::Color;
-use lurek2d::math::rect::Rect;
+use lurek2d::tilemap::*;
 
 // ── tmx ───────────────────────────────────────────────────────────────────────
 
@@ -97,8 +97,14 @@ mod tileset_tests {
         assert!(ts.get_animation(0).is_none());
 
         let frames = vec![
-            TileAnimFrame { tile_id: 0, duration_ms: 100.0 },
-            TileAnimFrame { tile_id: 1, duration_ms: 200.0 },
+            TileAnimFrame {
+                tile_id: 0,
+                duration_ms: 100.0,
+            },
+            TileAnimFrame {
+                tile_id: 1,
+                duration_ms: 200.0,
+            },
         ];
         ts.set_animation(0, frames);
         let anim = ts.get_animation(0).expect("animation 0 exists");
@@ -123,7 +129,6 @@ mod tileset_tests {
         assert_eq!(ts.get_auto_tile_id_8("wall", 0b10101010), Some(7));
         assert_eq!(ts.get_auto_tile_id_8("wall", 0b00000000), None);
     }
-
 }
 
 // ── render ────────────────────────────────────────────────────────────────────
@@ -152,9 +157,20 @@ mod render_tests {
         let cmds = m.generate_render_commands(0.0, 0.0, 0.0, 0.0, f32::MAX, f32::MAX);
         let rects = cmds
             .iter()
-            .filter(|c| matches!(c, RenderCommand::Rectangle { mode: DrawMode::Fill, .. }))
+            .filter(|c| {
+                matches!(
+                    c,
+                    RenderCommand::Rectangle {
+                        mode: DrawMode::Fill,
+                        ..
+                    }
+                )
+            })
             .count();
-        assert!(rects >= 2, "expected at least 2 fill rectangles, got {rects}");
+        assert!(
+            rects >= 2,
+            "expected at least 2 fill rectangles, got {rects}"
+        );
     }
 
     #[test]
@@ -166,7 +182,10 @@ mod render_tests {
             .iter()
             .filter(|c| matches!(c, RenderCommand::Rectangle { .. }))
             .count();
-        assert_eq!(rects, 0, "hidden layer should produce no rectangle commands");
+        assert_eq!(
+            rects, 0,
+            "hidden layer should produce no rectangle commands"
+        );
     }
 
     #[test]
@@ -270,7 +289,10 @@ mod mapgen_tests {
         let mut group = MapGroup::new("test");
         group.add_script(MapScript::new("gen1"));
         assert_eq!(group.get_script_count(), 1);
-        assert_eq!(group.get_script(0).expect("script 0 exists").get_name(), "gen1");
+        assert_eq!(
+            group.get_script(0).expect("script 0 exists").get_name(),
+            "gen1"
+        );
     }
 
     #[test]
@@ -283,9 +305,14 @@ mod mapgen_tests {
     #[test]
     fn step_type_roundtrip() {
         let types = [
-            StepType::FillRandom, StepType::PlaceBlock, StepType::PlaceRandom,
-            StepType::PlaceLine, StepType::FloodFill, StepType::FillArea,
-            StepType::DrawPath, StepType::FillRect,
+            StepType::FillRandom,
+            StepType::PlaceBlock,
+            StepType::PlaceRandom,
+            StepType::PlaceLine,
+            StepType::FloodFill,
+            StepType::FillArea,
+            StepType::DrawPath,
+            StepType::FillRect,
         ];
         for st in &types {
             let s = st.as_str();
@@ -318,12 +345,21 @@ mod mapgen_tests {
             ..ScriptStep::default()
         });
         assert_eq!(script.get_step_count(), 2);
-        assert_eq!(script.get_step(0).expect("step 0 exists").step_type, StepType::FillRandom);
-        assert_eq!(script.get_step(1).expect("step 1 exists").step_type, StepType::PlaceBlock);
+        assert_eq!(
+            script.get_step(0).expect("step 0 exists").step_type,
+            StepType::FillRandom
+        );
+        assert_eq!(
+            script.get_step(1).expect("step 1 exists").step_type,
+            StepType::PlaceBlock
+        );
 
         script.remove_step(0);
         assert_eq!(script.get_step_count(), 1);
-        assert_eq!(script.get_step(0).expect("step 0 exists").step_type, StepType::PlaceBlock);
+        assert_eq!(
+            script.get_step(0).expect("step 0 exists").step_type,
+            StepType::PlaceBlock
+        );
 
         script.clear_steps();
         assert_eq!(script.get_step_count(), 0);
@@ -802,7 +838,9 @@ mod chunk_tests {
         let mut m = ChunkMap::new(4);
         m.set_tile(1, 2, 5);
         let (cx, cy) = m.tile_to_chunk(1, 2);
-        let slice = m.iter_chunk(cx, cy).expect("cx/cy in bounds for chunk iteration");
+        let slice = m
+            .iter_chunk(cx, cy)
+            .expect("cx/cy in bounds for chunk iteration");
         assert_eq!(slice.len(), 16);
     }
 
@@ -817,7 +855,7 @@ mod chunk_tests {
 
 mod autotile_sheet_tests {
     use super::*;
-    use lurek2d::tilemap::autotile_sheet::{AutoTileSheet, AutoTileLayout};
+    use lurek2d::tilemap::autotile_sheet::{AutoTileLayout, AutoTileSheet};
 
     #[test]
     fn creation_blob47() {
@@ -844,9 +882,18 @@ mod autotile_sheet_tests {
 
     #[test]
     fn tile_count_per_layout() {
-        assert_eq!(AutoTileSheet::new(16, 16, AutoTileLayout::Blob47).get_tile_count(), 47);
-        assert_eq!(AutoTileSheet::new(16, 16, AutoTileLayout::Composite48).get_tile_count(), 48);
-        assert_eq!(AutoTileSheet::new(16, 16, AutoTileLayout::Minimal16).get_tile_count(), 16);
+        assert_eq!(
+            AutoTileSheet::new(16, 16, AutoTileLayout::Blob47).get_tile_count(),
+            47
+        );
+        assert_eq!(
+            AutoTileSheet::new(16, 16, AutoTileLayout::Composite48).get_tile_count(),
+            48
+        );
+        assert_eq!(
+            AutoTileSheet::new(16, 16, AutoTileLayout::Minimal16).get_tile_count(),
+            16
+        );
     }
 
     #[test]

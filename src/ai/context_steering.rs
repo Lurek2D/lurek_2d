@@ -224,7 +224,13 @@ impl ContextSteering {
     /// - `jitter` — `f32`.
     /// - `weight` — `f32`.
     pub fn add_wander(&mut self, jitter: f32, weight: f32) {
-        self.add_interest(ContextBehaviorKind::Wander { angle: self.wander_angle, jitter }, weight);
+        self.add_interest(
+            ContextBehaviorKind::Wander {
+                angle: self.wander_angle,
+                jitter,
+            },
+            weight,
+        );
     }
 
     /// Adds an `AvoidPoint` danger behavior.
@@ -247,8 +253,25 @@ impl ContextSteering {
     /// - `max_y` — `f32`.
     /// - `margin` — `f32`.
     /// - `weight` — `f32`.
-    pub fn add_avoid_bounds(&mut self, min_x: f32, min_y: f32, max_x: f32, max_y: f32, margin: f32, weight: f32) {
-        self.add_danger(ContextBehaviorKind::AvoidBounds { min_x, min_y, max_x, max_y, margin }, weight);
+    pub fn add_avoid_bounds(
+        &mut self,
+        min_x: f32,
+        min_y: f32,
+        max_x: f32,
+        max_y: f32,
+        margin: f32,
+        weight: f32,
+    ) {
+        self.add_danger(
+            ContextBehaviorKind::AvoidBounds {
+                min_x,
+                min_y,
+                max_x,
+                max_y,
+                margin,
+            },
+            weight,
+        );
     }
 
     /// Clears all behaviors, resetting the evaluator to a blank state.
@@ -271,8 +294,12 @@ impl ContextSteering {
     /// `(f32, f32)`.
     pub fn evaluate(&mut self, ax: f32, ay: f32, vx: f32, vy: f32) -> (f32, f32) {
         // Reset rings
-        for v in &mut self.interest { *v = 0.0; }
-        for v in &mut self.danger   { *v = 0.0; }
+        for v in &mut self.interest {
+            *v = 0.0;
+        }
+        for v in &mut self.danger {
+            *v = 0.0;
+        }
 
         let n = self.slot_count;
         let slot_angle = TAU / n as f32;
@@ -281,8 +308,14 @@ impl ContextSteering {
         let behaviors: Vec<ContextBehavior> = self.behaviors.clone();
 
         for b in &behaviors {
-            if !b.enabled { continue; }
-            let ring = if b.is_interest { &mut self.interest } else { &mut self.danger };
+            if !b.enabled {
+                continue;
+            }
+            let ring = if b.is_interest {
+                &mut self.interest
+            } else {
+                &mut self.danger
+            };
             match &b.kind {
                 ContextBehaviorKind::SeekTarget { x, y } => {
                     let dx = x - ax;
@@ -309,12 +342,50 @@ impl ContextSteering {
                 ContextBehaviorKind::Direction { angle } => {
                     fill_cone(ring, *angle, slot_angle, b.weight, n);
                 }
-                ContextBehaviorKind::AvoidBounds { min_x, min_y, max_x, max_y, margin } => {
+                ContextBehaviorKind::AvoidBounds {
+                    min_x,
+                    min_y,
+                    max_x,
+                    max_y,
+                    margin,
+                } => {
                     // Write danger for slots pointing toward nearby bounds
-                    if ax - min_x < *margin { fill_cone(ring, 0.0,          slot_angle, b.weight * (1.0 - (ax - min_x) / margin).clamp(0.0, 1.0), n); }
-                    if max_x - ax < *margin { fill_cone(ring, PI,           slot_angle, b.weight * (1.0 - (max_x - ax) / margin).clamp(0.0, 1.0), n); }
-                    if ay - min_y < *margin { fill_cone(ring, PI / 2.0,    slot_angle, b.weight * (1.0 - (ay - min_y) / margin).clamp(0.0, 1.0), n); }
-                    if max_y - ay < *margin { fill_cone(ring, -PI / 2.0,   slot_angle, b.weight * (1.0 - (max_y - ay) / margin).clamp(0.0, 1.0), n); }
+                    if ax - min_x < *margin {
+                        fill_cone(
+                            ring,
+                            0.0,
+                            slot_angle,
+                            b.weight * (1.0 - (ax - min_x) / margin).clamp(0.0, 1.0),
+                            n,
+                        );
+                    }
+                    if max_x - ax < *margin {
+                        fill_cone(
+                            ring,
+                            PI,
+                            slot_angle,
+                            b.weight * (1.0 - (max_x - ax) / margin).clamp(0.0, 1.0),
+                            n,
+                        );
+                    }
+                    if ay - min_y < *margin {
+                        fill_cone(
+                            ring,
+                            PI / 2.0,
+                            slot_angle,
+                            b.weight * (1.0 - (ay - min_y) / margin).clamp(0.0, 1.0),
+                            n,
+                        );
+                    }
+                    if max_y - ay < *margin {
+                        fill_cone(
+                            ring,
+                            -PI / 2.0,
+                            slot_angle,
+                            b.weight * (1.0 - (max_y - ay) / margin).clamp(0.0, 1.0),
+                            n,
+                        );
+                    }
                 }
             }
         }
@@ -323,7 +394,11 @@ impl ContextSteering {
         let mut best_idx = 0;
         let mut best_val = f32::NEG_INFINITY;
         for i in 0..n {
-            self.result[i] = if self.danger[i] > self.interest[i] { 0.0 } else { self.interest[i] - self.danger[i] };
+            self.result[i] = if self.danger[i] > self.interest[i] {
+                0.0
+            } else {
+                self.interest[i] - self.danger[i]
+            };
             if self.result[i] > best_val {
                 best_val = self.result[i];
                 best_idx = i;
@@ -345,25 +420,33 @@ impl ContextSteering {
     ///
     /// # Returns
     /// `f32`.
-    pub fn chosen_direction(&self) -> f32 { self.chosen_dir }
+    pub fn chosen_direction(&self) -> f32 {
+        self.chosen_dir
+    }
 
     /// Returns the chosen magnitude (net interest score) from the last `evaluate` call.
     ///
     /// # Returns
     /// `f32`.
-    pub fn chosen_magnitude(&self) -> f32 { self.chosen_magnitude }
+    pub fn chosen_magnitude(&self) -> f32 {
+        self.chosen_magnitude
+    }
 
     /// Returns a copy of the current interest ring values.
     ///
     /// # Returns
     /// `Vec<f32>`.
-    pub fn interest_map(&self) -> Vec<f32> { self.interest.clone() }
+    pub fn interest_map(&self) -> Vec<f32> {
+        self.interest.clone()
+    }
 
     /// Returns a copy of the current danger ring values.
     ///
     /// # Returns
     /// `Vec<f32>`.
-    pub fn danger_map(&self) -> Vec<f32> { self.danger.clone() }
+    pub fn danger_map(&self) -> Vec<f32> {
+        self.danger.clone()
+    }
 }
 
 // ────────────────────────────────────────────────────────────────────────────
@@ -388,8 +471,12 @@ fn fill_cone(ring: &mut [f32], target_angle: f32, slot_angle: f32, weight: f32, 
 /// Normalised angular difference in `(-π, π]`.
 fn angle_diff_f32(a: f32, b: f32) -> f32 {
     let mut d = a - b;
-    while d > PI  { d -= TAU; }
-    while d <= -PI { d += TAU; }
+    while d > PI {
+        d -= TAU;
+    }
+    while d <= -PI {
+        d += TAU;
+    }
     d
 }
 

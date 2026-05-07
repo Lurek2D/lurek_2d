@@ -71,4 +71,3 @@ mod render_tests {
         );
     }
 }
-

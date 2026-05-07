@@ -35,7 +35,6 @@
 //! rows are processed bottom-to-top.  This ensures no two threads write to the
 //! same cell simultaneously.
 
-
 // ── CellType ──────────────────────────────────────────────────────────────────
 
 /// The material type of a single cell in a [`CellularWorld`].

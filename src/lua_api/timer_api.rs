@@ -1,4 +1,4 @@
-﻿//! `lurek.timer` - Frame timing, FPS tracking, and scheduled Lua callbacks.
+//! `lurek.timer` - Frame timing, FPS tracking, and scheduled Lua callbacks.
 
 use super::SharedState;
 use mlua::prelude::*;
@@ -74,7 +74,9 @@ impl LuaUserData for LuaScheduler {
         /// @param | delay | number | Delay in seconds.
         /// @param | callback | function | Callback function.
         /// @return | integer | Scheduled event ID.
-        methods.add_method_mut("afterNamed", |lua, this, (name, delay, func): (String, f64, LuaFunction)| {
+        methods.add_method_mut(
+            "afterNamed",
+            |lua, this, (name, delay, func): (String, f64, LuaFunction)| {
                 if let Some(old_id) = this.named_ids.remove(&name) {
                     this.scheduler.cancel(old_id);
                     Self::remove_callback(lua, &mut this.callbacks, old_id)?;
@@ -93,7 +95,9 @@ impl LuaUserData for LuaScheduler {
         /// @param | callback | function | Callback function.
         /// @param | count | integer? | Optional repeat count; defaults to infinite.
         /// @return | integer | Scheduled event ID.
-        methods.add_method_mut("every", |lua, this, (interval, func, count): (f64, LuaFunction, Option<i32>)| {
+        methods.add_method_mut(
+            "every",
+            |lua, this, (interval, func, count): (f64, LuaFunction, Option<i32>)| {
                 let key = lua.create_registry_value(func)?;
                 let id = this.scheduler.every(interval, count.unwrap_or(-1));
                 this.callbacks.insert(id, key);
@@ -107,7 +111,9 @@ impl LuaUserData for LuaScheduler {
         /// @param | func | function | Callback function.
         /// @param | count | integer? | Optional repeat count; defaults to infinite.
         /// @return | integer | Scheduled event ID.
-        methods.add_method_mut("everyFrames", |lua, this, (n, func, count): (u64, LuaFunction, Option<i32>)| {
+        methods.add_method_mut(
+            "everyFrames",
+            |lua, this, (n, func, count): (u64, LuaFunction, Option<i32>)| {
                 let key = lua.create_registry_value(func)?;
                 let id = this.scheduler.every_frames(n, count.unwrap_or(-1));
                 this.callbacks.insert(id, key);
@@ -122,7 +128,9 @@ impl LuaUserData for LuaScheduler {
         /// @param | callback | function | Callback function.
         /// @param | count | integer? | Optional repeat count; defaults to infinite.
         /// @return | integer | Scheduled event ID.
-        methods.add_method_mut("everyNamed", |lua, this, (name, interval, func, count): (String, f64, LuaFunction, Option<i32>)| {
+        methods.add_method_mut(
+            "everyNamed",
+            |lua, this, (name, interval, func, count): (String, f64, LuaFunction, Option<i32>)| {
                 if let Some(old_id) = this.named_ids.remove(&name) {
                     this.scheduler.cancel(old_id);
                     Self::remove_callback(lua, &mut this.callbacks, old_id)?;
@@ -382,7 +390,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @return | number | Delta time in seconds for the current frame
     let s = state.clone();
     // Auto-doc: Lua API binding.
-    tbl.set("getDelta", lua.create_function(move |_, ()| Ok(s.borrow().delta_time))?,
+    tbl.set(
+        "getDelta",
+        lua.create_function(move |_, ()| Ok(s.borrow().delta_time))?,
     )?;
 
     // -- getFPS --
@@ -390,7 +400,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @return | number | The current FPS value
     let s = state.clone();
     // Auto-doc: Lua API binding.
-    tbl.set("getFPS", lua.create_function(move |_, ()| Ok(s.borrow().fps))?,
+    tbl.set(
+        "getFPS",
+        lua.create_function(move |_, ()| Ok(s.borrow().fps))?,
     )?;
 
     // -- getTime --
@@ -398,7 +410,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @return | number | Total elapsed seconds since engine start
     let s = state.clone();
     // Auto-doc: Lua API binding.
-    tbl.set("getTime", lua.create_function(move |_, ()| Ok(s.borrow().total_time))?,
+    tbl.set(
+        "getTime",
+        lua.create_function(move |_, ()| Ok(s.borrow().total_time))?,
     )?;
 
     // -- getAverageDelta --
@@ -406,7 +420,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @return | number | Rolling average delta time in seconds
     let s = state.clone();
     // Auto-doc: Lua API binding.
-    tbl.set("getAverageDelta", lua.create_function(move |_, ()| Ok(s.borrow().clock.average_delta()))?,
+    tbl.set(
+        "getAverageDelta",
+        lua.create_function(move |_, ()| Ok(s.borrow().clock.average_delta()))?,
     )?;
 
     // -- getFrameCount --
@@ -414,7 +430,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @return | integer | Total frame count since engine start
     let s = state.clone();
     // Auto-doc: Lua API binding.
-    tbl.set("getFrameCount", lua.create_function(move |_, ()| Ok(s.borrow().clock.frame_count()))?,
+    tbl.set(
+        "getFrameCount",
+        lua.create_function(move |_, ()| Ok(s.borrow().clock.frame_count()))?,
     )?;
 
     // -- step --
@@ -422,7 +440,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @return | number | The delta time for the stepped frame
     let s = state.clone();
     // Auto-doc: Lua API binding.
-    tbl.set("step", lua.create_function(move |_, ()| Ok(s.borrow_mut().step_timer()))?,
+    tbl.set(
+        "step",
+        lua.create_function(move |_, ()| Ok(s.borrow_mut().step_timer()))?,
     )?;
 
     // -- getMicroTime --
@@ -430,7 +450,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @return | number | High-resolution elapsed seconds
     let s = state.clone();
     // Auto-doc: Lua API binding.
-    tbl.set("getMicroTime", lua.create_function(move |_, ()| Ok(s.borrow().clock.elapsed()))?,
+    tbl.set(
+        "getMicroTime",
+        lua.create_function(move |_, ()| Ok(s.borrow().clock.elapsed()))?,
     )?;
 
     // -- getPhysicsDelta --
@@ -438,7 +460,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @return | number | The fixed physics timestep in seconds
     let s = state.clone();
     // Auto-doc: Lua API binding.
-    tbl.set("getPhysicsDelta", lua.create_function(move |_, ()| Ok(s.borrow().physics_fixed_dt))?,
+    tbl.set(
+        "getPhysicsDelta",
+        lua.create_function(move |_, ()| Ok(s.borrow().physics_fixed_dt))?,
     )?;
 
     // -- setPhysicsDelta --
@@ -447,7 +471,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @return | nil | No return value.
     let s = state.clone();
     // Auto-doc: Lua API binding.
-    tbl.set("setPhysicsDelta", lua.create_function(move |_, dt: f64| {
+    tbl.set(
+        "setPhysicsDelta",
+        lua.create_function(move |_, dt: f64| {
             let clamped = dt.clamp(1.0 / 240.0, 1.0 / 10.0);
             s.borrow_mut().physics_fixed_dt = clamped;
             Ok(())
@@ -459,7 +485,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @return | integer | The maximum physics sub-steps per frame
     let s = state.clone();
     // Auto-doc: Lua API binding.
-    tbl.set("getPhysicsMaxSteps", lua.create_function(move |_, ()| Ok(s.borrow().physics_max_steps))?,
+    tbl.set(
+        "getPhysicsMaxSteps",
+        lua.create_function(move |_, ()| Ok(s.borrow().physics_max_steps))?,
     )?;
 
     // -- setPhysicsMaxSteps --
@@ -468,7 +496,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @return | nil | No return value.
     let s = state.clone();
     // Auto-doc: Lua API binding.
-    tbl.set("setPhysicsMaxSteps", lua.create_function(move |_, n: u32| {
+    tbl.set(
+        "setPhysicsMaxSteps",
+        lua.create_function(move |_, n: u32| {
             s.borrow_mut().physics_max_steps = n.clamp(1, 64);
             Ok(())
         })?,
@@ -478,7 +508,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// Blocks the current thread for the specified number of seconds using an OS-level sleep.
     /// @param | seconds | number | Duration to sleep in seconds
     /// @return | nil | No return value.
-    tbl.set("sleep", lua.create_function(|_, seconds: f64| {
+    tbl.set(
+        "sleep",
+        lua.create_function(|_, seconds: f64| {
             crate::timer::sleep(seconds);
             Ok(())
         })?,
@@ -487,14 +519,18 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     // -- newScheduler --
     /// Creates and returns a new independent Scheduler userdata object for managing timed and frame-based callbacks.
     /// @return | LScheduler | A new scheduler instance
-    tbl.set("newScheduler", lua.create_function(|lua, ()| lua.create_userdata(LuaScheduler::new()))?,
+    tbl.set(
+        "newScheduler",
+        lua.create_function(|lua, ()| lua.create_userdata(LuaScheduler::new()))?,
     )?;
 
     // -- chain --
     /// Creates a new Scheduler pre-loaded with a sequence of one-shot callbacks that fire in order with cumulative delays.
     /// @param | steps | table | Array of {delay: number, func: function} entries
     /// @return | LScheduler | A new scheduler pre-loaded with the chained callbacks
-    tbl.set("chain", lua.create_function(|lua, steps: LuaTable| {
+    tbl.set(
+        "chain",
+        lua.create_function(|lua, steps: LuaTable| {
             let mut sched = LuaScheduler::new();
             let mut accumulated: f64 = 0.0;
             let len = steps.raw_len();
@@ -524,7 +560,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @return | nil | No return value.
     let rt = real_timers.clone();
     // Auto-doc: Lua API binding.
-    tbl.set("afterReal", lua.create_function(move |lua, (delay, func): (f64, LuaFunction)| {
+    tbl.set(
+        "afterReal",
+        lua.create_function(move |lua, (delay, func): (f64, LuaFunction)| {
             let deadline =
                 std::time::Instant::now() + std::time::Duration::from_secs_f64(delay.max(0.0));
             let key = lua.create_registry_value(func)?;
@@ -538,7 +576,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @return | integer | The number of real-time callbacks that fired
     let rt = real_timers;
     // Auto-doc: Lua API binding.
-    tbl.set("tickRealTimers", lua.create_function(move |lua, ()| {
+    tbl.set(
+        "tickRealTimers",
+        lua.create_function(move |lua, ()| {
             let now = std::time::Instant::now();
             let mut timers = rt.borrow_mut();
             let mut fired = 0u32;
@@ -569,7 +609,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @return | nil | No return value.
     let sa = smooth_alpha.clone();
     // Auto-doc: Lua API binding.
-    tbl.set("setSmoothingFactor", lua.create_function(move |_, alpha: f64| {
+    tbl.set(
+        "setSmoothingFactor",
+        lua.create_function(move |_, alpha: f64| {
             *sa.borrow_mut() = alpha.clamp(0.01, 1.0);
             Ok(())
         })?,
@@ -582,7 +624,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     let smoothed_ref = smoothed.clone();
     let alpha_ref = smooth_alpha.clone();
     // Auto-doc: Lua API binding.
-    tbl.set("getSmoothedDelta", lua.create_function(move |_, ()| {
+    tbl.set(
+        "getSmoothedDelta",
+        lua.create_function(move |_, ()| {
             let dt = s.borrow().delta_time;
             let alpha = *alpha_ref.borrow();
             let mut sm = smoothed_ref.borrow_mut();
@@ -610,7 +654,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @return | nil | No return value.
     let ws = wait_secs.clone();
     // Auto-doc: Lua API binding.
-    tbl.set("waitSeconds", lua.create_function(move |lua, seconds: f64| {
+    tbl.set(
+        "waitSeconds",
+        lua.create_function(move |lua, seconds: f64| {
             let deadline =
                 std::time::Instant::now() + std::time::Duration::from_secs_f64(seconds.max(0.0));
             let co_tbl: LuaTable = lua.globals().get("coroutine")?;
@@ -636,7 +682,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     let wf = wait_frames.clone();
     let s_wf = state.clone();
     // Auto-doc: Lua API binding.
-    tbl.set("waitFrames", lua.create_function(move |lua, frames: u64| {
+    tbl.set(
+        "waitFrames",
+        lua.create_function(move |lua, frames: u64| {
             let target = s_wf.borrow().clock.frame_count() + frames;
             let co_tbl: LuaTable = lua.globals().get("coroutine")?;
             let running_fn: LuaFunction = co_tbl.get("running")?;
@@ -661,7 +709,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     let wf_tick = wait_frames;
     let s_tick = state.clone();
     // Auto-doc: Lua API binding.
-    tbl.set("tickWaits", lua.create_function(move |lua, ()| {
+    tbl.set(
+        "tickWaits",
+        lua.create_function(move |lua, ()| {
             let now = std::time::Instant::now();
             let current_frame = s_tick.borrow().clock.frame_count();
             let mut resumed = 0u32;

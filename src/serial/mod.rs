@@ -25,12 +25,12 @@ pub mod toml;
 pub mod xml;
 // pub mod yaml; // YAML removed: use TOML instead (design-assumption B-05). serde_yml dep dropped.
 
+pub use codec::{
+    decode_bytes, decode_text, detect_format, encode, DecodeOptions, EncodeOptions, EncodedValue,
+    SerialFormat,
+};
 pub use csv::{from_csv, from_csv_reader, to_csv, CsvOptions};
 pub use ini::from_ini;
-pub use codec::{
-	decode_bytes, decode_text, detect_format, encode, DecodeOptions, EncodeOptions, EncodedValue,
-	SerialFormat,
-};
 pub use json::{from_json, to_json};
 pub use lua_table::SerialValue;
 pub use msgpack::{decode as from_msgpack, encode as to_msgpack};

@@ -32,8 +32,8 @@
 use std::cmp::Ordering;
 use std::collections::{BinaryHeap, HashMap};
 
-use crate::runtime::log_messages::{GP01, GP02, GP03};
 use crate::log_msg;
+use crate::runtime::log_messages::{GP01, GP02, GP03};
 use mlua::RegistryKey;
 
 /// A single GOAP action with boolean preconditions and effects.

@@ -110,7 +110,9 @@ impl ColumnStore {
             ColumnStore::Bool { validity, .. } => validity,
             ColumnStore::Text { validity, .. } => validity,
         };
-        validity.as_ref().is_none_or(|v| *v.get(i).unwrap_or(&false))
+        validity
+            .as_ref()
+            .is_none_or(|v| *v.get(i).unwrap_or(&false))
     }
 
     /// Collect valid (non-null) f64 values from a Float64 column.
@@ -801,24 +803,16 @@ impl VecFrame {
             ReduceOp::Count => Some(vals.len() as f64),
             ReduceOp::Sum => Some(vals.iter().sum()),
             ReduceOp::Mean => Some(vals.iter().sum::<f64>() / vals.len() as f64),
-            ReduceOp::Min => vals
-                .iter()
-                .cloned()
-                .reduce(f64::min),
-            ReduceOp::Max => vals
-                .iter()
-                .cloned()
-                .reduce(f64::max),
+            ReduceOp::Min => vals.iter().cloned().reduce(f64::min),
+            ReduceOp::Max => vals.iter().cloned().reduce(f64::max),
             ReduceOp::Var => {
                 let mean = vals.iter().sum::<f64>() / vals.len() as f64;
-                let var = vals.iter().map(|x| (x - mean).powi(2)).sum::<f64>()
-                    / vals.len() as f64;
+                let var = vals.iter().map(|x| (x - mean).powi(2)).sum::<f64>() / vals.len() as f64;
                 Some(var)
             }
             ReduceOp::Std => {
                 let mean = vals.iter().sum::<f64>() / vals.len() as f64;
-                let var = vals.iter().map(|x| (x - mean).powi(2)).sum::<f64>()
-                    / vals.len() as f64;
+                let var = vals.iter().map(|x| (x - mean).powi(2)).sum::<f64>() / vals.len() as f64;
                 Some(var.sqrt())
             }
         };
@@ -997,8 +991,7 @@ impl VecFrame {
     /// `Result<(), String>`.
     pub fn par_scalar_op(&mut self, cols: &[&str], op: ScalarOp, val: f64) -> Result<(), String> {
         // Collect indices; validate first so we don't partially mutate on error.
-        let indices: Result<Vec<usize>, String> =
-            cols.iter().map(|c| self.resolve(c)).collect();
+        let indices: Result<Vec<usize>, String> = cols.iter().map(|c| self.resolve(c)).collect();
         let indices = indices?;
 
         // Parallel mutable access: split columns into indexed slices.
@@ -1064,11 +1057,7 @@ fn infer_column(cells: &[CellValue]) -> ColumnStore {
     if has_bool && !has_num && !has_text {
         // Bool column
         let mut data = Vec::with_capacity(n);
-        let mut validity = if has_nil {
-            Some(vec![true; n])
-        } else {
-            None
-        };
+        let mut validity = if has_nil { Some(vec![true; n]) } else { None };
         for (i, c) in cells.iter().enumerate() {
             match c {
                 CellValue::Bool(b) => data.push(*b),
@@ -1085,11 +1074,7 @@ fn infer_column(cells: &[CellValue]) -> ColumnStore {
     } else if has_text && !has_num && !has_bool {
         // Text column
         let mut data = Vec::with_capacity(n);
-        let mut validity = if has_nil {
-            Some(vec![true; n])
-        } else {
-            None
-        };
+        let mut validity = if has_nil { Some(vec![true; n]) } else { None };
         for (i, c) in cells.iter().enumerate() {
             match c {
                 CellValue::Text(s) => data.push(s.clone()),

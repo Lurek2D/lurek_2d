@@ -1133,4 +1133,254 @@ describe("ecs strict: LUniverse release/spawnBulk/type/typeOf", function()
     end)
 end)
 
+-- @describe queryMulti
+describe("queryMulti", function()
+    -- @covers LUniverse:queryMulti
+    -- @covers LUniverse:set
+    -- @covers LUniverse:spawn
+    -- @covers lurek.ecs.newUniverse
+    it("calls callback with id and component values for matching entities", function()
+        local w = lurek.ecs.newUniverse()
+        local a = w:spawn()
+        local b = w:spawn()
+        local c = w:spawn()
+        w:set(a, "pos", {x=1, y=2})
+        w:set(a, "vel", {x=3, y=4})
+        w:set(b, "pos", {x=5, y=6})   -- no vel
+        w:set(c, "pos", {x=7, y=8})
+        w:set(c, "vel", {x=9, y=10})
+
+        local ids_seen = {}
+        local sum_x = 0
+        w:queryMulti({"pos", "vel"}, function(id, p, v)
+            table.insert(ids_seen, id)
+            sum_x = sum_x + p.x + v.x
+        end)
+
+        expect_equal(2, #ids_seen)
+        expect_equal(1+3+7+9, sum_x)
+    end)
+
+    -- @covers LUniverse:queryMulti
+    -- @covers LUniverse:spawn
+    -- @covers lurek.ecs.newUniverse
+    it("calls callback zero times when no entity matches all components", function()
+        local w = lurek.ecs.newUniverse()
+        local e = w:spawn()
+        w:set(e, "pos", {x=0, y=0})
+
+        local count = 0
+        w:queryMulti({"pos", "vel"}, function() count = count + 1 end)
+        expect_equal(0, count)
+    end)
+
+    -- @covers LUniverse:queryMulti
+    -- @covers lurek.ecs.newUniverse
+    it("empty names list calls callback zero times", function()
+        local w = lurek.ecs.newUniverse()
+        w:spawn()
+        local count = 0
+        w:queryMulti({}, function() count = count + 1 end)
+        expect_equal(0, count)
+    end)
+end)
+
+-- @describe getDirtyEntities
+describe("getDirtyEntities", function()
+    -- @covers LUniverse:getDirtyEntities
+    -- @covers LUniverse:set
+    -- @covers LUniverse:spawn
+    -- @covers lurek.ecs.newUniverse
+    it("tracks entities whose components were changed", function()
+        local w = lurek.ecs.newUniverse()
+        local e1 = w:spawn()
+        local e2 = w:spawn()
+        local e3 = w:spawn()
+
+        w:set(e1, "hp", 10)
+        w:set(e3, "speed", 5)
+
+        local dirty = w:getDirtyEntities()
+        expect_equal(2, #dirty)
+
+        -- Check the entity IDs are in the returned table
+        local found_e1, found_e3 = false, false
+        for _, id in ipairs(dirty) do
+            if id == e1 then found_e1 = true end
+            if id == e3 then found_e3 = true end
+        end
+        expect_true(found_e1, "e1 should be dirty")
+        expect_true(found_e3, "e3 should be dirty")
+    end)
+
+    -- @covers LUniverse:getDirtyEntities
+    -- @covers LUniverse:flushObservers
+    -- @covers LUniverse:set
+    -- @covers LUniverse:spawn
+    -- @covers lurek.ecs.newUniverse
+    it("dirty set is cleared after flushObservers", function()
+        local w = lurek.ecs.newUniverse()
+        local e = w:spawn()
+        w:set(e, "hp", 10)
+        expect_equal(1, #w:getDirtyEntities())
+        w:flushObservers()
+        expect_equal(0, #w:getDirtyEntities())
+    end)
+
+    -- @covers LUniverse:getDirtyEntities
+    -- @covers LUniverse:remove
+    -- @covers LUniverse:set
+    -- @covers LUniverse:spawn
+    -- @covers lurek.ecs.newUniverse
+    it("removing a component marks entity as dirty", function()
+        local w = lurek.ecs.newUniverse()
+        local e = w:spawn()
+        w:set(e, "hp", 100)
+        w:flushObservers()
+        w:remove(e, "hp")
+        local dirty = w:getDirtyEntities()
+        local found = false
+        for _, id in ipairs(dirty) do
+            if id == e then found = true end
+        end
+        expect_true(found, "entity with removed component should be dirty")
+    end)
+end)
+
+-- @describe system phases
+describe("system phases", function()
+    -- @covers LUniverse:addSystem
+    -- @covers LUniverse:update
+    -- @covers LUniverse:updatePhase
+    -- @covers lurek.ecs.newUniverse
+    it("update() only runs systems in the update phase", function()
+        local w = lurek.ecs.newUniverse()
+        local update_ran = false
+        local pre_ran = false
+
+        local UpdateSys = { update = function(self, world, dt) update_ran = true end }
+        local PreSys    = { update = function(self, world, dt) pre_ran  = true end }
+
+        w:addSystem(UpdateSys, {phase = "update"})
+        w:addSystem(PreSys,    {phase = "pre_update"})
+
+        w:update(0.016)
+
+        expect_true(update_ran, "update phase system should have run")
+        expect_false(pre_ran,   "pre_update system should not run on world:update()")
+    end)
+
+    -- @covers LUniverse:addSystem
+    -- @covers LUniverse:updatePhase
+    -- @covers lurek.ecs.newUniverse
+    it("updatePhase runs only systems in the named phase", function()
+        local w = lurek.ecs.newUniverse()
+        local order = {}
+
+        local PreSys    = { update = function() table.insert(order, "pre")  end }
+        local UpdateSys = { update = function() table.insert(order, "tick") end }
+        local PostSys   = { update = function() table.insert(order, "post") end }
+
+        w:addSystem(PreSys,    {phase = "pre_update"})
+        w:addSystem(UpdateSys, {phase = "update"})
+        w:addSystem(PostSys,   {phase = "post_update"})
+
+        w:updatePhase("pre_update",  0.016)
+        w:updatePhase("update",      0.016)
+        w:updatePhase("post_update", 0.016)
+
+        expect_equal("pre",  order[1])
+        expect_equal("tick", order[2])
+        expect_equal("post", order[3])
+    end)
+
+    -- @covers LUniverse:addSystem
+    -- @covers LUniverse:update
+    -- @covers lurek.ecs.newUniverse
+    it("system without explicit phase defaults to update phase", function()
+        local w = lurek.ecs.newUniverse()
+        local ran = false
+        local Sys = { update = function() ran = true end }
+        w:addSystem(Sys)  -- no phase option
+        w:update(0.016)
+        expect_true(ran, "default-phase system should run on world:update()")
+    end)
+
+    -- @covers LUniverse:addSystem
+    -- @covers LUniverse:emit
+    -- @covers lurek.ecs.newUniverse
+    it("emit dispatches to all systems regardless of phase", function()
+        local w = lurek.ecs.newUniverse()
+        local count = 0
+        local SysA = { onEvent = function() count = count + 1 end }
+        local SysB = { onEvent = function() count = count + 1 end }
+        w:addSystem(SysA, {phase = "pre_update"})
+        w:addSystem(SysB, {phase = "post_update"})
+        w:emit("onEvent")
+        expect_equal(2, count)
+    end)
+
+    -- @covers LUniverse:addSystem
+    -- @covers LUniverse:render
+    -- @covers lurek.ecs.newUniverse
+    it("render() only runs systems in the render phase", function()
+        local w = lurek.ecs.newUniverse()
+        local render_ran = false
+        local update_ran = false
+
+        local RenderSys = { render = function() render_ran = true end }
+        local UpdateSys = { render = function() update_ran = true end }
+
+        w:addSystem(RenderSys, {phase = "render"})
+        w:addSystem(UpdateSys, {phase = "update"})
+
+        w:render()
+
+        expect_true(render_ran,  "render-phase system should have run")
+        expect_false(update_ran, "update-phase system should not run on world:render()")
+    end)
+end)
+
+-- @describe snapshot and applySnapshot
+describe("snapshot and applySnapshot", function()
+    -- @covers LUniverse:applySnapshot
+    -- @covers LUniverse:get
+    -- @covers LUniverse:getEntityCount
+    -- @covers LUniverse:set
+    -- @covers LUniverse:snapshot
+    -- @covers LUniverse:spawn
+    -- @covers lurek.ecs.newUniverse
+    it("snapshot / applySnapshot round-trips entity state", function()
+        local w = lurek.ecs.newUniverse()
+        local e = w:spawn()
+        w:set(e, "score", 99)
+
+        local snap = w:snapshot()
+        expect_equal("table", type(snap))
+
+        w:clear()
+        expect_equal(0, w:getEntityCount())
+
+        w:applySnapshot(snap)
+        expect_equal(1, w:getEntityCount())
+        local ids = w:getEntities()
+        expect_equal(99, w:get(ids[1], "score"))
+    end)
+
+    -- @covers LUniverse:applySnapshot
+    -- @covers LUniverse:snapshot
+    -- @covers LUniverse:spawn
+    -- @covers lurek.ecs.newUniverse
+    it("snapshot captures string tags", function()
+        local w = lurek.ecs.newUniverse()
+        local e = w:spawn()
+        w:addTag(e, "hero")
+
+        local snap = w:snapshot()
+        w:clear()
+        w:applySnapshot(snap)
+        expect_true(w:hasTag(w:getEntities()[1], "hero"))
+    end)
+end)
+
 test_summary()

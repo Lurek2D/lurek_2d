@@ -149,6 +149,37 @@ pub struct DataFrame {
     pub(crate) data: Vec<Vec<CellValue>>,
 }
 
+/// Borrowing row iterator for [`DataFrame`].
+///
+/// Yields one row at a time as a vector of `(column_name, cell_ref)` pairs,
+/// avoiding full-table materialization.
+pub struct DataFrameRowIter<'a> {
+    df: &'a DataFrame,
+    next_row: usize,
+}
+
+impl<'a> Iterator for DataFrameRowIter<'a> {
+    type Item = Vec<(&'a str, &'a CellValue)>;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        if self.next_row >= self.df.nrows() {
+            return None;
+        }
+
+        let row_index = self.next_row;
+        self.next_row += 1;
+
+        let row = self
+            .df
+            .column_names
+            .iter()
+            .enumerate()
+            .map(|(ci, name)| (name.as_str(), &self.df.data[ci][row_index]))
+            .collect();
+        Some(row)
+    }
+}
+
 /// Named catalog of DataFrames.
 ///
 /// # Fields
@@ -372,6 +403,20 @@ impl DataFrame {
             .collect())
     }
 
+    /// Iterate rows lazily as borrowed `(column_name, cell)` pairs.
+    ///
+    /// This avoids creating a full row-table copy for the entire DataFrame and
+    /// is intended for streaming consumers.
+    ///
+    /// # Returns
+    /// `DataFrameRowIter<'_>`.
+    pub fn iter_rows(&self) -> DataFrameRowIter<'_> {
+        DataFrameRowIter {
+            df: self,
+            next_row: 0,
+        }
+    }
+
     /// Get a single cell value (0-based row, ColRef for column).
     ///
     /// # Parameters
@@ -461,7 +506,9 @@ impl DataFrame {
             if rows.is_empty() {
                 return Ok(Self::new());
             }
-            return Err("from_rows: column_names cannot be empty when rows are provided".to_string());
+            return Err(
+                "from_rows: column_names cannot be empty when rows are provided".to_string(),
+            );
         }
 
         for (i, row) in rows.iter().enumerate() {

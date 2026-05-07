@@ -347,8 +347,16 @@ mod mesh_tests {
     #[test]
     fn from_vertices_preserves_data() {
         let verts = vec![
-            MeshVertex { x: 10.0, y: 20.0, ..Default::default() },
-            MeshVertex { x: 30.0, y: 40.0, ..Default::default() },
+            MeshVertex {
+                x: 10.0,
+                y: 20.0,
+                ..Default::default()
+            },
+            MeshVertex {
+                x: 30.0,
+                y: 40.0,
+                ..Default::default()
+            },
         ];
         let m = Mesh::from_vertices(verts, MeshDrawMode::Fan);
         assert_eq!(m.vertex_count(), 2);
@@ -370,7 +378,14 @@ mod mesh_tests {
     #[test]
     fn set_vertex_updates_position() {
         let mut m = Mesh::new(2, MeshDrawMode::Triangles);
-        m.set_vertex(1, MeshVertex { x: 99.0, y: 88.0, ..Default::default() });
+        m.set_vertex(
+            1,
+            MeshVertex {
+                x: 99.0,
+                y: 88.0,
+                ..Default::default()
+            },
+        );
         assert_eq!(m.get_vertex(1).unwrap().x, 99.0);
     }
 
@@ -490,7 +505,10 @@ mod shape_tests {
     fn clone_produces_independent_copy() {
         let mut original = CompoundShape::new();
         original.push_command(ShapeCommand::Line {
-            x1: 0.0, y1: 0.0, x2: 10.0, y2: 10.0,
+            x1: 0.0,
+            y1: 0.0,
+            x2: 10.0,
+            y2: 10.0,
         });
         let mut cloned = original.clone();
         cloned.push_command(ShapeCommand::SetColor(1.0, 0.0, 0.0, 1.0));

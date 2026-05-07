@@ -28,7 +28,7 @@
 /// - `MouseWheel` â€” Simulate a mouse wheel scroll (`"wheelmoved"` dispatch).
 /// - `TextInput` â€” Simulate raw text input (`"textinput"` dispatch).
 /// - `Wait` â€” No-op pause; just a timed delay with no event dispatched.
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Action {
     /// Simulate a key press event (`"keypressed"` dispatch).
     ///
@@ -72,7 +72,40 @@ pub enum Action {
     /// in the playback sequence â€” useful for ensuring a specific elapsed-time
     /// gap between surrounding steps.
     Wait,
+    /// Repeat-capable marker action.
+    ///
+    /// This action itself does not dispatch an event; it is useful in script
+    /// authoring when paired with `repeat` fields.
+    Repeat,
+    /// Inline call of a named macro script.
+    ///
+    /// The simulator expands the macro's steps into the active script timeline
+    /// at runtime.
+    CallMacro,
+    /// Runtime assertion against a named automation condition.
+    ///
+    /// Fails playback when the condition is false.
+    Assert,
+    /// Visual assertion by pixel-diffing two image files.
+    ///
+    /// Fails playback when `diff(actual, baseline) > max_diff`.
+    VisualAssert,
 }
+
+const ACTION_MAPPINGS: [(&str, Action); 12] = [
+    ("keypress", Action::KeyPress),
+    ("keyrelease", Action::KeyRelease),
+    ("mousemove", Action::MouseMove),
+    ("mousepress", Action::MousePress),
+    ("mouserelease", Action::MouseRelease),
+    ("mousewheel", Action::MouseWheel),
+    ("textinput", Action::TextInput),
+    ("wait", Action::Wait),
+    ("repeat", Action::Repeat),
+    ("callmacro", Action::CallMacro),
+    ("assert", Action::Assert),
+    ("visualassert", Action::VisualAssert),
+];
 
 impl Action {
     /// Parse an action string into the corresponding variant.
@@ -90,17 +123,9 @@ impl Action {
     /// # Returns
     /// `Option<Action>`.
     pub fn parse_action(s: &str) -> Option<Action> {
-        match s {
-            "keypress" => Some(Action::KeyPress),
-            "keyrelease" => Some(Action::KeyRelease),
-            "mousemove" => Some(Action::MouseMove),
-            "mousepress" => Some(Action::MousePress),
-            "mouserelease" => Some(Action::MouseRelease),
-            "mousewheel" => Some(Action::MouseWheel),
-            "textinput" => Some(Action::TextInput),
-            "wait" => Some(Action::Wait),
-            _ => None,
-        }
+        ACTION_MAPPINGS
+            .iter()
+            .find_map(|(name, action)| (*name == s).then_some(*action))
     }
 
     /// Return the canonical lowercase string representation of this action.
@@ -112,16 +137,10 @@ impl Action {
     /// # Returns
     /// `&'static str`.
     pub fn as_str(&self) -> &'static str {
-        match self {
-            Action::KeyPress => "keypress",
-            Action::KeyRelease => "keyrelease",
-            Action::MouseMove => "mousemove",
-            Action::MousePress => "mousepress",
-            Action::MouseRelease => "mouserelease",
-            Action::MouseWheel => "mousewheel",
-            Action::TextInput => "textinput",
-            Action::Wait => "wait",
-        }
+        ACTION_MAPPINGS
+            .iter()
+            .find_map(|(name, action)| (*action == *self).then_some(*name))
+            .unwrap_or("wait")
     }
 }
 
@@ -229,6 +248,31 @@ pub struct Step {
     /// occurred (e.g., `2` for a double-click). Dispatched event receives
     /// count `1` when this is `None`.
     pub clicks: Option<u32>,
+    /// Number of extra copies of this step to generate.
+    ///
+    /// Expansion happens when scripts are created or loaded. A value of `3`
+    /// means one original step plus three generated copies.
+    pub repeat: Option<u32>,
+    /// Time interval in seconds between generated repeat copies.
+    ///
+    /// Defaults to `0.0` when unset.
+    pub repeat_interval: Option<f32>,
+    /// Macro name used by [`Action::CallMacro`].
+    pub macro_name: Option<String>,
+    /// Optional named condition gate.
+    ///
+    /// When present and false, the step is skipped.
+    pub when: Option<String>,
+    /// Optional named condition assertion.
+    ///
+    /// When present and false, playback fails.
+    pub assert: Option<String>,
+    /// Baseline image path for [`Action::VisualAssert`].
+    pub baseline: Option<String>,
+    /// Actual image path for [`Action::VisualAssert`].
+    pub actual: Option<String>,
+    /// Maximum allowed pixel diff for [`Action::VisualAssert`].
+    pub max_diff: Option<u32>,
 }
 
 impl Step {
@@ -259,6 +303,14 @@ impl Step {
             text: None,
             is_repeat: false,
             clicks: None,
+            repeat: None,
+            repeat_interval: None,
+            macro_name: None,
+            when: None,
+            assert: None,
+            baseline: None,
+            actual: None,
+            max_diff: None,
         }
     }
 

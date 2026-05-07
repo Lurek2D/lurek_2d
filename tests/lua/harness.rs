@@ -55,8 +55,7 @@ fn create_test_vm() -> mlua::Lua {
     // The sandbox does not expose it by default, so provide a local test-only implementation.
     let dofile_fn = lua
         .create_function(|lua, path: String| {
-            let code = std::fs::read_to_string(&path)
-                .map_err(mlua::Error::external)?;
+            let code = std::fs::read_to_string(&path).map_err(mlua::Error::external)?;
             lua.load(&code)
                 .set_name(&path)
                 .exec()

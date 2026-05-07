@@ -6,28 +6,28 @@
 - Source path: `src/ecs/`
 - Lua API path(s): `src/lua_api/ecs_api.rs`
 - Primary Lua namespace: `lurek.ecs`
-- Rust test path(s): none found under tests/ with ecs in the path
-- Lua test path(s): none found under tests/ with ecs in the path
+- Rust test path(s): `tests/rust/unit/ecs_tests.rs`
+- Lua test path(s): `tests/lua/unit/test_ecs_core_unit.lua`
 
 ## Summary
 
-The `ecs` module provides Lurek2D's Entity-Component-System infrastructure — a Feature Systems tier module that separates identity (entities), data (components), and behaviour (systems) so that game objects can mix and modify their capabilities at runtime without subclassing.
+The `ecs` module provides Lurek2D's Lua-first ECS runtime using a single `Universe` userdata (`lurek.ecs.newUniverse()`).
 
-**Entity lifecycle.** Entities are lightweight integer IDs managed by `Universe`. The universe holds a generation counter per ID slot: when an entity is despawned and its slot reused, any stale `EntityId` referencing the old generation is silently invalid. Core operations: `spawn()` -> `EntityId`, `despawn(id)`, `is_alive(id) -> bool`. Free slots are tracked via a free-list for O(1) allocation.
+**Entity lifecycle.** Entities are packed generational IDs (24-bit slot + 8-bit generation). Slot reuse invalidates stale handles by generation mismatch. Core operations: `spawn`, `kill`, `killRecursive`, `isAlive`, `getEntities`, `getEntityCount`.
 
-**Component storage.** The `ComponentStore` inside `Universe` uses a `TypeId`-keyed map of boxed trait objects, where each entry is a `HashMap<EntityId, Box<dyn Any + Send + Sync>>`. This is deliberately a simple, hash-map-backed design rather than an archetypal or sparse-set layout: the engine targets desktop hardware with scripted game logic rather than millions of entities per frame, so the flexibility and simplicity of dynamic dispatch is worth the hash-lookup cost. Key operations: `add_component::<T>(entity, value)`, `get_component::<T>(entity) -> Option<&T>`, `get_component_mut::<T>(entity) -> Option<&mut T>`, `remove_component::<T>(entity)`, `query::<T>()` (iterate all entities with component T).
+**Component storage and queries.** Components are Lua values stored per-entity in Lua registry tables. Core operations: `set/get/has/remove/getComponents`, `query`, `queryNot`, and `queryMulti` (batched callback with multiple component payloads in one pass).
 
-**Tags and layers.** Entities can have string tags and an integer layer mask. Tags: `add_tag(entity, tag)`, `remove_tag(entity, tag)`, `has_tag(entity, tag)`, `entities_with_tag(tag)`. Layers: `set_layer(entity, mask)`, `get_layer(entity)`, `entities_in_layer(mask)`. Extended query predicates allow narrowing entity sets by tag intersection, component presence, and layer mask simultaneously, reducing boilerplate for common game-loop queries like all visible enemies with a health component.
+**Tags and layers.** The module supports both string tags and bitmap tags (up to 63 named bits), plus numeric layering. Query helpers include `getEntitiesByTag`, `queryBitmapTag`, `queryBitmapAny`, `queryBitmapAll`, `getEntitiesByLayer`, and `getEntitiesSorted`.
 
-**Blueprints.** A `Blueprint` is a reusable entity template: `define_blueprint(name, components)` registers a component set by name; `spawn_blueprint(name)` instantiates a new entity from it. This is the Lua-friendly factory pattern for common entity archetypes (enemies, projectiles, pickups).
+**Blueprints and bulk spawning.** Blueprint APIs (`defineBlueprint`, `extendBlueprint`, `spawnBlueprint`, `spawnBulk`) provide reusable templates with deep-copy isolation and optional override tables.
 
-**Parent-child hierarchies.** `relationships.rs` adds full parent-child hierarchies to `Universe`: `set_parent(child, parent)`, `get_parent(child)`, `get_children(parent)`, `get_descendants(parent)`, `detach(child)`. Used by `scene` for transform propagation and by Lua scripts building entity groups. Destroying a parent optionally despawns all descendants.
+**Hierarchy and directed relations.** `setParent/getParent/getChildren` define parent-child trees. `addRelation/getRelated/removeRelation/clearRelations/hasRelation` provide directed named graph links. `RelationshipManager` in `relationships.rs` provides separate symmetric numeric + level-based relations.
 
-**RelationshipManager.** A separate `RelationshipManager` (distinct from the hierarchy) manages symmetric pairwise entity relationships with a numeric value and optional named levels. Used for NPC relationship/reputation systems: `define_type(name, levels)`, `set_value(a, b, v)`, `adjust_value(a, b, delta)`, `set_level(a, b, type, level)`, `get_level(a, b, type)`, `all_relations_for(entity)`. Also supports directed named links: `add_link(from, to, name)` / `get_links(from, name)` / `remove_link`, a lightweight alternative to the full AI blackboard for simple graph-based game state.
+**System scheduling.** Systems are registered with optional `priority` and optional `phase`. Built-in phase usage is `pre_update`, `update`, `post_update`, and `render`. Default-phase systems (no phase specified) run in both `update()` and `render()` for backward compatibility. Dispatch APIs: `update`, `updatePhase`, `render`, `emit`.
 
-**Systems.** Registered systems are Lua callbacks (or Rust closures) tagged with a priority and run in order each frame: `register_system(name, priority, callback)`, `unregister_system(name)`, `run_systems(dt)`. This keeps the ECS update loop decoupled from the game script structure.
+**Change detection and snapshots.** Component writes/removals mark entities dirty (`getDirtyEntities`) until `flushObservers` drains events. World state can be persisted/restored through `serialize/deserialize` and aliases `snapshot/applySnapshot`.
 
-**Lua surface.** `lurek.ecs.spawn()` returns entity id. `lurek.ecs.despawn(id)`, `lurek.ecs.isAlive(id)`. `lurek.ecs.addComponent(id, type, data)`, `getComponent(id, type)`, `removeComponent(id, type)`. `lurek.ecs.query(type)` returns list. `lurek.ecs.addTag/removeTag/hasTag/withTag`. `lurek.ecs.setLayer/getLayer/inLayer`. `lurek.ecs.setParent/getParent/getChildren/detach`. `lurek.ecs.defineBlueprint/spawnBlueprint`. `lurek.ecs.registerSystem/unregisterSystem`. `lurek.ecs.newRelationships()` returns `RelationshipManager` userdata with full type/level/link API.
+**Sparse query fast-path (opt-in).** Cargo feature `ecs-archetype` enables a sparse-set style component index (`component -> entity slots`) used to narrow candidates for `query`, `queryNot`, and `queryMulti` before table checks.
 
 **Scope boundary.** Feature Systems tier. Depends on `runtime` for SharedState registration. Lua bridge in `src/lua_api/ecs_api.rs`.
 
@@ -35,7 +35,8 @@ The `ecs` module provides Lurek2D's Entity-Component-System infrastructure — a
 
 - `mod.rs`: Declares the ECS submodules and re-exports the main world and relationship types.
 - `relationships.rs`: Defines reusable relationship types and the `RelationshipManager` for symmetric pairwise values and named relation levels.
-- `universe.rs`: Defines `Universe`, including generational entity IDs, component storage via Lua registry tables, tags, layers, blueprints, hierarchy management, and ordered system dispatch.
+- `universe.rs`: Defines `Universe` core state, lifecycle, component/tag/layer/system operations, plus phase ordering and sparse-index helpers.
+- `universe_ext.rs`: Defines extension `impl Universe` blocks for query batching/filtering, bulk spawning, snapshot serialization, and restore logic.
 
 ## Types
 
@@ -113,13 +114,16 @@ The `ecs` module provides Lurek2D's Entity-Component-System infrastructure — a
 - `Universe::remove_blueprint` (`universe.rs`): Removes a blueprint definition.
 - `Universe::list_blueprints` (`universe.rs`): Lists all defined blueprint names.
 - `Universe::get_blueprint_components` (`universe.rs`): Returns a deep copy of a blueprint's component table, or Nil if not found.
-- `Universe::add_system` (`universe.rs`): Adds a system (Lua table) to the system list at the given priority (lower = first).
-- `Universe::get_sorted_system_indices` (`universe.rs`): Returns 1-based system store indices sorted by ascending priority.
+- `Universe::add_system` (`universe.rs`): Adds a system (Lua table) with priority and phase.
+- `Universe::get_sorted_system_indices_all` (`universe.rs`): Returns all 1-based system store indices sorted by ascending priority.
+- `Universe::get_sorted_system_indices_for_phase` (`universe.rs`): Returns 1-based system store indices sorted by ascending priority for one phase.
 - `Universe::remove_system` (`universe.rs`): Removes a system by pointer identity from the system list.
 - `Universe::get_system_count` (`universe.rs`): Returns the number of registered systems.
 - `Universe::clear` (`universe.rs`): Clears all entities, components, tags, layers, and systems.
 - `Universe::take_component_events` (`universe.rs`): Takes and clears all pending component-add and component-remove events.
+- `Universe::get_dirty_entities` (`universe.rs`): Returns entity IDs with component changes pending observer flush.
 - `Universe::query_not` (`universe.rs`): Returns alive entities that have ALL `with` components and NONE of the `without` components.
+- `Universe::query_multi` (`universe.rs`): Calls a callback for entities that match multiple component names, passing all component values in one call.
 - `Universe::spawn_bulk` (`universe.rs`): Spawns `count` entities from a blueprint, applying the same optional overrides to each.
 - `Universe::serialize_to_table` (`universe.rs`): Serializes all alive entities to a Lua table snapshot.
 - `Universe::deserialize_from_table` (`universe.rs`): Restores entity state from a snapshot produced by `serialize_to_table`.
@@ -149,9 +153,11 @@ The `ecs` module provides Lurek2D's Entity-Component-System infrastructure — a
 - `LUniverse:addSystem`: Adds a system table to the universe with an optional priority (lower = earlier).
 - `LUniverse:removeSystem`: Removes a system table from the universe.
 - `LUniverse:update`: Calls update(system, world, dt) on each registered system in priority order.
+- `LUniverse:updatePhase`: Calls update(system, world, dt) for systems in the selected phase.
 - `LUniverse:render`: Calls render(system, world) on each system in priority order and falls back to draw(system, world).
 - `LUniverse:emit`: Emits a named event to all systems that implement the handler, in priority order.
 - `LUniverse:getSystemCount`: Returns the number of registered systems.
+- `LUniverse:getDirtyEntities`: Returns entities whose components changed since the last observer flush.
 - `LUniverse:clear`: Removes all entities, components, tags, layers, and systems. Blueprints are preserved.
 - `LUniverse:release`: Releases all universe state, equivalent to clear.
 - `LUniverse:addTag`: Attaches a string tag to an entity.
@@ -183,8 +189,11 @@ The `ecs` module provides Lurek2D's Entity-Component-System infrastructure — a
 - `LUniverse:getChildren`: Returns all direct child entity IDs.
 - `LUniverse:killRecursive`: Kills an entity and all its descendants recursively.
 - `LUniverse:queryNot`: Returns entity IDs that have all `with` components and none of the `without` components.
+- `LUniverse:queryMulti`: Calls callback(id, comp1, comp2, …) for entities matching all requested component names.
 - `LUniverse:serialize`: Serializes all alive entities to a Lua table snapshot.
 - `LUniverse:deserialize`: Restores entity state from a snapshot produced by serialize() while preserving blueprints and systems.
+- `LUniverse:snapshot`: Alias of serialize().
+- `LUniverse:applySnapshot`: Alias of deserialize().
 - `LUniverse:onComponentAdded`: Registers a callback for component-added events that is dispatched by flushObservers().
 - `LUniverse:onComponentRemoved`: Registers a callback for component-removed events that is dispatched by flushObservers().
 - `LUniverse:flushObservers`: Dispatches all pending component-add and component-remove events to registered callbacks.

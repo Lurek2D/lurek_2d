@@ -12,10 +12,10 @@ pub mod cache;
 pub mod events;
 /// GPU-facing packed data builders.
 pub mod gpu_bridge;
-/// Province label/centroid helpers.
-pub mod labels;
 /// Province map preprocessing and metadata import helpers.
 pub mod import;
+/// Province label/centroid helpers.
+pub mod labels;
 /// Map-mode helpers for province shading.
 pub mod map_modes;
 /// Province runtime registry.
@@ -31,8 +31,8 @@ pub mod view_transform;
 
 pub use events::{ProvinceChange, ProvinceEvent};
 pub use import::{
-	import_metadata_from_files, sanitize_marked_png, MarkerSanitizeOptions,
-	MarkerSanitizeSummary, ProvinceMetadataImportOptions, ProvinceMetadataImportSummary,
+    import_metadata_from_files, sanitize_marked_png, MarkerSanitizeOptions, MarkerSanitizeSummary,
+    ProvinceMetadataImportOptions, ProvinceMetadataImportSummary,
 };
 pub use registry::ProvinceRegistry;
 pub use types::{BorderClass, ProvinceId, ProvinceSnapshot, ProvinceStyle};

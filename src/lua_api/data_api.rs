@@ -8,12 +8,12 @@ use std::collections::VecDeque;
 use std::rc::Rc;
 use std::sync::Arc;
 
-use crate::lua_api::lua_types::LurekType;
 use crate::data::toml_convert;
 use crate::data::{
     self, BinValue, ByteData, CompressFormat, DataView, DataWriter, EncodeFormat, HashAlgorithm,
     LuaDataView, PackValue,
 };
+use crate::lua_api::lua_types::LurekType;
 
 // -------------------------------------------------------------------------------
 // Pack conversion helpers
@@ -243,7 +243,6 @@ impl LuaUserData for LuaRingBuffer {
         methods.add_method("typeOf", |_, _, name: String| {
             Ok(name == "LRingBuffer" || name == "Object")
         });
-
     }
 }
 

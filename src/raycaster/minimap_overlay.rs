@@ -44,11 +44,7 @@ fn tile_line_of_sight(raycaster: &Raycaster2D, x0: i32, y0: i32, x1: i32, y1: i3
             y += sy;
         }
 
-        if (x != x1 || y != y1)
-            && (x < 0
-                || y < 0
-                || raycaster.get_cell(x as u32, y as u32) > 0)
-        {
+        if (x != x1 || y != y1) && (x < 0 || y < 0 || raycaster.get_cell(x as u32, y as u32) > 0) {
             return false;
         }
     }
@@ -131,6 +127,7 @@ pub fn build_minimap_tile_window(
 /// Traces multiple rays and returns unique grid cells crossed by those rays.
 ///
 /// The output can drive fog-of-war reveal logic without Lua-side per-ray loops.
+#[allow(clippy::too_many_arguments)]
 pub fn reveal_cells_from_rays(
     raycaster: &Raycaster2D,
     ox: f32,
@@ -145,22 +142,31 @@ pub fn reveal_cells_from_rays(
     let mut visited: HashSet<(u32, u32)> = HashSet::new();
     let mut cells = Vec::new();
 
-    let add_cell = |visited: &mut HashSet<(u32, u32)>, cells: &mut Vec<(u32, u32)>, x: f32, y: f32| {
-        if x.is_finite() && y.is_finite() && x >= 0.0 && y >= 0.0 {
-            let gx = x.floor() as u32;
-            let gy = y.floor() as u32;
-            if gx < raycaster.width() && gy < raycaster.height() && visited.insert((gx, gy)) {
-                cells.push((gx, gy));
+    let add_cell =
+        |visited: &mut HashSet<(u32, u32)>, cells: &mut Vec<(u32, u32)>, x: f32, y: f32| {
+            if x.is_finite() && y.is_finite() && x >= 0.0 && y >= 0.0 {
+                let gx = x.floor() as u32;
+                let gy = y.floor() as u32;
+                if gx < raycaster.width() && gy < raycaster.height() && visited.insert((gx, gy)) {
+                    cells.push((gx, gy));
+                }
             }
-        }
-    };
+        };
 
     add_cell(&mut visited, &mut cells, ox, oy);
     let hits = raycaster.cast_rays(ox, oy, angle, fov, count, max_dist);
 
     for hit in hits {
-        let hx = if hit.hit { hit.hit_x } else { ox + angle.cos() * max_dist };
-        let hy = if hit.hit { hit.hit_y } else { oy + angle.sin() * max_dist };
+        let hx = if hit.hit {
+            hit.hit_x
+        } else {
+            ox + angle.cos() * max_dist
+        };
+        let hy = if hit.hit {
+            hit.hit_y
+        } else {
+            oy + angle.sin() * max_dist
+        };
         let dx = hx - ox;
         let dy = hy - oy;
         let dist = (dx * dx + dy * dy).sqrt();

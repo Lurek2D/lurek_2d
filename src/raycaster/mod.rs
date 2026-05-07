@@ -16,10 +16,10 @@ pub mod depth_buffer;
 pub mod doors;
 /// CPU software-rendering fallback for headless testing.
 pub mod draw;
-/// Floor and ceiling height variations for stepped or multi-level environments.
-pub mod heightmap;
 /// Grid movement helpers for 4-direction dungeon movement.
 pub mod grid_motion;
+/// Floor and ceiling height variations for stepped or multi-level environments.
+pub mod heightmap;
 /// Static and dynamic point lighting for raycaster worlds.
 pub mod lighting;
 /// Top-down minimap extraction from a raycaster grid.
@@ -53,8 +53,8 @@ pub use grid_motion::{dir4_delta, try_move, GridMoveAction};
 pub use heightmap::HeightMap;
 pub use lighting::{apply_lit_shade, compute_lighting, PointLight};
 pub use minimap_overlay::{
-	build_minimap_tile_window, compute_tile_light, draw_player_arrow, extract_minimap,
-	reveal_cells_from_rays, MinimapTileSample,
+    build_minimap_tile_window, compute_tile_light, draw_player_arrow, extract_minimap,
+    reveal_cells_from_rays, MinimapTileSample,
 };
 pub use projection::{distance_shade, project_column};
 pub use ray_hit::RayHit;

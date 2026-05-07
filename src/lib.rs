@@ -72,6 +72,7 @@ pub mod animation;
 /// Audio playback system backed by rodio.
 pub mod audio;
 /// Automated input simulation via timed step scripts for testing and replay.
+#[cfg(feature = "automation-plugin")]
 pub mod automation;
 /// Property tween system: animate any Lua table field with easing, sequences, and parallels.
 pub mod tween;
@@ -155,12 +156,12 @@ pub mod patterns;
 pub mod physics;
 /// DAG-based pipeline orchestrator for composing multi-step workflows.
 pub mod pipeline;
-/// Province runtime engine: map-state snapshots, topology, border classes, and GPU bridge data.
-pub mod province;
 /// (Deprecated â€” use `fx::post` instead.) Post-processing effects data model.
 // pub mod postfx; â€” superseded by fx::post
 /// Procedural world generation: cellular automata, Voronoi, flood fill, Poisson disk, periodic noise.
 pub mod procgen;
+/// Province runtime engine: map-state snapshots, topology, border classes, and GPU bridge data.
+pub mod province;
 /// Grid-based DDA raycaster for retro FPS and dungeon-crawler games: wall rendering, sprite projection, lighting, doors, heightmaps, minimap.
 pub mod raycaster;
 // migration-state: pub mod province_map; â€” now library/province_map/init.lua

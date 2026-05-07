@@ -1,4 +1,4 @@
-//! `lurek.signal` - Event queue polling and pub-sub signal dispatch.
+//! `lurek.event` - Event queue polling and pub-sub signal dispatch.
 
 use super::SharedState;
 use mlua::prelude::*;
@@ -324,6 +324,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
 
     // -- pump --
     /// Synchronises OS-level windowing events into the engine event queue.
+    ///
+    /// In Lurek2D this is an API-parity no-op because window/input events are
+    /// already pushed by the runtime loop.
     /// @return | nil | No return value.
     let s = state.clone();
     tbl.set(
@@ -403,6 +406,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
 
     // -- pushDeferred --
     /// Pushes a named event into the deferred buffer instead of the main queue.
+    ///
+    /// Scalar payload values are copied directly. Table payload values are
+    /// shallow-cloned (scalar keys and scalar values only).
     /// @param | name | string | The event name to defer
     /// @return | nil | No return value.
     let deferred = deferred_queue.clone();
@@ -442,24 +448,22 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         "pushDeferredPriority",
         lua.create_function(move |_, args: LuaMultiValue| {
             let mut iter = args.into_iter();
-            let name: String = match iter.next() {
-                Some(LuaValue::String(s)) => s
-                    .to_str()
-                    .map_err(|e| LuaError::RuntimeError(e.to_string()))?
-                    .to_string(),
-                _ => {
-                    return Err(LuaError::RuntimeError(
+            let name: String =
+                match iter.next() {
+                    Some(LuaValue::String(s)) => s
+                        .to_str()
+                        .map_err(|e| LuaError::RuntimeError(e.to_string()))?
+                        .to_string(),
+                    _ => return Err(LuaError::RuntimeError(
                         "event.pushDeferredPriority requires a string event name as first argument"
                             .into(),
-                    ))
-                }
-            };
+                    )),
+                };
             let priority = match iter.next() {
                 Some(value) => parse_priority(&value)?,
                 None => {
                     return Err(LuaError::RuntimeError(
-                        "event.pushDeferredPriority requires a priority as second argument"
-                            .into(),
+                        "event.pushDeferredPriority requires a priority as second argument".into(),
                     ))
                 }
             };
@@ -485,7 +489,8 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
             let count = buf.len() as u32;
             let mut st = s.borrow_mut();
             for (name, args, priority) in buf.drain(..) {
-                st.event_queue.push_event_with_priority(&name, args, priority);
+                st.event_queue
+                    .push_event_with_priority(&name, args, priority);
             }
             Ok(count)
         })?,
@@ -552,6 +557,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
 
     // -- push --
     /// Pushes a custom named event onto the main engine event queue with optional payload arguments.
+    ///
+    /// Scalar payload values are copied directly. Table payload values are
+    /// shallow-cloned (scalar keys and scalar values only).
     /// @param | name | string | The event name to push (case-sensitive)
     /// @return | nil | No return value.
     let s = state.clone();
@@ -595,6 +603,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// Pushes a custom named event onto a selected queue lane.
     /// @param | name | string | The event name to push (case-sensitive)
     /// @param | priority | string | Queue lane: "high" or "normal"
+    ///
+    /// Scalar payload values are copied directly. Table payload values are
+    /// shallow-cloned (scalar keys and scalar values only).
     /// @return | nil | No return value.
     let s = state.clone();
     let hist_p = history_buf.clone();
@@ -610,8 +621,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                     .to_string(),
                 _ => {
                     return Err(LuaError::RuntimeError(
-                        "event.pushPriority requires a string event name as first argument"
-                            .into(),
+                        "event.pushPriority requires a string event name as first argument".into(),
                     ))
                 }
             };
@@ -629,9 +639,11 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                 event_args.push(EventArg::from_lua_val(&val)?);
             }
 
-            s.borrow_mut()
-                .event_queue
-                .push_event_with_priority(&name, event_args.clone(), priority);
+            s.borrow_mut().event_queue.push_event_with_priority(
+                &name,
+                event_args.clone(),
+                priority,
+            );
 
             let cap_val = *cap_p.borrow();
             if cap_val > 0 {

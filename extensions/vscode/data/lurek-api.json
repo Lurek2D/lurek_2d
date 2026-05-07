@@ -2993,6 +2993,70 @@
           "objectType": null
         },
         {
+          "name": "isFailed",
+          "fullPath": "lurek.automation.isFailed",
+          "signature": "()",
+          "description": "Returns true if playback stopped because an assertion failed.",
+          "parameters": [],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "getLastError",
+          "fullPath": "lurek.automation.getLastError",
+          "signature": "()",
+          "description": "Returns the last simulator failure string, or nil if none.",
+          "parameters": [],
+          "returns": "string?",
+          "returnType": "string?",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "setCondition",
+          "fullPath": "lurek.automation.setCondition",
+          "signature": "(name, value)",
+          "description": "Sets a named boolean condition used by `when` and `assert` step fields.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Condition name.",
+              "optional": false
+            },
+            {
+              "name": "value",
+              "type": "boolean",
+              "description": "Condition value.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "getCondition",
+          "fullPath": "lurek.automation.getCondition",
+          "signature": "(name)",
+          "description": "Returns a condition value by name, or nil when unset.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Condition name.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean?",
+          "returnType": "boolean?",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
           "name": "getCurrentStep",
           "fullPath": "lurek.automation.getCurrentStep",
           "signature": "()",
@@ -5714,6 +5778,24 @@
           "objectType": null
         },
         {
+          "name": "schemaFromToml",
+          "fullPath": "lurek.docs.schemaFromToml",
+          "signature": "(toml_text)",
+          "description": "Creates a schema validator from TOML text.",
+          "parameters": [
+            {
+              "name": "toml_text",
+              "type": "string",
+              "description": "TOML schema definition.",
+              "optional": false
+            }
+          ],
+          "returns": "LSchema",
+          "returnType": "LSchema",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
           "name": "reflectLive",
           "fullPath": "lurek.docs.reflectLive",
           "signature": "([ns])",
@@ -6123,13 +6205,35 @@
           "returnType": "table",
           "isMethod": false,
           "objectType": null
+        },
+        {
+          "name": "getFrameProfile",
+          "fullPath": "lurek.engine.getFrameProfile",
+          "signature": "()",
+          "description": "Returns CPU callback timing for the most recently completed frame.",
+          "parameters": [],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "getConfigRevision",
+          "fullPath": "lurek.engine.getConfigRevision",
+          "signature": "()",
+          "description": "Returns the monotonic config revision counter.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": false,
+          "objectType": null
         }
       ],
       "methods": []
     },
     {
       "name": "event",
-      "description": "`lurek.signal` - Event queue polling and pub-sub signal dispatch.",
+      "description": "`lurek.event` - Event queue polling and pub-sub signal dispatch.",
       "functions": [
         {
           "name": "exit",
@@ -15432,7 +15536,7 @@
         {
           "name": "zoomCameraAt",
           "fullPath": "lurek.province.zoomCameraAt",
-          "signature": "(anchor_x, anchor_y, cam_x, cam_y, old_zoom, new_zoom)",
+          "signature": "lurek.province.zoomCameraAt(anchor_x, anchor_y, cam_x, cam_y, old_zoom, new_zoom)",
           "description": "Recomputes camera x/y so zooming stays anchored under the same screen point.",
           "parameters": [
             {
@@ -40298,6 +40402,17 @@
           "parameters": [],
           "returns": "table",
           "returnType": "table",
+          "isMethod": true,
+          "objectType": "LDataFrame"
+        },
+        {
+          "name": "rows",
+          "fullPath": "LDataFrame:rows",
+          "signature": "()",
+          "description": "Returns a streaming row iterator for use with Lua generic for.",
+          "parameters": [],
+          "returns": "function",
+          "returnType": "function",
           "isMethod": true,
           "objectType": "LDataFrame"
         },
@@ -76145,6 +76260,48 @@
           "objectType": "LPipeline"
         },
         {
+          "name": "addBranch",
+          "fullPath": "LPipeline:addBranch",
+          "signature": "LPipeline:addBranch(name, deps, when_fn, then_fn, [else_fn])",
+          "description": "Adds an if/else branch as two conditional steps that share one predicate result.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Branch base name.",
+              "optional": false
+            },
+            {
+              "name": "deps",
+              "type": "table",
+              "description": "Array of dependency step names.",
+              "optional": false
+            },
+            {
+              "name": "when_fn",
+              "type": "function",
+              "description": "Predicate callback evaluated once.",
+              "optional": false
+            },
+            {
+              "name": "then_fn",
+              "type": "function",
+              "description": "Callback executed when predicate returns true.",
+              "optional": false
+            },
+            {
+              "name": "else_fn",
+              "type": "function",
+              "description": "Optional callback executed when predicate returns false.",
+              "optional": true
+            }
+          ],
+          "returns": "LPipeline",
+          "returnType": "LPipeline",
+          "isMethod": true,
+          "objectType": "LPipeline"
+        },
+        {
           "name": "onProgress",
           "fullPath": "LPipeline:onProgress",
           "signature": "(cb)",
@@ -76154,6 +76311,24 @@
               "name": "fn",
               "type": "function",
               "description": "Callback called with `(step_name, status)`.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LPipeline"
+        },
+        {
+          "name": "onEvent",
+          "fullPath": "LPipeline:onEvent",
+          "signature": "(cb)",
+          "description": "Registers a callback invoked for lifecycle events (`step_started`, `step_finished`).",
+          "parameters": [
+            {
+              "name": "fn",
+              "type": "function",
+              "description": "Callback called with `(event_name, step_name, status, detail)`.",
               "optional": false
             }
           ],
@@ -76376,6 +76551,35 @@
           ],
           "returns": "nil",
           "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LPipelineStep"
+        },
+        {
+          "name": "setAsync",
+          "fullPath": "LPipelineStep:setAsync",
+          "signature": "(enabled)",
+          "description": "Enables or disables coroutine-based execution in `Pipeline:runAsync`.",
+          "parameters": [
+            {
+              "name": "enabled",
+              "type": "boolean",
+              "description": "When true, step callback may `coroutine.yield()` and resume on later `update()` calls.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LPipelineStep"
+        },
+        {
+          "name": "isAsync",
+          "fullPath": "LPipelineStep:isAsync",
+          "signature": "()",
+          "description": "Returns whether coroutine-based async execution is enabled for this step.",
+          "parameters": [],
+          "returns": "boolean",
+          "returnType": "boolean",
           "isMethod": true,
           "objectType": "LPipelineStep"
         },
@@ -78873,7 +79077,7 @@
         {
           "name": "screenToMap",
           "fullPath": "LProvinceRegistry:screenToMap",
-          "signature": "(screen_x, screen_y, cam_x, cam_y, zoom, [pixel_size])",
+          "signature": "LProvinceRegistry:screenToMap(screen_x, screen_y, cam_x, cam_y, zoom, [pixel_size])",
           "description": "Converts screen-space coordinates to map-space coordinates.",
           "parameters": [
             {
@@ -78921,7 +79125,7 @@
         {
           "name": "screenToProvince",
           "fullPath": "LProvinceRegistry:screenToProvince",
-          "signature": "(screen_x, screen_y, cam_x, cam_y, zoom, [pixel_size])",
+          "signature": "LProvinceRegistry:screenToProvince(screen_x, screen_y, cam_x, cam_y, zoom, [pixel_size])",
           "description": "Returns province id under a screen-space position.",
           "parameters": [
             {
@@ -81865,7 +82069,7 @@
         {
           "name": "revealCellsFromRays",
           "fullPath": "LRaycaster:revealCellsFromRays",
-          "signature": "(ox, oy, angle, fov, count, max_dist, [step])",
+          "signature": "LRaycaster:revealCellsFromRays(ox, oy, angle, fov, count, max_dist, [step])",
           "description": "Traces multiple rays and returns unique grid cells crossed by those rays.",
           "parameters": [
             {
@@ -110167,7 +110371,7 @@
           "name": "addSystem",
           "fullPath": "LUniverse:addSystem",
           "signature": "(system, [opts])",
-          "description": "Adds a system table to the universe with an optional priority (lower = earlier).",
+          "description": "Adds a system table to the universe with an optional priority (lower = earlier) and phase.",
           "parameters": [
             {
               "name": "system",
@@ -110178,7 +110382,7 @@
             {
               "name": "opts",
               "type": "table",
-              "description": "Optional table with a `priority` integer field.",
+              "description": "Optional table with `priority` integer and `phase` string fields.",
               "optional": true
             }
           ],
@@ -110209,7 +110413,7 @@
           "name": "update",
           "fullPath": "LUniverse:update",
           "signature": "(dt)",
-          "description": "Calls update(system, world, dt) on each registered system in priority order.",
+          "description": "Calls update(system, world, dt) on each system in the \"update\" phase in priority order.",
           "parameters": [
             {
               "name": "dt",
@@ -110227,7 +110431,7 @@
           "name": "render",
           "fullPath": "LUniverse:render",
           "signature": "()",
-          "description": "Calls render(system, world) on each system in priority order and falls back to draw(system, world).",
+          "description": "Calls render(system, world) on each system in the \"render\" phase in priority order; falls back to draw(system, world).",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -110260,6 +110464,94 @@
           "parameters": [],
           "returns": "integer",
           "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LUniverse"
+        },
+        {
+          "name": "updatePhase",
+          "fullPath": "LUniverse:updatePhase",
+          "signature": "(phase, dt)",
+          "description": "Calls the named lifecycle method on each system that belongs to the given phase, in priority order.",
+          "parameters": [
+            {
+              "name": "phase",
+              "type": "string",
+              "description": "Phase name, e.g. `\"pre_update\"`, `\"update\"`, `\"post_update\"` or any custom name.",
+              "optional": false
+            },
+            {
+              "name": "dt",
+              "type": "number",
+              "description": "Delta time in seconds.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LUniverse"
+        },
+        {
+          "name": "getDirtyEntities",
+          "fullPath": "LUniverse:getDirtyEntities",
+          "signature": "()",
+          "description": "Returns entity IDs whose components changed since the last flushObservers / takeObserverEvents call.",
+          "parameters": [],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LUniverse"
+        },
+        {
+          "name": "queryMulti",
+          "fullPath": "LUniverse:queryMulti",
+          "signature": "(names_table, callback)",
+          "description": "Iterates every alive entity that has ALL the listed components and calls the callback with",
+          "parameters": [
+            {
+              "name": "names",
+              "type": "table",
+              "description": "Array of component name strings.",
+              "optional": false
+            },
+            {
+              "name": "callback",
+              "type": "function",
+              "description": "Called as `callback(id, val1, val2, …)` for each matching entity.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LUniverse"
+        },
+        {
+          "name": "snapshot",
+          "fullPath": "LUniverse:snapshot",
+          "signature": "()",
+          "description": "Serializes the entire universe state to a Lua table.  Alias for serialize.",
+          "parameters": [],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LUniverse"
+        },
+        {
+          "name": "applySnapshot",
+          "fullPath": "LUniverse:applySnapshot",
+          "signature": "(snapshot)",
+          "description": "Restores the universe from a snapshot table produced by snapshot.  Alias for deserialize.",
+          "parameters": [
+            {
+              "name": "snapshot",
+              "type": "table",
+              "description": "Snapshot table previously returned by snapshot.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
           "isMethod": true,
           "objectType": "LUniverse"
         },

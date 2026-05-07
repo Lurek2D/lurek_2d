@@ -381,29 +381,35 @@ impl ProvinceGrid {
     ///
     /// Returns (spans, segments) or None if format is invalid.
     #[allow(clippy::type_complexity)]
-    pub fn deserialize_shape_data(data: &[u8]) -> Option<(Vec<(u32, u32, u32, u32)>, Vec<(u32, u32, u32, u32, u32, u32)>)> {
+    pub fn deserialize_shape_data(
+        data: &[u8],
+    ) -> Option<(
+        Vec<(u32, u32, u32, u32)>,
+        Vec<(u32, u32, u32, u32, u32, u32)>,
+    )> {
         if data.len() < 16 {
             return None;
         }
 
         let mut off = 0usize;
-        let magic = u32::from_le_bytes([data[off], data[off+1], data[off+2], data[off+3]]);
+        let magic = u32::from_le_bytes([data[off], data[off + 1], data[off + 2], data[off + 3]]);
         off += 4;
         if magic != 0x5348_4150 {
             return None;
         }
 
-        let _version = u32::from_le_bytes([data[off], data[off+1], data[off+2], data[off+3]]);
+        let _version = u32::from_le_bytes([data[off], data[off + 1], data[off + 2], data[off + 3]]);
         off += 4;
-        let _width = u32::from_le_bytes([data[off], data[off+1], data[off+2], data[off+3]]);
+        let _width = u32::from_le_bytes([data[off], data[off + 1], data[off + 2], data[off + 3]]);
         off += 4;
-        let _height = u32::from_le_bytes([data[off], data[off+1], data[off+2], data[off+3]]);
+        let _height = u32::from_le_bytes([data[off], data[off + 1], data[off + 2], data[off + 3]]);
         off += 4;
 
         if off + 4 > data.len() {
             return None;
         }
-        let num_spans = u32::from_le_bytes([data[off], data[off+1], data[off+2], data[off+3]]) as usize;
+        let num_spans =
+            u32::from_le_bytes([data[off], data[off + 1], data[off + 2], data[off + 3]]) as usize;
         off += 4;
 
         let mut spans = Vec::new();
@@ -411,13 +417,13 @@ impl ProvinceGrid {
             if off + 16 > data.len() {
                 return None;
             }
-            let id = u32::from_le_bytes([data[off], data[off+1], data[off+2], data[off+3]]);
+            let id = u32::from_le_bytes([data[off], data[off + 1], data[off + 2], data[off + 3]]);
             off += 4;
-            let y = u32::from_le_bytes([data[off], data[off+1], data[off+2], data[off+3]]);
+            let y = u32::from_le_bytes([data[off], data[off + 1], data[off + 2], data[off + 3]]);
             off += 4;
-            let x0 = u32::from_le_bytes([data[off], data[off+1], data[off+2], data[off+3]]);
+            let x0 = u32::from_le_bytes([data[off], data[off + 1], data[off + 2], data[off + 3]]);
             off += 4;
-            let x1 = u32::from_le_bytes([data[off], data[off+1], data[off+2], data[off+3]]);
+            let x1 = u32::from_le_bytes([data[off], data[off + 1], data[off + 2], data[off + 3]]);
             off += 4;
             spans.push((id, y, x0, x1));
         }
@@ -425,7 +431,8 @@ impl ProvinceGrid {
         if off + 4 > data.len() {
             return None;
         }
-        let num_segs = u32::from_le_bytes([data[off], data[off+1], data[off+2], data[off+3]]) as usize;
+        let num_segs =
+            u32::from_le_bytes([data[off], data[off + 1], data[off + 2], data[off + 3]]) as usize;
         off += 4;
 
         let mut segs = Vec::new();
@@ -433,17 +440,17 @@ impl ProvinceGrid {
             if off + 24 > data.len() {
                 return None;
             }
-            let a = u32::from_le_bytes([data[off], data[off+1], data[off+2], data[off+3]]);
+            let a = u32::from_le_bytes([data[off], data[off + 1], data[off + 2], data[off + 3]]);
             off += 4;
-            let b = u32::from_le_bytes([data[off], data[off+1], data[off+2], data[off+3]]);
+            let b = u32::from_le_bytes([data[off], data[off + 1], data[off + 2], data[off + 3]]);
             off += 4;
-            let x0 = u32::from_le_bytes([data[off], data[off+1], data[off+2], data[off+3]]);
+            let x0 = u32::from_le_bytes([data[off], data[off + 1], data[off + 2], data[off + 3]]);
             off += 4;
-            let y0 = u32::from_le_bytes([data[off], data[off+1], data[off+2], data[off+3]]);
+            let y0 = u32::from_le_bytes([data[off], data[off + 1], data[off + 2], data[off + 3]]);
             off += 4;
-            let x1 = u32::from_le_bytes([data[off], data[off+1], data[off+2], data[off+3]]);
+            let x1 = u32::from_le_bytes([data[off], data[off + 1], data[off + 2], data[off + 3]]);
             off += 4;
-            let y1 = u32::from_le_bytes([data[off], data[off+1], data[off+2], data[off+3]]);
+            let y1 = u32::from_le_bytes([data[off], data[off + 1], data[off + 2], data[off + 3]]);
             off += 4;
             segs.push((a, b, x0, y0, x1, y1));
         }

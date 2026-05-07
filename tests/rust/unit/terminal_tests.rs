@@ -99,7 +99,6 @@ mod widget_tests {
         assert_eq!(base.x, 2);
         assert_eq!(base.y, 6);
     }
-
 }
 
 // ── terminal_state ────────────────────────────────────────────────────────────

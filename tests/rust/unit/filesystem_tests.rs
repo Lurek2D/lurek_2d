@@ -178,7 +178,8 @@ mod file_handle_tests {
         writer.write(b"abc").unwrap();
         writer.close().unwrap();
 
-        let mut appender = FileHandle::open(&fs, "save/mode_roundtrip.txt", FileMode::Append).unwrap();
+        let mut appender =
+            FileHandle::open(&fs, "save/mode_roundtrip.txt", FileMode::Append).unwrap();
         appender.write(b"def").unwrap();
         appender.close().unwrap();
 

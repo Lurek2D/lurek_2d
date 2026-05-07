@@ -123,7 +123,7 @@ impl LuaUserData for LuaFileWatcher {
         // -- check --
         /// Polls the watcher. If the file has changed since the last call, fires the
         /// `onChanged` callback (if set) and returns `true`.
-            /// @return | boolean | True if the watched path changed.
+        /// @return | boolean | True if the watched path changed.
         methods.add_method_mut("check", |lua, this, ()| {
             let changed = this.watcher.poll();
             if !changed.is_empty() {
@@ -139,7 +139,7 @@ impl LuaUserData for LuaFileWatcher {
 
         // -- getPath --
         /// Returns the watched path string.
-            /// @return | string | Watched path.
+        /// @return | string | Watched path.
         methods.add_method("getPath", |_, this, ()| Ok(this.path.clone()));
 
         // -- cancel --
@@ -155,13 +155,13 @@ impl LuaUserData for LuaFileWatcher {
 
         // -- type --
         /// Returns the type name of this object.
-            /// @return | string | Lua-visible type name.
+        /// @return | string | Lua-visible type name.
         methods.add_method("type", |_, _, ()| Ok("LFileWatcher"));
 
         // -- typeOf --
         /// Returns true if this object is of the given type.
         /// @param | name | string | Name string.
-            /// @return | boolean | True if the type name matches LFileWatcher or Object.
+        /// @return | boolean | True if the type name matches LFileWatcher or Object.
         methods.add_method("typeOf", |_, _, name: String| {
             Ok(name == "LFileWatcher" || name == "Object")
         });
@@ -181,7 +181,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// @param | message | string | Message text.
     let s = shared.clone();
     /// @return | nil | No value is returned.
-    dt.set("log", lua.create_function(move |_, (level, message): (String, String)| {
+    dt.set(
+        "log",
+        lua.create_function(move |_, (level, message): (String, String)| {
             s.borrow_mut().logger.push(&level, &message, "?", 0, None);
             Ok(())
         })?,
@@ -192,55 +194,87 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// @param | message | string | Message text.
     /// @return | nil | No value is returned.
     let s = shared.clone();
-    dt.set("trace", lua.create_function(move |_, message: String| {
-        s.borrow_mut().logger.push("trace", &message, "?", 0, None); Ok(()) })?)?;
+    dt.set(
+        "trace",
+        lua.create_function(move |_, message: String| {
+            s.borrow_mut().logger.push("trace", &message, "?", 0, None);
+            Ok(())
+        })?,
+    )?;
 
     // -- debug --
     /// Logs a message at DEBUG level.
     /// @param | message | string | Message text.
     /// @return | nil | No value is returned.
     let s = shared.clone();
-    dt.set("debug", lua.create_function(move |_, message: String| {
-        s.borrow_mut().logger.push("debug", &message, "?", 0, None); Ok(()) })?)?;
+    dt.set(
+        "debug",
+        lua.create_function(move |_, message: String| {
+            s.borrow_mut().logger.push("debug", &message, "?", 0, None);
+            Ok(())
+        })?,
+    )?;
 
     // -- info --
     /// Logs a message at INFO level.
     /// @param | message | string | Message text.
     /// @return | nil | No value is returned.
     let s = shared.clone();
-    dt.set("info", lua.create_function(move |_, message: String| {
-        s.borrow_mut().logger.push("info", &message, "?", 0, None); Ok(()) })?)?;
+    dt.set(
+        "info",
+        lua.create_function(move |_, message: String| {
+            s.borrow_mut().logger.push("info", &message, "?", 0, None);
+            Ok(())
+        })?,
+    )?;
 
     // -- warn --
     /// Logs a message at WARN level.
     /// @param | message | string | Message text.
     /// @return | nil | No value is returned.
     let s = shared.clone();
-    dt.set("warn", lua.create_function(move |_, message: String| {
-        s.borrow_mut().logger.push("warn", &message, "?", 0, None); Ok(()) })?)?;
+    dt.set(
+        "warn",
+        lua.create_function(move |_, message: String| {
+            s.borrow_mut().logger.push("warn", &message, "?", 0, None);
+            Ok(())
+        })?,
+    )?;
 
     // -- error --
     /// Logs a message at ERROR level.
     /// @param | message | string | Message text.
     /// @return | nil | No value is returned.
     let s = shared.clone();
-    dt.set("error", lua.create_function(move |_, message: String| {
-        s.borrow_mut().logger.push("error", &message, "?", 0, None); Ok(()) })?)?;
+    dt.set(
+        "error",
+        lua.create_function(move |_, message: String| {
+            s.borrow_mut().logger.push("error", &message, "?", 0, None);
+            Ok(())
+        })?,
+    )?;
 
     // -- fatal --
     /// Logs a message at FATAL level.
     /// @param | message | string | Message text.
     /// @return | nil | No value is returned.
     let s = shared.clone();
-    dt.set("fatal", lua.create_function(move |_, message: String| {
-        s.borrow_mut().logger.push("fatal", &message, "?", 0, None); Ok(()) })?)?;
+    dt.set(
+        "fatal",
+        lua.create_function(move |_, message: String| {
+            s.borrow_mut().logger.push("fatal", &message, "?", 0, None);
+            Ok(())
+        })?,
+    )?;
 
     // -- setLogLevel --
     /// Sets the minimum log level.
     /// @param | level | string | Level name.
     let s = shared.clone();
     /// @return | nil | No value is returned.
-    dt.set("setLogLevel", lua.create_function(move |_, level: String| {
+    dt.set(
+        "setLogLevel",
+        lua.create_function(move |_, level: String| {
             use crate::devtools::LogLevel;
             if let Some(lv) = LogLevel::from_str(&level) {
                 s.borrow_mut().logger.min_level = lv;
@@ -252,8 +286,10 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     // -- getLogLevel --
     /// Returns the current minimum log level.
     let s = shared.clone();
-        /// @return | string | Current minimum log level name.
-    dt.set("getLogLevel", lua.create_function(move |_, ()| Ok(s.borrow().logger.min_level.as_str().to_string()))?,
+    /// @return | string | Current minimum log level name.
+    dt.set(
+        "getLogLevel",
+        lua.create_function(move |_, ()| Ok(s.borrow().logger.min_level.as_str().to_string()))?,
     )?;
 
     // -- setLogConsole --
@@ -261,7 +297,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// @param | enabled | boolean | Whether it is enabled.
     let s = shared.clone();
     /// @return | nil | No value is returned.
-    dt.set("setLogConsole", lua.create_function(move |_, enabled: bool| {
+    dt.set(
+        "setLogConsole",
+        lua.create_function(move |_, enabled: bool| {
             s.borrow_mut().logger.console_enabled = enabled;
             Ok(())
         })?,
@@ -270,8 +308,10 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     // -- getLogConsole --
     /// Returns whether console log output is enabled.
     let s = shared.clone();
-        /// @return | boolean | True if console log output is enabled.
-    dt.set("getLogConsole", lua.create_function(move |_, ()| Ok(s.borrow().logger.console_enabled))?,
+    /// @return | boolean | True if console log output is enabled.
+    dt.set(
+        "getLogConsole",
+        lua.create_function(move |_, ()| Ok(s.borrow().logger.console_enabled))?,
     )?;
 
     // -- setLogFile --
@@ -279,7 +319,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// @param | path | string | Filesystem path.
     let s = shared.clone();
     /// @return | nil | No value is returned.
-    dt.set("setLogFile", lua.create_function(move |_, path: String| {
+    dt.set(
+        "setLogFile",
+        lua.create_function(move |_, path: String| {
             s.borrow_mut().logger.log_file = path;
             Ok(())
         })?,
@@ -288,16 +330,20 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     // -- getLogFile --
     /// Returns the current log file path.
     let s = shared.clone();
-        /// @return | string | Current log file path.
-    dt.set("getLogFile", lua.create_function(move |_, ()| Ok(s.borrow().logger.log_file.clone()))?,
+    /// @return | string | Current log file path.
+    dt.set(
+        "getLogFile",
+        lua.create_function(move |_, ()| Ok(s.borrow().logger.log_file.clone()))?,
     )?;
 
     // -- getLogHistory --
     /// Returns recent log entries as an array of tables.
-        /// @param | count | integer? | Maximum number of entries to return.
+    /// @param | count | integer? | Maximum number of entries to return.
     let s = shared.clone();
-        /// @return | table | Recent log entry records.
-    dt.set("getLogHistory", lua.create_function(move |lua, count: Option<usize>| {
+    /// @return | table | Recent log entry records.
+    dt.set(
+        "getLogHistory",
+        lua.create_function(move |lua, count: Option<usize>| {
             let st = s.borrow();
             let entries = st.logger.tail(count);
             let tbl = lua.create_table()?;
@@ -321,7 +367,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// Discards all accumulated log entries from the in-memory devtools log buffer.
     let s = shared.clone();
     /// @return | nil | No value is returned.
-    dt.set("clearLog", lua.create_function(move |_, ()| {
+    dt.set(
+        "clearLog",
+        lua.create_function(move |_, ()| {
             s.borrow_mut().logger.clear();
             Ok(())
         })?,
@@ -334,7 +382,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// @param | enabled | boolean | Whether it is enabled.
     let s = shared.clone();
     /// @return | nil | No value is returned.
-    dt.set("setProfilingEnabled", lua.create_function(move |_, enabled: bool| {
+    dt.set(
+        "setProfilingEnabled",
+        lua.create_function(move |_, enabled: bool| {
             s.borrow_mut().profiler.enabled = enabled;
             Ok(())
         })?,
@@ -343,8 +393,10 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     // -- isProfilingEnabled --
     /// Returns whether the profiler is enabled.
     let s = shared.clone();
-        /// @return | boolean | True if the profiler is enabled.
-    dt.set("isProfilingEnabled", lua.create_function(move |_, ()| Ok(s.borrow().profiler.enabled))?,
+    /// @return | boolean | True if the profiler is enabled.
+    dt.set(
+        "isProfilingEnabled",
+        lua.create_function(move |_, ()| Ok(s.borrow().profiler.enabled))?,
     )?;
 
     // -- profilePush --
@@ -352,7 +404,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// @param | name | string | Name string.
     let s = shared.clone();
     /// @return | nil | No value is returned.
-    dt.set("profilePush", lua.create_function(move |_, name: String| {
+    dt.set(
+        "profilePush",
+        lua.create_function(move |_, name: String| {
             s.borrow_mut().profiler.push(&name);
             Ok(())
         })?,
@@ -363,7 +417,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     let s = shared.clone();
     /// @param | value | string? | Value to store.
     /// @return | nil | No value is returned.
-    dt.set("profilePop", lua.create_function(move |_, _: Option<String>| {
+    dt.set(
+        "profilePop",
+        lua.create_function(move |_, _: Option<String>| {
             s.borrow_mut().profiler.pop();
             Ok(())
         })?,
@@ -373,7 +429,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// Seals the current frame of profiling data.
     let s = shared.clone();
     /// @return | nil | No value is returned.
-    dt.set("profileFrame", lua.create_function(move |_, ()| {
+    dt.set(
+        "profileFrame",
+        lua.create_function(move |_, ()| {
             s.borrow_mut().profiler.end_frame();
             Ok(())
         })?,
@@ -382,16 +440,20 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     // -- getProfileFrameCount --
     /// Returns the number of retained profile frames.
     let s = shared.clone();
-        /// @return | integer | Number of retained profile frames.
-    dt.set("getProfileFrameCount", lua.create_function(move |_, ()| Ok(s.borrow().profiler.frames.len()))?,
+    /// @return | integer | Number of retained profile frames.
+    dt.set(
+        "getProfileFrameCount",
+        lua.create_function(move |_, ()| Ok(s.borrow().profiler.frames.len()))?,
     )?;
 
     // -- getProfileData --
     /// Returns zone data table for a specific frame (0 or nil = most recent).
     /// @param | frame | integer? | Frame value.
     let s = shared.clone();
-        /// @return | table | Zone data records for the requested frame.
-    dt.set("getProfileData", lua.create_function(move |lua, frame: Option<i64>| {
+    /// @return | table | Zone data records for the requested frame.
+    dt.set(
+        "getProfileData",
+        lua.create_function(move |lua, frame: Option<i64>| {
             let st = s.borrow();
             let idx = frame.unwrap_or(0);
             let tbl = lua.create_table()?;
@@ -408,7 +470,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// Clears all profiling data and resets the zone stack.
     let s = shared.clone();
     /// @return | nil | No value is returned.
-    dt.set("resetProfile", lua.create_function(move |_, ()| {
+    dt.set(
+        "resetProfile",
+        lua.create_function(move |_, ()| {
             s.borrow_mut().profiler.reset();
             Ok(())
         })?,
@@ -421,7 +485,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// @param | dt | number | Delta time in seconds.
     let s = shared.clone();
     /// @return | nil | No value is returned.
-    dt.set("recordFrameTime", lua.create_function(move |_, dt_val: f64| {
+    dt.set(
+        "recordFrameTime",
+        lua.create_function(move |_, dt_val: f64| {
             s.borrow_mut().frame_stats.record(dt_val);
             Ok(())
         })?,
@@ -430,8 +496,10 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     // -- getFrameStats --
     /// Returns a table of computed frame statistics.
     let s = shared.clone();
-        /// @return | table | Computed frame statistics.
-    dt.set("getFrameStats", lua.create_function(move |lua, ()| {
+    /// @return | table | Computed frame statistics.
+    dt.set(
+        "getFrameStats",
+        lua.create_function(move |lua, ()| {
             let snap = s.borrow().frame_stats.snapshot();
             let tbl = lua.create_table()?;
             tbl.set("fps", snap.fps)?;
@@ -450,8 +518,10 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     // -- getFrameHistory --
     /// Returns the raw frame-time sample array.
     let s = shared.clone();
-        /// @return | table | Recorded frame-time samples.
-    dt.set("getFrameHistory", lua.create_function(move |lua, ()| {
+    /// @return | table | Recorded frame-time samples.
+    dt.set(
+        "getFrameHistory",
+        lua.create_function(move |lua, ()| {
             let st = s.borrow();
             let tbl = lua.create_table()?;
             for (i, &val) in st.frame_stats.history.iter().enumerate() {
@@ -466,7 +536,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// @param | size | integer | Requested size.
     let s = shared.clone();
     /// @return | nil | No value is returned.
-    dt.set("setFrameHistorySize", lua.create_function(move |_, size: usize| {
+    dt.set(
+        "setFrameHistorySize",
+        lua.create_function(move |_, size: usize| {
             s.borrow_mut().frame_stats.set_capacity(size);
             Ok(())
         })?,
@@ -475,8 +547,10 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     // -- getFrameHistorySize --
     /// Returns the current frame-history buffer capacity.
     let s = shared.clone();
-        /// @return | integer | Frame-history buffer capacity.
-    dt.set("getFrameHistorySize", lua.create_function(move |_, ()| Ok(s.borrow().frame_stats.capacity))?,
+    /// @return | integer | Frame-history buffer capacity.
+    dt.set(
+        "getFrameHistorySize",
+        lua.create_function(move |_, ()| Ok(s.borrow().frame_stats.capacity))?,
     )?;
 
     // -- File Watcher -------------------------------------------------
@@ -485,8 +559,10 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// Adds a file path to the watch list. Returns false if already watched.
     /// @param | path | string | Filesystem path.
     let s = shared.clone();
-        /// @return | boolean | True if the path was added to the watch list.
-    dt.set("watch", lua.create_function(move |_, path: String| {
+    /// @return | boolean | True if the path was added to the watch list.
+    dt.set(
+        "watch",
+        lua.create_function(move |_, path: String| {
             let mut st = s.borrow_mut();
             if st.watcher.paths.contains_key(std::path::Path::new(&path)) {
                 return Ok(false);
@@ -500,15 +576,19 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// Removes a file path from the watch list.
     /// @param | path | string | Filesystem path.
     let s = shared.clone();
-        /// @return | boolean | True if the path was removed from the watch list.
-    dt.set("unwatch", lua.create_function(move |_, path: String| Ok(s.borrow_mut().watcher.unwatch(&path)))?,
+    /// @return | boolean | True if the path was removed from the watch list.
+    dt.set(
+        "unwatch",
+        lua.create_function(move |_, path: String| Ok(s.borrow_mut().watcher.unwatch(&path)))?,
     )?;
 
     // -- getWatchedPaths --
     /// Returns an array of all watched paths.
     let s = shared.clone();
-        /// @return | table | Watched file paths.
-    dt.set("getWatchedPaths", lua.create_function(move |lua, ()| {
+    /// @return | table | Watched file paths.
+    dt.set(
+        "getWatchedPaths",
+        lua.create_function(move |lua, ()| {
             let st = s.borrow();
             let mut paths = st.watcher.watched_paths();
             paths.sort();
@@ -523,8 +603,10 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     // -- scan --
     /// Polls all watched paths and returns paths whose mtime changed.
     let s = shared.clone();
-        /// @return | table | Paths whose modification time changed.
-    dt.set("scan", lua.create_function(move |lua, ()| {
+    /// @return | table | Paths whose modification time changed.
+    dt.set(
+        "scan",
+        lua.create_function(move |lua, ()| {
             let mut st = s.borrow_mut();
             let changed = st.watcher.poll();
             let tbl = lua.create_table()?;
@@ -539,7 +621,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// Clears all watched paths.
     let s = shared.clone();
     /// @return | nil | No value is returned.
-    dt.set("clearWatches", lua.create_function(move |_, ()| {
+    dt.set(
+        "clearWatches",
+        lua.create_function(move |_, ()| {
             s.borrow_mut().watcher.clear();
             Ok(())
         })?,
@@ -548,8 +632,10 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     // -- getWatchInterval --
     /// Returns the file watch poll interval in seconds.
     let s = shared.clone();
-        /// @return | number | File watch poll interval in seconds.
-    dt.set("getWatchInterval", lua.create_function(move |_, ()| Ok(s.borrow().watch_interval))?,
+    /// @return | number | File watch poll interval in seconds.
+    dt.set(
+        "getWatchInterval",
+        lua.create_function(move |_, ()| Ok(s.borrow().watch_interval))?,
     )?;
 
     // -- setWatchInterval --
@@ -557,7 +643,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// @param | interval | number | Interval in seconds.
     let s = shared.clone();
     /// @return | nil | No value is returned.
-    dt.set("setWatchInterval", lua.create_function(move |_, interval: f32| {
+    dt.set(
+        "setWatchInterval",
+        lua.create_function(move |_, interval: f32| {
             s.borrow_mut().watch_interval = interval.max(0.01);
             Ok(())
         })?,
@@ -569,7 +657,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// Returns the Lua call stack as a table of frames.
     /// @param | max_depth | integer? | Maximum recursion depth.
     /// @return | table | Sequential table of Lua stack-frame tables.
-    dt.set("getCallStack", lua.create_function(|lua, max_depth: Option<usize>| {
+    dt.set(
+        "getCallStack",
+        lua.create_function(|lua, max_depth: Option<usize>| {
             let max = max_depth.unwrap_or(20).min(100);
             // LUA-EVAL-JUSTIFIED: lua.load() is required because `debug.getinfo` is a Lua C
             // function operating in the Lua VM's debug state; mlua exposes no Rust
@@ -597,8 +687,10 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     // -- eval --
     /// Evaluates a Lua string and returns (success, results...).
     /// @param | code | string | Lua code string.
-        /// @return | boolean | True if the code executed successfully.
-    dt.set("eval", lua.create_function(
+    /// @return | boolean | True if the code executed successfully.
+    dt.set(
+        "eval",
+        lua.create_function(
             // LUA-EVAL-JUSTIFIED: lua.load() here IS the feature - devtools.eval() evaluates
             // arbitrary Lua code supplied by the developer at runtime.
             |lua, code: String| match lua.load(&code).eval::<LuaMultiValue>() {
@@ -620,8 +712,10 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     // -- openConsole --
     /// Opens the console window (updates the console flag; returns true).
     let s = shared.clone();
-        /// @return | boolean | True after opening the console flag.
-    dt.set("openConsole", lua.create_function(move |_, ()| {
+    /// @return | boolean | True after opening the console flag.
+    dt.set(
+        "openConsole",
+        lua.create_function(move |_, ()| {
             s.borrow_mut().console_open = true;
             Ok(true)
         })?,
@@ -630,8 +724,10 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     // -- isConsoleOpen --
     /// Returns whether the console is considered open.
     let s = shared.clone();
-        /// @return | boolean | True if the console is open.
-    dt.set("isConsoleOpen", lua.create_function(move |_, ()| Ok(s.borrow().console_open))?,
+    /// @return | boolean | True if the console is open.
+    dt.set(
+        "isConsoleOpen",
+        lua.create_function(move |_, ()| Ok(s.borrow().console_open))?,
     )?;
 
     // -- Live Watch / Snapshot -------------------------------------------------
@@ -643,8 +739,10 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// @param | getter | function | Getter callback.
     /// @param | category | string? | Category name.
     let s = shared.clone();
-        /// @return | integer | Identifier for the new watch.
-    dt.set("exposeWatch", lua.create_function(
+    /// @return | integer | Identifier for the new watch.
+    dt.set(
+        "exposeWatch",
+        lua.create_function(
             move |lua, (name, getter, category): (String, LuaFunction, Option<String>)| {
                 let key = lua.create_registry_value(getter)?;
                 let mut st = s.borrow_mut();
@@ -662,10 +760,12 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
 
     // -- removeWatch --
     /// Removes a watch by the id returned from exposeWatch. Returns true if removed.
-        /// @param | id | integer | Watch identifier returned by exposeWatch.
+    /// @param | id | integer | Watch identifier returned by exposeWatch.
     let s = shared.clone();
-        /// @return | boolean | True if the watch was removed.
-    dt.set("removeWatch", lua.create_function(move |_, id: u64| {
+    /// @return | boolean | True if the watch was removed.
+    dt.set(
+        "removeWatch",
+        lua.create_function(move |_, id: u64| {
             let mut st = s.borrow_mut();
             let start_id = st.next_watch_id - st.watches.len() as u64;
             let idx = id.checked_sub(start_id) as Option<u64>;
@@ -682,8 +782,10 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     // -- getWatches --
     /// Calls all registered watch getters and returns a table of {name, category, value} records.
     let s = shared.clone();
-        /// @return | table | Watch records with name, category, and sampled value.
-    dt.set("getWatches", lua.create_function(move |lua, ()| {
+    /// @return | table | Watch records with name, category, and sampled value.
+    dt.set(
+        "getWatches",
+        lua.create_function(move |lua, ()| {
             let st = s.borrow();
             let tbl = lua.create_table()?;
             for (i, entry) in st.watches.iter().enumerate() {
@@ -709,8 +811,10 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// Takes a structured snapshot of all watches + frame stats + last profile frame.
     /// Returns a single table suitable for logging or sending to the VS Code extension.
     let s = shared.clone();
-        /// @return | table | Snapshot of watches, frame stats, profile, and log data.
-    dt.set("snapshot", lua.create_function(move |lua, ()| {
+    /// @return | table | Snapshot of watches, frame stats, profile, and log data.
+    dt.set(
+        "snapshot",
+        lua.create_function(move |lua, ()| {
             let st = s.borrow();
             let snap = lua.create_table()?;
 
@@ -772,9 +876,11 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// Returns a flat summary table of all recorded profiler zones across all stored
     /// frames. Each entry is `{name, calls, total_ms, avg_ms, min_ms, max_ms, self_ms}`.
     /// Useful for CSV export or performance dashboards.
-        /// @return | table | Profiler zone summary records.
+    /// @return | table | Profiler zone summary records.
     let s = shared.clone();
-    dt.set("profilerReport", lua.create_function(move |lua, ()| {
+    dt.set(
+        "profilerReport",
+        lua.create_function(move |lua, ()| {
             let mut aggregated: std::collections::HashMap<String, (f64, u32, f64, f64, f64)> =
                 Default::default();
             let st = s.borrow();
@@ -804,7 +910,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
                 row.set("name", name.clone())?;
                 row.set("calls", *calls)?;
                 row.set("total_ms", *total)?;
-                row.set("avg_ms", if *calls > 0 {
+                row.set(
+                    "avg_ms",
+                    if *calls > 0 {
                         total / (*calls as f64)
                     } else {
                         0.0
@@ -829,7 +937,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// - `cancel()` - removes the stored callback
     /// @param | path | string | file or directory path to watch.
     /// @return | FileWatcher | New standalone per-path file watcher. Call :check() once per frame.
-    dt.set("newFileWatcher", lua.create_function(|lua, path: String| {
+    dt.set(
+        "newFileWatcher",
+        lua.create_function(|lua, path: String| {
             let mut fw = LuaFileWatcher {
                 watcher: FileWatcher::new(),
                 path: path.clone(),
@@ -860,7 +970,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// ```
     /// @param | max_history | integer? | Maximum history length.
     /// @return | ReplConsole | REPL console userdata.
-    dt.set("newRepl", lua.create_function(|lua, max_history: Option<usize>| {
+    dt.set(
+        "newRepl",
+        lua.create_function(|lua, max_history: Option<usize>| {
             lua.create_userdata(LuaReplConsole {
                 inner: ReplConsole::new(max_history.unwrap_or(200)),
             })
@@ -891,14 +1003,14 @@ impl LuaUserData for LuaReplConsole {
         /// Any Lua error is caught and returned as an error string.
         ///
         /// @param | code | string | Lua code string.
-            /// @return | string | REPL result or error text.
+        /// @return | string | REPL result or error text.
         methods.add_method_mut("eval", |lua, this, code: String| {
             Ok(this.inner.eval(&code, lua))
         });
 
         // -- history --
         /// Returns an ordered array of past inputs (oldest first).
-            /// @return | table | History entries from oldest to newest.
+        /// @return | table | History entries from oldest to newest.
         methods.add_method("history", |lua, this, ()| {
             let t = lua.create_table()?;
             for (i, entry) in this.inner.history().iter().enumerate() {
@@ -917,18 +1029,18 @@ impl LuaUserData for LuaReplConsole {
 
         // -- len --
         /// Returns the number of history entries.
-            /// @return | integer | Number of history entries.
+        /// @return | integer | Number of history entries.
         methods.add_method("len", |_, this, ()| Ok(this.inner.len()));
 
         // -- type --
         /// Returns the type name of this object.
-            /// @return | string | Lua-visible type name.
+        /// @return | string | Lua-visible type name.
         methods.add_method("type", |_, _, ()| Ok("LReplConsole"));
 
         // -- typeOf --
         /// Returns true if this object is of the given type.
         /// @param | name | string | Name string.
-            /// @return | boolean | True if the type name matches LReplConsole or Object.
+        /// @return | boolean | True if the type name matches LReplConsole or Object.
         methods.add_method("typeOf", |_, _, name: String| {
             Ok(name == "LReplConsole" || name == "Object")
         });

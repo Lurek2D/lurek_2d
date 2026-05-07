@@ -3,8 +3,8 @@
 //! Provides A* and Dijkstra over arbitrary graph topologies such as province maps,
 //! world graphs, or any custom directed graph with weighted edges.
 
-use std::collections::{BinaryHeap, HashMap};
 use std::cmp::Ordering;
+use std::collections::{BinaryHeap, HashMap};
 
 use crate::graph::core::Graph;
 
@@ -52,16 +52,20 @@ pub fn graph_astar(
 
         // Follow outgoing edges
         for edge in graph.edges.values() {
-            if !edge.active { continue; }
+            if !edge.active {
+                continue;
+            }
             let neighbor = if edge.from_node == id {
                 edge.to_node
             } else if edge.bidirectional && edge.to_node == id {
                 edge.from_node
             } else {
-                continue
+                continue;
             };
 
-            if !graph.nodes.contains_key(&neighbor) { continue; }
+            if !graph.nodes.contains_key(&neighbor) {
+                continue;
+            }
 
             let edge_cost = edge.weight.max(0.0) as f32;
             let new_g = cur_g + edge_cost;
@@ -69,7 +73,10 @@ pub fn graph_astar(
                 g_cost.insert(neighbor, new_g);
                 came_from.insert(neighbor, id);
                 let h = heuristic.map_or(0.0, |f| f(neighbor, to));
-                open.push(GNode { id: neighbor, f: new_g + h });
+                open.push(GNode {
+                    id: neighbor,
+                    f: new_g + h,
+                });
             }
         }
     }
@@ -101,26 +108,35 @@ pub fn graph_range(graph: &Graph, start: u64, max_cost: f32) -> Vec<(u64, f32)> 
     let mut result = Vec::new();
 
     while let Some(GNode { id, f: cost }) = heap.pop() {
-        if cost > *dist.get(&id).unwrap_or(&f32::MAX) { continue; }
+        if cost > *dist.get(&id).unwrap_or(&f32::MAX) {
+            continue;
+        }
         result.push((id, cost));
 
         for edge in graph.edges.values() {
-            if !edge.active { continue; }
+            if !edge.active {
+                continue;
+            }
             let neighbor = if edge.from_node == id {
                 edge.to_node
             } else if edge.bidirectional && edge.to_node == id {
                 edge.from_node
             } else {
-                continue
+                continue;
             };
 
-            if !graph.nodes.contains_key(&neighbor) { continue; }
+            if !graph.nodes.contains_key(&neighbor) {
+                continue;
+            }
 
             let edge_cost = edge.weight.max(0.0) as f32;
             let new_cost = cost + edge_cost;
             if new_cost <= max_cost && new_cost < *dist.get(&neighbor).unwrap_or(&f32::MAX) {
                 dist.insert(neighbor, new_cost);
-                heap.push(GNode { id: neighbor, f: new_cost });
+                heap.push(GNode {
+                    id: neighbor,
+                    f: new_cost,
+                });
             }
         }
     }
@@ -144,12 +160,16 @@ struct GNode {
 }
 
 impl PartialEq for GNode {
-    fn eq(&self, other: &Self) -> bool { self.f == other.f }
+    fn eq(&self, other: &Self) -> bool {
+        self.f == other.f
+    }
 }
 impl Eq for GNode {}
 
 impl PartialOrd for GNode {
-    fn partial_cmp(&self, other: &Self) -> Option<Ordering> { Some(self.cmp(other)) }
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(self.cmp(other))
+    }
 }
 
 impl Ord for GNode {

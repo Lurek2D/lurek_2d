@@ -55,6 +55,8 @@ This module primarily collaborates with `audio`, `camera`, `event`, `filesystem`
 - `WindowState` (`struct`, `shared_state.rs`): Tracks window state and queues window operations for the event loop.
 - `ErrorInfo` (`struct`, `shared_state.rs`): Structured error information for the last engine error.
 - `ScreenshotRequest` (`struct`, `shared_state.rs`): Pending request to save the next rendered screen frame as a PNG.
+- `FrameProfile` (`struct`, `shared_state.rs`): Per-frame callback timing snapshot recorded by the app loop.
+- `ResourceMemoryStats` (`struct`, `shared_state.rs`): Resource-memory accounting snapshot with per-kind bytes and counts.
 - `SharedState` (`struct`, `shared_state.rs`): Shared mutable state passed via `Rc<RefCell<SharedState>>` to all Lua API closures and the engine loop.
 - `RendererStats` (`struct`, `shared_state.rs`): Snapshot of renderer statistics for a single frame.
 
@@ -119,3 +121,5 @@ This module primarily collaborates with `audio`, `camera`, `event`, `filesystem`
 - Summary paragraphs are manual prose. The collected Files, Types, Functions, Lua API Reference, and References sections can be regenerated when the source changes.
 - This module has no dedicated direct `lurek.*` namespace and is usually consumed through higher integration layers.
 - **conf.toml only (updated 2026-04-21)**: `conf.lua` support has been removed. `Config::load` tries `conf.toml` and returns `Config::default()` if absent. `load_from_conf_lua`, `build_config_table`, and `read_config_table` have been deleted. Configuration is TOML-only.
+- **Hot-reload (updated 2026-05-07)**: `app` now watches `conf.toml` and applies mutable settings live (target fps, physics tick, fixed update tick, log level, window title, viewport scale mode) while incrementing a runtime config revision counter.
+- **Engine diagnostics (updated 2026-05-07)**: `lurek.engine.getResourceStats()` now includes per-kind bytes/counts (`texture`, `font`, `canvas`, `shader`, `total`), and `lurek.engine.getFrameProfile()` exposes per-callback CPU timing buckets.

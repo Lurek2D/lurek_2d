@@ -244,13 +244,15 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
 
                 let val = match (payload, fmt) {
                     (LuaValue::String(bytes), Some(SerialFormat::MsgPack)) => {
-                        crate::serial::decode_bytes(bytes.as_bytes().as_ref(), SerialFormat::MsgPack)
+                        crate::serial::decode_bytes(bytes.as_bytes(), SerialFormat::MsgPack)
                             .map_err(LuaError::RuntimeError)?
                     }
                     (LuaValue::String(text), Some(f)) => {
                         let s = text
                             .to_str()
-                            .map_err(|e| LuaError::RuntimeError(format!("decode: expected UTF-8 text: {e}")))?
+                            .map_err(|e| {
+                                LuaError::RuntimeError(format!("decode: expected UTF-8 text: {e}"))
+                            })?
                             .to_string();
                         crate::serial::decode_text(
                             &s,
@@ -264,7 +266,11 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
                     (LuaValue::String(text), None) => {
                         let s = text
                             .to_str()
-                            .map_err(|e| LuaError::RuntimeError(format!("decode: expected UTF-8 text for auto-detect: {e}")))?
+                            .map_err(|e| {
+                                LuaError::RuntimeError(format!(
+                                    "decode: expected UTF-8 text for auto-detect: {e}"
+                                ))
+                            })?
                             .to_string();
                         crate::serial::decode_text(
                             &s,
@@ -295,21 +301,23 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// @return | string | Encoded UTF-8 text or binary bytes string for msgpack.
     tbl.set(
         "encode",
-        lua.create_function(|lua, (value, format, opts): (LuaValue, String, Option<LuaTable>)| {
-            let val = from_lua(&value)?;
-            let fmt = SerialFormat::parse(&format).ok_or_else(|| {
-                LuaError::RuntimeError(
-                    "encode: unknown format (expected json/toml/csv/msgpack)".to_string(),
-                )
-            })?;
-            let encoded = crate::serial::encode(&val, fmt, encode_options_from_table(opts)?)
-                .map_err(LuaError::RuntimeError)?;
+        lua.create_function(
+            |lua, (value, format, opts): (LuaValue, String, Option<LuaTable>)| {
+                let val = from_lua(&value)?;
+                let fmt = SerialFormat::parse(&format).ok_or_else(|| {
+                    LuaError::RuntimeError(
+                        "encode: unknown format (expected json/toml/csv/msgpack)".to_string(),
+                    )
+                })?;
+                let encoded = crate::serial::encode(&val, fmt, encode_options_from_table(opts)?)
+                    .map_err(LuaError::RuntimeError)?;
 
-            match encoded {
-                EncodedValue::Text(s) => lua.create_string(&s),
-                EncodedValue::Binary(bytes) => lua.create_string(&bytes),
-            }
-        })?,
+                match encoded {
+                    EncodedValue::Text(s) => lua.create_string(&s),
+                    EncodedValue::Binary(bytes) => lua.create_string(&bytes),
+                }
+            },
+        )?,
     )?;
 
     // -- applyDefaults --
@@ -322,8 +330,8 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
         lua.create_function(|lua, (value, schema): (LuaValue, LuaValue)| {
             let val = from_lua(&value)?;
             let sch = from_lua(&schema)?;
-            let patched = crate::serial::apply_schema_defaults(&val, &sch)
-                .map_err(LuaError::RuntimeError)?;
+            let patched =
+                crate::serial::apply_schema_defaults(&val, &sch).map_err(LuaError::RuntimeError)?;
             to_lua(lua, &patched)
         })?,
     )?;

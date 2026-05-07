@@ -92,7 +92,9 @@ impl Need {
     /// # Returns
     /// `f32`.
     pub fn urgency_score(&self) -> f32 {
-        if !self.enabled { return 0.0; }
+        if !self.enabled {
+            return 0.0;
+        }
         self.urgency_factor * (1.0 - self.value)
     }
 
@@ -216,7 +218,9 @@ impl NeedAdvertisement {
     /// # Returns
     /// `f32`.
     pub fn score(&self, agent_pos: (f32, f32), need_urgency: f32) -> f32 {
-        if !self.is_available() { return 0.0; }
+        if !self.is_available() {
+            return 0.0;
+        }
         let dx = self.position.0 - agent_pos.0;
         let dy = self.position.1 - agent_pos.1;
         let dist = (dx * dx + dy * dy).sqrt();
@@ -287,7 +291,9 @@ impl NeedSystem {
     /// # Parameters
     /// - `dt` — `f32`.
     pub fn update(&mut self, dt: f32) {
-        for n in &mut self.needs { n.update(dt); }
+        for n in &mut self.needs {
+            n.update(dt);
+        }
     }
 
     /// Returns the name of the most urgent need (highest `urgency_score`).
@@ -296,7 +302,8 @@ impl NeedSystem {
     /// # Returns
     /// `Option<&str>`.
     pub fn most_urgent(&self) -> Option<&str> {
-        self.needs.iter()
+        self.needs
+            .iter()
             .filter(|n| n.enabled)
             .max_by(|a, b| a.urgency_score().partial_cmp(&b.urgency_score()).unwrap())
             .map(|n| n.name.as_str())
@@ -308,7 +315,9 @@ impl NeedSystem {
     /// - `name` — `&str`.
     /// - `amount` — `f32`.
     pub fn satisfy(&mut self, name: &str, amount: f32) {
-        if let Some(need) = self.get_mut(name) { need.satisfy(amount); }
+        if let Some(need) = self.get_mut(name) {
+            need.satisfy(amount);
+        }
     }
 
     /// Returns a list of all need names in this system.
@@ -341,11 +350,17 @@ impl NeedSystem {
     ///
     /// # Returns
     /// `Option<usize>`.
-    pub fn best_advertisement(&self, agent_pos: (f32, f32), ads: &[NeedAdvertisement]) -> Option<usize> {
-        ads.iter().enumerate()
+    pub fn best_advertisement(
+        &self,
+        agent_pos: (f32, f32),
+        ads: &[NeedAdvertisement],
+    ) -> Option<usize> {
+        ads.iter()
+            .enumerate()
             .filter(|(_, ad)| ad.is_available())
             .map(|(i, ad)| {
-                let urgency = self.get(&ad.need_name)
+                let urgency = self
+                    .get(&ad.need_name)
                     .map(|n| n.urgency_score())
                     .unwrap_or(0.0);
                 (i, ad.score(agent_pos, urgency))
@@ -379,8 +394,8 @@ mod tests {
     fn satisfy_increases_value() {
         // satisfy() adds to value; deprive() subtracts
         let mut n = Need::new("rest", 0.1, 0.5, 1.5);
-        n.deprive(0.5);  // value = 1.0 - 0.5 = 0.5
-        n.satisfy(0.2);  // value = 0.5 + 0.2 = 0.7
+        n.deprive(0.5); // value = 1.0 - 0.5 = 0.5
+        n.satisfy(0.2); // value = 0.5 + 0.2 = 0.7
         assert!((n.value - 0.7).abs() < 1e-6);
     }
 
@@ -406,9 +421,9 @@ mod tests {
         let mut s = NeedSystem::new();
         // Deprive hunger so its urgency_score (factor * (1 - value)) is high
         let mut hunger = Need::new("hunger", 0.1, 0.5, 1.5);
-        hunger.deprive(0.9);  // value = 0.1, urgency_score = 1.5 * 0.9 = 1.35
+        hunger.deprive(0.9); // value = 0.1, urgency_score = 1.5 * 0.9 = 1.35
         s.add_need(hunger);
-        let rest = Need::new("rest", 0.1, 0.5, 1.5);  // value = 1.0, urgency_score = 0.0
+        let rest = Need::new("rest", 0.1, 0.5, 1.5); // value = 1.0, urgency_score = 0.0
         s.add_need(rest);
         assert_eq!(s.most_urgent().unwrap(), "hunger");
     }

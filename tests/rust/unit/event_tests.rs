@@ -1,6 +1,6 @@
 mod event_queue_tests {
     use lurek2d::event::{event_to_lua_multi, Event, EventArg, EventPriority, EventQueue};
-    use mlua::Lua;
+    use mlua::{Lua, Value};
 
     #[test]
     fn high_priority_lane_drains_before_normal_lane() {
@@ -43,6 +43,40 @@ mod event_queue_tests {
 
         let hp: f64 = payload_tbl.get("hp").expect("hp key");
         assert!((hp - 12.0).abs() < f64::EPSILON);
+    }
+
+    #[test]
+    fn from_lua_val_table_is_shallow_for_nested_values() {
+        let lua = Lua::new();
+        let table = lua.create_table().expect("table");
+        table.set("hp", 10).expect("set hp");
+        table.set(true, false).expect("set bool key");
+        let nested = lua.create_table().expect("nested");
+        nested.set("k", "v").expect("set nested");
+        table.set("nested", nested).expect("set nested table");
+
+        let converted = EventArg::from_lua_val(&Value::Table(table)).expect("convert event arg");
+        let EventArg::Table(entries) = converted else {
+            panic!("expected EventArg::Table");
+        };
+
+        let event = Event {
+            name: "table_check".to_string(),
+            args: vec![EventArg::Table(entries)],
+        };
+        let values = event_to_lua_multi(&lua, &event).expect("event to lua");
+        let payload_tbl = match &values[1] {
+            Value::Table(tbl) => tbl,
+            other => panic!("expected table payload, got {other:?}"),
+        };
+
+        let hp: f64 = payload_tbl.get("hp").expect("hp key");
+        let bool_val: bool = payload_tbl.get(true).expect("bool key");
+        let nested_val: Value = payload_tbl.get("nested").expect("nested key");
+
+        assert!((hp - 10.0).abs() < f64::EPSILON);
+        assert!(!bool_val);
+        assert!(matches!(nested_val, Value::Nil));
     }
 }
 

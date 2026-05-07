@@ -19,12 +19,29 @@
 //! elapsed counter and step index back to zero.
 
 use std::collections::HashMap;
+use std::path::Path;
 
 use crate::event::{Event, EventArg, EventQueue};
 
+use super::script::MAX_STEPS;
 use super::{Action, Script, Step};
 use crate::log_msg;
 use crate::runtime::log_messages::{AT01_SIM_INIT, AT02_SCRIPT_LOAD};
+
+/// Event sink abstraction used by automation playback.
+///
+/// This decouples `Simulator::update_with_sink` from `EventQueue`, enabling
+/// deterministic unit tests with simple mock sinks.
+pub trait StepEventSink {
+    /// Push an event produced by a simulated step.
+    fn push_event(&mut self, event: Event);
+}
+
+impl StepEventSink for EventQueue {
+    fn push_event(&mut self, event: Event) {
+        self.push(event);
+    }
+}
 
 /// Current playback state of the [`Simulator`].
 ///
@@ -67,6 +84,8 @@ enum PlaybackState {
     /// steps will fire. Callers should check [`Simulator::is_complete`] and
     /// call [`Simulator::stop`] or [`Simulator::start`] as appropriate.
     Complete,
+    /// Playback halted because an automation assertion failed.
+    Failed,
 }
 
 /// Automated input simulation engine.
@@ -104,7 +123,8 @@ pub struct Simulator {
     /// Advanced by each [`Simulator::update`] call when in `Running` state.
     /// Frozen when `Paused`. Reset to `0.0` by [`Simulator::stop`] and
     /// [`Simulator::start`].
-    elapsed: f32,
+    elapsed_micros: u64,
+    dt_carry_micros: f64,
     /// Index of the next step to be dispatched in the active script.
     ///
     /// Steps at indices `0..next_step_idx` have already been dispatched.
@@ -132,6 +152,8 @@ pub struct Simulator {
     /// The engine does not render this overlay itself; the flag is a hint for the
     /// Lua script that calls `lurek.automation:isHighlightMode()`.
     highlight_mode: bool,
+    conditions: HashMap<String, bool>,
+    last_error: Option<String>,
 }
 
 impl Simulator {
@@ -147,12 +169,15 @@ impl Simulator {
         Self {
             scripts: HashMap::new(),
             active_script: None,
-            elapsed: 0.0,
+            elapsed_micros: 0,
+            dt_carry_micros: 0.0,
             next_step_idx: 0,
             state: PlaybackState::Idle,
             macros: HashMap::new(),
             playback_speed: 1.0,
             highlight_mode: false,
+            conditions: HashMap::new(),
+            last_error: None,
         }
     }
 
@@ -233,9 +258,11 @@ impl Simulator {
             return Err(format!("simulator.start: script '{}' is not loaded", name));
         }
         self.active_script = Some(name.to_string());
-        self.elapsed = 0.0;
+        self.elapsed_micros = 0;
+        self.dt_carry_micros = 0.0;
         self.next_step_idx = 0;
         self.state = PlaybackState::Running;
+        self.last_error = None;
         Ok(())
     }
 
@@ -247,7 +274,8 @@ impl Simulator {
     /// call.
     pub fn stop(&mut self) {
         self.active_script = None;
-        self.elapsed = 0.0;
+        self.elapsed_micros = 0;
+        self.dt_carry_micros = 0.0;
         self.next_step_idx = 0;
         self.state = PlaybackState::Idle;
     }
@@ -303,6 +331,16 @@ impl Simulator {
         self.state == PlaybackState::Complete
     }
 
+    /// Return `true` if playback stopped due to a failed assertion.
+    pub fn is_failed(&self) -> bool {
+        self.state == PlaybackState::Failed
+    }
+
+    /// Return the most recent automation failure string.
+    pub fn last_error(&self) -> Option<&str> {
+        self.last_error.as_deref()
+    }
+
     /// Return the index of the next step to be dispatched.
     ///
     /// Steps at indices `0..current_step()` have already been dispatched.
@@ -349,7 +387,17 @@ impl Simulator {
     /// # Returns
     /// `f32`.
     pub fn elapsed_time(&self) -> f32 {
-        self.elapsed
+        self.elapsed_micros as f32 / 1_000_000.0
+    }
+
+    /// Set a named boolean condition used by `when` and `assert` step fields.
+    pub fn set_condition(&mut self, name: String, value: bool) {
+        self.conditions.insert(name, value);
+    }
+
+    /// Return a named condition value.
+    pub fn get_condition(&self, name: &str) -> Option<bool> {
+        self.conditions.get(name).copied()
     }
 
     /// Return a clone of the named script from the registry, if it is loaded.
@@ -508,35 +556,164 @@ impl Simulator {
     /// - `dt` â€” `f32`. Seconds since the previous frame.
     /// - `event_queue` â€” `&mut EventQueue`.
     pub fn update(&mut self, dt: f32, event_queue: &mut EventQueue) {
+        self.update_with_sink(dt, event_queue);
+    }
+
+    /// Advance playback and dispatch due steps into a generic event sink.
+    pub fn update_with_sink<S: StepEventSink>(&mut self, dt: f32, event_sink: &mut S) {
         if self.state != PlaybackState::Running {
             return;
         }
 
-        self.elapsed += dt * self.playback_speed;
+        let delta = (dt.max(0.0) as f64) * (self.playback_speed as f64) * 1_000_000.0;
+        let total = self.dt_carry_micros + delta;
+        let whole = total.floor();
+        self.dt_carry_micros = total - whole;
+        self.elapsed_micros = self.elapsed_micros.saturating_add(whole as u64);
 
         let script_name = match &self.active_script {
             Some(name) => name.clone(),
             None => return,
         };
 
-        let script = match self.scripts.get(&script_name) {
-            Some(s) => s,
-            None => return,
-        };
-
         // Dispatch all steps whose time has been reached.
-        while self.next_step_idx < script.steps.len() {
-            let step = &script.steps[self.next_step_idx];
-            if step.time > self.elapsed {
+        while let Some(step) = self
+            .scripts
+            .get(&script_name)
+            .and_then(|s| s.steps.get(self.next_step_idx))
+            .cloned()
+        {
+            if step_time_micros(&step) > self.elapsed_micros {
                 break;
             }
-            Self::dispatch_step(step, event_queue);
+
+            if let Err(err) = self.execute_step(&script_name, &step, event_sink) {
+                self.last_error = Some(err);
+                self.state = PlaybackState::Failed;
+                break;
+            }
+
             self.next_step_idx += 1;
         }
 
+        if self.state == PlaybackState::Failed {
+            return;
+        }
+
+        let step_count = self
+            .scripts
+            .get(&script_name)
+            .map(|s| s.steps.len())
+            .unwrap_or(0);
+
         // Check if all steps have been dispatched.
-        if self.next_step_idx >= script.steps.len() {
+        if self.next_step_idx >= step_count {
             self.state = PlaybackState::Complete;
+        }
+    }
+
+    fn execute_step<S: StepEventSink>(
+        &mut self,
+        script_name: &str,
+        step: &Step,
+        event_sink: &mut S,
+    ) -> Result<(), String> {
+        if let Some(cond_name) = step.when.as_deref() {
+            let cond = self.conditions.get(cond_name).copied().unwrap_or(false);
+            if !cond {
+                return Ok(());
+            }
+        }
+
+        if let Some(assert_name) = step.assert.as_deref() {
+            let cond = self.conditions.get(assert_name).copied().unwrap_or(false);
+            if !cond {
+                return Err(format!(
+                    "simulator.assert: condition '{}' is false at step {}",
+                    assert_name, self.next_step_idx
+                ));
+            }
+        }
+
+        match step.action {
+            Action::CallMacro => self.expand_macro_step(script_name, step),
+            Action::Assert => {
+                let name = step
+                    .assert
+                    .as_deref()
+                    .or(step.when.as_deref())
+                    .ok_or_else(|| {
+                        "simulator.assert: missing 'assert' condition name".to_string()
+                    })?;
+                if self.conditions.get(name).copied().unwrap_or(false) {
+                    Ok(())
+                } else {
+                    Err(format!(
+                        "simulator.assert action: condition '{}' is false at step {}",
+                        name, self.next_step_idx
+                    ))
+                }
+            }
+            Action::VisualAssert => self.run_visual_assert(step),
+            Action::Repeat | Action::Wait => Ok(()),
+            _ => {
+                Self::dispatch_step(step, event_sink);
+                Ok(())
+            }
+        }
+    }
+
+    fn expand_macro_step(&mut self, script_name: &str, step: &Step) -> Result<(), String> {
+        let macro_name = step
+            .macro_name
+            .as_deref()
+            .ok_or_else(|| "simulator.callMacro: missing step.macro".to_string())?;
+        let macro_script = self
+            .macros
+            .get(macro_name)
+            .cloned()
+            .ok_or_else(|| format!("simulator.callMacro: macro '{}' not found", macro_name))?;
+
+        let active = self.scripts.get_mut(script_name).ok_or_else(|| {
+            format!(
+                "simulator.callMacro: active script '{}' not found",
+                script_name
+            )
+        })?;
+
+        let base_time = step.time.max(0.0);
+        let mut injected = Vec::with_capacity(macro_script.steps.len());
+        for mut nested in macro_script.steps {
+            nested.time = base_time + nested.time.max(0.0);
+            injected.push(nested);
+        }
+
+        let insert_at = self.next_step_idx.saturating_add(1);
+        active.steps.splice(insert_at..insert_at, injected);
+        if active.steps.len() > MAX_STEPS {
+            active.steps.truncate(MAX_STEPS);
+        }
+        Ok(())
+    }
+
+    fn run_visual_assert(&self, step: &Step) -> Result<(), String> {
+        let baseline = step
+            .baseline
+            .as_deref()
+            .ok_or_else(|| "simulator.visualAssert: missing 'baseline'".to_string())?;
+        let actual = step
+            .actual
+            .as_deref()
+            .ok_or_else(|| "simulator.visualAssert: missing 'actual'".to_string())?;
+        let max_diff = step.max_diff.unwrap_or(0);
+        let diff = diff_images(Path::new(baseline), Path::new(actual))?;
+        if diff > max_diff {
+            Err(format!(
+                "simulator.visualAssert: diff {} exceeds maxDiff {} for '{}' vs '{}'",
+                diff, max_diff, actual, baseline
+            ))
+        } else {
+            Ok(())
         }
     }
 
@@ -551,12 +728,12 @@ impl Simulator {
     /// - `MouseWheel` â†’ `"wheelmoved"` with `(dx, dy)`
     /// - `TextInput` â†’ `"textinput"` with `(text)`
     /// - `Wait` â†’ no event pushed (pure delay)
-    fn dispatch_step(step: &Step, event_queue: &mut EventQueue) {
+    fn dispatch_step<S: StepEventSink>(step: &Step, event_queue: &mut S) {
         match step.action {
             Action::KeyPress => {
                 let key = step.key.as_deref().unwrap_or("unknown");
                 let scancode = step.effective_scancode().unwrap_or(key);
-                event_queue.push(Event {
+                event_queue.push_event(Event {
                     name: "keypressed".to_string(),
                     args: vec![
                         EventArg::Str(key.to_string()),
@@ -568,7 +745,7 @@ impl Simulator {
             Action::KeyRelease => {
                 let key = step.key.as_deref().unwrap_or("unknown");
                 let scancode = step.effective_scancode().unwrap_or(key);
-                event_queue.push(Event {
+                event_queue.push_event(Event {
                     name: "keyreleased".to_string(),
                     args: vec![
                         EventArg::Str(key.to_string()),
@@ -581,7 +758,7 @@ impl Simulator {
                 let y = step.y.unwrap_or(0.0);
                 let dx = step.dx.unwrap_or(0.0);
                 let dy = step.dy.unwrap_or(0.0);
-                event_queue.push(Event {
+                event_queue.push_event(Event {
                     name: "mousemoved".to_string(),
                     args: vec![
                         EventArg::Num(x),
@@ -596,7 +773,7 @@ impl Simulator {
                 let y = step.y.unwrap_or(0.0);
                 let button = step.button.unwrap_or(1) as f64;
                 let clicks = step.clicks.unwrap_or(1) as f64;
-                event_queue.push(Event {
+                event_queue.push_event(Event {
                     name: "mousepressed".to_string(),
                     args: vec![
                         EventArg::Num(x),
@@ -611,7 +788,7 @@ impl Simulator {
                 let x = step.x.unwrap_or(0.0);
                 let y = step.y.unwrap_or(0.0);
                 let button = step.button.unwrap_or(1) as f64;
-                event_queue.push(Event {
+                event_queue.push_event(Event {
                     name: "mousereleased".to_string(),
                     args: vec![EventArg::Num(x), EventArg::Num(y), EventArg::Num(button)],
                 });
@@ -619,23 +796,76 @@ impl Simulator {
             Action::MouseWheel => {
                 let x = step.x.unwrap_or(0.0);
                 let y = step.y.unwrap_or(0.0);
-                event_queue.push(Event {
+                event_queue.push_event(Event {
                     name: "wheelmoved".to_string(),
                     args: vec![EventArg::Num(x), EventArg::Num(y)],
                 });
             }
             Action::TextInput => {
                 let text = step.text.as_deref().unwrap_or("");
-                event_queue.push(Event {
+                event_queue.push_event(Event {
                     name: "textinput".to_string(),
                     args: vec![EventArg::Str(text.to_string())],
                 });
             }
-            Action::Wait => {
+            Action::Wait
+            | Action::Repeat
+            | Action::CallMacro
+            | Action::Assert
+            | Action::VisualAssert => {
                 // No-op â€” just a timed delay.
             }
         }
     }
+}
+
+fn step_time_micros(step: &Step) -> u64 {
+    (step.time.max(0.0) as f64 * 1_000_000.0).round() as u64
+}
+
+fn diff_images(baseline: &Path, actual: &Path) -> Result<u32, String> {
+    let base = ::image::open(baseline)
+        .map_err(|e| {
+            format!(
+                "visualAssert baseline load failed ({}): {}",
+                baseline.display(),
+                e
+            )
+        })?
+        .to_rgba8();
+    let act = ::image::open(actual)
+        .map_err(|e| {
+            format!(
+                "visualAssert actual load failed ({}): {}",
+                actual.display(),
+                e
+            )
+        })?
+        .to_rgba8();
+
+    let (bw, bh) = base.dimensions();
+    let (aw, ah) = act.dimensions();
+    let shared_w = bw.min(aw);
+    let shared_h = bh.min(ah);
+    let mut total = 0u64;
+
+    for y in 0..shared_h {
+        for x in 0..shared_w {
+            let b = base.get_pixel(x, y).0;
+            let a = act.get_pixel(x, y).0;
+            for c in 0..4 {
+                total += (b[c] as i32 - a[c] as i32).unsigned_abs() as u64;
+            }
+        }
+    }
+
+    let shared_pixels = (shared_w as u64) * (shared_h as u64);
+    let base_pixels = (bw as u64) * (bh as u64);
+    let act_pixels = (aw as u64) * (ah as u64);
+    let unmatched = (base_pixels - shared_pixels) + (act_pixels - shared_pixels);
+    total += unmatched * 4 * 255;
+
+    Ok(total.min(u32::MAX as u64) as u32)
 }
 
 impl Default for Simulator {

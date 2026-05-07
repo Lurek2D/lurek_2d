@@ -24,7 +24,6 @@ pub struct ProvinceRecord {
     pub attrs: HashMap<String, String>,
 }
 
-
 /// Full province dataset with revisioned change history.
 #[derive(Debug, Clone)]
 pub struct ProvinceRegistry {
@@ -253,14 +252,7 @@ impl ProvinceRegistry {
     }
 
     /// Sets province label guide line in map-space coordinates.
-    pub fn set_label_line(
-        &mut self,
-        id: ProvinceId,
-        ax: f32,
-        ay: f32,
-        bx: f32,
-        by: f32,
-    ) -> bool {
+    pub fn set_label_line(&mut self, id: ProvinceId, ax: f32, ay: f32, bx: f32, by: f32) -> bool {
         let Some(rec) = self.provinces.get_mut(&id) else {
             return false;
         };
@@ -284,7 +276,9 @@ impl ProvinceRegistry {
 
     /// Returns province label text.
     pub fn label_text_for(&self, id: ProvinceId) -> Option<&str> {
-        self.provinces.get(&id).and_then(|p| p.label_text.as_deref())
+        self.provinces
+            .get(&id)
+            .and_then(|p| p.label_text.as_deref())
     }
 
     fn bump_change(&mut self, change: ProvinceChange) {

@@ -1,4 +1,4 @@
-﻿//! `lurek.thread` - Background threads and inter-thread channel communication.
+//! `lurek.thread` - Background threads and inter-thread channel communication.
 
 use super::SharedState;
 use mlua::prelude::*;
@@ -227,7 +227,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// @return | LThread | New thread handle.
     let ch = named_channels.clone();
     // Auto-doc: Lua API binding.
-    tbl.set("newThread", lua.create_function(move |_, code: String| {
+    tbl.set(
+        "newThread",
+        lua.create_function(move |_, code: String| {
             Ok(LuaThreadHandle {
                 inner: Arc::new(Mutex::new(LuaThread::new(code, ch.clone()))),
             })
@@ -237,7 +239,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     // -- newChannel --
     /// Creates a new unnamed channel for inter-thread communication.
     /// @return | LChannel | New channel handle.
-    tbl.set("newChannel", lua.create_function(|_, ()| {
+    tbl.set(
+        "newChannel",
+        lua.create_function(|_, ()| {
             Ok(LuaChannel {
                 inner: Channel::new(),
             })
@@ -250,7 +254,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// @return | LChannel | Named channel handle.
     let ch = named_channels.clone();
     // Auto-doc: Lua API binding.
-    tbl.set("getChannel", lua.create_function(move |_, name: String| {
+    tbl.set(
+        "getChannel",
+        lua.create_function(move |_, name: String| {
             let mut channels = ch.lock().unwrap();
             let channel = channels
                 .entry(name.clone())
@@ -265,7 +271,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// @param | size | integer | Number of worker threads to spawn.
     /// @param | code | string | Worker Lua source code.
     /// @return | LThreadPool | New thread pool handle.
-    tbl.set("newPool", lua.create_function(|_, (size, code): (usize, String)| {
+    tbl.set(
+        "newPool",
+        lua.create_function(|_, (size, code): (usize, String)| {
             Ok(LuaThreadPool {
                 inner: Arc::new(Mutex::new(ThreadPool::new(size, code))),
             })
@@ -277,7 +285,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// @param | code | string | Worker Lua source code.
     /// @param | args | table | Argument values passed to the worker.
     /// @return | LPromise | New promise handle.
-    tbl.set("async", lua.create_function(|_, (code, args): (String, LuaMultiValue)| {
+    tbl.set(
+        "async",
+        lua.create_function(|_, (code, args): (String, LuaMultiValue)| {
             let channel_args = args
                 .into_iter()
                 .map(lua_to_channel_value)

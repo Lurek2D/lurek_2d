@@ -7,8 +7,8 @@
 // ── lua_table ─────────────────────────────────────────────────────────────────
 
 mod lua_table_tests {
-    use lurek2d::serial::lua_table::{from_lua, to_lua, SerialValue};
     use indexmap::IndexMap;
+    use lurek2d::serial::lua_table::{from_lua, to_lua, SerialValue};
     use mlua::prelude::*;
 
     #[test]
@@ -123,7 +123,10 @@ mod codec_tests {
 
     #[test]
     fn detect_format_finds_json() {
-        assert_eq!(detect_format("{\"name\":\"hero\"}"), Some(SerialFormat::Json));
+        assert_eq!(
+            detect_format("{\"name\":\"hero\"}"),
+            Some(SerialFormat::Json)
+        );
     }
 
     #[test]
@@ -166,7 +169,12 @@ mod codec_tests {
 
     #[test]
     fn decode_text_ini_returns_section_map() {
-        let val = decode_text("[player]\nname=hero\n", Some(SerialFormat::Ini), DecodeOptions::default()).unwrap();
+        let val = decode_text(
+            "[player]\nname=hero\n",
+            Some(SerialFormat::Ini),
+            DecodeOptions::default(),
+        )
+        .unwrap();
         match val {
             SerialValue::Map(root) => {
                 assert!(matches!(root.get("player"), Some(SerialValue::Map(_))));

@@ -21,6 +21,10 @@ The `app` module is Lurek2D's application entry point and engine lifecycle orche
 3. Auto-collects render commands from parallax, tilemap, raycaster, and UI subsystems.
 4. Calls `GpuRenderer::render_frame()` to flush the accumulated `RenderCommand` queue to the GPU.
 
+**Config hot-reload.** During `about_to_wait`, the app polls `conf.toml` via `filesystem::FileWatcher`. On successful reload it applies mutable settings without process restart: target FPS cap, physics/fixed-update rates, runtime log level, window title, and viewport scale-mode/game-size fields.
+
+**Frame profiling.** `game_update()` records per-callback CPU wall-clock timing buckets (`process_physics`, `fixedUpdate`, `process`, `process_late`, `draw`, `draw_ui`) and stores the last-frame snapshot in `SharedState` for runtime introspection (`lurek.engine.getFrameProfile()`).
+
 **Run state machine.** `RunState` has three states: Running, Error, and Restarting. Any Lua or engine error transitions to Error, which displays the `ErrorScreen`. R key restarts the game from scratch; the engine re-initialises the Lua VM and reloads all Lua scripts without restarting the process.
 
 **Error screen.** `ErrorScreen` converts Lua runtime errors (`mlua::Error`) and engine errors (`EngineError`) into a structured blue screen with formatted traceback, recovery hints, Ctrl+C clipboard copy of the error text, and R-to-restart. `wrap_text` handles word-wrapping for the narrow screen layout.

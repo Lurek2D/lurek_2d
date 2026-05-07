@@ -7,11 +7,14 @@
 - Lua API path(s): `src/lua_api/pipeline_api.rs`
 - Primary Lua namespace: `lurek.pipeline`
 - Rust test path(s): tests/rust/unit/pipeline_tests.rs
-- Lua test path(s): tests/lua/unit/test_pipeline.lua
+- Lua test path(s): tests/lua/unit/test_pipeline_core_unit.lua
 
 ## Summary
 
 The `pipeline` module is documented from the current source tree and existing module reference data.
+
+As of 2026-05-07, async runs support coroutine-yielding steps via `LPipelineStep:setAsync(true)`,
+runtime branch composition via `LPipeline:addBranch`, and lifecycle events via `LPipeline:onEvent`.
 
 This module primarily collaborates with `runtime`. Its responsibility should stay inside the Edge/Integration group rather than absorb behavior owned by those neighbors.
 
@@ -106,7 +109,9 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 - `LPipeline:toTable`: Serialises the pipeline definition to a Lua table.
 - `LPipeline:type`: Returns the Lua-visible type name for this pipeline.
 - `LPipeline:addConditional`: Adds a conditional step to the pipeline.
+- `LPipeline:addBranch`: Adds a two-way runtime branch with shared predicate evaluation.
 - `LPipeline:onProgress`: Registers a callback invoked after every step.
+- `LPipeline:onEvent`: Registers a callback invoked for pipeline lifecycle events.
 - `LPipeline:toAscii`: Returns an ASCII diagram of the pipeline DAG.
 - `LPipeline:addSubPipeline`: Inlines all steps from a sub-pipeline into this pipeline.
 - `LPipeline:typeOf`: Returns whether the given type name matches this pipeline.
@@ -122,6 +127,8 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 - `LPipelineStep:setRetryCount`: Sets the maximum number of retry attempts after failure.
 - `LPipelineStep:getRetryCount`: Returns the configured retry count.
 - `LPipelineStep:setRetryDelay`: Sets the delay between retry attempts.
+- `LPipelineStep:setAsync`: Enables coroutine-based async execution for this step.
+- `LPipelineStep:isAsync`: Returns whether coroutine-based async execution is enabled.
 - `LPipelineStep:setOptional`: Sets whether this step is optional.
 - `LPipelineStep:isOptional`: Returns whether this step is marked as optional.
 - `LPipelineStep:setOnError`: Stores the error callback for this step.

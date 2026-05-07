@@ -80,8 +80,7 @@ impl InputRecording {
             frames: self.frames.clone(),
             total_frames: self.total_frames,
         };
-        serde_json::to_string(&envelope)
-            .map_err(|e| format!("InputRecording serialize error: {e}"))
+        serde_json::to_string(&envelope).map_err(|e| format!("InputRecording serialize error: {e}"))
     }
 
     /// Deserializes an [`InputRecording`] from a JSON string.

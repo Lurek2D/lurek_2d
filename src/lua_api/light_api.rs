@@ -1,4 +1,4 @@
-﻿//! `lurek.light` - 2D lighting, shadow occluders, and ambient control.
+//! `lurek.light` - 2D lighting, shadow occluders, and ambient control.
 //!
 //! Manages `Light` handles (point / directional / spot) and `Occluder` handles
 //! (line-segment shadow casters) within the engine's `LightWorld`. Supports
@@ -339,7 +339,9 @@ impl LuaUserData for LuaLight {
         /// @param | b | number | Blue channel.
         /// @param | a | number? | Optional alpha channel.
         /// @return | nil | No value is returned.
-        methods.add_method("setColor", |_, this, (r, g, b, a): (f32, f32, f32, Option<f32>)| {
+        methods.add_method(
+            "setColor",
+            |_, this, (r, g, b, a): (f32, f32, f32, Option<f32>)| {
                 let mut st = this.state.borrow_mut();
                 let light = st
                     .light_world
@@ -505,7 +507,9 @@ impl LuaUserData for LuaLight {
         /// @param | b | number | Blue channel.
         /// @param | a | number? | Optional alpha channel.
         /// @return | nil | No value is returned.
-        methods.add_method("setShadowColor", |_, this, (r, g, b, a): (f32, f32, f32, Option<f32>)| {
+        methods.add_method(
+            "setShadowColor",
+            |_, this, (r, g, b, a): (f32, f32, f32, Option<f32>)| {
                 let mut st = this.state.borrow_mut();
                 let light = st
                     .light_world
@@ -995,7 +999,9 @@ impl LuaUserData for LuaLight {
         /// @param | target | table | Target fields such as `color`, `intensity`, and `radius`.
         /// @param | duration | number | Transition duration in seconds.
         /// @return | nil | No value is returned.
-        methods.add_method("transitionTo", |_, this, (target, duration): (LuaTable, f32)| {
+        methods.add_method(
+            "transitionTo",
+            |_, this, (target, duration): (LuaTable, f32)| {
                 let st = this.state.borrow();
                 let light = st
                     .light_world
@@ -1403,7 +1409,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @return | LLight | Created light handle.
     let s = state.clone();
     // Auto-doc: Lua API binding.
-    tbl.set("newLight", lua.create_function(
+    tbl.set(
+        "newLight",
+        lua.create_function(
             move |_, (x, y, radius, opts): (f32, f32, f32, Option<LuaTable>)| {
                 let mut light = Light2D::new(x, y, radius);
                 if let Some(ref opts) = opts {
@@ -1429,7 +1437,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @return | LOccluder | Created occluder handle.
     let s = state.clone();
     // Auto-doc: Lua API binding.
-    tbl.set("newOccluder", lua.create_function(move |_, (vtbl, opts): (LuaTable, Option<LuaTable>)| {
+    tbl.set(
+        "newOccluder",
+        lua.create_function(move |_, (vtbl, opts): (LuaTable, Option<LuaTable>)| {
             let flat: Vec<f32> = vtbl.sequence_values::<f32>().collect::<LuaResult<_>>()?;
             let mut occ = Occluder::from_flat_coords(&flat).map_err(LuaError::RuntimeError)?;
             if let Some(ref opts) = opts {
@@ -1452,7 +1462,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @return | nil | No value is returned.
     let s = state.clone();
     // Auto-doc: Lua API binding.
-    tbl.set("setAmbient", lua.create_function(move |_, (r, g, b, a): (f32, f32, f32, Option<f32>)| {
+    tbl.set(
+        "setAmbient",
+        lua.create_function(move |_, (r, g, b, a): (f32, f32, f32, Option<f32>)| {
             s.borrow_mut().light_world.ambient = Color::new(r, g, b, a.unwrap_or(1.0));
             Ok(())
         })?,
@@ -1466,7 +1478,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @return | number | Ambient alpha component.
     let s = state.clone();
     // Auto-doc: Lua API binding.
-    tbl.set("getAmbient", lua.create_function(move |_, ()| {
+    tbl.set(
+        "getAmbient",
+        lua.create_function(move |_, ()| {
             let c = s.borrow().light_world.ambient;
             Ok((c.r, c.g, c.b, c.a))
         })?,
@@ -1478,7 +1492,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @return | nil | No value is returned.
     let s = state.clone();
     // Auto-doc: Lua API binding.
-    tbl.set("setEnabled", lua.create_function(move |_, enabled: bool| {
+    tbl.set(
+        "setEnabled",
+        lua.create_function(move |_, enabled: bool| {
             s.borrow_mut().light_world.enabled = enabled;
             Ok(())
         })?,
@@ -1489,7 +1505,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @return | boolean | True if the lighting system is active.
     let s = state.clone();
     // Auto-doc: Lua API binding.
-    tbl.set("isEnabled", lua.create_function(move |_, ()| Ok(s.borrow().light_world.enabled))?,
+    tbl.set(
+        "isEnabled",
+        lua.create_function(move |_, ()| Ok(s.borrow().light_world.enabled))?,
     )?;
 
     // -- getLightCount --
@@ -1497,7 +1515,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @return | integer | Light count.
     let s = state.clone();
     // Auto-doc: Lua API binding.
-    tbl.set("getLightCount", lua.create_function(move |_, ()| Ok(s.borrow().light_world.light_count()))?,
+    tbl.set(
+        "getLightCount",
+        lua.create_function(move |_, ()| Ok(s.borrow().light_world.light_count()))?,
     )?;
 
     // -- getOccluderCount --
@@ -1505,7 +1525,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @return | integer | Occluder count.
     let s = state.clone();
     // Auto-doc: Lua API binding.
-    tbl.set("getOccluderCount", lua.create_function(move |_, ()| Ok(s.borrow().light_world.occluder_count()))?,
+    tbl.set(
+        "getOccluderCount",
+        lua.create_function(move |_, ()| Ok(s.borrow().light_world.occluder_count()))?,
     )?;
 
     // -- getMaxLights --
@@ -1513,7 +1535,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @return | integer | Maximum per-frame light count.
     let s = state.clone();
     // Auto-doc: Lua API binding.
-    tbl.set("getMaxLights", lua.create_function(move |_, ()| Ok(s.borrow().light_world.max_lights))?,
+    tbl.set(
+        "getMaxLights",
+        lua.create_function(move |_, ()| Ok(s.borrow().light_world.max_lights))?,
     )?;
 
     // -- setMaxLights --
@@ -1522,7 +1546,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @return | nil | No value is returned.
     let s = state.clone();
     // Auto-doc: Lua API binding.
-    tbl.set("setMaxLights", lua.create_function(move |_, n: u16| {
+    tbl.set(
+        "setMaxLights",
+        lua.create_function(move |_, n: u16| {
             s.borrow_mut().light_world.max_lights = n.clamp(1, 256);
             Ok(())
         })?,
@@ -1533,7 +1559,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @return | nil | No value is returned.
     let s = state.clone();
     // Auto-doc: Lua API binding.
-    tbl.set("clear", lua.create_function(move |_, ()| {
+    tbl.set(
+        "clear",
+        lua.create_function(move |_, ()| {
             s.borrow_mut().light_world.clear();
             Ok(())
         })?,
@@ -1546,7 +1574,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @return | nil | No value is returned.
     let s = state.clone();
     // Auto-doc: Lua API binding.
-    tbl.set("setGroupEnabled", lua.create_function(move |_, (group_id, enabled): (u16, bool)| {
+    tbl.set(
+        "setGroupEnabled",
+        lua.create_function(move |_, (group_id, enabled): (u16, bool)| {
             s.borrow_mut()
                 .light_world
                 .set_group_enabled(group_id, enabled);
@@ -1561,7 +1591,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @return | nil | No value is returned.
     let s = state.clone();
     // Auto-doc: Lua API binding.
-    tbl.set("setGroupIntensity", lua.create_function(move |_, (group_id, intensity): (u16, f32)| {
+    tbl.set(
+        "setGroupIntensity",
+        lua.create_function(move |_, (group_id, intensity): (u16, f32)| {
             s.borrow_mut()
                 .light_world
                 .set_group_intensity(group_id, intensity);
@@ -1579,7 +1611,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @return | nil | No value is returned.
     let s = state.clone();
     // Auto-doc: Lua API binding.
-    tbl.set("setGroupColor", lua.create_function(
+    tbl.set(
+        "setGroupColor",
+        lua.create_function(
             move |_, (group_id, r, g, b, a): (u16, f32, f32, f32, Option<f32>)| {
                 s.borrow_mut()
                     .light_world
@@ -1595,7 +1629,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @return | integer | Number of lights in the group.
     let s = state.clone();
     // Auto-doc: Lua API binding.
-    tbl.set("getGroupCount", lua.create_function(move |_, group_id: u16| {
+    tbl.set(
+        "getGroupCount",
+        lua.create_function(move |_, group_id: u16| {
             Ok(s.borrow().light_world.group_count(group_id))
         })?,
     )?;
@@ -1606,7 +1642,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @return | nil | No value is returned.
     let s = state.clone();
     // Auto-doc: Lua API binding.
-    tbl.set("advanceFlickers", lua.create_function(move |_, dt: f32| {
+    tbl.set(
+        "advanceFlickers",
+        lua.create_function(move |_, dt: f32| {
             s.borrow_mut().light_world.advance_flickers(dt);
             Ok(())
         })?,
@@ -1620,7 +1658,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @return | number | Ambient alpha component snapshot.
     let s = state.clone();
     // Auto-doc: Lua API binding.
-    tbl.set("syncAmbient", lua.create_function(move |_, ()| {
+    tbl.set(
+        "syncAmbient",
+        lua.create_function(move |_, ()| {
             let hint = s.borrow().light_world.ambient_color_hint();
             Ok((hint[0], hint[1], hint[2], hint[3]))
         })?,
@@ -1631,7 +1671,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @return | table | Array of `{x, y, angle}` hint tables.
     let s = state.clone();
     // Auto-doc: Lua API binding.
-    tbl.set("getGodRayHints", lua.create_function(move |lua, ()| {
+    tbl.set(
+        "getGodRayHints",
+        lua.create_function(move |lua, ()| {
             let hints = s.borrow().light_world.directional_light_hints();
             let tbl = lua.create_table()?;
             for (i, (x, y, angle)) in hints.iter().enumerate() {
@@ -1650,7 +1692,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @return | table | Array of `{x, y, radius, intensity, direction, normalMap, strength}` tables.
     let s = state.clone();
     // Auto-doc: Lua API binding.
-    tbl.set("getNormalMapHints", lua.create_function(move |lua, ()| {
+    tbl.set(
+        "getNormalMapHints",
+        lua.create_function(move |lua, ()| {
             let hints = s.borrow().light_world.normal_map_light_hints();
             let tbl = lua.create_table()?;
             for (i, h) in hints.iter().enumerate() {

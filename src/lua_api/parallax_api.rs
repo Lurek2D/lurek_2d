@@ -333,7 +333,9 @@ impl LuaUserData for LuaParallaxLayer {
         /// @param | max_x | number | Maximum horizontal offset.
         /// @param | max_y | number | Maximum vertical offset.
         /// @return | nil | No value is returned.
-        methods.add_method("setClamp", |_, this, (min_x, min_y, max_x, max_y): (f32, f32, f32, f32)| {
+        methods.add_method(
+            "setClamp",
+            |_, this, (min_x, min_y, max_x, max_y): (f32, f32, f32, f32)| {
                 let mut l = this.layer.borrow_mut();
                 l.clamp_min = Some([min_x, min_y]);
                 l.clamp_max = Some([max_x, max_y]);
@@ -655,7 +657,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @param | name | string | Name assigned to the new set.
     /// @return | LParallaxSet | Returns the new parallax set userdata.
     let s = state.clone();
-    parallax.set("newSet", lua.create_function(move |_, name: String| Ok(LuaParallaxSet::new(name, s.clone())))?,
+    parallax.set(
+        "newSet",
+        lua.create_function(move |_, name: String| Ok(LuaParallaxSet::new(name, s.clone())))?,
     )?;
 
     lurek.set("parallax", parallax)?;

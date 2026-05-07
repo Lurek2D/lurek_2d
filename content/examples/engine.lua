@@ -120,8 +120,32 @@
 --   function lurek.process(_)
 --     if lurek.engine.frameCount() % 300 ~= 0 then return end
 --     local stats = lurek.engine.getResourceStats()
---     local mb = stats.texture_bytes / (1024 * 1024)
---     lurek.log.debug(string.format("textures=%d resident=%.2fMB", stats.texture_count, mb), "mem")
+--     local mb = stats.total_bytes / (1024 * 1024)
+--     lurek.log.debug(string.format("tex=%d font=%d canvas=%d total=%.2fMB", stats.texture_count, stats.font_count, stats.canvas_count, mb), "mem")
+--   end
+-- end
+
+--@api-stub: lurek.engine.getFrameProfile
+-- Returns per-callback CPU timing for the last completed frame.
+-- Use this to locate expensive callbacks before reaching for external profilers.
+-- if false then -- lurek.engine.getFrameProfile
+--   function lurek.draw_ui()
+--     local p = lurek.engine.getFrameProfile()
+--     lurek.render.print(string.format("process=%.2fms draw=%.2fms", p.process_ms, p.draw_ms), 8, 28)
+--   end
+-- end
+
+--@api-stub: lurek.engine.getConfigRevision
+-- Returns a monotonic counter that increments after `conf.toml` hot-reload.
+-- Cache this value to refresh gameplay knobs only when config actually changes.
+-- if false then -- lurek.engine.getConfigRevision
+--   local last = lurek.engine.getConfigRevision()
+--   function lurek.process(_)
+--     local now = lurek.engine.getConfigRevision()
+--     if now ~= last then
+--       last = now
+--       lurek.log.info("config revision changed to " .. now, "boot")
+--     end
 --   end
 -- end
 -- content/examples/engine.lua

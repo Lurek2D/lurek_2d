@@ -26,8 +26,8 @@
 
 use std::collections::HashMap;
 
-use crate::runtime::log_messages::{FN01, FN02};
 use crate::log_msg;
+use crate::runtime::log_messages::{FN01, FN02};
 use mlua::RegistryKey;
 
 /// Lua lifecycle hooks for a single FSM state.

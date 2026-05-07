@@ -5,8 +5,8 @@
 //! remaining Rust coverage here focuses on low-level error-screen formatting
 //! and debug-overlay command generation.
 
-use lurek2d::app::error_screen::{wrap_text, format_traceback, ErrorScreen};
 use lurek2d::app::debug_overlay::DebugOverlay;
+use lurek2d::app::error_screen::{format_traceback, wrap_text, ErrorScreen};
 use lurek2d::runtime::error::EngineError;
 use lurek2d::runtime::resource_keys::FontKey;
 use slotmap::SlotMap;

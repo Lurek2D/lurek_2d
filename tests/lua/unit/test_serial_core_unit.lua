@@ -229,7 +229,7 @@ end)
 
 -- YAML removed: design-assumption B-05 (TOML is the human-authored config format; serde_yml dependency dropped)
 
---  Serial MsgPack (merged from test_serial_msgpack.lua) 
+--  Serial MsgPack (merged from test_serial_msgpack.lua)
 
 -- @describe lurek.serial.encodeMsgPack
 describe("lurek.serial.encodeMsgPack", function()
@@ -311,7 +311,7 @@ describe("lurek.serial.decodeMsgPack", function()
   end)
 end)
 
---  Serial Schema (merged from test_serial_schema.lua) 
+--  Serial Schema (merged from test_serial_schema.lua)
 
 -- @describe lurek.serial.validate  type checks
 describe("lurek.serial.validate  type checks", function()
@@ -495,7 +495,7 @@ describe("lurek.serial.validate  sequence items", function()
   end)
 end)
 
---  Serial XML (merged from test_serial_xml.lua) 
+--  Serial XML (merged from test_serial_xml.lua)
 
 -- @describe lurek.serial.decodeXml
 describe("lurek.serial.decodeXml", function()

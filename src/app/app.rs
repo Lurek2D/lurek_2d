@@ -11,6 +11,7 @@ use std::sync::Arc;
 use std::time::Instant;
 
 use crate::event::EventArg;
+use crate::filesystem::watcher::FileWatcher;
 use mlua::prelude::*;
 use winit::application::ApplicationHandler;
 use winit::event::{ElementState, MouseButton, WindowEvent};
@@ -46,11 +47,11 @@ use crate::runtime::log_messages::{
     L016_LUA_VM_INIT_FAIL, L017_MAIN_LUA_READ_FAIL, L021_CLIPBOARD_FAIL, L023_GPU_TEX_TOO_SMALL,
     L024_SURFACE_LOST, L033_GPU_ADAPTER, L034_GPU_TEX_DIM, L035_GPU_INIT, L036_GAMEPAD_CONNECTED,
     L037_GAMEPAD_DISCONNECTED, L038_GILRS_UNAVAILABLE, L039_WINDOW_CLOSE, L040_ICON_LOAD_FAIL,
-    L041_ICON_CONV_FAIL, L043_DROP_FILE, L044_DROP_GAME,
-    L070_SURFACE_NO_READBACK, L071_CURSOR_GRAB_FAIL, L072_CURSOR_GRAB_LOCK_FAIL,
-    L073_CURSOR_POS_FAIL, L074_SCREENSHOT_NO_READBACK, L075_SCREENSHOT_SAVE_FAIL,
-    L076_SCREENSHOT_ENCODE_FAIL, L077_DRAG_HOVER, L078_DRAG_HOVER_CANCEL, L079_DRAG_DROP_IGNORED,
-    L080_GAME_DIR, L081_LOG_FILE, L082_LOG_FILE_FAIL, L083_DROP_ARCHIVE, L084_DROP_ARCHIVE_FAIL,
+    L041_ICON_CONV_FAIL, L043_DROP_FILE, L044_DROP_GAME, L070_SURFACE_NO_READBACK,
+    L071_CURSOR_GRAB_FAIL, L072_CURSOR_GRAB_LOCK_FAIL, L073_CURSOR_POS_FAIL,
+    L074_SCREENSHOT_NO_READBACK, L075_SCREENSHOT_SAVE_FAIL, L076_SCREENSHOT_ENCODE_FAIL,
+    L077_DRAG_HOVER, L078_DRAG_HOVER_CANCEL, L079_DRAG_DROP_IGNORED, L080_GAME_DIR, L081_LOG_FILE,
+    L082_LOG_FILE_FAIL, L083_DROP_ARCHIVE, L084_DROP_ARCHIVE_FAIL,
 };
 pub use crate::runtime::shared_state::WindowState;
 
@@ -207,6 +208,9 @@ pub struct LurekApp {
     /// Error message from conf.toml loading, displayed after window opens.
     conf_error: Option<String>,
 
+    /// Polling watcher used to detect `conf.toml` changes for hot-reload.
+    conf_watcher: FileWatcher,
+
     /// True when the game_dir was explicitly passed as a CLI argument.
     explicit_game_dir: bool,
 
@@ -287,6 +291,8 @@ impl LurekApp {
         window_pos: Option<(i32, i32)>,
     ) -> Self {
         let window_vsync_mode = if config.window.vsync { 1 } else { 0 };
+        let mut conf_watcher = FileWatcher::new();
+        conf_watcher.watch(game_dir.join("conf.toml"));
 
         LurekApp {
             config,
@@ -314,6 +320,7 @@ impl LurekApp {
             run_state: RunState::Running,
             debug_overlay: DebugOverlay::new(),
             conf_error,
+            conf_watcher,
             explicit_game_dir,
             window_vsync_mode,
             engine_fonts: None,
@@ -947,9 +954,11 @@ impl LurekApp {
         }
 
         let dt = state.borrow().clock.delta();
+        let mut frame_profile = crate::runtime::FrameProfile::default();
 
         // â”€â”€ 2. process_physics (fixed timestep, may fire 0..N times) â”€â”€â”€â”€
         {
+            let phase_start = Instant::now();
             let fixed_dt = state.borrow().physics_fixed_dt;
             self.physics_accumulator += dt;
             // Safety cap: read from shared state, defaults to 8.
@@ -963,10 +972,12 @@ impl LurekApp {
                     return;
                 }
             }
+            frame_profile.process_physics_ms = phase_start.elapsed().as_secs_f64() as f32 * 1000.0;
         }
 
         // â”€â”€ 2b. fixedUpdate (independent fixed timestep, may fire 0..N times) â”€â”€
         {
+            let phase_start = Instant::now();
             let fixed_dt = state.borrow().fixed_update_dt;
             if fixed_dt > 0.0 {
                 self.fixed_update_accumulator += dt;
@@ -982,18 +993,27 @@ impl LurekApp {
                     }
                 }
             }
+            frame_profile.fixed_update_ms = phase_start.elapsed().as_secs_f64() as f32 * 1000.0;
         }
 
         // â”€â”€ 3. process(dt) (variable timestep, once per frame) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-        if let Err(e) = call_lua_callback_checked(lua, "process", dt) {
-            self.run_state = RunState::Error(try_errorhandler_or_screen(lua, &e));
-            return;
+        {
+            let phase_start = Instant::now();
+            if let Err(e) = call_lua_callback_checked(lua, "process", dt) {
+                self.run_state = RunState::Error(try_errorhandler_or_screen(lua, &e));
+                return;
+            }
+            frame_profile.process_ms = phase_start.elapsed().as_secs_f64() as f32 * 1000.0;
         }
 
         // â”€â”€ 4. process_late(dt) (after process, before render) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-        if let Err(e) = call_lua_callback_checked(lua, "process_late", dt) {
-            self.run_state = RunState::Error(try_errorhandler_or_screen(lua, &e));
-            return;
+        {
+            let phase_start = Instant::now();
+            if let Err(e) = call_lua_callback_checked(lua, "process_late", dt) {
+                self.run_state = RunState::Error(try_errorhandler_or_screen(lua, &e));
+                return;
+            }
+            frame_profile.process_late_ms = phase_start.elapsed().as_secs_f64() as f32 * 1000.0;
         }
 
         // â”€â”€ 5. render (main draw pass) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
@@ -1053,9 +1073,13 @@ impl LurekApp {
         }
 
         // â”€â”€ 5c. Lua render callback (draw order 4 â€” game world) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-        if let Err(e) = call_lua_callback_checked(lua, "draw", ()) {
-            self.run_state = RunState::Error(try_errorhandler_or_screen(lua, &e));
-            return;
+        {
+            let phase_start = Instant::now();
+            if let Err(e) = call_lua_callback_checked(lua, "draw", ()) {
+                self.run_state = RunState::Error(try_errorhandler_or_screen(lua, &e));
+                return;
+            }
+            frame_profile.draw_ms = phase_start.elapsed().as_secs_f64() as f32 * 1000.0;
         }
 
         // â”€â”€ 5d. Auto-collect: raycaster scene (draw order 5 â€” 3D FPS view) â”€â”€
@@ -1187,9 +1211,13 @@ impl LurekApp {
         }
 
         // â”€â”€ 6. render_ui (UI/HUD overlay pass) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-        if let Err(e) = call_lua_callback_checked(lua, "draw_ui", ()) {
-            self.run_state = RunState::Error(try_errorhandler_or_screen(lua, &e));
-            return;
+        {
+            let phase_start = Instant::now();
+            if let Err(e) = call_lua_callback_checked(lua, "draw_ui", ()) {
+                self.run_state = RunState::Error(try_errorhandler_or_screen(lua, &e));
+                return;
+            }
+            frame_profile.draw_ui_ms = phase_start.elapsed().as_secs_f64() as f32 * 1000.0;
         }
 
         // â”€â”€ 6a. Auto-collect: GUI context (draw order 9 â€” after render_ui) â”€â”€
@@ -1216,6 +1244,14 @@ impl LurekApp {
         if !overlay_cmds.is_empty() {
             state.borrow_mut().render_commands.extend(overlay_cmds);
         }
+
+        frame_profile.callback_total_ms = frame_profile.process_physics_ms
+            + frame_profile.fixed_update_ms
+            + frame_profile.process_ms
+            + frame_profile.process_late_ms
+            + frame_profile.draw_ms
+            + frame_profile.draw_ui_ms;
+        state.borrow_mut().frame_profile = frame_profile;
     }
 
     fn render(&mut self) {
@@ -1384,11 +1420,13 @@ impl LurekApp {
             st.canvases = canvases;
             st.meshes = meshes;
             if capture_screen_image {
-                st.captured_screen_image = screenshot_pixels
-                    .as_ref()
-                    .and_then(|(width, height, pixels)| {
-                        crate::image::ImageData::from_bytes(*width, *height, pixels.clone()).ok()
-                    });
+                st.captured_screen_image =
+                    screenshot_pixels
+                        .as_ref()
+                        .and_then(|(width, height, pixels)| {
+                            crate::image::ImageData::from_bytes(*width, *height, pixels.clone())
+                                .ok()
+                        });
             }
         }
 
@@ -1707,6 +1745,55 @@ impl LurekApp {
         self.init_lua();
     }
 
+    fn poll_config_hot_reload(&mut self) {
+        if self.conf_watcher.poll().is_empty() {
+            return;
+        }
+
+        let (new_config, load_err) = Config::load(&self.game_dir);
+        if let Some(err) = load_err {
+            log::warn!("conf.toml hot-reload failed: {}", err);
+            return;
+        }
+
+        self.config = new_config;
+        self.window_vsync_mode = if self.config.window.vsync { 1 } else { 0 };
+        if let Some(level) = self.config.log_level.as_deref() {
+            crate::runtime::log_messages::set_log_level(level);
+        }
+
+        if let Some(window) = &self.window {
+            window.set_title(&self.current_window_title());
+        }
+
+        if let Some(state) = &self.state {
+            let mut st = state.borrow_mut();
+            st.physics_fixed_dt = 1.0 / self.config.performance.physics_tick_rate.max(1) as f64;
+            st.fixed_update_dt = match self.config.performance.fixed_update_tick_rate {
+                Some(rate) if rate > 0 => 1.0 / rate as f64,
+                _ => 0.0,
+            };
+            st.window_state.vsync_mode = self.window_vsync_mode;
+            st.window_state.pending_vsync = Some(self.window_vsync_mode);
+            st.window_state.game_width =
+                self.config
+                    .window
+                    .game_width
+                    .unwrap_or(self.config.window.width) as f32;
+            st.window_state.game_height =
+                self.config
+                    .window
+                    .game_height
+                    .unwrap_or(self.config.window.height) as f32;
+            st.window_state.scale_mode_str = self.config.window.scale_mode.clone();
+            let (ww, wh) = (st.window_width, st.window_height);
+            recompute_viewport(&mut st.window_state, ww, wh);
+            st.config_reload_revision = st.config_reload_revision.saturating_add(1);
+        }
+
+        log::info!("conf.toml hot-reloaded successfully");
+    }
+
     fn reconfigure_surface(&mut self) {
         let Some((w, h)) = self
             .renderer
@@ -1878,9 +1965,7 @@ impl LurekApp {
             }
         }
 
-        let Some(target_id) = target_id else {
-            return None;
-        };
+        let target_id = target_id?;
         if !ff_supported {
             return None;
         }
@@ -2776,6 +2861,8 @@ impl ApplicationHandler for LurekApp {
 
     fn about_to_wait(&mut self, event_loop: &ActiveEventLoop) {
         use std::time::Duration;
+
+        self.poll_config_hot_reload();
 
         // Safety-net: if screenshot mode has been active too long without a capture,
         // force-quit so batch tools never hang indefinitely.

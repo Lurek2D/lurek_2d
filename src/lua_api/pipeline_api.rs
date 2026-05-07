@@ -1,10 +1,11 @@
-﻿//! `lurek.pipeline` - DAG-based pipeline orchestrator for composing multi-step workflows.
+//! `lurek.pipeline` - DAG-based pipeline orchestrator for composing multi-step workflows.
 
 use super::SharedState;
 use mlua::prelude::*;
 use std::cell::RefCell;
 use std::collections::HashMap;
 use std::rc::Rc;
+use std::time::Instant;
 
 use crate::log_msg;
 use crate::pipeline::{ErrorMode, Pipeline, PipelineScheduler, PipelineStep, StepStatus};
@@ -26,7 +27,7 @@ pub struct LuaStep {
 
 impl LuaStep {
     // Creates a new [`LuaStep`] wrapping the given [`PipelineStep`].
-/// Auto-doc: public item.
+    /// Auto-doc: public item.
     pub fn new(step: PipelineStep) -> Self {
         Self {
             inner: Rc::new(RefCell::new(step)),
@@ -37,7 +38,7 @@ impl LuaStep {
     }
 
     // Executes this step synchronously, handling retries and status transitions.
-/// Auto-doc: public item.
+    /// Auto-doc: public item.
     pub(crate) fn execute_sync<'lua>(
         &self,
         lua: &'lua Lua,
@@ -67,6 +68,7 @@ impl LuaStep {
 
         let max_attempts = retry_count + 1;
         let mut last_error: Option<LuaError> = None;
+        let started = Instant::now();
 
         for attempt in 0..max_attempts {
             self.inner.borrow_mut().attempt = attempt + 1;
@@ -82,6 +84,7 @@ impl LuaStep {
                     ctx.set("results", results)?;
 
                     self.inner.borrow_mut().status = StepStatus::Completed;
+                    self.inner.borrow_mut().duration = started.elapsed().as_secs_f32();
                     self.inner.borrow_mut().error_msg = None;
                     return Ok(true);
                 }
@@ -102,6 +105,7 @@ impl LuaStep {
         {
             let mut inner = self.inner.borrow_mut();
             inner.status = StepStatus::Failed;
+            inner.duration = started.elapsed().as_secs_f32();
             inner.error_msg = Some(err_msg.clone());
         }
 
@@ -118,6 +122,22 @@ impl LuaStep {
         } else {
             Ok(true)
         }
+    }
+
+    fn is_async_enabled(&self) -> bool {
+        self.inner
+            .borrow()
+            .metadata
+            .get("__pipeline_async")
+            .map(|v| v == "true")
+            .unwrap_or(false)
+    }
+
+    fn set_async_enabled(&self, enabled: bool) {
+        self.inner
+            .borrow_mut()
+            .metadata
+            .insert("__pipeline_async".to_string(), enabled.to_string());
     }
 }
 
@@ -215,6 +235,20 @@ impl LuaUserData for LuaStep {
             this.inner.borrow_mut().retry_delay = seconds;
             Ok(())
         });
+
+        // -- setAsync --
+        /// Enables or disables coroutine-based execution in `Pipeline:runAsync`.
+        /// @param | enabled | boolean | When true, step callback may `coroutine.yield()` and resume on later `update()` calls.
+        /// @return | nil | No value is returned.
+        methods.add_method("setAsync", |_, this, enabled: bool| {
+            this.set_async_enabled(enabled);
+            Ok(())
+        });
+
+        // -- isAsync --
+        /// Returns whether coroutine-based async execution is enabled for this step.
+        /// @return | boolean | True when `runAsync` executes this step as a coroutine.
+        methods.add_method("isAsync", |_, this, ()| Ok(this.is_async_enabled()));
 
         // -- setOptional --
         /// Sets whether this step is optional.
@@ -372,11 +406,17 @@ pub struct LuaPipeline {
     pub(crate) is_async: Rc<RefCell<bool>>,
     // Registry key for the optional progress callback `fn(step_name, status)`.
     pub(crate) on_progress_key: Rc<RefCell<Option<LuaRegistryKey>>>,
+    // Registry key for generic event callback `fn(event_name, step_name, status, detail)`.
+    pub(crate) on_event_key: Rc<RefCell<Option<LuaRegistryKey>>>,
+    // Per-step coroutine state for async steps.
+    pub(crate) running_threads: Rc<RefCell<HashMap<String, LuaRegistryKey>>>,
+    // Per-step start time used to track step duration.
+    pub(crate) started_at: Rc<RefCell<HashMap<String, Instant>>>,
 }
 
 impl LuaPipeline {
     // Creates a new [`LuaPipeline`] wrapping the given [`Pipeline`].
-/// Auto-doc: public item.
+    /// Auto-doc: public item.
     pub fn new(pipeline: Pipeline) -> Self {
         Self {
             inner: Rc::new(RefCell::new(pipeline)),
@@ -388,6 +428,9 @@ impl LuaPipeline {
             context_key: Rc::new(RefCell::new(None)),
             is_async: Rc::new(RefCell::new(false)),
             on_progress_key: Rc::new(RefCell::new(None)),
+            on_event_key: Rc::new(RefCell::new(None)),
+            running_threads: Rc::new(RefCell::new(HashMap::new())),
+            started_at: Rc::new(RefCell::new(HashMap::new())),
         }
     }
 
@@ -406,6 +449,9 @@ impl LuaPipeline {
             context_key: Rc::new(RefCell::new(None)),
             is_async: Rc::new(RefCell::new(false)),
             on_progress_key: Rc::new(RefCell::new(None)),
+            on_event_key: Rc::new(RefCell::new(None)),
+            running_threads: Rc::new(RefCell::new(HashMap::new())),
+            started_at: Rc::new(RefCell::new(HashMap::new())),
         }
     }
 }
@@ -497,7 +543,172 @@ pub(crate) fn fire_step_callbacks<'lua>(
             log_msg!(warn, LA02_PIPELINE_CALLBACK_FAIL, "on_progress: {e}");
         }
     }
+    let detail: LuaValue = if step_status == StepStatus::Failed {
+        LuaValue::String(
+            lua.create_string(wrapper.inner.borrow().error_msg.clone().unwrap_or_default())?,
+        )
+    } else {
+        LuaValue::Nil
+    };
+    fire_pipeline_event(
+        lua,
+        this,
+        "step_finished",
+        step_name,
+        step_status.as_str(),
+        detail,
+    )?;
     Ok(())
+}
+
+fn fire_pipeline_event<'lua>(
+    lua: &'lua Lua,
+    this: &LuaPipeline,
+    event_name: &str,
+    step_name: &str,
+    status: &str,
+    detail: LuaValue<'lua>,
+) -> LuaResult<()> {
+    if let Some(key) = this.on_event_key.borrow().as_ref() {
+        let f: LuaFunction = lua.registry_value(key)?;
+        if let Err(e) = f.call::<_, LuaValue<'_>>((
+            event_name.to_string(),
+            step_name.to_string(),
+            status.to_string(),
+            detail,
+        )) {
+            log_msg!(warn, LA02_PIPELINE_CALLBACK_FAIL, "on_event: {e}");
+        }
+    }
+    Ok(())
+}
+
+fn execute_async_coroutine_step<'lua>(
+    lua: &'lua Lua,
+    this: &LuaPipeline,
+    step_name: &str,
+    wrapper: &LuaStep,
+    ctx: &LuaTable<'lua>,
+) -> LuaResult<bool> {
+    let mut first_resume = false;
+    let mut thread_key = this.running_threads.borrow_mut().remove(step_name);
+
+    if thread_key.is_none() {
+        // Evaluate condition only for the first run.
+        if let Some(key) = wrapper.condition_key.borrow().as_ref() {
+            let cond_fn: LuaFunction = lua.registry_value(key)?;
+            let should_run: bool = cond_fn.call(ctx.clone())?;
+            if !should_run {
+                wrapper.inner.borrow_mut().status = StepStatus::Skipped;
+                return Ok(true);
+            }
+        }
+
+        let name = wrapper.inner.borrow().name.clone();
+        let cb_key_opt = wrapper.callback_key.borrow();
+        let cb_key = cb_key_opt.as_ref().ok_or_else(|| {
+            LuaError::runtime(format!("step '{}' has no callback registered", name))
+        })?;
+        let cb: LuaFunction = lua.registry_value(cb_key)?;
+        drop(cb_key_opt);
+
+        let thread = lua.create_thread(cb)?;
+        let key = lua.create_registry_value(thread)?;
+        thread_key = Some(key);
+        first_resume = true;
+
+        let mut inner = wrapper.inner.borrow_mut();
+        inner.attempt = inner.attempt.saturating_add(1);
+        inner.status = StepStatus::Running;
+        inner.error_msg = None;
+        drop(inner);
+
+        this.started_at
+            .borrow_mut()
+            .insert(step_name.to_string(), Instant::now());
+    }
+
+    let Some(reg_key) = thread_key else {
+        return Ok(false);
+    };
+    let thread_val: LuaValue = lua.registry_value(&reg_key)?;
+    let thread = match thread_val {
+        LuaValue::Thread(t) => t,
+        _ => {
+            this.running_threads.borrow_mut().remove(step_name);
+            lua.remove_registry_value(reg_key)?;
+            return Err(LuaError::runtime(format!(
+                "step '{}' async state is invalid",
+                step_name
+            )));
+        }
+    };
+
+    let resumed = if first_resume {
+        thread.resume::<_, LuaValue<'_>>(ctx.clone())
+    } else {
+        thread.resume::<_, LuaValue<'_>>(())
+    };
+
+    match resumed {
+        Ok(result) => {
+            let coroutine_tbl: LuaTable = lua.globals().get("coroutine")?;
+            let status_fn: LuaFunction = coroutine_tbl.get("status")?;
+            let coroutine_status: String = status_fn.call(thread.clone())?;
+            if coroutine_status != "dead" {
+                wrapper.inner.borrow_mut().status = StepStatus::Running;
+                this.running_threads
+                    .borrow_mut()
+                    .insert(step_name.to_string(), reg_key);
+                return Ok(false);
+            }
+
+            let results: LuaTable = match ctx.get("results") {
+                Ok(t) => t,
+                Err(_) => lua.create_table()?,
+            };
+            results.set(step_name.to_string(), result)?;
+            ctx.set("results", results)?;
+
+            let mut inner = wrapper.inner.borrow_mut();
+            inner.status = StepStatus::Completed;
+            if let Some(started) = this.started_at.borrow_mut().remove(step_name) {
+                inner.duration = started.elapsed().as_secs_f32();
+            }
+            drop(inner);
+
+            this.running_threads.borrow_mut().remove(step_name);
+            lua.remove_registry_value(reg_key)?;
+            Ok(true)
+        }
+        Err(e) => {
+            this.running_threads.borrow_mut().remove(step_name);
+            lua.remove_registry_value(reg_key)?;
+
+            let mut inner = wrapper.inner.borrow_mut();
+            let max_attempts = inner.retry_count.saturating_add(1);
+            if inner.attempt < max_attempts {
+                inner.status = StepStatus::Waiting;
+                return Ok(false);
+            }
+            inner.status = StepStatus::Failed;
+            inner.error_msg = Some(e.to_string());
+            if let Some(started) = this.started_at.borrow_mut().remove(step_name) {
+                inner.duration = started.elapsed().as_secs_f32();
+            }
+            drop(inner);
+
+            if let Some(key) = wrapper.on_error_key.borrow().as_ref() {
+                let err_fn: LuaFunction = lua.registry_value(key)?;
+                let err = wrapper.inner.borrow().error_msg.clone().unwrap_or_default();
+                if let Err(cb_err) = err_fn.call::<_, LuaValue<'_>>((step_name.to_string(), err)) {
+                    log_msg!(warn, LA02_PIPELINE_CALLBACK_FAIL, "on_error: {cb_err}");
+                }
+            }
+
+            Ok(true)
+        }
+    }
 }
 
 /// Finalises a pipeline run and returns its Lua result table.
@@ -697,14 +908,24 @@ impl LuaUserData for LuaPipeline {
                             break 'steps;
                         } else {
                             wrapper.inner.borrow_mut().status = StepStatus::Skipped;
+                            fire_step_callbacks(lua, this, step_name, &ctx, &wrapper)?;
                             continue;
                         }
                     }
                     Err(_) => {
                         wrapper.inner.borrow_mut().status = StepStatus::Skipped;
+                        fire_step_callbacks(lua, this, step_name, &ctx, &wrapper)?;
                         continue;
                     }
                 }
+                fire_pipeline_event(
+                    lua,
+                    this,
+                    "step_started",
+                    step_name,
+                    StepStatus::Running.as_str(),
+                    LuaValue::Nil,
+                )?;
                 let succeeded = wrapper.execute_sync(lua, &ctx, abort_on_fail)?;
                 fire_step_callbacks(lua, this, step_name, &ctx, &wrapper)?;
                 if !succeeded {
@@ -734,6 +955,8 @@ impl LuaUserData for LuaPipeline {
 
             *this.context_key.borrow_mut() = Some(lua.create_registry_value(ctx)?);
             *this.is_async.borrow_mut() = true;
+            this.running_threads.borrow_mut().clear();
+            this.started_at.borrow_mut().clear();
 
             let pipeline = this.inner.borrow();
             this.scheduler.borrow_mut().start(&pipeline);
@@ -772,6 +995,37 @@ impl LuaUserData for LuaPipeline {
                 }
             };
             let abort_on_fail = this.inner.borrow().error_mode == ErrorMode::Abort;
+
+            // Resume all currently-running coroutine steps first.
+            let running_names: Vec<String> =
+                this.running_threads.borrow().keys().cloned().collect();
+            for step_name in running_names {
+                let wrapper = match this.step_wrappers.borrow().get(&step_name).cloned() {
+                    Some(w) => w,
+                    None => continue,
+                };
+                let done = execute_async_coroutine_step(lua, this, &step_name, &wrapper, &ctx)?;
+                if done {
+                    fire_step_callbacks(lua, this, &step_name, &ctx, &wrapper)?;
+                    if wrapper.inner.borrow().status == StepStatus::Failed && abort_on_fail {
+                        this.step_wrappers.borrow().values().for_each(|w| {
+                            let s = w.inner.borrow().status.clone();
+                            if s == StepStatus::Pending || s == StepStatus::Waiting {
+                                w.inner.borrow_mut().status = StepStatus::Cancelled;
+                            }
+                        });
+                        *this.is_async.borrow_mut() = false;
+                        this.scheduler.borrow_mut().reset();
+                        return finalize_pipeline_result(
+                            lua,
+                            this,
+                            this.scheduler.borrow().elapsed,
+                        )
+                        .map(|_| true);
+                    }
+                }
+            }
+
             let ready_names: Vec<String> = {
                 let pipeline = this.inner.borrow();
                 this.scheduler.borrow_mut().update(dt, &pipeline)
@@ -781,8 +1035,27 @@ impl LuaUserData for LuaPipeline {
                     Some(w) => w,
                     None => continue,
                 };
-                let succeeded = wrapper.execute_sync(lua, &ctx, abort_on_fail)?;
-                fire_step_callbacks(lua, this, &step_name, &ctx, &wrapper)?;
+                fire_pipeline_event(
+                    lua,
+                    this,
+                    "step_started",
+                    &step_name,
+                    StepStatus::Running.as_str(),
+                    LuaValue::Nil,
+                )?;
+                let succeeded = if wrapper.is_async_enabled() {
+                    let done = execute_async_coroutine_step(lua, this, &step_name, &wrapper, &ctx)?;
+                    if done {
+                        fire_step_callbacks(lua, this, &step_name, &ctx, &wrapper)?;
+                    }
+                    // For coroutine steps, `done == false` means still running and should not
+                    // be treated as a pipeline failure.
+                    done || wrapper.inner.borrow().status != StepStatus::Failed
+                } else {
+                    let ok = wrapper.execute_sync(lua, &ctx, abort_on_fail)?;
+                    fire_step_callbacks(lua, this, &step_name, &ctx, &wrapper)?;
+                    ok
+                };
                 if !succeeded {
                     this.step_wrappers.borrow().values().for_each(|w| {
                         let s = w.inner.borrow().status.clone();
@@ -811,6 +1084,9 @@ impl LuaUserData for LuaPipeline {
                         this.scheduler
                             .borrow_mut()
                             .mark_step_waiting(name, &pipeline);
+                    } else if let Ok(false) = pipeline.are_deps_satisfied(name, &statuses) {
+                        w.inner.borrow_mut().status = StepStatus::Skipped;
+                        fire_step_callbacks(lua, this, name, &ctx, w)?;
                     }
                 }
             }
@@ -843,6 +1119,8 @@ impl LuaUserData for LuaPipeline {
                     w.inner.borrow_mut().status = StepStatus::Cancelled;
                 }
             }
+            this.running_threads.borrow_mut().clear();
+            this.started_at.borrow_mut().clear();
             Ok(())
         });
 
@@ -857,6 +1135,8 @@ impl LuaUserData for LuaPipeline {
             *this.context_key.borrow_mut() = None;
             *this.is_async.borrow_mut() = false;
             this.scheduler.borrow_mut().reset();
+            this.running_threads.borrow_mut().clear();
+            this.started_at.borrow_mut().clear();
             Ok(())
         });
 
@@ -1011,6 +1291,7 @@ impl LuaUserData for LuaPipeline {
                 st.set("optional", inner.optional)?;
                 st.set("retryCount", inner.retry_count)?;
                 st.set("retryDelay", inner.retry_delay)?;
+                st.set("async", wrapper.is_async_enabled())?;
                 if let Some(ref tag) = inner.tag {
                     st.set("tag", tag.clone())?;
                 }
@@ -1067,12 +1348,144 @@ impl LuaUserData for LuaPipeline {
             },
         );
 
+        // -- addBranch --
+        /// Adds an if/else branch as two conditional steps that share one predicate result.
+        /// @param | name | string | Branch base name.
+        /// @param | deps | table | Array of dependency step names.
+        /// @param | when_fn | function | Predicate callback evaluated once.
+        /// @param | then_fn | function | Callback executed when predicate returns true.
+        /// @param | else_fn | function? | Optional callback executed when predicate returns false.
+        /// @return | LPipeline | This pipeline for chaining.
+        methods.add_method(
+            "addBranch",
+            |lua,
+             this,
+             (name, deps_tbl, when_fn, then_fn, else_fn): (
+                String,
+                LuaTable,
+                LuaFunction,
+                LuaFunction,
+                Option<LuaFunction>,
+            )| {
+                let dep_names: Vec<String> = deps_tbl
+                    .sequence_values::<String>()
+                    .collect::<LuaResult<Vec<_>>>()?;
+
+                let guard_name = format!("{}__branch_guard", name);
+                let then_name = format!("{}__then", name);
+                let else_name = format!("{}__else", name);
+                let branch_key = format!("pipeline.branch.{}", name);
+                let when_key = lua.create_registry_value(when_fn)?;
+
+                let guard_wrapper = LuaStep::new(PipelineStep::new(guard_name.clone()));
+                {
+                    let mut inner = guard_wrapper.inner.borrow_mut();
+                    inner.deps = dep_names;
+                }
+                let branch_key_guard = branch_key.clone();
+                let when_key_guard = when_key;
+                let guard_cb = lua.create_function(move |lua, ctx: LuaTable| {
+                    let branch_tbl: LuaTable = match ctx.get("branch") {
+                        Ok(t) => t,
+                        Err(_) => {
+                            let t = lua.create_table()?;
+                            ctx.set("branch", t.clone())?;
+                            t
+                        }
+                    };
+                    let predicate: LuaFunction = lua.registry_value(&when_key_guard)?;
+                    let pass: bool = predicate.call(ctx.clone())?;
+                    branch_tbl.set(branch_key_guard.clone(), pass)?;
+                    Ok(pass)
+                })?;
+                *guard_wrapper.callback_key.borrow_mut() =
+                    Some(lua.create_registry_value(guard_cb)?);
+
+                let then_wrapper = LuaStep::new(PipelineStep::new(then_name));
+                then_wrapper
+                    .inner
+                    .borrow_mut()
+                    .deps
+                    .push(guard_name.clone());
+                *then_wrapper.callback_key.borrow_mut() = Some(lua.create_registry_value(then_fn)?);
+                let branch_key_then = branch_key.clone();
+                let then_cond = lua.create_function(move |_, ctx: LuaTable| {
+                    let branch_tbl: LuaTable = match ctx.get("branch") {
+                        Ok(t) => t,
+                        Err(_) => return Ok(false),
+                    };
+                    Ok(branch_tbl
+                        .get::<_, bool>(branch_key_then.clone())
+                        .unwrap_or(false))
+                })?;
+                *then_wrapper.condition_key.borrow_mut() =
+                    Some(lua.create_registry_value(then_cond)?);
+
+                let else_wrapper = LuaStep::new(PipelineStep::new(else_name));
+                else_wrapper
+                    .inner
+                    .borrow_mut()
+                    .deps
+                    .push(guard_name.clone());
+                let else_cb: LuaFunction = match else_fn {
+                    Some(f) => f,
+                    None => lua.create_function(|_, _: LuaTable| Ok(LuaValue::Nil))?,
+                };
+                *else_wrapper.callback_key.borrow_mut() = Some(lua.create_registry_value(else_cb)?);
+                let branch_key_else = branch_key;
+                let else_cond = lua.create_function(move |_, ctx: LuaTable| {
+                    let branch_tbl: LuaTable = match ctx.get("branch") {
+                        Ok(t) => t,
+                        Err(_) => return Ok(false),
+                    };
+                    Ok(!branch_tbl
+                        .get::<_, bool>(branch_key_else.clone())
+                        .unwrap_or(false))
+                })?;
+                *else_wrapper.condition_key.borrow_mut() =
+                    Some(lua.create_registry_value(else_cond)?);
+
+                let mut pipeline = this.inner.borrow_mut();
+                pipeline
+                    .add_step(guard_wrapper.inner.borrow().clone())
+                    .map_err(LuaError::runtime)?;
+                pipeline
+                    .add_step(then_wrapper.inner.borrow().clone())
+                    .map_err(LuaError::runtime)?;
+                pipeline
+                    .add_step(else_wrapper.inner.borrow().clone())
+                    .map_err(LuaError::runtime)?;
+                drop(pipeline);
+
+                this.step_wrappers
+                    .borrow_mut()
+                    .insert(guard_name, guard_wrapper);
+                this.step_wrappers
+                    .borrow_mut()
+                    .insert(format!("{}__then", name), then_wrapper);
+                this.step_wrappers
+                    .borrow_mut()
+                    .insert(format!("{}__else", name), else_wrapper);
+
+                Ok(this.clone())
+            },
+        );
+
         // -- onProgress --
         /// Registers a callback invoked after every step.
         /// @param | fn | function | Callback called with `(step_name, status)`.
         /// @return | nil | No value is returned.
         methods.add_method("onProgress", |lua, this, cb: LuaFunction| {
             *this.on_progress_key.borrow_mut() = Some(lua.create_registry_value(cb)?);
+            Ok(())
+        });
+
+        // -- onEvent --
+        /// Registers a callback invoked for lifecycle events (`step_started`, `step_finished`).
+        /// @param | fn | function | Callback called with `(event_name, step_name, status, detail)`.
+        /// @return | nil | No value is returned.
+        methods.add_method("onEvent", |lua, this, cb: LuaFunction| {
+            *this.on_event_key.borrow_mut() = Some(lua.create_registry_value(cb)?);
             Ok(())
         });
 
@@ -1201,6 +1614,10 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
                     }
                     if let Ok(tag) = st.get::<_, String>("tag") {
                         step.tag = Some(tag);
+                    }
+                    if let Ok(async_enabled) = st.get::<_, bool>("async") {
+                        step.metadata
+                            .insert("__pipeline_async".to_string(), async_enabled.to_string());
                     }
 
                     let wrapper = LuaStep::new(step.clone());

@@ -128,13 +128,7 @@ impl Texture {
         pixels: Vec<u8>,
         textures: &mut SlotMap<TextureKey, TextureData>,
     ) -> EngineResult<Self> {
-        Self::from_rgba_with_color_space(
-            width,
-            height,
-            pixels,
-            textures,
-            TextureColorSpace::Srgb,
-        )
+        Self::from_rgba_with_color_space(width, height, pixels, textures, TextureColorSpace::Srgb)
     }
 
     /// Creates a texture from raw RGBA pixel data with an explicit GPU color-space hint.

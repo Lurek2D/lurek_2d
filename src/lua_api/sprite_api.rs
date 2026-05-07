@@ -92,7 +92,9 @@ impl LuaUserData for LuaSpriteSheet {
         /// @param | start_frame | integer | Zero-based first frame index.
         /// @param | count | integer | Number of frames in the group.
         /// @return | nil | No value is returned.
-        methods.add_method_mut("nameGroup", |_, this, (name, start, count): (String, usize, usize)| {
+        methods.add_method_mut(
+            "nameGroup",
+            |_, this, (name, start, count): (String, usize, usize)| {
                 this.inner.name_group(name, start, count);
                 Ok(())
             },
@@ -215,7 +217,9 @@ impl LuaUserData for LuaSpriteAtlas {
         /// @param | flip_x | boolean | Whether to flip the region horizontally.
         /// @param | flip_y | boolean | Whether to flip the region vertically.
         /// @return | table | Flipped region table.
-        methods.add_method("getFlipped", |lua, this, (name, flip_x, flip_y): (String, bool, bool)| match this
+        methods.add_method(
+            "getFlipped",
+            |lua, this, (name, flip_x, flip_y): (String, bool, bool)| match this
                 .inner
                 .get_entry(&name)
             {
@@ -266,7 +270,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// @param | frame_width | integer | Frame width in pixels.
     /// @param | frame_height | integer | Frame height in pixels.
     /// @return | LSpriteSheet | New sprite sheet object.
-    tbl.set("newSheet", lua.create_function(|lua, (tw, th, fw, fh): (u32, u32, u32, u32)| {
+    tbl.set(
+        "newSheet",
+        lua.create_function(|lua, (tw, th, fw, fh): (u32, u32, u32, u32)| {
             lua.create_userdata(LuaSpriteSheet {
                 inner: SpriteSheet::new(tw, th, fw, fh),
             })
@@ -278,7 +284,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// @param | texture_width | integer | Source texture width in pixels.
     /// @param | texture_height | integer | Source texture height in pixels.
     /// @return | LSpriteSheet | New sprite sheet object.
-    tbl.set("newRPGMakerSheet", lua.create_function(|lua, (tw, th): (u32, u32)| {
+    tbl.set(
+        "newRPGMakerSheet",
+        lua.create_function(|lua, (tw, th): (u32, u32)| {
             lua.create_userdata(LuaSpriteSheet {
                 inner: SpriteSheet::from_rpgmaker(tw, th),
             })
@@ -289,7 +297,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// Parses a TexturePacker JSON string (hash or array format) and returns a SpriteAtlas.
     /// @param | json_str | string | TexturePacker JSON string.
     /// @return | LSpriteAtlas | Parsed sprite atlas object.
-    tbl.set("parseAtlas", lua.create_function(
+    tbl.set(
+        "parseAtlas",
+        lua.create_function(
             |lua, json_str: String| match parse_texturepacker_json(&json_str) {
                 Ok(atlas) => {
                     let ud = lua.create_userdata(LuaSpriteAtlas { inner: atlas })?;
@@ -306,7 +316,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// @param | sheet_width | integer | Virtual sheet width in pixels.
     /// @param | sheet_height | integer | Virtual sheet height in pixels.
     /// @return | LSpriteSheet | New sprite sheet object.
-    tbl.set("newAtlasSheet", lua.create_function(|lua, (atlas_ud, sw, sh): (LuaAnyUserData, u32, u32)| {
+    tbl.set(
+        "newAtlasSheet",
+        lua.create_function(|lua, (atlas_ud, sw, sh): (LuaAnyUserData, u32, u32)| {
             let atlas = atlas_ud.borrow::<LuaSpriteAtlas>()?;
             lua.create_userdata(LuaSpriteSheet {
                 inner: SpriteSheet::from_atlas(&atlas.inner, sw, sh),
@@ -318,7 +330,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// Parses an Aseprite JSON export string and returns a sprite atlas.
     /// @param | json_str | string | Aseprite JSON export string.
     /// @return | LSpriteAtlas | Parsed sprite atlas object.
-    tbl.set("parseAsepriteAtlas", lua.create_function(|lua, json_str: String| {
+    tbl.set(
+        "parseAsepriteAtlas",
+        lua.create_function(|lua, json_str: String| {
             let atlas = parse_aseprite_json(&json_str).map_err(LuaError::RuntimeError)?;
             lua.create_userdata(LuaSpriteAtlas { inner: atlas })
         })?,

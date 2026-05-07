@@ -144,8 +144,10 @@ impl PaletteLUT {
             for x in 0..w {
                 if let Some((r, g, b, a)) = img.get_pixel(x, y) {
                     let index = if let Some(m) = &map {
-                        let key =
-                            (u32::from(r) << 24) | (u32::from(g) << 16) | (u32::from(b) << 8) | u32::from(a);
+                        let key = (u32::from(r) << 24)
+                            | (u32::from(g) << 16)
+                            | (u32::from(b) << 8)
+                            | u32::from(a);
                         m.get(&key).copied()
                     } else {
                         let mut idx = None;

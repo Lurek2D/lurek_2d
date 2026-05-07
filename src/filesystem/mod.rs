@@ -36,9 +36,7 @@ pub mod zip_mount;
 /// Polling-based file watcher for development hot-reload workflows.
 pub mod watcher;
 
-pub use async_loader::{
-	AsyncLoader, LoadHandle, LoadResult, LoadStatus, WriteResult, WriteStatus,
-};
+pub use async_loader::{AsyncLoader, LoadHandle, LoadResult, LoadStatus, WriteResult, WriteStatus};
 pub use file_data::FileData;
 pub use file_handle::{FileHandle, FileMode};
 pub use vfs::{FileInfo, FileType, GameFS, MountLayer};

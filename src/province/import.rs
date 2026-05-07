@@ -128,7 +128,12 @@ fn is_special_marker(r: u8, g: u8, b: u8, opts: &MarkerSanitizeOptions) -> bool 
     is_capital_marker(r, g, b, opts) || is_label_marker(r, g, b, opts)
 }
 
-fn find_owner_rgb(img: &ImageData, x: u32, y: u32, opts: &MarkerSanitizeOptions) -> Option<(u8, u8, u8)> {
+fn find_owner_rgb(
+    img: &ImageData,
+    x: u32,
+    y: u32,
+    opts: &MarkerSanitizeOptions,
+) -> Option<(u8, u8, u8)> {
     let w = img.width() as i32;
     let h = img.height() as i32;
     let x = x as i32;
@@ -242,25 +247,49 @@ fn parse_rgb_id_map(csv_path: &str) -> Result<HashMap<u32, u32>, String> {
             .unwrap_or_default()
             .trim()
             .parse::<u32>()
-            .map_err(|e| format!("province metadata: invalid game id '{}': {}", rec.get(0).unwrap_or_default(), e))?;
+            .map_err(|e| {
+                format!(
+                    "province metadata: invalid game id '{}': {}",
+                    rec.get(0).unwrap_or_default(),
+                    e
+                )
+            })?;
         let r = rec
             .get(1)
             .unwrap_or_default()
             .trim()
             .parse::<u8>()
-            .map_err(|e| format!("province metadata: invalid red '{}': {}", rec.get(1).unwrap_or_default(), e))?;
+            .map_err(|e| {
+                format!(
+                    "province metadata: invalid red '{}': {}",
+                    rec.get(1).unwrap_or_default(),
+                    e
+                )
+            })?;
         let g = rec
             .get(2)
             .unwrap_or_default()
             .trim()
             .parse::<u8>()
-            .map_err(|e| format!("province metadata: invalid green '{}': {}", rec.get(2).unwrap_or_default(), e))?;
+            .map_err(|e| {
+                format!(
+                    "province metadata: invalid green '{}': {}",
+                    rec.get(2).unwrap_or_default(),
+                    e
+                )
+            })?;
         let b = rec
             .get(3)
             .unwrap_or_default()
             .trim()
             .parse::<u8>()
-            .map_err(|e| format!("province metadata: invalid blue '{}': {}", rec.get(3).unwrap_or_default(), e))?;
+            .map_err(|e| {
+                format!(
+                    "province metadata: invalid blue '{}': {}",
+                    rec.get(3).unwrap_or_default(),
+                    e
+                )
+            })?;
 
         out.insert(pack_rgb(r, g, b), game_id);
     }
@@ -383,9 +412,9 @@ pub fn import_metadata_from_files(
             }
 
             if let std::collections::hash_map::Entry::Vacant(entry) = gid_to_game_id.entry(gid) {
-                let (r, g, b, _) = color_img
-                    .get_pixel(x, y)
-                    .ok_or_else(|| "province metadata: color map pixel out of bounds".to_string())?;
+                let (r, g, b, _) = color_img.get_pixel(x, y).ok_or_else(|| {
+                    "province metadata: color map pixel out of bounds".to_string()
+                })?;
                 if let Some(game_id) = rgb_to_game_id.get(&pack_rgb(r, g, b)).copied() {
                     entry.insert(game_id);
                     mapped_provinces = mapped_provinces.saturating_add(1);
@@ -435,9 +464,7 @@ pub fn import_metadata_from_files(
                 if registry.set_capital(gid, x as f32 + 0.5, y as f32 + 0.5) {
                     capitals_set = capitals_set.saturating_add(1);
                 }
-            } else if opts.set_label_lines
-                && is_label_marker(mr, mg, mb, &opts.marker_options)
-            {
+            } else if opts.set_label_lines && is_label_marker(mr, mg, mb, &opts.marker_options) {
                 label_points
                     .entry(gid)
                     .or_default()
