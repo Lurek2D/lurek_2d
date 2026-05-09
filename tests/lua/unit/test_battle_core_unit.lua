@@ -1,10 +1,13 @@
-﻿-- Lurek2D battle API tests
+
+-- Lurek2D battle API tests.
+-- Verifies the current turnbattle contract for builds where the module may be absent.
 
 if not lurek.turnbattle then
     -- @describe fallback when turnbattle is unavailable
     describe("lurek.turnbattle", function()
         it("module is unavailable in this runtime build", function()
-            expect_true(true)
+            expect_type("table", lurek)
+            expect_nil(lurek.turnbattle)
         end)
     end)
 else
@@ -17,6 +20,9 @@ else
 
     -- @describe newCombatant factory behavior
     describe("lurek.turnbattle.newCombatant", function()
+        -- @covers LCombatant:getName
+        -- @covers LCombatant:isAlive
+        -- @covers lurek.turnbattle.newCombatant
         it("creates a combatant with basic accessors", function()
             local c = lurek.turnbattle.newCombatant("hero")
             expect_not_nil(c)
@@ -27,6 +33,17 @@ else
 
     -- @describe battle creation and attack flow
     describe("lurek.turnbattle.newBattle", function()
+        -- @covers LBattle:addCombatant
+        -- @covers LBattle:attack
+        -- @covers LCombatant:addAction
+        -- @covers LCombatant:setHp
+        -- @covers LCombatant:setMaxHp
+        -- @covers LCombatant:setTeam
+        -- @covers LTurnAction:setAccuracy
+        -- @covers LTurnAction:setBaseDamage
+        -- @covers lurek.turnbattle.newAction
+        -- @covers lurek.turnbattle.newBattle
+        -- @covers lurek.turnbattle.newCombatant
         it("creates a battle and resolves a simple attack", function()
             local battle = lurek.turnbattle.newBattle("arena")
             local hero = lurek.turnbattle.newCombatant("hero")

@@ -34,7 +34,9 @@ Own the testing strategy, file layout, assertion patterns, and coverage tooling 
 - `@covers` marker rules (enforced by `python tools/audit/lua_test_structure_audit.py`):
   - Each `-- @covers lurek.module.method` or `-- @covers Type:method` must sit **directly above** the `it()` it annotates — no blank lines between the last `@covers` and `it()`.
   - The `-- @covers` line must be **indented exactly as many spaces as the `it()` call** it precedes. If `it()` has 4 spaces, `@covers` must also have 4 spaces.
-  - List **every** API symbol called inside the `it()` body: both the `lurek.module.factory()` call that creates the object **and** every `obj:method()` call on the returned object. Example: if `it()` calls `lurek.dialog.newSequencer()` and then `seq:load()`, `seq:start()`, `seq:getState()`, all four must appear as separate `-- @covers` lines.
+  - `@covers` means **tested behavior**, not mere usage. A symbol may be marked only when the `it()` contains at least one assertion proving that symbol's contract (return value, state change, error behavior, output payload, or side effect).
+  - Do **not** mark a symbol if it is only setup plumbing. Example: calling `lurek.module.newX()` only to get an object is not enough by itself unless the test asserts constructor contract (type, fields, defaults, or creation invariants).
+  - If a symbol is called but no assertion in the same `it()` validates it, remove that symbol from markers.
   - Do not annotate a symbol that `it()` never calls — e.g. a namespace-existence check should only list the namespace, not every method of the type.
   - `-- @tests` is **forbidden**. Remove all `-- @tests` lines. Use `-- @covers` exclusively.
   - `@covers` must never appear inside a `describe()` block header above all `it()` calls; it belongs directly above each individual `it()`.
@@ -45,6 +47,124 @@ Own the testing strategy, file layout, assertion patterns, and coverage tooling 
   - After each 3-file batch, run `python tools/audit/lua_test_structure_audit.py --path <file>` for each touched file and proceed only if all pass.
   - Use helper scripts only for detection/reporting, not for blind mass edits.
 - Demo tests go in `tests/lua/content/games/test_<name>.lua` and `tests/demo_smoke_tests.rs` — not in `tests/lua/unit/`. Mixing demo tests with unit tests defeats the purpose of both suites.
+
+## Test Type Matrix (Authoritative)
+
+Each Lua test family has a distinct goal, marker set, and acceptance rule. Do not mix them.
+
+- **Lua Unit (`tests/lua/unit/`)**
+  - Goal: verify single public module contracts (`lurek.*`) in isolation-level scenarios.
+  - Marker above each `it()`: `-- @covers ...`
+  - Required style: mark only symbols whose behavior is validated by assertions inside that `it()`.
+  - Not allowed: integration-only markers (`@integration`, `@security`, `@stress`, `@evidence`) as the primary marker.
+
+- **Lua Integration (`tests/lua/integration/`)**
+  - Goal: verify behavior across at least two subsystems (for example, pathfind + minimap, save + network).
+  - Marker above each `it()`: `-- @integration ...`
+  - Multiple `-- @integration` lines above one `it()` are valid when the test asserts multiple integration symbols.
+  - Every listed integration symbol must be called and assertion-backed inside that same `it()`.
+  - Required style: assert cross-module contract effects (inputs/outputs/observable state), not internal algorithm shape.
+  - Not allowed: brittle route-shape assumptions unless engine spec guarantees exact shape.
+
+- **Lua Security (`tests/lua/security/`)**
+  - Goal: reject malformed or hostile inputs; verify safe failure behavior.
+  - Marker above each `it()`: `-- @security ...`
+  - Required style: explicit invalid input + explicit expected safe outcome (`expect_error`, clamped output, no crash contract).
+  - Not allowed: assertions based on assumptions that conflict with current supported API contracts.
+
+- **Lua Stress (`tests/lua/stress/`)**
+  - Goal: throughput/stability under high load.
+  - Marker above each `it()`: `-- @stress ...`
+  - Required style: deterministic loops and bounded checks (no ambient timing assumptions unless explicitly tolerated).
+  - Not allowed: "no crash = pass" without at least one measurable post-condition.
+
+- **Lua Evidence (`tests/lua/evidence/`)**
+  - Goal: produce reproducible artifacts/output to support behavior claims.
+  - Marker above each `it()`: `-- @evidence ...`
+  - Required style: explicit evidence path/content checks where available.
+  - Not allowed: silent pass paths without rationale for unavailable environment features.
+
+- **Lua Config / Library / Demo suites**
+  - Goal: suite-specific contracts; follow local conventions in those directories.
+  - Marker policy: keep existing local marker scheme; do not force unit-marker style if suite has separate semantics.
+  - Not allowed: migrating tests between families just to satisfy marker tooling.
+
+## Marker and Docstring Rules (Hard Requirements)
+- **Marker accuracy (CRITICAL)**:
+  - A marker symbol must correspond to a call that TESTS the symbol, not merely uses it.
+  - If `local x = lurek.module.new()` appears with NO assertion validating `new()` contract, DO NOT mark `lurek.module.new`.
+  - Setup calls without assertions are **invisible to markers** — remove them from the marker list.
+  - Example violation: calling `lurek.animation.new()` to create an object but never asserting the object's type/fields/behavior. REMOVE that marker.
+  - Example correct: calling `lurek.animation.new()` AND asserting `expect_type("userdata", anim)` or similar. KEEP that marker.
+- Marker placement:
+  - Marker lines must be directly above `it()`.
+  - Marker indentation must exactly match the indentation of `it()`.
+  - No blank line between the last marker and `it()`.
+
+- Marker choice:
+  - Use one primary family marker by file family (`@covers`, `@integration`, `@security`, `@stress`, `@evidence`).
+  - Do not mix family markers in one `it()` unless explicitly required by a validator rule.
+
+- Symbol accuracy:
+  - Marker symbols must correspond to calls made in that `it()` body.
+  - Marker symbols must be assertion-backed in that same `it()`; usage without verification is forbidden.
+  - Do not add markers for symbols not called in the test body.
+
+- Assertion-backed coverage examples:
+  - Valid `@covers`: call `lurek.compute.zeros(...)` and assert returned tensor shape/type/values.
+  - Invalid `@covers`: call `lurek.compute.zeros(...)` only to feed another function, with no assertion on `zeros` behavior.
+  - Valid constructor `@covers`: call `newX()` and assert defaults/fields/type.
+  - Invalid constructor `@covers`: call `newX()` only as helper setup, no constructor contract assertions.
+
+- Forbidden markers:
+  - `-- @tests` is forbidden.
+
+- Describe marker:
+  - Keep `-- @describe` before each `describe(...)` block for readability and audit consistency.
+
+## Integration Test Design Rules
+
+- **File placement rule**: Only place tests in `tests/lua/integration/` if they test behavior across at least TWO modules from different subsystems.
+  - Example valid integration: animation drives sprite on screen (animation + render subsystems).
+  - Example invalid (move to unit): animation frame counter increments (animation only — zero subsystem interaction).
+  - Example valid integration: input (keyboard) changes active animation (input + animation).
+  - Example invalid (move to unit): calling `lurek.animation.new()` and asserting it returns a table (zero interaction with any other module).
+
+- Integration tests must prove subsystem interaction, not internal path geometry.
+- Avoid testing single-module contracts through integration files — those belong in `tests/lua/unit/`.
+- Prefer stable invariants:
+  - endpoint correctness,
+  - object lifecycle (`create`, `replace`, `clear`),
+  - serialization/deserialization round-trip,
+  - callback/event propagation.
+- Avoid brittle invariants unless spec guarantees them:
+  - exact path length,
+  - exact node-by-node route,
+  - exact ID reuse/non-reuse behavior.
+
+## Security Test Design Rules
+
+- Use "supported contract first" principle: do not assert rejection for inputs that API intentionally supports.
+- Every rejection test must tie to one explicit invalidity reason:
+  - type mismatch,
+  - range violation,
+  - malformed payload,
+  - forbidden operation.
+- Every acceptance test of edge input must still assert at least one correctness post-condition.
+
+## Definition of Done (Per Changed Test File)
+
+- File-level checks:
+  - `python tools/audit/lua_test_structure_audit.py --path <file>` passes.
+  - Markers match file family rules above.
+
+- Execution checks:
+  - Run the specific target test (`cargo test --test lua_tests <target> -- --test-threads 1`).
+  - If user asks for batch processing, run full relevant batch and report exact failing targets.
+
+- Reporting checks:
+  - If a full suite fails, identify the first failing file and first failing assertion line.
+  - Do not report unrelated tests as root cause for the currently edited file.
 ## Companion File Index
 
 None - all guidance is inline.

@@ -3,31 +3,6 @@
 
 -- @describe integration: tilemap visibility through camera
 describe("integration: tilemap visibility through camera", function()
-    -- @integration LTileMap:addLayer
-    -- @integration LTileMap:getTile
-    -- @integration LTileMap:setTile
-    -- @integration lurek.tilemap.newTileMap
-    it("creates tilemap and fills tiles", function()
-        local tm = lurek.tilemap.newTileMap(20, 20, 16)
-        tm:addLayer("tiles", 20, 20)
-        expect_not_nil(tm, "tilemap created")
-
-        for y = 0, 19 do
-            for x = 0, 19 do
-                tm:setTile(1, x + 1, y + 1, (x + y) % 4 + 1)
-            end
-        end
-
-        -- Read back a few tiles
-        local t00 = tm:getTile(1, 1, 1)
-        local t11 = tm:getTile(1, 2, 2)
-        local t99 = tm:getTile(1, 10, 10)
-
-        expect_equal(1, t00, "tile (0,0)")
-        expect_equal(3, t11, "tile (1,1): (1+1)%4+1=3")
-        expect_equal(3, t99, "tile (9,9): (9+9)%4+1=3")
-    end)
-
     -- @integration LCamera:getPosition
     -- @integration LCamera:setPosition
     -- @integration LTileMap:addLayer
@@ -60,17 +35,5 @@ describe("integration: tilemap visibility through camera", function()
         expect_equal(tile_col + 1, tile_id, "tile id matches shifted camera column")
     end)
 
-    -- @integration LTileMap:addLayer
-    -- @integration LTileMap:getTile
-    -- @integration lurek.tilemap.newTileMap
-    it("out-of-bounds tile read returns nil without crashing", function()
-        local tm = lurek.tilemap.newTileMap(10, 10, 16)
-        tm:addLayer("tiles", 10, 10)
-        expect_no_error(function()
-            local t = tm:getTile(1, 100, 100)
-            -- May be nil or 0, the important thing is no crash
-            expect_true(t == nil or type(t) == "number", "out-of-bounds returns nil or number")
-        end)
-    end)
 end)
 test_summary()

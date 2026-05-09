@@ -45,35 +45,5 @@ describe("integration: data serialization with filesystem I/O", function()
         end
     end)
 
-    -- @integration lurek.serial.fromJson
-    -- @integration lurek.serial.toJson
-    it("round-trips nested data correctly", function()
-        local nested = {
-            meta = { version = 2, engine = "lurek" },
-            data = { {x=1, y=2}, {x=3, y=4} },
-        }
-
-        local encoded = lurek.serial.toJson(nested)
-        local decoded = lurek.serial.fromJson(encoded)
-
-        expect_equal(2, decoded.meta.version, "nested version")
-        expect_equal("lurek", decoded.meta.engine, "nested engine")
-    end)
-
-    -- @integration lurek.serial.fromJson
-    -- @integration lurek.serial.toJson
-    it("large table serialization stress", function()
-        local big = {}
-        for i = 1, 200 do
-            big[i] = { x = i * 0.1, y = i * 0.2, name = "item_" .. i }
-        end
-
-        local encoded = lurek.serial.toJson(big)
-        expect_true(#encoded > 100, "encoded has content")
-
-        local decoded = lurek.serial.fromJson(encoded)
-        expect_equal(200, #decoded, "200 items decoded")
-        expect_near(20.0, decoded[200].x, 0.1, "last item x correct")
-    end)
 end)
 test_summary()

@@ -9,7 +9,7 @@
 pub mod codec;
 /// CSV parsing and serialization via the csv crate.
 pub mod csv;
-/// INI parsing (read-only).
+/// INI parsing helpers for read-only configuration decoding.
 pub mod ini;
 /// JSON parsing and serialization via serde_json.
 pub mod json;

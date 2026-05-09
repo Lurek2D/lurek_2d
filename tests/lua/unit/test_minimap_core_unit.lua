@@ -1043,4 +1043,12 @@ describe("minimap strict: LMinimap render", function()
     end)
 end)
 
+-- @describe minimap migrated from render unit
+describe("minimap migrated from render unit", function()
+    -- @covers lurek.minimap.newMinimap
+    it("exposes lurek.minimap.newMinimap as the canonical constructor", function()
+        expect_type("function", lurek.minimap.newMinimap)
+    end)
+end)
+
 test_summary()

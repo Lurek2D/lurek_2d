@@ -1252,7 +1252,7 @@ pub enum ColRef  // Column reference: string name or 1-based integer index.  # V
 *[src/dataframe/rng.rs](src/dataframe/rng.rs) — 1/1 documented (100%)*
 
 ```rust
-pub struct Xorshift64  // Minimal xorshift64 PRNG.
+pub struct Xorshift64  // Minimal deterministic xorshift64 PRNG used by dataframe helpers.
 ```
 
 ### `dataframe::serial`
@@ -5354,7 +5354,7 @@ pub enum TransitionType  // Visual transition types between scenes.  # Variants 
 ```rust
 pub mod codec  // Unified dispatch API for encode/decode and format auto-detection.
 pub mod csv  // CSV parsing and serialization via the csv crate.
-pub mod ini  // INI parsing (read-only).
+pub mod ini  // INI parsing helpers for read-only configuration decoding.
 pub mod json  // JSON parsing and serialization via serde_json.
 pub mod lua_table  // `SerialValue` type definition and Lua↔`SerialValue` bidirectional conversion.
 pub mod msgpack  // MessagePack encoding and decoding via rmp-serde.
@@ -5371,8 +5371,8 @@ pub mod xml  // XML parsing (read-only) via roxmltree.
 
 ```rust
 pub struct DecodeOptions  // Text codec decode options.
-pub struct EncodeOptions  // Codec encode options.
-pub enum EncodedValue  // Encoded output payload.
+pub struct EncodeOptions  // Encoding options used by the format-dispatch codec entry points.
+pub enum EncodedValue  // Encoded payload returned by `encode`, either UTF-8 text or binary bytes.
 pub enum SerialFormat  // Supported serial codec formats.
 pub fn decode_bytes()  // Decode binary bytes for the selected binary-capable format.
 pub fn decode_text()  // Decode UTF-8 text using explicit or auto-detected format.

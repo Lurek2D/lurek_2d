@@ -1675,7 +1675,7 @@ describe("lurek.audio.newPool", function()
         if ok then
             expect_not_nil(pool)
         else
-            expect_true(true)
+            expect_false(ok)
         end
     end)
 
@@ -2459,6 +2459,48 @@ describe("audio strict: LSoundData drawWaveform", function()
         else
             expect_true(true) -- newImageData not available in this build; skip
         end
+    end)
+end)
+
+-- @describe audio migrated from integration/audio_timer
+describe("audio migrated from integration/audio_timer", function()
+    -- @covers lurek.audio.getMasterVolume
+    -- @covers lurek.audio.setMasterVolume
+    it("audio volume can be ramped over time", function()
+        lurek.audio.setMasterVolume(0.0)
+        expect_near(0.0, lurek.audio.getMasterVolume(), 0.01)
+
+        local volume = 0.0
+        local target = 1.0
+        local speed = 2.0
+        local dt = 0.016
+        for _ = 1, 30 do
+            volume = math.min(target, volume + speed * dt)
+        end
+
+        lurek.audio.setMasterVolume(volume)
+        expect_true(volume > 0.9)
+        expect_near(volume, lurek.audio.getMasterVolume(), 0.01)
+        lurek.audio.setMasterVolume(1.0)
+    end)
+
+    -- @covers lurek.audio.getMasterVolume
+    -- @covers lurek.audio.setMasterVolume
+    it("audio volume fade-out follows exponential decay", function()
+        lurek.audio.setMasterVolume(1.0)
+
+        local volume = 1.0
+        local decay_rate = 0.5
+        local dt = 0.016
+        for _ = 1, 60 do
+            volume = volume * (decay_rate ^ dt)
+        end
+
+        expect_true(volume < 1.0)
+        expect_true(volume > 0.0)
+        lurek.audio.setMasterVolume(volume)
+        expect_near(volume, lurek.audio.getMasterVolume(), 0.01)
+        lurek.audio.setMasterVolume(1.0)
     end)
 end)
 

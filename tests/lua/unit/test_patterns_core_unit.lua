@@ -1527,4 +1527,150 @@ describe("patterns strict: LSet clear", function()
     end)
 end)
 
+-- relationships (migrated from ecs unit tests)
+
+-- @describe lurek.patterns.RelationshipManager
+describe("lurek.patterns.RelationshipManager", function()
+    -- @covers LRelationshipManager:getValue
+    -- @covers lurek.patterns.newRelationshipManager
+    it("getValue defaults to zero for unknown pairs", function()
+        local rm = lurek.patterns.newRelationshipManager()
+        expect_near(0.0, rm:getValue(1, 2), 1e-5)
+    end)
+
+    -- @covers LRelationshipManager:getValue
+    -- @covers LRelationshipManager:setValue
+    -- @covers lurek.patterns.newRelationshipManager
+    it("stores and retrieves numeric values between entity pairs", function()
+        local rm = lurek.patterns.newRelationshipManager()
+        local a, b = 1, 2
+        rm:setValue(a, b, 75.0)
+        expect_near(75.0, rm:getValue(a, b), 1e-5)
+    end)
+
+    -- @covers LRelationshipManager:adjustValue
+    -- @covers LRelationshipManager:getValue
+    -- @covers LRelationshipManager:setValue
+    -- @covers lurek.patterns.newRelationshipManager
+    it("adjustValue changes the value by delta", function()
+        local rm = lurek.patterns.newRelationshipManager()
+        rm:setValue(1, 2, 50.0)
+        rm:adjustValue(1, 2, -10.0)
+        expect_near(40.0, rm:getValue(1, 2), 1e-5)
+    end)
+
+    -- @covers LRelationshipManager:defineType
+    -- @covers LRelationshipManager:getLevel
+    -- @covers LRelationshipManager:setLevel
+    -- @covers lurek.patterns.newRelationshipManager
+    it("supports named relationship type levels", function()
+        local rm = lurek.patterns.newRelationshipManager()
+        rm:defineType("Faction", {"enemy", "neutral", "ally"}, "neutral")
+        local ok = rm:setLevel(1, 2, "Faction", "ally")
+        expect_equal(true, ok)
+        expect_equal("ally", rm:getLevel(1, 2, "Faction"))
+    end)
+
+    -- @covers LRelationshipManager:setLevel
+    -- @covers lurek.patterns.newRelationshipManager
+    it("setLevel returns false for unknown type", function()
+        local rm = lurek.patterns.newRelationshipManager()
+        expect_equal(false, rm:setLevel(1, 2, "Unknown", "ally"))
+    end)
+
+    -- @covers LRelationshipManager:defineType
+    -- @covers LRelationshipManager:setLevel
+    -- @covers lurek.patterns.newRelationshipManager
+    it("setLevel returns false for invalid level", function()
+        local rm = lurek.patterns.newRelationshipManager()
+        rm:defineType("Faction", {"enemy", "ally"}, "ally")
+        expect_equal(false, rm:setLevel(1, 2, "Faction", "neutral"))
+    end)
+
+    -- @covers LRelationshipManager:defineType
+    -- @covers LRelationshipManager:getLevel
+    -- @covers lurek.patterns.newRelationshipManager
+    it("getLevel returns default when unset", function()
+        local rm = lurek.patterns.newRelationshipManager()
+        rm:defineType("Faction", {"enemy", "neutral", "ally"}, "neutral")
+        expect_equal("neutral", rm:getLevel(1, 2, "Faction"))
+    end)
+
+    -- @covers LRelationshipManager:getValue
+    -- @covers LRelationshipManager:pairCount
+    -- @covers LRelationshipManager:removePair
+    -- @covers LRelationshipManager:setValue
+    -- @covers lurek.patterns.newRelationshipManager
+    it("removePair resets to defaults and decrements pairCount", function()
+        local rm = lurek.patterns.newRelationshipManager()
+        rm:setValue(1, 2, 100.0)
+        expect_equal(1, rm:pairCount())
+        rm:removePair(1, 2)
+        expect_equal(0, rm:pairCount())
+        expect_near(0.0, rm:getValue(1, 2), 1e-5)
+    end)
+
+    -- @covers LRelationshipManager:pairCount
+    -- @covers LRelationshipManager:setValue
+    -- @covers lurek.patterns.newRelationshipManager
+    it("pairCount tracks stored pairs", function()
+        local rm = lurek.patterns.newRelationshipManager()
+        expect_equal(0, rm:pairCount())
+        rm:setValue(1, 2, 5.0)
+        expect_equal(1, rm:pairCount())
+    end)
+
+    -- @covers LRelationshipManager:defineType
+    -- @covers LRelationshipManager:typeNames
+    -- @covers lurek.patterns.newRelationshipManager
+    it("typeNames returns all defined type names", function()
+        local rm = lurek.patterns.newRelationshipManager()
+        rm:defineType("Friendship", {"stranger","friend","bestfriend"})
+        rm:defineType("Faction", {"enemy","ally"})
+        local names = rm:typeNames()
+        expect_equal(2, #names)
+    end)
+
+    -- @covers LRelationshipManager:defineType
+    -- @covers LRelationshipManager:removeType
+    -- @covers LRelationshipManager:setLevel
+    -- @covers LRelationshipManager:typeNames
+    -- @covers lurek.patterns.newRelationshipManager
+    it("removeType removes the relationship type", function()
+        local rm = lurek.patterns.newRelationshipManager()
+        rm:defineType("Mood", {"happy", "sad"}, "happy")
+        rm:removeType("Mood")
+        local names = rm:typeNames()
+        expect_equal(0, #names)
+        expect_equal(false, rm:setLevel(1, 2, "Mood", "sad"))
+    end)
+end)
+
+-- [migrated from ecs unit tests]
+-- Regression: RelationshipManager:defineType must not panic when the optional
+-- default_level argument is omitted or empty.
+
+-- @describe RelationshipManager regression: empty default_level
+describe("RelationshipManager regression: empty default_level", function()
+    -- @covers LRelationshipManager:defineType
+    -- @covers LRelationshipManager:typeNames
+    -- @covers lurek.patterns.newRelationshipManager
+    it("defineType without default_level does not panic", function()
+        local rm = lurek.patterns.newRelationshipManager()
+        expect_no_error(function()
+            rm:defineType("diplomacy", { "war", "neutral", "alliance" })
+        end)
+        local names = rm:typeNames()
+        expect_equal(1, #names)
+        expect_equal("diplomacy", names[1])
+    end)
+
+    -- @covers LRelationshipManager:defineType
+    -- @covers lurek.patterns.newRelationshipManager
+    it("defineType accepts empty levels table without error", function()
+        local rm = lurek.patterns.newRelationshipManager()
+        rm:defineType("neutral", {})
+    end)
+end)
+
 test_summary()

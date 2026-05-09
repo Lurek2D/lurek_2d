@@ -1136,9 +1136,8 @@ describe("tween strict coverage sweep", function()
     -- @covers lurek.tween.newState
     it("TweenState type API is callable", function()
         local st = lurek.tween.newState(1.0)
-        st:type()
-        st:typeOf("LTweenState")
-        expect_true(true)
+        expect_type("string", st:type())
+        expect_type("boolean", st:typeOf("LTweenState"))
     end)
 
     -- @covers LTween.cancel
@@ -1154,10 +1153,10 @@ describe("tween strict coverage sweep", function()
         t:onComplete(function() end)
         t:onUpdate(function() end)
         t:onCancel(function() end)
-        t:type()
-        t:typeOf("LTween")
+        expect_type("string", t:type())
+        expect_type("boolean", t:typeOf("LTween"))
         t:cancel()
-        expect_true(true)
+        expect_not_nil(t)
     end)
 
     -- @covers LTweenSequence.tween
@@ -1176,9 +1175,8 @@ describe("tween strict coverage sweep", function()
         s:callback(function() end)
         s:onComplete(function() end)
         s:start()
-        s:type()
-        s:typeOf("LTweenSequence")
-        expect_true(true)
+        expect_type("string", s:type())
+        expect_type("boolean", s:typeOf("LTweenSequence"))
     end)
 
     -- @covers LTweenParallel.add
@@ -1196,9 +1194,8 @@ describe("tween strict coverage sweep", function()
         p:add(child)
         p:onComplete(function() end)
         p:start()
-        p:type()
-        p:typeOf("LTweenParallel")
-        expect_true(true)
+        expect_type("string", p:type())
+        expect_type("boolean", p:typeOf("LTweenParallel"))
     end)
 
     -- @covers LSpring:type
@@ -1207,10 +1204,162 @@ describe("tween strict coverage sweep", function()
     it("Spring type API is callable", function()
         local target = { x = 0 }
         local sp = lurek.tween.spring(target, { x = 10 })
-        sp:type()
-        sp:typeOf("LSpring")
-        expect_true(true)
+        expect_type("string", sp:type())
+        expect_type("boolean", sp:typeOf("LSpring"))
     end)
+end)
+
+-- @describe tween migrated from integration/tween_camera
+describe("tween migrated from integration/tween_camera", function()
+    -- @covers LTweenState:lerp
+    -- @covers LTweenState:tick
+    -- @covers lurek.tween.newState
+    it("tween reaches target at completion", function()
+        local state = lurek.tween.newState(0.5, "linear")
+        state:tick(0.6)
+        local val = state:lerp(100, 200)
+        expect_near(200, val, 1.0)
+    end)
+
+    -- @covers LTweenState:isComplete
+    -- @covers LTweenState:tick
+    -- @covers lurek.tween.newState
+    it("tween isComplete true after full duration", function()
+        local state = lurek.tween.newState(0.1, "linear")
+        state:tick(0.2)
+        expect_true(state:isComplete())
+    end)
+end)
+
+-- @describe unit: migrated from integration/test_cardgame_tween_integration.lua
+describe("unit: migrated from integration/test_cardgame_tween_integration.lua", function()
+        -- @covers lurek.tween.cancelAll
+        -- @covers lurek.tween.tween
+        -- @covers lurek.tween.update
+        -- @covers Card:setTilePosition
+        -- @covers Card:getTilePosition
+        it("tween updates card tile_x toward target over multiple updates", function()
+            lurek.tween.cancelAll()
+            local card = fresh_card()
+            card:setTilePosition(0, 0)
+    
+            lurek.tween.tween(2.0, card, { tile_x = 10 }, "linear")
+            lurek.tween.update(0.5)
+            local x_quarter = card.tile_x
+            lurek.tween.update(0.5)
+            local x_half = card.tile_x
+            lurek.tween.update(1.0)
+    
+            expect_near(2.5, x_quarter, 0.5)
+            expect_near(5.0, x_half, 0.5)
+            expect_near(10.0, card.tile_x, 1e-5)
+        end)
+
+        -- @covers lurek.tween.cancelAll
+        -- @covers lurek.tween.tween
+        -- @covers lurek.tween.update
+        -- @covers Card:addTag
+        -- @covers Card:hasTag
+        it("finished tween triggers cardgame callback and mutates card tags", function()
+            lurek.tween.cancelAll()
+            local card = fresh_card()
+            card:setTilePosition(0, 0)
+    
+            local fired = 0
+            local tw = lurek.tween.tween(1.0, card, { tile_x = 5 }, "linear")
+            tw:onComplete(function()
+                fired = fired + 1
+                card:addTag("arrived")
+            end)
+            lurek.tween.update(1.5)
+    
+            expect_equal(1, fired)
+            expect_true(card:hasTag("arrived"))
+            expect_near(5.0, card.tile_x, 1e-5)
+        end)
+
+        -- @covers lurek.tween.cancelAll
+        -- @covers lurek.tween.tween
+        -- @covers lurek.tween.update
+        -- @covers Card:setTilePosition
+        it("sequential tweens move card through two distinct positions", function()
+            lurek.tween.cancelAll()
+            local card = fresh_card()
+            card:setTilePosition(0, 0)
+    
+            lurek.tween.tween(1.0, card, { tile_x = 4 }, "linear")
+            lurek.tween.update(1.0)
+            expect_near(4.0, card.tile_x, 0.5)
+    
+            lurek.tween.cancelAll()
+            lurek.tween.tween(1.0, card, { tile_x = 10 }, "linear")
+            lurek.tween.update(1.0)
+            expect_near(10.0, card.tile_x, 0.5)
+        end)
+
+        -- @covers lurek.tween.cancelAll
+        -- @covers lurek.tween.tween
+        -- @covers lurek.tween.update
+        it("inOutQuad easing reaches midpoint value at half duration", function()
+            lurek.tween.cancelAll()
+            local card = fresh_card()
+            card:setTilePosition(0, 0)
+    
+            lurek.tween.tween(2.0, card, { tile_x = 1.0 }, "inOutQuad")
+            lurek.tween.update(1.0)
+            expect_near(0.5, card.tile_x, 1e-5)
+        end)
+
+        -- @covers lurek.tween.cancelAll
+        -- @covers lurek.tween.tween
+        -- @covers lurek.tween.update
+        -- @covers Card:getTilePosition
+        it("tween animates tile_x and tile_y simultaneously", function()
+            lurek.tween.cancelAll()
+            local card = fresh_card()
+            card:setTilePosition(0, 0)
+    
+            lurek.tween.tween(1.0, card, { tile_x = 3, tile_y = 6 }, "linear")
+            lurek.tween.update(1.0)
+            local x, y = card:getTilePosition()
+            expect_near(3.0, x, 1e-5)
+            expect_near(6.0, y, 1e-5)
+        end)
+
+        -- @covers lurek.tween.cancelAll
+        -- @covers lurek.tween.tween
+        it("tween rejects non-numeric duration", function()
+            lurek.tween.cancelAll()
+            local card = fresh_card()
+            expect_error(function()
+                lurek.tween.tween("oops", card, { tile_x = 1 })
+            end)
+        end)
+
+end)
+
+-- @describe unit: migrated from integration/test_tween_ecs.lua
+describe("unit: migrated from integration/test_tween_ecs.lua", function()
+        -- @covers LTweenState:lerp
+        -- @covers LTweenState:tick
+        -- @covers lurek.tween.newState
+        it("ease-in tween moves slowly at start, fast at end", function()
+            local from_val, to_val = 0.0, 100.0
+            local st_linear  = lurek.tween.newState(1.0, "linear")
+            local st_ease_in = lurek.tween.newState(1.0, "quadIn")
+    
+            -- Advance both to 10% of their duration
+            st_linear:tick(0.1)
+            st_ease_in:tick(0.1)
+    
+            local v_linear  = st_linear:lerp(from_val, to_val)
+            local v_ease_in = st_ease_in:lerp(from_val, to_val)
+    
+            -- At t=0.1, linear = ~10, quadIn should be less (slow start)
+            expect_near(10, v_linear, 2.0, "linear at 10%     10")
+            expect_true(v_ease_in < v_linear, "ease-in slower than linear at 10%")
+        end)
+
 end)
 
 test_summary()

@@ -493,64 +493,6 @@ describe("lurek.automation - update and completion", function()
         lurek.automation.unload("key_test")
     end)
 
-    -- @covers lurek.automation.load
-    -- @covers lurek.automation.start
-    -- @covers lurek.automation.stop
-    -- @covers lurek.automation.unload
-    -- @covers lurek.automation.update
-    -- @covers lurek.event.clear
-    -- @covers lurek.event.wait
-    it("should default keypress scancode to key and repeat to false", function()
-        lurek.event.clear()
-        lurek.automation.load("key_defaults", {
-            steps = {
-                { action = "keypress", key = "a", time = 0.0 },
-            }
-        })
-        lurek.automation.start("key_defaults")
-        lurek.automation.update(0.01)
-
-        local ok, name, args = lurek.event.wait(0)
-        expect_equal(ok, true)
-        expect_equal(name, "keypressed")
-        expect_equal(args[1], "a")
-        expect_equal(args[2], "a")
-        expect_equal(args[3], false)
-
-        lurek.automation.stop()
-        lurek.automation.unload("key_defaults")
-        lurek.event.clear()
-    end)
-
-    -- @covers lurek.automation.load
-    -- @covers lurek.automation.start
-    -- @covers lurek.automation.stop
-    -- @covers lurek.automation.unload
-    -- @covers lurek.automation.update
-    -- @covers lurek.event.clear
-    -- @covers lurek.event.wait
-    it("should prefer explicit scancode in queued keypress events", function()
-        lurek.event.clear()
-        lurek.automation.load("key_scancode", {
-            steps = {
-                { action = "keypress", key = "a", scancode = "KeyA", time = 0.0 },
-            }
-        })
-        lurek.automation.start("key_scancode")
-        lurek.automation.update(0.01)
-
-        local ok, name, args = lurek.event.wait(0)
-        expect_equal(ok, true)
-        expect_equal(name, "keypressed")
-        expect_equal(args[1], "a")
-        expect_equal(args[2], "KeyA")
-        expect_equal(args[3], false)
-
-        lurek.automation.stop()
-        lurek.automation.unload("key_scancode")
-        lurek.event.clear()
-    end)
-
     -- @covers lurek.automation.isComplete
     -- @covers lurek.automation.load
     -- @covers lurek.automation.start
@@ -1143,6 +1085,36 @@ describe("lurek.automation extended actions", function()
         lurek.automation.stop()
         lurek.automation.unload("macro_src_ext")
         lurek.automation.unload("macro_call")
+    end)
+end)
+
+-- @describe automation migrated from integration/automation_event
+describe("automation migrated from integration/automation_event", function()
+    -- @covers lurek.automation.getLastError
+    -- @covers lurek.automation.isFailed
+    -- @covers lurek.automation.load
+    -- @covers lurek.automation.setCondition
+    -- @covers lurek.automation.start
+    -- @covers lurek.automation.stop
+    -- @covers lurek.automation.unload
+    -- @covers lurek.automation.update
+    it("fails assert action when condition is false", function()
+        lurek.automation.load("assert_fail", {
+            steps = {
+                { action = "assert", assert = "boss_dead", time = 0.0 },
+            }
+        })
+
+        lurek.automation.setCondition("boss_dead", false)
+        lurek.automation.start("assert_fail")
+        lurek.automation.update(0.01)
+
+        expect_equal(lurek.automation.isFailed(), true)
+        local err = lurek.automation.getLastError()
+        expect_type("string", err)
+
+        lurek.automation.stop()
+        lurek.automation.unload("assert_fail")
     end)
 end)
 

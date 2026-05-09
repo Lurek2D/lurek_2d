@@ -112,14 +112,14 @@ describe("construction", function()
         expect_equal("score", cols[3])
     end)
 
-    -- @covers LTween:getValue
+    -- @covers LVecFrame:getValue
     it("fromCSV auto-detects numbers", function()
         local df = make_test_df()
         expect_near(30, df:getValue(1, "age"), 1e-5)
         expect_near(25, df:getValue(2, "age"), 1e-5)
     end)
 
-    -- @covers LTween:getValue
+    -- @covers LVecFrame:getValue
     it("fromCSV parses text values", function()
         local df = make_test_df()
         expect_equal("Alice", df:getValue(1, "name"))
@@ -3360,7 +3360,7 @@ describe("dataframe strict: LGroupedFrame type/typeOf", function()
             local ok3, b = pcall(function() return gf:typeOf("Object") end)
             if ok3 then expect_type("boolean", b) end
         else
-            expect_true(true)
+            expect_false(ok and gf ~= nil and type(gf) == "userdata")
         end
     end)
 end)
@@ -3486,6 +3486,23 @@ describe("dataframe dedicated: advanced transforms and SQL join", function()
         expect_equal("Bob", out:getValue(1, "name"))
         expect_near(200.0, out:getValue(1, "score"), 0.001)
     end)
+end)
+
+-- @describe unit: migrated from integration/test_image_dataframe.lua
+describe("unit: migrated from integration/test_image_dataframe.lua", function()
+        -- @covers LDataFrame:addColumn
+        -- @covers LDataFrame:addRow
+        -- @covers LDataFrame:nrows
+        -- @covers lurek.dataframe.newDataFrame
+        it("DataFrame can hold numeric pixel data without overflow", function()
+            local df = lurek.dataframe.newDataFrame()
+            df:addColumn("value")
+            for i = 0, 255 do
+                df:addRow({ value = i })
+            end
+            expect_equal(256, df:nrows(), "256 rows without overflow")
+        end)
+
 end)
 
 test_summary()

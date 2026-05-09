@@ -712,7 +712,7 @@ describe("devtools strict: LFileWatcher type / typeOf", function()
             expect_type("string", fw:type())
             expect_type("boolean", fw:typeOf("Object"))
         else
-            expect_true(true)
+            expect_false(ok and fw ~= nil)
         end
     end)
 end)
@@ -728,7 +728,7 @@ describe("devtools strict: LReplConsole type / typeOf", function()
             expect_type("string", repl:type())
             expect_type("boolean", repl:typeOf("Object"))
         else
-            expect_true(true)
+            expect_false(ok and repl ~= nil)
         end
     end)
 end)

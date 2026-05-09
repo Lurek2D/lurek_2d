@@ -34,7 +34,6 @@ describe("lurek.render font functions", function()
   end)
 
   -- @covers lurek.render.getFont
-  -- @covers lurek.render.newFont
   -- @covers lurek.render.setFont
   it("setFont and getFont round-trip to a non-nil font", function()
     local font = lurek.render.newFont(14)
@@ -45,7 +44,6 @@ describe("lurek.render font functions", function()
 
   -- @covers lurek.render.getFontHeight
   -- @covers lurek.render.getFontWidth
-  -- @covers lurek.render.newFont
   it("reports positive width and height for a loaded font", function()
     local font = lurek.render.newFont(14)
     expect_true(lurek.render.getFontWidth(font, "Hello") > 0)

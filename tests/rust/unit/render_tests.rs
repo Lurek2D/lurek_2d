@@ -573,6 +573,7 @@ mod renderer_tests {
             pixels: vec![255, 0, 0, 255],
             width: 1,
             height: 1,
+            color_space: lurek2d::image::TextureColorSpace::Srgb,
         };
         let td2 = td.clone();
         assert_eq!(td2.pixels, vec![255, 0, 0, 255]);

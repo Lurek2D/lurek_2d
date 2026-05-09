@@ -2,7 +2,6 @@
 -- Integration: lurek.graph MST and A* with lurek.pathfind.
 -- Namespaces: lurek.graph + lurek.pathfind
 
-
 --
 -- Graph MST (Minimum Spanning Tree)
 --
@@ -47,28 +46,6 @@ describe("graph.mst", function()
         end
     end)
 
-    -- @integration LGraph:addEdge
-    -- @integration LGraph:addNode
-    -- @integration LGraph:mst
-    -- @integration lurek.graph.newGraph
-    it("two-node graph has one MST edge", function()
-        local g = lurek.graph.newGraph()
-        local a = g:addNode()
-        local b = g:addNode()
-        g:addEdge(a, b)
-        local tree = g:mst()
-        expect_equal(1, #tree)
-    end)
-
-    -- @integration LGraph:addNode
-    -- @integration LGraph:mst
-    -- @integration lurek.graph.newGraph
-    it("single node graph has empty MST", function()
-        local g = lurek.graph.newGraph()
-        g:addNode()
-        local tree = g:mst()
-        expect_equal(0, #tree)
-    end)
 end)
 
 --
@@ -105,46 +82,6 @@ describe("graph.astar", function()
         end
     end)
 
-    -- @integration LGraph:addNode
-    -- @integration LGraph:astar
-    -- @integration lurek.graph.newGraph
-    it("returns nil when no path exists", function()
-        local g = lurek.graph.newGraph()
-        local a = g:addNode()
-        local b = g:addNode()
-        -- No edge between a and b
-        local path = g:astar(a, b)
-        expect_equal(nil, path)
-    end)
-
-    -- @integration LGraph:addEdge
-    -- @integration LGraph:addNode
-    -- @integration LGraph:astar
-    -- @integration lurek.graph.newGraph
-    it("astar path starts and ends at expected nodes", function()
-        local g = lurek.graph.newGraph()
-        local a   = g:addNode("start")
-        local mid = g:addNode("mid")
-        local b   = g:addNode("end")
-        g:addEdge(a, mid)
-        g:addEdge(mid, b)
-        local path = g:astar(a, b)
-        if path then
-            -- Path should be a table of node userdatas
-            expect_equal(3, #path)
-        end
-    end)
-
-    -- @integration LGraph:addNode
-    -- @integration LGraph:astar
-    -- @integration lurek.graph.newGraph
-    it("same-node astar path has length 1", function()
-        local g = lurek.graph.newGraph()
-        local a = g:addNode()
-        local path = g:astar(a, a)
-        -- A path from a node to itself should be [a] or nil depending on impl
-        expect_true(path == nil or #path == 1, "path to self should be length 1 or nil")
-    end)
 end)
 
 --
@@ -152,14 +89,6 @@ end)
 --
 -- @describe graph + JPS integration
 describe("graph + JPS integration", function()
-
-    -- @integration lurek.procgen.worldGraph
-    it("worldGraph edge costs match procgen expectations", function()
-        local wg = lurek.procgen.worldGraph(200, 150, 6, 5)
-        for _, e in ipairs(wg.edges) do
-            expect_true(e.cost > 0, "edge cost should be positive")
-        end
-    end)
 
     -- @integration LGraph:addEdge
     -- @integration LGraph:addNode

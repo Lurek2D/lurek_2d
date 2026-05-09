@@ -583,10 +583,49 @@ describe("thread strict: LPromise type/typeOf/result/getError", function()
             local ok2 = pcall(function() return p:getError() end)
             expect_type("boolean", ok2)
         else
-            expect_true(true)
+            expect_nil(p)
         end
         pool:join()
     end)
+end)
+
+-- @describe unit: migrated from integration/test_thread_data.lua
+describe("unit: migrated from integration/test_thread_data.lua", function()
+        -- @covers LChannel:pop
+        -- @covers LChannel:push
+        -- @covers lurek.thread.newChannel
+        it("pushes and pops plain value via channel", function()
+            local ch = lurek.thread.newChannel()
+            expect_not_nil(ch, "channel created")
+    
+            ch:push(42)
+            local val = ch:pop()
+            expect_equal(42, val, "integer round-tripped through channel")
+        end)
+
+        -- @covers LChannel:pop
+        -- @covers LChannel:push
+        -- @covers lurek.thread.newChannel
+        it("channel is FIFO for multiple pushes", function()
+            local ch = lurek.thread.newChannel()
+    
+            ch:push(1)
+            ch:push(2)
+            ch:push(3)
+    
+            expect_equal(1, ch:pop(), "first out is 1")
+            expect_equal(2, ch:pop(), "second out is 2")
+            expect_equal(3, ch:pop(), "third out is 3")
+        end)
+
+        -- @covers LChannel:pop
+        -- @covers lurek.thread.newChannel
+        it("tryPop on empty channel returns nil", function()
+            local ch  = lurek.thread.newChannel()
+            local val = ch:pop()
+            expect_nil(val, "empty channel returns nil")
+        end)
+
 end)
 
 test_summary()

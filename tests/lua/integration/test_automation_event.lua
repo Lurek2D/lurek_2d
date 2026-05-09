@@ -6,13 +6,13 @@ local automation = lurek.automation
 
 -- @describe automation + event integration
 describe("automation + event integration", function()
-    -- @covers lurek.automation.load
-    -- @covers lurek.automation.start
-    -- @covers lurek.automation.stop
-    -- @covers lurek.automation.unload
-    -- @covers lurek.automation.update
-    -- @covers lurek.event.clear
-    -- @covers lurek.event.wait
+    -- @integration lurek.automation.load
+    -- @integration lurek.automation.start
+    -- @integration lurek.automation.stop
+    -- @integration lurek.automation.unload
+    -- @integration lurek.automation.update
+    -- @integration lurek.event.clear
+    -- @integration lurek.event.wait
     it("dispatches queued key events with expected payload", function()
         lurek.event.clear()
         lurek.automation.load("evt_payload", {
@@ -43,41 +43,72 @@ describe("automation + event integration", function()
         lurek.event.clear()
     end)
 
-    -- @covers lurek.automation.getLastError
-    -- @covers lurek.automation.isFailed
-    -- @covers lurek.automation.load
-    -- @covers lurek.automation.setCondition
-    -- @covers lurek.automation.start
-    -- @covers lurek.automation.stop
-    -- @covers lurek.automation.unload
-    -- @covers lurek.automation.update
-    it("fails assert action when condition is false", function()
-        lurek.automation.load("assert_fail", {
+    -- @integration lurek.automation.load
+    -- @integration lurek.automation.start
+    -- @integration lurek.automation.stop
+    -- @integration lurek.automation.unload
+    -- @integration lurek.automation.update
+    -- @integration lurek.event.clear
+    -- @integration lurek.event.wait
+    it("defaults keypress scancode to key and repeat to false", function()
+        lurek.event.clear()
+        lurek.automation.load("key_defaults", {
             steps = {
-                { action = "assert", assert = "boss_dead", time = 0.0 },
+                { action = "keypress", key = "a", time = 0.0 },
             }
         })
+        lurek.automation.start("key_defaults")
+        lurek.automation.update(0.01)
 
-        automation.setCondition("boss_dead", false)
-        automation.start("assert_fail")
-        automation.update(0.01)
+        local ok, name, args = lurek.event.wait(0)
+        expect_equal(ok, true)
+        expect_equal(name, "keypressed")
+        expect_equal(args[1], "a")
+        expect_equal(args[2], "a")
+        expect_equal(args[3], false)
 
-        expect_equal(automation.isFailed(), true)
-        local err = automation.getLastError()
-        expect_type("string", err)
-
-        automation.stop()
-        automation.unload("assert_fail")
+        lurek.automation.stop()
+        lurek.automation.unload("key_defaults")
+        lurek.event.clear()
     end)
 
-    -- @covers lurek.automation.isFailed
-    -- @covers lurek.automation.load
-    -- @covers lurek.automation.start
-    -- @covers lurek.automation.stop
-    -- @covers lurek.automation.unload
-    -- @covers lurek.automation.update
-    -- @covers lurek.image.newImageData
-    -- @covers lurek.image.savePNG
+    -- @integration lurek.automation.load
+    -- @integration lurek.automation.start
+    -- @integration lurek.automation.stop
+    -- @integration lurek.automation.unload
+    -- @integration lurek.automation.update
+    -- @integration lurek.event.clear
+    -- @integration lurek.event.wait
+    it("prefers explicit scancode in queued keypress events", function()
+        lurek.event.clear()
+        lurek.automation.load("key_scancode", {
+            steps = {
+                { action = "keypress", key = "a", scancode = "KeyA", time = 0.0 },
+            }
+        })
+        lurek.automation.start("key_scancode")
+        lurek.automation.update(0.01)
+
+        local ok, name, args = lurek.event.wait(0)
+        expect_equal(ok, true)
+        expect_equal(name, "keypressed")
+        expect_equal(args[1], "a")
+        expect_equal(args[2], "KeyA")
+        expect_equal(args[3], false)
+
+        lurek.automation.stop()
+        lurek.automation.unload("key_scancode")
+        lurek.event.clear()
+    end)
+
+    -- @integration lurek.automation.isFailed
+    -- @integration lurek.automation.load
+    -- @integration lurek.automation.start
+    -- @integration lurek.automation.stop
+    -- @integration lurek.automation.unload
+    -- @integration lurek.automation.update
+    -- @integration lurek.image.newImageData
+    -- @integration lurek.image.savePNG
     it("passes visualassert action on identical images", function()
         local img = lurek.image.newImageData(2, 2)
         img:setPixel(0, 0, 255, 0, 0, 255)
@@ -110,3 +141,4 @@ describe("automation + event integration", function()
 end)
 
 test_summary()
+

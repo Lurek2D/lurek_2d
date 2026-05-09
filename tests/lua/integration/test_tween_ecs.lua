@@ -62,24 +62,5 @@ describe("integration: tween drives entity transform", function()
         end
     end)
 
-    -- @integration LTweenState:lerp
-    -- @integration LTweenState:tick
-    -- @integration lurek.tween.newState
-    it("ease-in tween moves slowly at start, fast at end", function()
-        local from_val, to_val = 0.0, 100.0
-        local st_linear  = lurek.tween.newState(1.0, "linear")
-        local st_ease_in = lurek.tween.newState(1.0, "quadIn")
-
-        -- Advance both to 10% of their duration
-        st_linear:tick(0.1)
-        st_ease_in:tick(0.1)
-
-        local v_linear  = st_linear:lerp(from_val, to_val)
-        local v_ease_in = st_ease_in:lerp(from_val, to_val)
-
-        -- At t=0.1, linear = ~10, quadIn should be less (slow start)
-        expect_near(10, v_linear, 2.0, "linear at 10%     10")
-        expect_true(v_ease_in < v_linear, "ease-in slower than linear at 10%")
-    end)
 end)
 test_summary()

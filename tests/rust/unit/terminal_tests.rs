@@ -76,7 +76,7 @@ mod ansi_tests {
 // ── widget ────────────────────────────────────────────────────────────────────
 
 mod widget_tests {
-    use lurek2d::terminal::{BorderStyle, Widget, WidgetBase};
+    use lurek2d::terminal::{BorderStyle, WidgetBase};
 
     #[test]
     fn border_style_roundtrip() {
@@ -104,7 +104,6 @@ mod widget_tests {
 // ── terminal_state ────────────────────────────────────────────────────────────
 
 mod terminal_state_tests {
-    use lurek2d::terminal::Terminal;
 }
 
 // ── render ────────────────────────────────────────────────────────────────────

@@ -87,25 +87,5 @@ describe("integration: entity events via signal", function()
         expect_equal(55, universe:get(id, "hp"), "entity hp reduced correctly")
     end)
 
-    -- @integration LSignal:connect
-    -- @integration LSignal:emit
-    -- @integration LSignal:remove
-    -- @integration lurek.event.newSignal
-    it("disconnected signal listener not called", function()
-        local sig   = lurek.event.newSignal()
-        local count = 0
-
-        -- connect returns a handle (integer); disconnect via sig:remove(handle)
-        local handle = sig:connect("tick", function()
-            count = count + 1
-        end)
-
-        sig:emit("tick")
-        expect_equal(1, count, "listener called once before disconnect")
-
-        sig:remove(handle)
-        sig:emit("tick")
-        expect_equal(1, count, "listener not called after disconnect")
-    end)
 end)
 test_summary()

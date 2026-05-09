@@ -59,7 +59,7 @@ pub struct DecodeOptions {
     pub csv: CsvOptions,
 }
 
-/// Codec encode options.
+/// Encoding options used by the format-dispatch codec entry points.
 #[derive(Debug, Clone, Copy, Default)]
 pub struct EncodeOptions {
     /// Pretty-print JSON output when true.
@@ -68,7 +68,7 @@ pub struct EncodeOptions {
     pub csv: CsvOptions,
 }
 
-/// Encoded output payload.
+/// Encoded payload returned by `encode`, either UTF-8 text or binary bytes.
 pub enum EncodedValue {
     /// UTF-8 text payload.
     Text(String),

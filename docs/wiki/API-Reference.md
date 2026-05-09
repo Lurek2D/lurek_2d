@@ -3812,7 +3812,7 @@ Define any of these in `main.lua`. All are optional.
   lurek.input.isDown( args )  -> boolean  -- Returns true if any of the given keys is currently held down.
   lurek.input.isDown( button )  -> boolean  -- Returns whether the given mouse button is currently held down.
   lurek.input.isDown( id, button )  -> boolean  -- Returns whether the given button on the gamepad is currently held.
-  lurek.input.isDown( )
+  lurek.input.isDown( )  -> boolean  -- Returns true while any binding assigned to this mapping is currently held.
   lurek.input.isGamepad( id )  -> boolean  -- Returns whether the joystick at the given slot is a recognized gamepad.
   lurek.input.isGrabbed( )  -> boolean  -- Returns whether the mouse cursor is locked to the window.
   lurek.input.isModifierActive( modifier )  -> boolean  -- Returns whether the named modifier key is currently held.
@@ -3850,10 +3850,10 @@ Define any of these in `main.lua`. All are optional.
   lurek.input.wasDisconnected( id )  -> boolean  -- Returns whether the gamepad disconnected this frame.
   lurek.input.wasPressed( id, button )  -> boolean  -- Returns whether a gamepad button was pressed this frame.
   lurek.input.wasPressed( id )  -> boolean  -- Returns whether a touch with the given ID started this frame.
-  lurek.input.wasPressed( )
+  lurek.input.wasPressed( )  -> boolean  -- Returns true on the frame where any mapping binding transitions to pressed.
   lurek.input.wasReleased( id, button )  -> boolean  -- Returns whether a gamepad button was released this frame.
   lurek.input.wasReleased( id )  -> boolean  -- Returns whether a touch with the given ID ended this frame.
-  lurek.input.wasReleased( )
+  lurek.input.wasReleased( )  -> boolean  -- Returns true on the frame where any mapping binding transitions to released.
 ```
 
 **`LCombo`** methods:

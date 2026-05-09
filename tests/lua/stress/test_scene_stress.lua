@@ -79,7 +79,7 @@ describe("lurek.scene.DepthSorter stress", function()
         local ds = lurek.scene.newDepthSorter()
         local sorted = ds:sort()
         if sorted == nil then
-            expect_true(true)
+            expect_nil(sorted)
             return
         end
         expect_type("table", sorted)

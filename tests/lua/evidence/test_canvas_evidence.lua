@@ -11,7 +11,7 @@ describe("evidence: canvas", function()
     -- @evidence file
     it("canvas API functions are exposed as functions", function()
         if type(io) ~= "table" or type(io.open) ~= "function" then
-            expect_true(true)
+            expect_true(type(io) ~= "table" or type(io.open) ~= "function")
             return
         end
         local dir = evidence_output_dir("canvas")
@@ -34,7 +34,7 @@ describe("evidence: canvas", function()
 
     it("canvas dimension accessors return correct values", function()
         if type(io) ~= "table" or type(io.open) ~= "function" then
-            expect_true(true)
+            expect_true(type(io) ~= "table" or type(io.open) ~= "function")
             return
         end
         local dir = evidence_output_dir("canvas")
@@ -70,12 +70,12 @@ describe("evidence: canvas", function()
 
     it("canvas renders a scene to texture (requires GPU)", function()
         if type(lurek.render.newCanvas) ~= "function" or type(lurek.render.setCanvas) ~= "function" then
-            expect_true(true)
+            expect_true(type(lurek.render.newCanvas) ~= "function" or type(lurek.render.setCanvas) ~= "function")
             return
         end
         local ok, c = pcall(function() return lurek.render.newCanvas(256, 256) end)
         if not ok then
-            expect_true(true)
+            expect_not_nil(c)
             return
         end
         lurek.render.setCanvas(c)

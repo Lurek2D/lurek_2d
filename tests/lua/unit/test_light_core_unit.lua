@@ -2019,7 +2019,7 @@ describe("light strict: LOccluder type/typeOf", function()
             expect_type("string", oc:type())
             expect_type("boolean", oc:typeOf("Object"))
         else
-            expect_true(true)
+            expect_false(ok and oc ~= nil)
         end
     end)
 end)

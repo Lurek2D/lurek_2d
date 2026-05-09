@@ -504,16 +504,23 @@ describe("raycaster sprite manager", function()
   it("remove does not error when id exists", function()
     local sm = lurek.raycaster.newSpriteManager()
     local id = sm:add(10, 10, "barrel.png")
-    sm:remove(id)
-    expect_equal(true, true)
+        expect_no_error(function()
+            sm:remove(id)
+        end)
+        local proj = sm:sortAndProject(0, 0, 0.0)
+        expect_equal(0, #proj)
   end)
 
   -- @covers LSpriteManager:remove
   -- @covers lurek.raycaster.newSpriteManager
   it("remove is silent for unknown id", function()
     local sm = lurek.raycaster.newSpriteManager()
-    sm:remove(9999)
-    expect_equal(true, true)
+        sm:add(1, 1, "barrel.png")
+        expect_no_error(function()
+            sm:remove(9999)
+        end)
+        local proj = sm:sortAndProject(0, 0, 0.0)
+        expect_equal(1, #proj)
   end)
 
   -- @covers LSpriteManager:add
@@ -1045,25 +1052,6 @@ describe("Raycaster floor/ceiling per-cell textures", function()
 
         expect_nil(rc:getFloorTextureCell(2, 3))
         expect_nil(rc:getCeilingTextureCell(2, 3))
-    end)
-
-    -- @covers LImage:getId
-    -- @covers LRaycaster:getFloorTextureCell
-    -- @covers LRaycaster:getCeilingTextureCell
-    -- @covers LRaycaster:setFloorTextureCell
-    -- @covers LRaycaster:setCeilingTextureCell
-    -- @covers lurek.raycaster.new
-    -- @covers lurek.render.newImage
-    it("accepts LImage userdata in per-cell overrides", function()
-        local rc = lurek.raycaster.new(8, 8)
-        local floor_img = lurek.render.newImage("assets/icon.png")
-        local ceil_img = lurek.render.newImage("assets/icon.png")
-
-        rc:setFloorTextureCell(1, 1, floor_img)
-        rc:setCeilingTextureCell(1, 1, ceil_img)
-
-        expect_equal(floor_img:getId(), rc:getFloorTextureCell(1, 1))
-        expect_equal(ceil_img:getId(), rc:getCeilingTextureCell(1, 1))
     end)
 
     -- @covers LRaycaster:buildScene

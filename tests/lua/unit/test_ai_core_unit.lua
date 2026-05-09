@@ -35,16 +35,6 @@ describe("lurek.ai module exists", function()
         expect_type("function", lurek.ai.newSteeringManager)
     end)
 
-    -- @covers lurek.pathfind.newPathGrid
-    it("has no newPathGrid factory (moved to pathfinding)", function()
-        expect_type("function", lurek.pathfind.newPathGrid)
-    end)
-
-    -- @covers lurek.pathfind.newPathFlowField
-    it("has no newFlowField factory (moved to pathfinding)", function()
-        expect_type("function", lurek.pathfind.newPathFlowField)
-    end)
-
     -- @covers lurek.ai.newQLearner
     it("has newQLearner factory", function()
         expect_type("function", lurek.ai.newQLearner)
@@ -1041,204 +1031,6 @@ describe("lurek.ai SteeringManager", function()
 end)
 
 -- =========================================================================
--- 9. PathGrid
--- =========================================================================
--- @describe lurek.ai PathGrid
-describe("lurek.ai PathGrid", function()
-    -- @covers LPathGrid:type
-    -- @covers lurek.pathfind.newPathGrid
-    it("type returns PathGrid", function()
-        local g = lurek.pathfind.newPathGrid(10, 10, 32)
-        expect_equal("LPathGrid", g:type())
-    end)
-
-    -- @covers LPathGrid:getCellSize
-    -- @covers LPathGrid:getHeight
-    -- @covers LPathGrid:getWidth
-    -- @covers lurek.pathfind.newPathGrid
-    it("getWidth / getHeight / getCellSize", function()
-        local g = lurek.pathfind.newPathGrid(8, 6, 16)
-        expect_equal(8, g:getWidth())
-        expect_equal(6, g:getHeight())
-        expect_near(16, g:getCellSize(), 0.01)
-    end)
-
-    -- @covers LPathGrid:isWalkable
-    -- @covers lurek.pathfind.newPathGrid
-    it("all cells walkable by default", function()
-        local g = lurek.pathfind.newPathGrid(5, 5, 10)
-        expect_true(g:isWalkable(1, 1))
-        expect_true(g:isWalkable(5, 5))
-    end)
-
-    -- @covers LPathGrid:isWalkable
-    -- @covers LPathGrid:setWalkable
-    -- @covers lurek.pathfind.newPathGrid
-    it("setWalkable / isWalkable (1-based)", function()
-        local g = lurek.pathfind.newPathGrid(5, 5, 10)
-        g:setWalkable(3, 3, false)
-        expect_false(g:isWalkable(3, 3))
-        g:setWalkable(3, 3, true)
-        expect_true(g:isWalkable(3, 3))
-    end)
-
-    -- @covers LPathGrid:getCost
-    -- @covers LPathGrid:setCost
-    -- @covers lurek.pathfind.newPathGrid
-    it("setCost / getCost (1-based)", function()
-        local g = lurek.pathfind.newPathGrid(5, 5, 10)
-        g:setCost(2, 2, 3.5)
-        expect_near(3.5, g:getCost(2, 2), 0.01)
-    end)
-
-    -- @covers LPathGrid:findPath
-    -- @covers lurek.pathfind.newPathGrid
-    it("findPath returns a table for open grid", function()
-        local g = lurek.pathfind.newPathGrid(5, 5, 10)
-        local path = g:findPath(1, 1, 5, 5)
-        expect_not_nil(path, "path should exist")
-        expect_type("table", path)
-        expect_true(#path > 0, "path should have waypoints")
-    end)
-
-    -- @covers LPathGrid:findPath
-    -- @covers lurek.pathfind.newPathGrid
-    it("findPath entries have x and y fields", function()
-        local g = lurek.pathfind.newPathGrid(5, 5, 10)
-        local path = g:findPath(1, 1, 3, 3)
-        expect_not_nil(path)
-        local first = path[1]
-        expect_not_nil(first.x, "x field")
-        expect_not_nil(first.y, "y field")
-    end)
-
-    -- @covers LPathGrid:findPath
-    -- @covers LPathGrid:setWalkable
-    -- @covers lurek.pathfind.newPathGrid
-    it("findPath returns nil for blocked path", function()
-        local g = lurek.pathfind.newPathGrid(3, 1, 10)
-        g:setWalkable(2, 1, false)
-        local path = g:findPath(1, 1, 3, 1)
-        expect_nil(path, "blocked path should be nil")
-    end)
-
-    -- @covers LPathGrid:findPathSmoothed
-    -- @covers lurek.pathfind.newPathGrid
-    it("findPathSmoothed returns a table", function()
-        local g = lurek.pathfind.newPathGrid(5, 5, 10)
-        local path = g:findPathSmoothed(1, 1, 5, 5)
-        expect_not_nil(path)
-        expect_type("table", path)
-    end)
-
-    -- @covers LPathGrid:findPath
-    -- @covers lurek.pathfind.newPathGrid
-    it("findPath same start and goal", function()
-        local g = lurek.pathfind.newPathGrid(5, 5, 10)
-        local path = g:findPath(3, 3, 3, 3)
-        expect_not_nil(path)
-    end)
-end)
-
--- =========================================================================
--- 10. FlowField
--- =========================================================================
--- @describe lurek.ai FlowField
-describe("lurek.ai FlowField", function()
-    -- @covers LAIFlowField:type
-    -- @covers lurek.pathfind.newPathFlowField
-    -- @covers lurek.pathfind.newPathGrid
-    it("type returns FlowField", function()
-        local g = lurek.pathfind.newPathGrid(5, 5, 10)
-        local ff = lurek.pathfind.newPathFlowField(g)
-        expect_equal("LAIFlowField", ff:type())
-    end)
-
-    -- @covers LAIFlowField:getHeight
-    -- @covers LAIFlowField:getWidth
-    -- @covers lurek.pathfind.newPathFlowField
-    -- @covers lurek.pathfind.newPathGrid
-    it("getWidth / getHeight", function()
-        local g = lurek.pathfind.newPathGrid(8, 6, 10)
-        local ff = lurek.pathfind.newPathFlowField(g)
-        expect_equal(8, ff:getWidth())
-        expect_equal(6, ff:getHeight())
-    end)
-
-    -- @covers LAIFlowField:hasGoal
-    -- @covers lurek.pathfind.newPathFlowField
-    -- @covers lurek.pathfind.newPathGrid
-    it("hasGoal returns false initially", function()
-        local g = lurek.pathfind.newPathGrid(5, 5, 10)
-        local ff = lurek.pathfind.newPathFlowField(g)
-        expect_false(ff:hasGoal())
-    end)
-
-    -- @covers LAIFlowField:getGoal
-    -- @covers LAIFlowField:hasGoal
-    -- @covers LAIFlowField:setGoal
-    -- @covers lurek.pathfind.newPathFlowField
-    -- @covers lurek.pathfind.newPathGrid
-    it("setGoal / hasGoal / getGoal (1-based)", function()
-        local g = lurek.pathfind.newPathGrid(5, 5, 10)
-        local ff = lurek.pathfind.newPathFlowField(g)
-        ff:setGoal(3, 4)
-        expect_true(ff:hasGoal())
-        local gx, gy = ff:getGoal()
-        expect_equal(3, gx)
-        expect_equal(4, gy)
-    end)
-
-    -- @covers LAIFlowField:getDirection
-    -- @covers LAIFlowField:setGoal
-    -- @covers lurek.pathfind.newPathFlowField
-    -- @covers lurek.pathfind.newPathGrid
-    it("getDirection returns two numbers", function()
-        local g = lurek.pathfind.newPathGrid(5, 5, 10)
-        local ff = lurek.pathfind.newPathFlowField(g)
-        ff:setGoal(3, 3)
-        local dx, dy = ff:getDirection(1, 1)
-        expect_type("number", dx)
-        expect_type("number", dy)
-    end)
-
-    -- @covers LAIFlowField:getDistance
-    -- @covers LAIFlowField:setGoal
-    -- @covers lurek.pathfind.newPathFlowField
-    -- @covers lurek.pathfind.newPathGrid
-    it("getDistance returns a number", function()
-        local g = lurek.pathfind.newPathGrid(5, 5, 10)
-        local ff = lurek.pathfind.newPathFlowField(g)
-        ff:setGoal(3, 3)
-        local d = ff:getDistance(1, 1)
-        expect_type("number", d)
-    end)
-
-    -- @covers LAIFlowField:getGoal
-    -- @covers lurek.pathfind.newPathFlowField
-    -- @covers lurek.pathfind.newPathGrid
-    it("getGoal returns nil before setGoal", function()
-        local g = lurek.pathfind.newPathGrid(5, 5, 10)
-        local ff = lurek.pathfind.newPathFlowField(g)
-        local gx, gy = ff:getGoal()
-        expect_nil(gx)
-        expect_nil(gy)
-    end)
-
-    -- @covers LAIFlowField:getDistance
-    -- @covers LAIFlowField:setGoal
-    -- @covers lurek.pathfind.newPathFlowField
-    -- @covers lurek.pathfind.newPathGrid
-    it("distance at goal is zero", function()
-        local g = lurek.pathfind.newPathGrid(5, 5, 10)
-        local ff = lurek.pathfind.newPathFlowField(g)
-        ff:setGoal(3, 3)
-        local d = ff:getDistance(3, 3)
-        expect_near(0, d, 0.01)
-    end)
-end)
-
--- =========================================================================
 -- 11. QLearner
 -- =========================================================================
 -- @describe lurek.ai QLearner
@@ -2020,20 +1812,6 @@ describe("lurek.ai type system", function()
         expect_equal("LSteeringManager", lurek.ai.newSteeringManager():type())
     end)
 
-    -- @covers LPathGrid:type
-    -- @covers lurek.pathfind.newPathGrid
-    it("PathGrid:type() returns PathGrid", function()
-        expect_equal("LPathGrid", lurek.pathfind.newPathGrid(5, 5, 10):type())
-    end)
-
-    -- @covers LAIFlowField:type
-    -- @covers lurek.pathfind.newPathFlowField
-    -- @covers lurek.pathfind.newPathGrid
-    it("FlowField:type() returns FlowField", function()
-        local g = lurek.pathfind.newPathGrid(5, 5, 10)
-        expect_equal("LAIFlowField", lurek.pathfind.newPathFlowField(g):type())
-    end)
-
     -- @covers LQLearner:type
     -- @covers lurek.ai.newQLearner
     it("QLearner:type() returns QLearner", function()
@@ -2658,7 +2436,7 @@ describe("AILod shouldUpdate", function()
             expect_equal(updates < 16, true)
         else
             -- Single tier: always updates (pass vacuously)
-            expect_equal(true, true)
+            expect_equal(0, max_tier)
         end
     end)
 end)
@@ -3467,7 +3245,7 @@ describe("StrategyAI tags", function()
         s:addTag("night")
         s:addTag("rain")
         s:removeTag("night")
-        expect_equal(true, true)  -- no crash = pass
+        expect_type("number", s:timeUntilNext())
     end)
 end)
 

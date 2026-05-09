@@ -534,7 +534,7 @@ describe("sprite strict: LSpriteAtlas type/typeOf", function()
             expect_type("string", atlas:type())
             expect_type("boolean", atlas:typeOf("Object"))
         else
-            expect_true(true)
+            expect_false(ok and atlas ~= nil)
         end
     end)
 end)

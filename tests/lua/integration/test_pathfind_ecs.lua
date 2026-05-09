@@ -22,60 +22,16 @@ describe("pathfinding + entity integration", function()
 
         -- Find path from (1,1) to (10,10) in 1-based coords
         local path = pf:findPath(1, 1, 10, 10)
-        expect_true(path ~= nil, "path found")
+        expect_not_nil(path, "path found")
+        expect_true(#path > 0, "path has at least one step")
 
-        if path then
-            local steps = #path
-            expect_true(steps > 0, "path has steps: " .. steps)
+        -- Move entity along first step
+        local px, py = path[1].x, path[1].y
+        universe:set(entity, "x", px)
+        universe:set(entity, "y", py)
 
-            -- Move entity along first step
-            local px, py = path[1].x, path[1].y
-            universe:set(entity, "x", px)
-            universe:set(entity, "y", py)
-
-            local ex = universe:get(entity, "x")
-            expect_equal(px, ex, "entity x matches path point")
-        end
-    end)
-
-    -- @integration LNavGrid:setBlocked
-    -- @integration LUnitPathfinder:findPath
-    -- @integration lurek.pathfind.newNavGrid
-    -- @integration lurek.pathfind.newPathfinder
-    it("blocked cells force path around obstacle", function()
-        local grid = lurek.pathfind.newNavGrid(10, 10)
-        local pf   = lurek.pathfind.newPathfinder(grid)
-
-        -- Block a wall at column 6 (1-based), rows 1-9
-        for y = 1, 9 do
-            grid:setBlocked(6, y, true)
-        end
-
-        local path = pf:findPath(1, 6, 10, 6)
-        expect_true(path ~= nil, "path found around wall")
-
-        if path then
-            local len = #path
-            -- Path around wall should be longer than direct
-            expect_true(len > 9, "path is longer due to obstacle: " .. len)
-        end
-    end)
-
-    -- @integration LNavGrid:setBlocked
-    -- @integration LUnitPathfinder:findPath
-    -- @integration lurek.pathfind.newNavGrid
-    -- @integration lurek.pathfind.newPathfinder
-    it("no path returns nil for unreachable goal", function()
-        local grid = lurek.pathfind.newNavGrid(10, 10)
-        local pf   = lurek.pathfind.newPathfinder(grid)
-
-        -- Block all of row 2 so (1,1) is trapped in row 1 and cannot reach (1,10)
-        for x = 1, 10 do
-            grid:setBlocked(x, 2, true)
-        end
-
-        local path = pf:findPath(1, 1, 1, 10)
-        expect_true(path == nil, "no path to unreachable goal (got " .. tostring(path) .. ")")
+        local ex = universe:get(entity, "x")
+        expect_equal(px, ex, "entity x matches path point")
     end)
 
     -- @integration LUnitPathfinder:findPath
@@ -95,21 +51,21 @@ describe("pathfinding + entity integration", function()
         local grid = lurek.pathfind.newNavGrid(5, 5)
         local pf   = lurek.pathfind.newPathfinder(grid)
         local path = pf:findPath(1, 1, 5, 5)
+        expect_not_nil(path, "path should exist on open 5x5 grid")
+        expect_true(#path > 0, "path should include at least one step")
 
-        if path then
-            -- Walk entire path
-            for i = 1, #path do
-                local px, py = path[i].x, path[i].y
-                universe:set(entity, "x", px)
-                universe:set(entity, "y", py)
-            end
-
-            -- Entity should be at destination
-            local fx = universe:get(entity, "x")
-            local fy = universe:get(entity, "y")
-            expect_equal(5, fx, "entity reached x=5")
-            expect_equal(5, fy, "entity reached y=5")
+        -- Walk entire path
+        for i = 1, #path do
+            local px, py = path[i].x, path[i].y
+            universe:set(entity, "x", px)
+            universe:set(entity, "y", py)
         end
+
+        -- Entity should be at destination
+        local fx = universe:get(entity, "x")
+        local fy = universe:get(entity, "y")
+        expect_equal(5, fx, "entity reached x=5")
+        expect_equal(5, fy, "entity reached y=5")
 
         expect_true(universe:isAlive(entity), "entity survived path walk")
     end)

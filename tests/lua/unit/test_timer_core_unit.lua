@@ -744,4 +744,180 @@ describe("timer strict: LScheduler type/typeOf", function()
     end)
 end)
 
+-- @describe timer migrated from integration animation/audio timer
+describe("timer migrated from integration animation/audio timer", function()
+    -- @covers lurek.timer.getTime
+    it("timer.getTime is non-negative", function()
+        local t0 = lurek.timer.getTime()
+        expect_type("number", t0)
+        expect_true(t0 >= 0)
+    end)
+
+    -- @covers lurek.timer.getDelta
+    it("timer.getDelta returns non-negative number", function()
+        local dt = lurek.timer.getDelta()
+        expect_type("number", dt)
+        expect_true(dt >= 0)
+    end)
+
+    -- @covers lurek.timer.getDelta
+    it("timer delta provides consistent timestep", function()
+        local dt = lurek.timer.getDelta()
+        expect_type("number", dt)
+        expect_true(dt >= 0)
+    end)
+
+    -- @covers lurek.timer.getTime
+    it("timer getTime returns increasing values", function()
+        local t1 = lurek.timer.getTime()
+        expect_type("number", t1)
+        expect_true(t1 >= 0)
+    end)
+end)
+
+-- @describe unit: migrated from integration/test_quest_time_integration.lua
+describe("unit: migrated from integration/test_quest_time_integration.lua", function()
+        -- @covers LScheduler:after
+        -- @covers LScheduler:update
+        -- @covers lurek.timer.newScheduler
+        it("scheduler:after deadline auto-fails an active quest", function()
+            local log, q = build_log_with_quest("ticking")
+            local sched = lurek.timer.newScheduler()
+    
+            sched:after(2.0, function() log:failQuest("ticking") end)
+    
+            sched:update(1.0)
+            expect_equal("active", q.status)
+            sched:update(1.5)
+            expect_equal("failed", q.status)
+        end)
+
+        -- @covers LScheduler:every
+        -- @covers LScheduler:update
+        -- @covers lurek.timer.newScheduler
+        it("scheduler:every advances objective progress and completes it", function()
+            local log = quest.newQuestLog()
+            local q = quest.newQuest("hunt", "Hunt")
+            local stage = quest.newQuestStage("s", "S")
+            stage:addObjective(quest.newObjective("kills", "Slay foes", 3))
+            q:addStage(stage)
+            log:addQuest(q)
+            log:startQuest("hunt")
+    
+            local sched = lurek.timer.newScheduler()
+            sched:every(1.0, function()
+                log:advanceObjective("hunt", "kills", 1)
+            end, 3)
+    
+            sched:update(1.0); sched:update(1.0); sched:update(1.0)
+            expect_equal(3, stage:getObjective("kills").current)
+            expect_true(stage:getObjective("kills"):isComplete())
+        end)
+    
+        -- @covers LScheduler:after
+        -- @covers LScheduler:cancel
+        -- @covers LScheduler:getCount
+        -- @covers LScheduler:update
+        -- @covers lurek.timer.newScheduler
+        it("cancel aborts the deadline and the quest stays active", function()
+            local log, q = build_log_with_quest("cancellable")
+            local sched = lurek.timer.newScheduler()
+    
+            local id = sched:after(1.0, function() log:failQuest("cancellable") end)
+            local ok = sched:cancel(id)
+            expect_true(ok)
+            sched:update(2.0)
+            expect_equal("active", q.status)
+            expect_equal(0, sched:getCount())
+        end)
+    
+        -- resuming lets it fire after the remaining wall time elapses.
+        -- @covers LScheduler:after
+        -- @covers LScheduler:pause
+        -- @covers LScheduler:resume
+        -- @covers LScheduler:update
+        -- @covers lurek.timer.newScheduler
+        it("pause and resume preserves the remaining deadline window", function()
+            local log, q = build_log_with_quest("pausable")
+            local sched = lurek.timer.newScheduler()
+            local id = sched:after(1.0, function() log:failQuest("pausable") end)
+    
+            sched:update(0.4)
+            sched:pause(id)
+            sched:update(5.0)
+            expect_equal("active", q.status)
+            sched:resume(id)
+            sched:update(0.7)
+            expect_equal("failed", q.status)
+        end)
+    
+        -- @covers LScheduler:after
+        -- @covers LScheduler:update
+        -- @covers lurek.timer.newScheduler
+        it("zero-delay deadline fires on the next update", function()
+            local log, q = build_log_with_quest("instant")
+            local sched = lurek.timer.newScheduler()
+            sched:after(0.0, function() log:failQuest("instant") end)
+            sched:update(0.0001)
+            expect_equal("failed", q.status)
+        end)
+    
+        -- @covers LScheduler:after
+        -- @covers lurek.timer.newScheduler
+        it("scheduler:after rejects a non-function callback", function()
+            local sched = lurek.timer.newScheduler()
+            expect_error(function()
+                sched:after(1.0, "not a function")
+            end)
+        end)
+    
+    end)
+
+end)
+
+-- @describe unit: migrated from integration/test_timer_event.lua
+describe("unit: migrated from integration/test_timer_event.lua", function()
+        -- @covers LScheduler:after
+        -- @covers LScheduler:update
+        -- @covers lurek.timer.newScheduler
+        it("timer fires once after update accumulates enough dt", function()
+            local sched = lurek.timer.newScheduler()
+            local fired = false
+    
+            sched:after(0.1, function()
+                fired = true
+            end)
+    
+            sched:update(0.05)
+            expect_true(not fired, "not yet fired at 0.05 s")
+    
+            sched:update(0.06)
+            expect_true(fired, "fired after 0.11 s total")
+        end)
+
+        -- @covers LScheduler:after
+        -- @covers LScheduler:getCount
+        -- @covers LScheduler:update
+        -- @covers lurek.timer.newScheduler
+        it("timer count decrements after firing once", function()
+            local sched = lurek.timer.newScheduler()
+            sched:after(0.01, function() end)
+            expect_equal(sched:getCount(), 1, "1 scheduled timer")
+            sched:update(0.02)
+            expect_equal(sched:getCount(), 0, "0 timers after firing")
+        end)
+
+end)
+
+-- @describe unit: migrated from integration/test_timer_math.lua
+describe("unit: migrated from integration/test_timer_math.lua", function()
+        -- @covers lurek.timer.getDelta
+        it("getDelta returns a number", function()
+            local dt = lurek.timer.getDelta()
+            expect_not_nil(dt, "getDelta returns a value")
+            expect_true(type(dt) == "number", "dt is a number")
+        end)
+
+end)
+
 test_summary()

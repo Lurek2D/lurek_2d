@@ -501,4 +501,89 @@ describe("lurek.i18n helper coverage", function()
         lurek.i18n.unloadTable("zz_loaded")
     end)
 end)
+
+-- @describe unit: migrated from integration/test_i18n_dialog.lua
+describe("unit: migrated from integration/test_i18n_dialog.lua", function()
+        -- @covers lurek.i18n.loadTable
+        -- @covers lurek.i18n.setLanguage
+        -- @covers lurek.i18n.t
+        it("resolves dialog line key through i18n locale table", function()
+            lurek.i18n.loadTable("en", {
+                dialog = {
+                    intro = "Welcome, traveler.",
+                },
+            })
+            lurek.i18n.setLanguage("en")
+    
+            local seq = new_localized_sequence("dialog.intro")
+    
+            expect_equal("Narrator", seq:currentSpeaker())
+            expect_equal("Welcome, traveler.", seq:currentText())
+            expect_equal("waiting", seq:getState())
+        end)
+
+        -- @covers lurek.i18n.loadTable
+        -- @covers lurek.i18n.setFallbacks
+        -- @covers lurek.i18n.setLanguage
+        -- @covers lurek.i18n.t
+        it("falls back to default locale when key missing in active locale", function()
+            lurek.i18n.loadTable("en", {
+                dialog = {
+                    farewell = "Safe travels.",
+                },
+            })
+            lurek.i18n.loadTable("pl", {
+                dialog = {
+                    intro = "Witaj, podróżniku.",
+                },
+            })
+            lurek.i18n.setFallbacks({ "en" })
+            lurek.i18n.setLanguage("pl")
+    
+            local seq = new_localized_sequence("dialog.farewell")
+    
+            expect_equal("Safe travels.", seq:currentText())
+            expect_equal("waiting", seq:getState())
+        end)
+
+        -- @covers lurek.i18n.loadTable
+        -- @covers lurek.i18n.setLanguage
+        -- @covers lurek.i18n.t
+        it("building a new dialog after locale switch uses the new translation", function()
+            lurek.i18n.loadTable("en", {
+                dialog = {
+                    choice = "Choose your path.",
+                },
+            })
+            lurek.i18n.loadTable("pl", {
+                dialog = {
+                    choice = "Wybierz swoją ścieżkę.",
+                },
+            })
+    
+            lurek.i18n.setLanguage("en")
+            local english_seq = new_localized_sequence("dialog.choice")
+    
+            lurek.i18n.setLanguage("pl")
+            local polish_seq = new_localized_sequence("dialog.choice")
+    
+            expect_equal("Choose your path.", english_seq:currentText())
+            expect_equal("Wybierz swoją ścieżkę.", polish_seq:currentText())
+        end)
+
+end)
+
+-- @describe unit: migrated from integration/test_i18n_ui.lua
+describe("unit: migrated from integration/test_i18n_ui.lua", function()
+        -- @covers lurek.i18n.setLanguage
+        -- @covers lurek.i18n.t
+        it("missing key returns key name as fallback", function()
+            lurek.i18n.setLanguage("en")
+            local val = lurek.i18n.t("non_existent_key_xyz")
+            -- Should return key name, not crash
+            expect_type("string", val, "missing key returns a string fallback")
+        end)
+
+end)
+
 test_summary()

@@ -841,11 +841,10 @@ describe("data.msgpack", function()
 
 
     -- @covers lurek.data.toMsgPack
-    -- @covers lurek.serial.toJson
     it("produces a binary string shorter than JSON for integers", function()
         local data = { a = 1, b = 2, c = 3 }
         local bytes = lurek.data.toMsgPack(data)
-        local json  = lurek.serial.toJson(data, false)
+      local json = '{"a":1,"b":2,"c":3}'
         -- MessagePack should be more compact than JSON for this payload
         expect_equal(#bytes <= #json, true)
     end)
@@ -1456,6 +1455,124 @@ describe("data strict: LRingBuffer / LDataView / LDataWriter type/typeOf", funct
         expect_type("string", dw:type())
         expect_type("boolean", dw:typeOf("Object"))
     end)
+end)
+
+-- @describe lurek.data.encode + lurek.data.decode
+describe("lurek.data.encode + lurek.data.decode", function()
+    -- @covers lurek.data.encode
+    -- @covers lurek.data.decode
+    it("round-trips base64", function()
+        if lurek.data and lurek.data.encode then
+            local original = "Hello, Lurek2D!"
+            local encoded = lurek.data.encode("base64", original)
+            expect_not_nil(encoded, "encoded data")
+            expect_true(type(encoded) == "string", "encoded is string")
+            local decoded = lurek.data.decode("base64", encoded)
+            expect_equal(original, decoded, "round-trip preserves data")
+        end
+    end)
+end)
+
+-- @describe lurek.data.hash
+describe("lurek.data.hash", function()
+    -- @covers lurek.data.hash
+    it("same input produces same hash", function()
+        if lurek.data and lurek.data.hash then
+            local hash1 = lurek.data.hash("md5", "test")
+            local hash2 = lurek.data.hash("md5", "test")
+            expect_equal(hash1, hash2, "same input = same hash")
+        end
+    end)
+
+    -- @covers lurek.data.hash
+    it("different input produces different hash", function()
+        if lurek.data and lurek.data.hash then
+            local hash1 = lurek.data.hash("md5", "test")
+            local hash3 = lurek.data.hash("md5", "different")
+            expect_not_equal(hash1, hash3, "different input = different hash")
+        end
+    end)
+end)
+
+-- @describe lurek.data.parseToml + lurek.data.encodeToml
+describe("lurek.data.parseToml + lurek.data.encodeToml", function()
+    -- @covers lurek.data.parseToml
+    it("parses strings, booleans, and integers", function()
+        if lurek.data and lurek.data.parseToml then
+            local decoded = lurek.data.parseToml('title = "Lurek2D"\nenabled = true\ncount = 3')
+            expect_equal("Lurek2D", decoded.title, "parseToml decodes strings")
+            expect_true(decoded.enabled == true, "parseToml decodes booleans")
+            expect_equal(3, decoded.count, "parseToml decodes integers")
+        end
+    end)
+
+    -- @covers lurek.data.encodeToml
+    it("encodes a table to a TOML string", function()
+        if lurek.data and lurek.data.encodeToml then
+            local encoded = lurek.data.encodeToml({ title = "Lurek2D", enabled = true, count = 3 })
+            expect_true(type(encoded) == "string", "encodeToml returns string")
+        end
+    end)
+
+    -- @covers lurek.data.parseToml
+    it("errors on invalid TOML", function()
+        if lurek.data and lurek.data.parseToml then
+            local ok, _ = pcall(function()
+                lurek.data.parseToml("invalid = [")
+            end)
+            expect_false(ok, "invalid TOML should fail")
+        end
+    end)
+
+    -- @covers lurek.data.encodeToml
+    it("encodes a pure hash table without error", function()
+        if lurek.data and lurek.data.encodeToml then
+            local ok = pcall(function()
+                lurek.data.encodeToml({ a = 1, b = 2 })
+            end)
+            expect_true(ok, "pure hash table encodes")
+        end
+    end)
+end)
+
+-- @describe unit: migrated from integration/test_compute_dataframe.lua
+describe("unit: migrated from integration/test_compute_dataframe.lua", function()
+        -- @covers lurek.data.compress
+        -- @covers lurek.data.decode
+        -- @covers lurek.data.decompress
+        -- @covers lurek.data.encode
+        it("compress -> encode -> decode -> decompress roundtrip", function()
+            local original = "Lurek2D integration test: compress then encode then decode then decompress."
+    
+            -- Step 1: Compress
+            local compressed = lurek.data.compress("deflate", original, 6)
+    
+            -- Step 2: Base64 encode (for safe text transport)
+            local encoded = lurek.data.encode("base64", compressed)
+            expect_type("string", encoded, "encoded is string")
+    
+            -- Step 3: Base64 decode
+            local decoded_compressed = lurek.data.decode("base64", encoded)
+    
+            -- Step 4: Decompress
+            local result = lurek.data.decompress("deflate", decoded_compressed)
+    
+            expect_equal(original, result, "full pipeline preserves data")
+        end)
+
+        -- @covers lurek.data.compress
+        -- @covers lurek.data.hash
+        it("hash of compressed data is stable", function()
+            local data = "Hash stability test vector"
+            local compressed = lurek.data.compress("zlib", data, 6)
+    
+            local hash1 = lurek.data.hash("sha256", compressed)
+            local hash2 = lurek.data.hash("sha256", compressed)
+    
+            expect_equal(hash1, hash2, "hash is deterministic")
+            expect_equal(64, #hash1, "SHA-256 produces 64 hex chars")
+        end)
+
 end)
 
 test_summary()

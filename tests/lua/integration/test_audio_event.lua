@@ -66,18 +66,5 @@ describe("audio + event integration", function()
         lurek.audio.setMasterVolume(1.0)
     end)
 
-    -- @integration LSignal:connect
-    -- @integration LSignal:emit
-    -- @integration lurek.event.newSignal
-    it("multiple event listeners on same event", function()
-        local sfx_sig   = lurek.event.newSignal()
-        local call_count = 0
-
-        sfx_sig:connect("sfx", function() call_count = call_count + 1 end)
-        sfx_sig:connect("sfx", function() call_count = call_count + 1 end)
-
-        sfx_sig:emit("sfx")
-        expect_equal(2, call_count, "both listeners called")
-    end)
 end)
 test_summary()

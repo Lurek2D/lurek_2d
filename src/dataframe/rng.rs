@@ -1,6 +1,6 @@
 //! Shared deterministic pseudo-random generator for dataframe operations.
 
-/// Minimal xorshift64 PRNG.
+/// Minimal deterministic xorshift64 PRNG used by dataframe helpers.
 pub(crate) struct Xorshift64 {
     state: u64,
 }

@@ -55,13 +55,5 @@ describe("integration: localized strings in UI labels", function()
         end)
     end)
 
-    -- @integration lurek.i18n.setLanguage
-    -- @integration lurek.i18n.t
-    it("missing key returns key name as fallback", function()
-        lurek.i18n.setLanguage("en")
-        local val = lurek.i18n.t("non_existent_key_xyz")
-        -- Should return key name, not crash
-        expect_type("string", val, "missing key returns a string fallback")
-    end)
 end)
 test_summary()

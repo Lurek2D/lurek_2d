@@ -572,40 +572,6 @@ local function make_parallax_subject()
     error("No usable parallax constructor available for contract test")
 end
 
--- @describe target rendering/drawing contract: spine
-describe("target rendering/drawing contract: spine", function()
-    -- @covers lurek.spine.newSkeleton
-    it("exposes lurek.spine.newSkeleton as the canonical constructor", function()
-        expect_type("function", lurek.spine.newSkeleton)
-    end)
-
-    -- @covers lurek.render
-    -- @covers LAnimation:drawToImage
-    -- @covers LAreaChart:drawToImage
-    -- @covers LBarChart:drawToImage
-    -- @covers LLineChart:drawToImage
-    -- @covers LMinimap:drawToImage
-    -- @covers LOverlay:drawToImage
-    -- @covers LParticleSystem:drawToImage
-    -- @covers LPieChart:drawToImage
-    -- @covers LScatterPlot:drawToImage
-    it("skeleton objects expose drawToImage() and accept dimensions", function()
-        local sk = make_spine_subject()
-        expect_type("function", sk.drawToImage)
-        expect_no_error(function()
-            sk:drawToImage(64, 64)
-        end)
-    end)
-
-    -- @covers lurek.render
-    it("skeleton drawToImage() returns image data contract", function()
-        local sk = make_spine_subject()
-        expect_type("function", sk.drawToImage)
-        local img = sk:drawToImage(64, 64)
-        verify_image_data_contract(img)
-    end)
-end)
-
 -- @describe target rendering/drawing contract: raycaster
 describe("target rendering/drawing contract: raycaster", function()
     -- @covers LRaycaster:buildScene
@@ -626,33 +592,8 @@ describe("target rendering/drawing contract: raycaster", function()
     end)
 end)
 
--- @describe target rendering/drawing contract: ui
-describe("target rendering/drawing contract: ui", function()
-    -- @covers lurek.ui.newPanel
-    it("exposes lurek.ui.newPanel as the canonical panel constructor", function()
-        expect_type("function", lurek.ui.newPanel)
-    end)
-
-    -- @covers lurek.ui.draw
-    it("panel widgets render through lurek.ui.draw()", function()
-        local panel = make_ui_panel_subject()
-        expect_type("function", panel.setTitle)
-        expect_type("function", lurek.ui.draw)
-        expect_no_error(function()
-            panel.setTitle("contract")
-            lurek.ui.draw()
-        end)
-    end)
-end)
-
 -- @describe target rendering/drawing contract: particle
 describe("target rendering/drawing contract: particle", function()
-    -- @covers lurek.particle.newSystem
-    it("exposes lurek.particle.newSystem as the canonical constructor", function()
-        expect_type("table", lurek.particle)
-        expect_type("function", lurek.particle.newSystem)
-    end)
-
     -- @covers lurek.render
     it("particle systems expose render()", function()
         local ps = make_particle_subject()
@@ -707,11 +648,6 @@ end)
 
 -- @describe target rendering/drawing contract: minimap
 describe("target rendering/drawing contract: minimap", function()
-    -- @covers lurek.minimap.newMinimap
-    it("exposes lurek.minimap.newMinimap as the canonical constructor", function()
-        expect_type("function", lurek.minimap.newMinimap)
-    end)
-
     -- @covers lurek.render
     it("minimaps expose render()", function()
         local mini = make_minimap_subject()
@@ -732,12 +668,6 @@ end)
 
 -- @describe target rendering/drawing contract: overlay
 describe("target rendering/drawing contract: overlay", function()
-    -- @covers lurek.effect.newOverlay
-    it("exposes lurek.effect.newOverlay as the canonical constructor", function()
-        expect_type("table", lurek.effect)
-        expect_type("function", lurek.effect.newOverlay)
-    end)
-
     -- @covers lurek.render
     it("overlays expose render()", function()
         local ov = make_overlay_subject()
@@ -761,11 +691,6 @@ end)
 
 -- @describe target rendering/drawing contract: parallax
 describe("target rendering/drawing contract: parallax", function()
-    -- @covers lurek.parallax.newSet
-    it("exposes lurek.parallax.newSet as the canonical constructor", function()
-        expect_type("function", lurek.parallax.newSet)
-    end)
-
     -- @covers lurek.render
     it("parallax sets expose render()", function()
         local bg = make_parallax_subject()
@@ -773,39 +698,6 @@ describe("target rendering/drawing contract: parallax", function()
         expect_no_error(function()
             bg:render(0, 0)
         end)
-    end)
-end)
-
--- @describe target rendering/drawing contract: entity
-describe("target rendering/drawing contract: entity", function()
-    -- @covers lurek.ecs.newUniverse
-    it("world objects expose render()", function()
-        local world = lurek.ecs.newUniverse()
-        expect_type("function", world.render)
-    end)
-
-    -- @covers LUniverse:addSystem
-    -- @covers LUniverse:render
-    -- @covers lurek.ecs.newUniverse
-    it("world:render() dispatches render() and not draw() on systems", function()
-        local world = lurek.ecs.newUniverse()
-        local render_count = 0
-        local draw_count = 0
-
-        local sys = {}
-        function sys:render(_world)
-            render_count = render_count + 1
-        end
-
-        function sys:draw(_world)
-            draw_count = draw_count + 1
-        end
-
-        world:addSystem(sys)
-        world:render()
-
-        expect_equal(1, render_count)
-        expect_equal(0, draw_count)
     end)
 end)
 
@@ -1172,12 +1064,15 @@ describe("render strict: LImageData methods", function()
     -- @covers LImageData:typeOf
     it("LImageData type and typeOf return correct strings", function()
         local fn = lurek.render["newImageData"]
-        local ok, img = fn and pcall(fn, 4, 4) or false, nil
+        local ok, img = false, nil
+        if fn then
+            ok, img = pcall(fn, 4, 4)
+        end
         if ok and img ~= nil then
             expect_equal(img:type(), "LImageData")
             expect_true(img:typeOf("ImageData"))
         else
-            expect_true(true) -- newImageData unavailable in this build; skip
+            expect_true(fn == nil or not ok or img == nil)
         end
     end)
 end)

@@ -708,125 +708,6 @@ describe("queryNot", function()
     end)
 end)
 
---  relationships (merged from test_entity_relationships.lua)
-
--- @describe lurek.patterns.RelationshipManager
-describe("lurek.patterns.RelationshipManager", function()
-    -- @covers LRelationshipManager:getValue
-    -- @covers lurek.patterns.newRelationshipManager
-    it("getValue defaults to zero for unknown pairs", function()
-        local rm = lurek.patterns.newRelationshipManager()
-        expect_near(0.0, rm:getValue(1, 2), 1e-5)
-    end)
-
-    -- @covers LRelationshipManager:getValue
-    -- @covers LRelationshipManager:setValue
-    -- @covers lurek.patterns.newRelationshipManager
-    it("stores and retrieves numeric values between entity pairs", function()
-        local rm = lurek.patterns.newRelationshipManager()
-        local a, b = 1, 2
-        rm:setValue(a, b, 75.0)
-        expect_near(75.0, rm:getValue(a, b), 1e-5)
-    end)
-
-    -- @covers LRelationshipManager:adjustValue
-    -- @covers LRelationshipManager:getValue
-    -- @covers LRelationshipManager:setValue
-    -- @covers lurek.patterns.newRelationshipManager
-    it("adjustValue changes the value by delta", function()
-        local rm = lurek.patterns.newRelationshipManager()
-        rm:setValue(1, 2, 50.0)
-        rm:adjustValue(1, 2, -10.0)
-        expect_near(40.0, rm:getValue(1, 2), 1e-5)
-    end)
-
-    -- @covers LRelationshipManager:defineType
-    -- @covers LRelationshipManager:getLevel
-    -- @covers LRelationshipManager:setLevel
-    -- @covers lurek.patterns.newRelationshipManager
-    it("supports named relationship type levels", function()
-        local rm = lurek.patterns.newRelationshipManager()
-        rm:defineType("Faction", {"enemy", "neutral", "ally"}, "neutral")
-        local ok = rm:setLevel(1, 2, "Faction", "ally")
-        expect_equal(true, ok)
-        expect_equal("ally", rm:getLevel(1, 2, "Faction"))
-    end)
-
-    -- @covers LRelationshipManager:setLevel
-    -- @covers lurek.patterns.newRelationshipManager
-    it("setLevel returns false for unknown type", function()
-        local rm = lurek.patterns.newRelationshipManager()
-        expect_equal(false, rm:setLevel(1, 2, "Unknown", "ally"))
-    end)
-
-    -- @covers LRelationshipManager:defineType
-    -- @covers LRelationshipManager:setLevel
-    -- @covers lurek.patterns.newRelationshipManager
-    it("setLevel returns false for invalid level", function()
-        local rm = lurek.patterns.newRelationshipManager()
-        rm:defineType("Faction", {"enemy", "ally"}, "ally")
-        expect_equal(false, rm:setLevel(1, 2, "Faction", "neutral"))
-    end)
-
-    -- @covers LRelationshipManager:defineType
-    -- @covers LRelationshipManager:getLevel
-    -- @covers lurek.patterns.newRelationshipManager
-    it("getLevel returns default when unset", function()
-        local rm = lurek.patterns.newRelationshipManager()
-        rm:defineType("Faction", {"enemy", "neutral", "ally"}, "neutral")
-        expect_equal("neutral", rm:getLevel(1, 2, "Faction"))
-    end)
-
-    -- @covers LRelationshipManager:getValue
-    -- @covers LRelationshipManager:pairCount
-    -- @covers LRelationshipManager:removePair
-    -- @covers LRelationshipManager:setValue
-    -- @covers lurek.patterns.newRelationshipManager
-    it("removePair resets to defaults and decrements pairCount", function()
-        local rm = lurek.patterns.newRelationshipManager()
-        rm:setValue(1, 2, 100.0)
-        expect_equal(1, rm:pairCount())
-        rm:removePair(1, 2)
-        expect_equal(0, rm:pairCount())
-        expect_near(0.0, rm:getValue(1, 2), 1e-5)
-    end)
-
-    -- @covers LRelationshipManager:pairCount
-    -- @covers LRelationshipManager:setValue
-    -- @covers lurek.patterns.newRelationshipManager
-    it("pairCount tracks stored pairs", function()
-        local rm = lurek.patterns.newRelationshipManager()
-        expect_equal(0, rm:pairCount())
-        rm:setValue(1, 2, 5.0)
-        expect_equal(1, rm:pairCount())
-    end)
-
-    -- @covers LRelationshipManager:defineType
-    -- @covers LRelationshipManager:typeNames
-    -- @covers lurek.patterns.newRelationshipManager
-    it("typeNames returns all defined type names", function()
-        local rm = lurek.patterns.newRelationshipManager()
-        rm:defineType("Friendship", {"stranger","friend","bestfriend"})
-        rm:defineType("Faction", {"enemy","ally"})
-        local names = rm:typeNames()
-        expect_equal(2, #names)
-    end)
-
-    -- @covers LRelationshipManager:defineType
-    -- @covers LRelationshipManager:removeType
-    -- @covers LRelationshipManager:setLevel
-    -- @covers LRelationshipManager:typeNames
-    -- @covers lurek.patterns.newRelationshipManager
-    it("removeType removes the relationship type", function()
-        local rm = lurek.patterns.newRelationshipManager()
-        rm:defineType("Mood", {"happy", "sad"}, "happy")
-        rm:removeType("Mood")
-        local names = rm:typeNames()
-        expect_equal(0, #names)
-        expect_equal(false, rm:setLevel(1, 2, "Mood", "sad"))
-    end)
-end)
-
 -- ============================================================
 -- ECS Universe directed relationship API
 -- ============================================================
@@ -1076,34 +957,6 @@ describe("system priority", function()
     end)
 end)
 
-
--- [merged from test_ecs_regress_relationship_default.lua]
--- Regression: RelationshipManager:defineType must not panic when the optional
--- default_level argument is omitted or empty. Before the fix, an empty default
--- string tripped a debug_assert in RelationType::new.
-
--- @describe RelationshipManager regression: empty default_level
-describe("RelationshipManager regression: empty default_level", function()
-    -- @covers LRelationshipManager:defineType
-    -- @covers LRelationshipManager:typeNames
-    -- @covers lurek.patterns.newRelationshipManager
-    it("defineType without default_level does not panic", function()
-        local rm = lurek.patterns.newRelationshipManager()
-        expect_no_error(function()
-            rm:defineType("diplomacy", { "war", "neutral", "alliance" })
-        end)
-        local names = rm:typeNames()
-        expect_equal(1, #names)
-        expect_equal("diplomacy", names[1])
-    end)
-
-    -- @covers LRelationshipManager:defineType
-    -- @covers lurek.patterns.newRelationshipManager
-    it("defineType accepts empty levels table without error", function()
-        local rm = lurek.patterns.newRelationshipManager()
-        rm:defineType("neutral", {})
-    end)
-end)
 
 -- @describe ecs strict: LUniverse release/spawnBulk/type/typeOf
 describe("ecs strict: LUniverse release/spawnBulk/type/typeOf", function()
@@ -1381,6 +1234,193 @@ describe("snapshot and applySnapshot", function()
         w:applySnapshot(snap)
         expect_true(w:hasTag(w:getEntities()[1], "hero"))
     end)
+end)
+
+-- @describe ecs migrated from render unit
+describe("ecs migrated from render unit", function()
+    -- @covers lurek.ecs.newUniverse
+    it("world objects expose render()", function()
+        local world = lurek.ecs.newUniverse()
+        expect_type("function", world.render)
+    end)
+
+    -- @covers LUniverse:addSystem
+    -- @covers LUniverse:render
+    -- @covers lurek.ecs.newUniverse
+    it("world:render() dispatches render() and not draw() on systems", function()
+        local world = lurek.ecs.newUniverse()
+        local render_count = 0
+        local draw_count = 0
+
+        local sys = {}
+        function sys:render(_world)
+            render_count = render_count + 1
+        end
+
+        function sys:draw(_world)
+            draw_count = draw_count + 1
+        end
+
+        world:addSystem(sys)
+        world:render()
+
+        expect_equal(1, render_count)
+        expect_equal(0, draw_count)
+    end)
+end)
+
+-- @describe ecs migrated from integration/ecs_ai
+describe("ecs migrated from integration/ecs_ai", function()
+    -- @covers LUniverse:addTag
+    -- @covers LUniverse:getEntitiesByTag
+    -- @covers LUniverse:set
+    -- @covers LUniverse:spawn
+    -- @covers lurek.ecs.newUniverse
+    it("entity tags drive AI behavior", function()
+        local universe = lurek.ecs.newUniverse()
+
+        for _ = 1, 5 do
+            local id = universe:spawn()
+            universe:set(id, "type", "enemy")
+            universe:addTag(id, "hostile")
+        end
+
+        for _ = 1, 3 do
+            local id = universe:spawn()
+            universe:set(id, "type", "friendly")
+            universe:addTag(id, "ally")
+        end
+
+        local hostiles = universe:getEntitiesByTag("hostile")
+        local allies = universe:getEntitiesByTag("ally")
+
+        expect_equal(5, #hostiles)
+        expect_equal(3, #allies)
+    end)
+end)
+
+-- @describe unit: migrated from integration/test_save_ecs.lua
+describe("unit: migrated from integration/test_save_ecs.lua", function()
+        -- @covers LUniverse:get
+        -- @covers LUniverse:isAlive
+        -- @covers LUniverse:set
+        -- @covers LUniverse:spawn
+        -- @covers lurek.ecs.newUniverse
+        it("collects entity data for save", function()
+            local universe = lurek.ecs.newUniverse()
+    
+            -- Create game entities
+            local player = universe:spawn()
+            universe:set(player, "name", "Hero")
+            universe:set(player, "health", 85)
+            universe:set(player, "position", {x = 100, y = 200})
+    
+            local enemy1 = universe:spawn()
+            universe:set(enemy1, "name", "Goblin")
+            universe:set(enemy1, "health", 30)
+    
+            local enemy2 = universe:spawn()
+            universe:set(enemy2, "name", "Dragon")
+            universe:set(enemy2, "health", 500)
+    
+            -- Collect state as save data
+            local save_data = {}
+            local ids = {player, enemy1, enemy2}
+            for _, id in ipairs(ids) do
+                if universe:isAlive(id) then
+                    save_data[#save_data + 1] = {
+                        name = universe:get(id, "name"),
+                        health = universe:get(id, "health"),
+                    }
+                end
+            end
+    
+            expect_equal(3, #save_data, "3 entities collected")
+            expect_equal("Hero", save_data[1].name, "player name preserved")
+            expect_equal(85, save_data[1].health, "player health preserved")
+            expect_equal("Dragon", save_data[3].name, "dragon name preserved")
+        end)
+
+end)
+
+-- @describe unit: migrated from integration/test_scene_ecs.lua
+describe("unit: migrated from integration/test_scene_ecs.lua", function()
+        -- @covers LUniverse:get
+        -- @covers LUniverse:set
+        -- @covers LUniverse:spawn
+        -- @covers lurek.ecs.newUniverse
+        it("creates scene and populates with entities", function()
+            local universe = lurek.ecs.newUniverse()
+    
+            -- Spawn parent and children
+            local parent = universe:spawn()
+            universe:set(parent, "name", "parent")
+            universe:set(parent, "x", 0.0)
+            universe:set(parent, "y", 0.0)
+    
+            local children = {}
+            for i = 1, 5 do
+                local child = universe:spawn()
+                universe:set(child, "name", "child_" .. i)
+                universe:set(child, "parent_id", parent)
+                universe:set(child, "x", i * 10.0)
+                universe:set(child, "y", i * 10.0)
+                children[i] = child
+            end
+    
+            -- Verify parent-child relationships
+            for i, child in ipairs(children) do
+                local pid = universe:get(child, "parent_id")
+                expect_equal(parent, pid, "child " .. i .. " references parent")
+            end
+        end)
+
+        -- @covers LUniverse:get
+        -- @covers LUniverse:kill
+        -- @covers LUniverse:set
+        -- @covers LUniverse:spawn
+        -- @covers lurek.ecs.newUniverse
+        it("killing parent entity is tracked", function()
+            local universe = lurek.ecs.newUniverse()
+    
+            local parent = universe:spawn()
+            local child  = universe:spawn()
+            universe:set(child, "parent_id", parent)
+    
+            universe:kill(parent)
+            -- After kill, child still exists (orphan is the game engine's responsibility)
+            local pid = universe:get(child, "parent_id")
+            expect_equal(parent, pid, "orphan child still stores old parent id")
+        end)
+
+        -- @covers LUniverse:get
+        -- @covers LUniverse:kill
+        -- @covers LUniverse:set
+        -- @covers LUniverse:spawn
+        -- @covers lurek.ecs.newUniverse
+        it("large entity population in scene does not error", function()
+            local universe = lurek.ecs.newUniverse()
+            local ids = {}
+    
+            for i = 1, 200 do
+                local id = universe:spawn()
+                universe:set(id, "index", i)
+                ids[i] = id
+            end
+    
+            -- Verify a sample
+            expect_equal(1,   universe:get(ids[1],   "index"), "first entity")
+            expect_equal(200, universe:get(ids[200], "index"), "last entity")
+    
+            -- Kill all
+            for _, id in ipairs(ids) do
+                universe:kill(id)
+            end
+            expect_false(universe:isAlive(ids[1]),   "first killed entity is no longer alive")
+            expect_false(universe:isAlive(ids[200]),  "last killed entity is no longer alive")
+            expect_equal(0, universe:getEntityCount(), "all entities removed after bulk kill")
+        end)
+
 end)
 
 test_summary()

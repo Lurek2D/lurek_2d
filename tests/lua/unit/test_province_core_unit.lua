@@ -19,7 +19,6 @@ end)
 describe("registry queries", function()
     -- @covers LProvinceRegistry:getRevision
     -- @covers LProvinceRegistry:provinceCount
-    -- @covers lurek.province.newFromPng
     it("returns non-empty provinces and revision", function()
         local reg = lurek.province.newFromPng("test-province-q", "content/games/strategy/eu2/map.png")
         expect_true(reg:provinceCount() > 0)
@@ -29,7 +28,6 @@ describe("registry queries", function()
     -- @covers LProvinceRegistry:getChangesSince
     -- @covers LProvinceRegistry:getRevision
     -- @covers LProvinceRegistry:setPoliticalColor
-    -- @covers lurek.province.newFromPng
     it("tracks incremental changes", function()
         local reg = lurek.province.newFromPng("test-province-chg", "content/games/strategy/eu2/map.png")
         local rev0 = reg:getRevision()
@@ -64,7 +62,6 @@ end)
 describe("province camera/view helpers", function()
     -- @covers LProvinceRegistry:fitCamera
     -- @covers LProvinceRegistry:screenToMap
-    -- @covers lurek.province.newFromPng
     it("computes a fit transform and maps screen center back to map space", function()
         local reg = lurek.province.newFromPng("test-province-view", "content/games/strategy/eu2/map.png")
         local cam_x, cam_y, zoom = reg:fitCamera(1000, 500, 1.0)
@@ -78,7 +75,6 @@ describe("province camera/view helpers", function()
     end)
 
     -- @covers LProvinceRegistry:screenToProvince
-    -- @covers lurek.province.newFromPng
     it("returns nil when picking outside map bounds", function()
         local reg = lurek.province.newFromPng("test-province-pick", "content/games/strategy/eu2/map.png")
         local id = reg:screenToProvince(-100, -100, 0, 0, 1.0, 1.0)
@@ -100,7 +96,6 @@ describe("province registry extended coverage", function()
     -- @covers LProvinceRegistry:provinceIds
     -- @covers LProvinceRegistry:provinceSpans
     -- @covers LProvinceRegistry:borderSegments
-    -- @covers lurek.province.newFromPng
     it("returns ids and geometry tables", function()
         local reg = lurek.province.newFromPng("test-province-geom", "content/games/strategy/eu2/map.png")
         local ids = reg:provinceIds()
@@ -114,7 +109,6 @@ describe("province registry extended coverage", function()
 
     -- @covers LProvinceRegistry:getBorderClass
     -- @covers LProvinceRegistry:setBorderClass
-    -- @covers lurek.province.newFromPng
     it("sets and gets border class", function()
         local reg = lurek.province.newFromPng("test-province-borders", "content/games/strategy/eu2/map.png")
         reg:setBorderClass(1, 2, "coast")
@@ -128,7 +122,6 @@ describe("province registry extended coverage", function()
     -- @covers LProvinceRegistry:setVisibilityState
     -- @covers LProvinceRegistry:setCapital
     -- @covers LProvinceRegistry:setLabelLine
-    -- @covers lurek.province.newFromPng
     it("applies style and metadata mutators", function()
         local reg = lurek.province.newFromPng("test-province-mutate", "content/games/strategy/eu2/map.png")
         expect_true(reg:setTerrainType(1, 3))

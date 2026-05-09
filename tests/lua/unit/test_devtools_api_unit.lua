@@ -11,44 +11,44 @@ describe("lurek.devtools logger", function()
         expect_not_nil(lurek.devtools)
     end)
 
-    -- @integration lurek.devtools.getLogLevel
+    -- @covers lurek.devtools.getLogLevel
     it("defaults log level to info", function()
         expect_equal("info", lurek.devtools.getLogLevel())
     end)
 
-    -- @integration lurek.devtools.getLogLevel
-    -- @integration lurek.devtools.setLogLevel
+    -- @covers lurek.devtools.getLogLevel
+    -- @covers lurek.devtools.setLogLevel
     it("can set and get log level", function()
         lurek.devtools.setLogLevel("warn")
         expect_equal("warn", lurek.devtools.getLogLevel())
         lurek.devtools.setLogLevel("info")
     end)
 
-    -- @integration lurek.devtools.getLogConsole
+    -- @covers lurek.devtools.getLogConsole
     it("defaults log console to true", function()
         expect_equal(true, lurek.devtools.getLogConsole())
     end)
 
-    -- @integration lurek.devtools.getLogConsole
-    -- @integration lurek.devtools.setLogConsole
+    -- @covers lurek.devtools.getLogConsole
+    -- @covers lurek.devtools.setLogConsole
     it("can toggle console logging", function()
         lurek.devtools.setLogConsole(false)
         expect_equal(false, lurek.devtools.getLogConsole())
         lurek.devtools.setLogConsole(true)
     end)
 
-    -- @integration lurek.devtools.getLogFile
-    -- @integration lurek.devtools.setLogFile
+    -- @covers lurek.devtools.getLogFile
+    -- @covers lurek.devtools.setLogFile
     it("can set and get log file path", function()
         lurek.devtools.setLogFile("test.log")
         expect_equal("test.log", lurek.devtools.getLogFile())
         lurek.devtools.setLogFile("")
     end)
 
-    -- @integration lurek.devtools.clearLog
-    -- @integration lurek.devtools.getLogHistory
-    -- @integration lurek.devtools.info
-    -- @integration lurek.devtools.setLogConsole
+    -- @covers lurek.devtools.clearLog
+    -- @covers lurek.devtools.getLogHistory
+    -- @covers lurek.devtools.info
+    -- @covers lurek.devtools.setLogConsole
     it("records log entries", function()
         lurek.devtools.clearLog()
         lurek.devtools.setLogConsole(false) -- suppress stderr noise
@@ -60,11 +60,11 @@ describe("lurek.devtools logger", function()
         lurek.devtools.setLogConsole(true)
     end)
 
-    -- @integration lurek.devtools.clearLog
-    -- @integration lurek.devtools.getLogHistory
-    -- @integration lurek.devtools.info
-    -- @integration lurek.devtools.setLogConsole
-    -- @integration lurek.devtools.setLogLevel
+    -- @covers lurek.devtools.clearLog
+    -- @covers lurek.devtools.getLogHistory
+    -- @covers lurek.devtools.info
+    -- @covers lurek.devtools.setLogConsole
+    -- @covers lurek.devtools.setLogLevel
     it("filters below minimum level", function()
         lurek.devtools.clearLog()
         lurek.devtools.setLogConsole(false)
@@ -76,10 +76,10 @@ describe("lurek.devtools logger", function()
         lurek.devtools.setLogConsole(true)
     end)
 
-    -- @integration lurek.devtools.clearLog
-    -- @integration lurek.devtools.getLogHistory
-    -- @integration lurek.devtools.info
-    -- @integration lurek.devtools.setLogConsole
+    -- @covers lurek.devtools.clearLog
+    -- @covers lurek.devtools.getLogHistory
+    -- @covers lurek.devtools.info
+    -- @covers lurek.devtools.setLogConsole
     it("clearLog empties history", function()
         lurek.devtools.setLogConsole(false)
         lurek.devtools.info("will be cleared")
@@ -88,10 +88,10 @@ describe("lurek.devtools logger", function()
         lurek.devtools.setLogConsole(true)
     end)
 
-    -- @integration lurek.devtools.clearLog
-    -- @integration lurek.devtools.getLogHistory
-    -- @integration lurek.devtools.info
-    -- @integration lurek.devtools.setLogConsole
+    -- @covers lurek.devtools.clearLog
+    -- @covers lurek.devtools.getLogHistory
+    -- @covers lurek.devtools.info
+    -- @covers lurek.devtools.setLogConsole
     it("getLogHistory respects count", function()
         lurek.devtools.clearLog()
         lurek.devtools.setLogConsole(false)
@@ -111,13 +111,13 @@ end)
 -- ===================================================================
 -- @describe lurek.devtools frame stats
 describe("lurek.devtools frame stats", function()
-    -- @integration lurek.devtools.getFrameHistorySize
+    -- @covers lurek.devtools.getFrameHistorySize
     it("defaults frame history size to 300", function()
         expect_equal(300, lurek.devtools.getFrameHistorySize())
     end)
 
-    -- @integration lurek.devtools.getFrameHistory
-    -- @integration lurek.devtools.recordFrameTime
+    -- @covers lurek.devtools.getFrameHistory
+    -- @covers lurek.devtools.recordFrameTime
     it("can record and retrieve frame times", function()
         lurek.devtools.recordFrameTime(0.016)
         lurek.devtools.recordFrameTime(0.017)
@@ -125,8 +125,8 @@ describe("lurek.devtools frame stats", function()
         expect_true(#history >= 2)
     end)
 
-    -- @integration lurek.devtools.getFrameStats
-    -- @integration lurek.devtools.recordFrameTime
+    -- @covers lurek.devtools.getFrameStats
+    -- @covers lurek.devtools.recordFrameTime
     it("computes frame stats", function()
         -- Record some known values
         for i = 1, 10 do
@@ -142,16 +142,16 @@ describe("lurek.devtools frame stats", function()
         expect_not_nil(stats.p99)
     end)
 
-    -- @integration lurek.devtools.getFrameHistorySize
-    -- @integration lurek.devtools.setFrameHistorySize
+    -- @covers lurek.devtools.getFrameHistorySize
+    -- @covers lurek.devtools.setFrameHistorySize
     it("can change frame history size", function()
         lurek.devtools.setFrameHistorySize(50)
         expect_equal(50, lurek.devtools.getFrameHistorySize())
         lurek.devtools.setFrameHistorySize(300) -- restore
     end)
 
-    -- @integration lurek.devtools.getFrameHistorySize
-    -- @integration lurek.devtools.setFrameHistorySize
+    -- @covers lurek.devtools.getFrameHistorySize
+    -- @covers lurek.devtools.setFrameHistorySize
     it("clamps history size", function()
         lurek.devtools.setFrameHistorySize(1)
         expect_equal(10, lurek.devtools.getFrameHistorySize())
@@ -164,26 +164,26 @@ end)
 -- ===================================================================
 -- @describe lurek.devtools profiler
 describe("lurek.devtools profiler", function()
-    -- @integration lurek.devtools.isProfilingEnabled
+    -- @covers lurek.devtools.isProfilingEnabled
     it("defaults profiling to disabled", function()
         expect_equal(false, lurek.devtools.isProfilingEnabled())
     end)
 
-    -- @integration lurek.devtools.isProfilingEnabled
-    -- @integration lurek.devtools.setProfilingEnabled
+    -- @covers lurek.devtools.isProfilingEnabled
+    -- @covers lurek.devtools.setProfilingEnabled
     it("can enable profiling", function()
         lurek.devtools.setProfilingEnabled(true)
         expect_equal(true, lurek.devtools.isProfilingEnabled())
         lurek.devtools.setProfilingEnabled(false)
     end)
 
-    -- @integration lurek.devtools.getProfileData
-    -- @integration lurek.devtools.getProfileFrameCount
-    -- @integration lurek.devtools.profileFrame
-    -- @integration lurek.devtools.profilePop
-    -- @integration lurek.devtools.profilePush
-    -- @integration lurek.devtools.resetProfile
-    -- @integration lurek.devtools.setProfilingEnabled
+    -- @covers lurek.devtools.getProfileData
+    -- @covers lurek.devtools.getProfileFrameCount
+    -- @covers lurek.devtools.profileFrame
+    -- @covers lurek.devtools.profilePop
+    -- @covers lurek.devtools.profilePush
+    -- @covers lurek.devtools.resetProfile
+    -- @covers lurek.devtools.setProfilingEnabled
     it("records and retrieves profile zones", function()
         lurek.devtools.setProfilingEnabled(true)
         lurek.devtools.profilePush("render")
@@ -199,12 +199,12 @@ describe("lurek.devtools profiler", function()
         lurek.devtools.setProfilingEnabled(false)
     end)
 
-    -- @integration lurek.devtools.getProfileFrameCount
-    -- @integration lurek.devtools.profileFrame
-    -- @integration lurek.devtools.profilePop
-    -- @integration lurek.devtools.profilePush
-    -- @integration lurek.devtools.resetProfile
-    -- @integration lurek.devtools.setProfilingEnabled
+    -- @covers lurek.devtools.getProfileFrameCount
+    -- @covers lurek.devtools.profileFrame
+    -- @covers lurek.devtools.profilePop
+    -- @covers lurek.devtools.profilePush
+    -- @covers lurek.devtools.resetProfile
+    -- @covers lurek.devtools.setProfilingEnabled
     it("resetProfile clears all data", function()
         lurek.devtools.setProfilingEnabled(true)
         lurek.devtools.profilePush("test")
@@ -221,31 +221,31 @@ end)
 -- ===================================================================
 -- @describe lurek.devtools file watcher
 describe("lurek.devtools file watcher", function()
-    -- @integration lurek.devtools.clearWatches
-    -- @integration lurek.devtools.getWatchedPaths
+    -- @covers lurek.devtools.clearWatches
+    -- @covers lurek.devtools.getWatchedPaths
     it("starts with no watched paths", function()
         lurek.devtools.clearWatches()
         expect_equal(0, #lurek.devtools.getWatchedPaths())
     end)
 
-    -- @integration lurek.devtools.getWatchInterval
+    -- @covers lurek.devtools.getWatchInterval
     it("defaults watch interval to 0.5", function()
         local interval = lurek.devtools.getWatchInterval()
         expect_true(math.abs(interval - 0.5) < 0.01)
     end)
 
-    -- @integration lurek.devtools.getWatchInterval
-    -- @integration lurek.devtools.setWatchInterval
+    -- @covers lurek.devtools.getWatchInterval
+    -- @covers lurek.devtools.setWatchInterval
     it("can set watch interval", function()
         lurek.devtools.setWatchInterval(1.0)
         expect_true(math.abs(lurek.devtools.getWatchInterval() - 1.0) < 0.01)
         lurek.devtools.setWatchInterval(0.5)
     end)
 
-    -- @integration lurek.devtools.clearWatches
-    -- @integration lurek.devtools.getWatchedPaths
-    -- @integration lurek.devtools.unwatch
-    -- @integration lurek.devtools.watch
+    -- @covers lurek.devtools.clearWatches
+    -- @covers lurek.devtools.getWatchedPaths
+    -- @covers lurek.devtools.unwatch
+    -- @covers lurek.devtools.watch
     it("can watch and unwatch paths", function()
         lurek.devtools.clearWatches()
         local added = lurek.devtools.watch("nonexistent_test_file.txt")
@@ -256,8 +256,8 @@ describe("lurek.devtools file watcher", function()
         expect_equal(0, #lurek.devtools.getWatchedPaths())
     end)
 
-    -- @integration lurek.devtools.clearWatches
-    -- @integration lurek.devtools.watch
+    -- @covers lurek.devtools.clearWatches
+    -- @covers lurek.devtools.watch
     it("watch returns false if already watched", function()
         lurek.devtools.clearWatches()
         lurek.devtools.watch("test.txt")
@@ -272,20 +272,20 @@ end)
 -- ===================================================================
 -- @describe lurek.devtools debug bridge
 describe("lurek.devtools debug bridge", function()
-    -- @integration lurek.devtools.getCallStack
+    -- @covers lurek.devtools.getCallStack
     it("getCallStack returns a table", function()
         local stack = lurek.devtools.getCallStack()
         expect_not_nil(stack)
     end)
 
-    -- @integration lurek.devtools.eval
+    -- @covers lurek.devtools.eval
     it("eval succeeds with valid code", function()
         local ok, result = lurek.devtools.eval("return 1 + 2")
         expect_true(ok)
         expect_equal(3, result)
     end)
 
-    -- @integration lurek.devtools.eval
+    -- @covers lurek.devtools.eval
     it("eval fails with invalid code", function()
         local ok, err = lurek.devtools.eval("invalid code here %%%")
         expect_equal(false, ok)
@@ -298,13 +298,13 @@ end)
 -- ===================================================================
 -- @describe lurek.devtools console
 describe("lurek.devtools console", function()
-    -- @integration lurek.devtools.isConsoleOpen
+    -- @covers lurek.devtools.isConsoleOpen
     it("defaults console to not open", function()
         expect_equal(false, lurek.devtools.isConsoleOpen())
     end)
 
-    -- @integration lurek.devtools.isConsoleOpen
-    -- @integration lurek.devtools.openConsole
+    -- @covers lurek.devtools.isConsoleOpen
+    -- @covers lurek.devtools.openConsole
     it("openConsole marks it as open", function()
         lurek.devtools.openConsole()
         expect_equal(true, lurek.devtools.isConsoleOpen())

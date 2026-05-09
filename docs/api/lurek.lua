@@ -10087,6 +10087,8 @@ lurek.input.mouse.isDown = function(button) end
 ---@return boolean True if the button is down.
 lurek.input.gamepad.isDown = function(id, button) end
 
+--- Returns true while any binding assigned to this mapping is currently held.
+---@return boolean True if at least one mapped key/button is down.
 lurek.input.isDown = function() end
 
 --- Returns whether the joystick at the given slot is a recognized gamepad.
@@ -10282,6 +10284,8 @@ lurek.input.gamepad.wasPressed = function(id, button) end
 ---@return boolean True if the touch started this frame.
 lurek.input.touch.wasPressed = function(id) end
 
+--- Returns true on the frame where any mapping binding transitions to pressed.
+---@return boolean True if at least one mapped key/button was pressed this frame.
 lurek.input.wasPressed = function() end
 
 --- Returns whether a gamepad button was released this frame.
@@ -10295,6 +10299,8 @@ lurek.input.gamepad.wasReleased = function(id, button) end
 ---@return boolean True if the touch ended this frame.
 lurek.input.touch.wasReleased = function(id) end
 
+--- Returns true on the frame where any mapping binding transitions to released.
+---@return boolean True if at least one mapped key/button was released this frame.
 lurek.input.wasReleased = function() end
 
 ---@class lurek.light

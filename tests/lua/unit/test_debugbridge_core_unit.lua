@@ -51,7 +51,7 @@ describe("lurek.debugbridge lifecycle", function()
 
     -- @covers lurek.debugbridge.poll
     it("poll does not error when not running", function()
-        lurek.debugbridge.poll()  -- should be a no-op
+        expect_no_error(function() lurek.debugbridge.poll() end)
     end)
 
 end)
@@ -174,8 +174,7 @@ describe("lurek.debugbridge broadcast", function()
 
     -- @covers lurek.debugbridge.broadcast
     it("broadcast does not error without connected clients", function()
-        lurek.debugbridge.broadcast("test_event", '{"key": "value"}')
-        -- No error means success  - no clients to receive it
+        expect_no_error(function() lurek.debugbridge.broadcast("test_event", '{"key": "value"}') end)
     end)
 
 end)
@@ -190,7 +189,7 @@ describe("lurek.debugbridge poll", function()
     -- @covers lurek.debugbridge.stop
     it("poll processes without error when server is running", function()
         lurek.debugbridge.start(49743)
-        lurek.debugbridge.poll()
+        expect_no_error(function() lurek.debugbridge.poll() end)
         lurek.debugbridge.stop()
     end)
 

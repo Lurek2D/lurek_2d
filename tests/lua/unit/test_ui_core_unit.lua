@@ -3582,4 +3582,12 @@ describe("lurek.ui default theme and viewport helpers", function()
     end)
 end)
 
+-- @describe ui migrated from render unit
+describe("ui migrated from render unit", function()
+    -- @covers lurek.ui.newPanel
+    it("newPanel remains canonical panel constructor", function()
+        expect_type("function", lurek.ui.newPanel)
+    end)
+end)
+
 test_summary()

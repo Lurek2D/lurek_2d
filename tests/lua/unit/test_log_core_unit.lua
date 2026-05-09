@@ -423,8 +423,10 @@ describe("lurek.log namespace", function()
 
     -- @covers lurek.log.info
     it("logs without error", function()
-        lurek.log.info("test message from Lua")
-        expect_equal(true, true)
+        local ok = pcall(function()
+            lurek.log.info("test message from Lua")
+        end)
+        expect_true(ok)
     end)
 
     -- @covers lurek.log.info
@@ -550,7 +552,7 @@ end)
 lurek.log.setLevel("info")
 lurek.log.clearSinks()
 
---  Structured Logging (merged from test_log_structured.lua) 
+--  Structured Logging (merged from test_log_structured.lua)
 
 -- @describe lurek.log.struct  basic API
 describe("lurek.log.struct  basic API", function()

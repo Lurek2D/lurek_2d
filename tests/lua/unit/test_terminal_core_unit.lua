@@ -64,7 +64,8 @@ describe("terminal handles", function()
             expect_near(cell_w1, cell_w2, 0.001)
             expect_near(cell_h1, cell_h2, 0.001)
         else
-            expect_true(true)
+            expect_equal(type(cell_w1), type(cell_w2))
+            expect_equal(type(cell_h1), type(cell_h2))
         end
     end)
 
@@ -555,7 +556,7 @@ describe("terminal low-level cell methods (RS parity)", function()
             return lurek.terminal.newTerminal(0, -5)
         end)
         if not ok then
-            expect_true(true)
+            expect_not_nil(term)
             return
         end
         local cols, rows = term:getDimensions()
@@ -570,7 +571,7 @@ describe("terminal low-level cell methods (RS parity)", function()
         ---@type any
         local term = lurek.terminal.newTerminal(10, 5)
         if type(term.setChar) ~= "function" then
-            expect_true(true)
+            expect_true(type(term.setChar) ~= "function")
             return
         end
         term:set(3, 2, "A", 0.5, 0.1, 0.2, 1.0)
@@ -589,7 +590,7 @@ describe("terminal low-level cell methods (RS parity)", function()
         ---@type any
         local term = lurek.terminal.newTerminal(10, 5)
         if type(term.setFg) ~= "function" then
-            expect_true(true)
+            expect_true(type(term.setFg) ~= "function")
             return
         end
         term:set(2, 2, "B", 1.0, 0.0, 0.0, 1.0)
@@ -605,7 +606,7 @@ describe("terminal low-level cell methods (RS parity)", function()
         ---@type any
         local term = lurek.terminal.newTerminal(10, 5)
         if type(term.setBg) ~= "function" then
-            expect_true(true)
+            expect_true(type(term.setBg) ~= "function")
             return
         end
         term:set(2, 2, "C", 1.0, 0.0, 0.0, 1.0)
@@ -620,7 +621,7 @@ describe("terminal low-level cell methods (RS parity)", function()
         ---@type any
         local term = lurek.terminal.newTerminal(5, 3)
         if type(term.print) ~= "function" then
-            expect_true(true)
+            expect_true(type(term.print) ~= "function")
             return
         end
         term:print(1, 1, "Hello World")
@@ -635,7 +636,7 @@ describe("terminal low-level cell methods (RS parity)", function()
         ---@type any
         local term = lurek.terminal.newTerminal(20, 10)
         if type(term.setCursor) ~= "function" or type(term.getCursor) ~= "function" then
-            expect_true(true)
+            expect_true(type(term.setCursor) ~= "function" or type(term.getCursor) ~= "function")
             return
         end
         term:setCursor(5, 3)
@@ -652,7 +653,7 @@ describe("terminal low-level cell methods (RS parity)", function()
         ---@type any
         local term = lurek.terminal.newTerminal(10, 5)
         if type(term.resize) ~= "function" then
-            expect_true(true)
+            expect_true(type(term.resize) ~= "function")
             return
         end
         term:set(2, 2, "R", 1, 0, 0, 1)
@@ -669,7 +670,7 @@ describe("terminal low-level cell methods (RS parity)", function()
         ---@type any
         local term = lurek.terminal.newTerminal(20, 10)
         if type(term.setCursor) ~= "function" or type(term.resize) ~= "function" or type(term.getCursor) ~= "function" then
-            expect_true(true)
+            expect_true(type(term.setCursor) ~= "function" or type(term.resize) ~= "function" or type(term.getCursor) ~= "function")
             return
         end
         term:setCursor(15, 8)
@@ -690,7 +691,7 @@ describe("terminal widget lookup helpers (RS parity)", function()
         ---@type any
         local term = lurek.terminal.newTerminal(20, 10)
         if type(term.getWidget) ~= "function" then
-            expect_true(true)
+            expect_true(type(term.getWidget) ~= "function")
             return
         end
         local lbl = lurek.terminal.newLabel(1, 1, "Hi")
@@ -709,7 +710,7 @@ describe("terminal widget lookup helpers (RS parity)", function()
         ---@type any
         local term = lurek.terminal.newTerminal(20, 10)
         if type(term.findByTag) ~= "function" then
-            expect_true(true)
+            expect_true(type(term.findByTag) ~= "function")
             return
         end
         local lbl = lurek.terminal.newLabel(1, 1, "HealthBar")
@@ -1180,6 +1181,31 @@ describe("terminal strict: LWidget setPosition / setSize / getSize / type / type
         expect_type("string", w:type())
         expect_type("boolean", w:typeOf("Object"))
     end)
+end)
+
+-- @describe unit: migrated from integration/test_terminal_input.lua
+describe("unit: migrated from integration/test_terminal_input.lua", function()
+        -- @covers LTerminal:addWidget
+        -- @covers LTerminal:setFocus
+        -- @covers LTerminal:textinput
+        -- @covers LWidget:getText
+        -- @covers lurek.terminal.newTerminal
+        -- @covers lurek.terminal.newTextBox
+        it("text typed through the terminal appends to the focused command buffer", function()
+            local term = lurek.terminal.newTerminal(40, 12)
+            local input = lurek.terminal.newTextBox(2, 2, 18)
+    
+            term:addWidget(input)
+            term:setFocus(input)
+    
+            expect_true(term:textinput("h"))
+            expect_true(term:textinput("e"))
+            expect_true(term:textinput("l"))
+            expect_true(term:textinput("p"))
+    
+            expect_equal("help", input:getText())
+        end)
+
 end)
 
 test_summary()

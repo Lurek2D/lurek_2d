@@ -26,14 +26,6 @@ describe("one-way platform integration", function()
         expect_near(-1, ny, 1e-5)
     end)
 
-    -- @integration lurek.physics_platformer
-    it("world steps without error with one-way bodies", function()
-        expect_no_error(function()
-            for _ = 1, 10 do
-                world:step(1/60)
-            end
-        end)
-    end)
 end)
 
 -- @describe contact callbacks and sleeping integration
@@ -53,39 +45,17 @@ describe("contact callbacks and sleeping integration", function()
         end)
     end)
 
-    -- @integration lurek.physics.newBody
-    it("world steps without error when callbacks are registered", function()
-        local b1 = lurek.physics.newBody(world, 0, 0, "dynamic")
-        local b2 = lurek.physics.newBody(world, 50, 0, "static")
-        expect_no_error(function()
-            for _ = 1, 5 do
-                world:step(1/60)
-            end
-        end)
-    end)
-
     -- @integration LWorld:clearBeginContact
     -- @integration LWorld:clearEndContact
+    -- @integration LWorld:step
     it("stepping after clearing callbacks does not error", function()
         world:clearBeginContact()
         world:clearEndContact()
-        expect_no_error(function()
-            world:step(1/60)
-        end)
+        world:step(1/60)
+        expect_equal(0, began)
+        expect_equal(0, ended)
     end)
 
-    -- @integration LBody:getId
-    -- @integration LWorld:sleepBody
-    -- @integration LWorld:wakeUpBody
-    -- @integration lurek.physics.newBody
-    it("sleep then wake then step does not error", function()
-        local b = lurek.physics.newBody(world, 0, 0, "dynamic")
-        world:sleepBody(b:getId())
-        world:wakeUpBody(b:getId())
-        expect_no_error(function()
-            world:step(1/60)
-        end)
-    end)
 end)
 
 -- @describe batch body creation integration

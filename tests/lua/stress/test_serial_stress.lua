@@ -7,12 +7,13 @@ describe("serial stress: base64 throughput", function()
     -- @stress lurek.data.encode
     it("1000 base64 encode-decode cycles", function()
         local input = string.rep("Stress test payload for serialization. ", 10)
+        local decoded_last = nil
 
         for i = 1, 1000 do
             local encoded = lurek.data.encode("base64", input)
-            local decoded = lurek.data.decode("base64", encoded)
+            decoded_last = lurek.data.decode("base64", encoded)
         end
-        expect_true(true, "1000 base64 cycles completed")
+        expect_equal(input, decoded_last)
     end)
 
     -- @stress lurek.data.decode
@@ -35,26 +36,28 @@ describe("serial stress: data encode throughput", function()
         local input = { x = 1.5, y = 2.5, name = "stress", items = { 1, 2, 3 } }
 
         if type(lurek.serial) ~= "table" or type(lurek.serial.toJson) ~= "function" or type(lurek.serial.fromJson) ~= "function" then
-            expect_true(true)
+            expect_true(type(lurek.serial) ~= "table" or type(lurek.serial.toJson) ~= "function" or type(lurek.serial.fromJson) ~= "function")
             return
         end
 
+        local out = nil
         for i = 1, 1000 do
             local json = lurek.serial.toJson(input, false)
-            local _out = lurek.serial.fromJson(json)
+            out = lurek.serial.fromJson(json)
         end
-        expect_true(true, "1000 JSON cycles completed")
+        expect_type("table", out)
     end)
 
     -- @stress lurek.data.compress
     -- @stress lurek.data.decompress
     it("100 compression cycles on 10KB data", function()
         local input = string.rep("ABCDEFGHIJ", 1000)  -- 10KB
+        local decompressed_last = nil
         for i = 1, 100 do
             local compressed = lurek.data.compress("deflate", input)
-            local decompressed = lurek.data.decompress("deflate", compressed)
+            decompressed_last = lurek.data.decompress("deflate", compressed)
         end
-        expect_true(true, "100 compress cycles completed")
+        expect_equal(input, decompressed_last)
     end)
 end)
 test_summary()

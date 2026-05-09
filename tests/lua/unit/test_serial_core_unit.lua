@@ -124,6 +124,7 @@ describe("TOML round-trip", function()
     end)
 end)
 
+  -- @describe INI decode
 describe("INI decode", function()
   -- @covers lurek.serial.fromIni
   it("fromIni parses sectioned ini text", function()
@@ -621,6 +622,7 @@ describe("lurek.serial regression coverage", function()
   end)
 end)
 
+-- @describe lurek.serial unified codec API
 describe("lurek.serial unified codec API", function()
   -- @covers lurek.serial.detectFormat
   it("detectFormat identifies json", function()
@@ -682,4 +684,194 @@ describe("lurek.serial unified codec API", function()
     expect_equal("hero", patched.name)
   end)
 end)
+
+-- @describe unit: migrated from integration/test_data_filesystem.lua
+describe("unit: migrated from integration/test_data_filesystem.lua", function()
+        -- @covers lurek.serial.fromJson
+        -- @covers lurek.serial.toJson
+        it("round-trips nested data correctly", function()
+            local nested = {
+                meta = { version = 2, engine = "lurek" },
+                data = { {x=1, y=2}, {x=3, y=4} },
+            }
+    
+            local encoded = lurek.serial.toJson(nested)
+            local decoded = lurek.serial.fromJson(encoded)
+    
+            expect_equal(2, decoded.meta.version, "nested version")
+            expect_equal("lurek", decoded.meta.engine, "nested engine")
+        end)
+
+        -- @covers lurek.serial.fromJson
+        -- @covers lurek.serial.toJson
+        it("large table serialization stress", function()
+            local big = {}
+            for i = 1, 200 do
+                big[i] = { x = i * 0.1, y = i * 0.2, name = "item_" .. i }
+            end
+    
+            local encoded = lurek.serial.toJson(big)
+            expect_true(#encoded > 100, "encoded has content")
+    
+            local decoded = lurek.serial.fromJson(encoded)
+            expect_equal(200, #decoded, "200 items decoded")
+            expect_near(20.0, decoded[200].x, 0.1, "last item x correct")
+        end)
+
+end)
+
+-- @describe unit: migrated from integration/test_inventory_save_integration.lua
+describe("unit: migrated from integration/test_inventory_save_integration.lua", function()
+        -- @covers lurek.serial.fromJson
+        -- @covers lurek.serial.toJson
+        it("snapshot round-trips through codec.toJson/fromJson", function()
+            local inv = inventory.newInventory()
+            local bag = inventory.newContainer("bag", "fixed", 8, 8)
+            inv:addContainer("bag", bag)
+            local item = inventory.newItem("potion")
+            bag:addItem(item, 3)
+    
+            local snap = snapshot(inv)
+            local json = lurek.serial.toJson(snap)
+            expect_type("string", json)
+            local decoded = lurek.serial.fromJson(json)
+    
+            expect_type("table", decoded)
+            expect_type("table", decoded.containers)
+            expect_equal(1, #decoded.containers)
+            expect_equal("bag", decoded.containers[1].name)
+            expect_equal("potion", decoded.containers[1].items[1].type)
+            expect_equal(3, decoded.containers[1].items[1].qty)
+        end)
+
+        -- @covers lurek.serial.fromJson
+        -- @covers lurek.serial.toJson
+        it("stack counts survive round-trip", function()
+            local inv = inventory.newInventory()
+            local box = inventory.newContainer("box", "fixed", 4, 4)
+            inv:addContainer("box", box)
+            local arrow = inventory.newItem("arrow")
+            arrow:setStackLimit(99)
+            box:addItem(arrow, 12)
+    
+            local json = lurek.serial.toJson(snapshot(inv))
+            local back = lurek.serial.fromJson(json)
+            expect_equal(12, back.containers[1].items[1].qty)
+        end)
+
+        -- @covers lurek.serial.fromJson
+        -- @covers lurek.serial.toJson
+        it("container order is preserved across round-trip", function()
+            local inv = inventory.newInventory()
+            for _, name in ipairs({ "alpha", "bravo", "charlie" }) do
+                inv:addContainer(name, inventory.newContainer(name, "fixed", 1, 1))
+            end
+            local back = lurek.serial.fromJson(lurek.serial.toJson(snapshot(inv)))
+            expect_equal("alpha", back.containers[1].name)
+            expect_equal("bravo", back.containers[2].name)
+            expect_equal("charlie", back.containers[3].name)
+        end)
+
+        -- @covers lurek.serial.fromJson
+        it("missing containers field decodes to empty list with sensible default", function()
+            local back = lurek.serial.fromJson("{}")
+            expect_type("table", back)
+            local containers = back.containers or {}
+            expect_equal(0, #containers)
+        end)
+
+        -- @covers lurek.serial.fromJson
+        it("corrupt JSON raises an error when decoded", function()
+            expect_error(function()
+                lurek.serial.fromJson("{not valid json")
+            end)
+        end)
+
+        -- @covers lurek.serial.fromJson
+        -- @covers lurek.serial.toJson
+        it("empty inventory round-trips without loss", function()
+            local inv = inventory.newInventory()
+            local json = lurek.serial.toJson(snapshot(inv))
+            local back = lurek.serial.fromJson(json)
+            expect_type("table", back)
+            expect_equal(0, #(back.containers or {}))
+        end)
+
+        -- @covers lurek.serial.fromJson
+        -- @covers lurek.serial.toJson
+        it("snapshot round-trips through codec.toJson/fromJson", function()
+            local inv = inventory.newInventory()
+            local bag = inventory.newContainer("bag", "fixed", 8, 8)
+            inv:addContainer("bag", bag)
+            local item = inventory.newItem("potion")
+            bag:addItem(item, 3)
+    
+            local snap = snapshot(inv)
+            local json = lurek.serial.toJson(snap)
+            expect_type("string", json)
+            local decoded = lurek.serial.fromJson(json)
+    
+            expect_type("table", decoded)
+            expect_type("table", decoded.containers)
+            expect_equal(1, #decoded.containers)
+            expect_equal("bag", decoded.containers[1].name)
+            expect_equal("potion", decoded.containers[1].items[1].type)
+            expect_equal(3, decoded.containers[1].items[1].qty)
+        end)
+
+        -- @covers lurek.serial.fromJson
+        -- @covers lurek.serial.toJson
+        it("stack counts survive round-trip", function()
+            local inv = inventory.newInventory()
+            local box = inventory.newContainer("box", "fixed", 4, 4)
+            inv:addContainer("box", box)
+            local arrow = inventory.newItem("arrow")
+            arrow:setStackLimit(99)
+            box:addItem(arrow, 12)
+    
+            local json = lurek.serial.toJson(snapshot(inv))
+            local back = lurek.serial.fromJson(json)
+            expect_equal(12, back.containers[1].items[1].qty)
+        end)
+
+        -- @covers lurek.serial.fromJson
+        -- @covers lurek.serial.toJson
+        it("container order is preserved across round-trip", function()
+            local inv = inventory.newInventory()
+            for _, name in ipairs({ "alpha", "bravo", "charlie" }) do
+                inv:addContainer(name, inventory.newContainer(name, "fixed", 1, 1))
+            end
+            local back = lurek.serial.fromJson(lurek.serial.toJson(snapshot(inv)))
+            expect_equal("alpha", back.containers[1].name)
+            expect_equal("bravo", back.containers[2].name)
+            expect_equal("charlie", back.containers[3].name)
+        end)
+
+        -- @covers lurek.serial.fromJson
+        it("missing containers field decodes to empty list with sensible default", function()
+            local back = lurek.serial.fromJson("{}")
+            expect_type("table", back)
+            local containers = back.containers or {}
+            expect_equal(0, #containers)
+        end)
+
+        -- @covers lurek.serial.fromJson
+        it("corrupt JSON raises an error when decoded", function()
+            expect_error(function()
+                lurek.serial.fromJson("{not valid json")
+            end)
+        end)
+
+        -- @covers lurek.serial.fromJson
+        -- @covers lurek.serial.toJson
+        it("empty inventory round-trips without loss", function()
+            local inv = inventory.newInventory()
+            local json = lurek.serial.toJson(snapshot(inv))
+            local back = lurek.serial.fromJson(json)
+            expect_type("table", back)
+            expect_equal(0, #(back.containers or {}))
+        end)
+
+end)
+
 test_summary()

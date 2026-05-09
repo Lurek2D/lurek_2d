@@ -816,4 +816,280 @@ end)
       expect_false(sig:typeOf("Entity"))
     end)
   end)
+-- @describe event migrated from integration/audio_event
+describe("event migrated from integration/audio_event", function()
+  -- @covers LSignal:connect
+  -- @covers LSignal:emit
+  -- @covers lurek.event.newSignal
+  it("multiple event listeners on same event", function()
+    local sfx_sig = lurek.event.newSignal()
+    local call_count = 0
+
+    sfx_sig:connect("sfx", function() call_count = call_count + 1 end)
+    sfx_sig:connect("sfx", function() call_count = call_count + 1 end)
+    sfx_sig:emit("sfx")
+
+    expect_equal(2, call_count)
+  end)
+end)
+
+-- @describe unit: migrated from integration/test_dialog_event_integration.lua
+describe("unit: migrated from integration/test_dialog_event_integration.lua", function()
+        -- @covers LSignal:connect
+        -- @covers lurek.event.newSignal
+        it("line event fires through Signal with payload", function()
+            local seq = dialog.newSequencer()
+            local sig = lurek.event.newSignal()
+            bridge(seq, sig, { "line", "finished" })
+    
+            local got_speaker, got_text
+            sig:connect("line", function(speaker, text)
+                got_speaker, got_text = speaker, text
+            end)
+    
+            seq:setSpeed(100)
+            seq:load({ { type = "say", speaker = "Alice", text = "Hi!" } })
+            seq:start()
+            seq:update(0.5)
+    
+            expect_equal("Alice", got_speaker)
+            expect_equal("Hi!", got_text)
+        end)
+
+        -- @covers LSignal:connect
+        -- @covers lurek.event.newSignal
+        it("multiple Signal subscribers each receive the event", function()
+            local seq = dialog.newSequencer()
+            local sig = lurek.event.newSignal()
+            bridge(seq, sig, { "line" })
+    
+            local count_a, count_b = 0, 0
+            sig:connect("line", function() count_a = count_a + 1 end)
+            sig:connect("line", function() count_b = count_b + 1 end)
+    
+            seq:setSpeed(100)
+            seq:load({ { type = "say", speaker = "N", text = "X" } })
+            seq:start()
+            seq:update(0.5)
+    
+            expect_equal(1, count_a)
+            expect_equal(1, count_b)
+        end)
+
+        -- @covers LSignal:connect
+        -- @covers lurek.event.newSignal
+        it("finished event fires through Signal at end of script", function()
+            local seq = dialog.newSequencer()
+            local sig = lurek.event.newSignal()
+            bridge(seq, sig, { "line", "finished" })
+    
+            local finished = false
+            sig:connect("finished", function() finished = true end)
+    
+            seq:setSpeed(1000)
+            seq:load({ { type = "say", speaker = "N", text = "End." } })
+            seq:start()
+            seq:update(0.1)
+            seq:advance() -- waiting -> next -> done -> finished
+            expect_true(finished)
+        end)
+
+        -- @covers LSignal:connect
+        -- @covers lurek.event.newSignal
+        it("choice event fires through Signal when reaching a choice node", function()
+            local seq = dialog.newSequencer()
+            local sig = lurek.event.newSignal()
+            bridge(seq, sig, { "choice" })
+    
+            local choice_fired = false
+            sig:connect("choice", function() choice_fired = true end)
+    
+            seq:load({
+                { type = "choice", text = "Pick:", options = {
+                    { label = "A", branch = {} },
+                    { label = "B", branch = {} },
+                } },
+            })
+            seq:start()
+            expect_true(choice_fired)
+            expect_equal("choice", seq:getState())
+        end)
+
+        -- @covers LSignal:connect
+        -- @covers lurek.event.newSignal
+        it("seq:off stops further events from reaching Signal subscribers", function()
+            local seq = dialog.newSequencer()
+            local sig = lurek.event.newSignal()
+            bridge(seq, sig, { "line" })
+    
+            local count = 0
+            sig:connect("line", function() count = count + 1 end)
+    
+            seq:setSpeed(1000)
+            seq:load({
+                { type = "say", speaker = "N", text = "1" },
+                { type = "say", speaker = "N", text = "2" },
+            })
+            seq:start()
+            seq:update(0.1)
+            expect_equal(1, count)
+    
+            seq:off("line")
+            seq:advance() -- moves to second "say" node, would normally fire "line"
+            seq:update(0.1)
+            expect_equal(1, count)
+        end)
+
+        -- @covers LSignal:connect
+        -- @covers lurek.event.newSignal
+        it("line event fires through Signal with payload", function()
+            local seq = dialog.newSequencer()
+            local sig = lurek.event.newSignal()
+            bridge(seq, sig, { "line", "finished" })
+    
+            local got_speaker, got_text
+            sig:connect("line", function(speaker, text)
+                got_speaker, got_text = speaker, text
+            end)
+    
+            seq:setSpeed(100)
+            seq:load({ { type = "say", speaker = "Alice", text = "Hi!" } })
+            seq:start()
+            seq:update(0.5)
+    
+            expect_equal("Alice", got_speaker)
+            expect_equal("Hi!", got_text)
+        end)
+
+        -- @covers LSignal:connect
+        -- @covers lurek.event.newSignal
+        it("multiple Signal subscribers each receive the event", function()
+            local seq = dialog.newSequencer()
+            local sig = lurek.event.newSignal()
+            bridge(seq, sig, { "line" })
+    
+            local count_a, count_b = 0, 0
+            sig:connect("line", function() count_a = count_a + 1 end)
+            sig:connect("line", function() count_b = count_b + 1 end)
+    
+            seq:setSpeed(100)
+            seq:load({ { type = "say", speaker = "N", text = "X" } })
+            seq:start()
+            seq:update(0.5)
+    
+            expect_equal(1, count_a)
+            expect_equal(1, count_b)
+        end)
+
+        -- @covers LSignal:connect
+        -- @covers lurek.event.newSignal
+        it("finished event fires through Signal at end of script", function()
+            local seq = dialog.newSequencer()
+            local sig = lurek.event.newSignal()
+            bridge(seq, sig, { "line", "finished" })
+    
+            local finished = false
+            sig:connect("finished", function() finished = true end)
+    
+            seq:setSpeed(1000)
+            seq:load({ { type = "say", speaker = "N", text = "End." } })
+            seq:start()
+            seq:update(0.1)
+            seq:advance() -- waiting -> next -> done -> finished
+            expect_true(finished)
+        end)
+
+        -- @covers LSignal:connect
+        -- @covers lurek.event.newSignal
+        it("choice event fires through Signal when reaching a choice node", function()
+            local seq = dialog.newSequencer()
+            local sig = lurek.event.newSignal()
+            bridge(seq, sig, { "choice" })
+    
+            local choice_fired = false
+            sig:connect("choice", function() choice_fired = true end)
+    
+            seq:load({
+                { type = "choice", text = "Pick:", options = {
+                    { label = "A", branch = {} },
+                    { label = "B", branch = {} },
+                } },
+            })
+            seq:start()
+            expect_true(choice_fired)
+            expect_equal("choice", seq:getState())
+        end)
+
+        -- @covers LSignal:connect
+        -- @covers lurek.event.newSignal
+        it("seq:off stops further events from reaching Signal subscribers", function()
+            local seq = dialog.newSequencer()
+            local sig = lurek.event.newSignal()
+            bridge(seq, sig, { "line" })
+    
+            local count = 0
+            sig:connect("line", function() count = count + 1 end)
+    
+            seq:setSpeed(1000)
+            seq:load({
+                { type = "say", speaker = "N", text = "1" },
+                { type = "say", speaker = "N", text = "2" },
+            })
+            seq:start()
+            seq:update(0.1)
+            expect_equal(1, count)
+    
+            seq:off("line")
+            seq:advance() -- moves to second "say" node, would normally fire "line"
+            seq:update(0.1)
+            expect_equal(1, count)
+        end)
+
+end)
+
+-- @describe unit: migrated from integration/test_event_entity.lua
+describe("unit: migrated from integration/test_event_entity.lua", function()
+        -- @covers LSignal:connect
+        -- @covers LSignal:emit
+        -- @covers LSignal:remove
+        -- @covers lurek.event.newSignal
+        it("disconnected signal listener not called", function()
+            local sig   = lurek.event.newSignal()
+            local count = 0
+    
+            -- connect returns a handle (integer); disconnect via sig:remove(handle)
+            local handle = sig:connect("tick", function()
+                count = count + 1
+            end)
+    
+            sig:emit("tick")
+            expect_equal(1, count, "listener called once before disconnect")
+    
+            sig:remove(handle)
+            sig:emit("tick")
+            expect_equal(1, count, "listener not called after disconnect")
+        end)
+
+end)
+
+-- @describe unit: migrated from integration/test_timer_event.lua
+describe("unit: migrated from integration/test_timer_event.lua", function()
+        -- @covers LSignal:connect
+        -- @covers LSignal:emit
+        -- @covers lurek.event.newSignal
+        it("event signal emits and receives value", function()
+            local sig = lurek.event.newSignal()
+            local received = nil
+    
+            -- connect(event_name, fn)     name is required
+            sig:connect("value", function(v)
+                received = v
+            end)
+    
+            sig:emit("value", 42)
+            expect_equal(received, 42, "signal delivers value to listener")
+        end)
+
+end)
+
 test_summary()

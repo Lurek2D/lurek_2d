@@ -575,4 +575,12 @@ describe("spine strict: LSkeletonAnimation type/typeOf", function()
     end)
 end)
 
+-- @describe spine migrated from render unit
+describe("spine migrated from render unit", function()
+    -- @covers lurek.spine.newSkeleton
+    it("newSkeleton remains canonical constructor", function()
+        expect_type("function", lurek.spine.newSkeleton)
+    end)
+end)
+
 test_summary()

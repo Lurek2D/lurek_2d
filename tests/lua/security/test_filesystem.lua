@@ -38,7 +38,7 @@ describe("sandbox: restricted require", function()
         -- External network libraries must be blocked or absent in the sandbox.
         -- Either require is nil, or it returns nil, or it throws an error.
         if require == nil then
-            expect_equal(true, true)
+            expect_nil(require)
         else
             local ok, result = pcall(require, "socket")
             -- Acceptable outcomes: error thrown OR returned nil (module absent)

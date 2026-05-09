@@ -417,4 +417,25 @@ describe("save strict: LSaveManager addMigration/type/typeOf", function()
     end)
 end)
 
+-- @describe save migrated from integration/save_tilemap
+describe("save migrated from integration/save_tilemap", function()
+    -- @covers LSaveManager:getSummary
+    -- @covers LSaveManager:setSummary
+    -- @covers lurek.save.newSaveManager
+    it("save summary stores metadata", function()
+        local sm = lurek.save.newSaveManager()
+        sm:setSummary("level_01")
+        expect_equal("level_01", sm:getSummary())
+    end)
+
+    -- @covers LSaveManager:getSchemaVersion
+    -- @covers lurek.save.newSaveManager
+    it("schema version is accessible", function()
+        local sm = lurek.save.newSaveManager()
+        local ver = sm:getSchemaVersion()
+        expect_type("number", ver)
+        expect_true(ver >= 0)
+    end)
+end)
+
 test_summary()

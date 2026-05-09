@@ -3,19 +3,6 @@
 
 -- @describe integration: particle emitter driven by timer
 describe("integration: particle emitter driven by timer", function()
-    -- @integration LParticleSystem:setEmissionRate
-    -- @integration LParticleSystem:setParticleLifetime
-    -- @integration LParticleSystem:setPosition
-    -- @integration lurek.particle.newSystem
-    it("emitter created and configured without error", function()
-        expect_no_error(function()
-            local pe = lurek.particle.newSystem()
-            expect_not_nil(pe, "particle emitter created")
-            pe:setPosition(100, 100)
-            pe:setEmissionRate(60.0)
-            pe:setParticleLifetime(2.0, 2.0)
-        end)
-    end)
 
     -- @integration LParticleSystem:emit
     -- @integration LParticleSystem:setEmissionRate
@@ -53,28 +40,5 @@ describe("integration: particle emitter driven by timer", function()
         expect_true(t1 >= t0, "timer is monotonic")
     end)
 
-    -- @integration LParticleSystem:setEmissionRate
-    -- @integration LParticleSystem:setParticleLifetime
-    -- @integration LParticleSystem:setPosition
-    -- @integration lurek.particle.newSystem
-    it("emitter position can be updated each frame", function()
-        local pe    = lurek.particle.newSystem()
-        local trail = {}
-
-        pe:setEmissionRate(1.0)
-        pe:setParticleLifetime(1.0, 1.0)
-
-        for i = 1, 10 do
-            local x = i * 20.0
-            local y = 100.0
-            pe:setPosition(x, y)
-            trail[i] = {x = x, y = y}
-        end
-
-        -- Last recorded position
-        local last = trail[10]
-        expect_equal(200.0, last.x, "last trail x = 200")
-        expect_equal(100.0, last.y, "last trail y = 100")
-    end)
 end)
 test_summary()

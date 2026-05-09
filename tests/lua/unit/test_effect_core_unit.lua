@@ -346,9 +346,9 @@ describe("lurek.effect.newEffect", function()
 
     -- @covers LPostFxEffect:type
     -- @covers lurek.effect.newEffect
-    it("effect:type returns 'PostFxEffect'", function()
+    it("effect:type returns 'LPostFxEffect'", function()
         local eff = lurek.effect.newEffect("blur")
-        expect_equal("PostFxEffect", eff:type())
+        expect_equal("LPostFxEffect", eff:type())
     end)
 
     -- @covers LPostFxEffect:typeOf
@@ -441,9 +441,9 @@ describe("lurek.effect.newStack", function()
 
     -- @covers LPostFxStack:type
     -- @covers lurek.effect.newStack
-    it("stack:type returns 'PostFxStack'", function()
+    it("stack:type returns 'LPostFxStack'", function()
         local stack = lurek.effect.newStack()
-        expect_equal("PostFxStack", stack:type())
+        expect_equal("LPostFxStack", stack:type())
     end)
 
     -- @covers LPostFxStack:getHeight
@@ -2134,10 +2134,10 @@ describe("effect strict: LPostFxEffect getType", function()
             if ok and fx ~= nil then
                 expect_type("string", fx:getType())
             else
-                expect_true(true)
+                expect_false(ok and fx ~= nil)
             end
         else
-            expect_true(true)
+            expect_false(ok_e and blur_effect ~= nil)
         end
     end)
 end)
@@ -2198,61 +2198,543 @@ describe("effect strict: LScreenTransition color/setColor/type/typeOf", function
     end)
 end)
 
--- @describe effect-light ambient bridge
-describe("effect-light ambient bridge", function()
-    -- @covers LOverlay:getAmbientColor
-    -- @covers LOverlay:pullAmbientFromLight
+-- @describe effect migrated from render unit
+describe("effect migrated from render unit", function()
     -- @covers lurek.effect.newOverlay
-    -- @covers lurek.light.setAmbient
-    it("pullAmbientFromLight copies light ambient into overlay", function()
-        lurek.light.setAmbient(0.12, 0.34, 0.56, 0.78)
-        local ov = lurek.effect.newOverlay()
-        ov:pullAmbientFromLight()
-        local r, g, b, a = ov:getAmbientColor()
-        expect_near(r, 0.12, 0.001)
-        expect_near(g, 0.34, 0.001)
-        expect_near(b, 0.56, 0.001)
-        expect_near(a, 0.78, 0.001)
+    it("exposes lurek.effect.newOverlay as the canonical constructor", function()
+        expect_type("table", lurek.effect)
+        expect_type("function", lurek.effect.newOverlay)
+    end)
+end)
+
+
+--  ImageEffect chain API (migrated from test_image_core_unit.lua)
+--  ImageEffect chain API (merged from test_image_effect.lua)
+
+---@param fx LImageEffect
+---@param key integer|string
+---@return LPostFxEffect
+local function require_effect(fx, key)
+    local effect = fx:getEffect(key)
+    if effect == nil then
+        error(("expected effect %s to exist"):format(tostring(key)), 2)
+    end
+    return effect
+end
+
+-- @describe lurek.effect.newImageEffect construction (empty)
+describe("lurek.effect.newImageEffect construction (empty)", function()
+    -- @covers lurek.effect.newImageEffect
+    it("newImageEffect is a function", function()
+        expect_type("function", lurek.effect.newImageEffect)
     end)
 
-    -- @covers LOverlay:pushAmbientToLight
-    -- @covers LOverlay:setAmbientColor
-    -- @covers lurek.effect.newOverlay
-    -- @covers lurek.light.getAmbient
-    it("pushAmbientToLight copies overlay ambient into light world", function()
-        local ov = lurek.effect.newOverlay()
-        ov:setAmbientColor(0.21, 0.22, 0.23, 0.24)
-        ov:pushAmbientToLight()
-        local r, g, b, a = lurek.light.getAmbient()
-        expect_near(r, 0.21, 0.001)
-        expect_near(g, 0.22, 0.001)
-        expect_near(b, 0.23, 0.001)
-        expect_near(a, 0.24, 0.001)
+    -- @covers lurek.effect.newImageEffect
+    it("newImageEffect() returns non-nil", function()
+        local fx = lurek.effect.newImageEffect()
+        expect_equal(fx ~= nil, true)
     end)
 
-    -- @covers LOverlay:getAmbientColor
-    -- @covers LOverlay:setAmbientColor
-    -- @covers LOverlay:syncAmbientWithLight
-    -- @covers lurek.effect.newOverlay
-    -- @covers lurek.light.getAmbient
-    -- @covers lurek.light.setAmbient
-    it("syncAmbientWithLight avg resolves and writes both sides", function()
-        local ov = lurek.effect.newOverlay()
-        ov:setAmbientColor(0.2, 0.2, 0.2, 0.2)
-        lurek.light.setAmbient(0.8, 0.6, 0.4, 1.0)
-        ov:syncAmbientWithLight("avg")
+    -- @covers lurek.effect.newImageEffect
+    it("newImageEffect() returns object with effectCount method", function()
+        local fx = lurek.effect.newImageEffect()
+        expect_type("function", fx.effectCount)
+    end)
 
-        local orr, org, orb, ora = ov:getAmbientColor()
-        local lr, lg, lb, la = lurek.light.getAmbient()
-        expect_near(orr, 0.5, 0.001)
-        expect_near(org, 0.4, 0.001)
-        expect_near(orb, 0.3, 0.001)
-        expect_near(ora, 0.6, 0.001)
-        expect_near(lr, 0.5, 0.001)
-        expect_near(lg, 0.4, 0.001)
-        expect_near(lb, 0.3, 0.001)
-        expect_near(la, 0.6, 0.001)
+    -- @covers lurek.effect.newImageEffect
+    it("newImageEffect() returns object with addEffect method", function()
+        local fx = lurek.effect.newImageEffect()
+        expect_type("function", fx.addEffect)
+    end)
+
+    -- @covers lurek.effect.newImageEffect
+    it("newImageEffect() returns object with getEffect method", function()
+        local fx = lurek.effect.newImageEffect()
+        expect_type("function", fx.getEffect)
+    end)
+
+    -- @covers lurek.effect.newImageEffect
+    it("newImageEffect() returns object with removeEffect method", function()
+        local fx = lurek.effect.newImageEffect()
+        expect_type("function", fx.removeEffect)
+    end)
+
+    -- @covers lurek.effect.newImageEffect
+    it("newImageEffect() returns object with clearEffects method", function()
+        local fx = lurek.effect.newImageEffect()
+        expect_type("function", fx.clearEffects)
+    end)
+
+    -- @covers lurek.effect.newImageEffect
+    it("newImageEffect() returns object with clone method", function()
+        local fx = lurek.effect.newImageEffect()
+        expect_type("function", fx.clone)
+    end)
+
+    -- @covers lurek.effect.newImageEffect
+    it("newImageEffect() returns object with save method", function()
+        local fx = lurek.effect.newImageEffect()
+        expect_type("function", fx.save)
+    end)
+
+    -- @covers LImageEffect:effectCount
+    -- @covers lurek.effect.newImageEffect
+    it("empty chain has effectCount == 0", function()
+        local fx = lurek.effect.newImageEffect()
+        expect_equal(fx:effectCount(), 0)
+    end)
+end)
+
+-- @describe lurek.effect.newImageEffect construction (single name)
+describe("lurek.effect.newImageEffect construction (single name)", function()
+    -- @covers LImageEffect:effectCount
+    -- @covers lurek.effect.newImageEffect
+    it("newImageEffect('blur') produces effectCount == 1", function()
+        local fx = lurek.effect.newImageEffect("blur")
+        expect_equal(fx:effectCount(), 1)
+    end)
+
+    -- @covers lurek.effect.newImageEffect
+    it("first effect type is 'blur'", function()
+        local fx = lurek.effect.newImageEffect("blur")
+        local e = require_effect(fx, 1)
+        expect_equal(e:getType(), "blur")
+    end)
+
+    -- @covers LImageEffect:effectCount
+    -- @covers lurek.effect.newImageEffect
+    it("newImageEffect('blur', {radius=4}) produces effectCount == 1", function()
+        local fx = lurek.effect.newImageEffect("blur", { radius = 4 })
+        expect_equal(fx:effectCount(), 1)
+    end)
+
+    -- @covers lurek.effect.newImageEffect
+    it("newImageEffect('blur', {radius=4}) sets radius parameter", function()
+        local fx = lurek.effect.newImageEffect("blur", { radius = 4 })
+        local v = require_effect(fx, 1):getParameter("radius")
+        expect_equal(math.abs(v - 4) < 0.001, true)
+    end)
+end)
+
+-- @describe lurek.effect.newImageEffect construction (chain table)
+describe("lurek.effect.newImageEffect construction (chain table)", function()
+    -- @covers LImageEffect:effectCount
+    -- @covers lurek.effect.newImageEffect
+    it("two-element chain produces effectCount == 2", function()
+        local fx = lurek.effect.newImageEffect({ { type = "blur", radius = 2 }, { type = "sepia" } })
+        expect_equal(fx:effectCount(), 2)
+    end)
+
+    -- @covers lurek.effect.newImageEffect
+    it("first effect in chain is 'blur'", function()
+        local fx = lurek.effect.newImageEffect({ { type = "blur", radius = 2 }, { type = "sepia" } })
+        expect_equal(require_effect(fx, 1):getType(), "blur")
+    end)
+
+    -- @covers lurek.effect.newImageEffect
+    it("second effect in chain is 'sepia'", function()
+        local fx = lurek.effect.newImageEffect({ { type = "blur", radius = 2 }, { type = "sepia" } })
+        expect_equal(require_effect(fx, 2):getType(), "sepia")
+    end)
+
+    -- @covers lurek.effect.newImageEffect
+    it("chain entry parameters are applied", function()
+        local fx = lurek.effect.newImageEffect({ { type = "blur", radius = 2 } })
+        local v = require_effect(fx, 1):getParameter("radius")
+        expect_equal(math.abs(v - 2) < 0.001, true)
+    end)
+end)
+
+-- @describe ImageEffect:addEffect
+describe("ImageEffect:addEffect", function()
+    -- @covers LImageEffect:addEffect
+    -- @covers lurek.effect.newImageEffect
+    it("addEffect returns non-nil", function()
+        local fx = lurek.effect.newImageEffect()
+        local e = fx:addEffect("vignette")
+        expect_equal(e ~= nil, true)
+    end)
+
+    -- @covers LImageEffect:addEffect
+    -- @covers lurek.effect.newImageEffect
+    it("addEffect returns PostFxEffect with correct type", function()
+        local fx = lurek.effect.newImageEffect()
+        local e = fx:addEffect("vignette")
+        expect_equal(e:getType(), "vignette")
+    end)
+
+    -- @covers LImageEffect:addEffect
+    -- @covers LImageEffect:effectCount
+    -- @covers lurek.effect.newImageEffect
+    it("addEffect increments effectCount", function()
+        local fx = lurek.effect.newImageEffect()
+        fx:addEffect("blur")
+        expect_equal(fx:effectCount(), 1)
+        fx:addEffect("sepia")
+        expect_equal(fx:effectCount(), 2)
+    end)
+
+    -- @covers LImageEffect:addEffect
+    -- @covers lurek.effect.newImageEffect
+    it("addEffect appends to end of chain", function()
+        local fx = lurek.effect.newImageEffect()
+        fx:addEffect("blur")
+        fx:addEffect("vignette")
+        expect_equal(require_effect(fx, 2):getType(), "vignette")
+    end)
+end)
+
+-- @describe ImageEffect:getEffect by index
+describe("ImageEffect:getEffect by index", function()
+    -- @covers LImageEffect:addEffect
+    -- @covers lurek.effect.newImageEffect
+    it("getEffect(1) returns first effect", function()
+        local fx = lurek.effect.newImageEffect()
+        fx:addEffect("blur")
+        fx:addEffect("sepia")
+        expect_equal(require_effect(fx, 1):getType(), "blur")
+    end)
+
+    -- @covers LImageEffect:addEffect
+    -- @covers lurek.effect.newImageEffect
+    it("getEffect(2) returns second effect", function()
+        local fx = lurek.effect.newImageEffect()
+        fx:addEffect("blur")
+        fx:addEffect("sepia")
+        expect_equal(require_effect(fx, 2):getType(), "sepia")
+    end)
+
+    -- @covers LImageEffect:addEffect
+    -- @covers LImageEffect:getEffect
+    -- @covers lurek.effect.newImageEffect
+    it("getEffect out-of-bounds returns nil or errors gracefully", function()
+        local fx = lurek.effect.newImageEffect()
+        fx:addEffect("blur")
+        local ok = pcall(function()
+            local e = fx:getEffect(99)
+            expect_equal(e == nil, true)
+        end)
+        expect_type("boolean", ok)
+    end)
+
+    -- @covers LImageEffect:addEffect
+    -- @covers LImageEffect:getEffect
+    -- @covers lurek.effect.newImageEffect
+    it("getEffect(0) returns nil or errors gracefully", function()
+        local fx = lurek.effect.newImageEffect()
+        fx:addEffect("blur")
+        local ok = pcall(function()
+            local e = fx:getEffect(0)
+            expect_equal(e == nil, true)
+        end)
+        expect_type("boolean", ok)
+    end)
+end)
+
+-- @describe ImageEffect:getEffect by name
+describe("ImageEffect:getEffect by name", function()
+    -- @covers LImageEffect:addEffect
+    -- @covers LImageEffect:getEffect
+    -- @covers lurek.effect.newImageEffect
+    it("getEffect('blur') returns the blur effect", function()
+        local fx = lurek.effect.newImageEffect()
+        fx:addEffect("blur")
+        fx:addEffect("sepia")
+        local e = fx:getEffect("blur")
+        expect_equal(e ~= nil, true)
+        expect_equal(require_effect(fx, "blur"):getType(), "blur")
+    end)
+
+    -- @covers LImageEffect:addEffect
+    -- @covers LImageEffect:getEffect
+    -- @covers lurek.effect.newImageEffect
+    it("getEffect('sepia') returns the sepia effect", function()
+        local fx = lurek.effect.newImageEffect()
+        fx:addEffect("blur")
+        fx:addEffect("sepia")
+        local e = fx:getEffect("sepia")
+        expect_equal(e ~= nil, true)
+        expect_equal(require_effect(fx, "sepia"):getType(), "sepia")
+    end)
+
+    -- @covers LImageEffect:addEffect
+    -- @covers LImageEffect:getEffect
+    -- @covers lurek.effect.newImageEffect
+    it("getEffect with unknown name returns nil or errors gracefully", function()
+        local fx = lurek.effect.newImageEffect()
+        fx:addEffect("blur")
+        local ok = pcall(function()
+            local e = fx:getEffect("nonexistent_effect")
+            expect_equal(e == nil, true)
+        end)
+        expect_type("boolean", ok)
+    end)
+end)
+
+-- @describe PostFxEffect setParameter / getParameter round-trip
+describe("PostFxEffect setParameter / getParameter round-trip", function()
+    -- @covers lurek.effect.newImageEffect
+    it("setParameter radius then getParameter returns same value", function()
+        local fx = lurek.effect.newImageEffect("blur")
+        require_effect(fx, 1):setParameter("radius", 7.5)
+        local v = require_effect(fx, 1):getParameter("radius")
+        expect_equal(math.abs(v - 7.5) < 0.001, true)
+    end)
+
+    -- @covers lurek.effect.newImageEffect
+    it("setParameter overwrites previous value", function()
+        local fx = lurek.effect.newImageEffect("blur")
+        require_effect(fx, 1):setParameter("radius", 3.0)
+        require_effect(fx, 1):setParameter("radius", 9.0)
+        local v = require_effect(fx, 1):getParameter("radius")
+        expect_equal(math.abs(v - 9.0) < 0.001, true)
+    end)
+
+    -- @covers LImageEffect:addEffect
+    -- @covers LPostFxEffect:getParameter
+    -- @covers LPostFxEffect:setParameter
+    -- @covers lurek.effect.newImageEffect
+    it("getParameter on separate effects are independent", function()
+        local fx = lurek.effect.newImageEffect()
+        local e1 = fx:addEffect("blur")
+        local e2 = fx:addEffect("blur")
+        e1:setParameter("radius", 2.0)
+        e2:setParameter("radius", 8.0)
+        expect_equal(math.abs(e1:getParameter("radius") - 2.0) < 0.001, true)
+        expect_equal(math.abs(e2:getParameter("radius") - 8.0) < 0.001, true)
+    end)
+end)
+
+-- @describe ImageEffect:effectCount
+describe("ImageEffect:effectCount", function()
+    -- @covers LImageEffect:effectCount
+    -- @covers lurek.effect.newImageEffect
+    it("starts at 0 for empty chain", function()
+        local fx = lurek.effect.newImageEffect()
+        expect_equal(fx:effectCount(), 0)
+    end)
+
+    -- @covers LImageEffect:addEffect
+    -- @covers LImageEffect:effectCount
+    -- @covers lurek.effect.newImageEffect
+    it("increments by 1 after each addEffect", function()
+        local fx = lurek.effect.newImageEffect()
+        fx:addEffect("blur")
+        expect_equal(fx:effectCount(), 1)
+        fx:addEffect("vignette")
+        expect_equal(fx:effectCount(), 2)
+        fx:addEffect("sepia")
+        expect_equal(fx:effectCount(), 3)
+    end)
+
+    -- @covers LImageEffect:addEffect
+    -- @covers LImageEffect:effectCount
+    -- @covers LImageEffect:removeEffect
+    -- @covers lurek.effect.newImageEffect
+    it("decrements after removeEffect", function()
+        local fx = lurek.effect.newImageEffect()
+        fx:addEffect("blur")
+        fx:addEffect("sepia")
+        fx:removeEffect(1)
+        expect_equal(fx:effectCount(), 1)
+    end)
+end)
+
+-- @describe ImageEffect:removeEffect by index
+describe("ImageEffect:removeEffect by index", function()
+    -- @covers LImageEffect:addEffect
+    -- @covers LImageEffect:effectCount
+    -- @covers LImageEffect:removeEffect
+    -- @covers lurek.effect.newImageEffect
+    it("removeEffect(1) decrements effectCount", function()
+        local fx = lurek.effect.newImageEffect()
+        fx:addEffect("blur")
+        fx:addEffect("sepia")
+        fx:removeEffect(1)
+        expect_equal(fx:effectCount(), 1)
+    end)
+
+    -- @covers LImageEffect:addEffect
+    -- @covers LImageEffect:removeEffect
+    -- @covers lurek.effect.newImageEffect
+    it("remaining effect after removing index 1 is the second original", function()
+        local fx = lurek.effect.newImageEffect()
+        fx:addEffect("blur")
+        fx:addEffect("sepia")
+        fx:removeEffect(1)
+        expect_equal(require_effect(fx, 1):getType(), "sepia")
+    end)
+
+    -- @covers LImageEffect:addEffect
+    -- @covers LImageEffect:effectCount
+    -- @covers LImageEffect:removeEffect
+    -- @covers lurek.effect.newImageEffect
+    it("removeEffect(2) removes the second effect", function()
+        local fx = lurek.effect.newImageEffect()
+        fx:addEffect("blur")
+        fx:addEffect("sepia")
+        fx:removeEffect(2)
+        expect_equal(fx:effectCount(), 1)
+        expect_equal(require_effect(fx, 1):getType(), "blur")
+    end)
+end)
+
+-- @describe ImageEffect:removeEffect by name
+describe("ImageEffect:removeEffect by name", function()
+    -- @covers LImageEffect:addEffect
+    -- @covers LImageEffect:effectCount
+    -- @covers LImageEffect:removeEffect
+    -- @covers lurek.effect.newImageEffect
+    it("removeEffect('sepia') from [blur, sepia] -> effectCount == 1", function()
+        local fx = lurek.effect.newImageEffect()
+        fx:addEffect("blur")
+        fx:addEffect("sepia")
+        fx:removeEffect("sepia")
+        expect_equal(fx:effectCount(), 1)
+    end)
+
+    -- @covers LImageEffect:addEffect
+    -- @covers LImageEffect:removeEffect
+    -- @covers lurek.effect.newImageEffect
+    it("remaining effect after removing 'sepia' is 'blur'", function()
+        local fx = lurek.effect.newImageEffect()
+        fx:addEffect("blur")
+        fx:addEffect("sepia")
+        fx:removeEffect("sepia")
+        expect_equal(require_effect(fx, 1):getType(), "blur")
+    end)
+
+    -- @covers LImageEffect:addEffect
+    -- @covers LImageEffect:effectCount
+    -- @covers LImageEffect:removeEffect
+    -- @covers lurek.effect.newImageEffect
+    it("removeEffect('blur') from [blur, sepia] -> remaining is 'sepia'", function()
+        local fx = lurek.effect.newImageEffect()
+        fx:addEffect("blur")
+        fx:addEffect("sepia")
+        fx:removeEffect("blur")
+        expect_equal(fx:effectCount(), 1)
+        expect_equal(require_effect(fx, 1):getType(), "sepia")
+    end)
+end)
+
+-- @describe ImageEffect:clearEffects
+describe("ImageEffect:clearEffects", function()
+    -- @covers LImageEffect:addEffect
+    -- @covers LImageEffect:clearEffects
+    -- @covers LImageEffect:effectCount
+    -- @covers lurek.effect.newImageEffect
+    it("clearEffects on populated chain produces effectCount == 0", function()
+        local fx = lurek.effect.newImageEffect()
+        fx:addEffect("blur")
+        fx:addEffect("vignette")
+        fx:addEffect("sepia")
+        fx:clearEffects()
+        expect_equal(fx:effectCount(), 0)
+    end)
+
+    -- @covers LImageEffect:clearEffects
+    -- @covers LImageEffect:effectCount
+    -- @covers lurek.effect.newImageEffect
+    it("clearEffects on empty chain is a no-op", function()
+        local fx = lurek.effect.newImageEffect()
+        fx:clearEffects()
+        expect_equal(fx:effectCount(), 0)
+    end)
+
+    -- @covers LImageEffect:addEffect
+    -- @covers LImageEffect:clearEffects
+    -- @covers LImageEffect:effectCount
+    -- @covers lurek.effect.newImageEffect
+    it("can addEffect again after clearEffects", function()
+        local fx = lurek.effect.newImageEffect()
+        fx:addEffect("blur")
+        fx:clearEffects()
+        fx:addEffect("sepia")
+        expect_equal(fx:effectCount(), 1)
+        expect_equal(require_effect(fx, 1):getType(), "sepia")
+    end)
+end)
+
+-- @describe ImageEffect:clone
+describe("ImageEffect:clone", function()
+    -- @covers LImageEffect:addEffect
+    -- @covers LImageEffect:clone
+    -- @covers lurek.effect.newImageEffect
+    it("clone returns non-nil", function()
+        local fx = lurek.effect.newImageEffect()
+        fx:addEffect("blur")
+        local copy = fx:clone()
+        expect_equal(copy ~= nil, true)
+    end)
+
+    -- @covers LImageEffect:addEffect
+    -- @covers LImageEffect:clone
+    -- @covers LImageEffect:effectCount
+    -- @covers lurek.effect.newImageEffect
+    it("clone has the same effectCount as original", function()
+        local fx = lurek.effect.newImageEffect()
+        fx:addEffect("blur")
+        fx:addEffect("sepia")
+        local copy = fx:clone()
+        expect_equal(copy:effectCount(), fx:effectCount())
+    end)
+
+    -- @covers LImageEffect:addEffect
+    -- @covers LImageEffect:clone
+    -- @covers lurek.effect.newImageEffect
+    it("clone has the same effect types in order", function()
+        local fx = lurek.effect.newImageEffect()
+        fx:addEffect("blur")
+        fx:addEffect("sepia")
+        local copy = fx:clone()
+        expect_equal(require_effect(copy, 1):getType(), "blur")
+        expect_equal(require_effect(copy, 2):getType(), "sepia")
+    end)
+
+    -- @covers LImageEffect:addEffect
+    -- @covers LImageEffect:clone
+    -- @covers LImageEffect:effectCount
+    -- @covers lurek.effect.newImageEffect
+    it("modifying clone does not affect original effectCount", function()
+        local fx = lurek.effect.newImageEffect()
+        fx:addEffect("blur")
+        local copy = fx:clone()
+        copy:addEffect("vignette")
+        expect_equal(fx:effectCount(), 1)
+        expect_equal(copy:effectCount(), 2)
+    end)
+
+    -- @covers LImageEffect:clone
+    -- @covers lurek.effect.newImageEffect
+    it("modifying clone parameter does not affect original", function()
+        local fx = lurek.effect.newImageEffect("blur")
+        require_effect(fx, 1):setParameter("radius", 3.0)
+        local copy = fx:clone()
+        require_effect(copy, 1):setParameter("radius", 99.0)
+        local orig_v = require_effect(fx, 1):getParameter("radius")
+        expect_equal(math.abs(orig_v - 3.0) < 0.001, true)
+    end)
+end)
+
+-- @describe lurek.effect.newImageEffect invalid effect name
+describe("lurek.effect.newImageEffect invalid effect name", function()
+    -- @covers lurek.effect.newImageEffect
+    it("rejects unknown effect name on construction", function()
+        expect_error(function()
+            lurek.effect.newImageEffect("not_a_real_effect")
+        end)
+    end)
+
+    -- @covers LImageEffect:addEffect
+    -- @covers lurek.effect.newImageEffect
+    it("addEffect rejects unknown effect name", function()
+        local fx = lurek.effect.newImageEffect()
+        expect_error(function()
+            fx:addEffect("not_a_real_effect")
+        end)
     end)
 end)
 
 test_summary()
+

@@ -3,12 +3,6 @@
 
 -- @describe timer + math integration
 describe("timer + math integration", function()
-    -- @integration lurek.timer.getDelta
-    it("getDelta returns a number", function()
-        local dt = lurek.timer.getDelta()
-        expect_not_nil(dt, "getDelta returns a value")
-        expect_true(type(dt) == "number", "dt is a number")
-    end)
 
     it("time-based interpolation with math", function()
         -- Simulate lerp between two values over time
@@ -24,17 +18,6 @@ describe("timer + math integration", function()
         local smooth_t = t * t * (3 - 2 * t)
         local smooth_result = start_val + (end_val - start_val) * smooth_t
         expect_near(50, smooth_result, 0.001, "smoothstep at t=0.5")
-    end)
-
-    -- @integration lurek.math.pi
-    -- @integration lurek.math.sin
-    it("oscillation with sin and time", function()
-        -- Simulate oscillating value: sin(time * frequency)
-        local frequency = 2.0
-        local time = lurek.math.pi / (2 * frequency)
-
-        local value = lurek.math.sin(time * frequency)
-        expect_near(1.0, value, 0.001, "sin peak at quarter period")
     end)
 
     it("frame-rate independent movement", function()

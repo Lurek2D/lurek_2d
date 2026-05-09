@@ -1,94 +1,61 @@
--- Lurek2D Integration Test: Graphics + Animation
--- Tests drawing primitives with animation frame progression
+-- Lurek2D Integration Test: Animation driving Render output
+-- Tests cross-module behavior: animation frame progression controls sprite drawing
 
--- @describe graphics + animation integration
-describe("graphics + animation integration", function()
-    -- @integration LAnimation:addClip
+-- @describe animation + render integration
+describe("animation + render integration", function()
+    -- @integration lurek.animation.new
     -- @integration LAnimation:addFramesFromGrid
-    -- @integration LAnimation:getCurrentFrame
+    -- @integration LAnimation:addClip
     -- @integration LAnimation:play
     -- @integration LAnimation:update
-    -- @integration lurek.animation.new
-    it("animation clip current frame advances with time", function()
-        local anim = lurek.animation.new()
-        anim:addFramesFromGrid(128, 16, 16, 16, 0, 4)
-        anim:addClip("run", {0, 1, 2, 3}, 10.0, false)
-        anim:play("run")
-
-        local f0 = anim:getCurrentFrame()
-        expect_true(f0 >= 0, "frame is >= 0 at start")
-
-        anim:update(0.15)
-        local f1 = anim:getCurrentFrame()
-        expect_true(f1 >= 0, "frame is valid after 0.15s")
-    end)
-
-    -- @integration LAnimation:addClip
-    -- @integration LAnimation:addFramesFromGrid
     -- @integration LAnimation:getCurrentFrame
-    -- @integration LAnimation:play
-    -- @integration LAnimation:update
-    -- @integration lurek.animation.new
-    -- @integration lurek.render.rectangle
     -- @integration lurek.render.setColor
-    it("animation frame drives sprite draw parameters", function()
+    -- @integration lurek.render.rectangle
+    it("animation frame index controls render source texture offset", function()
         local anim = lurek.animation.new()
-        anim:addFramesFromGrid(64, 16, 16, 16, 0, 4)
+        expect_type("userdata", anim, "animation constructor returns userdata")
+        anim:addFramesFromGrid(64, 16, 16, 16, 0, 4)  -- 4 frames, 16px wide each
         anim:addClip("walk", {0, 1, 2, 3}, 8.0, false)
         anim:play("walk")
 
-        anim:update(0.125)  -- advance one frame at 8fps
+        -- Frame 0: offset 0
+        anim:update(0.125)  -- 8 fps, so 0.125s = one frame
         local frame_idx = anim:getCurrentFrame()
-
-        -- Use frame data for drawing
-        expect_no_error(function()
+            expect_equal(1, frame_idx, "frame 1 after one update at 8fps")
+        expect_true(pcall(function()
             lurek.render.setColor(1, 1, 1, 1)
-            -- Use frame_idx to offset source x in a hypothetical draw
-            local src_x = frame_idx * 16
-            lurek.render.rectangle("fill", src_x, 0, 16, 16)
-        end)
+            lurek.render.rectangle("fill", frame_idx * 16, 0, 16, 16)
+        end), "render accepts animation frame offset for sprite coords")
     end)
 
-    -- @integration LAnimation:addClip
+    -- @integration lurek.animation.new
     -- @integration LAnimation:addFramesFromGrid
-    -- @integration LAnimation:isLooping
-    -- @integration LAnimation:isPlaying
+    -- @integration LAnimation:addClip
     -- @integration LAnimation:play
     -- @integration LAnimation:update
-    -- @integration lurek.animation.new
-    it("looping animation clip isLooping is true", function()
-        local anim = lurek.animation.new()
-        anim:addFramesFromGrid(48, 16, 16, 16, 0, 3)
-        anim:addClip("idle", {0, 1, 2}, 5.0, true)
-        anim:play("idle")
-
-        expect_true(anim:isLooping(), "looping clip reports isLooping = true")
-
-        -- Advance past the clip end
-        anim:update(1.0)
-        expect_true(anim:isPlaying(), "still playing after looping past end")
-    end)
-
-    -- @integration LAnimation:addClip
-    -- @integration LAnimation:addFramesFromGrid
     -- @integration LAnimation:getCurrentFrame
-    -- @integration LAnimation:pause
-    -- @integration LAnimation:play
-    -- @integration LAnimation:update
-    -- @integration lurek.animation.new
-    it("paused animation does not advance frames", function()
+    -- @integration lurek.render.rectangle
+    it("sequential animation updates produce consecutive sprite offsets", function()
         local anim = lurek.animation.new()
+        expect_type("userdata", anim, "animation constructor returns userdata")
         anim:addFramesFromGrid(32, 16, 16, 16, 0, 2)
         anim:addClip("seq", {0, 1}, 5.0, false)
         anim:play("seq")
 
-        anim:pause()
-        local before = anim:getCurrentFrame()
-        anim:update(0.5)
-        local after = anim:getCurrentFrame()
-
-        -- Paused animation should not advance
-        expect_equal(before, after, "paused animation frame does not change")
+        local offsets = {}
+        for i = 1, 4 do
+            anim:update(0.25)  -- 5fps
+            table.insert(offsets, anim:getCurrentFrame())
+            expect_true(pcall(function()
+                local src_x = anim:getCurrentFrame() * 16
+                lurek.render.rectangle("fill", src_x, 0, 16, 16)
+            end), "render call " .. i .. " with animation frame")
+        end
+        expect_equal(4, #offsets, "exactly 4 frame updates recorded")
+        for i, f in ipairs(offsets) do
+            expect_true(f >= 1, "frame index >= 1 at update step " .. i)
+        end
     end)
 end)
+
 test_summary()

@@ -805,17 +805,17 @@ describe("parallax tile size", function()
     -- @covers LParallaxLayer:setTileSize
     it("setTileSize accepts positive dimensions", function()
         local layer = make_layer()
-        -- Should not error
-        layer:setTileSize(256.0, 128.0)
-        expect_equal(true, true)  -- reached without error
+        expect_no_error(function()
+            layer:setTileSize(256.0, 128.0)
+        end)
     end)
 
     -- @covers LParallaxLayer:setTileSize
     it("setTileSize with zero width resets to texture default", function()
         local layer = make_layer()
-        layer:setTileSize(0.0, 64.0)
-        -- Non-positive w resets tile_w; no error expected
-        expect_equal(true, true)
+        expect_no_error(function()
+            layer:setTileSize(0.0, 64.0)
+        end)
     end)
 
     -- @covers LParallaxLayer:getTiling
@@ -846,6 +846,14 @@ describe("parallax strict: LParallaxLayer setRepeat/setScale", function()
         local layer = make_layer()
         local ok = pcall(function() layer:setScale(1.5, 1.5) end)
         expect_type("boolean", ok)
+    end)
+end)
+
+-- @describe parallax migrated from render unit
+describe("parallax migrated from render unit", function()
+    -- @covers lurek.parallax.newSet
+    it("exposes lurek.parallax.newSet as the canonical constructor", function()
+        expect_type("function", lurek.parallax.newSet)
     end)
 end)
 

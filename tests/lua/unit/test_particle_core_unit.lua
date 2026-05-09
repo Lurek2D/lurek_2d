@@ -1324,4 +1324,60 @@ describe("particle strict uncovered methods", function()
         expect_type("boolean", ok)
     end)
 end)
+
+-- @describe particle migrated from render unit
+describe("particle migrated from render unit", function()
+    -- @covers lurek.particle.newSystem
+    it("exposes lurek.particle.newSystem as the canonical constructor", function()
+        expect_type("table", lurek.particle)
+        expect_type("function", lurek.particle.newSystem)
+    end)
+end)
+
+-- @describe unit: migrated from integration/test_particle_timer.lua
+describe("unit: migrated from integration/test_particle_timer.lua", function()
+        -- @covers LParticleSystem:emit
+        -- @covers LParticleSystem:getCount
+        -- @covers LParticleSystem:setEmissionRate
+        -- @covers LParticleSystem:setParticleLifetime
+        -- @covers LParticleSystem:setPosition
+        -- @covers lurek.particle.newSystem
+        it("emitter created and configured with observable particle output", function()
+            local pe = lurek.particle.newSystem()
+            expect_not_nil(pe, "particle emitter created")
+    
+            pe:setPosition(100, 100)
+            pe:setEmissionRate(60.0)
+            pe:setParticleLifetime(2.0, 2.0)
+            pe:emit(3)
+    
+            expect_true(pe:getCount() > 0, "emitter should contain particles after emit")
+        end)
+
+        -- @covers LParticleSystem:setEmissionRate
+        -- @covers LParticleSystem:setParticleLifetime
+        -- @covers LParticleSystem:setPosition
+        -- @covers lurek.particle.newSystem
+        it("emitter position can be updated each frame", function()
+            local pe    = lurek.particle.newSystem()
+            local trail = {}
+    
+            pe:setEmissionRate(1.0)
+            pe:setParticleLifetime(1.0, 1.0)
+    
+            for i = 1, 10 do
+                local x = i * 20.0
+                local y = 100.0
+                pe:setPosition(x, y)
+                trail[i] = {x = x, y = y}
+            end
+    
+            -- Last recorded position
+            local last = trail[10]
+            expect_equal(200.0, last.x, "last trail x = 200")
+            expect_equal(100.0, last.y, "last trail y = 100")
+        end)
+
+end)
+
 test_summary()

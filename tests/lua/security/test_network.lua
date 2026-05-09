@@ -83,12 +83,13 @@ describe("lurek.network security", function()
     -- @security LNetworkHost:destroy
     -- @security lurek.network.newHost
     it("should not crash on rapid create/destroy cycle", function()
+        local completed = 0
         for i = 1, 10 do
             local h = lurek.network.newHost({ addr = "0.0.0.0:0" })
             h:destroy()
+            completed = completed + 1
         end
-        -- If we get here without crash, test passes
-        expect_equal(true, true)
+        expect_equal(10, completed)
     end)
 
     -- @security LNetworkRuntime:shutdown
@@ -97,8 +98,10 @@ describe("lurek.network security", function()
         local rt = lurek.network.newRuntime()
         rt:shutdown()
         -- Second shutdown should not crash
-        rt:shutdown()
-        expect_equal(true, true)
+        local ok = pcall(function()
+            rt:shutdown()
+        end)
+        expect_true(ok)
     end)
 
     -- @security lurek.network.pack

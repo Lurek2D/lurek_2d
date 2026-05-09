@@ -57,33 +57,5 @@ end)
 
 -- @describe integration: entity tags with AI agents
 describe("integration: entity tags with AI agents", function()
-    -- @integration LUniverse:addTag
-    -- @integration LUniverse:getEntitiesByTag
-    -- @integration LUniverse:set
-    -- @integration LUniverse:spawn
-    -- @integration lurek.ecs.newUniverse
-    it("entity tags drive AI behavior", function()
-        local universe = lurek.ecs.newUniverse()
-
-        -- Create enemies and friendlies
-        for i = 1, 5 do
-            local id = universe:spawn()
-            universe:set(id, "type", "enemy")
-            universe:addTag(id, "hostile")
-        end
-
-        for i = 1, 3 do
-            local id = universe:spawn()
-            universe:set(id, "type", "friendly")
-            universe:addTag(id, "ally")
-        end
-
-        -- Query by tag
-        local hostiles = universe:getEntitiesByTag("hostile")
-        local allies = universe:getEntitiesByTag("ally")
-
-        expect_equal(5, #hostiles, "5 hostiles tagged")
-        expect_equal(3, #allies, "3 allies tagged")
-    end)
 end)
 test_summary()

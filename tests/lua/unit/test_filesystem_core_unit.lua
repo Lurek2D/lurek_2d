@@ -1032,7 +1032,7 @@ describe("filesystem strict: LFileHandle type / typeOf", function()
             expect_type("string", fh:type())
             expect_type("boolean", fh:typeOf("Object"))
         else
-            expect_true(true)
+            expect_not_nil(fh)
         end
     end)
 end)
@@ -1043,7 +1043,7 @@ describe("filesystem strict: LFileData type / typeOf", function()
     -- @covers LFileData:typeOf
     -- @covers lurek.filesystem.openFile
     it("LFileData type and typeOf skip when no fixture file", function()
-        expect_true(true)
+        expect_type("function", lurek.filesystem.openFile)
     end)
 end)
 
@@ -1062,7 +1062,7 @@ describe("filesystem strict: LZipMount contains / prefix / type / typeOf", funct
             expect_type("boolean", zm:contains("anything"))
             expect_type("string", zm:prefix())
         else
-            expect_true(true)
+            expect_not_nil(zm)
         end
     end)
 end)
@@ -1077,6 +1077,18 @@ describe("filesystem strict: binary reads", function()
         expect_type("string", bytes)
         expect_true(#bytes >= 3)
     end)
+end)
+
+-- @describe unit: migrated from integration/test_serial_filesystem.lua
+describe("unit: migrated from integration/test_serial_filesystem.lua", function()
+        -- @covers lurek.filesystem.exists
+        -- @covers lurek.filesystem.write
+        it("filesystem.exists returns true after write", function()
+            local path = tmp .. "exists_check.txt"
+            lurek.filesystem.write(path, "ping")
+            expect_true(lurek.filesystem.exists(path), "exists after write")
+        end)
+
 end)
 
 test_summary()

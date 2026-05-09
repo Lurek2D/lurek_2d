@@ -43,7 +43,10 @@ describe("savegame + entity + scene integration", function()
 
         -- Trigger collect
         local snapshot = sm:collect()
-        expect_true(snapshot ~= nil, "snapshot is not nil")
+        expect_not_nil(snapshot, "snapshot is not nil")
+        expect_not_nil(collected_data, "entity save callback was invoked")
+        expect_equal(85, collected_data.player_hp, "player HP captured by collect")
+        expect_equal(7,  collected_data.player_level, "player level captured by collect")
     end)
 
     -- @integration LSaveManager:collect

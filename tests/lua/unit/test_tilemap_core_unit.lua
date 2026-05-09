@@ -1,4 +1,4 @@
-﻿-- Lurek2D Tilemap API Tests
+-- Lurek2D Tilemap API Tests
 -- Covers lurek.tilemap module: factory functions, TileSet, TileMap,
 -- coordinate helpers, autotile, chunk map, iso map, map generation, and TMX.
 -- NOTE: This test runs in headless mode (no GPU/window). drawLayer and
@@ -75,6 +75,10 @@ describe("lurek.tilemap module exists", function()
         expect_type("function", lurek.tilemap.loadTMX)
     end)
 
+    -- @covers lurek.tilemap.FLOOR
+    -- @covers lurek.tilemap.NORTH_WALL
+    -- @covers lurek.tilemap.OBJECT
+    -- @covers lurek.tilemap.WEST_WALL
     it("exposes IsoMap tile-part constants", function()
         expect_equal(1, lurek.tilemap.FLOOR)
         expect_equal(2, lurek.tilemap.NORTH_WALL)
@@ -2494,6 +2498,42 @@ describe("tilemap strict: LTileMap extra methods", function()
         local tm = lurek.tilemap.newTileMap(16, 16)
         local ok = pcall(function() tm:fireTileExit(1, {x=0,y=0}, 0, 0) end)
         expect_type("boolean", ok)
+    end)
+end)
+
+-- @describe tilemap migrated from integration/tilemap_camera
+describe("tilemap migrated from integration/tilemap_camera", function()
+    -- @covers LTileMap:addLayer
+    -- @covers LTileMap:getTile
+    -- @covers LTileMap:setTile
+    -- @covers lurek.tilemap.newTileMap
+    it("creates tilemap and fills tiles", function()
+        local tm = lurek.tilemap.newTileMap(20, 20, 16)
+        tm:addLayer("tiles", 20, 20)
+        expect_not_nil(tm)
+
+        for y = 0, 19 do
+            for x = 0, 19 do
+                tm:setTile(1, x + 1, y + 1, (x + y) % 4 + 1)
+            end
+        end
+
+        local t00 = tm:getTile(1, 1, 1)
+        local t11 = tm:getTile(1, 2, 2)
+        local t99 = tm:getTile(1, 10, 10)
+        expect_equal(1, t00)
+        expect_equal(3, t11)
+        expect_equal(3, t99)
+    end)
+
+    -- @covers LTileMap:addLayer
+    -- @covers LTileMap:getTile
+    -- @covers lurek.tilemap.newTileMap
+    it("out-of-bounds tile read returns 0", function()
+        local tm = lurek.tilemap.newTileMap(10, 10, 16)
+        tm:addLayer("tiles", 10, 10)
+        local t = tm:getTile(1, 100, 100)
+        expect_equal(0, t)
     end)
 end)
 

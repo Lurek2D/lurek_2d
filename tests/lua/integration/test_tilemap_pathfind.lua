@@ -89,5 +89,45 @@ describe("integration: tilemap feeds into pathfinding grid", function()
         expect_true(#path >= 5, "path length at least 5 steps for 5-tile distance")
         expect_true(#path <= 8, "path length reasonable (not excessive)")
     end)
+
+    -- @integration LNavGrid:getHeight
+    -- @integration LNavGrid:getWidth
+    -- @integration LTileMap:addLayer
+    -- @integration LTileMap:setTile
+    -- @integration lurek.pathfind.newNavGridFromTileMap
+    -- @integration lurek.tilemap.newTileMap
+    it("creates grid from tilemap with correct dimensions", function()
+        local tm = lurek.tilemap.newTileMap(16, 16, 8)
+        tm:addLayer("ground", 4, 4)
+        for y = 1, 4 do
+            for x = 1, 4 do
+                tm:setTile(1, x, y, 1)
+            end
+        end
+        local nav = lurek.pathfind.newNavGridFromTileMap(tm, 1, {2})
+        expect_equal(4, nav:getWidth())
+        expect_equal(4, nav:getHeight())
+    end)
+
+    -- @integration LNavGrid:getCost
+    -- @integration LTileMap:addLayer
+    -- @integration LTileMap:setTile
+    -- @integration lurek.pathfind.newNavGridFromTileMap
+    -- @integration lurek.tilemap.newTileMap
+    it("blocked GIDs produce cost 0", function()
+        local tm = lurek.tilemap.newTileMap(16, 16, 8)
+        tm:addLayer("ground", 4, 4)
+        for y = 1, 4 do
+            for x = 1, 4 do
+                tm:setTile(1, x, y, 1)
+            end
+        end
+        tm:setTile(1, 2, 2, 2)
+        tm:setTile(1, 3, 3, 2)
+        local nav = lurek.pathfind.newNavGridFromTileMap(tm, 1, {2})
+        expect_equal(0, nav:getCost(2, 2))
+        expect_equal(0, nav:getCost(3, 3))
+        expect_true(nav:getCost(1, 1) > 0, "walkable tile should have cost > 0")
+    end)
 end)
 test_summary()

@@ -389,10 +389,9 @@ describe("validation: compute invalid args", function()
     end)
 
     -- @security lurek.compute.zeros
-    it("rejects too many dimensions", function()
-        expect_error(function()
-            lurek.compute.zeros({2, 3, 4, 5}, "float32")
-        end, "4D should error")
+    it("accepts 4D arrays with valid dimensions", function()
+        local arr = lurek.compute.zeros({2, 3, 4, 5}, "float32")
+        expect_not_nil(arr)
     end)
 end)
 

@@ -1220,4 +1220,17 @@ describe("input strict coverage sweep", function()
     end)
 end)
 
+-- @describe unit: migrated from integration/test_input_camera.lua
+describe("unit: migrated from integration/test_input_camera.lua", function()
+        -- @covers lurek.input.mouse
+        it("getMousePosition returns two numbers", function()
+            expect_no_error(function()
+                local mx, my = lurek.input.mouse.getPosition()
+                expect_type("number", mx, "mouse x is number")
+                expect_type("number", my, "mouse y is number")
+            end)
+        end)
+
+end)
+
 test_summary()

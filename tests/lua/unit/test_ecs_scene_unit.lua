@@ -3,10 +3,10 @@
 
 -- @describe integration: scene + entity hierarchy
 describe("integration: scene + entity hierarchy", function()
-    -- @integration LUniverse:get
-    -- @integration LUniverse:set
-    -- @integration LUniverse:spawn
-    -- @integration lurek.ecs.newUniverse
+    -- @covers LUniverse:get
+    -- @covers LUniverse:set
+    -- @covers LUniverse:spawn
+    -- @covers lurek.ecs.newUniverse
     it("creates scene and populates with entities", function()
         local universe = lurek.ecs.newUniverse()
 
@@ -33,11 +33,11 @@ describe("integration: scene + entity hierarchy", function()
         end
     end)
 
-    -- @integration LUniverse:get
-    -- @integration LUniverse:kill
-    -- @integration LUniverse:set
-    -- @integration LUniverse:spawn
-    -- @integration lurek.ecs.newUniverse
+    -- @covers LUniverse:get
+    -- @covers LUniverse:kill
+    -- @covers LUniverse:set
+    -- @covers LUniverse:spawn
+    -- @covers lurek.ecs.newUniverse
     it("killing parent entity is tracked", function()
         local universe = lurek.ecs.newUniverse()
 
@@ -51,11 +51,11 @@ describe("integration: scene + entity hierarchy", function()
         expect_equal(parent, pid, "orphan child still stores old parent id")
     end)
 
-    -- @integration LUniverse:get
-    -- @integration LUniverse:kill
-    -- @integration LUniverse:set
-    -- @integration LUniverse:spawn
-    -- @integration lurek.ecs.newUniverse
+    -- @covers LUniverse:get
+    -- @covers LUniverse:kill
+    -- @covers LUniverse:set
+    -- @covers LUniverse:spawn
+    -- @covers lurek.ecs.newUniverse
     it("large entity population in scene does not error", function()
         local universe = lurek.ecs.newUniverse()
         local ids = {}
@@ -74,7 +74,9 @@ describe("integration: scene + entity hierarchy", function()
         for _, id in ipairs(ids) do
             universe:kill(id)
         end
-        expect_true(true, "bulk create + kill did not crash")
+        expect_false(universe:isAlive(ids[1]),   "first killed entity is no longer alive")
+        expect_false(universe:isAlive(ids[200]),  "last killed entity is no longer alive")
+        expect_equal(0, universe:getEntityCount(), "all entities removed after bulk kill")
     end)
 end)
 test_summary()

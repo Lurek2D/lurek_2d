@@ -1221,6 +1221,8 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
             let action = name.clone();
             let am_is_down = am.clone();
             let s_is_down = s.clone();
+            /// Returns true while any binding assigned to this mapping is currently held.
+            /// @return | boolean | True if at least one mapped key/button is down.
             mapping.set(
                 "isDown",
                 lua.create_function(move |_, ()| {
@@ -1236,6 +1238,8 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
             let action = name.clone();
             let am_pressed = am.clone();
             let s_pressed = s.clone();
+            /// Returns true on the frame where any mapping binding transitions to pressed.
+            /// @return | boolean | True if at least one mapped key/button was pressed this frame.
             mapping.set(
                 "wasPressed",
                 lua.create_function(move |_, ()| {
@@ -1251,6 +1255,8 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
             let action = name.clone();
             let am_released = am.clone();
             let s_released = s.clone();
+            /// Returns true on the frame where any mapping binding transitions to released.
+            /// @return | boolean | True if at least one mapped key/button was released this frame.
             mapping.set(
                 "wasReleased",
                 lua.create_function(move |_, ()| {

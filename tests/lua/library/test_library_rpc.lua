@@ -525,17 +525,20 @@ describe("RPC onError Validation", function()
     it("accepts a function", function()
         local host = MockHost.new()
         local R = rpc_mod.new(host)
-        R:onError(function() end)
-        -- no error
-        expect_equal(true, true)
+        local ok = pcall(function()
+            R:onError(function() end)
+        end)
+        expect_true(ok)
     end)
 
     it("accepts nil to clear", function()
         local host = MockHost.new()
         local R = rpc_mod.new(host)
-        R:onError(function() end)
-        R:onError(nil)
-        expect_equal(true, true)
+        local ok = pcall(function()
+            R:onError(function() end)
+            R:onError(nil)
+        end)
+        expect_true(ok)
     end)
 
     it("rejects non-function", function()
@@ -583,9 +586,8 @@ describe("RPC Logging", function()
             success = true,
             result  = { "test" },
         })
-        R:poll()
-        -- No crash = pass
-        expect_equal(true, true)
+        local responses = R:poll()
+        expect_type("table", responses)
     end)
 end)
 

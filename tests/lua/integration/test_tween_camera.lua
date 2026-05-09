@@ -33,15 +33,6 @@ describe("integration: tween drives camera position and zoom", function()
     -- @integration LTweenState:lerp
     -- @integration LTweenState:tick
     -- @integration lurek.tween.newState
-    it("tween reaches target at completion", function()
-        local state = lurek.tween.newState(0.5, "linear")
-
-        -- Advance past end
-        state:tick(0.6)
-        local val = state:lerp(100, 200)
-        expect_near(200, val, 1.0, "tween reached target value")
-    end)
-
     -- @integration LCamera:getZoom
     -- @integration LCamera:setZoom
     -- @integration LTweenState:lerp
@@ -64,12 +55,5 @@ describe("integration: tween drives camera position and zoom", function()
     -- @integration LTweenState:isComplete
     -- @integration LTweenState:tick
     -- @integration lurek.tween.newState
-    it("tween isComplete true after full duration", function()
-        local state = lurek.tween.newState(0.1, "linear")
-
-        -- Advance beyond duration
-        local done = state:tick(0.2)
-        expect_true(done or state:isComplete(), "tween completed after 0.2s > 0.1s duration")
-    end)
 end)
 test_summary()

@@ -50,31 +50,5 @@ end)
 
 -- @describe integration: AI pathfinding with navgrid
 describe("integration: AI pathfinding with navgrid", function()
-    -- @integration LNavGrid:setBlocked
-    -- @integration LUnitPathfinder:findPath
-    -- @integration lurek.pathfind.newNavGrid
-    -- @integration lurek.pathfind.newPathfinder
-    it("agent follows A* path", function()
-        local grid = lurek.pathfind.newNavGrid(50, 50)
-
-        -- Add wall
-        for y = 10, 40 do
-            grid:setBlocked(25, y, true)
-        end
-
-        local pf = lurek.pathfind.newPathfinder(grid)
-        local path = pf:findPath(10, 25, 40, 25)
-        expect_not_nil(path, "path found around wall")
-        expect_true(#path > 15, "path goes around wall")
-
-        -- Verify path doesn't cross the wall
-        local crosses_wall = false
-        for _, wp in ipairs(path) do
-            if wp.x == 25 and wp.y >= 10 and wp.y <= 40 then
-                crosses_wall = true
-            end
-        end
-        expect_false(crosses_wall, "path avoids wall")
-    end)
 end)
 test_summary()

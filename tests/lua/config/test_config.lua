@@ -17,7 +17,9 @@ require("tests/lua/init")
 
 -- @describe lurek.conf function
 describe("lurek.conf function", function()
-    -- NOTE: lurek.conf is not yet registered in the Lua API; pending until implemented.
+    it("does not expose a public lurek.conf runtime function after boot", function()
+        expect_nil(lurek.conf)
+    end)
 end)
 
 --
@@ -117,6 +119,11 @@ end)
 
 -- @describe lurek.conf call-time safety
 describe("lurek.conf call-time safety", function()
-    -- NOTE: lurek.conf is not yet registered in the Lua API; pending until implemented.
+    it("keeps runtime config reads available without a lurek.conf writer", function()
+        expect_nil(lurek.conf)
+        expect_type("number", lurek.window.getWidth())
+        expect_type("number", lurek.window.getHeight())
+        expect_type("string", lurek.runtime.getVersion())
+    end)
 end)
 test_summary()

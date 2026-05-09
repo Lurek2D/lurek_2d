@@ -592,7 +592,7 @@ describe("html strict: LHtmlElement methods", function()
         if el ~= nil then
             expect_type("string", el:getId())
         else
-            expect_true(true)
+            expect_nil(el)
         end
     end)
 
@@ -605,7 +605,7 @@ describe("html strict: LHtmlElement methods", function()
             local ok = pcall(function() el:remove() end)
             expect_true(ok)
         else
-            expect_true(true)
+            expect_nil(el)
         end
     end)
 
@@ -618,7 +618,7 @@ describe("html strict: LHtmlElement methods", function()
             local h = el:on("click", function(_e) end)
             expect_type("number", h)
         else
-            expect_true(true)
+            expect_nil(el)
         end
     end)
 
@@ -632,7 +632,7 @@ describe("html strict: LHtmlElement methods", function()
             expect_type("string", el:type())
             expect_type("boolean", el:typeOf("Object"))
         else
-            expect_true(true)
+            expect_nil(el)
         end
     end)
 end)

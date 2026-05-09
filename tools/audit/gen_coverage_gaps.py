@@ -182,6 +182,22 @@ _INTERNAL_MODULES = {
     "raycaster::grid_motion",
 }
 
+# Rust functions that are intentionally internal even when their module has
+# other Lua-facing functionality.
+_INTERNAL_FUNCTIONS = {
+    ("data::compress", "compress_stream"),
+    ("data::compress", "decompress_stream"),
+    ("ecs::universe_ext", "deep_copy_table"),
+    ("serial::codec", "decode_text"),
+    ("serial::codec", "decode_bytes"),
+    ("window::event_loop", "current_display_index"),
+    ("window::event_loop", "desktop_dimensions_for_display"),
+    ("window::event_loop", "display_name_for_display"),
+    ("window::event_loop", "move_window_to_display"),
+    ("window::event_loop", "select_startup_monitor"),
+    ("window::event_loop", "center_window_on_monitor"),
+}
+
 # Minimum description length to be considered "documented"
 _MIN_DESC_LENGTH = 25
 
@@ -214,6 +230,8 @@ def _rust_public_fns(rust_data: dict) -> list[dict]:
             continue
         for item in mod_data.get("items", []):
             if item.get("kind") == "fn":
+                if (mod_path, item["name"]) in _INTERNAL_FUNCTIONS:
+                    continue
                 results.append({
                     "module": mod_path,
                     "name": item["name"],

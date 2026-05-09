@@ -1,68 +1,36 @@
 -- Lurek2D Parallax + Camera Integration Tests
--- Verifies that parallax layers respond correctly to camera positions and
--- that Camera2D position can drive parallax draw calls from Lua scripts.
---
--- Both lurek.parallax and lurek.camera namespaces must appear.
---
+-- Verifies cross-module behavior between lurek.camera and lurek.parallax.
+-- Headless-safe: all checks use deterministic camera coordinates and pcall guards.
 
 local function load_image()
     return lurek.render.newImage("assets/icon.png")
 end
 
--- @describe parallax and camera modules exist together
-describe("parallax and camera modules exist together", function()
-    it("lurek.parallax is a table", function()
-        expect_type("table", lurek.parallax)
-    end)
-    it("lurek.camera is a table", function()
-        expect_type("table", lurek.camera)
-    end)
-    -- @integration lurek.camera.new
-    it("lurek.camera.new creates a Camera2D object", function()
-        local cam = lurek.camera.new(800, 600)
-        expect_type("userdata", cam)
-    end)
-end)
+local function expect_cam_xy(cam, x, y, msg)
+    local cx, cy = cam:getPosition()
+    expect_near(x, cx, 1e-5, msg .. " x")
+    expect_near(y, cy, 1e-5, msg .. " y")
+end
 
--- @describe Camera2D position drives parallax draw
-describe("Camera2D position drives parallax draw", function()
-    -- @integration LCamera:getPosition
-    -- @integration LCamera:setPosition
-    -- @integration lurek.camera.new
-    it("Camera2D setPosition and getPosition round-trip", function()
-        local cam = lurek.camera.new(800, 600)
-        cam:setPosition(400, 300)
-        local cx, cy = cam:getPosition()
-        expect_near(400.0, cx)
-        expect_near(300.0, cy)
-    end)
-
+-- @describe camera coordinates drive parallax rendering behavior
+describe("camera + parallax integration", function()
     -- @integration LCamera:getPosition
     -- @integration LCamera:setPosition
     -- @integration LParallaxLayer:render
     -- @integration lurek.camera.new
     -- @integration lurek.parallax.newLayer
-    it("parallax layer draws without error with Camera2D position", function()
+    it("camera position feeds layer render coordinates", function()
         local cam = lurek.camera.new(800, 600)
-        cam:setPosition(640, 360)
-        local layer = lurek.parallax.newLayer({
-            texture = load_image(),
-            scroll_factor_x = 0.5,
-        })
+        local layer = lurek.parallax.newLayer({ texture = load_image(), scroll_factor_x = 0.5 })
+
+        cam:setPosition(640.0, 360.0)
+        expect_cam_xy(cam, 640.0, 360.0, "camera round trip")
+
         local cx, cy = cam:getPosition()
-        expect_no_error(function()
+        local ok = pcall(function()
             layer:render(cx, cy)
         end)
-    end)
-
-    -- @integration LParallaxLayer:render
-    -- @integration lurek.parallax.newLayer
-    it("two draw calls at different positions both succeed", function()
-        local layer = lurek.parallax.newLayer({ texture = load_image(), scroll_factor_x = 0.3 })
-        expect_no_error(function()
-            layer:render(0, 0)
-            layer:render(1280, 720)
-        end)
+        expect_true(ok, "layer render accepts camera coordinates")
     end)
 
     -- @integration LCamera:getPosition
@@ -72,240 +40,175 @@ describe("Camera2D position drives parallax draw", function()
     -- @integration lurek.camera.new
     -- @integration lurek.parallax.newLayer
     -- @integration lurek.parallax.newSet
-    it("set:draw with Camera2D position does not raise", function()
+    it("camera position drives multi-layer set render", function()
         local img = load_image()
-        local s = lurek.parallax.newSet("bg_auto")
-        s:addLayer(lurek.parallax.newLayer({ texture = img, scroll_factor_x = 0.2, z = 0 }))
-        s:addLayer(lurek.parallax.newLayer({ texture = img, scroll_factor_x = 0.5, z = 1 }))
+        local set = lurek.parallax.newSet("bg_auto")
+        set:addLayer(lurek.parallax.newLayer({ texture = img, scroll_factor_x = 0.2, z = 0 }))
+        set:addLayer(lurek.parallax.newLayer({ texture = img, scroll_factor_x = 0.6, z = 1 }))
+
         local cam = lurek.camera.new(800, 600)
-        cam:setPosition(500, 200)
+        cam:setPosition(500.0, 200.0)
+        expect_cam_xy(cam, 500.0, 200.0, "camera set position")
+
         local cx, cy = cam:getPosition()
-        expect_no_error(function()
-            s:render(cx, cy)
+        local ok = pcall(function()
+            set:render(cx, cy)
         end)
+        expect_true(ok, "set render accepts camera coordinates")
     end)
-end)
 
--- @describe drawAuto uses the engine camera
-describe("drawAuto uses the engine camera", function()
-    -- @integration LParallaxLayer:renderAuto
+    -- @integration LCamera:getPosition
+    -- @integration LCamera:setPosition
+    -- @integration LParallaxLayer:render
+    -- @integration lurek.camera.new
     -- @integration lurek.parallax.newLayer
-    it("layer:drawAuto does not raise", function()
-        local layer = lurek.parallax.newLayer({ texture = load_image() })
-        expect_no_error(function()
-            layer:renderAuto()
-        end)
-    end)
-    -- @integration LParallaxSet:addLayer
-    -- @integration LParallaxSet:renderAuto
-    -- @integration lurek.parallax.newLayer
-    -- @integration lurek.parallax.newSet
-    it("set:drawAuto does not raise with multiple layers", function()
-        local img = load_image()
-        local s = lurek.parallax.newSet("auto_test")
-        s:addLayer(lurek.parallax.newLayer({ texture = img, z = 0 }))
-        s:addLayer(lurek.parallax.newLayer({ texture = img, z = 1 }))
-        expect_no_error(function()
-            s:renderAuto()
-        end)
-    end)
-end)
+    it("multiple layer render calls stay stable while camera moves", function()
+        local cam = lurek.camera.new(800, 600)
+        local layer = lurek.parallax.newLayer({ texture = load_image(), scroll_factor_x = 0.3 })
 
--- @describe Multi-layer parallax scroll factor differentiation
-describe("Multi-layer parallax scroll factor differentiation", function()
-    -- @integration LParallaxLayer:render
-    -- @integration lurek.parallax.newLayer
-    it("layers with different scroll factors all draw without error", function()
-        local img = load_image()
-        local far   = lurek.parallax.newLayer({ texture = img, scroll_factor_x = 0.1 })
-        local mid   = lurek.parallax.newLayer({ texture = img, scroll_factor_x = 0.4 })
-        local close = lurek.parallax.newLayer({ texture = img, scroll_factor_x = 0.8 })
-        expect_no_error(function()
-            far:render(640, 360)
-            mid:render(640, 360)
-            close:render(640, 360)
-        end)
-    end)
-    -- @integration LParallaxLayer:render
-    -- @integration lurek.parallax.newLayer
-    it("sky layer with scroll_factor 0 draws at any camera position", function()
-        local sky = lurek.parallax.newLayer({
-            texture = load_image(),
-            scroll_factor_x = 0.0,
-            scroll_factor_y = 0.0,
-        })
-        expect_no_error(function()
-            sky:render(9999, 9999)
-        end)
-    end)
-    -- @integration LParallaxLayer:render
-    -- @integration lurek.parallax.newLayer
-    it("foreground layer with scroll_factor > 1 draws without error", function()
-        local fg = lurek.parallax.newLayer({ texture = load_image(), scroll_factor_x = 1.5 })
-        expect_no_error(function()
-            fg:render(300, 0)
-        end)
-    end)
-    -- @integration LParallaxSet:addLayer
-    -- @integration LParallaxSet:render
-    -- @integration lurek.parallax.newLayer
-    -- @integration lurek.parallax.newSet
-    it("layers in a set are sorted by z and drawn in order", function()
-        local img = load_image()
-        local s = lurek.parallax.newSet("sorted")
-        s:addLayer(lurek.parallax.newLayer({ texture = img, scroll_factor_x = 0.8, z = 2 }))
-        s:addLayer(lurek.parallax.newLayer({ texture = img, scroll_factor_x = 0.4, z = 0 }))
-        s:addLayer(lurek.parallax.newLayer({ texture = img, scroll_factor_x = 0.1, z = 1 }))
-        expect_no_error(function()
-            s:render(800, 0)
-        end)
-    end)
-end)
+        local ok_count = 0
+        for i = 1, 5 do
+            cam:setPosition(i * 120.0, i * 40.0)
+            local cx, cy = cam:getPosition()
+            local ok = pcall(function()
+                layer:render(cx, cy)
+            end)
+            if ok then
+                ok_count = ok_count + 1
+            end
+        end
 
--- @describe Autoscroll with camera movement
-describe("Autoscroll with camera movement", function()
+        expect_equal(5, ok_count, "all camera-driven renders succeed")
+    end)
+
+    -- @integration LCamera:getPosition
+    -- @integration LCamera:setPosition
     -- @integration LParallaxLayer:render
     -- @integration LParallaxLayer:update
+    -- @integration lurek.camera.new
     -- @integration lurek.parallax.newLayer
-    it("update + draw loop does not raise", function()
-        local layer = lurek.parallax.newLayer({
-            texture = load_image(),
-            autoscroll_x = 80.0,
-        })
+    it("autoscroll update works with changing camera follow position", function()
+        local cam = lurek.camera.new(800, 600)
+        local layer = lurek.parallax.newLayer({ texture = load_image(), autoscroll_x = 80.0 })
+
+        local dt = 1.0 / 60.0
+        local ok_count = 0
         for i = 1, 30 do
-            local dt = 1.0 / 60.0
             layer:update(dt)
-            expect_no_error(function()
-                layer:render(i * 5.0, 0)
+            cam:setPosition(i * 10.0, 0.0)
+            local cx, cy = cam:getPosition()
+            local ok = pcall(function()
+                layer:render(cx, cy)
             end)
+            if ok then
+                ok_count = ok_count + 1
+            end
         end
+
+        expect_equal(30, ok_count, "all autoscroll renders succeed with camera motion")
     end)
+
+    -- @integration LCamera:getPosition
+    -- @integration LCamera:setPosition
     -- @integration LParallaxSet:addLayer
     -- @integration LParallaxSet:render
     -- @integration LParallaxSet:update
+    -- @integration lurek.camera.new
     -- @integration lurek.parallax.newLayer
     -- @integration lurek.parallax.newSet
-    it("set:update + set:draw loop does not raise", function()
+    it("set update and render remain stable during camera sweep", function()
         local img = load_image()
-        local s = lurek.parallax.newSet("wind")
-        s:addLayer(lurek.parallax.newLayer({ texture = img, autoscroll_x = 20.0, z = 0 }))
-        s:addLayer(lurek.parallax.newLayer({ texture = img, autoscroll_x = 50.0, z = 1 }))
+        local set = lurek.parallax.newSet("wind")
+        set:addLayer(lurek.parallax.newLayer({ texture = img, autoscroll_x = 20.0, z = 0 }))
+        set:addLayer(lurek.parallax.newLayer({ texture = img, autoscroll_x = 50.0, z = 1 }))
+
+        local cam = lurek.camera.new(800, 600)
+        local dt = 1.0 / 60.0
+        local ok_count = 0
+
         for i = 1, 30 do
-            s:update(1.0 / 60.0)
-            expect_no_error(function()
-                s:render(i * 10.0, 0)
+            set:update(dt)
+            cam:setPosition(i * 8.0, 0.0)
+            local cx, cy = cam:getPosition()
+            local ok = pcall(function()
+                set:render(cx, cy)
             end)
+            if ok then
+                ok_count = ok_count + 1
+            end
         end
-    end)
-    -- @integration LParallaxLayer:render
-    -- @integration LParallaxLayer:update
-    -- @integration lurek.parallax.newLayer
-    it("autoscroll stays bounded after many frames", function()
-        local layer = lurek.parallax.newLayer({ texture = load_image(), autoscroll_x = 600.0 })
-        for _ = 1, 3600 do
-            layer:update(1.0 / 60.0)
-        end
-        expect_no_error(function()
-            layer:render(0, 0)
-        end)
-    end)
-end)
 
--- @describe Scene transition: hide -> resetAutoscroll -> show
-describe("Scene transition: hide -> resetAutoscroll -> show", function()
-    -- @integration LParallaxLayer:resetAutoscroll
-    -- @integration LParallaxSet:addLayer
-    -- @integration LParallaxSet:render
-    -- @integration LParallaxSet:setVisible
-    -- @integration LParallaxSet:update
-    -- @integration lurek.parallax.newLayer
-    -- @integration lurek.parallax.newSet
-    it("full transition sequence does not raise", function()
-        local img = load_image()
-        local s = lurek.parallax.newSet("level1_bg")
-        local far  = lurek.parallax.newLayer({ texture = img, scroll_factor_x = 0.2, autoscroll_x = 15.0, z = 0 })
-        local near = lurek.parallax.newLayer({ texture = img, scroll_factor_x = 0.6, autoscroll_x = 40.0, z = 1 })
-        s:addLayer(far)
-        s:addLayer(near)
-        for i = 1, 60 do
-            s:update(1.0 / 60.0)
-            s:render(i * 20.0, 0)
-        end
-        s:setVisible(false)
-        far:resetAutoscroll()
-        near:resetAutoscroll()
-        s:setVisible(true)
-        expect_no_error(function()
-            s:update(1.0 / 60.0)
-            s:render(0, 0)
-        end)
+        expect_equal(30, ok_count, "all set renders succeed during camera sweep")
     end)
-end)
 
--- @describe Layer crossfade via opacity
-describe("Layer crossfade via opacity", function()
+    -- @integration LCamera:getPosition
+    -- @integration LCamera:setPosition
     -- @integration LParallaxLayer:render
     -- @integration LParallaxLayer:setOpacity
+    -- @integration lurek.camera.new
     -- @integration lurek.parallax.newLayer
-    it("fading one layer out while another fades in does not raise", function()
+    it("opacity crossfade works while camera moves", function()
         local img = load_image()
-        local day   = lurek.parallax.newLayer({ texture = img, opacity = 1.0 })
+        local cam = lurek.camera.new(800, 600)
+        local day = lurek.parallax.newLayer({ texture = img, opacity = 1.0 })
         local night = lurek.parallax.newLayer({ texture = img, opacity = 0.0 })
+
+        local ok_count = 0
         for i = 0, 30 do
             local t = i / 30.0
             day:setOpacity(1.0 - t)
             night:setOpacity(t)
-            expect_no_error(function()
-                day:render(i * 15.0, 0)
-                night:render(i * 15.0, 0)
-            end)
-        end
-    end)
-end)
+            cam:setPosition(i * 6.0, 0.0)
+            local cx, cy = cam:getPosition()
 
--- @describe Physics-driven camera analogue
-describe("Physics-driven camera analogue", function()
-    -- @integration LParallaxLayer:render
-    -- @integration LParallaxLayer:update
-    -- @integration lurek.parallax.newLayer
-    it("simulated physics position drives parallax layer", function()
-        local layer = lurek.parallax.newLayer({
-            texture = load_image(),
-            scroll_factor_x = 0.4,
-        })
-        local body_x = 0.0
-        local velocity_x = 200.0
-        for _ = 1, 30 do
-            local dt = 1.0 / 60.0
-            body_x = body_x + velocity_x * dt
-            layer:update(dt)
-            expect_no_error(function()
-                layer:render(body_x, 0)
+            local ok = pcall(function()
+                day:render(cx, cy)
+                night:render(cx, cy)
             end)
+            if ok then
+                ok_count = ok_count + 1
+            end
         end
-        expect_true(body_x > 90.0, "simulated body should have moved forward")
+
+        expect_equal(31, ok_count, "all crossfade renders succeed")
     end)
 
     -- @integration LCamera:getPosition
     -- @integration LCamera:setPosition
-    -- @integration LParallaxLayer:render
-    -- @integration LParallaxLayer:update
+    -- @integration LParallaxSet:addLayer
+    -- @integration LParallaxSet:render
+    -- @integration LParallaxSet:setVisible
+    -- @integration LParallaxSet:update
     -- @integration lurek.camera.new
     -- @integration lurek.parallax.newLayer
-    it("Camera2D follow position drives parallax draw", function()
+    -- @integration lurek.parallax.newSet
+    it("visibility transition preserves camera-driven rendering", function()
+        local img = load_image()
+        local set = lurek.parallax.newSet("level1_bg")
+        set:addLayer(lurek.parallax.newLayer({ texture = img, scroll_factor_x = 0.2, autoscroll_x = 15.0, z = 0 }))
+        set:addLayer(lurek.parallax.newLayer({ texture = img, scroll_factor_x = 0.6, autoscroll_x = 40.0, z = 1 }))
+
         local cam = lurek.camera.new(800, 600)
-        local layer = lurek.parallax.newLayer({
-            texture = load_image(),
-            scroll_factor_x = 0.5,
-        })
-        for i = 1, 30 do
-            cam:setPosition(i * 10.0, 0)
+        local dt = 1.0 / 60.0
+
+        for i = 1, 20 do
+            set:update(dt)
+            cam:setPosition(i * 12.0, 0.0)
             local cx, cy = cam:getPosition()
-            layer:update(1.0 / 60.0)
-            expect_no_error(function()
-                layer:render(cx, cy)
-            end)
+            set:render(cx, cy)
         end
+
+        set:setVisible(false)
+        set:update(dt)
+        set:setVisible(true)
+
+        cam:setPosition(0.0, 0.0)
+        local cx, cy = cam:getPosition()
+        local ok = pcall(function()
+            set:render(cx, cy)
+        end)
+        expect_true(ok, "render succeeds after visibility transition")
     end)
 end)
+
 test_summary()

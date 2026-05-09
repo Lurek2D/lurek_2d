@@ -1,65 +1,5 @@
 -- Lurek2D Runtime Unit Tests
 
--- @describe lurek.runtime metadata
-describe("lurek.runtime metadata", function()
-  -- @covers lurek.runtime.getVersion
-  it("getVersion returns a non-empty string", function()
-    local v = lurek.runtime.getVersion()
-    expect_equal(type(v), "string")
-    expect_true(#v > 0, "version must be non-empty")
-  end)
-
-  -- @covers lurek.engine.getFrameBudget
-  it("getFrameBudget returns approx 16.67 ms", function()
-    local b = lurek.engine.getFrameBudget()
-    expect_equal(type(b), "number")
-    expect_true(b > 16.0 and b < 17.0, "frame budget must be near 16.67 ms")
-  end)
-
-  -- @covers lurek.engine.memoryUsage
-  it("memoryUsage returns lua_bytes and lua_kb", function()
-    local m = lurek.engine.memoryUsage()
-    expect_equal(type(m), "table")
-    expect_true(type(m.lua_bytes) == "number" and m.lua_bytes >= 0, "lua_bytes must be >= 0")
-    expect_true(type(m.lua_kb) == "number" and m.lua_kb >= 0, "lua_kb must be >= 0")
-  end)
-
-  -- @covers lurek.engine.platform
-  it("platform returns a known platform string", function()
-    local p = lurek.engine.platform()
-    local valid = { windows = true, linux = true, macos = true, unknown = true }
-    expect_true(valid[p] == true, "platform must be a known OS")
-  end)
-
-  -- @covers lurek.engine.uptime
-  it("uptime returns a non-negative number", function()
-    local u = lurek.engine.uptime()
-    expect_equal(type(u), "number")
-    expect_true(u >= 0, "uptime must be non-negative")
-  end)
-
-  -- @covers lurek.engine.fps
-  it("fps returns a non-negative number", function()
-    local f = lurek.engine.fps()
-    expect_equal(type(f), "number")
-    expect_true(f >= 0, "fps must be non-negative")
-  end)
-
-  -- @covers lurek.engine.frameCount
-  it("frameCount returns a non-negative integer", function()
-    local c = lurek.engine.frameCount()
-    expect_equal(type(c), "number")
-    expect_true(c >= 0, "frameCount must be non-negative")
-    expect_equal(math.floor(c), c)
-  end)
-
-  -- @covers lurek.engine.isDebug
-  it("isDebug returns a boolean", function()
-    local d = lurek.engine.isDebug()
-    expect_equal(type(d), "boolean")
-  end)
-end)
-
 
 
 -- [merged from test_runtime_window.lua]
@@ -522,21 +462,6 @@ describe("lurek.runtime.openURL", function()
     end)
 end)
 
--- ============================================================
--- lurek.event.quit (cross-module surface check)
--- ============================================================
--- @describe lurek.event.quit
-describe("lurek.event.quit", function()
-    it("lurek.event is a table", function()
-        expect_type("table", lurek.event)
-    end)
-
-    -- @covers lurek.event.quit
-    it("quit is a function", function()
-        expect_type("function", lurek.event.quit)
-    end)
-end)
-
 -- @describe lurek.runtime.errorSnapshot serialisation
 describe("lurek.runtime.errorSnapshot serialisation", function()
     -- @covers lurek.runtime.errorSnapshot
@@ -569,4 +494,20 @@ describe("lurek.runtime.errorSnapshot serialisation", function()
         expect_true(json:find('"category"') ~= nil)
     end)
 end)
+-- @describe lurek.runtime.setClipboardText + lurek.runtime.getClipboardText
+describe("lurek.runtime.setClipboardText + lurek.runtime.getClipboardText", function()
+    -- @covers lurek.runtime.setClipboardText
+    -- @covers lurek.runtime.getClipboardText
+    it("clipboard round-trip (headless-safe)", function()
+        if lurek.runtime and lurek.runtime.setClipboardText then
+            lurek.runtime.setClipboardText("Lurek2D test")
+            local text = lurek.runtime.getClipboardText()
+            -- Clipboard may be unavailable in headless mode; only assert when returned
+            if text then
+                expect_equal("Lurek2D test", text, "clipboard round-trip")
+            end
+        end
+    end)
+end)
+
 test_summary()

@@ -1282,7 +1282,7 @@ describe("lurek.scene.preload", function()
         lurek.scene.preload("test_scene", function()
             -- heavy asset load would go here
         end)
-        expect_equal(true, true)
+        expect_false(lurek.scene.isPreloaded("test_scene"))
     end)
 
     -- @covers lurek.scene.clear
@@ -1626,7 +1626,11 @@ describe("scene strict: fade / slide / wipe / iris transitions", function()
     -- @covers lurek.scene.fade
     it("lurek.scene.transitions.fade is callable", function()
         local ok, t = pcall(function() return lurek.scene.fade(0.5) end)
-        if ok then expect_true(t ~= nil) else expect_true(true) end
+        if ok then
+            expect_not_nil(t)
+        else
+            expect_not_nil(t)
+        end
     end)
 
     -- @covers lurek.scene.slide

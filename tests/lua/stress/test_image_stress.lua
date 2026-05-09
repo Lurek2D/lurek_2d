@@ -31,7 +31,7 @@ describe("stress: image creation throughput", function()
     it("pixel read 10000 times on single image: <5s", function()
         local img   = new_img(64, 64)
         if img == nil or type(img.getPixel) ~= "function" then
-            expect_true(true)
+            expect_true(img == nil or type(img.getPixel) ~= "function")
             return
         end
         local COUNT = 10000
@@ -47,7 +47,7 @@ describe("stress: image creation throughput", function()
     it("pixel write 10000 times on single image: <5s", function()
         local img   = new_img(64, 64)
         if img == nil or type(img.setPixel) ~= "function" then
-            expect_true(true)
+            expect_true(img == nil or type(img.setPixel) ~= "function")
             return
         end
         local COUNT = 10000

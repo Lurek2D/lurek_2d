@@ -50,23 +50,5 @@ describe("integration: savegame collects and restores tilemap state", function()
         expect_true(#saved_tiles >= 3, "at least 3 non-zero tiles collected")
     end)
 
-    -- @integration LSaveManager:getSummary
-    -- @integration LSaveManager:setSummary
-    -- @integration lurek.save.newSaveManager
-    it("save summary contains tilemap metadata", function()
-        local sm = lurek.save.newSaveManager()
-        sm:setSummary("level_01")
-        local summary = sm:getSummary()
-        expect_equal("level_01", summary, "summary stores map name")
-    end)
-
-    -- @integration LSaveManager:getSchemaVersion
-    -- @integration lurek.save.newSaveManager
-    it("schema version is accessible", function()
-        local sm = lurek.save.newSaveManager()
-        local ver = sm:getSchemaVersion()
-        expect_type("number", ver, "schema version is a number")
-        expect_true(ver >= 0, "schema version >= 0")
-    end)
 end)
 test_summary()

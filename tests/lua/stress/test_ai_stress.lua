@@ -20,7 +20,7 @@ describe("stress: AI FSM evaluation throughput", function()
             update_fn = nil
         end
         if type(update_fn) ~= "function" then
-            expect_true(true)
+            expect_true(type(update_fn) ~= "function")
             return
         end
 
@@ -54,7 +54,7 @@ describe("stress: AI FSM evaluation throughput", function()
             update_fn = nil
         end
         if type(update_fn) ~= "function" then
-            expect_true(true)
+            expect_true(type(update_fn) ~= "function")
             return
         end
 

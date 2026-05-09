@@ -36,26 +36,5 @@ describe("image + dataframe integration", function()
         expect_equal(3, df:ncols(), "r/g/b columns present")
     end)
 
-    -- @integration LImageData:getHeight
-    -- @integration LImageData:getWidth
-    -- @integration lurek.image.newImageData
-    it("ImageData width/height round-trips", function()
-        local img = lurek.image.newImageData(32, 16)
-        expect_equal(img:getWidth(), 32, "width is 32")
-        expect_equal(img:getHeight(), 16, "height is 16")
-    end)
-
-    -- @integration LDataFrame:addColumn
-    -- @integration LDataFrame:addRow
-    -- @integration LDataFrame:nrows
-    -- @integration lurek.dataframe.newDataFrame
-    it("DataFrame can hold numeric pixel data without overflow", function()
-        local df = lurek.dataframe.newDataFrame()
-        df:addColumn("value")
-        for i = 0, 255 do
-            df:addRow({ value = i })
-        end
-        expect_equal(256, df:nrows(), "256 rows without overflow")
-    end)
 end)
 test_summary()

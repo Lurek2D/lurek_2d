@@ -3,8 +3,8 @@
 
 -- @describe math for graphics transformations
 describe("math for graphics transformations", function()
-    -- @integration lurek.math.cos
-    -- @integration lurek.math.sin
+    -- @covers lurek.math.cos
+    -- @covers lurek.math.sin
     it("rotation matrix components", function()
         local angle = math.rad(90)
         local cos_a = lurek.math.cos(angle)
@@ -72,7 +72,7 @@ describe("math color operations", function()
         expect_near(0.5, b, 0.001, "interpolated blue")
     end)
 
-    -- @integration lurek.math.floor
+    -- @covers lurek.math.floor
     it("HSV to RGB conversion", function()
         -- Pure red: H=0, S=1, V=1
         local h, s, v = 0, 1, 1
@@ -122,7 +122,7 @@ describe("math geometry utilities", function()
         expect_true(inside, "point inside circle (dist=5, radius=6)")
     end)
 
-    -- @integration lurek.math.abs
+    -- @covers lurek.math.abs
     it("line segment intersection", function()
         -- Perpendicular lines that cross at (5, 5)
         local x1, y1, x2, y2 = 0, 5, 10, 5  -- horizontal

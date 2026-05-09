@@ -2,6 +2,45 @@
 
 All notable changes to Lurek2D are recorded here.
 
+## [1.0.9-fix.54] - 2026-05-08
+
+### docs(testing): enforce per-suite Lua test goals, markers, and docstring rules
+
+- Updated [testing-rust skill](.github/skills/testing-rust/SKILL.md) with an explicit test-family matrix covering:
+  - per-suite goal and scope (`unit`, `integration`, `security`, `stress`, `evidence`, config/library/demo),
+  - required marker type per suite,
+  - docstring/marker placement and symbol-accuracy rules,
+  - suite-specific anti-patterns (for example brittle integration path-shape assertions),
+  - per-file definition-of-done checklist (audit + targeted execution + failure reporting).
+- Tightened marker semantics in `testing-rust`:
+  - `@covers` is now explicitly assertion-backed coverage, not mere API usage,
+  - setup-only calls must not be marked unless constructor/setup contract is asserted,
+  - symbols called without direct verification in the same `it()` are forbidden in markers.
+- Added hard guidance to prevent mixing test-family semantics and to keep marker intent aligned with test location.
+- Fixed broken CAG link in [game-ai skill](.github/skills/game-ai/SKILL.md):
+  - `tests/lua/unit/test_ai_unit.lua` -> `tests/lua/unit/test_ai_core_unit.lua`.
+- Validation:
+  - `python tools/validate/cag_validate.py` -> PASS,
+  - `python tools/audit/cag_link_check.py --strict` -> PASS.
+
+## [1.0.9-fix.53] - 2026-05-07
+
+### fix(docs): clear coverage gaps report and align API docstring metadata
+
+- Fixed Rust docstring coverage gaps by expanding short descriptions in:
+  - `src/dataframe/rng.rs` (`Xorshift64`),
+  - `src/serial/mod.rs` (`ini` module),
+  - `src/serial/codec.rs` (`EncodeOptions`, `EncodedValue`).
+- Fixed missing Lua docstrings for action-mapping helpers in `src/lua_api/input_api.rs`:
+  - added descriptions and explicit boolean returns for `lurek.input.isDown()`,
+  - `lurek.input.wasPressed()`,
+  - `lurek.input.wasReleased()`.
+- Updated `tools/audit/gen_coverage_gaps.py` with `_INTERNAL_FUNCTIONS` filtering for intentionally internal Rust functions in mixed modules (without hiding entire modules).
+- Regenerated documentation artifacts and coverage reports; `logs/reports/coverage_gaps.md` now reports:
+  - Rust→Lua gaps: 0,
+  - Rust docstring issues: 0,
+  - Lua docstring issues: 0.
+
 ## [1.0.9-fix.52] - 2026-05-07
 
 ### feat(pipeline): add coroutine async steps, branch composition, and lifecycle hooks

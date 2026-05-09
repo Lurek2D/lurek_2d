@@ -7,7 +7,7 @@ describe("animation stress: mass timeline creation", function()
     it("creates 1000 timelines", function()
         local new_timeline = rawget(lurek.animation, "newTimeline")
         if type(new_timeline) ~= "function" then
-            expect_true(true)
+            expect_true(type(new_timeline) ~= "function")
             return
         end
         local timelines = {}
@@ -24,7 +24,7 @@ describe("animation stress: mass timeline creation", function()
     it("updates 1000 timelines per frame", function()
         local new_timeline = rawget(lurek.animation, "newTimeline")
         if type(new_timeline) ~= "function" then
-            expect_true(true)
+            expect_true(type(new_timeline) ~= "function")
             return
         end
         local timelines = {}
@@ -56,7 +56,7 @@ describe("animation stress: many keyframes", function()
     it("timeline with 100 keyframes", function()
         local new_timeline = rawget(lurek.animation, "newTimeline")
         if type(new_timeline) ~= "function" then
-            expect_true(true)
+            expect_true(type(new_timeline) ~= "function")
             return
         end
         local tl = new_timeline()

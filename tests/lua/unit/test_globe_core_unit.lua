@@ -1,4 +1,4 @@
-﻿-- tests/lua/unit/test_globe.lua
+-- tests/lua/unit/test_globe.lua
 -- Lurek2D Globe API Tests
 -- Covers province topology, orbit camera, fog-of-war, markers, labels,
 -- layers, arcs, path-finding, simulation update, and math helpers.
@@ -33,6 +33,7 @@ describe("lurek.globe module exists", function()
         expect_type("function", lurek.globe.latLonToUnit)
     end)
 
+    -- @covers lurek.globe.MAX_PROVINCES
     it("exposes MAX_PROVINCES constant", function()
         expect_type("number", lurek.globe.MAX_PROVINCES)
         expect_true(lurek.globe.MAX_PROVINCES >= 1024)

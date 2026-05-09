@@ -5,9 +5,9 @@
 
 -- @describe tween + animation integration
 describe("tween + animation integration", function()
-    -- @integration LTweenState:lerp
-    -- @integration LTweenState:tick
-    -- @integration lurek.tween.newState
+    -- @covers LTweenState:lerp
+    -- @covers LTweenState:tick
+    -- @covers lurek.tween.newState
     it("tween linear easing drives position", function()
         local state = lurek.tween.newState(1.0, "linear")
 
@@ -26,9 +26,9 @@ describe("tween + animation integration", function()
         expect_near(100, v100, 1.0, "tween at end is 100")
     end)
 
-    -- @integration LTweenState:lerp
-    -- @integration LTweenState:tick
-    -- @integration lurek.tween.newState
+    -- @covers LTweenState:lerp
+    -- @covers LTweenState:tick
+    -- @covers lurek.tween.newState
     it("tween ease-in-out midpoint shape", function()
         local state = lurek.tween.newState(2.0, "easeInOut")
         state:tick(1.0)  -- 50% through
@@ -38,18 +38,18 @@ describe("tween + animation integration", function()
         expect_near(0.5, val, 0.1, "easeInOut at midpoint     0.5")
     end)
 
-    -- @integration LTweenState:isComplete
-    -- @integration LTweenState:tick
-    -- @integration lurek.tween.newState
+    -- @covers LTweenState:isComplete
+    -- @covers LTweenState:tick
+    -- @covers lurek.tween.newState
     it("tween isComplete true after full duration", function()
         local state = lurek.tween.newState(1.0, "linear")
         state:tick(1.1)  -- advance past end
         expect_true(state:isComplete(), "isComplete after 1.1 s > 1.0 s duration")
     end)
 
-    -- @integration LTweenState:lerp
-    -- @integration LTweenState:tick
-    -- @integration lurek.tween.newState
+    -- @covers LTweenState:lerp
+    -- @covers LTweenState:tick
+    -- @covers lurek.tween.newState
     it("multiple tweens track independently", function()
         local t1 = lurek.tween.newState(1.0, "linear")
         local t2 = lurek.tween.newState(2.0, "linear")

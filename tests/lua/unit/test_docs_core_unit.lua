@@ -868,7 +868,7 @@ describe("docs strict: LDocEntry accessors", function()
         local cat = lurek.docs.getCatalog()
         local entries = cat:getEntries()
         if #entries == 0 then
-            expect_true(true)
+            expect_equal(0, #entries)
             return
         end
         local e = entries[1]

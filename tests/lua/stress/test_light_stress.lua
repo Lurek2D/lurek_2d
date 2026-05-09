@@ -48,7 +48,7 @@ describe("stress: light position update throughput", function()
                 elseif type(l.setPosition) == "function" then
                     l:setPosition(math.random() * 1920, math.random() * 1080)
                 else
-                    expect_true(true)
+                    expect_true(type(set_position) ~= "function" and type(l.setPosition) ~= "function")
                     return
                 end
             end

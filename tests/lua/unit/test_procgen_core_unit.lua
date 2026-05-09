@@ -522,4 +522,134 @@ describe("lurek.procgen regression coverage", function()
         expect_near(s3_a, s3_b, 0.000001)
     end)
 end)
+
+-- @describe unit: migrated from integration/test_graph_pathfind.lua
+describe("unit: migrated from integration/test_graph_pathfind.lua", function()
+        -- @covers lurek.procgen.worldGraph
+        it("worldGraph edge costs match procgen expectations", function()
+            local wg = lurek.procgen.worldGraph(200, 150, 6, 5)
+            for _, e in ipairs(wg.edges) do
+                expect_true(e.cost > 0, "edge cost should be positive")
+            end
+        end)
+
+end)
+
+-- @describe unit: migrated from integration/test_pathfind_graph.lua
+describe("unit: migrated from integration/test_pathfind_graph.lua", function()
+        -- @covers lurek.procgen.worldGraph
+        it("worldGraph region coordinates stay within world bounds", function()
+            local wg = lurek.procgen.worldGraph(200, 100, 10, 1)
+            for _, r in ipairs(wg.regions) do
+                expect_true(r.x >= 0 and r.x <= 200, "region x out of bounds")
+                expect_true(r.y >= 0 and r.y <= 100, "region y out of bounds")
+            end
+        end)
+
+        -- @covers lurek.procgen.worldGraph
+        it("worldGraph edge endpoints are valid region IDs", function()
+            local wg = lurek.procgen.worldGraph(200, 100, 8, 2)
+            local id_set = {}
+            for _, r in ipairs(wg.regions) do id_set[r.id] = true end
+            for _, e in ipairs(wg.edges) do
+                expect_true(id_set[e.from] == true, "from region not found: " .. e.from)
+                expect_true(id_set[e.to]   == true, "to region not found: " .. e.to)
+            end
+        end)
+
+        -- @covers lurek.procgen.bspDungeon
+        it("BSP dungeon width/height matches requested size", function()
+            local d = lurek.procgen.bspDungeon({ width = 30, height = 20, seed = 5 })
+            -- All rooms must be inside the dungeon bounds
+            for _, r in ipairs(d.rooms) do
+                expect_true(r.x + r.w <= 30, "room overflows width")
+                expect_true(r.y + r.h <= 20, "room overflows height")
+            end
+        end)
+
+end)
+
+-- @describe unit: migrated from integration/test_procgen_tilemap.lua
+describe("unit: migrated from integration/test_procgen_tilemap.lua", function()
+        -- @covers lurek.procgen.perlinNoise
+        it("different seeds produce different tilemaps", function()
+            local map1_tiles = {}
+            local map2_tiles = {}
+    
+            for y = 0, 3 do
+                for x = 0, 3 do
+                    local n1 = lurek.procgen.perlinNoise(x * 0.1, y * 0.1, 1, 1)
+                    local n2 = lurek.procgen.perlinNoise(x * 0.1 + 3.7, y * 0.1 + 5.3, 1, 1)
+                    table.insert(map1_tiles, n1)
+                    table.insert(map2_tiles, n2)
+                end
+            end
+    
+            -- At least one tile should differ
+            local any_different = false
+            for i = 1, #map1_tiles do
+                if math.abs(map1_tiles[i] - map2_tiles[i]) > 0.001 then
+                    any_different = true
+                    break
+                end
+            end
+            expect_true(any_different, "different offsets produce different noise")
+        end)
+
+        -- @covers lurek.procgen.bspDungeon
+        it("BSP rooms can map to walkable tile IDs", function()
+            local d = lurek.procgen.bspDungeon({ width = 40, height = 30, seed = 42 })
+            -- Mark room cells as tile 1 (walkable), rest as tile 0 (wall)
+            local grid = {}
+            for i = 1, 40 * 30 do grid[i] = 0 end
+            for _, r in ipairs(d.rooms) do
+                for dy = 0, r.h - 1 do
+                    for dx = 0, r.w - 1 do
+                        local idx = (r.y + dy) * 40 + (r.x + dx) + 1
+                        if idx >= 1 and idx <= #grid then
+                            grid[idx] = 1
+                        end
+                    end
+                end
+            end
+            expect_equal(40 * 30, #grid)
+            -- At least one walkable cell
+            local has_walkable = false
+            for _, v in ipairs(grid) do
+                if v == 1 then has_walkable = true break end
+            end
+            expect_true(has_walkable, "expected at least one walkable cell from rooms")
+        end)
+
+        -- @covers lurek.procgen.roomsDungeon
+        it("roomsDungeon grid matches dimensions", function()
+            local d = lurek.procgen.roomsDungeon({ width = 24, height = 16, max_rooms = 6, seed = 11 })
+            expect_equal(24 * 16, #d.grid)
+        end)
+
+        -- @covers lurek.procgen.wfcGenerate
+        it("WFC grid stays within tile ID set", function()
+            local tiles = { { id = 0, weight = 1 }, { id = 1, weight = 1 }, { id = 2, weight = 0.5 } }
+            local adj = { [0] = { 0, 1 }, [1] = { 0, 1, 2 }, [2] = { 1, 2 } }
+            local g = lurek.procgen.wfcGenerate({ width = 10, height = 10, tiles = tiles, adjacencies = adj, seed = 3 })
+            for _, c in ipairs(g.cells) do
+                expect_true(c >= 0 and c <= 2, "unexpected tile id: " .. c)
+            end
+        end)
+
+        -- @covers lurek.procgen.heightmap
+        it("heightmap drives biome layer assignment", function()
+            local hm = lurek.procgen.heightmap({ width = 12, height = 12, seed = 77 })
+            local biomes = { "deep_water", "water", "sand", "grass", "forest", "mountain", "snow" }
+            local layer = {}
+            for _, v in ipairs(hm.cells) do
+                local idx = math.max(1, math.min(#biomes, math.floor(v * #biomes) + 1))
+                table.insert(layer, biomes[idx])
+            end
+            expect_equal(12 * 12, #layer)
+            expect_true(type(layer[1]) == "string", "biome should be a string")
+        end)
+
+end)
+
 test_summary()

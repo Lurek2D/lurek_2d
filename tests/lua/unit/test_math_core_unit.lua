@@ -1,7 +1,8 @@
-﻿-- Lurek2D Math API Tests
+-- Lurek2D Math API Tests
 
 -- @describe lurek.math constants
 describe("lurek.math constants", function()
+    -- @covers lurek.math.pi
     it("has pi", function()
         expect_not_nil(lurek.math.pi, "pi exists")
         expect_near(3.14159265358979, lurek.math.pi, 0.0001, "pi value")
@@ -200,6 +201,7 @@ end)
 
 -- @describe math constants and utility
 describe("math constants and utility", function()
+    -- @covers lurek.math.tau
     it("has tau = 2*pi", function()
         expect_near(lurek.math.tau, lurek.math.pi * 2, 0.0001)
     end)
@@ -2559,4 +2561,338 @@ describe("math strict uncovered symbols", function()
         expect_type("boolean", tree:typeOf("LAabbTree"))
     end)
 end)
+
+-- @describe unit: migrated from integration/test_math_pathfind.lua
+describe("unit: migrated from integration/test_math_pathfind.lua", function()
+        -- @covers lurek.math.vec3
+        it("creates a Vec3 with correct components", function()
+            local v = lurek.math.vec3(1, 2, 3)
+            expect_near(1, v.x, 1e-5)
+            expect_near(2, v.y, 1e-5)
+            expect_near(3, v.z, 1e-5)
+        end)
+
+        -- @covers lurek.math.Vec3
+        it("Vec3 alias works identically", function()
+            local v = lurek.math.Vec3(4, 5, 6)
+            expect_near(4, v.x, 1e-5)
+            expect_near(5, v.y, 1e-5)
+            expect_near(6, v.z, 1e-5)
+        end)
+
+        -- @covers LVec3:length
+        -- @covers lurek.math.vec3
+        it("length of (3,4,0) is 5", function()
+            local v = lurek.math.vec3(3, 4, 0)
+            expect_near(5.0, v:length(), 1e-4)
+        end)
+
+        -- @covers LVec3:length
+        -- @covers lurek.math.vec3
+        it("length of unit vector is 1", function()
+            local v = lurek.math.vec3(1, 0, 0)
+            expect_near(1.0, v:length(), 1e-5)
+        end)
+
+        -- @covers LVec3:lengthSquared
+        -- @covers lurek.math.vec3
+        it("lengthSquared avoids sqrt", function()
+            local v = lurek.math.vec3(2, 2, 1)
+            expect_near(9.0, v:lengthSquared(), 1e-5) -- 4+4+1=9
+        end)
+
+        -- @covers LVec3:length
+        -- @covers LVec3:normalize
+        -- @covers lurek.math.vec3
+        it("normalize produces unit vector", function()
+            local v = lurek.math.vec3(3, 0, 0):normalize()
+            expect_near(1.0, v:length(), 1e-5)
+            expect_near(1.0, v.x, 1e-5)
+        end)
+
+        -- @covers LVec3:dot
+        -- @covers lurek.math.vec3
+        it("dot product of perpendicular vectors is 0", function()
+            local a = lurek.math.vec3(1, 0, 0)
+            local b = lurek.math.vec3(0, 1, 0)
+            expect_near(0.0, a:dot(b), 1e-5)
+        end)
+
+        -- @covers LVec3:dot
+        -- @covers lurek.math.vec3
+        it("dot product of parallel vectors equals product of lengths", function()
+            local a = lurek.math.vec3(2, 0, 0)
+            local b = lurek.math.vec3(3, 0, 0)
+            expect_near(6.0, a:dot(b), 1e-5)
+        end)
+
+        -- @covers LVec3:cross
+        -- @covers lurek.math.vec3
+        it("cross product of x and y axes is z axis", function()
+            local x = lurek.math.vec3(1, 0, 0)
+            local y = lurek.math.vec3(0, 1, 0)
+            local z = x:cross(y)
+            expect_near(0.0, z.x, 1e-5)
+            expect_near(0.0, z.y, 1e-5)
+            expect_near(1.0, z.z, 1e-5)
+        end)
+
+        -- @covers LVec3:lerp
+        -- @covers lurek.math.vec3
+        it("lerp at t=0 returns from", function()
+            local a = lurek.math.vec3(0, 0, 0)
+            local b = lurek.math.vec3(10, 20, 30)
+            local v = a:lerp(b, 0)
+            expect_near(0.0, v.x, 1e-5)
+        end)
+
+        -- @covers LVec3:lerp
+        -- @covers lurek.math.vec3
+        it("lerp at t=1 returns to", function()
+            local a = lurek.math.vec3(0, 0, 0)
+            local b = lurek.math.vec3(10, 20, 30)
+            local v = a:lerp(b, 1)
+            expect_near(10.0, v.x, 1e-5)
+            expect_near(20.0, v.y, 1e-5)
+        end)
+
+        -- @covers LVec3:lerp
+        -- @covers lurek.math.vec3
+        it("lerp at t=0.5 is midpoint", function()
+            local a = lurek.math.vec3(0, 0, 0)
+            local b = lurek.math.vec3(10, 0, 0)
+            local v = a:lerp(b, 0.5)
+            expect_near(5.0, v.x, 1e-5)
+        end)
+
+        -- @covers LVec3:distance
+        -- @covers lurek.math.vec3
+        it("distance from (0,0,0) to (1,0,0) is 1", function()
+            local a = lurek.math.vec3(0, 0, 0)
+            local b = lurek.math.vec3(1, 0, 0)
+            expect_near(1.0, a:distance(b), 1e-5)
+        end)
+
+        -- @covers LVec3:add
+        -- @covers lurek.math.vec3
+        it("add combines components", function()
+            local a = lurek.math.vec3(1, 2, 3)
+            local b = lurek.math.vec3(4, 5, 6)
+            local c = a:add(b)
+            expect_near(5.0, c.x, 1e-5)
+            expect_near(7.0, c.y, 1e-5)
+            expect_near(9.0, c.z, 1e-5)
+        end)
+
+        -- @covers LVec3:sub
+        -- @covers lurek.math.vec3
+        it("sub subtracts components", function()
+            local a = lurek.math.vec3(5, 5, 5)
+            local b = lurek.math.vec3(2, 3, 1)
+            local c = a:sub(b)
+            expect_near(3.0, c.x, 1e-5)
+        end)
+
+        -- @covers LVec3:scale
+        -- @covers lurek.math.vec3
+        it("scale multiplies components", function()
+            local v = lurek.math.vec3(2, 3, 4):scale(2)
+            expect_near(4.0, v.x, 1e-5)
+            expect_near(6.0, v.y, 1e-5)
+            expect_near(8.0, v.z, 1e-5)
+        end)
+
+        -- @covers lurek.math.catmullRom
+        it("creates a spline without error", function()
+            local s = lurek.math.catmullRom(pts)
+            expect_type("userdata", s)
+        end)
+
+        -- @covers LCatmullRom:len
+        -- @covers lurek.math.catmullRom
+        it("len returns control point count", function()
+            local s = lurek.math.catmullRom(pts)
+            expect_equal(4, s:len())
+        end)
+
+        -- @covers LCatmullRom:sample
+        -- @covers lurek.math.catmullRom
+        it("sample returns two numbers", function()
+            local s = lurek.math.catmullRom(pts)
+            local x, y = s:sample(0.5)
+            expect_type("number", x)
+            expect_type("number", y)
+        end)
+
+        -- @covers LCatmullRom:sample
+        -- @covers lurek.math.catmullRom
+        it("sample at t=0 is near first control point", function()
+            local s = lurek.math.catmullRom(pts)
+            local x, y = s:sample(0.0)
+            -- Catmull-Rom boundary behaviour: at t=0 should be near pts[1] or pts[2]
+            expect_type("number", x)
+        end)
+
+        -- @covers LCatmullRom:sampleSegment
+        -- @covers lurek.math.catmullRom
+        it("sampleSegment returns two numbers", function()
+            local s = lurek.math.catmullRom(pts)
+            local x, y = s:sampleSegment(1, 0.5)
+            expect_type("number", x)
+            expect_type("number", y)
+        end)
+
+        -- @covers lurek.math.hermite
+        it("creates a hermite spline without error", function()
+            local s = lurek.math.hermite(0, 0, 10, 0, 1, 1, 1, -1)
+            expect_type("userdata", s)
+        end)
+
+        -- @covers LHermite:sample
+        -- @covers lurek.math.hermite
+        it("sample returns two numbers", function()
+            local s = lurek.math.hermite(0, 0, 10, 0, 1, 1, 1, -1)
+            local x, y = s:sample(0.5)
+            expect_type("number", x)
+            expect_type("number", y)
+        end)
+
+        -- @covers LHermite:sample
+        -- @covers lurek.math.hermite
+        it("sample at t=0 is start point", function()
+            local s = lurek.math.hermite(2, 3, 8, 5, 0, 0, 0, 0)
+            local x, y = s:sample(0.0)
+            expect_near(2.0, x, 1e-4)
+            expect_near(3.0, y, 1e-4)
+        end)
+
+        -- @covers LHermite:sample
+        -- @covers lurek.math.hermite
+        it("sample at t=1 is end point", function()
+            local s = lurek.math.hermite(2, 3, 8, 5, 0, 0, 0, 0)
+            local x, y = s:sample(1.0)
+            expect_near(8.0, x, 1e-4)
+            expect_near(5.0, y, 1e-4)
+        end)
+
+        -- @covers lurek.math.lerp
+        it("lerp at t=0 returns a", function()
+            expect_near(3.0, lurek.math.lerp(3, 7, 0), 1e-5)
+        end)
+
+        -- @covers lurek.math.lerp
+        it("lerp at t=1 returns b", function()
+            expect_near(7.0, lurek.math.lerp(3, 7, 1), 1e-5)
+        end)
+
+        -- @covers lurek.math.lerp
+        it("lerp at t=0.5 is midpoint", function()
+            expect_near(5.0, lurek.math.lerp(3, 7, 0.5), 1e-5)
+        end)
+
+        -- @covers lurek.math.lerp
+        it("lerp extrapolates beyond [a,b]", function()
+            expect_near(9.0, lurek.math.lerp(3, 7, 1.5), 1e-5)
+        end)
+
+        -- @covers lurek.math.remap
+        it("remap center of [0,1] to [10,20]", function()
+            expect_near(15.0, lurek.math.remap(0.5, 0, 1, 10, 20), 1e-4)
+        end)
+
+        -- @covers lurek.math.remap
+        it("remap minimum stays at out_min", function()
+            expect_near(10.0, lurek.math.remap(0, 0, 1, 10, 20), 1e-4)
+        end)
+
+        -- @covers lurek.math.remap
+        it("remap maximum stays at out_max", function()
+            expect_near(20.0, lurek.math.remap(1, 0, 1, 10, 20), 1e-4)
+        end)
+
+        -- @covers lurek.math.remap
+        it("remap inverts when out_min > out_max", function()
+            expect_near(15.0, lurek.math.remap(0.5, 0, 1, 20, 10), 1e-4)
+        end)
+
+        -- @covers lurek.math.catmullRom
+        it("spline segments can define a patrol route for a unit path", function()
+            local patrol = lurek.math.catmullRom {
+                { x = 1, y = 1 }, { x = 50, y = 10 }, { x = 80, y = 50 }, { x = 50, y = 90 }, { x = 1, y = 80 }
+            }
+            -- Sample 10 positions along the spline
+            local positions = {}
+            for i = 0, 9 do
+                local t = i / 9
+                local px, py = patrol:sample(t)
+                table.insert(positions, { x = px, y = py })
+            end
+            expect_equal(10, #positions)
+            for _, pos in ipairs(positions) do
+                expect_type("number", pos.x)
+                expect_type("number", pos.y)
+            end
+        end)
+
+end)
+
+-- @describe unit: migrated from integration/test_math_physics.lua
+describe("unit: migrated from integration/test_math_physics.lua", function()
+        -- @covers lurek.math.max
+        -- @covers lurek.math.min
+        it("AABB overlap check using math", function()
+            -- Two rectangles that overlap
+            local ax, ay, aw, ah = 0, 0, 10, 10
+            local bx, by, bw, bh = 5, 5, 10, 10
+    
+            -- Manual AABB overlap check using math
+            local overlap_x = lurek.math.min(ax + aw, bx + bw) - lurek.math.max(ax, bx)
+            local overlap_y = lurek.math.min(ay + ah, by + bh) - lurek.math.max(ay, by)
+    
+            expect_true(overlap_x > 0, "x overlap exists")
+            expect_true(overlap_y > 0, "y overlap exists")
+            expect_near(5, overlap_x, 0.001, "x overlap = 5")
+            expect_near(5, overlap_y, 0.001, "y overlap = 5")
+        end)
+
+        -- @covers lurek.math.atan2
+        -- @covers lurek.math.pi
+        it("angle between two points", function()
+            local x1, y1 = 0, 0
+            local x2, y2 = 1, 1
+    
+            local angle = lurek.math.atan2(y2 - y1, x2 - x1)
+            expect_near(lurek.math.pi / 4, angle, 0.001, "45 degree angle")
+        end)
+
+        -- @covers lurek.math.cos
+        -- @covers lurek.math.sin
+        it("rotate a velocity vector", function()
+            local speed = 10
+            local angle = math.rad(90)
+    
+            local vx = speed * lurek.math.cos(angle)
+            local vy = speed * lurek.math.sin(angle)
+    
+            expect_near(0, vx, 0.001, "vx at 90 degrees")
+            expect_near(10, vy, 0.001, "vy at 90 degrees")
+        end)
+
+end)
+
+-- @describe unit: migrated from integration/test_timer_math.lua
+describe("unit: migrated from integration/test_timer_math.lua", function()
+        -- @covers lurek.math.pi
+        -- @covers lurek.math.sin
+        it("oscillation with sin and time", function()
+            -- Simulate oscillating value: sin(time * frequency)
+            local frequency = 2.0
+            local time = lurek.math.pi / (2 * frequency)
+    
+            local value = lurek.math.sin(time * frequency)
+            expect_near(1.0, value, 0.001, "sin peak at quarter period")
+        end)
+
+end)
+
 test_summary()

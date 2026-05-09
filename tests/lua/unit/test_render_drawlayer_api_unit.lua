@@ -4,14 +4,14 @@
 -- -------------------------------------------------------------------
 -- @describe DrawLayer creation
 describe("DrawLayer creation", function()
-    -- @integration lurek.render.newDrawLayer
+    -- @covers lurek.render.newDrawLayer
     it("creates a DrawLayer via lurek.render.newDrawLayer()", function()
         local layer = lurek.render.newDrawLayer()
         expect_type("userdata", layer)
     end)
 
-    -- @integration LDrawLayer:getCount
-    -- @integration lurek.render.newDrawLayer
+    -- @covers LDrawLayer:getCount
+    -- @covers lurek.render.newDrawLayer
     it("starts with count 0", function()
         local layer = lurek.render.newDrawLayer()
         expect_equal(0, layer:getCount())
@@ -21,9 +21,9 @@ end)
 -- -------------------------------------------------------------------
 -- @describe DrawLayer queue
 describe("DrawLayer queue", function()
-    -- @integration LDrawLayer:getCount
-    -- @integration LDrawLayer:queue
-    -- @integration lurek.render.newDrawLayer
+    -- @covers LDrawLayer:getCount
+    -- @covers LDrawLayer:queue
+    -- @covers lurek.render.newDrawLayer
     it("queuing increases count", function()
         local layer = lurek.render.newDrawLayer()
         layer:queue(1.0, function() end)
@@ -32,18 +32,18 @@ describe("DrawLayer queue", function()
         expect_equal(2, layer:getCount())
     end)
 
-    -- @integration LDrawLayer:getCount
-    -- @integration LDrawLayer:queue
-    -- @integration lurek.render.newDrawLayer
+    -- @covers LDrawLayer:getCount
+    -- @covers LDrawLayer:queue
+    -- @covers lurek.render.newDrawLayer
     it("queue accepts negative z-order", function()
         local layer = lurek.render.newDrawLayer()
         layer:queue(-5.0, function() end)
         expect_equal(1, layer:getCount())
     end)
 
-    -- @integration LDrawLayer:getCount
-    -- @integration LDrawLayer:queue
-    -- @integration lurek.render.newDrawLayer
+    -- @covers LDrawLayer:getCount
+    -- @covers LDrawLayer:queue
+    -- @covers lurek.render.newDrawLayer
     it("queue accepts zero z-order", function()
         local layer = lurek.render.newDrawLayer()
         layer:queue(0, function() end)
@@ -54,9 +54,9 @@ end)
 -- -------------------------------------------------------------------
 -- @describe DrawLayer flush
 describe("DrawLayer flush", function()
-    -- @integration LDrawLayer:flush
-    -- @integration LDrawLayer:queue
-    -- @integration lurek.render.newDrawLayer
+    -- @covers LDrawLayer:flush
+    -- @covers LDrawLayer:queue
+    -- @covers lurek.render.newDrawLayer
     it("flush calls callbacks in z-order (ascending)", function()
         local layer = lurek.render.newDrawLayer()
         local order = {}
@@ -70,10 +70,10 @@ describe("DrawLayer flush", function()
         expect_equal("C", order[3])
     end)
 
-    -- @integration LDrawLayer:flush
-    -- @integration LDrawLayer:getCount
-    -- @integration LDrawLayer:queue
-    -- @integration lurek.render.newDrawLayer
+    -- @covers LDrawLayer:flush
+    -- @covers LDrawLayer:getCount
+    -- @covers LDrawLayer:queue
+    -- @covers lurek.render.newDrawLayer
     it("flush empties the queue", function()
         local layer = lurek.render.newDrawLayer()
         layer:queue(1.0, function() end)
@@ -83,18 +83,18 @@ describe("DrawLayer flush", function()
         expect_equal(0, layer:getCount())
     end)
 
-    -- @integration LDrawLayer:flush
-    -- @integration LDrawLayer:getCount
-    -- @integration lurek.render.newDrawLayer
+    -- @covers LDrawLayer:flush
+    -- @covers LDrawLayer:getCount
+    -- @covers lurek.render.newDrawLayer
     it("flush on empty layer is a no-op", function()
         local layer = lurek.render.newDrawLayer()
         layer:flush() -- should not error
         expect_equal(0, layer:getCount())
     end)
 
-    -- @integration LDrawLayer:flush
-    -- @integration LDrawLayer:queue
-    -- @integration lurek.render.newDrawLayer
+    -- @covers LDrawLayer:flush
+    -- @covers LDrawLayer:queue
+    -- @covers lurek.render.newDrawLayer
     it("flush handles negative z-orders correctly", function()
         local layer = lurek.render.newDrawLayer()
         local order = {}
@@ -107,9 +107,9 @@ describe("DrawLayer flush", function()
         expect_equal("pos", order[3])
     end)
 
-    -- @integration LDrawLayer:flush
-    -- @integration LDrawLayer:queue
-    -- @integration lurek.render.newDrawLayer
+    -- @covers LDrawLayer:flush
+    -- @covers LDrawLayer:queue
+    -- @covers lurek.render.newDrawLayer
     it("flush handles equal z-orders (stable-ish)", function()
         local layer = lurek.render.newDrawLayer()
         local count = 0
@@ -124,10 +124,10 @@ end)
 -- -------------------------------------------------------------------
 -- @describe DrawLayer clear
 describe("DrawLayer clear", function()
-    -- @integration LDrawLayer:clear
-    -- @integration LDrawLayer:getCount
-    -- @integration LDrawLayer:queue
-    -- @integration lurek.render.newDrawLayer
+    -- @covers LDrawLayer:clear
+    -- @covers LDrawLayer:getCount
+    -- @covers LDrawLayer:queue
+    -- @covers lurek.render.newDrawLayer
     it("clear removes all queued entries", function()
         local layer = lurek.render.newDrawLayer()
         layer:queue(1.0, function() end)
@@ -138,19 +138,19 @@ describe("DrawLayer clear", function()
         expect_equal(0, layer:getCount())
     end)
 
-    -- @integration LDrawLayer:clear
-    -- @integration LDrawLayer:getCount
-    -- @integration lurek.render.newDrawLayer
+    -- @covers LDrawLayer:clear
+    -- @covers LDrawLayer:getCount
+    -- @covers lurek.render.newDrawLayer
     it("clear on empty layer is safe", function()
         local layer = lurek.render.newDrawLayer()
         layer:clear()
         expect_equal(0, layer:getCount())
     end)
 
-    -- @integration LDrawLayer:clear
-    -- @integration LDrawLayer:flush
-    -- @integration LDrawLayer:queue
-    -- @integration lurek.render.newDrawLayer
+    -- @covers LDrawLayer:clear
+    -- @covers LDrawLayer:flush
+    -- @covers LDrawLayer:queue
+    -- @covers lurek.render.newDrawLayer
     it("cleared callbacks are not called on flush", function()
         local layer = lurek.render.newDrawLayer()
         local called = false
@@ -164,10 +164,10 @@ end)
 -- -------------------------------------------------------------------
 -- @describe DrawLayer reuse
 describe("DrawLayer reuse", function()
-    -- @integration LDrawLayer:flush
-    -- @integration LDrawLayer:getCount
-    -- @integration LDrawLayer:queue
-    -- @integration lurek.render.newDrawLayer
+    -- @covers LDrawLayer:flush
+    -- @covers LDrawLayer:getCount
+    -- @covers LDrawLayer:queue
+    -- @covers lurek.render.newDrawLayer
     it("layer can be reused after flush", function()
         local layer = lurek.render.newDrawLayer()
         layer:queue(1.0, function() end)
@@ -177,10 +177,10 @@ describe("DrawLayer reuse", function()
         expect_equal(1, layer:getCount())
     end)
 
-    -- @integration LDrawLayer:clear
-    -- @integration LDrawLayer:getCount
-    -- @integration LDrawLayer:queue
-    -- @integration lurek.render.newDrawLayer
+    -- @covers LDrawLayer:clear
+    -- @covers LDrawLayer:getCount
+    -- @covers LDrawLayer:queue
+    -- @covers lurek.render.newDrawLayer
     it("layer can be reused after clear", function()
         local layer = lurek.render.newDrawLayer()
         layer:queue(1.0, function() end)
@@ -189,9 +189,9 @@ describe("DrawLayer reuse", function()
         expect_equal(1, layer:getCount())
     end)
 
-    -- @integration LDrawLayer:flush
-    -- @integration LDrawLayer:queue
-    -- @integration lurek.render.newDrawLayer
+    -- @covers LDrawLayer:flush
+    -- @covers LDrawLayer:queue
+    -- @covers lurek.render.newDrawLayer
     it("multiple flush cycles work correctly", function()
         local layer = lurek.render.newDrawLayer()
         local results = {}
@@ -213,29 +213,29 @@ end)
 -- -------------------------------------------------------------------
 -- @describe DrawLayer type system
 describe("DrawLayer type system", function()
-    -- @integration LDrawLayer:type
-    -- @integration lurek.render.newDrawLayer
+    -- @covers LDrawLayer:type
+    -- @covers lurek.render.newDrawLayer
     it("has type() method returning LDrawLayer", function()
         local layer = lurek.render.newDrawLayer()
         expect_equal("LDrawLayer", layer:type())
     end)
 
-    -- @integration LDrawLayer:typeOf
-    -- @integration lurek.render.newDrawLayer
+    -- @covers LDrawLayer:typeOf
+    -- @covers lurek.render.newDrawLayer
     it("typeOf Object returns true", function()
         local layer = lurek.render.newDrawLayer()
         expect_true(layer:typeOf("Object"))
     end)
 
-    -- @integration LDrawLayer:typeOf
-    -- @integration lurek.render.newDrawLayer
+    -- @covers LDrawLayer:typeOf
+    -- @covers lurek.render.newDrawLayer
     it("typeOf DrawLayer returns true", function()
         local layer = lurek.render.newDrawLayer()
         expect_true(layer:typeOf("DrawLayer"))
     end)
 
-    -- @integration LDrawLayer:typeOf
-    -- @integration lurek.render.newDrawLayer
+    -- @covers LDrawLayer:typeOf
+    -- @covers lurek.render.newDrawLayer
     it("typeOf wrong type returns false", function()
         local layer = lurek.render.newDrawLayer()
         expect_false(layer:typeOf("Image"))
@@ -245,10 +245,10 @@ end)
 -- -------------------------------------------------------------------
 -- @describe DrawLayer large queue
 describe("DrawLayer large queue", function()
-    -- @integration LDrawLayer:flush
-    -- @integration LDrawLayer:getCount
-    -- @integration LDrawLayer:queue
-    -- @integration lurek.render.newDrawLayer
+    -- @covers LDrawLayer:flush
+    -- @covers LDrawLayer:getCount
+    -- @covers LDrawLayer:queue
+    -- @covers lurek.render.newDrawLayer
     it("handles many entries", function()
         local layer = lurek.render.newDrawLayer()
         local sum = 0

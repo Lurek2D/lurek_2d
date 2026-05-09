@@ -57,12 +57,5 @@ describe("serial + filesystem integration", function()
         expect_true(#parsed >= 2, "CSV parse returns at least 2 data rows")
     end)
 
-    -- @integration lurek.filesystem.exists
-    -- @integration lurek.filesystem.write
-    it("filesystem.exists returns true after write", function()
-        local path = tmp .. "exists_check.txt"
-        lurek.filesystem.write(path, "ping")
-        expect_true(lurek.filesystem.exists(path), "exists after write")
-    end)
 end)
 test_summary()

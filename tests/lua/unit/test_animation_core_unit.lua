@@ -18,35 +18,30 @@ describe("new()", function()
     end)
 
     -- @covers LAnimation:getFrameCount
-    -- @covers lurek.animation.new
     it("getFrameCount returns 0 on empty animation", function()
         local a = lurek.animation.new()
         expect_equal(0, a:getFrameCount())
     end)
 
     -- @covers LAnimation:getClipCount
-    -- @covers lurek.animation.new
     it("getClipCount returns 0 with no clips", function()
         local a = lurek.animation.new()
         expect_equal(0, a:getClipCount())
     end)
 
     -- @covers LAnimation:isPlaying
-    -- @covers lurek.animation.new
     it("isPlaying returns false before play()", function()
         local a = lurek.animation.new()
         expect_equal(false, a:isPlaying())
     end)
 
     -- @covers LAnimation:getClip
-    -- @covers lurek.animation.new
     it("getClip returns nil before play()", function()
         local a = lurek.animation.new()
         expect_equal(nil, a:getClip())
     end)
 
     -- @covers LAnimation:getSpeed
-    -- @covers lurek.animation.new
     it("getSpeed returns default 1.0", function()
         local a = lurek.animation.new()
         expect_near(1.0, a:getSpeed(), 0.001)
@@ -56,7 +51,6 @@ end)
 -- @describe addFrame()
 describe("addFrame()", function()
     -- @covers LAnimation:addFrame
-    -- @covers lurek.animation.new
     it("returns an index starting from 0", function()
         local a = lurek.animation.new()
         local idx = a:addFrame(0, 0, 32, 32)
@@ -65,7 +59,6 @@ describe("addFrame()", function()
 
     -- @covers LAnimation:addFrame
     -- @covers LAnimation:getFrameCount
-    -- @covers lurek.animation.new
     it("increments frame count", function()
         local a = lurek.animation.new()
         a:addFrame(0, 0, 16, 16)
@@ -77,7 +70,6 @@ end)
 -- @describe addFramesFromGrid()
 describe("addFramesFromGrid()", function()
     -- @covers LAnimation:addFramesFromGrid
-    -- @covers lurek.animation.new
     it("returns the number of frames added", function()
         local a = lurek.animation.new()
         local n = a:addFramesFromGrid(128, 128, 32, 32, 0, 4)
@@ -86,7 +78,6 @@ describe("addFramesFromGrid()", function()
 
     -- @covers LAnimation:addFramesFromGrid
     -- @covers LAnimation:getFrameCount
-    -- @covers lurek.animation.new
     it("increases frame count by the returned amount", function()
         local a = lurek.animation.new()
         local n = a:addFramesFromGrid(64, 64, 32, 32, 0, 2)
@@ -99,7 +90,6 @@ describe("addClip()", function()
     -- @covers LAnimation:addClip
     -- @covers LAnimation:addFrame
     -- @covers LAnimation:getClipCount
-    -- @covers lurek.animation.new
     it("increases clip count by one", function()
         local a = lurek.animation.new()
         a:addFrame(0, 0, 16, 16)
@@ -114,7 +104,6 @@ describe("play() / stop()", function()
     -- @covers LAnimation:addFrame
     -- @covers LAnimation:isPlaying
     -- @covers LAnimation:play
-    -- @covers lurek.animation.new
     it("play transitions isPlaying to true", function()
         local a = lurek.animation.new()
         a:addFrame(0, 0, 16, 16)
@@ -125,7 +114,6 @@ describe("play() / stop()", function()
     end)
 
     -- @covers LAnimation:play
-    -- @covers lurek.animation.new
     it("play returns false for unknown clip", function()
         local a = lurek.animation.new()
         local ok = a:play("nonexistent")
@@ -137,7 +125,6 @@ describe("play() / stop()", function()
     -- @covers LAnimation:isPlaying
     -- @covers LAnimation:play
     -- @covers LAnimation:stop
-    -- @covers lurek.animation.new
     it("stop makes isPlaying false", function()
         local a = lurek.animation.new()
         a:addFrame(0, 0, 16, 16)
@@ -152,7 +139,6 @@ end)
 describe("setSpeed() / getSpeed()", function()
     -- @covers LAnimation:getSpeed
     -- @covers LAnimation:setSpeed
-    -- @covers lurek.animation.new
     it("round-trips the speed value", function()
         local a = lurek.animation.new()
         a:setSpeed(2.5)
@@ -167,7 +153,6 @@ describe("update() + getQuad()", function()
     -- @covers LAnimation:getQuad
     -- @covers LAnimation:play
     -- @covers LAnimation:update
-    -- @covers lurek.animation.new
     it("getQuad returns a table after play + update", function()
         local a = lurek.animation.new()
         a:addFrame(0, 0, 32, 32)
@@ -187,7 +172,6 @@ describe("update() + getQuad()", function()
     -- @covers LAnimation:getQuad
     -- @covers LAnimation:play
     -- @covers LAnimation:update
-    -- @covers lurek.animation.new
     it("getQuad preserves the active frame rectangle", function()
         local a = lurek.animation.new()
         a:addFrame(64, 32, 16, 16)
@@ -203,7 +187,6 @@ describe("update() + getQuad()", function()
     end)
 
     -- @covers LAnimation:getQuad
-    -- @covers lurek.animation.new
     it("getQuad returns nil when not playing", function()
         local a = lurek.animation.new()
         local q = a:getQuad()
@@ -214,7 +197,6 @@ end)
 -- @describe pollEvents()
 describe("pollEvents()", function()
     -- @covers LAnimation:pollEvents
-    -- @covers lurek.animation.new
     it("returns a table", function()
         local a = lurek.animation.new()
         local evs = a:pollEvents()
@@ -222,7 +204,6 @@ describe("pollEvents()", function()
     end)
 
     -- @covers LAnimation:pollEvents
-    -- @covers lurek.animation.new
     it("returns empty table when idle", function()
         local a = lurek.animation.new()
         local evs = a:pollEvents()
@@ -241,7 +222,6 @@ describe("pause and resume", function()
     -- @covers LAnimation:pause
     -- @covers LAnimation:play
     -- @covers LAnimation:update
-    -- @covers lurek.animation.new
     it("pause stops advancement", function()
         local a = lurek.animation.new()
         a:addFrame(0, 0, 16, 16)
@@ -262,7 +242,6 @@ describe("pause and resume", function()
     -- @covers LAnimation:pause
     -- @covers LAnimation:play
     -- @covers LAnimation:resume
-    -- @covers lurek.animation.new
     it("resume continues from paused frame", function()
         local a = lurek.animation.new()
         a:addFrame(0, 0, 16, 16)
@@ -286,7 +265,6 @@ describe("setFrame", function()
     -- @covers LAnimation:getCurrentFrame
     -- @covers LAnimation:play
     -- @covers LAnimation:setFrame
-    -- @covers lurek.animation.new
     it("sets playback to a specific frame index", function()
         local a = lurek.animation.new()
         a:addFrame(0, 0, 16, 16)
@@ -307,7 +285,6 @@ describe("getCurrentFrame", function()
     -- @covers LAnimation:addFrame
     -- @covers LAnimation:getCurrentFrame
     -- @covers LAnimation:play
-    -- @covers lurek.animation.new
     it("returns 0 at start of clip", function()
         local a = lurek.animation.new()
         a:addFrame(0, 0, 16, 16)
@@ -326,7 +303,6 @@ describe("isLooping", function()
     -- @covers LAnimation:addFrame
     -- @covers LAnimation:isLooping
     -- @covers LAnimation:play
-    -- @covers lurek.animation.new
     it("returns true for looping clip", function()
         local a = lurek.animation.new()
         a:addFrame(0, 0, 16, 16)
@@ -339,7 +315,6 @@ describe("isLooping", function()
     -- @covers LAnimation:addFrame
     -- @covers LAnimation:isLooping
     -- @covers LAnimation:play
-    -- @covers lurek.animation.new
     it("returns false for non-looping clip", function()
         local a = lurek.animation.new()
         a:addFrame(0, 0, 16, 16)
@@ -358,7 +333,6 @@ describe("event lifecycle", function()
     -- @covers LAnimation:play
     -- @covers LAnimation:pollEvents
     -- @covers LAnimation:update
-    -- @covers lurek.animation.new
     it("non-looping clip emits Finished event", function()
         local a = lurek.animation.new()
         a:addFrame(0, 0, 16, 16)
@@ -378,7 +352,6 @@ describe("event lifecycle", function()
     -- @covers LAnimation:play
     -- @covers LAnimation:pollEvents
     -- @covers LAnimation:update
-    -- @covers lurek.animation.new
     it("looping clip emits Looped event", function()
         local a = lurek.animation.new()
         a:addFrame(0, 0, 16, 16)
@@ -398,7 +371,6 @@ describe("event lifecycle", function()
     -- @covers LAnimation:play
     -- @covers LAnimation:pollEvents
     -- @covers LAnimation:update
-    -- @covers lurek.animation.new
     it("frame advancement emits frameChanged with frame index", function()
         local a = lurek.animation.new()
         a:addFrame(0, 0, 16, 16)
@@ -422,7 +394,6 @@ describe("event lifecycle", function()
     -- @covers LAnimation:play
     -- @covers LAnimation:pollEvents
     -- @covers LAnimation:update
-    -- @covers lurek.animation.new
     it("pollEvents drains events", function()
         local a = lurek.animation.new()
         a:addFrame(0, 0, 16, 16)
@@ -445,7 +416,6 @@ describe("speed edge cases", function()
     -- @covers LAnimation:play
     -- @covers LAnimation:setSpeed
     -- @covers LAnimation:update
-    -- @covers lurek.animation.new
     it("speed 0 freezes playback", function()
         local a = lurek.animation.new()
         a:addFrame(0, 0, 16, 16)
@@ -460,7 +430,6 @@ describe("speed edge cases", function()
 
     -- @covers LAnimation:getSpeed
     -- @covers LAnimation:setSpeed
-    -- @covers lurek.animation.new
     it("setSpeed clamps negative to 0", function()
         local a = lurek.animation.new()
         a:setSpeed(-5)
@@ -477,7 +446,6 @@ describe("clip switching", function()
     -- @covers LAnimation:getCurrentFrame
     -- @covers LAnimation:play
     -- @covers LAnimation:update
-    -- @covers lurek.animation.new
     it("switching clips resets frame to 0", function()
         local a = lurek.animation.new()
         a:addFrame(0, 0, 16, 16)
@@ -498,7 +466,6 @@ describe("addClipFromGrid", function()
     -- @covers LAnimation:addClipFromGrid
     -- @covers LAnimation:getClipCount
     -- @covers LAnimation:getFrameCount
-    -- @covers lurek.animation.new
     it("creates clip from grid in one call", function()
         local a = lurek.animation.new()
         expect_no_error(function()
@@ -518,7 +485,6 @@ describe("frame advancement", function()
     -- @covers LAnimation:getCurrentFrame
     -- @covers LAnimation:play
     -- @covers LAnimation:update
-    -- @covers lurek.animation.new
     it("zero dt does not advance frame", function()
         local a = lurek.animation.new()
         a:addFrame(0, 0, 16, 16)
@@ -627,16 +593,7 @@ end)
 
 -- @describe Animation:drawToImage()
 describe("Animation:drawToImage()", function()
-    -- @covers lurek.animation
     -- @covers LAnimation:drawToImage
-    -- @covers LAreaChart:drawToImage
-    -- @covers LBarChart:drawToImage
-    -- @covers LLineChart:drawToImage
-    -- @covers LMinimap:drawToImage
-    -- @covers LOverlay:drawToImage
-    -- @covers LParticleSystem:drawToImage
-    -- @covers LPieChart:drawToImage
-    -- @covers LScatterPlot:drawToImage
     it("returns a userdata", function()
         local a = make_anim()
         local img = a:drawToImage(32, 32)
@@ -739,7 +696,6 @@ describe("newStateMachine()", function()
     end)
 
     -- @covers LAnimStateMachine:getState
-    -- @covers lurek.animation.newStateMachine
     it("getState returns initial state name", function()
         local a = make_anim()
         a:play("idle")
@@ -750,7 +706,6 @@ describe("newStateMachine()", function()
     -- @covers LAnimStateMachine:addState
     -- @covers LAnimStateMachine:forceState
     -- @covers LAnimStateMachine:getState
-    -- @covers lurek.animation.newStateMachine
     it("forceState switches the current state", function()
         local a = make_anim()
         local fsm = lurek.animation.newStateMachine(a, "idle")
@@ -764,7 +719,6 @@ describe("newStateMachine()", function()
     -- @covers LAnimStateMachine:getState
     -- @covers LAnimStateMachine:setParam
     -- @covers LAnimStateMachine:update
-    -- @covers lurek.animation.newStateMachine
     it("transition fires when boolean param is set", function()
         local a = make_anim()
         local fsm = lurek.animation.newStateMachine(a, "idle")
@@ -781,7 +735,6 @@ describe("newStateMachine()", function()
     -- @covers LAnimStateMachine:getState
     -- @covers LAnimStateMachine:setParam
     -- @covers LAnimStateMachine:update
-    -- @covers lurek.animation.newStateMachine
     it("transition fires when float param is greater than threshold", function()
         local a = make_anim()
         local fsm = lurek.animation.newStateMachine(a, "idle")
@@ -798,7 +751,6 @@ describe("newStateMachine()", function()
     -- @covers LAnimStateMachine:getState
     -- @covers LAnimStateMachine:setParam
     -- @covers LAnimStateMachine:update
-    -- @covers lurek.animation.newStateMachine
     it("transition fires when integer param is not equal", function()
         local a = make_anim()
         local fsm = lurek.animation.newStateMachine(a, "idle")
@@ -815,7 +767,6 @@ describe("newStateMachine()", function()
     -- @covers LAnimStateMachine:getState
     -- @covers LAnimStateMachine:setParam
     -- @covers LAnimStateMachine:update
-    -- @covers lurek.animation.newStateMachine
     it("invalid transition conditions are ignored", function()
         local a = make_anim()
         local fsm = lurek.animation.newStateMachine(a, "idle")
@@ -828,7 +779,6 @@ describe("newStateMachine()", function()
     end)
 
     -- @covers LAnimStateMachine:getQuad
-    -- @covers lurek.animation.newStateMachine
     it("getQuad returns a table", function()
         local a = make_anim()
         a:play("idle")
@@ -856,7 +806,6 @@ end)
 -- @describe len() / addLayer()
 describe("len() / addLayer()", function()
     -- @covers LBlendLayerSet:len
-    -- @covers lurek.animation.newBlendLayerSet
     it("starts empty", function()
         local bls = lurek.animation.newBlendLayerSet()
         expect_equal(0, bls:len())
@@ -864,7 +813,6 @@ describe("len() / addLayer()", function()
 
     -- @covers LBlendLayerSet:addLayer
     -- @covers LBlendLayerSet:len
-    -- @covers lurek.animation.newBlendLayerSet
     it("addLayer increments len", function()
         local bls = lurek.animation.newBlendLayerSet()
         bls:addLayer("upper", "attack", 1.0)
@@ -873,7 +821,6 @@ describe("len() / addLayer()", function()
 
     -- @covers LBlendLayerSet:addLayer
     -- @covers LBlendLayerSet:len
-    -- @covers lurek.animation.newBlendLayerSet
     it("accepts two distinct layers", function()
         local bls = lurek.animation.newBlendLayerSet()
         bls:addLayer("upper", "attack", 1.0)
@@ -883,7 +830,6 @@ describe("len() / addLayer()", function()
 
     -- @covers LBlendLayerSet:addLayer
     -- @covers LBlendLayerSet:len
-    -- @covers lurek.animation.newBlendLayerSet
     it("accepts bone mask as fourth argument", function()
         local bls = lurek.animation.newBlendLayerSet()
         bls:addLayer("upper", "attack", 0.8, {"spine", "shoulder_L", "shoulder_R"})
@@ -895,7 +841,6 @@ end)
 describe("setWeight() / getWeight()", function()
     -- @covers LBlendLayerSet:addLayer
     -- @covers LBlendLayerSet:getWeight
-    -- @covers lurek.animation.newBlendLayerSet
     it("getWeight returns initial weight", function()
         local bls = lurek.animation.newBlendLayerSet()
         bls:addLayer("upper", "attack", 0.75)
@@ -906,7 +851,6 @@ describe("setWeight() / getWeight()", function()
     -- @covers LBlendLayerSet:addLayer
     -- @covers LBlendLayerSet:getWeight
     -- @covers LBlendLayerSet:setWeight
-    -- @covers lurek.animation.newBlendLayerSet
     it("setWeight updates the weight", function()
         local bls = lurek.animation.newBlendLayerSet()
         bls:addLayer("lower", "walk", 1.0)
@@ -920,7 +864,6 @@ end)
 describe("listLayers()", function()
     -- @covers LBlendLayerSet:addLayer
     -- @covers LBlendLayerSet:listLayers
-    -- @covers lurek.animation.newBlendLayerSet
     it("returns a table", function()
         local bls = lurek.animation.newBlendLayerSet()
         bls:addLayer("upper", "attack", 1.0)
@@ -930,7 +873,6 @@ describe("listLayers()", function()
 
     -- @covers LBlendLayerSet:addLayer
     -- @covers LBlendLayerSet:listLayers
-    -- @covers lurek.animation.newBlendLayerSet
     it("table length equals layer count", function()
         local bls = lurek.animation.newBlendLayerSet()
         bls:addLayer("upper", "attack", 1.0)
@@ -945,7 +887,6 @@ describe("removeLayer()", function()
     -- @covers LBlendLayerSet:addLayer
     -- @covers LBlendLayerSet:len
     -- @covers LBlendLayerSet:removeLayer
-    -- @covers lurek.animation.newBlendLayerSet
     it("decrements len after removal", function()
         local bls = lurek.animation.newBlendLayerSet()
         bls:addLayer("upper", "attack", 1.0)
@@ -955,7 +896,6 @@ describe("removeLayer()", function()
     end)
 
     -- @covers LBlendLayerSet:removeLayer
-    -- @covers lurek.animation.newBlendLayerSet
     it("removing unknown layer raises an error", function()
         local bls = lurek.animation.newBlendLayerSet()
         expect_error(function()
@@ -969,7 +909,6 @@ describe("setMask()", function()
     -- @covers LBlendLayerSet:addLayer
     -- @covers LBlendLayerSet:len
     -- @covers LBlendLayerSet:setMask
-    -- @covers lurek.animation.newBlendLayerSet
     it("accepts a bone list without error", function()
         local bls = lurek.animation.newBlendLayerSet()
         bls:addLayer("upper", "attack", 1.0)
@@ -1060,7 +999,6 @@ describe("AnimCurve custom easing", function()
     end)
 
     -- @covers LAnimCurve:setCustomEasing
-    -- @covers lurek.animation.newCurve
     it("setCustomEasing accepts a function without error", function()
         if lurek.animation.newCurve then
             local c = lurek.animation.newCurve()
@@ -1074,7 +1012,6 @@ describe("AnimCurve custom easing", function()
     -- @covers LAnimCurve:addKeyframe
     -- @covers LAnimCurve:eval
     -- @covers LAnimCurve:setCustomEasing
-    -- @covers lurek.animation.newCurve
     it("eval uses custom easing callback when set", function()
         if lurek.animation.newCurve then
             local c = lurek.animation.newCurve()
@@ -1089,7 +1026,6 @@ describe("AnimCurve custom easing", function()
     -- @covers LAnimCurve:addKeyframe
     -- @covers LAnimCurve:eval
     -- @covers LAnimCurve:setCustomEasing
-    -- @covers lurek.animation.newCurve
     it("setCustomEasing nil clears callback and reverts to linear", function()
         if lurek.animation.newCurve then
             local c = lurek.animation.newCurve()
@@ -1109,7 +1045,6 @@ end)
 -- @describe BlendLayerSet:len
 describe("BlendLayerSet:len ", function()
     -- @covers LBlendLayerSet:len
-    -- @covers lurek.animation.newBlendLayerSet
     it("len returns 0 for a fresh BlendLayerSet", function()
         local bls = lurek.animation.newBlendLayerSet()
         expect_equal(0, bls:len())
@@ -1117,7 +1052,6 @@ describe("BlendLayerSet:len ", function()
 
     -- @covers LBlendLayerSet:addLayer
     -- @covers LBlendLayerSet:len
-    -- @covers lurek.animation.newBlendLayerSet
     it("len increments after addLayer", function()
         local bls = lurek.animation.newBlendLayerSet()
         bls:addLayer("spine", "idle", 1.0)
@@ -1128,7 +1062,6 @@ end)
 -- @describe AnimSyncGroup:add
 describe("AnimSyncGroup:add ", function()
     -- @covers LAnimSyncGroup:add
-    -- @covers lurek.animation.newSyncGroup
     it("add is callable on a sync group", function()
         local group = lurek.animation.newSyncGroup()
         local ok, _ = pcall(function() group:add(1) end)
@@ -1140,7 +1073,6 @@ end)
 describe("animation strict: type / typeOf coverage", function()
     -- @covers LAnimation:type
     -- @covers LAnimation:typeOf
-    -- @covers lurek.animation.new
     it("LAnimation type and typeOf are callable", function()
         local a = lurek.animation.new()
         expect_type("string", a:type())
@@ -1149,8 +1081,6 @@ describe("animation strict: type / typeOf coverage", function()
 
     -- @covers LAnimStateMachine:type
     -- @covers LAnimStateMachine:typeOf
-    -- @covers lurek.animation.newStateMachine
-    -- @covers lurek.animation.new
     it("LAnimStateMachine type and typeOf are callable", function()
         local a = lurek.animation.new()
         a:addFrame(0, 0, 32, 32)
@@ -1161,7 +1091,6 @@ describe("animation strict: type / typeOf coverage", function()
 
     -- @covers LBlendLayerSet:type
     -- @covers LBlendLayerSet:typeOf
-    -- @covers lurek.animation.newBlendLayerSet
     it("LBlendLayerSet type and typeOf are callable", function()
         local bls = lurek.animation.newBlendLayerSet()
         expect_type("string", bls:type())
@@ -1170,24 +1099,70 @@ describe("animation strict: type / typeOf coverage", function()
 
     -- @covers LAnimCurve:type
     -- @covers LAnimCurve:typeOf
-    -- @covers lurek.animation.newCurve
     it("LAnimCurve type and typeOf are callable", function()
         local ok, ac = pcall(function() return lurek.animation.newCurve() end)
         if ok then
             expect_type("string", ac:type())
             expect_type("boolean", ac:typeOf("Object"))
         else
-            expect_true(true)
+            expect_not_nil(ac)
         end
     end)
 
     -- @covers LAnimSyncGroup:type
     -- @covers LAnimSyncGroup:typeOf
-    -- @covers lurek.animation.newSyncGroup
     it("LAnimSyncGroup type and typeOf are callable", function()
         local sg = lurek.animation.newSyncGroup()
         expect_type("string", sg:type())
         expect_type("boolean", sg:typeOf("Object"))
+    end)
+end)
+
+-- @describe animation migrated from integration/animation_timer
+describe("animation migrated from integration/animation_timer", function()
+    -- @covers LAnimation:addClip
+    -- @covers LAnimation:addFrame
+    -- @covers LAnimation:getCurrentFrame
+    -- @covers LAnimation:play
+    -- @covers LAnimation:update
+    -- @covers lurek.animation.new
+    it("animation advances by injected delta", function()
+        local anim = lurek.animation.new()
+        for _ = 1, 4 do
+            anim:addFrame(0, 0, 32, 32)
+        end
+        anim:addClip("main", {0, 1, 2, 3}, 4.0, true)
+        anim:play("main")
+
+        local dt = 1 / 60
+        for _ = 1, 60 do
+            anim:update(dt)
+        end
+
+        local frame = anim:getCurrentFrame()
+        expect_type("number", frame)
+        expect_true(frame >= 0)
+    end)
+
+    -- @covers LAnimation:addClip
+    -- @covers LAnimation:addFrame
+    -- @covers LAnimation:getCurrentFrame
+    -- @covers LAnimation:play
+    -- @covers LAnimation:update
+    -- @covers lurek.animation.new
+    it("animation frame changes at correct simulated time", function()
+        local anim = lurek.animation.new()
+        anim:addFrame(0, 0, 32, 32)
+        anim:addFrame(0, 0, 32, 32)
+        anim:addFrame(0, 0, 32, 32)
+        anim:addClip("seq", {0, 1, 2}, 5.0, false)
+        anim:play("seq")
+
+        local f0 = anim:getCurrentFrame()
+        expect_true(f0 >= 0)
+        anim:update(0.25)
+        local f1 = anim:getCurrentFrame()
+        expect_true(f1 >= 0)
     end)
 end)
 

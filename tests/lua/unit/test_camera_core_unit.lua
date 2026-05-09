@@ -822,4 +822,192 @@ describe("camera strict: newCamera / apply / reset / attach / detach / type / ty
     end)
 end)
 
+-- @describe camera migrated from integration/scene_camera
+describe("camera migrated from integration/scene_camera", function()
+    -- @covers LCamera:getPosition
+    -- @covers LCamera:setPosition
+    -- @covers lurek.camera.newCamera
+    it("camera position changes are stored correctly", function()
+        local cam = lurek.camera.newCamera()
+        cam:setPosition(0, 0)
+        local x0, y0 = cam:getPosition()
+        expect_near(0, x0, 0.001)
+        expect_near(0, y0, 0.001)
+
+        cam:setPosition(320, 240)
+        local x1, y1 = cam:getPosition()
+        expect_near(320, x1, 0.001)
+        expect_near(240, y1, 0.001)
+    end)
+
+    -- @covers LCamera:getZoom
+    -- @covers LCamera:setZoom
+    -- @covers lurek.camera.newCamera
+    it("camera zoom alters the visible scale", function()
+        local cam = lurek.camera.newCamera()
+        cam:setZoom(1.0)
+        expect_near(1.0, cam:getZoom(), 0.001)
+        cam:setZoom(2.0)
+        expect_near(2.0, cam:getZoom(), 0.001)
+        cam:setZoom(0.5)
+        expect_near(0.5, cam:getZoom(), 0.001)
+    end)
+
+    -- @covers LCamera:getRotation
+    -- @covers LCamera:setRotation
+    -- @covers lurek.camera.newCamera
+    it("camera rotation is retrievable", function()
+        local cam = lurek.camera.newCamera()
+        cam:setRotation(0.5)
+        expect_near(0.5, cam:getRotation(), 0.001)
+    end)
+
+    -- @covers LCamera:getPosition
+    -- @covers LCamera:setBounds
+    -- @covers LCamera:setPosition
+    -- @covers LCamera:update
+    -- @covers lurek.camera.newCamera
+    it("tilemap world bounds clamp camera position", function()
+        local cam = lurek.camera.newCamera()
+        cam:setBounds(0, 0, 128, 96)
+        cam:setPosition(999, 999)
+        cam:update(0.016)
+
+        local x, y = cam:getPosition()
+        expect_true(x <= 128)
+        expect_true(y <= 96)
+    end)
+end)
+
+-- @describe unit: migrated from integration/test_camera_tilemap_scroll.lua
+describe("unit: migrated from integration/test_camera_tilemap_scroll.lua", function()
+        -- @covers LCamera:getPosition
+        -- @covers LCamera:setPosition
+        -- @covers LTileMap:addLayer
+        -- @covers LTileMap:getTile
+        -- @covers LTileMap:setTile
+        -- @covers LTileMap:worldToTile
+        -- @covers lurek.camera.newCamera
+        -- @covers lurek.tilemap.newTileMap
+        it("loads tilemap chunk when camera moves into range", function()
+            local cam = lurek.camera.newCamera()
+            local tm = build_scroll_map()
+    
+            cam:setPosition(0, 0)
+            local x0, y0 = cam:getPosition()
+            local tx0, ty0 = tm:worldToTile(x0, y0)
+    
+            cam:setPosition(48, 0)
+            local x1, y1 = cam:getPosition()
+            local tx1, ty1 = tm:worldToTile(x1, y1)
+    
+            expect_type("number", tx0)
+            expect_type("number", ty0)
+            expect_type("number", tx1)
+            expect_type("number", ty1)
+            expect_true(tx1 >= tx0, "camera move right should not move to an earlier tile column")
+        end)
+
+        -- @covers LCamera:getViewport
+        -- @covers LCamera:setPosition
+        -- @covers LCamera:setViewport
+        -- @covers LTileMap:addLayer
+        -- @covers LTileMap:getTile
+        -- @covers LTileMap:setTile
+        -- @covers LTileMap:worldToTile
+        -- @covers lurek.camera.newCamera
+        -- @covers lurek.tilemap.newTileMap
+        it("unloads distant chunks as camera moves away", function()
+            local cam = lurek.camera.newCamera()
+            local tm = build_scroll_map()
+    
+            cam:setViewport(0, 0, 64, 48)
+            cam:setPosition(16, 0)
+            local _, _, viewport_w, viewport_h = cam:getViewport()
+            local left_tx, top_ty = tm:worldToTile(16, 0)
+            local right_tx = tm:worldToTile(16 + viewport_w - 1, viewport_h - 1)
+            local first_visible = tm:getTile(1, left_tx + 1, top_ty + 1)
+            local last_visible = tm:getTile(1, right_tx + 1, top_ty + 1)
+    
+            cam:setPosition(160, 0)
+            local new_left_tx = tm:worldToTile(160, 0)
+            local new_first_visible = tm:getTile(1, new_left_tx + 1, top_ty + 1)
+    
+            expect_type("number", first_visible)
+            expect_type("number", last_visible)
+            expect_type("number", new_first_visible)
+            expect_true(last_visible >= first_visible, "viewport right edge should not move backward")
+            expect_true(new_first_visible > first_visible, "camera move right should shift first visible tile forward")
+        end)
+
+end)
+
+-- @describe unit: migrated from integration/test_input_camera.lua
+describe("unit: migrated from integration/test_input_camera.lua", function()
+        -- @covers LCamera:getPosition
+        -- @covers LCamera:getZoom
+        -- @covers LCamera:setPosition
+        -- @covers LCamera:setZoom
+        -- @covers lurek.camera.newCamera
+        it("camera at origin: screen coords equal world coords", function()
+            local cam = lurek.camera.newCamera()
+            cam:setPosition(0, 0)
+            cam:setZoom(1.0)
+    
+            -- With camera at origin, zoom 1.0          world pos equals screen pos
+            local screen_x, screen_y = 320.0, 240.0
+            local cx, cy = cam:getPosition()
+            local zoom   = cam:getZoom()
+    
+            -- Manual screen-to-world formula: world = screen / zoom + cam_pos - screen_center/zoom
+            -- Here we just verify zoom is 1.0 and cam is at origin
+            expect_near(1.0, zoom,   0.001, "zoom is 1")
+            expect_near(0.0, cx,     0.001, "cam at origin x")
+            expect_near(0.0, cy,     0.001, "cam at origin y")
+            -- At zoom=1 and cam=(0,0), a click at screen (320,240) maps to world (320,240)
+            local world_x = screen_x / zoom + cx
+            local world_y = screen_y / zoom + cy
+            expect_near(320.0, world_x, 0.001, "world x matches screen x")
+            expect_near(240.0, world_y, 0.001, "world y matches screen y")
+        end)
+
+        -- @covers LCamera:getPosition
+        -- @covers LCamera:getZoom
+        -- @covers LCamera:setPosition
+        -- @covers LCamera:setZoom
+        -- @covers lurek.camera.newCamera
+        it("camera panned: world coords offset from screen", function()
+            local cam = lurek.camera.newCamera()
+            cam:setPosition(100, 50)
+            cam:setZoom(1.0)
+    
+            local screen_x, screen_y = 0.0, 0.0
+            local cx, cy = cam:getPosition()
+            local zoom   = cam:getZoom()
+    
+            local world_x = screen_x / zoom + cx
+            local world_y = screen_y / zoom + cy
+    
+            expect_near(100.0, world_x, 0.001, "world x offset by cam pan")
+            expect_near(50.0,  world_y, 0.001, "world y offset by cam pan")
+        end)
+
+        -- @covers LCamera:getZoom
+        -- @covers LCamera:setPosition
+        -- @covers LCamera:setZoom
+        -- @covers lurek.camera.newCamera
+        it("camera zoomed 2x: world coords halved relative to screen", function()
+            local cam = lurek.camera.newCamera()
+            cam:setPosition(0, 0)
+            cam:setZoom(2.0)
+    
+            local screen_x = 200.0
+            local zoom     = cam:getZoom()
+            local world_x  = screen_x / zoom
+    
+            expect_near(100.0, world_x, 0.001, "zoom 2x halves screen x to world x")
+        end)
+
+end)
+
 test_summary()
