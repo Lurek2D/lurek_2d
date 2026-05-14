@@ -1,4 +1,8 @@
 
+//! - Wire-format value type (`NetValue`) mirroring Lua's dynamic type system for cross-peer messaging.
+//! - MessagePack serialization and deserialization via `pack`/`unpack`.
+//! - Zero-allocation size estimation for budget checks before sending.
+
 use super::error::NetworkError;
 use serde::{Deserialize, Serialize};
 

@@ -1,4 +1,8 @@
 
+//! - Ready-made parallax layer constructors for common depth planes.
+//! - Far background, mid background, and foreground fog presets.
+//! - Each preset configures scroll factor, repeat, z-order, opacity, and blend mode.
+
 use crate::parallax::ParallaxLayer;
 use crate::render::BlendMode;
 use crate::runtime::resource_keys::TextureKey;

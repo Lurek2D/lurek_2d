@@ -1,3 +1,7 @@
+//! - Fixed-size render canvas carrying pixel dimensions for the GPU surface.
+//! - Logs creation at debug level via the CV01 message code.
+//! - Owned by `GpuRenderer`; does not hold GPU resources itself.
+
 use crate::log_msg;
 use crate::runtime::log_messages::CV01;
 /// A fixed-size render canvas owned by `GpuRenderer`; carries only dimensions.

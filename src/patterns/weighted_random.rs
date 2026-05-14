@@ -1,4 +1,8 @@
 
+//! - Weighted random selection over a dynamic entry list with add/remove/update.
+//! - Single-pick and multi-pick-without-replacement algorithms using normalized samples.
+//! - Revision counter for detecting structural changes and invalidating external caches.
+
 /// A single candidate with a weight and debug label.
 #[derive(Debug, Clone)]
 pub struct WeightedEntry {
@@ -130,6 +134,7 @@ impl WeightedRandom {
         self.revision += 1;
     }
 }
+/// Default to an empty selector with no entries.
 impl Default for WeightedRandom {
     fn default() -> Self {
         Self::new()

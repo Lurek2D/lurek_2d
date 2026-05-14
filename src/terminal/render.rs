@@ -1,8 +1,13 @@
+//! - Render the terminal cell grid as a list of `RenderCommand` draw calls.
+//! - Rasterise the grid into an `ImageData` thumbnail for previews.
+//! - Both paths iterate cells and map foreground/background colours to output.
+
 use super::terminal_state::Terminal;
 use crate::image::ImageData;
 use crate::render::renderer::{DrawMode, RenderCommand};
 use crate::runtime::resource_keys::FontKey;
 
+/// Rendering helpers for the terminal cell grid.
 impl Terminal {
     /// Build a `RenderCommand` list for the current cell grid using `font_key`, `char_w`/`char_h` cell dimensions, and `scale`.
     pub fn generate_render_commands(

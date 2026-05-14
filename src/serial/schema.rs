@@ -1,6 +1,13 @@
+//! - Validate a `SerialValue` tree against a schema describing expected types, ranges, and structure.
+//! - Enforce required fields, numeric min/max, string length bounds, nested table fields, and array items.
+//! - Apply default values from a schema to fill missing fields in a value tree.
+//! - Report path-qualified error messages when validation fails.
+//! - Log schema pass/fail outcomes through the engine log system.
+
 use super::lua_table::SerialValue;
 use crate::log_msg;
 use crate::runtime::log_messages::{SR07_SCHEMA_PASS, SR08_SCHEMA_FAIL};
+/// Recursively validate a value against a schema node, tracking the dotted path for error messages.
 fn validate_at(value: &SerialValue, schema: &SerialValue, path: &str) -> Result<(), String> {
     let schema_map = match schema {
         SerialValue::Map(m) => m,
@@ -108,6 +115,7 @@ fn validate_at(value: &SerialValue, schema: &SerialValue, path: &str) -> Result<
     }
     Ok(())
 }
+/// Return the human-readable type name of a serial value for error reporting.
 fn type_name(val: &SerialValue) -> &'static str {
     match val {
         SerialValue::Null => "null",
@@ -118,6 +126,7 @@ fn type_name(val: &SerialValue) -> &'static str {
         SerialValue::Map(_) => "table",
     }
 }
+/// Extract an f64 from a numeric serial value, returning None for non-numeric types.
 fn numeric_f64(val: &SerialValue) -> Option<f64> {
     match val {
         SerialValue::Int(n) => Some(*n as f64),
@@ -125,6 +134,7 @@ fn numeric_f64(val: &SerialValue) -> Option<f64> {
         _ => None,
     }
 }
+/// Convert a schema numeric literal to f64 for comparison.
 fn to_f64(val: &SerialValue) -> Option<f64> {
     match val {
         SerialValue::Int(n) => Some(*n as f64),
@@ -132,18 +142,21 @@ fn to_f64(val: &SerialValue) -> Option<f64> {
         _ => None,
     }
 }
+/// Convert a non-negative integer serial value to usize for length checks.
 fn to_usize(val: &SerialValue) -> Option<usize> {
     match val {
         SerialValue::Int(n) if *n >= 0 => Some(*n as usize),
         _ => None,
     }
 }
+/// Return the byte length of a string serial value, or None if not a string.
 fn string_len(val: &SerialValue) -> Option<usize> {
     match val {
         SerialValue::Str(s) => Some(s.len()),
         _ => None,
     }
 }
+/// Validate a serial value tree against a schema, logging the pass/fail result.
 pub fn validate(value: &SerialValue, schema: &SerialValue) -> Result<(), String> {
     match validate_at(value, schema, "") {
         Ok(()) => {
@@ -156,9 +169,11 @@ pub fn validate(value: &SerialValue, schema: &SerialValue) -> Result<(), String>
         }
     }
 }
+/// Fill missing fields in a value tree with defaults defined in the schema.
 pub fn apply_defaults(value: &SerialValue, schema: &SerialValue) -> Result<SerialValue, String> {
     apply_defaults_at(value, schema)
 }
+/// Recursively merge schema defaults into a value node, handling nested fields and array items.
 fn apply_defaults_at(value: &SerialValue, schema: &SerialValue) -> Result<SerialValue, String> {
     let schema_map = match schema {
         SerialValue::Map(m) => m,

@@ -1,5 +1,13 @@
+//! - A\* pathfinding on a `NavGrid` with configurable diagonal modes and unit sizes.
+//! - Heuristic selection: octile distance for diagonal movement, Manhattan otherwise.
+//! - Early termination via `max_nodes` with partial-path fallback to closest reached cell.
+//! - Bresenham line-of-sight checks for walkability validation.
+//! - String-pull path smoothing that removes redundant waypoints.
+
+use crate::runtime::log_messages::{AT01,AT02,AT03};
 
 use crate::log_msg;
+use crate::pathfind::nav_grid::{DiagonalMode, NavGrid};
 use std::cmp::Ordering;
 use std::collections::BinaryHeap;
 const SQRT2: f32 = std::f32::consts::SQRT_2;
@@ -22,6 +30,7 @@ impl PartialEq for AStarNode {
         self.f == other.f
     }
 }
+/// Marker trait required by `Ord`; equality is based on f-cost.
 impl Eq for AStarNode {}
 
 /// Reverse ordering so `BinaryHeap` becomes a min-heap on f-cost.

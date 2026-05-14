@@ -1,4 +1,10 @@
 
+//! - Behavior tree data structure with Sequence, Selector, Parallel, Inverter, Repeat, and Leaf node kinds.
+//! - Builder API for allocating nodes, linking children, and setting the root.
+//! - Per-tick runtime state tracking running nodes and repeat counters.
+//! - Integer `NodeId` addressing; no heap indirection between parent and child.
+//! - Fully deterministic tick ordering: left-to-right child evaluation.
+
 /// Tick result returned by a behavior tree node.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum BtStatus {

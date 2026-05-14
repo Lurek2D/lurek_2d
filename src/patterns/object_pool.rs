@@ -1,4 +1,8 @@
 
+//! - Capacity-bounded object pool that tracks idle and active ids for reuse.
+//! - Supports acquire/release lifecycle, prewarming, and optional capacity limits.
+//! - Useful for entity recycling, bullet pools, and particle systems.
+
 /// Capacity-bounded pool tracking idle and active object ids.
 #[derive(Debug)]
 pub struct ObjectPool {

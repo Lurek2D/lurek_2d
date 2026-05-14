@@ -1,3 +1,11 @@
+//! - Skeleton struct holding bones, slots, animations, IK constraints, skins, and playback state.
+//! - Bone and slot management: add, find by name, query world transforms.
+//! - Animation playback: start/stop clips, advance time, loop or clamp at duration.
+//! - IK constraint registration and per-frame solving against bone poses.
+//! - Skin system: register skins, switch active skin, map attachments per slot.
+//! - World-transform recomputation traversing bones in parent-before-child order.
+//! - Debug visualization: rasterise skeleton bones and slot markers into ImageData.
+
 use super::bone::Bone;
 use super::ik::IKConstraint;
 use super::slot::Slot;

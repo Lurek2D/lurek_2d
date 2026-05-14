@@ -1,3 +1,12 @@
+//! - Visual theming system for the immediate-mode GUI, mapping widget-type/state pairs to style records.
+//! - Each style carries background, foreground, border colors, font size, shadow, gradient, and text alignment.
+//! - Lookup falls back from the requested state to `Normal`, letting partial themes work without exhaustive registration.
+//! - Ships a full dark preset covering all standard widget types (buttons, inputs, panels, menus, dialogs, etc.).
+//! - Style records are value types (`Clone + Debug`) so themes can be cheaply forked per-screen.
+//! - Includes a debug helper that rasterizes button states into an `ImageData` tile for visual validation.
+//! - Integrates with `GuiContext` at render time; the renderer reads resolved styles per-widget per-frame.
+//! - Designed for extension: games register custom `(WidgetType, WidgetState)` entries without modifying built-in presets.
+
 use crate::ui::widget::{WidgetState, WidgetType};
 use std::collections::HashMap;
 /// Per-state visual properties for a single widget type.

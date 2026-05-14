@@ -1,6 +1,13 @@
 
+//! - Hex grid with configurable flat-top or pointy-top offset layout.
+//! - Per-cell blocked flags and movement cost for weighted pathfinding.
+//! - A* search returning shortest path between two hex cells.
+//! - Line-of-sight, field-of-view, and range-of-movement queries.
+//! - Cube-coordinate math for distance, interpolation, and rounding.
+
 use std::cmp::Ordering;
-use std::collections::{BinaryHeap, HashMap}; column or row is the flat side.
+use std::collections::{BinaryHeap, HashMap};
+/// Orientation of hexagons in the grid.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum HexLayout {
     /// Hexagons have flat sides on the left and right; columns are aligned vertically.
@@ -164,7 +171,7 @@ impl HexGrid {
         let (bx, by, bz) = self.to_cube(b);
         (((ax - bx).abs() + (ay - by).abs() + (az - bz).abs()) / 2) as u32
     }
-    /// Convert offset coordinates to cube coordinates.
+    /// Convert `(col, row)` to a flat Vec index, or `None` when out of bounds.
     fn index(&self, col: u32, row: u32) -> Option<usize> {
         if col < self.width && row < self.height {
             Some((row * self.width + col) as usize)
@@ -271,6 +278,7 @@ impl PartialEq for AStarNode {
         self.f == other.f
     }
 }
+/// Marker trait for total equality derived from f-score.
 impl Eq for AStarNode {}
 
 /// Delegates to `Ord`.

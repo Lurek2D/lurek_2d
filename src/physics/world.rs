@@ -1,3 +1,15 @@
+//! - Full rapier2d-backed physics simulation world with body, collider, and joint management.
+//! - Collision event collection: begin-contact, end-contact, and overlap pairs per step.
+//! - Raycast queries: single closest hit, point-to-point sweep, and multi-hit gather.
+//! - AABB and point spatial queries via QueryPipeline.
+//! - Joint catalog: revolute, distance, prismatic, weld, rope, wheel, friction, motor, mouse, pulley, gear.
+//! - Joint break-force thresholds with automatic removal on exceeded relative velocity.
+//! - One-way platform normals with velocity projection on contact.
+//! - Trigger zone system: gravity overrides (zero, directional, point, repulsor), damping, enter/exit events.
+//! - Fixed-timestep accumulator helper and pixels-per-meter unit conversion.
+//! - Debug rendering: shape snapshot extraction and direct ImageData line drawing.
+//! - Body lifecycle: add, destroy (disable), clear world, sleep control, CCD toggle.
+
 use super::body::{Body, BodyShape, BodyType};
 use super::shape::Shape;
 use super::zone::{PhysicsZone, ZoneEvent, ZoneGravityMode, ZoneTracker};
@@ -181,6 +193,7 @@ pub struct World {
     /// Zone enter/exit events emitted last step.
     zone_events: Vec<ZoneEvent>,
 }
+/// Physics world operations: body management, stepping, joints, queries, zones, and debug rendering.
 impl World {
     /// Draw all body outlines onto an RGBA `ImageData` using the given colour.
     pub fn draw_debug_to_image(

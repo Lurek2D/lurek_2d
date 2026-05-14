@@ -1,3 +1,13 @@
+//! - Province metadata import pipeline: colour-map PNG + RGB CSV + optional TOML → registry.
+//! - Marker PNG sanitization: replace capital and label marker pixels with nearest non-marker neighbour.
+//! - RGB colour CSV parsing mapping packed (R,G,B) tuples to numeric game_id values.
+//! - TOML province info parsing for display name and terrain token fields.
+//! - Pixel-level marker detection with configurable thresholds for capital (near-white) and label (magenta) markers.
+//! - Expanding-ring neighbour search to resolve marker pixel ownership from surrounding province colours.
+//! - Deterministic political colour derivation from game_id with fixed sea-blue for water provinces.
+//! - Label line extraction: find longest-distance pair from label marker point clusters per province.
+//! - Full import pipeline wiring terrain type, political colour, attributes, capitals, and label lines into the registry.
+
 use crate::image::ImageData;
 use crate::province::registry::ProvinceRegistry;
 use std::collections::{HashMap, HashSet};

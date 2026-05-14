@@ -1,3 +1,7 @@
+//! - Frame-driven delay scheduler that counts down per-step timers each update.
+//! - Report which pipeline steps become ready once their configured delay expires.
+//! - Track wall-clock elapsed time and running state for the owning pipeline.
+
 use crate::pipeline::dag::Pipeline;
 use crate::pipeline::step::StepStatus;
 use std::collections::HashMap;

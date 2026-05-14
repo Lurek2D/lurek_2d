@@ -1,3 +1,15 @@
+//! - Retained-mode GUI context owning a flat arena of widgets addressed by index.
+//! - Discriminated `WidgetKind` union covering 35+ control/container/overlay types with shared `WidgetBase` access.
+//! - Recursive layout pass computing absolute `computed_rect` from parent-relative positions.
+//! - Focus management with forward/backward cycling and keyboard-driven tab navigation.
+//! - Drag-and-drop API with cycle detection to prevent parent-into-child drops.
+//! - Alpha and position transition animations stepped each frame with automatic expiry.
+//! - Data binding system mapping string keys to numeric, text, or boolean widget values.
+//! - FNV-hash render signature for fast dirty-check without full tree diffing.
+//! - Mouse press/release/move and keyboard input dispatch to the focused widget.
+//! - Toast overlay queue with per-message timers and automatic expiry.
+//! - Event queue (`GuiEvent`) drained each frame by the Lua binding layer.
+
 use crate::log_msg;
 use crate::runtime::log_messages::{GU01_CTX_INIT, GU02_WIDGET_ADD};
 use crate::ui::containers::{

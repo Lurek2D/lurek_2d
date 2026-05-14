@@ -1,3 +1,7 @@
+//! - Slot struct: named attachment point on a bone with RGBA tint and optional texture reference.
+//! - Constructor defaults to white opaque colour, no attachment, and draw-order zero.
+//! - Draw-order field drives back-to-front rendering when multiple slots share a bone.
+
 /// Attachment point on a bone with colour tint and optional texture attachment name.
 #[derive(Debug, Clone)]
 pub struct Slot {

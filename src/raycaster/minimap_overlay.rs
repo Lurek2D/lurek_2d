@@ -1,3 +1,9 @@
+//! - Tile-based minimap window construction with per-tile lighting and line-of-sight checks.
+//! - Bresenham grid traversal for fast obstruction testing between player and map cells.
+//! - FOV ray fan that reveals all traversed cells within a max distance and step size.
+//! - Pixel-grid minimap extraction producing raw RGBA buffers with wall/floor coloring.
+//! - Player arrow rendering (filled circle plus direction line) composited onto the minimap.
+
 use super::dda::Raycaster2D;
 use super::lighting::{compute_lighting, PointLight};
 use std::collections::HashSet;

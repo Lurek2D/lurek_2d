@@ -1,3 +1,14 @@
+//! - Multi-layer tile map with per-tile GID storage, tint overrides, and parallax scroll factors.
+//! - Tileset attachment and GID resolution across multiple tileset ranges.
+//! - 4-neighbour and 8-neighbour autotile bitmask computation and GID substitution.
+//! - Continuous AABB sweep-cast collision against solid tiles for platformer and top-down physics.
+//! - Per-GID animation timer advancement using tileset frame data.
+//! - World-to-tile and tile-to-world coordinate conversion respecting tile dimensions.
+//! - Viewport-aware culled render-command generation for debug colour-coded output.
+//! - Debug image rendering: full-map, per-layer side-by-side, and highlight-overlay modes.
+//! - Boolean walkability grid export for pathfinding integration.
+//! - GID-to-position reverse index cache for fast spatial queries by tile type.
+
 use super::mapgen::MapOrientation;
 use super::tileset::TileSet;
 use crate::log_msg;

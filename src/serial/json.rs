@@ -1,13 +1,20 @@
+//! - Parse JSON strings into the engine's `SerialValue` intermediate representation.
+//! - Encode `SerialValue` trees back to JSON (compact or pretty-printed).
+//! - Map JSON types (null, bool, number, string, array, object) to `SerialValue` variants bidirectionally.
+
 use super::lua_table::SerialValue;
 use crate::log_msg;
 use crate::runtime::log_messages::{SR01_JSON_OK, SR03_JSON_ENC};
 use indexmap::IndexMap;
 use serde_json::Value as JsonValue;
+
+/// Parse a JSON string into a `SerialValue` tree.
 pub fn from_json(s: &str) -> Result<SerialValue, String> {
     let v: JsonValue = serde_json::from_str(s).map_err(|e| format!("JSON parse error: {e}"))?;
     log_msg!(debug, SR01_JSON_OK);
     Ok(json_to_serial(v))
 }
+/// Encode a `SerialValue` tree to a JSON string.
 pub fn to_json(val: &SerialValue, pretty: bool) -> Result<String, String> {
     let jv = serial_to_json(val);
     let result = if pretty {
@@ -20,6 +27,7 @@ pub fn to_json(val: &SerialValue, pretty: bool) -> Result<String, String> {
     }
     result
 }
+/// Convert a `serde_json::Value` into the equivalent `SerialValue`.
 fn json_to_serial(v: JsonValue) -> SerialValue {
     match v {
         JsonValue::Null => SerialValue::Null,
@@ -42,6 +50,7 @@ fn json_to_serial(v: JsonValue) -> SerialValue {
         }
     }
 }
+/// Convert a `SerialValue` into the equivalent `serde_json::Value`.
 fn serial_to_json(val: &SerialValue) -> JsonValue {
     match val {
         SerialValue::Null => JsonValue::Null,

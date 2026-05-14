@@ -1,3 +1,7 @@
+//! - Render-command generation from the active scene in the stack.
+//! - Off-screen scene capture into ImageData for snapshots and thumbnails.
+//! - Stub implementations returning empty output when no scene is active.
+
 use super::stack::SceneStack;
 use crate::image::ImageData;
 use crate::render::renderer::RenderCommand;

@@ -100,16 +100,21 @@
 	// ─── GitHub Copilot ───────────────────────────────────────────────────────
 	"github.copilot.enable": {
 		"*": true,
+		"plaintext": false,
+		"markdown": true,
+		"scminput": false,
+		"yaml": true,
 		"lua": true,
+		"cpp": true,
 		"rust": true,
 		"toml": true,
-		"markdown": true
+		"skill": true
 	},
 	"github.copilot.renameSuggestions.triggerAutomatically": true,
 	// Next Edit Suggestions
 	"github.copilot.nextEditSuggestions.enabled": true,
 	"github.copilot.nextEditSuggestions.extendedRange": true,
-	"github.copilot.nextEditSuggestions.eagerness": "medium",
+	"github.copilot.nextEditSuggestions.eagerness": "auto",
 	"github.copilot.nextEditSuggestions.fixes": true,
 	// Inline edits
 	"github.copilot.chat.inlineEdits.chatSessionContextProvider.enabled": true,

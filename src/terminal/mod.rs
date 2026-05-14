@@ -1,3 +1,8 @@
+//! - In-engine terminal emulator with ANSI escape-code support
+//! - Grid-based cell model, tab completion, and syntax highlighting
+//! - Converts terminal state into RenderCommand sequences for display
+//! - Widget primitives for composing custom terminal UIs
+
 /// ANSI escape-code parsing and attribute types.
 pub mod ansi;
 /// Tab-completion provider interface and built-in implementations.

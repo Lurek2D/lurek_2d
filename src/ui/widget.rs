@@ -361,24 +361,6 @@ pub struct WidgetBase {
     /// Effective visibility after layout and parent visibility propagation.
     pub is_visible: bool,
 }
-    pub min_height: f32,
-    pub max_width: f32,
-    pub max_height: f32,
-    pub anchor_left: Option<f32>,
-    pub anchor_top: Option<f32>,
-    pub anchor_right: Option<f32>,
-    pub anchor_bottom: Option<f32>,
-    pub anchor_center_x: Option<f32>,
-    pub anchor_center_y: Option<f32>,
-    pub flex_grow: f32,
-    pub flex_shrink: f32,
-    pub alpha: f32,
-    pub entity_attachment: Option<u64>,
-    pub bind_key: Option<String>,
-    pub transitions: Vec<WidgetTransition>,
-    pub computed_rect: crate::math::Rect,
-    pub is_visible: bool,
-}
 impl WidgetBase {
     /// Create a `WidgetBase` with `widget_type` defaults from `WidgetType::default_size`, visible, enabled, alpha 1.
     pub fn new(widget_type: WidgetType) -> Self {
@@ -437,3 +419,4 @@ impl Default for WidgetBase {
         Self::new(WidgetType::Panel)
     }
 }
+

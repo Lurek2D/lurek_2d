@@ -1,11 +1,25 @@
+//! - Serialization and deserialization for multiple formats (JSON, TOML, CSV, XML, MsgPack, INI)
+//! - Unified codec interface with auto-detection and round-trip encode/decode
+//! - Schema validation and default application for structured data
+//! - Lua table ↔ Rust value bridging via SerialValue
+
+/// Unified codec: format detection, encode, and decode entry points.
 pub mod codec;
+/// CSV parsing and generation with configurable options.
 pub mod csv;
+/// INI file parser.
 pub mod ini;
+/// JSON serialization and deserialization.
 pub mod json;
+/// SerialValue type bridging Lua tables and Rust data.
 pub mod lua_table;
+/// MessagePack binary encode/decode.
 pub mod msgpack;
+/// Schema validation and default-value application.
 pub mod schema;
+/// TOML parsing and encoding.
 pub mod toml;
+/// XML decoding.
 pub mod xml;
 pub use codec::{
     decode_bytes, decode_text, detect_format, encode, DecodeOptions, EncodeOptions, EncodedValue,

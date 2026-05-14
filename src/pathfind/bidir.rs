@@ -1,9 +1,16 @@
 
+//! - Bidirectional A* search that expands from both start and goal simultaneously.
+//! - Meets in the middle when both closed sets overlap, halving explored nodes on large grids.
+//! - Falls back to a partial forward path when the node budget is exhausted.
+//! - Respects NavGrid diagonal mode and per-cell movement cost.
+//! - Supports variable unit sizes for multi-tile pathfinding.
+
 use crate::log_msg;
 use crate::pathfind::nav_grid::{DiagonalMode, NavGrid};
 use crate::runtime::log_messages::{BI01, BI02, BI03};
 use std::cmp::Ordering;
 use std::collections::BinaryHeap;
+/// Precomputed square root of 2 for diagonal movement cost.
 const SQRT2: f32 = std::f32::consts::SQRT_2;
 /// Priority-queue node used by both forward and backward open sets.
 #[derive(Debug, Clone)]
@@ -23,6 +30,7 @@ impl PartialEq for BNode {
         self.f == other.f
     }
 }
+/// Marker trait completing total-equality for heap usage.
 impl Eq for BNode {}
 
 /// Reverse ordering so `BinaryHeap` is a min-heap on f-cost.

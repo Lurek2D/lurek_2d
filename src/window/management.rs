@@ -1,3 +1,11 @@
+//! - Stage deferred window property changes (title, size, position, icon, display).
+//! - Fullscreen and vsync mode switching with exclusive/desktop variants.
+//! - Minimize, maximize, restore, close, and attention-request staging.
+//! - Focus, visibility, and mouse-focus queries.
+//! - DPI-aware pixel conversion helpers.
+//! - Combined mode update and snapshot via `set_mode`/`get_mode`.
+//! - Native OS message-box dialog via `rfd`.
+
 use crate::runtime::shared_state::{FullscreenType, WindowState};
 /// Snapshot of the window's current mode returned by `get_mode`.
 pub struct ModeInfo {

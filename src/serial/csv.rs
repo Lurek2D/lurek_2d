@@ -1,11 +1,20 @@
+//! - Parse CSV text or streams into `SerialValue` sequences of maps or arrays.
+//! - Serialize `SerialValue` back to CSV with configurable delimiter and header behavior.
+//! - Support both header-keyed (map rows) and index-only (sequence rows) modes.
+
 use super::lua_table::SerialValue;
 use indexmap::IndexMap;
 use std::io::Read;
+
+/// Options controlling CSV parsing and serialization behavior.
 #[derive(Debug, Clone, Copy)]
 pub struct CsvOptions {
+    /// Column separator byte (default `,`).
     pub delimiter: u8,
+    /// Whether the first row is treated as column headers.
     pub has_headers: bool,
 }
+/// Provide sensible defaults: comma delimiter with headers enabled.
 impl Default for CsvOptions {
     fn default() -> Self {
         Self {
@@ -14,9 +23,11 @@ impl Default for CsvOptions {
         }
     }
 }
+/// Parse a CSV string into a `SerialValue` sequence.
 pub fn from_csv(s: &str, opts: CsvOptions) -> Result<SerialValue, String> {
     from_csv_reader(s.as_bytes(), opts)
 }
+/// Parse CSV from any `Read` source into a `SerialValue` sequence.
 pub fn from_csv_reader<R: Read>(reader: R, opts: CsvOptions) -> Result<SerialValue, String> {
     let mut reader = csv::ReaderBuilder::new()
         .delimiter(opts.delimiter)
@@ -53,6 +64,7 @@ pub fn from_csv_reader<R: Read>(reader: R, opts: CsvOptions) -> Result<SerialVal
         Ok(SerialValue::Seq(rows))
     }
 }
+/// Serialize a `SerialValue` sequence of rows into a CSV string.
 pub fn to_csv(val: &SerialValue, opts: CsvOptions) -> Result<String, String> {
     let rows = match val {
         SerialValue::Seq(rows) => rows,

@@ -1,3 +1,6 @@
+//! - Easing curve helpers for scene transitions and tween interpolation.
+//! - Provides bounce-out and related mathematical curves.
+
 /// Evaluate the bounce-out easing curve for t in [0, 1]; returns 1 at t=1.
 pub(crate) fn bounce_out(t: f32) -> f32 {
     const N1: f32 = 7.5625;

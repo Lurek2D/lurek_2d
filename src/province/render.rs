@@ -1,3 +1,10 @@
+//! - Province map rendering: convert registry data into a flat RenderCommand list.
+//! - Viewport culling based on screen bounds and zoom/pan transform.
+//! - Fill rendering via per-province span rectangles coloured by the active map mode.
+//! - Border rendering with colour classification (land-land, coast, sea-sea, special).
+//! - Capital dot markers and text labels with shadow offset.
+//! - Hover and selection highlight outlines for interactive feedback.
+
 use crate::province::borders::classify_border;
 use crate::province::map_modes::{resolve_color, ProvinceMapMode};
 use crate::province::registry::ProvinceRegistry;

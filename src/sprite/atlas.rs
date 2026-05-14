@@ -1,3 +1,9 @@
+//! - Named atlas region type (`AtlasEntry`) with pixel rect, rotation, and flip flags.
+//! - `SpriteAtlas` lookup table: ordered Vec + HashMap for O(1) name lookup.
+//! - TexturePacker JSON parser supporting both array and object frame formats.
+//! - Aseprite JSON parser with the same dual-format support.
+//! - Conversion from `image::TextureAtlas` for runtime atlas building.
+
 use std::collections::HashMap;
 /// Named sub-region of a texture atlas with pixel coordinates, size, and flip/rotate flags.
 #[derive(Debug, Clone)]
@@ -94,6 +100,7 @@ impl SpriteAtlas {
 }
 /// Default delegates to new().
 impl Default for SpriteAtlas {
+    /// Return an empty SpriteAtlas.
     fn default() -> Self {
         Self::new()
     }

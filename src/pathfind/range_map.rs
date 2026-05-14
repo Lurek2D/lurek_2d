@@ -1,6 +1,11 @@
 
+//! - Dijkstra-based budget-limited range expansion over a 2D grid.
+//! - Produces a cost map showing which cells are reachable within a travel budget.
+//! - Supports cardinal and diagonal movement with per-cell cost weights.
+
 use std::cmp::Ordering;
 use std::collections::BinaryHeap;
+/// Budget-limited cost map built by Dijkstra expansion from a single origin.
 pub struct RangeMap {
     /// Grid width in cells.
     pub width: u32,
@@ -161,6 +166,7 @@ impl PartialEq for DNode {
         self.cost == other.cost
     }
 }
+/// Marker trait required by `Ord`.
 impl Eq for DNode {}
 
 /// Delegates to `Ord`.

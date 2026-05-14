@@ -1,3 +1,7 @@
+//! - Lifecycle status enum tracking pipeline progression from pending through completion or failure.
+//! - Aggregated result struct collecting per-step outcomes, durations, and error messages.
+//! - Convenience queries for success checks and human-readable summaries.
+
 /// Lifecycle state of a pipeline run.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum PipelineStatus {

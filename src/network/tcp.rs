@@ -1,4 +1,8 @@
 
+//! - Non-blocking TCP connection pool for the background network thread.
+//! - Round-robin polling across all active streams with event-based notification.
+//! - Connect, send, close, and bulk-poll operations with automatic error cleanup.
+
 use super::net_thread::{NetworkResponse, TcpEvent};
 use log::{debug, warn};
 use std::collections::HashMap;

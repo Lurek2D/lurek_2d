@@ -1,6 +1,13 @@
 
+//! - Polygon-based navigation mesh for 2D pathfinding.
+//! - A\* search over polygon adjacency graph with centroid heuristic.
+//! - Ray-cast point-in-polygon containment test.
+//! - Centroid waypoint extraction from polygon corridors.
+//! - Directed and bidirectional polygon connectivity.
+
 use std::cmp::Ordering;
-use std::collections::{BinaryHeap, HashMap}; with explicit connectivity edges.
+use std::collections::{BinaryHeap, HashMap};
+/// Polygon-based 2D navigation mesh supporting A\* pathfinding.
 #[derive(Debug, Clone, Default)]
 pub struct NavMesh {
     /// Vertex lists for each polygon region.
@@ -157,20 +164,24 @@ struct Node {
 }
 /// Equality by f-score.
 impl PartialEq for Node {
+    /// Compare two nodes by f-score equality.
     fn eq(&self, other: &Self) -> bool {
         self.f == other.f
     }
 }
+/// Marker trait asserting total equality for `Node`.
 impl Eq for Node {}
 
 /// Delegates to `Ord`.
 impl PartialOrd for Node {
+    /// Delegate partial comparison to the total `Ord` implementation.
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
         Some(self.cmp(other))
     }
 }
 /// Reverse ordering so `BinaryHeap` is a min-heap.
 impl Ord for Node {
+    /// Compare in reverse order to produce a min-heap from `BinaryHeap`.
     fn cmp(&self, other: &Self) -> Ordering {
         other.f.partial_cmp(&self.f).unwrap_or(Ordering::Equal)
     }

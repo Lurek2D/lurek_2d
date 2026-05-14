@@ -1,4 +1,10 @@
 
+//! - Adjacency-list graph with directed and undirected mode support.
+//! - Node and edge CRUD with stable integer identifiers.
+//! - Weighted, labelled edges with automatic reverse-edge insertion for undirected graphs.
+//! - BFS and DFS traversals from any start node.
+//! - Connectivity queries and neighbour enumeration.
+
 /// A graph node with a debug label.
 #[derive(Debug, Clone)]
 pub struct GraphNode {

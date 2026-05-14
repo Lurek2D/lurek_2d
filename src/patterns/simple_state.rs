@@ -1,5 +1,11 @@
 
+//! - Named-state registry with at-most-one active state at a time.
+//! - Add, remove, query, and switch states; validates transitions against the known set.
+//! - Sorted enumeration and count helpers for introspection.
+
 use std::collections::HashSet;
+
+/// A flat set of named states where at most one can be active.
 pub struct SimpleState {
     /// All declared state names.
     states: HashSet<String>,

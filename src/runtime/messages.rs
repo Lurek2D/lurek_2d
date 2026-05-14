@@ -1,7 +1,12 @@
+//! - Embedded TOML-based message catalog for runtime log and display text.
+//! - Lazy one-shot initialization with fallback to raw identifiers.
+//! - Recursive string extraction from nested TOML tables.
+
 use std::collections::HashMap;
 use std::sync::OnceLock;
 /// Embedded message catalog source loaded from runtime config assets.
 pub const CATALOG_TOML: &str = include_str!("cfg/messages.toml");
+/// Global singleton holding the parsed message catalog.
 static CATALOG: OnceLock<MessageCatalog> = OnceLock::new();
 /// Runtime map of log/message identifiers to display text.
 pub struct MessageCatalog {

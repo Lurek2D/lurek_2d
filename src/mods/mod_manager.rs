@@ -1,4 +1,13 @@
 
+//! - Mod registry: register, unregister, and look up mods by id or capability.
+//! - Manifest parsing: load `mod.toml` files, validate fields, and compute SHA-256 signatures.
+//! - Load ordering: topological sort with dependency resolution, priority tie-breaking, and custom override.
+//! - Asset conflict detection: prevent two mods from declaring the same asset path.
+//! - Hot-reload queue: mark mods dirty, re-parse their manifests, and re-register atomically.
+//! - Folder scanning: discover mod directories on disk and batch-register valid entries.
+//! - Dependency validation: detect missing deps and circular dependency cycles.
+//! - Config schema: carry typed key/default triples from manifests for runtime config UI.
+
 use crate::log_msg;
 use crate::runtime::log_messages::{MD01_MGR_INIT, MD02_MOD_REG, MD04_ORDER_OK};
 use sha2::{Digest, Sha256};
@@ -39,6 +48,7 @@ pub struct ModInfo {
     /// Optional SHA-256 hex signature of the manifest fields; verified on load.
     pub signature: Option<String>,
 }
+/// Construction helpers for `ModInfo`.
 impl ModInfo {
     /// Create a minimal `ModInfo` with defaults; logs MD02.
     pub fn new(id: impl Into<String>) -> Self {
@@ -104,6 +114,7 @@ pub struct ModManager {
     /// Set mirror of `reload_queue` for O(1) duplicate prevention.
     reload_queue_set: HashSet<String>,
 }
+/// Mod lifecycle operations: registration, ordering, scanning, reload, and validation.
 impl ModManager {
     /// Create an empty mod manager; logs MD01.
     pub fn new() -> Self {

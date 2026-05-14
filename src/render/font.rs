@@ -1,3 +1,10 @@
+//! - Bitmap font atlas loading from embedded PNG sprite sheets with per-character cell extraction.
+//! - Six bundled font sizes (3×5 through 12×22) with nearest-size selection for scaling.
+//! - Glyph lookup returning UV coordinates, pixel metrics, and advance widths.
+//! - Text measurement: total pixel width, line height with multiplier, ascent and descent.
+//! - Word-wrap algorithm splitting text into lines that fit a pixel-width limit.
+//! - Atlas dirty-tracking for lazy GPU texture upload.
+
 use crate::runtime::error::{EngineError, EngineResult};
 /// Embedded PNG data for the 3×5 bitmap font.
 const FONT_3X5: &[u8] = include_bytes!("../../assets/fonts/bitmap_3x5.png");

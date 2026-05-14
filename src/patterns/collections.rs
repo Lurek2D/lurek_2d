@@ -1,4 +1,8 @@
 
+//! - Capacity metadata types for bounded stacks and queues.
+//! - Full-check logic shared by Lua-facing collection wrappers.
+//! - Zero capacity means unbounded; non-zero enforces a hard limit.
+
 /// Capacity metadata for a bounded stack.
 #[derive(Debug, Default, Clone)]
 pub struct StackMeta {

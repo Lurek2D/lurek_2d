@@ -1,3 +1,9 @@
+//! - Defines `EngineError` — the engine-wide error enum covering all subsystem failures.
+//! - Provides `ErrorCategory` for high-level failure classification (init, runtime, resource, script, filesystem, system).
+//! - Assigns stable machine-readable error codes (`E1001`–`E1012`) and recovery hints per variant.
+//! - Exposes `ErrorSnapshot` for serializable log/UI output with compact JSON encoding.
+//! - Supplies the `EngineResult<T>` convenience alias used throughout the runtime.
+
 use thiserror::Error;
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 /// High-level classification used to group runtime failures.

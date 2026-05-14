@@ -1,4 +1,9 @@
 
+//! - Ribbon trail built from a deque of aged world-space points.
+//! - Automatic point retirement when age exceeds configurable lifetime.
+//! - Width tapering and head-to-tail colour interpolation.
+//! - Render output as triangle-strip render commands or CPU-rasterised image.
+
 use crate::math::Color;
 use crate::render::renderer::{DrawMode, RenderCommand};
 /// Single point on a trail ribbon with world-space position and accumulated age.
@@ -28,6 +33,7 @@ pub struct Trail {
     /// Minimum distance in pixels between consecutive points; suppresses duplicates.
     pub min_distance: f32,
 }
+/// Methods for building, updating, and rendering a ribbon trail.
 impl Trail {
     /// Create a trail with `lifetime` seconds per point and `start_width` pixels at the head.
     pub fn new(lifetime: f32, start_width: f32) -> Self {

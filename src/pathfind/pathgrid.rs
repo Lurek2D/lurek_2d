@@ -1,6 +1,13 @@
 
+//! - Grid-based A* pathfinding with 8-directional movement and variable cell costs.
+//! - Bresenham line-of-sight checks for post-search path smoothing (string-pull).
+//! - World-space coordinate conversion: cell indices map to centres via configurable cell size.
+//! - Diagonal corner-cutting prevention to avoid clipping through blocked corners.
+//! - Octile distance heuristic for consistent and admissible cost estimation.
+
 use std::cmp::Ordering;
 use std::collections::BinaryHeap;
+/// Single cell in a pathfinding grid, storing traversal permission and movement cost.
 #[derive(Debug, Clone)]
 pub struct Cell {
     /// Whether agents may enter this cell.
@@ -31,6 +38,7 @@ impl PartialEq for AStarNode {
         self.f_cost == other.f_cost
     }
 }
+/// Marker trait required by `Ord`; equality is by f-score.
 impl Eq for AStarNode {}
 
 /// Delegates to `Ord`.

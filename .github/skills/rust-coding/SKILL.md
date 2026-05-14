@@ -51,11 +51,30 @@ Every one of the following lines must have a `///` comment directly above it —
 - Every field inside a struct — pub and private — one `///` line each
 - Every variant inside an enum — one `///` line each
 
-Plain `impl Type { }` (inherent impl) does NOT get a `///` on the `impl` line itself — document only the items inside.
+Plain `impl Type { }` (inherent impl): keep existing `///` comments and improve them. Add `///` when the block groups distinct functionality. Never remove existing `///` on impl blocks.
 
 **File level (`//!`)**
-Up to ~600 characters. Write as a wrapped paragraph of 3-6 short lines. Concrete facts only: what the file owns, its purpose and role in the system, what it does NOT own, and key dependencies.
-**NEVER list method names, function names, struct names, pub mod names, or any symbol from the file body.** The reader can see declarations directly. Write WHY and WHAT THIS FILE IS — not a table of contents, not a symbol index.
+Use bullet-point format: each line starts with `//! - `. Proportional to file size:
+- Small file (<3000 chars source): ~300 characters, 3-4 bullets.
+- Medium file (3000–10000 chars): ~600 characters, 5-7 bullets.
+- Large file (>10000 chars): ~1200 characters, 8-12 bullets.
+
+Content of bullets — describe in order:
+1. What the file provides (capability groups, not individual symbol names).
+2. How groups of related functions/types behave and what algorithms they use.
+3. Design decisions: data representations, fallback behaviors, degenerate-path handling.
+4. Integration notes: what kind of callers use this (runtime, tests, Lua bindings, tools).
+
+**Do NOT list individual function names, struct names, or method names.** Describe capabilities and behaviors. The reader can see declarations — the `//!` block explains WHY this file exists and HOW its pieces relate.
+
+Reference example (`src/math/geometry.rs`):
+```rust
+//! - Provides standalone 2D geometry algorithms over scalar coordinates and flat vertex arrays.
+//! - Basic helpers compute angle between points, circle point containment, circle-circle overlap, line-circle intersections, and segment-circle intersections.
+//! - Polygon helpers compute signed area, centroid with arithmetic-mean fallback for degenerate polygons, point-in-polygon by ray casting, and convex hull by Andrew monotone chain.
+//! - Functions favor simple tuples and slices so they can be used from runtime code, tests, and Lua bindings without owning heavier geometry types.
+//! - Degenerate paths generally return conservative values such as empty result sets, arithmetic centroids, or false intersections instead of panicking.
+```
 
 **Struct (`///`)**
 One line: role in the system + which other type uses it.
@@ -66,7 +85,7 @@ One line: purpose. Every variant: one line — when it applies.
 
 **Impl blocks (`///`)**
 Every `impl Trait for Type` block gets one `///` line above it: what the trait provides for this type.
-Plain `impl Type { }` blocks (inherent impl) do NOT get a `///` on the `impl` line itself — document only the methods inside.
+Plain `impl Type { }` blocks (inherent impl): if a `///` comment already exists, keep and improve it. When adding new impl blocks, a `///` comment is optional but recommended when the block groups a distinct set of related methods (e.g. constructors, getters, serialization helpers). Never remove an existing `///` on a plain impl.
 
 **Methods and functions (`///`)**
 One line only. State what it does AND what it returns, including edge cases inline.

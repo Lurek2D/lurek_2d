@@ -1,4 +1,9 @@
 
+//! - Minimap state, layer composition, marker tracking, and fog-of-war reveal.
+//! - Pixel-buffer rendering pipeline that writes the minimap texture each frame.
+//! - Province-map adapter bridging world regions into minimap layers.
+//! - Shared types for markers, overlays, pings, and color modes.
+
 #[allow(clippy::module_inception)]
 /// Core minimap state and update logic.
 pub mod minimap;

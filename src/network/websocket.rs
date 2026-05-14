@@ -1,4 +1,10 @@
 
+//! - Manage a pool of active WebSocket connections keyed by caller-assigned ID.
+//! - Spawn background threads for TLS/TCP handshakes so connect never blocks the game loop.
+//! - Non-blocking poll loop reads text, binary, and close frames from all live sockets.
+//! - Send text or binary frames, and perform graceful close with drain semantics.
+//! - Post all connection lifecycle events (open, message, error, close) through an MPSC channel.
+
 use super::net_thread::{NetworkResponse, WsEvent};
 use log::{debug, warn};
 use std::collections::HashMap;
@@ -22,6 +28,7 @@ struct PendingConnect {
     /// Channel that receives the completed socket or an error string.
     rx: mpsc::Receiver<Result<WebSocket<MaybeTlsStream<TcpStream>>, String>>,
 }
+/// Core connection lifecycle: connect, send, receive, close, and poll.
 impl WebSocketManager {
     /// Create an empty WebSocket manager with no connections.
     pub fn new() -> Self {

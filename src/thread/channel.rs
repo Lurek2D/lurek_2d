@@ -1,3 +1,9 @@
+//! - Thread-safe MPMC channel for passing typed values between Lua VMs.
+//! - Bounded and unbounded variants with configurable overflow policy.
+//! - Blocking `push`/`demand` and non-blocking `try_push`/`pop`/`peek` operations.
+//! - Recursive Lua-to-ChannelValue and ChannelValue-to-Lua conversion (nil, bool, number, string, table, bytes).
+//! - Named channels for diagnostics; monotonic push-count IDs for tracing.
+
 use crate::log_msg;
 use crate::runtime::log_messages::{CH01, CH02, CH03, CH04};
 use mlua::prelude::*;

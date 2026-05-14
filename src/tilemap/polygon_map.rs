@@ -1,3 +1,9 @@
+//! - Named convex/concave polygon regions with fill color and optional text labels.
+//! - Spatial query via ray-casting point-in-polygon test for hit detection.
+//! - Global outline and highlight styling shared across all regions.
+//! - Region management: add, remove, recolor, label, and enumerate.
+//! - Bounding-box and centroid computation for layout and camera framing.
+
 use crate::math::Color;
 use std::collections::HashMap;
 

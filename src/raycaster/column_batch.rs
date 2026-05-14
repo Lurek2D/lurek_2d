@@ -1,3 +1,7 @@
+//! - Per-column wall-slice projection data produced by the DDA stepper.
+//! - Full-frame column batch holding screen dimensions and flat floor/ceiling colors.
+//! - Bulk update from packed ray data and per-column depth queries.
+
 use crate::log_msg;
 use crate::math::Color;
 use crate::runtime::log_messages::{CB01, CB02};

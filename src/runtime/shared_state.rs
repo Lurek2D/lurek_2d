@@ -1,3 +1,14 @@
+//! - Central mutable state container shared across all engine subsystems during a frame.
+//! - Window state tracking: focus, DPI, fullscreen, scale mode, and pending resize/move requests.
+//! - Resource pools via SlotMap for textures, fonts, canvases, shaders, meshes, and particle systems.
+//! - Input aggregation: keyboard, mouse, touch, and gamepad state with vibration requests.
+//! - Timing and profiling: frame clock, delta time, FPS, per-phase timing breakdown.
+//! - Memory budget enforcement with LRU eviction of textures and canvases.
+//! - Asynchronous file I/O through GameFS with poll-based completion.
+//! - Physics stepping configuration and run-state parameters.
+//! - Render pipeline state: blend mode, stencil, depth, scissor, color mask, and command buffer.
+//! - Province registries, parallax layers, tilemaps, raycaster output, and UI context weak refs.
+
 use crate::audio::midi::MidiState;
 use crate::audio::Mixer;
 use crate::camera::Camera;
@@ -104,9 +115,9 @@ pub struct WindowState {
     /// Stores pending_scale_mode state.
     pub pending_scale_mode: Option<String>,
 }
-/// Implements trait behavior for this type.
+/// Provide sensible desktop-safe defaults for window state on startup.
 impl Default for WindowState {
-    /// Execute default helper and return its result.
+    /// Create a WindowState with default desktop-safe values.
     fn default() -> Self {
         Self {
             focused: true,
@@ -224,9 +235,9 @@ pub struct PhysicsRunConfig {
     /// Stores fixed_update_dt state.
     pub fixed_update_dt: f64,
 }
-/// Implements trait behavior for this type.
+/// Provide default 60 Hz physics stepping configuration.
 impl Default for PhysicsRunConfig {
-    /// Execute default helper and return its result.
+    /// Create a PhysicsRunConfig targeting 60 Hz with up to 8 sub-steps.
     fn default() -> Self {
         Self {
             fixed_dt: 1.0 / 60.0,
@@ -399,8 +410,9 @@ pub struct SharedState {
     /// Stores active_province_registry state.
     pub active_province_registry: Option<String>,
 }
+/// Core constructor and frame-lifecycle methods for SharedState.
 impl SharedState {
-    /// Execute new and return its result.
+    /// Create a new shared state with initial window dimensions, title, and game directory.
     pub fn new(width: u32, height: u32, title: &str, game_dir: PathBuf) -> Self {
         let fs = GameFS::new(game_dir.clone());
         SharedState {
@@ -486,7 +498,7 @@ impl SharedState {
             active_province_registry: None,
         }
     }
-    /// Execute step_timer and return its result.
+    /// Advance the frame clock and update delta time, FPS, and total time.
     pub fn step_timer(&mut self) -> f64 {
         self.frame_counter = self.frame_counter.wrapping_add(1);
         let dt = self.clock.tick();
@@ -498,15 +510,15 @@ impl SharedState {
         }
         dt
     }
-    /// Execute touch_texture and return its result.
+    /// Mark a texture as recently used for LRU eviction tracking.
     pub fn touch_texture(&mut self, key: TextureKey) {
         self.texture_last_used.insert(key, self.frame_counter);
     }
-    /// Execute touch_canvas and return its result.
+    /// Mark a canvas as recently used for LRU eviction tracking.
     pub fn touch_canvas(&mut self, key: CanvasKey) {
         self.canvas_last_used.insert(key, self.frame_counter);
     }
-    /// Execute evict_lru_resources and return its result.
+    /// Evict least-recently-used textures until memory usage is within budget.
     pub fn evict_lru_resources(&mut self) {
         let stats = self.resource_memory_stats();
         if stats.total_bytes <= self.resource_budget_bytes {
@@ -533,7 +545,7 @@ impl SharedState {
             }
         }
     }
-    /// Execute resource_memory_stats and return its result.
+    /// Compute current resource memory usage across all asset types.
     pub fn resource_memory_stats(&self) -> ResourceMemoryStats {
         let texture_bytes: u64 = self
             .textures
@@ -574,7 +586,7 @@ impl SharedState {
             shader_count: self.shaders.len() as u64,
         }
     }
-    /// Execute request_async_load and return its result.
+    /// Submit an asynchronous file read and return a poll handle.
     pub fn request_async_load(&mut self, path: &str) -> crate::runtime::error::EngineResult<u64> {
         let resolved = self.fs.resolve_read_path(path)?;
         if self.async_loader.is_none() {
@@ -587,7 +599,7 @@ impl SharedState {
             .request_load(resolved);
         Ok(handle.0)
     }
-    /// Execute request_async_write and return its result.
+    /// Submit an asynchronous file write and return a poll handle.
     pub fn request_async_write(
         &mut self,
         path: &str,
@@ -604,7 +616,7 @@ impl SharedState {
             .request_write(resolved, data);
         Ok(handle.0)
     }
-    /// Execute load_default_fonts and return its result.
+    /// Load all built-in font sizes and set the default active font.
     pub fn load_default_fonts(&mut self) {
         if self.default_font.is_some() {
             return;
@@ -619,7 +631,7 @@ impl SharedState {
             }
         }
     }
-    /// Execute poll_async_load and return its result.
+    /// Check the status of a pending asynchronous read operation.
     pub fn poll_async_load(&self, handle_id: u64) -> (String, Option<String>) {
         use crate::filesystem::{LoadHandle, LoadResult, LoadStatus};
         if let Some(ref loader) = self.async_loader {
@@ -635,7 +647,7 @@ impl SharedState {
             ("error".to_string(), None)
         }
     }
-    /// Execute poll_async_write and return its result.
+    /// Check the status of a pending asynchronous write operation.
     pub fn poll_async_write(&self, handle_id: u64) -> (String, Option<String>) {
         use crate::filesystem::{LoadHandle, WriteResult, WriteStatus};
         if let Some(ref loader) = self.async_loader {
@@ -664,8 +676,9 @@ pub struct RendererStats {
     /// Stores texture_memory state.
     pub texture_memory: usize,
 }
+/// Aggregate renderer statistics computed from current SharedState.
 impl SharedState {
-    /// Execute compute_stats and return its result.
+    /// Compute aggregate renderer statistics for the current frame.
     pub fn compute_stats(&self) -> RendererStats {
         RendererStats {
             draw_calls: self.render_commands.len(),

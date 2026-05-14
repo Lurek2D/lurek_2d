@@ -1,6 +1,9 @@
+//! - Fixed-size thread pool that runs A* pathfinding off the game thread.
+//! - Job submission, cancellation, and non-blocking result polling via channels.
+//! - Workers share a single work queue and skip cancelled requests early.
 
-use crate::pathfind::astar;
-use std::sync::{Arc, Mutex};
+use crate::pathfind::{astar, NavGrid};
+use std::sync::{mpsc, mpsc::{Receiver, Sender}, Arc, Mutex};
 use std::thread;
 /// In-flight A\* job sent to a worker thread.
 struct PathRequest {

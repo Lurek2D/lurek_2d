@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- docs/simulation: added Lurek2D-oriented rewrites of the block simulator idea documents under `ideas/simulation/out`, then consolidated the root architecture notes into a production `blocksim` design covering `src/blocksim`, `src/lua_api/blocksim_api.rs`, `library/blocksim`, TOML/Lua authoring split, monitor/anomaly rules, roadmap gates, and VS Code extension needs.
+
+- docs/cag: updated `workflow-audit-rust-src-docs.prompt.md` to require a strict read -> correct -> save -> next-file loop and to forbid subagents, cargo commands, and external validation tooling during the pass.
+
 - docs/cag: added `workflow-audit-rust-src-docs.prompt.md` for manual, alphabetical Rust doc audits across `src/` excluding `src/lua_api`, with whole-file reads, one-file-at-a-time edits, feature-based `//!` headers, and immediate per-file validation.
 
 - docs/cag: removed optional `agent` field from prompt frontmatters and made `agent` field non-required in `cag_validate.py`; agents no longer need explicit routing—they work autonomously until Manager calls or task completes.

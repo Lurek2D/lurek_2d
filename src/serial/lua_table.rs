@@ -1,17 +1,31 @@
+//! - Bidirectional conversion between Lua tables and a typed serial value tree.
+//! - Supports null, bool, int, float, string, sequence, and map variants.
+//! - Detects array-like tables automatically and emits `Seq`; otherwise emits `Map`.
+
 use indexmap::IndexMap;
 use mlua::prelude::{Lua, LuaResult, LuaValue};
 use std::fmt;
+/// Type-erased value tree used for Lua-to-Rust serialization.
 #[derive(Debug, Clone)]
 pub enum SerialValue {
+    /// Nil / absent value.
     Null,
+    /// Boolean value.
     Bool(bool),
+    /// Integer value (whole numbers stored losslessly).
     Int(i64),
+    /// Floating-point value.
     Float(f64),
+    /// UTF-8 string value.
     Str(String),
+    /// Ordered sequence (array-like Lua table).
     Seq(Vec<SerialValue>),
+    /// String-keyed map (non-sequential Lua table).
     Map(IndexMap<String, SerialValue>),
 }
+/// Display scalar values inline; complex values show `[complex]`.
 impl fmt::Display for SerialValue {
+    /// Format this value for user-facing display.
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             SerialValue::Null => write!(f, ""),
@@ -23,6 +37,7 @@ impl fmt::Display for SerialValue {
         }
     }
 }
+/// Convert a `SerialValue` tree into a Lua value (tables for Seq/Map).
 pub fn to_lua<'lua>(lua: &'lua Lua, val: &SerialValue) -> LuaResult<LuaValue<'lua>> {
     match val {
         SerialValue::Null => Ok(LuaValue::Nil),
@@ -46,6 +61,7 @@ pub fn to_lua<'lua>(lua: &'lua Lua, val: &SerialValue) -> LuaResult<LuaValue<'lu
         }
     }
 }
+/// Convert a Lua value into a `SerialValue` tree, detecting arrays automatically.
 pub fn from_lua(val: &LuaValue) -> LuaResult<SerialValue> {
     match val {
         LuaValue::Nil => Ok(SerialValue::Null),

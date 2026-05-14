@@ -1,5 +1,14 @@
+//! - Stateful per-unit pathfinder wrapping a shared `NavGrid` reference.
+//! - Full A* path search with optional string-pull smoothing for shorter results.
+//! - Partial-path expansion with configurable node budget for real-time budgets.
+//! - BFS reachability test and nearest-walkable-cell search within a radius.
+//! - LRU path cache with configurable max size and manual invalidation.
+//! - Octile heuristic and Bresenham line-of-sight utility helpers.
+
+use crate::runtime::log_messages::{UP01,UP02,UP03};
 
 use crate::log_msg;
+use crate::pathfind::{astar, nav_grid::NavGrid};
 use std::cell::RefCell;
 use std::collections::{HashMap, VecDeque};
 use std::rc::Rc;

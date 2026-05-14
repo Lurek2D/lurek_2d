@@ -1,17 +1,33 @@
+//! - Format detection, decoding, and encoding for the serial module.
+//! - Supports JSON, TOML, CSV, MsgPack, XML, and INI formats.
+//! - Provides auto-detection of text formats by content inspection.
+//! - Separates text-based and binary decode paths.
+
 use super::{
     from_csv, from_ini, from_json, from_toml, from_xml, to_csv, to_json, to_toml, CsvOptions,
 };
 use super::{from_msgpack, to_msgpack, SerialValue};
+
+/// Supported serialization formats.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum SerialFormat {
+    /// JSON format.
     Json,
+    /// TOML format.
     Toml,
+    /// CSV (comma-separated values) format.
     Csv,
+    /// MessagePack binary format.
     MsgPack,
+    /// XML format.
     Xml,
+    /// INI/CFG key-value format.
     Ini,
 }
+
+/// Methods for parsing and converting `SerialFormat`.
 impl SerialFormat {
+    /// Parse a format name string into a `SerialFormat` variant.
     pub fn parse(s: &str) -> Option<Self> {
         match s.trim().to_ascii_lowercase().as_str() {
             "json" => Some(Self::Json),
@@ -23,6 +39,8 @@ impl SerialFormat {
             _ => None,
         }
     }
+
+    /// Detect format from a file path extension.
     pub fn from_extension(path: &str) -> Option<Self> {
         let path_lower = path.to_ascii_lowercase();
         let ext = if let Some(dot_idx) = path_lower.rfind('.') {
@@ -40,6 +58,8 @@ impl SerialFormat {
             _ => None,
         }
     }
+
+    /// Return the canonical string name for this format.
     pub fn as_str(self) -> &'static str {
         match self {
             Self::Json => "json",
@@ -51,19 +71,32 @@ impl SerialFormat {
         }
     }
 }
+
+/// Options controlling text decoding behavior.
 #[derive(Debug, Clone, Copy, Default)]
 pub struct DecodeOptions {
+    /// CSV-specific parsing options.
     pub csv: CsvOptions,
 }
+
+/// Options controlling encoding behavior.
 #[derive(Debug, Clone, Copy, Default)]
 pub struct EncodeOptions {
+    /// When true, JSON output is pretty-printed.
     pub json_pretty: bool,
+    /// CSV-specific encoding options.
     pub csv: CsvOptions,
 }
+
+/// Result of encoding a value — either UTF-8 text or raw bytes.
 pub enum EncodedValue {
+    /// UTF-8 encoded text output.
     Text(String),
+    /// Raw binary output (e.g. MsgPack).
     Binary(Vec<u8>),
 }
+
+/// Detect the serialization format of a text string by content inspection.
 pub fn detect_format(input: &str) -> Option<SerialFormat> {
     let s = input.trim_start();
     if s.is_empty() {
@@ -88,6 +121,8 @@ pub fn detect_format(input: &str) -> Option<SerialFormat> {
     }
     None
 }
+
+/// Decode a text string into a `SerialValue`, optionally specifying the format.
 pub fn decode_text(
     input: &str,
     format: Option<SerialFormat>,
@@ -107,6 +142,8 @@ pub fn decode_text(
         }
     }
 }
+
+/// Decode a binary byte slice into a `SerialValue` using the given format.
 pub fn decode_bytes(input: &[u8], format: SerialFormat) -> Result<SerialValue, String> {
     match format {
         SerialFormat::MsgPack => from_msgpack(input),
@@ -116,6 +153,8 @@ pub fn decode_bytes(input: &[u8], format: SerialFormat) -> Result<SerialValue, S
         )),
     }
 }
+
+/// Encode a `SerialValue` into the specified format.
 pub fn encode(
     value: &SerialValue,
     format: SerialFormat,

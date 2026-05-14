@@ -1,4 +1,8 @@
 
+//! - Per-particle runtime state: position, velocity, lifetime, rotation, and acceleration.
+//! - Holds spawn-time origin for radial/tangential force calculations.
+//! - Carries a shape seed for deterministic procedural polygon generation.
+
 /// Per-particle state owned by the `ParticleSystem` pool.
 #[derive(Clone, Debug)]
 pub struct Particle {

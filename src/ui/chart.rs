@@ -1,3 +1,19 @@
+//! - Software-rasterised chart rendering into `ImageData` pixel buffers — no GPU dependency.
+//! - Five chart types: `LineChart` (polyline + dots), `BarChart` (grouped), `ScatterPlot`,
+//!   `PieChart` (per-pixel angle test), and `AreaChart` (stacked cumulative layers).
+//! - Shared `ChartConfig` controls dimensions, background/axis/grid/label colours, title,
+//!   margins, and grid visibility across all chart types.
+//! - Grid and axis helpers draw horizontal/vertical grid lines, tick marks, and numeric labels
+//!   scaled to arbitrary value ranges on both axes.
+//! - Legend panel rendered as a floating colour-swatch box positioned near the top-right corner.
+//! - Pie chart uses brute-force per-pixel distance and angle checks with edge-darkening for
+//!   anti-aliased-looking wedge boundaries; divider lines drawn as white radial spokes.
+//! - Area chart performs linear interpolation between uniform X samples and fills columns
+//!   cumulatively from the bottom layer upward.
+//! - `safe_circle` helper rasterises filled circles clamped to image bounds for dot markers.
+//! - All draw operations write directly to RGBA pixel data; output is a plain `ImageData` that
+//!   can be saved to PNG or uploaded as a GPU texture.
+
 use crate::image::ImageData;
 use crate::math::color::Color;
 

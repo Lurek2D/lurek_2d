@@ -1,3 +1,16 @@
+//! - Wavefront OBJ and MTL file loading via `tobj` or a built-in hand parser.
+//! - Triangulated face model with per-vertex position, UV, and normal indices.
+//! - Named materials carrying diffuse colour and optional texture path.
+//! - CPU software rasteriser producing `ImageData` thumbnails with back-face culling, Z-buffer, and key lighting.
+//! - Perspective projection of OBJ models into engine `Mesh` geometry for GPU rendering.
+//! - Instance projection with Y-axis rotation, uniform scale, and depth output for scene sorting.
+//! - Local `Vec3`/`Vec2` types for self-contained 3-D math without engine-wide dependencies.
+//! - `ObjCamera` helper packing position, lookat target, and FOV for projection calls.
+//! - `ObjLoader` stateless parser facade with both file-based and in-memory entry points.
+//! - MTL parsing extracting `newmtl`, `Kd`, and `map_Kd` into a flat material list.
+//! - OBJ face-vertex index resolver handling 1-based and negative (relative) indices.
+//! - Edge-function barycentric rasterisation for the CPU renderer path.
+
 use crate::image::ImageData;
 use crate::render::mesh::{Mesh, MeshDrawMode, MeshVertex};
 use crate::runtime::resource_keys::TextureKey;
@@ -36,6 +49,7 @@ pub struct Vec3 {
     /// Z component.
     pub z: f32,
 }
+/// Arithmetic helpers for the local 3-D vector type.
 impl Vec3 {
     /// Construct from components.
     pub fn new(x: f32, y: f32, z: f32) -> Self {
@@ -132,6 +146,7 @@ pub struct ObjModel {
     /// Materials from `.mtl` file or inline MTL declarations.
     pub materials: Vec<ObjMaterial>,
 }
+/// Query, CPU-rasterise, and project operations on a parsed OBJ model.
 impl ObjModel {
     /// Return the number of triangles in this model.
     pub fn face_count(&self) -> usize {
@@ -519,6 +534,7 @@ impl ObjModel {
 }
 /// Stateless parser wrapper for Wavefront OBJ files.
 pub struct ObjLoader;
+/// File-based and in-memory OBJ/MTL parsing entry points.
 impl ObjLoader {
     /// Load and triangulate an OBJ file from `path`, using `tobj`; return error on I/O or parse failure.
     pub fn load_file(path: impl AsRef<Path>) -> Result<ObjModel, ObjError> {
@@ -811,6 +827,7 @@ pub struct ObjCamera {
     /// Vertical field of view in degrees.
     pub fov_y_deg: f32,
 }
+/// Construction and unpacking helpers for the perspective camera.
 impl ObjCamera {
     /// Construct a camera from position, target, and FOV.
     pub fn new(x: f32, y: f32, z: f32, tx: f32, ty: f32, tz: f32, fov_y_deg: f32) -> Self {

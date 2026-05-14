@@ -1,4 +1,8 @@
 
+//! - Numeric limits for peer connections, channels, and buffer sizes.
+//! - Default fallback values when game config omits network parameters.
+//! - Timeout durations for HTTP and transport-level operations.
+
 /// Hard ceiling on simultaneous peer connections across all transports.
 pub const MAX_PEERS: usize = 4096;
 /// Default peer slot count used when the game does not specify a capacity.

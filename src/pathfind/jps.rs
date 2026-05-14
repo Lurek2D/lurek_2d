@@ -1,6 +1,13 @@
 
+//! - Jump Point Search (JPS) optimised A* on uniform-cost 8-directional grids.
+//! - Prunes symmetric neighbours to skip large open areas without expanding every cell.
+//! - Identifies forced neighbours and jump points along cardinal and diagonal directions.
+//! - Produces a full tile-by-tile path by interpolating between jump points.
+//! - Uses octile distance heuristic and a min-heap open list.
+
 use std::cmp::Ordering;
 use std::collections::{BinaryHeap, HashMap};
+/// Uniform-cost 8-directional grid with Jump Point Search pathfinding.
 pub struct JpsGrid {
     /// Grid width in cells.
     pub width: u32,

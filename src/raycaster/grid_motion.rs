@@ -1,3 +1,7 @@
+//! - Discrete movement actions (forward, backward, strafe) for grid-locked locomotion.
+//! - Direction-to-delta conversion for 4-directional facing (E/S/W/N).
+//! - Collision-checked tile movement with configurable blocking predicate.
+
 /// Discrete movement intent for a single step on the grid.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum GridMoveAction {

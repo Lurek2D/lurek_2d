@@ -1,6 +1,12 @@
 
+//! - Rasterisation of a single parallax layer into an `ImageData` bitmap.
+//! - Applies tint, opacity, and visibility when drawing.
+//! - Produces a solid-colour image sized to the requested dimensions.
+
 use super::layer::ParallaxLayer;
 use crate::image::ImageData;
+
+/// Drawing helpers for `ParallaxLayer`.
 impl ParallaxLayer {
 /// Rasterise this layer into a solid-colour `ImageData` sized `width × height`; returns transparent image when `visible` is `false`.
     pub fn draw_to_image(&self, width: u32, height: u32) -> ImageData {

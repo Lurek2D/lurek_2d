@@ -1,3 +1,9 @@
+//! - Cardinal facing direction with angle, delta, and rotation helpers.
+//! - Discrete grid walker with forward, backward, and strafe movement.
+//! - Previous-state snapshot for smooth frame interpolation of position and heading.
+//! - Relative-facing query to classify adjacent tiles as front, back, left, or right.
+//! - Passability checks decoupled from actual collision data.
+
 use std::f32::consts::PI;
 
 /// Cardinal facing direction for a grid-aligned entity.
@@ -12,6 +18,7 @@ pub enum Facing {
     /// Facing toward decreasing X (left on screen).
     West = 3,
 }
+/// Methods for parsing, converting, and rotating cardinal directions.
 impl Facing {
     /// Parse a direction string (`"north"`, `"n"`, etc.); returns `None` on unknown input.
     pub fn parse(s: &str) -> Option<Self> {
@@ -100,6 +107,7 @@ pub struct TileWalker {
     /// Facing at the last `begin_move` snapshot.
     prev_facing: Facing,
 }
+/// Grid movement, rotation, interpolation, and relative-facing queries.
 impl TileWalker {
     /// Create a `TileWalker` at `(x, y)` facing `facing`; previous state initialised to the same values.
     pub fn new(x: i32, y: i32, facing: Facing) -> Self {

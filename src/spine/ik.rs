@@ -1,3 +1,7 @@
+//! - Two-bone inverse-kinematics constraint for skeleton animation.
+//! - Solves root and elbow rotations via law-of-cosines to reach a world-space target.
+//! - Supports configurable bend direction (positive or negative).
+
 use super::bone::Bone;
 
 /// 2-bone IK constraint that drives root and elbow rotations toward a world-space target.

@@ -1,4 +1,10 @@
 
+//! - Emitter configuration struct (`ParticleConfig`) with all tunable parameters serialisable to TOML.
+//! - Enums controlling spawn distribution, insertion order, operating state, and coordinate mode.
+//! - Geometric emission shapes: point, circle, rectangle, ring, line, cone, star, spiral, and custom callback.
+//! - Helper types for point attractors and axis-aligned bounce boundaries.
+//! - Relative-mode and area-distribution strategies for world-space vs emitter-attached particles.
+
 use super::shapes::ParticleShape;
 use crate::runtime::resource_keys::TextureKey;
 /// Controls how particles are distributed across the emitter's area when `area_width`/`area_height` > 0.
@@ -259,6 +265,7 @@ pub struct ParticleConfig {
     /// Ring thickness expressed as a fraction of the outer radius in `[0.0, 1.0]`.
     pub ring_thickness: f32,
 }
+/// Provide sensible starting values for a general-purpose upward particle fountain.
 impl Default for ParticleConfig {
     fn default() -> Self {
         Self {
@@ -322,6 +329,7 @@ impl Default for ParticleConfig {
         }
     }
 }
+/// Construction helpers for `ParticleConfig`.
 impl ParticleConfig {
     /// Parse a `ParticleConfig` from a TOML string; returns the error string on failure.
     pub fn from_toml_str(toml_str: &str) -> Result<Self, String> {

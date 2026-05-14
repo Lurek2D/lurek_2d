@@ -1,3 +1,10 @@
+//! - Grid-based influence map with named floating-point layers over a uniform cell grid.
+//! - Stamp radial influence with distance falloff, propagate via neighbourhood smoothing, and decay over time.
+//! - Query aggregated influence inside world-space rectangles or locate extrema positions.
+//! - Blend multiple layers with weighted combination into a destination layer.
+//! - Debug visualisation rendering layers into an RGBA image for inspection.
+
+use crate::runtime::log_messages::{IF01,IF02,IF03};
 
 use crate::log_msg;
 use std::collections::HashMap;

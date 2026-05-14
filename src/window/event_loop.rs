@@ -1,3 +1,8 @@
+//! - Multi-monitor enumeration, display info snapshots, and primary-monitor detection.
+//! - Monitor selection with fallback logic (current → primary → first available).
+//! - Window centering and cross-display movement helpers.
+//! - Startup monitor resolution for initial window placement.
+
 use winit::event_loop::ActiveEventLoop;
 use winit::monitor::MonitorHandle;
 use winit::window::Window;

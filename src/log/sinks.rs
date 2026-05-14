@@ -1,3 +1,14 @@
+//! - Log severity levels and string parsing for sink-level filtering.
+//! - In-memory ring-buffer sink for captured log entries with structured fields.
+//! - Output format selection: plain text, JSON, and NDJSON line formats.
+//! - Timestamp and ANSI color formatting helpers for human-readable output.
+//! - Rotating file sink with configurable size limit and backup management.
+//! - Buffered write coalescing to reduce OS syscall frequency.
+//! - Tag-based allow-list filtering per sink instance.
+//! - Callback sink variant for Lua-side log dispatch.
+//! - Unified `Sink` abstraction combining level, format, and storage backend.
+//! - `SinkRegistry` for multi-sink dispatch of unstructured and structured messages.
+
 use crate::data::RingBuffer;
 use std::collections::BTreeMap;
 use std::fs::{self, File, OpenOptions};

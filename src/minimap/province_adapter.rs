@@ -1,4 +1,8 @@
 
+//! - Bridge between `ProvinceRegistry` terrain/visibility data and the minimap grid.
+//! - Copy terrain types, fog levels, and political palette colours into a `Minimap`.
+//! - Clips to the smaller of the two grids so mismatched sizes never panic.
+
 use crate::minimap::minimap::Minimap;
 use crate::minimap::types::FogLevel;
 use crate::province::registry::ProvinceRegistry;

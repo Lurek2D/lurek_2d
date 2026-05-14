@@ -1,20 +1,35 @@
+//! - MessagePack binary encoding and decoding for SerialValue trees.
+//! - Intermediate MsgValue enum bridging SerialValue to rmp_serde.
+//! - Size estimation for pre-allocated encode buffers.
+//! - JSON-compatible encode/decode path via serde_json::Value.
+
 use super::lua_table::SerialValue;
 use crate::log_msg;
 use crate::runtime::log_messages::{SR04_MSGPACK_DEC, SR05_MSGPACK_ENC};
 use indexmap::IndexMap;
 use rmp_serde as rmps;
 use serde::{Deserialize, Serialize};
+
+/// Intermediate value type used for MessagePack serialization roundtrips.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub(super) enum MsgValue {
+    /// Nil / null value.
     Null,
+    /// Boolean value.
     Bool(bool),
+    /// Signed 64-bit integer.
     Int(i64),
+    /// 64-bit floating-point number.
     Float(f64),
+    /// UTF-8 string.
     Str(String),
+    /// Ordered sequence of values.
     Seq(Vec<MsgValue>),
+    /// String-keyed map of values.
     Map(std::collections::HashMap<String, MsgValue>),
 }
+/// Convert a SerialValue tree into the MsgValue intermediate representation.
 fn serial_to_msg(val: &SerialValue) -> MsgValue {
     match val {
         SerialValue::Null => MsgValue::Null,
@@ -32,6 +47,7 @@ fn serial_to_msg(val: &SerialValue) -> MsgValue {
         }
     }
 }
+/// Estimate the encoded byte size of a MsgValue for buffer pre-allocation.
 fn estimate_msg_size(val: &MsgValue) -> usize {
     match val {
         MsgValue::Null => 1,
@@ -48,6 +64,7 @@ fn estimate_msg_size(val: &MsgValue) -> usize {
         }
     }
 }
+/// Convert a decoded MsgValue back into a SerialValue tree.
 fn msg_to_serial(val: MsgValue) -> SerialValue {
     match val {
         MsgValue::Null => SerialValue::Null,
@@ -65,6 +82,7 @@ fn msg_to_serial(val: MsgValue) -> SerialValue {
         }
     }
 }
+/// Encode a SerialValue tree into MessagePack bytes.
 pub fn encode(val: &SerialValue) -> Result<Vec<u8>, String> {
     let mv = serial_to_msg(val);
     let mut bytes = Vec::with_capacity(estimate_msg_size(&mv));
@@ -74,6 +92,7 @@ pub fn encode(val: &SerialValue) -> Result<Vec<u8>, String> {
     log_msg!(debug, SR05_MSGPACK_ENC);
     Ok(bytes)
 }
+/// Decode MessagePack bytes into a SerialValue tree.
 pub fn decode(bytes: &[u8]) -> Result<SerialValue, String> {
     let mv: MsgValue = {
         let mut deserializer = rmps::Deserializer::new(std::io::Cursor::new(bytes));
@@ -88,10 +107,12 @@ pub fn decode(bytes: &[u8]) -> Result<SerialValue, String> {
     log_msg!(debug, SR04_MSGPACK_DEC);
     Ok(msg_to_serial(mv))
 }
+/// Encode a serde_json Value into MessagePack bytes.
 pub fn encode_json(value: &serde_json::Value) -> Result<Vec<u8>, String> {
     let bytes = rmps::to_vec(value).map_err(|e| format!("MessagePack encode error: {e}"))?;
     Ok(bytes)
 }
+/// Decode MessagePack bytes into a serde_json Value.
 pub fn decode_json(bytes: &[u8]) -> Result<serde_json::Value, String> {
     use serde::Deserialize;
     let mut deserializer = rmps::Deserializer::new(std::io::Cursor::new(bytes));

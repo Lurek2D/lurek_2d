@@ -1,4 +1,8 @@
 
+//! - Entity snapshot capture and wire serialization for networked state.
+//! - Linear dead-reckoning prediction between ticks.
+//! - Server-authoritative reconciliation with configurable blend factor.
+
 use crate::network::message::NetValue;
 /// Point-in-time position and velocity snapshot for one networked entity.
 #[derive(Debug, Clone, PartialEq)]
@@ -16,6 +20,7 @@ pub struct EntitySnapshot {
     /// Y velocity in world units per second.
     pub vy: f32,
 }
+/// Serialization and deserialization of entity snapshots to/from `NetValue`.
 impl EntitySnapshot {
     /// Encode this snapshot as a `NetValue::Map` suitable for wire transmission.
     pub fn to_netvalue(&self) -> NetValue {

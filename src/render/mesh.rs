@@ -1,3 +1,7 @@
+//! - 2D mesh geometry: vertices with position, UV, and RGBA color.
+//! - Triangle topology modes: independent triangles, fan, and strip.
+//! - Index-buffer support and topology-agnostic triangulation.
+
 use crate::log_msg;
 use crate::runtime::log_messages::MS01;
 use crate::runtime::resource_keys::TextureKey;

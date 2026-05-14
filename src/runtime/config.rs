@@ -1,3 +1,10 @@
+//! - Runtime configuration types parsed from `conf.toml` at engine startup.
+//! - Top-level `Config` struct with sections for window, renderer, modules, and performance.
+//! - Feature-toggle table (`ModulesConfig`) controlling which engine subsystems are loaded.
+//! - Dependency validation that auto-disables modules when prerequisites are off.
+//! - TOML merge logic: user overrides are layered on top of built-in defaults.
+//! - Serde-based serialization for round-trip configuration persistence.
+
 #[allow(unused_imports)]
 use crate::log_msg;
 use crate::runtime::log_messages::{
@@ -147,6 +154,7 @@ pub struct ModulesConfig {
     /// Enable globe module.
     pub globe: bool,
 }
+/// Dependency validation and auto-fix logic for module toggles.
 impl ModulesConfig {
     /// Disable modules whose dependencies are not enabled and emit warnings.
     pub fn validate_and_fix(&mut self) {
@@ -307,6 +315,7 @@ impl Default for Config {
         }
     }
 }
+/// Loading and merging logic for runtime configuration files.
 impl Config {
     /// Load configuration, preferring `conf.toml` when it exists in `game_dir`.
     pub fn load(game_dir: &Path) -> (Self, Option<String>) {

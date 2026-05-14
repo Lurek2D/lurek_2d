@@ -1,3 +1,7 @@
+//! - Classify shared borders between adjacent provinces by terrain type.
+//! - Map land/water combinations to discrete border classes (land-land, coast, sea-sea).
+//! - Provide a single pure function with no side effects for pipeline integration.
+
 use crate::province::types::{BorderClass, ProvinceStyle};
 
 /// Classify the shared border between provinces with styles a and b; uses terrain_type == 0 as the water test.

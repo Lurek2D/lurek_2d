@@ -1,4 +1,12 @@
 
+//! - Lua-visible tween handles: single-field (`LuaTween`), sequence (`LuaTweenSequence`), and parallel (`LuaTweenParallel`).
+//! - Each handle owns its easing state, target registry key, start/end values, and lifecycle callbacks.
+//! - Tick-driven interpolation writes computed values directly into Lua tables each frame.
+//! - Repeat, yoyo, relative-offset, and custom easing function support on single tweens.
+//! - Sequences consume multiple steps (tween, delay, callback) in order, carrying leftover dt across boundaries.
+//! - Parallel groups advance all lanes simultaneously and complete when every lane finishes.
+//! - Coroutine waiter pattern: tweens and sequences resume registered coroutines on completion.
+
 use crate::tween::TweenState;
 use mlua::prelude::*;
 

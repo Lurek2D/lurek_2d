@@ -1,3 +1,8 @@
+//! - Province map system: registry, geometry cache, GPU bridge, and rendering.
+//! - Imports colour-map PNG + CSV/TOML metadata into an authoritative ProvinceRegistry.
+//! - Generates RenderCommands for fills, borders, capitals, and text labels.
+//! - Provides view-transform helpers for camera fitting and screen-to-map projection.
+
 /// Border classification: derive BorderClass from two adjacent province styles.
 pub mod borders;
 /// Binary-format geometry cache for province spans and border segments.

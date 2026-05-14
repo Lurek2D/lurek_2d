@@ -1,3 +1,7 @@
+//! - Camera fitting, zoom-at-anchor, and coordinate conversion between screen, map, and cell space.
+//! - Screen-to-map and map-to-cell transforms with safe clamping for zero-size or non-finite inputs.
+//! - All functions are pure (no state); denominators clamped to avoid division by zero.
+
 /// Return (cam_x, cam_y, zoom) that fits the full map centred on screen; clamps zoom to ≥ 0.0001.
 pub fn fit_camera_to_screen(
     map_w: u32,

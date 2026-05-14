@@ -1,3 +1,7 @@
+//! - Single-sprite data type holding texture, position, scale, rotation, and colour tint.
+//! - Constructor and transform setters for positioning and styling sprites.
+//! - Designed as a lightweight value object consumed by the render pipeline.
+
 use crate::math::Color;
 use crate::math::Vec2;
 

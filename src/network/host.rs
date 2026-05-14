@@ -1,4 +1,13 @@
 
+//! - ENet host wrapper owning a non-blocking UDP socket and all peer slots for one endpoint.
+//! - Host role classification (Server, Client, combined Host) for session routing.
+//! - Event-driven poll loop yielding Connect, Disconnect, and Receive events.
+//! - Connection lifecycle: initiate, graceful disconnect, forced disconnect, and reset.
+//! - Unicast and broadcast packet sending with reliable or unreliable delivery.
+//! - Peer diagnostics: round-trip time, connection state, address, and full statistics snapshot.
+//! - Bandwidth and channel limit configuration at runtime.
+//! - Convenience constructors for common server and client bind patterns.
+
 use super::constants::{DEFAULT_CHANNELS, DEFAULT_PEERS, MAX_PEERS};
 use super::error::NetworkError;
 use crate::log_msg;
@@ -51,6 +60,7 @@ pub enum NetworkEvent {
         data: Vec<u8>,
     },
 }
+/// Core networking operations: creation, polling, sending, peer management, and teardown.
 impl NetworkHost {
     /// Create and bind a new ENet host; returns `PeerLimitExceeded` if `peer_count` exceeds `MAX_PEERS`.
     pub fn new(

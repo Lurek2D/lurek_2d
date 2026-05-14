@@ -1,3 +1,7 @@
+//! - Fixed-size worker pool backed by LuaThread instances sharing input/output channels.
+//! - Submit work items, collect results non-blocking, and join with optional timeout.
+//! - Workers auto-register `__pool_input`/`__pool_output` named channels for Lua-side access.
+
 use crate::thread::channel::{Channel, ChannelValue};
 use crate::thread::worker::LuaThread;
 use std::collections::HashMap;
@@ -18,6 +22,7 @@ pub struct ThreadPool {
     #[allow(dead_code)]
     named_channels: Arc<Mutex<HashMap<String, Arc<Channel>>>>,
 }
+/// Core lifecycle and work-dispatch methods for `ThreadPool`.
 impl ThreadPool {
     /// Create a pool of `size` workers, each executing `code`, wired to shared input/output channels.
     pub fn new(size: usize, code: String) -> Self {

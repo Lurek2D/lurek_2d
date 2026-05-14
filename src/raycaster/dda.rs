@@ -1,3 +1,14 @@
+//! - 2D grid map and Digital Differential Analyzer (DDA) ray-stepping engine.
+//! - Single-ray casting with perpendicular distance correction and texture-U sampling.
+//! - Multi-hit ray casting through transparent walls up to a configurable depth.
+//! - Fan-cast (cast_rays) with fish-eye correction for full-screen column rendering.
+//! - Flat-packed ray output for efficient Lua-side consumption without per-hit tables.
+//! - Grid-based line-of-sight query using DDA traversal.
+//! - World-to-screen sprite projection with FOV-aware perspective transform.
+//! - Per-pixel floor/ceiling UV generation for textured floor casting.
+//! - Per-tile-type wall alpha overrides enabling transparent and semi-transparent walls.
+//! - Bounds-safe cell access with silent clamping for out-of-range coordinates.
+
 use super::ray_hit::RayHit;
 use super::sprite_projection::SpriteProjection;
 use crate::log_msg;
@@ -14,6 +25,7 @@ pub struct Raycaster2D {
     /// Per-tile-type alpha overrides for transparent walls; default 1.0 (opaque).
     wall_alphas: HashMap<u8, f32>,
 }
+/// Core DDA grid map implementation with ray-casting, visibility, and projection methods.
 impl Raycaster2D {
     /// Create a new empty grid of `width × height` open cells.
     pub fn new(width: u32, height: u32) -> Self {
@@ -254,6 +266,14 @@ impl Raycaster2D {
     }
     /// Cast `count` rays spread across `fov` from `(ox, oy)`; return one `RayHit` per ray with fish-eye correction.
     pub fn cast_rays(
+        &self,
+        ox: f32,
+        oy: f32,
+        angle: f32,
+        fov: f32,
+        count: u32,
+        max_dist: f32,
+    ) -> Vec<RayHit> {
         let mut results = Vec::with_capacity(count as usize);
         let half_fov = fov / 2.0;
         for i in 0..count {

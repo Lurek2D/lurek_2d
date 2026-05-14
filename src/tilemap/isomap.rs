@@ -1,3 +1,9 @@
+//! - Multi-level isometric tile map with per-tile draw-layer parts (floor, walls, objects).
+//! - Diamond-projection coordinate conversion between tile space and screen space.
+//! - Painter-sorted draw iteration via diagonal-strip traversal across elevation levels.
+//! - Per-level visibility toggling and configurable part draw order.
+//! - Bulk fill and individual GID get/set for each tile-part slot.
+
 /// Draw-layer part of an isometric tile (floor, walls, objects).
 #[non_exhaustive]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

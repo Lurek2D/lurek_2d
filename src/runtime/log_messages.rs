@@ -1,7 +1,16 @@
 
+//! - Stable, structured log message identifiers for all engine subsystems.
+//! - Each constant provides a short code (e.g. "L001") used as prefix in log output.
+//! - Identifiers grouped by domain: L=lifecycle, A=audio, G=graphics, P=physics, FS=filesystem.
+//! - Additional prefixes: AN=animation, EN=ECS, TM=tilemap, SV=save, SC=scene, TH=thread, PF=pathfind.
+//! - Extended prefixes: MD=mods, NW=network, PL=pipeline, AT=automation, CP=compute, SR=serial, GU=GUI.
+//! - Runtime log level control via set_log_level/get_log_level with atomic override.
+//! - log_msg! macro for consistent formatted log output with message lookup.
+//! - Codes are stable across versions for log parsing, alerting, and external tool integration.
+
 use std::sync::atomic::{AtomicU8, Ordering};
 static LOG_LEVEL_OVERRIDE: AtomicU8 = AtomicU8::new(0);
-/// Execute set_log_level and return its result.
+/// Set the global runtime log level from a string name (off, error, warn, info, debug, trace).
 pub fn set_log_level(level: &str) {
     let filter = match level.to_lowercase().as_str() {
         "off" | "none" => log::LevelFilter::Off,
@@ -22,7 +31,7 @@ pub fn set_log_level(level: &str) {
     log::set_max_level(filter);
     LOG_LEVEL_OVERRIDE.store(filter as u8, Ordering::Relaxed);
 }
-/// Execute get_log_level and return its result.
+/// Return the current global log level as a static string.
 pub fn get_log_level() -> &'static str {
     match log::max_level() {
         log::LevelFilter::Off => "off",
@@ -111,6 +120,7 @@ pub const L030_ASYNC_LOAD_REQUEST: &str = "L030";
 pub const L031_ASYNC_LOAD_COMPLETE: &str = "L031";
 /// Stable log message identifier.
 pub const L032_BATCH_STATS: &str = "L032";
+/// Emit a structured log message using a stable identifier and optional format arguments.
 #[macro_export]
 macro_rules! log_msg {
     (error, $id:expr) => {

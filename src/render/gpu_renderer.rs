@@ -1,3 +1,16 @@
+//! - wgpu-based GPU renderer: vertex batching, draw-call encoding, pipeline caching, and frame presentation.
+//! - Flat-color and textured geometry paths with per-frame vertex/index buffer management.
+//! - User WGSL shader compilation, uniform upload, and per-pipeline-key caching.
+//! - Off-screen canvas render targets with lazy depth/stencil attachment creation.
+//! - Additive point-light accumulation pass with 1-D shadow-map atlas and composite blend.
+//! - Post-processing pipeline integration, screenshot readback, and per-frame render statistics.
+//! - Tessellation helpers for rectangles, rounded rects, ellipses, arcs, triangles, and polygons.
+//! - Stencil write/test pipeline variants with configurable compare and operation modes.
+//! - Bitmap font fallback renderer and thick-line geometry generation utilities.
+//! - Frustum culling via 2-D AABB visibility test against the camera transform.
+//! - Automatic geometry buffer growth when frame vertex/index demand exceeds current capacity.
+//! - Texture upload, font atlas rebuild, and canvas lifecycle tied to slot-map resource pruning.
+
 use crate::log_msg;
 use crate::math::{Mat3, Vec2};
 use crate::render::mesh::Mesh;
@@ -150,6 +163,7 @@ pub struct RenderStats {
     /// CPU time spent in `render_frame` this frame in milliseconds.
     pub cpu_render_ms: f32,
 }
+/// Optional pixel-space scissor rectangle `(x, y, width, height)`.
 type ScissorRect = Option<(u32, u32, u32, u32)>;
 /// Identifies the active render target during a frame.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -836,6 +850,7 @@ impl GpuRenderer {
         self.screen_stencil_target = None;
         self.light_gpu = None;
     }
+    /// Compute the next power-of-two capacity that satisfies `needed`.
     fn grow_capacity(current: u64, needed: u64) -> u64 {
         let mut cap = current.max(1);
         while cap < needed {
@@ -846,6 +861,7 @@ impl GpuRenderer {
         }
         cap.max(needed)
     }
+    /// Grow vertex and index buffers when their capacity is exceeded by the current frame.
     fn ensure_geometry_buffer_capacity(
         &mut self,
         color_verts_needed: usize,
@@ -906,6 +922,7 @@ impl GpuRenderer {
             );
         }
     }
+    /// Create a wgpu sampler from the default filter configuration triple.
     fn create_sampler(&self, default_filter: &(String, String, u32)) -> wgpu::Sampler {
         let min_filter = parse_filter_mode(&default_filter.0);
         let mag_filter = parse_filter_mode(&default_filter.1);
@@ -925,6 +942,7 @@ impl GpuRenderer {
             ..Default::default()
         })
     }
+    /// Create a texture+sampler bind group using the shared layout.
     fn create_texture_bind_group(
         &self,
         view: &wgpu::TextureView,
@@ -946,6 +964,7 @@ impl GpuRenderer {
             ],
         })
     }
+    /// Upload raw RGBA pixel data to a new GPU texture and return the wrapped handle.
     fn create_gpu_texture_raw(
         &self,
         pixels: &[u8],
@@ -1011,6 +1030,7 @@ impl GpuRenderer {
         let gt = self.create_gpu_texture_raw(pixels, width, height, color_space, default_filter);
         self.gpu_textures.insert(key, gt);
     }
+    /// Rebuild the GPU font atlas texture if the font is dirty or not yet uploaded.
     fn ensure_font_atlas(
         &mut self,
         font_key: FontKey,
@@ -1068,6 +1088,7 @@ impl GpuRenderer {
         );
         self.canvas_needs_clear.insert(key, true);
     }
+    /// Allocate a depth/stencil texture at the given dimensions.
     fn create_depth_stencil_target(
         &self,
         width: u32,
@@ -1096,6 +1117,7 @@ impl GpuRenderer {
             height,
         }
     }
+    /// Recreate the screen depth/stencil target if dimensions changed.
     fn ensure_screen_stencil_target(&mut self) {
         let needs_recreate = self
             .screen_stencil_target
@@ -1110,6 +1132,7 @@ impl GpuRenderer {
             ));
         }
     }
+    /// Recreate the per-canvas depth/stencil target if dimensions changed.
     fn ensure_canvas_stencil_target(&mut self, key: CanvasKey, width: u32, height: u32) {
         let needs_recreate = self
             .canvas_stencil_targets
@@ -1123,6 +1146,7 @@ impl GpuRenderer {
             );
         }
     }
+    /// Remove GPU resources whose slot-map keys have been freed.
     fn prune_released_resources(
         &mut self,
         textures: &SlotMap<TextureKey, TextureData>,
@@ -1169,6 +1193,7 @@ impl GpuRenderer {
             self.shader_cache.remove(key);
         }
     }
+    /// Allocate or recreate the light accumulation texture, shadow atlas, and light pipelines.
     fn ensure_light_resources(&mut self) {
         let needs_recreate = match &self.light_gpu {
             Some(lg) => lg.width != self.width || lg.height != self.height,
@@ -1354,6 +1379,7 @@ impl GpuRenderer {
             height: h,
         });
     }
+    /// Return whether an axis-aligned bounding box is visible after model+camera transform.
     #[inline]
     #[allow(clippy::too_many_arguments)]
     fn aabb_visible_2d(
@@ -4371,6 +4397,7 @@ impl GpuRenderer {
         self.render_stats.cpu_render_ms = frame_start.elapsed().as_secs_f32() * 1000.0;
         Ok(pending_readback.and_then(|readback| self.complete_surface_readback(readback)))
     }
+    /// Copy the surface texture into a mappable readback buffer for screenshot capture.
     fn begin_surface_readback(
         &self,
         encoder: &mut wgpu::CommandEncoder,
@@ -4420,6 +4447,7 @@ impl GpuRenderer {
             height,
         })
     }
+    /// Map the readback buffer and extract RGBA pixel data for the screenshot.
     fn complete_surface_readback(
         &self,
         readback: PendingSurfaceReadback,
@@ -4467,6 +4495,7 @@ impl GpuRenderer {
         }
         Some((readback.width, readback.height, pixels))
     }
+    /// Write the per-frame viewport dimensions, time, and camera matrix to the GPU uniform buffer.
     fn update_viewport_uniform(
         &mut self,
         width: u32,
@@ -4500,6 +4529,7 @@ impl GpuRenderer {
         self.queue
             .write_buffer(&self.viewport_buffer, 0, bytemuck::bytes_of(&data));
     }
+    /// Return the pixel dimensions of a render target from the logical canvas store.
     fn target_dimensions(
         &self,
         target: RenderTargetId,
@@ -4513,6 +4543,7 @@ impl GpuRenderer {
                 .unwrap_or((self.width, self.height)),
         }
     }
+    /// Return the pixel dimensions of a render target from the GPU texture store.
     fn target_dimensions_from_gpu(&self, target: RenderTargetId) -> (u32, u32) {
         match target {
             RenderTargetId::Screen => (self.width, self.height),
@@ -4523,6 +4554,7 @@ impl GpuRenderer {
                 .unwrap_or((self.width, self.height)),
         }
     }
+    /// Build the full pipeline selection key for a prepared draw call.
     fn pipeline_selection_key(&self, draw: PreparedDraw) -> PipelineSelectionKey {
         let geometry = draw.geometry;
         let pipeline = PipelineKey {
@@ -4539,6 +4571,7 @@ impl GpuRenderer {
             None => PipelineSelectionKey::Default { geometry, pipeline },
         }
     }
+    /// Return or create the default render pipeline for the given geometry and blend/stencil key.
     fn default_pipeline(
         &mut self,
         geometry: GeometryKind,
@@ -4583,6 +4616,7 @@ impl GpuRenderer {
             GeometryKind::Texture => self.default_texture_pipelines.get(&key).unwrap(),
         }
     }
+    /// Compile and cache a user shader if its source or uniform signature changed.
     fn ensure_shader_cache(&mut self, shader_key: ShaderKey, shader: &Shader) {
         let ordered_uniforms = shader.ordered_uniforms();
         let uniform_signature: Vec<(String, ShaderUniformKind)> = ordered_uniforms
@@ -4714,6 +4748,7 @@ impl GpuRenderer {
             }
         }
     }
+    /// Return or create a user-shader render pipeline for the given geometry and blend/stencil key.
     fn custom_pipeline(
         &mut self,
         shader_key: ShaderKey,
@@ -4769,11 +4804,13 @@ impl GpuRenderer {
             GeometryKind::Texture => cache.texture_pipelines.get(&key).unwrap(),
         }
     }
+    /// Return the uniform bind group for a cached user shader, if present.
     fn shader_bind_group(&self, shader_key: ShaderKey) -> Option<&wgpu::BindGroup> {
         self.shader_cache
             .get(shader_key)
             .and_then(|cache| cache.uniform_bind_group.as_ref())
     }
+    /// Resolve a `TexRef` to its GPU bind group for texture sampling.
     fn texture_bind_group(&self, texture_ref: TexRef) -> Option<&wgpu::BindGroup> {
         match texture_ref {
             TexRef::Texture(key) => self
@@ -4790,6 +4827,7 @@ impl GpuRenderer {
                 .map(|texture| &texture.bind_group),
         }
     }
+    /// Encode a single prepared draw call into the active render pass.
     fn issue_draw(
         &mut self,
         pass: &mut wgpu::RenderPass<'_>,
@@ -4891,6 +4929,7 @@ impl GpuRenderer {
         pass.draw_indexed(draw.idx_start..draw.idx_start + draw.idx_count, 0, 0..1);
         true
     }
+    /// Tessellate a rectangle into flat-color vertices and indices.
     #[allow(clippy::too_many_arguments)]
     fn tess_rect(
         &self,
@@ -4923,6 +4962,7 @@ impl GpuRenderer {
             }
         }
     }
+    /// Tessellate a rounded rectangle into flat-color vertices and indices.
     #[allow(clippy::too_many_arguments)]
     fn tess_rounded_rect(
         &self,
@@ -4957,6 +4997,7 @@ impl GpuRenderer {
             }
         }
     }
+    /// Tessellate an ellipse into flat-color vertices and indices.
     #[allow(clippy::too_many_arguments)]
     fn tess_ellipse(
         &self,
@@ -5011,6 +5052,7 @@ impl GpuRenderer {
             }
         }
     }
+    /// Tessellate a triangle into flat-color vertices and indices.
     #[allow(clippy::too_many_arguments)]
     fn tess_triangle(
         &self,
@@ -5046,6 +5088,7 @@ impl GpuRenderer {
             }
         }
     }
+    /// Tessellate a polygon from a flat vertex array into flat-color geometry.
     #[allow(clippy::too_many_arguments)]
     fn tess_polygon(
         &self,
@@ -5093,6 +5136,7 @@ impl GpuRenderer {
             }
         }
     }
+    /// Tessellate an arc segment into flat-color vertices and indices.
     #[allow(clippy::too_many_arguments)]
     fn tess_arc(
         &self,
@@ -5297,7 +5341,8 @@ fn uniform_kind(value: &UniformValue) -> ShaderUniformKind {
         UniformValue::Bool(_) => ShaderUniformKind::Bool,
     }
 }
-/// Serialize a `UniformValue` into a 16-byte std140-aligned buffer for a wgpu uniform upload.\nfn uniform_bytes(value: &UniformValue) -> [u8; 16] {
+/// Serialize a `UniformValue` into a 16-byte std140-aligned buffer for a wgpu uniform upload.
+fn uniform_bytes(value: &UniformValue) -> [u8; 16] {
     let mut bytes = [0u8; 16];
     match value {
         UniformValue::Float(v) => {
@@ -5322,6 +5367,7 @@ fn uniform_kind(value: &UniformValue) -> ShaderUniformKind {
     }
     bytes
 }
+/// Return the WGSL type name string for a shader uniform kind.
 fn uniform_wgsl_type(kind: ShaderUniformKind) -> &'static str {
     match kind {
         ShaderUniformKind::Float => "f32",
@@ -5332,6 +5378,7 @@ fn uniform_wgsl_type(kind: ShaderUniformKind) -> &'static str {
         ShaderUniformKind::Bool => "u32",
     }
 }
+/// Generate WGSL `@group/@binding var<uniform>` declarations for all shader uniforms.
 fn custom_uniform_declarations(
     uniform_signature: &[(String, ShaderUniformKind)],
     group_index: u32,
@@ -5347,6 +5394,7 @@ fn custom_uniform_declarations(
         })
         .collect::<String>()
 }
+/// Build the comma-separated argument string for the user fragment entry call.
 fn custom_fragment_call_args(
     inputs: &[ShaderFragmentInput],
     color_expr: &str,
@@ -5361,6 +5409,7 @@ fn custom_fragment_call_args(
         .collect::<Vec<_>>()
         .join(", ")
 }
+/// Assemble the full WGSL source for a custom flat-color shader pipeline.
 fn build_custom_color_shader_source(
     shader: &Shader,
     uniform_signature: &[(String, ShaderUniformKind)],
@@ -5419,6 +5468,7 @@ fn lurek_fragment_main(in: VertexOutput) -> @location(0) vec4<f32> {{
         fragment_call_args = fragment_call_args,
     )
 }
+/// Assemble the full WGSL source for a custom textured shader pipeline.
 fn build_custom_texture_shader_source(
     shader: &Shader,
     uniform_signature: &[(String, ShaderUniformKind)],
@@ -5480,6 +5530,7 @@ fn lurek_fragment_main(in: VertexOutput) -> @location(0) vec4<f32> {{
         fragment_call_args = fragment_call_args,
     )
 }
+/// Create a wgpu render pipeline for the given geometry kind, blend/stencil key, and shader module.
 fn create_render_pipeline(
     device: &wgpu::Device,
     surface_format: wgpu::TextureFormat,
@@ -5560,6 +5611,7 @@ fn create_render_pipeline(
         }),
     }
 }
+/// Build the depth/stencil descriptor for a given stencil mode.
 fn depth_stencil_state(stencil_mode: StencilMode) -> wgpu::DepthStencilState {
     wgpu::DepthStencilState {
         format: wgpu::TextureFormat::Depth24PlusStencil8,
@@ -5582,6 +5634,7 @@ fn depth_stencil_state(stencil_mode: StencilMode) -> wgpu::DepthStencilState {
         bias: wgpu::DepthBiasState::default(),
     }
 }
+/// Build a stencil face-state for the given stencil mode.
 fn stencil_face_state(stencil_mode: StencilMode) -> wgpu::StencilFaceState {
     match stencil_mode {
         StencilMode::Disabled => wgpu::StencilFaceState {
@@ -5604,6 +5657,7 @@ fn stencil_face_state(stencil_mode: StencilMode) -> wgpu::StencilFaceState {
         },
     }
 }
+/// Map a renderer `CompareMode` to a wgpu `CompareFunction`.
 fn compare_function(compare: crate::render::renderer::CompareMode) -> wgpu::CompareFunction {
     match compare {
         crate::render::renderer::CompareMode::Equal => wgpu::CompareFunction::Equal,
@@ -5616,6 +5670,7 @@ fn compare_function(compare: crate::render::renderer::CompareMode) -> wgpu::Comp
         crate::render::renderer::CompareMode::Never => wgpu::CompareFunction::Never,
     }
 }
+/// Map a renderer `StencilAction` to a wgpu `StencilOperation`.
 fn stencil_operation(action: crate::render::renderer::StencilAction) -> wgpu::StencilOperation {
     match action {
         crate::render::renderer::StencilAction::Replace => wgpu::StencilOperation::Replace,
@@ -5632,11 +5687,13 @@ fn stencil_operation(action: crate::render::renderer::StencilAction) -> wgpu::St
         crate::render::renderer::StencilAction::Invert => wgpu::StencilOperation::Invert,
     }
 }
+/// Transform a point by a `Mat3` and return the screen-space `(x, y)` pair.
 #[inline]
 fn apply(t: &Mat3, x: f32, y: f32) -> (f32, f32) {
     let p = t.transform_point(Vec2 { x, y });
     (p.x, p.y)
 }
+/// Generate a thick line as a transformed quad from `(x1,y1)` to `(x2,y2)`.
 #[allow(clippy::too_many_arguments)]
 fn push_thick_line(
     cv: &mut Vec<ColorVertex>,
@@ -5666,6 +5723,7 @@ fn push_thick_line(
     ];
     push_quad_verts(cv, ci, &pts, color);
 }
+/// Push four pre-transformed corner positions as a two-triangle quad.
 fn push_quad_verts(
     cv: &mut Vec<ColorVertex>,
     ci: &mut Vec<u32>,
@@ -5681,6 +5739,7 @@ fn push_quad_verts(
     }
     ci.extend_from_slice(&[base, base + 1, base + 2, base, base + 2, base + 3]);
 }
+/// Fill a convex polygon as a triangle fan from a centre point.
 fn push_fan_fill(
     cv: &mut Vec<ColorVertex>,
     ci: &mut Vec<u32>,
@@ -5711,6 +5770,7 @@ fn push_fan_fill(
         ci.extend_from_slice(&[base, base + 1 + i, base + 1 + (i + 1) % n]);
     }
 }
+/// Generate a rounded rectangle outline path as a series of arc-sampled points.
 fn build_rounded_rect_path(
     x: f32,
     y: f32,
@@ -5735,6 +5795,7 @@ fn build_rounded_rect_path(
     }
     pts
 }
+/// Push a textured quad with position, rotation, scale, and origin offset.
 #[allow(clippy::too_many_arguments)]
 fn push_tex_quad(
     tv: &mut Vec<TexVertex>,
@@ -5776,6 +5837,7 @@ fn push_tex_quad(
     }
     ti.extend_from_slice(&[base, base + 1, base + 2, base, base + 2, base + 3]);
 }
+/// Push a textured quad defined by explicit corner positions and per-vertex W depths.
 fn push_tex_quad_corners(
     tv: &mut Vec<TexVertex>,
     ti: &mut Vec<u32>,
@@ -5798,6 +5860,7 @@ fn push_tex_quad_corners(
     }
     ti.extend_from_slice(&[base, base + 1, base + 2, base, base + 2, base + 3]);
 }
+/// Return the 5×7 bitmap pattern for a single character.
 #[allow(dead_code)]
 fn bitmap_char(ch: char) -> [u8; 7] {
     match ch.to_ascii_uppercase() {
@@ -5932,6 +5995,7 @@ fn bitmap_char(ch: char) -> [u8; 7] {
         ],
     }
 }
+/// Render a string of text using the built-in 5×7 bitmap font.
 #[allow(dead_code)]
 #[allow(clippy::too_many_arguments)]
 fn render_text(

@@ -1,3 +1,7 @@
+//! - Animated sliding doors placed on raycaster grid tiles.
+//! - Per-door state machine: Closed → Opening → Open → Closing → Closed.
+//! - DoorManager registry drives batch updates and spatial lookups.
+
 /// Slide axis of a door: horizontal (slides along X) or vertical (slides along Y).
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum DoorDirection {
@@ -42,6 +46,7 @@ pub struct DoorManager {
 impl DoorManager {
     /// Create an empty `DoorManager`.
     pub fn new() -> Self {
+        Self { doors: Vec::new() }
     }
     /// Register a new closed door at `(x, y)` with the given `direction` and `speed`; return its index handle.
     pub fn add_door(&mut self, x: u32, y: u32, direction: DoorDirection, speed: f32) -> usize {

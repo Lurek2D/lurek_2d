@@ -1,3 +1,10 @@
+//! - Tile-based terrain grid that syncs solid cells to static physics bodies via chunked rebuilds.
+//! - Chunk-based dirty tracking: only modified regions regenerate bodies on flush.
+//! - Bulk fill operations (circle, rectangle, fill-all) for terrain editing at runtime.
+//! - Run-length row merging to minimise body count per chunk.
+//! - Compact bitpacked serialisation and deserialisation for save/load.
+//! - Debris spawning and column-collapse utilities for destructible terrain effects.
+
 use super::body::{Body, BodyShape, BodyType};
 use super::world::World;
 use std::collections::{HashMap, HashSet};

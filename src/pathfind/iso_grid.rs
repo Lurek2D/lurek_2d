@@ -1,6 +1,12 @@
 
+//! - Grid-based A* pathfinding over a rectangular isometric cell map.
+//! - Per-cell blocked flags and movement cost support for weighted searches.
+//! - Bresenham line-of-sight query between two grid positions.
+//! - 4-directional neighbour expansion with bounds and passability filtering.
+
 use std::cmp::Ordering;
-use std::collections::{BinaryHeap, HashMap}; with per-cell cost and 4-directional movement.
+use std::collections::{BinaryHeap, HashMap};
+/// Rectangular grid that stores per-cell passability and cost for A* pathfinding.
 pub struct IsoGrid {
     /// Grid width in cells.
     pub width: u32,
@@ -147,6 +153,7 @@ impl PartialEq for Node {
         self.f == other.f
     }
 }
+/// Marker trait required by `Ord`.
 impl Eq for Node {}
 
 /// Delegates to `Ord`.

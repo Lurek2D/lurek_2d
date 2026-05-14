@@ -40,30 +40,30 @@ impl FileWatcher {
             }
         }
         changed.sort();
-        /// Return the number of watched paths.
         changed
     }
+    /// Return the number of watched paths.
     pub fn len(&self) -> usize {
-        /// Return true when no paths are watched.
         self.paths.len()
     }
+    /// Return true when no paths are watched.
     pub fn is_empty(&self) -> bool {
-        /// Force all watched paths to report a change on the next poll.
         self.paths.is_empty()
     }
+    /// Force all watched paths to report a change on the next poll.
     pub fn force_changed(&mut self) {
         for last in self.paths.values_mut() {
             *last = Some(std::time::UNIX_EPOCH);
         }
-    /// Construct a default file watcher with no watched paths.
     }
 }
 impl Default for FileWatcher {
+    /// Construct a default file watcher with no watched paths.
     fn default() -> Self {
         Self::new()
-    /// Read the last modification time for a path or return None on metadata failure.
     }
 }
+/// Read the last modification time for a path or return None on metadata failure.
 pub fn read_mtime(path: &Path) -> Option<SystemTime> {
     std::fs::metadata(path).ok()?.modified().ok()
 }

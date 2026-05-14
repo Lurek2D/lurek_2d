@@ -1,3 +1,7 @@
+//! - Software rasterization of a raycaster scene into an `ImageData` pixel buffer.
+//! - Flat-shaded fills for ceilings, floors, walls, and sprites.
+//! - Back-to-front draw order for correct painter's-algorithm layering.
+
 use crate::image::ImageData;
 use crate::raycaster::scene::RaycasterScene;
 /// Fill a screen-space rectangle with the given RGBA `light` color; clamps to image bounds.
@@ -18,6 +22,7 @@ fn fill_rect(img: &mut ImageData, x0: f32, y0: f32, x1: f32, y1: f32, light: [f3
         }
     }
 }
+/// Software rasterization methods for `RaycasterScene`.
 impl RaycasterScene {
     /// Rasterize this scene into a new `ImageData` of `width × height`; draws ceilings, floors, walls, then sprites back-to-front.
     pub fn draw_to_image(&self, width: u32, height: u32) -> ImageData {

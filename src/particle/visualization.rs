@@ -1,4 +1,10 @@
 
+//! - Particle visualization helpers that render live `ParticleSystem` state to `ImageData` bitmaps.
+//! - Generic renderer using colour/size/alpha keyframes from the emitter configuration.
+//! - Themed preset renderers for explosions, rain, and spark-trail effects.
+//! - Compositing support: overlay particles onto an existing background or paint in-place.
+//! - Bar-chart lifecycle diagram showing particle count over time steps.
+
 use super::emitter::ParticleSystem;
 use super::math::{interpolate_alphas, interpolate_colors, interpolate_sizes};
 use crate::image::ImageData;

@@ -1,4 +1,9 @@
 
+//! - Prefix trie for character-level string key storage and retrieval.
+//! - Insert, search, remove, and prefix-match operations.
+//! - DFS collection of all keys sharing a common prefix.
+//! - Automatic pruning of empty leaf nodes on removal.
+
 /// Internal trie node holding child edges and end-of-word marker.
 #[derive(Debug, Default)]
 struct TrieNode {

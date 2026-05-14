@@ -474,7 +474,9 @@ impl NoiseGenerator {
             + contrib(gi1, x1, y1, z1)
             + contrib(gi2, x2, y2, z2)
             + contrib(gi3, x3, y3, z3))
-    }    /// Return 2-D Worley (cell) noise using `dist` metric; returns F2-F1 when `f2` is true.    pub fn worley_2d(&self, x: f64, y: f64, dist: DistType, f2: bool) -> f64 {
+    }
+    /// Return 2-D Worley (cell) noise using `dist` metric; returns F2-F1 when `f2` is true.
+    pub fn worley_2d(&self, x: f64, y: f64, dist: DistType, f2: bool) -> f64 {
         let ix = x.floor() as i32;
         let iy = y.floor() as i32;
         let mut min1 = f64::MAX;

@@ -1,3 +1,10 @@
+//! - Uniform grid frame extraction from a single texture via per-frame width/height.
+//! - Precomputed Rect lookup by linear index, row, column, or arbitrary range.
+//! - Named frame groups for tagging animation sequences within the grid.
+//! - Directional animation layout (rows or columns) for multi-facing character sheets.
+//! - Preset constructors for RPGMaker 3×4 sheets and SpriteAtlas-backed sheets.
+//! - Debug visualisation that rasterises the grid into an ImageData with coloured borders.
+
 use crate::log_msg;
 use crate::math::Rect;
 use crate::runtime::log_messages::{SS01, SS02};

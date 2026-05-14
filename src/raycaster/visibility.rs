@@ -1,3 +1,7 @@
+//! - Radial visibility polygon computation from a point source.
+//! - Casts rays at segment-endpoint angles with epsilon jitter for gap-free coverage.
+//! - Returns interleaved coordinate arrays suitable for triangle-fan rendering.
+
 use super::segment::{cast_ray_2d, Segment};
 /// Cast radial rays at all segment-endpoint angles from `(ox, oy)` and return
 /// an interleaved `[x0, y0, x1, y1, ...]` visibility polygon sorted by angle.

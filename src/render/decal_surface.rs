@@ -1,3 +1,7 @@
+//! - Persistent paint-target surface for world-space decals.
+//! - Stores pixel dimensions used by the renderer to allocate backing textures.
+//! - Lightweight data struct with no GPU resources of its own.
+
 /// Paint-target surface for persistent world decals; holds pixel dimensions only.
 pub struct DecalSurface {
     /// Pixel width of this surface.
@@ -6,6 +10,7 @@ pub struct DecalSurface {
     pub height: u32,
 }
 
+/// Construction and dimension queries for a decal surface.
 impl DecalSurface {
     /// Create a `DecalSurface` sized `width` × `height` pixels.
     pub fn new(width: u32, height: u32) -> Self {

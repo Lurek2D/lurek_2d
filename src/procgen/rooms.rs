@@ -1,3 +1,9 @@
+//! - Random room placement with overlap rejection and configurable size ranges.
+//! - L-shaped corridor carving between consecutive room centres.
+//! - Flat row-major tile grid output (wall / floor / corridor byte values).
+//! - Prefab stamp system that centre-pastes named mask patterns into placed rooms.
+//! - Round-robin prefab assignment across all placed rooms.
+
 use crate::procgen::lcg::Lcg;
 
 /// Axis-aligned room rectangle placed in a rooms dungeon grid.
@@ -13,6 +19,7 @@ pub struct Room {
     pub h: u32,
 }
 
+/// Geometric helpers for room overlap testing and centre calculation.
 impl Room {
     /// Return true if this room overlaps `other` with a 1-tile buffer on each side.
     fn overlaps(&self, other: &Room) -> bool {

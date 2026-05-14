@@ -1,3 +1,5 @@
+//! - Collision detection result types for penetration depth and contact normals.
+
 use crate::math::Vec2;
 
 /// Result of a collision detection query.

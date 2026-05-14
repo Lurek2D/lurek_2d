@@ -1,3 +1,9 @@
+//! - Dirty-tracking, auto-save scheduling, and schema-versioned migration for `lurek.save`.
+//! - `SaveManager` owns registration of Lua tables, auto-save interval logic, and migration routing.
+//! - `SaveValue` tree converts between Lua tables and a serializable Rust enum.
+//! - Serialization emits Lua table literals; compression uses LZ4 + Base64 with a marker header.
+//! - Slot file naming, parse validation, and summary forwarding to `SlotMeta`.
+
 use crate::data::compress::{compress, decompress, CompressFormat};
 use crate::log_msg;
 use crate::runtime::log_messages::{SV01, SV02, SV03, SV04};
@@ -36,6 +42,7 @@ pub struct SaveManager {
     /// Summary text forwarded to `SlotMeta` on the next write.
     summary: String,
 }
+/// Core implementation: construction, registration, versioning, auto-save, and slot path helpers.
 impl SaveManager {
     /// Create a new default `SaveManager` and log its construction.
     pub fn new() -> Self {
@@ -204,6 +211,7 @@ pub enum SaveValue {
     /// Lua table, keys serialized as strings.
     Table(HashMap<String, SaveValue>),
 }
+/// Conversion from Lua values into the serializable `SaveValue` tree.
 impl SaveValue {
     /// Convert a `LuaValue` into `SaveValue`; return `LuaError` for unsupported types or non-string table keys.
     pub fn from_lua(value: &LuaValue) -> LuaResult<Self> {

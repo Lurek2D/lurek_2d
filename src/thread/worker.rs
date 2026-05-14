@@ -1,3 +1,9 @@
+//! - Worker VM lifecycle: spawn an OS thread with an isolated Lua VM, track Pending/Running/Completed/Error states.
+//! - Restricted API surface: inject only `lurek.thread.getChannel`, `lurek.fs.read`, and `arg` into worker VMs.
+//! - Channel-based communication: workers receive a shared channel registry for typed cross-VM messaging.
+//! - Blocking and timeout joins: wait indefinitely or poll with a deadline for worker completion.
+//! - Path-traversal guard: `fs.read` in worker VMs rejects `..` segments to prevent sandbox escape.
+
 use crate::log_msg;
 use crate::runtime::log_messages::{TH01_WORKER_INIT, TH02_WORKER_START, TH04_WORKER_ERROR};
 use crate::thread::channel::{channel_value_to_lua, Channel, ChannelValue, LuaChannel};
@@ -30,6 +36,7 @@ pub struct LuaThread {
     /// Named channel registry injected into the worker VM via `lurek.thread.getChannel`.
     channels: Arc<Mutex<HashMap<String, Arc<Channel>>>>,
 }
+/// Lifecycle management for a worker Lua VM running on a dedicated OS thread.
 impl LuaThread {
     /// Create a `LuaThread` ready to run `code` with access to `channels`; does not start the OS thread.
     pub fn new(code: String, channels: Arc<Mutex<HashMap<String, Arc<Channel>>>>) -> Self {

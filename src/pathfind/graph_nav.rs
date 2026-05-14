@@ -1,4 +1,10 @@
 
+//! - A* shortest-path search over weighted directed/bidirectional graphs.
+//! - Range query returning all nodes reachable within a cost budget.
+//! - Heuristic support for informed search; falls back to Dijkstra when omitted.
+//! - Min-heap priority queue node with reverse ordering for `BinaryHeap`.
+//! - Path reconstruction from predecessor map.
+
 use crate::graph::core::Graph;
 use std::cmp::Ordering;
 use std::collections::{BinaryHeap, HashMap};
@@ -116,20 +122,24 @@ struct GNode {
 }
 /// Equality by f-cost.
 impl PartialEq for GNode {
+    /// Compare two nodes by f-cost equality.
     fn eq(&self, other: &Self) -> bool {
         self.f == other.f
     }
 }
+/// Marker trait confirming total equality for `GNode`.
 impl Eq for GNode {}
 
 /// Delegates to `Ord`.
 impl PartialOrd for GNode {
+    /// Delegate partial comparison to total `Ord` implementation.
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
         Some(self.cmp(other))
     }
 }
 /// Reverse ordering so `BinaryHeap` is a min-heap.
 impl Ord for GNode {
+    /// Compare in reverse so lower f-cost has higher priority.
     fn cmp(&self, other: &Self) -> Ordering {
         other.f.partial_cmp(&self.f).unwrap_or(Ordering::Equal)
     }

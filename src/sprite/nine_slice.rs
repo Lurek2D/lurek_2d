@@ -1,3 +1,7 @@
+//! - Nine-slice (9-patch) descriptor that splits a texture into corners, edges, and a center.
+//! - Generates source/destination patch tuples for scalable UI borders and panels.
+//! - Preserves corner pixel ratios while stretching edges and center to fit target dimensions.
+
 use crate::runtime::resource_keys::TextureKey;
 
 /// Source and destination rect tuple: (src_x, src_y, src_w, src_h, dst_x, dst_y, dst_w, dst_h).

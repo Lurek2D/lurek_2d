@@ -1,3 +1,9 @@
+//! - Tileset geometry: tile dimensions, spacing, margin, column count, and GID range ownership.
+//! - Source-rect lookup: compute pixel `Rect` for any local tile ID within the sprite-sheet.
+//! - Collision metadata: per-tile solid flag storage and query.
+//! - Animation sequences: frame-based tile animations keyed by local ID.
+//! - Autotile rules: 4-bit and 8-bit bitmask-to-tile mappings for terrain transitions.
+
 use crate::log_msg;
 use crate::math::Rect;
 use crate::runtime::log_messages::{TS01, TS02, TS03};
@@ -38,6 +44,8 @@ pub struct TileSet {
     /// 8-bit autotile rules: `(type_name, bitmask) -> local_tile_id`.
     auto_rules_8: HashMap<(String, u16), u32>,
 }
+
+/// Construction, geometry queries, collision, animation, and autotile rule management.
 impl TileSet {
     /// Create a `TileSet` with the given layout parameters and empty solid, animation, and autotile tables.
     pub fn new(

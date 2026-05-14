@@ -1,3 +1,9 @@
+//! - Concrete widget structs for buttons, labels, text inputs, checkboxes, sliders, progress bars, combo boxes, list boxes, tab bars, radio buttons, scroll bars, spin boxes, and switches.
+//! - Each control embeds a `WidgetBase` for shared layout, style, and state; construction sets the correct `WidgetType` discriminant.
+//! - Editing controls (TextInput, SpinBox, Slider) clamp or validate input at the boundary to guarantee invariants.
+//! - Collection controls (ComboBox, ListBox, TabBar) auto-adjust selection indices on item removal.
+//! - All controls derive `Debug` and `Clone` for inspection and snapshot-based undo.
+
 use crate::ui::widget::{WidgetBase, WidgetType};
 /// Clickable push button with a text label.
 #[derive(Debug, Clone)]
@@ -137,6 +143,7 @@ impl Slider {
             step: 0.0,
         }
     }
+    /// Clamp `v` to `[min, max]` and snap to the nearest step if step > 0.
     pub fn set_value(&mut self, v: f64) {
         let mut v = v.clamp(self.min, self.max);
         if self.step > 0.0 {
@@ -200,6 +207,7 @@ impl ComboBox {
             open: false,
         }
     }
+    /// Append a new item to the drop-down list.
     pub fn add_item(&mut self, text: impl Into<String>) {
         self.items.push(text.into());
     }
@@ -416,6 +424,7 @@ impl SpinBox {
             step: 1.0,
         }
     }
+    /// Snap `v` to the nearest step and clamp to `[min, max]`.
     pub fn set_value(&mut self, v: f64) {
         let snapped = if self.step > 0.0 {
             (v / self.step).round() * self.step

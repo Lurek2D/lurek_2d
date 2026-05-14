@@ -1,6 +1,11 @@
 
+//! - Named-strategy registry with id assignment and current-selection tracking.
+//! - Register, remove, query, and switch strategies by string name.
+//! - Provides id-based lookup for the active strategy.
+
 use std::collections::HashMap;
 #[derive(Debug, Default, Clone)]
+/// Named-strategy registry that maps string names to numeric ids.
 pub struct Strategy {
     /// Registered strategy name → id map.
     strategies: HashMap<String, u64>,

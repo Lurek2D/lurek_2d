@@ -1,3 +1,7 @@
+//! - Per-tile floor and ceiling height storage for raycaster maps.
+//! - Supports individual tile and rectangular region height assignment.
+//! - Out-of-bounds coordinates are silently ignored or return safe defaults.
+
 /// Per-tile floor and ceiling height overrides for a raycaster map.
 pub struct HeightMap {
     /// Map width in tiles.
@@ -9,6 +13,8 @@ pub struct HeightMap {
     /// Ceiling height per tile, 1.0 = default ceiling level.
     ceiling_heights: Vec<f32>,
 }
+
+/// Core construction, per-tile access, and rectangular fill operations.
 impl HeightMap {
     /// Create a new `HeightMap` with default floor heights 0.0 and ceiling heights 1.0.
     pub fn new(width: u32, height: u32) -> Self {

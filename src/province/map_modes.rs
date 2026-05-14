@@ -1,3 +1,7 @@
+//! - Map-mode enum selecting which province style field drives fill colour.
+//! - Colour resolution logic mapping political, terrain, and visibility modes to RGBA.
+//! - String round-trip helpers for mode serialisation and Lua interop.
+
 use crate::province::types::ProvinceStyle;
 
 /// Active map display mode; controls which style field drives the province fill colour.

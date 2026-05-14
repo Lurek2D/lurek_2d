@@ -1,4 +1,10 @@
 
+//! - Province-level A* pathfinding across adjacency graphs with configurable move costs.
+//! - Dijkstra-based reachability flood to find all provinces within a cost budget.
+//! - Per-province and per-edge-tag cost modelling with blocked-province exclusion.
+//! - Min-heap priority queue node with reverse ordering for standard `BinaryHeap`.
+//! - Euclidean centroid heuristic for A* admissibility.
+
 use std::cmp::Ordering;
 use std::collections::{BinaryHeap, HashMap, HashSet};
 /// Result of a province-level pathfinding query.
@@ -72,6 +78,7 @@ impl PartialEq for AStarNode {
         self.f_score == other.f_score
     }
 }
+/// Marker trait required by `Ord`; delegates equality to `PartialEq`.
 impl Eq for AStarNode {}
 
 /// Delegates to `Ord`.

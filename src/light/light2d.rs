@@ -357,18 +357,3 @@ impl Light2D {
         img
     }
 }
-
-                        let existing = img.get_pixel(px, py).unwrap_or((0, 0, 0, 0));
-                        let nr = r.max(existing.0);
-                        let ng = g.max(existing.1);
-                        let nb = b.max(existing.2);
-                        img.set_pixel(px, py, nr, ng, nb, 255);
-                    }
-                }
-            }
-            img.draw_label(name, ox + 30, (height - 15) as i32, 200, 200, 200);
-        }
-        img.draw_label("LIGHT FALLOFF MODES", (width / 3) as i32, 3, 100, 255, 100);
-        img
-    }
-}

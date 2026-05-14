@@ -1,3 +1,13 @@
+//! - Defines the `RenderCommand` enum — the complete vocabulary of draw, state, and control operations submitted each frame.
+//! - Provides blend, stencil, and depth mode enums for compositing and test configuration.
+//! - Contains text alignment and draw-mode enums shared across shape, font, and path rendering.
+//! - Houses post-processing pass descriptors and rich-text span types.
+//! - Declares particle instance and render-shape types for the particle system pipeline.
+//! - Includes physics debug shape and config records for collider overlay rendering.
+//! - Provides path-segment, gradient, hex, bevel, and nine-slice draw primitives.
+//! - Defines Spine slot draw records, sort-group markers, and compositing layer commands.
+//! - Supplies `TextureData` for CPU-to-GPU texture uploads and `DrawableKind` for generic draw utilities.
+
 use crate::math::Vec2;
 use crate::render::image_effect::ShaderPassDescriptor;
 use crate::render::mesh::Mesh;

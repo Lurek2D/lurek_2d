@@ -1,5 +1,11 @@
 
+//! - Name-based service registry for runtime feature discovery.
+//! - Register, unregister, and query string-keyed services.
+//! - Sorted enumeration of all active service names.
+
 use std::collections::HashSet;
+
+/// String-keyed service registry for runtime feature queries.
 #[derive(Debug, Default)]
 pub struct ServiceLocator {
     /// Set of currently registered service names.

@@ -1,3 +1,13 @@
+//! - Software-rendered raycaster visualization helpers for debugging and demo output.
+//! - Top-down grid map rendering with player position and radial ray overlay.
+//! - First-person column-based wall rendering with distance-based shading.
+//! - Depth-map greyscale visualization where brightness encodes proximity.
+//! - Line-of-sight connectivity check rendered as a coloured line between two points.
+//! - Camera sweep atlas generating a multi-frame rotation sequence into a single image.
+//! - Procedural textured first-person view with brick, stone, wood, metal, and mosaic patterns.
+//! - All outputs produce an `ImageData` bitmap suitable for GPU upload or file export.
+//! - Procedural texture lookup mapping cell type and UV to RGB without external assets.
+
 use super::dda::Raycaster2D;
 impl Raycaster2D {
     /// Render a top-down grid map with player dot and radial ray lines into an `ImageData`.
@@ -166,6 +176,7 @@ impl Raycaster2D {
         }
         img
     }
+    /// Render a top-down grid with a line-of-sight check between two points into an `ImageData`.
     #[allow(clippy::too_many_arguments)]
     pub fn draw_line_of_sight_to_image(
         &self,
@@ -226,6 +237,7 @@ impl Raycaster2D {
         );
         img
     }
+    /// Render a multi-frame camera rotation sweep as a tiled atlas into an `ImageData`.
     #[allow(clippy::too_many_arguments)]
     pub fn draw_camera_sweep_to_image(
         &self,
@@ -269,6 +281,7 @@ impl Raycaster2D {
         }
         img
     }
+    /// Render a first-person view with procedural wall textures into an `ImageData`.
     #[allow(clippy::too_many_arguments)]
     pub fn draw_textured_view_to_image(
         &self,
@@ -348,6 +361,7 @@ impl Raycaster2D {
         );
         img
     }
+    /// Return an RGB colour for a procedural wall texture given cell type and UV coordinates.
     fn procedural_texture_color(cell: u32, frac_y: f32, frac_x: f32) -> (u8, u8, u8) {
         match cell {
             1 => {

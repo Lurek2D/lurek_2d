@@ -1,3 +1,9 @@
+//! - Stateful graph renderer mapping named data series (line, scatter, bar) onto a screen viewport.
+//! - World-to-screen and screen-to-world coordinate transforms with configurable axis ranges and auto-range fitting.
+//! - Visual configuration: toggleable grid, axes, labels, background colour, and chart title/annotation.
+//! - Series storage keyed by name with insert-or-replace semantics and bulk clear.
+//! - Cursor overlay support for interactive hover inspection in world-space coordinates.
+
 use crate::math::Color;
 use std::collections::HashMap;
 /// Discriminated data series type for a `GraphRenderer`; each variant holds named, coloured data.

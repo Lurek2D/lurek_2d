@@ -1,3 +1,7 @@
+//! - Core type definitions for the province map system.
+//! - ProvinceId alias, BorderClass enum for adjacency classification, and ProvinceStyle for per-province visuals.
+//! - ProvinceSnapshot provides an immutable point-in-time view of province state.
+
 use std::collections::HashMap;
 
 /// Numeric identifier for a province; 0 is reserved for "no province" / ocean pixels.

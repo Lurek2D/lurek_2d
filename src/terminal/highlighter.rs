@@ -1,3 +1,7 @@
+//! - Pattern-based text highlighting: match literal strings and assign foreground/background colors.
+//! - Span splitting: decompose input into colored runs for terminal cell rendering.
+//! - Leftmost-first rule priority with default fallback for unmatched regions.
+
 /// A plain-string pattern with associated foreground and optional background colors.
 pub struct HighlightRule {
     /// Literal string to match in the input text.

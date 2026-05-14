@@ -1,5 +1,11 @@
+//! - Parse INI text into a nested `SerialValue` map.
+//! - Support sections, key=value pairs, and comment lines.
+//! - Preserve insertion order via `IndexMap`.
+
 use super::lua_table::SerialValue;
 use indexmap::IndexMap;
+
+/// Parse an INI-formatted string into a `SerialValue::Map`.
 pub fn from_ini(s: &str) -> Result<SerialValue, String> {
     let mut root: IndexMap<String, SerialValue> = IndexMap::new();
     let mut sections: IndexMap<String, IndexMap<String, SerialValue>> = IndexMap::new();

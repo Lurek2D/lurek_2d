@@ -1,3 +1,7 @@
+//! - Tileable Perlin noise grid generation and cell access.
+//! - Conversion to grayscale RGBA byte buffers and `ImageData`.
+//! - Batch render-command generation for grid visualization.
+
 use crate::image::ImageData;
 use crate::procgen::noise::perlin_noise_periodic;
 use crate::procgen::scalar_map_to_rgba_bytes;

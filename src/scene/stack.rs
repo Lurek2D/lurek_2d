@@ -1,3 +1,10 @@
+//! - Stack-based scene manager: push, pop, switch, and clear with optional transitions.
+//! - Overlay support: scenes marked as overlays render above all normal scenes.
+//! - Transition queuing: enqueues fade/slide/wipe transitions and drains them sequentially.
+//! - Layer ordering: per-scene draw priority for front-to-back render sorting.
+//! - Named registry: associate string names with SceneIds for lookup and navigation.
+//! - Per-scene data slots: store and retrieve SceneId-encoded values by string key.
+
 use crate::log_msg;
 use crate::runtime::log_messages::{
     SC01_STACK_INIT, SC02_SCENE_PUSH, SC03_SCENE_POP, SC04_STACK_CLEAR,
@@ -306,6 +313,7 @@ impl SceneStack {
 }
 /// Default delegates to new().
 impl Default for SceneStack {
+    /// Create an empty SceneStack via new().
     fn default() -> Self {
         Self::new()
     }

@@ -1,11 +1,11 @@
 ---
 description: "Audit and fix Rust docs across src/ excluding src/lua_api by reading each file fully, editing one file at a time, and writing feature-based file headers."
-agent: "developer"
 ---
 # Workflow: Audit Rust Src Docs
 
 ## Goal
 - Complete a manual Rust doc audit for `src/` excluding `src/lua_api/`, with accurate item docs and feature-based file headers.
+- Use a strict read -> correct -> save -> next-file loop with no subagents, no cargo commands, and no tools beyond reading the current file and saving the current edit during the pass.
 
 ## Inputs
 - Start folder or current resume point.
@@ -20,23 +20,23 @@ agent: "developer"
 5. Add or fix the top-level `//!` doc only after the full file audit, and make it a compact multiline bullet list of real file features, owned responsibilities, and architectural purpose derived from the whole file.
 6. Keep the file header free of dependency notes, method inventories, symbol-by-symbol summaries, and repeated templates such as `defines`, `owns`, or `keeps`.
 7. Size the file header to the file: about 300-400 characters for small files, 600-800 for medium files, and up to about 1200 for large files when the feature surface requires it.
-8. After each edited file, run the narrowest validation for that file, fix any doc mistake introduced by the edit, and only then move to the next file.
-9. Do not use subagents, helper scripts, or batch generation for the writing itself; perform the audit manually file by file until the requested stop boundary is reached.
+8. After each edited file, save it immediately and move to the next file in order without stopping for cargo, subagents, validation tools, or any tool use beyond opening the current file and saving the current edit.
+9. Do not use subagents, helper scripts, cargo commands, search helpers, execution tools, or tool-driven batch generation for the reading, writing, or validation flow; only open the current file, read it fully, correct the docs manually, save, and continue until the requested stop boundary is reached.
 
 ## Success Criteria
 - [ ] The workflow outcome is complete: manual Rust doc audit for `src/` excluding `src/lua_api/`, with accurate item docs and feature-based file headers.
 - [ ] Files were processed in strict alphabetical order, one file at a time.
 - [ ] Every touched file was read fully before editing.
 - [ ] Each touched file has accurate one-line item docs and a feature-based `//!` header derived from the whole file.
-- [ ] Each touched file was validated immediately after editing.
+- [ ] Each touched file was saved immediately after editing, then the workflow continued to the next file without cargo, subagents, or any extra tool usage beyond file open and save.
 
 ## Anti-patterns
 - Skim the header or first page of a file and write docs from partial context.
 - Invent behavior, add filler, or smooth over uncertainty with generic prose.
 - Use a repeated header template instead of a real feature list for the current file.
 - List methods, structs, or dependencies instead of describing the file's actual owned features.
-- Edit several files first and postpone validation until later.
-- Use subagents, scripts, or batch automation to generate the docs.
+- Edit several files first and postpone saving until later.
+- Use subagents, cargo commands, scripts, search helpers, execution tools, or batch automation instead of the manual open-read-edit-save-next loop.
 
 ## Example Invocation
 - /workflow-audit-rust-src-docs start=src/ai

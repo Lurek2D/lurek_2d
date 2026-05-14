@@ -1,3 +1,14 @@
+//! - GPU render-command emission for all retained-mode UI widget types (buttons, sliders, trees, tables, dialogs, etc.).
+//! - CPU pixel-rasterisation fallback (`draw_to_image`) for headless screenshot and test verification.
+//! - Theme-aware style resolution with per-widget alpha compositing applied to all colour channels.
+//! - Shared helper emitters for common visual patterns: shadow, highlight strip, gradient/rounded box, border.
+//! - Widget-specific draw routines: slider thumb, progress fill, checkbox mark, radio dot, combo arrow, scroll thumb, switch track.
+//! - Recursive tree-node rendering in both GPU-command and CPU-pixel paths with expand/collapse indicators.
+//! - HSV-to-RGB conversion used by the colour-picker hue bar rasteriser.
+//! - `WidgetRenderer` carrier struct threading `GuiContext`, font key, and output buffer through the render pass.
+//! - Child-collection logic merging standard `children()` with type-specific slots (menus, accordion sections, dock zones).
+//! - Approximate character-width text measurement and alignment (left/center/right) for label placement.
+
 use crate::render::renderer::{DrawMode, GradientDirection, RenderCommand};
 use crate::runtime::resource_keys::FontKey;
 use crate::ui::context::{GuiContext, WidgetKind};

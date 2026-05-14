@@ -1,4 +1,8 @@
 
+//! - Single-axis damped spring simulation with configurable stiffness, damping, and settle detection.
+//! - Named spring system aggregating multiple axes under shared default parameters.
+//! - Euler integration with snap-to-target on settle to eliminate micro-oscillation.
+
 use std::collections::HashMap;
 
 /// Single-axis spring simulation with configurable stiffness, damping, and settle precision.
@@ -20,6 +24,7 @@ pub struct SpringAxis {
     pub settled: bool,
 }
 
+/// Single-axis spring physics: creation, stepping, reset, and target changes.
 impl SpringAxis {
     /// Create a new spring axis; `settled` is set immediately if `|position - target| < precision`.
     pub fn new(position: f32, target: f32, stiffness: f32, damping: f32, precision: f32) -> Self {
@@ -84,6 +89,7 @@ pub struct SpringSystem {
     pub precision: f32,
 }
 
+/// Multi-axis spring management: axis registration, batch stepping, and query.
 impl SpringSystem {
     /// Create a new spring system with the given default parameters and no axes.
     pub fn new(stiffness: f32, damping: f32, precision: f32) -> Self {

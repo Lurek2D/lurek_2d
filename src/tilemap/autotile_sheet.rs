@@ -1,3 +1,9 @@
+//! - Autotile sprite-sheet abstraction: blob-47, composite-48, and minimal-16 layouts.
+//! - Bitmask table generation and reverse lookup from neighbor mask to tile index.
+//! - 8-bit diagonal collapse for correct cardinal-gated corner resolution.
+//! - Quarter-tile compositing helpers for sub-tile source and destination rects.
+//! - Sheet-to-tileset rule registration for runtime autotile placement.
+
 use super::tileset::TileSet;
 use crate::math::Rect;
 use std::collections::HashMap;
@@ -30,7 +36,12 @@ pub struct AutoTileSheet {
     reverse_map: HashMap<u16, u32>,
 }
 /// Collapse diagonal bits that are only valid when both adjacent cardinal neighbours are set.
-    let n = mask & 1;
+fn reduce_8bit(mask: u8) -> u8 {
+    collapse_diagonals(mask)
+}
+
+/// Collapse diagonal bits, keeping only those whose adjacent cardinal pair is both set.
+fn collapse_diagonals(mask: u8) -> u8 {    let n = mask & 1;
     let e = (mask >> 1) & 1;
     let s = (mask >> 2) & 1;
     let w = (mask >> 3) & 1;
@@ -51,6 +62,7 @@ pub struct AutoTileSheet {
         | (nw_valid << 7)
 }
 /// Build the bitmask and reverse-map tables for the 47-tile blob layout.
+fn build_blob47_tables() -> (Vec<u16>, HashMap<u16, u32>) {
     let mut unique: Vec<u8> = Vec::with_capacity(47);
     let mut seen: HashMap<u8, u32> = HashMap::new();
     let mut full_map: [u32; 256] = [0; 256];
@@ -78,6 +90,7 @@ pub struct AutoTileSheet {
     (bitmask_map, reverse_map)
 }
 /// Build the bitmask and reverse-map tables for the 48-tile composite layout.
+fn build_composite48_tables() -> (Vec<u16>, HashMap<u16, u32>) {
     let (blob_bm, _) = build_blob47_tables();
     let mut bitmask_map = Vec::with_capacity(48);
     bitmask_map.push(0u16);
@@ -97,6 +110,7 @@ pub struct AutoTileSheet {
     (bitmask_map, reverse_map)
 }
 /// Build the bitmask and reverse-map tables for the 16-tile minimal 4-bit layout.
+fn build_minimal16_tables() -> (Vec<u16>, HashMap<u16, u32>) {
     let mut bitmask_map = Vec::with_capacity(16);
     let mut reverse_map = HashMap::new();
     for i in 0u16..16 {

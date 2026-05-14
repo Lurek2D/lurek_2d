@@ -1,3 +1,7 @@
+//! - Rapier2D-backed rigid-body physics: bodies, shapes, world stepping, and raycasting.
+//! - Collision helpers (AABB, circle, point) and contact/event reporting.
+//! - Terrain tile-maps, spatial trigger zones, and cellular-automaton simulation.
+
 /// Rigid body management and handle types.
 pub mod body;
 /// Cellular automaton world simulation.

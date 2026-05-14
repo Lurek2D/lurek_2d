@@ -1,3 +1,14 @@
+//! - Standalone 2D, 3D, and 4D Perlin noise evaluation with configurable seeds.
+//! - 2D simplex noise with seeded and convenience zero-seed wrappers.
+//! - FBM fractal layering over Perlin noise with normalised output.
+//! - Seeded `NoiseGenerator` with permutation-table Perlin (1D/2D/3D) and Simplex (2D/3D/4D).
+//! - Worley (cellular) noise in 2D and 3D with Euclidean, Manhattan, and Chebyshev metrics.
+//! - Fractal combinators: FBM, ridged multifractal, and turbulence; all normalised.
+//! - Domain warping via Perlin-driven coordinate offsets.
+//! - Sequential and parallel (`rayon`) height-map generation from `MapGenOptions`.
+//! - Tileable periodic 2D Perlin noise for seamless texture synthesis.
+//! - Internal hash and gradient helpers for all supported dimensions.
+
 use rayon::prelude::*;
 
 /// Distance metric used by Worley/cellular noise to measure feature-point distance.
@@ -55,48 +66,6 @@ pub struct MapGenOptions {
 }
 
 /// Provide sane defaults: scale 1.0, 4 octaves FBM Perlin, no offset.
-impl Default for MapGenOptions {
-    fn default() -> Self {
-        Self {
-            scale_x: 1.0,
-            scale_y: 1.0,
-            octaves: 4,
-            lacunarity: 2.0,
-            persistence: 0.5,
-            kind: NoiseKind::Perlin,
-            fractal: FractalType::Fbm,
-            offset_x: 0.0,
-            offset_y: 0.0,
-        }
-    }
-}
-    Euclidean,
-    Manhattan,
-    Chebyshev,
-}
-#[derive(Debug, Clone, Copy, PartialEq)]
-pub enum NoiseKind {
-    Perlin,
-    Simplex,
-}
-#[derive(Debug, Clone, Copy, PartialEq)]
-pub enum FractalType {
-    Fbm,
-    Ridged,
-    Turbulence,
-}
-#[derive(Debug, Clone)]
-pub struct MapGenOptions {
-    pub scale_x: f64,
-    pub scale_y: f64,
-    pub octaves: u32,
-    pub lacunarity: f64,
-    pub persistence: f64,
-    pub kind: NoiseKind,
-    pub fractal: FractalType,
-    pub offset_x: f64,
-    pub offset_y: f64,
-}
 impl Default for MapGenOptions {
     fn default() -> Self {
         Self {

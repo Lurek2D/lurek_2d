@@ -1,4 +1,8 @@
 
+//! - Unified error enum for all network subsystem failures.
+//! - Covers socket I/O, ENet, HTTP, WebSocket, TCP, and threading faults.
+//! - Integrates with `thiserror` for automatic `Display` and `From` impls.
+
 use thiserror::Error;
 
 /// All error conditions that can occur in the network subsystem.
@@ -6,7 +10,12 @@ use thiserror::Error;
 pub enum NetworkError {
     /// Caller requested more peer slots than `MAX_PEERS` allows.
     #[error("peer count {requested} exceeds maximum of {max}")]
-    PeerLimitExceeded { requested: usize, max: usize },
+    PeerLimitExceeded {
+        /// Number of peers the caller tried to allocate.
+        requested: usize,
+        /// Hard upper bound on peer slots.
+        max: usize,
+    },
     /// Underlying OS I/O failure on a socket or file descriptor.
     #[error("network I/O error: {0}")]
     Io(#[from] std::io::Error),

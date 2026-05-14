@@ -1,3 +1,7 @@
+//! - Voronoi diagram generation on a 2D grid with F1/F2 distance fields.
+//! - Optional domain warp via hash noise for organic region boundaries.
+//! - Returns region indices and per-pixel distance buffers in row-major order.
+
 use super::lcg::Lcg;
 
 /// Options controlling domain warp applied before Voronoi distance computation.

@@ -1,3 +1,14 @@
+//! - Define the terminal widget type system: Label, Button, TextBox, List, Border, and Panel.
+//! - Provide `WidgetBase` for shared layout state: position, size, visibility, enabled flag, and tag.
+//! - Offer `BorderStyle` enum with single, double, and ASCII line-drawing variants.
+//! - Construct widgets from 1-based terminal coordinates with clamped dimensions.
+//! - Get and set display text for text-bearing widgets (Label, Button, TextBox).
+//! - Get and set foreground color for colored widgets (Label, Border).
+//! - Manipulate list contents: add, remove, clear items; track selection and scroll offset.
+//! - Enforce TextBox max-length constraints with automatic cursor clamping.
+//! - Expose border property accessors for style and title.
+//! - Provide type-checking predicates for widget kind discrimination.
+
 use super::cell::DEFAULT_FG;
 use super::terminal_state::{MAX_COLS, MAX_ROWS};
 
@@ -475,6 +486,7 @@ impl Widget {
 #[cfg(test)]
 mod tests {
     use super::*;
+    /// Verify all known border style names parse and round-trip through `as_str`.
     #[test]
     fn border_style_roundtrip() {
         for name in &["single", "double", "ascii"] {
@@ -482,10 +494,12 @@ mod tests {
             assert_eq!(bs.as_str(), *name);
         }
     }
+    /// Verify unknown border style names return `None`.
     #[test]
     fn border_style_unknown_returns_none() {
         assert!(BorderStyle::from_str_name("dashed").is_none());
     }
+    /// Confirm 1-based position conversion and set round-trips correctly.
     #[test]
     fn widget_base_position_1based_roundtrip() {
         let mut base = WidgetBase::new(4, 9, 20, 15);
@@ -494,23 +508,27 @@ mod tests {
         assert_eq!(base.x, 2);
         assert_eq!(base.y, 6);
     }
+    /// Verify label creation stores text and picks the correct kind.
     #[test]
     fn widget_new_label() {
         let w = Widget::new_label(1, 1, "Hello");
         assert!(matches!(w.kind, WidgetKind::Label { .. }));
         assert_eq!(w.get_text().unwrap(), "Hello".to_string());
     }
+    /// Verify button creation returns the correct kind.
     #[test]
     fn widget_new_button() {
         let w = Widget::new_button(1, 1, 5, 1, "OK");
         assert!(w.is_button());
     }
+    /// Verify `set_text` updates the label content.
     #[test]
     fn widget_set_text() {
         let mut w = Widget::new_label(1, 1, "A");
         w.set_text("B".to_string()).unwrap();
         assert_eq!(w.get_text().unwrap(), "B".to_string());
     }
+    /// Verify list add and item count accessors.
     #[test]
     fn widget_list_add_and_count() {
         let mut w = Widget::new_list(1, 1, 10, 5);
@@ -519,6 +537,7 @@ mod tests {
         assert_eq!(w.get_item_count().unwrap(), 2);
         assert_eq!(w.get_item_1based(1).unwrap(), "alpha".to_string());
     }
+    /// Verify `is_*` predicates return correct results per kind.
     #[test]
     fn widget_is_type_checks() {
         let btn = Widget::new_button(1, 1, 5, 1, "X");

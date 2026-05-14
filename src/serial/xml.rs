@@ -1,7 +1,13 @@
+//! - Parse XML strings into a SerialValue tree using roxmltree.
+//! - Recursively convert elements, attributes, text, and children into map/seq structures.
+//! - Provide a single `decode` entry point for the serial module.
+
 use super::lua_table::SerialValue;
 use crate::log_msg;
 use crate::runtime::log_messages::SR06_XML_OK;
 use indexmap::IndexMap;
+
+/// Recursively convert an XML node into a SerialValue map with tag, attrs, text, and children.
 fn node_to_serial(node: roxmltree::Node) -> SerialValue {
     let mut map: IndexMap<String, SerialValue> = IndexMap::new();
     map.insert(
@@ -40,6 +46,8 @@ fn node_to_serial(node: roxmltree::Node) -> SerialValue {
     }
     SerialValue::Map(map)
 }
+
+/// Parse an XML string and return the root element as a SerialValue tree.
 pub fn decode(s: &str) -> Result<SerialValue, String> {
     let doc = roxmltree::Document::parse(s).map_err(|e| format!("XML parse error: {e}"))?;
     log_msg!(debug, SR06_XML_OK);

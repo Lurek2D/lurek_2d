@@ -1,3 +1,11 @@
+//! - Flat 2-D grid with per-cell walkability and movement-cost storage.
+//! - A* pathfinding with optional diagonal movement and Euclidean/Manhattan heuristic.
+//! - Dijkstra shortest-path search respecting per-cell costs.
+//! - BFS unweighted shortest path for uniform-cost grids.
+//! - Dijkstra-based flow-field generation toward a single goal cell.
+//! - Internal min-heap node and path reconstruction utilities.
+
+use crate::runtime::log_messages::{PF01_GRID_INIT,PF03_NO_PATH};
 
 use crate::log_msg;
 use std::cmp::Ordering;
@@ -18,6 +26,7 @@ impl PartialEq for Node {
         self.cost == other.cost
     }
 }
+/// Marker trait required by `Ord`; delegates equality to cost comparison.
 impl Eq for Node {}
 
 /// Reverse ordering so `BinaryHeap` is a min-heap on cost.

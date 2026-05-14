@@ -1,3 +1,10 @@
+//! - Data-only body descriptor passed to `World` for physics simulation.
+//! - Body types: static, dynamic, kinematic, and sensor (overlap-only).
+//! - Shape primitives: rectangle, circle, polygon, edge, and chain.
+//! - Constructors produce default mass, friction, and restitution values.
+//! - Geometric helpers: AABB computation, layer/mask filtering, local↔world transforms.
+//! - Extended shapes stored in `shape_ext` for polygon/edge/chain bodies.
+
 use crate::log_msg;
 use crate::math::{Rect, Vec2};
 use crate::physics::shape::Shape;

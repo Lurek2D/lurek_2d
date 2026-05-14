@@ -1,3 +1,7 @@
+//! - Camera-culled render-command generation for tile-map layers.
+//! - GID-to-color debug palette for fallback colored tile rendering.
+//! - Per-layer visibility and tint applied during command emission.
+
 use super::tilemap::TileMap;
 use crate::render::renderer::{DrawMode, RenderCommand};
 
@@ -18,6 +22,7 @@ fn gid_to_color(gid: u32) -> (f32, f32, f32) {
         }
     }
 }
+/// Render-command generation for `TileMap`.
 impl TileMap {
     #[allow(clippy::too_many_arguments)]
     #[allow(clippy::manual_clamp)]

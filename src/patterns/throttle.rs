@@ -1,4 +1,8 @@
 
+//! - Rate-limiting primitives: throttle (fire at most once per interval) and debounce (fire after quiet period).
+//! - Both track elapsed time, fire counts, and can be enabled/disabled at runtime.
+//! - Progress query on throttle; trigger/cancel lifecycle on debounce.
+
 /// Timer that fires at most once per `interval` seconds.
 #[derive(Debug, Clone)]
 pub struct Throttle {
