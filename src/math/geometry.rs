@@ -1,8 +1,3 @@
-//! Geometric primitives and query functions: angle, point-in-shape, segment intersection,
-//! polygon area/centroid, Bresenham rasterisation, convex hull, and Bowyer-Watson Delaunay
-//! triangulation.  Used by physics debug, procgen, pathfinding, and Lua geometry bindings.
-//! Does not own 2D transform math (see transform.rs) or polygon clipping (see polygon.rs).
-
 /// Return the angle in radians from point (x1, y1) to point (x2, y2) via `atan2`.
 pub fn angle_between(x1: f32, y1: f32, x2: f32, y2: f32) -> f32 {
     (y2 - y1).atan2(x2 - x1)

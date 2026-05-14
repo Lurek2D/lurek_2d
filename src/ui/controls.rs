@@ -1,8 +1,3 @@
-//! Leaf control widgets for `lurek.ui` — interactive elements including `Button`, `Label`, `TextInput`,
-//! `CheckBox`, `Slider`, `ProgressBar`, `ComboBox`, `ListBox`, `TabBar`, `RadioButton`, `ScrollBar`,
-//! `SpinBox`, and `Switch`. Each widget owns a `WidgetBase` and its control-specific state.
-//! Depends on `crate::ui::widget`.
-
 use crate::ui::widget::{WidgetBase, WidgetType};
 /// Clickable push button with a text label.
 #[derive(Debug, Clone)]

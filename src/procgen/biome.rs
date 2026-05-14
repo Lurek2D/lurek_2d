@@ -1,9 +1,3 @@
-//! Biome classification for procedural world generation in `src/procgen`.
-//! Owns `BiomeType` variants, per-variant RGBA colors, threshold-driven `BiomeRules`,
-//! and `BiomeClassifier` which maps (height, moisture, temperature) triples to biome
-//! variants. Does not own heightmap or noise generation — those live in `heightmap.rs`
-//! and `noise.rs`.
-
 /// Biome variant covering terrain from ocean to ice cap.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum BiomeType {

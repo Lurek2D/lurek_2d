@@ -1,9 +1,3 @@
-//! 2D dynamic lighting system: point/spot/area lights, occlusion, shadows, and blending.
-//! Owns the light world, light definitions, falloff curves, attenuation, flicker, blend modes,
-//! occluder shapes, shadow filtering, and runtime transitions for light properties.
-//! Does not own GPU pipelines — `LightWorld` produces RenderCommand payloads consumed by `src/render/`.
-//! Key dependencies: `src/render/` for commands, `src/physics/` for occluder shape sources.
-
 /// Attenuation curve definitions for light intensity decay.
 pub mod attenuation;
 /// Additive, multiply, and screen blend mode variants for light accumulation.

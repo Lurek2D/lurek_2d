@@ -1,9 +1,3 @@
-//! Own lazy query pipeline that records deferred transformation steps over a cloned `DataFrame`.
-//! Steps are appended by consuming builder methods and materialised in one pass on `collect`.
-//! A `tombstone` constructor provides a zero-allocation sentinel for optional lazy values.
-//! `DataFrame::lazy()` is the intended entry point. Does not expose parallel execution;
-//! use `VecFrame` for that. Primary consumer is `src/lua_api/dataframe_api.rs`.
-
 use crate::dataframe::frame::{CellValue, ColRef, DataFrame};
 #[derive(Clone)]
 /// Store one deferred lazy-query step applied during `collect`.

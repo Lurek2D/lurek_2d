@@ -1,7 +1,10 @@
-//! Behavior tree data structures: nodes, execution status, and the root container.
-//! Owns `BTNode` (all composite and leaf variants), `BTStatus`, `ParallelPolicy`,
-//! `BehaviorTree`, and `BtDebugState`. Does not execute the tree; tick logic
-//! lives in `lua_api/ai_api.rs`. Depends on `mlua::RegistryKey` for Lua callbacks.
+//! Behaviour tree graph: node types, tick status, and root container.
+//!
+//! - Defines all composite nodes (selector, sequence, parallel), decorator nodes (inverter, repeater, succeeder, guard), and leaf nodes (action, condition)
+//! - Tracks per-node running index across frames so multi-tick behaviours resume correctly without restarting
+//! - Anchors Lua callbacks at leaf nodes via registry keys — game scripts supply the actual action and condition logic
+//! - Provides debug snapshot with node count and last tick result; tick execution lives in the Lua API binding layer
+
 use mlua::RegistryKey;
 #[derive(Debug, Clone, PartialEq)]
 pub enum BTStatus {

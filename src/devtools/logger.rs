@@ -1,8 +1,3 @@
-//! Store bounded developer logs and optional mirrored console/file output.
-//! Keep filtering and retention behavior deterministic for debug inspection.
-//! Do not configure global logging backends or runtime tracing subscribers here.
-//! Depend on in-memory queues and elapsed-time anchors for timestamps.
-
 use crate::devtools::time_anchor::TimeAnchor;
 use std::collections::VecDeque;
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]

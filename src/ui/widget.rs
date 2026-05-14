@@ -1,8 +1,3 @@
-//! Core widget primitive types for `lurek.ui` — `WidgetState`, `WidgetType`, `WidgetTransitionKind`,
-//! `WidgetTransition`, and `WidgetBase`.
-//! `WidgetBase` is embedded in every concrete widget struct as the common layout and state carrier.
-//! Depends on `crate::math::Rect`.
-
 /// Interaction state of a widget used as a theme lookup key.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum WidgetState {

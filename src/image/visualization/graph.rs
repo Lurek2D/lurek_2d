@@ -1,7 +1,3 @@
-//! Node-edge graph visualizations with labeled nodes, colored edges, and removed-edge overlays.
-//! Renders arbitrary position/label/color arrays; removed edges are drawn in red before active edges.
-//! Does not own graph topology — callers provide parallel position, label, color, and edge arrays.
-//! Depends on `crate::image::ImageData`.
 use crate::image::ImageData;
 #[allow(clippy::too_many_arguments)]
 /// Render a node-edge graph with labels and transfer-weight edges into an image.

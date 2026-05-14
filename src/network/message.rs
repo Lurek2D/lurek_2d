@@ -1,8 +1,3 @@
-//! `NetValue` — wire-safe value type and MessagePack framing for the network subsystem.
-//! Owns encode (`pack`) and decode (`unpack`) via `rmp_serde`, and size estimation.
-//! Used by every transport layer to frame messages; does not own socket I/O.
-//! Key dependency: `rmp_serde` for MessagePack; mirrors Lua's type system structurally.
-
 use super::error::NetworkError;
 use serde::{Deserialize, Serialize};
 

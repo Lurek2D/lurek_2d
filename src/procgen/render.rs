@@ -1,8 +1,3 @@
-//! Noise-grid rendering helpers for `src/procgen`.
-//! Owns `NoiseGrid` and its tiling-Perlin construction, RGBA export, render-command
-//! generation, and `ImageData` export. Does not own general noise primitives or
-//! dungeon rendering — those live in `noise.rs`, `rooms.rs`, and `bsp.rs`.
-
 use crate::image::ImageData;
 use crate::procgen::noise::perlin_noise_periodic;
 use crate::procgen::scalar_map_to_rgba_bytes;

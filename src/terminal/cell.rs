@@ -1,7 +1,3 @@
-//! Single terminal cell type and default color constants shared across the
-//! terminal emulator. Owns `TCell` and the module-wide default fg/bg/char
-//! values. Does not own layout, rendering, or ANSI parsing.
-
 /// Default foreground color: opaque white [r, g, b, a].
 pub(crate) const DEFAULT_FG: [f32; 4] = [1.0, 1.0, 1.0, 1.0];
 /// Default background color: fully transparent black [r, g, b, a].

@@ -1,8 +1,3 @@
-//! Game-state snapshot types and client-side prediction/reconciliation helpers.
-//! Owns `EntitySnapshot` encoding, linear extrapolation, and blend-based reconciliation.
-//! Does not own transport or framing; callers serialize snapshots via `message::pack`.
-//! Used by both server (authoritative ticks) and client (prediction correction).
-
 use crate::network::message::NetValue;
 /// Point-in-time position and velocity snapshot for one networked entity.
 #[derive(Debug, Clone, PartialEq)]

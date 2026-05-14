@@ -1,6 +1,3 @@
-//! Rate-limiting helpers: `Throttle` fires on a fixed interval, `Debounce` delays until quiet.
-//! Both advance with `update(dt)` and return `true` when the event fires.
-
 /// Timer that fires at most once per `interval` seconds.
 #[derive(Debug, Clone)]
 pub struct Throttle {

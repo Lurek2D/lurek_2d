@@ -1,8 +1,3 @@
-//! Camera-to-render command adapters for transform stack setup.
-//! Owns command emission for beginning and ending camera-scoped draw passes.
-//! Keeps render command construction separate from renderer execution details.
-//! Depends on camera state types and RenderCommand enum variants.
-
 use crate::camera::types::{Camera, Camera2D};
 use crate::render::renderer::RenderCommand;
 impl Camera {

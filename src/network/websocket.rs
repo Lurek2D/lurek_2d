@@ -1,8 +1,3 @@
-//! Non-blocking WebSocket connection manager using `tungstenite` for the background network thread.
-//! Owns live `WebSocket` connections and an async-connect queue via per-connection helper threads.
-//! Does not own the event loop; called by `net_thread::NetworkRuntime::thread_main`.
-//! Key dependencies: `tungstenite`, `net_thread::{NetworkResponse, WsEvent}`.
-
 use super::net_thread::{NetworkResponse, WsEvent};
 use log::{debug, warn};
 use std::collections::HashMap;

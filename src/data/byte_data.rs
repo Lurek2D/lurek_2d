@@ -1,9 +1,3 @@
-//! Own mutable byte buffer used throughout the data module as the primary owned-bytes container.
-//! Wraps a `Vec<u8>` and provides indexed single-byte access, UTF-8 string decode, zero-fill
-//! construction, and slice-view accessors. Does not own compression or hashing logic.
-//! Callers that need sequential writes should use `DataWriter` instead.
-//! Used by `src/lua_api/data_api.rs` and by pack/unpack helpers in this module.
-
 #[derive(Debug, Clone)]
 /// Hold owned raw bytes with convenience conversion helpers.
 pub struct ByteData {

@@ -1,8 +1,3 @@
-//! Own compression and decompression helpers wrapping flate2 (deflate/gzip/zlib) and lz4_flex.
-//! Supports full-buffer, chunk-list, and generic streaming paths. Codec and level are caller-selected.
-//! A private `ChunkReader` adapter implements `Read` over a slice list for the chunk path.
-//! Does not own file I/O; callers pre-read bytes. Primary consumer is `src/lua_api/data_api.rs`.
-
 use std::io::{Cursor, Read, Write};
 #[derive(Debug, Clone, Copy, PartialEq)]
 /// Select compression codec.

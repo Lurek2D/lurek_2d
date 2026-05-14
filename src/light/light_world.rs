@@ -1,8 +1,3 @@
-//! Light world accumulator: holds all `Light2D` and `Occluder` instances for a scene.
-//! Manages slotmap storage, ambient color, group operations, flicker advancement, and debug visualization.
-//! Does not run per-pixel rendering — it produces data structures and hints consumed by `src/render/`.
-//! Key dependencies: `slotmap`, `crate::runtime::resource_keys`, sibling `light2d` and `occluder` modules.
-
 use crate::light::light2d::Light2D;
 use crate::light::light_type::LightType;
 use crate::light::occluder::Occluder;

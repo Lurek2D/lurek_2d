@@ -1,8 +1,3 @@
-//! Spine-compatible 2D skeletal animation runtime.
-//! Owns Skeleton, Bone, Slot, IKConstraint, BoneTimeline, and SkeletonAnimation.
-//! Does not own asset loading or rendering commands — render.rs bridges to the render pipeline.
-//! Key dependencies: math (Vec2, Mat3), render (RenderCommand).
-
 /// Bone transform hierarchy and parent-relative pose computation.
 pub mod bone;
 /// Inverse-kinematics constraint resolving 2-bone IK chains.

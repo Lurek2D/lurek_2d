@@ -1,8 +1,3 @@
-//! Compute documentation quality and validation summaries from entry catalogs.
-//! Keep scoring thresholds and issue aggregation deterministic for audits.
-//! Do not parse source files or emit JSON payloads in this module.
-//! Depend on catalog entry data and standard hash maps for grouping.
-
 use crate::docs::catalog::Catalog;
 use crate::docs::entry::DocEntry;
 use std::collections::HashMap;

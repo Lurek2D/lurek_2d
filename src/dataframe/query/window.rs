@@ -1,9 +1,3 @@
-//! Own rolling and ranking window extension methods for `DataFrame` used in the query pipeline.
-//! All methods append their result as a new named column and mutate `self` in place.
-//! Window operations are nil-safe: nil rows are excluded from numeric aggregations and
-//! produce nil output cells. Rank is dense over valid rows only; cumulative sum propagates
-//! nil as nil. No SQL or filter logic here; those live in `../sql.rs` and `filter.rs`.
-
 use crate::dataframe::frame::{CellValue, ColRef, DataFrame};
 impl DataFrame {
     #[allow(clippy::needless_range_loop)]

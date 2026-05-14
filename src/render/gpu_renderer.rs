@@ -1,8 +1,3 @@
-//! wgpu device/queue wrapper, pipeline builder, and frame draw-command processor.
-//! Owns all GPU-side state: vertex/index buffers, texture bind groups, shader cache,
-//! canvas render targets, light accumulation pass, and post-fx pipeline. Entry point
-//! for every draw call issued by `RenderCommand`. Does not own window or surface.
-
 use crate::log_msg;
 use crate::math::{Mat3, Vec2};
 use crate::render::mesh::Mesh;

@@ -1,8 +1,3 @@
-//! Fixed-size Lua worker thread pool. Owns `ThreadPool` which manages a set of
-//! `LuaThread` workers sharing input and output `Channel`s. Does not own
-//! individual thread lifecycle beyond start/wait; that lives in `worker`.
-//! Depends on `channel` and `worker`.
-
 use crate::thread::channel::{Channel, ChannelValue};
 use crate::thread::worker::LuaThread;
 use std::collections::HashMap;

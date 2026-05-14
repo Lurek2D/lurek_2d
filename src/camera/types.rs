@@ -1,8 +1,3 @@
-//! Core camera state containers and follow/update logic for 2D scenes.
-//! Owns transform data, follow behavior, constraints, and effect integration.
-//! Keeps camera simulation separate from rendering backend execution.
-//! Depends on math primitives and local camera effect state.
-
 use crate::camera::effects::{CameraBreathing, CameraSway, ZoomPulse};
 use crate::math::{Mat3, Rect, Vec2};
 

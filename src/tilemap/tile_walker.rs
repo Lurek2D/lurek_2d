@@ -1,8 +1,3 @@
-//! Grid-aligned walker with discrete movement, facing, and smooth interpolation helpers.
-//! Owns `Facing` direction enum and `TileWalker` for tile-step games such as dungeon crawlers.
-//! Does not own collision data; `can_move_to` is always permissive and callers add their own gate.
-//! Depends only on `std::f32::consts`.
-
 use std::f32::consts::PI;
 
 /// Cardinal facing direction for a grid-aligned entity.

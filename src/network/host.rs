@@ -1,8 +1,3 @@
-//! ENet-based network host: peer management, send/receive, and connection lifecycle.
-//! Wraps `rusty_enet` for reliable and unreliable UDP transport over a `UdpSocket`.
-//! Does not own the Tokio thread or game-state sync; those live in `net_thread` and `net_sync`.
-//! Key dependencies: `rusty_enet`, `constants` for limits, `error::NetworkError`.
-
 use super::constants::{DEFAULT_CHANNELS, DEFAULT_PEERS, MAX_PEERS};
 use super::error::NetworkError;
 use crate::log_msg;

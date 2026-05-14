@@ -1,7 +1,3 @@
-//! High-level pathfinder for sized game units: A\* with LRU cache, smoothing, partial paths, and reachability.
-//! Wraps a shared `NavGrid` behind `Rc<RefCell>` and exposes waypoint-based path results.
-//! Does not own Lua bindings; consumed by `src/lua_api/pathfind_api.rs`.
-
 use crate::log_msg;
 use crate::pathfind::astar;
 use crate::pathfind::nav_grid::NavGrid;

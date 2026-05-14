@@ -1,8 +1,3 @@
-//! Tileset definition: per-tile quad lookup, solid flags, frame animations, and autotile rule tables.
-//! Owns `TileSet` and `TileAnimFrame`; used by `TileMap` to resolve GIDs to UV rects and collision flags.
-//! Does not own rendering or the tileset image; callers use quads from `get_quad` for draw calls.
-//! Depends on `math`, `log`, and `runtime::log_messages`.
-
 use crate::log_msg;
 use crate::math::Rect;
 use crate::runtime::log_messages::{TS01, TS02, TS03};

@@ -1,6 +1,8 @@
-﻿//! Audio device enumeration and selection stubs exposed to the Lua API.
-//! Returns a hard-coded "Default" device list until platform device enumeration is implemented.
-//! Does not own playback state or mixer resources.
+﻿//! Audio device enumeration and selection facade for the Lua API surface.
+//!
+//! - Returns available output device names and the active device name
+//! - Accepts device selection requests and validates them against the available list
+//! - Currently stubs device enumeration; all paths return the system default device
 
 /// Return the list of available audio output device names; currently always `["Default"]`.
 pub fn get_playback_devices() -> Vec<String> {

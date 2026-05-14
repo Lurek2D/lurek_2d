@@ -1,9 +1,3 @@
-//! Own sequential binary writer with a movable cursor over an owned byte buffer.
-//! Supports typed little-endian and big-endian writes, length-prefixed strings, and raw slices.
-//! The cursor can be repositioned; the buffer grows automatically. Intended for building binary
-//! payloads later consumed by pack/unpack, serialization, or asset export tools.
-//! Does not read back written data; use `DataView` for read-only access over a slice.
-
 /// Hold buffer and cursor for binary writes.
 pub struct DataWriter {
     /// Store written bytes.

@@ -1,8 +1,3 @@
-//! CPU-side software rasterizer for `RaycasterScene`. Rasterizes scene quads
-//! (floors, ceilings, walls, sprites) into an `ImageData` pixel buffer using
-//! flat-colored rectangles. Used for headless testing and CPU fallback paths.
-//! Does not own scene construction or GPU upload.
-
 use crate::image::ImageData;
 use crate::raycaster::scene::RaycasterScene;
 /// Fill a screen-space rectangle with the given RGBA `light` color; clamps to image bounds.

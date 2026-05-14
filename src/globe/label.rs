@@ -1,8 +1,3 @@
-//! Globe label storage keyed by stable ids and filtered by LOD.
-//!
-//! Owns label lifetime and simple visibility/text/position updates.
-//! Style and render decisions stay in the shared label types.
-
 use crate::globe::types::{Label, LabelStyle};
 use std::collections::HashMap;
 /// Label collection keyed by stable id.

@@ -1,7 +1,3 @@
-//! Dijkstra-based flow field backed by a shared `NavGrid`; supports multi-target seeding,
-//! cost-weighted movement, steering helpers, and debug image export.
-//! Does not own grid construction or Lua bindings; consumed by `src/lua_api/pathfind_api.rs`.
-
 use crate::log_msg;
 use crate::pathfind::nav_grid::NavGrid;
 use crate::runtime::log_messages::{FF01, FF02, FF03};

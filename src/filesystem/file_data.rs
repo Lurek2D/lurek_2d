@@ -1,7 +1,3 @@
-//! Owned file payload used for cached bytes and text conversion in GameFS flows.
-//!
-//! Stores a logical path together with raw bytes for later inspection or decoding.
-
 /// Cached file bytes paired with the logical path they came from.
 pub struct FileData {
     /// Logical path used to load or label the payload.

@@ -1,7 +1,3 @@
-//! CPU-side mesh geometry: vertex list, optional index buffer, texture binding,
-//! and draw-mode for Triangles/Fan/Strip. Consumed by `GpuRenderer::render_frame`
-//! via `RenderCommand::DrawMesh`. Does not hold GPU buffers.
-
 use crate::log_msg;
 use crate::runtime::log_messages::MS01;
 use crate::runtime::resource_keys::TextureKey;

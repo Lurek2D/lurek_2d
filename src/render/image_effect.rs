@@ -1,6 +1,3 @@
-//! `ShaderPassDescriptor` — named post-processing pass with float parameter map.
-//! Aggregated into a `PostFxPipeline` pass chain. Does not hold GPU state.
-
 use std::collections::HashMap;
 /// One named shader pass in a post-processing chain; carries float uniform parameters.
 #[derive(Debug, Clone)]

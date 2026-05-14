@@ -1,6 +1,3 @@
-//! Named-strategy registry: register strategies by name, track which is current.
-//! Strategies are identified by opaque `u64` ids; callers dispatch based on the id.
-
 use std::collections::HashMap;
 
 /// Registry of named strategies with a single active selection.

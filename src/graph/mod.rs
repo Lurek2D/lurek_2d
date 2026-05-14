@@ -1,8 +1,3 @@
-//! Graph simulation modules for nodes, edges, items, rendering, and updates.
-//!
-//! Re-exports the public graph surface used by engine and Lua-facing layers.
-//! Detailed behavior lives in sibling module files.
-
 /// Graph algorithm helpers.
 pub mod algorithms;
 /// Core graph container and stats.

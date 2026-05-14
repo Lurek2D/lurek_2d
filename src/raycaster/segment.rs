@@ -1,7 +1,3 @@
-//! 2D line-segment definition and analytic ray-segment intersection for the
-//! raycaster. Used by the BSP/polygon raycaster path and visibility queries.
-//! Does not share state with the DDA grid raycaster.
-
 /// An infinite-precision 2D line segment from `(x1, y1)` to `(x2, y2)`.
 #[derive(Debug, Clone)]
 pub struct Segment {

@@ -1,8 +1,3 @@
-//! Step-DAG pipeline system used by `lurek.pipeline` Lua bindings.
-//! Owns pipeline definition (`dag`), individual step types (`step`), time-based
-//! scheduling (`scheduler`), and result aggregation (`result`). Does not own
-//! execution callbacks or Lua bindings — those live in `src/lua_api/pipeline_api.rs`.
-
 /// DAG, `Pipeline` struct, and `ErrorMode` for dependency-ordered step execution.
 pub mod dag;
 /// `PipelineResult` and `PipelineStatus` produced after a run completes or aborts.

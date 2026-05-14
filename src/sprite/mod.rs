@@ -1,8 +1,3 @@
-//! 2D sprite system: single sprites, texture atlases, sprite sheets, nine-slice panels, and batched drawing.
-//! Owns Sprite, SpriteAtlas, SpriteSheet, NineSlice, SpriteBatch, and the TexturePacker JSON parser.
-//! Does not own texture upload or GPU pipeline \u2014 those live in the render module.
-//! Key dependencies: render (RenderCommand), image (ImageData), math (Rect).
-
 /// Texture atlas region map and TexturePacker JSON parser.
 pub mod atlas;
 /// Nine-slice panel geometry for scalable UI borders and boxes.

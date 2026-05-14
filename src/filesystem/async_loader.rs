@@ -1,8 +1,3 @@
-//! Background file request queue used for asynchronous reads and writes.
-//!
-//! Owns request dispatch, result caches, and the worker thread lifecycle.
-//! Path resolution happens before requests enter this queue.
-
 use std::collections::HashMap;
 use std::path::PathBuf;
 use std::sync::atomic::{AtomicU64, Ordering};

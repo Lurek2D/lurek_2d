@@ -1,7 +1,3 @@
-//! Particle trail system: a ribbon of `TrailPoint` values that fades over a configurable lifetime.
-//! Owns `Trail` (point buffer, width, colour gradient) and `TrailPoint` (position + age).
-//! Does not own the renderer; `build_render_commands` outputs `Triangle` pairs to the caller.
-
 use crate::math::Color;
 use crate::render::renderer::{DrawMode, RenderCommand};
 /// Single point on a trail ribbon with world-space position and accumulated age.

@@ -1,8 +1,3 @@
-//! Uniform-grid spatial hash for fast AABB, circle, and segment queries over string-keyed items.
-//! Used by particle systems, tile queries, and the Lua spatial query API.
-//! Does not own physics collision shapes — those belong in src/physics/ via rapier.
-//! Items are keyed by String id; use AabbTree instead when numeric keys are preferred.
-
 use std::collections::{HashMap, HashSet};
 
 /// A spatial item registered in the hash grid, describing its AABB.

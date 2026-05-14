@@ -1,9 +1,3 @@
-//! Depth-sorting for scene draw calls.
-//! Owns DepthSorter and DepthEntry; chooses between unstable, stable, radix, and parallel
-//! sort strategies depending on entry count and depth type.
-//! Does not own rendering or callback dispatch — callers use sorted_entries() to drive draw order.
-//! Key dependencies: rayon for the parallel sort path above PARALLEL_SORT_THRESHOLD.
-
 /// Minimum entry count that enables the 8-bit radix sort path over unstable sort.
 const RADIX_THRESHOLD: usize = 256;
 /// Minimum entry count that switches to rayon parallel sort.

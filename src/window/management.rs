@@ -1,8 +1,3 @@
-//! OS window control helpers for `lurek.window` — title, size, position, fullscreen,
-//! vsync, DPI conversion, focus, icon, minimize/maximize/restore, and message boxes.
-//! All functions stage changes on `WindowState`; the event loop applies them next frame.
-//! Depends on `crate::runtime::shared_state` and `rfd` for native dialogs.
-
 use crate::runtime::shared_state::{FullscreenType, WindowState};
 /// Snapshot of the window's current mode returned by `get_mode`.
 pub struct ModeInfo {

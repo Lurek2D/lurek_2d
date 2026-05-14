@@ -1,5 +1,3 @@
-//! Province map mode enum and colour resolver: selects display colour from ProvinceStyle based on active mode.
-//! Consumed by the render layer; does not own rendering commands or GPU state.
 use crate::province::types::ProvinceStyle;
 
 /// Active map display mode; controls which style field drives the province fill colour.

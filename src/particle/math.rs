@@ -1,8 +1,3 @@
-//! Math helpers for particle keyframe interpolation and random sampling.
-//! Owns `interpolate_sizes`, `interpolate_colors`, `interpolate_alphas`, `rand_range`, and `rand_normal`.
-//! Re-exports `lerp` from `crate::math` for convenience.
-//! All functions are pure; no state is mutated.
-
 pub use crate::math::lerp;
 /// Evaluate the particle size at normalised lifetime `t` with optional per-particle `variation` in `[0.0, 1.0]`.
 pub fn interpolate_sizes(sizes: &[f32], t: f32, variation: f32) -> f32 {

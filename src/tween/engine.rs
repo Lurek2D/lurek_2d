@@ -1,8 +1,3 @@
-//! Central tween coordinator that owns all active tween, sequence, parallel,
-//! and spring registry keys. Drives per-frame updates via `update` and provides
-//! bulk cancellation. Does not own easing functions or Lua callbacks directly;
-//! those are stored in handles. Depends on mlua registry and `tween::handle`.
-
 use crate::tween::handle::{LuaTween, LuaTweenParallel, LuaTweenSequence};
 use mlua::prelude::*;
 use std::cell::RefCell;

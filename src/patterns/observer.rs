@@ -1,6 +1,3 @@
-//! Key-scoped observer: subscriptions registered by string key, dispatched by `watchers_for`.
-//! Supports one-shot subscriptions and a wildcard `"*"` key.
-
 use std::collections::HashMap;
 
 /// A single subscription entry for an observer.

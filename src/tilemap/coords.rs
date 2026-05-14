@@ -1,8 +1,3 @@
-//! Tile-space coordinate conversion helpers: isometric screen↔tile and hex grid math.
-//! Owns all standalone conversion, neighbor, distance, ring, spiral, and rotate functions.
-//! Does not own tile storage or rendering; callers apply results to their own data.
-//! Depends on `math`.
-
 use crate::math::Vec2;
 use std::f32::consts::PI;
 

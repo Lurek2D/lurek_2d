@@ -1,7 +1,3 @@
-//! `Script` — an ordered, time-sorted sequence of automation `Step` values.
-//! Parses TOML input, expands repeat entries, enforces the step-count cap, and
-//! exposes limit controls used by `Simulator`. Does not own event dispatch or playback.
-
 use super::{Action, Step};
 pub(crate) const MAX_STEPS: usize = 100_000;
 #[derive(Debug, Clone)]

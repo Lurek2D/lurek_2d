@@ -1,7 +1,3 @@
-//! Inverse-kinematics constraint for 2-bone chains in the spine skeleton system.
-//! Owns IKConstraint: stores chain indices and target, solves root and elbow rotations via law-of-cosines.
-//! Does not own world-space accumulation — callers must re-run pose update after solve().
-
 use super::bone::Bone;
 
 /// 2-bone IK constraint that drives root and elbow rotations toward a world-space target.

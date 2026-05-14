@@ -1,8 +1,3 @@
-//! Seedable pseudo-random number generator backed by `fastrand::Rng`.
-//! Exposes uniform float, integer, Gaussian, and seed-state helpers used by
-//! procgen, loot, combat, and the `lurek.random` Lua API.
-//! Does not own noise — for spatially coherent random use noise_generator.rs.
-
 use fastrand::Rng;
 
 /// Seedable RNG wrapping `fastrand::Rng` with stored seed for serialisation.

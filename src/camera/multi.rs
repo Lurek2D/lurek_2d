@@ -1,8 +1,3 @@
-//! Multi-camera rig container for split-screen and overlay layouts.
-//! Owns named camera instances and layout helpers for common window partitions.
-//! Keeps layout assignment separate from per-camera simulation behavior.
-//! Depends on Camera2D state from the camera types module.
-
 use crate::camera::types::Camera2D;
 use std::collections::HashMap;
 

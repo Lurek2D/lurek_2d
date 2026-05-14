@@ -1,5 +1,3 @@
-//! Post-processing state, overlay effects, and effect stack helpers.
-
 /// Ambient color state derived from time-of-day settings.
 pub mod ambient;
 /// Atmospheric overlay states such as clouds, fog, and lightning.

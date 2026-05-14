@@ -1,6 +1,3 @@
-//! Character-keyed trie for prefix search, exact lookup, and key removal.
-//! Used internally for completion and dictionary queries; no Lua bindings are exposed directly.
-
 /// Internal trie node holding child edges and end-of-word marker.
 #[derive(Debug, Default)]
 struct TrieNode {

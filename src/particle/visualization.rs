@@ -1,7 +1,3 @@
-//! Debug and editor visualisation functions that render `ParticleSystem` state to `ImageData`.
-//! All functions are pure or accept borrowed mutable `ImageData`; no renderer or GPU state is needed.
-//! Intended for preview thumbnails, test output, and tool UIs — not for in-game rendering.
-
 use super::emitter::ParticleSystem;
 use super::math::{interpolate_alphas, interpolate_colors, interpolate_sizes};
 use crate::image::ImageData;

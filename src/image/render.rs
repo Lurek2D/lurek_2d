@@ -1,8 +1,3 @@
-//! Bridge helpers that convert `ImageData` into `RenderCommand` payloads.
-//! Owns the `generate_render_commands` and `draw_to_image` helpers on `ImageData`.
-//! Does not own GPU pipeline state — callers submit returned commands to the renderer.
-//! Depends on `RenderCommand` from `src/render/` and `TextureKey` from runtime resource keys.
-
 use super::image_data::ImageData;
 use crate::render::renderer::RenderCommand;
 use crate::runtime::resource_keys::TextureKey;

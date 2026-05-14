@@ -1,8 +1,3 @@
-//! Audio waveform visualization: renders mono f32 sample slices to labeled `ImageData` plots.
-//! Normalises to peak amplitude; draws grid lines, center axis, and per-sample vertical bars.
-//! Does not own audio state — callers provide a sample slice and sample rate.
-//! Depends on `crate::image::ImageData` for pixel output.
-
 use crate::image::ImageData;
 /// Render a mono waveform preview into an image.
 pub fn waveform_to_image(samples: &[f32], _sample_rate: u32, width: u32, height: u32) -> ImageData {

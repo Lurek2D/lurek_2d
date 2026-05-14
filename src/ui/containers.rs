@@ -1,8 +1,3 @@
-//! Container widgets for `lurek.ui` — `Panel`, `Layout`, `ScrollPanel`, `NinePatch`, `GUIWindow`,
-//! `SplitPanel`, and `DockPanel`. Each container holds child widget indices and drives layout
-//! positioning. Does not own widget state, theming, or rendering draw calls.
-//! Depends on `crate::ui::widget`.
-
 use crate::ui::widget::{WidgetBase, WidgetType};
 /// Plain box container that groups children with an optional title and scroll flag.
 #[derive(Debug, Clone)]

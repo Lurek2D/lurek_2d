@@ -1,8 +1,3 @@
-//! Globe frame composition helpers for multi-viewport rendering.
-//!
-//! Owns viewport remapping when multiple globes render into one frame.
-//! Actual globe draw command generation stays in the draw module.
-
 use crate::globe::draw::emit_globe_frame;
 use crate::globe::registry::GlobeRegistry;
 use crate::render::renderer::RenderCommand;

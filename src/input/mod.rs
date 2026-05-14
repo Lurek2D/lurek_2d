@@ -1,8 +1,3 @@
-//! Input subsystem — keyboard, mouse, gamepad, touch, combo detection, and input recording.
-//! Owns device state polling, event name constants, and cursor management.
-//! Does not own render or game-logic; consumers call into this module from the runtime event loop.
-//! Key dependencies: winit (keyboard/mouse events), gilrs (gamepad), mlua (Lua-facing API).
-
 /// Combo gesture detection and multi-step input sequences.
 pub mod combo;
 /// Gamepad device state, axis/button mapping, and vibration requests via gilrs.

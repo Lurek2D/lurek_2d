@@ -1,6 +1,3 @@
-//! Debug rendering helpers for `World`: `RenderCommand` list generation and CPU image rasterisation.
-//! These methods extend `World` for debug visualisation only; not used in release builds.
-
 use crate::image::ImageData;
 use crate::physics::body::{BodyShape, BodyType};
 use crate::physics::world::World;

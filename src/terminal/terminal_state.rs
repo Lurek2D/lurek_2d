@@ -1,8 +1,3 @@
-//! Core terminal state machine. Owns the `Terminal` struct, the `TCell` grid,
-//! widget list, scrollback buffer, and command history. Dispatches `TerminalEvent`
-//! values on user interaction. Does not own rendering or ANSI parsing; those live
-//! in `render.rs` and `ansi.rs`. Depends on `widget`, `cell`, `RenderCommand`, and `FontKey`.
-
 use super::cell::{TCell, DEFAULT_FG};
 use super::widget::{BorderStyle, Widget, WidgetKind};
 use crate::render::renderer::RenderCommand;

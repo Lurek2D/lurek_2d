@@ -1,8 +1,3 @@
-//! 4-connected flood fill for `src/procgen` grid masks.
-//! Owns `flood_fill` which produces a 0/1 reachability mask from a seed cell.
-//! Does not own cellular automata, room detection, or rendering — those live in
-//! `cellular.rs`, `rooms.rs`, and `render.rs`.
-
 /// Flood-fill from `(sx, sy)` over `data` and return a flat mask where 1 = reached cell.
 ///
 /// Cells match the fill region when `above=true` and value >= `threshold`,

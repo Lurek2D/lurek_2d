@@ -1,8 +1,3 @@
-//! Per-column wall data for the legacy column-based raycaster path. Stores projected
-//! wall-slice coordinates, texture U offset, shade, and depth for each screen column.
-//! `ColumnBatch` is populated from raw ray arrays and read by the CPU-side draw path.
-//! Does not own DDA stepping or GPU upload.
-
 use crate::log_msg;
 use crate::math::Color;
 use crate::runtime::log_messages::{CB01, CB02};

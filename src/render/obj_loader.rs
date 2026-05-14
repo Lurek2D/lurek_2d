@@ -1,8 +1,3 @@
-//! Wavefront OBJ parser and software rasterizer for preview and mesh projection.
-//! Provides `ObjLoader` (file + text parse), `ObjModel` (geometry + materials),
-//! and CPU-side `render_to_image`/`project_to_mesh` helpers. Uses `tobj` for
-//! file loading and a hand-written parser for in-memory text. No GPU state.
-
 use crate::image::ImageData;
 use crate::render::mesh::{Mesh, MeshDrawMode, MeshVertex};
 use crate::runtime::resource_keys::TextureKey;

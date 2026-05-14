@@ -1,9 +1,3 @@
-//! Shelf-based texture atlas packer with named regions and optional nine-slice metadata.
-//! Owns `TextureAtlas` (allocator), `AtlasRegion` (packed rect with UV and insets), `NineSliceInsets`.
-//! Uses first-fit shelf algorithm: rows grow downward, regions are placed left-to-right on each shelf.
-//! Does not own pixel data or GPU upload — callers blit pixels and upload the result.
-//! Depends only on `std::collections::HashMap` for the region lookup table.
-
 use std::collections::HashMap;
 /// Nine-slice border distances used to preserve corners and edges.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

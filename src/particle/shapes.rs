@@ -1,7 +1,3 @@
-//! `ParticleShape` enum: per-particle primitive geometry used by the renderer to draw each particle.
-//! Owns the shape type definition; render interpretation lives in `render::renderer`.
-//! Serialisable; matched to `ParticleRenderShape` in `emitter::build_render_commands`.
-
 /// Geometric primitive used to draw a single particle.
 #[derive(Clone, Debug, Default, PartialEq, serde::Serialize, serde::Deserialize)]
 pub enum ParticleShape {

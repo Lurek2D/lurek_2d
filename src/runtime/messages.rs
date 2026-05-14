@@ -1,6 +1,3 @@
-//! Message catalog loading and lookup for stable log identifiers.
-//! Parses TOML once, stores flattened key-value strings, and resolves ids at runtime.
-
 use std::collections::HashMap;
 use std::sync::OnceLock;
 /// Embedded message catalog source loaded from runtime config assets.

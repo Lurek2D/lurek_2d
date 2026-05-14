@@ -1,7 +1,3 @@
-//! Blend mode enum for how a 2D light contributes to the accumulation buffer.
-//! Consumed by `LightWorld` when compositing individual light contributions.
-//! Does not own blend math — the renderer applies the mode during pass execution.
-
 /// Blend mode for how a light's contribution is combined with the light accumulation buffer.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub enum LightBlendMode {

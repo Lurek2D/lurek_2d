@@ -1,8 +1,3 @@
-//! Tilemap subsystem: tile grids, tilesets, autotile sheets, isometric maps,
-//! chunk-based large maps, TMX and LDtk import, procedural map generation,
-//! polygon regions, tile-space coordinate helpers, and the walker iterator.
-//! Does not own rendering or physics; callers route output to the render layer.
-
 /// Autotile sprite-sheet layout and rule matching.
 pub mod autotile_sheet;
 /// Chunk-based storage for very large tile grids.

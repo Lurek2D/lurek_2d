@@ -1,7 +1,3 @@
-//! `DrawLayer` — a z-ordered queue of Lua draw callback IDs flushed each frame.
-//! Callbacks are sorted by `z_order` at flush time. Does not hold GPU commands;
-//! the Lua runtime invokes each callback ID in sorted order to emit `RenderCommand`s.
-
 /// A pending draw-callback slot queued in `DrawLayer`.
 pub struct LayerEntry {
     /// Depth key used to sort entries front-to-back before flush.

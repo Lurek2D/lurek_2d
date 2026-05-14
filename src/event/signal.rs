@@ -1,5 +1,3 @@
-//! Named signal subscriptions with wildcard pattern support.
-
 use crate::log_msg;
 use crate::runtime::log_messages::{SG01, SG02};
 use std::collections::HashMap;

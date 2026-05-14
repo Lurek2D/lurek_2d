@@ -1,9 +1,3 @@
-//! LIMG binary serialization for flat `ImageData` and layered `LayeredImage` stacks.
-//! Format: 6-byte header (magic `LIMG`, version byte, type flag) followed by zlib-compressed payload.
-//! Owns encode/decode for both flat (type 0) and layered (type 1) variants.
-//! Does not own filesystem paths beyond direct `std::fs` calls; callers manage paths.
-//! Depends on `flate2` for zlib compression.
-
 use super::image_data::ImageData;
 use super::layers::LayeredImage;
 use flate2::read::ZlibDecoder;

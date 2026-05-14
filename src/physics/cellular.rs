@@ -1,7 +1,3 @@
-//! Falling-sand cellular automaton: sand, water, fire, gas, and rock simulation on a 2D grid.
-//! Stepping is CPU-only and frame-order-biased using `even_tick` for left/right fairness.
-//! Used by `lurek.cellular.*` bindings in `src/lua_api/cellular_api.rs`.
-
 /// Cell material type used in `CellularWorld`.
 #[repr(u8)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]

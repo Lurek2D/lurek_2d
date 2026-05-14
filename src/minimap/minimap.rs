@@ -1,8 +1,3 @@
-//! Core `Minimap` struct: terrain grid, fog, objects, markers, pings, overlays, and layers.
-//! Owns all minimap state and provides read/write accessors used by the Lua API and province adapter.
-//! Does not own the GPU pipeline; rendering is delegated to `super::render`.
-//! Consumed by `src/lua_api/minimap_api.rs` and `src/minimap/province_adapter.rs`.
-
 use super::types::{
     ColorMode, FogLevel, LayerData, MarkerAnimation, MinimapMarker, MinimapObject,
     MinimapObjectType, MinimapPing, OverlayPath, OverlayShape,

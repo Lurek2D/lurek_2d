@@ -1,8 +1,3 @@
-//! Define normalized documentation entry records shared by docs tooling stages.
-//! Keep only data containers and simple completeness checks in this file.
-//! Do not perform file IO, schema validation, or export formatting here.
-//! Depend on standard maps for optional metadata extensions.
-
 use std::collections::HashMap;
 #[derive(Debug, Clone, Default)]
 /// Hold one parameter description extracted for a callable entry.

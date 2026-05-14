@@ -1,7 +1,3 @@
-//! Physics body definitions: `Body` struct, `BodyType`, `BodyShape`, and constructors.
-//! Bodies are the data-only description sent to `World`; the world owns the actual simulation state.
-//! Does not hold rapier handles; translation to rapier types happens in `world.rs`.
-
 use crate::log_msg;
 use crate::math::{Rect, Vec2};
 use crate::physics::shape::Shape;

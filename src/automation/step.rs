@@ -1,8 +1,3 @@
-//! `Action` enum and `Step` struct for automation scripts.
-//! `Action` maps lowercase string identifiers to input event kinds; `Step` holds a
-//! timed payload for keyboard, mouse, text, wait, macro-call, and assert events.
-//! Consumed exclusively by `Script` and `Simulator` in this module.
-
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 /// Input event kind dispatched by a `Step` during automation playback.
 pub enum Action {

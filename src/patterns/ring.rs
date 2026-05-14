@@ -1,6 +1,3 @@
-//! Fixed-capacity ring buffer storing numeric or string entries with tags.
-//! When full, the oldest entry is evicted on push. Supports sum and average over numeric entries.
-
 use std::collections::VecDeque;
 
 /// Fixed-capacity ring buffer of `RingEntry` values.

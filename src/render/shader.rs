@@ -1,8 +1,3 @@
-//! WGSL user shader compilation, validation, and source-rewriting for the engine
-//! custom shader system. Parses fragment entry signatures via `naga`, rewrites
-//! `@fragment` entries as helper functions for the wrapper pipeline, and stores
-//! per-shader uniform values. Does not hold wgpu pipelines — `GpuRenderer` builds those.
-
 use crate::log_msg;
 use crate::runtime::log_messages::SH01_SHADER_OK;
 use std::collections::HashMap;

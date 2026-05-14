@@ -1,8 +1,3 @@
-//! ZIP archive overlay used to expose packaged files through virtual paths.
-//!
-//! Builds a name index once and reads entries on demand from the archive.
-//! Path normalization and traversal checks stay local to this module.
-
 use std::collections::HashMap;
 use std::io::Read;
 use std::path::{Path, PathBuf};

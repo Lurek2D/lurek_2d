@@ -1,9 +1,3 @@
-//! Own grouped and correlated dataframe transformation methods extending `DataFrame`.
-//! Groups rows by a key column, aggregates across any supported `AggFn` mode, and builds
-//! cross-tabulation pivots. Also provides Pearson correlation between two numeric columns
-//! and a square correlation matrix over all numeric columns. All methods preserve first-seen
-//! key order, skip nil values in numeric paths, and return new frames without mutating self.
-
 use crate::dataframe::frame::{AggFn, CellValue, ColRef, DataFrame};
 impl DataFrame {
     #[allow(clippy::needless_range_loop)]

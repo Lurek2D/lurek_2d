@@ -1,7 +1,3 @@
-//! World-space 8-directional A\* grid with per-cell cost, path smoothing, and line-of-sight.
-//! Returns world-space `(f32, f32)` waypoints rather than cell coordinates.
-//! Does not own Lua bindings; consumed by `src/lua_api/pathfind_api.rs`.
-
 use std::cmp::Ordering;
 use std::collections::BinaryHeap;
 /// Walkability and movement cost for a single grid cell.

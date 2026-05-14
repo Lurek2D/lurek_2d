@@ -1,5 +1,3 @@
-//! Extension queries and snapshot helpers layered onto the ECS universe.
-
 use super::Universe;
 use crate::ecs::lua_table::deep_copy_table;
 use mlua::{Function, Lua, Result as LuaResult, Table, Value as LuaValue};

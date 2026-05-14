@@ -1,7 +1,3 @@
-//! 2D affine transform backed by a Mat3. Provides translate/rotate/scale/shear mutation,
-//! point projection, inverse, and SRT decomposition. Used by sprite, camera, and UI layout
-//! to compose hierarchical transforms. Does not own animation — see `tween` for interpolation.
-
 use crate::math::mat3::Mat3;
 use crate::math::vec2::Vec2;
 

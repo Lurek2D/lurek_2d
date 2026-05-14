@@ -1,8 +1,3 @@
-//! Markov-chain name generator for `src/procgen`.
-//! Owns `NameGen` which trains an n-gram character chain on example words and
-//! samples from it to produce plausible new names. Does not own world graph or
-//! region labelling — those live in `world_graph.rs`.
-
 use crate::procgen::lcg::Lcg;
 use std::collections::HashMap;
 

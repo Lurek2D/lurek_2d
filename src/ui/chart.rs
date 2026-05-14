@@ -1,8 +1,3 @@
-//! Chart rendering helpers for `lurek.ui` — rasterises line, bar, scatter, pie, and area
-//! charts into `ImageData` pixels. Does not own the UI layout tree or rendering pipeline;
-//! callers request a rendered `ImageData` and hand it to the sprite system.
-//! Feature-gated behind `ui-charts`; depends on `crate::image::ImageData` and `crate::math::color`.
-
 use crate::image::ImageData;
 use crate::math::color::Color;
 

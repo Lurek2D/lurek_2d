@@ -1,8 +1,3 @@
-//! DDS compressed image decoding, format detection, and mipmap extraction.
-//! Owns the `CompressedFormat` enum and `CompressedImageData` type.
-//! Does not own GPU upload — callers pass decoded payloads to `src/render/`.
-//! Depends on the `ddsfile` crate for DDS parsing.
-
 use crate::runtime::EngineError;
 /// Compressed texture format recognized from DDS metadata.
 #[derive(Debug, Clone, PartialEq, Eq)]

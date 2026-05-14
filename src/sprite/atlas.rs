@@ -1,8 +1,3 @@
-//! Texture atlas region map and sprite atlas parsers for TexturePacker and Aseprite JSON formats.
-//! Owns AtlasEntry, SpriteAtlas, parse_texturepacker_json, parse_aseprite_json, and related helpers.
-//! Does not own texture upload or GPU state — callers read AtlasEntry UV data and pass it to the renderer.
-//! Key dependencies: serde_json for JSON parsing, image::TextureAtlas for from_texture_atlas construction.
-
 use std::collections::HashMap;
 /// Named sub-region of a texture atlas with pixel coordinates, size, and flip/rotate flags.
 #[derive(Debug, Clone)]

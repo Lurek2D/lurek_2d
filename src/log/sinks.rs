@@ -1,8 +1,3 @@
-//! Log sink types: flat file, rotating file, in-memory ring buffer, and callback sinks.
-//! `SinkRegistry` holds a list of `Sink` instances and dispatches messages to all matching sinks.
-//! Plain, JSON, and NDJSON output formats are supported; optional timestamps and ANSI color codes.
-//! Key dependencies: `crate::data::RingBuffer` for memory sink, `serde_json` for JSON formatting.
-
 use crate::data::RingBuffer;
 use std::collections::BTreeMap;
 use std::fs::{self, File, OpenOptions};

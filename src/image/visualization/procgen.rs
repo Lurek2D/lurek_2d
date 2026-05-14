@@ -1,7 +1,3 @@
-//! Procedural-generation debug visualizations: cellular automata, Voronoi, dungeon maps, Delaunay triangulation.
-//! Renders pre-computed grid/region/point data — does not run the generator itself.
-//! Does not own procgen algorithms; callers supply flat arrays for grid cells, regions, and point sets.
-//! Depends on `super::hsv_to_rgb_viz` and `crate::image::ImageData`.
 use super::hsv_to_rgb_viz;
 use crate::image::ImageData;
 /// Render a cellular automata grid with cell size and alive-cell color into an image.

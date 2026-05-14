@@ -1,8 +1,3 @@
-//! Time-based and frame-based callback scheduler used by `lurek.timer`.
-//! Owns `Scheduler`, `ScheduledEvent`, and `FrameEvent`. Does not fire Lua
-//! callbacks directly — callers inspect the returned fired-ID vec each frame.
-//! Depends on `crate::runtime::log_messages` for structured log codes.
-
 use crate::log_msg;
 use crate::runtime::log_messages::{TI01, TI02, TI03, TI04};
 

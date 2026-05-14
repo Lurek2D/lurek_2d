@@ -1,6 +1,3 @@
-//! String-keyed flat state set with a single active current state.
-//! No transitions or guards; intended for lightweight game-logic state tracking.
-
 use std::collections::HashSet;
 
 /// Set of named states with an optional current selection.

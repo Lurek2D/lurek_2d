@@ -1,8 +1,3 @@
-//! TOML-driven declarative layout loader for `lurek.ui` — deserialises `WidgetDef` / `LayoutDef` trees
-//! into a live `GuiContext` via `load_layout_toml` and `load_layout_def`.
-//! Also provides `render_to_image` for headless RGBA rasterisation of a loaded layout.
-//! Depends on `crate::ui::context`, `crate::math::Rect`, and `serde` / `toml` / `image`.
-
 use crate::ui::context::{GuiContext, WidgetKind};
 use serde::Deserialize;
 /// Flat description of a single widget produced by TOML deserialisation; children are nested inline.

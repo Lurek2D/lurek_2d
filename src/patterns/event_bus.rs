@@ -1,6 +1,3 @@
-//! Priority-ordered event bus with one-shot subscriptions and wildcard `*` matching.
-//! Stores subscription metadata only; dispatch is performed by callers using returned listener IDs.
-
 use std::collections::HashMap;
 /// Metadata for a single event subscription.
 #[derive(Debug, Clone)]

@@ -1,7 +1,3 @@
-//! Polygon-based navigation mesh: convex polygon regions connected by a graph, with A\* corridor search.
-//! Finds world-space paths by identifying entry/goal polygons, running polygon-level A\*, and inserting centroids.
-//! Does not own Lua bindings; consumed by `src/lua_api/pathfind_api.rs`.
-
 use std::cmp::Ordering;
 use std::collections::{BinaryHeap, HashMap};
 /// Navigation mesh: a collection of polygons with explicit connectivity edges.

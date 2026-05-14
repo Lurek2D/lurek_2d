@@ -1,5 +1,3 @@
-//! Province label utilities: computes pixel-weighted centroids from span runs.
-//! Used by ProvinceRegistry and the render layer to position text labels.
 use std::collections::HashMap;
 
 /// Compute the pixel-weighted centroid (x, y) for each province id present in the span slice;

@@ -1,8 +1,3 @@
-//! Input event recorder and frame-accurate playback for replays and automated tests.
-//! Owns the recording buffer, JSON serialisation, and frame-step playback cursor.
-//! Does not own real-time event delivery; the runtime feeds events in and reads them out each frame.
-//! Consumed by `src/lua_api/input_api.rs` and automation tools in `tests/`.
-
 /// A single input event with a kind tag and a key/button name.
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize, PartialEq)]
 pub struct InputEvent {

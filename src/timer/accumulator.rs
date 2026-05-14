@@ -1,7 +1,3 @@
-//! Fixed-step time accumulator for scaled delta-time integration.
-//! Owns `accumulate_scaled_micros`; does not own the game clock or scheduler.
-//! Used by `Clock` to advance elapsed microseconds with sub-microsecond carry.
-
 /// Advance `elapsed_micros` by `dt_seconds * scale`, accumulating fractional
 /// microseconds in `carry_micros` to avoid drift; clamps negative inputs to zero.
 pub(crate) fn accumulate_scaled_micros(

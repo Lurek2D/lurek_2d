@@ -1,8 +1,3 @@
-//! Heightmap generation and simple hydraulic erosion for `src/procgen`.
-//! Owns `HeightmapOpts`, `Heightmap`, and its FBM-noise construction, cellular
-//! conversion, normalisation, erosion, and RGBA export methods. Does not own
-//! biome classification or noise primitives — those live in `biome.rs` and `noise.rs`.
-
 use crate::procgen::noise::{FractalType, MapGenOptions, NoiseGenerator, NoiseKind};
 use crate::procgen::scalar_map_to_rgba_bytes;
 

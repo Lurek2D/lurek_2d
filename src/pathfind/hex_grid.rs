@@ -1,7 +1,3 @@
-//! Offset-coordinate hexagonal grid with flat-top and pointy-top layout support.
-//! Provides A\*, range-of-movement, line-of-sight, field-of-view, and neighbour queries.
-//! Does not own Lua bindings; consumed by `src/lua_api/pathfind_api.rs`.
-
 use std::cmp::Ordering;
 use std::collections::{BinaryHeap, HashMap};
 /// Hex layout convention: column or row is the flat side.

@@ -1,8 +1,3 @@
-//! Fog-of-war masks and per-viewer fog storage for globe provinces.
-//!
-//! Stores compact visibility state and per-viewer mask collections.
-//! Encoding helpers stay local to this module.
-
 use crate::globe::types::{FogState, ProvinceId, MAX_PROVINCES};
 use base64::Engine;
 use std::collections::HashMap;

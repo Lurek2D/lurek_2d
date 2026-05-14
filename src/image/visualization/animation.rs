@@ -1,8 +1,3 @@
-//! Animation debug visualizations: frame-grid previews and playback timeline strips.
-//! Renders frames as labeled cell grids; highlights the active frame with a gold border.
-//! Does not own animation state — callers pass `&Animation` and a snapshot slice.
-//! Depends on `crate::animation::Animation` and `crate::image::ImageData`.
-
 use crate::animation::Animation;
 use crate::image::ImageData;
 /// Render an animation frame grid into an image.

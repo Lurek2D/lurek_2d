@@ -1,6 +1,3 @@
-//! Guard-aware FSM: named states, directed transition rules, and bounded history log.
-//! Guards are tracked as a flag; callers invoke guard logic themselves before calling `transition_to`.
-
 use std::collections::HashMap;
 
 /// A directed transition rule between two named states.

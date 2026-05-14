@@ -1,6 +1,3 @@
-//! Animation clip metadata and playback mode.
-//! Owns `ClipPlaybackMode` and `AnimClip`.
-//! Does not own runtime playback state; that lives in `controller.rs`.
 /// Supported clip playback modes.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum ClipPlaybackMode {

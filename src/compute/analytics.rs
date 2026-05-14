@@ -1,8 +1,3 @@
-//! Statistical and signal analytics helpers operating on NdArray values.
-//! Owns cumulative transforms, histogram computation, normalization, and correlation.
-//! Keeps analysis math separate from low-level array storage internals.
-//! Depends on NdArray constructors and typed value accessors.
-
 use crate::compute::array::NdArray;
 
 /// Compute cumulative sum and return a 1D array with running totals.

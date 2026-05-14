@@ -1,8 +1,3 @@
-//! Provide a minimal Lua REPL helper with bounded command history.
-//! Keep evaluation behavior simple for developer diagnostics and scripting checks.
-//! Do not own sandbox policy or runtime command routing in this module.
-//! Depend on mlua execution and local value formatting helpers.
-
 use crate::devtools::lua_display::value_to_string;
 #[derive(Debug, Clone)]
 /// Store REPL command history and capacity limits for local dev sessions.

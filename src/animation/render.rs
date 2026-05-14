@@ -1,5 +1,3 @@
-//! Render helpers for turning animation frames into draw commands.
-
 use crate::animation::controller::Animation;
 use crate::math::Rect;
 use crate::render::renderer::RenderCommand;

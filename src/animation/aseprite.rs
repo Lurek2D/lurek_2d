@@ -1,7 +1,3 @@
-//! Aseprite JSON importer for frame rectangles and animation tags.
-//! Owns `AsepriteFrameData`, `AsepriteDirection`, `AsepriteTagData`, and `AsepriteParsed`.
-//! Does not own textures or rendering; it only parses metadata.
-//! Depends on `serde_json::Value` for JSON traversal.
 use serde_json::Value;
 /// One frame rectangle parsed from an Aseprite sheet.
 #[derive(Debug, Clone)]

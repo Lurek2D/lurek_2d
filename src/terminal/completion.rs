@@ -1,7 +1,3 @@
-//! Tab-completion engine for the terminal emulator. Owns the sorted candidate
-//! list and prefix-cycling state. Does not own key-event routing or history;
-//! callers feed candidates, then call `next_completion` on each Tab press.
-
 /// Sorted candidate store with prefix-based cycling for terminal Tab completion.
 pub struct CompletionEngine {
     /// Alphabetically sorted list of registered completion strings.

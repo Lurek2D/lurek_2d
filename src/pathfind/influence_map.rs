@@ -1,7 +1,3 @@
-//! Named per-layer influence maps for AI spatial reasoning: stamping, propagation, blending, decay.
-//! Each layer is a flat grid of f32 values representing influence strength per cell.
-//! Does not own pathfinding or Lua bindings; consumed by `src/lua_api/pathfind_api.rs`.
-
 use crate::log_msg;
 use crate::runtime::log_messages::{IF01, IF02, IF03};
 use std::collections::HashMap;

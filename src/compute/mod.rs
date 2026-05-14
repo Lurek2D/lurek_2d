@@ -1,8 +1,3 @@
-//! Numerical compute subsystem for array, linalg, FFT, and spatial helpers.
-//! Owns module wiring and re-exports for compute-facing APIs.
-//! Keeps high-level compute organization separate from Lua binding layers.
-//! Depends on sibling compute modules for concrete algorithms.
-
 /// Exposes analytics helpers for cumulative and statistical operations.
 pub mod analytics;
 /// Exposes typed n-dimensional array container and constructors.

@@ -1,7 +1,3 @@
-//! Syntax-highlighting pass for terminal text. Owns `HighlightRule`, `ColoredSpan`,
-//! and the greedy first-match `highlight_spans` function. Does not own ANSI parsing
-//! or cell writing; callers map returned spans to `TCell` colors.
-
 /// A plain-string pattern with associated foreground and optional background colors.
 pub struct HighlightRule {
     /// Literal string to match in the input text.

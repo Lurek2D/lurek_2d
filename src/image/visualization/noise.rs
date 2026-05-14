@@ -1,7 +1,3 @@
-//! Noise field and terrain visualizations: grayscale, height-mapped, multi-octave, and terrain coloring.
-//! Accepts arbitrary `Fn(f64,f64)->f64` noise functions; renders scaled or raw output.
-//! Does not own noise generation — callers supply the noise closure.
-//! Depends on `crate::image::ImageData`.
 use crate::image::ImageData;
 /// Render a noise function as a grayscale image, scaling range to full byte range.
 pub fn noise_to_image(

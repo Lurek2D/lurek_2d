@@ -1,7 +1,3 @@
-//! `Canvas` — a named logical render surface with fixed pixel dimensions.
-//! Created once at startup and held by the renderer; does not own pixel data
-//! or GPU resources. Used as a sizing reference by draw-layer and post-fx code.
-
 use crate::log_msg;
 use crate::runtime::log_messages::CV01;
 /// A fixed-size render canvas owned by `GpuRenderer`; carries only dimensions.

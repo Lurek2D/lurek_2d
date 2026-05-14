@@ -1,7 +1,3 @@
-//! Easing curve gallery and cubic Bezier visualizations rendered to `ImageData`.
-//! Draws multi-panel grids with labeled curves; handles overshoot values above 1.0.
-//! Does not own easing definitions — callers pass `(&str, &dyn Fn(f32)->f32)` slices.
-//! Depends on `crate::image::ImageData`.
 use crate::image::ImageData;
 /// Render a gallery of easing curves in a grid into an image.
 pub fn easing_gallery_to_image(

@@ -1,6 +1,3 @@
-//! Lightweight geometry tests used by the physics world and Lua overlap queries.
-//! All functions are coordinate-space agnostic and have no side effects.
-
 /// Return true when two AABBs overlap (axes: x-right, y-down).
 #[allow(clippy::too_many_arguments)]
 pub fn test_aabb(ax: f32, ay: f32, aw: f32, ah: f32, bx: f32, by: f32, bw: f32, bh: f32) -> bool {

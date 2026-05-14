@@ -1,8 +1,3 @@
-//! Timeline, keyframe, easing, and animation clip data for spine skeletal animation.
-//! Owns EasingType, BoneProperty, Keyframe, BoneTimeline, EventKeyframe, and SkeletonAnimation.
-//! Does not own skeleton state or IK — callers pass a Skeleton into apply_to_skeleton.
-//! Key dependencies: Bone (for pose application), serde_json for from_json.
-
 use super::bone::Bone;
 /// Interpolation curve applied between two adjacent keyframes.
 #[derive(Debug, Clone, PartialEq)]

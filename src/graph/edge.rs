@@ -1,8 +1,3 @@
-//! Graph edge state and transit constraints between nodes.
-//!
-//! Owns edge-local capacity, cooldown, and allowed-item settings.
-//! Graph-wide routing lives in sibling modules.
-
 use std::collections::HashSet;
 /// Directed connection between two graph nodes.
 pub struct Edge {

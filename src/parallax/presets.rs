@@ -1,7 +1,3 @@
-//! Named preset constructors for common parallax layer configurations.
-//! Returns fully-configured `ParallaxLayer` instances; callers add to their layer list unchanged.
-//! Does not own textures; callers supply `TextureKey` values from the asset system.
-
 use crate::parallax::ParallaxLayer;
 use crate::render::BlendMode;
 use crate::runtime::resource_keys::TextureKey;

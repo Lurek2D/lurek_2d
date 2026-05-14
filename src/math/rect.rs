@@ -1,8 +1,3 @@
-//! Axis-aligned rectangle defined by top-left corner and size.
-//! Provides containment, intersection, union, and construction helpers.
-//! Used by UI layout, camera bounds, collision broadphase, and texture sub-regions.
-//! Does not own physics shapes — rapier uses its own AABB type.
-
 use super::vec2::Vec2;
 
 /// Axis-aligned rectangle with position and size; used for bounds, layout regions, and UV rects.

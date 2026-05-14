@@ -1,8 +1,3 @@
-//! Widget render emit functions for `lurek.ui` — converts live `GuiContext` widget state into
-//! `RenderCommand` streams and `ImageData` via `build_render_commands` and `draw_to_image`.
-//! All per-widget drawing is done by private `emit_*` helpers; no GPU calls are made here.
-//! Depends on `crate::render::renderer`, `crate::ui::context`, `crate::ui::theme`, and `crate::image`.
-
 use crate::render::renderer::{DrawMode, GradientDirection, RenderCommand};
 use crate::runtime::resource_keys::FontKey;
 use crate::ui::context::{GuiContext, WidgetKind};

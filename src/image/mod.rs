@@ -1,9 +1,3 @@
-//! Owns packed RGBA pixel buffers, texture metadata, GPU upload helpers, image-space filters,
-//! palette remapping, layered image compositing, atlas packing, province-grid extraction,
-//! compressed-image decoding, and debug visualizations.
-//! Does not own GPU pipelines or render passes — those live in `src/render/`.
-//! Key dependencies: `src/render/` for RenderCommand payloads, `src/filesystem/` for asset loading.
-
 /// Core RGBA image storage and drawing helpers.
 pub mod image_data;
 /// Core RGBA image buffer type.

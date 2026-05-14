@@ -1,6 +1,3 @@
-//! Owned RGBA pixel buffer: construction, access, basic drawing primitives, and PNG encoding.
-//! Serves as the primary in-memory image type passed between image effects, serialization,
-//! and visualization helpers. Does not own GPU resources.
 use crate::log_msg;
 use crate::runtime::log_messages::{IM01_IMAGE_LOADED, IM02_IMAGE_MISMATCH};
 /// Mutable RGBA image buffer used across rendering, serialization, and analysis.

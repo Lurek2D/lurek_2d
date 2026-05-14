@@ -1,7 +1,3 @@
-//! Reusable compound shape type built from a list of `ShapeCommand` draw operations.
-//! A `CompoundShape` is stored in the engine shape registry and replayed as part of
-//! `RenderCommand::DrawShape`. Contains no GPU state; drawing happens in `GpuRenderer`.
-
 use super::renderer::DrawMode;
 /// One drawing operation stored inside a `CompoundShape`.
 #[derive(Debug, Clone)]

@@ -1,8 +1,3 @@
-//! Data graph renderer for `lurek.ui` — rasterises `GraphSeries` data (line, scatter, bar) into
-//! a pixel viewport using a configurable axis range, grid, and cursor overlay.
-//! Does not own a widget in the UI tree; callers supply screen viewport coordinates directly.
-//! Depends on `crate::math::Color`.
-
 use crate::math::Color;
 use std::collections::HashMap;
 /// Discriminated data series type for a `GraphRenderer`; each variant holds named, coloured data.

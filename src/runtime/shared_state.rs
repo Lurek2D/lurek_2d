@@ -1,6 +1,3 @@
-//! Shared runtime state container used by app loop and Lua-facing systems.
-//! Owns frame data, resource registries, async IO handles, and per-frame metrics.
-
 use crate::audio::midi::MidiState;
 use crate::audio::Mixer;
 use crate::camera::Camera;

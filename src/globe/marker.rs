@@ -1,8 +1,3 @@
-//! Globe marker storage keyed by stable ids and filtered by visibility or type.
-//!
-//! Owns marker lifetime and simple position, attribute, and visibility updates.
-//! Styling stays in the shared marker types.
-
 use crate::globe::types::{Marker, MarkerStyle};
 use std::collections::HashMap;
 /// Marker collection keyed by stable id.

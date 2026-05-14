@@ -1,6 +1,8 @@
-﻿//! Fatal error presentation model and text-formatting helpers.
-//! Builds display-ready message and traceback lines from Lua/engine failures and
-//! emits `RenderCommand` sets for full-screen error view rendering.
+﻿//! Fatal error presentation layer that renders Lua and engine failures as a full-screen display.
+//!
+//! - Formats error messages and stack traces with line-wrapping for readability
+//! - Produces a complete set of render commands for a styled error screen with title, body, and footer
+//! - Accepts both engine-level and Lua-sourced errors through a common representation
 
 use crate::render::renderer::{DrawMode, RenderCommand};
 use crate::runtime::error::EngineError;

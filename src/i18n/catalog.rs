@@ -1,5 +1,3 @@
-//! Locale catalog storage, lookup, coverage analysis, and table flattening.
-
 use serde_json;
 use std::cell::RefCell;
 use std::collections::HashMap;

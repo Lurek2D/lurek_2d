@@ -1,8 +1,3 @@
-//! Pipeline execution result types for `src/pipeline`.
-//! Owns `PipelineStatus` (lifecycle enum) and `PipelineResult` (final outcome after
-//! a pipeline run). Does not own scheduling, step definitions, or DAG logic.
-//! Consumed by `PipelineScheduler` and Lua bindings in `lua_api/pipeline_api.rs`.
-
 /// Lifecycle state of a pipeline run.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum PipelineStatus {

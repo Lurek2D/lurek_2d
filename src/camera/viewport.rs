@@ -1,8 +1,3 @@
-//! Viewport scaling policies and transform helpers for game-to-window mapping.
-//! Owns scale mode math and runtime viewport transform state.
-//! Keeps coordinate conversion independent from camera follow behavior.
-//! Depends only on scalar transform calculations.
-
 #[derive(Debug, Clone, PartialEq)]
 /// Selects how the game surface scales into a window surface.
 pub enum ScaleMode {

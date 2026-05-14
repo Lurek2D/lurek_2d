@@ -1,8 +1,3 @@
-//! `ParallaxLayer` and `ParallaxDrawBatch` — the core data model for parallax scrolling.
-//! Owns scroll-factor math, autoscroll accumulation, tiling geometry, and per-layer effects.
-//! Does not own rendering or cameras; `render.rs` drives `build_draw_calls` each frame.
-//! Key dependencies: `render::{BlendMode, ShaderPassDescriptor}`, `runtime::resource_keys::TextureKey`.
-
 use crate::render::BlendMode;
 use crate::render::ShaderPassDescriptor;
 use crate::runtime::resource_keys::TextureKey;

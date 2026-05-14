@@ -1,6 +1,9 @@
-//! AI level-of-detail tiers for update throttling and thinking distance.
-//! Owns `LodTier` and `AILod`.
-//! Does not own scheduling; callers decide how to use the chosen tier.
+//! Distance-based AI level-of-detail system for scaling per-agent update frequency.
+//!
+//! - Defines ordered LOD tiers, each with a max distance, per-frame update cadence, and think range
+//! - Assigns each agent a tier based on its distance from a reference point and exposes frame-number throttling
+//! - Reduces AI computation cost by skipping updates for distant agents on configurable intervals
+
 /// One LOD bucket for AI work.
 #[derive(Clone)]
 pub struct LodTier {

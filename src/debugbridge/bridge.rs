@@ -1,8 +1,3 @@
-//! Hold synchronized debug bridge state shared between runtime and TCP server.
-//! Keep request queues, print history, and performance sampling in one place.
-//! Do not own socket accept loops or JSON message parsing in this module.
-//! Depend on synchronized queues, timestamps, and serde JSON values.
-
 use std::collections::VecDeque;
 use std::sync::{Arc, Mutex};
 use std::time::Instant;

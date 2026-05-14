@@ -1,8 +1,3 @@
-//! DDA (Digital Differential Analysis) ray-grid traversal core. Owns the map grid,
-//! single/multi-hit ray casting, fan cast for a full FOV, line-of-sight queries,
-//! sprite projection, and floor-row UV sampling. Used by `build_scene`, `segment`,
-//! and `visibility`. Does not own rendering or Lua bindings.
-
 use super::ray_hit::RayHit;
 use super::sprite_projection::SpriteProjection;
 use crate::log_msg;

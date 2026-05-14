@@ -1,9 +1,3 @@
-//! Own core tabular data types for the dataframe module: typed cell values, column selectors,
-//! column-major frame storage, row iteration, named-table database container, and aggregation
-//! mode enum. Query, sort, serialization, and vectorized logic live in sibling files and extend
-//! the types here through separate `impl` blocks. Primary consumer is `src/lua_api/dataframe_api.rs`.
-//! No graphics, audio, or physics logic belongs here.
-
 use crate::dataframe::rng::Xorshift64;
 use std::cmp::Ordering;
 use std::collections::HashMap;

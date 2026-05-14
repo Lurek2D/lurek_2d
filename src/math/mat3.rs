@@ -1,8 +1,3 @@
-//! 3×3 matrix for 2D affine transforms (translation, rotation, scale, shear).
-//! Row-major layout; used by `Transform` to compose and invert camera and sprite transforms.
-//! Does not cover projection — rendering uses a separate MVP construction at draw time.
-//! Owned by the math module; consumed by render, camera, and physics debug overlays.
-
 use super::vec2::Vec2;
 
 /// Row-major 3×3 float matrix for 2D affine transforms; used by Transform and Camera.

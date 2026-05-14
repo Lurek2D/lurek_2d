@@ -1,7 +1,3 @@
-//! Thin convenience wrappers over `NoiseGenerator` for Lua and engine call sites.
-//! Exposes seeded Perlin (2-D/3-D/4-D), seeded Simplex (2-D/3-D), and fBm.
-//! Does not own the underlying noise algorithms — those live in noise_generator.rs.
-
 use super::noise_generator::{NoiseGenerator, NoiseKind};
 
 /// Return the Ken Perlin smooth-step polynomial `6t⁵ - 15t⁴ + 10t³`.

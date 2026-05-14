@@ -1,8 +1,3 @@
-//! Tilemap-to-RenderCommand conversion helpers.
-//! Adds `generate_render_commands` to `TileMap` for camera-culled GID-to-color fallback rendering.
-//! Does not own the render pipeline; output is handed to the render layer unchanged.
-//! Depends on `tilemap` and `render`.
-
 use super::tilemap::TileMap;
 use crate::render::renderer::{DrawMode, RenderCommand};
 

@@ -1,5 +1,3 @@
-//! Locale catalog, formatting, interpolation, and pluralization helpers.
-
 /// Locale catalog storage and flattening helpers.
 pub mod catalog;
 /// Locale-aware date and number formatting helpers.

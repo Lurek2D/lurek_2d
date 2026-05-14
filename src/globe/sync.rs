@@ -1,8 +1,3 @@
-//! Globe snapshot transfer helpers for camera state and province ownership.
-//!
-//! Owns the data bridge used by sync and replay flows.
-//! It does not perform graph updates or rendering.
-
 use crate::globe::registry::Globe;
 use crate::globe::types::ProvinceId;
 use std::collections::HashMap;

@@ -1,8 +1,3 @@
-//! Background network thread and `NetworkRuntime` handle for async HTTP, TCP, and WebSocket I/O.
-//! Owns the `lurek-network` OS thread, MPSC channels, and request-ID sequencing.
-//! Does not own ENet (UDP) — that stays on the calling thread via `NetworkHost`.
-//! Key dependencies: `http`, `tcp::TcpConnectionManager`, `websocket::WebSocketManager`.
-
 use super::http;
 use super::tcp::TcpConnectionManager;
 use super::websocket::WebSocketManager;

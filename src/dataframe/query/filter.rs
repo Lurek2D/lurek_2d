@@ -1,9 +1,3 @@
-//! Own row selection, sorting, joins, sampling, and descriptive statistics extension for `DataFrame`.
-//! All methods are nil-safe: nil cells are excluded from numeric aggregations. The `sample`
-//! helper uses the internal `Xorshift64` PRNG for reproducible random row selection. Private
-//! helpers `extract_rows` and `collect_numbers` are shared with sibling query files.
-//! No SQL parsing or window logic here; those live in `../sql.rs` and `window.rs`.
-
 use crate::dataframe::frame::{CellValue, ColRef, DataFrame};
 use crate::dataframe::rng::Xorshift64;
 impl DataFrame {

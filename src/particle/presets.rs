@@ -1,7 +1,3 @@
-//! Named preset constructors returning ready-to-use `ParticleConfig` values.
-//! Each function returns a distinct visual effect configuration; callers pass the result to `ParticleSystem::new`.
-//! Does not own emitter state; all values are plain data with no side effects.
-
 use crate::particle::{EmissionShape, ParticleConfig};
 /// Return a `ParticleConfig` producing an upward fire effect with turbulence and RGB fade.
 pub fn fire() -> ParticleConfig {

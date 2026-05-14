@@ -1,8 +1,3 @@
-//! ANSI escape-code parsing for the terminal emulator. Owns color structs, span
-//! splitting, SGR attribute decoding, and the xterm-256 color cube. Does not own
-//! rendering or cell layout; consumers call `parse_ansi_spans` then forward spans
-//! to the render layer. Depends only on the standard library.
-
 /// RGB color produced by ANSI color codes or xterm-256 palette lookup.
 #[derive(Debug, Clone, PartialEq)]
 pub struct AnsiColor {

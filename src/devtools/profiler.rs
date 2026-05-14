@@ -1,8 +1,3 @@
-//! Record hierarchical timing zones and retain recent frame captures.
-//! Keep profiling data collection lightweight for developer diagnostics.
-//! Do not schedule frame boundaries or own global clock configuration here.
-//! Depend on elapsed-time anchors and bounded frame buffers.
-
 use crate::devtools::time_anchor::TimeAnchor;
 use std::collections::VecDeque;
 #[derive(Debug, Clone)]

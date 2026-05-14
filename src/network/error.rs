@@ -1,7 +1,3 @@
-//! `NetworkError` — unified error type for all network subsystem failures.
-//! Used as the `Err` variant on every fallible function in `network::*`.
-//! Does not own recovery logic; callers decide whether to retry or surface to Lua.
-
 use thiserror::Error;
 
 /// All error conditions that can occur in the network subsystem.

@@ -1,6 +1,3 @@
-//! Headless utility commands for validation, packing, and screenshot automation.
-//! Executes tooling workflows without creating a windowed runtime session.
-
 use std::env;
 use std::fs::{self, File};
 use std::io::{Seek, Write};

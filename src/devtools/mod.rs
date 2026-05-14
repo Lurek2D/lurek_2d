@@ -1,8 +1,3 @@
-//! Group developer tooling state used for diagnostics and local iteration flows.
-//! Keep profiler, logs, REPL, and file watch helpers separated from runtime logic.
-//! Do not own gameplay behavior, rendering commands, or Lua API surface design.
-//! Depend on lightweight data structures and time tracking primitives.
-
 /// Expose frame-time history collection and aggregate snapshot helpers.
 pub mod frame_stats;
 /// Expose lightweight log storage and filtering helpers for developer output.

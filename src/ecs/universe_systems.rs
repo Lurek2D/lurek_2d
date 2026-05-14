@@ -1,5 +1,3 @@
-//! System registration and dependency ordering helpers for the ECS universe.
-
 use super::Universe;
 use mlua::{Lua, Result as LuaResult, Table, Value as LuaValue};
 impl Universe {

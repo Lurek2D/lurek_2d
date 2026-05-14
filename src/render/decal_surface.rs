@@ -1,7 +1,3 @@
-//! `DecalSurface` — a fixed-size surface used as a paint target for persistent decals.
-//! Carries only pixel dimensions; does not own GPU textures or pixel data.
-//! Consumed by the Lua decal API and the GPU renderer upload path.
-
 /// Paint-target surface for persistent world decals; holds pixel dimensions only.
 pub struct DecalSurface {
     /// Pixel width of this surface.

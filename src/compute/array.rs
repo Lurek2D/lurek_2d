@@ -1,8 +1,3 @@
-//! Typed n-dimensional dense array storage used by compute modules.
-//! Owns shape validation, stride math, typed scalar conversion, and constructors.
-//! Keeps byte-buffer representation isolated from operation-level algorithms.
-//! Depends only on std containers and numeric casting.
-
 /// Defines maximum allowed number of elements for safe allocations.
 const MAX_ELEMENTS: usize = 268_435_456;
 

@@ -1,7 +1,3 @@
-//! Door state machine and manager for the raycaster. Tracks open/close animation
-//! per grid-tile door, updates open amounts each frame, and provides positional lookup.
-//! Consumed by `build_scene` to adjust wall geometry for partially open doors.
-
 /// Slide axis of a door: horizontal (slides along X) or vertical (slides along Y).
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum DoorDirection {

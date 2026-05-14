@@ -1,8 +1,3 @@
-//! Chunk-based infinite tile storage for large or procedurally generated maps.
-//! Owns `ChunkMap`, which partitions world space into fixed-size chunks allocated on demand.
-//! Does not own rendering, tile types, or physics; callers drive chunk load/unload.
-//! Depends on `math` and logging.
-
 use crate::log_msg;
 use crate::math::Rect;
 use crate::runtime::log_messages::{CK01, CK02, CK03};

@@ -1,6 +1,3 @@
-//! Named-channel message broker: handler ids registered per channel, dispatched by callers.
-//! Decouples senders from receivers without storing closures.
-
 use std::collections::HashMap;
 
 /// Named-channel broker mapping channel names to registered handler ids.

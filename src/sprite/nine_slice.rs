@@ -1,8 +1,3 @@
-//! Nine-slice panel geometry for scalable UI borders and boxes.
-//! Owns NineSlice and the Patch type alias; computes the 9 source/destination rect pairs for tiled stretching.
-//! Does not own texture data or rendering commands — callers iterate patches() and emit draw calls.
-//! Key dependencies: TextureKey for referencing the border texture.
-
 use crate::runtime::resource_keys::TextureKey;
 
 /// Source and destination rect tuple: (src_x, src_y, src_w, src_h, dst_x, dst_y, dst_w, dst_h).

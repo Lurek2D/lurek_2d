@@ -1,8 +1,3 @@
-//! Globe domain modules for topology, projection, drawing, and registry state.
-//!
-//! Re-exports the public globe surface used by higher-level systems.
-//! The actual loading, projection, and rendering logic lives in sibling files.
-
 /// Globe composition helpers.
 pub mod composition;
 /// Globe drawing helpers.

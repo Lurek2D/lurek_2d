@@ -1,8 +1,3 @@
-//! Multi-touch point state: active touches, per-frame start/end deltas, and pressure.
-//! Owns the touch-point map and per-frame delta sets.
-//! Does not own OS touch event delivery; the runtime event loop calls mutation methods each frame.
-//! Consumed by `src/lua_api/input_api.rs`.
-
 use std::collections::{HashMap, HashSet};
 
 /// A single active touch contact point with its position and pressure.

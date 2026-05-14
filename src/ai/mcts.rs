@@ -1,6 +1,10 @@
-//! Monte Carlo tree search engine for discrete action spaces.
-//! Owns `MCTSConfig`, the internal `MCTSNode`, and `MCTSEngine`.
-//! Does not own the game state; callers supply actions, transitions, and evaluation.
+//! Monte Carlo Tree Search engine for game-tree decision-making.
+//!
+//! - Maintains an arena-backed search tree and runs UCT-guided selection, expansion, random rollout, and backpropagation
+//! - Game state representation, legal action enumeration, state transition, and leaf evaluation are all caller-supplied closures
+//! - Configurable iteration count, UCT exploration constant, and rollout depth; returns the most-visited root child action
+//! - Stateless between calls except for the internal arena; each `search` invocation rebuilds the tree from scratch
+
 /// Configuration for one MCTS search run.
 pub struct MCTSConfig {
     /// Number of iterations to execute.

@@ -1,9 +1,3 @@
-//! Scatter-and-connect room dungeon generator for `src/procgen`.
-//! Owns `RoomsOpts`, `RoomsDungeon`, `Room`, prefab stamping types, and the
-//! `rooms_dungeon` / `rooms_dungeon_with_prefabs` entry points. Corridor tiles
-//! are written as value `2` and floor tiles as `1` into the flat grid.
-//! Does not own BSP partitioning — that lives in `bsp.rs`.
-
 use crate::procgen::lcg::Lcg;
 
 /// Axis-aligned room rectangle placed in a rooms dungeon grid.

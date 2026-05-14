@@ -1,7 +1,3 @@
-//! Physics shape definitions for `Body` and standalone colliders.
-//! `Shape` describes the geometry; `StandaloneShape` wraps it with material properties.
-//! Translation to rapier2d colliders happens here via `to_rapier_collider`.
-
 use crate::math::Vec2;
 use rapier2d::prelude::*;
 

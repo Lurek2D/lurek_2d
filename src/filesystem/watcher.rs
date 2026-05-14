@@ -1,8 +1,3 @@
-//! File modification tracker used by reload and change detection flows.
-//!
-//! Stores watched paths and their last known modification times.
-//! It does not resolve paths or own the files it observes.
-
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
 use std::time::SystemTime;

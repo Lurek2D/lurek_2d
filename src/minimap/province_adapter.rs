@@ -1,8 +1,3 @@
-//! Adapter functions that populate `Minimap` state from a `ProvinceRegistry`.
-//! Owns the terrain, visibility, and colour-palette sync logic between province and minimap.
-//! Does not own either data source; both are passed by mutable and shared reference.
-//! Called by `src/lua_api/minimap_api.rs` when the game requests a province sync.
-
 use crate::minimap::minimap::Minimap;
 use crate::minimap::types::FogLevel;
 use crate::province::registry::ProvinceRegistry;

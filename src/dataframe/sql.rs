@@ -1,9 +1,3 @@
-//! Own SQL-like SELECT query parser and executor over `DataFrame` and `Database` tables.
-//! Tokenises a SQL string, parses the statement into a structured plan, then dispatches to
-//! existing `DataFrame` query methods rather than reimplementing row logic. Supports column
-//! aliases, wildcard select, literals, and basic WHERE expressions. No DDL, INSERT, or UPDATE.
-//! Primary consumer is `src/lua_api/dataframe_api.rs`. All mutation goes through query methods.
-
 use crate::dataframe::frame::{CellValue, ColRef, DataFrame, Database};
 #[derive(Debug, Clone, PartialEq)]
 /// Store lexical tokens produced from SQL text.

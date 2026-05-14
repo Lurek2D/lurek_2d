@@ -1,8 +1,3 @@
-//! Timed interpolation helpers for camera position and zoom transitions.
-//! Owns waypoint path interpolation and zoom tween state with easing support.
-//! Keeps transition math separate from camera state storage and rendering.
-//! Depends only on scalar interpolation without external subsystem state.
-
 #[derive(Clone)]
 /// Stores waypoint interpolation state for camera positional movement.
 pub struct CameraPath {

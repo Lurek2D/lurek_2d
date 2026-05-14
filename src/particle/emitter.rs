@@ -1,8 +1,3 @@
-//! `ParticleSystem` — the live emitter that owns a pool of particles and drives their update loop.
-//! Owns spawning, per-frame physics integration, death handling, sub-system management, and render command generation.
-//! Does not own the renderer or physics world; callers feed `RenderCommand` output to the renderer.
-//! Key dependencies: `particle::config`, `particle::emission`, `particle::math`, `render::renderer`.
-
 use super::config::{
     Attractor, BounceBounds, EmissionShape, EmitterState, InsertMode, ParticleConfig,
 };

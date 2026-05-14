@@ -1,7 +1,3 @@
-//! Geometry debug visualizations: polygon galleries, spirals, star shapes, and intersection proofs.
-//! Renders parameterized shapes using draw_line and set_pixel on `ImageData`.
-//! Does not own geometric primitives — shapes are computed inline from parameters.
-//! Depends on `super::hsv_to_rgb_viz` and `crate::image::ImageData`.
 use super::hsv_to_rgb_viz;
 use crate::image::ImageData;
 #[allow(clippy::type_complexity)]

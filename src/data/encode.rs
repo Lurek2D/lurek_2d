@@ -1,8 +1,3 @@
-//! Own base64 and hex encode/decode helpers for opaque byte payloads in the data module.
-//! Both directions are supported: bytes-to-string and string-to-bytes with descriptive errors.
-//! Format selection is through an enum so callers never import codec crates directly.
-//! No streaming variant; buffers must fit in memory. Primary consumer is `src/lua_api/data_api.rs`.
-
 use base64::Engine;
 #[derive(Debug, Clone, Copy, PartialEq)]
 /// Select textual encoding algorithm.

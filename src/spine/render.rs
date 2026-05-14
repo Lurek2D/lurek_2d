@@ -1,8 +1,3 @@
-//! Skeleton-level render assembly: adds RenderCommand generation to Skeleton.
-//! Converts posed bones and slot attachments to debug-draw circles and rectangles.
-//! Does not own bone pose accumulation or slot data \u2014 those live in skeleton.rs and slot.rs.
-//! Key dependencies: Skeleton, RenderCommand, DrawMode.
-
 use super::skeleton::Skeleton;
 use crate::render::renderer::{DrawMode, RenderCommand};
 

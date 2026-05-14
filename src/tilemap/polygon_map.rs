@@ -1,9 +1,3 @@
-//! Polygon-region zone map for area-based game maps.
-//! Owns `PolygonRegion` and `PolygonMap`, supporting point-in-polygon queries, labels,
-//! outline/highlight rendering state, and bounding-box queries.
-//! Does not own rendering; callers read vertices and colors for draw calls.
-//! Depends on `math`.
-
 use crate::math::Color;
 use std::collections::HashMap;
 

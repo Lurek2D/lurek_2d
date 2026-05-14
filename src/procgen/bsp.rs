@@ -1,9 +1,3 @@
-//! Binary Space Partitioning dungeon generator for `src/procgen`.
-//! Owns `BspRoom`, `BspDungeon`, `BspOpts`, prefab stamping types, and the
-//! `bsp_dungeon` / `bsp_dungeon_with_prefabs` entry points. Does not own corridor
-//! rendering or room placement logic beyond BSP tree partitioning.
-//! Depends on `lcg.rs` for deterministic random splitting.
-
 use crate::procgen::lcg::Lcg;
 
 /// Axis-aligned room rectangle produced by BSP partitioning.

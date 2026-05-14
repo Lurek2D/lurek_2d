@@ -1,7 +1,3 @@
-//! Variable floor and ceiling height map for the raycaster. Stores per-tile height
-//! values (0.0=ground level, 1.0=full cell height) used by `build_scene` to offset
-//! the floor and ceiling planes. Does not own rendering or tile blocking logic.
-
 /// Per-tile floor and ceiling height overrides for a raycaster map.
 pub struct HeightMap {
     /// Map width in tiles.

@@ -1,7 +1,3 @@
-//! Render subsystem entry point. Re-exports all public render types used by the
-//! Lua API, raycaster, UI, and scene layers. Owns no rendering logic directly;
-//! each submodule carries its own responsibility. GPU state lives in `gpu_renderer`.
-
 /// CPU-side canvas API: paint-style pixel and shape commands on an `ImageData` surface.
 pub mod canvas;
 /// Decal surface for projecting persistent paint-style marks onto world geometry.

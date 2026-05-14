@@ -1,8 +1,3 @@
-//! Combo gesture detector — sequences of key presses with per-step and total gap timeouts.
-//! Owns the step definition, timeout math, and progress state machine.
-//! Does not own key-press event delivery; callers feed keys via `ComboDetector::feed`.
-//! Used by `ComboDetector` Lua binding in `src/lua_api/input_api.rs`.
-
 /// One required key press in a combo sequence with its maximum inter-step gap.
 #[derive(Clone, Debug, PartialEq)]
 pub struct ComboStep {

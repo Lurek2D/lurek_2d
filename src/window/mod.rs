@@ -1,8 +1,3 @@
-//! Window management subsystem for lurek2D \u2014 event loop, OS window control, display enumeration,
-//! DPI handling, fullscreen toggling, vsync, and virtual viewport scaling.
-//! Delegates to `winit 0.30`; does not own rendering or input. The three sibling modules
-//! (`event_loop`, `management`, `viewport`) each own one responsibility surface.
-
 /// Event-loop helpers: display enumeration, monitor selection, window centering, and startup placement.
 pub mod event_loop;
 /// OS window control: size, position, title, DPI, fullscreen, vsync, focus, icon, and message boxes.

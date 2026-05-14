@@ -1,5 +1,3 @@
-//! Bit-level helpers for packing ECS slot and generation values into entity ids.
-
 /// Stateless namespace for encoding and decoding packed entity identifiers.
 pub struct GenerationalId;
 impl GenerationalId {

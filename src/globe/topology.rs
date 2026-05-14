@@ -1,8 +1,3 @@
-//! Province graph topology and cached pathfinding data for globe routing.
-//!
-//! Owns province storage, adjacency caches, and path query helpers.
-//! Path cost policy lives in the pathfinding module.
-
 use crate::globe::types::{GlobeError, Province, ProvinceId, MAX_PROVINCES};
 use crate::pathfind::graph_path::{find_province_path, ProvinceCostFn, ProvincePath};
 use std::collections::{HashMap, HashSet};

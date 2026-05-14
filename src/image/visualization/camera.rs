@@ -1,8 +1,3 @@
-//! Camera debug overlay generator: draws world grid, viewport frustum, and camera center.
-//! Renders Camera2D state at a configurable world-to-image scale for debug screenshots.
-//! Does not own camera state — callers pass `&Camera2D` and viewport dimensions.
-//! Depends on `crate::camera::Camera2D` and `crate::image::ImageData`.
-
 use super::hsv_to_rgb_viz;
 use crate::camera::Camera2D;
 use crate::image::ImageData;

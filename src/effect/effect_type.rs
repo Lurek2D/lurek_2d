@@ -1,5 +1,3 @@
-//! Built-in post-effect type identifiers, names, and default parameter maps.
-
 use std::collections::HashMap;
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 /// Enumerates the built-in post-processing effect implementations.

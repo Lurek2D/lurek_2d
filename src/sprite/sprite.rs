@@ -1,8 +1,3 @@
-//! Core Sprite type: a positioned, scaled, rotated, and tinted texture reference.
-//! Owns Sprite and its transform/color setters; does not own draw commands or texture upload.
-//! Callers read Sprite fields to emit RenderCommands in the render pipeline.
-//! Key dependencies: math::Vec2, math::Color.
-
 use crate::math::Color;
 use crate::math::Vec2;
 

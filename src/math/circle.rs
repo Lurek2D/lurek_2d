@@ -1,7 +1,3 @@
-//! Circle shape with center and radius. Provides area, perimeter, containment, intersection,
-//! and AABB queries. Used by physics broadphase helpers, procgen, and Lua geometry utilities.
-//! Does not own collision response — that belongs to the physics module.
-
 use super::vec2::Vec2;
 
 /// Axis-aligned circle defined by center position and non-negative radius.

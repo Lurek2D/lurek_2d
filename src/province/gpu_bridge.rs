@@ -1,6 +1,3 @@
-//! GPU data bridge: converts ProvinceRegistry style records into a tightly-packed struct array
-//! suitable for upload as a uniform or storage buffer in the province render pass.
-//! Does not touch wgpu directly; that is handled by the render pipeline layer.
 use crate::province::registry::ProvinceRegistry;
 
 /// Per-province GPU record laid out for direct buffer upload; repr(C) guarantees field order.

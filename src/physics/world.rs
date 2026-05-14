@@ -1,7 +1,3 @@
-//! rapier2d-backed 2D physics world: bodies, joints, raycasting, zones, and one-way platforms.
-//! `World` owns the full simulation state and is the only entry point for the physics Lua bindings.
-//! Raw rapier handles never leave this module; callers use opaque `usize` body/joint ids.
-
 use super::body::{Body, BodyShape, BodyType};
 use super::shape::Shape;
 use super::zone::{PhysicsZone, ZoneEvent, ZoneGravityMode, ZoneTracker};

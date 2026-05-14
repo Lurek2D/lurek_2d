@@ -1,8 +1,3 @@
-//! SpriteSheet: uniform grid frame extraction and named group management for a single texture.
-//! Owns SpriteSheet, FrameGroup, and DirectionLayout; precomputes all Rect frames at construction time.
-//! Does not own texture upload or rendering — callers use get_frame() / get_group() to drive draw calls.
-//! Key dependencies: math::Rect for frame regions, SpriteAtlas for from_atlas construction.
-
 use crate::log_msg;
 use crate::math::Rect;
 use crate::runtime::log_messages::{SS01, SS02};

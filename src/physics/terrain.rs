@@ -1,7 +1,3 @@
-//! Chunked tile-map terrain that generates static collision bodies into a `World`.
-//! Cells are boolean solid/empty; dirty chunks are rebuilt with run-length merged AABB bodies.
-//! Serialises to a compact bitpacked byte buffer for save/load.
-
 use super::body::{Body, BodyShape, BodyType};
 use super::world::World;
 use std::collections::{HashMap, HashSet};

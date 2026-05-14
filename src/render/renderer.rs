@@ -1,7 +1,3 @@
-//! Public render command types and supporting enums consumed by `GpuRenderer::render_frame`.
-//! Defines `RenderCommand` — the primary draw API — plus blend modes, stencil ops, particle
-//! instances, post-fx passes, and debug helpers. Contains no GPU state or wgpu calls.
-
 use crate::math::Vec2;
 use crate::render::image_effect::ShaderPassDescriptor;
 use crate::render::mesh::Mesh;

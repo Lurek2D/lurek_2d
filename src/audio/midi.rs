@@ -1,6 +1,8 @@
-﻿//! `MidiState` — holds the loaded SoundFont data and path for MIDI synthesis.
-//! Validates SF2 RIFF headers on load and provides accessor methods used by `MidiPlayer`
-//! and the Lua MIDI API. Does not own a playback engine or rodio resources.
+﻿//! SoundFont state container for MIDI synthesis preparation.
+//!
+//! - Loads and validates SF2 SoundFont binary data from disk by checking RIFF headers
+//! - Provides accessor methods used by the MIDI player and the Lua MIDI API
+//! - Data-only; does not own a synthesis engine or drive audio output
 
 #[derive(Debug, Clone, Default)]
 /// Stores the loaded SoundFont binary data and its source path for MIDI synthesis.

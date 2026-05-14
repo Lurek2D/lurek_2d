@@ -1,8 +1,3 @@
-//! RGBA float color type plus gamma/linear conversion and HSL/HSV helpers.
-//! Colors are stored as linear f32 in [0, 1] range; sRGB conversion is explicit via
-//! `gamma_to_linear` / `linear_to_gamma`. Used by rendering, UI, particles, and tween.
-//! Does not own palette management or per-asset color profiles.
-
 /// Linear RGBA float color; all channels are in [0.0, 1.0] unless explicitly noted.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Color {

@@ -1,7 +1,3 @@
-//! Bidirectional A\* search: runs forward and backward queues simultaneously and joins at the
-//! first cell that both frontiers have closed. Faster than one-way A\* on long, open corridors.
-//! Does not own grid construction; consumed by `src/lua_api/pathfind_api.rs`.
-
 use crate::log_msg;
 use crate::pathfind::nav_grid::{DiagonalMode, NavGrid};
 use crate::runtime::log_messages::{BI01, BI02, BI03};

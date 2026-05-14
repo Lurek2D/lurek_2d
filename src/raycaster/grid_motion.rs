@@ -1,8 +1,3 @@
-//! Grid-aligned movement helpers for dungeon-crawler-style player movement.
-//! Provides four-directional move deltas relative to a player's facing direction
-//! and a bounded try_move helper that checks tile collisions. Used by game scripts
-//! via `lurek.raycaster`. Does not own physics or continuous collision detection.
-
 /// Discrete movement intent for a single step on the grid.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum GridMoveAction {

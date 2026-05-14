@@ -1,7 +1,3 @@
-//! Flicker animation config for per-light intensity oscillation over time.
-//! `FlickerConfig` produces a scalar multiplier each frame via sine-based modulation.
-//! Does not read system time — callers pass `dt` to `advance`. Default is disabled.
-
 /// Sine-based flicker config that modulates a light's intensity by a small oscillating factor.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct FlickerConfig {

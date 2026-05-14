@@ -1,6 +1,3 @@
-//! Capacity-bounded object pool: idle/active id tracking with prewarm and bulk release.
-//! Ids are opaque `u64` tokens; callers own the actual objects and index them by id.
-
 /// Capacity-bounded pool tracking idle and active object ids.
 #[derive(Debug)]
 pub struct ObjectPool {

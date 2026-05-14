@@ -1,7 +1,3 @@
-//! Relay session ticket encoding and UDP hole-punch probe helpers.
-//! Owns the wire format for relay tickets (`room_id|peer_id`) and punch-through byte probes.
-//! Does not own socket I/O; callers send the produced bytes via `tcp` or `websocket`.
-
 /// Relay session ticket identifying a room and the connecting peer.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct RelayTicket {

@@ -1,8 +1,3 @@
-//! `Simulator` drives deterministic script playback: loads `Script` values, advances
-//! time, dispatches input events via `StepEventSink`, handles macros, conditions,
-//! assertions, pixel-diff visual asserts, and playback-speed scaling.
-//! Does not own event dispatch internals; depends on `EventQueue` and `timer`.
-
 use super::script::MAX_STEPS;
 use super::{Action, Script, Step};
 use crate::event::{Event, EventArg, EventQueue};

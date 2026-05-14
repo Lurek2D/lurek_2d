@@ -1,8 +1,3 @@
-//! 3D float vector used for raycasting directions, 3D noise coordinates, lighting normals,
-//! and volume intersection queries. Provides cross product, projection, reflect, and lerp.
-//! Does not own 4×4 matrix math — 2D engine uses Mat3; Vec3 covers only the cases where
-//! a third component is genuinely needed.
-
 use std::fmt;
 use std::ops::{Add, Div, Mul, Neg, Sub};
 

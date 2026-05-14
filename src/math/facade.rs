@@ -1,7 +1,3 @@
-//! Scalar math utilities re-exported from `math` root: lerp, remap, clamp, sign,
-//! smoothstep, and inverse_lerp. These are standalone free functions with no dependencies on
-//! other math types. Used across the engine wherever a quick scalar blend or range map is needed.
-
 /// Linearly interpolate from `a` to `b` by factor `t`; t=0 returns `a`, t=1 returns `b`.
 pub fn lerp(a: f32, b: f32, t: f32) -> f32 {
     a + t * (b - a)

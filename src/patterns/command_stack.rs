@@ -1,6 +1,3 @@
-//! Undo/redo command history stack with optional batch grouping and size cap.
-//! Command entries carry an identifier and undo-capability flag; no closures are stored.
-
 /// Metadata record for a single pushed command.
 #[derive(Debug, Clone)]
 pub struct CommandEntry {

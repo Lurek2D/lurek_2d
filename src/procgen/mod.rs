@@ -1,8 +1,3 @@
-//! Procedural generation toolkit for `src/`.
-//! Re-exports all public types and entry points from the submodules below.
-//! Does not define logic directly — all implementations live in sibling files.
-//! Used by `src/lua_api/procgen_api.rs` and world-building game scripts.
-
 /// Biome classification types and rules-based classifier.
 pub mod biome;
 /// Binary Space Partitioning dungeon generator.

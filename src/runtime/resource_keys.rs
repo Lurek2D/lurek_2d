@@ -1,6 +1,3 @@
-//! Slot-map key declarations for runtime resource registries.
-//! Keeps handle types distinct across textures, shaders, meshes, and auxiliary assets.
-
 use slotmap::new_key_type;
 new_key_type! {
     /// Key for texture storage entries.

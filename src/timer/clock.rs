@@ -1,8 +1,3 @@
-//! Per-frame wall-clock that tracks delta, total elapsed time, FPS, and a
-//! rolling average delta over the last 60 frames. Does not own scheduling or
-//! sleep; consumed by the runtime main loop and `lurek.timer` bindings.
-//! Depends only on `std::time::Instant`.
-
 use std::time::Instant;
 
 /// Number of frames kept in the rolling delta average window.

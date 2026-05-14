@@ -1,8 +1,3 @@
-//! Typed MPMC channel for cross-thread value transfer between the main Lua VM
-//! and worker VMs. Owns `ChannelValue`, `OverflowPolicy`, `Channel`, and the
-//! Lua conversion helpers. Does not own threading or pool management; those live
-//! in `pool` and `worker`. Depends on `mlua` for Lua value conversion.
-
 use crate::log_msg;
 use crate::runtime::log_messages::{CH01, CH02, CH03, CH04};
 use mlua::prelude::*;

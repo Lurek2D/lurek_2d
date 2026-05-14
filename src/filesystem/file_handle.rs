@@ -1,8 +1,3 @@
-//! File handle state and buffered I/O wrappers for GameFS-backed reads and writes.
-//!
-//! Keeps logical paths, resolved host paths, and buffered streams together.
-//! Path resolution and mount policy stay in GameFS.
-
 use crate::filesystem::GameFS;
 use crate::runtime::error::{EngineError, EngineResult};
 use std::io::{BufRead, BufReader, BufWriter, Read, Seek, SeekFrom, Write};

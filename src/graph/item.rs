@@ -1,8 +1,3 @@
-//! Graph item state and placement inside nodes or edge transit.
-//!
-//! Owns item lifetime, decay fields, priority, and placement state.
-//! Movement logic stays in graph simulation code.
-
 /// Current location of an item in the graph.
 #[derive(Debug, Clone, PartialEq)]
 pub enum ItemPosition {

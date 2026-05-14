@@ -1,8 +1,3 @@
-//! Polygon utilities: ear-clipping triangulation, convexity check, signed area, Sutherland-Hodgman
-//! clipping, polygon intersection, union, and difference via convex hull approximation.
-//! Used by procgen, Lua geometry bindings, and the render debug overlay.
-//! Does not own physics collision shapes — those use rapier's own polygon type.
-
 use crate::math::vec2::Vec2;
 
 /// Triangulate a simple (non-self-intersecting) polygon using ear clipping; returns error on failure.

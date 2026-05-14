@@ -1,7 +1,3 @@
-//! Own binary data utilities module: byte buffers, sequential writers, typed views, ring buffers,
-//! hash digests, text encoding, compression, and pack/unpack format helpers. Lua bindings live
-//! in `src/lua_api/data_api.rs`. No graphics, audio, or physics logic belongs here.
-
 /// Token-based binary reader and writer for structured byte payloads.
 pub mod bin_pack;
 /// Mutable owned byte buffer with indexed access and conversion helpers.

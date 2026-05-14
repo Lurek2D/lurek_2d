@@ -1,6 +1,3 @@
-//! Animation playback events emitted by the controller.
-//! Owns `AnimEvent` only.
-//! Does not own the event queue; callers drain and handle events.
 /// Event emitted by `Animation`.
 #[derive(Debug, Clone, PartialEq)]
 pub enum AnimEvent {

@@ -1,8 +1,3 @@
-//! `RenderCommand` generation for the minimap: terrain cells, fog, overlays, pings, objects, and markers.
-//! Owns the `generate_render_commands` impl block on `Minimap`; all rendering logic lives here.
-//! Does not own GPU pipeline state; it emits `RenderCommand` values consumed by `src/render/renderer.rs`.
-//! Called via `Minimap::build_render_commands` from `src/lua_api/minimap_api.rs`.
-
 use super::minimap::Minimap;
 use super::types::{FogLevel, OverlayShape};
 use crate::render::renderer::{DrawMode, RenderCommand};

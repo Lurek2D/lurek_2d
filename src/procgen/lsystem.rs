@@ -1,7 +1,3 @@
-//! Lindenmayer-system (L-system) string rewriting and turtle geometry for `src/procgen`.
-//! Owns `LSystem`, its rewriting logic, and `to_segments` turtle interpretation.
-//! Does not own rendering or world-graph construction — those live in `render.rs` and `world_graph.rs`.
-
 use std::collections::HashMap;
 
 /// String-rewriting L-system with production rules and a configurable iteration count.

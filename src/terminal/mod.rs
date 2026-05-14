@@ -1,8 +1,3 @@
-//! In-engine terminal emulator: cell grid, ANSI escape handling, input completion,
-//! syntax highlighting, and widget rendering. Does not own game-loop integration;
-//! consumers drive it via `Terminal` and render via `render`. Depends on
-//! `render::RenderCommand` for output and `input` for key events.
-
 /// ANSI escape-code parsing and attribute types.
 pub mod ansi;
 /// Tab-completion provider interface and built-in implementations.

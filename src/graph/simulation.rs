@@ -1,8 +1,3 @@
-//! Graph simulation update passes for decay, transit, flow, conversion, and queues.
-//!
-//! Owns the per-step mutation order and emitted graph events.
-//! Pathfinding and storage types live in sibling modules.
-
 use super::core::Graph;
 use super::item::ItemPosition;
 use super::node::FlowMode;

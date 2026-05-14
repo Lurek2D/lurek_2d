@@ -1,8 +1,3 @@
-//! Shelf-first rectangle packer for texture atlases and sprite-sheet generation.
-//! Supports optional per-rect padding and occupancy reporting.
-//! Used by the image module's atlas builder and the font glyph cache.
-//! Does not own texture upload — that belongs in src/render/.
-
 /// Placement result for a single packed rectangle.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct PackedRect {

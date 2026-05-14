@@ -1,8 +1,3 @@
-//! LDtk JSON level format import. Parses a single level from an LDtk project string
-//! and constructs a `TileMap` with one layer per tile or auto-layer.
-//! Does not own map storage or rendering after the import completes.
-//! Depends on `tilemap`, `tileset`, and `serde_json`.
-
 use super::tilemap::TileMap;
 use super::tileset::TileSet;
 

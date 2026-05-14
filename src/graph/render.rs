@@ -1,8 +1,3 @@
-//! Graph render helpers that emit a simple node-and-edge preview.
-//!
-//! Owns layout and renderer command emission for graph previews.
-//! It does not persist positions or simulation state.
-
 use crate::graph::core::Graph;
 use crate::render::renderer::{DrawMode, RenderCommand};
 impl Graph {

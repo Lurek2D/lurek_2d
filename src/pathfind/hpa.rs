@@ -1,7 +1,3 @@
-//! Hierarchical Pathfinding A* (HPA*): builds a chunk-level abstract graph over a NavGrid
-//! then refines abstract paths back to grid-level tile sequences.
-//! Does not own Lua bindings or NavGrid construction; consumed by `src/lua_api/pathfind_api.rs`.
-
 use crate::log_msg;
 use crate::pathfind::astar;
 use crate::pathfind::nav_grid::NavGrid;

@@ -1,8 +1,3 @@
-//! Point-light accumulation and distance-based shading for the raycaster.
-//! Computes per-tile RGB lighting from ambient level and a list of `PointLight`
-//! sources using Bresenham line-of-sight occlusion. Used by `build_scene` to
-//! shade wall and floor quads. Does not own shadow maps or GPU light passes.
-
 /// A point light placed in world space that contributes to tile-level lighting.
 #[derive(Debug, Clone)]
 pub struct PointLight {

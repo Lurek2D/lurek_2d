@@ -1,6 +1,3 @@
-//! Runtime configuration schema loaded from `conf.toml`.
-//! Owns defaults, dependency normalization, and merge logic for user overrides.
-
 #[allow(unused_imports)]
 use crate::log_msg;
 use crate::runtime::log_messages::{

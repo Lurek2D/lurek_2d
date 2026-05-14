@@ -1,8 +1,3 @@
-//! Runtime UI context for `lurek.ui` — owns the flat widget list, input dispatch, animation ticks,
-//! data bindings, drag-and-drop, focus management, and the deferred event queue.
-//! `GuiContext` is the single entry point for all widget creation and mutation at runtime.
-//! Depends on all widget, control, container, and extra types in the `crate::ui` sub-tree.
-
 use crate::log_msg;
 use crate::runtime::log_messages::{GU01_CTX_INIT, GU02_WIDGET_ADD};
 use crate::ui::containers::{

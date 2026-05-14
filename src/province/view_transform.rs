@@ -1,6 +1,3 @@
-//! Province camera / view-transform helpers: fit, screen-to-map, cell hit-test, and zoom-at-point.
-//! Pure math; no dependencies on registry, render, or Lua state.
-
 /// Return (cam_x, cam_y, zoom) that fits the full map centred on screen; clamps zoom to ≥ 0.0001.
 pub fn fit_camera_to_screen(
     map_w: u32,

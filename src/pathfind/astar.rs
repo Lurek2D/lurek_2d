@@ -1,8 +1,3 @@
-//! A\* pathfinding over `NavGrid`: standard search, bidirectional helper, line-of-sight, and
-//! string-pull path smoothing. Does not own grid construction or Lua bindings.
-//! Consumed by `src/pathfind/bidir.rs`, `src/pathfind/unit_pathfinder.rs`, and
-//! `src/lua_api/pathfind_api.rs`.
-
 use crate::log_msg;
 use crate::pathfind::nav_grid::{DiagonalMode, NavGrid};
 use crate::runtime::log_messages::{AT01, AT02, AT03};

@@ -1,8 +1,3 @@
-//! LAN lobby discovery and in-process room registry for the network subsystem.
-//! Owns UDP broadcast announce/listen for local-network lobbies and a process-local `RoomRegistry`.
-//! Does not own peer connections; callers use the returned address/port to connect via `NetworkHost`.
-//! Key dependencies: standard `UdpSocket`, `OnceLock`+`Mutex` for the global room registry.
-
 use std::net::{Ipv4Addr, SocketAddr, UdpSocket};
 use std::sync::{Mutex, OnceLock};
 use std::time::{Duration, Instant};

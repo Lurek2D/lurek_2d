@@ -1,8 +1,3 @@
-//! Math module: Vec2, Vec3, Mat3, Rect, Color, Transform, spatial structures (AABB tree,
-//! spatial hash, rect packing), procedural noise, random, easing, splines, bezier, polygons,
-//! circles, voronoi, and scalar utilities (lerp, clamp, remap, smoothstep, sign, inverse_lerp).
-//! Does not own physics simulation or rendering. Used by nearly every other engine subsystem.
-
 /// AABB broadphase spatial query tree.
 pub mod aabb_tree;
 /// Cubic bezier curve evaluation and sampling.

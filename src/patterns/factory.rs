@@ -1,6 +1,3 @@
-//! Registry-based factory: named type set with alias resolution.
-//! Stores registered type names and string aliases; actual construction is caller-owned.
-
 use std::collections::HashSet;
 /// Registry of named constructable types with optional string aliases.
 #[derive(Debug, Default)]

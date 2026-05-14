@@ -1,7 +1,3 @@
-//! Converts `ParallaxLayer` and `ParallaxDrawBatch` into `RenderCommand` streams.
-//! Owns the translation from parallax draw data to renderer API calls; does not own camera maths.
-//! Key dependencies: `parallax::layer`, `render::renderer::RenderCommand`.
-
 use crate::parallax::layer::{ParallaxDrawBatch, ParallaxLayer};
 use crate::render::renderer::RenderCommand;
 impl ParallaxLayer {

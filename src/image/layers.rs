@@ -1,8 +1,3 @@
-//! Named layer stack with per-layer opacity, visibility, and alpha compositing.
-//! Owns `ImageLayer` (single layer) and `LayeredImage` (ordered stack with merge).
-//! Does not own GPU resources or serialization — callers handle persistence.
-//! Depends on `image_data::ImageData` for per-layer pixel storage.
-
 use super::image_data::ImageData;
 /// A single named image layer with opacity, visibility, and pixel data.
 #[derive(Debug, Clone)]

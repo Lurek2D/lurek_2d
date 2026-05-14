@@ -1,8 +1,3 @@
-//! Voronoi diagram generation from 2-D point sets via Bowyer-Watson Delaunay triangulation.
-//! Deduplicates input, classifies circumcenters per site, and CCW-sorts cell vertices.
-//! Used by procgen map generators and the Lua province map module.
-//! Does not own Delaunay triangulation exposed in geometry.rs — that variant is for general use.
-
 use std::collections::HashMap;
 
 /// One Voronoi region around a seed site with its polygon vertices in CCW order.

@@ -1,9 +1,3 @@
-//! Debug visualization generators that render engine state into `ImageData` frames.
-//! Submodules cover animation, audio waveforms, camera frusta, easing curves,
-//! geometry shapes, data graphs, image-op previews, noise fields, procedural patterns, and UI layouts.
-//! Does not own GPU pipelines; outputs are CPU-side `ImageData` for screenshots or debug overlays.
-//! Re-exports all public visualization entry points from submodules via glob.
-
 /// Animation visualizations.
 pub mod animation;
 /// Audio visualizations.

@@ -1,8 +1,3 @@
-//! Store and query normalized documentation entries for doc generation tooling.
-//! Keep merge and search behavior deterministic for downstream report steps.
-//! Do not parse source comments or write output files in this module.
-//! Depend only on entry models and standard collection types.
-
 use crate::docs::entry::DocEntry;
 /// Hold the in-memory list of documentation entries collected from source data.
 pub struct Catalog {

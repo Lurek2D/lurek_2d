@@ -1,8 +1,3 @@
-//! Parallax scrolling subsystem: layer management, draw-batch accumulation, and tile iteration.
-//! Owns the data model for multi-speed background layers and dispatches draw commands to the renderer.
-//! Does not own camera math or final GPU submission; those belong in `render` and `src/render/`.
-//! Key re-exports: `ParallaxLayer`, `ParallaxDrawBatch` from `layer`.
-
 /// Stateless draw-call helpers: converts layer data into renderer `RenderCommand` payloads.
 pub mod draw;
 /// `ParallaxLayer` definition and `ParallaxDrawBatch` accumulator used by game code.

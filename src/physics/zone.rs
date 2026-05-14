@@ -1,7 +1,3 @@
-//! Trigger zones that apply gravity overrides, damping, and enter/exit events to bodies.
-//! `PhysicsZone` defines a spatial region; `ZoneTracker` detects body crossings each step.
-//! Consumed exclusively by `World::apply_zone_forces`; not exposed directly to Lua.
-
 use std::collections::{HashMap, HashSet};
 
 /// Alias for a zone's numeric identifier.

@@ -1,7 +1,3 @@
-//! Jump Point Search (JPS) A\* for uniform-cost 8-directional grids.
-//! Prunes symmetric paths via jump-point identification, outperforming standard A\* on open terrain.
-//! Does not own Lua bindings; consumed by `src/lua_api/pathfind_api.rs`.
-
 use std::cmp::Ordering;
 use std::collections::{BinaryHeap, HashMap};
 /// Uniform-cost 8-directional grid for Jump Point Search.

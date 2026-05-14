@@ -1,8 +1,3 @@
-//! Skeleton: bone tree, slot list, animation playback, IK dispatch, and skin mapping.
-//! Owns Skeleton and BoneParams; drives pose accumulation via update_world_transforms.
-//! Does not own rendering or bone math — those live in render.rs and bone.rs.
-//! Key dependencies: Bone, Slot, IKConstraint, SkeletonAnimation, ImageData.
-
 use super::bone::Bone;
 use super::ik::IKConstraint;
 use super::slot::Slot;

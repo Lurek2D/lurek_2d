@@ -1,8 +1,3 @@
-//! Graph pathfinding helpers for shortest paths, reachability, and neighbor queries.
-//!
-//! Owns Dijkstra-style traversal over the graph edge set.
-//! Item movement still happens in simulation code.
-
 use super::core::Graph;
 use std::cmp::Ordering;
 use std::collections::{BinaryHeap, HashMap, HashSet};

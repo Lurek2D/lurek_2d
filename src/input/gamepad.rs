@@ -1,8 +1,3 @@
-//! Gamepad device state, gilrs button/axis name translation, virtual D-pad, and mapping persistence.
-//! Owns per-frame button/axis delta tracking and vibration request construction.
-//! Does not own gilrs event polling; that lives in `src/runtime/`. Mapping I/O uses std fs directly.
-//! Consumed by `src/lua_api/input_api.rs` and the runtime event loop.
-
 use crate::log_msg;
 use crate::runtime::log_messages::{GD01, GD02, GD03};
 use crate::runtime::EngineError;

@@ -1,7 +1,3 @@
-//! Composable behavior tree builder and tick-state tracker for game AI.
-//! Supports Sequence, Selector, Parallel, Inverter, Repeat, and Leaf node types.
-//! Does not own Lua bindings; consumed by `src/lua_api/ai_api.rs`.
-
 /// Tick result returned by a behavior tree node.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum BtStatus {

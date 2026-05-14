@@ -1,6 +1,8 @@
-﻿//! `Decoder` — decodes an audio file (WAV/OGG/MP3/FLAC via rodio) into an i16 PCM buffer.
-//! Provides seek, tell, and chunked-decode for streaming readback. Does not own a playback
-//! sink; used by `SoundData::from_file` and direct Lua audio API calls.
+﻿//! Audio file decoder that converts WAV, OGG, MP3, and FLAC content into i16 PCM buffers.
+//!
+//! - Decodes the full file into memory and exposes a seekable, chunk-iterable read interface
+//! - Provides sample rate, channel count, and bit depth metadata for downstream consumers
+//! - Used by sound data loading and streaming paths; does not own a playback sink
 
 use crate::log_msg;
 use crate::runtime::log_messages::AD01_AUDIO_DECODED;

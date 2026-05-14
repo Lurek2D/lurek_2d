@@ -1,9 +1,3 @@
-//! CPU-side texture loading, color-space tagging, and alpha premultiplication.
-//! Owns `Texture` (slot-map handle + dimensions), `TextureColorSpace`, and `premultiply_alpha_rgba8_in_place`.
-//! Decodes images on load and stores `TextureData` in the caller-supplied `SlotMap`.
-//! Does not own GPU upload — the renderer reads `TextureData` from the slot map and uploads it.
-//! Depends on the `image` crate for decoding and `slotmap` for texture key storage.
-
 use crate::log_msg;
 use crate::render::renderer::TextureData;
 use crate::runtime::error::{EngineError, EngineResult};

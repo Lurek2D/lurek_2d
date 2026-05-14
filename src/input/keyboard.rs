@@ -1,8 +1,3 @@
-//! Keyboard key and scan-code state tracking, modifier flags, and winit key-code translation.
-//! Owns per-frame pressed/released delta lists and the text-input character buffer.
-//! Does not own event delivery; the runtime event loop calls the mutation methods each frame.
-//! Consumed by `src/lua_api/input_api.rs` and the runtime event loop.
-
 use std::collections::HashSet;
 
 /// Bitmask flag for the Shift modifier.

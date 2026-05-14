@@ -1,7 +1,3 @@
-//! Dijkstra-based movement range map: reachable cells within a travel budget from an origin.
-//! Supports 4-directional and 8-directional expansion with per-cell cost.
-//! Does not own Lua bindings; consumed by `src/lua_api/pathfind_api.rs`.
-
 use std::cmp::Ordering;
 use std::collections::BinaryHeap;
 /// Precomputed movement-cost distances from an origin cell within a budget.

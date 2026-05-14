@@ -1,8 +1,3 @@
-//! Individual step definition types for `src/pipeline`.
-//! Owns `StepStatus`, `ErrorPolicy`, and `PipelineStep`. Does not own DAG topology,
-//! scheduling timers, or execution logic — those live in `dag.rs` and `scheduler.rs`.
-//! `PipelineStep` instances are created by Lua via `pipeline_api.rs` and stored in `Pipeline`.
-
 use std::collections::HashMap;
 
 /// Execution lifecycle state of a single pipeline step.

@@ -1,8 +1,3 @@
-//! Globe orbit camera and screen-space projection helpers.
-//!
-//! Owns camera clamping and geographic projection math for globe rendering.
-//! It does not decide visibility or layer ordering.
-
 use crate::globe::types::{GlobeSpec, LodTier, ProjectedProvince, Province};
 use crate::math::sphere::{axial_tilt_mat, lat_lon_to_unit, rot_x, rot_y, Mat3x3};
 use crate::math::{Vec2, Vec3};

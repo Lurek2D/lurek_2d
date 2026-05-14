@@ -1,8 +1,3 @@
-//! Globe hit testing against projected provinces.
-//!
-//! Owns screen-space point-in-polygon checks and best-hit selection.
-//! Projection and graph traversal stay in sibling modules.
-
 use crate::globe::projection::{build_view_matrix, OrbitCamera};
 use crate::globe::topology::ProvinceGraph;
 use crate::globe::types::{GlobeSpec, ProvinceId};

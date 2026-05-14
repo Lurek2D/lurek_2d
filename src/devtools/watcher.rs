@@ -1,8 +1,3 @@
-//! Track watched files and detect modifications for developer hot-reload flows.
-//! Support both polling-based mtime checks and optional native watcher events.
-//! Do not apply reload logic or script recompilation decisions in this module.
-//! Depend on filesystem metadata and optional notify backend when enabled.
-
 use crate::filesystem::watcher::read_mtime;
 #[cfg(feature = "devtools-plugin")]
 use notify::{Config, Event, RecommendedWatcher, RecursiveMode, Watcher};

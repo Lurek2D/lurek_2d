@@ -1,8 +1,3 @@
-//! Structured log facade: global level control, structured message dispatch, and level-enabled checks.
-//! Wraps the `log` crate's macros to emit tagged structured messages with optional key-value fields.
-//! Does not own sinks or buffering — routes through the `log` crate to registered appenders.
-//! Key dependencies: `crate::runtime::log_messages` for level get/set, `log` crate for dispatch.
-
 use crate::runtime::log_messages;
 use std::collections::BTreeMap;
 

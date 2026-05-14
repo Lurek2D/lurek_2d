@@ -1,8 +1,3 @@
-//! SpriteBatch: deferred draw-call accumulation for grouped sprite rendering from a single texture.
-//! Owns SpriteBatch and BatchEntry; accumulates entries until clear() resets the buffer each frame.
-//! Does not own rendering commands — callers iterate entries() to emit draw calls from the render pipeline.
-//! Key dependencies: TextureKey for the shared source texture.
-
 use crate::runtime::resource_keys::TextureKey;
 
 /// Deferred sprite draw-call collector bound to a single texture.

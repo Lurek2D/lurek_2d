@@ -1,7 +1,3 @@
-//! Converts a `RaycasterScene` into `RenderCommand` draw calls for the GPU renderer.
-//! Emits textured and flat quads for ceilings, floors, walls, and billboard sprites
-//! in the correct draw order. Does not own scene construction or GPU state.
-
 use crate::raycaster::scene::RaycasterScene;
 use crate::render::renderer::{DrawMode, RenderCommand};
 use crate::render::BlendMode;

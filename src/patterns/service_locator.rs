@@ -1,6 +1,3 @@
-//! String-keyed service registry: tracks which named services are registered.
-//! Does not hold references; callers look up and resolve services themselves.
-
 use std::collections::HashSet;
 
 /// Registry of registered service names.

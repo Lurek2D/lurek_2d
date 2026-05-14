@@ -1,5 +1,3 @@
-//! Relationship metadata and adjacency storage between ECS entities.
-
 use crate::log_msg;
 use crate::runtime::log_messages::{RL01, RL02, RL03};
 use std::collections::HashMap;

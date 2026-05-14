@@ -1,8 +1,3 @@
-//! Track frame delta samples and compute percentile timing summaries.
-//! Keep rolling-window statistics deterministic for debug HUD displays.
-//! Do not read clocks directly or own profiler zone nesting behavior.
-//! Depend on numeric vectors and bounded deque storage.
-
 use std::collections::VecDeque;
 #[derive(Debug)]
 /// Store a bounded history of frame delta samples for aggregate stats.

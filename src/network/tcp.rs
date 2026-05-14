@@ -1,8 +1,3 @@
-//! Non-blocking TCP connection manager for the background network thread.
-//! Owns a map of live `TcpStream` connections keyed by caller-assigned ID.
-//! Does not own the event loop or thread; called by `net_thread::NetworkRuntime::thread_main`.
-//! Key dependencies: `TcpStream` from std, `net_thread::{NetworkResponse, TcpEvent}`.
-
 use super::net_thread::{NetworkResponse, TcpEvent};
 use log::{debug, warn};
 use std::collections::HashMap;

@@ -1,6 +1,3 @@
-//! Binary serialisation cache for province geometry: span runs and border segments.
-//! Encode/decode round-trips through a versioned little-endian byte format (magic 0x50525643).
-//! Does not store style data; that is managed by ProvinceRegistry.
 use crate::province::registry::ProvinceRegistry;
 
 /// Serialisable snapshot of province geometry extracted from ProvinceRegistry.

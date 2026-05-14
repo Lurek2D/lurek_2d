@@ -1,7 +1,3 @@
-//! Arbitrary-degree Bézier curve: evaluation via de Casteljau / Bernstein, arc-length sampling,
-//! derivative curve, and control-point mutation.  Used by tween paths, camera rails, and
-//! Lua spline helpers.  Does not own spline chains — see spline.rs.
-
 use crate::math::vec2::Vec2;
 
 /// Arbitrary-degree Bézier curve backed by a dynamic control-point list.

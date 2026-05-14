@@ -1,9 +1,3 @@
-//! Own fixed-capacity ring buffer with overwrite-on-full FIFO semantics for recent-value storage.
-//! Backed by a `Vec<Option<T>>` with head and length tracking; when full, the oldest element is
-//! silently overwritten. Generic over `T: Clone` with a copy-optimised path for `T: Copy`.
-//! Used internally by event history, rolling stat windows, and audio level meters.
-//! Not exposed directly to Lua.
-
 /// Hold circular queue storage with overwrite semantics.
 pub struct RingBuffer<T: Clone> {
     /// Store slots for buffered values.

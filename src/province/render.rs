@@ -1,6 +1,3 @@
-//! Province render command generation: converts ProvinceRegistry + ProvinceRenderOptions into a RenderCommand Vec.
-//! Handles fill spans, border lines, capital markers, and text labels with viewport culling.
-//! Does not own GPU state; pushes transform/pop pairs so callers can compose into larger scenes.
 use crate::province::borders::classify_border;
 use crate::province::map_modes::{resolve_color, ProvinceMapMode};
 use crate::province::registry::ProvinceRegistry;

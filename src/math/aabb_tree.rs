@@ -1,8 +1,3 @@
-//! Dynamic AABB bounding-volume hierarchy for broad-phase spatial queries.
-//! Supports insert, remove, update, AABB, point, circle, and segment queries.
-//! Used by the physics broad phase and the spatial query Lua API.
-//! Does not own physics bodies or collision resolution — those belong in src/physics/.
-
 use std::collections::HashMap;
 
 /// Public leaf entry stored alongside a tree node, exposed for Lua query results.

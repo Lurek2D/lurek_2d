@@ -1,5 +1,3 @@
-//! Ordering, enablement, and debug rendering for post-effect stacks.
-
 use crate::log_msg;
 use crate::runtime::log_messages::{FX01, FX02};
 #[derive(Debug, Clone)]

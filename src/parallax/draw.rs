@@ -1,7 +1,3 @@
-//! `ParallaxLayer::draw_to_image` — rasterises a layer into an `ImageData` for testing or atlas baking.
-//! Applies tint, opacity, and visibility flag; does not perform GPU submission.
-//! Used by tests and offline baking tools; runtime rendering uses `render.rs` instead.
-
 use super::layer::ParallaxLayer;
 use crate::image::ImageData;
 impl ParallaxLayer {

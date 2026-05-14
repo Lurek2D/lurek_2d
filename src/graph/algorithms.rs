@@ -1,8 +1,3 @@
-//! Graph algorithm helpers for components, ordering, coloring, and A* search.
-//!
-//! Owns graph-analysis routines that derive structure from the current graph.
-//! It does not mutate simulation state beyond local scratch data.
-
 use super::core::Graph;
 use std::collections::{HashMap, HashSet, VecDeque};
 impl Graph {

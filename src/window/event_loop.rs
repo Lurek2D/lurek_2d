@@ -1,8 +1,3 @@
-//! Display enumeration and monitor-placement utilities for `lurek.window`.
-//! Wraps `winit` monitor APIs to provide index-stable display info, window centering,
-//! multi-monitor target selection, and startup monitor selection.
-//! Does not manage the running event loop; see `management.rs` for OS window state.
-
 use winit::event_loop::ActiveEventLoop;
 use winit::monitor::MonitorHandle;
 use winit::window::Window;

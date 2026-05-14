@@ -1,8 +1,3 @@
-//! Tile position generator for parallax tiling.
-//! Owns the algorithm that maps a scroll offset and tile step size to a list of on-screen positions.
-//! Includes a hard cap (`MAX_TILED_POSITIONS`) to prevent unbounded allocations with tiny tile sizes.
-//! Does not own rendering or layer state; called by `layer::build_draw_calls`.
-
 /// Fraction of a tile width/height added on each side of the screen as a visibility margin.
 const CULL_MARGIN_TILES: f32 = 1.5;
 /// Hard cap on the total number of tile positions returned per call.

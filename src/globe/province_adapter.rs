@@ -1,8 +1,3 @@
-//! Adapters that copy province-registry state into globe state.
-//!
-//! Owns simple synchronization from province snapshots into globe colors and fog.
-//! It does not resolve province topology or rendering.
-
 use crate::globe::registry::Globe;
 use crate::province::registry::ProvinceRegistry;
 /// Copy political colors from the province registry into matching globe provinces.

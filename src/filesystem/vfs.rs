@@ -1,8 +1,3 @@
-//! Virtual filesystem, mount layering, and file path policy for GameFS.
-//!
-//! Owns read, write, mount, and metadata operations over the game directory.
-//! Path traversal checks and glob matching stay local to this module.
-
 use crate::filesystem::file_handle::{FileHandle, FileMode};
 use crate::log_msg;
 use crate::runtime::error::{EngineError, EngineResult};

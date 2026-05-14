@@ -1,9 +1,3 @@
-//! Core tilemap types: `TileMap` with layered `TileLayer` storage, sweep-cast collision, and autotile resolution.
-//! Owns tile GID storage, layer visibility/tint/parallax, tileset attachment, autotile bitmask computation,
-//! viewport, animation timers, and debug render-command generation.
-//! Does not own the render pipeline, physics, or asset loading — these are handled by callers.
-//! Depends on `tileset`, `mapgen`, `render`, `image`, `math`, and `log`.
-
 use super::mapgen::MapOrientation;
 use super::tileset::TileSet;
 use crate::log_msg;

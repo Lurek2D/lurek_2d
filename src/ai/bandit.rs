@@ -1,6 +1,9 @@
-//! Multi-armed bandit strategies: epsilon-greedy, UCB1, and Thompson sampling.
-//! Owns `BanditArm`, `BanditStrategy`, and `Bandit` only.
-//! Does not own reward collection; callers feed outcomes into `update`.
+//! Multi-armed bandit solver for exploration-exploitation decisions in AI.
+//!
+//! - Tracks per-arm pull counts and reward statistics to drive empirical mean estimation
+//! - Supports three selection strategies: epsilon-greedy random exploration, UCB1 confidence-bound, and Thompson Beta sampling
+//! - Updates arm posterior parameters after each observed reward; caller owns action execution and outcome measurement
+
 /// A single bandit arm with accumulated reward statistics.
 #[derive(Clone)]
 pub struct BanditArm {

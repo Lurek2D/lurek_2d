@@ -1,7 +1,3 @@
-//! Simple rectangular grid for A\*, Dijkstra, BFS, and flow-field queries.
-//! Does not own NavGrid or nav-agent state; consumed by `src/pathfind/` helpers
-//! and `src/lua_api/pathfind_api.rs`.
-
 use crate::log_msg;
 use crate::runtime::log_messages::{PF01_GRID_INIT, PF03_NO_PATH};
 use std::cmp::Ordering;

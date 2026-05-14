@@ -1,8 +1,3 @@
-//! SceneStack and SceneId: push/pop/switch lifecycle for game scenes with queued transitions.
-//! Owns stack state, scene registry, overlay set, scene-layer ordering, and per-scene data keys.
-//! Does not own transition math or render commands — those live in transition.rs and render.rs.
-//! Key dependencies: ActiveTransition, EasingType, TransitionType from transition.rs.
-
 use crate::log_msg;
 use crate::runtime::log_messages::{
     SC01_STACK_INIT, SC02_SCENE_PUSH, SC03_SCENE_POP, SC04_STACK_CLEAR,

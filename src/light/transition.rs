@@ -1,8 +1,3 @@
-//! Linear tween transition for smoothly animating `Light2D` color, intensity, and radius.
-//! `LightTransition` is advanced each frame by calling `update(dt)` which returns interpolated values.
-//! Does not mutate the light directly — callers apply the returned tuple to their `Light2D`.
-//! Duration is clamped to ≥1e-6 to avoid division by zero.
-
 /// Time-based linear tween that interpolates a light's color, intensity, and radius.
 #[derive(Clone)]
 pub struct LightTransition {

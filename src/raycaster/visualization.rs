@@ -1,7 +1,3 @@
-//! Debug visualization helpers for `Raycaster2D`: top-down map, software first-person
-//! view, and depth-map image rendering. All three methods write into `ImageData`
-//! pixel buffers and are intended for development, not production rendering.
-
 use super::dda::Raycaster2D;
 impl Raycaster2D {
     /// Render a top-down grid map with player dot and radial ray lines into an `ImageData`.

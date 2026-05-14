@@ -1,7 +1,3 @@
-//! Particle emitter configuration types: enums for distribution, shape, insert mode, and the main `ParticleConfig` struct.
-//! Owns all tunable emitter parameters; does not hold mutable state — `emitter.rs` owns live particle state.
-//! Serialisable to/from TOML via serde; `texture_id` is skipped because `TextureKey` is runtime-only.
-
 use super::shapes::ParticleShape;
 use crate::runtime::resource_keys::TextureKey;
 /// Controls how particles are distributed across the emitter's area when `area_width`/`area_height` > 0.

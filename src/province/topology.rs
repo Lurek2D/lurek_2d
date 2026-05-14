@@ -1,6 +1,3 @@
-//! Province adjacency graph built from pixel-scan output in ProvinceGrid.
-//! Stores neighbour lists indexed by ProvinceId and exposes adjacency queries.
-//! Does not own geometry, styles, or rendering data.
 use crate::province::types::ProvinceId;
 use std::collections::{HashMap, HashSet};
 

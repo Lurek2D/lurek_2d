@@ -1,8 +1,3 @@
-//! Iterative radix-2 FFT helpers for real input and complex spectra.
-//! Owns in-place butterfly transform and zero-padding behavior.
-//! Keeps Fourier math localized and independent from array container types.
-//! Depends only on scalar math and internal complex helper structure.
-
 use std::f64::consts::PI;
 
 #[derive(Clone, Copy, Debug, Default)]

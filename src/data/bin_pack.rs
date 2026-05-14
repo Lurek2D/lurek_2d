@@ -1,8 +1,3 @@
-//! Own whitespace-token binary reader/writer for structured binary data exchange.
-//! A format string is a space-separated list of type tokens. Serialises typed value slices
-//! to bytes and deserialises bytes back to typed values. Static byte-length estimation
-//! is available for fixed-width formats. Primary consumer is `src/lua_api/data_api.rs`.
-
 use crate::data::byte_data::ByteData;
 #[derive(Debug, Clone)]
 /// Hold typed values used by token-based binary packing.

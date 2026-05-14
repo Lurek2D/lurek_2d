@@ -1,5 +1,3 @@
-//! Province change and event enums used by ProvinceRegistry to track mutations and signal the Lua layer.
-//! ProvinceChange records individual field mutations; ProvinceEvent describes higher-level map signals.
 use crate::province::types::{BorderClass, ProvinceId};
 
 /// Single field mutation recorded in the registry change log, keyed by revision.

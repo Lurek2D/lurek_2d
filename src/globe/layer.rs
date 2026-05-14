@@ -1,8 +1,3 @@
-//! Globe overlay layer storage and color resolution by province.
-//!
-//! Owns layer collection management and simple per-province overrides.
-//! Color blending policy stays local to this module.
-
 use crate::globe::types::{Layer, ProvinceId};
 use std::collections::HashMap;
 /// Named layer collection keyed by layer name.

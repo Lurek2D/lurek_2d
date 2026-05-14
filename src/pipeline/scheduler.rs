@@ -1,8 +1,3 @@
-//! Time-based step scheduler for `src/pipeline`.
-//! Owns per-step countdown timers and tracks pipeline elapsed time. Does not own
-//! step definitions, DAG topology, or execution logic — those live in `dag.rs`.
-//! Consumed by Lua bindings in `lua_api/pipeline_api.rs` to drive frame-by-frame updates.
-
 use crate::pipeline::dag::Pipeline;
 use crate::pipeline::step::StepStatus;
 use std::collections::HashMap;

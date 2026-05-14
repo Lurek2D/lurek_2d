@@ -1,8 +1,3 @@
-//! Own deterministic 64-bit xorshift PRNG scoped exclusively to dataframe sampling.
-//! Not a cryptographic generator. Kept `pub(crate)` to prevent accidental use outside
-//! this module. Zero seeds are promoted to 1 to avoid the degenerate all-zero state.
-//! Replace only this file if a higher-quality RNG is ever needed; callers will not change.
-
 /// Hold xorshift64 state used by dataframe-local random helpers.
 pub(crate) struct Xorshift64 {
     /// Store current PRNG state word.

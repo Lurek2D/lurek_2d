@@ -1,5 +1,3 @@
-//! Entity-system building blocks used by the runtime-facing ECS layer.
-
 /// Entity id packing and unpacking helpers.
 pub mod generational_id;
 /// Lua table cloning helpers for ECS snapshots and blueprints.

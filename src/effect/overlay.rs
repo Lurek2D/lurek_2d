@@ -1,5 +1,3 @@
-//! Screen overlay controller for weather, ambient light, flashes, fades, and haze.
-
 use super::ambient::AmbientState;
 use super::atmosphere::{
     CloudState, FilmGrainState, FogState, HeatHazeState, LightningState, VignetteState,

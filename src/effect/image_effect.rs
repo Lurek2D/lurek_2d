@@ -1,5 +1,3 @@
-//! Named collections of post effects that can be converted into shader pass descriptors.
-
 use super::effect::PostFxEffect;
 use crate::log_msg;
 use crate::render::ShaderPassDescriptor;

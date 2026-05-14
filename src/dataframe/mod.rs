@@ -1,8 +1,3 @@
-//! Own tabular data module. Provides column-major frame storage, typed cell values, lazy
-//! deferred query pipelines, grouped and window analytics, CSV/JSON/binary serialization,
-//! a SQL-like SELECT layer, and rayon-backed vectorized column arithmetic. External callers
-//! reach this module through `src/lua_api/dataframe_api.rs`. No graphics or audio logic here.
-
 /// Core table types and base dataframe operations.
 pub mod frame;
 /// Deferred query builder and lazy execution pipeline.

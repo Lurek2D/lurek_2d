@@ -1,8 +1,3 @@
-//! Time-based camera effect primitives used by camera update paths.
-//! Owns pulse zoom offsets, sway offsets, and breathing zoom oscillation.
-//! Keeps effect state math separate from camera follow and bounds logic.
-//! Depends only on scalar trigonometry from the standard library.
-
 use std::f32::consts::PI;
 
 /// Stores state for a temporary sinusoidal zoom pulse.

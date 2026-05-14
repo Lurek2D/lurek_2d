@@ -1,6 +1,3 @@
-//! Synchronization group for animation handles that should advance together.
-//! Owns `AnimSyncGroup` only.
-//! Does not own animation playback; it only stores slotmap keys.
 use slotmap::DefaultKey;
 /// Set of animation keys that should stay in sync.
 #[derive(Debug, Clone, Default)]

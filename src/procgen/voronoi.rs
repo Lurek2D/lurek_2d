@@ -1,8 +1,3 @@
-//! Voronoi diagram generator for `src/procgen`.
-//! Owns `VoronoiOpts`, `voronoi_diagram`, and the `simple_hash_noise` warp helper.
-//! Does not own Poisson sampling or world-graph construction — those live in
-//! `poisson.rs` and `world_graph.rs`.
-
 use super::lcg::Lcg;
 
 /// Options controlling domain warp applied before Voronoi distance computation.

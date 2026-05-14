@@ -1,7 +1,3 @@
-//! Shared numeric limits and protocol constants for the network subsystem.
-//! All transport layers (TCP, WebSocket) and the lobby read from this file.
-//! Does not own logic; change values here to tune network capacity globally.
-
 /// Hard ceiling on simultaneous peer connections across all transports.
 pub const MAX_PEERS: usize = 4096;
 /// Default peer slot count used when the game does not specify a capacity.

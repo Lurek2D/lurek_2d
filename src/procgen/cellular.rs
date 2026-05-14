@@ -1,9 +1,3 @@
-//! Cellular automata cave generator for `src/procgen`.
-//! Owns `CellularOpts` and `cellular_automata` which runs Moore-neighbourhood
-//! birth/survive rules over a seeded random grid. Does not own rendering, flood
-//! fill, or room placement — those live in `render.rs`, `flood_fill.rs`, and `rooms.rs`.
-//! Depends on `lcg.rs` for deterministic seeding.
-
 use super::lcg::Lcg;
 
 /// Configuration for one cellular automata cave generation run.

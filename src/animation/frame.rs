@@ -1,6 +1,3 @@
-//! Animation frame geometry and optional per-frame duration.
-//! Owns `AnimFrame` and the `AnimationFrame` alias.
-//! Does not own texture data; it only stores quad coordinates.
 use crate::math::Rect;
 /// Frame rectangle and duration.
 #[derive(Debug, Clone)]

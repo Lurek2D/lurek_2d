@@ -1,7 +1,3 @@
-//! Bitmap font loader, glyph atlas wrapper, and text metrics for the render layer.
-//! Bundles six fixed-size PNG bitmap fonts (3×5 – 12×22), provides glyph UV lookup,
-//! pixel-width measurement, and word-wrap. Does not own GPU texture state.
-
 use crate::runtime::error::{EngineError, EngineResult};
 /// Embedded PNG data for the 3×5 bitmap font.
 const FONT_3X5: &[u8] = include_bytes!("../../assets/fonts/bitmap_3x5.png");

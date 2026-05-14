@@ -1,7 +1,3 @@
-//! Catmull-Rom and Hermite spline interpolation used by tween paths and camera rails.
-//! CatmullRomSpline handles dynamic multi-point chains; HermiteSpline handles single cubic segments.
-//! Does not own Bézier curves (bezier.rs) or UI animation scheduling (tween.rs).
-
 /// Multi-point Catmull-Rom spline with dynamic control-point list.
 pub struct CatmullRomSpline {
     /// Ordered (x, y) control points; at least 2 are required for sampling.

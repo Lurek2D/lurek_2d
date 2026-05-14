@@ -1,8 +1,3 @@
-//! Own format-string pack/unpack helpers modelled on Python’s `struct` module.
-//! A format string is a sequence of type tokens with optional endianness prefix.
-//! Serialises typed value slices to bytes and deserialises bytes back to typed values.
-//! Primary consumer is `src/lua_api/data_api.rs`. Does not own file I/O.
-
 use crate::data::byte_data::ByteData;
 #[derive(Debug, Clone)]
 /// Hold value variants used by pack and unpack formats.

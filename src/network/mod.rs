@@ -1,8 +1,3 @@
-//! Network subsystem — TCP, WebSocket, HTTP, lobby, relay, and game-state sync.
-//! Owns all outbound and inbound socket lifecycle, message framing, and peer management.
-//! Does not own Lua bindings (those live in `src/lua_api/network_api.rs`) or save state.
-//! Key dependencies: `tokio` runtime on the net thread, `message` framing, `error` types.
-
 /// Shared numeric limits and protocol constants used across all network layers.
 pub mod constants;
 /// `NetworkError` type covering socket, protocol, and framing failures.

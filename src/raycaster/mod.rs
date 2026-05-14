@@ -1,8 +1,3 @@
-//! Raycaster subsystem: DDA ray casting, scene building, sprite projection, lighting,
-//! doors, grid motion, depth buffering, minimap overlay, and visualization helpers.
-//! Produces a `RaycasterScene` each frame consumed by `src/render/`. Does not own
-//! Lua bindings or file I/O; depends on `math` and `render` types.
-
 /// Raycaster scene construction from camera and world grid.
 pub mod build_scene;
 /// Per-column batch data passed to the renderer.

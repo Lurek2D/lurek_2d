@@ -1,7 +1,3 @@
-//! Slot: attachment point that links a bone to a drawable region in a spine skeleton.
-//! Owns Slot with colour tint, draw order, and optional attachment name.
-//! Does not own attachment texture data or skin resolution \u2014 those live in skeleton.rs and the asset pipeline.
-
 /// Attachment point on a bone with colour tint and optional texture attachment name.
 #[derive(Debug, Clone)]
 pub struct Slot {

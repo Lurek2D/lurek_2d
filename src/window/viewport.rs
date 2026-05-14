@@ -1,8 +1,3 @@
-//! Virtual viewport coordinate-mapping helpers for `lurek.window`.
-//! Translates between logical game coordinates and physical screen pixels using
-//! scale factors and letter-box offsets stored on `WindowState`.
-//! Scale mode is staged here and applied by the event loop; valid modes: `none`, `letterbox`, `stretch`, `pixel`.
-
 use crate::runtime::shared_state::WindowState;
 /// Return the logical game viewport width in pixels.
 pub fn get_width(ws: &WindowState) -> f32 {

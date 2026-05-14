@@ -1,8 +1,3 @@
-//! Province id grid derived from color-coded images, with adjacency detection and polygon tracing.
-//! Owns `ProvinceGrid` (id lookup, spans, border segments, polygon extraction) and `AdjacencyPair`.
-//! Does not own map rendering or Lua exposure — callers handle those layers.
-//! Depends on `image_data::ImageData` for pixel input and `std::collections` for edge tracing.
-
 use crate::image::ImageData;
 use std::collections::{HashMap, HashSet};
 /// Adjacency summary for two provinces and the number of shared border pixels.

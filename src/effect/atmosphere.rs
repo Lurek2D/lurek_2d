@@ -1,5 +1,3 @@
-//! Atmospheric overlay state types for clouds, fog, haze, grain, and lightning.
-
 #[derive(Debug, Clone)]
 /// Configures animated cloud overlay generation.
 pub struct CloudState {

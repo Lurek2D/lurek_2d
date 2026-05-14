@@ -1,6 +1,10 @@
-//! AI director tension model controlling encounter pacing and spawn pressure.
-//! Owns `DirectorPhase`, `DirectorConfig`, and `AIDirector`.
-//! Does not own combat spawns; it only computes pacing scalars.
+//! AI director that governs encounter pacing through a tension-driven phase machine.
+//!
+//! - Tracks a global tension value and transitions through build-up, peak, sustain, and relief phases based on configurable thresholds
+//! - Accepts intensity events from game systems to push tension upward; tension decays automatically over time
+//! - Exposes per-phase spawn rate multipliers, loot drop factors, and ambient intensity scalars for game systems to consume
+//! - Fully data-oriented; game-side spawn and reward decisions read the published factors and act independently
+
 /// Director pacing phase.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum DirectorPhase {

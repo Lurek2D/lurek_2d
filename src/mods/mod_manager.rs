@@ -1,8 +1,3 @@
-//! Mod lifecycle manager: registration, dependency resolution, load-order computation, and hot-reload.
-//! Owns `ModInfo` and `ModManager`; no Lua execution or filesystem I/O beyond `mod.toml` parsing.
-//! Does not own asset mounting or script execution; those are performed by callers after `load_order()`.
-//! Consumed by `src/lua_api/mods_api.rs`.
-
 use crate::log_msg;
 use crate::runtime::log_messages::{MD01_MGR_INIT, MD02_MOD_REG, MD04_ORDER_OK};
 use sha2::{Digest, Sha256};

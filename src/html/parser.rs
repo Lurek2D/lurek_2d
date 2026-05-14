@@ -1,5 +1,3 @@
-//! HTML token parsing, attribute decoding, and text escaping helpers.
-
 use crate::html::element::{HtmlElement, HtmlElementId};
 use std::collections::BTreeMap;
 /// Parse HTML into a live element tree and return the top-level child ids.

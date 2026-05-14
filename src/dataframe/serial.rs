@@ -1,10 +1,3 @@
-//! Own serialization and deserialization helpers for `DataFrame` and `Database` across three
-//! formats: CSV (text rows with header), JSON (array-of-objects), and a compact binary layout.
-//! All directions (read and write) are supported. `to_string_table` renders a padded ASCII table
-//! for debug output. `Database` serialization wraps all tables in a single keyed JSON object.
-//! No network or file I/O; callers pre-read bytes and pass them in. Primary consumer is
-//! `src/lua_api/dataframe_api.rs`.
-
 use crate::dataframe::frame::{CellValue, DataFrame};
 /// Parse CSV text and return DataFrame or validation error.
 pub fn from_csv(s: &str) -> Result<DataFrame, String> {

@@ -1,7 +1,3 @@
-//! Thread-pool for off-thread A\* requests: submit a job by id, cancel it before dispatch,
-//! and poll completed results each frame without blocking the game thread.
-//! Does not own NavGrid construction; consumed by `src/lua_api/pathfind_api.rs`.
-
 use crate::pathfind::astar;
 use crate::pathfind::nav_grid::NavGrid;
 use std::sync::mpsc::{self, Receiver, Sender};

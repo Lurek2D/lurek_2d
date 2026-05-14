@@ -1,8 +1,3 @@
-//! Element-wise arithmetic, comparison, reduction, and reshape operations.
-//! Owns broadcast handling, scalar dispatch, axis reductions, and bitwise ops.
-//! Keeps generic compute operations separate from storage and linalg modules.
-//! Depends on NdArray accessors and optional rayon parallel execution.
-
 use crate::compute::array::{DataType, NdArray};
 use rayon::prelude::*;
 use std::sync::OnceLock;

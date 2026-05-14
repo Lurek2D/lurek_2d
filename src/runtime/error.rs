@@ -1,6 +1,3 @@
-//! Engine error taxonomy and transport-friendly snapshots.
-//! Maps subsystem failures to stable error codes, categories, and recovery hints.
-
 use thiserror::Error;
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 /// High-level classification used to group runtime failures.

@@ -1,8 +1,3 @@
-//! Scene management: stack-based scene lifecycle, depth sorting, transitions, and scene rendering.
-//! Owns SceneStack, DepthSorter, transition types, and easing helpers.
-//! Does not own rendering commands — those are assembled in render.rs and forwarded to the render pipeline.
-//! Key dependencies: render (RenderCommand), math (Vec2), transition state machine.
-
 /// Depth-sorted entity ordering for scene draw calls.
 pub mod depth_sorter;
 /// Internal easing curve math used by transition.rs.

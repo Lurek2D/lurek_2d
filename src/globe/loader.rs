@@ -1,8 +1,3 @@
-//! Globe province loading from TOML, PNG grids, and generated Voronoi points.
-//!
-//! Owns lightweight parsing and conversion into shared province types.
-//! Registry insertion and render behavior stay outside this module.
-
 use crate::globe::types::{Province, ProvinceId};
 use crate::image::province_grid::ProvinceGrid;
 use crate::math::voronoi::voronoi_from_points;

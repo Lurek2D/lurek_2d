@@ -1,8 +1,3 @@
-//! Build JSON payloads for editor docs features from normalized entry records.
-//! Keep transformation rules for completions, hover, and signatures centralized.
-//! Do not read source comments or compute documentation quality metrics here.
-//! Depend on serde JSON values and plain file output utilities.
-
 use crate::docs::entry::DocEntry;
 use std::collections::HashMap;
 use std::fs::File;

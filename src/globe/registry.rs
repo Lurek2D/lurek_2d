@@ -1,8 +1,3 @@
-//! Globe registry and per-globe state for provinces, overlays, and emit paths.
-//!
-//! Owns globe instances plus their mutable runtime state.
-//! Rendering and picking behavior stay in sibling modules.
-
 use crate::globe::draw::emit_globe_frame;
 use crate::globe::fog::FogStore;
 use crate::globe::label::LabelStore;

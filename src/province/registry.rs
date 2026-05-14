@@ -1,6 +1,3 @@
-//! Province registry: the authoritative store of per-province style, geometry, labels, and change history.
-//! Built from a ProvinceGrid pixel scan; mutation methods append to a change log keyed by revision.
-//! Consumed by render, gpu_bridge, cache, import, and Lua bindings; does not own rendering commands.
 use crate::image::ProvinceGrid;
 use crate::province::events::ProvinceChange;
 use crate::province::topology::ProvinceGraph;

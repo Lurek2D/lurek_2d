@@ -1,6 +1,8 @@
-﻿//! Lightweight audio source descriptors used by the audio API.
-//! `SpatialState` carries listener-relative 3D attributes, and `AudioSource` stores
-//! source identity/path/default playback flags before registration in `Mixer`.
+﻿//! Per-source identity and spatial attribute descriptors for audio source registration.
+//!
+//! - Stores the source file path, default playback flags, and loop configuration
+//! - Carries 3D spatial state: position, velocity, and orientation for panning and Doppler
+//! - Lightweight descriptors used before and during source registration in the mixer
 
 use crate::log_msg;
 use crate::runtime::log_messages::AS01;

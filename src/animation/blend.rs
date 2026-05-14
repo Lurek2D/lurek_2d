@@ -1,6 +1,3 @@
-//! Animation blend layers and optional bone masks.
-//! Owns `BlendMask`, `BlendLayer`, and `BlendLayerSet`.
-//! Does not own animation playback; it only stores blend configuration.
 /// Bone mask for restricting a blend layer to selected bones.
 #[derive(Debug, Clone, Default)]
 pub struct BlendMask {

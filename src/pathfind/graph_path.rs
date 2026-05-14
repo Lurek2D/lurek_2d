@@ -1,7 +1,3 @@
-//! Province-level A\* and Dijkstra reachability for strategy-game maps.
-//! Operates on province adjacency lists with per-province and per-edge tag costs.
-//! Does not own province data or Lua bindings; consumed by `src/province/` and `src/lua_api/pathfind_api.rs`.
-
 use std::cmp::Ordering;
 use std::collections::{BinaryHeap, HashMap, HashSet};
 /// Result of a province-level pathfinding query.

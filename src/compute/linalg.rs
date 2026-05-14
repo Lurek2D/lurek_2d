@@ -1,8 +1,3 @@
-//! Linear algebra and geometric helper routines for NdArray data.
-//! Owns vector normalization, matrix transforms, decomposition, and solvers.
-//! Keeps linalg-specific workflows separate from generic element-wise ops.
-//! Depends on NdArray, DataType, and spatial convolution helper usage.
-
 use crate::compute::array::{DataType, NdArray};
 use crate::compute::spatial;
 

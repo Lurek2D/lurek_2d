@@ -1,5 +1,3 @@
-//! Transient screen-space state for flashes, shakes, and fades.
-
 #[derive(Debug, Clone)]
 /// Tracks a time-limited full-screen flash overlay.
 pub struct FlashState {

@@ -1,7 +1,3 @@
-//! Image comparison panels, pixel-transform grids, and HSV color-wheel visualizations.
-//! Renders side-by-side labeled frames, applies per-pixel transform grids, and draws a full color wheel.
-//! Does not own source images — callers pass `&ImageData` slices.
-//! Depends on `super::hsv_to_rgb_viz` and `crate::image::ImageData`.
 use super::hsv_to_rgb_viz;
 use crate::image::ImageData;
 /// Render side-by-side labeled images into a composite image.

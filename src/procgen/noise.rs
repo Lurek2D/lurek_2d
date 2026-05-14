@@ -1,9 +1,3 @@
-//! Noise primitives and map generation for `src/procgen`.
-//! Owns Perlin 1-4D, Simplex 2-4D, Worley/cellular, FBM, ridged, and turbulence
-//! fractals via `NoiseGenerator`, plus standalone free functions and `MapGenOptions`.
-//! Does not own biome classification or heightmap erosion — those live in `biome.rs`
-//! and `heightmap.rs`. Depends on `rayon` for parallel map generation.
-
 use rayon::prelude::*;
 
 /// Distance metric used by Worley/cellular noise to measure feature-point distance.

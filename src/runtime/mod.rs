@@ -1,6 +1,3 @@
-//! Runtime foundation types shared across app loop, Lua bridge, and subsystem modules.
-//! Exposes config loading, message catalog, error model, resource keys, and shared frame state.
-
 /// Runtime configuration model loaded from `conf.toml`.
 pub mod config;
 /// Engine-wide error types and snapshot helpers.

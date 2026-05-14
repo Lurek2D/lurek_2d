@@ -1,8 +1,3 @@
-//! Blocking HTTP client used for matchmaking requests and asset URL fetches.
-//! Wraps `ureq` with a configurable timeout; runs synchronously on the caller's thread.
-//! Does not own async I/O; callers must dispatch to the net thread when non-blocking is required.
-//! Key dependency: `ureq` for HTTP transport.
-
 use log::{debug, warn};
 use std::time::Duration;
 /// Result of a completed HTTP request, including both success and error cases.

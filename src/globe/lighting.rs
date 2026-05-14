@@ -1,8 +1,3 @@
-//! Globe lighting helpers for sun direction, intensity, and terminator fade.
-//!
-//! Owns simple math used by projection and render code.
-//! It does not manage scene state or material setup.
-
 use crate::globe::types::GlobeSpec;
 use crate::math::sphere::{lat_lon_to_unit, rot_y};
 use crate::math::Vec3;

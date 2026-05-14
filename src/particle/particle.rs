@@ -1,7 +1,3 @@
-//! `Particle` — per-particle mutable state updated every frame by `ParticleSystem::update`.
-//! Owns position, velocity, life counter, rotation, and per-instance acceleration overrides.
-//! Deliberately small; config data stays in `ParticleConfig`, not per-particle.
-
 /// Per-particle state owned by the `ParticleSystem` pool.
 #[derive(Clone, Debug)]
 pub struct Particle {

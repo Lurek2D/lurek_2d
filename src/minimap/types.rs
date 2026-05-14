@@ -1,7 +1,3 @@
-//! Shared value types for the minimap subsystem: colour modes, fog levels, objects, markers, overlays, and layers.
-//! Owns all plain data structs and enums used by both `minimap.rs` and `render.rs`.
-//! Does not own state or rendering logic; those live in their respective sibling files.
-
 /// Whether minimap cells are coloured by terrain type or by political owner.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum ColorMode {

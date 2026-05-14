@@ -1,8 +1,3 @@
-//! Extra overlay and auxiliary widgets for `lurek.ui` — `Toast`, `Separator`, `Spacer`, `TreeView`,
-//! `Toolbar`, `MenuBar`, `MenuItem`, `Dialog`, `StatusBar`, `Accordion`, `TooltipPanel`,
-//! `ColorPicker`, `GUITable`, `ImageWidget`, `Badge`, and `CustomWidget`.
-//! Depends on `crate::ui::widget`.
-
 use crate::ui::widget::{WidgetBase, WidgetType};
 /// Timed overlay notification that disappears after `duration` seconds.
 #[derive(Debug, Clone)]

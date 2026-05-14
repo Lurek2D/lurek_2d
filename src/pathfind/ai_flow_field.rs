@@ -1,7 +1,3 @@
-//! BFS-based flow field for AI crowd movement on a flat walkability grid.
-//! Does not own unit steering or pathfinding A\*; consumed by `src/ai/` and
-//! `src/lua_api/pathfind_api.rs`. Re-exported from `pathfind` as `SimpleFlowField`.
-
 use std::collections::VecDeque;
 
 /// Precomputed directional flow field driving units toward a single goal cell.

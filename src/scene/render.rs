@@ -1,8 +1,3 @@
-//! Scene-level render assembly: adds render methods to SceneStack.
-//! Assembles RenderCommand lists for the active scene and provides off-screen rasterisation via ImageData.
-//! Does not own RenderCommand definitions or image encode — those live in render/ and image/ respectively.
-//! Key dependencies: SceneStack, RenderCommand, ImageData.
-
 use super::stack::SceneStack;
 use crate::image::ImageData;
 use crate::render::renderer::RenderCommand;

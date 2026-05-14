@@ -1,8 +1,3 @@
-//! Tiled TMX map file parser for orthogonal, isometric, staggered, and hexagonal maps.
-//! Owns all TMX data types and the `load_tmx` entry point; supports CSV, base64, zlib, and gzip tile encodings.
-//! Does not own `TileMap` construction; callers convert `TmxMap` into engine types using the loaded data.
-//! Depends on `roxmltree`, `base64`, `flate2`, `log`, and `runtime::log_messages`.
-
 use crate::log_msg;
 use crate::runtime::log_messages::{TL01, TL02};
 use base64::Engine as _;

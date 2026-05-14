@@ -1,8 +1,3 @@
-//! Camera-culled, chunk-based renderer state for large tile maps.
-//! Owns `LargeMapRenderer` and `MapChunk`. Manages dirty-chunk tracking, LOD thresholds,
-//! and the visible-chunk range calculation. Does not own draw calls or GPU resources.
-//! Depends only on `std`.
-
 use std::collections::HashMap;
 
 /// A single rendered chunk: a region of tile IDs with a dirty flag for incremental updates.

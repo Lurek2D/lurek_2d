@@ -1,7 +1,3 @@
-//! Core walkability grid for pathfinding: per-cell cost, blocked state, diagonal mode, dirty regions.
-//! Used as the input to A*, JPS, flow-field, and HPA* algorithms.
-//! Does not own Lua bindings; consumed by `src/lua_api/pathfind_api.rs`.
-
 use crate::log_msg;
 use crate::runtime::log_messages::{NG01, NG02, NG03};
 /// Controls which diagonal moves are permitted during pathfinding.

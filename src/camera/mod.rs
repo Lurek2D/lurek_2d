@@ -1,8 +1,3 @@
-//! Camera subsystem for 2D world-view control, framing, and viewport scaling.
-//! Owns camera state types, render transform command builders, and helper effects.
-//! Keeps logic local to camera behavior and does not own renderer execution.
-//! Depends on math primitives and render command enums from core subsystems.
-
 /// Exposes camera effect primitives for sway, breathing, and pulse behavior.
 pub mod effects;
 /// Exposes multi-camera rig management for split and overlay layouts.

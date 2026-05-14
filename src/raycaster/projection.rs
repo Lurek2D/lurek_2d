@@ -1,7 +1,3 @@
-//! Wall-column projection math for the raycaster. Converts a DDA ray distance
-//! to screen-space wall-slice height, start/end Y, and distance-based shade.
-//! Used by `build_scene` and the legacy column-batch path.
-
 /// Project a wall column at `distance` using `fov` and `screen_height`;
 /// return `(wall_height, draw_start_y, draw_end_y)` in screen pixels.
 pub fn project_column(distance: f32, fov: f32, screen_height: f32) -> (f32, f32, f32) {

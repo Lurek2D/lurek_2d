@@ -1,8 +1,3 @@
-//! Own read-only typed accessor over a shared `Arc<Vec<u8>>` byte buffer with offset and size.
-//! Immutable and zero-copy: the `Arc` allows cheap clones for passing sub-views across threads.
-//! Does not support writing; use `DataWriter` for write access. `LuaDataView` wraps it for the
-//! ownership pattern required by `mlua::UserData`. Primary consumer is `src/lua_api/data_api.rs`.
-
 use std::sync::Arc;
 /// Hold shared byte slice window with offset and size.
 pub struct DataView {

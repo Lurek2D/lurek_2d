@@ -1,8 +1,3 @@
-//! Spherical-geometry helpers for the globe module: lat/lon conversion, great-circle paths,
-//! ray-sphere intersection, axial-tilt matrix, and a column-major 3×3 matrix helper.
-//! Used exclusively by src/globe/; not exposed in the general math public API.
-//! Does not own the globe rendering or tile mesh generation.
-
 use crate::math::Vec3;
 
 /// Column-major 3×3 float matrix used for sphere rotation in globe view transforms.

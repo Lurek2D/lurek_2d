@@ -1,8 +1,3 @@
-//! Single Lua worker thread harness. Owns `LuaThread`, `ThreadState`, and the
-//! minimal `lurek.*` API registered inside the worker VM. Does not own the pool
-//! or channel routing; those live in `pool` and `channel`. Depends on `mlua`
-//! and `channel`. No shared mutable state between VMs except `Arc<Channel>`.
-
 use crate::log_msg;
 use crate::runtime::log_messages::{TH01_WORKER_INIT, TH02_WORKER_START, TH04_WORKER_ERROR};
 use crate::thread::channel::{channel_value_to_lua, Channel, ChannelValue, LuaChannel};

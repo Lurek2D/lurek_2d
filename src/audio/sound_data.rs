@@ -1,6 +1,9 @@
-﻿//! In-memory PCM sample container and waveform synthesis/edit utilities.
-//! Owns sample buffers, metadata (rate/channels/bit depth), WAV encoding, procedural
-//! generators, waveform rasterisation, and simple one-pole filtering helpers.
+﻿//! In-memory PCM sample container with synthesis and editing utilities.
+//!
+//! - Stores interleaved f32 samples with sample rate, channel count, and bit depth metadata
+//! - Encodes to 16-bit WAV for export and implements the rodio Source trait for direct playback
+//! - Provides procedural waveform generators (sine, square, sawtooth, noise) for synthetic audio
+//! - Supports per-sample rasterisation, one-pole filtering, and channel resampling helpers
 
 use rodio::Source;
 #[derive(Debug, Clone)]

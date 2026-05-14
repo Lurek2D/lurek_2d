@@ -1,7 +1,3 @@
-//! `RayHit` record produced by a single DDA ray step. Carries all data needed
-//! by `build_scene` and `projection` to draw a wall slice: distance, texture
-//! coordinate, side, hit position, and the cell value of the struck wall.
-
 /// Result record for one DDA ray; produced by `Raycaster2D::cast_ray`.
 #[derive(Debug, Clone)]
 pub struct RayHit {

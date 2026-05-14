@@ -1,8 +1,3 @@
-//! Light attenuation curve: constant, linear, and quadratic intensity falloff by distance.
-//! `Attenuation` computes a scalar factor from 0.0 to 1.0 used by `LightWorld` to scale brightness.
-//! Does not own light color or rendering — only provides the distance-to-factor mapping.
-//! Default is no-op attenuation (constant=1, linear=0, quadratic=0).
-
 /// Quadratic attenuation coefficients for distance-based light intensity falloff.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Attenuation {

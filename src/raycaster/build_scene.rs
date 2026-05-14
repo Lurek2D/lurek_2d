@@ -1,8 +1,3 @@
-//! Scene construction for a single raycaster frame: floor/ceiling tile quads,
-//! wall face quads, lowered-floor side walls, roof geometry, and billboard sprites.
-//! Computes projections from world-space tiles to screen-space quads consumed by
-//! `RaycasterScene`. Does not own DDA ray stepping or depth buffering.
-
 use crate::math::{Color, Vec2};
 use crate::raycaster::dda::Raycaster2D;
 use crate::raycaster::lighting::{compute_lighting, PointLight};

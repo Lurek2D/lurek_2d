@@ -1,7 +1,3 @@
-//! Wave Function Collapse tile map generator for `src/procgen`.
-//! Owns `WfcTile`, `WfcRules`, `WfcOpts`, `WfcGrid`, and `wfc_generate`.
-//! Does not own dungeon room layout or noise maps — those live in `rooms.rs` and `noise.rs`.
-
 use crate::procgen::lcg::Lcg;
 use std::collections::HashMap;
 

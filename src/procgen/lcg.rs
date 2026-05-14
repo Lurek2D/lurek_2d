@@ -1,7 +1,3 @@
-//! Linear Congruential Generator (LCG) for `src/procgen` procedural algorithms.
-//! Owns the `Lcg` struct and its integer and float output methods. Does not own
-//! higher-level noise or dungeon algorithms — those consume `Lcg` from other files.
-
 /// 64-bit LCG RNG seeded deterministically; used throughout `procgen` for reproducible results.
 pub struct Lcg {
     /// Current generator state; mutated by each call to `next`.

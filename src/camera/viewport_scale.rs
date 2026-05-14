@@ -1,8 +1,3 @@
-//! Stateful viewport scaling helper used by camera and resize integrations.
-//! Owns computed scale, offset, and scaled-size values for a game surface.
-//! Keeps scale-mode conversion logic shared across runtime callers.
-//! Depends on camera scale mode transform computation.
-
 use crate::camera::viewport::ScaleMode;
 
 /// Stores runtime viewport scaling values for game and window surfaces.

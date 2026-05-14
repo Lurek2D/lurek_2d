@@ -1,5 +1,3 @@
-//! Render-command helpers for capturing and applying post-effect stacks.
-
 use crate::effect::stack::PostFxStack;
 use crate::render::renderer::RenderCommand;
 impl PostFxStack {

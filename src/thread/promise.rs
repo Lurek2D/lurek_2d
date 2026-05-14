@@ -1,8 +1,3 @@
-//! Single-value async result container backed by a one-shot `LuaThread`. Owns
-//! `PromiseState` and `Promise`. Does not own scheduling or channel routing;
-//! the worker pushes its result to `__promise_result` and Promise polls it.
-//! Depends on `channel` and `worker`.
-
 use crate::thread::channel::{Channel, ChannelValue};
 use crate::thread::worker::LuaThread;
 use std::collections::HashMap;

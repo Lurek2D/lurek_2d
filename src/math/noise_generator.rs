@@ -1,8 +1,3 @@
-//! Core noise algorithms: Perlin (1-D/2-D/3-D/4-D), Simplex (1-D/2-D/3-D), Worley cell noise,
-//! fBm / ridged / turbulence fractals, domain warp, and full heightmap generation.
-//! Used by procgen, tilemap, and globe terrain pipelines via NoiseGenerator.
-//! Does not own thin Lua wrappers — those live in noise_functions.rs.
-
 /// Distance metric used by Worley cell noise.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum DistType {

@@ -1,8 +1,3 @@
-//! Core globe data types for provinces, overlays, markers, labels, and render specs.
-//!
-//! Owns shared value objects used by globe loading, projection, and drawing code.
-//! Behavior and rendering decisions live in sibling modules.
-
 use crate::math::Vec2;
 use std::collections::{HashMap, HashSet};
 /// Maximum province count supported by globe data structures.

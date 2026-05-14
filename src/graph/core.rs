@@ -1,8 +1,3 @@
-//! Core graph container for nodes, edges, items, indexes, and serialization.
-//!
-//! Owns graph storage plus index maintenance for fast traversal.
-//! Higher-level algorithms and simulation passes live in sibling modules.
-
 use super::edge::Edge;
 use super::item::{GraphItem, ItemPosition};
 use super::node::{Node, OverflowPolicy};

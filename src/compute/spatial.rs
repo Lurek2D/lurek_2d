@@ -1,8 +1,3 @@
-//! Spatial array operators for convolution, morphology, and matrix geometry.
-//! Owns neighborhood traversals, flood fill, region copy, and matrix products.
-//! Keeps spatial kernels separate from generic element-wise operation module.
-//! Depends on NdArray indexing and typed scalar access.
-
 use crate::compute::array::{DataType, NdArray};
 use std::collections::VecDeque;
 

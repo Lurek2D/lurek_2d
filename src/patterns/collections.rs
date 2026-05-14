@@ -1,6 +1,3 @@
-//! Capacity metadata helpers for stack and queue containers.
-//! Provides `StackMeta` and `QueueMeta` used by Lua-side stack/queue wrappers to enforce size limits.
-
 /// Capacity metadata for a bounded stack.
 #[derive(Debug, Default, Clone)]
 pub struct StackMeta {

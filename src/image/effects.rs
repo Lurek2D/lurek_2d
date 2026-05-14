@@ -1,9 +1,3 @@
-//! Image-space effects, filters, resampling, and compositing helpers for `ImageData`.
-//! Owns brightness, contrast, saturation, gamma, noise, blur, sharpen, resize (bilinear/Lanczos3),
-//! flip, crop, blit (alpha-compositing), nine-slice drawing, and pixel diff.
-//! Does not own GPU pipelines; all operations produce or mutate CPU-side `ImageData`.
-//! Depends on `image_data::ImageData` and the `rayon` crate for parallel pixel mapping.
-
 use super::image_data::ImageData;
 /// Resize kernels supported by the image resampler.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]

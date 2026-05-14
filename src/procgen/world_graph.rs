@@ -1,8 +1,3 @@
-//! World-graph construction and pathfinding for `src/procgen`.
-//! Owns `WorldRegion`, `WorldEdge`, `WorldGraph`, `generate_world_graph`, and the
-//! private `WNode` min-heap entry. Provides A*, bounded Dijkstra, Kruskal MST,
-//! and k-nearest edge generation. Does not own biome classification or dungeon layout.
-
 use crate::procgen::lcg::Lcg;
 use std::cmp::Ordering;
 use std::collections::{BinaryHeap, HashMap};

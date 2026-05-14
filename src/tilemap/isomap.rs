@@ -1,8 +1,3 @@
-//! Isometric tile map with multi-level, multi-part tile support.
-//! Owns `IsoTilePart`, `IsoTile`, `IsoLevel`, `IsoMap`, and `IsoDrawItem`.
-//! Does not own rendering, tilesets, or physics; callers consume `IsoDrawItem` vecs for draw calls.
-//! No external module dependencies beyond standard library.
-
 /// Draw-layer part of an isometric tile (floor, walls, objects).
 #[non_exhaustive]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

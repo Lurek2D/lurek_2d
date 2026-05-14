@@ -1,5 +1,3 @@
-//! Ambient overlay state derived from configurable time-of-day lighting.
-
 #[derive(Debug, Clone)]
 /// Stores ambient tint settings applied across the whole screen.
 pub struct AmbientState {

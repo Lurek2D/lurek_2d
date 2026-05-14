@@ -1,8 +1,3 @@
-//! Widget visual style definitions and the `Theme` registry for `lurek.ui`.
-//! `WidgetStyle` holds per-widget RGBA colours and metrics; `Theme` maps `(WidgetType, WidgetState)` pairs to styles.
-//! `Theme::default_dark` is the built-in dark preset; callers may override individual states via `set_style`.
-//! Depends on `crate::ui::widget::{WidgetState, WidgetType}`.
-
 use crate::ui::widget::{WidgetState, WidgetType};
 use std::collections::HashMap;
 /// Per-state visual properties for a single widget type.

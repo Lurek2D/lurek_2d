@@ -1,8 +1,3 @@
-//! Occluder shape for casting shadows in the 2D light system.
-//! `Occluder` holds a polygon vertex list, world position, opacity, and light-layer mask.
-//! Consumed by `LightWorld`; vertex count is validated to 3..=512 at construction time.
-//! Depends on `crate::math::Vec2` for vertex storage.
-
 use crate::math::Vec2;
 
 /// Convex polygon shape that blocks light and casts shadows in `LightWorld`.

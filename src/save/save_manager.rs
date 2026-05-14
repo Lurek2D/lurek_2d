@@ -1,8 +1,3 @@
-//! Core save-system logic: slot metadata, dirty-flag tracking, auto-save timer,
-//! schema version and migration registry, Lua-value serialization, and LZ4/Base64
-//! compression helpers. Does not perform file I/O; callers use `slot_path()` and
-//! drive reads/writes themselves. Depends on `data::compress`, mlua, and base64.
-
 use crate::data::compress::{compress, decompress, CompressFormat};
 use crate::log_msg;
 use crate::runtime::log_messages::{SV01, SV02, SV03, SV04};

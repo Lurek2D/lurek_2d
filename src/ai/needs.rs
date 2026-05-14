@@ -1,6 +1,9 @@
-//! Need system for AI motivation, urgency scoring, and local advertisements.
-//! Owns `Need`, `NeedAdvertisement`, and `NeedSystem`.
-//! Does not own the action selection loop; callers query urgency and best ads.
+//! Agent need system modelling basic drives that decay over time and are satisfied by world advertisements.
+//!
+//! - Tracks named needs per agent, each with a current value, passive decay rate, urgency threshold, and weighting factor
+//! - Advertisement objects represent world sources that can satisfy a specific need, with cooldown timers and distance-weighted scoring
+//! - Selects the highest-scoring available advertisement for the most urgent active need; urgency ranking drives action prioritisation
+
 /// One tracked need with a normalized value.
 pub struct Need {
     /// Need name.

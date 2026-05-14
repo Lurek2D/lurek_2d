@@ -1,7 +1,3 @@
-//! World-space sprite registry for the raycaster. Tracks billboards by unique ID,
-//! supports add/remove/move/visibility, and produces a back-to-front sorted list
-//! for depth-correct rendering. Does not own projection math or GPU calls.
-
 /// A billboard sprite placed in world space with an associated texture and uniform scale.
 #[derive(Debug, Clone)]
 pub struct WorldSprite {

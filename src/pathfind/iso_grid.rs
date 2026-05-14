@@ -1,7 +1,3 @@
-//! Axis-aligned isometric grid with 4-directional A\*, line-of-sight, and neighbour queries.
-//! Uses Manhattan distance as the A\* heuristic; cells have individual movement costs.
-//! Does not own Lua bindings; consumed by `src/lua_api/pathfind_api.rs`.
-
 use std::cmp::Ordering;
 use std::collections::{BinaryHeap, HashMap};
 /// Isometric walkability grid with per-cell cost and 4-directional movement.

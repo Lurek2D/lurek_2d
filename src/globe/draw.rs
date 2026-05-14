@@ -1,8 +1,3 @@
-//! Globe render command emission from province, marker, label, and arc state.
-//!
-//! Owns the translation from globe state into renderer command streams.
-//! It does not own resource loading or persistent globe state.
-
 use crate::globe::fog::FogStore;
 use crate::globe::label::LabelStore;
 use crate::globe::layer::LayerStore;

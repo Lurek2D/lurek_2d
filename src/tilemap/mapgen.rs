@@ -1,9 +1,3 @@
-//! Procedural tile map generator driven by `MapGroup` scripts and seeded RNG.
-//! Owns all map-generation types: `MapBlock`, `MapGroup`, `MapScript`, `ScriptStep`,
-//! `MapGen`, zone descriptors, enums, and the internal `Lcg` RNG.
-//! Does not own map rendering or tileset graphics; output is a plain `TileMap`.
-//! Depends on `tilemap`, `tileset`, and logging.
-
 use super::tilemap::TileMap;
 use super::tileset::TileSet;
 use crate::log_msg;

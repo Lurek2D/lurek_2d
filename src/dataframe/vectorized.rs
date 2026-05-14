@@ -1,8 +1,3 @@
-//! Own columnar storage and SIMD-friendly vectorized arithmetic accelerating `DataFrame` operations.
-//! Typed column stores carry optional per-row validity bitmasks. Scalar and binary column ops,
-//! aggregation reductions, comparison masks, and type casts are exposed on `VecFrame`. Parallel
-//! variants use rayon for multi-column workloads. Conversion to and from `DataFrame` is explicit.
-//! Primary consumer is `src/lua_api/dataframe_api.rs`. Does not own query logic or serialization.
 use crate::dataframe::frame::{CellValue, DataFrame};
 use rayon::prelude::*;
 use std::collections::HashMap;

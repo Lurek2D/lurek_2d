@@ -1,6 +1,3 @@
-//! Sorted priority queue with stable FIFO ordering for equal-priority items.
-//! Items are addressed by opaque `u64` ids and stored in descending priority order.
-
 /// A single entry in the queue with a stable tie-breaking sequence number.
 #[derive(Debug, Clone)]
 pub struct PriorityItem {

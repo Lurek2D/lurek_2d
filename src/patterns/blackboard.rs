@@ -1,7 +1,3 @@
-//! Typed key-value store for behavior tree and game AI state sharing.
-//! Tracks per-key and global revision counters for change detection.
-//! Does not own Lua bindings; consumed by `src/lua_api/ai_api.rs`.
-
 use std::collections::HashMap;
 use std::fmt;
 /// Typed value stored in a `Blackboard` entry.

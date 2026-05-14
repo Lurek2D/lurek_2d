@@ -1,8 +1,3 @@
-//! Run debug bridge TCP loop and dispatch JSON-RPC client messages.
-//! Keep connection handling, response writes, and event broadcast in one place.
-//! Do not store long-lived bridge state outside synchronized shared container.
-//! Depend on TCP sockets, buffered reads, and atomic running flags.
-
 use super::bridge::{BridgeShared, PendingRequest, PendingResponse};
 use std::io::{BufRead, BufReader, Write};
 use std::net::TcpListener;

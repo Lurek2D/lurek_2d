@@ -1,6 +1,3 @@
-//! Province metadata import pipeline: reads colour-map PNGs and CSV/TOML to populate ProvinceRegistry.
-//! Also provides marker PNG sanitisation that replaces capital/label pixels with their surrounding colour.
-//! All file I/O uses std::fs; no GameFS dependency in this module.
 use crate::image::ImageData;
 use crate::province::registry::ProvinceRegistry;
 use std::collections::{HashMap, HashSet};

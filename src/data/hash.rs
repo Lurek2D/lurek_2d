@@ -1,8 +1,3 @@
-//! Own hashing and checksum helpers for byte buffers used by the data module.
-//! Supports MD5, SHA-1, SHA-256, SHA-512, and CRC32. Digests are returned as lowercase hex
-//! strings; CRC32 returns a raw u64 for Lua numeric compatibility. Algorithm is caller-selected
-//! via a parsed enum. No streaming. Primary consumer is `src/lua_api/data_api.rs`.
-
 use md5::Digest;
 use sha1;
 #[derive(Debug, Clone, Copy, PartialEq)]

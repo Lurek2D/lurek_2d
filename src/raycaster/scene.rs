@@ -1,7 +1,3 @@
-//! `RaycasterScene` and its constituent quad/sprite/mesh types. Built each frame
-//! by `build_scene` from DDA cast results, then consumed by `render` to produce
-//! `RenderCommand` calls. Does not own DDA traversal or GPU state.
-
 use crate::math::Vec2;
 use crate::render::mesh::Mesh;
 use crate::runtime::resource_keys::TextureKey;

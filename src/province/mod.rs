@@ -1,7 +1,3 @@
-//! Province subsystem: pixel-map political geography — registry, topology, rendering, and metadata import.
-//! Owns ProvinceRegistry (style + geometry), adjacency graph, GPU bridge, and import pipeline.
-//! Does not own pathfinding, AI, or game-logic rules.
-
 /// Border classification: derive BorderClass from two adjacent province styles.
 pub mod borders;
 /// Binary-format geometry cache for province spans and border segments.

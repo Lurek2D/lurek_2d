@@ -1,7 +1,3 @@
-//! Particle system module: emitters, configs, physics collision, trails, and renderer integration.
-//! Owns all particle lifecycle logic from emission through update, rendering, and trail tracking.
-//! Does not own the renderer pipeline or physics world; both are accessed via dedicated integration files.
-
 /// Particle emitter configuration: shape, rate, lifetime, and per-particle property ranges.
 pub mod config;
 /// Emission strategy: burst, continuous, and lifetime-gated emission logic.

@@ -1,5 +1,3 @@
-//! Named post-effect preset recipes assembled from built-in effect stacks.
-
 use super::effect::PostFxEffect;
 use super::effect_type::PostFxEffectType;
 use super::stack::PostFxStack;

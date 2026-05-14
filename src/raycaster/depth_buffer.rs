@@ -1,7 +1,3 @@
-//! Per-column depth buffer for sprite occlusion. Stores the nearest wall depth for
-//! each screen column so sprite pixels behind a wall are discarded. Used by the
-//! sprite draw pass in `draw.rs`. Does not interact with the GPU depth buffer.
-
 /// Per-column wall-hit depth used to cull sprite pixels that fall behind a wall.
 pub struct DepthBuffer {
     /// Number of screen columns this buffer covers.

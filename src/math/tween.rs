@@ -1,7 +1,3 @@
-//! Time-driven tween interpolator that drives one or more scalar values from start to target
-//! using a named easing function over a fixed duration. Used by `lurek.tween` Lua bindings
-//! and directly by the animation subsystem. Does not own timers — callers must call `update(dt)`.
-
 use crate::math::easing;
 
 /// Start/target pair for a single channel managed by a `Tween`.

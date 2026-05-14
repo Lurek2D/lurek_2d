@@ -1,5 +1,3 @@
-//! Debug image generation for visualizing post-effect stack state.
-
 use super::stack::PostFxStack;
 use crate::image::ImageData;
 impl PostFxStack {

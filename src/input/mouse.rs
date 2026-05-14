@@ -1,8 +1,3 @@
-//! Mouse position, button state, scroll accumulation, cursor kind, and OS cursor handle.
-//! Owns per-frame button delta arrays and the pending warp-position request.
-//! Does not own window handle or winit event delivery; the runtime loop calls mutation methods.
-//! Consumed by `src/lua_api/input_api.rs`.
-
 /// OS-provided cursor shape variants available through `lurek.input.setCursor`.
 #[derive(Debug, Clone, Copy, PartialEq, Default)]
 pub enum SystemCursor {

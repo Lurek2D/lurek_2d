@@ -1,8 +1,3 @@
-//! Minimap subsystem: top-down overview rendering with markers, pings, fog, and overlays.
-//! Owns the minimap state, its renderer, province-map integration, and all public types.
-//! Does not own the main world camera or the 2D sprite renderer; it uses its own render pass.
-//! Consumed by `src/lua_api/minimap_api.rs`.
-
 #[allow(clippy::module_inception)]
 /// Core minimap state and update logic.
 pub mod minimap;

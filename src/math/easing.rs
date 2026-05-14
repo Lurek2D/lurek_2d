@@ -1,8 +1,3 @@
-//! Easing functions mapping `t ∈ [0, 1]` to a shaped output value in [0, 1].
-//! Covers linear, quad, cubic, quart, sine, expo, elastic, bounce, and back families,
-//! each in ease-in, ease-out, and ease-in-out variants. Used by `tween` and Lua `lurek.tween`.
-//! Does not own animation state — it only maps scalars.
-
 use std::f32::consts::PI;
 
 /// Return `t` unchanged (no-op easing).

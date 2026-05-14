@@ -1,8 +1,3 @@
-//! Autotile bitmask sheet: maps 8-bit neighbor bitmasks to sprite-sheet tile indices.
-//! Owns `AutoTileLayout`, `AutoTileSheet`, and the bitmask table builders.
-//! Does not own tile rendering or map storage; callers use the returned `Rect` for draw calls.
-//! Depends on `tileset` and `math`.
-
 use super::tileset::TileSet;
 use crate::math::Rect;
 use std::collections::HashMap;

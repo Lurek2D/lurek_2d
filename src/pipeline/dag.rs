@@ -1,9 +1,3 @@
-//! Directed acyclic graph (DAG) and top-level `Pipeline` struct for `src/pipeline`.
-//! Owns step registration, dependency validation, topological sort, parallel-group
-//! computation, sub-pipeline composition, and result collection. Does not own
-//! scheduling timers or step execution; those live in `scheduler.rs`.
-//! Depends on `step.rs` and `result.rs` within this module.
-
 use crate::log_msg;
 use crate::pipeline::result::{PipelineResult, PipelineStatus};
 use crate::pipeline::step::{PipelineStep, StepStatus};

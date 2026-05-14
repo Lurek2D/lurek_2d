@@ -1,6 +1,3 @@
-//! Time-windowed entry accumulator that signals when to flush buffered data.
-//! Used for batching Lua events, analytics, or network packets within a time or count budget.
-
 /// A single accumulated value pushed into a `Funnel`.
 #[derive(Debug, Clone)]
 pub struct FunnelEntry {

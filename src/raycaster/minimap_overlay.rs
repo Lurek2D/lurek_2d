@@ -1,7 +1,3 @@
-//! Minimap overlay utilities: tile visibility sampling, light accumulation, pixel-map
-//! extraction around the player, and a directional arrow renderer. Consumed by the
-//! raycaster Lua API to draw an in-game minimap texture. Does not own DDA stepping.
-
 use super::dda::Raycaster2D;
 use super::lighting::{compute_lighting, PointLight};
 use std::collections::HashSet;

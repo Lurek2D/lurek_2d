@@ -1,7 +1,3 @@
-//! Bidirectional hash map: O(1) lookup by key and by value.
-//! Both key and value must implement `Clone + Hash + Eq`.
-//! Inserting a duplicate key or value automatically removes the old conflicting pair.
-
 use std::collections::HashMap;
 use std::hash::Hash;
 /// Hash map with O(1) lookups in both directions using mirrored forward and reverse tables.

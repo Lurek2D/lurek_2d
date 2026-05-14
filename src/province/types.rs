@@ -1,6 +1,3 @@
-//! Core province data types: identifiers, border classification, per-province style, and snapshot views.
-//! Owned by the province subsystem; consumed by registry, render, gpu_bridge, and Lua bindings.
-//! Does not contain layout data, geometry, or rendering logic.
 use std::collections::HashMap;
 
 /// Numeric identifier for a province; 0 is reserved for "no province" / ocean pixels.

@@ -1,8 +1,3 @@
-//! Scene transition types, easing curves, and active transition state.
-//! Owns TransitionType, EasingType, and ActiveTransition; drives progress tracking used by SceneStack.
-//! Does not own stack push/pop logic or rendering — callers read progress() to apply visual effects.
-//! Key dependencies: easing::bounce_out for the Bounce curve.
-
 use super::easing::bounce_out;
 use crate::log_msg;
 use crate::runtime::log_messages::{TR01, TR02};

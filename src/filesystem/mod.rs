@@ -1,8 +1,3 @@
-//! Filesystem layer for mounted game data, save access, and file watching.
-//!
-//! Owns GameFS-facing types and re-exports the public filesystem surface.
-//! It does not implement rendering, Lua bindings, or game logic.
-
 /// Async file request queue and result tracking.
 pub mod async_loader;
 /// Cached file payload helper.

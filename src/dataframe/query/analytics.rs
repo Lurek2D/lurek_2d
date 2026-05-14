@@ -1,9 +1,3 @@
-//! Own statistical analytics extension for `DataFrame` used in the query pipeline.
-//! Provides z-score normalisation, min-max rescaling to a target range, outlier detection
-//! by threshold, most-frequent-value lookup, and Shannon entropy over rendered cell strings.
-//! Also exposes a free `percentile` function for sorted f64 slices. All operations are nil-safe:
-//! nil cells are excluded from numeric computations. Does not mutate the source frame.
-
 use crate::dataframe::frame::{CellValue, ColRef, DataFrame};
 /// Compute percentile by linear interpolation over sorted values.
 pub fn percentile(sorted: &[f64], pct: f64) -> f64 {

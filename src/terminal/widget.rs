@@ -1,8 +1,3 @@
-//! Widget primitives for the terminal UI layer. Owns `Widget`, `WidgetBase`,
-//! `WidgetKind`, and `BorderStyle`. Does not own input dispatch or rendering;
-//! those are handled by `terminal_state` and `render`. Depends on `cell` constants
-//! and the `MAX_COLS`/`MAX_ROWS` grid caps.
-
 use super::cell::DEFAULT_FG;
 use super::terminal_state::{MAX_COLS, MAX_ROWS};
 

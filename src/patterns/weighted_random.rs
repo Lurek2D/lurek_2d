@@ -1,6 +1,3 @@
-//! Weight-based random selection with add/remove, weight update, and without-replacement pick_n.
-//! Callers supply normalized samples (0.0..1.0) so the module stays deterministic and testable.
-
 /// A single candidate with a weight and debug label.
 #[derive(Debug, Clone)]
 pub struct WeightedEntry {

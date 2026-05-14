@@ -1,8 +1,3 @@
-//! Own documentation-domain data aggregation and export helpers used by tooling.
-//! Keep this module focused on catalog assembly, quality scoring, and JSON output.
-//! Do not own Lua binding registration or runtime-facing script behavior.
-//! Depend on serde JSON serialization and schema types from the shared crate.
-
 /// Expose catalog storage and query operations for documentation entries.
 pub mod catalog;
 /// Expose normalized entry types for parameters, returns, and metadata.

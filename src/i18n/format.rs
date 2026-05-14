@@ -1,5 +1,3 @@
-//! Locale-aware number and date formatting helpers.
-
 /// Return decimal and thousands separators for a locale prefix.
 pub fn locale_separators(locale: &str) -> (char, char) {
     const COMMA_DECIMAL: &[&str] = &[

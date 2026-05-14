@@ -1,8 +1,3 @@
-//! Supply and demand processing that spawns and routes items between nodes.
-//!
-//! Owns one demand-resolution pass over graph nodes.
-//! It does not update transit timers or decay.
-
 use super::core::Graph;
 use super::item::ItemPosition;
 use super::simulation::GraphEvent;

@@ -1,5 +1,3 @@
-//! Water distortion overlay state and time integration helpers.
-
 #[derive(Debug, Clone)]
 /// Stores parameters for animated water distortion and tint overlays.
 pub struct WaterOverlayState {

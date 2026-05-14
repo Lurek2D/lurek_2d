@@ -1,7 +1,3 @@
-//! Directed or undirected labeled graph with BFS, DFS, and connectivity queries.
-//! Nodes and edges are identified by monotonically increasing integer ids.
-//! Does not own Lua bindings; consumed by `src/lua_api/ai_api.rs` and `src/pathfind/graph_nav.rs`.
-
 /// A graph node with a debug label.
 #[derive(Debug, Clone)]
 pub struct GraphNode {

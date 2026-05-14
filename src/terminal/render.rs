@@ -1,8 +1,3 @@
-//! Render output helpers for `Terminal`. Converts the live cell grid into
-//! `RenderCommand` sequences or a rasterised `ImageData` thumbnail. Does not
-//! own the cell data or font metrics; those are owned by `terminal_state` and
-//! callers. Depends on `render::RenderCommand` and `image::ImageData`.
-
 use super::terminal_state::Terminal;
 use crate::image::ImageData;
 use crate::render::renderer::{DrawMode, RenderCommand};

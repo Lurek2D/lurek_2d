@@ -1,8 +1,3 @@
-//! GPU post-processing pipeline: built-in WGSL effect shaders, a ping-pong
-//! render-texture pair, and `PostFxPipeline` that applies ordered `PostFxPass`
-//! sequences each frame. Custom shaders may be registered at runtime. Does not
-//! own the main frame texture; relies on `GpuRenderer` to supply capture views.
-
 use std::collections::HashMap;
 /// Shared fullscreen-triangle vertex shader used by every built-in and custom post-fx effect.
 const POSTFX_VERTEX: &str = r#"

@@ -1,8 +1,3 @@
-//! Render integration for `ParticleSystem` and `Trail`.
-//! Owns `generate_render_commands` impls and `expand_particle_commands` which splits
-//! `DrawParticleSystem` commands into per-particle textured draws plus one untextured batch.
-//! Does not own particle physics or renderer submission; caller feeds the output to the renderer.
-
 use super::emitter::ParticleSystem;
 use super::trail::Trail;
 use crate::render::renderer::RenderCommand;

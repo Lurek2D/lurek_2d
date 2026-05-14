@@ -1,8 +1,3 @@
-//! 2D float vector used throughout the engine for positions, directions, velocities, and sizes.
-//! Provides arithmetic operators, geometric queries (dot, cross, reflect, rotate), and angle
-//! helpers. Does not own matrix math — see `mat3` for transforms. Used by physics, rendering,
-//! input, particles, and UI layout.
-
 use std::ops::{Add, AddAssign, Div, Mul, MulAssign, Neg, Sub, SubAssign};
 
 /// 2D float vector; backbone of all position and direction math in the engine.

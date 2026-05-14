@@ -1,8 +1,3 @@
-//! Palette lookup table for pixel-exact color remapping of `ImageData` buffers.
-//! Owns `PaletteLUT`: a paired from/to color list with apply, cycle, and mutate helpers.
-//! Uses a `HashMap` fast-path for tables wider than 16 entries, linear scan otherwise.
-//! Does not own image storage or GPU resources.
-
 use crate::math::Color;
 use std::collections::HashMap;
 /// Source-to-target color mapping used to remap image pixels.

@@ -1,9 +1,3 @@
-//! Core 2D light definition with all per-light rendering properties.
-//! `Light2D` holds position, color, intensity, type, shadow config, masks, flicker, and attenuation.
-//! Consumed by `LightWorld` which reads fields directly during accumulation; Lua bindings live in `src/lua_api/`.
-//! Does not own rendering — it is a data container only.
-//! Key dependencies: all sibling light types, `crate::math::Color`, `crate::runtime::log_messages`.
-
 use crate::light::attenuation::Attenuation;
 use crate::light::blend_mode::LightBlendMode;
 use crate::light::falloff::FalloffMode;

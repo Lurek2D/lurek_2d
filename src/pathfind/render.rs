@@ -1,7 +1,3 @@
-//! Debug-render extensions for pathfinding types: `NavGrid`, `FlowField`, and `InfluenceMap`.
-//! Each impl adds `generate_render_commands` that produces `RenderCommand` vectors for overlay display.
-//! Does not own core pathfinding logic; all data reads come from the respective type's public API.
-
 use crate::pathfind::flow_field::FlowField;
 use crate::pathfind::influence_map::InfluenceMap;
 use crate::pathfind::nav_grid::NavGrid;

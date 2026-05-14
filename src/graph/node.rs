@@ -1,8 +1,3 @@
-//! Graph node state, flow configuration, and local queue or inventory helpers.
-//!
-//! Owns node-local supply, demand, conversion, and queue settings.
-//! Graph-wide routing and simulation stay in sibling modules.
-
 use std::collections::{HashMap, HashSet, VecDeque};
 use std::str::FromStr;
 /// Overflow behavior applied when a node reaches capacity.

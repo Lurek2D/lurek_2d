@@ -1,7 +1,3 @@
-//! Bone transform node in a spine skeletal hierarchy.
-//! Owns Bone: local and world-space position, rotation, and scale.
-//! Does not own pose accumulation or IK — those live in skeleton.rs and ik.rs respectively.
-
 /// Single bone in the skeleton tree with local and accumulated world-space transform.
 #[derive(Debug, Clone)]
 pub struct Bone {
