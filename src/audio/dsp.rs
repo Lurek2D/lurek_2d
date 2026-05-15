@@ -1,4 +1,3 @@
-
 //! - Lock-free `AtomicParam` for sharing f32 parameters between the audio thread and Lua API.
 //! - `EffectType` enum covering biquad filters, reverbs, chorus, flanger, phaser, distortion, limiter, and compressor.
 //! - `EffectParams` shared parameter block with named `set_param` dispatch per effect type.

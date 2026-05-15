@@ -1,4 +1,3 @@
-
 //! - Geometric shape primitives controlling how individual particles are rendered.
 //! - Includes simple fills (square, circle, triangle), directional shapes (spark, ray, capsule), and composite outlines (ring).
 //! - Each variant may carry inline parameters (edge count, aspect ratio, thickness).

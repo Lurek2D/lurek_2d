@@ -1,4 +1,3 @@
-
 //! - ENet host wrapper owning a non-blocking UDP socket and all peer slots for one endpoint.
 //! - Host role classification (Server, Client, combined Host) for session routing.
 //! - Event-driven poll loop yielding Connect, Disconnect, and Receive events.

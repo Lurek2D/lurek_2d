@@ -1,4 +1,3 @@
-
 //! - Channel-based mediator for decoupled handler registration and dispatch.
 //! - Register/unregister handlers by string channel with unique ids.
 //! - Query, count, and clear handlers per channel or globally.

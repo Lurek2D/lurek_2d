@@ -151,11 +151,11 @@ This module primarily collaborates with `image`, `math`, `runtime`. Its responsi
 ### Module Functions
 - `lurek.light.newLight`: Creates a light and applies optional light settings.
 - `lurek.light.newOccluder`: Creates an occluder from a flat vertex coordinate table and optional settings.
-- `lurek.light.setAmbient`: Sets global ambient light color.
+- `lurek.light.setAmbient`: Sets global ambient light color. This function is exposed to Lua scripts.
 - `lurek.light.getAmbient`: Returns global ambient light color.
 - `lurek.light.setEnabled`: Enables or disables the shared light world.
 - `lurek.light.isEnabled`: Returns whether the shared light world is enabled.
-- `lurek.light.getLightCount`: Returns the number of live lights.
+- `lurek.light.getLightCount`: Returns the number of live lights. This function is exposed to Lua scripts.
 - `lurek.light.getOccluderCount`: Returns the number of live occluders.
 - `lurek.light.getMaxLights`: Returns the maximum configured light count.
 - `lurek.light.setMaxLights`: Sets the maximum configured light count, clamped to 1 through 256.
@@ -170,39 +170,39 @@ This module primarily collaborates with `image`, `math`, `runtime`. Its responsi
 - `lurek.light.getNormalMapHints`: Returns light hints that reference normal maps.
 
 ### `LLight` Methods
-- `LLight:setPosition`: Sets this light position.
-- `LLight:getPosition`: Returns this light position.
-- `LLight:setRadius`: Sets this light radius.
-- `LLight:getRadius`: Returns this light radius.
-- `LLight:setColor`: Sets this light RGBA color.
-- `LLight:getColor`: Returns this light RGBA color.
-- `LLight:setIntensity`: Sets this light intensity.
-- `LLight:getIntensity`: Returns this light intensity.
-- `LLight:setEnergy`: Sets this light energy value.
-- `LLight:getEnergy`: Returns this light energy value.
-- `LLight:setBlendMode`: Sets this light blend mode.
+- `LLight:setPosition`: Sets this light position. This method is available to Lua scripts.
+- `LLight:getPosition`: Returns this light position. This method is available to Lua scripts.
+- `LLight:setRadius`: Sets this light radius. This method is available to Lua scripts.
+- `LLight:getRadius`: Returns this light radius. This method is available to Lua scripts.
+- `LLight:setColor`: Sets this light RGBA color. This method is available to Lua scripts.
+- `LLight:getColor`: Returns this light RGBA color. This method is available to Lua scripts.
+- `LLight:setIntensity`: Sets this light intensity. This method is available to Lua scripts.
+- `LLight:getIntensity`: Returns this light intensity. This method is available to Lua scripts.
+- `LLight:setEnergy`: Sets this light energy value. This method is available to Lua scripts.
+- `LLight:getEnergy`: Returns this light energy value. This method is available to Lua scripts.
+- `LLight:setBlendMode`: Sets this light blend mode. This method is available to Lua scripts.
 - `LLight:getBlendMode`: Returns this light blend mode string.
-- `LLight:setFalloff`: Sets this light falloff mode.
+- `LLight:setFalloff`: Sets this light falloff mode. This method is available to Lua scripts.
 - `LLight:getFalloff`: Returns this light falloff mode string.
 - `LLight:setShadowEnabled`: Enables or disables shadow casting for this light.
 - `LLight:isShadowEnabled`: Returns whether this light casts shadows.
-- `LLight:setShadowColor`: Sets this light shadow RGBA color.
+- `LLight:setShadowColor`: Sets this light shadow RGBA color. This method is available to Lua scripts.
 - `LLight:getShadowColor`: Returns this light shadow RGBA color.
-- `LLight:setShadowFilter`: Sets this light shadow filter.
+- `LLight:setShadowFilter`: Sets this light shadow filter. This method is available to Lua scripts.
 - `LLight:getShadowFilter`: Returns this light shadow filter string.
 - `LLight:setShadowSmooth`: Sets this light shadow smoothing value.
 - `LLight:getShadowSmooth`: Returns this light shadow smoothing value.
 - `LLight:setShadowSoftness`: Sets this light shadow softness value.
 - `LLight:getShadowSoftness`: Returns this light shadow softness value.
-- `LLight:setLightMask`: Sets this light's inclusion mask.
+- `LLight:setLightMask`: Sets this light's inclusion mask. This method is available to Lua scripts.
 - `LLight:getLightMask`: Returns this light's inclusion mask.
 - `LLight:setShadowMask`: Sets this light's shadow receiver mask.
 - `LLight:getShadowMask`: Returns this light's shadow receiver mask.
-- `LLight:setEnabled`: Enables or disables this light.
+- `LLight:setEnabled`: Enables or disables this light. This method is available to Lua scripts.
 - `LLight:isEnabled`: Returns whether this light is enabled.
-- `LLight:setLightType`: Sets this light type.
-- `LLight:getLightType`: Returns this light type string.
-- `LLight:setDirection`: Sets this light direction angle.
+- `LLight:setLightType`: Sets this light type. This method is available to Lua scripts.
+- `LLight:getLightType`: Returns this light type string. This method is available to Lua scripts.
+- `LLight:setDirection`: Sets this light direction angle. This method is available to Lua scripts.
 - `LLight:getDirection`: Returns this light direction angle.
 - `LLight:setInnerAngle`: Sets this spot light inner cone angle.
 - `LLight:getInnerAngle`: Returns this spot light inner cone angle.
@@ -214,8 +214,8 @@ This module primarily collaborates with `image`, `math`, `runtime`. Its responsi
 - `LLight:getFlicker`: Returns this light flicker speed and strength.
 - `LLight:setFlickerEnabled`: Enables or disables this light flicker state.
 - `LLight:isFlickerEnabled`: Returns whether this light flicker is enabled.
-- `LLight:setGroupId`: Sets this light group id.
-- `LLight:getGroupId`: Returns this light group id.
+- `LLight:setGroupId`: Sets this light group id. This method is available to Lua scripts.
+- `LLight:getGroupId`: Returns this light group id. This method is available to Lua scripts.
 - `LLight:setVolumetric`: Enables or disables volumetric behavior for this light.
 - `LLight:isVolumetric`: Returns whether this light is volumetric.
 - `LLight:remove`: Removes this light from the shared light world.
@@ -241,9 +241,9 @@ This module primarily collaborates with `image`, `math`, `runtime`. Its responsi
 - `LOccluder:getVertices`: Returns this occluder's flat vertex coordinate list.
 - `LOccluder:setPosition`: Sets this occluder position offset.
 - `LOccluder:getPosition`: Returns this occluder position offset.
-- `LOccluder:setOpacity`: Sets this occluder opacity.
-- `LOccluder:getOpacity`: Returns this occluder opacity.
-- `LOccluder:setLightMask`: Sets this occluder's light mask.
+- `LOccluder:setOpacity`: Sets this occluder opacity. This method is available to Lua scripts.
+- `LOccluder:getOpacity`: Returns this occluder opacity. This method is available to Lua scripts.
+- `LOccluder:setLightMask`: Sets this occluder's light mask. This method is available to Lua scripts.
 - `LOccluder:getLightMask`: Returns this occluder's light mask.
 - `LOccluder:setEnabled`: Enables or disables this occluder.
 - `LOccluder:isEnabled`: Returns whether this occluder is enabled.

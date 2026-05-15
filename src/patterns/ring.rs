@@ -1,4 +1,3 @@
-
 //! - Fixed-capacity ring buffer backed by `VecDeque` with automatic eviction of oldest entries.
 //! - Each entry carries an optional numeric or string payload plus a caller-assigned tag.
 //! - Provides aggregate helpers (sum, average) and ordered iteration from oldest to newest.

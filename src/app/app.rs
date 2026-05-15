@@ -1,4 +1,3 @@
-
 //! - Implements the central `LurekApp` runtime driven by winit's `ApplicationHandler`.
 //! - Manages GPU surface creation, wgpu adapter/device selection, and surface reconfiguration.
 //! - Orchestrates the frame loop: tick input, call Lua process/draw callbacks, then present.
@@ -565,6 +564,7 @@ impl LurekApp {
             &window_title,
             self.game_dir.clone(),
         );
+        shared_state.runtime_mode = self.config.runtime.mode;
         if let Some(identity) = &self.config.identity {
             shared_state.filesystem_identity = identity.clone();
         }

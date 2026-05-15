@@ -152,8 +152,8 @@ mod bidir_tests {
 }
 
 mod flow_field_tests {
-    use lurek2d::pathfind::NavGrid;
     use lurek2d::pathfind::FlowField;
+    use lurek2d::pathfind::NavGrid;
     use std::cell::RefCell;
     use std::rc::Rc;
 
@@ -388,9 +388,15 @@ mod nav_grid_tests {
 
     #[test]
     fn test_diagonal_mode_round_trip_strings() {
-        assert_eq!(DiagonalMode::from_lua_str("always"), Some(DiagonalMode::Always));
+        assert_eq!(
+            DiagonalMode::from_lua_str("always"),
+            Some(DiagonalMode::Always)
+        );
         assert_eq!(DiagonalMode::from_lua_str("none"), Some(DiagonalMode::None));
-        assert_eq!(DiagonalMode::from_lua_str("nocornercut"), Some(DiagonalMode::NoCornerCut));
+        assert_eq!(
+            DiagonalMode::from_lua_str("nocornercut"),
+            Some(DiagonalMode::NoCornerCut)
+        );
         assert_eq!(DiagonalMode::from_lua_str("bogus"), None);
         assert_eq!(DiagonalMode::Always.to_lua_str(), "always");
     }
@@ -457,7 +463,9 @@ mod range_map_tests {
         let blocked = vec![false; 4];
         let rm = RangeMap::from_grid(2, 2, &costs, &blocked, 0, 0, 5.0, false);
         let cells = rm.reachable_cells_with_cost();
-        assert!(cells.iter().any(|(x, y, c)| *x == 0 && *y == 0 && *c == 0.0));
+        assert!(cells
+            .iter()
+            .any(|(x, y, c)| *x == 0 && *y == 0 && *c == 0.0));
     }
 }
 

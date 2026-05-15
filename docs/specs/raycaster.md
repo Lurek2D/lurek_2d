@@ -229,14 +229,14 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - `LRaycaster:drawDepthMap`: Renders a grayscale depth map showing distance-to-wall for each column.
 - `LRaycaster:drawLineOfSight`: Renders a debug image showing the line-of-sight ray between two world points.
 - `LRaycaster:drawCameraSweep`: Renders multiple frames of a rotating camera sweep as a single combined image.
-- `LRaycaster:buildScene`: Builds a complete textured raycaster scene for GPU rendering. Stores the output internally
+- `LRaycaster:buildScene`: Builds a complete textured raycaster scene for GPU rendering. Stores the output internally.
 - `LRaycaster:buildSceneWithModels`: Builds a textured raycaster scene with additional 3D .obj model instances projected into the view.
 - `LRaycaster:type`: Returns the type name of this object ("LRaycaster").
 - `LRaycaster:typeOf`: Checks whether this object matches the given type name.
 
 ### `LSpriteManager` Methods
 - `LSpriteManager:add`: Adds a new sprite to the manager at a world position with a texture name and optional scale.
-- `LSpriteManager:remove`: Removes a sprite by its id.
+- `LSpriteManager:remove`: Removes a sprite by its id. This method is available to Lua scripts.
 - `LSpriteManager:setPosition`: Updates the world position of an existing sprite.
 - `LSpriteManager:setVisible`: Shows or hides a sprite without removing it.
 - `LSpriteManager:clear`: Removes all sprites from the manager.

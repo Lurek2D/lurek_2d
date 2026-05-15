@@ -348,7 +348,7 @@ The `physics` module provides Lurek2D's rigid-body physics simulation backed by 
 
 ### `LTerrain` Methods
 - `LTerrain:setCell`: Sets a single terrain cell to solid or empty.
-- `LTerrain:getCell`: Returns whether a cell is solid.
+- `LTerrain:getCell`: Returns whether a cell is solid. This method is available to Lua scripts.
 - `LTerrain:fillCircle`: Fills or clears a circular region of terrain cells.
 - `LTerrain:fillRect`: Fills or clears a rectangular region of terrain cells.
 - `LTerrain:fillAll`: Sets all terrain cells to either solid or empty.
@@ -447,7 +447,7 @@ The `physics` module provides Lurek2D's rigid-body physics simulation backed by 
 - `LWorld:typeOf`: Checks if this object is of a given type name. Supports inheritance (always matches "Object").
 
 ### `LZone` Methods
-- `LZone:getId`: Returns the unique ID of this zone.
+- `LZone:getId`: Returns the unique ID of this zone. This method is available to Lua scripts.
 - `LZone:setEnabled`: Enables or disables this zone. Disabled zones have no effect on bodies.
 - `LZone:setPriority`: Sets the priority of this zone. Higher-priority zones take precedence when overlapping.
 - `LZone:setLayerMask`: Sets a bitmask controlling which body layers this zone affects.

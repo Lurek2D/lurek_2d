@@ -1,4 +1,3 @@
-
 //! - Keyframe interpolation for particle size, colour, and alpha over normalised lifetime.
 //! - Uniform and normal random number helpers for emission variance.
 //! - All evaluators clamp `t` to `[0.0, 1.0]` and return sensible defaults on empty input.

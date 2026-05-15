@@ -9,7 +9,7 @@
 use lurek2d::runtime::config::Config;
 use lurek2d::runtime::error::{EngineError, ErrorCategory};
 use lurek2d::runtime::log_messages::*;
-use lurek2d::runtime::SharedState;
+use lurek2d::runtime::{RuntimeMode, SharedState};
 use std::path::PathBuf;
 
 // ── log_messages ─────────────────────────────────────────────────────────────
@@ -256,6 +256,24 @@ mod config_tests {
     }
 
     #[test]
+    fn default_runtime_mode_is_gui() {
+        let c = Config::default();
+        assert_eq!(c.runtime.mode, RuntimeMode::Gui);
+    }
+
+    #[test]
+    fn runtime_mode_parses_supported_tokens() {
+        assert_eq!("gui".parse::<RuntimeMode>().unwrap(), RuntimeMode::Gui);
+        assert_eq!("tui".parse::<RuntimeMode>().unwrap(), RuntimeMode::Tui);
+        assert_eq!(
+            "headless".parse::<RuntimeMode>().unwrap(),
+            RuntimeMode::Headless
+        );
+        assert_eq!("cli".parse::<RuntimeMode>().unwrap(), RuntimeMode::Cli);
+        assert!("server".parse::<RuntimeMode>().is_err());
+    }
+
+    #[test]
     fn default_identity_none() {
         let c = Config::default();
         assert!(c.identity.is_none());
@@ -357,6 +375,17 @@ mod config_tests {
     }
 
     #[test]
+    fn headless_profile_disables_window_render_input_audio_and_terminal() {
+        let mut modules = Config::default().modules;
+        modules.apply_headless_profile();
+        assert!(!modules.window);
+        assert!(!modules.render);
+        assert!(!modules.input);
+        assert!(!modules.audio);
+        assert!(!modules.terminal);
+    }
+
+    #[test]
     fn load_from_conf_toml_merges_nested_defaults() {
         let tmp = tempfile::tempdir().expect("tempdir");
         let conf = r#"
@@ -376,6 +405,26 @@ target_fps = 144
         assert_eq!(cfg.window.width, 800);
         assert_eq!(cfg.window.height, 600);
         assert_eq!(cfg.performance.physics_tick_rate, 60);
+    }
+
+    #[test]
+    fn load_from_conf_toml_reads_runtime_mode_and_headless_frames() {
+        let tmp = tempfile::tempdir().expect("tempdir");
+        let conf = r#"
+[runtime]
+mode = "headless"
+
+[headless]
+frames = 3
+dt = 0.25
+"#;
+        std::fs::write(tmp.path().join("conf.toml"), conf).expect("write conf.toml");
+
+        let (cfg, err) = Config::load_from_conf_toml(tmp.path());
+        assert!(err.is_none(), "unexpected parse error: {:?}", err);
+        assert_eq!(cfg.runtime.mode, RuntimeMode::Headless);
+        assert_eq!(cfg.headless.frames, Some(3));
+        assert_eq!(cfg.headless.dt, 0.25);
     }
 }
 

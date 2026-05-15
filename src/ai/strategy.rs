@@ -1,4 +1,3 @@
-
 //! - High-level strategy selection scoring named goals against current tag context over time.
 //! - Goal records with eligibility tags, priority scaling, enable state, and computed scores.
 //! - Timed evaluation flow querying external scorers and storing the active strategic choice.

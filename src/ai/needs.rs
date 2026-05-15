@@ -1,4 +1,3 @@
-
 //! - Need-tracking model with normalized internal drives, urgency settings, and external advertisements.
 //! - Per-need decay, urgency scoring, satisfaction updates, and cooldown-aware advertisement scoring.
 //! - System-level operations for adding needs, time-based updates, and most-urgent drive selection.

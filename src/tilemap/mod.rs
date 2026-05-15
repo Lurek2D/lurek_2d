@@ -21,13 +21,13 @@ pub mod mapgen;
 pub mod polygon_map;
 /// Render helpers converting tilemap data to `RenderCommand` sequences.
 pub mod render;
+/// Tile-space walker/iterator over connected cells.
+pub mod tile_walker;
 /// Core `TileMap` and `TileLayer` types.
 #[allow(clippy::module_inception)]
 pub mod tilemap;
 /// Tileset metadata and animation frame types.
 pub mod tileset;
-/// Tile-space walker/iterator over connected cells.
-pub mod tile_walker;
 /// Tiled TMX XML format import. This module is publicly re-exported.
 pub mod tmx;
 
@@ -39,10 +39,10 @@ pub use chunk::ChunkMap;
 pub use coords::*;
 /// Re-export isometric map types for callers.
 pub use isomap::{IsoDrawItem, IsoLevel, IsoMap, IsoTile, IsoTilePart};
-/// Re-export the LDtk level loader function.
-pub use ldtk::load_ldtk;
 /// Re-export large-map renderer types.
 pub use large_map_renderer::{LargeMapRenderer, MapChunk};
+/// Re-export the LDtk level loader function.
+pub use ldtk::load_ldtk;
 /// Re-export procedural map generation types.
 pub use mapgen::{
     Edge, LayerMode, MapBlock, MapGen, MapGroup, MapOrientation, MapScript, MapSize, MapZone,
@@ -56,7 +56,5 @@ pub use tilemap::{SweepResult, TileLayer, TileMap};
 pub use tileset::{TileAnimFrame, TileSet};
 /// Re-export TMX import types and loader function.
 pub use tmx::{
-    load_tmx, TmxLayer, TmxMap, TmxObject, TmxObjectLayer, TmxOrientation, TmxTileLayer,
-    TmxTileset,
+    load_tmx, TmxLayer, TmxMap, TmxObject, TmxObjectLayer, TmxOrientation, TmxTileLayer, TmxTileset,
 };
-

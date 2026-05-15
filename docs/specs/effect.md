@@ -219,21 +219,21 @@ The `effect` module owns Lurek2D's post-processing and image-effect pipeline —
 ### `LOverlay` Methods
 - `LOverlay:update`: Advances overlay timers and animated effect state.
 - `LOverlay:triggerFlash`: Starts a screen flash with explicit RGBA color and duration.
-- `LOverlay:triggerShake`: Starts a screen shake effect.
+- `LOverlay:triggerShake`: Starts a screen shake effect. This method is available to Lua scripts.
 - `LOverlay:triggerFade`: Starts a fade overlay toward a target alpha.
 - `LOverlay:triggerLightning`: Starts a lightning flash using the overlay lightning state.
 - `LOverlay:getShakeOffset`: Returns the current screen shake offset.
 - `LOverlay:isActive`: Returns whether any overlay effect is currently active.
 - `LOverlay:clear`: Clears active overlay effects and resets transient state.
 - `LOverlay:resize`: Resizes the overlay target dimensions.
-- `LOverlay:getWidth`: Returns the overlay width.
-- `LOverlay:getHeight`: Returns the overlay height.
-- `LOverlay:getDimensions`: Returns the overlay dimensions.
-- `LOverlay:getFlashAlpha`: Returns the current flash alpha.
+- `LOverlay:getWidth`: Returns the overlay width. This method is available to Lua scripts.
+- `LOverlay:getHeight`: Returns the overlay height. This method is available to Lua scripts.
+- `LOverlay:getDimensions`: Returns the overlay dimensions. This method is available to Lua scripts.
+- `LOverlay:getFlashAlpha`: Returns the current flash alpha. This method is available to Lua scripts.
 - `LOverlay:getLightningAlpha`: Returns the current lightning alpha.
 - `LOverlay:setAmbientEnabled`: Enables or disables overlay ambient color rendering.
 - `LOverlay:isAmbientEnabled`: Returns whether overlay ambient color rendering is enabled.
-- `LOverlay:setAmbientColor`: Sets overlay ambient RGBA color.
+- `LOverlay:setAmbientColor`: Sets overlay ambient RGBA color. This method is available to Lua scripts.
 - `LOverlay:getAmbientColor`: Returns overlay ambient RGBA color.
 - `LOverlay:pullAmbientFromLight`: Copies ambient color from the shared light world into this overlay.
 - `LOverlay:pushAmbientToLight`: Copies this overlay ambient color into the shared light world.
@@ -242,17 +242,17 @@ The `effect` module owns Lurek2D's post-processing and image-effect pipeline —
 - `LOverlay:getTimeOfDay`: Returns the overlay time-of-day value.
 - `LOverlay:setFogEnabled`: Enables or disables overlay fog rendering.
 - `LOverlay:isFogEnabled`: Returns whether overlay fog rendering is enabled.
-- `LOverlay:setFogDensity`: Sets overlay fog density.
-- `LOverlay:getFogDensity`: Returns overlay fog density.
-- `LOverlay:setFogColor`: Sets overlay fog RGBA color.
-- `LOverlay:getFogColor`: Returns overlay fog RGBA color.
+- `LOverlay:setFogDensity`: Sets overlay fog density. This method is available to Lua scripts.
+- `LOverlay:getFogDensity`: Returns overlay fog density. This method is available to Lua scripts.
+- `LOverlay:setFogColor`: Sets overlay fog RGBA color. This method is available to Lua scripts.
+- `LOverlay:getFogColor`: Returns overlay fog RGBA color. This method is available to Lua scripts.
 - `LOverlay:setHeatHazeEnabled`: Enables or disables overlay heat haze rendering.
 - `LOverlay:isHeatHazeEnabled`: Returns whether overlay heat haze rendering is enabled.
-- `LOverlay:setHeatHazeIntensity`: Sets overlay heat haze intensity.
+- `LOverlay:setHeatHazeIntensity`: Sets overlay heat haze intensity. This method is available to Lua scripts.
 - `LOverlay:getHeatHazeIntensity`: Returns overlay heat haze intensity.
 - `LOverlay:setVignetteEnabled`: Enables or disables overlay vignette rendering.
 - `LOverlay:isVignetteEnabled`: Returns whether overlay vignette rendering is enabled.
-- `LOverlay:setVignetteStrength`: Sets overlay vignette strength.
+- `LOverlay:setVignetteStrength`: Sets overlay vignette strength. This method is available to Lua scripts.
 - `LOverlay:getVignetteStrength`: Returns overlay vignette strength.
 - `LOverlay:setFilmGrainEnabled`: Enables or disables overlay film grain rendering.
 - `LOverlay:isFilmGrainEnabled`: Returns whether overlay film grain rendering is enabled.
@@ -262,12 +262,12 @@ The `effect` module owns Lurek2D's post-processing and image-effect pipeline —
 - `LOverlay:isCloudShadowsEnabled`: Returns whether overlay cloud shadow rendering is enabled.
 - `LOverlay:setCloudCount`: Sets the overlay cloud shadow count.
 - `LOverlay:getCloudCount`: Returns the overlay cloud shadow count.
-- `LOverlay:setCloudSpeed`: Sets cloud shadow movement speed.
+- `LOverlay:setCloudSpeed`: Sets cloud shadow movement speed. This method is available to Lua scripts.
 - `LOverlay:getCloudSpeed`: Returns cloud shadow movement speed.
-- `LOverlay:setCloudScale`: Sets cloud shadow scale.
-- `LOverlay:getCloudScale`: Returns cloud shadow scale.
-- `LOverlay:setCloudOpacity`: Sets cloud shadow opacity.
-- `LOverlay:getCloudOpacity`: Returns cloud shadow opacity.
+- `LOverlay:setCloudScale`: Sets cloud shadow scale. This method is available to Lua scripts.
+- `LOverlay:getCloudScale`: Returns cloud shadow scale. This method is available to Lua scripts.
+- `LOverlay:setCloudOpacity`: Sets cloud shadow opacity. This method is available to Lua scripts.
+- `LOverlay:getCloudOpacity`: Returns cloud shadow opacity. This method is available to Lua scripts.
 - `LOverlay:setWeatherEnabled`: Enables or disables overlay weather rendering.
 - `LOverlay:isWeatherEnabled`: Returns whether overlay weather rendering is enabled.
 - `LOverlay:setWeather`: Sets the overlay weather type by name.
@@ -299,7 +299,7 @@ The `effect` module owns Lurek2D's post-processing and image-effect pipeline —
 - `LPostFxEffect:getTypeName`: Returns the built-in or custom effect type name.
 - `LPostFxEffect:isBuiltIn`: Returns whether this effect uses one of the engine built-in effect types.
 - `LPostFxEffect:isEnabled`: Returns whether this effect is enabled on its owning effect object.
-- `LPostFxEffect:setEnabled`: Enables or disables this effect.
+- `LPostFxEffect:setEnabled`: Enables or disables this effect. This method is available to Lua scripts.
 - `LPostFxEffect:setParameter`: Sets a numeric shader parameter by name.
 - `LPostFxEffect:getParameter`: Reads a numeric shader parameter and falls back to a default value when missing.
 - `LPostFxEffect:hasParameter`: Returns whether a shader parameter exists on this effect.
@@ -330,8 +330,8 @@ The `effect` module owns Lurek2D's post-processing and image-effect pipeline —
 - `LPostFxStack:getEffectCount`: Returns the number of effect handles in this stack.
 - `LPostFxStack:getEffect`: Returns the effect handle at a one-based position.
 - `LPostFxStack:getEnabledEffects`: Returns effect handles whose stack passes are enabled.
-- `LPostFxStack:getWidth`: Returns the stack render width.
-- `LPostFxStack:getHeight`: Returns the stack render height.
+- `LPostFxStack:getWidth`: Returns the stack render width. This method is available to Lua scripts.
+- `LPostFxStack:getHeight`: Returns the stack render height. This method is available to Lua scripts.
 - `LPostFxStack:getDimensions`: Returns the stack render dimensions.
 - `LPostFxStack:resize`: Resizes the post-processing stack render target dimensions.
 - `LPostFxStack:len`: Returns the number of effect handles in this stack.
@@ -355,7 +355,7 @@ The `effect` module owns Lurek2D's post-processing and image-effect pipeline —
 - `LScreenTransition:progress`: Returns normalized transition progress.
 - `LScreenTransition:isActive`: Returns whether the transition is currently active.
 - `LScreenTransition:isDone`: Returns whether the transition has finished.
-- `LScreenTransition:kind`: Returns the transition kind name.
+- `LScreenTransition:kind`: Returns the transition kind name. This method is available to Lua scripts.
 - `LScreenTransition:color`: Returns the transition RGBA color.
 - `LScreenTransition:setColor`: Sets the transition RGBA color from a numeric array table.
 - `LScreenTransition:type`: Returns the Lua-visible type name for this transition handle.

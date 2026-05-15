@@ -1,4 +1,3 @@
-
 //! - Shared AI world container owning registered agents, name-to-index lookup, and global blackboard.
 //! - Lifecycle operations adding or removing named agents with synchronized lookup tables.
 //! - World update surface exposing global blackboard access and velocity-based position integration.

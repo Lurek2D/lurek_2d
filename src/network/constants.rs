@@ -1,4 +1,3 @@
-
 //! - Numeric limits for peer connections, channels, and buffer sizes.
 //! - Default fallback values when game config omits network parameters.
 //! - Timeout durations for HTTP and transport-level operations.

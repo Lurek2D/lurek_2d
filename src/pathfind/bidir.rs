@@ -1,4 +1,3 @@
-
 //! - Bidirectional A* search that expands from both start and goal simultaneously.
 //! - Meets in the middle when both closed sets overlap, halving explored nodes on large grids.
 //! - Falls back to a partial forward path when the node budget is exhausted.

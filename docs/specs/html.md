@@ -119,9 +119,9 @@ This module is mostly self-contained inside the Edge/Integration group. Cross-mo
 - Namespace: `lurek.html`
 
 ### Module Functions
-- `lurek.html.preventDefault`: Lua-facing function documented in the binding source.
-- `lurek.html.stopPropagation`: Lua-facing function documented in the binding source.
-- `lurek.html.isDefaultPrevented`: Lua-facing function documented in the binding source.
+- `lurek.html.preventDefault`: Prevent default for Lua scripts in this module.
+- `lurek.html.stopPropagation`: Stop propagation for Lua scripts in this module.
+- `lurek.html.isDefaultPrevented`: Returns true if default prevented for Lua scripts in this module.
 - `lurek.html.newDocument`: Creates an HTML document from optional source and layout/style options.
 - `lurek.html.loadDocument`: Loads an HTML document from GameFS and optionally loads CSS from options or companion file.
 - `lurek.html.supports`: Returns whether the HTML engine supports a named feature.
@@ -156,7 +156,7 @@ This module is mostly self-contained inside the Edge/Integration group. Cross-mo
 
 ### `LHtmlElement` Methods
 - `LHtmlElement:getDocument`: Returns the document handle that owns this element.
-- `LHtmlElement:getTagName`: Returns this element's tag name.
+- `LHtmlElement:getTagName`: Returns this element's tag name. This method is available to Lua scripts.
 - `LHtmlElement:getId`: Returns this element's id attribute.
 - `LHtmlElement:setId`: Sets or clears this element's id attribute.
 - `LHtmlElement:getText`: Returns this element's text content.
@@ -169,7 +169,7 @@ This module is mostly self-contained inside the Edge/Integration group. Cross-mo
 - `LHtmlElement:setAttribute`: Sets or clears an attribute on this element.
 - `LHtmlElement:removeAttribute`: Removes an attribute from this element.
 - `LHtmlElement:hasClass`: Returns whether this element has a CSS class.
-- `LHtmlElement:addClass`: Adds a CSS class to this element.
+- `LHtmlElement:addClass`: Adds a CSS class to this element. This method is available to Lua scripts.
 - `LHtmlElement:removeClass`: Removes a CSS class from this element.
 - `LHtmlElement:toggleClass`: Toggles a CSS class on this element, optionally forcing the final state.
 - `LHtmlElement:getStyle`: Returns an inline or computed style value for this element.

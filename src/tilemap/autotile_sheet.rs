@@ -41,7 +41,8 @@ fn reduce_8bit(mask: u8) -> u8 {
 }
 
 /// Collapse diagonal bits, keeping only those whose adjacent cardinal pair is both set.
-fn collapse_diagonals(mask: u8) -> u8 {    let n = mask & 1;
+fn collapse_diagonals(mask: u8) -> u8 {
+    let n = mask & 1;
     let e = (mask >> 1) & 1;
     let s = (mask >> 2) & 1;
     let w = (mask >> 3) & 1;

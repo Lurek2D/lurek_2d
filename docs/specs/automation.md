@@ -104,8 +104,8 @@ The `automation` module is Lurek2D's automated input simulation engine — a Fea
 - `lurek.automation.getScripts`: Returns the names of loaded automation scripts.
 - `lurek.automation.start`: Starts playback of a loaded automation script.
 - `lurek.automation.stop`: Stops the current automation script.
-- `lurek.automation.pause`: Pauses automation playback.
-- `lurek.automation.resume`: Resumes automation playback.
+- `lurek.automation.pause`: Pauses automation playback. This function is exposed to Lua scripts.
+- `lurek.automation.resume`: Resumes automation playback. This function is exposed to Lua scripts.
 - `lurek.automation.update`: Advances automation playback and dispatches generated input events.
 - `lurek.automation.isRunning`: Returns whether automation playback is running.
 - `lurek.automation.isPaused`: Returns whether automation playback is paused.
@@ -122,9 +122,9 @@ The `automation` module is Lurek2D's automated input simulation engine — a Fea
 - `lurek.automation.getStepLimit`: Returns the configured step limit for a loaded script.
 - `lurek.automation.setStepLimit`: Sets the maximum step count for a loaded script.
 - `lurek.automation.saveMacro`: Saves a loaded script as a named macro.
-- `lurek.automation.playMacro`: Starts playback of a saved macro.
-- `lurek.automation.hasMacro`: Returns whether a macro is saved.
-- `lurek.automation.listMacros`: Returns the names of saved macros.
+- `lurek.automation.playMacro`: Starts playback of a saved macro. This function is exposed to Lua scripts.
+- `lurek.automation.hasMacro`: Returns whether a macro is saved. This function is exposed to Lua scripts.
+- `lurek.automation.listMacros`: Returns the names of saved macros. This function is exposed to Lua scripts.
 - `lurek.automation.setPlaybackSpeed`: Sets automation playback speed multiplier.
 - `lurek.automation.getPlaybackSpeed`: Returns automation playback speed multiplier.
 - `lurek.automation.setHighlightMode`: Enables or disables automation highlight mode.

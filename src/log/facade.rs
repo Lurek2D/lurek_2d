@@ -38,7 +38,7 @@ pub fn get_level() -> String {
 
 /// Return `true` if the global log filter allows messages at `level`; returns `false` for unknown strings.
 pub fn enabled_for(level: &str) -> bool {
-    use ::log::LevelFilter;
+    use log::LevelFilter;
     let filter = match level.to_lowercase().as_str() {
         "error" => LevelFilter::Error,
         "warn" | "warning" => LevelFilter::Warn,

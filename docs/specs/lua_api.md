@@ -5,15 +5,15 @@
 - Module group: `Edge/Integration`
 - Source path: `src/lua_api/`
 - Lua API path(s): None direct
-- Primary Lua namespace: `lurek.physics`
+- Primary Lua namespace: All `lurek.*` namespaces
 - Rust test path(s): tests/rust/unit/; tests/rust/ext/
 - Lua test path(s): tests/lua/harness.rs; tests/lua/unit/; tests/lua/integration/; tests/lua/security/; tests/lua/stress/; tests/lua/golden/
 
 ## Summary
 
-The `lua_api` module is documented from the current source tree and existing module reference data.
+The `lua_api` module is the scripting composition root for Lurek2D. It creates sandboxed Lua VMs, registers the enabled `lurek.*` namespaces, exposes thin userdata wrappers over engine modules, and centralizes VM-profile differences between full GUI runtime, no-window headless runtime, and test harness startup.
 
-This module primarily collaborates with `ai`, `animation`, `audio`, `automation`, `camera`, `compute`, `data`, `dataframe`, and adjacent engine modules. Its responsibility should stay inside the Edge/Integration group rather than absorb behavior owned by those neighbors.
+This module should stay thin. Ownership stops at binding registration, argument conversion, userdata wrapping, and sandbox policy. Domain behaviour belongs in the owning `src/<module>/` directory, not in `src/lua_api/`.
 
 ## Files
 
@@ -57,8 +57,9 @@ This module primarily collaborates with `ai`, `animation`, `audio`, `automation`
 - `procgen_api.rs`: Registers lurek.procgen and bridges procedural-generation utilities.
 - `province_api.rs`: `lurek.province` - Engine-backed province registry and snapshot API.
 - `raycaster_api.rs`: Registers lurek.raycaster and exposes retro 2.5D raycasting features.
-- `register.rs`: Lua VM factory: `create_lua_vm` and `create_test_vm`.
+- `register.rs`: Lua VM factory: `create_lua_vm`, `create_headless_vm`, and `create_test_vm`.
 - `render_api.rs`: Registers the main 2D drawing APIs and resource wrappers used for graphics, canvases, shaders, meshes, and sprite batches.
+- `repl_api.rs`: `lurek.repl` -- Release-safe Lua REPL session bindings for interactive evaluation.
 - `save_api.rs`: Registers lurek.save and exposes save-slot and persistence helpers.
 - `scene_api.rs`: Registers lurek.scene and bridges scene stack and transition management.
 - `serial_api.rs`: Registers lurek.serial and exposes JSON, TOML, and CSV serialization helpers.
@@ -173,6 +174,7 @@ This module primarily collaborates with `ai`, `animation`, `audio`, `automation`
 - `LuaQuad` (`struct`, `render_api.rs`): Lua-side quad viewport into a texture.
 - `LuaShape` (`struct`, `render_api.rs`): Lua-side handle to a [`CompoundShape`] stored in [`SharedState::shapes`].
 - `LObjModel` (`struct`, `render_api.rs`): Lua-side handle to a parsed Wavefront OBJ model.
+- `LReplSession` (`struct`, `repl_api.rs`): Lua-side REPL session handle with bounded history.
 - `LuaSaveManager` (`struct`, `save_api.rs`): Lua-side wrapper around [`SaveManager`] with per-module callback storage.
 - `LuaDepthSorter` (`struct`, `scene_api.rs`): Lua-side wrapper around a [`DepthSorter`] with registry-stored callbacks.
 - `LuaSkeleton` (`struct`, `spine_api.rs`): Lua-side wrapper around a [`Skeleton`].
@@ -209,15 +211,15 @@ This module primarily collaborates with `ai`, `animation`, `audio`, `automation`
 - `register` (`audio_api.rs`): Registers the `lurek.window` API table with the Lua VM.
 - `register` (`automation_api.rs`): Registers the `lurek.window` API table with the Lua VM.
 - `Step::vec_from_lua_table` (`automation_api.rs`): Converts a Lua array of step tables into automation steps.
-- `CallbackRegistry::new` (`callback_registry.rs`): Public function or method declared in `callback_registry.rs`.
-- `CallbackRegistry::register` (`callback_registry.rs`): Public function or method declared in `callback_registry.rs`.
-- `CallbackRegistry::get` (`callback_registry.rs`): Public function or method declared in `callback_registry.rs`.
-- `CallbackRegistry::remove` (`callback_registry.rs`): Public function or method declared in `callback_registry.rs`.
-- `CallbackRegistry::contains` (`callback_registry.rs`): Public function or method declared in `callback_registry.rs`.
-- `CallbackRegistry::clear` (`callback_registry.rs`): Public function or method declared in `callback_registry.rs`.
-- `CallbackRegistry::len` (`callback_registry.rs`): Public function or method declared in `callback_registry.rs`.
-- `CallbackRegistry::is_empty` (`callback_registry.rs`): Public function or method declared in `callback_registry.rs`.
-- `CallbackRegistry::invoke` (`callback_registry.rs`): Public function or method declared in `callback_registry.rs`.
+- `CallbackRegistry::new` (`callback_registry.rs`): Creates a new value.
+- `CallbackRegistry::register` (`callback_registry.rs`): Register.
+- `CallbackRegistry::get` (`callback_registry.rs`): Returns a value.
+- `CallbackRegistry::remove` (`callback_registry.rs`): Removes or clears stored state.
+- `CallbackRegistry::contains` (`callback_registry.rs`): Contains.
+- `CallbackRegistry::clear` (`callback_registry.rs`): Removes or clears stored state.
+- `CallbackRegistry::len` (`callback_registry.rs`): Len.
+- `CallbackRegistry::is_empty` (`callback_registry.rs`): Returns true if empty.
+- `CallbackRegistry::invoke` (`callback_registry.rs`): Invoke.
 - `LuaCamera2D::visible_area` (`camera_api.rs`): Returns the camera visible area tuple for engine-side helpers.
 - `LuaCamera2D::position` (`camera_api.rs`): Returns the camera position tuple for engine-side helpers.
 - `register` (`camera_api.rs`): Registers the `lurek.window` API table with the Lua VM.
@@ -254,10 +256,10 @@ This module primarily collaborates with `ai`, `animation`, `audio`, `automation`
 - `ParticleConfig::from_lua_opts` (`particle_api.rs`): Builds a particle config from a Lua options table.
 - `register` (`pathfind_api.rs`): Registers the `lurek.window` API table with the Lua VM.
 - `register` (`patterns_api.rs`): Registers the `lurek.window` API table with the Lua VM.
-- `LuaWorld::world_handle` (`physics_api.rs`): Public function or method declared in `physics_api.rs`.
+- `LuaWorld::world_handle` (`physics_api.rs`): World handle.
 - `register` (`physics_api.rs`): Registers the `lurek.window` API table with the Lua VM.
 - `LuaStep::new` (`pipeline_api.rs`): Wraps an existing pipeline step in a Lua-visible userdata handle.
-- `LuaStep::execute_sync` (`pipeline_api.rs`): Public function or method declared in `pipeline_api.rs`.
+- `LuaStep::execute_sync` (`pipeline_api.rs`): Execute sync.
 - `LuaPipeline::new` (`pipeline_api.rs`): Creates a new Lua-visible pipeline wrapper around a pipeline value.
 - `LuaPipeline::from_parts` (`pipeline_api.rs`): Rebuilds a Lua pipeline wrapper from shared pipeline and step-wrapper state.
 - `pipeline_result_to_lua` (`pipeline_api.rs`): Converts a `PipelineResult` to a Lua result table for the `run` return value.
@@ -273,8 +275,10 @@ This module primarily collaborates with `ai`, `animation`, `audio`, `automation`
 - `register` (`province_api.rs`): Registers the `lurek.window` API table with the Lua VM.
 - `register` (`raycaster_api.rs`): Registers the `lurek.window` API table with the Lua VM.
 - `create_lua_vm` (`register.rs`): Creates and configures the Lua VM, registers `lurek.*` sub-APIs according to the provided module flags, and returns the ready `Lua` instance.
+- `create_headless_vm` (`register.rs`): Creates a Lua VM with no-window headless module profile applied.
 - `create_test_vm` (`register.rs`): Creates a test Lua VM with the BDD test framework loaded and all available API modules registered.
 - `register` (`render_api.rs`): Registers the `lurek.window` API table with the Lua VM.
+- `register` (`repl_api.rs`): Registers the `lurek.window` API table with the Lua VM.
 - `LuaSaveManager::new` (`save_api.rs`): Creates a new Lua-visible save manager bound to shared engine state.
 - `register` (`save_api.rs`): Registers the `lurek.window` API table with the Lua VM.
 - `register` (`scene_api.rs`): Registers the `lurek.window` API table with the Lua VM.
@@ -299,7 +303,7 @@ This module primarily collaborates with `ai`, `animation`, `audio`, `automation`
 
 ## Lua API Reference
 
-- Namespace: `lurek.physics`
+- Namespace: All `lurek.*` namespaces registered by the current VM profile.
 
 ## References
 
@@ -341,6 +345,7 @@ This module primarily collaborates with `ai`, `animation`, `audio`, `automation`
 - `province`: Imports or references `src/province/`. Dependency stays inside `Edge/Integration` and should remain acyclic.
 - `raycaster`: Imports or references `raycaster` from `src/raycaster/`.
 - `render`: Imports or references `render` from `src/render/`.
+- `repl`: Imports or references `src/repl/`. Dependency stays inside `Edge/Integration` and should remain acyclic.
 - `runtime`: Imports or references `runtime` from `src/runtime/`.
 - `save`: Imports or references `save` from `src/save/`.
 - `scene`: Imports or references `scene` from `src/scene/`.
@@ -359,4 +364,5 @@ This module primarily collaborates with `ai`, `animation`, `audio`, `automation`
 
 - Keep this module reference synchronized with `src/lua_api/` and any matching Lua bindings.
 - Summary paragraphs are manual prose. The collected Files, Types, Functions, Lua API Reference, and References sections can be regenerated when the source changes.
-- This module has no dedicated direct `lurek.*` namespace and is usually consumed through higher integration layers.
+- `create_headless_vm()` is the no-window VM profile used by `--headless`. It reuses the same binding layer but applies the headless module mask before registration.
+- `repl_api.rs` now owns the release-safe `lurek.repl` surface, while `devtools_api.rs` keeps a compatibility wrapper for `lurek.devtools.newRepl()`.

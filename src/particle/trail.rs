@@ -1,4 +1,3 @@
-
 //! - Ribbon trail built from a deque of aged world-space points.
 //! - Automatic point retirement when age exceeds configurable lifetime.
 //! - Width tapering and head-to-tail colour interpolation.

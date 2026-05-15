@@ -1,4 +1,3 @@
-
 //! - Convert minimap state into an ordered list of `RenderCommand` values for the renderer.
 //! - Draw the background, terrain grid cells with zoom and center offset, and fog-of-war tinting.
 //! - Render overlay shapes (lines, rectangles), multi-segment paths, and the viewport indicator.

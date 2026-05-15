@@ -5,38 +5,47 @@
 - Module group: `Core Runtime`
 - Source path: `src/runtime/`
 - Lua API path(s): None direct
-- Primary Lua namespace: `lurek.runtime.setLogLevel`
-- Rust test path(s): tests/rust/unit/window_tests.rs, tests/rust/ext/graphics_runtime_smoke_tests.rs, plus runtime-focused unit coverage embedded in src/runtime/messages.rs
-- Lua test path(s): tests/lua/config/test_config.lua, tests/lua/harness.rs
+- Primary Lua namespace: `lurek.runtime`
+- Rust test path(s): tests/rust/unit/runtime_tests.rs, tests/rust/unit/window_tests.rs, tests/rust/ext/graphics_runtime_smoke_tests.rs, plus runtime-focused unit coverage embedded in src/runtime/messages.rs
+- Lua test path(s): tests/lua/config/test_config.lua, tests/lua/unit/test_runtime_core_unit.lua
 
 ## Summary
 
-The `runtime` module is documented from the current source tree and existing module reference data.
+The `runtime` module owns the engine's core startup configuration, shared mutable state, structured engine errors, runtime message catalog, and now the mode-selection primitives used by `lurek_run()`. It is the lowest layer that knows about `gui`, `tui`, `headless`, and `cli` as startup concepts.
 
-This module primarily collaborates with `audio`, `camera`, `event`, `filesystem`, `input`, `light`, `parallax`, `particle`, and adjacent engine modules. Its responsibility should stay inside the Core Runtime group rather than absorb behavior owned by those neighbors.
+This module also owns the real no-window execution path in `headless.rs`. Windowed modes continue upward into `app`, but headless runtime stays here so it can run without any dependency on winit, wgpu, or the GUI event loop.
 
 ## Files
 
 - `config.rs`: Engine configuration loaded from `conf.toml`.
 - `error.rs`: Structured error types and result alias for the Lurek2D engine.
+- `headless.rs`: No-window Lua runtime for `--headless` execution.
 - `log_messages.rs`: Structured logging with stable message IDs for the Lurek2D engine.
 - `messages.rs`: TOML-backed message catalog for stable, human-readable engine log messages.
 - `mod.rs`: Core engine runtime: configuration, error handling, shared state, and resource management.
+- `mode.rs`: Runtime mode enum and CLI/config token parsing.
 - `resource_keys.rs`: Typed resource keys for generational ID-based resource pools.
 - `shared_state.rs`: Central shared runtime state for the Lurek2D engine.
 
 ## Types
 
 - `Config` (`struct`, `config.rs`): Top-level engine configuration.
+- `RuntimeConfig` (`struct`, `config.rs`): `[runtime]` table holding the selected startup mode.
 - `RenderConfig` (`struct`, `config.rs`): GPU backend and power-preference settings resolved once at engine startup.
 - `WindowConfig` (`struct`, `config.rs`): Window dimensions, title, vsync, fullscreen, and resize settings.
+- `TuiConfig` (`struct`, `config.rs`): Terminal-grid window defaults for GUI-backed TUI startup.
+- `CliConfig` (`struct`, `config.rs`): Terminal-grid and history defaults for GUI-backed CLI startup.
+- `HeadlessConfig` (`struct`, `config.rs`): Headless frame count and `dt` defaults.
 - `ModulesConfig` (`struct`, `config.rs`): Flags to enable or disable optional engine subsystems.
 - `PerformanceConfig` (`struct`, `config.rs`): Frame rate cap and other performance tuning options.
 - `ErrorCategory` (`enum`, `error.rs`): Error category for grouping related engine errors.
 - `EngineError` (`enum`, `error.rs`): All possible error conditions that can occur in the Lurek2D engine.
 - `EngineResult` (`type`, `error.rs`): Convenience alias for `Result<T, EngineError>` used throughout the engine.
 - `ErrorSnapshot` (`struct`, `error.rs`): A serialisable snapshot of an engine error.
+- `HeadlessOptions` (`struct`, `headless.rs`): CLI-derived inputs for one headless run.
 - `MessageCatalog` (`struct`, `messages.rs`): Immutable map from stable message ID (e.g.
+- `RuntimeMode` (`enum`, `mode.rs`): Supported startup modes: `gui`, `tui`, `headless`, and `cli`.
+- `RuntimeModeParseError` (`struct`, `mode.rs`): Error for invalid mode tokens.
 - `TextureKey` (`struct`, `resource_keys.rs`): Key for texture resources stored in SharedState.
 - `FontKey` (`struct`, `resource_keys.rs`): Key for font resources stored in SharedState.
 - `CanvasKey` (`struct`, `resource_keys.rs`): Key for canvas off-screen render targets.
@@ -63,6 +72,7 @@ This module primarily collaborates with `audio`, `camera`, `event`, `filesystem`
 
 ## Functions
 
+- `ModulesConfig::apply_headless_profile` (`config.rs`): Force module switches that must be disabled in no-window headless runtime.
 - `ModulesConfig::validate_and_fix` (`config.rs`): Disable modules whose dependencies are not enabled and emit warnings.
 - `Config::load` (`config.rs`): Load configuration, preferring `conf.toml` when it exists in `game_dir`.
 - `Config::load_from_conf_toml` (`config.rs`): Parse `conf.toml`, merge it over defaults, and return config with optional parse error.
@@ -72,6 +82,8 @@ This module primarily collaborates with `audio`, `camera`, `event`, `filesystem`
 - `EngineError::recovery_hint` (`error.rs`): Return operator hint describing likely remediation path.
 - `ErrorSnapshot::to_json` (`error.rs`): Encode snapshot as compact JSON for external consumers.
 - `EngineError::snapshot` (`error.rs`): Build snapshot payload from this error value.
+- `run_headless` (`headless.rs`): Runs the no-window Lua runtime and maps errors to `ExitCode`.
+- `run_headless_checked` (`headless.rs`): Runs headless while preserving structured engine errors for tests.
 - `set_log_level` (`log_messages.rs`): Sets the global log level at runtime (called from `lurek.runtime.setLogLevel`).
 - `get_log_level` (`log_messages.rs`): Returns the current log level name.
 - `MessageCatalog::from_toml` (`messages.rs`): Parse TOML and build a message catalog map; keep empty map on parse errors.
@@ -84,6 +96,8 @@ This module primarily collaborates with `audio`, `camera`, `event`, `filesystem`
 - `has_message` (`messages.rs`): Returns `true` if the global message catalog contains the given ID.
 - `message_count` (`messages.rs`): Number of entries currently registered in the global message catalog.
 - `catalog` (`messages.rs`): Returns a reference to the global [`MessageCatalog`], or `None` if [`init`] has not been called yet.
+- `RuntimeMode::as_str` (`mode.rs`): Return the lowercase config and CLI token for this mode.
+- `RuntimeModeParseError::value` (`mode.rs`): Return the invalid token supplied by the caller.
 - `SharedState::new` (`shared_state.rs`): Create a new shared state with initial window dimensions, title, and game directory.
 - `SharedState::step_timer` (`shared_state.rs`): Advance the frame clock and update delta time, FPS, and total time.
 - `SharedState::touch_texture` (`shared_state.rs`): Mark a texture as recently used for LRU eviction tracking.
@@ -110,11 +124,13 @@ This module primarily collaborates with `audio`, `camera`, `event`, `filesystem`
 - `image`: Imports or references `src/image/`. Cross-group dependency from `Core Runtime` into `Platform Services`.
 - `input`: Imports or references `input` from `src/input/`.
 - `light`: Imports or references `light` from `src/light/`.
+- `lua_api`: Imports or references `src/lua_api/`. Cross-group dependency from `Core Runtime` into `Edge/Integration`.
 - `parallax`: Imports or references `parallax` from `src/parallax/`.
 - `particle`: Imports or references `particle` from `src/particle/`.
 - `province`: Imports or references `src/province/`. Cross-group dependency from `Core Runtime` into `Edge/Integration`.
 - `raycaster`: Imports or references `raycaster` from `src/raycaster/`.
 - `render`: Imports or references `render` from `src/render/`.
+- `repl`: Imports or references `src/repl/`. Cross-group dependency from `Core Runtime` into `Edge/Integration`.
 - `sprite`: Imports or references `sprite` from `src/sprite/`.
 - `tilemap`: Imports or references `tilemap` from `src/tilemap/`.
 - `timer`: Imports or references `timer` from `src/timer/`.
@@ -128,9 +144,11 @@ This module primarily collaborates with `audio`, `camera`, `event`, `filesystem`
 - **conf.toml only (updated 2026-04-21)**: `conf.lua` support has been removed. `Config::load` tries `conf.toml` and returns `Config::default()` if absent. `load_from_conf_lua`, `build_config_table`, and `read_config_table` have been deleted. Configuration is TOML-only.
 - **Hot-reload (updated 2026-05-07)**: `app` now watches `conf.toml` and applies mutable settings live (target fps, physics tick, fixed update tick, log level, window title, viewport scale mode) while incrementing a runtime config revision counter.
 - **Hot-reload programmatic trigger (updated 2026-05-12)**: `lurek.runtime.reloadConfig()` sets `SharedState::pending_config_reload`; the app loop consumes this flag and calls `FileWatcher::force_changed()` before the normal `poll_config_hot_reload` path, enabling Lua-triggered reloads without requiring a file change on disk.
-- **Config inspector (updated 2026-05-12)**: `lurek.runtime.getConfig()` returns a snapshot table of active runtime-mutable config values: `physics_tick_rate`, `fixed_update_tick_rate`, `frame_budget_warn_ms`, `lua_callback_timeout_ms`, `vsync`, `log_level`, `config_reload_revision`.
+- **Config inspector (updated 2026-05-12, extended 2026-05-15)**: `lurek.runtime.getConfig()` returns a snapshot table of active runtime-mutable config values and startup mode state: `runtime_mode`, `physics_tick_rate`, `fixed_update_tick_rate`, `frame_budget_warn_ms`, `lua_callback_timeout_ms`, `vsync`, `log_level`, `config_reload_revision`.
 - **PhysicsRunConfig (updated 2026-05-12)**: Four physics-related fields (`physics_fixed_dt`, `physics_max_steps`, `fixed_update_dt`, `physics_debug_draw`) removed from flat `SharedState` and grouped into `PhysicsRunConfig` sub-struct accessible as `SharedState::physics_run`.
 - **evict_lru_resources total budget (updated 2026-05-12)**: Eviction check now uses `resource_memory_stats().total_bytes` (textures + fonts + canvases + shaders) instead of texture-only byte sum. `canvas_last_used` map and `touch_canvas()` method added for canvas recency tracking. Internal allocation pattern improved: `Vec::with_capacity` + `sort_unstable_by_key`.
 - **messages.rs unsafe removed (updated 2026-05-12)**: `MessageCatalog` stores `&'static str` values via `Box::leak` in `collect_strings`; no `unsafe` blocks remain in `messages.rs`. `get_message` return type and `MessageCatalog::get` return type unchanged.
 - **Engine diagnostics (updated 2026-05-12)**: `lurek.engine.getResourceStats()` includes per-kind bytes/counts (`texture`, `font`, `canvas`, `shader`, `total`), `lurek.engine.getFrameProfile()` now includes both callback buckets and app-loop buckets (`app_tick_ms`, `app_update_ms`, `app_render_ms`, `app_frame_total_ms`), and `lurek.engine.getFrameProfileText()` returns a compact one-line timing summary.
 - **Lua callback timeout (updated 2026-05-12)**: `[performance].lua_callback_timeout_ms` is mirrored into runtime state and enforced for app-driven Lua callbacks via an instruction hook. Timeouts are surfaced as runtime errors and route the app to `RunState::Error`.
+- **Runtime modes (updated 2026-05-15)**: `[runtime].mode` accepts `gui`, `tui`, `headless`, and `cli`. CLI flags `--mode=...`, `--gui`, `--tui`, `--headless`, and `--cli` override config. GUI remains the default and still routes through `App::run`. TUI and CLI also use the GUI event loop, but force a terminal-grid window sized from `[tui]` or `[cli]` config. Headless bypasses `App::run` and runs without window, render, input, audio, or terminal modules.
+- **Headless callbacks (updated 2026-05-15)**: `--headless` loads `main.lua` only when a game directory was supplied, runs any `--eval` snippets, calls `lurek.init()` and `lurek.ready()` if present, then runs configured or CLI-specified frames through `lurek.process_physics(dt)`, `lurek.fixedUpdate(dt)`, `lurek.process(dt)`, and `lurek.process_late(dt)` without draw callbacks.

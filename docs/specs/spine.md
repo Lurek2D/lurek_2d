@@ -46,7 +46,7 @@ This module primarily collaborates with `image`, `render`, `runtime`. Its respon
 - `IKConstraint::new` (`ik.rs`): Create a new IKConstraint with the given chain indices and bend direction; target defaults to (0, 0).
 - `IKConstraint::set_target` (`ik.rs`): Update the world-space target position for this constraint.
 - `IKConstraint::solve` (`ik.rs`): Solve root and elbow local_rotation angles using law-of-cosines 2-bone IK; no-op when chain length < 2 or indices out of bounds.
-- `Skeleton::generate_render_commands` (`render.rs`): Build a RenderCommand list for all bones (filled circles) and slot attachments (outline rectangles) at world offset (x, y); returns empty vec when no bones exist.
+- `Skeleton::generate_render_commands` (`render.rs`): Build a RenderCommand list for all bones (filled circles) and slot attachments (outline rectangles).
 - `Skeleton::new` (`skeleton.rs`): Create an empty Skeleton with identity scale and no active animation.
 - `Skeleton::add_bone` (`skeleton.rs`): Append a Bone to the bone array and return its new index.
 - `Skeleton::add_slot` (`skeleton.rs`): Append a Slot to the slot array and return its new index.

@@ -13,6 +13,8 @@ pub mod circle;
 pub mod color;
 /// Easing function table for animation and tween drivers.
 pub mod easing;
+/// Scalar math utilities: lerp, remap, clamp, sign, smoothstep, inverse_lerp.
+pub mod facade;
 /// Scalar geometric helpers: point-in-shape, closest-point, distance, intersection.
 pub mod geometry;
 /// 3x3 matrix for 2D affine transforms.
@@ -45,8 +47,6 @@ pub mod vec2;
 pub mod vec3;
 /// Voronoi diagram builder and per-cell data.
 pub mod voronoi;
-/// Scalar math utilities: lerp, remap, clamp, sign, smoothstep, inverse_lerp.
-pub mod facade;
 
 pub use aabb_tree::AabbTree;
 pub use bezier::BezierCurve;

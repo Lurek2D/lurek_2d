@@ -1,4 +1,3 @@
-
 //! - AI debug rendering helpers turning FSM and behavior-tree state into renderer commands.
 //! - Layout and traversal logic walking state-machine and tree data with position assignment.
 //! - Image drawing helpers mirroring structures into offline ImageData for inspection.

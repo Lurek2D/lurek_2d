@@ -361,6 +361,25 @@ def check_orphan_doc_in_closures(lines: list[str]) -> None:
         # Skip lines that are just /// (blank doc line) -- common in pub fn docs inside impl blocks
         if stripped == "///":
             continue
+
+        # Legitimate: nested helper tables sometimes document a nearby mapping.set(...)
+        # registration after a few local bridge `let` lines. Those doc blocks are still
+        # parseable by gen_lua_api.py and should not warn.
+        registration_found = False
+        for look_ahead in range(i + 1, min(len(lines), i + 9)):
+            next_stripped = lines[look_ahead].strip()
+            if not next_stripped or next_stripped.startswith("///"):
+                continue
+            if next_stripped.startswith("//"):
+                continue
+            if re.match(r"^let\s+\w+\s*=\s*.+;\s*$", next_stripped):
+                continue
+            if re.search(r'\b(\w+\.set|methods\.add_method(?:_mut)?|methods\.add_function(?:_mut)?)\s*\(', next_stripped):
+                registration_found = True
+            break
+        if registration_found:
+            continue
+
         _warn(i + 1,
               f"Deep `///` at indent {len(m.group(1))} -- this doc comment is likely "
               "inside a closure body; docstrings belong ABOVE the closure call, not inside it")

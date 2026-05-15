@@ -25,6 +25,7 @@ use crate::raycaster::RaycasterScene;
 use crate::render::gpu_renderer::RenderStats;
 use crate::render::renderer::{BlendMode, DepthMode, RenderCommand, StencilMode, TextureData};
 use crate::render::{Canvas, CompoundShape, Mesh, Shader};
+use crate::runtime::mode::RuntimeMode;
 use crate::runtime::resource_keys::{
     CanvasKey, FontKey, MeshKey, ParticleKey, ShaderKey, ShapeKey, SpriteBatchKey, TextureKey,
 };
@@ -395,6 +396,8 @@ pub struct SharedState {
     pub frame_counter: u64,
     /// Stores config_reload_revision state.
     pub config_reload_revision: u64,
+    /// Stores selected runtime mode for Lua config snapshots and tooling.
+    pub runtime_mode: RuntimeMode,
     /// Stores texture_last_used state.
     pub texture_last_used: HashMap<TextureKey, u64>,
     /// Stores canvas_last_used state.
@@ -489,6 +492,7 @@ impl SharedState {
             frame_profile: FrameProfile::default(),
             frame_counter: 0,
             config_reload_revision: 0,
+            runtime_mode: RuntimeMode::Gui,
             texture_last_used: HashMap::new(),
             canvas_last_used: HashMap::new(),
             frame_budget_warn_ms: None,

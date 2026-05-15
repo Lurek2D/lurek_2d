@@ -1,4 +1,3 @@
-
 //! - Defines keyed numeric curves and sparse multi-property timelines for animation data.
 //! - Stores sorted keyframes for single values and named property tracks.
 //! - Supports step, linear, ease-in, ease-out, ease-in-out, and callback-backed easing modes.

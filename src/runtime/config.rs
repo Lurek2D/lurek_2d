@@ -10,11 +10,14 @@ use crate::log_msg;
 use crate::runtime::log_messages::{
     L050_MODULE_DEP_DISABLED, L051_CONF_READ_ERR, L052_CONF_PARSE_ERR,
 };
+use crate::runtime::mode::RuntimeMode;
 use serde::{Deserialize, Serialize};
 use std::path::Path;
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Top-level runtime configuration consumed during engine startup.
 pub struct Config {
+    /// Runtime mode selection and mode-level startup behavior.
+    pub runtime: RuntimeConfig,
     /// Window and presentation settings.
     pub window: WindowConfig,
     /// Renderer backend selection and adapter preferences.
@@ -23,6 +26,12 @@ pub struct Config {
     pub modules: ModulesConfig,
     /// Frame pacing and callback timing settings.
     pub performance: PerformanceConfig,
+    /// Terminal-grid runtime defaults reserved for the TUI mode.
+    pub tui: TuiConfig,
+    /// GUI-rendered REPL runtime defaults reserved for the CLI mode.
+    pub cli: CliConfig,
+    /// No-window Lua runtime defaults.
+    pub headless: HeadlessConfig,
     /// Optional filesystem identity string used by save/runtime systems.
     pub identity: Option<String>,
     /// Optional game or package version tag.
@@ -33,6 +42,12 @@ pub struct Config {
     pub log_append: bool,
     /// Optional log level override.
     pub log_level: Option<String>,
+}
+#[derive(Debug, Clone, Serialize, Deserialize)]
+/// Runtime mode configuration loaded from `[runtime]`.
+pub struct RuntimeConfig {
+    /// Selected startup mode; CLI flags override this value.
+    pub mode: RuntimeMode,
 }
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Renderer backend configuration.
@@ -75,6 +90,45 @@ pub struct WindowConfig {
     pub game_height: Option<u32>,
     /// Startup maximized flag.
     pub maximized: bool,
+}
+#[derive(Debug, Clone, Serialize, Deserialize)]
+/// Terminal-grid mode defaults used by GUI-backed TUI startup.
+pub struct TuiConfig {
+    /// Number of terminal columns.
+    pub cols: u32,
+    /// Number of terminal rows.
+    pub rows: u32,
+    /// Cell width in pixels.
+    pub cell_width: u32,
+    /// Cell height in pixels.
+    pub cell_height: u32,
+    /// Optional monospace font path.
+    pub font: Option<String>,
+    /// Requested terminal font size.
+    pub font_size: u32,
+}
+#[derive(Debug, Clone, Serialize, Deserialize)]
+/// GUI-rendered interactive Lua REPL defaults used by CLI startup.
+pub struct CliConfig {
+    /// Number of terminal columns.
+    pub cols: u32,
+    /// Number of terminal rows.
+    pub rows: u32,
+    /// Cell width in pixels.
+    pub cell_width: u32,
+    /// Cell height in pixels.
+    pub cell_height: u32,
+    /// Maximum REPL history entries retained by default.
+    pub max_history: usize,
+}
+#[derive(Debug, Clone, Serialize, Deserialize)]
+/// Headless runtime defaults for callback stepping.
+pub struct HeadlessConfig {
+    #[serde(default)]
+    /// Optional number of process frames to execute after init and ready.
+    pub frames: Option<u32>,
+    /// Delta time passed to headless frame callbacks.
+    pub dt: f64,
 }
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Feature-toggle table for engine modules.
@@ -156,6 +210,26 @@ pub struct ModulesConfig {
 }
 /// Dependency validation and auto-fix logic for module toggles.
 impl ModulesConfig {
+    /// Force module switches that must be disabled in no-window headless runtime.
+    pub fn apply_headless_profile(&mut self) {
+        self.audio = false;
+        self.render = false;
+        self.input = false;
+        self.window = false;
+        self.terminal = false;
+        self.particle = false;
+        self.effect = false;
+        self.tilemap = false;
+        self.ui = false;
+        self.minimap = false;
+        self.animation = false;
+        self.tween = false;
+        self.camera = false;
+        self.raycaster = false;
+        self.spine = false;
+        self.parallax = false;
+        self.globe = false;
+    }
     /// Disable modules whose dependencies are not enabled and emit warnings.
     pub fn validate_and_fix(&mut self) {
         if !self.render {
@@ -236,6 +310,9 @@ impl Default for Config {
     /// Build default runtime configuration.
     fn default() -> Self {
         Config {
+            runtime: RuntimeConfig {
+                mode: RuntimeMode::Gui,
+            },
             window: WindowConfig {
                 width: 800,
                 height: 600,
@@ -306,6 +383,25 @@ impl Default for Config {
                 fixed_update_tick_rate: None,
                 frame_budget_warn_ms: None,
                 lua_callback_timeout_ms: None,
+            },
+            tui: TuiConfig {
+                cols: 80,
+                rows: 25,
+                cell_width: 10,
+                cell_height: 20,
+                font: None,
+                font_size: 16,
+            },
+            cli: CliConfig {
+                cols: 100,
+                rows: 30,
+                cell_width: 10,
+                cell_height: 20,
+                max_history: 200,
+            },
+            headless: HeadlessConfig {
+                frames: None,
+                dt: 1.0 / 60.0,
             },
             identity: None,
             version: None,

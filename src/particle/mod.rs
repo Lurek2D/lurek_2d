@@ -1,4 +1,3 @@
-
 //! - Particle emitter lifecycle: spawn, simulate, and recycle pooled particles each frame.
 //! - Configurable emission shapes, rates, bursts, and per-particle property ranges (colour, size, alpha).
 //! - Physics collision response, trail ribbons, spawn-shape geometry, and preset constructors.

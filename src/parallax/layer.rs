@@ -1,4 +1,3 @@
-
 //! - Single parallax layer definition with scroll factor, autoscroll, tiling, opacity, and tint.
 //! - Draw-batch struct that collects tile positions and render state for submission.
 //! - Camera-relative pixel offset computation with optional scroll clamping.

@@ -296,12 +296,13 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
 
     // -- getConfig --
     /// Returns a table containing the current engine runtime configuration values.
-    /// @return | table | Table with fields: `physics_tick_rate` (number), `fixed_update_tick_rate` (number?), `frame_budget_warn_ms` (number?), `lua_callback_timeout_ms` (number?), `vsync` (boolean), `log_level` (string), `config_reload_revision` (number).
+    /// @return | table | Table with fields: `runtime_mode` (string), `physics_tick_rate` (number), `fixed_update_tick_rate` (number?), `frame_budget_warn_ms` (number?), `lua_callback_timeout_ms` (number?), `vsync` (boolean), `log_level` (string), `config_reload_revision` (number).
     system.set(
         "getConfig",
         lua.create_function(move |lua, ()| {
             let st = s.borrow();
             let tbl = lua.create_table()?;
+            tbl.set("runtime_mode", st.runtime_mode.as_str())?;
             let fixed_dt = st.physics_run.fixed_dt;
             let physics_tick_rate = if fixed_dt > 0.0 { 1.0 / fixed_dt } else { 0.0 };
             tbl.set("physics_tick_rate", physics_tick_rate)?;

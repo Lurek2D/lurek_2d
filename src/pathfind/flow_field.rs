@@ -4,7 +4,7 @@
 //! - Provides world-space steering that converts pixel coordinates to tile lookups and returns a scaled velocity.
 //! - Includes a debug visualisation helper that renders the field directions and obstacles to an ImageData bitmap.
 
-use crate::runtime::log_messages::{FF01,FF02,FF03};
+use crate::runtime::log_messages::{FF01, FF02, FF03};
 
 use crate::log_msg;
 use crate::pathfind::nav_grid::NavGrid;

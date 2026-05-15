@@ -72,14 +72,14 @@ Protocol access now includes a lightweight handshake: clients call `ping` to rec
 
 ### Module Functions
 - `lurek.debugbridge.start`: Starts the localhost debug bridge server on a port.
-- `lurek.debugbridge.stop`: Returns whether the debug bridge server is running.
-- `lurek.debugbridge.isRunning`: Lua-facing function documented in the binding source.
-- `lurek.debugbridge.getPort`: Returns the debug bridge TCP port.
+- `lurek.debugbridge.stop`: Stops the debug bridge server and joins its server thread.
+- `lurek.debugbridge.isRunning`: Returns whether the debug bridge server is currently running.
+- `lurek.debugbridge.getPort`: Returns the debug bridge TCP port. This function is exposed to Lua scripts.
 - `lurek.debugbridge.getClientCount`: Returns the number of connected debug bridge clients.
 - `lurek.debugbridge.poll`: Polls pending debugger requests, evaluates supported methods, and queues responses.
 - `lurek.debugbridge.capturePrint`: Captures a print message and broadcasts it to debug bridge clients.
 - `lurek.debugbridge.getPrintHistory`: Returns captured print history entries.
-- `lurek.debugbridge.clearPrintHistory`: Clears captured print history.
+- `lurek.debugbridge.clearPrintHistory`: Clears captured print history. This function is exposed to Lua scripts.
 - `lurek.debugbridge.setMaxPrintHistory`: Sets the maximum retained print history entry count.
 - `lurek.debugbridge.getPerformance`: Returns debug bridge performance metrics.
 - `lurek.debugbridge.requestScreenshot`: Requests a screenshot from the runtime.

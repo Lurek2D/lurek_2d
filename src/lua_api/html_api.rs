@@ -803,7 +803,7 @@ fn collect_element_listeners<'lua>(
         .map(|listener| lua.registry_value(&listener.key))
         .collect()
 }
-    /// Collects Lua document callbacks for one event name.
+/// Collects Lua document callbacks for one event name.
 fn collect_document_listeners<'lua>(
     lua: &'lua Lua,
     document: &LuaHtmlDocument,
@@ -817,7 +817,7 @@ fn collect_document_listeners<'lua>(
         .map(|listener| lua.registry_value(&listener.key))
         .collect()
 }
-    /// Builds the Lua event table passed to HTML event listeners.
+/// Builds the Lua event table passed to HTML event listeners.
 fn create_html_event_table<'lua>(
     lua: &'lua Lua,
     document: &LuaHtmlDocument,

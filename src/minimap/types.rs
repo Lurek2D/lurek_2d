@@ -1,4 +1,3 @@
-
 //! - Shared data types for the minimap subsystem: enums, structs, and overlay shapes.
 //! - `ColorMode` selects between terrain-coloured and political-coloured cell rendering.
 //! - `FogLevel` encodes per-cell fog-of-war visibility as a three-state enum.
@@ -174,4 +173,3 @@ pub struct LayerData {
     /// Number of rows in this layer grid.
     pub height: u32,
 }
-

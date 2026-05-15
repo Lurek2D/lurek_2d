@@ -67,52 +67,52 @@ This module primarily collaborates with `image`, `render`, `runtime`. Its respon
 - `LParallaxLayer:update`: Advances parallax layer autoscroll by delta time.
 - `LParallaxLayer:render`: Enqueues render commands using explicit camera coordinates.
 - `LParallaxLayer:renderAuto`: Enqueues render commands using the runtime camera.
-- `LParallaxLayer:resetAutoscroll`: Resets layer autoscroll offset.
-- `LParallaxLayer:setScrollFactor`: Sets layer scroll factor.
-- `LParallaxLayer:getScrollFactor`: Returns layer scroll factor.
-- `LParallaxLayer:setOffset`: Sets layer offset.
-- `LParallaxLayer:getOffset`: Returns layer offset.
-- `LParallaxLayer:setAutoscroll`: Sets layer autoscroll velocity.
+- `LParallaxLayer:resetAutoscroll`: Resets layer autoscroll offset. This method is available to Lua scripts.
+- `LParallaxLayer:setScrollFactor`: Sets layer scroll factor. This method is available to Lua scripts.
+- `LParallaxLayer:getScrollFactor`: Returns layer scroll factor. This method is available to Lua scripts.
+- `LParallaxLayer:setOffset`: Sets layer offset. This method is available to Lua scripts.
+- `LParallaxLayer:getOffset`: Returns layer offset. This method is available to Lua scripts.
+- `LParallaxLayer:setAutoscroll`: Sets layer autoscroll velocity. This method is available to Lua scripts.
 - `LParallaxLayer:getAutoscroll`: Returns layer autoscroll velocity.
 - `LParallaxLayer:setRepeat`: Sets horizontal and vertical repeat flags.
-- `LParallaxLayer:setScale`: Sets layer scale.
-- `LParallaxLayer:setZ`: Sets layer z order.
-- `LParallaxLayer:getZ`: Returns layer z order.
+- `LParallaxLayer:setScale`: Sets layer scale. This method is available to Lua scripts.
+- `LParallaxLayer:setZ`: Sets layer z order. This method is available to Lua scripts.
+- `LParallaxLayer:getZ`: Returns layer z order. This method is available to Lua scripts.
 - `LParallaxLayer:setOpacity`: Sets layer opacity, clamped to 0..1.
-- `LParallaxLayer:getOpacity`: Returns layer opacity.
-- `LParallaxLayer:setTint`: Sets layer tint color.
-- `LParallaxLayer:getTint`: Returns layer tint color.
-- `LParallaxLayer:setBlendMode`: Sets layer blend mode by name.
-- `LParallaxLayer:getBlendMode`: Returns layer blend mode name.
-- `LParallaxLayer:setVisible`: Sets layer visibility.
-- `LParallaxLayer:isVisible`: Returns layer visibility.
+- `LParallaxLayer:getOpacity`: Returns layer opacity. This method is available to Lua scripts.
+- `LParallaxLayer:setTint`: Sets layer tint color. This method is available to Lua scripts.
+- `LParallaxLayer:getTint`: Returns layer tint color. This method is available to Lua scripts.
+- `LParallaxLayer:setBlendMode`: Sets layer blend mode by name. This method is available to Lua scripts.
+- `LParallaxLayer:getBlendMode`: Returns layer blend mode name. This method is available to Lua scripts.
+- `LParallaxLayer:setVisible`: Sets layer visibility. This method is available to Lua scripts.
+- `LParallaxLayer:isVisible`: Returns layer visibility. This method is available to Lua scripts.
 - `LParallaxLayer:setClamp`: Sets clamp bounds for layer movement.
-- `LParallaxLayer:clearClamp`: Clears layer clamp bounds.
-- `LParallaxLayer:setTiling`: Enables or disables layer tiling.
+- `LParallaxLayer:clearClamp`: Clears layer clamp bounds. This method is available to Lua scripts.
+- `LParallaxLayer:setTiling`: Enables or disables layer tiling. This method is available to Lua scripts.
 - `LParallaxLayer:getTiling`: Returns whether layer tiling is enabled.
-- `LParallaxLayer:setTileSize`: Sets tile size for tiling.
-- `LParallaxLayer:setDepth`: Sets parallax depth.
-- `LParallaxLayer:getDepth`: Returns parallax depth.
+- `LParallaxLayer:setTileSize`: Sets tile size for tiling. This method is available to Lua scripts.
+- `LParallaxLayer:setDepth`: Sets parallax depth. This method is available to Lua scripts.
+- `LParallaxLayer:getDepth`: Returns parallax depth. This method is available to Lua scripts.
 - `LParallaxLayer:addEffectPass`: Adds a shader effect pass to this layer.
 - `LParallaxLayer:clearEffects`: Clears shader effect passes from this layer.
-- `LParallaxLayer:effectCount`: Returns shader effect pass count.
-- `LParallaxLayer:setMotionStretch`: Sets motion stretch settings.
-- `LParallaxLayer:getMotionStretch`: Returns motion stretch settings.
+- `LParallaxLayer:effectCount`: Returns shader effect pass count. This method is available to Lua scripts.
+- `LParallaxLayer:setMotionStretch`: Sets motion stretch settings. This method is available to Lua scripts.
+- `LParallaxLayer:getMotionStretch`: Returns motion stretch settings. This method is available to Lua scripts.
 
 ### `LParallaxSet` Methods
 - `LParallaxSet:type`: Returns the Lua-visible type name for this parallax set handle.
-- `LParallaxSet:addLayer`: Adds a parallax layer to this set.
+- `LParallaxSet:addLayer`: Adds a parallax layer to this set. This method is available to Lua scripts.
 - `LParallaxSet:removeLayerAt`: Removes a layer by one-based index.
 - `LParallaxSet:layerCount`: Returns the number of layers in this set.
 - `LParallaxSet:getLayerZAt`: Returns z order for a layer by one-based index.
-- `LParallaxSet:sortByZ`: Sorts layers by z order.
-- `LParallaxSet:setVisible`: Sets set visibility.
-- `LParallaxSet:isVisible`: Returns set visibility.
-- `LParallaxSet:update`: Updates all layers in this set.
+- `LParallaxSet:sortByZ`: Sorts layers by z order. This method is available to Lua scripts.
+- `LParallaxSet:setVisible`: Sets set visibility. This method is available to Lua scripts.
+- `LParallaxSet:isVisible`: Returns set visibility. This method is available to Lua scripts.
+- `LParallaxSet:update`: Updates all layers in this set. This method is available to Lua scripts.
 - `LParallaxSet:render`: Enqueues render commands for all visible set layers using explicit camera coordinates.
 - `LParallaxSet:renderAuto`: Enqueues render commands for all visible set layers using the runtime camera.
-- `LParallaxSet:getName`: Returns this set name.
-- `LParallaxSet:setName`: Sets this set name.
+- `LParallaxSet:getName`: Returns this set name. This method is available to Lua scripts.
+- `LParallaxSet:setName`: Sets this set name. This method is available to Lua scripts.
 
 ## References
 

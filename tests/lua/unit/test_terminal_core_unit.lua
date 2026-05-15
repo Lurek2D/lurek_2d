@@ -616,14 +616,11 @@ describe("terminal low-level cell methods (RS parity)", function()
     end)
 
     -- @covers LTerminal:get
+    -- @covers LTerminal:print
     -- @covers lurek.terminal.newTerminal
     it("print writes characters left-to-right and clips at edge", function()
-        ---@type any
+        ---@type LTerminal
         local term = lurek.terminal.newTerminal(5, 3)
-        if type(term.print) ~= "function" then
-            expect_true(type(term.print) ~= "function")
-            return
-        end
         term:print(1, 1, "Hello World")
         local ch1 = term:get(1, 1)
         local ch5 = term:get(5, 1)
@@ -1194,18 +1191,160 @@ describe("unit: migrated from integration/test_terminal_input.lua", function()
         it("text typed through the terminal appends to the focused command buffer", function()
             local term = lurek.terminal.newTerminal(40, 12)
             local input = lurek.terminal.newTextBox(2, 2, 18)
-    
+
             term:addWidget(input)
             term:setFocus(input)
-    
+
             expect_true(term:textinput("h"))
             expect_true(term:textinput("e"))
             expect_true(term:textinput("l"))
             expect_true(term:textinput("p"))
-    
+
             expect_equal("help", input:getText())
         end)
 
+end)
+
+-- @describe scrollback buffer
+describe("scrollback buffer", function()
+    -- @covers lurek.terminal.getScrollback
+    -- @covers lurek.terminal.scrollbackLen
+    -- @covers lurek.terminal.setScrollbackCap
+    it("pushes lines to scrollback and retrieves them by offset and count", function()
+        ---@type any
+        local term = lurek.terminal.newTerminal(40, 10)
+        lurek.terminal.pushScrollback(term, "line one")
+        lurek.terminal.pushScrollback(term, "line two")
+        lurek.terminal.pushScrollback(term, "line three")
+
+        expect_equal(3, lurek.terminal.scrollbackLen(term))
+        local lines = lurek.terminal.getScrollback(term, 0, 2)
+        expect_equal(2, #lines)
+    end)
+
+    -- @covers lurek.terminal.setScrollbackCap
+    -- @covers lurek.terminal.scrollbackLen
+    it("respects scrollback cap and evicts oldest lines when exceeded", function()
+        ---@type any
+        local term = lurek.terminal.newTerminal(40, 10)
+        lurek.terminal.setScrollbackCap(term, 2)
+        lurek.terminal.pushScrollback(term, "a")
+        lurek.terminal.pushScrollback(term, "b")
+        lurek.terminal.pushScrollback(term, "c")
+        expect_equal(2, lurek.terminal.scrollbackLen(term))
+    end)
+end)
+
+-- @describe command history
+describe("command history", function()
+    -- @covers lurek.terminal.pushCmdHistory
+    -- @covers lurek.terminal.cmdHistoryLen
+    -- @covers lurek.terminal.clearCmdHistory
+    -- @covers lurek.terminal.prevCmd
+    -- @covers lurek.terminal.nextCmd
+    it("pushes entries and reports correct length", function()
+        ---@type any
+        local term = lurek.terminal.newTerminal(40, 10)
+        lurek.terminal.pushCmdHistory(term, "ls")
+        lurek.terminal.pushCmdHistory(term, "cd /")
+        expect_equal(2, lurek.terminal.cmdHistoryLen(term))
+    end)
+
+    it("clearCmdHistory resets length to zero", function()
+        ---@type any
+        local term = lurek.terminal.newTerminal(40, 10)
+        lurek.terminal.pushCmdHistory(term, "ls")
+        lurek.terminal.clearCmdHistory(term)
+        expect_equal(0, lurek.terminal.cmdHistoryLen(term))
+    end)
+
+    it("prevCmd and nextCmd navigate history", function()
+        ---@type any
+        local term = lurek.terminal.newTerminal(40, 10)
+        lurek.terminal.pushCmdHistory(term, "first")
+        lurek.terminal.pushCmdHistory(term, "second")
+        local prev = lurek.terminal.prevCmd(term)
+        expect_equal("string", type(prev))
+        local next_cmd = lurek.terminal.nextCmd(term)
+        -- next may return nil or string depending on position
+        expect_true(next_cmd == nil or type(next_cmd) == "string")
+    end)
+end)
+
+-- @describe completion engine
+describe("completion engine", function()
+    -- @covers lurek.terminal.addCompletion
+    -- @covers lurek.terminal.getCompletions
+    -- @covers lurek.terminal.clearCompletions
+    -- @covers lurek.terminal.removeCompletion
+    -- @covers lurek.terminal.nextCompletion
+    -- @covers lurek.terminal.resetCompletion
+    it("addCompletion and getCompletions return matching candidates", function()
+        lurek.terminal.clearCompletions()
+        lurek.terminal.addCompletion("help")
+        lurek.terminal.addCompletion("history")
+        lurek.terminal.addCompletion("quit")
+
+        local matches = lurek.terminal.getCompletions("h")
+        expect_true(#matches >= 2)
+
+        lurek.terminal.clearCompletions()
+        local empty = lurek.terminal.getCompletions("h")
+        expect_equal(0, #empty)
+    end)
+
+    it("removeCompletion removes a single candidate", function()
+        lurek.terminal.clearCompletions()
+        lurek.terminal.addCompletion("foo")
+        lurek.terminal.addCompletion("foobar")
+        lurek.terminal.removeCompletion("foo")
+        local matches = lurek.terminal.getCompletions("foo")
+        expect_equal(1, #matches)
+        expect_equal("foobar", matches[1])
+    end)
+
+    it("nextCompletion cycles through matches", function()
+        lurek.terminal.clearCompletions()
+        lurek.terminal.addCompletion("alpha")
+        lurek.terminal.addCompletion("also")
+        lurek.terminal.resetCompletion()
+        local c1 = lurek.terminal.nextCompletion("al")
+        local c2 = lurek.terminal.nextCompletion("al")
+        expect_equal("string", type(c1))
+        expect_equal("string", type(c2))
+    end)
+end)
+
+-- @describe applyTheme
+describe("applyTheme", function()
+    -- @covers lurek.terminal.applyTheme
+    it("applies known themes without error", function()
+        ---@type any
+        local term = lurek.terminal.newTerminal(40, 10)
+        local themes = { "solarized_dark", "solarized_light", "monokai", "dracula", "nord" }
+        for _, name in ipairs(themes) do
+            lurek.terminal.applyTheme(term, name)
+        end
+    end)
+
+    it("returns error for unknown theme", function()
+        ---@type any
+        local term = lurek.terminal.newTerminal(40, 10)
+        local ok = pcall(function() lurek.terminal.applyTheme(term, "unknown_xyz") end)
+        expect_false(ok)
+    end)
+end)
+
+-- @describe grid limits
+describe("grid limits", function()
+    -- @covers lurek.terminal.getMaxCols
+    -- @covers lurek.terminal.getMaxRows
+    it("getMaxCols and getMaxRows return positive integers", function()
+        local max_cols = lurek.terminal.getMaxCols()
+        local max_rows = lurek.terminal.getMaxRows()
+        expect_true(type(max_cols) == "number" and max_cols > 0)
+        expect_true(type(max_rows) == "number" and max_rows > 0)
+    end)
 end)
 
 test_summary()

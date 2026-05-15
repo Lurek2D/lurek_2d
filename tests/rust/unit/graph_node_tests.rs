@@ -56,7 +56,12 @@ fn test_supply_demand_crud_updates_values() {
     assert_eq!(n.get_available_supply("gold"), 0);
     n.add_demand("food", 10, 5);
     assert!(n.get_demand("food").is_some());
-    assert_eq!(n.get_demand("food").expect("food demand should exist").priority, 5);
+    assert_eq!(
+        n.get_demand("food")
+            .expect("food demand should exist")
+            .priority,
+        5
+    );
     n.remove_supply("ore");
     assert_eq!(n.get_available_supply("ore"), 0);
     n.remove_demand("food");
@@ -113,9 +118,18 @@ fn test_flow_mode_parse_rejects_unknown_value() {
         FlowMode::from_str("passive").expect("passive should parse"),
         FlowMode::Passive
     );
-    assert_eq!(FlowMode::from_str("push").expect("push should parse"), FlowMode::Push);
-    assert_eq!(FlowMode::from_str("pull").expect("pull should parse"), FlowMode::Pull);
-    assert_eq!(FlowMode::from_str("both").expect("both should parse"), FlowMode::Both);
+    assert_eq!(
+        FlowMode::from_str("push").expect("push should parse"),
+        FlowMode::Push
+    );
+    assert_eq!(
+        FlowMode::from_str("pull").expect("pull should parse"),
+        FlowMode::Pull
+    );
+    assert_eq!(
+        FlowMode::from_str("both").expect("both should parse"),
+        FlowMode::Both
+    );
     assert!(FlowMode::from_str("bad").is_err());
     assert_eq!(FlowMode::Both.to_str(), "both");
 }

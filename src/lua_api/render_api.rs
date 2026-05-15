@@ -2507,14 +2507,12 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @return | LCanvas | The active canvas handle.
     graphics.set(
         "getCanvas",
-        lua.create_function(move |_, ()| {
-            match s.borrow().active_canvas {
-                Some(key) => Ok(Some(LuaCanvas {
-                    state: s.clone(),
-                    key,
-                })),
-                None => Ok(None),
-            }
+        lua.create_function(move |_, ()| match s.borrow().active_canvas {
+            Some(key) => Ok(Some(LuaCanvas {
+                state: s.clone(),
+                key,
+            })),
+            None => Ok(None),
         })?,
     )?;
     let s = state.clone();

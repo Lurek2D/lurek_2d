@@ -1,4 +1,3 @@
-
 //! - Render-command generation for particle systems and trails.
 //! - Expansion of batched `DrawParticleSystem` into individual textured draw calls.
 //! - Untextured particles remain batched for efficient rendering.

@@ -237,7 +237,7 @@ fn current_bone_property(bone: &Bone, prop: &BoneProperty) -> f32 {
 /// Utility and data-query methods for SkeletonAnimation.
 impl SkeletonAnimation {
     /// Return the evaluated (bone_idx, property, value) pose snapshot for all timelines at the given time.
-/// Return the evaluated (bone_idx, property, value) pose snapshot for all timelines at the given time.
+    /// Return the evaluated (bone_idx, property, value) pose snapshot for all timelines at the given time.
     pub fn pose_at(&self, time: f32) -> Vec<(usize, BoneProperty, f32)> {
         self.timelines
             .iter()

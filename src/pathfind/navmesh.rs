@@ -1,4 +1,3 @@
-
 //! - Polygon-based navigation mesh for 2D pathfinding.
 //! - A\* search over polygon adjacency graph with centroid heuristic.
 //! - Ray-cast point-in-polygon containment test.

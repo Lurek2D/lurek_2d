@@ -477,7 +477,7 @@ The `ai` module is Lurek2D's Feature Systems tier AI toolkit — a collection of
 - `lurek.ai.newDialogueAI`: Creates an empty dialogue selector for weighted topics and branches.
 - `lurek.ai.newGOAPPlanner`: Creates an empty GOAP planner for boolean world-state planning.
 - `lurek.ai.newInfluenceMap`: Creates a grid influence map with the supplied cell dimensions and world cell size.
-- `lurek.ai.newSquad`: Creates an empty named squad.
+- `lurek.ai.newSquad`: Creates an empty named squad. This function is exposed to Lua scripts.
 - `lurek.ai.newCommandQueue`: Creates an empty command queue for callback-backed AI commands.
 - `lurek.ai.newTraitProfile`: Creates an empty trait profile with modifier support.
 - `lurek.ai.newStimulusWorld`: Creates an empty stimulus world for visual and auditory stimulus records.
@@ -580,7 +580,7 @@ The `ai` module is Lurek2D's Feature Systems tier AI toolkit — a collection of
 - `LBandit:select`: Selects an arm using the configured bandit strategy.
 - `LBandit:update`: Updates one arm with a received reward.
 - `LBandit:bestArm`: Returns the arm with the best current estimate.
-- `LBandit:reset`: Resets all bandit arm statistics.
+- `LBandit:reset`: Resets all bandit arm statistics. This method is available to Lua scripts.
 - `LBandit:armCount`: Returns the number of arms in this bandit.
 - `LBandit:totalPulls`: Returns the total number of arm selections recorded by this bandit.
 - `LBandit:type`: Returns the Lua-visible type name for this bandit handle.
@@ -598,7 +598,7 @@ The `ai` module is Lurek2D's Feature Systems tier AI toolkit — a collection of
 - `LCommandQueue:pushFront`: Adds a command callback to the front of the queue.
 - `LCommandQueue:replace`: Replaces the queue contents with one command callback.
 - `LCommandQueue:cancelCurrent`: Cancels the currently active command when one exists.
-- `LCommandQueue:clear`: Removes every queued command.
+- `LCommandQueue:clear`: Removes every queued command. This method is available to Lua scripts.
 - `LCommandQueue:getCount`: Returns the number of commands currently queued.
 - `LCommandQueue:isEmpty`: Returns whether the command queue has no commands.
 - `LCommandQueue:getCurrentType`: Returns the type label of the current command when one exists.
@@ -633,7 +633,7 @@ The `ai` module is Lurek2D's Feature Systems tier AI toolkit — a collection of
 
 ### `LEmotionModel` Methods
 - `LEmotionModel:add`: Adds an emotion definition with resting value, decay, and visibility threshold.
-- `LEmotionModel:trigger`: Adds an amount to a named emotion.
+- `LEmotionModel:trigger`: Adds an amount to a named emotion. This method is available to Lua scripts.
 - `LEmotionModel:get`: Returns the current value of a named emotion.
 - `LEmotionModel:dominant`: Returns the strongest active emotion name when one is available.
 - `LEmotionModel:isActive`: Returns whether a named emotion is currently active.
@@ -659,7 +659,7 @@ The `ai` module is Lurek2D's Feature Systems tier AI toolkit — a collection of
 ### `LGeneticAlgorithm` Methods
 - `LGeneticAlgorithm:evolve`: Advances the genetic algorithm by one generation.
 - `LGeneticAlgorithm:generation`: Returns the current generation index.
-- `LGeneticAlgorithm:popSize`: Returns the population size.
+- `LGeneticAlgorithm:popSize`: Returns the population size. This method is available to Lua scripts.
 - `LGeneticAlgorithm:setFitness`: Sets the fitness value for a chromosome by zero-based index.
 - `LGeneticAlgorithm:getGenes`: Returns the genes for a chromosome by zero-based index.
 - `LGeneticAlgorithm:bestGenes`: Returns the genes for the best chromosome in the population.
@@ -724,7 +724,7 @@ The `ai` module is Lurek2D's Feature Systems tier AI toolkit — a collection of
 - `LNeuroevolution:chromosomeToNet`: Converts one chromosome into a neural network handle when the index is valid.
 - `LNeuroevolution:bestNetwork`: Converts the best chromosome into a neural network handle when one exists.
 - `LNeuroevolution:bestFitness`: Returns the best fitness value in the population.
-- `LNeuroevolution:popSize`: Returns the population size.
+- `LNeuroevolution:popSize`: Returns the population size. This method is available to Lua scripts.
 - `LNeuroevolution:generation`: Returns the current generation index.
 - `LNeuroevolution:type`: Returns the Lua-visible type name for this neuroevolution handle.
 - `LNeuroevolution:typeOf`: Returns whether this neuroevolution handle matches a supported type name.
@@ -763,12 +763,12 @@ The `ai` module is Lurek2D's Feature Systems tier AI toolkit — a collection of
 - `LQLearner:typeOf`: Returns whether this Q-learner handle matches a supported type name.
 
 ### `LSquad` Methods
-- `LSquad:getName`: Returns the squad name.
+- `LSquad:getName`: Returns the squad name. This method is available to Lua scripts.
 - `LSquad:addMember`: Adds a member name to the squad member list.
 - `LSquad:removeMember`: Removes every member entry with the given name.
 - `LSquad:getMemberCount`: Returns the number of members in this squad.
 - `LSquad:getMembers`: Returns all squad members in an array-style Lua table.
-- `LSquad:setLeader`: Sets the squad leader name.
+- `LSquad:setLeader`: Sets the squad leader name. This method is available to Lua scripts.
 - `LSquad:getLeader`: Returns the squad leader name when one is assigned.
 - `LSquad:setFormation`: Sets the squad formation type and optionally updates spacing.
 - `LSquad:getFormation`: Returns the current squad formation type name.
@@ -815,15 +815,15 @@ The `ai` module is Lurek2D's Feature Systems tier AI toolkit — a collection of
 ### `LStimulusWorld` Methods
 - `LStimulusWorld:addVisual`: Adds a visual stimulus and returns its identifier.
 - `LStimulusWorld:addAuditory`: Adds an auditory stimulus with decay and returns its identifier.
-- `LStimulusWorld:remove`: Removes a stimulus by identifier.
+- `LStimulusWorld:remove`: Removes a stimulus by identifier. This method is available to Lua scripts.
 - `LStimulusWorld:update`: Advances stimulus decay and lifetime state.
 - `LStimulusWorld:count`: Returns the number of active stimuli.
-- `LStimulusWorld:clear`: Removes every active stimulus.
+- `LStimulusWorld:clear`: Removes every active stimulus. This method is available to Lua scripts.
 - `LStimulusWorld:type`: Returns the Lua-visible type name for this stimulus world handle.
 - `LStimulusWorld:typeOf`: Returns whether this stimulus world handle matches a supported type name.
 
 ### `LStrategyAI` Methods
-- `LStrategyAI:addGoal`: Adds a named strategic goal.
+- `LStrategyAI:addGoal`: Adds a named strategic goal. This method is available to Lua scripts.
 - `LStrategyAI:addTag`: Adds a context tag to this strategy AI.
 - `LStrategyAI:removeTag`: Removes a context tag from this strategy AI.
 - `LStrategyAI:update`: Advances strategy timing and scores goals when the update interval has elapsed.

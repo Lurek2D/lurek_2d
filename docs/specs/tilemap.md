@@ -423,8 +423,8 @@ The `tilemap` module is Lurek2D's tile-map authoring and rendering subsystem in 
 - `LIsoMap:getTilePart`: Returns the GID for a specific part of a tile at a given position and level.
 - `LIsoMap:fillLevel`: Fills all tiles on a level for a given part with a single GID.
 - `LIsoMap:setOrigin`: Sets the screen-space origin (top-left anchor) for isometric rendering.
-- `LIsoMap:getWidth`: Returns the map width in tiles.
-- `LIsoMap:getHeight`: Returns the map height in tiles.
+- `LIsoMap:getWidth`: Returns the map width in tiles. This method is available to Lua scripts.
+- `LIsoMap:getHeight`: Returns the map height in tiles. This method is available to Lua scripts.
 - `LIsoMap:getTileWidth`: Returns the width of an isometric tile in pixels.
 - `LIsoMap:getTileHeight`: Returns the height of an isometric tile in pixels.
 - `LIsoMap:getLevelHeight`: Returns the vertical pixel offset between levels.
@@ -442,7 +442,7 @@ The `tilemap` module is Lurek2D's tile-map authoring and rendering subsystem in 
 - `LLargeMapRenderer:getTile`: Returns the tile GID at a given position.
 - `LLargeMapRenderer:getMapSize`: Returns the map dimensions in tiles.
 - `LLargeMapRenderer:setChunkSize`: Sets the chunk size used for rendering subdivision.
-- `LLargeMapRenderer:getChunkSize`: Returns the current chunk size.
+- `LLargeMapRenderer:getChunkSize`: Returns the current chunk size. This method is available to Lua scripts.
 - `LLargeMapRenderer:invalidateChunk`: Marks a specific chunk as dirty so it will be rebuilt on the next render.
 - `LLargeMapRenderer:invalidateAll`: Marks all chunks as dirty, forcing a full rebuild on the next render.
 - `LLargeMapRenderer:getVisibleChunks`: Returns the number of chunks currently visible in the viewport.
@@ -462,15 +462,15 @@ The `tilemap` module is Lurek2D's tile-map authoring and rendering subsystem in 
 - `LMapBlock:getTile`: Returns the tile GID at a position within the block.
 - `LMapBlock:setSide`: Sets the side ID for an edge segment, used for edge matching in map generation.
 - `LMapBlock:getSide`: Returns the side ID for an edge segment.
-- `LMapBlock:getWidth`: Returns the block width in tiles.
-- `LMapBlock:getHeight`: Returns the block height in tiles.
+- `LMapBlock:getWidth`: Returns the block width in tiles. This method is available to Lua scripts.
+- `LMapBlock:getHeight`: Returns the block height in tiles. This method is available to Lua scripts.
 - `LMapBlock:getDimensions`: Returns both width and height of the block in tiles.
 - `LMapBlock:getLayerCount`: Returns the number of tile layers in this block.
 - `LMapBlock:getSegmentSize`: Returns the segment size used for edge matching.
 - `LMapBlock:getWidthInSegments`: Returns the block width measured in segments.
 - `LMapBlock:getHeightInSegments`: Returns the block height measured in segments.
 - `LMapBlock:setName`: Sets the block's name for identification during map generation.
-- `LMapBlock:getName`: Returns the block's name.
+- `LMapBlock:getName`: Returns the block's name. This method is available to Lua scripts.
 - `LMapBlock:setWeight`: Sets the selection weight for this block during random placement.
 - `LMapBlock:getWeight`: Returns the current selection weight.
 - `LMapBlock:type`: Returns the type name of this userdata.
@@ -485,7 +485,7 @@ The `tilemap` module is Lurek2D's tile-map authoring and rendering subsystem in 
 - `LMapGroup:addBlock`: Adds a map block to this group for use in generation.
 - `LMapGroup:getBlockCount`: Returns how many blocks are in this group.
 - `LMapGroup:removeBlock`: Removes a block from the group by index.
-- `LMapGroup:getName`: Returns the group name.
+- `LMapGroup:getName`: Returns the group name. This method is available to Lua scripts.
 - `LMapGroup:addScript`: Attaches a map-generation script to this group.
 - `LMapGroup:getScriptCount`: Returns how many scripts are attached to this group.
 - `LMapGroup:type`: Returns the type name of this userdata.

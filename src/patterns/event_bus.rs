@@ -1,4 +1,3 @@
-
 //! - Named event bus that routes events to prioritized subscriptions.
 //! - Supports wildcard listeners, one-shot subscriptions, and per-event clearing.
 //! - Returns ordered listener ID lists for the Lua callback layer to dispatch.

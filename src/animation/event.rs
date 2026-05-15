@@ -1,4 +1,3 @@
-
 //! - Defines the animation events emitted while clip playback advances.
 //! - Carries the state changes higher layers react to: finish, loop, and frame switch.
 //! - Stores the optional frame index payload for frame-change notifications.

@@ -1,4 +1,3 @@
-
 //! - Spawn-offset sampling for particle emission shapes and area distributions.
 //! - Supports uniform, normal, ellipse, border, rectangle, ring, cone, star, and spiral modes.
 //! - Handles area-angle rotation for distribution-based offsets.

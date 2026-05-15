@@ -5,7 +5,7 @@
 //! - Dijkstra-based flow-field generation toward a single goal cell.
 //! - Internal min-heap node and path reconstruction utilities.
 
-use crate::runtime::log_messages::{PF01_GRID_INIT,PF03_NO_PATH};
+use crate::runtime::log_messages::{PF01_GRID_INIT, PF03_NO_PATH};
 
 use crate::log_msg;
 use std::cmp::Ordering;

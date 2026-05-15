@@ -646,6 +646,11 @@ fn lua_unit_render_unit() {
 }
 
 #[test]
+fn lua_unit_repl_unit() {
+    run_lua_test("unit/test_repl_core_unit.lua");
+}
+
+#[test]
 fn lua_unit_runtime_unit() {
     run_lua_test("unit/test_runtime_core_unit.lua");
 }

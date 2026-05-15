@@ -3,7 +3,11 @@
 //! - Workers share a single work queue and skip cancelled requests early.
 
 use crate::pathfind::{astar, NavGrid};
-use std::sync::{mpsc, mpsc::{Receiver, Sender}, Arc, Mutex};
+use std::sync::{
+    mpsc,
+    mpsc::{Receiver, Sender},
+    Arc, Mutex,
+};
 use std::thread;
 /// In-flight A\* job sent to a worker thread.
 struct PathRequest {

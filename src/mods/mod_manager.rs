@@ -1,4 +1,3 @@
-
 //! - Mod registry: register, unregister, and look up mods by id or capability.
 //! - Manifest parsing: load `mod.toml` files, validate fields, and compute SHA-256 signatures.
 //! - Load ordering: topological sort with dependency resolution, priority tie-breaking, and custom override.

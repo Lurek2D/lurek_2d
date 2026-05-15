@@ -174,7 +174,7 @@ The `ecs` module provides Lurek2D's Lua-first ECS runtime using a single `Univer
 - `LUniverse:takeSnapshotDiff`: Returns and clears accumulated ECS snapshot diff data.
 - `LUniverse:clear`: Clears all entities, components, systems, and ECS state from this universe.
 - `LUniverse:release`: Releases universe contents by clearing all ECS state.
-- `LUniverse:addTag`: Adds a string tag to an entity.
+- `LUniverse:addTag`: Adds a string tag to an entity. This method is available to Lua scripts.
 - `LUniverse:removeTag`: Removes a string tag from an entity.
 - `LUniverse:hasTag`: Returns whether an entity has a string tag.
 - `LUniverse:getTags`: Returns string tags assigned to an entity.

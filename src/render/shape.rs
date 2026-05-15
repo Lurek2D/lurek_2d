@@ -54,21 +54,11 @@ pub enum ShapeCommand {
         y3: f32,
     },
     /// Draw a filled or outlined convex polygon from a flat `[x, y, ...]` list.
-    Polygon {
-        mode: DrawMode,
-        vertices: Vec<f32>,
-    },
+    Polygon { mode: DrawMode, vertices: Vec<f32> },
     /// Draw a line segment.
-    Line {
-        x1: f32,
-        y1: f32,
-        x2: f32,
-        y2: f32,
-    },
+    Line { x1: f32, y1: f32, x2: f32, y2: f32 },
     /// Draw a polyline from a flat `[x, y, ...]` list.
-    Polyline {
-        points: Vec<f32>,
-    },
+    Polyline { points: Vec<f32> },
     /// Draw a circular arc.
     Arc {
         mode: DrawMode,

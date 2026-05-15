@@ -1,4 +1,3 @@
-
 //! - Stable, structured log message identifiers for all engine subsystems.
 //! - Each constant provides a short code (e.g. "L001") used as prefix in log output.
 //! - Identifiers grouped by domain: L=lifecycle, A=audio, G=graphics, P=physics, FS=filesystem.

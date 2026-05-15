@@ -7,13 +7,13 @@
 - Lua API path(s): `src/lua_api/terminal_api.rs`
 - Primary Lua namespace: `lurek.terminal`
 - Rust test path(s): tests/rust/unit/terminal_tests.rs, tests/rust/ext/terminal_demo_smoke_tests.rs
-- Lua test path(s): tests/lua/unit/test_terminal.lua
+- Lua test path(s): tests/lua/unit/test_terminal_core_unit.lua
 
 ## Summary
 
-The `terminal` module is documented from the current source tree and existing module reference data.
+The `terminal` module owns Lurek2D's character-grid surfaces, ANSI parsing, syntax-style highlighting, scrollback, command-history helpers, completion engine, and terminal-native widgets. It is the text-mode UI layer used by in-game consoles and by the GUI-backed `tui` and `cli` runtime modes.
 
-This module primarily collaborates with `image`, `render`, `runtime`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
+This module owns terminal state and render-command generation, but it does not own REPL evaluation or runtime-mode selection. `repl` owns interactive Lua execution, while `runtime` and `app` decide when a window becomes a terminal-only surface.
 
 ## Files
 
@@ -252,6 +252,7 @@ This module primarily collaborates with `image`, `render`, `runtime`. Its respon
 
 - Keep this module reference synchronized with `src/terminal/` and any matching Lua bindings.
 - Summary paragraphs are manual prose. The collected Files, Types, Functions, Lua API Reference, and References sections can be regenerated when the source changes.
+- Runtime mode config now uses `[tui]` and `[cli]` terminal-grid settings (`cols`, `rows`, `cell_width`, `cell_height`) to size GUI windows for terminal-only startup modes. `--mode=tui` creates a DOS-like terminal-grid window and loads a supplied game, or a built-in TUI screen when no game is supplied. `--mode=cli` creates a GUI-rendered interactive Lua shell backed by `lurek.repl` and rendered through `lurek.terminal`.
 
 ### 2026-05-12 Update
 

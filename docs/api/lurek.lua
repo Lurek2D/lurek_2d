@@ -46,13 +46,6 @@ LSpacer = {}
 
 ---@alias WrapMode "clamp"|"repeat"|"mirroredrepeat"|"clampzero"
 
---- Called once after the game script is loaded.
-function lurek.load() end
-
---- Called every frame. `dt` is elapsed seconds.
----@param dt number Delta time in seconds
-function lurek.update(dt) end
-
 --- Called every frame for rendering. All draw calls must happen here.
 function lurek.draw() end
 
@@ -3257,14 +3250,17 @@ lurek.audio.newSawtoothWave = function(freq, duration, sample_rate, amplitude) e
 lurek.audio.newSineWave = function(freq, duration, sample_rate, amplitude) end
 
 --- Creates a new SoundData object from a file path or blank buffer for procedural audio.
----@param ... string|number|number|number
+---@param pathOrCount string|number File path to decode, or sample count for blank buffer.
+---@param sampleRate number Sample rate in Hz (e.g. 44100, 48000).
+---@param channels? number Channel count (1 = mono, 2 = stereo), defaults to 1.
 ---@return SoundData Raw PCM sample data for manipulation or playback.
-lurek.audio.newSoundData = function(...) end
+lurek.audio.newSoundData = function(pathOrCount, sampleRate, channels) end
 
 --- Creates a new audio source from a file path, either fully loaded or streaming.
----@param ... string|string
+---@param path string Relative path to the audio file (WAV, OGG, MP3, FLAC).
+---@param sourceType? string "static" to load fully into memory, or "stream" (default) for streaming.
 ---@return LSource A new audio source ready for playback.
-lurek.audio.newSource = function(...) end
+lurek.audio.newSource = function(path, sourceType) end
 
 --- New square wave for Lua scripts in this module.
 ---@param freq number Lua argument for `freq`.
@@ -7684,9 +7680,9 @@ lurek.effect.newCustomEffect = function(shader_id) end
 lurek.effect.newEffect = function(type_name) end
 
 --- Creates an image effect chain from no arguments, a type name and optional parameters, or a chain table.
----@param ... LuaValue
+---@param args LuaValue Optional effect type string plus parameter table, or an array table of effect entries.
 ---@return LImageEffect New image effect chain handle.
-lurek.effect.newImageEffect = function(...) end
+lurek.effect.newImageEffect = function(args) end
 
 --- Creates an overlay controller for screen effects using optional dimensions.
 ---@param w? number Optional overlay width in pixels, defaulting to 800.
@@ -7803,9 +7799,10 @@ function LSignal:clearAll() end
 function LSignal:connect(name, func) end
 
 --- Emits a signal event and invokes matching callbacks with the remaining arguments.
----@param ... string|LuaValue
+---@param name string Signal event name to emit.
+---@param args LuaValue Additional arguments passed to matching callbacks.
 ---@return nil No value is returned.
-function LSignal:emit(...) end
+function LSignal:emit(name, args) end
 
 --- Returns the callback count for one exact signal event name.
 ---@param name string Signal event name.
@@ -7888,24 +7885,30 @@ lurek.event.poll = function() end
 lurek.event.pump = function() end
 
 --- Pushes a normal-priority event into the shared event queue and optional history.
----@param ... string|LuaValue
+---@param name string Event name.
+---@param args LuaValue Additional event arguments.
 ---@return nil No value is returned.
-lurek.event.push = function(...) end
+lurek.event.push = function(name, args) end
 
 --- Adds a normal-priority event to the deferred buffer instead of the live queue.
----@param ... string|LuaValue
+---@param name string Event name to enqueue later.
+---@param args LuaValue Additional event arguments stored with the event.
 ---@return nil No value is returned.
-lurek.event.pushDeferred = function(...) end
+lurek.event.pushDeferred = function(name, args) end
 
 --- Adds an event with explicit priority to the deferred buffer.
----@param ... string|LuaValue
+---@param name string Event name to enqueue later.
+---@param priority string Priority string `high` or `normal`.
+---@param args LuaValue Additional event arguments stored with the event.
 ---@return nil No value is returned.
-lurek.event.pushDeferredPriority = function(...) end
+lurek.event.pushDeferredPriority = function(name, priority, args) end
 
 --- Pushes an event with explicit priority into the shared event queue and optional history.
----@param ... string|LuaValue
+---@param name string Event name.
+---@param priority string Priority string `high` or `normal`.
+---@param args LuaValue Additional event arguments.
 ---@return nil No value is returned.
-lurek.event.pushPriority = function(...) end
+lurek.event.pushPriority = function(name, priority, args) end
 
 --- Requests engine shutdown with exit code zero.
 ---@return nil No value is returned.
@@ -10086,9 +10089,11 @@ function LImageData:paste(src_ud, dx, dy) end
 function LImageData:posterize(levels) end
 
 --- Returns a resized image using an optional named filter.
----@param ... number|string
+---@param width number Output width.
+---@param height number Output height.
+---@param filter string Optional filter name, defaulting to `bilinear`.
 ---@return LuaValue Resized `LImageData` handle, or nil when resizing fails.
-function LImageData:resize(...) end
+function LImageData:resize(width, height, filter) end
 
 --- Returns a resized image using nearest-neighbor sampling.
 ---@param new_w number Output width.
@@ -10306,9 +10311,9 @@ function LProvinceGrid:borderSegments() end
 function LProvinceGrid:deserializeShapeData(bytes) end
 
 --- Queues filled polygon draw commands for province shapes, optionally culled to a viewport.
----@param ... LuaValue
+---@param viewport LuaValue Either no arguments or four numeric values `x, y, w, h`.
 ---@return number Number of polygons emitted to the render command queue.
-function LProvinceGrid:drawShapes(...) end
+function LProvinceGrid:drawShapes(viewport) end
 
 --- Returns the province id stored at grid coordinates.
 ---@param x number X coordinate.
@@ -10378,9 +10383,9 @@ lurek.image.loadLayered = function(filename) end
 lurek.image.newCompressedData = function(filename) end
 
 --- Creates empty image data from dimensions or decodes image data from a GameFS filename.
----@param ... LuaValue
+---@param args LuaValue Either `(width, height)` numeric arguments or a filename string.
 ---@return LImageData New image data handle.
-lurek.image.newImageData = function(...) end
+lurek.image.newImageData = function(args) end
 
 --- Creates image data from raw RGBA bytes and explicit dimensions.
 ---@param w number Width in pixels.
@@ -14672,9 +14677,9 @@ function LParticleSystem:setBufferSize(n) end
 function LParticleSystem:setCollidesWithPhysics(world_ud, probe_radius, restitution) end
 
 --- Sets particle color keyframes from RGBA tables.
----@param ... table
+---@param colors table One or more color tables.
 ---@return nil No value is returned.
-function LParticleSystem:setColors(...) end
+function LParticleSystem:setColors(colors) end
 
 --- Sets a Lua callback for custom emission positions.
 ---@param cb function Callback returning an x/y position.
@@ -14788,9 +14793,9 @@ function LParticleSystem:setShape(shape) end
 function LParticleSystem:setSizeVariation(v) end
 
 --- Sets particle size keyframes from numeric arguments.
----@param ... number
+---@param sizes number One or more size values.
 ---@return nil No value is returned.
-function LParticleSystem:setSizes(...) end
+function LParticleSystem:setSizes(sizes) end
 
 --- Sets particle speed range. This method is available to Lua scripts.
 ---@param min number Minimum speed.
@@ -19978,9 +19983,16 @@ lurek.render.clearStencil = function() end
 lurek.render.currentLayer = function() end
 
 --- Draws a drawable object (Image, Canvas, SpriteBatch, or Mesh) at the given position with optional transform.
----@param ... LImage|LCanvas|LSpriteBatch|LMesh|number
+---@param drawable LImage|LCanvas|LSpriteBatch|LMesh The drawable object to render.
+---@param x? number X position (default 0).
+---@param y? number Y position (default 0).
+---@param r? number Rotation in radians (default 0).
+---@param sx? number Scale X (default 1).
+---@param sy? number Scale Y (default 1).
+---@param ox? number Origin offset X (default 0).
+---@param oy? number Origin offset Y (default 0).
 ---@return table Table result returned by this call.
-lurek.render.draw = function(...) end
+lurek.render.draw = function(drawable, x, y, r, sx, sy, ox, oy) end
 
 --- Draws a beveled rectangle with highlight, shadow, and fill colors for 3D-style UI elements.
 ---@param x number Left edge X.
@@ -20371,14 +20383,16 @@ lurek.render.newCanvas = function(width, height) end
 lurek.render.newDrawLayer = function() end
 
 --- Creates a new bitmap font from a PNG sprite sheet path or returns a built-in font by pixel height.
----@param ... string|number|number
+---@param pathOrSize string|number File path to a PNG font sheet, or a pixel height for a built-in font.
+---@param size? number Cell height in pixels when loading from a file (default 14).
 ---@return LFont The created font handle.
-lurek.render.newFont = function(...) end
+lurek.render.newFont = function(pathOrSize, size) end
 
 --- Loads a texture from a file path or creates one from an ImageData object.
----@param ... string|LImageData|string
+---@param pathOrData string|LImageData File path to an image, or an ImageData object.
+---@param colorSpace? string Color space: "srgb" (default) or "linear".
 ---@return LImage The loaded image handle.
-lurek.render.newImage = function(...) end
+lurek.render.newImage = function(pathOrData, colorSpace) end
 
 --- Creates a named rendering layer with an optional z-order for draw call organization.
 ---@param name string Layer name.
@@ -20569,9 +20583,12 @@ lurek.render.setCanvas = function(canvas) end
 lurek.render.setColor = function(r, g, b, a) end
 
 --- Sets which color channels are written during draw calls. Call with no args to enable all.
----@param ... boolean
+---@param r? boolean Enable red channel.
+---@param g? boolean Enable green channel.
+---@param b? boolean Enable blue channel.
+---@param a? boolean Enable alpha channel.
 ---@return nil No return value.
-lurek.render.setColorMask = function(...) end
+lurek.render.setColorMask = function(r, g, b, a) end
 
 --- Sets the default texture filtering mode for newly created images.
 ---@param min string Minification filter: "nearest" or "linear".
@@ -20625,9 +20642,12 @@ lurek.render.setLineWidth = function(w) end
 lurek.render.setPointSize = function(size) end
 
 --- Sets or clears the scissor rectangle. Only pixels inside this region are drawn. Call with no args to clear.
----@param ... number
+---@param x? number Left edge of the scissor rectangle.
+---@param y? number Top edge.
+---@param w? number Width.
+---@param h? number Height.
 ---@return nil No return value.
-lurek.render.setScissor = function(...) end
+lurek.render.setScissor = function(x, y, w, h) end
 
 --- Activates a shader for subsequent draw calls. Pass nil to restore the default shader.
 ---@param shader? LShader Shader handle to activate, or nil for default.
@@ -20680,6 +20700,49 @@ lurek.render.translate = function(x, y) end
 ---@param y3 number Third vertex Y.
 ---@return nil No return value.
 lurek.render.triangle = function(mode, x1, y1, x2, y2, x3, y3) end
+
+---@class lurek.repl
+lurek.repl = {}
+
+--- Lua-side REPL session handle with bounded history.
+---@class LReplSession
+LReplSession = {}
+
+--- Clears all entries from this REPL session history.
+---@return nil No value is returned.
+function LReplSession:clear() end
+
+--- Returns completion candidates that begin with the supplied prefix.
+---@param prefix string Prefix text to complete.
+---@return table Array table of matching completion strings.
+function LReplSession:complete(prefix) end
+
+--- Evaluates Lua code and records the input in this REPL history.
+---@param code string Lua expression, statement, or REPL command to evaluate.
+---@return string Display text for the result, command, or error.
+function LReplSession:eval(code) end
+
+--- Returns the recorded REPL input history in oldest-first order.
+---@return table Array table of history entry strings.
+function LReplSession:history() end
+
+--- Returns the number of entries stored in this REPL history.
+---@return number History entry count.
+function LReplSession:len() end
+
+--- Returns the Lua-visible type name for this REPL session handle.
+---@return string The string `LReplSession`.
+function LReplSession:type() end
+
+--- Returns whether this REPL session handle matches a supported type name.
+---@param name string Type name to compare against `LReplSession` and `Object`.
+---@return boolean True when the supplied type name matches this handle.
+function LReplSession:typeOf(name) end
+
+--- Creates a release-safe REPL session with bounded command history.
+---@param max_history? number Optional maximum number of history entries; defaults to 200.
+---@return LReplSession REPL session handle for eval, history, and completion.
+lurek.repl.new = function(max_history) end
 
 ---@class lurek.save
 lurek.save = {}
@@ -20991,6 +21054,11 @@ lurek.scene.new = function(def) end
 --- Create a new `LDepthSorter` instance for collecting drawable items and flushing them in depth-sorted (painter's algorithm) order. Allocate one per scene or per rendering pass.
 ---@return LDepthSorter A fresh depth sorter with no queued entries.
 lurek.scene.newDepthSorter = function() end
+
+--- Alias for `lurek.scene.new`. Creates a new scene instance from an optional prototype table while preserving the older API name still used by tests, examples, and existing game scripts.
+---@param def? table A prototype table containing scene lifecycle methods (`enter`, `leave`, `update`, `draw`, etc.). If omitted, an empty table is used.
+---@return table A new instance table with `def` as its metatable `__index`.
+lurek.scene.newScene = function(def) end
 
 --- Pop the top scene off the stack and return to the previous one. The popped scene receives `leave()` and the revealed scene receives `resume()` (unless the popped scene was an overlay, in which case the underlying scene was never paused). Use this for "back" navigation, closing menus, or exiting sub-screens.
 ---@param transition? string Transition type name. Defaults to `"none"` (instant).
@@ -21586,7 +21654,7 @@ lurek.runtime.getBatchResults = function(results) end
 lurek.runtime.getClipboardText = function() end
 
 --- Returns a table containing the current engine runtime configuration values.
----@return table Table with fields: `physics_tick_rate` (number), `fixed_update_tick_rate` (number?), `frame_budget_warn_ms` (number?), `lua_callback_timeout_ms` (number?), `vsync` (boolean), `log_level` (string), `config_reload_revision` (number).
+---@return table Table with fields: `runtime_mode` (string), `physics_tick_rate` (number), `fixed_update_tick_rate` (number?), `frame_budget_warn_ms` (number?), `lua_callback_timeout_ms` (number?), `vsync` (boolean), `log_level` (string), `config_reload_revision` (number).
 lurek.runtime.getConfig = function() end
 
 --- Returns whether the on-screen debug overlay is currently enabled.
@@ -21758,6 +21826,13 @@ function LTerminal:keypressed(key) end
 ---@return nil No return value.
 function LTerminal:mousepressed(px, py, button) end
 
+--- Writes text to the terminal grid starting at a specific cell.
+---@param col number Column index (1-based) where writing starts.
+---@param row number Row index (1-based) where writing starts.
+---@param text string Text to write into consecutive cells.
+---@return nil No value is returned.
+function LTerminal:print(col, row, text) end
+
 --- Detaches a widget from this terminal, removing it from rendering and input handling.
 ---@param widget LWidget The widget to detach.
 ---@return nil No value is returned.
@@ -21774,9 +21849,19 @@ function LTerminal:render(x, y) end
 function LTerminal:resetCellSize() end
 
 --- Writes a character with foreground and background color to a specific cell in the terminal grid.
----@param ... number|string|number|number
+---@param col number Column index (1-based).
+---@param row number Row index (1-based).
+---@param ch string|number Character as a string or Unicode codepoint.
+---@param fr? number Foreground red (0-1, default 1).
+---@param fg? number Foreground green (0-1, default 1).
+---@param fb? number Foreground blue (0-1, default 1).
+---@param fa? number Foreground alpha (0-1, default 1).
+---@param br? number Background red (0-1, default 0).
+---@param bg? number Background green (0-1, default 0).
+---@param bb? number Background blue (0-1, default 0).
+---@param ba? number Background alpha (0-1, default 0).
 ---@return nil No value is returned.
-function LTerminal:set(...) end
+function LTerminal:set(col, row, ch, fr, fg, fb, fa, br, bg, bb, ba) end
 
 --- Overrides the cell width and height used for rendering this terminal grid.
 ---@param w number Cell width in pixels.
@@ -24474,6 +24559,12 @@ LDockPanel.undock = function(child_idx) end
 ---@class LGuiTable : LUiWidget
 LGuiTable = {}
 
+--- Adds a new column to this table widget.
+---@param header string The column header text.
+---@param width? number The column width in pixels (default 100).
+---@return nil No return value.
+LGuiTable.addColumn = function(header, width) end
+
 --- Adds a row to this table widget. This method is available to Lua scripts.
 ---@param cells table Array of cell text values.
 ---@return nil No return value.
@@ -24944,6 +25035,11 @@ LRadioButton.setGroup = function(group) end
 ---@return nil No return value.
 LRadioButton.setOnChange = function(f) end
 
+--- Sets the selected state of this radio button.
+---@param v boolean True to select.
+---@return nil No return value.
+LRadioButton.setSelected = function(v) end
+
 --- Sets the label text of this radio button.
 ---@param text string The radio button label.
 ---@return nil No return value.
@@ -24996,6 +25092,10 @@ LScrollBar = {}
 ---@return number The content size.
 LScrollBar.getContentSize = function() end
 
+--- Returns the current scroll position of this scroll bar.
+---@return number The scroll position.
+LScrollBar.getScrollPosition = function() end
+
 --- Returns the visible viewport size tracked by this scroll bar.
 ---@return number The view size.
 LScrollBar.getViewSize = function() end
@@ -25019,9 +25119,19 @@ LScrollBar.setOnChange = function(f) end
 ---@return nil No return value.
 LScrollBar.setScrollPosition = function(v) end
 
+--- Sets the visible viewport size for this scroll bar.
+---@param v number The view size.
+---@return nil No return value.
+LScrollBar.setViewSize = function(v) end
+
 --- Adds scroll-panel-specific methods to a scroll panel widget table.
 ---@class LScrollPanel : LUiWidget
 LScrollPanel = {}
+
+--- Returns the virtual content dimensions of this scroll panel.
+---@return number a Content width and height in pixels.
+---@return number b Content width and height in pixels.
+LScrollPanel.getContentSize = function() end
 
 --- Returns the maximum scroll offset allowed in each axis.
 ---@return number a Maximum horizontal and vertical scroll values.
@@ -25112,6 +25222,10 @@ LSlider.setValue = function(v) end
 ---@class LSpinBox : LUiWidget
 LSpinBox = {}
 
+--- Decreases this spin box's value by one step.
+---@return nil No return value.
+LSpinBox.decrement = function() end
+
 --- Returns the current numeric value of this spin box.
 ---@return number The spin box value.
 LSpinBox.getValue = function() end
@@ -25199,6 +25313,11 @@ LStatusBar.addSection = function(text, width) end
 ---@return number The section count.
 LStatusBar.getSectionCount = function() end
 
+--- Returns the text of a status bar section by its 1-based index.
+---@param section_idx number The 1-based section index.
+---@return string The section text, or nil if out of range.
+LStatusBar.getSectionText = function(section_idx) end
+
 --- Sets the number of sections, truncating or adding empty sections as needed.
 ---@param count number The desired section count.
 ---@return nil No return value.
@@ -25273,6 +25392,10 @@ LTextInput = {}
 ---@return number The zero-based cursor position.
 LTextInput.getCursorPosition = function() end
 
+--- Returns the placeholder text of this text input.
+---@return string The placeholder text.
+LTextInput.getPlaceholder = function() end
+
 --- Returns the current text content of this text input field.
 ---@return string The input text.
 LTextInput.getText = function() end
@@ -25285,6 +25408,11 @@ LTextInput.isFocused = function() end
 ---@param n number Maximum character count.
 ---@return nil No return value.
 LTextInput.setMaxLength = function(n) end
+
+--- Sets the placeholder text shown when the input is empty.
+---@param text string The placeholder text.
+---@return nil No return value.
+LTextInput.setPlaceholder = function(text) end
 
 --- Sets the text content of this text input field and moves the cursor to the end.
 ---@param text string The text to set.
@@ -25330,6 +25458,11 @@ LToast.getProgress = function() end
 --- Returns whether this toast has exceeded its display duration.
 ---@return boolean True if expired.
 LToast.isExpired = function() end
+
+--- Sets how long this toast is displayed in seconds.
+---@param d number Duration in seconds.
+---@return nil No return value.
+LToast.setDuration = function(d) end
 
 --- Sets the message text displayed by this toast notification.
 ---@param msg string The toast message.
@@ -25915,10 +26048,20 @@ lurek.ui.mousereleased = function(x, y, btn) end
 ---@return LAccordion The new accordion widget table.
 lurek.ui.newAccordion = function() end
 
+--- Creates a new area chart for data visualization.
+---@param opts table Table with width, height, and optional title.
+---@return LAreaChart The new area chart userdata.
+lurek.ui.newAreaChart = function(opts) end
+
 --- Creates a new badge widget for displaying counts.
 ---@param count? number Initial count (default 0).
 ---@return LBadge The new badge widget table.
 lurek.ui.newBadge = function(count) end
+
+--- Creates a new bar chart for data visualization.
+---@param opts table Table with width, height, and optional title.
+---@return LBarChart The new bar chart userdata.
+lurek.ui.newBarChart = function(opts) end
 
 --- Creates a new button widget. This function is exposed to Lua scripts.
 ---@param text? string The button label text.
@@ -25966,6 +26109,11 @@ lurek.ui.newLabel = function(text) end
 ---@return LLayout The new layout widget table.
 lurek.ui.newLayout = function(direction) end
 
+--- Creates a new line chart for data visualization.
+---@param opts table Table with width, height, and optional title.
+---@return LLineChart The new line chart userdata.
+lurek.ui.newLineChart = function(opts) end
+
 --- Creates a new list box widget. This function is exposed to Lua scripts.
 ---@return LListBox The new list box widget table.
 lurek.ui.newList = function() end
@@ -25987,6 +26135,11 @@ lurek.ui.newNinePatch = function() end
 ---@return LPanel The new panel widget table.
 lurek.ui.newPanel = function() end
 
+--- Creates a new pie chart for data visualization.
+---@param opts table Table with width, height, and optional title.
+---@return LPieChart The new pie chart userdata.
+lurek.ui.newPieChart = function(opts) end
+
 --- Creates a new progress bar widget. This function is exposed to Lua scripts.
 ---@param min? number Minimum value (default 0).
 ---@param max? number Maximum value (default 100).
@@ -25998,6 +26151,11 @@ lurek.ui.newProgressBar = function(min, max) end
 ---@param group? string The radio group name.
 ---@return LRadioButton The new radio button widget table.
 lurek.ui.newRadioButton = function(text, group) end
+
+--- Creates a new scatter plot for data visualization.
+---@param opts table Table with width, height, and optional title.
+---@return LScatterPlot The new scatter plot userdata.
+lurek.ui.newScatterPlot = function(opts) end
 
 --- Creates a new scroll bar widget. This function is exposed to Lua scripts.
 ---@param vertical? boolean True for vertical (default true).
@@ -26056,6 +26214,10 @@ lurek.ui.newTable = function() end
 --- Creates a new text input widget. This function is exposed to Lua scripts.
 ---@return LTextInput The new text input widget table.
 lurek.ui.newTextInput = function() end
+
+--- Creates a new UI theme for styling widgets.
+---@return LTheme The new theme userdata.
+lurek.ui.newTheme = function() end
 
 --- Creates a new toast notification widget.
 ---@param message? string The toast message.

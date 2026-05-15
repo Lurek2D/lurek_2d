@@ -1,4 +1,3 @@
-
 //! - Stub device enumeration and selection for the audio output backend.
 //! - Always reports a single "Default" device until platform-specific enumeration is added.
 //! - Validates device name against the available list on set.

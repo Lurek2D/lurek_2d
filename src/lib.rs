@@ -83,6 +83,8 @@ pub mod province;
 pub mod raycaster;
 /// Exposes the rendering subsystem module.
 pub mod render;
+/// Exposes the release-safe Lua REPL subsystem module.
+pub mod repl;
 /// Exposes the core runtime subsystem module.
 pub mod runtime;
 /// Exposes the save subsystem module.
@@ -111,10 +113,11 @@ pub mod ui;
 pub mod window;
 
 /// Starts the Lurek2D runtime using the current CLI arguments and active game path.
-pub fn lurek_run() {
+pub fn lurek_run() -> std::process::ExitCode {
     use app::App;
-    use runtime::Config;
+    use runtime::{Config, HeadlessOptions, RuntimeMode};
     use std::env;
+    use std::process::ExitCode;
     std::panic::set_hook(Box::new(|info| {
         let payload = if let Some(s) = info.payload().downcast_ref::<&str>() {
             s.to_string()
@@ -151,8 +154,13 @@ pub fn lurek_run() {
     let mut window_y: Option<i32> = None;
     let mut window_width: Option<u32> = None;
     let mut window_height: Option<u32> = None;
+    let mut mode_override: Option<RuntimeMode> = None;
+    let mut eval: Vec<String> = Vec::new();
+    let mut frames_override: Option<u32> = None;
     let mut game_arg: Option<String> = None;
-    for arg in env::args().skip(1) {
+    let mut parse_error: Option<String> = None;
+    let mut args = env::args().skip(1);
+    while let Some(arg) = args.next() {
         if let Some(val) = arg.strip_prefix("--screenshot=") {
             screenshot_path = Some(std::path::PathBuf::from(val));
         } else if let Some(val) = arg.strip_prefix("--screenshot-frames=") {
@@ -179,9 +187,56 @@ pub fn lurek_run() {
             if let Ok(n) = val.parse::<u32>() {
                 window_height = Some(n);
             }
+        } else if let Some(val) = arg.strip_prefix("--mode=") {
+            match val.parse::<RuntimeMode>() {
+                Ok(mode) => mode_override = Some(mode),
+                Err(error) => parse_error = Some(error.to_string()),
+            }
+        } else if arg == "--mode" {
+            match args.next() {
+                Some(value) => match value.parse::<RuntimeMode>() {
+                    Ok(mode) => mode_override = Some(mode),
+                    Err(error) => parse_error = Some(error.to_string()),
+                },
+                None => {
+                    parse_error = Some("--mode requires gui, tui, headless, or cli".to_string())
+                }
+            }
+        } else if arg == "--gui" {
+            mode_override = Some(RuntimeMode::Gui);
+        } else if arg == "--tui" {
+            mode_override = Some(RuntimeMode::Tui);
+        } else if arg == "--headless" {
+            mode_override = Some(RuntimeMode::Headless);
+        } else if arg == "--cli" {
+            mode_override = Some(RuntimeMode::Cli);
+        } else if let Some(value) = arg.strip_prefix("--eval=") {
+            eval.push(value.to_string());
+        } else if arg == "--eval" {
+            match args.next() {
+                Some(value) => eval.push(value),
+                None => parse_error = Some("--eval requires Lua source code".to_string()),
+            }
+        } else if let Some(value) = arg.strip_prefix("--frames=") {
+            match value.parse::<u32>() {
+                Ok(frames) => frames_override = Some(frames),
+                Err(_) => parse_error = Some(format!("invalid --frames value '{}'", value)),
+            }
+        } else if arg == "--frames" {
+            match args.next() {
+                Some(value) => match value.parse::<u32>() {
+                    Ok(frames) => frames_override = Some(frames),
+                    Err(_) => parse_error = Some(format!("invalid --frames value '{}'", value)),
+                },
+                None => parse_error = Some("--frames requires an integer value".to_string()),
+            }
         } else if !arg.starts_with("--") {
             game_arg = Some(arg);
         }
+    }
+    if let Some(error) = parse_error {
+        eprintln!("{}", error);
+        return ExitCode::FAILURE;
     }
     let explicit_game_dir = game_arg.is_some();
     let mut _lurek_temp_dir: Option<tempfile::TempDir> = None;
@@ -209,7 +264,7 @@ pub fn lurek_run() {
                     #[cfg(target_os = "windows")]
                     show_windows_error_box(&msg);
                     eprintln!("{}", msg);
-                    return;
+                    return ExitCode::FAILURE;
                 }
             }
         } else {
@@ -226,15 +281,251 @@ pub fn lurek_run() {
     if let Some(height) = window_height {
         config.window.height = height;
     }
-    let app = App::new(config, conf_error);
-    app.run(
-        game_dir,
-        explicit_game_dir,
-        screenshot_path,
-        screenshot_frames,
-        screenshot_time,
-        window_x.zip(window_y),
-    );
+    let mode = mode_override.unwrap_or(config.runtime.mode);
+    match mode {
+        RuntimeMode::Gui => {
+            config.modules.validate_and_fix();
+            let app = App::new(config, conf_error);
+            app.run(
+                game_dir,
+                explicit_game_dir,
+                screenshot_path,
+                screenshot_frames,
+                screenshot_time,
+                window_x.zip(window_y),
+            );
+            ExitCode::SUCCESS
+        }
+        RuntimeMode::Headless => {
+            if let Some(error) = conf_error {
+                eprintln!("Configuration Error\n{}", error);
+                return ExitCode::FAILURE;
+            }
+            runtime::run_headless(
+                config,
+                HeadlessOptions {
+                    game_dir,
+                    explicit_game_dir,
+                    eval,
+                    frames_override,
+                },
+            )
+        }
+        RuntimeMode::Tui => {
+            config.window.width = config.tui.cols.saturating_mul(config.tui.cell_width);
+            config.window.height = config.tui.rows.saturating_mul(config.tui.cell_height);
+            config.window.resizable = false;
+            config.window.title = format!("{} [TUI]", config.window.title);
+            config.modules.render = true;
+            config.modules.input = true;
+            config.modules.window = true;
+            config.modules.terminal = true;
+            config.modules.validate_and_fix();
+            let (mode_dir, temp_dir) = if explicit_game_dir {
+                (game_dir, _lurek_temp_dir)
+            } else {
+                match create_builtin_game_dir("tui", builtin_tui_script(&config)) {
+                    Ok((dir, temp)) => (dir, Some(temp)),
+                    Err(error) => {
+                        eprintln!("failed to create TUI runtime: {}", error);
+                        return ExitCode::FAILURE;
+                    }
+                }
+            };
+            _lurek_temp_dir = temp_dir;
+            let app = App::new(config, conf_error);
+            app.run(
+                mode_dir,
+                explicit_game_dir,
+                screenshot_path,
+                screenshot_frames,
+                screenshot_time,
+                window_x.zip(window_y),
+            );
+            ExitCode::SUCCESS
+        }
+        RuntimeMode::Cli => {
+            config.window.width = config.cli.cols.saturating_mul(config.cli.cell_width);
+            config.window.height = config.cli.rows.saturating_mul(config.cli.cell_height);
+            config.window.resizable = false;
+            config.window.title = format!("{} [CLI]", config.window.title);
+            config.modules.render = true;
+            config.modules.input = true;
+            config.modules.window = true;
+            config.modules.terminal = true;
+            config.modules.validate_and_fix();
+            let startup_main = if explicit_game_dir {
+                Some(game_dir.join("main.lua"))
+            } else {
+                None
+            };
+            let script = builtin_cli_script(&config, startup_main.as_deref());
+            let (mode_dir, temp_dir) = match create_builtin_game_dir("cli", script) {
+                Ok((dir, temp)) => (dir, temp),
+                Err(error) => {
+                    eprintln!("failed to create CLI runtime: {}", error);
+                    return ExitCode::FAILURE;
+                }
+            };
+            _lurek_temp_dir = Some(temp_dir);
+            let app = App::new(config, conf_error);
+            app.run(
+                mode_dir,
+                false,
+                screenshot_path,
+                screenshot_frames,
+                screenshot_time,
+                window_x.zip(window_y),
+            );
+            ExitCode::SUCCESS
+        }
+    }
+}
+
+fn create_builtin_game_dir(
+    name: &str,
+    main_lua: String,
+) -> Result<(std::path::PathBuf, tempfile::TempDir), std::io::Error> {
+    let temp_dir = tempfile::tempdir()?;
+    let root = temp_dir.path().to_path_buf();
+    std::fs::write(root.join("main.lua"), main_lua)?;
+    std::fs::write(
+        root.join("conf.toml"),
+        format!(
+            "[window]\ntitle = \"Lurek2D {}\"\nresizable = false\n",
+            name.to_ascii_uppercase()
+        ),
+    )?;
+    Ok((root, temp_dir))
+}
+
+fn lua_string_literal(value: &str) -> String {
+    format!("{:?}", value)
+}
+
+fn builtin_cli_script(config: &runtime::Config, startup_main: Option<&std::path::Path>) -> String {
+    let startup = startup_main
+        .map(|path| lua_string_literal(&path.to_string_lossy().replace('\\', "/")))
+        .unwrap_or_else(|| "nil".to_string());
+    format!(
+        r##"
+local cols, rows = {cols}, {rows}
+local cell_w, cell_h = {cell_w}, {cell_h}
+local term, repl
+local lines = {{}}
+local input = ""
+local history = {{}}
+local history_index = nil
+
+local function push(line)
+    lines[#lines + 1] = tostring(line)
+    while #lines > rows - 2 do table.remove(lines, 1) end
+end
+
+local function install_print_sink()
+    print = function(...)
+        local parts = {{}}
+        for i = 1, select("#", ...) do
+            parts[#parts + 1] = tostring(select(i, ...))
+        end
+        push(table.concat(parts, "\t"))
+    end
+end
+
+local function submit()
+    local command = input
+    if command == "" then return end
+    push("lurek> " .. command)
+    history[#history + 1] = command
+    history_index = nil
+    input = ""
+    local result = repl:eval(command)
+    if result and result ~= "" and result ~= "(ok)" then push(result) end
+    if result == "(quit)" then lurek.event.quit() end
+end
+
+function lurek.init()
+    term = lurek.terminal.newTerminal(cols, rows)
+    term:setCellSize(cell_w, cell_h)
+    repl = lurek.repl.new({max_history})
+    lurek.input.keyboard.setTextInput(true)
+    install_print_sink()
+    push("Lurek2D Interactive CLI")
+    push("Type Lua code. :help for commands. :quit exits.")
+    local startup = {startup}
+    if startup then push("Startup main.lua available: " .. startup) end
+end
+
+function lurek.keypressed(key)
+    if key == "return" then submit(); return end
+    if key == "backspace" then input = input:sub(1, math.max(0, #input - 1)); return end
+    if key == "escape" then lurek.event.quit(); return end
+    if key == "tab" then
+        local completions = repl:complete(input)
+        if #completions == 1 then input = completions[1] elseif #completions > 1 then push(table.concat(completions, "  ")) end
+        return
+    end
+    if key == "up" and #history > 0 then
+        history_index = history_index and math.max(1, history_index - 1) or #history
+        input = history[history_index]
+        return
+    end
+    if key == "down" and history_index then
+        history_index = history_index + 1
+        if history_index > #history then history_index = nil; input = "" else input = history[history_index] end
+    end
+end
+
+function lurek.textinput(text)
+    input = input .. text
+end
+
+function lurek.draw()
+    term:clear()
+    for i, line in ipairs(lines) do term:print(1, i, line) end
+    term:print(1, rows, "lurek> " .. input .. "_")
+    term:render(0, 0)
+end
+"##,
+        cols = config.cli.cols,
+        rows = config.cli.rows,
+        cell_w = config.cli.cell_width,
+        cell_h = config.cli.cell_height,
+        max_history = config.cli.max_history,
+        startup = startup
+    )
+}
+
+fn builtin_tui_script(config: &runtime::Config) -> String {
+    format!(
+        r##"
+local cols, rows = {cols}, {rows}
+local cell_w, cell_h = {cell_w}, {cell_h}
+local term
+
+function lurek.init()
+    term = lurek.terminal.newTerminal(cols, rows)
+    term:setCellSize(cell_w, cell_h)
+end
+
+function lurek.keypressed(key)
+    if key == "escape" then lurek.event.quit() end
+end
+
+function lurek.draw()
+    term:clear()
+    term:print(1, 1, "Lurek2D TUI mode")
+    term:print(1, 3, "This is a GUI window rendered as a terminal grid.")
+    term:print(1, 4, "Run: lurek2d --mode=tui <game_dir> to load a TUI game.")
+    term:print(1, rows, "Press Escape to quit.")
+    term:render(0, 0)
+end
+"##,
+        cols = config.tui.cols,
+        rows = config.tui.rows,
+        cell_w = config.tui.cell_width,
+        cell_h = config.tui.cell_height,
+    )
 }
 #[cfg(target_os = "windows")]
 fn show_windows_error_box(msg: &str) {

@@ -1,4 +1,3 @@
-
 //! - Province-level A* pathfinding across adjacency graphs with configurable move costs.
 //! - Dijkstra-based reachability flood to find all provinces within a cost budget.
 //! - Per-province and per-edge-tag cost modelling with blocked-province exclusion.

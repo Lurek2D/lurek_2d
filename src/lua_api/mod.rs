@@ -83,6 +83,8 @@ pub mod raycaster_api;
 pub mod register;
 /// Exposes the `lurek.render` binding module.
 pub mod render_api;
+/// Exposes the `lurek.repl` binding module.
+pub mod repl_api;
 /// Exposes the `lurek.save` binding module.
 pub mod save_api;
 /// Exposes the `lurek.scene` binding module.
@@ -109,4 +111,4 @@ pub mod tween_api;
 pub mod ui_api;
 /// Exposes the `lurek.window` binding module.
 pub mod window_api;
-pub use register::{create_lua_vm, create_test_vm};
+pub use register::{create_headless_vm, create_lua_vm, create_test_vm};

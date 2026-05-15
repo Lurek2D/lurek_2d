@@ -5,19 +5,21 @@
 - Module group: `Edge/Integration`
 - Source path: `src/app/`
 - Lua API path(s): None direct
-- Primary Lua namespace: `lurek.input`
-- Rust test path(s): tests/rust/unit/engine_tests.rs; tests/rust/ext/graphics_runtime_smoke_tests.rs
+- Primary Lua namespace: None direct
+- Rust test path(s): tests/engine_tests.rs; tests/rust/ext/graphics_runtime_smoke_tests.rs
 - Lua test path(s): None dedicated
 
 ## Summary
 
-The `app` module is Lurek2D's application entry point and engine lifecycle orchestrator — the Edge/Integration tier topmost layer. It owns the winit 0.30 event loop, the wgpu device and surface, the Lua VM instance, and the main frame pacing loop. Nothing else in the engine imports from `app`; it is the integration layer that wires all subsystems together.
+The `app` module is Lurek2D's GUI application entry point and engine lifecycle orchestrator. It owns the winit 0.30 event loop, the wgpu device and surface, the window-backed `SharedState`, the Lua VM instance used by windowed sessions, and the main frame pacing loop. Nothing else in the engine imports from `app`; it is the integration layer that wires all subsystems together for windowed runtime modes.
 
-**Startup.** `App::run()` is the single public entry point. It creates the OS window via winit, initialises the wgpu device and swap chain, constructs `SharedState`, creates the Lua VM via `lua_api::create_lua_vm()`, and enters the winit event loop. If no game folder is provided on the command line, it shows the native window immediately after GPU setup so the first redraw can present the branded splash screen before `init_lua()` runs. Drag-and-drop of a folder or `.lurek` archive from the OS file manager also starts a game session mid-run.
+**Startup.** `lurek_run()` now decides which runtime mode should start. GUI, TUI, and CLI all arrive here and call `App::run()`. Headless mode does not. `App::run()` creates the OS window via winit, initialises the wgpu device and swap chain, constructs `SharedState`, creates the Lua VM via `lua_api::create_lua_vm()`, and enters the winit event loop. If no game folder is provided on the command line, it shows the native window immediately after GPU setup so the first redraw can present the branded splash screen before `init_lua()` runs. Drag-and-drop of a folder or `.lurek` archive from the OS file manager also starts a game session mid-run.
+
+**Mode-specific windowed startup.** `lurek_run()` can synthesize temporary game directories for `--mode=cli` and `--mode=tui`. From the `app` module's point of view these are ordinary game roots containing a generated `main.lua`, so the same window, Lua, and render bootstrap path is reused without a second GUI runtime implementation.
 
 **Frame loop.** The internal `LurekApp` struct implements winit's `ApplicationHandler` trait. Each frame the loop:
 1. Dispatches OS events (keyboard, mouse, gamepad via gilrs, resize, drag-drop, close).
-2. Calls the Lua callback sequence: `ready` (once) → `process_physics` (fixed timestep, if used) → `fixedUpdate` (optional fixed timestep) → `process(dt)` → `process_late(dt)` → `render()`.
+2. Calls the Lua callback sequence: `ready` (once) → `process_physics` (fixed timestep, if used) → `fixedUpdate` (optional fixed timestep) → `process(dt)` → `process_late(dt)` → `draw()` → `draw_ui()`.
 3. Auto-collects render commands from parallax, tilemap, raycaster, and UI subsystems.
 4. Calls `GpuRenderer::render_frame()` to flush the accumulated `RenderCommand` queue to the GPU.
 
@@ -33,7 +35,7 @@ The `app` module is Lurek2D's application entry point and engine lifecycle orche
 
 **Debug overlay.** `DebugOverlay` is a lightweight FPS and draw-call counter rendered as overlay text, toggled by F12. It uses only the existing `RenderCommand` text draw path and adds negligible overhead.
 
-**Viewport scaling.** `recompute_viewport()` supports four scaling modes configured via `conf.lua`: `letterbox` (fit with black bars), `stretch` (fill with distortion), `pixel` (integer scale), and `none` (raw pixel passthrough). `fit_contain_size` is the helper that computes the maximum integer-preserving size.
+**Viewport scaling.** `recompute_viewport()` supports four scaling modes configured via `conf.toml`: `letterbox` (fit with black bars), `stretch` (fill with distortion), `pixel` (integer scale), and `none` (raw pixel passthrough). `fit_contain_size` is the helper that computes the maximum integer-preserving size.
 
 **Gamepad support.** gilrs gamepad discovery and hot-plug events are processed in the winit event handler. Axes and buttons are mapped to `lurek.input` key codes and dispatched to the normal input pipeline — no separate gamepad API is needed.
 
@@ -90,7 +92,7 @@ The `app` module is Lurek2D's application entry point and engine lifecycle orche
 
 ## Lua API Reference
 
-- Namespace: `lurek.input`
+- No dedicated direct `lurek.*` namespace is exposed by this module.
 
 ## References
 
@@ -113,3 +115,4 @@ The `app` module is Lurek2D's application entry point and engine lifecycle orche
 - Keep this module reference synchronized with `src/app/` and any matching Lua bindings.
 - Summary paragraphs are manual prose. The collected Files, Types, Functions, Lua API Reference, and References sections can be regenerated when the source changes.
 - This module has no dedicated direct `lurek.*` namespace and is usually consumed through higher integration layers.
+- `app` owns only window-backed runtime execution. `--headless` is intentionally handled in `runtime::headless` before any `App::run()` call.

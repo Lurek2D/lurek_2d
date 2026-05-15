@@ -1,4 +1,3 @@
-
 //! - Entity snapshot capture and wire serialization for networked state.
 //! - Linear dead-reckoning prediction between ticks.
 //! - Server-authoritative reconciliation with configurable blend factor.

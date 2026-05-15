@@ -22,8 +22,15 @@ standard distribution binary for Windows end-users. The
 the Windows console window at launch, eliminating the black terminal backdrop
 that `lurek2d.exe` shows in a developer session. On Linux and macOS the
 attribute is a no-op, making `lurekc` binary-equivalent to `lurek2d`. Both
-binaries call the same `lurek_run()` entry function and therefore share the
-same engine behaviour, configuration, and Lua scripting environment.
+binaries call the same `lurek_run()` entry function, return the same `ExitCode`,
+and therefore share the same engine behaviour, runtime-mode parsing, configuration,
+and Lua scripting environment.
+
+**`lurek_headless` — tooling helper binary**: `src/bin/lurek_headless.rs` remains
+an auxiliary packaging and validation binary used for archive packing, validation,
+and screenshot-batch workflows. It is not the user-facing `--headless` runtime mode.
+The actual gameplay-oriented headless mode now lives behind `lurek2d --headless`
+inside the shared `lurek_run()` bootstrap path.
 
 **Development vs. distribution workflow**: During development, `lurek2d.exe`
 is preferred because engine log lines, Lua `print()` output, and `RUST_LOG`
@@ -32,10 +39,10 @@ the distribution step (`tools/dist/dist.ps1`) packages `lurekc.exe` as the
 primary launcher so games run silently as expected desktop applications. Both
 binaries are produced from the same `cargo build --release` invocation.
 
-**`lurekc` is the only file in this module**: There is exactly one source file
-in `src/bin/`. It contains a four-line `main()` that calls `lurek_run()`. Any
-future headless, server, or batch-runner binary entry point should be added as
-a new `[[bin]]` target here, following the same thin-wrapper pattern.
+**Thin wrappers only**: `src/bin/` currently contains a thin GUI launcher
+(`lurekc.rs`) and a thin tooling helper (`lurek_headless.rs`). Neither file owns
+runtime policy, module selection, or Lua API behaviour. All user-facing mode
+selection remains centralized in `lurek_run()` so `lurek2d` and `lurekc` stay in sync.
 
 **Design constraints**: The `bin` directory intentionally contains no domain
 logic, no library code, and no `lurek.*` Lua-reachable API surface. Keeping

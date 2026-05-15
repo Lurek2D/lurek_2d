@@ -1,4 +1,3 @@
-
 //! - Grid-based A* pathfinding with 8-directional movement and variable cell costs.
 //! - Bresenham line-of-sight checks for post-search path smoothing (string-pull).
 //! - World-space coordinate conversion: cell indices map to centres via configurable cell size.

@@ -541,6 +541,13 @@ describe("lurek.runtime.getConfig", function()
     end)
 
     -- @covers lurek.runtime.getConfig
+    it("has runtime_mode as a string", function()
+        local cfg = lurek.runtime.getConfig()
+        expect_type("string", cfg.runtime_mode)
+        expect_true(cfg.runtime_mode == "gui" or cfg.runtime_mode == "tui" or cfg.runtime_mode == "headless" or cfg.runtime_mode == "cli", "runtime_mode must be a supported mode")
+    end)
+
+    -- @covers lurek.runtime.getConfig
     it("has physics_tick_rate >= 1", function()
         local cfg = lurek.runtime.getConfig()
         expect_type("number", cfg.physics_tick_rate)

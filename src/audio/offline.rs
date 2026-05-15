@@ -1,4 +1,3 @@
-
 //! - Offline audio processing: apply DSP effect chains to files without real-time playback.
 //! - Peak normalisation with configurable target level.
 //! - WAV file decode to f32 and encode back to 16-bit PCM via rodio.

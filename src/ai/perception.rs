@@ -1,4 +1,3 @@
-
 //! - Perception model storing stimuli, sensor configuration, detection results, and awareness state.
 //! - Stimulus world for visual, auditory, and custom signals with insertion, decay, and removal.
 //! - Sensor-side logic testing visibility, hearing, detecting nearby stimuli, and updating awareness.

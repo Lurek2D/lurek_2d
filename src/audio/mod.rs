@@ -1,4 +1,3 @@
-
 //! - Audio subsystem module: mixer, buses, DSP effects, decoders, MIDI, pools, and visualisation.
 //! - Re-exports primary types: `Mixer`, `Bus`, `Decoder`, `SoundData`, `MidiPlayer`, `SoundPool`.
 //! - Submodule organisation separating playback, offline processing, and device enumeration.

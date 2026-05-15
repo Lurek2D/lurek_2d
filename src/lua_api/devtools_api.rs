@@ -677,22 +677,20 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// @return | LuaValue | Multi-return where the first value is a boolean success flag followed by result values or an error string.
     dt.set(
         "eval",
-        lua.create_function(
-            |lua, code: String| {
-                // LUA-EVAL-JUSTIFIED: devtools.eval is an explicit REPL/debug eval API.
-                match lua.load(&code).eval::<LuaMultiValue>() {
-                    Ok(vals) => {
-                        let mut result = vec![LuaValue::Boolean(true)];
-                        result.extend(vals.into_iter());
-                        Ok(LuaMultiValue::from_vec(result))
-                    }
-                    Err(e) => Ok(LuaMultiValue::from_vec(vec![
-                        LuaValue::Boolean(false),
-                        LuaValue::String(lua.create_string(e.to_string().as_bytes())?),
-                    ])),
+        lua.create_function(|lua, code: String| {
+            // LUA-EVAL-JUSTIFIED: devtools.eval is an explicit REPL/debug eval API.
+            match lua.load(&code).eval::<LuaMultiValue>() {
+                Ok(vals) => {
+                    let mut result = vec![LuaValue::Boolean(true)];
+                    result.extend(vals.into_iter());
+                    Ok(LuaMultiValue::from_vec(result))
                 }
-            },
-        )?,
+                Err(e) => Ok(LuaMultiValue::from_vec(vec![
+                    LuaValue::Boolean(false),
+                    LuaValue::String(lua.create_string(e.to_string().as_bytes())?),
+                ])),
+            }
+        })?,
     )?;
 
     // -- openConsole --

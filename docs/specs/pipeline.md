@@ -104,8 +104,8 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 - `LPipeline:setOnComplete`: Registers a callback invoked when the entire pipeline finishes execution. Receives the result table.
 - `LPipeline:setOnStepComplete`: Registers a callback invoked each time any step completes successfully. Receives (stepName, context).
 - `LPipeline:setOnStepError`: Registers a callback invoked each time any step fails. Receives (stepName, errorMessage).
-- `LPipeline:getName`: Returns the name of this pipeline.
-- `LPipeline:setName`: Changes the name of this pipeline.
+- `LPipeline:getName`: Returns the name of this pipeline. This method is available to Lua scripts.
+- `LPipeline:setName`: Changes the name of this pipeline. This method is available to Lua scripts.
 - `LPipeline:toTable`: Serializes the pipeline configuration into a plain Lua table for inspection or persistence.
 - `LPipeline:type`: Returns the type name of this object ("LPipeline").
 - `LPipeline:addConditional`: Convenience method to create and add a step with dependencies and a condition in one call.

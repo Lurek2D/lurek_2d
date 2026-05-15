@@ -1,4 +1,3 @@
-
 //! - Named audio routing bus with per-bus volume, pitch, pause, and duck-target controls.
 //! - Shared DSP effect chain stored as `Arc<RwLock<Vec<Arc<EffectParams>>>>` for lock-free audio-thread reads.
 //! - Dynamic add/remove of typed effects (lowpass, reverb, chorus, compressor, etc.) with runtime IDs.

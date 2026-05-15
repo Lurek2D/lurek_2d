@@ -352,37 +352,37 @@ The `math` module is Lurek2D's foundational mathematics library — a Foundation
 - `lurek.math.newTween`: Creates a tween with a duration and optional easing name.
 - `lurek.math.newSpatialHash`: Creates a spatial hash index with a cell size.
 - `lurek.math.newNoiseGenerator`: Creates a procedural noise generator with an optional seed.
-- `lurek.math.newRectPacker`: Creates a rectangle packer.
+- `lurek.math.newRectPacker`: Creates a rectangle packer. This function is exposed to Lua scripts.
 - `lurek.math.perlin2d`: Samples stateless 2D Perlin noise.
 - `lurek.math.perlin3d`: Samples stateless 3D Perlin noise.
 - `lurek.math.simplex2d`: Samples stateless 2D simplex noise.
 - `lurek.math.fbm`: Samples stateless fractal Brownian motion noise.
 - `lurek.math.applyEasing`: Applies a named easing function to a normalized value.
-- `lurek.math.linear`: Applies linear easing.
-- `lurek.math.inQuad`: Applies quadratic ease-in.
-- `lurek.math.outQuad`: Applies quadratic ease-out.
-- `lurek.math.inOutQuad`: Applies quadratic ease-in-out.
-- `lurek.math.inCubic`: Applies cubic ease-in.
-- `lurek.math.outCubic`: Applies cubic ease-out.
-- `lurek.math.inOutCubic`: Applies cubic ease-in-out.
-- `lurek.math.inQuart`: Applies quartic ease-in.
-- `lurek.math.outQuart`: Applies quartic ease-out.
-- `lurek.math.inOutQuart`: Applies quartic ease-in-out.
-- `lurek.math.inSine`: Applies sine ease-in.
-- `lurek.math.outSine`: Applies sine ease-out.
-- `lurek.math.inOutSine`: Applies sine ease-in-out.
-- `lurek.math.inExpo`: Applies exponential ease-in.
-- `lurek.math.outExpo`: Applies exponential ease-out.
+- `lurek.math.linear`: Applies linear easing. This function is exposed to Lua scripts.
+- `lurek.math.inQuad`: Applies quadratic ease-in. This function is exposed to Lua scripts.
+- `lurek.math.outQuad`: Applies quadratic ease-out. This function is exposed to Lua scripts.
+- `lurek.math.inOutQuad`: Applies quadratic ease-in-out. This function is exposed to Lua scripts.
+- `lurek.math.inCubic`: Applies cubic ease-in. This function is exposed to Lua scripts.
+- `lurek.math.outCubic`: Applies cubic ease-out. This function is exposed to Lua scripts.
+- `lurek.math.inOutCubic`: Applies cubic ease-in-out. This function is exposed to Lua scripts.
+- `lurek.math.inQuart`: Applies quartic ease-in. This function is exposed to Lua scripts.
+- `lurek.math.outQuart`: Applies quartic ease-out. This function is exposed to Lua scripts.
+- `lurek.math.inOutQuart`: Applies quartic ease-in-out. This function is exposed to Lua scripts.
+- `lurek.math.inSine`: Applies sine ease-in. This function is exposed to Lua scripts.
+- `lurek.math.outSine`: Applies sine ease-out. This function is exposed to Lua scripts.
+- `lurek.math.inOutSine`: Applies sine ease-in-out. This function is exposed to Lua scripts.
+- `lurek.math.inExpo`: Applies exponential ease-in. This function is exposed to Lua scripts.
+- `lurek.math.outExpo`: Applies exponential ease-out. This function is exposed to Lua scripts.
 - `lurek.math.inOutExpo`: Applies exponential ease-in-out.
-- `lurek.math.inElastic`: Applies elastic ease-in.
-- `lurek.math.outElastic`: Applies elastic ease-out.
-- `lurek.math.outBounce`: Applies bounce ease-out.
-- `lurek.math.inBounce`: Applies bounce ease-in.
-- `lurek.math.inBack`: Applies back ease-in.
-- `lurek.math.outBack`: Applies back ease-out.
-- `lurek.math.inOutElastic`: Applies elastic ease-in-out.
-- `lurek.math.inOutBounce`: Applies bounce ease-in-out.
-- `lurek.math.inOutBack`: Applies back ease-in-out.
+- `lurek.math.inElastic`: Applies elastic ease-in. This function is exposed to Lua scripts.
+- `lurek.math.outElastic`: Applies elastic ease-out. This function is exposed to Lua scripts.
+- `lurek.math.outBounce`: Applies bounce ease-out. This function is exposed to Lua scripts.
+- `lurek.math.inBounce`: Applies bounce ease-in. This function is exposed to Lua scripts.
+- `lurek.math.inBack`: Applies back ease-in. This function is exposed to Lua scripts.
+- `lurek.math.outBack`: Applies back ease-out. This function is exposed to Lua scripts.
+- `lurek.math.inOutElastic`: Applies elastic ease-in-out. This function is exposed to Lua scripts.
+- `lurek.math.inOutBounce`: Applies bounce ease-in-out. This function is exposed to Lua scripts.
+- `lurek.math.inOutBack`: Applies back ease-in-out. This function is exposed to Lua scripts.
 - `lurek.math.triangulate`: Triangulates a flat polygon point table.
 - `lurek.math.isConvex`: Returns whether a flat polygon point table is convex.
 - `lurek.math.gammaToLinear`: Converts a gamma-space channel to linear space.
@@ -401,23 +401,23 @@ The `math` module is Lurek2D's foundational mathematics library — a Foundation
 - `lurek.math.polygonCentroid`: Computes the centroid for a flat polygon point table.
 - `lurek.math.segmentIntersectsSegment`: Returns whether two segments intersect and their intersection point when present.
 - `lurek.math.bresenham`: Returns integer grid points along a Bresenham line.
-- `lurek.math.rad`: Converts degrees to radians.
-- `lurek.math.deg`: Converts radians to degrees.
-- `lurek.math.sin`: Returns sine of an angle.
-- `lurek.math.cos`: Returns cosine of an angle.
-- `lurek.math.tan`: Returns tangent of an angle.
-- `lurek.math.asin`: Returns arcsine of a value.
-- `lurek.math.acos`: Returns arccosine of a value.
+- `lurek.math.rad`: Converts degrees to radians. This function is exposed to Lua scripts.
+- `lurek.math.deg`: Converts radians to degrees. This function is exposed to Lua scripts.
+- `lurek.math.sin`: Returns sine of an angle. This function is exposed to Lua scripts.
+- `lurek.math.cos`: Returns cosine of an angle. This function is exposed to Lua scripts.
+- `lurek.math.tan`: Returns tangent of an angle. This function is exposed to Lua scripts.
+- `lurek.math.asin`: Returns arcsine of a value. This function is exposed to Lua scripts.
+- `lurek.math.acos`: Returns arccosine of a value. This function is exposed to Lua scripts.
 - `lurek.math.atan`: Returns arctangent or two-argument arctangent.
 - `lurek.math.atan2`: Returns two-argument arctangent.
-- `lurek.math.sqrt`: Returns square root of a value.
-- `lurek.math.abs`: Returns absolute value.
-- `lurek.math.floor`: Returns floor of a value.
-- `lurek.math.ceil`: Returns ceiling of a value.
-- `lurek.math.round`: Returns rounded value.
-- `lurek.math.exp`: Returns exponential of a value.
+- `lurek.math.sqrt`: Returns square root of a value. This function is exposed to Lua scripts.
+- `lurek.math.abs`: Returns absolute value. This function is exposed to Lua scripts.
+- `lurek.math.floor`: Returns floor of a value. This function is exposed to Lua scripts.
+- `lurek.math.ceil`: Returns ceiling of a value. This function is exposed to Lua scripts.
+- `lurek.math.round`: Returns rounded value. This function is exposed to Lua scripts.
+- `lurek.math.exp`: Returns exponential of a value. This function is exposed to Lua scripts.
 - `lurek.math.log`: Returns natural logarithm or logarithm with a supplied base.
-- `lurek.math.pow`: Raises a value to a power.
+- `lurek.math.pow`: Raises a value to a power. This function is exposed to Lua scripts.
 - `lurek.math.min`: Returns the smallest supplied value.
 - `lurek.math.max`: Returns the largest supplied value.
 - `lurek.math.fmod`: Returns floating-point remainder.
@@ -425,17 +425,17 @@ The `math` module is Lurek2D's foundational mathematics library — a Foundation
 - `lurek.math.distanceSq`: Returns squared Euclidean distance between two points.
 - `lurek.math.random`: Returns a Lua math random value, optionally scaled to one or two bounds.
 - `lurek.math.randomInt`: Returns a Lua math random integer in an inclusive range.
-- `lurek.math.simplexNoise`: Samples 2D or 3D simplex noise.
-- `lurek.math.vec2`: Creates a 2D vector.
-- `lurek.math.Vec2`: Creates a 2D vector.
-- `lurek.math.vec3`: Creates a 3D vector.
-- `lurek.math.Vec3`: Creates a 3D vector.
+- `lurek.math.simplexNoise`: Samples 2D or 3D simplex noise. This function is exposed to Lua scripts.
+- `lurek.math.vec2`: Creates a 2D vector. This function is exposed to Lua scripts.
+- `lurek.math.Vec2`: Creates a 2D vector. This function is exposed to Lua scripts.
+- `lurek.math.vec3`: Creates a 3D vector. This function is exposed to Lua scripts.
+- `lurek.math.Vec3`: Creates a 3D vector. This function is exposed to Lua scripts.
 - `lurek.math.catmullRom`: Creates a Catmull-Rom spline from point tables.
 - `lurek.math.hermite`: Creates a Hermite spline from endpoints and tangents.
 - `lurek.math.lerp`: Linearly interpolates between two values.
 - `lurek.math.remap`: Remaps a value from one range to another.
-- `lurek.math.clamp`: Clamps a value to a range.
-- `lurek.math.sign`: Returns the sign of a value.
+- `lurek.math.clamp`: Clamps a value to a range. This function is exposed to Lua scripts.
+- `lurek.math.sign`: Returns the sign of a value. This function is exposed to Lua scripts.
 - `lurek.math.smoothstep`: Applies smoothstep interpolation between two edges.
 - `lurek.math.inverseLerp`: Returns the interpolation factor of a value between two bounds.
 - `lurek.math.hslToRgb`: Converts HSL color values to RGBA channels.
@@ -444,23 +444,23 @@ The `math` module is Lurek2D's foundational mathematics library — a Foundation
 - `lurek.math.rectUnion`: Returns the union rectangle for two rectangles.
 - `lurek.math.rectFromCenter`: Creates a rectangle tuple from center coordinates and size.
 - `lurek.math.polygonClip`: Clips a flat polygon point table against a plane.
-- `lurek.math.aabbTree`: Creates an empty AABB tree.
-- `lurek.math.newCircle`: Creates a circle primitive.
+- `lurek.math.aabbTree`: Creates an empty AABB tree. This function is exposed to Lua scripts.
+- `lurek.math.newCircle`: Creates a circle primitive. This function is exposed to Lua scripts.
 - `lurek.math.polygonIntersection`: Returns polygon intersection points for two polygon tables.
 - `lurek.math.polygonUnion`: Returns polygon union points for two polygon tables.
 - `lurek.math.polygonDifference`: Returns polygon difference points for two polygon tables.
 - `lurek.math.voronoi`: Builds Voronoi cells from a polygon-style point table.
 
 ### `LAabbTree` Methods
-- `LAabbTree:insert`: Inserts an AABB by id.
-- `LAabbTree:remove`: Removes an AABB by id.
-- `LAabbTree:query`: Queries ids intersecting an AABB.
-- `LAabbTree:queryPoint`: Queries ids containing a point.
-- `LAabbTree:update`: Updates an AABB by id.
+- `LAabbTree:insert`: Inserts an AABB by id. This method is available to Lua scripts.
+- `LAabbTree:remove`: Removes an AABB by id. This method is available to Lua scripts.
+- `LAabbTree:query`: Queries ids intersecting an AABB. This method is available to Lua scripts.
+- `LAabbTree:queryPoint`: Queries ids containing a point. This method is available to Lua scripts.
+- `LAabbTree:update`: Updates an AABB by id. This method is available to Lua scripts.
 - `LAabbTree:contains`: Returns whether the tree contains an id.
 - `LAabbTree:len`: Returns the number of items in the tree.
 - `LAabbTree:isEmpty`: Returns whether the tree has no items.
-- `LAabbTree:clear`: Clears all items from the tree.
+- `LAabbTree:clear`: Clears all items from the tree. This method is available to Lua scripts.
 - `LAabbTree:type`: Returns the Lua-visible type name for this AABB tree handle.
 - `LAabbTree:typeOf`: Returns whether this AABB tree handle matches a supported type name.
 
@@ -475,7 +475,7 @@ The `math` module is Lurek2D's foundational mathematics library — a Foundation
 - `LBezierCurve:getControlPointCount`: Returns the number of control points in this curve.
 - `LBezierCurve:length`: Returns the approximate curve length.
 - `LBezierCurve:evaluateAtDistance`: Evaluates this curve at an approximate distance along the curve.
-- `LBezierCurve:translate`: Translates all control points.
+- `LBezierCurve:translate`: Translates all control points. This method is available to Lua scripts.
 - `LBezierCurve:rotate`: Rotates all control points around an origin.
 - `LBezierCurve:scale`: Scales all control points around an origin.
 - `LBezierCurve:type`: Returns the Lua-visible type name for this Bezier curve handle.
@@ -485,20 +485,20 @@ The `math` module is Lurek2D's foundational mathematics library — a Foundation
 - `LCatmullRom:sample`: Samples the spline at normalized parameter `t`.
 - `LCatmullRom:sampleSegment`: Samples one spline segment at local parameter `t`.
 - `LCatmullRom:len`: Returns the number of points in the spline.
-- `LCatmullRom:addPoint`: Adds a point to the spline.
+- `LCatmullRom:addPoint`: Adds a point to the spline. This method is available to Lua scripts.
 - `LCatmullRom:removePoint`: Removes a point by zero-based index and returns its coordinates.
 - `LCatmullRom:type`: Returns the Lua-visible type name for this spline handle.
 - `LCatmullRom:typeOf`: Returns whether this spline handle matches a supported type name.
 
 ### `LCircle` Methods
-- `LCircle:area`: Returns this circle area.
-- `LCircle:perimeter`: Returns this circle perimeter.
+- `LCircle:area`: Returns this circle area. This method is available to Lua scripts.
+- `LCircle:perimeter`: Returns this circle perimeter. This method is available to Lua scripts.
 - `LCircle:contains`: Returns whether this circle contains a point.
 - `LCircle:intersects`: Returns whether this circle intersects another circle.
 - `LCircle:aabb`: Returns this circle axis-aligned bounding box.
 - `LCircle:x`: Returns this circle center x coordinate.
 - `LCircle:y`: Returns this circle center y coordinate.
-- `LCircle:radius`: Returns this circle radius.
+- `LCircle:radius`: Returns this circle radius. This method is available to Lua scripts.
 - `LCircle:type`: Returns the Lua-visible type name for this circle handle.
 - `LCircle:typeOf`: Returns whether this circle handle matches a supported type name.
 
@@ -508,23 +508,23 @@ The `math` module is Lurek2D's foundational mathematics library — a Foundation
 - `LHermite:typeOf`: Returns whether this spline handle matches a supported type name.
 
 ### `LNoiseGenerator` Methods
-- `LNoiseGenerator:perlin1d`: Samples 1D Perlin noise.
-- `LNoiseGenerator:perlin2d`: Samples 2D Perlin noise.
-- `LNoiseGenerator:perlin3d`: Samples 3D Perlin noise.
-- `LNoiseGenerator:perlin4d`: Samples 4D Perlin noise.
-- `LNoiseGenerator:simplex1d`: Samples 1D simplex noise.
-- `LNoiseGenerator:simplex2d`: Samples 2D simplex noise.
-- `LNoiseGenerator:simplex3d`: Samples 3D simplex noise.
-- `LNoiseGenerator:worley2d`: Samples 2D Worley noise.
-- `LNoiseGenerator:worley3d`: Samples 3D Worley noise.
+- `LNoiseGenerator:perlin1d`: Samples 1D Perlin noise. This method is available to Lua scripts.
+- `LNoiseGenerator:perlin2d`: Samples 2D Perlin noise. This method is available to Lua scripts.
+- `LNoiseGenerator:perlin3d`: Samples 3D Perlin noise. This method is available to Lua scripts.
+- `LNoiseGenerator:perlin4d`: Samples 4D Perlin noise. This method is available to Lua scripts.
+- `LNoiseGenerator:simplex1d`: Samples 1D simplex noise. This method is available to Lua scripts.
+- `LNoiseGenerator:simplex2d`: Samples 2D simplex noise. This method is available to Lua scripts.
+- `LNoiseGenerator:simplex3d`: Samples 3D simplex noise. This method is available to Lua scripts.
+- `LNoiseGenerator:worley2d`: Samples 2D Worley noise. This method is available to Lua scripts.
+- `LNoiseGenerator:worley3d`: Samples 3D Worley noise. This method is available to Lua scripts.
 - `LNoiseGenerator:fbm`: Samples fractal Brownian motion noise.
-- `LNoiseGenerator:ridged`: Samples ridged fractal noise.
+- `LNoiseGenerator:ridged`: Samples ridged fractal noise. This method is available to Lua scripts.
 - `LNoiseGenerator:turbulence`: Samples turbulence fractal noise.
 - `LNoiseGenerator:warpDomain`: Samples domain-warped noise coordinates.
 - `LNoiseGenerator:generateMap`: Generates a noise map and returns it as a flat array table.
 - `LNoiseGenerator:generateMapCompute`: Generates a noise map through the compute backend and returns it as a flat array table.
 - `LNoiseGenerator:getSeed`: Returns this noise generator seed.
-- `LNoiseGenerator:setSeed`: Sets this noise generator seed.
+- `LNoiseGenerator:setSeed`: Sets this noise generator seed. This method is available to Lua scripts.
 - `LNoiseGenerator:type`: Returns the Lua-visible type name for this noise generator handle.
 - `LNoiseGenerator:typeOf`: Returns whether this noise generator handle matches a supported type name.
 
@@ -533,7 +533,7 @@ The `math` module is Lurek2D's foundational mathematics library — a Foundation
 - `LRandomGenerator:randomFloat`: Returns a random floating-point value in a range.
 - `LRandomGenerator:randomInt`: Returns a random integer in a range.
 - `LRandomGenerator:randomNormal`: Returns a normally distributed random value.
-- `LRandomGenerator:getSeed`: Returns this generator seed.
+- `LRandomGenerator:getSeed`: Returns this generator seed. This method is available to Lua scripts.
 - `LRandomGenerator:setSeed`: Resets this generator to a seed value.
 - `LRandomGenerator:getState`: Returns this generator serialized state string.
 - `LRandomGenerator:setState`: Restores this generator from a serialized state string.
@@ -543,7 +543,7 @@ The `math` module is Lurek2D's foundational mathematics library — a Foundation
 ### `LRectPacker` Methods
 - `LRectPacker:pack`: Attempts to pack a rectangle and returns its placement coordinates.
 - `LRectPacker:clear`: Clears packed rectangles from this packer.
-- `LRectPacker:occupancy`: Returns occupied area ratio.
+- `LRectPacker:occupancy`: Returns occupied area ratio. This method is available to Lua scripts.
 - `LRectPacker:getPacked`: Returns packed rectangle records.
 
 ### `LSpatialHash` Methods
@@ -562,14 +562,14 @@ The `math` module is Lurek2D's foundational mathematics library — a Foundation
 ### `LTransform` Methods
 - `LTransform:translate`: Applies a translation to this transform.
 - `LTransform:rotate`: Applies a rotation to this transform.
-- `LTransform:scale`: Applies scale to this transform.
-- `LTransform:shear`: Applies shear to this transform.
+- `LTransform:scale`: Applies scale to this transform. This method is available to Lua scripts.
+- `LTransform:shear`: Applies shear to this transform. This method is available to Lua scripts.
 - `LTransform:reset`: Resets this transform to identity.
 - `LTransform:setTransformation`: Replaces this transform from position, rotation, scale, origin, and shear components.
 - `LTransform:transformPoint`: Transforms a point by this transform.
 - `LTransform:inverseTransformPoint`: Transforms a point by this transform's inverse.
 - `LTransform:inverse`: Returns this transform's inverse.
-- `LTransform:clone`: Returns a copy of this transform.
+- `LTransform:clone`: Returns a copy of this transform. This method is available to Lua scripts.
 - `LTransform:getMatrix`: Returns this transform matrix as a flat array table.
 - `LTransform:decompose`: Decomposes this transform into component values.
 - `LTransform:type`: Returns the Lua-visible type name for this transform handle.
@@ -579,32 +579,32 @@ The `math` module is Lurek2D's foundational mathematics library — a Foundation
 - `LTween:update`: Advances the tween clock and returns whether it is complete.
 - `LTween:reset`: Resets the tween clock to the beginning.
 - `LTween:getValue`: Returns one tween value by one-based index or all values when no index is provided.
-- `LTween:getAllValues`: Returns all current tween values.
+- `LTween:getAllValues`: Returns all current tween values. This method is available to Lua scripts.
 - `LTween:isComplete`: Returns whether this tween is complete.
 - `LTween:getValueCount`: Returns the number of values animated by this tween.
 - `LTween:getEasingName`: Returns this tween easing function name.
-- `LTween:getDuration`: Returns this tween duration.
-- `LTween:getTime`: Returns this tween clock time.
-- `LTween:getClock`: Returns this tween clock time.
-- `LTween:setTime`: Sets this tween clock time.
-- `LTween:set`: Sets this tween clock time.
-- `LTween:addValue`: Adds a value track to this tween.
+- `LTween:getDuration`: Returns this tween duration. This method is available to Lua scripts.
+- `LTween:getTime`: Returns this tween clock time. This method is available to Lua scripts.
+- `LTween:getClock`: Returns this tween clock time. This method is available to Lua scripts.
+- `LTween:setTime`: Sets this tween clock time. This method is available to Lua scripts.
+- `LTween:set`: Sets this tween clock time. This method is available to Lua scripts.
+- `LTween:addValue`: Adds a value track to this tween. This method is available to Lua scripts.
 - `LTween:type`: Returns the Lua-visible type name for this tween handle.
 - `LTween:typeOf`: Returns whether this tween handle matches a supported type name.
 
 ### `LVec2` Methods
 - `LVec2:dot`: Returns the dot product with another vector.
-- `LVec2:length`: Returns this vector length.
-- `LVec2:x`: Returns this vector x component.
-- `LVec2:y`: Returns this vector y component.
+- `LVec2:length`: Returns this vector length. This method is available to Lua scripts.
+- `LVec2:x`: Returns this vector x component. This method is available to Lua scripts.
+- `LVec2:y`: Returns this vector y component. This method is available to Lua scripts.
 - `LVec2:lengthSquared`: Returns this vector squared length.
 - `LVec2:normalize`: Returns a normalized copy of this vector.
 - `LVec2:normalized`: Returns a normalized copy of this vector.
 - `LVec2:lerp`: Returns a vector interpolated toward another vector.
 - `LVec2:distance`: Returns distance to another vector.
-- `LVec2:angle`: Returns this vector angle.
+- `LVec2:angle`: Returns this vector angle. This method is available to Lua scripts.
 - `LVec2:rotate`: Returns this vector rotated by an angle.
-- `LVec2:perpendicular`: Returns a perpendicular vector.
+- `LVec2:perpendicular`: Returns a perpendicular vector. This method is available to Lua scripts.
 - `LVec2:cross`: Returns the scalar 2D cross product with another vector.
 - `LVec2:fromAngle`: Creates a unit vector from an angle.
 - `LVec2:reflect`: Returns this vector reflected around a normal vector.
@@ -612,7 +612,7 @@ The `math` module is Lurek2D's foundational mathematics library — a Foundation
 - `LVec2:typeOf`: Returns whether this vector handle matches a supported type name.
 
 ### `LVec3` Methods
-- `LVec3:length`: Returns this vector length.
+- `LVec3:length`: Returns this vector length. This method is available to Lua scripts.
 - `LVec3:lengthSquared`: Returns this vector squared length.
 - `LVec3:normalize`: Returns a normalized copy of this vector.
 - `LVec3:dot`: Returns the dot product with another vector.

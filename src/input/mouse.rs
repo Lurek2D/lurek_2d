@@ -255,4 +255,3 @@ pub struct CursorHandle {
 pub fn is_cursor_supported() -> bool {
     true
 }
-

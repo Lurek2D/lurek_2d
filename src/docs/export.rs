@@ -32,7 +32,7 @@ fn build_completions(entries: &[DocEntry], include_enum: bool) -> Vec<serde_json
         })
         .collect()
 }
-    /// Build hover payload data keyed by qualified name and return the map.
+/// Build hover payload data keyed by qualified name and return the map.
 fn build_hover_map(entries: &[DocEntry], compact: bool) -> HashMap<String, serde_json::Value> {
     let mut hover: HashMap<String, serde_json::Value> = HashMap::new();
     for e in entries {

@@ -1,4 +1,3 @@
-
 //! - Public AI module surface grouping planning, decision, control, memory, and movement subsystems.
 //! - Module-level export map for agent state, planners, blackboard, and command flow.
 //! - Learning helpers, perception, steering, and squad coordination re-exports.

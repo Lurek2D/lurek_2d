@@ -1,4 +1,3 @@
-
 //! - Jump Point Search (JPS) optimised A* on uniform-cost 8-directional grids.
 //! - Prunes symmetric neighbours to skip large open areas without expanding every cell.
 //! - Identifies forced neighbours and jump points along cardinal and diagonal directions.

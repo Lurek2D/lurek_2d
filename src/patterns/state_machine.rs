@@ -1,4 +1,3 @@
-
 //! - Finite state machine with explicit states, guarded transitions, and bounded history.
 //! - Transition rules with optional guards control allowed state changes.
 //! - Maintains a capped history ring of visited states for replay or debugging.

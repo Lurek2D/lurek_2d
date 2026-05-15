@@ -1,4 +1,3 @@
-
 //! - ORCA local-avoidance data representing moving agents, solver constraints, and safe output velocities.
 //! - Per-agent motion inputs: current velocity, preferred velocity, collision radius, and max speed.
 //! - Solver pass building pairwise half-plane constraints and projecting collision-free velocities.

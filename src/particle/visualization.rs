@@ -1,4 +1,3 @@
-
 //! - Particle visualization helpers that render live `ParticleSystem` state to `ImageData` bitmaps.
 //! - Generic renderer using colour/size/alpha keyframes from the emitter configuration.
 //! - Themed preset renderers for explosions, rain, and spark-trail effects.

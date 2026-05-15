@@ -1,4 +1,3 @@
-
 //! - Linear undo/redo command history with cursor-based navigation.
 //! - Batch grouping for multi-command atomic operations.
 //! - Configurable max-size eviction of oldest entries.

@@ -11,7 +11,7 @@
 
 ## Summary
 
-The `devtools` module is Lurek2D's in-process developer toolbox — a Feature Systems tier module exposing structured logging, frame profiling, rolling frame statistics, a file watcher for hot-reload, and an interactive Lua REPL, all accessible from Lua scripts via `lurek.devtools.*`. It is intended to aid game developers during development without requiring a separate profiler binary or GPU overlay renderer.
+The `devtools` module is Lurek2D's in-process developer toolbox — an Edge/Integration tier module exposing structured logging, frame profiling, rolling frame statistics, a file watcher for hot-reload, and compatibility wrappers for developer-facing tools accessible from Lua scripts via `lurek.devtools.*`. It is intended to aid game developers during development without requiring a separate profiler binary or GPU overlay renderer.
 
 **Logger.** `Logger` is a level-filtered, categorised in-process message store with a rolling history ring buffer. Messages are tagged with a `LogLevel` (trace/debug/info/warn/error) and an optional category string. `push(level, category, message)` records an entry; `tail(n)` returns the most recent n entries; `filter_category(cat)` returns all entries matching a category prefix. The history bound is configurable (`set_capacity`). `Logger` is separate from the engine's Rust `log` crate output — it independently captures Lua-emitted diagnostic messages for in-game debug consoles and tooling.
 
@@ -21,11 +21,11 @@ The `devtools` module is Lurek2D's in-process developer toolbox — a Feature Sy
 
 **FileWatcher.** `FileWatcher` polls file modification times at a configurable interval. Watched paths are registered with `watch(path)`; `check()` returns the list of paths whose mtime has changed since the last check. From Lua: `lurek.devtools.watcher:watch(path)`, `watcher:check()` → changed paths table. Intended for hot-reload workflows: a Lua game can watch its own scripts and assets and call `lurek.require` or re-load textures on change without a full restart.
 
-**REPL console.** `ReplConsole` provides an interactive Lua REPL with a bounded input history buffer that can be embedded in a running game session without spawning a separate process. `eval(code)` executes an arbitrary Lua expression in the current VM and returns its string representation. `history()` / `historySize()` / `clearHistory()` manage the input history ring. This enables in-game developer consoles (e.g., a text input field that submits code to `repl:eval()`) without external tooling.
+**REPL console.** `ReplConsole` is now a compatibility wrapper over the release-safe `src/repl/` core. It preserves the existing devtools-facing Lua surface while sharing evaluation, history, and display behaviour with the runtime CLI path. `eval(code)` executes an expression, statement, or colon command in the current VM. `history()`, `clear()`, and `len()` expose the bounded history buffer. This keeps `lurek.devtools.newRepl()` useful for in-game developer consoles while the shared REPL core remains available outside debug-only builds.
 
-**Lua surface.** `lurek.devtools.newLogger(capacity)` / `newProfiler()` / `newFrameStats(capacity)` / `newWatcher(interval_ms)` / `newRepl()` create instances. `Logger` userdata: `push(level, cat, msg)`, `tail(n)`, `filterCategory(cat)`, `clear()`, `setLevel(level)`. `Profiler` userdata: `begin(name)`, `stop()`, `frame()` (tree). `FrameStats` userdata: `record(dt)`, `snapshot()` (table with fps/mean/min/max/p50/p95/p99). `FileWatcher` userdata: `watch(path)`, `check()`. `ReplConsole` userdata: `eval(code)`, `history()`, `historySize()`, `clearHistory()`. Module-level utilities also expose lightweight GPU frame stats (`recordGpuFrameTime`, `getGpuFrameStats`) and an entity inspector toggle (`openEntityInspector`, `isEntityInspectorOpen`).
+**Lua surface.** `lurek.devtools.newLogger(capacity)` / `newProfiler()` / `newFrameStats(capacity)` / `newWatcher(interval_ms)` / `newRepl()` create instances. `Logger` userdata: `push(level, cat, msg)`, `tail(n)`, `filterCategory(cat)`, `clear()`, `setLevel(level)`. `Profiler` userdata: `begin(name)`, `stop()`, `frame()` (tree). `FrameStats` userdata: `record(dt)`, `snapshot()` (table with fps/mean/min/max/p50/p95/p99). `FileWatcher` userdata: `watch(path)`, `check()`. `ReplConsole` userdata: `eval(code)`, `history()`, `clear()`, `len()`, `type()`, `typeOf()`. Module-level utilities also expose lightweight GPU frame stats (`recordGpuFrameTime`, `getGpuFrameStats`) and an entity inspector toggle (`openEntityInspector`, `isEntityInspectorOpen`).
 
-**Scope boundary.** Feature Systems tier. Depends on `runtime` for VM access in REPL eval. Lua bridge in `src/lua_api/devtools_api.rs`.
+**Scope boundary.** Edge/Integration tier. Depends on lower-tier runtime facilities and the shared `repl` core, but should remain a tooling wrapper layer rather than a home for reusable runtime logic.
 
 ## Files
 
@@ -152,7 +152,7 @@ The `devtools` module is Lurek2D's in-process developer toolbox — a Feature Sy
 ### `LFileWatcher` Methods
 - `LFileWatcher:onChanged`: Sets the callback invoked when this watcher observes a change.
 - `LFileWatcher:check`: Polls the watcher and invokes the change callback when a change is found.
-- `LFileWatcher:getPath`: Returns the watched path.
+- `LFileWatcher:getPath`: Returns the watched path. This method is available to Lua scripts.
 - `LFileWatcher:cancel`: Cancels this watcher and removes its callback.
 - `LFileWatcher:type`: Returns the Lua-visible type name for this file watcher handle.
 - `LFileWatcher:typeOf`: Returns whether this file watcher handle matches a supported type name.
@@ -168,8 +168,10 @@ The `devtools` module is Lurek2D's in-process developer toolbox — a Feature Sy
 ## References
 
 - `filesystem`: Imports or references `src/filesystem/`. Cross-group dependency from `Edge/Integration` into `Core Runtime`.
+- `repl`: Imports or references `src/repl/`. Dependency stays inside `Edge/Integration` and should remain acyclic.
 
 ## Notes
 
 - Keep this module reference synchronized with `src/devtools/` and any matching Lua bindings.
 - Summary paragraphs are manual prose. The collected Files, Types, Functions, Lua API Reference, and References sections can be regenerated when the source changes.
+- Release-safe interactive evaluation now lives in `src/repl/`. `devtools` keeps only the compatibility wrapper and debug-oriented Lua entry point.

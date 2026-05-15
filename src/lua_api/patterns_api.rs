@@ -539,7 +539,10 @@ impl LuaUserData for LuaFactory {
         /// Return an array of all registered type names.
         /// @return | table | Array of type name strings.
         methods.add_method("getTypes", |lua, this, ()| {
-            let names: Vec<String> = this.factory.borrow().type_names()
+            let names: Vec<String> = this
+                .factory
+                .borrow()
+                .type_names()
                 .iter()
                 .map(|s| s.to_string())
                 .collect();

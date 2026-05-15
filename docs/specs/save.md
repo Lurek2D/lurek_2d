@@ -77,7 +77,7 @@ This module primarily collaborates with `data`, `runtime`. Its responsibility sh
 - `LSaveManager:setSummary`: Set a human-readable summary string stored alongside save metadata (e.g. "Level 5 – Forest").
 - `LSaveManager:getSummary`: Get the current summary string that will be embedded in the next save.
 - `LSaveManager:reset`: Completely reset the save manager: unregister all sections, clear migrations, hooks, compression, and dirty state.
-- `LSaveManager:setCompress`: Enable or disable LZ4 compression for save files. Compressed saves are smaller on disk
+- `LSaveManager:setCompress`: Enable or disable LZ4 compression for save files. Compressed saves are smaller on disk.
 - `LSaveManager:isCompressed`: Check whether save compression is currently enabled.
 - `LSaveManager:onBeforeSave`: Set a hook function called immediately before each save operation begins.
 - `LSaveManager:onAfterLoad`: Set a hook function called immediately after a save file is successfully loaded and all restorers have run.

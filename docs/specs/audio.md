@@ -318,7 +318,7 @@ The `audio` module is Lurek2D's full-featured sound engine — a Platform Servic
 - `lurek.audio.clone`: Creates an independent copy of a source sharing the same audio data.
 - `lurek.audio.pauseAll`: Pauses all currently playing audio sources.
 - `lurek.audio.stopAll`: Stops all audio sources and resets their positions.
-- `lurek.audio.resumeAll`: Resumes all paused audio sources.
+- `lurek.audio.resumeAll`: Resumes all paused audio sources. This function is exposed to Lua scripts.
 - `lurek.audio.release`: Releases an audio source, freeing its memory and stopping playback.
 - `lurek.audio.newBus`: Creates a new audio mixing bus for grouping and controlling sources.
 - `lurek.audio.setSourceBus`: Routes a source through a specific audio bus for grouped mixing.
@@ -352,49 +352,49 @@ The `audio` module is Lurek2D's full-featured sound engine — a Platform Servic
 - `lurek.audio.getMeter`: Returns the current master peak level for VU-meter displays.
 - `lurek.audio.newMidiPlayer`: Creates a new MIDI player instance, optionally loading a file immediately.
 - `lurek.audio.newSoundData`: Creates a new SoundData object from a file path or blank buffer for procedural audio.
-- `lurek.audio.setMidiSoundFont`: Lua-facing function documented in the binding source.
-- `lurek.audio.hasMidiSoundFont`: Lua-facing function documented in the binding source.
-- `lurek.audio.clearMidiSoundFont`: Lua-facing function documented in the binding source.
-- `lurek.audio.newDecoder`: Lua-facing function documented in the binding source.
-- `lurek.audio.newQueueableSource`: Lua-facing function documented in the binding source.
-- `lurek.audio.queueSource`: Lua-facing function documented in the binding source.
-- `lurek.audio.getFreeBufferCount`: Lua-facing function documented in the binding source.
-- `lurek.audio.playQueueable`: Lua-facing function documented in the binding source.
-- `lurek.audio.stopQueueable`: Lua-facing function documented in the binding source.
-- `lurek.audio.getPlaybackDevices`: Lua-facing function documented in the binding source.
-- `lurek.audio.getPlaybackDevice`: Lua-facing function documented in the binding source.
-- `lurek.audio.setPlaybackDevice`: Lua-facing function documented in the binding source.
-- `lurek.audio.create_bus`: Lua-facing function documented in the binding source.
+- `lurek.audio.setMidiSoundFont`: Sets the midi sound font for Lua scripts in this module.
+- `lurek.audio.hasMidiSoundFont`: Returns true if midi sound font for Lua scripts in this module.
+- `lurek.audio.clearMidiSoundFont`: Clears midi sound font for Lua scripts in this module.
+- `lurek.audio.newDecoder`: New decoder for Lua scripts in this module.
+- `lurek.audio.newQueueableSource`: New queueable source for Lua scripts in this module.
+- `lurek.audio.queueSource`: Queue source for Lua scripts in this module.
+- `lurek.audio.getFreeBufferCount`: Returns the free buffer count for Lua scripts in this module.
+- `lurek.audio.playQueueable`: Play queueable for Lua scripts in this module.
+- `lurek.audio.stopQueueable`: Stop queueable for Lua scripts in this module.
+- `lurek.audio.getPlaybackDevices`: Returns the playback devices for Lua scripts in this module.
+- `lurek.audio.getPlaybackDevice`: Returns the playback device for Lua scripts in this module.
+- `lurek.audio.setPlaybackDevice`: Sets the playback device for Lua scripts in this module.
+- `lurek.audio.create_bus`: Create_bus for Lua scripts in this module.
 - `lurek.audio.set_bus_volume`: Overwrites one normalized PCM sample value in this sound buffer.
-- `lurek.audio.add_effect`: Lua-facing function documented in the binding source.
-- `lurek.audio.remove_effect`: Lua-facing function documented in the binding source.
-- `lurek.audio.set_effect_param`: Lua-facing function documented in the binding source.
-- `lurek.audio.newSineWave`: Lua-facing function documented in the binding source.
-- `lurek.audio.newSquareWave`: Lua-facing function documented in the binding source.
-- `lurek.audio.newSawtoothWave`: Lua-facing function documented in the binding source.
-- `lurek.audio.newTriangleWave`: Lua-facing function documented in the binding source.
-- `lurek.audio.newWhiteNoise`: Lua-facing function documented in the binding source.
-- `lurek.audio.applyLowpass`: Lua-facing function documented in the binding source.
-- `lurek.audio.applyHighpass`: Lua-facing function documented in the binding source.
-- `lurek.audio.applyBandpass`: Lua-facing function documented in the binding source.
-- `lurek.audio.applyGain`: Lua-facing function documented in the binding source.
-- `lurek.audio.mixInto`: Lua-facing function documented in the binding source.
-- `lurek.audio.saveWAV`: Lua-facing function documented in the binding source.
-- `lurek.audio.setStereoWidth`: Lua-facing function documented in the binding source.
-- `lurek.audio.getStereoWidth`: Lua-facing function documented in the binding source.
-- `lurek.audio.setRandomPitch`: Lua-facing function documented in the binding source.
-- `lurek.audio.clearRandomPitch`: Lua-facing function documented in the binding source.
-- `lurek.audio.crossfade`: Lua-facing function documented in the binding source.
-- `lurek.audio.getBusPeak`: Lua-facing function documented in the binding source.
-- `lurek.audio.getBusRms`: Lua-facing function documented in the binding source.
-- `lurek.audio.newPool`: Lua-facing function documented in the binding source.
-- `lurek.audio.processOffline`: Lua-facing function documented in the binding source.
-- `lurek.audio.normalizeFile`: Lua-facing function documented in the binding source.
-- `lurek.audio.waveformToPng`: Lua-facing function documented in the binding source.
-- `lurek.audio.spectrogramToPng`: Lua-facing function documented in the binding source.
+- `lurek.audio.add_effect`: Add_effect for Lua scripts in this module.
+- `lurek.audio.remove_effect`: Remove_effect for Lua scripts in this module.
+- `lurek.audio.set_effect_param`: Set_effect_param for Lua scripts in this module.
+- `lurek.audio.newSineWave`: New sine wave for Lua scripts in this module.
+- `lurek.audio.newSquareWave`: New square wave for Lua scripts in this module.
+- `lurek.audio.newSawtoothWave`: New sawtooth wave for Lua scripts in this module.
+- `lurek.audio.newTriangleWave`: New triangle wave for Lua scripts in this module.
+- `lurek.audio.newWhiteNoise`: New white noise for Lua scripts in this module.
+- `lurek.audio.applyLowpass`: Apply lowpass for Lua scripts in this module.
+- `lurek.audio.applyHighpass`: Apply highpass for Lua scripts in this module.
+- `lurek.audio.applyBandpass`: Apply bandpass for Lua scripts in this module.
+- `lurek.audio.applyGain`: Apply gain for Lua scripts in this module.
+- `lurek.audio.mixInto`: Mix into for Lua scripts in this module.
+- `lurek.audio.saveWAV`: Save wav for Lua scripts in this module.
+- `lurek.audio.setStereoWidth`: Sets the stereo width for Lua scripts in this module.
+- `lurek.audio.getStereoWidth`: Returns the stereo width for Lua scripts in this module.
+- `lurek.audio.setRandomPitch`: Sets the random pitch for Lua scripts in this module.
+- `lurek.audio.clearRandomPitch`: Clears random pitch for Lua scripts in this module.
+- `lurek.audio.crossfade`: Crossfade for Lua scripts in this module.
+- `lurek.audio.getBusPeak`: Returns the bus peak for Lua scripts in this module.
+- `lurek.audio.getBusRms`: Returns the bus rms for Lua scripts in this module.
+- `lurek.audio.newPool`: New pool for Lua scripts in this module.
+- `lurek.audio.processOffline`: Process offline for Lua scripts in this module.
+- `lurek.audio.normalizeFile`: Normalize file for Lua scripts in this module.
+- `lurek.audio.waveformToPng`: Waveform to png for Lua scripts in this module.
+- `lurek.audio.spectrogramToPng`: Spectrogram to png for Lua scripts in this module.
 
 ### `LBus` Methods
-- `LBus:getName`: Returns the name of this audio bus.
+- `LBus:getName`: Returns the name of this audio bus. This method is available to Lua scripts.
 - `LBus:setVolume`: Sets the volume multiplier for all sources routed through this bus.
 - `LBus:getVolume`: Returns the current volume multiplier of this bus.
 - `LBus:setPitch`: Sets the pitch multiplier applied to all sources routed through this bus.

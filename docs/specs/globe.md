@@ -257,7 +257,7 @@ The `globe` module provides an XCOM Geoscape-style 2D strategic globe view — a
 
 ### `LGlobe` Methods
 - `LGlobe:addProvince`: Adds a province described by id, centroid, vertices, neighbors, and optional base color.
-- `LGlobe:removeProvince`: Removes a province by id.
+- `LGlobe:removeProvince`: Removes a province by id. This method is available to Lua scripts.
 - `LGlobe:provinceCount`: Returns the number of provinces in this globe.
 - `LGlobe:getNeighbors`: Returns neighboring province ids for a province.
 - `LGlobe:setProvinceAttr`: Sets a string attribute on a province.
@@ -268,7 +268,7 @@ The `globe` module provides an XCOM Geoscape-style 2D strategic globe view — a
 - `LGlobe:getProvinceSector`: Returns the sector name assigned to a province.
 - `LGlobe:getSectorProvinces`: Returns province ids assigned to a sector.
 - `LGlobe:setHeatLayer`: Creates or replaces a heat layer that maps province attributes into colors.
-- `LGlobe:removeHeatLayer`: Removes a heat layer by name.
+- `LGlobe:removeHeatLayer`: Removes a heat layer by name. This method is available to Lua scripts.
 - `LGlobe:pan`: Pans the globe camera by latitude and longitude deltas.
 - `LGlobe:zoom`: Multiplies the globe camera zoom by a factor.
 - `LGlobe:setCamera`: Sets camera latitude, longitude, and zoom.
@@ -287,25 +287,25 @@ The `globe` module provides an XCOM Geoscape-style 2D strategic globe view — a
 - `LGlobe:isVisible`: Returns whether a province is visible for one fog-of-war viewer.
 - `LGlobe:revealAll`: Reveals every province for one fog-of-war viewer.
 - `LGlobe:addMarker`: Adds a marker at latitude and longitude with an optional label.
-- `LGlobe:removeMarker`: Removes a marker by id.
+- `LGlobe:removeMarker`: Removes a marker by id. This method is available to Lua scripts.
 - `LGlobe:moveMarker`: Moves a marker to latitude and longitude coordinates.
-- `LGlobe:setMarkerVisible`: Shows or hides a marker.
+- `LGlobe:setMarkerVisible`: Shows or hides a marker. This method is available to Lua scripts.
 - `LGlobe:setMarkerPulse`: Sets marker pulse frequency and amplitude.
-- `LGlobe:setMarkerRotation`: Sets marker rotation speed.
+- `LGlobe:setMarkerRotation`: Sets marker rotation speed. This method is available to Lua scripts.
 - `LGlobe:setMarkerAttr`: Sets a string attribute on a marker.
 - `LGlobe:getMarkerAttr`: Reads a string attribute from a marker.
 - `LGlobe:addLabel`: Adds a text label at latitude and longitude.
 - `LGlobe:setLabelText`: Changes text for an existing label.
-- `LGlobe:setLabelVisible`: Shows or hides a label.
-- `LGlobe:removeLabel`: Removes a label by id.
+- `LGlobe:setLabelVisible`: Shows or hides a label. This method is available to Lua scripts.
+- `LGlobe:removeLabel`: Removes a label by id. This method is available to Lua scripts.
 - `LGlobe:addLayer`: Adds a render layer with optional z-order.
-- `LGlobe:removeLayer`: Removes a render layer by name.
+- `LGlobe:removeLayer`: Removes a render layer by name. This method is available to Lua scripts.
 - `LGlobe:setLayerColor`: Sets a province color override inside a render layer.
-- `LGlobe:setLayerVisible`: Shows or hides a render layer.
-- `LGlobe:setLayerAlpha`: Sets render layer alpha.
+- `LGlobe:setLayerVisible`: Shows or hides a render layer. This method is available to Lua scripts.
+- `LGlobe:setLayerAlpha`: Sets render layer alpha. This method is available to Lua scripts.
 - `LGlobe:setTimeOfDay`: Sets globe time of day modulo 24 hours.
-- `LGlobe:getTimeOfDay`: Returns globe time of day.
-- `LGlobe:setRotation`: Sets globe rotation angle.
+- `LGlobe:getTimeOfDay`: Returns globe time of day. This method is available to Lua scripts.
+- `LGlobe:setRotation`: Sets globe rotation angle. This method is available to Lua scripts.
 - `LGlobe:setAutoRotationSpeed`: Sets automatic globe rotation speed.
 - `LGlobe:update`: Advances globe simulation timers and animated state.
 - `LGlobe:setBorders`: Enables or disables province border rendering.
@@ -315,7 +315,7 @@ The `globe` module provides an XCOM Geoscape-style 2D strategic globe view — a
 - `LGlobe:getCachedReachability`: Returns cached reachability costs for a faction.
 - `LGlobe:exportProvinceMeshOBJ`: Exports province geometry as Wavefront OBJ text.
 - `LGlobe:addArc`: Adds a visible route arc between two latitude and longitude points.
-- `LGlobe:removeArc`: Removes an arc by id.
+- `LGlobe:removeArc`: Removes an arc by id. This method is available to Lua scripts.
 - `LGlobe:getName`: Returns the registry name of this globe.
 - `LGlobe:type`: Returns the Lua-visible type name for this globe handle.
 - `LGlobe:typeOf`: Returns whether this globe handle matches a supported type name.

@@ -1,4 +1,3 @@
-
 //! - Steering model representing individual movement behaviors, blending rules, and waypoint following.
 //! - Behavior variants: seek, flee, arrive, wander, flock, pursue, evade, and custom callbacks.
 //! - Manager logic combining active behaviors with weighting or priority selection.

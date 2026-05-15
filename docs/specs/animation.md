@@ -178,13 +178,13 @@ The `animation` module is Lurek2D's sprite animation system — a Foundations ti
 - `lurek.animation.new`: Creates an empty animation with no frames or clips.
 - `lurek.animation.fromAseprite`: Loads an animation from an Aseprite JSON export string.
 - `lurek.animation.newStateMachine`: Creates an animation state machine by consuming an animation handle.
-- `lurek.animation.newCurve`: Creates an empty animation curve.
+- `lurek.animation.newCurve`: Creates an empty animation curve. This function is exposed to Lua scripts.
 - `lurek.animation.newSyncGroup`: Creates an empty animation synchronization group.
 - `lurek.animation.newBlendLayerSet`: Creates an empty blend layer set for layered animation playback.
 - `lurek.animation.buildCharacter`: Builds a character animation bundle from grid frame and clip configuration.
 
 ### `LAnimCurve` Methods
-- `LAnimCurve:addKeyframe`: Adds a keyframe to the curve.
+- `LAnimCurve:addKeyframe`: Adds a keyframe to the curve. This method is available to Lua scripts.
 - `LAnimCurve:eval`: Evaluates the curve at a time or normalized position.
 - `LAnimCurve:setEasing`: Sets the built-in easing mode used between keyframes.
 - `LAnimCurve:keyframeCount`: Returns the number of keyframes stored in this curve.
@@ -220,7 +220,7 @@ The `animation` module is Lurek2D's sprite animation system — a Foundations ti
 - `LAnimation:setClipMode`: Changes the playback mode for an existing clip.
 - `LAnimation:getClipMode`: Returns the playback mode name for a clip when it exists.
 - `LAnimation:addClipFromGrid`: Adds frames from a texture grid and creates a clip that references the new frames.
-- `LAnimation:play`: Starts playback of a named clip.
+- `LAnimation:play`: Starts playback of a named clip. This method is available to Lua scripts.
 - `LAnimation:stop`: Stops playback and resets animation playback state.
 - `LAnimation:pause`: Pauses animation playback without changing the current clip.
 - `LAnimation:resume`: Resumes playback of a paused animation.
@@ -234,7 +234,7 @@ The `animation` module is Lurek2D's sprite animation system — a Foundations ti
 - `LAnimation:setSpeed`: Sets the animation playback speed multiplier.
 - `LAnimation:getFrameCount`: Returns the number of frame rectangles stored in this animation.
 - `LAnimation:getClipCount`: Returns the number of named clips stored in this animation.
-- `LAnimation:getCurrentFrame`: Returns the current frame index.
+- `LAnimation:getCurrentFrame`: Returns the current frame index. This method is available to Lua scripts.
 - `LAnimation:setFrame`: Sets the current frame index directly.
 - `LAnimation:crossfade`: Starts a crossfade from the current clip to another clip.
 - `LAnimation:getBlendState`: Returns current crossfade rectangles and blend factor when a crossfade is active.
@@ -245,7 +245,7 @@ The `animation` module is Lurek2D's sprite animation system — a Foundations ti
 
 ### `LBlendLayerSet` Methods
 - `LBlendLayerSet:addLayer`: Adds a weighted animation blend layer with an optional bone mask.
-- `LBlendLayerSet:removeLayer`: Removes a blend layer by name.
+- `LBlendLayerSet:removeLayer`: Removes a blend layer by name. This method is available to Lua scripts.
 - `LBlendLayerSet:setWeight`: Sets the blend weight for an existing layer.
 - `LBlendLayerSet:getWeight`: Returns the weight for a blend layer when it exists.
 - `LBlendLayerSet:setMask`: Replaces a layer bone mask from a table of bone names.

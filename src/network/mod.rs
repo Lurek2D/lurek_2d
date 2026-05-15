@@ -1,4 +1,3 @@
-
 //! - Multiplayer networking: TCP, WebSocket, and relay transports with binary message framing.
 //! - Host/client model with lobby state machine, peer management, and game-state sync.
 //! - Background async runtime (Tokio) for non-blocking socket I/O and HTTP helpers.

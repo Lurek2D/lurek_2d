@@ -82,7 +82,7 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 - Namespace: `lurek.window`
 
 ### Module Functions
-- `lurek.window.setTitle`: Sets the window title bar text.
+- `lurek.window.setTitle`: Sets the window title bar text. This function is exposed to Lua scripts.
 - `lurek.window.getTitle`: Returns the current window title bar text.
 - `lurek.window.getWidth`: Returns the current window width in logical (DPI-independent) pixels.
 - `lurek.window.getHeight`: Returns the current window height in logical (DPI-independent) pixels.
@@ -91,7 +91,7 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 - `lurek.window.getFullscreen`: Returns the current fullscreen state and type.
 - `lurek.window.isOpen`: Returns whether the window is currently open. Always returns true while the game is running.
 - `lurek.window.setVSync`: Sets the vertical sync mode. Controls how frame presentation is synchronized with the display.
-- `lurek.window.getVSync`: Returns the current VSync mode.
+- `lurek.window.getVSync`: Returns the current VSync mode. This function is exposed to Lua scripts.
 - `lurek.window.hasFocus`: Returns whether the window currently has keyboard focus.
 - `lurek.window.hasMouseFocus`: Returns whether the mouse cursor is inside the window.
 - `lurek.window.isMinimized`: Returns whether the window is currently minimized to the taskbar.

@@ -1,7 +1,3 @@
-
-
-
-
 //! - Complete `Light2D` struct holding position, color, radius, type, shadow, masks, flicker, and attenuation.
 //! - Constructor defaults to a white point light with full-layer masks and no shadows.
 //! - Getter/setter API for every field: position, color, intensity, energy, blend mode, falloff, masks.

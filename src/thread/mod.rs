@@ -11,4 +11,3 @@ pub mod pool;
 pub mod promise;
 /// Worker-thread harness that owns a secondary Lua VM and processes message payloads.
 pub mod worker;
-

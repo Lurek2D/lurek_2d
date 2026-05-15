@@ -1,4 +1,3 @@
-
 //! - Personality-trait model storing base values, temporary modifiers, and reusable archetype presets.
 //! - Profile logic resolving effective trait values, advancing and removing expiring modifiers.
 //! - Interpolation toward other profiles with origin archetype tracking.

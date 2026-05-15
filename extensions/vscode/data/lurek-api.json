@@ -722,10 +722,16 @@
           "description": "Creates a new audio source from a file path, either fully loaded or streaming.",
           "parameters": [
             {
-              "name": "...",
-              "type": "string|string",
-              "description": "",
+              "name": "path",
+              "type": "string",
+              "description": "Relative path to the audio file (WAV, OGG, MP3, FLAC).",
               "optional": false
+            },
+            {
+              "name": "sourceType",
+              "type": "string",
+              "description": "\"static\" to load fully into memory, or \"stream\" (default) for streaming.",
+              "optional": true
             }
           ],
           "returns": "LSource",
@@ -1832,10 +1838,22 @@
           "description": "Creates a new SoundData object from a file path or blank buffer for procedural audio.",
           "parameters": [
             {
-              "name": "...",
-              "type": "string|integer|integer|integer",
-              "description": "",
+              "name": "pathOrCount",
+              "type": "string|integer",
+              "description": "File path to decode, or sample count for blank buffer.",
               "optional": false
+            },
+            {
+              "name": "sampleRate",
+              "type": "integer",
+              "description": "Sample rate in Hz (e.g. 44100, 48000).",
+              "optional": false
+            },
+            {
+              "name": "channels",
+              "type": "integer",
+              "description": "Channel count (1 = mono, 2 = stereo), defaults to 1.",
+              "optional": true
             }
           ],
           "returns": "SoundData",
@@ -6105,9 +6123,9 @@
           "description": "Creates an image effect chain from no arguments, a type name and optional parameters, or a chain table.",
           "parameters": [
             {
-              "name": "...",
+              "name": "args",
               "type": "LuaValue",
-              "description": "",
+              "description": "Optional effect type string plus parameter table, or an array table of effect entries.",
               "optional": false
             }
           ],
@@ -6472,9 +6490,15 @@
           "description": "Adds a normal-priority event to the deferred buffer instead of the live queue.",
           "parameters": [
             {
-              "name": "...",
-              "type": "string|LuaValue",
-              "description": "",
+              "name": "name",
+              "type": "string",
+              "description": "Event name to enqueue later.",
+              "optional": false
+            },
+            {
+              "name": "args",
+              "type": "LuaValue",
+              "description": "Additional event arguments stored with the event.",
               "optional": false
             }
           ],
@@ -6490,9 +6514,21 @@
           "description": "Adds an event with explicit priority to the deferred buffer.",
           "parameters": [
             {
-              "name": "...",
-              "type": "string|LuaValue",
-              "description": "",
+              "name": "name",
+              "type": "string",
+              "description": "Event name to enqueue later.",
+              "optional": false
+            },
+            {
+              "name": "priority",
+              "type": "string",
+              "description": "Priority string `high` or `normal`.",
+              "optional": false
+            },
+            {
+              "name": "args",
+              "type": "LuaValue",
+              "description": "Additional event arguments stored with the event.",
               "optional": false
             }
           ],
@@ -6559,9 +6595,15 @@
           "description": "Pushes a normal-priority event into the shared event queue and optional history.",
           "parameters": [
             {
-              "name": "...",
-              "type": "string|LuaValue",
-              "description": "",
+              "name": "name",
+              "type": "string",
+              "description": "Event name.",
+              "optional": false
+            },
+            {
+              "name": "args",
+              "type": "LuaValue",
+              "description": "Additional event arguments.",
               "optional": false
             }
           ],
@@ -6577,9 +6619,21 @@
           "description": "Pushes an event with explicit priority into the shared event queue and optional history.",
           "parameters": [
             {
-              "name": "...",
-              "type": "string|LuaValue",
-              "description": "",
+              "name": "name",
+              "type": "string",
+              "description": "Event name.",
+              "optional": false
+            },
+            {
+              "name": "priority",
+              "type": "string",
+              "description": "Priority string `high` or `normal`.",
+              "optional": false
+            },
+            {
+              "name": "args",
+              "type": "LuaValue",
+              "description": "Additional event arguments.",
               "optional": false
             }
           ],
@@ -8457,9 +8511,9 @@
           "description": "Creates empty image data from dimensions or decodes image data from a GameFS filename.",
           "parameters": [
             {
-              "name": "...",
+              "name": "args",
               "type": "LuaValue",
-              "description": "",
+              "description": "Either `(width, height)` numeric arguments or a filename string.",
               "optional": false
             }
           ],
@@ -17070,10 +17124,52 @@
           "description": "Draws a drawable object (Image, Canvas, SpriteBatch, or Mesh) at the given position with optional transform.",
           "parameters": [
             {
-              "name": "...",
-              "type": "LImage|LCanvas|LSpriteBatch|LMesh|number",
-              "description": "",
+              "name": "drawable",
+              "type": "LImage|LCanvas|LSpriteBatch|LMesh",
+              "description": "The drawable object to render.",
               "optional": false
+            },
+            {
+              "name": "x",
+              "type": "number",
+              "description": "X position (default 0).",
+              "optional": true
+            },
+            {
+              "name": "y",
+              "type": "number",
+              "description": "Y position (default 0).",
+              "optional": true
+            },
+            {
+              "name": "r",
+              "type": "number",
+              "description": "Rotation in radians (default 0).",
+              "optional": true
+            },
+            {
+              "name": "sx",
+              "type": "number",
+              "description": "Scale X (default 1).",
+              "optional": true
+            },
+            {
+              "name": "sy",
+              "type": "number",
+              "description": "Scale Y (default 1).",
+              "optional": true
+            },
+            {
+              "name": "ox",
+              "type": "number",
+              "description": "Origin offset X (default 0).",
+              "optional": true
+            },
+            {
+              "name": "oy",
+              "type": "number",
+              "description": "Origin offset Y (default 0).",
+              "optional": true
             }
           ],
           "returns": "table",
@@ -17439,10 +17535,16 @@
           "description": "Creates a new bitmap font from a PNG sprite sheet path or returns a built-in font by pixel height.",
           "parameters": [
             {
-              "name": "...",
-              "type": "string|number|number",
-              "description": "",
+              "name": "pathOrSize",
+              "type": "string|number",
+              "description": "File path to a PNG font sheet, or a pixel height for a built-in font.",
               "optional": false
+            },
+            {
+              "name": "size",
+              "type": "number",
+              "description": "Cell height in pixels when loading from a file (default 14).",
+              "optional": true
             }
           ],
           "returns": "LFont",
@@ -17677,10 +17779,16 @@
           "description": "Loads a texture from a file path or creates one from an ImageData object.",
           "parameters": [
             {
-              "name": "...",
-              "type": "string|LImageData|string",
-              "description": "",
+              "name": "pathOrData",
+              "type": "string|LImageData",
+              "description": "File path to an image, or an ImageData object.",
               "optional": false
+            },
+            {
+              "name": "colorSpace",
+              "type": "string",
+              "description": "Color space: \"srgb\" (default) or \"linear\".",
+              "optional": true
             }
           ],
           "returns": "LImage",
@@ -18050,10 +18158,28 @@
           "description": "Sets or clears the scissor rectangle. Only pixels inside this region are drawn. Call with no args to clear.",
           "parameters": [
             {
-              "name": "...",
+              "name": "x",
               "type": "number",
-              "description": "",
-              "optional": false
+              "description": "Left edge of the scissor rectangle.",
+              "optional": true
+            },
+            {
+              "name": "y",
+              "type": "number",
+              "description": "Top edge.",
+              "optional": true
+            },
+            {
+              "name": "w",
+              "type": "number",
+              "description": "Width.",
+              "optional": true
+            },
+            {
+              "name": "h",
+              "type": "number",
+              "description": "Height.",
+              "optional": true
             }
           ],
           "returns": "nil",
@@ -18115,10 +18241,28 @@
           "description": "Sets which color channels are written during draw calls. Call with no args to enable all.",
           "parameters": [
             {
-              "name": "...",
+              "name": "r",
               "type": "boolean",
-              "description": "",
-              "optional": false
+              "description": "Enable red channel.",
+              "optional": true
+            },
+            {
+              "name": "g",
+              "type": "boolean",
+              "description": "Enable green channel.",
+              "optional": true
+            },
+            {
+              "name": "b",
+              "type": "boolean",
+              "description": "Enable blue channel.",
+              "optional": true
+            },
+            {
+              "name": "a",
+              "type": "boolean",
+              "description": "Enable alpha channel.",
+              "optional": true
             }
           ],
           "returns": "nil",
@@ -19653,6 +19797,31 @@
       "methods": []
     },
     {
+      "name": "repl",
+      "description": "`lurek.repl` -- Release-safe Lua REPL session bindings for interactive evaluation.",
+      "functions": [
+        {
+          "name": "new",
+          "fullPath": "lurek.repl.new",
+          "signature": "([max_history])",
+          "description": "Creates a release-safe REPL session with bounded command history.",
+          "parameters": [
+            {
+              "name": "max_history",
+              "type": "integer",
+              "description": "Optional maximum number of history entries; defaults to 200.",
+              "optional": true
+            }
+          ],
+          "returns": "LReplSession",
+          "returnType": "LReplSession",
+          "isMethod": false,
+          "objectType": null
+        }
+      ],
+      "methods": []
+    },
+    {
       "name": "save",
       "description": "`lurek.save` — Persistent game save/load system with named slots, schema versioning, auto-save, compression, and migration support.",
       "functions": [
@@ -20252,6 +20421,24 @@
           "fullPath": "lurek.scene.new",
           "signature": "([def])",
           "description": "Create a new scene instance from an optional prototype table. Sets up metatables so the instance inherits methods from the prototype. Use this for one-off scene creation; use `define` when you need a reusable scene constructor.",
+          "parameters": [
+            {
+              "name": "def",
+              "type": "table",
+              "description": "A prototype table containing scene lifecycle methods (`enter`, `leave`, `update`, `draw`, etc.). If omitted, an empty table is used.",
+              "optional": true
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "newScene",
+          "fullPath": "lurek.scene.newScene",
+          "signature": "([def])",
+          "description": "Alias for `lurek.scene.new`. Creates a new scene instance from an optional prototype table while preserving the older API name still used by tests, examples, and existing game scripts.",
           "parameters": [
             {
               "name": "def",
@@ -24289,6 +24476,17 @@
           "objectType": null
         },
         {
+          "name": "newTheme",
+          "fullPath": "lurek.ui.newTheme",
+          "signature": "()",
+          "description": "Creates a new UI theme for styling widgets.",
+          "parameters": [],
+          "returns": "LTheme",
+          "returnType": "LTheme",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
           "name": "setTheme",
           "fullPath": "lurek.ui.setTheme",
           "signature": "(theme_ud)",
@@ -24642,6 +24840,96 @@
           ],
           "returns": "LImageData",
           "returnType": "LImageData",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "newLineChart",
+          "fullPath": "lurek.ui.newLineChart",
+          "signature": "(opts)",
+          "description": "Creates a new line chart for data visualization.",
+          "parameters": [
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Table with width, height, and optional title.",
+              "optional": false
+            }
+          ],
+          "returns": "LLineChart",
+          "returnType": "LLineChart",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "newBarChart",
+          "fullPath": "lurek.ui.newBarChart",
+          "signature": "(opts)",
+          "description": "Creates a new bar chart for data visualization.",
+          "parameters": [
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Table with width, height, and optional title.",
+              "optional": false
+            }
+          ],
+          "returns": "LBarChart",
+          "returnType": "LBarChart",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "newScatterPlot",
+          "fullPath": "lurek.ui.newScatterPlot",
+          "signature": "(opts)",
+          "description": "Creates a new scatter plot for data visualization.",
+          "parameters": [
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Table with width, height, and optional title.",
+              "optional": false
+            }
+          ],
+          "returns": "LScatterPlot",
+          "returnType": "LScatterPlot",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "newPieChart",
+          "fullPath": "lurek.ui.newPieChart",
+          "signature": "(opts)",
+          "description": "Creates a new pie chart for data visualization.",
+          "parameters": [
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Table with width, height, and optional title.",
+              "optional": false
+            }
+          ],
+          "returns": "LPieChart",
+          "returnType": "LPieChart",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "newAreaChart",
+          "fullPath": "lurek.ui.newAreaChart",
+          "signature": "(opts)",
+          "description": "Creates a new area chart for data visualization.",
+          "parameters": [
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Table with width, height, and optional title.",
+              "optional": false
+            }
+          ],
+          "returns": "LAreaChart",
+          "returnType": "LAreaChart",
           "isMethod": false,
           "objectType": null
         },
@@ -53200,6 +53488,30 @@
       "description": "Adds GUI-table-specific methods to a table widget.",
       "methods": [
         {
+          "name": "addColumn",
+          "fullPath": "LGuiTable.addColumn",
+          "signature": "(header, [width])",
+          "description": "Adds a new column to this table widget.",
+          "parameters": [
+            {
+              "name": "header",
+              "type": "string",
+              "description": "The column header text.",
+              "optional": false
+            },
+            {
+              "name": "width",
+              "type": "number",
+              "description": "The column width in pixels (default 100).",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LGuiTable"
+        },
+        {
           "name": "getColumnCount",
           "fullPath": "LGuiTable.getColumnCount",
           "signature": "()",
@@ -57780,9 +58092,21 @@
           "description": "Returns a resized image using an optional named filter.",
           "parameters": [
             {
-              "name": "...",
-              "type": "integer|string",
-              "description": "",
+              "name": "width",
+              "type": "integer",
+              "description": "Output width.",
+              "optional": false
+            },
+            {
+              "name": "height",
+              "type": "integer",
+              "description": "Output height.",
+              "optional": false
+            },
+            {
+              "name": "filter",
+              "type": "string",
+              "description": "Optional filter name, defaulting to `bilinear`.",
               "optional": false
             }
           ],
@@ -81199,9 +81523,9 @@
           "description": "Sets particle size keyframes from numeric arguments.",
           "parameters": [
             {
-              "name": "...",
+              "name": "sizes",
               "type": "number",
-              "description": "",
+              "description": "One or more size values.",
               "optional": false
             }
           ],
@@ -81385,9 +81709,9 @@
           "description": "Sets particle color keyframes from RGBA tables.",
           "parameters": [
             {
-              "name": "...",
+              "name": "colors",
               "type": "table",
-              "description": "",
+              "description": "One or more color tables.",
               "optional": false
             }
           ],
@@ -85738,9 +86062,9 @@
           "description": "Queues filled polygon draw commands for province shapes, optionally culled to a viewport.",
           "parameters": [
             {
-              "name": "...",
+              "name": "viewport",
               "type": "LuaValue",
-              "description": "",
+              "description": "Either no arguments or four numeric values `x, y, w, h`.",
               "optional": false
             }
           ],
@@ -87334,6 +87658,24 @@
           "parameters": [],
           "returns": "boolean",
           "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LRadioButton"
+        },
+        {
+          "name": "setSelected",
+          "fullPath": "LRadioButton.setSelected",
+          "signature": "(v)",
+          "description": "Sets the selected state of this radio button.",
+          "parameters": [
+            {
+              "name": "v",
+              "type": "boolean",
+              "description": "True to select.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
           "isMethod": true,
           "objectType": "LRadioButton"
         },
@@ -90141,6 +90483,110 @@
       ]
     },
     {
+      "name": "LReplSession",
+      "description": "Lua-side REPL session handle with bounded history.",
+      "methods": [
+        {
+          "name": "eval",
+          "fullPath": "LReplSession:eval",
+          "signature": "(code)",
+          "description": "Evaluates Lua code and records the input in this REPL history.",
+          "parameters": [
+            {
+              "name": "code",
+              "type": "string",
+              "description": "Lua expression, statement, or REPL command to evaluate.",
+              "optional": false
+            }
+          ],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LReplSession"
+        },
+        {
+          "name": "history",
+          "fullPath": "LReplSession:history",
+          "signature": "()",
+          "description": "Returns the recorded REPL input history in oldest-first order.",
+          "parameters": [],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LReplSession"
+        },
+        {
+          "name": "clear",
+          "fullPath": "LReplSession:clear",
+          "signature": "()",
+          "description": "Clears all entries from this REPL session history.",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LReplSession"
+        },
+        {
+          "name": "len",
+          "fullPath": "LReplSession:len",
+          "signature": "()",
+          "description": "Returns the number of entries stored in this REPL history.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LReplSession"
+        },
+        {
+          "name": "complete",
+          "fullPath": "LReplSession:complete",
+          "signature": "(prefix)",
+          "description": "Returns completion candidates that begin with the supplied prefix.",
+          "parameters": [
+            {
+              "name": "prefix",
+              "type": "string",
+              "description": "Prefix text to complete.",
+              "optional": false
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LReplSession"
+        },
+        {
+          "name": "type",
+          "fullPath": "LReplSession:type",
+          "signature": "()",
+          "description": "Returns the Lua-visible type name for this REPL session handle.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LReplSession"
+        },
+        {
+          "name": "typeOf",
+          "fullPath": "LReplSession:typeOf",
+          "signature": "(name)",
+          "description": "Returns whether this REPL session handle matches a supported type name.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Type name to compare against `LReplSession` and `Object`.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LReplSession"
+        }
+      ]
+    },
+    {
       "name": "LRing",
       "description": "Lua-facing fixed-size ring buffer for numeric or string values. Oldest entries are overwritten when full.",
       "methods": [
@@ -91792,6 +92238,17 @@
       "description": "Adds scroll-bar-specific methods to a scroll bar widget table.",
       "methods": [
         {
+          "name": "getScrollPosition",
+          "fullPath": "LScrollBar.getScrollPosition",
+          "signature": "()",
+          "description": "Returns the current scroll position of this scroll bar.",
+          "parameters": [],
+          "returns": "number",
+          "returnType": "number",
+          "isMethod": true,
+          "objectType": "LScrollBar"
+        },
+        {
           "name": "setScrollPosition",
           "fullPath": "LScrollBar.setScrollPosition",
           "signature": "(v)",
@@ -91846,6 +92303,24 @@
           "parameters": [],
           "returns": "number",
           "returnType": "number",
+          "isMethod": true,
+          "objectType": "LScrollBar"
+        },
+        {
+          "name": "setViewSize",
+          "fullPath": "LScrollBar.setViewSize",
+          "signature": "(v)",
+          "description": "Sets the visible viewport size for this scroll bar.",
+          "parameters": [
+            {
+              "name": "v",
+              "type": "number",
+              "description": "The view size.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
           "isMethod": true,
           "objectType": "LScrollBar"
         },
@@ -92845,6 +93320,17 @@
           ],
           "returns": "nil",
           "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LScrollPanel"
+        },
+        {
+          "name": "getContentSize",
+          "fullPath": "LScrollPanel.getContentSize",
+          "signature": "()",
+          "description": "Returns the virtual content dimensions of this scroll panel.",
+          "parameters": [],
+          "returns": "number, number",
+          "returnType": "number, number",
           "isMethod": true,
           "objectType": "LScrollPanel"
         },
@@ -95792,9 +96278,15 @@
           "description": "Emits a signal event and invokes matching callbacks with the remaining arguments.",
           "parameters": [
             {
-              "name": "...",
-              "type": "string|LuaValue",
-              "description": "",
+              "name": "name",
+              "type": "string",
+              "description": "Signal event name to emit.",
+              "optional": false
+            },
+            {
+              "name": "args",
+              "type": "LuaValue",
+              "description": "Additional arguments passed to matching callbacks.",
               "optional": false
             }
           ],
@@ -99800,6 +100292,17 @@
           "objectType": "LSpinBox"
         },
         {
+          "name": "decrement",
+          "fullPath": "LSpinBox.decrement",
+          "signature": "()",
+          "description": "Decreases this spin box's value by one step.",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LSpinBox"
+        },
+        {
           "name": "setRange",
           "fullPath": "LSpinBox.setRange",
           "signature": "(min, max)",
@@ -103371,6 +103874,24 @@
           ],
           "returns": "nil",
           "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LStatusBar"
+        },
+        {
+          "name": "getSectionText",
+          "fullPath": "LStatusBar.getSectionText",
+          "signature": "(section_idx)",
+          "description": "Returns the text of a status bar section by its 1-based index.",
+          "parameters": [
+            {
+              "name": "section_idx",
+              "type": "number",
+              "description": "The 1-based section index.",
+              "optional": false
+            }
+          ],
+          "returns": "string",
+          "returnType": "string",
           "isMethod": true,
           "objectType": "LStatusBar"
         },
@@ -107446,10 +107967,70 @@
           "description": "Writes a character with foreground and background color to a specific cell in the terminal grid.",
           "parameters": [
             {
-              "name": "...",
-              "type": "number|string|number|number",
-              "description": "",
+              "name": "col",
+              "type": "number",
+              "description": "Column index (1-based).",
               "optional": false
+            },
+            {
+              "name": "row",
+              "type": "number",
+              "description": "Row index (1-based).",
+              "optional": false
+            },
+            {
+              "name": "ch",
+              "type": "string|number",
+              "description": "Character as a string or Unicode codepoint.",
+              "optional": false
+            },
+            {
+              "name": "fr",
+              "type": "number",
+              "description": "Foreground red (0-1, default 1).",
+              "optional": true
+            },
+            {
+              "name": "fg",
+              "type": "number",
+              "description": "Foreground green (0-1, default 1).",
+              "optional": true
+            },
+            {
+              "name": "fb",
+              "type": "number",
+              "description": "Foreground blue (0-1, default 1).",
+              "optional": true
+            },
+            {
+              "name": "fa",
+              "type": "number",
+              "description": "Foreground alpha (0-1, default 1).",
+              "optional": true
+            },
+            {
+              "name": "br",
+              "type": "number",
+              "description": "Background red (0-1, default 0).",
+              "optional": true
+            },
+            {
+              "name": "bg",
+              "type": "number",
+              "description": "Background green (0-1, default 0).",
+              "optional": true
+            },
+            {
+              "name": "bb",
+              "type": "number",
+              "description": "Background blue (0-1, default 0).",
+              "optional": true
+            },
+            {
+              "name": "ba",
+              "type": "number",
+              "description": "Background alpha (0-1, default 0).",
+              "optional": true
             }
           ],
           "returns": "nil",
@@ -107487,6 +108068,36 @@
           "signature": "()",
           "description": "Clears all cells in the terminal grid, resetting characters and colors to defaults.",
           "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTerminal"
+        },
+        {
+          "name": "print",
+          "fullPath": "LTerminal:print",
+          "signature": "(col, row, text)",
+          "description": "Writes text to the terminal grid starting at a specific cell.",
+          "parameters": [
+            {
+              "name": "col",
+              "type": "number",
+              "description": "Column index (1-based) where writing starts.",
+              "optional": false
+            },
+            {
+              "name": "row",
+              "type": "number",
+              "description": "Row index (1-based) where writing starts.",
+              "optional": false
+            },
+            {
+              "name": "text",
+              "type": "string",
+              "description": "Text to write into consecutive cells.",
+              "optional": false
+            }
+          ],
           "returns": "nil",
           "returnType": "nil",
           "isMethod": true,
@@ -108149,6 +108760,35 @@
           "fullPath": "LTextInput.getText",
           "signature": "()",
           "description": "Returns the current text content of this text input field.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LTextInput"
+        },
+        {
+          "name": "setPlaceholder",
+          "fullPath": "LTextInput.setPlaceholder",
+          "signature": "(text)",
+          "description": "Sets the placeholder text shown when the input is empty.",
+          "parameters": [
+            {
+              "name": "text",
+              "type": "string",
+              "description": "The placeholder text.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTextInput"
+        },
+        {
+          "name": "getPlaceholder",
+          "fullPath": "LTextInput.getPlaceholder",
+          "signature": "()",
+          "description": "Returns the placeholder text of this text input.",
           "parameters": [],
           "returns": "string",
           "returnType": "string",
@@ -111098,6 +111738,24 @@
           "parameters": [],
           "returns": "string",
           "returnType": "string",
+          "isMethod": true,
+          "objectType": "LToast"
+        },
+        {
+          "name": "setDuration",
+          "fullPath": "LToast.setDuration",
+          "signature": "(d)",
+          "description": "Sets how long this toast is displayed in seconds.",
+          "parameters": [
+            {
+              "name": "d",
+              "type": "number",
+              "description": "Duration in seconds.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
           "isMethod": true,
           "objectType": "LToast"
         },
@@ -125284,25 +125942,6 @@
     ]
   },
   "callbacks": [
-    {
-      "name": "load",
-      "signature": "function lurek.load()",
-      "description": "Called once after the game script is loaded.",
-      "parameters": []
-    },
-    {
-      "name": "update",
-      "signature": "function lurek.update(dt)",
-      "description": "Called every frame. `dt` is elapsed seconds.",
-      "parameters": [
-        {
-          "name": "dt",
-          "type": "number",
-          "description": "Delta time in seconds",
-          "optional": false
-        }
-      ]
-    },
     {
       "name": "draw",
       "signature": "function lurek.draw()",

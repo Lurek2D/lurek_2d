@@ -87,4 +87,3 @@ impl TouchState {
         self.touches.len()
     }
 }
-

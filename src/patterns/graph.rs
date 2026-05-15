@@ -1,4 +1,3 @@
-
 //! - Adjacency-list graph with directed and undirected mode support.
 //! - Node and edge CRUD with stable integer identifiers.
 //! - Weighted, labelled edges with automatic reverse-edge insertion for undirected graphs.

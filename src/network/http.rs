@@ -1,4 +1,3 @@
-
 //! - Synchronous HTTP client built on `ureq` for GET, POST, PUT, PATCH, DELETE, HEAD, and OPTIONS.
 //! - Configurable per-request timeout via agent builder.
 //! - Unified `HttpResponse` captures status, body, headers, and optional error message.

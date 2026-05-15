@@ -1,4 +1,3 @@
-
 //! - Bridge between `ProvinceRegistry` terrain/visibility data and the minimap grid.
 //! - Copy terrain types, fog levels, and political palette colours into a `Minimap`.
 //! - Clips to the smaller of the two grids so mismatched sizes never panic.
@@ -56,4 +55,3 @@ pub fn apply_terrain_palette(minimap: &mut Minimap, registry: &ProvinceRegistry)
         }
     }
 }
-

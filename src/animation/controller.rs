@@ -1,4 +1,3 @@
-
 //! - Owns the runtime animation player for frame-based clips.
 //! - Stores loaded frames, named clips, active playback state, pending animation events, and crossfade state.
 //! - Builds clip data from grids, explicit rectangles, and parsed Aseprite metadata.

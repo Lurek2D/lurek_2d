@@ -5,7 +5,7 @@
 //! - LRU path cache with configurable max size and manual invalidation.
 //! - Octile heuristic and Bresenham line-of-sight utility helpers.
 
-use crate::runtime::log_messages::{UP01,UP02,UP03};
+use crate::runtime::log_messages::{UP01, UP02, UP03};
 
 use crate::log_msg;
 use crate::pathfind::{astar, nav_grid::NavGrid};

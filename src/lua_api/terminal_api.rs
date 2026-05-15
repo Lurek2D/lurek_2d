@@ -1,4 +1,4 @@
-//! `lurek.terminal` - Provides an in-game terminal emulator with command parsing, history, output buffering, and ANSI-style formatting.
+//! `lurek.terminal` -- In-game terminal emulator with command parsing, history, output buffering, and ANSI-style formatting.
 
 use super::SharedState;
 use crate::terminal::ansi::{parse_ansi_spans, strip_ansi_codes};
@@ -418,6 +418,19 @@ impl LuaUserData for LuaTerminal {
             this.binding.terminal.borrow_mut().clear();
             Ok(())
         });
+        // -- print --
+        /// Writes text to the terminal grid starting at a specific cell.
+        /// @param | col | number | Column index (1-based) where writing starts.
+        /// @param | row | number | Row index (1-based) where writing starts.
+        /// @param | text | string | Text to write into consecutive cells.
+        /// @return | nil | No value is returned.
+        methods.add_method(
+            "print",
+            |_, this, (col, row, text): (usize, usize, String)| {
+                this.binding.terminal.borrow_mut().print(col, row, &text);
+                Ok(())
+            },
+        );
         // -- getDimensions --
         /// Returns the number of columns and rows in the terminal grid.
         /// @return | number, number | Column count, row count.

@@ -4,7 +4,7 @@
 //! - Bresenham line-of-sight checks for walkability validation.
 //! - String-pull path smoothing that removes redundant waypoints.
 
-use crate::runtime::log_messages::{AT01,AT02,AT03};
+use crate::runtime::log_messages::{AT01, AT02, AT03};
 
 use crate::log_msg;
 use crate::pathfind::nav_grid::{DiagonalMode, NavGrid};

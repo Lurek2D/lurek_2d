@@ -157,7 +157,7 @@ The `filesystem` module is Lurek2D's sandboxed virtual filesystem abstraction â€
 - `lurek.filesystem.read`: Reads a UTF-8 text file from GameFS.
 - `lurek.filesystem.write`: Writes a UTF-8 text file through GameFS.
 - `lurek.filesystem.readJson`: Reads a JSON document as text from GameFS.
-- `lurek.filesystem.writeJson`: Writes JSON text through GameFS.
+- `lurek.filesystem.writeJson`: Writes JSON text through GameFS. This function is exposed to Lua scripts.
 - `lurek.filesystem.readOrWriteJson`: Reads a JSON file or writes and returns default JSON when the file is absent.
 - `lurek.filesystem.readBytes`: Reads a binary file from GameFS and returns the bytes as a Lua string.
 - `lurek.filesystem.writeBytes`: Writes binary data through GameFS.
@@ -182,12 +182,12 @@ The `filesystem` module is Lurek2D's sandboxed virtual filesystem abstraction â€
 - `lurek.filesystem.writeAsync`: Starts an asynchronous file write request.
 - `lurek.filesystem.pollAsyncWrite`: Polls an asynchronous file write request.
 - `lurek.filesystem.mount`: Mounts an external source path at a GameFS mount point.
-- `lurek.filesystem.unmount`: Removes a GameFS mount point.
+- `lurek.filesystem.unmount`: Removes a GameFS mount point. This function is exposed to Lua scripts.
 - `lurek.filesystem.load`: Loads a Lua chunk from GameFS and returns it as a Lua function.
 - `lurek.filesystem.newFileData`: Loads a file into an immutable file data handle.
 - `lurek.filesystem.copy`: Copies one GameFS file to another path.
 - `lurek.filesystem.move`: Moves or renames one GameFS file to another path.
-- `lurek.filesystem.removeDir`: Removes a GameFS directory.
+- `lurek.filesystem.removeDir`: Removes a GameFS directory. This function is exposed to Lua scripts.
 - `lurek.filesystem.glob`: Returns GameFS paths matching a glob pattern.
 - `lurek.filesystem.listRecursive`: Lists all paths under a GameFS directory recursively.
 - `lurek.filesystem.stat`: Returns size and file/directory flags for a GameFS path.
@@ -208,10 +208,10 @@ The `filesystem` module is Lurek2D's sandboxed virtual filesystem abstraction â€
 - `LFileHandle:write`: Writes a string to this file handle.
 - `LFileHandle:seek`: Moves the file cursor to an absolute byte position.
 - `LFileHandle:tell`: Returns the current file cursor position.
-- `LFileHandle:getSize`: Returns the size of the open file.
+- `LFileHandle:getSize`: Returns the size of the open file. This method is available to Lua scripts.
 - `LFileHandle:getMode`: Returns the mode used to open this file handle.
 - `LFileHandle:flush`: Flushes pending writes on this file handle.
-- `LFileHandle:close`: Closes this file handle.
+- `LFileHandle:close`: Closes this file handle. This method is available to Lua scripts.
 - `LFileHandle:isEOF`: Returns whether the file cursor is at end of file.
 - `LFileHandle:type`: Returns the Lua-visible type name for this file handle.
 - `LFileHandle:typeOf`: Returns whether this file handle matches a supported type name.

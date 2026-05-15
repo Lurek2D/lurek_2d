@@ -1,4 +1,3 @@
-
 //! - Emitter configuration struct (`ParticleConfig`) with all tunable parameters serialisable to TOML.
 //! - Enums controlling spawn distribution, insertion order, operating state, and coordinate mode.
 //! - Geometric emission shapes: point, circle, rectangle, ring, line, cone, star, spiral, and custom callback.

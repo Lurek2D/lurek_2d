@@ -1,4 +1,3 @@
-
 //! - Debug visualization for pathfinding structures as colored `RenderCommand` lists.
 //! - NavGrid renders walkable/blocked cells, FlowField draws directional arrows, InfluenceMap shows signed heat.
 //! - Each struct exposes `generate_render_commands` returning a `Vec<RenderCommand>` for overlay drawing.

@@ -1,4 +1,3 @@
-
 //! - Background network thread that owns all blocking I/O (HTTP, TCP, WebSocket).
 //! - MPSC request/response channels isolate the game thread from socket latency.
 //! - `NetworkRequest` enum drives HTTP fetches, TCP streams, and WebSocket frames.

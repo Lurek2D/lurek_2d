@@ -1,4 +1,3 @@
-
 //! - Bidirectional map with O(1) lookup by key or by value.
 //! - Mirrored forward and reverse `HashMap` tables kept in sync on every mutation.
 //! - Insert, remove-by-key, remove-by-value, and containment checks in both directions.

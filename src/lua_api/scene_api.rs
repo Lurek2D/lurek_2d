@@ -728,6 +728,23 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
             Ok(instance)
         })?,
     )?;
+    // -- newScene --
+    /// Alias for `lurek.scene.new`. Creates a new scene instance from an optional prototype table while preserving the older API name still used by tests, examples, and existing game scripts.
+    /// @param | def | table? | A prototype table containing scene lifecycle methods (`enter`, `leave`, `update`, `draw`, etc.). If omitted, an empty table is used.
+    /// @return | table | A new instance table with `def` as its metatable `__index`.
+    tbl.set(
+        "newScene",
+        lua.create_function(|lua, def: Option<LuaTable>| {
+            let def = match def {
+                Some(t) => t,
+                None => lua.create_table()?,
+            };
+            def.set("__index", def.clone())?;
+            let instance: LuaTable = lua.create_table()?;
+            instance.set_metatable(Some(def));
+            Ok(instance)
+        })?,
+    )?;
     // -- define --
     /// Create a reusable scene constructor function from a prototype table. Each call to the returned factory produces a fresh instance that inherits methods from the prototype via metatables. Ideal for defining scene "classes" that can be instantiated multiple times.
     /// @param | def | table? | A prototype table with scene lifecycle methods.

@@ -431,6 +431,16 @@ do -- Terminal:render
   function lurek.draw() term:render(0, 0) end
 end
 
+--@api-stub: LTerminal:print
+-- Writes text into consecutive terminal cells starting at a 1-based column and row.
+-- Use it for shell prompts, roguelike logs, and fixed-grid text output.
+do -- Terminal:print
+  ---@type LTerminal
+  local term = lurek.terminal.newTerminal(80, 25)
+  term:print(1, 1, "lurek> print(10)")
+  term:print(1, 2, "10")
+end
+
 --@api-stub: LTerminal:setFont
 -- Sets the terminal font by pixel height, snapping to the nearest built-in size.
 -- Use to scale UI text for hi-DPI displays or accessibility settings.

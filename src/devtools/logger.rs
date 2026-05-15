@@ -158,7 +158,7 @@ impl Logger {
             .skip(self.history.len().saturating_sub(n))
             .collect()
     }
-            /// Return entries whose category starts with the requested prefix.
+    /// Return entries whose category starts with the requested prefix.
     pub fn filter_category<'a>(&'a self, cat: &str) -> Vec<&'a LogEntry> {
         let lower = cat.to_ascii_lowercase();
         self.history

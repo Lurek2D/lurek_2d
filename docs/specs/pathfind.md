@@ -224,23 +224,23 @@ This module primarily collaborates with `graph`, `image`, `render`, `runtime`. I
 - Namespace: `lurek.pathfind`
 
 ### Module Functions
-- `lurek.pathfind.newNavGrid`: Creates a navigation grid.
+- `lurek.pathfind.newNavGrid`: Creates a navigation grid. This function is exposed to Lua scripts.
 - `lurek.pathfind.newPathfinder`: Creates a unit pathfinder for a navigation grid.
 - `lurek.pathfind.newFlowField`: Creates a flow field for a navigation grid.
-- `lurek.pathfind.newPathGrid`: Creates a cell-size path grid.
+- `lurek.pathfind.newPathGrid`: Creates a cell-size path grid. This function is exposed to Lua scripts.
 - `lurek.pathfind.newPathFlowField`: Creates an AI flow field from a path grid.
 - `lurek.pathfind.setThreadCount`: Records a warning because pathfinding thread count is not implemented.
 - `lurek.pathfind.getThreadCount`: Returns the pathfinding thread count.
 - `lurek.pathfind.newNavGridFromTileMap`: Creates a navigation grid from a tilemap layer and blocked gid table.
-- `lurek.pathfind.newHexGrid`: Creates a hex grid.
-- `lurek.pathfind.newJpsGrid`: Creates a Jump Point Search grid.
-- `lurek.pathfind.newNavMesh`: Creates an empty navigation mesh.
+- `lurek.pathfind.newHexGrid`: Creates a hex grid. This function is exposed to Lua scripts.
+- `lurek.pathfind.newJpsGrid`: Creates a Jump Point Search grid. This function is exposed to Lua scripts.
+- `lurek.pathfind.newNavMesh`: Creates an empty navigation mesh. This function is exposed to Lua scripts.
 - `lurek.pathfind.rangeMap`: Computes reachable cells from range map options.
 
 ### `LAIFlowField` Methods
-- `LAIFlowField:getWidth`: Returns flow field width.
-- `LAIFlowField:getHeight`: Returns flow field height.
-- `LAIFlowField:hasGoal`: Returns whether a goal is set.
+- `LAIFlowField:getWidth`: Returns flow field width. This method is available to Lua scripts.
+- `LAIFlowField:getHeight`: Returns flow field height. This method is available to Lua scripts.
+- `LAIFlowField:hasGoal`: Returns whether a goal is set. This method is available to Lua scripts.
 - `LAIFlowField:setGoal`: Sets the one-based flow field goal.
 - `LAIFlowField:getGoal`: Returns the one-based flow field goal when set.
 - `LAIFlowField:getDirection`: Returns flow direction for a one-based cell.
@@ -280,9 +280,9 @@ This module primarily collaborates with `graph`, `image`, `render`, `runtime`. I
 - `LJpsGrid:typeOf`: Returns whether this JPS grid handle matches a supported type name.
 
 ### `LNavGrid` Methods
-- `LNavGrid:getWidth`: Returns grid width.
-- `LNavGrid:getHeight`: Returns grid height.
-- `LNavGrid:getDimensions`: Returns grid dimensions.
+- `LNavGrid:getWidth`: Returns grid width. This method is available to Lua scripts.
+- `LNavGrid:getHeight`: Returns grid height. This method is available to Lua scripts.
+- `LNavGrid:getDimensions`: Returns grid dimensions. This method is available to Lua scripts.
 - `LNavGrid:setCost`: Sets movement cost at a one-based grid cell.
 - `LNavGrid:getCost`: Returns movement cost at a one-based grid cell.
 - `LNavGrid:setBlocked`: Sets blocked state at a one-based grid cell.
@@ -291,14 +291,14 @@ This module primarily collaborates with `graph`, `image`, `render`, `runtime`. I
 - `LNavGrid:fill`: Fills the grid with a movement cost.
 - `LNavGrid:fillRect`: Fills a one-based rectangular area with a movement cost.
 - `LNavGrid:loadFromString`: Loads grid data from a binary string.
-- `LNavGrid:saveToString`: Saves grid data to a binary string.
-- `LNavGrid:setChunkSize`: Sets hierarchical chunk size.
-- `LNavGrid:getChunkSize`: Returns hierarchical chunk size.
+- `LNavGrid:saveToString`: Saves grid data to a binary string. This method is available to Lua scripts.
+- `LNavGrid:setChunkSize`: Sets hierarchical chunk size. This method is available to Lua scripts.
+- `LNavGrid:getChunkSize`: Returns hierarchical chunk size. This method is available to Lua scripts.
 - `LNavGrid:rebuildAbstract`: Rebuilds the cached abstract graph for this grid.
 - `LNavGrid:setDirty`: Marks a one-based rectangular region dirty.
-- `LNavGrid:clearDirty`: Clears dirty regions.
-- `LNavGrid:setDiagonalMode`: Sets diagonal movement mode.
-- `LNavGrid:getDiagonalMode`: Returns diagonal movement mode.
+- `LNavGrid:clearDirty`: Clears dirty regions. This method is available to Lua scripts.
+- `LNavGrid:setDiagonalMode`: Sets diagonal movement mode. This method is available to Lua scripts.
+- `LNavGrid:getDiagonalMode`: Returns diagonal movement mode. This method is available to Lua scripts.
 - `LNavGrid:type`: Returns the Lua-visible type name for this navigation grid handle.
 - `LNavGrid:typeOf`: Returns whether this navigation grid handle matches a supported type name.
 
@@ -306,14 +306,14 @@ This module primarily collaborates with `graph`, `image`, `render`, `runtime`. I
 - `LNavMesh:addPolygon`: Adds a polygon from vertex tables and returns a one-based id.
 - `LNavMesh:connectPolygons`: Connects two polygons by one-based id.
 - `LNavMesh:findPath`: Finds a path through the navmesh between world points.
-- `LNavMesh:getPolygonCount`: Returns navmesh polygon count.
+- `LNavMesh:getPolygonCount`: Returns navmesh polygon count. This method is available to Lua scripts.
 - `LNavMesh:type`: Returns the Lua-visible type name for this navmesh handle.
 - `LNavMesh:typeOf`: Returns whether this navmesh handle matches a supported type name.
 
 ### `LPathGrid` Methods
-- `LPathGrid:getWidth`: Returns grid width.
-- `LPathGrid:getHeight`: Returns grid height.
-- `LPathGrid:getCellSize`: Returns path grid cell size.
+- `LPathGrid:getWidth`: Returns grid width. This method is available to Lua scripts.
+- `LPathGrid:getHeight`: Returns grid height. This method is available to Lua scripts.
+- `LPathGrid:getCellSize`: Returns path grid cell size. This method is available to Lua scripts.
 - `LPathGrid:setWalkable`: Sets walkability at a one-based cell.
 - `LPathGrid:isWalkable`: Returns walkability at a one-based cell.
 - `LPathGrid:setCost`: Sets movement cost at a one-based cell.
@@ -334,11 +334,11 @@ This module primarily collaborates with `graph`, `image`, `render`, `runtime`. I
 - `LUnitPathfinder:isReachable`: Returns whether a target cell is reachable.
 - `LUnitPathfinder:heuristicDistance`: Returns heuristic distance between two one-based cells.
 - `LUnitPathfinder:lineOfSight`: Returns whether two one-based cells have line of sight.
-- `LUnitPathfinder:setCacheEnabled`: Enables or disables path cache.
+- `LUnitPathfinder:setCacheEnabled`: Enables or disables path cache. This method is available to Lua scripts.
 - `LUnitPathfinder:isCacheEnabled`: Returns whether path cache is enabled.
-- `LUnitPathfinder:clearCache`: Clears cached paths.
-- `LUnitPathfinder:getCacheSize`: Returns current path cache size.
-- `LUnitPathfinder:setCacheMaxSize`: Sets maximum path cache size.
+- `LUnitPathfinder:clearCache`: Clears cached paths. This method is available to Lua scripts.
+- `LUnitPathfinder:getCacheSize`: Returns current path cache size. This method is available to Lua scripts.
+- `LUnitPathfinder:setCacheMaxSize`: Sets maximum path cache size. This method is available to Lua scripts.
 - `LUnitPathfinder:type`: Returns the Lua-visible type name for this pathfinder handle.
 - `LUnitPathfinder:typeOf`: Returns whether this pathfinder handle matches a supported type name.
 

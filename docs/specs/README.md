@@ -41,7 +41,7 @@ Regen workflow:
 
 ## Module index
 
-50 module specs, grouped by the five-tier dependency model from [docs/architecture/engine-architecture.md § Module Group Diagram](../architecture/engine-architecture.md#module-group-diagram) (the same five tiers listed in the [Repository Layout](../../.github/copilot-instructions.md#repository-layout) section of the system prompt).
+51 module specs, grouped by the five-tier dependency model from [docs/architecture/engine-architecture.md § Module Group Diagram](../architecture/engine-architecture.md#module-group-diagram) (the same five tiers listed in the [Repository Layout](../../.github/copilot-instructions.md#repository-layout) section of the system prompt).
 
 **Plugin tier** column reflects the P1 evaluation matrix in `work/docs-api-arch-specs-review-20260418/reports/P1_EVIDENCE.md` § 5. Values:
 
@@ -78,6 +78,7 @@ Engine lifecycle, resource registry, I/O, timing, events, concurrency. Imports F
 | `event`      | [event.md](event.md)           | Centralised event queue: OS input, window state, custom Lua events, automation injections.                 | —               |
 | `filesystem` | [filesystem.md](filesystem.md) | Sandboxed virtual filesystem (`GameFS`); blocks path-traversal escape from the game directory.             | —               |
 | `network`    | [network.md](network.md)       | Multiplayer stack: ENet, raw TCP, async HTTP, WebSocket. Heavy crate tree.                                 | `TIER-1-PLUGIN` |
+| `repl`       | [repl.md](repl.md)             | Release-safe Lua REPL core used by the GUI CLI mode and devtools wrappers; headless also reuses its value-formatting helper. | —               |
 | `runtime`    | [runtime.md](runtime.md)       | Foundational shared state, engine config, error types, resource keys, log catalogue. Root of the dep tree. | —               |
 | `thread`     | [thread.md](thread.md)         | Background threading with per-thread isolated Lua VMs (B-04: VMs cannot be shared).                        | —               |
 | `timer`      | [timer.md](timer.md)           | Frame-timing (`Clock`) and deferred / repeating callback scheduling (`Scheduler`).                         | —               |
@@ -139,7 +140,7 @@ Composition root, scripting bridge, devtools, build outputs. Top of the DAG — 
 | `docs`        | [docs.md](docs.md)               | In-engine API documentation catalog and lightweight schema validation for structured game data. | —           |
 | `lua_api`     | [lua_api.md](lua_api.md)         | Lua scripting bridge: collects every `lurek.*` sub-API and seals the sandboxed `lurek` global.  | —           |
 
-> Total module specs: **50** — one row per `*.md` file in `docs/specs/` excluding `README.md` and `SPEC_TEMPLATE.md`. The `pipeline` module is listed once (under Feature Systems) per the canonical group assignment in `engine-architecture.md`.
+> Total module specs: **51** — one row per `*.md` file in `docs/specs/` excluding `README.md` and `SPEC_TEMPLATE.md`. The `pipeline` module is listed once (under Feature Systems) per the canonical group assignment in `engine-architecture.md`.
 
 ---
 

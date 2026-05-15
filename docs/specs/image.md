@@ -275,8 +275,8 @@ The Lua-side `LProvinceGrid` userdata also exposes `drawShapes(view_x?, view_y?,
 - `lurek.image.fromScreen`: Returns a completed screen capture image or requests one for a future call.
 
 ### `LCompressedImageData` Methods
-- `LCompressedImageData:getWidth`: Returns compressed image width.
-- `LCompressedImageData:getHeight`: Returns compressed image height.
+- `LCompressedImageData:getWidth`: Returns compressed image width. This method is available to Lua scripts.
+- `LCompressedImageData:getHeight`: Returns compressed image height. This method is available to Lua scripts.
 - `LCompressedImageData:getDimensions`: Returns compressed image dimensions.
 - `LCompressedImageData:getMipmapCount`: Returns the number of mipmap levels in this compressed image.
 - `LCompressedImageData:getFormat`: Returns the compressed image format name.
@@ -284,9 +284,9 @@ The Lua-side `LProvinceGrid` userdata also exposes `drawShapes(view_x?, view_y?,
 - `LCompressedImageData:typeOf`: Returns whether this compressed image handle matches a supported type name.
 
 ### `LImageData` Methods
-- `LImageData:getWidth`: Returns image width.
-- `LImageData:getHeight`: Returns image height.
-- `LImageData:getDimensions`: Returns image dimensions.
+- `LImageData:getWidth`: Returns image width. This method is available to Lua scripts.
+- `LImageData:getHeight`: Returns image height. This method is available to Lua scripts.
+- `LImageData:getDimensions`: Returns image dimensions. This method is available to Lua scripts.
 - `LImageData:getPixel`: Returns RGBA channels at a pixel coordinate.
 - `LImageData:setPixel`: Sets RGBA channels at a pixel coordinate.
 - `LImageData:encode`: Encodes image data in a supported format.
@@ -303,18 +303,18 @@ The Lua-side `LProvinceGrid` userdata also exposes `drawShapes(view_x?, view_y?,
 - `LImageData:threshold`: Applies a threshold filter to this image in place.
 - `LImageData:posterize`: Reduces image colors to a fixed number of levels in place.
 - `LImageData:fill`: Fills the whole image with one RGBA color.
-- `LImageData:noise`: Adds noise to this image in place.
+- `LImageData:noise`: Adds noise to this image in place. This method is available to Lua scripts.
 - `LImageData:alphaMask`: Multiplies this image alpha channel by a factor in place.
 - `LImageData:flipHorizontal`: Flips this image horizontally in place.
 - `LImageData:flipVertical`: Flips this image vertically in place.
 - `LImageData:rotate90cw`: Returns a new image rotated ninety degrees clockwise.
-- `LImageData:crop`: Returns a cropped image region.
+- `LImageData:crop`: Returns a cropped image region. This method is available to Lua scripts.
 - `LImageData:resizeNearest`: Returns a resized image using nearest-neighbor sampling.
 - `LImageData:blur`: Returns a blurred copy of this image.
 - `LImageData:sharpen`: Returns a sharpened copy of this image.
 - `LImageData:drawRect`: Draws a filled rectangle into this image.
 - `LImageData:drawCircle`: Draws a filled circle into this image.
-- `LImageData:drawLine`: Draws a line into this image.
+- `LImageData:drawLine`: Draws a line into this image. This method is available to Lua scripts.
 - `LImageData:resize`: Returns a resized image using an optional named filter.
 - `LImageData:blit`: Copies a source image into this image at a destination coordinate.
 - `LImageData:drawNineSlice`: Draws a nine-slice region from a source image into this image.
@@ -330,8 +330,8 @@ The Lua-side `LProvinceGrid` userdata also exposes `drawShapes(view_x?, view_y?,
 - `LImageData:typeOf`: Returns whether this image data handle matches the `ImageData` type name.
 
 ### `LLayeredImage` Methods
-- `LLayeredImage:getWidth`: Returns the layered image width.
-- `LLayeredImage:getHeight`: Returns the layered image height.
+- `LLayeredImage:getWidth`: Returns the layered image width. This method is available to Lua scripts.
+- `LLayeredImage:getHeight`: Returns the layered image height. This method is available to Lua scripts.
 - `LLayeredImage:layerCount`: Returns the number of layers in the stack.
 - `LLayeredImage:addLayer`: Adds a blank layer with an optional name.
 - `LLayeredImage:removeLayer`: Removes a layer by one-based index.
@@ -359,8 +359,8 @@ The Lua-side `LProvinceGrid` userdata also exposes `drawShapes(view_x?, view_y?,
 - `LPaletteLUT:typeOf`: Returns whether this palette lookup table handle matches a supported type name.
 
 ### `LProvinceGrid` Methods
-- `LProvinceGrid:getWidth`: Returns the province grid width.
-- `LProvinceGrid:getHeight`: Returns the province grid height.
+- `LProvinceGrid:getWidth`: Returns the province grid width. This method is available to Lua scripts.
+- `LProvinceGrid:getHeight`: Returns the province grid height. This method is available to Lua scripts.
 - `LProvinceGrid:getAt`: Returns the province id stored at grid coordinates.
 - `LProvinceGrid:provinceCount`: Returns the number of distinct provinces in the grid.
 - `LProvinceGrid:adjacencies`: Returns province adjacency records and shared border pixel counts.

@@ -1,4 +1,3 @@
-
 //! - Manage a pool of active WebSocket connections keyed by caller-assigned ID.
 //! - Spawn background threads for TLS/TCP handshakes so connect never blocks the game loop.
 //! - Non-blocking poll loop reads text, binary, and close frames from all live sockets.

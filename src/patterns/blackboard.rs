@@ -1,4 +1,3 @@
-
 //! - Shared key-value store for passing typed state between AI and game systems.
 //! - Supports bool, number, text, and nil entries with per-key revision tracking.
 //! - Global and per-key revision counters enable efficient change detection.

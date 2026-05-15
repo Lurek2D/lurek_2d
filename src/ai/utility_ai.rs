@@ -1,4 +1,3 @@
-
 //! - Utility-AI scoring model storing actions, response curves, considerations, and evaluation results.
 //! - Response-curve mapping rules and action-side data binding Lua scorers with momentum weighting.
 //! - Evaluation flow calling registered scorers, tracking per-action scores, and selecting best action.

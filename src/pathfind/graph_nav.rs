@@ -1,4 +1,3 @@
-
 //! - A* shortest-path search over weighted directed/bidirectional graphs.
 //! - Range query returning all nodes reachable within a cost budget.
 //! - Heuristic support for informed search; falls back to Dijkstra when omitted.

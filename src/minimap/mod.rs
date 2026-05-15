@@ -1,4 +1,3 @@
-
 //! - Minimap state, layer composition, marker tracking, and fog-of-war reveal.
 //! - Pixel-buffer rendering pipeline that writes the minimap texture each frame.
 //! - Province-map adapter bridging world regions into minimap layers.
@@ -19,4 +18,3 @@ pub use types::{
     ColorMode, FogLevel, LayerData, MarkerAnimation, MinimapMarker, MinimapObject,
     MinimapObjectType, MinimapPing, OverlayPath, OverlayShape,
 };
-

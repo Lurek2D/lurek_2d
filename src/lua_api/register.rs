@@ -11,9 +11,9 @@ use super::{
     debugbridge_api, docs_api, ecs_api, effect_api, engine_api, event_api, filesystem_api,
     globe_api, html_api, i18n_api, image_api, input_api, light_api, log_api, math_api, minimap_api,
     mods_api, network_api, parallax_api, particle_api, pathfind_api, patterns_api, physics_api,
-    pipeline_api, procgen_api, province_api, raycaster_api, render_api, save_api, scene_api,
-    serial_api, spine_api, sprite_api, system_api, terminal_api, thread_api, tilemap_api,
-    timer_api, tween_api, ui_api, window_api,
+    pipeline_api, procgen_api, province_api, raycaster_api, render_api, repl_api, save_api,
+    scene_api, serial_api, spine_api, sprite_api, system_api, terminal_api, thread_api,
+    tilemap_api, timer_api, tween_api, ui_api, window_api,
 };
 use crate::runtime::config::ModulesConfig;
 use crate::runtime::SharedState;
@@ -81,6 +81,7 @@ pub fn create_lua_vm(state: Rc<RefCell<SharedState>>, modules: &ModulesConfig) -
     docs_api::register(&lua, &lurek, state.clone())?;
     log_api::register(&lua, &lurek, state.clone())?;
     engine_api::register(&lua, &lurek, state.clone())?;
+    repl_api::register(&lua, &lurek, state.clone())?;
     data_api::register(&lua, &lurek, state.clone())?;
     mods_api::register(&lua, &lurek, state.clone())?;
     serial_api::register(&lua, &lurek, state.clone())?;
@@ -186,6 +187,16 @@ pub fn create_lua_vm(state: Rc<RefCell<SharedState>>, modules: &ModulesConfig) -
         package.set("path", new_path)?;
     }
     Ok(lua)
+}
+/// Creates a Lua VM with no-window headless module profile applied.
+pub fn create_headless_vm(
+    state: Rc<RefCell<SharedState>>,
+    modules: &ModulesConfig,
+) -> LuaResult<Lua> {
+    let mut headless_modules = modules.clone();
+    headless_modules.apply_headless_profile();
+    headless_modules.validate_and_fix();
+    create_lua_vm(state, &headless_modules)
 }
 /// Creates a default test Lua VM with default module configuration.
 pub fn create_test_vm() -> LuaResult<Lua> {

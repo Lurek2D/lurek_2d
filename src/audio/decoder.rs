@@ -1,4 +1,3 @@
-
 //! - Full-file PCM decoder backed by rodio for WAV/OGG/MP3/FLAC formats.
 //! - Random-access seek and rewind via cursor over the decoded i16 sample buffer.
 //! - Chunked iteration with configurable `buffer_size` for streaming consumption.

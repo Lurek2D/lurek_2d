@@ -1,4 +1,3 @@
-
 //! - Behavior tree data structure with Sequence, Selector, Parallel, Inverter, Repeat, and Leaf node kinds.
 //! - Builder API for allocating nodes, linking children, and setting the root.
 //! - Per-tick runtime state tracking running nodes and repeat counters.

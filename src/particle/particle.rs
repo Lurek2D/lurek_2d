@@ -1,4 +1,3 @@
-
 //! - Per-particle runtime state: position, velocity, lifetime, rotation, and acceleration.
 //! - Holds spawn-time origin for radial/tangential force calculations.
 //! - Carries a shape seed for deterministic procedural polygon generation.

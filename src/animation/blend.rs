@@ -1,4 +1,3 @@
-
 //! - Defines blend masks and named blend layers for multi-clip animation mixing.
 //! - Stores per-layer clip assignment, clamped blend weight, and optional bone filtering.
 //! - Manages an ordered layer set with add, remove, lookup, weight update, and mask replacement.

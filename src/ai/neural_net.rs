@@ -1,4 +1,3 @@
-
 //! - Lightweight feed-forward neural-network with dense layers, activation modes, and flat parameters.
 //! - Layer-local forward evaluation, activation application, and parameter counting.
 //! - Network-level operations: append layers, run forward passes, load/export weight buffers.

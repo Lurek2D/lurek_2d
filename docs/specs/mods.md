@@ -59,12 +59,12 @@ The manager now performs dependency-aware ordering, parses manifest-level `asset
 
 ### Module Functions
 - `lurek.mods.newMod`: Creates a mod metadata handle from a Lua table.
-- `lurek.mods.newModManager`: Creates an empty mod manager.
+- `lurek.mods.newModManager`: Creates an empty mod manager. This function is exposed to Lua scripts.
 - `lurek.mods.newRegistry`: Creates an empty content registry.
 - `lurek.mods.checkApiVersion`: Checks whether a mod API version is compatible with a host version.
 
 ### `LContentRegistry` Methods
-- `LContentRegistry:registerType`: Registers a content type name.
+- `LContentRegistry:registerType`: Registers a content type name. This method is available to Lua scripts.
 - `LContentRegistry:register`: Stores a Lua value under a registered content type and id.
 - `LContentRegistry:get`: Returns one stored value by content type and id.
 - `LContentRegistry:getAll`: Returns all stored values for a content type keyed by id.
@@ -73,26 +73,26 @@ The manager now performs dependency-aware ordering, parses manifest-level `asset
 - `LContentRegistry:typeOf`: Returns whether this content registry handle matches a supported type name.
 
 ### `LMod` Methods
-- `LMod:getId`: Returns the mod id.
-- `LMod:getName`: Returns the mod display name.
-- `LMod:getVersion`: Returns the mod version.
-- `LMod:getAuthor`: Returns the mod author.
-- `LMod:getDescription`: Returns the mod description.
-- `LMod:getDependencies`: Returns mod dependency ids.
-- `LMod:getPriority`: Returns the mod priority.
+- `LMod:getId`: Returns the mod id. This method is available to Lua scripts.
+- `LMod:getName`: Returns the mod display name. This method is available to Lua scripts.
+- `LMod:getVersion`: Returns the mod version. This method is available to Lua scripts.
+- `LMod:getAuthor`: Returns the mod author. This method is available to Lua scripts.
+- `LMod:getDescription`: Returns the mod description. This method is available to Lua scripts.
+- `LMod:getDependencies`: Returns mod dependency ids. This method is available to Lua scripts.
+- `LMod:getPriority`: Returns the mod priority. This method is available to Lua scripts.
 - `LMod:isEnabled`: Returns whether the mod is enabled.
-- `LMod:setEnabled`: Sets whether the mod is enabled.
-- `LMod:isLoaded`: Returns whether the mod is loaded.
+- `LMod:setEnabled`: Sets whether the mod is enabled. This method is available to Lua scripts.
+- `LMod:isLoaded`: Returns whether the mod is loaded. This method is available to Lua scripts.
 - `LMod:getApiVersion`: Returns the optional required API version.
 - `LMod:setApiVersion`: Sets the required API version string.
 - `LMod:getCapabilities`: Returns capability names declared by the mod.
 - `LMod:setCapabilities`: Sets capability names from an array table.
-- `LMod:getConfigSchema`: Returns config schema entries.
+- `LMod:getConfigSchema`: Returns config schema entries. This method is available to Lua scripts.
 - `LMod:setConfigSchema`: Sets config schema entries from a Lua table.
-- `LMod:setHook`: Stores a Lua hook function by name.
+- `LMod:setHook`: Stores a Lua hook function by name. This method is available to Lua scripts.
 - `LMod:getHook`: Returns a stored hook function by name.
 - `LMod:hasHook`: Returns whether a hook name is registered.
-- `LMod:getHookNames`: Returns registered hook names.
+- `LMod:getHookNames`: Returns registered hook names. This method is available to Lua scripts.
 - `LMod:setConfig`: Stores a Lua config value for this mod.
 - `LMod:getConfig`: Returns the stored Lua config value.
 - `LMod:releaseRefs`: Releases stored Lua registry references for hooks and config.
@@ -100,22 +100,22 @@ The manager now performs dependency-aware ordering, parses manifest-level `asset
 - `LMod:typeOf`: Returns whether this mod handle matches a supported type name.
 
 ### `LModManager` Methods
-- `LModManager:registerMod`: Registers a mod with the manager.
-- `LModManager:unregisterMod`: Unregisters a mod by id.
+- `LModManager:registerMod`: Registers a mod with the manager. This method is available to Lua scripts.
+- `LModManager:unregisterMod`: Unregisters a mod by id. This method is available to Lua scripts.
 - `LModManager:hasMod`: Returns whether a mod id is registered.
 - `LModManager:getModCount`: Returns the number of registered mods.
 - `LModManager:getAllMods`: Returns metadata for all registered mods.
 - `LModManager:getModsByCapability`: Returns metadata for mods declaring a capability.
-- `LModManager:getLoadOrder`: Returns the resolved load order.
+- `LModManager:getLoadOrder`: Returns the resolved load order. This method is available to Lua scripts.
 - `LModManager:validateDependencies`: Returns dependency validation messages.
 - `LModManager:hasCircularDependencies`: Returns whether registered mods have circular dependencies.
 - `LModManager:setLoadOrder`: Sets explicit load order from an array of mod ids.
-- `LModManager:clearLoadOrder`: Clears explicit load order.
-- `LModManager:scanFolder`: Scans a folder for mod metadata.
+- `LModManager:clearLoadOrder`: Clears explicit load order. This method is available to Lua scripts.
+- `LModManager:scanFolder`: Scans a folder for mod metadata. This method is available to Lua scripts.
 - `LModManager:getModPath`: Returns the filesystem path for a registered mod.
-- `LModManager:markForReload`: Marks a mod id for reload.
+- `LModManager:markForReload`: Marks a mod id for reload. This method is available to Lua scripts.
 - `LModManager:getReloadQueue`: Returns mod ids waiting for reload.
-- `LModManager:clearReloadQueue`: Clears the reload queue.
+- `LModManager:clearReloadQueue`: Clears the reload queue. This method is available to Lua scripts.
 - `LModManager:processReloadQueue`: Processes and clears the reload queue.
 - `LModManager:type`: Returns the Lua-visible type name for this mod manager handle.
 - `LModManager:typeOf`: Returns whether this mod manager handle matches a supported type name.

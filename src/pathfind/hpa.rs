@@ -8,7 +8,7 @@
 //! - Boundary scanning logic handles both horizontal and vertical chunk edges.
 //! - Supports variable unit sizes passed through to underlying A* refinement.
 
-use crate::runtime::log_messages::{HP01,HP02,HP03};
+use crate::runtime::log_messages::{HP01, HP02, HP03};
 
 use crate::log_msg;
 use crate::pathfind::{astar, nav_grid::NavGrid};

@@ -42,7 +42,7 @@ fn parse_addr(s: &str) -> LuaResult<SocketAddr> {
     s.parse()
         .map_err(|_| LuaError::RuntimeError(format!("invalid address: {s}")))
 }
-    /// Converts peer statistics into a Lua table.
+/// Converts peer statistics into a Lua table.
 fn stats_to_table(lua: &Lua, stats: PeerStats) -> LuaResult<LuaTable<'_>> {
     let t = lua.create_table()?;
     t.set("round_trip_time", stats.round_trip_time)?;

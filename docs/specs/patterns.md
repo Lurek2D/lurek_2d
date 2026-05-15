@@ -426,10 +426,10 @@ This module is mostly self-contained inside the Foundations group. Cross-module 
 - `LList:indexOf`: Find the 1-based index of the first occurrence of a value. Returns nil if not found.
 - `LList:reverse`: Reverse the order of all items in the list in-place.
 - `LList:len`: Return the number of items in the list.
-- `LList:isEmpty`: Check whether the list is empty.
+- `LList:isEmpty`: Check whether the list is empty. This method is available to Lua scripts.
 - `LList:contains`: Check whether the list contains a specific value.
-- `LList:clear`: Remove all items from the list.
-- `LList:toArray`: Return all items as an array table.
+- `LList:clear`: Remove all items from the list. This method is available to Lua scripts.
+- `LList:toArray`: Return all items as an array table. This method is available to Lua scripts.
 
 ### `LMap` Methods
 - `LMap:set`: Set a key-value pair in the map. Replaces any existing value for the same key.
@@ -442,7 +442,7 @@ This module is mostly self-contained inside the Foundations group. Cross-module 
 - `LMap:values`: Return an array of all values in the map.
 - `LMap:entries`: Return an array of {key, value} tables for all entries.
 - `LMap:merge`: Copy all entries from another LMap into this map. Existing keys are overwritten.
-- `LMap:clear`: Remove all entries from the map.
+- `LMap:clear`: Remove all entries from the map. This method is available to Lua scripts.
 
 ### `LMediator` Methods
 - `LMediator:on`: Register a handler callback on a named channel. Returns an ID for unregistration.
@@ -476,7 +476,7 @@ This module is mostly self-contained inside the Foundations group. Cross-module 
 - `LPriorityQueue:peek`: Return the highest-priority item without removing it. Returns nil if empty.
 - `LPriorityQueue:len`: Return the number of items currently in the queue.
 - `LPriorityQueue:isEmpty`: Check whether the queue contains no items.
-- `LPriorityQueue:clearAll`: Remove all items from the queue.
+- `LPriorityQueue:clearAll`: Remove all items from the queue. This method is available to Lua scripts.
 
 ### `LQueue` Methods
 - `LQueue:enqueue`: Add a value to the back of the queue. Returns false if at capacity.
@@ -489,9 +489,9 @@ This module is mostly self-contained inside the Foundations group. Cross-module 
 - `LQueue:insertAt`: Insert a value at a 1-based index in the queue. Returns false if at capacity.
 - `LQueue:removeAt`: Remove and return the value at a 1-based index. Returns nil if out of range.
 - `LQueue:len`: Return the current number of items in the queue.
-- `LQueue:isEmpty`: Check whether the queue is empty.
+- `LQueue:isEmpty`: Check whether the queue is empty. This method is available to Lua scripts.
 - `LQueue:isFull`: Check whether the queue has reached its capacity limit.
-- `LQueue:clear`: Remove all items from the queue.
+- `LQueue:clear`: Remove all items from the queue. This method is available to Lua scripts.
 - `LQueue:toArray`: Return all queue items as an array table (front to back).
 
 ### `LRelationshipManager` Methods
@@ -514,7 +514,7 @@ This module is mostly self-contained inside the Foundations group. Cross-module 
 - `LRing:average`: Return the arithmetic mean of all numeric values in the ring.
 - `LRing:len`: Return the number of entries currently in the ring.
 - `LRing:isFull`: Check whether the ring has reached its maximum capacity.
-- `LRing:clear`: Remove all entries from the ring.
+- `LRing:clear`: Remove all entries from the ring. This method is available to Lua scripts.
 
 ### `LServiceLocator` Methods
 - `LServiceLocator:provide`: Register a service instance under a given name. Replaces any previously registered service with the same name.
@@ -529,9 +529,9 @@ This module is mostly self-contained inside the Foundations group. Cross-module 
 - `LSet:remove`: Remove a string from the set. Returns true if it was present.
 - `LSet:has`: Check whether a string is in the set.
 - `LSet:len`: Return the number of items in the set.
-- `LSet:isEmpty`: Check whether the set is empty.
+- `LSet:isEmpty`: Check whether the set is empty. This method is available to Lua scripts.
 - `LSet:toArray`: Return all set items as an array table.
-- `LSet:clear`: Remove all items from the set.
+- `LSet:clear`: Remove all items from the set. This method is available to Lua scripts.
 - `LSet:union`: Return a new set containing all items from both this set and another.
 - `LSet:intersection`: Return a new set containing only items present in both this set and another.
 
@@ -557,9 +557,9 @@ This module is mostly self-contained inside the Foundations group. Cross-module 
 - `LStack:removeAt`: Remove and return the value at a 1-based index. Returns nil if out of range.
 - `LStack:moveWithin`: Move an item from one 1-based index to another within the stack.
 - `LStack:len`: Return the current number of items in the stack.
-- `LStack:isEmpty`: Check whether the stack is empty.
+- `LStack:isEmpty`: Check whether the stack is empty. This method is available to Lua scripts.
 - `LStack:isFull`: Check whether the stack has reached its capacity limit (if one was set).
-- `LStack:clear`: Remove all items from the stack.
+- `LStack:clear`: Remove all items from the stack. This method is available to Lua scripts.
 - `LStack:toArray`: Return all stack items as an array table (bottom to top).
 
 ### `LStrategy` Methods
@@ -589,7 +589,7 @@ This module is mostly self-contained inside the Foundations group. Cross-module 
 - `LWeightedRandom:totalWeight`: Return the sum of all entry weights.
 - `LWeightedRandom:len`: Return the number of entries in the pool.
 - `LWeightedRandom:isEmpty`: Check whether the pool has no entries.
-- `LWeightedRandom:clearAll`: Remove all entries from the pool.
+- `LWeightedRandom:clearAll`: Remove all entries from the pool. This method is available to Lua scripts.
 - `LWeightedRandom:getRevision`: Return the revision counter. Increments on any add/remove/weight change.
 
 ## References

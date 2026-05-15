@@ -1,4 +1,3 @@
-
 //! - Formats fatal Lua and engine errors into a user-facing screen.
 //! - Splits message text and traceback, word-wraps long lines, and cleans Lua string markers.
 //! - Builds full-screen render commands showing error title, body, traceback, and hint footer.

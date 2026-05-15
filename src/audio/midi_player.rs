@@ -1,4 +1,3 @@
-
 //! - `MidiPlayer` stateful transport controller for MIDI file playback via rendered PCM.
 //! - File loading with parsed metadata: duration, BPM, ticks-per-beat, track names, note count.
 //! - Transport controls: play, stop, pause, resume, seek, tell, and duration queries.

@@ -46,7 +46,7 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 - `detect_format` (`codec.rs`): Detect the serialization format of a text string by content inspection.
 - `decode_text` (`codec.rs`): Decode a text string into a `SerialValue`, optionally specifying the format.
 - `decode_bytes` (`codec.rs`): Decode a binary byte slice into a `SerialValue` using the given format.
-- `encode` (`codec.rs`): Encode a `SerialValue` into the specified format.
+- `encode` (`codec.rs`): Encode a SerialValue tree into MessagePack bytes.
 - `from_csv` (`csv.rs`): Parse a CSV string into a `SerialValue` sequence.
 - `from_csv_reader` (`csv.rs`): Parse CSV from any `Read` source into a `SerialValue` sequence.
 - `to_csv` (`csv.rs`): Serialize a `SerialValue` sequence of rows into a CSV string.
@@ -56,7 +56,7 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 - `to_lua` (`lua_table.rs`): Convert a `SerialValue` tree into a Lua value (tables for Seq/Map).
 - `from_lua` (`lua_table.rs`): Convert a Lua value into a `SerialValue` tree, detecting arrays automatically.
 - `encode` (`msgpack.rs`): Encode a SerialValue tree into MessagePack bytes.
-- `decode` (`msgpack.rs`): Decode MessagePack bytes into a SerialValue tree.
+- `decode` (`msgpack.rs`): Parse an XML string and return the root element as a SerialValue tree.
 - `encode_json` (`msgpack.rs`): Encode a serde_json Value into MessagePack bytes.
 - `decode_json` (`msgpack.rs`): Decode MessagePack bytes into a serde_json Value.
 - `validate` (`schema.rs`): Validate a serial value tree against a schema, logging the pass/fail result.

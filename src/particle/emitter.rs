@@ -1,4 +1,3 @@
-
 //! - Live particle emitter that owns the active particle pool, physics stepping, and sub-system list.
 //! - Per-frame integration: gravity, radial/tangential acceleration, linear damping, drag, orbit, and turbulence.
 //! - Point-attractor influence applied per particle each frame with distance falloff.

@@ -1,4 +1,3 @@
-
 //! - `SoundData` in-memory interleaved f32 PCM buffer with per-sample get/set and metadata.
 //! - File decode via rodio, silent-buffer allocation, and Lua argument factory.
 //! - WAV encoding to byte vector for save/export.

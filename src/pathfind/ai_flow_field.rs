@@ -1,4 +1,3 @@
-
 //! - Precomputed flow field steering multiple agents toward a single goal cell.
 //! - BFS distance propagation with 8-directional neighbours and diagonal cost.
 //! - Per-cell normalised direction vectors for smooth unit movement.

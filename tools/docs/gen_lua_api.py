@@ -261,9 +261,9 @@ def _merge_typed_params_with_inferred(typed_params: list, inferred_sig: str) -> 
         return []
 
     if inferred == [("...", False)]:
-        # If typed_params already has an explicit "..." entry, keep them as-is
-        # (the docstring explicitly typed both named params and varargs).
-        if any(p[0] == "..." for p in typed_params):
+        # If the docstring already names the Lua-facing parameters, preserve that
+        # explicit data instead of collapsing it into a synthetic `...` placeholder.
+        if typed_params:
             return typed_params
         merged_type_parts: List[str] = []
         for typed in typed_params:

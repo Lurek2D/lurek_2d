@@ -91,7 +91,7 @@ Scope boundary:
 - `lurek.event.newSignal`: Creates an isolated signal dispatcher for Lua callbacks.
 - `lurek.event.pump`: Pumps the shared event queue without removing events for Lua.
 - `lurek.event.wait`: Waits for the next queued event and returns success, name, and argument table.
-- `lurek.event.restart`: Requests an engine restart.
+- `lurek.event.restart`: Requests an engine restart. This function is exposed to Lua scripts.
 - `lurek.event.quit`: Requests engine shutdown with exit code zero.
 - `lurek.event.pushDeferred`: Adds a normal-priority event to the deferred buffer instead of the live queue.
 - `lurek.event.pushDeferredPriority`: Adds an event with explicit priority to the deferred buffer.

@@ -1,4 +1,3 @@
-
 //! - Named observer pattern with per-key subscription lists and wildcard support.
 //! - One-shot (`once`) and persistent subscription modes with auto-cleanup on dispatch.
 //! - Key-scoped and global clear operations for lifecycle management.

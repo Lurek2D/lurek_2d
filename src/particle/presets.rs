@@ -1,4 +1,3 @@
-
 //! - Ready-made `ParticleConfig` constructors for common visual effects (fire, smoke, rain, snow, sparks).
 //! - Each preset returns a standalone config with tuned lifetime, speed, color ramp, and shape.
 //! - Designed for one-call usage; callers can override individual fields after construction.

@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- fix(scene,ui): restored the `lurek.scene.newScene` Lua alias in `scene_api.rs`, synchronized `lurek.ui.setEnabled()` with `WidgetBase.enabled`, and regenerated Lua API/spec outputs so the failing scene and UI Lua tests pass again.
+
+- feat(runtime): added `gui|tui|headless|cli` runtime mode parsing from config and CLI flags, implemented the no-window headless Lua runtime with `--eval`/`--frames`, added the release-safe `repl` core plus `lurek.repl`, and synced focused Rust/Lua tests, examples, and specs.
+
 - docs/validation: added `tools/validate/validate_rust_source_docs.py`, strengthened Lua API source and generated-stub validators to enforce summary/param/return/class completeness, wired a new docs gate into `.vscode/tasks.json`, updated `tools/validate/README.md`, and remediated `src/**/*.rs` plus `src/lua_api/*_api.rs` so the phase-1 source-doc validators pass.
 
 - docs/lua_api: audited all `src/lua_api/*_api.rs` bindings, filled missing Rust docstrings and `@return` markers, normalized misplaced doc comment indentation, and regenerated the Lua API stubs for docs and the VS Code extension.

@@ -1,4 +1,3 @@
-
 //! - Tabular Q-learning model with flat state-action value table and training parameters.
 //! - Epsilon-greedy action selection, Bellman updates, and episode bookkeeping.
 //! - Lightweight persistence helpers for serializing and reloading learned policies.

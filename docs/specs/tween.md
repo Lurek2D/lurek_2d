@@ -38,11 +38,11 @@ This module primarily collaborates with `math`. Its responsibility should stay i
 ## Functions
 
 - `TweenEngine::new` (`engine.rs`): Create an empty engine with no active animations and no custom easings.
-- `TweenEngine::update` (`engine.rs`): Advance all active tweens, sequences, and parallels by `dt` seconds; remove completed entries from the registry; return error on Lua fault.
+- `TweenEngine::update` (`engine.rs`): Advance all active tweens, sequences, and parallels by `dt` seconds;.
 - `TweenEngine::cancel_all` (`engine.rs`): Cancel and remove all active tweens, sequences, and parallels; fires `on_cancel` callbacks; return error on Lua fault.
 - `TweenEngine::active_count` (`engine.rs`): Return the total count of active tweens, sequences, parallels, and springs.
 - `LuaTween::new` (`handle.rs`): Create a new active tween targeting `fields` of `target` over `duration` seconds using `easing_name`.
-- `LuaTween::tick_with` (`handle.rs`): Advance the tween by `dt` seconds, write interpolated values to the target table, fire `on_update`, handle repeats and yoyo; return true when fully done.
+- `LuaTween::tick_with` (`handle.rs`): Advance the tween by `dt` seconds, write interpolated values to the target table,.
 - `LuaTween::fire_on_complete` (`handle.rs`): Consume and call the `on_complete` registry callback if one is set.
 - `LuaTween::set_relative` (`handle.rs`): Set whether `end_values` are absolute targets or offsets from start; resets start capture.
 - `LuaTween::add_waiter` (`handle.rs`): Push a coroutine registry key to be resumed when this tween completes.
@@ -126,7 +126,7 @@ This module primarily collaborates with `math`. Its responsibility should stay i
 - `LTween:await`: Yields the current coroutine until this tween completes or is cancelled. Must be called from inside a coroutine.
 - `LTween:setRepeat`: Sets how many times the tween should repeat after the first play. Use -1 for infinite repeat.
 - `LTween:setYoyo`: Enables or disables yoyo mode, which reverses the tween direction on each repeat cycle.
-- `LTween:onComplete`: Lua-facing function documented in the binding source.
+- `LTween:onComplete`: On complete on this LTween object. This method is available to Lua scripts.
 - `LTween:onUpdate`: Sets a callback to fire every frame while the tween is active. Returns the tween for chaining.
 - `LTween:onCancel`: Sets a callback to fire when the tween is cancelled. Returns the tween for chaining.
 - `LTween:type`: Returns the type name of this object.

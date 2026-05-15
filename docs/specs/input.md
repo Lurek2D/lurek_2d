@@ -172,11 +172,11 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 - `lurek.input.mouse.getX`: Returns the current mouse x coordinate.
 - `lurek.input.mouse.getY`: Returns the current mouse y coordinate.
 - `lurek.input.mouse.isDown`: Returns whether a one-based mouse button index is down.
-- `lurek.input.mouse.setVisible`: Sets mouse cursor visibility.
+- `lurek.input.mouse.setVisible`: Sets mouse cursor visibility. This function is exposed to Lua scripts.
 - `lurek.input.mouse.isVisible`: Returns whether the mouse cursor is visible.
 - `lurek.input.mouse.setGrabbed`: Sets whether the mouse is grabbed by the window.
 - `lurek.input.mouse.isGrabbed`: Returns whether the mouse is grabbed by the window.
-- `lurek.input.mouse.setRelativeMode`: Sets relative mouse mode.
+- `lurek.input.mouse.setRelativeMode`: Sets relative mouse mode. This function is exposed to Lua scripts.
 - `lurek.input.mouse.getRelativeMode`: Returns whether relative mouse mode is enabled.
 - `lurek.input.mouse.setPosition`: Requests a mouse cursor position change.
 - `lurek.input.mouse.setCursor`: Sets the active cursor from a cursor handle, system cursor name, or nil for arrow.
@@ -189,12 +189,12 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 - `lurek.input.gamepad.getJoystickCount`: Returns the number of joystick slots tracked by the runtime.
 - `lurek.input.gamepad.getJoysticks`: Returns ids for currently connected gamepads.
 - `lurek.input.gamepad.isConnected`: Returns whether a gamepad id is currently connected.
-- `lurek.input.gamepad.getName`: Returns a gamepad display name.
+- `lurek.input.gamepad.getName`: Returns a gamepad display name. This function is exposed to Lua scripts.
 - `lurek.input.gamepad.isGamepad`: Returns whether a connected gamepad exists at an id.
 - `lurek.input.gamepad.getButtonCount`: Returns the button count for a gamepad.
 - `lurek.input.gamepad.getAxisCount`: Returns the axis count for a gamepad.
 - `lurek.input.gamepad.isDown`: Returns whether a gamepad button is currently down.
-- `lurek.input.gamepad.getAxis`: Returns a gamepad axis value.
+- `lurek.input.gamepad.getAxis`: Returns a gamepad axis value. This function is exposed to Lua scripts.
 - `lurek.input.gamepad.virtualDpad`: Converts analog x and y values into virtual d-pad booleans and direction.
 - `lurek.input.gamepad.isVibrationSupported`: Returns whether a gamepad supports vibration requests.
 - `lurek.input.gamepad.vibrate`: Requests gamepad vibration with low and high frequency motor strengths.
@@ -212,19 +212,19 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 - `lurek.input.gamepad.loadGamepadMappings`: Loads gamepad mapping strings from a file.
 - `lurek.input.gamepad.saveGamepadMappings`: Saves gamepad mapping strings to a file.
 - `lurek.input.touch.getTouches`: Returns active touch points with id, position, and pressure.
-- `lurek.input.touch.getPosition`: Returns the position of a touch id.
-- `lurek.input.touch.getPressure`: Returns pressure for a touch id.
+- `lurek.input.touch.getPosition`: Returns the position of a touch id. This function is exposed to Lua scripts.
+- `lurek.input.touch.getPressure`: Returns pressure for a touch id. This function is exposed to Lua scripts.
 - `lurek.input.touch.getTouchCount`: Returns the current active touch count.
 - `lurek.input.touch.wasPressed`: Returns whether a touch id began this frame.
 - `lurek.input.touch.wasReleased`: Returns whether a touch id ended this frame.
 - `lurek.input.bind`: Adds one or more keyboard/gamepad bindings to an action.
 - `lurek.input.newMapping`: Creates an action mapping table with isDown, wasPressed, and wasReleased helper functions.
-- `lurek.input.isDown`: Lua-facing function documented in the binding source.
-- `lurek.input.wasPressed`: Lua-facing function documented in the binding source.
-- `lurek.input.wasReleased`: Lua-facing function documented in the binding source.
+- `lurek.input.isDown`: Returns true if down for Lua scripts in this module.
+- `lurek.input.wasPressed`: Was pressed for Lua scripts in this module.
+- `lurek.input.wasReleased`: Was released for Lua scripts in this module.
 - `lurek.input.unbind`: Removes all bindings for an action.
-- `lurek.input.clearBindings`: Removes all action bindings.
-- `lurek.input.getBindings`: Returns all action bindings.
+- `lurek.input.clearBindings`: Removes all action bindings. This function is exposed to Lua scripts.
+- `lurek.input.getBindings`: Returns all action bindings. This function is exposed to Lua scripts.
 - `lurek.input.isActionDown`: Returns whether any binding for an action is currently down.
 - `lurek.input.wasActionPressed`: Returns whether any binding for an action was pressed this frame and records the frame.
 - `lurek.input.wasActionReleased`: Returns whether any binding for an action was released this frame.

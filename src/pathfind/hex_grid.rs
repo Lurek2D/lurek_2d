@@ -1,4 +1,3 @@
-
 //! - Hex grid with configurable flat-top or pointy-top offset layout.
 //! - Per-cell blocked flags and movement cost for weighted pathfinding.
 //! - A* search returning shortest path between two hex cells.

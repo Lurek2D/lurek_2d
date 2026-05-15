@@ -296,4 +296,3 @@ fn utf8_char_len(byte: u8) -> usize {
         4
     }
 }
-

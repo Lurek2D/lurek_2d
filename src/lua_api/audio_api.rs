@@ -73,7 +73,7 @@ fn extract_sound_data_args(args: LuaMultiValue) -> LuaResult<(Option<String>, us
         }
     };
 
-        /// Registers the `lurek.audio` module, Lua-visible audio constructors, controls, and userdata wrappers.
+    /// Registers the `lurek.audio` module, Lua-visible audio constructors, controls, and userdata wrappers.
     let rate = match it.next() {
         Some(LuaValue::Integer(n)) => n as u32,
         Some(LuaValue::Number(n)) => n as u32,
@@ -2103,11 +2103,11 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
 
-        // -- setSample --
-        /// Overwrites one normalized PCM sample value in this sound buffer.
-        /// @param | index | integer | Zero-based sample index.
-        /// @param | value | number | New sample value.
-        /// @return | nil | No value is returned.
+    // -- setSample --
+    /// Overwrites one normalized PCM sample value in this sound buffer.
+    /// @param | index | integer | Zero-based sample index.
+    /// @param | value | number | New sample value.
+    /// @return | nil | No value is returned.
     let s = state.clone();
     tbl.set(
         "set_bus_volume",

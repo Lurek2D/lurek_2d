@@ -344,7 +344,7 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - `WidgetState::parse_str` (`widget.rs`): Parse a lowercase state name to a variant, or return `None` if unrecognised.
 - `WidgetState::as_str` (`widget.rs`): Return the canonical lowercase name string for this state.
 - `WidgetType::as_str` (`widget.rs`): Return the canonical lowercase name string for this type.
-- `WidgetType::parse_str` (`widget.rs`): Public function or method declared in `widget.rs`.
+- `WidgetType::parse_str` (`widget.rs`): Parse str.
 - `WidgetType::default_size` (`widget.rs`): Return the default `(width, height)` size in pixels for this widget type.
 - `WidgetTransition::alpha` (`widget.rs`): Create an alpha fade from `from` to `to` over `duration` seconds; optionally hide when done.
 - `WidgetTransition::position` (`widget.rs`): Create a position slide from `(from_x, from_y)` to `(to_x, to_y)` over `duration` seconds.
@@ -358,41 +358,42 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - Namespace: `lurek.ui`
 
 ### Module Functions
-- `lurek.ui.newButton`: Creates a new button widget.
-- `lurek.ui.newLabel`: Creates a new label widget.
-- `lurek.ui.newTextInput`: Creates a new text input widget.
-- `lurek.ui.newCheckbox`: Creates a new checkbox widget.
-- `lurek.ui.newSlider`: Creates a new slider widget.
-- `lurek.ui.newProgressBar`: Creates a new progress bar widget.
+- `lurek.ui.newButton`: Creates a new button widget. This function is exposed to Lua scripts.
+- `lurek.ui.newLabel`: Creates a new label widget. This function is exposed to Lua scripts.
+- `lurek.ui.newTextInput`: Creates a new text input widget. This function is exposed to Lua scripts.
+- `lurek.ui.newCheckbox`: Creates a new checkbox widget. This function is exposed to Lua scripts.
+- `lurek.ui.newSlider`: Creates a new slider widget. This function is exposed to Lua scripts.
+- `lurek.ui.newProgressBar`: Creates a new progress bar widget. This function is exposed to Lua scripts.
 - `lurek.ui.newComboBox`: Creates a new combo box (drop-down) widget.
-- `lurek.ui.newList`: Creates a new list box widget.
+- `lurek.ui.newList`: Creates a new list box widget. This function is exposed to Lua scripts.
 - `lurek.ui.newPanel`: Creates a new panel widget (container).
 - `lurek.ui.newLayout`: Creates a new layout container widget.
 - `lurek.ui.newScrollPanel`: Creates a new scrollable panel widget.
 - `lurek.ui.newNinePatch`: Creates a new nine-patch widget for scalable bordered images.
-- `lurek.ui.newTabBar`: Creates a new tab bar widget.
-- `lurek.ui.newSeparator`: Creates a new separator widget.
+- `lurek.ui.newTabBar`: Creates a new tab bar widget. This function is exposed to Lua scripts.
+- `lurek.ui.newSeparator`: Creates a new separator widget. This function is exposed to Lua scripts.
 - `lurek.ui.newSpacer`: Creates a new spacer widget for spacing between other widgets.
 - `lurek.ui.newToast`: Creates a new toast notification widget.
-- `lurek.ui.newTreeView`: Creates a new tree view widget.
-- `lurek.ui.newRadioButton`: Creates a new radio button widget.
-- `lurek.ui.newScrollBar`: Creates a new scroll bar widget.
-- `lurek.ui.newWindow`: Creates a new GUI window widget.
+- `lurek.ui.newTreeView`: Creates a new tree view widget. This function is exposed to Lua scripts.
+- `lurek.ui.newRadioButton`: Creates a new radio button widget. This function is exposed to Lua scripts.
+- `lurek.ui.newScrollBar`: Creates a new scroll bar widget. This function is exposed to Lua scripts.
+- `lurek.ui.newWindow`: Creates a new GUI window widget. This function is exposed to Lua scripts.
 - `lurek.ui.newSplitPanel`: Creates a new split panel widget with two resizable sub-panels.
 - `lurek.ui.newDockPanel`: Creates a new dock panel widget for docking child widgets to sides.
-- `lurek.ui.newToolbar`: Creates a new toolbar widget.
-- `lurek.ui.newMenuBar`: Creates a new menu bar widget.
-- `lurek.ui.newMenuItem`: Creates a new menu item widget.
-- `lurek.ui.newDialog`: Creates a new dialog widget.
-- `lurek.ui.newStatusBar`: Creates a new status bar widget.
-- `lurek.ui.newAccordion`: Creates a new accordion widget.
+- `lurek.ui.newToolbar`: Creates a new toolbar widget. This function is exposed to Lua scripts.
+- `lurek.ui.newMenuBar`: Creates a new menu bar widget. This function is exposed to Lua scripts.
+- `lurek.ui.newMenuItem`: Creates a new menu item widget. This function is exposed to Lua scripts.
+- `lurek.ui.newDialog`: Creates a new dialog widget. This function is exposed to Lua scripts.
+- `lurek.ui.newStatusBar`: Creates a new status bar widget. This function is exposed to Lua scripts.
+- `lurek.ui.newAccordion`: Creates a new accordion widget. This function is exposed to Lua scripts.
 - `lurek.ui.newTooltipPanel`: Creates a new tooltip panel widget.
-- `lurek.ui.newColorPicker`: Creates a new color picker widget.
+- `lurek.ui.newColorPicker`: Creates a new color picker widget. This function is exposed to Lua scripts.
 - `lurek.ui.newTable`: Creates a new table widget for tabular data display.
 - `lurek.ui.newImageWidget`: Creates a new image display widget.
-- `lurek.ui.setTheme`: Applies a theme to the UI context.
+- `lurek.ui.newTheme`: Creates a new UI theme for styling widgets.
+- `lurek.ui.setTheme`: Applies a theme to the UI context. This function is exposed to Lua scripts.
 - `lurek.ui.getTheme`: Returns whether a theme is currently set.
-- `lurek.ui.getRoot`: Returns the root panel widget.
+- `lurek.ui.getRoot`: Returns the root panel widget. This function is exposed to Lua scripts.
 - `lurek.ui.setFocus`: Sets keyboard focus to a widget, or clears focus if nil.
 - `lurek.ui.getFocus`: Returns the index of the currently focused widget, or nil.
 - `lurek.ui.focusNext`: Moves keyboard focus to the next focusable widget.
@@ -411,21 +412,26 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - `lurek.ui.newCustomWidget`: Creates a new custom widget with optional initial configuration.
 - `lurek.ui.getWidgetCount`: Returns the total number of widgets in the UI context.
 - `lurek.ui.drawToImage`: Renders the entire UI to an image buffer.
+- `lurek.ui.newLineChart`: Creates a new line chart for data visualization.
+- `lurek.ui.newBarChart`: Creates a new bar chart for data visualization.
+- `lurek.ui.newScatterPlot`: Creates a new scatter plot for data visualization.
+- `lurek.ui.newPieChart`: Creates a new pie chart for data visualization.
+- `lurek.ui.newAreaChart`: Creates a new area chart for data visualization.
 - `lurek.ui.parseWidgetState`: Validates and normalizes a widget state string.
 - `lurek.ui.newSpinBox`: Creates a new spin box (numeric stepper) widget.
 - `lurek.ui.newSwitch`: Creates a new toggle switch widget.
 - `lurek.ui.newBadge`: Creates a new badge widget for displaying counts.
 - `lurek.ui.setDefaultTheme`: Applies the built-in default theme to the UI context.
 - `lurek.ui.setViewport`: Sets the viewport size for the UI context.
-- `lurek.ui.flushCache`: Flushes internal UI caches.
+- `lurek.ui.flushCache`: Flushes internal UI caches. This function is exposed to Lua scripts.
 - `lurek.ui.beginDrag`: Begins a drag operation on a widget.
 - `lurek.ui.getActiveDrag`: Returns the widget index currently being dragged, or nil.
 - `lurek.ui.dropOn`: Drops the currently dragged widget onto a target widget.
 - `lurek.ui.endDrag`: Ends the current drag operation without dropping.
 - `lurek.ui.update_bindings`: Updates data bindings for widgets that reference binding keys.
 - `lurek.ui.loadLayout`: Loads a UI layout from a Lua table definition.
-- `lurek.ui.loadLayoutFile`: Loads a UI layout from a TOML file.
-- `lurek.ui.renderToImage`: Renders the UI to a PNG file.
+- `lurek.ui.loadLayoutFile`: Loads a UI layout from a TOML file. This function is exposed to Lua scripts.
+- `lurek.ui.renderToImage`: Renders the UI to a PNG file. This function is exposed to Lua scripts.
 
 ### `LAccordion` Methods
 - `LAccordion:addSection`: Adds a collapsible section to this accordion.
@@ -486,9 +492,9 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 
 ### `LDialog` Methods
 - `LDialog:getTitle`: Returns the title text of this dialog.
-- `LDialog:setTitle`: Sets the title text of this dialog.
+- `LDialog:setTitle`: Sets the title text of this dialog. This method is available to Lua scripts.
 - `LDialog:isModal`: Returns whether this dialog is modal (blocks interaction with other widgets).
-- `LDialog:setModal`: Sets whether this dialog is modal.
+- `LDialog:setModal`: Sets whether this dialog is modal. This method is available to Lua scripts.
 - `LDialog:isOpen`: Returns whether this dialog is currently open and visible.
 - `LDialog:open`: Opens this dialog, making it visible.
 - `LDialog:close`: Closes this dialog and fires the onClose callback if it was open.
@@ -505,8 +511,9 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - `LDockPanel:getSplitSize`: Returns the size configured for a dock panel side region.
 
 ### `LGuiTable` Methods
+- `LGuiTable:addColumn`: Adds a new column to this table widget.
 - `LGuiTable:getColumnCount`: Returns the number of columns in this table widget.
-- `LGuiTable:addRow`: Adds a row to this table widget.
+- `LGuiTable:addRow`: Adds a row to this table widget. This method is available to Lua scripts.
 - `LGuiTable:getRowCount`: Returns the number of rows in this table widget.
 - `LGuiTable:getCell`: Returns the text of a cell at the given 1-based row and column.
 - `LGuiTable:setCell`: Sets the text of a cell at the given 1-based row and column.
@@ -598,7 +605,7 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - `LPanel:setScrollable`: Enables or disables scrolling within this panel.
 
 ### `LPieChart` Methods
-- `LPieChart:addSegment`: Adds a segment to this pie chart.
+- `LPieChart:addSegment`: Adds a segment to this pie chart. This method is available to Lua scripts.
 - `LPieChart:drawToImage`: Renders this pie chart to an image buffer.
 - `LPieChart:type`: Returns the type name of this object.
 - `LPieChart:typeOf`: Checks whether this object matches the given type name.
@@ -615,6 +622,7 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - `LRadioButton:getText`: Returns the label text of this radio button.
 - `LRadioButton:setText`: Sets the label text of this radio button.
 - `LRadioButton:isSelected`: Returns whether this radio button is currently selected.
+- `LRadioButton:setSelected`: Sets the selected state of this radio button.
 - `LRadioButton:getGroup`: Returns the radio button group name. Buttons in the same group are mutually exclusive.
 - `LRadioButton:setGroup`: Sets the radio button group name. Buttons in the same group are mutually exclusive.
 - `LRadioButton:setOnChange`: Registers a callback invoked when this radio button's selection changes.
@@ -628,15 +636,18 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - `LScatterPlot:typeOf`: Checks whether this object matches the given type name.
 
 ### `LScrollBar` Methods
+- `LScrollBar:getScrollPosition`: Returns the current scroll position of this scroll bar.
 - `LScrollBar:setScrollPosition`: Sets the scroll position of this scroll bar, clamped to the valid range.
 - `LScrollBar:getContentSize`: Returns the total content size tracked by this scroll bar.
 - `LScrollBar:setContentSize`: Sets the total content size that this scroll bar represents.
 - `LScrollBar:getViewSize`: Returns the visible viewport size tracked by this scroll bar.
+- `LScrollBar:setViewSize`: Sets the visible viewport size for this scroll bar.
 - `LScrollBar:isVertical`: Returns whether this scroll bar is oriented vertically.
 - `LScrollBar:setOnChange`: Registers a callback invoked when this scroll bar's position changes.
 
 ### `LScrollPanel` Methods
 - `LScrollPanel:setContentSize`: Sets the virtual content dimensions of this scroll panel.
+- `LScrollPanel:getContentSize`: Returns the virtual content dimensions of this scroll panel.
 - `LScrollPanel:setScrollPosition`: Sets the scroll offset position of this scroll panel.
 - `LScrollPanel:getScrollPosition`: Returns the current scroll offset of this scroll panel.
 - `LScrollPanel:getMaxScroll`: Returns the maximum scroll offset allowed in each axis.
@@ -661,6 +672,7 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - `LSpinBox:setValue`: Sets the numeric value of this spin box, clamped to its range.
 - `LSpinBox:getValue`: Returns the current numeric value of this spin box.
 - `LSpinBox:increment`: Increases this spin box's value by one step.
+- `LSpinBox:decrement`: Decreases this spin box's value by one step.
 - `LSpinBox:setRange`: Sets the minimum and maximum bounds for this spin box.
 - `LSpinBox:setStep`: Sets the step increment for this spin box.
 
@@ -677,8 +689,9 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - `LSplitPanel:getSecondChild`: Returns the widget index of the second (right/bottom) child panel.
 
 ### `LStatusBar` Methods
-- `LStatusBar:addSection`: Adds a section to this status bar.
+- `LStatusBar:addSection`: Adds a section to this status bar. This method is available to Lua scripts.
 - `LStatusBar:setSectionText`: Sets the text of a status bar section by its 1-based index.
+- `LStatusBar:getSectionText`: Returns the text of a status bar section by its 1-based index.
 - `LStatusBar:getSectionCount`: Returns the number of sections in this status bar.
 - `LStatusBar:setSectionCount`: Sets the number of sections, truncating or adding empty sections as needed.
 - `LStatusBar:setSectionWidget`: Associates a widget with a status bar section (reserved for future use).
@@ -692,13 +705,15 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - `LTabBar:addTab`: Adds a new tab with the given label to this tab bar.
 - `LTabBar:removeTab`: Removes the tab at the given 1-based index.
 - `LTabBar:getTab`: Returns the label of the tab at the given 1-based index.
-- `LTabBar:getTabCount`: Returns the total number of tabs.
+- `LTabBar:getTabCount`: Returns the total number of tabs. This method is available to Lua scripts.
 - `LTabBar:setActiveTab`: Sets the active (selected) tab by 1-based index.
 - `LTabBar:getActiveTab`: Returns the 1-based index of the currently active tab.
 
 ### `LTextInput` Methods
 - `LTextInput:setText`: Sets the text content of this text input field and moves the cursor to the end.
 - `LTextInput:getText`: Returns the current text content of this text input field.
+- `LTextInput:setPlaceholder`: Sets the placeholder text shown when the input is empty.
+- `LTextInput:getPlaceholder`: Returns the placeholder text of this text input.
 - `LTextInput:setMaxLength`: Sets the maximum number of characters allowed in this text input.
 - `LTextInput:isFocused`: Returns whether this text input currently has keyboard focus.
 - `LTextInput:getCursorPosition`: Returns the current cursor position (character index) within the text input.
@@ -711,6 +726,7 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 ### `LToast` Methods
 - `LToast:setMessage`: Sets the message text displayed by this toast notification.
 - `LToast:getMessage`: Returns the message text of this toast.
+- `LToast:setDuration`: Sets how long this toast is displayed in seconds.
 - `LToast:getDuration`: Returns the display duration of this toast in seconds.
 - `LToast:getProgress`: Returns the elapsed fraction (0.0 to 1.0) of this toast's lifetime.
 - `LToast:isExpired`: Returns whether this toast has exceeded its display duration.
@@ -727,24 +743,24 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - `LToolbar:isButtonToggled`: Returns whether a toolbar button is toggled on.
 
 ### `LTooltipPanel` Methods
-- `LTooltipPanel:getText`: Returns the tooltip display text.
-- `LTooltipPanel:setText`: Sets the tooltip display text.
+- `LTooltipPanel:getText`: Returns the tooltip display text. This method is available to Lua scripts.
+- `LTooltipPanel:setText`: Sets the tooltip display text. This method is available to Lua scripts.
 - `LTooltipPanel:getDelay`: Returns the delay in seconds before this tooltip appears.
 - `LTooltipPanel:setDelay`: Sets the delay in seconds before this tooltip appears.
 - `LTooltipPanel:getTarget`: Returns the widget index that this tooltip is attached to.
 - `LTooltipPanel:setTarget`: Sets the widget index that this tooltip is attached to.
 
 ### `LTreeView` Methods
-- `LTreeView:addNode`: /// Returns a value for addNode (auto-generated).
-- `LTreeView:toggleNode`: /// Returns a value for toggleNode (auto-generated).
-- `LTreeView:isExpanded`: /// Returns a value for isExpanded (auto-generated).
-- `LTreeView:getNodeCount`: /// Returns a value for getNodeCount (auto-generated).
-- `LTreeView:removeNode`: /// Returns a value for removeNode (auto-generated).
-- `LTreeView:clearNodes`: /// Returns a value for clearNodes (auto-generated).
-- `LTreeView:getNodeText`: /// Returns a value for getNodeText (auto-generated).
-- `LTreeView:setNodeText`: /// Returns a value for setNodeText (auto-generated).
-- `LTreeView:setNodeIcon`: /// Returns a value for setNodeIcon (auto-generated).
-- `LTreeView:expandNode`: /// Returns a value for expandNode (auto-generated).
+- `LTreeView:addNode`: Adds node on this LTreeView object.
+- `LTreeView:toggleNode`: Toggle node on this LTreeView object.
+- `LTreeView:isExpanded`: Returns true if expanded on this LTreeView object.
+- `LTreeView:getNodeCount`: Returns the node count on this LTreeView object.
+- `LTreeView:removeNode`: Removes node on this LTreeView object.
+- `LTreeView:clearNodes`: Clears nodes on this LTreeView object.
+- `LTreeView:getNodeText`: Returns the node text on this LTreeView object.
+- `LTreeView:setNodeText`: Sets the node text on this LTreeView object.
+- `LTreeView:setNodeIcon`: Sets the node icon on this LTreeView object.
+- `LTreeView:expandNode`: Expand node on this LTreeView object.
 - `LTreeView:collapseNode`: Collapses the node at the given 1-based index to hide its children.
 - `LTreeView:isNodeExpanded`: Returns whether the node at the given 1-based index is expanded. Returns nil if the index is invalid.
 - `LTreeView:expandAll`: Expands all nodes in this tree view.

@@ -71,7 +71,7 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 - `lurek.log.warn`: Logs a warning message with an optional tag.
 - `lurek.log.error`: Logs an error message with an optional tag.
 - `lurek.log.print`: Logs a message at a runtime-selected level with an optional tag.
-- `lurek.log.setLevel`: Sets the global log level.
+- `lurek.log.setLevel`: Sets the global log level. This function is exposed to Lua scripts.
 - `lurek.log.getLevel`: Returns the global log level string.
 - `lurek.log.addSink`: Adds a memory, file, rotating, or callback sink from a config table.
 - `lurek.log.removeSink`: Removes a sink by id and releases any callback registry key.

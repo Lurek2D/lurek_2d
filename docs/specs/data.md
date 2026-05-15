@@ -165,20 +165,20 @@ The `data` module is Lurek2D's binary data manipulation toolkit — a Foundation
 - `lurek.data.read`: Reads binary values from a byte string using a format string.
 - `lurek.data.size`: Measures fixed byte size for a binary format string.
 - `lurek.data.parseToml`: Parses TOML text into Lua tables and scalar values.
-- `lurek.data.encodeToml`: Encodes a Lua table into TOML text.
+- `lurek.data.encodeToml`: Encodes a Lua table into TOML text. This function is exposed to Lua scripts.
 - `lurek.data.newRingBuffer`: Creates a fixed-capacity ring buffer for Lua values.
 - `lurek.data.toMsgPack`: Encodes a Lua value into the current structured binary interchange payload.
 - `lurek.data.fromMsgPack`: Decodes a structured binary interchange payload back into Lua values.
 - `lurek.data.newWriter`: Creates an empty binary data writer.
 
 ### `LByteData` Methods
-- `LByteData:getSize`: Returns the byte buffer length.
+- `LByteData:getSize`: Returns the byte buffer length. This method is available to Lua scripts.
 - `LByteData:getString`: Returns the byte buffer as a string.
 - `LByteData:getByte`: Reads one byte at a zero-based offset.
 - `LByteData:setByte`: Writes one byte at a zero-based offset.
-- `LByteData:clone`: Returns a copy of this byte buffer.
+- `LByteData:clone`: Returns a copy of this byte buffer. This method is available to Lua scripts.
 - `LByteData:setBit`: Sets or clears one bit inside a byte.
-- `LByteData:getBit`: Reads one bit inside a byte.
+- `LByteData:getBit`: Reads one bit inside a byte. This method is available to Lua scripts.
 - `LByteData:readBits`: Reads up to 32 bits starting at a byte and bit offset.
 
 ### `LDataView` Methods
@@ -195,8 +195,8 @@ The `data` module is Lurek2D's binary data manipulation toolkit — a Foundation
 - `LDataView:typeOf`: Returns whether this data view handle matches a supported type name.
 
 ### `LDataWriter` Methods
-- `LDataWriter:writeU8`: Writes an unsigned 8-bit integer.
-- `LDataWriter:writeI8`: Writes a signed 8-bit integer.
+- `LDataWriter:writeU8`: Writes an unsigned 8-bit integer. This method is available to Lua scripts.
+- `LDataWriter:writeI8`: Writes a signed 8-bit integer. This method is available to Lua scripts.
 - `LDataWriter:writeU16LE`: Writes an unsigned 16-bit integer in little-endian order.
 - `LDataWriter:writeU16BE`: Writes an unsigned 16-bit integer in big-endian order.
 - `LDataWriter:writeI16LE`: Writes a signed 16-bit integer in little-endian order.
@@ -206,9 +206,9 @@ The `data` module is Lurek2D's binary data manipulation toolkit — a Foundation
 - `LDataWriter:writeF64LE`: Writes a 64-bit float in little-endian order.
 - `LDataWriter:writeString`: Writes a UTF-8 string to the writer.
 - `LDataWriter:writeBytes`: Writes raw bytes from a Lua string to the writer.
-- `LDataWriter:seek`: Moves the writer cursor.
+- `LDataWriter:seek`: Moves the writer cursor. This method is available to Lua scripts.
 - `LDataWriter:tell`: Returns the writer cursor position.
-- `LDataWriter:len`: Returns the writer buffer length.
+- `LDataWriter:len`: Returns the writer buffer length. This method is available to Lua scripts.
 - `LDataWriter:toBytes`: Returns the writer buffer as a binary string.
 - `LDataWriter:type`: Returns the Lua-visible type name for this data writer handle.
 - `LDataWriter:typeOf`: Returns whether this data writer handle matches a supported type name.
@@ -219,7 +219,7 @@ The `data` module is Lurek2D's binary data manipulation toolkit — a Foundation
 - `LRingBuffer:peek`: Returns the oldest value without removing it.
 - `LRingBuffer:peekNewest`: Returns the newest value without removing it.
 - `LRingBuffer:len`: Returns the number of values currently stored.
-- `LRingBuffer:capacity`: Returns the ring buffer capacity.
+- `LRingBuffer:capacity`: Returns the ring buffer capacity. This method is available to Lua scripts.
 - `LRingBuffer:isEmpty`: Returns whether the ring buffer has no values.
 - `LRingBuffer:isFull`: Returns whether the ring buffer is at capacity.
 - `LRingBuffer:clear`: Removes every stored value and releases registry keys.

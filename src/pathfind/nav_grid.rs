@@ -5,8 +5,8 @@
 //! - Bulk fill, rect fill, byte import/export, and deep-copy snapshot.
 //! - Debug visualisation: render grid + path overlay to an ImageData buffer.
 
-use crate::runtime::log_messages::{NG01, NG02, NG03};
 use crate::log_msg;
+use crate::runtime::log_messages::{NG01, NG02, NG03};
 /// Controls which diagonal moves are permitted during pathfinding.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum DiagonalMode {

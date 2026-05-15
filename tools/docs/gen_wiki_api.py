@@ -236,18 +236,25 @@ def _render_module_section(mod_name: str, mod_data: dict) -> list:
 # ── Callbacks section ──────────────────────────────────────────────────────────
 
 _CALLBACKS = [
-    ("lurek.load()", "", "called once after script loads"),
-    ("lurek.update(dt)", "", "dt: number; called every frame before draw"),
+    ("lurek.init()", "", "called once when the engine initialises"),
+    ("lurek.ready()", "", "called once after init, when the active runtime is ready"),
+    ("lurek.process_physics(dt)", "", "dt: number; fixed physics step"),
+    ("lurek.fixedUpdate(dt)", "", "dt: number; fixed update step when configured"),
+    ("lurek.process(dt)", "", "dt: number; called every frame before draw"),
+    ("lurek.process_late(dt)", "", "dt: number; called every frame after process"),
     ("lurek.draw()", "", "called every frame; push draw commands here"),
+    ("lurek.draw_ui()", "", "called every frame after draw for UI overlay"),
     ("lurek.keypressed(key, scancode, isrepeat)", "", "key: string; isrepeat: bool"),
     ("lurek.keyreleased(key, scancode)", "", "key: string; scancode: string"),
     ("lurek.textinput(text)", "", "text: string; Unicode character input"),
+    ("lurek.textedited(text, start, length)", "", "IME composition text changed"),
     ("lurek.mousepressed(x, y, button)", "", "button: 1=left 2=right 3=middle"),
     ("lurek.mousereleased(x, y, button)", "", "button: number"),
+    ("lurek.mousemoved(x, y, dx, dy)", "", "dx, dy: mouse delta this frame"),
     ("lurek.wheelmoved(x, y)", "", "x,y: scroll delta this frame"),
-    ("lurek.input.gamepadpressed(id, button)", "", "id: number; button: string"),
-    ("lurek.input.gamepadreleased(id, button)", "", "id: number; button: string"),
-    ("lurek.input.gamepadaxis(id, axis, value)", "", "value: -1.0 to 1.0"),
+    ("lurek.gamepadpressed(id, button)", "", "id: number; button: string"),
+    ("lurek.gamepadreleased(id, button)", "", "id: number; button: string"),
+    ("lurek.gamepadaxis(id, axis, value)", "", "value: -1.0 to 1.0"),
     ("lurek.joystickadded(id)", "", "gamepad connected"),
     ("lurek.joystickremoved(id)", "", "gamepad disconnected"),
     ("lurek.touchpressed(id, x, y, dx, dy, pressure)", "", "touch start"),
@@ -257,6 +264,7 @@ _CALLBACKS = [
     ("lurek.visible(visible)", "", "visible: bool; window hidden or shown"),
     ("lurek.resize(w, h)", "", "w, h: new window dimensions"),
     ("lurek.quit()", "", "return true to cancel shutdown"),
+    ("lurek.exit()", "", "called when the engine is shutting down"),
     ("lurek.errorhandler(msg)", "", "return replacement string or nil"),
 ]
 

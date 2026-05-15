@@ -132,7 +132,7 @@ fn config_string(config: &LuaTable, key: &str, default: &str) -> String {
         .flatten()
         .unwrap_or_else(|| default.to_string())
 }
-    /// Registers `lurek.log` severity helpers, sink management, and structured logging functions.
+/// Registers `lurek.log` severity helpers, sink management, and structured logging functions.
 pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
     let sinks: Rc<RefCell<SinkRegistry>> = Rc::new(RefCell::new(SinkRegistry::new()));

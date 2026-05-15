@@ -1,4 +1,3 @@
-
 //! - Single-axis damped spring simulation with configurable stiffness, damping, and settle detection.
 //! - Named spring system aggregating multiple axes under shared default parameters.
 //! - Euler integration with snap-to-target on settle to eliminate micro-oscillation.

@@ -311,12 +311,12 @@ def gen_home() -> str:
     Minimal `main.lua`:
 
     ```lua
-    function lurek.load()
+    function lurek.init()
         lurek.window.setTitle("My Game")
         lurek.renders.setBackgroundColor(0.1, 0.1, 0.2)
     end
 
-    function lurek.update(dt)
+    function lurek.process(dt)
         -- game logic: move objects, run physics, etc.
     end
 
@@ -335,9 +335,9 @@ def gen_home() -> str:
     |------|----------------|
     | [[Getting-Started]] | Installation, first game, project layout |
     | [[Your-First-Game]] | Step-by-step tutorial: from nothing to a moving sprite |
-    | [[Project-Structure]] | `main.lua`, `conf.lua`, folder layout, assets |
-    | [[Configuration]] | `conf.lua` / `conf.toml` — window and module settings |
-    | [[Callbacks]] | All engine callbacks (`lurek.load`, `lurek.update`, `lurek.draw`, …) |
+    | [[Project-Structure]] | `main.lua`, `conf.toml`, folder layout, assets |
+    | [[Configuration]] | `conf.toml` — window, runtime mode, and module settings |
+    | [[Callbacks]] | All engine callbacks (`lurek.init`, `lurek.process`, `lurek.draw`, …) |
     | [[Examples]] | 38 single-file API usage scripts |
     | [[Demos]] | 111+ playable demos organised by genre |
 
@@ -501,12 +501,12 @@ def gen_getting_started() -> str:
     ```
 
     ```lua
-    function lurek.load()
+    function lurek.init()
         lurek.window.setTitle("My First Game")
         lurek.renders.setBackgroundColor(0.1, 0.1, 0.2)
     end
 
-    function lurek.update(dt)
+    function lurek.process(dt)
         -- game logic here
     end
 
@@ -617,7 +617,7 @@ def gen_your_first_game() -> str:
     ## Step 2: Set Up the Game Window
 
     ```lua
-    function lurek.load()
+    function lurek.init()
         lurek.window.setTitle("My Platformer")
         lurek.window.setMode(800, 600)
         lurek.renders.setBackgroundColor(0.2, 0.3, 0.4)
@@ -630,7 +630,7 @@ def gen_your_first_game() -> str:
     ## Step 3: Add Player Movement
 
     ```lua
-    function lurek.update(dt)
+    function lurek.process(dt)
         if lurek.input.keyboard.isDown("left", "a") then
             player.x = player.x - player.speed * dt
         end
@@ -675,7 +675,7 @@ def gen_your_first_game() -> str:
     Place an image file in your game folder and load it:
 
     ```lua
-    function lurek.load()
+    function lurek.init()
         lurek.window.setTitle("Sprite Demo")
         sprite = lurek.renders.newImage("player.png")
         player = { x = 400, y = 300, speed = 200 }
@@ -692,7 +692,7 @@ def gen_your_first_game() -> str:
     ## Step 7: Add Physics (optional)
 
     ```lua
-    function lurek.load()
+    function lurek.init()
         world = lurek.physics.newWorld(0, 500)  -- gravity pulling down
 
         -- Ground
@@ -703,7 +703,7 @@ def gen_your_first_game() -> str:
         ball:setRestitution(0.6)  -- bouncy
     end
 
-    function lurek.update(dt)
+    function lurek.process(dt)
         world:step(dt)
     end
 
@@ -760,7 +760,7 @@ def gen_project_structure() -> str:
     ```
     my_game/
     ├── main.lua           -- entry point
-    ├── conf.lua           -- window/module configuration (optional)
+    ├── conf.toml          -- window/runtime/module configuration (optional)
     ├── assets/            -- images, sounds, fonts (optional)
     │   ├── player.png
     │   ├── enemy.png
@@ -778,8 +778,8 @@ def gen_project_structure() -> str:
     The engine executes `main.lua` after booting. Define callbacks here:
 
     ```lua
-    function lurek.load()       end  -- called once after init
-    function lurek.update(dt)   end  -- called every frame
+    function lurek.init()       end  -- called once during startup
+    function lurek.process(dt)  end  -- called every frame
     function lurek.draw()       end  -- called every frame after update
     function lurek.quit()       end  -- called before exit
     ```
@@ -788,17 +788,17 @@ def gen_project_structure() -> str:
 
     ---
 
-    ## Configuration: conf.lua
+    ## Configuration: conf.toml
 
-    If `conf.lua` exists, the engine calls `lurek.conf(t)` before opening the window:
+    If `conf.toml` exists, the engine reads it before starting the runtime:
 
-    ```lua
-    function lurek.conf(t)
-        t.window.title  = "My Game"
-        t.window.width  = 1280
-        t.window.height = 720
-        t.identity      = "my_game"
-    end
+    ```toml
+    [window]
+    title = "My Game"
+    width = 1280
+    height = 720
+
+    identity = "my_game"
     ```
 
     See [[Configuration]] for all available fields.
@@ -820,7 +820,7 @@ def gen_project_structure() -> str:
     ## Save Directory
 
     The `save/` folder (relative to the game directory) is writable at runtime.
-    Use the `t.identity` setting in `conf.lua` or the filesystem API:
+    Use the `identity` field in `conf.toml` or the filesystem API:
 
     ```lua
     lurek.filesystem.write("save/progress.json", data)
@@ -863,47 +863,9 @@ def gen_configuration() -> str:
     return GEN_BANNER + dedent("""\
     # Configuration
 
-    Lurek2D reads configuration from two optional files before any game code runs.
+    Lurek2D reads configuration from an optional `conf.toml` file before any game code runs.
 
     ---
-
-    ## conf.lua
-
-    Place `conf.lua` in your game folder alongside `main.lua`.
-    The `lurek.conf(t)` callback is called during engine boot — before the window opens.
-
-    ```lua
-    function lurek.conf(t)
-        -- Window
-        t.window.title      = "My Game"
-        t.window.width      = 1280
-        t.window.height     = 720
-        t.window.fullscreen = false
-        t.window.resizable  = true
-        t.window.vsync      = true
-        t.window.fps_cap    = 0      -- 0 = no cap
-
-        -- Identity (used for save directory)
-        t.identity = "my_game"
-
-        -- Modules (set false to disable)
-        t.modules.physics   = true
-        t.modules.audio     = true
-        t.modules.ui       = true
-        t.modules.terminal  = true
-        t.modules.network   = false
-        t.modules.mods   = false
-
-        -- Debug
-        t.debug.show_fps    = false
-    end
-    ```
-
-    ---
-
-    ## conf.toml
-
-    Alternatively, use a `conf.toml` file (TOML format) for the same settings:
 
     ```toml
     [window]
@@ -913,12 +875,18 @@ def gen_configuration() -> str:
     fullscreen = false
     vsync      = true
 
+    [runtime]
+    mode = "gui"
+
+    identity = "my_game"
+
     [modules]
     physics = true
     audio   = true
+    ui      = true
+    terminal = true
+    network = false
     ```
-
-    Both formats are equivalent. `conf.lua` takes precedence if both exist.
 
     ---
 
@@ -959,11 +927,15 @@ def gen_callbacks() -> str:
     ## Core Loop
 
     ```lua
-    function lurek.conf(t)       end  -- called before window opens; configure in conf.lua
-    function lurek.load()        end  -- called once after script and assets are loaded
-    function lurek.update(dt)    end  -- dt: seconds; called every frame before draw
-    function lurek.draw()        end  -- called every frame; push draw commands here
-    function lurek.quit()        end  -- called before the engine exits; return true to cancel
+    function lurek.init()                 end  -- called once during startup
+    function lurek.ready()                end  -- called once after init
+    function lurek.process_physics(dt)    end  -- fixed physics step
+    function lurek.fixedUpdate(dt)        end  -- fixed update step
+    function lurek.process(dt)            end  -- dt: seconds; main game logic
+    function lurek.process_late(dt)       end  -- dt: seconds; late updates
+    function lurek.draw()                 end  -- called every frame; push draw commands here
+    function lurek.draw_ui()              end  -- called every frame after draw
+    function lurek.quit()                 end  -- called before the engine exits; return true to cancel
     ```
 
     ---
@@ -1024,13 +996,15 @@ def gen_callbacks() -> str:
     ## Callback Execution Order
 
     ```
-    lurek.conf(t)          ← before window opens (from conf.lua)
     window opens
-    lurek.load()           ← once, after full init
+    lurek.init()           ← once, during startup
+    lurek.ready()          ← once, after init
     ┌─ frame loop ──────────────────────────────
     │  poll events → fire lurek.key*/mouse*/etc.
-    │  lurek.update(dt)
-    │  lurek.draw()        ← push DrawCommands
+    │  lurek.process_physics(dt) / lurek.fixedUpdate(dt)
+    │  lurek.process(dt)
+    │  lurek.process_late(dt)
+    │  lurek.draw() / lurek.draw_ui()   ← push DrawCommands
     │  GPU renderer processes the command queue
     └────────────────────────────────────────────
     lurek.quit()           ← on window close
@@ -2246,11 +2220,11 @@ def gen_coding_conventions() -> str:
     local player = {}
     local enemies = {}
 
-    function lurek.load()
+    function lurek.init()
         -- initialization
     end
 
-    function lurek.update(dt)
+    function lurek.process(dt)
         -- game logic
     end
 

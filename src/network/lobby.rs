@@ -1,4 +1,3 @@
-
 //! - LAN lobby discovery via timed UDP broadcast listen on a fixed port.
 //! - Lobby advertisement encoding and parsing in a `key=value;...` wire format.
 //! - In-process room registry for create, join, leave, and list operations.

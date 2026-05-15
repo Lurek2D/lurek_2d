@@ -1,4 +1,3 @@
-
 //! - `SoundPool` round-robin polyphonic voice pool for one-shot playback of a single sound asset.
 //! - Preloaded `SoundKey` voices cycled via `next_voice` for low-latency triggering.
 //! - Per-pool volume multiplier and optional bus routing assignment.

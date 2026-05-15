@@ -4,7 +4,7 @@
 //! - Blend multiple layers with weighted combination into a destination layer.
 //! - Debug visualisation rendering layers into an RGBA image for inspection.
 
-use crate::runtime::log_messages::{IF01,IF02,IF03};
+use crate::runtime::log_messages::{IF01, IF02, IF03};
 
 use crate::log_msg;
 use std::collections::HashMap;

@@ -1,4 +1,3 @@
-
 //! - Multi-layer parallax scrolling system with per-layer speed, tiling, and draw-batch accumulation.
 //! - Preset constructors for common configurations (sky, mountains, clouds).
 //! - Tile-column iterator and stateless draw-call generation into `RenderCommand` payloads.

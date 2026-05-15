@@ -1,4 +1,3 @@
-
 //! - Loads Aseprite JSON exports into engine animation metadata.
 //! - Extracts sheet frame rectangles, per-frame durations, and sheet size.
 //! - Parses frame tags into named clip ranges with forward, reverse, or ping-pong playback.

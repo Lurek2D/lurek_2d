@@ -164,6 +164,7 @@ fn create_widget_table<'a>(
             let mut g = c.borrow_mut();
             if let Some(w) = g.widgets.get_mut(idx) {
                 let b = w.base_mut();
+                b.enabled = v;
                 if !v {
                     b.state = WidgetState::Disabled;
                 } else if b.state == WidgetState::Disabled {
@@ -192,6 +193,10 @@ fn create_widget_table<'a>(
     t.set(
         "setId",
         lua.create_function(move |_, id: String| {
+            let mut g = c.borrow_mut();
+            if let Some(w) = g.widgets.get_mut(idx) {
+                w.base_mut().id = id;
+            }
             Ok(())
         })?,
     )?;
@@ -1006,8 +1011,14 @@ fn add_text_input_methods(
     // -- setPlaceholder --
     /// Sets the placeholder text shown when the input is empty.
     /// @param | text | string | The placeholder text.
+    /// @return | nil | No return value.
     t.set(
         "setPlaceholder",
+        lua.create_function(move |_, text: String| {
+            let mut g = c.borrow_mut();
+            if let Some(WidgetKind::TextInput(ti)) = g.widgets.get_mut(idx) {
+                ti.placeholder = text;
+            }
             Ok(())
         })?,
     )?;
@@ -1017,6 +1028,10 @@ fn add_text_input_methods(
     /// @return | string | The placeholder text.
     t.set(
         "getPlaceholder",
+        lua.create_function(move |_, ()| {
+            let g = c.borrow();
+            Ok(match g.widgets.get(idx) {
+                Some(WidgetKind::TextInput(ti)) => ti.placeholder.clone(),
                 _ => String::new(),
             })
         })?,
@@ -1763,8 +1778,14 @@ fn add_spin_box_methods(
     let c = ctx.clone();
     // -- decrement --
     /// Decreases this spin box's value by one step.
+    /// @return | nil | No return value.
     t.set(
         "decrement",
+        lua.create_function(move |_, ()| {
+            let mut g = c.borrow_mut();
+            if let Some(WidgetKind::SpinBox(sb)) = g.widgets.get_mut(idx) {
+                sb.decrement();
+            }
             Ok(())
         })?,
     )?;
@@ -2160,6 +2181,10 @@ fn add_scroll_panel_methods(
     /// @return | number, number | Content width and height in pixels.
     t.set(
         "getContentSize",
+        lua.create_function(move |_, ()| {
+            let g = c.borrow();
+            Ok(match g.widgets.get(idx) {
+                Some(WidgetKind::ScrollPanel(sp)) => (sp.content_width, sp.content_height),
                 _ => (0.0, 0.0),
             })
         })?,
@@ -2388,8 +2413,14 @@ fn add_toast_methods(
     // -- setDuration --
     /// Sets how long this toast is displayed in seconds.
     /// @param | d | number | Duration in seconds.
+    /// @return | nil | No return value.
     t.set(
         "setDuration",
+        lua.create_function(move |_, d: f32| {
+            let mut g = c.borrow_mut();
+            if let Some(WidgetKind::Toast(toast)) = g.widgets.get_mut(idx) {
+                toast.duration = d.max(0.0);
+            }
             Ok(())
         })?,
     )?;
@@ -2876,8 +2907,14 @@ fn add_radio_button_methods(
     // -- setSelected --
     /// Sets the selected state of this radio button.
     /// @param | v | boolean | True to select.
+    /// @return | nil | No return value.
     t.set(
         "setSelected",
+        lua.create_function(move |_, v: bool| {
+            let mut g = c.borrow_mut();
+            if let Some(WidgetKind::RadioButton(rb)) = g.widgets.get_mut(idx) {
+                rb.selected = v;
+            }
             Ok(())
         })?,
     )?;
@@ -2939,6 +2976,12 @@ fn add_scroll_bar_methods(
     /// @return | number | The scroll position.
     t.set(
         "getScrollPosition",
+        lua.create_function(move |_, ()| {
+            let g = c.borrow();
+            Ok(match g.widgets.get(idx) {
+                Some(WidgetKind::ScrollBar(sb)) => sb.position,
+                _ => 0.0,
+            })
         })?,
     )?;
     let c = ctx.clone();
@@ -3003,8 +3046,14 @@ fn add_scroll_bar_methods(
     // -- setViewSize --
     /// Sets the visible viewport size for this scroll bar.
     /// @param | v | number | The view size.
+    /// @return | nil | No return value.
     t.set(
         "setViewSize",
+        lua.create_function(move |_, v: f32| {
+            let mut g = c.borrow_mut();
+            if let Some(WidgetKind::ScrollBar(sb)) = g.widgets.get_mut(idx) {
+                sb.view_size = v;
+            }
             Ok(())
         })?,
     )?;
@@ -3359,7 +3408,7 @@ fn add_dock_panel_methods(
     /// @param | child_idx | number | The widget index to undock.
     /// @return | nil | No return value.
     t.set(
-        "undock",,
+        "undock",
         lua.create_function(move |_, child_idx: usize| {
             let mut g = c.borrow_mut();
             if let Some(WidgetKind::DockPanel(dp)) = g.widgets.get_mut(idx) {
@@ -4004,6 +4053,10 @@ fn add_status_bar_methods(
     /// @return | string | The section text, or nil if out of range.
     t.set(
         "getSectionText",
+        lua.create_function(move |_, section_idx: usize| {
+            let g = c.borrow();
+            Ok(match g.widgets.get(idx) {
+                Some(WidgetKind::StatusBar(sb)) => {
                     if section_idx >= 1 && section_idx <= sb.sections.len() {
                         Some(sb.sections[section_idx - 1].0.clone())
                     } else {
@@ -4425,11 +4478,16 @@ fn add_gui_table_methods(
 ) -> LuaResult<()> {
     let c = ctx.clone();
     // -- addColumn --
-    /// Adds a column to this table widget.
+    /// Adds a new column to this table widget.
     /// @param | header | string | The column header text.
     /// @param | width | number? | The column width in pixels (default 100).
+    /// @return | nil | No return value.
     t.set(
         "addColumn",
+        lua.create_function(move |_, (header, width): (String, Option<f32>)| {
+            let mut g = c.borrow_mut();
+            if let Some(WidgetKind::GUITable(tbl)) = g.widgets.get_mut(idx) {
+                tbl.columns.push(TableColumn {
                     header,
                     width: width.unwrap_or(100.0),
                 });
@@ -5342,6 +5400,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     /// @return | LTheme | The new theme userdata.
     tbl.set(
         "newTheme",
+        lua.create_function(move |lua, ()| {
             lua.create_userdata(LuaTheme {
                 inner: Rc::new(RefCell::new(Theme::new())),
             })
@@ -5695,6 +5754,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     /// @return | LLineChart | The new line chart userdata.
     tbl.set(
         "newLineChart",
+        lua.create_function(move |_, opts: LuaTable| {
             let width = opts.get::<_, u32>("width").unwrap_or(400);
             let height = opts.get::<_, u32>("height").unwrap_or(300);
             let title = opts.get::<_, Option<String>>("title").ok().flatten();
@@ -5715,6 +5775,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     /// @return | LBarChart | The new bar chart userdata.
     tbl.set(
         "newBarChart",
+        lua.create_function(move |_, opts: LuaTable| {
             let width = opts.get::<_, u32>("width").unwrap_or(400);
             let height = opts.get::<_, u32>("height").unwrap_or(300);
             let title = opts.get::<_, Option<String>>("title").ok().flatten();
@@ -5735,6 +5796,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     /// @return | LScatterPlot | The new scatter plot userdata.
     tbl.set(
         "newScatterPlot",
+        lua.create_function(move |_, opts: LuaTable| {
             let width = opts.get::<_, u32>("width").unwrap_or(400);
             let height = opts.get::<_, u32>("height").unwrap_or(400);
             let title = opts.get::<_, Option<String>>("title").ok().flatten();
@@ -5755,6 +5817,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     /// @return | LPieChart | The new pie chart userdata.
     tbl.set(
         "newPieChart",
+        lua.create_function(move |_, opts: LuaTable| {
             let width = opts.get::<_, u32>("width").unwrap_or(400);
             let height = opts.get::<_, u32>("height").unwrap_or(400);
             let title = opts.get::<_, Option<String>>("title").ok().flatten();
@@ -5775,6 +5838,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     /// @return | LAreaChart | The new area chart userdata.
     tbl.set(
         "newAreaChart",
+        lua.create_function(move |_, opts: LuaTable| {
             let width = opts.get::<_, u32>("width").unwrap_or(400);
             let height = opts.get::<_, u32>("height").unwrap_or(300);
             let title = opts.get::<_, Option<String>>("title").ok().flatten();

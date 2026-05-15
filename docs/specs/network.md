@@ -145,14 +145,14 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 - `lurek.network.pack`: Packs a supported Lua value into a binary network message string.
 - `lurek.network.unpack`: Unpacks a binary network message string into Lua values.
 - `lurek.network.createLobby`: Broadcasts lobby information and returns it as a table.
-- `lurek.network.discoverLobbies`: Discovers broadcast lobbies.
-- `lurek.network.createRoom`: Creates a local room record.
-- `lurek.network.listRooms`: Lists known local room records.
-- `lurek.network.joinRoom`: Joins a room by id when available.
-- `lurek.network.leaveRoom`: Leaves a room by id when available.
+- `lurek.network.discoverLobbies`: Discovers broadcast lobbies. This function is exposed to Lua scripts.
+- `lurek.network.createRoom`: Creates a local room record. This function is exposed to Lua scripts.
+- `lurek.network.listRooms`: Lists known local room records. This function is exposed to Lua scripts.
+- `lurek.network.joinRoom`: Joins a room by id when available. This function is exposed to Lua scripts.
+- `lurek.network.leaveRoom`: Leaves a room by id when available. This function is exposed to Lua scripts.
 - `lurek.network.syncEntity`: Broadcasts a packed entity sync payload through a network host.
-- `lurek.network.newRelayTicket`: Creates an encoded relay ticket.
-- `lurek.network.parseRelayTicket`: Parses an encoded relay ticket.
+- `lurek.network.newRelayTicket`: Creates an encoded relay ticket. This function is exposed to Lua scripts.
+- `lurek.network.parseRelayTicket`: Parses an encoded relay ticket. This function is exposed to Lua scripts.
 - `lurek.network.makePunchProbe`: Creates a relay punch probe payload for a peer id.
 - `lurek.network.parsePunchProbe`: Parses a relay punch probe payload.
 - `lurek.network.predictLinear`: Predicts an entity snapshot forward by linear velocity.
@@ -160,30 +160,30 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 
 ### `LNetworkHost` Methods
 - `LNetworkHost:service`: Polls the host for one network event.
-- `LNetworkHost:connect`: Connects to a remote address.
-- `LNetworkHost:send`: Sends bytes to a peer on a channel.
+- `LNetworkHost:connect`: Connects to a remote address. This method is available to Lua scripts.
+- `LNetworkHost:send`: Sends bytes to a peer on a channel. This method is available to Lua scripts.
 - `LNetworkHost:broadcast`: Broadcasts bytes to all connected peers on a channel.
 - `LNetworkHost:flush`: Flushes queued outgoing network packets.
 - `LNetworkHost:disconnect`: Requests a graceful peer disconnect.
-- `LNetworkHost:disconnectNow`: Disconnects a peer immediately.
+- `LNetworkHost:disconnectNow`: Disconnects a peer immediately. This method is available to Lua scripts.
 - `LNetworkHost:disconnectLater`: Schedules a peer disconnect after pending packets.
-- `LNetworkHost:resetPeer`: Resets a peer connection.
-- `LNetworkHost:ping`: Sends a ping to a peer.
+- `LNetworkHost:resetPeer`: Resets a peer connection. This method is available to Lua scripts.
+- `LNetworkHost:ping`: Sends a ping to a peer. This method is available to Lua scripts.
 - `LNetworkHost:getRoundTripTime`: Returns peer round trip time in milliseconds.
-- `LNetworkHost:getPeerState`: Returns peer connection state.
+- `LNetworkHost:getPeerState`: Returns peer connection state. This method is available to Lua scripts.
 - `LNetworkHost:getPeerAddress`: Returns peer socket address when available.
 - `LNetworkHost:getAddress`: Returns local host socket address.
-- `LNetworkHost:getPeerLimit`: Returns configured peer limit.
+- `LNetworkHost:getPeerLimit`: Returns configured peer limit. This method is available to Lua scripts.
 - `LNetworkHost:getChannelLimit`: Returns configured channel limit.
-- `LNetworkHost:setChannelLimit`: Sets channel limit.
+- `LNetworkHost:setChannelLimit`: Sets channel limit. This method is available to Lua scripts.
 - `LNetworkHost:getBandwidthLimit`: Returns incoming and outgoing bandwidth limits.
 - `LNetworkHost:setBandwidthLimit`: Sets incoming and outgoing bandwidth limits.
-- `LNetworkHost:getConnectedPeerCount`: Returns connected peer count.
-- `LNetworkHost:getConnectedPeerIds`: Returns ids for connected peers.
-- `LNetworkHost:getPeerStats`: Returns statistics for a peer.
-- `LNetworkHost:destroy`: Destroys the network host.
+- `LNetworkHost:getConnectedPeerCount`: Returns connected peer count. This method is available to Lua scripts.
+- `LNetworkHost:getConnectedPeerIds`: Returns ids for connected peers. This method is available to Lua scripts.
+- `LNetworkHost:getPeerStats`: Returns statistics for a peer. This method is available to Lua scripts.
+- `LNetworkHost:destroy`: Destroys the network host. This method is available to Lua scripts.
 - `LNetworkHost:isDestroyed`: Returns whether the network host is destroyed.
-- `LNetworkHost:getRole`: Returns host role string.
+- `LNetworkHost:getRole`: Returns host role string. This method is available to Lua scripts.
 - `LNetworkHost:isServer`: Returns whether this host has server role.
 - `LNetworkHost:isClient`: Returns whether this host has client role.
 - `LNetworkHost:type`: Returns the Lua-visible type name for this network host handle.
@@ -191,16 +191,16 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 
 ### `LNetworkRuntime` Methods
 - `LNetworkRuntime:httpRequest`: Starts an HTTP request from an options table and returns its request id.
-- `LNetworkRuntime:httpGet`: Starts an HTTP GET request.
-- `LNetworkRuntime:httpPost`: Starts an HTTP POST request.
-- `LNetworkRuntime:tcpConnect`: Opens a TCP connection.
-- `LNetworkRuntime:tcpSend`: Sends bytes over a TCP connection.
-- `LNetworkRuntime:tcpClose`: Closes a TCP connection.
-- `LNetworkRuntime:wsConnect`: Opens a WebSocket connection.
+- `LNetworkRuntime:httpGet`: Starts an HTTP GET request. This method is available to Lua scripts.
+- `LNetworkRuntime:httpPost`: Starts an HTTP POST request. This method is available to Lua scripts.
+- `LNetworkRuntime:tcpConnect`: Opens a TCP connection. This method is available to Lua scripts.
+- `LNetworkRuntime:tcpSend`: Sends bytes over a TCP connection. This method is available to Lua scripts.
+- `LNetworkRuntime:tcpClose`: Closes a TCP connection. This method is available to Lua scripts.
+- `LNetworkRuntime:wsConnect`: Opens a WebSocket connection. This method is available to Lua scripts.
 - `LNetworkRuntime:wsSend`: Sends text over a WebSocket connection.
-- `LNetworkRuntime:wsClose`: Closes a WebSocket connection.
+- `LNetworkRuntime:wsClose`: Closes a WebSocket connection. This method is available to Lua scripts.
 - `LNetworkRuntime:poll`: Polls runtime responses for HTTP, TCP, and WebSocket operations.
-- `LNetworkRuntime:shutdown`: Shuts down the network runtime.
+- `LNetworkRuntime:shutdown`: Shuts down the network runtime. This method is available to Lua scripts.
 - `LNetworkRuntime:type`: Returns the Lua-visible type name for this network runtime handle.
 - `LNetworkRuntime:typeOf`: Returns whether this network runtime handle matches a supported type name.
 

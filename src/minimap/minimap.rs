@@ -1,4 +1,3 @@
-
 //! - Grid-based minimap with configurable terrain types, colours, and per-cell fog-of-war.
 //! - Object tracking with typed, owner-coloured dots and optional texture icons.
 //! - Political and terrain colour modes for strategic map overlays.

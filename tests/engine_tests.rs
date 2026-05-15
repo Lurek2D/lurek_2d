@@ -37,10 +37,10 @@ mod effect_tests;
 mod filesystem_tests;
 #[path = "rust/unit/globe_tests.rs"]
 mod globe_tests;
-#[path = "rust/unit/graph_tests.rs"]
-mod graph_tests;
 #[path = "rust/unit/graph_node_tests.rs"]
 mod graph_node_tests;
+#[path = "rust/unit/graph_tests.rs"]
+mod graph_tests;
 #[path = "rust/unit/gui_tests.rs"]
 mod gui_tests;
 #[path = "rust/unit/i18n_tests.rs"]
@@ -79,6 +79,8 @@ mod procgen_tests;
 mod raycaster_tests;
 #[path = "rust/unit/render_tests.rs"]
 mod render_tests;
+#[path = "rust/unit/repl_tests.rs"]
+mod repl_tests;
 #[path = "rust/unit/runtime_tests.rs"]
 mod runtime_tests;
 #[path = "rust/unit/save_tests.rs"]

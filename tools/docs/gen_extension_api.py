@@ -29,8 +29,6 @@ from datetime import date
 # Engine callbacks (game script slot functions).
 # Stable Lurek contracts -- not extracted from source.
 CALLBACKS: list[dict] = [
-    {"name": "load", "signature": "function lurek.load()", "description": "Called once after the game script is loaded.", "parameters": []},
-    {"name": "update", "signature": "function lurek.update(dt)", "description": "Called every frame. `dt` is elapsed seconds.", "parameters": [{"name": "dt", "type": "number", "description": "Delta time in seconds", "optional": False}]},
     {"name": "draw", "signature": "function lurek.draw()", "description": "Called every frame for rendering. All draw calls must happen here.", "parameters": []},
     {"name": "keypressed", "signature": "function lurek.keypressed(key)", "description": "Called when a keyboard key is pressed.", "parameters": [{"name": "key", "type": "string", "description": "Key name", "optional": False}]},
     {"name": "keyreleased", "signature": "function lurek.keyreleased(key)", "description": "Called when a keyboard key is released.", "parameters": [{"name": "key", "type": "string", "description": "Key name", "optional": False}]},

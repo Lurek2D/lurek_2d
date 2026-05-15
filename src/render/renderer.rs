@@ -221,21 +221,11 @@ pub enum RenderCommand {
         y3: f32,
     },
     /// Draw a filled or outlined convex polygon from a flat `[x, y, ...]` array.
-    Polygon {
-        mode: DrawMode,
-        vertices: Vec<f32>,
-    },
+    Polygon { mode: DrawMode, vertices: Vec<f32> },
     /// Draw a single line segment.
-    Line {
-        x1: f32,
-        y1: f32,
-        x2: f32,
-        y2: f32,
-    },
+    Line { x1: f32, y1: f32, x2: f32, y2: f32 },
     /// Draw a polyline from a flat `[x, y, ...]` point array.
-    Polyline {
-        points: Vec<f32>,
-    },
+    Polyline { points: Vec<f32> },
     /// Draw a texture at `(x, y)` with an optional per-frame shader effect chain.
     DrawImage {
         texture_key: TextureKey,
@@ -295,30 +285,17 @@ pub enum RenderCommand {
     /// Pop the transform matrix from the stack and restore the previous state.
     PopTransform,
     /// Apply a translation to the current transform.
-    Translate {
-        x: f32,
-        y: f32,
-    },
+    Translate { x: f32, y: f32 },
     /// Apply a rotation (radians) to the current transform.
-    Rotate {
-        angle: f32,
-    },
+    Rotate { angle: f32 },
     /// Apply a non-uniform scale to the current transform.
-    Scale {
-        sx: f32,
-        sy: f32,
-    },
+    Scale { sx: f32, sy: f32 },
     /// Apply a shear (skew) to the current transform.
-    Shear {
-        kx: f32,
-        ky: f32,
-    },
+    Shear { kx: f32, ky: f32 },
     /// Reset the current transform to the identity matrix.
     Origin,
     /// Replace the current transform with an explicit 3x3 column-major matrix.
-    ApplyTransform {
-        matrix: [f32; 9],
-    },
+    ApplyTransform { matrix: [f32; 9] },
     /// Draw a circular arc segment.
     Arc {
         mode: DrawMode,
@@ -330,9 +307,7 @@ pub enum RenderCommand {
         segments: u32,
     },
     /// Draw a registered sprite batch.
-    DrawBatch {
-        batch_key: SpriteBatchKey,
-    },
+    DrawBatch { batch_key: SpriteBatchKey },
     /// Set the active blend mode for subsequent draw commands.
     SetBlendMode(BlendMode),
     /// Set or clear the active render canvas; `None` restores the default target.
@@ -355,9 +330,7 @@ pub enum RenderCommand {
         height: u32,
     },
     /// Draw a list of screen-space points.
-    Points {
-        points: Vec<(f32, f32)>,
-    },
+    Points { points: Vec<(f32, f32)> },
     /// Set the point-sprite size in pixels.
     SetPointSize(f32),
     /// Set or clear the scissor rectangle; `None` disables scissor testing.
@@ -377,10 +350,7 @@ pub enum RenderCommand {
         scale: f32,
     },
     /// Begin stencil write pass using `action` and reference `value`.
-    StencilBegin {
-        action: StencilAction,
-        value: u8,
-    },
+    StencilBegin { action: StencilAction, value: u8 },
     /// End stencil write pass and restore color writes.
     StencilEnd,
     /// Set or clear stencil test for subsequent draws; `None` disables testing.
@@ -399,10 +369,7 @@ pub enum RenderCommand {
         oy: f32,
     },
     /// Upload updated `Mesh` data to the named GPU slot.
-    SyncMesh {
-        mesh_key: MeshKey,
-        mesh: Mesh,
-    },
+    SyncMesh { mesh_key: MeshKey, mesh: Mesh },
     /// Draw a one-frame transient mesh without a persistent GPU slot.
     DrawMeshTransient {
         mesh: Mesh,
@@ -440,17 +407,11 @@ pub enum RenderCommand {
         oy: f32,
     },
     /// Draw a particle system snapshot as a list of `ParticleInstance` values.
-    DrawParticleSystem {
-        particles: Vec<ParticleInstance>,
-    },
+    DrawParticleSystem { particles: Vec<ParticleInstance> },
     /// Mark the start of a post-processing capture region identified by `stack_id`.
-    BeginPostFx {
-        stack_id: u64,
-    },
+    BeginPostFx { stack_id: u64 },
     /// Mark the end of a post-processing capture region.
-    EndPostFx {
-        stack_id: u64,
-    },
+    EndPostFx { stack_id: u64 },
     /// Apply a series of post-fx passes to the captured region.
     ApplyPostFx {
         stack_id: u64,
@@ -526,24 +487,18 @@ pub enum RenderCommand {
         mode: DrawMode,
     },
     /// Begin a depth-sorted draw group identified by `group_id`.
-    BeginSortGroup {
-        group_id: u64,
-    },
+    BeginSortGroup { group_id: u64 },
     /// Push a sort key for the next draw command in the current sort group.
     PushSortKey(f32),
     /// Flush and emit all buffered commands in the sort group ordered by sort key.
-    FlushSortGroup {
-        group_id: u64,
-    },
+    FlushSortGroup { group_id: u64 },
     /// Draw physics collider outlines using `config` colors.
     DrawPhysicsDebug {
         shapes: Vec<PhysicsDebugShape>,
         config: PhysicsDebugConfig,
     },
     /// Draw Spine skeleton slot quads.
-    DrawSpineSkeleton {
-        slots: Vec<SpineSlotDraw>,
-    },
+    DrawSpineSkeleton { slots: Vec<SpineSlotDraw> },
     /// Draw a bevel-styled rectangle with highlight, shadow, and fill colors.
     DrawBevelRect {
         x: f32,
@@ -563,9 +518,7 @@ pub enum RenderCommand {
         blend: BlendMode,
     },
     /// Pop and composite the named layer onto the parent target.
-    PopLayer {
-        id: u64,
-    },
+    PopLayer { id: u64 },
     /// Draw a convex triangle fan with per-vertex UVs, tint, and blend mode.
     DrawConvexFan {
         vertices: Vec<Vec2>,

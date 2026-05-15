@@ -174,12 +174,12 @@ This module primarily collaborates with `image`, `light`, `math`, `runtime`, `sp
 - `lurek.render.setBackgroundColor`: Sets the background clear color used at the start of each frame.
 - `lurek.render.getBackgroundColor`: Returns the current background clear color.
 - `lurek.render.rectangle`: Draws a rectangle. If rx is provided, draws a rounded rectangle.
-- `lurek.render.circle`: Draws a circle.
-- `lurek.render.ellipse`: Draws an ellipse.
+- `lurek.render.circle`: Draws a circle. This function is exposed to Lua scripts.
+- `lurek.render.ellipse`: Draws an ellipse. This function is exposed to Lua scripts.
 - `lurek.render.triangle`: Draws a triangle from three vertex positions.
 - `lurek.render.line`: Draws a line between two points, or a polyline through multiple points.
 - `lurek.render.polygon`: Draws a polygon from a flat list of x,y vertex coordinates.
-- `lurek.render.arc`: Draws a circular arc.
+- `lurek.render.arc`: Draws a circular arc. This function is exposed to Lua scripts.
 - `lurek.render.points`: Draws one or more points. Accepts either a table of {x,y} pairs or flat x,y coordinate values.
 - `lurek.render.draw`: Draws a drawable object (Image, Canvas, SpriteBatch, or Mesh) at the given position with optional transform.
 - `lurek.render.drawq`: Draws a sub-region of an image defined by a Quad, with optional transform.
@@ -190,9 +190,9 @@ This module primarily collaborates with `image`, `light`, `math`, `runtime`, `sp
 - `lurek.render.printRich`: Draws rich text composed of individually styled spans at the given position.
 - `lurek.render.clear`: Clears all queued render commands for the current frame.
 - `lurek.render.setLineWidth`: Sets the line width for subsequent line-mode draw calls.
-- `lurek.render.getLineWidth`: Returns the current line width.
+- `lurek.render.getLineWidth`: Returns the current line width. This function is exposed to Lua scripts.
 - `lurek.render.setPointSize`: Sets the point size for subsequent point draw calls.
-- `lurek.render.getPointSize`: Returns the current point size.
+- `lurek.render.getPointSize`: Returns the current point size. This function is exposed to Lua scripts.
 - `lurek.render.setBlendMode`: Sets the blend mode for subsequent draw operations.
 - `lurek.render.getBlendMode`: Returns the current blend mode name.
 - `lurek.render.newFont`: Creates a new bitmap font from a PNG sprite sheet path or returns a built-in font by pixel height.
@@ -259,7 +259,7 @@ This module primarily collaborates with `image`, `light`, `math`, `runtime`, `sp
 - `lurek.render.drawGradientRect`: Draws a rectangle with a two-color gradient fill.
 - `lurek.render.drawColoredPolygon`: Draws a polygon with per-vertex colors.
 - `lurek.render.drawIsoCubeTile`: Draws an isometric cube tile with configurable face colors and optional textures.
-- `lurek.render.drawHexTile`: Draws a regular hexagonal tile.
+- `lurek.render.drawHexTile`: Draws a regular hexagonal tile. This function is exposed to Lua scripts.
 - `lurek.render.beginSortGroup`: Begins a depth-sorted rendering group. Draw calls within this group are sorted by pushSortKey values.
 - `lurek.render.pushSortKey`: Sets the depth sort key for subsequent draw calls within the current sort group.
 - `lurek.render.flushSortGroup`: Ends a sort group and emits all accumulated draw calls in sorted order.
@@ -272,7 +272,7 @@ This module primarily collaborates with `image`, `light`, `math`, `runtime`, `sp
 - `lurek.render.drawGradientRect`: Draws a rectangle with a two-color gradient fill.
 - `lurek.render.drawColoredPolygon`: Draws a polygon with per-vertex colors.
 - `lurek.render.drawIsoCubeTile`: Draws an isometric cube tile with configurable face colors and optional textures.
-- `lurek.render.drawHexTile`: Draws a regular hexagonal tile.
+- `lurek.render.drawHexTile`: Draws a regular hexagonal tile. This function is exposed to Lua scripts.
 - `lurek.render.beginSortGroup`: Begins a depth-sorted rendering group. Draw calls within this group are sorted by pushSortKey values.
 - `lurek.render.pushSortKey`: Sets the depth sort key for subsequent draw calls within the current sort group.
 - `lurek.render.flushSortGroup`: Ends a sort group and emits all accumulated draw calls in sorted order.
@@ -295,14 +295,14 @@ This module primarily collaborates with `image`, `light`, `math`, `runtime`, `sp
 - `LCanvas:getDimensions`: Returns both width and height of this canvas.
 - `LCanvas:release`: Releases the canvas GPU resource. If this canvas is currently active, drawing reverts to the screen.
 - `LCanvas:typeOf`: Returns the type name of this object.
-- `LCanvas:type`: Returns the internal Lua type tag.
+- `LCanvas:type`: Returns the internal Lua type tag. This method is available to Lua scripts.
 
 ### `LDrawLayer` Methods
 - `LDrawLayer:queue`: Enqueues a draw callback at the given z-depth. Callbacks execute when flush() is called.
 - `LDrawLayer:flush`: Sorts all queued callbacks by z-depth and executes them in order, then empties the layer.
 - `LDrawLayer:clear`: Discards all queued callbacks without executing them.
 - `LDrawLayer:getCount`: Returns the number of callbacks currently queued.
-- `LDrawLayer:type`: Returns the internal Lua type tag.
+- `LDrawLayer:type`: Returns the internal Lua type tag. This method is available to Lua scripts.
 - `LDrawLayer:typeOf`: Checks whether this object matches the given type name.
 
 ### `LFont` Methods
@@ -315,7 +315,7 @@ This module primarily collaborates with `image`, `light`, `math`, `runtime`, `sp
 - `LFont:getWrap`: Word-wraps text to fit within a pixel width limit and returns the resulting lines.
 - `LFont:release`: Releases the font resource. The handle becomes invalid after this call.
 - `LFont:typeOf`: Returns the type name of this object.
-- `LFont:type`: Returns the internal Lua type tag.
+- `LFont:type`: Returns the internal Lua type tag. This method is available to Lua scripts.
 
 ### `LImage` Methods
 - `LImage:getId`: Returns the internal numeric handle ID for this image.
@@ -324,7 +324,7 @@ This module primarily collaborates with `image`, `light`, `math`, `runtime`, `sp
 - `LImage:getDimensions`: Returns both width and height of this image.
 - `LImage:release`: Releases the GPU memory for this image. The handle becomes invalid after this call.
 - `LImage:typeOf`: Returns the type name of this object.
-- `LImage:type`: Returns the internal Lua type tag.
+- `LImage:type`: Returns the internal Lua type tag. This method is available to Lua scripts.
 
 ### `LImageData` Methods
 - `LImageData:getWidth`: Returns the width of this image data in pixels.
@@ -342,9 +342,9 @@ This module primarily collaborates with `image`, `light`, `math`, `runtime`, `sp
 - `LMesh:getVertex`: Returns the data for a single vertex by 1-based index.
 - `LMesh:setVertex`: Updates a single vertex by 1-based index. Table format: {x, y, u, v, r, g, b, a}.
 - `LMesh:setTexture`: Assigns or removes a texture for this mesh. Pass nil to clear the texture.
-- `LMesh:release`: Releases the mesh resource.
+- `LMesh:release`: Releases the mesh resource. This method is available to Lua scripts.
 - `LMesh:typeOf`: Returns the type name of this object.
-- `LMesh:type`: Returns the internal Lua type tag.
+- `LMesh:type`: Returns the internal Lua type tag. This method is available to Lua scripts.
 
 ### `LNineSlice` Methods
 - `LNineSlice:getInsets`: Returns the border insets (top, right, bottom, left) that define the stretchable regions.
@@ -365,14 +365,14 @@ This module primarily collaborates with `image`, `light`, `math`, `runtime`, `sp
 - `LQuad:setViewport`: Updates the quad's viewport rectangle.
 - `LQuad:getTextureDimensions`: Returns the full dimensions of the source texture this quad references.
 - `LQuad:typeOf`: Returns the type name of this object.
-- `LQuad:type`: Returns the internal Lua type tag.
+- `LQuad:type`: Returns the internal Lua type tag. This method is available to Lua scripts.
 
 ### `LShader` Methods
 - `LShader:send`: Sends a uniform value to this shader by name. Supported types: number, boolean, or table (vec2/vec3/vec4).
 - `LShader:hasUniform`: Checks whether this shader declares a uniform with the given name.
 - `LShader:release`: Releases the shader resource. If active, the default shader is restored.
 - `LShader:typeOf`: Returns the type name of this object.
-- `LShader:type`: Returns the internal Lua type tag.
+- `LShader:type`: Returns the internal Lua type tag. This method is available to Lua scripts.
 
 ### `LShape` Methods
 - `LShape:getCommandCount`: Returns the number of drawing commands accumulated in this shape.
@@ -381,16 +381,16 @@ This module primarily collaborates with `image`, `light`, `math`, `runtime`, `sp
 - `LShape:setLineWidth`: Sets the line width for subsequent line-mode shape commands.
 - `LShape:rectangle`: Adds a rectangle command to the shape.
 - `LShape:roundedRectangle`: Adds a rounded rectangle command to the shape.
-- `LShape:circle`: Adds a circle command to the shape.
+- `LShape:circle`: Adds a circle command to the shape. This method is available to Lua scripts.
 - `LShape:ellipse`: Adds an ellipse command to the shape.
 - `LShape:triangle`: Adds a triangle command to the shape.
 - `LShape:polygon`: Adds a polygon command to the shape from a flat list of x,y coordinate pairs.
 - `LShape:line`: Adds a line segment command to the shape.
 - `LShape:polyline`: Adds a connected polyline command to the shape from a flat list of x,y coordinate pairs.
-- `LShape:arc`: Adds an arc command to the shape.
+- `LShape:arc`: Adds an arc command to the shape. This method is available to Lua scripts.
 - `LShape:draw`: Renders the accumulated shape commands to the screen with optional transform.
 - `LShape:typeOf`: Checks whether this object matches the given type name.
-- `LShape:type`: Returns the internal Lua type tag.
+- `LShape:type`: Returns the internal Lua type tag. This method is available to Lua scripts.
 
 ### `LSpriteBatch` Methods
 - `LSpriteBatch:add`: Adds a sprite entry to the batch at the given position with optional transform.
@@ -399,7 +399,7 @@ This module primarily collaborates with `image`, `light`, `math`, `runtime`, `sp
 - `LSpriteBatch:getBufferSize`: Returns the maximum number of entries this batch can hold.
 - `LSpriteBatch:release`: Releases the sprite batch resource.
 - `LSpriteBatch:typeOf`: Returns the type name of this object.
-- `LSpriteBatch:type`: Returns the internal Lua type tag.
+- `LSpriteBatch:type`: Returns the internal Lua type tag. This method is available to Lua scripts.
 
 ## References
 
