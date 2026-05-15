@@ -5,53 +5,61 @@
 - Module group: `Edge/Integration`
 - Source path: `src/app/`
 - Lua API path(s): None direct
-- Primary Lua namespace: None direct
+- Primary Lua namespace: `lurek.input`
 - Rust test path(s): tests/engine_tests.rs; tests/rust/ext/graphics_runtime_smoke_tests.rs
 - Lua test path(s): None dedicated
 
 ## Summary
 
-The `app` module is Lurek2D's GUI application entry point and engine lifecycle orchestrator. It owns the winit 0.30 event loop, the wgpu device and surface, the window-backed `SharedState`, the Lua VM instance used by windowed sessions, and the main frame pacing loop. Nothing else in the engine imports from `app`; it is the integration layer that wires all subsystems together for windowed runtime modes.
+Application lifecycle controller that owns the main loop, frame dispatching, and Lua callback orchestration. `LurekApp` initializes all engine subsystems in dependency order, creates the wgpu surface, and enters the winit event loop. Each frame it calls `Clock::tick`, polls input, steps physics, invokes the active Lua callbacks (`load`, `update`, `draw`, `keypressed`, etc.), and presents the rendered frame.
 
-**Startup.** `lurek_run()` now decides which runtime mode should start. GUI, TUI, and CLI all arrive here and call `App::run()`. Headless mode does not. `App::run()` creates the OS window via winit, initialises the wgpu device and swap chain, constructs `SharedState`, creates the Lua VM via `lua_api::create_lua_vm()`, and enters the winit event loop. If no game folder is provided on the command line, it shows the native window immediately after GPU setup so the first redraw can present the branded splash screen before `init_lua()` runs. Drag-and-drop of a folder or `.lurek` archive from the OS file manager also starts a game session mid-run.
+Includes a debug overlay for FPS/memory/draw-call display, an error screen for unrecoverable Lua panics with stack-trace rendering, a splash screen shown during initial asset loading, and a frame profiler that records per-phase timing. The module sits at the Edge/Integration tier — it composes all other modules but owns no domain logic itself.
 
-**Mode-specific windowed startup.** `lurek_run()` can synthesize temporary game directories for `--mode=cli` and `--mode=tui`. From the `app` module's point of view these are ordinary game roots containing a generated `main.lua`, so the same window, Lua, and render bootstrap path is reused without a second GUI runtime implementation.
+## Source Documentation
 
-**Frame loop.** The internal `LurekApp` struct implements winit's `ApplicationHandler` trait. Each frame the loop:
-1. Dispatches OS events (keyboard, mouse, gamepad via gilrs, resize, drag-drop, close).
-2. Calls the Lua callback sequence: `ready` (once) → `process_physics` (fixed timestep, if used) → `fixedUpdate` (optional fixed timestep) → `process(dt)` → `process_late(dt)` → `draw()` → `draw_ui()`.
-3. Auto-collects render commands from parallax, tilemap, raycaster, and UI subsystems.
-4. Calls `GpuRenderer::render_frame()` to flush the accumulated `RenderCommand` queue to the GPU.
+### `app.rs`
+- Implements the central `LurekApp` runtime driven by winit's `ApplicationHandler`.
+- Manages GPU surface creation, wgpu adapter/device selection, and surface reconfiguration.
+- Orchestrates the frame loop: tick input, call Lua process/draw callbacks, then present.
+- Handles window events (keyboard, mouse, touch, gamepad, drag-drop, resize, focus).
+- Provides splash-screen and error-screen rendering paths when no game is loaded or a fatal occurs.
+- Owns hot-reload watchers for conf.toml, Lua scripts, and asset files with automatic restart.
+- Integrates gilrs for gamepad polling, force-feedback vibration, and axis/button callbacks.
+- Performs viewport letterbox/stretch/pixel scaling and automatic screenshot capture.
+- Boots the Lua VM, loads main.lua, fires `lurek.init()`, and enters the main game loop.
+- Provides `App` bootstrap wrapper that initializes logging and launches the event loop.
 
-**Hot-reload.** During `about_to_wait`, the app polls `conf.toml` and content watchers (`*.lua` scripts plus common asset extensions) via `filesystem::FileWatcher`. Config changes apply in-place; content changes trigger a game-session restart (Lua VM + game state) without restarting the engine process or recreating the window/GPU device.
+### `debug_overlay.rs`
+- Owns the lightweight debug HUD toggled by F12 or Lua.
+- Renders FPS counter and draw-call counter in a semi-transparent box.
+- Produces render commands only when the overlay is enabled and a font key is available.
 
-**Frame profiling.** `game_update()` records per-callback CPU wall-clock timing buckets (`process_physics`, `fixedUpdate`, `process`, `process_late`, `draw`, `draw_ui`) and the app loop records frame-stage buckets (`tick`, `update`, `render`, `frame_total`). The snapshot is exposed via `lurek.engine.getFrameProfile()` and `lurek.engine.getFrameProfileText()`.
+### `error_screen.rs`
+- Formats fatal Lua and engine errors into a user-facing screen.
+- Splits message text and traceback, word-wraps long lines, and cleans Lua string markers.
+- Builds full-screen render commands showing error title, body, traceback, and hint footer.
+- Provides clipboard export text for quick copy of error details.
 
-**Lua callback timeout.** `[performance].lua_callback_timeout_ms` is an optional hard budget for any Lua callback invocation. When exceeded, the callback is aborted via an instruction hook and the run state transitions to `RunState::Error`.
+### `frame_profile.rs`
+- Formats per-frame timing data into compact single-line strings for logging.
+- Reads tick, update, render, and callback timings from `FrameProfile`.
 
-**Run state machine.** `RunState` has three states: Running, Error, and Restarting. Any Lua or engine error transitions to Error, which displays the `ErrorScreen`. R key restarts the game from scratch; the engine re-initialises the Lua VM and reloads all Lua scripts without restarting the process.
+### `lua_callbacks.rs`
+- Invokes named `lurek.*` Lua callbacks with error logging and optional timeout.
+- Installs an instruction-count hook to abort runaway callbacks after a deadline.
+- Provides checked and unchecked variants for both timed and untimed invocation.
 
-**Error screen.** `ErrorScreen` converts Lua runtime errors (`mlua::Error`) and engine errors (`EngineError`) into a structured blue screen with formatted traceback, recovery hints, Ctrl+C clipboard copy of the error text, and R-to-restart. `wrap_text` handles word-wrapping for the narrow screen layout.
+### `mod.rs`
+- Orchestrates the Lurek2D application lifecycle from window creation through frame rendering.
+- Bridges winit events to Lua callbacks, GPU rendering, input polling, and hot-reload.
+- Houses the error screen, debug overlay, splash screen, and frame profiling submodules.
+- Provides Lua callback timeout wrappers used across the frame update path.
 
-**Debug overlay.** `DebugOverlay` is a lightweight FPS and draw-call counter rendered as overlay text, toggled by F12. It uses only the existing `RenderCommand` text draw path and adds negligible overhead.
-
-**Viewport scaling.** `recompute_viewport()` supports four scaling modes configured via `conf.toml`: `letterbox` (fit with black bars), `stretch` (fill with distortion), `pixel` (integer scale), and `none` (raw pixel passthrough). `fit_contain_size` is the helper that computes the maximum integer-preserving size.
-
-**Gamepad support.** gilrs gamepad discovery and hot-plug events are processed in the winit event handler. Axes and buttons are mapped to `lurek.input` key codes and dispatched to the normal input pipeline — no separate gamepad API is needed.
-
-**CI screenshot.** Auto-screenshot mode (`--screenshot`) waits for a configured capture trigger (`--screenshot-time` or `--screenshot-frames`), saves a PNG to a configured path, and exits. Window placement can be controlled with `--window-x`/`--window-y`, and startup window size can be overridden with `--window-width`/`--window-height` for tiled batch runs. Screenshot safety-exit uses a dynamic timeout derived from the configured capture delay (plus grace), so captures at 3s are not terminated prematurely.
-
-**Scope boundary.** Edge/Integration tier. Imports from render, audio, input, lua_api, filesystem, and all other module groups. Nothing in the engine imports from `app`.
-
-## Files
-
-- `app.rs`: Defines the public App entry point and the internal runtime implementation that owns the window, event loop integration, renderer, Lua VM, and frame lifecycle. This is the main file for startup flow, event handling, splash mode, and run-state transitions.
-- `debug_overlay.rs`: Defines DebugOverlay, the lightweight in-engine overlay for frame and draw statistics. It exists so app-level runtime state can expose quick visual diagnostics without dragging in the full devtools stack.
-- `error_screen.rs`: Defines ErrorScreen, the structured presentation for runtime and Lua failures. This file owns how fatal problems become user-visible render commands instead of raw crashes or console output.
-- `frame_profile.rs`: Contains helper formatting utilities for exposing frame profile data in-engine.
-- `lua_callbacks.rs`: Contains timeout-aware callback wrappers used by the app loop to invoke `lurek.*` callbacks safely.
-- `mod.rs`: Module root that exposes the public app-facing types. It keeps the external surface small while hiding most of the runtime wiring details.
-- `splash_screen.rs`: - Decodes embedded splash icon and banner PNGs into temporary texture storage.
+### `splash_screen.rs`
+- Decodes embedded splash icon and banner PNGs into temporary texture storage.
+- Builds render commands for the splash screen layout with centred branding.
+- Shows a drag-and-drop hint that changes colour when a folder is hovered.
+- Provides the `SplashBranding` struct used by the app loop until a game loads.
 
 ## Types
 
@@ -92,7 +100,7 @@ The `app` module is Lurek2D's GUI application entry point and engine lifecycle o
 
 ## Lua API Reference
 
-- No dedicated direct `lurek.*` namespace is exposed by this module.
+- Namespace: `lurek.input`
 
 ## References
 

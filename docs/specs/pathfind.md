@@ -11,32 +11,149 @@
 
 ## Summary
 
-The `pathfind` module is documented from the current source tree and existing module reference data.
+Grid, hex, and mesh pathfinding library providing A*, Dijkstra, Jump Point Search (JPS), Hierarchical Pathfinding A* (HPA*), bidirectional search, flow fields, influence maps, and navigation meshes. `NavGrid` is the primary grid type with walkability masks, movement costs, and multi-size unit support. `FlowField` precomputes direction vectors for many-agent scenarios.
 
-This module primarily collaborates with `graph`, `image`, `render`, `runtime`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
+`HexGrid` supports hexagonal grids with cube/axial/offset coordinates and hex-specific distance/neighbor functions. `JpsGrid` accelerates uniform-cost grid search via jump-point symmetry breaking. `InfluenceMap` propagates scalar values across grids for AI threat/attraction modeling. `NavMesh` handles polygon-based navigation for non-grid environments. Async path requests run on background threads via `PathPool`. Exposed as `lurek.pathfind.*`. Feature Systems tier.
 
-## Files
+## Source Documentation
 
-- `ai_flow_field.rs`: Provides a simpler BFS-style flow-field implementation used for lightweight AI movement support.
-- `astar.rs`: Implements A-star search, line-of-sight checks, and path smoothing helpers over navigation grids.
-- `async_pool.rs`: Dispatches pathfinding work to background threads with request management and cancellation support.
-- `bidir.rs`: Bidirectional A★ for halved search space on large navigation grids.
-- `flow_field.rs`: Implements Dijkstra-based flow fields for crowd steering toward one or more targets.
-- `graph_nav.rs`: Generic graph-based navigation using the `graph` module's [`Graph`] struct.
-- `graph_path.rs`: Implements adjacency-graph pathfinding for province-style or node-link worlds instead of regular grids.
-- `grid.rs`: Defines a standalone grid with generic path search, BFS, Dijkstra, and flow-field generation support.
-- `hex_grid.rs`: Hexagonal grid pathfinding, LOS, FOV, and range-of-movement.
-- `hpa.rs`: Implements hierarchical pathfinding using chunk abstraction and entrance-based higher-level search.
-- `influence_map.rs`: Stores and updates multi-layer spatial influence values for tactical or strategic reasoning.
-- `iso_grid.rs`: Isometric grid pathfinding with diamond topology (4-directional).
-- `jps.rs`: Jump Point Search (JPS) for uniform-cost orthogonal-diagonal grids.
-- `mod.rs`: Declares the pathfinding submodules and re-exports the main grids, algorithms, and support types.
-- `nav_grid.rs`: Defines the main navigation grid with walkability, costs, diagonal rules, and thread-friendly snapshots.
-- `navmesh.rs`: - Polygon-based navigation mesh for 2D pathfinding.
-- `pathgrid.rs`: Provides an alternate path grid with float costs and built-in path operations.
-- `range_map.rs`: Dijkstra-budget range-of-movement and threat-range maps on arbitrary grids.
-- `render.rs`: Generates debug render output for grids, flow fields, and influence maps.
-- `unit_pathfinder.rs`: Wraps pathfinding for unit-sized actors, including caching, partial paths, and nearest-walkable recovery.
+### `ai_flow_field.rs`
+- Precomputed flow field steering multiple agents toward a single goal cell.
+- BFS distance propagation with 8-directional neighbours and diagonal cost.
+- Per-cell normalised direction vectors for smooth unit movement.
+- Walkability mask support for blocking impassable terrain.
+
+### `astar.rs`
+- A\* pathfinding on a `NavGrid` with configurable diagonal modes and unit sizes.
+- Heuristic selection: octile distance for diagonal movement, Manhattan otherwise.
+- Early termination via `max_nodes` with partial-path fallback to closest reached cell.
+- Bresenham line-of-sight checks for walkability validation.
+- String-pull path smoothing that removes redundant waypoints.
+
+### `async_pool.rs`
+- Fixed-size thread pool that runs A* pathfinding off the game thread.
+- Job submission, cancellation, and non-blocking result polling via channels.
+- Workers share a single work queue and skip cancelled requests early.
+
+### `bidir.rs`
+- Bidirectional A* search that expands from both start and goal simultaneously.
+- Meets in the middle when both closed sets overlap, halving explored nodes on large grids.
+- Falls back to a partial forward path when the node budget is exhausted.
+- Respects NavGrid diagonal mode and per-cell movement cost.
+- Supports variable unit sizes for multi-tile pathfinding.
+
+### `flow_field.rs`
+- Dijkstra-based flow field that seeds from one or more goal cells and computes shortest paths across a NavGrid.
+- Each reachable cell stores a normalised direction vector toward the nearest goal and its accumulated travel cost.
+- Supports variable unit sizes for clearance-aware pathfinding using the backing grid's walkability checks.
+- Provides world-space steering that converts pixel coordinates to tile lookups and returns a scaled velocity.
+- Includes a debug visualisation helper that renders the field directions and obstacles to an ImageData bitmap.
+
+### `graph_nav.rs`
+- A* shortest-path search over weighted directed/bidirectional graphs.
+- Range query returning all nodes reachable within a cost budget.
+- Heuristic support for informed search; falls back to Dijkstra when omitted.
+- Min-heap priority queue node with reverse ordering for `BinaryHeap`.
+- Path reconstruction from predecessor map.
+
+### `graph_path.rs`
+- Province-level A* pathfinding across adjacency graphs with configurable move costs.
+- Dijkstra-based reachability flood to find all provinces within a cost budget.
+- Per-province and per-edge-tag cost modelling with blocked-province exclusion.
+- Min-heap priority queue node with reverse ordering for standard `BinaryHeap`.
+- Euclidean centroid heuristic for A* admissibility.
+
+### `grid.rs`
+- Flat 2-D grid with per-cell walkability and movement-cost storage.
+- A* pathfinding with optional diagonal movement and Euclidean/Manhattan heuristic.
+- Dijkstra shortest-path search respecting per-cell costs.
+- BFS unweighted shortest path for uniform-cost grids.
+- Dijkstra-based flow-field generation toward a single goal cell.
+- Internal min-heap node and path reconstruction utilities.
+
+### `hex_grid.rs`
+- Hex grid with configurable flat-top or pointy-top offset layout.
+- Per-cell blocked flags and movement cost for weighted pathfinding.
+- A* search returning shortest path between two hex cells.
+- Line-of-sight, field-of-view, and range-of-movement queries.
+- Cube-coordinate math for distance, interpolation, and rounding.
+
+### `hpa.rs`
+- Hierarchical Pathfinding A* (HPA*) over a chunked NavGrid abstraction.
+- Partition the grid into fixed-size chunks and detect entrance nodes at chunk boundaries.
+- Build an abstract graph of entrance-to-entrance edges with A*-computed costs.
+- Run abstract-level A* search using octile distance heuristic.
+- Refine abstract waypoints back into full grid-level paths via per-segment A*.
+- BFS-based reachability test over chunk connectivity without computing a full path.
+- Temporary start/goal insertion into the abstract graph for single queries.
+- Boundary scanning logic handles both horizontal and vertical chunk edges.
+- Supports variable unit sizes passed through to underlying A* refinement.
+
+### `influence_map.rs`
+- Grid-based influence map with named floating-point layers over a uniform cell grid.
+- Stamp radial influence with distance falloff, propagate via neighbourhood smoothing, and decay over time.
+- Query aggregated influence inside world-space rectangles or locate extrema positions.
+- Blend multiple layers with weighted combination into a destination layer.
+- Debug visualisation rendering layers into an RGBA image for inspection.
+
+### `iso_grid.rs`
+- Grid-based A* pathfinding over a rectangular isometric cell map.
+- Per-cell blocked flags and movement cost support for weighted searches.
+- Bresenham line-of-sight query between two grid positions.
+- 4-directional neighbour expansion with bounds and passability filtering.
+
+### `jps.rs`
+- Jump Point Search (JPS) optimised A* on uniform-cost 8-directional grids.
+- Prunes symmetric neighbours to skip large open areas without expanding every cell.
+- Identifies forced neighbours and jump points along cardinal and diagonal directions.
+- Produces a full tile-by-tile path by interpolating between jump points.
+- Uses octile distance heuristic and a min-heap open list.
+
+### `mod.rs`
+- Grid-based and graph-based pathfinding algorithms (A*, bidirectional, JPS, HPA*).
+- Flow fields and influence maps for group movement and tactical queries.
+- Navigation grids, hex grids, isometric grids, and navmesh support.
+- Async thread-pool dispatch for off-thread path computation.
+
+### `nav_grid.rs`
+- Integer-cost walkability grid for tile-based pathfinding.
+- Per-cell movement weight (0 = blocked, 1–254 = traversal cost).
+- Cardinal and diagonal neighbour queries with corner-cut policies.
+- Dirty-rectangle tracking for deferred HPA* hierarchy invalidation.
+- Bulk fill, rect fill, byte import/export, and deep-copy snapshot.
+- Debug visualisation: render grid + path overlay to an ImageData buffer.
+
+### `navmesh.rs`
+- Polygon-based navigation mesh for 2D pathfinding.
+- A\* search over polygon adjacency graph with centroid heuristic.
+- Ray-cast point-in-polygon containment test.
+- Centroid waypoint extraction from polygon corridors.
+- Directed and bidirectional polygon connectivity.
+
+### `pathgrid.rs`
+- Grid-based A* pathfinding with 8-directional movement and variable cell costs.
+- Bresenham line-of-sight checks for post-search path smoothing (string-pull).
+- World-space coordinate conversion: cell indices map to centres via configurable cell size.
+- Diagonal corner-cutting prevention to avoid clipping through blocked corners.
+- Octile distance heuristic for consistent and admissible cost estimation.
+
+### `range_map.rs`
+- Dijkstra-based budget-limited range expansion over a 2D grid.
+- Produces a cost map showing which cells are reachable within a travel budget.
+- Supports cardinal and diagonal movement with per-cell cost weights.
+
+### `render.rs`
+- Debug visualization for pathfinding structures as colored `RenderCommand` lists.
+- NavGrid renders walkable/blocked cells, FlowField draws directional arrows, InfluenceMap shows signed heat.
+- Each struct exposes `generate_render_commands` returning a `Vec<RenderCommand>` for overlay drawing.
+
+### `unit_pathfinder.rs`
+- Stateful per-unit pathfinder wrapping a shared `NavGrid` reference.
+- Full A* path search with optional string-pull smoothing for shorter results.
+- Partial-path expansion with configurable node budget for real-time budgets.
+- BFS reachability test and nearest-walkable-cell search within a radius.
+- LRU path cache with configurable max size and manual invalidation.
+- Octile heuristic and Bresenham line-of-sight utility helpers.
 
 ## Types
 

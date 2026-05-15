@@ -11,49 +11,116 @@
 
 ## Summary
 
-The `procgen` module is Lurek2D's procedural content generation library — a Foundations tier module that depends only on `math`, enabling all generators to run headlessly in tests and pre-generation passes without a window or GPU context.
+Procedural content generation library providing noise, dungeon generation, heightmaps, Voronoi tessellation, Wave Function Collapse, L-systems, name generation, and spatial sampling. `NoiseGenerator` wraps Perlin/Simplex/Worley/Value noise with FBM octave stacking and domain warping. `BspDungeon` and `CellularOpts` generate room-and-corridor or cave-like maps with configurable parameters.
 
-**Noise generators.** Standalone functions `perlin2d`, `perlin3d`, `perlin4d`, `simplex2d`, and `simplex_noise_3d` provide single-sample noise values. `NoiseGenerator` is a configurable multi-octave wrapper with `NoiseKind` (Perlin, Simplex), `FractalType` (Fbm, Ridged, Turbulence), octave count, lacunarity, persistence, and frequency settings. Worley (cellular) noise supports Euclidean, Manhattan, and Chebyshev distance metrics. Periodic Perlin noise (`perlin_noise_periodic`) generates tileable maps that wrap without seams. `generate_noise_map_parallel` fills a 2D grid using Rayon parallel iterators for fast CPU-parallel generation at world-map scale.
+`Heightmap` provides terrain generation with erosion simulation, biome assignment, and river carving. Voronoi generates cell-based region partitioning for province maps. WFC solves constraint-based tile placement from example patterns. L-systems produce fractal vegetation and road networks. Name generation uses Markov chains trained on input word lists. Poisson-disk sampling distributes points with minimum spacing guarantees. All algorithms are CPU-only and headless-testable. Exposed as `lurek.procgen.*`. Foundations tier.
 
-**Dungeon and cave generation.** `bsp_dungeon(opts)` partitions a rectangle recursively using Binary Space Partitioning to produce non-overlapping rooms with L-shaped corridors. `rooms_dungeon(opts)` scatters rectangular rooms randomly with configurable room size and margin constraints. `cellular_automata(opts)` applies configurable birth and survival rules (Game of Life style) to smooth a random fill into organic cave or island networks. `flood_fill` performs BFS over a flat byte grid from a seed position for region tagging and connectivity analysis.
+## Source Documentation
 
-**Heightmap terrain.** `Heightmap` generates 2D float elevation grids using fractal noise with `HeightmapOpts`. Post-processing: simplified hydraulic erosion (sediment flows from high-to-low neighbours), `normalize()` to rescale values to [0, 1]. `to_rgba_bytes()` exports the heightmap as a grayscale RGBA image buffer for CPU-side texture generation.
+### `biome.rs`
+- Biome classification system mapping height, moisture, and temperature to terrain types.
+- Defines `BiomeType` enum covering ocean, coast, desert, forest, tundra, and more.
+- Configurable `BiomeRules` thresholds for tuning world generation.
+- Stateless `BiomeClassifier` for single-cell or bulk grid classification.
+- RGBA color mapping for biome visualisation output.
 
-**Voronoi and world graphs.** `voronoi_diagram(points, warp)` generates Voronoi region cells with optional domain-warp distortion for organic shapes. Nearest-distance and second-distance field outputs enable cell-border detection and Delaunay-inspired edges. `WorldGraph` stores `WorldRegion` nodes and `WorldEdge` connections with MST generation and pathfinding support for regional strategy maps with province-level topology.
+### `bsp.rs`
+- Binary Space Partition dungeon generator: recursive splitting, leaf room placement, corridor linking.
+- Configuration via `BspOpts`: grid size, recursion depth, minimum partition size, padding, seed.
+- Prefab stamping: round-robin placement of named template shapes centred in qualifying rooms.
+- Deterministic output driven by a seeded `Lcg` RNG for reproducible layouts.
+- Pure algorithm module with no rendering or tilemap dependency.
 
-**Wave Function Collapse.** `WfcGrid` implements WFC with adjacency `WfcRules` and per-tile probability weights. `solve(max_iterations)` runs constraint propagation and backtracking. Output is a 2D tile-ID grid. `WfcRules` can be authored manually or derived from a sample tilemap. Used for dungeon rooms, town layouts, and natural terrain patches.
+### `cellular.rs`
+- Cellular automata cave generator producing flat grid maps from configurable birth/survive rules.
+- Supports reproducible output via seeded LCG randomisation.
+- Treats out-of-bounds neighbours as solid, forming natural cave walls at map edges.
 
-**L-Systems.** `LSystem` performs parametric string rewriting via production rules: `addRule(symbol, replacement)`, `iterate(n)`, `to_segments(angle_deg)` converts the generated string to turtle-graphics line segments. Starting axiom and production alphabet are configurable. Used for plant generation, fractal coastlines, and procedural architecture.
+### `color.rs`
+- Convert scalar procgen output into pixel-ready RGBA byte buffers.
+- Grayscale mapping with automatic 0–1 clamping.
+- Suitable for heightmaps, noise previews, and debug visualisation.
 
-**Name generation.** `NameGen` trains a second-order Markov chain model on a word list and generates names with configurable min/max length. `train(words)`, `generate()`. Suitable for NPC names, place names, and item descriptions.
+### `flood_fill.rs`
+- Four-connected flood fill on a flat `u8` grid with threshold-based matching.
+- Return a binary mask of reachable cells from a seed coordinate.
+- Support both above-threshold and below-threshold fill modes.
 
-**Poisson-disk sampling.** `poisson_disk(area, min_dist, tries)` uses Bridson's algorithm to sample 2D points with a guaranteed minimum spacing for natural object scatter. Returns a `Vec<Vec2>`. Used for tree placement, enemy spawning, and treasure distribution.
+### `heightmap.rs`
+- Procedural heightmap generation from FBM Perlin noise with configurable octaves, lacunarity, and persistence.
+- Simple hydraulic erosion pass that redistributes height differences across 4-connected neighbours.
+- Construction from raw noise maps or cellular automata grids with automatic normalisation to 0.0–1.0.
+- Clamped coordinate access and flat RGBA byte export for GPU texture upload.
+- Deterministic output controlled by a seed value passed through to the noise generator.
 
-**Rendering helpers.** `render.rs` provides `NoiseGrid` sampling and visualisation helpers that produce `RenderCommand` sequences or CPU image buffers for noise previews and debug overlays without requiring a GPU context.
+### `lcg.rs`
+- 64-bit linear congruential generator (LCG) for deterministic pseudo-random number output.
+- Provides seeded construction, raw `u64` stepping, and uniform `f32` sampling.
+- Used as the shared RNG primitive across all `procgen` subsystems.
 
-**Lua surface.** `lurek.procgen.perlin(x, y)`, `simplex(x, y)`, `worley(x, y, metric)`. `lurek.procgen.newNoise(opts)` returns a NoiseGenerator userdata with `sample(x, y)`, `map(w, h)`. `bspDungeon(opts)` returns rooms+corridors table. `roomsDungeon(opts)`. `cellularCave(opts)`. `newHeightmap(opts)`. `voronoi(points)`. `newWfc(w, h, rules)`. `newLSystem(axiom)`. `newNameGen()`. `poissonDisk(rect, min_dist)`.
+### `lsystem.rs`
+- Deterministic string-rewriting L-system with configurable axiom, production rules, and iteration depth.
+- Turtle-graphics interpreter converts generated strings into line segments for rendering.
+- Supports branching via stack-based `[`/`]` commands for tree and fractal geometry.
 
-**Scope boundary.** Foundations tier. Depends only on `math`. Lua bridge in `src/lua_api/procgen_api.rs`.
+### `mod.rs`
+- Procedural generation toolkit: noise, dungeons, heightmaps, and world graphs.
+- Algorithms: Perlin/Simplex/Worley noise, BSP & room-scatter dungeons, cellular automata caves.
+- Utilities: Poisson disk sampling, L-systems, Markov name generation, Voronoi, WFC.
+- All generators are deterministic given a seed via the internal LCG.
 
-## Files
+### `namegen.rs`
+- Markov-chain name generator trained on arbitrary word corpora.
+- Configurable n-gram order controls fidelity-vs-variety tradeoff.
+- Deterministic output via internal LCG seeding for reproducible generation.
+- Batch generation with length constraints and bounded retry logic.
 
-- `biome.rs`: - Biome classification system mapping height, moisture, and temperature to terrain types.
-- `bsp.rs`: Binary Space Partitioning dungeon generator.
-- `cellular.rs`: Cellular automata map generation with configurable fill, birth, survive, and iteration settings.
-- `color.rs`: - Convert scalar procgen output into pixel-ready RGBA byte buffers.
-- `flood_fill.rs`: Threshold-based BFS flood fill over flat byte grids.
-- `heightmap.rs`: Heightmap generation using fractal noise, erosion, and normalization.
-- `lcg.rs`: Internal deterministic random generator shared by the generation algorithms.
-- `lsystem.rs`: L-system string rewriter for procedural plant and structure generation.
-- `mod.rs`: Module root and re-export surface for the public generation functions and option structs.
-- `namegen.rs`: Markov chain name generator.
-- `noise.rs`: Procedural noise functions and generators: Perlin, Simplex, Worley, fractal combinators.
-- `poisson.rs`: Bridson-style Poisson-disk sampling for evenly spaced point placement.
-- `render.rs`: `NoiseGrid` sampling and visualization helpers for command-queue or CPU-image inspection.
-- `rooms.rs`: Rooms-and-corridors dungeon generator with random scatter placement.
-- `voronoi.rs`: Voronoi region, nearest-distance, and second-distance field generation with optional warp.
-- `wfc.rs`: Wave Function Collapse tile grid generator.
-- `world_graph.rs`: World-level topology graph: regions connected by traversable edges.
+### `noise.rs`
+- Standalone 2D, 3D, and 4D Perlin noise evaluation with configurable seeds.
+- 2D simplex noise with seeded and convenience zero-seed wrappers.
+- FBM fractal layering over Perlin noise with normalised output.
+- Seeded `NoiseGenerator` with permutation-table Perlin (1D/2D/3D) and Simplex (2D/3D/4D).
+- Worley (cellular) noise in 2D and 3D with Euclidean, Manhattan, and Chebyshev metrics.
+- Fractal combinators: FBM, ridged multifractal, and turbulence; all normalised.
+- Domain warping via Perlin-driven coordinate offsets.
+- Sequential and parallel (`rayon`) height-map generation from `MapGenOptions`.
+- Tileable periodic 2D Perlin noise for seamless texture synthesis.
+- Internal hash and gradient helpers for all supported dimensions.
+
+### `poisson.rs`
+- Poisson-disk sampling: generate evenly-spaced random 2D point distributions.
+- Uses Bridson's algorithm with grid acceleration for O(n) rejection.
+- Deterministic via seeded LCG; produces `(x, y)` pair vectors.
+
+### `render.rs`
+- Tileable Perlin noise grid generation and cell access.
+- Conversion to grayscale RGBA byte buffers and `ImageData`.
+- Batch render-command generation for grid visualization.
+
+### `rooms.rs`
+- Random room placement with overlap rejection and configurable size ranges.
+- L-shaped corridor carving between consecutive room centres.
+- Flat row-major tile grid output (wall / floor / corridor byte values).
+- Prefab stamp system that centre-pastes named mask patterns into placed rooms.
+- Round-robin prefab assignment across all placed rooms.
+
+### `voronoi.rs`
+- Voronoi diagram generation on a 2D grid with F1/F2 distance fields.
+- Optional domain warp via hash noise for organic region boundaries.
+- Returns region indices and per-pixel distance buffers in row-major order.
+
+### `wfc.rs`
+- Wave Function Collapse (WFC) grid generator with weighted tile selection.
+- Adjacency-rule constraint propagation with automatic backtracking retries.
+- Deterministic seeded output via the internal LCG; each retry increments the seed.
+- Returns a flat row-major grid of tile IDs or `None` cells on contradiction.
+
+### `world_graph.rs`
+- Region and edge data types representing nodes and weighted connections in a world graph.
+- A* pathfinding with Euclidean heuristic for shortest-path queries between regions.
+- Bounded Dijkstra reachability returning all regions within a cumulative travel cost.
+- Minimum spanning tree computation via Kruskal's algorithm.
+- Random world graph generation placing regions in a bounding box and connecting k-nearest neighbours.
 
 ## Types
 

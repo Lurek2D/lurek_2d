@@ -1,4 +1,4 @@
-//! `lurek.terminal` -- In-game terminal emulator with command parsing, history, output buffering, and ANSI-style formatting.
+//! `lurek.terminal` - Provides an in-game terminal emulator with command parsing, history, output buffering, and ANSI-style formatting.
 
 use super::SharedState;
 use crate::terminal::ansi::{parse_ansi_spans, strip_ansi_codes};
@@ -9,6 +9,7 @@ use mlua::prelude::*;
 use std::cell::RefCell;
 use std::collections::HashMap;
 use std::rc::{Rc, Weak};
+/// Returns the active terminal cell width and height using the current font or fallback metrics.
 fn font_cell_size(st: &SharedState) -> (f32, f32) {
     let key = st.active_font.or(st.default_font);
     if let Some(fk) = key {
@@ -17,6 +18,30 @@ fn font_cell_size(st: &SharedState) -> (f32, f32) {
         }
     }
     (8.0, 14.0)
+}
+/// Returns the active cell size, preferring a terminal override over font metrics.
+fn effective_cell_size(terminal: &Terminal, st: &SharedState) -> (f32, f32) {
+    terminal
+        .get_cell_size()
+        .unwrap_or_else(|| font_cell_size(st))
+}
+
+/// Converts terminal dimensions and cell metrics into a logical window size.
+fn terminal_window_size(terminal: &Terminal, st: &SharedState) -> (u32, u32) {
+    let (cell_w, cell_h) = effective_cell_size(terminal, st);
+    let width = (terminal.cols() as f32 * cell_w).ceil().max(1.0) as u32;
+    let height = (terminal.rows() as f32 * cell_h).ceil().max(1.0) as u32;
+    (width, height)
+}
+
+/// Stages a window resize so the terminal grid exactly fills the logical window.
+fn queue_terminal_window_fit(binding: &TerminalBinding) {
+    let (width, height) = {
+        let st = binding.shared_state.borrow();
+        let terminal = binding.terminal.borrow();
+        terminal_window_size(&terminal, &st)
+    };
+    binding.shared_state.borrow_mut().window_state.pending_size = Some((width, height));
 }
 /// Stored Lua callback registry keys for widget interaction events.
 #[derive(Default)]
@@ -41,6 +66,7 @@ struct WidgetBinding {
     attachment: WidgetAttachment,
 }
 impl WidgetBinding {
+    /// Creates a detached widget binding with empty callbacks and no pending children.
     fn new(widget: Widget) -> Self {
         Self {
             widget,
@@ -56,16 +82,20 @@ struct TerminalBinding {
     shared_state: Rc<RefCell<SharedState>>,
     widget_handles: RefCell<HashMap<usize, Weak<RefCell<WidgetBinding>>>>,
 }
+/// Builds a terminal API runtime error tagged with the Lua-visible method name.
 fn runtime_error(method: &str, message: &str) -> LuaError {
     LuaError::RuntimeError(format!("{method}: {message}"))
 }
+/// Builds the standard error used when a widget belongs to a different terminal.
 fn wrong_terminal(method: &str) -> LuaError {
     runtime_error(method, "widget is not attached to this terminal")
 }
+/// Extracts a widget binding handle from Lua widget userdata.
 fn widget_handle_from_userdata(userdata: &LuaAnyUserData) -> LuaResult<Rc<RefCell<WidgetBinding>>> {
     let widget = userdata.borrow::<LuaWidget>()?;
     Ok(widget.binding.clone())
 }
+/// Returns the attached terminal and widget index for a binding when it is currently mounted.
 fn attached_location(binding: &Rc<RefCell<WidgetBinding>>) -> Option<(Rc<TerminalBinding>, usize)> {
     let binding_ref = binding.borrow();
     match &binding_ref.attachment {
@@ -73,6 +103,7 @@ fn attached_location(binding: &Rc<RefCell<WidgetBinding>>) -> Option<(Rc<Termina
         WidgetAttachment::Detached => None,
     }
 }
+/// Returns a widget index only when the binding is attached to the requested terminal.
 fn attached_index_for_terminal(
     binding: &Rc<RefCell<WidgetBinding>>,
     terminal: &Rc<TerminalBinding>,
@@ -85,6 +116,7 @@ fn attached_index_for_terminal(
         }
     })
 }
+/// Resolves a live widget binding for a terminal index and removes stale weak handles.
 fn widget_handle_for_index(
     terminal: &Rc<TerminalBinding>,
     index: usize,
@@ -101,6 +133,7 @@ fn widget_handle_for_index(
         }
     }
 }
+/// Runs a read-only action against the latest widget state whether it is attached or detached.
 fn with_widget<R>(
     binding: &Rc<RefCell<WidgetBinding>>,
     method: &str,
@@ -117,6 +150,7 @@ fn with_widget<R>(
         action(&binding_ref.widget)
     }
 }
+/// Runs a mutable action against the latest widget state whether it is attached or detached.
 fn with_widget_mut<R>(
     binding: &Rc<RefCell<WidgetBinding>>,
     method: &str,
@@ -133,6 +167,7 @@ fn with_widget_mut<R>(
         action(&mut binding_ref.widget)
     }
 }
+/// Stores or clears one Lua callback registry key in a widget callback slot.
 fn store_callback(
     lua: &Lua,
     slot: &mut Option<LuaRegistryKey>,
@@ -145,10 +180,14 @@ fn store_callback(
 }
 /// Identifies which widget callback to dispatch.
 enum CallbackKind {
+    /// Button click callback slot.
     Click,
+    /// Text or value change callback slot.
     Change,
+    /// Selection change callback slot.
     Select,
 }
+/// Invokes the requested widget callback when the binding has one registered.
 fn dispatch_callback(
     lua: &Lua,
     binding: &Rc<RefCell<WidgetBinding>>,
@@ -170,6 +209,7 @@ fn dispatch_callback(
     }
     Ok(())
 }
+/// Dispatches terminal widget events back into their corresponding Lua callbacks.
 fn dispatch_terminal_events(
     lua: &Lua,
     terminal: &Rc<TerminalBinding>,
@@ -187,6 +227,7 @@ fn dispatch_terminal_events(
     }
     Ok(())
 }
+/// Copies the latest terminal widget state back into a detached binding snapshot.
 fn sync_binding_snapshot(
     binding: &Rc<RefCell<WidgetBinding>>,
     terminal: &Rc<TerminalBinding>,
@@ -216,6 +257,7 @@ fn sync_binding_snapshot(
     binding_ref.pending_children = pending_children;
     binding_ref.attachment = WidgetAttachment::Detached;
 }
+/// Reindexes stored widget handles after one widget has been removed from a terminal.
 fn reindex_widget_handles(terminal: &Rc<TerminalBinding>, removed_index: usize) {
     let entries: Vec<(usize, Weak<RefCell<WidgetBinding>>)> = {
         let handles = terminal.widget_handles.borrow();
@@ -252,6 +294,7 @@ fn reindex_widget_handles(terminal: &Rc<TerminalBinding>, removed_index: usize) 
     }
     *terminal.widget_handles.borrow_mut() = reindexed;
 }
+/// Attaches a detached widget binding to a terminal and returns its widget index.
 fn attach_widget(
     terminal: &Rc<TerminalBinding>,
     binding: &Rc<RefCell<WidgetBinding>>,
@@ -299,6 +342,7 @@ fn attach_widget(
     }
     Ok(index)
 }
+/// Detaches one widget from a terminal and restores its local snapshot state.
 fn remove_attached_widget(
     terminal: &Rc<TerminalBinding>,
     binding: &Rc<RefCell<WidgetBinding>>,
@@ -315,6 +359,7 @@ fn remove_attached_widget(
     reindex_widget_handles(terminal, index);
     Ok(true)
 }
+/// Detaches every widget from a terminal and clears the live widget registry.
 fn clear_attached_widgets(terminal: &Rc<TerminalBinding>) {
     let snapshots: Vec<(usize, Rc<RefCell<WidgetBinding>>, Widget)> = {
         let terminal_ref = terminal.terminal.borrow();
@@ -337,6 +382,7 @@ fn clear_attached_widgets(terminal: &Rc<TerminalBinding>) {
     terminal.terminal.borrow_mut().clear_widgets();
     terminal.widget_handles.borrow_mut().clear();
 }
+/// Converts an optional Lua numeric value into a non-negative `usize` with zero fallback.
 fn usize_from_value(value: Option<LuaValue>) -> usize {
     match value {
         Some(LuaValue::Integer(value)) => value.max(0) as usize,
@@ -344,6 +390,7 @@ fn usize_from_value(value: Option<LuaValue>) -> usize {
         _ => 0,
     }
 }
+/// Converts an optional Lua numeric value into an `f32` when possible.
 fn number_from_value(value: Option<LuaValue>) -> Option<f32> {
     match value {
         Some(LuaValue::Integer(value)) => Some(value as f32),
@@ -401,8 +448,8 @@ impl LuaUserData for LuaTerminal {
         });
         // -- get --
         /// Reads the character and colors at a specific cell in the terminal grid.
-        /// @param | col | number | Column index (1-based).
-        /// @param | row | number | Row index (1-based).
+        /// @param | col | integer | Column index (1-based).
+        /// @param | row | integer | Row index (1-based).
         /// @return | number, number, number, number, number, number, number, number, number | Character codepoint, fg RGBA, bg RGBA.
         methods.add_method("get", |_, this, (col, row): (usize, usize)| {
             let cell = this.binding.terminal.borrow().get(col, row);
@@ -420,8 +467,8 @@ impl LuaUserData for LuaTerminal {
         });
         // -- print --
         /// Writes text to the terminal grid starting at a specific cell.
-        /// @param | col | number | Column index (1-based) where writing starts.
-        /// @param | row | number | Row index (1-based) where writing starts.
+        /// @param | col | integer | Column index (1-based) where writing starts.
+        /// @param | row | integer | Row index (1-based) where writing starts.
         /// @param | text | string | Text to write into consecutive cells.
         /// @return | nil | No value is returned.
         methods.add_method(
@@ -528,12 +575,16 @@ impl LuaUserData for LuaTerminal {
         /// Forwards a mouse press event to the terminal, converting pixel coordinates to cell coordinates.
         /// @param | px | number | Pixel X position of the mouse click.
         /// @param | py | number | Pixel Y position of the mouse click.
-        /// @param | button | number? | Mouse button index (default 1 for left).
+        /// @param | button | integer? | Mouse button index (default 1 for left).
         /// @return | nil | No return value.
         methods.add_method(
             "mousepressed",
             |lua, this, (px, py, button): (f32, f32, Option<usize>)| {
-                let (cell_w, cell_h) = font_cell_size(&this.binding.shared_state.borrow());
+                let (cell_w, cell_h) = {
+                    let st = this.binding.shared_state.borrow();
+                    let terminal = this.binding.terminal.borrow();
+                    effective_cell_size(&terminal, &st)
+                };
                 let col = (px / cell_w).floor() as usize + 1;
                 let row = (py / cell_h).floor() as usize + 1;
                 let (_, events) = this.binding.terminal.borrow_mut().mousepressed_with_events(
@@ -546,7 +597,7 @@ impl LuaUserData for LuaTerminal {
             },
         );
         // -- render --
-        /// Renders the terminal grid and all attached widgets by emitting render commands at the given screen position.
+        /// Renders the terminal grid and widgets and stages a window size matching the grid and active cell size.
         /// @param | x | number? | Screen X offset in pixels (default 0).
         /// @param | y | number? | Screen Y offset in pixels (default 0).
         /// @return | nil | No value is returned.
@@ -555,9 +606,8 @@ impl LuaUserData for LuaTerminal {
             let font_key = st.active_font.or(st.default_font);
             if let Some(fk) = font_key {
                 let terminal = this.binding.terminal.borrow();
-                let (cell_w, cell_h) = terminal
-                    .get_cell_size()
-                    .unwrap_or_else(|| font_cell_size(&st));
+                let (cell_w, cell_h) = effective_cell_size(&terminal, &st);
+                let (target_w, target_h) = terminal_window_size(&terminal, &st);
                 let commands = terminal.build_render_commands(
                     x.unwrap_or(0.0),
                     y.unwrap_or(0.0),
@@ -567,17 +617,15 @@ impl LuaUserData for LuaTerminal {
                 );
                 drop(terminal);
                 drop(st);
-                this.binding
-                    .shared_state
-                    .borrow_mut()
-                    .render_commands
-                    .extend(commands);
+                let mut shared = this.binding.shared_state.borrow_mut();
+                shared.window_state.pending_size = Some((target_w, target_h));
+                shared.render_commands.extend(commands);
             }
             Ok(())
         });
         // -- setFont --
-        /// Selects the nearest built-in bitmap font by pixel height for terminal cell rendering.
-        /// @param | height | number | Desired font height in pixels.
+        /// Selects the nearest built-in bitmap font by pixel height and refits the window to the terminal grid.
+        /// @param | height | integer | Desired font height in pixels.
         /// @return | nil | No value is returned.
         methods.add_method("setFont", |_, this, height: u32| {
             let idx = crate::render::Font::nearest_size(height);
@@ -585,6 +633,7 @@ impl LuaUserData for LuaTerminal {
             if let Some(key) = st.default_fonts[idx] {
                 drop(st);
                 this.binding.shared_state.borrow_mut().active_font = Some(key);
+                queue_terminal_window_fit(&this.binding);
                 Ok(())
             } else {
                 Err(LuaError::RuntimeError(
@@ -593,52 +642,36 @@ impl LuaUserData for LuaTerminal {
             }
         });
         // -- setCellSize --
-        /// Overrides the cell width and height used for rendering this terminal grid.
+        /// Overrides the cell width and height used for rendering this terminal grid and refits the window.
         /// @param | w | number | Cell width in pixels.
         /// @param | h | number | Cell height in pixels.
         /// @return | nil | No value is returned.
         methods.add_method("setCellSize", |_, this, (w, h): (f32, f32)| {
             this.binding.terminal.borrow_mut().set_cell_size(w, h);
+            queue_terminal_window_fit(&this.binding);
             Ok(())
         });
         // -- resetCellSize --
-        /// Removes any custom cell size override, reverting to the size derived from the active font.
+        /// Removes any custom cell size override, reverting to the active font metrics and refitting the window.
         /// @return | nil | No value is returned.
         methods.add_method("resetCellSize", |_, this, ()| {
             this.binding.terminal.borrow_mut().reset_cell_size();
+            queue_terminal_window_fit(&this.binding);
             Ok(())
         });
         // -- getCellSize --
-        /// Returns the current custom cell size override, or nil if no override is set.
-        /// @return | table | Table with `w` and `h` fields in pixels, or nil.
-        methods.add_method("getCellSize", |lua, this, ()| {
-            if let Some((w, h)) = this.binding.terminal.borrow().get_cell_size() {
-                let t = lua.create_table()?;
-                t.set("w", w)?;
-                t.set("h", h)?;
-                Ok(mlua::Value::Table(t))
-            } else {
-                Ok(mlua::Value::Nil)
-            }
+        /// Returns the active terminal cell width and height in pixels, using custom override or font metrics.
+        /// @return | number, number | Cell width and height in pixels.
+        methods.add_method("getCellSize", |_, this, ()| {
+            let st = this.binding.shared_state.borrow();
+            let terminal = this.binding.terminal.borrow();
+            Ok(effective_cell_size(&terminal, &st))
         });
         // -- autoResize --
         /// Requests the window to resize so it exactly fits the terminal grid at the current cell size.
         /// @return | nil | No value is returned.
         methods.add_method("autoResize", |_, this, ()| {
-            let st = this.binding.shared_state.borrow();
-            let terminal = this.binding.terminal.borrow();
-            let cols = terminal.cols();
-            let rows = terminal.rows();
-            let (cell_w, cell_h) = font_cell_size(&st);
-            let new_w = cols as u32 * cell_w as u32;
-            let new_h = rows as u32 * cell_h as u32;
-            drop(terminal);
-            drop(st);
-            this.binding
-                .shared_state
-                .borrow_mut()
-                .window_state
-                .pending_size = Some((new_w, new_h));
+            queue_terminal_window_fit(&this.binding);
             Ok(())
         });
         // -- type --
@@ -663,8 +696,8 @@ impl LuaUserData for LuaWidget {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
         // -- setPosition --
         /// Sets the widget position in 1-based cell coordinates within the terminal grid.
-        /// @param | col | number | Column index (1-based).
-        /// @param | row | number | Row index (1-based).
+        /// @param | col | integer | Column index (1-based).
+        /// @param | row | integer | Row index (1-based).
         /// @return | nil | No value is returned.
         methods.add_method("setPosition", |_, this, (col, row): (usize, usize)| {
             with_widget_mut(&this.binding, "Widget:setPosition", |widget| {
@@ -682,8 +715,8 @@ impl LuaUserData for LuaWidget {
         });
         // -- setSize --
         /// Sets the widget dimensions in cell units, clamped to a minimum of 1x1.
-        /// @param | width | number | Width in cells.
-        /// @param | height | number | Height in cells.
+        /// @param | width | integer | Width in cells.
+        /// @param | height | integer | Height in cells.
         /// @return | nil | No value is returned.
         methods.add_method("setSize", |_, this, (width, height): (usize, usize)| {
             with_widget_mut(&this.binding, "Widget:setSize", |widget| {
@@ -827,7 +860,7 @@ impl LuaUserData for LuaWidget {
         });
         // -- setMaxLength --
         /// Sets the maximum number of characters allowed in a text box widget.
-        /// @param | maxLength | number | Maximum character count.
+        /// @param | maxLength | integer | Maximum character count.
         /// @return | LuaValue | Returned Lua value.
         methods.add_method("setMaxLength", |_, this, max_length: usize| {
             with_widget_mut(&this.binding, "Widget:setMaxLength", |widget| {
@@ -873,7 +906,7 @@ impl LuaUserData for LuaWidget {
         });
         // -- removeItem --
         /// Removes a list item by its 1-based index.
-        /// @param | index | number | 1-based item index to remove.
+        /// @param | index | integer | 1-based item index to remove.
         /// @return | LuaValue | Returned Lua value.
         methods.add_method("removeItem", |_, this, index: usize| {
             with_widget_mut(&this.binding, "Widget:removeItem", |widget| {
@@ -904,7 +937,7 @@ impl LuaUserData for LuaWidget {
         });
         // -- getItem --
         /// Returns the text of a list item by its 1-based index.
-        /// @param | index | number | 1-based item index.
+        /// @param | index | integer | 1-based item index.
         /// @return | string | The item text.
         methods.add_method("getItem", |_, this, index: usize| {
             with_widget(&this.binding, "Widget:getItem", |widget| {
@@ -915,7 +948,7 @@ impl LuaUserData for LuaWidget {
         });
         // -- setSelected --
         /// Sets the currently selected item in a list widget by 1-based index, or clears the selection with nil. Fires the onSelect callback if changed.
-        /// @param | index | number? | 1-based item index, or nil to clear selection.
+        /// @param | index | integer? | 1-based item index, or nil to clear selection.
         /// @return | nil | No value is returned.
         methods.add_method("setSelected", |lua, this, index: Option<usize>| {
             let changed = with_widget_mut(&this.binding, "Widget:setSelected", |widget| {
@@ -1121,7 +1154,7 @@ impl LuaUserData for LuaWidget {
         });
         // -- getChild --
         /// Returns a child widget from a panel by its 1-based index, or nil if the index is out of range.
-        /// @param | index | number | 1-based child index.
+        /// @param | index | integer | 1-based child index.
         /// @return | LWidget | The child widget, or nil.
         methods.add_method("getChild", |lua: &Lua, this, index: usize| {
             with_widget(&this.binding, "Widget:getChild", |widget| {
@@ -1185,9 +1218,9 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     let tbl = lua.create_table()?;
     let s = state.clone();
     // -- newTerminal --
-    /// Creates a new terminal emulator grid with the given column and row count.
-    /// @param | cols | number? | Number of columns (default 80).
-    /// @param | rows | number? | Number of rows (default 40).
+    /// Creates a new terminal emulator grid and stages a window size that fits its active cell metrics.
+    /// @param | cols | integer? | Number of columns (default 80).
+    /// @param | rows | integer? | Number of rows (default 40).
     /// @return | LTerminal | The new terminal object.
     tbl.set(
         "newTerminal",
@@ -1200,13 +1233,14 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
                 shared_state: s.clone(),
                 widget_handles: RefCell::new(HashMap::new()),
             });
+            queue_terminal_window_fit(&binding);
             lua.create_userdata(LuaTerminal { binding })
         })?,
     )?;
     // -- newLabel --
     /// Creates a new label widget that displays static text at the given cell position.
-    /// @param | col | number | Column position (1-based).
-    /// @param | row | number | Row position (1-based).
+    /// @param | col | integer | Column position (1-based).
+    /// @param | row | integer | Row position (1-based).
     /// @param | text | string? | Initial text (default empty).
     /// @return | LWidget | The new label widget.
     tbl.set(
@@ -1254,9 +1288,9 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     )?;
     // -- newTextBox --
     /// Creates a new single-line text input widget at the given position with a fixed width.
-    /// @param | col | number | Column position (1-based).
-    /// @param | row | number | Row position (1-based).
-    /// @param | width | number | Input field width in cells.
+    /// @param | col | integer | Column position (1-based).
+    /// @param | row | integer | Row position (1-based).
+    /// @param | width | integer | Input field width in cells.
     /// @return | LWidget | The new text box widget.
     tbl.set(
         "newTextBox",
@@ -1269,10 +1303,10 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     )?;
     // -- newList --
     /// Creates a new scrollable list widget for displaying and selecting items.
-    /// @param | col | number | Column position (1-based).
-    /// @param | row | number | Row position (1-based).
-    /// @param | width | number | List width in cells.
-    /// @param | height | number | List height in cells (visible rows).
+    /// @param | col | integer | Column position (1-based).
+    /// @param | row | integer | Row position (1-based).
+    /// @param | width | integer | List width in cells.
+    /// @param | height | integer | List height in cells (visible rows).
     /// @return | LWidget | The new list widget.
     tbl.set(
         "newList",
@@ -1287,10 +1321,10 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     )?;
     // -- newBorder --
     /// Creates a new decorative border widget drawn using box-drawing characters.
-    /// @param | col | number | Column position (1-based).
-    /// @param | row | number | Row position (1-based).
-    /// @param | width | number | Border width in cells.
-    /// @param | height | number | Border height in cells.
+    /// @param | col | integer | Column position (1-based).
+    /// @param | row | integer | Row position (1-based).
+    /// @param | width | integer | Border width in cells.
+    /// @param | height | integer | Border height in cells.
     /// @return | LWidget | The new border widget.
     tbl.set(
         "newBorder",
@@ -1305,10 +1339,10 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     )?;
     // -- newPanel --
     /// Creates a new panel widget that can contain child widgets for grouped layout.
-    /// @param | col | number | Column position (1-based).
-    /// @param | row | number | Row position (1-based).
-    /// @param | width | number? | Panel width in cells (default 1).
-    /// @param | height | number? | Panel height in cells (default 1).
+    /// @param | col | integer | Column position (1-based).
+    /// @param | row | integer | Row position (1-based).
+    /// @param | width | integer? | Panel width in cells (default 1).
+    /// @param | height | integer? | Panel height in cells (default 1).
     /// @return | LWidget | The new panel widget.
     tbl.set(
         "newPanel",
@@ -1347,8 +1381,8 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     // -- getScrollback --
     /// Retrieves a range of lines from the terminal scrollback buffer.
     /// @param | terminal | LTerminal | The terminal to read from.
-    /// @param | offset | number | 0-based offset from the newest line.
-    /// @param | count | number | Number of lines to retrieve.
+    /// @param | offset | integer | 0-based offset from the newest line.
+    /// @param | count | integer | Number of lines to retrieve.
     /// @return | table | Array of scrollback line strings.
     tbl.set(
         "getScrollback",
@@ -1381,7 +1415,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     // -- setScrollbackCap --
     /// Sets the maximum number of lines retained in the terminal scrollback buffer. Older lines are discarded when the cap is exceeded.
     /// @param | terminal | LTerminal | The terminal to configure.
-    /// @param | cap | number | Maximum number of scrollback lines.
+    /// @param | cap | integer | Maximum number of scrollback lines.
     /// @return | nil | No return value.
     tbl.set(
         "setScrollbackCap",
@@ -1594,8 +1628,8 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     // -- printAnsi --
     /// Renders ANSI-colored text directly onto the terminal grid at the given cell position.
     /// @param | terminal | LTerminal | The terminal to print to.
-    /// @param | col | number | Starting column (1-based).
-    /// @param | row | number | Row to print on (1-based).
+    /// @param | col | integer | Starting column (1-based).
+    /// @param | row | integer | Row to print on (1-based).
     /// @param | text | string | Text containing ANSI escape sequences.
     /// @return | nil | No return value.
     tbl.set(

@@ -90,7 +90,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     let s = state.clone();
     // -- setVSync --
     /// Sets the vertical sync mode. Controls how frame presentation is synchronized with the display.
-    /// @param | mode | number | VSync mode: 0 = off, 1 = on, -1 = adaptive.
+    /// @param | mode | integer | VSync mode: 0 = off, 1 = on, -1 = adaptive.
     /// @return | nil | No return value.
     tbl.set(
         "setVSync",
@@ -192,8 +192,8 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     let s = state.clone();
     // -- setPosition --
     /// Moves the window to the specified screen position.
-    /// @param | x | number | The x-coordinate for the window's top-left corner.
-    /// @param | y | number | The y-coordinate for the window's top-left corner.
+    /// @param | x | integer | The x-coordinate for the window's top-left corner.
+    /// @param | y | integer | The y-coordinate for the window's top-left corner.
     /// @return | nil | No return value.
     tbl.set(
         "setPosition",
@@ -275,7 +275,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     let s = state.clone();
     // -- setDisplay --
     /// Moves the window to the specified display. Throws an error if the index is negative.
-    /// @param | display | number | Zero-based index of the target display.
+    /// @param | display | integer | Zero-based index of the target display.
     /// @return | nil | No return value.
     tbl.set(
         "setDisplay",
@@ -291,7 +291,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     let s = state.clone();
     // -- getDesktopDimensions --
     /// Returns the desktop resolution of a specific display, or the current display if none is specified.
-    /// @param | display | number? | Zero-based display index. Uses the current display if omitted.
+    /// @param | display | integer? | Zero-based display index. Uses the current display if omitted.
     /// @return | number | Desktop width in pixels.
     /// @return | number | Desktop height in pixels.
     tbl.set(
@@ -368,8 +368,8 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     let s = state.clone();
     // -- setMode --
     /// Sets the window display mode with a specific resolution and optional flags. Use this to resize the window and configure fullscreen or VSync at the same time.
-    /// @param | w | number | The desired window width in pixels.
-    /// @param | h | number | The desired window height in pixels.
+    /// @param | w | integer | The desired window width in pixels.
+    /// @param | h | integer | The desired window height in pixels.
     /// @param | flags | table? | Optional table with fields: fullscreen (boolean), fullscreentype (string), vsync (number).
     /// @return | nil | No return value.
     tbl.set(
@@ -512,7 +512,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     let s = state.clone();
     // -- getDisplayName --
     /// Returns the human-readable name of a display. Returns "Unknown" if the display cannot be identified.
-    /// @param | display | number? | Zero-based display index. Uses the current display if omitted.
+    /// @param | display | integer? | Zero-based display index. Uses the current display if omitted.
     /// @return | string | The display name.
     tbl.set(
         "getDisplayName",
@@ -825,6 +825,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         tbl.get::<_, LuaFunction>("getCurrentDisplay")?,
     )?;
     display_tbl.set("setCurrent", tbl.get::<_, LuaFunction>("setDisplay")?)?;
+    // display: subtable of display/monitor query and control functions.
     tbl.set("display", display_tbl)?;
     let mode_tbl = lua.create_table()?;
     mode_tbl.set("set", tbl.get::<_, LuaFunction>("setMode")?)?;
@@ -845,9 +846,11 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         tbl.get::<_, LuaFunction>("requestAttention")?,
     )?;
     mode_tbl.set("flash", tbl.get::<_, LuaFunction>("flash")?)?;
+    // mode: subtable of window mode and state management functions.
     tbl.set("mode", mode_tbl)?;
     let cursor_tbl = lua.create_table()?;
     cursor_tbl.set("hasFocus", tbl.get::<_, LuaFunction>("hasMouseFocus")?)?;
+    // cursor: subtable of cursor focus utilities.
     tbl.set("cursor", cursor_tbl)?;
     lurek.set("window", tbl)?;
     Ok(())

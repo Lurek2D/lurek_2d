@@ -11,23 +11,74 @@
 
 ## Summary
 
-The `light` module is documented from the current source tree and existing module reference data.
+2D lighting data model managing point, spot, and area lights with shadow-casting occluders. `Light2D` stores position, color, radius, intensity, cone angle, falloff curve, and flicker configuration. `LightWorld` holds the collection of lights and `Occluder` segments that block light propagation for shadow generation.
 
-This module primarily collaborates with `image`, `math`, `runtime`. Its responsibility should stay inside the Platform Services group rather than absorb behavior owned by those neighbors.
+Attenuation supports quadratic, linear, and inverse-square falloff models plus custom coefficient tuples. Blend modes control how light contributes to the scene (additive, subtractive, multiply). `FlickerConfig` drives procedural intensity variation using noise patterns. Light groups enable batch control of related lights. Transitions animate light property changes over time. The module is pure data — all GPU rendering is handled by the render module. Exposed as `lurek.light.*`. Platform Services tier.
 
-## Files
+## Source Documentation
 
-- `attenuation.rs`: Defines coefficient-based attenuation for custom distance decay.
-- `blend_mode.rs`: Defines how light mixes with the scene.
-- `falloff.rs`: Defines the high-level radial falloff enum.
-- `flicker.rs`: Defines flicker configuration and phase advancement helpers.
-- `light2d.rs`: Defines Light2D, the main per-light data record with position, radius, color, intensity, masks, shadows, geometry, attenuation, flicker, and grouping.
-- `light_type.rs`: Defines the geometric light-type enum for point, directional, and spot lights.
-- `light_world.rs`: Defines LightWorld, the keyed container for active lights, occluders, ambient color, limits, and group operations.
-- `mod.rs`: Declares the lighting submodules and re-exports the public light types.
-- `occluder.rs`: Defines Occluder, a polygon shadow caster with transform, opacity, mask, and enabled state.
-- `shadow.rs`: Defines the shadow edge-filter enum.
-- `transition.rs`: Smooth linear transition for light color, intensity, and radius.
+### `attenuation.rs`
+- Distance-based light intensity falloff using quadratic attenuation coefficients.
+- Computes attenuation factor from constant, linear, and quadratic terms.
+- Debug visualization of attenuation curves rendered to an image buffer.
+
+### `blend_mode.rs`
+- Define blend modes controlling how each light merges into the accumulation buffer.
+- Support additive, subtractive, and alpha-mix compositing strategies.
+
+### `falloff.rs`
+- Radial intensity falloff shapes applied on top of distance attenuation.
+- Variants control how brightness decreases from a light's center to its radius edge.
+
+### `flicker.rs`
+- Sine-based flicker configuration that modulates light intensity over time.
+- Phase accumulates each frame and wraps at TAU for continuous oscillation.
+- Strength controls peak deviation from base intensity; speed sets radians per second.
+- Disabled by default; enable to animate torches, candles, or neon lights.
+
+### `light2d.rs`
+- Complete `Light2D` struct holding position, color, radius, type, shadow, masks, flicker, and attenuation.
+- Constructor defaults to a white point light with full-layer masks and no shadows.
+- Getter/setter API for every field: position, color, intensity, energy, blend mode, falloff, masks.
+- Spot-light parameters: direction, inner/outer cone angles.
+- Shadow controls: enable, tint color, filter preset, smooth, and softness.
+- Normal-map attachment with optional path and contribution strength.
+- Volumetric scattering toggle and group-id batching support.
+- Debug visualization helper rendering falloff-mode comparison panels to `ImageData`.
+
+### `light_type.rs`
+- Define the geometric illumination models available for 2D lights.
+- Discriminate between point, directional, and spot light behavior.
+- Drive intensity falloff and ray direction logic in the lighting pipeline.
+
+### `light_world.rs`
+- Scene-level container (`LightWorld`) managing all `Light2D` instances and `Occluder` shapes via slotmaps.
+- Add, remove, query, and bulk-update lights and occluders by stable keys.
+- Group operations: enable/disable, intensity, and color changes on a named group ID.
+- Flicker system: lazy-indexed advance loop that only touches lights with active flicker state.
+- Renderer hints: ambient color array, directional light tuples, and normal-map snapshot extraction.
+- Debug visualization: rasterize an approximate light-map preview into an `ImageData` bitmap.
+
+### `mod.rs`
+- 2D lighting system with point, spot, and area light types supporting color, falloff, and flicker.
+- Shadow casting via occluder shapes with configurable filter quality.
+- Light world accumulator that processes all active lights and emits composited render commands.
+- Blend modes and attenuation curves for flexible intensity decay and compositing.
+
+### `occluder.rs`
+- Convex polygon shape that blocks light and casts shadows in the 2D lighting system.
+- Vertex management: construction from Vec2 list or flat coordinate arrays, runtime replacement.
+- Per-occluder properties: world position offset, shadow opacity, light-layer bitmask, enabled toggle.
+
+### `shadow.rs`
+- Shadow filtering quality presets for soft-shadow rendering.
+- Defines PCF sample kernels at varying tap counts.
+- Default is hard shadows (no filtering) for maximum performance.
+
+### `transition.rs`
+- Time-based linear interpolation of light color, intensity, and radius.
+- Clamps duration to a safe minimum and tracks elapsed progress.
+- Returns interpolated values each frame until the transition completes.
 
 ## Types
 

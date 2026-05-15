@@ -11,14 +11,23 @@
 
 ## Summary
 
-The `save` module is documented from the current source tree and existing module reference data.
+Slot-based persistent save system with compression, rotation, dirty tracking, auto-save scheduling, and schema-versioned migrations. `SaveManager` coordinates named data sections — each section registers a collector function (gathers current state as a Lua table) and a restorer function (applies loaded state). Dirty tracking skips writes when state has not changed.
 
-This module primarily collaborates with `data`, `runtime`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
+Serialization converts Lua tables to a `SaveValue` tree, then emits Lua-literal text compressed with LZ4 + Base64. Slot files are numbered with configurable rotation depth and backup copies. Schema versioning stamps each save with a version number; registered migration functions upgrade old saves to the current schema on load. Summary metadata (timestamp, playtime, thumbnail) enables save-slot UI display without full deserialization. Exposed as `lurek.save.*`. Feature Systems tier.
 
-## Files
+## Source Documentation
 
-- `mod.rs`: Declares the save submodules and re-exports the public save manager, value, metadata, serialization-facing types, and compression helpers.
-- `save_manager.rs`: Implements `SaveManager`, slot metadata, schema versioning, dirty tracking, collector registration, restore hooks, auto-save timing, and save-file compression helpers (`compress_save_content`, `decompress_save_content`).
+### `mod.rs`
+- Slot-based save/load with compression and rotation
+- Serialize Lua tables to binary SaveValue format
+- Backup management with configurable slot count
+
+### `save_manager.rs`
+- Dirty-tracking, auto-save scheduling, and schema-versioned migration for `lurek.save`.
+- `SaveManager` owns registration of Lua tables, auto-save interval logic, and migration routing.
+- `SaveValue` tree converts between Lua tables and a serializable Rust enum.
+- Serialization emits Lua table literals; compression uses LZ4 + Base64 with a marker header.
+- Slot file naming, parse validation, and summary forwarding to `SlotMeta`.
 
 ## Types
 

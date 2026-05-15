@@ -351,9 +351,15 @@ impl LuaUserData for LuaUnitPathfinder {
             Ok(this.inner.borrow().get_path_cost(&waypoints))
         });
         // -- findPartialPath --
-        /// Finds a partial path with a node limit.
-        /// @return | table | Array table of waypoint tables.
-        /// @return | boolean | True when the path is complete.
+        /// Finds the best reachable path from a start to a goal within a maximum node budget. Useful for incremental pathfinding across frames.
+        /// @param | x1 | integer | One-based column of the start cell.
+        /// @param | y1 | integer | One-based row of the start cell.
+        /// @param | x2 | integer | One-based column of the goal cell.
+        /// @param | y2 | integer | One-based row of the goal cell.
+        /// @param | max_nodes | integer | Maximum number of nodes to expand before stopping.
+        /// @param | unit_size | integer? | Width/height of the unit in grid cells for clearance checks (default 1).
+        /// @return | table | Array of `{x, y}` waypoint tables forming the found partial path.
+        /// @return | boolean | `true` if the returned path reaches the exact goal cell.
         methods.add_method("findPartialPath", |lua,
              this,
              (x1, y1, x2, y2, max_nodes, unit_size): (

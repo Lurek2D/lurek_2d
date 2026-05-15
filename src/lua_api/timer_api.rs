@@ -47,7 +47,7 @@ impl LuaUserData for LuaScheduler {
         });
         // -- afterFrames --
         /// Schedules a one-shot callback to fire after the given number of frames. Returns an event ID for management.
-        /// @param | n | number | Number of frames to wait before the callback fires.
+        /// @param | n | integer | Number of frames to wait before the callback fires.
         /// @param | func | function | Callback to invoke when the frame count elapses.
         /// @return | number | Unique event ID for this scheduled callback.
         methods.add_method_mut("afterFrames", |lua, this, (n, func): (u64, LuaFunction)| {
@@ -80,7 +80,7 @@ impl LuaUserData for LuaScheduler {
         /// Schedules a repeating callback that fires at a fixed interval in seconds. Pass a positive count to limit repetitions, or omit/pass -1 to repeat indefinitely.
         /// @param | interval | number | Time in seconds between each invocation.
         /// @param | func | function | Callback to invoke on each interval tick.
-        /// @param | count | number? | Maximum number of times to fire. Defaults to -1 (infinite).
+        /// @param | count | integer? | Maximum number of times to fire. Defaults to -1 (infinite).
         /// @return | number | Unique event ID for this repeating callback.
         methods.add_method_mut(
             "every",
@@ -93,9 +93,9 @@ impl LuaUserData for LuaScheduler {
         );
         // -- everyFrames --
         /// Schedules a repeating callback that fires every N frames. Pass a positive count to limit repetitions, or omit/pass -1 to repeat indefinitely.
-        /// @param | n | number | Number of frames between each invocation.
+        /// @param | n | integer | Number of frames between each invocation.
         /// @param | func | function | Callback to invoke on each frame-interval tick.
-        /// @param | count | number? | Maximum number of times to fire. Defaults to -1 (infinite).
+        /// @param | count | integer? | Maximum number of times to fire. Defaults to -1 (infinite).
         /// @return | number | Unique event ID for this repeating callback.
         methods.add_method_mut(
             "everyFrames",
@@ -111,7 +111,7 @@ impl LuaUserData for LuaScheduler {
         /// @param | name | string | Unique name for this repeating event.
         /// @param | interval | number | Time in seconds between each invocation.
         /// @param | func | function | Callback to invoke on each interval tick.
-        /// @param | count | number? | Maximum number of times to fire. Defaults to -1 (infinite).
+        /// @param | count | integer? | Maximum number of times to fire. Defaults to -1 (infinite).
         /// @return | number | Unique event ID for this repeating callback.
         methods.add_method_mut(
             "everyNamed",
@@ -131,7 +131,7 @@ impl LuaUserData for LuaScheduler {
         );
         // -- cancel --
         /// Cancels a scheduled event by its ID. Returns true if the event was found and removed, false if it did not exist.
-        /// @param | id | number | Event ID returned by after, every, or their variants.
+        /// @param | id | integer | Event ID returned by after, every, or their variants.
         /// @return | boolean | True if the event was found and cancelled.
         methods.add_method_mut("cancel", |lua, this, id: u32| {
             let removed = this.scheduler.cancel(id);
@@ -167,17 +167,17 @@ impl LuaUserData for LuaScheduler {
         });
         // -- pause --
         /// Pauses a scheduled event so it stops accumulating time. Returns true if the event was found and paused.
-        /// @param | id | number | Event ID to pause.
+        /// @param | id | integer | Event ID to pause.
         /// @return | boolean | True if the event exists and was paused.
         methods.add_method_mut("pause", |_, this, id: u32| Ok(this.scheduler.pause(id)));
         // -- resume --
         /// Resumes a previously paused event so it continues accumulating time. Returns true if the event was found and resumed.
-        /// @param | id | number | Event ID to resume.
+        /// @param | id | integer | Event ID to resume.
         /// @return | boolean | True if the event exists and was resumed.
         methods.add_method_mut("resume", |_, this, id: u32| Ok(this.scheduler.resume(id)));
         // -- isPaused --
         /// Checks whether a scheduled event is currently paused.
-        /// @param | id | number | Event ID to check.
+        /// @param | id | integer | Event ID to check.
         /// @return | boolean | True if the event is paused, false if running or not found.
         methods.add_method("isPaused", |_, this, id: u32| {
             Ok(this.scheduler.is_paused(id))
@@ -205,7 +205,7 @@ impl LuaUserData for LuaScheduler {
         });
         // -- getRemaining --
         /// Returns the remaining time in seconds before the event fires. The first return value indicates whether the event was found; the second is the remaining time (0.0 if not found).
-        /// @param | id | number | Event ID to query.
+        /// @param | id | integer | Event ID to query.
         /// @return | boolean | True if the event exists.
         /// @return | number | Remaining time in seconds, or 0.0 if not found.
         methods.add_method("getRemaining", |_, this, id: u32| {
@@ -216,7 +216,7 @@ impl LuaUserData for LuaScheduler {
         });
         // -- getInterval --
         /// Returns the interval duration in seconds for a repeating event. The first return value indicates whether the event was found; the second is the interval (0.0 if not found).
-        /// @param | id | number | Event ID to query.
+        /// @param | id | integer | Event ID to query.
         /// @return | boolean | True if the event exists.
         /// @return | number | Interval in seconds, or 0.0 if not found.
         methods.add_method("getInterval", |_, this, id: u32| {
@@ -227,7 +227,7 @@ impl LuaUserData for LuaScheduler {
         });
         // -- getRepeatCount --
         /// Returns the remaining repeat count for a repeating event. The first return value indicates whether the event was found; the second is the count (0 if not found). A value of -1 means infinite repeats.
-        /// @param | id | number | Event ID to query.
+        /// @param | id | integer | Event ID to query.
         /// @return | boolean | True if the event exists.
         /// @return | number | Remaining repeat count, or 0 if not found.
         methods.add_method("getRepeatCount", |_, this, id: u32| {
@@ -246,7 +246,7 @@ impl LuaUserData for LuaScheduler {
         methods.add_method("isEmpty", |_, this, ()| Ok(this.scheduler.is_empty()));
         // -- setInterval --
         /// Changes the interval duration in seconds for an existing repeating event. Returns true if the event was found and updated.
-        /// @param | id | number | Event ID of the repeating event.
+        /// @param | id | integer | Event ID of the repeating event.
         /// @param | interval | number | New interval duration in seconds.
         /// @return | boolean | True if the event was found and its interval updated.
         methods.add_method_mut("setInterval", |_, this, (id, interval): (u32, f64)| {
@@ -254,7 +254,7 @@ impl LuaUserData for LuaScheduler {
         });
         // -- resetEvent --
         /// Resets the elapsed time of a scheduled event back to zero, restarting its delay or interval countdown. Returns true if the event was found and reset.
-        /// @param | id | number | Event ID to reset.
+        /// @param | id | integer | Event ID to reset.
         /// @return | boolean | True if the event was found and reset.
         methods.add_method_mut("resetEvent", |_, this, id: u32| {
             Ok(this.scheduler.reset_event(id))
@@ -429,7 +429,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     )?;
     // -- setPhysicsMaxSteps --
     /// Sets the maximum number of physics steps allowed per frame. Clamped between 1 and 64. Higher values improve accuracy under lag but cost more CPU.
-    /// @param | n | number | Maximum physics steps per frame.
+    /// @param | n | integer | Maximum physics steps per frame.
     /// @return | nil | No return value.
     let s = state.clone();
     tbl.set(
@@ -589,7 +589,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     )?;
     // -- waitFrames --
     /// Yields the current coroutine for the given number of frames. Must be called from within a coroutine. The coroutine is resumed automatically when tickWaits is called and the target frame count has been reached.
-    /// @param | frames | number | Number of frames to wait.
+    /// @param | frames | integer | Number of frames to wait.
     /// @return | nil | No return value.
     let wf = wait_frames.clone();
     let s_wf = state.clone();
@@ -668,6 +668,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     // -- delay --
     /// Alias for waitSeconds. Yields the current coroutine for the given number of seconds.
     let wait_fn: LuaValue = tbl.get("waitSeconds")?;
+    // delay: alias for waitSeconds
     tbl.set("delay", wait_fn)?;
     lurek.set("timer", tbl)?;
     Ok(())

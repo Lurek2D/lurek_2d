@@ -11,18 +11,44 @@
 
 ## Summary
 
-The `parallax` module is documented from the current source tree and existing module reference data.
+Multi-layer scrolling background system with camera-relative scroll factors, auto-scroll, tiling, and blend modes. Each `ParallaxLayer` defines a texture, scroll speed multiplier (0.0 = static, 1.0 = locked to camera), vertical/horizontal tiling, opacity, tint color, and blend mode. Layers stack back-to-front with the lowest scroll factor appearing furthest away.
 
-This module primarily collaborates with `image`, `render`, `runtime`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
+Auto-scroll adds constant velocity independent of camera movement for ambient effects (clouds, stars). `ParallaxDrawBatch` describes the computed draw state for a layer after camera transform application — the renderer consumes these batches for actual GPU draws. Presets provide common configurations (sky gradients, forest layers, city skylines). Exposed as `lurek.parallax.*`. Feature Systems tier.
 
-## Files
+## Source Documentation
 
-- `draw.rs`: Implements CPU-side image drawing for headless and test-friendly parallax output without depending on the GPU path.
-- `layer.rs`: Defines `ParallaxLayer` state, scroll calculations, autoscroll behavior, and batch-building logic.
-- `mod.rs`: Declares the parallax submodules and re-exports the main layer and batch types.
-- `presets.rs`: Provides reusable constructors for common layer styles (`far`, `mid`, `fog`).
-- `render.rs`: Converts parallax batches into `RenderCommand` sequences with color, blend mode, and repeated image draws.
-- `tile_iter.rs`: Shared tiled-position iterator with stronger off-screen culling margin and safety cap.
+### `draw.rs`
+- Rasterisation of a single parallax layer into an `ImageData` bitmap.
+- Applies tint, opacity, and visibility when drawing.
+- Produces a solid-colour image sized to the requested dimensions.
+
+### `layer.rs`
+- Single parallax layer definition with scroll factor, autoscroll, tiling, opacity, and tint.
+- Draw-batch struct that collects tile positions and render state for submission.
+- Camera-relative pixel offset computation with optional scroll clamping.
+- Tile repetition logic delegated to `tile_iter` for viewport coverage.
+- Motion-stretch blur effect injection based on autoscroll velocity.
+- Shader effect chain management (set, clear, count) per layer.
+
+### `mod.rs`
+- Multi-layer parallax scrolling system with per-layer speed, tiling, and draw-batch accumulation.
+- Preset constructors for common configurations (sky, mountains, clouds).
+- Tile-column iterator and stateless draw-call generation into `RenderCommand` payloads.
+
+### `presets.rs`
+- Ready-made parallax layer constructors for common depth planes.
+- Far background, mid background, and foreground fog presets.
+- Each preset configures scroll factor, repeat, z-order, opacity, and blend mode.
+
+### `render.rs`
+- Convert parallax layer state into flat `RenderCommand` lists for the renderer.
+- Tile position batches into draw-image sequences with color and blend pre-applied.
+- Bridge between the parallax camera math and the GPU submission pipeline.
+
+### `tile_iter.rs`
+- Compute visible tile positions for repeating parallax layers within a screen rect plus cull margin.
+- Walk one axis at a time and combine X/Y into a full grid, capped to prevent runaway allocation.
+- Non-repeating layers emit only the single start position.
 
 ## Types
 

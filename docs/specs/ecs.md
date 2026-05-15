@@ -11,35 +11,58 @@
 
 ## Summary
 
-The `ecs` module provides Lurek2D's Lua-first ECS runtime using a single `Universe` userdata (`lurek.ecs.newUniverse()`).
+Lua-first Entity-Component-System runtime centered on the `Universe` container. Entities are packed generational IDs (24-bit slot + 8-bit generation) with slot reuse invalidating stale handles. Components are Lua values stored per-entity in Lua registry tables — no Rust-side component storage. Core operations: `spawn`, `kill`, `isAlive`, `set`/`get`/`has`/`remove` component, with batch queries via `query`, `queryNot`, `queryMulti`.
 
-**Entity lifecycle.** Entities are packed generational IDs (24-bit slot + 8-bit generation). Slot reuse invalidates stale handles by generation mismatch. Core operations: `spawn`, `kill`, `killRecursive`, `isAlive`, `getEntities`, `getEntityCount`.
+Supports parent-child relationships with recursive kill propagation, string and bitmap tags (up to 63 named bits), numeric layers, and blueprints for template-based spawning. Systems register as named Lua callbacks executed in dependency order during `update` and `render` phases. Snapshot serialization enables save/load and network sync via `serialize`/`deserialize` with diff-based delta compression. Exposed as `lurek.ecs.*`.
 
-**Component storage and queries.** Components are Lua values stored per-entity in Lua registry tables. Core operations: `set/get/has/remove/getComponents`, `query`, `queryNot`, and `queryMulti` (batched callback with multiple component payloads in one pass).
+## Source Documentation
 
-**Tags and layers.** The module supports both string tags and bitmap tags (up to 63 named bits), plus numeric layering. Query helpers include `getEntitiesByTag`, `queryBitmapTag`, `queryBitmapAny`, `queryBitmapAll`, `getEntitiesByLayer`, and `getEntitiesSorted`.
+### `generational_id.rs`
+- Pack and unpack 24-bit slot + 8-bit generation into a single u32 entity id.
+- Stateless utility struct with no allocation or state.
+- Supports up to ~16M slots and 256 generations per slot.
 
-**Blueprints and bulk spawning.** Blueprint APIs (`defineBlueprint`, `extendBlueprint`, `spawnBlueprint`, `spawnBulk`) provide reusable templates with deep-copy isolation and optional override tables.
+### `lua_table.rs`
+- Deep-copy utility for Lua tables via mlua.
+- Recursively clones nested table structures by value.
+- Used by ECS and other systems that need independent table snapshots.
 
-**Hierarchy and directed relations.** `setParent/getParent/getChildren` define parent-child trees. `addRelation/getRelated/removeRelation/clearRelations/hasRelation` provide directed named graph links. `RelationshipManager` in `relationships.rs` provides separate symmetric numeric + level-based relations.
+### `mod.rs`
+- Lightweight ECS: entities with generational IDs, Lua-table components, tags, and blueprints.
+- Relationship graph for parent/child, ownership, and custom link types between entities.
+- Deep-copy and snapshot utilities for cloning Lua component tables.
 
-**System scheduling.** Systems are registered with optional `priority`, optional `phase`, optional stable `name`, and optional `after` dependency names. Built-in phase usage is `pre_update`, `update`, `post_update`, and `render`. Default-phase systems (no phase specified) run in both `update()` and `render()` for backward compatibility. Dispatch APIs: `update`, `updatePhase`, `render`, `emit`. Per-phase ordering is dependency-aware (topological by `after`) with priority as stable fallback.
+### `relationships.rs`
+- Relationship type definitions with named level labels and validated defaults.
+- Pairwise relationship records storing numeric affinity and per-type level state.
+- Canonical entity-pair ordering for symmetric, order-independent lookups.
+- Directed named links between entities for one-way associations.
+- Query helpers: filter by entity, check existence, iterate all relations.
 
-**Change detection and snapshots.** Component writes/removals mark entities dirty (`getDirtyEntities`) until `flushObservers` drains events. World state can be persisted/restored through `serialize/deserialize` and aliases `snapshot/applySnapshot`. Incremental diffs are available through `takeSnapshotDiff` (Lua) / `take_snapshot_diff` (Rust) and report added/removed components, deleted entities, and dirty entities since the previous diff pull.
+### `universe.rs`
+- Entity lifecycle: spawn, kill, recursive kill, alive checks, and generational id packing.
+- Component storage: set, get, has, remove, and name-list queries backed by Lua registry tables.
+- Archetype-style query acceleration via optional component-name index (`ecs-archetype` feature).
+- String tags with reverse index and bitmap tags with 63-bit fast masking.
+- Entity hierarchy: parent/child links, recursive deletion, and child enumeration.
+- Layer assignment and sorted entity retrieval for render ordering.
+- Blueprint templates: define, extend, spawn from template, and list operations.
+- System registration metadata: priorities, phases, names, and dependency lists.
+- Snapshot diff and dirty tracking for component add/remove notification streams.
+- Full universe reset via clear, draining all stores and recycling state.
 
-**Sparse query fast-path (opt-in).** Cargo feature `ecs-archetype` enables a sparse-set style component index (`component -> entity slots`) used to narrow candidates for `query`, `queryNot`, and `queryMulti` before table checks.
+### `universe_ext.rs`
+- Extended Universe operations: advanced queries, bulk spawning, and state serialization.
+- query_not filters entities by required and excluded component sets.
+- query_multi invokes a callback with packed ids and multiple component values per entity.
+- spawn_bulk creates many entities from a single blueprint with optional per-entity overrides.
+- serialize_to_table / deserialize_from_table convert live universe state to and from Lua tables.
+- Serialization captures components, tags, layers, bitmap masks, and parent-child hierarchy.
 
-**Scope boundary.** Feature Systems tier. Depends on `runtime` for SharedState registration. Lua bridge in `src/lua_api/ecs_api.rs`.
-
-## Files
-
-- `generational_id.rs`: - Pack and unpack 24-bit slot + 8-bit generation into a single u32 entity id.
-- `lua_table.rs`: - Deep-copy utility for Lua tables via mlua.
-- `mod.rs`: Declares the ECS submodules and re-exports the main world and relationship types.
-- `relationships.rs`: Defines reusable relationship types and the `RelationshipManager` for symmetric pairwise values and named relation levels.
-- `universe.rs`: Defines `Universe` core state, lifecycle, component/tag/layer/system operations, plus phase ordering and sparse-index helpers.
-- `universe_ext.rs`: Defines extension `impl Universe` blocks for query batching/filtering, bulk spawning, snapshot serialization, and restore logic.
-- `universe_systems.rs`: Defines extracted system registration/removal/count and dependency-aware phase ordering logic.
+### `universe_systems.rs`
+- System registration, removal, and count queries on a Universe.
+- Priority-based and dependency-aware topological sorting of systems per phase.
+- Phase filtering with fallback semantics for empty-phase systems.
 
 ## Types
 

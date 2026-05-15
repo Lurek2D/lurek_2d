@@ -11,32 +11,41 @@
 
 ## Summary
 
-The `automation` module is Lurek2D's automated input simulation engine — a Feature Systems tier subsystem for loading, recording, and playing back scripted input sequences. It is primarily used for headless integration tests, QA regression replay, speedrun verification, and development session recording.
+Headless input simulation framework for automated testing, QA replay, and recorded gameplay sessions. `Script` holds an ordered sequence of `Step` entries — each step is a timed action (key press, mouse move, click, wait, assert) that the `Simulator` executes against the engine's input and event systems without a visible window.
 
-**Core model.** The central type is `Simulator`, a playback engine that owns a named registry of `Script` objects. Each `Script` contains a time-sorted `Vec<Step>` where every `Step` pairs an `Action` variant with a timestamp (in seconds from script start) and optional parameters. `Action` variants include standard input events plus orchestration actions: `Repeat`, `CallMacro`, `Assert`, and `VisualAssert`. Scripts are capped at `MAX_STEPS` entries (module-wide default, overridable per-script) to prevent unbounded memory use.
+Scripts can be loaded from TOML files or constructed from Lua tables. The simulator supports pause/resume, conditional branching via named flags, and a highlight mode that overlays action indicators when running with a visible window. Used by `tests/lua/` harness for deterministic integration testing and by `lurek.automation.*` for in-game replay features.
 
-**Playback.** `Simulator::update(dt)` advances an internal deterministic microsecond clock and dispatches all steps whose timestamp is reached by pushing synthetic `Event` values into the engine's `EventQueue` through the same `push()` path as real hardware events. Time accumulation now uses the shared `timer::accumulate_scaled_micros` helper (fixed-point carry) instead of local float accumulation. The simulator exposes `update_with_sink` via a sink trait for unit tests that do not want to instantiate `EventQueue`. The playback state machine now includes failure handling: `Idle → Running → Paused → Running → Complete | Failed`.
+## Source Documentation
 
-**Script lifecycle.** Scripts can be created programmatically from Lua tables or loaded from TOML files via `Script::from_toml(string)`. Each script carries: name, optional description string, the step list, and an optional per-script step limit via `set_step_limit` / `get_step_limit` (independent of the module-wide `MAX_STEPS` cap).
+### `mod.rs`
+- Automation subsystem for deterministic input replay and visual regression testing.
+- Script stores time-sorted steps parsed from TOML with repeat expansion.
+- Simulator drives playback, dispatches events, evaluates conditions, and runs asserts.
+- Step and Action types describe timed input events and control flow actions.
 
-**Macro system.** `Simulator` includes an inline macro recording and playback manager: `save_macro(name, steps)` stores a named step sequence; `play_macro(name)` appends it to the active timeline; `has_macro(name)` / `list_macros()` query the registry. This enables composable test sequences from reusable input fragments.
+### `script.rs`
+- Automation script container: named, time-sorted step sequences for deterministic replay.
+- Expands repeat markers into cloned steps at computed time offsets.
+- Parses TOML input with meta description and typed step fields.
+- Enforces a configurable step limit (default MAX_STEPS = 100,000).
+- Sorts steps by time after expansion for correct playback ordering.
 
-**Time scaling.** `set_playback_speed(factor)` / `get_playback_speed()` controls the rate at which the internal clock advances relative to wall-clock dt. Values greater than 1.0 fast-forward replay, enabling rapid regression sweeps. Values less than 1.0 slow-motion the replay for debugging timing-sensitive steps.
+### `simulator.rs`
+- Automation simulator: drives script playback by advancing time and dispatching events.
+- Manages a registry of named scripts and macros with load/unload lifecycle.
+- Evaluates condition expressions (&&, ||, !, parentheses) against named boolean flags.
+- Supports pause, resume, speed control, and visual highlight mode for debug tools.
+- CallMacro steps inline macro scripts at the current playback position.
+- VisualAssert steps compare baseline and actual images with pixel-diff tolerance.
+- Assert steps halt playback when condition expressions evaluate to false.
+- StepEventSink trait decouples event dispatch from EventQueue for testing.
 
-**Highlight mode.** `set_highlight_mode(bool)` / `is_highlight_mode()` toggles visual input feedback during replay — useful for demo recording and QA review sessions where reviewers need to see which input is being simulated.
-
-**`waitUntil` primitive.** The Lua surface exposes `lurek.automation.waitUntil(predicate)`, a synchronisation step that inserts a blocking sentinel into the timeline. The simulator fires the predicate each tick and only advances to the next step when it returns true. This enables `waitUntil(function() return boss:isDead() end)` style synchronisation without hard-coded timestamps.
-
-**Lua surface.** Script management: `load(name, data)`, `loadFromToml(name, toml)`, `unload(name)`, `hasScript(name)`, `getScripts()`. Playback: `start(name)`, `stop()`, `pause()`, `resume()`, `isComplete()`, `isRunning()`, `isPaused()`, `isFailed()`, `getLastError()`, `update(dt)`. Extended API: `setStepLimit(name, n)`, `getStepLimit(name)`, `setPlaybackSpeed(f)`, `getPlaybackSpeed()`, `saveMacro(name, scriptName)`, `playMacro(name)`, `hasMacro(name)`, `listMacros()`, `setCondition(name, value)`, `getCondition(name)`, `setHighlightMode(bool)`, `isHighlightMode()`, `waitUntil(fn, timeout)`. `when` and `assert` step fields now accept boolean expressions (`!`, `&&`, `||`, parentheses) over named conditions.
-
-**Scope boundary.** Core Runtime tier (uses runtime event infrastructure). Depends on `event`, `runtime`. Lua bridge in `src/lua_api/automation_api.rs`.
-
-## Files
-
-- `mod.rs`: Module root that documents the automation surface and re-exports Script, Simulator, Action, and Step. This is the shortest entry point for understanding what the module exposes to other Rust code.
-- `script.rs`: Defines Script, the named container for a time-sorted list of Steps. It also enforces the step-count cap and supports TOML-based script loading.
-- `simulator.rs`: Defines Simulator and its internal playback state machine. This is the runtime engine that loads scripts, starts and stops playback, advances elapsed time, and pushes synthetic events into the EventQueue.
-- `step.rs`: Defines the Action enum and Step record that describe a single timed automation action. This file is the schema for every script entry regardless of whether it comes from Lua, TOML, or Rust-side tests.
+### `step.rs`
+- Action enum and Step struct: typed event descriptors for automation playback.
+- Action variants cover keyboard, mouse, wheel, text, wait, repeat, macro, and asserts.
+- Step carries all optional fields (key, position, delta, button, text, conditions).
+- Parse support maps lowercase action strings to Action variants.
+- Repeat and interval fields drive expansion in Script construction.
 
 ## Types
 

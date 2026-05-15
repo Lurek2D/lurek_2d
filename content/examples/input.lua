@@ -947,9 +947,9 @@ end
 -- ---- Example: lurek.input.loadGamepadMappings -------------------------------
 --@api-stub: lurek.input.loadGamepadMappings
 -- Loads SDL2 GameControllerDB-format mappings from a file.
-do -- lurek.input.loadGamepadMappings
+do -- lurek.input.gamepad.loadGamepadMappings
   -- loadGamepadMappings may not be available headless; guard with pcall
-  local ok, count = pcall(lurek.input.loadGamepadMappings, "assets/gamecontrollerdb.txt")
+  local ok, count = pcall(lurek.input.gamepad.loadGamepadMappings, "assets/gamecontrollerdb.txt")
   lurek.log.info("loadGamepadMappings ok=" .. tostring(ok), "input")
 end
 

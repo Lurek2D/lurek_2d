@@ -11,55 +11,96 @@
 
 ## Summary
 
-The `effect` module owns Lurek2D's post-processing and image-effect pipeline — a Platform Services tier module that applies full-screen or region-based visual transformations on top of the rendered game scene. It is the home for blur, bloom, distortion, colour grading, scanlines, vignette, pixelation, lens distortion, weather overlays, screen flash/shake/fade, and custom WGSL fragment shaders. All effect state flows through the render command queue and has no coupling to physics, audio, ECS, or input.
+Post-processing and screen effect pipeline operating on rendered frames. `PostFxStack` manages an ordered list of `PostFxEffect` instances that process the frame buffer sequentially — effects include blur (Gaussian, box, radial), bloom (threshold + blur + additive blend), color grading (LUT-based), lens distortion, vignette, chromatic aberration, scanlines, CRT curvature, film grain, and pixelation.
 
-**PostFxStack — the full-frame pipeline.** `PostFxStack` is the ordered container for full-screen post-processing passes. `PostFxEffect` describes one pass: an `PostFxEffectType` variant selecting the built-in shader, a parameter map (`HashMap<String, f32>` for intensity, radius, threshold, etc.), an enabled flag, and an optional custom WGSL shader handle. Effects are applied in stack order after the main world and UI passes are complete.
+`ImageEffect` provides CPU-side per-pixel operations for cases where GPU post-processing is not needed. `Overlay` manages ambient lighting state, weather particle overlays (rain, snow, fog, dust), and screen-space flash/fade/shake. `WaterOverlay` adds animated water surface distortion. Transition effects (fade, wipe, dissolve, pixelate) bridge scene changes. Each effect is configured via Lua tables and controlled through `lurek.effect.*`.
 
-**ImageEffect — per-object effects.** `ImageEffect` is a smaller effect descriptor attached to individual image or sprite draws. It supports the same preset library but applies only to the texture it is attached to before it is composited into the scene, enabling per-sprite chromatic aberration, desaturation, or custom shader effects.
+## Source Documentation
 
-**Presets library.** `presets.rs` registers a library of commonly needed named effects as `PostFxEffect` templates: gaussian blur, box blur, chromatic aberration, CRT scanlines, colour inversion, sepia, pixelation, edge detection, sharpening, and a classic vignette. Lua scripts apply these by name without writing WGSL.
+### `ambient.rs`
+- Global ambient tint state driven by a time-of-day curve.
+- Maps hour values (0–24) to RGBA color through piecewise dawn/day/dusk/night segments.
+- Consumed by the overlay renderer when the ambient effect is enabled.
 
-**Dedicated preset types.** Three additional source files add first-class preset types with their own parameter sets:
-- `color_grade.rs` — `ColorGrade`: separate shadow, midtone, and highlight tint controls with saturation and exposure.
-- `lens_distort.rs` — `LensDistort`: barrel and pincushion optical lens distortion with configurable strength and aberration.
-- `scanline.rs` — `Scanline`: CRT-style horizontal scanline overlay with line height, brightness, and colour shift.
+### `atmosphere.rs`
+- State structs for full-screen atmosphere overlays: clouds, fog, heat haze, vignette, film grain, and lightning flash.
+- Each struct carries enabled flag plus effect-specific parameters (density, intensity, color, speed).
+- All default to disabled so overlays are opt-in per scene.
 
-**Overlay — top-level screen controller.** `Overlay` aggregates all ambient, atmospheric, weather, and transient screen-state into a single controller polled by the renderer each frame:
-- `AmbientState`: time-of-day tint and brightness.
-- `FogState`, `CloudState`, `HeatHazeState`, `VignetteState`, `FilmGrainState`, `LightningState` (atmosphere).
-- `WaterOverlay`: UV-distortion water surface with depth tint.
-- `WeatherState`: rain/snow particle simulation with wind and intensity.
-- `ScreenEffects`: flash (timed full-screen colour), shake (positional offset), fade (in/out alpha transition).
-- `TransitionState`: cross-fade, wipe, and slide screen-transition management.
+### `draw.rs`
+- Render a preview image summarizing the current post-FX stack state.
+- Produce a solid-color thumbnail indicating whether any effects are active.
 
-**Render integration.** `render.rs` emits `RenderCommand::BeginPostFx` / `RenderCommand::EndPostFx` / `RenderCommand::ApplyPostFx` markers into the command queue. The GPU renderer processes these after the main draw pass: for each effect in the stack, it binds the effect's shader (all built-in WGSL sources are embedded at compile time), pushes uniform parameters, and renders a full-screen textured quad reading from the previous pass's output.
+### `effect.rs`
+- Post-processing effect instance holding type, parameters, and enabled state.
+- Built-in effects carry default params; custom effects bind to an explicit shader id.
+- Parameter accessors for reading, writing, and listing scalar uniforms.
 
-**Lua surface.** `lurek.effect.newStack()` → `PostFxStack` userdata. `stack:add(effectName, params)`, `stack:remove(i)`, `stack:enable(i)`, `stack:disable(i)`. `lurek.effect.newImageEffect(name, params)` → `ImageEffect` userdata (attached to image draws). `lurek.effect.newColorGrade(params)`, `newLensDistort(params)`, `newScanline(params)`. Overlay: `lurek.effect.overlay.*` for ambient, fog, vignette, weather, flash, shake, fade.
+### `effect_type.rs`
+- Post-processing effect type enumeration and name registry.
+- Canonical lowercase name mapping for Lua-facing effect lookup.
+- Debug label generation for renderer diagnostics.
+- Default parameter tables for each built-in effect.
+- Built-in effect catalog excluding the custom shader pass.
 
-**Scope boundary.** Platform Services tier. Depends on `render` (command types), `image`, `runtime`. Lua bridge in `src/lua_api/effect_api.rs`.
+### `image_effect.rs`
+- Image-scoped post-processing effect pipeline that groups and orders shader passes.
+- Provides add, remove, lookup-by-index/name, and clear operations on owned or shared effects.
+- Converts the active pipeline into renderer-ready `ShaderPassDescriptor` sequences.
 
-**Ownership clarifications.**
-- Screen shake in `effect` is overlay-level screen-space shake (`Overlay::trigger_shake` / `ShakeState`). Camera shake in `camera` remains camera-transform shake. They are intentionally separate control points.
-- `effect::AmbientState` controls post-process ambient tint as an overlay visual layer. `light::LightWorld.ambient` controls gameplay/world light accumulation in the light system. They are separate domains.
-- `effect::WeatherState` is lightweight full-screen weather overlay particles. The `particle` module remains the general-purpose emitter/runtime for gameplay particles.
+### `mod.rs`
+- Post-processing effect stack: bloom, blur, CRT, vignette, film grain, and custom shaders.
+- Screen overlays: weather particles, fog, heat haze, water distortion, flashes, and fades.
+- Atmosphere and ambient color derived from time-of-day.
+- Named presets and per-image effect ordering.
 
-## Files
+### `overlay.rs`
+- Central `Overlay` struct owning every screen-space post-world effect state block.
+- Per-frame update loop advancing weather particles, flash decay, shake decay, fade interpolation, cloud scroll, and lightning.
+- Weather particle spawning and simulation for rain, snow, hail, dust, leaves, ash, and pollen modes.
+- Trigger API for flash, camera shake, screen fade, and lightning flash events.
+- Query helpers for shake offset, flash/lightning alpha, active state, and target dimensions.
+- Render command builder emitting full-screen colored rectangles for flash, fade, lightning, and vignette overlays.
+- Clear/reset restoring all subsystems to default inactive state.
+- Debug visualization: state panels, flash frame strips, shake offset trails, fade transition strips, and combined trigger previews.
 
-- `ambient.rs`: Defines time-of-day ambient lighting state.
-- `atmosphere.rs`: Defines cloud, fog, heat haze, vignette, film grain, and lightning state structs.
-- `draw.rs`: Provides CPU-side fallback drawing helpers for post-processing stacks.
-- `effect.rs`: Defines PostFxEffect, the parameter bag for a single post-processing pass.
-- `effect_type.rs`: Defines PostFxEffectType and the default parameter presets for built-in effect kinds.
-- `image_effect.rs`: Defines ImageEffect, a smaller effect chain attached to individual image draws.
-- `mod.rs`: Declares the effect submodules and re-exports the public post-processing and overlay types.
-- `overlay.rs`: Defines Overlay, the top-level screen-effect controller that aggregates ambient, atmospheric, weather, and transient screen effects.
-- `presets.rs`: Preset effect stacks for common visual styles.
-- `render.rs`: Generates render-command markers for beginning, ending, and applying post-processing capture.
-- `screen_effects.rs`: Defines flash, shake, and fade state.
-- `stack.rs`: Defines PostFxStack, the ordered full-frame post-processing pipeline container.
-- `transition.rs`: Screen-transition effect data model for [`super::PostFxStack`].
-- `water_overlay.rs`: Water surface overlay with UV distortion and depth-tint controls.
-- `weather.rs`: Defines weather particle types, live particles, and weather simulation state.
+### `presets.rs`
+- Built-in post-processing effect presets (retro TV, horror, dream, neon, sepia).
+- Preset construction with viewport-sized stack initialization.
+- Static name lookup for canonical preset identifiers.
+
+### `render.rs`
+- Render-command integration for the post-effects stack.
+- Emits begin/end/apply command sequences consumed by the renderer.
+- Skips command generation when no effects are enabled.
+
+### `screen_effects.rs`
+- Full-screen effect state machines: flash, shake, and fade.
+- Each state tracks active flag, timing, and per-frame parameters.
+- Deterministic PRNG for shake offsets without external RNG dependency.
+
+### `stack.rs`
+- Ordered post-processing effect stack with per-entry enable flags.
+- Index-based effect references aligned with a parallel enabled vector.
+- Stack manipulation: add, remove, insert, reorder, deduplicate.
+- Query helpers for enabled subset, dimensions, and positional lookup.
+- Debug visualization renderers for stack state, catalogs, parameters, and type bars.
+
+### `transition.rs`
+- Full-screen transition effects: fade, wipe, iris wipe, and dissolve.
+- String-based kind parsing with canonical name round-tripping.
+- Time-based playback lifecycle with forward and reverse modes.
+- Normalized progress query for renderer consumption.
+
+### `water_overlay.rs`
+- Animated water distortion overlay with configurable amplitude, frequency, and speed.
+- Shallow-water tint and depth-based color shift with independent blend strengths.
+- Time-accumulating update loop that advances the wave pattern each frame.
+
+### `weather.rs`
+- Weather particle simulation types and state management.
+- Supports rain, snow, hail, dust, leaves, ash, and pollen behaviors.
+- Tracks particle pool, wind parameters, and internal PRNG.
 
 ## Types
 

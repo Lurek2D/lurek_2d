@@ -11,36 +11,126 @@
 
 ## Summary
 
-The `patterns` module is documented from the current source tree and existing module reference data.
+Twelve classic game-programming design patterns exposed as reusable Lua building blocks via `lurek.patterns.*`. Includes: behavior trees (sequence, selector, parallel, inverter, repeat, cooldown, random), hierarchical state machines with enter/exit/update callbacks, event buses for decoupled pub-sub messaging, observer pattern for property-change notification, command stack with undo/redo history.
 
-Recent scope extension: collection utilities now include richer generic object-management operations inspired by cardgame workflows but exposed as engine-wide neutral APIs (`LStack`, `LQueue`, `LList`, and `LMap`).
+Also provides: object pools with acquire/release lifecycle, weighted random selection with priority queues, ring buffers for fixed-size history, bidirectional maps (BiMap), trie-based prefix search, service locators for dependency injection, and blackboard key-value stores for shared AI state. All patterns are standalone Lua userdata objects with no inter-pattern coupling. Foundations tier.
 
-This module is mostly self-contained inside the Foundations group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
+## Source Documentation
 
-## Files
+### `behavior_tree.rs`
+- Behavior tree data structure with Sequence, Selector, Parallel, Inverter, Repeat, and Leaf node kinds.
+- Builder API for allocating nodes, linking children, and setting the root.
+- Per-tick runtime state tracking running nodes and repeat counters.
+- Integer `NodeId` addressing; no heap indirection between parent and child.
+- Fully deterministic tick ordering: left-to-right child evaluation.
 
-- `behavior_tree.rs`: Implements behavior tree node graph structures and run-state containers for Sequence/Selector/Parallel/Decorator/Leaf AI composition.
-- `bimap.rs`: BiMap: bidirectional HashMap with bijection enforcement on `insert`.
-- `blackboard.rs`: Implements a shared typed key-value board with revision tracking for cross-system facts.
-- `collections.rs`: Fundamental ordered-collection and set ADTs for Lua scripting.
-- `command_stack.rs`: Tracks undo and redo history metadata, including cursor position and batching state.
-- `event_bus.rs`: Implements named event-subscription metadata with priority ordering and one-shot listeners.
-- `factory.rs`: Implements a constructor-name registry with optional alias resolution.
-- `funnel.rs`: Implements a time-windowed event collector that can batch inputs before flushing.
-- `graph.rs`: Implements a lightweight directed/undirected weighted adjacency-list graph with BFS/DFS helpers.
-- `mediator.rs`: Mediator pattern — pub/sub message channels.
-- `mod.rs`: Declares the patterns submodules and re-exports the public helper types.
-- `object_pool.rs`: Implements slot bookkeeping for reusable pooled objects, including idle and active tracking.
-- `observer.rs`: Implements per-key watcher metadata for reactive property changes.
-- `priority_queue.rs`: Implements a stable highest-priority-first queue for small agenda or turn-order workloads.
-- `ring.rs`: Implements a fixed-capacity circular history buffer for numeric or string-tagged entries.
-- `service_locator.rs`: Implements a named-service presence registry used by the Lua layer to store actual values.
-- `simple_state.rs`: Implements a lightweight named-state tracker with a single active state and no validated transition graph.
-- `state_machine.rs`: Implements a fuller finite-state machine with registered states, explicit transition rules, and history.
-- `strategy.rs`: Strategy pattern — named, swappable behaviours.
-- `throttle.rs`: Implements leading-edge throttle and trailing-edge debounce timers for callback rate limiting.
-- `trie.rs`: Trie: string-key prefix index with DFS `prefix_search` and recursive `remove`.
-- `weighted_random.rs`: Implements weighted entry pools with deterministic sample-based selection (`pick`, `pick_n`) and revision tracking.
+### `bimap.rs`
+- Bidirectional map with O(1) lookup by key or by value.
+- Mirrored forward and reverse `HashMap` tables kept in sync on every mutation.
+- Insert, remove-by-key, remove-by-value, and containment checks in both directions.
+
+### `blackboard.rs`
+- Shared key-value store for passing typed state between AI and game systems.
+- Supports bool, number, text, and nil entries with per-key revision tracking.
+- Global and per-key revision counters enable efficient change detection.
+
+### `collections.rs`
+- Capacity metadata types for bounded stacks and queues.
+- Full-check logic shared by Lua-facing collection wrappers.
+- Zero capacity means unbounded; non-zero enforces a hard limit.
+
+### `command_stack.rs`
+- Linear undo/redo command history with cursor-based navigation.
+- Batch grouping for multi-command atomic operations.
+- Configurable max-size eviction of oldest entries.
+
+### `event_bus.rs`
+- Named event bus that routes events to prioritized subscriptions.
+- Supports wildcard listeners, one-shot subscriptions, and per-event clearing.
+- Returns ordered listener ID lists for the Lua callback layer to dispatch.
+
+### `factory.rs`
+- Named type registry with alias support for dynamic object construction.
+- Register, unregister, and resolve canonical type names at runtime.
+- Alias mapping allows multiple names to reference the same underlying type.
+
+### `funnel.rs`
+- Buffered accumulator that collects tagged numeric entries and flushes on a time window or count threshold.
+- Provides push/update/flush lifecycle: push entries, tick time, drain when ready.
+- Supports immediate flush (window=0), count-triggered flush, and manual discard.
+
+### `graph.rs`
+- Adjacency-list graph with directed and undirected mode support.
+- Node and edge CRUD with stable integer identifiers.
+- Weighted, labelled edges with automatic reverse-edge insertion for undirected graphs.
+- BFS and DFS traversals from any start node.
+- Connectivity queries and neighbour enumeration.
+
+### `mediator.rs`
+- Channel-based mediator for decoupled handler registration and dispatch.
+- Register/unregister handlers by string channel with unique ids.
+- Query, count, and clear handlers per channel or globally.
+
+### `mod.rs`
+- Reusable game-logic design patterns: state machines, behavior trees, event buses, and object pools.
+- Data structures for priority queues, graphs, tries, rings, and bidirectional maps.
+- Command stacking, observer subscriptions, throttling, and weighted random selection.
+
+### `object_pool.rs`
+- Capacity-bounded object pool that tracks idle and active ids for reuse.
+- Supports acquire/release lifecycle, prewarming, and optional capacity limits.
+- Useful for entity recycling, bullet pools, and particle systems.
+
+### `observer.rs`
+- Named observer pattern with per-key subscription lists and wildcard support.
+- One-shot (`once`) and persistent subscription modes with auto-cleanup on dispatch.
+- Key-scoped and global clear operations for lifecycle management.
+
+### `priority_queue.rs`
+- Sorted priority queue with stable FIFO tie-breaking for equal priorities.
+- Push, pop, peek, and remove by id with O(n) insertion via partition point.
+- Each item carries an auto-assigned id, priority, label, and sequence number.
+
+### `ring.rs`
+- Fixed-capacity ring buffer backed by `VecDeque` with automatic eviction of oldest entries.
+- Each entry carries an optional numeric or string payload plus a caller-assigned tag.
+- Provides aggregate helpers (sum, average) and ordered iteration from oldest to newest.
+
+### `service_locator.rs`
+- Name-based service registry for runtime feature discovery.
+- Register, unregister, and query string-keyed services.
+- Sorted enumeration of all active service names.
+
+### `simple_state.rs`
+- Named-state registry with at-most-one active state at a time.
+- Add, remove, query, and switch states; validates transitions against the known set.
+- Sorted enumeration and count helpers for introspection.
+
+### `state_machine.rs`
+- Finite state machine with explicit states, guarded transitions, and bounded history.
+- Transition rules with optional guards control allowed state changes.
+- Maintains a capped history ring of visited states for replay or debugging.
+
+### `strategy.rs`
+- Named-strategy registry with id assignment and current-selection tracking.
+- Register, remove, query, and switch strategies by string name.
+- Provides id-based lookup for the active strategy.
+
+### `throttle.rs`
+- Rate-limiting primitives: throttle (fire at most once per interval) and debounce (fire after quiet period).
+- Both track elapsed time, fire counts, and can be enabled/disabled at runtime.
+- Progress query on throttle; trigger/cancel lifecycle on debounce.
+
+### `trie.rs`
+- Prefix trie for character-level string key storage and retrieval.
+- Insert, search, remove, and prefix-match operations.
+- DFS collection of all keys sharing a common prefix.
+- Automatic pruning of empty leaf nodes on removal.
+
+### `weighted_random.rs`
+- Weighted random selection over a dynamic entry list with add/remove/update.
+- Single-pick and multi-pick-without-replacement algorithms using normalized samples.
+- Revision counter for detecting structural changes and invalidating external caches.
 
 ## Types
 

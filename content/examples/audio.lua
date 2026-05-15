@@ -2331,7 +2331,7 @@ end
 -- Useful for visualising recorded audio or showing a UI waveform preview.
 do -- mlua (SoundData):drawWaveform
   function lurek.init()
-    local sd = lurek.audio.newSoundData(44100, 44100, 16, 1)
+    local sd = lurek.audio.newSoundData(44100, 44100, 1)
     local img = lurek.image.newImageData(512, 64)
     if sd and img then
       local ok_w = pcall(function() sd:drawWaveform(img, 0, 0, 512, 64, 255, 255, 255, 255) end)
@@ -2395,8 +2395,9 @@ end
 -- Returns the type name of this object.
 -- Useful for runtime type inspection.
 do -- LDecoder:type
-  local ok_d, decoder_obj = pcall(lurek.audio.newDecoder, "assets/sound.ogg", 4096)
-  if not ok_d then decoder_obj = nil end
+  local decoder_obj ---@type LDecoder?
+  local ok_d, r = pcall(lurek.audio.newDecoder, "assets/sound.ogg", 4096)
+  if ok_d then decoder_obj = r end
   local t = decoder_obj and decoder_obj:type() or "LDecoder"
   lurek.log.info("LDecoder:type = " .. t, "audio")
 end
@@ -2404,8 +2405,9 @@ end
 -- Returns true if this object is of the given type.
 -- Use for runtime type checks.
 do -- LDecoder:typeOf
-  local ok_d2, decoder_obj2 = pcall(lurek.audio.newDecoder, "assets/sound.ogg", 4096)
-  if not ok_d2 then decoder_obj2 = nil end
+  local decoder_obj2 ---@type LDecoder?
+  local ok_d2, r2 = pcall(lurek.audio.newDecoder, "assets/sound.ogg", 4096)
+  if ok_d2 then decoder_obj2 = r2 end
   lurek.log.info("is LDecoder: " .. tostring(decoder_obj2 and decoder_obj2:typeOf("LDecoder") or false), "audio")
   lurek.log.info("is wrong: " .. tostring(decoder_obj2 and decoder_obj2:typeOf("Unknown") or false), "audio")
 end

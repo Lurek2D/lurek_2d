@@ -11,32 +11,132 @@
 
 ## Summary
 
-The `raycaster` module is documented from the current source tree and existing module reference data.
+Wolfenstein-style 2D grid raycaster projecting textured walls, floors, ceilings, and billboard sprites from a first-person camera. `Raycaster2D` owns a tile grid where each cell has wall textures (per-face: N/S/E/W), floor/ceiling textures, door state, and height modifiers. DDA traversal casts rays per screen column to find wall hits, then projects wall strip height using the perspective formula.
 
-This module primarily collaborates with `image`, `math`, `render`, `runtime`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
+Floor and ceiling rendering uses perspective-correct per-pixel texture mapping with per-tile lighting and UV calculation. Doors interpolate open/close state for animated sliding. Heightmap support enables variable floor/ceiling heights and lowered pits. Billboard sprites sort by depth and clip against the wall depth buffer. Lighting applies distance attenuation, ambient, and per-cell light levels. The scene builder produces a `RaycasterScene` of draw commands consumed by the renderer. Exposed as `lurek.raycaster.*`. Feature Systems tier — first-wave plugin candidate.
 
-## Files
+## Source Documentation
 
-- `build_scene.rs`: Builds a `RaycasterScene` from map, light, and sprite inputs so higher layers can render textured quads instead of raw hit columns.
-- `column_batch.rs`: Defines column-oriented rendering payloads used by older or alternative wall-strip style outputs.
-- `dda.rs`: Implements the main `Raycaster2D` DDA grid traversal, multi-ray casting, and line-of-sight queries.
-- `depth_buffer.rs`: Stores per-column depth values for sprite occlusion and front-to-back visibility checks.
-- `doors.rs`: Manages door state, orientation, and sliding animation timing for grid-based raycast worlds.
-- `draw.rs`: Provides CPU-side image drawing for `RaycasterScene`, useful for software rendering or headless verification.
-- `grid_motion.rs`: Provides shared 4-direction movement helpers (`forward/back/left/right`) and collision-aware movement stepping.
-- `heightmap.rs`: Tracks per-cell floor and ceiling height variation for stepped or multi-height raycast spaces.
-- `lighting.rs`: Defines point lights and computes light influence or lit shading values for projected geometry.
-- `minimap_overlay.rs`: Extracts minimap-friendly data and player-arrow overlays from raycast world state.
-- `mod.rs`: Declares the raycaster submodules and re-exports the core hit, scene, lighting, door, and helper types.
-- `projection.rs`: Converts ray hits into projected wall geometry and shading metrics.
-- `ray_hit.rs`: Defines the per-ray hit result returned by DDA and related casting helpers.
-- `render.rs`: Converts a `RaycasterScene` into `RenderCommand` output for textured-quad rendering.
-- `scene.rs`: Defines the high-level scene model of walls, floors, ceilings, and billboard sprites used after geometric casting.
-- `segment.rs`: Implements raycasting against arbitrary 2D segments instead of a grid.
-- `sprite_manager.rs`: Batch sprite manager with depth-sorted projection for raycaster scenes.
-- `sprite_projection.rs`: Projects billboard sprites into screen space with depth and size data.
-- `visibility.rs`: Builds visibility polygons and related field-of-view data from 2D geometry.
-- `visualization.rs`: Diagnostic and visualization helpers for [`Raycaster2D`].
+### `build_scene.rs`
+- Build a complete `RaycasterScene` each frame from camera parameters, a DDA grid, and texture lookups.
+- Project floor and ceiling tiles as perspective-correct quads with per-tile lighting and UV mapping.
+- Generate lowered-floor pit geometry including depth-offset surfaces and side-wall extrusions.
+- Emit wall-face quads for every visible solid-cell boundary with roof-side thickness geometry.
+- Project billboard sprites to screen space with distance-based sizing and lighting.
+- Integrate ambient light, point-light contributions, distance shading, and roofed-ambient darkening.
+- Provide camera-space depth projection helpers (`camera_depth`, `project_ground_point`, `project_horizontal_plane`).
+- Snap projected coordinates to half-pixel boundaries to reduce sub-pixel jitter on floor/ceiling edges.
+- Supply UV-generation utilities for axis-aligned quads and world-space column strips.
+
+### `column_batch.rs`
+- Per-column wall-slice projection data produced by the DDA stepper.
+- Full-frame column batch holding screen dimensions and flat floor/ceiling colors.
+- Bulk update from packed ray data and per-column depth queries.
+
+### `dda.rs`
+- 2D grid map and Digital Differential Analyzer (DDA) ray-stepping engine.
+- Single-ray casting with perpendicular distance correction and texture-U sampling.
+- Multi-hit ray casting through transparent walls up to a configurable depth.
+- Fan-cast (cast_rays) with fish-eye correction for full-screen column rendering.
+- Flat-packed ray output for efficient Lua-side consumption without per-hit tables.
+- Grid-based line-of-sight query using DDA traversal.
+- World-to-screen sprite projection with FOV-aware perspective transform.
+- Per-pixel floor/ceiling UV generation for textured floor casting.
+- Per-tile-type wall alpha overrides enabling transparent and semi-transparent walls.
+- Bounds-safe cell access with silent clamping for out-of-range coordinates.
+
+### `depth_buffer.rs`
+- Per-column depth storage for raycaster wall hits.
+- Used during sprite rendering to cull pixels that fall behind walls.
+- Cleared each frame, written during wall-casting, read during sprite-casting.
+
+### `doors.rs`
+- Animated sliding doors placed on raycaster grid tiles.
+- Per-door state machine: Closed → Opening → Open → Closing → Closed.
+- DoorManager registry drives batch updates and spatial lookups.
+
+### `draw.rs`
+- Software rasterization of a raycaster scene into an `ImageData` pixel buffer.
+- Flat-shaded fills for ceilings, floors, walls, and sprites.
+- Back-to-front draw order for correct painter's-algorithm layering.
+
+### `grid_motion.rs`
+- Discrete movement actions (forward, backward, strafe) for grid-locked locomotion.
+- Direction-to-delta conversion for 4-directional facing (E/S/W/N).
+- Collision-checked tile movement with configurable blocking predicate.
+
+### `heightmap.rs`
+- Per-tile floor and ceiling height storage for raycaster maps.
+- Supports individual tile and rectangular region height assignment.
+- Out-of-bounds coordinates are silently ignored or return safe defaults.
+
+### `lighting.rs`
+- Point-light model with position, radius, intensity, and RGB color.
+- Bresenham line-of-sight check to block light through walls.
+- Per-tile lighting accumulator combining ambient and point-light contributions.
+
+### `minimap_overlay.rs`
+- Tile-based minimap window construction with per-tile lighting and line-of-sight checks.
+- Bresenham grid traversal for fast obstruction testing between player and map cells.
+- FOV ray fan that reveals all traversed cells within a max distance and step size.
+- Pixel-grid minimap extraction producing raw RGBA buffers with wall/floor coloring.
+- Player arrow rendering (filled circle plus direction line) composited onto the minimap.
+
+### `mod.rs`
+- Grid-based 2D raycaster using DDA ray-stepping and column projection.
+- Builds per-frame scenes with wall quads, floor/ceiling, sprites, and doors.
+- Supports heightmaps, distance lighting, depth occlusion, and FOV visibility.
+- Provides minimap overlay extraction and debug visualization helpers.
+
+### `projection.rs`
+- Wall-column projection from ray distance to screen-pixel height and vertical bounds.
+- Distance-based shading for depth fog attenuation.
+
+### `ray_hit.rs`
+- DDA ray-cast result record holding wall distance, hit coordinates, and texture sampling data.
+- Carries both fish-eye-corrected and raw distances for flexible column rendering.
+- Provides side, alpha, and cell value for shading and transparency decisions.
+
+### `render.rs`
+- Convert a built raycaster scene into GPU-ready render commands.
+- Emit textured quads for ceilings, floors, walls, and sprites in correct painter order.
+- Fall back to solid-color rectangles when a surface has no texture assigned.
+
+### `scene.rs`
+- Scene geometry types emitted by the raycaster build pass and consumed by the renderer.
+- Quad primitives for walls, floors, ceilings, billboard sprites, and static meshes.
+- `RaycasterScene` collects all quads for one frame with depth and perspective-correct UV data.
+
+### `segment.rs`
+- 2D line segment representation for raycaster wall geometry.
+- Ray-vs-segment intersection test returning nearest hit point and index.
+- Used by the raycaster module to resolve wall hits from arbitrary origins.
+
+### `sprite_manager.rs`
+- Billboard sprite registry for the raycaster subsystem.
+- Manages creation, removal, positioning, and visibility of world-space sprites.
+- Provides distance-sorted iteration for back-to-front rendering.
+
+### `sprite_projection.rs`
+- Screen-space sprite projection data for raycaster billboard rendering.
+- Stores position, scale, distance, and visibility after camera-plane projection.
+- Consumed by the depth-buffer occlusion pass to sort and clip sprites.
+
+### `visibility.rs`
+- Radial visibility polygon computation from a point source.
+- Casts rays at segment-endpoint angles with epsilon jitter for gap-free coverage.
+- Returns interleaved coordinate arrays suitable for triangle-fan rendering.
+
+### `visualization.rs`
+- Software-rendered raycaster visualization helpers for debugging and demo output.
+- Top-down grid map rendering with player position and radial ray overlay.
+- First-person column-based wall rendering with distance-based shading.
+- Depth-map greyscale visualization where brightness encodes proximity.
+- Line-of-sight connectivity check rendered as a coloured line between two points.
+- Camera sweep atlas generating a multi-frame rotation sequence into a single image.
+- Procedural textured first-person view with brick, stone, wood, metal, and mosaic patterns.
+- All outputs produce an `ImageData` bitmap suitable for GPU upload or file export.
+- Procedural texture lookup mapping cell type and UV to RGB without external assets.
 
 ## Types
 

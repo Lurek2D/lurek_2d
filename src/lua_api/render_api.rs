@@ -34,8 +34,8 @@ impl LuaUserData for LuaImageData {
         methods.add_method("getHeight", |_, this, ()| Ok(this.inner.height()));
         // -- resize --
         /// Creates a new ImageData resized to the given dimensions using bilinear sampling.
-        /// @param | w | number | Target width in pixels.
-        /// @param | h | number | Target height in pixels.
+        /// @param | w | integer | Target width in pixels.
+        /// @param | h | integer | Target height in pixels.
         /// @return | LImageData | A new resized ImageData, or nil if the operation failed.
         methods.add_method("resize", |lua, this, (w, h): (u32, u32)| {
             match this.inner.resize(w, h) {
@@ -48,8 +48,8 @@ impl LuaUserData for LuaImageData {
         // -- blit --
         /// Copies pixel data from another ImageData onto this one at the specified position.
         /// @param | source | LImageData | The source image data to copy from.
-        /// @param | dstX | number | Destination X offset in pixels.
-        /// @param | dstY | number | Destination Y offset in pixels.
+        /// @param | dstX | integer | Destination X offset in pixels.
+        /// @param | dstY | integer | Destination Y offset in pixels.
         /// @return | nil | No return value.
         methods.add_method_mut(
             "blit",
@@ -61,10 +61,10 @@ impl LuaUserData for LuaImageData {
         );
         // -- getRegion --
         /// Extracts a rectangular sub-region as a new ImageData.
-        /// @param | x | number | Top-left X coordinate of the region.
-        /// @param | y | number | Top-left Y coordinate of the region.
-        /// @param | w | number | Width of the region in pixels.
-        /// @param | h | number | Height of the region in pixels.
+        /// @param | x | integer | Top-left X coordinate of the region.
+        /// @param | y | integer | Top-left Y coordinate of the region.
+        /// @param | w | integer | Width of the region in pixels.
+        /// @param | h | integer | Height of the region in pixels.
         /// @return | LImageData | A new ImageData for the region, or nil if out of bounds.
         methods.add_method(
             "getRegion",
@@ -516,7 +516,7 @@ impl LuaUserData for LuaMesh {
         });
         // -- getVertex --
         /// Returns the data for a single vertex by 1-based index.
-        /// @param | index | number | 1-based vertex index.
+        /// @param | index | integer | 1-based vertex index.
         /// @return | number, number, number, number, number, number, number, number | x, y, u, v, r, g, b, a.
         methods.add_method("getVertex", |_, this, index: usize| {
             let st = this.state.borrow();
@@ -530,7 +530,7 @@ impl LuaUserData for LuaMesh {
         });
         // -- setVertex --
         /// Updates a single vertex by 1-based index. Table format: {x, y, u, v, r, g, b, a}.
-        /// @param | index | number | 1-based vertex index.
+        /// @param | index | integer | 1-based vertex index.
         /// @param | data | table | Vertex data: {x, y, u, v, r, g, b, a}.
         /// @return | nil | No value is returned.
         methods.add_method("setVertex", |_, this, (index, data): (usize, LuaTable)| {
@@ -698,6 +698,7 @@ impl LuaUserData for LuaQuad {
         methods.add_method("type", |_, _, ()| Ok("LQuad"));
     }
 }
+/// Converts a Lua scalar or numeric table into a shader uniform payload supported by the renderer.
 fn lua_value_to_uniform(v: &LuaValue) -> LuaResult<UniformValue> {
     match v {
         LuaValue::Number(n) => Ok(UniformValue::Float(*n as f32)),
@@ -734,6 +735,7 @@ fn lua_value_to_uniform(v: &LuaValue) -> LuaResult<UniformValue> {
         )),
     }
 }
+/// Parses a Lua shape draw mode string into the renderer draw mode enum.
 fn parse_draw_mode(mode: &str) -> Result<DrawMode, LuaError> {
     match mode {
         "fill" => Ok(DrawMode::Fill),
@@ -743,6 +745,7 @@ fn parse_draw_mode(mode: &str) -> Result<DrawMode, LuaError> {
         ))),
     }
 }
+/// Parses a Lua blend mode string into the renderer blend mode enum.
 fn parse_blend_mode(s: &str) -> Result<BlendMode, LuaError> {
     match s {
         "alpha" => Ok(BlendMode::Alpha),
@@ -2174,7 +2177,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     let s = state.clone();
     // -- getDefaultFont --
     /// Returns a built-in default font at the nearest available pixel height.
-    /// @param | pixelHeight | number? | Desired pixel height (default 14).
+    /// @param | pixelHeight | integer? | Desired pixel height (default 14).
     /// @return | LFont | The built-in font handle.
     graphics.set(
         "getDefaultFont",
@@ -2447,8 +2450,8 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     let s = state.clone();
     // -- newCanvas --
     /// Creates a new off-screen render target with the given dimensions.
-    /// @param | width | number | Canvas width in pixels (must be > 0).
-    /// @param | height | number | Canvas height in pixels (must be > 0).
+    /// @param | width | integer | Canvas width in pixels (must be > 0).
+    /// @param | height | integer | Canvas height in pixels (must be > 0).
     /// @return | LCanvas | The created canvas handle.
     graphics.set(
         "newCanvas",
@@ -2539,7 +2542,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     // -- newSpriteBatch --
     /// Creates a batched sprite renderer for efficiently drawing many copies of the same texture.
     /// @param | image | LImage | Source texture for all sprites in the batch.
-    /// @param | max | number? | Maximum number of entries (default 1000).
+    /// @param | max | integer? | Maximum number of entries (default 1000).
     /// @return | LSpriteBatch | The created sprite batch handle.
     graphics.set(
         "newSpriteBatch",
@@ -3184,7 +3187,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// Sets the default texture filtering mode for newly created images.
     /// @param | min | string | Minification filter: "nearest" or "linear".
     /// @param | mag | string | Magnification filter: "nearest" or "linear".
-    /// @param | anisotropy | number? | Anisotropy level (default 1).
+    /// @param | anisotropy | integer? | Anisotropy level (default 1).
     /// @return | nil | No return value.
     graphics.set(
         "setDefaultFilter",
@@ -3375,7 +3378,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @param | cy | number | Control point Y.
     /// @param | x2 | number | End X.
     /// @param | y2 | number | End Y.
-    /// @param | segs | number? | Number of line segments (default 16).
+    /// @param | segs | integer? | Number of line segments (default 16).
     /// @return | nil | No value is returned.
     graphics.set("drawQuadBezier", lua.create_function(
             move |_,
@@ -3775,7 +3778,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     let s = state.clone();
     // -- beginSortGroup --
     /// Begins a depth-sorted rendering group. Draw calls within this group are sorted by pushSortKey values.
-    /// @param | id | number | Group identifier.
+    /// @param | id | integer | Group identifier.
     /// @return | nil | No return value.
     graphics.set(
         "beginSortGroup",
@@ -3803,7 +3806,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     let s = state.clone();
     // -- flushSortGroup --
     /// Ends a sort group and emits all accumulated draw calls in sorted order.
-    /// @param | id | number | Group identifier matching the beginSortGroup call.
+    /// @param | id | integer | Group identifier matching the beginSortGroup call.
     /// @return | nil | No return value.
     graphics.set(
         "flushSortGroup",
@@ -3892,7 +3895,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     let s = state.clone();
     // -- pushLayer --
     /// Begins a compositing layer with the given alpha and blend mode. Must be paired with popLayer.
-    /// @param | id | number | Layer identifier (must match the popLayer call).
+    /// @param | id | integer | Layer identifier (must match the popLayer call).
     /// @param | alpha | number? | Layer opacity (0–1, default 1).
     /// @param | blendMode | string? | Blend mode: "alpha" (default), "add", "multiply", "replace", "screen".
     /// @return | nil | No return value.
@@ -3923,7 +3926,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     let s = state.clone();
     // -- popLayer --
     /// Ends a compositing layer and composites it with the previous content.
-    /// @param | id | number | Layer identifier matching the pushLayer call.
+    /// @param | id | integer | Layer identifier matching the pushLayer call.
     /// @return | nil | No return value.
     graphics.set(
         "popLayer",
@@ -4327,7 +4330,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     let s = state.clone();
     // -- beginSortGroup --
     /// Begins a depth-sorted rendering group. Draw calls within this group are sorted by pushSortKey values.
-    /// @param | id | number | Group identifier.
+    /// @param | id | integer | Group identifier.
     /// @return | nil | No return value.
     graphics.set(
         "beginSortGroup",
@@ -4355,7 +4358,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     let s = state.clone();
     // -- flushSortGroup --
     /// Ends a sort group and emits all accumulated draw calls in sorted order.
-    /// @param | id | number | Group identifier matching the beginSortGroup call.
+    /// @param | id | integer | Group identifier matching the beginSortGroup call.
     /// @return | nil | No return value.
     graphics.set(
         "flushSortGroup",
@@ -4445,7 +4448,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     let s = state.clone();
     // -- pushLayer --
     /// Begins a compositing layer with the given alpha and blend mode. Must be paired with popLayer.
-    /// @param | id | number | Layer identifier (must match the popLayer call).
+    /// @param | id | integer | Layer identifier (must match the popLayer call).
     /// @param | alpha | number? | Layer opacity (0–1, default 1).
     /// @param | blendMode | string? | Blend mode: "alpha" (default), "add", "multiply", "replace", "screen".
     /// @return | nil | No return value.
@@ -4469,7 +4472,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     let s = state.clone();
     // -- popLayer --
     /// Ends a compositing layer and composites it with the previous content.
-    /// @param | id | number | Layer identifier matching the pushLayer call.
+    /// @param | id | integer | Layer identifier matching the pushLayer call.
     /// @return | nil | No return value.
     graphics.set(
         "popLayer",
@@ -4490,7 +4493,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     // -- newLayer --
     /// Creates a named rendering layer with an optional z-order for draw call organization.
     /// @param | name | string | Layer name.
-    /// @param | zOrder | number? | Z-order for layer sorting (default 0).
+    /// @param | zOrder | integer? | Z-order for layer sorting (default 0).
     /// @return | nil | No return value.
     graphics.set(
         "newLayer",
@@ -4559,7 +4562,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     // -- setLayerZOrder --
     /// Sets the z-order value of a named rendering layer.
     /// @param | name | string | Layer name.
-    /// @param | z | number | New z-order value.
+    /// @param | z | integer | New z-order value.
     /// @return | nil | No return value.
     graphics.set(
         "setLayerZOrder",
@@ -4644,8 +4647,8 @@ impl LuaUserData for LObjModel {
         });
         // -- renderToImage --
         /// Renders the OBJ model to a GPU texture at the given resolution with optional 90-degree rotation.
-        /// @param | width | number | Output image width in pixels.
-        /// @param | height | number | Output image height in pixels.
+        /// @param | width | integer | Output image width in pixels.
+        /// @param | height | integer | Output image height in pixels.
         /// @param | rotation | number? | Rotation step (0–3, each step = 90 degrees, default 0).
         /// @return | LImage | The rendered image handle.
         methods.add_method_mut(

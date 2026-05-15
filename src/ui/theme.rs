@@ -1,7 +1,7 @@
 //! - Visual theming system for the immediate-mode GUI, mapping widget-type/state pairs to style records.
 //! - Each style carries background, foreground, border colors, font size, shadow, gradient, and text alignment.
 //! - Lookup falls back from the requested state to `Normal`, letting partial themes work without exhaustive registration.
-//! - Ships a full dark preset covering all standard widget types (buttons, inputs, panels, menus, dialogs, etc.).
+//! - Ships a full dark preset covering all standard widget types (buttons, inputs, panels, layouts, menus, dialogs, etc.).
 //! - Style records are value types (`Clone + Debug`) so themes can be cheaply forked per-screen.
 //! - Includes a debug helper that rasterizes button states into an `ImageData` tile for visual validation.
 //! - Integrates with `GuiContext` at render time; the renderer reads resolved styles per-widget per-frame.
@@ -491,6 +491,23 @@ impl Theme {
                 [0.15, 0.15, 0.20, 0.92],
                 [0.88, 0.90, 0.94, 1.0],
                 [0.28, 0.28, 0.35, 1.0],
+                1.0,
+                0.0,
+                14.0,
+                none_shadow,
+                [0.0, 0.0],
+                0.0,
+                None,
+                "left",
+            ),
+        );
+        t.set_style(
+            WidgetType::Layout,
+            WidgetState::Normal,
+            mk(
+                [0.13, 0.13, 0.18, 0.72],
+                [0.88, 0.90, 0.94, 1.0],
+                [0.24, 0.24, 0.30, 0.85],
                 1.0,
                 0.0,
                 14.0,

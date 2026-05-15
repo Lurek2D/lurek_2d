@@ -11,17 +11,41 @@
 
 ## Summary
 
-The `thread` module is documented from the current source tree and existing module reference data.
+Background threading with isolated per-thread Lua VMs communicating via typed MPMC channels. `Channel` provides thread-safe message passing with bounded/unbounded variants, configurable overflow policy (block, drop-oldest, drop-newest, error), and recursive Lua-to-`ChannelValue` conversion supporting nil, bool, number, string, and nested tables.
 
-This module primarily collaborates with `runtime`. Its responsibility should stay inside the Core Runtime group rather than absorb behavior owned by those neighbors.
+`ThreadPool` manages a fixed number of worker threads executing Lua code strings or file paths. Each worker creates its own Lua VM with a restricted API subset (no window, render, or input access). `Promise` wraps async results with poll/await semantics. Non-blocking `try_push`/`pop`/`peek` operations enable lock-free polling patterns. Channel values serialize transparently — no manual marshaling needed from Lua. Exposed as `lurek.thread.*`. Core Runtime tier (B-04: VMs cannot share state).
 
-## Files
+## Source Documentation
 
-- `channel.rs`: `ChannelValue` enum, `Channel` MPMC queue, `LuaChannel` UserData, conversion functions
-- `mod.rs`: Module root — re-exports `channel` and `worker` submodules
-- `pool.rs`: Thread pool of reusable worker Lua VMs.
-- `promise.rs`: Single-result future for one-shot background computation.
-- `worker.rs`: `ThreadState` enum, `LuaThread` struct, worker VM registration
+### `channel.rs`
+- Thread-safe MPMC channel for passing typed values between Lua VMs.
+- Bounded and unbounded variants with configurable overflow policy.
+- Blocking `push`/`demand` and non-blocking `try_push`/`pop`/`peek` operations.
+- Recursive Lua-to-ChannelValue and ChannelValue-to-Lua conversion (nil, bool, number, string, table, bytes).
+- Named channels for diagnostics; monotonic push-count IDs for tracing.
+
+### `mod.rs`
+- Cross-thread messaging via typed MPMC channels for Lua VM isolation.
+- Fixed-size thread pool for CPU-bound background tasks.
+- Promise containers for single-value async results.
+- Worker harness owning secondary Lua VMs for parallel script execution.
+
+### `pool.rs`
+- Fixed-size worker pool backed by LuaThread instances sharing input/output channels.
+- Submit work items, collect results non-blocking, and join with optional timeout.
+- Workers auto-register `__pool_input`/`__pool_output` named channels for Lua-side access.
+
+### `promise.rs`
+- One-shot async computation that spawns a LuaThread and collects a single result.
+- Lifecycle tracking via PromiseState (Pending, Done, Error).
+- Result delivery through an internal named channel polled by the caller.
+
+### `worker.rs`
+- Worker VM lifecycle: spawn an OS thread with an isolated Lua VM, track Pending/Running/Completed/Error states.
+- Restricted API surface: inject only `lurek.thread.getChannel`, `lurek.fs.read`, and `arg` into worker VMs.
+- Channel-based communication: workers receive a shared channel registry for typed cross-VM messaging.
+- Blocking and timeout joins: wait indefinitely or poll with a deadline for worker completion.
+- Path-traversal guard: `fs.read` in worker VMs rejects `..` segments to prevent sandbox escape.
 
 ## Types
 

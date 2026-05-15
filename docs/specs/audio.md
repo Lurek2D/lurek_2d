@@ -11,45 +11,109 @@
 
 ## Summary
 
-The `audio` module is Lurek2D's full-featured sound engine — a Platform Services tier subsystem built on `rodio` 0.17. It handles everything from sound loading and real-time playback to bus mixing, DSP effects chains, spatial 2D audio, MIDI synthesis, and offline processing. All Lua access goes through `lurek.audio.*` which delegates to `Mixer` and `Bus` instances stored in `SharedState`.
+Full-featured sound engine built on `rodio` 0.17 handling loading, real-time playback, bus mixing, DSP effects, spatial 2D audio, MIDI synthesis, and offline processing. `Mixer` is the central controller with `SlotMap<SoundKey, AudioEntry>` for O(1) handle lookup. Sounds load as `Static` (fully decoded in-memory buffer for short SFX) or `Stream` (incremental decode for music/voice).
 
-**Mixer.** `Mixer` is the central audio controller. It owns a `SlotMap<SoundKey, AudioEntry>` for O(1) handle lookup and safe invalidation on drop. A `rodio::OutputStream` + `OutputStreamHandle` drives PCM to the default audio device (enumerable and selectable via `facade.rs`). Sounds are loaded as two modes: `Static` (fully decoded into a `SoundData` in-memory buffer — for short SFX) or `Stream` (incrementally decoded from disk — for music). Per-source controls: volume, pitch (speed multiplier), stereo pan, looping flag, and independent play/pause/stop/seek operations. Fade-in and fade-out are built-in via linear interpolation over user-specified durations.
+`Bus` provides hierarchical volume/pan/effect routing — game, music, SFX, and voice buses each carry their own `EffectChain` of DSP nodes (reverb, echo, low-pass, high-pass, compressor, distortion, chorus, flanger, pitch-shift). The `SoundPool` manages concurrent instance limits with voice stealing. Spatial audio positions sources in 2D with distance attenuation and stereo panning. MIDI playback converts note events to PCM via a built-in wavetable synthesizer. `OfflineRenderer` captures final mix to WAV without real-time playback. All Lua access goes through `lurek.audio.*`.
 
-**Bus system.** `Bus` is a named group for shared volume and pause control. Sources are assigned to a bus by name at load or dynamically at runtime; the mixer multiplies each source's effective volume/pitch by its bus multiplier on every update. Typical buses: `"music"`, `"sfx"`, `"voice"`. Buses extend into **duck-target** support: `set_duck_target(priority_bus, factor, attack, release)` causes a bus to automatically lower its volume when a designated priority bus is active — dialogue-over-music ducking with no manual scripting. `Bus:getPeak()` returns a real-time RMS level for UI VU meters.
+## Source Documentation
 
-**DSP effects.** `dsp.rs` provides a dynamic per-source `SharedEffectGraph` that chains `ActiveEffect` slots. `EffectType` variants: LowPass, HighPass, Reverb, Delay, Chorus, Distortion, Compressor, Equalizer, Pitch, Gate, Tremolo, Vibrato. Each effect slot stores `EffectParams` with atomic float parameters (`AtomicParam`) for thread-safe real-time automation. `DynamicEffectSource` wraps a rodio source and applies the chain. Buses also carry their own effect chains via `Bus::add_effect` / `Bus::remove_effect`.
+### `bus.rs`
+- Named audio routing bus with per-bus volume, pitch, pause, and duck-target controls.
+- Shared DSP effect chain stored as `Arc<RwLock<Vec<Arc<EffectParams>>>>` for lock-free audio-thread reads.
+- Dynamic add/remove of typed effects (lowpass, reverb, chorus, compressor, etc.) with runtime IDs.
+- Duck-target assignment enabling automatic cross-bus volume suppression.
+- Boundary clamping on volume, pitch, and duck volume values.
 
-**Spatial audio.** `SpatialState` stores a source's world-space position, velocity, and a max-distance for falloff calculation. The mixer translates spatial positions to stereo pan and volume attenuation on each `update(dt)` call. Listener position and orientation are set via `lurek.audio.setListenerPosition` / `setListenerVelocity`.
+### `decoder.rs`
+- Full-file PCM decoder backed by rodio for WAV/OGG/MP3/FLAC formats.
+- Random-access seek and rewind via cursor over the decoded i16 sample buffer.
+- Chunked iteration with configurable `buffer_size` for streaming consumption.
+- Duration and position queries derived from sample rate and channel count.
+- Seekable flag always true since the entire file is held in memory.
 
-**Sound data and decoding.** `SoundData` holds fully decoded f32 PCM with per-sample read/write access (useful for procedural audio). `Decoder` provides chunked streaming reads from audio files (WAV, OGG, MP3, FLAC). `QueueableSource` is a manually-fed streaming sink that accepts raw f32 PCM buffers pushed in real time — used for procedurally generated audio or network audio streams.
+### `dsp.rs`
+- Lock-free `AtomicParam` for sharing f32 parameters between the audio thread and Lua API.
+- `EffectType` enum covering biquad filters, reverbs, chorus, flanger, phaser, distortion, limiter, and compressor.
+- `EffectParams` shared parameter block with named `set_param` dispatch per effect type.
+- `ActiveEffect` per-source instantiation holding biquad delay elements, circular comb buffer, LFO phase, and envelope state.
+- Sample-by-sample `process` implementing each algorithm variant with clamped parameter reads.
+- `SharedEffectGraph` Arc-wrapped effect list shared between `Bus` (writer) and `DynamicEffectSource` (reader).
+- `DynamicEffectSource<I>` rodio `Source` wrapper applying the full effect chain per sample with per-frame sync.
+- Comb-buffer sizing derived from sample rate and effect type at construction time.
+- Biquad coefficient computation for lowpass, highpass, bandpass, notch, low-shelf, high-shelf, and bell EQ.
+- LFO-driven modulated delay for flanger and phaser with depth and rate controls.
 
-**MIDI synthesis.** `MidiPlayer` is a software MIDI synthesizer: `load(path)` parses `.mid` files via `midly`, then `render()` produces f32 PCM via sine-additive per-channel synthesis. `get/set_output_sample_rate` and `get/set_output_channels` control output quality. Exposed to Lua as `lurek.audio.loadMidi(path)` returning a `MidiPlayer` userdata with `play`, `pause`, `stop`.
+### `facade.rs`
+- Stub device enumeration and selection for the audio output backend.
+- Always reports a single "Default" device until platform-specific enumeration is added.
+- Validates device name against the available list on set.
 
-**Sound pool.** `SoundPool` provides round-robin polyphonic playback of a single audio asset — play calls cycle through a fixed number of voices so rapid fire SFX (gunshots, footsteps) don't cut each other off. Configured by `max_voices` parameter.
+### `midi.rs`
+- `MidiState` storage for loaded SoundFont binary data and its source path.
+- RIFF+sfbk header validation on `set_soundfont` to reject malformed SF2 files.
+- Query and clear helpers for SoundFont availability and data access.
 
-**Offline processing.** `offline.rs` applies `OfflineEffect` chains to in-memory `SoundData` buffers outside the real-time mixer, producing processed PCM results for export or analysis.
+### `midi_player.rs`
+- `MidiPlayer` stateful transport controller for MIDI file playback via rendered PCM.
+- File loading with parsed metadata: duration, BPM, ticks-per-beat, track names, note count.
+- Transport controls: play, stop, pause, resume, seek, tell, and duration queries.
+- Per-channel volume, mute, instrument, and solo/unsolo operations across 16 MIDI channels.
+- Per-track mute support keyed by track index.
+- Configurable tempo scaling, looping, and output sample rate / channel count.
+- Mixer bus assignment via `BusKey` for routed playback.
+- `MidiData` metadata struct storing parsed song-level attributes.
+- Helper functions for MIDI note-to-frequency conversion and sine-wave note rendering.
 
-**Visualisation.** `visualizer.rs` exports waveform and spectrogram PNG images from `SoundData`, useful for development tooling, debug overlays, and audio-reactive UI.
+### `mixer.rs`
+- `Mixer` central registry: slot-mapped sources, buses, queueable streams, and spatial listener state.
+- rodio `OutputStream`/`OutputStreamHandle` ownership with graceful fallback when audio hardware is unavailable.
+- Per-source playback lifecycle: load, play, stop, pause, resume, seek, clone, release.
+- Per-source parameters: volume, pitch, pan, looping, lowpass/highpass cutoff, fade-in, spatial position/velocity.
+- `Bus` integration: bus creation, name lookup, per-source bus assignment, bus-level volume/pitch/pause propagation.
+- `QueueableSource` push-buffer streaming with fixed slot count and free-buffer tracking.
+- Spatial audio: listener position/orientation/velocity, per-source position/velocity/orientation, doppler scale, distance model.
+- Peak metering: per-source, per-bus average, and master peak tracking.
+- Stereo width, random pitch range, crossfade, and sound pool creation utilities.
+- `SourceType` and `PlayState` enums for backing strategy and runtime state classification.
 
-**Lua surface.** `lurek.audio.load(path, options)` loads a sound (returning a `SoundKey`), `play`, `pause`, `stop`, `seek`, `volume`, `pitch`, `pan`, `loop`, `fadeTo`, `getDuration`, `getTime`. Bus management: `lurek.audio.getBus(name)` → `Bus` userdata with `setVolume`, `setPitch`, `pause`, `resume`, `addEffect`, `setDuckTarget`, `getPeak`. Effects: `lurek.audio.addEffect(sound_key, effect_type, params)`. Spatial: `setPosition`, `setListenerPosition`. MIDI: `loadMidi` → `MidiPlayer`. Pool: `newPool(path, voices)` → `SoundPool`.
+### `mod.rs`
+- Audio subsystem module: mixer, buses, DSP effects, decoders, MIDI, pools, and visualisation.
+- Re-exports primary types: `Mixer`, `Bus`, `Decoder`, `SoundData`, `MidiPlayer`, `SoundPool`.
+- Submodule organisation separating playback, offline processing, and device enumeration.
 
-**Scope boundary.** Platform Services tier. Depends on `runtime` (SoundKey, SharedState). Lua bridge in `src/lua_api/audio_api.rs`.
+### `offline.rs`
+- Offline audio processing: apply DSP effect chains to files without real-time playback.
+- Peak normalisation with configurable target level.
+- WAV file decode to f32 and encode back to 16-bit PCM via rodio.
+- `OfflineEffect` serialisable struct matching `EffectType` + three parameter slots.
+- Parent directory auto-creation for output paths.
 
-## Files
+### `pool.rs`
+- `SoundPool` round-robin polyphonic voice pool for one-shot playback of a single sound asset.
+- Preloaded `SoundKey` voices cycled via `next_voice` for low-latency triggering.
+- Per-pool volume multiplier and optional bus routing assignment.
+- Validity check ensuring at least one voice is available.
 
-- `bus.rs`: Named audio bus for grouping sources under shared volume, pitch, and pause controls.
-- `decoder.rs`: Streaming audio decoder for chunked PCM reading.
-- `dsp.rs`: Digital signal processing effects for the Lurek2D audio pipeline.
-- `facade.rs`: Audio device facade: enumeration and selection of playback devices.
-- `midi.rs`: MIDI SoundFont state management.
-- `midi_player.rs`: Software MIDI synthesizer: parses MIDI with `midly`, renders to PCM via sine-additive synthesis, and plays through a rodio `Sink`.
-- `mixer.rs`: Core audio mixer that owns every loaded sound and drives playback through rodio.
-- `mod.rs`: Audio subsystem for Lurek2D games.
-- `offline.rs`: Offline audio processing utilities.
-- `pool.rs`: Polyphonic sound pool for round-robin voice allocation.
-- `sound_data.rs`: Decoded PCM audio sample buffer with per-sample read/write access.
-- `source.rs`: Audio source type and playback state enums for the audio subsystem.
-- `visualizer.rs`: Audio visualisation utilities — waveform and spectrogram PNG export.
+### `sound_data.rs`
+- `SoundData` in-memory interleaved f32 PCM buffer with per-sample get/set and metadata.
+- File decode via rodio, silent-buffer allocation, and Lua argument factory.
+- WAV encoding to byte vector for save/export.
+- Waveform generators: sine, square, sawtooth, triangle, and deterministic white noise.
+- In-place DSP transforms: low-pass, high-pass, band-pass, gain, and mix-into.
+- Waveform drawing into `ImageData` for visual feedback.
+- Duration, sample count, and channel count queries.
+
+### `source.rs`
+- `SpatialState` 3D position, velocity, and orientation for positional audio.
+- `AudioSource` basic metadata struct: ID, file path, volume, and looping flag.
+- Default spatial state: origin position, zero velocity, forward -Z / up +Y orientation.
+
+### `visualizer.rs`
+- Waveform-to-PNG rendering: peak min/max per column plotted as vertical bars.
+- Spectrogram-to-PNG rendering: Hann-windowed DFT with frequency bins mapped to heatmap colours.
+- Mono downmix helper for multi-channel input files.
+- Heat-colour mapping from normalised magnitude to RGBA.
+- Parent directory auto-creation for output image paths.
 
 ## Types
 

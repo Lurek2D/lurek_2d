@@ -1181,10 +1181,10 @@ impl LuaUserData for LuaNoiseGenerator {
         /// Samples fractal Brownian motion noise.
         /// @param | x | number | X coordinate.
         /// @param | y | number | Y coordinate.
-        /// @param | octaves | integer | Optional octave count, defaulting to 4.
-        /// @param | lac | number | Optional lacunarity, defaulting to 2.0.
-        /// @param | pers | number | Optional persistence, defaulting to 0.5.
-        /// @param | kind | string | Optional noise kind name.
+        /// @param | octaves | integer? | Octave count (default 4).
+        /// @param | lac | number? | Lacunarity (default 2.0).
+        /// @param | pers | number? | Persistence (default 0.5).
+        /// @param | kind | string? | Noise kind name (default `"perlin"`).
         /// @return | number | Noise value.
         methods.add_method(
             "fbm",
@@ -1216,10 +1216,10 @@ impl LuaUserData for LuaNoiseGenerator {
         /// Samples ridged fractal noise. This method is available to Lua scripts.
         /// @param | x | number | X coordinate.
         /// @param | y | number | Y coordinate.
-        /// @param | octaves | integer | Optional octave count, defaulting to 4.
-        /// @param | lac | number | Optional lacunarity, defaulting to 2.0.
-        /// @param | pers | number | Optional persistence, defaulting to 0.5.
-        /// @param | kind | string | Optional noise kind name.
+        /// @param | octaves | integer? | Octave count (default 4).
+        /// @param | lac | number? | Lacunarity (default 2.0).
+        /// @param | pers | number? | Persistence (default 0.5).
+        /// @param | kind | string? | Noise kind name (default `"perlin"`).
         /// @return | number | Noise value.
         methods.add_method(
             "ridged",
@@ -1251,10 +1251,10 @@ impl LuaUserData for LuaNoiseGenerator {
         /// Samples turbulence fractal noise.
         /// @param | x | number | X coordinate.
         /// @param | y | number | Y coordinate.
-        /// @param | octaves | integer | Optional octave count, defaulting to 4.
-        /// @param | lac | number | Optional lacunarity, defaulting to 2.0.
-        /// @param | pers | number | Optional persistence, defaulting to 0.5.
-        /// @param | kind | string | Optional noise kind name.
+        /// @param | octaves | integer? | Octave count (default 4).
+        /// @param | lac | number? | Lacunarity (default 2.0).
+        /// @param | pers | number? | Persistence (default 0.5).
+        /// @param | kind | string? | Noise kind name (default `"perlin"`).
         /// @return | number | Noise value.
         methods.add_method(
             "turbulence",
@@ -1650,16 +1650,16 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
     // -- newTransform --
-    /// Creates an identity transform or a transform from optional components.
-    /// @param | x | number | Optional x translation.
-    /// @param | y | number | Optional y translation.
-    /// @param | angle | number | Optional rotation angle.
-    /// @param | sx | number | Optional x scale.
-    /// @param | sy | number | Optional y scale.
-    /// @param | ox | number | Optional origin x.
-    /// @param | oy | number | Optional origin y.
-    /// @param | kx | number | Optional x shear.
-    /// @param | ky | number | Optional y shear.
+    /// Creates a 2D transform. All components are optional; omitting all returns an identity transform.
+    /// @param | x | number? | X translation (default 0).
+    /// @param | y | number? | Y translation (default 0).
+    /// @param | angle | number? | Rotation angle in radians (default 0).
+    /// @param | sx | number? | X scale factor (default 1).
+    /// @param | sy | number? | Y scale factor; defaults to `sx` when omitted.
+    /// @param | ox | number? | X origin offset for rotation/scale (default 0).
+    /// @param | oy | number? | Y origin offset for rotation/scale (default 0).
+    /// @param | kx | number? | X shear factor (default 0).
+    /// @param | ky | number? | Y shear factor (default 0).
     /// @return | LTransform | New transform handle.
     tbl.set(
         "newTransform",
@@ -2410,8 +2410,11 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
             Ok(result)
         })?,
     )?;
+    /// The mathematical constant π ≈ 3.14159. Equivalent to `math.pi` in standard Lua.
     tbl.set("pi", std::f64::consts::PI)?;
+    /// The mathematical constant τ = 2π ≈ 6.28318.
     tbl.set("tau", std::f64::consts::TAU)?;
+    /// Positive infinity constant. Equivalent to `math.huge` in standard Lua.
     tbl.set("huge", f64::INFINITY)?;
     // -- rad --
     /// Converts degrees to radians. This function is exposed to Lua scripts.
@@ -2532,7 +2535,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     )?;
     // -- min --
     /// Returns the smallest supplied value.
-    /// @param | args | number | One or more numeric values.
+    /// @param | ... | number | One or more numeric values.
     /// @return | number | Minimum value.
     tbl.set(
         "min",
@@ -2544,7 +2547,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     )?;
     // -- max --
     /// Returns the largest supplied value.
-    /// @param | args | number | One or more numeric values.
+    /// @param | ... | number | One or more numeric values.
     /// @return | number | Maximum value.
     tbl.set(
         "max",

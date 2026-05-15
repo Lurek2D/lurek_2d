@@ -11,25 +11,113 @@
 
 ## Summary
 
-The `render` module is documented from the current source tree and existing module reference data.
+wgpu 22 GPU renderer with a deferred `RenderCommand` queue — no GPU work executes during Lua callbacks. Lua scripts emit draw commands (rectangles, circles, lines, polygons, text, textures, meshes) into a frame-local command buffer. At frame end the renderer sorts by layer/depth, batches compatible draws, and encodes wgpu render passes.
 
-This module primarily collaborates with `image`, `light`, `math`, `runtime`, `sprite`. Its responsibility should stay inside the Platform Services group rather than absorb behavior owned by those neighbors.
+`GpuRenderer` owns the device, queue, swap chain, and all GPU resources (textures, buffers, pipelines, shaders). `Font` handles text shaping and glyph atlas management via fontdue. Canvas targets enable off-screen rendering to textures. Post-processing applies shader passes from the `PostFxPipeline`. Custom WGSL shaders can be loaded and bound with uniform data. Mesh rendering supports indexed geometry with vertex attributes. Shape helpers generate circle, rounded-rect, polygon, and arc geometry. Exposed as `lurek.render.*`. Platform Services tier.
 
-## Files
+## Source Documentation
 
-- `canvas.rs`: Logical off-screen render-target descriptor used by the backend and Lua canvas APIs.
-- `decal_surface.rs`: Persistent descriptor for decal stamping targets.
-- `draw_layer.rs`: Ordered callback queue for grouped draw-order management.
-- `font.rs`: Bitmap font loading, atlas storage, glyph lookup, and text-measurement helpers.
-- `gpu_renderer.rs`: Concrete wgpu renderer for device setup, resource pools, pipeline caching, and frame execution.
-- `image_effect.rs`: Lightweight per-image shader-pass descriptor used by render commands.
-- `mesh.rs`: Custom geometry data structures and mesh draw-mode support.
-- `mod.rs`: Module root and public re-export surface for the active render submodules.
-- `obj_loader.rs`: Wavefront OBJ loader for Lurek2D.
-- `postfx_pipeline.rs`: GPU post-processing pipeline for Lurek2D.
-- `renderer.rs`: Render-command enum plus blend, stencil, depth, text, and texture-side data types.
-- `shader.rs`: Custom WGSL shader objects, validation, and typed uniform values.
-- `shape.rs`: Compound vector-shape builder and the primitive command list it records.
+### `canvas.rs`
+- Fixed-size render canvas carrying pixel dimensions for the GPU surface.
+- Logs creation at debug level via the CV01 message code.
+- Owned by `GpuRenderer`; does not hold GPU resources itself.
+
+### `decal_surface.rs`
+- Persistent paint-target surface for world-space decals.
+- Stores pixel dimensions used by the renderer to allocate backing textures.
+- Lightweight data struct with no GPU resources of its own.
+
+### `draw_layer.rs`
+- Z-ordered draw-callback queue flushed once per frame by the render loop.
+- Entries hold a depth key and an opaque callback ID returned to Lua.
+- Sorted at flush time so draw callbacks execute in front-to-back order.
+
+### `font.rs`
+- Bitmap font atlas loading from embedded PNG sprite sheets with per-character cell extraction.
+- Six bundled font sizes (3×5 through 12×22) with nearest-size selection for scaling.
+- Glyph lookup returning UV coordinates, pixel metrics, and advance widths.
+- Text measurement: total pixel width, line height with multiplier, ascent and descent.
+- Word-wrap algorithm splitting text into lines that fit a pixel-width limit.
+- Atlas dirty-tracking for lazy GPU texture upload.
+
+### `gpu_renderer.rs`
+- wgpu-based GPU renderer: vertex batching, draw-call encoding, pipeline caching, and frame presentation.
+- Flat-color and textured geometry paths with per-frame vertex/index buffer management.
+- User WGSL shader compilation, uniform upload, and per-pipeline-key caching.
+- Off-screen canvas render targets with lazy depth/stencil attachment creation.
+- Additive point-light accumulation pass with 1-D shadow-map atlas and composite blend.
+- Post-processing pipeline integration, screenshot readback, and per-frame render statistics.
+- Tessellation helpers for rectangles, rounded rects, ellipses, arcs, triangles, and polygons.
+- Stencil write/test pipeline variants with configurable compare and operation modes.
+- Bitmap font fallback renderer and thick-line geometry generation utilities.
+- Frustum culling via 2-D AABB visibility test against the camera transform.
+- Automatic geometry buffer growth when frame vertex/index demand exceeds current capacity.
+- Texture upload, font atlas rebuild, and canvas lifecycle tied to slot-map resource pruning.
+
+### `image_effect.rs`
+- Descriptor for a single named shader pass in a post-processing chain.
+- Carries float uniform parameters and an enable flag per pass.
+- Used by the render pipeline to build configurable multi-pass effects.
+
+### `mesh.rs`
+- 2D mesh geometry: vertices with position, UV, and RGBA color.
+- Triangle topology modes: independent triangles, fan, and strip.
+- Index-buffer support and topology-agnostic triangulation.
+
+### `mod.rs`
+- GPU rendering pipeline: wgpu device, passes, command encoding, and post-fx chain.
+- Draw primitives: sprites, shapes, meshes, text, decals, and canvas pixel ops.
+- Font rasterisation, shader management, and image-effect descriptors.
+- Draw-layer ordering and blend/stencil/depth state per command.
+
+### `obj_loader.rs`
+- Wavefront OBJ and MTL file loading via `tobj` or a built-in hand parser.
+- Triangulated face model with per-vertex position, UV, and normal indices.
+- Named materials carrying diffuse colour and optional texture path.
+- CPU software rasteriser producing `ImageData` thumbnails with back-face culling, Z-buffer, and key lighting.
+- Perspective projection of OBJ models into engine `Mesh` geometry for GPU rendering.
+- Instance projection with Y-axis rotation, uniform scale, and depth output for scene sorting.
+- Local `Vec3`/`Vec2` types for self-contained 3-D math without engine-wide dependencies.
+- `ObjCamera` helper packing position, lookat target, and FOV for projection calls.
+- `ObjLoader` stateless parser facade with both file-based and in-memory entry points.
+- MTL parsing extracting `newmtl`, `Kd`, and `map_Kd` into a flat material list.
+- OBJ face-vertex index resolver handling 1-based and negative (relative) indices.
+- Edge-function barycentric rasterisation for the CPU renderer path.
+
+### `postfx_pipeline.rs`
+- Full-screen post-processing pipeline: compile, cache, and execute GPU shader passes.
+- 20+ built-in WGSL fragment shaders: bloom, blur, vignette, noise, grayscale, sepia, invert, CRT, chromatic aberration, scanlines, pixelate, hue-shift, edge-detect, god-rays, water-distort, sharpen, dither, outline, depth-of-field, motion-blur.
+- Shared fullscreen-triangle vertex shader emitted once and reused by all effects.
+- Ping-pong intermediate textures for multi-pass compositing without extra allocations.
+- Named parameter map → 16-float uniform packing for effect configuration.
+- Runtime registration of custom WGSL fragment shaders under user-chosen names.
+- Auto-uniform injection of time, frame count, and resolution into the last four slots.
+- Identity copy pass used as fallback when no effects are enabled.
+- Pass sequencing respects insertion order; final result written directly to the surface target.
+
+### `renderer.rs`
+- Defines the `RenderCommand` enum — the complete vocabulary of draw, state, and control operations submitted each frame.
+- Provides blend, stencil, and depth mode enums for compositing and test configuration.
+- Contains text alignment and draw-mode enums shared across shape, font, and path rendering.
+- Houses post-processing pass descriptors and rich-text span types.
+- Declares particle instance and render-shape types for the particle system pipeline.
+- Includes physics debug shape and config records for collider overlay rendering.
+- Provides path-segment, gradient, hex, bevel, and nine-slice draw primitives.
+- Defines Spine slot draw records, sort-group markers, and compositing layer commands.
+- Supplies `TextureData` for CPU-to-GPU texture uploads and `DrawableKind` for generic draw utilities.
+
+### `shader.rs`
+- Parse and validate user-supplied WGSL fragment shaders via naga.
+- Rewrite fragment entry points into plain helper functions for wrapper-pipeline injection.
+- Extract `@location` input slots (color, UV) and enforce vec type constraints.
+- Manage typed uniform values (`float`, `vec2`–`vec4`, `int`, `bool`) for per-frame GPU upload.
+- Provide deterministic ordered-uniform iteration for stable buffer layout.
+- Strip and consume WGSL `@attribute(...)` tokens during header rewriting.
+
+### `shape.rs`
+- Compound shape storage: named, replayable sequences of vector-drawing commands.
+- Shape commands: rectangles, circles, ellipses, arcs, polygons, lines, and polylines.
+- State tracking: per-shape color and line-width carried across replays.
 
 ## Types
 

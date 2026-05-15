@@ -609,10 +609,14 @@ impl LuaUserData for LuaMinimap {
         });
         #[allow(clippy::type_complexity)]
         // -- addPing --
-        /// Adds a timed ping effect at a minimap position.
-        /// @param | x | number | Ping x coordinate.
-        /// @param | y | number | Ping y coordinate.
-        /// @param | duration | number | Ping duration in seconds.
+        /// Adds a timed ping effect at a minimap world position. The ping fades out over its duration.
+        /// @param | x | number | World x coordinate of the ping.
+        /// @param | y | number | World y coordinate of the ping.
+        /// @param | duration | number | How long the ping is visible in seconds.
+        /// @param | r | number? | Red channel of the ping color (0..1, default 1).
+        /// @param | g | number? | Green channel of the ping color (0..1, default 1).
+        /// @param | b | number? | Blue channel of the ping color (0..1, default 0).
+        /// @param | a | number? | Alpha channel of the ping color (0..1, default 1).
         /// @return | nil | No value is returned.
         methods.add_method_mut(
             "addPing",

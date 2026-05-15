@@ -556,6 +556,7 @@ impl LuaUserData for ValidationReport {
             for (i, inc) in this.0.incomplete.iter().enumerate() {
                 incomplete.set(i + 1, inc.clone())?;
             }
+            // incomplete: items with partial or missing documentation
             tbl.set("incomplete", incomplete)?;
             Ok(tbl)
         });
@@ -1129,8 +1130,11 @@ pub fn register(
                     }
                 }
             }
+            // checkStaleness result: stale source files, current files, missing files
             tbl.set("stale", stale)?;
+            // current: source files with up-to-date documentation
             tbl.set("current", current)?;
+            // missing: source files with no associated documentation
             tbl.set("missing", missing_tbl)?;
             Ok(tbl)
         })?,

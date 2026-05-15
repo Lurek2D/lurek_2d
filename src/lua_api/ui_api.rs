@@ -489,7 +489,7 @@ fn create_widget_table<'a>(
     let c = ctx.clone();
     // -- setZOrder --
     /// Sets the z-order (draw priority) of this widget. Higher values draw on top.
-    /// @param | z | number | The z-order integer value.
+    /// @param | z | integer | The z-order integer value.
     /// @return | nil | No return value.
     t.set(
         "setZOrder",
@@ -866,7 +866,7 @@ fn create_widget_table<'a>(
     let c = ctx.clone();
     // -- attachToEntity --
     /// Attaches this widget to a game entity so it follows the entity's position on screen.
-    /// @param | entity_id | number | The entity ID to attach to.
+    /// @param | entity_id | integer | The entity ID to attach to.
     /// @return | nil | No return value.
     t.set(
         "attachToEntity",
@@ -1039,7 +1039,7 @@ fn add_text_input_methods(
     let c = ctx.clone();
     // -- setMaxLength --
     /// Sets the maximum number of characters allowed in this text input.
-    /// @param | n | number | Maximum character count.
+    /// @param | n | integer | Maximum character count.
     /// @return | nil | No return value.
     t.set(
         "setMaxLength",
@@ -1370,7 +1370,7 @@ fn add_combo_box_methods(
     let c = ctx.clone();
     // -- removeItem --
     /// Removes the item at the given 1-based index from this combo box.
-    /// @param | index | number | The 1-based index of the item to remove.
+    /// @param | index | integer | The 1-based index of the item to remove.
     /// @return | boolean | True if the item was removed.
     t.set(
         "removeItem",
@@ -1416,7 +1416,7 @@ fn add_combo_box_methods(
     let c = ctx.clone();
     // -- getItem --
     /// Returns the text of the item at the given 1-based index.
-    /// @param | index | number | The 1-based item index.
+    /// @param | index | integer | The 1-based item index.
     /// @return | string | The item text, or nil if out of range.
     t.set(
         "getItem",
@@ -1437,7 +1437,7 @@ fn add_combo_box_methods(
     let c = ctx.clone();
     // -- setSelectedIndex --
     /// Sets the selected item by 1-based index.
-    /// @param | index | number | The 1-based index of the item to select.
+    /// @param | index | integer | The 1-based index of the item to select.
     /// @return | nil | No return value.
     t.set(
         "setSelectedIndex",
@@ -1506,7 +1506,7 @@ fn add_list_box_methods(
     let c = ctx.clone();
     // -- removeItem --
     /// Removes the item at the given 1-based index from this list box.
-    /// @param | index | number | The 1-based index to remove.
+    /// @param | index | integer | The 1-based index to remove.
     /// @return | nil | No return value.
     t.set(
         "removeItem",
@@ -1551,7 +1551,7 @@ fn add_list_box_methods(
     let c = ctx.clone();
     // -- getItem --
     /// Returns the text of the item at the given 1-based index.
-    /// @param | index | number | The 1-based item index.
+    /// @param | index | integer | The 1-based item index.
     /// @return | string | The item text, or empty string if out of range.
     t.set(
         "getItem",
@@ -1572,7 +1572,7 @@ fn add_list_box_methods(
     let c = ctx.clone();
     // -- setSelectedIndex --
     /// Sets the selected item by 1-based index.
-    /// @param | index | number | The 1-based index of the item to select.
+    /// @param | index | integer | The 1-based index of the item to select.
     /// @return | nil | No return value.
     t.set(
         "setSelectedIndex",
@@ -1642,7 +1642,7 @@ fn add_tab_bar_methods(
     let c = ctx.clone();
     // -- removeTab --
     /// Removes the tab at the given 1-based index.
-    /// @param | index | number | The 1-based tab index.
+    /// @param | index | integer | The 1-based tab index.
     /// @return | boolean | True if the tab was removed.
     t.set(
         "removeTab",
@@ -1660,7 +1660,7 @@ fn add_tab_bar_methods(
     let c = ctx.clone();
     // -- getTab --
     /// Returns the label of the tab at the given 1-based index.
-    /// @param | index | number | The 1-based tab index.
+    /// @param | index | integer | The 1-based tab index.
     /// @return | string | The tab label, or nil if out of range.
     t.set(
         "getTab",
@@ -1695,7 +1695,7 @@ fn add_tab_bar_methods(
     let c = ctx.clone();
     // -- setActiveTab --
     /// Sets the active (selected) tab by 1-based index.
-    /// @param | index | number | The 1-based tab index to activate.
+    /// @param | index | integer | The 1-based tab index to activate.
     /// @return | nil | No return value.
     t.set(
         "setActiveTab",
@@ -1884,7 +1884,7 @@ fn add_badge_methods(
     let c = ctx.clone();
     // -- setCount --
     /// Sets the notification count displayed by this badge.
-    /// @param | count | number | The notification count.
+    /// @param | count | integer | The notification count.
     /// @return | nil | No return value.
     t.set(
         "setCount",
@@ -2049,7 +2049,7 @@ fn add_layout_methods(
     let c = ctx.clone();
     // -- setColumns --
     /// Sets the number of columns for grid layout mode (minimum 1).
-    /// @param | n | number | Column count.
+    /// @param | n | integer | Column count.
     /// @return | nil | No return value.
     t.set(
         "setColumns",
@@ -2276,10 +2276,10 @@ fn add_nine_patch_methods(
     let c = ctx.clone();
     // -- setInsets --
     /// Sets the border insets defining the stretchable center region of the nine-patch image.
-    /// @param | left | number | Left inset in pixels.
-    /// @param | top | number | Top inset in pixels.
-    /// @param | right | number | Right inset in pixels.
-    /// @param | bottom | number | Bottom inset in pixels.
+    /// @param | left | integer | Left inset in pixels.
+    /// @param | top | integer | Top inset in pixels.
+    /// @param | right | integer | Right inset in pixels.
+    /// @param | bottom | integer | Bottom inset in pixels.
     /// @return | nil | No return value.
     t.set(
         "setInsets",
@@ -2313,8 +2313,8 @@ fn add_nine_patch_methods(
     let c = ctx.clone();
     // -- setImageDimensions --
     /// Sets the original image dimensions used for nine-patch slice calculations.
-    /// @param | w | number | Image width in pixels.
-    /// @param | h | number | Image height in pixels.
+    /// @param | w | integer | Image width in pixels.
+    /// @param | h | integer | Image height in pixels.
     /// @return | nil | No return value.
     t.set(
         "setImageDimensions",
@@ -2535,6 +2535,7 @@ fn add_separator_methods(
     )?;
     Ok(())
 }
+/// Registers tree-view-specific Lua methods on a widget method table.
 fn add_tree_view_methods(
     lua: &Lua,
     t: &LuaTable,
@@ -2704,7 +2705,7 @@ fn add_tree_view_methods(
     let c = ctx.clone();
     // -- collapseNode --
     /// Collapses the node at the given 1-based index to hide its children.
-    /// @param | index | number | The 1-based node index.
+    /// @param | index | integer | The 1-based node index.
     /// @return | boolean | True if the node was collapsed.
     t.set(
         "collapseNode",
@@ -2720,7 +2721,7 @@ fn add_tree_view_methods(
     let c = ctx.clone();
     // -- isNodeExpanded --
     /// Returns whether the node at the given 1-based index is expanded. Returns nil if the index is invalid.
-    /// @param | index | number | The 1-based node index.
+    /// @param | index | integer | The 1-based node index.
     /// @return | boolean | True if expanded, false if collapsed, nil if invalid.
     t.set(
         "isNodeExpanded",
@@ -2764,7 +2765,7 @@ fn add_tree_view_methods(
     let c = ctx.clone();
     // -- setSelectedNode --
     /// Sets the selected node by 1-based index.
-    /// @param | index | number | The 1-based node index.
+    /// @param | index | integer | The 1-based node index.
     /// @return | boolean | True if the node was selected.
     t.set(
         "setSelectedNode",
@@ -2797,7 +2798,7 @@ fn add_tree_view_methods(
     let c = ctx.clone();
     // -- getChildNodes --
     /// Returns a table of 1-based child node indices for the node at the given index.
-    /// @param | index | number | The 1-based parent node index.
+    /// @param | index | integer | The 1-based parent node index.
     /// @return | table | Array of 1-based child indices.
     t.set(
         "getChildNodes",
@@ -2817,7 +2818,7 @@ fn add_tree_view_methods(
     let c = ctx.clone();
     // -- getParentNode --
     /// Returns the 1-based index of the parent of the node at the given index.
-    /// @param | index | number | The 1-based node index.
+    /// @param | index | integer | The 1-based node index.
     /// @return | number | The parent node index, or nil for root nodes.
     t.set(
         "getParentNode",
@@ -2837,7 +2838,7 @@ fn add_tree_view_methods(
     let c = ctx.clone();
     // -- getNodeDepth --
     /// Returns the nesting depth of the node at the given index (0 for root nodes).
-    /// @param | index | number | The 1-based node index.
+    /// @param | index | integer | The 1-based node index.
     /// @return | number | The depth, or nil if index is invalid.
     t.set(
         "getNodeDepth",
@@ -3322,7 +3323,7 @@ fn add_split_panel_methods(
     let c = ctx.clone();
     // -- setFirstChild --
     /// Sets the widget index for the first (left/top) panel.
-    /// @param | child_idx | number | The widget index.
+    /// @param | child_idx | integer | The widget index.
     /// @return | nil | No return value.
     t.set(
         "setFirstChild",
@@ -3337,7 +3338,7 @@ fn add_split_panel_methods(
     let c = ctx.clone();
     // -- setSecondChild --
     /// Sets the widget index for the second (right/bottom) panel.
-    /// @param | child_idx | number | The widget index.
+    /// @param | child_idx | integer | The widget index.
     /// @return | nil | No return value.
     t.set(
         "setSecondChild",
@@ -3389,7 +3390,7 @@ fn add_dock_panel_methods(
     let c = ctx.clone();
     // -- dock --
     /// Docks a child widget to the specified side of this dock panel.
-    /// @param | child_idx | number | The widget index to dock.
+    /// @param | child_idx | integer | The widget index to dock.
     /// @param | side | string | The dock side ("left", "right", "top", "bottom", "center").
     /// @return | nil | No return value.
     t.set(
@@ -3405,7 +3406,7 @@ fn add_dock_panel_methods(
     let c = ctx.clone();
     // -- undock --
     /// Removes a child widget from this dock panel.
-    /// @param | child_idx | number | The widget index to undock.
+    /// @param | child_idx | integer | The widget index to undock.
     /// @return | nil | No return value.
     t.set(
         "undock",
@@ -3629,7 +3630,7 @@ fn add_menu_bar_methods(
     let c = ctx.clone();
     // -- addMenu --
     /// Adds a menu (by its widget index) to this menu bar.
-    /// @param | menu_idx | number | The widget index of the menu to add.
+    /// @param | menu_idx | integer | The widget index of the menu to add.
     /// @return | nil | No return value.
     t.set(
         "addMenu",
@@ -3646,7 +3647,7 @@ fn add_menu_bar_methods(
     let c = ctx.clone();
     // -- removeMenu --
     /// Removes a menu from this menu bar by its widget index.
-    /// @param | menu_idx | number | The widget index of the menu to remove.
+    /// @param | menu_idx | integer | The widget index of the menu to remove.
     /// @return | boolean | True if the menu was found and removed.
     t.set(
         "removeMenu",
@@ -3788,7 +3789,7 @@ fn add_menu_item_methods(
     let c = ctx.clone();
     // -- addSubItem --
     /// Adds a sub-item to this menu item for building nested menus.
-    /// @param | child_idx | number | The widget index of the sub-item to add.
+    /// @param | child_idx | integer | The widget index of the sub-item to add.
     /// @return | nil | No return value.
     t.set(
         "addSubItem",
@@ -3959,7 +3960,7 @@ fn add_dialog_methods(
     let c = ctx.clone();
     // -- setContent --
     /// Sets the content widget for this dialog.
-    /// @param | content_idx | number? | The widget index to show as content, or nil to clear.
+    /// @param | content_idx | integer? | The widget index to show as content, or nil to clear.
     /// @return | nil | No return value.
     t.set(
         "setContent",
@@ -4031,7 +4032,7 @@ fn add_status_bar_methods(
     let c = ctx.clone();
     // -- setSectionText --
     /// Sets the text of a status bar section by its 1-based index.
-    /// @param | section_idx | number | The 1-based section index.
+    /// @param | section_idx | integer | The 1-based section index.
     /// @param | text | string | The new section text.
     /// @return | nil | No return value.
     t.set(
@@ -4049,7 +4050,7 @@ fn add_status_bar_methods(
     let c = ctx.clone();
     // -- getSectionText --
     /// Returns the text of a status bar section by its 1-based index.
-    /// @param | section_idx | number | The 1-based section index.
+    /// @param | section_idx | integer | The 1-based section index.
     /// @return | string | The section text, or nil if out of range.
     t.set(
         "getSectionText",
@@ -4084,7 +4085,7 @@ fn add_status_bar_methods(
     let c = ctx.clone();
     // -- setSectionCount --
     /// Sets the number of sections, truncating or adding empty sections as needed.
-    /// @param | count | number | The desired section count.
+    /// @param | count | integer | The desired section count.
     /// @return | nil | No return value.
     t.set(
         "setSectionCount",
@@ -4105,7 +4106,7 @@ fn add_status_bar_methods(
     let c = ctx.clone();
     // -- setSectionWidget --
     /// Associates a widget with a status bar section (reserved for future use).
-    /// @param | section_idx | number | The 1-based section index.
+    /// @param | section_idx | integer | The 1-based section index.
     /// @param | widget | any | The widget value to associate.
     /// @return | nil | No return value.
     t.set(
@@ -4128,7 +4129,7 @@ fn add_accordion_methods(
     // -- addSection --
     /// Adds a collapsible section to this accordion.
     /// @param | title | string | The section title.
-    /// @param | content_idx | number? | Optional widget index for the section content.
+    /// @param | content_idx | integer? | Optional widget index for the section content.
     /// @return | nil | No return value.
     t.set(
         "addSection",
@@ -4161,7 +4162,7 @@ fn add_accordion_methods(
     let c = ctx.clone();
     // -- toggleSection --
     /// Toggles the expanded state of an accordion section by its 1-based index.
-    /// @param | section_idx | number | The 1-based section index.
+    /// @param | section_idx | integer | The 1-based section index.
     /// @return | boolean | The new expanded state.
     t.set(
         "toggleSection",
@@ -4185,7 +4186,7 @@ fn add_accordion_methods(
     let c = ctx.clone();
     // -- isSectionExpanded --
     /// Returns whether an accordion section is expanded.
-    /// @param | section_idx | number | The 1-based section index.
+    /// @param | section_idx | integer | The 1-based section index.
     /// @return | boolean | True if expanded.
     t.set(
         "isSectionExpanded",
@@ -4233,7 +4234,7 @@ fn add_accordion_methods(
     let c = ctx.clone();
     // -- getSectionTitle --
     /// Returns the title of an accordion section by its 1-based index.
-    /// @param | section_idx | number | The 1-based section index.
+    /// @param | section_idx | integer | The 1-based section index.
     /// @return | string | The section title, or nil if out of range.
     t.set(
         "getSectionTitle",
@@ -4335,7 +4336,7 @@ fn add_tooltip_panel_methods(
     let c = ctx.clone();
     // -- setTarget --
     /// Sets the widget index that this tooltip is attached to.
-    /// @param | target | number? | The target widget index, or nil to detach.
+    /// @param | target | integer? | The target widget index, or nil to detach.
     /// @return | nil | No return value.
     t.set(
         "setTarget",
@@ -4541,8 +4542,8 @@ fn add_gui_table_methods(
     let c = ctx.clone();
     // -- getCell --
     /// Returns the text of a cell at the given 1-based row and column.
-    /// @param | row | number | The 1-based row index.
-    /// @param | col | number | The 1-based column index.
+    /// @param | row | integer | The 1-based row index.
+    /// @param | col | integer | The 1-based column index.
     /// @return | string | The cell text, or nil if out of range.
     t.set(
         "getCell",
@@ -4567,8 +4568,8 @@ fn add_gui_table_methods(
     let c = ctx.clone();
     // -- setCell --
     /// Sets the text of a cell at the given 1-based row and column.
-    /// @param | row | number | The 1-based row index.
-    /// @param | col | number | The 1-based column index.
+    /// @param | row | integer | The 1-based row index.
+    /// @param | col | integer | The 1-based column index.
     /// @param | text | string | The new cell text.
     /// @return | nil | No return value.
     t.set(
@@ -4600,7 +4601,7 @@ fn add_gui_table_methods(
     let c = ctx.clone();
     // -- setSelectedRow --
     /// Sets the selected row by its 1-based index, or nil to deselect.
-    /// @param | row | number? | The 1-based row index, or nil.
+    /// @param | row | integer? | The 1-based row index, or nil.
     /// @return | nil | No return value.
     t.set(
         "setSelectedRow",
@@ -5540,7 +5541,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     /// Delivers a mouse press event to the UI.
     /// @param | x | number | Mouse X position.
     /// @param | y | number | Mouse Y position.
-    /// @param | btn | number? | Mouse button index (default 1).
+    /// @param | btn | integer? | Mouse button index (default 1).
     /// @return | boolean | True if a widget consumed the event.
     tbl.set(
         "mousepressed",
@@ -5554,7 +5555,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     /// Delivers a mouse release event to the UI.
     /// @param | x | number | Mouse X position.
     /// @param | y | number | Mouse Y position.
-    /// @param | btn | number? | Mouse button index (default 1).
+    /// @param | btn | integer? | Mouse button index (default 1).
     /// @return | boolean | True if a widget consumed the event.
     tbl.set(
         "mousereleased",
@@ -5738,8 +5739,8 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     let c = ctx.clone();
     // -- drawToImage --
     /// Renders the entire UI to an image buffer.
-    /// @param | w | number | Image width in pixels.
-    /// @param | h | number | Image height in pixels.
+    /// @param | w | integer | Image width in pixels.
+    /// @param | h | integer | Image height in pixels.
     /// @return | LImageData | The rendered image.
     tbl.set(
         "drawToImage",
@@ -5902,7 +5903,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     let cbs = callbacks.clone();
     // -- newBadge --
     /// Creates a new badge widget for displaying counts.
-    /// @param | count | number? | Initial count (default 0).
+    /// @param | count | integer? | Initial count (default 0).
     /// @return | LBadge | The new badge widget table.
     tbl.set(
         "newBadge",
@@ -6072,8 +6073,8 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     let c = ctx.clone();
     // -- renderToImage --
     /// Renders the UI to a PNG file. This function is exposed to Lua scripts.
-    /// @param | width | number | Image width in pixels.
-    /// @param | height | number | Image height in pixels.
+    /// @param | width | integer | Image width in pixels.
+    /// @param | height | integer | Image height in pixels.
     /// @param | path | string | Output file path.
     /// @return | nil | No return value.
     tbl.set(

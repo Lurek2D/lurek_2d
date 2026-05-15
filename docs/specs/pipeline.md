@@ -11,20 +11,40 @@
 
 ## Summary
 
-The `pipeline` module is documented from the current source tree and existing module reference data.
+DAG-based workflow orchestration engine for sequencing multi-step operations with dependency ordering, parallel execution, and error handling. `Pipeline` stores named steps as a directed acyclic graph — topological sort determines execution order, and parallel-level grouping identifies steps that can run concurrently. Sub-pipelines merge under namespace prefixes with outer dependency edges.
 
-As of 2026-05-07, async runs support coroutine-yielding steps via `LPipelineStep:setAsync(true)`,
-runtime branch composition via `LPipeline:addBranch`, and lifecycle events via `LPipeline:onEvent`.
+Steps support conditional execution (run-if predicates), retry with backoff, timeout limits, and named outputs that flow as inputs to downstream steps. `PipelineScheduler` drives async execution with progress tracking and cancellation. Error modes configure whether failures abort the pipeline or allow partial completion. Used for asset processing, test sequencing, analytics collection, and mod build workflows. Exposed as `lurek.pipeline.*`. Feature Systems tier.
 
-This module primarily collaborates with `runtime`. Its responsibility should stay inside the Edge/Integration group rather than absorb behavior owned by those neighbors.
+## Source Documentation
 
-## Files
+### `dag.rs`
+- DAG-based pipeline representing named steps with explicit dependency edges.
+- Topological ordering via Kahn's algorithm with cycle detection.
+- Parallel-level grouping for concurrent scheduling of independent steps.
+- Sub-pipeline merging under a namespace prefix with outer dependency wiring.
+- Validation of dependency references, execution-order queries, and ASCII diagram rendering.
+- Result collection from final step statuses into a typed `PipelineResult`.
 
-- `dag.rs`: Defines Pipeline and the graph-level algorithms such as dependency validation, topological ordering, and parallel-group calculation. This is the core file for execution-order semantics.
-- `mod.rs`: Module root that re-exports the pipeline graph, step, scheduler, and result types. It is the stable import surface for the orchestration engine.
-- `result.rs`: Defines PipelineResult and the overall PipelineStatus enum. This file turns a run into a structured success or failure record instead of a loose set of side effects.
-- `scheduler.rs`: Defines PipelineScheduler, the time-based helper that determines which delayed steps are ready to run. It is the timing primitive for async or multi-frame pipeline execution.
-- `step.rs`: Defines PipelineStep plus the step-level enums for status and error policy. It owns what one node in the workflow knows about dependencies, delays, retries, tags, and runtime outcome.
+### `mod.rs`
+- DAG-based pipeline for dependency-ordered step execution.
+- Frame-driven scheduler ticks steps when delay timers expire.
+- Per-step error policies with abort-on-failure or continue modes.
+- Result types report completed, skipped, and failed steps after a run.
+
+### `result.rs`
+- Lifecycle status enum tracking pipeline progression from pending through completion or failure.
+- Aggregated result struct collecting per-step outcomes, durations, and error messages.
+- Convenience queries for success checks and human-readable summaries.
+
+### `scheduler.rs`
+- Frame-driven delay scheduler that counts down per-step timers each update.
+- Report which pipeline steps become ready once their configured delay expires.
+- Track wall-clock elapsed time and running state for the owning pipeline.
+
+### `step.rs`
+- Pipeline step definition: named unit of work with dependency, timing, and retry config.
+- Execution lifecycle via `StepStatus` (pending → waiting → running → terminal).
+- Per-step error policy overriding pipeline-level failure behavior.
 
 ## Types
 

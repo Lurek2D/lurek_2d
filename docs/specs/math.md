@@ -11,57 +11,165 @@
 
 ## Summary
 
-The `math` module is Lurek2D's foundational mathematics library — a Foundations tier module at the leaf of the engine's dependency graph with zero Lurek2D module dependencies of its own. Every other module that needs 2D math, geometry, or colour types imports from here.
+Foundational 2D math, geometry, color, and spatial utility types forming the leaf of the engine dependency graph. Core types: `Vec2`/`Vec3` (f32 vectors), `Mat3` (3x3 transform matrix), `Color` (RGBA f32 with named constructors and HSL/HSV conversion), `Rect` (axis-aligned rectangle), `Transform` (position + rotation + scale).
 
-**Core value types.** `Vec2` (2D f32 vector with arithmetic operators, swizzling, dot/cross/normalise/lerp/distance), `Vec3` (3D f32 vector with equivalent ops), `Mat3` (3x3 column-major affine transform matrix supporting translate, rotate, scale composition and multiplication), `Transform` (chainable builder wrapping `Mat3`), `Rect` (AABB with contains/overlaps/union/intersection), `Color` (the engine's canonical sRGB `[f32; 4]` type with named constants, `u8` and `f32` constructors, packed `u32` output, HSV conversion, and gamma helpers — all engine colour handling must use this type).
+Geometry: line intersection, point-in-polygon, polygon area/centroid, convex hull, circle-circle/circle-rect overlap, ray-segment intersection. Curves: `BezierCurve` (quadratic/cubic), `CatmullRomSpline` (smooth interpolation through control points). Noise: Perlin, Simplex, Worley, FBM with octave stacking. Spatial indexing: `SpatialHash` for O(1) neighbor queries, `QuadTree` for recursive spatial subdivision. Random: `RandomGenerator` with seeded PCG and weighted/shuffled selection. 50+ easing functions. Exposed as `lurek.math.*`. Foundations tier — imported by nearly every module.
 
-**Curve and spline types.** `BezierCurve` (arbitrary-order De Casteljau evaluation with tangent and arc-length queries), `CatmullRomSpline` (smooth interpolating spline for animation paths), `HermiteSpline` (tension-controlled interpolation). These underpin animation, camera paths, and UI transitions.
+## Source Documentation
 
-**Geometry utilities.** `geometry.rs` provides free-standing geometry helpers: circle/point containment, AABB overlap, line segment intersection, Bresenham rasterisation, convex hull (Andrew's monotone chain), ear-clipping polygon triangulation, and polygon area/centroid. `polygon.rs` focuses on convexity testing and triangulation quality. `Circle` and `Sphere` are lightweight value types for game-code collision geometry.
+### `aabb_tree.rs`
+- Dynamic AABB bounding-volume hierarchy for broad-phase 2D spatial queries.
+- Insertion, removal, and in-place update of axis-aligned bounding boxes keyed by numeric id.
+- Query primitives: rectangle overlap, point containment, circle overlap, and segment intersection.
+- Surface-area heuristic descent for high-quality sibling selection on insert.
+- Free-list node pool avoiding repeated allocation and fragmentation.
+- Incremental bottom-up refit keeping ancestor bounds tight after mutations.
+- Helper geometry routines: AABB area, merged bounds, box-box, box-circle, and box-segment tests.
+- Leaf-centric design mapping each entry id to a single leaf node for O(1) lookup.
+- Suitable for hundreds to low thousands of dynamic bodies at interactive frame rates.
 
-**Spatial index.** `SpatialHash` is a uniform-grid broad-phase AABB index: `insert(id, rect)`, `query_rect(rect)` returns a set of IDs, `remove(id)`. `AabbTree` is a dynamic BVH for the same query surface with better worst-case complexity for non-uniformly distributed objects.
+### `bezier.rs`
+- Arbitrary-degree Bézier curve with dynamic control-point list.
+- Evaluation via Bernstein basis, clamped to [0,1].
+- Sampling helpers for full curves, sub-segments, and arc-length walks.
+- First-derivative computation and tangent-angle extraction.
+- Geometric transforms: translate, rotate, scale relative to an origin.
+- Control-point CRUD with minimum-count safety.
 
-**Noise.** `noise_generator.rs` is the canonical implementation (`NoiseGenerator`) for seeded Perlin/Simplex/Worley + fractal/map generation. `noise_functions.rs` remains as a compatibility free-function surface and delegates to `NoiseGenerator` to keep both APIs behaviorally aligned. `NoiseField` is the simplified Lua-facing wrapper.
+### `circle.rs`
+- Circle primitive defined by center + radius, clamped non-negative on construction.
+- Point-containment, circle-circle intersection, and AABB queries.
+- Area and perimeter helpers using `std::f32::consts::PI`.
 
-**Voronoi tessellation.** `voronoi.rs` implements Fortune's sweep-line algorithm. `VoronoiDiagram::new(points)` computes the tessellation; `cells()` iterates `VoronoiCell` entries with polygon boundary vertices and neighbour indices. Used for procedural territory maps, dungeon partitioning, and noise dithering.
+### `color.rs`
+- Linear RGBA float color type with f32 channels in [0, 1].
+- Named constants for common colors and Lurek2D brand palette.
+- Construction from u8 components and `#RRGGBB` / `#RRGGBBAA` hex strings.
+- Conversion to packed u32 RGB and u8 tuples.
+- Color-space transforms: RGB↔HSL, HSV→RGB, sRGB gamma↔linear.
 
-**Transform algebra.** `Transform2D` in `transform.rs` is a mutable 2D transform wrapper around `Mat3` with chainable `translate(dx, dy)`, `rotate(angle)`, `scale(sx, sy)`, `shear(sx, sy)` operations and `world_to_local(p)` / `local_to_world(p)` point conversion. This simplifies 2D scene-graph transform accumulation without manually composing Mat3 calls.
+### `easing.rs`
+- Standard easing curves: quad, cubic, quart, sine, expo, elastic, bounce, back.
+- Each family provides in, out, and in-out variants mapping t∈[0,1]→[0,1].
+- Boundary-clamped functions (expo, elastic) handle t≤0 and t≥1 explicitly.
+- Name-based lookup via `apply` and `resolve_easing_fn` for string-driven tween systems.
+- Linear passthrough for identity interpolation.
 
-**Easing.** `EasingType` enum covers 30+ named easing functions (linear, quad, cubic, quart, quint, sine, expo, circ, bounce, back, elastic — all in/out/in-out variants), addressable both by enum variant and by string name for serialisation. `easing.rs` also contains the numeric interpolation primitives in `tween.rs` used by the `tween` feature module.
+### `facade.rs`
+- Scalar interpolation helpers: lerp, inverse_lerp, remap, smoothstep.
+- Numeric utilities: clamp, sign.
+- All functions operate on `f32` and are pure (no side effects).
 
-**Randomisation.** `RandomGenerator` wraps `fastrand` in a seedable, serialisable deterministic RNG. `seed(n)`, `float()`, `int_range(min, max)`, `bool_chance(p)`, `pick(table)`, `shuffle(table)`. Used wherever reproducible sequences are needed (procedural generation, test fixtures, AI noise).
+### `geometry.rs`
+- Circle queries: containment, circle-circle overlap, circle-line and circle-segment intersection with hit points.
+- Polygon operations: signed area (shoelace), centroid, point-in-polygon (ray cast), convex hull (Andrew monotone chain).
+- Segment and line utilities: segment-segment intersection, closest point on segment, infinite-line intersection.
+- Grid rasterization: Bresenham line for integer cell traversal.
+- Triangulation: Delaunay via Bowyer-Watson with super-triangle removal.
+- Angle computation: atan2-based bearing between two points.
+- All routines are standalone free functions operating on flat coordinate scalars or flat vertex arrays.
+- f32 used for game-facing geometry; f64 used for Delaunay where precision matters.
 
-**Math facade.** `facade.rs` exposes free functions: `lerp(a, b, t)`, `remap(v, in_min, in_max, out_min, out_max)`, `clamp(v, lo, hi)`, `sign(v)`, `smoothstep(e0, e1, x)`, `inverse_lerp(a, b, v)`.
+### `mat3.rs`
+- Row-major 3×3 matrix type for 2D affine transformations.
+- Factory constructors for identity, translation, rotation, scale, and shear.
+- Inverse computation with degenerate-determinant fallback.
+- Point transformation and matrix multiplication via `std::ops::Mul`.
 
-**Lua surface.** `lurek.math.*` exposes Vec2/Vec3/Mat3/Color constructors and full method sets; `Rect`, `BezierCurve`, `Transform2D`, `NoiseField`, `VoronoiDiagram`, `SpatialHash` userdata; easing functions via `lurek.math.ease(type, t)`, random via `lurek.math.newRand(seed)` and free functions (lerp, clamp, remap, etc.).
+### `mod.rs`
+- Math primitives: Vec2, Vec3, Mat3, Rect, Circle, Color, Transform.
+- Noise and procedural generation: Perlin, simplex, value noise, Voronoi diagrams.
+- Spatial structures: AABB tree, spatial hash grid, rectangle bin-packing.
+- Curves and interpolation: bezier, splines, tweens, easing functions, scalar helpers.
 
-**Scope boundary.** Foundations tier. Zero Lurek2D dependencies. Lua bridge in `src/lua_api/math_api.rs`.
+### `noise_functions.rs`
+- Perlin noise helpers (2-D, 3-D, 4-D) with per-call seeding.
+- Simplex noise (2-D, 3-D) with optional fixed seed.
+- Fractional Brownian motion (fBm) layering multiple Perlin octaves.
 
-## Files
+### `noise_generator.rs`
+- Seeded permutation-table noise generator supporting Perlin gradient noise in 1-D through 4-D dimensions.
+- Simplex noise variants in 1-D, 2-D, and 3-D using skewed simplex grids for faster evaluation.
+- Worley (cell/Voronoi) noise in 2-D and 3-D with selectable distance metrics: Euclidean, Manhattan, Chebyshev.
+- Fractal layering strategies: fractional Brownian motion (fBm), ridged multifractal, and turbulence.
+- Configurable heightmap generation producing row-major f64 arrays from combined multi-octave passes.
+- Gradient contribution helpers mapping hash bytes to directional dot products in 1-D through 4-D.
+- Smoothstep fade curve and linear interpolation primitives used across all Perlin evaluations.
+- Deterministic cell hashing for reproducible procedural feature point placement from any u64 seed.
+- Domain warping via Perlin displacement fields for organic terrain and texture distortion.
+- MapGenOptions controlling scale, octaves, lacunarity, persistence, offset, algorithm, and fractal type.
 
-- `aabb_tree.rs`: Dynamic axis-aligned bounding box (AABB) tree for broad-phase queries.
-- `bezier.rs`: Implements arbitrary-order Bezier curves with evaluation, derivative, editing, rendering, and transform helpers.
-- `circle.rs`: Circle value type for 2D collision geometry and containment queries.
-- `color.rs`: Defines the shared RGBA value type plus byte conversion, packed RGB output, HSV conversion, and gamma helpers.
-- `easing.rs`: Houses the named easing curve functions and the string-based dispatcher used by tweening code and Lua bindings.
-- `facade.rs`: Foundational math free functions: `lerp`, `remap`, `clamp`, `sign`, `smoothstep`, `inverse_lerp`.
-- `geometry.rs`: Collects free-standing geometry utilities such as circle tests, polygon measurements, segment tests, line rasterization, convex hull, and triangulation helpers.
-- `mat3.rs`: Implements the 3x3 affine matrix used for 2D transforms, point transforms, composition, and inversion.
-- `mod.rs`: Re-exports the public math surface so other modules and the Lua bridge can depend on one stable module root.
-- `noise_functions.rs`: Compatibility free-function layer (`perlin2d`, `simplex2d`, `fbm`, ...) delegating to `NoiseGenerator`.
-- `noise_generator.rs`: Owns the seeded `NoiseGenerator` and the richer procedural toolset for Perlin, Simplex, Worley, fractal layering, domain warping, and map generation.
-- `polygon.rs`: Provides polygon-specific helpers centered on convexity testing and ear-clipping triangulation.
-- `random.rs`: Wraps `fastrand` in a deterministic, serializable RNG API that matches engine and Lua expectations.
-- `rect.rs`: Provides axis-aligned rectangles for overlap, containment, and intersection queries used across gameplay and rendering code.
-- `rect_packing.rs`: - Shelf-first rectangle packing for texture atlas layout.
-- `spatial_hash.rs`: Implements a uniform-grid broad-phase index for fast rectangle, circle, and segment spatial queries.
-- `sphere.rs`: Spherical math helpers used by `src/globe/`.
-- `spline.rs`: Interpolating and approximating splines: Catmull-Rom and Hermite.
-- `transform.rs`: Wraps `Mat3` in a mutable 2D transform object with chainable translate, rotate, scale, and shear operations.
-- `tween.rs`: Implements low-level numeric interpolation over one or more values and explicitly stays below the higher-level `src/tween/` feature system.
-- `vec2.rs`: Defines the engine's primary 2D vector type and common arithmetic, direction, interpolation, and geometric helpers.
-- `vec3.rs`: 3D floating-point vector with arithmetic operators and common helpers.
-- `voronoi.rs`: Voronoi tessellation from a set of 2-D seed points.
+### `polygon.rs`
+- Ear-clipping triangulation for simple polygons and convexity testing.
+- Sutherland-Hodgman polygon clipping against arbitrary half-planes.
+- Boolean-style polygon operations: intersection, union, and difference.
+- Andrew monotone-chain convex hull and winding-order normalization.
+- Internal helpers for signed area, point-in-triangle, and cross-product sign tests.
+
+### `random.rs`
+- Seedable pseudo-random number generator wrapping `fastrand` with save/restore support.
+- Uniform integer, float, and Gaussian sampling primitives.
+- Seed persistence via string serialisation for deterministic replay.
+
+### `rect.rs`
+- Axis-aligned rectangle defined by top-left corner and size (y-down convention).
+- Containment, intersection, union, and bounding-box construction from point sets.
+- Center-based and corner-based constructors for layout and collision use cases.
+
+### `rect_packing.rs`
+- Shelf-first rectangle packing for texture atlas layout.
+- Configurable atlas dimensions and uniform pixel padding between rects.
+- Tracks occupancy ratio and returns placement coordinates in insertion order.
+
+### `spatial_hash.rs`
+- Uniform-grid spatial hashing for broad-phase 2D collision and proximity queries.
+- AABB insert/remove/update with automatic cell-bucket management.
+- Rectangle, circle, and segment query shapes with deduplication.
+- Parametric slab-based segment-vs-AABB intersection test.
+- O(1) cell lookup per query tile; scales with world density, not total item count.
+
+### `sphere.rs`
+- Sphere-surface coordinate helpers: latitude/longitude ↔ unit-sphere Vec3 conversion.
+- Great-circle distance (Haversine) and arc interpolation between two geo-points.
+- Ray-sphere intersection returning the nearest positive hit distance.
+- Column-major 3×3 rotation matrices (axis-aligned X/Y/Z plus axial-tilt convenience).
+- Matrix-vector and matrix-matrix multiplication for globe-view transforms.
+
+### `spline.rs`
+- Catmull-Rom multi-segment spline with dynamic control-point management.
+- Hermite cubic segment defined by endpoints and tangents.
+- Normalized parameter sampling across full spline or individual segments.
+
+### `transform.rs`
+- Accumulated 2D affine transform backed by a 3×3 matrix.
+- Chainable translate, rotate, scale, and shear mutations.
+- Forward and inverse point mapping plus SRT decomposition.
+
+### `tween.rs`
+- Multi-channel tween interpolator that drives values from start to target over a fixed duration.
+- Easing resolution accepts both short names and `easeIn*`/`easeOut*` prefixed forms.
+- Each tween holds an independent clock, supports reset, seek, and completion query.
+- Channels are registered dynamically and interpolated per-frame via the resolved easing curve.
+- Falls back to linear when an unknown easing name is provided.
+
+### `vec2.rs`
+- 2D float vector type used for all position, direction, and velocity math.
+- Arithmetic operators: add, sub, mul, div, negate, and assign variants.
+- Geometric helpers: length, normalize, distance, dot, cross, perpendicular.
+- Rotation, reflection, and angle conversion utilities.
+- Linear interpolation and unit-direction construction from radians.
+
+### `vec3.rs`
+- 3D float vector for cross-product normals, raycasting directions, and noise inputs.
+- Arithmetic ops (add, sub, mul, div, neg) and geometric helpers (dot, cross, normalize, reflect, project).
+- Lerp, distance, and length utilities for interpolation and spatial queries.
+
+### `voronoi.rs`
+- Voronoi diagram generation from 2D point sets via Bowyer-Watson Delaunay triangulation.
+- Circumcenter and circumcircle predicates for incremental insertion.
+- Boundary-edge extraction and super-triangle cleanup.
+- CCW vertex sorting and deduplication to produce closed polygonal cells.
+- Input deduplication to handle coincident sites gracefully.
 
 ## Types
 

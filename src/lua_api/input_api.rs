@@ -222,9 +222,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     let keyboard = lua.create_table()?;
     let s = state.clone();
     // -- keyboard.isDown --
-    /// Returns whether any supplied keyboard key is currently down.
-    /// @param | args | string | One or more key names.
-    /// @return | boolean | True when at least one key is down.
+    /// Returns whether any of the supplied key names are currently held down.
+    /// @param | ... | string | One or more key name strings (e.g. `"space"`, `"w"`, `"up"`). At least one required.
+    /// @return | boolean | `true` if any of the given keys is currently pressed.
     keyboard.set(
         "isDown",
         lua.create_function(move |_, args: Variadic<String>| {

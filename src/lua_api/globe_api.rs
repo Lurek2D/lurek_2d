@@ -1139,9 +1139,13 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
             Ok(t)
         })?,
     )?;
+    /// Maximum number of provinces that can be registered in the globe.
     tbl.set("MAX_PROVINCES", MAX_PROVINCES as u32)?;
+    /// LOD string constant for far-distance province rendering.
     tbl.set("LOD_FAR", "far")?;
+    /// LOD string constant for mid-distance province rendering.
     tbl.set("LOD_MID", "mid")?;
+    /// LOD string constant for near-distance province rendering.
     tbl.set("LOD_NEAR", "near")?;
     luna.set("globe", tbl)?;
     Ok(())

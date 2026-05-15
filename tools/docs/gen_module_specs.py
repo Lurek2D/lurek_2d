@@ -105,7 +105,7 @@ GROUPS = {
 SECTION_ALIASES = {
     "general_info": ["General Info", "Module Info"],
     "summary": ["Summary", "Module Purpose", "Purpose"],
-    "files": ["Files", "Source Files"],
+    "source_docs": ["Source Documentation", "File Descriptions"],
     "types": ["Types", "Key Types"],
     "functions": ["Functions"],
     "lua_api": ["Lua API Reference", "Lua API", "Lua API Summary"],
@@ -275,6 +275,25 @@ def first_module_doc_line(lines: list[str]) -> str:
     return clean_doc_text(" ".join(parts))
 
 
+def collect_all_file_docs(lines: list[str]) -> list[str]:
+    """Collect all //! doc lines from the top of a file as individual bullet points."""
+    docs: list[str] = []
+    for raw in lines:
+        stripped = raw.strip()
+        if stripped.startswith("//!"):
+            content = stripped[3:].strip()
+            if content:
+                # Strip leading '- ' if present to normalize
+                if content.startswith("- "):
+                    content = content[2:]
+                docs.append(content)
+        elif docs:
+            break
+        elif stripped and not stripped.startswith("//"):
+            break
+    return docs
+
+
 def normalize_impl_target(raw: str) -> str:
     target = raw.split("<", 1)[0].strip().rstrip("{")
     return target.split("::")[-1]
@@ -283,6 +302,7 @@ def normalize_impl_target(raw: str) -> str:
 def scan_module_sources(module: str) -> dict:
     module_dir = SRC / module
     file_info = []
+    file_docs: dict[str, list[str]] = {}
     types_by_file: dict[str, list[dict]] = defaultdict(list)
     functions_by_file: dict[str, list[dict]] = defaultdict(list)
     refs: set[str] = set()
@@ -292,6 +312,9 @@ def scan_module_sources(module: str) -> dict:
         rel = path.relative_to(module_dir).as_posix()
         lines = read_text(path).splitlines()
         purpose = first_module_doc_line(lines)
+        all_docs = collect_all_file_docs(lines)
+        if all_docs:
+            file_docs[rel] = all_docs
         if not purpose:
             for idx, line in enumerate(lines):
                 if TYPE_RE.match(line) or FUNCTION_RE.match(line):
@@ -357,6 +380,7 @@ def scan_module_sources(module: str) -> dict:
 
     return {
         "files": file_info,
+        "file_docs": file_docs,
         "types_by_file": types_by_file,
         "functions_by_file": functions_by_file,
         "references": sorted(refs),
@@ -517,6 +541,19 @@ def format_files(file_rows: list[dict], overrides: dict[str, str]) -> str:
     return "\n".join(lines)
 
 
+def format_source_docs(file_docs: dict[str, list[str]]) -> str:
+    """Format the //! file-level documentation as bullet points grouped by file."""
+    if not file_docs:
+        return "- No file-level `//!` documentation found in this module's source files."
+    lines: list[str] = []
+    for rel_path, docs in sorted(file_docs.items()):
+        lines.append(f"### `{rel_path}`")
+        for doc in docs:
+            lines.append(f"- {doc}")
+        lines.append("")
+    return "\n".join(lines).rstrip()
+
+
 def format_types(module: str, file_rows: list[dict], types_by_file: dict[str, list[dict]], overrides: dict[str, str]) -> str:
     lines: list[str] = []
     for row in file_rows:
@@ -637,7 +674,6 @@ def build_spec(module: str, lua_parser) -> tuple[str, dict]:
     elif "\n\n" not in summary_text:
         summary_text = summary_text + "\n\n" + build_scope_boundary(module, source["references"], group)
 
-    file_overrides = combine_pair_maps(spec_sections["files"], agent_sections["files"], legacy_sections["files"])
     type_overrides = combine_pair_maps(spec_sections["types"], agent_sections["types"], legacy_sections["types"])
     function_overrides = combine_pair_maps(spec_sections["functions"], legacy_sections["functions"])
     reference_overrides = combine_pair_maps(spec_sections["references"], legacy_sections["references"])
@@ -646,7 +682,7 @@ def build_spec(module: str, lua_parser) -> tuple[str, dict]:
         notes_text = build_default_notes(module, lua_api)
 
     general_info = format_general_info(module, group, rust_tests, lua_tests, lua_api)
-    files_text = format_files(source["files"], file_overrides)
+    source_docs_text = format_source_docs(source["file_docs"])
     types_text = format_types(module, source["files"], source["types_by_file"], type_overrides)
     functions_text = format_functions(module, source["files"], source["functions_by_file"], function_overrides)
     lua_api_text = format_lua_api(lua_api)
@@ -662,9 +698,9 @@ def build_spec(module: str, lua_parser) -> tuple[str, dict]:
 
 {summary_text}
 
-## Files
+## Source Documentation
 
-{files_text}
+{source_docs_text}
 
 ## Types
 

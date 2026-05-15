@@ -11,34 +11,45 @@
 
 ## Summary
 
-The `docs` module is Lurek2D's in-engine API documentation catalog and data-validation schema system — a Foundations tier module with no rendering, audio, or physics dependencies. It serves two distinct but closely related purposes: providing a structured, queryable database of `lurek.*` API metadata at runtime for IDE tooling and Lua introspection, and offering a lightweight schema validation mechanism for arbitrary structured game data such as config files, save data, and mod manifests.
+Runtime documentation catalog that scans Lua API metadata at startup and provides programmatic access to function signatures, parameter descriptions, return types, and usage examples. `DocEntry` stores per-function documentation including summary, params, returns, and source location. `Catalog` holds the complete API surface indexed by namespace path.
 
-**Documentation catalog.** The catalog side is built around three core types. `DocEntry` is the canonical description of one documented API item — function, method, value, or type — carrying its fully-qualified name, module name, kind tag (`function`/`method`/`value`/`type`), a human-readable description, ordered `ParamInfo` parameter records (name, type hint, description), and `ReturnInfo` return descriptors. A `Catalog` is an in-memory collection of `DocEntry` records with query methods: `add(entry)`, `modules()` (sorted unique list), `all_entries()`, `entries_for_module(name)`, `get_entry(qualified_name)`, `search(query)` (case-insensitive substring over name and description), `filter_by_kind(kind)`, `clear()`.
+Validation and quality reporting (`validate`, `quality`, `coverage`) check documentation completeness and flag missing entries. Export functions generate IDE integration data: completions, hover info, and signature help in JSON format. Schema generation from TOML definitions produces typed config documentation. Exposed as `lurek.docs.*`. Edge/Integration tier — consumes metadata from all other modules.
 
-**Population and use.** The catalog is populated at engine boot by iterating over the registered `lurek.*` API surface and constructing `DocEntry` records from the Rust binding metadata. It serves three downstream consumers: the VS Code extension's IntelliSense completions (via `export_completions`), hover information (via `export_hover`), and signature help (via `export_signatures`); the debug bridge's real-time hover queries over the TCP protocol; and the `lurek.docs` Lua API that lets game code query the API at runtime (useful for in-game help screens and mod-documentation generators).
+## Source Documentation
 
-**Quality reporting.** `QualityReport` computes a completeness score for each module's documentation: it identifies entries with missing prose descriptions, missing parameter type hints, missing return descriptions, and empty example lists, and produces a per-module quality percentage. `ValidationReport` compares the catalog against an expected API surface and lists phantom entries (in catalog, not in source) and missing entries (in source, not in catalog). These are used by `tools/audit/docstring_audit.py` and `tools/audit/lua_api_test_coverage.py`.
+### `catalog.rs`
+- Provide in-memory catalog storage for documentation entries collected from Rust source.
+- Support insertion-order preservation, module grouping, and text search.
+- Offer merge, filter, and deduplication for multi-source doc aggregation.
 
-**Export formats.** `export.rs` converts the catalog into editor-facing payloads written to JSON files:
-- `export_completions(catalog, path)` → VS Code completion item array.
-- `export_hover(catalog, path)` → map of qualified name → hover markdown.
-- `export_signatures(catalog, path)` → map of qualified name → signature help.
-These outputs are consumed by the VS Code extension at extension activation time.
+### `entry.rs`
+- Define normalized documentation record types for lurek API symbols.
+- Model parameter, return, and metadata fields used by export and report stages.
+- Provide completeness validation helpers for entry quality checks.
 
-**Schema validation.** `schema.rs` provides a lightweight data contract system independent of the documentation catalog. A `Schema` is a map of field names to `FieldRule` entries; each rule specifies: required vs optional presence, a `FieldType` constraint (Number, Text, Bool, Table, Any), and an optional default value. `schema.validate_pairs(pairs)` checks a sequence of key-value pairs and returns a `SchemaResult` listing any `SchemaError` entries (missing required fields, type mismatches). Game code uses this for validating plugin manifests, `conf.lua` sections, and structured save-data before trusting values deeper in the engine.
+### `export.rs`
+- Build JSON payloads for IDE completion, hover, and signature help from doc entries.
+- Support compact and rich output modes for different consumer needs.
+- Write individual or bundled JSON files to an output directory.
+- Serialize via buffered writers with human-readable pretty formatting.
+- Separate public export entry points from internal payload builders.
 
-**Lua surface.** `lurek.docs.catalog()` returns a snapshot of the runtime catalog as a Lua table. `lurek.docs.query(name)` looks up a single entry. `lurek.docs.search(query)` returns matching entries. `lurek.docs.modules()` lists module names. Schema: `lurek.docs.newSchema(rules)` → `Schema` userdata; `schema:validate(table)` → `{ok, errors}`.
+### `mod.rs`
+- Aggregate documentation infrastructure: catalog, entry models, export, reporting, and schema.
+- Re-export primary types so callers can import from the top-level docs module.
+- Support the doc generation pipeline and IDE tooling data flow.
 
-**Scope boundary.** Foundations tier. No engine module imports. Lua bridge in `src/lua_api/docs_api.rs`.
+### `report.rs`
+- Compute per-entry quality scores from completeness of description, params, and metadata.
+- Convert scores to letter grades for human-readable reporting.
+- Validate catalogs for missing, phantom, and incomplete entries.
+- Aggregate module-level and overall quality metrics from a catalog snapshot.
+- Support both catalog-based and standalone entry-based report construction.
 
-## Files
-
-- `catalog.rs`: Defines Catalog, the in-memory collection of DocEntry values. It is the lookup and search layer for module-based queries, kind filtering, and direct entry retrieval.
-- `entry.rs`: Defines DocEntry, ParamInfo, and ReturnInfo. This file owns the shape of one documented API item and the metadata needed to describe its parameters and return values.
-- `export.rs`: Converts catalogs into editor-facing export formats such as completion, hover, and signature payloads. This file is the bridge from internal doc metadata to downstream tooling output.
-- `mod.rs`: Module root that re-exports documentation, reporting, schema, and export helpers. It gives the rest of the codebase one place to import the runtime docs surface.
-- `report.rs`: Defines ValidationReport, QualityReport, and the scoring helpers that evaluate doc completeness. This is where documentation metadata becomes measurable quality data.
-- `schema.rs`: Defines Schema, FieldRule, FieldType, SchemaError, and SchemaResult for runtime validation of structured Lua data. It is the module boundary between reflective documentation metadata and enforceable data rules.
+### `schema.rs`
+- Re-export schema validation types from the lurek_schema crate.
+- Provide field rules, type definitions, and error types to docs modules.
+- Keep schema source of truth external; this file is an access bridge.
 
 ## Types
 

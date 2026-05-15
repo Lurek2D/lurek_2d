@@ -11,62 +11,200 @@
 
 ## Summary
 
-The `ai` module is Lurek2D's Feature Systems tier AI toolkit — a collection of 27 decoupled subsystems that can be used individually or composed through the central `AIWorld` / `Agent` framework. All computation is pure CPU math; there are no GPU, audio, or window dependencies, so every subsystem can run in headless unit tests without a graphics context.
+Game AI toolkit providing twelve subsystems for non-player character behavior. Includes finite state machines (`FSM`), behavior trees with parallel/sequence/selector composites, Goal-Oriented Action Planning (`GOAP`), Hierarchical Task Networks (`HTN`), Monte-Carlo Tree Search (`MCTS`), utility-based scoring, Q-learning with epsilon-greedy exploration, context steering for obstacle avoidance, squad coordination, influence maps, need/emotion/trait personality models, and a global `AIDirector` that adjusts difficulty based on player performance metrics.
 
-**Core framework.** `AIWorld` is the top-level registry. It owns all `Agent` instances and a shared global `Blackboard`. Each `Agent` carries kinematic state (position, velocity, max speed, max force), a `DecisionModel` enum selecting the active AI paradigm, and a local `Blackboard` that chains to the world-level blackboard for hierarchical key-value lookup. `AIWorld::update(dt)` ticks all agents in descending priority order, integrating velocity into position and invoking any custom-model callbacks.
+All subsystems are pure CPU, headless-testable, and exposed through `lurek.ai.*` constructors. Each AI object is independent Lua userdata — no shared world state is required. The `Blackboard` key-value store provides inter-system communication when needed. Sensors feed world observations into agents via a typed `SensorWorld` container. The module has no rendering dependency and sits in the Feature Systems tier importing only `math` and `runtime`.
 
-**Decision-making subsystems.** Ten paradigms are available:
-- **FSM** (`fsm.rs`) — finite state machine with named states, lifecycle callbacks (enter/exit/update), and priority-ordered guarded transitions.
-- **Behavior Tree** (`behavior_tree.rs`) — hierarchical BT supporting Selector, Sequence, Parallel composites; Inverter, Repeater, Succeeder, Guard decorators; Action and Condition leaves. `BtDebugState` snapshots the active path for visual inspection.
-- **Steering** (`steering.rs`) — Reynolds-style movement with Seek, Flee, Arrive, Wander, Pursue, Evade, Flock behaviors. `SteeringManager` blends forces in weighted or priority mode, supports spatial-hash bucketing for large flocks, and can consume nav-grid/navmesh waypoint paths directly through `setPath`.
-- **Dialogue AI** (`dialogue.rs`) — topic/branch selector driven by FSM state, BT status, and utility-action scores for deterministic NPC conversation routing.
-- **Context Steering** (`context_steering.rs`) — radial interest/danger ring evaluator for smooth obstacle-aware direction selection.
-- **GOAP** (`goap.rs`) — Goal-Oriented Action Planning via A* over boolean world-state facts; configurable iteration cap to prevent frame spikes.
-- **Utility AI** (`utility_ai.rs`) — multi-axis action scorer with per-consideration response curves (linear, quadratic, sigmoid, exponential, threshold).
-- **Q-Learning** (`qlearner.rs`) — tabular epsilon-greedy reinforcement learner; Q-table serialises to/from JSON for persistence.
-- **HTN** (`htn.rs`) — Hierarchical Task Network planner decomposing compound tasks into primitive task sequences via preconditioned methods.
-- **MCTS** (`mcts.rs`) — Monte Carlo Tree Search for look-ahead decisions in game-tree problems.
-- **Command Queue** (`command_queue.rs`) — RTS-style ordered command queue with interruptibility, front-insertion, and cancel.
+## Source Documentation
 
-**Supporting subsystems.** `Blackboard` (hierarchical key-value store); `InfluenceMap` (multi-layer spatial float grid for strategic area heat); `Squad` (formation offset computation, shared blackboard); `AIDirector` (dynamic pacing/tension controller with spawn-rate and loot-drop factors); `EmotionModel` (named affective dimensions with decay); `NeedSystem` (motivational needs with urgency scoring and advertisement selection); `TraitProfile` (named float trait base values with timed additive modifiers and archetype instantiation); `StimulusWorld` / `Sensor` (visual, auditory, and custom perception with awareness levels); `ORCASolver` (Optimal Reciprocal Collision Avoidance for crowd navigation); `NeuralNet` + `Neuroevolution` (feedforward network inference; genetic algorithm training); `GeneticAlgorithm` (generational GA with tournament selection, crossover, mutation, elitism); `Bandit` (multi-armed bandit with epsilon-greedy, UCB, and Thompson strategies); `StrategyAI` (throttled strategic goal evaluator with tag-gated preconditions); `AILod` (distance-tiered LOD for skipping updates on far agents).
+### `agent.rs`
+- Core runtime state for one AI actor: identity, motion, priority, and decision mode.
+- Per-agent links to AI subsystems: blackboard, FSM, behavior tree, steering, and sensing.
+- Optional emotion, needs, tags, and LOD data accessible through a single shared container.
+- DecisionModel enum routing agents to FSM, BT, steering, or custom Lua callbacks.
+- Single-call constructor initializing all fields to safe defaults with subsystem slots disconnected.
 
-**Pathfinding re-exports.** `FlowField`, `Cell`, and `PathGrid` types are re-exported from `crate::pathfind` so that `lurek.ai.*` provides a single scripting surface without requiring separate PathFind module imports.
+### `bandit.rs`
+- Compact multi-armed bandit storing per-arm reward history and posterior parameters.
+- Strategy switch for epsilon-greedy, UCB1, and Thompson sampling policies.
+- Selection, reward ingestion, and reset for adaptive arm choice without a planning framework.
+- Internal gamma and beta sampling driven by a deterministic xorshift64 RNG.
+- Per-arm pull counts, cumulative reward, and Bayesian alpha/beta parameter tracking.
 
-**Lua surface.** 36 constructor functions under `lurek.ai.*` create every subsystem from Lua. Each type exposes methods through its userdata handle. Key additions: `AIDirector:setTension` for scripted tension sequences; `ContextSteering:addSeekTarget/addAvoidPoint/addAvoidBounds`; `GOAPPlanner:getMaxIterations/setMaxIterations`; `StateMachine:setInitialState`; `TraitProfile:set/get/getBase/addModifier`; `SteeringManager:enableSpatialHash/setSpatialHashCellSize/setPath`; `newDialogueAI` with topic/branch selection methods.
+### `behavior_tree.rs`
+- Behavior-tree node hierarchy with local runtime progress and last tick result.
+- Control-flow variants: selector, sequence, parallel, decorator, guard, and Lua leaves.
+- Subtree reset, node counting, status translation, and compact debug snapshots.
+- Running state per composite node enabling cross-tick resume from last active child.
+- Parallel policy configuration with independent success and failure thresholds.
+- Root node container used as the single-instance tree by the per-agent AI runtime.
 
-**Scope boundary.** Feature Systems tier. Depends on `math`, `pathfind`, `runtime`. Lua bridge in `src/lua_api/ai_api.rs`. Plugin candidacy under proposed constraint A-05 — see [docs/architecture/plugins.md](../architecture/plugins.md).
+### `blackboard.rs`
+- Lightweight hierarchical blackboard storing per-agent facts as numbers, booleans, and strings.
+- Local entry map with optional parent chain and read/write resolution through fallback hierarchy.
+- Key removal, board clearing, key listing, size reporting, and parent attachment operations.
+- Parent-chain walk for reads giving child boards transparent access to shared data.
+- Structured runtime logging for creation, removal, and clear events.
 
-## Files
+### `command_queue.rs`
+- Queued command format staging discrete actor actions with targets, callbacks, and priority.
+- FIFO command queue with front insertion, replacement, cancellation, and advance operations.
+- Raw-construction helpers for enqueuing commands without separate struct building.
+- Interruptible commands that can be cancelled individually without clearing the queue.
+- Structured runtime logging for queue creation and bulk-clear events.
 
-- `agent.rs`: Defines the core `Agent` record and the top-level decision-model selection enum used to attach different AI styles to an actor.
-- `bandit.rs`: Multi-armed bandit algorithms for AI exploration/exploitation decisions.
-- `behavior_tree.rs`: Implements behavior tree nodes, statuses, composite policies, and the execution model for hierarchical decision logic.
-- `blackboard.rs`: Provides a hierarchical key-value blackboard for local and shared AI state.
-- `command_queue.rs`: Implements queued AI commands with priorities, interruptibility, and callback integration.
-- `context_steering.rs`: Context Steering — direction-based interest/danger evaluation for smooth movement.
-- `dialogue.rs`: Dialogue AI selector that combines FSM/BT/Utility context into topic and branch choices.
-- `director.rs`: AI Director — dynamic difficulty and pacing controller.
-- `emotion.rs`: AI Emotion Model — simulated affective state for expressive agents.
-- `fsm.rs`: Defines finite state machine structures, state callbacks, and guarded transitions.
-- `genetic.rs`: Genetic Algorithm (GA) for offline AI parameter optimisation.
-- `goap.rs`: Implements GOAP planning primitives and planner search over world-state facts.
-- `htn.rs`: Hierarchical Task Network (HTN) Planner.
-- `lod.rs`: AI Level-of-Detail (LOD) system — budget-aware update throttling.
-- `mcts.rs`: Monte Carlo Tree Search (MCTS) for AI decision-making.
-- `mod.rs`: Declares the AI submodules and re-exports the main decision-model and support types, including selected pathfinding-facing types.
-- `needs.rs`: AI Needs and Motivation System.
-- `neural_net.rs`: Minimal feedforward neural network for AI inference.
-- `neuroevolution.rs`: Neuroevolution — evolve neural network weights using a genetic algorithm.
-- `orca.rs`: ORCA — Optimal Reciprocal Collision Avoidance for smooth crowd navigation.
-- `perception.rs`: AI Perception and Sensing System.
-- `qlearner.rs`: Provides a tabular Q-learning implementation for trainable action selection.
-- `render.rs`: Generates debug render output for AI state, plans, or decision structures when visual inspection is needed.
-- `squad.rs`: Defines squad grouping, formation handling, and shared blackboard coordination.
-- `steering.rs`: Implements movement steering behaviors such as seek, flee, arrive, wander, pursue, evade, and flocking.
-- `strategy.rs`: Strategic AI — high-level goal evaluation and throttled decision-making.
-- `traits.rs`: AI Trait and Personality System.
-- `utility_ai.rs`: Implements utility-based action scoring with considerations and response curves.
-- `world.rs`: Defines `AIWorld`, the central registry and coordination surface for agents and shared AI state.
+### `context_steering.rs`
+- Slot-based context steering accumulating interest and danger around a directional ring.
+- Behavior variants projecting targets, hazards, wander, fixed headings, and world-bound avoidance.
+- Evaluation pass merging contributions and choosing the strongest safe direction.
+- Seek-target interest projection using an angle cone toward the target position.
+- Hash-based wander jitter biasing direction over time without explicit random state.
+- Per-slot danger subtraction so agents steer around hazards while maintaining progress.
+- Last chosen heading and magnitude recording for downstream movement application.
+- Inspection accessors for interest and danger maps useful for debug visualization.
+- Uses cosine-attenuated cone fill to smoothly distribute weights across
+- neighboring slots near a target angle.
+
+### `dialogue.rs`
+- Dialogue selection choosing topics and branches from weighted sets guarded by FSM and BT state.
+- Topic and branch records with optional gate keys and utility-score references.
+- Scoring and matching logic filtering by gates, folding utility, and returning best candidates.
+- Independent gating against FSM state and behavior-tree status for adaptive selection.
+- Base weight combined with optional utility scores for flexible priority ranking.
+
+### `director.rs`
+- Pacing director translating accumulated tension into pressure phases and runtime multipliers.
+- Tunable thresholds and timers moving between buildup, peak, sustain, and relief phases.
+- Derived outputs for spawn pressure, loot pressure, ambient intensity, and state inspection.
+- Slower tension decay during peak and sustain phases to hold pressure before relief.
+- Per-phase spawn, loot, and ambient multipliers scaling downstream gameplay intensity.
+
+### `emotion.rs`
+- Per-agent emotion state tracking named feelings as clamped scalars decaying toward rest.
+- Single-emotion rules for activation thresholds, direct setting, triggering, and decay.
+- Model-level add, replace, query, dominant-state lookup, update, and reset operations.
+- Value clamping to [0, 1] at the write boundary preventing out-of-range propagation.
+- Dominant emotion identification by filtering active entries and selecting highest value.
+
+### `fsm.rs`
+- Finite-state-machine storing named states, callback hooks, transition rules, and active state.
+- Callback bundles for state entry, update, and exit with priority-sorted transition records.
+- Mutable machine state tracking current state, initial state, elapsed time, and registration helpers.
+- Descending-priority transition sorting so the tick evaluator tests highest-priority guards first.
+- Elapsed time tracking in the current state for time-based guards and Lua update callbacks.
+
+### `genetic.rs`
+- Population-based genetic optimization storing genomes, fitness values, and generation bookkeeping.
+- Evolution step preserving elites, tournament selection, crossover, and in-place mutation.
+- Deterministic random helpers driving parent selection, crossover, and Gaussian mutation.
+- Stable per-chromosome identifiers persisting across generations for lineage tracking.
+- Seeded xorshift64 RNG with Box-Muller normal sampling for reproducible evolution.
+
+### `goap.rs`
+- GOAP planning data storing actions, goals, search nodes, and planner state.
+- World-state model built from boolean preconditions, effects, and goal priorities.
+- Optional Lua execution callbacks attached to actions for runtime behavior.
+- Bounded A* search expanding reachable states and returning ordered action plans.
+- Unsatisfied-condition count heuristic guiding A* toward goals with minimal expansion.
+- Automatic highest-priority goal selection or targeted planning by goal index.
+- Iteration cap preventing runaway planning on large or unsolvable state spaces.
+- Search node tracking with parent links for plan reconstruction after goal reach.
+
+### `htn.rs`
+- HTN planning model representing symbolic world state, tasks, methods, and the task registry.
+- Primitive tasks mutating state directly and compound tasks expanding through methods.
+- Recursive decomposition of a root task into a linear primitive plan with precondition checks.
+- Float-threshold preconditions on world-state keys expressing partial satisfaction.
+- Recursion depth cap at 128 levels preventing infinite expansion in cyclic task domains.
+
+### `lod.rs`
+- AI level-of-detail model grouping agents into distance-based update tiers.
+- Tier data controlling maximum coverage, think distance, and frame cadence.
+- Tier sorting, agent assignment from positions, and per-frame run decisions.
+- Frame-cadence check so distant agents skip updates while near agents run every frame.
+- Default three-tier near/mid/far layout suitable for 2D worlds on integrated GPUs.
+
+### `mcts.rs`
+- Monte Carlo Tree Search configuring search parameters, arena-backed nodes, and rollout statistics.
+- Selection, expansion, rollout, and backpropagation flow scoring actions through bounded simulations.
+- Internal random helper and UCT scoring logic driving node choice and action sampling.
+- Arena-backed tree structure avoiding per-node heap allocations during iterative search.
+- Generic state, action-enumeration, transition, and evaluation closures for domain-independent search.
+
+### `mod.rs`
+- Public AI module surface grouping planning, decision, control, memory, and movement subsystems.
+- Module-level export map for agent state, planners, blackboard, and command flow.
+- Learning helpers, perception, steering, and squad coordination re-exports.
+- Compact entry surface re-exporting runtime types for higher engine layers.
+
+### `needs.rs`
+- Need-tracking model with normalized internal drives, urgency settings, and external advertisements.
+- Per-need decay, urgency scoring, satisfaction updates, and cooldown-aware advertisement scoring.
+- System-level operations for adding needs, time-based updates, and most-urgent drive selection.
+- Best-advertisement selection weighted by distance, cooldown, and need priority.
+
+### `neural_net.rs`
+- Lightweight feed-forward neural-network with dense layers, activation modes, and flat parameters.
+- Layer-local forward evaluation, activation application, and parameter counting.
+- Network-level operations: append layers, run forward passes, load/export weight buffers.
+
+### `neuroevolution.rs`
+- Neuroevolution wrapper joining genetic algorithm with neural-network for population-based weight search.
+- Template layer specification for rebuilding networks from flat chromosome genes.
+- Orchestration logic mapping chromosomes to networks, recording fitness, and advancing evolution.
+
+### `orca.rs`
+- ORCA local-avoidance data representing moving agents, solver constraints, and safe output velocities.
+- Per-agent motion inputs: current velocity, preferred velocity, collision radius, and max speed.
+- Solver pass building pairwise half-plane constraints and projecting collision-free velocities.
+
+### `perception.rs`
+- Perception model storing stimuli, sensor configuration, detection results, and awareness state.
+- Stimulus world for visual, auditory, and custom signals with insertion, decay, and removal.
+- Sensor-side logic testing visibility, hearing, detecting nearby stimuli, and updating awareness.
+- Custom detection range tracking and time-based stimulus expiration.
+
+### `qlearner.rs`
+- Tabular Q-learning model with flat state-action value table and training parameters.
+- Epsilon-greedy action selection, Bellman updates, and episode bookkeeping.
+- Lightweight persistence helpers for serializing and reloading learned policies.
+
+### `render.rs`
+- AI debug rendering helpers turning FSM and behavior-tree state into renderer commands.
+- Layout and traversal logic walking state-machine and tree data with position assignment.
+- Image drawing helpers mirroring structures into offline ImageData for inspection.
+
+### `squad.rs`
+- Squad-level coordination grouping named members under one leader with shared local memory.
+- Formation mode, spacing, and ordered membership determining relative placement.
+- Formation-position logic producing target offsets for line, column, wedge, and circle patterns.
+
+### `steering.rs`
+- Steering model representing individual movement behaviors, blending rules, and waypoint following.
+- Behavior variants: seek, flee, arrive, wander, flock, pursue, evade, and custom callbacks.
+- Manager logic combining active behaviors with weighting or priority selection.
+- Waypoint path advancement and final steering force clamping.
+
+### `strategy.rs`
+- High-level strategy selection scoring named goals against current tag context over time.
+- Goal records with eligibility tags, priority scaling, enable state, and computed scores.
+- Timed evaluation flow querying external scorers and storing the active strategic choice.
+
+### `traits.rs`
+- Personality-trait model storing base values, temporary modifiers, and reusable archetype presets.
+- Profile logic resolving effective trait values, advancing and removing expiring modifiers.
+- Interpolation toward other profiles with origin archetype tracking.
+- Archetype registry and deterministic hash helper for varied profiles with per-trait jitter.
+
+### `utility_ai.rs`
+- Utility-AI scoring model storing actions, response curves, considerations, and evaluation results.
+- Response-curve mapping rules and action-side data binding Lua scorers with momentum weighting.
+- Evaluation flow calling registered scorers, tracking per-action scores, and selecting best action.
+
+### `world.rs`
+- Shared AI world container owning registered agents, name-to-index lookup, and global blackboard.
+- Lifecycle operations adding or removing named agents with synchronized lookup tables.
+- World update surface exposing global blackboard access and velocity-based position integration.
 
 ## Types
 

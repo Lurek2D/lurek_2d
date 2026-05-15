@@ -11,44 +11,111 @@
 
 ## Summary
 
-The `ui` module is documented from the current source tree and existing module reference data.
+Retained-mode GUI framework with 35+ widget types, layout engine, theme system, charts, data binding, and TOML-based layout loading. `GuiContext` is the top-level container managing widget trees, focus state, input routing, and per-frame update/draw cycles. Widgets include buttons, labels, text inputs, checkboxes, sliders, dropdowns, lists, trees, tabs, panels, scrollbars, progress bars, color pickers, date pickers, and custom canvas regions.
 
-This module primarily collaborates with `image`, `math`, `render`, `runtime`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
+Layout uses a flex-based model with containers, rows, columns, grids, and stack panels — supports padding, margin, alignment, grow/shrink factors, and min/max constraints. Themes define color palettes, fonts, spacing, and per-widget style overrides in TOML. Data binding connects widget values to Lua tables with two-way synchronization. Chart widgets (line, bar, scatter, pie, area) render data visualizations to `ImageData` buffers. TOML loader instantiates complete UI hierarchies from declarative layout files. Exposed as `lurek.ui.*`. Feature Systems tier.
 
-### 2026-05 UI Runtime Additions
+## Source Documentation
 
-- Added first-class widget transitions in core UI runtime:
-	- timed alpha transitions and timed position transitions,
-	- runtime helpers for start/cancel/query animation state.
-- Added drag-and-drop reparenting between containers:
-	- explicit drag lifecycle (`beginDrag`, `dropOn`, `endDrag`),
-	- cycle-safe reparenting and parent detachment.
-- Extended model binding sync:
-	- number/text/bool binding values,
-	- binding updates for slider/progress/spinbox/badge, label/button/text input/menu item, checkbox/switch, plus generic visibility.
-- Improved render-cache invalidation:
-	- `flushCache` now uses a lightweight widget-tree signature (position/size/state/topology) in addition to the dirty flag.
+### `chart.rs`
+- Software-rasterised chart rendering into `ImageData` pixel buffers — no GPU dependency.
+- Five chart types: `LineChart` (polyline + dots), `BarChart` (grouped), `ScatterPlot`,
+- `PieChart` (per-pixel angle test), and `AreaChart` (stacked cumulative layers).
+- Shared `ChartConfig` controls dimensions, background/axis/grid/label colours, title,
+- margins, and grid visibility across all chart types.
+- Grid and axis helpers draw horizontal/vertical grid lines, tick marks, and numeric labels
+- scaled to arbitrary value ranges on both axes.
+- Legend panel rendered as a floating colour-swatch box positioned near the top-right corner.
+- Pie chart uses brute-force per-pixel distance and angle checks with edge-darkening for
+- anti-aliased-looking wedge boundaries; divider lines drawn as white radial spokes.
+- Area chart performs linear interpolation between uniform X samples and fills columns
+- cumulatively from the bottom layer upward.
+- `safe_circle` helper rasterises filled circles clamped to image bounds for dot markers.
+- All draw operations write directly to RGBA pixel data; output is a plain `ImageData` that
+- can be saved to PNG or uploaded as a GPU texture.
 
-### 2026-05 UI Refactor Closure (IDEA.md)
+### `containers.rs`
+- Container widgets for the retained-mode GUI: Panel, Layout, ScrollPanel, NinePatch, GUIWindow, SplitPanel, DockPanel.
+- Layout engine supports vertical, horizontal, and grid stacking with spacing, alignment, and justification.
+- ScrollPanel provides viewport clipping with clamped 2D scroll offsets and configurable speed.
+- NinePatch implements resolution-independent 9-slice border rendering from pixel insets.
+- GUIWindow adds floating window semantics: title bar, close button, drag, and resize.
+- SplitPanel and DockPanel offer two-pane splitting and edge-based docking respectively.
 
-- Reduced `WidgetKind::base` / `WidgetKind::base_mut` dispatch boilerplate in `src/ui/context.rs` via shared macro mapping.
-- Introduced `WidgetRenderer` orchestration in `src/ui/render.rs` to keep root traversal/render pipeline setup separate from per-widget emission logic.
-- Unified repeated chart legend/title fragments in `src/ui/chart.rs` through shared helper functions used by line/bar/scatter/pie/area renderers.
-- No Lua API surface change in this pass; behavior is preserved while reducing maintenance duplication.
+### `context.rs`
+- Retained-mode GUI context owning a flat arena of widgets addressed by index.
+- Discriminated `WidgetKind` union covering 35+ control/container/overlay types with shared `WidgetBase` access.
+- Recursive layout pass computing absolute `computed_rect` from parent-relative positions.
+- Focus management with forward/backward cycling and keyboard-driven tab navigation.
+- Drag-and-drop API with cycle detection to prevent parent-into-child drops.
+- Alpha and position transition animations stepped each frame with automatic expiry.
+- Data binding system mapping string keys to numeric, text, or boolean widget values.
+- FNV-hash render signature for fast dirty-check without full tree diffing.
+- Mouse press/release/move and keyboard input dispatch to the focused widget.
+- Toast overlay queue with per-message timers and automatic expiry.
+- Event queue (`GuiEvent`) drained each frame by the Lua binding layer.
 
-## Files
+### `controls.rs`
+- Concrete widget structs for buttons, labels, text inputs, checkboxes, sliders, progress bars, combo boxes, list boxes, tab bars, radio buttons, scroll bars, spin boxes, and switches.
+- Each control embeds a `WidgetBase` for shared layout, style, and state; construction sets the correct `WidgetType` discriminant.
+- Editing controls (TextInput, SpinBox, Slider) clamp or validate input at the boundary to guarantee invariants.
+- Collection controls (ComboBox, ListBox, TabBar) auto-adjust selection indices on item removal.
+- All controls derive `Debug` and `Clone` for inspection and snapshot-based undo.
 
-- `chart.rs`: Generates CPU-rendered chart images for line, bar, scatter, pie, and area graphs without requiring the GPU path.
-- `containers.rs`: Defines structural widgets such as panels, layouts, split views, scroll panels, windows, dock panels, and nine-patch containers.
-- `context.rs`: Implements `GuiContext`, the retained widget pool, focus management, event routing, child relationships, and toast tracking.
-- `controls.rs`: Defines common interactive widgets such as buttons, labels, text inputs, sliders, check boxes, combo boxes, list boxes, and progress bars.
-- `data_graph_renderer.rs`: Implements data-series rendering helpers for charts and graph-style visualizations.
-- `extras.rs`: Defines secondary widgets and utility components such as menus, toolbars, dialogs, tables, tree views, tooltips, accordions, image widgets, and toasts.
-- `layout_loader.rs`: Implements pure-Rust layout definition loading (`WidgetDef` / TOML) and a headless software PNG rasteriser for test evidence generation.
-- `mod.rs`: Declares the UI submodules and re-exports the widget, context, theme, container, control, and chart-facing types.
-- `render.rs`: Walks UI state and theme data to produce runtime render commands for every built-in widget and a CPU-side `drawToImage()` helper used by evidence tests.
-- `theme.rs`: Stores theme style maps, widget visual state, and the built-in `Theme::default_dark()` skin that covers every built-in widget type.
-- `widget.rs`: Defines shared widget metadata and the broad widget-type and widget-state enums used across the module.
+### `data_graph_renderer.rs`
+- Stateful graph renderer mapping named data series (line, scatter, bar) onto a screen viewport.
+- World-to-screen and screen-to-world coordinate transforms with configurable axis ranges and auto-range fitting.
+- Visual configuration: toggleable grid, axes, labels, background colour, and chart title/annotation.
+- Series storage keyed by name with insert-or-replace semantics and bulk clear.
+- Cursor overlay support for interactive hover inspection in world-space coordinates.
+
+### `extras.rs`
+- Supplemental UI widgets beyond core controls: toasts, separators, spacers, tree views, toolbars, menus, dialogs, and status bars.
+- Accordion panels with optional exclusive-expand mode and tooltip overlays with configurable delay.
+- HSVA/RGB colour picker, column-row data grid with sorting, static image display, numeric badge overlay.
+- TreeView uses a flat `Vec<TreeNode>` with index-based parent/child links; add, remove, expand, collapse, and depth queries are O(n) worst case.
+- Toolbar and MenuBar hold child indices into an external widget list; buttons support enabled/toggled states.
+- Dialog supports modal blocking, optional content slot, and footer action buttons.
+- CustomWidget provides a blank shell for fully user-controlled rendering via Lua callbacks.
+- All widgets embed `WidgetBase` for shared layout, style, and state; widget-type enum discriminant assigned at construction.
+
+### `layout_loader.rs`
+- Deserialise TOML layout files into a recursive `WidgetDef` tree and instantiate them into a live `GuiContext`.
+- Map widget-type strings to concrete `GuiContext::add_*` constructors covering 30+ widget kinds.
+- Apply optional base properties (position, size, id, visibility, enabled, tooltip) and type-specific values after creation.
+- Provide a headless `render_to_image` path that runs a layout pass and alpha-blends flat debug colours per widget kind to an RGBA PNG.
+- Support recursive child nesting via the `children` field in `WidgetDef`, mirroring the runtime parent–child hierarchy.
+- Integrate with `GuiContext` only; no wgpu dependency — useful for offline layout validation and snapshot tests.
+
+### `mod.rs`
+- Immediate-mode GUI toolkit: containers, controls, extras, and theming.
+- Provides layout panels, interactive widgets, and data-bound context.
+- Optional chart and TOML layout-loader features behind feature flags.
+
+### `render.rs`
+- GPU render-command emission for all retained-mode UI widget types (buttons, sliders, trees, tables, dialogs, etc.).
+- CPU pixel-rasterisation fallback (`draw_to_image`) for headless screenshot and test verification.
+- Theme-aware style resolution with per-widget alpha compositing applied to all colour channels.
+- Shared helper emitters for common visual patterns: shadow, highlight strip, gradient/rounded box, border.
+- Widget-specific draw routines: slider thumb, progress fill, checkbox mark, radio dot, combo arrow, scroll thumb, switch track.
+- Recursive tree-node rendering in both GPU-command and CPU-pixel paths with expand/collapse indicators.
+- HSV-to-RGB conversion used by the colour-picker hue bar rasteriser.
+- `WidgetRenderer` carrier struct threading `GuiContext`, font key, and output buffer through the render pass.
+- Child-collection logic merging standard `children()` with type-specific slots (menus, accordion sections, dock zones).
+- Approximate character-width text measurement and alignment (left/center/right) for label placement.
+
+### `theme.rs`
+- Visual theming system for the immediate-mode GUI, mapping widget-type/state pairs to style records.
+- Each style carries background, foreground, border colors, font size, shadow, gradient, and text alignment.
+- Lookup falls back from the requested state to `Normal`, letting partial themes work without exhaustive registration.
+- Ships a full dark preset covering all standard widget types (buttons, inputs, panels, layouts, menus, dialogs, etc.).
+- Style records are value types (`Clone + Debug`) so themes can be cheaply forked per-screen.
+- Includes a debug helper that rasterizes button states into an `ImageData` tile for visual validation.
+- Integrates with `GuiContext` at render time; the renderer reads resolved styles per-widget per-frame.
+- Designed for extension: games register custom `(WidgetType, WidgetState)` entries without modifying built-in presets.
+
+### `widget.rs`
+- Public types and helpers for the widget module.
 
 ## Types
 

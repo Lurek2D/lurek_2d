@@ -180,6 +180,50 @@ _INTERNAL_MODULES = {
     "province::render",
     "province::view_transform",
     "raycaster::grid_motion",
+    # App startup/profiling internals — not part of the Lua surface
+    "app::frame_profile",
+    "app::lua_callbacks",
+    "app::splash_screen",
+    # Devtools / REPL internals — displayed in devtools UI, not callable from Lua
+    "devtools::lua_display",
+    "repl::completer",
+    "repl::value",
+    # ECS internal table helpers (ecs::universe_ext::deep_copy_table is in
+    # _INTERNAL_FUNCTIONS above; ecs::lua_table is the same helper under a different path)
+    "ecs::lua_table",
+    # Filesystem OS-level helpers — exposed only through lurek.filesystem API
+    "filesystem::watcher",
+    # Globe internal pipeline helpers — exposed through lurek.globe / lurek.province
+    "globe::composition",
+    "globe::export",
+    "globe::sync",
+    # HTML internal color parser — used by html_api.rs, not a standalone Lua function
+    "html::color",
+    # i18n catalog-level helpers — wrapped by lurek.i18n.* in i18n_api.rs
+    "i18n::catalog",
+    # Image low-level pixel processing — called inside lurek.image / render pipeline
+    "image::texture",
+    # Math easing resolver — called inside tween/scene closures; not a Lua function
+    "math::easing",
+    # Network relay ticket encoder/decoder — called inside lurek.network closures
+    "network::relay",
+    # Parallax internal helpers — exposed only through lurek.parallax layer API
+    "parallax::presets",
+    "parallax::tile_iter",
+    # Particle internal helpers — called inside lurek.particle API closures
+    "particle::physics_collision",
+    "particle::presets",
+    # Procgen color/biome byte-conversion helpers — called inside lurek.procgen closures
+    "procgen::biome",
+    "procgen::color",
+    # Runtime entry points — called by main(); not Lua-callable
+    "runtime::headless",
+    # Scene easing primitives — used by scene transition system internally
+    "scene::easing",
+    # Serial msgpack helpers — called inside lurek.serial closures (serial::csv etc already listed)
+    "serial::msgpack",
+    # Timer sub-module accumulator — called inside the timer update loop; not Lua-exposed
+    "timer::accumulator",
 }
 
 # Rust functions that are intentionally internal even when their module has

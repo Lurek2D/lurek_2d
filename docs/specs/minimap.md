@@ -11,19 +11,48 @@
 
 ## Summary
 
-The `minimap` module owns a grid-backed minimap state model plus the CPU/GPU command builders used to visualize that state for gameplay HUDs, screenshots, and evidence tests.
+Grid-based minimap data model with fog-of-war, tracked objects, markers, overlays, and render pipeline. `Minimap` owns a grid of terrain cells with per-cell color, type, and fog level (hidden, explored, visible). Objects are tracked entities that appear as colored dots on the minimap with optional labels and update callbacks.
 
-This module primarily collaborates with `camera`, `image`, `province`, `render`, and `runtime`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
+Markers are persistent or timed icons at fixed world positions (quest markers, points of interest). Overlays render geometric shapes (circles, rectangles, lines, polygons) over the grid for zone highlighting. The render pipeline converts grid + objects + markers + overlays into `ImageData` at configurable resolution and viewport bounds. Viewport overlay shows the camera's visible area as a rectangle. Exposed as `lurek.minimap.*`. Feature Systems tier.
 
-Recent additions in this slice include shared fog visibility handling, camera-tracking helpers, radius-based fog reveal, texture-backed marker/object icons, and a single render-command path used by both `render()` and evidence-oriented validation.
+## Source Documentation
 
-## Files
+### `minimap.rs`
+- Grid-based minimap with configurable terrain types, colours, and per-cell fog-of-war.
+- Object tracking with typed, owner-coloured dots and optional texture icons.
+- Political and terrain colour modes for strategic map overlays.
+- Zoom, pan, and camera-tracking viewport with outline rectangle.
+- Timed pings and persistent markers with blink, pulse, and rotate animations.
+- Vector overlay shapes (lines, rectangles) and named polyline paths.
+- Multi-layer cell data for stacked map views.
+- Coordinate conversion between screen pixels and grid cells, with hover info lookup.
+- CPU rasterisation to `ImageData` for export and full `RenderCommand` generation.
 
-- `minimap.rs`: Implements the main `Minimap` state container, including terrain cells, fog, tracked objects, markers, pings, zoom, pan, and coordinate transforms.
-- `mod.rs`: Declares the minimap submodules and re-exports the core minimap and support types.
-- `province_adapter.rs`: Minimap ↔ province adapter (optional coupling layer).
-- `render.rs`: Generates render commands for the minimap background, cells, viewport rectangle, and animated pings.
-- `types.rs`: Defines shared enums and data records such as fog levels, color modes, objects, pings, and markers.
+### `mod.rs`
+- Minimap state, layer composition, marker tracking, and fog-of-war reveal.
+- Pixel-buffer rendering pipeline that writes the minimap texture each frame.
+- Province-map adapter bridging world regions into minimap layers.
+- Shared types for markers, overlays, pings, and color modes.
+
+### `province_adapter.rs`
+- Bridge between `ProvinceRegistry` terrain/visibility data and the minimap grid.
+- Copy terrain types, fog levels, and political palette colours into a `Minimap`.
+- Clips to the smaller of the two grids so mismatched sizes never panic.
+
+### `render.rs`
+- Convert minimap state into an ordered list of `RenderCommand` values for the renderer.
+- Draw the background, terrain grid cells with zoom and center offset, and fog-of-war tinting.
+- Render overlay shapes (lines, rectangles), multi-segment paths, and the viewport indicator.
+- Draw animated pings with fade, map objects with optional icons, and markers with crosshairs.
+- All coordinates are projected from grid-space to screen-space via the minimap's transform.
+
+### `types.rs`
+- Shared data types for the minimap subsystem: enums, structs, and overlay shapes.
+- `ColorMode` selects between terrain-coloured and political-coloured cell rendering.
+- `FogLevel` encodes per-cell fog-of-war visibility as a three-state enum.
+- Object, ping, and marker structs hold live map overlays with position, colour, and animation.
+- `OverlayShape` and `OverlayPath` describe vector geometry drawn over the terrain grid.
+- `LayerData` stores raw cell bytes for named minimap layers.
 
 ## Types
 

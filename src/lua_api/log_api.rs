@@ -144,7 +144,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     // -- debug --
     /// Logs a debug message with an optional tag.
     /// @param | message | string | Message text.
-    /// @param | tag | string | Optional tag, defaulting to `Lua`.
+    /// @param | tag | string? | Log tag shown in the sink output (default `"Lua"`).
     /// @return | nil | No value is returned.
     tbl.set(
         "debug",
@@ -160,7 +160,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     // -- info --
     /// Logs an info message with an optional tag.
     /// @param | message | string | Message text.
-    /// @param | tag | string | Optional tag, defaulting to `Lua`.
+    /// @param | tag | string? | Log tag shown in the sink output (default `"Lua"`).
     /// @return | nil | No value is returned.
     tbl.set(
         "info",
@@ -176,7 +176,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     // -- warn --
     /// Logs a warning message with an optional tag.
     /// @param | message | string | Message text.
-    /// @param | tag | string | Optional tag, defaulting to `Lua`.
+    /// @param | tag | string? | Log tag shown in the sink output (default `"Lua"`).
     /// @return | nil | No value is returned.
     tbl.set(
         "warn",
@@ -192,7 +192,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     // -- error --
     /// Logs an error message with an optional tag.
     /// @param | message | string | Message text.
-    /// @param | tag | string | Optional tag, defaulting to `Lua`.
+    /// @param | tag | string? | Log tag shown in the sink output (default `"Lua"`).
     /// @return | nil | No value is returned.
     tbl.set(
         "error",

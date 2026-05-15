@@ -11,19 +11,59 @@
 
 ## Summary
 
-The `input` module is documented from the current source tree and existing module reference data.
+Per-frame input state translated from winit OS events covering keyboard, mouse, gamepad, and touch. `KeyboardState` tracks key-down/up/pressed/released per frame with scancode and virtual key mapping. `MouseState` provides position, delta, scroll, button state, and drag tracking. `GamepadState` supports up to 4 controllers with analog sticks, triggers, buttons, and dead-zone configuration.
 
-This module primarily collaborates with `runtime`. Its responsibility should stay inside the Platform Services group rather than absorb behavior owned by those neighbors.
+`ComboDetector` recognizes multi-step key sequences with per-step and total-sequence timeouts for fighting-game-style inputs. `InputRecorder` captures input streams for replay and automation. Touch input provides multi-point tracking with gesture detection (tap, swipe, pinch, rotation). Action mapping binds named actions to multiple input sources with remapping support. Exposed as `lurek.input.*`. Platform Services tier.
 
-## Files
+## Source Documentation
 
-- `combo.rs`: Combo and input-sequence detection for ordered key/button input chains.
-- `gamepad.rs`: Gamepad implementation for the `input` subsystem.
-- `keyboard.rs`: Keyboard implementation for the `input` subsystem.
-- `mod.rs`: Mod implementation for the `input` subsystem.
-- `mouse.rs`: Mouse implementation for the `input` subsystem.
-- `recorder.rs`: Input recording and playback for Lurek2D.
-- `touch.rs`: Touch input state tracking for Lurek2D.
+### `combo.rs`
+- Multi-step key-press combo detection with per-step and total-sequence timeouts.
+- Stateful detector that advances, breaks, or completes on each key feed or timer tick.
+- Used by the `lurek.input` combo API to recognize fighting-game-style input sequences.
+
+### `gamepad.rs`
+- Per-slot gamepad state tracking: buttons, axes, connection lifecycle, and per-frame delta sets.
+- Vibration request queuing for delivery to the OS force-feedback driver.
+- SDL2-style GUID-based mapping store with file and string parsing.
+- Gilrs button/axis to SDL2 string conversion helpers.
+- Virtual D-pad synthesis from analog stick values with configurable deadzone.
+- Hat (D-pad) direction queries returning 8-way compass strings.
+
+### `keyboard.rs`
+- Per-frame keyboard state machine tracking logical keys, physical scan-codes, and frame deltas.
+- Modifier bitmask flags (Shift, Ctrl, Alt, Meta) updated each event.
+- OS key-repeat and text-input (IME) buffer toggling.
+- Bidirectional mapping between logical key names and physical scan-code names.
+- Winit-to-Lurek translation for both logical `Key` and physical `KeyCode` enums.
+- Frame lifecycle: `begin_frame` clears deltas, events accumulate, queries read snapshot.
+- Scan-code layer allows layout-independent bindings for WASD-style controls.
+- Text-input buffer collects composed characters for chat and text fields.
+
+### `mod.rs`
+- Keyboard, mouse, gamepad, and touch input state aggregation.
+- Event constants for Lua callbacks (keypressed, mousemoved, etc.).
+- Combo gesture detection and input recording for replays.
+
+### `mouse.rs`
+- Per-frame mouse state tracking: position, button held/pressed/released deltas, and scroll accumulators.
+- System cursor shape selection from a fixed set of OS-provided variants.
+- Custom image-based cursor support via raw RGBA pixel buffers with hotspot offsets.
+- Cursor visibility, grab (confinement), and relative (delta) mode toggles.
+- Warp-to-position requests consumed by the runtime window loop.
+- Frame-boundary reset for button deltas and scroll values.
+
+### `recorder.rs`
+- Record and replay input sessions as sparse frame sequences.
+- Capture key/mouse events per frame; skip silent frames to save space.
+- Serialise recordings to versioned JSON envelopes for deterministic replay.
+- Provide stateful recorder with start/stop/load/playback cursor lifecycle.
+- Support both live recording and loaded-file playback in one struct.
+
+### `touch.rs`
+- Multi-touch contact tracking with per-frame pressed/released deltas.
+- Position and pressure state for each active touch id.
+- Frame-boundary lifecycle: begin_frame clears deltas, start/move/end mutate state.
 
 ## Types
 

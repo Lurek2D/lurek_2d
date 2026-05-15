@@ -55,18 +55,38 @@ describe("terminal handles", function()
 
     -- @covers LTerminal:getCellSize
     -- @covers lurek.terminal.newTerminal
-    it("reports the default cell size through colon and explicit self syntax", function()
+    it("reports the active cell size through colon and explicit self syntax", function()
         ---@type any
         local term = lurek.terminal.newTerminal(10, 5)
         local cell_w1, cell_h1 = term:getCellSize()
         local cell_w2, cell_h2 = term.getCellSize(term)
-        if type(cell_w1) == "number" and type(cell_h1) == "number" then
-            expect_near(cell_w1, cell_w2, 0.001)
-            expect_near(cell_h1, cell_h2, 0.001)
-        else
-            expect_equal(type(cell_w1), type(cell_w2))
-            expect_equal(type(cell_h1), type(cell_h2))
-        end
+        expect_type("number", cell_w1)
+        expect_type("number", cell_h1)
+        expect_true(cell_w1 > 0)
+        expect_true(cell_h1 > 0)
+        expect_near(cell_w1, cell_w2, 0.001)
+        expect_near(cell_h1, cell_h2, 0.001)
+    end)
+
+    -- @covers LTerminal:autoResize
+    -- @covers LTerminal:getCellSize
+    -- @covers LTerminal:resetCellSize
+    -- @covers LTerminal:setCellSize
+    -- @covers lurek.terminal.newTerminal
+    it("uses custom cell size for render scaling helpers", function()
+        ---@type any
+        local term = lurek.terminal.newTerminal(10, 5)
+        term:setCellSize(12, 18)
+        local cell_w, cell_h = term:getCellSize()
+        expect_near(12, cell_w, 0.001)
+        expect_near(18, cell_h, 0.001)
+        expect_no_error(function() term:autoResize() end)
+        term:resetCellSize()
+        local reset_w, reset_h = term:getCellSize()
+        expect_type("number", reset_w)
+        expect_type("number", reset_h)
+        expect_true(reset_w > 0)
+        expect_true(reset_h > 0)
     end)
 
     -- @covers LTerminal:get
@@ -1003,12 +1023,15 @@ end)
 describe("terminal getCellSize default", function()
     -- @covers LTerminal:getCellSize
     -- @covers lurek.terminal.newTerminal
-    it("getCellSize returns nil before any override is set", function()
-    ---@type any
-    local t = lurek.terminal.newTerminal(20, 10)
-    local result = t:getCellSize()
-    expect_equal(nil, result)
-  end)
+    it("getCellSize returns font-derived values before any override is set", function()
+        ---@type any
+        local t = lurek.terminal.newTerminal(20, 10)
+        local w, h = t:getCellSize()
+        expect_type("number", w)
+        expect_type("number", h)
+        expect_equal(true, w > 0)
+        expect_equal(true, h > 0)
+    end)
 end)
 
 -- @describe terminal setCellSize / getCellSize roundtrip
@@ -1020,10 +1043,9 @@ describe("terminal setCellSize / getCellSize roundtrip", function()
     ---@type any
     local t = lurek.terminal.newTerminal(20, 10)
     t:setCellSize(12, 20)
-    local cs = t:getCellSize()
-    expect_type("table", cs)
-    expect_near(12.0, cs.w, 0.001)
-    expect_near(20.0, cs.h, 0.001)
+        local w, h = t:getCellSize()
+        expect_near(12.0, w, 0.001)
+        expect_near(20.0, h, 0.001)
   end)
 
     -- @covers LTerminal:getCellSize
@@ -1033,10 +1055,9 @@ describe("terminal setCellSize / getCellSize roundtrip", function()
     ---@type any
     local t = lurek.terminal.newTerminal(20, 10)
     t:setCellSize(0, -5)
-    local cs = t:getCellSize()
-    expect_type("table", cs)
-    expect_equal(true, cs.w >= 1.0)
-    expect_equal(true, cs.h >= 1.0)
+        local w, h = t:getCellSize()
+        expect_equal(true, w >= 1.0)
+        expect_equal(true, h >= 1.0)
   end)
 
     -- @covers LTerminal:getCellSize
@@ -1046,9 +1067,9 @@ describe("terminal setCellSize / getCellSize roundtrip", function()
     ---@type any
     local t = lurek.terminal.newTerminal(20, 10)
     t:setCellSize(64, 128)
-    local cs = t:getCellSize()
-    expect_near(64.0, cs.w, 0.001)
-    expect_near(128.0, cs.h, 0.001)
+        local w, h = t:getCellSize()
+        expect_near(64.0, w, 0.001)
+        expect_near(128.0, h, 0.001)
   end)
 end)
 
@@ -1058,14 +1079,17 @@ describe("terminal resetCellSize", function()
     -- @covers LTerminal:resetCellSize
     -- @covers LTerminal:setCellSize
     -- @covers lurek.terminal.newTerminal
-    it("getCellSize returns nil after resetCellSize", function()
-    ---@type any
-    local t = lurek.terminal.newTerminal(20, 10)
-    t:setCellSize(10, 18)
-    t:resetCellSize()
-    local cs = t:getCellSize()
-    expect_equal(nil, cs)
-  end)
+    it("getCellSize returns font-derived values after resetCellSize", function()
+        ---@type any
+        local t = lurek.terminal.newTerminal(20, 10)
+        t:setCellSize(10, 18)
+        t:resetCellSize()
+        local w, h = t:getCellSize()
+        expect_type("number", w)
+        expect_type("number", h)
+        expect_equal(true, w > 0)
+        expect_equal(true, h > 0)
+    end)
 
     -- @covers LTerminal:getCellSize
     -- @covers LTerminal:resetCellSize
@@ -1077,10 +1101,9 @@ describe("terminal resetCellSize", function()
     t:setCellSize(10, 18)
     t:resetCellSize()
     t:setCellSize(5, 9)
-    local cs = t:getCellSize()
-    expect_type("table", cs)
-    expect_near(5.0, cs.w, 0.001)
-    expect_near(9.0, cs.h, 0.001)
+        local w, h = t:getCellSize()
+        expect_near(5.0, w, 0.001)
+        expect_near(9.0, h, 0.001)
   end)
 end)
 
@@ -1250,6 +1273,10 @@ describe("command history", function()
         expect_equal(2, lurek.terminal.cmdHistoryLen(term))
     end)
 
+    -- @covers lurek.terminal.clearCmdHistory
+    -- @covers lurek.terminal.cmdHistoryLen
+    -- @covers lurek.terminal.newTerminal
+    -- @covers lurek.terminal.pushCmdHistory
     it("clearCmdHistory resets length to zero", function()
         ---@type any
         local term = lurek.terminal.newTerminal(40, 10)
@@ -1258,6 +1285,10 @@ describe("command history", function()
         expect_equal(0, lurek.terminal.cmdHistoryLen(term))
     end)
 
+    -- @covers lurek.terminal.newTerminal
+    -- @covers lurek.terminal.nextCmd
+    -- @covers lurek.terminal.prevCmd
+    -- @covers lurek.terminal.pushCmdHistory
     it("prevCmd and nextCmd navigate history", function()
         ---@type any
         local term = lurek.terminal.newTerminal(40, 10)
@@ -1293,6 +1324,10 @@ describe("completion engine", function()
         expect_equal(0, #empty)
     end)
 
+    -- @covers lurek.terminal.addCompletion
+    -- @covers lurek.terminal.clearCompletions
+    -- @covers lurek.terminal.getCompletions
+    -- @covers lurek.terminal.removeCompletion
     it("removeCompletion removes a single candidate", function()
         lurek.terminal.clearCompletions()
         lurek.terminal.addCompletion("foo")
@@ -1303,6 +1338,10 @@ describe("completion engine", function()
         expect_equal("foobar", matches[1])
     end)
 
+    -- @covers lurek.terminal.addCompletion
+    -- @covers lurek.terminal.clearCompletions
+    -- @covers lurek.terminal.nextCompletion
+    -- @covers lurek.terminal.resetCompletion
     it("nextCompletion cycles through matches", function()
         lurek.terminal.clearCompletions()
         lurek.terminal.addCompletion("alpha")
@@ -1327,6 +1366,8 @@ describe("applyTheme", function()
         end
     end)
 
+    -- @covers lurek.terminal.applyTheme
+    -- @covers lurek.terminal.newTerminal
     it("returns error for unknown theme", function()
         ---@type any
         local term = lurek.terminal.newTerminal(40, 10)

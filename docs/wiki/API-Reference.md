@@ -409,26 +409,26 @@ Define any of these in `main.lua`. All are optional.
 > Sound playback: load audio files, play/pause/stop, volume, pitch, looping, panning.
 
 ```lua
-  lurek.audio.add_effect( bus_name, effect_type_str, [params] )  -> table  -- Add_effect for Lua scripts in this module.
-  lurek.audio.applyBandpass( sd_ud, low_hz, high_hz )  -> nil  -- Apply bandpass for Lua scripts in this module.
-  lurek.audio.applyGain( sd_ud, gain )  -> nil  -- Apply gain for Lua scripts in this module.
-  lurek.audio.applyHighpass( sd_ud, cutoff_hz )  -> nil  -- Apply highpass for Lua scripts in this module.
-  lurek.audio.applyLowpass( sd_ud, cutoff_hz )  -> nil  -- Apply lowpass for Lua scripts in this module.
+  lurek.audio.add_effect( bus_name, effect_type_str, [params] )  -> integer  -- Adds an effect to a named audio bus and returns its effect ID.
+  lurek.audio.applyBandpass( sd_ud, low_hz, high_hz )  -> nil  -- Applies a bandpass filter in-place to the sound data.
+  lurek.audio.applyGain( sd_ud, gain )  -> nil  -- Applies a gain multiplier in-place to the sound data.
+  lurek.audio.applyHighpass( sd_ud, cutoff_hz )  -> nil  -- Applies a highpass filter in-place to the sound data.
+  lurek.audio.applyLowpass( sd_ud, cutoff_hz )  -> nil  -- Applies a lowpass filter in-place to the sound data.
   lurek.audio.clearFilter( id_val )  -> nil  -- Removes all frequency filters from a source.
   lurek.audio.clearMidiSoundFont( )  -> nil  -- Clears midi sound font for Lua scripts in this module.
-  lurek.audio.clearRandomPitch( src_ud )  -> nil  -- Clears random pitch for Lua scripts in this module.
+  lurek.audio.clearRandomPitch( src_ud )  -> nil  -- Clears any random pitch range previously set on the source.
   lurek.audio.clone( id_val )  -> LSource  -- Creates an independent copy of a source sharing the same audio data.
   lurek.audio.create_bus( name, [parent_name] )  -> nil  -- Create_bus for Lua scripts in this module.
-  lurek.audio.crossfade( from_ud, to_ud, duration )  -> nil  -- Crossfade for Lua scripts in this module.
+  lurek.audio.crossfade( from_ud, to_ud, duration )  -> nil  -- Crossfades from one audio source to another over the given duration.
   lurek.audio.fadeIn( id_val, dur )  -> nil  -- Sets the fade-in duration for a source so it ramps from silence on play.
   lurek.audio.getActiveSourceCount( )  -> integer  -- Returns the number of sources currently playing audio.
-  lurek.audio.getBusPeak( bus_name )  -> nil  -- Returns the bus peak for Lua scripts in this module.
-  lurek.audio.getBusRms( bus_name )  -> nil  -- Returns the bus rms for Lua scripts in this module.
+  lurek.audio.getBusPeak( bus_name )  -> number  -- Returns the peak amplitude of the named audio bus over the last processing frame.
+  lurek.audio.getBusRms( bus_name )  -> number  -- Returns the RMS (root mean square) amplitude of the named audio bus over the last proce...
   lurek.audio.getDistanceModel( )  -> string  -- Returns the current distance attenuation model name.
   lurek.audio.getDopplerScale( )  -> number  -- Returns the current global Doppler effect scale.
   lurek.audio.getDuration( id_val )  -> number  -- Returns the total duration of a source in seconds.
   lurek.audio.getFadeIn( id_val )  -> number  -- Returns the configured fade-in duration of a source.
-  lurek.audio.getFreeBufferCount( qsource_id )  -> table  -- Returns the free buffer count for Lua scripts in this module.
+  lurek.audio.getFreeBufferCount( qsource_id )  -> integer  -- Returns the number of free (available) buffer slots on a queueable source.
   lurek.audio.getHighpass( id_val )  -> integer  -- Returns the current highpass filter cutoff of a source.
   lurek.audio.getListener( )  -> Listener  -- Returns the current 3D listener position.
   lurek.audio.getListener2D( )  -> Listener2D  -- Returns the current 2D listener position.
@@ -445,7 +445,7 @@ Define any of these in `main.lua`. All are optional.
   lurek.audio.getSourceBus( id_val )  -> LBus  -- Returns the bus a source is routed through.
   lurek.audio.getSourceCount( )  -> integer  -- Returns the total number of loaded audio sources (playing or idle).
   lurek.audio.getSourceType( id_val )  -> string  -- Returns whether a source is static or streaming.
-  lurek.audio.getStereoWidth( src_ud )  -> nil  -- Returns the stereo width for Lua scripts in this module.
+  lurek.audio.getStereoWidth( src_ud )  -> number  -- Returns the current stereo width factor of an audio source.
   lurek.audio.getVelocity( id_val )  -> Velocity  -- Returns the velocity vector of a source.
   lurek.audio.getVolume( id_val )  -> number  -- Returns the current volume of a source.
   lurek.audio.hasMidiSoundFont( )  -> nil  -- Returns true if midi sound font for Lua scripts in this module.
@@ -453,32 +453,32 @@ Define any of these in `main.lua`. All are optional.
   lurek.audio.isPaused( id_val )  -> boolean  -- Returns whether a source is currently paused.
   lurek.audio.isPlaying( id_val )  -> boolean  -- Returns whether a source is currently playing.
   lurek.audio.isStopped( id_val )  -> boolean  -- Returns whether a source is currently stopped.
-  lurek.audio.mixInto( dest_ud, src_ud )  -> nil  -- Mix into for Lua scripts in this module.
+  lurek.audio.mixInto( dest_ud, src_ud )  -> nil  -- Mixes the samples of `src` into `dest` in-place (both must have the same format).
   lurek.audio.newBus( name )  -> LBus  -- Creates a new audio mixing bus for grouping and controlling sources.
-  lurek.audio.newDecoder( source, [buffersize] )  -> table  -- New decoder for Lua scripts in this module.
+  lurek.audio.newDecoder( source, [buffersize] )  -> LDecoder  -- Creates a streaming audio decoder for the given file. The file is opened relative to th...
   lurek.audio.newMidiPlayer( [path] )  -> LMidiPlayer  -- Creates a new MIDI player instance, optionally loading a file immediately.
-  lurek.audio.newPool( file_path, voice_count )  -> table  -- New pool for Lua scripts in this module.
-  lurek.audio.newQueueableSource( )  -> table  -- New queueable source for Lua scripts in this module.
-  lurek.audio.newSawtoothWave( freq, duration, sample_rate, amplitude )  -> table  -- New sawtooth wave for Lua scripts in this module.
-  lurek.audio.newSineWave( freq, duration, sample_rate, amplitude )  -> table  -- New sine wave for Lua scripts in this module.
-  lurek.audio.newSoundData( ... )  -> SoundData  -- Creates a new SoundData object from a file path or blank buffer for procedural audio.
+  lurek.audio.newPool( file_path, voice_count )  -> LSoundPool  -- Creates a polyphonic sound pool that allows the same audio file to play on multiple sim...
+  lurek.audio.newQueueableSource( )  -> integer  -- Creates a new queueable audio source for streaming PCM data buffer by buffer.
+  lurek.audio.newSawtoothWave( freq, duration, sample_rate, amplitude )  -> LSoundData  -- Generates a sawtooth wave as a `SoundData` buffer.
+  lurek.audio.newSineWave( freq, duration, sample_rate, amplitude )  -> LSoundData  -- Generates a sine wave as a `SoundData` buffer.
+  lurek.audio.newSoundData( ... )  -> LSoundData  -- Creates a new SoundData object from a file path or blank buffer for procedural audio.
   lurek.audio.newSource( ... )  -> LSource  -- Creates a new audio source from a file path, either fully loaded or streaming.
-  lurek.audio.newSquareWave( freq, duration, sample_rate, amplitude )  -> table  -- New square wave for Lua scripts in this module.
-  lurek.audio.newTriangleWave( freq, duration, sample_rate, amplitude )  -> table  -- New triangle wave for Lua scripts in this module.
-  lurek.audio.newWhiteNoise( duration, sample_rate, amplitude, seed )  -> table  -- New white noise for Lua scripts in this module.
+  lurek.audio.newSquareWave( freq, duration, sample_rate, amplitude )  -> LSoundData  -- Generates a square wave as a `SoundData` buffer.
+  lurek.audio.newTriangleWave( freq, duration, sample_rate, amplitude )  -> LSoundData  -- Generates a triangle wave as a `SoundData` buffer.
+  lurek.audio.newWhiteNoise( duration, sample_rate, amplitude, seed )  -> LSoundData  -- Generates white noise as a `SoundData` buffer using a deterministic seed.
   lurek.audio.normalizeFile( input, output, target )  -> nil  -- Normalize file for Lua scripts in this module.
   lurek.audio.pause( id_val )  -> nil  -- Pauses playback of a source at its current position.
   lurek.audio.pauseAll( )  -> nil  -- Pauses all currently playing audio sources.
   lurek.audio.play( id_val, [options] )  -> integer  -- Starts playback of a source by handle, optionally routing through a named bus.
   lurek.audio.playLooping( id_val )  -> nil  -- Starts playback of a source with looping enabled in one call.
   lurek.audio.playQueueable( qsource_id )  -> nil  -- Play queueable for Lua scripts in this module.
-  lurek.audio.processOffline( input, output, effects_tbl )  -> nil  -- Process offline for Lua scripts in this module.
-  lurek.audio.queueSource( qsource_id, sd )  -> nil  -- Queue source for Lua scripts in this module.
+  lurek.audio.processOffline( input, output, effects_tbl )  -> nil  -- Processes an audio file offline through a chain of effects and writes the result to an ...
+  lurek.audio.queueSource( qsource_id, sd )  -> nil  -- Queues a decoded audio chunk for playback on a queueable source.
   lurek.audio.release( id_val )  -> boolean  -- Releases an audio source, freeing its memory and stopping playback.
   lurek.audio.remove_effect( bus_name, effect_id )  -> nil  -- Remove_effect for Lua scripts in this module.
   lurek.audio.resume( id_val )  -> nil  -- Resumes playback of a paused source.
   lurek.audio.resumeAll( )  -> nil  -- Resumes all paused audio sources. This function is exposed to Lua scripts.
-  lurek.audio.saveWAV( sd_ud, filename )  -> nil  -- Save wav for Lua scripts in this module.
+  lurek.audio.saveWAV( sd_ud, filename )  -> nil  -- Encodes the sound data as a WAV file and saves it to the given path (relative to game d...
   lurek.audio.seek( id_val, pos )  -> nil  -- Seeks a source to a specific position in seconds.
   lurek.audio.setDistanceModel( model )  -> nil  -- Sets the distance attenuation model for spatial audio.
   lurek.audio.setDopplerScale( scale )  -> nil  -- Sets the global Doppler effect intensity multiplier.
@@ -495,12 +495,12 @@ Define any of these in `main.lua`. All are optional.
   lurek.audio.setPitch( id_val, pitch )  -> nil  -- Sets the pitch multiplier of a source, affecting playback speed and tone.
   lurek.audio.setPlaybackDevice( name )  -> nil  -- Sets the playback device for Lua scripts in this module.
   lurek.audio.setPosition( id_val, x, y, [z] )  -> nil  -- Sets the 3D position of a source for spatial audio panning and attenuation.
-  lurek.audio.setRandomPitch( src_ud, min, max )  -> nil  -- Sets the random pitch for Lua scripts in this module.
+  lurek.audio.setRandomPitch( src_ud, min, max )  -> nil  -- Sets a random pitch range for a source; each play picks a random pitch between min and ...
   lurek.audio.setSourceBus( id_val, bus_val )  -> nil  -- Routes a source through a specific audio bus for grouped mixing.
-  lurek.audio.setStereoWidth( src_ud, width )  -> nil  -- Sets the stereo width for Lua scripts in this module.
+  lurek.audio.setStereoWidth( src_ud, width )  -> nil  -- Sets the stereo width of an audio source (0.0 = mono, 1.0 = full stereo).
   lurek.audio.setVelocity( id_val, x, y, [z] )  -> nil  -- Sets the velocity of a source for Doppler effect calculations.
   lurek.audio.setVolume( id_val, vol )  -> nil  -- Sets the volume of a source by handle.
-  lurek.audio.set_bus_volume( name, volume )  -> nil  -- Overwrites one normalized PCM sample value in this sound buffer.
+  lurek.audio.set_bus_volume( name, volume )  -> nil  -- Sets the volume of a named audio bus.
   lurek.audio.set_effect_param( bus_name, effect_id, param_name, value )  -> nil  -- Set_effect_param for Lua scripts in this module.
   lurek.audio.spectrogramToPng( input, output, width, height )  -> nil  -- Spectrogram to png for Lua scripts in this module.
   lurek.audio.stop( id_val )  -> nil  -- Stops playback of a source and resets its position to the beginning.
@@ -804,7 +804,7 @@ Define any of these in `main.lua`. All are optional.
   lurek.math.newRandomGenerator( [seed] )  -> LRandomGenerator  -- Creates a deterministic random generator with an optional seed.
   lurek.math.newRectPacker( width, height, [padding] )  -> LRectPacker  -- Creates a rectangle packer. This function is exposed to Lua scripts.
   lurek.math.newSpatialHash( cell_size )  -> LSpatialHash  -- Creates a spatial hash index with a cell size.
-  lurek.math.newTransform( )  -> LTransform  -- Creates an identity transform or a transform from optional components.
+  lurek.math.newTransform( )  -> LTransform  -- Creates a 2D transform. All components are optional; omitting all returns an identity t...
   lurek.math.newTween( duration, [easing_name] )  -> LTween  -- Creates a tween with a duration and optional easing name.
   lurek.math.outBack( t )  -> number  -- Applies back ease-out. This function is exposed to Lua scripts.
   lurek.math.outBounce( t )  -> number  -- Applies bounce ease-out. This function is exposed to Lua scripts.
@@ -1720,7 +1720,7 @@ Define any of these in `main.lua`. All are optional.
   LParticleSystem:setBounds( xmin, xmax, ymin, ymax, restitution )  -> nil  -- Sets collision bounds for particles.
   LParticleSystem:setBufferSize( n )  -> nil  -- Sets maximum particle buffer size.
   LParticleSystem:setCollidesWithPhysics( world_ud, [probe_radius], [restitution] )  -> nil  -- Enables particle collision against a physics world.
-  LParticleSystem:setColors( ... )  -> nil  -- Sets particle color keyframes from RGBA tables.
+  LParticleSystem:setColors( ... )  -> nil  -- Sets particle color keyframes from one or more RGBA tables.
   LParticleSystem:setCustomEmissionShape( cb )  -> nil  -- Sets a Lua callback for custom emission positions.
   LParticleSystem:setDirection( dir )  -> nil  -- Sets emission direction. This method is available to Lua scripts.
   LParticleSystem:setEmissionArea( dist, w, h, [angle], [dir_rel] )  -> nil  -- Sets emission area distribution and size.
@@ -1740,7 +1740,7 @@ Define any of these in `main.lua`. All are optional.
   LParticleSystem:setRotation( min, max )  -> nil  -- Sets particle rotation range. This method is available to Lua scripts.
   LParticleSystem:setShape( shape )  -> nil  -- Sets particle shape. This method is available to Lua scripts.
   LParticleSystem:setSizeVariation( v )  -> nil  -- Sets size variation. This method is available to Lua scripts.
-  LParticleSystem:setSizes( ... )  -> nil  -- Sets particle size keyframes from numeric arguments.
+  LParticleSystem:setSizes( ... )  -> nil  -- Sets the particle size keyframes used during a particle's lifetime. Pass two or more va...
   LParticleSystem:setSpeed( min, max )  -> nil  -- Sets particle speed range. This method is available to Lua scripts.
   LParticleSystem:setSpin( min, max )  -> nil  -- Sets particle spin range. This method is available to Lua scripts.
   LParticleSystem:setSpinVariation( v )  -> nil  -- Sets spin variation. This method is available to Lua scripts.
@@ -2348,7 +2348,7 @@ Define any of these in `main.lua`. All are optional.
 ```lua
   LUnitPathfinder:clearCache( )  -> nil  -- Clears cached paths. This method is available to Lua scripts.
   LUnitPathfinder:findNearestWalkable( x, y, max_radius, [unit_size] )  -> integer  -- Finds nearest walkable one-based grid cell within a radius.
-  LUnitPathfinder:findPartialPath( )  -> table  -- Finds a partial path with a node limit.
+  LUnitPathfinder:findPartialPath( )  -> table  -- Finds the best reachable path from a start to a goal within a maximum node budget. Usef...
   LUnitPathfinder:findPath( x1, y1, x2, y2, [unit_size] )  -> table  -- Finds a path between one-based grid cells.
   LUnitPathfinder:findPathBidirectional( )  -> table  -- Finds a path using bidirectional A* and returns completion status.
   LUnitPathfinder:findPathSmooth( x1, y1, x2, y2, [unit_size] )  -> table  -- Finds a smoothed path between one-based grid cells.
@@ -3149,7 +3149,7 @@ Define any of these in `main.lua`. All are optional.
   LProvinceGrid:adjacencies( )  -> table  -- Returns province adjacency records and shared border pixel counts.
   LProvinceGrid:borderSegments( )  -> table  -- Returns border line segments between neighboring provinces.
   LProvinceGrid:deserializeShapeData( bytes )  -> LuaValue  -- Decodes serialized province shape data into span and segment tables.
-  LProvinceGrid:drawShapes( ... )  -> integer  -- Queues filled polygon draw commands for province shapes, optionally culled to a viewport.
+  LProvinceGrid:drawShapes( ... )  -> integer  -- Queues filled polygon draw commands for province shapes, optionally culled to a viewpor...
   LProvinceGrid:getAt( x, y )  -> integer  -- Returns the province id stored at grid coordinates.
   LProvinceGrid:getHeight( )  -> integer  -- Returns the province grid height. This method is available to Lua scripts.
   LProvinceGrid:getPolygons( )  -> table  -- Returns polygon rings for every province.
@@ -3620,7 +3620,7 @@ Define any of these in `main.lua`. All are optional.
 ```lua
   LMinimap:addMarker( )  -> integer  -- Adds a marker and returns its id. This method is available to Lua scripts.
   LMinimap:addObjectType( name, r, g, b, [a] )  -> integer  -- Adds an object type and returns its one-based index.
-  LMinimap:addPing( )  -> nil  -- Adds a timed ping effect at a minimap position.
+  LMinimap:addPing( )  -> nil  -- Adds a timed ping effect at a minimap world position. The ping fades out over its durat...
   LMinimap:clearMarkerAnimation( id )  -> nil  -- Clears marker animation by id. This method is available to Lua scripts.
   LMinimap:clearMarkerTexture( id )  -> nil  -- Clears image texture from a marker.
   LMinimap:clearObjectTypeTexture( type_idx )  -> nil  -- Clears image texture for an object type.
@@ -3938,7 +3938,7 @@ Define any of these in `main.lua`. All are optional.
   lurek.input.isActionDown( action )  -> boolean  -- Returns whether any binding for an action is currently down.
   lurek.input.isConnected( id )  -> boolean  -- Returns whether a gamepad id is currently connected.
   lurek.input.isCursorSupported( )  -> boolean  -- Returns whether the current platform supports cursor changes.
-  lurek.input.isDown( args )  -> boolean  -- Returns whether any supplied keyboard key is currently down.
+  lurek.input.isDown( args )  -> boolean  -- Returns whether any of the supplied key names are currently held down.
   lurek.input.isDown( button )  -> boolean  -- Returns whether a one-based mouse button index is down.
   lurek.input.isDown( id, button )  -> boolean  -- Returns whether a gamepad button is currently down.
   lurek.input.isDown( )  -> boolean  -- Returns true if down for Lua scripts in this module.
@@ -5712,7 +5712,7 @@ Define any of these in `main.lua`. All are optional.
   lurek.procgen.heightmapFromCellular( width, height, cells_tbl, [floor_value] )  -> table  -- Convert a cellular automata grid into a heightmap by distance-transforming the floor ce...
   lurek.procgen.lsystem( opts )  -> string  -- Expand an L-system grammar and return the resulting string. Useful for generating branc...
   lurek.procgen.lsystemSegments( opts, [angle_deg], [step] )  -> table  -- Expand an L-system and interpret the result as turtle-graphics commands, returning line...
-  lurek.procgen.newBiomeClassifier( [opts] )  -> LBiomeClassifier  -- Create a BiomeClassifier object with custom threshold rules for mapping height/moisture...
+  lurek.procgen.newBiomeClassifier( [opts] )  -> BiomeClassifier  -- Create a BiomeClassifier object with custom threshold rules for mapping height/moisture...
   lurek.procgen.noiseMap( width, height, [opts] )  -> table  -- Generate a 2D noise map with configurable scale, octaves, and offsets. Runs on a single...
   lurek.procgen.noiseMapParallel( width, height, [opts] )  -> table  -- Generate a 2D noise map using multiple threads for faster computation on large maps. Us...
   lurek.procgen.noiseMapParallelSeeded( width, height, [opts] )  -> table  -- Generate a 2D noise map using multiple threads with a specific seed for reproducible re...
@@ -6073,7 +6073,7 @@ Define any of these in `main.lua`. All are optional.
   lurek.terminal.newLabel( col, row, [text] )  -> LWidget  -- Creates a new label widget that displays static text at the given cell position.
   lurek.terminal.newList( col, row, width, height )  -> LWidget  -- Creates a new scrollable list widget for displaying and selecting items.
   lurek.terminal.newPanel( col, row, [width], [height] )  -> LWidget  -- Creates a new panel widget that can contain child widgets for grouped layout.
-  lurek.terminal.newTerminal( [cols], [rows] )  -> LTerminal  -- Creates a new terminal emulator grid with the given column and row count.
+  lurek.terminal.newTerminal( [cols], [rows] )  -> LTerminal  -- Creates a new terminal emulator grid and stages a window size that fits its active cell...
   lurek.terminal.newTextBox( col, row, width )  -> LWidget  -- Creates a new single-line text input widget at the given position with a fixed width.
   lurek.terminal.nextCmd( term_ud )  -> string  -- Navigates forward in the terminal command history, returning the next command or nil if...
   lurek.terminal.nextCompletion( prefix )  -> string  -- Cycles to the next matching completion candidate for the given prefix, wrapping around ...
@@ -6100,7 +6100,7 @@ Define any of these in `main.lua`. All are optional.
   LTerminal:clear( )  -> nil  -- Clears all cells in the terminal grid, resetting characters and colors to defaults.
   LTerminal:clearWidgets( )  -> nil  -- Removes all attached widgets from this terminal at once.
   LTerminal:get( col, row )  -- Reads the character and colors at a specific cell in the terminal grid.
-  LTerminal:getCellSize( )  -> table  -- Returns the current custom cell size override, or nil if no override is set.
+  LTerminal:getCellSize( )  -> CellSize  -- Returns the active terminal cell width and height in pixels, using custom override or f...
   LTerminal:getDimensions( )  -> Dimensions  -- Returns the number of columns and rows in the terminal grid.
   LTerminal:getFocused( )  -> LWidget  -- Returns the widget that currently has keyboard focus, or nil if no widget is focused.
   LTerminal:getWidgetCount( )  -> number  -- Returns the number of widgets currently attached to this terminal.
@@ -6108,12 +6108,12 @@ Define any of these in `main.lua`. All are optional.
   LTerminal:mousepressed( px, py, [button] )  -> nil  -- Forwards a mouse press event to the terminal, converting pixel coordinates to cell coor...
   LTerminal:print( col, row, text )  -> nil  -- Writes text to the terminal grid starting at a specific cell.
   LTerminal:removeWidget( widget_ud )  -> nil  -- Detaches a widget from this terminal, removing it from rendering and input handling.
-  LTerminal:render( [x], [y] )  -> nil  -- Renders the terminal grid and all attached widgets by emitting render commands at the g...
-  LTerminal:resetCellSize( )  -> nil  -- Removes any custom cell size override, reverting to the size derived from the active font.
+  LTerminal:render( [x], [y] )  -> nil  -- Renders the terminal grid and widgets and stages a window size matching the grid and ac...
+  LTerminal:resetCellSize( )  -> nil  -- Removes any custom cell size override, reverting to the active font metrics and refitti...
   LTerminal:set( ... )  -> nil  -- Writes a character with foreground and background color to a specific cell in the termi...
-  LTerminal:setCellSize( w, h )  -> nil  -- Overrides the cell width and height used for rendering this terminal grid.
+  LTerminal:setCellSize( w, h )  -> nil  -- Overrides the cell width and height used for rendering this terminal grid and refits th...
   LTerminal:setFocus( value )  -> nil  -- Sets which widget currently has keyboard focus, or clears focus when nil is passed.
-  LTerminal:setFont( height )  -> nil  -- Selects the nearest built-in bitmap font by pixel height for terminal cell rendering.
+  LTerminal:setFont( height )  -> nil  -- Selects the nearest built-in bitmap font by pixel height and refits the window to the t...
   LTerminal:textinput( text )  -> boolean  -- Forwards a text input event to the terminal for character entry into focused widgets.
   LTerminal:type( )  -> string  -- Returns the type name string "LTerminal".
   LTerminal:typeOf( name )  -> boolean  -- Checks whether this object matches a given type name. Accepts "LTerminal" or "Object".
@@ -6206,19 +6206,19 @@ Define any of these in `main.lua`. All are optional.
 > Creates and starts a property tween that smoothly interpolates numeric fields on the target table over the given duration.
 
 ```lua
-  LTween:await( ud )  -> nil  -- Yields the current coroutine until this tween completes or is cancelled. Must be called...
-  LTween:cancel( ud )  -> nil  -- Cancels this tween immediately, fires the onCancel callback if set, and resumes any cor...
+  LTween:await( )  -> nil  -- Yields the current coroutine until this tween completes or is cancelled. Must be called...
+  LTween:cancel( )  -> nil  -- Cancels this tween immediately, fires the onCancel callback if set, and resumes any cor...
   LTween:getDuration( )  -> number  -- Returns the total duration of this tween in seconds.
   LTween:getElapsed( )  -> number  -- Returns the number of seconds that have elapsed since the tween started.
   LTween:getFields( )  -> table  -- Returns an array of field names being tweened on the target table.
   LTween:getProgress( )  -> number  -- Returns the eased progress of this tween as a value from 0.0 to 1.0.
   LTween:getRemaining( )  -> number  -- Returns the number of seconds remaining until this tween completes.
   LTween:isActive( )  -> boolean  -- Returns whether this tween is still running (not cancelled or completed).
-  LTween:onCancel( ud, f )  -> LTween  -- Sets a callback to fire when the tween is cancelled. Returns the tween for chaining.
-  LTween:onComplete( ud, f )  -> table  -- On complete on this LTween object. This method is available to Lua scripts.
-  LTween:onUpdate( ud, f )  -> LTween  -- Sets a callback to fire every frame while the tween is active. Returns the tween for ch...
+  LTween:onCancel( f )  -> LTween  -- Sets a callback to fire when the tween is cancelled. Returns the tween for chaining.
+  LTween:onComplete( ud, f )  -> LTween  -- Sets a callback to fire when the tween completes. Returns the tween for chaining.
+  LTween:onUpdate( f )  -> LTween  -- Sets a callback to fire every frame while the tween is active. Returns the tween for ch...
   LTween:pause( )  -> nil  -- Pauses this tween so it stops advancing until resumed.
-  LTween:relative( ud, enabled )  -> LTween  -- Chainable version of `setRelative`. Returns the tween for fluent API usage.
+  LTween:relative( enabled )  -> LTween  -- Chainable version of `setRelative`. Returns the tween for fluent API usage.
   LTween:resume( )  -> nil  -- Resumes a paused tween so it continues advancing.
   LTween:setRelative( enabled )  -> nil  -- Sets whether the tween end values are relative to the start values instead of absolute.
   LTween:setRepeat( n )  -> nil  -- Sets how many times the tween should repeat after the first play. Use -1 for infinite r...
@@ -6236,7 +6236,7 @@ Define any of these in `main.lua`. All are optional.
   LTweenParallel:cancel( )  -> nil  -- Cancels all tweens in this parallel group immediately.
   LTweenParallel:isActive( )  -> boolean  -- Returns whether this parallel group is still running.
   LTweenParallel:onComplete( ud, f )  -> LTweenParallel  -- Sets a callback to fire when all tweens in this parallel group have finished. Returns t...
-  LTweenParallel:start( ud )  -> LTweenParallel  -- Starts all tweens in this parallel group simultaneously.
+  LTweenParallel:start( )  -> LTweenParallel  -- Starts all tweens in this parallel group simultaneously.
   LTweenParallel:tween( )  -> LTweenParallel  -- Creates and adds a new tween step directly to this parallel group.
   LTweenParallel:type( )  -> string  -- Returns the type name of this object.
   LTweenParallel:typeOf( name )  -> boolean  -- Checks whether this object matches the given type name.
@@ -6247,14 +6247,14 @@ Define any of these in `main.lua`. All are optional.
 > Creates a new empty tween sequence. Chain `.tween()`, `.delay()`, and `.callback()` steps, then call `:start()`.
 
 ```lua
-  LTweenSequence:await( ud )  -> nil  -- Yields the current coroutine until this sequence completes or is cancelled. Must be cal...
-  LTweenSequence:callback( ud, f )  -> LTweenSequence  -- Appends a callback step to this sequence that fires when reached during playback.
+  LTweenSequence:await( )  -> nil  -- Yields the current coroutine until this sequence completes or is cancelled. Must be cal...
+  LTweenSequence:callback( f )  -> LTweenSequence  -- Appends a callback step to this sequence that fires when reached during playback.
   LTweenSequence:cancel( )  -> nil  -- Cancels this sequence immediately and resumes any coroutines waiting on it.
   LTweenSequence:delay( ud, seconds, [cb] )  -> LTweenSequence  -- Appends a delay step to this sequence. Optionally fires a callback when the delay elapses.
   LTweenSequence:getProgress( )  -> number  -- Returns the overall progress ratio of this sequence from 0.0 to 1.0.
   LTweenSequence:isActive( )  -> boolean  -- Returns whether this sequence is still running.
   LTweenSequence:onComplete( ud, f )  -> LTweenSequence  -- Sets a callback to fire when the sequence finishes all steps. Returns the sequence for ...
-  LTweenSequence:start( ud )  -> LTweenSequence  -- Starts playback of this sequence from the first step.
+  LTweenSequence:start( )  -> LTweenSequence  -- Starts playback of this sequence from the first step.
   LTweenSequence:tween( )  -> LTweenSequence  -- Appends a tween step to this sequence that animates numeric fields on the target table.
   LTweenSequence:type( )  -> string  -- Returns the type name of this object.
   LTweenSequence:typeOf( name )  -> boolean  -- Checks whether this object matches the given type name.
@@ -6869,7 +6869,7 @@ Define any of these in `main.lua`. All are optional.
 
 **`LTreeView`** methods:
 
-> Creates a new tree view widget. This function is exposed to Lua scripts.
+> Registers tree-view-specific Lua methods on a widget method table.
 
 ```lua
   LTreeView:addNode( text, [parent_index] )  -> table  -- Adds node on this LTreeView object.

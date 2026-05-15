@@ -677,4 +677,152 @@ describe("unit: migrated from integration/test_procgen_tilemap.lua", function()
 
 end)
 
+-- ============================================================
+-- BSP Dungeon With Prefabs
+-- ============================================================
+-- @describe procgen.bspDungeonWithPrefabs
+describe("procgen.bspDungeonWithPrefabs", function()
+    -- @covers lurek.procgen.bspDungeonWithPrefabs
+    it("returns dungeon and prefab placement tables", function()
+        local prefabs = { { name = "boss", width = 4, height = 4 } }
+        local dungeon, placed = lurek.procgen.bspDungeonWithPrefabs({ width = 40, height = 30, seed = 1 }, prefabs)
+        expect_type("table", dungeon.rooms)
+        expect_type("table", dungeon.corridors)
+        expect_type("table", placed)
+    end)
+
+    -- @covers lurek.procgen.bspDungeonWithPrefabs
+    it("placed prefabs have name, x, y, width, height", function()
+        local prefabs = { { name = "chest", width = 2, height = 2 } }
+        local _, placed = lurek.procgen.bspDungeonWithPrefabs({ width = 40, height = 30, seed = 7 }, prefabs)
+        for _, p in ipairs(placed) do
+            expect_type("string", p.name)
+            expect_type("number", p.x)
+            expect_type("number", p.y)
+            expect_type("number", p.width)
+            expect_type("number", p.height)
+        end
+    end)
+
+    -- @covers lurek.procgen.bspDungeonWithPrefabs
+    it("same seed is deterministic", function()
+        local prefabs = { { name = "room", width = 3, height = 3 } }
+        local d1, p1 = lurek.procgen.bspDungeonWithPrefabs({ width = 40, height = 30, seed = 42 }, prefabs)
+        local d2, p2 = lurek.procgen.bspDungeonWithPrefabs({ width = 40, height = 30, seed = 42 }, prefabs)
+        expect_equal(#d1.rooms, #d2.rooms)
+        expect_equal(#p1, #p2)
+    end)
+end)
+
+-- ============================================================
+-- Rooms Dungeon With Prefabs
+-- ============================================================
+-- @describe procgen.roomsDungeonWithPrefabs
+describe("procgen.roomsDungeonWithPrefabs", function()
+    -- @covers lurek.procgen.roomsDungeonWithPrefabs
+    it("returns dungeon with grid and prefab placements", function()
+        local prefabs = { { name = "altar", width = 3, height = 3 } }
+        local dungeon, placed = lurek.procgen.roomsDungeonWithPrefabs({ width = 30, height = 20, seed = 5 }, prefabs)
+        expect_type("table", dungeon.rooms)
+        expect_type("table", dungeon.grid)
+        expect_equal(30 * 20, #dungeon.grid)
+        expect_type("table", placed)
+    end)
+
+    -- @covers lurek.procgen.roomsDungeonWithPrefabs
+    it("placed prefabs have required fields", function()
+        local prefabs = { { name = "shrine", width = 2, height = 2 } }
+        local _, placed = lurek.procgen.roomsDungeonWithPrefabs({ width = 30, height = 20, seed = 9 }, prefabs)
+        for _, p in ipairs(placed) do
+            expect_type("string", p.name)
+            expect_type("number", p.x)
+            expect_type("number", p.y)
+        end
+    end)
+
+    -- @covers lurek.procgen.roomsDungeonWithPrefabs
+    it("same seed is deterministic", function()
+        local prefabs = { { name = "room", width = 2, height = 2 } }
+        local d1, _ = lurek.procgen.roomsDungeonWithPrefabs({ width = 30, height = 20, seed = 77 }, prefabs)
+        local d2, _ = lurek.procgen.roomsDungeonWithPrefabs({ width = 30, height = 20, seed = 77 }, prefabs)
+        expect_equal(#d1.rooms, #d2.rooms)
+    end)
+end)
+
+-- ============================================================
+-- Heightmap From Cellular
+-- ============================================================
+-- @describe procgen.heightmapFromCellular
+describe("procgen.heightmapFromCellular", function()
+    -- @covers lurek.procgen.heightmapFromCellular
+    it("returns table with cells, width, height", function()
+        local cells = lurek.procgen.cellularAutomata(8, 6, { seed = 1 })
+        local hm = lurek.procgen.heightmapFromCellular(8, 6, cells)
+        expect_type("table", hm.cells)
+        expect_equal(8, hm.width)
+        expect_equal(6, hm.height)
+        expect_equal(48, #hm.cells)
+    end)
+
+    -- @covers lurek.procgen.heightmapFromCellular
+    it("cell values are non-negative numbers", function()
+        local cells = lurek.procgen.cellularAutomata(6, 6, { seed = 3 })
+        local hm = lurek.procgen.heightmapFromCellular(6, 6, cells)
+        for _, v in ipairs(hm.cells) do
+            expect_type("number", v)
+            expect_true(v >= 0.0, "height value must be non-negative")
+        end
+    end)
+
+    -- @covers lurek.procgen.heightmapFromCellular
+    it("same input produces same heightmap", function()
+        local cells = lurek.procgen.cellularAutomata(8, 8, { seed = 10 })
+        local a = lurek.procgen.heightmapFromCellular(8, 8, cells)
+        local b = lurek.procgen.heightmapFromCellular(8, 8, cells)
+        expect_near(a.cells[1], b.cells[1], 1e-5)
+    end)
+end)
+
+-- ============================================================
+-- Noise Map Parallel Seeded
+-- ============================================================
+-- @describe procgen.noiseMapParallelSeeded
+describe("procgen.noiseMapParallelSeeded", function()
+    -- @covers lurek.procgen.noiseMapParallelSeeded
+    it("returns flat array of correct length", function()
+        local m = lurek.procgen.noiseMapParallelSeeded(8, 8)
+        expect_equal(64, #m)
+    end)
+
+    -- @covers lurek.procgen.noiseMapParallelSeeded
+    it("values are numbers", function()
+        local m = lurek.procgen.noiseMapParallelSeeded(4, 4, { seed = 1 })
+        for _, v in ipairs(m) do
+            expect_type("number", v)
+        end
+    end)
+
+    -- @covers lurek.procgen.noiseMapParallelSeeded
+    it("same seed produces deterministic results", function()
+        local a = lurek.procgen.noiseMapParallelSeeded(8, 8, { seed = 99 })
+        local b = lurek.procgen.noiseMapParallelSeeded(8, 8, { seed = 99 })
+        expect_equal(#a, #b)
+        expect_near(a[1], b[1], 1e-5)
+    end)
+
+    -- @covers lurek.procgen.noiseMapParallelSeeded
+    it("different seeds produce different results", function()
+        local a = lurek.procgen.noiseMapParallelSeeded(8, 8, { seed = 1 })
+        local b = lurek.procgen.noiseMapParallelSeeded(8, 8, { seed = 2 })
+        local any_diff = false
+        for i = 1, #a do
+            if math.abs(a[i] - b[i]) > 1e-5 then
+                any_diff = true
+                break
+            end
+        end
+        expect_true(any_diff, "different seeds should produce different noise")
+    end)
+end)
+
 test_summary()

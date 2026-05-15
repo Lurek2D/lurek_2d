@@ -195,6 +195,7 @@
             "dependsOn": [
                 "Docs: Validate Rust Source",
                 "Docs: Validate Lua Source",
+                "Docs: Validate Lua Param Types",
                 "Docs: Validate Lua Stubs",
                 "Docs: Validate Module Coverage"
             ],
@@ -212,6 +213,13 @@
             "detail": "📖 Enforce Lua API source doc completeness for summaries, @param tags, @return tags, and Lua-visible object descriptions.",
             "type": "shell",
             "command": "python tools/validate/validate_lua_api.py src/lua_api",
+            "problemMatcher": []
+        },
+        {
+            "label": "Docs: Validate Lua Param Types",
+            "detail": "📖 Verify that @param type annotations in src/lua_api/*_api.rs match Rust closure parameter types (number vs integer, etc.).",
+            "type": "shell",
+            "command": "python tools/validate/validate_param_types.py --errors-only",
             "problemMatcher": []
         },
         {

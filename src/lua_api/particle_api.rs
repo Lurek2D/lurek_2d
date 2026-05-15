@@ -577,8 +577,8 @@ impl LuaUserData for LuaParticleSystem {
             Ok((mn, mx))
         });
         // -- setSizes --
-        /// Sets particle size keyframes from numeric arguments.
-        /// @param | sizes | number | One or more size values.
+        /// Sets the particle size keyframes used during a particle's lifetime. Pass two or more values to interpolate between them.
+        /// @param | ... | number | Two or more size values that the particle lerps through over its lifetime (e.g. `4, 1` shrinks from 4 to 1).
         /// @return | nil | No value is returned.
         methods.add_method("setSizes", |_, this, sizes: LuaMultiValue| {
             let mut v: Vec<f32> = Vec::new();
@@ -728,8 +728,9 @@ impl LuaUserData for LuaParticleSystem {
                 .is_some_and(|ps| ps.config.relative_rotation))
         });
         // -- setColors --
-        /// Sets particle color keyframes from RGBA tables.
-        /// @param | colors | table | One or more color tables.
+        /// Sets particle color keyframes from one or more RGBA tables.
+        /// Pass between 1 and 8 color tables in order; particles will interpolate between them over their lifetime.
+        /// @param | ... | table | One or more `{r, g, b, a}` color tables.
         /// @return | nil | No value is returned.
         methods.add_method("setColors", |_, this, colors: LuaMultiValue| {
             let mut v: Vec<[f32; 4]> = Vec::new();

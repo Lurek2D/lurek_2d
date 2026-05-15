@@ -11,19 +11,53 @@
 
 ## Summary
 
-The `spine` module is documented from the current source tree and existing module reference data.
+Skeletal animation runtime providing hierarchical bone trees, slot-based attachment management, IK constraints, skin variants, and keyframe timeline playback. `Skeleton` owns an ordered `Vec<Bone>` where each bone stores local transform (position, rotation, scale) and accumulated world-space transform propagated from parent to child.
 
-This module primarily collaborates with `image`, `render`, `runtime`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
+`Slot` binds visual content (sprite region, mesh, or bounding box) to a bone with draw-order and blend-mode configuration. `IKConstraint` solves two-bone inverse kinematics positioning chain endpoints at target locations. `SkeletonAnimation` drives `BoneTimeline` and `SlotTimeline` keyframes with interpolation (linear, stepped, bezier). Skins group slot attachments into switchable visual sets. Animation parsing loads skeleton definitions from Lua table format. Exposed as `lurek.spine.*`. Feature Systems tier.
 
-## Files
+## Source Documentation
 
-- `bone.rs`: Individual bone data with local transform input and cached world transform output.
-- `ik.rs`: Two-bone IK constraint using the law-of-cosines analytic solver.
-- `mod.rs`: Module root and re-export surface for the public skeletal types.
-- `render.rs`: Debug render-command generation for bones and slot attachment placeholders.
-- `skeleton.rs`: Skeleton ownership, bone and slot management, transform propagation, and CPU image helpers.
-- `slot.rs`: Slot data binding an attachment name, tint, and draw order to a bone index.
-- `timeline.rs`: Keyframe timelines and skeleton animation playback for the spine module.
+### `bone.rs`
+- Bone struct holding local and accumulated world-space transform.
+- Parent-child hierarchy via optional parent index.
+- Constructors for root bones and parented child bones.
+
+### `ik.rs`
+- Two-bone inverse-kinematics constraint for skeleton animation.
+- Solves root and elbow rotations via law-of-cosines to reach a world-space target.
+- Supports configurable bend direction (positive or negative).
+
+### `mod.rs`
+- Skeletal animation runtime: bones, slots, IK, timelines, and pose blending.
+- Hierarchical bone transforms with parent-relative computation.
+- Keyframe-driven animation clips with easing and interpolation.
+- Skeleton-level render assembly converting posed bones to draw commands.
+
+### `render.rs`
+- Convert a Skeleton's bone and slot state into a flat list of RenderCommands.
+- Draw bones as filled circles at world positions with slot-derived colors.
+- Draw slot attachments as outline rectangles around their parent bone.
+
+### `skeleton.rs`
+- Skeleton struct holding bones, slots, animations, IK constraints, skins, and playback state.
+- Bone and slot management: add, find by name, query world transforms.
+- Animation playback: start/stop clips, advance time, loop or clamp at duration.
+- IK constraint registration and per-frame solving against bone poses.
+- Skin system: register skins, switch active skin, map attachments per slot.
+- World-transform recomputation traversing bones in parent-before-child order.
+- Debug visualization: rasterise skeleton bones and slot markers into ImageData.
+
+### `slot.rs`
+- Slot struct: named attachment point on a bone with RGBA tint and optional texture reference.
+- Constructor defaults to white opaque colour, no attachment, and draw-order zero.
+- Draw-order field drives back-to-front rendering when multiple slots share a bone.
+
+### `timeline.rs`
+- Easing curves (linear, quadratic in/out, step) for inter-keyframe interpolation.
+- Keyframe storage and sorted insertion for bone property timelines.
+- BoneTimeline evaluation with clamping and step-hold semantics.
+- Event keyframes fired at specific animation times for Lua callback dispatch.
+- SkeletonAnimation clip: multi-timeline playback, blending, reversal, and JSON parsing.
 
 ## Types
 

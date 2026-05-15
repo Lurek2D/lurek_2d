@@ -202,13 +202,13 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
             },
         )?,
     )?;
+    let st = state.clone();
     // -- pop --
     /// Pop the top scene off the stack and return to the previous one. The popped scene receives `leave()` and the revealed scene receives `resume()` (unless the popped scene was an overlay, in which case the underlying scene was never paused). Use this for "back" navigation, closing menus, or exiting sub-screens.
     /// @param | transition | string? | Transition type name. Defaults to `"none"` (instant).
     /// @param | duration | number? | Transition animation duration in seconds. Defaults to 0.
     /// @param | easing | string? | Easing curve name. Defaults to `"linear"`.
     /// @return | nil | No value is returned.
-    let st = state.clone();
     tbl.set("pop", lua.create_function(
             move |lua, (transition, duration, easing): (Option<String>, Option<f32>, Option<String>)| {
                 let trans = transition
@@ -495,7 +495,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     )?;
     // -- setCurrentLayer --
     /// Set the rendering layer of the current top scene. Scenes with higher layer values are processed and drawn after lower-layer scenes. Use layers to control draw order when multiple scenes are active (e.g. game world at layer 0, HUD overlay at layer 10).
-    /// @param | layer | number | Integer layer value to assign (higher = drawn later / on top).
+    /// @param | layer | integer | Integer layer value to assign (higher = drawn later / on top).
     /// @return | boolean | True if a scene was on top and the layer was set, false if the stack is empty.
     let st = state.clone();
     tbl.set(
@@ -1089,6 +1089,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
             Ok(t)
         })?,
     )?;
+    // transitions: subtable of built-in transition descriptor constructor functions.
     tbl.set("transitions", trans_tbl)?;
     lurek.set("scene", tbl.clone())?;
     Ok(())

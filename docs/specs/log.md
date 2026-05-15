@@ -11,15 +11,33 @@
 
 ## Summary
 
-The `log` module is documented from the current source tree and existing module reference data.
+Structured logging facade with global level control and dispatch to registered sinks. Messages carry severity level, optional tag, and structured key-value fields (`LogFields`). The module supports memory sinks (bounded ring buffer for recent entries), rotating file sinks (size-based rotation with configurable retention), and callback sinks for Lua-side log handling.
 
-This module primarily collaborates with `runtime`. Its responsibility should stay inside the Foundations group rather than absorb behavior owned by those neighbors.
+Level filtering is per-sink via `SinkLevel` — each sink independently chooses its minimum severity threshold. The global level gates all emission before dispatch to avoid formatting costs on suppressed messages. Runtime level mutation via string names enables dynamic verbosity adjustment. Used by all engine modules via `log_msg!` macro. Exposed as `lurek.log.*`. Foundations tier.
 
-## Files
+## Source Documentation
 
-- `facade.rs`: Structured logging facade exposed to Lua through `lurek.log.*`.
-- `mod.rs`: Defines the small public domain surface for setting and querying the active log level and re-exports sink-related types.
-- `sinks.rs`: Implements sink filtering and fan-out, including file-backed sinks, bounded memory sinks backed by `data::RingBuffer<MemoryEntry>`, and the registry that tracks active outputs.
+### `facade.rs`
+- Structured log dispatch with level, tag, and key-value fields.
+- Runtime log-level query and mutation via string names.
+- Level-filter check without emitting a message.
+
+### `mod.rs`
+- Structured logging facade with global level control and dispatch to registered sinks.
+- Rotating file sink and in-memory ring buffer for runtime log capture.
+- Level-gated emission so disabled messages cost near-zero.
+
+### `sinks.rs`
+- Log severity levels and string parsing for sink-level filtering.
+- In-memory ring-buffer sink for captured log entries with structured fields.
+- Output format selection: plain text, JSON, and NDJSON line formats.
+- Timestamp and ANSI color formatting helpers for human-readable output.
+- Rotating file sink with configurable size limit and backup management.
+- Buffered write coalescing to reduce OS syscall frequency.
+- Tag-based allow-list filtering per sink instance.
+- Callback sink variant for Lua-side log dispatch.
+- Unified `Sink` abstraction combining level, format, and storage backend.
+- `SinkRegistry` for multi-sink dispatch of unstructured and structured messages.
 
 ## Types
 

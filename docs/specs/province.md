@@ -11,42 +11,92 @@
 
 ## Summary
 
-`province` is the engine-native province runtime module for large strategy maps.
-It stores province topology, style state (political colors, terrain, borders, fog,
-visibility), geometry caches (spans/segments), and revisioned change streams used
-by render frontends and adapters.
+Engine-native province runtime for strategy-game maps providing topology management, style state, revisioned change streams, geometry caching, and a Lua bridge. `ProvinceRegistry` stores per-province metadata (name, type, owner, resource values) with a `ProvinceGraph` encoding adjacency relationships and border geometry.
 
-The module is intentionally independent from `globe` and `minimap`. Integration
-is done through optional adapter files:
+`ProvinceStyle` maps provinces to visual states (color, highlight, pattern) via named map modes. The geometry cache pre-computes province outlines, centroids, and fill regions for efficient rendering. Change streams emit revisioned deltas when province state mutates — downstream systems subscribe to apply incremental updates. Import pipeline converts bitmap province maps (color-coded pixels) into structured registry data. Exposed as `lurek.province.*`. Feature Systems tier — classified CORE-KEEP.
 
-- `src/globe/province_adapter.rs`
-- `src/minimap/province_adapter.rs`
+## Source Documentation
 
-Lua controls this module through `lurek.province.*`, while heavy data processing
-stays in Rust.
+### `borders.rs`
+- Classify shared borders between adjacent provinces by terrain type.
+- Map land/water combinations to discrete border classes (land-land, coast, sea-sea).
+- Provide a single pure function with no side effects for pipeline integration.
 
-The module also provides a standardized map-import pipeline for strategy content:
+### `cache.rs`
+- Serialisable geometry cache for province spans and border segments.
+- Binary encode/decode with versioned little-endian format.
+- Built from a ProvinceRegistry snapshot for fast load without re-scanning.
 
-- marker sanitization (`lurek.province.sanitizeMarkedPng`) that rewrites special
-  marker pixels into owner colors for deterministic color-id mapping,
-- bulk metadata import (`LProvinceRegistry:importMetadataFromFiles`) that applies
-  CSV/TOML-driven terrain, labels, capitals, and political colors in one Rust pass.
+### `events.rs`
+- Change-log entries for single-field province mutations (colour, terrain, border, fog, visibility).
+- High-level map events emitted to Lua callbacks after batched province updates.
+- Typed signals for map-mode switches, palette replacements, and fog overlays.
 
-## Files
+### `gpu_bridge.rs`
+- GPU-uploadable province data bridge between registry and render pipeline.
+- Packs province style fields into a repr(C) record for direct buffer upload.
+- Builds sorted record arrays from the province registry for deterministic GPU ordering.
 
-- `borders.rs`: Border classification helpers.
-- `cache.rs`: Cache serialization for province geometry.
-- `events.rs`: Province runtime events and change records.
-- `gpu_bridge.rs`: GPU bridge helpers for province data buffers.
-- `import.rs`: - Province metadata import pipeline: colour-map PNG + RGB CSV + optional TOML → registry.
-- `labels.rs`: Province centroid/label anchor helpers.
-- `map_modes.rs`: Province map-mode utilities.
-- `mod.rs`: Province engine module.
-- `registry.rs`: Province runtime registry.
-- `render.rs`: Province render command generation.
-- `topology.rs`: Province topology graph and adjacency helpers.
-- `types.rs`: Core value types for the province engine.
-- `view_transform.rs`: Province map view transform helpers shared by strategy-style map scripts.
+### `import.rs`
+- Province metadata import pipeline: colour-map PNG + RGB CSV + optional TOML → registry.
+- Marker PNG sanitization: replace capital and label marker pixels with nearest non-marker neighbour.
+- RGB colour CSV parsing mapping packed (R,G,B) tuples to numeric game_id values.
+- TOML province info parsing for display name and terrain token fields.
+- Pixel-level marker detection with configurable thresholds for capital (near-white) and label (magenta) markers.
+- Expanding-ring neighbour search to resolve marker pixel ownership from surrounding province colours.
+- Deterministic political colour derivation from game_id with fixed sea-blue for water provinces.
+- Label line extraction: find longest-distance pair from label marker point clusters per province.
+- Full import pipeline wiring terrain type, political colour, attributes, capitals, and label lines into the registry.
+
+### `labels.rs`
+- Compute pixel-weighted centroids from province span data.
+- Map province IDs to their geometric center for label placement.
+
+### `map_modes.rs`
+- Map-mode enum selecting which province style field drives fill colour.
+- Colour resolution logic mapping political, terrain, and visibility modes to RGBA.
+- String round-trip helpers for mode serialisation and Lua interop.
+
+### `mod.rs`
+- Province map system: registry, geometry cache, GPU bridge, and rendering.
+- Imports colour-map PNG + CSV/TOML metadata into an authoritative ProvinceRegistry.
+- Generates RenderCommands for fills, borders, capitals, and text labels.
+- Provides view-transform helpers for camera fitting and screen-to-map projection.
+
+### `registry.rs`
+- Central province registry: owns pixel grid, span runs, adjacency graph, and per-province records.
+- Builds from a ProvinceGrid or PNG colour-map; computes spans, bounding boxes, and centroids.
+- Provides fast lookup by pixel coordinate, province id, or bounding box.
+- Manages mutable province style (political colour, terrain, fog, visibility, border style).
+- Stores capital positions, label anchor lines, and label text per province.
+- Tracks adjacency via ProvinceGraph and exposes neighbour and pair queries.
+- Maintains a monotonic revision counter and ordered change log for incremental sync.
+- Supports border class overrides keyed by normalised province pair.
+- Stores arbitrary string key-value attributes per province via set_attr.
+
+### `render.rs`
+- Province map rendering: convert registry data into a flat RenderCommand list.
+- Viewport culling based on screen bounds and zoom/pan transform.
+- Fill rendering via per-province span rectangles coloured by the active map mode.
+- Border rendering with colour classification (land-land, coast, sea-sea, special).
+- Capital dot markers and text labels with shadow offset.
+- Hover and selection highlight outlines for interactive feedback.
+
+### `topology.rs`
+- Undirected adjacency graph storing sorted neighbour lists per province.
+- Rebuild from raw id pairs with dedup and self-loop filtering.
+- Binary-search-based neighbour lookup and adjacency queries.
+- Extraction of all province ids and unique adjacency pairs.
+
+### `types.rs`
+- Core type definitions for the province map system.
+- ProvinceId alias, BorderClass enum for adjacency classification, and ProvinceStyle for per-province visuals.
+- ProvinceSnapshot provides an immutable point-in-time view of province state.
+
+### `view_transform.rs`
+- Camera fitting, zoom-at-anchor, and coordinate conversion between screen, map, and cell space.
+- Screen-to-map and map-to-cell transforms with safe clamping for zero-size or non-finite inputs.
+- All functions are pure (no state); denominators clamped to avoid division by zero.
 
 ## Types
 

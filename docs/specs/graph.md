@@ -11,36 +11,87 @@
 
 ## Summary
 
-The `graph` module provides Lurek2D's directed flow-simulation graph system â€” a simulation substrate where typed items flow through a network of nodes connected by directed edges. Unlike a pure data-structure graph library, this module models quantity transport: items accumulate in nodes, flow through edges at controlled rates, decay over time, and undergo conversion reactions at production nodes. It is a Foundations tier module with no engine dependencies.
+Directed flow-simulation graph where typed items travel through nodes connected by weighted edges. Unlike a pure data-structure graph, this module models quantity transport: items accumulate in node inventories, flow through edges at capacity-limited rates, decay over time, and undergo conversion reactions. `Graph` owns `HashMap`-based storage for `Node`, `Edge`, and `GraphItem` with persistent adjacency indexes for O(1) neighbor lookup.
 
-Core traversal now uses persistent incoming/outgoing adjacency indexes stored inside `Graph`, so pathfinding and graph algorithms iterate only relevant edges per node instead of scanning all edges on each expansion. The module also exposes induced graph extraction through `Graph::subgraph(node_ids)` and `LGraph:subgraph(nodes)`.
+Simulation pipeline (`step(dt)`): decay all items, fire conversion rules, match supply/demand declarations, move items along edges respecting capacity and cooldowns, deliver arrivals to destination inventories. Emits `GraphEvent` values for Lua callback dispatch. Graph algorithms: connected components, cycle detection, topological sort, MST (Kruskal), coloring, bipartiteness, A*, Dijkstra shortest-path, reachability, and nearest-neighbor queries. Debug rendering produces `RenderCommand` overlays. Exposed as `lurek.graph.*`. Foundations tier.
 
-**Core model.** `Graph` is the central container, owning a `SlotMap` of `Node` instances and a `SlotMap` of `Edge` instances. `GraphItem` is the transported cargo: each item has a type string, quantity, priority, lifetime countdown, and a current `ItemPosition` (at a node, in-transit on an edge, or unplaced). `Node` stores: the accumulated item inventory, `ConversionRule` map (input type â†’ output type at a conversion ratio), `OverflowPolicy` (Cap, Spill, or Reject), `FlowMode` (Push, Pull, or Passive), and Supply/Demand declarations. `Edge` stores: routing cost weight, travel time, cooldown timer, capacity, and an item-type filter set that restricts which types may traverse it.
+## Source Documentation
 
-**Simulation pipeline.** `Graph::step(dt)` runs the complete tick in order: (1) decay â€” all items lose a configured fraction of quantity per second; (2) conversions â€” nodes with matching `ConversionRule`s transform input inventories to outputs; (3) supply/demand matching â€” `supply_demand.rs` queries which nodes have declared supplies and which have declared demands, then routes created items through the graph; (4) flow â€” `simulation.rs` moves items along edges respecting capacity limits and cooldown timers; (5) delivery â€” items arriving at their destination node are deposited into inventory. The pipeline emits `GraphEvent` values (transit, decay, conversion, queue, overflow) that Lua scripts can subscribe to for game reactions.
+### `algorithms.rs`
+- Connected-component discovery via undirected BFS traversal.
+- Directed cycle detection using a three-color DFS walk.
+- Kahn-style topological sort with deterministic tie-breaking.
+- Kruskal minimum spanning forest using a union-find structure.
+- Greedy graph coloring with sorted node-id processing order.
+- Bipartiteness test through BFS two-coloring.
+- A* shortest-path search using Euclidean node-position heuristics.
+- All algorithms operate on the shared `Graph` adjacency representation.
 
-**Graph algorithms.** `algorithms.rs` provides connected-component analysis, cycle detection, topological sort, MST, colouring, and A*. `pathfinding.rs` provides Dijkstra-based shortest-path between nodes, reachability analysis from a source, and nearest-neighbour queries.
+### `core.rs`
+- Graph container managing nodes, edges, and items with id-based lookup.
+- Adjacency indexes for fast outgoing and incoming edge queries.
+- Node CRUD with cascade removal of connected edges and displaced items.
+- Edge CRUD with transit capacity, cooldown, and type filtering.
+- Item lifecycle: creation, node placement (with overflow policy), transit, and removal.
+- Subgraph extraction preserving topology and item positions.
+- Aggregate stats computation across nodes and edges.
+- Direction-based edge queries (in, out, both).
+- Simple circular-layout image rendering for debug preview.
+- JSON-like serialize and deserialize for persistence.
 
-**Debug rendering.** `render.rs` outputs `RenderCommand` entries visualising node/edge state â€” inventory bars, edge flow indicators, and label overlays â€” without making `graph` a rendering subsystem. The rendering output is purely additive; the graph has no dependency on `render`'s wgpu types.
+### `edge.rs`
+- Directed edge connecting two graph nodes with capacity, throughput, and cooldown constraints.
+- Type-based filtering restricts which items may transit an edge.
+- Supports bidirectional flag and per-edge speed/weight modifiers for pathfinding.
 
-**FlowResult and GraphStats.** `FlowResult` is the per-step outcome report: items moved, conversions fired, overflow events, and total decay. `GraphStats` is the snapshot of the full graph state: node count, edge count, active items, pending demand, pending supply, total inventory. Both are readable from Lua.
+### `item.rs`
+- Define `GraphItem` as the data carrier moved through graph nodes and edges.
+- Track item position (at node, in transit, or unplaced) via `ItemPosition`.
+- Provide decay-time lifetime, priority, and alive/dead state per item.
 
-**Lua surface.** `lurek.graph.new()` â†’ `Graph` userdata. `graph:addNode(spec)`, `removeNode(id)`, `getNode(id)`. `graph:addEdge(from, to, spec)`, `removeEdge(id)`, `getEdge(id)`. `graph:step(dt)` â†’ `FlowResult`. `graph:findPath(from, to)`, `graph:reachable(from, max_steps)`. `graph:bfs(start, callback)`, `graph:dfs(start, callback)`. `graph:setSupply(node, type, qty)`, `graph:setDemand(node, type, qty)`. `graph:addConversion(node, rule)`. `graph:stats()` â†’ `GraphStats`. `graph:on(event_name, callback)`.
+### `mod.rs`
+- Directed graph container with typed nodes, edges, and item flow.
+- Supply/demand modeling, conversion rules, and overflow policies.
+- Pathfinding, simulation stepping, and event emission.
+- Render helpers for visual graph output.
 
-**Scope boundary.** Foundations tier. No engine module imports. Lua bridge in `src/lua_api/graph_api.rs`.
+### `node.rs`
+- Node struct with id, type, capacity, inventory, and flow settings for graph simulation.
+- OverflowPolicy enum controlling behavior when a node reaches capacity: reject, destroy, or queue.
+- FlowMode enum defining automatic push, pull, or passive behavior during simulation steps.
+- ConversionRule, Supply, and Demand structs for item transformation and economic modeling.
+- Tag, queue, and item management methods on Node.
+- String-based FromStr parsing for policy and flow mode enums.
 
-## Files
+### `pathfinding.rs`
+- Dijkstra shortest-path search over weighted directed graphs.
+- Item-type-aware pathfinding respecting edge filters and cooldowns.
+- Distance queries and bounded reachability flood-fill.
+- Neighbor discovery across active edges and bidirectional links.
+- Path reconstruction from predecessor maps into ordered node/edge lists.
+- Priority-queue state with min-cost ordering for traversal.
 
-- `algorithms.rs`: Adds connected-component, cycle-detection, and topological-sort helpers.
-- `core.rs`: Defines Graph and GraphStats plus node, edge, and item management operations.
-- `edge.rs`: Defines Edge, the directed connection with capacity, travel timing, cooldowns, weights, and item-type filters.
-- `item.rs`: Defines GraphItem and ItemPosition for typed items that rest on nodes or travel across edges.
-- `mod.rs`: Declares the active graph submodules and re-exports the public graph, node, edge, item, and event types.
-- `node.rs`: Defines Node and the flow, overflow, conversion, supply, and demand types that give nodes gameplay meaning.
-- `pathfinding.rs`: Adds Dijkstra-based shortest-path, reachability, and neighbor queries.
-- `render.rs`: Generates debug render commands for visualizing graph state without making graph a rendering subsystem.
-- `simulation.rs`: Implements the main tick pipeline and emits GraphEvent values for transit, decay, conversion, queue, and routing activity.
-- `supply_demand.rs`: Matches demand declarations to supplies and routes created items through the graph.
+### `render.rs`
+- Render a graph as a circular node-and-edge diagram via `RenderCommand` output.
+- Layout nodes evenly on a circle, draw edges as lines, color nodes by type.
+- Produce a self-contained command list suitable for the engine renderer.
+
+### `simulation.rs`
+- Graph simulation tick loop: `update`, `step`, and parallel variant.
+- Item decay processing: reduce remaining life, kill expired items, purge from all containers.
+- Edge transit progression: advance items along edges and resolve arrivals with overflow policy.
+- Push-flow mechanics: rate-limited emission of items from push-capable nodes onto outgoing edges.
+- Pull-flow mechanics: rate-limited demand of items into pull-capable nodes from source inventories.
+- Node conversion rules: consume matching inputs and produce typed outputs per recipe.
+- Queue processing: timed dequeue of waiting items into node inventories when capacity allows.
+- Overflow handling: reject, destroy, or queue items that arrive at full nodes.
+- Parallel simulation via rayon feature gate for large-graph workloads.
+- GraphEvent emission for every state transition observable by Lua scripts.
+
+### `supply_demand.rs`
+- Priority-ordered demand matching against available supply nodes.
+- Pathfinding-based item routing from supplier to consumer.
+- Event emission on supply depletion and demand fulfillment.
 
 ## Types
 

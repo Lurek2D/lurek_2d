@@ -11,24 +11,86 @@
 
 ## Summary
 
-The `network` module is documented from the current source tree and existing module reference data.
+Multiplayer networking stack providing ENet UDP transport, raw TCP sockets, async HTTP client, and WebSocket connections. `NetworkHost` manages connections in server, client, or peer-to-peer roles with reliable/unreliable channel separation. `NetworkEvent` delivers connect, disconnect, receive, and timeout notifications to Lua callbacks.
 
-This module primarily collaborates with `runtime`. Its responsibility should stay inside the Core Runtime group rather than absorb behavior owned by those neighbors.
+Entity synchronization replicates state snapshots with delta compression and client-side prediction. Relay tickets enable NAT-punched peer connections via a relay server. HTTP client supports GET/POST/PUT/DELETE with headers, timeouts, and async polling. WebSocket provides persistent bidirectional messaging. Network operations run on a dedicated I/O thread to avoid blocking the game loop. Exposed as `lurek.network.*`. Core Runtime tier — heavy dependency tree, first-wave plugin candidate.
 
-## Files
+## Source Documentation
 
-- `constants.rs`: Compile-time limits and defaults (MAX_PEERS=4096, DEFAULT_PEERS=16, DEFAULT_CHANNELS=2, HTTP_TIMEOUT_SECS=30, TCP_BUFFER_SIZE=65536, WS_BUFFER_SIZE=65536).
-- `error.rs`: `NetworkError` enum with variants: ConnectionFailed, SendFailed, InvalidPeer, InvalidAddress, Http, WebSocket, Tcp, Serialization, Thread.
-- `host.rs`: ENet host wrapper with `HostRole` enum; factory methods `create_server`, `create_client`.
-- `http.rs`: HTTP client via `ureq`. `HttpResponse` struct, `execute_request` function.
-- `lobby.rs`: LAN lobby discovery via UDP broadcast.
-- `message.rs`: MessagePack serialization. `NetValue` enum, `pack`/`unpack` functions.
-- `mod.rs`: Module root — declares all 8 sub-modules.
-- `net_sync.rs`: - Entity snapshot capture and wire serialization for networked state.
-- `net_thread.rs`: Background I/O thread. `NetworkRuntime`, `NetworkRequest`, `NetworkResponse`, `TcpEvent`, `WsEvent`.
-- `relay.rs`: - Relay ticket encoding and decoding for room+peer identification over the wire.
-- `tcp.rs`: Non-blocking TCP with `TcpConnectionManager`.
-- `websocket.rs`: WebSocket client with `WebSocketManager`.
+### `constants.rs`
+- Numeric limits for peer connections, channels, and buffer sizes.
+- Default fallback values when game config omits network parameters.
+- Timeout durations for HTTP and transport-level operations.
+
+### `error.rs`
+- Unified error enum for all network subsystem failures.
+- Covers socket I/O, ENet, HTTP, WebSocket, TCP, and threading faults.
+- Integrates with `thiserror` for automatic `Display` and `From` impls.
+
+### `host.rs`
+- ENet host wrapper owning a non-blocking UDP socket and all peer slots for one endpoint.
+- Host role classification (Server, Client, combined Host) for session routing.
+- Event-driven poll loop yielding Connect, Disconnect, and Receive events.
+- Connection lifecycle: initiate, graceful disconnect, forced disconnect, and reset.
+- Unicast and broadcast packet sending with reliable or unreliable delivery.
+- Peer diagnostics: round-trip time, connection state, address, and full statistics snapshot.
+- Bandwidth and channel limit configuration at runtime.
+- Convenience constructors for common server and client bind patterns.
+
+### `http.rs`
+- Synchronous HTTP client built on `ureq` for GET, POST, PUT, PATCH, DELETE, HEAD, and OPTIONS.
+- Configurable per-request timeout via agent builder.
+- Unified `HttpResponse` captures status, body, headers, and optional error message.
+
+### `lobby.rs`
+- LAN lobby discovery via timed UDP broadcast listen on a fixed port.
+- Lobby advertisement encoding and parsing in a `key=value;...` wire format.
+- In-process room registry for create, join, leave, and list operations.
+- Broadcast helper that sends a single SO_BROADCAST datagram on all interfaces.
+- Deduplication of discovered lobbies by host+port during the scan window.
+
+### `message.rs`
+- Wire-format value type (`NetValue`) mirroring Lua's dynamic type system for cross-peer messaging.
+- MessagePack serialization and deserialization via `pack`/`unpack`.
+- Zero-allocation size estimation for budget checks before sending.
+
+### `mod.rs`
+- Multiplayer networking: TCP, WebSocket, and relay transports with binary message framing.
+- Host/client model with lobby state machine, peer management, and game-state sync.
+- Background async runtime (Tokio) for non-blocking socket I/O and HTTP helpers.
+
+### `net_sync.rs`
+- Entity snapshot capture and wire serialization for networked state.
+- Linear dead-reckoning prediction between ticks.
+- Server-authoritative reconciliation with configurable blend factor.
+
+### `net_thread.rs`
+- Background network thread that owns all blocking I/O (HTTP, TCP, WebSocket).
+- MPSC request/response channels isolate the game thread from socket latency.
+- `NetworkRequest` enum drives HTTP fetches, TCP streams, and WebSocket frames.
+- `NetworkResponse` carries completed results and lifecycle events back to the game loop.
+- `TcpEvent` / `WsEvent` model connection state machines (connect, data, close, error).
+- `NetworkRuntime` struct spawns the thread, assigns IDs, and exposes typed helpers.
+- 10 ms poll loop processes transports and drains the request channel.
+- Graceful shutdown closes all connections and joins the thread on drop.
+- Correlation IDs let the game thread match responses to outstanding requests.
+
+### `relay.rs`
+- Relay ticket encoding and decoding for room+peer identification over the wire.
+- UDP hole-punch probe construction and parsing with a magic prefix.
+- Lightweight helpers for relay-based NAT traversal signalling.
+
+### `tcp.rs`
+- Non-blocking TCP connection pool for the background network thread.
+- Round-robin polling across all active streams with event-based notification.
+- Connect, send, close, and bulk-poll operations with automatic error cleanup.
+
+### `websocket.rs`
+- Manage a pool of active WebSocket connections keyed by caller-assigned ID.
+- Spawn background threads for TLS/TCP handshakes so connect never blocks the game loop.
+- Non-blocking poll loop reads text, binary, and close frames from all live sockets.
+- Send text or binary frames, and perform graceful close with drain semantics.
+- Post all connection lifecycle events (open, message, error, close) through an MPSC channel.
 
 ## Types
 

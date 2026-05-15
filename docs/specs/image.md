@@ -11,60 +11,174 @@
 
 ## Summary
 
-The `image` module is Lurek2D's CPU-side pixel buffer and image manipulation library — a Platform Services tier module used by the asset pipeline, golden tests, save serialisation, and the debug visualisation system. It has no dependency on wgpu or the GPU render pipeline, making it fully usable in headless test contexts.
+CPU-side pixel buffer operations for loading, manipulating, and exporting RGBA8 image data. `ImageData` is the core type — a width/height/pixel-data triple with blit, fill, crop, resize (nearest/bilinear), flip, rotate, clear, gradient, and region operations. `LayeredImage` stacks multiple `ImageData` layers with blend modes (normal, multiply, screen, overlay, add).
 
-**ImageData — the core buffer.** `ImageData` is a heap-allocated RGBA8 pixel buffer (`width × height × 4` bytes) with construction from file (PNG/JPEG via the `image` crate), from raw bytes, or zeroed allocation. Per-pixel API: `get_pixel(x, y)` → `[u8;4]`, `set_pixel(x, y, rgba)`. Drawing primitives: filled rect, filled circle, Bresenham line, 3×5 bitmap font label. Bulk transforms: `resize(w, h, filter)` (nearest-neighbour, bilinear, and lanczos3), `blit(src, dst_x, dst_y)` (Porter-Duff over; opaque fast path), `fill(color)`, `get_region(x, y, w, h)` (crop), `diff(other)` (pixel-by-pixel delta image for golden tests). High-throughput transforms: `map_pixel(fn)` and `map_pixel_par(fn)` (Rayon-accelerated for images > 65K pixels). Format export: `encode_png()` → bytes.
+Province grid detection segments pixel regions into numbered provinces via flood-fill with configurable color keys. `TextureAtlas` packs multiple images into a single texture with bin-packing. DDS decoding handles BC1–BC7 compressed textures. Palette-based LUT color remapping enables retro effects. Effects include blur, sharpen, edge detect, desaturate, and threshold. Exposed as `lurek.image.*`. Platform Services tier.
 
-**Image effects.** `effects.rs` extends `ImageData` with CPU-side image processing: brightness/contrast adjustment, hue-rotate, saturate, desaturate, sepia tone, invert, blur (box and Gaussian), sharpen, emboss, edge detection, pixelate, and `convolve(kernel, ksize)` for custom kernels. These effects run entirely on the CPU and do not require a GPU shader.
+## Source Documentation
 
-**Layered compositing.** `LayeredImage` and `ImageLayer` implement a Porter-Duff compositing stack. Each `ImageLayer` carries a name, visibility flag, opacity scalar, and its own `ImageData` backing store. `LayeredImage::flatten()` composites all visible layers in order into a single `ImageData`. Used for multi-layer save files (e.g., the `painting.limg` save format) and for the `effect` module's CPU-side compositing path.
+### `compressed.rs`
+- DDS compressed-texture parsing: header validation, mipmap extraction, format detection.
+- Recognized block-compression families: BC1–BC7 (desktop) and ETC1/ETC2 (mobile).
+- Dual detection path: DXGI format field for DX10+ files, D3DFormat for legacy DDS.
+- File-level helpers for magic-byte checks and full-file decode via GameFS or std I/O.
+- Data carrier (`CompressedImageData`) holding dimensions, format tag, and raw mip payloads.
 
-**Province grid.** `ProvinceGrid` in `province_grid.rs` is a flat `Vec<u32>` spatial index built from a province-colour PNG in a single O(w×h) scan. Each unique non-black RGB is assigned a sequential province ID (1..n). Provides O(1) coordinate-to-province lookup (`get(x, y) → province_id`), single-pass adjacency detection with border-pixel counts (`adjacencies()` → `Vec<AdjacencyPair>`), and border-corner polygon extraction (`province_polygons()` / `province_polygons_simplified()`) where each vertex is a pixel-grid corner. Used by the `globe` module and strategy games that use colour-coded province maps.
+### `effects.rs`
+- Pixel-level color adjustments: brightness, contrast, saturation, gamma, tint, grayscale, sepia, invert, threshold, and posterize applied via parallel pixel mapping.
+- Alpha channel masking and deterministic per-pixel noise injection with repeatable seed.
+- Geometric transforms: horizontal and vertical flip, 90-degree clockwise rotation, and rectangular crop with bounds validation.
+- Resize operations using nearest-neighbor sampling, bilinear interpolation, and Lanczos3 windowed-sinc filtering.
+- Separable box blur with configurable radius and 3x3 unsharp-mask sharpening kernel.
+- General-purpose NxN kernel convolution with clamped-edge boundary handling and validation of odd kernel dimensions.
+- Compositing via alpha-blended blit with fast-path for fully opaque sources and nine-slice stretch drawing.
+- Bytewise image difference scoring across same-sized and differently-sized images for test comparison.
+- `ResizeFilter` enum for selecting resampling kernels via string parsing at the Lua boundary.
 
-The Lua-side `LProvinceGrid` userdata also exposes `drawShapes(view_x?, view_y?, view_w?, view_h?)`, which uses cached simplified polygons and the original province colours to enqueue filled polygon render commands on the Rust render queue. When a viewport is provided, off-screen shapes are culled before commands are pushed.
+### `image_data.rs`
+- Mutable RGBA pixel buffer for creation, loading, and manipulation of 2D images.
+- Constructors from file path, encoded memory bytes, or raw RGBA byte vectors.
+- Per-pixel read/write, paste composition, and bulk map transforms (serial and parallel).
+- Primitive drawing: filled rectangles, circles, Bresenham lines, and bitmap text labels.
+- PNG encoding for serialization and export.
 
-**Compressed image data.** `CompressedImageData` holds DDS/DXT1/DXT3/DXT5/BC7/ETC compressed GPU texture data loaded without CPU decompression, ready to upload directly to wgpu. `CompressedFormat` identifies the compression format. This path is used for large atlas textures where the file size and VRAM footprint matter.
+### `layers.rs`
+- Named image layers with opacity, visibility, and RGBA pixel data.
+- Layered image stack that composites layers front-to-back with alpha blending.
+- Layer manipulation: add, remove, reorder, swap, rename, set opacity/visibility.
+- Final merge produces a single `ImageData` using standard Porter-Duff over compositing.
 
-**Palette LUT.** `PaletteLUT` is a colour palette lookup table mapping source RGBA values to target RGBA values for palette-swap effects. Used by the `effect` module's CPU palette-swap pass and the shader-side palette-swap render feature.
+### `mod.rs`
+- RGBA image storage, pixel manipulation, and CPU-side drawing helpers.
+- Compressed format decoding (PNG, QOI, BMP, TGA, WebP) and texture upload.
+- Layered compositing, palette remapping, and image-space effects.
+- Texture atlas packing, nine-slice metadata, and province-grid extraction.
 
-**Texture atlas.** `TextureAtlas` in `texture_atlas.rs` uses a shelf-packing bin-packing algorithm to arrange named rectangular regions into a fixed atlas layout. Regions can optionally carry `NineSliceInsets { left, right, top, bottom }` metadata for scalable UI/panel rendering.
+### `palette_lut.rs`
+- Source-to-target color remapping via indexed palette lookup tables.
+- Hash-accelerated pixel matching for large palettes, linear scan for small ones.
+- In-place image rewrite and cyclic rotation of replacement colors.
 
-**Serial format.** `serial.rs` implements the binary `.lim` (LIMG) format: zlib-compressed `ImageData` or `LayeredImage` with a fixed header. `encode_lim(image)` → bytes; `decode_lim(bytes)` → `ImageData` or `LayeredImage`. Used by the `save` module.
+### `province_grid.rs`
+- Province grid construction from color-mapped images, assigning unique ids per distinct RGB color.
+- Pixel-level province id lookup and reverse color retrieval by id.
+- Adjacency detection between neighboring provinces with shared-border-pixel counts.
+- Horizontal span extraction for contiguous province row segments.
+- Border segment detection returning line segments between differing province regions.
+- Polygon tracing from directed cell edges into closed point loops per province.
+- Polygon simplification removing collinear vertices and 45-degree staircase patterns.
+- Binary serialization and deserialization of span and border segment shape data.
+- Adjacency pair struct exposing province relationships for map graph queries.
 
-**Visualisation helpers.** The `visualization/` submodule provides over 40 standalone helper functions that produce `ImageData` debug bitmaps without import cycles: animation frame sequence previews, audio waveform bitmaps, camera frustum diagrams, easing curves, Bezier curves, noise maps, geometry intersection diagrams, HUD bar renderings, and graph visualisations. These are used exclusively by development and documentation tooling.
+### `render.rs`
+- Convert an image buffer into GPU render commands for on-screen display.
+- Provide cloning helpers to snapshot pixel data as standalone values.
+- Bridge between ImageData and the engine's RenderCommand pipeline.
 
-**Render integration.** `render.rs` converts `ImageData` values into `RenderCommand::DrawImage` entries for direct draw calls without creating a persistent GPU texture. Used for debug overlays that change every frame.
+### `serial.rs`
+- Serialize and deserialize flat and layered images in the LIMG binary format.
+- Provide zlib compression and decompression for pixel payloads.
+- Validate headers, version tags, and type flags on load.
+- Encode layer metadata (name, opacity, visibility) alongside pixel data.
+- Expose both file-path and raw-byte entry points for flexible I/O.
 
-**Lua surface.** `lurek.image.new(w, h)`, `lurek.image.load(path)`, `lurek.image.newImageDataFromBytes(w, h, bytes)`, and `lurek.image.fromScreen()` (async poll-based GPU readback). `ImageData` userdata: `get(x, y)`, `set(x, y, r, g, b, a)`, `resize(w, h, filter?)`, `blit(src, dx, dy)`, `fill(r, g, b, a)`, `region(x, y, w, h)`, `encodePng()`, `getRawBytes()`, `diff(other)`. Effects: `brightness(v)`, `blur(r)`, `convolve(kernel)`, etc. `lurek.image.newLayers()` → `LayeredImage`. `lurek.image.loadCompressed(path)` → `CompressedImageData`. `lurek.image.newAtlas()` → `TextureAtlas`. Integration path: `lurek.render.newImage(path_or_imageData, color_space?)` accepts optional `"srgb"`/`"linear"` upload hint.
+### `texture.rs`
+- CPU-side texture loading, decoding, and storage into the SlotMap pool.
+- Premultiplied-alpha conversion for correct blending on the GPU.
+- Color-space tagging (sRGB vs linear) carried alongside pixel data.
+- Construction from file paths or raw RGBA byte buffers.
+- Dimension validation for caller-supplied pixel buffers.
 
-**Scope boundary.** Platform Services tier. Depends on `image` external crate, `ddsfile`, `flate2`, `rayon`. Lua bridge in `src/lua_api/image_api.rs`.
-`src/image/effects.rs` owns CPU pixel transforms and CPU nine-slice drawing helpers. Shader-chain composition for post-processing lives in `src/effect/image_effect.rs`.
+### `texture_atlas.rs`
+- Shelf-based rectangle packing for combining multiple images into a single atlas texture.
+- Nine-slice inset metadata attached per region for scalable UI sprites.
+- Name-keyed region lookup, clearing, and dimension queries.
 
-## Files
+### `visualization/animation.rs`
+- Frame grid rendering for animation debug overlays.
+- Playback timeline preview with active frame highlighting.
+- Playback control state visualization with run, idle, pause, and resume.
+- Default cell-dimension wrapper for quick animation preview.
+- Color-coded frame indicators for current vs inactive frames.
 
-- `compressed.rs`: Defines DDS-backed compressed image data for formats that should stay compressed until GPU upload.
-- `effects.rs`: Adds CPU image-processing operations onto `ImageData`, including tone changes, geometric transforms, blur, sharpen, and other filter-style edits.
-- `image_data.rs`: Defines `ImageData`, the core RGBA8 pixel buffer with load, encode, per-pixel access, drawing primitives, and bulk pixel transforms.
-- `layers.rs`: Defines layered image composition with named layers, visibility, opacity, ordering, and Porter-Duff style flattening.
-- `mod.rs`: Re-exports the module's public image types and groups the submodules into one CPU-side image surface.
-- `palette_lut.rs`: Stores source-to-target color mappings used for palette-swap style workflows.
-- `province_grid.rs`: Defines `ProvinceGrid`, a flat `Vec<u32>` spatial index built from a province-colour PNG. Provides O(1) coordinate lookup and single-pass O(w×h) adjacency detection with border-pixel counts.
-- `render.rs`: Converts `ImageData` into render-command descriptions without taking ownership of renderer internals.
-- `serial.rs`: Implements the `.lim` binary format for saving and loading flat and layered images.
-- `texture.rs`: Defines a lightweight texture handle and CPU-to-renderer texture creation helpers.
-- `texture_atlas.rs`: Packs named rectangular regions into a fixed atlas layout for sprite-sheet style use cases.
-- `visualization/animation.rs`: Animation visualization helpers.
-- `visualization/audio.rs`: Audio waveform visualization helpers.
-- `visualization/camera.rs`: Camera visualization helpers.
-- `visualization/easing.rs`: Easing curve and Bezier visualization helpers.
-- `visualization/facade.rs`: Shared color conversion helpers for the `visualization` module.
-- `visualization/geometry.rs`: Geometry shape and intersection visualization helpers.
-- `visualization/graph.rs`: Graph visualization helpers.
-- `visualization/image_ops.rs`: Image operation visualization helpers.
-- `visualization/mod.rs`: Standalone visualization helpers for Tier 1 modules.
-- `visualization/noise.rs`: Noise and terrain visualization helpers.
-- `visualization/procgen.rs`: Procedural generation visualization helpers.
-- `visualization/ui.rs`: UI and HUD visualization helpers.
+### `visualization/audio.rs`
+- Mono waveform preview with axis grid and peak normalization.
+- Stereo waveform rendering with channel separation.
+- Zoomed waveform with interpolated sample detail.
+- Labeled waveform strip with custom color mapping.
+- Shared peak normalization and column-based rendering.
+
+### `visualization/camera.rs`
+- Camera debug overlay with viewport rectangle and position crosshair.
+- Zoom level comparison panel across multiple scale factors.
+- Rotation preview grid with world-to-screen coordinate transforms.
+- Camera bounds display with labeled position list.
+- Follow and dead-zone trail visualization.
+- Shake displacement trail with center and moved-position markers.
+- Full-size camera debug wrapper for quick usage.
+- HSV color helpers for hue-based visual differentiation.
+
+### `visualization/easing.rs`
+- Easing curve gallery rendered in a labeled grid layout.
+- Overlaid easing comparison chart with colored traces.
+- Bézier curve rendering with control-point markers.
+- Advanced Bézier demo with derivatives, segments, and edit operations.
+- Grid background and axis rendering for chart context.
+
+### `visualization/facade.rs`
+- HSV to RGB conversion for visualization color mapping.
+- Hue-based palette generation for chart and graph elements.
+- Shared color utility used across all visualization submodules.
+
+### `visualization/geometry.rs`
+- Polygon gallery with regular shapes of varying side counts.
+- Archimedes spiral rendering with HSV ring colors.
+- Filled primitive samples: rectangles, circles, brightness grid.
+- Convex hull computation and overlay drawing.
+- Point-in-polygon, centroid, and area visualization.
+- Bresenham line rasterization proof.
+- Segment-segment and circle-line intersection tests.
+- Circle-segment and line intersection proof rendering.
+
+### `visualization/graph.rs`
+- Node-edge graph rendering with labels and colored vertices.
+- Removed-edge overlay with dimmed styling.
+- Item-flow graph with directional arrows and node items.
+- Stats text and title label placement.
+- Circle node rendering with adjacency-list edges.
+
+### `visualization/image_ops.rs`
+- Side-by-side labeled image comparison composite.
+- Pixel transform grid: original, inverted, grayscale, sepia columns.
+- HSV color wheel rendering from angle and distance.
+- Slot-based layout with automatic scaling and padding.
+- Label placement beneath each comparison slot.
+
+### `visualization/mod.rs`
+- Submodule declarations for all visualization categories.
+- Wildcard re-exports providing a flat public API.
+- Shared facade helpers scoped to crate visibility.
+
+### `visualization/noise.rs`
+- Noise function rendering as scaled grayscale.
+- Raw noise mapping without range normalization.
+- Terrain biome coloring from noise elevation bands.
+- Heightmap slice visualization with elevation gradient.
+- Noise comparison strip with multiple tiles side by side.
+
+### `visualization/procgen.rs`
+- Cellular automata grid rendering with alive and dead colors.
+- Voronoi region visualization from seed partitions.
+- Point sample rendering as colored dots or circles.
+- Dungeon grid display with wall and floor tile scaling.
+- Delaunay triangulation overlay with triangle edges and vertices.
+
+### `visualization/ui.rs`
+- Settings panel layout with controls, sliders, and buttons.
+- HUD bar rendering for health, mana, stamina, and XP.
+- Skill cooldown arcs with radial fill indicators.
+- Color swatch palette with selection highlight.
+- Progress bars and percentage label formatting.
 
 ## Types
 

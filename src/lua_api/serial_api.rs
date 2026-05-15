@@ -9,12 +9,14 @@ use crate::serial::{
 use mlua::prelude::*;
 use std::cell::RefCell;
 use std::rc::Rc;
+/// Resolves the first byte of an optional delimiter string, defaulting to a comma.
 fn parse_delimiter(delim: Option<String>) -> u8 {
     delim
         .as_deref()
         .and_then(|d| d.as_bytes().first().copied())
         .unwrap_or(b',')
 }
+/// Parses CSV decoding and encoding options from an optional Lua options table.
 fn csv_options_from_table(opts: Option<LuaTable>) -> LuaResult<CsvOptions> {
     let mut out = CsvOptions::default();
     if let Some(t) = opts {
@@ -25,6 +27,7 @@ fn csv_options_from_table(opts: Option<LuaTable>) -> LuaResult<CsvOptions> {
     }
     Ok(out)
 }
+/// Parses shared serialization encode options from an optional Lua options table.
 fn encode_options_from_table(opts: Option<LuaTable>) -> LuaResult<EncodeOptions> {
     let mut out = EncodeOptions::default();
     if let Some(t) = opts {

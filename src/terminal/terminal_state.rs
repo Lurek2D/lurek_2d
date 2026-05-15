@@ -1,10 +1,10 @@
 //! - Terminal grid state machine: fixed-size cell buffer with 1-based cursor, per-cell fg/bg colors, and content-preserving resize.
-//! - Widget system: compositable label, button, text-box, list, border, and panel widgets drawn on top of the grid.
+//! - Widget system: compositable label, button, text-box, list, border, and panel widgets drawn on top of the grid with default shaded skins.
 //! - Focus and input dispatch: keyboard, text-input, and mouse events routed to the focused widget with event emission.
 //! - Scrollback buffer: capped line history with offset-based windowed retrieval.
 //! - Command history: push/prev/next navigation for console-style input recall.
 //! - Cell manipulation helpers: single-cell set/get, bulk print, colored print, and default-color application.
-//! - Render output: composited cell buffer flattened into batched `RenderCommand` lists for the renderer.
+//! - Render output: composited cell buffer flattened into batched background and text `RenderCommand` lists for the renderer.
 //! - Border rendering: single, double, and ASCII frame styles with optional title text.
 //! - Panel child tracking: index-based parent-child relationships with automatic adjustment on widget removal.
 
@@ -20,6 +20,22 @@ pub(crate) const MAX_ROWS: usize = 256;
 
 /// Foreground color for unfocused buttons.
 const BUTTON_FG: [f32; 4] = [0.9, 0.9, 0.9, 1.0];
+/// Background color for inactive terminal buttons.
+const BUTTON_BG: [f32; 4] = [0.16, 0.19, 0.26, 1.0];
+/// Background color for focused terminal buttons.
+const BUTTON_FOCUS_BG: [f32; 4] = [0.23, 0.28, 0.40, 1.0];
+/// Bright top-left edge color for shaded terminal widgets.
+const WIDGET_LIGHT_FG: [f32; 4] = [0.82, 0.88, 1.0, 1.0];
+/// Dark bottom-right edge color for shaded terminal widgets.
+const WIDGET_SHADOW_FG: [f32; 4] = [0.06, 0.07, 0.10, 1.0];
+/// Background color for text entry widgets.
+const TEXTBOX_BG: [f32; 4] = [0.07, 0.08, 0.11, 1.0];
+/// Background color for terminal list widgets.
+const LIST_BG: [f32; 4] = [0.09, 0.10, 0.14, 1.0];
+/// Background color for the selected row inside a terminal list.
+const LIST_SELECTED_BG: [f32; 4] = [0.18, 0.30, 0.44, 1.0];
+/// Background color for terminal panels and bordered regions.
+const PANEL_BG: [f32; 4] = [0.10, 0.11, 0.15, 0.94];
 /// Foreground color applied to the focused widget.
 const FOCUS_FG: [f32; 4] = [1.0, 0.95, 0.5, 1.0];
 /// Foreground color for the selected list item.
@@ -74,7 +90,28 @@ fn set_render_cell(
     cells[idx].fg = fg;
 }
 
-/// Fill a rectangular region of `cells` with space characters using `fg`.
+/// Write a single character cell at `(col, row)` including foreground and background; ignored when out of bounds.
+#[allow(clippy::too_many_arguments)]
+fn set_render_cell_with_bg(
+    cells: &mut [TCell],
+    dimensions: (usize, usize),
+    position: (usize, usize),
+    ch: char,
+    fg: [f32; 4],
+    bg: [f32; 4],
+) {
+    let (cols, rows) = dimensions;
+    let (col, row) = position;
+    if col >= cols || row >= rows {
+        return;
+    }
+    let idx = row * cols + col;
+    cells[idx].ch = ch as u32;
+    cells[idx].fg = fg;
+    cells[idx].bg = bg;
+}
+
+/// Fill a rectangular region of `cells` with space characters using `fg` and `bg`.
 #[allow(clippy::too_many_arguments)]
 fn clear_render_rect(
     cells: &mut [TCell],
@@ -85,10 +122,118 @@ fn clear_render_rect(
     width: usize,
     height: usize,
     fg: [f32; 4],
+    bg: [f32; 4],
 ) {
     for row in y..y.saturating_add(height) {
         for col in x..x.saturating_add(width) {
-            set_render_cell(cells, cols, rows, col, row, ' ', fg);
+            set_render_cell_with_bg(cells, (cols, rows), (col, row), ' ', fg, bg);
+        }
+    }
+}
+
+/// Draw a shaded one-cell button row with bracket edges and centered text.
+#[allow(clippy::too_many_arguments)]
+fn draw_compact_button(
+    cells: &mut [TCell],
+    cols: usize,
+    rows: usize,
+    x: usize,
+    y: usize,
+    width: usize,
+    text: &str,
+    fg: [f32; 4],
+    bg: [f32; 4],
+) {
+    if width == 0 {
+        return;
+    }
+    clear_render_rect(cells, cols, rows, x, y, width, 1, fg, bg);
+    if width >= 2 {
+        set_render_cell_with_bg(cells, (cols, rows), (x, y), '[', WIDGET_LIGHT_FG, bg);
+        set_render_cell_with_bg(
+            cells,
+            (cols, rows),
+            (x + width - 1, y),
+            ']',
+            WIDGET_SHADOW_FG,
+            bg,
+        );
+    }
+    let content_width = width.saturating_sub(2).max(1);
+    let text_width = char_count(text).min(content_width);
+    let start_col = x + (width.saturating_sub(text_width) / 2);
+    write_render_text(cells, cols, rows, start_col, y, text, fg, text_width);
+}
+
+/// Draw a light-top/dark-bottom frame around a rectangular terminal widget.
+#[allow(clippy::too_many_arguments)]
+fn draw_shaded_frame(
+    cells: &mut [TCell],
+    cols: usize,
+    rows: usize,
+    x: usize,
+    y: usize,
+    width: usize,
+    height: usize,
+    bg: [f32; 4],
+) {
+    if width == 0 || height == 0 {
+        return;
+    }
+    clear_render_rect(cells, cols, rows, x, y, width, height, DEFAULT_FG, bg);
+    if width == 1 || height == 1 {
+        return;
+    }
+    for offset in 0..width {
+        let top_ch = if offset == 0 {
+            '┌'
+        } else if offset == width - 1 {
+            '┐'
+        } else {
+            '─'
+        };
+        let bottom_ch = if offset == 0 {
+            '└'
+        } else if offset == width - 1 {
+            '┘'
+        } else {
+            '─'
+        };
+        set_render_cell_with_bg(
+            cells,
+            (cols, rows),
+            (x + offset, y),
+            top_ch,
+            WIDGET_LIGHT_FG,
+            bg,
+        );
+        set_render_cell_with_bg(
+            cells,
+            (cols, rows),
+            (x + offset, y + height - 1),
+            bottom_ch,
+            WIDGET_SHADOW_FG,
+            bg,
+        );
+    }
+    if height > 2 {
+        for offset in 1..height - 1 {
+            set_render_cell_with_bg(
+                cells,
+                (cols, rows),
+                (x, y + offset),
+                '│',
+                WIDGET_LIGHT_FG,
+                bg,
+            );
+            set_render_cell_with_bg(
+                cells,
+                (cols, rows),
+                (x + width - 1, y + offset),
+                '│',
+                WIDGET_SHADOW_FG,
+                bg,
+            );
         }
     }
 }
@@ -565,30 +710,43 @@ impl Terminal {
                     } else {
                         BUTTON_FG
                     };
-                    clear_render_rect(
-                        &mut cells,
-                        self.cols,
-                        self.rows,
-                        widget.base.x,
-                        widget.base.y,
-                        widget.base.width,
-                        widget.base.height,
-                        fg,
-                    );
-                    let row = widget.base.y + widget.base.height.saturating_sub(1) / 2;
-                    let text_width = char_count(text).min(widget.base.width);
-                    let start_col =
-                        widget.base.x + widget.base.width.saturating_sub(text_width) / 2;
-                    write_render_text(
-                        &mut cells,
-                        self.cols,
-                        self.rows,
-                        start_col,
-                        row,
-                        text,
-                        fg,
-                        widget.base.width,
-                    );
+                    let bg = if self.focused == Some(index) {
+                        BUTTON_FOCUS_BG
+                    } else {
+                        BUTTON_BG
+                    };
+                    if widget.base.height <= 1 {
+                        draw_compact_button(
+                            &mut cells,
+                            self.cols,
+                            self.rows,
+                            widget.base.x,
+                            widget.base.y,
+                            widget.base.width,
+                            text,
+                            fg,
+                            bg,
+                        );
+                    } else {
+                        draw_shaded_frame(
+                            &mut cells,
+                            self.cols,
+                            self.rows,
+                            widget.base.x,
+                            widget.base.y,
+                            widget.base.width,
+                            widget.base.height,
+                            bg,
+                        );
+                        let row = widget.base.y + widget.base.height.saturating_sub(1) / 2;
+                        let inner_width = widget.base.width.saturating_sub(2).max(1);
+                        let text_width = char_count(text).min(inner_width);
+                        let start_col =
+                            widget.base.x + widget.base.width.saturating_sub(text_width) / 2;
+                        write_render_text(
+                            &mut cells, self.cols, self.rows, start_col, row, text, fg, text_width,
+                        );
+                    }
                 }
                 WidgetKind::TextBox {
                     text, cursor_pos, ..
@@ -602,6 +760,7 @@ impl Terminal {
                         widget.base.width,
                         widget.base.height,
                         DEFAULT_FG,
+                        TEXTBOX_BG,
                     );
                     let display = truncate_chars(text, widget.base.width);
                     write_render_text(
@@ -632,18 +791,19 @@ impl Terminal {
                     selected,
                     scroll_offset,
                 } => {
+                    clear_render_rect(
+                        &mut cells,
+                        self.cols,
+                        self.rows,
+                        widget.base.x,
+                        widget.base.y,
+                        widget.base.width,
+                        widget.base.height,
+                        DEFAULT_FG,
+                        LIST_BG,
+                    );
                     for row_offset in 0..widget.base.height {
                         let row = widget.base.y + row_offset;
-                        clear_render_rect(
-                            &mut cells,
-                            self.cols,
-                            self.rows,
-                            widget.base.x,
-                            row,
-                            widget.base.width,
-                            1,
-                            DEFAULT_FG,
-                        );
                         let item_index = scroll_offset + row_offset;
                         if item_index >= items.len() {
                             continue;
@@ -654,6 +814,19 @@ impl Terminal {
                         } else {
                             DEFAULT_FG
                         };
+                        if is_selected {
+                            clear_render_rect(
+                                &mut cells,
+                                self.cols,
+                                self.rows,
+                                widget.base.x,
+                                row,
+                                widget.base.width,
+                                1,
+                                fg,
+                                LIST_SELECTED_BG,
+                            );
+                        }
                         let prefix = if is_selected { "> " } else { "  " };
                         let available = widget.base.width.saturating_sub(char_count(prefix));
                         let text = truncate_chars(&items[item_index], available);
@@ -684,9 +857,31 @@ impl Terminal {
                     title,
                     color,
                 } => {
+                    clear_render_rect(
+                        &mut cells,
+                        self.cols,
+                        self.rows,
+                        widget.base.x,
+                        widget.base.y,
+                        widget.base.width,
+                        widget.base.height,
+                        *color,
+                        PANEL_BG,
+                    );
                     self.render_border(&mut cells, widget, *style, title, *color);
                 }
-                WidgetKind::Panel { .. } => {}
+                WidgetKind::Panel { .. } => {
+                    draw_shaded_frame(
+                        &mut cells,
+                        self.cols,
+                        self.rows,
+                        widget.base.x,
+                        widget.base.y,
+                        widget.base.width,
+                        widget.base.height,
+                        PANEL_BG,
+                    );
+                }
             }
         }
         cells
@@ -891,6 +1086,39 @@ impl Terminal {
             if row_cells.is_empty() {
                 continue;
             }
+            let flush_bg_run = |commands: &mut Vec<RenderCommand>,
+                                run_start: usize,
+                                run_len: usize,
+                                run_color: [f32; 4]| {
+                if run_len > 0 && run_color[3] > 0.0 {
+                    commands.push(RenderCommand::SetColor(
+                        run_color[0],
+                        run_color[1],
+                        run_color[2],
+                        run_color[3],
+                    ));
+                    commands.push(RenderCommand::Rectangle {
+                        mode: crate::render::renderer::DrawMode::Fill,
+                        x: ox + run_start as f32 * cell_w,
+                        y: oy + row as f32 * cell_h,
+                        w: run_len as f32 * cell_w,
+                        h: cell_h,
+                    });
+                }
+            };
+            let mut bg_start = 0usize;
+            let mut bg_color = row_cells[0].bg;
+            let mut bg_len = 0usize;
+            for (col, cell) in row_cells.iter().enumerate() {
+                if col > 0 && cell.bg != bg_color {
+                    flush_bg_run(&mut commands, bg_start, bg_len, bg_color);
+                    bg_start = col;
+                    bg_color = cell.bg;
+                    bg_len = 0;
+                }
+                bg_len += 1;
+            }
+            flush_bg_run(&mut commands, bg_start, bg_len, bg_color);
             let mut run_start = 0usize;
             let mut run_color = row_cells[0].fg;
             let mut run_text = String::new();

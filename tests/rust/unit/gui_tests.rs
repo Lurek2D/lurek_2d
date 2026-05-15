@@ -146,6 +146,78 @@ fn theme_default_dark_button_has_nonzero_corner_radius() {
     );
 }
 
+#[test]
+fn theme_default_dark_button_has_depth_cues() {
+    use lurek2d::ui::widget::{WidgetState, WidgetType};
+    let theme = Theme::default_dark();
+    let style = theme
+        .get_style(WidgetType::Button, WidgetState::Normal)
+        .unwrap();
+    assert!(
+        style.gradient_end.is_some(),
+        "Button in default_dark must have a gradient fill"
+    );
+    assert!(
+        style.shadow_color[3] > 0.0,
+        "Button in default_dark must have a visible shadow"
+    );
+    assert!(
+        style.highlight_alpha > 0.0,
+        "Button in default_dark must have a top highlight"
+    );
+}
+
+#[test]
+fn theme_default_dark_has_normal_style_for_every_widget_type() {
+    use lurek2d::ui::widget::{WidgetState, WidgetType};
+    let theme = Theme::default_dark();
+    let widget_types = [
+        WidgetType::Button,
+        WidgetType::Label,
+        WidgetType::TextInput,
+        WidgetType::CheckBox,
+        WidgetType::Slider,
+        WidgetType::ProgressBar,
+        WidgetType::ComboBox,
+        WidgetType::ListBox,
+        WidgetType::Panel,
+        WidgetType::Layout,
+        WidgetType::ScrollPanel,
+        WidgetType::NinePatch,
+        WidgetType::TabBar,
+        WidgetType::Toast,
+        WidgetType::Separator,
+        WidgetType::Spacer,
+        WidgetType::TreeView,
+        WidgetType::RadioButton,
+        WidgetType::ScrollBar,
+        WidgetType::GUIWindow,
+        WidgetType::SplitPanel,
+        WidgetType::DockPanel,
+        WidgetType::Toolbar,
+        WidgetType::MenuBar,
+        WidgetType::MenuItem,
+        WidgetType::Dialog,
+        WidgetType::StatusBar,
+        WidgetType::Accordion,
+        WidgetType::TooltipPanel,
+        WidgetType::ColorPicker,
+        WidgetType::GUITable,
+        WidgetType::ImageWidget,
+        WidgetType::SpinBox,
+        WidgetType::Switch,
+        WidgetType::Badge,
+        WidgetType::Custom,
+    ];
+    for widget_type in widget_types {
+        assert!(
+            theme.get_style(widget_type, WidgetState::Normal).is_some(),
+            "default_dark missing normal style for {}",
+            widget_type.as_str()
+        );
+    }
+}
+
 // ─── GuiContext private internals ─────────────────────────────────────────────
 // GuiContext fields (dirty, viewport_w/h, theme, widget pool) are not exposed
 // via `lurek.ui.*`; only the effects of mutation are observable from Lua.

@@ -11,52 +11,23 @@
 
 ## Summary
 
-The `bin` module provides alternative binary entry points for Lurek2D, built
-alongside the primary `lurek2d` executable. It is an Edge/Integration tier
-compilation unit — not a library — containing only Cargo `[[bin]]` targets that
-call into the engine through the `lurek_run()` entry function.
+Executable entry points for the Lurek2D binary distribution. `lurek_headless.rs` provides a windowless runner for CI tests and automation — it initializes the engine without creating a GPU surface or OS window. `lurekc.rs` is the compiler/bundler entry that packages game scripts and assets into a distributable archive.
 
-**`lurekc` — Console-less Windows launcher**: `src/bin/lurekc.rs` is the
-standard distribution binary for Windows end-users. The
-`#![cfg_attr(windows, windows_subsystem = "windows")]` attribute suppresses
-the Windows console window at launch, eliminating the black terminal backdrop
-that `lurek2d.exe` shows in a developer session. On Linux and macOS the
-attribute is a no-op, making `lurekc` binary-equivalent to `lurek2d`. Both
-binaries call the same `lurek_run()` entry function, return the same `ExitCode`,
-and therefore share the same engine behaviour, runtime-mode parsing, configuration,
-and Lua scripting environment.
+Neither file contains domain logic; they parse command-line arguments and delegate to `app` and `runtime` for actual execution. The module exists in the Edge/Integration tier solely to host `fn main()` targets.
 
-**`lurek_headless` — tooling helper binary**: `src/bin/lurek_headless.rs` remains
-an auxiliary packaging and validation binary used for archive packing, validation,
-and screenshot-batch workflows. It is not the user-facing `--headless` runtime mode.
-The actual gameplay-oriented headless mode now lives behind `lurek2d --headless`
-inside the shared `lurek_run()` bootstrap path.
+## Source Documentation
 
-**Development vs. distribution workflow**: During development, `lurek2d.exe`
-is preferred because engine log lines, Lua `print()` output, and `RUST_LOG`
-diagnostics stream to the visible console. For a player-facing Windows release
-the distribution step (`tools/dist/dist.ps1`) packages `lurekc.exe` as the
-primary launcher so games run silently as expected desktop applications. Both
-binaries are produced from the same `cargo build --release` invocation.
+### `lurek_headless.rs`
+- Headless CLI tool for game validation, packaging, and batch screenshot capture.
+- `validate` subcommand invokes the Python game validator script.
+- `pack` subcommand compresses a game directory into a .lurek ZIP archive.
+- `screenshot-batch` subcommand runs each game for N frames and captures a PNG.
+- No GPU or window required for validate/pack; screenshot-batch spawns engine instances.
 
-**Thin wrappers only**: `src/bin/` currently contains a thin GUI launcher
-(`lurekc.rs`) and a thin tooling helper (`lurek_headless.rs`). Neither file owns
-runtime policy, module selection, or Lua API behaviour. All user-facing mode
-selection remains centralized in `lurek_run()` so `lurek2d` and `lurekc` stay in sync.
-
-**Design constraints**: The `bin` directory intentionally contains no domain
-logic, no library code, and no `lurek.*` Lua-reachable API surface. Keeping
-entry points thin ensures that the boot sequence, argument parsing, and engine
-configuration live entirely in `src/main.rs` → `lurek_run()`, so changes
-propagate automatically to every binary variant without duplication.
-
-**Scope boundary**: Edge/Integration tier. A Cargo `[[bin]]` target, not a
-`mod` in the library tree. No types, no public functions, no Lua API surface.
-
-## Files
-
-- `lurek_headless.rs`: - Headless CLI tool for game validation, packaging, and batch screenshot capture.
-- `lurekc.rs`: Minimal console-less launcher for Windows builds that applies the windows_subsystem attribute and then delegates straight to lurek2d::lurek_run(). This file should stay intentionally tiny because it is only a wrapper binary.
+### `lurekc.rs`
+- Console-less launcher variant for the shared `lurek_run()` bootstrap path.
+- Applies the Windows GUI subsystem attribute while preserving all runtime modes.
+- Returns the same process exit code as the main `lurek2d` entry point.
 
 ## Types
 

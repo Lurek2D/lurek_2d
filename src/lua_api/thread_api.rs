@@ -242,7 +242,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     )?;
     // -- newBoundedChannel --
     /// Creates a new bounded channel with a fixed capacity, blocking pushes when full.
-    /// @param | capacity | number | Maximum number of items the channel can hold.
+    /// @param | capacity | integer | Maximum number of items the channel can hold.
     /// @return | LChannel | A new bounded channel.
     tbl.set(
         "newBoundedChannel",
@@ -270,7 +270,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     )?;
     // -- newPool --
     /// Creates a fixed-size thread pool where each worker runs the same Lua code and consumes items from a shared input channel.
-    /// @param | size | number | Number of worker threads to spawn.
+    /// @param | size | integer | Number of worker threads to spawn.
     /// @param | code | string | Lua source code each worker thread will execute.
     /// @return | LThreadPool | A pool handle for submitting work and collecting results.
     tbl.set(

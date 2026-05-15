@@ -11,17 +11,40 @@
 
 ## Summary
 
-The `timer` module is documented from the current source tree and existing module reference data.
+Frame timing and deferred callback scheduling for the engine main loop. `Clock` tracks per-frame delta time, accumulated total elapsed time, and a rolling FPS measurement updated every second. A ring-buffer average delta smooths frame-time jitter for display and adaptive logic. Microsecond accumulation uses fractional carry to prevent drift across frames.
 
-This module primarily collaborates with `runtime`. Its responsibility should stay inside the Core Runtime group rather than absorb behavior owned by those neighbors.
+`Scheduler` manages time-based and frame-based events with one-shot and repeating modes. Named events deduplicate on re-registration. A global time-scale multiplier slows or speeds all scheduled callbacks without affecting wall-clock timers. Per-event pause/resume, interval mutation, and remaining-time queries provide full lifecycle control. Real-time timers (`afterReal`) bypass game pause and time scaling for UI and notification use cases. Coroutine-friendly `waitSeconds`/`waitFrames` yield and auto-resume. Exposed as `lurek.timer.*`. Core Runtime tier.
 
-## Files
+## Source Documentation
 
-- `accumulator.rs`: - Drift-free microsecond accumulation for scaled elapsed-time tracking.
-- `clock.rs`: `Clock` struct � frame delta, total time, FPS, and rolling average
-- `mod.rs`: Re-exports `Clock` and `Scheduler`; provides free function `sleep()`
-- `scheduler.rs`: `Scheduler` and `ScheduledEvent` � delayed and repeating events
-- `sleep.rs`: Thread-blocking sleep helper used by `lurek.timer.sleep`.
+### `accumulator.rs`
+- Drift-free microsecond accumulation for scaled elapsed-time tracking.
+- Fractional sub-microsecond carry prevents rounding loss across frames.
+- All negative inputs clamped to zero for monotonic guarantees.
+
+### `clock.rs`
+- Per-frame clock that tracks delta time, total elapsed, FPS, and a rolling average delta.
+- FPS is measured over one-second windows; average delta uses a fixed-size ring buffer.
+- Designed for the runtime main loop — one `tick()` call per frame drives all counters.
+
+### `mod.rs`
+- Time tracking, fixed-step accumulation, and frame-independent scheduling.
+- Provides a high-resolution clock, scaled delta, and sleep utilities.
+- Exposes a tick-based scheduler for deferred and repeating callbacks.
+
+### `scheduler.rs`
+- Time-based and frame-based event scheduling with one-shot and repeating modes.
+- Named events with automatic deduplication on re-registration.
+- Global time-scale multiplier applied to wall-clock updates; clamped to safe range.
+- Per-event pause/resume, interval mutation, and remaining-time queries.
+- Swap-remove expiry during update to avoid O(n) shifts on large event lists.
+- Monotonic ID allocation for stable external references into the scheduler.
+- Integration point for `lurek.timer` Lua bindings via ID-keyed callback dispatch.
+
+### `sleep.rs`
+- Thread-blocking sleep utility for the timer subsystem.
+- Clamps non-positive durations to a no-op, preventing panics from negative `Duration`.
+- Delegates to `std::thread::sleep` with no spin-wait or busy-loop overhead.
 
 ## Types
 

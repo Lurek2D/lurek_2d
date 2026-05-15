@@ -24,7 +24,7 @@ impl LuaUserData for LuaEventBus {
         /// Subscribe a callback to a named event. Higher priority listeners fire first.
         /// @param | event | string | The event name to listen for.
         /// @param | callback | function | The function to invoke when the event fires.
-        /// @param | priority | number? | Listener priority (default 0). Higher values execute first.
+        /// @param | priority | integer? | Listener priority (default 0). Higher values execute first.
         /// @return | number | A subscription ID used to unsubscribe later.
         methods.add_method(
             "on",
@@ -38,7 +38,7 @@ impl LuaUserData for LuaEventBus {
         );
         // -- off --
         /// Unsubscribe a listener by its subscription ID. Removes the callback from the event bus.
-        /// @param | id | number | The subscription ID returned by `on()`.
+        /// @param | id | integer | The subscription ID returned by `on()`.
         /// @return | nil | No value is returned.
         methods.add_method("off", |lua, this, id: u64| {
             this.bus.borrow_mut().unsubscribe(id);
@@ -856,7 +856,7 @@ impl LuaUserData for LuaBlackboard {
         );
         // -- unwatch --
         /// Remove a previously registered watcher by its ID.
-        /// @param | id | number | The watcher ID returned by `watch()`.
+        /// @param | id | integer | The watcher ID returned by `watch()`.
         /// @return | nil | No value is returned.
         methods.add_method("unwatch", |lua, this, id: u64| {
             if let Some(rk) = this.watchers.borrow_mut().remove(&id) {
@@ -960,7 +960,7 @@ impl LuaUserData for LuaObserver {
         );
         // -- unsubscribe --
         /// Remove a subscription by its ID. The callback will no longer fire.
-        /// @param | id | number | The subscription ID returned by `subscribe()`.
+        /// @param | id | integer | The subscription ID returned by `subscribe()`.
         /// @return | nil | No value is returned.
         methods.add_method("unsubscribe", |lua, this, id: u64| {
             this.observer.borrow_mut().unsubscribe(id);
@@ -1125,7 +1125,7 @@ impl LuaUserData for LuaPriorityQueue {
         add_type_methods(methods);
         // -- push --
         /// Add an item with a numeric priority. Higher priority items are dequeued first.
-        /// @param | priority | number | The priority value (higher = dequeued sooner).
+        /// @param | priority | integer | The priority value (higher = dequeued sooner).
         /// @param | value | boolean|number|string|table | The payload to store.
         /// @param | label | string? | Optional human-readable label for debugging.
         /// @return | number | The internal ID of the enqueued item.
@@ -1432,8 +1432,8 @@ impl LuaUserData for LuaRelationshipManager {
         methods.add_method("typeNames", |_, this, ()| Ok(this.rm.borrow().type_names()));
         // -- setValue --
         /// Set the numeric relationship value between two entity IDs.
-        /// @param | a | number | First entity ID.
-        /// @param | b | number | Second entity ID.
+        /// @param | a | integer | First entity ID.
+        /// @param | b | integer | Second entity ID.
         /// @param | value | number | The numeric value to store.
         /// @return | nil | No value is returned.
         methods.add_method("setValue", |_, this, (a, b, value): (u32, u32, f64)| {
@@ -1442,16 +1442,16 @@ impl LuaUserData for LuaRelationshipManager {
         });
         // -- getValue --
         /// Get the numeric relationship value between two entity IDs.
-        /// @param | a | number | First entity ID.
-        /// @param | b | number | Second entity ID.
+        /// @param | a | integer | First entity ID.
+        /// @param | b | integer | Second entity ID.
         /// @return | number | The stored value (0 if not set).
         methods.add_method("getValue", |_, this, (a, b): (u32, u32)| {
             Ok(this.rm.borrow().get_value(a, b))
         });
         // -- adjustValue --
         /// Add a delta to the relationship value between two entities.
-        /// @param | a | number | First entity ID.
-        /// @param | b | number | Second entity ID.
+        /// @param | a | integer | First entity ID.
+        /// @param | b | integer | Second entity ID.
         /// @param | delta | number | Amount to add (can be negative).
         /// @return | nil | No value is returned.
         methods.add_method("adjustValue", |_, this, (a, b, delta): (u32, u32, f64)| {
@@ -1460,8 +1460,8 @@ impl LuaUserData for LuaRelationshipManager {
         });
         // -- setLevel --
         /// Set the named level for a relationship type between two entities.
-        /// @param | a | number | First entity ID.
-        /// @param | b | number | Second entity ID.
+        /// @param | a | integer | First entity ID.
+        /// @param | b | integer | Second entity ID.
         /// @param | typeName | string | The relationship type.
         /// @param | level | string | The level name to assign.
         /// @return | boolean | True if the level was set successfully.
@@ -1473,8 +1473,8 @@ impl LuaUserData for LuaRelationshipManager {
         );
         // -- getLevel --
         /// Get the named level for a relationship type between two entities.
-        /// @param | a | number | First entity ID.
-        /// @param | b | number | Second entity ID.
+        /// @param | a | integer | First entity ID.
+        /// @param | b | integer | Second entity ID.
         /// @param | typeName | string | The relationship type.
         /// @return | string | The current level name, or nil when no level is assigned.
         methods.add_method(
@@ -1485,8 +1485,8 @@ impl LuaUserData for LuaRelationshipManager {
         );
         // -- removePair --
         /// Remove all relationship data between two entities.
-        /// @param | a | number | First entity ID.
-        /// @param | b | number | Second entity ID.
+        /// @param | a | integer | First entity ID.
+        /// @param | b | integer | Second entity ID.
         /// @return | nil | No value is returned.
         methods.add_method("removePair", |_, this, (a, b): (u32, u32)| {
             this.rm.borrow_mut().remove_relation(a, b);
@@ -1530,7 +1530,7 @@ impl LuaUserData for LuaMediator {
         // -- off --
         /// Unregister a handler from a channel by its ID.
         /// @param | channel | string | The channel name.
-        /// @param | id | number | The handler ID to remove.
+        /// @param | id | integer | The handler ID to remove.
         /// @return | nil | No value is returned.
         methods.add_method("off", |lua, this, (channel, id): (String, u64)| {
             this.mediator.borrow_mut().unregister(&channel, id);
@@ -1792,7 +1792,7 @@ impl LuaUserData for LuaStack {
         });
         // -- popMany --
         /// Pop up to `count` values from the top and return them as an array table.
-        /// @param | count | number | Maximum number of items to pop.
+        /// @param | count | integer | Maximum number of items to pop.
         /// @return | table | Array of popped values (may be shorter than count).
         methods.add_method("popMany", |lua, this, count: usize| {
             let out = lua.create_table()?;
@@ -1830,7 +1830,7 @@ impl LuaUserData for LuaStack {
         });
         // -- peekAt --
         /// Return the value at a 1-based index without removing it. Returns nil if out of range.
-        /// @param | index | number | 1-based position in the stack.
+        /// @param | index | integer | 1-based position in the stack.
         /// @return | boolean|number|string|table|nil | The value at that position, or nil.
         methods.add_method("peekAt", |lua, this, index: usize| {
             if index == 0 {
@@ -1845,7 +1845,7 @@ impl LuaUserData for LuaStack {
         });
         // -- insertAt --
         /// Insert a value at a 1-based index in the stack, shifting items above it. Returns false if at capacity.
-        /// @param | index | number | 1-based insertion position.
+        /// @param | index | integer | 1-based insertion position.
         /// @param | value | boolean|number|string|table | The value to insert.
         /// @return | boolean | True if inserted, false if full.
         methods.add_method(
@@ -1863,7 +1863,7 @@ impl LuaUserData for LuaStack {
         );
         // -- removeAt --
         /// Remove and return the value at a 1-based index. Returns nil if out of range.
-        /// @param | index | number | 1-based position to remove.
+        /// @param | index | integer | 1-based position to remove.
         /// @return | boolean|number|string|table|nil | The removed value, or nil.
         methods.add_method("removeAt", |lua, this, index: usize| {
             if index == 0 || index > this.items.borrow().len() {
@@ -1876,8 +1876,8 @@ impl LuaUserData for LuaStack {
         });
         // -- moveWithin --
         /// Move an item from one 1-based index to another within the stack.
-        /// @param | from | number | Source index.
-        /// @param | to | number | Destination index.
+        /// @param | from | integer | Source index.
+        /// @param | to | integer | Destination index.
         /// @return | boolean | True if the move succeeded.
         methods.add_method("moveWithin", |_, this, (from, to): (usize, usize)| {
             let len = this.items.borrow().len();
@@ -2013,7 +2013,7 @@ impl LuaUserData for LuaQueue {
         });
         // -- peekAt --
         /// Return the value at a 1-based index without removing it. Returns nil if out of range.
-        /// @param | index | number | 1-based position.
+        /// @param | index | integer | 1-based position.
         /// @return | boolean|number|string|table|nil | The value, or nil.
         methods.add_method("peekAt", |lua, this, index: usize| {
             if index == 0 {
@@ -2028,7 +2028,7 @@ impl LuaUserData for LuaQueue {
         });
         // -- insertAt --
         /// Insert a value at a 1-based index in the queue. Returns false if at capacity.
-        /// @param | index | number | 1-based insertion position.
+        /// @param | index | integer | 1-based insertion position.
         /// @param | value | boolean|number|string|table | The value to insert.
         /// @return | boolean | True if inserted, false if full.
         methods.add_method(
@@ -2046,7 +2046,7 @@ impl LuaUserData for LuaQueue {
         );
         // -- removeAt --
         /// Remove and return the value at a 1-based index. Returns nil if out of range.
-        /// @param | index | number | 1-based position to remove.
+        /// @param | index | integer | 1-based position to remove.
         /// @return | boolean|number|string|table|nil | The removed value, or nil.
         methods.add_method("removeAt", |lua, this, index: usize| {
             if index == 0 || index > this.items.borrow().len() {
@@ -2138,7 +2138,7 @@ impl LuaUserData for LuaList {
         });
         // -- get --
         /// Get the value at a 1-based index. Returns nil if out of range.
-        /// @param | index | number | 1-based position.
+        /// @param | index | integer | 1-based position.
         /// @return | boolean|number|string|table|nil | The value, or nil.
         methods.add_method("get", |lua, this, index: usize| {
             if index == 0 {
@@ -2154,7 +2154,7 @@ impl LuaUserData for LuaList {
         });
         // -- set --
         /// Replace the value at a 1-based index. Errors if index is 0 or out of range.
-        /// @param | index | number | 1-based position.
+        /// @param | index | integer | 1-based position.
         /// @param | value | boolean|number|string|table | The new value.
         /// @return | nil | No value is returned.
         methods.add_method("set", |lua, this, (index, value): (usize, LuaValue)| {
@@ -2172,7 +2172,7 @@ impl LuaUserData for LuaList {
         });
         // -- insert --
         /// Insert a value at a 1-based index, shifting subsequent items right.
-        /// @param | index | number | 1-based insertion position.
+        /// @param | index | integer | 1-based insertion position.
         /// @param | value | boolean|number|string|table | The value to insert.
         /// @return | nil | No value is returned.
         methods.add_method("insert", |lua, this, (index, value): (usize, LuaValue)| {
@@ -2184,7 +2184,7 @@ impl LuaUserData for LuaList {
         });
         // -- remove --
         /// Remove and return the value at a 1-based index. Returns nil if out of range.
-        /// @param | index | number | 1-based position to remove.
+        /// @param | index | integer | 1-based position to remove.
         /// @return | boolean|number|string|table|nil | The removed value, or nil.
         methods.add_method("remove", |lua, this, index: usize| {
             if index == 0 {
@@ -2530,7 +2530,7 @@ impl LuaUserData for LuaWeightedRandom {
         );
         // -- remove --
         /// Remove an item by its ID. Returns true if it existed.
-        /// @param | id | number | The entry ID to remove.
+        /// @param | id | integer | The entry ID to remove.
         /// @return | boolean | True if removed.
         methods.add_method("remove", |lua, this, id: u64| {
             let removed = this.pool.borrow_mut().remove(id);
@@ -2543,7 +2543,7 @@ impl LuaUserData for LuaWeightedRandom {
         });
         // -- setWeight --
         /// Change the weight of an existing entry.
-        /// @param | id | number | The entry ID.
+        /// @param | id | integer | The entry ID.
         /// @param | weight | number | The new weight value.
         /// @return | boolean | True if the entry was found and updated.
         methods.add_method("setWeight", |_, this, (id, weight): (u64, f64)| {
@@ -2567,7 +2567,7 @@ impl LuaUserData for LuaWeightedRandom {
         });
         // -- pickN --
         /// Pick multiple unique items. Requires an array of random samples.
-        /// @param | count | number | Number of items to pick.
+        /// @param | count | integer | Number of items to pick.
         /// @param | samples | table | Array of random numbers in [0, 1).
         /// @return | table | Array of picked values.
         methods.add_method("pickN", |lua, this, (count, samples): (usize, LuaTable)| {
@@ -2651,7 +2651,7 @@ impl LuaUserData for LuaBehaviorTree {
         });
         // -- addParallel --
         /// Create a parallel composite node that runs all children simultaneously.
-        /// @param | minSuccess | number | Minimum successful children required for this node to succeed.
+        /// @param | minSuccess | integer | Minimum successful children required for this node to succeed.
         /// @param | label | string? | Optional debug label.
         /// @return | number | The node ID.
         methods.add_method(
@@ -2675,7 +2675,7 @@ impl LuaUserData for LuaBehaviorTree {
         });
         // -- addRepeat --
         /// Create a decorator node that repeats its child a fixed number of times.
-        /// @param | count | number | Number of repetitions.
+        /// @param | count | integer | Number of repetitions.
         /// @param | label | string? | Optional debug label.
         /// @return | number | The node ID.
         methods.add_method(
@@ -2703,15 +2703,15 @@ impl LuaUserData for LuaBehaviorTree {
         );
         // -- addChild --
         /// Attach a child node to a parent composite or decorator node.
-        /// @param | parentId | number | The parent node ID.
-        /// @param | childId | number | The child node ID to attach.
+        /// @param | parentId | integer | The parent node ID.
+        /// @param | childId | integer | The child node ID to attach.
         /// @return | boolean | True if attached successfully.
         methods.add_method("addChild", |_, this, (parent_id, child_id): (u32, u32)| {
             Ok(this.tree.borrow_mut().add_child(parent_id, child_id))
         });
         // -- setRoot --
         /// Designate a node as the tree's root. Tick evaluation starts here.
-        /// @param | id | number | The node ID to set as root.
+        /// @param | id | integer | The node ID to set as root.
         /// @return | boolean | True if the node exists.
         methods.add_method("setRoot", |_, this, id: u32| {
             Ok(this.tree.borrow_mut().set_root(id))
@@ -2906,7 +2906,7 @@ impl LuaUserData for LuaGraph {
         );
         // -- removeNode --
         /// Remove a node and all its connected edges. Returns true if the node existed.
-        /// @param | id | number | The node ID to remove.
+        /// @param | id | integer | The node ID to remove.
         /// @return | boolean | True if removed.
         methods.add_method("removeNode", |lua, this, id: u32| {
             let removed = this.graph.borrow_mut().remove_node(id);
@@ -2919,7 +2919,7 @@ impl LuaUserData for LuaGraph {
         });
         // -- getNodeValue --
         /// Retrieve the payload value stored on a node. Returns nil if no payload.
-        /// @param | id | number | The node ID.
+        /// @param | id | integer | The node ID.
         /// @return | boolean|number|string|table|nil | The payload, or nil.
         methods.add_method("getNodeValue", |lua, this, id: u32| {
             let payloads = this.node_payloads.borrow();
@@ -2930,8 +2930,8 @@ impl LuaUserData for LuaGraph {
         });
         // -- addEdge --
         /// Add a directed (or undirected) edge between two nodes with optional weight and label.
-        /// @param | from | number | Source node ID.
-        /// @param | to | number | Target node ID.
+        /// @param | from | integer | Source node ID.
+        /// @param | to | integer | Target node ID.
         /// @param | weight | number? | Edge weight (default 1.0).
         /// @param | label | string? | Optional edge label.
         /// @return | number | The new edge's ID.
@@ -2948,7 +2948,7 @@ impl LuaUserData for LuaGraph {
         );
         // -- removeEdge --
         /// Remove an edge by its ID. Returns true if it existed.
-        /// @param | id | number | The edge ID to remove.
+        /// @param | id | integer | The edge ID to remove.
         /// @return | boolean | True if removed.
         methods.add_method("removeEdge", |lua, this, id: u32| {
             let removed = this.graph.borrow_mut().remove_edge(id);
@@ -2961,7 +2961,7 @@ impl LuaUserData for LuaGraph {
         });
         // -- neighbors --
         /// Return an array of node IDs directly connected to the given node.
-        /// @param | id | number | The node ID to query.
+        /// @param | id | integer | The node ID to query.
         /// @return | table | Array of neighbor node IDs.
         methods.add_method("neighbors", |lua, this, id: u32| {
             let nbs = this.graph.borrow().neighbors(id);
@@ -2973,7 +2973,7 @@ impl LuaUserData for LuaGraph {
         });
         // -- bfs --
         /// Perform a breadth-first search from a node. Returns visited node IDs in BFS order.
-        /// @param | start | number | The starting node ID.
+        /// @param | start | integer | The starting node ID.
         /// @return | table | Array of visited node IDs.
         methods.add_method("bfs", |lua, this, start: u32| {
             let order = this.graph.borrow().bfs(start);
@@ -2985,7 +2985,7 @@ impl LuaUserData for LuaGraph {
         });
         // -- dfs --
         /// Perform a depth-first search from a node. Returns visited node IDs in DFS order.
-        /// @param | start | number | The starting node ID.
+        /// @param | start | integer | The starting node ID.
         /// @return | table | Array of visited node IDs.
         methods.add_method("dfs", |lua, this, start: u32| {
             let order = this.graph.borrow().dfs(start);
@@ -2997,15 +2997,15 @@ impl LuaUserData for LuaGraph {
         });
         // -- isConnected --
         /// Check whether there is any path from one node to another.
-        /// @param | from | number | Source node ID.
-        /// @param | to | number | Target node ID.
+        /// @param | from | integer | Source node ID.
+        /// @param | to | integer | Target node ID.
         /// @return | boolean | True if a path exists.
         methods.add_method("isConnected", |_, this, (from, to): (u32, u32)| {
             Ok(this.graph.borrow().is_connected(from, to))
         });
         // -- hasNode --
         /// Check whether a node with the given ID exists in the graph.
-        /// @param | id | number | Node ID to check.
+        /// @param | id | integer | Node ID to check.
         /// @return | boolean | True if the node exists.
         methods.add_method("hasNode", |_, this, id: u32| {
             Ok(this.graph.borrow().has_node(id))
@@ -3072,7 +3072,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     )?;
     // -- newCommandStack --
     /// Create a new undo/redo command stack for recording and reversing player or editor actions.
-    /// @param | maxSize | number? | Maximum history depth (0 = unlimited).
+    /// @param | maxSize | integer? | Maximum history depth (0 = unlimited).
     /// @return | LCommandStack | A new command stack instance.
     patterns.set(
         "newCommandStack",
@@ -3201,7 +3201,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     )?;
     // -- newRing --
     /// Create a new fixed-size ring buffer for numeric or string values. Oldest entries are overwritten when full.
-    /// @param | capacity | number | Maximum number of entries the ring can hold.
+    /// @param | capacity | integer | Maximum number of entries the ring can hold.
     /// @param | name | string? | Optional name for debugging.
     /// @return | LRing | A new ring buffer instance.
     patterns.set(
@@ -3218,7 +3218,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     // -- newFunnel --
     /// Create a new batching funnel that collects events over a time window and flushes them together.
     /// @param | window | number | Time window in seconds before auto-flush.
-    /// @param | maxEntries | number? | Maximum entries before forced flush (0 = no limit).
+    /// @param | maxEntries | integer? | Maximum entries before forced flush (0 = no limit).
     /// @param | name | string? | Optional name for debugging.
     /// @return | LFunnel | A new funnel instance.
     patterns.set(
@@ -3273,7 +3273,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     )?;
     // -- newStack --
     /// Create a new LIFO stack with optional capacity limit.
-    /// @param | capacity | number? | Maximum items (0 = unlimited).
+    /// @param | capacity | integer? | Maximum items (0 = unlimited).
     /// @return | LStack | A new stack instance.
     patterns.set(
         "newStack",
@@ -3286,7 +3286,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     )?;
     // -- newQueue --
     /// Create a new FIFO queue with optional capacity limit.
-    /// @param | capacity | number? | Maximum items (0 = unlimited).
+    /// @param | capacity | integer? | Maximum items (0 = unlimited).
     /// @return | LQueue | A new queue instance.
     patterns.set(
         "newQueue",

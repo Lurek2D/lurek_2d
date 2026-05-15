@@ -11,54 +11,110 @@
 
 ## Summary
 
-The `dataframe` module is Lurek2D's in-memory column-major tabular data system — a Foundations tier module for analytical workloads: game data tables, leaderboard processing, CSV imports, configurable save-game summaries, and lightweight SQL-style queries without an external database. It has no Lurek2D engine dependencies and can run in any headless test context.
+In-memory column-major tabular data engine with lightweight SQL-style queries. `DataFrame` stores named columns of `CellValue` (Nil, Bool, Int, Float, String) with typed column operations. Supports adding/removing columns and rows, cell access, sorting, filtering by predicate, aggregation (sum, mean, min, max, count), grouping, joins (inner, left, right, full), window functions (rank, row_number, lag, lead, running totals), and CSV/JSON import/export.
 
-**Core model.** `DataFrame` is the primary type: a column-major table where each column is a named `Vec<CellValue>`. `CellValue` is a tagged union of Null, Bool, Integer (i64), Float (f64), and Text (String). Rows are accessed by 0-based index; columns by name or by `ColRef` (name or 1-based Lua-style index). Core CRUD: `add_column(name, default)`, `remove_column(ref)`, `rename_column(old, new)`, `get_column(ref)`, `add_row(pairs)`, `remove_row(i)`, `get_cell(row, col)`, `set_cell(row, col, value)`. Meta queries: `nrows()`, `ncols()`, `columns()`, `count()`.
+`Database` holds multiple named DataFrames and executes SQL queries parsed by a built-in SQL engine supporting SELECT, WHERE, JOIN, GROUP BY, ORDER BY, LIMIT, and subqueries. `VecFrame` provides a lightweight vectorized variant for bulk numeric operations. Exposed as `lurek.dataframe.*`. Foundations tier with no engine dependencies.
 
-**Database.** `Database` groups multiple named `DataFrame` tables into a catalog for multi-table query workflows. `add_table(name, frame)`, `remove_table(name)`, `get_table(name)`, `list_tables()`.
+## Source Documentation
 
-**Query pipeline.** `query/` (previously `query.rs`) provides a comprehensive analytical pipeline operating on `DataFrame` instances:
-- *Filtering*: `filter(predicate)` returns a row-index mask; `where_col_eq(col, value)`, `where_col_gt`, `where_col_lt` for typed comparisons.
-- *Sorting*: `sort_by(col, asc)` returns a sorted copy; `sort_by_multi(cols, dirs)` for multi-key sort.
-- *Projection*: `select_cols(names)` returns a new frame with only the specified columns; `drop_cols(names)` removes them.
-- *Slicing*: `head(n)`, `tail(n)`, `slice(start, end)` return subsets.
-- *Set operations*: `concat(other)` appends rows; `union_cols(other)` adds columns from another frame.
-- *Group-by / aggregate*: `group_by(cols)` returns groups of row indices; `aggregate(col, AggFn)` computes sum, mean, min, max, count, std_dev over grouped or full columns. `pivot(row_col, col_col, val_col, agg)` builds a pivot table.
-- *Sampling*: `sample(n, seed)` returns a random row subset (seeded for repeatability).
-- *Null handling*: `drop_nulls(col)`, `fill_nulls(col, value)`, `count_nulls(col)`.
-- *Statistics*: `describe(col)` returns min, max, mean, std_dev, count for numeric columns.
-- *Type-casting*: `cast_column(col, target_type)` converts a column in-place.
-- *Join*: `join(other, left_col, right_col, join_type)` for INNER, LEFT, RIGHT joins.
-- *Streaming rows*: `iter_rows()` yields borrowed row views lazily to support sequential processing without `toTable` full materialization.
+### `frame.rs`
+- Core dataframe cell type and typed value representation
+- Columnar storage with named columns and row-major access
+- Column resolution by name or one-based index
+- Row and column CRUD operations including add, remove, and rename
+- DataFrame cloning, slicing, and row iteration
+- Database container for named table collections
+- Random data generation from typed column definitions
+- Arithmetic expression evaluation per row via `with_eval`
+- Pivot table construction with configurable aggregation
+- Rolling mean, rolling sum, and rank computations
+- Aggregation function enumeration and parsing
 
-**SQL engine.** `sql.rs` is a hand-written SQL tokenizer, parser, expression evaluator, and execution engine supporting a useful subset of standard SQL: SELECT (column list or `*`, with optional `table.column` qualified names), FROM (single table or two-table JOIN with ON clause), WHERE (comparison operators, AND/OR, IS NULL, LIKE), ORDER BY (ASC/DESC), GROUP BY, aggregate functions (SUM, COUNT, AVG, MIN, MAX), and LIMIT. Queries run against `Database` catalogs via `execute(db, sql_string) → Result<DataFrame>`.
+### `lazy.rs`
+- Deferred query step representation for filter, sort, select, head, tail, slice, and limit
+- Lazy query builder that chains steps without executing until `collect`
+- Materialization via sequential step application over a cloned source frame
 
-**Serialisation.** `serial.rs` handles round-trip I/O for multiple formats:
-- *CSV*: `from_csv(text, delimiter, has_header)` with auto-typed cell parsing; `to_csv(delimiter, include_header)`.
-- *JSON*: `from_json_array(json_string)` (array-of-objects); `to_json_array()`.
-- *LVDF*: Lurek2D's own lightweight binary format for fast DataFrame persistence.
-- *Table string*: `to_table_string(max_rows)` for debug display.
+### `mod.rs`
+- Columnar DataFrame type and Database container
+- Lazy query builder and deferred execution pipeline
+- Query-time transforms: filtering, grouping, analytics, and window functions
+- CSV, JSON, and binary serialization and parsing
+- SQL-like SELECT executor with tokenizer and recursive-descent parser
+- Typed vectorized column storage with parallel reduce and scalar operations
 
-**Vectorized layer (VecFrame).** `vectorized.rs` provides `VecFrame`, a Polars-inspired typed-column store where each column is a dense flat buffer (`Vec<f64>`, `Vec<i64>`, `Vec<bool>`, or `Vec<String>`) plus an optional validity bitmap for null rows.  Operations run over entire columns at once — no per-cell enum dispatch — so the Rust compiler can auto-vectorize numeric loops with SIMD instructions and `rayon` can parallelize multi-column sweeps.  Key operations: scalar ops (`add`/`sub`/`mul`/`div`/`abs`/`sqrt`/`floor`/`ceil`/`neg`/`clamp`) applied in-place to a whole column; binary column ops (`add`/`sub`/`mul`/`div`/`min`/`max`) between two columns producing a third; reductions (`sum`/`mean`/`min`/`max`/`std`/`var`/`count`) that skip null rows; comparison filter masks and `apply_mask` for row filtering; `col_cast` for type conversion; and `par_reduce`/`par_scalar_op` for rayon-parallel multi-column work.  `VecFrame::from_dataframe` converts a `DataFrame` into `VecFrame` by type-inferring each column; `VecFrame::to_dataframe` converts back.  A GPU path is intentionally deferred — would require crossing into `src/compute/`.
+### `query/analytics.rs`
+- Percentile computation by linear interpolation over sorted values
+- Z-score standardization for numeric columns
+- Min-max normalization to arbitrary output range
+- Outlier detection via z-score threshold
+- Mode value computation across non-nil cells
+- Shannon entropy calculation over rendered cell distributions
 
-**Lua surface.** `lurek.dataframe.new()` creates an empty `DataFrame`. `lurek.dataframe.fromCSV(text)`, `fromJSON(text)`. The `DataFrame` userdata exposes the full column/row CRUD, all query methods, and serialisation methods. `DataFrame:lazy()` starts a lazy evaluation pipeline (`LLazyQuery`) whose steps — `filter`, `sort`, `head`, `tail`, `limit`, `slice`, `dropNil`, `select` — each return a new pipeline builder; `collect()` executes the whole chain at once without allocating intermediate frames. `lurek.dataframe.newDatabase()` creates a `Database`. `Database:execute(sql)` runs SQL directly from Lua.  `lurek.dataframe.toVec(df)` converts a `DataFrame` to a `VecFrame`; `lurek.dataframe.fromVec(vf)` converts back.  `VecFrame` exposes: `colAdd`/`colSub`/`colMul`/`colDiv`/`colAbs`/`colSqrt`/`colFloor`/`colCeil`/`colNeg`/`colClamp`, `colOp`, `reduce`, `filterMask`, `applyMask`, `colType`, `colCast`, `nrows`, `ncols`, `columns`, `parReduce`, `parScalarOp`, `toDataFrame`.
+### `query/filter.rs`
+- Row filtering by column predicate with comparison and contains operators
+- Column sorting in ascending or descending order
+- Head, tail, and inclusive slice row selection
+- Column projection and unique value extraction
+- Group-by partitioning and inner/left join merging
+- Frame merge, count-by, drop-nil, and deterministic sampling
+- Aggregate statistics: sum, mean, min, max, median, stddev, variance
+- Descriptive statistics frame generation
+- Nil fill, batch row append, and column f64 import/export
 
-**Scope boundary.** Foundations tier. No Lurek2D module imports. Lua bridge in `src/lua_api/dataframe_api.rs`.
+### `query/grouping.rs`
+- Grouped aggregation by key column with mean, sum, min, max, count, first, last
+- Pivot transformation from row/column/value keys into cross-tabulated frame
+- Pearson correlation between two numeric columns
+- Full numeric-column correlation matrix generation
 
-## Files
+### `query/mod.rs`
+- Statistical and distribution-oriented analytics helpers
+- Row filtering, sorting, joins, and sampling operations
+- Grouped aggregation, pivoting, and correlation computations
+- Rolling and ranking window functions
 
-- `frame.rs`: Defines `CellValue`, `ColRef`, `DataFrame`, and `Database`, including column and row CRUD plus deterministic random test-data generation.
-- `lazy.rs`: Defines `LazyQuery`, a step-list pipeline builder over a `DataFrame`. Steps are recorded cheaply and executed once at `collect()` without intermediate allocations.
-- `mod.rs`: Declares the dataframe submodules and re-exports the main table and database types, plus `VecFrame` and its op enums.
-- `query/analytics.rs`: - Percentile computation by linear interpolation over sorted values - Z-score standardization for numeric columns - Min-max normalization to arbitrary output range - Outlier detection via z-score threshold - Mode value computation across non-nil cells - Shannon entropy calculatio
-- `query/filter.rs`: - Row filtering by column predicate with comparison and contains operators - Column sorting in ascending or descending order - Head, tail, and inclusive slice row selection - Column projection and unique value extraction - Group-by partitioning and inner/left join merging - Frame
-- `query/grouping.rs`: - Grouped aggregation by key column with mean, sum, min, max, count, first, last - Pivot transformation from row/column/value keys into cross-tabulated frame - Pearson correlation between two numeric columns - Full numeric-column correlation matrix generation
-- `query/mod.rs`: - Statistical and distribution-oriented analytics helpers - Row filtering, sorting, joins, and sampling operations - Grouped aggregation, pivoting, and correlation computations - Rolling and ranking window functions
-- `query/window.rs`: - Rolling mean, sum, min, and max over configurable window size - Dense rank computation with average-rank tie-breaking - Row-to-row percent change calculation - Cumulative sum across ordered rows
-- `rng.rs`: - Xorshift64 pseudo-random number generator for deterministic dataframe sampling - Float, integer, and index generation from 64-bit state - Zero-seed remap to avoid degenerate all-zero output
-- `serial.rs`: Handles DataFrame serialization and parsing for CSV, JSON, LVDF binary, and printable string-table output.
-- `sql.rs`: Implements the hand-written SQL tokenizer, parser, expression evaluator, and execution engine for single-table and multi-table queries. Supports `table.column` qualified names in SELECT.
-- `vectorized.rs`: Provides `VecFrame` (typed flat-buffer columns), `ColumnStore`, and the scalar/binary/reduce/cmp op enums for bulk vectorized processing.
+### `query/window.rs`
+- Rolling mean, sum, min, and max over configurable window size
+- Dense rank computation with average-rank tie-breaking
+- Row-to-row percent change calculation
+- Cumulative sum across ordered rows
+
+### `rng.rs`
+- Xorshift64 pseudo-random number generator for deterministic dataframe sampling
+- Float, integer, and index generation from 64-bit state
+- Zero-seed remap to avoid degenerate all-zero output
+
+### `serial.rs`
+- CSV parsing with quote escaping and type auto-detection
+- CSV serialization with field escaping rules
+- JSON array-of-objects parsing into DataFrame
+- JSON serialization with proper string escaping
+- Compact binary LVDF format encoding and decoding
+- Padded string-table rendering for debug and display
+- Database-level JSON serialization across all tables
+- Nested JSON value and array handling during parse
+
+### `sql.rs`
+- SQL text tokenizer producing typed token stream
+- Recursive-descent parser for SELECT statements
+- WHERE clause expression tree with AND, OR, NOT, LIKE, and IN
+- Aggregate function support: COUNT, SUM, AVG, MIN, MAX
+- GROUP BY with HAVING filter and ORDER BY with LIMIT/OFFSET
+- JOIN clause parsing and inner-join execution
+- SQL LIKE pattern matching with `%` and `_` wildcards
+- Single-frame and multi-table Database query entry points
+
+### `vectorized.rs`
+- Typed columnar storage (Float64, Int64, Bool, Text) with optional validity masks
+- Element-wise scalar operations: add, sub, mul, div, abs, sqrt, floor, ceil, neg
+- Element-wise binary operations between two numeric columns
+- Column reduction: sum, mean, min, max, std, var, count
+- Comparison mask generation for filter predicates
+- VecFrame ↔ DataFrame bidirectional conversion with type inference
+- Parallel multi-column reduce and scalar operations via rayon
+- Column type casting between float64, int64, and text
+- Boolean mask filtering across all column types
 
 ## Types
 

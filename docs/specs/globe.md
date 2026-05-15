@@ -11,55 +11,116 @@
 
 ## Summary
 
-The `globe` module provides an XCOM Geoscape-style 2D strategic globe view — a projection-correct rendering of a unit sphere divided into navigable named provinces. It is a Feature Systems tier module that works entirely through the engine's existing 2D `RenderCommand` variants (`DrawConvexFan`, `Polyline`, `Circle`, `Print`), adding no new wgpu pipeline or 3D draw calls (consistent with binding constraint A-03).
+XCOM-style Geoscape globe rendering a province-based sphere with orbit camera, fog-of-war, markers, arcs, and day/night terminator. `Globe` owns a `ProvinceGraph` topology plus rendering state for province highlighting, selection, and color coding. The orbit camera provides latitude/longitude positioning with zoom and smooth interpolation.
 
-**Province topology.** `ProvinceGraph` stores adjacency lists keyed by `ProvinceId` (u32). Each `Province` carries a vertex polygon in lat/lon degrees, centroid coordinates, a neighbour list, a free-form attribute `HashMap`, per-edge tag sets, optional texture metadata, and a base RGBA colour. Up to `MAX_PROVINCES` (8192) provinces are supported per globe instance. `ProvinceGraph` supports A\* pathfinding between provinces, reachability analysis with configurable edge-tag filtering, and nearest-province queries for click-to-select interactions.
+`FogMask` tracks per-province visibility state. `MarkerStore` and `LabelStore` position icons and text on the sphere surface with screen-space projection. Arcs render great-circle paths between locations. The rendering output is 2D draw commands (projected from spherical coordinates) — no 3D pipeline. Multiple globe instances can coexist via `GlobeRegistry`. Exposed as `lurek.globe.*`. Foundations tier with no engine dependencies beyond `math`.
 
-**Orbit camera.** `OrbitCamera` tracks lat/lon look-at position, zoom multiplier, and screen-centre offset. `build_view_matrix()` converts orbital parameters to the 2D projection matrix used by the draw pass. `project_province(id)` and `project_point(lat, lon)` map lat/lon coordinates to screen space under the current projection. `LodTier` (Far / Mid / Near) derives from zoom level and gates border detail, province label rendering, and marker rendering at three LOD levels so distant views stay uncluttered.
+## Source Documentation
 
-**Day/night lighting.** The sun direction derives from `GlobeSpec.time_of_day` (0–24 h) and an `axial_tilt_deg` field. Each province receives a scalar intensity value with a soft terminator band computed in `lighting.rs`. The `ambient` floor prevents night-side provinces from going fully dark. The intensity value is applied as a brightness multiplier to the province's effective colour at draw time.
+### `composition.rs`
+- Compose multiple globe views into a single frame via split viewports.
+- Emit render commands for each named globe with per-entry screen center overrides.
+- Iterate the registry, clone camera state, and collect draw output into one batch.
 
-**Fog of war.** `FogMask` now supports three states per province (`hidden`, `explored`, `visible`) and compact base64 serialization helpers for save/network transport. `FogStore` manages one `FogMask` per viewer entity, enabling multi-faction fog-of-war without per-frame heap allocation. Fog intensity modulates province colour independently of the day/night lighting multiplier.
+### `draw.rs`
+- Emit a complete globe frame as a list of render commands.
+- Draw provinces with fog-of-war, lighting, heat-layer blending, and texture mapping.
+- Render borders with optional polyline smoothing passes.
+- Project and draw great-circle arcs between coordinate pairs.
+- Display animated markers with pulse, rotation, and labels.
+- Emit atmosphere halo circles and LOD-gated text labels.
 
-**Markers, labels, and overlay layers.** `MarkerStore` and `LabelStore` manage point-of-interest and text overlays with lifecycle tracking: `add(id, lat, lon, data)`, `remove(id)`, `update(id, data)`. Marker styles include pulse and rotation animation fields. `LayerStore` plus `HeatLayer` overlays compute blended province colours from base colour, overlay contributions, fog intensity, and day/night multiplier.
+### `export.rs`
+- Export globe province geometry to standard mesh formats.
+- Generate flat OBJ output with one named object per province polygon.
+- Vertex data uses (lon, lat) mapping onto a 2D plane at z=0.
 
-**Texture + atmosphere rendering.** Province draw commands emit atlas-backed UVs (no empty UV payload) and optional per-province texture keys. Atmosphere halo commands are emitted around the visible hemisphere using 2D draw calls only.
+### `fog.rs`
+- Compact per-province fog mask storing hidden, explored, and visible states.
+- Bit-packed base64 serialization for save/load round-trips.
+- Per-viewer fog store keyed by viewer name with automatic mask creation.
+- Reveal, hide, explore, and toggle operations on individual or batched provinces.
+- Query helpers for visible/explored id lists and province counts.
 
-**Procedural + tooling support.** `loader.rs` includes a real PNG province loader (ProvinceGrid-backed) plus Voronoi province generation helper. `export.rs` exports province polygons as OBJ text for procedural tools.
+### `label.rs`
+- Id-keyed label storage for globe map annotations.
+- Insert, remove, move, and toggle visibility of positioned text labels.
+- LOD-aware iteration filters labels by minimum detail tier.
 
-**Strategic hooks and grouping.** `Globe` supports sector grouping (`set_province_sector`), cached faction reachability maps, split-screen multi-globe composition helpers (`composition.rs`), and channel-based snapshot sync (`sync.rs`).
+### `layer.rs`
+- Named layer storage keyed by string, with insert, remove, and lookup.
+- Per-province color overrides, visibility toggling, and alpha clamping.
+- Z-order–aware color resolution across all visible layers.
 
-**Arc rendering.** `Arc` records great-circle routes or range-ring annotations between two lat/lon points. The draw module converts arcs to polyline sequences in screen space and emits `RenderCommand::Polyline` entries. Useful for trade routes, missile arcs, and influence boundaries.
+### `lighting.rs`
+- Globe day/night lighting: sun direction from rotation and time-of-day.
+- Per-province diffuse intensity with ambient floor.
+- Batch intensity computation for province centroid sequences.
+- Terminator-band alpha for smooth day/night transition rendering.
 
-**Province picking.** `picking.rs` provides screen-to-province hit-testing: `pick(screen_x, screen_y)` → `Option<ProvinceId>` using a convex-fan point-in-polygon test under the current projection. Used by click-to-select and hover-highlight interactions in Lua scripts.
+### `loader.rs`
+- Load provinces from TOML strings or files using a lightweight inline parser.
+- Load provinces from PNG province-grid images with bounding-box extraction and adjacency detection.
+- Generate approximate province geometry from Voronoi seed points.
+- Convert between internal builder representations and the shared `Province` type.
+- Parse TOML primitives: u32 literals, float pairs, float-4 arrays, string key-value lines.
 
-**Loaders.** `loader.rs` parses TOML province-map files (province polygon lists, adjacency tables, attribute maps) and stub PNG province rasters. Both populate native `Globe` structures through `GlobeRegistry`. Provinces can also be constructed programmatically via the Lua API for procedurally generated maps.
+### `marker.rs`
+- Stable-id marker collection for globe pin management.
+- Insert, remove, move, and query markers by id or type.
+- Per-marker visibility toggle and arbitrary string attributes.
 
-**Registry.** `GlobeRegistry` manages multiple named globe instances (`create(name, spec)`, `get(name)`, `destroy(name)`). This allows games to maintain separate strategic maps (world map, regional view, star chart) as distinct instances.
+### `mod.rs`
+- Globe rendering with orbit camera projection and LOD tiers.
+- Province registry, fog-of-war masks, and picking queries.
+- Label, marker, and layer management for map overlays.
+- Synchronization channels for background globe updates.
 
-**Lua surface.** `lurek.globe.create(name, spec)`, `destroy(name)`, `get(name)` → `Globe` userdata. `Globe` methods: `addProvince(def)`, `removeProvince(id)`, `setAdjacent(a, b)`, `findPath(a, b)`, `reachable(start, max_steps)`, `pickProvince(x, y)`, `setCamera(lat, lon, zoom)`, `setTime(hours)`, `setFog(faction, province, revealed)`, `addMarker(id, lat, lon, data)`, `addLabel(id, lat, lon, text)`, `addLayer(name)`, `setLayerColor(layer, province, color)`, `draw()`.
+### `picking.rs`
+- Screen-space province picking via ray-polygon intersection.
+- Projects province polygons from 3D globe to 2D screen for hit testing.
+- Selects the front-most visible province under a pointer position.
 
-**Scope boundary.** Feature Systems tier. Depends on `render`, `math`, `runtime`, `image`. Lua bridge in `src/lua_api/globe_api.rs`.
+### `projection.rs`
+- Orbit camera with latitude, longitude, zoom, and level-of-detail selection.
+- View-matrix construction from globe rotation, axial tilt, and camera angles.
+- Single-point and polygon projection from lat/lon to screen space.
+- Back-face culling via z-depth test for hidden-hemisphere rejection.
+- Screen-drag-to-pan conversion and vector normalization helpers.
 
-## Files
+### `province_adapter.rs`
+- Sync political colors and fog visibility from the province registry into the globe.
+- Bridge between province game-state and globe rendering data.
 
-- `composition.rs`: Split-screen composition across multiple globes.
-- `draw.rs`: Frame emission for the globe module.
-- `export.rs`: Province mesh export helpers (OBJ).
-- `fog.rs`: Per-faction fog-of-war for the globe module.
-- `label.rs`: Generic label store for the globe module.
-- `layer.rs`: Named layer registry for the globe module.
-- `lighting.rs`: Day/night lighting for the globe module.
-- `loader.rs`: Province data loaders for the globe module.
-- `marker.rs`: Generic marker store for the globe module.
-- `mod.rs`: Globe module — XCOM-style Geoscape / Europa Universalis sphere.
-- `picking.rs`: Screen-to-province hit-test for the globe module.
-- `projection.rs`: Orthographic sphere projection and orbit camera for the globe module.
-- `province_adapter.rs`: Globe ↔ province adapter (optional coupling layer).
-- `registry.rs`: Globe registry — per-named-globe container and multi-globe manager.
-- `sync.rs`: Channel-based globe snapshot synchronization.
-- `topology.rs`: Province adjacency graph for the globe module.
-- `types.rs`: Core value types for the globe module.
+### `registry.rs`
+- Mutable globe state combining topology, fog, markers, labels, layers, and arcs.
+- Province add/remove/get and sector grouping operations.
+- Heat-layer and arc overlay management with add/replace/remove.
+- Orbit camera integration and screen-space province picking.
+- Frame emission producing render commands for the full globe state.
+- Named globe registry for storing and retrieving multiple globes by name.
+- Reachability caching per faction for path-cost queries.
+
+### `sync.rs`
+- Snapshot serialization of globe state for cross-thread transfer.
+- Channel pair for sending and receiving globe snapshots.
+- Build and apply helpers to capture or restore globe state.
+
+### `topology.rs`
+- Province graph structure with adjacency caching, centroid lookup, and edge tags.
+- Pathfinding integration via cost functions and reachability queries.
+- Province attribute storage and neighbor-list access.
+- Cache rebuild for bulk topology mutations.
+- Default-cost convenience wrappers for quick path and range checks.
+
+### `types.rs`
+- Core data types for the globe subsystem: provinces, markers, labels, arcs, and layers.
+- Province geometry with polygon vertices, centroids, adjacency, and per-edge tags.
+- Render parameters via GlobeSpec: lighting, atmosphere, borders, rotation.
+- Overlay and heat-map layers with per-province color overrides.
+- Marker and label types with style, LOD gating, and pulse animation.
+- Projection output types for screen-space rendering of provinces and arcs.
+- Globe-level error enum for load, lookup, and pathfinding failures.
 
 ## Types
 

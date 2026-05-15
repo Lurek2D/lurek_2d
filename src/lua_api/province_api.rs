@@ -16,6 +16,7 @@ use mlua::prelude::*;
 use std::cell::RefCell;
 use std::path::Path;
 use std::rc::Rc;
+/// Resolves a province asset path against the active game directory when the path is relative.
 fn resolve_game_path(state: &Rc<RefCell<SharedState>>, path: &str) -> String {
     let st = state.borrow();
     let p = Path::new(path);
@@ -25,6 +26,7 @@ fn resolve_game_path(state: &Rc<RefCell<SharedState>>, path: &str) -> String {
         st.game_dir.join(p).to_string_lossy().into_owned()
     }
 }
+/// Parses optional marker sanitization settings from a Lua options table.
 fn marker_options_from_lua(opts: Option<&LuaTable>) -> MarkerSanitizeOptions {
     let mut out = MarkerSanitizeOptions::default();
     if let Some(t) = opts {
@@ -53,6 +55,7 @@ pub struct LuaProvinceRegistry {
     state: Rc<RefCell<SharedState>>,
 }
 impl LuaProvinceRegistry {
+    /// Runs a closure with the current province registry or returns a Lua runtime error when missing.
     fn with_registry<R>(&self, f: impl FnOnce(&ProvinceRegistry) -> R) -> LuaResult<R> {
         let st = self.state.borrow();
         let reg = st.province_registries.get(&self.name).ok_or_else(|| {
@@ -86,8 +89,8 @@ impl LuaUserData for LuaProvinceRegistry {
         });
         // -- getAt --
         /// Returns the province ID at the given grid cell coordinates. Returns 0 if the cell is unowned (sea, wasteland, etc.).
-        /// @param | x | number | Zero-based column index.
-        /// @param | y | number | Zero-based row index.
+        /// @param | x | integer | Zero-based column index.
+        /// @param | y | integer | Zero-based row index.
         /// @return | number | Province ID at (x, y), or 0 for unowned cells.
         methods.add_method("getAt", |_, this, (x, y): (u32, u32)| {
             this.with_registry(|r| r.get_at(x, y))
@@ -258,7 +261,7 @@ impl LuaUserData for LuaProvinceRegistry {
         });
         // -- getProvince --
         /// Returns a snapshot table describing a single province: its ID, revision, style (political_color, terrain_type, border_style, fog_state, visibility_state), centroid, and custom attributes.
-        /// @param | id | number | Province ID to query.
+        /// @param | id | integer | Province ID to query.
         /// @return | table | Province snapshot table, or nil if the ID does not exist.
         methods.add_method("getProvince", |lua, this, id: u32| {
             let snap = this.with_registry(|r| r.get_province(id))?;
@@ -297,7 +300,7 @@ impl LuaUserData for LuaProvinceRegistry {
         });
         // -- getNeighbors --
         /// Returns a table of province IDs that share a border with the given province.
-        /// @param | id | number | Province ID to query.
+        /// @param | id | integer | Province ID to query.
         /// @return | table | Array of neighboring province IDs.
         methods.add_method("getNeighbors", |lua, this, id: u32| {
             let ids = this.with_registry(|r| r.get_neighbors(id))?;
@@ -309,8 +312,8 @@ impl LuaUserData for LuaProvinceRegistry {
         });
         // -- getBorderClass --
         /// Returns the border classification string between two adjacent provinces (e.g. "river", "mountain", "sea"), or nil if no class is set.
-        /// @param | a | number | First province ID.
-        /// @param | b | number | Second province ID.
+        /// @param | a | integer | First province ID.
+        /// @param | b | integer | Second province ID.
         /// @return | string | Border class name, or nil.
         methods.add_method("getBorderClass", |_, this, (a, b): (u32, u32)| {
             let class = this.with_registry(|r| r.get_border_class(a, b))?;
@@ -318,8 +321,8 @@ impl LuaUserData for LuaProvinceRegistry {
         });
         // -- setBorderClass --
         /// Sets the border classification between two adjacent provinces. Used to control border rendering style (e.g. rivers drawn as blue lines).
-        /// @param | a | number | First province ID.
-        /// @param | b | number | Second province ID.
+        /// @param | a | integer | First province ID.
+        /// @param | b | integer | Second province ID.
         /// @param | class | string | Border class name (e.g. "river", "mountain", "sea").
         /// @return | nil | No return value.
         methods.add_method_mut(
@@ -333,7 +336,7 @@ impl LuaUserData for LuaProvinceRegistry {
         );
         // -- setPoliticalColor --
         /// Sets the political map color for a province. Used in political map mode rendering and change tracking.
-        /// @param | id | number | Province ID.
+        /// @param | id | integer | Province ID.
         /// @param | r | number | Red component (0.0–1.0).
         /// @param | g | number | Green component (0.0–1.0).
         /// @param | b | number | Blue component (0.0–1.0).
@@ -349,8 +352,8 @@ impl LuaUserData for LuaProvinceRegistry {
         );
         // -- setTerrainType --
         /// Sets the terrain type index for a province. Terrain type controls which fill color or texture is used in terrain map mode.
-        /// @param | id | number | Province ID.
-        /// @param | terrain_type | number | Terrain type index (game-defined meaning).
+        /// @param | id | integer | Province ID.
+        /// @param | terrain_type | integer | Terrain type index (game-defined meaning).
         /// @return | nil | No return value.
         methods.add_method_mut(
             "setTerrainType",
@@ -360,8 +363,8 @@ impl LuaUserData for LuaProvinceRegistry {
         );
         // -- setBorderStyle --
         /// Sets the border rendering style index for a province. Controls line thickness, color, or pattern when borders are drawn.
-        /// @param | id | number | Province ID.
-        /// @param | border_style | number | Border style index (game-defined meaning).
+        /// @param | id | integer | Province ID.
+        /// @param | border_style | integer | Border style index (game-defined meaning).
         /// @return | nil | No return value.
         methods.add_method_mut(
             "setBorderStyle",
@@ -371,7 +374,7 @@ impl LuaUserData for LuaProvinceRegistry {
         );
         // -- setFogState --
         /// Sets the fog-of-war state for a province. Typically 0 = revealed, 1 = fogged, 2 = hidden. Controls rendering opacity or overlay.
-        /// @param | id | number | Province ID.
+        /// @param | id | integer | Province ID.
         /// @param | fog_state | number | Fog state value (game-defined meaning).
         /// @return | LuaValue | Returned Lua value.
         methods.add_method_mut("setFogState", |_, this, (id, fog_state): (u32, u8)| {
@@ -379,7 +382,7 @@ impl LuaUserData for LuaProvinceRegistry {
         });
         // -- setVisibilityState --
         /// Sets the visibility state for a province. Used for strategic visibility layers separate from fog (e.g. scouted vs. unscouted).
-        /// @param | id | number | Province ID.
+        /// @param | id | integer | Province ID.
         /// @param | visibility_state | number | Visibility state value (game-defined meaning).
         /// @return | nil | No return value.
         methods.add_method_mut(
@@ -390,7 +393,7 @@ impl LuaUserData for LuaProvinceRegistry {
         );
         // -- setAttr --
         /// Sets a custom string attribute on a province. Attributes are returned in the `attrs` table of `getProvince` and can store arbitrary game metadata.
-        /// @param | id | number | Province ID.
+        /// @param | id | integer | Province ID.
         /// @param | key | string | Attribute name.
         /// @param | value | string | Attribute value.
         /// @return | nil | No return value.
@@ -402,7 +405,7 @@ impl LuaUserData for LuaProvinceRegistry {
         );
         // -- setCapital --
         /// Sets the capital marker position for a province. The capital is drawn as a small icon during `render` when `draw_capitals` is enabled.
-        /// @param | id | number | Province ID.
+        /// @param | id | integer | Province ID.
         /// @param | x | number | Capital x position in map space.
         /// @param | y | number | Capital y position in map space.
         /// @return | LuaValue | Returned Lua value.
@@ -411,7 +414,7 @@ impl LuaUserData for LuaProvinceRegistry {
         });
         // -- setLabelLine --
         /// Sets the label baseline for a province. The label text is rendered along the line from (ax,ay) to (bx,by), allowing curved or angled province names.
-        /// @param | id | number | Province ID.
+        /// @param | id | integer | Province ID.
         /// @param | ax | number | Start x of the label line in map space.
         /// @param | ay | number | Start y of the label line in map space.
         /// @param | bx | number | End x of the label line in map space.
@@ -425,7 +428,7 @@ impl LuaUserData for LuaProvinceRegistry {
         );
         // -- setLabelText --
         /// Sets the display name text for a province. Rendered on the map when `draw_labels` is enabled in `render` options.
-        /// @param | id | number | Province ID.
+        /// @param | id | integer | Province ID.
         /// @param | text | string | Province display name.
         /// @return | LuaValue | Returned Lua value.
         methods.add_method_mut("setLabelText", |_, this, (id, text): (u32, String)| {
@@ -581,7 +584,7 @@ impl LuaUserData for LuaProvinceRegistry {
         });
         // -- getChangesSince --
         /// Returns all province changes that occurred after the given revision. Each entry contains the revision number and a change record describing what was modified (political_color, terrain_type, border_style, fog_state, visibility_state, or border_class).
-        /// @param | revision | number | The revision to query from (exclusive). Pass the last known revision to get only new changes.
+        /// @param | revision | integer | The revision to query from (exclusive). Pass the last known revision to get only new changes.
         /// @return | table | Array of change tables, each with a `revision` field and change-specific fields (kind, province_id, etc.).
         methods.add_method("getChangesSince", |lua, this, revision: u64| {
             let changes = this.with_registry(|r| r.get_changes_since(revision))?;

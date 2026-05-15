@@ -11,22 +11,66 @@
 
 ## Summary
 
-The `serial` module is documented from the current source tree and existing module reference data.
+Format-agnostic text serialization centered on the recursive `SerialValue` enum that maps between Lua tables and six external formats: JSON, TOML, CSV, MsgPack, XML, and INI. `SerialFormat` selects the codec; auto-detection inspects content bytes to guess the format. Decode produces `SerialValue` trees; encode writes formatted output with configurable options (pretty-print, indentation, key sorting).
 
-This module primarily collaborates with `runtime`. Its responsibility should stay inside the Foundations group rather than absorb behavior owned by those neighbors.
+CSV parsing handles headers, delimiters, quoting, and multi-line fields. TOML supports nested tables and arrays of tables. XML parsing preserves attributes and text nodes. Schema validation checks `SerialValue` trees against expected shapes with typed constraints. Lua bridge converts between `SerialValue` and Lua tables transparently. Exposed as `lurek.serial.*`. Foundations tier — classified CORE-KEEP.
 
-## Files
+## Source Documentation
 
-- `codec.rs`: - Format detection, decoding, and encoding for the serial module.
-- `csv.rs`: - Parse CSV text or streams into `SerialValue` sequences of maps or arrays.
-- `ini.rs`: - Parse INI text into a nested `SerialValue` map.
-- `json.rs`: - Parse JSON strings into the engine's `SerialValue` intermediate representation.
-- `lua_table.rs`: - Bidirectional conversion between Lua tables and a typed serial value tree.
-- `mod.rs`: - Serialization and deserialization for multiple formats (JSON, TOML, CSV, XML, MsgPack, INI) - Unified codec interface with auto-detection and round-trip encode/decode - Schema validation and default application for structured data - Lua table ↔ Rust value bridging via SerialVal
-- `msgpack.rs`: - MessagePack binary encoding and decoding for SerialValue trees.
-- `schema.rs`: - Validate a `SerialValue` tree against a schema describing expected types, ranges, and structure.
-- `toml.rs`: - Parse TOML strings into engine-internal `SerialValue` trees.
-- `xml.rs`: - Parse XML strings into a SerialValue tree using roxmltree.
+### `codec.rs`
+- Format detection, decoding, and encoding for the serial module.
+- Supports JSON, TOML, CSV, MsgPack, XML, and INI formats.
+- Provides auto-detection of text formats by content inspection.
+- Separates text-based and binary decode paths.
+
+### `csv.rs`
+- Parse CSV text or streams into `SerialValue` sequences of maps or arrays.
+- Serialize `SerialValue` back to CSV with configurable delimiter and header behavior.
+- Support both header-keyed (map rows) and index-only (sequence rows) modes.
+
+### `ini.rs`
+- Parse INI text into a nested `SerialValue` map.
+- Support sections, key=value pairs, and comment lines.
+- Preserve insertion order via `IndexMap`.
+
+### `json.rs`
+- Parse JSON strings into the engine's `SerialValue` intermediate representation.
+- Encode `SerialValue` trees back to JSON (compact or pretty-printed).
+- Map JSON types (null, bool, number, string, array, object) to `SerialValue` variants bidirectionally.
+
+### `lua_table.rs`
+- Bidirectional conversion between Lua tables and a typed serial value tree.
+- Supports null, bool, int, float, string, sequence, and map variants.
+- Detects array-like tables automatically and emits `Seq`; otherwise emits `Map`.
+
+### `mod.rs`
+- Serialization and deserialization for multiple formats (JSON, TOML, CSV, XML, MsgPack, INI)
+- Unified codec interface with auto-detection and round-trip encode/decode
+- Schema validation and default application for structured data
+- Lua table ↔ Rust value bridging via SerialValue
+
+### `msgpack.rs`
+- MessagePack binary encoding and decoding for SerialValue trees.
+- Intermediate MsgValue enum bridging SerialValue to rmp_serde.
+- Size estimation for pre-allocated encode buffers.
+- JSON-compatible encode/decode path via serde_json::Value.
+
+### `schema.rs`
+- Validate a `SerialValue` tree against a schema describing expected types, ranges, and structure.
+- Enforce required fields, numeric min/max, string length bounds, nested table fields, and array items.
+- Apply default values from a schema to fill missing fields in a value tree.
+- Report path-qualified error messages when validation fails.
+- Log schema pass/fail outcomes through the engine log system.
+
+### `toml.rs`
+- Parse TOML strings into engine-internal `SerialValue` trees.
+- Encode `SerialValue` back to TOML text for config persistence.
+- Bridge between the `toml` crate's value types and the serial layer.
+
+### `xml.rs`
+- Parse XML strings into a SerialValue tree using roxmltree.
+- Recursively convert elements, attributes, text, and children into map/seq structures.
+- Provide a single `decode` entry point for the serial module.
 
 ## Types
 

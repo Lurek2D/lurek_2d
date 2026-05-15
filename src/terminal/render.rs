@@ -1,6 +1,6 @@
-//! - Render the terminal cell grid as a list of `RenderCommand` draw calls.
-//! - Rasterise the grid into an `ImageData` thumbnail for previews.
-//! - Both paths iterate cells and map foreground/background colours to output.
+//! - Render the composited terminal cell grid as a list of `RenderCommand` draw calls.
+//! - Rasterise the composited grid into an `ImageData` thumbnail for previews and tests.
+//! - Both paths include terminal widgets and map foreground/background colours to output.
 
 use super::terminal_state::Terminal;
 use crate::image::ImageData;
@@ -18,12 +18,13 @@ impl Terminal {
         scale: f32,
     ) -> Vec<RenderCommand> {
         let (cols, rows) = self.get_dimensions();
+        let cells = self.render_cells();
         let mut cmds = Vec::with_capacity(cols * rows * 2);
-        for row in 1..=rows {
-            for col in 1..=cols {
-                let cell = self.get(col, row);
-                let x = (col - 1) as f32 * char_w;
-                let y = (row - 1) as f32 * char_h;
+        for row in 0..rows {
+            for col in 0..cols {
+                let cell = cells[row * cols + col];
+                let x = col as f32 * char_w;
+                let y = row as f32 * char_h;
                 let [br, bg_clr, bb, ba] = cell.bg;
                 if ba > 0.0 {
                     cmds.push(RenderCommand::SetColor(br, bg_clr, bb, ba));
@@ -60,11 +61,27 @@ impl Terminal {
         if cols == 0 || rows == 0 || width == 0 || height == 0 {
             return img;
         }
+        let cells = self.render_cells();
         let cell_w = (width / cols as u32).max(1);
         let cell_h = (height / rows as u32).max(1);
-        for row in 1..=rows {
-            for col in 1..=cols {
-                let cell = self.get(col, row);
+        for row in 0..rows {
+            for col in 0..cols {
+                let cell = cells[row * cols + col];
+                let [br, bg, bb, ba] = cell.bg;
+                let px = (col as u32 * cell_w) as i32;
+                let py = (row as u32 * cell_h) as i32;
+                if ba > 0.0 {
+                    img.draw_rect(
+                        px,
+                        py,
+                        cell_w,
+                        cell_h,
+                        (br * 255.0).min(255.0) as u8,
+                        (bg * 255.0).min(255.0) as u8,
+                        (bb * 255.0).min(255.0) as u8,
+                        (ba * 255.0).min(255.0) as u8,
+                    );
+                }
                 let ch = char::from_u32(cell.ch).unwrap_or(' ');
                 if ch == ' ' {
                     continue;
@@ -73,8 +90,6 @@ impl Terminal {
                 let pr = (r * 255.0).min(255.0) as u8;
                 let pg = (g * 255.0).min(255.0) as u8;
                 let pb = (b * 255.0).min(255.0) as u8;
-                let px = ((col - 1) as u32 * cell_w) as i32;
-                let py = ((row - 1) as u32 * cell_h) as i32;
                 img.draw_rect(px, py, cell_w, cell_h, pr, pg, pb, 255);
             }
         }

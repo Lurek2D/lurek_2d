@@ -494,7 +494,7 @@ impl LuaUserData for LuaTween {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
         // -- cancel --
         /// Cancels this tween immediately, fires the onCancel callback if set, and resumes any coroutines waiting on it.
-        /// @param | ud | userdata | Lua argument for `ud`.
+        /// @param | self | LTween | This tween instance (implicit via `:cancel()`).
         /// @return | nil | No return value.
         methods.add_function("cancel", |lua, ud: LuaAnyUserData| {
             let mut tw = ud.borrow_mut::<LuaTween>()?;
@@ -569,8 +569,8 @@ impl LuaUserData for LuaTween {
         });
         // -- relative --
         /// Chainable version of `setRelative`. Returns the tween for fluent API usage.
-        /// @param | ud | userdata | Lua argument for `ud`.
-        /// @param | enabled | boolean | Boolean flag that controls `enabled`.
+        /// @param | self | LTween | This tween instance (implicit via `:relative(...)`).
+        /// @param | enabled | boolean | `true` for relative mode, `false` for absolute.
         /// @return | LTween | The same tween handle for chaining.
         methods.add_function("relative", |_, (ud, enabled): (LuaAnyUserData, bool)| {
             ud.borrow_mut::<LuaTween>()?.set_relative(enabled);
@@ -579,7 +579,7 @@ impl LuaUserData for LuaTween {
 
         // -- await --
         /// Yields the current coroutine until this tween completes or is cancelled. Must be called from inside a coroutine.
-        /// @param | ud | userdata | Lua argument for `ud`.
+        /// @param | self | LTween | This tween instance (implicit via `:await()`).
         /// @return | nil | No return value.
         methods.add_function("await", |lua, ud: LuaAnyUserData| {
             let co_tbl: LuaTable = lua.globals().get("coroutine")?;
@@ -603,7 +603,7 @@ impl LuaUserData for LuaTween {
         });
         // -- setRepeat --
         /// Sets how many times the tween should repeat after the first play. Use -1 for infinite repeat.
-        /// @param | n | number | Number of additional repeats (0 = play once, -1 = infinite).
+        /// @param | n | integer | Number of additional repeats (0 = play once, -1 = infinite).
         /// @return | nil | No value is returned.
         methods.add_method_mut("setRepeat", |_, this, n: i32| {
             this.repeat_count = n;
@@ -618,10 +618,11 @@ impl LuaUserData for LuaTween {
             this.yoyo = enabled;
             Ok(())
         });
-        /// On complete on this LTween object. This method is available to Lua scripts.
-        /// @param | ud | userdata | Lua argument for `ud`.
-        /// @param | f | function | Lua argument for `f`.
-        /// @return | table | Table result returned by this call.
+        // -- onComplete --
+        /// Sets a callback to fire when the tween completes. Returns the tween for chaining.
+        /// @param | self | LTween | This tween instance (implicit via `:onComplete(...)`).
+        /// @param | f | function | Callback fired when the tween finishes.
+        /// @return | LTween | The same tween handle for chaining.
         methods.add_function(
             "onComplete",
             |lua, (ud, f): (LuaAnyUserData, LuaFunction)| {
@@ -638,8 +639,8 @@ impl LuaUserData for LuaTween {
 
         // -- onUpdate --
         /// Sets a callback to fire every frame while the tween is active. Returns the tween for chaining.
-        /// @param | ud | userdata | Lua argument for `ud`.
-        /// @param | f | function | Lua argument for `f`.
+        /// @param | self | LTween | This tween instance (implicit via `:onUpdate(...)`).
+        /// @param | f | function | Callback fired each frame with the current progress `t` (0..1).
         /// @return | LTween | The same tween handle for chaining.
         methods.add_function("onUpdate", |lua, (ud, f): (LuaAnyUserData, LuaFunction)| {
             {
@@ -654,8 +655,8 @@ impl LuaUserData for LuaTween {
 
         // -- onCancel --
         /// Sets a callback to fire when the tween is cancelled. Returns the tween for chaining.
-        /// @param | ud | userdata | Lua argument for `ud`.
-        /// @param | f | function | Lua argument for `f`.
+        /// @param | self | LTween | This tween instance (implicit via `:onCancel(...)`).
+        /// @param | f | function | Callback fired when the tween is cancelled.
         /// @return | LTween | The same tween handle for chaining.
         methods.add_function("onCancel", |lua, (ud, f): (LuaAnyUserData, LuaFunction)| {
             {
@@ -686,10 +687,11 @@ impl LuaUserData for LuaTweenSequence {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
         // -- tween --
         /// Appends a tween step to this sequence that animates numeric fields on the target table.
+        /// @param | self | LTweenSequence | The sequence to append this step to (implicit via `:tween(...)`).
         /// @param | duration | number | Duration in seconds.
         /// @param | target | table | The table whose fields will be animated.
         /// @param | fields | table | Key-value pairs mapping field names to target end values.
-        /// @param | easing | ?string | Easing function name (default `"linear"`).
+        /// @param | easing | string? | Easing function name (default `"linear"`).
         /// @return | LTweenSequence | This sequence for chaining.
         methods.add_function(
             "tween",
@@ -727,9 +729,9 @@ impl LuaUserData for LuaTweenSequence {
 
         // -- delay --
         /// Appends a delay step to this sequence. Optionally fires a callback when the delay elapses.
-        /// @param | ud | userdata | Lua argument for `ud`.
-        /// @param | seconds | number | Lua argument for `seconds`.
-        /// @param | cb | function? | Lua argument for `cb`.
+        /// @param | self | LTweenSequence | The sequence to append this delay to (implicit via `:delay(...)`).
+        /// @param | seconds | number | Duration to wait in seconds.
+        /// @param | cb | function? | Optional callback fired when the delay elapses.
         /// @return | LTweenSequence | This sequence for chaining.
         methods.add_function(
             "delay",
@@ -752,8 +754,8 @@ impl LuaUserData for LuaTweenSequence {
 
         // -- callback --
         /// Appends a callback step to this sequence that fires when reached during playback.
-        /// @param | ud | userdata | Lua argument for `ud`.
-        /// @param | f | function | Lua argument for `f`.
+        /// @param | self | LTweenSequence | The sequence to append this step to (implicit via `:callback(...)`).
+        /// @param | f | function | Function called when this step is reached during playback.
         /// @return | LTweenSequence | This sequence for chaining.
         methods.add_function("callback", |lua, (ud, f): (LuaAnyUserData, LuaFunction)| {
             let mut seq = ud.borrow_mut::<LuaTweenSequence>()?;
@@ -765,7 +767,7 @@ impl LuaUserData for LuaTweenSequence {
 
         // -- start --
         /// Starts playback of this sequence from the first step.
-        /// @param | ud | userdata | Lua argument for `ud`.
+        /// @param | self | LTweenSequence | The sequence to start (implicit via `:start()`).
         /// @return | LTweenSequence | This sequence for chaining.
         methods.add_function("start", |_lua, ud: LuaAnyUserData| {
             ud.borrow_mut::<LuaTweenSequence>()?.active = true;
@@ -793,7 +795,7 @@ impl LuaUserData for LuaTweenSequence {
 
         // -- await --
         /// Yields the current coroutine until this sequence completes or is cancelled. Must be called from inside a coroutine.
-        /// @param | ud | userdata | Lua argument for `ud`.
+        /// @param | self | LTweenSequence | The sequence to wait for (implicit via `:await()`).
         /// @return | nil | No return value.
         methods.add_function("await", |lua, ud: LuaAnyUserData| {
             let co_tbl: LuaTable = lua.globals().get("coroutine")?;
@@ -818,8 +820,8 @@ impl LuaUserData for LuaTweenSequence {
 
         // -- onComplete --
         /// Sets a callback to fire when the sequence finishes all steps. Returns the sequence for chaining.
-        /// @param | ud | userdata | Lua argument for `ud`.
-        /// @param | f | function | Lua argument for `f`.
+        /// @param | self | LTweenSequence | The sequence to configure (implicit via `:onComplete(...)`).
+        /// @param | f | function | Function to call when the sequence completes.
         /// @return | LTweenSequence | This sequence for chaining.
         methods.add_function(
             "onComplete",
@@ -853,8 +855,8 @@ impl LuaUserData for LuaTweenParallel {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
         // -- add --
         /// Adds an existing tween handle to this parallel group. The tween becomes owned by the group.
-        /// @param | par_ud | userdata | Lua argument for `par_ud`.
-        /// @param | tw_ud | userdata | Lua argument for `tw_ud`.
+        /// @param | self | LTweenParallel | The parallel group to add to (implicit via `:add(...)`).
+        /// @param | tw_ud | LTween | The tween handle returned by `lurek.tween.tween()` to add to this group.
         /// @return | nil | No return value.
         methods.add_function(
             "add",
@@ -882,10 +884,11 @@ impl LuaUserData for LuaTweenParallel {
 
         // -- tween --
         /// Creates and adds a new tween step directly to this parallel group.
+        /// @param | self | LTweenParallel | The parallel group to add to (implicit via `:tween(...)`).
         /// @param | duration | number | Duration in seconds.
         /// @param | target | table | The table whose fields will be animated.
         /// @param | fields | table | Key-value pairs mapping field names to target end values.
-        /// @param | easing | ?string | Easing function name (default `"linear"`).
+        /// @param | easing | string? | Easing function name (default `"linear"`).
         /// @return | LTweenParallel | This parallel group for chaining.
         methods.add_function(
             "tween",
@@ -924,7 +927,7 @@ impl LuaUserData for LuaTweenParallel {
 
         // -- start --
         /// Starts all tweens in this parallel group simultaneously.
-        /// @param | ud | userdata | Lua argument for `ud`.
+        /// @param | self | LTweenParallel | The parallel group to start (implicit via `:start()`).
         /// @return | LTweenParallel | This parallel group for chaining.
         methods.add_function("start", |_lua, ud: LuaAnyUserData| {
             ud.borrow_mut::<LuaTweenParallel>()?.active = true;
@@ -946,8 +949,8 @@ impl LuaUserData for LuaTweenParallel {
 
         // -- onComplete --
         /// Sets a callback to fire when all tweens in this parallel group have finished. Returns the group for chaining.
-        /// @param | ud | userdata | Lua argument for `ud`.
-        /// @param | f | function | Lua argument for `f`.
+        /// @param | self | LTweenParallel | The parallel group to configure (implicit via `:onComplete(...)`).
+        /// @param | f | function | Function to call when all tweens in the group complete.
         /// @return | LTweenParallel | This parallel group for chaining.
         methods.add_function(
             "onComplete",

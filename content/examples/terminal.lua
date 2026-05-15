@@ -32,7 +32,7 @@ end
 -- Use for clickable menu actions; pair with setOnClick to wire behaviour.
 do -- lurek.terminal.newButton
   local term = lurek.terminal.newTerminal(80, 25)
-  local quit_btn = lurek.terminal.newButton(60, 23, 12, 1, "[ Quit ]")
+  local quit_btn = lurek.terminal.newButton(60, 21, 14, 3, "Quit")
   quit_btn:setOnClick(function() lurek.log.info("quit pressed", "menu") end)
   term:addWidget(quit_btn)
 end
@@ -424,7 +424,7 @@ end
 
 --@api-stub: LTerminal:render
 -- Renders the terminal grid and widgets as render commands.
--- Call from lurek.render after game-world drawing so the terminal sits on top.
+-- Call from lurek.render; render keeps the window fitted to the grid cell size.
 do -- Terminal:render
   local term = lurek.terminal.newTerminal(80, 25)
   term:addWidget(lurek.terminal.newLabel(2, 2, "HUD"))
@@ -467,18 +467,18 @@ do -- Terminal:resetCellSize
 end
 
 --@api-stub: LTerminal:getCellSize
--- Returns the active cell size override as `{w, h}`, or `nil` if none is set.
--- Use to detect whether the terminal is using a custom grid before resetting.
+-- Returns the active cell size as two numbers, using a custom override or font metrics.
+-- Use these values when converting pixel mouse positions to terminal cell positions.
 do -- Terminal:getCellSize
   local term = lurek.terminal.newTerminal(80, 25)
   term:setCellSize(18, 18)
-  local override = term:getCellSize()
-  if override then lurek.log.debug("override " .. override.w .. "x" .. override.h, "term") end
+  local cw, ch = term:getCellSize()
+  lurek.log.debug("cell size " .. cw .. "x" .. ch, "term")
 end
 
 --@api-stub: LTerminal:autoResize
--- Resizes the window to exactly fit the terminal grid at the current font size.
--- Call after setFont when you want the OS window to hug the grid bounds.
+-- Resizes the window to exactly fit the terminal grid at the active cell size.
+-- Call after setFont or setCellSize when you want to force the pending window size immediately.
 do -- Terminal:autoResize
   local term = lurek.terminal.newTerminal(80, 25)
   term:setFont(20)

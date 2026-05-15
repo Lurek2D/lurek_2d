@@ -11,37 +11,31 @@
 
 ## Summary
 
-The `debugbridge` module provides Lurek2D's TCP debug bridge — a JSON-over-TCP server bound to `127.0.0.1` that external tools (the VS Code extension, the MCP server, and any compatible debugger client) can connect to for runtime inspection and game control while the engine is running. It is an Edge/Integration tier module.
+TCP debug bridge enabling external tools (VS Code extension, remote inspectors) to connect to a running Lurek2D instance. The bridge server listens on a configurable port and accepts JSON-RPC requests for breakpoint management, variable inspection, expression evaluation, screenshot capture, performance metrics, and print history retrieval.
 
-**Protocol model.** The bridge exposes a command protocol over persistent TCP connections. Each JSON message from a connected client carries a command name and typed parameters. The bridge dispatches to the appropriate handler and sends a JSON reply. Supported commands include: querying current log output (`log`), evaluating arbitrary Lua expressions in the running VM (`eval`), reading/writing engine state fields, listing loaded modules, querying frame performance metrics, taking screenshots, and injecting synthetic input via the automation system. All messages are newline-delimited JSON so they are easy to consume from any language.
+`BridgeShared` holds the synchronized state between the game thread and the bridge I/O thread via `Arc<Mutex<>>`. Print capture intercepts `lurek.log` output and stores it in a bounded ring buffer for external consumption. The module is disabled in release builds by default and only activates when explicitly started from Lua via `lurek.debugbridge.start()`. Edge/Integration tier.
 
-Protocol access now includes a lightweight handshake: clients call `ping` to receive a nonce and protocol metadata, then call `hello` with the nonce and matching protocol version. Non-`ping` methods require the valid nonce in `params.nonce`.
+## Source Documentation
 
-**Threading design.** TCP I/O runs on a dedicated background OS thread (`server_thread`) that runs the accept loop and handles all socket reads/writes. This thread cannot call into the Lua VM or touch `SharedState` directly — LuaJIT VMs are single-threaded and not safe to call from any thread other than the one that created them. The bridge resolves this constraint via a two-queue design: operations requiring VM access are serialised as `PendingRequest` entries in `BridgeShared` (guarded by a `Mutex`). The main engine thread calls `bridge.poll()` once per frame to drain the pending-request queue, execute each request on the main thread, and push the resulting `PendingResponse` entries back through the client channel for the background thread to transmit.
+### `bridge.rs`
+- Define shared state and queue structures for the debug bridge protocol.
+- Hold pending request and response buffers for runtime-client communication.
+- Track rolling frame-time performance metrics with bounded sample windows.
+- Maintain bounded print history captured from runtime Lua output.
+- Manage session configuration: port, protocol version, capabilities, and nonce.
+- Provide broadcast queue for event delivery to all connected clients.
 
-**`BridgeShared` — the synchronisation boundary.** `BridgeShared` is the central shared record behind an `Arc<Mutex<BridgeShared>>` alias `SharedBridge`. It holds:
-- The pending-request queue (background → main thread).
-- The pending-response queue (main thread → background).
-- Broadcast queues for log events and game state changes to all connected clients.
-- A ring buffer of `PrintEntry` records capturing Lua `print()` output for tooling visibility.
-- A ring buffer of frame delta-time samples for the performance endpoint.
-- Screenshot request/response flags.
+### `mod.rs`
+- Expose the debug bridge subsystem for runtime-to-IDE communication.
+- Provide shared state queues, TCP server loop, and JSON-RPC dispatch.
+- Re-export integration types used by the engine runtime layer.
 
-`BridgeShared::push_print(entry)` adds a log record and trims history to `max_print_history` in O(1) using `VecDeque`. `BridgeShared::record_frame(dt)` appends to the frame-time ring buffer with O(1) eviction and incrementally maintained performance aggregates. `BridgeShared::get_performance()` serialises cached stats to JSON (fps, min, max, avg frame time) without rescanning the full history every call.
-
-**`PrintEntry`.** Timestamped print-capture record. Lua-side `print()` calls are intercepted and routed through `capture_print_with_broadcast`, which both records the entry and queues a broadcast event so all connected debug clients see live log output without polling.
-
-**Server thread.** `server_thread` runs the TCP accept loop. Per-client goroutine-equivalent logic handles partial reads and newline framing. `handle_client_message` parses each complete JSON message: background-safe methods (connection status, port query, performance snapshot) respond immediately without queuing; VM-access methods (Lua eval, state reads, screenshot request) enqueue a `PendingRequest` and block the client reader until the main thread fulfils it via `poll()`.
-
-**Lua surface.** `lurek.debugbridge.start(port)` binds the server. `stop()` disconnects all clients and shuts the thread. `isRunning()` / `getPort()` / `getClientCount()` expose status. The bridge's own Lua surface is intentionally minimal — the rich capability is on the external-tooling side of the TCP connection, not in Lua game code.
-
-**Scope boundary.** Edge/Integration tier. Depends on `runtime` (shared state access) and `lua_api` indirectly via poll dispatch. Lua bridge in `src/lua_api/debugbridge_api.rs` (Lua scripts start/stop the server; the bridge protocol itself operates outside the Lua VM).
-
-## Files
-
-- `bridge.rs`: Defines the shared state records that move data between the TCP thread and the main thread. This file owns bridge-side queues, print-history tracking, and lightweight performance aggregation.
-- `mod.rs`: Module root that re-exports the shared bridge types and server entry points. It provides the small public surface other modules use when they need to start or interact with the bridge.
-- `server.rs`: Implements the TCP accept loop and client-message dispatch layer. It is the networking and protocol entry point for the bridge.
+### `server.rs`
+- Run a non-blocking TCP server loop accepting debug bridge client connections.
+- Parse JSON-RPC messages and dispatch to built-in handlers or runtime queue.
+- Deliver pending responses and broadcast events to connected clients.
+- Handle protocol handshake, nonce authentication, and version negotiation.
+- Support ping, hello, eval, performance, print history, and screenshot requests.
 
 ## Types
 

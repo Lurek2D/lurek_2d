@@ -414,6 +414,20 @@ def check_lua_entry_doc_completeness(path: Path) -> None:
         inferred_params = GEN_LUA_API._parse_inferred_sig_tokens(entry.inferred_sig)
         has_variadic_signature = any(name == "..." for name, _ in inferred_params)
 
+        # For add_function methods that use the @param|self| convention, normalise both
+        # sides so the count comparison is consistent:
+        #   - Inline add_function:  generator strips the implicit ud param → inferred has
+        #                           N-1 tokens; strip the @param|self| from explicit.
+        #   - Multiline add_function: generator does NOT strip ud → inferred has N tokens;
+        #                             strip @param|self| from explicit AND strip the first
+        #                             inferred token (the ud placeholder) when doing so
+        #                             would equalise the counts.
+        had_explicit_self = bool(explicit_params) and explicit_params[0][0] == "self"
+        if had_explicit_self:
+            explicit_params = explicit_params[1:]
+            if inferred_params and len(inferred_params) == len(explicit_params) + 1:
+                inferred_params = inferred_params[1:]
+
         if inferred_params and not has_variadic_signature and len(explicit_params) != len(inferred_params):
             _err(
                 entry.line,

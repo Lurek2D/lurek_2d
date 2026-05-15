@@ -11,37 +11,54 @@
 
 ## Summary
 
-The `filesystem` module is Lurek2D's sandboxed virtual filesystem abstraction — a Core Runtime tier module that wraps all file I/O behind a `GameFS` type ensuring Lua scripts and engine code can only read and write within the game's allowed directory tree. It is the primary security boundary preventing path traversal attacks that could allow a game script to access arbitrary host files.
+Sandboxed virtual filesystem preventing path traversal attacks from game scripts. `GameFS` wraps all I/O operations behind a security boundary — every path is resolved against the game's base directory and checked for `..` components, symbolic links, and absolute prefixes before the OS is consulted. Violations produce `EngineError::FsPathTraversal`.
 
-**Sandbox model.** `GameFS` is initialised with a base directory (the loaded game folder) and an optional separate save-data directory. Every path passed to any `GameFS` method is resolved against the base directory and checked against a traversal guard: components using `..`, symbolic links, or absolute path prefixes are rejected with `EngineError::FsPathTraversal` before the OS is ever consulted. The check resolves the canonical path and confirms it starts with the base directory prefix. Write operations are always routed to the save-data directory (if configured) rather than the read-only game folder; read operations can access both — mirroring LÖVE2D's content/save split.
+Supports synchronous and asynchronous read/write, directory listing, glob matching, file watching, and ZIP archive mounting. `AsyncLoader` runs file I/O on a background thread with a poll-based completion API. `ZipMount` overlays compressed archives as read-only virtual directories. `FileHandle` provides buffered cursor-based streaming I/O. File metadata (`FileInfo`) includes size, timestamps, and type classification. Exposed as `lurek.filesystem.*`. Core Runtime tier.
 
-**Core file API.** `GameFS` methods: `read_string(path)`, `read_bytes(path)`, `write_string(path, content)`, `write_bytes(path, data)`, `append_string(path, content)`, `read_lines(path)` (iterator), `list(path)` (directory entries), `get_directory_items(path)` (with type tags), `get_info(path)` → `FileInfo`, `exists(path)`, `create_directory(path)`, `remove(path)`, `copy_file(src, dst)`, `move_file(src, dst)`, `remove_dir(path)`, `glob(pattern)` (wildcard matching), and JSON helpers `read_json(path)`, `write_json(path, json)`, `read_or_write_json(path, default_json)`.
+## Source Documentation
 
-**FileHandle.** `FileHandle` provides an open-file session with explicit lifecycle: `open(path, mode)` → handle, `read(n)`, `read_all()`, `write(bytes)`, `seek(pos)`, `tell()`, `close()`. `FileMode` enum: `Read`, `Write`, `Append`, `ReadWrite`. Lua: `lurek.filesystem.open(path, mode)` returns a `FileHandle` userdata.
+### `async_loader.rs`
+- Background file I/O via a dedicated worker thread and bounded request queue.
+- Non-blocking read and write requests returning opaque handles for polling.
+- Capacity-limited channel with graceful overflow reporting.
+- Thread-safe result storage consumed by callers through poll methods.
+- Automatic worker shutdown and join on drop.
 
-**FileInfo.** `FileInfo` carries: `file_type` (`File`, `Directory`, `Symlink`, `Other`), `size` (bytes), `mod_time` (Unix timestamp), `read_only` flag. Returned by `lurek.filesystem.getInfo(path)`.
+### `file_data.rs`
+- Pair raw file bytes with the logical path they were loaded from.
+- Provide length, emptiness, and UTF-8 decode helpers on the cached payload.
+- Serve as the common return type for GameFS load operations.
 
-**AsyncLoader.** `AsyncLoader` provides a background worker thread for non-blocking file reads and writes with bounded-channel back-pressure. Read path: `request_load(path) → LoadHandle` then `poll(handle) → LoadStatus`. Write path: `request_write(path, bytes) → LoadHandle` then `poll_write(handle) → WriteStatus`. Lua: `lurek.filesystem.readAsync(path)` / `pollAsync(handle)` and `lurek.filesystem.writeAsync(path, data)` / `pollAsyncWrite(handle)`.
+### `file_handle.rs`
+- Buffered file handle abstraction for GameFS read, write, and append streams.
+- Mode-based state machine: Read, Write, Append, or Closed.
+- Resolves logical game paths through GameFS before opening OS files.
+- Provides line-oriented and byte-oriented read APIs with EOF detection.
+- Seek, tell, flush, and auto-close on drop for safe resource cleanup.
 
-**FileWatcher.** `FileWatcher` is a polling-based change detector that tracks file modification times. `watch(path)`, `check()` → changed paths, `unwatch(path)`. Designed for development hot-reload: Lua scripts watch their own assets and reload on change. Lua: `lurek.filesystem.newWatcher()` → `FileWatcher` userdata.
+### `mod.rs`
+- Virtual filesystem with layered mounts (directory, ZIP archive).
+- Async file loading queue with handle-based status polling.
+- Buffered file I/O with read, write, and append modes.
+- File modification watcher for hot-reload workflows.
 
-**ZIP archive support.** `ZipMount` / `ZipArchive` adds first-class ZIP archive support: files inside a `.zip` can be listed and read without extracting to disk. Lua: `lurek.filesystem.newZip(path)` → `ZipArchive` userdata; `zip:list()`, `zip:read(entry)`, `zip:exists(entry)`.
+### `vfs.rs`
+- Virtual filesystem (GameFS) rooted at a game directory with read and write operations.
+- Overlay mount system that layers additional source directories under virtual prefixes.
+- Path-traversal rejection and save-directory write confinement for sandboxed access.
+- JSON validation helpers, file metadata queries, glob matching, and temp-file creation.
+- Recursive and flat directory listing with merged overlay results.
+- File handle creation, copy, move, and remove operations within the save boundary.
 
-**Mount points.** `MountLayer` provides a read-only virtual filesystem overlay for archive and mod content packages. The `mods` module uses `MountLayer` to overlay mod `.lurek` archives over the base game directory, giving mod content transparent access through the same `GameFS` API.
+### `watcher.rs`
+- Poll-based file watcher that detects modification-time changes on registered paths.
+- Maintains a path→mtime cache and reports diffs on each poll cycle.
+- Supports watch/unwatch, forced invalidation, and empty-state queries.
 
-**Lua surface.** `lurek.filesystem.read(path)`, `write(path, content)`, `append(path, content)`, `exists(path)`, `list(path)`, `getInfo(path)`, `mkdir(path)`, `remove(path)`, `copy(src, dst)`, `move(src, dst)`, `glob(pattern)`, `open(path, mode)` → `FileHandle`, `readAsync(path)` → handle, `pollAsync(handle)`, `writeAsync(path, data)` → handle, `pollAsyncWrite(handle)`, `newWatcher()` → `FileWatcher`, `mountZip(path, prefix)` → `LZipMount`.
-
-**Scope boundary.** Core Runtime tier. Depends on `runtime` for error types. Lua bridge in `src/lua_api/filesystem_api.rs`.
-
-## Files
-
-- `async_loader.rs`: Background asset-loading worker that reads files off the main thread.
-- `file_data.rs`: Raw file data buffer loaded from the VFS.
-- `file_handle.rs`: File handle with buffered read/write and sandboxed path resolution.
-- `mod.rs`: Mod implementation for the `filesystem` subsystem.
-- `vfs.rs`: Vfs implementation for the `filesystem` subsystem.
-- `watcher.rs`: Polling-based file watcher for development hot-reload workflows.
-- `zip_mount.rs`: ZIP archive mounting — read-only virtual filesystem layer backed by a `.zip` file.
+### `zip_mount.rs`
+- ZIP-backed virtual filesystem mount with path-indexed entry lookup.
+- Reads individual files from a ZIP archive on demand without full extraction.
+- Normalizes virtual paths and rejects directory-traversal attempts.
 
 ## Types
 

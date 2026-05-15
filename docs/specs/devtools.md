@@ -11,32 +11,59 @@
 
 ## Summary
 
-The `devtools` module is Lurek2D's in-process developer toolbox — an Edge/Integration tier module exposing structured logging, frame profiling, rolling frame statistics, a file watcher for hot-reload, and compatibility wrappers for developer-facing tools accessible from Lua scripts via `lurek.devtools.*`. It is intended to aid game developers during development without requiring a separate profiler binary or GPU overlay renderer.
+Development-time diagnostic utilities exposed as `lurek.devtools.*` for runtime inspection and profiling. `Logger` provides leveled logging with sink routing (memory, file, callback). `Profiler` measures named code zones with begin/end markers and computes per-zone average/min/max timings. `FrameStats` tracks per-frame CPU time, draw calls, and memory snapshots in a rolling window.
 
-**Logger.** `Logger` is a level-filtered, categorised in-process message store with a rolling history ring buffer. Messages are tagged with a `LogLevel` (trace/debug/info/warn/error) and an optional category string. `push(level, category, message)` records an entry; `tail(n)` returns the most recent n entries; `filter_category(cat)` returns all entries matching a category prefix. The history bound is configurable (`set_capacity`). `Logger` is separate from the engine's Rust `log` crate output — it independently captures Lua-emitted diagnostic messages for in-game debug consoles and tooling.
+`FileWatcher` monitors directories for changes and fires callbacks on create/modify/delete events — used for hot-reload workflows. `ReplConsole` wraps the REPL session for in-game command execution. `TimeAnchor` provides relative timing for log correlation. All utilities are headless-safe; the module imports only `runtime` and `log`.
 
-**Profiler.** `Profiler` is a hierarchical zone-based frame profiler. `begin_zone(name)` / `end_zone()` bracket sections of game code; the profiler records wall-clock time per zone and builds a tree of `ProfileZone` entries for each completed frame. Each `ProfileZone` has `total_time()` (wall clock including children) and `self_time()` (exclusive cost), and `flatten()` collapses the tree to a pre-order list for tabular display. From Lua: `lurek.devtools.profiler:begin("name")`, `profiler:end()`, `profiler:frame()` returns the last completed frame's zone tree as a table.
+## Source Documentation
 
-**FrameStats.** `FrameStats` is a rolling sample buffer for frame delta-time values. `record(dt)` pushes a new sample, evicting the oldest when at capacity. The buffer is backed by `VecDeque` so eviction is O(1). `snapshot()` returns a `FrameSnapshot` with: current FPS, mean frame time, min, max, and percentile values p50/p95/p99 computed over the current window. Used by the debug overlay and the debug bridge performance endpoint.
+### `frame_stats.rs`
+- Collect bounded rolling history of frame-delta samples
+- Compute aggregate metrics: FPS, average, min, max, and percentiles
+- Produce immutable snapshots summarizing recent frame performance
 
-**FileWatcher.** `FileWatcher` polls file modification times at a configurable interval. Watched paths are registered with `watch(path)`; `check()` returns the list of paths whose mtime has changed since the last check. From Lua: `lurek.devtools.watcher:watch(path)`, `watcher:check()` → changed paths table. Intended for hot-reload workflows: a Lua game can watch its own scripts and assets and call `lurek.require` or re-load textures on change without a full restart.
+### `logger.rs`
+- Define ordered severity levels with case-insensitive parsing
+- Store bounded in-memory log history with timestamped entries
+- Filter log output by minimum severity and optional category prefix
+- Mirror accepted entries to stderr and optional append-only file
+- Provide tail and category query access over retained entries
 
-**REPL console.** `ReplConsole` is now a compatibility wrapper over the release-safe `src/repl/` core. It preserves the existing devtools-facing Lua surface while sharing evaluation, history, and display behaviour with the runtime CLI path. `eval(code)` executes an expression, statement, or colon command in the current VM. `history()`, `clear()`, and `len()` expose the bounded history buffer. This keeps `lurek.devtools.newRepl()` useful for in-game developer consoles while the shared REPL core remains available outside debug-only builds.
+### `lua_display.rs`
+- Convert Lua values to human-readable text for REPL and debug display
+- Handle nil, boolean, number, string, table, function, and userdata variants
+- Return safe fallback labels for unrecognized value kinds
 
-**Lua surface.** `lurek.devtools.newLogger(capacity)` / `newProfiler()` / `newFrameStats(capacity)` / `newWatcher(interval_ms)` / `newRepl()` create instances. `Logger` userdata: `push(level, cat, msg)`, `tail(n)`, `filterCategory(cat)`, `clear()`, `setLevel(level)`. `Profiler` userdata: `begin(name)`, `stop()`, `frame()` (tree). `FrameStats` userdata: `record(dt)`, `snapshot()` (table with fps/mean/min/max/p50/p95/p99). `FileWatcher` userdata: `watch(path)`, `check()`. `ReplConsole` userdata: `eval(code)`, `history()`, `clear()`, `len()`, `type()`, `typeOf()`. Module-level utilities also expose lightweight GPU frame stats (`recordGpuFrameTime`, `getGpuFrameStats`) and an entity inspector toggle (`openEntityInspector`, `isEntityInspectorOpen`).
+### `mod.rs`
+- Aggregate frame-time statistics and FPS percentile snapshots
+- Structured logging with severity filtering, file output, and history
+- Hierarchical profiler with zone stacking and per-frame capture
+- Interactive Lua REPL console with bounded command history
+- File-watcher polling and native notify integration for hot-reload
 
-**Scope boundary.** Edge/Integration tier. Depends on lower-tier runtime facilities and the shared `repl` core, but should remain a tooling wrapper layer rather than a home for reusable runtime logic.
+### `profiler.rs`
+- Record hierarchical profiling zones with push/pop stack semantics
+- Compute total and self (exclusive) duration per zone
+- Capture per-frame zone trees into bounded rolling history
+- Retrieve frames by positive or negative index
+- Flatten nested zone trees for aggregate reporting
 
-## Files
+### `repl.rs`
+- Compatibility wrapper around the release-safe REPL core
+- Preserves the devtools `ReplConsole` API and bounded history behavior
+- Returns expression results, success markers, command text, or formatted error text
 
-- `frame_stats.rs`: Defines FrameStats and FrameSnapshot for rolling frame-time analysis. This file is responsible for summary metrics such as min, max, average, FPS, and percentile calculations.
-- `logger.rs`: Defines LogLevel, LogEntry, and Logger for runtime log capture and filtering. This is the place to inspect when diagnostic history, severity filtering, or category tagging changes.
-- `lua_display.rs`: - Convert Lua values to human-readable text for REPL and debug display - Handle nil, boolean, number, string, table, function, and userdata variants - Return safe fallback labels for unrecognized value kinds
-- `mod.rs`: Module root that re-exports the public devtools surface. It keeps the module easy to import without exposing internal file layout.
-- `profiler.rs`: Defines ProfileZone and Profiler for nested CPU timing zones recorded across frames. It owns the push or pop profiler model and the retained per-frame profiling history.
-- `repl.rs`: REPL console for interactive Lua evaluation inside a running game session.
-- `time_anchor.rs`: - Capture a monotonic instant at construction time - Compute elapsed seconds from that anchor on demand - Provide a shared timing primitive for logger and profiler
-- `watcher.rs`: Defines FileWatcher for lightweight path polling based on modification time. It is the module's file-change detection primitive for developer workflows.
+### `time_anchor.rs`
+- Capture a monotonic instant at construction time
+- Compute elapsed seconds from that anchor on demand
+- Provide a shared timing primitive for logger and profiler
+
+### `watcher.rs`
+- Track watched file paths with last-observed modification timestamps
+- Poll for mtime changes and report modified paths on each tick
+- Integrate native notify backend when devtools-plugin feature is enabled
+- Support forced-stale marking, path registration, and full clear
+- Deduplicate change reports via sorted set collection
 
 ## Types
 

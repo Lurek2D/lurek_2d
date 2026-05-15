@@ -11,17 +11,39 @@
 
 ## Summary
 
-The `tween` module is documented from the current source tree and existing module reference data.
+Smooth value interpolation engine with easing functions, sequenced chains, parallel groups, and spring physics. `LuaTween` interpolates a single numeric property from start to end over a duration using one of 30+ easing curves (linear, quad, cubic, quart, elastic, bounce, back, etc.). Tweens fire `onUpdate`, `onComplete`, and `onRepeat` callbacks.
 
-This module primarily collaborates with `math`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
+`LuaTweenSequence` chains multiple tweens with optional delays between steps — each tween starts when the previous completes. `LuaTweenParallel` runs multiple tweens simultaneously and completes when all children finish. `SpringSystem` provides physics-based interpolation with configurable stiffness, damping, and mass for natural-feeling UI animations. `TweenEngine` pools all active tweens and advances them each frame via `update(dt)`. Yoyo and repeat modes enable looping. Exposed as `lurek.tween.*`. Feature Systems tier.
 
-## Files
+## Source Documentation
 
-- `engine.rs`: Defines `TweenEngine`, the active-object pool that ticks live tween handles and releases them when done.
-- `handle.rs`: Defines the Lua-backed domain handle types for single tweens, sequences, parallel groups, and their step or entry records.
-- `mod.rs`: Declares the tween submodules and re-exports the core timing state, handle types, and engine.
-- `spring.rs`: Physics-based spring interpolation for the `lurek.tween` system.
-- `state.rs`: Defines `TweenState` plus built-in easing lookup and easing-name enumeration.
+### `engine.rs`
+- Public types and helpers for the engine module.
+
+### `handle.rs`
+- Lua-visible tween handles: single-field (`LuaTween`), sequence (`LuaTweenSequence`), and parallel (`LuaTweenParallel`).
+- Each handle owns its easing state, target registry key, start/end values, and lifecycle callbacks.
+- Tick-driven interpolation writes computed values directly into Lua tables each frame.
+- Repeat, yoyo, relative-offset, and custom easing function support on single tweens.
+- Sequences consume multiple steps (tween, delay, callback) in order, carrying leftover dt across boundaries.
+- Parallel groups advance all lanes simultaneously and complete when every lane finishes.
+- Coroutine waiter pattern: tweens and sequences resume registered coroutines on completion.
+
+### `mod.rs`
+- Smooth value interpolation with configurable easing curves.
+- Sequence and parallel combinators for complex multi-step animations.
+- Spring-based physics tweening for natural motion.
+- Shared tween engine driving all active tweens each frame.
+
+### `spring.rs`
+- Single-axis damped spring simulation with configurable stiffness, damping, and settle detection.
+- Named spring system aggregating multiple axes under shared default parameters.
+- Euler integration with snap-to-target on settle to eliminate micro-oscillation.
+
+### `state.rs`
+- Per-tween progress state tracking elapsed time, duration, pause flag, and resolved easing function.
+- Case-insensitive easing name resolution with fallback aliases for common naming conventions (camelCase, LÖVE-style).
+- Built-in easing catalog query used by tooling and Lua autocomplete.
 
 ## Types
 

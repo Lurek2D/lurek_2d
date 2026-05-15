@@ -11,44 +11,77 @@
 
 ## Summary
 
-The `data` module is Lurek2D's binary data manipulation toolkit — a Foundations tier module with no engine dependencies. It provides the low-level building blocks used by game code and engine internals that must work with binary data at the byte level: raw byte buffers, compression, cryptographic hashing, binary encoding/decoding, structured pack/unpack, and ring buffers.
+Binary data toolkit providing byte buffers, compression, hashing, encoding, and structured pack/unpack operations. `ByteData` is a resizable byte vector with cursor-based read/write for all primitive types (u8–u64, i8–i64, f32, f64) in both little-endian and big-endian byte orders. `DataView` provides zero-copy typed access into existing byte slices. `DataWriter` accumulates serialized binary output.
 
-**`ByteData` — the core buffer.** `ByteData` is an owned, heap-allocated raw byte buffer with bounds-checked element access. It is the primary interchange type: network payloads, save-file blobs, compressed data, and hashed content all flow through `ByteData`. Key operations: `new(n)`, `from_slice`, `as_slice`, `get(i)`, `set(i, v)`, `len`, `append`, `split_at`, `concat`. Lua scripts receive `ByteData` userdata with the full method set including `toHex()`, `toBase64()`, `slice(start, len)`.
+Compression supports LZ4, Zstd, Deflate, and Gzip via `CompressFormat`. Hashing covers MD5, SHA-1, SHA-256, SHA-512, CRC32, xxHash, and BLAKE3 via `HashAlgorithm`. Encoding handles Base64, Hex, and URL-safe variants. `pack`/`unpack` use format strings for struct-style binary layout. `RingBuffer` provides fixed-capacity FIFO for streaming data. Exposed as `lurek.data.*`. Pure Foundations tier.
 
-**Compression.** `compress.rs` wraps deflate, gzip, zlib (via flate2), and LZ4 (via lz4_flex) behind the `CompressFormat` enum. `compress(data, format)` and `decompress(data, format)` remain the primary whole-buffer interfaces. For large payload pipelines, `compress_stream` / `decompress_stream` and `compress_chunks` / `decompress_chunks` add chunked I/O paths that do not require callers to pre-concatenate input bytes.
+## Source Documentation
 
-**Hashing.** `hash.rs` provides `hash(data, algorithm) → ByteData` for MD5, SHA-1, SHA-256, and SHA-512 via the `HashAlgorithm` enum. Output is a fixed-length `ByteData` digest. The Lua surface exposes `lurek.data.hash(bytes, "sha256")` returning a hex string directly.
+### `bin_pack.rs`
+- Token-based binary packing and unpacking using whitespace-separated format strings
+- Endian-aware serialization of integers, floats, booleans, strings, and raw bytes
+- Coercion helpers that convert between BinValue variants at write time
+- Length-prefixed and null-terminated string support for wire protocols
+- Padding tokens for alignment and fixed-layout binary structures
+- Bounds-checked reads with descriptive underflow error messages
+- Static size measurement for formats without variable-width tokens
+- ByteData output for zero-copy integration with the data module pipeline
 
-**Binary encoding.** `encode.rs` provides `encode(data, format)` / `decode(text, format)` for the `EncodeFormat` enum variants: `Base64` and `Hex`. Used for transport-safe representations of binary payloads.
+### `byte_data.rs`
+- Owned mutable byte buffer with indexed read and write access
+- UTF-8 string encoding and lossy decoding from raw bytes
+- Immutable and mutable slice views for zero-copy downstream use
 
-**Pack/unpack.** `pack.rs` implements a LÖVE2D-compatible single-character format string binary packer: `b` (byte), `i`/`I` (signed/unsigned integers in 1/2/4/8 byte widths), `f` (float32), `d` (float64), `s` (length-prefixed string), `z` (null-terminated), `c<n>` (fixed-length bytes). `pack(fmt, values) → ByteData` / `unpack(fmt, data) → table`. Used by network serialisation and persistent save-data encoding for cross-platform compatibility.
+### `compress.rs`
+- Multi-codec compression and decompression (deflate, gzip, zlib, lz4)
+- Full-buffer and streaming APIs for both single slices and chunk lists
+- Configurable compression level clamped to valid range (0-9)
+- ChunkReader adapter that flattens multiple borrowed slices into one Read stream
+- Consistent error wrapping with codec-specific context messages
 
-**Named-token format.** `bin_pack.rs` implements Lurek2D's own named-token binary format (`u32`, `f64`, `str`, `i16`, with endian modifiers). `BinValue` is the tagged value enum bridging dynamic Lua input to strongly-typed binary writes. Intended for human-readable debug encoding scenarios.
+### `data_writer.rs`
+- Sequential binary writer with a movable cursor over a growable byte buffer
+- Little-endian and big-endian integer, float, and string write methods
+- Seek support with automatic zero-fill when moving past buffer end
 
-**DataView / DataWriter.** `DataView` is a read-only typed cursor over a byte slice with bounds-checked little-endian typed accessors (no copy). `DataWriter` is the growable write-cursor companion. `LuaDataView` wraps `DataView` as Lua userdata keeping the domain type free of Lua method registration.
+### `dataview.rs`
+- Read-only typed accessor over a shared Arc byte buffer
+- Bounds-checked scalar reads for u8, i8, u16, i16, u32, i32, f32, f64
+- Sub-slice views with validated offset and size
+- LuaDataView wrapper for Lua-facing ownership patterns
 
-**Serial delegation.** Lua-facing `lurek.data.parseToml`, `lurek.data.encodeToml`, `lurek.data.toMsgPack`, and `lurek.data.fromMsgPack` are thin adapters in `src/lua_api/data_api.rs` that delegate parsing/encoding to the `serial` module (`src/serial/toml.rs` and `src/serial/msgpack.rs`).
+### `encode.rs`
+- Base64 and hexadecimal encoding and decoding for opaque byte payloads
+- Format selection via enum variant parsed from user-facing labels
+- Consistent error wrapping for malformed input
 
-**Ring buffer.** `RingBuffer<T>` is a generic fixed-capacity circular buffer, useful for input history windows, debug log tails, and time-stamped event queues. Exposes `push`, `pop`, `peek`, `len`, `is_full`, clone-based collection (`to_vec`) and non-cloning access (`iter`, `to_refs`) for large element types.
+### `hash.rs`
+- Cryptographic hash digest computation (MD5, SHA-1, SHA-256, SHA-512)
+- CRC32 checksum for fast integrity checks
+- Hex-encoded string output for all digest algorithms
 
-**Lua surface.** `lurek.data.new(n)` creates a `ByteData`. `lurek.data.compress/decompress(bytes, format)`, `lurek.data.hash(bytes, algo)`, `lurek.data.encode/decode(bytes, format)`, `lurek.data.pack(fmt, ...)`, `lurek.data.unpack(fmt, bytes)`, `lurek.data.newView(bytes)` → `DataView`, `lurek.data.newWriter()` → `DataWriter`. `ByteData` userdata: `get`, `set`, `len`, `append`, `slice`, `toHex`, `toBase64`, `toTable`.
+### `mod.rs`
+- Binary packing, unpacking, and struct-style format-string serialization
+- Owned byte buffers, shared data views, and sequential writers
+- Compression codecs (deflate, gzip, zlib, lz4) with stream and chunk APIs
+- Encoding helpers (base64, hex) and hash digests (MD5, SHA, CRC32)
+- Fixed-capacity ring buffer with overwrite-on-full FIFO semantics
 
-**Note.** Text format parsing (JSON, TOML, CSV) is the responsibility of the `serial` module under `lurek.serial`. `data` covers only binary representations.
+### `pack.rs`
+- Python struct-style format-string packing and unpacking
+- Single-character format tokens for integers, floats, strings, and padding
+- Endian switching via '<' (little) and '>' (big) prefix characters
+- Length-prefixed ('s') and null-terminated ('z') string support
+- Coercion helpers that widen numeric PackValue variants at write time
+- Bounds-checked reads with per-token underflow error messages
+- Static and dynamic packed-size calculation for buffer pre-allocation
+- ByteData output for integration with the data module pipeline
 
-**Scope boundary.** Foundations tier. Depends only on external crates: flate2, lz4_flex, sha2, base64, hex. Lua bridge in `src/lua_api/data_api.rs`.
-
-## Files
-
-- `bin_pack.rs`: Implements the Lurek2D-native binary pack format with readable named tokens such as `u32`, `f64`, `str`, and endian modifiers.
-- `byte_data.rs`: Defines the owned byte-buffer type used to construct, mutate, clone, and expose raw bytes to Lua.
-- `compress.rs`: Provides whole-buffer, stream, and chunked compression/decompression for deflate, gzip, zlib, and LZ4 formats.
-- `data_writer.rs`: Write-cursor companion to [`DataView`](super::DataView).
-- `dataview.rs`: Implements a read-only typed cursor over shared bytes with bounds-checked little-endian accessors.
-- `encode.rs`: Handles base64 and hex encoding and decoding for binary payload transport.
-- `hash.rs`: Computes MD5, SHA-1, SHA-256, and SHA-512 digests over in-memory data.
-- `mod.rs`: Re-exports the public binary-data surface and keeps callers from importing individual helpers ad hoc.
-- `pack.rs`: Implements the LÖVE-style single-character binary pack and unpack format used for compact compatibility-oriented serialization.
-- `ring_buffer.rs`: Fixed-capacity circular ring buffer.
+### `ring_buffer.rs`
+- Fixed-capacity circular buffer with oldest-overwrite FIFO semantics
+- Push, pop, peek, and index-based access with O(1) operations
+- Iteration and collection helpers from oldest to newest element
+- Copy-optimized collection for `Clone + Copy` element types
 
 ## Types
 

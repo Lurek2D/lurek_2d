@@ -11,16 +11,26 @@
 
 ## Summary
 
-The `mods` module is documented from the current source tree and existing module reference data.
+Mod-loading framework providing discovery, manifest parsing, dependency resolution, load-order sorting, and hot-reload for user-created game modifications. `ModManager` scans designated mod directories for `mod.toml` manifests, validates version constraints and dependency graphs, resolves load order via topological sort, and mounts mod assets into the virtual filesystem.
 
-This module primarily collaborates with `runtime`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
+`ModInfo` holds per-mod metadata including name, version, author, dependencies, asset paths, script entry points, and optional integrity signatures. Mods can override existing assets, add new content, or inject Lua scripts that run in a sandboxed context. Enable/disable toggling and priority ordering allow conflict resolution when multiple mods modify the same content. Exposed as `lurek.mods.*`. Feature Systems tier.
 
-The manager now performs dependency-aware ordering, parses manifest-level `assets` and `signature` metadata during folder scans, reports malformed manifests through the log, exposes capability-based filtering for Lua consumers, and can process a hot-reload queue by reloading queued manifests from disk.
+## Source Documentation
 
-## Files
+### `mod.rs`
+- Mod system entry point exposing lifecycle management for game mods.
+- Handles discovery, enabling/disabling, and Lua script integration of mods.
+- Re-exports all public items from the mod manager submodule.
 
-- `mod.rs`: Declares the mod-management surface and re-exports the manager implementation.
-- `mod_manager.rs`: Implements mod discovery, manifest parsing, dependency validation, custom load ordering, and queued reload tracking.
+### `mod_manager.rs`
+- Mod registry: register, unregister, and look up mods by id or capability.
+- Manifest parsing: load `mod.toml` files, validate fields, and compute SHA-256 signatures.
+- Load ordering: topological sort with dependency resolution, priority tie-breaking, and custom override.
+- Asset conflict detection: prevent two mods from declaring the same asset path.
+- Hot-reload queue: mark mods dirty, re-parse their manifests, and re-register atomically.
+- Folder scanning: discover mod directories on disk and batch-register valid entries.
+- Dependency validation: detect missing deps and circular dependency cycles.
+- Config schema: carry typed key/default triples from manifests for runtime config UI.
 
 ## Types
 

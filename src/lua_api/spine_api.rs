@@ -7,6 +7,7 @@ use crate::spine::{BoneParams, Skeleton};
 use mlua::prelude::*;
 use std::cell::RefCell;
 use std::rc::Rc;
+/// Parses optional bone transform overrides from a Lua table.
 fn parse_bone_opts(opts: &Option<LuaTable>) -> LuaResult<(f32, f32, f32, f32, f32)> {
     let (mut x, mut y, mut rot, mut sx, mut sy) = (0.0, 0.0, 0.0, 1.0, 1.0);
     if let Some(tbl) = opts {
@@ -57,7 +58,7 @@ impl LuaUserData for LuaSkeleton {
         // -- addChildBone --
         /// Adds a bone as a child of an existing bone, inheriting its parent's world transform.
         /// @param | name | string | Unique name for this bone.
-        /// @param | parent_idx | number | Zero-based index of the parent bone.
+        /// @param | parent_idx | integer | Zero-based index of the parent bone.
         /// @param | opts | table? | Optional table with keys: x, y, rotation, scale_x, scale_y (local offsets from parent).
         /// @return | number | Zero-based index of the newly added child bone.
         methods.add_method_mut(
@@ -78,7 +79,7 @@ impl LuaUserData for LuaSkeleton {
         // -- addSlot --
         /// Adds a slot attached to a specific bone, optionally assigning a default attachment name.
         /// @param | name | string | Unique name for this slot.
-        /// @param | bone_idx | number | Zero-based index of the bone this slot is attached to.
+        /// @param | bone_idx | integer | Zero-based index of the bone this slot is attached to.
         /// @param | attachment | string? | Optional default attachment name for this slot.
         /// @return | number | Zero-based index of the newly added slot.
         methods.add_method_mut(
@@ -110,7 +111,7 @@ impl LuaUserData for LuaSkeleton {
         });
         // -- getBoneWorld --
         /// Returns the final world-space transform of a bone after hierarchy resolution.
-        /// @param | idx | number | Zero-based bone index.
+        /// @param | idx | integer | Zero-based bone index.
         /// @return | table | Table with keys x, y, rotation, scale_x, scale_y — or nil if the index is invalid.
         methods.add_method("getBoneWorld", |lua, this, idx: usize| {
             match this.inner.bone_world_transform(idx) {
@@ -145,8 +146,8 @@ impl LuaUserData for LuaSkeleton {
         methods.add_method("slotCount", |_, this, ()| Ok(this.inner.slot_count()));
         // -- drawToImage --
         /// Renders the skeleton into an in-memory image of the given dimensions and returns it as LImage userdata.
-        /// @param | w | number | Width of the output image in pixels.
-        /// @param | h | number | Height of the output image in pixels.
+        /// @param | w | integer | Width of the output image in pixels.
+        /// @param | h | integer | Height of the output image in pixels.
         /// @return | LImage | A new image containing the rendered skeleton.
         methods.add_method("drawToImage", |lua, this, (w, h): (u32, u32)| {
             let img = this.inner.draw_to_image(w, h);

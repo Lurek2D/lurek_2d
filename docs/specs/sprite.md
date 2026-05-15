@@ -11,18 +11,46 @@
 
 ## Summary
 
-The `sprite` module is documented from the current source tree and existing module reference data.
+Sprite sheet, texture atlas, and batch rendering primitives for 2D game visuals. `SpriteSheet` divides a texture into a uniform grid of frames addressed by index, with support for RPG Maker character layouts. `SpriteAtlas` stores named regions with pixel rects, rotation flags, and flip states — parsed from TexturePacker and Aseprite JSON formats.
 
-This module primarily collaborates with `image`, `math`, `runtime`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
+`SpriteBatch` groups multiple sprite draws into a single GPU draw call for efficient rendering of tile layers, UI elements, or repeated sprites. `NineSlice` generates stretched panel geometry that preserves corner and edge regions while tiling the center — used for scalable UI panels and dialog boxes. Direction-based animation helpers map movement direction to atlas frame ranges. Exposed as `lurek.sprite.*`. Feature Systems tier.
 
-## Files
+## Source Documentation
 
-- `atlas.rs`: TexturePacker JSON atlas importer and named region lookup.
-- `mod.rs`: Module root and re-export surface for the public sprite-related types.
-- `nine_slice.rs`: Nine-slice descriptor and patch computation for scalable UI panels and borders.
-- `sprite.rs`: Single sprite data with transform and tint information around a texture identifier.
-- `sprite_batch.rs`: Batch container for many sprite entries that share one texture key.
-- `sprite_sheet.rs`: Grid-based sprite sheet, named frame groups, and optional directional layout helpers.
+### `atlas.rs`
+- Named atlas region type (`AtlasEntry`) with pixel rect, rotation, and flip flags.
+- `SpriteAtlas` lookup table: ordered Vec + HashMap for O(1) name lookup.
+- TexturePacker JSON parser supporting both array and object frame formats.
+- Aseprite JSON parser with the same dual-format support.
+- Conversion from `image::TextureAtlas` for runtime atlas building.
+
+### `mod.rs`
+- Sprite, SpriteSheet, and SpriteBatch types for 2D rendering
+- Texture atlas parsing (TexturePacker JSON) and region lookup
+- Nine-slice panel geometry for scalable UI elements
+
+### `nine_slice.rs`
+- Nine-slice (9-patch) descriptor that splits a texture into corners, edges, and a center.
+- Generates source/destination patch tuples for scalable UI borders and panels.
+- Preserves corner pixel ratios while stretching edges and center to fit target dimensions.
+
+### `sprite.rs`
+- Single-sprite data type holding texture, position, scale, rotation, and colour tint.
+- Constructor and transform setters for positioning and styling sprites.
+- Designed as a lightweight value object consumed by the render pipeline.
+
+### `sprite_batch.rs`
+- Deferred sprite draw-call collector bound to a single texture atlas.
+- Accumulates positioned, rotated, scaled source-quad entries for batch submission.
+- Supports optional capacity cap to limit per-frame draw volume.
+
+### `sprite_sheet.rs`
+- Uniform grid frame extraction from a single texture via per-frame width/height.
+- Precomputed Rect lookup by linear index, row, column, or arbitrary range.
+- Named frame groups for tagging animation sequences within the grid.
+- Directional animation layout (rows or columns) for multi-facing character sheets.
+- Preset constructors for RPGMaker 3×4 sheets and SpriteAtlas-backed sheets.
+- Debug visualisation that rasterises the grid into an ImageData with coloured borders.
 
 ## Types
 

@@ -11,35 +11,27 @@
 
 ## Summary
 
-The `event` module is Lurek2D's centralized queue and signal dispatch layer. It owns queue storage, queue ordering semantics, queue wait behavior, and the `Signal` pub-sub primitive used by Lua scripts through `lurek.event`.
+Centralized event queue and signal dispatch layer providing the backbone for inter-system communication. `EventQueue` is a dual-lane FIFO (high and normal priority) backed by `VecDeque` — `poll()` drains high-priority events first while maintaining FIFO order within each lane. `wait(timeout_ms)` blocks on a condvar without spin-looping.
 
-Event queue behavior:
-- `EventQueue` is a dual-lane FIFO (`high` and `normal`) backed by `VecDeque`.
-- `poll()` always drains `high` before `normal`, while keeping FIFO order inside each lane.
-- `wait(timeout_ms)` blocks on a condvar wake path (no spin loop), returning an event immediately when available.
-- `pump()` is intentionally a no-op in Lurek2D and exists for API parity.
+`Event` payload is `Vec<EventArg>` supporting scalar values and shallow-cloned table payloads. `Signal` is a typed pub-sub primitive — subscribers register closures that fire synchronously on `emit()`. Event history can be enabled for replay and debugging. Deferred events queue for next-frame delivery, enabling safe event emission during iteration. Exposed as `lurek.event.*`. Core Runtime tier importing only `runtime`.
 
-Payload behavior:
-- `Event` payload is `Vec<EventArg>`.
-- `EventArg` supports scalar values plus shallow-cloned table payloads.
-- Table payload conversion stores only scalar keys (`string`, `number`, `boolean`) and scalar values; nested tables are not deep-cloned.
+## Source Documentation
 
-Lua-facing API behavior:
-- Queue APIs: `poll`, `wait`, `clear`, `push`, `pushPriority`, `pushDeferred`, `pushDeferredPriority`, `flushDeferred`.
-- Runtime control APIs: `exit`, `quit`, `restart`.
-- History APIs: `enableHistory`, `getHistory`, `clearHistory`.
-- Signal factory: `newSignal()` returning `LSignal` with methods `register`, `emit`, `remove`, `clear`, `clearAll`, `getCount`, `getTotalCount`, `once`, `registerWithFilter`, `connect`, `type`, `typeOf`.
+### `event_queue.rs`
+- Dual-priority FIFO event queue (high and normal) with priority-based polling.
+- Event payload types supporting string, number, boolean, nil, and shallow tables.
+- Condvar-based blocking wait with optional timeout for thread synchronization.
+- Lua value conversion utilities for copying event payloads across the Rust-Lua boundary.
+- Table key and value marshalling with shallow-copy semantics.
 
-Scope boundary:
-- Core Runtime tier module with thin Lua bridge in `src/lua_api/event_api.rs`.
-- OS/window/input events are pushed from `app`; synthetic events are pushed by `automation`.
-- Cross-thread messaging is out of scope for this module and belongs to `lurek.thread.Channel`.
+### `mod.rs`
+- Priority queue with ordered dispatch and Lua payload conversion for runtime events.
+- Name-based and wildcard signal subscriptions for decoupled communication.
 
-## Files
-
-- `event_queue.rs`: Event types and FIFO event queue.
-- `mod.rs`: Event queue for polling system and custom events.
-- `signal.rs`: Handle-based pub-sub signal system with exact-name and glob-wildcard subscriptions.
+### `signal.rs`
+- Named signal subscription registry with exact-name and wildcard pattern matching.
+- Handle-based subscribe/remove lifecycle with monotonic id allocation.
+- Glob-style wildcard matching (`*`, `?`) for pattern subscriptions.
 
 ## Types
 

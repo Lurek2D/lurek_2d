@@ -187,7 +187,7 @@ impl LuaUserData for LuaStep {
 
         // -- setRetryCount --
         /// Sets how many times this step should be retried after a failure before being marked as failed.
-        /// @param | count | number | Number of retry attempts (0 means no retries).
+        /// @param | count | integer | Number of retry attempts (0 means no retries).
         /// @return | nil | No value is returned.
         methods.add_method("setRetryCount", |_, this, count: u32| {
             this.inner.borrow_mut().retry_count = count;
@@ -510,6 +510,7 @@ pub(crate) fn fire_step_callbacks<'lua>(
     )?;
     Ok(())
 }
+/// Dispatches one pipeline lifecycle event to the optional Lua `on_event` callback.
 fn fire_pipeline_event<'lua>(
     lua: &'lua Lua,
     this: &LuaPipeline,
@@ -531,6 +532,7 @@ fn fire_pipeline_event<'lua>(
     }
     Ok(())
 }
+/// Starts or resumes an async coroutine-backed pipeline step and reports whether it completed.
 fn execute_async_coroutine_step<'lua>(
     lua: &'lua Lua,
     this: &LuaPipeline,

@@ -11,20 +11,68 @@
 
 ## Summary
 
-The `terminal` module owns Lurek2D's character-grid surfaces, ANSI parsing, syntax-style highlighting, scrollback, command-history helpers, completion engine, and terminal-native widgets. It is the text-mode UI layer used by in-game consoles and by the GUI-backed `tui` and `cli` runtime modes.
+Character-grid terminal emulator with ANSI escape sequence parsing, widget system, tab completion, scrollback buffer, command history, and syntax highlighting. `Terminal` manages a character grid with per-cell foreground/background colors, attributes (bold, italic, underline, blink), and cursor position. ANSI parsing handles CSI sequences for color, cursor movement, and screen clearing.
 
-This module owns terminal state and render-command generation, but it does not own REPL evaluation or runtime-mode selection. `repl` owns interactive Lua execution, while `runtime` and `app` decide when a window becomes a terminal-only surface.
+Widgets provide pre-built terminal UI components with default shaded cell backgrounds for buttons, text boxes, lists, borders, and panels. `CompletionEngine` offers context-aware tab completion from registered word sources. Command history supports persistent storage with search and navigation. Syntax highlighting applies token-based coloring for Lua code display. Events signal key press, resize, and scroll actions for interactive applications. Exposed as `lurek.terminal.*`. Feature Systems tier.
 
-## Files
+## Source Documentation
 
-- `ansi.rs`: ANSI escape code parsing for the terminal module.
-- `cell.rs`: Defines the `TCell` character-cell record with foreground and background color data.
-- `completion.rs`: Tab-completion engine for the terminal module.
-- `highlighter.rs`: Text-highlighting algorithm (`HighlightRule`, `ColoredSpan`, `highlight_spans`) — splits text by earliest-match-wins rules.
-- `mod.rs`: Declares the terminal submodules and re-exports the grid, widget, and border types.
-- `render.rs`: Converts terminal contents and terminal widgets into render commands or CPU-side image output.
-- `terminal_state.rs`: Implements the main `Terminal` state, including the cell grid, cursor, focus, input routing, and terminal events.
-- `widget.rs`: Defines terminal-native widget metadata and the concrete widget kinds used inside a terminal surface.
+### `ansi.rs`
+- ANSI escape sequence stripping and SGR attribute parsing.
+- Standard 8-color CGA and bright palette tables (codes 30–37, 90–97).
+- Xterm-256 color index decoding: cube (16–231) and grayscale (232–255).
+- 24-bit true-color RGB extraction from SGR 38/48 sub-code 2.
+- Span-based output splitting text into runs with shared fg/bg/bold state.
+- UTF-8 byte-level helpers for raw escape parsing without allocation.
+
+### `cell.rs`
+- Single-cell data type for the terminal grid.
+- Default color and character constants.
+- `Default` trait wiring for blank cells.
+
+### `completion.rs`
+- Prefix-based tab-completion engine for the in-game terminal.
+- Maintains a sorted candidate list; cycles through matches on repeated Tab presses.
+- Supports dynamic add/remove of candidates and stateless prefix queries.
+
+### `highlighter.rs`
+- Pattern-based text highlighting: match literal strings and assign foreground/background colors.
+- Span splitting: decompose input into colored runs for terminal cell rendering.
+- Leftmost-first rule priority with default fallback for unmatched regions.
+
+### `mod.rs`
+- In-engine terminal emulator with ANSI escape-code support
+- Grid-based cell model, tab completion, and syntax highlighting
+- Converts terminal state into RenderCommand sequences for display
+- Widget primitives for composing custom terminal UIs
+
+### `render.rs`
+- Render the composited terminal cell grid as a list of `RenderCommand` draw calls.
+- Rasterise the composited grid into an `ImageData` thumbnail for previews.
+- Both paths include terminal widgets and map foreground/background colours to output.
+
+### `terminal_state.rs`
+- Terminal grid state machine: fixed-size cell buffer with 1-based cursor, per-cell fg/bg colors, and content-preserving resize.
+- Widget system: compositable label, button, text-box, list, border, and panel widgets drawn on top of the grid with default shaded skins.
+- Focus and input dispatch: keyboard, text-input, and mouse events routed to the focused widget with event emission.
+- Scrollback buffer: capped line history with offset-based windowed retrieval.
+- Command history: push/prev/next navigation for console-style input recall.
+- Cell manipulation helpers: single-cell set/get, bulk print, colored print, and default-color application.
+- Render output: composited cell buffer flattened into batched text and background `RenderCommand` lists for the renderer.
+- Border rendering: single, double, and ASCII frame styles with optional title text.
+- Panel child tracking: index-based parent-child relationships with automatic adjustment on widget removal.
+
+### `widget.rs`
+- Define the terminal widget type system: Label, Button, TextBox, List, Border, and Panel.
+- Provide `WidgetBase` for shared layout state: position, size, visibility, enabled flag, and tag.
+- Offer `BorderStyle` enum with single, double, and ASCII line-drawing variants.
+- Construct widgets from 1-based terminal coordinates with clamped dimensions.
+- Get and set display text for text-bearing widgets (Label, Button, TextBox).
+- Get and set foreground color for colored widgets (Label, Border).
+- Manipulate list contents: add, remove, clear items; track selection and scroll offset.
+- Enforce TextBox max-length constraints with automatic cursor clamping.
+- Expose border property accessors for style and title.
+- Provide type-checking predicates for widget kind discrimination.
 
 ## Types
 
@@ -56,8 +104,8 @@ This module owns terminal state and render-command generation, but it does not o
 - `CompletionEngine::next_completion` (`completion.rs`): Advance to the next candidate matching `prefix` and return it; returns `None` when no matches exist.
 - `CompletionEngine::reset` (`completion.rs`): Reset the cycling position without clearing candidates.
 - `highlight_spans` (`highlighter.rs`): Splits `text` into colored spans by matching `rules` left-to-right.
-- `Terminal::generate_render_commands` (`render.rs`): Build a `RenderCommand` list for the current cell grid using `font_key`, `char_w`/`char_h` cell dimensions, and `scale`.
-- `Terminal::draw_to_image` (`render.rs`): Rasterise the cell grid into a `width`×`height` `ImageData` thumbnail; non-space cells are drawn as solid colored rectangles.
+- `Terminal::generate_render_commands` (`render.rs`): Build a `RenderCommand` list for the composited grid using `font_key`, `char_w`/`char_h` cell dimensions, and `scale`.
+- `Terminal::draw_to_image` (`render.rs`): Rasterise the composited grid into a `width`×`height` `ImageData` thumbnail; backgrounds and non-space cells are drawn as solid colored rectangles.
 - `Terminal::new` (`terminal_state.rs`): Create a new `Terminal` with a blank grid of `cols`×`rows` cells, clamped to `MAX_COLS`/`MAX_ROWS`.
 - `Terminal::set` (`terminal_state.rs`): Set cell at 1-based `(col, row)` to `ch` with `fg` and `bg` colors; silently ignored when out of bounds.
 - `Terminal::get` (`terminal_state.rs`): Return the cell at 1-based `(col, row)`; returns a default cell when out of bounds.
@@ -96,7 +144,7 @@ This module owns terminal state and render-command generation, but it does not o
 - `Terminal::resize` (`terminal_state.rs`): Resize the grid to `new_cols`×`new_rows`, preserving the overlapping content region.
 - `Terminal::widget_count` (`terminal_state.rs`): Return the number of registered widgets.
 - `Terminal::find_by_tag` (`terminal_state.rs`): Return the first widget whose `base.tag` matches `tag`, or `None`.
-- `Terminal::build_render_commands` (`terminal_state.rs`): Build a batched `RenderCommand` list for the composited cell grid at pixel origin `(ox, oy)` with `cell_w`/`cell_h` and `font_key`.
+- `Terminal::build_render_commands` (`terminal_state.rs`): Build a batched `RenderCommand` list for the composited cell grid at pixel origin `(ox, oy)` with `cell_w`/`cell_h`, background runs, and `font_key`.
 - `Terminal::set_default_colors` (`terminal_state.rs`): Apply `fg` and `bg` to every cell in the grid without changing character codepoints.
 - `Terminal::print_colored` (`terminal_state.rs`): Write `text` with explicit `fg` and optional `bg` starting at 1-based `(col, row)`.
 - `Terminal::set_scrollback_cap` (`terminal_state.rs`): Set the scrollback line cap; trims oldest lines immediately if the buffer exceeds the new limit.
@@ -184,6 +232,7 @@ This module owns terminal state and render-command generation, but it does not o
 - `LTerminal:set`: Writes a character with foreground and background color to a specific cell in the terminal grid.
 - `LTerminal:get`: Reads the character and colors at a specific cell in the terminal grid.
 - `LTerminal:clear`: Clears all cells in the terminal grid, resetting characters and colors to defaults.
+- `LTerminal:print`: Writes text to the terminal grid starting at a specific cell.
 - `LTerminal:getDimensions`: Returns the number of columns and rows in the terminal grid.
 - `LTerminal:addWidget`: Attaches a widget to this terminal so it is rendered and receives input events.
 - `LTerminal:removeWidget`: Detaches a widget from this terminal, removing it from rendering and input handling.
@@ -194,12 +243,12 @@ This module owns terminal state and render-command generation, but it does not o
 - `LTerminal:keypressed`: Forwards a key press event to the terminal for widget input processing.
 - `LTerminal:textinput`: Forwards a text input event to the terminal for character entry into focused widgets.
 - `LTerminal:mousepressed`: Forwards a mouse press event to the terminal, converting pixel coordinates to cell coordinates.
-- `LTerminal:render`: Renders the terminal grid and all attached widgets by emitting render commands at the given screen position.
+- `LTerminal:render`: Renders the terminal grid and all attached widgets by emitting render commands at the given screen position; also stages a window size matching the terminal grid and active cell size.
 - `LTerminal:setFont`: Selects the nearest built-in bitmap font by pixel height for terminal cell rendering.
 - `LTerminal:setCellSize`: Overrides the cell width and height used for rendering this terminal grid.
 - `LTerminal:resetCellSize`: Removes any custom cell size override, reverting to the size derived from the active font.
-- `LTerminal:getCellSize`: Returns the current custom cell size override, or nil if no override is set.
-- `LTerminal:autoResize`: Requests the window to resize so it exactly fits the terminal grid at the current cell size.
+- `LTerminal:getCellSize`: Returns the active terminal cell width and height in pixels, using a custom override or font metrics.
+- `LTerminal:autoResize`: Requests the window to resize so it exactly fits the terminal grid at the active cell size.
 - `LTerminal:type`: Returns the type name string "LTerminal".
 - `LTerminal:typeOf`: Checks whether this object matches a given type name. Accepts "LTerminal" or "Object".
 

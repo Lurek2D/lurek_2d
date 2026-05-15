@@ -884,17 +884,38 @@ def extract_lua_functions(api_file: Path) -> List[LuaFunction]:
             desc = _first_desc_line(docstring)
             params, returns = _extract_params_returns(docstring)
             inferred = _infer_signature(lines, i)
+            typed = _merge_typed_params_with_inferred(
+                _parse_tagged_params(docstring), inferred
+            )
+            # If the first @param is named 'self', this is an instance method:
+            # use colon notation (implicit self) and strip self from both the typed
+            # params list and the legacy params_doc field.
+            is_instance_method = bool(typed) and typed[0][0] == "self"
+            if is_instance_method:
+                lua_name = f"{display_owner}:{func_name}"
+                typed = typed[1:]
+                # Strip the first param line from the legacy params field so
+                # gen_luadoc.py does not emit self in the function body signature.
+                if params:
+                    non_empty = [l for l in params.splitlines() if l.strip()]
+                    params = "\n".join(non_empty[1:]) if non_empty else ""
+                # Strip the first token from inferred_sig so the fallback in
+                # gen_luadoc.py also omits the Rust-side ud/self param.
+                if inferred and inferred.startswith("("):
+                    inner = inferred[1:-1].strip()
+                    tokens = [p.strip() for p in inner.split(",") if p.strip()]
+                    inferred = "(" + ", ".join(tokens[1:]) + ")" if tokens else "()"
+            else:
+                lua_name = f"{display_owner}.{func_name}"
             functions.append(LuaFunction(
                 module=module, name=func_name,
-                lua_name=f"{display_owner}.{func_name}",
+                lua_name=lua_name,
                 owner_type=display_owner, description=desc,
                 full_doc=docstring, params=params,
                 returns=returns, line=i + 1,
                 file=rel_path, kind="method",
                 inferred_sig=inferred,
-                typed_params=_merge_typed_params_with_inferred(
-                    _parse_tagged_params(docstring), inferred
-                ),
+                typed_params=typed,
                 inferred_return=_parse_tagged_return(docstring)[0],
                 return_description=_parse_tagged_return(docstring)[1],
             ))

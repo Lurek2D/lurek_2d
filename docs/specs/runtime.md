@@ -11,21 +11,78 @@
 
 ## Summary
 
-The `runtime` module owns the engine's core startup configuration, shared mutable state, structured engine errors, runtime message catalog, and now the mode-selection primitives used by `lurek_run()`. It is the lowest layer that knows about `gui`, `tui`, `headless`, and `cli` as startup concepts.
+Foundational shared state, engine configuration, error types, resource keys, and the log message catalog forming the root of the engine dependency graph. `SharedState` is the central mutable container holding all engine subsystem instances — accessed via `RefCell` borrows by binding code. `Config` stores TOML-parsed engine settings (window size, audio device, physics step, asset paths).
 
-This module also owns the real no-window execution path in `headless.rs`. Windowed modes continue upward into `app`, but headless runtime stays here so it can run without any dependency on winit, wgpu, or the GUI event loop.
+`EngineError` is the unified error enum with variants for every failure domain (IO, Lua, GPU, audio, network, physics, parse). `RuntimeMode` distinguishes normal execution from headless test mode. Resource keys (`TextureKey`, `SoundKey`, `FontKey`) provide typed handles for asset lookup. The log message catalog defines structured message codes used by all modules for consistent diagnostic output. Exposed as `lurek.runtime.*`. Core Runtime tier — imported by every module.
 
-## Files
+## Source Documentation
 
-- `config.rs`: Engine configuration loaded from `conf.toml`.
-- `error.rs`: Structured error types and result alias for the Lurek2D engine.
-- `headless.rs`: No-window Lua runtime for `--headless` execution.
-- `log_messages.rs`: Structured logging with stable message IDs for the Lurek2D engine.
-- `messages.rs`: TOML-backed message catalog for stable, human-readable engine log messages.
-- `mod.rs`: Core engine runtime: configuration, error handling, shared state, and resource management.
-- `mode.rs`: Runtime mode enum and CLI/config token parsing.
-- `resource_keys.rs`: Typed resource keys for generational ID-based resource pools.
-- `shared_state.rs`: Central shared runtime state for the Lurek2D engine.
+### `config.rs`
+- Runtime configuration types parsed from `conf.toml` at engine startup.
+- Top-level `Config` struct with sections for window, renderer, modules, and performance.
+- Feature-toggle table (`ModulesConfig`) controlling which engine subsystems are loaded.
+- Dependency validation that auto-disables modules when prerequisites are off.
+- TOML merge logic: user overrides are layered on top of built-in defaults.
+- Serde-based serialization for round-trip configuration persistence.
+
+### `error.rs`
+- Defines `EngineError` — the engine-wide error enum covering all subsystem failures.
+- Provides `ErrorCategory` for high-level failure classification (init, runtime, resource, script, filesystem, system).
+- Assigns stable machine-readable error codes (`E1001`–`E1012`) and recovery hints per variant.
+- Exposes `ErrorSnapshot` for serializable log/UI output with compact JSON encoding.
+- Supplies the `EngineResult<T>` convenience alias used throughout the runtime.
+
+### `headless.rs`
+- Implements the no-window headless runtime path for script automation and CI use.
+- `HeadlessOptions` carries game directory, eval snippets, and an optional frame-count override.
+- `run_headless` maps engine errors to process exit codes; `run_headless_checked` preserves structured errors for test callers.
+- Init sequence installs a stdout-routed `print` global and prepends game-directory roots to `package.path`.
+- Frame loop drives `process_physics`, `fixedUpdate`, `process`, and `process_late` in order; count and dt come from config or CLI flag.
+- Callback timeout is enforced via Lua instruction-count hooks when a limit is configured in `PerformanceConfig`.
+
+### `log_messages.rs`
+- Stable, structured log message identifiers for all engine subsystems.
+- Each constant provides a short code (e.g. "L001") used as prefix in log output.
+- Identifiers grouped by domain: L=lifecycle, A=audio, G=graphics, P=physics, FS=filesystem.
+- Additional prefixes: AN=animation, EN=ECS, TM=tilemap, SV=save, SC=scene, TH=thread, PF=pathfind.
+- Extended prefixes: MD=mods, NW=network, PL=pipeline, AT=automation, CP=compute, SR=serial, GU=GUI.
+- Runtime log level control via set_log_level/get_log_level with atomic override.
+- log_msg! macro for consistent formatted log output with message lookup.
+- Codes are stable across versions for log parsing, alerting, and external tool integration.
+
+### `messages.rs`
+- Embedded TOML-based message catalog for runtime log and display text.
+- Lazy one-shot initialization with fallback to raw identifiers.
+- Recursive string extraction from nested TOML tables.
+
+### `mod.rs`
+- Engine runtime foundations: configuration, shared state, and error types.
+- Loads `conf.toml` into a typed `Config` struct consumed by all subsystems.
+- Provides `SharedState` for mutable cross-module communication during a frame.
+- Defines `EngineError` variants and slot-map resource keys.
+
+### `mode.rs`
+- Defines `RuntimeMode` enum with four variants: `gui`, `tui`, `headless`, and `cli`.
+- Provides lowercase string tokens for config serialization and CLI parsing via `as_str` and `Display`.
+- `FromStr` accepts any casing and returns a typed parse error that names the rejected token.
+- Used by `config.rs` during TOML deserialization and by `main.rs` to select the startup path.
+
+### `resource_keys.rs`
+- Typed slotmap keys for every engine resource pool (textures, fonts, sounds, particles, etc.).
+- Each key is a lightweight handle safe to store in Lua userdata and pass across frames.
+- Generated via `slotmap::new_key_type!` for O(1) lookup with generational validity checks.
+
+### `shared_state.rs`
+- Central mutable state container shared across all engine subsystems during a frame.
+- Window state tracking: focus, DPI, fullscreen, scale mode, and pending resize/move requests.
+- Resource pools via SlotMap for textures, fonts, canvases, shaders, meshes, and particle systems.
+- Input aggregation: keyboard, mouse, touch, and gamepad state with vibration requests.
+- Timing and profiling: frame clock, delta time, FPS, per-phase timing breakdown.
+- Memory budget enforcement with LRU eviction of textures and canvases.
+- Asynchronous file I/O through GameFS with poll-based completion.
+- Physics stepping configuration and run-state parameters.
+- Render pipeline state: blend mode, stencil, depth, scissor, color mask, and command buffer.
+- Province registries, parallax layers, tilemaps, raycaster output, and UI context weak refs.
 
 ## Types
 
@@ -113,7 +170,7 @@ This module also owns the real no-window execution path in `headless.rs`. Window
 
 ## Lua API Reference
 
-- Namespace: `lurek.runtime.setLogLevel`
+- Namespace: `lurek.runtime`
 
 ## References
 

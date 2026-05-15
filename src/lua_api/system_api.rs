@@ -313,17 +313,24 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                 tbl.set("fixed_update_tick_rate", mlua::Value::Nil)?;
             }
             if let Some(ms) = st.frame_budget_warn_ms {
+                // frame_budget_warn_ms: per-frame time budget threshold in milliseconds
                 tbl.set("frame_budget_warn_ms", ms)?;
             } else {
+                // frame_budget_warn_ms: not configured
                 tbl.set("frame_budget_warn_ms", mlua::Value::Nil)?;
             }
             if let Some(ms) = st.lua_callback_timeout_ms {
+                // lua_callback_timeout_ms: per-callback Lua execution time limit in milliseconds
                 tbl.set("lua_callback_timeout_ms", ms)?;
             } else {
+                // lua_callback_timeout_ms: not configured
                 tbl.set("lua_callback_timeout_ms", mlua::Value::Nil)?;
             }
+            // vsync: whether vertical sync is currently enabled
             tbl.set("vsync", st.window_state.vsync_mode != 0)?;
+            // log_level: current logging verbosity level string
             tbl.set("log_level", log_messages::get_log_level().to_string())?;
+            // config_reload_revision: number of times the engine config has been reloaded
             tbl.set("config_reload_revision", st.config_reload_revision)?;
             Ok(tbl)
         })?,

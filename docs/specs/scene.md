@@ -11,18 +11,45 @@
 
 ## Summary
 
-The `scene` module is documented from the current source tree and existing module reference data.
+Scene stack with push/pop transitions, depth-sorted draw ordering, layered rendering, named registry, and shared data slots. `SceneStack` manages the active scene hierarchy — pushing a new scene pauses the previous one, popping resumes it. Transitions animate between scenes using fade, wipe, dissolve, slide, and pixelate effects with configurable duration and easing.
 
-This module primarily collaborates with `image`, `render`, `runtime`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
+`DepthSorter` provides adaptive draw-call ordering using unstable sort for small batches, stable sort for medium, radix sort for large (256+ entries with integral depths), and parallel sort for very large (10k+) sets. Overlays render above all scenes for persistent HUD elements. Named scene registry allows direct jump-to-scene by string key. Shared data slots pass state between scenes without globals. Exposed as `lurek.scene.*`. Feature Systems tier.
 
-## Files
+## Source Documentation
 
-- `depth_sorter.rs`: Per-frame depth-ordered callback batcher used by the Lua scene layer.
-- `easing.rs`: - Easing curve helpers for scene transitions and tween interpolation.
-- `mod.rs`: Module root and re-export surface for the stack, transition, and depth-sorting types.
-- `render.rs`: Empty render-command and simple CPU-image helpers so `SceneStack` fits shared engine interfaces.
-- `stack.rs`: Scene stack, registry, shared-data bookkeeping, and transition state ownership.
-- `transition.rs`: Transition-type enum plus active transition progress and timer logic.
+### `depth_sorter.rs`
+- Adaptive depth sorting for scene draw calls with four strategy tiers.
+- Selects unstable, stable, 8-bit radix, or rayon parallel sort by entry count and depth shape.
+- Radix path requires integral depths and ≥256 entries; parallel kicks in at 10k entries.
+- Each entry carries depth, callback index, and object-kind flag for draw dispatch.
+
+### `easing.rs`
+- Easing curve helpers for scene transitions and tween interpolation.
+- Provides bounce-out and related mathematical curves.
+
+### `mod.rs`
+- Scene stack with push/pop lifecycle and unique SceneId handles.
+- Depth-sorted entity ordering for layered draw calls.
+- Transition effects (fade, slide, wipe) with configurable easing curves.
+
+### `render.rs`
+- Render-command generation from the active scene in the stack.
+- Off-screen scene capture into ImageData for snapshots and thumbnails.
+- Stub implementations returning empty output when no scene is active.
+
+### `stack.rs`
+- Stack-based scene manager: push, pop, switch, and clear with optional transitions.
+- Overlay support: scenes marked as overlays render above all normal scenes.
+- Transition queuing: enqueues fade/slide/wipe transitions and drains them sequentially.
+- Layer ordering: per-scene draw priority for front-to-back render sorting.
+- Named registry: associate string names with SceneIds for lookup and navigation.
+- Per-scene data slots: store and retrieve SceneId-encoded values by string key.
+
+### `transition.rs`
+- Scene transition visual effects for smooth scene switching (fade, slide, wipe, iris, zoom, crossfade).
+- Easing curves with evaluation: linear, quadratic, cubic, bounce, and back overshoot.
+- Active transition state tracking elapsed time and computing eased progress.
+- Lua string parsing for transition type and easing selection from game scripts.
 
 ## Types
 

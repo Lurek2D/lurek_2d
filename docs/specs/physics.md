@@ -11,40 +11,81 @@
 
 ## Summary
 
-The `physics` module provides Lurek2D's rigid-body physics simulation backed by rapier2d 0.32. It is a Platform Services tier module that exposes a comprehensive 2D physics API for game scripts while handling all rapier pipeline complexity internally. Physics is classified CORE-KEEP — too central to 2D games to extract as a plugin.
+Rigid-body 2D physics simulation backed by rapier2d 0.32. `World` owns the complete rapier state: body set, collider set, joint set, pipeline, broad-phase, and narrow-phase. `World::step(dt)` advances by one time step syncing property changes, running the pipeline, and reading back positions/velocities. Fixed-timestep sub-stepping via `step_fixed` ensures deterministic results.
 
-**World and simulation step.** `World` owns the complete rapier simulation state: rigid body set, collider set, joint set, broad-phase, narrow-phase, integration parameters, and the pipeline. `World::step(dt)` advances by one time step: syncing body property changes into rapier, running the pipeline, and reading back positions/velocities for dynamic bodies. `World::step_fixed(accumulated_dt, step_dt, max_steps)` provides fixed-timestep sub-stepping for deterministic simulation with accumulator-based variable frame rate handling. `World::get_collision_events()` returns `Vec<BodyContact>` for script-side response each frame.
+Bodies support dynamic, static, and kinematic modes with restitution, friction, damping, and CCD. Shapes: circle, rectangle, polygon, capsule, segment, triangle, compound, heightfield. Joints: revolute, prismatic, spring, distance, rope, weld, gear, motor. Sensors detect overlap without physical response. Raycasting, shape-casting, and point queries provide spatial awareness. Physics zones apply area effects (gravity, buoyancy, wind). Cellular automata terrain enables destructible environments. Exposed as `lurek.physics.*`. Platform Services tier.
 
-**Bodies and shapes.** `Body` instances are created with `BodyType` (Dynamic, Kinematic, Static, Sensor) and `BodyShape` (Rect or Circle). Sensor bodies detect overlaps without impulse responses. The extended `Shape` enum supports polygons, edges, and chains for complex static geometry. `StandaloneShape` wraps a `Shape` with default fixture parameters for reuse across multiple bodies. Each `Body` carries mass, restitution, friction, linear/angular velocity, and a category+mask bit field for collision filtering.
+## Source Documentation
 
-**Spatial queries.** `World::raycast(origin, direction, max_distance, mask)` returns `Option<RaycastHit>` with hit point, normal, and body reference. `World::overlap_rect(rect, mask)` and `World::overlap_circle(center, radius, mask)` return lists of overlapping body IDs. `World::contact_pairs()` returns current narrow-phase `ContactInfo` snapshots for detailed per-pair inspection.
+### `body.rs`
+- Data-only body descriptor passed to `World` for physics simulation.
+- Body types: static, dynamic, kinematic, and sensor (overlap-only).
+- Shape primitives: rectangle, circle, polygon, edge, and chain.
+- Constructors produce default mass, friction, and restitution values.
+- Geometric helpers: AABB computation, layer/mask filtering, local↔world transforms.
+- Extended shapes stored in `shape_ext` for polygon/edge/chain bodies.
 
-**Joints.** Revolute (pin joint with optional motor and limits), prismatic (slider), distance (spring), weld (rigid), rope (max-distance constraint), wheel (prismatic + rotation for vehicles), friction (linear/angular), motor, and mouse (spring toward a dragged target). Pulley and gear joints are stubs that fall back to distance and revolute joints.
+### `cellular.rs`
+- Fixed-size cellular automaton grid simulating falling sand, flowing water, rising gas, and spreading fire.
+- Material interaction rules: sand displaces water, fire consumes gas, gravity pulls solids down.
+- Alternating sweep direction each tick to reduce lateral bias in material flow.
+- RGBA image export with pluggable palette for rendering grid state to textures.
+- Compact byte serialization and deserialization for save/load of grid snapshots.
+- Geometric fill helpers (rect, circle) for painting materials into the grid.
 
-**Physics zones.** `PhysicsZone` adds per-region gravity and damping overrides applied before each pipeline step. Zone boundaries are circles, rectangles, or convex polygons. `ZoneGravityMode` can scale world gravity, replace it, or apply an attractor/repulsor force. `ZoneEvent` fires when bodies enter or leave zones. `ZoneTracker` provides change-detection for zone membership. Used for water, low-gravity fields, and directional wind.
+### `collision.rs`
+- Collision detection result types for penetration depth and contact normals.
 
-**Destructible terrain.** `TerrainMap` is a bitgrid-backed static collider system for Worms-style terrain deformation. The grid is divided into 16x16 `Chunk` regions, each backed by a rapier compound shape built from edge segments. `set_cell(x, y, solid)` marks cells; `flush()` rebuilds changed chunk colliders. `apply_circle_damage(cx, cy, radius)` removes all cells within a radius and marks affected chunks dirty.
+### `collision_helpers.rs`
+- Pure-geometry collision tests for AABB, circle, and point queries.
+- No allocations or side effects; suitable for hot-path per-frame checks.
+- All coordinates assume x-right, y-down screen space.
 
-**Cellular automaton.** `CellularWorld` is a falling-sand simulation independent of rapier, operating on a per-cell material grid. `CellType` variants: Sand, Water, Fire, Gas, Rock (immovable). Each `tick()` applies gravity rules, material interaction (fire spreads, water flows, gas rises). Palette configuration controls per-type colours. `to_image()` exports the current state for GPU upload.
+### `mod.rs`
+- Rapier2D-backed rigid-body physics: bodies, shapes, world stepping, and raycasting.
+- Collision helpers (AABB, circle, point) and contact/event reporting.
+- Terrain tile-maps, spatial trigger zones, and cellular-automaton simulation.
 
-**Collision helpers.** `collision_helpers` provides lightweight stateless geometric collision utilities (AABB, circle, point-in-shape) that complement the full rapier pipeline for scripted pre-checks without spawning physics bodies.
+### `render.rs`
+- Debug visualisation of physics bodies as render commands or rasterised images.
+- Colour-codes bodies by type: dynamic, static, kinematic, sensor.
+- Draws velocity arrows for dynamic bodies and shape outlines for all bodies.
 
-**Lua surface.** `lurek.physics.newWorld(gravity_x, gravity_y)`. World methods: `addBody(spec)` returns body_id, `removeBody(id)`, `getBody(id)`, `setBodyPos(id, x, y)`, `setBodyVel(id, vx, vy)`, `step(dt)`, `getCollisions()`, `raycast(ox, oy, dx, dy, dist, mask)`, `addJoint(type, id_a, id_b, params)`. Zone: `addZone(spec)` returns zone_id, `removeZone(id)`. Terrain: `newTerrain(w, h)`. Cellular: `newCellular(w, h)`.
+### `shape.rs`
+- Geometry primitives: rect, circle, convex polygon, edge, and chain polyline.
+- Rapier collider conversion with degenerate-input rejection.
+- String-based shape parsing from a type tag and flat argument list.
+- Regular polygon constructor with side-count clamping.
+- `StandaloneShape` pairs geometry with density, friction, restitution, and sensor flag.
+- Local-space AABB queries for all shape variants.
 
-**Scope boundary.** Platform Services tier. Depends on `math`, `runtime`, `image`, `render` (debug commands), `rapier2d`. Lua bridge in `src/lua_api/physics_api.rs`.
+### `terrain.rs`
+- Tile-based terrain grid that syncs solid cells to static physics bodies via chunked rebuilds.
+- Chunk-based dirty tracking: only modified regions regenerate bodies on flush.
+- Bulk fill operations (circle, rectangle, fill-all) for terrain editing at runtime.
+- Run-length row merging to minimise body count per chunk.
+- Compact bitpacked serialisation and deserialisation for save/load.
+- Debris spawning and column-collapse utilities for destructible terrain effects.
 
-## Files
+### `world.rs`
+- Full rapier2d-backed physics simulation world with body, collider, and joint management.
+- Collision event collection: begin-contact, end-contact, and overlap pairs per step.
+- Raycast queries: single closest hit, point-to-point sweep, and multi-hit gather.
+- AABB and point spatial queries via QueryPipeline.
+- Joint catalog: revolute, distance, prismatic, weld, rope, wheel, friction, motor, mouse, pulley, gear.
+- Joint break-force thresholds with automatic removal on exceeded relative velocity.
+- One-way platform normals with velocity projection on contact.
+- Trigger zone system: gravity overrides (zero, directional, point, repulsor), damping, enter/exit events.
+- Fixed-timestep accumulator helper and pixels-per-meter unit conversion.
+- Debug rendering: shape snapshot extraction and direct ImageData line drawing.
+- Body lifecycle: add, destroy (disable), clear world, sleep control, CCD toggle.
 
-- `body.rs`: Script-facing rigid-body types, constructors, bounding boxes, and local/world point helpers.
-- `cellular.rs`: Cellular automaton simulation: falling-sand, water, fire, and gas.
-- `collision.rs`: Backward-compatible `CollisionInfo` contact record retained on the public API surface.
-- `collision_helpers.rs`: Lightweight stateless geometric collision helpers.
-- `mod.rs`: Module root and public re-export surface for bodies, shapes, collision records, and the world.
-- `render.rs`: Debug overlay render-command generation and CPU image export for headless inspection.
-- `shape.rs`: Extended collider geometry and reusable standalone fixture descriptors.
-- `terrain.rs`: Destructible terrain: a bitgrid-backed static collider system for Worms-style and Tanks-style terrain deformation.
-- `world.rs`: Simulation owner for rapier sets, body and collider mappings, joints, stepping, events, and spatial queries.
-- `zone.rs`: Physics zone system: gravity areas, attractor/repulsor regions, and zero-gravity pockets.
+### `zone.rs`
+- Spatial trigger zones with boundary containment (rect or circle).
+- Gravity overrides per zone: directional, point-attractor, repulsor, or zero-g.
+- Priority-based zone layering with bitmask filtering.
+- Damping overrides (linear and angular) for bodies inside a zone.
+- Enter/leave event tracking via diffing per-body zone sets each step.
 
 ## Types
 

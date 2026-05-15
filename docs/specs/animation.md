@@ -11,40 +11,83 @@
 
 ## Summary
 
-The `animation` module is Lurek2D's sprite animation system — a Foundations tier subsystem dedicated to describing how a textured sprite changes its source rectangle over time. It imports only from `crate::math`, so it can run in unit tests and non-rendering contexts without any platform services or GPU state.
+Sprite and skeletal animation runtime managing frame sequences, blend layers, state machines, and synchronization groups. `AnimClip` holds ordered `AnimFrame` entries with per-frame duration, source rectangle, and optional event triggers. `AnimStateMachine` drives clip transitions with configurable blend durations and exit-time rules. `AnimSyncGroup` locks multiple animations to a shared normalized timeline for coordinated character movement.
 
-**Core playback.** `Animation` is the main controller. It owns a flat pool of `AnimFrame` entries (each a source rectangle into a sprite sheet with an optional per-frame duration override) and any number of named `AnimClip` objects (an ordered list of frame indices, a default FPS rate, a looping flag, and an explicit playback mode: `forward`, `reverse`, or `pingpong`). Typical usage: `add_frame` or `add_frames_from_grid` for atlas layouts, then `add_clip` to register named states, then `play(clip_name)` when sprite state changes. `update(dt)` advances the frame timer, emits `AnimEvent` notifications via a pending queue (`ClipEnd`, `FrameReached`, `ClipLoop`), and applies crossfade transitions between clips.
+The module provides `AnimCurve` for easing-driven value interpolation along keyframes, `BlendLayerSet` for multi-layer additive/override mixing, and an Aseprite JSON importer that converts tagged frame ranges into engine clips. A `buildCharacter` helper assembles direction-based clip sets from atlas regions. Exposed as `lurek.animation.*` with state machine, curve, blend, and sync constructors. Imports only `math`; fully headless-testable.
 
-**State machine.** `AnimStateMachine` provides parameter-driven transitions between clips. `AnimParamValue` holds boolean, integer, or float values. `AnimTransition` edges carry a `TransitionCondition` (parameter name, `ConditionOp`, threshold) — the machine evaluates all outgoing transitions from the current state each update tick and switches automatically when a condition fires. `AnimStateConfig` stores per-state clip name, transition priority, and optional blend-in duration.
+## Source Documentation
 
-**Blend layers.** `BlendLayerSet` composites multiple animation clips on a single sprite with per-layer blend weights and optional `BlendMask` bone-subset filtering. Layers are ordered and evaluated additively, enabling upper/lower body split animations or damage-overlay blending without a separate entity.
+### `aseprite.rs`
+- Loads Aseprite JSON exports into engine animation metadata.
+- Extracts sheet frame rectangles, per-frame durations, and sheet size.
+- Parses frame tags into named clip ranges with forward, reverse, or ping-pong playback.
+- Accepts both array and object `frames` layouts and normalizes object order into playback order.
+- Validates required metadata fields and returns explicit parse errors when the export is incomplete.
 
-**Animation curves.** `AnimCurve` is a keyframe-based procedural animation curve. Keyframes store (time, value) pairs; adjacent pairs define segments with a configurable `EasingKind` interpolation mode (Linear, QuadIn, QuadOut, QuadInOut, CubicIn, CubicOut, CubicInOut, Sine, Bounce, Custom). Curves drive rotation, scale, alpha, or any float property independently of sprite-sheet frames.
+### `blend.rs`
+- Defines blend masks and named blend layers for multi-clip animation mixing.
+- Stores per-layer clip assignment, clamped blend weight, and optional bone filtering.
+- Manages an ordered layer set with add, remove, lookup, weight update, and mask replacement.
+- Provides the layer data higher animation systems use to build partial-body or weighted blends.
 
-**Sync groups.** `AnimSyncGroup` coordinates playback timing across multiple `Animation` instances so separate sprites (e.g., a character's body and shadow) advance in lock-step. `set_phase(t)` and `advance(dt)` synchronise all registered handles.
+### `clip.rs`
+- Defines named animation clips as reusable frame-index ranges.
+- Stores playback direction, looping state, and fallback FPS for clips that do not rely on per-frame timing.
+- Gives higher animation systems a compact clip descriptor they can switch, reuse, and combine by name.
 
-**Aseprite importer.** `aseprite.rs` parses Aseprite JSON export strings (`load_aseprite_json`) into `AsepriteParsed` — a list of `AsepriteFrameData` source rectangles and `AsepriteTagData` named clip ranges — and then populates the engine's native `Animation` type.
+### `controller.rs`
+- Owns the runtime animation player for frame-based clips.
+- Stores loaded frames, named clips, active playback state, pending animation events, and crossfade state.
+- Builds clip data from grids, explicit rectangles, and parsed Aseprite metadata.
+- Advances playback with forward, reverse, and ping-pong modes, including looping, stopping, pausing, and speed scaling.
+- Exposes the current quad, event drain, crossfade blend state, and simple preview images for the active frame set.
 
-**Render integration.** `AnimRenderParams` packages all data the render pipeline needs to draw one frame: texture key, source rect, destination transform, and flip flags. The module itself never issues draw calls; it only produces parameters consumed by `render`.
+### `curve.rs`
+- Defines keyed numeric curves and sparse multi-property timelines for animation data.
+- Stores sorted keyframes for single values and named property tracks.
+- Supports step, linear, ease-in, ease-out, ease-in-out, and callback-backed easing modes.
+- Evaluates one curve, one property, or a full property snapshot at an arbitrary time.
+- Provides the interpolation layer used by higher animation systems for parameter driving over time.
 
-**Lua surface.** `lurek.animation.new()` creates an `Animation`. `lurek.animation.newStateMachine()`, `lurek.animation.newCurve()`, `lurek.animation.newSyncGroup()`, and `lurek.animation.newBlendLayerSet()` expose the additional subsystems. `lurek.animation.fromAseprite(json_string)` parses Aseprite exports. `lurek.animation.buildCharacter(cfg)` builds a common animation+FSM bundle from one configuration table. All returned userdatas are fully scriptable with their complete method sets.
+### `event.rs`
+- Defines the animation events emitted while clip playback advances.
+- Carries the state changes higher layers react to: finish, loop, and frame switch.
+- Stores the optional frame index payload for frame-change notifications.
+- Provides a stable event name and a small accessor surface for consumers of runtime playback events.
 
-**Scope boundary.** Foundations tier. Depends only on `math`. Lua bridge in `src/lua_api/animation_api.rs`.
+### `frame.rs`
+- Defines the single-frame record used by the animation runtime to pair a source rectangle with optional per-frame timing.
+- Keeps the minimal frame payload shared by clips, controllers, previews, and imported metadata.
+- Preserves the older public alias so existing code can keep referring to the same frame type through its legacy name.
 
-## Files
+### `mod.rs`
+- Provides frame-based sprite animation with clips, playback modes, and named events.
+- Supports Aseprite JSON import, blend layers, property curves, and state machine transitions.
+- Offers Spine skeleton bridge, sync groups, and render-command generation for active frames.
+- Re-exports all primary types so dependents can import from `animation::` directly.
 
-- `aseprite.rs`: Aseprite JSON export parser for sprite animation data.
-- `blend.rs`: Blend-layer system for compositing multiple animation clips on a single sprite.
-- `clip.rs`: Defines AnimClip, the named sequence of frame indices with clip FPS and looping behavior.
-- `controller.rs`: Defines Animation, the main playback controller for frames, clips, speed, current state, and pending events.
-- `curve.rs`: Keyframe-based animation curves with per-segment easing.
-- `event.rs`: Defines AnimEvent, the event enum emitted for frame changes, loops, and completion.
-- `frame.rs`: Defines AnimFrame plus the AnimationFrame compatibility alias.
-- `mod.rs`: Declares the animation submodules and re-exports the public frame, clip, controller, event, and render parameter types.
-- `render.rs`: Converts the current animation frame into renderer-facing DrawQuad command data.
-- `spine_bridge.rs`: - Bridges a Spine skeleton to an animation state machine via name mapping.
-- `state_machine.rs`: Finite-state machine for sprite animation: states, transitions, and parameter-driven switching.
-- `sync_group.rs`: Named animation synchronisation groups.
+### `render.rs`
+- Converts the current animation frame quad into a textured draw command.
+- Stores atlas reference, position, rotation, and scale in `AnimRenderParams`.
+- Provides a standalone `quad_to_draw_command` helper reusable outside the controller.
+
+### `spine_bridge.rs`
+- Bridges a Spine skeleton to an animation state machine via name mapping.
+- Plays mapped Spine clips automatically when the FSM transitions to a new state.
+- Owns the skeleton instance and advances its animation and world transforms each frame.
+- Exposes read and write access to the skeleton and the last applied FSM state.
+
+### `state_machine.rs`
+- Implements a named-state animation FSM driven by typed parameters and parsed conditions.
+- Registers states with clip bindings and transitions with string-based condition expressions.
+- Evaluates transition chains each frame and force-plays the target clip on state change.
+- Supports float, int, and bool parameters compared with standard relational operators.
+- Provides the condition parser and numeric comparison utilities used by transition evaluation.
+
+### `sync_group.rs`
+- Groups animation slot-map keys that should stay synchronised during playback.
+- Stores a deduplicated member list with add, remove, clear, and query operations.
+- Provides the membership data higher systems use to align animation timers.
 
 ## Types
 

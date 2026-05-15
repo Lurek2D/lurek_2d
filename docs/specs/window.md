@@ -11,16 +11,36 @@
 
 ## Summary
 
-The `window` module is documented from the current source tree and existing module reference data.
+OS window lifecycle management via winit 0.30 with deferred state writes applied at frame start on the main thread. `WindowState` accumulates requested changes (title, size, position, fullscreen mode, VSync, cursor visibility, icon) during the frame and applies them atomically before the next event poll to avoid mid-frame state inconsistency.
 
-This module primarily collaborates with `runtime`. Its responsibility should stay inside the Platform Services group rather than absorb behavior owned by those neighbors.
+Multi-monitor enumeration provides `DisplayInfo` snapshots with resolution, DPI scale, refresh rate, and position. Fullscreen supports exclusive and borderless modes with resolution selection. VSync configuration toggles between immediate, FIFO, and mailbox present modes. DPI-aware scaling adjusts the viewport and reports `ScaleInfo` for layout calculations. Window centering, cross-display movement, and startup monitor selection helpers handle multi-monitor workflows. Native file dialogs (open, save, folder) run asynchronously to avoid blocking the game loop. Exposed as `lurek.window.*`. Platform Services tier.
 
-## Files
+## Source Documentation
 
-- `event_loop.rs`: Owns monitor/event-loop helper functions for display enumeration, startup monitor selection, and centering windows on target monitors.
-- `management.rs`: Owns window commands and queries such as title, fullscreen, vsync, size, position, minimize, maximize, restore, visibility, DPI scale, and message boxes.
-- `mod.rs`: Declares the window submodules and re-exports the public management and viewport helpers as the module's main surface.
-- `viewport.rs`: Owns logical game dimensions, scale-mode changes, and coordinate conversion between game space and on-screen pixels.
+### `event_loop.rs`
+- Multi-monitor enumeration, display info snapshots, and primary-monitor detection.
+- Monitor selection with fallback logic (current → primary → first available).
+- Window centering and cross-display movement helpers.
+- Startup monitor resolution for initial window placement.
+
+### `management.rs`
+- Stage deferred window property changes (title, size, position, icon, display).
+- Fullscreen and vsync mode switching with exclusive/desktop variants.
+- Minimize, maximize, restore, close, and attention-request staging.
+- Focus, visibility, and mouse-focus queries.
+- DPI-aware pixel conversion helpers.
+- Combined mode update and snapshot via `set_mode`/`get_mode`.
+- Native OS message-box dialog via `rfd`.
+
+### `mod.rs`
+- OS window lifecycle: creation, sizing, positioning, fullscreen, and DPI handling.
+- Multi-monitor support: display enumeration, selection, and window placement.
+- Virtual viewport: logical-to-pixel scaling and scale-mode selection.
+
+### `viewport.rs`
+- Logical game viewport size queries and scale-mode staging.
+- Coordinate conversion between logical game space and physical screen pixels.
+- Viewport scale/offset snapshot via `ScaleInfo`.
 
 ## Types
 

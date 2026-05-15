@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+- docs/lua_api: added `tools/validate/validate_param_types.py` to cross-check `@param` type annotations in `src/lua_api/*_api.rs` against Rust closure type inference, and `tools/fix/fix_param_types.py` to auto-apply corrections; corrected 575 `number` → `integer` mismatches across 18 api files (all cases where Rust uses integer types `i32`/`u32`/`i64`/`u64`/`usize`); wired the new validator into the `Docs: Validate Source` task in `.vscode/tasks.json`.
+
+- fix(terminal,ui): added default shaded terminal widget rendering with background command emission, made terminal render/cell-size/window-fit paths use the same active cell metrics, fixed `LTerminal:getCellSize()` to return width and height numbers, and added a missing default `Layout` style to the GUI dark theme with Rust/Lua coverage and example/spec sync.
+
+- docs/lua_api: added missing inline Rust `///` comments for helper functions and internal bridge types across `audio_api`, `physics_api`, `render_api`, `terminal_api`, and several supporting `src/lua_api/*_api.rs` files to improve source-level documentation coverage.
+
 - fix(scene,ui): restored the `lurek.scene.newScene` Lua alias in `scene_api.rs`, synchronized `lurek.ui.setEnabled()` with `WidgetBase.enabled`, and regenerated Lua API/spec outputs so the failing scene and UI Lua tests pass again.
 
 - feat(runtime): added `gui|tui|headless|cli` runtime mode parsing from config and CLI flags, implemented the no-window headless Lua runtime with `--eval`/`--frames`, added the release-safe `repl` core plus `lurek.repl`, and synced focused Rust/Lua tests, examples, and specs.

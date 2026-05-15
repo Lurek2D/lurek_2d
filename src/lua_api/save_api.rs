@@ -8,11 +8,13 @@ use mlua::prelude::*;
 use std::cell::RefCell;
 use std::collections::HashMap;
 use std::rc::Rc;
+/// Extracts a logical slot name from a `slot_<name>.sav` filename.
 fn slot_name_from_filename(filename: &str) -> Option<&str> {
     filename
         .strip_prefix("slot_")
         .and_then(|s| s.strip_suffix(".sav"))
 }
+/// Parses validated save content and evaluates it back into a Lua table.
 fn eval_save_content<'a>(vm: &'a Lua, content: &str) -> LuaResult<LuaTable<'a>> {
     let validated = SaveManager::parse_save_string(content).map_err(LuaError::RuntimeError)?;
     vm.load(validated.as_str()).eval()
@@ -251,7 +253,7 @@ impl LuaUserData for LuaSaveManager {
         // -- setSchemaVersion --
         /// Set the current schema version number for saves produced by this game build.
         /// When loading an older save, migrations registered via addMigration will run in order.
-        /// @param | version | number | Integer schema version (must increase with each breaking data format change).
+        /// @param | version | integer | Integer schema version (must increase with each breaking data format change).
         /// @return | nil | No value is returned.
         methods.add_method_mut("setSchemaVersion", |_, this, version: i32| {
             this.manager.set_schema_version(version);
@@ -266,7 +268,7 @@ impl LuaUserData for LuaSaveManager {
         // -- addMigration --
         /// Register a migration function that transforms save data from one schema version to the next.
         /// Migrations run in version order when loading saves older than the current schema version.
-        /// @param | fromVersion | number | The schema version this migration upgrades FROM (it produces fromVersion+1).
+        /// @param | fromVersion | integer | The schema version this migration upgrades FROM (it produces fromVersion+1).
         /// @param | func | function | Receives the full save data table and must return the transformed table.
         /// @return | nil | No return value.
         methods.add_method_mut(

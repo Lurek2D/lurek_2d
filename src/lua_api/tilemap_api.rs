@@ -17,10 +17,12 @@ use mlua::prelude::*;
 use std::cell::RefCell;
 use std::collections::HashMap;
 use std::rc::Rc;
+/// Converts a one-based Lua index into a zero-based `usize` tile index.
 fn one_based_usize(name: &str, val: usize) -> LuaResult<usize> {
     val.checked_sub(1)
         .ok_or_else(|| mlua::Error::RuntimeError(format!("{name} must be >= 1 (got {val})")))
 }
+/// Converts a one-based Lua index into a zero-based `u32` tile index.
 fn one_based_u32(name: &str, val: u32) -> LuaResult<u32> {
     val.checked_sub(1)
         .ok_or_else(|| mlua::Error::RuntimeError(format!("{name} must be >= 1 (got {val})")))
@@ -84,7 +86,7 @@ impl LuaUserData for LuaTileSet {
         });
         // -- getQuad --
         /// Returns the source rectangle (UV quad) for a tile in the atlas.
-        /// @param | tileId | number | Tile ID (1-based).
+        /// @param | tileId | integer | Tile ID (1-based).
         /// @return | table | Table with fields `x`, `y`, `width`, `height` in pixels.
         methods.add_method("getQuad", |lua, this, tile_id: u32| {
             if tile_id == 0 {
@@ -102,7 +104,7 @@ impl LuaUserData for LuaTileSet {
         });
         // -- setAnimation --
         /// Assigns an animation sequence to a tile. Each frame references another tile ID and a duration.
-        /// @param | tileId | number | Tile ID to animate (1-based).
+        /// @param | tileId | integer | Tile ID to animate (1-based).
         /// @param | frames | table | Array of `{tileid=number, duration=number}` frame definitions.
         /// @return | nil | No return value.
         methods.add_method(
@@ -136,7 +138,7 @@ impl LuaUserData for LuaTileSet {
         );
         // -- getAnimation --
         /// Returns the animation frames for a tile, or nil if none are set.
-        /// @param | tileId | number | Tile ID to query (1-based).
+        /// @param | tileId | integer | Tile ID to query (1-based).
         /// @return | table | Array of `{tileid=number, duration=number}` frames, or nil.
         methods.add_method("getAnimation", |lua, this, tile_id: u32| {
             if tile_id == 0 {
@@ -161,7 +163,7 @@ impl LuaUserData for LuaTileSet {
         });
         // -- setSolid --
         /// Marks a tile as solid or non-solid for collision queries.
-        /// @param | tileId | number | Tile ID to modify (1-based).
+        /// @param | tileId | integer | Tile ID to modify (1-based).
         /// @param | solid | boolean | Whether the tile blocks movement.
         /// @return | nil | No value is returned.
         methods.add_method("setSolid", |_, this, (tile_id, solid): (u32, bool)| {
@@ -175,7 +177,7 @@ impl LuaUserData for LuaTileSet {
         });
         // -- isSolid --
         /// Checks whether a tile is marked as solid.
-        /// @param | tileId | number | Tile ID to check (1-based).
+        /// @param | tileId | integer | Tile ID to check (1-based).
         /// @return | boolean | True if the tile is solid.
         methods.add_method("isSolid", |_, this, tile_id: u32| {
             if tile_id == 0 {
@@ -189,7 +191,7 @@ impl LuaUserData for LuaTileSet {
         /// Registers a 4-bit auto-tile rule mapping a bitmask to a tile ID for a named tile type.
         /// @param | typeName | string | Logical tile type name (e.g. "grass").
         /// @param | bitmask | number | 4-bit neighbor bitmask (0..15).
-        /// @param | tileId | number | Tile ID to use for this bitmask (1-based).
+        /// @param | tileId | integer | Tile ID to use for this bitmask (1-based).
         /// @return | nil | No return value.
         methods.add_method(
             "setAutoTileRule",
@@ -224,7 +226,7 @@ impl LuaUserData for LuaTileSet {
         /// Registers an 8-bit auto-tile rule mapping a bitmask to a tile ID for a named tile type.
         /// @param | typeName | string | Logical tile type name.
         /// @param | bitmask | number | 8-bit neighbor bitmask (0..255).
-        /// @param | tileId | number | Tile ID to use for this bitmask (1-based).
+        /// @param | tileId | integer | Tile ID to use for this bitmask (1-based).
         /// @return | nil | No return value.
         methods.add_method(
             "setAutoTileRule8",
@@ -297,7 +299,7 @@ impl LuaUserData for LuaTileMap {
         });
         // -- getTileSet --
         /// Returns the tileset at the given index.
-        /// @param | idx | number | Tileset index (1-based).
+        /// @param | idx | integer | Tileset index (1-based).
         /// @return | LTileSet | The tileset, or nil if index is out of range.
         methods.add_method("getTileSet", |_, this, idx: usize| {
             if idx == 0 {
@@ -316,8 +318,8 @@ impl LuaUserData for LuaTileMap {
         // -- addLayer --
         /// Creates a new tile layer with the given name and dimensions.
         /// @param | name | string | Layer name.
-        /// @param | w | number | Width in tiles.
-        /// @param | h | number | Height in tiles.
+        /// @param | w | integer | Width in tiles.
+        /// @param | h | integer | Height in tiles.
         /// @return | number | Index of the new layer (1-based).
         methods.add_method("addLayer", |_, this, (name, w, h): (String, u32, u32)| {
             let idx = this.inner.borrow_mut().add_layer(&name, w, h);
@@ -331,7 +333,7 @@ impl LuaUserData for LuaTileMap {
         });
         // -- getLayerName --
         /// Returns the name of a layer by index.
-        /// @param | idx | number | Layer index (1-based).
+        /// @param | idx | integer | Layer index (1-based).
         /// @return | string | Layer name, or nil if index is out of range.
         methods.add_method("getLayerName", |_, this, idx: usize| {
             Ok(this
@@ -342,7 +344,7 @@ impl LuaUserData for LuaTileMap {
         });
         // -- setLayerVisible --
         /// Sets whether a layer is drawn during rendering.
-        /// @param | idx | number | Layer index (1-based).
+        /// @param | idx | integer | Layer index (1-based).
         /// @param | visible | boolean | True to show, false to hide.
         /// @return | nil | No return value.
         methods.add_method(
@@ -354,14 +356,14 @@ impl LuaUserData for LuaTileMap {
         );
         // -- getLayerVisible --
         /// Returns whether a layer is currently visible.
-        /// @param | idx | number | Layer index (1-based).
+        /// @param | idx | integer | Layer index (1-based).
         /// @return | boolean | True if the layer is visible.
         methods.add_method("getLayerVisible", |_, this, idx: usize| {
             Ok(this.inner.borrow().get_layer_visible(idx - 1))
         });
         // -- setLayerColor --
         /// Sets the tint color for an entire layer.
-        /// @param | idx | number | Layer index (1-based).
+        /// @param | idx | integer | Layer index (1-based).
         /// @param | r | number | Red channel (0..1).
         /// @param | g | number | Green channel (0..1).
         /// @param | b | number | Blue channel (0..1).
@@ -376,7 +378,7 @@ impl LuaUserData for LuaTileMap {
         );
         // -- getLayerColor --
         /// Returns the tint color of a layer as four RGBA components.
-        /// @param | idx | number | Layer index (1-based).
+        /// @param | idx | integer | Layer index (1-based).
         /// @return | number | Red (0..1).
         /// @return | number | Green (0..1).
         /// @return | number | Blue (0..1).
@@ -387,7 +389,7 @@ impl LuaUserData for LuaTileMap {
         });
         // -- setLayerOffset --
         /// Sets the pixel offset for a layer, shifting all tiles during rendering.
-        /// @param | idx | number | Layer index (1-based).
+        /// @param | idx | integer | Layer index (1-based).
         /// @param | ox | number | Horizontal offset in pixels.
         /// @param | oy | number | Vertical offset in pixels.
         /// @return | nil | No return value.
@@ -400,7 +402,7 @@ impl LuaUserData for LuaTileMap {
         );
         // -- getLayerOffset --
         /// Returns the pixel offset of a layer.
-        /// @param | idx | number | Layer index (1-based).
+        /// @param | idx | integer | Layer index (1-based).
         /// @return | number | Horizontal offset.
         /// @return | number | Vertical offset.
         methods.add_method("getLayerOffset", |_, this, idx: usize| {
@@ -409,7 +411,7 @@ impl LuaUserData for LuaTileMap {
         });
         // -- setLayerParallax --
         /// Sets the parallax scroll factor for a layer. Values less than 1 scroll slower than the camera.
-        /// @param | idx | number | Layer index (1-based).
+        /// @param | idx | integer | Layer index (1-based).
         /// @param | px | number | Horizontal parallax factor.
         /// @param | py | number | Vertical parallax factor.
         /// @return | nil | No return value.
@@ -422,7 +424,7 @@ impl LuaUserData for LuaTileMap {
         );
         // -- getLayerParallax --
         /// Returns the parallax scroll factor of a layer.
-        /// @param | idx | number | Layer index (1-based).
+        /// @param | idx | integer | Layer index (1-based).
         /// @return | number | Horizontal parallax factor.
         /// @return | number | Vertical parallax factor.
         methods.add_method("getLayerParallax", |_, this, idx: usize| {
@@ -431,10 +433,10 @@ impl LuaUserData for LuaTileMap {
         });
         // -- setTile --
         /// Sets the tile GID at a specific grid position on a layer.
-        /// @param | layer | number | Layer index (1-based).
-        /// @param | x | number | Column (1-based).
-        /// @param | y | number | Row (1-based).
-        /// @param | gid | number | Global tile ID to place.
+        /// @param | layer | integer | Layer index (1-based).
+        /// @param | x | integer | Column (1-based).
+        /// @param | y | integer | Row (1-based).
+        /// @param | gid | integer | Global tile ID to place.
         /// @return | nil | No return value.
         methods.add_method(
             "setTile",
@@ -447,18 +449,18 @@ impl LuaUserData for LuaTileMap {
         );
         // -- getTile --
         /// Returns the tile GID at a specific grid position on a layer.
-        /// @param | layer | number | Layer index (1-based).
-        /// @param | x | number | Column (1-based).
-        /// @param | y | number | Row (1-based).
+        /// @param | layer | integer | Layer index (1-based).
+        /// @param | x | integer | Column (1-based).
+        /// @param | y | integer | Row (1-based).
         /// @return | number | Global tile ID at that position.
         methods.add_method("getTile", |_, this, (layer, x, y): (usize, u32, u32)| {
             Ok(this.inner.borrow().get_tile(layer - 1, x - 1, y - 1))
         });
         // -- clearTile --
         /// Removes the tile at a specific grid position, setting it to empty (GID 0).
-        /// @param | layer | number | Layer index (1-based).
-        /// @param | x | number | Column (1-based).
-        /// @param | y | number | Row (1-based).
+        /// @param | layer | integer | Layer index (1-based).
+        /// @param | x | integer | Column (1-based).
+        /// @param | y | integer | Row (1-based).
         /// @return | nil | No value is returned.
         methods.add_method("clearTile", |_, this, (layer, x, y): (usize, u32, u32)| {
             this.inner.borrow_mut().clear_tile(layer - 1, x - 1, y - 1);
@@ -466,8 +468,8 @@ impl LuaUserData for LuaTileMap {
         });
         // -- fill --
         /// Fills every cell of a layer with the given GID.
-        /// @param | layer | number | Layer index (1-based).
-        /// @param | gid | number | Global tile ID to fill with.
+        /// @param | layer | integer | Layer index (1-based).
+        /// @param | gid | integer | Global tile ID to fill with.
         /// @return | nil | No value is returned.
         methods.add_method("fill", |_, this, (layer, gid): (usize, u32)| {
             this.inner.borrow_mut().fill(layer - 1, gid);
@@ -475,7 +477,7 @@ impl LuaUserData for LuaTileMap {
         });
         // -- tileTypeIndex --
         /// Builds an index mapping each GID present on a layer to an array of `{x, y}` positions.
-        /// @param | layer | number | Layer index (1-based).
+        /// @param | layer | integer | Layer index (1-based).
         /// @return | table | Table keyed by GID, each value an array of `{x=number, y=number}`.
         methods.add_method("tileTypeIndex", |lua, this, layer: usize| {
             if layer == 0 {
@@ -497,8 +499,8 @@ impl LuaUserData for LuaTileMap {
         });
         // -- findTilesByGid --
         /// Returns all positions on a layer that contain a specific GID.
-        /// @param | layer | number | Layer index (1-based).
-        /// @param | gid | number | Global tile ID to search for.
+        /// @param | layer | integer | Layer index (1-based).
+        /// @param | gid | integer | Global tile ID to search for.
         /// @return | table | Array of `{x=number, y=number}` positions.
         methods.add_method("findTilesByGid", |lua, this, (layer, gid): (usize, u32)| {
             if layer == 0 {
@@ -560,8 +562,8 @@ impl LuaUserData for LuaTileMap {
         });
         // -- tileToWorld --
         /// Converts tile-grid coordinates to world-space pixel coordinates (top-left corner of the tile).
-        /// @param | tx | number | Tile column (1-based).
-        /// @param | ty | number | Tile row (1-based).
+        /// @param | tx | integer | Tile column (1-based).
+        /// @param | ty | integer | Tile row (1-based).
         /// @return | number | World X position in pixels.
         /// @return | number | World Y position in pixels.
         methods.add_method("tileToWorld", |_, this, (tx, ty): (u32, u32)| {
@@ -596,16 +598,16 @@ impl LuaUserData for LuaTileMap {
         });
         // -- isSolid --
         /// Checks whether the tile at a given position on a layer is solid.
-        /// @param | layer | number | Layer index (1-based).
-        /// @param | x | number | Column (1-based).
-        /// @param | y | number | Row (1-based).
+        /// @param | layer | integer | Layer index (1-based).
+        /// @param | x | integer | Column (1-based).
+        /// @param | y | integer | Row (1-based).
         /// @return | boolean | True if the tile at that position is marked solid.
         methods.add_method("isSolid", |_, this, (layer, x, y): (usize, u32, u32)| {
             Ok(this.inner.borrow().is_solid(layer - 1, x - 1, y - 1))
         });
         // -- applyAutoTile --
         /// Runs 4-bit auto-tiling on an entire layer, replacing tiles according to registered rules.
-        /// @param | layer | number | Layer index (1-based).
+        /// @param | layer | integer | Layer index (1-based).
         /// @param | typeName | string | Tile type name whose rules to apply.
         /// @return | nil | No return value.
         methods.add_method(
@@ -619,9 +621,9 @@ impl LuaUserData for LuaTileMap {
         );
         // -- applyAutoTileAt --
         /// Runs 4-bit auto-tiling at a single tile position and updates it and its neighbors.
-        /// @param | layer | number | Layer index (1-based).
-        /// @param | x | number | Column (1-based).
-        /// @param | y | number | Row (1-based).
+        /// @param | layer | integer | Layer index (1-based).
+        /// @param | x | integer | Column (1-based).
+        /// @param | y | integer | Row (1-based).
         /// @param | typeName | string | Tile type name whose rules to apply.
         /// @return | nil | No return value.
         methods.add_method(
@@ -635,7 +637,7 @@ impl LuaUserData for LuaTileMap {
         );
         // -- applyAutoTile8 --
         /// Runs 8-bit auto-tiling on an entire layer, considering diagonal neighbors.
-        /// @param | layer | number | Layer index (1-based).
+        /// @param | layer | integer | Layer index (1-based).
         /// @param | typeName | string | Tile type name whose rules to apply.
         /// @return | nil | No return value.
         methods.add_method(
@@ -649,9 +651,9 @@ impl LuaUserData for LuaTileMap {
         );
         // -- applyAutoTile8At --
         /// Runs 8-bit auto-tiling at a single tile position and updates it and its neighbors.
-        /// @param | layer | number | Layer index (1-based).
-        /// @param | x | number | Column (1-based).
-        /// @param | y | number | Row (1-based).
+        /// @param | layer | integer | Layer index (1-based).
+        /// @param | x | integer | Column (1-based).
+        /// @param | y | integer | Row (1-based).
         /// @param | typeName | string | Tile type name whose rules to apply.
         /// @return | nil | No return value.
         methods.add_method(
@@ -665,7 +667,7 @@ impl LuaUserData for LuaTileMap {
         );
         // -- rectOverlapsSolid --
         /// Tests whether a world-space rectangle overlaps any solid tile on a layer.
-        /// @param | layer | number | Layer index (1-based).
+        /// @param | layer | integer | Layer index (1-based).
         /// @param | x | number | Rectangle left edge in world pixels.
         /// @param | y | number | Rectangle top edge in world pixels.
         /// @param | w | number | Rectangle width in pixels.
@@ -682,7 +684,7 @@ impl LuaUserData for LuaTileMap {
         );
         // -- sweepRect --
         /// Performs a swept AABB collision test against solid tiles on a layer, returning the contact point and normal.
-        /// @param | layer | number | Layer index (1-based).
+        /// @param | layer | integer | Layer index (1-based).
         /// @param | x | number | Rectangle left edge in world pixels.
         /// @param | y | number | Rectangle top edge in world pixels.
         /// @param | w | number | Rectangle width in pixels.
@@ -747,9 +749,9 @@ impl LuaUserData for LuaTileMap {
         });
         // -- setTileTint --
         /// Overrides the color tint for a single tile at a given position.
-        /// @param | layer | number | Layer index (1-based).
-        /// @param | x | number | Column (1-based).
-        /// @param | y | number | Row (1-based).
+        /// @param | layer | integer | Layer index (1-based).
+        /// @param | x | integer | Column (1-based).
+        /// @param | y | integer | Row (1-based).
         /// @param | r | number | Red channel (0..1).
         /// @param | g | number | Green channel (0..1).
         /// @param | b | number | Blue channel (0..1).
@@ -778,7 +780,7 @@ impl LuaUserData for LuaTileMap {
         });
         // -- drawToImage --
         /// Rasterizes the map into an image using the given tile size, returning an image handle.
-        /// @param | tileSize | number | Pixel size of each tile in the output image.
+        /// @param | tileSize | integer | Pixel size of each tile in the output image.
         /// @return | LImage | Rasterized image of the map.
         methods.add_method("drawToImage", |_, this, tile_size: u32| {
             let img = this.inner.borrow().draw_to_image(tile_size);
@@ -786,7 +788,7 @@ impl LuaUserData for LuaTileMap {
         });
         // -- toNavGrid --
         /// Converts a layer into a 2D boolean grid for pathfinding. Tiles with GIDs in the given list are marked walkable.
-        /// @param | layer | number | Layer index (1-based).
+        /// @param | layer | integer | Layer index (1-based).
         /// @param | gids | table | Array of walkable GIDs.
         /// @return | table | 2D array of booleans (true = walkable).
         methods.add_method(
@@ -810,7 +812,7 @@ impl LuaUserData for LuaTileMap {
         );
         // -- onTileEnter --
         /// Registers a callback invoked when an entity enters a tile with the given GID.
-        /// @param | gid | number | Global tile ID to watch for.
+        /// @param | gid | integer | Global tile ID to watch for.
         /// @param | func | function | Callback receiving `(wx, wy, tx, ty)`.
         /// @return | nil | No return value.
         methods.add_method_mut(
@@ -823,7 +825,7 @@ impl LuaUserData for LuaTileMap {
         );
         // -- checkEntities --
         /// Checks a list of entities against registered tile-enter callbacks on a layer.
-        /// @param | layer | number | Layer index (1-based).
+        /// @param | layer | integer | Layer index (1-based).
         /// @param | entities | table | Array of entity tables, each with `x`/`y` or `[1]`/`[2]` fields.
         /// @return | nil | No return value.
         methods.add_method(
@@ -853,7 +855,7 @@ impl LuaUserData for LuaTileMap {
         );
         // -- onTileStep --
         /// Registers a callback invoked each frame an entity remains on a tile with the given GID.
-        /// @param | gid | number | Global tile ID to watch for.
+        /// @param | gid | integer | Global tile ID to watch for.
         /// @param | func | function | Callback receiving `(entity, tx, ty)`.
         /// @return | nil | No return value.
         methods.add_method_mut(
@@ -866,7 +868,7 @@ impl LuaUserData for LuaTileMap {
         );
         // -- onTileExit --
         /// Registers a callback invoked when an entity leaves a tile with the given GID.
-        /// @param | gid | number | Global tile ID to watch for.
+        /// @param | gid | integer | Global tile ID to watch for.
         /// @param | func | function | Callback receiving `(entity, tx, ty)`.
         /// @return | nil | No return value.
         methods.add_method_mut(
@@ -879,10 +881,10 @@ impl LuaUserData for LuaTileMap {
         );
         // -- fireTileStep --
         /// Manually fires the tile-step callback for a specific GID and entity at a tile position.
-        /// @param | gid | number | Global tile ID.
+        /// @param | gid | integer | Global tile ID.
         /// @param | entity | table | Entity table to pass to the callback.
-        /// @param | tx | number | Tile column.
-        /// @param | ty | number | Tile row.
+        /// @param | tx | integer | Tile column.
+        /// @param | ty | integer | Tile row.
         /// @return | nil | No return value.
         methods.add_method(
             "fireTileStep",
@@ -896,10 +898,10 @@ impl LuaUserData for LuaTileMap {
         );
         // -- fireTileExit --
         /// Manually fires the tile-exit callback for a specific GID and entity at a tile position.
-        /// @param | gid | number | Global tile ID.
+        /// @param | gid | integer | Global tile ID.
         /// @param | entity | table | Entity table to pass to the callback.
-        /// @param | tx | number | Tile column.
-        /// @param | ty | number | Tile row.
+        /// @param | tx | integer | Tile column.
+        /// @param | ty | integer | Tile row.
         /// @return | nil | No return value.
         methods.add_method(
             "fireTileExit",
@@ -964,7 +966,7 @@ impl LuaUserData for LuaAutoTileSheet {
         /// Writes the auto-tile bitmask-to-tile rules from this sheet into a tileset.
         /// @param | tileSet | LTileSet | Target tileset to receive the rules.
         /// @param | typeName | string | Logical tile type name to register under.
-        /// @param | startGid | number? | Optional first GID offset.
+        /// @param | startGid | integer? | Optional first GID offset.
         /// @return | nil | No return value.
         methods.add_method(
             "applyToTileSet",
@@ -980,7 +982,7 @@ impl LuaUserData for LuaAutoTileSheet {
         );
         // -- getBitmaskForTile --
         /// Returns the bitmask associated with a tile in this auto-tile sheet.
-        /// @param | tileId | number | Tile ID (1-based).
+        /// @param | tileId | integer | Tile ID (1-based).
         /// @return | number | Bitmask value, or nil if not found.
         methods.add_method("getBitmaskForTile", |_, this, tile_id: u32| {
             if tile_id == 0 {
@@ -1003,7 +1005,7 @@ impl LuaUserData for LuaAutoTileSheet {
         });
         // -- getQuad --
         /// Returns the source rectangle for a tile in the auto-tile sheet.
-        /// @param | tileId | number | Tile ID (1-based).
+        /// @param | tileId | integer | Tile ID (1-based).
         /// @return | number | X offset in pixels.
         /// @return | number | Y offset in pixels.
         /// @return | number | Width in pixels.
@@ -1039,17 +1041,17 @@ impl LuaUserData for LuaChunkMap {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
         // -- getTile --
         /// Returns the tile GID at the given world-tile coordinate.
-        /// @param | x | number | Tile X coordinate.
-        /// @param | y | number | Tile Y coordinate.
+        /// @param | x | integer | Tile X coordinate.
+        /// @param | y | integer | Tile Y coordinate.
         /// @return | number | Global tile ID.
         methods.add_method("getTile", |_, this, (x, y): (i32, i32)| {
             Ok(this.inner.borrow().get_tile(x, y))
         });
         // -- setTile --
         /// Sets the tile GID at the given world-tile coordinate.
-        /// @param | x | number | Tile X coordinate.
-        /// @param | y | number | Tile Y coordinate.
-        /// @param | gid | number | Global tile ID to place.
+        /// @param | x | integer | Tile X coordinate.
+        /// @param | y | integer | Tile Y coordinate.
+        /// @param | gid | integer | Global tile ID to place.
         /// @return | nil | No value is returned.
         methods.add_method("setTile", |_, this, (x, y, gid): (i32, i32, u32)| {
             this.inner.borrow_mut().set_tile(x, y, gid);
@@ -1057,8 +1059,8 @@ impl LuaUserData for LuaChunkMap {
         });
         // -- clearTile --
         /// Removes the tile at the given world-tile coordinate.
-        /// @param | x | number | Tile X coordinate.
-        /// @param | y | number | Tile Y coordinate.
+        /// @param | x | integer | Tile X coordinate.
+        /// @param | y | integer | Tile Y coordinate.
         /// @return | nil | No value is returned.
         methods.add_method("clearTile", |_, this, (x, y): (i32, i32)| {
             this.inner.borrow_mut().clear_tile(x, y);
@@ -1066,11 +1068,11 @@ impl LuaUserData for LuaChunkMap {
         });
         // -- fillRect --
         /// Fills a rectangular region of tiles with a given GID.
-        /// @param | x0 | number | Left tile coordinate.
-        /// @param | y0 | number | Top tile coordinate.
-        /// @param | x1 | number | Right tile coordinate (inclusive).
-        /// @param | y1 | number | Bottom tile coordinate (inclusive).
-        /// @param | gid | number | Global tile ID to fill with.
+        /// @param | x0 | integer | Left tile coordinate.
+        /// @param | y0 | integer | Top tile coordinate.
+        /// @param | x1 | integer | Right tile coordinate (inclusive).
+        /// @param | y1 | integer | Bottom tile coordinate (inclusive).
+        /// @param | gid | integer | Global tile ID to fill with.
         /// @return | nil | No return value.
         methods.add_method(
             "fillRect",
@@ -1081,8 +1083,8 @@ impl LuaUserData for LuaChunkMap {
         );
         // -- loadChunk --
         /// Loads a chunk into memory at the given chunk coordinates.
-        /// @param | cx | number | Chunk X coordinate.
-        /// @param | cy | number | Chunk Y coordinate.
+        /// @param | cx | integer | Chunk X coordinate.
+        /// @param | cy | integer | Chunk Y coordinate.
         /// @return | nil | No value is returned.
         methods.add_method("loadChunk", |_, this, (cx, cy): (i32, i32)| {
             this.inner.borrow_mut().load_chunk(cx, cy);
@@ -1090,8 +1092,8 @@ impl LuaUserData for LuaChunkMap {
         });
         // -- unloadChunk --
         /// Unloads a chunk from memory at the given chunk coordinates.
-        /// @param | cx | number | Chunk X coordinate.
-        /// @param | cy | number | Chunk Y coordinate.
+        /// @param | cx | integer | Chunk X coordinate.
+        /// @param | cy | integer | Chunk Y coordinate.
         /// @return | nil | No value is returned.
         methods.add_method("unloadChunk", |_, this, (cx, cy): (i32, i32)| {
             this.inner.borrow_mut().unload_chunk(cx, cy);
@@ -1145,8 +1147,8 @@ impl LuaUserData for LuaChunkMap {
         );
         // -- chunkTileRange --
         /// Returns the tile-coordinate range covered by a specific chunk.
-        /// @param | cx | number | Chunk X coordinate.
-        /// @param | cy | number | Chunk Y coordinate.
+        /// @param | cx | integer | Chunk X coordinate.
+        /// @param | cy | integer | Chunk Y coordinate.
         /// @return | number | Minimum tile X.
         /// @return | number | Minimum tile Y.
         /// @return | number | Maximum tile X.
@@ -1178,8 +1180,8 @@ impl LuaUserData for LuaLargeMapRenderer {
         // -- setMapData --
         /// Replaces all tile data with a flat array of GIDs for the given dimensions.
         /// @param | data | table | Flat array of tile GIDs (row-major order).
-        /// @param | width | number | Map width in tiles.
-        /// @param | height | number | Map height in tiles.
+        /// @param | width | integer | Map width in tiles.
+        /// @param | height | integer | Map height in tiles.
         /// @return | nil | No return value.
         methods.add_method_mut(
             "setMapData",
@@ -1194,9 +1196,9 @@ impl LuaUserData for LuaLargeMapRenderer {
         );
         // -- setTile --
         /// Sets a single tile GID at a given position.
-        /// @param | x | number | Column.
-        /// @param | y | number | Row.
-        /// @param | tileId | number | Tile GID to place.
+        /// @param | x | integer | Column.
+        /// @param | y | integer | Row.
+        /// @param | tileId | integer | Tile GID to place.
         /// @return | nil | No value is returned.
         methods.add_method_mut("setTile", |_, this, (x, y, tile_id): (u32, u32, u32)| {
             this.inner.borrow_mut().set_tile(x, y, tile_id);
@@ -1204,8 +1206,8 @@ impl LuaUserData for LuaLargeMapRenderer {
         });
         // -- getTile --
         /// Returns the tile GID at a given position.
-        /// @param | x | number | Column.
-        /// @param | y | number | Row.
+        /// @param | x | integer | Column.
+        /// @param | y | integer | Row.
         /// @return | number | Tile GID.
         methods.add_method("getTile", |_, this, (x, y): (u32, u32)| {
             Ok(this.inner.borrow().get_tile(x, y))
@@ -1220,7 +1222,7 @@ impl LuaUserData for LuaLargeMapRenderer {
         });
         // -- setChunkSize --
         /// Sets the chunk size used for rendering subdivision.
-        /// @param | size | number | Chunk size in tiles per side.
+        /// @param | size | integer | Chunk size in tiles per side.
         /// @return | nil | No value is returned.
         methods.add_method_mut("setChunkSize", |_, this, size: u32| {
             this.inner.borrow_mut().set_chunk_size(size);
@@ -1234,8 +1236,8 @@ impl LuaUserData for LuaLargeMapRenderer {
         });
         // -- invalidateChunk --
         /// Marks a specific chunk as dirty so it will be rebuilt on the next render.
-        /// @param | cx | number | Chunk X index.
-        /// @param | cy | number | Chunk Y index.
+        /// @param | cx | integer | Chunk X index.
+        /// @param | cy | integer | Chunk Y index.
         /// @return | nil | No value is returned.
         methods.add_method_mut("invalidateChunk", |_, this, (cx, cy): (i32, i32)| {
             this.inner.borrow_mut().invalidate_chunk(cx, cy);
@@ -1307,7 +1309,7 @@ impl LuaUserData for LuaLargeMapRenderer {
         });
         // -- setTilesetColumns --
         /// Sets the column count of the associated tileset atlas for UV calculation.
-        /// @param | cols | number | Number of columns in the tileset image.
+        /// @param | cols | integer | Number of columns in the tileset image.
         /// @return | nil | No value is returned.
         methods.add_method_mut("setTilesetColumns", |_, this, cols: u32| {
             this.inner.borrow_mut().set_tileset_columns(cols);
@@ -1354,7 +1356,7 @@ impl LuaUserData for LuaIsoMap {
         });
         // -- setLevelVisible --
         /// Sets whether a vertical level is drawn during rendering.
-        /// @param | z | number | Level index (1-based).
+        /// @param | z | integer | Level index (1-based).
         /// @param | visible | boolean | True to show, false to hide.
         /// @return | nil | No value is returned.
         methods.add_method("setLevelVisible", |_, this, (z, visible): (usize, bool)| {
@@ -1364,7 +1366,7 @@ impl LuaUserData for LuaIsoMap {
         });
         // -- isLevelVisible --
         /// Returns whether a vertical level is currently visible.
-        /// @param | z | number | Level index (1-based).
+        /// @param | z | integer | Level index (1-based).
         /// @return | boolean | True if the level is visible.
         methods.add_method("isLevelVisible", |_, this, z: usize| {
             let z = one_based_usize("z", z)?;
@@ -1372,11 +1374,11 @@ impl LuaUserData for LuaIsoMap {
         });
         // -- setTilePart --
         /// Sets the GID for a specific part of a tile at a given position and level.
-        /// @param | z | number | Level index (1-based).
-        /// @param | x | number | Column (1-based).
-        /// @param | y | number | Row (1-based).
-        /// @param | part | number | Part index (e.g. floor, wall, object).
-        /// @param | gid | number | Global tile ID to place.
+        /// @param | z | integer | Level index (1-based).
+        /// @param | x | integer | Column (1-based).
+        /// @param | y | integer | Row (1-based).
+        /// @param | part | integer | Part index (e.g. floor, wall, object).
+        /// @param | gid | integer | Global tile ID to place.
         /// @return | nil | No return value.
         methods.add_method(
             "setTilePart",
@@ -1390,10 +1392,10 @@ impl LuaUserData for LuaIsoMap {
         );
         // -- getTilePart --
         /// Returns the GID for a specific part of a tile at a given position and level.
-        /// @param | z | number | Level index (1-based).
-        /// @param | x | number | Column (1-based).
-        /// @param | y | number | Row (1-based).
-        /// @param | part | number | Part index.
+        /// @param | z | integer | Level index (1-based).
+        /// @param | x | integer | Column (1-based).
+        /// @param | y | integer | Row (1-based).
+        /// @param | part | integer | Part index.
         /// @return | number | Global tile ID.
         methods.add_method(
             "getTilePart",
@@ -1406,9 +1408,9 @@ impl LuaUserData for LuaIsoMap {
         );
         // -- fillLevel --
         /// Fills all tiles on a level for a given part with a single GID.
-        /// @param | z | number | Level index (1-based).
-        /// @param | part | number | Part index to fill.
-        /// @param | gid | number | Global tile ID to fill with.
+        /// @param | z | integer | Level index (1-based).
+        /// @param | part | integer | Part index to fill.
+        /// @param | gid | integer | Global tile ID to fill with.
         /// @return | nil | No value is returned.
         methods.add_method("fillLevel", |_, this, (z, part, gid): (usize, u32, u32)| {
             let z = one_based_usize("z", z)?;
@@ -1518,10 +1520,10 @@ impl LuaUserData for LuaMapBlock {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
         // -- setTile --
         /// Sets a tile GID at a position within the block.
-        /// @param | layer | number | Layer index (1-based).
-        /// @param | x | number | Column (1-based).
-        /// @param | y | number | Row (1-based).
-        /// @param | gid | number | Global tile ID.
+        /// @param | layer | integer | Layer index (1-based).
+        /// @param | x | integer | Column (1-based).
+        /// @param | y | integer | Row (1-based).
+        /// @param | gid | integer | Global tile ID.
         /// @return | nil | No return value.
         methods.add_method(
             "setTile",
@@ -1534,9 +1536,9 @@ impl LuaUserData for LuaMapBlock {
         );
         // -- getTile --
         /// Returns the tile GID at a position within the block.
-        /// @param | layer | number | Layer index (1-based).
-        /// @param | x | number | Column (1-based).
-        /// @param | y | number | Row (1-based).
+        /// @param | layer | integer | Layer index (1-based).
+        /// @param | x | integer | Column (1-based).
+        /// @param | y | integer | Row (1-based).
         /// @return | number | Global tile ID.
         methods.add_method("getTile", |_, this, (layer, x, y): (u32, u32, u32)| {
             Ok(this.inner.borrow().get_tile(layer - 1, x - 1, y - 1))
@@ -1544,8 +1546,8 @@ impl LuaUserData for LuaMapBlock {
         // -- setSide --
         /// Sets the side ID for an edge segment, used for edge matching in map generation.
         /// @param | edge | string | Edge direction: `"north"`, `"east"`, `"south"`, or `"west"`.
-        /// @param | segment | number | Segment index along the edge (1-based).
-        /// @param | sideId | number | Side identifier for matching.
+        /// @param | segment | integer | Segment index along the edge (1-based).
+        /// @param | sideId | integer | Side identifier for matching.
         /// @return | nil | No return value.
         methods.add_method(
             "setSide",
@@ -1559,7 +1561,7 @@ impl LuaUserData for LuaMapBlock {
         // -- getSide --
         /// Returns the side ID for an edge segment.
         /// @param | edge | string | Edge direction: `"north"`, `"east"`, `"south"`, or `"west"`.
-        /// @param | segment | number | Segment index along the edge (1-based).
+        /// @param | segment | integer | Segment index along the edge (1-based).
         /// @return | number | Side identifier.
         methods.add_method("getSide", |_, this, (edge_str, segment): (String, u32)| {
             let edge = Edge::from_str(&edge_str)
@@ -1677,7 +1679,7 @@ impl LuaUserData for LuaMapGroup {
         });
         // -- removeBlock --
         /// Removes a block from the group by index.
-        /// @param | idx | number | Block index (1-based).
+        /// @param | idx | integer | Block index (1-based).
         /// @return | nil | No value is returned.
         methods.add_method("removeBlock", |_, this, idx: usize| {
             this.inner.borrow_mut().remove_block(idx - 1);
@@ -1828,8 +1830,8 @@ impl LuaUserData for LuaMapGen {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
         // -- generate --
         /// Runs the map generator, optionally using a specific script, seed, and layer name, returning a new tilemap.
-        /// @param | scriptIdx | number? | Script index in the group (1-based), or nil for default.
-        /// @param | seed | number? | Random seed, or nil for random.
+        /// @param | scriptIdx | integer? | Script index in the group (1-based), or nil for default.
+        /// @param | seed | integer? | Random seed, or nil for random.
         /// @param | layerName | string? | Output layer name (default `"main"`).
         /// @return | LTileMap | Generated tilemap.
         methods.add_method("generate", |_, this, (script_idx, seed, layer_name): (Option<usize>, Option<u64>, Option<String>)| {
@@ -1906,9 +1908,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     let s = state.clone();
     // -- newTileMap --
     /// Creates a new empty tilemap with the given tile dimensions.
-    /// @param | tileWidth | number | Tile width in pixels.
-    /// @param | tileHeight | number | Tile height in pixels.
-    /// @param | chunkSize | number? | Internal chunk size in tiles (default 16).
+    /// @param | tileWidth | integer | Tile width in pixels.
+    /// @param | tileHeight | integer | Tile height in pixels.
+    /// @param | chunkSize | integer? | Internal chunk size in tiles (default 16).
     /// @return | LTileMap | New tilemap.
     tbl.set(
         "newTileMap",
@@ -1932,8 +1934,8 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     )?;
     // -- newAutoTileSheet --
     /// Creates an auto-tile sheet with a given tile size and layout.
-    /// @param | tileW | number | Tile width in pixels.
-    /// @param | tileH | number | Tile height in pixels.
+    /// @param | tileW | integer | Tile width in pixels.
+    /// @param | tileH | integer | Tile height in pixels.
     /// @param | layout | string | Layout type: `"blob47"`, `"composite48"`, or `"minimal16"`.
     /// @return | LAutoTileSheet | New auto-tile sheet.
     tbl.set("newAutoTileSheet", lua.create_function(
@@ -1957,7 +1959,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     )?;
     // -- newChunkMap --
     /// Creates a new infinite chunk-based tile map.
-    /// @param | chunkSize | number? | Tiles per chunk side (default 16).
+    /// @param | chunkSize | integer? | Tiles per chunk side (default 16).
     /// @return | LChunkMap | New chunk map.
     tbl.set(
         "newChunkMap",
@@ -2003,10 +2005,10 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     )?;
     // -- newMapBlock --
     /// Creates a new procedural map block with the given dimensions.
-    /// @param | width | number | Block width in tiles.
-    /// @param | height | number | Block height in tiles.
-    /// @param | layers | number? | Number of tile layers (default 1).
-    /// @param | segmentSize | number? | Edge segment size in tiles (default 1).
+    /// @param | width | integer | Block width in tiles.
+    /// @param | height | integer | Block height in tiles.
+    /// @param | layers | integer? | Number of tile layers (default 1).
+    /// @param | segmentSize | integer? | Edge segment size in tiles (default 1).
     /// @return | LMapBlock | New map block.
     tbl.set(
         "newMapBlock",
@@ -2067,8 +2069,8 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     )?;
     // -- toScreenHex --
     /// Converts axial hex coordinates to screen-space pixel position.
-    /// @param | q | number | Axial Q coordinate.
-    /// @param | r | number | Axial R coordinate.
+    /// @param | q | integer | Axial Q coordinate.
+    /// @param | r | integer | Axial R coordinate.
     /// @param | size | number | Hex cell size in pixels.
     /// @return | number | Screen X.
     /// @return | number | Screen Y.
@@ -2095,8 +2097,8 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     )?;
     // -- hexNeighbors --
     /// Returns the six neighboring hex cells of a given axial coordinate.
-    /// @param | q | number | Axial Q.
-    /// @param | r | number | Axial R.
+    /// @param | q | integer | Axial Q.
+    /// @param | r | integer | Axial R.
     /// @return | table | Array of `{q=number, r=number}` neighbor cells.
     tbl.set(
         "hexNeighbors",
@@ -2114,10 +2116,10 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     )?;
     // -- hexDistance --
     /// Computes the hex grid distance between two axial coordinates.
-    /// @param | q1 | number | First Q.
-    /// @param | r1 | number | First R.
-    /// @param | q2 | number | Second Q.
-    /// @param | r2 | number | Second R.
+    /// @param | q1 | integer | First Q.
+    /// @param | r1 | integer | First R.
+    /// @param | q2 | integer | Second Q.
+    /// @param | r2 | integer | Second R.
     /// @return | number | Distance in hex steps.
     tbl.set(
         "hexDistance",
@@ -2140,10 +2142,10 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     )?;
     // -- hexLine --
     /// Returns all hex cells along a line between two axial coordinates.
-    /// @param | q1 | number | Start Q.
-    /// @param | r1 | number | Start R.
-    /// @param | q2 | number | End Q.
-    /// @param | r2 | number | End R.
+    /// @param | q1 | integer | Start Q.
+    /// @param | r1 | integer | Start R.
+    /// @param | q2 | integer | End Q.
+    /// @param | r2 | integer | End R.
     /// @return | table | Array of `{q, r}` pairs along the line.
     tbl.set(
         "hexLine",
@@ -2161,9 +2163,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     )?;
     // -- hexRing --
     /// Returns all hex cells forming a ring at a given radius around a center.
-    /// @param | q | number | Center Q.
-    /// @param | r | number | Center R.
-    /// @param | radius | number | Ring radius in hex steps.
+    /// @param | q | integer | Center Q.
+    /// @param | r | integer | Center R.
+    /// @param | radius | integer | Ring radius in hex steps.
     /// @return | table | Array of `{q, r}` pairs on the ring.
     tbl.set(
         "hexRing",
@@ -2181,9 +2183,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     )?;
     // -- hexSpiral --
     /// Returns all hex cells in a spiral pattern out to a given radius.
-    /// @param | q | number | Center Q.
-    /// @param | r | number | Center R.
-    /// @param | radius | number | Maximum radius.
+    /// @param | q | integer | Center Q.
+    /// @param | r | integer | Center R.
+    /// @param | radius | integer | Maximum radius.
     /// @return | table | Array of `{q, r}` pairs in spiral order.
     tbl.set(
         "hexSpiral",
@@ -2201,9 +2203,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     )?;
     // -- hexArea --
     /// Returns all hex cells within a filled area of a given radius.
-    /// @param | q | number | Center Q.
-    /// @param | r | number | Center R.
-    /// @param | radius | number | Area radius.
+    /// @param | q | integer | Center Q.
+    /// @param | r | integer | Center R.
+    /// @param | radius | integer | Area radius.
     /// @return | table | Array of `{q, r}` pairs inside the area.
     tbl.set(
         "hexArea",
@@ -2221,11 +2223,11 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     )?;
     // -- hexRotate --
     /// Rotates a hex cell around a center point by a number of 60-degree steps.
-    /// @param | q | number | Cell Q.
-    /// @param | r | number | Cell R.
-    /// @param | centerQ | number | Pivot Q.
-    /// @param | centerR | number | Pivot R.
-    /// @param | steps | number | Number of 60-degree rotation steps (positive = clockwise).
+    /// @param | q | integer | Cell Q.
+    /// @param | r | integer | Cell R.
+    /// @param | centerQ | integer | Pivot Q.
+    /// @param | centerR | integer | Pivot R.
+    /// @param | steps | integer | Number of 60-degree rotation steps (positive = clockwise).
     /// @return | number | Rotated Q.
     /// @return | number | Rotated R.
     tbl.set(
@@ -2239,10 +2241,10 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     )?;
     // -- hexReflect --
     /// Reflects a hex cell across an axis through a center point.
-    /// @param | q | number | Cell Q.
-    /// @param | r | number | Cell R.
-    /// @param | centerQ | number | Pivot Q.
-    /// @param | centerR | number | Pivot R.
+    /// @param | q | integer | Cell Q.
+    /// @param | r | integer | Cell R.
+    /// @param | centerQ | integer | Pivot Q.
+    /// @param | centerR | integer | Pivot R.
     /// @param | axis | string | Reflection axis name.
     /// @return | number | Reflected Q.
     /// @return | number | Reflected R.
@@ -2257,8 +2259,8 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     )?;
     // -- isoRotate --
     /// Rotates an isometric direction index by a number of 90-degree steps.
-    /// @param | direction | number | Current direction (0..3).
-    /// @param | steps | number | Number of 90-degree steps.
+    /// @param | direction | integer | Current direction (0..3).
+    /// @param | steps | integer | Number of 90-degree steps.
     /// @return | number | Rotated direction.
     tbl.set(
         "isoRotate",
@@ -2268,7 +2270,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     )?;
     // -- isoDirectionName --
     /// Returns a human-readable name for an isometric direction index.
-    /// @param | direction | number | Direction index.
+    /// @param | direction | integer | Direction index.
     /// @return | string | Direction name (e.g. `"north"`, `"east"`, `"south"`, `"west"`).
     tbl.set(
         "isoDirectionName",
@@ -2293,9 +2295,13 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
             })
         })?,
     )?;
+    /// Floor layer index in a dual-layer tilemap cell (value 1).
     tbl.set("FLOOR", 1u32)?;
+    /// North wall layer index in a tilemap cell (value 2).
     tbl.set("NORTH_WALL", 2u32)?;
+    /// West wall layer index in a tilemap cell (value 3).
     tbl.set("WEST_WALL", 3u32)?;
+    /// Object layer index in a tilemap cell (value 4).
     tbl.set("OBJECT", 4u32)?;
     let s3 = state.clone();
     // -- newMapGen --
@@ -2490,8 +2496,8 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     )?;
     // -- newLargeMapRenderer --
     /// Creates a chunk-based large-map renderer for efficient rendering of very large maps.
-    /// @param | tileW | number | Tile width in pixels.
-    /// @param | tileH | number | Tile height in pixels.
+    /// @param | tileW | integer | Tile width in pixels.
+    /// @param | tileH | integer | Tile height in pixels.
     /// @return | LLargeMapRenderer | New large-map renderer.
     tbl.set(
         "newLargeMapRenderer",

@@ -5,17 +5,11 @@ lurek = {}
 
 ---@alias LuaValue nil|boolean|number|string|table|function|userdata|thread
 
----@class AnyUserData
-AnyUserData = {}
-
 ---@alias ByteData LByteData
 
 ---@alias Image LImage
 
 ---@alias ImageData LImageData
-
----@class LBiomeClassifier
-LBiomeClassifier = {}
 
 ---@class LSpacer
 LSpacer = {}
@@ -2971,35 +2965,35 @@ function LSource:type() end
 ---@return boolean True if this object matches the given type.
 function LSource:typeOf(name) end
 
---- Add_effect for Lua scripts in this module.
----@param bus_name string Lua argument for `bus_name`.
----@param effect_type_str string Lua argument for `effect_type_str`.
----@param params? mlua::Table Lua argument for `params`.
----@return table Table result returned by this call.
+--- Adds an effect to a named audio bus and returns its effect ID.
+---@param bus_name string Name of the audio bus.
+---@param effect_type_str string Effect type identifier (e.g. `"lowpass"`, `"highpass"`, `"reverb"`).
+---@param params? table Optional parameters table; may include a `value` field.
+---@return number Numeric effect ID handle for use with `remove_effect` and `set_effect_param`.
 lurek.audio.add_effect = function(bus_name, effect_type_str, params) end
 
---- Apply bandpass for Lua scripts in this module.
----@param sd_ud userdata Lua argument for `sd_ud`.
----@param low_hz number Lua argument for `low_hz`.
----@param high_hz number Lua argument for `high_hz`.
+--- Applies a bandpass filter in-place to the sound data.
+---@param sd_ud LSoundData The sound data to process.
+---@param low_hz number Lower cutoff frequency in Hz.
+---@param high_hz number Upper cutoff frequency in Hz.
 ---@return nil No return value.
 lurek.audio.applyBandpass = function(sd_ud, low_hz, high_hz) end
 
---- Apply gain for Lua scripts in this module.
----@param sd_ud userdata Lua argument for `sd_ud`.
----@param gain number Lua argument for `gain`.
+--- Applies a gain multiplier in-place to the sound data.
+---@param sd_ud LSoundData The sound data to process.
+---@param gain number Gain multiplier (1.0 = unity, >1.0 = louder, <1.0 = quieter).
 ---@return nil No return value.
 lurek.audio.applyGain = function(sd_ud, gain) end
 
---- Apply highpass for Lua scripts in this module.
----@param sd_ud userdata Lua argument for `sd_ud`.
----@param cutoff_hz number Lua argument for `cutoff_hz`.
+--- Applies a highpass filter in-place to the sound data.
+---@param sd_ud LSoundData The sound data to process.
+---@param cutoff_hz number Highpass cutoff frequency in Hz.
 ---@return nil No return value.
 lurek.audio.applyHighpass = function(sd_ud, cutoff_hz) end
 
---- Apply lowpass for Lua scripts in this module.
----@param sd_ud userdata Lua argument for `sd_ud`.
----@param cutoff_hz number Lua argument for `cutoff_hz`.
+--- Applies a lowpass filter in-place to the sound data.
+---@param sd_ud LSoundData The sound data to process.
+---@param cutoff_hz number Lowpass cutoff frequency in Hz.
 ---@return nil No return value.
 lurek.audio.applyLowpass = function(sd_ud, cutoff_hz) end
 
@@ -3012,8 +3006,8 @@ lurek.audio.clearFilter = function(source) end
 ---@return nil No return value.
 lurek.audio.clearMidiSoundFont = function() end
 
---- Clears random pitch for Lua scripts in this module.
----@param src_ud userdata Lua argument for `src_ud`.
+--- Clears any random pitch range previously set on the source.
+---@param src_ud LSource The audio source to reset.
 ---@return nil No return value.
 lurek.audio.clearRandomPitch = function(src_ud) end
 
@@ -3028,10 +3022,10 @@ lurek.audio.clone = function(source) end
 ---@return nil No return value.
 lurek.audio.create_bus = function(name, parent_name) end
 
---- Crossfade for Lua scripts in this module.
----@param from_ud userdata Lua argument for `from_ud`.
----@param to_ud userdata Lua argument for `to_ud`.
----@param duration number Lua argument for `duration`.
+--- Crossfades from one audio source to another over the given duration.
+---@param from_ud LSource The source to fade out.
+---@param to_ud LSource The source to fade in.
+---@param duration number Crossfade duration in seconds.
 ---@return nil No return value.
 lurek.audio.crossfade = function(from_ud, to_ud, duration) end
 
@@ -3045,14 +3039,14 @@ lurek.audio.fadeIn = function(source, dur) end
 ---@return number Count of active (playing) sources.
 lurek.audio.getActiveSourceCount = function() end
 
---- Returns the bus peak for Lua scripts in this module.
----@param bus_name string Lua argument for `bus_name`.
----@return nil No return value.
+--- Returns the peak amplitude of the named audio bus over the last processing frame.
+---@param bus_name string Name of the audio bus to query.
+---@return number Peak amplitude in the range [0.0, 1.0+].
 lurek.audio.getBusPeak = function(bus_name) end
 
---- Returns the bus rms for Lua scripts in this module.
----@param bus_name string Lua argument for `bus_name`.
----@return nil No return value.
+--- Returns the RMS (root mean square) amplitude of the named audio bus over the last processing frame.
+---@param bus_name string Name of the audio bus to query.
+---@return number RMS amplitude in the range [0.0, 1.0+].
 lurek.audio.getBusRms = function(bus_name) end
 
 --- Returns the current distance attenuation model name.
@@ -3073,9 +3067,9 @@ lurek.audio.getDuration = function(source) end
 ---@return number Fade-in duration in seconds.
 lurek.audio.getFadeIn = function(source) end
 
---- Returns the free buffer count for Lua scripts in this module.
----@param qsource_id number Lua argument for `qsource_id`.
----@return table Table result returned by this call.
+--- Returns the number of free (available) buffer slots on a queueable source.
+---@param qsource_id number Queueable source handle returned by `newQueueableSource`.
+---@return number Number of free buffer slots available for queuing.
 lurek.audio.getFreeBufferCount = function(qsource_id) end
 
 --- Returns the current highpass filter cutoff of a source.
@@ -3160,9 +3154,9 @@ lurek.audio.getSourceCount = function() end
 ---@return string Either "static" or "stream".
 lurek.audio.getSourceType = function(source) end
 
---- Returns the stereo width for Lua scripts in this module.
----@param src_ud userdata Lua argument for `src_ud`.
----@return nil No return value.
+--- Returns the current stereo width factor of an audio source.
+---@param src_ud LSource The audio source to query.
+---@return number Stereo width factor (0.0 = mono, 1.0 = full stereo).
 lurek.audio.getStereoWidth = function(src_ud) end
 
 --- Returns the velocity vector of a source.
@@ -3201,9 +3195,9 @@ lurek.audio.isPlaying = function(source) end
 ---@return boolean True if the source is stopped.
 lurek.audio.isStopped = function(source) end
 
---- Mix into for Lua scripts in this module.
----@param dest_ud userdata Lua argument for `dest_ud`.
----@param src_ud userdata Lua argument for `src_ud`.
+--- Mixes the samples of `src` into `dest` in-place (both must have the same format).
+---@param dest_ud LSoundData Destination sound data to mix into.
+---@param src_ud LSoundData Source sound data to mix from.
 ---@return nil No return value.
 lurek.audio.mixInto = function(dest_ud, src_ud) end
 
@@ -3212,10 +3206,10 @@ lurek.audio.mixInto = function(dest_ud, src_ud) end
 ---@return LBus The new audio bus handle.
 lurek.audio.newBus = function(name) end
 
---- New decoder for Lua scripts in this module.
----@param source string Path-like input used by this call.
----@param buffersize? number Lua argument for `buffersize`.
----@return table Table result returned by this call.
+--- Creates a streaming audio decoder for the given file. The file is opened relative to the game directory.
+---@param source string Relative path to the audio file (WAV, OGG, MP3, or FLAC).
+---@param buffersize? number Number of samples per decode chunk; defaults to 2048.
+---@return LDecoder A streaming decoder with `decode`, `seek`, `rewind`, and `getSampleRate` methods.
 lurek.audio.newDecoder = function(source, buffersize) end
 
 --- Creates a new MIDI player instance, optionally loading a file immediately.
@@ -3223,37 +3217,41 @@ lurek.audio.newDecoder = function(source, buffersize) end
 ---@return LMidiPlayer A new MIDI player ready for playback.
 lurek.audio.newMidiPlayer = function(path) end
 
---- New pool for Lua scripts in this module.
----@param file_path string Lua argument for `file_path`.
----@param voice_count number Lua argument for `voice_count`.
----@return table Table result returned by this call.
+--- Creates a polyphonic sound pool that allows the same audio file to play on multiple simultaneous voices.
+---@param file_path string Relative path to the audio file shared by all voices in the pool.
+---@param voice_count number Number of concurrent voices to pre-allocate.
+---@return LSoundPool A sound pool with `play`, `stopAll`, `setVolume`, `release`, and `getVoiceCount` methods.
 lurek.audio.newPool = function(file_path, voice_count) end
 
---- New queueable source for Lua scripts in this module.
----@return table Table result returned by this call.
-lurek.audio.newQueueableSource = function() end
+--- Creates a new queueable audio source for streaming PCM data buffer by buffer.
+---@param sample_rate number Sample rate in Hz (e.g. 44100).
+---@param bit_depth number Bit depth per sample (8 or 16).
+---@param channels number Channel count (1 = mono, 2 = stereo).
+---@param buffer_count? number Number of internal buffers to pre-allocate; defaults to 4.
+---@return number An opaque integer handle for use with `queueSource`, `playQueueable`, and `stopQueueable`.
+lurek.audio.newQueueableSource = function(sample_rate, bit_depth, channels, buffer_count) end
 
---- New sawtooth wave for Lua scripts in this module.
----@param freq number Lua argument for `freq`.
----@param duration number Lua argument for `duration`.
----@param sample_rate number Lua argument for `sample_rate`.
----@param amplitude number Lua argument for `amplitude`.
----@return table Table result returned by this call.
+--- Generates a sawtooth wave as a `SoundData` buffer.
+---@param freq number Frequency in Hz.
+---@param duration number Duration in seconds.
+---@param sample_rate number Sample rate in Hz (e.g. 44100).
+---@param amplitude number Peak amplitude in the range [0.0, 1.0].
+---@return LSoundData A `SoundData` object containing the generated PCM samples.
 lurek.audio.newSawtoothWave = function(freq, duration, sample_rate, amplitude) end
 
---- New sine wave for Lua scripts in this module.
----@param freq number Lua argument for `freq`.
----@param duration number Lua argument for `duration`.
----@param sample_rate number Lua argument for `sample_rate`.
----@param amplitude number Lua argument for `amplitude`.
----@return table Table result returned by this call.
+--- Generates a sine wave as a `SoundData` buffer.
+---@param freq number Frequency in Hz (e.g. 440.0 for concert A).
+---@param duration number Duration in seconds.
+---@param sample_rate number Sample rate in Hz (e.g. 44100).
+---@param amplitude number Peak amplitude in the range [0.0, 1.0].
+---@return LSoundData A `SoundData` object containing the generated PCM samples.
 lurek.audio.newSineWave = function(freq, duration, sample_rate, amplitude) end
 
 --- Creates a new SoundData object from a file path or blank buffer for procedural audio.
 ---@param pathOrCount string|number File path to decode, or sample count for blank buffer.
 ---@param sampleRate number Sample rate in Hz (e.g. 44100, 48000).
 ---@param channels? number Channel count (1 = mono, 2 = stereo), defaults to 1.
----@return SoundData Raw PCM sample data for manipulation or playback.
+---@return LSoundData Raw PCM sample data for manipulation or playback.
 lurek.audio.newSoundData = function(pathOrCount, sampleRate, channels) end
 
 --- Creates a new audio source from a file path, either fully loaded or streaming.
@@ -3262,28 +3260,28 @@ lurek.audio.newSoundData = function(pathOrCount, sampleRate, channels) end
 ---@return LSource A new audio source ready for playback.
 lurek.audio.newSource = function(path, sourceType) end
 
---- New square wave for Lua scripts in this module.
----@param freq number Lua argument for `freq`.
----@param duration number Lua argument for `duration`.
----@param sample_rate number Lua argument for `sample_rate`.
----@param amplitude number Lua argument for `amplitude`.
----@return table Table result returned by this call.
+--- Generates a square wave as a `SoundData` buffer.
+---@param freq number Frequency in Hz.
+---@param duration number Duration in seconds.
+---@param sample_rate number Sample rate in Hz (e.g. 44100).
+---@param amplitude number Peak amplitude in the range [0.0, 1.0].
+---@return LSoundData A `SoundData` object containing the generated PCM samples.
 lurek.audio.newSquareWave = function(freq, duration, sample_rate, amplitude) end
 
---- New triangle wave for Lua scripts in this module.
----@param freq number Lua argument for `freq`.
----@param duration number Lua argument for `duration`.
----@param sample_rate number Lua argument for `sample_rate`.
----@param amplitude number Lua argument for `amplitude`.
----@return table Table result returned by this call.
+--- Generates a triangle wave as a `SoundData` buffer.
+---@param freq number Frequency in Hz.
+---@param duration number Duration in seconds.
+---@param sample_rate number Sample rate in Hz (e.g. 44100).
+---@param amplitude number Peak amplitude in the range [0.0, 1.0].
+---@return LSoundData A `SoundData` object containing the generated PCM samples.
 lurek.audio.newTriangleWave = function(freq, duration, sample_rate, amplitude) end
 
---- New white noise for Lua scripts in this module.
----@param duration number Lua argument for `duration`.
----@param sample_rate number Lua argument for `sample_rate`.
----@param amplitude number Lua argument for `amplitude`.
----@param seed number Lua argument for `seed`.
----@return table Table result returned by this call.
+--- Generates white noise as a `SoundData` buffer using a deterministic seed.
+---@param duration number Duration in seconds.
+---@param sample_rate number Sample rate in Hz (e.g. 44100).
+---@param amplitude number Peak amplitude in the range [0.0, 1.0].
+---@param seed number Seed value for the noise generator (same seed produces identical output).
+---@return LSoundData A `SoundData` object containing the generated PCM samples.
 lurek.audio.newWhiteNoise = function(duration, sample_rate, amplitude, seed) end
 
 --- Normalize file for Lua scripts in this module.
@@ -3318,16 +3316,16 @@ lurek.audio.playLooping = function(source) end
 ---@return nil No return value.
 lurek.audio.playQueueable = function(qsource_id) end
 
---- Process offline for Lua scripts in this module.
----@param input string Lua argument for `input`.
----@param output string Lua argument for `output`.
----@param effects_tbl mlua::Table Lua argument for `effects_tbl`.
+--- Processes an audio file offline through a chain of effects and writes the result to an output file.
+---@param input string Relative path to the input audio file.
+---@param output string Relative path for the output WAV file.
+---@param effects_tbl table Array of effect tables; each has `type` (string) and optional `p1`, `p2`, `p3` (number) fields.
 ---@return nil No return value.
 lurek.audio.processOffline = function(input, output, effects_tbl) end
 
---- Queue source for Lua scripts in this module.
----@param qsource_id number Lua argument for `qsource_id`.
----@param sd mlua::AnyUserData Lua argument for `sd`.
+--- Queues a decoded audio chunk for playback on a queueable source.
+---@param qsource_id number Queueable source handle returned by `newQueueableSource`.
+---@param sd LSoundData Sound data chunk to enqueue for playback.
 ---@return nil No return value.
 lurek.audio.queueSource = function(qsource_id, sd) end
 
@@ -3351,9 +3349,9 @@ lurek.audio.resume = function(source) end
 ---@return nil No return value.
 lurek.audio.resumeAll = function() end
 
---- Save wav for Lua scripts in this module.
----@param sd_ud userdata Lua argument for `sd_ud`.
----@param filename string Path-like input used by this call.
+--- Encodes the sound data as a WAV file and saves it to the given path (relative to game dir).
+---@param sd_ud LSoundData The sound data to encode and save.
+---@param filename string Relative output path for the WAV file.
 ---@return nil No return value.
 lurek.audio.saveWAV = function(sd_ud, filename) end
 
@@ -3455,10 +3453,10 @@ lurek.audio.setPlaybackDevice = function(name) end
 ---@return nil No return value.
 lurek.audio.setPosition = function(source, x, y, z) end
 
---- Sets the random pitch for Lua scripts in this module.
----@param src_ud userdata Lua argument for `src_ud`.
----@param min number Lua argument for `min`.
----@param max number Lua argument for `max`.
+--- Sets a random pitch range for a source; each play picks a random pitch between min and max.
+---@param src_ud LSource The audio source to configure.
+---@param min number Minimum pitch multiplier.
+---@param max number Maximum pitch multiplier.
 ---@return nil No return value.
 lurek.audio.setRandomPitch = function(src_ud, min, max) end
 
@@ -3468,9 +3466,9 @@ lurek.audio.setRandomPitch = function(src_ud, min, max) end
 ---@return nil No return value.
 lurek.audio.setSourceBus = function(source, bus) end
 
---- Sets the stereo width for Lua scripts in this module.
----@param src_ud userdata Lua argument for `src_ud`.
----@param width number Numeric `width` argument for this call.
+--- Sets the stereo width of an audio source (0.0 = mono, 1.0 = full stereo).
+---@param src_ud LSource The audio source to adjust.
+---@param width number Stereo width factor (0.0 = mono, 1.0 = full stereo).
 ---@return nil No return value.
 lurek.audio.setStereoWidth = function(src_ud, width) end
 
@@ -3488,11 +3486,11 @@ lurek.audio.setVelocity = function(source, x, y, z) end
 ---@return nil No return value.
 lurek.audio.setVolume = function(source, vol) end
 
---- Overwrites one normalized PCM sample value in this sound buffer.
----@param index number Zero-based sample index.
----@param value number New sample value.
----@return nil No value is returned.
-lurek.audio.set_bus_volume = function(index, value) end
+--- Sets the volume of a named audio bus.
+---@param name string Name of the audio bus.
+---@param volume number Volume level (0.0 = silent, 1.0 = full, >1.0 = boost).
+---@return nil No return value.
+lurek.audio.set_bus_volume = function(name, volume) end
 
 --- Set_effect_param for Lua scripts in this module.
 ---@param bus_name string Lua argument for `bus_name`.
@@ -7800,9 +7798,9 @@ function LSignal:connect(name, func) end
 
 --- Emits a signal event and invokes matching callbacks with the remaining arguments.
 ---@param name string Signal event name to emit.
----@param args LuaValue Additional arguments passed to matching callbacks.
+---@param ... LuaValue Additional arguments passed to matching callbacks.
 ---@return nil No value is returned.
-function LSignal:emit(name, args) end
+function LSignal:emit(name, ...) end
 
 --- Returns the callback count for one exact signal event name.
 ---@param name string Signal event name.
@@ -7886,29 +7884,29 @@ lurek.event.pump = function() end
 
 --- Pushes a normal-priority event into the shared event queue and optional history.
 ---@param name string Event name.
----@param args LuaValue Additional event arguments.
+---@param ... LuaValue Additional event arguments.
 ---@return nil No value is returned.
-lurek.event.push = function(name, args) end
+lurek.event.push = function(name, ...) end
 
 --- Adds a normal-priority event to the deferred buffer instead of the live queue.
 ---@param name string Event name to enqueue later.
----@param args LuaValue Additional event arguments stored with the event.
+---@param ... LuaValue Additional event arguments stored with the event.
 ---@return nil No value is returned.
-lurek.event.pushDeferred = function(name, args) end
+lurek.event.pushDeferred = function(name, ...) end
 
 --- Adds an event with explicit priority to the deferred buffer.
 ---@param name string Event name to enqueue later.
 ---@param priority string Priority string `high` or `normal`.
----@param args LuaValue Additional event arguments stored with the event.
+---@param ... LuaValue Additional event arguments stored with the event.
 ---@return nil No value is returned.
-lurek.event.pushDeferredPriority = function(name, priority, args) end
+lurek.event.pushDeferredPriority = function(name, priority, ...) end
 
 --- Pushes an event with explicit priority into the shared event queue and optional history.
 ---@param name string Event name.
 ---@param priority string Priority string `high` or `normal`.
----@param args LuaValue Additional event arguments.
+---@param ... LuaValue Additional event arguments.
 ---@return nil No value is returned.
-lurek.event.pushPriority = function(name, priority, args) end
+lurek.event.pushPriority = function(name, priority, ...) end
 
 --- Requests engine shutdown with exit code zero.
 ---@return nil No value is returned.
@@ -10310,10 +10308,13 @@ function LProvinceGrid:borderSegments() end
 ---@return LuaValue Table with `spans` and `segments`, or nil when decoding fails.
 function LProvinceGrid:deserializeShapeData(bytes) end
 
---- Queues filled polygon draw commands for province shapes, optionally culled to a viewport.
----@param viewport LuaValue Either no arguments or four numeric values `x, y, w, h`.
+--- Queues filled polygon draw commands for province shapes, optionally culled to a viewport rect.
+---@param x? number Viewport left edge (required if providing a viewport).
+---@param y? number Viewport top edge (required if providing a viewport).
+---@param w? number Viewport width (required if providing a viewport).
+---@param h? number Viewport height (required if providing a viewport).
 ---@return number Number of polygons emitted to the render command queue.
-function LProvinceGrid:drawShapes(viewport) end
+function LProvinceGrid:drawShapes(x, y, w, h) end
 
 --- Returns the province id stored at grid coordinates.
 ---@param x number X coordinate.
@@ -10383,9 +10384,10 @@ lurek.image.loadLayered = function(filename) end
 lurek.image.newCompressedData = function(filename) end
 
 --- Creates empty image data from dimensions or decodes image data from a GameFS filename.
----@param args LuaValue Either `(width, height)` numeric arguments or a filename string.
+---@param width_or_filename number|string Width in pixels for a blank canvas, or a GameFS filename string to load from disk.
+---@param height? number Height in pixels; required when the first argument is a width integer. Omit when loading from filename.
 ---@return LImageData New image data handle.
-lurek.image.newImageData = function(args) end
+lurek.image.newImageData = function(width_or_filename, height) end
 
 --- Creates image data from raw RGBA bytes and explicit dimensions.
 ---@param w number Width in pixels.
@@ -10683,10 +10685,10 @@ lurek.input.gamepad.isConnected = function(id) end
 ---@return boolean True when cursor changes are supported.
 lurek.input.mouse.isCursorSupported = function() end
 
---- Returns whether any supplied keyboard key is currently down.
----@param args string One or more key names.
----@return boolean True when at least one key is down.
-lurek.input.keyboard.isDown = function(args) end
+--- Returns whether any of the supplied key names are currently held down.
+---@param ... string One or more key name strings (e.g. `"space"`, `"w"`, `"up"`). At least one required.
+---@return boolean `true` if any of the given keys is currently pressed.
+lurek.input.keyboard.isDown = function(...) end
 
 --- Returns whether a one-based mouse button index is down.
 ---@param button number One-based mouse button index.
@@ -11430,7 +11432,7 @@ lurek.log.clearSinks = function() end
 
 --- Logs a debug message with an optional tag.
 ---@param message string Message text.
----@param tag? string Optional tag, defaulting to `Lua`.
+---@param tag? string Log tag shown in the sink output (default `"Lua"`).
 ---@return nil No value is returned.
 lurek.log.debug = function(message, tag) end
 
@@ -11442,7 +11444,7 @@ lurek.log.debug_fields = function(message, fields_tbl) end
 
 --- Logs an error message with an optional tag.
 ---@param message string Message text.
----@param tag? string Optional tag, defaulting to `Lua`.
+---@param tag? string Log tag shown in the sink output (default `"Lua"`).
 ---@return nil No value is returned.
 lurek.log.error = function(message, tag) end
 
@@ -11463,7 +11465,7 @@ lurek.log.getLevel = function() end
 
 --- Logs an info message with an optional tag.
 ---@param message string Message text.
----@param tag? string Optional tag, defaulting to `Lua`.
+---@param tag? string Log tag shown in the sink output (default `"Lua"`).
 ---@return nil No value is returned.
 lurek.log.info = function(message, tag) end
 
@@ -11509,7 +11511,7 @@ lurek.log.struct = function(level_str, message, fields_tbl) end
 
 --- Logs a warning message with an optional tag.
 ---@param message string Message text.
----@param tag? string Optional tag, defaulting to `Lua`.
+---@param tag? string Log tag shown in the sink output (default `"Lua"`).
 ---@return nil No value is returned.
 lurek.log.warn = function(message, tag) end
 
@@ -11798,10 +11800,10 @@ LNoiseGenerator = {}
 --- Samples fractal Brownian motion noise.
 ---@param x number X coordinate.
 ---@param y number Y coordinate.
----@param octaves number Optional octave count, defaulting to 4.
----@param lac number Optional lacunarity, defaulting to 2.0.
----@param pers number Optional persistence, defaulting to 0.5.
----@param kind string Optional noise kind name.
+---@param octaves? number Octave count (default 4).
+---@param lac? number Lacunarity (default 2.0).
+---@param pers? number Persistence (default 0.5).
+---@param kind? string Noise kind name (default `"perlin"`).
 ---@return number Noise value.
 function LNoiseGenerator:fbm(x, y, octaves, lac, pers, kind) end
 
@@ -11852,10 +11854,10 @@ function LNoiseGenerator:perlin4d(x, y, z, w) end
 --- Samples ridged fractal noise. This method is available to Lua scripts.
 ---@param x number X coordinate.
 ---@param y number Y coordinate.
----@param octaves number Optional octave count, defaulting to 4.
----@param lac number Optional lacunarity, defaulting to 2.0.
----@param pers number Optional persistence, defaulting to 0.5.
----@param kind string Optional noise kind name.
+---@param octaves? number Octave count (default 4).
+---@param lac? number Lacunarity (default 2.0).
+---@param pers? number Persistence (default 0.5).
+---@param kind? string Noise kind name (default `"perlin"`).
 ---@return number Noise value.
 function LNoiseGenerator:ridged(x, y, octaves, lac, pers, kind) end
 
@@ -11885,10 +11887,10 @@ function LNoiseGenerator:simplex3d(x, y, z) end
 --- Samples turbulence fractal noise.
 ---@param x number X coordinate.
 ---@param y number Y coordinate.
----@param octaves number Optional octave count, defaulting to 4.
----@param lac number Optional lacunarity, defaulting to 2.0.
----@param pers number Optional persistence, defaulting to 0.5.
----@param kind string Optional noise kind name.
+---@param octaves? number Octave count (default 4).
+---@param lac? number Lacunarity (default 2.0).
+---@param pers? number Persistence (default 0.5).
+---@param kind? string Noise kind name (default `"perlin"`).
 ---@return number Noise value.
 function LNoiseGenerator:turbulence(x, y, octaves, lac, pers, kind) end
 
@@ -12748,14 +12750,14 @@ lurek.math.linearToGamma = function(c) end
 lurek.math.log = function(x, b) end
 
 --- Returns the largest supplied value.
----@param args number One or more numeric values.
+---@param ... number One or more numeric values.
 ---@return number Maximum value.
-lurek.math.max = function(args) end
+lurek.math.max = function(...) end
 
 --- Returns the smallest supplied value.
----@param args number One or more numeric values.
+---@param ... number One or more numeric values.
 ---@return number Minimum value.
-lurek.math.min = function(args) end
+lurek.math.min = function(...) end
 
 --- Creates a Bezier curve from a flat point table.
 ---@param points table Flat numeric table `{x1, y1, x2, y2, ...}` with at least two points.
@@ -12791,16 +12793,16 @@ lurek.math.newRectPacker = function(width, height, padding) end
 ---@return LSpatialHash New spatial hash handle.
 lurek.math.newSpatialHash = function(cell_size) end
 
---- Creates an identity transform or a transform from optional components.
----@param x number Optional x translation.
----@param y number Optional y translation.
----@param angle number Optional rotation angle.
----@param sx number Optional x scale.
----@param sy number Optional y scale.
----@param ox number Optional origin x.
----@param oy number Optional origin y.
----@param kx number Optional x shear.
----@param ky number Optional y shear.
+--- Creates a 2D transform. All components are optional; omitting all returns an identity transform.
+---@param x? number X translation (default 0).
+---@param y? number Y translation (default 0).
+---@param angle? number Rotation angle in radians (default 0).
+---@param sx? number X scale factor (default 1).
+---@param sy? number Y scale factor; defaults to `sx` when omitted.
+---@param ox? number X origin offset for rotation/scale (default 0).
+---@param oy? number Y origin offset for rotation/scale (default 0).
+---@param kx? number X shear factor (default 0).
+---@param ky? number Y shear factor (default 0).
 ---@return LTransform New transform handle.
 lurek.math.newTransform = function(x, y, angle, sx, sy, ox, oy, kx, ky) end
 
@@ -13082,12 +13084,16 @@ function LMinimap:addMarker(x, y, desc) end
 ---@return number One-based object type index.
 function LMinimap:addObjectType(name, r, g, b, a) end
 
---- Adds a timed ping effect at a minimap position.
----@param x number Ping x coordinate.
----@param y number Ping y coordinate.
----@param duration number Ping duration in seconds.
+--- Adds a timed ping effect at a minimap world position. The ping fades out over its duration.
+---@param x number World x coordinate of the ping.
+---@param y number World y coordinate of the ping.
+---@param duration number How long the ping is visible in seconds.
+---@param r? number Red channel of the ping color (0..1, default 1).
+---@param g? number Green channel of the ping color (0..1, default 1).
+---@param b? number Blue channel of the ping color (0..1, default 0).
+---@param a? number Alpha channel of the ping color (0..1, default 1).
 ---@return nil No value is returned.
-function LMinimap:addPing(x, y, duration) end
+function LMinimap:addPing(x, y, duration, r, g, b, a) end
 
 --- Clears marker animation by id. This method is available to Lua scripts.
 ---@param id number Marker id.
@@ -14676,10 +14682,10 @@ function LParticleSystem:setBufferSize(n) end
 ---@return nil No value is returned.
 function LParticleSystem:setCollidesWithPhysics(world_ud, probe_radius, restitution) end
 
---- Sets particle color keyframes from RGBA tables.
----@param colors table One or more color tables.
+--- Sets particle color keyframes from one or more RGBA tables.
+---@param ... table One or more `{r, g, b, a}` color tables.
 ---@return nil No value is returned.
-function LParticleSystem:setColors(colors) end
+function LParticleSystem:setColors(...) end
 
 --- Sets a Lua callback for custom emission positions.
 ---@param cb function Callback returning an x/y position.
@@ -14792,10 +14798,10 @@ function LParticleSystem:setShape(shape) end
 ---@return nil No value is returned.
 function LParticleSystem:setSizeVariation(v) end
 
---- Sets particle size keyframes from numeric arguments.
----@param sizes number One or more size values.
+--- Sets the particle size keyframes used during a particle's lifetime. Pass two or more values to interpolate between them.
+---@param ... number Two or more size values that the particle lerps through over its lifetime (e.g. `4, 1` shrinks from 4 to 1).
 ---@return nil No value is returned.
-function LParticleSystem:setSizes(sizes) end
+function LParticleSystem:setSizes(...) end
 
 --- Sets particle speed range. This method is available to Lua scripts.
 ---@param min number Minimum speed.
@@ -15503,10 +15509,16 @@ function LUnitPathfinder:clearCache() end
 ---@return number b Result y coordinate, or nil.
 function LUnitPathfinder:findNearestWalkable(x, y, max_radius, unit_size) end
 
---- Finds a partial path with a node limit.
----@return table a Array table of waypoint tables.
----@return boolean b True when the path is complete.
-function LUnitPathfinder:findPartialPath() end
+--- Finds the best reachable path from a start to a goal within a maximum node budget. Useful for incremental pathfinding across frames.
+---@param x1 number One-based column of the start cell.
+---@param y1 number One-based row of the start cell.
+---@param x2 number One-based column of the goal cell.
+---@param y2 number One-based row of the goal cell.
+---@param max_nodes number Maximum number of nodes to expand before stopping.
+---@param unit_size? number Width/height of the unit in grid cells for clearance checks (default 1).
+---@return table a Array of `{x, y}` waypoint tables forming the found partial path.
+---@return boolean b `true` if the returned path reaches the exact goal cell.
+function LUnitPathfinder:findPartialPath(x1, y1, x2, y2, max_nodes, unit_size) end
 
 --- Finds a path between one-based grid cells.
 ---@param x1 number Lua argument for `x1`.
@@ -18561,7 +18573,7 @@ lurek.procgen.lsystemSegments = function(opts, angle, step) end
 
 --- Create a BiomeClassifier object with custom threshold rules for mapping height/moisture/temperature to biome types.
 ---@param opts? table Optional rules: ocean_threshold, coast_threshold, mountain_threshold, ice_cap_threshold, cold_temperature, warm_temperature, dry_moisture, wet_moisture.
----@return LBiomeClassifier A classifier object with :classify() and :classifyMap() methods.
+---@return BiomeClassifier A classifier object with :classify() and :classifyMap() methods.
 lurek.procgen.newBiomeClassifier = function(opts) end
 
 --- Generate a 2D noise map with configurable scale, octaves, and offsets. Runs on a single thread.
@@ -21797,8 +21809,9 @@ function LTerminal:clearWidgets() end
 ---@return number i Character codepoint, fg RGBA, bg RGBA.
 function LTerminal:get(col, row) end
 
---- Returns the current custom cell size override, or nil if no override is set.
----@return table Table with `w` and `h` fields in pixels, or nil.
+--- Returns the active terminal cell width and height in pixels, using custom override or font metrics.
+---@return number a Cell width and height in pixels.
+---@return number b Cell width and height in pixels.
 function LTerminal:getCellSize() end
 
 --- Returns the number of columns and rows in the terminal grid.
@@ -21838,13 +21851,13 @@ function LTerminal:print(col, row, text) end
 ---@return nil No value is returned.
 function LTerminal:removeWidget(widget) end
 
---- Renders the terminal grid and all attached widgets by emitting render commands at the given screen position.
+--- Renders the terminal grid and widgets and stages a window size matching the grid and active cell size.
 ---@param x? number Screen X offset in pixels (default 0).
 ---@param y? number Screen Y offset in pixels (default 0).
 ---@return nil No value is returned.
 function LTerminal:render(x, y) end
 
---- Removes any custom cell size override, reverting to the size derived from the active font.
+--- Removes any custom cell size override, reverting to the active font metrics and refitting the window.
 ---@return nil No value is returned.
 function LTerminal:resetCellSize() end
 
@@ -21863,7 +21876,7 @@ function LTerminal:resetCellSize() end
 ---@return nil No value is returned.
 function LTerminal:set(col, row, ch, fr, fg, fb, fa, br, bg, bb, ba) end
 
---- Overrides the cell width and height used for rendering this terminal grid.
+--- Overrides the cell width and height used for rendering this terminal grid and refits the window.
 ---@param w number Cell width in pixels.
 ---@param h number Cell height in pixels.
 ---@return nil No value is returned.
@@ -21874,7 +21887,7 @@ function LTerminal:setCellSize(w, h) end
 ---@return nil No value is returned.
 function LTerminal:setFocus(widget) end
 
---- Selects the nearest built-in bitmap font by pixel height for terminal cell rendering.
+--- Selects the nearest built-in bitmap font by pixel height and refits the window to the terminal grid.
 ---@param height number Desired font height in pixels.
 ---@return nil No value is returned.
 function LTerminal:setFont(height) end
@@ -22165,7 +22178,7 @@ lurek.terminal.newList = function(col, row, width, height) end
 ---@return LWidget The new panel widget.
 lurek.terminal.newPanel = function(col, row, width, height) end
 
---- Creates a new terminal emulator grid with the given column and row count.
+--- Creates a new terminal emulator grid and stages a window size that fits its active cell metrics.
 ---@param cols? number Number of columns (default 80).
 ---@param rows? number Number of rows (default 40).
 ---@return LTerminal The new terminal object.
@@ -23919,14 +23932,12 @@ function LSpring:update(dt) end
 LTween = {}
 
 --- Yields the current coroutine until this tween completes or is cancelled. Must be called from inside a coroutine.
----@param ud userdata Lua argument for `ud`.
 ---@return nil No return value.
-LTween.await = function(ud) end
+function LTween:await() end
 
 --- Cancels this tween immediately, fires the onCancel callback if set, and resumes any coroutines waiting on it.
----@param ud userdata Lua argument for `ud`.
 ---@return nil No return value.
-LTween.cancel = function(ud) end
+function LTween:cancel() end
 
 --- Returns the total duration of this tween in seconds.
 ---@return number Total duration.
@@ -23953,32 +23964,29 @@ function LTween:getRemaining() end
 function LTween:isActive() end
 
 --- Sets a callback to fire when the tween is cancelled. Returns the tween for chaining.
----@param ud userdata Lua argument for `ud`.
----@param f function Lua argument for `f`.
+---@param f function Callback fired when the tween is cancelled.
 ---@return LTween The same tween handle for chaining.
-LTween.onCancel = function(ud, f) end
+function LTween:onCancel(f) end
 
---- On complete on this LTween object. This method is available to Lua scripts.
----@param ud userdata Lua argument for `ud`.
----@param f function Lua argument for `f`.
----@return table Table result returned by this call.
-LTween.onComplete = function(ud, f) end
+--- Sets a callback to fire when the tween completes. Returns the tween for chaining.
+---@param self LTween This tween instance (implicit via `:onComplete(...)`).
+---@param f function Callback fired when the tween finishes.
+---@return LTween The same tween handle for chaining.
+LTween.onComplete = function(self, f) end
 
 --- Sets a callback to fire every frame while the tween is active. Returns the tween for chaining.
----@param ud userdata Lua argument for `ud`.
----@param f function Lua argument for `f`.
+---@param f function Callback fired each frame with the current progress `t` (0..1).
 ---@return LTween The same tween handle for chaining.
-LTween.onUpdate = function(ud, f) end
+function LTween:onUpdate(f) end
 
 --- Pauses this tween so it stops advancing until resumed.
 ---@return nil No value is returned.
 function LTween:pause() end
 
 --- Chainable version of `setRelative`. Returns the tween for fluent API usage.
----@param ud userdata Lua argument for `ud`.
----@param enabled boolean Boolean flag that controls `enabled`.
+---@param enabled boolean `true` for relative mode, `false` for absolute.
 ---@return LTween The same tween handle for chaining.
-LTween.relative = function(ud, enabled) end
+function LTween:relative(enabled) end
 
 --- Resumes a paused tween so it continues advancing.
 ---@return nil No value is returned.
@@ -24013,10 +24021,10 @@ function LTween:typeOf(name) end
 LTweenParallel = {}
 
 --- Adds an existing tween handle to this parallel group. The tween becomes owned by the group.
----@param par_ud userdata Lua argument for `par_ud`.
----@param tw_ud userdata Lua argument for `tw_ud`.
+---@param self LTweenParallel The parallel group to add to (implicit via `:add(...)`).
+---@param tw_ud LTween The tween handle returned by `lurek.tween.tween()` to add to this group.
 ---@return nil No return value.
-LTweenParallel.add = function(par_ud, tw_ud) end
+LTweenParallel.add = function(self, tw_ud) end
 
 --- Cancels all tweens in this parallel group immediately.
 ---@return nil No value is returned.
@@ -24027,23 +24035,23 @@ function LTweenParallel:cancel() end
 function LTweenParallel:isActive() end
 
 --- Sets a callback to fire when all tweens in this parallel group have finished. Returns the group for chaining.
----@param ud userdata Lua argument for `ud`.
----@param f function Lua argument for `f`.
+---@param self LTweenParallel The parallel group to configure (implicit via `:onComplete(...)`).
+---@param f function Function to call when all tweens in the group complete.
 ---@return LTweenParallel This parallel group for chaining.
-LTweenParallel.onComplete = function(ud, f) end
+LTweenParallel.onComplete = function(self, f) end
 
 --- Starts all tweens in this parallel group simultaneously.
----@param ud userdata Lua argument for `ud`.
 ---@return LTweenParallel This parallel group for chaining.
-LTweenParallel.start = function(ud) end
+function LTweenParallel:start() end
 
 --- Creates and adds a new tween step directly to this parallel group.
+---@param self LTweenParallel The parallel group to add to (implicit via `:tween(...)`).
 ---@param duration number Duration in seconds.
 ---@param target table The table whose fields will be animated.
 ---@param fields table Key-value pairs mapping field names to target end values.
----@param easing ?string Easing function name (default `"linear"`).
+---@param easing? string Easing function name (default `"linear"`).
 ---@return LTweenParallel This parallel group for chaining.
-LTweenParallel.tween = function(duration, target, fields, easing) end
+LTweenParallel.tween = function(self, duration, target, fields, easing) end
 
 --- Returns the type name of this object.
 ---@return string Always `"LTweenParallel"`.
@@ -24059,26 +24067,24 @@ function LTweenParallel:typeOf(name) end
 LTweenSequence = {}
 
 --- Yields the current coroutine until this sequence completes or is cancelled. Must be called from inside a coroutine.
----@param ud userdata Lua argument for `ud`.
 ---@return nil No return value.
-LTweenSequence.await = function(ud) end
+function LTweenSequence:await() end
 
 --- Appends a callback step to this sequence that fires when reached during playback.
----@param ud userdata Lua argument for `ud`.
----@param f function Lua argument for `f`.
+---@param f function Function called when this step is reached during playback.
 ---@return LTweenSequence This sequence for chaining.
-LTweenSequence.callback = function(ud, f) end
+function LTweenSequence:callback(f) end
 
 --- Cancels this sequence immediately and resumes any coroutines waiting on it.
 ---@return nil No value is returned.
 function LTweenSequence:cancel() end
 
 --- Appends a delay step to this sequence. Optionally fires a callback when the delay elapses.
----@param ud userdata Lua argument for `ud`.
----@param seconds number Lua argument for `seconds`.
----@param cb? function Lua argument for `cb`.
+---@param self LTweenSequence The sequence to append this delay to (implicit via `:delay(...)`).
+---@param seconds number Duration to wait in seconds.
+---@param cb? function Optional callback fired when the delay elapses.
 ---@return LTweenSequence This sequence for chaining.
-LTweenSequence.delay = function(ud, seconds, cb) end
+LTweenSequence.delay = function(self, seconds, cb) end
 
 --- Returns the overall progress ratio of this sequence from 0.0 to 1.0.
 ---@return number Progress ratio.
@@ -24089,23 +24095,23 @@ function LTweenSequence:getProgress() end
 function LTweenSequence:isActive() end
 
 --- Sets a callback to fire when the sequence finishes all steps. Returns the sequence for chaining.
----@param ud userdata Lua argument for `ud`.
----@param f function Lua argument for `f`.
+---@param self LTweenSequence The sequence to configure (implicit via `:onComplete(...)`).
+---@param f function Function to call when the sequence completes.
 ---@return LTweenSequence This sequence for chaining.
-LTweenSequence.onComplete = function(ud, f) end
+LTweenSequence.onComplete = function(self, f) end
 
 --- Starts playback of this sequence from the first step.
----@param ud userdata Lua argument for `ud`.
 ---@return LTweenSequence This sequence for chaining.
-LTweenSequence.start = function(ud) end
+function LTweenSequence:start() end
 
 --- Appends a tween step to this sequence that animates numeric fields on the target table.
+---@param self LTweenSequence The sequence to append this step to (implicit via `:tween(...)`).
 ---@param duration number Duration in seconds.
 ---@param target table The table whose fields will be animated.
 ---@param fields table Key-value pairs mapping field names to target end values.
----@param easing ?string Easing function name (default `"linear"`).
+---@param easing? string Easing function name (default `"linear"`).
 ---@return LTweenSequence This sequence for chaining.
-LTweenSequence.tween = function(duration, target, fields, easing) end
+LTweenSequence.tween = function(self, duration, target, fields, easing) end
 
 --- Returns the type name of this object.
 ---@return string Always `"LTweenSequence"`.
@@ -25550,7 +25556,7 @@ LTooltipPanel.setTarget = function(target) end
 ---@return nil No return value.
 LTooltipPanel.setText = function(text) end
 
---- Creates a new tree view widget. This function is exposed to Lua scripts.
+--- Registers tree-view-specific Lua methods on a widget method table.
 ---@class LTreeView : LUiWidget
 LTreeView = {}
 

@@ -124,9 +124,9 @@ mod terminal_state_tests {}
 // ── render ────────────────────────────────────────────────────────────────────
 
 mod render_tests {
-    use lurek2d::render::RenderCommand;
+    use lurek2d::render::{DrawMode, RenderCommand};
     use lurek2d::runtime::resource_keys::FontKey;
-    use lurek2d::terminal::Terminal;
+    use lurek2d::terminal::{Terminal, Widget};
     use slotmap::KeyData;
 
     fn dummy_font() -> FontKey {
@@ -157,6 +157,47 @@ mod render_tests {
     }
 
     #[test]
+    fn build_render_commands_button_emits_background_and_label() {
+        let mut terminal = Terminal::new(12, 5);
+        terminal.add_widget(Widget::new_button(2, 2, 8, 3, "OK"));
+
+        let cmds = terminal.build_render_commands(0.0, 0.0, 8.0, 16.0, dummy_font());
+
+        let has_background = cmds.iter().any(|cmd| {
+            matches!(
+                cmd,
+                RenderCommand::Rectangle {
+                    mode: DrawMode::Fill,
+                    ..
+                }
+            )
+        });
+        let has_label = cmds
+            .iter()
+            .any(|cmd| matches!(cmd, RenderCommand::Print { text, .. } if text.contains("OK")));
+        let has_frame = cmds.iter().any(|cmd| {
+            matches!(cmd, RenderCommand::Print { text, .. } if text.contains('┌') || text.contains('└'))
+        });
+        assert!(has_background, "button should emit a visible background");
+        assert!(has_label, "button should emit its label");
+        assert!(has_frame, "button should emit a shaded frame");
+    }
+
+    #[test]
+    fn generate_render_commands_includes_widget_backgrounds() {
+        let mut terminal = Terminal::new(10, 4);
+        terminal.add_widget(Widget::new_panel(1, 1, 10, 4));
+
+        let cmds = terminal.generate_render_commands(dummy_font(), 8.0, 16.0, 1.0);
+
+        assert!(
+            cmds.iter()
+                .any(|cmd| matches!(cmd, RenderCommand::Rectangle { .. })),
+            "panel widget should render through the terminal helper path"
+        );
+    }
+
+    #[test]
     fn draw_to_image_correct_dimensions() {
         let t = Terminal::new(8, 4);
         let img = t.draw_to_image(160, 80);
@@ -177,6 +218,21 @@ mod render_tests {
         let img = t.draw_to_image(64, 32);
         if let Some((r, g, b, _)) = img.get_pixel(0, 0) {
             assert!(r > 100 && g < 50 && b < 50, "expected red cell pixel");
+        }
+    }
+
+    #[test]
+    fn draw_to_image_includes_widget_background_pixels() {
+        let mut terminal = Terminal::new(4, 2);
+        terminal.add_widget(Widget::new_button(1, 1, 4, 1, "Go"));
+
+        let img = terminal.draw_to_image(40, 20);
+
+        if let Some((r, g, b, _)) = img.get_pixel(5, 5) {
+            assert!(
+                r > 20 || g > 20 || b > 35,
+                "button background should tint the output image"
+            );
         }
     }
 }

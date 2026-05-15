@@ -11,74 +11,62 @@
 
 ## Summary
 
-The `camera` module provides Lurek2D's camera, viewport, and cinematic effects system — a Platform Services tier module that imports only from `crate::math`, making it usable in tests and non-rendering contexts without platform dependencies.
+2D camera and viewport system providing position, zoom, rotation, bounds clamping, and smooth follow behaviors. `Camera2D` is the core data type holding world-space transform and projection parameters. `Viewport` maps camera space to screen pixels with configurable scaling modes (integer, letterbox, stretch). `CameraRig2D` adds multi-target tracking with look-ahead, dead zones, and weighted blend between targets.
 
-**Camera2D — the primary type.** `Camera2D` holds position, zoom level, rotation angle, and a full set of gameplay follow behaviours:
-- *Smooth follow*: spring-based exponential lerp toward a target entity position with configurable `follow_speed`.
-- *Dead zone*: a rectangular region around the camera center where the target can move without triggering camera movement.
-- *Look-ahead*: optional velocity-based forward prediction so the camera shows more of where the player is heading.
-- *Bounds clamping*: the camera can be constrained to a world-space AABB so it never shows outside the level.
-- *Screen shake*: time-decaying additive offset with configurable magnitude and frequency, applied after follow computation.
-- *Zoom constraints*: optional min/max zoom levels with damping for smooth transitions.
-- *Rotation constraints*: optional min/max rotation angles with damping for smooth transitions.
-- *Follow presets*: configurable camera profiles (tight, cinematic, balanced, aggressive) for common gameplay scenarios.
+Camera effects include shake (decaying sinusoidal displacement), sway (continuous pendulum motion), breathing (subtle rhythmic zoom oscillation), and zoom pulse (snap-zoom with elastic return). `CameraPath` enables spline-driven camera movement along waypoints with easing. All camera types are pure data — no GPU resources. Screen-to-world and world-to-screen coordinate conversion functions are provided. Exposed as `lurek.camera.*`.
 
-`Camera` is the minimal flat variant — position, zoom, rotation — and `view_matrix()` produces the `Mat3` applied to all world-space draw commands.
+## Source Documentation
 
-**Viewport.** `Viewport` maps the fixed logical game resolution onto the physical window through three `ScaleMode` variants: `Letterbox` (preserve aspect ratio with bars), `Stretch` (fill window ignoring aspect ratio), and `PixelPerfect` (integer-only scaling). `ViewportScale` extends `Viewport` with scaled content-dimension tracking for the render transform stack. Both now use a shared `ScaleMode::compute_transforms()` helper to eliminate code duplication.
+### `effects.rs`
+- Camera effect primitives for transient motion overlays on top of base camera state.
+- ZoomPulse provides a one-shot sinusoidal zoom spike triggered by game events.
+- CameraSway adds oscillating positional offset with configurable frequency and decay.
+- CameraBreathing delivers subtle periodic zoom modulation for idle camera presence.
+- Each effect is composable: the parent camera sums their outputs each frame.
 
-**Cinematic effects.** `effects.rs` adds three time-based overlays applied on top of follow and shake:
-- `ZoomPulse`: brief zoom-in that decays back to base zoom via a sine envelope — useful for hit impacts.
-- `CameraSway`: sinusoidal x/y offset oscillation for underwater or rocking effects.
-- `CameraBreathing`: subtle periodic zoom oscillation for a living-camera feel during cutscenes.
-All effects are now integrated into rendering via `effective_zoom()` and `effect_offset()`.
+### `mod.rs`
+- Camera subsystem module root: effects, multi-view, path, render, types, and viewport.
+- Re-exports all primary types for ergonomic access from engine code.
+- Submodules own distinct concerns: transform state, viewport scaling, render commands.
 
-**Camera path.** `path.rs` provides `CameraPath` for smooth world-space waypoint following over a fixed duration (linear interpolation between consecutive waypoints), and `CameraZoomTween` (alias: `ZoomTween`) for zoom-level transitions. Both are non-blocking — `update(dt)` drives them and returns `true` when complete.
+### `multi.rs`
+- Multi-camera rig that stores and manages named Camera2D instances.
+- Provides preset viewport layouts: split-screen, minimap, and picture-in-picture.
+- Supports bulk update and deterministic iteration for multi-view rendering passes.
 
-**Easing-aware camera motion.** Camera follow and zoom transitions now support easing modes beyond linear interpolation. `Camera2D` exposes follow easing (`linear`, `smoothstep`, `easeout`) and `ZoomTween` supports camera-local easing variants.
+### `path.rs`
+- Waypoint-based camera path interpolation for scripted camera movement.
+- CameraZoomTween provides eased transitions between zoom levels over time.
+- CameraTweenEasing selects interpolation curve: linear, smooth-step, or ease-out-cubic.
+- CameraPath segments multi-point paths with linear interpolation and progress tracking.
+- ZoomTween is a type alias preserving backwards compatibility.
 
-**Multi-camera orchestration.** `multi.rs` adds `CameraRig2D`, a named camera rig for split-screen (`left`/`right`), minimap (`main`/`minimap`), and picture-in-picture (`main`/`pip`) layouts.
+### `render.rs`
+- Render command generation from camera transform state.
+- Builds PushTransform/Translate/Rotate/Scale/PopTransform sequences for Camera and Camera2D.
+- Separates begin/end phases so callers can sandwich scene commands between transforms.
 
-**Parallax scaling.** Per-camera parallax factors map layer scroll speeds to the camera's view-matrix. `set_parallax_factor(layer_id, factor)` / `get_parallax_factor(layer_id)` / `clear_parallax_factors()` let each camera drive a different parallax coefficient, enabling split-screen scenes with independent depth illusions.
+### `types.rs`
+- Core camera state containers: Camera (minimal) and Camera2D (full runtime).
+- Camera2D drives follow-target tracking with dead-zone, smoothing, and look-ahead.
+- Integrates shake, zoom pulse, sway, and breathing effects into effective transforms.
+- Viewport, bounds, and coordinate conversion for world/screen mapping.
+- Zoom and rotation damping with configurable constraint ranges.
+- Easing selection for follow interpolation: linear, smooth-step, ease-out-cubic.
+- View matrix generation composing position, rotation, zoom, and all active effects.
+- Presets for common follow behaviors: tight, cinematic, balanced, aggressive.
 
-**Render integration.** `render.rs` converts camera state into `RenderCommand` sequences: push transform → translate (with sway and shake offsets) → rotate → scale (using effective zoom) → pop transform. The bridge layer invokes this before the game's draw callback so Lua scripts see the camera applied transparently, including all active effects.
+### `viewport.rs`
+- Viewport scaling strategies for mapping a fixed game surface into variable window sizes.
+- ScaleMode selects Letterbox (aspect-preserving), Stretch, or PixelPerfect scaling.
+- Viewport struct holds computed scale factors and offsets after each window resize.
+- Bidirectional coordinate conversion between screen pixels and game-space units.
+- Recomputes transforms on resize without allocating new state.
 
-`render.rs` also provides allocation-free append helpers so hot-path camera application can reuse the global render command buffer without per-frame temporary `Vec<RenderCommand>` allocations.
-
-**Coordinate helpers.** `world_to_screen(x, y)` and `screen_to_world(x, y)` convert between coordinate spaces using the current view-matrix and viewport scale, exposed to Lua for picking and UI-anchoring.
-
-**Lua surface.** Core methods: `getPosition()`, `setPosition`, `getZoom`, `setZoom`, `getRotation`, `setRotation`, `setTarget()`, `setDeadZone(w, h)`, `setBounds(xmin, ymin, xmax, ymax)`, `shake(magnitude, duration)`, `toWorld`, `toScreen`.
-
-Follow behavior: `setFollowSmooth(speed)`, `setLookAhead(multiplier)`, `update(dt)`.
-
-Follow easing and resize helpers: `setFollowEasing(mode)`, `getFollowEasing()`, `onWindowResize(windowW, windowH)`, `onWindowResizeScaled(gameW, gameH, windowW, windowH, mode)`.
-
-Constraints: `setZoomConstraints(min, max)`, `getZoomConstraints()`, `setZoomDamping(factor)`, `getZoomDamping()`, `setRotationConstraints(min, max)`, `getRotationConstraints()`, `setRotationDamping(factor)`, `getRotationDamping()`.
-
-Presets: `presetTightFollow()`, `presetCinematicFollow()`, `presetBalancedFollow()`, `presetAggressiveFollow()`.
-
-Path and zoom: `followPath(waypoints, duration)`, `stopPath()`, `pathProgress()`, `zoomTo(target, duration)`, `stopZoom()`, `updateZoom(dt)`.
-
-Effects: `zoomPulse(amplitude, duration)`, `startSway(amplitude_x, amplitude_y, frequency, decay)`, `stopSway()`, `isSway()`, `startBreathing(amplitude, rate)`, `stopBreathing()`, `isBreathing()`, `getEffectiveZoom()`, `getEffectOffset()`.
-
-Parallax: `setParallaxFactor(layer, factor)`, `getParallaxFactor(layer)`, `clearParallaxFactors()`.
-
-Render: `apply()`, `reset()`, `attach()`, `detach()`.
-
-Rig: `newRig()`, `LCameraRig:splitScreen()`, `LCameraRig:minimap()`, `LCameraRig:pictureInPicture()`, `LCameraRig:setPosition()`, `LCameraRig:setZoom()`, `LCameraRig:setTarget()`, `LCameraRig:updateAll()`, `LCameraRig:apply()`, `LCameraRig:getViewport()`, `LCameraRig:names()`, `LCameraRig:remove()`, `LCameraRig:has()`.
-
-**Scope boundary.** Platform Services tier. Depends only on `math`. Lua bridge in `src/lua_api/camera_api.rs`.
-
-## Files
-
-- `effects.rs`: Cinematic camera effects: zoom pulse, sway, and breathing.
-- `mod.rs`: Declares the camera submodules and re-exports the public camera and viewport surface.
-- `multi.rs`: Named multi-camera rig orchestration for split-screen, minimap, and picture-in-picture.
-- `path.rs`: Camera path follower and smooth-zoom tween for [`super::Camera2D`].
-- `render.rs`: Converts Camera and Camera2D state into push, translate, rotate, scale, and pop render commands.
-- `types.rs`: Defines Camera and Camera2D, including transforms, follow logic, bounds, shake, and coordinate conversion.
-- `viewport.rs`: Defines ScaleMode and Viewport for logical-resolution scaling and coordinate mapping.
-- `viewport_scale.rs`: Defines ViewportScale, a viewport helper that also tracks scaled output dimensions.
+### `viewport_scale.rs`
+- Viewport scale state object used by the engine resize flow.
+- Stores computed scale, offset, and scaled dimensions after each resize.
+- Provides bidirectional game/screen coordinate conversion helpers.
 
 ## Types
 

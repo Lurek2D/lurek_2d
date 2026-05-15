@@ -9,6 +9,7 @@ describe("lurek.repl module", function()
 end)
 
 describe("LReplSession", function()
+    -- @covers lurek.repl.new
     it("evaluates expressions", function()
         local repl = lurek.repl.new(8)
         expect_equal("4", repl:eval("2 + 2"))
@@ -20,6 +21,7 @@ describe("LReplSession", function()
         expect_equal("42", repl:eval("repl_answer + 1"))
     end)
 
+    -- @covers LReplSession:len
     it("keeps bounded history", function()
         local repl = lurek.repl.new(2)
         repl:eval("1")

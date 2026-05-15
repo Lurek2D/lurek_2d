@@ -11,19 +11,60 @@
 
 ## Summary
 
-The `html` module is documented from the current source tree and existing module reference data.
+HTML/CSS document engine for building game UIs using familiar web markup. Parses HTML into a DOM tree of `HtmlElement` nodes, applies CSS rules via selector matching (tag, class, id, attribute, pseudo-class, combinators), and computes box-model layout with flexbox support. The layout engine produces `HtmlDrawCommand` entries — renderer-agnostic draw instructions for rectangles, text, borders, images, and clipping regions.
 
-This module is mostly self-contained inside the Edge/Integration group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
+CSS color parsing covers hex, rgb(), rgba(), hsl(), hsla(), and named keywords. Text rendering supports wrapping, alignment, and multi-line overflow. Interactive elements handle click, hover, focus, and keyboard events with Lua callback binding. Style properties include margin, padding, border, background, font, opacity, transform, and transition. Exposed as `lurek.html.*`.
 
-## Files
+## Source Documentation
 
-- `color.rs`: - CSS color string parsing: hex, `rgb()`, `rgba()`, `hsl()`, `hsla()`, and named keywords.
-- `document.rs`: `HtmlDocument` — DOM owner, layout engine, stylesheet manager, viewport, draw-command generation.
-- `element.rs`: `HtmlElement`, `HtmlElementId`, `HtmlRect` — node representation, attribute/class/style storage, child management.
-- `mod.rs`: Module root — re-exports `HtmlDocument`, `HtmlDocumentOptions`, `HtmlDrawCommand`, `HtmlElement`, `HtmlElementId`, `HtmlRect`.
-- `parser.rs`: HTML/RML string parser — produces element tree from markup.
-- `selector.rs`: CSS selector parser and matching engine.
-- `style.rs`: CSS property parser, cascade, computed-style resolution.
+### `color.rs`
+- CSS color string parsing: hex, `rgb()`, `rgba()`, `hsl()`, `hsla()`, and named keywords.
+- Component extraction for RGB bytes/percent, alpha, hue (deg/turn/rad), and percent values.
+- HSL-to-RGB conversion with full hue normalization.
+- Named color lookup covering the CSS basic and extended keyword set.
+- All outputs normalized to `[f32; 4]` in the 0.0–1.0 range.
+
+### `document.rs`
+- Owns `HtmlDocument`, the mutable tree that holds parsed elements, CSS state, and interaction focus.
+- Provides document construction from raw HTML with optional viewport size and initial CSS.
+- Manages CSS source accumulation, rule parsing, and per-element computed style resolution.
+- Implements a simple vertical block layout engine with dirty-flag tracking and viewport resize.
+- Exposes DOM query helpers: element-by-id, CSS selector matching, ancestor traversal.
+- Supports DOM mutation: set/append inner HTML, set text, remove elements, attribute and class ops.
+- Handles focus, hover, hit-testing, mouse/keyboard routing, and text input for form elements.
+- Produces `HtmlDrawCommand` vectors consumed by the renderer for box and text passes.
+- Includes inner/outer HTML serialization and document-order traversal utilities.
+
+### `element.rs`
+- DOM element model: tag, attributes, children, parent linkage, and text content.
+- Inline style handling with bidirectional sync to the `style` attribute.
+- Class list manipulation: add, remove, toggle, and membership queries.
+- Axis-aligned layout rectangle for hit testing and position queries.
+- Attribute normalization and void-tag classification helpers.
+
+### `mod.rs`
+- HTML document tree with element storage, layout rectangles, and draw-command generation.
+- CSS rule parsing, selector matching, and color normalization.
+- Tag parsing and entity escaping for inline HTML content.
+
+### `parser.rs`
+- Parse raw HTML strings into a live element tree with parent-child relationships.
+- Split tag headers, extract and normalize attribute key-value pairs.
+- Decode and encode the small HTML entity set (amp, lt, gt, quot, #39).
+- Collapse whitespace in text nodes before attaching to elements.
+- Handle self-closing tags, void tags, closing tags, and comments.
+
+### `selector.rs`
+- CSS selector matching for the HTML element tree.
+- Parse selector strings into tag, id, class, and combinator fragments.
+- Support descendant and child combinators for ancestor-chain traversal.
+- Match parsed selector chains against live elements by walking parent links.
+- Provide the core predicate used by style resolution and query APIs.
+
+### `style.rs`
+- CSS stylesheet parsing: split source text into selector/declaration blocks.
+- Declaration normalization: property validation, value extraction, warning collection.
+- Length unit resolution: convert px, %, and unitless values to pixel floats.
 
 ## Types
 

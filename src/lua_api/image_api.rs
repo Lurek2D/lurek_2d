@@ -163,8 +163,12 @@ impl LuaUserData for LuaProvinceGrid {
             Ok(out)
         });
         // -- drawShapes --
-        /// Queues filled polygon draw commands for province shapes, optionally culled to a viewport.
-        /// @param | viewport | LuaValue | Either no arguments or four numeric values `x, y, w, h`.
+        /// Queues filled polygon draw commands for province shapes, optionally culled to a viewport rect.
+        /// Pass no arguments to draw all shapes, or pass `x, y, w, h` to cull to a rectangle.
+        /// @param | x | number? | Viewport left edge (required if providing a viewport).
+        /// @param | y | number? | Viewport top edge (required if providing a viewport).
+        /// @param | w | number? | Viewport width (required if providing a viewport).
+        /// @param | h | number? | Viewport height (required if providing a viewport).
         /// @return | integer | Number of polygons emitted to the render command queue.
         methods.add_method_mut("drawShapes", |_, this, args: LuaMultiValue| {
             let viewport = if args.is_empty() {
@@ -586,7 +590,8 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     let s = state.clone();
     // -- newImageData --
     /// Creates empty image data from dimensions or decodes image data from a GameFS filename.
-    /// @param | args | LuaValue | Either `(width, height)` numeric arguments or a filename string.
+    /// @param | width_or_filename | integer|string | Width in pixels for a blank canvas, or a GameFS filename string to load from disk.
+    /// @param | height | integer? | Height in pixels; required when the first argument is a width integer. Omit when loading from filename.
     /// @return | LImageData | New image data handle.
     tbl.set(
         "newImageData",

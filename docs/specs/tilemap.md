@@ -11,46 +11,120 @@
 
 ## Summary
 
-The `tilemap` module is Lurek2D's tile-map authoring and rendering subsystem in the Feature Systems tier. It covers the full range from simple single-layer orthogonal grids to multi-layer maps with animated tiles, external format imports, automatic tile selection, isometric depth sorting, hex coordinates, and sparse infinite chunk maps.
+Multi-layer tile map system supporting TMX (Tiled) and LDtk import, autotile rules, isometric grids, chunk-based streaming, procedural generation, and polygon region detection. `TileMap` stores stacked `TileLayer` grids with per-cell tile IDs, flip flags, and collision data. `TileSet` defines tile properties, animations, and collision shapes.
 
-**Core map model.** `TileMap` is the top-level container: a multi-layer grid where each `TileLayer` holds a flat row-major `Vec<u32>` of tile GIDs plus display properties — name, Z-order, opacity, visibility flag, tint colour, parallax scroll multipliers, and per-layer draw offsets. Primary CRUD: `get_tile(layer, x, y)`, `set_tile(layer, x, y, id)`, `fill_rect(layer, rect, id)`, `swap_tiles(layer, rect)`. Viewport culling: only tiles within the camera AABB are rendered. `sweep_rect(rect)` returns all non-empty GIDs intersecting a world-space AABB — used as the broad-phase collision pre-filter before rapier2d shape generation. Animation state tracks frame timers per animated tile GID across all layers.
+`AutoTileSheet` applies bitmask-based neighbor rules for seamless terrain transitions. `IsoMap` handles diamond and staggered isometric coordinate systems with proper depth sorting. `ChunkMap` divides large maps into loadable/unloadable rectangular chunks for open-world streaming. Procedural generators create cave, dungeon, and terrain maps from noise or cellular automata. Polygon regions detect and export contiguous shapes for physics colliders. Exposed as `lurek.tilemap.*`. Feature Systems tier.
 
-**TileSet.** Stores the source `TextureKey`, tile dimensions, tile count, and per-tile properties: `passable` flag, optional `TileAnimFrame` sequence (local-id + duration pairs), custom `HashMap<String, String>` properties, and an optional `collision_shape` override for physics collider generation. The collision shape allows concave and non-rectangular hitboxes per tile variant.
+## Source Documentation
 
-**External format importers.** `load_tmx(path)` parses Tiled `.tmx` XML exports including object layers, tile properties, image layers, embedded and external tileset references, and base64/zlib-encoded tile payloads. `load_ldtk(path)` parses LDtk JSON exports. Both populate native `TileMap` + `TileSet` structures so all downstream code is format-agnostic.
+### `autotile_sheet.rs`
+- Autotile sprite-sheet abstraction: blob-47, composite-48, and minimal-16 layouts.
+- Bitmask table generation and reverse lookup from neighbor mask to tile index.
+- 8-bit diagonal collapse for correct cardinal-gated corner resolution.
+- Quarter-tile compositing helpers for sub-tile source and destination rects.
+- Sheet-to-tileset rule registration for runtime autotile placement.
 
-**AutoTile.** `AutoTileSheet` precomputes bitmask-to-tile-index lookup tables for three atlas layouts: RPGMaker blob-47, composite-48, and minimal-16. Given an 8-neighbor bitmask, it selects the correct tile variant automatically — eliminating manual tile placement in procedurally generated or runtime-editable maps. `get_quarter_rects` / `get_quarter_dst_rects` support sub-tile composite rendering for RPGMaker 47-tile atlas format.
+### `chunk.rs`
+- Infinite sparse tile grid partitioned into fixed-size square chunks.
+- On-demand chunk allocation and explicit load/unload lifecycle.
+- Tile read/write by world coordinates with automatic chunk decomposition.
+- Rectangular fill, chunk enumeration, and view-frustum culling helpers.
+- World-space geometry queries for chunk bounds and overlap testing.
 
-**Isometric and hex support.** `IsoMap` stores multi-level isometric grids with four `IsoTilePart` sub-slots per cell (Floor, Wall, Object, Overlay) and yields painter's-algorithm depth-sorted `IsoDrawItem` records for correct layering. `coords.rs` provides `to_screen_iso` / `from_screen_iso` (diamond isometric projection) and `to_screen_hex` / `from_screen_hex` (pointy-top axial hex) coordinate conversion helpers usable from both Rust and Lua.
+### `coords.rs`
+- Isometric tile-to-screen and screen-to-tile coordinate conversions.
+- Cardinal direction rotation, naming, and angle snapping for iso grids.
+- Hex axial coordinate conversions between screen and grid space.
+- Hex neighbor lookup, distance, and rounding for fractional coordinates.
+- Line drawing, ring enumeration, spiral traversal, and area fill on hex grids.
+- Hex rotation and reflection transforms around arbitrary center cells.
 
-**Chunk map.** `ChunkMap` is a `HashMap<(i32, i32), Vec<u32>>` sparse infinite tile map supporting negative coordinates. `load_chunk` / `unload_chunk` manage per-chunk lifecycle. `get_chunks_in_view(viewport)` returns only chunk keys intersecting the camera frustum for efficient streaming.
+### `isomap.rs`
+- Multi-level isometric tile map with per-tile draw-layer parts (floor, walls, objects).
+- Diamond-projection coordinate conversion between tile space and screen space.
+- Painter-sorted draw iteration via diagonal-strip traversal across elevation levels.
+- Per-level visibility toggling and configurable part draw order.
+- Bulk fill and individual GID get/set for each tile-part slot.
 
-**Procedural generation.** `MapGen` consumes `MapBlock` prefab libraries and `MapScript` step sequences to assemble `TileMap` outputs procedurally. `PolygonMap` manages named polygon overlays with hit-testing, highlight state, and bounding-box queries for province or zone overlay use cases.
+### `large_map_renderer.rs`
+- Chunk-based large-map renderer for tilemaps that exceed single-pass draw limits.
+- Splits the full tile grid into fixed-size square chunks with dirty-flag tracking.
+- Camera and viewport state drive visibility culling at chunk granularity.
+- Supports per-tile mutation with automatic chunk invalidation.
+- Optional LOD down-sampling controlled by configurable zoom thresholds.
+- Tileset column count stored for atlas UV computation by the draw backend.
 
-**Tile walker.** `TileWalker` implements a cardinal, cell-by-cell movement controller with directional facing, step animation readiness, and passability checks — useful for dungeon-crawler or grid-locked movement games.
+### `ldtk.rs`
+- Import LDtk project JSON into the engine tilemap representation.
+- Parse levels, tile layers, and auto-layers with tileset geometry reconstruction.
+- Map LDtk pixel-based tile coordinates to grid-cell indices.
 
-**Render integration.** `render.rs` generates `RenderCommand` batches from `TileMap` layers. `large_map_renderer.rs` tracks chunk visibility, dirty state, and LOD metadata for worlds that need culling-friendly batched rendering at scale.
+### `mapgen.rs`
+- Procedural tile-map generation driven by reusable block stamps and scripted steps.
+- `MapBlock` stores rectangular tile grids with edge side-IDs for neighbour matching.
+- `MapGroup` collects blocks and `MapScript`s into named generation palettes.
+- `ScriptStep` parameterises operations: fill, place, scatter, flood-fill, path drawing.
+- `MapGen` orchestrates generation using seeded LCG RNG, zones, orientation, and layer modes.
+- Supports single-region and multi-region world tiling with independent seeds per region.
+- Deterministic output: same seed + script always produces the same map.
+- Grid presets (`MapSize`) and horizontal zone bands constrain placement areas.
+- Orientation tags (top-down, side-view, isometric, hexagonal) stored for downstream renderers.
+- Layer modes control whether blocks share a unified layer or write independently.
 
-**Lua surface.** `lurek.tilemap.newMap(w, h, tile_w, tile_h)` creates an empty map. `lurek.tilemap.loadTMX(path)` and `lurek.tilemap.loadLDtk(path)` import external formats. The `TileMap` userdata exposes layer management, tile CRUD, fill/flood operations, animation control, physics collision mesh generation, chunk streaming, and render command retrieval. `AutoTileSheet` is exposed via `lurek.tilemap.newAutoTileSheet(tileset, layout)` with a `computeTile(map, layer, x, y)` method. `IsoMap` and coordinate helpers are exposed under the same namespace.
+### `mod.rs`
+- Tile map storage, rendering, and chunk streaming for large worlds.
+- Supports orthogonal and isometric layouts with layered tiles.
+- Imports LDtk and Tiled TMX formats; procedural generation via MapGen.
+- Autotile rules, tile-space coordinates, and polygon-region maps.
 
-**Scope boundary.** Feature Systems tier. Depends on `render`, `math`, `runtime`, `image`. Lua bridge in `src/lua_api/tilemap_api.rs`.
+### `polygon_map.rs`
+- Named convex/concave polygon regions with fill color and optional text labels.
+- Spatial query via ray-casting point-in-polygon test for hit detection.
+- Global outline and highlight styling shared across all regions.
+- Region management: add, remove, recolor, label, and enumerate.
+- Bounding-box and centroid computation for layout and camera framing.
 
-## Files
+### `render.rs`
+- Camera-culled render-command generation for tile-map layers.
+- GID-to-color debug palette for fallback colored tile rendering.
+- Per-layer visibility and tint applied during command emission.
 
-- `autotile_sheet.rs`: Defines autotile lookup tables for blob-47, composite-48, and minimal-16 layouts and applies those rules onto a `TileSet`.
-- `chunk.rs`: Implements `ChunkMap`, a sparse chunked tile store for very large or effectively infinite worlds with negative coordinate support.
-- `coords.rs`: Provides standalone isometric and hex-grid conversion helpers so scripts and engine code can reason about non-orthogonal tile coordinates without embedding projection math elsewhere.
-- `isomap.rs`: Stores multi-level isometric maps and yields painter-ordered draw items for floor, wall, and object parts per cell.
-- `large_map_renderer.rs`: Tracks chunk visibility, dirty state, viewport, and LOD metadata for large tile worlds that need efficient culling-friendly batching.
-- `ldtk.rs`: LDtk JSON map format importer.
-- `mapgen.rs`: Implements prefab blocks, grouped block libraries, scripted generation steps, and map assembly logic for procedural tilemap authoring.
-- `mod.rs`: Declares the tilemap submodules and re-exports the main map, tileset, generation, TMX, isometric, and utility types as the public module surface.
-- `polygon_map.rs`: Manages named polygon regions with hit testing, labels, highlight state, and bounding-box queries for map overlays or province-style regions.
-- `render.rs`: Adds `TileMap` render-command generation so tile layers can be turned into CPU-side draw commands without putting map traversal logic in the renderer.
-- `tile_walker.rs`: Implements a cardinal, cell-by-cell movement controller for dungeon-crawler or raycast-style navigation on a tile grid.
-- `tilemap.rs`: Holds the core layered `TileMap`, including tile CRUD, per-layer display state, viewport culling, animation state, and tile collision queries.
-- `tileset.rs`: Defines `TileSet` atlas layout, per-tile animation frames, solid flags, and 4-bit or 8-bit autotile rule tables.
-- `tmx.rs`: Parses Tiled TMX data, including tilesets, tile layers, object layers, and supported encoded tile payloads.
+### `tile_walker.rs`
+- Cardinal facing direction with angle, delta, and rotation helpers.
+- Discrete grid walker with forward, backward, and strafe movement.
+- Previous-state snapshot for smooth frame interpolation of position and heading.
+- Relative-facing query to classify adjacent tiles as front, back, left, or right.
+- Passability checks decoupled from actual collision data.
+
+### `tilemap.rs`
+- Multi-layer tile map with per-tile GID storage, tint overrides, and parallax scroll factors.
+- Tileset attachment and GID resolution across multiple tileset ranges.
+- 4-neighbour and 8-neighbour autotile bitmask computation and GID substitution.
+- Continuous AABB sweep-cast collision against solid tiles for platformer and top-down physics.
+- Per-GID animation timer advancement using tileset frame data.
+- World-to-tile and tile-to-world coordinate conversion respecting tile dimensions.
+- Viewport-aware culled render-command generation for debug colour-coded output.
+- Debug image rendering: full-map, per-layer side-by-side, and highlight-overlay modes.
+- Boolean walkability grid export for pathfinding integration.
+- GID-to-position reverse index cache for fast spatial queries by tile type.
+
+### `tileset.rs`
+- Tileset geometry: tile dimensions, spacing, margin, column count, and GID range ownership.
+- Source-rect lookup: compute pixel `Rect` for any local tile ID within the sprite-sheet.
+- Collision metadata: per-tile solid flag storage and query.
+- Animation sequences: frame-based tile animations keyed by local ID.
+- Autotile rules: 4-bit and 8-bit bitmask-to-tile mappings for terrain transitions.
+
+### `tmx.rs`
+- Parse the Tiled TMX XML map format into engine-native structs for tile and object layers.
+- Support orthogonal, isometric, staggered, and hexagonal map orientations.
+- Decode tile GID arrays from CSV, raw XML, and base64 encodings with zlib/gzip decompression.
+- Extract tileset metadata including image paths, spacing, margins, and solid-tile markers.
+- Parse object layers with position, size, type, and optional tile-GID references.
+- Mask Tiled flip flags (horizontal, vertical, diagonal) from raw GID values before storage.
+- Detect solid tiles via embedded objectgroups or `solid=true` custom properties.
+- Propagate parse failures as descriptive error strings with element and attribute context.
+- Parse Tiled hex color strings (`#RRGGBB` / `#AARRGGBB`) for map background color.
 
 ## Types
 

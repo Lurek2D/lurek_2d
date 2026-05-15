@@ -5246,7 +5246,7 @@ pub enum ShapeCommand  // One drawing operation stored inside a `CompoundShape`.
 
 ### `repl`
 
-> Release-safe Lua REPL core shared by GUI CLI and developer tooling.
+> - Exports the release-safe Lua REPL core: session, commands, completer, and value formatter. - Re-exports top-level symbols for convenient use by `lua_api` bindings and `devtools`. - All REPL state is pure Rust with no wgpu or winit dependencies; safe for headless and test contexts.
 
 *[src/repl/mod.rs](src/repl/mod.rs) — 4/4 documented (100%)*
 
@@ -5259,7 +5259,7 @@ pub mod value  // Lua value formatting for REPL and headless stdout output.
 
 ### `repl::commands`
 
-> REPL command tokens returned by the release-safe REPL core.
+> - Declares `ReplCommand` enum for the five built-in colon commands: `:help`, `:quit`, `:clear`, `:reset`, and `:load <path>`. - `display_text` returns a short human-readable confirmation string for each command variant. - Command data only; dispatch logic and Lua eval live in `session.rs`.
 
 *[src/repl/commands.rs](src/repl/commands.rs) — 1/1 documented (100%)*
 
@@ -5269,7 +5269,7 @@ pub enum ReplCommand  // Special colon command recognised by `ReplSession`.
 
 ### `repl::completer`
 
-> Completion helpers for the release-safe Lua REPL core.
+> - Provides `complete_prefix` for tab completion against a static pool and live Lua globals. - Static pool includes Lua keywords, built-in globals, standard libraries, colon commands, and all `lurek.*` sub-namespaces. - Dynamic branch resolves a dot-separated path through Lua globals and collects matching key names. - Output is sorted and deduplicated; callers pass `None` for the Lua handle when no VM is available.
 
 *[src/repl/completer.rs](src/repl/completer.rs) — 1/1 documented (100%)*
 
@@ -5279,7 +5279,7 @@ pub fn complete_prefix()  // Return sorted completions matching the supplied pre
 
 ### `repl::session`
 
-> Stateful Lua REPL session that evaluates snippets and records bounded history.
+> - Implements `ReplSession`, a stateful Lua evaluator with bounded command history. - `ReplResult` captures value output, silent success, structured error text, or a parsed colon command. - Eval dispatches colon commands first; expression input tries `return <input>` then falls back to statement execution. - History is capped at `max_history` entries; oldest entries are evicted when the cap is reached; default capacity is 200. - `:load` reads a file from disk and executes it inside the current Lua VM, returning a command or error result. - Session state is pure Rust; the Lua reference is borrowed per call and never stored on the struct.
 
 *[src/repl/session.rs](src/repl/session.rs) — 2/2 documented (100%)*
 
@@ -5290,7 +5290,7 @@ pub enum ReplResult  // Result of evaluating one REPL line.
 
 ### `repl::value`
 
-> Lua value formatting used by release-safe REPL surfaces.
+> - Converts a single `mlua::Value` to a display string for REPL and headless stdout output. - Covers all Lua value kinds; opaque types like tables and functions return fixed angle-bracket labels. - Error values include the Lua error message; nil returns the literal string `"nil"`.
 
 *[src/repl/value.rs](src/repl/value.rs) — 1/1 documented (100%)*
 
@@ -5352,7 +5352,7 @@ pub type EngineResult  // Convenience alias for runtime results that use `Engine
 
 ### `runtime::headless`
 
-> Headless runtime path that runs Lua without creating a window, input loop, or renderer.
+> - Implements the no-window headless runtime path for script automation and CI use. - `HeadlessOptions` carries game directory, eval snippets, and an optional frame-count override. - `run_headless` maps engine errors to process exit codes; `run_headless_checked` preserves structured errors for test callers. - Init sequence installs a stdout-routed `print` global and prepends game-directory roots to `package.path`. - Frame loop drives `process_physics`, `fixedUpdate`, `process`, and `process_late` in order; count and dt come from config or CLI flag. - Callback timeout is enforced via Lua instruction-count hooks when a limit is configured in `PerformanceConfig`.
 
 *[src/runtime/headless.rs](src/runtime/headless.rs) — 3/3 documented (100%)*
 
@@ -5656,7 +5656,7 @@ pub fn resolve_message()  // Resolve dynamic identifier to owned message text, o
 
 ### `runtime::mode`
 
-> Runtime mode selection shared by config loading and CLI startup parsing.
+> - Defines `RuntimeMode` enum with four variants: `gui`, `tui`, `headless`, and `cli`. - Provides lowercase string tokens for config serialization and CLI parsing via `as_str` and `Display`. - `FromStr` accepts any casing and returns a typed parse error that names the rejected token. - Used by `config.rs` during TOML deserialization and by `main.rs` to select the startup path.
 
 *[src/runtime/mode.rs](src/runtime/mode.rs) — 2/2 documented (100%)*
 
@@ -6116,7 +6116,7 @@ pub fn highlight_spans()  // Split `text` into `ColoredSpan`s by applying `rules
 
 ### `terminal::terminal_state`
 
-> - Terminal grid state machine: fixed-size cell buffer with 1-based cursor, per-cell fg/bg colors, and content-preserving resize. - Widget system: compositable label, button, text-box, list, border, and panel widgets drawn on top of the grid. - Focus and input dispatch: keyboard, text-input, and mouse events routed to the focused widget with event emission. - Scrollback buffer: capped line history with offset-based windowed retrieval. - Command history: push/prev/next navigation for console-style input recall. - Cell manipulation helpers: single-cell set/get, bulk print, colored print, and default-color application. - Render output: composited cell buffer flattened into batched `RenderCommand` lists for the renderer. - Border rendering: single, double, and ASCII frame styles with optional title text. - Panel child tracking: index-based parent-child relationships with automatic adjustment on widget removal.
+> - Terminal grid state machine: fixed-size cell buffer with 1-based cursor, per-cell fg/bg colors, and content-preserving resize. - Widget system: compositable label, button, text-box, list, border, and panel widgets drawn on top of the grid with default shaded skins. - Focus and input dispatch: keyboard, text-input, and mouse events routed to the focused widget with event emission. - Scrollback buffer: capped line history with offset-based windowed retrieval. - Command history: push/prev/next navigation for console-style input recall. - Cell manipulation helpers: single-cell set/get, bulk print, colored print, and default-color application. - Render output: composited cell buffer flattened into batched background and text `RenderCommand` lists for the renderer. - Border rendering: single, double, and ASCII frame styles with optional title text. - Panel child tracking: index-based parent-child relationships with automatic adjustment on widget removal.
 
 *[src/terminal/terminal_state.rs](src/terminal/terminal_state.rs) — 4/4 documented (100%)*
 
@@ -6670,7 +6670,7 @@ pub fn render_to_image()  // Run a layout pass on `ctx` at the given resolution 
 
 ### `ui::theme`
 
-> - Visual theming system for the immediate-mode GUI, mapping widget-type/state pairs to style records. - Each style carries background, foreground, border colors, font size, shadow, gradient, and text alignment. - Lookup falls back from the requested state to `Normal`, letting partial themes work without exhaustive registration. - Ships a full dark preset covering all standard widget types (buttons, inputs, panels, menus, dialogs, etc.). - Style records are value types (`Clone + Debug`) so themes can be cheaply forked per-screen. - Includes a debug helper that rasterizes button states into an `ImageData` tile for visual validation. - Integrates with `GuiContext` at render time; the renderer reads resolved styles per-widget per-frame. - Designed for extension: games register custom `(WidgetType, WidgetState)` entries without modifying built-in presets.
+> - Visual theming system for the immediate-mode GUI, mapping widget-type/state pairs to style records. - Each style carries background, foreground, border colors, font size, shadow, gradient, and text alignment. - Lookup falls back from the requested state to `Normal`, letting partial themes work without exhaustive registration. - Ships a full dark preset covering all standard widget types (buttons, inputs, panels, layouts, menus, dialogs, etc.). - Style records are value types (`Clone + Debug`) so themes can be cheaply forked per-screen. - Includes a debug helper that rasterizes button states into an `ImageData` tile for visual validation. - Integrates with `GuiContext` at render time; the renderer reads resolved styles per-widget per-frame. - Designed for extension: games register custom `(WidgetType, WidgetState)` entries without modifying built-in presets.
 
 *[src/ui/theme.rs](src/ui/theme.rs) — 2/2 documented (100%)*
 

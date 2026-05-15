@@ -17,7 +17,7 @@ impl LuaUserData for LuaSpriteSheet {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
         // -- getFrame --
         /// Returns the UV quad for a single frame by its 1-based index.
-        /// @param | index | number | 1-based frame index in the sprite sheet.
+        /// @param | index | integer | 1-based frame index in the sprite sheet.
         /// @return | table | Quad table `{x, y, w, h}` with normalized UV coordinates, or nil if out of range.
         methods.add_method("getFrame", |lua, this, index: usize| {
             match this.inner.get_frame(index) {
@@ -36,7 +36,7 @@ impl LuaUserData for LuaSpriteSheet {
         });
         // -- getRow --
         /// Returns all frame quads in the given row of the sprite sheet grid.
-        /// @param | row | number | 0-based row index.
+        /// @param | row | integer | 0-based row index.
         /// @return | table | Array of quad tables `{x, y, w, h}`.
         methods.add_method("getRow", |lua, this, row: u32| {
             let frames = this.inner.get_row(row);
@@ -44,7 +44,7 @@ impl LuaUserData for LuaSpriteSheet {
         });
         // -- getColumn --
         /// Returns all frame quads in the given column of the sprite sheet grid.
-        /// @param | col | number | 0-based column index.
+        /// @param | col | integer | 0-based column index.
         /// @return | table | Array of quad tables `{x, y, w, h}`.
         methods.add_method("getColumn", |lua, this, col: u32| {
             let frames = this.inner.get_column(col);
@@ -77,8 +77,8 @@ impl LuaUserData for LuaSpriteSheet {
         // -- nameGroup --
         /// Defines a named animation group as a contiguous range of frames.
         /// @param | name | string | Name for the group (e.g. "attack").
-        /// @param | start | number | 1-based start frame index.
-        /// @param | count | number | Number of frames in the group.
+        /// @param | start | integer | 1-based start frame index.
+        /// @param | count | integer | Number of frames in the group.
         /// @return | nil | No return value.
         methods.add_method_mut(
             "nameGroup",
@@ -105,8 +105,8 @@ impl LuaUserData for LuaSpriteSheet {
         });
         // -- drawToImage --
         /// Renders the sprite sheet grid into an LImage of the given size for debugging or previews.
-        /// @param | w | number | Output image width in pixels.
-        /// @param | h | number | Output image height in pixels.
+        /// @param | w | integer | Output image width in pixels.
+        /// @param | h | integer | Output image height in pixels.
         /// @return | LImage | A new image containing the rendered sprite sheet.
         methods.add_method("drawToImage", |lua, this, (w, h): (u32, u32)| {
             let img = this.inner.draw_to_image(w, h);
@@ -154,7 +154,7 @@ impl LuaUserData for LuaSpriteAtlas {
         });
         // -- getByIndex --
         /// Returns a sprite region by its 1-based index in the atlas.
-        /// @param | index | number | 1-based entry index.
+        /// @param | index | integer | 1-based entry index.
         /// @return | table | Entry table `{name, x, y, w, h, rotated}`, or nil if out of range.
         methods.add_method("getByIndex", |lua, this, index: usize| {
             match this.inner.get_by_index(index.saturating_sub(1)) {
@@ -234,10 +234,10 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
 
     // -- newSheet --
     /// Creates a new sprite sheet by dividing a texture of the given pixel size into a grid of equal-sized frames.
-    /// @param | tw | number | Full texture width in pixels.
-    /// @param | th | number | Full texture height in pixels.
-    /// @param | fw | number | Single frame width in pixels.
-    /// @param | fh | number | Single frame height in pixels.
+    /// @param | tw | integer | Full texture width in pixels.
+    /// @param | th | integer | Full texture height in pixels.
+    /// @param | fw | integer | Single frame width in pixels.
+    /// @param | fh | integer | Single frame height in pixels.
     /// @return | LSpriteSheet | A new sprite sheet object.
     tbl.set(
         "newSheet",
@@ -249,8 +249,8 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     )?;
     // -- newRPGMakerSheet --
     /// Creates a sprite sheet using RPG Maker's standard character layout (4 columns × 4 rows per character block).
-    /// @param | tw | number | Full texture width in pixels.
-    /// @param | th | number | Full texture height in pixels.
+    /// @param | tw | integer | Full texture width in pixels.
+    /// @param | th | integer | Full texture height in pixels.
     /// @return | LSpriteSheet | A new sprite sheet configured for RPG Maker character sprites.
     tbl.set(
         "newRPGMakerSheet",
@@ -279,8 +279,8 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     // -- newAtlasSheet --
     /// Creates a sprite sheet from an existing atlas, treating each atlas entry as a frame within the given sheet dimensions.
     /// @param | atlas | LSpriteAtlas | A previously parsed sprite atlas.
-    /// @param | sw | number | Sheet texture width in pixels.
-    /// @param | sh | number | Sheet texture height in pixels.
+    /// @param | sw | integer | Sheet texture width in pixels.
+    /// @param | sh | integer | Sheet texture height in pixels.
     /// @return | LSpriteSheet | A new sprite sheet derived from the atlas entries.
     tbl.set(
         "newAtlasSheet",
@@ -305,6 +305,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     lurek.set("sprite", tbl)?;
     Ok(())
 }
+/// Converts a sprite rectangle into the Lua quad table returned by atlas helpers.
 fn quad_table(lua: &Lua, r: Rect) -> LuaResult<LuaTable<'_>> {
     let t = lua.create_table()?;
     t.set("x", r.x)?;
@@ -313,6 +314,7 @@ fn quad_table(lua: &Lua, r: Rect) -> LuaResult<LuaTable<'_>> {
     t.set("h", r.height)?;
     Ok(t)
 }
+/// Converts a slice of sprite rectangles into an array-style Lua table.
 fn frames_to_table<'lua>(lua: &'lua Lua, frames: &[Rect]) -> LuaResult<LuaTable<'lua>> {
     let t = lua.create_table()?;
     for (i, r) in frames.iter().enumerate() {

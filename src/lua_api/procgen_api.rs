@@ -33,8 +33,8 @@ impl LuaUserData for LuaBiomeClassifier {
         });
         // -- classifyMap --
         /// Classify an entire grid of points into biome types in bulk.
-        /// @param | width | number | Grid width in cells.
-        /// @param | height | number | Grid height in cells.
+        /// @param | width | integer | Grid width in cells.
+        /// @param | height | integer | Grid height in cells.
         /// @param | heights | table | Flat array of height values (length = width*height).
         /// @param | moisture | table | Flat array of moisture values (length = width*height).
         /// @param | temperature | table? | Optional flat array of temperature values. If omitted, temperature is ignored.
@@ -129,8 +129,8 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     let tbl = lua.create_table()?;
     // -- cellularAutomata --
     /// Generate a cave or organic map using cellular automata rules.
-    /// @param | width | number | Grid width in cells.
-    /// @param | height | number | Grid height in cells.
+    /// @param | width | integer | Grid width in cells.
+    /// @param | height | integer | Grid height in cells.
     /// @param | opts | table? | Options: fill (0.0–1.0 initial fill ratio), iterations, birth threshold, survive threshold, seed.
     /// @return | table | Flat array of u8 values (0=empty, 1=wall) with length width*height.
     tbl.set(
@@ -210,8 +210,8 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     /// @param | width | number | Area width.
     /// @param | height | number | Area height.
     /// @param | minDist | number | Minimum distance between any two points.
-    /// @param | maxAttempts | number? | Rejection attempts per active point (default 30). Higher = denser fill.
-    /// @param | seed | number? | RNG seed (default 0).
+    /// @param | maxAttempts | integer? | Rejection attempts per active point (default 30). Higher = denser fill.
+    /// @param | seed | integer? | RNG seed (default 0).
     /// @return | table | Array of {x, y} tables representing generated points.
     tbl.set("poissonDisk", lua.create_function(
             |lua, (w, h, min_dist, max_attempts, seed): (f32, f32, f32, Option<u32>, Option<u64>)| {
@@ -229,8 +229,8 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     )?;
     // -- voronoi --
     /// Compute a Voronoi diagram from a set of seed points. Returns region ownership, distance-to-nearest, and distance-to-second-nearest for each cell.
-    /// @param | width | number | Grid width.
-    /// @param | height | number | Grid height.
+    /// @param | width | integer | Grid width.
+    /// @param | height | integer | Grid height.
     /// @param | points | table | Array of {x, y} seed points.
     /// @param | opts | table? | Options: warp_scale, warp_strength, seed for domain warping.
     /// @return | table | Flat array of 1-based region indices (length = width*height).
@@ -602,8 +602,8 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     )?;
     // -- heightmapFromCellular --
     /// Convert a cellular automata grid into a heightmap by distance-transforming the floor cells.
-    /// @param | width | number | Grid width.
-    /// @param | height | number | Grid height.
+    /// @param | width | integer | Grid width.
+    /// @param | height | integer | Grid height.
     /// @param | cells | table | Flat u8 array from cellularAutomata.
     /// @param | floorValue | number? | Cell value treated as open floor (default 0).
     /// @return | table | Table with .cells (flat f32 array), .width, .height.
@@ -822,8 +822,8 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     /// Generate a connected world graph with named regions and weighted edges. Useful for overworld maps, trade routes, or quest connectivity.
     /// @param | width | number | World area width.
     /// @param | height | number | World area height.
-    /// @param | regionCount | number | Number of regions to place.
-    /// @param | seed | number? | RNG seed (default 0).
+    /// @param | regionCount | integer | Number of regions to place.
+    /// @param | seed | integer? | RNG seed (default 0).
     /// @return | table | Table with .regions (array of {id, name, x, y, tags[]}) and .edges (array of {from, to, cost, bidirectional}).
     tbl.set(
         "worldGraph",
@@ -862,8 +862,8 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     )?;
     // -- noiseMap --
     /// Generate a 2D noise map with configurable scale, octaves, and offsets. Runs on a single thread.
-    /// @param | width | number | Map width in cells.
-    /// @param | height | number | Map height in cells.
+    /// @param | width | integer | Map width in cells.
+    /// @param | height | integer | Map height in cells.
     /// @param | opts | table? | Options: scale_x, scale_y, octaves, lacunarity, persistence, offset_x, offset_y, seed.
     /// @return | table | Flat array of f64 noise values (length = width*height).
     tbl.set(
@@ -913,8 +913,8 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     )?;
     // -- noiseMapParallel --
     /// Generate a 2D noise map using multiple threads for faster computation on large maps. Uses seed 0.
-    /// @param | width | number | Map width in cells.
-    /// @param | height | number | Map height in cells.
+    /// @param | width | integer | Map width in cells.
+    /// @param | height | integer | Map height in cells.
     /// @param | opts | table? | Options: scale_x, scale_y, octaves, lacunarity, persistence, offset_x, offset_y.
     /// @return | table | Flat array of f64 noise values (length = width*height).
     tbl.set(
@@ -954,8 +954,8 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     )?;
     // -- noiseMapParallelSeeded --
     /// Generate a 2D noise map using multiple threads with a specific seed for reproducible results.
-    /// @param | width | number | Map width in cells.
-    /// @param | height | number | Map height in cells.
+    /// @param | width | integer | Map width in cells.
+    /// @param | height | integer | Map height in cells.
     /// @param | opts | table? | Options: scale_x, scale_y, octaves, lacunarity, persistence, offset_x, offset_y, seed.
     /// @return | table | Flat array of f64 noise values (length = width*height).
     tbl.set(
@@ -1020,7 +1020,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     // -- newBiomeClassifier --
     /// Create a BiomeClassifier object with custom threshold rules for mapping height/moisture/temperature to biome types.
     /// @param | opts | table? | Optional rules: ocean_threshold, coast_threshold, mountain_threshold, ice_cap_threshold, cold_temperature, warm_temperature, dry_moisture, wet_moisture.
-    /// @return | LBiomeClassifier | A classifier object with :classify() and :classifyMap() methods.
+    /// @return | BiomeClassifier | A classifier object with :classify() and :classifyMap() methods.
     tbl.set(
         "newBiomeClassifier",
         lua.create_function(|lua, opts: Option<LuaTable>| {
