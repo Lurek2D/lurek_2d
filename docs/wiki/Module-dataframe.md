@@ -2432,57 +2432,14 @@ Returns the Lua-visible type name for this grouped frame handle.
 
 #### Example
 
-Module-level example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Exact example from [sprite.lua](../blob/main/content/examples/sprite.lua):
 
 ```lua
--- content/examples/dataframe.lua
--- lurek.dataframe API examples.
--- Run: cargo run -- content/examples/dataframe.lua
-
---@api-stub: lurek.dataframe.newDataFrame
--- Creates an empty dataframe
 do
-  local stats = lurek.dataframe.newDataFrame()
-  stats:addColumn("name", "")
-  stats:addColumn("score", 0)
-  stats:addRow({name = "Alice", score = 1200})
+  local batch = lurek.sprite.newBatch("assets/sheet.png", 32, 32)
+  local gf = batch:addGroup(1, 2)
+  lurek.log.info(gf:type(), "sprite")
 end
-
---@api-stub: lurek.dataframe.newDatabase
--- Creates an empty dataframe database
-do
-  local db = lurek.dataframe.newDatabase()
-  local players = lurek.dataframe.fromTable({{id = 1, name = "Alice"}})
-  db:addTable("players", players)
-  lurek.log.info("tables: " .. db:tableCount())
-end
-
---@api-stub: lurek.dataframe.fromTable
--- Creates a dataframe from an array table of row tables
-do
-  local rows = {
-    {name = "goblin", hp = 30, level = 2},
-    {name = "orc",    hp = 60, level = 5},
-  }
-  local enemies = lurek.dataframe.fromTable(rows)
-  lurek.log.info("loaded " .. enemies:nrows() .. " enemies")
-end
-
---@api-stub: lurek.dataframe.fromRows
--- Creates a dataframe from column names and array-style rows
-do
-  local columns = {"id", "name", "score"}
-  local rows = {
-    {1, "Alice", 1200},
-    {2, "Bob", 980},
-  }
-  local scores = lurek.dataframe.fromRows(columns, rows)
-  lurek.log.info("player #2: " .. scores:getValue(2, "name"))
-end
-
---@api-stub: lurek.dataframe.fromCSV
--- Parses a dataframe from CSV text
-do
 ```
 
 ### `LGroupedFrame:typeOf(name: string) -> boolean`
@@ -2497,57 +2454,14 @@ Returns whether this grouped frame handle matches a supported type name.
 
 #### Example
 
-Module-level example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Exact example from [sprite.lua](../blob/main/content/examples/sprite.lua):
 
 ```lua
--- content/examples/dataframe.lua
--- lurek.dataframe API examples.
--- Run: cargo run -- content/examples/dataframe.lua
-
---@api-stub: lurek.dataframe.newDataFrame
--- Creates an empty dataframe
 do
-  local stats = lurek.dataframe.newDataFrame()
-  stats:addColumn("name", "")
-  stats:addColumn("score", 0)
-  stats:addRow({name = "Alice", score = 1200})
+  local batch = lurek.sprite.newBatch("assets/sheet.png", 32, 32)
+  local gf = batch:addGroup(1, 2)
+  lurek.log.info(tostring(gf:typeOf("LGroupedFrame")), "sprite")
 end
-
---@api-stub: lurek.dataframe.newDatabase
--- Creates an empty dataframe database
-do
-  local db = lurek.dataframe.newDatabase()
-  local players = lurek.dataframe.fromTable({{id = 1, name = "Alice"}})
-  db:addTable("players", players)
-  lurek.log.info("tables: " .. db:tableCount())
-end
-
---@api-stub: lurek.dataframe.fromTable
--- Creates a dataframe from an array table of row tables
-do
-  local rows = {
-    {name = "goblin", hp = 30, level = 2},
-    {name = "orc",    hp = 60, level = 5},
-  }
-  local enemies = lurek.dataframe.fromTable(rows)
-  lurek.log.info("loaded " .. enemies:nrows() .. " enemies")
-end
-
---@api-stub: lurek.dataframe.fromRows
--- Creates a dataframe from column names and array-style rows
-do
-  local columns = {"id", "name", "score"}
-  local rows = {
-    {1, "Alice", 1200},
-    {2, "Bob", 980},
-  }
-  local scores = lurek.dataframe.fromRows(columns, rows)
-  lurek.log.info("player #2: " .. scores:getValue(2, "name"))
-end
-
---@api-stub: lurek.dataframe.fromCSV
--- Parses a dataframe from CSV text
-do
 ```
 
 ### `LLazyQuery`
@@ -2597,57 +2511,14 @@ Executes the lazy query and returns a dataframe.
 
 #### Example
 
-Module-level example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Exact example from [data.lua](../blob/main/content/examples/data.lua):
 
 ```lua
--- content/examples/dataframe.lua
--- lurek.dataframe API examples.
--- Run: cargo run -- content/examples/dataframe.lua
-
---@api-stub: lurek.dataframe.newDataFrame
--- Creates an empty dataframe
 do
-  local stats = lurek.dataframe.newDataFrame()
-  stats:addColumn("name", "")
-  stats:addColumn("score", 0)
-  stats:addRow({name = "Alice", score = 1200})
+  local q = lurek.data.newLazyQuery({1,2,3,4,5})
+  local result = q:collect()
+  lurek.log.debug("count=" .. #result, "data")
 end
-
---@api-stub: lurek.dataframe.newDatabase
--- Creates an empty dataframe database
-do
-  local db = lurek.dataframe.newDatabase()
-  local players = lurek.dataframe.fromTable({{id = 1, name = "Alice"}})
-  db:addTable("players", players)
-  lurek.log.info("tables: " .. db:tableCount())
-end
-
---@api-stub: lurek.dataframe.fromTable
--- Creates a dataframe from an array table of row tables
-do
-  local rows = {
-    {name = "goblin", hp = 30, level = 2},
-    {name = "orc",    hp = 60, level = 5},
-  }
-  local enemies = lurek.dataframe.fromTable(rows)
-  lurek.log.info("loaded " .. enemies:nrows() .. " enemies")
-end
-
---@api-stub: lurek.dataframe.fromRows
--- Creates a dataframe from column names and array-style rows
-do
-  local columns = {"id", "name", "score"}
-  local rows = {
-    {1, "Alice", 1200},
-    {2, "Bob", 980},
-  }
-  local scores = lurek.dataframe.fromRows(columns, rows)
-  lurek.log.info("player #2: " .. scores:getValue(2, "name"))
-end
-
---@api-stub: lurek.dataframe.fromCSV
--- Parses a dataframe from CSV text
-do
 ```
 
 ### `LLazyQuery:dropNil(col: string) -> LLazyQuery`
@@ -2662,57 +2533,14 @@ Adds a step that drops rows with nil values in a column.
 
 #### Example
 
-Module-level example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Exact example from [data.lua](../blob/main/content/examples/data.lua):
 
 ```lua
--- content/examples/dataframe.lua
--- lurek.dataframe API examples.
--- Run: cargo run -- content/examples/dataframe.lua
-
---@api-stub: lurek.dataframe.newDataFrame
--- Creates an empty dataframe
 do
-  local stats = lurek.dataframe.newDataFrame()
-  stats:addColumn("name", "")
-  stats:addColumn("score", 0)
-  stats:addRow({name = "Alice", score = 1200})
+  local q = lurek.data.newLazyQuery({1,nil,3}):dropNil()
+  local r = q:collect()
+  lurek.log.debug("non-nil=" .. #r, "data")
 end
-
---@api-stub: lurek.dataframe.newDatabase
--- Creates an empty dataframe database
-do
-  local db = lurek.dataframe.newDatabase()
-  local players = lurek.dataframe.fromTable({{id = 1, name = "Alice"}})
-  db:addTable("players", players)
-  lurek.log.info("tables: " .. db:tableCount())
-end
-
---@api-stub: lurek.dataframe.fromTable
--- Creates a dataframe from an array table of row tables
-do
-  local rows = {
-    {name = "goblin", hp = 30, level = 2},
-    {name = "orc",    hp = 60, level = 5},
-  }
-  local enemies = lurek.dataframe.fromTable(rows)
-  lurek.log.info("loaded " .. enemies:nrows() .. " enemies")
-end
-
---@api-stub: lurek.dataframe.fromRows
--- Creates a dataframe from column names and array-style rows
-do
-  local columns = {"id", "name", "score"}
-  local rows = {
-    {1, "Alice", 1200},
-    {2, "Bob", 980},
-  }
-  local scores = lurek.dataframe.fromRows(columns, rows)
-  lurek.log.info("player #2: " .. scores:getValue(2, "name"))
-end
-
---@api-stub: lurek.dataframe.fromCSV
--- Parses a dataframe from CSV text
-do
 ```
 
 ### `LLazyQuery:filter(col: string, op: string, val: LuaValue) -> LLazyQuery`
@@ -2729,57 +2557,14 @@ Adds a filter step to the lazy query.
 
 #### Example
 
-Module-level example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Exact example from [data.lua](../blob/main/content/examples/data.lua):
 
 ```lua
--- content/examples/dataframe.lua
--- lurek.dataframe API examples.
--- Run: cargo run -- content/examples/dataframe.lua
-
---@api-stub: lurek.dataframe.newDataFrame
--- Creates an empty dataframe
 do
-  local stats = lurek.dataframe.newDataFrame()
-  stats:addColumn("name", "")
-  stats:addColumn("score", 0)
-  stats:addRow({name = "Alice", score = 1200})
+  local q = lurek.data.newLazyQuery({1,2,3,4}):filter(function(x) return x > 2 end)
+  local r = q:collect()
+  lurek.log.debug("filtered=" .. #r, "data")
 end
-
---@api-stub: lurek.dataframe.newDatabase
--- Creates an empty dataframe database
-do
-  local db = lurek.dataframe.newDatabase()
-  local players = lurek.dataframe.fromTable({{id = 1, name = "Alice"}})
-  db:addTable("players", players)
-  lurek.log.info("tables: " .. db:tableCount())
-end
-
---@api-stub: lurek.dataframe.fromTable
--- Creates a dataframe from an array table of row tables
-do
-  local rows = {
-    {name = "goblin", hp = 30, level = 2},
-    {name = "orc",    hp = 60, level = 5},
-  }
-  local enemies = lurek.dataframe.fromTable(rows)
-  lurek.log.info("loaded " .. enemies:nrows() .. " enemies")
-end
-
---@api-stub: lurek.dataframe.fromRows
--- Creates a dataframe from column names and array-style rows
-do
-  local columns = {"id", "name", "score"}
-  local rows = {
-    {1, "Alice", 1200},
-    {2, "Bob", 980},
-  }
-  local scores = lurek.dataframe.fromRows(columns, rows)
-  lurek.log.info("player #2: " .. scores:getValue(2, "name"))
-end
-
---@api-stub: lurek.dataframe.fromCSV
--- Parses a dataframe from CSV text
-do
 ```
 
 ### `LLazyQuery:head(n: integer) -> LLazyQuery`
@@ -2794,57 +2579,14 @@ Adds a head limit step to the lazy query.
 
 #### Example
 
-Module-level example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Exact example from [data.lua](../blob/main/content/examples/data.lua):
 
 ```lua
--- content/examples/dataframe.lua
--- lurek.dataframe API examples.
--- Run: cargo run -- content/examples/dataframe.lua
-
---@api-stub: lurek.dataframe.newDataFrame
--- Creates an empty dataframe
 do
-  local stats = lurek.dataframe.newDataFrame()
-  stats:addColumn("name", "")
-  stats:addColumn("score", 0)
-  stats:addRow({name = "Alice", score = 1200})
+  local q = lurek.data.newLazyQuery({10,20,30,40}):head(2)
+  local r = q:collect()
+  lurek.log.debug("head=" .. r[1], "data")
 end
-
---@api-stub: lurek.dataframe.newDatabase
--- Creates an empty dataframe database
-do
-  local db = lurek.dataframe.newDatabase()
-  local players = lurek.dataframe.fromTable({{id = 1, name = "Alice"}})
-  db:addTable("players", players)
-  lurek.log.info("tables: " .. db:tableCount())
-end
-
---@api-stub: lurek.dataframe.fromTable
--- Creates a dataframe from an array table of row tables
-do
-  local rows = {
-    {name = "goblin", hp = 30, level = 2},
-    {name = "orc",    hp = 60, level = 5},
-  }
-  local enemies = lurek.dataframe.fromTable(rows)
-  lurek.log.info("loaded " .. enemies:nrows() .. " enemies")
-end
-
---@api-stub: lurek.dataframe.fromRows
--- Creates a dataframe from column names and array-style rows
-do
-  local columns = {"id", "name", "score"}
-  local rows = {
-    {1, "Alice", 1200},
-    {2, "Bob", 980},
-  }
-  local scores = lurek.dataframe.fromRows(columns, rows)
-  lurek.log.info("player #2: " .. scores:getValue(2, "name"))
-end
-
---@api-stub: lurek.dataframe.fromCSV
--- Parses a dataframe from CSV text
-do
 ```
 
 ### `LLazyQuery:limit(n: integer) -> LLazyQuery`
@@ -2859,57 +2601,14 @@ Adds a row limit step to the lazy query.
 
 #### Example
 
-Module-level example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Exact example from [data.lua](../blob/main/content/examples/data.lua):
 
 ```lua
--- content/examples/dataframe.lua
--- lurek.dataframe API examples.
--- Run: cargo run -- content/examples/dataframe.lua
-
---@api-stub: lurek.dataframe.newDataFrame
--- Creates an empty dataframe
 do
-  local stats = lurek.dataframe.newDataFrame()
-  stats:addColumn("name", "")
-  stats:addColumn("score", 0)
-  stats:addRow({name = "Alice", score = 1200})
+  local q = lurek.data.newLazyQuery({1,2,3,4,5}):limit(3)
+  local r = q:collect()
+  lurek.log.debug("limit count=" .. #r, "data")
 end
-
---@api-stub: lurek.dataframe.newDatabase
--- Creates an empty dataframe database
-do
-  local db = lurek.dataframe.newDatabase()
-  local players = lurek.dataframe.fromTable({{id = 1, name = "Alice"}})
-  db:addTable("players", players)
-  lurek.log.info("tables: " .. db:tableCount())
-end
-
---@api-stub: lurek.dataframe.fromTable
--- Creates a dataframe from an array table of row tables
-do
-  local rows = {
-    {name = "goblin", hp = 30, level = 2},
-    {name = "orc",    hp = 60, level = 5},
-  }
-  local enemies = lurek.dataframe.fromTable(rows)
-  lurek.log.info("loaded " .. enemies:nrows() .. " enemies")
-end
-
---@api-stub: lurek.dataframe.fromRows
--- Creates a dataframe from column names and array-style rows
-do
-  local columns = {"id", "name", "score"}
-  local rows = {
-    {1, "Alice", 1200},
-    {2, "Bob", 980},
-  }
-  local scores = lurek.dataframe.fromRows(columns, rows)
-  lurek.log.info("player #2: " .. scores:getValue(2, "name"))
-end
-
---@api-stub: lurek.dataframe.fromCSV
--- Parses a dataframe from CSV text
-do
 ```
 
 ### `LLazyQuery:select(cols: table) -> LLazyQuery`
@@ -2924,57 +2623,14 @@ Adds a column selection step to the lazy query.
 
 #### Example
 
-Module-level example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Exact example from [data.lua](../blob/main/content/examples/data.lua):
 
 ```lua
--- content/examples/dataframe.lua
--- lurek.dataframe API examples.
--- Run: cargo run -- content/examples/dataframe.lua
-
---@api-stub: lurek.dataframe.newDataFrame
--- Creates an empty dataframe
 do
-  local stats = lurek.dataframe.newDataFrame()
-  stats:addColumn("name", "")
-  stats:addColumn("score", 0)
-  stats:addRow({name = "Alice", score = 1200})
+  local q = lurek.data.newLazyQuery({1,2,3}):select(function(x) return x * 2 end)
+  local r = q:collect()
+  lurek.log.debug("doubled first=" .. r[1], "data")
 end
-
---@api-stub: lurek.dataframe.newDatabase
--- Creates an empty dataframe database
-do
-  local db = lurek.dataframe.newDatabase()
-  local players = lurek.dataframe.fromTable({{id = 1, name = "Alice"}})
-  db:addTable("players", players)
-  lurek.log.info("tables: " .. db:tableCount())
-end
-
---@api-stub: lurek.dataframe.fromTable
--- Creates a dataframe from an array table of row tables
-do
-  local rows = {
-    {name = "goblin", hp = 30, level = 2},
-    {name = "orc",    hp = 60, level = 5},
-  }
-  local enemies = lurek.dataframe.fromTable(rows)
-  lurek.log.info("loaded " .. enemies:nrows() .. " enemies")
-end
-
---@api-stub: lurek.dataframe.fromRows
--- Creates a dataframe from column names and array-style rows
-do
-  local columns = {"id", "name", "score"}
-  local rows = {
-    {1, "Alice", 1200},
-    {2, "Bob", 980},
-  }
-  local scores = lurek.dataframe.fromRows(columns, rows)
-  lurek.log.info("player #2: " .. scores:getValue(2, "name"))
-end
-
---@api-stub: lurek.dataframe.fromCSV
--- Parses a dataframe from CSV text
-do
 ```
 
 ### `LLazyQuery:slice(start: integer, end: integer) -> LLazyQuery`
@@ -2990,57 +2646,14 @@ Adds a one-based row slice step to the lazy query.
 
 #### Example
 
-Module-level example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Exact example from [data.lua](../blob/main/content/examples/data.lua):
 
 ```lua
--- content/examples/dataframe.lua
--- lurek.dataframe API examples.
--- Run: cargo run -- content/examples/dataframe.lua
-
---@api-stub: lurek.dataframe.newDataFrame
--- Creates an empty dataframe
 do
-  local stats = lurek.dataframe.newDataFrame()
-  stats:addColumn("name", "")
-  stats:addColumn("score", 0)
-  stats:addRow({name = "Alice", score = 1200})
+  local q = lurek.data.newLazyQuery({10,20,30,40,50}):slice(2, 4)
+  local r = q:collect()
+  lurek.log.debug("slice count=" .. #r, "data")
 end
-
---@api-stub: lurek.dataframe.newDatabase
--- Creates an empty dataframe database
-do
-  local db = lurek.dataframe.newDatabase()
-  local players = lurek.dataframe.fromTable({{id = 1, name = "Alice"}})
-  db:addTable("players", players)
-  lurek.log.info("tables: " .. db:tableCount())
-end
-
---@api-stub: lurek.dataframe.fromTable
--- Creates a dataframe from an array table of row tables
-do
-  local rows = {
-    {name = "goblin", hp = 30, level = 2},
-    {name = "orc",    hp = 60, level = 5},
-  }
-  local enemies = lurek.dataframe.fromTable(rows)
-  lurek.log.info("loaded " .. enemies:nrows() .. " enemies")
-end
-
---@api-stub: lurek.dataframe.fromRows
--- Creates a dataframe from column names and array-style rows
-do
-  local columns = {"id", "name", "score"}
-  local rows = {
-    {1, "Alice", 1200},
-    {2, "Bob", 980},
-  }
-  local scores = lurek.dataframe.fromRows(columns, rows)
-  lurek.log.info("player #2: " .. scores:getValue(2, "name"))
-end
-
---@api-stub: lurek.dataframe.fromCSV
--- Parses a dataframe from CSV text
-do
 ```
 
 ### `LLazyQuery:sort(col: string, [ascending]: boolean) -> LLazyQuery`
@@ -3056,57 +2669,14 @@ Adds a sort step to the lazy query. This method is available to Lua scripts.
 
 #### Example
 
-Module-level example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Exact example from [data.lua](../blob/main/content/examples/data.lua):
 
 ```lua
--- content/examples/dataframe.lua
--- lurek.dataframe API examples.
--- Run: cargo run -- content/examples/dataframe.lua
-
---@api-stub: lurek.dataframe.newDataFrame
--- Creates an empty dataframe
 do
-  local stats = lurek.dataframe.newDataFrame()
-  stats:addColumn("name", "")
-  stats:addColumn("score", 0)
-  stats:addRow({name = "Alice", score = 1200})
+  local q = lurek.data.newLazyQuery({3,1,2}):sort(function(a,b) return a < b end)
+  local r = q:collect()
+  lurek.log.debug("sorted first=" .. r[1], "data")
 end
-
---@api-stub: lurek.dataframe.newDatabase
--- Creates an empty dataframe database
-do
-  local db = lurek.dataframe.newDatabase()
-  local players = lurek.dataframe.fromTable({{id = 1, name = "Alice"}})
-  db:addTable("players", players)
-  lurek.log.info("tables: " .. db:tableCount())
-end
-
---@api-stub: lurek.dataframe.fromTable
--- Creates a dataframe from an array table of row tables
-do
-  local rows = {
-    {name = "goblin", hp = 30, level = 2},
-    {name = "orc",    hp = 60, level = 5},
-  }
-  local enemies = lurek.dataframe.fromTable(rows)
-  lurek.log.info("loaded " .. enemies:nrows() .. " enemies")
-end
-
---@api-stub: lurek.dataframe.fromRows
--- Creates a dataframe from column names and array-style rows
-do
-  local columns = {"id", "name", "score"}
-  local rows = {
-    {1, "Alice", 1200},
-    {2, "Bob", 980},
-  }
-  local scores = lurek.dataframe.fromRows(columns, rows)
-  lurek.log.info("player #2: " .. scores:getValue(2, "name"))
-end
-
---@api-stub: lurek.dataframe.fromCSV
--- Parses a dataframe from CSV text
-do
 ```
 
 ### `LLazyQuery:tail(n: integer) -> LLazyQuery`
@@ -3121,57 +2691,14 @@ Adds a tail limit step to the lazy query.
 
 #### Example
 
-Module-level example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Exact example from [data.lua](../blob/main/content/examples/data.lua):
 
 ```lua
--- content/examples/dataframe.lua
--- lurek.dataframe API examples.
--- Run: cargo run -- content/examples/dataframe.lua
-
---@api-stub: lurek.dataframe.newDataFrame
--- Creates an empty dataframe
 do
-  local stats = lurek.dataframe.newDataFrame()
-  stats:addColumn("name", "")
-  stats:addColumn("score", 0)
-  stats:addRow({name = "Alice", score = 1200})
+  local q = lurek.data.newLazyQuery({10,20,30,40}):tail(2)
+  local r = q:collect()
+  lurek.log.debug("tail first=" .. r[1], "data")
 end
-
---@api-stub: lurek.dataframe.newDatabase
--- Creates an empty dataframe database
-do
-  local db = lurek.dataframe.newDatabase()
-  local players = lurek.dataframe.fromTable({{id = 1, name = "Alice"}})
-  db:addTable("players", players)
-  lurek.log.info("tables: " .. db:tableCount())
-end
-
---@api-stub: lurek.dataframe.fromTable
--- Creates a dataframe from an array table of row tables
-do
-  local rows = {
-    {name = "goblin", hp = 30, level = 2},
-    {name = "orc",    hp = 60, level = 5},
-  }
-  local enemies = lurek.dataframe.fromTable(rows)
-  lurek.log.info("loaded " .. enemies:nrows() .. " enemies")
-end
-
---@api-stub: lurek.dataframe.fromRows
--- Creates a dataframe from column names and array-style rows
-do
-  local columns = {"id", "name", "score"}
-  local rows = {
-    {1, "Alice", 1200},
-    {2, "Bob", 980},
-  }
-  local scores = lurek.dataframe.fromRows(columns, rows)
-  lurek.log.info("player #2: " .. scores:getValue(2, "name"))
-end
-
---@api-stub: lurek.dataframe.fromCSV
--- Parses a dataframe from CSV text
-do
 ```
 
 ### `LLazyQuery:type() -> string`
@@ -3182,57 +2709,13 @@ Returns the Lua-visible type name for this lazy query handle.
 
 #### Example
 
-Module-level example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Exact example from [data.lua](../blob/main/content/examples/data.lua):
 
 ```lua
--- content/examples/dataframe.lua
--- lurek.dataframe API examples.
--- Run: cargo run -- content/examples/dataframe.lua
-
---@api-stub: lurek.dataframe.newDataFrame
--- Creates an empty dataframe
 do
-  local stats = lurek.dataframe.newDataFrame()
-  stats:addColumn("name", "")
-  stats:addColumn("score", 0)
-  stats:addRow({name = "Alice", score = 1200})
+  local q = lurek.data.newLazyQuery({1,2,3})
+  lurek.log.info(q:type(), "data")
 end
-
---@api-stub: lurek.dataframe.newDatabase
--- Creates an empty dataframe database
-do
-  local db = lurek.dataframe.newDatabase()
-  local players = lurek.dataframe.fromTable({{id = 1, name = "Alice"}})
-  db:addTable("players", players)
-  lurek.log.info("tables: " .. db:tableCount())
-end
-
---@api-stub: lurek.dataframe.fromTable
--- Creates a dataframe from an array table of row tables
-do
-  local rows = {
-    {name = "goblin", hp = 30, level = 2},
-    {name = "orc",    hp = 60, level = 5},
-  }
-  local enemies = lurek.dataframe.fromTable(rows)
-  lurek.log.info("loaded " .. enemies:nrows() .. " enemies")
-end
-
---@api-stub: lurek.dataframe.fromRows
--- Creates a dataframe from column names and array-style rows
-do
-  local columns = {"id", "name", "score"}
-  local rows = {
-    {1, "Alice", 1200},
-    {2, "Bob", 980},
-  }
-  local scores = lurek.dataframe.fromRows(columns, rows)
-  lurek.log.info("player #2: " .. scores:getValue(2, "name"))
-end
-
---@api-stub: lurek.dataframe.fromCSV
--- Parses a dataframe from CSV text
-do
 ```
 
 ### `LLazyQuery:typeOf(name: string) -> boolean`
@@ -3247,57 +2730,13 @@ Returns whether this lazy query handle matches a supported type name.
 
 #### Example
 
-Module-level example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Exact example from [data.lua](../blob/main/content/examples/data.lua):
 
 ```lua
--- content/examples/dataframe.lua
--- lurek.dataframe API examples.
--- Run: cargo run -- content/examples/dataframe.lua
-
---@api-stub: lurek.dataframe.newDataFrame
--- Creates an empty dataframe
 do
-  local stats = lurek.dataframe.newDataFrame()
-  stats:addColumn("name", "")
-  stats:addColumn("score", 0)
-  stats:addRow({name = "Alice", score = 1200})
+  local q = lurek.data.newLazyQuery({1,2,3})
+  lurek.log.info(tostring(q:typeOf("LLazyQuery")), "data")
 end
-
---@api-stub: lurek.dataframe.newDatabase
--- Creates an empty dataframe database
-do
-  local db = lurek.dataframe.newDatabase()
-  local players = lurek.dataframe.fromTable({{id = 1, name = "Alice"}})
-  db:addTable("players", players)
-  lurek.log.info("tables: " .. db:tableCount())
-end
-
---@api-stub: lurek.dataframe.fromTable
--- Creates a dataframe from an array table of row tables
-do
-  local rows = {
-    {name = "goblin", hp = 30, level = 2},
-    {name = "orc",    hp = 60, level = 5},
-  }
-  local enemies = lurek.dataframe.fromTable(rows)
-  lurek.log.info("loaded " .. enemies:nrows() .. " enemies")
-end
-
---@api-stub: lurek.dataframe.fromRows
--- Creates a dataframe from column names and array-style rows
-do
-  local columns = {"id", "name", "score"}
-  local rows = {
-    {1, "Alice", 1200},
-    {2, "Bob", 980},
-  }
-  local scores = lurek.dataframe.fromRows(columns, rows)
-  lurek.log.info("player #2: " .. scores:getValue(2, "name"))
-end
-
---@api-stub: lurek.dataframe.fromCSV
--- Parses a dataframe from CSV text
-do
 ```
 
 ### `LVecFrame`

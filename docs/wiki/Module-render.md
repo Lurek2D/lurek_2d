@@ -249,7 +249,10 @@ Module example from [render.lua](../blob/main/content/examples/render.lua):
 -- Sets the active drawing color for all subsequent draw operations
 do
   lurek.render.setColor(1.0, 0.5, 0.2, 1.0)  -- warm orange
-  function lurek.draw() lurek.render.setColor(1, 0.5, 0.2, 1); lurek.render.rectangle('fill', 10, 10, 64, 32) end
+  function lurek.draw()
+    lurek.render.setColor(1, 0.5, 0.2, 1)
+    lurek.render.rectangle('fill', 10, 10, 64, 32)
+  end
 end
 
 --@api-stub: lurek.render.getColor
@@ -290,8 +293,6 @@ do
   function lurek.draw()
     lurek.render.setColor(0.2, 0.9, 0.4, 1)
     lurek.render.circle('fill', 200, 150, 24)
-  end
-end
 ```
 
 ## Key Types
@@ -352,7 +353,12 @@ Exact example from [render.lua](../blob/main/content/examples/render.lua):
 ```lua
 do
   local t = { sx = 1.5, sy = 1.5, ox = 100, oy = 100, rot = 0.0 }
-  function lurek.draw() lurek.render.push(); lurek.render.applyTransform(t); lurek.render.rectangle('fill', 0, 0, 20, 20); lurek.render.pop() end
+  function lurek.draw()
+    lurek.render.push()
+    lurek.render.applyTransform(t)
+    lurek.render.rectangle('fill', 0, 0, 20, 20)
+    lurek.render.pop()
+  end
 end
 ```
 
@@ -480,7 +486,11 @@ Exact example from [render.lua](../blob/main/content/examples/render.lua):
 
 ```lua
 do
-  function lurek.draw() lurek.render.clearStencil(); lurek.render.stencil('replace', 1); lurek.render.rectangle('fill', 0, 0, 64, 64) end
+  function lurek.draw()
+    lurek.render.clearStencil()
+    lurek.render.stencil('replace', 1)
+    lurek.render.rectangle('fill', 0, 0, 64, 64)
+  end
 end
 ```
 
@@ -1170,7 +1180,10 @@ Exact example from [render.lua](../blob/main/content/examples/render.lua):
 do
   pcall(function()
     local lh = lurek.render.getFontHeight(lurek.render.getDefaultFont())
-    function lurek.draw() lurek.render.print('line 1', 10, 10); lurek.render.print('line 2', 10, 10 + lh) end
+    function lurek.draw()
+      lurek.render.print('line 1', 10, 10)
+      lurek.render.print('line 2', 10, 10 + lh)
+    end
   end)
 end
 ```
@@ -1650,7 +1663,10 @@ Exact example from [render.lua](../blob/main/content/examples/render.lua):
 
 ```lua
 do
-  function lurek.init() lurek.render.newLayer('background', -10); lurek.render.newLayer('hud', 100) end
+  function lurek.init()
+    lurek.render.newLayer('background', -10)
+    lurek.render.newLayer('hud', 100)
+  end
 end
 ```
 
@@ -1866,7 +1882,12 @@ Exact example from [render.lua](../blob/main/content/examples/render.lua):
 
 ```lua
 do
-  function lurek.draw() lurek.render.push(); lurek.render.scale(2, 2); lurek.render.print('big', 0, 0); lurek.render.pop() end
+  function lurek.draw()
+    lurek.render.push()
+    lurek.render.scale(2, 2)
+    lurek.render.print('big', 0, 0)
+    lurek.render.pop()
+  end
 end
 ```
 
@@ -1884,7 +1905,11 @@ Exact example from [render.lua](../blob/main/content/examples/render.lua):
 
 ```lua
 do
-  function lurek.draw() lurek.render.pushLayer(2); lurek.render.rectangle('fill', 0, 0, 32, 32); lurek.render.popLayer(2) end
+  function lurek.draw()
+    lurek.render.pushLayer(2)
+    lurek.render.rectangle('fill', 0, 0, 32, 32)
+    lurek.render.popLayer(2)
+  end
 end
 ```
 
@@ -2123,7 +2148,12 @@ Exact example from [render.lua](../blob/main/content/examples/render.lua):
 
 ```lua
 do
-  function lurek.draw() lurek.render.push(); lurek.render.scale(1.5, 1.5); lurek.render.print('zoom', 100, 100); lurek.render.pop() end
+  function lurek.draw()
+    lurek.render.push()
+    lurek.render.scale(1.5, 1.5)
+    lurek.render.print('zoom', 100, 100)
+    lurek.render.pop()
+  end
 end
 ```
 
@@ -2210,7 +2240,10 @@ Exact example from [render.lua](../blob/main/content/examples/render.lua):
 ```lua
 do
   lurek.render.setColor(1.0, 0.5, 0.2, 1.0)  -- warm orange
-  function lurek.draw() lurek.render.setColor(1, 0.5, 0.2, 1); lurek.render.rectangle('fill', 10, 10, 64, 32) end
+  function lurek.draw()
+    lurek.render.setColor(1, 0.5, 0.2, 1)
+    lurek.render.rectangle('fill', 10, 10, 64, 32)
+  end
 end
 ```
 
@@ -2459,7 +2492,11 @@ Exact example from [render.lua](../blob/main/content/examples/render.lua):
 do
   local sh
   function lurek.init() sh = lurek.render.newShader('// trivial fragment shader') end
-  function lurek.draw() lurek.render.setShader(sh); lurek.render.rectangle('fill', 0, 0, 64, 64); lurek.render.setShader() end
+  function lurek.draw()
+    lurek.render.setShader(sh)
+    lurek.render.rectangle('fill', 0, 0, 64, 64)
+    lurek.render.setShader()
+  end
 end
 ```
 
@@ -2479,7 +2516,10 @@ Exact example from [render.lua](../blob/main/content/examples/render.lua):
 
 ```lua
 do
-  function lurek.draw() lurek.render.setStencilMode('replace', 'always', 1); lurek.render.circle('fill', 100, 100, 30) end
+  function lurek.draw()
+    lurek.render.setStencilMode('replace', 'always', 1)
+    lurek.render.circle('fill', 100, 100, 30)
+  end
 end
 ```
 
@@ -2498,7 +2538,11 @@ Exact example from [render.lua](../blob/main/content/examples/render.lua):
 
 ```lua
 do
-  function lurek.draw() lurek.render.setStencilTest('equal', 1); lurek.render.rectangle('fill', 0, 0, 64, 64); lurek.render.setStencilTest() end
+  function lurek.draw()
+    lurek.render.setStencilTest('equal', 1)
+    lurek.render.rectangle('fill', 0, 0, 64, 64)
+    lurek.render.setStencilTest()
+  end
 end
 ```
 
@@ -2535,7 +2579,12 @@ Exact example from [render.lua](../blob/main/content/examples/render.lua):
 
 ```lua
 do
-  function lurek.draw() lurek.render.push(); lurek.render.shear(0.2, 0); lurek.render.rectangle('fill', 80, 80, 40, 40); lurek.render.pop() end
+  function lurek.draw()
+    lurek.render.push()
+    lurek.render.shear(0.2, 0)
+    lurek.render.rectangle('fill', 80, 80, 40, 40)
+    lurek.render.pop()
+  end
 end
 ```
 
@@ -2578,7 +2627,12 @@ Exact example from [render.lua](../blob/main/content/examples/render.lua):
 
 ```lua
 do
-  function lurek.draw() lurek.render.push(); lurek.render.translate(50, 80); lurek.render.circle('fill', 0, 0, 8); lurek.render.pop() end
+  function lurek.draw()
+    lurek.render.push()
+    lurek.render.translate(50, 80)
+    lurek.render.circle('fill', 0, 0, 8)
+    lurek.render.pop()
+  end
 end
 ```
 
@@ -2638,7 +2692,11 @@ Exact example from [render.lua](../blob/main/content/examples/render.lua):
 ```lua
 do
   local c
-  function lurek.init() c = lurek.render.newCanvas(320, 240); local w, h = c:getDimensions(); lurek.log.debug(w .. 'x' .. h) end
+  function lurek.init()
+    c = lurek.render.newCanvas(320, 240)
+    local w, h = c:getDimensions()
+    lurek.log.debug(w .. 'x' .. h)
+  end
 end
 ```
 
@@ -2655,7 +2713,10 @@ Exact example from [render.lua](../blob/main/content/examples/render.lua):
 ```lua
 do
   local c
-  function lurek.init() c = lurek.render.newCanvas(320, 240); lurek.log.debug('ch=' .. c:getHeight()) end
+  function lurek.init()
+    c = lurek.render.newCanvas(320, 240)
+    lurek.log.debug('ch=' .. c:getHeight())
+  end
 end
 ```
 
@@ -2672,7 +2733,10 @@ Exact example from [render.lua](../blob/main/content/examples/render.lua):
 ```lua
 do
   local c
-  function lurek.init() c = lurek.render.newCanvas(320, 240); lurek.log.debug('cw=' .. c:getWidth()) end
+  function lurek.init()
+    c = lurek.render.newCanvas(320, 240)
+    lurek.log.debug('cw=' .. c:getWidth())
+  end
 end
 ```
 
@@ -2724,7 +2788,10 @@ Exact example from [render.lua](../blob/main/content/examples/render.lua):
 ```lua
 do
   local c
-  function lurek.init() c = lurek.render.newCanvas(320, 240); if c:typeOf() == 'Canvas' then lurek.log.debug('canvas') end end
+  function lurek.init()
+    c = lurek.render.newCanvas(320, 240)
+    if c:typeOf() == 'Canvas' then lurek.log.debug('canvas') end
+  end
 end
 ```
 
@@ -2789,7 +2856,11 @@ Exact example from [render.lua](../blob/main/content/examples/render.lua):
 ```lua
 do
   local dl
-  function lurek.init() dl = lurek.render.newDrawLayer(); dl:queue(0, function() lurek.render.rectangle('fill', 0, 0, 8, 8) end); lurek.log.debug('queued=' .. dl:getCount()) end
+  function lurek.init()
+    dl = lurek.render.newDrawLayer()
+    dl:queue(0, function() lurek.render.rectangle('fill', 0, 0, 8, 8) end)
+    lurek.log.debug('queued=' .. dl:getCount())
+  end
 end
 ```
 
@@ -2848,7 +2919,10 @@ Exact example from [render.lua](../blob/main/content/examples/render.lua):
 ```lua
 do
   local dl
-  function lurek.init() dl = lurek.render.newDrawLayer(); if dl:typeOf('DrawLayer') then lurek.log.debug('dl') end end
+  function lurek.init()
+    dl = lurek.render.newDrawLayer()
+    if dl:typeOf('DrawLayer') then lurek.log.debug('dl') end
+  end
 end
 ```
 
@@ -2882,7 +2956,10 @@ Exact example from [render.lua](../blob/main/content/examples/render.lua):
 ```lua
 do
   local f
-  function lurek.init() f = lurek.render.newFont('assets/fonts/Inter.ttf', 18); lurek.log.debug('asc=' .. tostring(f:getAscent())) end
+  function lurek.init()
+    f = lurek.render.newFont('assets/fonts/Inter.ttf', 18)
+    lurek.log.debug('asc=' .. tostring(f:getAscent()))
+  end
 end
 ```
 
@@ -2899,7 +2976,10 @@ Exact example from [render.lua](../blob/main/content/examples/render.lua):
 ```lua
 do
   local f
-  function lurek.init() f = lurek.render.newFont('assets/fonts/Inter.ttf', 18); lurek.log.debug('desc=' .. tostring(f:getDescent())) end
+  function lurek.init()
+    f = lurek.render.newFont('assets/fonts/Inter.ttf', 18)
+    lurek.log.debug('desc=' .. tostring(f:getDescent()))
+  end
 end
 ```
 
@@ -2916,7 +2996,10 @@ Exact example from [render.lua](../blob/main/content/examples/render.lua):
 ```lua
 do
   local f
-  function lurek.init() f = lurek.render.newFont('assets/fonts/Inter.ttf', 18); lurek.log.debug('h=' .. f:getHeight()) end
+  function lurek.init()
+    f = lurek.render.newFont('assets/fonts/Inter.ttf', 18)
+    lurek.log.debug('h=' .. f:getHeight())
+  end
 end
 ```
 
@@ -2933,7 +3016,10 @@ Exact example from [render.lua](../blob/main/content/examples/render.lua):
 ```lua
 do
   local f
-  function lurek.init() f = lurek.render.newFont('assets/fonts/Inter.ttf', 18); lurek.log.debug('lh=' .. f:getLineHeight()) end
+  function lurek.init()
+    f = lurek.render.newFont('assets/fonts/Inter.ttf', 18)
+    lurek.log.debug('lh=' .. f:getLineHeight())
+  end
 end
 ```
 
@@ -2954,7 +3040,10 @@ Exact example from [render.lua](../blob/main/content/examples/render.lua):
 ```lua
 do
   local f
-  function lurek.init() f = lurek.render.newFont('assets/fonts/Inter.ttf', 18); lurek.log.debug('w=' .. f:getWidth('Hello')) end
+  function lurek.init()
+    f = lurek.render.newFont('assets/fonts/Inter.ttf', 18)
+    lurek.log.debug('w=' .. f:getWidth('Hello'))
+  end
 end
 ```
 
@@ -3016,7 +3105,10 @@ Exact example from [render.lua](../blob/main/content/examples/render.lua):
 ```lua
 do
   local f
-  function lurek.init() f = lurek.render.newFont('assets/fonts/Inter.ttf', 18); f:setLineHeight(1.25) end
+  function lurek.init()
+    f = lurek.render.newFont('assets/fonts/Inter.ttf', 18)
+    f:setLineHeight(1.25)
+  end
 end
 ```
 
@@ -3033,7 +3125,10 @@ Exact example from [render.lua](../blob/main/content/examples/render.lua):
 ```lua
 do
   local f
-  function lurek.init() f = lurek.render.newFont('assets/fonts/Inter.ttf', 18); lurek.log.debug(f:type()) end
+  function lurek.init()
+    f = lurek.render.newFont('assets/fonts/Inter.ttf', 18)
+    lurek.log.debug(f:type())
+  end
 end
 ```
 
@@ -3050,7 +3145,10 @@ Exact example from [render.lua](../blob/main/content/examples/render.lua):
 ```lua
 do
   local f
-  function lurek.init() f = lurek.render.newFont('assets/fonts/Inter.ttf', 18); if f:typeOf() == 'Font' then lurek.log.debug('font') end end
+  function lurek.init()
+    f = lurek.render.newFont('assets/fonts/Inter.ttf', 18)
+    if f:typeOf() == 'Font' then lurek.log.debug('font') end
+  end
 end
 ```
 
@@ -3082,7 +3180,11 @@ Exact example from [render.lua](../blob/main/content/examples/render.lua):
 ```lua
 do
   local img
-  function lurek.init() img = lurek.render.newImage('img/hero.png'); local w, h = img:getDimensions(); lurek.log.debug(w .. 'x' .. h) end
+  function lurek.init()
+    img = lurek.render.newImage('img/hero.png')
+    local w, h = img:getDimensions()
+    lurek.log.debug(w .. 'x' .. h)
+  end
 end
 ```
 
@@ -3099,7 +3201,10 @@ Exact example from [render.lua](../blob/main/content/examples/render.lua):
 ```lua
 do
   local img
-  function lurek.init() img = lurek.render.newImage('img/hero.png'); lurek.log.debug('h=' .. img:getHeight()) end
+  function lurek.init()
+    img = lurek.render.newImage('img/hero.png')
+    lurek.log.debug('h=' .. img:getHeight())
+  end
 end
 ```
 
@@ -3135,7 +3240,10 @@ Exact example from [render.lua](../blob/main/content/examples/render.lua):
 ```lua
 do
   local img
-  function lurek.init() img = lurek.render.newImage('img/hero.png'); lurek.log.debug('w=' .. img:getWidth()) end
+  function lurek.init()
+    img = lurek.render.newImage('img/hero.png')
+    lurek.log.debug('w=' .. img:getWidth())
+  end
 end
 ```
 
@@ -3187,7 +3295,10 @@ Exact example from [render.lua](../blob/main/content/examples/render.lua):
 ```lua
 do
   local img
-  function lurek.init() img = lurek.render.newImage('img/hero.png'); if img:typeOf() == 'Image' then lurek.log.debug('image') end end
+  function lurek.init()
+    img = lurek.render.newImage('img/hero.png')
+    if img:typeOf() == 'Image' then lurek.log.debug('image') end
+  end
 end
 ```
 
@@ -3354,12 +3465,12 @@ Returns the type name of this object.
 
 #### Example
 
-Exact example from [render.lua](../blob/main/content/examples/render.lua):
+Exact example from [image.lua](../blob/main/content/examples/image.lua):
 
 ```lua
 do
-  local data = screenshot()
-  if data then lurek.log.debug(data:type()) end
+  local img = lurek.image.newImageData(8, 8)
+  assert(img:type() == "ImageData")
 end
 ```
 
@@ -3375,12 +3486,12 @@ Checks whether this object matches the given type name.
 
 #### Example
 
-Exact example from [render.lua](../blob/main/content/examples/render.lua):
+Exact example from [image.lua](../blob/main/content/examples/image.lua):
 
 ```lua
 do
-  local data = screenshot()
-  if data and data:typeOf('ImageData') then lurek.log.debug('confirmed ImageData') end
+  local img = lurek.image.newImageData(8, 8)
+  assert(img:typeOf("ImageData") == true)
 end
 ```
 
@@ -3438,7 +3549,10 @@ Exact example from [render.lua](../blob/main/content/examples/render.lua):
 ```lua
 do
   local m
-  function lurek.init() m = lurek.render.newMesh({ {0,0,0,0,1,1,1,1}, {64,0,1,0,1,1,1,1}, {32,64,0.5,1,1,1,1,1} }); lurek.log.debug('verts=' .. m:getVertexCount()) end
+  function lurek.init()
+    m = lurek.render.newMesh({ {0,0,0,0,1,1,1,1}, {64,0,1,0,1,1,1,1}, {32,64,0.5,1,1,1,1,1} })
+    lurek.log.debug('verts=' .. m:getVertexCount())
+  end
 end
 ```
 
@@ -3516,7 +3630,10 @@ Exact example from [render.lua](../blob/main/content/examples/render.lua):
 ```lua
 do
   local m
-  function lurek.init() m = lurek.render.newMesh({ {0,0,0,0,1,1,1,1}, {64,0,1,0,1,1,1,1}, {32,64,0.5,1,1,1,1,1} }); lurek.log.debug(m:type()) end
+  function lurek.init()
+    m = lurek.render.newMesh({ {0,0,0,0,1,1,1,1}, {64,0,1,0,1,1,1,1}, {32,64,0.5,1,1,1,1,1} })
+    lurek.log.debug(m:type())
+  end
 end
 ```
 
@@ -3533,7 +3650,10 @@ Exact example from [render.lua](../blob/main/content/examples/render.lua):
 ```lua
 do
   local m
-  function lurek.init() m = lurek.render.newMesh({ {0,0,0,0,1,1,1,1}, {64,0,1,0,1,1,1,1}, {32,64,0.5,1,1,1,1,1} }); if m:typeOf() == 'Mesh' then lurek.log.debug('mesh') end end
+  function lurek.init()
+    m = lurek.render.newMesh({ {0,0,0,0,1,1,1,1}, {64,0,1,0,1,1,1,1}, {32,64,0.5,1,1,1,1,1} })
+    if m:typeOf() == 'Mesh' then lurek.log.debug('mesh') end
+  end
 end
 ```
 
@@ -3817,7 +3937,11 @@ Exact example from [render.lua](../blob/main/content/examples/render.lua):
 ```lua
 do
   local q
-  function lurek.init() q = lurek.render.newQuad(0, 0, 32, 32, 256, 256); local sw, sh = q:getTextureDimensions(); lurek.log.debug(sw .. 'x' .. sh) end
+  function lurek.init()
+    q = lurek.render.newQuad(0, 0, 32, 32, 256, 256)
+    local sw, sh = q:getTextureDimensions()
+    lurek.log.debug(sw .. 'x' .. sh)
+  end
 end
 ```
 
@@ -3834,7 +3958,11 @@ Exact example from [render.lua](../blob/main/content/examples/render.lua):
 ```lua
 do
   local q
-  function lurek.init() q = lurek.render.newQuad(0, 0, 32, 32, 256, 256); local x, y, w, h = q:getViewport(); lurek.log.debug(x .. ',' .. y .. ',' .. w .. ',' .. h) end
+  function lurek.init()
+    q = lurek.render.newQuad(0, 0, 32, 32, 256, 256)
+    local x, y, w, h = q:getViewport()
+    lurek.log.debug(x .. ',' .. y .. ',' .. w .. ',' .. h)
+  end
 end
 ```
 
@@ -3875,7 +4003,10 @@ Exact example from [render.lua](../blob/main/content/examples/render.lua):
 ```lua
 do
   local q
-  function lurek.init() q = lurek.render.newQuad(0, 0, 32, 32, 256, 256); lurek.log.debug(q:type()) end
+  function lurek.init()
+    q = lurek.render.newQuad(0, 0, 32, 32, 256, 256)
+    lurek.log.debug(q:type())
+  end
 end
 ```
 
@@ -3892,7 +4023,10 @@ Exact example from [render.lua](../blob/main/content/examples/render.lua):
 ```lua
 do
   local q
-  function lurek.init() q = lurek.render.newQuad(0, 0, 32, 32, 256, 256); if q:typeOf() == 'Quad' then lurek.log.debug('quad') end end
+  function lurek.init()
+    q = lurek.render.newQuad(0, 0, 32, 32, 256, 256)
+    if q:typeOf() == 'Quad' then lurek.log.debug('quad') end
+  end
 end
 ```
 
@@ -3928,7 +4062,10 @@ Exact example from [render.lua](../blob/main/content/examples/render.lua):
 ```lua
 do
   local sh
-  function lurek.init() sh = lurek.render.newShader('// shader source'); if sh:hasUniform('time') then sh:send('time', 0.0) end end
+  function lurek.init()
+    sh = lurek.render.newShader('// shader source')
+    if sh:hasUniform('time') then sh:send('time', 0.0) end
+  end
 end
 ```
 
@@ -3984,7 +4121,10 @@ Exact example from [render.lua](../blob/main/content/examples/render.lua):
 ```lua
 do
   local sh
-  function lurek.init() sh = lurek.render.newShader('// shader source'); lurek.log.debug(sh:type()) end
+  function lurek.init()
+    sh = lurek.render.newShader('// shader source')
+    lurek.log.debug(sh:type())
+  end
 end
 ```
 
@@ -4001,7 +4141,10 @@ Exact example from [render.lua](../blob/main/content/examples/render.lua):
 ```lua
 do
   local sh
-  function lurek.init() sh = lurek.render.newShader('// shader source'); if sh:typeOf() == 'Shader' then lurek.log.debug('shader') end end
+  function lurek.init()
+    sh = lurek.render.newShader('// shader source')
+    if sh:typeOf() == 'Shader' then lurek.log.debug('shader') end
+  end
 end
 ```
 
@@ -4159,7 +4302,11 @@ Exact example from [render.lua](../blob/main/content/examples/render.lua):
 ```lua
 do
   local s
-  function lurek.init() s = lurek.render.newShape(); s:line(0, 0, 50, 50); lurek.log.debug('cmds=' .. s:getCommandCount()) end
+  function lurek.init()
+    s = lurek.render.newShape()
+    s:line(0, 0, 50, 50)
+    lurek.log.debug('cmds=' .. s:getCommandCount())
+  end
 end
 ```
 
@@ -4181,7 +4328,11 @@ Exact example from [render.lua](../blob/main/content/examples/render.lua):
 ```lua
 do
   local s
-  function lurek.init() s = lurek.render.newShape(); s:line(0, 0, 100, 0); s:line(100, 0, 100, 100) end
+  function lurek.init()
+    s = lurek.render.newShape()
+    s:line(0, 0, 100, 0)
+    s:line(100, 0, 100, 100)
+  end
 end
 ```
 
@@ -4387,7 +4538,10 @@ Exact example from [render.lua](../blob/main/content/examples/render.lua):
 ```lua
 do
   local s
-  function lurek.init() s = lurek.render.newShape(); if s:typeOf('Shape') then lurek.log.debug('shape') end end
+  function lurek.init()
+    s = lurek.render.newShape()
+    if s:typeOf('Shape') then lurek.log.debug('shape') end
+  end
 end
 ```
 
@@ -4469,7 +4623,10 @@ Exact example from [render.lua](../blob/main/content/examples/render.lua):
 ```lua
 do
   local batch
-  function lurek.init() batch = lurek.render.newSpriteBatch(lurek.render.newImage('img/tiles.png'), 256); lurek.log.debug('cap=' .. batch:getBufferSize()) end
+  function lurek.init()
+    batch = lurek.render.newSpriteBatch(lurek.render.newImage('img/tiles.png'), 256)
+    lurek.log.debug('cap=' .. batch:getBufferSize())
+  end
 end
 ```
 
@@ -4522,7 +4679,10 @@ Exact example from [render.lua](../blob/main/content/examples/render.lua):
 ```lua
 do
   local batch
-  function lurek.init() batch = lurek.render.newSpriteBatch(lurek.render.newImage('img/tiles.png'), 64); lurek.log.debug(batch:type()) end
+  function lurek.init()
+    batch = lurek.render.newSpriteBatch(lurek.render.newImage('img/tiles.png'), 64)
+    lurek.log.debug(batch:type())
+  end
 end
 ```
 
@@ -4539,7 +4699,10 @@ Exact example from [render.lua](../blob/main/content/examples/render.lua):
 ```lua
 do
   local batch
-  function lurek.init() batch = lurek.render.newSpriteBatch(lurek.render.newImage('img/tiles.png'), 64); if batch:typeOf() == 'SpriteBatch' then lurek.log.debug('batch') end end
+  function lurek.init()
+    batch = lurek.render.newSpriteBatch(lurek.render.newImage('img/tiles.png'), 64)
+    if batch:typeOf() == 'SpriteBatch' then lurek.log.debug('batch') end
+  end
 end
 ```
 

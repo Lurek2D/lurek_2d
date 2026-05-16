@@ -145,6 +145,7 @@ Trails render connected segments behind moving particles. Attractors and force z
 Module example from [particle.lua](../blob/main/content/examples/particle.lua):
 
 ```lua
+-- Advances this particle system by the given delta time.
 do
   local sys = lurek.particle.newSystem({ maxParticles = 128, emissionRate = 30 })
   sys:start()
@@ -154,6 +155,7 @@ do
 end
 
 --@api-stub: ParticleSystem:emit
+-- Performs the emit operation on this particle system.
 do
   local hit = lurek.particle.newSystem({ maxParticles = 64, lifetimeMin = 0.2, lifetimeMax = 0.4 })
   hit:setPosition(160, 120)
@@ -161,6 +163,7 @@ do
 end
 
 --@api-stub: ParticleSystem:start
+-- Starts the operation managed by this particle system.
 do
   local rain = lurek.particle.newSystem({ maxParticles = 512, emissionRate = 200 })
   rain:setPosition(400, 0)
@@ -169,6 +172,7 @@ do
 end
 
 --@api-stub: ParticleSystem:stop
+-- Stops the current operation or playback on this particle system.
 do
   local jet = lurek.particle.newSystem({ emissionRate = 100 })
   jet:start()
@@ -178,6 +182,7 @@ do
 end
 
 --@api-stub: ParticleSystem:pause
+-- Pauses the current operation or playback on this particle system.
 do
   local steam = lurek.particle.newSystem({ emissionRate = 40 })
   steam:start()
@@ -185,12 +190,8 @@ do
 end
 
 --@api-stub: ParticleSystem:resume
+-- Resumes a previously paused operation or playback on this particle system.
 do
-  local fog = lurek.particle.newSystem({ emissionRate = 20 })
-  fog:start()
-  fog:pause()
-  fog:resume()
-end
 ```
 
 ## Key Types

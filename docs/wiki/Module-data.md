@@ -780,10 +780,11 @@ Exact example from [data.lua](../blob/main/content/examples/data.lua):
 
 ```lua
 do
-  local bd = lurek.data.newByteData(4)
-  bd:setByte(0, 99)
-  local copy = bd:clone()
-  lurek.log.info("copy[0]=" .. copy:getByte(0), "data")
+  local original = lurek.data.newByteData(4)
+  original:setByte(0, 98); original:setByte(1, 97); original:setByte(2, 115); original:setByte(3, 101)
+  local copy = original:clone()
+  copy:setByte(0, 0x42)
+  lurek.log.info("orig=" .. original:getString() .. " copy=" .. copy:getString(), "data")
 end
 ```
 
@@ -804,10 +805,10 @@ Exact example from [data.lua](../blob/main/content/examples/data.lua):
 
 ```lua
 do
-  local bd = lurek.data.newByteData(4)
-  bd:setByte(0, 0b10101010)
-  local b = bd:getBit(0, 1)
-  lurek.log.info("bit(0,1)=" .. tostring(b), "data")
+  local fd = lurek.data.newByteData(16)
+  fd:setByte(0, 0b10110110)
+  local bit = fd:getBit(0, 1)
+  lurek.log.info("bit 1 = " .. tostring(bit), "data")
 end
 ```
 
@@ -827,10 +828,10 @@ Exact example from [data.lua](../blob/main/content/examples/data.lua):
 
 ```lua
 do
-  local bd = lurek.data.newByteData(8)
-  bd:setByte(0, 0xFF)
-  local b = bd:getByte(0)
-  lurek.log.info("byte[0]=" .. tostring(b), "data")
+  local bd = lurek.data.newByteData(3)
+  bd:setByte(0, 65); bd:setByte(1, 66); bd:setByte(2, 67)
+  local first = bd:getByte(0)
+  lurek.log.info("first byte (A=65) = " .. first, "data")
 end
 ```
 
@@ -846,8 +847,8 @@ Exact example from [data.lua](../blob/main/content/examples/data.lua):
 
 ```lua
 do
-  local bd = lurek.data.newByteData(32)
-  lurek.log.info("size=" .. bd:getSize(), "data")
+  local bd = lurek.data.newByteData(5)
+  lurek.log.info("byte data size = " .. bd:getSize(), "data")
 end
 ```
 
@@ -863,9 +864,11 @@ Exact example from [data.lua](../blob/main/content/examples/data.lua):
 
 ```lua
 do
-  local bd = lurek.data.newByteData(8)
-  local s = bd:getString()
-  lurek.log.info("string length=" .. #s, "data")
+  local bd = lurek.data.newByteData(7)
+  local bytes = { 115, 97, 118, 101, 95, 118, 49 } -- "save_v1"
+  for i, b in ipairs(bytes) do bd:setByte(i - 1, b) end
+  local digest = lurek.data.encode("hex", lurek.data.hash("md5", bd:getString()))
+  lurek.log.info("md5 = " .. digest, "data")
 end
 ```
 
@@ -887,10 +890,10 @@ Exact example from [data.lua](../blob/main/content/examples/data.lua):
 
 ```lua
 do
-  local bd = lurek.data.newByteData(4)
-  bd:setByte(0, 0b11001100)
-  local val = bd:readBits(0, 4, 4)
-  lurek.log.info("bits=" .. tostring(val), "data")
+  local fd = lurek.data.newByteData(16)
+  fd:setByte(0, 0xFF)
+  local val = fd:readBits(0, 0, 8)
+  lurek.log.info("read bits: " .. val, "data")
 end
 ```
 
@@ -910,10 +913,9 @@ Exact example from [data.lua](../blob/main/content/examples/data.lua):
 
 ```lua
 do
-  local bd = lurek.data.newByteData(4)
-  bd:setBit(0, 3, true)   -- byte 0, bit 3 = 1
-  bd:setBit(0, 1, false)  -- byte 0, bit 1 = 0
-  lurek.log.info("bit(0,3)=" .. tostring(bd:getBit(0, 3)), "data")
+  local fd = lurek.data.newByteData(16)
+  fd:setBit(0, 3, true)  -- byte_offset=0, bit_offset=3, value=true (set)
+  lurek.log.info("bit 3 set to 1", "data")
 end
 ```
 
@@ -932,10 +934,10 @@ Exact example from [data.lua](../blob/main/content/examples/data.lua):
 
 ```lua
 do
-  local bd = lurek.data.newByteData(8)
-  bd:setByte(0, 42)
-  bd:setByte(3, 255)
-  lurek.log.info("byte[0]=" .. bd:getByte(0) .. " byte[3]=" .. bd:getByte(3), "data")
+  local bd = lurek.data.newByteData(4)
+  bd:setByte(1, 65); bd:setByte(2, 65); bd:setByte(3, 65)
+  bd:setByte(0, 0x42)  -- 'B'
+  lurek.log.info("patched: " .. bd:getString(), "data")
 end
 ```
 

@@ -239,6 +239,7 @@ Multi-layer tile map system supporting TMX (Tiled) and LDtk import, autotile rul
 Module example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
 
 ```lua
+-- Advances this tile map by the given delta time.
 do
   local map = lurek.tilemap.newTileMap(16, 16)
   map:addLayer("water", 32, 32)
@@ -246,6 +247,7 @@ do
 end
 
 --@api-stub: TileMap:worldToTile
+-- Performs the world to tile operation on this tile map.
 do
   local map = lurek.tilemap.newTileMap(16, 16)
   map:addLayer("background", 64, 64)
@@ -254,6 +256,7 @@ do
 end
 
 --@api-stub: TileMap:tileToWorld
+-- Performs the tile to world operation on this tile map.
 do
   local map = lurek.tilemap.newTileMap(16, 16)
   map:addLayer("background", 32, 32)
@@ -262,6 +265,7 @@ do
 end
 
 --@api-stub: TileMap:getTileWidth
+-- Returns the tile width of this tile map.
 do
   local map = lurek.tilemap.newTileMap(32, 32)
   local step = map:getTileWidth()
@@ -269,6 +273,7 @@ do
 end
 
 --@api-stub: TileMap:getTileHeight
+-- Returns the tile height of this tile map.
 do
   local map = lurek.tilemap.newTileMap(16, 32)
   local row_h = map:getTileHeight()
@@ -276,16 +281,11 @@ do
 end
 
 --@api-stub: TileMap:getTileDimensions
+-- Returns the tile dimensions of this tile map.
 do
   local map = lurek.tilemap.newTileMap(16, 16)
   local tw, th = map:getTileDimensions()
   lurek.log.info("tile size " .. tw .. "x" .. th, "tilemap")
-end
-
---@api-stub: TileMap:getChunkSize
-do
-  local map = lurek.tilemap.newTileMap(16, 16, 32)
-  lurek.log.info("map chunk size = " .. map:getChunkSize(), "tilemap")
 ```
 
 ## Key Types
@@ -3241,9 +3241,9 @@ Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
 do
   local ts = lurek.tilemap.newTileSet(1, 64, 8, 16, 16)
   local tm = lurek.tilemap.newTileMap(16, 16)
-  tm:setTile(1, 5, 5, 1)
-  tm:applyAutoTile8At(1, 5, 5, "terrain")
-  lurek.log.info("8-way at-cell applied", "tilemap")
+  tm:fill(1, 1)
+  tm:applyAutoTile8(1, "terrain")
+  lurek.log.info("8-way auto-tile applied", "tilemap")
 end
 ```
 
@@ -3260,56 +3260,13 @@ Runs 8-bit auto-tiling at a single tile position and updates it and its neighbor
 
 #### Example
 
-Module-level example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
 
 ```lua
 do
-  local map = lurek.tilemap.newTileMap(16, 16)
-  map:addLayer("water", 32, 32)
-  function lurek.process(dt) map:update(dt) end
+  local tm = lurek.tilemap.new(20, 20, 16, 16)
+  tm:applyAutoTile8At(5, 5)
 end
-
---@api-stub: TileMap:worldToTile
-do
-  local map = lurek.tilemap.newTileMap(16, 16)
-  map:addLayer("background", 64, 64)
-  local tx, ty = map:worldToTile(128, 96)
-  lurek.log.info("world (128,96) -> tile (" .. tx .. ", " .. ty .. ")", "tilemap")
-end
-
---@api-stub: TileMap:tileToWorld
-do
-  local map = lurek.tilemap.newTileMap(16, 16)
-  map:addLayer("background", 32, 32)
-  local wx, wy = map:tileToWorld(5, 8)
-  lurek.log.info("spawn pos px=(" .. wx .. ", " .. wy .. ")", "tilemap")
-end
-
---@api-stub: TileMap:getTileWidth
-do
-  local map = lurek.tilemap.newTileMap(32, 32)
-  local step = map:getTileWidth()
-  lurek.log.info("snap step = " .. step .. " px", "tilemap")
-end
-
---@api-stub: TileMap:getTileHeight
-do
-  local map = lurek.tilemap.newTileMap(16, 32)
-  local row_h = map:getTileHeight()
-  lurek.log.info("HUD row height = " .. row_h, "ui")
-end
-
---@api-stub: TileMap:getTileDimensions
-do
-  local map = lurek.tilemap.newTileMap(16, 16)
-  local tw, th = map:getTileDimensions()
-  lurek.log.info("tile size " .. tw .. "x" .. th, "tilemap")
-end
-
---@api-stub: TileMap:getChunkSize
-do
-  local map = lurek.tilemap.newTileMap(16, 16, 32)
-  lurek.log.info("map chunk size = " .. map:getChunkSize(), "tilemap")
 ```
 
 ### `LTileMap:applyAutoTileAt(layer: integer, x: integer, y: integer, typeName: string)`

@@ -794,7 +794,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     let s = state.clone();
     // -- fromScreen --
     /// Returns a completed screen capture image or requests one for a future call.
-    /// @return | LuaValue | `LImageData` when capture data is ready, or nil after requesting capture.
+    /// @return | LImageData? | `LImageData` when capture data is ready, or nil after requesting capture.
     tbl.set(
         "fromScreen",
         lua.create_function(move |lua, ()| {
@@ -1139,7 +1139,7 @@ impl mlua::UserData for ImageData {
         /// @param | width | integer | Output width.
         /// @param | height | integer | Output height.
         /// @param | filter | string | Optional filter name, defaulting to `bilinear`.
-        /// @return | LuaValue | Resized `LImageData` handle, or nil when resizing fails.
+        /// @return | LImageData? | Resized `LImageData` handle, or nil when resizing fails.
         methods.add_method("resize", |lua, this, args: LuaMultiValue| {
             let mut it = args.into_iter();
             let w = match it.next() {
@@ -1276,7 +1276,7 @@ impl mlua::UserData for ImageData {
         /// @param | y | integer | Region y coordinate.
         /// @param | w | integer | Region width.
         /// @param | h | integer | Region height.
-        /// @return | LuaValue | `LImageData` handle, or nil when the region is out of bounds.
+        /// @return | LImageData? | `LImageData` handle, or nil when the region is out of bounds.
         methods.add_method(
             "getRegion",
             |lua, this, (x, y, w, h): (u32, u32, u32, u32)| match this.get_region(x, y, w, h) {

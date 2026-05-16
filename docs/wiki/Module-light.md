@@ -171,20 +171,21 @@ do
   end
 end
 
--- â”€â”€ Light methods â”€â”€
+-- Light methods
 
 --@api-stub: Light:setPosition
+-- Sets the position of this light.
 do
   local lamp = lurek.light.newLight(0, 0, 120)
   lamp:setPosition(320, 240)
 end
 
 --@api-stub: Light:getPosition
+-- Returns the position of this light.
 do
   local lamp = lurek.light.newLight(150, 100, 80)
   local x, y = lamp:getPosition()
   lurek.log.info("lamp at (" .. x .. "," .. y .. ")", "light")
-end
 ```
 
 ## Key Types

@@ -321,8 +321,9 @@ Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
 
 ```lua
 do
-  local cat = lurek.docs.loadAll("docs/api")
-  pcall(lurek.docs.exportAll, cat, "build/tmp")
+  local catalog = lurek.docs.scan()
+  pcall(lurek.docs.exportAll, catalog, "build/vscode")
+  lurek.log.info("docs", "wrote full editor bundle")
 end
 ```
 
@@ -341,8 +342,9 @@ Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
 
 ```lua
 do
-  local cat = lurek.docs.loadAll("docs/api")
-  pcall(lurek.docs.exportCheatsheet, cat, "build/tmp/cheatsheet.txt")
+  local catalog = lurek.docs.scan()
+  pcall(lurek.docs.exportCheatsheet, catalog, "build/cheatsheet.txt")
+  lurek.log.info("docs", "wrote cheatsheet.txt")
 end
 ```
 
@@ -361,8 +363,9 @@ Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
 
 ```lua
 do
-  local cat = lurek.docs.loadAll("docs/api")
-  pcall(lurek.docs.exportCompletions, cat, "build/tmp/completions.json")
+  local catalog = lurek.docs.scan()
+  pcall(lurek.docs.exportCompletions, catalog, "build/vscode/completions.json")
+  lurek.log.info("docs", "wrote completions.json")
 end
 ```
 
@@ -381,8 +384,9 @@ Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
 
 ```lua
 do
-  local cat = lurek.docs.loadAll("docs/api")
-  pcall(lurek.docs.exportHover, cat, "build/tmp/hover.json")
+  local catalog = lurek.docs.scan()
+  pcall(lurek.docs.exportHover, catalog, "build/vscode/hover.json")
+  lurek.log.info("docs", "wrote hover.json")
 end
 ```
 
@@ -401,8 +405,9 @@ Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
 
 ```lua
 do
-  local cat = lurek.docs.loadAll("docs/api")
-  pcall(lurek.docs.exportMarkdown, cat, "build/tmp/api.md")
+  local catalog = lurek.docs.loadAll("docs/api")
+  pcall(lurek.docs.exportMarkdown, catalog, "build/lua-api.md")
+  lurek.log.info("docs", "regenerated lua-api.md")
 end
 ```
 
@@ -421,8 +426,9 @@ Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
 
 ```lua
 do
-  local cat = lurek.docs.loadAll("docs/api")
-  pcall(lurek.docs.exportSignatures, cat, "build/tmp/signatures.json")
+  local catalog = lurek.docs.scan()
+  pcall(lurek.docs.exportSignatures, catalog, "build/vscode/signatures.json")
+  lurek.log.info("docs", "wrote signatures.json")
 end
 ```
 
@@ -484,8 +490,10 @@ Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
 
 ```lua
 do
-  local ok, cat = pcall(lurek.docs.loadToml, "docs/api/lurek.md")
-  -- ok=false if file schema doesn't match; that's fine for headless testing
+  local ok, catalog = pcall(lurek.docs.loadToml, "docs/api/audio.toml")
+  if ok and catalog:entryCount() == 0 then
+    lurek.log.warn("docs", "audio.toml had no entries")
+  end
 end
 ```
 
@@ -1430,6 +1438,7 @@ do
 end
 
 --@api-stub: DocEntry:hasReturnType
+-- Returns true if this doc entry has a return type.
 do
   local catalog = lurek.docs.loadAll("docs/api")
   for _, e in ipairs(catalog:getEntries()) do
@@ -1440,6 +1449,7 @@ do
 end
 
 --@api-stub: DocEntry:hasExample
+-- Returns true if this doc entry has a example.
 do
   local catalog = lurek.docs.loadAll("docs/api")
   local without = 0
@@ -1449,9 +1459,10 @@ do
   lurek.log.info("docs", without .. " entries lack examples")
 end
 
--- â”€â”€ ApiCatalog methods â”€â”€
+-- ApiCatalog methods
 
 --@api-stub: ApiCatalog:getModules
+-- Returns the modules of this api catalog.
 do
   local catalog = lurek.docs.scan()
   for _, name in ipairs(catalog:getModules()) do
@@ -1460,14 +1471,11 @@ do
 end
 
 --@api-stub: ApiCatalog:getEntries
+-- Returns the entries of this api catalog.
 do
   local catalog = lurek.docs.scan()
   local audio_entries = catalog:getEntries("audio")
   lurek.log.info("docs", "audio has " .. #audio_entries .. " entries")
-end
-
---@api-stub: ApiCatalog:getEntry
-do
 ```
 
 ### `LDocEntry:hasReturnType() -> boolean`
@@ -1491,6 +1499,7 @@ do
 end
 
 --@api-stub: DocEntry:hasExample
+-- Returns true if this doc entry has a example.
 do
   local catalog = lurek.docs.loadAll("docs/api")
   local without = 0
@@ -1500,9 +1509,10 @@ do
   lurek.log.info("docs", without .. " entries lack examples")
 end
 
--- â”€â”€ ApiCatalog methods â”€â”€
+-- ApiCatalog methods
 
 --@api-stub: ApiCatalog:getModules
+-- Returns the modules of this api catalog.
 do
   local catalog = lurek.docs.scan()
   for _, name in ipairs(catalog:getModules()) do
@@ -1511,6 +1521,7 @@ do
 end
 
 --@api-stub: ApiCatalog:getEntries
+-- Returns the entries of this api catalog.
 do
   local catalog = lurek.docs.scan()
   local audio_entries = catalog:getEntries("audio")
@@ -1518,6 +1529,7 @@ do
 end
 
 --@api-stub: ApiCatalog:getEntry
+-- Returns the entry of this api catalog.
 do
   local catalog = lurek.docs.scan()
   local entry = catalog:getEntry("lurek.audio.play")
@@ -1525,10 +1537,6 @@ do
 end
 
 --@api-stub: ApiCatalog:getTypes
-do
-  local catalog = lurek.docs.loadAll("docs/api")
-  for _, t in ipairs(catalog:getTypes("audio")) do
-    lurek.log.debug("docs", "audio type: " .. t)
 ```
 
 ### `LDocEntry:type() -> string`

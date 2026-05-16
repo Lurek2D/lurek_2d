@@ -127,6 +127,7 @@ Markers are persistent or timed icons at fixed world positions (quest markers, p
 Module example from [minimap.lua](../blob/main/content/examples/minimap.lua):
 
 ```lua
+-- Advances this minimap by the given delta time.
 do
   local mm = lurek.minimap.newMinimap(32, 32)
   mm:addPing(8, 8, 0.5)
@@ -134,18 +135,21 @@ do
 end
 
 --@api-stub: Minimap:type
+-- Returns the Lua-visible type name string for this minimap handle.
 do
   local mm = lurek.minimap.newMinimap(16, 16)
   if mm:type() == "Minimap" then lurek.log.info("widget is a minimap", "ui") end
 end
 
 --@api-stub: Minimap:typeOf
+-- Returns true if this minimap handle matches the given type name string.
 do
   local mm = lurek.minimap.newMinimap(16, 16)
   if mm:typeOf("Object") then lurek.log.info("widget responds to Object api", "ui") end
 end
 
 --@api-stub: Minimap:render
+-- Draws or renders this minimap to the current render target.
 do
   local mm
   function lurek.init() mm = lurek.minimap.newMinimap(48, 32, 200, 140) end
@@ -153,6 +157,7 @@ do
 end
 
 --@api-stub: Minimap:drawToImage
+-- Draws or renders this minimap to the current render target.
 do
   local mm = lurek.minimap.newMinimap(16, 16)
   mm:setTerrain(1, 1, 1)
@@ -161,6 +166,7 @@ do
 end
 
 --@api-stub: Minimap:addMarker
+-- Adds a marker to this minimap.
 do
   local mm = lurek.minimap.newMinimap(64, 64, 4)
   local id = mm:addMarker(20, 30, "quest_marker", 1, 1, 0, 1)
@@ -168,12 +174,6 @@ do
 end
 
 --@api-stub: Minimap:addObjectType
-do
-  local mm = lurek.minimap.newMinimap(32, 32, 4)
-  local enemy_idx = mm:addObjectType("enemy", 1, 0, 0, 1)
-  local ally_idx = mm:addObjectType("ally",  0, 0.5, 1, 1)
-  lurek.log.info("object types: " .. mm:getObjectTypeCount(), "minimap")
-end
 ```
 
 ## Key Types

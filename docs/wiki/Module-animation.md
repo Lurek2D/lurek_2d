@@ -112,6 +112,7 @@ The module provides `AnimCurve` for easing-driven value interpolation along keyf
 Module example from [animation.lua](../blob/main/content/examples/animation.lua):
 
 ```lua
+-- Advances this animation by the given delta time.
 do
   local anim = lurek.animation.new()
   anim:addFrame(0, 0, 32, 32)
@@ -121,6 +122,7 @@ do
 end
 
 --@api-stub: Animation:getQuad
+-- Returns the quad of this animation.
 do
   local anim = lurek.animation.new()
   anim:addFrame(0, 0, 32, 32)
@@ -131,6 +133,7 @@ do
 end
 
 --@api-stub: Animation:pollEvents
+-- Performs the poll events operation on this animation.
 do
   local anim = lurek.animation.new()
   anim:addFrame(0, 0, 32, 32)
@@ -145,6 +148,7 @@ do
 end
 
 --@api-stub: Animation:isPlaying
+-- Returns true if this animation playing.
 do
   local anim = lurek.animation.new()
   anim:addFrame(0, 0, 32, 32)
@@ -154,11 +158,8 @@ do
 end
 
 --@api-stub: Animation:isLooping
+-- Returns true if this animation looping.
 do
-  local anim = lurek.animation.new()
-  anim:addFrame(0, 0, 32, 32)
-  anim:addClip("idle", {0}, 2, true)
-  anim:play("idle")
 ```
 
 ## Key Types
@@ -540,56 +541,13 @@ Rasterizes all animation frames into a preview grid image.
 
 #### Example
 
-Module-level example from [animation.lua](../blob/main/content/examples/animation.lua):
+Exact example from [animation.lua](../blob/main/content/examples/animation.lua):
 
 ```lua
 do
-  local anim = lurek.animation.new()
-  anim:addFrame(0, 0, 32, 32)
-  anim:addClip("walk", {0}, 8, true)
-  anim:play("walk")
-  function lurek.process(dt) anim:update(dt) end
+  local anim = lurek.animation.new("assets/player.png", 64, 64)
+  anim:drawPreviewGrid(0, 0, 2)
 end
-
---@api-stub: Animation:getQuad
-do
-  local anim = lurek.animation.new()
-  anim:addFrame(0, 0, 32, 32)
-  anim:addClip("idle", {0}, 4, true)
-  anim:play("idle")
-  local q = anim:getQuad()
-  if q then lurek.log.debug("frame quad w=" .. q.w .. " h=" .. q.h, "anim") end
-end
-
---@api-stub: Animation:pollEvents
-do
-  local anim = lurek.animation.new()
-  anim:addFrame(0, 0, 32, 32)
-  anim:addClip("attack", {0}, 8, false)
-  anim:play("attack")
-  function lurek.process(dt)
-    anim:update(dt)
-    for _, ev in ipairs(anim:pollEvents()) do
-      if ev.type == "clip_finished" then lurek.log.info("attack done", "anim") end
-    end
-  end
-end
-
---@api-stub: Animation:isPlaying
-do
-  local anim = lurek.animation.new()
-  anim:addFrame(0, 0, 32, 32)
-  anim:addClip("swing", {0}, 6, false)
-  anim:play("swing")
-  if anim:isPlaying() then lurek.log.debug("swing in progress, ignoring input", "combat") end
-end
-
---@api-stub: Animation:isLooping
-do
-  local anim = lurek.animation.new()
-  anim:addFrame(0, 0, 32, 32)
-  anim:addClip("idle", {0}, 2, true)
-  anim:play("idle")
 ```
 
 ### `LAnimation:drawToImage(w: integer, h: integer) -> ImageData`
@@ -693,56 +651,14 @@ Returns the playback mode name for a clip when it exists.
 
 #### Example
 
-Module-level example from [animation.lua](../blob/main/content/examples/animation.lua):
+Exact example from [animation.lua](../blob/main/content/examples/animation.lua):
 
 ```lua
 do
-  local anim = lurek.animation.new()
-  anim:addFrame(0, 0, 32, 32)
-  anim:addClip("walk", {0}, 8, true)
-  anim:play("walk")
-  function lurek.process(dt) anim:update(dt) end
+  local anim = lurek.animation.new("assets/player.png", 64, 64)
+  local mode = anim:getClipMode()
+  lurek.log.debug("clip mode=" .. mode, "anim")
 end
-
---@api-stub: Animation:getQuad
-do
-  local anim = lurek.animation.new()
-  anim:addFrame(0, 0, 32, 32)
-  anim:addClip("idle", {0}, 4, true)
-  anim:play("idle")
-  local q = anim:getQuad()
-  if q then lurek.log.debug("frame quad w=" .. q.w .. " h=" .. q.h, "anim") end
-end
-
---@api-stub: Animation:pollEvents
-do
-  local anim = lurek.animation.new()
-  anim:addFrame(0, 0, 32, 32)
-  anim:addClip("attack", {0}, 8, false)
-  anim:play("attack")
-  function lurek.process(dt)
-    anim:update(dt)
-    for _, ev in ipairs(anim:pollEvents()) do
-      if ev.type == "clip_finished" then lurek.log.info("attack done", "anim") end
-    end
-  end
-end
-
---@api-stub: Animation:isPlaying
-do
-  local anim = lurek.animation.new()
-  anim:addFrame(0, 0, 32, 32)
-  anim:addClip("swing", {0}, 6, false)
-  anim:play("swing")
-  if anim:isPlaying() then lurek.log.debug("swing in progress, ignoring input", "combat") end
-end
-
---@api-stub: Animation:isLooping
-do
-  local anim = lurek.animation.new()
-  anim:addFrame(0, 0, 32, 32)
-  anim:addClip("idle", {0}, 2, true)
-  anim:play("idle")
 ```
 
 ### `LAnimation:getCurrentFrame() -> integer`
@@ -965,56 +881,13 @@ Changes the playback mode for an existing clip.
 
 #### Example
 
-Module-level example from [animation.lua](../blob/main/content/examples/animation.lua):
+Exact example from [animation.lua](../blob/main/content/examples/animation.lua):
 
 ```lua
 do
-  local anim = lurek.animation.new()
-  anim:addFrame(0, 0, 32, 32)
-  anim:addClip("walk", {0}, 8, true)
-  anim:play("walk")
-  function lurek.process(dt) anim:update(dt) end
+  local anim = lurek.animation.new("assets/player.png", 64, 64)
+  anim:setClipMode("pingpong")
 end
-
---@api-stub: Animation:getQuad
-do
-  local anim = lurek.animation.new()
-  anim:addFrame(0, 0, 32, 32)
-  anim:addClip("idle", {0}, 4, true)
-  anim:play("idle")
-  local q = anim:getQuad()
-  if q then lurek.log.debug("frame quad w=" .. q.w .. " h=" .. q.h, "anim") end
-end
-
---@api-stub: Animation:pollEvents
-do
-  local anim = lurek.animation.new()
-  anim:addFrame(0, 0, 32, 32)
-  anim:addClip("attack", {0}, 8, false)
-  anim:play("attack")
-  function lurek.process(dt)
-    anim:update(dt)
-    for _, ev in ipairs(anim:pollEvents()) do
-      if ev.type == "clip_finished" then lurek.log.info("attack done", "anim") end
-    end
-  end
-end
-
---@api-stub: Animation:isPlaying
-do
-  local anim = lurek.animation.new()
-  anim:addFrame(0, 0, 32, 32)
-  anim:addClip("swing", {0}, 6, false)
-  anim:play("swing")
-  if anim:isPlaying() then lurek.log.debug("swing in progress, ignoring input", "combat") end
-end
-
---@api-stub: Animation:isLooping
-do
-  local anim = lurek.animation.new()
-  anim:addFrame(0, 0, 32, 32)
-  anim:addClip("idle", {0}, 2, true)
-  anim:play("idle")
 ```
 
 ### `LAnimation:setFrame(index: integer)`
@@ -1436,7 +1309,10 @@ do
   anim:addFrame(0, 0, 32, 32); anim:addClip("idle", {0}, 4, true)
   local fsm = lurek.animation.newStateMachine(anim, "idle")
   fsm:addState("idle", "idle", true)
-  function lurek.draw() local q = fsm:getQuad(); if q then lurek.log.debug("fsm quad w=" .. q.w, "anim") end end
+  function lurek.draw()
+    local q = fsm:getQuad()
+    if q then lurek.log.debug("fsm quad w=" .. q.w, "anim") end
+  end
 end
 ```
 

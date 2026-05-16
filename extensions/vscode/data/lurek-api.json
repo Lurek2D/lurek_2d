@@ -1,6 +1,6 @@
 {
   "version": "auto-generated",
-  "generated": "2026-05-15",
+  "generated": "2026-05-16",
   "modules": [
     {
       "name": "ai",
@@ -4035,7 +4035,7 @@
           "parameters": [
             {
               "name": "value",
-              "type": "LuaValue",
+              "type": "any",
               "description": "Integer size for zeroed bytes, or string used as initial bytes.",
               "optional": false
             }
@@ -4209,7 +4209,7 @@
           "parameters": [
             {
               "name": "value",
-              "type": "LuaValue",
+              "type": "any",
               "description": "Lua value to encode through the serial table converter.",
               "optional": false
             }
@@ -8768,8 +8768,8 @@
           "signature": "()",
           "description": "Returns a completed screen capture image or requests one for a future call.",
           "parameters": [],
-          "returns": "LuaValue",
-          "returnType": "LuaValue",
+          "returns": "LImageData?",
+          "returnType": "LImageData?",
           "isMethod": false,
           "objectType": null
         }
@@ -9098,7 +9098,7 @@
           "parameters": [
             {
               "name": "cursor_val",
-              "type": "LuaValue",
+              "type": "any",
               "description": "`LCursor`, system cursor string, or nil.",
               "optional": false
             }
@@ -26584,8 +26584,8 @@
           "signature": "()",
           "description": "Returns the one-based flow field goal when set.",
           "parameters": [],
-          "returns": "integer",
-          "returnType": "integer",
+          "returns": "integer?",
+          "returnType": "integer?",
           "isMethod": true,
           "objectType": "LAIFlowField"
         },
@@ -28649,7 +28649,7 @@
           "parameters": [
             {
               "name": "func",
-              "type": "LuaValue",
+              "type": "any",
               "description": "Function used as custom easing callback, or nil to clear custom easing.",
               "optional": false
             }
@@ -28890,7 +28890,7 @@
           "parameters": [
             {
               "name": "handle",
-              "type": "LuaValue",
+              "type": "any",
               "description": "Animation handle accepted by future sync group implementations.",
               "optional": false
             }
@@ -28908,7 +28908,7 @@
           "parameters": [
             {
               "name": "handle",
-              "type": "LuaValue",
+              "type": "any",
               "description": "Animation handle accepted by future sync group implementations.",
               "optional": false
             }
@@ -31349,7 +31349,7 @@
           "parameters": [
             {
               "name": "bitmask",
-              "type": "number",
+              "type": "integer",
               "description": "Bitmask to resolve.",
               "optional": false
             }
@@ -37768,7 +37768,7 @@
           "parameters": [
             {
               "name": "cellType",
-              "type": "number",
+              "type": "integer",
               "description": "Material type constant to count.",
               "optional": false
             }
@@ -37786,7 +37786,7 @@
           "parameters": [
             {
               "name": "cellType",
-              "type": "number",
+              "type": "integer",
               "description": "Material type constant to find.",
               "optional": false
             }
@@ -42740,7 +42740,7 @@
           "parameters": [
             {
               "name": "col",
-              "type": "LuaValue",
+              "type": "any",
               "description": "Column name string or one-based column index.",
               "optional": false
             }
@@ -42782,7 +42782,7 @@
           "parameters": [
             {
               "name": "col",
-              "type": "LuaValue",
+              "type": "any",
               "description": "Column name string or one-based column index.",
               "optional": false
             }
@@ -43040,7 +43040,7 @@
           "parameters": [
             {
               "name": "col",
-              "type": "LuaValue",
+              "type": "any",
               "description": "Column name string or one-based column index.",
               "optional": false
             }
@@ -43058,7 +43058,7 @@
           "parameters": [
             {
               "name": "col",
-              "type": "LuaValue",
+              "type": "any",
               "description": "Column name string or one-based column index.",
               "optional": false
             }
@@ -43076,7 +43076,7 @@
           "parameters": [
             {
               "name": "col",
-              "type": "LuaValue",
+              "type": "any",
               "description": "Column name string or one-based column index.",
               "optional": false
             }
@@ -43148,7 +43148,7 @@
           "parameters": [
             {
               "name": "col",
-              "type": "LuaValue",
+              "type": "any",
               "description": "Column name string or one-based column index.",
               "optional": false
             }
@@ -43166,7 +43166,7 @@
           "parameters": [
             {
               "name": "col",
-              "type": "LuaValue",
+              "type": "any",
               "description": "Column name string or one-based column index.",
               "optional": false
             }
@@ -43219,7 +43219,7 @@
           "parameters": [
             {
               "name": "col",
-              "type": "LuaValue",
+              "type": "any",
               "description": "Column name string or one-based column index.",
               "optional": false
             }
@@ -43237,7 +43237,7 @@
           "parameters": [
             {
               "name": "col",
-              "type": "LuaValue",
+              "type": "any",
               "description": "Column name string or one-based column index.",
               "optional": false
             }
@@ -43255,7 +43255,7 @@
           "parameters": [
             {
               "name": "col",
-              "type": "LuaValue",
+              "type": "any",
               "description": "Column name string or one-based column index.",
               "optional": false
             }
@@ -43273,7 +43273,7 @@
           "parameters": [
             {
               "name": "col",
-              "type": "LuaValue",
+              "type": "any",
               "description": "Column name string or one-based column index.",
               "optional": false
             }
@@ -43291,7 +43291,7 @@
           "parameters": [
             {
               "name": "col",
-              "type": "LuaValue",
+              "type": "any",
               "description": "Column name string or one-based column index.",
               "optional": false
             }
@@ -43309,7 +43309,7 @@
           "parameters": [
             {
               "name": "col",
-              "type": "LuaValue",
+              "type": "any",
               "description": "Column name string or one-based column index.",
               "optional": false
             }
@@ -43327,7 +43327,7 @@
           "parameters": [
             {
               "name": "col",
-              "type": "LuaValue",
+              "type": "any",
               "description": "Column name string or one-based column index.",
               "optional": false
             }
@@ -43865,7 +43865,7 @@
           "parameters": [
             {
               "name": "col",
-              "type": "LuaValue",
+              "type": "any",
               "description": "Column reference.",
               "optional": false
             }
@@ -43883,7 +43883,7 @@
           "parameters": [
             {
               "name": "col",
-              "type": "LuaValue",
+              "type": "any",
               "description": "Column reference.",
               "optional": false
             }
@@ -43919,7 +43919,7 @@
           "parameters": [
             {
               "name": "col",
-              "type": "LuaValue",
+              "type": "any",
               "description": "Column reference.",
               "optional": false
             }
@@ -51433,8 +51433,8 @@
               "optional": false
             }
           ],
-          "returns": "LuaValue",
-          "returnType": "LuaValue",
+          "returns": "any",
+          "returnType": "any",
           "isMethod": true,
           "objectType": "LGraph"
         },
@@ -51634,8 +51634,8 @@
               "optional": false
             }
           ],
-          "returns": "LuaValue",
-          "returnType": "LuaValue",
+          "returns": "any",
+          "returnType": "any",
           "isMethod": true,
           "objectType": "LGraph"
         },
@@ -51664,8 +51664,8 @@
               "optional": false
             }
           ],
-          "returns": "LuaValue",
-          "returnType": "LuaValue",
+          "returns": "any",
+          "returnType": "any",
           "isMethod": true,
           "objectType": "LGraph"
         },
@@ -51688,8 +51688,8 @@
               "optional": false
             }
           ],
-          "returns": "LuaValue",
-          "returnType": "LuaValue",
+          "returns": "any",
+          "returnType": "any",
           "isMethod": true,
           "objectType": "LGraph"
         },
@@ -51781,8 +51781,8 @@
           "signature": "()",
           "description": "Returns nodes in topological order when the graph is acyclic.",
           "parameters": [],
-          "returns": "LuaValue",
-          "returnType": "LuaValue",
+          "returns": "any",
+          "returnType": "any",
           "isMethod": true,
           "objectType": "LGraph"
         },
@@ -51838,8 +51838,8 @@
               "optional": false
             }
           ],
-          "returns": "LuaValue",
-          "returnType": "LuaValue",
+          "returns": "any",
+          "returnType": "any",
           "isMethod": true,
           "objectType": "LGraph"
         },
@@ -52698,8 +52698,8 @@
           "signature": "()",
           "description": "Returns where this item is stored: a node, an edge plus progress, or no values when unplaced.",
           "parameters": [],
-          "returns": "LuaValue",
-          "returnType": "LuaValue",
+          "returns": "any",
+          "returnType": "any",
           "isMethod": true,
           "objectType": "LGraphItem"
         },
@@ -52969,8 +52969,8 @@
           "signature": "()",
           "description": "Returns this node's optional push item-type filter.",
           "parameters": [],
-          "returns": "LuaValue",
-          "returnType": "LuaValue",
+          "returns": "any",
+          "returnType": "any",
           "isMethod": true,
           "objectType": "LGraphNode"
         },
@@ -52998,8 +52998,8 @@
           "signature": "()",
           "description": "Returns this node's optional pull item-type filter.",
           "parameters": [],
-          "returns": "LuaValue",
-          "returnType": "LuaValue",
+          "returns": "any",
+          "returnType": "any",
           "isMethod": true,
           "objectType": "LGraphNode"
         },
@@ -53425,8 +53425,8 @@
           "signature": "()",
           "description": "Removes and returns the next item from this node's explicit queue.",
           "parameters": [],
-          "returns": "LuaValue",
-          "returnType": "LuaValue",
+          "returns": "any",
+          "returnType": "any",
           "isMethod": true,
           "objectType": "LGraphNode"
         },
@@ -58147,8 +58147,8 @@
               "optional": false
             }
           ],
-          "returns": "LuaValue",
-          "returnType": "LuaValue",
+          "returns": "LImageData?",
+          "returnType": "LImageData?",
           "isMethod": true,
           "objectType": "LImageData"
         },
@@ -58303,8 +58303,8 @@
               "optional": false
             }
           ],
-          "returns": "LuaValue",
-          "returnType": "LuaValue",
+          "returns": "LImageData?",
+          "returnType": "LImageData?",
           "isMethod": true,
           "objectType": "LImageData"
         },
@@ -59612,7 +59612,7 @@
           "parameters": [
             {
               "name": "key",
-              "type": "LuaValue",
+              "type": "any",
               "description": "Integer index, numeric index, or effect type name.",
               "optional": false
             }
@@ -59630,7 +59630,7 @@
           "parameters": [
             {
               "name": "key",
-              "type": "LuaValue",
+              "type": "any",
               "description": "Integer index, numeric index, or effect type name.",
               "optional": false
             }
@@ -65989,7 +65989,7 @@
           "parameters": [
             {
               "name": "value",
-              "type": "boolean|number|string|table",
+              "type": "any",
               "description": "The value to append.",
               "optional": false
             }
@@ -66007,7 +66007,7 @@
           "parameters": [
             {
               "name": "value",
-              "type": "boolean|number|string|table",
+              "type": "any",
               "description": "The value to append.",
               "optional": false
             }
@@ -66025,7 +66025,7 @@
           "parameters": [
             {
               "name": "value",
-              "type": "boolean|number|string|table",
+              "type": "any",
               "description": "The value to prepend.",
               "optional": false
             }
@@ -66149,7 +66149,7 @@
           "parameters": [
             {
               "name": "value",
-              "type": "boolean|number|string|table",
+              "type": "any",
               "description": "The value to search for.",
               "optional": false
             }
@@ -66200,7 +66200,7 @@
           "parameters": [
             {
               "name": "value",
-              "type": "boolean|number|string|table",
+              "type": "any",
               "description": "The value to search for.",
               "optional": false
             }
@@ -77313,7 +77313,7 @@
           "parameters": [
             {
               "name": "value",
-              "type": "boolean|number|string|table",
+              "type": "any",
               "description": "The object to store in the pool.",
               "optional": false
             }
@@ -77342,7 +77342,7 @@
           "parameters": [
             {
               "name": "value",
-              "type": "boolean|number|string|table",
+              "type": "any",
               "description": "The object to release back into the pool.",
               "optional": false
             }
@@ -82598,8 +82598,8 @@
               "optional": false
             }
           ],
-          "returns": "table",
-          "returnType": "table",
+          "returns": "table?",
+          "returnType": "table?",
           "isMethod": true,
           "objectType": "LPathGrid"
         },
@@ -82634,8 +82634,8 @@
               "optional": false
             }
           ],
-          "returns": "table",
-          "returnType": "table",
+          "returns": "table?",
+          "returnType": "table?",
           "isMethod": true,
           "objectType": "LPathGrid"
         },
@@ -87531,7 +87531,7 @@
           "parameters": [
             {
               "name": "value",
-              "type": "boolean|number|string|table",
+              "type": "any",
               "description": "The value to enqueue.",
               "optional": false
             }
@@ -87549,7 +87549,7 @@
           "parameters": [
             {
               "name": "value",
-              "type": "boolean|number|string|table",
+              "type": "any",
               "description": "The value to insert at the front.",
               "optional": false
             }
@@ -89665,7 +89665,7 @@
           "parameters": [
             {
               "name": "tileType",
-              "type": "number",
+              "type": "integer",
               "description": "The cell value to query.",
               "optional": false
             }
@@ -90808,7 +90808,7 @@
           "parameters": [
             {
               "name": "value",
-              "type": "LuaValue",
+              "type": "any",
               "description": "Lua value to store in the buffer.",
               "optional": false
             }
@@ -103544,7 +103544,7 @@
           "parameters": [
             {
               "name": "value",
-              "type": "boolean|number|string|table",
+              "type": "any",
               "description": "The value to push.",
               "optional": false
             }
@@ -103562,7 +103562,7 @@
           "parameters": [
             {
               "name": "value",
-              "type": "boolean|number|string|table",
+              "type": "any",
               "description": "The value to insert at the bottom.",
               "optional": false
             }

@@ -1,18 +1,25 @@
 -- content/examples/ai.lua
--- lurek.ai API examples.
+-- Demonstrates every lurek.ai.* function with realistic game AI usage patterns.
 -- Run: cargo run -- content/examples/ai.lua
 
 --@api-stub: lurek.ai.newWorld
 -- Creates an isolated AI world for agents, blackboards, and custom decision callbacks
 do
+  -- Use an AI world to manage all NPCs in a level. Each world is independent,
+  -- so you can pause dungeon AI while overworld agents keep running.
+  -- Scenario: open-world RPG with separate AI worlds per region.
   local world = lurek.ai.newWorld()
   world:addAgent("guard_01")
+  -- Call world:update(dt) every frame to tick all registered agents.
   function lurek.process(dt) world:update(dt) end
 end
 
 --@api-stub: lurek.ai.newBlackboard
 -- Creates an empty AI blackboard for typed local facts
 do
+  -- Blackboards are key-value stores for AI knowledge. Agents read/write facts
+  -- here so decision logic stays decoupled from game state.
+  -- Scenario: stealth game guard shares "alert_level" across patrol group.
   local bb = lurek.ai.newBlackboard()
   bb:setNumber("alert_level", 0.3)
   bb:setBool("player_seen", false)
@@ -21,6 +28,9 @@ end
 --@api-stub: lurek.ai.newStateMachine
 -- Creates an empty finite state machine with Lua-backed states and transitions
 do
+  -- FSMs are ideal for NPCs with clear, discrete behavior phases.
+  -- Each state has onEnter/onUpdate/onExit callbacks for clean transitions.
+  -- Scenario: guard patrol AI — idle → patrol → alert → chase → attack.
   local fsm = lurek.ai.newStateMachine()
   fsm:addState("patrol", { onEnter = function() lurek.log.info("patrolling", "ai") end })
   fsm:addState("chase", {})
@@ -30,6 +40,9 @@ end
 --@api-stub: lurek.ai.newBehaviorTree
 -- Creates an empty behavior tree that can receive a root node
 do
+  -- Behavior trees compose complex AI from simple reusable nodes.
+  -- Set a root node, then call bt:tick(dt) each frame to evaluate.
+  -- Scenario: boss phase transitions — check HP, pick attack pattern, execute.
   local bt = lurek.ai.newBehaviorTree()
   local root = lurek.ai.newSequence()
   root:addChild(lurek.ai.newAction(function() return "success" end))
@@ -39,6 +52,9 @@ end
 --@api-stub: lurek.ai.newSelector
 -- Creates a behavior tree selector node with no children
 do
+  -- A selector tries each child until one succeeds (OR logic).
+  -- Use it for fallback behaviors: try attack, else flee, else idle.
+  -- Scenario: enemy AI picks first viable action from priority list.
   local sel = lurek.ai.newSelector()
   sel:addChild(lurek.ai.newCondition(function() return false end))
   sel:addChild(lurek.ai.newAction(function() return "success" end))
@@ -47,6 +63,9 @@ end
 --@api-stub: lurek.ai.newSequence
 -- Creates a behavior tree sequence node with no children
 do
+  -- A sequence runs children in order, stopping on first failure (AND logic).
+  -- Use it for multi-step tasks: check condition → move → attack.
+  -- Scenario: melee NPC must be in range AND have stamina before swinging.
   local seq = lurek.ai.newSequence()
   seq:addChild(lurek.ai.newCondition(function() return true end))
   seq:addChild(lurek.ai.newAction(function() return "success" end))
@@ -55,6 +74,9 @@ end
 --@api-stub: lurek.ai.newParallel
 -- Creates a behavior tree parallel node with optional success and failure policies
 do
+  -- Parallel nodes tick all children simultaneously each frame.
+  -- Policies: "require_all" = all must succeed; "require_one" = one failure aborts.
+  -- Scenario: NPC walks AND talks — both actions run concurrently.
   local par = lurek.ai.newParallel("require_all", "require_one")
   par:addChild(lurek.ai.newAction(function() return "success" end))
   par:addChild(lurek.ai.newAction(function() return "running" end))
@@ -63,6 +85,9 @@ end
 --@api-stub: lurek.ai.newInverter
 -- Creates a behavior tree inverter decorator with an empty sequence child
 do
+  -- Inverter flips child result: success→failure, failure→success.
+  -- Useful for negating conditions without writing inverse logic.
+  -- Scenario: "NOT player_visible" check reuses the same visibility condition.
   local inv = lurek.ai.newInverter()
   inv:setChild(lurek.ai.newCondition(function() return false end))
   local bt = lurek.ai.newBehaviorTree(); bt:setRoot(inv)
@@ -71,6 +96,9 @@ end
 --@api-stub: lurek.ai.newRepeater
 -- Creates a behavior tree repeater decorator with an optional repeat count
 do
+  -- Repeater re-runs its child N times (or infinitely if count is nil).
+  -- The count parameter controls how many iterations before returning success.
+  -- Scenario: fire 3 arrows in burst — repeat the "shoot" action 3 times.
   local rep = lurek.ai.newRepeater(3)
   rep:setChild(lurek.ai.newAction(function() return "success" end))
   local bt = lurek.ai.newBehaviorTree(); bt:setRoot(rep)
@@ -79,6 +107,9 @@ end
 --@api-stub: lurek.ai.newSucceeder
 -- Creates a behavior tree succeeder decorator with an empty sequence child
 do
+  -- Succeeder always returns success regardless of child result.
+  -- Use it for optional actions that should never abort a sequence.
+  -- Scenario: "try to taunt" in a sequence — even if taunt fails, continue.
   local suc = lurek.ai.newSucceeder()
   suc:setChild(lurek.ai.newAction(function() return "failure" end))
   local bt = lurek.ai.newBehaviorTree(); bt:setRoot(suc)
@@ -87,6 +118,9 @@ end
 --@api-stub: lurek.ai.newAction
 -- Creates a behavior tree action leaf backed by a Lua callback
 do
+  -- Action nodes do the actual work. The callback receives dt and must
+  -- return "success", "failure", or "running" (for multi-frame actions).
+  -- Scenario: "move_to_cover" returns "running" until the NPC arrives.
   local act = lurek.ai.newAction(function(dt)
       return "success"
   end)
@@ -95,6 +129,9 @@ end
 --@api-stub: lurek.ai.newCondition
 -- Creates a behavior tree condition leaf backed by a Lua callback
 do
+  -- Condition nodes test a predicate — return true for success, false for failure.
+  -- They never return "running"; use them as guards before action nodes.
+  -- Scenario: check "is HP below 30%?" before triggering heal behavior.
   local hp_low = lurek.ai.newCondition(function() return true end)
   local seq = lurek.ai.newSequence()
   seq:addChild(hp_low)
@@ -103,6 +140,9 @@ end
 --@api-stub: lurek.ai.newSteeringManager
 -- Creates an empty steering manager with support for built-in and custom behaviors
 do
+  -- Steering combines movement behaviors (seek, flee, wander) into one force.
+  -- Weight parameter (last arg) controls how much each behavior contributes.
+  -- Scenario: zombie wanders randomly but seeks the player when nearby.
   local sm = lurek.ai.newSteeringManager()
   sm:addSeek(400, 300, 1.0)
   sm:addWander(20, 40, 5, 0.3)
@@ -111,6 +151,9 @@ end
 --@api-stub: LSteeringManager.setPath
 -- Sets the path of this steering manager.
 do
+  -- Assigns a waypoint path for the steering manager to follow.
+  -- Parameters: path, lookahead distance, weight. Larger lookahead = smoother curves.
+  -- Scenario: RTS unit follows A* path with smooth cornering.
   local grid = lurek.pathfind.newPathGrid(10, 10, 32)
   local path = grid:findPath(1, 1, 10, 10)
   local sm = lurek.ai.newSteeringManager()
@@ -126,6 +169,9 @@ end
 --@api-stub: LSteeringManager.getPathProgress
 -- Returns the path progress of this steering manager.
 do
+  -- Returns current waypoint index and total count — track how far along the path.
+  -- Use this to trigger events at waypoints (e.g., stop at checkpoint 3).
+  -- Scenario: courier NPC delivers packages at specific path milestones.
   local sm = lurek.ai.newSteeringManager()
   sm:setPath({ { x = 16, y = 16 }, { x = 48, y = 16 } })
   local idx, total = sm:getPathProgress()
@@ -136,6 +182,9 @@ end
 --@api-stub: lurek.ai.newQLearner
 -- Creates a Q-learner with fixed state and action counts
 do
+  -- Q-learning trains NPC behavior through reward signals over time.
+  -- Parameters: state_count, action_count. Learning rate controls adaptation speed.
+  -- Scenario: enemy learns which attack patterns work against the player.
   local ql = lurek.ai.newQLearner(16, 4)
   ql:setLearningRate(0.1)
   ql:setExplorationRate(0.2)
@@ -144,6 +193,9 @@ end
 --@api-stub: lurek.ai.newUtilityAI
 -- Creates an empty utility AI action scorer
 do
+  -- Utility AI scores all possible actions and picks the highest-value one.
+  -- Each action has a scoring function (returns 0..1) and a weight multiplier.
+  -- Scenario: survival NPC weighs eat vs sleep vs flee based on current needs.
   local uai = lurek.ai.newUtilityAI()
   uai:addAction("flee", function() return 0.8 end, 1.0)
   uai:addAction("attack", function() return 0.4 end, 1.0)
@@ -152,6 +204,9 @@ end
 --@api-stub: lurek.ai.newDialogueAI
 -- Creates an empty dialogue selector for weighted topics and branches
 do
+  -- DialogueAI picks conversation topics based on game state and utility scores.
+  -- Topics can require FSM state or BT status as prerequisites.
+  -- Scenario: tavern NPC shifts from smalltalk to quest hints when trust is high.
   local d = lurek.ai.newDialogueAI()
   local t = d:type()
   local _is_dialogue = d:typeOf("DialogueAI")
@@ -180,6 +235,9 @@ end
 --@api-stub: lurek.ai.newGOAPPlanner
 -- Creates an empty GOAP planner for boolean world-state planning
 do
+  -- GOAP finds action sequences to reach a goal from the current world state.
+  -- Actions have preconditions, effects, and cost — the planner picks cheapest path.
+  -- Scenario: squad coordination — plan "get_ammo → reload → suppress" automatically.
   local planner = lurek.ai.newGOAPPlanner()
   planner:addAction("eat", 1.0, function() lurek.log.info("eating", "ai") end)
   planner:addGoal("not_hungry", 1.0)
@@ -188,6 +246,9 @@ end
 --@api-stub: lurek.ai.newInfluenceMap
 -- Creates a grid influence map with the supplied cell dimensions and world cell size
 do
+  -- Influence maps let AI reason about spatial control (threat zones, territory).
+  -- Parameters: grid_w, grid_h, cell_size. Layers separate concerns (threat vs resources).
+  -- Scenario: RTS units avoid high-threat cells and prefer resource-rich areas.
   local infl = lurek.ai.newInfluenceMap(64, 64, 16)
   infl:addLayer("threat")
   infl:stampInfluence("threat", 320, 240, 80, 1.0, 1.0)
@@ -196,6 +257,9 @@ end
 --@api-stub: lurek.ai.newSquad
 -- Creates an empty named squad
 do
+  -- Squads group agents for coordinated tactics (flanking, covering fire).
+  -- Formation type and spacing control how members position relative to the leader.
+  -- Scenario: tactical shooter — 4-man squad holds wedge formation while advancing.
   local squad = lurek.ai.newSquad("alpha")
   squad:addMember("guard_01")
   squad:setFormation("wedge", 32)
@@ -204,6 +268,9 @@ end
 --@api-stub: lurek.ai.newCommandQueue
 -- Creates an empty command queue for callback-backed AI commands
 do
+  -- Command queues serialize AI actions so they execute one-at-a-time in order.
+  -- Each command has a name, callback, and optional params table for context.
+  -- Scenario: boss fight — queue "roar", "charge", "slam" as sequential phases.
   local q = lurek.ai.newCommandQueue()
   q:enqueue("move", function() end, { targetX = 200, targetY = 100 })
   q:enqueue("attack", function() end, { priority = 5 })
@@ -212,6 +279,9 @@ end
 --@api-stub: lurek.ai.newTraitProfile
 -- Creates an empty trait profile with modifier support
 do
+  -- Trait profiles store personality values (0..1) that influence AI decisions.
+  -- Modifiers can temporarily shift traits (e.g., rage buff increases aggression).
+  -- Scenario: cowardly goblin flees at 50% HP; brave knight fights to the end.
   local traits = lurek.ai.newTraitProfile()
   traits:set("aggression", 0.7)
   traits:set("courage", 0.4)
@@ -220,6 +290,9 @@ end
 --@api-stub: lurek.ai.newStimulusWorld
 -- Creates an empty stimulus world for visual and auditory stimulus records
 do
+  -- Stimulus world tracks sensory events (sounds, sights) that agents can perceive.
+  -- Auditory params: x, y, loudness, radius, decay_rate, tag. Stimuli fade over time.
+  -- Scenario: stealth game — footsteps create auditory stimuli that alert guards.
   local sw = lurek.ai.newStimulusWorld()
   sw:addAuditory(100, 200, 1.0, 150, 0.5, "footstep")
   function lurek.process(dt) sw:update(dt) end
@@ -228,6 +301,9 @@ end
 --@api-stub: lurek.ai.newContextSteering
 -- Creates a context steering model with the requested directional slot count
 do
+  -- Context steering uses directional slots to blend seek/avoid into one smooth heading.
+  -- More slots = finer direction resolution but slightly higher cost. 8-16 is typical.
+  -- Scenario: crowd of zombies navigating around obstacles toward the player.
   local cs = lurek.ai.newContextSteering(16)
   cs:addSeekTarget(500, 300, 1.0)
   cs:addAvoidPoint(250, 200, 64, 1.0)
@@ -236,6 +312,9 @@ end
 --@api-stub: lurek.ai.newNeedSystem
 -- Creates an empty need system for decaying named needs
 do
+  -- Need system models Sims-style drives that decay over time and drive behavior.
+  -- Parameters per need: name, decay_rate, threshold, weight. Highest urgency wins.
+  -- Scenario: survival game NPC eats when hunger > threshold, sleeps when energy low.
   local needs = lurek.ai.newNeedSystem()
   needs:addNeed("hunger", 0.05, 0.6, 1.5)
   function lurek.process(dt) needs:update(dt) end
@@ -244,6 +323,9 @@ end
 --@api-stub: lurek.ai.newAIDirector
 -- Creates an AI director for tension, phase, and pacing factor calculations
 do
+  -- AI Director manages game pacing by tracking tension and spawning enemies accordingly.
+  -- Tension 0..1 ramps up during combat, decays during rest — like Left 4 Dead's director.
+  -- Scenario: horde game — director spawns harder waves when tension drops too low.
   local dir = lurek.ai.newAIDirector()
   dir:setTension(0.4)
   function lurek.process(dt) dir:update(dt) end
@@ -252,6 +334,9 @@ end
 --@api-stub: lurek.ai.newHTNDomain
 -- Creates an empty hierarchical task network domain
 do
+  -- HTN decomposes high-level goals into ordered primitive tasks via methods.
+  -- Primitives have preconditions, effects, and deletions on world state.
+  -- Scenario: "defeat_enemy" decomposes into "approach → aim → fire → confirm_kill".
   local d = lurek.ai.newHTNDomain()
   d:addPrimitive("attack", { "has_weapon" }, { "enemy_dead" }, {})
 end
@@ -259,6 +344,9 @@ end
 --@api-stub: lurek.ai.newMCTSEngine
 -- Creates a Monte Carlo tree search engine with deterministic configuration
 do
+  -- MCTS simulates random playouts to find strong moves in large decision spaces.
+  -- Parameters: iterations, exploration_c, max_depth, seed. More iterations = stronger play.
+  -- Scenario: board game AI (chess, Go) or turn-based tactical combat decision making.
   local mcts = lurek.ai.newMCTSEngine(200, 1.41, 32, 12345)
   local actions = function(s) return { 1, 2, 3 } end
   local apply = function(s, a) return s + a end
@@ -268,6 +356,9 @@ end
 --@api-stub: lurek.ai.newEmotionModel
 -- Creates an empty emotion model for named decaying emotion values
 do
+  -- Emotion model tracks named feelings that rise from events and decay over time.
+  -- Parameters per emotion: name, initial_value, decay_rate, max_value.
+  -- Scenario: NPC's fear builds when attacked, causing flee behavior at high levels.
   local em = lurek.ai.newEmotionModel()
   em:add("fear", 0.0, 0.1, 0.2)
   em:add("anger", 0.0, 0.05, 0.15)
@@ -276,6 +367,9 @@ end
 --@api-stub: lurek.ai.newORCASolver
 -- Creates an ORCA avoidance solver with the supplied prediction horizon
 do
+  -- ORCA computes collision-free velocities for crowds without explicit pathfinding.
+  -- Prediction horizon (seconds) controls how far ahead agents anticipate collisions.
+  -- Scenario: 200 villagers navigating a market square without overlapping each other.
   local orca = lurek.ai.newORCASolver(2.0)
   local idx = orca:addAgent(100, 100, 16, 80)
   orca:setPreferredVelocity(idx, 50, 0)
@@ -284,6 +378,9 @@ end
 --@api-stub: lurek.ai.newNeuralNet
 -- Creates an empty feed-forward neural network
 do
+  -- Feed-forward neural net maps inputs to outputs through weighted layers.
+  -- addLayer(inputs, outputs, activation) — "relu", "sigmoid", "softmax" supported.
+  -- Scenario: NPC learns to dodge projectiles from sensor inputs (distances, angles).
   local nn = lurek.ai.newNeuralNet()
   nn:addLayer(4, 8, "relu")
   nn:addLayer(8, 2, "softmax")
@@ -292,6 +389,9 @@ end
 --@api-stub: lurek.ai.newGeneticAlgorithm
 -- Creates a genetic algorithm population with fixed chromosome length
 do
+  -- GA evolves a population of solutions by selection, crossover, and mutation.
+  -- Parameters: population_size, chromosome_length, seed. Set fitness per individual.
+  -- Scenario: evolving enemy stat distributions that challenge the player optimally.
   local ga = lurek.ai.newGeneticAlgorithm(50, 16, 42)
   ga:setFitness(1, 0.7)
   function lurek.process(dt) ga:evolve() end
@@ -300,6 +400,9 @@ end
 --@api-stub: lurek.ai.newBandit
 -- Creates a multi-armed bandit with a named selection strategy
 do
+  -- Multi-armed bandit balances exploration vs exploitation across N choices.
+  -- Strategies: "ucb1", "epsilon_greedy", "softmax". Epsilon controls random exploration.
+  -- Scenario: dynamic difficulty — pick which enemy type to spawn based on player deaths.
   local b = lurek.ai.newBandit(4, "ucb1", 0.1, 99)
   local arm = b:select()
   b:update(arm, 1.0)
@@ -308,6 +411,9 @@ end
 --@api-stub: lurek.ai.newNeuroevolution
 -- Creates a neuroevolution population from a layer specification table
 do
+  -- Neuroevolution combines neural nets with genetic algorithms — no backprop needed.
+  -- Layer spec defines network topology; population_size and seed control evolution.
+  -- Scenario: evolving flocking creatures whose brains improve across generations.
   local layers = { { inputs = 4, outputs = 8, activation = "relu" }, { inputs = 8, outputs = 2, activation = "softmax" } }
   local ne = lurek.ai.newNeuroevolution(layers, 30, 1)
   function lurek.process(dt) ne:evolve() end
@@ -316,6 +422,9 @@ end
 --@api-stub: lurek.ai.newStrategyAI
 -- Creates a strategy AI that reevaluates goals on a fixed interval
 do
+  -- Strategy AI periodically re-ranks goals and picks the best one to pursue.
+  -- Interval (seconds) controls how often the AI reconsiders — lower = more reactive.
+  -- Scenario: RTS faction AI switches between "expand", "defend", "attack" every 2s.
   local s = lurek.ai.newStrategyAI(2.0)
   s:addGoal("expand")
   s:addGoal("defend")
@@ -324,6 +433,9 @@ end
 --@api-stub: lurek.ai.newAILod
 -- Creates a default AI level-of-detail tier selector
 do
+  -- AI LOD reduces update frequency for distant or off-screen agents to save CPU.
+  -- shouldUpdate(tier, distance) returns true only when the agent's budget allows.
+  -- Scenario: 500 NPCs in open world — only nearby ones get full AI updates each frame.
   local lod = lurek.ai.newAILod()
   if lod:shouldUpdate(1, 60) then lurek.log.debug("tier 1 update", "ai") end
 end
@@ -361,6 +473,9 @@ end
 --@api-stub: AIWorld:getGlobalBlackboard
 -- Returns the global blackboard of this ai world.
 do
+  -- The global blackboard is shared state visible to ALL agents in the world.
+  -- Use it for world-level facts: alarm status, time of day, player position.
+  -- Scenario: one guard spots the player → sets "alarm" on global BB → all guards react.
   local world = lurek.ai.newWorld()
   local bb = world:getGlobalBlackboard()
   bb:setNumber("alarm", 0.0)
@@ -530,6 +645,9 @@ end
 --@api-stub: Agent:getBlackboard
 -- Returns the blackboard of this agent.
 do
+  -- Per-agent blackboard stores private state only this agent reads/writes.
+  -- Use for HP, target_id, last_known_position — data other agents shouldn't see.
+  -- Scenario: guard tracks "last_heard_sound_pos" independently from other guards.
   local world = lurek.ai.newWorld()
   local agent = world:addAgent("scout_01")
   local bb = agent:getBlackboard()
@@ -555,6 +673,9 @@ end
 --@api-stub: Blackboard:setNumber
 -- Sets the number of this blackboard.
 do
+  -- Blackboards are typed key-value stores shared between AI subsystems.
+  -- Use setNumber for numeric state: HP, distances, cooldown timers, threat scores.
+  -- Scenario: guard stores alert_level (0-1); FSM transitions to "investigate" at 0.5.
   local bb = lurek.ai.newBlackboard()
   bb:setNumber("hp", 100)
   bb:setNumber("alert_level", 0.6)
@@ -595,6 +716,8 @@ end
 --@api-stub: Blackboard:clear
 -- Clears all items from this blackboard.
 do
+  -- Wipes all entries — use when an agent respawns or changes role entirely.
+  -- Scenario: enemy dies and respawns → clear blackboard so stale target data is gone.
   local bb = lurek.ai.newBlackboard()
   bb:setBool("dirty", true)
   bb:clear()
@@ -603,6 +726,8 @@ end
 --@api-stub: Blackboard:getKeys
 -- Returns the keys of this blackboard.
 do
+  -- Returns all stored key names as an array — useful for serialization or debug display.
+  -- Scenario: save system iterates keys to persist agent memory between levels.
   local bb = lurek.ai.newBlackboard()
   bb:setNumber("hp", 100); bb:setBool("alive", true)
   for _, k in ipairs(bb:getKeys()) do lurek.log.debug("key=" .. k, "ai") end
@@ -633,6 +758,9 @@ end
 --@api-stub: StateMachine:addState
 -- Adds a state to this state machine.
 do
+  -- Each state can have onEnter, onUpdate, onExit callbacks.
+  -- Use onEnter to reset timers/animations; onUpdate for per-frame logic (e.g. path follow).
+  -- Scenario: an enemy patrols waypoints, then switches to chase when it sees the player.
   local fsm = lurek.ai.newStateMachine()
   fsm:addState("patrol", { onEnter = function() lurek.log.info("patrol", "ai") end })
   fsm:addState("chase", { onUpdate = function(dt) end })
@@ -649,6 +777,8 @@ end
 --@api-stub: StateMachine:getCurrentState
 -- Returns the current state of this state machine.
 do
+  -- Query the active state to drive animations, sound, or UI indicators.
+  -- Scenario: HUD shows "ALERT" icon when guard is in "chase" state.
   local fsm = lurek.ai.newStateMachine()
   fsm:addState("patrol", {}); fsm:setInitialState("patrol")
   local s = fsm:getCurrentState()
@@ -658,6 +788,9 @@ end
 --@api-stub: StateMachine:forceState
 -- Performs the force state operation on this state machine.
 do
+  -- Bypasses transitions — use for interrupts like stun, death, or cutscene override.
+  -- Calls onExit of old state and onEnter of new state immediately.
+  -- Scenario: player lands a critical hit → force enemy into "stunned" regardless of current state.
   local fsm = lurek.ai.newStateMachine()
   fsm:addState("stunned", {}); fsm:setInitialState("stunned")
   fsm:forceState("stunned")
@@ -666,6 +799,9 @@ end
 --@api-stub: StateMachine:getTimeInState
 -- Returns the time in state of this state machine.
 do
+  -- Elapsed seconds since entering the current state (resets on transition).
+  -- Useful for timeout transitions: "if idle for 5s, switch to wander".
+  -- Scenario: shopkeeper returns to counter after standing idle too long.
   local fsm = lurek.ai.newStateMachine()
   fsm:addState("idle", {}); fsm:setInitialState("idle")
   if fsm:getTimeInState() > 5.0 then fsm:forceState("idle") end
@@ -688,6 +824,9 @@ end
 --@api-stub: BehaviorTree:setRoot
 -- Sets the root of this behavior tree.
 do
+  -- The root node is the entry point ticked every frame. Typically a Selector or Sequence.
+  -- Build the tree bottom-up: create leaf nodes first, compose into branches, then setRoot.
+  -- Scenario: root Selector tries "attack" branch first, falls back to "patrol" branch.
   local bt = lurek.ai.newBehaviorTree()
   local root = lurek.ai.newSelector()
   root:addChild(lurek.ai.newAction(function() return "success" end))
@@ -697,6 +836,9 @@ end
 --@api-stub: BehaviorTree:getLastStatus
 -- Returns the last status of this behavior tree.
 do
+  -- Returns "success", "failure", or "running" from the last tick.
+  -- Use to detect when a behavior completes and trigger follow-up logic.
+  -- Scenario: if last tick returned "failure", play a confused animation.
   local bt = lurek.ai.newBehaviorTree()
   local root = lurek.ai.newSequence()
   root:addChild(lurek.ai.newAction(function() return "success" end))
@@ -708,6 +850,9 @@ end
 --@api-stub: BehaviorTree:getDebugState
 -- Returns the debug state of this behavior tree.
 do
+  -- Returns a table with node_count, last_status, and active path for dev tools.
+  -- Useful for drawing a BT visualizer overlay or logging which branch is active.
+  -- Scenario: debug HUD shows "attack→aim→fire" path highlighted in green.
   local bt = lurek.ai.newBehaviorTree()
   local root = lurek.ai.newSequence()
   root:addChild(lurek.ai.newAction(function() return "success" end))
@@ -733,6 +878,9 @@ end
 --@api-stub: BTNode:addChild
 -- Adds a child to this bt node.
 do
+  -- Sequence runs children left-to-right; stops on first failure (AND logic).
+  -- Selector tries children left-to-right; stops on first success (OR logic).
+  -- Scenario: Sequence["has_ammo?", "aim", "fire"] — skips aim+fire if no ammo.
   local seq = lurek.ai.newSequence()
   seq:addChild(lurek.ai.newCondition(function() return true end))
   seq:addChild(lurek.ai.newAction(function() return "success" end))
@@ -749,6 +897,9 @@ end
 --@api-stub: BTNode:reset
 -- Resets this bt node to its default state.
 do
+  -- Clears running state and iteration counters for this node and its subtree.
+  -- Call when re-entering a branch after an interrupt or state machine transition.
+  -- Scenario: player breaks line-of-sight → reset the chase subtree so it re-evaluates cleanly.
   local rep = lurek.ai.newRepeater(3)
   rep:setChild(lurek.ai.newAction(function() return "success" end))
   rep:reset()
@@ -826,6 +977,9 @@ end
 --@api-stub: SteeringManager:setCombineMode
 -- Sets the combine mode of this steering manager.
 do
+  -- "weighted_sum" blends all forces; "priority" uses highest-weight behavior only.
+  -- Priority avoids jittery blending when behaviors conflict (e.g. seek vs flee).
+  -- Scenario: fleeing from danger overrides seek-to-waypoint via priority mode.
   local sm = lurek.ai.newSteeringManager()
   sm:addSeek(400, 300, 1.0)
   sm:setCombineMode("priority")
@@ -842,6 +996,9 @@ end
 --@api-stub: SteeringManager:getLastSteering
 -- Returns the last steering of this steering manager.
 do
+  -- Returns the (fx, fy) force vector computed on the last calculate() call.
+  -- Apply this as velocity or acceleration to your entity's position each frame.
+  -- Scenario: multiply by dt and add to NPC position for smooth movement toward a target.
   local sm = lurek.ai.newSteeringManager()
   sm:addSeek(400, 300, 1.0)
   local fx, fy = sm:getLastSteering()
@@ -876,6 +1033,9 @@ end
 --@api-stub: SteeringManager:enableSpatialHash
 -- Performs the enable spatial hash operation on this steering manager.
 do
+  -- Spatial hashing accelerates neighbor queries for separation/cohesion behaviors.
+  -- Enable when you have many agents (50+) to avoid O(n^2) distance checks.
+  -- Scenario: 200 fish in a school — spatial hash keeps flocking at 60 FPS.
   local sm = lurek.ai.newSteeringManager()
   sm:addSeek(400, 300, 1.0)
   sm:enableSpatialHash(true)
@@ -884,6 +1044,9 @@ end
 --@api-stub: QLearner:chooseAction
 -- Performs the choose action operation on this q learner.
 do
+  -- Epsilon-greedy: picks the best-known action most of the time, random otherwise.
+  -- The exploration rate controls how often it tries new actions vs exploiting known good ones.
+  -- Scenario: grid-world NPC learns optimal patrol route by trial and error over episodes.
   local ql = lurek.ai.newQLearner(8, 4)
   local action = ql:chooseAction(1)
   lurek.log.debug("action=" .. action, "ai")
@@ -900,6 +1063,9 @@ end
 --@api-stub: QLearner:getQValue
 -- Returns the q value of this q learner.
 do
+  -- Q(state, action) estimates the expected cumulative reward for taking action in state.
+  -- Higher Q = better long-term outcome. Updated incrementally via the learn() call.
+  -- Scenario: inspect Q-values to visualize which directions the NPC prefers in each cell.
   local ql = lurek.ai.newQLearner(8, 4)
   ql:learn(1, 2, 1.0, 3)
   local q = ql:getQValue(1, 2)
@@ -1026,6 +1192,9 @@ end
 --@api-stub: UtilityAI:evaluate
 -- Performs the evaluate operation on this utility ai.
 do
+  -- Scores all registered actions and picks the highest. Scores are 0.0-1.0 floats.
+  -- Unlike FSM/BT, utility AI adapts smoothly — no explicit transitions to author.
+  -- Scenario: NPC with low HP scores "flee" at 0.9, "attack" at 0.2 → flees automatically.
   local uai = lurek.ai.newUtilityAI()
   uai:addAction("flee", function() return 0.8 end)
   uai:addAction("attack", function() return 0.4 end)
@@ -1141,6 +1310,9 @@ end
 --@api-stub: InfluenceMap:decay
 -- Performs the decay operation on this influence map.
 do
+  -- Multiplies every cell by the decay factor each frame, fading old influence over time.
+  -- Without decay, stamps accumulate forever and the map becomes useless.
+  -- Scenario: gunshot stamps threat=1.0; after 2 seconds it fades to ~0.5, so guards lose interest.
   local im = lurek.ai.newInfluenceMap(32, 32, 16)
   im:addLayer("threat")
   im:stampInfluence("threat", 100, 100, 64, 1.0, 1.0)
@@ -1167,6 +1339,9 @@ end
 --@api-stub: InfluenceMap:getMaxPosition
 -- Returns the max position of this influence map.
 do
+  -- Returns the (x, y) world position of the cell with the highest influence value.
+  -- Use to find the most dangerous/attractive spot on the map for decision-making.
+  -- Scenario: AI commander sends reinforcements toward the highest-threat cell.
   local im = lurek.ai.newInfluenceMap(32, 32, 16)
   im:addLayer("threat")
   im:stampInfluence("threat", 200, 100, 32, 1.0, 1.0)
@@ -3090,3 +3265,5 @@ do
   local sm = lurek.ai.newSteeringManager()
   sm:setPath({{x=0,y=0},{x=100,y=0},{x=100,y=100}})
 end
+
+print("content/examples/ai.lua")

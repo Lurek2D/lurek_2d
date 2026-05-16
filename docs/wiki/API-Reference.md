@@ -2674,7 +2674,7 @@ lurek.i18n.validateLocale(locale: string) -> boolean -- Returns whether a locale
 [[Module page|Module-image]]
 
 ```lua
-lurek.image.fromScreen() -> LuaValue -- Returns a completed screen capture image or requests one for a future call.
+lurek.image.fromScreen() -> LImageData? -- Returns a completed screen capture image or requests one for a future call.
 lurek.image.isCompressed(filename: string) -> boolean -- Returns whether a GameFS image file begins with DDS compressed image magic bytes.
 lurek.image.loadImage(filename: string) -> LImageData -- Loads and decodes image data from GameFS.
 lurek.image.loadLayered(filename: string) -> LLayeredImage -- Loads a serialized layered image stack from GameFS.
@@ -2725,7 +2725,7 @@ LImageData:getDimensions() -> integer -- Returns image dimensions. This method i
 LImageData:getHeight() -> integer -- Returns image height. This method is available to Lua scripts.
 LImageData:getPixel(x: integer, y: integer) -> integer -- Returns RGBA channels at a pixel coordinate.
 LImageData:getRawBytes() -> string -- Returns raw image bytes as a Lua string.
-LImageData:getRegion(x: integer, y: integer, w: integer, h: integer) -> LuaValue -- Returns an image region when the requested rectangle is inside bounds.
+LImageData:getRegion(x: integer, y: integer, w: integer, h: integer) -> LImageData? -- Returns an image region when the requested rectangle is inside bounds.
 LImageData:getString() -> string -- Returns raw image bytes as a Lua string.
 LImageData:getWidth() -> integer -- Returns image width. This method is available to Lua scripts.
 LImageData:grayscale() -- Converts this image to grayscale in place.
@@ -2735,7 +2735,7 @@ LImageData:mapPixels(func: function) -- Applies a Lua callback to every pixel an
 LImageData:noise(amount: integer) -- Adds noise to this image in place. This method is available to Lua scripts.
 LImageData:paste(src_ud: LImageData, dx: integer, dy: integer) -- Pastes a source image into this image at unsigned destination coordinates.
 LImageData:posterize(levels: integer) -- Reduces image colors to a fixed number of levels in place.
-LImageData:resize(width: integer, height: integer, filter: string) -> LuaValue -- Returns a resized image using an optional named filter.
+LImageData:resize(width: integer, height: integer, filter: string) -> LImageData? -- Returns a resized image using an optional named filter.
 LImageData:resizeNearest(new_w: integer, new_h: integer) -> LImageData -- Returns a resized image using nearest-neighbor sampling.
 LImageData:rotate90cw() -> LImageData -- Returns a new image rotated ninety degrees clockwise.
 LImageData:saturation(factor: number) -- Applies a saturation factor to this image in place.

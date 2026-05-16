@@ -78,6 +78,7 @@ Skeletal animation runtime providing hierarchical bone trees, slot-based attachm
 Module example from [spine.lua](../blob/main/content/examples/spine.lua):
 
 ```lua
+-- Sets the position of this skeleton.
 do
   local rig = lurek.spine.newSkeleton("npc")
   rig:addBone("root")
@@ -89,6 +90,7 @@ do
 end
 
 --@api-stub: Skeleton:boneCount
+-- Performs the bone count operation on this skeleton.
 do
   local rig = lurek.spine.newSkeleton("npc")
   rig:addBone("root"); rig:addChildBone("torso", 0); rig:addChildBone("head", 1)
@@ -98,6 +100,7 @@ do
 end
 
 --@api-stub: Skeleton:slotCount
+-- Performs the slot count operation on this skeleton.
 do
   local rig = lurek.spine.newSkeleton("npc")
   local b = rig:addBone("torso")
@@ -106,6 +109,7 @@ do
 end
 
 --@api-stub: Skeleton:drawToImage
+-- Draws or renders this skeleton to the current render target.
 do
   local rig = lurek.spine.newSkeleton("npc")
   rig:addBone("root", { x = 64, y = 64 })
@@ -116,14 +120,11 @@ do
 end
 
 --@api-stub: Skeleton:stopAnimation
+-- Stops the current operation or playback on this skeleton.
 do
   local rig = lurek.spine.newSkeleton("npc")
   rig:addBone("root")
   local walk = lurek.spine.newSkeletonAnimation("walk", 0.6)
-  rig:addAnimation(walk)
-  rig:playAnimation("walk", true)
-  rig:stopAnimation()
-end
 ```
 
 ## Key Types

@@ -2711,6 +2711,7 @@ do
 end
 
 --@api-stub: LGraph
+-- Performs the l graph operation on this .
 do
   local g = lurek.patterns.newGraph(true)
   local a = g:addNode("A", { hp = 10 })
@@ -2729,7 +2730,6 @@ do
   local ec = g:edgeCount()
 
   g:removeEdge(eid)
-  g:removeNode(c)
 ```
 
 ### `LBehaviorTree:getDebugState() -> table`
@@ -3574,56 +3574,14 @@ Adds a selectable branch under an existing dialogue topic.
 
 #### Example
 
-Module-level example from [ai.lua](../blob/main/content/examples/ai.lua):
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 
 ```lua
--- Creates an isolated AI world for agents, blackboards, and custom decision callbacks
 do
-  local world = lurek.ai.newWorld()
-  world:addAgent("guard_01")
-  function lurek.process(dt) world:update(dt) end
+  local d = lurek.ai.newDialogueAI()
+  d:addTopic("greet")
+  d:addBranch("greet", "friendly", function(bb) return true end)
 end
-
---@api-stub: lurek.ai.newBlackboard
--- Creates an empty AI blackboard for typed local facts
-do
-  local bb = lurek.ai.newBlackboard()
-  bb:setNumber("alert_level", 0.3)
-  bb:setBool("player_seen", false)
-end
-
---@api-stub: lurek.ai.newStateMachine
--- Creates an empty finite state machine with Lua-backed states and transitions
-do
-  local fsm = lurek.ai.newStateMachine()
-  fsm:addState("patrol", { onEnter = function() lurek.log.info("patrolling", "ai") end })
-  fsm:addState("chase", {})
-  fsm:setInitialState("patrol")
-end
-
---@api-stub: lurek.ai.newBehaviorTree
--- Creates an empty behavior tree that can receive a root node
-do
-  local bt = lurek.ai.newBehaviorTree()
-  local root = lurek.ai.newSequence()
-  root:addChild(lurek.ai.newAction(function() return "success" end))
-  bt:setRoot(root)
-end
-
---@api-stub: lurek.ai.newSelector
--- Creates a behavior tree selector node with no children
-do
-  local sel = lurek.ai.newSelector()
-  sel:addChild(lurek.ai.newCondition(function() return false end))
-  sel:addChild(lurek.ai.newAction(function() return "success" end))
-end
-
---@api-stub: lurek.ai.newSequence
--- Creates a behavior tree sequence node with no children
-do
-  local seq = lurek.ai.newSequence()
-  seq:addChild(lurek.ai.newCondition(function() return true end))
-  seq:addChild(lurek.ai.newAction(function() return "success" end))
 ```
 
 ### `LDialogueAI:addTopic(id: string, [weight]: number, [fsm_state]: string, [bt_status]: string, [utility_key]: string)`
@@ -3640,56 +3598,13 @@ Adds a selectable dialogue topic with optional context filters.
 
 #### Example
 
-Module-level example from [ai.lua](../blob/main/content/examples/ai.lua):
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 
 ```lua
--- Creates an isolated AI world for agents, blackboards, and custom decision callbacks
 do
-  local world = lurek.ai.newWorld()
-  world:addAgent("guard_01")
-  function lurek.process(dt) world:update(dt) end
+  local d = lurek.ai.newDialogueAI()
+  d:addTopic("greet")
 end
-
---@api-stub: lurek.ai.newBlackboard
--- Creates an empty AI blackboard for typed local facts
-do
-  local bb = lurek.ai.newBlackboard()
-  bb:setNumber("alert_level", 0.3)
-  bb:setBool("player_seen", false)
-end
-
---@api-stub: lurek.ai.newStateMachine
--- Creates an empty finite state machine with Lua-backed states and transitions
-do
-  local fsm = lurek.ai.newStateMachine()
-  fsm:addState("patrol", { onEnter = function() lurek.log.info("patrolling", "ai") end })
-  fsm:addState("chase", {})
-  fsm:setInitialState("patrol")
-end
-
---@api-stub: lurek.ai.newBehaviorTree
--- Creates an empty behavior tree that can receive a root node
-do
-  local bt = lurek.ai.newBehaviorTree()
-  local root = lurek.ai.newSequence()
-  root:addChild(lurek.ai.newAction(function() return "success" end))
-  bt:setRoot(root)
-end
-
---@api-stub: lurek.ai.newSelector
--- Creates a behavior tree selector node with no children
-do
-  local sel = lurek.ai.newSelector()
-  sel:addChild(lurek.ai.newCondition(function() return false end))
-  sel:addChild(lurek.ai.newAction(function() return "success" end))
-end
-
---@api-stub: lurek.ai.newSequence
--- Creates a behavior tree sequence node with no children
-do
-  local seq = lurek.ai.newSequence()
-  seq:addChild(lurek.ai.newCondition(function() return true end))
-  seq:addChild(lurek.ai.newAction(function() return "success" end))
 ```
 
 ### `LDialogueAI:clearUtilityScores()`
@@ -3698,56 +3613,14 @@ Removes every stored utility score from this dialogue selector.
 
 #### Example
 
-Module-level example from [ai.lua](../blob/main/content/examples/ai.lua):
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 
 ```lua
--- Creates an isolated AI world for agents, blackboards, and custom decision callbacks
 do
-  local world = lurek.ai.newWorld()
-  world:addAgent("guard_01")
-  function lurek.process(dt) world:update(dt) end
+  local d = lurek.ai.newDialogueAI()
+  d:setUtilityScore("greet", 1.0)
+  d:clearUtilityScores()
 end
-
---@api-stub: lurek.ai.newBlackboard
--- Creates an empty AI blackboard for typed local facts
-do
-  local bb = lurek.ai.newBlackboard()
-  bb:setNumber("alert_level", 0.3)
-  bb:setBool("player_seen", false)
-end
-
---@api-stub: lurek.ai.newStateMachine
--- Creates an empty finite state machine with Lua-backed states and transitions
-do
-  local fsm = lurek.ai.newStateMachine()
-  fsm:addState("patrol", { onEnter = function() lurek.log.info("patrolling", "ai") end })
-  fsm:addState("chase", {})
-  fsm:setInitialState("patrol")
-end
-
---@api-stub: lurek.ai.newBehaviorTree
--- Creates an empty behavior tree that can receive a root node
-do
-  local bt = lurek.ai.newBehaviorTree()
-  local root = lurek.ai.newSequence()
-  root:addChild(lurek.ai.newAction(function() return "success" end))
-  bt:setRoot(root)
-end
-
---@api-stub: lurek.ai.newSelector
--- Creates a behavior tree selector node with no children
-do
-  local sel = lurek.ai.newSelector()
-  sel:addChild(lurek.ai.newCondition(function() return false end))
-  sel:addChild(lurek.ai.newAction(function() return "success" end))
-end
-
---@api-stub: lurek.ai.newSequence
--- Creates a behavior tree sequence node with no children
-do
-  local seq = lurek.ai.newSequence()
-  seq:addChild(lurek.ai.newCondition(function() return true end))
-  seq:addChild(lurek.ai.newAction(function() return "success" end))
 ```
 
 ### `LDialogueAI:getTopicCount() -> integer`
@@ -3758,56 +3631,14 @@ Returns the number of topics registered in this dialogue selector.
 
 #### Example
 
-Module-level example from [ai.lua](../blob/main/content/examples/ai.lua):
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 
 ```lua
--- Creates an isolated AI world for agents, blackboards, and custom decision callbacks
 do
-  local world = lurek.ai.newWorld()
-  world:addAgent("guard_01")
-  function lurek.process(dt) world:update(dt) end
+  local d = lurek.ai.newDialogueAI()
+  d:addTopic("greet")
+  lurek.log.debug("topics=" .. d:getTopicCount(), "ai")
 end
-
---@api-stub: lurek.ai.newBlackboard
--- Creates an empty AI blackboard for typed local facts
-do
-  local bb = lurek.ai.newBlackboard()
-  bb:setNumber("alert_level", 0.3)
-  bb:setBool("player_seen", false)
-end
-
---@api-stub: lurek.ai.newStateMachine
--- Creates an empty finite state machine with Lua-backed states and transitions
-do
-  local fsm = lurek.ai.newStateMachine()
-  fsm:addState("patrol", { onEnter = function() lurek.log.info("patrolling", "ai") end })
-  fsm:addState("chase", {})
-  fsm:setInitialState("patrol")
-end
-
---@api-stub: lurek.ai.newBehaviorTree
--- Creates an empty behavior tree that can receive a root node
-do
-  local bt = lurek.ai.newBehaviorTree()
-  local root = lurek.ai.newSequence()
-  root:addChild(lurek.ai.newAction(function() return "success" end))
-  bt:setRoot(root)
-end
-
---@api-stub: lurek.ai.newSelector
--- Creates a behavior tree selector node with no children
-do
-  local sel = lurek.ai.newSelector()
-  sel:addChild(lurek.ai.newCondition(function() return false end))
-  sel:addChild(lurek.ai.newAction(function() return "success" end))
-end
-
---@api-stub: lurek.ai.newSequence
--- Creates a behavior tree sequence node with no children
-do
-  local seq = lurek.ai.newSequence()
-  seq:addChild(lurek.ai.newCondition(function() return true end))
-  seq:addChild(lurek.ai.newAction(function() return "success" end))
 ```
 
 ### `LDialogueAI:selectBranch(topic_id: string) -> LuaValue`
@@ -3822,56 +3653,16 @@ Selects the best currently valid branch for the given topic.
 
 #### Example
 
-Module-level example from [ai.lua](../blob/main/content/examples/ai.lua):
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 
 ```lua
--- Creates an isolated AI world for agents, blackboards, and custom decision callbacks
 do
-  local world = lurek.ai.newWorld()
-  world:addAgent("guard_01")
-  function lurek.process(dt) world:update(dt) end
+  local d = lurek.ai.newDialogueAI()
+  d:addTopic("greet")
+  d:addBranch("greet", "friendly", function(bb) return true end)
+  local branch = d:selectBranch("greet", {})
+  lurek.log.debug("branch=" .. tostring(branch), "ai")
 end
-
---@api-stub: lurek.ai.newBlackboard
--- Creates an empty AI blackboard for typed local facts
-do
-  local bb = lurek.ai.newBlackboard()
-  bb:setNumber("alert_level", 0.3)
-  bb:setBool("player_seen", false)
-end
-
---@api-stub: lurek.ai.newStateMachine
--- Creates an empty finite state machine with Lua-backed states and transitions
-do
-  local fsm = lurek.ai.newStateMachine()
-  fsm:addState("patrol", { onEnter = function() lurek.log.info("patrolling", "ai") end })
-  fsm:addState("chase", {})
-  fsm:setInitialState("patrol")
-end
-
---@api-stub: lurek.ai.newBehaviorTree
--- Creates an empty behavior tree that can receive a root node
-do
-  local bt = lurek.ai.newBehaviorTree()
-  local root = lurek.ai.newSequence()
-  root:addChild(lurek.ai.newAction(function() return "success" end))
-  bt:setRoot(root)
-end
-
---@api-stub: lurek.ai.newSelector
--- Creates a behavior tree selector node with no children
-do
-  local sel = lurek.ai.newSelector()
-  sel:addChild(lurek.ai.newCondition(function() return false end))
-  sel:addChild(lurek.ai.newAction(function() return "success" end))
-end
-
---@api-stub: lurek.ai.newSequence
--- Creates a behavior tree sequence node with no children
-do
-  local seq = lurek.ai.newSequence()
-  seq:addChild(lurek.ai.newCondition(function() return true end))
-  seq:addChild(lurek.ai.newAction(function() return "success" end))
 ```
 
 ### `LDialogueAI:selectTopic() -> LuaValue`
@@ -3882,56 +3673,16 @@ Selects the best currently valid topic using weights and context filters.
 
 #### Example
 
-Module-level example from [ai.lua](../blob/main/content/examples/ai.lua):
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 
 ```lua
--- Creates an isolated AI world for agents, blackboards, and custom decision callbacks
 do
-  local world = lurek.ai.newWorld()
-  world:addAgent("guard_01")
-  function lurek.process(dt) world:update(dt) end
+  local d = lurek.ai.newDialogueAI()
+  d:addTopic("greet")
+  d:setUtilityScore("greet", 0.9)
+  local topic = d:selectTopic({})
+  lurek.log.debug("topic=" .. tostring(topic), "ai")
 end
-
---@api-stub: lurek.ai.newBlackboard
--- Creates an empty AI blackboard for typed local facts
-do
-  local bb = lurek.ai.newBlackboard()
-  bb:setNumber("alert_level", 0.3)
-  bb:setBool("player_seen", false)
-end
-
---@api-stub: lurek.ai.newStateMachine
--- Creates an empty finite state machine with Lua-backed states and transitions
-do
-  local fsm = lurek.ai.newStateMachine()
-  fsm:addState("patrol", { onEnter = function() lurek.log.info("patrolling", "ai") end })
-  fsm:addState("chase", {})
-  fsm:setInitialState("patrol")
-end
-
---@api-stub: lurek.ai.newBehaviorTree
--- Creates an empty behavior tree that can receive a root node
-do
-  local bt = lurek.ai.newBehaviorTree()
-  local root = lurek.ai.newSequence()
-  root:addChild(lurek.ai.newAction(function() return "success" end))
-  bt:setRoot(root)
-end
-
---@api-stub: lurek.ai.newSelector
--- Creates a behavior tree selector node with no children
-do
-  local sel = lurek.ai.newSelector()
-  sel:addChild(lurek.ai.newCondition(function() return false end))
-  sel:addChild(lurek.ai.newAction(function() return "success" end))
-end
-
---@api-stub: lurek.ai.newSequence
--- Creates a behavior tree sequence node with no children
-do
-  local seq = lurek.ai.newSequence()
-  seq:addChild(lurek.ai.newCondition(function() return true end))
-  seq:addChild(lurek.ai.newAction(function() return "success" end))
 ```
 
 ### `LDialogueAI:setBTStatus([status]: string)`
@@ -3944,56 +3695,13 @@ Sets the behavior-tree status used as dialogue selection context.
 
 #### Example
 
-Module-level example from [ai.lua](../blob/main/content/examples/ai.lua):
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 
 ```lua
--- Creates an isolated AI world for agents, blackboards, and custom decision callbacks
 do
-  local world = lurek.ai.newWorld()
-  world:addAgent("guard_01")
-  function lurek.process(dt) world:update(dt) end
+  local d = lurek.ai.newDialogueAI()
+  d:setBTStatus("running")
 end
-
---@api-stub: lurek.ai.newBlackboard
--- Creates an empty AI blackboard for typed local facts
-do
-  local bb = lurek.ai.newBlackboard()
-  bb:setNumber("alert_level", 0.3)
-  bb:setBool("player_seen", false)
-end
-
---@api-stub: lurek.ai.newStateMachine
--- Creates an empty finite state machine with Lua-backed states and transitions
-do
-  local fsm = lurek.ai.newStateMachine()
-  fsm:addState("patrol", { onEnter = function() lurek.log.info("patrolling", "ai") end })
-  fsm:addState("chase", {})
-  fsm:setInitialState("patrol")
-end
-
---@api-stub: lurek.ai.newBehaviorTree
--- Creates an empty behavior tree that can receive a root node
-do
-  local bt = lurek.ai.newBehaviorTree()
-  local root = lurek.ai.newSequence()
-  root:addChild(lurek.ai.newAction(function() return "success" end))
-  bt:setRoot(root)
-end
-
---@api-stub: lurek.ai.newSelector
--- Creates a behavior tree selector node with no children
-do
-  local sel = lurek.ai.newSelector()
-  sel:addChild(lurek.ai.newCondition(function() return false end))
-  sel:addChild(lurek.ai.newAction(function() return "success" end))
-end
-
---@api-stub: lurek.ai.newSequence
--- Creates a behavior tree sequence node with no children
-do
-  local seq = lurek.ai.newSequence()
-  seq:addChild(lurek.ai.newCondition(function() return true end))
-  seq:addChild(lurek.ai.newAction(function() return "success" end))
 ```
 
 ### `LDialogueAI:setFSMState([state]: string)`
@@ -4006,56 +3714,13 @@ Sets the finite-state-machine state used as dialogue selection context.
 
 #### Example
 
-Module-level example from [ai.lua](../blob/main/content/examples/ai.lua):
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 
 ```lua
--- Creates an isolated AI world for agents, blackboards, and custom decision callbacks
 do
-  local world = lurek.ai.newWorld()
-  world:addAgent("guard_01")
-  function lurek.process(dt) world:update(dt) end
+  local d = lurek.ai.newDialogueAI()
+  d:setFSMState("combat")
 end
-
---@api-stub: lurek.ai.newBlackboard
--- Creates an empty AI blackboard for typed local facts
-do
-  local bb = lurek.ai.newBlackboard()
-  bb:setNumber("alert_level", 0.3)
-  bb:setBool("player_seen", false)
-end
-
---@api-stub: lurek.ai.newStateMachine
--- Creates an empty finite state machine with Lua-backed states and transitions
-do
-  local fsm = lurek.ai.newStateMachine()
-  fsm:addState("patrol", { onEnter = function() lurek.log.info("patrolling", "ai") end })
-  fsm:addState("chase", {})
-  fsm:setInitialState("patrol")
-end
-
---@api-stub: lurek.ai.newBehaviorTree
--- Creates an empty behavior tree that can receive a root node
-do
-  local bt = lurek.ai.newBehaviorTree()
-  local root = lurek.ai.newSequence()
-  root:addChild(lurek.ai.newAction(function() return "success" end))
-  bt:setRoot(root)
-end
-
---@api-stub: lurek.ai.newSelector
--- Creates a behavior tree selector node with no children
-do
-  local sel = lurek.ai.newSelector()
-  sel:addChild(lurek.ai.newCondition(function() return false end))
-  sel:addChild(lurek.ai.newAction(function() return "success" end))
-end
-
---@api-stub: lurek.ai.newSequence
--- Creates a behavior tree sequence node with no children
-do
-  local seq = lurek.ai.newSequence()
-  seq:addChild(lurek.ai.newCondition(function() return true end))
-  seq:addChild(lurek.ai.newAction(function() return "success" end))
 ```
 
 ### `LDialogueAI:setUtilityScore(key: string, score: number)`
@@ -4069,56 +3734,14 @@ Stores a utility score used by topics and branches that reference the given key.
 
 #### Example
 
-Module-level example from [ai.lua](../blob/main/content/examples/ai.lua):
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 
 ```lua
--- Creates an isolated AI world for agents, blackboards, and custom decision callbacks
 do
-  local world = lurek.ai.newWorld()
-  world:addAgent("guard_01")
-  function lurek.process(dt) world:update(dt) end
+  local d = lurek.ai.newDialogueAI()
+  d:addTopic("greet")
+  d:setUtilityScore("greet", 0.8)
 end
-
---@api-stub: lurek.ai.newBlackboard
--- Creates an empty AI blackboard for typed local facts
-do
-  local bb = lurek.ai.newBlackboard()
-  bb:setNumber("alert_level", 0.3)
-  bb:setBool("player_seen", false)
-end
-
---@api-stub: lurek.ai.newStateMachine
--- Creates an empty finite state machine with Lua-backed states and transitions
-do
-  local fsm = lurek.ai.newStateMachine()
-  fsm:addState("patrol", { onEnter = function() lurek.log.info("patrolling", "ai") end })
-  fsm:addState("chase", {})
-  fsm:setInitialState("patrol")
-end
-
---@api-stub: lurek.ai.newBehaviorTree
--- Creates an empty behavior tree that can receive a root node
-do
-  local bt = lurek.ai.newBehaviorTree()
-  local root = lurek.ai.newSequence()
-  root:addChild(lurek.ai.newAction(function() return "success" end))
-  bt:setRoot(root)
-end
-
---@api-stub: lurek.ai.newSelector
--- Creates a behavior tree selector node with no children
-do
-  local sel = lurek.ai.newSelector()
-  sel:addChild(lurek.ai.newCondition(function() return false end))
-  sel:addChild(lurek.ai.newAction(function() return "success" end))
-end
-
---@api-stub: lurek.ai.newSequence
--- Creates a behavior tree sequence node with no children
-do
-  local seq = lurek.ai.newSequence()
-  seq:addChild(lurek.ai.newCondition(function() return true end))
-  seq:addChild(lurek.ai.newAction(function() return "success" end))
 ```
 
 ### `LDialogueAI:type() -> string`
@@ -4129,56 +3752,13 @@ Returns the Lua-visible type name for this dialogue AI handle.
 
 #### Example
 
-Module-level example from [ai.lua](../blob/main/content/examples/ai.lua):
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 
 ```lua
--- Creates an isolated AI world for agents, blackboards, and custom decision callbacks
 do
-  local world = lurek.ai.newWorld()
-  world:addAgent("guard_01")
-  function lurek.process(dt) world:update(dt) end
+  local d = lurek.ai.newDialogueAI()
+  lurek.log.info(d:type(), "ai")
 end
-
---@api-stub: lurek.ai.newBlackboard
--- Creates an empty AI blackboard for typed local facts
-do
-  local bb = lurek.ai.newBlackboard()
-  bb:setNumber("alert_level", 0.3)
-  bb:setBool("player_seen", false)
-end
-
---@api-stub: lurek.ai.newStateMachine
--- Creates an empty finite state machine with Lua-backed states and transitions
-do
-  local fsm = lurek.ai.newStateMachine()
-  fsm:addState("patrol", { onEnter = function() lurek.log.info("patrolling", "ai") end })
-  fsm:addState("chase", {})
-  fsm:setInitialState("patrol")
-end
-
---@api-stub: lurek.ai.newBehaviorTree
--- Creates an empty behavior tree that can receive a root node
-do
-  local bt = lurek.ai.newBehaviorTree()
-  local root = lurek.ai.newSequence()
-  root:addChild(lurek.ai.newAction(function() return "success" end))
-  bt:setRoot(root)
-end
-
---@api-stub: lurek.ai.newSelector
--- Creates a behavior tree selector node with no children
-do
-  local sel = lurek.ai.newSelector()
-  sel:addChild(lurek.ai.newCondition(function() return false end))
-  sel:addChild(lurek.ai.newAction(function() return "success" end))
-end
-
---@api-stub: lurek.ai.newSequence
--- Creates a behavior tree sequence node with no children
-do
-  local seq = lurek.ai.newSequence()
-  seq:addChild(lurek.ai.newCondition(function() return true end))
-  seq:addChild(lurek.ai.newAction(function() return "success" end))
 ```
 
 ### `LDialogueAI:typeOf(name: string) -> boolean`
@@ -4193,56 +3773,13 @@ Returns whether this dialogue AI handle matches a supported type name.
 
 #### Example
 
-Module-level example from [ai.lua](../blob/main/content/examples/ai.lua):
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 
 ```lua
--- Creates an isolated AI world for agents, blackboards, and custom decision callbacks
 do
-  local world = lurek.ai.newWorld()
-  world:addAgent("guard_01")
-  function lurek.process(dt) world:update(dt) end
+  local d = lurek.ai.newDialogueAI()
+  lurek.log.info(tostring(d:typeOf("LDialogueAI")), "ai")
 end
-
---@api-stub: lurek.ai.newBlackboard
--- Creates an empty AI blackboard for typed local facts
-do
-  local bb = lurek.ai.newBlackboard()
-  bb:setNumber("alert_level", 0.3)
-  bb:setBool("player_seen", false)
-end
-
---@api-stub: lurek.ai.newStateMachine
--- Creates an empty finite state machine with Lua-backed states and transitions
-do
-  local fsm = lurek.ai.newStateMachine()
-  fsm:addState("patrol", { onEnter = function() lurek.log.info("patrolling", "ai") end })
-  fsm:addState("chase", {})
-  fsm:setInitialState("patrol")
-end
-
---@api-stub: lurek.ai.newBehaviorTree
--- Creates an empty behavior tree that can receive a root node
-do
-  local bt = lurek.ai.newBehaviorTree()
-  local root = lurek.ai.newSequence()
-  root:addChild(lurek.ai.newAction(function() return "success" end))
-  bt:setRoot(root)
-end
-
---@api-stub: lurek.ai.newSelector
--- Creates a behavior tree selector node with no children
-do
-  local sel = lurek.ai.newSelector()
-  sel:addChild(lurek.ai.newCondition(function() return false end))
-  sel:addChild(lurek.ai.newAction(function() return "success" end))
-end
-
---@api-stub: lurek.ai.newSequence
--- Creates a behavior tree sequence node with no children
-do
-  local seq = lurek.ai.newSequence()
-  seq:addChild(lurek.ai.newCondition(function() return true end))
-  seq:addChild(lurek.ai.newAction(function() return "success" end))
 ```
 
 ### `LEmotionModel`
@@ -7433,56 +6970,13 @@ Clears the active waypoint path behavior.
 
 #### Example
 
-Module-level example from [ai.lua](../blob/main/content/examples/ai.lua):
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 
 ```lua
--- Creates an isolated AI world for agents, blackboards, and custom decision callbacks
 do
-  local world = lurek.ai.newWorld()
-  world:addAgent("guard_01")
-  function lurek.process(dt) world:update(dt) end
+  local sm = lurek.ai.newSteeringManager()
+  sm:clearPath()
 end
-
---@api-stub: lurek.ai.newBlackboard
--- Creates an empty AI blackboard for typed local facts
-do
-  local bb = lurek.ai.newBlackboard()
-  bb:setNumber("alert_level", 0.3)
-  bb:setBool("player_seen", false)
-end
-
---@api-stub: lurek.ai.newStateMachine
--- Creates an empty finite state machine with Lua-backed states and transitions
-do
-  local fsm = lurek.ai.newStateMachine()
-  fsm:addState("patrol", { onEnter = function() lurek.log.info("patrolling", "ai") end })
-  fsm:addState("chase", {})
-  fsm:setInitialState("patrol")
-end
-
---@api-stub: lurek.ai.newBehaviorTree
--- Creates an empty behavior tree that can receive a root node
-do
-  local bt = lurek.ai.newBehaviorTree()
-  local root = lurek.ai.newSequence()
-  root:addChild(lurek.ai.newAction(function() return "success" end))
-  bt:setRoot(root)
-end
-
---@api-stub: lurek.ai.newSelector
--- Creates a behavior tree selector node with no children
-do
-  local sel = lurek.ai.newSelector()
-  sel:addChild(lurek.ai.newCondition(function() return false end))
-  sel:addChild(lurek.ai.newAction(function() return "success" end))
-end
-
---@api-stub: lurek.ai.newSequence
--- Creates a behavior tree sequence node with no children
-do
-  local seq = lurek.ai.newSequence()
-  seq:addChild(lurek.ai.newCondition(function() return true end))
-  seq:addChild(lurek.ai.newAction(function() return "success" end))
 ```
 
 ### `LSteeringManager:enableSpatialHash(enabled: boolean)`
@@ -7569,56 +7063,14 @@ Returns the current one-based waypoint index and total waypoint count.
 
 #### Example
 
-Module-level example from [ai.lua](../blob/main/content/examples/ai.lua):
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 
 ```lua
--- Creates an isolated AI world for agents, blackboards, and custom decision callbacks
 do
-  local world = lurek.ai.newWorld()
-  world:addAgent("guard_01")
-  function lurek.process(dt) world:update(dt) end
+  local sm = lurek.ai.newSteeringManager()
+  local prog = sm:getPathProgress()
+  lurek.log.debug("progress=" .. prog, "ai")
 end
-
---@api-stub: lurek.ai.newBlackboard
--- Creates an empty AI blackboard for typed local facts
-do
-  local bb = lurek.ai.newBlackboard()
-  bb:setNumber("alert_level", 0.3)
-  bb:setBool("player_seen", false)
-end
-
---@api-stub: lurek.ai.newStateMachine
--- Creates an empty finite state machine with Lua-backed states and transitions
-do
-  local fsm = lurek.ai.newStateMachine()
-  fsm:addState("patrol", { onEnter = function() lurek.log.info("patrolling", "ai") end })
-  fsm:addState("chase", {})
-  fsm:setInitialState("patrol")
-end
-
---@api-stub: lurek.ai.newBehaviorTree
--- Creates an empty behavior tree that can receive a root node
-do
-  local bt = lurek.ai.newBehaviorTree()
-  local root = lurek.ai.newSequence()
-  root:addChild(lurek.ai.newAction(function() return "success" end))
-  bt:setRoot(root)
-end
-
---@api-stub: lurek.ai.newSelector
--- Creates a behavior tree selector node with no children
-do
-  local sel = lurek.ai.newSelector()
-  sel:addChild(lurek.ai.newCondition(function() return false end))
-  sel:addChild(lurek.ai.newAction(function() return "success" end))
-end
-
---@api-stub: lurek.ai.newSequence
--- Creates a behavior tree sequence node with no children
-do
-  local seq = lurek.ai.newSequence()
-  seq:addChild(lurek.ai.newCondition(function() return true end))
-  seq:addChild(lurek.ai.newAction(function() return "success" end))
 ```
 
 ### `LSteeringManager:hasPath() -> boolean`
@@ -7629,56 +7081,13 @@ Returns whether this manager currently has an active waypoint path.
 
 #### Example
 
-Module-level example from [ai.lua](../blob/main/content/examples/ai.lua):
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 
 ```lua
--- Creates an isolated AI world for agents, blackboards, and custom decision callbacks
 do
-  local world = lurek.ai.newWorld()
-  world:addAgent("guard_01")
-  function lurek.process(dt) world:update(dt) end
+  local sm = lurek.ai.newSteeringManager()
+  lurek.log.debug("has path=" .. tostring(sm:hasPath()), "ai")
 end
-
---@api-stub: lurek.ai.newBlackboard
--- Creates an empty AI blackboard for typed local facts
-do
-  local bb = lurek.ai.newBlackboard()
-  bb:setNumber("alert_level", 0.3)
-  bb:setBool("player_seen", false)
-end
-
---@api-stub: lurek.ai.newStateMachine
--- Creates an empty finite state machine with Lua-backed states and transitions
-do
-  local fsm = lurek.ai.newStateMachine()
-  fsm:addState("patrol", { onEnter = function() lurek.log.info("patrolling", "ai") end })
-  fsm:addState("chase", {})
-  fsm:setInitialState("patrol")
-end
-
---@api-stub: lurek.ai.newBehaviorTree
--- Creates an empty behavior tree that can receive a root node
-do
-  local bt = lurek.ai.newBehaviorTree()
-  local root = lurek.ai.newSequence()
-  root:addChild(lurek.ai.newAction(function() return "success" end))
-  bt:setRoot(root)
-end
-
---@api-stub: lurek.ai.newSelector
--- Creates a behavior tree selector node with no children
-do
-  local sel = lurek.ai.newSelector()
-  sel:addChild(lurek.ai.newCondition(function() return false end))
-  sel:addChild(lurek.ai.newAction(function() return "success" end))
-end
-
---@api-stub: lurek.ai.newSequence
--- Creates a behavior tree sequence node with no children
-do
-  local seq = lurek.ai.newSequence()
-  seq:addChild(lurek.ai.newCondition(function() return true end))
-  seq:addChild(lurek.ai.newAction(function() return "success" end))
 ```
 
 ### `LSteeringManager:setCombineMode(mode: string)`
@@ -7713,56 +7122,13 @@ Sets a waypoint path behavior from an array of `{x, y}` tables.
 
 #### Example
 
-Module-level example from [ai.lua](../blob/main/content/examples/ai.lua):
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 
 ```lua
--- Creates an isolated AI world for agents, blackboards, and custom decision callbacks
 do
-  local world = lurek.ai.newWorld()
-  world:addAgent("guard_01")
-  function lurek.process(dt) world:update(dt) end
+  local sm = lurek.ai.newSteeringManager()
+  sm:setPath({{x=0,y=0},{x=100,y=0},{x=100,y=100}})
 end
-
---@api-stub: lurek.ai.newBlackboard
--- Creates an empty AI blackboard for typed local facts
-do
-  local bb = lurek.ai.newBlackboard()
-  bb:setNumber("alert_level", 0.3)
-  bb:setBool("player_seen", false)
-end
-
---@api-stub: lurek.ai.newStateMachine
--- Creates an empty finite state machine with Lua-backed states and transitions
-do
-  local fsm = lurek.ai.newStateMachine()
-  fsm:addState("patrol", { onEnter = function() lurek.log.info("patrolling", "ai") end })
-  fsm:addState("chase", {})
-  fsm:setInitialState("patrol")
-end
-
---@api-stub: lurek.ai.newBehaviorTree
--- Creates an empty behavior tree that can receive a root node
-do
-  local bt = lurek.ai.newBehaviorTree()
-  local root = lurek.ai.newSequence()
-  root:addChild(lurek.ai.newAction(function() return "success" end))
-  bt:setRoot(root)
-end
-
---@api-stub: lurek.ai.newSelector
--- Creates a behavior tree selector node with no children
-do
-  local sel = lurek.ai.newSelector()
-  sel:addChild(lurek.ai.newCondition(function() return false end))
-  sel:addChild(lurek.ai.newAction(function() return "success" end))
-end
-
---@api-stub: lurek.ai.newSequence
--- Creates a behavior tree sequence node with no children
-do
-  local seq = lurek.ai.newSequence()
-  seq:addChild(lurek.ai.newCondition(function() return true end))
-  seq:addChild(lurek.ai.newAction(function() return "success" end))
 ```
 
 ### `LSteeringManager:setSpatialHashCellSize(size: number)`

@@ -509,13 +509,13 @@ do
 end
 
 --@api-stub: LUiWidget:animateAlpha
+-- Performs the animate alpha operation on this ui widget.
 do
   local w = lurek.ui.newLabel("alpha")
   pcall(function() w["animateAlpha"](0.5, 0.25, false) end)
 end
 
 --@api-stub: LUiWidget:animatePosition
-do
 ```
 
 ## Key Types
@@ -7729,13 +7729,13 @@ do
 end
 
 --@api-stub: LUiWidget:animateAlpha
+-- Performs the animate alpha operation on this ui widget.
 do
   local w = lurek.ui.newLabel("alpha")
   pcall(function() w["animateAlpha"](0.5, 0.25, false) end)
 end
 
 --@api-stub: LUiWidget:animatePosition
-do
 ```
 
 ### `LUiWidget:addChild(child: LWidget)`

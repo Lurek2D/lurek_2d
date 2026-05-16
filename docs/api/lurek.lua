@@ -10041,7 +10041,7 @@ function LImageData:getRawBytes() end
 ---@param y number Region y coordinate.
 ---@param w number Region width.
 ---@param h number Region height.
----@return LuaValue `LImageData` handle, or nil when the region is out of bounds.
+---@return LImageData? `LImageData` handle, or nil when the region is out of bounds.
 function LImageData:getRegion(x, y, w, h) end
 
 --- Returns raw image bytes as a Lua string.
@@ -10091,7 +10091,7 @@ function LImageData:posterize(levels) end
 ---@param width number Output width.
 ---@param height number Output height.
 ---@param filter string Optional filter name, defaulting to `bilinear`.
----@return LuaValue Resized `LImageData` handle, or nil when resizing fails.
+---@return LImageData? Resized `LImageData` handle, or nil when resizing fails.
 function LImageData:resize(width, height, filter) end
 
 --- Returns a resized image using nearest-neighbor sampling.
@@ -10361,7 +10361,7 @@ function LProvinceGrid:type() end
 function LProvinceGrid:typeOf(name) end
 
 --- Returns a completed screen capture image or requests one for a future call.
----@return LuaValue `LImageData` when capture data is ready, or nil after requesting capture.
+---@return LImageData? `LImageData` when capture data is ready, or nil after requesting capture.
 lurek.image.fromScreen = function() end
 
 --- Returns whether a GameFS image file begins with DDS compressed image magic bytes.
@@ -12258,7 +12258,7 @@ function LVec2:dot(other) end
 --- Creates a unit vector from an angle.
 ---@param radians number Angle in radians.
 ---@return LVec2 New vector handle.
-LVec2.fromAngle = function(radians) end
+function LVec2:fromAngle(radians) end
 
 --- Returns this vector length. This method is available to Lua scripts.
 ---@return number Vector length.
@@ -12366,7 +12366,7 @@ function LVec3:scale(s) end
 --- Creates a vector with all components set to one value.
 ---@param v number Component value.
 ---@return LVec3 New vector handle.
-LVec3.splat = function(v) end
+function LVec3:splat(v) end
 
 --- Returns the difference from another vector.
 ---@param other LVec3 Other vector handle.
@@ -23983,7 +23983,7 @@ function LTween:onCancel(f) end
 ---@param self LTween This tween instance (implicit via `:onComplete(...)`).
 ---@param f function Callback fired when the tween finishes.
 ---@return LTween The same tween handle for chaining.
-LTween.onComplete = function(self, f) end
+function LTween:onComplete(self, f) end
 
 --- Sets a callback to fire every frame while the tween is active. Returns the tween for chaining.
 ---@param f function Callback fired each frame with the current progress `t` (0..1).
@@ -24035,7 +24035,7 @@ LTweenParallel = {}
 ---@param self LTweenParallel The parallel group to add to (implicit via `:add(...)`).
 ---@param tw_ud LTween The tween handle returned by `lurek.tween.tween()` to add to this group.
 ---@return nil No return value.
-LTweenParallel.add = function(self, tw_ud) end
+function LTweenParallel:add(self, tw_ud) end
 
 --- Cancels all tweens in this parallel group immediately.
 ---@return nil No value is returned.
@@ -24049,7 +24049,7 @@ function LTweenParallel:isActive() end
 ---@param self LTweenParallel The parallel group to configure (implicit via `:onComplete(...)`).
 ---@param f function Function to call when all tweens in the group complete.
 ---@return LTweenParallel This parallel group for chaining.
-LTweenParallel.onComplete = function(self, f) end
+function LTweenParallel:onComplete(self, f) end
 
 --- Starts all tweens in this parallel group simultaneously.
 ---@return LTweenParallel This parallel group for chaining.
@@ -24062,7 +24062,7 @@ function LTweenParallel:start() end
 ---@param fields table Key-value pairs mapping field names to target end values.
 ---@param easing? string Easing function name (default `"linear"`).
 ---@return LTweenParallel This parallel group for chaining.
-LTweenParallel.tween = function(self, duration, target, fields, easing) end
+function LTweenParallel:tween(self, duration, target, fields, easing) end
 
 --- Returns the type name of this object.
 ---@return string Always `"LTweenParallel"`.
@@ -24095,7 +24095,7 @@ function LTweenSequence:cancel() end
 ---@param seconds number Duration to wait in seconds.
 ---@param cb? function Optional callback fired when the delay elapses.
 ---@return LTweenSequence This sequence for chaining.
-LTweenSequence.delay = function(self, seconds, cb) end
+function LTweenSequence:delay(self, seconds, cb) end
 
 --- Returns the overall progress ratio of this sequence from 0.0 to 1.0.
 ---@return number Progress ratio.
@@ -24109,7 +24109,7 @@ function LTweenSequence:isActive() end
 ---@param self LTweenSequence The sequence to configure (implicit via `:onComplete(...)`).
 ---@param f function Function to call when the sequence completes.
 ---@return LTweenSequence This sequence for chaining.
-LTweenSequence.onComplete = function(self, f) end
+function LTweenSequence:onComplete(self, f) end
 
 --- Starts playback of this sequence from the first step.
 ---@return LTweenSequence This sequence for chaining.
@@ -24122,7 +24122,7 @@ function LTweenSequence:start() end
 ---@param fields table Key-value pairs mapping field names to target end values.
 ---@param easing? string Easing function name (default `"linear"`).
 ---@return LTweenSequence This sequence for chaining.
-LTweenSequence.tween = function(self, duration, target, fields, easing) end
+function LTweenSequence:tween(self, duration, target, fields, easing) end
 
 --- Returns the type name of this object.
 ---@return string Always `"LTweenSequence"`.
@@ -24260,35 +24260,35 @@ LAccordion = {}
 ---@param title string The section title.
 ---@param content_idx? number Optional widget index for the section content.
 ---@return nil No return value.
-LAccordion.addSection = function(title, content_idx) end
+function LAccordion:addSection(title, content_idx) end
 
 --- Returns the number of sections in this accordion.
 ---@return number The section count.
-LAccordion.getSectionCount = function() end
+function LAccordion:getSectionCount() end
 
 --- Returns the title of an accordion section by its 1-based index.
 ---@param section_idx number The 1-based section index.
 ---@return string The section title, or nil if out of range.
-LAccordion.getSectionTitle = function(section_idx) end
+function LAccordion:getSectionTitle(section_idx) end
 
 --- Returns whether this accordion is in exclusive mode (only one section open at a time).
 ---@return boolean True if exclusive.
-LAccordion.isExclusive = function() end
+function LAccordion:isExclusive() end
 
 --- Returns whether an accordion section is expanded.
 ---@param section_idx number The 1-based section index.
 ---@return boolean True if expanded.
-LAccordion.isSectionExpanded = function(section_idx) end
+function LAccordion:isSectionExpanded(section_idx) end
 
 --- Sets exclusive mode. When true, expanding one section collapses all others.
 ---@param v boolean True for exclusive mode.
 ---@return nil No return value.
-LAccordion.setExclusive = function(v) end
+function LAccordion:setExclusive(v) end
 
 --- Toggles the expanded state of an accordion section by its 1-based index.
 ---@param section_idx number The 1-based section index.
 ---@return boolean The new expanded state.
-LAccordion.toggleSection = function(section_idx) end
+function LAccordion:toggleSection(section_idx) end
 
 --- Lua-exposed area chart for data visualization.
 ---@class LAreaChart
@@ -24328,16 +24328,16 @@ LBadge = {}
 
 --- Returns the current notification count of this badge.
 ---@return number The badge count.
-LBadge.getCount = function() end
+function LBadge:getCount() end
 
 --- Returns the formatted display text of this badge (e.g. "99+" when count exceeds the maximum).
 ---@return string The display text.
-LBadge.getDisplayText = function() end
+function LBadge:getDisplayText() end
 
 --- Sets the notification count displayed by this badge.
 ---@param count number The notification count.
 ---@return nil No return value.
-LBadge.setCount = function(count) end
+function LBadge:setCount(count) end
 
 --- Lua-exposed bar chart for data visualization.
 ---@class LBarChart
@@ -24377,12 +24377,12 @@ LButton = {}
 
 --- Returns the current display text of this button.
 ---@return string The button label.
-LButton.getText = function() end
+function LButton:getText() end
 
 --- Sets the display text on this button.
 ---@param text string The button label text.
 ---@return nil No return value.
-LButton.setText = function(text) end
+function LButton:setText(text) end
 
 --- Adds checkbox-specific methods to a checkbox widget table.
 ---@class LCheckbox : LUiWidget
@@ -24390,21 +24390,21 @@ LCheckbox = {}
 
 --- Returns the label text of this checkbox.
 ---@return string The checkbox label.
-LCheckbox.getText = function() end
+function LCheckbox:getText() end
 
 --- Returns whether this checkbox is currently checked.
 ---@return boolean True if checked.
-LCheckbox.isChecked = function() end
+function LCheckbox:isChecked() end
 
 --- Sets the checked state of this checkbox.
 ---@param checked boolean True to check, false to uncheck.
 ---@return nil No return value.
-LCheckbox.setChecked = function(checked) end
+function LCheckbox:setChecked(checked) end
 
 --- Sets the label text displayed next to this checkbox.
 ---@param text string The checkbox label.
 ---@return nil No return value.
-LCheckbox.setText = function(text) end
+function LCheckbox:setText(text) end
 
 --- Adds color-picker-specific methods to a color picker widget table.
 ---@class LColorPicker : LUiWidget
@@ -24415,15 +24415,15 @@ LColorPicker = {}
 ---@return number b Green.
 ---@return number c Blue.
 ---@return number d Alpha.
-LColorPicker.getColor = function() end
+function LColorPicker:getColor() end
 
 --- Returns the color mode of this picker (e.g. "rgb", "hsv").
 ---@return string The color mode.
-LColorPicker.getColorMode = function() end
+function LColorPicker:getColorMode() end
 
 --- Returns whether the alpha channel slider is visible.
 ---@return boolean True if the alpha slider is shown.
-LColorPicker.getShowAlpha = function() end
+function LColorPicker:getShowAlpha() end
 
 --- Sets the current color as RGBA components.
 ---@param r number Red (0.0 to 1.0).
@@ -24431,22 +24431,22 @@ LColorPicker.getShowAlpha = function() end
 ---@param b number Blue (0.0 to 1.0).
 ---@param a? number Alpha (0.0 to 1.0), keeps current if omitted.
 ---@return nil No return value.
-LColorPicker.setColor = function(r, g, b, a) end
+function LColorPicker:setColor(r, g, b, a) end
 
 --- Sets the color mode of this picker (e.g. "rgb", "hsv").
 ---@param mode string The color mode.
 ---@return nil No return value.
-LColorPicker.setColorMode = function(mode) end
+function LColorPicker:setColorMode(mode) end
 
 --- Registers a callback invoked when this color picker's value changes.
 ---@param f function Callback receiving the widget index.
 ---@return nil No return value.
-LColorPicker.setOnChange = function(f) end
+function LColorPicker:setOnChange(f) end
 
 --- Sets whether the alpha channel slider is visible.
 ---@param v boolean True to show the alpha slider.
 ---@return nil No return value.
-LColorPicker.setShowAlpha = function(v) end
+function LColorPicker:setShowAlpha(v) end
 
 --- Adds combo-box-specific methods to a combo box widget table.
 ---@class LComboBox : LUiWidget
@@ -24455,38 +24455,38 @@ LComboBox = {}
 --- Appends a new text item to this combo box's dropdown list.
 ---@param text string The item label to add.
 ---@return nil No return value.
-LComboBox.addItem = function(text) end
+function LComboBox:addItem(text) end
 
 --- Removes all items from this combo box.
 ---@return nil No return value.
-LComboBox.clearItems = function() end
+function LComboBox:clearItems() end
 
 --- Returns the text of the item at the given 1-based index.
 ---@param index number The 1-based item index.
 ---@return string The item text, or nil if out of range.
-LComboBox.getItem = function(index) end
+function LComboBox:getItem(index) end
 
 --- Returns the number of items in this combo box.
 ---@return number The item count.
-LComboBox.getItemCount = function() end
+function LComboBox:getItemCount() end
 
 --- Returns the 1-based index of the currently selected item, or 0 if none is selected.
 ---@return number The selected index.
-LComboBox.getSelectedIndex = function() end
+function LComboBox:getSelectedIndex() end
 
 --- Returns the text of the currently selected item, or nil if none is selected.
 ---@return string The selected item text.
-LComboBox.getSelectedItem = function() end
+function LComboBox:getSelectedItem() end
 
 --- Removes the item at the given 1-based index from this combo box.
 ---@param index number The 1-based index of the item to remove.
 ---@return boolean True if the item was removed.
-LComboBox.removeItem = function(index) end
+function LComboBox:removeItem(index) end
 
 --- Sets the selected item by 1-based index.
 ---@param index number The 1-based index of the item to select.
 ---@return nil No return value.
-LComboBox.setSelectedIndex = function(index) end
+function LComboBox:setSelectedIndex(index) end
 
 --- Adds dialog-specific methods to a dialog widget table.
 ---@class LDialog : LUiWidget
@@ -24496,51 +24496,51 @@ LDialog = {}
 ---@param text string The button label.
 ---@param cb? function Optional click callback (reserved for future use).
 ---@return number The 1-based button index.
-LDialog.addButton = function(text, cb) end
+function LDialog:addButton(text, cb) end
 
 --- Closes this dialog and fires the onClose callback if it was open.
 ---@return nil No return value.
-LDialog.close = function() end
+function LDialog:close() end
 
 --- Returns the widget index of this dialog's content, or nil if not set.
 ---@return number The content widget index.
-LDialog.getContent = function() end
+function LDialog:getContent() end
 
 --- Returns the title text of this dialog.
 ---@return string The dialog title.
-LDialog.getTitle = function() end
+function LDialog:getTitle() end
 
 --- Returns whether this dialog is modal (blocks interaction with other widgets).
 ---@return boolean True if modal.
-LDialog.isModal = function() end
+function LDialog:isModal() end
 
 --- Returns whether this dialog is currently open and visible.
 ---@return boolean True if open.
-LDialog.isOpen = function() end
+function LDialog:isOpen() end
 
 --- Opens this dialog, making it visible.
 ---@return nil No return value.
-LDialog.open = function() end
+function LDialog:open() end
 
 --- Sets the content widget for this dialog.
 ---@param content_idx? number The widget index to show as content, or nil to clear.
 ---@return nil No return value.
-LDialog.setContent = function(content_idx) end
+function LDialog:setContent(content_idx) end
 
 --- Sets whether this dialog is modal. This method is available to Lua scripts.
 ---@param v boolean True to make modal.
 ---@return nil No return value.
-LDialog.setModal = function(v) end
+function LDialog:setModal(v) end
 
 --- Registers a callback invoked when this dialog is closed.
 ---@param f function Callback receiving the widget index.
 ---@return nil No return value.
-LDialog.setOnClose = function(f) end
+function LDialog:setOnClose(f) end
 
 --- Sets the title text of this dialog. This method is available to Lua scripts.
 ---@param title string The dialog title.
 ---@return nil No return value.
-LDialog.setTitle = function(title) end
+function LDialog:setTitle(title) end
 
 --- Adds dock-panel-specific methods to a dock panel widget table.
 ---@class LDockPanel : LUiWidget
@@ -24550,27 +24550,27 @@ LDockPanel = {}
 ---@param child_idx number The widget index to dock.
 ---@param side string The dock side ("left", "right", "top", "bottom", "center").
 ---@return nil No return value.
-LDockPanel.dock = function(child_idx, side) end
+function LDockPanel:dock(child_idx, side) end
 
 --- Returns the number of widgets docked in this dock panel.
 ---@return number The docked widget count.
-LDockPanel.getDockedCount = function() end
+function LDockPanel:getDockedCount() end
 
 --- Returns the size configured for a dock panel side region.
 ---@param side string The dock side.
 ---@return number The size in pixels, or nil if not set.
-LDockPanel.getSplitSize = function(side) end
+function LDockPanel:getSplitSize(side) end
 
 --- Sets the size of a dock panel side region.
 ---@param side string The dock side ("left", "right", "top", "bottom").
 ---@param size number The size in pixels.
 ---@return nil No return value.
-LDockPanel.setSplitSize = function(side, size) end
+function LDockPanel:setSplitSize(side, size) end
 
 --- Removes a child widget from this dock panel.
 ---@param child_idx number The widget index to undock.
 ---@return nil No return value.
-LDockPanel.undock = function(child_idx) end
+function LDockPanel:undock(child_idx) end
 
 --- Adds GUI-table-specific methods to a table widget.
 ---@class LGuiTable : LUiWidget
@@ -24580,56 +24580,56 @@ LGuiTable = {}
 ---@param header string The column header text.
 ---@param width? number The column width in pixels (default 100).
 ---@return nil No return value.
-LGuiTable.addColumn = function(header, width) end
+function LGuiTable:addColumn(header, width) end
 
 --- Adds a row to this table widget. This method is available to Lua scripts.
 ---@param cells table Array of cell text values.
 ---@return nil No return value.
-LGuiTable.addRow = function(cells) end
+function LGuiTable:addRow(cells) end
 
 --- Returns the text of a cell at the given 1-based row and column.
 ---@param row number The 1-based row index.
 ---@param col number The 1-based column index.
 ---@return string The cell text, or nil if out of range.
-LGuiTable.getCell = function(row, col) end
+function LGuiTable:getCell(row, col) end
 
 --- Returns the number of columns in this table widget.
 ---@return number The column count.
-LGuiTable.getColumnCount = function() end
+function LGuiTable:getColumnCount() end
 
 --- Returns the number of rows in this table widget.
 ---@return number The row count.
-LGuiTable.getRowCount = function() end
+function LGuiTable:getRowCount() end
 
 --- Returns the 1-based index of the currently selected row, or nil.
 ---@return number The selected row index.
-LGuiTable.getSelectedRow = function() end
+function LGuiTable:getSelectedRow() end
 
 --- Returns whether columns in this table can be sorted by clicking headers.
 ---@return boolean True if sortable.
-LGuiTable.isSortable = function() end
+function LGuiTable:isSortable() end
 
 --- Sets the text of a cell at the given 1-based row and column.
 ---@param row number The 1-based row index.
 ---@param col number The 1-based column index.
 ---@param text string The new cell text.
 ---@return nil No return value.
-LGuiTable.setCell = function(row, col, text) end
+function LGuiTable:setCell(row, col, text) end
 
 --- Registers a callback invoked when a table row is selected.
 ---@param f function Callback receiving the widget index.
 ---@return nil No return value.
-LGuiTable.setOnSelect = function(f) end
+function LGuiTable:setOnSelect(f) end
 
 --- Sets the selected row by its 1-based index, or nil to deselect.
 ---@param row? number The 1-based row index, or nil.
 ---@return nil No return value.
-LGuiTable.setSelectedRow = function(row) end
+function LGuiTable:setSelectedRow(row) end
 
 --- Sets whether columns in this table can be sorted by clicking headers.
 ---@param v boolean True to enable sorting.
 ---@return nil No return value.
-LGuiTable.setSortable = function(v) end
+function LGuiTable:setSortable(v) end
 
 --- Adds GUI-window-specific methods to a window widget table.
 ---@class LGuiWindow : LUiWidget
@@ -24637,44 +24637,44 @@ LGuiWindow = {}
 
 --- Returns the title bar text of this GUI window.
 ---@return string The window title.
-LGuiWindow.getTitle = function() end
+function LGuiWindow:getTitle() end
 
 --- Returns whether this window shows a close button.
 ---@return boolean True if closeable.
-LGuiWindow.isCloseable = function() end
+function LGuiWindow:isCloseable() end
 
 --- Returns whether this window can be dragged by its title bar.
 ---@return boolean True if draggable.
-LGuiWindow.isDraggable = function() end
+function LGuiWindow:isDraggable() end
 
 --- Returns whether this window can be resized by dragging its edges.
 ---@return boolean True if resizable.
-LGuiWindow.isResizable = function() end
+function LGuiWindow:isResizable() end
 
 --- Sets whether this window shows a close button.
 ---@param v boolean True to show the close button.
 ---@return nil No return value.
-LGuiWindow.setCloseable = function(v) end
+function LGuiWindow:setCloseable(v) end
 
 --- Sets whether this window can be dragged by its title bar.
 ---@param v boolean True to allow dragging.
 ---@return nil No return value.
-LGuiWindow.setDraggable = function(v) end
+function LGuiWindow:setDraggable(v) end
 
 --- Registers a callback invoked when this window is closed.
 ---@param f function Callback receiving the widget index.
 ---@return nil No return value.
-LGuiWindow.setOnClose = function(f) end
+function LGuiWindow:setOnClose(f) end
 
 --- Sets whether this window can be resized.
 ---@param v boolean True to allow resizing.
 ---@return nil No return value.
-LGuiWindow.setResizable = function(v) end
+function LGuiWindow:setResizable(v) end
 
 --- Sets the title bar text of this GUI window.
 ---@param title string The window title.
 ---@return nil No return value.
-LGuiWindow.setTitle = function(title) end
+function LGuiWindow:setTitle(title) end
 
 --- Adds image-widget-specific methods to an image widget table.
 ---@class LImageWidget : LUiWidget
@@ -24682,19 +24682,19 @@ LImageWidget = {}
 
 --- Returns the image scaling mode (e.g. "fit", "fill", "stretch").
 ---@return string The scale mode.
-LImageWidget.getScaleMode = function() end
+function LImageWidget:getScaleMode() end
 
 --- Returns the tint color of this image widget as RGBA components.
 ---@return number a Red.
 ---@return number b Green.
 ---@return number c Blue.
 ---@return number d Alpha.
-LImageWidget.getTint = function() end
+function LImageWidget:getTint() end
 
 --- Sets the image scaling mode (e.g. "fit", "fill", "stretch").
 ---@param mode string The scale mode.
 ---@return nil No return value.
-LImageWidget.setScaleMode = function(mode) end
+function LImageWidget:setScaleMode(mode) end
 
 --- Sets the tint color of this image widget as RGBA components.
 ---@param r number Red (0.0 to 1.0).
@@ -24702,7 +24702,7 @@ LImageWidget.setScaleMode = function(mode) end
 ---@param b number Blue (0.0 to 1.0).
 ---@param a? number Alpha (0.0 to 1.0), defaults to 1.0.
 ---@return nil No return value.
-LImageWidget.setTint = function(r, g, b, a) end
+function LImageWidget:setTint(r, g, b, a) end
 
 --- Adds label-specific methods (setText, getText) to a label widget table.
 ---@class LLabel : LUiWidget
@@ -24710,12 +24710,12 @@ LLabel = {}
 
 --- Returns the current display text of this label.
 ---@return string The label text.
-LLabel.getText = function() end
+function LLabel:getText() end
 
 --- Sets the display text on this label.
 ---@param text string The label text.
 ---@return nil No return value.
-LLabel.setText = function(text) end
+function LLabel:setText(text) end
 
 --- Adds layout-specific methods to a layout container widget table.
 ---@class LLayout : LUiWidget
@@ -24723,53 +24723,53 @@ LLayout = {}
 
 --- Returns the current cross-axis alignment mode.
 ---@return string The alignment mode.
-LLayout.getAlign = function() end
+function LLayout:getAlign() end
 
 --- Returns the current layout direction.
 ---@return string The direction name.
-LLayout.getDirection = function() end
+function LLayout:getDirection() end
 
 --- Returns the current main-axis justification mode.
 ---@return string The justification mode.
-LLayout.getJustify = function() end
+function LLayout:getJustify() end
 
 --- Returns the current spacing between children.
 ---@return number The spacing in pixels.
-LLayout.getSpacing = function() end
+function LLayout:getSpacing() end
 
 --- Returns whether wrapping is enabled for this layout.
 ---@return boolean True if wrapping is on.
-LLayout.getWrap = function() end
+function LLayout:getWrap() end
 
 --- Sets the cross-axis alignment for children (e.g. "start", "center", "end", "stretch").
 ---@param align string The alignment mode.
 ---@return nil No return value.
-LLayout.setAlign = function(align) end
+function LLayout:setAlign(align) end
 
 --- Sets the number of columns for grid layout mode (minimum 1).
 ---@param n number Column count.
 ---@return nil No return value.
-LLayout.setColumns = function(n) end
+function LLayout:setColumns(n) end
 
 --- Sets the layout direction for child arrangement ("horizontal", "vertical", or "grid").
 ---@param dir string The layout direction.
 ---@return nil No return value.
-LLayout.setDirection = function(dir) end
+function LLayout:setDirection(dir) end
 
 --- Sets the main-axis justification for children (e.g. "start", "center", "end", "space-between").
 ---@param justify string The justification mode.
 ---@return nil No return value.
-LLayout.setJustify = function(justify) end
+function LLayout:setJustify(justify) end
 
 --- Sets the spacing in pixels between child widgets in this layout.
 ---@param spacing number Gap between children in pixels.
 ---@return nil No return value.
-LLayout.setSpacing = function(spacing) end
+function LLayout:setSpacing(spacing) end
 
 --- Enables or disables wrapping of children to the next row/column when they overflow.
 ---@param wrap boolean True to enable wrapping.
 ---@return nil No return value.
-LLayout.setWrap = function(wrap) end
+function LLayout:setWrap(wrap) end
 
 --- Lua-exposed line chart for data visualization.
 ---@class LLineChart
@@ -24815,39 +24815,39 @@ LListBox = {}
 --- Appends a new text item to this list box.
 ---@param text string The item text to add.
 ---@return nil No return value.
-LListBox.addItem = function(text) end
+function LListBox:addItem(text) end
 
 --- Removes all items from this list box.
 ---@return nil No return value.
-LListBox.clearItems = function() end
+function LListBox:clearItems() end
 
 --- Returns the text of the item at the given 1-based index.
 ---@param index number The 1-based item index.
 ---@return string The item text, or empty string if out of range.
-LListBox.getItem = function(index) end
+function LListBox:getItem(index) end
 
 --- Returns the number of items in this list box.
 ---@return number The item count.
-LListBox.getItemCount = function() end
+function LListBox:getItemCount() end
 
 --- Returns the 1-based index of the currently selected item, or 0 if none.
 ---@return number The selected index.
-LListBox.getSelectedIndex = function() end
+function LListBox:getSelectedIndex() end
 
 --- Removes the item at the given 1-based index from this list box.
 ---@param index number The 1-based index to remove.
 ---@return nil No return value.
-LListBox.removeItem = function(index) end
+function LListBox:removeItem(index) end
 
 --- Sets the pixel height of each item row in this list box.
 ---@param h number Row height in pixels.
 ---@return nil No return value.
-LListBox.setItemHeight = function(h) end
+function LListBox:setItemHeight(h) end
 
 --- Sets the selected item by 1-based index.
 ---@param index number The 1-based index of the item to select.
 ---@return nil No return value.
-LListBox.setSelectedIndex = function(index) end
+function LListBox:setSelectedIndex(index) end
 
 --- Adds menu-bar-specific methods to a menu bar widget table.
 ---@class LMenuBar : LUiWidget
@@ -24856,20 +24856,20 @@ LMenuBar = {}
 --- Adds a menu (by its widget index) to this menu bar.
 ---@param menu_idx number The widget index of the menu to add.
 ---@return nil No return value.
-LMenuBar.addMenu = function(menu_idx) end
+function LMenuBar:addMenu(menu_idx) end
 
 --- Returns the number of menus in this menu bar.
 ---@return number The menu count.
-LMenuBar.getMenuCount = function() end
+function LMenuBar:getMenuCount() end
 
 --- Returns a table of widget indices for all menus in this menu bar.
 ---@return table Array of menu widget indices.
-LMenuBar.getMenus = function() end
+function LMenuBar:getMenus() end
 
 --- Removes a menu from this menu bar by its widget index.
 ---@param menu_idx number The widget index of the menu to remove.
 ---@return boolean True if the menu was found and removed.
-LMenuBar.removeMenu = function(menu_idx) end
+function LMenuBar:removeMenu(menu_idx) end
 
 --- Adds menu-item-specific methods to a menu item widget table.
 ---@class LMenuItem : LUiWidget
@@ -24878,43 +24878,43 @@ LMenuItem = {}
 --- Adds a sub-item to this menu item for building nested menus.
 ---@param child_idx number The widget index of the sub-item to add.
 ---@return nil No return value.
-LMenuItem.addSubItem = function(child_idx) end
+function LMenuItem:addSubItem(child_idx) end
 
 --- Returns the keyboard shortcut string associated with this menu item.
 ---@return string The shortcut text.
-LMenuItem.getShortcut = function() end
+function LMenuItem:getShortcut() end
 
 --- Returns a table of widget indices for all sub-items of this menu item.
 ---@return table Array of sub-item widget indices.
-LMenuItem.getSubItems = function() end
+function LMenuItem:getSubItems() end
 
 --- Returns the display text of this menu item.
 ---@return string The menu item text.
-LMenuItem.getText = function() end
+function LMenuItem:getText() end
 
 --- Returns whether this menu item is checked (for checkable menu items).
 ---@return boolean True if checked.
-LMenuItem.isChecked = function() end
+function LMenuItem:isChecked() end
 
 --- Sets the checked state of this menu item.
 ---@param v boolean True to check.
 ---@return nil No return value.
-LMenuItem.setChecked = function(v) end
+function LMenuItem:setChecked(v) end
 
 --- Registers a callback invoked when this menu item is clicked.
 ---@param f function Callback receiving the widget index.
 ---@return nil No return value.
-LMenuItem.setOnClick = function(f) end
+function LMenuItem:setOnClick(f) end
 
 --- Sets the keyboard shortcut text displayed next to this menu item.
 ---@param shortcut string The shortcut text (e.g. "Ctrl+S").
 ---@return nil No return value.
-LMenuItem.setShortcut = function(shortcut) end
+function LMenuItem:setShortcut(shortcut) end
 
 --- Sets the display text of this menu item.
 ---@param text string The menu item text.
 ---@return nil No return value.
-LMenuItem.setText = function(text) end
+function LMenuItem:setText(text) end
 
 --- Adds nine-patch-specific methods to a nine-patch widget table.
 ---@class LNinePatch : LUiWidget
@@ -24923,24 +24923,24 @@ LNinePatch = {}
 --- Returns the original image dimensions of this nine-patch.
 ---@return number a Image width and height.
 ---@return number b Image width and height.
-LNinePatch.getImageDimensions = function() end
+function LNinePatch:getImageDimensions() end
 
 --- Returns the border insets of this nine-patch.
 ---@return number a Left, top, right, and bottom insets.
 ---@return number b Left, top, right, and bottom insets.
 ---@return number c Left, top, right, and bottom insets.
 ---@return number d Left, top, right, and bottom insets.
-LNinePatch.getInsets = function() end
+function LNinePatch:getInsets() end
 
 --- Returns the computed nine-patch slices as a table of source/dest rectangles for rendering.
 ---@return table Array of slice tables with sx, sy, sw, sh, dx, dy, dw, dh fields, or nil.
-LNinePatch.getSlices = function() end
+function LNinePatch:getSlices() end
 
 --- Sets the original image dimensions used for nine-patch slice calculations.
 ---@param w number Image width in pixels.
 ---@param h number Image height in pixels.
 ---@return nil No return value.
-LNinePatch.setImageDimensions = function(w, h) end
+function LNinePatch:setImageDimensions(w, h) end
 
 --- Sets the border insets defining the stretchable center region of the nine-patch image.
 ---@param left number Left inset in pixels.
@@ -24948,7 +24948,7 @@ LNinePatch.setImageDimensions = function(w, h) end
 ---@param right number Right inset in pixels.
 ---@param bottom number Bottom inset in pixels.
 ---@return nil No return value.
-LNinePatch.setInsets = function(left, top, right, bottom) end
+function LNinePatch:setInsets(left, top, right, bottom) end
 
 --- Adds panel-specific methods (setTitle, getTitle, setScrollable) to a panel widget table.
 ---@class LPanel : LUiWidget
@@ -24956,17 +24956,17 @@ LPanel = {}
 
 --- Returns the title text of this panel.
 ---@return string The panel title.
-LPanel.getTitle = function() end
+function LPanel:getTitle() end
 
 --- Enables or disables scrolling within this panel.
 ---@param scrollable boolean True to enable scrolling.
 ---@return nil No return value.
-LPanel.setScrollable = function(scrollable) end
+function LPanel:setScrollable(scrollable) end
 
 --- Sets the title text displayed on this panel's header.
 ---@param title string The panel title.
 ---@return nil No return value.
-LPanel.setTitle = function(title) end
+function LPanel:setTitle(title) end
 
 --- Lua-exposed pie chart for data visualization.
 ---@class LPieChart
@@ -25001,30 +25001,30 @@ LProgressBar = {}
 
 --- Returns the maximum value of this progress bar's range.
 ---@return number The maximum value.
-LProgressBar.getMax = function() end
+function LProgressBar:getMax() end
 
 --- Returns the minimum value of this progress bar's range.
 ---@return number The minimum value.
-LProgressBar.getMin = function() end
+function LProgressBar:getMin() end
 
 --- Returns the normalized progress as a fraction (0.0 to 1.0) of the current range.
 ---@return number The normalized progress.
-LProgressBar.getProgress = function() end
+function LProgressBar:getProgress() end
 
 --- Returns the current value of this progress bar.
 ---@return number The progress value.
-LProgressBar.getValue = function() end
+function LProgressBar:getValue() end
 
 --- Sets the minimum and maximum bounds for this progress bar.
 ---@param min number Minimum value.
 ---@param max number Maximum value.
 ---@return nil No return value.
-LProgressBar.setRange = function(min, max) end
+function LProgressBar:setRange(min, max) end
 
 --- Sets the current fill value of this progress bar, clamped to its range.
 ---@param v number The progress value.
 ---@return nil No return value.
-LProgressBar.setValue = function(v) end
+function LProgressBar:setValue(v) end
 
 --- Adds radio-button-specific methods to a radio button widget table.
 ---@class LRadioButton : LUiWidget
@@ -25032,35 +25032,35 @@ LRadioButton = {}
 
 --- Returns the radio button group name. Buttons in the same group are mutually exclusive.
 ---@return string The group name.
-LRadioButton.getGroup = function() end
+function LRadioButton:getGroup() end
 
 --- Returns the label text of this radio button.
 ---@return string The radio button label.
-LRadioButton.getText = function() end
+function LRadioButton:getText() end
 
 --- Returns whether this radio button is currently selected.
 ---@return boolean True if selected.
-LRadioButton.isSelected = function() end
+function LRadioButton:isSelected() end
 
 --- Sets the radio button group name. Buttons in the same group are mutually exclusive.
 ---@param group string The group name.
 ---@return nil No return value.
-LRadioButton.setGroup = function(group) end
+function LRadioButton:setGroup(group) end
 
 --- Registers a callback invoked when this radio button's selection changes.
 ---@param f function Callback receiving the widget index.
 ---@return nil No return value.
-LRadioButton.setOnChange = function(f) end
+function LRadioButton:setOnChange(f) end
 
 --- Sets the selected state of this radio button.
 ---@param v boolean True to select.
 ---@return nil No return value.
-LRadioButton.setSelected = function(v) end
+function LRadioButton:setSelected(v) end
 
 --- Sets the label text of this radio button.
 ---@param text string The radio button label.
 ---@return nil No return value.
-LRadioButton.setText = function(text) end
+function LRadioButton:setText(text) end
 
 --- Lua-exposed scatter plot for data visualization.
 ---@class LScatterPlot
@@ -25107,39 +25107,39 @@ LScrollBar = {}
 
 --- Returns the total content size tracked by this scroll bar.
 ---@return number The content size.
-LScrollBar.getContentSize = function() end
+function LScrollBar:getContentSize() end
 
 --- Returns the current scroll position of this scroll bar.
 ---@return number The scroll position.
-LScrollBar.getScrollPosition = function() end
+function LScrollBar:getScrollPosition() end
 
 --- Returns the visible viewport size tracked by this scroll bar.
 ---@return number The view size.
-LScrollBar.getViewSize = function() end
+function LScrollBar:getViewSize() end
 
 --- Returns whether this scroll bar is oriented vertically.
 ---@return boolean True if vertical.
-LScrollBar.isVertical = function() end
+function LScrollBar:isVertical() end
 
 --- Sets the total content size that this scroll bar represents.
 ---@param v number The content size.
 ---@return nil No return value.
-LScrollBar.setContentSize = function(v) end
+function LScrollBar:setContentSize(v) end
 
 --- Registers a callback invoked when this scroll bar's position changes.
 ---@param f function Callback receiving the widget index.
 ---@return nil No return value.
-LScrollBar.setOnChange = function(f) end
+function LScrollBar:setOnChange(f) end
 
 --- Sets the scroll position of this scroll bar, clamped to the valid range.
 ---@param v number The scroll position.
 ---@return nil No return value.
-LScrollBar.setScrollPosition = function(v) end
+function LScrollBar:setScrollPosition(v) end
 
 --- Sets the visible viewport size for this scroll bar.
 ---@param v number The view size.
 ---@return nil No return value.
-LScrollBar.setViewSize = function(v) end
+function LScrollBar:setViewSize(v) end
 
 --- Adds scroll-panel-specific methods to a scroll panel widget table.
 ---@class LScrollPanel : LUiWidget
@@ -25148,38 +25148,38 @@ LScrollPanel = {}
 --- Returns the virtual content dimensions of this scroll panel.
 ---@return number a Content width and height in pixels.
 ---@return number b Content width and height in pixels.
-LScrollPanel.getContentSize = function() end
+function LScrollPanel:getContentSize() end
 
 --- Returns the maximum scroll offset allowed in each axis.
 ---@return number a Maximum horizontal and vertical scroll values.
 ---@return number b Maximum horizontal and vertical scroll values.
-LScrollPanel.getMaxScroll = function() end
+function LScrollPanel:getMaxScroll() end
 
 --- Returns the current scroll offset of this scroll panel.
 ---@return number a Horizontal and vertical scroll offsets.
 ---@return number b Horizontal and vertical scroll offsets.
-LScrollPanel.getScrollPosition = function() end
+function LScrollPanel:getScrollPosition() end
 
 --- Returns the current scroll speed multiplier.
 ---@return number The scroll speed.
-LScrollPanel.getScrollSpeed = function() end
+function LScrollPanel:getScrollSpeed() end
 
 --- Sets the virtual content dimensions of this scroll panel.
 ---@param w number Content width in pixels.
 ---@param h number Content height in pixels.
 ---@return nil No return value.
-LScrollPanel.setContentSize = function(w, h) end
+function LScrollPanel:setContentSize(w, h) end
 
 --- Sets the scroll offset position of this scroll panel.
 ---@param x number Horizontal scroll offset.
 ---@param y number Vertical scroll offset.
 ---@return nil No return value.
-LScrollPanel.setScrollPosition = function(x, y) end
+function LScrollPanel:setScrollPosition(x, y) end
 
 --- Sets the scroll speed multiplier for mouse wheel scrolling.
 ---@param speed number Scroll speed in pixels per scroll tick.
 ---@return nil No return value.
-LScrollPanel.setScrollSpeed = function(speed) end
+function LScrollPanel:setScrollSpeed(speed) end
 
 --- Adds separator-specific methods to a separator widget table.
 ---@class LSeparator : LUiWidget
@@ -25187,21 +25187,21 @@ LSeparator = {}
 
 --- Returns the line thickness of this separator.
 ---@return number The thickness in pixels.
-LSeparator.getThickness = function() end
+function LSeparator:getThickness() end
 
 --- Returns whether this separator is oriented vertically.
 ---@return boolean True if vertical.
-LSeparator.isVertical = function() end
+function LSeparator:isVertical() end
 
 --- Sets the line thickness of this separator in pixels.
 ---@param thickness number Thickness in pixels.
 ---@return nil No return value.
-LSeparator.setThickness = function(thickness) end
+function LSeparator:setThickness(thickness) end
 
 --- Sets whether this separator draws vertically or horizontally.
 ---@param v boolean True for vertical, false for horizontal.
 ---@return nil No return value.
-LSeparator.setVertical = function(v) end
+function LSeparator:setVertical(v) end
 
 --- Adds slider-specific methods to a slider widget table.
 ---@class LSlider : LUiWidget
@@ -25209,31 +25209,31 @@ LSlider = {}
 
 --- Returns the maximum value of this slider's range.
 ---@return number The maximum value.
-LSlider.getMax = function() end
+function LSlider:getMax() end
 
 --- Returns the minimum value of this slider's range.
 ---@return number The minimum value.
-LSlider.getMin = function() end
+function LSlider:getMin() end
 
 --- Returns the current value of this slider.
 ---@return number The slider value.
-LSlider.getValue = function() end
+function LSlider:getValue() end
 
 --- Sets the minimum and maximum bounds for this slider.
 ---@param min number Minimum value.
 ---@param max number Maximum value.
 ---@return nil No return value.
-LSlider.setRange = function(min, max) end
+function LSlider:setRange(min, max) end
 
 --- Sets the step increment for this slider's value snapping.
 ---@param step number The step size.
 ---@return nil No return value.
-LSlider.setStep = function(step) end
+function LSlider:setStep(step) end
 
 --- Sets the current value of this slider, clamped to its range.
 ---@param v number The value to set.
 ---@return nil No return value.
-LSlider.setValue = function(v) end
+function LSlider:setValue(v) end
 
 --- Adds spin-box-specific methods to a spin box widget table.
 ---@class LSpinBox : LUiWidget
@@ -25241,31 +25241,31 @@ LSpinBox = {}
 
 --- Decreases this spin box's value by one step.
 ---@return nil No return value.
-LSpinBox.decrement = function() end
+function LSpinBox:decrement() end
 
 --- Returns the current numeric value of this spin box.
 ---@return number The spin box value.
-LSpinBox.getValue = function() end
+function LSpinBox:getValue() end
 
 --- Increases this spin box's value by one step.
 ---@return nil No return value.
-LSpinBox.increment = function() end
+function LSpinBox:increment() end
 
 --- Sets the minimum and maximum bounds for this spin box.
 ---@param min number Minimum value.
 ---@param max number Maximum value.
 ---@return nil No return value.
-LSpinBox.setRange = function(min, max) end
+function LSpinBox:setRange(min, max) end
 
 --- Sets the step increment for this spin box.
 ---@param step number The step size (minimum 1e-9).
 ---@return nil No return value.
-LSpinBox.setStep = function(step) end
+function LSpinBox:setStep(step) end
 
 --- Sets the numeric value of this spin box, clamped to its range.
 ---@param v number The value to set.
 ---@return nil No return value.
-LSpinBox.setValue = function(v) end
+function LSpinBox:setValue(v) end
 
 --- Adds split-panel-specific methods to a split panel widget table.
 ---@class LSplitPanel : LUiWidget
@@ -25273,48 +25273,48 @@ LSplitPanel = {}
 
 --- Returns the widget index of the first (left/top) child panel.
 ---@return number The widget index, or nil if not set.
-LSplitPanel.getFirstChild = function() end
+function LSplitPanel:getFirstChild() end
 
 --- Returns the minimum pixel size of each split sub-panel.
 ---@return number The minimum size in pixels.
-LSplitPanel.getMinPanelSize = function() end
+function LSplitPanel:getMinPanelSize() end
 
 --- Returns the orientation of this split panel ("horizontal" or "vertical").
 ---@return string The orientation.
-LSplitPanel.getOrientation = function() end
+function LSplitPanel:getOrientation() end
 
 --- Returns the widget index of the second (right/bottom) child panel.
 ---@return number The widget index, or nil if not set.
-LSplitPanel.getSecondChild = function() end
+function LSplitPanel:getSecondChild() end
 
 --- Returns the split position as a fraction (0.0 to 1.0) of the panel's total size.
 ---@return number The split fraction.
-LSplitPanel.getSplitPosition = function() end
+function LSplitPanel:getSplitPosition() end
 
 --- Sets the widget index for the first (left/top) panel.
 ---@param child_idx number The widget index.
 ---@return nil No return value.
-LSplitPanel.setFirstChild = function(child_idx) end
+function LSplitPanel:setFirstChild(child_idx) end
 
 --- Sets the minimum pixel size of each split sub-panel.
 ---@param v number The minimum size in pixels.
 ---@return nil No return value.
-LSplitPanel.setMinPanelSize = function(v) end
+function LSplitPanel:setMinPanelSize(v) end
 
 --- Sets the orientation of this split panel ("horizontal" or "vertical").
 ---@param v string The orientation.
 ---@return nil No return value.
-LSplitPanel.setOrientation = function(v) end
+function LSplitPanel:setOrientation(v) end
 
 --- Sets the widget index for the second (right/bottom) panel.
 ---@param child_idx number The widget index.
 ---@return nil No return value.
-LSplitPanel.setSecondChild = function(child_idx) end
+function LSplitPanel:setSecondChild(child_idx) end
 
 --- Sets the split position as a fraction (0.0 to 1.0).
 ---@param v number The split fraction.
 ---@return nil No return value.
-LSplitPanel.setSplitPosition = function(v) end
+function LSplitPanel:setSplitPosition(v) end
 
 --- Adds status-bar-specific methods to a status bar widget table.
 ---@class LStatusBar : LUiWidget
@@ -25324,33 +25324,33 @@ LStatusBar = {}
 ---@param text string The section display text.
 ---@param width? number The section width in pixels (default 100).
 ---@return nil No return value.
-LStatusBar.addSection = function(text, width) end
+function LStatusBar:addSection(text, width) end
 
 --- Returns the number of sections in this status bar.
 ---@return number The section count.
-LStatusBar.getSectionCount = function() end
+function LStatusBar:getSectionCount() end
 
 --- Returns the text of a status bar section by its 1-based index.
 ---@param section_idx number The 1-based section index.
 ---@return string The section text, or nil if out of range.
-LStatusBar.getSectionText = function(section_idx) end
+function LStatusBar:getSectionText(section_idx) end
 
 --- Sets the number of sections, truncating or adding empty sections as needed.
 ---@param count number The desired section count.
 ---@return nil No return value.
-LStatusBar.setSectionCount = function(count) end
+function LStatusBar:setSectionCount(count) end
 
 --- Sets the text of a status bar section by its 1-based index.
 ---@param section_idx number The 1-based section index.
 ---@param text string The new section text.
 ---@return nil No return value.
-LStatusBar.setSectionText = function(section_idx, text) end
+function LStatusBar:setSectionText(section_idx, text) end
 
 --- Associates a widget with a status bar section (reserved for future use).
 ---@param section_idx number The 1-based section index.
 ---@param widget LuaValue The widget value to associate.
 ---@return nil No return value.
-LStatusBar.setSectionWidget = function(section_idx, widget) end
+function LStatusBar:setSectionWidget(section_idx, widget) end
 
 --- Adds switch-specific methods (setOn, isOn, toggle) to a switch widget table.
 ---@class LSwitch : LUiWidget
@@ -25358,16 +25358,16 @@ LSwitch = {}
 
 --- Returns whether this switch is currently in the on state.
 ---@return boolean True if the switch is on.
-LSwitch.isOn = function() end
+function LSwitch:isOn() end
 
 --- Sets the on/off state of this toggle switch.
 ---@param on boolean True to turn on, false to turn off.
 ---@return nil No return value.
-LSwitch.setOn = function(on) end
+function LSwitch:setOn(on) end
 
 --- Toggles this switch between on and off states.
 ---@return nil No return value.
-LSwitch.toggle = function() end
+function LSwitch:toggle() end
 
 --- Adds tab-bar-specific methods to a tab bar widget table.
 ---@class LTabBar : LUiWidget
@@ -25376,30 +25376,30 @@ LTabBar = {}
 --- Adds a new tab with the given label to this tab bar.
 ---@param label string The tab label text.
 ---@return nil No return value.
-LTabBar.addTab = function(label) end
+function LTabBar:addTab(label) end
 
 --- Returns the 1-based index of the currently active tab.
 ---@return number The active tab index.
-LTabBar.getActiveTab = function() end
+function LTabBar:getActiveTab() end
 
 --- Returns the label of the tab at the given 1-based index.
 ---@param index number The 1-based tab index.
 ---@return string The tab label, or nil if out of range.
-LTabBar.getTab = function(index) end
+function LTabBar:getTab(index) end
 
 --- Returns the total number of tabs. This method is available to Lua scripts.
 ---@return number The tab count.
-LTabBar.getTabCount = function() end
+function LTabBar:getTabCount() end
 
 --- Removes the tab at the given 1-based index.
 ---@param index number The 1-based tab index.
 ---@return boolean True if the tab was removed.
-LTabBar.removeTab = function(index) end
+function LTabBar:removeTab(index) end
 
 --- Sets the active (selected) tab by 1-based index.
 ---@param index number The 1-based tab index to activate.
 ---@return nil No return value.
-LTabBar.setActiveTab = function(index) end
+function LTabBar:setActiveTab(index) end
 
 --- Adds text-input-specific methods to a text input widget table.
 ---@class LTextInput : LUiWidget
@@ -25407,34 +25407,34 @@ LTextInput = {}
 
 --- Returns the current cursor position (character index) within the text input.
 ---@return number The zero-based cursor position.
-LTextInput.getCursorPosition = function() end
+function LTextInput:getCursorPosition() end
 
 --- Returns the placeholder text of this text input.
 ---@return string The placeholder text.
-LTextInput.getPlaceholder = function() end
+function LTextInput:getPlaceholder() end
 
 --- Returns the current text content of this text input field.
 ---@return string The input text.
-LTextInput.getText = function() end
+function LTextInput:getText() end
 
 --- Returns whether this text input currently has keyboard focus.
 ---@return boolean True if focused.
-LTextInput.isFocused = function() end
+function LTextInput:isFocused() end
 
 --- Sets the maximum number of characters allowed in this text input.
 ---@param n number Maximum character count.
 ---@return nil No return value.
-LTextInput.setMaxLength = function(n) end
+function LTextInput:setMaxLength(n) end
 
 --- Sets the placeholder text shown when the input is empty.
 ---@param text string The placeholder text.
 ---@return nil No return value.
-LTextInput.setPlaceholder = function(text) end
+function LTextInput:setPlaceholder(text) end
 
 --- Sets the text content of this text input field and moves the cursor to the end.
 ---@param text string The text to set.
 ---@return nil No return value.
-LTextInput.setText = function(text) end
+function LTextInput:setText(text) end
 
 --- Lua-exposed wrapper around a GUI theme for styling widgets.
 ---@class LTheme
@@ -25462,29 +25462,29 @@ LToast = {}
 
 --- Returns the display duration of this toast in seconds.
 ---@return number The duration.
-LToast.getDuration = function() end
+function LToast:getDuration() end
 
 --- Returns the message text of this toast.
 ---@return string The toast message.
-LToast.getMessage = function() end
+function LToast:getMessage() end
 
 --- Returns the elapsed fraction (0.0 to 1.0) of this toast's lifetime.
 ---@return number The progress fraction.
-LToast.getProgress = function() end
+function LToast:getProgress() end
 
 --- Returns whether this toast has exceeded its display duration.
 ---@return boolean True if expired.
-LToast.isExpired = function() end
+function LToast:isExpired() end
 
 --- Sets how long this toast is displayed in seconds.
 ---@param d number Duration in seconds.
 ---@return nil No return value.
-LToast.setDuration = function(d) end
+function LToast:setDuration(d) end
 
 --- Sets the message text displayed by this toast notification.
 ---@param msg string The toast message.
 ---@return nil No return value.
-LToast.setMessage = function(msg) end
+function LToast:setMessage(msg) end
 
 --- Adds toolbar-specific methods to a toolbar widget table.
 ---@class LToolbar : LUiWidget
@@ -25494,47 +25494,47 @@ LToolbar = {}
 ---@param id string The button identifier.
 ---@param tooltip? string Optional tooltip text for the button.
 ---@return number The 1-based index of the added button.
-LToolbar.addButton = function(id, tooltip) end
+function LToolbar:addButton(id, tooltip) end
 
 --- Adds a visual separator to this toolbar.
 ---@return nil No return value.
-LToolbar.addSeparator = function() end
+function LToolbar:addSeparator() end
 
 --- Adds a flexible spacer to this toolbar.
 ---@param _size? number Optional size hint (reserved for future use).
 ---@return nil No return value.
-LToolbar.addSpacer = function(_size) end
+function LToolbar:addSpacer(_size) end
 
 --- Returns a table describing the toolbar button with the given ID.
 ---@param id string The button identifier.
 ---@return table Table with id, tooltip, enabled, toggled fields, or nil if not found.
-LToolbar.getButton = function(id) end
+function LToolbar:getButton(id) end
 
 --- Returns the toolbar orientation ("horizontal" or "vertical").
 ---@return string The orientation.
-LToolbar.getOrientation = function() end
+function LToolbar:getOrientation() end
 
 --- Returns whether a toolbar button is toggled on.
 ---@param id string The button identifier.
 ---@return boolean True if toggled, nil if not found.
-LToolbar.isButtonToggled = function(id) end
+function LToolbar:isButtonToggled(id) end
 
 --- Enables or disables a toolbar button by its ID.
 ---@param id string The button identifier.
 ---@param enabled boolean True to enable.
 ---@return boolean True if the button was found.
-LToolbar.setButtonEnabled = function(id, enabled) end
+function LToolbar:setButtonEnabled(id, enabled) end
 
 --- Sets the toggle state of a toolbar button by its ID.
 ---@param id string The button identifier.
 ---@param toggled boolean True to toggle on.
 ---@return boolean True if the button was found.
-LToolbar.setButtonToggled = function(id, toggled) end
+function LToolbar:setButtonToggled(id, toggled) end
 
 --- Sets the toolbar orientation ("horizontal" or "vertical").
 ---@param v string The orientation.
 ---@return nil No return value.
-LToolbar.setOrientation = function(v) end
+function LToolbar:setOrientation(v) end
 
 --- Adds tooltip-panel-specific methods to a tooltip panel widget table.
 ---@class LTooltipPanel : LUiWidget
@@ -25542,30 +25542,30 @@ LTooltipPanel = {}
 
 --- Returns the delay in seconds before this tooltip appears.
 ---@return number The delay in seconds.
-LTooltipPanel.getDelay = function() end
+function LTooltipPanel:getDelay() end
 
 --- Returns the widget index that this tooltip is attached to.
 ---@return number The target widget index, or nil if unset.
-LTooltipPanel.getTarget = function() end
+function LTooltipPanel:getTarget() end
 
 --- Returns the tooltip display text. This method is available to Lua scripts.
 ---@return string The tooltip text.
-LTooltipPanel.getText = function() end
+function LTooltipPanel:getText() end
 
 --- Sets the delay in seconds before this tooltip appears.
 ---@param v number The delay in seconds.
 ---@return nil No return value.
-LTooltipPanel.setDelay = function(v) end
+function LTooltipPanel:setDelay(v) end
 
 --- Sets the widget index that this tooltip is attached to.
 ---@param target? number The target widget index, or nil to detach.
 ---@return nil No return value.
-LTooltipPanel.setTarget = function(target) end
+function LTooltipPanel:setTarget(target) end
 
 --- Sets the tooltip display text. This method is available to Lua scripts.
 ---@param text string The tooltip text.
 ---@return nil No return value.
-LTooltipPanel.setText = function(text) end
+function LTooltipPanel:setText(text) end
 
 --- Registers tree-view-specific Lua methods on a widget method table.
 ---@class LTreeView : LUiWidget
@@ -25575,94 +25575,94 @@ LTreeView = {}
 ---@param text string String value for `text`.
 ---@param parent_index? number Lua argument for `parent_index`.
 ---@return table Table result returned by this call.
-LTreeView.addNode = function(text, parent_index) end
+function LTreeView:addNode(text, parent_index) end
 
 --- Clears nodes on this LTreeView object.
 ---@return nil No return value.
-LTreeView.clearNodes = function() end
+function LTreeView:clearNodes() end
 
 --- Collapses all nodes in this tree view.
 ---@return nil No return value.
-LTreeView.collapseAll = function() end
+function LTreeView:collapseAll() end
 
 --- Collapses the node at the given 1-based index to hide its children.
 ---@param index number The 1-based node index.
 ---@return boolean True if the node was collapsed.
-LTreeView.collapseNode = function(index) end
+function LTreeView:collapseNode(index) end
 
 --- Expands all nodes in this tree view.
 ---@return nil No return value.
-LTreeView.expandAll = function() end
+function LTreeView:expandAll() end
 
 --- Expand node on this LTreeView object.
 ---@param index number Identifier argument for `index`.
 ---@return boolean Boolean result returned by this call.
-LTreeView.expandNode = function(index) end
+function LTreeView:expandNode(index) end
 
 --- Returns a table of 1-based child node indices for the node at the given index.
 ---@param index number The 1-based parent node index.
 ---@return table Array of 1-based child indices.
-LTreeView.getChildNodes = function(index) end
+function LTreeView:getChildNodes(index) end
 
 --- Returns the node count on this LTreeView object.
 ---@return table Table result returned by this call.
-LTreeView.getNodeCount = function() end
+function LTreeView:getNodeCount() end
 
 --- Returns the nesting depth of the node at the given index (0 for root nodes).
 ---@param index number The 1-based node index.
 ---@return number The depth, or nil if index is invalid.
-LTreeView.getNodeDepth = function(index) end
+function LTreeView:getNodeDepth(index) end
 
 --- Returns the node text on this LTreeView object.
 ---@param index number Identifier argument for `index`.
 ---@return table Table result returned by this call.
-LTreeView.getNodeText = function(index) end
+function LTreeView:getNodeText(index) end
 
 --- Returns the 1-based index of the parent of the node at the given index.
 ---@param index number The 1-based node index.
 ---@return number The parent node index, or nil for root nodes.
-LTreeView.getParentNode = function(index) end
+function LTreeView:getParentNode(index) end
 
 --- Returns the 1-based index of the currently selected node.
 ---@return number The selected node index, or nil if none.
-LTreeView.getSelectedNode = function() end
+function LTreeView:getSelectedNode() end
 
 --- Returns true if expanded on this LTreeView object.
 ---@param index number Identifier argument for `index`.
 ---@return table Table result returned by this call.
-LTreeView.isExpanded = function(index) end
+function LTreeView:isExpanded(index) end
 
 --- Returns whether the node at the given 1-based index is expanded. Returns nil if the index is invalid.
 ---@param index number The 1-based node index.
 ---@return boolean True if expanded, false if collapsed, nil if invalid.
-LTreeView.isNodeExpanded = function(index) end
+function LTreeView:isNodeExpanded(index) end
 
 --- Removes node on this LTreeView object.
 ---@param index number Identifier argument for `index`.
 ---@return boolean Boolean result returned by this call.
-LTreeView.removeNode = function(index) end
+function LTreeView:removeNode(index) end
 
 --- Sets the node icon on this LTreeView object.
 ---@param index number Identifier argument for `index`.
 ---@param icon string Lua argument for `icon`.
 ---@return boolean Boolean result returned by this call.
-LTreeView.setNodeIcon = function(index, icon) end
+function LTreeView:setNodeIcon(index, icon) end
 
 --- Sets the node text on this LTreeView object.
 ---@param index number Identifier argument for `index`.
 ---@param text string String value for `text`.
 ---@return boolean Boolean result returned by this call.
-LTreeView.setNodeText = function(index, text) end
+function LTreeView:setNodeText(index, text) end
 
 --- Sets the selected node by 1-based index.
 ---@param index number The 1-based node index.
 ---@return boolean True if the node was selected.
-LTreeView.setSelectedNode = function(index) end
+function LTreeView:setSelectedNode(index) end
 
 --- Toggle node on this LTreeView object.
 ---@param index number Identifier argument for `index`.
 ---@return boolean Boolean result returned by this call.
-LTreeView.toggleNode = function(index) end
+function LTreeView:toggleNode(index) end
 
 --- Creates a Lua table representing a widget with all shared base methods common to every widget type.
 ---@class LUiWidget
@@ -25671,161 +25671,161 @@ LUiWidget = {}
 --- Adds a child widget to this widget's hierarchy.
 ---@param child LWidget The child widget table or widget index to add.
 ---@return nil No return value.
-LUiWidget.addChild = function(child) end
+function LUiWidget:addChild(child) end
 
 --- Smoothly animates this widget's opacity toward a target value over the given duration.
 ---@param target number Target alpha value (0.0 to 1.0).
 ---@param duration? number Animation duration in seconds. Defaults to 0.2.
 ---@param hide_on_complete? boolean If true, hides the widget when alpha reaches 0.
 ---@return table Table result returned by this call.
-LUiWidget.animateAlpha = function(target, duration, hide_on_complete) end
+function LUiWidget:animateAlpha(target, duration, hide_on_complete) end
 
 --- Smoothly animates this widget's position toward the target coordinates.
 ---@param x number Target x position.
 ---@param y number Target y position.
 ---@param duration? number Animation duration in seconds. Defaults to 0.2.
 ---@return table Table result returned by this call.
-LUiWidget.animatePosition = function(x, y, duration) end
+function LUiWidget:animatePosition(x, y, duration) end
 
 --- Attaches this widget to a game entity so it follows the entity's position on screen.
 ---@param entity_id number The entity ID to attach to.
 ---@return nil No return value.
-LUiWidget.attachToEntity = function(entity_id) end
+function LUiWidget:attachToEntity(entity_id) end
 
 --- Binds this widget to a data key for use with update_bindings.
 ---@param key string The binding key name.
 ---@return nil No return value.
-LUiWidget.bind = function(key) end
+function LUiWidget:bind(key) end
 
 --- Cancels all active animations on this widget, leaving it at its current state.
 ---@return nil No return value.
-LUiWidget.cancelAnimations = function() end
+function LUiWidget:cancelAnimations() end
 
 --- Removes all anchor constraints from this widget.
 ---@return nil No return value.
-LUiWidget.clearAnchor = function() end
+function LUiWidget:clearAnchor() end
 
 --- Tests whether the given screen-space point is inside this widget's bounds.
 ---@param x number X coordinate in screen pixels.
 ---@param y number Y coordinate in screen pixels.
 ---@return boolean True if the point is within the widget.
-LUiWidget.containsPoint = function(x, y) end
+function LUiWidget:containsPoint(x, y) end
 
 --- Detaches this widget from any previously attached entity.
 ---@return nil No return value.
-LUiWidget.detachFromEntity = function() end
+function LUiWidget:detachFromEntity() end
 
 --- Instantly makes this widget fully opaque and visible.
 ---@return nil No return value.
-LUiWidget.fadeIn = function() end
+function LUiWidget:fadeIn() end
 
 --- Instantly makes this widget fully transparent and hidden.
 ---@return nil No return value.
-LUiWidget.fadeOut = function() end
+function LUiWidget:fadeOut() end
 
 --- Searches this widget's subtree for a child with the given ID.
 ---@param id string The widget ID to search for.
 ---@return LWidget The found widget table, or nil if not found.
-LUiWidget.findById = function(id) end
+function LUiWidget:findById(id) end
 
 --- Returns the current opacity of this widget.
 ---@return number The alpha value between 0.0 and 1.0.
-LUiWidget.getAlpha = function() end
+function LUiWidget:getAlpha() end
 
 --- Returns the number of direct child widgets attached to this widget.
 ---@return number The child count.
-LUiWidget.getChildCount = function() end
+function LUiWidget:getChildCount() end
 
 --- Returns a table of lightweight child widget references, each containing an _idx field.
 ---@return table Array of child widget tables.
-LUiWidget.getChildren = function() end
+function LUiWidget:getChildren() end
 
 --- Returns the flex-grow factor of this widget.
 ---@return number The grow factor.
-LUiWidget.getFlexGrow = function() end
+function LUiWidget:getFlexGrow() end
 
 --- Returns the flex-shrink factor of this widget.
 ---@return number The shrink factor.
-LUiWidget.getFlexShrink = function() end
+function LUiWidget:getFlexShrink() end
 
 --- Returns the string identifier assigned to this widget.
 ---@return string The widget ID, or an empty string if none was set.
-LUiWidget.getId = function() end
+function LUiWidget:getId() end
 
 --- Returns the outer margin of this widget.
 ---@return number a Top, right, bottom, and left margin in pixels.
 ---@return number b Top, right, bottom, and left margin in pixels.
 ---@return number c Top, right, bottom, and left margin in pixels.
 ---@return number d Top, right, bottom, and left margin in pixels.
-LUiWidget.getMargin = function() end
+function LUiWidget:getMargin() end
 
 --- Returns the maximum width and height of this widget.
 ---@return number a Maximum width and height in pixels.
 ---@return number b Maximum width and height in pixels.
-LUiWidget.getMaxSize = function() end
+function LUiWidget:getMaxSize() end
 
 --- Returns the minimum width and height of this widget.
 ---@return number a Minimum width and height in pixels.
 ---@return number b Minimum width and height in pixels.
-LUiWidget.getMinSize = function() end
+function LUiWidget:getMinSize() end
 
 --- Returns the inner padding of this widget.
 ---@return number a Top, right, bottom, and left padding in pixels.
 ---@return number b Top, right, bottom, and left padding in pixels.
 ---@return number c Top, right, bottom, and left padding in pixels.
 ---@return number d Top, right, bottom, and left padding in pixels.
-LUiWidget.getPadding = function() end
+function LUiWidget:getPadding() end
 
 --- Returns the local position of this widget relative to its parent.
 ---@return number a The x and y coordinates in pixels.
 ---@return number b The x and y coordinates in pixels.
-LUiWidget.getPosition = function() end
+function LUiWidget:getPosition() end
 
 --- Returns the computed bounding rectangle of this widget in screen coordinates after layout.
 ---@return number a The x, y, width, and height of the computed rect.
 ---@return number b The x, y, width, and height of the computed rect.
 ---@return number c The x, y, width, and height of the computed rect.
 ---@return number d The x, y, width, and height of the computed rect.
-LUiWidget.getRect = function() end
+function LUiWidget:getRect() end
 
 --- Returns the width and height of this widget.
 ---@return number a The width and height in pixels.
 ---@return number b The width and height in pixels.
-LUiWidget.getSize = function() end
+function LUiWidget:getSize() end
 
 --- Returns the current interaction state of this widget (e.g. "normal", "hovered", "pressed", "disabled").
 ---@return string The widget state name.
-LUiWidget.getState = function() end
+function LUiWidget:getState() end
 
 --- Returns the tooltip text of this widget.
 ---@return string The tooltip text, or an empty string if none is set.
-LUiWidget.getTooltip = function() end
+function LUiWidget:getTooltip() end
 
 --- Returns the z-order (draw priority) of this widget.
 ---@return number The z-order value.
-LUiWidget.getZOrder = function() end
+function LUiWidget:getZOrder() end
 
 --- Returns whether this widget currently has an active animation.
 ---@return boolean True if an animation is in progress.
-LUiWidget.isAnimating = function() end
+function LUiWidget:isAnimating() end
 
 --- Returns whether this widget is currently enabled and can receive input.
 ---@return boolean True if the widget is enabled.
-LUiWidget.isEnabled = function() end
+function LUiWidget:isEnabled() end
 
 --- Returns whether this widget is currently visible.
 ---@return boolean True if the widget is visible.
-LUiWidget.isVisible = function() end
+function LUiWidget:isVisible() end
 
 --- Removes a child widget from this widget's hierarchy.
 ---@param child LWidget The child widget table or widget index to remove.
 ---@return nil No return value.
-LUiWidget.removeChild = function(child) end
+function LUiWidget:removeChild(child) end
 
 --- Sets the opacity of this widget, clamped to 0.0 (fully transparent) through 1.0 (fully opaque).
 ---@param alpha number The opacity value.
 ---@return nil No return value.
-LUiWidget.setAlpha = function(alpha) end
+function LUiWidget:setAlpha(alpha) end
 
 --- Anchors this widget to its parent's edges. Pass nil for any side to leave it unanchored.
 ---@param left? number Distance from parent's left edge, or nil.
@@ -25833,33 +25833,33 @@ LUiWidget.setAlpha = function(alpha) end
 ---@param right? number Distance from parent's right edge, or nil.
 ---@param bottom? number Distance from parent's bottom edge, or nil.
 ---@return nil No return value.
-LUiWidget.setAnchor = function(left, top, right, bottom) end
+function LUiWidget:setAnchor(left, top, right, bottom) end
 
 --- Centers this widget within its parent using proportional anchor offsets (0.0 to 1.0).
 ---@param cx? number Horizontal center fraction (0.5 = centered).
 ---@param cy? number Vertical center fraction (0.5 = centered).
 ---@return nil No return value.
-LUiWidget.setAnchorCenter = function(cx, cy) end
+function LUiWidget:setAnchorCenter(cx, cy) end
 
 --- Enables or disables this widget. Disabled widgets appear grayed out and ignore input.
 ---@param v boolean True to enable, false to disable.
 ---@return nil No return value.
-LUiWidget.setEnabled = function(v) end
+function LUiWidget:setEnabled(v) end
 
 --- Sets the flex-grow factor controlling how much extra space this widget receives in a layout.
 ---@param grow number The grow factor (0 = no growth).
 ---@return nil No return value.
-LUiWidget.setFlexGrow = function(grow) end
+function LUiWidget:setFlexGrow(grow) end
 
 --- Sets the flex-shrink factor controlling how much this widget shrinks when layout space is insufficient.
 ---@param shrink number The shrink factor (0 = no shrinkage).
 ---@return nil No return value.
-LUiWidget.setFlexShrink = function(shrink) end
+function LUiWidget:setFlexShrink(shrink) end
 
 --- Assigns a string identifier to this widget for lookup with findById.
 ---@param id string A unique identifier string.
 ---@return nil No return value.
-LUiWidget.setId = function(id) end
+function LUiWidget:setId(id) end
 
 --- Sets the outer margin of this widget. Accepts 1 to 4 values (top, right?, bottom?, left?) following CSS shorthand rules.
 ---@param top number Top margin in pixels (also used as default for other sides).
@@ -25867,35 +25867,35 @@ LUiWidget.setId = function(id) end
 ---@param bottom? number Bottom margin. Defaults to top.
 ---@param left? number Left margin. Defaults to right.
 ---@return nil No return value.
-LUiWidget.setMargin = function(top, right, bottom, left) end
+function LUiWidget:setMargin(top, right, bottom, left) end
 
 --- Sets the maximum allowed width and height for this widget during layout.
 ---@param w number Maximum width in pixels.
 ---@param h number Maximum height in pixels.
 ---@return nil No return value.
-LUiWidget.setMaxSize = function(w, h) end
+function LUiWidget:setMaxSize(w, h) end
 
 --- Sets the minimum allowed width and height for this widget during layout.
 ---@param w number Minimum width in pixels.
 ---@param h number Minimum height in pixels.
 ---@return nil No return value.
-LUiWidget.setMinSize = function(w, h) end
+function LUiWidget:setMinSize(w, h) end
 
 --- Registers a callback function invoked when this widget's value changes.
 ---@param f function Callback receiving the widget index as argument.
 ---@return nil No return value.
-LUiWidget.setOnChange = function(f) end
+function LUiWidget:setOnChange(f) end
 
 --- Registers a callback function invoked when this widget is clicked.
 ---@param f function Callback receiving the widget index as argument.
 ---@return nil No return value.
-LUiWidget.setOnClick = function(f) end
+function LUiWidget:setOnClick(f) end
 
 --- Registers a custom draw callback for this widget, invoked each frame during the draw pass.
 ---@param _self LWidget The widget (ignored, kept for method-call syntax).
 ---@param f function Callback receiving a rect table {x, y, w, h} with the computed bounds.
 ---@return nil No return value.
-LUiWidget.setOnDraw = function(_self, f) end
+function LUiWidget:setOnDraw(_self, f) end
 
 --- Sets the inner padding of this widget. Accepts 1 to 4 values (top, right?, bottom?, left?) following CSS shorthand rules.
 ---@param top number Top padding in pixels (also used as default for other sides).
@@ -25903,59 +25903,59 @@ LUiWidget.setOnDraw = function(_self, f) end
 ---@param bottom? number Bottom padding. Defaults to top.
 ---@param left? number Left padding. Defaults to right.
 ---@return nil No return value.
-LUiWidget.setPadding = function(top, right, bottom, left) end
+function LUiWidget:setPadding(top, right, bottom, left) end
 
 --- Sets the local position of this widget relative to its parent.
 ---@param x number Horizontal position in pixels.
 ---@param y number Vertical position in pixels.
 ---@return nil No return value.
-LUiWidget.setPosition = function(x, y) end
+function LUiWidget:setPosition(x, y) end
 
 --- Sets the width and height of this widget in pixels.
 ---@param w number Width in pixels.
 ---@param h number Height in pixels.
 ---@return nil No return value.
-LUiWidget.setSize = function(w, h) end
+function LUiWidget:setSize(w, h) end
 
 --- Sets the tooltip text shown when the user hovers over this widget.
 ---@param text string The tooltip message.
 ---@return nil No return value.
-LUiWidget.setTooltip = function(text) end
+function LUiWidget:setTooltip(text) end
 
 --- Shows or hides this widget. Hidden widgets are not drawn and do not receive input.
 ---@param v boolean True to show, false to hide.
 ---@return nil No return value.
-LUiWidget.setVisible = function(v) end
+function LUiWidget:setVisible(v) end
 
 --- Sets the z-order (draw priority) of this widget. Higher values draw on top.
 ---@param z number The z-order integer value.
 ---@return nil No return value.
-LUiWidget.setZOrder = function(z) end
+function LUiWidget:setZOrder(z) end
 
 --- Moves this widget to the given position and makes it visible.
 ---@param x number Target x position.
 ---@param y number Target y position.
 ---@return nil No return value.
-LUiWidget.slideIn = function(x, y) end
+function LUiWidget:slideIn(x, y) end
 
 --- Moves this widget to the given position and hides it.
 ---@param x number Target x position.
 ---@param y number Target y position.
 ---@return nil No return value.
-LUiWidget.slideOut = function(x, y) end
+function LUiWidget:slideOut(x, y) end
 
 --- Returns the type name string of this widget (e.g. "LButton", "LSlider").
 ---@return string The widget type name.
-LUiWidget.type = function() end
+function LUiWidget:type() end
 
 --- Checks whether this widget matches the given type name, including base types "LWidget" and "Object".
 ---@param name string The type name to check against.
 ---@return boolean True if the widget is of the given type.
-LUiWidget.typeOf = function(name) end
+function LUiWidget:typeOf(name) end
 
 --- Removes the data binding from this widget.
 ---@return nil No return value.
-LUiWidget.unbind = function() end
+function LUiWidget:unbind() end
 
 --- Adds a toast notification to the queue.
 ---@param toast_table table Table with message (string) and optional duration (number).

@@ -1369,56 +1369,13 @@ Returns the type name string `"LDepthSorter"`.
 
 #### Example
 
-Module-level example from [scene.lua](../blob/main/content/examples/scene.lua):
+Exact example from [scene.lua](../blob/main/content/examples/scene.lua):
 
 ```lua
---@api-stub: lurek.scene.pop
--- Pop the top scene off the stack and return to the previous one
 do
-  function lurek.process(dt)
-    if lurek.scene.depth() > 1 and not lurek.scene.isTransitioning() then
-      lurek.scene.pop("fade", 0.25, "linear")
-    end
-  end
+  local ds = lurek.scene.newDepthSorter()
+  lurek.log.info(ds:type(), "scene")
 end
-
---@api-stub: lurek.scene.switchTo
--- Replace the current top scene with a different one without changing stack depth
-do
-  local game_over = lurek.scene.new({ enter = function(self, p) self.score = p.score end })
-  lurek.scene.switchTo(game_over, "fade", 0.5, "ease_out", { score = 1240 })
-end
-
---@api-stub: lurek.scene.clear
--- Remove all scenes from the stack
-do
-  function lurek.quit()
-    lurek.scene.clear()
-    lurek.log.info("scene stack cleared on shutdown", "scene")
-  end
-end
-
---@api-stub: lurek.scene.popTo
--- Pop scenes off the stack until the named registered scene is on top
-do
-  if lurek.scene.hasRegistered("world_map") and lurek.scene.depth() > 1 then
-    lurek.scene.popTo("world_map")
-  end
-end
-
---@api-stub: lurek.scene.update
--- Advance any active transition animation and call `update(self, dt)` on the current top scene
-do
-  local sim_dt = 1 / 60
-  for _ = 1, 30 do
-    lurek.scene.update(sim_dt)
-  end
-end
-
---@api-stub: lurek.scene.process
--- Call `ready(self)` once on newly-pushed scenes, then call `process(self, dt)` on every active scene ordered by layer (lowest first)
-do
-  local headless = lurek.scene.new({ process = function(self, dt) self.t = (self.t or 0) + dt end })
 ```
 
 ### `LDepthSorter:typeOf(name: string) -> boolean`
@@ -1433,56 +1390,13 @@ Check whether this object matches a given type name. Accepts `"LDepthSorter"` or
 
 #### Example
 
-Module-level example from [scene.lua](../blob/main/content/examples/scene.lua):
+Exact example from [scene.lua](../blob/main/content/examples/scene.lua):
 
 ```lua
---@api-stub: lurek.scene.pop
--- Pop the top scene off the stack and return to the previous one
 do
-  function lurek.process(dt)
-    if lurek.scene.depth() > 1 and not lurek.scene.isTransitioning() then
-      lurek.scene.pop("fade", 0.25, "linear")
-    end
-  end
+  local ds = lurek.scene.newDepthSorter()
+  lurek.log.info(tostring(ds:typeOf("LDepthSorter")), "scene")
 end
-
---@api-stub: lurek.scene.switchTo
--- Replace the current top scene with a different one without changing stack depth
-do
-  local game_over = lurek.scene.new({ enter = function(self, p) self.score = p.score end })
-  lurek.scene.switchTo(game_over, "fade", 0.5, "ease_out", { score = 1240 })
-end
-
---@api-stub: lurek.scene.clear
--- Remove all scenes from the stack
-do
-  function lurek.quit()
-    lurek.scene.clear()
-    lurek.log.info("scene stack cleared on shutdown", "scene")
-  end
-end
-
---@api-stub: lurek.scene.popTo
--- Pop scenes off the stack until the named registered scene is on top
-do
-  if lurek.scene.hasRegistered("world_map") and lurek.scene.depth() > 1 then
-    lurek.scene.popTo("world_map")
-  end
-end
-
---@api-stub: lurek.scene.update
--- Advance any active transition animation and call `update(self, dt)` on the current top scene
-do
-  local sim_dt = 1 / 60
-  for _ = 1, 30 do
-    lurek.scene.update(sim_dt)
-  end
-end
-
---@api-stub: lurek.scene.process
--- Call `ready(self)` once on newly-pushed scenes, then call `process(self, dt)` on every active scene ordered by layer (lowest first)
-do
-  local headless = lurek.scene.new({ process = function(self, dt) self.t = (self.t or 0) + dt end })
 ```
 
 

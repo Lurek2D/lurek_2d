@@ -14,7 +14,7 @@
 - [Key Types](#key-types)
 - [API Overview](#api-overview)
 - [Module Functions](#module-functions)
-  - [lurek.image.fromScreen() -> LuaValue](#lurekimagefromscreen-luavalue)
+  - [lurek.image.fromScreen() -> LImageData?](#lurekimagefromscreen-limagedata)
   - [lurek.image.isCompressed(filename: string) -> boolean](#lurekimageiscompressedfilename-string-boolean)
   - [lurek.image.loadImage(filename: string) -> LImageData](#lurekimageloadimagefilename-string-limagedata)
   - [lurek.image.loadLayered(filename: string) -> LLayeredImage](#lurekimageloadlayeredfilename-string-llayeredimage)
@@ -58,7 +58,7 @@
   - [LImageData:getHeight() -> integer](#limagedatagetheight-integer)
   - [LImageData:getPixel(x: integer, y: integer) -> integer](#limagedatagetpixelx-integer-y-integer-integer)
   - [LImageData:getRawBytes() -> string](#limagedatagetrawbytes-string)
-  - [LImageData:getRegion(x: integer, y: integer, w: integer, h: integer) -> LuaValue](#limagedatagetregionx-integer-y-integer-w-integer-h-integer-luavalue)
+  - [LImageData:getRegion(x: integer, y: integer, w: integer, h: integer) -> LImageData?](#limagedatagetregionx-integer-y-integer-w-integer-h-integer-limagedata)
   - [LImageData:getString() -> string](#limagedatagetstring-string)
   - [LImageData:getWidth() -> integer](#limagedatagetwidth-integer)
   - [LImageData:grayscale()](#limagedatagrayscale)
@@ -68,7 +68,7 @@
   - [LImageData:noise(amount: integer)](#limagedatanoiseamount-integer)
   - [LImageData:paste(src_ud: LImageData, dx: integer, dy: integer)](#limagedatapastesrcud-limagedata-dx-integer-dy-integer)
   - [LImageData:posterize(levels: integer)](#limagedataposterizelevels-integer)
-  - [LImageData:resize(width: integer, height: integer, filter: string) -> LuaValue](#limagedataresizewidth-integer-height-integer-filter-string-luavalue)
+  - [LImageData:resize(width: integer, height: integer, filter: string) -> LImageData?](#limagedataresizewidth-integer-height-integer-filter-string-limagedata)
   - [LImageData:resizeNearest(new_w: integer, new_h: integer) -> LImageData](#limagedataresizenearestneww-integer-newh-integer-limagedata)
   - [LImageData:rotate90cw() -> LImageData](#limagedatarotate90cw-limagedata)
   - [LImageData:saturation(factor: number)](#limagedatasaturationfactor-number)
@@ -209,7 +209,7 @@ do
 - Source spec: [docs/specs/image.md](../blob/main/docs/specs/image.md)
 
 ```lua
-lurek.image.fromScreen() -> LuaValue -- Returns a completed screen capture image or requests one for a future call.
+lurek.image.fromScreen() -> LImageData? -- Returns a completed screen capture image or requests one for a future call.
 lurek.image.isCompressed(filename: string) -> boolean -- Returns whether a GameFS image file begins with DDS compressed image magic bytes.
 lurek.image.loadImage(filename: string) -> LImageData -- Loads and decodes image data from GameFS.
 lurek.image.loadLayered(filename: string) -> LLayeredImage -- Loads a serialized layered image stack from GameFS.
@@ -225,11 +225,11 @@ lurek.image.savePNG(img_ud: LImageData, filename: string) -- Encodes image data 
 
 ## Module Functions
 
-### `lurek.image.fromScreen() -> LuaValue`
+### `lurek.image.fromScreen() -> LImageData?`
 
 Returns a completed screen capture image or requests one for a future call.
 
-**Returns**: `LuaValue` - `LImageData` when capture data is ready, or nil after requesting capture.
+**Returns**: `LImageData?` - `LImageData` when capture data is ready, or nil after requesting capture.
 
 #### Example
 
@@ -263,10 +263,13 @@ Exact example from [image.lua](../blob/main/content/examples/image.lua):
 
 ```lua
 do
-  -- Returns true for .dds files, false for .png / .jpg.
-  local is_dds = lurek.image.isCompressed("assets/terrain_bc1.dds")
-  local is_png = lurek.image.isCompressed("assets/hero.png")
-  lurek.log.info("dds=" .. tostring(is_dds) .. " png=" .. tostring(is_png), "image")
+  local path = "assets/terrain_bc1.dds"
+  local _ok_ic, _is_c = pcall(lurek.image.isCompressed, path)
+  if _ok_ic and _is_c then
+    pcall(lurek.image.newCompressedData, path)
+  else
+    lurek.image.newImageData(64, 64)
+  end
 end
 ```
 
@@ -332,11 +335,10 @@ Exact example from [image.lua](../blob/main/content/examples/image.lua):
 
 ```lua
 do
-  -- DDS files are optional assets; guard with pcall so the example is headless-safe.
-  local ok, cd = pcall(lurek.image.newCompressedData, "assets/terrain_bc1.dds")
-  if ok and cd then
-    lurek.log.info("loaded compressed texture, format=" .. cd:getFormat(), "image")
-  end
+  local ok_cd, cd = pcall(lurek.image.newCompressedData, "assets/terrain_bc1.dds")
+  if not ok_cd then return end
+  local mips = (cd and cd:getMipmapCount() or 0)
+  lurek.log.info("dds " .. (cd and cd:getFormat() or "unknown") .. " mips=" .. mips, "image")
 end
 ```
 
@@ -446,10 +448,10 @@ Exact example from [image.lua](../blob/main/content/examples/image.lua):
 
 ```lua
 do
-  local ok, grid = pcall(lurek.image.newProvinceGrid, "assets/provinces.png")
-  if ok and grid then
-    lurek.log.info("province grid loaded", "image")
-  end
+  local ok_grid, grid = pcall(lurek.image.newProvinceGrid, "assets/world_provinces.png")
+  if not ok_grid then return end
+  local count = (grid and grid:provinceCount() or 0)
+  lurek.log.info("loaded " .. count .. " provinces", "map")
 end
 ```
 
@@ -509,11 +511,10 @@ Exact example from [image.lua](../blob/main/content/examples/image.lua):
 
 ```lua
 do
-  -- DDS files are optional assets; guard with pcall so the example is headless-safe.
-  local ok, cd = pcall(lurek.image.newCompressedData, "assets/terrain_bc1.dds")
-  if ok and cd then
-    lurek.log.info("loaded compressed texture, format=" .. cd:getFormat(), "image")
-  end
+  local ok_cd, cd = pcall(lurek.image.newCompressedData, "assets/terrain_bc1.dds")
+  if not ok_cd then return end
+  local mips = (cd and cd:getMipmapCount() or 0)
+  lurek.log.info("dds " .. (cd and cd:getFormat() or "unknown") .. " mips=" .. mips, "image")
 end
 ```
 
@@ -669,9 +670,13 @@ Exact example from [image.lua](../blob/main/content/examples/image.lua):
 
 ```lua
 do
-  local restored = lurek.image.loadImage("save/orange64.limg")
-  local w, h = restored:getDimensions()
-  lurek.log.info("restored " .. w .. "x" .. h, "image")
+  local first = lurek.image.fromScreen()
+  if first == nil then
+    local later = lurek.image.fromScreen()
+    if later then
+      lurek.image.savePNG(later, "save/screen_capture.png")
+    end
+  end
 end
 ```
 
@@ -966,14 +971,12 @@ Exact example from [image.lua](../blob/main/content/examples/image.lua):
 
 ```lua
 do
-  local atlas = lurek.image.newImageData(8, 8)
-  atlas:fill(20, 20, 20, 255)
-  atlas:drawRect(2, 2, 4, 4, 220, 50, 50, 255)
+  local atlas = lurek.image.newImageData(32, 32)
+  atlas:fill(255, 255, 255, 255)
 
-  local canvas = lurek.image.newImageData(32, 20)
-  canvas:fill(0, 0, 0, 0)
-  canvas:drawNineSlice(atlas, 0, 0, 8, 8, 4, 2, 24, 16, 2, 2, 2, 2)
-  lurek.image.savePNG(canvas, "save/panel_nineslice.png")
+  local out = lurek.image.newImageData(96, 64)
+  out:fill(0, 0, 0, 0)
+  out:drawNineSlice(atlas, 0, 0, 32, 32, 4, 4, 88, 56, 8, 8, 8, 8)
 end
 ```
 
@@ -1178,60 +1181,17 @@ Returns raw image bytes as a Lua string.
 
 #### Example
 
-Module-level example from [image.lua](../blob/main/content/examples/image.lua):
+Exact example from [image.lua](../blob/main/content/examples/image.lua):
 
 ```lua
--- content/examples/image.lua
--- lurek.image API examples.
--- Run: cargo run -- content/examples/image.lua
-
---@api-stub: lurek.image.newImageData
--- Creates empty image data from dimensions or decodes image data from a GameFS filename
 do
-  local hero = lurek.image.newImageData(64, 64)
-  local scratch = lurek.image.newImageData(64, 64)
-  scratch:fill(0, 0, 0, 0)
-  lurek.log.info("loaded hero " .. hero:getWidth() .. "x" .. hero:getHeight(), "image")
+  local img = lurek.image.newImageData(4, 4)
+  local bytes = img:getRawBytes()
+  lurek.log.debug("raw bytes=" .. #bytes, "image")
 end
-
---@api-stub: lurek.image.newCompressedData
--- Loads DDS compressed image data from GameFS
-do
-  local ok_cd, cd = pcall(lurek.image.newCompressedData, "assets/terrain_bc1.dds")
-  if not ok_cd then return end
-  local mips = (cd and cd:getMipmapCount() or 0)
-  lurek.log.info("dds " .. (cd and cd:getFormat() or "unknown") .. " mips=" .. mips, "image")
-end
-
---@api-stub: lurek.image.isCompressed
--- Returns whether a GameFS image file begins with DDS compressed image magic bytes
-do
-  local path = "assets/terrain_bc1.dds"
-  local _ok_ic, _is_c = pcall(lurek.image.isCompressed, path)
-  if _ok_ic and _is_c then
-    pcall(lurek.image.newCompressedData, path)
-  else
-    lurek.image.newImageData(64, 64)
-  end
-end
-
---@api-stub: lurek.image.newLayeredImage
--- Creates a layered image stack with one or more blank layers
-do
-  local doc = lurek.image.newLayeredImage(256, 256)
-  local bg = doc:addLayer("background")
-  local fg = doc:addLayer("foreground")
-  lurek.log.info("layers bg=" .. bg .. " fg=" .. fg, "image")
-end
-
---@api-stub: lurek.image.saveImage
--- Saves an image data object to a path under the current game directory
-do
-  local img = lurek.image.newImageData(64, 64)
-  img:fill(255, 128, 0, 255)
 ```
 
-### `LImageData:getRegion(x: integer, y: integer, w: integer, h: integer) -> LuaValue`
+### `LImageData:getRegion(x: integer, y: integer, w: integer, h: integer) -> LImageData?`
 
 Returns an image region when the requested rectangle is inside bounds.
 
@@ -1242,7 +1202,7 @@ Returns an image region when the requested rectangle is inside bounds.
 - `w` (`integer`, required) - Region width.
 - `h` (`integer`, required) - Region height.
 
-**Returns**: `LuaValue` - `LImageData` handle, or nil when the region is out of bounds.
+**Returns**: `LImageData?` - `LImageData` handle, or nil when the region is out of bounds.
 
 #### Example
 
@@ -1266,9 +1226,10 @@ Exact example from [image.lua](../blob/main/content/examples/image.lua):
 
 ```lua
 do
-  local img = lurek.image.newImageData(4, 4)
-  local s = img:getString()
-  lurek.log.info("raw bytes length=" .. #s, "image")
+  local img = lurek.image.newImageData(8, 8)
+  img:fill(255, 0, 0, 255)
+  local raw = img:getString()
+  lurek.log.info("raw bytes=" .. #raw, "image")
 end
 ```
 
@@ -1437,7 +1398,7 @@ do
 end
 ```
 
-### `LImageData:resize(width: integer, height: integer, filter: string) -> LuaValue`
+### `LImageData:resize(width: integer, height: integer, filter: string) -> LImageData?`
 
 Returns a resized image using an optional named filter.
 
@@ -1447,7 +1408,7 @@ Returns a resized image using an optional named filter.
 - `height` (`integer`, required) - Output height.
 - `filter` (`string`, required) - Optional filter name, defaulting to `bilinear`.
 
-**Returns**: `LuaValue` - Resized `LImageData` handle, or nil when resizing fails.
+**Returns**: `LImageData?` - Resized `LImageData` handle, or nil when resizing fails.
 
 #### Example
 
@@ -1666,12 +1627,12 @@ Returns the Lua-visible type name for this image data handle.
 
 #### Example
 
-Exact example from [render.lua](../blob/main/content/examples/render.lua):
+Exact example from [image.lua](../blob/main/content/examples/image.lua):
 
 ```lua
 do
-  local data = screenshot()
-  if data then lurek.log.debug(data:type()) end
+  local img = lurek.image.newImageData(8, 8)
+  assert(img:type() == "ImageData")
 end
 ```
 
@@ -1687,12 +1648,12 @@ Returns whether this image data handle matches the `ImageData` type name.
 
 #### Example
 
-Exact example from [render.lua](../blob/main/content/examples/render.lua):
+Exact example from [image.lua](../blob/main/content/examples/image.lua):
 
 ```lua
 do
-  local data = screenshot()
-  if data and data:typeOf('ImageData') then lurek.log.debug('confirmed ImageData') end
+  local img = lurek.image.newImageData(8, 8)
+  assert(img:typeOf("ImageData") == true)
 end
 ```
 
@@ -2294,10 +2255,10 @@ Exact example from [image.lua](../blob/main/content/examples/image.lua):
 
 ```lua
 do
-  local ok, grid = pcall(lurek.image.newProvinceGrid, "assets/provinces.png")
-  if ok and grid then
-    lurek.log.info("province grid loaded", "image")
-  end
+  local ok_grid, grid = pcall(lurek.image.newProvinceGrid, "assets/world_provinces.png")
+  if not ok_grid then return end
+  local count = (grid and grid:provinceCount() or 0)
+  lurek.log.info("loaded " .. count .. " provinces", "map")
 end
 ```
 
@@ -2328,57 +2289,14 @@ Returns border line segments between neighboring provinces.
 
 #### Example
 
-Module-level example from [image.lua](../blob/main/content/examples/image.lua):
+Exact example from [province.lua](../blob/main/content/examples/province.lua):
 
 ```lua
--- content/examples/image.lua
--- lurek.image API examples.
--- Run: cargo run -- content/examples/image.lua
-
---@api-stub: lurek.image.newImageData
--- Creates empty image data from dimensions or decodes image data from a GameFS filename
 do
-  local hero = lurek.image.newImageData(64, 64)
-  local scratch = lurek.image.newImageData(64, 64)
-  scratch:fill(0, 0, 0, 0)
-  lurek.log.info("loaded hero " .. hero:getWidth() .. "x" .. hero:getHeight(), "image")
+  local grid = lurek.province.newGrid(800, 600, 64)
+  local segs = grid:borderSegments(1)
+  lurek.log.debug("border segs=" .. #segs, "province")
 end
-
---@api-stub: lurek.image.newCompressedData
--- Loads DDS compressed image data from GameFS
-do
-  local ok_cd, cd = pcall(lurek.image.newCompressedData, "assets/terrain_bc1.dds")
-  if not ok_cd then return end
-  local mips = (cd and cd:getMipmapCount() or 0)
-  lurek.log.info("dds " .. (cd and cd:getFormat() or "unknown") .. " mips=" .. mips, "image")
-end
-
---@api-stub: lurek.image.isCompressed
--- Returns whether a GameFS image file begins with DDS compressed image magic bytes
-do
-  local path = "assets/terrain_bc1.dds"
-  local _ok_ic, _is_c = pcall(lurek.image.isCompressed, path)
-  if _ok_ic and _is_c then
-    pcall(lurek.image.newCompressedData, path)
-  else
-    lurek.image.newImageData(64, 64)
-  end
-end
-
---@api-stub: lurek.image.newLayeredImage
--- Creates a layered image stack with one or more blank layers
-do
-  local doc = lurek.image.newLayeredImage(256, 256)
-  local bg = doc:addLayer("background")
-  local fg = doc:addLayer("foreground")
-  lurek.log.info("layers bg=" .. bg .. " fg=" .. fg, "image")
-end
-
---@api-stub: lurek.image.saveImage
--- Saves an image data object to a path under the current game directory
-do
-  local img = lurek.image.newImageData(64, 64)
-  img:fill(255, 128, 0, 255)
 ```
 
 ### `LProvinceGrid:deserializeShapeData(bytes: string) -> LuaValue`
@@ -2393,57 +2311,14 @@ Decodes serialized province shape data into span and segment tables.
 
 #### Example
 
-Module-level example from [image.lua](../blob/main/content/examples/image.lua):
+Exact example from [province.lua](../blob/main/content/examples/province.lua):
 
 ```lua
--- content/examples/image.lua
--- lurek.image API examples.
--- Run: cargo run -- content/examples/image.lua
-
---@api-stub: lurek.image.newImageData
--- Creates empty image data from dimensions or decodes image data from a GameFS filename
 do
-  local hero = lurek.image.newImageData(64, 64)
-  local scratch = lurek.image.newImageData(64, 64)
-  scratch:fill(0, 0, 0, 0)
-  lurek.log.info("loaded hero " .. hero:getWidth() .. "x" .. hero:getHeight(), "image")
+  local grid = lurek.province.newGrid(800, 600, 64)
+  local data = grid:serializeShapeData()
+  grid:deserializeShapeData(data)
 end
-
---@api-stub: lurek.image.newCompressedData
--- Loads DDS compressed image data from GameFS
-do
-  local ok_cd, cd = pcall(lurek.image.newCompressedData, "assets/terrain_bc1.dds")
-  if not ok_cd then return end
-  local mips = (cd and cd:getMipmapCount() or 0)
-  lurek.log.info("dds " .. (cd and cd:getFormat() or "unknown") .. " mips=" .. mips, "image")
-end
-
---@api-stub: lurek.image.isCompressed
--- Returns whether a GameFS image file begins with DDS compressed image magic bytes
-do
-  local path = "assets/terrain_bc1.dds"
-  local _ok_ic, _is_c = pcall(lurek.image.isCompressed, path)
-  if _ok_ic and _is_c then
-    pcall(lurek.image.newCompressedData, path)
-  else
-    lurek.image.newImageData(64, 64)
-  end
-end
-
---@api-stub: lurek.image.newLayeredImage
--- Creates a layered image stack with one or more blank layers
-do
-  local doc = lurek.image.newLayeredImage(256, 256)
-  local bg = doc:addLayer("background")
-  local fg = doc:addLayer("foreground")
-  lurek.log.info("layers bg=" .. bg .. " fg=" .. fg, "image")
-end
-
---@api-stub: lurek.image.saveImage
--- Saves an image data object to a path under the current game directory
-do
-  local img = lurek.image.newImageData(64, 64)
-  img:fill(255, 128, 0, 255)
 ```
 
 ### `LProvinceGrid:drawShapes([x]: number, [y]: number, [w]: number, [h]: number) -> integer`
@@ -2614,57 +2489,14 @@ Returns horizontal province spans by row.
 
 #### Example
 
-Module-level example from [image.lua](../blob/main/content/examples/image.lua):
+Exact example from [province.lua](../blob/main/content/examples/province.lua):
 
 ```lua
--- content/examples/image.lua
--- lurek.image API examples.
--- Run: cargo run -- content/examples/image.lua
-
---@api-stub: lurek.image.newImageData
--- Creates empty image data from dimensions or decodes image data from a GameFS filename
 do
-  local hero = lurek.image.newImageData(64, 64)
-  local scratch = lurek.image.newImageData(64, 64)
-  scratch:fill(0, 0, 0, 0)
-  lurek.log.info("loaded hero " .. hero:getWidth() .. "x" .. hero:getHeight(), "image")
+  local grid = lurek.province.newGrid(800, 600, 64)
+  local spans = grid:provinceSpans(1)
+  lurek.log.debug("spans=" .. #spans, "province")
 end
-
---@api-stub: lurek.image.newCompressedData
--- Loads DDS compressed image data from GameFS
-do
-  local ok_cd, cd = pcall(lurek.image.newCompressedData, "assets/terrain_bc1.dds")
-  if not ok_cd then return end
-  local mips = (cd and cd:getMipmapCount() or 0)
-  lurek.log.info("dds " .. (cd and cd:getFormat() or "unknown") .. " mips=" .. mips, "image")
-end
-
---@api-stub: lurek.image.isCompressed
--- Returns whether a GameFS image file begins with DDS compressed image magic bytes
-do
-  local path = "assets/terrain_bc1.dds"
-  local _ok_ic, _is_c = pcall(lurek.image.isCompressed, path)
-  if _ok_ic and _is_c then
-    pcall(lurek.image.newCompressedData, path)
-  else
-    lurek.image.newImageData(64, 64)
-  end
-end
-
---@api-stub: lurek.image.newLayeredImage
--- Creates a layered image stack with one or more blank layers
-do
-  local doc = lurek.image.newLayeredImage(256, 256)
-  local bg = doc:addLayer("background")
-  local fg = doc:addLayer("foreground")
-  lurek.log.info("layers bg=" .. bg .. " fg=" .. fg, "image")
-end
-
---@api-stub: lurek.image.saveImage
--- Saves an image data object to a path under the current game directory
-do
-  local img = lurek.image.newImageData(64, 64)
-  img:fill(255, 128, 0, 255)
 ```
 
 ### `LProvinceGrid:serializeShapeData() -> string`
@@ -2675,57 +2507,14 @@ Serializes province span and border shape data into a binary Lua string.
 
 #### Example
 
-Module-level example from [image.lua](../blob/main/content/examples/image.lua):
+Exact example from [province.lua](../blob/main/content/examples/province.lua):
 
 ```lua
--- content/examples/image.lua
--- lurek.image API examples.
--- Run: cargo run -- content/examples/image.lua
-
---@api-stub: lurek.image.newImageData
--- Creates empty image data from dimensions or decodes image data from a GameFS filename
 do
-  local hero = lurek.image.newImageData(64, 64)
-  local scratch = lurek.image.newImageData(64, 64)
-  scratch:fill(0, 0, 0, 0)
-  lurek.log.info("loaded hero " .. hero:getWidth() .. "x" .. hero:getHeight(), "image")
+  local grid = lurek.province.newGrid(800, 600, 64)
+  local data = grid:serializeShapeData()
+  lurek.log.debug("serialized bytes=" .. #data, "province")
 end
-
---@api-stub: lurek.image.newCompressedData
--- Loads DDS compressed image data from GameFS
-do
-  local ok_cd, cd = pcall(lurek.image.newCompressedData, "assets/terrain_bc1.dds")
-  if not ok_cd then return end
-  local mips = (cd and cd:getMipmapCount() or 0)
-  lurek.log.info("dds " .. (cd and cd:getFormat() or "unknown") .. " mips=" .. mips, "image")
-end
-
---@api-stub: lurek.image.isCompressed
--- Returns whether a GameFS image file begins with DDS compressed image magic bytes
-do
-  local path = "assets/terrain_bc1.dds"
-  local _ok_ic, _is_c = pcall(lurek.image.isCompressed, path)
-  if _ok_ic and _is_c then
-    pcall(lurek.image.newCompressedData, path)
-  else
-    lurek.image.newImageData(64, 64)
-  end
-end
-
---@api-stub: lurek.image.newLayeredImage
--- Creates a layered image stack with one or more blank layers
-do
-  local doc = lurek.image.newLayeredImage(256, 256)
-  local bg = doc:addLayer("background")
-  local fg = doc:addLayer("foreground")
-  lurek.log.info("layers bg=" .. bg .. " fg=" .. fg, "image")
-end
-
---@api-stub: lurek.image.saveImage
--- Saves an image data object to a path under the current game directory
-do
-  local img = lurek.image.newImageData(64, 64)
-  img:fill(255, 128, 0, 255)
 ```
 
 ### `LProvinceGrid:type() -> string`

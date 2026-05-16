@@ -380,8 +380,9 @@ Exact example from [network.lua](../blob/main/content/examples/network.lua):
 
 ```lua
 do
-  local ok, host = pcall(lurek.network.newHost, { address = "127.0.0.1", port = 0 })
-  lurek.log.info("newHost ok=" .. tostring(ok), "network")
+  local host = lurek.network.newHost{ addr = "0.0.0.0:5555", maxPeers = 32, channels = 2 }
+  lurek.log.info("listening on " .. host:getAddress(), "net")
+  host:destroy()
 end
 ```
 
@@ -1195,12 +1196,9 @@ Exact example from [network.lua](../blob/main/content/examples/network.lua):
 
 ```lua
 do
-  local ok ---@type boolean
-  local network_host_obj ---@type LNetworkHost?
-  ok, network_host_obj = pcall(lurek.network.newHost, 7777)
-  if not ok then network_host_obj = nil end
-  local t = network_host_obj and network_host_obj:type() or "LNetworkHost"
-  lurek.log.info("LNetworkHost:type = " .. t, "network")
+  local host = lurek.network.newServer{ port = 5573, maxPeers = 4 }
+  lurek.log.info("LNetworkHost:type = " .. host:type(), "net")
+  host:destroy()
 end
 ```
 
@@ -1220,12 +1218,9 @@ Exact example from [network.lua](../blob/main/content/examples/network.lua):
 
 ```lua
 do
-  local ok2 ---@type boolean
-  local network_host_obj2 ---@type LNetworkHost?
-  ok2, network_host_obj2 = pcall(lurek.network.newHost, 7778)
-  if not ok2 then network_host_obj2 = nil end
-  lurek.log.info("is LNetworkHost: " .. tostring(network_host_obj2 and network_host_obj2:typeOf("LNetworkHost") or false), "network")
-  lurek.log.info("is wrong: " .. tostring(network_host_obj2 and network_host_obj2:typeOf("Unknown") or false), "network")
+  local host = lurek.network.newServer{ port = 5574, maxPeers = 4 }
+  lurek.log.info("is host: " .. tostring(host:typeOf("LNetworkHost")), "net")
+  host:destroy()
 end
 ```
 
@@ -1431,9 +1426,9 @@ Exact example from [network.lua](../blob/main/content/examples/network.lua):
 
 ```lua
 do
-  local network_runtime_obj = lurek.network.newRuntime()
-  local t = network_runtime_obj:type()
-  lurek.log.info("LNetworkRuntime:type = " .. t, "network")
+  local rt = lurek.network.newRuntime()
+  lurek.log.info(rt:type(), "net")
+  rt:shutdown()
 end
 ```
 
@@ -1453,9 +1448,9 @@ Exact example from [network.lua](../blob/main/content/examples/network.lua):
 
 ```lua
 do
-  local network_runtime_obj = lurek.network.newRuntime()
-  lurek.log.info("is LNetworkRuntime: " .. tostring(network_runtime_obj:typeOf("LNetworkRuntime")), "network")
-  lurek.log.info("is wrong: " .. tostring(network_runtime_obj:typeOf("Unknown")), "network")
+  local rt = lurek.network.newRuntime()
+  lurek.log.info(tostring(rt:typeOf("LNetworkRuntime")), "net")
+  rt:shutdown()
 end
 ```
 

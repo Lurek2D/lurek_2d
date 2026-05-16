@@ -129,13 +129,14 @@ Camera effects include shake (decaying sinusoidal displacement), sway (continuou
 Module example from [camera.lua](../blob/main/content/examples/camera.lua):
 
 ```lua
---@api-stub: Camera2D:update
+-- Advances this camera2d by the given delta time.
 do
   local cam = lurek.camera.new(800, 600)
   function lurek.process(dt) cam:update(dt) end
 end
 
 --@api-stub: Camera2D:toWorld
+-- Performs the to world operation on this camera2d.
 do
   local cam = lurek.camera.new(800, 600)
   cam:setPosition(200, 100)
@@ -144,6 +145,7 @@ do
 end
 
 --@api-stub: Camera2D:toScreen
+-- Performs the to screen operation on this camera2d.
 do
   local cam = lurek.camera.new(800, 600)
   local enemy_wx, enemy_wy = 1024, 512
@@ -152,6 +154,7 @@ do
 end
 
 --@api-stub: Camera2D:getVisibleArea
+-- Returns the visible area of this camera2d.
 do
   local cam = lurek.camera.new(800, 600)
   local vx, vy, vw, vh = cam:getVisibleArea()
@@ -159,23 +162,20 @@ do
 end
 
 --@api-stub: Camera2D:lookAt
+-- Performs the look at operation on this camera2d.
 do
   local cam = lurek.camera.new(800, 600)
   cam:lookAt(2048, 1024)
 end
 
 --@api-stub: Camera2D:move
+-- Performs the move operation on this camera2d.
 do
   local cam = lurek.camera.new(800, 600)
   function lurek.process(dt) cam:move(200 * dt, 0) end
 end
 
 --@api-stub: Camera2D:stopPath
-do
-  local cam = lurek.camera.new(800, 600)
-  cam:followPath({ {0, 0}, {500, 500} }, 3.0)
-  cam:stopPath()
-end
 ```
 
 ## Key Types
@@ -386,9 +386,9 @@ Exact example from [camera.lua](../blob/main/content/examples/camera.lua):
 ```lua
 do
   local cam = lurek.camera.new(800, 600)
-  cam:followPath({{x=0,y=0},{x=500,y=300}}, 5.0)
-  cam:stopPath()
-  lurek.log.info("path cancelled", "camera")
+  local waypoints = {{x=0,y=0},{x=200,y=100},{x=400,y=200}}
+  cam:followPath(waypoints, 3.0)   -- traverse path over 3 seconds
+  lurek.log.info("path started, progress=" .. cam:pathProgress(), "camera")
 end
 ```
 
@@ -1453,54 +1453,11 @@ Stops the active camera path. This method is available to Lua scripts.
 
 #### Example
 
-Module-level example from [camera.lua](../blob/main/content/examples/camera.lua):
+Exact example from [camera.lua](../blob/main/content/examples/camera.lua):
 
 ```lua
---@api-stub: Camera2D:update
 do
-  local cam = lurek.camera.new(800, 600)
-  function lurek.process(dt) cam:update(dt) end
-end
-
---@api-stub: Camera2D:toWorld
-do
-  local cam = lurek.camera.new(800, 600)
-  cam:setPosition(200, 100)
-  local wx, wy = cam:toWorld(400, 300)
-  lurek.log.debug("click world=" .. wx .. "," .. wy, "input")
-end
-
---@api-stub: Camera2D:toScreen
-do
-  local cam = lurek.camera.new(800, 600)
-  local enemy_wx, enemy_wy = 1024, 512
-  local sx, sy = cam:toScreen(enemy_wx, enemy_wy)
-  if sx >= 0 and sx < 800 then lurek.log.debug("enemy on-screen at " .. sx .. "," .. sy, "hud") end
-end
-
---@api-stub: Camera2D:getVisibleArea
-do
-  local cam = lurek.camera.new(800, 600)
-  local vx, vy, vw, vh = cam:getVisibleArea()
-  lurek.log.info("visible " .. vx .. "," .. vy .. " " .. vw .. "x" .. vh, "render")
-end
-
---@api-stub: Camera2D:lookAt
-do
-  local cam = lurek.camera.new(800, 600)
-  cam:lookAt(2048, 1024)
-end
-
---@api-stub: Camera2D:move
-do
-  local cam = lurek.camera.new(800, 600)
-  function lurek.process(dt) cam:move(200 * dt, 0) end
-end
-
---@api-stub: Camera2D:stopPath
-do
-  local cam = lurek.camera.new(800, 600)
-  cam:followPath({ {0, 0}, {500, 500} }, 3.0)
+  local cam = lurek.camera.get()
   cam:stopPath()
 end
 ```
@@ -1597,14 +1554,56 @@ Returns the Lua-visible type name for this camera handle.
 
 #### Example
 
-Exact example from [camera.lua](../blob/main/content/examples/camera.lua):
+Module-level example from [camera.lua](../blob/main/content/examples/camera.lua):
 
 ```lua
+-- Advances this camera2d by the given delta time.
 do
-  local camera_obj = lurek.camera.new(800, 600)
-  local t = camera_obj:type()
-  lurek.log.info("LCamera:type = " .. t, "camera")
+  local cam = lurek.camera.new(800, 600)
+  function lurek.process(dt) cam:update(dt) end
 end
+
+--@api-stub: Camera2D:toWorld
+-- Performs the to world operation on this camera2d.
+do
+  local cam = lurek.camera.new(800, 600)
+  cam:setPosition(200, 100)
+  local wx, wy = cam:toWorld(400, 300)
+  lurek.log.debug("click world=" .. wx .. "," .. wy, "input")
+end
+
+--@api-stub: Camera2D:toScreen
+-- Performs the to screen operation on this camera2d.
+do
+  local cam = lurek.camera.new(800, 600)
+  local enemy_wx, enemy_wy = 1024, 512
+  local sx, sy = cam:toScreen(enemy_wx, enemy_wy)
+  if sx >= 0 and sx < 800 then lurek.log.debug("enemy on-screen at " .. sx .. "," .. sy, "hud") end
+end
+
+--@api-stub: Camera2D:getVisibleArea
+-- Returns the visible area of this camera2d.
+do
+  local cam = lurek.camera.new(800, 600)
+  local vx, vy, vw, vh = cam:getVisibleArea()
+  lurek.log.info("visible " .. vx .. "," .. vy .. " " .. vw .. "x" .. vh, "render")
+end
+
+--@api-stub: Camera2D:lookAt
+-- Performs the look at operation on this camera2d.
+do
+  local cam = lurek.camera.new(800, 600)
+  cam:lookAt(2048, 1024)
+end
+
+--@api-stub: Camera2D:move
+-- Performs the move operation on this camera2d.
+do
+  local cam = lurek.camera.new(800, 600)
+  function lurek.process(dt) cam:move(200 * dt, 0) end
+end
+
+--@api-stub: Camera2D:stopPath
 ```
 
 ### `LCamera:typeOf(name: string) -> boolean`
@@ -1619,14 +1618,56 @@ Returns whether this camera handle matches a supported type name.
 
 #### Example
 
-Exact example from [camera.lua](../blob/main/content/examples/camera.lua):
+Module-level example from [camera.lua](../blob/main/content/examples/camera.lua):
 
 ```lua
+-- Advances this camera2d by the given delta time.
 do
-  local camera_obj = lurek.camera.new(800, 600)
-  lurek.log.info("is LCamera: " .. tostring(camera_obj:typeOf("LCamera")), "camera")
-  lurek.log.info("is wrong: " .. tostring(camera_obj:typeOf("Unknown")), "camera")
+  local cam = lurek.camera.new(800, 600)
+  function lurek.process(dt) cam:update(dt) end
 end
+
+--@api-stub: Camera2D:toWorld
+-- Performs the to world operation on this camera2d.
+do
+  local cam = lurek.camera.new(800, 600)
+  cam:setPosition(200, 100)
+  local wx, wy = cam:toWorld(400, 300)
+  lurek.log.debug("click world=" .. wx .. "," .. wy, "input")
+end
+
+--@api-stub: Camera2D:toScreen
+-- Performs the to screen operation on this camera2d.
+do
+  local cam = lurek.camera.new(800, 600)
+  local enemy_wx, enemy_wy = 1024, 512
+  local sx, sy = cam:toScreen(enemy_wx, enemy_wy)
+  if sx >= 0 and sx < 800 then lurek.log.debug("enemy on-screen at " .. sx .. "," .. sy, "hud") end
+end
+
+--@api-stub: Camera2D:getVisibleArea
+-- Returns the visible area of this camera2d.
+do
+  local cam = lurek.camera.new(800, 600)
+  local vx, vy, vw, vh = cam:getVisibleArea()
+  lurek.log.info("visible " .. vx .. "," .. vy .. " " .. vw .. "x" .. vh, "render")
+end
+
+--@api-stub: Camera2D:lookAt
+-- Performs the look at operation on this camera2d.
+do
+  local cam = lurek.camera.new(800, 600)
+  cam:lookAt(2048, 1024)
+end
+
+--@api-stub: Camera2D:move
+-- Performs the move operation on this camera2d.
+do
+  local cam = lurek.camera.new(800, 600)
+  function lurek.process(dt) cam:move(200 * dt, 0) end
+end
+
+--@api-stub: Camera2D:stopPath
 ```
 
 ### `LCamera:update(dt: number)`

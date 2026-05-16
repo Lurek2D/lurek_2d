@@ -118,7 +118,7 @@ XCOM-style Geoscape globe rendering a province-based sphere with orbit camera, f
 Module example from [globe.lua](../blob/main/content/examples/globe.lua):
 
 ```lua
---@api-stub: Globe:pan
+-- Performs the pan operation on this globe.
 do
   local g = lurek.globe.new("pan_demo", {})
   function lurek.process(dt)
@@ -128,6 +128,7 @@ do
 end
 
 --@api-stub: Globe:zoom
+-- Performs the zoom operation on this globe.
 do
   local g = lurek.globe.new("zoom_demo", {})
   function lurek.process(dt)
@@ -137,6 +138,7 @@ do
 end
 
 --@api-stub: Globe:setCamera
+-- Sets the camera of this globe.
 do
   local g = lurek.globe.new("setcam_demo", {})
   g:setCamera(48.85, 2.35, 3.0)  -- centred on Paris, zoomed in
@@ -145,6 +147,7 @@ do
 end
 
 --@api-stub: Globe:getCamera
+-- Returns the camera of this globe.
 do
   local g = lurek.globe.new("getcam_demo", {})
   g:setCamera(0.0, 0.0, 1.5)
@@ -153,6 +156,7 @@ do
 end
 
 --@api-stub: Globe:getLod
+-- Returns the lod of this globe.
 do
   local g = lurek.globe.new("lod_demo", {})
   g:setCamera(0, 0, 5.0)
@@ -161,10 +165,6 @@ do
 end
 
 --@api-stub: Globe:pick
-do
-  local g = lurek.globe.new("pick_demo", {})
-  function lurek.input_pressed(key)
-    local mx, my = lurek.input.mouse.getPosition()
 ```
 
 ## Key Types
@@ -382,9 +382,9 @@ Exact example from [globe.lua](../blob/main/content/examples/globe.lua):
 
 ```lua
 do
-  local g = lurek.globe.new("new_demo", {})
-  g:addProvince(sampleProvince(1, 0, 0))
-  lurek.log.info("globe province count: " .. g:provinceCount(), "globe")
+  local g = lurek.globe.new("earth_demo", { radius = 1.0, axial_tilt_deg = 23.5 })
+  g:setBorders(true)
+  lurek.log.info("created globe " .. g:getName(), "globe")
 end
 ```
 
@@ -547,56 +547,16 @@ Caches default-cost reachability for a named faction.
 
 #### Example
 
-Module-level example from [globe.lua](../blob/main/content/examples/globe.lua):
+Exact example from [globe.lua](../blob/main/content/examples/globe.lua):
 
 ```lua
---@api-stub: Globe:pan
 do
-  local g = lurek.globe.new("pan_demo", {})
-  function lurek.process(dt)
-    if lurek.input.keyboard.isDown("a") then g:pan(0, -45.0 * dt) end
-    if lurek.input.keyboard.isDown("d") then g:pan(0,  45.0 * dt) end
-  end
+  local g = lurek.globe.new("reach_demo", {})
+  g:addProvince({ id = 1, centroid = {0,0}, vertices = {{0,0},{1,0},{1,1}}, neighbors = {2} })
+  g:addProvince({ id = 2, centroid = {2,2}, vertices = {{2,2},{3,2},{3,3}}, neighbors = {1} })
+  g:cacheReachability("blue", 1, 5.0)
+  local _map = g:getCachedReachability("blue")
 end
-
---@api-stub: Globe:zoom
-do
-  local g = lurek.globe.new("zoom_demo", {})
-  function lurek.process(dt)
-    local _, wheel = lurek.input.mouse.getWheelDelta()
-    if wheel ~= 0 then g:zoom(1.0 + wheel * 0.1) end
-  end
-end
-
---@api-stub: Globe:setCamera
-do
-  local g = lurek.globe.new("setcam_demo", {})
-  g:setCamera(48.85, 2.35, 3.0)  -- centred on Paris, zoomed in
-  local lat, lon, z = g:getCamera()
-  lurek.log.info(string.format("camera lat=%.2f lon=%.2f zoom=%.1f", lat, lon, z), "globe")
-end
-
---@api-stub: Globe:getCamera
-do
-  local g = lurek.globe.new("getcam_demo", {})
-  g:setCamera(0.0, 0.0, 1.5)
-  local lat, lon, z = g:getCamera()
-  lurek.filesystem.write("save/globe_camera.txt", string.format("%.3f,%.3f,%.3f", lat, lon, z))
-end
-
---@api-stub: Globe:getLod
-do
-  local g = lurek.globe.new("lod_demo", {})
-  g:setCamera(0, 0, 5.0)
-  local tier = g:getLod()
-  if tier == "near" then lurek.log.info("show city sprites", "globe") end
-end
-
---@api-stub: Globe:pick
-do
-  local g = lurek.globe.new("pick_demo", {})
-  function lurek.input_pressed(key)
-    local mx, my = lurek.input.mouse.getPosition()
 ```
 
 ### `LGlobe:clearProvinceTexture(id: integer) -> boolean`
@@ -634,56 +594,14 @@ Loads one viewer's fog state from a base64 string.
 
 #### Example
 
-Module-level example from [globe.lua](../blob/main/content/examples/globe.lua):
+Exact example from [globe.lua](../blob/main/content/examples/globe.lua):
 
 ```lua
---@api-stub: Globe:pan
 do
-  local g = lurek.globe.new("pan_demo", {})
-  function lurek.process(dt)
-    if lurek.input.keyboard.isDown("a") then g:pan(0, -45.0 * dt) end
-    if lurek.input.keyboard.isDown("d") then g:pan(0,  45.0 * dt) end
-  end
+  local g = lurek.globe.new(512, 256)
+  local enc = g:encodeFogBase64()
+  g:decodeFogBase64(enc)
 end
-
---@api-stub: Globe:zoom
-do
-  local g = lurek.globe.new("zoom_demo", {})
-  function lurek.process(dt)
-    local _, wheel = lurek.input.mouse.getWheelDelta()
-    if wheel ~= 0 then g:zoom(1.0 + wheel * 0.1) end
-  end
-end
-
---@api-stub: Globe:setCamera
-do
-  local g = lurek.globe.new("setcam_demo", {})
-  g:setCamera(48.85, 2.35, 3.0)  -- centred on Paris, zoomed in
-  local lat, lon, z = g:getCamera()
-  lurek.log.info(string.format("camera lat=%.2f lon=%.2f zoom=%.1f", lat, lon, z), "globe")
-end
-
---@api-stub: Globe:getCamera
-do
-  local g = lurek.globe.new("getcam_demo", {})
-  g:setCamera(0.0, 0.0, 1.5)
-  local lat, lon, z = g:getCamera()
-  lurek.filesystem.write("save/globe_camera.txt", string.format("%.3f,%.3f,%.3f", lat, lon, z))
-end
-
---@api-stub: Globe:getLod
-do
-  local g = lurek.globe.new("lod_demo", {})
-  g:setCamera(0, 0, 5.0)
-  local tier = g:getLod()
-  if tier == "near" then lurek.log.info("show city sprites", "globe") end
-end
-
---@api-stub: Globe:pick
-do
-  local g = lurek.globe.new("pick_demo", {})
-  function lurek.input_pressed(key)
-    local mx, my = lurek.input.mouse.getPosition()
 ```
 
 ### `LGlobe:encodeFogBase64(viewer: string) -> string`
@@ -698,56 +616,14 @@ Serializes one viewer's fog state to a base64 string.
 
 #### Example
 
-Module-level example from [globe.lua](../blob/main/content/examples/globe.lua):
+Exact example from [globe.lua](../blob/main/content/examples/globe.lua):
 
 ```lua
---@api-stub: Globe:pan
 do
-  local g = lurek.globe.new("pan_demo", {})
-  function lurek.process(dt)
-    if lurek.input.keyboard.isDown("a") then g:pan(0, -45.0 * dt) end
-    if lurek.input.keyboard.isDown("d") then g:pan(0,  45.0 * dt) end
-  end
+  local g = lurek.globe.new(512, 256)
+  local encoded = g:encodeFogBase64()
+  lurek.log.debug("fog encoded bytes=" .. #encoded, "globe")
 end
-
---@api-stub: Globe:zoom
-do
-  local g = lurek.globe.new("zoom_demo", {})
-  function lurek.process(dt)
-    local _, wheel = lurek.input.mouse.getWheelDelta()
-    if wheel ~= 0 then g:zoom(1.0 + wheel * 0.1) end
-  end
-end
-
---@api-stub: Globe:setCamera
-do
-  local g = lurek.globe.new("setcam_demo", {})
-  g:setCamera(48.85, 2.35, 3.0)  -- centred on Paris, zoomed in
-  local lat, lon, z = g:getCamera()
-  lurek.log.info(string.format("camera lat=%.2f lon=%.2f zoom=%.1f", lat, lon, z), "globe")
-end
-
---@api-stub: Globe:getCamera
-do
-  local g = lurek.globe.new("getcam_demo", {})
-  g:setCamera(0.0, 0.0, 1.5)
-  local lat, lon, z = g:getCamera()
-  lurek.filesystem.write("save/globe_camera.txt", string.format("%.3f,%.3f,%.3f", lat, lon, z))
-end
-
---@api-stub: Globe:getLod
-do
-  local g = lurek.globe.new("lod_demo", {})
-  g:setCamera(0, 0, 5.0)
-  local tier = g:getLod()
-  if tier == "near" then lurek.log.info("show city sprites", "globe") end
-end
-
---@api-stub: Globe:pick
-do
-  local g = lurek.globe.new("pick_demo", {})
-  function lurek.input_pressed(key)
-    local mx, my = lurek.input.mouse.getPosition()
 ```
 
 ### `LGlobe:exportProvinceMeshOBJ() -> string`
@@ -806,56 +682,15 @@ Returns cached reachability costs for a faction.
 
 #### Example
 
-Module-level example from [globe.lua](../blob/main/content/examples/globe.lua):
+Exact example from [globe.lua](../blob/main/content/examples/globe.lua):
 
 ```lua
---@api-stub: Globe:pan
 do
-  local g = lurek.globe.new("pan_demo", {})
-  function lurek.process(dt)
-    if lurek.input.keyboard.isDown("a") then g:pan(0, -45.0 * dt) end
-    if lurek.input.keyboard.isDown("d") then g:pan(0,  45.0 * dt) end
-  end
+  local g = lurek.globe.new(512, 256)
+  g:cacheReachability(1, 10)
+  local reach = g:getCachedReachability(1)
+  lurek.log.debug("reachable=" .. (reach and #reach or 0), "globe")
 end
-
---@api-stub: Globe:zoom
-do
-  local g = lurek.globe.new("zoom_demo", {})
-  function lurek.process(dt)
-    local _, wheel = lurek.input.mouse.getWheelDelta()
-    if wheel ~= 0 then g:zoom(1.0 + wheel * 0.1) end
-  end
-end
-
---@api-stub: Globe:setCamera
-do
-  local g = lurek.globe.new("setcam_demo", {})
-  g:setCamera(48.85, 2.35, 3.0)  -- centred on Paris, zoomed in
-  local lat, lon, z = g:getCamera()
-  lurek.log.info(string.format("camera lat=%.2f lon=%.2f zoom=%.1f", lat, lon, z), "globe")
-end
-
---@api-stub: Globe:getCamera
-do
-  local g = lurek.globe.new("getcam_demo", {})
-  g:setCamera(0.0, 0.0, 1.5)
-  local lat, lon, z = g:getCamera()
-  lurek.filesystem.write("save/globe_camera.txt", string.format("%.3f,%.3f,%.3f", lat, lon, z))
-end
-
---@api-stub: Globe:getLod
-do
-  local g = lurek.globe.new("lod_demo", {})
-  g:setCamera(0, 0, 5.0)
-  local tier = g:getLod()
-  if tier == "near" then lurek.log.info("show city sprites", "globe") end
-end
-
---@api-stub: Globe:pick
-do
-  local g = lurek.globe.new("pick_demo", {})
-  function lurek.input_pressed(key)
-    local mx, my = lurek.input.mouse.getPosition()
 ```
 
 ### `LGlobe:getCamera() -> number`
@@ -890,56 +725,15 @@ Returns fog-of-war state for one viewer and province.
 
 #### Example
 
-Module-level example from [globe.lua](../blob/main/content/examples/globe.lua):
+Exact example from [globe.lua](../blob/main/content/examples/globe.lua):
 
 ```lua
---@api-stub: Globe:pan
 do
-  local g = lurek.globe.new("pan_demo", {})
-  function lurek.process(dt)
-    if lurek.input.keyboard.isDown("a") then g:pan(0, -45.0 * dt) end
-    if lurek.input.keyboard.isDown("d") then g:pan(0,  45.0 * dt) end
-  end
+  local g = lurek.globe.new(512, 256)
+  g:setFogState(1, 1)
+  local state = g:getFogState(1)
+  lurek.log.debug("fog state=" .. state, "globe")
 end
-
---@api-stub: Globe:zoom
-do
-  local g = lurek.globe.new("zoom_demo", {})
-  function lurek.process(dt)
-    local _, wheel = lurek.input.mouse.getWheelDelta()
-    if wheel ~= 0 then g:zoom(1.0 + wheel * 0.1) end
-  end
-end
-
---@api-stub: Globe:setCamera
-do
-  local g = lurek.globe.new("setcam_demo", {})
-  g:setCamera(48.85, 2.35, 3.0)  -- centred on Paris, zoomed in
-  local lat, lon, z = g:getCamera()
-  lurek.log.info(string.format("camera lat=%.2f lon=%.2f zoom=%.1f", lat, lon, z), "globe")
-end
-
---@api-stub: Globe:getCamera
-do
-  local g = lurek.globe.new("getcam_demo", {})
-  g:setCamera(0.0, 0.0, 1.5)
-  local lat, lon, z = g:getCamera()
-  lurek.filesystem.write("save/globe_camera.txt", string.format("%.3f,%.3f,%.3f", lat, lon, z))
-end
-
---@api-stub: Globe:getLod
-do
-  local g = lurek.globe.new("lod_demo", {})
-  g:setCamera(0, 0, 5.0)
-  local tier = g:getLod()
-  if tier == "near" then lurek.log.info("show city sprites", "globe") end
-end
-
---@api-stub: Globe:pick
-do
-  local g = lurek.globe.new("pick_demo", {})
-  function lurek.input_pressed(key)
-    local mx, my = lurek.input.mouse.getPosition()
 ```
 
 ### `LGlobe:getLod() -> string`
@@ -1065,56 +859,14 @@ Returns the sector name assigned to a province.
 
 #### Example
 
-Module-level example from [globe.lua](../blob/main/content/examples/globe.lua):
+Exact example from [globe.lua](../blob/main/content/examples/globe.lua):
 
 ```lua
---@api-stub: Globe:pan
 do
-  local g = lurek.globe.new("pan_demo", {})
-  function lurek.process(dt)
-    if lurek.input.keyboard.isDown("a") then g:pan(0, -45.0 * dt) end
-    if lurek.input.keyboard.isDown("d") then g:pan(0,  45.0 * dt) end
-  end
+  local g = lurek.globe.new(512, 256)
+  local sector = g:getProvinceSector(1)
+  lurek.log.debug("sector=" .. tostring(sector), "globe")
 end
-
---@api-stub: Globe:zoom
-do
-  local g = lurek.globe.new("zoom_demo", {})
-  function lurek.process(dt)
-    local _, wheel = lurek.input.mouse.getWheelDelta()
-    if wheel ~= 0 then g:zoom(1.0 + wheel * 0.1) end
-  end
-end
-
---@api-stub: Globe:setCamera
-do
-  local g = lurek.globe.new("setcam_demo", {})
-  g:setCamera(48.85, 2.35, 3.0)  -- centred on Paris, zoomed in
-  local lat, lon, z = g:getCamera()
-  lurek.log.info(string.format("camera lat=%.2f lon=%.2f zoom=%.1f", lat, lon, z), "globe")
-end
-
---@api-stub: Globe:getCamera
-do
-  local g = lurek.globe.new("getcam_demo", {})
-  g:setCamera(0.0, 0.0, 1.5)
-  local lat, lon, z = g:getCamera()
-  lurek.filesystem.write("save/globe_camera.txt", string.format("%.3f,%.3f,%.3f", lat, lon, z))
-end
-
---@api-stub: Globe:getLod
-do
-  local g = lurek.globe.new("lod_demo", {})
-  g:setCamera(0, 0, 5.0)
-  local tier = g:getLod()
-  if tier == "near" then lurek.log.info("show city sprites", "globe") end
-end
-
---@api-stub: Globe:pick
-do
-  local g = lurek.globe.new("pick_demo", {})
-  function lurek.input_pressed(key)
-    local mx, my = lurek.input.mouse.getPosition()
 ```
 
 ### `LGlobe:getSectorProvinces(sector: string) -> table`
@@ -1129,56 +881,15 @@ Returns province ids assigned to a sector.
 
 #### Example
 
-Module-level example from [globe.lua](../blob/main/content/examples/globe.lua):
+Exact example from [globe.lua](../blob/main/content/examples/globe.lua):
 
 ```lua
---@api-stub: Globe:pan
 do
-  local g = lurek.globe.new("pan_demo", {})
-  function lurek.process(dt)
-    if lurek.input.keyboard.isDown("a") then g:pan(0, -45.0 * dt) end
-    if lurek.input.keyboard.isDown("d") then g:pan(0,  45.0 * dt) end
-  end
+  local g = lurek.globe.new(512, 256)
+  g:setProvinceSector(1, "north")
+  local ids = g:getSectorProvinces("north")
+  lurek.log.debug("sector province count=" .. #ids, "globe")
 end
-
---@api-stub: Globe:zoom
-do
-  local g = lurek.globe.new("zoom_demo", {})
-  function lurek.process(dt)
-    local _, wheel = lurek.input.mouse.getWheelDelta()
-    if wheel ~= 0 then g:zoom(1.0 + wheel * 0.1) end
-  end
-end
-
---@api-stub: Globe:setCamera
-do
-  local g = lurek.globe.new("setcam_demo", {})
-  g:setCamera(48.85, 2.35, 3.0)  -- centred on Paris, zoomed in
-  local lat, lon, z = g:getCamera()
-  lurek.log.info(string.format("camera lat=%.2f lon=%.2f zoom=%.1f", lat, lon, z), "globe")
-end
-
---@api-stub: Globe:getCamera
-do
-  local g = lurek.globe.new("getcam_demo", {})
-  g:setCamera(0.0, 0.0, 1.5)
-  local lat, lon, z = g:getCamera()
-  lurek.filesystem.write("save/globe_camera.txt", string.format("%.3f,%.3f,%.3f", lat, lon, z))
-end
-
---@api-stub: Globe:getLod
-do
-  local g = lurek.globe.new("lod_demo", {})
-  g:setCamera(0, 0, 5.0)
-  local tier = g:getLod()
-  if tier == "near" then lurek.log.info("show city sprites", "globe") end
-end
-
---@api-stub: Globe:pick
-do
-  local g = lurek.globe.new("pick_demo", {})
-  function lurek.input_pressed(key)
-    local mx, my = lurek.input.mouse.getPosition()
 ```
 
 ### `LGlobe:getTimeOfDay() -> number`
@@ -1451,56 +1162,14 @@ Removes a heat layer by name. This method is available to Lua scripts.
 
 #### Example
 
-Module-level example from [globe.lua](../blob/main/content/examples/globe.lua):
+Exact example from [globe.lua](../blob/main/content/examples/globe.lua):
 
 ```lua
---@api-stub: Globe:pan
 do
-  local g = lurek.globe.new("pan_demo", {})
-  function lurek.process(dt)
-    if lurek.input.keyboard.isDown("a") then g:pan(0, -45.0 * dt) end
-    if lurek.input.keyboard.isDown("d") then g:pan(0,  45.0 * dt) end
-  end
+  local g = lurek.globe.new(512, 256)
+  g:setHeatLayer("temp", 0, 40, 0.7)
+  g:removeHeatLayer("temp")
 end
-
---@api-stub: Globe:zoom
-do
-  local g = lurek.globe.new("zoom_demo", {})
-  function lurek.process(dt)
-    local _, wheel = lurek.input.mouse.getWheelDelta()
-    if wheel ~= 0 then g:zoom(1.0 + wheel * 0.1) end
-  end
-end
-
---@api-stub: Globe:setCamera
-do
-  local g = lurek.globe.new("setcam_demo", {})
-  g:setCamera(48.85, 2.35, 3.0)  -- centred on Paris, zoomed in
-  local lat, lon, z = g:getCamera()
-  lurek.log.info(string.format("camera lat=%.2f lon=%.2f zoom=%.1f", lat, lon, z), "globe")
-end
-
---@api-stub: Globe:getCamera
-do
-  local g = lurek.globe.new("getcam_demo", {})
-  g:setCamera(0.0, 0.0, 1.5)
-  local lat, lon, z = g:getCamera()
-  lurek.filesystem.write("save/globe_camera.txt", string.format("%.3f,%.3f,%.3f", lat, lon, z))
-end
-
---@api-stub: Globe:getLod
-do
-  local g = lurek.globe.new("lod_demo", {})
-  g:setCamera(0, 0, 5.0)
-  local tier = g:getLod()
-  if tier == "near" then lurek.log.info("show city sprites", "globe") end
-end
-
---@api-stub: Globe:pick
-do
-  local g = lurek.globe.new("pick_demo", {})
-  function lurek.input_pressed(key)
-    local mx, my = lurek.input.mouse.getPosition()
 ```
 
 ### `LGlobe:removeLabel(id: integer) -> boolean`
@@ -1670,56 +1339,13 @@ Sets automatic globe rotation speed.
 
 #### Example
 
-Module-level example from [globe.lua](../blob/main/content/examples/globe.lua):
+Exact example from [globe.lua](../blob/main/content/examples/globe.lua):
 
 ```lua
---@api-stub: Globe:pan
 do
-  local g = lurek.globe.new("pan_demo", {})
-  function lurek.process(dt)
-    if lurek.input.keyboard.isDown("a") then g:pan(0, -45.0 * dt) end
-    if lurek.input.keyboard.isDown("d") then g:pan(0,  45.0 * dt) end
-  end
+  local g = lurek.globe.new("autorot_demo", {})
+  g:setAutoRotationSpeed(0.02)
 end
-
---@api-stub: Globe:zoom
-do
-  local g = lurek.globe.new("zoom_demo", {})
-  function lurek.process(dt)
-    local _, wheel = lurek.input.mouse.getWheelDelta()
-    if wheel ~= 0 then g:zoom(1.0 + wheel * 0.1) end
-  end
-end
-
---@api-stub: Globe:setCamera
-do
-  local g = lurek.globe.new("setcam_demo", {})
-  g:setCamera(48.85, 2.35, 3.0)  -- centred on Paris, zoomed in
-  local lat, lon, z = g:getCamera()
-  lurek.log.info(string.format("camera lat=%.2f lon=%.2f zoom=%.1f", lat, lon, z), "globe")
-end
-
---@api-stub: Globe:getCamera
-do
-  local g = lurek.globe.new("getcam_demo", {})
-  g:setCamera(0.0, 0.0, 1.5)
-  local lat, lon, z = g:getCamera()
-  lurek.filesystem.write("save/globe_camera.txt", string.format("%.3f,%.3f,%.3f", lat, lon, z))
-end
-
---@api-stub: Globe:getLod
-do
-  local g = lurek.globe.new("lod_demo", {})
-  g:setCamera(0, 0, 5.0)
-  local tier = g:getLod()
-  if tier == "near" then lurek.log.info("show city sprites", "globe") end
-end
-
---@api-stub: Globe:pick
-do
-  local g = lurek.globe.new("pick_demo", {})
-  function lurek.input_pressed(key)
-    local mx, my = lurek.input.mouse.getPosition()
 ```
 
 ### `LGlobe:setBorders(show: boolean)`
@@ -1778,56 +1404,17 @@ Sets fog-of-war state for one viewer and province.
 
 #### Example
 
-Module-level example from [globe.lua](../blob/main/content/examples/globe.lua):
+Exact example from [globe.lua](../blob/main/content/examples/globe.lua):
 
 ```lua
---@api-stub: Globe:pan
 do
-  local g = lurek.globe.new("pan_demo", {})
-  function lurek.process(dt)
-    if lurek.input.keyboard.isDown("a") then g:pan(0, -45.0 * dt) end
-    if lurek.input.keyboard.isDown("d") then g:pan(0,  45.0 * dt) end
-  end
+  local g = lurek.globe.new("fogx_demo", {})
+  g:addProvince({ id = 1, centroid = {0,0}, vertices = {{0,0},{1,0},{1,1}} })
+  g:setFogState("p1", 1, "explored")
+  local _state = g:getFogState("p1", 1)
+  local data = g:encodeFogBase64("p1")
+  g:decodeFogBase64("p1", data)
 end
-
---@api-stub: Globe:zoom
-do
-  local g = lurek.globe.new("zoom_demo", {})
-  function lurek.process(dt)
-    local _, wheel = lurek.input.mouse.getWheelDelta()
-    if wheel ~= 0 then g:zoom(1.0 + wheel * 0.1) end
-  end
-end
-
---@api-stub: Globe:setCamera
-do
-  local g = lurek.globe.new("setcam_demo", {})
-  g:setCamera(48.85, 2.35, 3.0)  -- centred on Paris, zoomed in
-  local lat, lon, z = g:getCamera()
-  lurek.log.info(string.format("camera lat=%.2f lon=%.2f zoom=%.1f", lat, lon, z), "globe")
-end
-
---@api-stub: Globe:getCamera
-do
-  local g = lurek.globe.new("getcam_demo", {})
-  g:setCamera(0.0, 0.0, 1.5)
-  local lat, lon, z = g:getCamera()
-  lurek.filesystem.write("save/globe_camera.txt", string.format("%.3f,%.3f,%.3f", lat, lon, z))
-end
-
---@api-stub: Globe:getLod
-do
-  local g = lurek.globe.new("lod_demo", {})
-  g:setCamera(0, 0, 5.0)
-  local tier = g:getLod()
-  if tier == "near" then lurek.log.info("show city sprites", "globe") end
-end
-
---@api-stub: Globe:pick
-do
-  local g = lurek.globe.new("pick_demo", {})
-  function lurek.input_pressed(key)
-    local mx, my = lurek.input.mouse.getPosition()
 ```
 
 ### `LGlobe:setHeatLayer(name: string, attr_key: string, min: number, max: number, alpha: number)`
@@ -1844,56 +1431,14 @@ Creates or replaces a heat layer that maps province attributes into colors.
 
 #### Example
 
-Module-level example from [globe.lua](../blob/main/content/examples/globe.lua):
+Exact example from [globe.lua](../blob/main/content/examples/globe.lua):
 
 ```lua
---@api-stub: Globe:pan
 do
-  local g = lurek.globe.new("pan_demo", {})
-  function lurek.process(dt)
-    if lurek.input.keyboard.isDown("a") then g:pan(0, -45.0 * dt) end
-    if lurek.input.keyboard.isDown("d") then g:pan(0,  45.0 * dt) end
-  end
+  local g = lurek.globe.new("heat_demo", {})
+  g:setHeatLayer("population", "pop", 0.0, 100.0, 0.5)
+  g:removeHeatLayer("population")
 end
-
---@api-stub: Globe:zoom
-do
-  local g = lurek.globe.new("zoom_demo", {})
-  function lurek.process(dt)
-    local _, wheel = lurek.input.mouse.getWheelDelta()
-    if wheel ~= 0 then g:zoom(1.0 + wheel * 0.1) end
-  end
-end
-
---@api-stub: Globe:setCamera
-do
-  local g = lurek.globe.new("setcam_demo", {})
-  g:setCamera(48.85, 2.35, 3.0)  -- centred on Paris, zoomed in
-  local lat, lon, z = g:getCamera()
-  lurek.log.info(string.format("camera lat=%.2f lon=%.2f zoom=%.1f", lat, lon, z), "globe")
-end
-
---@api-stub: Globe:getCamera
-do
-  local g = lurek.globe.new("getcam_demo", {})
-  g:setCamera(0.0, 0.0, 1.5)
-  local lat, lon, z = g:getCamera()
-  lurek.filesystem.write("save/globe_camera.txt", string.format("%.3f,%.3f,%.3f", lat, lon, z))
-end
-
---@api-stub: Globe:getLod
-do
-  local g = lurek.globe.new("lod_demo", {})
-  g:setCamera(0, 0, 5.0)
-  local tier = g:getLod()
-  if tier == "near" then lurek.log.info("show city sprites", "globe") end
-end
-
---@api-stub: Globe:pick
-do
-  local g = lurek.globe.new("pick_demo", {})
-  function lurek.input_pressed(key)
-    local mx, my = lurek.input.mouse.getPosition()
 ```
 
 ### `LGlobe:setLabelText(id: integer, text: string) -> boolean`
@@ -2063,56 +1608,15 @@ Sets marker pulse frequency and amplitude.
 
 #### Example
 
-Module-level example from [globe.lua](../blob/main/content/examples/globe.lua):
+Exact example from [globe.lua](../blob/main/content/examples/globe.lua):
 
 ```lua
---@api-stub: Globe:pan
 do
-  local g = lurek.globe.new("pan_demo", {})
-  function lurek.process(dt)
-    if lurek.input.keyboard.isDown("a") then g:pan(0, -45.0 * dt) end
-    if lurek.input.keyboard.isDown("d") then g:pan(0,  45.0 * dt) end
-  end
+  local g = lurek.globe.new("marker_anim_demo", {})
+  local id = g:addMarker("poi", 10.0, 10.0, "A")
+  g:setMarkerPulse(id, 2.0, 0.2)
+  g:setMarkerRotation(id, 120.0)
 end
-
---@api-stub: Globe:zoom
-do
-  local g = lurek.globe.new("zoom_demo", {})
-  function lurek.process(dt)
-    local _, wheel = lurek.input.mouse.getWheelDelta()
-    if wheel ~= 0 then g:zoom(1.0 + wheel * 0.1) end
-  end
-end
-
---@api-stub: Globe:setCamera
-do
-  local g = lurek.globe.new("setcam_demo", {})
-  g:setCamera(48.85, 2.35, 3.0)  -- centred on Paris, zoomed in
-  local lat, lon, z = g:getCamera()
-  lurek.log.info(string.format("camera lat=%.2f lon=%.2f zoom=%.1f", lat, lon, z), "globe")
-end
-
---@api-stub: Globe:getCamera
-do
-  local g = lurek.globe.new("getcam_demo", {})
-  g:setCamera(0.0, 0.0, 1.5)
-  local lat, lon, z = g:getCamera()
-  lurek.filesystem.write("save/globe_camera.txt", string.format("%.3f,%.3f,%.3f", lat, lon, z))
-end
-
---@api-stub: Globe:getLod
-do
-  local g = lurek.globe.new("lod_demo", {})
-  g:setCamera(0, 0, 5.0)
-  local tier = g:getLod()
-  if tier == "near" then lurek.log.info("show city sprites", "globe") end
-end
-
---@api-stub: Globe:pick
-do
-  local g = lurek.globe.new("pick_demo", {})
-  function lurek.input_pressed(key)
-    local mx, my = lurek.input.mouse.getPosition()
 ```
 
 ### `LGlobe:setMarkerRotation(id: integer, dps: number) -> boolean`
@@ -2128,56 +1632,14 @@ Sets marker rotation speed. This method is available to Lua scripts.
 
 #### Example
 
-Module-level example from [globe.lua](../blob/main/content/examples/globe.lua):
+Exact example from [globe.lua](../blob/main/content/examples/globe.lua):
 
 ```lua
---@api-stub: Globe:pan
 do
-  local g = lurek.globe.new("pan_demo", {})
-  function lurek.process(dt)
-    if lurek.input.keyboard.isDown("a") then g:pan(0, -45.0 * dt) end
-    if lurek.input.keyboard.isDown("d") then g:pan(0,  45.0 * dt) end
-  end
+  local g = lurek.globe.new(512, 256)
+  local mid = g:placeMarker(0.5, 0.5, "base")
+  g:setMarkerRotation(mid, 1.57)
 end
-
---@api-stub: Globe:zoom
-do
-  local g = lurek.globe.new("zoom_demo", {})
-  function lurek.process(dt)
-    local _, wheel = lurek.input.mouse.getWheelDelta()
-    if wheel ~= 0 then g:zoom(1.0 + wheel * 0.1) end
-  end
-end
-
---@api-stub: Globe:setCamera
-do
-  local g = lurek.globe.new("setcam_demo", {})
-  g:setCamera(48.85, 2.35, 3.0)  -- centred on Paris, zoomed in
-  local lat, lon, z = g:getCamera()
-  lurek.log.info(string.format("camera lat=%.2f lon=%.2f zoom=%.1f", lat, lon, z), "globe")
-end
-
---@api-stub: Globe:getCamera
-do
-  local g = lurek.globe.new("getcam_demo", {})
-  g:setCamera(0.0, 0.0, 1.5)
-  local lat, lon, z = g:getCamera()
-  lurek.filesystem.write("save/globe_camera.txt", string.format("%.3f,%.3f,%.3f", lat, lon, z))
-end
-
---@api-stub: Globe:getLod
-do
-  local g = lurek.globe.new("lod_demo", {})
-  g:setCamera(0, 0, 5.0)
-  local tier = g:getLod()
-  if tier == "near" then lurek.log.info("show city sprites", "globe") end
-end
-
---@api-stub: Globe:pick
-do
-  local g = lurek.globe.new("pick_demo", {})
-  function lurek.input_pressed(key)
-    local mx, my = lurek.input.mouse.getPosition()
 ```
 
 ### `LGlobe:setMarkerVisible(id: integer, vis: boolean) -> boolean`
@@ -2242,56 +1704,16 @@ Assigns a province to a named sector.
 
 #### Example
 
-Module-level example from [globe.lua](../blob/main/content/examples/globe.lua):
+Exact example from [globe.lua](../blob/main/content/examples/globe.lua):
 
 ```lua
---@api-stub: Globe:pan
 do
-  local g = lurek.globe.new("pan_demo", {})
-  function lurek.process(dt)
-    if lurek.input.keyboard.isDown("a") then g:pan(0, -45.0 * dt) end
-    if lurek.input.keyboard.isDown("d") then g:pan(0,  45.0 * dt) end
-  end
+  local g = lurek.globe.new("sector_demo", {})
+  g:addProvince({ id = 2, centroid = {0,0}, vertices = {{0,0},{1,0},{1,1}} })
+  g:setProvinceSector(2, "north")
+  local _ = g:getProvinceSector(2)
+  local _ids = g:getSectorProvinces("north")
 end
-
---@api-stub: Globe:zoom
-do
-  local g = lurek.globe.new("zoom_demo", {})
-  function lurek.process(dt)
-    local _, wheel = lurek.input.mouse.getWheelDelta()
-    if wheel ~= 0 then g:zoom(1.0 + wheel * 0.1) end
-  end
-end
-
---@api-stub: Globe:setCamera
-do
-  local g = lurek.globe.new("setcam_demo", {})
-  g:setCamera(48.85, 2.35, 3.0)  -- centred on Paris, zoomed in
-  local lat, lon, z = g:getCamera()
-  lurek.log.info(string.format("camera lat=%.2f lon=%.2f zoom=%.1f", lat, lon, z), "globe")
-end
-
---@api-stub: Globe:getCamera
-do
-  local g = lurek.globe.new("getcam_demo", {})
-  g:setCamera(0.0, 0.0, 1.5)
-  local lat, lon, z = g:getCamera()
-  lurek.filesystem.write("save/globe_camera.txt", string.format("%.3f,%.3f,%.3f", lat, lon, z))
-end
-
---@api-stub: Globe:getLod
-do
-  local g = lurek.globe.new("lod_demo", {})
-  g:setCamera(0, 0, 5.0)
-  local tier = g:getLod()
-  if tier == "near" then lurek.log.info("show city sprites", "globe") end
-end
-
---@api-stub: Globe:pick
-do
-  local g = lurek.globe.new("pick_demo", {})
-  function lurek.input_pressed(key)
-    local mx, my = lurek.input.mouse.getPosition()
 ```
 
 ### `LGlobe:setProvinceTexture(id: integer, tex_raw: integer, u0: number, v0: number, u1: number, v1: number) -> boolean`
@@ -2456,7 +1878,7 @@ Lua-side handle for creating and locating named globes in one registry.
 Module-level example from [globe.lua](../blob/main/content/examples/globe.lua):
 
 ```lua
---@api-stub: Globe:pan
+-- Performs the pan operation on this globe.
 do
   local g = lurek.globe.new("pan_demo", {})
   function lurek.process(dt)
@@ -2466,6 +1888,7 @@ do
 end
 
 --@api-stub: Globe:zoom
+-- Performs the zoom operation on this globe.
 do
   local g = lurek.globe.new("zoom_demo", {})
   function lurek.process(dt)
@@ -2475,6 +1898,7 @@ do
 end
 
 --@api-stub: Globe:setCamera
+-- Sets the camera of this globe.
 do
   local g = lurek.globe.new("setcam_demo", {})
   g:setCamera(48.85, 2.35, 3.0)  -- centred on Paris, zoomed in
@@ -2483,6 +1907,7 @@ do
 end
 
 --@api-stub: Globe:getCamera
+-- Returns the camera of this globe.
 do
   local g = lurek.globe.new("getcam_demo", {})
   g:setCamera(0.0, 0.0, 1.5)
@@ -2491,6 +1916,7 @@ do
 end
 
 --@api-stub: Globe:getLod
+-- Returns the lod of this globe.
 do
   local g = lurek.globe.new("lod_demo", {})
   g:setCamera(0, 0, 5.0)
@@ -2499,10 +1925,6 @@ do
 end
 
 --@api-stub: Globe:pick
-do
-  local g = lurek.globe.new("pick_demo", {})
-  function lurek.input_pressed(key)
-    local mx, my = lurek.input.mouse.getPosition()
 ```
 
 ### `LGlobeRegistry:get(name: string) -> LuaValue`

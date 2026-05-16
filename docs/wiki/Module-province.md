@@ -418,57 +418,13 @@ Computes camera position and zoom so the entire province map fits within the giv
 
 #### Example
 
-Module-level example from [province.lua](../blob/main/content/examples/province.lua):
+Exact example from [province.lua](../blob/main/content/examples/province.lua):
 
 ```lua
--- content/examples/province.lua
--- lurek.province API examples.
--- Run: cargo run -- content/examples/province.lua
-
---@api-stub: lurek.province.newFromPng
--- Creates a new province registry by loading a color-coded PNG where each unique color represents a distinct province
 do
-  local ok, reg = pcall(lurek.province.newFromPng, "world", "content/games/strategy/eu2/map.png")
-  if ok and reg then
-    lurek.log.info("province registry created: " .. reg:getName(), "province")
-  end
+  local reg = lurek.province.newRegistry()
+  reg:fitCamera(1)
 end
-
---@api-stub: lurek.province.get
--- Retrieves an existing province registry by name
-do
-  local reg = lurek.province.get("world")
-  if reg then
-    lurek.log.info("got registry width=" .. reg:getWidth(), "province")
-  end
-end
-
---@api-stub: lurek.province.exists
--- Checks whether a province registry with the given name exists
-do
-  local found = lurek.province.exists("world")
-  lurek.log.info("exists=" .. tostring(found), "province")
-end
-
---@api-stub: lurek.province.remove
--- Removes a province registry by name and clears the active registry if it was the one removed
-do
-  pcall(lurek.province.newFromPng, "temp_map", "content/games/strategy/eu2/map.png")
-  local removed = lurek.province.remove("temp_map")
-  lurek.log.info("removed=" .. tostring(removed), "province")
-end
-
---@api-stub: lurek.province.setActive
--- Sets the named registry as the active province registry
-do
-  lurek.province.setActive("world")
-  lurek.log.info("active registry set to world", "province")
-end
-
---@api-stub: lurek.province.getActive
--- Returns the currently active province registry, or nil if none is set
-do
-  local active = lurek.province.getActive()
 ```
 
 ### `LProvinceRegistry:getAt(x: integer, y: integer) -> number`
@@ -685,57 +641,13 @@ Bulk-imports province metadata (colors, capitals, labels, terrain) from external
 
 #### Example
 
-Module-level example from [province.lua](../blob/main/content/examples/province.lua):
+Exact example from [province.lua](../blob/main/content/examples/province.lua):
 
 ```lua
--- content/examples/province.lua
--- lurek.province API examples.
--- Run: cargo run -- content/examples/province.lua
-
---@api-stub: lurek.province.newFromPng
--- Creates a new province registry by loading a color-coded PNG where each unique color represents a distinct province
 do
-  local ok, reg = pcall(lurek.province.newFromPng, "world", "content/games/strategy/eu2/map.png")
-  if ok and reg then
-    lurek.log.info("province registry created: " .. reg:getName(), "province")
-  end
+  local reg = lurek.province.newRegistry()
+  reg:importMetadataFromFiles({"save/example_province/meta.json"})
 end
-
---@api-stub: lurek.province.get
--- Retrieves an existing province registry by name
-do
-  local reg = lurek.province.get("world")
-  if reg then
-    lurek.log.info("got registry width=" .. reg:getWidth(), "province")
-  end
-end
-
---@api-stub: lurek.province.exists
--- Checks whether a province registry with the given name exists
-do
-  local found = lurek.province.exists("world")
-  lurek.log.info("exists=" .. tostring(found), "province")
-end
-
---@api-stub: lurek.province.remove
--- Removes a province registry by name and clears the active registry if it was the one removed
-do
-  pcall(lurek.province.newFromPng, "temp_map", "content/games/strategy/eu2/map.png")
-  local removed = lurek.province.remove("temp_map")
-  lurek.log.info("removed=" .. tostring(removed), "province")
-end
-
---@api-stub: lurek.province.setActive
--- Sets the named registry as the active province registry
-do
-  lurek.province.setActive("world")
-  lurek.log.info("active registry set to world", "province")
-end
-
---@api-stub: lurek.province.getActive
--- Returns the currently active province registry, or nil if none is set
-do
-  local active = lurek.province.getActive()
 ```
 
 ### `LProvinceRegistry:provinceCount() -> number`
@@ -837,57 +749,14 @@ Converts screen-space pixel coordinates to map-space floating-point coordinates 
 
 #### Example
 
-Module-level example from [province.lua](../blob/main/content/examples/province.lua):
+Exact example from [province.lua](../blob/main/content/examples/province.lua):
 
 ```lua
--- content/examples/province.lua
--- lurek.province API examples.
--- Run: cargo run -- content/examples/province.lua
-
---@api-stub: lurek.province.newFromPng
--- Creates a new province registry by loading a color-coded PNG where each unique color represents a distinct province
 do
-  local ok, reg = pcall(lurek.province.newFromPng, "world", "content/games/strategy/eu2/map.png")
-  if ok and reg then
-    lurek.log.info("province registry created: " .. reg:getName(), "province")
-  end
+  local reg = lurek.province.newRegistry()
+  local mx, my = reg:screenToMap(400, 300)
+  lurek.log.debug("map=" .. mx .. "," .. my, "province")
 end
-
---@api-stub: lurek.province.get
--- Retrieves an existing province registry by name
-do
-  local reg = lurek.province.get("world")
-  if reg then
-    lurek.log.info("got registry width=" .. reg:getWidth(), "province")
-  end
-end
-
---@api-stub: lurek.province.exists
--- Checks whether a province registry with the given name exists
-do
-  local found = lurek.province.exists("world")
-  lurek.log.info("exists=" .. tostring(found), "province")
-end
-
---@api-stub: lurek.province.remove
--- Removes a province registry by name and clears the active registry if it was the one removed
-do
-  pcall(lurek.province.newFromPng, "temp_map", "content/games/strategy/eu2/map.png")
-  local removed = lurek.province.remove("temp_map")
-  lurek.log.info("removed=" .. tostring(removed), "province")
-end
-
---@api-stub: lurek.province.setActive
--- Sets the named registry as the active province registry
-do
-  lurek.province.setActive("world")
-  lurek.log.info("active registry set to world", "province")
-end
-
---@api-stub: lurek.province.getActive
--- Returns the currently active province registry, or nil if none is set
-do
-  local active = lurek.province.getActive()
 ```
 
 ### `LProvinceRegistry:screenToProvince(screen_x: number, screen_y: number, cam_x: number, cam_y: number, zoom: number, [pixel_size]: number) -> number`
@@ -907,57 +776,14 @@ Converts screen-space coordinates directly to a province ID. Returns nil if the 
 
 #### Example
 
-Module-level example from [province.lua](../blob/main/content/examples/province.lua):
+Exact example from [province.lua](../blob/main/content/examples/province.lua):
 
 ```lua
--- content/examples/province.lua
--- lurek.province API examples.
--- Run: cargo run -- content/examples/province.lua
-
---@api-stub: lurek.province.newFromPng
--- Creates a new province registry by loading a color-coded PNG where each unique color represents a distinct province
 do
-  local ok, reg = pcall(lurek.province.newFromPng, "world", "content/games/strategy/eu2/map.png")
-  if ok and reg then
-    lurek.log.info("province registry created: " .. reg:getName(), "province")
-  end
+  local reg = lurek.province.newRegistry()
+  local id = reg:screenToProvince(400, 300)
+  lurek.log.debug("province=" .. tostring(id), "province")
 end
-
---@api-stub: lurek.province.get
--- Retrieves an existing province registry by name
-do
-  local reg = lurek.province.get("world")
-  if reg then
-    lurek.log.info("got registry width=" .. reg:getWidth(), "province")
-  end
-end
-
---@api-stub: lurek.province.exists
--- Checks whether a province registry with the given name exists
-do
-  local found = lurek.province.exists("world")
-  lurek.log.info("exists=" .. tostring(found), "province")
-end
-
---@api-stub: lurek.province.remove
--- Removes a province registry by name and clears the active registry if it was the one removed
-do
-  pcall(lurek.province.newFromPng, "temp_map", "content/games/strategy/eu2/map.png")
-  local removed = lurek.province.remove("temp_map")
-  lurek.log.info("removed=" .. tostring(removed), "province")
-end
-
---@api-stub: lurek.province.setActive
--- Sets the named registry as the active province registry
-do
-  lurek.province.setActive("world")
-  lurek.log.info("active registry set to world", "province")
-end
-
---@api-stub: lurek.province.getActive
--- Returns the currently active province registry, or nil if none is set
-do
-  local active = lurek.province.getActive()
 ```
 
 ### `LProvinceRegistry:setAttr(id: integer, key: string, value: string)`

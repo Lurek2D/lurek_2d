@@ -132,9 +132,10 @@ do
   end
 end
 
--- â”€â”€ Mod methods â”€â”€
+-- Mod methods
 
 --@api-stub: Mod:getId
+-- Returns the id of this mod.
 do
   local m = lurek.mods.newMod({id = "core.audio"})
   local registry = {}
@@ -142,9 +143,8 @@ do
 end
 
 --@api-stub: Mod:getName
+-- Returns the name of this mod.
 do
-  local m = lurek.mods.newMod({id = "ui.theme.dark", name = "Dark Theme"})
-  local label = m:getName()
 ```
 
 ## Key Types

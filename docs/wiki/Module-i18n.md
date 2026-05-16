@@ -543,10 +543,17 @@ Exact example from [i18n.lua](../blob/main/content/examples/i18n.lua):
 
 ```lua
 do
-  local json_src = '{"menu":{"start":"Start","quit":"Quit"}}'
-  lurek.i18n.loadString("demo_json", json_src, "json")
-  lurek.i18n.setLanguage("demo_json")
-  lurek.log.info("start=" .. lurek.i18n.t("menu.start"), "i18n")
+  local toml_src = [[
+[ui]
+ok     = "OK"
+cancel = "Cancel"
+[item]
+sword  = "Iron Sword"
+]]
+  lurek.i18n.loadString("demo_toml", toml_src, "toml")
+  lurek.i18n.setLanguage("demo_toml")
+  lurek.log.info("ok=" .. lurek.i18n.t("ui.ok"), "i18n")
+  lurek.log.info("sword=" .. lurek.i18n.t("item.sword"), "i18n")
 end
 ```
 

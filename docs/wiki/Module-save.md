@@ -68,6 +68,7 @@ Serialization converts Lua tables to a `SaveValue` tree, then emits Lua-literal 
 Module example from [save.lua](../blob/main/content/examples/save.lua):
 
 ```lua
+-- Advances this save manager by the given delta time.
 do
   local mgr = lurek.save.newSaveManager()
   mgr:enableAutoSave(30.0, "auto")
@@ -78,6 +79,7 @@ do
 end
 
 --@api-stub: SaveManager:setSummary
+-- Sets the summary of this save manager.
 do
   local mgr = lurek.save.newSaveManager()
   local area, playtime = "Forest", "12:30"
@@ -85,6 +87,7 @@ do
 end
 
 --@api-stub: SaveManager:getSummary
+-- Returns the summary of this save manager.
 do
   local mgr = lurek.save.newSaveManager()
   mgr:setSummary("Chapter 2 â€” Boss")
@@ -93,6 +96,7 @@ do
 end
 
 --@api-stub: SaveManager:reset
+-- Resets this save manager to its default state.
 do
   local mgr = lurek.save.newSaveManager()
   mgr:register("player", function() return {} end, function(_) end)
@@ -101,6 +105,7 @@ do
 end
 
 --@api-stub: SaveManager:setCompress
+-- Sets the compress of this save manager.
 do
   local mgr = lurek.save.newSaveManager()
   mgr:setCompress(true)
@@ -108,13 +113,8 @@ do
 end
 
 --@api-stub: SaveManager:isCompressed
+-- Returns true if this save manager compressed.
 do
-  local mgr = lurek.save.newSaveManager()
-  mgr:setCompress(true)
-  if mgr:isCompressed() then
-    lurek.log.info("save format: lz4+base64", "save")
-  end
-end
 ```
 
 ## Key Types
@@ -679,55 +679,12 @@ Return the type name string for this userdata object.
 
 #### Example
 
-Module-level example from [save.lua](../blob/main/content/examples/save.lua):
+Exact example from [save.lua](../blob/main/content/examples/save.lua):
 
 ```lua
 do
-  local mgr = lurek.save.newSaveManager()
-  mgr:enableAutoSave(30.0, "auto")
-  function lurek.process(dt)
-    local slot = mgr:update(dt)
-    if slot then mgr:save(slot) end
-  end
-end
-
---@api-stub: SaveManager:setSummary
-do
-  local mgr = lurek.save.newSaveManager()
-  local area, playtime = "Forest", "12:30"
-  mgr:setSummary(area .. " â€” " .. playtime)
-end
-
---@api-stub: SaveManager:getSummary
-do
-  local mgr = lurek.save.newSaveManager()
-  mgr:setSummary("Chapter 2 â€” Boss")
-  local label = mgr:getSummary()
-  lurek.log.info("current summary: " .. label, "save")
-end
-
---@api-stub: SaveManager:reset
-do
-  local mgr = lurek.save.newSaveManager()
-  mgr:register("player", function() return {} end, function(_) end)
-  mgr:reset()
-  lurek.log.info("save manager cleared for main menu", "save")
-end
-
---@api-stub: SaveManager:setCompress
-do
-  local mgr = lurek.save.newSaveManager()
-  mgr:setCompress(true)
-  lurek.log.info("compressed saves enabled", "save")
-end
-
---@api-stub: SaveManager:isCompressed
-do
-  local mgr = lurek.save.newSaveManager()
-  mgr:setCompress(true)
-  if mgr:isCompressed() then
-    lurek.log.info("save format: lz4+base64", "save")
-  end
+  local sm = lurek.save.manager()
+  lurek.log.info(sm:type(), "save")
 end
 ```
 
@@ -743,55 +700,12 @@ Check whether this object matches a given type name. Supports "LSaveManager" and
 
 #### Example
 
-Module-level example from [save.lua](../blob/main/content/examples/save.lua):
+Exact example from [save.lua](../blob/main/content/examples/save.lua):
 
 ```lua
 do
-  local mgr = lurek.save.newSaveManager()
-  mgr:enableAutoSave(30.0, "auto")
-  function lurek.process(dt)
-    local slot = mgr:update(dt)
-    if slot then mgr:save(slot) end
-  end
-end
-
---@api-stub: SaveManager:setSummary
-do
-  local mgr = lurek.save.newSaveManager()
-  local area, playtime = "Forest", "12:30"
-  mgr:setSummary(area .. " â€” " .. playtime)
-end
-
---@api-stub: SaveManager:getSummary
-do
-  local mgr = lurek.save.newSaveManager()
-  mgr:setSummary("Chapter 2 â€” Boss")
-  local label = mgr:getSummary()
-  lurek.log.info("current summary: " .. label, "save")
-end
-
---@api-stub: SaveManager:reset
-do
-  local mgr = lurek.save.newSaveManager()
-  mgr:register("player", function() return {} end, function(_) end)
-  mgr:reset()
-  lurek.log.info("save manager cleared for main menu", "save")
-end
-
---@api-stub: SaveManager:setCompress
-do
-  local mgr = lurek.save.newSaveManager()
-  mgr:setCompress(true)
-  lurek.log.info("compressed saves enabled", "save")
-end
-
---@api-stub: SaveManager:isCompressed
-do
-  local mgr = lurek.save.newSaveManager()
-  mgr:setCompress(true)
-  if mgr:isCompressed() then
-    lurek.log.info("save format: lz4+base64", "save")
-  end
+  local sm = lurek.save.manager()
+  lurek.log.info(tostring(sm:typeOf("LSaveManager")), "save")
 end
 ```
 

@@ -1199,56 +1199,13 @@ Returns the type name of this object as a string.
 
 #### Example
 
-Module-level example from [timer.lua](../blob/main/content/examples/timer.lua):
+Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
 
 ```lua
---@api-stub: lurek.timer.getDelta
--- Returns the time in seconds elapsed since the last frame
 do
-  function lurek.process()
-    local dt = lurek.timer.getDelta()
-    local speed = 200
-    local x = 0
-    x = x + speed * dt
-  end
+  local s = lurek.timer.newScheduler()
+  lurek.log.info(s:type(), "timer")
 end
-
---@api-stub: lurek.timer.getFPS
--- Returns the current frames-per-second count
-do
-  function lurek.draw_ui()
-    local fps = lurek.timer.getFPS()
-    if fps < 30 then
-      lurek.log.warn("low fps: " .. fps, "perf")
-    end
-  end
-end
-
---@api-stub: lurek.timer.getTime
--- Returns the total elapsed game time in seconds since the engine started
-do
-  function lurek.draw()
-    local t = lurek.timer.getTime()
-    local pulse = 0.5 + 0.5 * math.sin(t * 2.0)
-    lurek.log.debug("pulse=" .. pulse, "fx")
-  end
-end
-
---@api-stub: lurek.timer.getAverageDelta
--- Returns the smoothed average delta time in seconds over a recent window of frames
-do
-  function lurek.process()
-    local avg = lurek.timer.getAverageDelta()
-    local budget_ms = avg * 1000
-    if budget_ms > 20 then
-      lurek.log.warn("frame budget exceeded: " .. budget_ms .. "ms", "perf")
-    end
-  end
-end
-
---@api-stub: lurek.timer.getFrameCount
--- Returns the total number of frames rendered since the engine started
-do
 ```
 
 ### `LScheduler:typeOf(name: string) -> boolean`
@@ -1263,56 +1220,13 @@ Checks whether this object matches the given type name. Accepts "LScheduler" or 
 
 #### Example
 
-Module-level example from [timer.lua](../blob/main/content/examples/timer.lua):
+Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
 
 ```lua
---@api-stub: lurek.timer.getDelta
--- Returns the time in seconds elapsed since the last frame
 do
-  function lurek.process()
-    local dt = lurek.timer.getDelta()
-    local speed = 200
-    local x = 0
-    x = x + speed * dt
-  end
+  local s = lurek.timer.newScheduler()
+  lurek.log.info(tostring(s:typeOf("LScheduler")), "timer")
 end
-
---@api-stub: lurek.timer.getFPS
--- Returns the current frames-per-second count
-do
-  function lurek.draw_ui()
-    local fps = lurek.timer.getFPS()
-    if fps < 30 then
-      lurek.log.warn("low fps: " .. fps, "perf")
-    end
-  end
-end
-
---@api-stub: lurek.timer.getTime
--- Returns the total elapsed game time in seconds since the engine started
-do
-  function lurek.draw()
-    local t = lurek.timer.getTime()
-    local pulse = 0.5 + 0.5 * math.sin(t * 2.0)
-    lurek.log.debug("pulse=" .. pulse, "fx")
-  end
-end
-
---@api-stub: lurek.timer.getAverageDelta
--- Returns the smoothed average delta time in seconds over a recent window of frames
-do
-  function lurek.process()
-    local avg = lurek.timer.getAverageDelta()
-    local budget_ms = avg * 1000
-    if budget_ms > 20 then
-      lurek.log.warn("frame budget exceeded: " .. budget_ms .. "ms", "perf")
-    end
-  end
-end
-
---@api-stub: lurek.timer.getFrameCount
--- Returns the total number of frames rendered since the engine started
-do
 ```
 
 ### `LScheduler:update(dt: number) -> number`

@@ -107,6 +107,7 @@ Steps support conditional execution (run-if predicates), retry with backoff, tim
 Module example from [pipeline.lua](../blob/main/content/examples/pipeline.lua):
 
 ```lua
+-- Performs the run async operation on this pipeline.
 do
   local pl = lurek.pipeline.newPipeline("loading")
   pl:addStep(lurek.pipeline.newStep("a", function() end))
@@ -115,6 +116,7 @@ do
 end
 
 --@api-stub: Pipeline:update
+-- Advances this pipeline by the given delta time.
 do
   local pl = lurek.pipeline.newPipeline("loader")
   pl:addStep(lurek.pipeline.newStep("scan", function() end))
@@ -125,6 +127,7 @@ do
 end
 
 --@api-stub: Pipeline:cancel
+-- Cancels the current operation of this pipeline.
 do
   local pl = lurek.pipeline.newPipeline("net")
   pl:addStep(lurek.pipeline.newStep("ping", function() end))
@@ -133,6 +136,7 @@ do
 end
 
 --@api-stub: Pipeline:reset
+-- Resets this pipeline to its default state.
 do
   local pl = lurek.pipeline.newPipeline("retry")
   pl:addStep(lurek.pipeline.newStep("once", function() end))
@@ -140,6 +144,7 @@ do
 end
 
 --@api-stub: Pipeline:isRunning
+-- Returns true if this pipeline is currently running.
 do
   local pl = lurek.pipeline.newPipeline("loader")
   pl:addStep(lurek.pipeline.newStep("a", function() end))
@@ -148,12 +153,7 @@ do
 end
 
 --@api-stub: Pipeline:isComplete
-do
-  local pl = lurek.pipeline.newPipeline("boot")
-  pl:addStep(lurek.pipeline.newStep("noop", function() end))
-  pl:run()
-  if pl:isComplete() then lurek.log.info("boot finished", "boot") end
-end
+-- Returns true if this pipeline complete.
 ```
 
 ## Key Types
@@ -562,6 +562,7 @@ do
 end
 
 --@api-stub: Pipeline:getStepsByTag
+-- Returns the steps by tag of this pipeline.
 do
   local pl = lurek.pipeline.newPipeline("boot")
   local s = lurek.pipeline.newStep("upload_metric"); s:setTag("net"); pl:addStep(s)
@@ -571,6 +572,7 @@ do
 end
 
 --@api-stub: Pipeline:clear
+-- Clears all items from this pipeline.
 do
   local pl = lurek.pipeline.newPipeline("hot")
   pl:addStep(lurek.pipeline.newStep("old"))
@@ -578,6 +580,7 @@ do
 end
 
 --@api-stub: Pipeline:validate
+-- Performs the validate operation on this pipeline.
 do
   local pl = lurek.pipeline.newPipeline("check")
   local s = lurek.pipeline.newStep("orphan"); s:dependsOn("missing"); pl:addStep(s)
@@ -588,6 +591,7 @@ do
 end
 
 --@api-stub: Pipeline:getExecutionOrder
+-- Returns the execution order of this pipeline.
 do
   local pl = lurek.pipeline.newPipeline("plan")
   pl:addStep(lurek.pipeline.newStep("a"))
@@ -597,11 +601,7 @@ do
 end
 
 --@api-stub: Pipeline:getParallelGroups
-do
-  local pl = lurek.pipeline.newPipeline("parallel")
-  pl:addStep(lurek.pipeline.newStep("a"))
-  pl:addStep(lurek.pipeline.newStep("b"))
-  local groups = pl:getParallelGroups()
+-- Returns the parallel groups of this pipeline.
 ```
 
 ### `LPipeline:getSteps() -> table`

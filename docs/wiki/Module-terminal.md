@@ -129,6 +129,7 @@ Widgets provide pre-built terminal UI components with default shaded cell backgr
 Module example from [terminal.lua](../blob/main/content/examples/terminal.lua):
 
 ```lua
+-- Draws or renders this terminal to the current render target.
 do
   local term = lurek.terminal.newTerminal(80, 25)
   term:addWidget(lurek.terminal.newLabel(2, 2, "HUD"))
@@ -136,6 +137,7 @@ do
 end
 
 --@api-stub: Terminal:print
+-- Performs the print operation on this terminal.
 do
   ---@type LTerminal
   local term = lurek.terminal.newTerminal(80, 25)
@@ -144,18 +146,21 @@ do
 end
 
 --@api-stub: Terminal:setFont
+-- Sets the font of this terminal.
 do
   local term = lurek.terminal.newTerminal(80, 25)
   term:setFont(24)
 end
 
 --@api-stub: Terminal:setCellSize
+-- Sets the cell size of this terminal.
 do
   local term = lurek.terminal.newTerminal(80, 25)
   term:setCellSize(16, 16)
 end
 
 --@api-stub: Terminal:resetCellSize
+-- Resets cell size this terminal to its default state.
 do
   local term = lurek.terminal.newTerminal(80, 25)
   term:setCellSize(20, 20)
@@ -163,18 +168,12 @@ do
 end
 
 --@api-stub: Terminal:getCellSize
+-- Returns the cell size of this terminal.
 do
   local term = lurek.terminal.newTerminal(80, 25)
   term:setCellSize(18, 18)
   local cw, ch = term:getCellSize()
   lurek.log.debug("cell size " .. cw .. "x" .. ch, "term")
-end
-
---@api-stub: Terminal:autoResize
-do
-  local term = lurek.terminal.newTerminal(80, 25)
-  term:setFont(20)
-  term:autoResize()
 end
 ```
 

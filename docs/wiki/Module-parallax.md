@@ -124,6 +124,7 @@ do
 end
 
 --@api-stub: ParallaxLayer:addEffectPass
+-- Adds a effect pass to this parallax layer.
 do
   function lurek.init()
     local layer = lurek.parallax.newLayer({ texture = lurek.render.newImage("assets/parallax/fog.png") })
@@ -132,13 +133,12 @@ do
 end
 
 --@api-stub: ParallaxLayer:clearEffects
+-- Clears all effects items from this parallax layer.
 do
   function lurek.init()
     local layer = lurek.parallax.newLayer({ texture = lurek.render.newImage("assets/parallax/fog.png") })
     layer:addEffectPass("motion_blur", { strength = 0.1 })
     layer:clearEffects()
-  end
-end
 ```
 
 ## Key Types

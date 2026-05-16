@@ -337,6 +337,7 @@ do
 end
 
 --@api-stub: RectPacker:pack
+-- Performs the pack operation on this rect packer.
 do
   local packer = lurek.math.newRectPacker(128, 128, 2)
   local x, y = packer:pack(32, 24, "btn_ok")
@@ -346,10 +347,9 @@ do
 end
 
 --@api-stub: RectPacker:getPacked
+-- Returns the packed of this rect packer.
 do
   local packer = lurek.math.newRectPacker(128, 128, 2)
-  packer:pack(20, 20, "icon_a")
-  packer:pack(30, 18, "icon_b")
 ```
 
 ## Key Types
@@ -769,8 +769,8 @@ Exact example from [math.lua](../blob/main/content/examples/math.lua):
 
 ```lua
 do
-  local angle = lurek.math.clamp(2.5, -math.pi, math.pi)
-  lurek.log.debug("clamped angle=" .. angle, "math")
+  local volume = lurek.math.clamp(1.4, 0, 1)
+  lurek.log.debug("clamped vol=" .. volume, "audio")
 end
 ```
 
@@ -1531,8 +1531,8 @@ Exact example from [math.lua](../blob/main/content/examples/math.lua):
 
 ```lua
 do
-  local v = lurek.math.lerp(10.0, 20.0, 0.25)
-  lurek.log.debug("lerp v=" .. v, "math")
+  local hp_bar = lurek.math.lerp(0, 200, 0.42)
+  lurek.log.debug("hp bar pixels=" .. hp_bar, "ui")
 end
 ```
 
@@ -2510,8 +2510,9 @@ Exact example from [math.lua](../blob/main/content/examples/math.lua):
 
 ```lua
 do
-  local s = lurek.math.sign(-3.7)
-  lurek.log.debug("sign=" .. s, "math")
+  local axis = -0.4
+  local dir = lurek.math.sign(axis)
+  lurek.log.debug("walk dir=" .. dir, "input")
 end
 ```
 

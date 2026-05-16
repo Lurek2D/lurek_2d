@@ -119,6 +119,7 @@ Module example from [ecs.lua](../blob/main/content/examples/ecs.lua):
 end
 
 --@api-stub: Universe:render
+-- Draws or renders this universe to the current render target.
 do
   local world = lurek.ecs.newUniverse()
   local draw_system = {
@@ -134,6 +135,7 @@ do
 end
 
 --@api-stub: Universe:emit
+-- Performs the emit operation on this universe.
 do
   local world = lurek.ecs.newUniverse()
   local hp_system = {
@@ -147,16 +149,13 @@ do
 end
 
 --@api-stub: Universe:getSystemCount
+-- Returns the number of system items in this universe.
 do
   local world = lurek.ecs.newUniverse()
   world:addSystem({ update = function() end })
   world:addSystem({ render = function() end })
   lurek.log.info("systems registered=" .. world:getSystemCount(), "ecs")
 end
-
---@api-stub: Universe:clear
-do
-  local world = lurek.ecs.newUniverse()
 ```
 
 ## Key Types

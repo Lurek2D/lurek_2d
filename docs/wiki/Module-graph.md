@@ -170,6 +170,7 @@ Simulation pipeline (`step(dt)`): decay all items, fire conversion rules, match 
 Module example from [graph.lua](../blob/main/content/examples/graph.lua):
 
 ```lua
+-- Advances this graph by the given delta time.
 do
   local g = lurek.graph.newGraph()
   g:addNode("hub")
@@ -179,6 +180,7 @@ do
 end
 
 --@api-stub: Graph:step
+-- Performs the step operation on this graph.
 do
   local g = lurek.graph.newGraph()
   g:addNode("hub")
@@ -186,6 +188,7 @@ do
 end
 
 --@api-stub: Graph:tickParallel
+-- Performs the tick parallel operation on this graph.
 do
   local g = lurek.graph.newGraph()
   function lurek.process(dt)
@@ -194,6 +197,7 @@ do
 end
 
 --@api-stub: Graph:getNeighbors
+-- Returns the neighbors of this graph.
 do
   local g = lurek.graph.newGraph()
   local a = g:addNode("a")
@@ -203,6 +207,7 @@ do
 end
 
 --@api-stub: Graph:getComponents
+-- Returns the components of this graph.
 do
   local g = lurek.graph.newGraph()
   g:addNode("island_a")
@@ -211,12 +216,7 @@ do
 end
 
 --@api-stub: Graph:subgraph
-do
-  local g = lurek.graph.newGraph()
-  local a = g:addNode("a")
-  local b = g:addNode("b")
-  local c = g:addNode("c")
-  g:addEdge(a, b)
+-- Performs the subgraph operation on this graph.
 ```
 
 ## Key Types
@@ -1820,6 +1820,7 @@ do
 end
 
 --@api-stub: GraphItem:type
+-- Returns the Lua-visible type name string for this graph item handle.
 do
   local g = lurek.graph.newGraph()
   local store = g:addNode("store", 16)
@@ -1831,6 +1832,7 @@ do
 end
 
 --@api-stub: GraphItem:typeOf
+-- Returns true if this graph item handle matches the given type name string.
 do
   local g = lurek.graph.newGraph()
   local store = g:addNode("store", 16)
@@ -1841,9 +1843,10 @@ do
   end
 end
 
--- â”€â”€ Edge methods â”€â”€
+-- Edge methods
 
 --@api-stub: Edge:getType
+-- Returns the type of this edge.
 do
   local g = lurek.graph.newGraph()
   local a = g:addNode("source")
@@ -1851,8 +1854,6 @@ do
   local belt = g:addEdge(a, b, "conveyor")
   if belt:getType() == "conveyor" then
     lurek.log.debug("rendering conveyor segment", "render")
-  end
-end
 ```
 
 ### `LGraphItem:getPriority() -> integer`

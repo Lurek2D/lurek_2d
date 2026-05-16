@@ -1,163 +1,171 @@
 -- content/examples/ui.lua
--- lurek.ui API examples.
+-- Demonstrates every lurek.ui.* function with realistic game UI patterns.
 -- Run: cargo run -- content/examples/ui.lua
 
 --@api-stub: lurek.ui.beginDrag
 -- Begins a drag operation on a widget
 do
-  local w = lurek.ui.newButton("Drag")
-  pcall(function() lurek.ui.beginDrag(w) end)
+  -- Start dragging an inventory item when the player holds left-click.
+  -- The widget follows the cursor until dropOn() or endDrag() is called.
+  local slot = lurek.ui.newButton("Iron Sword")
+  lurek.ui.beginDrag(slot)
 end
 
 --@api-stub: lurek.ui.getActiveDrag
 -- Returns the widget index currently being dragged, or nil
 do
-  pcall(function()
-    local v = lurek.ui.getActiveDrag()
-    print("getActiveDrag:", v)
-  end)
+  -- Check if the player is currently moving an item between inventory slots.
+  -- Returns nil when nothing is being dragged — useful for cursor icon switching.
+  local dragged = lurek.ui.getActiveDrag()
+  if dragged then
+    print("Currently dragging widget:", dragged)
+  end
 end
 
 --@api-stub: lurek.ui.dropOn
 -- Drops the currently dragged widget onto a target widget
 do
-  local container = lurek.ui.newPanel()
-  local w = lurek.ui.newLabel("drop")
-  pcall(function()
-    lurek.ui.beginDrag(w)
-    lurek.ui.dropOn(container)
-  end)
+  -- Simulate equipping an item: drag from inventory, drop onto equipment slot.
+  -- The target widget receives the dragged widget as a new child.
+  local equipment_slot = lurek.ui.newPanel()
+  local item = lurek.ui.newLabel("Steel Shield")
+  lurek.ui.beginDrag(item)
+  lurek.ui.dropOn(equipment_slot)
 end
 
 --@api-stub: lurek.ui.endDrag
 -- Ends the current drag operation without dropping
 do
-  pcall(function()
-    local prev = lurek.ui.endDrag()
-    print("endDrag:", prev)
-  end)
+  -- Cancel the drag if the player releases outside any valid drop target.
+  -- Returns the widget that was being dragged so you can snap it back.
+  local cancelled_widget = lurek.ui.endDrag()
+  print("Drag cancelled, returning widget:", cancelled_widget)
 end
 
 --@api-stub: LUiWidget:animateAlpha
 -- Performs the animate alpha operation on this ui widget.
 do
-  local w = lurek.ui.newLabel("alpha")
-  pcall(function() w["animateAlpha"](0.5, 0.25, false) end)
+  -- Fade a damage indicator to transparent over 0.25 seconds.
+  -- Parameters: target alpha, duration, loop flag.
+  local damage_text = lurek.ui.newLabel("-42 HP")
+  damage_text:animateAlpha(0.0, 0.25, false)
 end
 
 --@api-stub: LUiWidget:animatePosition
 -- Performs the animate position operation on this ui widget.
 do
-  local w = lurek.ui.newLabel("move")
-  pcall(function() w["animatePosition"](120, 40, 0.25) end)
+  -- Slide a notification toast from off-screen to its final position.
+  -- Parameters: target x, target y, duration in seconds.
+  local toast = lurek.ui.newLabel("Quest Complete!")
+  toast:animatePosition(120, 40, 0.25)
 end
 
 --@api-stub: LUiWidget:isAnimating
 -- Returns true if this ui widget animating.
 do
-  local w = lurek.ui.newLabel("state")
-  pcall(function()
-    local v = w["isAnimating"]()
-    print("isAnimating:", v)
-  end)
+  -- Poll animation state to prevent input during transitions.
+  -- Useful to block button clicks while a menu is still sliding in.
+  local menu = lurek.ui.newLabel("Main Menu")
+  local busy = menu:isAnimating()
+  print("Menu animating:", busy)
 end
 
 --@api-stub: LUiWidget:cancelAnimations
 -- Performs the cancel animations operation on this ui widget.
 do
-  local w = lurek.ui.newLabel("cancel")
-  pcall(function() w["cancelAnimations"]() end)
+  -- Immediately stop all running animations on a widget.
+  -- Use when the player opens a new screen and old transitions are irrelevant.
+  local dialog = lurek.ui.newLabel("Loading...")
+  dialog:cancelAnimations()
 end
 
 --@api-stub: lurek.ui.setPosition
 -- Sets the position of this ui.
 do
-  pcall(function() lurek.ui.setPosition(100, 200) end)
-  print("applied")
+  -- Place the health bar at a fixed screen position (top-left HUD area).
+  -- Coordinates are in pixels relative to the parent container origin.
+  lurek.ui.setPosition(100, 200)
 end
 
 --@api-stub: lurek.ui.getPosition
 -- Returns the position of this ui.
 do
-  pcall(function()
-    local v = lurek.ui.getPosition()
-    print("getPosition:", v)
-  end)
+  -- Read the current position to calculate offset for a child tooltip.
+  local x, y = lurek.ui.getPosition()
+  print("Widget at:", x, y)
 end
 
 --@api-stub: lurek.ui.setSize
 -- Sets the size of this ui.
 do
-  pcall(function() lurek.ui.setSize(200, 50) end)
-  print("applied")
+  -- Resize the dialog box to fit varying amounts of NPC dialogue text.
+  -- Width and height in pixels; respects min/max size constraints if set.
+  lurek.ui.setSize(320, 80)
 end
 
 --@api-stub: lurek.ui.getSize
 -- Returns the size of this ui.
 do
-  pcall(function()
-    local v = lurek.ui.getSize()
-    print("getSize:", v)
-  end)
+  -- Query the panel size to center a child element manually.
+  local w, h = lurek.ui.getSize()
+  print("Panel size:", w, "x", h)
 end
 
 --@api-stub: lurek.ui.getRect
 -- Returns the rect of this ui.
 do
-  pcall(function()
-    local v = lurek.ui.getRect()
-    print("getRect:", v)
-  end)
+  -- Get the bounding rectangle (x, y, w, h) for hit-testing or overlap checks.
+  -- Useful for custom tooltip positioning relative to the widget bounds.
+  local rect = lurek.ui.getRect()
+  print("Bounding rect:", rect)
 end
 
 --@api-stub: lurek.ui.setVisible
 -- Sets the visibility flag for this ui.
 do
-  pcall(function() lurek.ui.setVisible(true) end)
-  print("applied")
+  -- Show the game-over screen when the player's HP reaches zero.
+  -- Hidden widgets skip rendering but keep their layout slot.
+  lurek.ui.setVisible(true)
 end
 
 --@api-stub: lurek.ui.isVisible
 -- Returns true if this ui is currently visible.
 do
-  pcall(function()
-    local v = lurek.ui.isVisible()
-    print("isVisible:", v)
-  end)
+  -- Check visibility before toggling — avoids redundant show/hide calls.
+  local shown = lurek.ui.isVisible()
+  print("Currently visible:", shown)
 end
 
 --@api-stub: lurek.ui.setEnabled
 -- Sets whether this ui is enabled and accepts input.
 do
-  pcall(function() lurek.ui.setEnabled(true) end)
-  print("applied")
+  -- Disable the "Buy" button when the player lacks enough gold.
+  -- Disabled widgets render with reduced alpha and ignore clicks.
+  lurek.ui.setEnabled(true)
 end
 
 --@api-stub: lurek.ui.isEnabled
 -- Returns true if this ui is currently enabled.
 do
-  pcall(function()
-    local v = lurek.ui.isEnabled()
-    print("isEnabled:", v)
-  end)
+  -- Guard input handlers — skip processing if the widget is disabled.
+  local active = lurek.ui.isEnabled()
+  print("Accepts input:", active)
 end
 
 --@api-stub: lurek.ui.setId
 -- Sets the id of this ui.
 do
-  pcall(function()
-    lurek.ui.setId("primary")
-    print("applied")
-  end)
+  -- Assign a unique string ID for later lookup with findById().
+  -- IDs should be stable across frames (e.g. "hud_health", "btn_attack").
+  lurek.ui.setId("hud_health_bar")
 end
 
 --@api-stub: lurek.ui.getId
 -- Returns the id of this ui.
 do
-  pcall(function()
-    local v = lurek.ui.getId()
-    print("getId:", v)
-  end)
+  -- Retrieve the ID to log which widget received a click event.
+  local id = lurek.ui.getId()
+  print("Clicked widget ID:", id)
 end
 
 --@api-stub: lurek.ui.setTooltip
@@ -212,6 +220,8 @@ end
 --@api-stub: lurek.ui.findById
 -- Finds and returns the by id in this ui by name or id.
 do
+  -- Retrieve a widget reference by its unique ID string.
+  -- Use this to update HUD elements from game logic, e.g. a score label.
   local v = lurek.ui.findById("widget_id")
   print("findById:", v)
 end
@@ -219,27 +229,41 @@ end
 --@api-stub: lurek.ui.setOnClick
 -- Sets the on click of this ui.
 do
-  lurek.ui.setOnClick(function() print("event") end)
+  -- Register a click handler — fires when the player clicks/taps this widget.
+  -- Common for menu buttons, inventory slots, shop items.
+  lurek.ui.setOnClick(function()
+    print("event")
+  end)
   print("applied")
 end
 
 --@api-stub: lurek.ui.setOnChange
 -- Sets the on change of this ui.
 do
-  lurek.ui.setOnChange(function() print("event") end)
+  -- Fires when the widget value changes (slider moved, checkbox toggled, text typed).
+  -- Use to apply settings in real-time, e.g. volume slider updates audio bus.
+  lurek.ui.setOnChange(function()
+    print("event")
+  end)
   print("applied")
 end
 
 --@api-stub: lurek.ui.setOnDraw
 -- Sets the on draw of this ui.
 do
-  lurek.ui.setOnDraw(function() print("event") end)
+  -- Custom draw callback — invoked every frame for this widget.
+  -- Use for custom rendering: minimap overlays, dynamic health bars, graphs.
+  lurek.ui.setOnDraw(function()
+    print("event")
+  end)
   print("applied")
 end
 
 --@api-stub: lurek.ui.containsPoint
 -- Performs the contains point operation on this ui.
 do
+  -- Hit-test: returns true if (x, y) is inside the widget bounds.
+  -- Useful for custom drag-and-drop or tooltip positioning logic.
   local v = lurek.ui.containsPoint(0, 0)
   print("containsPoint:", v)
 end
@@ -247,6 +271,8 @@ end
 --@api-stub: lurek.ui.setPadding
 -- Sets the padding of this ui.
 do
+  -- Inner spacing between widget border and content (in pixels).
+  -- Keeps text/icons from touching edges — standard for dialog panels.
   lurek.ui.setPadding(8)
   print("applied")
 end
@@ -261,6 +287,8 @@ end
 --@api-stub: lurek.ui.setMargin
 -- Sets the margin of this ui.
 do
+  -- Outer spacing between this widget and its neighbors (in pixels).
+  -- Use to space out toolbar buttons or list items evenly.
   lurek.ui.setMargin(8)
   print("applied")
 end
@@ -275,6 +303,8 @@ end
 --@api-stub: lurek.ui.setZOrder
 -- Sets the z order of this ui.
 do
+  -- Controls draw order: higher z = drawn on top.
+  -- Use to ensure popups/tooltips render above the game HUD.
   lurek.ui.setZOrder(1)
   print("applied")
 end
@@ -289,6 +319,8 @@ end
 --@api-stub: lurek.ui.setMinSize
 -- Sets the min size of this ui.
 do
+  -- Prevents the widget from shrinking below this size during layout.
+  -- Important for buttons that must remain clickable on small screens.
   lurek.ui.setMinSize(200, 50)
   print("applied")
 end
@@ -303,6 +335,8 @@ end
 --@api-stub: lurek.ui.setMaxSize
 -- Sets the max size of this ui.
 do
+  -- Caps the widget size — prevents expansion beyond this limit.
+  -- Useful for chat bubbles or tooltips that should not fill the screen.
   lurek.ui.setMaxSize(200, 50)
   print("applied")
 end
@@ -317,6 +351,8 @@ end
 --@api-stub: lurek.ui.setAnchor
 -- Sets the anchor of this ui.
 do
+  -- Pins widget edges to parent with pixel offsets (top, right, bottom, left).
+  -- Classic use: anchor a health bar to the top-left corner of the screen.
   lurek.ui.setAnchor(8, 8, 8, 8)
   print("applied")
 end
@@ -324,6 +360,8 @@ end
 --@api-stub: lurek.ui.setAnchorCenter
 -- Sets the anchor center of this ui.
 do
+  -- Centers the widget in its parent with an optional pixel offset.
+  -- Perfect for pause menus, "Game Over" screens, or modal dialogs.
   lurek.ui.setAnchorCenter(0, 0)
   print("applied")
 end
@@ -338,6 +376,8 @@ end
 --@api-stub: lurek.ui.setFlexGrow
 -- Sets the flex grow of this ui.
 do
+  -- Flex grow factor: how much extra space this widget claims.
+  -- Set to 1 on a content panel to fill remaining space in a toolbar layout.
   lurek.ui.setFlexGrow(1)
   print("applied")
 end
@@ -352,6 +392,8 @@ end
 --@api-stub: lurek.ui.setFlexShrink
 -- Sets the flex shrink of this ui.
 do
+  -- Flex shrink factor: how much this widget can compress when space is tight.
+  -- Set to 0 on critical buttons so they never disappear on narrow screens.
   lurek.ui.setFlexShrink(1)
   print("applied")
 end
@@ -366,6 +408,8 @@ end
 --@api-stub: lurek.ui.bind
 -- Performs the bind operation on this ui.
 do
+  -- Binds this widget to a data key for reactive updates.
+  -- When the bound value changes, the widget refreshes automatically.
   lurek.ui.bind("key")
   print("bind called")
 end
@@ -380,6 +424,8 @@ end
 --@api-stub: lurek.ui.setAlpha
 -- Sets the alpha of this ui.
 do
+  -- Opacity from 0.0 (invisible) to 1.0 (fully opaque).
+  -- Dim inactive panels to 0.5 so players focus on the active one.
   lurek.ui.setAlpha(0.85)
   print("applied")
 end
@@ -394,6 +440,8 @@ end
 --@api-stub: lurek.ui.fadeIn
 -- Performs the fade in operation on this ui.
 do
+  -- Smoothly transitions alpha from 0 to 1.
+  -- Use when showing a notification banner or quest popup.
   lurek.ui.fadeIn()
   print("fadeIn called")
 end
@@ -401,6 +449,8 @@ end
 --@api-stub: lurek.ui.fadeOut
 -- Performs the fade out operation on this ui.
 do
+  -- Smoothly transitions alpha from 1 to 0, then hides the widget.
+  -- Use to dismiss toast messages or temporary damage numbers.
   lurek.ui.fadeOut()
   print("fadeOut called")
 end
@@ -408,6 +458,8 @@ end
 --@api-stub: lurek.ui.slideIn
 -- Performs the slide in operation on this ui.
 do
+  -- Animates the widget in from an offset (dx, dy) to its final position.
+  -- Slide a side panel in from the left: slideIn(-300, 0)
   lurek.ui.slideIn(0, 0)
   print("slideIn called")
 end
@@ -415,6 +467,8 @@ end
 --@api-stub: lurek.ui.slideOut
 -- Performs the slide out operation on this ui.
 do
+  -- Animates the widget out to the given offset and hides it.
+  -- Dismiss a bottom drawer: slideOut(0, 200)
   lurek.ui.slideOut(0, 0)
   print("slideOut called")
 end
@@ -422,6 +476,8 @@ end
 --@api-stub: lurek.ui.attachToEntity
 -- Performs the attach to entity operation on this ui.
 do
+  -- Pins this widget above a game entity so it follows movement.
+  -- Use for floating name tags, health bars, or speech bubbles over NPCs.
   lurek.ui.attachToEntity(1)
   print("attachToEntity called")
 end
@@ -429,6 +485,8 @@ end
 --@api-stub: lurek.ui.detachFromEntity
 -- Performs the detach from entity operation on this ui.
 do
+  -- Releases entity tracking — widget stays at its last screen position.
+  -- Call when an NPC dies so the health bar can fade out in place.
   lurek.ui.detachFromEntity()
   print("detachFromEntity called")
 end
@@ -442,6 +500,7 @@ end
 --@api-stub: Button:setText
 -- Sets the text of this button.
 do
+  -- Change button label at runtime — e.g. toggle "Pause" / "Resume".
   local btn = new_example_image_widget():newButton("btn_play", "Play")
   btn:setText("Hello")
 end
@@ -658,8 +717,10 @@ end
 --@api-stub: Combo_Box:addItem
 -- Adds a item to this combo_box.
 do
+  -- ComboBox items can be added at runtime — useful for populating
+  -- difficulty selectors or resolution lists after loading user config.
   local cb = new_example_image_widget():newComboBox({"Easy","Normal","Hard"})
-  cb:addItem("item_1")
+  cb:addItem("Nightmare") -- append a new option discovered from DLC or unlocks
 end
 
 --@api-stub: Combo_Box:removeItem
@@ -695,8 +756,10 @@ end
 --@api-stub: Combo_Box:setSelectedIndex
 -- Sets the selected index of this combo_box.
 do
+  -- Programmatically select an item — e.g. restore the player's
+  -- saved difficulty preference when re-opening the options menu.
   local cb = new_example_image_widget():newComboBox({"Easy","Normal","Hard"})
-  cb:setSelectedIndex(true)
+  cb:setSelectedIndex(2) -- select "Normal" (1-based index)
 end
 
 --@api-stub: Combo_Box:getSelectedIndex
@@ -781,9 +844,11 @@ end
 --@api-stub: Tab_Bar:addTab
 -- Adds a tab to this tab_bar.
 do
+  -- TabBars hold child widgets as tab content. Each tab can contain
+  -- a full sub-panel — equipment grid, stat sheet, or world map.
   local tabs = new_example_image_widget():newTabBar({"Equip","Stats","Map"})
-  local child = new_example_image_widget():newButton("child_1", "Child")
-  tabs:addTab(child)
+  local child = new_example_image_widget():newButton("child_1", "Journal")
+  tabs:addTab(child) -- dynamically add a tab unlocked mid-game
 end
 
 --@api-stub: Tab_Bar:removeTab
@@ -812,8 +877,10 @@ end
 --@api-stub: Tab_Bar:setActiveTab
 -- Sets the active tab of this tab_bar.
 do
+  -- Switch the visible tab programmatically — e.g. open the Map tab
+  -- when the player presses 'M' as a keyboard shortcut.
   local tabs = new_example_image_widget():newTabBar({"Equip","Stats","Map"})
-  tabs:setActiveTab(1)
+  tabs:setActiveTab(3) -- jump directly to the Map tab
 end
 
 --@api-stub: Tab_Bar:getActiveTab
@@ -858,15 +925,19 @@ end
 --@api-stub: Spin_Box:setRange
 -- Sets the range of this spin_box.
 do
+  -- Clamp the spin box to valid bounds — prevents players from
+  -- entering impossible values like negative party size or 999 lives.
   local spin = new_example_image_widget():newSpinBox()
-  spin:setRange(1)
+  spin:setRange(1) -- min=1 (e.g. at least 1 party member)
 end
 
 --@api-stub: Spin_Box:setStep
 -- Sets the step of this spin_box.
 do
+  -- Step controls the increment per click/arrow press.
+  -- Use 5 for volume (0-100), 1 for item count, 0.1 for fine-tuning.
   local spin = new_example_image_widget():newSpinBox()
-  spin:setStep(1)
+  spin:setStep(5) -- each click changes value by 5 (e.g. volume slider)
 end
 
 -- Switch methods
@@ -889,8 +960,10 @@ end
 --@api-stub: Switch:toggle
 -- Toggles the  state of this switch.
 do
+  -- Toggle flips on↔off without knowing current state.
+  -- Handy for keybinds: press 'H' to toggle HUD visibility.
   local sw = new_example_image_widget():newSwitch(false)
-  sw:toggle()
+  sw:toggle() -- if off → on, if on → off
 end
 
 -- Badge methods
@@ -923,8 +996,10 @@ end
 --@api-stub: Panel:setTitle
 -- Sets the title of this panel.
 do
+  -- Panels are titled containers — use them for inventory windows,
+  -- character sheets, or dialog boxes that need a header bar.
   local panel = new_example_image_widget():newPanel()
-  panel:setTitle("Hello")
+  panel:setTitle("Inventory") -- shown in the panel's header area
 end
 
 --@api-stub: Panel:getTitle
@@ -938,8 +1013,10 @@ end
 --@api-stub: Panel:setScrollable
 -- Sets the scrollable of this panel.
 do
+  -- Enable scrolling when panel content exceeds visible area.
+  -- Essential for long inventory lists or quest logs.
   local panel = new_example_image_widget():newPanel()
-  panel:setScrollable(1)
+  panel:setScrollable(true) -- allow vertical scrolling
 end
 
 -- Layout methods
@@ -947,8 +1024,10 @@ end
 --@api-stub: Layout:setDirection
 -- Sets the direction of this layout.
 do
+  -- Direction controls child stacking: "vertical" for menus/lists,
+  -- "horizontal" for toolbars, hotbars, or side-by-side stat columns.
   local layout = new_example_image_widget():newLayout("vertical")
-  layout:setDirection("horizontal")
+  layout:setDirection("horizontal") -- switch to toolbar-style row
 end
 
 --@api-stub: Layout:getDirection
@@ -962,8 +1041,10 @@ end
 --@api-stub: Layout:setSpacing
 -- Sets the spacing of this layout.
 do
+  -- Spacing is the gap (in pixels) between each child widget.
+  -- Use 4-8 for tight lists, 16+ for breathing room in menus.
   local layout = new_example_image_widget():newLayout("vertical")
-  layout:setSpacing(8)
+  layout:setSpacing(8) -- 8px gap between each menu button
 end
 
 --@api-stub: Layout:getSpacing
@@ -977,15 +1058,19 @@ end
 --@api-stub: Layout:setColumns
 -- Sets the columns of this layout.
 do
+  -- Columns turn a layout into a grid. Use 4-6 columns for
+  -- inventory grids, 3 for card hands, 2 for side-by-side stats.
   local layout = new_example_image_widget():newLayout("vertical")
-  layout:setColumns(1)
+  layout:setColumns(4) -- 4-column inventory grid
 end
 
 --@api-stub: Layout:setWrap
 -- Sets the wrap of this layout.
 do
+  -- Wrap moves overflow children to the next row/column,
+  -- like CSS flex-wrap. Great for dynamic-count item grids.
   local layout = new_example_image_widget():newLayout("vertical")
-  layout:setWrap(true)
+  layout:setWrap(true) -- items flow to next row when row is full
 end
 
 --@api-stub: Layout:getWrap
@@ -999,8 +1084,10 @@ end
 --@api-stub: Layout:setAlign
 -- Sets the align of this layout.
 do
+  -- Align controls cross-axis placement: "center" for centered
+  -- menu buttons, "start"/"end" for left/right-anchored elements.
   local layout = new_example_image_widget():newLayout("vertical")
-  layout:setAlign("center")
+  layout:setAlign("center") -- center children horizontally
 end
 
 --@api-stub: Layout:getAlign
@@ -1014,8 +1101,10 @@ end
 --@api-stub: Layout:setJustify
 -- Sets the justify of this layout.
 do
+  -- Justify distributes children along the main axis:
+  -- "start", "center", "end", "space-between", "space-around".
   local layout = new_example_image_widget():newLayout("vertical")
-  layout:setJustify(1)
+  layout:setJustify("space-between") -- spread items evenly
 end
 
 --@api-stub: Layout:getJustify
@@ -1031,8 +1120,10 @@ end
 --@api-stub: Scroll_Panel:setContentSize
 -- Sets the content size of this scroll_panel.
 do
+  -- Content size defines the virtual scrollable area.
+  -- Set it larger than the panel's visible rect to enable scrolling.
   local sp = new_example_image_widget():newScrollPanel()
-  sp:setContentSize(200, 50)
+  sp:setContentSize(800, 2000) -- tall virtual area for a quest log
 end
 
 --@api-stub: Scroll_Panel:getContentSize
@@ -1046,8 +1137,10 @@ end
 --@api-stub: Scroll_Panel:setScrollPosition
 -- Sets the scroll position of this scroll_panel.
 do
+  -- Programmatic scroll — jump to a specific entry, e.g.
+  -- auto-scroll chat to the newest message at the bottom.
   local sp = new_example_image_widget():newScrollPanel()
-  sp:setScrollPosition(100, 200)
+  sp:setScrollPosition(0, 200) -- scroll down 200px
 end
 
 --@api-stub: Scroll_Panel:getScrollPosition
@@ -1086,8 +1179,10 @@ end
 --@api-stub: Nine_Patch:setInsets
 -- Sets the insets of this nine_patch.
 do
+  -- Insets define the non-stretchable border regions of a 9-patch.
+  -- The center stretches to fill; corners and edges stay fixed-size.
   local np = new_example_image_widget():newNinePatch("assets/panel.9.png")
-  np:setInsets(1)
+  np:setInsets(8) -- 8px fixed border on all sides
 end
 
 --@api-stub: Nine_Patch:getInsets
@@ -1141,8 +1236,10 @@ end
 --@api-stub: Toast:setDuration
 -- Sets the duration of this toast.
 do
+  -- Duration is how long (seconds) the toast stays visible.
+  -- Short (1s) for quick confirmations, longer (4s) for warnings.
   local toast = new_example_image_widget():newToast("Saved.", 2.0)
-  toast:setDuration(0.5)
+  toast:setDuration(3.0) -- show for 3 seconds before fading
 end
 
 --@api-stub: Toast:getDuration
@@ -1206,8 +1303,10 @@ end
 --@api-stub: Tree_View:addNode
 -- Adds a node to this tree_view.
 do
+  -- TreeViews display hierarchical data: skill trees, file browsers,
+  -- tech-tree unlocks, or nested quest objectives.
   local tree = new_example_image_widget():newTreeView({label="root"})
-  tree:addNode("item_1")
+  tree:addNode("Swordsmanship") -- add a child node to the root
 end
 
 --@api-stub: Tree_View:toggleNode
@@ -6234,4 +6333,6 @@ do
   w:detachFromEntity()
   lurek.log.info("LUiWidget:detachFromEntity called", "ui")
 end
+
+print("content/examples/ui.lua")
 

@@ -118,6 +118,7 @@ Floor and ceiling rendering uses perspective-correct per-pixel texture mapping w
 Module example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
 
 ```lua
+-- Advances this door manager by the given delta time.
 do
   local doors = lurek.raycaster.newDoorManager()
   doors:addDoor(3, 3, "horizontal", 2.0)
@@ -125,6 +126,7 @@ do
 end
 
 --@api-stub: DoorManager:getDoor
+-- Returns the door of this door manager.
 do
   local doors = lurek.raycaster.newDoorManager()
   local idx = doors:addDoor(5, 7, "horizontal", 2.0)
@@ -133,6 +135,7 @@ do
 end
 
 --@api-stub: DoorManager:count
+-- Returns the total count of items held by this door manager.
 do
   local doors = lurek.raycaster.newDoorManager()
   doors:addDoor(2, 2, "horizontal", 2.0)
@@ -141,30 +144,27 @@ do
 end
 
 --@api-stub: DoorManager:type
+-- Returns the Lua-visible type name string for this door manager handle.
 do
   local doors = lurek.raycaster.newDoorManager()
   if doors:type() == "DoorManager" then lurek.log.debug("door manager OK", "raycaster") end
 end
 
 --@api-stub: DoorManager:typeOf
+-- Returns true if this door manager handle matches the given type name string.
 do
   local doors = lurek.raycaster.newDoorManager()
   if doors:typeOf("DoorManager") then lurek.log.debug("dispatched as DoorManager", "raycaster") end
 end
 
--- â”€â”€ HeightMap methods â”€â”€
+-- HeightMap methods
 
 --@api-stub: HeightMap:setFloor
+-- Sets the floor of this height map.
 do
   local hm = lurek.raycaster.newHeightMap(16, 12)
   for x = 4, 7 do hm:setFloor(x, 6, -0.5) end
   hm:setFloor(8, 6, -0.25)
-end
-
---@api-stub: HeightMap:setCeiling
-do
-  local hm = lurek.raycaster.newHeightMap(16, 12)
-  for x = 0, 15 do hm:setCeiling(x, 0, 0.6) end
 ```
 
 ## Key Types

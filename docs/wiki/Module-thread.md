@@ -86,7 +86,7 @@ Background threading with isolated per-thread Lua VMs communicating via typed MP
 Module example from [thread.lua](../blob/main/content/examples/thread.lua):
 
 ```lua
---@api-stub: ThreadPool:collect
+-- Collects and returns all completed task results from this thread pool.
 do
   local pool = lurek.thread.newPool(2, "-- worker")
   function lurek.process(_)
@@ -99,6 +99,7 @@ do
 end
 
 --@api-stub: ThreadPool:size
+-- Returns the current size of this thread pool.
 do
   local pool = lurek.thread.newPool(8, "-- worker")
   local max_inflight = pool:size() * 4
@@ -106,6 +107,7 @@ do
 end
 
 --@api-stub: ThreadPool:join
+-- Blocks until this thread pool finishes its current operation.
 do
   local pool = lurek.thread.newPool(2, [[
     local n = lurek.thread.getChannel("__pool_input"):pop()
@@ -118,6 +120,7 @@ do
 end
 
 --@api-stub: ThreadPool:getInputChannel
+-- Returns the input channel of this thread pool.
 do
   local pool = lurek.thread.newPool(4, "-- worker")
   local input = pool:getInputChannel()
@@ -125,13 +128,11 @@ do
 end
 
 --@api-stub: ThreadPool:getOutputChannel
+-- Returns the output channel of this thread pool.
 do
   local pool = lurek.thread.newPool(4, "-- worker")
   local out = pool:getOutputChannel()
   lurek.log.debug("pending results: " .. out:getCount(), "thread")
-end
-
--- â”€â”€ Promise methods â”€â”€
 ```
 
 ## Key Types
@@ -198,9 +199,10 @@ do
   end
 end
 
--- â”€â”€ ThreadHandle methods â”€â”€
+-- ThreadHandle methods
 
 --@api-stub: ThreadHandle:type
+-- Returns the Lua-visible type name string for this thread handle handle.
 do
   local t = lurek.thread.newThread("-- noop")
   if t:type() == "LThread" then
@@ -209,6 +211,7 @@ do
 end
 
 --@api-stub: ThreadHandle:typeOf
+-- Returns true if this thread handle handle matches the given type name string.
 do
   local t = lurek.thread.newThread("-- noop")
   assert(t:typeOf("LThread"))
@@ -216,11 +219,9 @@ do
 end
 
 --@api-stub: ThreadHandle:start
+-- Starts the operation managed by this thread handle.
 do
   local t = lurek.thread.newThread([[
-    local seed, count = ...
-    lurek.thread.getChannel("results"):push(seed + count)
-  ]])
 ```
 
 ### `lurek.thread.getChannel(name: string) -> LChannel`
@@ -736,9 +737,10 @@ do
   end
 end
 
--- â”€â”€ ThreadHandle methods â”€â”€
+-- ThreadHandle methods
 
 --@api-stub: ThreadHandle:type
+-- Returns the Lua-visible type name string for this thread handle handle.
 do
   local t = lurek.thread.newThread("-- noop")
   if t:type() == "LThread" then
@@ -747,6 +749,7 @@ do
 end
 
 --@api-stub: ThreadHandle:typeOf
+-- Returns true if this thread handle handle matches the given type name string.
 do
   local t = lurek.thread.newThread("-- noop")
   assert(t:typeOf("LThread"))
@@ -754,11 +757,9 @@ do
 end
 
 --@api-stub: ThreadHandle:start
+-- Starts the operation managed by this thread handle.
 do
   local t = lurek.thread.newThread([[
-    local seed, count = ...
-    lurek.thread.getChannel("results"):push(seed + count)
-  ]])
 ```
 
 ### `LPromise:chain(code: string, ...: any) -> LPromise`
