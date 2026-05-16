@@ -1,18 +1,8 @@
 -- content/examples/procgen.lua
--- Hand-written coverage of the lurek.procgen API (29 items).
---
--- Stateless world-building helpers: dungeon layouts, noise fields,
--- cave automata, Voronoi/Poisson scatter, name generation and L-systems.
--- Every function is pure (returns Lua tables / scalars), so snippets run
--- at file load time without an init/render callback.
---
+-- lurek.procgen API examples.
 -- Run: cargo run -- content/examples/procgen.lua
 
--- â”€â”€ lurek.procgen.* functions â”€â”€
-
---@api-stub: lurek.procgen.cellularAutomata
--- Generates a cave-like map using cellular automata.
--- Use to seed organic cave levels; the returned flat byte array is row-major width * height.
+--@api-stub: lurek.procgen.cellularAutomata -- Generate a cave or organic map using cellular automata rules
 do -- lurek.procgen.cellularAutomata
   local w, h = 64, 48
   local cave = lurek.procgen.cellularAutomata(w, h, { fill = 0.45, iterations = 5, seed = 1337 })
@@ -21,9 +11,7 @@ do -- lurek.procgen.cellularAutomata
   lurek.log.info("cave generated: " .. floor_count .. " walkable cells of " .. (w * h), "procgen")
 end
 
---@api-stub: lurek.procgen.floodFill
--- BFS flood fill on a flat grid of bytes.
--- Pair with cellularAutomata to find the largest connected cave region; the result is a 0/1 mask.
+--@api-stub: lurek.procgen.floodFill -- Flood-fill a grid from a starting cell, marking all connected cells that pass a threshold test
 do -- lurek.procgen.floodFill
   local w, h = 16, 16
   local grid = {}
@@ -32,18 +20,14 @@ do -- lurek.procgen.floodFill
   lurek.log.debug("flood reached " .. #mask .. " cells from (1,1)", "procgen")
 end
 
---@api-stub: lurek.procgen.perlinNoise
--- Evaluates periodic Perlin noise at a point.
--- Useful for tileable textures: sample the same px,py period to get a seamless wrap.
+--@api-stub: lurek.procgen.perlinNoise -- Sample periodic 2D Perlin noise at a given coordinate
 do -- lurek.procgen.perlinNoise
   local px, py = 8.0, 8.0
   local n = lurek.procgen.perlinNoise(2.5, 3.1, px, py)
   if n > 0 then lurek.log.debug("perlin sample positive: " .. n, "procgen") end
 end
 
---@api-stub: lurek.procgen.poissonDisk
--- Generates Poisson disk sample points using Bridson's algorithm.
--- Use for non-overlapping props (trees, rocks); min_dist is in the same units as w/h.
+--@api-stub: lurek.procgen.poissonDisk -- Generate evenly-spaced random points using Poisson disk sampling
 do -- lurek.procgen.poissonDisk
   local pts = lurek.procgen.poissonDisk(800, 600, 32, 30, 42)
   for i = 1, math.min(3, #pts) do
@@ -51,18 +35,14 @@ do -- lurek.procgen.poissonDisk
   end
 end
 
---@api-stub: lurek.procgen.voronoi
--- Generates a Voronoi diagram for a set of seed points.
--- Returns three flat arrays (region id, distance, second-nearest distance) ideal for biome maps.
+--@api-stub: lurek.procgen.voronoi -- Compute a Voronoi diagram from a set of seed points
 do -- lurek.procgen.voronoi
   local seeds = { { x = 16, y = 16 }, { x = 48, y = 16 }, { x = 32, y = 48 } }
   local regions, dist, dist2 = lurek.procgen.voronoi(64, 64, seeds, { metric = "euclidean" })
   lurek.log.info("voronoi regions=" .. #regions .. " near=" .. dist[1] .. " next=" .. dist2[1], "procgen")
 end
 
---@api-stub: lurek.procgen.bspDungeon
--- Generates a dungeon using Binary Space Partitioning.
--- Good for top-down roguelikes; rooms is a list of {x,y,w,h} and corridors are line segments.
+--@api-stub: lurek.procgen.bspDungeon -- Generate a dungeon layout using Binary Space Partitioning
 do -- lurek.procgen.bspDungeon
   local d = lurek.procgen.bspDungeon({ width = 80, height = 50, min_size = 8, max_depth = 4, seed = 7 })
   local first = d.rooms[1]
@@ -70,9 +50,7 @@ do -- lurek.procgen.bspDungeon
   lurek.log.debug("first room at " .. first.x .. "," .. first.y .. " size " .. first.w .. "x" .. first.h, "procgen")
 end
 
---@api-stub: lurek.procgen.roomsDungeon
--- Generates a rooms-and-corridors dungeon.
--- Returns rooms, corridors, AND a flat grid (1=floor, 0=wall) so you can paint a tilemap directly.
+--@api-stub: lurek.procgen.roomsDungeon -- Generate a dungeon by placing random non-overlapping rooms and connecting them with corridors
 do -- lurek.procgen.roomsDungeon
   local d = lurek.procgen.roomsDungeon({ width = 60, height = 40, max_rooms = 12, min_room_size = 4, max_room_size = 9, seed = 2 })
   local floors = 0
@@ -80,8 +58,7 @@ do -- lurek.procgen.roomsDungeon
   lurek.log.info("rooms dungeon: " .. #d.rooms .. " rooms, " .. floors .. " floor tiles", "procgen")
 end
 
---@api-stub: lurek.procgen.roomsDungeonWithPrefabs
--- Generates a rooms dungeon and stamps prefab masks into room interiors.
+--@api-stub: lurek.procgen.roomsDungeonWithPrefabs -- Generate a rooms-based dungeon and place named prefabs into qualifying rooms
 do -- lurek.procgen.roomsDungeonWithPrefabs
   local prefabs = {
     { name = "altar", width = 3, height = 3, mask = {
@@ -94,17 +71,14 @@ do -- lurek.procgen.roomsDungeonWithPrefabs
   lurek.log.info("prefab rooms: " .. #d.rooms .. ", placements=" .. #placements, "procgen")
 end
 
---@api-stub: lurek.procgen.heightmap
--- Generates a heightmap using fractal noise.
--- Tune octaves/persistence for terrain detail; erosion_passes adds simple thermal smoothing.
+--@api-stub: lurek.procgen.heightmap -- Generate a fractal heightmap using multi-octave noise with optional hydraulic erosion
 do -- lurek.procgen.heightmap
   local hm = lurek.procgen.heightmap({ width = 128, height = 128, scale = 0.05, octaves = 4, persistence = 0.5, seed = 99 })
   local mid = hm.cells[(hm.height / 2) * hm.width + (hm.width / 2)]
   lurek.log.info("heightmap " .. hm.width .. "x" .. hm.height .. " centre=" .. mid, "procgen")
 end
 
---@api-stub: lurek.procgen.heightmapFromCellular
--- Converts cellular 0/1 map data into a normalized heightmap-like table.
+--@api-stub: lurek.procgen.heightmapFromCellular -- Convert a cellular automata grid into a heightmap by distance-transforming the floor cells
 do -- lurek.procgen.heightmapFromCellular
   local w, h = 8, 8
   local cells = {}
@@ -113,9 +87,7 @@ do -- lurek.procgen.heightmapFromCellular
   lurek.log.debug("heightmapFromCellular cells=" .. #hm.cells, "procgen")
 end
 
---@api-stub: lurek.procgen.wfcGenerate
--- Generates a tile grid using Wave Function Collapse.
--- Provide tiles and adjacency rules; collapse may fail, so check for sentinel 0 cells.
+--@api-stub: lurek.procgen.wfcGenerate -- Run Wave Function Collapse to generate a grid of tile IDs satisfying adjacency constraints
 do -- lurek.procgen.wfcGenerate
   local tiles = { { id = 1, weight = 1.0 }, { id = 2, weight = 0.5 } }
   local adj   = { [1] = { 1, 2 }, [2] = { 1, 2 } }
@@ -123,50 +95,41 @@ do -- lurek.procgen.wfcGenerate
   lurek.log.info("wfc grid " .. grid.width .. "x" .. grid.height .. " first=" .. grid.cells[1], "procgen")
 end
 
---@api-stub: lurek.procgen.lsystem
--- Generates an L-system string.
--- Use for procedural plants/fractals; the output string drives lsystemSegments() for rendering.
+--@api-stub: lurek.procgen.lsystem -- Expand an L-system grammar and return the resulting string
 do -- lurek.procgen.lsystem
   local rules = { F = "F+F-F-F+F" }
   local s = lurek.procgen.lsystem({ axiom = "F", rules = rules, iterations = 3 })
   lurek.log.debug("lsystem string length=" .. #s, "procgen")
 end
 
---@api-stub: lurek.procgen.lsystemSegments
--- Generates L-system line segments for rendering.
--- Returns {x1,y1,x2,y2} pairs in turtle-graphics units; multiply by a scale factor to draw.
+--@api-stub: lurek.procgen.lsystemSegments -- Expand an L-system and interpret the result as turtle-graphics commands, returning line segments
 do -- lurek.procgen.lsystemSegments
   local rules = { F = "FF+[+F-F-F]-[-F+F+F]" }
   local segs = lurek.procgen.lsystemSegments({ axiom = "F", rules = rules, iterations = 3 }, 22.5, 4.0)
   lurek.log.info("plant has " .. #segs .. " line segments", "procgen")
 end
 
---@api-stub: lurek.procgen.generateName
--- Generates a single procedural name using a Markov chain.
--- Feed 8+ samples for plausible output; min/max_len bound the result without truncating mid-word.
+--@api-stub: lurek.procgen.generateName -- Generate a single random name based on a Markov chain trained from sample names
 do -- lurek.procgen.generateName
   local samples = { "Eldoria", "Mythos", "Arden", "Brindlemar", "Caelum", "Drakov", "Eowyn" }
   local name = lurek.procgen.generateName(samples, 4, 9, 17)
   lurek.log.info("npc named '" .. name .. "'", "procgen")
 end
 
---@api-stub: lurek.procgen.newBiomeClassifier
--- Creates a biome classifier with optional threshold overrides.
+--@api-stub: lurek.procgen.newBiomeClassifier -- Create a BiomeClassifier object with custom threshold rules for mapping height/moisture/temperature to biome types
 do -- lurek.procgen.newBiomeClassifier
   local bc = lurek.procgen.newBiomeClassifier({ ocean_threshold = 0.25, warm_temperature = 0.7 })
   lurek.log.debug("biome classifier ready: " .. bc:type(), "procgen")
 end
 
---@api-stub: BiomeClassifier:classify
--- Classifies a single sample (height, moisture, temperature).
+--@api-stub: BiomeClassifier:classify -- Classify a single point into a biome type based on its environmental parameters
 do -- BiomeClassifier:classify
   local bc = lurek.procgen.newBiomeClassifier()
   local biome = bc:classify(0.62, 0.35, 0.72)
   lurek.log.info("sample biome=" .. biome, "procgen")
 end
 
---@api-stub: BiomeClassifier:classifyMap
--- Classifies a full row-major map from scalar arrays.
+--@api-stub: BiomeClassifier:classifyMap -- Classify an entire grid of points into biome types in bulk
 do -- BiomeClassifier:classifyMap
   local bc = lurek.procgen.newBiomeClassifier()
   local w, h = 2, 2
@@ -177,41 +140,34 @@ do -- BiomeClassifier:classifyMap
   lurek.log.debug("classifyMap produced " .. #biomes .. " cells", "procgen")
 end
 
---@api-stub: BiomeClassifier:type
--- Returns userdata type name.
+--@api-stub: BiomeClassifier:type -- Returns the type name of this object
 do -- BiomeClassifier:type
   local bc = lurek.procgen.newBiomeClassifier()
   local t = bc:type()
   lurek.log.debug("biome type=" .. t, "procgen")
 end
 
---@api-stub: BiomeClassifier:typeOf
--- Tests type identity.
+--@api-stub: BiomeClassifier:typeOf -- Check whether this object matches a given type name
 do -- BiomeClassifier:typeOf
   local bc = lurek.procgen.newBiomeClassifier()
   local ok = bc:typeOf("BiomeClassifier")
   if not ok then lurek.log.warn("unexpected biome classifier type", "procgen") end
 end
 
---@api-stub: lurek.procgen.biomeColor
--- Returns representative RGBA for a biome name.
+--@api-stub: lurek.procgen.biomeColor -- Get the default RGBA display color for a biome type name
 do -- lurek.procgen.biomeColor
   local r, g, b, a = lurek.procgen.biomeColor("desert")
   lurek.log.debug("desert rgba=" .. r .. "," .. g .. "," .. b .. "," .. a, "procgen")
 end
 
---@api-stub: lurek.procgen.generateNames
--- Generates N procedural names using a Markov chain.
--- Cheaper than calling generateName N times because the chain is built once.
+--@api-stub: lurek.procgen.generateNames -- Generate multiple random names in one call using Markov chains trained from sample data
 do -- lurek.procgen.generateNames
   local samples = { "Frostpeak", "Ironhold", "Stormwall", "Embervale", "Greyfen", "Hollowmere" }
   local towns = lurek.procgen.generateNames(samples, 5, 5, 12, 4)
   for i = 1, #towns do lurek.log.debug("town " .. i .. ": " .. towns[i], "procgen") end
 end
 
---@api-stub: lurek.procgen.worldGraph
--- Generates a world graph with scattered regions and edges.
--- Use for over-world maps; each region carries id, name, position, and free-form tags.
+--@api-stub: lurek.procgen.worldGraph -- Generate a connected world graph with named regions and weighted edges
 do -- lurek.procgen.worldGraph
   local wg = lurek.procgen.worldGraph(1024, 768, 8, 5)
   local first = wg.regions[1]
@@ -219,32 +175,26 @@ do -- lurek.procgen.worldGraph
   lurek.log.debug("region 1 '" .. first.name .. "' at " .. first.x .. "," .. first.y, "procgen")
 end
 
---@api-stub: lurek.procgen.noiseMap
--- Generates a noise map using the configurable NoiseGenerator.
--- Adjust scale_x/scale_y independently for stretched terrain; the result is row-major flat array.
+--@api-stub: lurek.procgen.noiseMap -- Generate a 2D noise map with configurable scale, octaves, and offsets
 do -- lurek.procgen.noiseMap
   local map = lurek.procgen.noiseMap(64, 64, { scale_x = 0.08, scale_y = 0.08, octaves = 3, persistence = 0.5, seed = 11 })
   lurek.log.info("noise map " .. #map .. " samples, first=" .. map[1], "procgen")
 end
 
---@api-stub: lurek.procgen.noiseMapParallel
--- Generates a noise map using rayon parallel processing.
--- Use for large maps (> 256x256) where the parallel speedup outweighs thread setup overhead.
+--@api-stub: lurek.procgen.noiseMapParallel -- Generate a 2D noise map using multiple threads for faster computation on large maps
 do -- lurek.procgen.noiseMapParallel
   local big = lurek.procgen.noiseMapParallel(256, 256, { scale_x = 0.02, scale_y = 0.02, octaves = 5, lacunarity = 2.0 })
   local sample = big[#big / 2]
   lurek.log.info("parallel noise map size=" .. #big .. " mid=" .. sample, "procgen")
 end
 
---@api-stub: lurek.procgen.noiseMapParallelSeeded
--- Generates a seeded parallel noise map for deterministic world generation.
+--@api-stub: lurek.procgen.noiseMapParallelSeeded -- Generate a 2D noise map using multiple threads with a specific seed for reproducible results
 do -- lurek.procgen.noiseMapParallelSeeded
   local map = lurek.procgen.noiseMapParallelSeeded(64, 64, { scale_x = 0.04, scale_y = 0.04, octaves = 4, seed = 12345 })
   lurek.log.debug("seeded parallel noise first=" .. map[1], "procgen")
 end
 
---@api-stub: lurek.procgen.bspDungeonWithPrefabs
--- Generates BSP rooms/corridors and prefab placement metadata.
+--@api-stub: lurek.procgen.bspDungeonWithPrefabs -- Generate a BSP dungeon and stamp named prefab rooms into suitable leaves
 do -- lurek.procgen.bspDungeonWithPrefabs
   local prefabs = {
     { name = "boss_room", width = 5, height = 5 },
@@ -254,17 +204,13 @@ do -- lurek.procgen.bspDungeonWithPrefabs
   lurek.log.info("bsp rooms=" .. #d.rooms .. " prefab placements=" .. #p, "procgen")
 end
 
---@api-stub: lurek.procgen.simplex2d
--- Returns a single Simplex noise value at the given 2-D coordinate.
--- Faster than Perlin and isotropic; output is in roughly [-1, 1].
+--@api-stub: lurek.procgen.simplex2d -- Sample 2D simplex noise at a point
 do -- lurek.procgen.simplex2d
   local n = lurek.procgen.simplex2d(12.5, 7.25)
   if math.abs(n) > 0.5 then lurek.log.debug("strong simplex2d response: " .. n, "procgen") end
 end
 
---@api-stub: lurek.procgen.simplex3d
--- Returns a single Simplex noise value at the given 3-D coordinate.
--- Use the third axis as time for animated noise (clouds, water) without seams between frames.
+--@api-stub: lurek.procgen.simplex3d -- Sample 3D simplex noise at a point
 do -- lurek.procgen.simplex3d
   local t = 0.0
   local n = lurek.procgen.simplex3d(4.0, 4.0, t)
@@ -273,7 +219,6 @@ end
 -- content/examples/procgen.lua
 -- EXAMPLEed coverage of the lurek.procgen API (29 items).
 --
--- Every --@api-stub: block below is a SCAFFOLD. The body must be
 -- replaced by hand with a 3-6 line real usage snippet showing how to
 -- call the API in real game context, written by reading:
 --   * src/lua_api/procgen_api.rs   (Lua binding, arg types, return shape)

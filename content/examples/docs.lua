@@ -1,31 +1,15 @@
 -- content/examples/docs.lua
--- Hand-written coverage of the lurek.docs API (75 items).
---
--- The lurek.docs namespace builds, validates, and exports an API catalog
--- by reflecting the live lurek.* tables and merging in TOML doc files.
--- Most calls return userdata (ApiCatalog / ValidationReport / QualityReport
--- / Schema / DocEntry) whose methods are demonstrated below.
---
+-- lurek.docs API examples.
 -- Run: cargo run -- content/examples/docs.lua
 
--- LApiCatalog / LSchema / LDocEntry have many methods not captured in generated stubs.
--- Docs API functions accept specific classes but stubs use generic userdata? types.
----@diagnostic disable: undefined-field, param-type-mismatch, need-check-nil
-
--- â”€â”€ lurek.docs.* functions â”€â”€
-
---@api-stub: lurek.docs.scan
--- Scan the lurek.* namespace to build an API catalog from live bindings.
--- Call this once at startup or from an editor tool to snapshot the runtime API surface.
+--@api-stub: lurek.docs.scan -- Reflects the live `lurek` table and builds a catalog of callable APIs
 do -- lurek.docs.scan
   local catalog = lurek.docs.scan()
   local count = catalog:entryCount()
   lurek.log.info("docs", "scanned " .. count .. " live API entries")
 end
 
---@api-stub: lurek.docs.scanModule
--- Scan a single module's bindings.
--- Use when you only need one namespace (faster than scan() and easier to validate).
+--@api-stub: lurek.docs.scanModule -- Reflects one live `lurek
 do -- lurek.docs.scanModule
   local audio_cat = lurek.docs.scanModule("audio")
   for _, entry in ipairs(audio_cat:getEntries()) do
@@ -33,9 +17,7 @@ do -- lurek.docs.scanModule
   end
 end
 
---@api-stub: lurek.docs.loadToml
--- Load a TOML doc file into an ApiCatalog.
--- Hand-authored TOML is the canonical doc source; load it before validate() to merge.
+--@api-stub: lurek.docs.loadToml -- Loads a TOML documentation catalog file and converts its entries into an API catalog
 do -- lurek.docs.loadToml
   local ok, catalog = pcall(lurek.docs.loadToml, "docs/api/audio.toml")
   if ok and catalog:entryCount() == 0 then
@@ -43,9 +25,7 @@ do -- lurek.docs.loadToml
   end
 end
 
---@api-stub: lurek.docs.loadAll
--- Load all .toml files in a directory and merge into a single ApiCatalog.
--- Use this in a CI doc-build step to gather every per-module TOML at once.
+--@api-stub: lurek.docs.loadAll -- Loads all TOML documentation catalog files from a directory and combines their entries
 do -- lurek.docs.loadAll
   local ok, catalog = pcall(lurek.docs.loadAll, "docs/api")
   if ok then
@@ -54,18 +34,14 @@ do -- lurek.docs.loadAll
   end
 end
 
---@api-stub: lurek.docs.describe
--- Inject or update a description for a named API entry.
--- Use to patch missing descriptions in the internal catalog before exporting.
+--@api-stub: lurek.docs.describe -- Adds or updates the description for one editable catalog entry
 do -- lurek.docs.describe
   lurek.docs.scan()
   lurek.docs.describe("lurek.audio.play", "Play a sound source by name.")
   lurek.docs.describe("lurek.audio.stop", "Stop a currently playing source.")
 end
 
---@api-stub: lurek.docs.setParamInfo
--- Set the parameter metadata for a catalog entry.
--- Pair with describe() so editor tooltips show parameter names and types.
+--@api-stub: lurek.docs.setParamInfo -- Replaces parameter metadata for one editable catalog entry
 do -- lurek.docs.setParamInfo
   lurek.docs.scan()
   lurek.docs.setParamInfo("lurek.audio.play", {
@@ -74,9 +50,7 @@ do -- lurek.docs.setParamInfo
   })
 end
 
---@api-stub: lurek.docs.setReturnInfo
--- Set the return type metadata for a catalog entry.
--- Required for IntelliSense to suggest method chains on the returned value.
+--@api-stub: lurek.docs.setReturnInfo -- Replaces return-value metadata for one editable catalog entry
 do -- lurek.docs.setReturnInfo
   lurek.docs.scan()
   lurek.docs.setReturnInfo("lurek.audio.play", {
@@ -84,27 +58,21 @@ do -- lurek.docs.setReturnInfo
   })
 end
 
---@api-stub: lurek.docs.getCatalog
--- Return the current internal catalog as an ApiCatalog userdata.
--- Use after describe()/setParamInfo() to read back the merged result.
+--@api-stub: lurek.docs.getCatalog -- Returns the editable in-memory documentation catalog
 do -- lurek.docs.getCatalog
   lurek.docs.scan()
   local cat = lurek.docs.getCatalog()
   lurek.log.info("docs", "internal catalog has " .. cat:entryCount() .. " entries")
 end
 
---@api-stub: lurek.docs.resetCatalog
--- Clear all entries from the internal catalog.
--- Call between independent doc-generation runs to avoid stale leftovers.
+--@api-stub: lurek.docs.resetCatalog -- Clears the editable in-memory documentation catalog
 do -- lurek.docs.resetCatalog
   lurek.docs.scan()
   lurek.docs.resetCatalog()
   assert(lurek.docs.getCatalog():entryCount() == 0, "catalog should be empty")
 end
 
---@api-stub: lurek.docs.validate
--- Validate catalog completeness against the live lurek.* bindings.
--- Run as a CI gate to fail the build when docs drift from the engine.
+--@api-stub: lurek.docs.validate -- Compares a documentation catalog with the live reflected `lurek` API table
 do -- lurek.docs.validate
   local catalog = lurek.docs.loadAll("docs/api")
   local report = lurek.docs.validate(catalog)
@@ -113,9 +81,7 @@ do -- lurek.docs.validate
   end
 end
 
---@api-stub: lurek.docs.validateModule
--- Validate a single module against the live lurek.<module>.* bindings.
--- Faster than full validate() while iterating on one module's docs.
+--@api-stub: lurek.docs.validateModule -- Compares one module's documentation catalog entries with the live reflected module table
 do -- lurek.docs.validateModule
   local ok, catalog = pcall(lurek.docs.loadToml, "docs/api/audio.toml")
   if ok then
@@ -126,45 +92,35 @@ do -- lurek.docs.validateModule
   end
 end
 
---@api-stub: lurek.docs.checkStaleness
--- Compare catalog entries against source files in a directory for staleness.
--- Use to flag TOML entries whose backing Rust file has changed since last export.
+--@api-stub: lurek.docs.checkStaleness -- Lists source files in a directory for simple documentation staleness checks
 do -- lurek.docs.checkStaleness
   local catalog = lurek.docs.loadAll("docs/api")
   local result = lurek.docs.checkStaleness(catalog, "src/lua_api")
   lurek.log.info("docs", "scanned " .. #result.current .. " source files")
 end
 
---@api-stub: lurek.docs.quality
--- Calculate quality metrics for a catalog or the internal catalog.
--- Use the score to gate releases on a minimum API documentation grade.
+--@api-stub: lurek.docs.quality -- Computes documentation quality for a supplied catalog or the editable in-memory catalog
 do -- lurek.docs.quality
   local catalog = lurek.docs.loadAll("docs/api")
   local q = lurek.docs.quality(catalog)
   lurek.log.info("docs", string.format("overall %.2f (%s)", q:getOverallScore(), q:getGrade()))
 end
 
---@api-stub: lurek.docs.qualityModule
--- Calculate quality metrics for a single module.
--- Useful for per-team dashboards where each owner only cares about their module.
+--@api-stub: lurek.docs.qualityModule -- Computes documentation quality for entries belonging to one module
 do -- lurek.docs.qualityModule
   local catalog = lurek.docs.loadAll("docs/api")
   local q = lurek.docs.qualityModule("audio", catalog)
   lurek.log.info("audio-docs", "audio module grade: " .. q:getGrade())
 end
 
---@api-stub: lurek.docs.coverage
--- Return (documented_count, total_live_count) coverage tuple.
--- Cheap progress signal during incremental doc-writing sessions.
+--@api-stub: lurek.docs.coverage -- Returns documented and live API counts for the full `lurek` table
 do -- lurek.docs.coverage
   local catalog = lurek.docs.loadAll("docs/api")
   local documented, total = lurek.docs.coverage(catalog)
   lurek.log.info("docs", string.format("coverage %d/%d", documented, total))
 end
 
---@api-stub: lurek.docs.coverageModule
--- Return (documented_count, total_live_count) for a single module.
--- Lets writers track one module without re-scanning the whole engine surface.
+--@api-stub: lurek.docs.coverageModule -- Returns documented and live API counts for one module
 do -- lurek.docs.coverageModule
   local ok, catalog = pcall(lurek.docs.loadToml, "docs/api/audio.toml")
   if ok then
@@ -173,63 +129,49 @@ do -- lurek.docs.coverageModule
   end
 end
 
---@api-stub: lurek.docs.exportCompletions
--- Export VS Code IntelliSense completions JSON to a file.
--- The VS Code extension reads this file at activation to populate suggestions.
+--@api-stub: lurek.docs.exportCompletions -- Exports catalog completion metadata to a file
 do -- lurek.docs.exportCompletions
   local catalog = lurek.docs.scan()
   pcall(lurek.docs.exportCompletions, catalog, "build/vscode/completions.json")
   lurek.log.info("docs", "wrote completions.json")
 end
 
---@api-stub: lurek.docs.exportHover
--- Export VS Code hover JSON to a file.
--- Pair with exportCompletions for full editor tooltip support.
+--@api-stub: lurek.docs.exportHover -- Exports catalog hover metadata to a file
 do -- lurek.docs.exportHover
   local catalog = lurek.docs.scan()
   pcall(lurek.docs.exportHover, catalog, "build/vscode/hover.json")
   lurek.log.info("docs", "wrote hover.json")
 end
 
---@api-stub: lurek.docs.exportSignatures
--- Export VS Code signature-help JSON to a file.
--- Powers the parameter-hint popup that appears after typing the opening paren.
+--@api-stub: lurek.docs.exportSignatures -- Exports catalog signature metadata to a file
 do -- lurek.docs.exportSignatures
   local catalog = lurek.docs.scan()
   pcall(lurek.docs.exportSignatures, catalog, "build/vscode/signatures.json")
   lurek.log.info("docs", "wrote signatures.json")
 end
 
---@api-stub: lurek.docs.exportAll
--- Export completions.json, hover.json, and signatures.json to a directory.
--- One-call shortcut for the full editor-support bundle.
+--@api-stub: lurek.docs.exportAll -- Exports all editor documentation artifacts for a catalog into a directory
 do -- lurek.docs.exportAll
   local catalog = lurek.docs.scan()
   pcall(lurek.docs.exportAll, catalog, "build/vscode")
   lurek.log.info("docs", "wrote full editor bundle")
 end
 
---@api-stub: lurek.docs.exportMarkdown
--- Export a Markdown API reference file.
--- Drop into docs/API/ for the user-facing reference shipped with the engine.
+--@api-stub: lurek.docs.exportMarkdown -- Writes a Markdown API reference from catalog entries
 do -- lurek.docs.exportMarkdown
   local catalog = lurek.docs.loadAll("docs/api")
   pcall(lurek.docs.exportMarkdown, catalog, "build/lua-api.md")
   lurek.log.info("docs", "regenerated lua-api.md")
 end
 
---@api-stub: lurek.docs.exportCheatsheet
--- Export a one-line-per-function plain-text cheatsheet.
--- Handy for grep-able offline reference; ships in dist alongside the binary.
+--@api-stub: lurek.docs.exportCheatsheet -- Writes a compact text cheatsheet from catalog entries
 do -- lurek.docs.exportCheatsheet
   local catalog = lurek.docs.scan()
   pcall(lurek.docs.exportCheatsheet, catalog, "build/cheatsheet.txt")
   lurek.log.info("docs", "wrote cheatsheet.txt")
 end
 
---@api-stub: lurek.docs.schema
--- Creates a Schema validator from a rules table.
--- Use to validate game config or save-data tables before consuming them.
+--@api-stub: lurek.docs.schema -- Builds a schema validator from Lua table rules
 do -- lurek.docs.schema
   local schema = lurek.docs.schema({
     name  = { type = "string", required = true, minLen = 1 },
@@ -239,9 +181,7 @@ do -- lurek.docs.schema
   schema:assert({ name = "Hero", level = 1, class = "warrior" })
 end
 
---@api-stub: lurek.docs.schemaFromToml
--- Creates a Schema validator directly from TOML text.
--- Useful when schema definitions are stored as TOML content in tool pipelines.
+--@api-stub: lurek.docs.schemaFromToml -- Builds a schema validator from TOML schema text
 do -- lurek.docs.schemaFromToml
   local schema_toml = [[
 name = "PlayerSave"
@@ -257,9 +197,7 @@ max = 99
   schema:assert({ level = 10 })
 end
 
---@api-stub: lurek.docs.reflectLive
--- Walks the live lurek.* Lua table and returns a structured reflection of all.
--- Use for editor tooling that needs the runtime API shape without TOML metadata.
+--@api-stub: lurek.docs.reflectLive -- Reflects live `lurek` module tables into plain name and type rows
 do -- lurek.docs.reflectLive
   local audio_only = lurek.docs.reflectLive("audio")
   for _, item in ipairs(audio_only.audio or {}) do
@@ -267,9 +205,7 @@ do -- lurek.docs.reflectLive
   end
 end
 
---@api-stub: lurek.docs.reflectTable
--- Reflects any Lua table, returning a structure describing its keys,.
--- Useful for inspecting plain Lua modules (not just lurek.*) at runtime.
+--@api-stub: lurek.docs.reflectTable -- Reflects an arbitrary Lua table into name, qualifiedName, and type rows
 do -- lurek.docs.reflectTable
   local mod = { greet = function(_) end, version = "1.0", count = 3 }
   local items = lurek.docs.reflectTable(mod, "mymod")
@@ -280,9 +216,7 @@ end
 
 -- â”€â”€ Schema methods â”€â”€
 
---@api-stub: LSchema:validate
--- Validates a Lua table against the schema.
--- Returns a list of error tables; empty list means data is valid.
+--@api-stub: Schema:validate
 do -- Schema:validate
   local schema = lurek.docs.schema({ hp = { type = "integer", required = true, min = 0 } }, "Stats")
   local result = schema:validate({ hp = -5 })
@@ -292,9 +226,7 @@ do -- Schema:validate
   end
 end
 
---@api-stub: LSchema:check
--- Returns true when the data passes all schema rules.
--- Cheaper than validate() when you only need a yes/no gate.
+--@api-stub: Schema:check
 do -- Schema:check
   local schema = lurek.docs.schema({ port = { type = "integer", min = 1, max = 65535 } }, "Net")
   if not schema:check({ port = 8080 }) then
@@ -302,27 +234,21 @@ do -- Schema:check
   end
 end
 
---@api-stub: LSchema:assert
--- Validates data and throws a Lua error on failure with all error messages joined.
--- Best for startup-time configuration where invalid data should halt the game.
+--@api-stub: Schema:assert
 do -- Schema:assert
   local schema = lurek.docs.schema({ width = { type = "integer", required = true, min = 1 } }, "Window")
   schema:assert({ width = 1280 })
   lurek.log.info("config", "window config validated")
 end
 
---@api-stub: LSchema:getName
--- Returns the name identifier of this API schema group.
--- Use in error messages to identify which schema rejected the data.
+--@api-stub: Schema:getName
 do -- Schema:getName
   local schema = lurek.docs.schema({ x = { type = "number" } }, "Point")
   local label = schema:getName()
   lurek.log.debug("schema", "loaded schema: " .. label)
 end
 
---@api-stub: LSchema:getFields
--- Returns a table of declared field names.
--- Use to drive UI form generation or report which fields a schema covers.
+--@api-stub: Schema:getFields
 do -- Schema:getFields
   local schema = lurek.docs.schema({ a = { type = "string" }, b = { type = "number" } }, "AB")
   for _, field in ipairs(schema:getFields()) do
@@ -332,18 +258,14 @@ end
 
 -- â”€â”€ DocEntry methods â”€â”€
 
---@api-stub: LDocEntry:getName
--- Returns the symbol name for this documentation entry.
--- The leaf identifier (e.g. "play") without the lurek.<module>. prefix.
+--@api-stub: DocEntry:getName
 do -- DocEntry:getName
   local catalog = lurek.docs.scanModule("audio")
   local entry = catalog:getEntries()[1]
   if entry then lurek.log.debug("docs", "first audio entry: " .. entry:getName()) end
 end
 
---@api-stub: LDocEntry:getQualifiedName
--- Returns the qualified name.
--- Use when joining catalogs or pointing users to the canonical lurek.* path.
+--@api-stub: DocEntry:getQualifiedName
 do -- DocEntry:getQualifiedName
   local catalog = lurek.docs.scan()
   for _, e in ipairs(catalog:getEntries()) do
@@ -351,18 +273,14 @@ do -- DocEntry:getQualifiedName
   end
 end
 
---@api-stub: LDocEntry:getModule
--- Returns the Lua module name this entry belongs to (e.g.
--- Group entries by module to render per-namespace doc pages.
+--@api-stub: DocEntry:getModule
 do -- DocEntry:getModule
   local catalog = lurek.docs.scan()
   local first = catalog:getEntries()[1]
   if first then lurek.log.debug("docs", "module: " .. first:getModule()) end
 end
 
---@api-stub: LDocEntry:getKind
--- Returns the kind tag for this entry (e.g.
--- Distinguishes "function" / "value" / "type" / "method" for doc renderers.
+--@api-stub: DocEntry:getKind
 do -- DocEntry:getKind
   local catalog = lurek.docs.scan()
   for _, e in ipairs(catalog:getEntries()) do
@@ -370,9 +288,7 @@ do -- DocEntry:getKind
   end
 end
 
---@api-stub: LDocEntry:getDescription
--- Returns the human-readable description text for this documentation entry.
--- Use to render hover tooltips or one-line summaries in editor UIs.
+--@api-stub: DocEntry:getDescription
 do -- DocEntry:getDescription
   local ok, catalog = pcall(lurek.docs.loadToml, "docs/api/audio.toml")
   if ok then
@@ -381,9 +297,7 @@ do -- DocEntry:getDescription
   end
 end
 
---@api-stub: LDocEntry:getParameters
--- Returns the parameters as a table of `{name, type, description, optional, default?}` records.
--- Drive parameter-hint popups or validate caller arguments by type.
+--@api-stub: DocEntry:getParameters
 do -- DocEntry:getParameters
   local ok, catalog = pcall(lurek.docs.loadToml, "docs/api/audio.toml")
   if ok then
@@ -396,9 +310,7 @@ do -- DocEntry:getParameters
   end
 end
 
---@api-stub: LDocEntry:getReturns
--- Returns the return values as a table of `{type, description}` records.
--- Lets editor tooling chain method calls on the documented return type.
+--@api-stub: DocEntry:getReturns
 do -- DocEntry:getReturns
   local ok, catalog = pcall(lurek.docs.loadToml, "docs/api/audio.toml")
   if ok then
@@ -411,9 +323,7 @@ do -- DocEntry:getReturns
   end
 end
 
---@api-stub: LDocEntry:getExample
--- Returns the example snippet, or nil.
--- Display in hover tooltips and on generated reference pages.
+--@api-stub: DocEntry:getExample
 do -- DocEntry:getExample
   local catalog = lurek.docs.loadAll("docs/api")
   local entry = catalog:getEntry("lurek.audio.play")
@@ -421,9 +331,7 @@ do -- DocEntry:getExample
   if snippet then lurek.log.info("docs", "example:\n" .. snippet) end
 end
 
---@api-stub: LDocEntry:getSince
--- Returns the since version string, or nil.
--- Use to mark new APIs in the changelog or hide them from older docs builds.
+--@api-stub: DocEntry:getSince
 do -- DocEntry:getSince
   local catalog = lurek.docs.loadAll("docs/api")
   for _, e in ipairs(catalog:getEntries()) do
@@ -432,9 +340,7 @@ do -- DocEntry:getSince
   end
 end
 
---@api-stub: LDocEntry:getDeprecated
--- Returns the deprecation message, or nil.
--- Surface deprecation warnings in the IDE or at startup for older games.
+--@api-stub: DocEntry:getDeprecated
 do -- DocEntry:getDeprecated
   local catalog = lurek.docs.loadAll("docs/api")
   for _, e in ipairs(catalog:getEntries()) do
@@ -443,9 +349,7 @@ do -- DocEntry:getDeprecated
   end
 end
 
---@api-stub: LDocEntry:getScore
--- Returns the quality score in [0,1].
--- Combine with the entry list to surface the worst-documented APIs first.
+--@api-stub: DocEntry:getScore
 do -- DocEntry:getScore
   local catalog = lurek.docs.loadAll("docs/api")
   for _, e in ipairs(catalog:getEntries()) do
@@ -453,9 +357,7 @@ do -- DocEntry:getScore
   end
 end
 
---@api-stub: LDocEntry:hasDescription
--- Returns true when the entry has a non-empty description.
--- Filter undocumented entries before exporting public reference pages.
+--@api-stub: DocEntry:hasDescription
 do -- DocEntry:hasDescription
   local catalog = lurek.docs.scan()
   local missing = 0
@@ -465,9 +367,7 @@ do -- DocEntry:hasDescription
   lurek.log.info("docs", missing .. " entries missing descriptions")
 end
 
---@api-stub: LDocEntry:hasParameters
--- Returns true when the entry has at least one parameter.
--- Useful when generating signature-help only for callable entries with parameters.
+--@api-stub: DocEntry:hasParameters
 do -- DocEntry:hasParameters
   local catalog = lurek.docs.loadAll("docs/api")
   for _, e in ipairs(catalog:getEntries()) do
@@ -477,9 +377,7 @@ do -- DocEntry:hasParameters
   end
 end
 
---@api-stub: LDocEntry:hasReturnType
--- Returns true when the entry declares at least one return type.
--- Helps flag functions whose return shape was never documented.
+--@api-stub: DocEntry:hasReturnType
 do -- DocEntry:hasReturnType
   local catalog = lurek.docs.loadAll("docs/api")
   for _, e in ipairs(catalog:getEntries()) do
@@ -489,9 +387,7 @@ do -- DocEntry:hasReturnType
   end
 end
 
---@api-stub: LDocEntry:hasExample
--- Returns true when the entry has an example snippet.
--- Use to ensure every public API ships with a runnable usage snippet.
+--@api-stub: DocEntry:hasExample
 do -- DocEntry:hasExample
   local catalog = lurek.docs.loadAll("docs/api")
   local without = 0
@@ -503,9 +399,7 @@ end
 
 -- â”€â”€ ApiCatalog methods â”€â”€
 
---@api-stub: LApiCatalog:getModules
--- Returns a sorted list of module names present in the catalog.
--- Iterate the result to render a per-module table of contents.
+--@api-stub: ApiCatalog:getModules
 do -- ApiCatalog:getModules
   local catalog = lurek.docs.scan()
   for _, name in ipairs(catalog:getModules()) do
@@ -513,27 +407,21 @@ do -- ApiCatalog:getModules
   end
 end
 
---@api-stub: LApiCatalog:getEntries
--- Returns all entries, optionally filtered to a single module.
--- Pass a module name to scope output when generating per-namespace pages.
+--@api-stub: ApiCatalog:getEntries
 do -- ApiCatalog:getEntries
   local catalog = lurek.docs.scan()
   local audio_entries = catalog:getEntries("audio")
   lurek.log.info("docs", "audio has " .. #audio_entries .. " entries")
 end
 
---@api-stub: LApiCatalog:getEntry
--- Returns a single entry by qualified name, or nil.
--- Use when you already know the API path and need its metadata.
+--@api-stub: ApiCatalog:getEntry
 do -- ApiCatalog:getEntry
   local catalog = lurek.docs.scan()
   local entry = catalog:getEntry("lurek.audio.play")
   if entry then lurek.log.info("docs", "found: " .. entry:getQualifiedName()) end
 end
 
---@api-stub: LApiCatalog:getTypes
--- Returns the names of all entries with kind "type" in the given module.
--- Useful for generating "Types" sections in module reference pages.
+--@api-stub: ApiCatalog:getTypes
 do -- ApiCatalog:getTypes
   local catalog = lurek.docs.loadAll("docs/api")
   for _, t in ipairs(catalog:getTypes("audio")) do
@@ -541,9 +429,7 @@ do -- ApiCatalog:getTypes
   end
 end
 
---@api-stub: LApiCatalog:getTypeMethods
--- Returns entries that are methods of the given type qualified name.
--- Pair with getTypes() to render full per-type method lists.
+--@api-stub: ApiCatalog:getTypeMethods
 do -- ApiCatalog:getTypeMethods
   local catalog = lurek.docs.loadAll("docs/api")
   for _, m in ipairs(catalog:getTypeMethods("lurek.audio.Source")) do
@@ -551,9 +437,7 @@ do -- ApiCatalog:getTypeMethods
   end
 end
 
---@api-stub: LApiCatalog:entryCount
--- Returns the number of entries, optionally scoped to a module.
--- Quick sanity check after scan() or loadAll() to confirm population.
+--@api-stub: ApiCatalog:entryCount
 do -- ApiCatalog:entryCount
   local catalog = lurek.docs.scan()
   local total = catalog:entryCount()
@@ -561,9 +445,7 @@ do -- ApiCatalog:entryCount
   lurek.log.info("docs", string.format("total %d, audio %d", total, audio))
 end
 
---@api-stub: LApiCatalog:merge
--- Returns a new catalog that is the union of this and another catalog, with other overriding duplicates.
--- Layer hand-authored TOML on top of a reflected scan to fill in missing metadata.
+--@api-stub: ApiCatalog:merge
 do -- ApiCatalog:merge
   local live = lurek.docs.scan()
   local toml = lurek.docs.loadAll("docs/api")
@@ -571,18 +453,14 @@ do -- ApiCatalog:merge
   lurek.log.info("docs", "merged " .. merged:entryCount() .. " entries")
 end
 
---@api-stub: LApiCatalog:filter
--- Returns a new catalog containing only entries for which predicate returns true.
--- Use to extract subsets like "all deprecated APIs" or "all functions over 5 params".
+--@api-stub: ApiCatalog:filter
 do -- ApiCatalog:filter
   local catalog = lurek.docs.loadAll("docs/api")
   local deprecated = catalog:filter(function(e) return e:getDeprecated() ~= nil end)
   lurek.log.info("docs", deprecated:entryCount() .. " deprecated entries")
 end
 
---@api-stub: LApiCatalog:search
--- Returns a table of entries whose name, qualified name, or description contains query.
--- Powers in-editor "find API by keyword" features.
+--@api-stub: ApiCatalog:search
 do -- ApiCatalog:search
   local catalog = lurek.docs.scan()
   for _, e in ipairs(catalog:search("play")) do
@@ -590,18 +468,14 @@ do -- ApiCatalog:search
   end
 end
 
---@api-stub: LApiCatalog:toTable
--- Converts the catalog to a plain Lua table array.
--- Use when feeding the catalog into other Lua tools that expect raw tables.
+--@api-stub: ApiCatalog:toTable
 do -- ApiCatalog:toTable
   local catalog = lurek.docs.scan()
   local raw = catalog:toTable()
   lurek.log.info("docs", "raw catalog has " .. #raw .. " rows")
 end
 
---@api-stub: LApiCatalog:toJSON
--- Serialises the catalog to a pretty-printed JSON string.
--- Drop directly into a build artifact for downstream tooling consumption.
+--@api-stub: ApiCatalog:toJSON
 do -- ApiCatalog:toJSON
   local catalog = lurek.docs.scan()
   local json = catalog:toJSON()
@@ -610,18 +484,14 @@ end
 
 -- â”€â”€ ValidationReport methods â”€â”€
 
---@api-stub: LValidationReport:isValid
--- Returns true when the report has no missing entries.
--- Use as the binary CI gate for the docs build.
+--@api-stub: ValidationReport:isValid
 do -- ValidationReport:isValid
   local catalog = lurek.docs.loadAll("docs/api")
   local report = lurek.docs.validate(catalog)
   if not report:isValid() then lurek.log.error("docs", "validation failed") end
 end
 
---@api-stub: LValidationReport:getMissing
--- Returns the list of qualified names present in the live API but missing from the catalog.
--- Iterate to print actionable missing-doc lines for the doc writer.
+--@api-stub: ValidationReport:getMissing
 do -- ValidationReport:getMissing
   local report = lurek.docs.validate(lurek.docs.loadAll("docs/api"))
   for _, name in ipairs(report:getMissing()) do
@@ -629,9 +499,7 @@ do -- ValidationReport:getMissing
   end
 end
 
---@api-stub: LValidationReport:getPhantom
--- Returns the list of qualified names in the catalog that are not present in the live API.
--- Phantom entries point to deleted or renamed APIs that need TOML cleanup.
+--@api-stub: ValidationReport:getPhantom
 do -- ValidationReport:getPhantom
   local report = lurek.docs.validate(lurek.docs.loadAll("docs/api"))
   for _, name in ipairs(report:getPhantom()) do
@@ -639,9 +507,7 @@ do -- ValidationReport:getPhantom
   end
 end
 
---@api-stub: LValidationReport:getIncomplete
--- Returns the list of qualified names whose catalog entry is incomplete.
--- Incomplete = empty description or no parameter/return info on a function.
+--@api-stub: ValidationReport:getIncomplete
 do -- ValidationReport:getIncomplete
   local report = lurek.docs.validate(lurek.docs.loadAll("docs/api"))
   for _, name in ipairs(report:getIncomplete()) do
@@ -649,9 +515,7 @@ do -- ValidationReport:getIncomplete
   end
 end
 
---@api-stub: LValidationReport:missingCount
--- Returns the count of missing entries.
--- Use as a numeric metric in build dashboards.
+--@api-stub: ValidationReport:missingCount
 do -- ValidationReport:missingCount
   local report = lurek.docs.validate(lurek.docs.loadAll("docs/api"))
   if report:missingCount() > 0 then
@@ -659,42 +523,32 @@ do -- ValidationReport:missingCount
   end
 end
 
---@api-stub: LValidationReport:phantomCount
--- Returns the count of phantom entries.
--- Track this across builds to ensure doc cleanup keeps pace with API removals.
+--@api-stub: ValidationReport:phantomCount
 do -- ValidationReport:phantomCount
   local report = lurek.docs.validate(lurek.docs.loadAll("docs/api"))
   lurek.log.info("docs", report:phantomCount() .. " phantom doc entries")
 end
 
---@api-stub: LValidationReport:incompleteCount
--- Returns the count of incomplete entries.
--- Pair with missing/phantom counts for a single-line summary line.
+--@api-stub: ValidationReport:incompleteCount
 do -- ValidationReport:incompleteCount
   local report = lurek.docs.validate(lurek.docs.loadAll("docs/api"))
   lurek.log.info("docs", report:incompleteCount() .. " incomplete doc entries")
 end
 
---@api-stub: LValidationReport:getSummary
--- Returns a single-line summary of the validation results.
--- Ideal for printing at the end of a CI step or to stdout.
+--@api-stub: ValidationReport:getSummary
 do -- ValidationReport:getSummary
   local report = lurek.docs.validate(lurek.docs.loadAll("docs/api"))
   lurek.log.info("docs", report:getSummary())
 end
 
---@api-stub: LValidationReport:toTable
--- Converts the report to a plain Lua table.
--- Use when feeding the report into custom dashboards or filters.
+--@api-stub: ValidationReport:toTable
 do -- ValidationReport:toTable
   local report = lurek.docs.validate(lurek.docs.loadAll("docs/api"))
   local data = report:toTable()
   lurek.log.info("docs", "missing rows: " .. #(data.missing or {}))
 end
 
---@api-stub: LValidationReport:toJSON
--- Serialises the report to a pretty-printed JSON string.
--- Persist for build artifacts or upload to an external dashboard.
+--@api-stub: ValidationReport:toJSON
 do -- ValidationReport:toJSON
   local report = lurek.docs.validate(lurek.docs.loadAll("docs/api"))
   pcall(function() lurek.fs.write("build/docs-validation.json", report:toJSON()) end)
@@ -702,25 +556,19 @@ end
 
 -- â”€â”€ QualityReport methods â”€â”€
 
---@api-stub: LQualityReport:getOverallScore
--- Returns the overall quality score in [0,1].
--- Use as a numeric gate (e.g. fail builds below 0.8).
+--@api-stub: QualityReport:getOverallScore
 do -- QualityReport:getOverallScore
   local q = lurek.docs.quality(lurek.docs.loadAll("docs/api"))
   if q:getOverallScore() < 0.8 then lurek.log.warn("docs", "quality below threshold") end
 end
 
---@api-stub: LQualityReport:getGrade
--- Returns the letter grade for the overall score.
--- Friendlier than the raw score for status badges and CI logs.
+--@api-stub: QualityReport:getGrade
 do -- QualityReport:getGrade
   local q = lurek.docs.quality(lurek.docs.loadAll("docs/api"))
   lurek.log.info("docs", "docs grade: " .. q:getGrade())
 end
 
---@api-stub: LQualityReport:getModuleScores
--- Returns a table mapping module name to its average quality score.
--- Surface per-module scores in a dashboard so each owner can target their weakest area.
+--@api-stub: QualityReport:getModuleScores
 do -- QualityReport:getModuleScores
   local q = lurek.docs.quality(lurek.docs.loadAll("docs/api"))
   for module, score in pairs(q:getModuleScores()) do
@@ -728,9 +576,7 @@ do -- QualityReport:getModuleScores
   end
 end
 
---@api-stub: LQualityReport:getWorst
--- Returns up to count entries with the lowest quality scores.
--- The natural input to a "fix-me-first" doc-writing queue.
+--@api-stub: QualityReport:getWorst
 do -- QualityReport:getWorst
   local q = lurek.docs.quality(lurek.docs.loadAll("docs/api"))
   for _, e in ipairs(q:getWorst(10)) do
@@ -738,9 +584,7 @@ do -- QualityReport:getWorst
   end
 end
 
---@api-stub: LQualityReport:getBest
--- Returns up to count entries with the highest quality scores.
--- Use the top entries as templates when filling in lower-scoring ones.
+--@api-stub: QualityReport:getBest
 do -- QualityReport:getBest
   local q = lurek.docs.quality(lurek.docs.loadAll("docs/api"))
   for _, e in ipairs(q:getBest(5)) do
@@ -748,9 +592,7 @@ do -- QualityReport:getBest
   end
 end
 
---@api-stub: LQualityReport:getByGrade
--- Returns entries whose grade exactly matches the given letter grade.
--- Use to drill into all "C" entries when targeting one tier of improvement.
+--@api-stub: QualityReport:getByGrade
 do -- QualityReport:getByGrade
   local q = lurek.docs.quality(lurek.docs.loadAll("docs/api"))
   for _, e in ipairs(q:getByGrade("C")) do
@@ -758,26 +600,20 @@ do -- QualityReport:getByGrade
   end
 end
 
---@api-stub: LQualityReport:getSummary
--- Returns a multi-line human-readable summary of quality by module.
--- Print at the end of a docs build to give writers a friendly recap.
+--@api-stub: QualityReport:getSummary
 do -- QualityReport:getSummary
   local q = lurek.docs.quality(lurek.docs.loadAll("docs/api"))
   lurek.log.info("docs", q:getSummary())
 end
 
---@api-stub: LQualityReport:toTable
--- Converts the quality report to a plain Lua table.
--- Use when piping into bespoke Lua post-processing or reporting code.
+--@api-stub: QualityReport:toTable
 do -- QualityReport:toTable
   local q = lurek.docs.quality(lurek.docs.loadAll("docs/api"))
   local data = q:toTable()
   lurek.log.info("docs", "table overall: " .. tostring(data.overall_score))
 end
 
---@api-stub: LQualityReport:toJSON
--- Serialises the quality report to a pretty-printed JSON string.
--- Persist as a build artifact for the docs dashboard to consume.
+--@api-stub: QualityReport:toJSON
 do -- QualityReport:toJSON
   local q = lurek.docs.quality(lurek.docs.loadAll("docs/api"))
   pcall(function() lurek.fs.write("build/docs-quality.json", q:toJSON()) end)
@@ -791,57 +627,43 @@ end
 -- The final committed file must contain ZERO --@api-stub: lines.
 -- =============================================================================
 
--- ---- Example: lurek.docs.loadToml -------------------------------------------
---@api-stub: lurek.docs.loadToml
--- Load a TOML doc file into an ApiCatalog.
+--@api-stub: lurek.docs.loadToml -- Loads a TOML documentation catalog file and converts its entries into an API catalog
 do -- lurek.docs.loadToml
   local ok, cat = pcall(lurek.docs.loadToml, "docs/api/lurek.md")
   -- ok=false if file schema doesn't match; that's fine for headless testing
 end
 
--- ---- Example: lurek.docs.exportCompletions ----------------------------------
---@api-stub: lurek.docs.exportCompletions
--- Export VS Code IntelliSense completions JSON to a file.
+--@api-stub: lurek.docs.exportCompletions -- Exports catalog completion metadata to a file
 do -- lurek.docs.exportCompletions
   local cat = lurek.docs.loadAll("docs/api")
   pcall(lurek.docs.exportCompletions, cat, "build/tmp/completions.json")
 end
 
--- ---- Example: lurek.docs.exportHover ----------------------------------------
---@api-stub: lurek.docs.exportHover
--- Export VS Code hover JSON to a file.
+--@api-stub: lurek.docs.exportHover -- Exports catalog hover metadata to a file
 do -- lurek.docs.exportHover
   local cat = lurek.docs.loadAll("docs/api")
   pcall(lurek.docs.exportHover, cat, "build/tmp/hover.json")
 end
 
--- ---- Example: lurek.docs.exportSignatures -----------------------------------
---@api-stub: lurek.docs.exportSignatures
--- Export VS Code signature-help JSON to a file.
+--@api-stub: lurek.docs.exportSignatures -- Exports catalog signature metadata to a file
 do -- lurek.docs.exportSignatures
   local cat = lurek.docs.loadAll("docs/api")
   pcall(lurek.docs.exportSignatures, cat, "build/tmp/signatures.json")
 end
 
--- ---- Example: lurek.docs.exportAll ------------------------------------------
---@api-stub: lurek.docs.exportAll
--- Export completions.json, hover.json, and signatures.json to a directory.
+--@api-stub: lurek.docs.exportAll -- Exports all editor documentation artifacts for a catalog into a directory
 do -- lurek.docs.exportAll
   local cat = lurek.docs.loadAll("docs/api")
   pcall(lurek.docs.exportAll, cat, "build/tmp")
 end
 
--- ---- Example: lurek.docs.exportMarkdown -------------------------------------
---@api-stub: lurek.docs.exportMarkdown
--- Export a Markdown API reference file.
+--@api-stub: lurek.docs.exportMarkdown -- Writes a Markdown API reference from catalog entries
 do -- lurek.docs.exportMarkdown
   local cat = lurek.docs.loadAll("docs/api")
   pcall(lurek.docs.exportMarkdown, cat, "build/tmp/api.md")
 end
 
--- ---- Example: lurek.docs.exportCheatsheet -----------------------------------
---@api-stub: lurek.docs.exportCheatsheet
--- Export a one-line-per-function plain-text cheatsheet.
+--@api-stub: lurek.docs.exportCheatsheet -- Writes a compact text cheatsheet from catalog entries
 do -- lurek.docs.exportCheatsheet
   local cat = lurek.docs.loadAll("docs/api")
   pcall(lurek.docs.exportCheatsheet, cat, "build/tmp/cheatsheet.txt")
@@ -855,60 +677,45 @@ end
 -- The final committed file must contain ZERO --@api-stub: lines.
 -- =============================================================================
 
--- ---- Example: lurek.docs.loadToml -------------------------------------------
---@api-stub: LApiCatalog:type
--- Returns the type name of this object.
--- Useful for runtime type inspection.
+--@api-stub: LApiCatalog:type -- Returns the Lua-visible type name for this API catalog handle
 do -- LApiCatalog:type
   local api_catalog_obj = lurek.docs.scan(nil)
   local t = api_catalog_obj:type()
   lurek.log.info("LApiCatalog:type = " .. t, "docs")
 end
---@api-stub: LApiCatalog:typeOf
--- Returns true if this object is of the given type.
--- Use for runtime type checks.
+--@api-stub: LApiCatalog:typeOf -- Returns whether this API catalog handle matches a supported type name
 do -- LApiCatalog:typeOf
   local api_catalog_obj = lurek.docs.scan(nil)
   lurek.log.info("is LApiCatalog: " .. tostring(api_catalog_obj:typeOf("LApiCatalog")), "docs")
   lurek.log.info("is wrong: " .. tostring(api_catalog_obj:typeOf("Unknown")), "docs")
 end
---@api-stub: LDocEntry:type
--- Returns the type name of this object.
--- Useful for runtime type inspection.
+--@api-stub: LDocEntry:type -- Returns the Lua-visible type name for this documentation entry handle
 do -- LDocEntry:type
   local catalog = lurek.docs.scanModule("audio")
     local entry = catalog:getEntries()[1]
   local t = catalog:type()
   lurek.log.info("LDocEntry:type = " .. t, "docs")
 end
---@api-stub: LDocEntry:typeOf
--- Returns true if this object is of the given type.
--- Use for runtime type checks.
+--@api-stub: LDocEntry:typeOf -- Returns whether this documentation entry handle matches a supported type name
 do -- LDocEntry:typeOf
   local catalog = lurek.docs.scanModule("audio")
     local entry = catalog:getEntries()[1]
   lurek.log.info("is LDocEntry: " .. tostring(catalog:typeOf("LDocEntry")), "docs")
   lurek.log.info("is wrong: " .. tostring(catalog:typeOf("Unknown")), "docs")
 end
---@api-stub: LQualityReport:type
--- Returns the type name of this object.
--- Useful for runtime type inspection.
+--@api-stub: LQualityReport:type -- Returns the Lua-visible type name for this quality report handle
 do -- LQualityReport:type
   local q = lurek.docs.quality(lurek.docs.loadAll("docs/api"))
   local t = q:type()
   lurek.log.info("LQualityReport:type = " .. t, "docs")
 end
---@api-stub: LQualityReport:typeOf
--- Returns true if this object is of the given type.
--- Use for runtime type checks.
+--@api-stub: LQualityReport:typeOf -- Returns whether this quality report handle matches a supported type name
 do -- LQualityReport:typeOf
   local q = lurek.docs.quality(lurek.docs.loadAll("docs/api"))
   lurek.log.info("is LQualityReport: " .. tostring(q:typeOf("LQualityReport")), "docs")
   lurek.log.info("is wrong: " .. tostring(q:typeOf("Unknown")), "docs")
 end
---@api-stub: LSchema:type
--- Returns the type name of this object.
--- Useful for runtime type inspection.
+--@api-stub: LSchema:type -- Returns the Lua-visible type name for this schema handle
 do -- LSchema:type
   local schema = lurek.docs.schema({ hp = { type = "integer", required = true, min = 0 } }, "Stats")
   local result = schema:validate({ hp = -5 })
@@ -919,9 +726,7 @@ do -- LSchema:type
   local t = schema:type()
   lurek.log.info("LSchema:type = " .. t, "docs")
 end
---@api-stub: LSchema:typeOf
--- Returns true if this object is of the given type.
--- Use for runtime type checks.
+--@api-stub: LSchema:typeOf -- Returns whether this schema handle matches a supported type name
 do -- LSchema:typeOf
   local schema = lurek.docs.schema({ hp = { type = "integer", required = true, min = 0 } }, "Stats")
   local result = schema:validate({ hp = -5 })
@@ -932,25 +737,17 @@ do -- LSchema:typeOf
   lurek.log.info("is LSchema: " .. tostring(schema:typeOf("LSchema")), "docs")
   lurek.log.info("is wrong: " .. tostring(schema:typeOf("Unknown")), "docs")
 end
---@api-stub: LValidationReport:type
--- Returns the type name of this object.
--- Useful for runtime type inspection.
+--@api-stub: LValidationReport:type -- Returns the Lua-visible type name for this validation report handle
 do -- LValidationReport:type
   local validation_report_obj = lurek.docs.validate(nil)
   local t = validation_report_obj:type()
   lurek.log.info("LValidationReport:type = " .. t, "docs")
 end
---@api-stub: LValidationReport:typeOf
--- Returns true if this object is of the given type.
--- Use for runtime type checks.
+--@api-stub: LValidationReport:typeOf -- Returns whether this validation report handle matches a supported type name
 do -- LValidationReport:typeOf
   local validation_report_obj = lurek.docs.validate(nil)
   lurek.log.info("is LValidationReport: " .. tostring(validation_report_obj:typeOf("LValidationReport")), "docs")
   lurek.log.info("is wrong: " .. tostring(validation_report_obj:typeOf("Unknown")), "docs")
 end
---@api-stub: block below with a real scenario.
--- Run .github/prompts/flesh-out-example.prompt.md for instructions.
--- The final committed file must contain ZERO --@api-stub: lines.
--- =============================================================================
 
 

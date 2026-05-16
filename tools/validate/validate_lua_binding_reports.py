@@ -29,6 +29,11 @@ GEN = _load_generator()
 
 def _report_counts(report) -> dict:
     return {
+        "confirmed_doc_bug_count": report.summary.confirmed_doc_bug_count,
+        "extraction_uncertain_count": report.summary.extraction_uncertain_count,
+        "unsupported_pattern_count": report.summary.unsupported_pattern_count,
+        "clean_entry_count": report.summary.clean_entry_count,
+        "blocking_issue_count": report.summary.blocking_issue_count,
         "missing_doc_entries": len(report.missing_doc_entries),
         "phantom_doc_entries": len(report.phantom_doc_entries),
         "parameter_count_mismatches": len(report.parameter_count_mismatches),
@@ -45,6 +50,11 @@ def _report_counts(report) -> dict:
 def _print_text(report) -> None:
     counts = _report_counts(report)
     print("Lua binding validation")
+    print("- confirmed doc bugs: {}".format(counts["confirmed_doc_bug_count"]))
+    print("- extraction uncertain: {}".format(counts["extraction_uncertain_count"]))
+    print("- unsupported patterns: {}".format(counts["unsupported_pattern_count"]))
+    print("- clean entries: {}".format(counts["clean_entry_count"]))
+    print("- blocking issues: {}".format(counts["blocking_issue_count"]))
     print("- missing doc entries: {}".format(counts["missing_doc_entries"]))
     print("- phantom doc entries: {}".format(counts["phantom_doc_entries"]))
     print("- parameter count mismatches: {}".format(counts["parameter_count_mismatches"]))
@@ -78,7 +88,7 @@ def main(argv: list[str] | None = None) -> int:
     else:
         _print_text(report)
 
-    return 0 if report.is_clean() else 1
+    return 0 if not report.has_blocking_issues() else 1
 
 
 if __name__ == "__main__":

@@ -769,7 +769,7 @@ impl LuaUserData for LuaRaycaster {
         });
         // -- getWallAlpha --
         /// Returns the current transparency value for a wall tile type.
-        /// @param | tileType | number | The cell value to query.
+        /// @param | tileType | integer | The cell value to query.
         /// @return | number | Alpha value (0.0..1.0).
         methods.add_method("getWallAlpha", |_, this, tile_type: u8| {
             Ok(this.inner.get_wall_alpha(tile_type))

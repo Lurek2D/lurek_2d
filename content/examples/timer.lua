@@ -1,18 +1,8 @@
 -- content/examples/timer.lua
--- Hand-written coverage of the lurek.timer API (43 items).
---
--- The lurek.timer namespace owns frame-time queries (delta, fps, smoothed
--- delta), the fixed physics timestep, real-clock timers, coroutine waits,
--- and Scheduler userdata for one-shot, recurring, named, and chained
--- callbacks. Most update-loop calls below live inside lurek.process(dt).
---
+-- lurek.timer API examples.
 -- Run: cargo run -- content/examples/timer.lua
 
--- â”€â”€ lurek.timer.* functions â”€â”€
-
---@api-stub: lurek.timer.getDelta
--- Returns the delta time in seconds for the current frame.
--- Use inside lurek.process to integrate motion frame-rate independently.
+--@api-stub: lurek.timer.getDelta -- Returns the time in seconds elapsed since the last frame
 do -- lurek.timer.getDelta
   function lurek.process()
     local dt = lurek.timer.getDelta()
@@ -22,9 +12,7 @@ do -- lurek.timer.getDelta
   end
 end
 
---@api-stub: lurek.timer.getFPS
--- Returns the current frames-per-second measurement.
--- Sample once per second to drive an HUD readout; the engine averages internally.
+--@api-stub: lurek.timer.getFPS -- Returns the current frames-per-second count
 do -- lurek.timer.getFPS
   function lurek.draw_ui()
     local fps = lurek.timer.getFPS()
@@ -34,9 +22,7 @@ do -- lurek.timer.getFPS
   end
 end
 
---@api-stub: lurek.timer.getTime
--- Returns the total elapsed time since engine start in seconds.
--- Good for animation phases; engine-time, so it is paused when the engine is paused.
+--@api-stub: lurek.timer.getTime -- Returns the total elapsed game time in seconds since the engine started
 do -- lurek.timer.getTime
   function lurek.draw()
     local t = lurek.timer.getTime()
@@ -45,9 +31,7 @@ do -- lurek.timer.getTime
   end
 end
 
---@api-stub: lurek.timer.getAverageDelta
--- Returns the rolling-average frame delta time in seconds.
--- More stable than getDelta for budgeting work; use to estimate per-frame headroom.
+--@api-stub: lurek.timer.getAverageDelta -- Returns the smoothed average delta time in seconds over a recent window of frames
 do -- lurek.timer.getAverageDelta
   function lurek.process()
     local avg = lurek.timer.getAverageDelta()
@@ -58,9 +42,7 @@ do -- lurek.timer.getAverageDelta
   end
 end
 
---@api-stub: lurek.timer.getFrameCount
--- Returns the total number of frames rendered since engine start.
--- Useful as a deterministic monotonic counter for periodic work without time drift.
+--@api-stub: lurek.timer.getFrameCount -- Returns the total number of frames rendered since the engine started
 do -- lurek.timer.getFrameCount
   function lurek.process()
     local n = lurek.timer.getFrameCount()
@@ -70,9 +52,7 @@ do -- lurek.timer.getFrameCount
   end
 end
 
---@api-stub: lurek.timer.step
--- Advances the timer by one frame, returning the delta time.
--- Engine calls this internally each frame; call manually only inside custom inner loops.
+--@api-stub: lurek.timer.step -- Advances the internal clock by one tick and returns the delta time for that tick
 do -- lurek.timer.step
   function lurek.process()
     local dt = lurek.timer.step()
@@ -81,9 +61,7 @@ do -- lurek.timer.step
   end
 end
 
---@api-stub: lurek.timer.getMicroTime
--- Returns the high-resolution elapsed time since engine start in seconds.
--- Use for ad-hoc benchmarks: capture before and after, subtract for elapsed.
+--@api-stub: lurek.timer.getMicroTime -- Returns high-resolution elapsed time in seconds since engine start
 do -- lurek.timer.getMicroTime
   local t0 = lurek.timer.getMicroTime()
   local sum = 0
@@ -92,27 +70,21 @@ do -- lurek.timer.getMicroTime
   lurek.log.debug("loop took " .. elapsed .. "s, sum=" .. sum, "bench")
 end
 
---@api-stub: lurek.timer.getPhysicsDelta
--- Returns the fixed timestep used by `process_physics` callbacks (seconds).
--- Read at startup to size your physics integration constants (e.g. impulse magnitudes).
+--@api-stub: lurek.timer.getPhysicsDelta -- Returns the fixed timestep used for physics simulation in seconds
 do -- lurek.timer.getPhysicsDelta
   local pdt = lurek.timer.getPhysicsDelta()
   local hz = 1.0 / pdt
   lurek.log.info("physics step: " .. pdt .. "s (" .. hz .. "Hz)", "physics")
 end
 
---@api-stub: lurek.timer.setPhysicsDelta
--- Sets the fixed timestep for `process_physics` callbacks (seconds).
--- Call once at startup; clamped to [1/240, 1/10]. Smaller = more accurate, more CPU.
+--@api-stub: lurek.timer.setPhysicsDelta -- Sets the fixed timestep for physics simulation
 do -- lurek.timer.setPhysicsDelta
   lurek.timer.setPhysicsDelta(1 / 120)
   local pdt = lurek.timer.getPhysicsDelta()
   lurek.log.info("physics now stepping at " .. (1.0 / pdt) .. "Hz", "physics")
 end
 
---@api-stub: lurek.timer.getPhysicsMaxSteps
--- Returns the maximum number of physics sub-steps allowed per frame.
--- Read this to ensure your scene tolerates spiral-of-death conditions on slow frames.
+--@api-stub: lurek.timer.getPhysicsMaxSteps -- Returns the maximum number of physics steps allowed per frame
 do -- lurek.timer.getPhysicsMaxSteps
   local max_steps = lurek.timer.getPhysicsMaxSteps()
   if max_steps < 4 then
@@ -120,18 +92,14 @@ do -- lurek.timer.getPhysicsMaxSteps
   end
 end
 
---@api-stub: lurek.timer.setPhysicsMaxSteps
--- Sets the maximum number of physics sub-steps allowed per frame (clamped 1â€“64).
--- Raise for scenes that occasionally need a long catch-up; cap to avoid stalls.
+--@api-stub: lurek.timer.setPhysicsMaxSteps -- Sets the maximum number of physics steps allowed per frame
 do -- lurek.timer.setPhysicsMaxSteps
   lurek.timer.setPhysicsMaxSteps(8)
   local n = lurek.timer.getPhysicsMaxSteps()
   lurek.log.info("physics catch-up cap = " .. n, "physics")
 end
 
---@api-stub: lurek.timer.sleep
--- Suspends execution for the given number of seconds.
--- Blocks the whole engine thread; use only in tools/scripts, never in lurek.process.
+--@api-stub: lurek.timer.sleep -- Blocks the current thread for the given number of seconds
 do -- lurek.timer.sleep
   local before = lurek.timer.getMicroTime()
   lurek.timer.sleep(0.05)
@@ -139,18 +107,14 @@ do -- lurek.timer.sleep
   lurek.log.debug("slept ~" .. elapsed .. "s", "tools")
 end
 
---@api-stub: lurek.timer.newScheduler
--- Creates a new independent Scheduler for managing timed callbacks.
--- Use when one subsystem needs its own time-scale or pause semantics.
+--@api-stub: lurek.timer.newScheduler -- Creates a new LScheduler instance for managing timed and frame-based callbacks independently from the global timer
 do -- lurek.timer.newScheduler
   local boss_timers = lurek.timer.newScheduler()
   boss_timers:after(2.5, function() lurek.log.info("boss enrages", "ai") end)
   function lurek.process(dt) boss_timers:update(dt) end
 end
 
---@api-stub: lurek.timer.chain
--- Creates a new Scheduler loaded with a sequenced one-shot chain.
--- Each step's delay is added to the previous; perfect for cutscene beats.
+--@api-stub: lurek.timer.chain -- Creates a scheduler pre-loaded with a sequence of delayed callbacks
 do -- lurek.timer.chain
   local intro = lurek.timer.chain({
     { delay = 0.0, func = function() lurek.log.info("scene: fade in", "cutscene") end },
@@ -160,9 +124,7 @@ do -- lurek.timer.chain
   function lurek.process(dt) intro:update(dt) end
 end
 
---@api-stub: lurek.timer.afterReal
--- Schedules a one-shot callback that fires after `delay` wall-clock seconds.
--- Wall-clock based, so it ignores engine time-scale and pause; pair with tickRealTimers().
+--@api-stub: lurek.timer.afterReal -- Schedules a one-shot callback based on real (wall-clock) time, unaffected by game pausing or time scaling
 do -- lurek.timer.afterReal
   lurek.timer.afterReal(3.0, function()
     lurek.log.info("3 real seconds elapsed", "ui")
@@ -170,9 +132,7 @@ do -- lurek.timer.afterReal
   function lurek.process() lurek.timer.tickRealTimers() end
 end
 
---@api-stub: lurek.timer.tickRealTimers
--- Advances all real-time timers by one tick; called automatically each frame.
--- Call manually only if you scheduled afterReal() before the engine started ticking.
+--@api-stub: lurek.timer.tickRealTimers -- Checks all real-time timers and fires any whose deadline has passed
 do -- lurek.timer.tickRealTimers
   lurek.timer.afterReal(0.25, function() lurek.log.debug("toast hide", "ui") end)
   function lurek.process()
@@ -181,9 +141,7 @@ do -- lurek.timer.tickRealTimers
   end
 end
 
---@api-stub: lurek.timer.setSmoothingFactor
--- Sets the smoothing factor (alpha) for `getSmoothedDelta`.
--- Lower (0.05) = very smooth, slow to react; 1.0 = no smoothing. Set once at startup.
+--@api-stub: lurek.timer.setSmoothingFactor -- Sets the exponential smoothing factor used by getSmoothedDelta
 do -- lurek.timer.setSmoothingFactor
   lurek.timer.setSmoothingFactor(0.1)
   function lurek.process()
@@ -192,9 +150,7 @@ do -- lurek.timer.setSmoothingFactor
   end
 end
 
---@api-stub: lurek.timer.getSmoothedDelta
--- Returns the exponential moving-average of frame deltas in seconds.
--- Use for HUD frame-time graphs where raw delta is too jittery to read.
+--@api-stub: lurek.timer.getSmoothedDelta -- Returns an exponentially smoothed delta time in seconds, reducing frame-to-frame jitter
 do -- lurek.timer.getSmoothedDelta
   function lurek.draw_ui()
     local sdt = lurek.timer.getSmoothedDelta()
@@ -203,9 +159,7 @@ do -- lurek.timer.getSmoothedDelta
   end
 end
 
---@api-stub: lurek.timer.waitSeconds
--- Yields the current Lua coroutine for at least `seconds` wall-clock seconds.
--- Must be called from inside a coroutine; drive resumes with tickWaits() each frame.
+--@api-stub: lurek.timer.waitSeconds -- Yields the current coroutine for the given number of real-time seconds
 do -- lurek.timer.waitSeconds
   local co = coroutine.wrap(function()
     lurek.log.info("phase 1", "intro")
@@ -216,9 +170,7 @@ do -- lurek.timer.waitSeconds
   function lurek.process() lurek.timer.tickWaits() end
 end
 
---@api-stub: lurek.timer.waitFrames
--- Yields the current Lua coroutine for at least `frames` engine frames.
--- Frame-deterministic alternative to waitSeconds; useful for replays and tests.
+--@api-stub: lurek.timer.waitFrames -- Yields the current coroutine for the given number of frames
 do -- lurek.timer.waitFrames
   local co = coroutine.wrap(function()
     lurek.log.debug("waiting 60 frames", "test")
@@ -229,9 +181,7 @@ do -- lurek.timer.waitFrames
   function lurek.process() lurek.timer.tickWaits() end
 end
 
---@api-stub: lurek.timer.tickWaits
--- Advances all `lurek.timer.wait()` coroutines by one tick; called each frame.
--- Call once per frame in lurek.process; returns the count of coroutines resumed.
+--@api-stub: lurek.timer.tickWaits -- Checks all pending waitSeconds and waitFrames coroutines, resumes any whose deadline or frame target has been reached, and cleans up completed entries
 do -- lurek.timer.tickWaits
   function lurek.process()
     local resumed = lurek.timer.tickWaits()
@@ -243,9 +193,7 @@ end
 
 -- â”€â”€ Scheduler methods â”€â”€
 
---@api-stub: LScheduler:after
--- Schedules a callback to fire once after a delay.
--- Returned id can be passed to cancel/pause/resume; nil callback is a noop slot.
+--@api-stub: Scheduler:after
 do -- Scheduler:after
   local sched = lurek.timer.newScheduler()
   local id = sched:after(1.5, function() lurek.log.info("spawn wave", "ai") end)
@@ -253,18 +201,14 @@ do -- Scheduler:after
   function lurek.process(dt) sched:update(dt) end
 end
 
---@api-stub: LScheduler:afterFrames
--- Schedules a callback to fire once after `n` frames.
--- Frame-based variant; immune to time-scale, advances via :updateFrames() each frame.
+--@api-stub: Scheduler:afterFrames
 do -- Scheduler:afterFrames
   local sched = lurek.timer.newScheduler()
   sched:afterFrames(30, function() lurek.log.debug("30 frames in", "test") end)
   function lurek.process() sched:updateFrames() end
 end
 
---@api-stub: LScheduler:cancel
--- Cancels a scheduled event by its numeric ID.
--- Returns true if it was active; safe to call on already-fired or unknown ids.
+--@api-stub: Scheduler:cancel
 do -- Scheduler:cancel
   local sched = lurek.timer.newScheduler()
   local id = sched:after(5.0, function() lurek.log.info("never fires", "demo") end)
@@ -272,9 +216,7 @@ do -- Scheduler:cancel
   lurek.log.debug("cancel returned " .. tostring(ok), "timer")
 end
 
---@api-stub: LScheduler:cancelNamed
--- Cancels a scheduled event by its string name.
--- Use named events to cancel without tracking ids; great for per-entity timers.
+--@api-stub: Scheduler:cancelNamed
 do -- Scheduler:cancelNamed
   local sched = lurek.timer.newScheduler()
   sched:afterNamed("invuln", 2.0, function() lurek.log.debug("invuln end", "combat") end)
@@ -282,9 +224,7 @@ do -- Scheduler:cancelNamed
   lurek.log.debug("invuln cancelled=" .. tostring(cancelled), "combat")
 end
 
---@api-stub: LScheduler:cancelAll
--- Cancels all scheduled events and returns the count removed.
--- Call on scene unload to drop pending callbacks before swapping state.
+--@api-stub: Scheduler:cancelAll
 do -- Scheduler:cancelAll
   local sched = lurek.timer.newScheduler()
   sched:after(1, function() end)
@@ -293,9 +233,7 @@ do -- Scheduler:cancelAll
   lurek.log.info("dropped " .. removed .. " timers on scene exit", "scene")
 end
 
---@api-stub: LScheduler:pause
--- Pauses a scheduled event by its ID.
--- Pair with :resume(id); paused events keep their remaining time intact.
+--@api-stub: Scheduler:pause
 do -- Scheduler:pause
   local sched = lurek.timer.newScheduler()
   local id = sched:every(1.0, function() lurek.log.debug("tick", "ai") end)
@@ -303,9 +241,7 @@ do -- Scheduler:pause
   lurek.log.debug("paused id=" .. id, "ai")
 end
 
---@api-stub: LScheduler:resume
--- Resumes a paused event by its ID.
--- Returns true if the event existed and was paused; mirror of :pause().
+--@api-stub: Scheduler:resume
 do -- Scheduler:resume
   local sched = lurek.timer.newScheduler()
   local id = sched:every(0.5, function() end)
@@ -314,9 +250,7 @@ do -- Scheduler:resume
   lurek.log.debug("resume returned " .. tostring(ok), "timer")
 end
 
---@api-stub: LScheduler:isPaused
--- Returns whether the given event is currently paused.
--- Useful to drive UI state (greyed-out icon) without tracking the flag yourself.
+--@api-stub: Scheduler:isPaused
 do -- Scheduler:isPaused
   local sched = lurek.timer.newScheduler()
   local id = sched:every(2.0, function() end)
@@ -326,9 +260,7 @@ do -- Scheduler:isPaused
   end
 end
 
---@api-stub: LScheduler:pauseNamed
--- Pauses a scheduled event by its string name.
--- Named-key analogue of :pause(); use when you only have the name in scope.
+--@api-stub: Scheduler:pauseNamed
 do -- Scheduler:pauseNamed
   local sched = lurek.timer.newScheduler()
   sched:everyNamed("regen", 1.0, function() lurek.log.debug("+1 hp", "rpg") end)
@@ -336,9 +268,7 @@ do -- Scheduler:pauseNamed
   lurek.log.debug("regen paused", "rpg")
 end
 
---@api-stub: LScheduler:resumeNamed
--- Resumes a paused event by its string name.
--- Returns true if the named event was paused before the call.
+--@api-stub: Scheduler:resumeNamed
 do -- Scheduler:resumeNamed
   local sched = lurek.timer.newScheduler()
   sched:everyNamed("regen", 1.0, function() end)
@@ -347,9 +277,7 @@ do -- Scheduler:resumeNamed
   lurek.log.debug("regen resumed=" .. tostring(ok), "rpg")
 end
 
---@api-stub: LScheduler:isPausedNamed
--- Returns whether the named event is currently paused.
--- Lets UI code query state by name without retaining the numeric id.
+--@api-stub: Scheduler:isPausedNamed
 do -- Scheduler:isPausedNamed
   local sched = lurek.timer.newScheduler()
   sched:everyNamed("spawn", 5.0, function() end)
@@ -359,9 +287,7 @@ do -- Scheduler:isPausedNamed
   end
 end
 
---@api-stub: LScheduler:getRemaining
--- Returns the seconds remaining until the next fire for an event, or nil.
--- Drive cooldown UI bars: divide by getInterval(id) to get a 0..1 progress value.
+--@api-stub: Scheduler:getRemaining
 do -- Scheduler:getRemaining
   local sched = lurek.timer.newScheduler()
   local id = sched:after(3.0, function() end)
@@ -371,9 +297,7 @@ do -- Scheduler:getRemaining
   end
 end
 
---@api-stub: LScheduler:getInterval
--- Returns the base interval in seconds for an event, or nil.
--- Combine with getRemaining to compute progress; nil means the id is unknown.
+--@api-stub: Scheduler:getInterval
 do -- Scheduler:getInterval
   local sched = lurek.timer.newScheduler()
   local id = sched:every(2.5, function() end)
@@ -382,9 +306,7 @@ do -- Scheduler:getInterval
   lurek.log.debug("event interval = " .. interval .. "s", "timer")
 end
 
---@api-stub: LScheduler:getRepeatCount
--- Returns the repeat count remaining for an event, or nil.
--- -1 means infinite; use to display "3 charges left" style HUD elements.
+--@api-stub: Scheduler:getRepeatCount
 do -- Scheduler:getRepeatCount
   local sched = lurek.timer.newScheduler()
   local id = sched:every(1.0, function() end)
@@ -393,9 +315,7 @@ do -- Scheduler:getRepeatCount
   lurek.log.debug("charges left = " .. left, "ability")
 end
 
---@api-stub: LScheduler:getCount
--- Returns the number of active scheduled events.
--- Useful for sanity checks and leak detection in long-running scenes.
+--@api-stub: Scheduler:getCount
 do -- Scheduler:getCount
   local sched = lurek.timer.newScheduler()
   sched:after(1, function() end)
@@ -404,9 +324,7 @@ do -- Scheduler:getCount
   lurek.log.debug("active timers = " .. n, "timer")
 end
 
---@api-stub: LScheduler:isEmpty
--- Returns whether the scheduler has no active events.
--- Cheap early-out before calling :update(dt) on a scheduler that's almost always idle.
+--@api-stub: Scheduler:isEmpty
 do -- Scheduler:isEmpty
   local sched = lurek.timer.newScheduler()
   function lurek.process(dt)
@@ -414,9 +332,7 @@ do -- Scheduler:isEmpty
   end
 end
 
---@api-stub: LScheduler:setInterval
--- Changes the repeat interval of an existing event.
--- Use to ramp difficulty: shorten the spawn interval as the wave progresses.
+--@api-stub: Scheduler:setInterval
 do -- Scheduler:setInterval
   local sched = lurek.timer.newScheduler()
   local id = sched:every(2.0, function() lurek.log.debug("spawn", "ai") end)
@@ -424,9 +340,7 @@ do -- Scheduler:setInterval
   lurek.log.info("spawn rate increased", "ai")
 end
 
---@api-stub: LScheduler:resetEvent
--- Resets an event's remaining time back to its original interval.
--- Use to refresh a buff's duration when a new pickup is collected.
+--@api-stub: Scheduler:resetEvent
 do -- Scheduler:resetEvent
   local sched = lurek.timer.newScheduler()
   local id = sched:after(10.0, function() lurek.log.info("buff expired", "rpg") end)
@@ -434,9 +348,7 @@ do -- Scheduler:resetEvent
   lurek.log.debug("buff timer refreshed", "rpg")
 end
 
---@api-stub: LScheduler:setTimeScale
--- Sets a global time-scale multiplier for this scheduler.
--- 0.5 = bullet-time, 2.0 = fast-forward; affects every event in the scheduler.
+--@api-stub: Scheduler:setTimeScale
 do -- Scheduler:setTimeScale
   local enemies = lurek.timer.newScheduler()
   enemies:every(1.0, function() lurek.log.debug("enemy think", "ai") end)
@@ -444,9 +356,7 @@ do -- Scheduler:setTimeScale
   lurek.log.info("enemies in slow-motion", "fx")
 end
 
---@api-stub: LScheduler:getTimeScale
--- Returns the current time-scale multiplier.
--- Read to display a slow-mo indicator or to tune dependent systems.
+--@api-stub: Scheduler:getTimeScale
 do -- Scheduler:getTimeScale
   local sched = lurek.timer.newScheduler()
   sched:setTimeScale(2.0)
@@ -456,27 +366,21 @@ do -- Scheduler:getTimeScale
   end
 end
 
---@api-stub: LScheduler:update
--- Advances all timers by dt seconds, firing due callbacks.
--- Call once per frame in lurek.process; pass the engine delta from getDelta() or arg.
+--@api-stub: Scheduler:update
 do -- Scheduler:update
   local sched = lurek.timer.newScheduler()
   sched:after(0.5, function() lurek.log.debug("fired", "demo") end)
   function lurek.process(dt) sched:update(dt) end
 end
 
---@api-stub: LScheduler:updateFrames
--- Advances frame-based events by one frame, firing due callbacks.
--- Pair with :afterFrames / :everyFrames; takes no dt because steps are discrete.
+--@api-stub: Scheduler:updateFrames
 do -- Scheduler:updateFrames
   local sched = lurek.timer.newScheduler()
   sched:everyFrames(15, function() lurek.log.debug("quarter-second tick", "test") end)
   function lurek.process() sched:updateFrames() end
 end
 
---@api-stub: LScheduler:afterNamed
--- Schedules a named one-shot callback after a delay; cancel by name with cancelNamed().
--- Named timers can be reset or cancelled without keeping a numeric id.
+--@api-stub: Scheduler:afterNamed
 do -- Scheduler:afterNamed
   local sched = lurek.timer.newScheduler()
   sched:afterNamed("respawn", 3.0, function()
@@ -485,9 +389,7 @@ do -- Scheduler:afterNamed
   lurek.log.info("named timer registered", "timer")
 end
 
---@api-stub: LScheduler:every
--- Schedules a repeating callback at a given interval in seconds.
--- Returns a numeric id for cancellation; repeat continues until cancel() is called.
+--@api-stub: Scheduler:every
 do -- Scheduler:every
   local sched = lurek.timer.newScheduler()
   local id = sched:every(1.0, function()
@@ -496,9 +398,7 @@ do -- Scheduler:every
   lurek.log.info("repeating id: " .. id, "timer")
 end
 
---@api-stub: LScheduler:everyFrames
--- Schedules a repeating callback every N game frames.
--- Frame-based timers are unaffected by delta-time spikes; useful for fixed-rate effects.
+--@api-stub: Scheduler:everyFrames
 do -- Scheduler:everyFrames
   local sched = lurek.timer.newScheduler()
   local id = sched:everyFrames(30, function()
@@ -507,9 +407,7 @@ do -- Scheduler:everyFrames
   lurek.log.info("frame-rate timer id: " .. id, "timer")
 end
 
---@api-stub: LScheduler:everyNamed
--- Schedules a named repeating callback at the given interval.
--- Named repeating timers can be paused, resumed, or cancelled by name.
+--@api-stub: Scheduler:everyNamed
 do -- Scheduler:everyNamed
   local sched = lurek.timer.newScheduler()
   sched:everyNamed("regen", 2.0, function()
@@ -521,9 +419,7 @@ end
 -- =============================================================================
 -- COVERAGE: 2 uncovered lurek.timer API item(s)
 -- Generated by tools/audit/example_add_missing.py
--- REQUIRED: replace every --@api-stub: block below with a real scenario.
 -- Run .github/prompts/flesh-out-example.prompt.md for instructions.
--- The final committed file must contain ZERO --@api-stub: lines.
 -- =============================================================================
 
 -- -----------------------------------------------------------------------------
@@ -533,36 +429,11 @@ end
 -- =============================================================================
 -- COVERAGE: 2 uncovered lurek.timer API item(s)
 -- Generated by tools/audit/example_add_missing.py
--- REQUIRED: replace every --@api-stub: block below with a real scenario.
 -- Run .github/prompts/flesh-out-example.prompt.md for instructions.
--- The final committed file must contain ZERO --@api-stub: lines.
 -- =============================================================================
 
 -- -----------------------------------------------------------------------------
 -- LScheduler methods
 -- -----------------------------------------------------------------------------
 
--- ---- Example: LScheduler:type -----------------------------------------------
---@api-stub: LScheduler:type
--- Returns the type name of this object.
--- lScheduler_Example:type()  -- -> string
--- Useful for runtime type inspection and debug logging.
--- do  -- LScheduler:type
---   local sched = lurek.timer.newScheduler()
---   local t = sched:type()
---   lurek.log.info("LScheduler:type = " .. t, "timer")
--- end
---@api-stub: LScheduler:typeOf
--- Returns true if this object is of the given type.
--- lScheduler_Example:typeOf("hero")  -- -> boolean
--- Use for runtime polymorphism and defensive checks.
--- do  -- LScheduler:typeOf
---   local sched = lurek.timer.newScheduler()
---   lurek.log.info("is LScheduler: " .. tostring(sched:typeOf("LScheduler")), "timer")
---   lurek.log.info("is unknown: " .. tostring(sched:typeOf("Unknown")), "timer")
--- end
---@api-stub: block below with a real scenario.
--- Run .github/prompts/flesh-out-example.prompt.md for instructions.
--- The final committed file must contain ZERO --@api-stub: lines.
--- =============================================================================
 

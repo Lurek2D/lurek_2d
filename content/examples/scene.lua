@@ -1,28 +1,15 @@
 -- content/examples/scene.lua
--- Hand-written coverage of the lurek.scene API (53 items).
---
--- The scene module owns a stack of scene tables plus an inter-scene data
--- store, transition presets, lazy preloaders, and a DepthSorter for
--- z-ordered draw batching. Build scenes with `lurek.scene.define` /
--- `lurek.scene.new` and drive lifecycle methods (enter/leave/process/render)
--- via the engine callbacks shown in each snippet below.
---
+-- lurek.scene API examples.
 -- Run: cargo run -- content/examples/scene.lua
 
--- â”€â”€ lurek.scene.* functions â”€â”€
-
---@api-stub: lurek.scene.push
--- Pushes a scene table onto the stack with an optional transition and easing.
--- Pause/enter callbacks fire automatically; the previous scene resumes only when this one is popped.
+--@api-stub: lurek.scene.push -- Push a new scene onto the stack, making it the active scene
 do -- lurek.scene.push
   local menu = lurek.scene.new({ enter = function(self, p) self.from = p and p.from end })
   lurek.scene.push(menu, "fade", 0.3, "ease_in_out", { from = "boot" })
   lurek.log.info("pushed menu, depth=" .. lurek.scene.depth(), "scene")
 end
 
---@api-stub: lurek.scene.pop
--- Pops the top scene from the stack with an optional transition and easing.
--- Call from a "back" or pause-menu close handler; resume fires on the revealed scene.
+--@api-stub: lurek.scene.pop -- Pop the top scene off the stack and return to the previous one
 do -- lurek.scene.pop
   function lurek.process(dt)
     if lurek.scene.depth() > 1 and not lurek.scene.isTransitioning() then
@@ -31,17 +18,13 @@ do -- lurek.scene.pop
   end
 end
 
---@api-stub: lurek.scene.switchTo
--- Replaces the top scene with a new one, calling leave and enter callbacks.
--- Use for navigation that should NOT remember the previous scene (game-over â†’ menu).
+--@api-stub: lurek.scene.switchTo -- Replace the current top scene with a different one without changing stack depth
 do -- lurek.scene.switchTo
   local game_over = lurek.scene.new({ enter = function(self, p) self.score = p.score end })
   lurek.scene.switchTo(game_over, "fade", 0.5, "ease_out", { score = 1240 })
 end
 
---@api-stub: lurek.scene.clear
--- Clears all scenes from the stack, calling leave on each.
--- Use when restarting a run from scratch or on a hard transition to the title screen.
+--@api-stub: lurek.scene.clear -- Remove all scenes from the stack
 do -- lurek.scene.clear
   function lurek.quit()
     lurek.scene.clear()
@@ -49,18 +32,14 @@ do -- lurek.scene.clear
   end
 end
 
---@api-stub: lurek.scene.popTo
--- Pops scenes until the named scene is on top, calling leave on each removed.
--- Wire to a "back to map" button so nested menus collapse in one call.
+--@api-stub: lurek.scene.popTo -- Pop scenes off the stack until the named registered scene is on top
 do -- lurek.scene.popTo
   if lurek.scene.hasRegistered("world_map") and lurek.scene.depth() > 1 then
     lurek.scene.popTo("world_map")
   end
 end
 
---@api-stub: lurek.scene.update
--- Updates the top scene and any active transition (legacy name; prefer `process`).
--- Only call manually if you bypass the engine main loop (e.g. in offline simulations or tests).
+--@api-stub: lurek.scene.update -- Advance any active transition animation and call `update(self, dt)` on the current top scene
 do -- lurek.scene.update
   local sim_dt = 1 / 60
   for _ = 1, 30 do
@@ -68,18 +47,14 @@ do -- lurek.scene.update
   end
 end
 
---@api-stub: lurek.scene.process
--- Calls `scene:ready(self)` once per scene on the first tick after enter, then `scene:process(dt)`.
--- Engine drives this every frame; call manually only when stepping a scene outside the main loop.
+--@api-stub: lurek.scene.process -- Call `ready(self)` once on newly-pushed scenes, then call `process(self, dt)` on every active scene ordered by layer (lowest first)
 do -- lurek.scene.process
   local headless = lurek.scene.new({ process = function(self, dt) self.t = (self.t or 0) + dt end })
   lurek.scene.push(headless)
   lurek.scene.process(0.016)
 end
 
---@api-stub: lurek.scene.processPhysics
--- Calls `scene:process_physics(dt)` on all active scenes (fixed timestep).
--- Use for deterministic physics: drive it from a fixed-step accumulator separate from process().
+--@api-stub: lurek.scene.processPhysics -- Call `process_physics(self, dt)` on every active scene ordered by layer
 do -- lurek.scene.processPhysics
   local fixed_dt = 1 / 120
   function lurek.process(_)
@@ -87,45 +62,35 @@ do -- lurek.scene.processPhysics
   end
 end
 
---@api-stub: lurek.scene.processLate
--- Calls `scene:process_late(dt)` on all active scenes (after process, before render).
--- Use for camera follow or UI layout that depends on this frame's player movement.
+--@api-stub: lurek.scene.processLate -- Call `process_late(self, dt)` on every active scene after all other processing
 do -- lurek.scene.processLate
   function lurek.process(dt)
     lurek.scene.processLate(dt)
   end
 end
 
---@api-stub: lurek.scene.draw
--- Draws all scenes in the stack from bottom to top (legacy name; prefer `render`).
--- Call inside `lurek.render` only when migrating older code; new scenes should implement `render`.
+--@api-stub: lurek.scene.draw -- Call `draw(self)` on every scene in the stack from bottom to top
 do -- lurek.scene.draw
   function lurek.draw()
     lurek.scene.draw()
   end
 end
 
---@api-stub: lurek.scene.render
--- Draws all scenes in the stack from bottom to top.
--- Always call this from `lurek.render`; overlays draw on top of the background scene automatically.
+--@api-stub: lurek.scene.render -- Call `render(self)` on every scene in the stack from bottom to top
 do -- lurek.scene.render
   function lurek.draw()
     lurek.scene.render()
   end
 end
 
---@api-stub: lurek.scene.renderUi
--- Draws UI overlay for all scenes in the stack from bottom to top.
--- Pair with `lurek.scene.render` so HUD/menus draw above world content.
+--@api-stub: lurek.scene.renderUi -- Call `render_ui(self)` on every scene in the stack from bottom to top
 do -- lurek.scene.renderUi
   function lurek.draw_ui()
     lurek.scene.renderUi()
   end
 end
 
---@api-stub: lurek.scene.getStackSize
--- Returns the number of scenes on the stack.
--- Use in debug overlays or to gate "back" actions before popping.
+--@api-stub: lurek.scene.getStackSize -- Returns the total number of scenes currently on the stack, including overlays
 do -- lurek.scene.getStackSize
   local n = lurek.scene.getStackSize()
   if n == 0 then
@@ -133,27 +98,21 @@ do -- lurek.scene.getStackSize
   end
 end
 
---@api-stub: lurek.scene.depth
--- Returns the number of scenes on the stack.
--- Ergonomic alias for `getStackSize`; prefer it in game code.
+--@api-stub: lurek.scene.depth -- Alias for `getStackSize`
 do -- lurek.scene.depth
   if lurek.scene.depth() < 1 then
     lurek.scene.push(lurek.scene.new({}))
   end
 end
 
---@api-stub: lurek.scene.isEmpty
--- Returns true if the scene stack is empty.
--- Check at startup before the first push to decide whether to load from a save.
+--@api-stub: lurek.scene.isEmpty -- Returns true if the scene stack contains no scenes at all
 do -- lurek.scene.isEmpty
   if lurek.scene.isEmpty() then
     lurek.scene.push(lurek.scene.new({ enter = function() end }))
   end
 end
 
---@api-stub: lurek.scene.getCurrent
--- Returns the current top scene table, or nil if the stack is empty.
--- Use to dispatch input or read scene-local state from outside the scene's own methods.
+--@api-stub: lurek.scene.getCurrent -- Returns the scene table currently on top of the stack, or nil if the stack is empty
 do -- lurek.scene.getCurrent
   local top = lurek.scene.getCurrent()
   if top and top.name then
@@ -161,9 +120,7 @@ do -- lurek.scene.getCurrent
   end
 end
 
---@api-stub: lurek.scene.isTransitioning
--- Returns true if a scene transition is currently active.
--- Gate input or further push/pop calls so transitions are not interrupted mid-blend.
+--@api-stub: lurek.scene.isTransitioning -- Returns true if a scene transition animation is currently playing
 do -- lurek.scene.isTransitioning
   function lurek.process(_)
     if lurek.scene.isTransitioning() then
@@ -172,9 +129,7 @@ do -- lurek.scene.isTransitioning
   end
 end
 
---@api-stub: lurek.scene.getTransitionProgress
--- Returns the transition progress from 0.0 to 1.0.
--- Use the raw value to drive custom audio fade or shader uniforms during a transition.
+--@api-stub: lurek.scene.getTransitionProgress -- Returns the raw linear progress (0
 do -- lurek.scene.getTransitionProgress
   function lurek.process(_)
     local p = lurek.scene.getTransitionProgress()
@@ -184,119 +139,91 @@ do -- lurek.scene.getTransitionProgress
   end
 end
 
---@api-stub: lurek.scene.queueTransition
--- Queues a transition to run after the currently active transition finishes.
--- Use when you want deterministic chained scene choreography (intro -> chapter card -> gameplay).
+--@api-stub: lurek.scene.queueTransition -- Queue a transition to play automatically after the current one finishes
 do -- lurek.scene.queueTransition
   lurek.scene.push(lurek.scene.new({}), "fade", 0.4, "linear")
   lurek.scene.queueTransition("wipe", 0.35, "ease_out")
 end
 
---@api-stub: lurek.scene.getQueuedTransitionCount
--- Returns how many transitions are waiting in the sequencer queue.
--- Useful for debug HUDs that show whether transition choreography is still pending.
+--@api-stub: lurek.scene.getQueuedTransitionCount -- Returns the number of transitions waiting in the queue behind the currently-playing transition
 do -- lurek.scene.getQueuedTransitionCount
   local queued = lurek.scene.getQueuedTransitionCount()
   lurek.log.debug("queued transitions=" .. queued, "scene")
 end
 
---@api-stub: lurek.scene.clearQueuedTransitions
--- Clears queued transitions without stopping the currently-running one.
--- Use as an emergency cancel when player skips cutscenes.
+--@api-stub: lurek.scene.clearQueuedTransitions -- Discard all queued transitions without affecting the currently-playing transition (if any)
 do -- lurek.scene.clearQueuedTransitions
   lurek.scene.clearQueuedTransitions()
 end
 
---@api-stub: lurek.scene.registerScene
--- Registers a scene table by name for later retrieval.
--- Register at boot so popTo / pushPreloaded / getRegistered can resolve scenes by name.
+--@api-stub: lurek.scene.registerScene -- Register a scene table under a unique name for later retrieval via `getRegistered`, navigation via `popTo`, or deferred push via `pushPreloaded`
 do -- lurek.scene.registerScene
   local options = lurek.scene.new({ enter = function() end })
   lurek.scene.registerScene("options", options)
   lurek.scene.registerScene("world_map", lurek.scene.new({}))
 end
 
---@api-stub: lurek.scene.getRegistered
--- Returns a registered scene table by name, or nil if not found.
--- Use to fetch a scene without re-creating it, then push or read fields on it.
+--@api-stub: lurek.scene.getRegistered -- Retrieve a previously registered scene table by its name, or nil if no scene is registered under that name
 do -- lurek.scene.getRegistered
   lurek.scene.registerScene("inventory", lurek.scene.new({ slots = {} }))
   local inv = lurek.scene.getRegistered("inventory")
   if inv then inv.slots[1] = "potion" end
 end
 
---@api-stub: lurek.scene.hasRegistered
--- Returns true if a scene is registered under the given name.
--- Guard popTo / pushPreloaded calls so they do not silently no-op on a typo.
+--@api-stub: lurek.scene.hasRegistered -- Check whether a scene is registered under the given name
 do -- lurek.scene.hasRegistered
   if not lurek.scene.hasRegistered("credits") then
     lurek.scene.registerScene("credits", lurek.scene.new({}))
   end
 end
 
---@api-stub: lurek.scene.unregisterScene
--- Removes a scene from the registry by name.
--- Call when a scene is no longer reachable (e.g. after finishing a one-shot tutorial).
+--@api-stub: lurek.scene.unregisterScene -- Remove a scene registration by name
 do -- lurek.scene.unregisterScene
   lurek.scene.registerScene("tutorial", lurek.scene.new({}))
   lurek.scene.unregisterScene("tutorial")
 end
 
---@api-stub: lurek.scene.getRegisteredNames
--- Returns a list of all registered scene names.
--- Use to build a debug scene-selector UI or to assert the expected set in tests.
+--@api-stub: lurek.scene.getRegisteredNames -- Returns an array of all currently registered scene name strings
 do -- lurek.scene.getRegisteredNames
   for _, name in ipairs(lurek.scene.getRegisteredNames()) do
     lurek.log.info("registered scene: " .. name, "scene")
   end
 end
 
---@api-stub: lurek.scene.setData
--- Stores a value in the inter-scene data store under the given key.
--- Use to pass run state (score, player loadout) between scenes without globals.
+--@api-stub: lurek.scene.setData -- Store an arbitrary Lua value in the scene module's shared data map, keyed by a string name
 do -- lurek.scene.setData
   lurek.scene.setData("player", { hp = 100, gold = 25 })
   lurek.scene.setData("difficulty", "normal")
 end
 
---@api-stub: lurek.scene.getData
--- Returns a value from the inter-scene data store, or nil if not found.
--- Read in the next scene's `enter` to restore shared state across the transition.
+--@api-stub: lurek.scene.getData -- Retrieve a value from the shared data map by key, or nil if the key has not been set
 do -- lurek.scene.getData
   lurek.scene.setData("score", 1240)
   local score = lurek.scene.getData("score") or 0
   if score > 1000 then lurek.log.info("high score!", "scene") end
 end
 
---@api-stub: lurek.scene.hasData
--- Returns true if the given key exists in the data store.
--- Distinguish "missing key" from "value is nil/false" without explicit sentinels.
+--@api-stub: lurek.scene.hasData -- Check whether a key exists in the shared scene data map without retrieving its value
 do -- lurek.scene.hasData
   if not lurek.scene.hasData("player") then
     lurek.scene.setData("player", { hp = 100 })
   end
 end
 
---@api-stub: lurek.scene.removeData
--- Removes a value from the inter-scene data store by key.
--- Clean up transient run data (e.g. last-checkpoint) when returning to the title.
+--@api-stub: lurek.scene.removeData -- Remove a key and its associated value from the shared scene data map
 do -- lurek.scene.removeData
   lurek.scene.setData("checkpoint", { x = 320, y = 240 })
   lurek.scene.removeData("checkpoint")
 end
 
---@api-stub: lurek.scene.newDepthSorter
--- Creates a new DepthSorter for z-ordered draw batching.
--- Build one per scene in `enter` and call :flush() inside the scene's render method.
+--@api-stub: lurek.scene.newDepthSorter -- Create a new `LDepthSorter` instance for collecting drawable items and flushing them in depth-sorted (painter's algorithm) order
 do -- lurek.scene.newDepthSorter
   local sorter = lurek.scene.newDepthSorter()
   sorter:setStable(true)
   lurek.log.debug("sorter ready, count=" .. sorter:getCount(), "render")
 end
 
---@api-stub: lurek.scene.new
--- Creates a scene instance directly from a methods table.
--- Use for one-off scenes (title screen, game over) where no constructor reuse is needed.
+--@api-stub: lurek.scene.new -- Create a new scene instance from an optional prototype table
 do -- lurek.scene.new
   local title = lurek.scene.new({
     enter = function(self) self.t = 0 end,
@@ -305,17 +232,13 @@ do -- lurek.scene.new
   lurek.scene.push(title)
 end
 
---@api-stub: lurek.scene.newScene
--- Alias for `lurek.scene.new`.
--- Prefer `new` in new code; this alias exists for compatibility with older scripts.
+--@api-stub: lurek.scene.newScene -- Alias for `lurek
 do -- lurek.scene.newScene
   local pause = lurek.scene.newScene({ enter = function(self) self.paused_at = os.time() end })
   lurek.scene.pushOverlay(pause)
 end
 
---@api-stub: lurek.scene.define
--- Creates a reusable scene class â€” returns a zero-argument constructor function.
--- Use when many scenes share the same methods (e.g. one Level class for many level files).
+--@api-stub: lurek.scene.define -- Create a reusable scene constructor function from a prototype table
 do -- lurek.scene.define
   local Level = lurek.scene.define({
     enter = function(self) self.enemies = {} end,
@@ -325,9 +248,7 @@ do -- lurek.scene.define
   lurek.scene.push(Level())
 end
 
---@api-stub: lurek.scene.getTransitionProgressEased
--- Returns the easing-adjusted transition progress from 0.0 to 1.0.
--- Use for visual blends (alpha, slide offset) so the curve matches the easing chosen on push.
+--@api-stub: lurek.scene.getTransitionProgressEased -- Returns the eased progress (0
 do -- lurek.scene.getTransitionProgressEased
 
   function lurek.draw()
@@ -336,69 +257,53 @@ do -- lurek.scene.getTransitionProgressEased
   end
 end
 
---@api-stub: lurek.scene.pushOverlay
--- Pushes a scene as a non-pausing overlay over the current top scene.
--- Use for HUD-style modals: the world keeps simulating beneath the overlay.
+--@api-stub: lurek.scene.pushOverlay -- Push a scene as a transparent overlay on top of the current scene
 do -- lurek.scene.pushOverlay
   local hud = lurek.scene.new({ render = function(self) end })
   lurek.scene.pushOverlay(hud, "fade", 0.2)
 end
 
---@api-stub: lurek.scene.isOverlay
--- Returns true if the current top scene was pushed as an overlay.
--- Branch input handling: overlays often consume only some keys and forward the rest.
+--@api-stub: lurek.scene.isOverlay -- Returns true if the current top scene was pushed via `pushOverlay`
 do -- lurek.scene.isOverlay
   if lurek.scene.isOverlay() then
     lurek.log.debug("top is overlay; world still ticking", "scene")
   end
 end
 
---@api-stub: lurek.scene.getActiveScenes
--- Returns a table array of all active scene tables.
--- Use to broadcast a custom event (resize, mute) to every active scene at once.
+--@api-stub: lurek.scene.getActiveScenes -- Returns a Lua array of all active scene tables ordered by their layer value (lowest layer first)
 do -- lurek.scene.getActiveScenes
   for _, s in ipairs(lurek.scene.getActiveScenes()) do
     if s.on_resize then s:on_resize(1280, 720) end
   end
 end
 
---@api-stub: lurek.scene.setCurrentLayer
--- Sets logical processing layer for the top scene. Lower values process first.
--- Use with overlays to force deterministic update order.
+--@api-stub: lurek.scene.setCurrentLayer -- Set the rendering layer of the current top scene
 do -- lurek.scene.setCurrentLayer
   lurek.scene.push(lurek.scene.new({}))
   lurek.scene.setCurrentLayer(5)
 end
 
---@api-stub: lurek.scene.getCurrentLayer
--- Gets logical processing layer for the top scene.
--- Use in diagnostics to verify layer assignments during scene composition.
+--@api-stub: lurek.scene.getCurrentLayer -- Get the rendering layer of the current top scene
 do -- lurek.scene.getCurrentLayer
   local layer = lurek.scene.getCurrentLayer()
   lurek.log.debug("current layer=" .. tostring(layer), "scene")
 end
 
---@api-stub: lurek.scene.preload
--- Registers a loader function for a named scene.
--- Define heavy asset loads (textures, audio) here so pushPreloaded runs them lazily.
+--@api-stub: lurek.scene.preload -- Register a deferred-loading function for a scene
 do -- lurek.scene.preload
   lurek.scene.preload("level_01", function()
     lurek.scene.registerScene("level_01", lurek.scene.new({ name = "level_01" }))
   end)
 end
 
---@api-stub: lurek.scene.isPreloaded
--- Returns true if the named scene has been preloaded.
--- Show a loading spinner while the loader has not yet run.
+--@api-stub: lurek.scene.isPreloaded -- Returns true if the named preload loader has already been executed at least once
 do -- lurek.scene.isPreloaded
   if not lurek.scene.isPreloaded("level_01") then
     lurek.log.info("level_01 not yet loaded; will load on first push", "scene")
   end
 end
 
---@api-stub: lurek.scene.pushPreloaded
--- Pushes a registered scene by name, running its loader if not yet preloaded.
--- Use from a "Start Game" button so first-push pays the load cost, subsequent pushes are instant.
+--@api-stub: lurek.scene.pushPreloaded -- Push a preloaded scene onto the stack by name
 do -- lurek.scene.pushPreloaded
   lurek.scene.preload("level_02", function()
     lurek.scene.registerScene("level_02", lurek.scene.new({ name = "level_02" }))
@@ -406,9 +311,7 @@ do -- lurek.scene.pushPreloaded
   lurek.scene.pushPreloaded("level_02", "fade", 0.4, "ease_in_out", { from_save = false })
 end
 
---@api-stub: lurek.scene.getTransitionTypes
--- Returns a table listing all supported transition type strings.
--- Use to build a dropdown in a settings menu so players can pick their preferred transition.
+--@api-stub: lurek.scene.getTransitionTypes -- Returns a Lua array of all supported transition type name strings
 do -- lurek.scene.getTransitionTypes
   local options = lurek.scene.getTransitionTypes()
   for i, t in ipairs(options) do
@@ -416,18 +319,14 @@ do -- lurek.scene.getTransitionTypes
   end
 end
 
---@api-stub: lurek.scene.serializeScene
--- Returns a snapshot of the scene stack as a Lua table: { stack=[name...], data={key=val} }.
--- Capture before quitting so the next launch can restore the run via deserializeScene.
+--@api-stub: lurek.scene.serializeScene -- Capture the current scene stack state as a serializable snapshot table
 do -- lurek.scene.serializeScene
   lurek.scene.setData("player", { hp = 75, gold = 12 })
   local snap = lurek.scene.serializeScene()
   lurek.log.info("snapshot has " .. #snap.stack .. " scenes", "save")
 end
 
---@api-stub: lurek.scene.deserializeScene
--- Restores scene data_refs from a snapshot produced by serializeScene().
--- Call before pushing the first scene so its `enter` can read the restored data store.
+--@api-stub: lurek.scene.deserializeScene -- Restore shared scene data from a previously-serialized snapshot table
 do -- lurek.scene.deserializeScene
   local snap = { stack = {}, data = { player = { hp = 30, gold = 99 } } }
   lurek.scene.deserializeScene(snap)
@@ -435,33 +334,25 @@ do -- lurek.scene.deserializeScene
   lurek.log.info("restored hp=" .. p.hp, "save")
 end
 
---@api-stub: lurek.scene.fade
--- Returns a fade cross-dissolve transition config table.
--- Capture the cfg once, then forward its fields into push/switchTo for consistent timing.
+--@api-stub: lurek.scene.fade -- Helper sub-table `lurek
 do -- lurek.scene.fade
   local cfg = lurek.scene.transitions.fade(0.4)
   lurek.scene.push(lurek.scene.new({}), cfg.type, cfg.duration, "ease_in_out")
 end
 
---@api-stub: lurek.scene.slide
--- Returns a directional slide transition config table.
--- Pick a direction matching the player's intent ("right" for next-page, "left" for back).
+--@api-stub: lurek.scene.slide -- Create a directional slide transition descriptor table
 do -- lurek.scene.slide
   local next_page = lurek.scene.transitions.slide("right", 0.3)
   lurek.scene.push(lurek.scene.new({}), next_page.type, next_page.duration)
 end
 
---@api-stub: lurek.scene.wipe
--- Returns a wipe/curtain transition config table.
--- Use for dramatic chapter breaks where the screen should be obscured longer than a fade.
+--@api-stub: lurek.scene.wipe -- Create a horizontal wipe transition descriptor table
 do -- lurek.scene.wipe
   local cfg = lurek.scene.transitions.wipe(0.6)
   lurek.scene.switchTo(lurek.scene.new({ name = "chapter_2" }), cfg.type, cfg.duration)
 end
 
---@api-stub: lurek.scene.iris
--- Returns an iris in/out (circular reveal) transition config table.
--- Classic "spotlight" close used for game-over or player-death reveals.
+--@api-stub: lurek.scene.iris -- Create an iris (circle) transition descriptor table
 do -- lurek.scene.iris
   local cfg = lurek.scene.transitions.iris(0.8)
   lurek.scene.switchTo(lurek.scene.new({ name = "game_over" }), cfg.type, cfg.duration, "ease_out")
@@ -469,9 +360,7 @@ end
 
 -- â”€â”€ DepthSorter methods â”€â”€
 
---@api-stub: LDepthSorter:add
--- Registers a draw callback at the given depth layer.
--- Lower depth draws first (background); reuse one sorter per scene and clear() between frames.
+--@api-stub: DepthSorter:add
 do -- DepthSorter:add
   local sorter = lurek.scene.newDepthSorter()
   sorter:add(function() lurek.log.debug("draw sky", "render") end, -100)
@@ -479,18 +368,14 @@ do -- DepthSorter:add
   sorter:add(function() lurek.log.debug("draw fog", "render") end, 100)
 end
 
---@api-stub: LDepthSorter:addObject
--- Registers a table object with a draw method at the given depth.
--- Object's `depth` field selects the layer; its `drawSorted` method is invoked on flush.
+--@api-stub: DepthSorter:addObject
 do -- DepthSorter:addObject
   local sorter = lurek.scene.newDepthSorter()
   local enemy = { depth = 10, drawSorted = function(self) lurek.log.debug("enemy", "render") end }
   sorter:addObject(enemy)
 end
 
---@api-stub: LDepthSorter:sort
--- Sorts all registered callbacks by depth ascending.
--- Call manually only if you want to inspect order before flush; flush() also sorts.
+--@api-stub: DepthSorter:sort
 do -- DepthSorter:sort
   local sorter = lurek.scene.newDepthSorter()
   sorter:add(function() end, 50)
@@ -498,9 +383,7 @@ do -- DepthSorter:sort
   sorter:sort()
 end
 
---@api-stub: LDepthSorter:flush
--- Calls all draw callbacks in sorted depth order, then clears.
--- Drive this from `lurek.render`: rebuild + flush every frame so depth is always current.
+--@api-stub: DepthSorter:flush
 do -- DepthSorter:flush
   local sorter = lurek.scene.newDepthSorter()
   function lurek.draw()
@@ -509,9 +392,7 @@ do -- DepthSorter:flush
   end
 end
 
---@api-stub: LDepthSorter:setStable
--- Sets whether equal-depth entries preserve insertion order.
--- Enable when sprites at the same depth must draw in submission order (UI lists, particle bursts).
+--@api-stub: DepthSorter:setStable
 do -- DepthSorter:setStable
   local sorter = lurek.scene.newDepthSorter()
   sorter:setStable(true)
@@ -519,9 +400,7 @@ do -- DepthSorter:setStable
   sorter:add(function() lurek.log.debug("b", "render") end, 0)
 end
 
---@api-stub: LDepthSorter:isStable
--- Returns true if stable sort mode is enabled.
--- Branch on this in tests or in code that conditionally relies on insertion-order semantics.
+--@api-stub: DepthSorter:isStable
 do -- DepthSorter:isStable
   local sorter = lurek.scene.newDepthSorter()
   if not sorter:isStable() then
@@ -529,9 +408,7 @@ do -- DepthSorter:isStable
   end
 end
 
---@api-stub: LDepthSorter:clear
--- Removes all registered callbacks without calling them.
--- Use to abandon a frame mid-build (e.g. paused) without drawing partial content.
+--@api-stub: DepthSorter:clear
 do -- DepthSorter:clear
   local sorter = lurek.scene.newDepthSorter()
   sorter:add(function() end, 0)
@@ -539,9 +416,7 @@ do -- DepthSorter:clear
   lurek.log.debug("cleared, count=" .. sorter:getCount(), "render")
 end
 
---@api-stub: LDepthSorter:getCount
--- Returns the number of registered draw entries.
--- Use in debug overlays to detect runaway add() calls (forgot to flush?).
+--@api-stub: DepthSorter:getCount
 do -- DepthSorter:getCount
   local sorter = lurek.scene.newDepthSorter()
   sorter:add(function() end, 0)
@@ -552,9 +427,7 @@ end
 -- =============================================================================
 -- COVERAGE: 2 uncovered lurek.scene API item(s)
 -- Generated by tools/audit/example_add_missing.py
--- REQUIRED: replace every --@api-stub: block below with a real scenario.
 -- Run .github/prompts/flesh-out-example.prompt.md for instructions.
--- The final committed file must contain ZERO --@api-stub: lines.
 -- =============================================================================
 
 -- -----------------------------------------------------------------------------
@@ -564,36 +437,11 @@ end
 -- =============================================================================
 -- COVERAGE: 2 uncovered lurek.scene API item(s)
 -- Generated by tools/audit/example_add_missing.py
--- REQUIRED: replace every --@api-stub: block below with a real scenario.
 -- Run .github/prompts/flesh-out-example.prompt.md for instructions.
--- The final committed file must contain ZERO --@api-stub: lines.
 -- =============================================================================
 
 -- -----------------------------------------------------------------------------
 -- LDepthSorter methods
 -- -----------------------------------------------------------------------------
 
--- ---- Example: LDepthSorter:type ---------------------------------------------
---@api-stub: LDepthSorter:type
--- Returns the type name of this object.
--- lDepthSorter_Example:type()  -- -> string
--- Useful for runtime type inspection and debug logging.
--- do  -- LDepthSorter:type
---   local sorter = lurek.scene.newDepthSorter()
---   local t = sorter:type()
---   lurek.log.info("LDepthSorter:type = " .. t, "scene")
--- end
---@api-stub: LDepthSorter:typeOf
--- Returns true if this object is of the given type.
--- lDepthSorter_Example:typeOf("hero")  -- -> boolean
--- Use for runtime polymorphism and defensive checks.
--- do  -- LDepthSorter:typeOf
---   local sorter = lurek.scene.newDepthSorter()
---   lurek.log.info("is LDepthSorter: " .. tostring(sorter:typeOf("LDepthSorter")), "scene")
---   lurek.log.info("is unknown: " .. tostring(sorter:typeOf("Unknown")), "scene")
--- end
---@api-stub: block below with a real scenario.
--- Run .github/prompts/flesh-out-example.prompt.md for instructions.
--- The final committed file must contain ZERO --@api-stub: lines.
--- =============================================================================
 

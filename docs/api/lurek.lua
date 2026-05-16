@@ -15080,8 +15080,8 @@ function LAIFlowField:getDirection(x, y) end
 function LAIFlowField:getDistance(x, y) end
 
 --- Returns the one-based flow field goal when set.
----@return number a Goal x coordinate, or nil.
----@return number b Goal y coordinate, or nil.
+---@return number? a Goal x coordinate, or nil.
+---@return number? b Goal y coordinate, or nil.
 function LAIFlowField:getGoal() end
 
 --- Returns flow field height. This method is available to Lua scripts.
@@ -15439,7 +15439,7 @@ LPathGrid = {}
 ---@param sy number Lua argument for `sy`.
 ---@param gx number Lua argument for `gx`.
 ---@param gy number Lua argument for `gy`.
----@return table Array table of point tables, or nil when no path exists.
+---@return table? Array table of point tables, or nil when no path exists.
 function LPathGrid:findPath(sx, sy, gx, gy) end
 
 --- Finds a smoothed path between one-based path grid cells.
@@ -15447,7 +15447,7 @@ function LPathGrid:findPath(sx, sy, gx, gy) end
 ---@param sy number Lua argument for `sy`.
 ---@param gx number Lua argument for `gx`.
 ---@param gy number Lua argument for `gy`.
----@return table Array table of point tables, or nil when no path exists.
+---@return table? Array table of point tables, or nil when no path exists.
 function LPathGrid:findPathSmoothed(sx, sy, gx, gy) end
 
 --- Returns path grid cell size. This method is available to Lua scripts.
@@ -16069,7 +16069,7 @@ function LGraph:removeNode(id) end
 LList = {}
 
 --- Append a value to the end of the list.
----@param value boolean|number|string|table The value to append.
+---@param value LuaValue The value to append.
 ---@return nil No value is returned.
 function LList:add(value) end
 
@@ -16078,7 +16078,7 @@ function LList:add(value) end
 function LList:clear() end
 
 --- Check whether the list contains a specific value.
----@param value boolean|number|string|table The value to search for.
+---@param value LuaValue The value to search for.
 ---@return boolean True if found.
 function LList:contains(value) end
 
@@ -16088,7 +16088,7 @@ function LList:contains(value) end
 function LList:get(index) end
 
 --- Find the 1-based index of the first occurrence of a value. Returns nil if not found.
----@param value boolean|number|string|table The value to search for.
+---@param value LuaValue The value to search for.
 ---@return number The 1-based index, or nil when the value is not found.
 function LList:indexOf(value) end
 
@@ -16111,7 +16111,7 @@ function LList:len() end
 function LList:pop() end
 
 --- Append a value to the end of the list (alias for add).
----@param value boolean|number|string|table The value to append.
+---@param value LuaValue The value to append.
 ---@return nil No value is returned.
 function LList:push(value) end
 
@@ -16139,7 +16139,7 @@ function LList:shift() end
 function LList:toArray() end
 
 --- Insert a value at the beginning of the list.
----@param value boolean|number|string|table The value to prepend.
+---@param value LuaValue The value to prepend.
 ---@return nil No value is returned.
 function LList:unshift(value) end
 
@@ -16251,7 +16251,7 @@ LObjectPool = {}
 function LObjectPool:acquire() end
 
 --- Add an object to the pool's idle set, making it available for future acquisition.
----@param value boolean|number|string|table The object to store in the pool.
+---@param value LuaValue The object to store in the pool.
 ---@return nil No value is returned.
 function LObjectPool:add(value) end
 
@@ -16272,7 +16272,7 @@ function LObjectPool:getAvailableCount() end
 function LObjectPool:getTotalCount() end
 
 --- Return an active object back to the pool's idle set so it can be reused.
----@param value boolean|number|string|table The object to release back into the pool.
+---@param value LuaValue The object to release back into the pool.
 ---@return nil No value is returned.
 function LObjectPool:release(value) end
 
@@ -16359,12 +16359,12 @@ function LQueue:dequeue() end
 function LQueue:dequeueBack() end
 
 --- Add a value to the back of the queue. Returns false if at capacity.
----@param value boolean|number|string|table The value to enqueue.
+---@param value LuaValue The value to enqueue.
 ---@return boolean True if enqueued, false if full.
 function LQueue:enqueue(value) end
 
 --- Add a value to the front of the queue (priority insertion). Returns false if at capacity.
----@param value boolean|number|string|table The value to insert at the front.
+---@param value LuaValue The value to insert at the front.
 ---@return boolean True if enqueued, false if full.
 function LQueue:enqueueFront(value) end
 
@@ -16681,12 +16681,12 @@ function LStack:popBottom() end
 function LStack:popMany(count) end
 
 --- Push a value onto the top of the stack. Returns false if the stack is at capacity.
----@param value boolean|number|string|table The value to push.
+---@param value LuaValue The value to push.
 ---@return boolean True if pushed, false if full.
 function LStack:push(value) end
 
 --- Push a value onto the bottom of the stack. Returns false if at capacity.
----@param value boolean|number|string|table The value to insert at the bottom.
+---@param value LuaValue The value to insert at the bottom.
 ---@return boolean True if pushed, false if full.
 function LStack:pushBottom(value) end
 

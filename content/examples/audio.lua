@@ -1,18 +1,8 @@
 -- content/examples/audio.lua
--- Hand-written coverage of the lurek.audio API (212 items).
---
--- Audio playback runs against the active rodio device, so most snippets
--- place their calls inside a `function lurek.init() ... end` callback that
--- the engine invokes once the device is ready. Sources, buses, MIDI players,
--- pools, decoders, and SoundData buffers are constructed in-block so each
--- example is self-contained and shows where the handle comes from.
+-- lurek.audio API examples.
 -- Run: cargo run -- content/examples/audio.lua
 
--- â”€â”€ lurek.audio.* functions â”€â”€
-
---@api-stub: lurek.audio.newSource
--- Loads an audio file and returns a Source handle.
--- Pass "static" for short SFX (decoded once, cheap to replay) and the default streaming mode for music.
+--@api-stub: lurek.audio.newSource -- Creates a new audio source from a file path, either fully loaded or streaming
 do -- lurek.audio.newSource
   function lurek.init()
     local ok_jump, jump = pcall(lurek.audio.newSource, "sfx/jump.ogg", "static")
@@ -24,9 +14,7 @@ do -- lurek.audio.newSource
   end
 end
 
---@api-stub: lurek.audio.play
--- Plays a source, with optional bus routing via options table.
--- Pass an `{bus = "sfx"}` options table to route the source through a previously created mix bus.
+--@api-stub: lurek.audio.play -- Starts playback of a source by handle, optionally routing through a named bus
 do -- lurek.audio.play
   function lurek.init()
     local ok_hit, hit = pcall(lurek.audio.newSource, "sfx/hit.ogg", "static")
@@ -36,9 +24,7 @@ do -- lurek.audio.play
   end
 end
 
---@api-stub: lurek.audio.stop
--- Stops playback and resets seek position.
--- Stops and rewinds the source so the next `play` call restarts cleanly from the first sample.
+--@api-stub: lurek.audio.stop -- Stops playback of a source and resets its position to the beginning
 do -- lurek.audio.stop
   function lurek.init()
     local ok_sirene, sirene = pcall(lurek.audio.newSource, "sfx/alarm.ogg", "static")
@@ -48,9 +34,7 @@ do -- lurek.audio.stop
   end
 end
 
---@api-stub: lurek.audio.setVolume
--- Sets source playback volume.
--- Volume is a linear 0.0â€“1.0 multiplier; for perceptual fades use a curve like `vol = target ^ 2`.
+--@api-stub: lurek.audio.setVolume -- Sets the volume of a source by handle
 do -- lurek.audio.setVolume
   function lurek.init()
     local ok_music, music = pcall(lurek.audio.newSource, "music/level.mp3")
@@ -60,9 +44,7 @@ do -- lurek.audio.setVolume
   end
 end
 
---@api-stub: lurek.audio.getVolume
--- Returns the source volume.
--- Read back the per-source volume (independent of master and bus volume) for HUD bars or save state.
+--@api-stub: lurek.audio.getVolume -- Returns the current volume of a source
 do -- lurek.audio.getVolume
   function lurek.init()
     local ok_music, music = pcall(lurek.audio.newSource, "music/level.mp3")
@@ -73,9 +55,7 @@ do -- lurek.audio.getVolume
   end
 end
 
---@api-stub: lurek.audio.pause
--- Pauses playback at the current position.
--- Pause keeps the playhead in place so `resume` continues; use `stop` if you want to restart from zero.
+--@api-stub: lurek.audio.pause -- Pauses playback of a source at its current position
 do -- lurek.audio.pause
   function lurek.init()
     local ok_music, music = pcall(lurek.audio.newSource, "music/level.mp3")
@@ -85,9 +65,7 @@ do -- lurek.audio.pause
   end
 end
 
---@api-stub: lurek.audio.resume
--- Resumes playback from pause.
--- Pair with `pause` to implement an in-game pause menu without losing the current playback position.
+--@api-stub: lurek.audio.resume -- Resumes playback of a paused source
 do -- lurek.audio.resume
   function lurek.init()
     local ok_music, music = pcall(lurek.audio.newSource, "music/level.mp3")
@@ -98,9 +76,7 @@ do -- lurek.audio.resume
   end
 end
 
---@api-stub: lurek.audio.setPitch
--- Sets source pitch multiplier.
--- Pitch shifts time too; values >1.0 speed up and raise pitch, <1.0 slow down. Range roughly 0.5â€“2.0.
+--@api-stub: lurek.audio.setPitch -- Sets the pitch multiplier of a source, affecting playback speed and tone
 do -- lurek.audio.setPitch
   function lurek.init()
     local ok_engine, engine = pcall(lurek.audio.newSource, "sfx/engine.ogg", "static")
@@ -110,9 +86,7 @@ do -- lurek.audio.setPitch
   end
 end
 
---@api-stub: lurek.audio.getPitch
--- Returns the source pitch multiplier.
--- Useful when chaining pitch tweens: read the current value, interpolate, then `setPitch` to the result.
+--@api-stub: lurek.audio.getPitch -- Returns the current pitch multiplier of a source
 do -- lurek.audio.getPitch
   function lurek.init()
     local ok_engine, engine = pcall(lurek.audio.newSource, "sfx/engine.ogg", "static")
@@ -123,9 +97,7 @@ do -- lurek.audio.getPitch
   end
 end
 
---@api-stub: lurek.audio.isPlaying
--- Returns true if the source is playing.
--- Poll once per frame to decide whether to start the next looped clip in a queued playlist.
+--@api-stub: lurek.audio.isPlaying -- Returns whether a source is currently playing
 do -- lurek.audio.isPlaying
   function lurek.init()
     local ok_sting, sting = pcall(lurek.audio.newSource, "sfx/sting.ogg", "static")
@@ -135,9 +107,7 @@ do -- lurek.audio.isPlaying
   end
 end
 
---@api-stub: lurek.audio.isPaused
--- Returns true if the source is paused.
--- Distinguishes paused-but-positioned from fully stopped sources; useful for resume buttons.
+--@api-stub: lurek.audio.isPaused -- Returns whether a source is currently paused
 do -- lurek.audio.isPaused
   function lurek.init()
     local ok_music, music = pcall(lurek.audio.newSource, "music/level.mp3")
@@ -147,9 +117,7 @@ do -- lurek.audio.isPaused
   end
 end
 
---@api-stub: lurek.audio.isStopped
--- Returns true if the source is stopped.
--- Returns true after `stop` or natural end-of-stream; use to recycle voices in a custom pool.
+--@api-stub: lurek.audio.isStopped -- Returns whether a source is currently stopped
 do -- lurek.audio.isStopped
   function lurek.init()
     local ok_sting, sting = pcall(lurek.audio.newSource, "sfx/sting.ogg", "static")
@@ -159,9 +127,7 @@ do -- lurek.audio.isStopped
   end
 end
 
---@api-stub: lurek.audio.setLooping
--- Enables or disables looping.
--- Call before `play` for music tracks; setting it on a one-shot SFX makes the clip repeat indefinitely.
+--@api-stub: lurek.audio.setLooping -- Enables or disables looping for a source
 do -- lurek.audio.setLooping
   function lurek.init()
     local ok_music, music = pcall(lurek.audio.newSource, "music/level.mp3")
@@ -171,9 +137,7 @@ do -- lurek.audio.setLooping
   end
 end
 
---@api-stub: lurek.audio.isLooping
--- Returns true if looping is enabled.
--- Read the looping flag when persisting per-source mixer state to a save file.
+--@api-stub: lurek.audio.isLooping -- Returns whether a source has looping enabled
 do -- lurek.audio.isLooping
   function lurek.init()
     local ok_music, music = pcall(lurek.audio.newSource, "music/level.mp3")
@@ -183,9 +147,7 @@ do -- lurek.audio.isLooping
   end
 end
 
---@api-stub: lurek.audio.playLooping
--- Plays the source in a continuous loop.
--- Shortcut that sets looping=true and plays in one call; preferred for ambient loops and music beds.
+--@api-stub: lurek.audio.playLooping -- Starts playback of a source with looping enabled in one call
 do -- lurek.audio.playLooping
   function lurek.init()
     local ok_rain, rain = pcall(lurek.audio.newSource, "music/rain_loop.ogg")
@@ -195,9 +157,7 @@ do -- lurek.audio.playLooping
   end
 end
 
---@api-stub: lurek.audio.setPan
--- Sets stereo panning (-1.0 left to 1.0 right).
--- Pan is mono-aware: -1 hard left, 0 centre, +1 hard right. For stereo sources combine with setStereoWidth.
+--@api-stub: lurek.audio.setPan -- Sets the stereo panning of a source
 do -- lurek.audio.setPan
   function lurek.init()
     local ok_sfx, sfx = pcall(lurek.audio.newSource, "sfx/swoosh.ogg", "static")
@@ -207,9 +167,7 @@ do -- lurek.audio.setPan
   end
 end
 
---@api-stub: lurek.audio.getPan
--- Returns the source stereo panning.
--- Surface the current pan value to a debug overlay so designers can tune positional cues.
+--@api-stub: lurek.audio.getPan -- Returns the current stereo pan position of a source
 do -- lurek.audio.getPan
   function lurek.init()
     local ok_sfx, sfx = pcall(lurek.audio.newSource, "sfx/swoosh.ogg", "static")
@@ -220,9 +178,7 @@ do -- lurek.audio.getPan
   end
 end
 
---@api-stub: lurek.audio.setMasterVolume
--- Sets the global master volume.
--- Apply once at startup from a settings file; clamps in [0, 1] internally so user input is safe.
+--@api-stub: lurek.audio.setMasterVolume -- Sets the global master volume affecting all audio output
 do -- lurek.audio.setMasterVolume
   function lurek.init()
     local user_volume = 0.7
@@ -230,9 +186,7 @@ do -- lurek.audio.setMasterVolume
   end
 end
 
---@api-stub: lurek.audio.getMasterVolume
--- Returns the global master volume.
--- Read the live master gain when drawing the settings slider so it reflects any in-game changes.
+--@api-stub: lurek.audio.getMasterVolume -- Returns the current global master volume level
 do -- lurek.audio.getMasterVolume
   function lurek.init()
     lurek.audio.setMasterVolume(0.7)
@@ -241,9 +195,7 @@ do -- lurek.audio.getMasterVolume
   end
 end
 
---@api-stub: lurek.audio.getActiveSourceCount
--- Returns the number of currently playing sources.
--- Watch this counter while developing to catch leaked or never-released sources eating mixer voices.
+--@api-stub: lurek.audio.getActiveSourceCount -- Returns the number of sources currently playing audio
 do -- lurek.audio.getActiveSourceCount
   function lurek.init()
     local ok_sfx, sfx = pcall(lurek.audio.newSource, "sfx/jump.ogg", "static")
@@ -253,9 +205,7 @@ do -- lurek.audio.getActiveSourceCount
   end
 end
 
---@api-stub: lurek.audio.getSourceCount
--- Returns the total number of registered sources.
--- Returns total registered sources (playing or not) â€” useful for diagnosing slow source leaks.
+--@api-stub: lurek.audio.getSourceCount -- Returns the total number of loaded audio sources (playing or idle)
 do -- lurek.audio.getSourceCount
   function lurek.init()
     local ok__, _ = pcall(lurek.audio.newSource, "sfx/coin.ogg", "static")
@@ -265,9 +215,7 @@ do -- lurek.audio.getSourceCount
   end
 end
 
---@api-stub: lurek.audio.getSourceType
--- Returns the type string ("static" or "stream") of a source.
--- Returns "static" or "stream"; branch when applying effects that only make sense for one mode.
+--@api-stub: lurek.audio.getSourceType -- Returns whether a source is static or streaming
 do -- lurek.audio.getSourceType
   function lurek.init()
     local ok_music, music = pcall(lurek.audio.newSource, "music/level.mp3")
@@ -277,9 +225,7 @@ do -- lurek.audio.getSourceType
   end
 end
 
---@api-stub: lurek.audio.clone
--- Creates an independent copy of a source.
--- Cheap polyphony: clone a static source so it can play overlapping copies without restarting.
+--@api-stub: lurek.audio.clone -- Creates an independent copy of a source sharing the same audio data
 do -- lurek.audio.clone
   function lurek.init()
     local ok_hit, hit = pcall(lurek.audio.newSource, "sfx/hit.ogg", "static")
@@ -289,9 +235,7 @@ do -- lurek.audio.clone
   end
 end
 
---@api-stub: lurek.audio.pauseAll
--- Pauses all currently playing sources.
--- Call from the pause-menu open hook to silence everything; pair with `resumeAll` on close.
+--@api-stub: lurek.audio.pauseAll -- Pauses all currently playing audio sources
 do -- lurek.audio.pauseAll
   function lurek.init()
     local ok_music, music = pcall(lurek.audio.newSource, "music/level.mp3")
@@ -301,9 +245,7 @@ do -- lurek.audio.pauseAll
   end
 end
 
---@api-stub: lurek.audio.stopAll
--- Stops all currently playing sources.
--- Use on scene transitions or game-over to drop every voice cleanly before loading the next level.
+--@api-stub: lurek.audio.stopAll -- Stops all audio sources and resets their positions
 do -- lurek.audio.stopAll
   function lurek.init()
     local ok_music, music = pcall(lurek.audio.newSource, "music/level.mp3")
@@ -313,9 +255,7 @@ do -- lurek.audio.stopAll
   end
 end
 
---@api-stub: lurek.audio.resumeAll
--- Resumes all paused sources.
--- Mirror of `pauseAll` â€” restart anything paused while preserving each source's playhead.
+--@api-stub: lurek.audio.resumeAll -- Resumes all paused audio sources
 do -- lurek.audio.resumeAll
   function lurek.init()
     local ok_music, music = pcall(lurek.audio.newSource, "music/level.mp3")
@@ -325,9 +265,7 @@ do -- lurek.audio.resumeAll
   end
 end
 
---@api-stub: lurek.audio.release
--- Releases a source and frees its memory.
--- Frees mixer memory; subsequent calls on the released handle raise an error so guard with isStopped.
+--@api-stub: lurek.audio.release -- Releases an audio source, freeing its memory and stopping playback
 do -- lurek.audio.release
   function lurek.init()
     local ok_sfx, sfx = pcall(lurek.audio.newSource, "sfx/coin.ogg", "static")
@@ -337,9 +275,7 @@ do -- lurek.audio.release
   end
 end
 
---@api-stub: lurek.audio.newBus
--- Creates a named audio bus for grouping sources.
--- Create one bus per mix group ("music", "sfx", "voice") at startup, then route sources via `setSourceBus`.
+--@api-stub: lurek.audio.newBus -- Creates a new audio mixing bus for grouping and controlling sources
 do -- lurek.audio.newBus
   function lurek.init()
     local sfx_bus = lurek.audio.newBus("sfx")
@@ -348,9 +284,7 @@ do -- lurek.audio.newBus
   end
 end
 
---@api-stub: lurek.audio.setSourceBus
--- Assigns a source to a bus.
--- Move a source to a different bus mid-game (e.g. when an NPC voice should duck under cinematic music).
+--@api-stub: lurek.audio.setSourceBus -- Routes a source through a specific audio bus for grouped mixing
 do -- lurek.audio.setSourceBus
   function lurek.init()
     local voice_bus = lurek.audio.newBus("voice")
@@ -360,9 +294,7 @@ do -- lurek.audio.setSourceBus
   end
 end
 
---@api-stub: lurek.audio.getSourceBus
--- Returns the bus a source is assigned to, or nil.
--- Returns the current Bus handle (or nil) so you can re-apply per-bus volume after a settings change.
+--@api-stub: lurek.audio.getSourceBus -- Returns the bus a source is routed through
 do -- lurek.audio.getSourceBus
   function lurek.init()
     local sfx_bus = lurek.audio.newBus("sfx")
@@ -374,9 +306,7 @@ do -- lurek.audio.getSourceBus
   end
 end
 
---@api-stub: lurek.audio.getMaxSources
--- Returns the maximum number of simultaneous sources.
--- Read once at startup to size your custom voice pool; current implementation reports 64 hardware voices.
+--@api-stub: lurek.audio.getMaxSources -- Returns the maximum number of simultaneous audio sources supported
 do -- lurek.audio.getMaxSources
   function lurek.init()
     local cap = lurek.audio.getMaxSources()
@@ -384,9 +314,7 @@ do -- lurek.audio.getMaxSources
   end
 end
 
---@api-stub: lurek.audio.getDuration
--- Returns the total duration of a source in seconds.
--- Use at level load to pre-roll a progress bar that tracks `tell / getDuration` across the cue.
+--@api-stub: lurek.audio.getDuration -- Returns the total duration of a source in seconds
 do -- lurek.audio.getDuration
   function lurek.init()
     local ok_music, music = pcall(lurek.audio.newSource, "music/level.mp3")
@@ -396,9 +324,7 @@ do -- lurek.audio.getDuration
   end
 end
 
---@api-stub: lurek.audio.tell
--- Returns the current playback position in seconds.
--- Read each frame to drive a beatmap or rhythm-game playhead; combine with seek for scrubbing UIs.
+--@api-stub: lurek.audio.tell -- Returns the current playback position of a source in seconds
 do -- lurek.audio.tell
   function lurek.init()
     local ok_music, music = pcall(lurek.audio.newSource, "music/level.mp3")
@@ -409,9 +335,7 @@ do -- lurek.audio.tell
   end
 end
 
---@api-stub: lurek.audio.seek
--- Seeks to a time position in seconds.
--- Position is in seconds; clamping past `getDuration` is the engine's job, but rounding is still on you.
+--@api-stub: lurek.audio.seek -- Seeks a source to a specific position in seconds
 do -- lurek.audio.seek
   function lurek.init()
     local ok_music, music = pcall(lurek.audio.newSource, "music/level.mp3")
@@ -421,9 +345,7 @@ do -- lurek.audio.seek
   end
 end
 
---@api-stub: lurek.audio.setLowpass
--- Applies a low-pass filter to a source.
--- Use ~800 Hz for the muffled "underwater" effect; ~3000 Hz for room-vs-hallway separation.
+--@api-stub: lurek.audio.setLowpass -- Applies a lowpass filter to a source, attenuating high frequencies
 do -- lurek.audio.setLowpass
   function lurek.init()
     local ok_music, music = pcall(lurek.audio.newSource, "music/level.mp3")
@@ -433,9 +355,7 @@ do -- lurek.audio.setLowpass
   end
 end
 
---@api-stub: lurek.audio.setHighpass
--- Applies a high-pass filter to a source.
--- Strip subwoofer rumble (~80 Hz) before applying spatial reverb to keep mixes from getting muddy.
+--@api-stub: lurek.audio.setHighpass -- Applies a highpass filter to a source, attenuating low frequencies
 do -- lurek.audio.setHighpass
   function lurek.init()
     local ok_music, music = pcall(lurek.audio.newSource, "music/level.mp3")
@@ -445,9 +365,7 @@ do -- lurek.audio.setHighpass
   end
 end
 
---@api-stub: lurek.audio.getLowpass
--- Returns the low-pass filter cutoff of a source.
--- Inspect the active cutoff to drive a debug HUD or to lerp it back to 0 when the player surfaces.
+--@api-stub: lurek.audio.getLowpass -- Returns the current lowpass filter cutoff of a source
 do -- lurek.audio.getLowpass
   function lurek.init()
     local ok_music, music = pcall(lurek.audio.newSource, "music/level.mp3")
@@ -457,9 +375,7 @@ do -- lurek.audio.getLowpass
   end
 end
 
---@api-stub: lurek.audio.getHighpass
--- Returns the high-pass filter cutoff of a source.
--- Mirror of `getLowpass`; together they let you save and restore filter state per-source.
+--@api-stub: lurek.audio.getHighpass -- Returns the current highpass filter cutoff of a source
 do -- lurek.audio.getHighpass
   function lurek.init()
     local ok_music, music = pcall(lurek.audio.newSource, "music/level.mp3")
@@ -469,9 +385,7 @@ do -- lurek.audio.getHighpass
   end
 end
 
---@api-stub: lurek.audio.clearFilter
--- Removes any active filter from a source.
--- Removes both low- and high-pass; call before reusing a source for a different sound class.
+--@api-stub: lurek.audio.clearFilter -- Removes all frequency filters from a source
 do -- lurek.audio.clearFilter
   function lurek.init()
     local ok_music, music = pcall(lurek.audio.newSource, "music/level.mp3")
@@ -481,9 +395,7 @@ do -- lurek.audio.clearFilter
   end
 end
 
---@api-stub: lurek.audio.fadeIn
--- Fades a source in from silence over the given duration.
--- Schedules a linear fade from 0 to current volume over `dur` seconds â€” call before `play` for clean entries.
+--@api-stub: lurek.audio.fadeIn -- Sets the fade-in duration for a source so it ramps from silence on play
 do -- lurek.audio.fadeIn
   function lurek.init()
     local ok_music, music = pcall(lurek.audio.newSource, "music/level.mp3")
@@ -493,9 +405,7 @@ do -- lurek.audio.fadeIn
   end
 end
 
---@api-stub: lurek.audio.getFadeIn
--- Returns the fade-in duration of a source.
--- Returns the configured fade-in seconds; useful when persisting per-cue fade settings to a save file.
+--@api-stub: lurek.audio.getFadeIn -- Returns the configured fade-in duration of a source
 do -- lurek.audio.getFadeIn
   function lurek.init()
     local ok_music, music = pcall(lurek.audio.newSource, "music/level.mp3")
@@ -505,9 +415,7 @@ do -- lurek.audio.getFadeIn
   end
 end
 
---@api-stub: lurek.audio.setListener2D
--- Sets the 2D listener position for spatial audio.
--- Drive each frame from your camera centre so positional sources pan correctly as the player moves.
+--@api-stub: lurek.audio.setListener2D -- Sets the 2D listener position for spatial audio calculations
 do -- lurek.audio.setListener2D
   function lurek.init()
     local cam_x, cam_y = 320.0, 240.0
@@ -515,9 +423,7 @@ do -- lurek.audio.setListener2D
   end
 end
 
---@api-stub: lurek.audio.getListener2D
--- Returns the 2D listener position (x, y).
--- Read back the listener after camera updates to confirm the audio system tracks the player.
+--@api-stub: lurek.audio.getListener2D -- Returns the current 2D listener position
 do -- lurek.audio.getListener2D
   function lurek.init()
     lurek.audio.setListener2D(320.0, 240.0)
@@ -526,18 +432,14 @@ do -- lurek.audio.getListener2D
   end
 end
 
---@api-stub: lurek.audio.setListener
--- Sets the 3D listener position.
--- 3D variant; pass z=0 for top-down games or use a small positive z to give vertical separation.
+--@api-stub: lurek.audio.setListener -- Sets the 3D listener position for spatial audio (Z defaults to 0 for 2D games)
 do -- lurek.audio.setListener
   function lurek.init()
     lurek.audio.setListener(320.0, 240.0, 0.0)
   end
 end
 
---@api-stub: lurek.audio.getListener
--- Returns the 3D listener position (x, y, z).
--- Returns the 3D listener position; pair with setVelocity for a full Doppler-aware setup.
+--@api-stub: lurek.audio.getListener -- Returns the current 3D listener position
 do -- lurek.audio.getListener
   function lurek.init()
     lurek.audio.setListener(320.0, 240.0, 0.0)
@@ -546,9 +448,7 @@ do -- lurek.audio.getListener
   end
 end
 
---@api-stub: lurek.audio.setPosition
--- Sets the 3D position of a source.
--- Place positional sources in world coordinates; combine with `setDistanceModel` for falloff curves.
+--@api-stub: lurek.audio.setPosition -- Sets the 3D position of a source for spatial audio panning and attenuation
 do -- lurek.audio.setPosition
   function lurek.init()
     local ok_foot, foot = pcall(lurek.audio.newSource, "sfx/footstep.ogg", "static")
@@ -558,9 +458,7 @@ do -- lurek.audio.setPosition
   end
 end
 
---@api-stub: lurek.audio.getPosition
--- Returns the 3D position of a source (x, y, z).
--- Read the source position to draw debug gizmos at audio emitter locations during development.
+--@api-stub: lurek.audio.getPosition -- Returns the 3D position of a source
 do -- lurek.audio.getPosition
   function lurek.init()
     local ok_foot, foot = pcall(lurek.audio.newSource, "sfx/footstep.ogg", "static")
@@ -571,9 +469,7 @@ do -- lurek.audio.getPosition
   end
 end
 
---@api-stub: lurek.audio.setVelocity
--- Sets the velocity of a source for Doppler.
--- Update velocity each frame from the entity's movement delta so Doppler shift sounds natural.
+--@api-stub: lurek.audio.setVelocity -- Sets the velocity of a source for Doppler effect calculations
 do -- lurek.audio.setVelocity
   function lurek.init()
     local ok_car, car = pcall(lurek.audio.newSource, "sfx/engine.ogg", "static")
@@ -583,9 +479,7 @@ do -- lurek.audio.setVelocity
   end
 end
 
---@api-stub: lurek.audio.getVelocity
--- Returns the velocity of a source (x, y, z).
--- Read back the stored velocity for debugging Doppler artefacts (clicks, frequency oscillation).
+--@api-stub: lurek.audio.getVelocity -- Returns the velocity vector of a source
 do -- lurek.audio.getVelocity
   function lurek.init()
     local ok_car, car = pcall(lurek.audio.newSource, "sfx/engine.ogg", "static")
@@ -596,9 +490,7 @@ do -- lurek.audio.getVelocity
   end
 end
 
---@api-stub: lurek.audio.setOrientation
--- Sets the 6-component orientation of a source.
--- Pass forward (fx,fy,fz) and up (ux,uy,uz) vectors; identity is forward=(0,0,-1) up=(0,1,0).
+--@api-stub: lurek.audio.setOrientation -- Sets the orientation of a source using forward and up vectors
 do -- lurek.audio.setOrientation
   function lurek.init()
     local ok_cone, cone = pcall(lurek.audio.newSource, "sfx/horn.ogg", "static")
@@ -608,9 +500,7 @@ do -- lurek.audio.setOrientation
   end
 end
 
---@api-stub: lurek.audio.getOrientation
--- Returns the 6-component orientation of a source.
--- Returns six numbers (fx, fy, fz, ux, uy, uz) â€” useful when serialising spatial state.
+--@api-stub: lurek.audio.getOrientation -- Returns the orientation vectors of a source
 do -- lurek.audio.getOrientation
   function lurek.init()
     local ok_cone, cone = pcall(lurek.audio.newSource, "sfx/horn.ogg", "static")
@@ -621,18 +511,14 @@ do -- lurek.audio.getOrientation
   end
 end
 
---@api-stub: lurek.audio.setDopplerScale
--- Sets the global Doppler effect scale.
--- 0.0 disables Doppler entirely; 1.0 is realistic; 2.0 exaggerates for arcade racing-style cues.
+--@api-stub: lurek.audio.setDopplerScale -- Sets the global Doppler effect intensity multiplier
 do -- lurek.audio.setDopplerScale
   function lurek.init()
     lurek.audio.setDopplerScale(1.0)
   end
 end
 
---@api-stub: lurek.audio.getDopplerScale
--- Returns the current Doppler scale.
--- Read back when wiring Doppler into a settings menu so the slider reflects engine state.
+--@api-stub: lurek.audio.getDopplerScale -- Returns the current global Doppler effect scale
 do -- lurek.audio.getDopplerScale
   function lurek.init()
     lurek.audio.setDopplerScale(1.5)
@@ -640,18 +526,14 @@ do -- lurek.audio.getDopplerScale
   end
 end
 
---@api-stub: lurek.audio.setDistanceModel
--- Sets the distance attenuation model.
--- Names: "none", "inverse", "linear", "exponential". "linear" is the friendliest for top-down games.
+--@api-stub: lurek.audio.setDistanceModel -- Sets the distance attenuation model for spatial audio
 do -- lurek.audio.setDistanceModel
   function lurek.init()
     lurek.audio.setDistanceModel("linear")
   end
 end
 
---@api-stub: lurek.audio.getDistanceModel
--- Returns the current distance model name.
--- Returns the active model name string â€” log on startup to confirm settings round-trip correctly.
+--@api-stub: lurek.audio.getDistanceModel -- Returns the current distance attenuation model name
 do -- lurek.audio.getDistanceModel
   function lurek.init()
     lurek.audio.setDistanceModel("linear")
@@ -659,18 +541,14 @@ do -- lurek.audio.getDistanceModel
   end
 end
 
---@api-stub: lurek.audio.setMeter
--- Sets the master peak meter level (0.0Ă˘â‚¬â€ś1.0).
--- Game scripts publish their own master peak (0â€“1) so visualisers don't need direct DSP access.
+--@api-stub: lurek.audio.setMeter -- Sets the master peak level for metering purposes
 do -- lurek.audio.setMeter
   function lurek.init()
     lurek.audio.setMeter(0.7)
   end
 end
 
---@api-stub: lurek.audio.getMeter
--- Returns the stored master peak meter level.
--- Read each frame to drive a VU-meter widget without hooking into the mixer audio thread.
+--@api-stub: lurek.audio.getMeter -- Returns the current master peak level for VU-meter displays
 do -- lurek.audio.getMeter
   function lurek.init()
     lurek.audio.setMeter(0.7)
@@ -678,9 +556,7 @@ do -- lurek.audio.getMeter
   end
 end
 
---@api-stub: lurek.audio.newMidiPlayer
--- Creates a MIDI player, optionally loading a file.
--- Pass a `.mid` path to load immediately; pass nil to construct empty and call `:load(path)` later.
+--@api-stub: lurek.audio.newMidiPlayer -- Creates a new MIDI player instance, optionally loading a file immediately
 do -- lurek.audio.newMidiPlayer
   function lurek.init()
     local mp = lurek.audio.newMidiPlayer("music/song.mid")
@@ -689,9 +565,7 @@ do -- lurek.audio.newMidiPlayer
   end
 end
 
---@api-stub: lurek.audio.newSoundData
--- Creates a SoundData from a file or as a silent buffer.
--- Two forms: `(path)` loads a WAV/OGG file; `(count, rate, channels)` allocates a silent buffer.
+--@api-stub: lurek.audio.newSoundData -- Creates a new SoundData object from a file path or blank buffer for procedural audio
 do -- lurek.audio.newSoundData
   function lurek.init()
     local sd = lurek.audio.newSoundData(44100, 44100, 1)
@@ -699,18 +573,14 @@ do -- lurek.audio.newSoundData
   end
 end
 
---@api-stub: lurek.audio.setMidiSoundFont
--- Sets the global SoundFont for MIDI synthesis.
--- Call once at startup with a `.sf2` path; affects every MIDI player created afterwards.
+--@api-stub: lurek.audio.setMidiSoundFont -- Sets the midi sound font for Lua scripts in this module
 do -- lurek.audio.setMidiSoundFont
   function lurek.init()
     lurek.audio.setMidiSoundFont("music/gm.sf2")
   end
 end
 
---@api-stub: lurek.audio.hasMidiSoundFont
--- Returns true if a SoundFont is loaded.
--- Branch on this before launching MIDI playback to fall back to a recorded version when no SF2 is present.
+--@api-stub: lurek.audio.hasMidiSoundFont -- Returns true if midi sound font for Lua scripts in this module
 do -- lurek.audio.hasMidiSoundFont
   function lurek.init()
     if not lurek.audio.hasMidiSoundFont() then
@@ -719,9 +589,7 @@ do -- lurek.audio.hasMidiSoundFont
   end
 end
 
---@api-stub: lurek.audio.clearMidiSoundFont
--- Unloads the active SoundFont.
--- Drops the loaded SoundFont to free memory between scenes that use different instrument banks.
+--@api-stub: lurek.audio.clearMidiSoundFont -- Clears midi sound font for Lua scripts in this module
 do -- lurek.audio.clearMidiSoundFont
   function lurek.init()
     lurek.audio.setMidiSoundFont("music/gm.sf2")
@@ -729,9 +597,7 @@ do -- lurek.audio.clearMidiSoundFont
   end
 end
 
---@api-stub: lurek.audio.newDecoder
--- Creates a streaming audio decoder.
--- Lets you pull PCM chunks manually for streaming visualisers; buffersize defaults to 2048 samples.
+--@api-stub: lurek.audio.newDecoder -- Creates a streaming audio decoder for the given file
 do -- lurek.audio.newDecoder
   function lurek.init()
     local dec = lurek.audio.newDecoder("music/long_track.ogg", 4096)
@@ -739,9 +605,7 @@ do -- lurek.audio.newDecoder
   end
 end
 
---@api-stub: lurek.audio.newQueueableSource
--- Creates a queueable source for manual PCM buffering.
--- Manual PCM streaming: returns an integer handle you feed via `queueSource` / `playQueueable`.
+--@api-stub: lurek.audio.newQueueableSource -- Creates a new queueable audio source for streaming PCM data buffer by buffer
 do -- lurek.audio.newQueueableSource
   function lurek.init()
     local qs = lurek.audio.newQueueableSource(44100, 16, 1, 4)
@@ -749,9 +613,7 @@ do -- lurek.audio.newQueueableSource
   end
 end
 
---@api-stub: lurek.audio.queueSource
--- Pushes a SoundData buffer into a queueable source.
--- Push a SoundData chunk to a queueable source; check `getFreeBufferCount` first to avoid drops.
+--@api-stub: lurek.audio.queueSource -- Queues a decoded audio chunk for playback on a queueable source
 do -- lurek.audio.queueSource
   function lurek.init()
     local qs = lurek.audio.newQueueableSource(44100, 16, 1, 4)
@@ -760,9 +622,7 @@ do -- lurek.audio.queueSource
   end
 end
 
---@api-stub: lurek.audio.getFreeBufferCount
--- Returns the free buffer slots in a queueable source.
--- Use as backpressure: only push more chunks while the count is greater than zero.
+--@api-stub: lurek.audio.getFreeBufferCount -- Returns the number of free (available) buffer slots on a queueable source
 do -- lurek.audio.getFreeBufferCount
   function lurek.init()
     local qs = lurek.audio.newQueueableSource(44100, 16, 1, 4)
@@ -771,9 +631,7 @@ do -- lurek.audio.getFreeBufferCount
   end
 end
 
---@api-stub: lurek.audio.playQueueable
--- Starts playback of a queueable source.
--- Begin playback once enough buffers are queued; the first chunks must already be present.
+--@api-stub: lurek.audio.playQueueable -- Play queueable for Lua scripts in this module
 do -- lurek.audio.playQueueable
   function lurek.init()
     local qs = lurek.audio.newQueueableSource(44100, 16, 1, 4)
@@ -783,9 +641,7 @@ do -- lurek.audio.playQueueable
   end
 end
 
---@api-stub: lurek.audio.stopQueueable
--- Stops a queueable source and drains its buffers.
--- Drains pending chunks and silences the source â€” call when switching streams to avoid stale audio.
+--@api-stub: lurek.audio.stopQueueable -- Stop queueable for Lua scripts in this module
 do -- lurek.audio.stopQueueable
   function lurek.init()
     local qs = lurek.audio.newQueueableSource(44100, 16, 1, 4)
@@ -794,9 +650,7 @@ do -- lurek.audio.stopQueueable
   end
 end
 
---@api-stub: lurek.audio.getPlaybackDevices
--- Returns a table of available audio output device names.
--- Returns an array of device-name strings; surface in a settings menu so users pick their headset.
+--@api-stub: lurek.audio.getPlaybackDevices -- Returns the playback devices for Lua scripts in this module
 do -- lurek.audio.getPlaybackDevices
   function lurek.init()
     local devs = lurek.audio.getPlaybackDevices()
@@ -804,9 +658,7 @@ do -- lurek.audio.getPlaybackDevices
   end
 end
 
---@api-stub: lurek.audio.getPlaybackDevice
--- Returns the current audio output device name.
--- Read once after switching devices to confirm the mixer accepted the requested output.
+--@api-stub: lurek.audio.getPlaybackDevice -- Returns the playback device for Lua scripts in this module
 do -- lurek.audio.getPlaybackDevice
   function lurek.init()
     local cur = lurek.audio.getPlaybackDevice()
@@ -814,9 +666,7 @@ do -- lurek.audio.getPlaybackDevice
   end
 end
 
---@api-stub: lurek.audio.setPlaybackDevice
--- Selects an audio output device by name.
--- Pass a device name returned by `getPlaybackDevices`; raises an error if the name is unknown.
+--@api-stub: lurek.audio.setPlaybackDevice -- Sets the playback device for Lua scripts in this module
 do -- lurek.audio.setPlaybackDevice
   function lurek.init()
     local devs = lurek.audio.getPlaybackDevices()
@@ -824,9 +674,7 @@ do -- lurek.audio.setPlaybackDevice
   end
 end
 
---@api-stub: lurek.audio.create_bus
--- Creates a bus by name (functional style).
--- Functional alternative to `newBus`: addresses buses by name, no handle returned. Pass parent for nesting.
+--@api-stub: lurek.audio.create_bus -- Create_bus for Lua scripts in this module
 do -- lurek.audio.create_bus
   function lurek.init()
     lurek.audio.create_bus("music")
@@ -834,9 +682,7 @@ do -- lurek.audio.create_bus
   end
 end
 
---@api-stub: lurek.audio.set_bus_volume
--- Sets a bus volume by name.
--- Adjust a named bus' gain without holding its handle â€” handy for menu sliders driven by string keys.
+--@api-stub: lurek.audio.set_bus_volume -- Sets the volume of a named audio bus
 do -- lurek.audio.set_bus_volume
   function lurek.init()
     lurek.audio.create_bus("music")
@@ -844,9 +690,7 @@ do -- lurek.audio.set_bus_volume
   end
 end
 
---@api-stub: lurek.audio.add_effect
--- Adds a DSP effect to a bus.
--- effect_type is one of "lowpass", "highpass", "reverb", â€¦ `params.value` seeds the first DSP parameter.
+--@api-stub: lurek.audio.add_effect -- Adds an effect to a named audio bus and returns its effect ID
 do -- lurek.audio.add_effect
   function lurek.init()
     lurek.audio.create_bus("sfx")
@@ -855,9 +699,7 @@ do -- lurek.audio.add_effect
   end
 end
 
---@api-stub: lurek.audio.remove_effect
--- Removes a DSP effect from a bus.
--- Pass the integer id returned from `add_effect`; returns false (or raises) for unknown ids.
+--@api-stub: lurek.audio.remove_effect -- Remove_effect for Lua scripts in this module
 do -- lurek.audio.remove_effect
   function lurek.init()
     lurek.audio.create_bus("sfx")
@@ -866,9 +708,7 @@ do -- lurek.audio.remove_effect
   end
 end
 
---@api-stub: lurek.audio.set_effect_param
--- Sets a parameter on a DSP effect.
--- Per-effect parameter names â€” "cutoff", "q", "mix" â€” vary; consult the EffectType source for valid keys.
+--@api-stub: lurek.audio.set_effect_param -- Set_effect_param for Lua scripts in this module
 do -- lurek.audio.set_effect_param
   function lurek.init()
     lurek.audio.create_bus("sfx")
@@ -877,9 +717,7 @@ do -- lurek.audio.set_effect_param
   end
 end
 
---@api-stub: lurek.audio.newSineWave
--- Generate a mono sine-wave SoundData buffer.
--- Synthesise a SoundData buffer for instant tones â€” handy for UI beeps and procedural music.
+--@api-stub: lurek.audio.newSineWave -- Generates a sine wave as a `SoundData` buffer
 do -- lurek.audio.newSineWave
   function lurek.init()
     local beep = lurek.audio.newSineWave(440.0, 0.25, 44100, 0.5)
@@ -887,9 +725,7 @@ do -- lurek.audio.newSineWave
   end
 end
 
---@api-stub: lurek.audio.newSquareWave
--- Generate a mono square-wave SoundData buffer.
--- Brighter than a sine; good for chiptune-style retro effects. Amplitude 0.5 avoids clipping.
+--@api-stub: lurek.audio.newSquareWave -- Generates a square wave as a `SoundData` buffer
 do -- lurek.audio.newSquareWave
   function lurek.init()
     local sq = lurek.audio.newSquareWave(220.0, 0.5, 44100, 0.5)
@@ -897,9 +733,7 @@ do -- lurek.audio.newSquareWave
   end
 end
 
---@api-stub: lurek.audio.newSawtoothWave
--- Generate a mono sawtooth-wave SoundData buffer.
--- Buzzy harmonic-rich timbre; subtractive-synth lead patches start here then add a low-pass filter.
+--@api-stub: lurek.audio.newSawtoothWave -- Generates a sawtooth wave as a `SoundData` buffer
 do -- lurek.audio.newSawtoothWave
   function lurek.init()
     local saw = lurek.audio.newSawtoothWave(110.0, 1.0, 44100, 0.5)
@@ -907,9 +741,7 @@ do -- lurek.audio.newSawtoothWave
   end
 end
 
---@api-stub: lurek.audio.newTriangleWave
--- Generate a mono triangle-wave SoundData buffer.
--- Halfway between sine (mellow) and square (bright); classic for soft 8-bit lead voices.
+--@api-stub: lurek.audio.newTriangleWave -- Generates a triangle wave as a `SoundData` buffer
 do -- lurek.audio.newTriangleWave
   function lurek.init()
     local tri = lurek.audio.newTriangleWave(330.0, 0.5, 44100, 0.5)
@@ -917,9 +749,7 @@ do -- lurek.audio.newTriangleWave
   end
 end
 
---@api-stub: lurek.audio.newWhiteNoise
--- Generate a reproducible white-noise SoundData buffer.
--- Seedable so playthroughs reproduce identical noise â€” great for impact stingers and footstep variation.
+--@api-stub: lurek.audio.newWhiteNoise -- Generates white noise as a `SoundData` buffer using a deterministic seed
 do -- lurek.audio.newWhiteNoise
   function lurek.init()
     local noise = lurek.audio.newWhiteNoise(0.5, 44100, 0.3, 12345)
@@ -927,9 +757,7 @@ do -- lurek.audio.newWhiteNoise
   end
 end
 
---@api-stub: lurek.audio.applyLowpass
--- Applies a first-order IIR low-pass filter to a SoundData in-place.
--- In-place: cuts frequencies above `cutoff_hz` on the SoundData. Good for muffling synth tones offline.
+--@api-stub: lurek.audio.applyLowpass -- Applies a lowpass filter in-place to the sound data
 do -- lurek.audio.applyLowpass
   function lurek.init()
     local saw = lurek.audio.newSawtoothWave(110.0, 1.0, 44100, 0.5)
@@ -937,9 +765,7 @@ do -- lurek.audio.applyLowpass
   end
 end
 
---@api-stub: lurek.audio.applyHighpass
--- Applies a first-order IIR high-pass filter to a SoundData in-place.
--- Removes everything below `cutoff_hz`; use ~80 Hz to clean up DC offset before normalising a buffer.
+--@api-stub: lurek.audio.applyHighpass -- Applies a highpass filter in-place to the sound data
 do -- lurek.audio.applyHighpass
   function lurek.init()
     local saw = lurek.audio.newSawtoothWave(110.0, 1.0, 44100, 0.5)
@@ -947,9 +773,7 @@ do -- lurek.audio.applyHighpass
   end
 end
 
---@api-stub: lurek.audio.applyBandpass
--- Applies a bandpass filter (high-pass then low-pass) to a SoundData in-place.
--- Combines high-pass and low-pass for a band; tight bands ("telephone EQ") use ~300â€“3400 Hz.
+--@api-stub: lurek.audio.applyBandpass -- Applies a bandpass filter in-place to the sound data
 do -- lurek.audio.applyBandpass
   function lurek.init()
     local sd = lurek.audio.newWhiteNoise(0.5, 44100, 0.3, 1)
@@ -957,9 +781,7 @@ do -- lurek.audio.applyBandpass
   end
 end
 
---@api-stub: lurek.audio.applyGain
--- Scales every sample by gain (clamped to [-1, 1]).
--- Multiplies every sample, clipping to [-1, 1]; for headroom-safe boosts, prefer `mixInto` with normalise.
+--@api-stub: lurek.audio.applyGain -- Applies a gain multiplier in-place to the sound data
 do -- lurek.audio.applyGain
   function lurek.init()
     local sd = lurek.audio.newSineWave(440.0, 0.25, 44100, 0.3)
@@ -967,9 +789,7 @@ do -- lurek.audio.applyGain
   end
 end
 
---@api-stub: lurek.audio.mixInto
--- Additively mixes another SoundData into the destination in-place.
--- Adds `src` samples on top of `dest` in place; both buffers must share sample rate and channel count.
+--@api-stub: lurek.audio.mixInto -- Mixes the samples of `src` into `dest` in-place (both must have the same format)
 do -- lurek.audio.mixInto
   function lurek.init()
     local a = lurek.audio.newSineWave(440.0, 0.5, 44100, 0.3)
@@ -978,9 +798,7 @@ do -- lurek.audio.mixInto
   end
 end
 
---@api-stub: lurek.audio.saveWAV
--- Saves a SoundData as a 16-bit PCM WAV file at the given path.
--- Writes 16-bit PCM at the SoundData's sample rate; path is resolved relative to the game directory.
+--@api-stub: lurek.audio.saveWAV -- Encodes the sound data as a WAV file and saves it to the given path (relative to game dir)
 do -- lurek.audio.saveWAV
   function lurek.init()
     local tone = lurek.audio.newSineWave(440.0, 1.0, 44100, 0.5)
@@ -988,9 +806,7 @@ do -- lurek.audio.saveWAV
   end
 end
 
---@api-stub: lurek.audio.setStereoWidth
--- Sets the stereo width multiplier for a source (1.0 = normal, 0.0 = mono).
--- Width of 1.0 keeps the original stereo image; 0.0 collapses to mono; values above 1 widen.
+--@api-stub: lurek.audio.setStereoWidth -- Sets the stereo width of an audio source (0
 do -- lurek.audio.setStereoWidth
   function lurek.init()
     local ok_music, music = pcall(lurek.audio.newSource, "music/level.mp3")
@@ -1000,9 +816,7 @@ do -- lurek.audio.setStereoWidth
   end
 end
 
---@api-stub: lurek.audio.getStereoWidth
--- Returns the current stereo width for a source.
--- Useful when implementing a per-source "focus" or "depth" slider in a settings menu.
+--@api-stub: lurek.audio.getStereoWidth -- Returns the current stereo width factor of an audio source
 do -- lurek.audio.getStereoWidth
   function lurek.init()
     local ok_music, music = pcall(lurek.audio.newSource, "music/level.mp3")
@@ -1012,9 +826,7 @@ do -- lurek.audio.getStereoWidth
   end
 end
 
---@api-stub: lurek.audio.setRandomPitch
--- Sets a random pitch range applied each time the source is played.
--- Each `play` picks a random pitch in [min, max]; e.g. 0.95â€“1.05 for natural-sounding footstep variation.
+--@api-stub: lurek.audio.setRandomPitch -- Sets a random pitch range for a source; each play picks a random pitch between min and max
 do -- lurek.audio.setRandomPitch
   function lurek.init()
     local ok_foot, foot = pcall(lurek.audio.newSource, "sfx/footstep.ogg", "static")
@@ -1024,9 +836,7 @@ do -- lurek.audio.setRandomPitch
   end
 end
 
---@api-stub: lurek.audio.clearRandomPitch
--- Clears any random pitch range on a source, restoring fixed pitch.
--- Restores deterministic pitch â€” call before recording demos or running automated tests.
+--@api-stub: lurek.audio.clearRandomPitch -- Clears any random pitch range previously set on the source
 do -- lurek.audio.clearRandomPitch
   function lurek.init()
     local ok_foot, foot = pcall(lurek.audio.newSource, "sfx/footstep.ogg", "static")
@@ -1036,9 +846,7 @@ do -- lurek.audio.clearRandomPitch
   end
 end
 
---@api-stub: lurek.audio.crossfade
--- Crossfades from one source to another over a duration.
--- Fades `from` out and `to` in over `duration` seconds; both sources should already be created.
+--@api-stub: lurek.audio.crossfade -- Crossfades from one audio source to another over the given duration
 do -- lurek.audio.crossfade
   function lurek.init()
     local ok_a, a = pcall(lurek.audio.newSource, "music/level1.mp3")
@@ -1049,9 +857,7 @@ do -- lurek.audio.crossfade
   end
 end
 
---@api-stub: lurek.audio.getBusPeak
--- Returns the peak signal level of the named bus (Example: always 0.0).
--- Peak level of the named bus in [0, 1] â€” drive a per-bus VU meter in your debug overlay.
+--@api-stub: lurek.audio.getBusPeak -- Returns the peak amplitude of the named audio bus over the last processing frame
 do -- lurek.audio.getBusPeak
   function lurek.init()
     lurek.audio.create_bus("music")
@@ -1060,9 +866,7 @@ do -- lurek.audio.getBusPeak
   end
 end
 
---@api-stub: lurek.audio.getBusRms
--- Returns the RMS signal level of the named bus (Example: always 0.0).
--- Smoother than peak; better for slow-moving level meters and dynamic ducking thresholds.
+--@api-stub: lurek.audio.getBusRms -- Returns the RMS (root mean square) amplitude of the named audio bus over the last processing frame
 do -- lurek.audio.getBusRms
   function lurek.init()
     lurek.audio.create_bus("music")
@@ -1071,9 +875,7 @@ do -- lurek.audio.getBusRms
   end
 end
 
---@api-stub: lurek.audio.newPool
--- Creates a polyphonic sound pool for the given file with N simultaneous voices.
--- Pre-allocates `voice_count` voices for one clip; call `pool:play()` for cheap polyphony.
+--@api-stub: lurek.audio.newPool -- Creates a polyphonic sound pool that allows the same audio file to play on multiple simultaneous voices
 do -- lurek.audio.newPool
   function lurek.init()
     local foot = lurek.audio.newPool("sfx/footstep.ogg", 8)
@@ -1082,9 +884,7 @@ do -- lurek.audio.newPool
   end
 end
 
---@api-stub: lurek.audio.processOffline
--- Applies a DSP effect chain to a WAV file and writes output.
--- Render a WAV with a chain of effects to disk; each entry is `{type=, p1=, p2=, p3=}` where p1/p2/p3 are floats.
+--@api-stub: lurek.audio.processOffline -- Processes an audio file offline through a chain of effects and writes the result to an output file
 do -- lurek.audio.processOffline
   function lurek.init()
     local fx = {{type = "lowpass", p1 = 800.0, p2 = 1.0, p3 = 0.5}}
@@ -1092,27 +892,21 @@ do -- lurek.audio.processOffline
   end
 end
 
---@api-stub: lurek.audio.normalizeFile
--- Normalizes a WAV file peak amplitude to target_level and writes output.
--- Peak-normalises an input WAV to `target_level` (0â€“1) and writes the result; preserves sample rate.
+--@api-stub: lurek.audio.normalizeFile -- Normalize file for Lua scripts in this module
 do -- lurek.audio.normalizeFile
   function lurek.init()
     lurek.audio.normalizeFile("music/raw.wav", "save/normalised.wav", 0.95)
   end
 end
 
---@api-stub: lurek.audio.waveformToPng
--- Renders the waveform of a WAV file to a PNG image.
--- Quick offline asset preview: dumps a widthĂ—height PNG of the waveform for use in a level editor.
+--@api-stub: lurek.audio.waveformToPng -- Waveform to png for Lua scripts in this module
 do -- lurek.audio.waveformToPng
   function lurek.init()
     lurek.audio.waveformToPng("music/level.wav", "save/level_wave.png", 800, 200)
   end
 end
 
---@api-stub: lurek.audio.spectrogramToPng
--- Renders a time-frequency spectrogram of a WAV file to a PNG image.
--- Same idea as `waveformToPng` but renders an STFT magnitude image â€” useful for spotting audio glitches.
+--@api-stub: lurek.audio.spectrogramToPng -- Spectrogram to png for Lua scripts in this module
 do -- lurek.audio.spectrogramToPng
   function lurek.init()
     lurek.audio.spectrogramToPng("music/level.wav", "save/level_spec.png", 800, 400)
@@ -1121,9 +915,7 @@ end
 
 -- â”€â”€ Source methods â”€â”€
 
---@api-stub: LSource:play
--- Starts or resumes playback.
--- Method form is identical to `lurek.audio.play(src)` â€” pick whichever style your script favours.
+--@api-stub: Source:play
 do -- Source:play
   function lurek.init()
     local ok_s, s = pcall(lurek.audio.newSource, "sfx/jump.ogg", "static")
@@ -1132,9 +924,7 @@ do -- Source:play
   end
 end
 
---@api-stub: LSource:stop
--- Stops playback and resets seek position.
--- Resets the playhead; use when the player cancels an action mid-cue (e.g. weapon swap).
+--@api-stub: Source:stop
 do -- Source:stop
   function lurek.init()
     local ok_s, s = pcall(lurek.audio.newSource, "sfx/laser.ogg", "static")
@@ -1143,9 +933,7 @@ do -- Source:stop
   end
 end
 
---@api-stub: LSource:pause
--- Pauses playback at the current position.
--- Keeps the seek position so `:resume()` continues from the same sample frame.
+--@api-stub: Source:pause
 do -- Source:pause
   function lurek.init()
     local ok_s, s = pcall(lurek.audio.newSource, "music/level.mp3")
@@ -1154,9 +942,7 @@ do -- Source:pause
   end
 end
 
---@api-stub: LSource:resume
--- Resumes playback from the paused position.
--- Pair with `:pause()` for in-game pause menus that don't restart cues.
+--@api-stub: Source:resume
 do -- Source:resume
   function lurek.init()
     local ok_s, s = pcall(lurek.audio.newSource, "music/level.mp3")
@@ -1165,9 +951,7 @@ do -- Source:resume
   end
 end
 
---@api-stub: LSource:setVolume
--- Sets playback volume (0.0 = silent, 1.0 = full).
--- Linear 0â€“1 multiplier; combined multiplicatively with bus volume and master volume.
+--@api-stub: Source:setVolume
 do -- Source:setVolume
   function lurek.init()
     local ok_s, s = pcall(lurek.audio.newSource, "music/level.mp3")
@@ -1176,9 +960,7 @@ do -- Source:setVolume
   end
 end
 
---@api-stub: LSource:getVolume
--- Returns the current volume multiplier.
--- Save and restore per-source gain across application restarts to remember mixer state.
+--@api-stub: Source:getVolume
 do -- Source:getVolume
   function lurek.init()
     local ok_s, s = pcall(lurek.audio.newSource, "music/level.mp3")
@@ -1188,9 +970,7 @@ do -- Source:getVolume
   end
 end
 
---@api-stub: LSource:setPitch
--- Sets the pitch multiplier (1.0 = normal).
--- Pitch also alters duration; if you need length-preserving shifts, render offline with a phase vocoder.
+--@api-stub: Source:setPitch
 do -- Source:setPitch
   function lurek.init()
     local ok_s, s = pcall(lurek.audio.newSource, "sfx/engine.ogg", "static")
@@ -1199,9 +979,7 @@ do -- Source:setPitch
   end
 end
 
---@api-stub: LSource:getPitch
--- Returns the current pitch multiplier.
--- Read the current multiplier when chaining tweens that animate engine pitch over time.
+--@api-stub: Source:getPitch
 do -- Source:getPitch
   function lurek.init()
     local ok_s, s = pcall(lurek.audio.newSource, "sfx/engine.ogg", "static")
@@ -1211,9 +989,7 @@ do -- Source:getPitch
   end
 end
 
---@api-stub: LSource:setLooping
--- Enables or disables looping playback.
--- Set before `:play()` for music; setting it on a clip already playing applies on the next loop point.
+--@api-stub: Source:setLooping
 do -- Source:setLooping
   function lurek.init()
     local ok_s, s = pcall(lurek.audio.newSource, "music/level.mp3")
@@ -1222,9 +998,7 @@ do -- Source:setLooping
   end
 end
 
---@api-stub: LSource:isLooping
--- Returns true if looping is enabled.
--- Branch in your save routine to skip persisting one-shot SFX flags.
+--@api-stub: Source:isLooping
 do -- Source:isLooping
   function lurek.init()
     local ok_s, s = pcall(lurek.audio.newSource, "music/level.mp3")
@@ -1234,9 +1008,7 @@ do -- Source:isLooping
   end
 end
 
---@api-stub: LSource:isPlaying
--- Returns true if currently playing.
--- Use to detect natural end-of-stream so you can chain the next track in a queue.
+--@api-stub: Source:isPlaying
 do -- Source:isPlaying
   function lurek.init()
     local ok_s, s = pcall(lurek.audio.newSource, "music/sting.ogg", "static")
@@ -1246,9 +1018,7 @@ do -- Source:isPlaying
   end
 end
 
---@api-stub: LSource:isPaused
--- Returns true if playback is paused.
--- Distinguishes paused-but-positioned from fully stopped, which matters for resume UI.
+--@api-stub: Source:isPaused
 do -- Source:isPaused
   function lurek.init()
     local ok_s, s = pcall(lurek.audio.newSource, "music/level.mp3")
@@ -1258,9 +1028,7 @@ do -- Source:isPaused
   end
 end
 
---@api-stub: LSource:isStopped
--- Returns true if playback has stopped.
--- Returns true when the playhead is at zero (after `:stop()` or natural end-of-stream).
+--@api-stub: Source:isStopped
 do -- Source:isStopped
   function lurek.init()
     local ok_s, s = pcall(lurek.audio.newSource, "sfx/jump.ogg", "static")
@@ -1270,9 +1038,7 @@ do -- Source:isStopped
   end
 end
 
---@api-stub: LSource:setPan
--- Sets stereo panning (-1.0 left to 1.0 right).
--- Range -1 (left) to 1 (right). Apply each frame from `(emitter.x - listener.x) / range`.
+--@api-stub: Source:setPan
 do -- Source:setPan
   function lurek.init()
     local ok_s, s = pcall(lurek.audio.newSource, "sfx/swoosh.ogg", "static")
@@ -1281,9 +1047,7 @@ do -- Source:setPan
   end
 end
 
---@api-stub: LSource:getPan
--- Returns the current stereo panning value.
--- Read back to keep a debug overlay in sync with computed pan values.
+--@api-stub: Source:getPan
 do -- Source:getPan
   function lurek.init()
     local ok_s, s = pcall(lurek.audio.newSource, "sfx/swoosh.ogg", "static")
@@ -1293,9 +1057,7 @@ do -- Source:getPan
   end
 end
 
---@api-stub: LSource:clone
--- Creates an independent copy of this source.
--- Cheap way to play overlapping copies of a static SFX without restarting the original.
+--@api-stub: Source:clone
 do -- Source:clone
   function lurek.init()
     local ok_s, s = pcall(lurek.audio.newSource, "sfx/hit.ogg", "static")
@@ -1305,9 +1067,7 @@ do -- Source:clone
   end
 end
 
---@api-stub: LSource:getType
--- Returns the source type ("static" or "stream").
--- Returns "static" for fully decoded clips and "stream" for on-the-fly decoders.
+--@api-stub: Source:getType
 do -- Source:getType
   function lurek.init()
     local ok_s, s = pcall(lurek.audio.newSource, "music/level.mp3")
@@ -1316,9 +1076,7 @@ do -- Source:getType
   end
 end
 
---@api-stub: LSource:getDuration
--- Returns the total duration in seconds.
--- Total length in seconds â€” divide by `:tell()` for a 0-1 progress value.
+--@api-stub: Source:getDuration
 do -- Source:getDuration
   function lurek.init()
     local ok_s, s = pcall(lurek.audio.newSource, "music/level.mp3")
@@ -1327,9 +1085,7 @@ do -- Source:getDuration
   end
 end
 
---@api-stub: LSource:tell
--- Returns the current playback position in seconds.
--- Read the current playhead each frame to drive a karaoke or rhythm-game cursor.
+--@api-stub: Source:tell
 do -- Source:tell
   function lurek.init()
     local ok_s, s = pcall(lurek.audio.newSource, "music/level.mp3")
@@ -1339,9 +1095,7 @@ do -- Source:tell
   end
 end
 
---@api-stub: LSource:seek
--- Seeks to a time position in seconds.
--- Position is in seconds; clamp to `:getDuration()` before calling to avoid silent no-ops.
+--@api-stub: Source:seek
 do -- Source:seek
   function lurek.init()
     local ok_s, s = pcall(lurek.audio.newSource, "music/level.mp3")
@@ -1350,9 +1104,7 @@ do -- Source:seek
   end
 end
 
---@api-stub: LSource:setLowpass
--- Applies a low-pass filter at the given cutoff frequency.
--- Drop high frequencies for muffled effect â€” try 800 Hz for underwater, 3000 Hz for behind-walls.
+--@api-stub: Source:setLowpass
 do -- Source:setLowpass
   function lurek.init()
     local ok_s, s = pcall(lurek.audio.newSource, "music/level.mp3")
@@ -1361,9 +1113,7 @@ do -- Source:setLowpass
   end
 end
 
---@api-stub: LSource:setHighpass
--- Applies a high-pass filter at the given cutoff frequency.
--- Strip rumble before mixing this source into a reverb bus â€” cleans up bass-heavy material.
+--@api-stub: Source:setHighpass
 do -- Source:setHighpass
   function lurek.init()
     local ok_s, s = pcall(lurek.audio.newSource, "music/level.mp3")
@@ -1372,9 +1122,7 @@ do -- Source:setHighpass
   end
 end
 
---@api-stub: LSource:getLowpass
--- Returns the low-pass filter cutoff frequency.
--- Read the cutoff so an in-game UI can tween it back to 0 when the player surfaces.
+--@api-stub: Source:getLowpass
 do -- Source:getLowpass
   function lurek.init()
     local ok_s, s = pcall(lurek.audio.newSource, "music/level.mp3")
@@ -1384,9 +1132,7 @@ do -- Source:getLowpass
   end
 end
 
---@api-stub: LSource:getHighpass
--- Returns the high-pass filter cutoff frequency.
--- Mirror of `getLowpass`; together let you save and restore filter state on a per-source basis.
+--@api-stub: Source:getHighpass
 do -- Source:getHighpass
   function lurek.init()
     local ok_s, s = pcall(lurek.audio.newSource, "music/level.mp3")
@@ -1396,9 +1142,7 @@ do -- Source:getHighpass
   end
 end
 
---@api-stub: LSource:clearFilter
--- Removes any active filter from this source.
--- Clears both filters; cheaper than tweening cutoffs back to default values.
+--@api-stub: Source:clearFilter
 do -- Source:clearFilter
   function lurek.init()
     local ok_s, s = pcall(lurek.audio.newSource, "music/level.mp3")
@@ -1407,9 +1151,7 @@ do -- Source:clearFilter
   end
 end
 
---@api-stub: LSource:fadeIn
--- Fades in from silence over the given duration in seconds.
--- Schedules a 0â†’volume fade over `dur` seconds; call before `:play()` for a clean entry.
+--@api-stub: Source:fadeIn
 do -- Source:fadeIn
   function lurek.init()
     local ok_s, s = pcall(lurek.audio.newSource, "music/level.mp3")
@@ -1418,9 +1160,7 @@ do -- Source:fadeIn
   end
 end
 
---@api-stub: LSource:getFadeIn
--- Returns the current fade-in duration in seconds.
--- Read the configured fade duration when persisting cue settings to a save file.
+--@api-stub: Source:getFadeIn
 do -- Source:getFadeIn
   function lurek.init()
     local ok_s, s = pcall(lurek.audio.newSource, "music/level.mp3")
@@ -1432,9 +1172,7 @@ end
 
 -- â”€â”€ Bus methods â”€â”€
 
---@api-stub: LBus:getName
--- Returns the unique name string assigned to this audio bus.
--- Returns the name passed to `newBus`; useful when iterating mixed bus collections.
+--@api-stub: Bus:getName
 do -- Bus:getName
   function lurek.init()
     local b = lurek.audio.newBus("music")
@@ -1442,9 +1180,7 @@ do -- Bus:getName
   end
 end
 
---@api-stub: LBus:setVolume
--- Sets the volume for all sources on this bus.
--- Bus volume is multiplied with each source's own volume â€” drive a settings slider here.
+--@api-stub: Bus:setVolume
 do -- Bus:setVolume
   function lurek.init()
     local b = lurek.audio.newBus("music")
@@ -1452,9 +1188,7 @@ do -- Bus:setVolume
   end
 end
 
---@api-stub: LBus:getVolume
--- Returns the current volume multiplier applied to all sources on this bus.
--- Read back the current bus gain to populate a settings menu on first open.
+--@api-stub: Bus:getVolume
 do -- Bus:getVolume
   function lurek.init()
     local b = lurek.audio.newBus("music")
@@ -1463,9 +1197,7 @@ do -- Bus:getVolume
   end
 end
 
---@api-stub: LBus:setPitch
--- Sets the pitch multiplier for all sources on this bus.
--- Affects every source on the bus; use 0.85 for slow-motion, 1.15 for hectic combat moments.
+--@api-stub: Bus:setPitch
 do -- Bus:setPitch
   function lurek.init()
     local b = lurek.audio.newBus("music")
@@ -1473,9 +1205,7 @@ do -- Bus:setPitch
   end
 end
 
---@api-stub: LBus:getPitch
--- Returns the bus pitch multiplier.
--- Inspect during a tween that interpolates pitch back to 1.0 over time.
+--@api-stub: Bus:getPitch
 do -- Bus:getPitch
   function lurek.init()
     local b = lurek.audio.newBus("music")
@@ -1484,9 +1214,7 @@ do -- Bus:getPitch
   end
 end
 
---@api-stub: LBus:pause
--- Pauses all sources on this bus.
--- Pause every source assigned to this bus in one call â€” handy for category-specific mute toggles.
+--@api-stub: Bus:pause
 do -- Bus:pause
   function lurek.init()
     local b = lurek.audio.newBus("music")
@@ -1494,9 +1222,7 @@ do -- Bus:pause
   end
 end
 
---@api-stub: LBus:resume
--- Resumes all sources on this bus.
--- Mirrors `:pause()`; the engine remembers each source's playhead so resume is glitch-free.
+--@api-stub: Bus:resume
 do -- Bus:resume
   function lurek.init()
     local b = lurek.audio.newBus("music")
@@ -1504,9 +1230,7 @@ do -- Bus:resume
   end
 end
 
---@api-stub: LBus:isPaused
--- Returns true if this bus is paused.
--- Read the bus state to keep a UI mute icon in sync with the mixer.
+--@api-stub: Bus:isPaused
 do -- Bus:isPaused
   function lurek.init()
     local b = lurek.audio.newBus("music")
@@ -1515,9 +1239,7 @@ do -- Bus:isPaused
   end
 end
 
---@api-stub: LBus:type
--- Returns the type name of this object.
--- Returns "Bus" â€” useful in generic mixer-state inspector code that walks userdata.
+--@api-stub: Bus:type
 do -- Bus:type
   function lurek.init()
     local b = lurek.audio.newBus("music")
@@ -1525,9 +1247,7 @@ do -- Bus:type
   end
 end
 
---@api-stub: LBus:typeOf
--- Returns true if this object is of the given type.
--- Returns true for "Bus" or the catch-all "Object" â€” the love2d-style class hierarchy check.
+--@api-stub: Bus:typeOf
 do -- Bus:typeOf
   function lurek.init()
     local b = lurek.audio.newBus("music")
@@ -1535,9 +1255,7 @@ do -- Bus:typeOf
   end
 end
 
---@api-stub: LBus:clearDuck
--- Removes the ducking target from this bus, restoring the target bus.
--- Stops this bus from ducking another; pair with `:setDuckTarget` (not exposed through EXAMPLE) at startup.
+--@api-stub: Bus:clearDuck
 do -- Bus:clearDuck
   function lurek.init()
     local b = lurek.audio.newBus("voice")
@@ -1545,9 +1263,7 @@ do -- Bus:clearDuck
   end
 end
 
---@api-stub: LBus:getPeak
--- Returns the average peak amplitude of all sources currently on this bus.
--- Returns the average peak across all sources on the bus â€” drive a per-bus VU meter.
+--@api-stub: Bus:getPeak
 do -- Bus:getPeak
   function lurek.init()
     local b = lurek.audio.newBus("music")
@@ -1557,9 +1273,7 @@ end
 
 -- â”€â”€ MidiPlayer methods â”€â”€
 
---@api-stub: LMidiPlayer:load
--- Loads a MIDI file from the given path.
--- Loads a `.mid` file from disk; pass an empty MidiPlayer (no path arg) when you intend to swap files.
+--@api-stub: MidiPlayer:load
 do -- MidiPlayer:load
   function lurek.init()
     local mp = lurek.audio.newMidiPlayer()
@@ -1567,9 +1281,7 @@ do -- MidiPlayer:load
   end
 end
 
---@api-stub: LMidiPlayer:loadData
--- Loads MIDI data from a Lua string.
--- Loads MIDI from an in-memory string â€” useful for procedurally generated sequences.
+--@api-stub: MidiPlayer:loadData
 do -- MidiPlayer:loadData
   function lurek.init()
     local mp = lurek.audio.newMidiPlayer()
@@ -1578,9 +1290,7 @@ do -- MidiPlayer:loadData
   end
 end
 
---@api-stub: LMidiPlayer:isLoaded
--- Returns true if a MIDI sequence is loaded.
--- Branch before `:play()` to fall back to a recorded track when the MIDI is missing.
+--@api-stub: MidiPlayer:isLoaded
 do -- MidiPlayer:isLoaded
   function lurek.init()
     local mp = lurek.audio.newMidiPlayer("music/song.mid")
@@ -1588,9 +1298,7 @@ do -- MidiPlayer:isLoaded
   end
 end
 
---@api-stub: LMidiPlayer:getFilePath
--- Returns the file path of the loaded MIDI, or nil.
--- Returns the loaded file path (or nil) â€” log when debugging which song is currently active.
+--@api-stub: MidiPlayer:getFilePath
 do -- MidiPlayer:getFilePath
   function lurek.init()
     local mp = lurek.audio.newMidiPlayer("music/song.mid")
@@ -1599,9 +1307,7 @@ do -- MidiPlayer:getFilePath
   end
 end
 
---@api-stub: LMidiPlayer:setSoundFont
--- Loads a SoundFont file into this player (EXAMPLE).
--- Per-player SoundFont override; EXAMPLE today, future versions will swap the synthesis bank.
+--@api-stub: MidiPlayer:setSoundFont
 do -- MidiPlayer:setSoundFont
   function lurek.init()
     local mp = lurek.audio.newMidiPlayer("music/song.mid")
@@ -1609,9 +1315,7 @@ do -- MidiPlayer:setSoundFont
   end
 end
 
---@api-stub: LMidiPlayer:getSoundFontPath
--- Returns the SoundFont file path, or nil (EXAMPLE).
--- Returns the per-player SoundFont path (currently always nil); log to confirm wiring later.
+--@api-stub: MidiPlayer:getSoundFontPath
 do -- MidiPlayer:getSoundFontPath
   function lurek.init()
     local mp = lurek.audio.newMidiPlayer("music/song.mid")
@@ -1620,9 +1324,7 @@ do -- MidiPlayer:getSoundFontPath
   end
 end
 
---@api-stub: LMidiPlayer:useDefaultSoundFont
--- Reverts to the built-in default SoundFont (EXAMPLE).
--- Reverts to the engine's built-in GM bank; safe to call on every level start to undo overrides.
+--@api-stub: MidiPlayer:useDefaultSoundFont
 do -- MidiPlayer:useDefaultSoundFont
   function lurek.init()
     local mp = lurek.audio.newMidiPlayer("music/song.mid")
@@ -1630,9 +1332,7 @@ do -- MidiPlayer:useDefaultSoundFont
   end
 end
 
---@api-stub: LMidiPlayer:play
--- Starts or resumes MIDI sequence playback from the current position.
--- Starts or resumes from the current playhead; works only after `setMidiSoundFont` is configured.
+--@api-stub: MidiPlayer:play
 do -- MidiPlayer:play
   function lurek.init()
     local mp = lurek.audio.newMidiPlayer("music/song.mid")
@@ -1640,9 +1340,7 @@ do -- MidiPlayer:play
   end
 end
 
---@api-stub: LMidiPlayer:pause
--- Pauses the MIDI sequence at the current position; resume with `play()`.
--- Pauses without resetting; pair with `:play()` for an in-game pause menu.
+--@api-stub: MidiPlayer:pause
 do -- MidiPlayer:pause
   function lurek.init()
     local mp = lurek.audio.newMidiPlayer("music/song.mid")
@@ -1650,9 +1348,7 @@ do -- MidiPlayer:pause
   end
 end
 
---@api-stub: LMidiPlayer:stop
--- Stops MIDI playback and resets the playhead to the beginning.
--- Stops and rewinds the playhead to bar 1, beat 1.
+--@api-stub: MidiPlayer:stop
 do -- MidiPlayer:stop
   function lurek.init()
     local mp = lurek.audio.newMidiPlayer("music/song.mid")
@@ -1660,9 +1356,7 @@ do -- MidiPlayer:stop
   end
 end
 
---@api-stub: LMidiPlayer:isPlaying
--- Returns true if MIDI is currently playing.
--- Use to chain into the next sequence when the current one ends naturally.
+--@api-stub: MidiPlayer:isPlaying
 do -- MidiPlayer:isPlaying
   function lurek.init()
     local mp = lurek.audio.newMidiPlayer("music/song.mid")
@@ -1671,9 +1365,7 @@ do -- MidiPlayer:isPlaying
   end
 end
 
---@api-stub: LMidiPlayer:isPaused
--- Returns true if MIDI playback is paused.
--- Distinguishes paused from stopped â€” affects whether `:play()` resumes or restarts.
+--@api-stub: MidiPlayer:isPaused
 do -- MidiPlayer:isPaused
   function lurek.init()
     local mp = lurek.audio.newMidiPlayer("music/song.mid")
@@ -1682,9 +1374,7 @@ do -- MidiPlayer:isPaused
   end
 end
 
---@api-stub: LMidiPlayer:seek
--- Seeks to a time position in seconds.
--- Time is in seconds; combine with `:getDuration()` to make percentage-based scrubbing.
+--@api-stub: MidiPlayer:seek
 do -- MidiPlayer:seek
   function lurek.init()
     local mp = lurek.audio.newMidiPlayer("music/song.mid")
@@ -1692,9 +1382,7 @@ do -- MidiPlayer:seek
   end
 end
 
---@api-stub: LMidiPlayer:tell
--- Returns the current playback position in seconds.
--- Read each frame to drive a beat-synced visualiser overlaid on the game world.
+--@api-stub: MidiPlayer:tell
 do -- MidiPlayer:tell
   function lurek.init()
     local mp = lurek.audio.newMidiPlayer("music/song.mid")
@@ -1703,9 +1391,7 @@ do -- MidiPlayer:tell
   end
 end
 
---@api-stub: LMidiPlayer:getDuration
--- Returns the total MIDI duration in seconds.
--- Returns the full sequence length in seconds for progress bars or end-of-track triggers.
+--@api-stub: MidiPlayer:getDuration
 do -- MidiPlayer:getDuration
   function lurek.init()
     local mp = lurek.audio.newMidiPlayer("music/song.mid")
@@ -1713,9 +1399,7 @@ do -- MidiPlayer:getDuration
   end
 end
 
---@api-stub: LMidiPlayer:setLooping
--- Enables or disables looping.
--- Toggle for menu music; off for cutscenes that should fall through to a follow-up cue.
+--@api-stub: MidiPlayer:setLooping
 do -- MidiPlayer:setLooping
   function lurek.init()
     local mp = lurek.audio.newMidiPlayer("music/song.mid")
@@ -1723,9 +1407,7 @@ do -- MidiPlayer:setLooping
   end
 end
 
---@api-stub: LMidiPlayer:isLooping
--- Returns true if looping is enabled.
--- Read back to drive a UI checkbox in a music-debug panel.
+--@api-stub: MidiPlayer:isLooping
 do -- MidiPlayer:isLooping
   function lurek.init()
     local mp = lurek.audio.newMidiPlayer("music/song.mid")
@@ -1734,9 +1416,7 @@ do -- MidiPlayer:isLooping
   end
 end
 
---@api-stub: LMidiPlayer:setVolume
--- Sets MIDI playback volume.
--- Independent of master and bus volumes; multiplied with both during synthesis.
+--@api-stub: MidiPlayer:setVolume
 do -- MidiPlayer:setVolume
   function lurek.init()
     local mp = lurek.audio.newMidiPlayer("music/song.mid")
@@ -1744,9 +1424,7 @@ do -- MidiPlayer:setVolume
   end
 end
 
---@api-stub: LMidiPlayer:getVolume
--- Returns the current MIDI volume.
--- Read back the per-player gain when persisting mixer state to a save file.
+--@api-stub: MidiPlayer:getVolume
 do -- MidiPlayer:getVolume
   function lurek.init()
     local mp = lurek.audio.newMidiPlayer("music/song.mid")
@@ -1755,9 +1433,7 @@ do -- MidiPlayer:getVolume
   end
 end
 
---@api-stub: LMidiPlayer:setBus
--- Routes MIDI output through a bus (or nil to clear).
--- Routes synthesis output through a bus so MIDI can be ducked or filtered like any other source.
+--@api-stub: MidiPlayer:setBus
 do -- MidiPlayer:setBus
   function lurek.init()
     local b = lurek.audio.newBus("music")
@@ -1766,9 +1442,7 @@ do -- MidiPlayer:setBus
   end
 end
 
---@api-stub: LMidiPlayer:getBus
--- Returns the assigned bus, or nil.
--- Returns the routed Bus userdata (or nil); useful when reusing players across scenes with different mixes.
+--@api-stub: MidiPlayer:getBus
 do -- MidiPlayer:getBus
   function lurek.init()
     local b = lurek.audio.newBus("music")
@@ -1779,9 +1453,7 @@ do -- MidiPlayer:getBus
   end
 end
 
---@api-stub: LMidiPlayer:setTempo
--- Sets playback tempo in BPM.
--- Tempo is BPM; internally stored as a scale of the file's original tempo.
+--@api-stub: MidiPlayer:setTempo
 do -- MidiPlayer:setTempo
   function lurek.init()
     local mp = lurek.audio.newMidiPlayer("music/song.mid")
@@ -1789,9 +1461,7 @@ do -- MidiPlayer:setTempo
   end
 end
 
---@api-stub: LMidiPlayer:getTempo
--- Returns the current tempo in BPM.
--- Returns the current effective BPM; useful for syncing visuals to playback speed.
+--@api-stub: MidiPlayer:getTempo
 do -- MidiPlayer:getTempo
   function lurek.init()
     local mp = lurek.audio.newMidiPlayer("music/song.mid")
@@ -1800,9 +1470,7 @@ do -- MidiPlayer:getTempo
   end
 end
 
---@api-stub: LMidiPlayer:getOriginalTempo
--- Returns the original MIDI file tempo in BPM.
--- Returns the BPM stored in the MIDI file header â€” the reference value for the tempo scale.
+--@api-stub: MidiPlayer:getOriginalTempo
 do -- MidiPlayer:getOriginalTempo
   function lurek.init()
     local mp = lurek.audio.newMidiPlayer("music/song.mid")
@@ -1810,9 +1478,7 @@ do -- MidiPlayer:getOriginalTempo
   end
 end
 
---@api-stub: LMidiPlayer:setTempoScale
--- Sets the tempo scale factor (1.0 = original speed).
--- Multiplier on top of the file tempo â€” 0.5 plays half-speed, 2.0 doubles.
+--@api-stub: MidiPlayer:setTempoScale
 do -- MidiPlayer:setTempoScale
   function lurek.init()
     local mp = lurek.audio.newMidiPlayer("music/song.mid")
@@ -1820,9 +1486,7 @@ do -- MidiPlayer:setTempoScale
   end
 end
 
---@api-stub: LMidiPlayer:getTempoScale
--- Returns the current tempo scale factor.
--- Read the current scale factor when chaining tempo tweens.
+--@api-stub: MidiPlayer:getTempoScale
 do -- MidiPlayer:getTempoScale
   function lurek.init()
     local mp = lurek.audio.newMidiPlayer("music/song.mid")
@@ -1831,9 +1495,7 @@ do -- MidiPlayer:getTempoScale
   end
 end
 
---@api-stub: LMidiPlayer:getTicksPerBeat
--- Returns the PPQ resolution from the MIDI header.
--- MIDI PPQ resolution â€” divide `:tell()` ticks by this to get beat positions.
+--@api-stub: MidiPlayer:getTicksPerBeat
 do -- MidiPlayer:getTicksPerBeat
   function lurek.init()
     local mp = lurek.audio.newMidiPlayer("music/song.mid")
@@ -1841,9 +1503,7 @@ do -- MidiPlayer:getTicksPerBeat
   end
 end
 
---@api-stub: LMidiPlayer:setChannelVolume
--- Sets volume for a MIDI channel (1-indexed).
--- Channels are 1-indexed (1-16); use to mix down a single instrument like the drums.
+--@api-stub: MidiPlayer:setChannelVolume
 do -- MidiPlayer:setChannelVolume
   function lurek.init()
     local mp = lurek.audio.newMidiPlayer("music/song.mid")
@@ -1851,9 +1511,7 @@ do -- MidiPlayer:setChannelVolume
   end
 end
 
---@api-stub: LMidiPlayer:getChannelVolume
--- Returns the volume for a MIDI channel (1-indexed).
--- Read per-channel gain when restoring mixer state across save files.
+--@api-stub: MidiPlayer:getChannelVolume
 do -- MidiPlayer:getChannelVolume
   function lurek.init()
     local mp = lurek.audio.newMidiPlayer("music/song.mid")
@@ -1862,9 +1520,7 @@ do -- MidiPlayer:getChannelVolume
   end
 end
 
---@api-stub: LMidiPlayer:setChannelMuted
--- Mutes or unmutes a MIDI channel (1-indexed).
--- Mute a single MIDI channel â€” useful for letting players solo individual instruments in a music-room.
+--@api-stub: MidiPlayer:setChannelMuted
 do -- MidiPlayer:setChannelMuted
   function lurek.init()
     local mp = lurek.audio.newMidiPlayer("music/song.mid")
@@ -1872,9 +1528,7 @@ do -- MidiPlayer:setChannelMuted
   end
 end
 
---@api-stub: LMidiPlayer:isChannelMuted
--- Returns true if a MIDI channel is muted (1-indexed).
--- Branch when drawing a per-channel mute toggle in a music-debug overlay.
+--@api-stub: MidiPlayer:isChannelMuted
 do -- MidiPlayer:isChannelMuted
   function lurek.init()
     local mp = lurek.audio.newMidiPlayer("music/song.mid")
@@ -1883,9 +1537,7 @@ do -- MidiPlayer:isChannelMuted
   end
 end
 
---@api-stub: LMidiPlayer:getChannelInstrument
--- Returns the GM instrument for a MIDI channel (1-indexed).
--- Returns the GM program (0-127) â€” drive a UI that shows instrument names per channel.
+--@api-stub: MidiPlayer:getChannelInstrument
 do -- MidiPlayer:getChannelInstrument
   function lurek.init()
     local mp = lurek.audio.newMidiPlayer("music/song.mid")
@@ -1894,9 +1546,7 @@ do -- MidiPlayer:getChannelInstrument
   end
 end
 
---@api-stub: LMidiPlayer:getChannelCount
--- Returns the number of MIDI channels.
--- Always 16 today; loop from 1..count when iterating channels in a UI.
+--@api-stub: MidiPlayer:getChannelCount
 do -- MidiPlayer:getChannelCount
   function lurek.init()
     local mp = lurek.audio.newMidiPlayer("music/song.mid")
@@ -1904,9 +1554,7 @@ do -- MidiPlayer:getChannelCount
   end
 end
 
---@api-stub: LMidiPlayer:soloChannel
--- Solos a MIDI channel (1-indexed).
--- Mutes every other channel â€” useful in a music-room demo where the player can isolate parts.
+--@api-stub: MidiPlayer:soloChannel
 do -- MidiPlayer:soloChannel
   function lurek.init()
     local mp = lurek.audio.newMidiPlayer("music/song.mid")
@@ -1914,9 +1562,7 @@ do -- MidiPlayer:soloChannel
   end
 end
 
---@api-stub: LMidiPlayer:unsoloAll
--- Clears solo on all channels.
--- Counterpart to `soloChannel`; restores the full mix in one call.
+--@api-stub: MidiPlayer:unsoloAll
 do -- MidiPlayer:unsoloAll
   function lurek.init()
     local mp = lurek.audio.newMidiPlayer("music/song.mid")
@@ -1924,9 +1570,7 @@ do -- MidiPlayer:unsoloAll
   end
 end
 
---@api-stub: LMidiPlayer:getTrackCount
--- Returns the number of tracks in the MIDI sequence.
--- Returns the number of MIDI tracks (often 1 per instrument in a multi-track export).
+--@api-stub: MidiPlayer:getTrackCount
 do -- MidiPlayer:getTrackCount
   function lurek.init()
     local mp = lurek.audio.newMidiPlayer("music/song.mid")
@@ -1934,9 +1578,7 @@ do -- MidiPlayer:getTrackCount
   end
 end
 
---@api-stub: LMidiPlayer:getTrackName
--- Returns the name of a MIDI track (1-indexed), or nil.
--- Tracks are 1-indexed; nil means the file did not embed a name for that track.
+--@api-stub: MidiPlayer:getTrackName
 do -- MidiPlayer:getTrackName
   function lurek.init()
     local mp = lurek.audio.newMidiPlayer("music/song.mid")
@@ -1945,9 +1587,7 @@ do -- MidiPlayer:getTrackName
   end
 end
 
---@api-stub: LMidiPlayer:setTrackMuted
--- Mutes or unmutes a track (1-indexed).
--- Mute by track instead of channel; handy when one track holds multi-instrument sections.
+--@api-stub: MidiPlayer:setTrackMuted
 do -- MidiPlayer:setTrackMuted
   function lurek.init()
     local mp = lurek.audio.newMidiPlayer("music/song.mid")
@@ -1955,9 +1595,7 @@ do -- MidiPlayer:setTrackMuted
   end
 end
 
---@api-stub: LMidiPlayer:isTrackMuted
--- Returns true if a track is muted (1-indexed).
--- Drive a per-track mute checkbox in a music editor; pair with `getTrackName` for labelling.
+--@api-stub: MidiPlayer:isTrackMuted
 do -- MidiPlayer:isTrackMuted
   function lurek.init()
     local mp = lurek.audio.newMidiPlayer("music/song.mid")
@@ -1966,9 +1604,7 @@ do -- MidiPlayer:isTrackMuted
   end
 end
 
---@api-stub: LMidiPlayer:getNoteCount
--- Returns the total note count in the MIDI sequence.
--- Total note-on events across all tracks; useful for difficulty estimation in rhythm games.
+--@api-stub: MidiPlayer:getNoteCount
 do -- MidiPlayer:getNoteCount
   function lurek.init()
     local mp = lurek.audio.newMidiPlayer("music/song.mid")
@@ -1976,9 +1612,7 @@ do -- MidiPlayer:getNoteCount
   end
 end
 
---@api-stub: LMidiPlayer:setOnNoteOn
--- Registers a note-on callback (EXAMPLE).
--- EXAMPLE today â€” future versions will fire `cb(channel, note, velocity)` on each note-on event.
+--@api-stub: MidiPlayer:setOnNoteOn
 do -- MidiPlayer:setOnNoteOn
   function lurek.init()
     local mp = lurek.audio.newMidiPlayer("music/song.mid")
@@ -1986,9 +1620,7 @@ do -- MidiPlayer:setOnNoteOn
   end
 end
 
---@api-stub: LMidiPlayer:setOnNoteOff
--- Registers a note-off callback (EXAMPLE).
--- Mirror of `setOnNoteOn`; receives the same arguments when a note ends.
+--@api-stub: MidiPlayer:setOnNoteOff
 do -- MidiPlayer:setOnNoteOff
   function lurek.init()
     local mp = lurek.audio.newMidiPlayer("music/song.mid")
@@ -1996,9 +1628,7 @@ do -- MidiPlayer:setOnNoteOff
   end
 end
 
---@api-stub: LMidiPlayer:setOnEnd
--- Registers a playback-end callback (EXAMPLE).
--- Fires once when the sequence reaches the final tick â€” chain into the next song here.
+--@api-stub: MidiPlayer:setOnEnd
 do -- MidiPlayer:setOnEnd
   function lurek.init()
     local mp = lurek.audio.newMidiPlayer("music/song.mid")
@@ -2006,9 +1636,7 @@ do -- MidiPlayer:setOnEnd
   end
 end
 
---@api-stub: LMidiPlayer:getSampleRate
--- Returns the PCM output sample rate in Hz.
--- PCM output rate in Hz (default 44100); informational unless you tap raw samples.
+--@api-stub: MidiPlayer:getSampleRate
 do -- MidiPlayer:getSampleRate
   function lurek.init()
     local mp = lurek.audio.newMidiPlayer("music/song.mid")
@@ -2016,9 +1644,7 @@ do -- MidiPlayer:getSampleRate
   end
 end
 
---@api-stub: LMidiPlayer:setSampleRate
--- Sets the PCM output sample rate in Hz (clamped 8000Ă˘â‚¬â€ś192000).
--- Clamped to 8000â€“192000; lower for chiptune effects, higher for mastering output.
+--@api-stub: MidiPlayer:setSampleRate
 do -- MidiPlayer:setSampleRate
   function lurek.init()
     local mp = lurek.audio.newMidiPlayer("music/song.mid")
@@ -2026,9 +1652,7 @@ do -- MidiPlayer:setSampleRate
   end
 end
 
---@api-stub: LMidiPlayer:getChannels
--- Returns the PCM output channel count (1 = mono, 2 = stereo).
--- Returns 1 (mono) or 2 (stereo); affects how the synthesised PCM is mixed into the rodio sink.
+--@api-stub: MidiPlayer:getChannels
 do -- MidiPlayer:getChannels
   function lurek.init()
     local mp = lurek.audio.newMidiPlayer("music/song.mid")
@@ -2036,9 +1660,7 @@ do -- MidiPlayer:getChannels
   end
 end
 
---@api-stub: LMidiPlayer:setChannels
--- Sets the PCM output channel count (clamped 1Ă˘â‚¬â€ś2).
--- Pass 1 for mono playback (saves bandwidth) or 2 for stereo (the default).
+--@api-stub: MidiPlayer:setChannels
 do -- MidiPlayer:setChannels
   function lurek.init()
     local mp = lurek.audio.newMidiPlayer("music/song.mid")
@@ -2046,9 +1668,7 @@ do -- MidiPlayer:setChannels
   end
 end
 
---@api-stub: LMidiPlayer:type
--- Returns the type name of this object.
--- Returns the literal string "MidiPlayer"; useful in mixed-userdata inspection helpers.
+--@api-stub: MidiPlayer:type
 do -- MidiPlayer:type
   function lurek.init()
     local mp = lurek.audio.newMidiPlayer("music/song.mid")
@@ -2056,9 +1676,7 @@ do -- MidiPlayer:type
   end
 end
 
---@api-stub: LMidiPlayer:typeOf
--- Returns true if this object is of the given type.
--- Returns true for "MidiPlayer" or "Object" â€” the love2d-style class hierarchy check.
+--@api-stub: MidiPlayer:typeOf
 do -- MidiPlayer:typeOf
   function lurek.init()
     local mp = lurek.audio.newMidiPlayer("music/song.mid")
@@ -2068,9 +1686,7 @@ end
 
 -- â”€â”€ SoundPool methods â”€â”€
 
---@api-stub: LSoundPool:play
--- Plays the next available voice and returns its SoundKey as an integer.
--- Returns the integer SoundKey of the next free voice â€” pass to `lurek.audio.setPan` etc. for variation.
+--@api-stub: SoundPool:play
 do -- SoundPool:play
   function lurek.init()
     local pool = lurek.audio.newPool("sfx/footstep.ogg", 8)
@@ -2079,9 +1695,7 @@ do -- SoundPool:play
   end
 end
 
---@api-stub: LSoundPool:stopAll
--- Stops all voices in this pool.
--- Stops every voice in the pool â€” call on level transition to avoid bleed-over.
+--@api-stub: SoundPool:stopAll
 do -- SoundPool:stopAll
   function lurek.init()
     local pool = lurek.audio.newPool("sfx/footstep.ogg", 8)
@@ -2089,9 +1703,7 @@ do -- SoundPool:stopAll
   end
 end
 
---@api-stub: LSoundPool:setVolume
--- Sets the volume for all voices in this pool.
--- Sets one volume for every voice in the pool (and for any voices created later).
+--@api-stub: SoundPool:setVolume
 do -- SoundPool:setVolume
   function lurek.init()
     local pool = lurek.audio.newPool("sfx/footstep.ogg", 8)
@@ -2099,9 +1711,7 @@ do -- SoundPool:setVolume
   end
 end
 
---@api-stub: LSoundPool:setBus
--- Routes all voices through the named bus.
--- Routes every voice through the named bus; pair with `lurek.audio.create_bus("sfx")` at startup.
+--@api-stub: SoundPool:setBus
 do -- SoundPool:setBus
   function lurek.init()
     lurek.audio.create_bus("sfx")
@@ -2110,9 +1720,7 @@ do -- SoundPool:setBus
   end
 end
 
---@api-stub: LSoundPool:release
--- Releases all voices from the mixer and invalidates this pool.
--- Frees every voice handle in the pool; the pool itself becomes unusable afterwards.
+--@api-stub: SoundPool:release
 do -- SoundPool:release
   function lurek.init()
     local pool = lurek.audio.newPool("sfx/footstep.ogg", 8)
@@ -2120,9 +1728,7 @@ do -- SoundPool:release
   end
 end
 
---@api-stub: LSoundPool:getVoiceCount
--- Returns the total number of voices in this pool.
--- Returns the configured polyphony â€” log on startup to confirm pool sizing matches design intent.
+--@api-stub: SoundPool:getVoiceCount
 do -- SoundPool:getVoiceCount
   function lurek.init()
     local pool = lurek.audio.newPool("sfx/footstep.ogg", 8)
@@ -2130,9 +1736,7 @@ do -- SoundPool:getVoiceCount
   end
 end
 
---@api-stub: LSoundPool:type
--- Returns the type name of this object.
--- Returns the literal string "SoundPool"; useful in generic mixer-state inspector code.
+--@api-stub: SoundPool:type
 do -- SoundPool:type
   function lurek.init()
     local pool = lurek.audio.newPool("sfx/footstep.ogg", 8)
@@ -2140,9 +1744,7 @@ do -- SoundPool:type
   end
 end
 
---@api-stub: LSoundPool:typeOf
--- Returns true if the type name matches.
--- Returns true for "SoundPool" or the catch-all "Object".
+--@api-stub: SoundPool:typeOf
 do -- SoundPool:typeOf
   function lurek.init()
     local pool = lurek.audio.newPool("sfx/footstep.ogg", 8)
@@ -2152,9 +1754,7 @@ end
 
 -- â”€â”€ Decoder methods â”€â”€
 
---@api-stub: LDecoder:decode
--- Decodes the next chunk of samples, or nil at EOF.
--- Returns a SoundData chunk (about `buffersize` samples) or nil at EOF â€” drive a streaming visualiser.
+--@api-stub: Decoder:decode
 do -- Decoder:decode
   function lurek.init()
     local dec = lurek.audio.newDecoder("music/long_track.ogg", 4096)
@@ -2163,9 +1763,7 @@ do -- Decoder:decode
   end
 end
 
---@api-stub: LDecoder:getChannelCount
--- Returns the number of audio channels.
--- Returns 1 for mono streams, 2 for stereo â€” plan your visualiser bins accordingly.
+--@api-stub: Decoder:getChannelCount
 do -- Decoder:getChannelCount
   function lurek.init()
     local dec = lurek.audio.newDecoder("music/long_track.ogg", 4096)
@@ -2173,9 +1771,7 @@ do -- Decoder:getChannelCount
   end
 end
 
---@api-stub: LDecoder:getBitDepth
--- Returns the per-sample bit depth of this decoded audio stream.
--- Returns the per-sample bit depth (typically 16); use to size raw PCM buffers manually.
+--@api-stub: Decoder:getBitDepth
 do -- Decoder:getBitDepth
   function lurek.init()
     local dec = lurek.audio.newDecoder("music/long_track.ogg", 4096)
@@ -2183,9 +1779,7 @@ do -- Decoder:getBitDepth
   end
 end
 
---@api-stub: LDecoder:getSampleRate
--- Returns the sample rate in Hz.
--- Hz output rate; pair with `getChannelCount` when feeding samples into a custom DSP path.
+--@api-stub: Decoder:getSampleRate
 do -- Decoder:getSampleRate
   function lurek.init()
     local dec = lurek.audio.newDecoder("music/long_track.ogg", 4096)
@@ -2193,9 +1787,7 @@ do -- Decoder:getSampleRate
   end
 end
 
---@api-stub: LDecoder:getDuration
--- Returns the total duration in seconds.
--- Total stream length in seconds â€” drives a scrub bar above your custom decode loop.
+--@api-stub: Decoder:getDuration
 do -- Decoder:getDuration
   function lurek.init()
     local dec = lurek.audio.newDecoder("music/long_track.ogg", 4096)
@@ -2203,9 +1795,7 @@ do -- Decoder:getDuration
   end
 end
 
---@api-stub: LDecoder:seek
--- Seeks to a time offset in seconds.
--- Offset in seconds; combine with `:rewind` and `:tell` for a manual streaming UI.
+--@api-stub: Decoder:seek
 do -- Decoder:seek
   function lurek.init()
     local dec = lurek.audio.newDecoder("music/long_track.ogg", 4096)
@@ -2213,9 +1803,7 @@ do -- Decoder:seek
   end
 end
 
---@api-stub: LDecoder:rewind
--- Rewinds to the beginning.
--- Shortcut equivalent to `:seek(0)` â€” handy when a streaming visualiser loops.
+--@api-stub: Decoder:rewind
 do -- Decoder:rewind
   function lurek.init()
     local dec = lurek.audio.newDecoder("music/long_track.ogg", 4096)
@@ -2223,9 +1811,7 @@ do -- Decoder:rewind
   end
 end
 
---@api-stub: LDecoder:tell
--- Returns the current position in seconds.
--- Read each frame to drive the playhead in your custom-decode visualiser.
+--@api-stub: Decoder:tell
 do -- Decoder:tell
   function lurek.init()
     local dec = lurek.audio.newDecoder("music/long_track.ogg", 4096)
@@ -2233,9 +1819,7 @@ do -- Decoder:tell
   end
 end
 
---@api-stub: LDecoder:isSeekable
--- Returns true if seeking is supported.
--- Some compressed streams forbid seeking; branch to disable scrub UI when the answer is false.
+--@api-stub: Decoder:isSeekable
 do -- Decoder:isSeekable
   function lurek.init()
     local dec = lurek.audio.newDecoder("music/long_track.ogg", 4096)
@@ -2243,9 +1827,7 @@ do -- Decoder:isSeekable
   end
 end
 
---@api-stub: LDecoder:release
--- Releases the decoder (no-op).
--- No-op today (the decoder drops on GC) but call it explicitly to make ownership intent clear.
+--@api-stub: Decoder:release
 do -- Decoder:release
   function lurek.init()
     local dec = lurek.audio.newDecoder("music/long_track.ogg", 4096)
@@ -2256,8 +1838,6 @@ end
 -- â”€â”€ SoundData methods â”€â”€
 
 --@api-stub: mlua:getSampleCount
--- Get the total number of samples.
--- Total sample frames; for stereo divide by 2 to get pairs.
 do -- mlua:getSampleCount
   function lurek.init()
     local sd = lurek.audio.newSineWave(440.0, 1.0, 44100, 0.5)
@@ -2266,8 +1846,6 @@ do -- mlua:getSampleCount
 end
 
 --@api-stub: mlua:getSampleRate
--- Get the sample rate.
--- Hz at which the buffer was generated â€” mismatched rates cause pitch shifts when mixed.
 do -- mlua:getSampleRate
   function lurek.init()
     local sd = lurek.audio.newSineWave(440.0, 1.0, 44100, 0.5)
@@ -2276,8 +1854,6 @@ do -- mlua:getSampleRate
 end
 
 --@api-stub: mlua:getChannelCount
--- Get the number of channels.
--- 1 for mono (synthesised waves), 2 for stereo (loaded files).
 do -- mlua:getChannelCount
   function lurek.init()
     local sd = lurek.audio.newSineWave(440.0, 1.0, 44100, 0.5)
@@ -2286,8 +1862,6 @@ do -- mlua:getChannelCount
 end
 
 --@api-stub: mlua:getDuration
--- Get the audio duration in seconds.
--- Length in seconds = sample_count / (sample_rate * channels). Cheaper than recomputing.
 do -- mlua:getDuration
   function lurek.init()
     local sd = lurek.audio.newSineWave(440.0, 1.0, 44100, 0.5)
@@ -2296,8 +1870,6 @@ do -- mlua:getDuration
 end
 
 --@api-stub: mlua:getBitDepth
--- Get the bit depth.
--- Synthesised SoundData buffers use 32-bit float internally; loaded WAVs preserve their original depth.
 do -- mlua:getBitDepth
   function lurek.init()
     local sd = lurek.audio.newSineWave(440.0, 1.0, 44100, 0.5)
@@ -2306,8 +1878,6 @@ do -- mlua:getBitDepth
 end
 
 --@api-stub: mlua:getSample
--- Get a specific sample by index.
--- Returns sample value in [-1, 1] at the given index; raises if the index is out of range.
 do -- mlua:getSample
   function lurek.init()
     local sd = lurek.audio.newSineWave(440.0, 1.0, 44100, 0.5)
@@ -2317,8 +1887,6 @@ do -- mlua:getSample
 end
 
 --@api-stub: mlua:setSample
--- Set a specific sample by index.
--- Writes one sample in place; useful for quick procedural edits before saving with `lurek.audio.saveWAV`.
 do -- mlua:setSample
   function lurek.init()
     local sd = lurek.audio.newSineWave(440.0, 1.0, 44100, 0.5)
@@ -2326,9 +1894,7 @@ do -- mlua:setSample
   end
 end
 
---@api-stub: mlua (SoundData):drawWaveform
--- Renders the SoundData buffer as a waveform into an ImageData object.
--- Useful for visualising recorded audio or showing a UI waveform preview.
+--@api-stub: mlua
 do -- mlua (SoundData):drawWaveform
   function lurek.init()
     local sd = lurek.audio.newSoundData(44100, 44100, 1)
@@ -2340,9 +1906,7 @@ do -- mlua (SoundData):drawWaveform
   end
 end
 
---@api-stub: LMidiPlayer:setChannelInstrument
--- Sets the General MIDI program number (instrument) for a MIDI channel.
--- Channel 9 is drums by convention; all others use GM program numbers 1-128.
+--@api-stub: MidiPlayer:setChannelInstrument
 do -- MidiPlayer:setChannelInstrument
   function lurek.init()
     local midi = lurek.audio.newMidiPlayer()
@@ -2351,9 +1915,7 @@ do -- MidiPlayer:setChannelInstrument
   end
 end
 
---@api-stub: LBus:setDuckTarget
--- Configures automatic ducking: when this bus is active, the target bus volume is reduced.
--- Pass the target bus name and a duck factor (0=silence, 1=no duck) and release time.
+--@api-stub: Bus:setDuckTarget
 do -- Bus:setDuckTarget
   function lurek.init()
     lurek.audio.newBus("music")
@@ -2365,8 +1927,6 @@ do -- Bus:setDuckTarget
 end
 
 --@api-stub: mlua:drawWaveform
--- Renders the waveform of a SoundData object into an ImageData as a line chart.
--- Use to show audio visualisations in the game HUD or a level editor.
 do -- mlua:drawWaveform
   local ok, err = pcall(function()
     local sd = lurek.audio.newSoundData("music/loop.ogg", 44100)
@@ -2390,10 +1950,7 @@ end
 -- LDecoder methods
 -- -----------------------------------------------------------------------------
 
--- ---- Example: LDecoder:type -------------------------------------------------
---@api-stub: LDecoder:type
--- Returns the type name of this object.
--- Useful for runtime type inspection.
+--@api-stub: LDecoder:type -- Returns the type name of this object for runtime type-checking
 do -- LDecoder:type
   local decoder_obj ---@type LDecoder?
   local ok_d, r = pcall(lurek.audio.newDecoder, "assets/sound.ogg", 4096)
@@ -2401,9 +1958,7 @@ do -- LDecoder:type
   local t = decoder_obj and decoder_obj:type() or "LDecoder"
   lurek.log.info("LDecoder:type = " .. t, "audio")
 end
---@api-stub: LDecoder:typeOf
--- Returns true if this object is of the given type.
--- Use for runtime type checks.
+--@api-stub: LDecoder:typeOf -- Checks whether this object matches the given type name
 do -- LDecoder:typeOf
   local decoder_obj2 ---@type LDecoder?
   local ok_d2, r2 = pcall(lurek.audio.newDecoder, "assets/sound.ogg", 4096)
@@ -2411,77 +1966,57 @@ do -- LDecoder:typeOf
   lurek.log.info("is LDecoder: " .. tostring(decoder_obj2 and decoder_obj2:typeOf("LDecoder") or false), "audio")
   lurek.log.info("is wrong: " .. tostring(decoder_obj2 and decoder_obj2:typeOf("Unknown") or false), "audio")
 end
---@api-stub: LSoundData:getSampleCount
--- Get the total number of samples.
--- Use to calculate buffer length or iterate over waveform data.
+--@api-stub: LSoundData:getSampleCount -- Returns the total number of samples stored in this sound buffer
 do -- LSoundData:getSampleCount
   local sd = lurek.audio.newSineWave(440, 1.0, 44100, 0.5)
   lurek.log.info("sample_count=" .. sd:getSampleCount(), "audio")
 end
---@api-stub: LSoundData:getSampleRate
--- Returns the sample rate of this audio buffer in Hz (e.g. 44100 or 48000).
--- Use to compute time offsets or to validate compatibility before mixing.
+--@api-stub: LSoundData:getSampleRate -- Returns the playback sample rate of this sound buffer
 do -- LSoundData:getSampleRate
   local sd = lurek.audio.newSineWave(440, 0.5, 44100, 0.5)
   lurek.log.info("sample_rate=" .. sd:getSampleRate(), "audio")
 end
---@api-stub: LSoundData:getChannelCount
--- Get the number of channels.
--- 1 = mono, 2 = stereo. Use to route mixing or panning logic.
+--@api-stub: LSoundData:getChannelCount -- Returns the number of audio channels stored in this sound buffer
 do -- LSoundData:getChannelCount
   local sd = lurek.audio.newSineWave(440, 0.5, 44100, 0.5)
   lurek.log.info("channels=" .. sd:getChannelCount(), "audio")
 end
---@api-stub: LSoundData:getDuration
--- Get the audio duration in seconds.
--- Use to display progress bars or schedule timed events.
+--@api-stub: LSoundData:getDuration -- Returns the approximate playback duration of this sound buffer
 do -- LSoundData:getDuration
   local sd = lurek.audio.newSineWave(440, 2.0, 44100, 0.5)
   lurek.log.info("duration=" .. sd:getDuration() .. "s", "audio")
 end
---@api-stub: LSoundData:getBitDepth
--- Returns the bit depth of this audio buffer (typically 16 or 32 bits per sample).
--- Use to choose the right encoding path when exporting WAV data.
+--@api-stub: LSoundData:getBitDepth -- Returns the sample bit depth of this sound buffer
 do -- LSoundData:getBitDepth
   local sd = lurek.audio.newSineWave(440, 0.5, 44100, 0.5)
   lurek.log.info("bit_depth=" .. sd:getBitDepth(), "audio")
 end
---@api-stub: LSoundData:getSample
--- Returns the sample value at the given channel and index.
--- Use to read a specific frame of waveform data for visualisation or analysis.
+--@api-stub: LSoundData:getSample -- Returns the sample value at the given zero-based sample index
 do -- LSoundData:getSample
   local sd = lurek.audio.newSineWave(440, 1.0, 44100, 0.5)
   local s = sd:getSample(1)   -- frame index 1
   lurek.log.info("sample[0]=" .. tostring(s), "audio")
 end
---@api-stub: LSoundData:drawWaveform
--- Draws the waveform onto an ImageData buffer.
--- Use to render a waveform visualisation for an audio editor UI.
+--@api-stub: LSoundData:drawWaveform -- Draws this sound buffer as a waveform into an image buffer
 do -- LSoundData:drawWaveform
   local sd = lurek.audio.newSineWave(440, 0.5, 44100, 0.5)
   local idata = lurek.image.newImageData(256, 64)
   sd:drawWaveform(idata, 0, 0, 256, 64, 0, 255, 0, 255)  -- green waveform at (0,0)
   lurek.log.info("waveform drawn to image 256x64", "audio")
 end
---@api-stub: LSoundData:setSample
--- Set a specific sample by index.
--- Use for custom synthesis or patching individual samples in a buffer.
+--@api-stub: LSoundData:setSample -- Overwrites the sample value at the given zero-based sample index
 do -- LSoundData:setSample
   local sd = lurek.audio.newSineWave(440, 0.5, 44100, 0.5)
   sd:setSample(0, 0.0)   -- silence sample at index 0
   lurek.log.info("sample[0] after zero=" .. sd:getSample(0), "audio")
 end
---@api-stub: LSource:type
--- Returns the type name of this object.
--- Useful for runtime type inspection.
+--@api-stub: LSource:type -- Returns the type name of this object for runtime type-checking
 do -- LSource:type
   local ok_s, source_obj = pcall(lurek.audio.newSource)
   local t = (ok_s and source_obj) and source_obj:type() or "LSource"
   lurek.log.info("LSource:type = " .. t, "audio")
 end
---@api-stub: LSource:typeOf
--- Returns true if this object is of the given type.
--- Use for runtime type checks.
+--@api-stub: LSource:typeOf -- Checks whether this object is of the given type name or a parent type
 do -- LSource:typeOf
   local ok_s, source_obj = pcall(lurek.audio.newSource)
   lurek.log.info("is LSource: " .. tostring((ok_s and source_obj) and source_obj:typeOf("LSource") or false), "audio")

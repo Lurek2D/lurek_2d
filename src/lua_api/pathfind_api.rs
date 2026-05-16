@@ -698,7 +698,7 @@ impl LuaUserData for LuaPathGrid {
         /// @param | sy | integer | Lua argument for `sy`.
         /// @param | gx | integer | Lua argument for `gx`.
         /// @param | gy | integer | Lua argument for `gy`.
-        /// @return | table | Array table of point tables, or nil when no path exists.
+        /// @return | table? | Array table of point tables, or nil when no path exists.
         methods.add_method(
             "findPath",
             |lua, this, (sx, sy, gx, gy): (usize, usize, usize, usize)| -> LuaResult<LuaValue> {
@@ -727,7 +727,7 @@ impl LuaUserData for LuaPathGrid {
         /// @param | sy | integer | Lua argument for `sy`.
         /// @param | gx | integer | Lua argument for `gx`.
         /// @param | gy | integer | Lua argument for `gy`.
-        /// @return | table | Array table of point tables, or nil when no path exists.
+        /// @return | table? | Array table of point tables, or nil when no path exists.
         methods.add_method(
             "findPathSmoothed",
             |lua, this, (sx, sy, gx, gy): (usize, usize, usize, usize)| -> LuaResult<LuaValue> {
@@ -800,8 +800,8 @@ impl LuaUserData for LuaAiFlowField {
         });
         // -- getGoal --
         /// Returns the one-based flow field goal when set.
-        /// @return | integer | Goal x coordinate, or nil.
-        /// @return | integer | Goal y coordinate, or nil.
+        /// @return | integer? | Goal x coordinate, or nil.
+        /// @return | integer? | Goal y coordinate, or nil.
         methods.add_method(
             "getGoal",
             |_, this, ()| -> LuaResult<(LuaValue, LuaValue)> {

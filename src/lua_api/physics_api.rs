@@ -1546,14 +1546,14 @@ impl LuaUserData for LuaCellular {
         );
         // -- countCells --
         /// Counts how many cells of a given material type exist in the grid.
-        /// @param | cellType | number | Material type constant to count.
+        /// @param | cellType | integer | Material type constant to count.
         /// @return | number | Cell count.
         methods.add_method("countCells", |_, this, t: u8| {
             Ok(this.sim.borrow().count_cells(CellType::from_u8(t)))
         });
         // -- findCells --
         /// Returns positions of all cells matching a material type.
-        /// @param | cellType | number | Material type constant to find.
+        /// @param | cellType | integer | Material type constant to find.
         /// @return | table | Array of {x, y} tables with cell coordinates.
         methods.add_method("findCells", |lua, this, t: u8| {
             let positions = this.sim.borrow().find_cells(CellType::from_u8(t));

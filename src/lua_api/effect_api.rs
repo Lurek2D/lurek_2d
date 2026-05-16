@@ -504,7 +504,7 @@ impl LuaUserData for LuaImageEffect {
         });
         // -- getEffect --
         /// Looks up an image effect by one-based index or effect type name.
-        /// @param | key | LuaValue | Integer index, numeric index, or effect type name.
+        /// @param | key | any | Integer index, numeric index, or effect type name.
         /// @return | LuaValue | `LPostFxEffect` handle, or nil when no matching effect exists.
         methods.add_method("getEffect", |lua, this, key: LuaValue| {
             let rc_opt = match &key {
@@ -526,7 +526,7 @@ impl LuaUserData for LuaImageEffect {
         });
         // -- removeEffect --
         /// Removes an image effect by one-based index or effect type name.
-        /// @param | key | LuaValue | Integer index, numeric index, or effect type name.
+        /// @param | key | any | Integer index, numeric index, or effect type name.
         /// @return | boolean | True when an effect was removed.
         methods.add_method_mut("removeEffect", |_, this, key: LuaValue| match &key {
             LuaValue::Integer(i) => Ok(this.inner.remove_by_index((*i as usize).saturating_sub(1))),
@@ -1235,7 +1235,7 @@ impl LuaUserData for LuaOverlay {
         );
         // -- setCustomShader --
         /// Sets or clears the custom overlay shader name.
-        /// @param | name | string | Optional shader name; nil clears the custom shader.
+        /// @param | name | string? | Optional shader name; nil clears the custom shader.
         /// @return | nil | No value is returned.
         methods.add_method_mut("setCustomShader", |_, this, name: Option<String>| {
             this.inner.custom_shader = name;

@@ -245,7 +245,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     let s = state.clone();
     // -- exit --
     /// Requests engine shutdown with an optional process exit code.
-    /// @param | code | integer | Optional exit code, defaulting to 0.
+    /// @param | code | integer? | Optional exit code, defaulting to 0.
     /// @return | nil | No value is returned.
     tbl.set(
         "exit",
@@ -309,7 +309,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     let s = state.clone();
     // -- wait --
     /// Waits for the next queued event and returns success, name, and argument table.
-    /// @param | timeout | number | Optional timeout in seconds.
+    /// @param | timeout | number? | Optional timeout in seconds.
     /// @return | boolean | True when an event was received before timeout.
     /// @return | string | Event name, or an empty string on timeout.
     /// @return | table | Array table of event arguments.

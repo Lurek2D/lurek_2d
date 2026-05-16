@@ -166,7 +166,7 @@ impl LuaUserData for LuaDataFrame {
         );
         // -- removeColumn --
         /// Removes a column by name or one-based index.
-        /// @param | col | LuaValue | Column name string or one-based column index.
+        /// @param | col | any | Column name string or one-based column index.
         /// @return | nil | No value is returned.
         methods.add_method("removeColumn", |_, this, col: LuaValue| {
             let cr = lua_to_col_ref(col)?;
@@ -189,7 +189,7 @@ impl LuaUserData for LuaDataFrame {
         });
         // -- getColumn --
         /// Returns a column as an array table. This method is available to Lua scripts.
-        /// @param | col | LuaValue | Column name string or one-based column index.
+        /// @param | col | any | Column name string or one-based column index.
         /// @return | table | Array table of column values.
         methods.add_method("getColumn", |lua, this, col: LuaValue| {
             let cr = lua_to_col_ref(col)?;
@@ -354,7 +354,7 @@ impl LuaUserData for LuaDataFrame {
         });
         // -- unique --
         /// Returns unique values from a column.
-        /// @param | col | LuaValue | Column name string or one-based column index.
+        /// @param | col | any | Column name string or one-based column index.
         /// @return | table | Array table of unique values.
         methods.add_method("unique", |lua, this, col: LuaValue| {
             let cr = lua_to_col_ref(col)?;
@@ -368,7 +368,7 @@ impl LuaUserData for LuaDataFrame {
         });
         // -- groupBy --
         /// Groups rows by a column and returns a table from group key to dataframe.
-        /// @param | col | LuaValue | Column name string or one-based column index.
+        /// @param | col | any | Column name string or one-based column index.
         /// @return | table | Table keyed by group values with dataframe handles as values.
         methods.add_method("groupBy", |lua, this, col: LuaValue| {
             let cr = lua_to_col_ref(col)?;
@@ -383,7 +383,7 @@ impl LuaUserData for LuaDataFrame {
         });
         // -- groupByObj --
         /// Groups rows by a column and returns a grouped-frame object.
-        /// @param | col | LuaValue | Column name string or one-based column index.
+        /// @param | col | any | Column name string or one-based column index.
         /// @return | LGroupedFrame | Grouped frame handle.
         methods.add_method("groupByObj", |_, this, col: LuaValue| {
             let cr = lua_to_col_ref(col)?;
@@ -431,7 +431,7 @@ impl LuaUserData for LuaDataFrame {
         });
         // -- countBy --
         /// Counts occurrences of each value in a column.
-        /// @param | col | LuaValue | Column name string or one-based column index.
+        /// @param | col | any | Column name string or one-based column index.
         /// @return | LDataFrame | New dataframe containing value counts.
         methods.add_method("countBy", |_, this, col: LuaValue| {
             let cr = lua_to_col_ref(col)?;
@@ -441,7 +441,7 @@ impl LuaUserData for LuaDataFrame {
         });
         // -- dropNil --
         /// Returns rows where the chosen column is not nil.
-        /// @param | col | LuaValue | Column name string or one-based column index.
+        /// @param | col | any | Column name string or one-based column index.
         /// @return | LDataFrame | New dataframe without nil rows for the column.
         methods.add_method("dropNil", |_, this, col: LuaValue| {
             let cr = lua_to_col_ref(col)?;
@@ -467,7 +467,7 @@ impl LuaUserData for LuaDataFrame {
         });
         // -- sum --
         /// Returns the numeric sum of a column.
-        /// @param | col | LuaValue | Column name string or one-based column index.
+        /// @param | col | any | Column name string or one-based column index.
         /// @return | number | Column sum.
         methods.add_method("sum", |_, this, col: LuaValue| {
             let cr = lua_to_col_ref(col)?;
@@ -475,7 +475,7 @@ impl LuaUserData for LuaDataFrame {
         });
         // -- mean --
         /// Returns the numeric mean of a column.
-        /// @param | col | LuaValue | Column name string or one-based column index.
+        /// @param | col | any | Column name string or one-based column index.
         /// @return | number | Column mean.
         methods.add_method("mean", |_, this, col: LuaValue| {
             let cr = lua_to_col_ref(col)?;
@@ -483,7 +483,7 @@ impl LuaUserData for LuaDataFrame {
         });
         // -- min --
         /// Returns the minimum value of a column.
-        /// @param | col | LuaValue | Column name string or one-based column index.
+        /// @param | col | any | Column name string or one-based column index.
         /// @return | LuaValue | Minimum cell value.
         methods.add_method("min", |_, this, col: LuaValue| {
             let cr = lua_to_col_ref(col)?;
@@ -494,7 +494,7 @@ impl LuaUserData for LuaDataFrame {
         });
         // -- max --
         /// Returns the maximum value of a column.
-        /// @param | col | LuaValue | Column name string or one-based column index.
+        /// @param | col | any | Column name string or one-based column index.
         /// @return | LuaValue | Maximum cell value.
         methods.add_method("max", |_, this, col: LuaValue| {
             let cr = lua_to_col_ref(col)?;
@@ -505,7 +505,7 @@ impl LuaUserData for LuaDataFrame {
         });
         // -- median --
         /// Returns the numeric median of a column.
-        /// @param | col | LuaValue | Column name string or one-based column index.
+        /// @param | col | any | Column name string or one-based column index.
         /// @return | number | Column median.
         methods.add_method("median", |_, this, col: LuaValue| {
             let cr = lua_to_col_ref(col)?;
@@ -516,7 +516,7 @@ impl LuaUserData for LuaDataFrame {
         });
         // -- stddev --
         /// Returns the numeric standard deviation of a column.
-        /// @param | col | LuaValue | Column name string or one-based column index.
+        /// @param | col | any | Column name string or one-based column index.
         /// @return | number | Column standard deviation.
         methods.add_method("stddev", |_, this, col: LuaValue| {
             let cr = lua_to_col_ref(col)?;
@@ -527,7 +527,7 @@ impl LuaUserData for LuaDataFrame {
         });
         // -- variance --
         /// Returns the numeric variance of a column.
-        /// @param | col | LuaValue | Column name string or one-based column index.
+        /// @param | col | any | Column name string or one-based column index.
         /// @return | number | Column variance.
         methods.add_method("variance", |_, this, col: LuaValue| {
             let cr = lua_to_col_ref(col)?;
@@ -863,7 +863,7 @@ impl LuaUserData for LuaDataFrame {
         );
         // -- modeVal --
         /// Returns the mode value of a column. This method is available to Lua scripts.
-        /// @param | col | LuaValue | Column reference.
+        /// @param | col | any | Column reference.
         /// @return | LuaValue | Most common cell value.
         methods.add_method("modeVal", |lua, this, col: LuaValue| {
             let col_ref = lua_to_col_ref(col)?;
@@ -876,7 +876,7 @@ impl LuaUserData for LuaDataFrame {
         });
         // -- entropy --
         /// Returns entropy for a column. This method is available to Lua scripts.
-        /// @param | col | LuaValue | Column reference.
+        /// @param | col | any | Column reference.
         /// @return | number | Entropy value.
         methods.add_method("entropy", |_, this, col: LuaValue| {
             let col_ref = lua_to_col_ref(col)?;
@@ -908,7 +908,7 @@ impl LuaUserData for LuaDataFrame {
         });
         // -- getColumnAsF64 --
         /// Returns a numeric column as an array of numbers.
-        /// @param | col | LuaValue | Column reference.
+        /// @param | col | any | Column reference.
         /// @return | table | Array table of numeric values.
         methods.add_method("getColumnAsF64", |lua, this, col: LuaValue| {
             let col_ref = lua_to_col_ref(col)?;

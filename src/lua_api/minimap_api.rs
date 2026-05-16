@@ -831,7 +831,7 @@ impl LuaUserData for LuaMinimap {
         );
         // -- clearPath --
         /// Clears one path by id or all paths when no id is provided.
-        /// @param | id | integer | Optional path id.
+        /// @param | id | integer? | Optional path id.
         /// @return | nil | No value is returned.
         methods.add_method_mut("clearPath", |_, this, id: Option<u32>| {
             this.inner.clear_path(id);

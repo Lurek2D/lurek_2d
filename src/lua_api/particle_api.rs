@@ -1422,7 +1422,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     let s = state.clone();
     // -- newSystem --
     /// Creates a particle system from an optional config table.
-    /// @param | config | table | Optional particle config table.
+    /// @param | config | table? | Optional particle config table.
     /// @return | LParticleSystem | New particle system handle.
     tbl.set(
         "newSystem",

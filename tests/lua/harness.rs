@@ -828,6 +828,11 @@ fn lua_evidence_light_evidence() {
 }
 
 #[test]
+fn lua_evidence_light_occluder_evidence() {
+    run_lua_test("evidence/test_light_occluder_evidence.lua");
+}
+
+#[test]
 fn lua_evidence_math_evidence() {
     run_lua_test("evidence/test_math_evidence.lua");
 }

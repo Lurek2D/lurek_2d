@@ -52,7 +52,7 @@ impl LuaUserData for LuaFileHandle {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
         // -- read --
         /// Reads up to an optional byte count and returns text using lossless UTF-8 replacement.
-        /// @param | count | integer | Optional maximum number of bytes to read.
+        /// @param | count | integer? | Optional maximum number of bytes to read.
         /// @return | string | String decoded from the bytes that were read.
         methods.add_method("read", |_, this, count: Option<usize>| {
             let bytes = this
@@ -743,7 +743,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     let s = state.clone();
     // -- createTempFile --
     /// Creates a temporary file through GameFS.
-    /// @param | prefix | string | Optional filename prefix, defaulting to `tmp`.
+    /// @param | prefix | string? | Optional filename prefix, defaulting to `tmp`.
     /// @return | string | Created temporary file path.
     tbl.set(
         "createTempFile",

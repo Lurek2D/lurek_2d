@@ -20,6 +20,8 @@ python tools/gen_all_docs.py
 | `gen_lua_docstring_skeletons.py` | `src/lua_api/*.rs` | `logs/data/lua_docstring_skeletons.json` or `logs/reports/lua_docstring_skeletons.md` | `--format json\|markdown`, `--output` |
 | `gen_extension_api.py` | `logs/data/lua_api_data.json` | `extensions/vscode/data/lurek-api.json` | `--input`, `--output`, `--verbose` |
 
+`gen_lua_binding_reports.py` now writes a primary categorized issue report alongside the legacy mismatch arrays. The JSON report includes `summary` counts, `issues` with structured code/doc evidence, and explicit classifications such as `CONFIRMED_DOC_BUG`, `EXTRACTION_UNCERTAIN`, `UNSUPPORTED_PATTERN`, and clean-entry counts.
+
 ### Reference generators â€” human-readable docs from JSON
 
 | Script | Reads | Produces | Key args |
@@ -62,6 +64,9 @@ python tools/docs/gen_rust_api_data.py
 # Snapshot what Rust registers vs what /// documents
 python tools/docs/gen_lua_binding_reports.py
 python tools/docs/gen_lua_binding_reports.py --mode code
+
+# Inspect categorized JSON output in logs/reports/lua_api_binding_validation.json
+python tools/validate/validate_lua_binding_reports.py --format json
 
 # Rebuild fresh docstring skeletons from Rust definitions only
 python tools/docs/gen_lua_docstring_skeletons.py

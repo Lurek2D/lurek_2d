@@ -301,7 +301,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
 
     // -- getLogHistory --
     /// Returns recent devtools log entries as structured tables.
-    /// @param | count | integer | Optional number of newest entries to return; omitted returns the logger default.
+    /// @param | count | integer? | Optional number of newest entries to return; omitted returns the logger default.
     /// @return | table | Array table containing level, timestamp, message, source, line, and optional category fields.
     let s = shared.clone();
     dt.set(
@@ -375,7 +375,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
 
     // -- profilePop --
     /// Ends the current profiling zone on the profiler stack.
-    /// @param | name | string | Optional zone name accepted for API compatibility and ignored by the profiler.
+    /// @param | name | string? | Optional zone name accepted for API compatibility and ignored by the profiler.
     /// @return | nil | No value is returned.
     let s = shared.clone();
     dt.set(
@@ -409,7 +409,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
 
     // -- getProfileData --
     /// Returns the profiler zone tree for a retained frame.
-    /// @param | frame | integer | Optional frame index understood by the profiler; omitted reads the newest frame alias used by the backend.
+    /// @param | frame | integer? | Optional frame index understood by the profiler; omitted reads the newest frame alias used by the backend.
     /// @return | table | Array table of profiler zones with name, time, selfTime, startTime, and children fields.
     let s = shared.clone();
     dt.set(
@@ -645,7 +645,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
 
     // -- getCallStack --
     /// Returns Lua call stack frames using the Lua debug library.
-    /// @param | max_depth | integer | Optional maximum number of frames to return; defaults to 20 and is capped at 100.
+    /// @param | max_depth | integer? | Optional maximum number of frames to return; defaults to 20 and is capped at 100.
     /// @return | table | Array table of frames with source, line, name, and what fields.
     dt.set(
         "getCallStack",
@@ -936,7 +936,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
 
     // -- newRepl --
     /// Creates a REPL console userdata with bounded command history.
-    /// @param | max_history | integer | Optional maximum number of history entries; defaults to 200.
+    /// @param | max_history | integer? | Optional maximum number of history entries; defaults to 200.
     /// @return | LReplConsole | REPL console handle for eval and history management.
     dt.set(
         "newRepl",

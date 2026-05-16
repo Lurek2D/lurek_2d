@@ -285,7 +285,7 @@ impl LuaUserData for ApiCatalog {
         });
         // -- getEntries --
         /// Returns catalog entries, optionally limited to one module.
-        /// @param | module | string | Optional module name used to filter entries.
+        /// @param | module | string? | Optional module name used to filter entries.
         /// @return | table | Array table of `LDocEntry` handles.
         methods.add_method("getEntries", |lua, this, module: Option<String>| {
             let tbl = lua.create_table()?;
@@ -340,7 +340,7 @@ impl LuaUserData for ApiCatalog {
         });
         // -- entryCount --
         /// Counts entries in the catalog, optionally for one module.
-        /// @param | module | string | Optional module name used to limit the count.
+        /// @param | module | string? | Optional module name used to limit the count.
         /// @return | integer | Number of matching entries.
         methods.add_method("entryCount", |_, this, module: Option<String>| {
             Ok(match module.as_deref() {
@@ -615,7 +615,7 @@ impl LuaUserData for QualityReport {
         });
         // -- getWorst --
         /// Returns the lowest-scoring documentation entries.
-        /// @param | count | integer | Optional maximum number of entries to return; defaults to 10.
+        /// @param | count | integer? | Optional maximum number of entries to return; defaults to 10.
         /// @return | table | Array table of worst-scoring `LDocEntry` handles.
         methods.add_method("getWorst", |lua, this, count: Option<usize>| {
             let n = count.unwrap_or(10);
@@ -633,7 +633,7 @@ impl LuaUserData for QualityReport {
         });
         // -- getBest --
         /// Returns the highest-scoring documentation entries.
-        /// @param | count | integer | Optional maximum number of entries to return; defaults to 10.
+        /// @param | count | integer? | Optional maximum number of entries to return; defaults to 10.
         /// @return | table | Array table of best-scoring `LDocEntry` handles.
         methods.add_method("getBest", |lua, this, count: Option<usize>| {
             let n = count.unwrap_or(10);
@@ -784,7 +784,7 @@ pub fn register(
 
     // -- scan --
     /// Reflects the live `lurek` table and builds a catalog of callable APIs.
-    /// @param | opts | table | Optional scan options table reserved for future filters.
+    /// @param | opts | table? | Optional scan options table reserved for future filters.
     /// @return | LApiCatalog | Catalog populated from the currently registered `lurek` table.
     docs_tbl.set(
         "scan",
@@ -1013,7 +1013,7 @@ pub fn register(
 
     // -- validate --
     /// Compares a documentation catalog with the live reflected `lurek` API table.
-    /// @param | catalog_ud | LApiCatalog | Optional catalog to validate against live reflection; omitted validates an empty catalog.
+    /// @param | catalog_ud | LApiCatalog? | Optional catalog to validate against live reflection; omitted validates an empty catalog.
     /// @return | LValidationReport | Report containing missing, phantom, and incomplete API names.
     docs_tbl.set(
         "validate",
@@ -1142,7 +1142,7 @@ pub fn register(
 
     // -- quality --
     /// Computes documentation quality for a supplied catalog or the editable in-memory catalog.
-    /// @param | catalog_ud | LApiCatalog | Optional catalog to score; omitted scores the editable catalog.
+    /// @param | catalog_ud | LApiCatalog? | Optional catalog to score; omitted scores the editable catalog.
     /// @return | LQualityReport | Quality report with overall and module-level scores.
     let s = state.clone();
     docs_tbl.set(
@@ -1181,7 +1181,7 @@ pub fn register(
 
     // -- coverage --
     /// Returns documented and live API counts for the full `lurek` table.
-    /// @param | catalog_ud | LApiCatalog | Optional catalog used for documented entry count.
+    /// @param | catalog_ud | LApiCatalog? | Optional catalog used for documented entry count.
     /// @return | integer | Number of catalog entries supplied as documented.
     /// @return | integer | Number of live APIs found by reflection.
     docs_tbl.set(
@@ -1424,7 +1424,7 @@ pub fn register(
 
     // -- reflectLive --
     /// Reflects live `lurek` module tables into plain name and type rows.
-    /// @param | ns | string | Optional module name to reflect; omitted reflects every table-valued module.
+    /// @param | ns | string? | Optional module name to reflect; omitted reflects every table-valued module.
     /// @return | table | Reflection table keyed by module name or containing the requested module entry.
     docs_tbl.set(
         "reflectLive",

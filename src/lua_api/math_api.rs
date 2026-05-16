@@ -838,7 +838,7 @@ impl LuaUserData for LuaTween {
         });
         // -- getValue --
         /// Returns one tween value by one-based index or all values when no index is provided.
-        /// @param | index | integer | Optional one-based value index.
+        /// @param | index | integer? | Optional one-based value index.
         /// @return | LuaValue | Number value or array table of all values.
         methods.add_method("getValue", |lua, this, index: Option<usize>| match index {
             Some(i) => {
@@ -1637,7 +1637,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     let tbl = lua.create_table()?;
     // -- newRandomGenerator --
     /// Creates a deterministic random generator with an optional seed.
-    /// @param | seed | integer | Optional seed value.
+    /// @param | seed | integer? | Optional seed value.
     /// @return | LRandomGenerator | New random generator handle.
     tbl.set(
         "newRandomGenerator",
@@ -1746,7 +1746,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     )?;
     // -- newNoiseGenerator --
     /// Creates a procedural noise generator with an optional seed.
-    /// @param | seed | integer | Optional seed value, defaulting to 0.
+    /// @param | seed | integer? | Optional seed value, defaulting to 0.
     /// @return | LNoiseGenerator | New noise generator handle.
     tbl.set(
         "newNoiseGenerator",

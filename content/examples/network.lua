@@ -1,38 +1,22 @@
 -- content/examples/network.lua
--- Hand-written coverage of the lurek.network API (38 items).
---
--- The lurek.network namespace covers two distinct subsystems: ENet-based
--- real-time peer-to-peer hosts (NetworkHost) used for in-game multiplayer,
--- and a background NetworkRuntime that runs HTTP / TCP / WebSocket I/O
--- off the main thread. Both must be polled every frame to surface events.
---
+-- lurek.network API examples.
 -- Run: cargo run -- content/examples/network.lua
--- pcall() is used throughout to construct host objects; when load fails
--- the variable stays nil-safe via ---@type annotation and the 'and' guard in usage.
 
--- â”€â”€ lurek.network.* functions â”€â”€
-
---@api-stub: lurek.network.newHost
--- Creates a new network host bound to the given address.
--- Use when you want a generic peer host (no fixed server/client role) bound to a specific local address.
+--@api-stub: lurek.network.newHost -- Creates a network host from an options table
 do -- lurek.network.newHost
   local host = lurek.network.newHost{ addr = "0.0.0.0:5555", maxPeers = 32, channels = 2 }
   lurek.log.info("listening on " .. host:getAddress(), "net")
   host:destroy()
 end
 
---@api-stub: lurek.network.newServer
--- Creates a server host that binds to a port and accepts connections.
--- Preferred over newHost for the authoritative side of a session: requires a port and accepts inbound peers.
+--@api-stub: lurek.network.newServer -- Creates a server host from an options table
 do -- lurek.network.newServer
   local server = lurek.network.newServer{ port = 5555, maxPeers = 16, channels = 2 }
   lurek.log.info("server up on " .. server:getAddress(), "net")
   server:destroy()
 end
 
---@api-stub: lurek.network.newClient
--- Creates a client host that connects to a remote server.
--- Use this on the joining side; it both creates the local socket and initiates the connect handshake.
+--@api-stub: lurek.network.newClient -- Creates a client host and connects to an address
 do -- lurek.network.newClient
   pcall(function()
     local client = lurek.network.newClient{ addr = "127.0.0.1:5555", channels = 2 }
@@ -41,27 +25,21 @@ do -- lurek.network.newClient
   end)
 end
 
---@api-stub: lurek.network.newRuntime
--- Creates a background network runtime for async HTTP, TCP, and WebSocket.
--- Spawn one runtime at startup and reuse it; it owns a worker thread, so creating many is wasteful.
+--@api-stub: lurek.network.newRuntime -- Creates a background network runtime
 do -- lurek.network.newRuntime
   local rt = lurek.network.newRuntime()
   rt:httpGet("http://127.0.0.1:9/version")
   function lurek.quit() rt:shutdown() end
 end
 
---@api-stub: lurek.network.pack
--- Serializes a Lua value to a binary MessagePack string.
--- MessagePack output is compact and binary-safe, so it is the right format for ENet send/broadcast payloads.
+--@api-stub: lurek.network.pack -- Packs a supported Lua value into a binary network message string
 do -- lurek.network.pack
   local snapshot = { x = 128.5, y = 64.0, hp = 87, weapon = "rifle" }
   local bytes = lurek.network.pack(snapshot)
   lurek.log.debug("packed " .. #bytes .. " bytes", "net")
 end
 
---@api-stub: lurek.network.unpack
--- Deserializes a MessagePack binary string back to a Lua value.
--- Always unpack the data you received before reading fields; ENet payloads are opaque strings on the wire.
+--@api-stub: lurek.network.unpack -- Unpacks a binary network message string into Lua values
 do -- lurek.network.unpack
   local payload = lurek.network.pack({ id = 42, action = "fire" })
   local msg = lurek.network.unpack(payload)
@@ -70,17 +48,13 @@ do -- lurek.network.unpack
   end
 end
 
---@api-stub: lurek.network.createLobby
--- Creates a LobbyInfo record and broadcasts it once on the local network.
--- Call this once on the host so LAN browsers can find the session; re-broadcast on player count changes.
+--@api-stub: lurek.network.createLobby -- Broadcasts lobby information and returns it as a table
 do -- lurek.network.createLobby
   local lobby = lurek.network.createLobby("Tom's Co-op", 5555, 1, 4)
   lurek.log.info("advertised lobby " .. lobby.name .. " on port " .. lobby.port, "net")
 end
 
---@api-stub: lurek.network.discoverLobbies
--- Listens for LAN lobby announcements for `timeout_ms` milliseconds (default 500).
--- Block briefly during a server-browser screen; the timeout caps how long the call sleeps before returning.
+--@api-stub: lurek.network.discoverLobbies -- Discovers broadcast lobbies
 do -- lurek.network.discoverLobbies
   local lobbies = lurek.network.discoverLobbies(750)
   for i, info in ipairs(lobbies) do
@@ -88,8 +62,7 @@ do -- lurek.network.discoverLobbies
   end
 end
 
---@api-stub: lurek.network.createRoom
--- Creates a room in local matchmaking registry.
+--@api-stub: lurek.network.createRoom -- Creates a local room record
 do -- lurek.network.createRoom
   local room = lurek.network.createRoom("Ranked-1", "hostA", 6)
   local same = lurek.network.joinRoom(room.id)
@@ -98,16 +71,14 @@ do -- lurek.network.createRoom
   lurek.network.leaveRoom(room.id)
 end
 
---@api-stub: lurek.network.joinRoom
--- Joins room by id and returns updated room.
+--@api-stub: lurek.network.joinRoom -- Joins a room by id when available
 do -- lurek.network.joinRoom
   local room = lurek.network.createRoom("casual", "hostB", 3)
   local joined = lurek.network.joinRoom(room.id)
   if joined then lurek.log.debug("joined room=" .. joined.id, "match") end
 end
 
---@api-stub: lurek.network.leaveRoom
--- Leaves room by id and returns updated room.
+--@api-stub: lurek.network.leaveRoom -- Leaves a room by id when available
 do -- lurek.network.leaveRoom
   local room = lurek.network.createRoom("coop", "hostC", 3)
   local _ = lurek.network.joinRoom(room.id)
@@ -115,15 +86,13 @@ do -- lurek.network.leaveRoom
   if left then lurek.log.debug("left room=" .. left.id, "match") end
 end
 
---@api-stub: lurek.network.listRooms
--- Lists known rooms in local registry.
+--@api-stub: lurek.network.listRooms -- Lists known local room records
 do -- lurek.network.listRooms
   local rooms = lurek.network.listRooms()
   lurek.log.debug("room count=" .. #rooms, "match")
 end
 
---@api-stub: lurek.network.newRelayTicket
--- Encodes relay ticket + NAT punch helper payload.
+--@api-stub: lurek.network.newRelayTicket -- Creates an encoded relay ticket
 do -- lurek.network.newRelayTicket
   local ticket = lurek.network.newRelayTicket("room-1", "peer-A")
   local parsed = lurek.network.parseRelayTicket(ticket)
@@ -134,31 +103,27 @@ do -- lurek.network.newRelayTicket
   end
 end
 
---@api-stub: lurek.network.parseRelayTicket
--- Decodes a relay ticket token.
+--@api-stub: lurek.network.parseRelayTicket -- Parses an encoded relay ticket
 do -- lurek.network.parseRelayTicket
   local token = lurek.network.newRelayTicket("room-2", "peer-B")
   local parsed = lurek.network.parseRelayTicket(token)
   if parsed then lurek.log.debug(parsed.room_id .. ":" .. parsed.peer_id, "relay") end
 end
 
---@api-stub: lurek.network.makePunchProbe
--- Builds binary NAT punch probe payload.
+--@api-stub: lurek.network.makePunchProbe -- Creates a relay punch probe payload for a peer id
 do -- lurek.network.makePunchProbe
   local probe = lurek.network.makePunchProbe("peer-C")
   lurek.log.debug("probe bytes=" .. #probe, "relay")
 end
 
---@api-stub: lurek.network.parsePunchProbe
--- Parses binary NAT punch probe payload.
+--@api-stub: lurek.network.parsePunchProbe -- Parses a relay punch probe payload
 do -- lurek.network.parsePunchProbe
   local probe = lurek.network.makePunchProbe("peer-D")
   local who = lurek.network.parsePunchProbe(probe)
   lurek.log.debug("probe peer=" .. tostring(who), "relay")
 end
 
---@api-stub: lurek.network.predictLinear
--- Predicts and reconciles one entity snapshot.
+--@api-stub: lurek.network.predictLinear -- Predicts an entity snapshot forward by linear velocity
 do -- lurek.network.predictLinear
   local now = { id = 1, tick = 10, x = 0.0, y = 0.0, vx = 2.0, vy = 0.0 }
   local predicted = lurek.network.predictLinear(now, 0.1)
@@ -167,8 +132,7 @@ do -- lurek.network.predictLinear
   lurek.log.debug("reconciled x=" .. smooth.x, "net-sync")
 end
 
---@api-stub: lurek.network.reconcileSnapshot
--- Reconciles predicted and authoritative snapshots.
+--@api-stub: lurek.network.reconcileSnapshot -- Reconciles a predicted snapshot toward an authoritative snapshot
 do -- lurek.network.reconcileSnapshot
   local predicted = { id = 2, tick = 20, x = 1.0, y = 0.0, vx = 1.0, vy = 0.0 }
   local server = { id = 2, tick = 20, x = 1.2, y = 0.1, vx = 1.0, vy = 0.0 }
@@ -176,9 +140,7 @@ do -- lurek.network.reconcileSnapshot
   lurek.log.debug("reconciled snapshot tick=" .. out.tick, "net-sync")
 end
 
---@api-stub: lurek.network.syncEntity
--- Convenience helper: packs an entity snapshot and broadcasts it to all peers.
--- Use for fire-and-forget state replication of fast-moving entities; pass reliable=false to keep latency low.
+--@api-stub: lurek.network.syncEntity -- Broadcasts a packed entity sync payload through a network host
 do -- lurek.network.syncEntity
   local server = lurek.network.newServer{ port = 5555, maxPeers = 8 }
   local player = { x = 100.0, y = 200.0, hp = 80 }
@@ -189,9 +151,7 @@ end
 
 -- â”€â”€ NetworkHost methods â”€â”€
 
---@api-stub: LNetworkHost:service
--- Polls the network for one event, returning an event table or nil.
--- Call this in lurek.process every frame and dispatch on event.type ("connect", "disconnect", "receive").
+--@api-stub: NetworkHost:service
 do -- NetworkHost:service
   local host = lurek.network.newServer{ port = 5556, maxPeers = 8 }
   function lurek.process(dt)
@@ -200,18 +160,14 @@ do -- NetworkHost:service
   end
 end
 
---@api-stub: LNetworkHost:flush
--- Flushes all pending sends immediately.
--- Call after a burst of urgent sends (e.g. end-of-frame state) to push packets out without waiting for service().
+--@api-stub: NetworkHost:flush
 do -- NetworkHost:flush
   local host = lurek.network.newServer{ port = 5557, maxPeers = 8 }
   host:broadcast(0, lurek.network.pack({ event = "round_end" }), true)
   host:flush()
 end
 
---@api-stub: LNetworkHost:resetPeer
--- Resets a peer connection immediately without notifying the remote side.
--- Use for misbehaving peers you want gone immediately; the remote side will not get a clean disconnect notice.
+--@api-stub: NetworkHost:resetPeer
 do -- NetworkHost:resetPeer
   local host = lurek.network.newServer{ port = 5558, maxPeers = 8 }
   local cheater_peer_id = 3
@@ -219,81 +175,63 @@ do -- NetworkHost:resetPeer
   lurek.log.warn("force-reset peer " .. cheater_peer_id, "net")
 end
 
---@api-stub: LNetworkHost:ping
--- Sends a ping to a peer to measure round-trip time.
--- Pings are normally automatic; call this only to force an immediate RTT update before reading getRoundTripTime.
+--@api-stub: NetworkHost:ping
 do -- NetworkHost:ping
   local host = lurek.network.newServer{ port = 5559, maxPeers = 8 }
   local peer_id = 1
   host:ping(peer_id)
 end
 
---@api-stub: LNetworkHost:getRoundTripTime
--- Returns the round-trip time estimate for a peer in milliseconds.
--- Read this each second to render a latency meter; the value is in milliseconds.
+--@api-stub: NetworkHost:getRoundTripTime
 do -- NetworkHost:getRoundTripTime
   local host = lurek.network.newServer{ port = 5560, maxPeers = 8 }
   local rtt_ms = host:getRoundTripTime(1)
   if rtt_ms > 150 then lurek.log.warn("high latency: " .. rtt_ms .. " ms", "net") end
 end
 
---@api-stub: LNetworkHost:getPeerState
--- Returns the connection state of a peer as a string.
--- Branch on the state string before sending; sends to a non-"connected" peer raise an error.
+--@api-stub: NetworkHost:getPeerState
 do -- NetworkHost:getPeerState
   local host = lurek.network.newServer{ port = 5561, maxPeers = 8 }
   local state = host:getPeerState(1)
   if state == "connected" then host:send(1, 0, "hello", true) end
 end
 
---@api-stub: LNetworkHost:getPeerAddress
--- Returns the remote address of a peer, or nil if unavailable.
--- Useful for logging and ban lists; returns nil if the peer slot is empty or the address is not yet known.
+--@api-stub: NetworkHost:getPeerAddress
 do -- NetworkHost:getPeerAddress
   local host = lurek.network.newServer{ port = 5562, maxPeers = 8 }
   local addr = host:getPeerAddress(1)
   if addr then lurek.log.info("peer 1 at " .. addr, "net") end
 end
 
---@api-stub: LNetworkHost:getAddress
--- Returns the local bind address as a string.
--- Useful right after newHost{ addr = "0.0.0.0:0" } to discover which ephemeral port the OS picked.
+--@api-stub: NetworkHost:getAddress
 do -- NetworkHost:getAddress
   local host = lurek.network.newHost{ addr = "0.0.0.0:0", maxPeers = 4 }
   local bound = host:getAddress()
   lurek.log.info("bound to " .. bound, "net")
 end
 
---@api-stub: LNetworkHost:getPeerLimit
--- Returns the maximum number of peer slots.
--- Compare against getConnectedPeerCount to decide whether to advertise the lobby as full.
+--@api-stub: NetworkHost:getPeerLimit
 do -- NetworkHost:getPeerLimit
   local host = lurek.network.newServer{ port = 5563, maxPeers = 16 }
   local cap = host:getPeerLimit()
   lurek.log.info("max players: " .. cap, "net")
 end
 
---@api-stub: LNetworkHost:getChannelLimit
--- Returns the maximum number of channels per connection.
--- Use when wiring a channel-aware protocol (e.g. channel 0 = state, 1 = chat) to validate your assumed channel count.
+--@api-stub: NetworkHost:getChannelLimit
 do -- NetworkHost:getChannelLimit
   local host = lurek.network.newServer{ port = 5564, maxPeers = 8, channels = 4 }
   local channels = host:getChannelLimit()
   assert(channels >= 2, "need at least 2 channels for state+chat")
 end
 
---@api-stub: LNetworkHost:setChannelLimit
--- Sets the channel limit for future connections.
--- Apply before any peer connects; existing connections keep the channel count they negotiated.
+--@api-stub: NetworkHost:setChannelLimit
 do -- NetworkHost:setChannelLimit
   local host = lurek.network.newHost{ addr = "0.0.0.0:0", maxPeers = 8 }
   host:setChannelLimit(4)
   lurek.log.info("now negotiating " .. host:getChannelLimit() .. " channels", "net")
 end
 
---@api-stub: LNetworkHost:getBandwidthLimit
--- Returns the bandwidth limits as a table with incoming and outgoing fields.
--- Show in a debug overlay; returned values are bytes/second, 0 means unlimited.
+--@api-stub: NetworkHost:getBandwidthLimit
 do -- NetworkHost:getBandwidthLimit
   pcall(function()
     local host = lurek.network.newServer{ port = 5565, maxPeers = 8 }
@@ -303,18 +241,14 @@ do -- NetworkHost:getBandwidthLimit
   end)
 end
 
---@api-stub: LNetworkHost:getConnectedPeerCount
--- Returns the number of currently connected peers.
--- Poll once per second for a player counter; cheaper than iterating getConnectedPeerIds.
+--@api-stub: NetworkHost:getConnectedPeerCount
 do -- NetworkHost:getConnectedPeerCount
   local host = lurek.network.newServer{ port = 5566, maxPeers = 8 }
   local n = host:getConnectedPeerCount()
   lurek.log.info("players online: " .. n, "net")
 end
 
---@api-stub: LNetworkHost:getConnectedPeerIds
--- Returns a table of connected peer IDs.
--- Iterate to fan-out per-peer messages (e.g. private inventory updates) instead of broadcasting.
+--@api-stub: NetworkHost:getConnectedPeerIds
 do -- NetworkHost:getConnectedPeerIds
   local host = lurek.network.newServer{ port = 5567, maxPeers = 8 }
   for _, pid in ipairs(host:getConnectedPeerIds()) do
@@ -322,18 +256,14 @@ do -- NetworkHost:getConnectedPeerIds
   end
 end
 
---@api-stub: LNetworkHost:getPeerStats
--- Returns a statistics table for a peer.
--- Inspect packets_sent / packets_lost in a debug HUD to spot lossy clients before they desync.
+--@api-stub: NetworkHost:getPeerStats
 do -- NetworkHost:getPeerStats
   local host = lurek.network.newServer{ port = 5568, maxPeers = 8 }
   local stats = host:getPeerStats(1)
   lurek.log.debug("peer 1 sent=" .. stats.packets_sent .. " lost=" .. stats.packets_lost, "net")
 end
 
---@api-stub: LNetworkHost:destroy
--- Destroys the host, closing the underlying socket.
--- Always call from lurek.quit so the OS releases the UDP socket; safe to call once on a host already destroyed.
+--@api-stub: NetworkHost:destroy
 do -- NetworkHost:destroy
   local host = lurek.network.newServer{ port = 5569, maxPeers = 8 }
   function lurek.quit()
@@ -341,27 +271,21 @@ do -- NetworkHost:destroy
   end
 end
 
---@api-stub: LNetworkHost:isDestroyed
--- Returns true if the host has been destroyed.
--- Guard service / send loops with this so a hot-reload that nukes the host does not crash the next frame.
+--@api-stub: NetworkHost:isDestroyed
 do -- NetworkHost:isDestroyed
   local host = lurek.network.newServer{ port = 5570, maxPeers = 8 }
   host:destroy()
   if host:isDestroyed() then lurek.log.info("host shut down cleanly", "net") end
 end
 
---@api-stub: LNetworkHost:getRole
--- Returns the multiplayer role of this host ("server", "client", or "host").
--- Use to share one update path for client and server while still printing the right diagnostic strings.
+--@api-stub: NetworkHost:getRole
 do -- NetworkHost:getRole
   local host = lurek.network.newServer{ port = 5571, maxPeers = 8 }
   local role = host:getRole()
   lurek.log.info("running as " .. role, "net")
 end
 
---@api-stub: LNetworkHost:isServer
--- Returns true if this host was created as a server.
--- Branch on this when authoritative logic (spawning, scoring) must only run on the server side.
+--@api-stub: NetworkHost:isServer
 do -- NetworkHost:isServer
   local host = lurek.network.newServer{ port = 5572, maxPeers = 8 }
   if host:isServer() then
@@ -369,9 +293,7 @@ do -- NetworkHost:isServer
   end
 end
 
---@api-stub: LNetworkHost:isClient
--- Returns true if this host was created as a client.
--- Use to skip server-only code paths (spawning, validation) on joiners while still sharing the loop.
+--@api-stub: NetworkHost:isClient
 do -- NetworkHost:isClient
   local client = lurek.network.newClient{ addr = "127.0.0.1:5555" }
   if client:isClient() then
@@ -382,9 +304,7 @@ end
 
 -- â”€â”€ NetworkRuntime methods â”€â”€
 
---@api-stub: LNetworkRuntime:httpRequest
--- Sends an HTTP request asynchronously.
--- Pass a fully formed table once; correlate the returned request id with poll() responses to read the result.
+--@api-stub: NetworkRuntime:httpRequest
 do -- NetworkRuntime:httpRequest
   local rt = lurek.network.newRuntime()
   local req_id = rt:httpRequest{
@@ -395,63 +315,49 @@ do -- NetworkRuntime:httpRequest
   lurek.log.info("submitted score request id=" .. req_id, "net")
 end
 
---@api-stub: LNetworkRuntime:tcpConnect
--- Opens a TCP connection to a remote address.
--- Returns a connection id immediately; the actual socket open is signalled by a poll() event with event="connected".
+--@api-stub: NetworkRuntime:tcpConnect
 do -- NetworkRuntime:tcpConnect
   local rt = lurek.network.newRuntime()
   local conn = rt:tcpConnect("127.0.0.1:9")
   lurek.log.info("dialling tcp conn=" .. conn, "net")
 end
 
---@api-stub: LNetworkRuntime:tcpSend
--- Sends data over a TCP connection.
--- Frame your own messages (length prefix or newline) before calling; the runtime sends raw bytes.
+--@api-stub: NetworkRuntime:tcpSend
 do -- NetworkRuntime:tcpSend
   local rt = lurek.network.newRuntime()
   local conn = rt:tcpConnect("127.0.0.1:9")
   rt:tcpSend(conn, "LOGIN tom\n")
 end
 
---@api-stub: LNetworkRuntime:tcpClose
--- Closes the TCP connection identified by the given connection handle.
--- Close as soon as you receive your final response; leaving sockets open leaks file descriptors over long sessions.
+--@api-stub: NetworkRuntime:tcpClose
 do -- NetworkRuntime:tcpClose
   local rt = lurek.network.newRuntime()
   local conn = rt:tcpConnect("127.0.0.1:9")
   rt:tcpClose(conn)
 end
 
---@api-stub: LNetworkRuntime:wsConnect
--- Opens a WebSocket connection.
--- Use ws:// for plaintext (LAN, dev) and wss:// for production; both return a connection id you correlate via poll().
+--@api-stub: NetworkRuntime:wsConnect
 do -- NetworkRuntime:wsConnect
   local rt = lurek.network.newRuntime()
   local ws = rt:wsConnect("ws://127.0.0.1:9/lobby")
   lurek.log.info("opening websocket id=" .. ws, "net")
 end
 
---@api-stub: LNetworkRuntime:wsSend
--- Sends a text message over a WebSocket connection.
--- Sends a single text frame; for binary frames serialise with lurek.network.pack and send via the binary channel.
+--@api-stub: NetworkRuntime:wsSend
 do -- NetworkRuntime:wsSend
   local rt = lurek.network.newRuntime()
   local ws = rt:wsConnect("ws://127.0.0.1:9/lobby")
   rt:wsSend(ws, '{"chat":"hello"}')
 end
 
---@api-stub: LNetworkRuntime:wsClose
--- Closes a WebSocket connection.
--- Close cleanly when the player leaves the chat screen; the server will send a close frame back via poll().
+--@api-stub: NetworkRuntime:wsClose
 do -- NetworkRuntime:wsClose
   local rt = lurek.network.newRuntime()
   local ws = rt:wsConnect("ws://127.0.0.1:9/lobby")
   rt:wsClose(ws)
 end
 
---@api-stub: LNetworkRuntime:poll
--- Polls for completed async responses (HTTP, TCP events, WebSocket events).
--- Drain every frame in lurek.process; each entry has a .type ("http", "tcp", "websocket") and event-specific fields.
+--@api-stub: NetworkRuntime:poll
 do -- NetworkRuntime:poll
   local rt = lurek.network.newRuntime()
   function lurek.process(dt)
@@ -461,9 +367,7 @@ do -- NetworkRuntime:poll
   end
 end
 
---@api-stub: LNetworkRuntime:shutdown
--- Shuts down the background network thread.
--- Call from lurek.quit so the worker thread joins cleanly; the runtime is unusable after this.
+--@api-stub: NetworkRuntime:shutdown
 do -- NetworkRuntime:shutdown
   local rt = lurek.network.newRuntime()
   function lurek.quit()
@@ -471,18 +375,14 @@ do -- NetworkRuntime:shutdown
   end
 end
 
---@api-stub: LNetworkHost:broadcast
--- Sends a message to all connected peers on the specified channel.
--- Efficient for authoritative-state updates; peers filter by channel number.
+--@api-stub: NetworkHost:broadcast
 do -- NetworkHost:broadcast
   local host = lurek.network.newServer({port=7777, maxPeers=32})
   host:broadcast(0, "state_update", true)
   lurek.log.info("broadcast sent", "network")
 end
 
---@api-stub: LNetworkHost:connect
--- Attempts to connect this client host to a remote server address and port.
--- Returns a peer handle; the connection is established asynchronously via service().
+--@api-stub: NetworkHost:connect
 do -- NetworkHost:connect
   local client = lurek.network.newClient({addr="127.0.0.1:7777"})
   local ok, err = pcall(function()
@@ -492,18 +392,14 @@ do -- NetworkHost:connect
   if not ok then lurek.log.info("connect: no server available", "network") end
 end
 
---@api-stub: LNetworkHost:disconnect
--- Sends a disconnect notification and flushes all queued data before closing.
--- Graceful disconnect; peer receives ENet disconnect event after data drains.
+--@api-stub: NetworkHost:disconnect
 do -- NetworkHost:disconnect
   local host = lurek.network.newServer({port=7778, maxPeers=8})
   host:disconnect(1)
   lurek.log.info("disconnect requested", "network")
 end
 
---@api-stub: LNetworkHost:disconnectLater
--- Queues a disconnect that fires only after all outgoing packets are delivered.
--- Use when you need the remote to receive a final message before the channel closes.
+--@api-stub: NetworkHost:disconnectLater
 do -- NetworkHost:disconnectLater
   local host = lurek.network.newServer({port=7779, maxPeers=8})
   host:send(1, 0, "game_over", true)
@@ -511,45 +407,35 @@ do -- NetworkHost:disconnectLater
   lurek.log.info("disconnect-later queued", "network")
 end
 
---@api-stub: LNetworkHost:disconnectNow
--- Closes the connection immediately without waiting for queued packets.
--- Use for timeout handling or when the connection is already known to be dead.
+--@api-stub: NetworkHost:disconnectNow
 do -- NetworkHost:disconnectNow
   local host = lurek.network.newServer({port=7780, maxPeers=8})
   host:disconnectNow(1)
   lurek.log.info("disconnect-now issued", "network")
 end
 
---@api-stub: LNetworkRuntime:httpGet
--- Issues an asynchronous HTTP GET request to the given URL.
--- poll() returns the response; subscribe to its result in the next frame.
+--@api-stub: NetworkRuntime:httpGet
 do -- NetworkRuntime:httpGet
   local rt = lurek.network.newRuntime()
   local id = rt:httpGet("http://127.0.0.1:9/get")
   lurek.log.info("GET id=" .. id, "network")
 end
 
---@api-stub: LNetworkRuntime:httpPost
--- Issues an asynchronous HTTP POST request with a JSON or form body.
--- Pass headers table and body string; response arrives via the callback.
+--@api-stub: NetworkRuntime:httpPost
 do -- NetworkRuntime:httpPost
   local rt = lurek.network.newRuntime()
   local id = rt:httpPost("http://127.0.0.1:9/post", '{"key":"val"}')
   lurek.log.info("POST id=" .. id, "network")
 end
 
---@api-stub: LNetworkHost:send
--- Sends a packet to a single peer on the given channel.
--- channel is a 0-based integer; mode is "reliable", "unsequenced", or "unreliable".
+--@api-stub: NetworkHost:send
 do -- NetworkHost:send
   local host = lurek.network.newServer({port=7781, maxPeers=8})
   host:send(1, 0, "ping", true)
   lurek.log.info("packet sent to peer 1", "network")
 end
 
---@api-stub: LNetworkHost:setBandwidthLimit
--- Sets incoming and outgoing bandwidth caps (bytes/sec) on the host.
--- 0 = unlimited; use to simulate poor network conditions during testing.
+--@api-stub: NetworkHost:setBandwidthLimit
 do -- NetworkHost:setBandwidthLimit
   local host = lurek.network.newServer({port=7782, maxPeers=8})
   host:setBandwidthLimit(128000, 64000)
@@ -564,9 +450,7 @@ end
 -- The final committed file must contain ZERO --@api-stub: lines.
 -- =============================================================================
 
--- ---- Example: lurek.network.newHost -----------------------------------------
---@api-stub: lurek.network.newHost
--- Creates a new network host bound to the given address.
+--@api-stub: lurek.network.newHost -- Creates a network host from an options table
 do -- lurek.network.newHost
   local ok, host = pcall(lurek.network.newHost, { address = "127.0.0.1", port = 0 })
   lurek.log.info("newHost ok=" .. tostring(ok), "network")
@@ -584,10 +468,7 @@ end
 -- The final committed file must contain ZERO --@api-stub: lines.
 -- =============================================================================
 
--- ---- Example: lurek.network.newHost -----------------------------------------
---@api-stub: LNetworkHost:type
--- Returns the type name of this object.
--- Useful for runtime type inspection.
+--@api-stub: LNetworkHost:type -- Returns the Lua-visible type name for this network host handle
 do -- LNetworkHost:type
   local ok ---@type boolean
   local network_host_obj ---@type LNetworkHost?
@@ -596,9 +477,7 @@ do -- LNetworkHost:type
   local t = network_host_obj and network_host_obj:type() or "LNetworkHost"
   lurek.log.info("LNetworkHost:type = " .. t, "network")
 end
---@api-stub: LNetworkHost:typeOf
--- Returns true if this object is of the given type.
--- Use for runtime type checks.
+--@api-stub: LNetworkHost:typeOf -- Returns whether this network host handle matches a supported type name
 do -- LNetworkHost:typeOf
   local ok2 ---@type boolean
   local network_host_obj2 ---@type LNetworkHost?
@@ -607,25 +486,17 @@ do -- LNetworkHost:typeOf
   lurek.log.info("is LNetworkHost: " .. tostring(network_host_obj2 and network_host_obj2:typeOf("LNetworkHost") or false), "network")
   lurek.log.info("is wrong: " .. tostring(network_host_obj2 and network_host_obj2:typeOf("Unknown") or false), "network")
 end
---@api-stub: LNetworkRuntime:type
--- Returns the type name of this object.
--- Useful for runtime type inspection.
+--@api-stub: LNetworkRuntime:type -- Returns the Lua-visible type name for this network runtime handle
 do -- LNetworkRuntime:type
   local network_runtime_obj = lurek.network.newRuntime()
   local t = network_runtime_obj:type()
   lurek.log.info("LNetworkRuntime:type = " .. t, "network")
 end
---@api-stub: LNetworkRuntime:typeOf
--- Returns true if this object is of the given type.
--- Use for runtime type checks.
+--@api-stub: LNetworkRuntime:typeOf -- Returns whether this network runtime handle matches a supported type name
 do -- LNetworkRuntime:typeOf
   local network_runtime_obj = lurek.network.newRuntime()
   lurek.log.info("is LNetworkRuntime: " .. tostring(network_runtime_obj:typeOf("LNetworkRuntime")), "network")
   lurek.log.info("is wrong: " .. tostring(network_runtime_obj:typeOf("Unknown")), "network")
 end
---@api-stub: block below with a real scenario.
--- Run .github/prompts/flesh-out-example.prompt.md for instructions.
--- The final committed file must contain ZERO --@api-stub: lines.
--- =============================================================================
 
 

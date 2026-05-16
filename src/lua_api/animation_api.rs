@@ -774,7 +774,7 @@ impl LuaUserData for LuaAnimCurve {
         });
         // -- setCustomEasing --
         /// Sets or clears a Lua callback used to evaluate custom easing.
-        /// @param | func | LuaValue | Function used as custom easing callback, or nil to clear custom easing.
+        /// @param | func | any | Function used as custom easing callback, or nil to clear custom easing.
         /// @return | nil | No value is returned.
         methods.add_method_mut("setCustomEasing", |lua, this, func: LuaValue| {
             use crate::animation::curve::EasingKind;
@@ -827,12 +827,12 @@ impl LuaUserData for LuaAnimSyncGroup {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
         // -- add --
         /// Adds an animation-like handle to the sync group.
-        /// @param | handle | LuaValue | Animation handle accepted by future sync group implementations.
+        /// @param | handle | any | Animation handle accepted by future sync group implementations.
         /// @return | nil | No value is returned.
         methods.add_method_mut("add", |_, _this, _handle: LuaValue| Ok(()));
         // -- remove --
         /// Removes an animation-like handle from the sync group.
-        /// @param | handle | LuaValue | Animation handle accepted by future sync group implementations.
+        /// @param | handle | any | Animation handle accepted by future sync group implementations.
         /// @return | nil | No value is returned.
         methods.add_method_mut("remove", |_, _this, _handle: LuaValue| Ok(()));
         // -- clear --

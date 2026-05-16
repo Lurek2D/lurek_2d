@@ -849,7 +849,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     )?;
     // -- discoverLobbies --
     /// Discovers broadcast lobbies. This function is exposed to Lua scripts.
-    /// @param | timeout_ms | integer | Optional timeout in milliseconds, defaulting to 500.
+    /// @param | timeout_ms | integer? | Optional timeout in milliseconds, defaulting to 500.
     /// @return | table | Array table of lobby info tables.
     tbl.set(
         "discoverLobbies",

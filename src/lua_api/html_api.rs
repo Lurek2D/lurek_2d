@@ -396,7 +396,7 @@ impl LuaUserData for LuaHtmlElement {
         });
         // -- setId --
         /// Sets or clears this element's id attribute.
-        /// @param | id | string | Optional id attribute value.
+        /// @param | id | string? | Optional id attribute value.
         /// @return | nil | No value is returned.
         methods.add_method("setId", |_, this, id: Option<String>| {
             check_html_element(this)?;

@@ -1,18 +1,8 @@
 -- content/examples/ecs.lua
--- Hand-written coverage of the lurek.ecs API (47 items).
---
--- Components are plain Lua tables stored under string names per entity
--- (e.g. "position", "velocity", "health"). Systems are tables with
--- update/render/event-handler functions called by the universe in
--- priority order.
---
+-- lurek.ecs API examples.
 -- Run: cargo run -- content/examples/ecs.lua
 
--- â”€â”€ lurek.ecs.* functions â”€â”€
-
---@api-stub: lurek.ecs.newUniverse
--- Creates a new empty ECS universe.
--- Call once at startup and reuse the returned world for all entity, component, and system work.
+--@api-stub: lurek.ecs.newUniverse -- Creates an empty ECS universe for entity, component, system, and relationship management
 do -- lurek.ecs.newUniverse
   local world = lurek.ecs.newUniverse()
   local hero = world:spawn()
@@ -22,9 +12,7 @@ end
 
 -- â”€â”€ Universe methods â”€â”€
 
---@api-stub: LUniverse:spawn
--- Creates a new entity and returns its packed ID.
--- The ID is a stable handle until killed; pair every spawn with the components that define it.
+--@api-stub: Universe:spawn
 do -- Universe:spawn
   local world = lurek.ecs.newUniverse()
   local enemy = world:spawn()
@@ -32,9 +20,7 @@ do -- Universe:spawn
   world:set(enemy, "health",   { hp = 5, max = 5 })
 end
 
---@api-stub: LUniverse:kill
--- Destroys the entity with the given ID, freeing its slot for reuse.
--- Use after a death animation finishes; the slot is recycled so cached IDs become stale.
+--@api-stub: Universe:kill
 do -- Universe:kill
   local world = lurek.ecs.newUniverse()
   local bullet = world:spawn()
@@ -42,9 +28,7 @@ do -- Universe:kill
   world:kill(bullet)
 end
 
---@api-stub: LUniverse:isAlive
--- Returns true if the entity ID is currently alive.
--- Always check before using a stored ID â€” slots are recycled and packed IDs disambiguate generations.
+--@api-stub: Universe:isAlive
 do -- Universe:isAlive
   local world = lurek.ecs.newUniverse()
   local id = world:spawn()
@@ -52,9 +36,7 @@ do -- Universe:isAlive
   if not world:isAlive(id) then lurek.log.debug("target gone", "ecs") end
 end
 
---@api-stub: LUniverse:get
--- Returns the component value for an entity, or nil if missing.
--- Mutate the returned table in place to update component state without an extra :set call.
+--@api-stub: Universe:get
 do -- Universe:get
   local world = lurek.ecs.newUniverse()
   local e = world:spawn()
@@ -63,9 +45,7 @@ do -- Universe:get
   pos.x = pos.x + 1
 end
 
---@api-stub: LUniverse:has
--- Returns true if the entity has the named component.
--- Branch on this before reading or applying optional behaviour like a "stunned" flag.
+--@api-stub: Universe:has
 do -- Universe:has
   local world = lurek.ecs.newUniverse()
   local e = world:spawn()
@@ -73,9 +53,7 @@ do -- Universe:has
   if world:has(e, "stunned") then lurek.log.debug("skip ai", "ecs") end
 end
 
---@api-stub: LUniverse:remove
--- Removes a component from an entity.
--- Use to drop transient state (e.g. "burning", "frozen") without killing the entity itself.
+--@api-stub: Universe:remove
 do -- Universe:remove
   local world = lurek.ecs.newUniverse()
   local e = world:spawn()
@@ -83,9 +61,7 @@ do -- Universe:remove
   world:remove(e, "burning")
 end
 
---@api-stub: LUniverse:getComponents
--- Returns all component names for an entity.
--- Useful for save-system snapshots, debug overlays, and editor inspectors.
+--@api-stub: Universe:getComponents
 do -- Universe:getComponents
   local world = lurek.ecs.newUniverse()
   local e = world:spawn()
@@ -94,9 +70,7 @@ do -- Universe:getComponents
   for _, name in ipairs(world:getComponents(e)) do lurek.log.debug(name, "inspect") end
 end
 
---@api-stub: LUniverse:query
--- Returns entity IDs that have all listed component names.
--- Drive every system loop from a query so logic stays data-driven instead of hard-coding entity lists.
+--@api-stub: Universe:query
 do -- Universe:query
   local world = lurek.ecs.newUniverse()
   local e = world:spawn()
@@ -108,9 +82,7 @@ do -- Universe:query
   end
 end
 
---@api-stub: LUniverse:getEntities
--- Returns all alive entity IDs.
--- Reach for query() instead in hot loops; this is for debug counts, save/load, and editors.
+--@api-stub: Universe:getEntities
 do -- Universe:getEntities
   local world = lurek.ecs.newUniverse()
   for _ = 1, 5 do world:spawn() end
@@ -118,18 +90,14 @@ do -- Universe:getEntities
   lurek.log.info("total entities=" .. #all, "ecs")
 end
 
---@api-stub: LUniverse:getEntityCount
--- Returns the number of alive entities.
--- Cheaper than #getEntities â€” call it from HUD/debug overlays every frame.
+--@api-stub: Universe:getEntityCount
 do -- Universe:getEntityCount
   local world = lurek.ecs.newUniverse()
   for _ = 1, 12 do world:spawn() end
   if world:getEntityCount() > 1000 then lurek.log.warn("entity budget exceeded", "ecs") end
 end
 
---@api-stub: LUniverse:removeSystem
--- Removes a system table from the universe.
--- Use to detach pause-incompatible systems (e.g. AI) when the game enters a menu.
+--@api-stub: Universe:removeSystem
 do -- Universe:removeSystem
   local world = lurek.ecs.newUniverse()
   local ai_system = { update = function() end }
@@ -137,9 +105,7 @@ do -- Universe:removeSystem
   world:removeSystem(ai_system)
 end
 
---@api-stub: LUniverse:update
--- Calls update(system, world, dt) on each registered system in priority order.
--- Drive it from lurek.process(dt) once per frame so all systems share the same timestep.
+--@api-stub: Universe:update
 do -- Universe:update
   local world = lurek.ecs.newUniverse()
   local move_system = {
@@ -154,9 +120,7 @@ do -- Universe:update
   function lurek.process(dt) world:update(dt) end
 end
 
---@api-stub: LUniverse:render
--- Calls render(system, world) on each registered system in priority order.
--- Wire it into lurek.render so draw order follows system priority instead of spawn order.
+--@api-stub: Universe:render
 do -- Universe:render
   local world = lurek.ecs.newUniverse()
   local draw_system = {
@@ -171,9 +135,7 @@ do -- Universe:render
   function lurek.draw() world:render() end
 end
 
---@api-stub: LUniverse:emit
--- Emits a named event to all systems that implement the handler, in priority order.
--- Decouple input/AI/audio: emit("damage", id, 10) and let any system with a damage(self,w,id,n) handler react.
+--@api-stub: Universe:emit
 do -- Universe:emit
   local world = lurek.ecs.newUniverse()
   local hp_system = {
@@ -186,9 +148,7 @@ do -- Universe:emit
   world:emit("damage", target, 3)
 end
 
---@api-stub: LUniverse:getSystemCount
--- Returns the number of registered systems.
--- Useful in startup logging to confirm the expected pipeline shape.
+--@api-stub: Universe:getSystemCount
 do -- Universe:getSystemCount
   local world = lurek.ecs.newUniverse()
   world:addSystem({ update = function() end })
@@ -196,9 +156,7 @@ do -- Universe:getSystemCount
   lurek.log.info("systems registered=" .. world:getSystemCount(), "ecs")
 end
 
---@api-stub: LUniverse:clear
--- Removes all entities, components, tags, layers, and systems. Blueprints are preserved.
--- Call between levels to reset gameplay state while keeping authored blueprint definitions.
+--@api-stub: Universe:clear
 do -- Universe:clear
   local world = lurek.ecs.newUniverse()
   for _ = 1, 5 do world:spawn() end
@@ -206,18 +164,14 @@ do -- Universe:clear
   lurek.log.info("after clear count=" .. world:getEntityCount(), "ecs")
 end
 
---@api-stub: LUniverse:release
--- Releases all universe state, equivalent to clear.
--- Prefer at full shutdown / new-game boundaries to make the intent explicit.
+--@api-stub: Universe:release
 do -- Universe:release
   local world = lurek.ecs.newUniverse()
   world:spawn()
   world:release()
 end
 
---@api-stub: LUniverse:addTag
--- Attaches a string tag to an entity.
--- Use sparingly for one-off labels ("player", "boss"); prefer bitmap tags for high-volume flags.
+--@api-stub: Universe:addTag
 do -- Universe:addTag
   local world = lurek.ecs.newUniverse()
   local hero = world:spawn()
@@ -225,9 +179,7 @@ do -- Universe:addTag
   world:addTag(hero, "alive")
 end
 
---@api-stub: LUniverse:removeTag
--- Removes a string tag from an entity.
--- Pair with addTag when state changes (e.g. drop "alive" when the death animation begins).
+--@api-stub: Universe:removeTag
 do -- Universe:removeTag
   local world = lurek.ecs.newUniverse()
   local e = world:spawn()
@@ -235,9 +187,7 @@ do -- Universe:removeTag
   world:removeTag(e, "alive")
 end
 
---@api-stub: LUniverse:hasTag
--- Returns true if the entity carries the given tag.
--- Branch on this in collision/AI handlers to skip non-targets without scanning components.
+--@api-stub: Universe:hasTag
 do -- Universe:hasTag
   local world = lurek.ecs.newUniverse()
   local e = world:spawn()
@@ -245,9 +195,7 @@ do -- Universe:hasTag
   if world:hasTag(e, "player") then lurek.log.debug("hit player", "ecs") end
 end
 
---@api-stub: LUniverse:getTags
--- Returns all string tags for an entity.
--- Useful for debug HUDs and editors; keep call sites out of inner loops.
+--@api-stub: Universe:getTags
 do -- Universe:getTags
   local world = lurek.ecs.newUniverse()
   local e = world:spawn()
@@ -255,9 +203,7 @@ do -- Universe:getTags
   for _, t in ipairs(world:getTags(e)) do lurek.log.debug(t, "tags") end
 end
 
---@api-stub: LUniverse:getEntitiesByTag
--- Returns all alive entities with the given string tag.
--- Use for unique-ish groups like "enemy"; for high-volume flags prefer queryBitmapTag.
+--@api-stub: Universe:getEntitiesByTag
 do -- Universe:getEntitiesByTag
   local world = lurek.ecs.newUniverse()
   for _ = 1, 3 do local id = world:spawn(); world:addTag(id, "enemy") end
@@ -265,27 +211,21 @@ do -- Universe:getEntitiesByTag
   lurek.log.info("enemy count=" .. #enemies, "ecs")
 end
 
---@api-stub: LUniverse:setLayer
--- Sets the layer for an entity.
--- Layers control draw/sort order â€” use small integers (e.g. 0=floor, 10=actor, 20=ui).
+--@api-stub: Universe:setLayer
 do -- Universe:setLayer
   local world = lurek.ecs.newUniverse()
   local floor = world:spawn(); world:setLayer(floor, 0)
   local actor = world:spawn(); world:setLayer(actor, 10)
 end
 
---@api-stub: LUniverse:getLayer
--- Returns the layer for an entity, defaulting to zero.
--- Use in custom render systems that need explicit z-comparison logic.
+--@api-stub: Universe:getLayer
 do -- Universe:getLayer
   local world = lurek.ecs.newUniverse()
   local e = world:spawn(); world:setLayer(e, 5)
   if world:getLayer(e) >= 5 then lurek.log.debug("foreground", "ecs") end
 end
 
---@api-stub: LUniverse:getEntitiesByLayer
--- Returns all alive entities on a specific layer.
--- Render layer-by-layer to guarantee draw order without sorting every frame.
+--@api-stub: Universe:getEntitiesByLayer
 do -- Universe:getEntitiesByLayer
   local world = lurek.ecs.newUniverse()
   for i = 1, 4 do local id = world:spawn(); world:setLayer(id, i % 2) end
@@ -293,9 +233,7 @@ do -- Universe:getEntitiesByLayer
   lurek.log.debug("layer1=" .. #fg, "ecs")
 end
 
---@api-stub: LUniverse:getEntitiesSorted
--- Returns all alive entities sorted by layer then ID.
--- Cheap one-pass walk for back-to-front rendering; cache between frames if entity set is stable.
+--@api-stub: Universe:getEntitiesSorted
 do -- Universe:getEntitiesSorted
   local world = lurek.ecs.newUniverse()
   local a = world:spawn(); world:setLayer(a, 2)
@@ -304,9 +242,7 @@ do -- Universe:getEntitiesSorted
   for _, id in ipairs(order) do lurek.log.debug("draw=" .. id, "ecs") end
 end
 
---@api-stub: LUniverse:defineTag
--- Defines a bitmap tag name, returning its bit index.
--- Define every bitmap tag at startup so query sites never race the first :bitmapTag call.
+--@api-stub: Universe:defineTag
 do -- Universe:defineTag
   local world = lurek.ecs.newUniverse()
   local bit_player = world:defineTag("player")
@@ -314,9 +250,7 @@ do -- Universe:defineTag
   lurek.log.info("player bit=" .. bit_player .. " enemy bit=" .. bit_enemy, "ecs")
 end
 
---@api-stub: LUniverse:bitmapTag
--- Adds a bitmap tag to an entity.
--- 64-tag bitset gives O(1) tag check and fast multi-tag intersection â€” use for hot per-frame flags.
+--@api-stub: Universe:bitmapTag
 do -- Universe:bitmapTag
   local world = lurek.ecs.newUniverse()
   world:defineTag("solid")
@@ -324,9 +258,7 @@ do -- Universe:bitmapTag
   world:bitmapTag(block, "solid")
 end
 
---@api-stub: LUniverse:bitmapUntag
--- Removes a bitmap tag from an entity.
--- Use when a temporary state ends, e.g. clearing "invincible" after the i-frames timer expires.
+--@api-stub: Universe:bitmapUntag
 do -- Universe:bitmapUntag
   local world = lurek.ecs.newUniverse()
   world:defineTag("invincible")
@@ -334,9 +266,7 @@ do -- Universe:bitmapUntag
   world:bitmapUntag(hero, "invincible")
 end
 
---@api-stub: LUniverse:hasBitmapTag
--- Returns true if the entity has the given bitmap tag.
--- Faster than hasTag for hot collision/AI checks once the tag has been defined.
+--@api-stub: Universe:hasBitmapTag
 do -- Universe:hasBitmapTag
   local world = lurek.ecs.newUniverse()
   world:defineTag("solid")
@@ -344,9 +274,7 @@ do -- Universe:hasBitmapTag
   if world:hasBitmapTag(block, "solid") then lurek.log.debug("collide", "phys") end
 end
 
---@api-stub: LUniverse:queryBitmapTag
--- Returns all alive entities with the given bitmap tag.
--- Drive your collision broadphase or AI scan from this â€” single u64 mask compare per entity.
+--@api-stub: Universe:queryBitmapTag
 do -- Universe:queryBitmapTag
   local world = lurek.ecs.newUniverse()
   world:defineTag("enemy")
@@ -354,9 +282,7 @@ do -- Universe:queryBitmapTag
   for _, id in ipairs(world:queryBitmapTag("enemy")) do lurek.log.debug("enemy=" .. id, "ai") end
 end
 
---@api-stub: LUniverse:queryBitmapAny
--- Returns all alive entities with any of the listed bitmap tags.
--- Use for "anything dangerous": queryBitmapAny({"enemy", "hazard", "trap"}).
+--@api-stub: Universe:queryBitmapAny
 do -- Universe:queryBitmapAny
   local world = lurek.ecs.newUniverse()
   world:defineTag("enemy"); world:defineTag("hazard")
@@ -366,9 +292,7 @@ do -- Universe:queryBitmapAny
   lurek.log.info("danger count=" .. #danger, "ai")
 end
 
---@api-stub: LUniverse:queryBitmapAll
--- Returns all alive entities with all of the listed bitmap tags.
--- Use for compound predicates: "alive AND solid AND visible" without a multi-component query.
+--@api-stub: Universe:queryBitmapAll
 do -- Universe:queryBitmapAll
   local world = lurek.ecs.newUniverse()
   world:defineTag("solid"); world:defineTag("visible")
@@ -378,9 +302,7 @@ do -- Universe:queryBitmapAll
   end
 end
 
---@api-stub: LUniverse:getBitmapTagBit
--- Returns the bit index for a bitmap tag name, or nil if undefined.
--- Useful when bridging to native code or for asserting startup tag tables match expectations.
+--@api-stub: Universe:getBitmapTagBit
 do -- Universe:getBitmapTagBit
   local world = lurek.ecs.newUniverse()
   world:defineTag("player")
@@ -388,27 +310,21 @@ do -- Universe:getBitmapTagBit
   if bit then lurek.log.info("player tag stored at bit " .. bit, "ecs") end
 end
 
---@api-stub: LUniverse:hasBlueprint
--- Returns true if a blueprint with the given name exists.
--- Guard before spawnBlueprint to surface a clean error when content data fails to load.
+--@api-stub: Universe:hasBlueprint
 do -- Universe:hasBlueprint
   local world = lurek.ecs.newUniverse()
   world:defineBlueprint("goblin", { health = { hp = 3, max = 3 } })
   if world:hasBlueprint("goblin") then lurek.log.info("goblin ready", "ecs") end
 end
 
---@api-stub: LUniverse:removeBlueprint
--- Removes a blueprint definition.
--- Use when hot-reloading a content folder so the next spawnBlueprint sees the fresh definition.
+--@api-stub: Universe:removeBlueprint
 do -- Universe:removeBlueprint
   local world = lurek.ecs.newUniverse()
   world:defineBlueprint("goblin", { health = { hp = 3, max = 3 } })
   world:removeBlueprint("goblin")
 end
 
---@api-stub: LUniverse:listBlueprints
--- Returns all defined blueprint names.
--- Useful for debug pickers and editor entity-spawn dropdowns.
+--@api-stub: Universe:listBlueprints
 do -- Universe:listBlueprints
   local world = lurek.ecs.newUniverse()
   world:defineBlueprint("goblin", { health = { hp = 3, max = 3 } })
@@ -416,9 +332,7 @@ do -- Universe:listBlueprints
   for _, name in ipairs(world:listBlueprints()) do lurek.log.debug(name, "blueprint") end
 end
 
---@api-stub: LUniverse:getBlueprintComponents
--- Returns a deep copy of a blueprint's component table, or nil.
--- Inspect or templatize from a blueprint without mutating the canonical definition.
+--@api-stub: Universe:getBlueprintComponents
 do -- Universe:getBlueprintComponents
   local world = lurek.ecs.newUniverse()
   world:defineBlueprint("goblin", { health = { hp = 3, max = 3 } })
@@ -426,9 +340,7 @@ do -- Universe:getBlueprintComponents
   if comps then lurek.log.info("goblin starts at hp=" .. comps.health.hp, "ecs") end
 end
 
---@api-stub: LUniverse:getParent
--- Returns the parent entity ID, or nil if unparented.
--- Use to walk up scene-graph hierarchies for transform inheritance or selection focus.
+--@api-stub: Universe:getParent
 do -- Universe:getParent
   local world = lurek.ecs.newUniverse()
   local parent = world:spawn()
@@ -437,9 +349,7 @@ do -- Universe:getParent
   if world:getParent(child) == parent then lurek.log.debug("attached", "scene") end
 end
 
---@api-stub: LUniverse:getChildren
--- Returns all direct child entity IDs.
--- Iterate to apply effects (tint, hide) to every child of a container without recursion.
+--@api-stub: Universe:getChildren
 do -- Universe:getChildren
   local world = lurek.ecs.newUniverse()
   local root = world:spawn()
@@ -447,9 +357,7 @@ do -- Universe:getChildren
   for _, id in ipairs(world:getChildren(root)) do lurek.log.debug("child=" .. id, "scene") end
 end
 
---@api-stub: LUniverse:killRecursive
--- Kills an entity and all its descendants recursively.
--- Drop a whole prefab in one call â€” wagon + driver + cargo all die together.
+--@api-stub: Universe:killRecursive
 do -- Universe:killRecursive
   local world = lurek.ecs.newUniverse()
   local wagon = world:spawn()
@@ -457,9 +365,7 @@ do -- Universe:killRecursive
   world:killRecursive(wagon)
 end
 
---@api-stub: LUniverse:serialize
--- Serializes all alive entities to a Lua table snapshot.
--- Pair with lurek.fs and a TOML/JSON encoder to write save files; deserialize() restores it.
+--@api-stub: Universe:serialize
 do -- Universe:serialize
   local world = lurek.ecs.newUniverse()
   local hero = world:spawn(); world:set(hero, "position", { x = 5, y = 7 })
@@ -467,9 +373,7 @@ do -- Universe:serialize
   lurek.log.info("snapshot entries=" .. #snapshot, "save")
 end
 
---@api-stub: LUniverse:deserialize
--- Restores entity state from a snapshot produced by serialize().
--- Clears live entities first; blueprints and registered systems survive â€” you keep your pipeline.
+--@api-stub: Universe:deserialize
 do -- Universe:deserialize
   local world = lurek.ecs.newUniverse()
   local e = world:spawn(); world:set(e, "position", { x = 1, y = 2 })
@@ -478,9 +382,7 @@ do -- Universe:deserialize
   world:deserialize(snap)
 end
 
---@api-stub: LUniverse:flushObservers
--- Dispatches all pending component-add and component-remove events to registered callbacks.
--- Call once per frame at a known point so observer side-effects never fire mid-system iteration.
+--@api-stub: Universe:flushObservers
 do -- Universe:flushObservers
   local world = lurek.ecs.newUniverse()
   world:onComponentAdded("health", function(id) lurek.log.info("hp added to " .. id, "ecs") end)
@@ -488,9 +390,7 @@ do -- Universe:flushObservers
   function lurek.process() world:flushObservers() end
 end
 
---@api-stub: LUniverse:getRelated
--- Returns all entity IDs reachable from `from` via the named relationship.
--- Model "owns", "targets", "follows" without polluting components â€” relationships stay queryable.
+--@api-stub: Universe:getRelated
 do -- Universe:getRelated
   local world = lurek.ecs.newUniverse()
   local hero = world:spawn()
@@ -498,9 +398,7 @@ do -- Universe:getRelated
   for _, item in ipairs(world:getRelated(hero, "wields")) do lurek.log.debug("equipped=" .. item, "ecs") end
 end
 
---@api-stub: LUniverse:clearRelations
--- Removes all directed named relationships of type `name` from entity `from`.
--- Wipe an entire follower group, equip slot, or aggro list in one call when the source despawns.
+--@api-stub: Universe:clearRelations
 do -- Universe:clearRelations
   local world = lurek.ecs.newUniverse()
   local boss = world:spawn()
@@ -508,9 +406,7 @@ do -- Universe:clearRelations
   world:clearRelations(boss, "minions")
 end
 
---@api-stub: LUniverse:addRelation
--- Adds a directed relation from one entity to another with a typed tag.
--- Relations model parent/child, attacker/target, or equipment/owner semantics.
+--@api-stub: Universe:addRelation
 do -- Universe:addRelation
   local u = lurek.ecs.newUniverse()
   local parent = u:spawn()
@@ -519,9 +415,7 @@ do -- Universe:addRelation
   lurek.log.info("relation added", "ecs")
 end
 
---@api-stub: LUniverse:addSystem
--- Registers a system function that processes entities matching a component query.
--- Systems run in registration order inside universe:update(); pass a query table and callback.
+--@api-stub: Universe:addSystem
 do -- Universe:addSystem
   local u = lurek.ecs.newUniverse()
   u:addSystem({
@@ -533,18 +427,14 @@ do -- Universe:addSystem
   lurek.log.info("system count: " .. u:getSystemCount(), "ecs")
 end
 
---@api-stub: LUniverse:defineBlueprint
--- Defines a named entity blueprint with a default component set.
--- Blueprints let you spawn pre-configured entities without repeating component setup.
+--@api-stub: Universe:defineBlueprint
 do -- Universe:defineBlueprint
   local u = lurek.ecs.newUniverse()
   u:defineBlueprint("enemy", {Health={max=100}, Position={x=0,y=0}})
   lurek.log.info("blueprint defined", "ecs")
 end
 
---@api-stub: LUniverse:each
--- Iterates all living entities matching the query, calling callback(entity, ...) for each.
--- More convenient than query() when side effects are needed on every matching entity.
+--@api-stub: Universe:each
 do -- Universe:each
   local u = lurek.ecs.newUniverse()
   local e = u:spawn()
@@ -554,9 +444,7 @@ do -- Universe:each
   end)
 end
 
---@api-stub: LUniverse:extendBlueprint
--- Creates a new blueprint by inheriting from an existing one and overriding components.
--- Child blueprints merge with parent; conflicts are resolved in favour of the child.
+--@api-stub: Universe:extendBlueprint
 do -- Universe:extendBlueprint
   local u = lurek.ecs.newUniverse()
   u:defineBlueprint("unit", {Health={max=100}, Position={x=0,y=0}})
@@ -564,9 +452,7 @@ do -- Universe:extendBlueprint
   lurek.log.info("boss extended from unit", "ecs")
 end
 
---@api-stub: LUniverse:hasRelation
--- Returns true if a directed relation with the given tag exists from source to target.
--- Use before removeRelation to avoid errors on non-existent relations.
+--@api-stub: Universe:hasRelation
 do -- Universe:hasRelation
   local u = lurek.ecs.newUniverse()
   local a = u:spawn(); local b = u:spawn()
@@ -574,9 +460,7 @@ do -- Universe:hasRelation
   lurek.log.info("has ally: " .. tostring(u:hasRelation(a, "ally", b)), "ecs")
 end
 
---@api-stub: LUniverse:onComponentAdded
--- Registers an observer callback that fires whenever a component type is added to any entity.
--- Useful for reacting to component initialisation without polling in a system.
+--@api-stub: Universe:onComponentAdded
 do -- Universe:onComponentAdded
   local u = lurek.ecs.newUniverse()
   u:onComponentAdded("Health", function(eid, comp)
@@ -586,9 +470,7 @@ do -- Universe:onComponentAdded
   u:set(e, "Health", {hp=100})
 end
 
---@api-stub: LUniverse:onComponentRemoved
--- Registers an observer callback that fires whenever a component type is removed from any entity.
--- Use to clean up external resources when a component is destroyed.
+--@api-stub: Universe:onComponentRemoved
 do -- Universe:onComponentRemoved
   local u = lurek.ecs.newUniverse()
   u:onComponentRemoved("Sprite", function(eid)
@@ -599,9 +481,7 @@ do -- Universe:onComponentRemoved
   u:remove(e, "Sprite")
 end
 
---@api-stub: LUniverse:queryNot
--- Returns all living entities that do NOT have all of the excluded component types.
--- Useful for finding entities missing a component, e.g. units without a patrol path.
+--@api-stub: Universe:queryNot
 do -- Universe:queryNot
   local u = lurek.ecs.newUniverse()
   local e1 = u:spawn(); u:set(e1, "Health", {hp=100})
@@ -610,9 +490,7 @@ do -- Universe:queryNot
   lurek.log.info("without health: " .. #uninjured, "ecs")
 end
 
---@api-stub: LUniverse:removeRelation
--- Removes a directed relation with the given tag between two entities.
--- No-op if the relation does not exist; check with hasRelation first if needed.
+--@api-stub: Universe:removeRelation
 do -- Universe:removeRelation
   local u = lurek.ecs.newUniverse()
   local a = u:spawn(); local b = u:spawn()
@@ -621,9 +499,7 @@ do -- Universe:removeRelation
   lurek.log.info("relation removed", "ecs")
 end
 
---@api-stub: LUniverse:set
--- Adds or replaces a component on an entity with the provided data table.
--- If the component already exists it is overwritten; fires onComponentAdded only on first add.
+--@api-stub: Universe:set
 do -- Universe:set
   local u = lurek.ecs.newUniverse()
   local e = u:spawn()
@@ -632,9 +508,7 @@ do -- Universe:set
   lurek.log.info("components set on entity " .. e, "ecs")
 end
 
---@api-stub: LUniverse:setParent
--- Establishes a parent-child hierarchy between two entities.
--- Children are destroyed when the parent is killed via killRecursive.
+--@api-stub: Universe:setParent
 do -- Universe:setParent
   local u = lurek.ecs.newUniverse()
   local parent = u:spawn()
@@ -643,9 +517,7 @@ do -- Universe:setParent
   lurek.log.info("parent: " .. u:getParent(child), "ecs")
 end
 
---@api-stub: LUniverse:spawnBlueprint
--- Spawns a new entity from a pre-defined blueprint with optional component overrides.
--- Overrides are merged with the blueprint defaults; returns the new entity id.
+--@api-stub: Universe:spawnBlueprint
 do -- Universe:spawnBlueprint
   local u = lurek.ecs.newUniverse()
   u:defineBlueprint("goblin", {Health={max=40}, Position={x=0,y=0}})
@@ -653,9 +525,7 @@ do -- Universe:spawnBlueprint
   lurek.log.info("spawned blueprint entity: " .. e, "ecs")
 end
 
---@api-stub: LUniverse:spawnBulk
--- Spawns multiple entities at once, optionally applying a template to each.
--- Much faster than calling spawn() in a loop; returns a table of new entity ids.
+--@api-stub: Universe:spawnBulk
 do -- Universe:spawnBulk
   local u = lurek.ecs.newUniverse()
   u:defineBlueprint("bulk_unit", {Health={max=100}, Position={x=0,y=0}})
@@ -687,18 +557,16 @@ end
 -- LUniverse methods
 -- -----------------------------------------------------------------------------
 
--- ---- Example: LUniverse:type ------------------------------------------------
 -- LUniverse:type / LUniverse:typeOf
 -- Inspect the runtime type name and confirm object type at runtime.
+--@api-stub: Universe:type
 do -- Universe:type typeOf
   local world = lurek.ecs.newUniverse()
   lurek.log.info("type=" .. world:type(), "ecs")
   lurek.log.info("typeOf Universe: " .. tostring(world:typeOf("Universe")), "ecs")
 end
 
---@api-stub: LUniverse:queryMulti
--- Iterates every alive entity that has ALL listed components, delivering values to the callback.
--- queryMulti({"pos","vel"}, cb) avoids a second get() call inside the loop.
+--@api-stub: Universe:queryMulti
 do -- Universe:queryMulti
   local world = lurek.ecs.newUniverse()
   local a = world:spawn()
@@ -710,9 +578,7 @@ do -- Universe:queryMulti
   end)
 end
 
---@api-stub: LUniverse:getDirtyEntities
--- Returns entity IDs whose components changed since the last flushObservers call.
--- Use at the end of a frame to run change-detection systems or sync external state.
+--@api-stub: Universe:getDirtyEntities
 do -- Universe:getDirtyEntities
   local world = lurek.ecs.newUniverse()
   local e = world:spawn()
@@ -723,9 +589,7 @@ do -- Universe:getDirtyEntities
   lurek.log.info("after flush dirty=" .. #world:getDirtyEntities(), "ecs")
 end
 
---@api-stub: LUniverse:updatePhase
--- Calls update(system, world, dt) on every system registered in the given phase, in priority order.
--- Use pre_update for input gather, update for logic, post_update for late transforms.
+--@api-stub: Universe:updatePhase
 do -- Universe:updatePhase
   local world = lurek.ecs.newUniverse()
   local InputSys = { update = function(self, w, dt) lurek.log.debug("input", "ecs") end }
@@ -738,9 +602,7 @@ do -- Universe:updatePhase
   end
 end
 
---@api-stub: LUniverse:snapshot
--- Serializes the entire universe state to a Lua table. Alias for serialize().
--- Pair with applySnapshot() for rollback or mid-session checkpointing.
+--@api-stub: Universe:snapshot
 do -- Universe:snapshot
   local world = lurek.ecs.newUniverse()
   local hero = world:spawn()
@@ -751,9 +613,7 @@ do -- Universe:snapshot
   lurek.log.info("restored entity count=" .. world:getEntityCount(), "ecs")
 end
 
---@api-stub: LUniverse:applySnapshot
--- Restores the universe from a snapshot table produced by snapshot(). Alias for deserialize().
--- All current entity state is replaced; systems and blueprints are preserved.
+--@api-stub: Universe:applySnapshot
 do -- Universe:applySnapshot
   local world = lurek.ecs.newUniverse()
   local e = world:spawn(); world:set(e, "score", 99)
@@ -765,21 +625,19 @@ do -- Universe:applySnapshot
 end
 
 
---@api-stub: LUniverse:type
+--@api-stub: LUniverse:type -- Returns the Lua-visible type name for this universe handle
 do -- LUniverse:type
   local u = lurek.ecs.newUniverse()
   local t = u:type()
 end
 
---@api-stub: LUniverse:typeOf
+--@api-stub: LUniverse:typeOf -- Returns whether this universe handle matches a supported type name
 do -- LUniverse:typeOf
   local u = lurek.ecs.newUniverse()
   local ok = u:typeOf("LUniverse")
 end
 
---@api-stub: LUniverse:takeSnapshotDiff
--- Returns incremental world changes since the previous diff pull.
--- Use this for delta sync / replay streams without serializing the full world every frame.
+--@api-stub: LUniverse:takeSnapshotDiff -- Returns and clears accumulated ECS snapshot diff data
 do -- LUniverse:takeSnapshotDiff
   local world = lurek.ecs.newUniverse()
   local e = world:spawn()

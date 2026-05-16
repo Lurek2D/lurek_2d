@@ -1,17 +1,8 @@
 -- content/examples/pipeline.lua
--- Hand-written coverage of the lurek.pipeline API (60 items).
---
--- Pipelines are dependency-ordered DAGs of named steps with sync and
--- async runners, retries, conditions, tags, and per-step callbacks for
--- structuring boot sequences, save/load flows, and asset loaders.
---
+-- lurek.pipeline API examples.
 -- Run: cargo run -- content/examples/pipeline.lua
 
--- â”€â”€ lurek.pipeline.* functions â”€â”€
-
---@api-stub: lurek.pipeline.newStep
--- Creates a new pipeline step with the given name and optional callback.
--- Pass the callback inline for one-shot tasks; configure delay/retry/tag on the returned step.
+--@api-stub: lurek.pipeline.newStep -- Creates a new pipeline step with the given name and an optional callback function
 do -- lurek.pipeline.newStep
   local step = lurek.pipeline.newStep("load_audio", function(ctx)
     ctx.audio_loaded = true
@@ -19,18 +10,14 @@ do -- lurek.pipeline.newStep
   step:setTag("boot")
 end
 
---@api-stub: lurek.pipeline.newPipeline
--- Creates a new empty pipeline with the given name (defaults to "pipeline").
--- Call once at boot to declare the top-level run; the name surfaces in toAscii output and progress callbacks.
+--@api-stub: lurek.pipeline.newPipeline -- Creates a new empty pipeline with an optional name
 do -- lurek.pipeline.newPipeline
   local boot = lurek.pipeline.newPipeline("boot")
   boot:addStep(lurek.pipeline.newStep("init", function() end))
   lurek.log.info("pipeline '" .. boot:getName() .. "' built", "boot")
 end
 
---@api-stub: lurek.pipeline.fromTable
--- Deserialises a pipeline from a definition table.
--- Use when the DAG is data-driven (TOML/JSON); wire callbacks afterwards via getStep + setCallback.
+--@api-stub: lurek.pipeline.fromTable -- Creates a pipeline pre-populated with steps from a declarative table definition
 do -- lurek.pipeline.fromTable
   local def = { name = "save", steps = {
     { name = "snapshot",   deps = {} },
@@ -43,16 +30,12 @@ end
 -- â”€â”€ Step methods â”€â”€
 
 --@api-stub: Step:getName
--- Returns the unique name of this step.
--- Read when iterating Pipeline:getSteps to log per-step diagnostics or build a UI label.
 do -- Step:getName
   local step = lurek.pipeline.newStep("hydrate_world")
   lurek.log.info("registering step: " .. step:getName(), "boot")
 end
 
 --@api-stub: Step:setCallback
--- Stores a Lua function as the execute callback for this step.
--- Attach or replace the executor body after construction; required when wiring a fromTable pipeline.
 do -- Step:setCallback
   local step = lurek.pipeline.newStep("warm_caches")
   step:setCallback(function(ctx)
@@ -61,24 +44,18 @@ do -- Step:setCallback
 end
 
 --@api-stub: Step:setCondition
--- Stores a Lua function (or nil) as the run-condition for this step.
--- Pass nil to clear; skipped steps don't fail their dependents â€” useful for debug-only or DLC-gated steps.
 do -- Step:setCondition
   local step = lurek.pipeline.newStep("seed_demo_data", function(ctx) ctx.seeded = true end)
   step:setCondition(function() return lurek.log.getLevel() == "debug" end)
 end
 
 --@api-stub: Step:setDelay
--- Sets the delay in seconds to wait after dependencies finish.
--- Use to stagger intros or pace splash animations; honoured by both sync and async runners.
 do -- Step:setDelay
   local step = lurek.pipeline.newStep("show_logo")
   step:setDelay(0.5)
 end
 
 --@api-stub: Step:getDelay
--- Returns the configured delay in seconds.
--- Read when displaying loading-progress estimates or unit-testing scheduling.
 do -- Step:getDelay
   local step = lurek.pipeline.newStep("fade_in")
   step:setDelay(1.25)
@@ -86,16 +63,12 @@ do -- Step:getDelay
 end
 
 --@api-stub: Step:setTimeout
--- Stores a timeout in seconds in the step's metadata.
--- Cap the per-attempt runtime so the scheduler can abort long-running async steps cleanly.
 do -- Step:setTimeout
   local step = lurek.pipeline.newStep("fetch_remote_config")
   step:setTimeout(5.0)
 end
 
 --@api-stub: Step:getTimeout
--- Returns the timeout stored in metadata, or 0.0 if unset.
--- Branch on the value (0 means no deadline) when surfacing time budgets in dev tooling.
 do -- Step:getTimeout
   local step = lurek.pipeline.newStep("download_dlc")
   step:setTimeout(30.0)
@@ -105,8 +78,6 @@ do -- Step:getTimeout
 end
 
 --@api-stub: Step:setRetryCount
--- Sets the maximum number of retry attempts on failure.
--- Combine with setRetryDelay for back-off; total attempts equals 1 + retry_count.
 do -- Step:setRetryCount
   local step = lurek.pipeline.newStep("connect_server", function(ctx) ctx.online = true end)
   step:setRetryCount(3)
@@ -114,8 +85,6 @@ do -- Step:setRetryCount
 end
 
 --@api-stub: Step:getRetryCount
--- Returns the configured retry count.
--- Read back when building a settings UI or when validating a deserialised pipeline.
 do -- Step:getRetryCount
   local step = lurek.pipeline.newStep("publish_score")
   step:setRetryCount(2)
@@ -123,8 +92,6 @@ do -- Step:getRetryCount
 end
 
 --@api-stub: Step:setRetryDelay
--- Sets the delay in seconds between retry attempts.
--- Use 1-2s for flaky network calls so transient errors clear before the next attempt.
 do -- Step:setRetryDelay
   local step = lurek.pipeline.newStep("login")
   step:setRetryCount(4)
@@ -132,8 +99,6 @@ do -- Step:setRetryDelay
 end
 
 --@api-stub: Step:setAsync
--- Enables coroutine mode for this step when the pipeline runs via runAsync/update.
--- Turn this on when the callback calls coroutine.yield() and should resume next frame.
 do -- Step:setAsync
   local step = lurek.pipeline.newStep("stream_chunks", function(ctx)
     coroutine.yield("waiting")
@@ -143,8 +108,6 @@ do -- Step:setAsync
 end
 
 --@api-stub: Step:isAsync
--- Returns whether coroutine mode is enabled for this step.
--- Useful for validating config-driven pipelines loaded from a table.
 do -- Step:isAsync
   local step = lurek.pipeline.newStep("stream_chunks")
   step:setAsync(true)
@@ -152,16 +115,12 @@ do -- Step:isAsync
 end
 
 --@api-stub: Step:setOptional
--- Marks whether this step is optional (downstream steps continue on failure).
--- Use for nice-to-have boot work (achievements, telemetry) so a failure doesn't block gameplay.
 do -- Step:setOptional
   local step = lurek.pipeline.newStep("preload_credits", function() end)
   step:setOptional(true)
 end
 
 --@api-stub: Step:isOptional
--- Returns whether this step is marked as optional.
--- Branch visualisation/UI on whether a step is required vs nice-to-have.
 do -- Step:isOptional
   local step = lurek.pipeline.newStep("achievements_sync")
   step:setOptional(true)
@@ -171,8 +130,6 @@ do -- Step:isOptional
 end
 
 --@api-stub: Step:setOnError
--- Stores a Lua function (or nil) to call if this step fails.
--- Receives the error message; pass nil to clear. Use for per-step recovery or logging.
 do -- Step:setOnError
   local step = lurek.pipeline.newStep("load_save", function() error("missing slot") end)
   step:setOnError(function(err)
@@ -181,8 +138,6 @@ do -- Step:setOnError
 end
 
 --@api-stub: Step:setData
--- Stores an arbitrary string value under the given key in step metadata.
--- Strings only â€” use to template per-step config (scene name, asset path) read inside the callback.
 do -- Step:setData
   local step = lurek.pipeline.newStep("load_level")
   step:setData("scene", "forest_01")
@@ -190,8 +145,6 @@ do -- Step:setData
 end
 
 --@api-stub: Step:getData
--- Retrieves a metadata value by key, returning nil if not found.
--- Always default with `or` since unknown keys return nil rather than raising.
 do -- Step:getData
   local step = lurek.pipeline.newStep("load_level")
   step:setData("scene", "forest_01")
@@ -200,16 +153,12 @@ do -- Step:getData
 end
 
 --@api-stub: Step:setTag
--- Sets the tag on this step for grouping and filtering.
--- Pair with Pipeline:getStepsByTag to operate on a logical subset ("gpu", "net", "audio").
 do -- Step:setTag
   local step = lurek.pipeline.newStep("compile_shaders")
   step:setTag("gpu")
 end
 
 --@api-stub: Step:getTag
--- Returns the tag on this step, or nil if unset.
--- Use to colour-code or group steps in a debug overlay; default with `or` for untagged steps.
 do -- Step:getTag
   local step = lurek.pipeline.newStep("warm_audio")
   step:setTag("audio")
@@ -218,8 +167,6 @@ do -- Step:getTag
 end
 
 --@api-stub: Step:dependsOn
--- Adds a dependency on another step by name or PipelineStep.
--- Pass a Step userdata or a name string; multiple calls accumulate, so chain them for fan-in nodes.
 do -- Step:dependsOn
   local boot = lurek.pipeline.newStep("boot")
   local load = lurek.pipeline.newStep("load_assets")
@@ -228,8 +175,6 @@ do -- Step:dependsOn
 end
 
 --@api-stub: Step:getDependencies
--- Returns the list of dependency step names.
--- Iterate to render a DAG visualiser; the array is empty for entry-point steps.
 do -- Step:getDependencies
   local step = lurek.pipeline.newStep("present")
   step:dependsOn("draw_world")
@@ -240,8 +185,6 @@ do -- Step:getDependencies
 end
 
 --@api-stub: Step:getDependencyCount
--- Returns the number of declared dependencies.
--- Use as a cheap O(1) guard before walking getDependencies; zero means an entry-point step.
 do -- Step:getDependencyCount
   local step = lurek.pipeline.newStep("commit_save")
   step:dependsOn("snapshot_state")
@@ -251,8 +194,6 @@ do -- Step:getDependencyCount
 end
 
 --@api-stub: Step:getStatus
--- Returns the current execution status as a string.
--- One of "pending", "waiting", "running", "completed", "failed", "skipped", "cancelled".
 do -- Step:getStatus
   local pl = lurek.pipeline.newPipeline("audit")
   local s = lurek.pipeline.newStep("noop", function() end)
@@ -261,8 +202,6 @@ do -- Step:getStatus
 end
 
 --@api-stub: Step:getError
--- Returns the error message from the last failed attempt, or nil.
--- Check after a failed run before retrying; nil means the step succeeded or hasn't run yet.
 do -- Step:getError
   local step = lurek.pipeline.newStep("touchy", function() error("disk full") end)
   local pl = lurek.pipeline.newPipeline("io"); pl:addStep(step); pl:run()
@@ -272,8 +211,6 @@ do -- Step:getError
 end
 
 --@api-stub: Step:getDuration
--- Returns total seconds spent executing this step.
--- Sums all attempts; combine with onProgress to build a per-step profiler view.
 do -- Step:getDuration
   local step = lurek.pipeline.newStep("compute", function() end)
   local pl = lurek.pipeline.newPipeline("bench"); pl:addStep(step); pl:run()
@@ -281,8 +218,6 @@ do -- Step:getDuration
 end
 
 --@api-stub: Step:getAttempt
--- Returns the number of execution attempts so far.
--- Equals 1 for steps that succeeded first try; inspect to detect flaky steps after retries.
 do -- Step:getAttempt
   local step = lurek.pipeline.newStep("flaky", function() end)
   step:setRetryCount(2)
@@ -291,8 +226,6 @@ do -- Step:getAttempt
 end
 
 --@api-stub: Step:type
--- Returns the type name "LPipelineStep".
--- Useful for runtime introspection alongside duck-typed values pulled from a generic container.
 do -- Step:type
   local step = lurek.pipeline.newStep("init")
   if step:type() == "LPipelineStep" then
@@ -301,8 +234,6 @@ do -- Step:type
 end
 
 --@api-stub: Step:typeOf
--- Returns true when the given name matches "LPipelineStep", the legacy alias, or a parent type.
--- Pass "Object" to test for any pipeline-namespace value when bridging from generic code.
 do -- Step:typeOf
   local step = lurek.pipeline.newStep("init")
   if step:typeOf("Object") then
@@ -312,36 +243,28 @@ end
 
 -- â”€â”€ Pipeline methods â”€â”€
 
---@api-stub: LPipeline:addStep
--- Adds a step to the pipeline.
--- Returns the pipeline for chaining; step names must be unique within a single pipeline.
+--@api-stub: Pipeline:addStep
 do -- Pipeline:addStep
   local pl = lurek.pipeline.newPipeline("boot")
   pl:addStep(lurek.pipeline.newStep("read_config", function(ctx) ctx.cfg = {} end))
     :addStep(lurek.pipeline.newStep("warm_cache",  function() end))
 end
 
---@api-stub: LPipeline:removeStep
--- Removes a step from the pipeline by name.
--- Safe before run() begins; existing dependents on the removed name will fail validate().
+--@api-stub: Pipeline:removeStep
 do -- Pipeline:removeStep
   local pl = lurek.pipeline.newPipeline("boot")
   pl:addStep(lurek.pipeline.newStep("legacy_check", function() end))
   pl:removeStep("legacy_check")
 end
 
---@api-stub: LPipeline:getStep
--- Returns the LuaStep wrapper for the named step, or nil.
--- Required to attach callbacks after fromTable, since serialised pipelines lack callback closures.
+--@api-stub: Pipeline:getStep
 do -- Pipeline:getStep
   local pl = lurek.pipeline.fromTable({ steps = { { name = "boot", deps = {} } } })
   local boot = pl:getStep("boot")
   if boot then boot:setCallback(function(ctx) ctx.booted = true end) end
 end
 
---@api-stub: LPipeline:getSteps
--- Returns a Lua array of all step wrappers in the pipeline.
--- Returns registration order, not execution order â€” use getExecutionOrder for the topological view.
+--@api-stub: Pipeline:getSteps
 do -- Pipeline:getSteps
   local pl = lurek.pipeline.newPipeline("scan")
   pl:addStep(lurek.pipeline.newStep("a"))
@@ -351,9 +274,7 @@ do -- Pipeline:getSteps
   end
 end
 
---@api-stub: LPipeline:getStepCount
--- Returns the total number of steps.
--- O(1) size check; use to short-circuit empty pipelines before incurring run setup cost.
+--@api-stub: Pipeline:getStepCount
 do -- Pipeline:getStepCount
   local pl = lurek.pipeline.newPipeline("dynamic")
   if pl:getStepCount() == 0 then
@@ -361,9 +282,7 @@ do -- Pipeline:getStepCount
   end
 end
 
---@api-stub: LPipeline:getStepsByTag
--- Returns a Lua array of all steps whose tag matches the given string.
--- Returns an empty table when no steps match â€” safe to ipairs without a nil check.
+--@api-stub: Pipeline:getStepsByTag
 do -- Pipeline:getStepsByTag
   local pl = lurek.pipeline.newPipeline("boot")
   local s = lurek.pipeline.newStep("upload_metric"); s:setTag("net"); pl:addStep(s)
@@ -372,18 +291,14 @@ do -- Pipeline:getStepsByTag
   end
 end
 
---@api-stub: LPipeline:clear
--- Clears all steps from the pipeline.
--- Useful when rebuilding the pipeline from a hot-reloaded definition without allocating a new one.
+--@api-stub: Pipeline:clear
 do -- Pipeline:clear
   local pl = lurek.pipeline.newPipeline("hot")
   pl:addStep(lurek.pipeline.newStep("old"))
   pl:clear()
 end
 
---@api-stub: LPipeline:validate
--- Validates the pipeline DAG.
--- Returns (ok, errors_array); call before run() to surface missing deps and cycles up front.
+--@api-stub: Pipeline:validate
 do -- Pipeline:validate
   local pl = lurek.pipeline.newPipeline("check")
   local s = lurek.pipeline.newStep("orphan"); s:dependsOn("missing"); pl:addStep(s)
@@ -393,9 +308,7 @@ do -- Pipeline:validate
   end
 end
 
---@api-stub: LPipeline:getExecutionOrder
--- Returns the topological execution order as an array of step names.
--- Returns (order, nil) on success or (nil, err) on cycle; check the second return before reading the first.
+--@api-stub: Pipeline:getExecutionOrder
 do -- Pipeline:getExecutionOrder
   local pl = lurek.pipeline.newPipeline("plan")
   pl:addStep(lurek.pipeline.newStep("a"))
@@ -404,9 +317,7 @@ do -- Pipeline:getExecutionOrder
   else lurek.log.info("first step: " .. ((order and order[1]) or "?"), "pipeline") end
 end
 
---@api-stub: LPipeline:getParallelGroups
--- Returns parallel execution groups as a nested array of step name arrays.
--- Each inner table holds steps with no inter-dependencies; safe to dispatch concurrently.
+--@api-stub: Pipeline:getParallelGroups
 do -- Pipeline:getParallelGroups
   local pl = lurek.pipeline.newPipeline("parallel")
   pl:addStep(lurek.pipeline.newStep("a"))
@@ -415,9 +326,7 @@ do -- Pipeline:getParallelGroups
   lurek.log.info("group count: " .. #groups, "pipeline")
 end
 
---@api-stub: LPipeline:run
--- Executes the pipeline synchronously in topological order.
--- Pass an optional context table to share state between steps via ctx.results.
+--@api-stub: Pipeline:run
 do -- Pipeline:run
   local pl = lurek.pipeline.newPipeline("boot")
   pl:addStep(lurek.pipeline.newStep("load", function(ctx) ctx.assets = 12 end))
@@ -425,9 +334,7 @@ do -- Pipeline:run
   lurek.log.info("ok=" .. tostring(result.success), "boot")
 end
 
---@api-stub: LPipeline:runAsync
--- Starts an async pipeline run.
--- Steps execute one-per-frame via update(dt); call from inside lurek.process to advance.
+--@api-stub: Pipeline:runAsync
 do -- Pipeline:runAsync
   local pl = lurek.pipeline.newPipeline("loading")
   pl:addStep(lurek.pipeline.newStep("a", function() end))
@@ -435,9 +342,7 @@ do -- Pipeline:runAsync
   function lurek.process(dt) pl:update(dt) end
 end
 
---@api-stub: LPipeline:update
--- Advances the async pipeline by one tick.
--- Returns true on the tick the pipeline finishes; pair with runAsync inside lurek.process.
+--@api-stub: Pipeline:update
 do -- Pipeline:update
   local pl = lurek.pipeline.newPipeline("loader")
   pl:addStep(lurek.pipeline.newStep("scan", function() end))
@@ -447,9 +352,7 @@ do -- Pipeline:update
   end
 end
 
---@api-stub: LPipeline:cancel
--- Cancels all pending and waiting steps.
--- In-flight steps continue to completion; safe to call from a UI button or timeout handler.
+--@api-stub: Pipeline:cancel
 do -- Pipeline:cancel
   local pl = lurek.pipeline.newPipeline("net")
   pl:addStep(lurek.pipeline.newStep("ping", function() end))
@@ -457,18 +360,14 @@ do -- Pipeline:cancel
   pl:cancel()
 end
 
---@api-stub: LPipeline:reset
--- Resets all step states and clears the async context.
--- Call between runs to reuse the same pipeline definition without re-adding steps.
+--@api-stub: Pipeline:reset
 do -- Pipeline:reset
   local pl = lurek.pipeline.newPipeline("retry")
   pl:addStep(lurek.pipeline.newStep("once", function() end))
   pl:run(); pl:reset(); pl:run()
 end
 
---@api-stub: LPipeline:isRunning
--- Returns true if the pipeline is currently running asynchronously.
--- True only between runAsync and the tick where update returns true; false for sync runs.
+--@api-stub: Pipeline:isRunning
 do -- Pipeline:isRunning
   local pl = lurek.pipeline.newPipeline("loader")
   pl:addStep(lurek.pipeline.newStep("a", function() end))
@@ -476,9 +375,7 @@ do -- Pipeline:isRunning
   if pl:isRunning() then lurek.log.debug("loader in flight", "boot") end
 end
 
---@api-stub: LPipeline:isComplete
--- Returns true if all steps have reached a terminal state.
--- Check before reading getResult; terminal states are completed/failed/skipped/cancelled.
+--@api-stub: Pipeline:isComplete
 do -- Pipeline:isComplete
   local pl = lurek.pipeline.newPipeline("boot")
   pl:addStep(lurek.pipeline.newStep("noop", function() end))
@@ -486,27 +383,21 @@ do -- Pipeline:isComplete
   if pl:isComplete() then lurek.log.info("boot finished", "boot") end
 end
 
---@api-stub: LPipeline:setErrorMode
--- Sets the pipeline error mode: "abort" or "continue".
--- "abort" (default) stops the run on first failure; "continue" keeps going and skips dependents.
+--@api-stub: Pipeline:setErrorMode
 do -- Pipeline:setErrorMode
   local pl = lurek.pipeline.newPipeline("scan")
   pl:setErrorMode("continue")
   pl:addStep(lurek.pipeline.newStep("a", function() end))
 end
 
---@api-stub: LPipeline:getErrorMode
--- Returns the current error mode as a string.
--- Use when serialising config back out, or to assert in tests that mode propagated correctly.
+--@api-stub: Pipeline:getErrorMode
 do -- Pipeline:getErrorMode
   local pl = lurek.pipeline.newPipeline("boot")
   pl:setErrorMode("continue")
   lurek.log.info("error mode: " .. pl:getErrorMode(), "boot")
 end
 
---@api-stub: LPipeline:getResult
--- Returns the current result table built from step states, or nil.
--- Returns nil for empty pipelines; the table mirrors the run() return value (success, completed, errors).
+--@api-stub: Pipeline:getResult
 do -- Pipeline:getResult
   local pl = lurek.pipeline.newPipeline("boot")
   pl:addStep(lurek.pipeline.newStep("noop", function() end))
@@ -515,9 +406,7 @@ do -- Pipeline:getResult
   if r then lurek.log.info("completed=" .. #r.completed, "boot") end
 end
 
---@api-stub: LPipeline:getContext
--- Returns the stored async context table, or nil.
--- The context is the table you passed to runAsync; nil means no async run is active.
+--@api-stub: Pipeline:getContext
 do -- Pipeline:getContext
   local pl = lurek.pipeline.newPipeline("loader")
   pl:addStep(lurek.pipeline.newStep("a", function() end))
@@ -526,9 +415,7 @@ do -- Pipeline:getContext
   if ctx then lurek.log.debug("progress=" .. tostring(ctx.progress), "boot") end
 end
 
---@api-stub: LPipeline:setOnComplete
--- Sets the callback to invoke when the pipeline completes.
--- Receives the result table; pass nil to clear. Fires once per run regardless of sync or async.
+--@api-stub: Pipeline:setOnComplete
 do -- Pipeline:setOnComplete
   local pl = lurek.pipeline.newPipeline("boot")
   pl:setOnComplete(function(r)
@@ -537,9 +424,7 @@ do -- Pipeline:setOnComplete
   pl:addStep(lurek.pipeline.newStep("noop", function() end)); pl:run()
 end
 
---@api-stub: LPipeline:setOnStepComplete
--- Sets the callback to invoke each time a step completes successfully.
--- Receives (step_name, ctx); ideal for driving a progress bar or per-step log line.
+--@api-stub: Pipeline:setOnStepComplete
 do -- Pipeline:setOnStepComplete
   local pl = lurek.pipeline.newPipeline("loader")
   pl:setOnStepComplete(function(name, _ctx)
@@ -548,9 +433,7 @@ do -- Pipeline:setOnStepComplete
   pl:addStep(lurek.pipeline.newStep("textures", function() end)); pl:run()
 end
 
---@api-stub: LPipeline:setOnStepError
--- Sets the callback to invoke each time a step fails.
--- Receives (step_name, err_msg); combine with continue mode for tolerant pipelines that log and skip.
+--@api-stub: Pipeline:setOnStepError
 do -- Pipeline:setOnStepError
   local pl = lurek.pipeline.newPipeline("net")
   pl:setOnStepError(function(name, err)
@@ -559,26 +442,20 @@ do -- Pipeline:setOnStepError
   pl:addStep(lurek.pipeline.newStep("ping", function() error("timeout") end)); pl:run()
 end
 
---@api-stub: LPipeline:getName
--- Returns the pipeline's name.
--- Surfaces in toAscii output and __tostring; use as a tag when emitting cross-pipeline logs.
+--@api-stub: Pipeline:getName
 do -- Pipeline:getName
   local pl = lurek.pipeline.newPipeline("save_routine")
   lurek.log.info("running pipeline " .. pl:getName(), "save")
 end
 
---@api-stub: LPipeline:setName
--- Sets the pipeline's name.
--- Useful when several pipelines share a templated builder; suffix with a scene id for clarity.
+--@api-stub: Pipeline:setName
 do -- Pipeline:setName
   local pl = lurek.pipeline.newPipeline("temp")
   pl:setName("scene_" .. "forest_01")
   lurek.log.debug("pipeline renamed to " .. pl:getName(), "scene")
 end
 
---@api-stub: LPipeline:toTable
--- Serialises the pipeline definition to a Lua table (no callbacks).
--- Pair with lurek.pipeline.fromTable for round-tripping; reattach callbacks via getStep:setCallback.
+--@api-stub: Pipeline:toTable
 do -- Pipeline:toTable
   local pl = lurek.pipeline.newPipeline("dump")
   pl:addStep(lurek.pipeline.newStep("a"))
@@ -586,9 +463,7 @@ do -- Pipeline:toTable
   lurek.log.info("serialised name=" .. t.name .. " steps=" .. #t.steps, "boot")
 end
 
---@api-stub: LPipeline:type
--- Returns the type name of this object.
--- Always returns "LPipeline"; cheap runtime guard before invoking pipeline-only methods on unknown values.
+--@api-stub: Pipeline:type
 do -- Pipeline:type
   local pl = lurek.pipeline.newPipeline("boot")
   if pl:type() == "LPipeline" then
@@ -596,9 +471,7 @@ do -- Pipeline:type
   end
 end
 
---@api-stub: LPipeline:onProgress
--- Registers a callback invoked after every step with `(step_name, status)`.
--- Lightweight per-step hook that fires regardless of success or failure; status is a lowercase string.
+--@api-stub: Pipeline:onProgress
 do -- Pipeline:onProgress
   local pl = lurek.pipeline.newPipeline("loader")
   pl:onProgress(function(name, status)
@@ -607,9 +480,7 @@ do -- Pipeline:onProgress
   pl:addStep(lurek.pipeline.newStep("a", function() end)); pl:run()
 end
 
---@api-stub: LPipeline:onEvent
--- Registers a callback invoked for lifecycle events such as `step_started` and `step_finished`.
--- Use this for telemetry pipelines that need explicit event names and step status in one callback.
+--@api-stub: Pipeline:onEvent
 do -- Pipeline:onEvent
   local pl = lurek.pipeline.newPipeline("loader")
   pl:onEvent(function(event_name, step_name, status, detail)
@@ -617,9 +488,7 @@ do -- Pipeline:onEvent
   end)
 end
 
---@api-stub: LPipeline:toAscii
--- Returns a multi-line ASCII string visualising the pipeline DAG.
--- Splat into a debug overlay or build log; each row groups steps that may run in parallel.
+--@api-stub: Pipeline:toAscii
 do -- Pipeline:toAscii
   local pl = lurek.pipeline.newPipeline("plan")
   pl:addStep(lurek.pipeline.newStep("a"))
@@ -627,9 +496,7 @@ do -- Pipeline:toAscii
   lurek.log.info("\n" .. pl:toAscii(), "pipeline")
 end
 
---@api-stub: LPipeline:typeOf
--- Returns the type identifier string of this pipeline stage object.
--- Pass "Object" to test for any pipeline-namespace value; returns true for "LPipeline", the legacy alias, or parents.
+--@api-stub: Pipeline:typeOf
 do -- Pipeline:typeOf
   local pl = lurek.pipeline.newPipeline("boot")
   if pl:typeOf("Object") then
@@ -638,9 +505,7 @@ do -- Pipeline:typeOf
 end
 
 
---@api-stub: LPipeline:addConditional
--- Adds a step that runs only when a predicate function returns true at execution time.
--- The predicate receives the pipeline context; skip the step by returning false.
+--@api-stub: Pipeline:addConditional
 do -- Pipeline:addConditional
   local pipe = lurek.pipeline.newPipeline("build")
   pipe:addConditional(
@@ -652,9 +517,7 @@ do -- Pipeline:addConditional
   lurek.log.info("conditional step added", "pipeline")
 end
 
---@api-stub: LPipeline:addBranch
--- Adds an if/else branch where the predicate is evaluated once and routed to then/else steps.
--- Branch steps are named `<name>__then` and `<name>__else` for diagnostics.
+--@api-stub: Pipeline:addBranch
 do -- Pipeline:addBranch
   local pipe = lurek.pipeline.newPipeline("build")
   pipe:addBranch(
@@ -666,9 +529,7 @@ do -- Pipeline:addBranch
   )
 end
 
---@api-stub: LPipeline:addSubPipeline
--- Embeds another Pipeline as a single logical step inside this pipeline.
--- The sub-pipeline runs atomically; its error mode inherits from the parent.
+--@api-stub: Pipeline:addSubPipeline
 do -- Pipeline:addSubPipeline
   local parent = lurek.pipeline.newPipeline("full_build")
   local tests  = lurek.pipeline.newPipeline("test_suite")
@@ -690,17 +551,12 @@ end
 -- LPipelineStep methods
 -- -----------------------------------------------------------------------------
 
--- ---- Example: LPipelineStep:getName -----------------------------------------
---@api-stub: LPipelineStep:getName
--- Returns the unique name of this step.
--- Use for logging, debugging, or resolving dependencies by name.
+--@api-stub: LPipelineStep:getName -- Returns the unique name of this pipeline step
 do -- LPipelineStep:getName
   local step = lurek.pipeline.newStep("load_assets", function() end)
   lurek.log.info("step name=" .. step:getName(), "pipeline")
 end
---@api-stub: LPipelineStep:setCallback
--- Stores a Lua function as the execute callback for this step.
--- Replace the callback to swap logic without rebuilding the pipeline.
+--@api-stub: LPipelineStep:setCallback -- Sets the main execution function for this step
 do -- LPipelineStep:setCallback
   local step = lurek.pipeline.newStep("process", function() end)
   step:setCallback(function()
@@ -708,9 +564,7 @@ do -- LPipelineStep:setCallback
   end)
   lurek.log.info("callback updated for: " .. step:getName(), "pipeline")
 end
---@api-stub: LPipelineStep:setCondition
--- Stores a Lua function (or nil) as the run-condition for this step.
--- The step is skipped when the condition returns false.
+--@api-stub: LPipelineStep:setCondition -- Sets a predicate function that determines whether this step should execute
 do -- LPipelineStep:setCondition
   local step = lurek.pipeline.newStep("optional_step", function() end)
   step:setCondition(function()
@@ -718,82 +572,62 @@ do -- LPipelineStep:setCondition
   end)
   lurek.log.info("condition set for: " .. step:getName(), "pipeline")
 end
---@api-stub: LPipelineStep:setDelay
--- Sets the delay in seconds to wait after dependencies finish.
--- Use to throttle heavy steps or add cooldowns between phases.
+--@api-stub: LPipelineStep:setDelay -- Sets a delay in seconds before this step begins execution after its dependencies are satisfied
 do -- LPipelineStep:setDelay
   local step = lurek.pipeline.newStep("delayed_step", function() end)
   step:setDelay(0.5)
   lurek.log.info("delay=" .. step:getDelay(), "pipeline")
 end
---@api-stub: LPipelineStep:getDelay
--- Returns the configured delay in seconds.
--- Use when inspecting step configuration before starting a pipeline.
+--@api-stub: LPipelineStep:getDelay -- Returns the configured delay for this step
 do -- LPipelineStep:getDelay
   local step = lurek.pipeline.newStep("fetch_data", function() end)
   step:setDelay(1.0)
   lurek.log.info("delay=" .. step:getDelay(), "pipeline")
 end
---@api-stub: LPipelineStep:setTimeout
--- Stores a timeout in seconds in the step's metadata.
--- Steps that exceed the timeout are marked as failed.
+--@api-stub: LPipelineStep:setTimeout -- Sets a maximum execution time for this step
 do -- LPipelineStep:setTimeout
   local step = lurek.pipeline.newStep("network_call", function() end)
   step:setTimeout(5.0)
   lurek.log.info("timeout=" .. step:getTimeout(), "pipeline")
 end
---@api-stub: LPipelineStep:getTimeout
--- Returns the timeout stored in metadata, or 0.0 if unset.
--- Use to validate that long-running steps have appropriate safety limits.
+--@api-stub: LPipelineStep:getTimeout -- Returns the configured timeout for this step, or 0 if none is set
 do -- LPipelineStep:getTimeout
   local step = lurek.pipeline.newStep("upload", function() end)
   step:setTimeout(10.0)
   lurek.log.info("timeout=" .. step:getTimeout() .. "s", "pipeline")
 end
---@api-stub: LPipelineStep:setRetryCount
--- Sets the maximum number of retry attempts on failure.
--- Use for transient failures like network timeouts or resource contention.
+--@api-stub: LPipelineStep:setRetryCount -- Sets how many times this step should be retried after a failure before being marked as failed
 do -- LPipelineStep:setRetryCount
   local step = lurek.pipeline.newStep("fetch_leaderboard", function() end)
   step:setRetryCount(3)
   lurek.log.info("retry_count=" .. step:getRetryCount(), "pipeline")
 end
---@api-stub: LPipelineStep:getRetryCount
--- Returns the configured retry count.
--- Inspect this before running to confirm fault-tolerance settings.
+--@api-stub: LPipelineStep:getRetryCount -- Returns the configured retry count for this step
 do -- LPipelineStep:getRetryCount
   local step = lurek.pipeline.newStep("save_progress", function() end)
   step:setRetryCount(2)
   lurek.log.info("retry_count=" .. step:getRetryCount(), "pipeline")
 end
---@api-stub: LPipelineStep:setRetryDelay
--- Sets the delay in seconds between retry attempts.
--- Use to implement exponential back-off for unstable external dependencies.
+--@api-stub: LPipelineStep:setRetryDelay -- Sets the delay in seconds between retry attempts for this step
 do -- LPipelineStep:setRetryDelay
   local step = lurek.pipeline.newStep("send_score", function() end)
   step:setRetryCount(3)
   step:setRetryDelay(0.5)   -- wait 0.5s before each retry
   lurek.log.info("retry delay configured for: " .. step:getName(), "pipeline")
 end
---@api-stub: LPipelineStep:setOptional
--- Marks whether this step is optional (downstream steps continue on failure).
--- Use for non-critical analytics or telemetry uploads.
+--@api-stub: LPipelineStep:setOptional -- Marks this step as optional
 do -- LPipelineStep:setOptional
   local step = lurek.pipeline.newStep("telemetry", function() end)
   step:setOptional(true)
   lurek.log.info("optional=" .. tostring(step:isOptional()), "pipeline")
 end
---@api-stub: LPipelineStep:isOptional
--- Returns whether this step is marked as optional.
--- Use to decide whether a failure should block or skip downstream steps.
+--@api-stub: LPipelineStep:isOptional -- Returns whether this step is marked as optional
 do -- LPipelineStep:isOptional
   local step = lurek.pipeline.newStep("analytics", function() end)
   step:setOptional(true)
   lurek.log.info("is optional=" .. tostring(step:isOptional()), "pipeline")
 end
---@api-stub: LPipelineStep:setOnError
--- Stores a Lua function (or nil) to call if this step fails.
--- Use to log diagnostics or rollback state when a critical step errors.
+--@api-stub: LPipelineStep:setOnError -- Sets an error handler callback invoked when this step fails after all retries are exhausted
 do -- LPipelineStep:setOnError
   local step = lurek.pipeline.newStep("critical_step", function() end)
   step:setOnError(function(err)
@@ -801,52 +635,40 @@ do -- LPipelineStep:setOnError
   end)
   lurek.log.info("error handler registered for: " .. step:getName(), "pipeline")
 end
---@api-stub: LPipelineStep:setData
--- Stores an arbitrary string value under the given key in step metadata.
--- Use to attach config values or resource names needed by the callback.
+--@api-stub: LPipelineStep:setData -- Stores a key-value metadata pair on this step
 do -- LPipelineStep:setData
   local step = lurek.pipeline.newStep("load_level", function() end)
   step:setData("level_id", "dungeon_2")
   step:setData("difficulty", "hard")
   lurek.log.info("level_id=" .. step:getData("level_id"), "pipeline")
 end
---@api-stub: LPipelineStep:getData
--- Retrieves a metadata value by key, returning nil if not found.
--- Use inside the callback to read config values passed by the caller.
+--@api-stub: LPipelineStep:getData -- Retrieves a metadata value previously stored with setData
 do -- LPipelineStep:getData
   local step = lurek.pipeline.newStep("init_renderer", function() end)
   step:setData("resolution", "1920x1080")
   local res = step:getData("resolution")
   lurek.log.info("resolution=" .. tostring(res), "pipeline")
 end
---@api-stub: LPipelineStep:setTag
--- Sets the tag on this step for grouping and filtering.
--- Use to batch-skip or batch-run steps by category.
+--@api-stub: LPipelineStep:setTag -- Assigns a tag string to this step for grouping and filtering purposes
 do -- LPipelineStep:setTag
   local step = lurek.pipeline.newStep("warmup_shader", function() end)
   step:setTag("graphics")
   lurek.log.info("tag=" .. tostring(step:getTag()), "pipeline")
 end
---@api-stub: LPipelineStep:getTag
--- Returns the tag on this step, or nil if unset.
--- Use to categorise steps when building the pipeline configuration UI.
+--@api-stub: LPipelineStep:getTag -- Returns the tag assigned to this step, or nil if none is set
 do -- LPipelineStep:getTag
   local step = lurek.pipeline.newStep("load_audio", function() end)
   step:setTag("audio")
   lurek.log.info("tag=" .. tostring(step:getTag()), "pipeline")
 end
---@api-stub: LPipelineStep:dependsOn
--- Adds a dependency on another step by name or PipelineStep. Returns self for chaining.
--- Use to declare step ordering so the pipeline waits for prerequisites.
+--@api-stub: LPipelineStep:dependsOn -- Declares that this step depends on another step (by name or reference)
 do -- LPipelineStep:dependsOn
   local a = lurek.pipeline.newStep("load_assets", function() end)
   local b = lurek.pipeline.newStep("init_scene", function() end)
   b:dependsOn(a)   -- init_scene waits for load_assets
   lurek.log.info("dep count=" .. b:getDependencyCount(), "pipeline")
 end
---@api-stub: LPipelineStep:getDependencies
--- Returns the list of dependency step names.
--- Use to visualise or validate the pipeline graph before execution.
+--@api-stub: LPipelineStep:getDependencies -- Returns a list of step names that this step depends on
 do -- LPipelineStep:getDependencies
   local a = lurek.pipeline.newStep("fetch", function() end)
   local b = lurek.pipeline.newStep("parse", function() end)
@@ -854,9 +676,7 @@ do -- LPipelineStep:getDependencies
   local deps = b:getDependencies()
   lurek.log.info("dep[1]=" .. tostring(deps[1]), "pipeline")
 end
---@api-stub: LPipelineStep:getDependencyCount
--- Returns the number of declared dependencies.
--- Use to quickly verify that all required steps have been registered.
+--@api-stub: LPipelineStep:getDependencyCount -- Returns the number of dependencies this step has
 do -- LPipelineStep:getDependencyCount
   local a = lurek.pipeline.newStep("step_a", function() end)
   local b = lurek.pipeline.newStep("step_b", function() end)
@@ -864,53 +684,41 @@ do -- LPipelineStep:getDependencyCount
   c:dependsOn(a):dependsOn(b)
   lurek.log.info("dep count=" .. c:getDependencyCount(), "pipeline")
 end
---@api-stub: LPipelineStep:getStatus
--- Returns the current execution status as a string.
--- Possible values: "pending", "running", "done", "failed", "skipped".
+--@api-stub: LPipelineStep:getStatus -- Returns the current execution status of this step as a string ("pending", "waiting", "running", "completed", "failed", "skipped", "cancelled")
 do -- LPipelineStep:getStatus
   local step = lurek.pipeline.newStep("build_nav", function() end)
   lurek.log.info("initial status=" .. step:getStatus(), "pipeline")
 end
---@api-stub: LPipelineStep:getError
--- Returns the error message from the last failed attempt, or nil.
--- Always check after pipeline completion to surface any step failures.
+--@api-stub: LPipelineStep:getError -- Returns the error message if this step failed, or nil if it has not failed
 do -- LPipelineStep:getError
   local step = lurek.pipeline.newStep("connect", function() end)
   local err = step:getError()
   lurek.log.info("error=" .. tostring(err), "pipeline")
 end
---@api-stub: LPipelineStep:getDuration
--- Returns total seconds spent executing this step.
--- Use for performance profiling to identify slow pipeline stages.
+--@api-stub: LPipelineStep:getDuration -- Returns how long this step took to execute in seconds (measured from start to completion or failure)
 do -- LPipelineStep:getDuration
   local step = lurek.pipeline.newStep("gen_terrain", function() end)
   lurek.log.info("duration=" .. step:getDuration() .. "s", "pipeline")
 end
---@api-stub: LPipelineStep:getAttempt
--- Returns the number of execution attempts so far.
--- Use to log retry count when diagnosing intermittent failures.
+--@api-stub: LPipelineStep:getAttempt -- Returns the current attempt number (1-based)
 do -- LPipelineStep:getAttempt
   local step = lurek.pipeline.newStep("login", function() end)
   lurek.log.info("attempt=" .. step:getAttempt(), "pipeline")
 end
---@api-stub: LPipelineStep:type
--- Returns the type name "PipelineStep".
--- Useful for runtime type inspection.
+--@api-stub: LPipelineStep:type -- Returns the type name of this object ("LPipelineStep")
 do -- LPipelineStep:type
   local step = lurek.pipeline.newStep("test_step", function() end)
   local t = step:type()
   lurek.log.info("LPipelineStep:type=" .. t, "pipeline")
 end
---@api-stub: LPipelineStep:typeOf
--- Returns true when the given name matches "PipelineStep" or a parent type.
--- Use for runtime type checks.
+--@api-stub: LPipelineStep:typeOf -- Checks whether this object is of a given type name
 do -- LPipelineStep:typeOf
   local step = lurek.pipeline.newStep("check_step", function() end)
   lurek.log.info("is PipelineStep: " .. tostring(step:typeOf("PipelineStep")), "pipeline")
   lurek.log.info("is wrong: " .. tostring(step:typeOf("Unknown")), "pipeline")
 end
 
---@api-stub: LPipelineStep:setAsync
+--@api-stub: LPipelineStep:setAsync -- Marks this step as asynchronous
 do -- LPipelineStep:setAsync
   local p = lurek.pipeline.newPipeline()
   local step = lurek.pipeline.newStep("fetch", function(ctx) return ctx end)
@@ -918,7 +726,7 @@ do -- LPipelineStep:setAsync
   step:setAsync(true)
 end
 
---@api-stub: LPipelineStep:isAsync
+--@api-stub: LPipelineStep:isAsync -- Returns whether this step is configured for asynchronous coroutine execution
 do -- LPipelineStep:isAsync
   local p = lurek.pipeline.newPipeline()
   local step = lurek.pipeline.newStep("transform", function(ctx) return ctx end)

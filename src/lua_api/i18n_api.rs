@@ -612,7 +612,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     let s = shared.clone();
     // -- isRTL --
     /// Returns whether a locale is written right-to-left.
-    /// @param | locale | string | Optional locale code; defaults to the active locale.
+    /// @param | locale | string? | Optional locale code; defaults to the active locale.
     /// @return | boolean | True for right-to-left locales.
     loc.set(
         "isRTL",

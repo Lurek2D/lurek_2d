@@ -1,59 +1,36 @@
 -- content/examples/system.lua
--- Hand-written coverage of the lurek.runtime API (28 items).
---
--- Platform queries (OS, CPU, memory, locale, clipboard) plus runtime-message
--- catalogue lookup, debug-overlay toggling, structured logging, and CLI
--- argument parsing. Most calls are safe at file scope; only batch-runner
--- helpers should usually live inside an `init`/`process` callback.
---
+-- lurek.system API examples.
 -- Run: cargo run -- content/examples/system.lua
 
--- â”€â”€ lurek.runtime.* functions â”€â”€
-
--- Guard: lurek.runtime is not registered in the headless test VM.
-if not lurek.runtime then return end
-
-local runtime = lurek.runtime
-
---@api-stub: lurek.runtime.getOS
--- Returns the host operating system name ('Windows', 'Linux', 'macOS').
--- Branch on this at startup to pick platform-specific asset paths or hot-keys.
+--@api-stub: lurek.runtime.getOS -- Returns the name of the host operating system as a string
 do -- lurek.runtime.getOS
   local os_name = runtime.getOS()
   local mod_key = (os_name == "macOS") and "cmd" or "ctrl"
   lurek.log.info("running on " .. os_name .. " (modifier=" .. mod_key .. ")", "boot")
 end
 
---@api-stub: lurek.runtime.getVersion
--- Returns the Lurek2D engine version string.
--- Stamp this into save files and crash reports so old saves can be migrated safely.
+--@api-stub: lurek.runtime.getVersion -- Returns the semantic version string of the Lurek2D engine
 do -- lurek.runtime.getVersion
   local engine_version = runtime.getVersion()
   local save_header = "lurek2d/" .. engine_version
   lurek.log.info("save header tag: " .. save_header, "save")
 end
 
---@api-stub: lurek.runtime.getProcessorCount
--- Returns the number of logical CPU cores available.
--- Use to size worker-thread pools; reserve at least one core for the main loop.
+--@api-stub: lurek.runtime.getProcessorCount -- Returns the number of logical processors available on the host machine
 do -- lurek.runtime.getProcessorCount
   local cores = runtime.getProcessorCount()
   local workers = math.max(1, cores - 1)
   lurek.log.info("spawning " .. workers .. " worker threads (of " .. cores .. ")", "thread")
 end
 
---@api-stub: lurek.runtime.getMemorySize
--- Returns the total amount of installed system RAM in megabytes.
--- Pick a texture-quality preset based on installed RAM rather than guessing.
+--@api-stub: lurek.runtime.getMemorySize -- Returns the total physical memory of the host system in megabytes
 do -- lurek.runtime.getMemorySize
   local ram_mb = runtime.getMemorySize()
   local quality = (ram_mb >= 8192) and "high" or (ram_mb >= 4096 and "medium" or "low")
   lurek.log.info("texture quality preset: " .. quality .. " (" .. ram_mb .. " MiB RAM)", "render")
 end
 
---@api-stub: lurek.runtime.openURL
--- Opens a URL in the system's default browser.
--- Only http/https/mailto schemes are accepted; the call returns false if rejected.
+--@api-stub: lurek.runtime.openURL -- Opens a URL in the default system browser
 do -- lurek.runtime.openURL
   local credits_url = "https://lurek2d.example/credits"
   local opened = runtime.openURL(credits_url)
@@ -62,27 +39,21 @@ do -- lurek.runtime.openURL
   end
 end
 
---@api-stub: lurek.runtime.getPreferredLocales
--- Returns an ordered list of the user's preferred locale strings (e.g. 'en-US').
--- Walk the list and stop at the first locale your translations actually support.
+--@api-stub: lurek.runtime.getPreferredLocales -- Returns a list of the user's preferred locale identifiers from the operating system
 do -- lurek.runtime.getPreferredLocales
   local locales = runtime.getPreferredLocales()
   local picked = locales[1] or "en_US"
   lurek.log.info("ui locale = " .. picked .. " (offered " .. #locales .. ")", "i18n")
 end
 
---@api-stub: lurek.runtime.getPowerInfo
--- Returns battery state, percentage charged, and estimated time remaining.
--- On laptops, drop the frame cap when on battery to extend playtime.
+--@api-stub: lurek.runtime.getPowerInfo -- Returns the current power supply state, battery percentage, and estimated time remaining
 do -- lurek.runtime.getPowerInfo
   local state, percent, _seconds = runtime.getPowerInfo()
   local fps_cap = (state == "battery" and (percent or 100) < 30) and 30 or 60
   lurek.log.info("power=" .. state .. " fps_cap=" .. fps_cap, "perf")
 end
 
---@api-stub: lurek.runtime.getInfo
--- Returns a table of system information including OS name, CPU model, and installed RAM.
--- Dump this once at startup so bug reports include the full host fingerprint.
+--@api-stub: lurek.runtime.getInfo -- Returns a table with comprehensive engine and host information
 do -- lurek.runtime.getInfo
   local info = runtime.getInfo()
   local line = info.engine .. " " .. info.version .. " on " .. info.os ..
@@ -90,18 +61,14 @@ do -- lurek.runtime.getInfo
   lurek.log.info(line, "boot")
 end
 
---@api-stub: lurek.runtime.getMessage
--- Resolves a stable runtime message ID such as 'L001' to its human-readable text.
--- Prefer message IDs over hard-coded English strings so localisation can swap them.
+--@api-stub: lurek.runtime.getMessage -- Resolves a message string by its identifier from the engine message catalog
 do -- lurek.runtime.getMessage
   local message_id = "L001"
   local text = runtime.getMessage(message_id)
   lurek.log.info(message_id .. ": " .. text, "i18n")
 end
 
---@api-stub: lurek.runtime.hasMessage
--- Returns true when the runtime message catalog contains the given stable message ID.
--- Guard `getMessage` with `hasMessage` when an ID comes from data that may be stale.
+--@api-stub: lurek.runtime.hasMessage -- Checks whether a message identifier exists in the engine message catalog
 do -- lurek.runtime.hasMessage
   local candidate = "L999"
   if runtime.hasMessage(candidate) then
@@ -111,9 +78,7 @@ do -- lurek.runtime.hasMessage
   end
 end
 
---@api-stub: lurek.runtime.getMessageCount
--- Returns the total number of message entries loaded into the runtime message catalog.
--- Useful as a smoke check after loading translation packs at startup.
+--@api-stub: lurek.runtime.getMessageCount -- Returns the total number of messages registered in the engine message catalog
 do -- lurek.runtime.getMessageCount
   local n = runtime.getMessageCount()
   if n < 1 then
@@ -122,18 +87,14 @@ do -- lurek.runtime.getMessageCount
   lurek.log.info("loaded " .. n .. " runtime messages", "i18n")
 end
 
---@api-stub: lurek.runtime.setClipboardText
--- Replaces the system clipboard contents with the given string.
--- Pair with a confirmation toast so the player knows the value was copied.
+--@api-stub: lurek.runtime.setClipboardText -- Copies a string to the system clipboard
 do -- lurek.runtime.setClipboardText
   local seed = "world-seed-4815162342"
   runtime.setClipboardText(seed)
   lurek.log.info("copied seed to clipboard: " .. seed, "ui")
 end
 
---@api-stub: lurek.runtime.getClipboardText
--- Returns the current contents of the system clipboard.
--- Trim whitespace before parsing â€” users often copy a trailing newline.
+--@api-stub: lurek.runtime.getClipboardText -- Reads the current text content from the system clipboard
 do -- lurek.runtime.getClipboardText
   local raw = runtime.getClipboardText() or ""
   local trimmed = raw:gsub("^%s+", ""):gsub("%s+$", "")
@@ -142,9 +103,7 @@ do -- lurek.runtime.getClipboardText
   end
 end
 
---@api-stub: lurek.runtime.setDebugOverlay
--- Shows or hides the FPS/draw-call debug overlay.
--- Bind to a function key in development; never leave it on in shipped builds.
+--@api-stub: lurek.runtime.setDebugOverlay -- Enables or disables the on-screen debug overlay that shows FPS, draw calls, and other diagnostics
 do -- lurek.runtime.setDebugOverlay
   function lurek.init()
     runtime.setDebugOverlay(true)
@@ -152,9 +111,7 @@ do -- lurek.runtime.setDebugOverlay
   end
 end
 
---@api-stub: lurek.runtime.getDebugOverlay
--- Returns whether the debug overlay is currently visible.
--- Read this before drawing your own perf HUD so you don't double-render counters.
+--@api-stub: lurek.runtime.getDebugOverlay -- Returns whether the on-screen debug overlay is currently enabled
 do -- lurek.runtime.getDebugOverlay
   function lurek.process(_dt)
     if runtime.getDebugOverlay() then
@@ -163,18 +120,14 @@ do -- lurek.runtime.getDebugOverlay
   end
 end
 
---@api-stub: lurek.runtime.setLogLevel
--- Sets the minimum severity level for runtime log messages.
--- Read the level from your config file; unknown level names will raise an error.
+--@api-stub: lurek.runtime.setLogLevel -- Sets the engine-wide log verbosity level at runtime
 do -- lurek.runtime.setLogLevel
   local desired_level = "info"
   runtime.setLogLevel(desired_level)
   lurek.log.info("log level set to " .. desired_level, "boot")
 end
 
---@api-stub: lurek.runtime.getLogLevel
--- Returns the name of the current minimum log level for runtime messages.
--- Echo it on the debug overlay so testers can confirm the active filter.
+--@api-stub: lurek.runtime.getLogLevel -- Returns the current engine log verbosity level as a string
 do -- lurek.runtime.getLogLevel
   local level = runtime.getLogLevel()
   if level == "debug" then
@@ -182,18 +135,14 @@ do -- lurek.runtime.getLogLevel
   end
 end
 
---@api-stub: lurek.runtime.log
--- Emit a log message from Lua at the specified level.
--- Use this when the level is dynamic; otherwise prefer lurek.log.info/warn/error.
+--@api-stub: lurek.runtime.log -- Writes a message to the engine log at the specified severity level
 do -- lurek.runtime.log
   local severity = "warn"
   local frame_ms = 22.5
   runtime.log(severity, "frame budget exceeded: " .. frame_ms .. " ms")
 end
 
---@api-stub: lurek.runtime.getLastError
--- Returns the last unhandled error message, or nil.
--- Drain it once per frame in dev to surface engine errors as in-game toasts.
+--@api-stub: lurek.runtime.getLastError -- Returns the last error for Lua scripts in this module
 do -- lurek.runtime.getLastError
   function lurek.process(_dt)
     local err = runtime.getLastError()
@@ -203,27 +152,21 @@ do -- lurek.runtime.getLastError
   end
 end
 
---@api-stub: lurek.runtime.errorSnapshot
--- Serialises an engine error message to a compact JSON string.
--- Attach the JSON to crash uploads so the reporter has the full structured error.
+--@api-stub: lurek.runtime.errorSnapshot -- Creates a JSON-encoded error snapshot from a message string, useful for diagnostics and error reporting
 do -- lurek.runtime.errorSnapshot
   local raw_error = "asset not found: hero.png"
   local json = runtime.errorSnapshot(raw_error)
   lurek.log.error("crash snapshot: " .. json, "crash")
 end
 
---@api-stub: lurek.runtime.getArch
--- Returns the CPU architecture string for the current machine.
--- Pick SIMD code paths or shader variants based on 'x86_64' vs 'aarch64'.
+--@api-stub: lurek.runtime.getArch -- Returns the CPU architecture of the host system
 do -- lurek.runtime.getArch
   local arch = runtime.getArch()
   local use_neon = (arch == "aarch64") or (arch == "arm64")
   lurek.log.info("arch=" .. arch .. " neon=" .. tostring(use_neon), "boot")
 end
 
---@api-stub: lurek.runtime.getEnv
--- Returns the value of an environment variable, or nil if not set.
--- Use for opt-in dev knobs (e.g. LUREK_PROFILE=1) â€” never read secrets here.
+--@api-stub: lurek.runtime.getEnv -- Reads an environment variable by name
 do -- lurek.runtime.getEnv
   local profile_flag = runtime.getEnv("LUREK_PROFILE")
   if profile_flag == "1" then
@@ -231,9 +174,7 @@ do -- lurek.runtime.getEnv
   end
 end
 
---@api-stub: lurek.runtime.getArgs
--- Returns the command-line arguments as a table.
--- Walk the table to pick up positional inputs like a level path or save slot.
+--@api-stub: lurek.runtime.getArgs -- Returns the command-line arguments passed to the engine as a 1-indexed table of strings
 do -- lurek.runtime.getArgs
   local args = runtime.getArgs()
   for i = 2, #args do
@@ -241,9 +182,7 @@ do -- lurek.runtime.getArgs
   end
 end
 
---@api-stub: lurek.runtime.parseArgs
--- Parses a command-line argument string and returns a structured key/value table.
--- Returns three sub-tables: flags, options (--key=value), and positional.
+--@api-stub: lurek.runtime.parseArgs -- Parses command-line arguments into structured flags, options, and positional values
 do -- lurek.runtime.parseArgs
   local input = { "--level=forest_01", "--debug", "save1.dat" }
   local parsed = runtime.parseArgs(input)
@@ -252,9 +191,7 @@ do -- lurek.runtime.parseArgs
   lurek.log.info("level=" .. level .. " debug=" .. tostring(debug_on), "boot")
 end
 
---@api-stub: lurek.runtime.runBatch
--- Runs a list of shell commands in parallel and returns immediately without blocking.
--- Each task is a Lua function; the call is synchronous and returns a results table.
+--@api-stub: lurek.runtime.runBatch -- Executes a table of named task functions sequentially, collecting pass/fail results and elapsed time for each
 do -- lurek.runtime.runBatch
   local tasks = {
     warmup_cache = function() return true end,
@@ -264,8 +201,7 @@ do -- lurek.runtime.runBatch
   lurek.log.info("batch completed: warmup=" .. results.warmup_cache.status, "boot")
 end
 
---@api-stub: lurek.system.reloadConfig
--- are refreshed without restarting the engine.
+--@api-stub: lurek.runtime.reloadConfig -- Requests a reload of the engine configuration from `conf
 do -- lurek.runtime.reloadConfig
   function lurek.init()
     -- Example: a key-bind that forces conf.toml to be re-read immediately.
@@ -274,10 +210,7 @@ do -- lurek.runtime.reloadConfig
   end
 end
 
---@api-stub: lurek.system.getConfig
--- Returns a snapshot table of the active runtime-mutable configuration values.
--- Fields: physics_tick_rate, fixed_update_tick_rate, frame_budget_warn_ms,
---         vsync, log_level, config_reload_revision.
+--@api-stub: lurek.runtime.getConfig -- Returns a table containing the current engine runtime configuration values
 do -- lurek.runtime.getConfig
   local cfg = runtime.getConfig()
   lurek.log.info(
@@ -295,9 +228,7 @@ do -- lurek.runtime.getConfig
 end
 
 
---@api-stub: lurek.runtime.getBatchResults
--- Returns the output table from the most recently completed runBatch call.
--- Tally the (passed, failed, skipped) trio to gate startup on critical jobs.
+--@api-stub: lurek.runtime.getBatchResults -- Summarizes batch results by counting passed, failed, and skipped tasks
 do -- lurek.runtime.getBatchResults
   local results = runtime.runBatch({
     ok_task = function() return true end,
@@ -310,137 +241,31 @@ end
 -- =============================================================================
 -- COVERAGE: 26 uncovered lurek.system API item(s)
 -- Generated by tools/audit/example_add_missing.py
--- REQUIRED: replace every --@api-stub: block below with a real scenario.
 -- Run .github/prompts/flesh-out-example.prompt.md for instructions.
--- The final committed file must contain ZERO --@api-stub: lines.
 -- =============================================================================
 
--- ---- Example: lurek.system.getOS --------------------------------------------
---@api-stub: lurek.system.getOS
--- Returns the host operating system name ('Windows', 'Linux', 'macOS').
--- lurek.system.getOS()  -- -> string
 
--- ---- Example: lurek.system.getVersion ---------------------------------------
---@api-stub: lurek.system.getVersion
--- Returns the Lurek2D engine version string.
--- lurek.system.getVersion()  -- -> string
 
--- ---- Example: lurek.system.getProcessorCount --------------------------------
---@api-stub: lurek.system.getProcessorCount
--- Returns the number of logical CPU cores available.
--- lurek.system.getProcessorCount()  -- -> integer
 
--- ---- Example: lurek.system.getMemorySize ------------------------------------
---@api-stub: lurek.system.getMemorySize
--- Returns the total amount of installed system RAM in megabytes.
--- lurek.system.getMemorySize()  -- -> integer
 
--- ---- Example: lurek.system.openURL ------------------------------------------
---@api-stub: lurek.system.openURL
--- Opens a URL in the system's default browser.
--- lurek.system.openURL(url)  -- -> boolean
 
--- ---- Example: lurek.system.getPreferredLocales ------------------------------
---@api-stub: lurek.system.getPreferredLocales
--- Returns an ordered list of the user's preferred locale strings (e.g. 'en-US').
--- lurek.system.getPreferredLocales()  -- -> table
 
--- ---- Example: lurek.system.getPowerInfo -------------------------------------
---@api-stub: lurek.system.getPowerInfo
--- Returns battery state, percentage charged, and estimated time remaining.
--- lurek.system.getPowerInfo()  -- -> string
 
--- ---- Example: lurek.system.getInfo ------------------------------------------
---@api-stub: lurek.system.getInfo
--- Returns a table of system information including OS name, CPU model, and installed RAM.
--- lurek.system.getInfo()  -- -> table
 
--- ---- Example: lurek.system.getMessage ---------------------------------------
---@api-stub: lurek.system.getMessage
--- Resolves a stable runtime message ID such as 'L001' to its human-readable text.
--- lurek.system.getMessage(1)  -- -> string
 
--- ---- Example: lurek.system.hasMessage ---------------------------------------
---@api-stub: lurek.system.hasMessage
--- Returns true when the runtime message catalog contains the given stable message ID.
--- lurek.system.hasMessage(1)  -- -> boolean
 
--- ---- Example: lurek.system.getMessageCount ----------------------------------
---@api-stub: lurek.system.getMessageCount
--- Returns the total number of message entries loaded into the runtime message catalog.
--- lurek.system.getMessageCount()  -- -> integer
 
--- ---- Example: lurek.system.setClipboardText ---------------------------------
---@api-stub: lurek.system.setClipboardText
--- Replaces the system clipboard contents with the given string.
--- lurek.system.setClipboardText("Hello, world!")
 
--- ---- Example: lurek.system.getClipboardText ---------------------------------
---@api-stub: lurek.system.getClipboardText
--- Returns the current contents of the system clipboard.
--- lurek.system.getClipboardText()  -- -> string
 
--- ---- Example: lurek.system.setDebugOverlay ----------------------------------
---@api-stub: lurek.system.setDebugOverlay
--- Shows or hides the FPS/draw-call debug overlay.
--- lurek.system.setDebugOverlay(true)
 
--- ---- Example: lurek.system.getDebugOverlay ----------------------------------
---@api-stub: lurek.system.getDebugOverlay
--- Returns whether the debug overlay is currently visible.
--- lurek.system.getDebugOverlay()  -- -> boolean
 
--- ---- Example: lurek.system.setLogLevel --------------------------------------
---@api-stub: lurek.system.setLogLevel
--- Sets the minimum severity level for runtime log messages.
--- lurek.system.setLogLevel(level)
 
--- ---- Example: lurek.system.getLogLevel --------------------------------------
---@api-stub: lurek.system.getLogLevel
--- Returns the name of the current minimum log level for runtime messages.
--- lurek.system.getLogLevel()  -- -> string
 
--- ---- Example: lurek.system.log ----------------------------------------------
---@api-stub: lurek.system.log
--- Emit a log message from Lua at the specified level.
--- lurek.system.log(level, message)
 
--- ---- Example: lurek.system.getLastError -------------------------------------
---@api-stub: lurek.system.getLastError
--- Returns the last unhandled error message, or nil.
--- lurek.system.getLastError()  -- -> table
 
--- ---- Example: lurek.system.errorSnapshot ------------------------------------
---@api-stub: lurek.system.errorSnapshot
--- Serialises an engine error message to a compact JSON string.
--- lurek.system.errorSnapshot("level_complete")  -- -> string
 
--- ---- Example: lurek.system.getArch ------------------------------------------
---@api-stub: lurek.system.getArch
--- Returns the CPU architecture string for the current machine.
--- lurek.system.getArch()  -- -> string
 
--- ---- Example: lurek.system.getEnv -------------------------------------------
---@api-stub: lurek.system.getEnv
--- Returns the value of an environment variable, or nil if not set.
--- lurek.system.getEnv("hero")  -- -> string
 
--- ---- Example: lurek.system.getArgs ------------------------------------------
---@api-stub: lurek.system.getArgs
--- Returns the command-line arguments as a table.
--- lurek.system.getArgs()  -- -> table
 
--- ---- Example: lurek.system.parseArgs ----------------------------------------
---@api-stub: lurek.system.parseArgs
--- Parses a command-line argument string and returns a structured key/value table.
--- lurek.system.parseArgs(args)  -- -> table
 
--- ---- Example: lurek.system.runBatch -----------------------------------------
---@api-stub: lurek.system.runBatch
--- Runs a list of shell commands in parallel and returns immediately without blocking.
--- lurek.system.runBatch(tasks, opts)  -- -> table
 
--- ---- Example: lurek.system.getBatchResults ----------------------------------
---@api-stub: lurek.system.getBatchResults
--- Returns the output table from the most recently completed runBatch call.
--- lurek.system.getBatchResults(results)  -- -> integer

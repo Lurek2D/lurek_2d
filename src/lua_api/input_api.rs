@@ -426,7 +426,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     let s = state.clone();
     // -- mouse.setCursor --
     /// Sets the active cursor from a cursor handle, system cursor name, or nil for arrow.
-    /// @param | cursor_val | LuaValue | `LCursor`, system cursor string, or nil.
+    /// @param | cursor_val | any | `LCursor`, system cursor string, or nil.
     /// @return | nil | No value is returned.
     mouse.set(
         "setCursor",

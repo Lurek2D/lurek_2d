@@ -1,35 +1,22 @@
 -- content/examples/terminal.lua
--- Hand-written coverage of the lurek.terminal API (82 items).
---
--- The lurek.terminal namespace builds text-grid UIs (in-game consoles,
--- inventory screens, dev REPLs) on top of a fixed-cell font grid with
--- focusable widgets, ANSI parsing, scrollback, and tab completion.
---
+-- lurek.terminal API examples.
 -- Run: cargo run -- content/examples/terminal.lua
 
--- â”€â”€ lurek.terminal.* functions â”€â”€
-
---@api-stub: lurek.terminal.newTerminal
--- Creates a new terminal grid with the given dimensions.
--- Pass cols/rows in cells (defaults 80x40); call once at startup and reuse the handle.
+--@api-stub: lurek.terminal.newTerminal -- Creates a new terminal emulator grid and stages a window size that fits its active cell metrics
 do -- lurek.terminal.newTerminal
   local console = lurek.terminal.newTerminal(100, 30)
   local cols, rows = console:getDimensions()
   lurek.log.info("console grid is " .. cols .. "x" .. rows, "term")
 end
 
---@api-stub: lurek.terminal.newLabel
--- Creates a new label widget at 1-based coordinates.
--- Use for static read-only text such as HUD captions or panel headings.
+--@api-stub: lurek.terminal.newLabel -- Creates a new label widget that displays static text at the given cell position
 do -- lurek.terminal.newLabel
   local term = lurek.terminal.newTerminal(80, 25)
   local title = lurek.terminal.newLabel(2, 1, "== Inventory ==")
   term:addWidget(title)
 end
 
---@api-stub: lurek.terminal.newButton
--- Creates a new button widget at 1-based coordinates.
--- Use for clickable menu actions; pair with setOnClick to wire behaviour.
+--@api-stub: lurek.terminal.newButton -- Creates a new clickable button widget with the given position, size, and label text
 do -- lurek.terminal.newButton
   local term = lurek.terminal.newTerminal(80, 25)
   local quit_btn = lurek.terminal.newButton(60, 21, 14, 3, "Quit")
@@ -37,9 +24,7 @@ do -- lurek.terminal.newButton
   term:addWidget(quit_btn)
 end
 
---@api-stub: lurek.terminal.newTextBox
--- Creates a new single-line text box widget at 1-based coordinates.
--- Use for command input, naming prompts, or chat composers; focus it to receive textinput.
+--@api-stub: lurek.terminal.newTextBox -- Creates a new single-line text input widget at the given position with a fixed width
 do -- lurek.terminal.newTextBox
   local term = lurek.terminal.newTerminal(80, 25)
   local input = lurek.terminal.newTextBox(2, 24, 70)
@@ -48,9 +33,7 @@ do -- lurek.terminal.newTextBox
   term:setFocus(input)
 end
 
---@api-stub: lurek.terminal.newList
--- Creates a new scrollable list widget at 1-based coordinates.
--- Use for selectable item lists like inventory or save slots; addItem to populate.
+--@api-stub: lurek.terminal.newList -- Creates a new scrollable list widget for displaying and selecting items
 do -- lurek.terminal.newList
   local term = lurek.terminal.newTerminal(80, 25)
   local saves = lurek.terminal.newList(2, 3, 30, 10)
@@ -59,9 +42,7 @@ do -- lurek.terminal.newList
   term:addWidget(saves)
 end
 
---@api-stub: lurek.terminal.newBorder
--- Creates a new decorative border widget at 1-based coordinates.
--- Use to frame a panel region; setStyle picks single/double/ascii line art.
+--@api-stub: lurek.terminal.newBorder -- Creates a new decorative border widget drawn using box-drawing characters
 do -- lurek.terminal.newBorder
   local term = lurek.terminal.newTerminal(80, 25)
   local frame = lurek.terminal.newBorder(1, 1, 80, 25)
@@ -70,9 +51,7 @@ do -- lurek.terminal.newBorder
   term:addWidget(frame)
 end
 
---@api-stub: lurek.terminal.newPanel
--- Creates a new container panel widget at 1-based coordinates.
--- Use to group related child widgets so visibility toggles cascade.
+--@api-stub: lurek.terminal.newPanel -- Creates a new panel widget that can contain child widgets for grouped layout
 do -- lurek.terminal.newPanel
   local term = lurek.terminal.newTerminal(80, 25)
   local pause_panel = lurek.terminal.newPanel(20, 8, 40, 10)
@@ -80,18 +59,14 @@ do -- lurek.terminal.newPanel
   term:addWidget(pause_panel)
 end
 
---@api-stub: lurek.terminal.pushScrollback
--- Appends a line to this terminal's scrollback buffer.
--- Use after every command echo so history persists when the visible region scrolls.
+--@api-stub: lurek.terminal.pushScrollback -- Appends a line of text to the terminal scrollback buffer for later retrieval
 do -- lurek.terminal.pushScrollback
   local term = lurek.terminal.newTerminal(80, 25)
   lurek.terminal.pushScrollback(term, "> spawn enemy 100 200")
   lurek.terminal.pushScrollback(term, "spawned goblin#7 at (100, 200)")
 end
 
---@api-stub: lurek.terminal.getScrollback
--- Returns a table of lines from the scrollback buffer.
--- Pass offset 0 for the most recent lines; useful for redrawing on scroll.
+--@api-stub: lurek.terminal.getScrollback -- Retrieves a range of lines from the terminal scrollback buffer
 do -- lurek.terminal.getScrollback
   local term = lurek.terminal.newTerminal(80, 25)
   lurek.terminal.pushScrollback(term, "build complete")
@@ -99,9 +74,7 @@ do -- lurek.terminal.getScrollback
   lurek.log.info("rendering " .. #recent .. " scrollback lines", "term")
 end
 
---@api-stub: lurek.terminal.scrollbackLen
--- Returns the number of lines currently in this terminal's scrollback buffer.
--- Use to compute scrollbar thumb size or to detect when buffer hits cap.
+--@api-stub: lurek.terminal.scrollbackLen -- Returns the number of lines currently stored in the terminal scrollback buffer
 do -- lurek.terminal.scrollbackLen
   local term = lurek.terminal.newTerminal(80, 25)
   lurek.terminal.pushScrollback(term, "hello")
@@ -110,27 +83,21 @@ do -- lurek.terminal.scrollbackLen
   end
 end
 
---@api-stub: lurek.terminal.setScrollbackCap
--- Sets the maximum number of lines retained in the scrollback buffer.
--- Cap before pushing high-volume logs to bound memory; older lines are dropped.
+--@api-stub: lurek.terminal.setScrollbackCap -- Sets the maximum number of lines retained in the terminal scrollback buffer
 do -- lurek.terminal.setScrollbackCap
   local term = lurek.terminal.newTerminal(80, 25)
   lurek.terminal.setScrollbackCap(term, 2000)
   lurek.terminal.pushScrollback(term, "cap set to 2000 lines")
 end
 
---@api-stub: lurek.terminal.pushCmdHistory
--- Appends a command string to this terminal's history.
--- Call after the user submits a command so up-arrow can recall it.
+--@api-stub: lurek.terminal.pushCmdHistory -- Appends a command string to the terminal command history for up/down arrow recall
 do -- lurek.terminal.pushCmdHistory
   local term = lurek.terminal.newTerminal(80, 25)
   local submitted = "give gold 500"
   lurek.terminal.pushCmdHistory(term, submitted)
 end
 
---@api-stub: lurek.terminal.prevCmd
--- Steps one entry back in command history (toward older commands).
--- Bind to the up-arrow key in your text-box input handler.
+--@api-stub: lurek.terminal.prevCmd -- Navigates backward in the terminal command history, returning the previous command or nil if at the start
 do -- lurek.terminal.prevCmd
   local term = lurek.terminal.newTerminal(80, 25)
   lurek.terminal.pushCmdHistory(term, "noclip on")
@@ -138,9 +105,7 @@ do -- lurek.terminal.prevCmd
   if recalled then lurek.log.debug("recalled: " .. recalled, "term") end
 end
 
---@api-stub: lurek.terminal.nextCmd
--- Steps one entry forward in command history (toward newer commands).
--- Bind to the down-arrow key; returns nil when past the newest entry.
+--@api-stub: lurek.terminal.nextCmd -- Navigates forward in the terminal command history, returning the next command or nil if at the end
 do -- lurek.terminal.nextCmd
   local term = lurek.terminal.newTerminal(80, 25)
   lurek.terminal.pushCmdHistory(term, "tp 0 0")
@@ -149,9 +114,7 @@ do -- lurek.terminal.nextCmd
   lurek.log.debug("next cmd: " .. tostring(newer), "term")
 end
 
---@api-stub: lurek.terminal.cmdHistoryLen
--- Returns the total number of entries in this terminal's command history.
--- Use to decide whether to enable up/down recall keys in the UI.
+--@api-stub: lurek.terminal.cmdHistoryLen -- Returns the number of commands currently stored in the terminal command history
 do -- lurek.terminal.cmdHistoryLen
   local term = lurek.terminal.newTerminal(80, 25)
   lurek.terminal.pushCmdHistory(term, "kill all")
@@ -159,26 +122,20 @@ do -- lurek.terminal.cmdHistoryLen
   lurek.log.info("history depth: " .. n, "term")
 end
 
---@api-stub: lurek.terminal.clearCmdHistory
--- Clears all entries from this terminal's command history.
--- Call when starting a fresh session or wiping save data.
+--@api-stub: lurek.terminal.clearCmdHistory -- Removes all entries from the terminal command history
 do -- lurek.terminal.clearCmdHistory
   local term = lurek.terminal.newTerminal(80, 25)
   lurek.terminal.pushCmdHistory(term, "spawn enemy 50 50")
   lurek.terminal.clearCmdHistory(term)
 end
 
---@api-stub: lurek.terminal.applyTheme
--- Applies a named colour theme to a terminal, recolouring all existing cells.
--- Built-in themes: solarized_dark, solarized_light, monokai, dracula, nord.
+--@api-stub: lurek.terminal.applyTheme -- Applies a named color theme to the terminal, setting default foreground and background colors
 do -- lurek.terminal.applyTheme
   local term = lurek.terminal.newTerminal(80, 25)
   lurek.terminal.applyTheme(term, "dracula")
 end
 
---@api-stub: lurek.terminal.printHighlighted
--- Prints text at 1-based `(col, row)` with per-keyword colour highlighting.
--- Pass rules as {pattern=<lua-pattern>, fg={r,g,b}} (0-255 ints) for syntax-style colouring.
+--@api-stub: lurek.terminal.printHighlighted -- Renders syntax-highlighted text onto the terminal grid using a table of highlight rules with regex patterns and colors
 do -- lurek.terminal.printHighlighted
   local term = lurek.terminal.newTerminal(80, 25)
   local rules = {
@@ -188,18 +145,14 @@ do -- lurek.terminal.printHighlighted
   lurek.terminal.printHighlighted(term, 2, 5, "ERROR at line 42", rules)
 end
 
---@api-stub: lurek.terminal.stripAnsi
--- Strips all ANSI escape codes from `text` and returns the plain string.
--- Use before logging or saving terminal output where colour codes would be noise.
+--@api-stub: lurek.terminal.stripAnsi -- Removes all ANSI escape sequences from a string, returning plain text
 do -- lurek.terminal.stripAnsi
   local raw = "\27[31mERROR:\27[0m boss spawn failed"
   local plain = lurek.terminal.stripAnsi(raw)
   lurek.log.warn("clean message: " .. plain, "term")
 end
 
---@api-stub: lurek.terminal.parseAnsi
--- Parses `text` into coloured spans.
--- Returned spans have {text, bold, fg?, bg?}; useful for custom rendering or filtering.
+--@api-stub: lurek.terminal.parseAnsi -- Parses ANSI escape sequences in a string into an array of span tables with text, bold, fg, and bg fields
 do -- lurek.terminal.parseAnsi
   local spans = lurek.terminal.parseAnsi("\27[1;32mOK\27[0m loaded")
   for _, s in ipairs(spans) do
@@ -207,43 +160,33 @@ do -- lurek.terminal.parseAnsi
   end
 end
 
---@api-stub: lurek.terminal.printAnsi
--- Prints ANSI-escaped `text` onto terminal `t` starting at `(col, row)`.
--- Use to render coloured server logs or REPL output without manually splitting spans.
+--@api-stub: lurek.terminal.printAnsi -- Renders ANSI-colored text directly onto the terminal grid at the given cell position
 do -- lurek.terminal.printAnsi
   local term = lurek.terminal.newTerminal(80, 25)
   local line = "\27[33mWARN:\27[0m low ammo"
   lurek.terminal.printAnsi(term, 2, 3, line)
 end
 
---@api-stub: lurek.terminal.addCompletion
--- Adds a candidate string to the tab-completion engine.
--- Register every command name once at startup so Tab cycles them in the input box.
+--@api-stub: lurek.terminal.addCompletion -- Registers a candidate string for tab-completion in the shared completion engine
 do -- lurek.terminal.addCompletion
   lurek.terminal.addCompletion("spawn")
   lurek.terminal.addCompletion("teleport")
   lurek.terminal.addCompletion("give")
 end
 
---@api-stub: lurek.terminal.removeCompletion
--- Removes a candidate string from the tab-completion engine.
--- Call when a command is unregistered (e.g. after a mod is unloaded).
+--@api-stub: lurek.terminal.removeCompletion -- Removes a previously registered completion candidate from the shared completion engine
 do -- lurek.terminal.removeCompletion
   lurek.terminal.addCompletion("debug_crash")
   lurek.terminal.removeCompletion("debug_crash")
 end
 
---@api-stub: lurek.terminal.clearCompletions
--- Clears all completion candidates.
--- Call when switching games or contexts so stale commands do not show up.
+--@api-stub: lurek.terminal.clearCompletions -- Removes all registered completion candidates from the shared completion engine
 do -- lurek.terminal.clearCompletions
   lurek.terminal.addCompletion("noclip")
   lurek.terminal.clearCompletions()
 end
 
---@api-stub: lurek.terminal.getCompletions
--- Returns all registered candidates that start with `prefix`, as a sorted array.
--- Use to render an autocomplete dropdown beneath the input cursor.
+--@api-stub: lurek.terminal.getCompletions -- Returns all completion candidates matching the given prefix string
 do -- lurek.terminal.getCompletions
   lurek.terminal.addCompletion("spawn_enemy")
   lurek.terminal.addCompletion("spawn_item")
@@ -251,9 +194,7 @@ do -- lurek.terminal.getCompletions
   lurek.log.info("matches: " .. #hits, "term")
 end
 
---@api-stub: lurek.terminal.nextCompletion
--- Returns the next candidate for `prefix`, cycling on repeated calls.
--- Bind to the Tab key; call resetCompletion when the user edits the prefix.
+--@api-stub: lurek.terminal.nextCompletion -- Cycles to the next matching completion candidate for the given prefix, wrapping around after the last match
 do -- lurek.terminal.nextCompletion
   lurek.terminal.addCompletion("give_gold")
   lurek.terminal.addCompletion("give_xp")
@@ -261,27 +202,21 @@ do -- lurek.terminal.nextCompletion
   if first then lurek.log.debug("tab: " .. first, "term") end
 end
 
---@api-stub: lurek.terminal.resetCompletion
--- Resets the cycling cursor without clearing the candidate list.
--- Call from your textinput handler whenever the input string changes.
+--@api-stub: lurek.terminal.resetCompletion -- Resets the completion cycling state so the next call to nextCompletion starts from the first match
 do -- lurek.terminal.resetCompletion
   lurek.terminal.addCompletion("kill_all")
   lurek.terminal.nextCompletion("kill")
   lurek.terminal.resetCompletion()
 end
 
---@api-stub: lurek.terminal.getMaxCols
--- Returns the maximum number of columns a Terminal can be constructed with.
--- Clamp user-configurable terminal sizes against this so newTerminal does not error.
+--@api-stub: lurek.terminal.getMaxCols -- Returns the engine-defined maximum number of columns a terminal grid can have
 do -- lurek.terminal.getMaxCols
   local max_cols = lurek.terminal.getMaxCols()
   local desired = math.min(120, max_cols)
   lurek.log.info("using " .. desired .. " cols (cap " .. max_cols .. ")", "term")
 end
 
---@api-stub: lurek.terminal.getMaxRows
--- Returns the maximum number of rows a Terminal can be constructed with.
--- Pair with getMaxCols when sizing terminals from a config file.
+--@api-stub: lurek.terminal.getMaxRows -- Returns the engine-defined maximum number of rows a terminal grid can have
 do -- lurek.terminal.getMaxRows
   local max_rows = lurek.terminal.getMaxRows()
   local desired = math.min(60, max_rows)
@@ -290,18 +225,14 @@ end
 
 -- â”€â”€ Terminal methods â”€â”€
 
---@api-stub: LTerminal:set
--- Sets a cell at 1-based coordinates with character FG and BG colours.
--- Pass char as a 1-char string or codepoint; colours are 0..1 floats.
+--@api-stub: Terminal:set
 do -- Terminal:set
   local term = lurek.terminal.newTerminal(80, 25)
   term:set(10, 5, "@", 1, 1, 0, 1, 0, 0, 0, 0)
   term:set(11, 5, "!", 1, 0.4, 0.4, 1)
 end
 
---@api-stub: LTerminal:get
--- Returns the cell data at 1-based coordinates.
--- Returns 9 values: codepoint, fg rgba, bg rgba; useful for save/restore of cells.
+--@api-stub: Terminal:get
 do -- Terminal:get
   local term = lurek.terminal.newTerminal(80, 25)
   term:set(3, 3, "X", 1, 0, 0, 1)
@@ -309,18 +240,14 @@ do -- Terminal:get
   lurek.log.debug("cell " .. ch .. " fg=" .. r .. "," .. g .. "," .. b, "term")
 end
 
---@api-stub: LTerminal:clear
--- Clears all cells to defaults.
--- Call before redrawing a frame from scratch instead of overwriting cell-by-cell.
+--@api-stub: Terminal:clear
 do -- Terminal:clear
   local term = lurek.terminal.newTerminal(80, 25)
   term:set(1, 1, "#", 1, 1, 1, 1)
   term:clear()
 end
 
---@api-stub: LTerminal:getDimensions
--- Returns the terminal grid dimensions.
--- Use to centre widgets or to clamp draw coordinates within bounds.
+--@api-stub: Terminal:getDimensions
 do -- Terminal:getDimensions
   local term = lurek.terminal.newTerminal(80, 25)
   local cols, rows = term:getDimensions()
@@ -335,18 +262,14 @@ end
 --   end)
 -- end
 
---@api-stub: LTerminal:addWidget
--- Attaches a widget to this terminal.
--- Widgets render in attach order; add backgrounds before foreground labels.
+--@api-stub: Terminal:addWidget
 do -- Terminal:addWidget
   local term = lurek.terminal.newTerminal(80, 25)
   local hp_label = lurek.terminal.newLabel(2, 2, "HP: 100/100")
   term:addWidget(hp_label)
 end
 
---@api-stub: LTerminal:removeWidget
--- Detaches a widget from this terminal.
--- Use to hide HUD elements when entering menus without destroying the widget handle.
+--@api-stub: Terminal:removeWidget
 do -- Terminal:removeWidget
   local term = lurek.terminal.newTerminal(80, 25)
   local toast = lurek.terminal.newLabel(20, 1, "Item picked up!")
@@ -354,18 +277,14 @@ do -- Terminal:removeWidget
   term:removeWidget(toast)
 end
 
---@api-stub: LTerminal:clearWidgets
--- Detaches all widgets from this terminal.
--- Call when switching between game screens to wipe the previous UI state.
+--@api-stub: Terminal:clearWidgets
 do -- Terminal:clearWidgets
   local term = lurek.terminal.newTerminal(80, 25)
   term:addWidget(lurek.terminal.newLabel(1, 1, "old screen"))
   term:clearWidgets()
 end
 
---@api-stub: LTerminal:getWidgetCount
--- Returns the number of attached widgets.
--- Useful to assert UI state in tests or to cap dynamically spawned tooltips.
+--@api-stub: Terminal:getWidgetCount
 do -- Terminal:getWidgetCount
   local term = lurek.terminal.newTerminal(80, 25)
   term:addWidget(lurek.terminal.newLabel(1, 1, "a"))
@@ -374,9 +293,7 @@ do -- Terminal:getWidgetCount
   end
 end
 
---@api-stub: LTerminal:setFocus
--- Sets the focused widget, or clears focus if nil is passed.
--- Only the focused widget receives keypressed/textinput; pass nil to release.
+--@api-stub: Terminal:setFocus
 do -- Terminal:setFocus
   local term = lurek.terminal.newTerminal(80, 25)
   local input = lurek.terminal.newTextBox(2, 24, 60)
@@ -384,9 +301,7 @@ do -- Terminal:setFocus
   term:setFocus(input)
 end
 
---@api-stub: LTerminal:getFocused
--- Returns the currently focused widget, or nil.
--- Use to detect whether key events should reach gameplay or stay in the UI.
+--@api-stub: Terminal:getFocused
 do -- Terminal:getFocused
   local term = lurek.terminal.newTerminal(80, 25)
   local input = lurek.terminal.newTextBox(2, 24, 60)
@@ -397,9 +312,7 @@ do -- Terminal:getFocused
   end
 end
 
---@api-stub: LTerminal:keypressed
--- Routes a key press to the focused widget and fires callbacks.
--- Forward from your global key handler; returns true if the widget consumed the key.
+--@api-stub: Terminal:keypressed
 do -- Terminal:keypressed
   local term = lurek.terminal.newTerminal(80, 25)
   local btn = lurek.terminal.newButton(2, 2, 10, 1, "OK")
@@ -410,9 +323,7 @@ do -- Terminal:keypressed
   lurek.log.debug("consumed=" .. tostring(consumed), "term")
 end
 
---@api-stub: LTerminal:textinput
--- Routes text input to the focused widget and fires callbacks.
--- Forward from a textinput hook so text boxes accept typed characters.
+--@api-stub: Terminal:textinput
 do -- Terminal:textinput
   local term = lurek.terminal.newTerminal(80, 25)
   local input = lurek.terminal.newTextBox(2, 24, 60)
@@ -422,18 +333,14 @@ do -- Terminal:textinput
   term:textinput("i")
 end
 
---@api-stub: LTerminal:render
--- Renders the terminal grid and widgets as render commands.
--- Call from lurek.render; render keeps the window fitted to the grid cell size.
+--@api-stub: Terminal:render
 do -- Terminal:render
   local term = lurek.terminal.newTerminal(80, 25)
   term:addWidget(lurek.terminal.newLabel(2, 2, "HUD"))
   function lurek.draw() term:render(0, 0) end
 end
 
---@api-stub: LTerminal:print
--- Writes text into consecutive terminal cells starting at a 1-based column and row.
--- Use it for shell prompts, roguelike logs, and fixed-grid text output.
+--@api-stub: Terminal:print
 do -- Terminal:print
   ---@type LTerminal
   local term = lurek.terminal.newTerminal(80, 25)
@@ -441,34 +348,26 @@ do -- Terminal:print
   term:print(1, 2, "10")
 end
 
---@api-stub: LTerminal:setFont
--- Sets the terminal font by pixel height, snapping to the nearest built-in size.
--- Use to scale UI text for hi-DPI displays or accessibility settings.
+--@api-stub: Terminal:setFont
 do -- Terminal:setFont
   local term = lurek.terminal.newTerminal(80, 25)
   term:setFont(24)
 end
 
---@api-stub: LTerminal:setCellSize
--- Sets a per-terminal cell pixel size override, bypassing the font-derived size.
--- Use to align cells to a sprite atlas grid; values are clamped to >= 1 pixel.
+--@api-stub: Terminal:setCellSize
 do -- Terminal:setCellSize
   local term = lurek.terminal.newTerminal(80, 25)
   term:setCellSize(16, 16)
 end
 
---@api-stub: LTerminal:resetCellSize
--- Removes the cell size override, restoring font-derived cell dimensions.
--- Call after a temporary override (e.g. cinematic zoom) to return to normal.
+--@api-stub: Terminal:resetCellSize
 do -- Terminal:resetCellSize
   local term = lurek.terminal.newTerminal(80, 25)
   term:setCellSize(20, 20)
   term:resetCellSize()
 end
 
---@api-stub: LTerminal:getCellSize
--- Returns the active cell size as two numbers, using a custom override or font metrics.
--- Use these values when converting pixel mouse positions to terminal cell positions.
+--@api-stub: Terminal:getCellSize
 do -- Terminal:getCellSize
   local term = lurek.terminal.newTerminal(80, 25)
   term:setCellSize(18, 18)
@@ -476,9 +375,7 @@ do -- Terminal:getCellSize
   lurek.log.debug("cell size " .. cw .. "x" .. ch, "term")
 end
 
---@api-stub: LTerminal:autoResize
--- Resizes the window to exactly fit the terminal grid at the active cell size.
--- Call after setFont or setCellSize when you want to force the pending window size immediately.
+--@api-stub: Terminal:autoResize
 do -- Terminal:autoResize
   local term = lurek.terminal.newTerminal(80, 25)
   term:setFont(20)
@@ -487,17 +384,13 @@ end
 
 -- â”€â”€ Widget methods â”€â”€
 
---@api-stub: LWidget:setPosition
--- Sets the widget position from 1-based coordinates.
--- Use to reposition tooltips or floating windows in response to game state.
+--@api-stub: Widget:setPosition
 do -- Widget:setPosition
   local label = lurek.terminal.newLabel(1, 1, "tooltip")
   label:setPosition(40, 12)
 end
 
---@api-stub: LWidget:getPosition
--- Returns the widget position as 1-based coordinates.
--- Use to anchor a child element relative to an existing widget.
+--@api-stub: Widget:getPosition
 do -- Widget:getPosition
   local label = lurek.terminal.newLabel(10, 5, "anchor")
   local col, row = label:getPosition()
@@ -505,9 +398,7 @@ do -- Widget:getPosition
   lurek.log.debug("arrow at " .. (col + 8) .. "," .. row, "term")
 end
 
---@api-stub: LWidget:setSize
--- Sets the widget size in cells.
--- Use to grow a list as items are added or to expand a panel for content.
+--@api-stub: Widget:setSize
 do -- Widget:setSize
   local list = lurek.terminal.newList(2, 3, 20, 4)
   list:addItem("sword")
@@ -515,26 +406,20 @@ do -- Widget:setSize
   list:setSize(20, 8)
 end
 
---@api-stub: LWidget:getSize
--- Returns the widget size in cells.
--- Use to compute layout offsets for sibling widgets.
+--@api-stub: Widget:getSize
 do -- Widget:getSize
   local panel = lurek.terminal.newPanel(2, 2, 30, 12)
   local w, h = panel:getSize()
   lurek.log.info("panel " .. w .. "x" .. h, "term")
 end
 
---@api-stub: LWidget:setVisible
--- Sets the widget visibility.
--- Toggle to show/hide overlays without removing them from the terminal.
+--@api-stub: Widget:setVisible
 do -- Widget:setVisible
   local hint = lurek.terminal.newLabel(2, 2, "[E] interact")
   hint:setVisible(false)
 end
 
---@api-stub: LWidget:isVisible
--- Returns whether the widget is visible.
--- Branch on visibility before computing expensive label text updates.
+--@api-stub: Widget:isVisible
 do -- Widget:isVisible
   local hint = lurek.terminal.newLabel(2, 2, "[E] interact")
   hint:setVisible(false)
@@ -543,17 +428,13 @@ do -- Widget:isVisible
   end
 end
 
---@api-stub: LWidget:setEnabled
--- Sets whether the widget accepts input.
--- Disable buttons during async operations to prevent double-clicks.
+--@api-stub: Widget:setEnabled
 do -- Widget:setEnabled
   local save_btn = lurek.terminal.newButton(2, 2, 10, 1, "Save")
   save_btn:setEnabled(false)
 end
 
---@api-stub: LWidget:isEnabled
--- Returns whether the widget accepts input.
--- Check before re-enabling so you do not clobber an explicit disabled state.
+--@api-stub: Widget:isEnabled
 do -- Widget:isEnabled
   local btn = lurek.terminal.newButton(2, 2, 10, 1, "Go")
   btn:setEnabled(false)
@@ -562,17 +443,13 @@ do -- Widget:isEnabled
   end
 end
 
---@api-stub: LWidget:setTag
--- Sets the free-form identification tag.
--- Use a stable string id so event handlers can identify widgets without table refs.
+--@api-stub: Widget:setTag
 do -- Widget:setTag
   local btn = lurek.terminal.newButton(2, 2, 10, 1, "Quit")
   btn:setTag("menu.quit")
 end
 
---@api-stub: LWidget:getTag
--- Returns the free-form identification tag.
--- Use in click callbacks to dispatch by tag instead of comparing widget refs.
+--@api-stub: Widget:getTag
 do -- Widget:getTag
   local btn = lurek.terminal.newButton(2, 2, 10, 1, "Quit")
   btn:setTag("menu.quit")
@@ -581,17 +458,13 @@ do -- Widget:getTag
   end
 end
 
---@api-stub: LWidget:setText
--- Sets the text content of a label, button, or text box widget.
--- Reuse a single label widget and update its text every frame instead of recreating.
+--@api-stub: Widget:setText
 do -- Widget:setText
   local fps_label = lurek.terminal.newLabel(2, 1, "FPS: --")
   fps_label:setText("FPS: 60")
 end
 
---@api-stub: LWidget:getText
--- Returns the text content of a label, button, or text box widget.
--- Read after textinput to grab what the user typed.
+--@api-stub: Widget:getText
 do -- Widget:getText
   local input = lurek.terminal.newTextBox(2, 24, 40)
   input:setText("noclip on")
@@ -599,34 +472,26 @@ do -- Widget:getText
   lurek.log.info("submit: " .. typed, "term")
 end
 
---@api-stub: LWidget:getColor
--- Returns the colour of a label or border widget.
--- Use to fade widgets by reading the current colour and animating the alpha.
+--@api-stub: Widget:getColor
 do -- Widget:getColor
   local label = lurek.terminal.newLabel(2, 2, "Hello")
   local r, g, b, a = label:getColor()
   lurek.log.debug("colour rgba " .. r .. "," .. g .. "," .. b .. "," .. a, "term")
 end
 
---@api-stub: LWidget:setOnClick
--- Registers a click callback for a button widget.
--- The callback runs on Enter when focused or on a mouse click on the button cells.
+--@api-stub: Widget:setOnClick
 do -- Widget:setOnClick
   local btn = lurek.terminal.newButton(2, 2, 12, 1, "[ Start ]")
   btn:setOnClick(function() lurek.log.info("starting game", "menu") end)
 end
 
---@api-stub: LWidget:setMaxLength
--- Sets the maximum character length of a text box widget.
--- Cap so player names or chat lines fit your network packet limits.
+--@api-stub: Widget:setMaxLength
 do -- Widget:setMaxLength
   local name_box = lurek.terminal.newTextBox(2, 5, 24)
   name_box:setMaxLength(16)
 end
 
---@api-stub: LWidget:getMaxLength
--- Returns the maximum character length of a text box widget.
--- Use to drive a "12/16" character counter beside the input.
+--@api-stub: Widget:getMaxLength
 do -- Widget:getMaxLength
   local name_box = lurek.terminal.newTextBox(2, 5, 24)
   name_box:setMaxLength(16)
@@ -634,9 +499,7 @@ do -- Widget:getMaxLength
   lurek.log.info("max name length " .. cap, "term")
 end
 
---@api-stub: LWidget:setOnChange
--- Registers a text change callback for a text box widget.
--- Use for live filtering (search boxes) or to validate input as it is typed.
+--@api-stub: Widget:setOnChange
 do -- Widget:setOnChange
   local search = lurek.terminal.newTextBox(2, 1, 30)
   search:setOnChange(function(text)
@@ -644,9 +507,7 @@ do -- Widget:setOnChange
   end)
 end
 
---@api-stub: LWidget:addItem
--- Adds an item to a list widget.
--- Use during inventory refreshes; items appear in insertion order.
+--@api-stub: Widget:addItem
 do -- Widget:addItem
   local inv = lurek.terminal.newList(2, 3, 30, 8)
   inv:addItem("Healing Potion x3")
@@ -654,9 +515,7 @@ do -- Widget:addItem
   inv:addItem("Lockpick x5")
 end
 
---@api-stub: LWidget:removeItem
--- Removes an item from a list widget by 1-based index.
--- Use after the player drops or consumes the corresponding inventory entry.
+--@api-stub: Widget:removeItem
 do -- Widget:removeItem
   local inv = lurek.terminal.newList(2, 3, 30, 8)
   inv:addItem("Healing Potion")
@@ -664,9 +523,7 @@ do -- Widget:removeItem
   inv:removeItem(2)
 end
 
---@api-stub: LWidget:clearItems
--- Removes all items from a list widget.
--- Call before refilling the list from a fresh inventory snapshot.
+--@api-stub: Widget:clearItems
 do -- Widget:clearItems
   local inv = lurek.terminal.newList(2, 3, 30, 8)
   inv:addItem("stale")
@@ -674,9 +531,7 @@ do -- Widget:clearItems
   inv:addItem("fresh")
 end
 
---@api-stub: LWidget:getItemCount
--- Returns the number of items in a list widget.
--- Use to drive an "Empty" placeholder label when the list has no entries.
+--@api-stub: Widget:getItemCount
 do -- Widget:getItemCount
   local inv = lurek.terminal.newList(2, 3, 30, 8)
   if inv:getItemCount() == 0 then
@@ -684,9 +539,7 @@ do -- Widget:getItemCount
   end
 end
 
---@api-stub: LWidget:getItem
--- Returns a list item by 1-based index.
--- Use with getSelected to fetch the highlighted entry on Enter.
+--@api-stub: Widget:getItem
 do -- Widget:getItem
   local inv = lurek.terminal.newList(2, 3, 30, 8)
   inv:addItem("Iron Sword")
@@ -695,9 +548,7 @@ do -- Widget:getItem
   lurek.log.debug("first item: " .. first, "term")
 end
 
---@api-stub: LWidget:setSelected
--- Sets the selected item in a list widget by 1-based index.
--- Pass nil to clear; useful when programmatically restoring a saved selection.
+--@api-stub: Widget:setSelected
 do -- Widget:setSelected
   local saves = lurek.terminal.newList(2, 3, 30, 8)
   saves:addItem("Slot 1")
@@ -705,9 +556,7 @@ do -- Widget:setSelected
   saves:setSelected(2)
 end
 
---@api-stub: LWidget:getSelected
--- Returns the selected item index (1-based) in a list widget, or nil.
--- Read on confirm to know which entry the player highlighted.
+--@api-stub: Widget:getSelected
 do -- Widget:getSelected
   local saves = lurek.terminal.newList(2, 3, 30, 8)
   saves:addItem("Slot 1")
@@ -716,9 +565,7 @@ do -- Widget:getSelected
   if idx then lurek.log.info("loaded slot " .. idx, "save") end
 end
 
---@api-stub: LWidget:setOnSelect
--- Registers a selection change callback for a list widget.
--- Use to update a preview pane whenever the highlight moves.
+--@api-stub: Widget:setOnSelect
 do -- Widget:setOnSelect
   local saves = lurek.terminal.newList(2, 3, 30, 8)
   saves:addItem("Slot 1")
@@ -727,17 +574,13 @@ do -- Widget:setOnSelect
   end)
 end
 
---@api-stub: LWidget:setStyle
--- Sets the border style of a border widget.
--- Valid styles: "single", "double", "ascii"; choose ascii for low-glyph fonts.
+--@api-stub: Widget:setStyle
 do -- Widget:setStyle
   local frame = lurek.terminal.newBorder(1, 1, 40, 10)
   frame:setStyle("single")
 end
 
---@api-stub: LWidget:getStyle
--- Returns the border style name of a border widget.
--- Use to round-trip the style when persisting UI preferences.
+--@api-stub: Widget:getStyle
 do -- Widget:getStyle
   local frame = lurek.terminal.newBorder(1, 1, 40, 10)
   frame:setStyle("double")
@@ -745,17 +588,13 @@ do -- Widget:getStyle
   lurek.log.info("border style: " .. style, "term")
 end
 
---@api-stub: LWidget:setTitle
--- Sets the title of a border widget.
--- The title overlays the top edge; use a leading/trailing space for breathing room.
+--@api-stub: Widget:setTitle
 do -- Widget:setTitle
   local frame = lurek.terminal.newBorder(1, 1, 40, 10)
   frame:setTitle(" Inventory ")
 end
 
---@api-stub: LWidget:getTitle
--- Returns the title of a border widget.
--- Use when rebuilding a panel to preserve the previously displayed heading.
+--@api-stub: Widget:getTitle
 do -- Widget:getTitle
   local frame = lurek.terminal.newBorder(1, 1, 40, 10)
   frame:setTitle(" Status ")
@@ -763,18 +602,14 @@ do -- Widget:getTitle
   lurek.log.debug("frame titled: " .. title, "term")
 end
 
---@api-stub: LWidget:addChild
--- Adds a child widget to a panel widget.
--- Children draw with the panel; toggling panel visibility cascades to all children.
+--@api-stub: Widget:addChild
 do -- Widget:addChild
   local panel = lurek.terminal.newPanel(2, 2, 30, 10)
   panel:addChild(lurek.terminal.newLabel(1, 1, "PAUSED"))
   panel:addChild(lurek.terminal.newButton(1, 3, 10, 1, "Resume"))
 end
 
---@api-stub: LWidget:removeChild
--- Removes a child widget from a panel widget.
--- Use to hot-swap a single subview without rebuilding the entire panel.
+--@api-stub: Widget:removeChild
 do -- Widget:removeChild
   local panel = lurek.terminal.newPanel(2, 2, 30, 10)
   local hint = lurek.terminal.newLabel(1, 1, "tip")
@@ -782,18 +617,14 @@ do -- Widget:removeChild
   panel:removeChild(hint)
 end
 
---@api-stub: LWidget:clearChildren
--- Removes all children from a panel widget.
--- Call before rebuilding a panel's contents from a fresh data source.
+--@api-stub: Widget:clearChildren
 do -- Widget:clearChildren
   local panel = lurek.terminal.newPanel(2, 2, 30, 10)
   panel:addChild(lurek.terminal.newLabel(1, 1, "old"))
   panel:clearChildren()
 end
 
---@api-stub: LWidget:getChildCount
--- Returns the number of children in a panel widget.
--- Use to lay out children dynamically (e.g. position the next at row N+1).
+--@api-stub: Widget:getChildCount
 do -- Widget:getChildCount
   local panel = lurek.terminal.newPanel(2, 2, 30, 10)
   panel:addChild(lurek.terminal.newLabel(1, 1, "a"))
@@ -801,9 +632,7 @@ do -- Widget:getChildCount
   lurek.log.debug("panel children: " .. n, "term")
 end
 
---@api-stub: LWidget:getChild
--- Returns a child widget from a panel by 1-based index, or nil.
--- Iterate from 1 to getChildCount to walk all children for layout passes.
+--@api-stub: Widget:getChild
 do -- Widget:getChild
   local panel = lurek.terminal.newPanel(2, 2, 30, 10)
   panel:addChild(lurek.terminal.newLabel(1, 1, "first"))
@@ -811,72 +640,48 @@ do -- Widget:getChild
   if first then lurek.log.debug("got first child", "term") end
 end
 
---@api-stub: LTerminal:mousepressed
--- Forwards a mouse-press event to the terminal UI for widget interaction.
--- Call from lurek's mouse callback or equivalent input handler each frame.
+--@api-stub: Terminal:mousepressed
 do -- Terminal:mousepressed
   local term = lurek.terminal.newTerminal(80, 24)
   term:mousepressed(10, 5, 1)
   lurek.log.info("mouse event forwarded", "terminal")
 end
 
---@api-stub: LWidget:setColor
--- Sets the foreground text or icon colour for a terminal widget.
--- Use ANSI-style RGB values in [0,1] to theme individual widgets.
+--@api-stub: Widget:setColor
 do -- Widget:setColor
   local lbl = lurek.terminal.newLabel(1, 1, "OK")
   lbl:setColor(0.2, 0.9, 0.3)
   lurek.log.info("widget colour set", "terminal")
 end
 
--- =============================================================================
--- COVERAGE: 4 uncovered lurek.terminal API item(s)
--- Generated by tools/audit/example_add_missing.py
--- REQUIRED: replace every --@api-stub: block below with a real scenario.
--- Run .github/prompts/flesh-out-example.prompt.md for instructions.
--- The final committed file must contain ZERO --@api-stub: lines.
--- =============================================================================
 
 -- -----------------------------------------------------------------------------
 -- LTerminal methods
 -- -----------------------------------------------------------------------------
 
--- ---- Example: LTerminal:type ------------------------------------------------
---@api-stub: LTerminal:type
--- Returns the type name of this object.
--- Useful for runtime type inspection.
+--@api-stub: LTerminal:type -- Returns the type name string "LTerminal"
 do -- LTerminal:type
   local terminal_obj = lurek.terminal.newTerminal(80, 24)
   local t = terminal_obj:type()
   lurek.log.info("LTerminal:type = " .. t, "terminal")
 end
---@api-stub: LTerminal:typeOf
--- Returns true if this object is of the given type.
--- Use for runtime type checks.
+--@api-stub: LTerminal:typeOf -- Checks whether this object matches a given type name
 do -- LTerminal:typeOf
   local terminal_obj2 = lurek.terminal.newTerminal(80, 24)
   lurek.log.info("is LTerminal: " .. tostring(terminal_obj2 and terminal_obj2:typeOf("LTerminal") or false), "terminal")
   lurek.log.info("is wrong: " .. tostring(terminal_obj2 and terminal_obj2:typeOf("Unknown") or false), "terminal")
 end
---@api-stub: LWidget:type
--- Returns the type name of this object.
--- Useful for runtime type inspection.
+--@api-stub: LWidget:type -- Returns the type name string "LWidget"
 do -- LWidget:type
   local widget_obj = lurek.terminal.newLabel(0, 0, "hello")
   local t = widget_obj:type()
   lurek.log.info("LWidget:type = " .. t, "terminal")
 end
---@api-stub: LWidget:typeOf
--- Returns true if this object is of the given type.
--- Use for runtime type checks.
+--@api-stub: LWidget:typeOf -- Checks whether this object matches a given type name
 do -- LWidget:typeOf
   local widget_obj2 = lurek.terminal.newLabel(0, 0, "hello")
   lurek.log.info("is LWidget: " .. tostring(widget_obj2 and widget_obj2:typeOf("LWidget") or false), "terminal")
   lurek.log.info("is wrong: " .. tostring(widget_obj2 and widget_obj2:typeOf("Unknown") or false), "terminal")
 end
---@api-stub: block below with a real scenario.
--- Run .github/prompts/flesh-out-example.prompt.md for instructions.
--- The final committed file must contain ZERO --@api-stub: lines.
--- =============================================================================
 
 

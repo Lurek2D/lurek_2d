@@ -120,6 +120,38 @@ class LuaBindingToolTests(unittest.TestCase):
                     source_file="src/lua_api/example_api.rs",
                     line=2,
                 ),
+                self.tool.BindingEntry(
+                    module="example",
+                    namespace="lurek.example",
+                    name="uncertainArgs",
+                    qualified_name="lurek.example.uncertainArgs",
+                    kind="function",
+                    call_style=".",
+                    owner="",
+                    parameters=[
+                        self.tool.BindingParam(
+                            "...",
+                            "any",
+                            "LuaMultiValue",
+                            False,
+                            True,
+                            True,
+                            confidence=self.tool.CONFIDENCE_HEURISTIC,
+                            diagnostics=[
+                                self.tool.BindingDiagnostic(
+                                    code="VARIADIC_LUA_MULTI_VALUE",
+                                    classification=self.tool.CLASSIFICATION_EXTRACTION_UNCERTAIN,
+                                    message="LuaMultiValue variadic arguments are extracted heuristically.",
+                                    evidence="LuaMultiValue",
+                                )
+                            ],
+                        )
+                    ],
+                    source_signature="|_, args: LuaMultiValue|",
+                    source_file="src/lua_api/example_api.rs",
+                    line=4,
+                    confidence=self.tool.CONFIDENCE_HEURISTIC,
+                ),
             ],
         )
 
@@ -154,6 +186,21 @@ class LuaBindingToolTests(unittest.TestCase):
                     source_file="src/lua_api/example_api.rs",
                     line=3,
                 ),
+                self.tool.BindingEntry(
+                    module="example",
+                    namespace="lurek.example",
+                    name="uncertainArgs",
+                    qualified_name="lurek.example.uncertainArgs",
+                    kind="function",
+                    call_style=".",
+                    owner="",
+                    parameters=[
+                        self.tool.BindingParam("first", "string", "string", False, False, True),
+                        self.tool.BindingParam("second", "integer", "integer", False, False, True),
+                    ],
+                    source_file="src/lua_api/example_api.rs",
+                    line=4,
+                ),
             ],
         )
 
@@ -166,6 +213,49 @@ class LuaBindingToolTests(unittest.TestCase):
         self.assertTrue(report.parameter_optionality_mismatches)
         self.assertTrue(report.return_type_mismatches)
         self.assertTrue(report.return_optionality_mismatches)
+        self.assertTrue(report.has_blocking_issues())
+
+        # Some orderCase issues are CONFIRMED_DOC_BUG (type/optionality/return mismatches).
+        # Parameter name mismatches are now EXTRACTION_UNCERTAIN per Rule 1.
+        confirmed = [
+            issue
+            for issue in report.issues
+            if issue.qualified_name == "lurek.example.orderCase"
+            and issue.classification == self.tool.CLASSIFICATION_CONFIRMED_DOC_BUG
+        ]
+        self.assertTrue(confirmed)
+
+        # Name mismatch issues for orderCase must be EXTRACTION_UNCERTAIN (Rule 1).
+        name_mismatches = [
+            issue
+            for issue in report.issues
+            if issue.qualified_name == "lurek.example.orderCase"
+            and issue.kind == "parameter_name_mismatch"
+        ]
+        self.assertTrue(name_mismatches)
+        self.assertTrue(
+            all(
+                issue.classification == self.tool.CLASSIFICATION_EXTRACTION_UNCERTAIN
+                for issue in name_mismatches
+            )
+        )
+
+        uncertain = [
+            issue
+            for issue in report.issues
+            if issue.qualified_name == "lurek.example.uncertainArgs"
+        ]
+        self.assertTrue(uncertain)
+        self.assertTrue(
+            all(
+                issue.classification == self.tool.CLASSIFICATION_EXTRACTION_UNCERTAIN
+                for issue in uncertain
+            )
+        )
+        self.assertTrue(all(not issue.blocking for issue in uncertain))
+        self.assertGreater(report.summary.confirmed_doc_bug_count, 0)
+        self.assertGreater(report.summary.extraction_uncertain_count, 0)
+        self.assertEqual(report.summary.unsupported_pattern_count, 0)
 
 
 if __name__ == "__main__":

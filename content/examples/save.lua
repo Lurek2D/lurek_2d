@@ -1,19 +1,8 @@
 -- content/examples/save.lua
--- Hand-written coverage of the lurek.save API (22 items).
---
--- A SaveManager owns per-module collector/restorer callbacks plus
--- schema versioning, optional LZ4 compression, and auto-save timing.
--- Slot data is written under "save/slot_<name>.sav" inside the game
--- directory, so all I/O is wrapped in lurek.init / lurek.quit so the
--- file loads cleanly without a runtime in static-analysis contexts.
---
+-- lurek.save API examples.
 -- Run: cargo run -- content/examples/save.lua
 
--- â”€â”€ lurek.save.* functions â”€â”€
-
---@api-stub: lurek.save.newSaveManager
--- Creates a new SaveManager for slot-based save/load operations.
--- Build one manager per game and register every persistent subsystem against it at startup.
+--@api-stub: lurek.save.newSaveManager -- Create a new SaveManager instance for managing persistent game saves
 do -- lurek.save.newSaveManager
   local mgr = lurek.save.newSaveManager()
   mgr:setSchemaVersion(1)
@@ -24,9 +13,7 @@ end
 
 -- â”€â”€ SaveManager methods â”€â”€
 
---@api-stub: LSaveManager:unregister
--- Removes a named module and its callbacks.
--- Call when a subsystem shuts down mid-game (e.g. minigame ends) so its data is no longer collected.
+--@api-stub: SaveManager:unregister
 do -- SaveManager:unregister
   local mgr = lurek.save.newSaveManager()
   mgr:register("minigame",
@@ -35,18 +22,14 @@ do -- SaveManager:unregister
   mgr:unregister("minigame")
 end
 
---@api-stub: LSaveManager:setSchemaVersion
--- Sets the current schema version for new saves.
--- Bump this whenever the persisted shape changes and add a matching migration via addMigration.
+--@api-stub: SaveManager:setSchemaVersion
 do -- SaveManager:setSchemaVersion
   local mgr = lurek.save.newSaveManager()
   mgr:setSchemaVersion(3)
   lurek.log.info("save schema is now v" .. mgr:getSchemaVersion(), "save")
 end
 
---@api-stub: LSaveManager:getSchemaVersion
--- Returns the current schema version.
--- Use during boot to log the active version or to gate compatibility checks against older slots.
+--@api-stub: SaveManager:getSchemaVersion
 do -- SaveManager:getSchemaVersion
   local mgr = lurek.save.newSaveManager()
   mgr:setSchemaVersion(2)
@@ -54,9 +37,7 @@ do -- SaveManager:getSchemaVersion
   if ver < 2 then lurek.log.warn("schema older than expected", "save") end
 end
 
---@api-stub: LSaveManager:collect
--- Collects data from all registered collectors into a table with metadata.
--- Use to snapshot game state without writing to disk â€” handy for in-memory checkpoints or replays.
+--@api-stub: SaveManager:collect
 do -- SaveManager:collect
   local mgr = lurek.save.newSaveManager()
   mgr:register("inventory",
@@ -66,9 +47,7 @@ do -- SaveManager:collect
   lurek.log.info("snapshot has " .. tostring(snapshot.inventory.gold) .. " gold", "save")
 end
 
---@api-stub: LSaveManager:restore
--- Restores data from a table, applying migrations and calling restorers.
--- Use to roll back to a checkpoint table previously returned by collect().
+--@api-stub: SaveManager:restore
 do -- SaveManager:restore
   local mgr = lurek.save.newSaveManager()
   local checkpoint
@@ -79,9 +58,7 @@ do -- SaveManager:restore
   mgr:restore(checkpoint)
 end
 
---@api-stub: LSaveManager:markDirty
--- Marks data as modified since the last save or load.
--- Call from gameplay events (item picked up, level cleared) so auto-save knows there is work to do.
+--@api-stub: SaveManager:markDirty
 do -- SaveManager:markDirty
   local mgr = lurek.save.newSaveManager()
   local function on_item_picked_up()
@@ -90,9 +67,7 @@ do -- SaveManager:markDirty
   on_item_picked_up()
 end
 
---@api-stub: LSaveManager:isDirty
--- Returns whether data has been modified since the last save or load.
--- Branch on this before showing a "save now?" prompt or quitting to disk.
+--@api-stub: SaveManager:isDirty
 do -- SaveManager:isDirty
   local mgr = lurek.save.newSaveManager()
   mgr:markDirty()
@@ -101,9 +76,7 @@ do -- SaveManager:isDirty
   end
 end
 
---@api-stub: LSaveManager:disableAutoSave
--- Disables automatic periodic saving; manual `write()` calls still work.
--- Call before cutscenes or boss fights to prevent the auto-save tick from interrupting flow.
+--@api-stub: SaveManager:disableAutoSave
 do -- SaveManager:disableAutoSave
   local mgr = lurek.save.newSaveManager()
   mgr:enableAutoSave(60.0, "auto")
@@ -111,9 +84,7 @@ do -- SaveManager:disableAutoSave
   lurek.log.info("auto-save paused for cutscene", "save")
 end
 
---@api-stub: LSaveManager:update
--- Advances the auto-save timer, returning the slot name if a save should trigger.
--- Drive from lurek.process(dt) â€” when it returns a slot name, call save(slot) on that frame.
+--@api-stub: SaveManager:update
 do -- SaveManager:update
   local mgr = lurek.save.newSaveManager()
   mgr:enableAutoSave(30.0, "auto")
@@ -123,18 +94,14 @@ do -- SaveManager:update
   end
 end
 
---@api-stub: LSaveManager:setSummary
--- Sets the summary string included in save metadata.
--- Refresh on level/area change so the load-game UI can show a friendly "Forest â€” 12:30" line per slot.
+--@api-stub: SaveManager:setSummary
 do -- SaveManager:setSummary
   local mgr = lurek.save.newSaveManager()
   local area, playtime = "Forest", "12:30"
   mgr:setSummary(area .. " â€” " .. playtime)
 end
 
---@api-stub: LSaveManager:getSummary
--- Returns the current summary string.
--- Useful for echoing the active summary into HUD overlays or debug panels.
+--@api-stub: SaveManager:getSummary
 do -- SaveManager:getSummary
   local mgr = lurek.save.newSaveManager()
   mgr:setSummary("Chapter 2 â€” Boss")
@@ -142,9 +109,7 @@ do -- SaveManager:getSummary
   lurek.log.info("current summary: " .. label, "save")
 end
 
---@api-stub: LSaveManager:reset
--- Resets all state, removing callbacks and clearing the manager.
--- Call when returning to the main menu so a fresh New Game starts with no stale registrations.
+--@api-stub: SaveManager:reset
 do -- SaveManager:reset
   local mgr = lurek.save.newSaveManager()
   mgr:register("player", function() return {} end, function(_) end)
@@ -152,18 +117,14 @@ do -- SaveManager:reset
   lurek.log.info("save manager cleared for main menu", "save")
 end
 
---@api-stub: LSaveManager:setCompress
--- Enables or disables LZ4 compression for saved data.
--- Turn on for large worlds or many slots â€” base64 + LZ4 trades a little CPU for much smaller files.
+--@api-stub: SaveManager:setCompress
 do -- SaveManager:setCompress
   local mgr = lurek.save.newSaveManager()
   mgr:setCompress(true)
   lurek.log.info("compressed saves enabled", "save")
 end
 
---@api-stub: LSaveManager:isCompressed
--- Returns whether compression is currently enabled.
--- Useful for diagnostics screens or for tests that assert the configured save format.
+--@api-stub: SaveManager:isCompressed
 do -- SaveManager:isCompressed
   local mgr = lurek.save.newSaveManager()
   mgr:setCompress(true)
@@ -172,9 +133,7 @@ do -- SaveManager:isCompressed
   end
 end
 
---@api-stub: LSaveManager:onBeforeSave
--- Registers a callback that fires before every save operation.
--- Use to refresh the summary, flush in-flight buffers, or stamp a final timestamp into game state.
+--@api-stub: SaveManager:onBeforeSave
 do -- SaveManager:onBeforeSave
   local mgr = lurek.save.newSaveManager()
   mgr:onBeforeSave(function(slot)
@@ -183,9 +142,7 @@ do -- SaveManager:onBeforeSave
   end)
 end
 
---@api-stub: LSaveManager:onAfterLoad
--- Registers a callback that fires after every successful load operation.
--- Use to rebuild derived state (cached lookups, scene graph) once all restorers have finished.
+--@api-stub: SaveManager:onAfterLoad
 do -- SaveManager:onAfterLoad
   local mgr = lurek.save.newSaveManager()
   mgr:onAfterLoad(function(slot)
@@ -193,9 +150,7 @@ do -- SaveManager:onAfterLoad
   end)
 end
 
---@api-stub: LSaveManager:save
--- Collects data and writes it to a slot file.
--- Call from a player-driven action (menu Save button, F5 hotkey) on a manager registered at startup.
+--@api-stub: SaveManager:save
 do -- SaveManager:save
   local mgr
   function lurek.init()
@@ -207,9 +162,7 @@ do -- SaveManager:save
   end
 end
 
---@api-stub: LSaveManager:load
--- Loads data from a slot file, applies migrations, and restores.
--- Returns ok, err â€” branch on the failure path to show the player a "corrupt save" message.
+--@api-stub: SaveManager:load
 do -- SaveManager:load
   local mgr
   function lurek.init()
@@ -220,9 +173,7 @@ do -- SaveManager:load
   end
 end
 
---@api-stub: LSaveManager:delete
--- Deletes a save file for the given slot.
--- Wire to a "Delete slot" UI button after a confirmation prompt â€” the file is removed immediately.
+--@api-stub: SaveManager:delete
 do -- SaveManager:delete
   local mgr
   function lurek.quit()
@@ -232,9 +183,7 @@ do -- SaveManager:delete
   end
 end
 
---@api-stub: LSaveManager:getSlots
--- Returns a list of all save slots with metadata.
--- Iterate the result to populate a load-game menu showing slot name, summary, and timestamp.
+--@api-stub: SaveManager:getSlots
 do -- SaveManager:getSlots
   local mgr
   function lurek.init()
@@ -245,9 +194,7 @@ do -- SaveManager:getSlots
   end
 end
 
---@api-stub: LSaveManager:getSlotInfo
--- Returns metadata for a single slot, or nil if not found.
--- Use to preview a slot's summary/version on hover before the player commits to loading it.
+--@api-stub: SaveManager:getSlotInfo
 do -- SaveManager:getSlotInfo
   local mgr
   function lurek.init()
@@ -257,9 +204,7 @@ do -- SaveManager:getSlotInfo
   end
 end
 
---@api-stub: LSaveManager:addMigration
--- Registers a migration function for upgrading save data from an older schema version.
--- Migrations run in version order on load; use to add/rename/remove fields safely.
+--@api-stub: SaveManager:addMigration
 do -- SaveManager:addMigration
   local sm = lurek.save.newSaveManager()
   sm:setSchemaVersion(2)
@@ -270,9 +215,7 @@ do -- SaveManager:addMigration
   lurek.log.info("migration registered", "save")
 end
 
---@api-stub: LSaveManager:enableAutoSave
--- Enables automatic saving after every markDirty() call, with an optional cooldown.
--- cooldown_secs prevents thrashing; 0 saves immediately on every dirty event.
+--@api-stub: SaveManager:enableAutoSave
 do -- SaveManager:enableAutoSave
   local sm = lurek.save.newSaveManager()
   sm:register("state", function() return {score=0} end, function(d) end)
@@ -280,18 +223,14 @@ do -- SaveManager:enableAutoSave
   lurek.log.info("auto-save enabled", "save")
 end
 
---@api-stub: LSaveManager:exists
--- Returns true if a save file exists for the given slot name.
--- Use before loading to provide appropriate UI (New Game vs Continue).
+--@api-stub: SaveManager:exists
 do -- SaveManager:exists
   local sm = lurek.save.newSaveManager()
   local present = sm:exists("slot1")
   lurek.log.info("slot1 exists: " .. tostring(present), "save")
 end
 
---@api-stub: LSaveManager:register
--- Registers a named serializable component with collect and restore callbacks.
--- collect() returns the data table; restore(data) applies it to the game state.
+--@api-stub: SaveManager:register
 do -- SaveManager:register
   local sm = lurek.save.newSaveManager()
   sm:register("player_state",
@@ -304,9 +243,7 @@ end
 -- =============================================================================
 -- COVERAGE: 2 uncovered lurek.save API item(s)
 -- Generated by tools/audit/example_add_missing.py
--- REQUIRED: replace every --@api-stub: block below with a real scenario.
 -- Run .github/prompts/flesh-out-example.prompt.md for instructions.
--- The final committed file must contain ZERO --@api-stub: lines.
 -- =============================================================================
 
 -- -----------------------------------------------------------------------------
@@ -316,36 +253,11 @@ end
 -- =============================================================================
 -- COVERAGE: 2 uncovered lurek.save API item(s)
 -- Generated by tools/audit/example_add_missing.py
--- REQUIRED: replace every --@api-stub: block below with a real scenario.
 -- Run .github/prompts/flesh-out-example.prompt.md for instructions.
--- The final committed file must contain ZERO --@api-stub: lines.
 -- =============================================================================
 
 -- -----------------------------------------------------------------------------
 -- LSaveManager methods
 -- -----------------------------------------------------------------------------
 
--- ---- Example: LSaveManager:type ---------------------------------------------
---@api-stub: LSaveManager:type
--- Returns the type name of this object.
--- lSaveManager_Example:type()  -- -> string
--- Useful for runtime type inspection and debug logging.
--- do  -- LSaveManager:type
---   local mgr = lurek.save.newSaveManager()
---   local t = mgr:type()
---   lurek.log.info("LSaveManager:type = " .. t, "save")
--- end
---@api-stub: LSaveManager:typeOf
--- Returns true if this object is of the given type.
--- lSaveManager_Example:typeOf("hero")  -- -> boolean
--- Use for runtime polymorphism and defensive checks.
--- do  -- LSaveManager:typeOf
---   local mgr = lurek.save.newSaveManager()
---   lurek.log.info("is LSaveManager: " .. tostring(mgr:typeOf("LSaveManager")), "save")
---   lurek.log.info("is unknown: " .. tostring(mgr:typeOf("Unknown")), "save")
--- end
---@api-stub: block below with a real scenario.
--- Run .github/prompts/flesh-out-example.prompt.md for instructions.
--- The final committed file must contain ZERO --@api-stub: lines.
--- =============================================================================
 

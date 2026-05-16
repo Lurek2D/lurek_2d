@@ -346,7 +346,7 @@ impl LuaUserData for LuaGlobe {
         });
         // -- setActiveViewer --
         /// Sets the active fog-of-war viewer name or clears it.
-        /// @param | viewer | string | Optional viewer name.
+        /// @param | viewer | string? | Optional viewer name.
         /// @return | nil | No value is returned.
         methods.add_method_mut("setActiveViewer", |_, this, viewer: Option<String>| {
             this.with_mut(|g| g.active_viewer = viewer)

@@ -222,7 +222,7 @@ impl LuaUserData for LuaGraphItem {
         });
         // -- getPosition --
         /// Returns where this item is stored: a node, an edge plus progress, or no values when unplaced.
-        /// @return | LuaValue | `LGraphNode` when at a node, `LGraphEdge` when in transit, or no value when unplaced.
+        /// @return | any | `LGraphNode` when at a node, `LGraphEdge` when in transit, or no value when unplaced.
         /// @return | number | Transit progress only when the first return is an edge.
         methods.add_method("getPosition", |lua, this, ()| -> LuaResult<LuaMultiValue> {
             let graph = this.graph.borrow();
@@ -647,13 +647,13 @@ impl LuaUserData for LuaNode {
         });
         // -- getPushFilter --
         /// Returns this node's optional push item-type filter.
-        /// @return | LuaValue | Filter string, or nil when no push filter is set.
+        /// @return | any | Filter string, or nil when no push filter is set.
         methods.add_method("getPushFilter", |_, this, ()| {
             with_node!(this, g, node, Ok(node.push_filter.clone()))
         });
         // -- setPushFilter --
         /// Sets or clears this node's push item-type filter.
-        /// @param | f | string | Optional item type filter string.
+        /// @param | f | string? | Optional item type filter string.
         /// @return | nil | No value is returned.
         methods.add_method("setPushFilter", |_, this, f: Option<String>| {
             with_node_mut!(this, g, node, {
@@ -663,13 +663,13 @@ impl LuaUserData for LuaNode {
         });
         // -- getPullFilter --
         /// Returns this node's optional pull item-type filter.
-        /// @return | LuaValue | Filter string, or nil when no pull filter is set.
+        /// @return | any | Filter string, or nil when no pull filter is set.
         methods.add_method("getPullFilter", |_, this, ()| {
             with_node!(this, g, node, Ok(node.pull_filter.clone()))
         });
         // -- setPullFilter --
         /// Sets or clears this node's pull item-type filter.
-        /// @param | f | string | Optional item type filter string.
+        /// @param | f | string? | Optional item type filter string.
         /// @return | nil | No value is returned.
         methods.add_method("setPullFilter", |_, this, f: Option<String>| {
             with_node_mut!(this, g, node, {
@@ -754,7 +754,7 @@ impl LuaUserData for LuaNode {
         });
         // -- getEdges --
         /// Returns edge handles connected to this node in the requested direction.
-        /// @param | dir | string | Optional direction string, defaulting to `both`.
+        /// @param | dir | string? | Optional direction string, defaulting to `both`.
         /// @return | table | Array table of `LGraphEdge` handles.
         methods.add_method("getEdges", |lua, this, dir: Option<String>| {
             let direction = dir.as_deref().unwrap_or("both");
@@ -941,7 +941,7 @@ impl LuaUserData for LuaNode {
         });
         // -- dequeue --
         /// Removes and returns the next item from this node's explicit queue.
-        /// @return | LuaValue | `LGraphItem` handle, or nil when the queue is empty.
+        /// @return | any | `LGraphItem` handle, or nil when the queue is empty.
         methods.add_method("dequeue", |_, this, ()| {
             let mut graph = this.graph.borrow_mut();
             let node = graph
@@ -1108,7 +1108,7 @@ impl LuaUserData for LuaGraph {
         /// Returns the edge connecting two nodes when one exists.
         /// @param | from_ud | LGraphNode | Source node handle.
         /// @param | to_ud | LGraphNode | Destination node handle.
-        /// @return | LuaValue | `LGraphEdge` handle, or nil when no edge connects the nodes.
+        /// @return | any | `LGraphEdge` handle, or nil when no edge connects the nodes.
         methods.add_method(
             "getEdgeBetween",
             |_, this, (from_ud, to_ud): (LuaAnyUserData, LuaAnyUserData)| {
@@ -1243,7 +1243,7 @@ impl LuaUserData for LuaGraph {
         /// Finds a path between two nodes. This method is available to Lua scripts.
         /// @param | from_ud | LGraphNode | Start node handle.
         /// @param | to_ud | LGraphNode | Target node handle.
-        /// @return | LuaValue | Path result table with nodes, edges, and cost, or nil when no path exists.
+        /// @return | any | Path result table with nodes, edges, and cost, or nil when no path exists.
         methods.add_method(
             "findPath",
             |lua, this, (from_ud, to_ud): (LuaAnyUserData, LuaAnyUserData)| {
@@ -1261,7 +1261,7 @@ impl LuaUserData for LuaGraph {
         /// @param | item_ud | LGraphItem | Item handle used for routing constraints.
         /// @param | from_ud | LGraphNode | Start node handle.
         /// @param | to_ud | LGraphNode | Target node handle.
-        /// @return | LuaValue | Path result table with nodes, edges, and cost, or nil when no path exists.
+        /// @return | any | Path result table with nodes, edges, and cost, or nil when no path exists.
         methods.add_method("findPathForItem", |lua, this, (item_ud, from_ud, to_ud): (LuaAnyUserData, LuaAnyUserData, LuaAnyUserData)| {
                 let item = item_ud.borrow::<LuaGraphItem>()?;
                 let from = from_ud.borrow::<LuaNode>()?;
@@ -1277,7 +1277,7 @@ impl LuaUserData for LuaGraph {
         /// Returns graph distance between two nodes when reachable.
         /// @param | from_ud | LGraphNode | Start node handle.
         /// @param | to_ud | LGraphNode | Target node handle.
-        /// @return | LuaValue | Distance number, or nil when no distance is available.
+        /// @return | any | Distance number, or nil when no distance is available.
         methods.add_method(
             "getDistance",
             |_, this, (from_ud, to_ud): (LuaAnyUserData, LuaAnyUserData)| {
@@ -1375,7 +1375,7 @@ impl LuaUserData for LuaGraph {
         });
         // -- topologicalSort --
         /// Returns nodes in topological order when the graph is acyclic.
-        /// @return | LuaValue | Array table of `LGraphNode` handles, or nil when sorting is impossible.
+        /// @return | any | Array table of `LGraphNode` handles, or nil when sorting is impossible.
         methods.add_method("topologicalSort", |lua, this, ()| {
             let graph = this.inner.borrow();
             match graph.topological_sort() {
@@ -1427,7 +1427,7 @@ impl LuaUserData for LuaGraph {
         /// Runs A* pathfinding between two nodes.
         /// @param | from_node | LGraphNode | Start node handle.
         /// @param | to_node | LGraphNode | Target node handle.
-        /// @return | LuaValue | Array table of `LGraphNode` handles, or nil when no path exists.
+        /// @return | any | Array table of `LGraphNode` handles, or nil when no path exists.
         methods.add_method(
             "astar",
             |lua, this, (from_node, to_node): (LuaAnyUserData, LuaAnyUserData)| {

@@ -1,18 +1,8 @@
 -- content/examples/image.lua
--- Hand-written coverage of the lurek.image API (68 items).
---
--- The lurek.image namespace owns CPU-side pixel buffers (ImageData),
--- compressed DDS payloads, layered painting canvases (LayeredImage),
--- province-map spatial indices, and palette remapping tables. All
--- image paths are resolved against the project's game directory.
---
+-- lurek.image API examples.
 -- Run: cargo run -- content/examples/image.lua
 
--- â”€â”€ lurek.image.* functions â”€â”€
-
---@api-stub: lurek.image.newImageData
--- Creates a new blank ImageData or loads one from a file.
--- Pass a path to load from disk, or (width, height) to allocate a transparent RGBA8 buffer.
+--@api-stub: lurek.image.newImageData -- Creates empty image data from dimensions or decodes image data from a GameFS filename
 do -- lurek.image.newImageData
   local hero = lurek.image.newImageData(64, 64)
   local scratch = lurek.image.newImageData(64, 64)
@@ -20,9 +10,7 @@ do -- lurek.image.newImageData
   lurek.log.info("loaded hero " .. hero:getWidth() .. "x" .. hero:getHeight(), "image")
 end
 
---@api-stub: lurek.image.newCompressedData
--- Loads compressed texture data from a DDS file.
--- Use for GPU-ready BCn formats so wgpu can upload without a CPU decode pass.
+--@api-stub: lurek.image.newCompressedData -- Loads DDS compressed image data from GameFS
 do -- lurek.image.newCompressedData
   local ok_cd, cd = pcall(lurek.image.newCompressedData, "assets/terrain_bc1.dds")
   if not ok_cd then return end
@@ -30,9 +18,7 @@ do -- lurek.image.newCompressedData
   lurek.log.info("dds " .. (cd and cd:getFormat() or "unknown") .. " mips=" .. mips, "image")
 end
 
---@api-stub: lurek.image.isCompressed
--- Returns true if the file at the given path is a DDS file.
--- Branch on this before choosing newCompressedData vs newImageData for unknown asset paths.
+--@api-stub: lurek.image.isCompressed -- Returns whether a GameFS image file begins with DDS compressed image magic bytes
 do -- lurek.image.isCompressed
   local path = "assets/terrain_bc1.dds"
   local _ok_ic, _is_c = pcall(lurek.image.isCompressed, path)
@@ -43,9 +29,7 @@ do -- lurek.image.isCompressed
   end
 end
 
---@api-stub: lurek.image.newLayeredImage
--- Creates a new empty LayeredImage canvas with no layers.
--- Use as a paint document; addLayer() afterwards to begin compositing.
+--@api-stub: lurek.image.newLayeredImage -- Creates a layered image stack with one or more blank layers
 do -- lurek.image.newLayeredImage
   local doc = lurek.image.newLayeredImage(256, 256)
   local bg = doc:addLayer("background")
@@ -53,18 +37,14 @@ do -- lurek.image.newLayeredImage
   lurek.log.info("layers bg=" .. bg .. " fg=" .. fg, "image")
 end
 
---@api-stub: lurek.image.saveImage
--- Saves a flat ImageData to a LIMG binary file at the given path.
--- LIMG preserves raw RGBA8 with no quality loss; prefer it over PNG for round-trip pipelines.
+--@api-stub: lurek.image.saveImage -- Saves an image data object to a path under the current game directory
 do -- lurek.image.saveImage
   local img = lurek.image.newImageData(64, 64)
   img:fill(255, 128, 0, 255)
   lurek.image.saveImage(img, "save/orange64.limg")
 end
 
---@api-stub: lurek.image.savePNG
--- Saves a flat ImageData as a PNG file at the given path.
--- Use for screenshots, thumbnails, and any artifact a human or external tool will open.
+--@api-stub: lurek.image.savePNG -- Encodes image data as PNG and writes it under the current game directory
 do -- lurek.image.savePNG
   local shot = lurek.image.newImageData(128, 64)
   shot:fill(20, 30, 40, 255)
@@ -72,9 +52,7 @@ do -- lurek.image.savePNG
   lurek.image.savePNG(shot, "save/screenshot.png")
 end
 
---@api-stub: LImageData:drawNineSlice
--- Draws a nine-slice patch from a source atlas image into this image.
--- Use it for scalable UI frames where corners must stay crisp.
+--@api-stub: LImageData:drawNineSlice -- Draws a nine-slice region from a source image into this image
 do -- LImageData:drawNineSlice
   local atlas = lurek.image.newImageData(32, 32)
   atlas:fill(255, 255, 255, 255)
@@ -84,18 +62,14 @@ do -- LImageData:drawNineSlice
   out:drawNineSlice(atlas, 0, 0, 32, 32, 4, 4, 88, 56, 8, 8, 8, 8)
 end
 
---@api-stub: lurek.image.loadImage
--- Loads an ImageData from a LIMG binary file.
--- Pair with saveImage() to reload pixel buffers written by an earlier session.
+--@api-stub: lurek.image.loadImage -- Loads and decodes image data from GameFS
 do -- lurek.image.loadImage
   local restored = lurek.image.loadImage("save/orange64.limg")
   local w, h = restored:getDimensions()
   lurek.log.info("restored " .. w .. "x" .. h, "image")
 end
 
---@api-stub: lurek.image.loadLayered
--- Loads a LayeredImage from a LIMG binary file.
--- Use for resuming a paint document with all named layers, opacities, and visibility intact.
+--@api-stub: lurek.image.loadLayered -- Loads a serialized layered image stack from GameFS
 do -- lurek.image.loadLayered
   pcall(function()
     local doc = lurek.image.loadLayered("save/painting.limg")
@@ -104,18 +78,14 @@ do -- lurek.image.loadLayered
   end)
 end
 
---@api-stub: lurek.image.newPaletteLut
--- Creates a new empty `PaletteLUT` used to remap colours in an image.
--- Build once with setColor() entries, then apply to many sprites that share the same palette.
+--@api-stub: lurek.image.newPaletteLut -- Creates an empty palette lookup table
 do -- lurek.image.newPaletteLut
   local lut = lurek.image.newPaletteLut()
   local before = lut:getColorCount()
   lurek.log.info("new lut entries=" .. before, "image")
 end
 
---@api-stub: lurek.image.newProvinceGrid
--- Loads a province map PNG and builds an O(1) spatial index with adjacency data.
--- Use for grand-strategy maps where each unique RGB colour identifies one province.
+--@api-stub: lurek.image.newProvinceGrid -- Loads a province id grid from an image file under the current game directory
 do -- lurek.image.newProvinceGrid
   local ok_grid, grid = pcall(lurek.image.newProvinceGrid, "assets/world_provinces.png")
   if not ok_grid then return end
@@ -125,9 +95,7 @@ end
 
 -- â”€â”€ ProvinceGrid methods â”€â”€
 
---@api-stub: LProvinceGrid:getWidth
--- Returns the grid width in pixels.
--- Pair with getHeight() to clamp mouse coordinates before calling getAt().
+--@api-stub: ProvinceGrid:getWidth
 do -- ProvinceGrid:getWidth
   local ok_grid, grid = pcall(lurek.image.newProvinceGrid, "assets/world_provinces.png")
   if not ok_grid then return end
@@ -137,9 +105,7 @@ do -- ProvinceGrid:getWidth
   end
 end
 
---@api-stub: LProvinceGrid:getHeight
--- Returns the grid height in pixels.
--- Use alongside getWidth() to size the rendered minimap or perform bounds checks.
+--@api-stub: ProvinceGrid:getHeight
 do -- ProvinceGrid:getHeight
   local ok_grid, grid = pcall(lurek.image.newProvinceGrid, "assets/world_provinces.png")
   if not ok_grid then return end
@@ -147,9 +113,7 @@ do -- ProvinceGrid:getHeight
   lurek.log.info("province map height=" .. h, "map")
 end
 
---@api-stub: LProvinceGrid:getAt
--- Returns the province ID at pixel coordinates (x, y).
--- Returns 0 for the background; check for non-zero before treating the click as a province.
+--@api-stub: ProvinceGrid:getAt
 do -- ProvinceGrid:getAt
   local ok_grid, grid = pcall(lurek.image.newProvinceGrid, "assets/world_provinces.png")
   if not ok_grid then return end
@@ -159,9 +123,7 @@ do -- ProvinceGrid:getAt
   end
 end
 
---@api-stub: LProvinceGrid:provinceCount
--- Returns the number of unique non-zero province IDs detected in the map.
--- Pre-allocate per-province arrays (owners, populations) using this count at startup.
+--@api-stub: ProvinceGrid:provinceCount
 do -- ProvinceGrid:provinceCount
   local ok_grid, grid = pcall(lurek.image.newProvinceGrid, "assets/world_provinces.png")
   if not ok_grid then return end
@@ -171,9 +133,7 @@ do -- ProvinceGrid:provinceCount
   lurek.log.info("allocated owner table for " .. count .. " provinces", "map")
 end
 
---@api-stub: LProvinceGrid:adjacencies
--- Returns an array of adjacency records.
--- Walk the result to build a graph for AI invasion planning or border rendering.
+--@api-stub: ProvinceGrid:adjacencies
 do -- ProvinceGrid:adjacencies
   local ok_grid, grid = pcall(lurek.image.newProvinceGrid, "assets/world_provinces.png")
   if not ok_grid then return end
@@ -181,9 +141,7 @@ do -- ProvinceGrid:adjacencies
   lurek.log.info("adjacency edges=" .. #edges, "map")
 end
 
---@api-stub: LProvinceGrid:getPolygons
--- Returns polygon loops for each province, keyed by province id.
--- Use this when exporting province borders to vector paths for debug overlays.
+--@api-stub: ProvinceGrid:getPolygons
 do -- ProvinceGrid:getPolygons
   local ok_grid, grid = pcall(lurek.image.newProvinceGrid, "assets/world_provinces.png")
   if not ok_grid then return end
@@ -195,9 +153,7 @@ do -- ProvinceGrid:getPolygons
   lurek.log.info("province polygon sets=" .. province_count, "map")
 end
 
---@api-stub: LProvinceGrid:getPolygonsSimplified
--- Returns simplified polygon loops with collinear/stair-step points removed.
--- Use this for cheaper rendering and smaller serialized border payloads.
+--@api-stub: ProvinceGrid:getPolygonsSimplified
 do -- ProvinceGrid:getPolygonsSimplified
   local ok_grid, grid = pcall(lurek.image.newProvinceGrid, "assets/world_provinces.png")
   if not ok_grid then return end
@@ -209,9 +165,7 @@ do -- ProvinceGrid:getPolygonsSimplified
   lurek.log.info("simplified province polygon sets=" .. province_count, "map")
 end
 
---@api-stub: LProvinceGrid:drawShapes
--- Draws province polygon fills through engine render commands.
--- Call inside render flow after setting desired camera transform and palette state.
+--@api-stub: LProvinceGrid:drawShapes -- Queues filled polygon draw commands for province shapes, optionally culled to a viewport rect
 do -- LProvinceGrid:drawShapes
   local ok_grid, grid = pcall(lurek.image.newProvinceGrid, "assets/world_provinces.png")
   if not ok_grid then return end
@@ -223,8 +177,6 @@ end
 -- â”€â”€ LayeredImage methods â”€â”€
 
 --@api-stub: LayeredImage:getWidth
--- Returns the canvas width shared by all layers.
--- Use to size brush strokes or to validate imported layer buffers match the canvas.
 do -- LayeredImage:getWidth
   local doc = lurek.image.newLayeredImage(256, 128)
   local w = doc:getWidth()
@@ -232,8 +184,6 @@ do -- LayeredImage:getWidth
 end
 
 --@api-stub: LayeredImage:getHeight
--- Returns the canvas height shared by all layers.
--- Pair with getWidth() to centre tools or build coordinate transforms.
 do -- LayeredImage:getHeight
   local doc = lurek.image.newLayeredImage(256, 128)
   local h = doc:getHeight()
@@ -241,8 +191,6 @@ do -- LayeredImage:getHeight
 end
 
 --@api-stub: LayeredImage:layerCount
--- Returns the number of layers in the stack.
--- Use to drive a layers panel or to iterate every layer with getLayer(i).
 do -- LayeredImage:layerCount
   local doc = lurek.image.newLayeredImage(64, 64)
   doc:addLayer("base")
@@ -251,8 +199,6 @@ do -- LayeredImage:layerCount
 end
 
 --@api-stub: LayeredImage:addLayer
--- Appends a new blank transparent layer on top and returns its 1-based index.
--- Capture the returned index so subsequent setName / setOpacity / setVisible target the right layer.
 do -- LayeredImage:addLayer
   local doc = lurek.image.newLayeredImage(128, 128)
   local idx = doc:addLayer("highlights")
@@ -261,8 +207,6 @@ do -- LayeredImage:addLayer
 end
 
 --@api-stub: LayeredImage:removeLayer
--- Removes the layer at the given 1-based index.
--- Subsequent layer indices shift down by one â€” refresh any cached ids after a remove.
 do -- LayeredImage:removeLayer
   local doc = lurek.image.newLayeredImage(64, 64)
   doc:addLayer("scratch")
@@ -271,8 +215,6 @@ do -- LayeredImage:removeLayer
 end
 
 --@api-stub: LayeredImage:getLayer
--- Returns a copy of the layer's pixel buffer as an ImageData.
--- The returned ImageData is a snapshot; mutate it freely without affecting the source layer.
 do -- LayeredImage:getLayer
   local doc = lurek.image.newLayeredImage(64, 64)
   doc:addLayer("base")
@@ -281,8 +223,6 @@ do -- LayeredImage:getLayer
 end
 
 --@api-stub: LayeredImage:getOpacity
--- Returns the opacity of a layer in [0.0, 1.0].
--- Read before adjusting so a slider can fade towards the existing value rather than snapping.
 do -- LayeredImage:getOpacity
   local doc = lurek.image.newLayeredImage(64, 64)
   doc:addLayer("ink")
@@ -291,8 +231,6 @@ do -- LayeredImage:getOpacity
 end
 
 --@api-stub: LayeredImage:setOpacity
--- Sets the opacity of a layer.
--- Clamp UI sliders to [0, 1]; setOpacity itself accepts only that range.
 do -- LayeredImage:setOpacity
   local doc = lurek.image.newLayeredImage(64, 64)
   local idx = doc:addLayer("shadow")
@@ -300,8 +238,6 @@ do -- LayeredImage:setOpacity
 end
 
 --@api-stub: LayeredImage:isVisible
--- Returns whether a layer is visible.
--- Use to drive the eye-icon state in a layers panel or to skip merge work for hidden layers.
 do -- LayeredImage:isVisible
   local doc = lurek.image.newLayeredImage(64, 64)
   doc:addLayer("ink")
@@ -311,8 +247,6 @@ do -- LayeredImage:isVisible
 end
 
 --@api-stub: LayeredImage:setVisible
--- Shows or hides a layer during compositing.
--- Toggle from a UI handler; merge() and save() respect the visibility flag.
 do -- LayeredImage:setVisible
   local doc = lurek.image.newLayeredImage(64, 64)
   local idx = doc:addLayer("guides")
@@ -320,8 +254,6 @@ do -- LayeredImage:setVisible
 end
 
 --@api-stub: LayeredImage:getName
--- Returns the name of a layer.
--- Use to populate a layers panel or to look up a layer by user-friendly label.
 do -- LayeredImage:getName
   local doc = lurek.image.newLayeredImage(64, 64)
   doc:addLayer("background")
@@ -330,8 +262,6 @@ do -- LayeredImage:getName
 end
 
 --@api-stub: LayeredImage:setName
--- Renames the layer at the given index to the new name string.
--- Call after a user double-clicks the layer label; names need not be unique.
 do -- LayeredImage:setName
   local doc = lurek.image.newLayeredImage(64, 64)
   local idx = doc:addLayer("untitled")
@@ -339,8 +269,6 @@ do -- LayeredImage:setName
 end
 
 --@api-stub: LayeredImage:swapLayers
--- Swaps two layers by their 1-based indices, changing their compositing order.
--- Use when the user drags a layer up or down in the panel; only adjacent swaps need a single call.
 do -- LayeredImage:swapLayers
   local doc = lurek.image.newLayeredImage(64, 64)
   doc:addLayer("a")
@@ -349,8 +277,6 @@ do -- LayeredImage:swapLayers
 end
 
 --@api-stub: LayeredImage:merge
--- Flattens all visible layers into a single ImageData using Porter-Duff "over" compositing.
--- Use to bake a paint document for export or to upload as a single GPU texture.
 do -- LayeredImage:merge
   local doc = lurek.image.newLayeredImage(64, 64)
   doc:addLayer("base")
@@ -359,8 +285,6 @@ do -- LayeredImage:merge
 end
 
 --@api-stub: LayeredImage:save
--- Saves the layered image to a LIMG binary file at the given path.
--- LIMG preserves layer names, opacities, and visibility; use for project files, not exports.
 do -- LayeredImage:save
   local doc = lurek.image.newLayeredImage(128, 128)
   doc:addLayer("background")
@@ -369,9 +293,7 @@ end
 
 -- â”€â”€ CompressedImageData methods â”€â”€
 
---@api-stub: LCompressedImageData:getWidth
--- Returns the width of the base mip level in pixels.
--- Use to validate atlases or to compute UV coordinates for compressed textures.
+--@api-stub: CompressedImageData:getWidth
 do -- CompressedImageData:getWidth
   local ok_cd, cd = pcall(lurek.image.newCompressedData, "assets/terrain_bc1.dds")
   if not ok_cd then return end
@@ -379,9 +301,7 @@ do -- CompressedImageData:getWidth
   lurek.log.info("dds base width=" .. w, "image")
 end
 
---@api-stub: LCompressedImageData:getHeight
--- Returns the height of the base mip level in pixels.
--- Pair with getWidth() to size the destination quad before drawing.
+--@api-stub: CompressedImageData:getHeight
 do -- CompressedImageData:getHeight
   local ok_cd, cd = pcall(lurek.image.newCompressedData, "assets/terrain_bc1.dds")
   if not ok_cd then return end
@@ -389,9 +309,7 @@ do -- CompressedImageData:getHeight
   lurek.log.info("dds base height=" .. h, "image")
 end
 
---@api-stub: LCompressedImageData:getDimensions
--- Returns the width and height of the base mip level.
--- One call instead of two when you need both dimensions in a single statement.
+--@api-stub: CompressedImageData:getDimensions
 do -- CompressedImageData:getDimensions
   local ok_cd, cd = pcall(lurek.image.newCompressedData, "assets/terrain_bc1.dds")
   if not ok_cd then return end
@@ -400,9 +318,7 @@ do -- CompressedImageData:getDimensions
   lurek.log.info("dds " .. w .. "x" .. h, "image")
 end
 
---@api-stub: LCompressedImageData:getMipmapCount
--- Returns the number of mipmap levels stored.
--- Branch on >1 to enable trilinear sampling; use 1 for pixel-art atlases that ship without mips.
+--@api-stub: CompressedImageData:getMipmapCount
 do -- CompressedImageData:getMipmapCount
   local ok_cd, cd = pcall(lurek.image.newCompressedData, "assets/terrain_bc1.dds")
   if not ok_cd then return end
@@ -412,9 +328,7 @@ do -- CompressedImageData:getMipmapCount
   end
 end
 
---@api-stub: LCompressedImageData:getFormat
--- Returns the compressed format name string.
--- Inspect to confirm the DDS uses an expected BCn variant before uploading.
+--@api-stub: CompressedImageData:getFormat
 do -- CompressedImageData:getFormat
   local ok_cd, cd = pcall(lurek.image.newCompressedData, "assets/terrain_bc1.dds")
   if not ok_cd then return end
@@ -425,8 +339,6 @@ end
 -- â”€â”€ ImageData methods â”€â”€
 
 --@api-stub: mlua:getWidth
--- Returns the width.
--- Read after newImageData/loadImage to size the destination canvas or sprite quad.
 do -- mlua:getWidth
   local img = lurek.image.newImageData(64, 64)
   local w = img:getWidth()
@@ -434,8 +346,6 @@ do -- mlua:getWidth
 end
 
 --@api-stub: mlua:getHeight
--- Returns the height.
--- Use with getWidth() to lay out atlases or compute aspect ratio.
 do -- mlua:getHeight
   local img = lurek.image.newImageData(64, 64)
   local h = img:getHeight()
@@ -443,8 +353,6 @@ do -- mlua:getHeight
 end
 
 --@api-stub: mlua:getDimensions
--- Returns the dimensions.
--- One call for both axes; useful when destructuring straight into local variables.
 do -- mlua:getDimensions
   local img = lurek.image.newImageData(64, 64)
   local w, h = img:getDimensions()
@@ -452,8 +360,6 @@ do -- mlua:getDimensions
 end
 
 --@api-stub: mlua:getPixel
--- Returns the pixel.
--- Out-of-bounds (x, y) raises an error; clamp inputs against getDimensions() first.
 do -- mlua:getPixel
   local img = lurek.image.newImageData(64, 64)
   local r, g, b, a = img:getPixel(0, 0)
@@ -461,8 +367,6 @@ do -- mlua:getPixel
 end
 
 --@api-stub: mlua:encode
--- Encode.
--- Only "png" is currently supported; the returned string is a complete PNG file body.
 do -- mlua:encode
   local img = lurek.image.newImageData(64, 64)
   img:fill(0, 200, 100, 255)
@@ -471,8 +375,6 @@ do -- mlua:encode
 end
 
 --@api-stub: mlua:getString
--- Returns the string.
--- Returns the raw RGBA8 byte string; useful for hashing or shipping over a network channel.
 do -- mlua:getString
   local img = lurek.image.newImageData(8, 8)
   img:fill(255, 0, 0, 255)
@@ -481,8 +383,6 @@ do -- mlua:getString
 end
 
 --@api-stub: mlua:mapPixel
--- Map pixel.
--- Callback receives (x, y, r, g, b, a) and must return four bytes; runs on the Lua thread.
 do -- mlua:mapPixel
   local img = lurek.image.newImageData(32, 32)
   img:fill(64, 64, 64, 255)
@@ -490,8 +390,6 @@ do -- mlua:mapPixel
 end
 
 --@api-stub: mlua:brightness
--- Brightness.
--- Factor > 1.0 brightens, < 1.0 darkens; clamps internally to valid byte range.
 do -- mlua:brightness
   local img = lurek.image.newImageData(64, 64)
   img:brightness(1.2)
@@ -499,8 +397,6 @@ do -- mlua:brightness
 end
 
 --@api-stub: mlua:contrast
--- Contrast.
--- 1.0 is identity; 1.5 boosts contrast moderately, 0.5 mutes it.
 do -- mlua:contrast
   local img = lurek.image.newImageData(64, 64)
   img:contrast(1.4)
@@ -508,8 +404,6 @@ do -- mlua:contrast
 end
 
 --@api-stub: mlua:saturation
--- Saturation.
--- 0.0 yields grayscale, 1.0 is identity, >1.0 boosts colour.
 do -- mlua:saturation
   local img = lurek.image.newImageData(64, 64)
   img:saturation(0.0)
@@ -517,8 +411,6 @@ do -- mlua:saturation
 end
 
 --@api-stub: mlua:gamma
--- Gamma.
--- Use ~2.2 to encode linear data to sRGB-like space, ~0.4545 for the inverse.
 do -- mlua:gamma
   local img = lurek.image.newImageData(64, 64)
   img:gamma(2.2)
@@ -526,8 +418,6 @@ do -- mlua:gamma
 end
 
 --@api-stub: mlua:grayscale
--- Grayscale.
--- Uses luminance weights; alpha is preserved untouched.
 do -- mlua:grayscale
   local img = lurek.image.newImageData(64, 64)
   img:grayscale()
@@ -535,8 +425,6 @@ do -- mlua:grayscale
 end
 
 --@api-stub: mlua:sepia
--- Sepia.
--- Applies a fixed warm-tone matrix; pair with brightness() to taste before saving.
 do -- mlua:sepia
   local img = lurek.image.newImageData(64, 64)
   img:sepia()
@@ -544,8 +432,6 @@ do -- mlua:sepia
 end
 
 --@api-stub: mlua:invert
--- Invert.
--- Inverts RGB but leaves alpha alone; useful for negative-image effects.
 do -- mlua:invert
   local img = lurek.image.newImageData(64, 64)
   img:invert()
@@ -553,8 +439,6 @@ do -- mlua:invert
 end
 
 --@api-stub: mlua:threshold
--- Threshold.
--- Pixels with luminance >= value become white, others black; useful for masks.
 do -- mlua:threshold
   local img = lurek.image.newImageData(64, 64)
   img:threshold(128)
@@ -562,8 +446,6 @@ do -- mlua:threshold
 end
 
 --@api-stub: mlua:posterize
--- Posterize.
--- Quantises each channel to N levels; 4 gives a cartoony look, 2 is near-monochrome.
 do -- mlua:posterize
   local img = lurek.image.newImageData(64, 64)
   img:posterize(4)
@@ -571,8 +453,6 @@ do -- mlua:posterize
 end
 
 --@api-stub: mlua:fill
--- Fill.
--- Pass (0, 0, 0, 0) to clear to transparent; channels are unsigned bytes.
 do -- mlua:fill
   local img = lurek.image.newImageData(64, 64)
   img:fill(20, 30, 40, 255)
@@ -580,8 +460,6 @@ do -- mlua:fill
 end
 
 --@api-stub: mlua:noise
--- Noise.
--- amount is the maximum per-channel deviation; 0 leaves the image untouched.
 do -- mlua:noise
   local img = lurek.image.newImageData(64, 64)
   img:fill(128, 128, 128, 255)
@@ -590,8 +468,6 @@ do -- mlua:noise
 end
 
 --@api-stub: mlua:alphaMask
--- Alpha mask.
--- Multiplies every pixel's alpha by factor; 0.0 hides the image, 1.0 is identity.
 do -- mlua:alphaMask
   local img = lurek.image.newImageData(64, 64)
   img:alphaMask(0.5)
@@ -599,8 +475,6 @@ do -- mlua:alphaMask
 end
 
 --@api-stub: mlua:flipHorizontal
--- Flip horizontal.
--- Mirrors left/right in place; call twice to restore the original.
 do -- mlua:flipHorizontal
   local img = lurek.image.newImageData(64, 64)
   img:flipHorizontal()
@@ -608,8 +482,6 @@ do -- mlua:flipHorizontal
 end
 
 --@api-stub: mlua:flipVertical
--- Flip vertical.
--- Mirrors top/bottom in place; useful when import coordinates disagree on Y axis.
 do -- mlua:flipVertical
   local img = lurek.image.newImageData(64, 64)
   img:flipVertical()
@@ -617,8 +489,6 @@ do -- mlua:flipVertical
 end
 
 --@api-stub: mlua:rotate90cw
--- Rotate90cw.
--- Returns a NEW ImageData rotated 90Â° clockwise; the original is left untouched.
 do -- mlua:rotate90cw
   local img = lurek.image.newImageData(64, 64)
   local rotated = img:rotate90cw()
@@ -626,8 +496,6 @@ do -- mlua:rotate90cw
 end
 
 --@api-stub: mlua:crop
--- Crop.
--- Returns a NEW ImageData covering the rectangle; nil if the rect is outside the source.
 do -- mlua:crop
   local img = lurek.image.newImageData(64, 64)
   local face = img:crop(8, 4, 32, 32)
@@ -635,8 +503,6 @@ do -- mlua:crop
 end
 
 --@api-stub: mlua:resizeNearest
--- Resize nearest.
--- Use for pixel art where bilinear would blur; returns a NEW ImageData at the requested size.
 do -- mlua:resizeNearest
   local img = lurek.image.newImageData(64, 64)
   local big = img:resizeNearest(128, 128)
@@ -644,8 +510,6 @@ do -- mlua:resizeNearest
 end
 
 --@api-stub: mlua:blur
--- Blur.
--- Box blur of given pixel radius; cost scales with radiusÂ˛, keep â‰¤ 8 for per-frame work.
 do -- mlua:blur
   local img = lurek.image.newImageData(64, 64)
   local soft = img:blur(2)
@@ -653,8 +517,6 @@ do -- mlua:blur
 end
 
 --@api-stub: mlua:sharpen
--- Sharpen.
--- Returns a NEW ImageData with a fixed 3x3 unsharp kernel applied; safe to call repeatedly.
 do -- mlua:sharpen
   local img = lurek.image.newImageData(64, 64)
   local crisp = img:sharpen()
@@ -662,8 +524,6 @@ do -- mlua:sharpen
 end
 
 --@api-stub: mlua:resize
--- Returns a bilinear-interpolated copy of the image at the given dimensions.
--- Returns nil if either dimension is zero; check before saving the result.
 do -- mlua:resize
   local img = lurek.image.newImageData(64, 64)
   local thumb = img:resize(32, 32)
@@ -673,8 +533,6 @@ do -- mlua:resize
 end
 
 --@api-stub: mlua:diff
--- Returns the sum of absolute per-channel pixel differences with another ImageData.
--- Use as a cheap regression metric for golden-image comparisons; 0 means pixel-perfect.
 do -- mlua:diff
   pcall(function()
     local a = lurek.image.newImageData(64, 64)
@@ -685,8 +543,6 @@ do -- mlua:diff
 end
 
 --@api-stub: mlua:mapPixels
--- Applies a function to every pixel in-place.
--- Like mapPixel but emphasises bulk transform; the callback signature is identical.
 do -- mlua:mapPixels
   local img = lurek.image.newImageData(32, 32)
   img:fill(100, 100, 100, 255)
@@ -694,8 +550,6 @@ do -- mlua:mapPixels
 end
 
 --@api-stub: mlua:applyPaletteLut
--- Applies a `PaletteLUT` to the image in place, replacing exact colour matches.
--- Pixels not present in the LUT are left unchanged; build the LUT once and reuse for many sprites.
 do -- mlua:applyPaletteLut
   local img = lurek.image.newImageData(64, 64)
   local lut = lurek.image.newPaletteLut()
@@ -703,9 +557,7 @@ do -- mlua:applyPaletteLut
   lurek.image.savePNG(img, "save/hero_recoloured.png")
 end
 
---@api-stub: LImageData:drawNineSlice
--- Draws a nine-slice patch from an atlas/source image onto this image.
--- Insets use atlas metadata (left, right, top, bottom) and corners keep fixed size.
+--@api-stub: LImageData:drawNineSlice -- Draws a nine-slice region from a source image into this image
 do -- LImageData:drawNineSlice
   local atlas = lurek.image.newImageData(8, 8)
   atlas:fill(20, 20, 20, 255)
@@ -718,8 +570,6 @@ do -- LImageData:drawNineSlice
 end
 
 --@api-stub: mlua:setRawData
--- Replaces all pixel data from a raw RGBA byte string.
--- The string length must equal width * height * 4; useful for piping bytes from network or compute.
 do -- mlua:setRawData
   local img = lurek.image.newImageData(2, 2)
   local bytes = string.rep(string.char(255, 0, 0, 255), 4)
@@ -729,9 +579,7 @@ end
 
 -- â”€â”€ PaletteLUT methods â”€â”€
 
---@api-stub: LPaletteLUT:getColorCount
--- Returns the number of colour mapping entries.
--- Read to size a UI list of remap entries or to detect an empty LUT before applying.
+--@api-stub: PaletteLUT:getColorCount
 do -- PaletteLUT:getColorCount
   local lut = lurek.image.newPaletteLut()
   local n = lut:getColorCount()
@@ -740,18 +588,14 @@ do -- PaletteLUT:getColorCount
   end
 end
 
---@api-stub: LPaletteLUT:clear
--- Removes all colour mapping entries.
--- Call before rebuilding a LUT from a new palette so old entries are not accidentally retained.
+--@api-stub: PaletteLUT:clear
 do -- PaletteLUT:clear
   local lut = lurek.image.newPaletteLut()
   lut:clear()
   lurek.log.info("lut reset, count=" .. lut:getColorCount(), "image")
 end
 
---@api-stub: LPaletteLUT:cycle
--- Rotates destination palette entries for classic palette-cycling animation.
--- Positive values rotate right, negative values rotate left.
+--@api-stub: PaletteLUT:cycle
 do -- PaletteLUT:cycle
   local lut = lurek.image.newPaletteLut()
   lut:setColor(255, 0, 0, 255, 0, 255, 0, 255)
@@ -759,9 +603,7 @@ do -- PaletteLUT:cycle
   lut:cycle(1)
 end
 
---@api-stub: mlua (ImageData):blit
--- Copies pixels from a source ImageData onto this one at the given destination offset.
--- Respects the destination's dimensions; source pixels outside bounds are clipped.
+--@api-stub: mlua
 do -- mlua (ImageData):blit
   local dst = lurek.image.newImageData(64, 64)
   local src = lurek.image.newImageData(16, 16)
@@ -770,9 +612,7 @@ do -- mlua (ImageData):blit
   lurek.log.info("blit complete", "image")
 end
 
---@api-stub: mlua (ImageData):convolve
--- Applies a convolution kernel to the image for blur, sharpen, or edge-detect.
--- kernel is a flat table of numbers; size must be sqrt(#kernel) x sqrt(#kernel).
+--@api-stub: mlua
 do -- mlua (ImageData):convolve
   local img = lurek.image.newImageData(32, 32)
   img:fill(1, 1, 1, 1)
@@ -781,9 +621,7 @@ do -- mlua (ImageData):convolve
   lurek.log.info("convolution done", "image")
 end
 
---@api-stub: mlua (ImageData):drawCircle
--- Draws a filled or outlined circle at (cx, cy) with the given radius and colour.
--- filled=true draws solid fill; false draws outline only at lineWidth pixels.
+--@api-stub: mlua
 do -- mlua (ImageData):drawCircle
   local img = lurek.image.newImageData(64, 64)
   img:fill(0, 0, 0, 1)
@@ -791,9 +629,7 @@ do -- mlua (ImageData):drawCircle
   lurek.log.info("circle drawn", "image")
 end
 
---@api-stub: mlua (ImageData):drawLine
--- Draws an anti-aliased line from (x1,y1) to (x2,y2) with the given RGBA colour.
--- Line width defaults to 1 pixel; thicker lines require Bresenham widening.
+--@api-stub: mlua
 do -- mlua (ImageData):drawLine
   local img = lurek.image.newImageData(64, 64)
   img:fill(0, 0, 0, 1)
@@ -801,9 +637,7 @@ do -- mlua (ImageData):drawLine
   lurek.log.info("line drawn", "image")
 end
 
---@api-stub: mlua (ImageData):drawRect
--- Draws a filled or outlined rectangle at (x,y) with the given size and colour.
--- filled=true draws solid fill; false draws the outline only.
+--@api-stub: mlua
 do -- mlua (ImageData):drawRect
   local img = lurek.image.newImageData(64, 64)
   img:fill(0, 0, 0, 1)
@@ -811,9 +645,7 @@ do -- mlua (ImageData):drawRect
   lurek.log.info("rect drawn", "image")
 end
 
---@api-stub: mlua (ImageData):getRegion
--- Returns a new ImageData containing a rectangular sub-region of this image.
--- Crop coordinates are (x, y, width, height); raises if out-of-bounds.
+--@api-stub: mlua
 do -- mlua (ImageData):getRegion
   local img = lurek.image.newImageData(64, 64)
   img:fill(1, 0, 0, 1)
@@ -824,8 +656,6 @@ do -- mlua (ImageData):getRegion
 end
 
 --@api-stub: LayeredImage:moveLayer
--- Moves a layer from one index to another in the layer stack.
--- Reordering layers changes the composite draw order; index 1 is the bottom.
 do -- LayeredImage:moveLayer
   local li = lurek.image.newLayeredImage(64, 64)
   li:addLayer()
@@ -834,9 +664,7 @@ do -- LayeredImage:moveLayer
   lurek.log.info("layer moved", "image")
 end
 
---@api-stub: mlua (ImageData):paste
--- Pastes another ImageData onto this one at (dx, dy) using alpha compositing.
--- Transparent source pixels do not overwrite the destination.
+--@api-stub: mlua
 do -- mlua (ImageData):paste
   local base = lurek.image.newImageData(64, 64)
   local overlay = lurek.image.newImageData(16, 16)
@@ -845,9 +673,7 @@ do -- mlua (ImageData):paste
   lurek.log.info("paste complete", "image")
 end
 
---@api-stub: LPaletteLUT:setColor
--- Sets a palette remap entry: pixels matching from_r,g,b,a are replaced with to_r,g,b,a.
--- applyPaletteLut() on ImageData uses all registered entries in one GPU pass.
+--@api-stub: PaletteLUT:setColor
 do -- PaletteLUT:setColor
   local lut = lurek.image.newPaletteLut()
   lut:setColor(1, 0, 0, 1, 0, 1, 0, 1)
@@ -855,8 +681,6 @@ do -- PaletteLUT:setColor
 end
 
 --@api-stub: LayeredImage:setLayer
--- Replaces the ImageData for a specific layer index.
--- The replacement must match the layered image dimensions exactly.
 do -- LayeredImage:setLayer
   local li = lurek.image.newLayeredImage(32, 32)
   li:addLayer()
@@ -866,9 +690,7 @@ do -- LayeredImage:setLayer
   lurek.log.info("layer set", "image")
 end
 
---@api-stub: mlua (ImageData):setPixel
--- Sets the RGBA colour of the pixel at (x, y); coordinates are 0-based.
--- Raises an error if (x,y) is outside the image dimensions.
+--@api-stub: mlua
 do -- mlua (ImageData):setPixel
   local img = lurek.image.newImageData(16, 16)
   img:setPixel(7, 7, 1, 0, 0, 1)
@@ -876,9 +698,7 @@ do -- mlua (ImageData):setPixel
   lurek.log.info("pixel r=" .. r, "image")
 end
 
---@api-stub: mlua (ImageData):tint
--- Multiplies every pixel's RGB channels by the given colour, preserving alpha.
--- Use to apply a team colour tint or seasonal palette shift to a sprite sheet.
+--@api-stub: mlua
 do -- mlua (ImageData):tint
   local img = lurek.image.newImageData(32, 32)
   img:fill(1, 1, 1, 1)
@@ -887,8 +707,6 @@ do -- mlua (ImageData):tint
 end
 
 --@api-stub: mlua:blit
--- Copies pixel data from a source ImageData onto this one at (dx, dy).
--- Pixels that fall outside the destination boundary are clipped.
 do -- mlua:blit
   local src = lurek.image.newImageData(32, 32)
   local dst = lurek.image.newImageData(64, 64)
@@ -897,8 +715,6 @@ do -- mlua:blit
 end
 
 --@api-stub: mlua:convolve
--- Applies a convolution kernel to this ImageData and returns a new ImageData.
--- kernel is a flat table of numbers; rows and cols define the kernel dimensions.
 do -- mlua:convolve
   local img = lurek.image.newImageData(64, 64)
   local blurred = img:convolve({1,2,1, 2,4,2, 1,2,1}, 3)
@@ -906,8 +722,6 @@ do -- mlua:convolve
 end
 
 --@api-stub: mlua:drawCircle
--- Draws a filled or outlined circle onto this ImageData at (cx, cy) with radius r.
--- color is an RGBA table; mode is "fill" or "line".
 do -- mlua:drawCircle
   local img = lurek.image.newImageData(128, 128)
   img:drawCircle(64, 64, 30, 1, 0, 0, 1)
@@ -915,8 +729,6 @@ do -- mlua:drawCircle
 end
 
 --@api-stub: mlua:drawLine
--- Draws a line segment onto this ImageData from (x1, y1) to (x2, y2).
--- color is an RGBA table; width controls the line thickness in pixels.
 do -- mlua:drawLine
   local img = lurek.image.newImageData(128, 128)
   img:drawLine(0, 0, 127, 127, 0, 1, 0, 1)
@@ -924,8 +736,6 @@ do -- mlua:drawLine
 end
 
 --@api-stub: mlua:drawRect
--- Draws a filled or outlined rectangle onto this ImageData.
--- color is an RGBA table; mode is "fill" or "line".
 do -- mlua:drawRect
   local img = lurek.image.newImageData(128, 128)
   img:drawRect(10, 10, 60, 40, 0, 0, 1, 1)
@@ -933,8 +743,6 @@ do -- mlua:drawRect
 end
 
 --@api-stub: mlua:getRegion
--- Returns a new ImageData containing a rectangular sub-region of this image.
--- Region is defined by (x, y, w, h); out-of-bounds areas are filled with zeros.
 do -- mlua:getRegion
   local img = lurek.image.newImageData(128, 128)
   local region = img:getRegion(0, 0, 32, 32)
@@ -944,8 +752,6 @@ do -- mlua:getRegion
 end
 
 --@api-stub: mlua:paste
--- Pastes a source ImageData onto this one at (dx, dy), blending with alpha.
--- Uses standard alpha compositing (source-over); non-destructive paste.
 do -- mlua:paste
   local src = lurek.image.newImageData(32, 32)
   local dst = lurek.image.newImageData(64, 64)
@@ -954,8 +760,6 @@ do -- mlua:paste
 end
 
 --@api-stub: mlua:setPixel
--- Sets the RGBA colour of a single pixel at (x, y) in this ImageData.
--- Values are in [0, 1]; changes take effect immediately without a flush call.
 do -- mlua:setPixel
   local img = lurek.image.newImageData(16, 16)
   img:setPixel(8, 8, 1.0, 0.0, 0.5, 1.0)
@@ -964,8 +768,6 @@ do -- mlua:setPixel
 end
 
 --@api-stub: mlua:tint
--- Multiplies every pixel of this ImageData by the given RGBA tint colour in-place.
--- Use to apply a global colour grade or team-colour shift to a sprite sheet.
 do -- mlua:tint
   local img = lurek.image.newImageData(64, 64)
   img:tint(1.0, 0.8, 0.6, 1.0)
@@ -980,8 +782,7 @@ end
 -- The final committed file must contain ZERO --@api-stub: lines.
 -- =============================================================================
 
--- ---- Example: lurek.image.newCompressedData ---------------------------------
---@api-stub: lurek.image.newCompressedData
+--@api-stub: lurek.image.newCompressedData -- Loads DDS compressed image data from GameFS
 do -- lurek.image.newCompressedData
   -- DDS files are optional assets; guard with pcall so the example is headless-safe.
   local ok, cd = pcall(lurek.image.newCompressedData, "assets/terrain_bc1.dds")
@@ -990,8 +791,7 @@ do -- lurek.image.newCompressedData
   end
 end
 
--- ---- Example: lurek.image.isCompressed --------------------------------------
---@api-stub: lurek.image.isCompressed
+--@api-stub: lurek.image.isCompressed -- Returns whether a GameFS image file begins with DDS compressed image magic bytes
 do -- lurek.image.isCompressed
   -- Returns true for .dds files, false for .png / .jpg.
   local is_dds = lurek.image.isCompressed("assets/terrain_bc1.dds")
@@ -999,8 +799,7 @@ do -- lurek.image.isCompressed
   lurek.log.info("dds=" .. tostring(is_dds) .. " png=" .. tostring(is_png), "image")
 end
 
--- ---- Example: lurek.image.newProvinceGrid -----------------------------------
---@api-stub: lurek.image.newProvinceGrid
+--@api-stub: lurek.image.newProvinceGrid -- Loads a province id grid from an image file under the current game directory
 do -- lurek.image.newProvinceGrid
   local ok, grid = pcall(lurek.image.newProvinceGrid, "assets/provinces.png")
   if ok and grid then
@@ -1012,19 +811,13 @@ end
 -- ImageData methods
 -- -----------------------------------------------------------------------------
 
--- ---- Example: ImageData:type ------------------------------------------------
---@api-stub: LImageData:type
--- Returns the type name of this object (always "ImageData").
--- Useful for runtime type dispatch when a function accepts multiple image types.
+--@api-stub: ImageData:type
 do -- ImageData:type
   local img = lurek.image.newImageData(8, 8)
   assert(img:type() == "ImageData")
 end
 
--- ---- Example: ImageData:typeOf ----------------------------------------------
---@api-stub: LImageData:typeOf
--- Returns true if this object is of the named type; false otherwise.
--- Pass "ImageData" for an exact match; broader parent types also return true.
+--@api-stub: ImageData:typeOf
 do -- ImageData:typeOf
   local img = lurek.image.newImageData(8, 8)
   assert(img:typeOf("ImageData") == true)
@@ -1038,10 +831,7 @@ end
 -- The final committed file must contain ZERO --@api-stub: lines.
 -- =============================================================================
 
--- ---- Example: lurek.image.newCompressedData ---------------------------------
---@api-stub: LCompressedImageData:type
--- Returns the type name of this object.
--- Useful for runtime type inspection.
+--@api-stub: LCompressedImageData:type -- Returns the Lua-visible type name for this compressed image handle
 do -- LCompressedImageData:type
   local ok, compressed_image_data_obj = pcall(lurek.image.newCompressedData, "assets/terrain_bc1.dds")
   if ok and compressed_image_data_obj then
@@ -1049,9 +839,7 @@ do -- LCompressedImageData:type
     lurek.log.info("LCompressedImageData:type = " .. t, "image")
   end
 end
---@api-stub: LCompressedImageData:typeOf
--- Returns true if this object is of the given type.
--- Use for runtime type checks.
+--@api-stub: LCompressedImageData:typeOf -- Returns whether this compressed image handle matches a supported type name
 do -- LCompressedImageData:typeOf
   local ok, compressed_image_data_obj = pcall(lurek.image.newCompressedData, "assets/terrain_bc1.dds")
   if ok and compressed_image_data_obj then
@@ -1059,40 +847,30 @@ do -- LCompressedImageData:typeOf
     lurek.log.info("is wrong: " .. tostring(compressed_image_data_obj:typeOf("Unknown")), "image")
   end
 end
---@api-stub: LImageData:getWidth
--- Returns the width of the image in pixels.
--- Use to compute image bounds or validate dimensions before pixel operations.
+--@api-stub: LImageData:getWidth -- Returns the width of this image data in pixels
 do -- LImageData:getWidth
   local img = lurek.image.newImageData(64, 32)
   lurek.log.info("width=" .. img:getWidth(), "image")
 end
---@api-stub: LImageData:getHeight
--- Returns the height of the image in pixels.
--- Use to compute image bounds or validate dimensions.
+--@api-stub: LImageData:getHeight -- Returns the height of this image data in pixels
 do -- LImageData:getHeight
   local img = lurek.image.newImageData(64, 32)
   lurek.log.info("height=" .. img:getHeight(), "image")
 end
---@api-stub: LImageData:getDimensions
--- Returns the width and height of the image as two integers.
--- Use to get both dimensions in one call for aspect ratio calculations.
+--@api-stub: LImageData:getDimensions -- Returns image dimensions
 do -- LImageData:getDimensions
   local img = lurek.image.newImageData(128, 64)
   local w, h = img:getDimensions()
   lurek.log.info("dimensions=" .. w .. "x" .. h, "image")
 end
---@api-stub: LImageData:getPixel
--- Returns the RGBA colour components of the pixel at (x, y) as four integers (0-255).
--- Use to sample pixel colours for collision maps or colour picking.
+--@api-stub: LImageData:getPixel -- Returns RGBA channels at a pixel coordinate
 do -- LImageData:getPixel
   local img = lurek.image.newImageData(8, 8)
   img:setPixel(2, 3, 255, 128, 0, 255)   -- set orange pixel
   local r, g, b, a = img:getPixel(2, 3)
   lurek.log.info("pixel(2,3)=" .. r .. "," .. g .. "," .. b .. "," .. a, "image")
 end
---@api-stub: LImageData:setPixel
--- Sets the RGBA colour of the pixel at (x, y); returns an error if coordinates are out of bounds.
--- Use for procedural texture painting or editing collision maps.
+--@api-stub: LImageData:setPixel -- Sets RGBA channels at a pixel coordinate
 do -- LImageData:setPixel
   local img = lurek.image.newImageData(16, 16)
   img:setPixel(0, 0, 255, 0, 0, 255)   -- red at top-left
@@ -1100,26 +878,20 @@ do -- LImageData:setPixel
   local r, g, b = img:getPixel(7, 7)
   lurek.log.info("center r=" .. r .. " g=" .. g, "image")
 end
---@api-stub: LImageData:encode
--- Encodes the image into a byte string in the specified format (currently "png").
--- Use to save a generated image to disk via lurek.filesystem.write.
+--@api-stub: LImageData:encode -- Encodes image data in a supported format
 do -- LImageData:encode
   local img = lurek.image.newImageData(16, 16)
   img:fill(200, 100, 50, 255)
   local bytes = img:encode("png")
   lurek.log.info("encoded size=" .. #bytes .. " bytes", "image")
 end
---@api-stub: LImageData:getString
--- Returns the raw pixel bytes of the image as a Lua string.
--- Use to transfer raw RGBA pixel data to a GPU texture or save it.
+--@api-stub: LImageData:getString -- Returns raw image bytes as a Lua string
 do -- LImageData:getString
   local img = lurek.image.newImageData(4, 4)
   local s = img:getString()
   lurek.log.info("raw bytes length=" .. #s, "image")
 end
---@api-stub: LImageData:mapPixel
--- Calls func(x, y, r, g, b, a) for each pixel and writes the returned RGBA back.
--- Use for custom per-pixel colour transforms like heat-map colouring.
+--@api-stub: LImageData:mapPixel -- Applies a Lua callback to every pixel and replaces each pixel with returned RGBA values
 do -- LImageData:mapPixel
   local img = lurek.image.newImageData(8, 8)
   img:fill(100, 150, 200, 255)
@@ -1129,9 +901,7 @@ do -- LImageData:mapPixel
   local r, g, b = img:getPixel(0, 0)
   lurek.log.info("after mapPixel r=" .. r .. " b=" .. b, "image")
 end
---@api-stub: LImageData:brightness
--- Adjusts the brightness of every pixel by the given factor (< 1.0 darkens, > 1.0 brightens).
--- Use to simulate day/night lighting on pre-rendered backgrounds.
+--@api-stub: LImageData:brightness -- Applies a brightness factor to this image in place
 do -- LImageData:brightness
   local img = lurek.image.newImageData(8, 8)
   img:fill(200, 200, 200, 255)
@@ -1139,9 +909,7 @@ do -- LImageData:brightness
   local r = img:getPixel(0, 0)
   lurek.log.info("r after darken=" .. r, "image")
 end
---@api-stub: LImageData:contrast
--- Adjusts the contrast of every pixel by the given factor (< 1.0 reduces, > 1.0 increases).
--- Use to post-process screenshots for a stylised look.
+--@api-stub: LImageData:contrast -- Applies a contrast factor to this image in place
 do -- LImageData:contrast
   local img = lurek.image.newImageData(8, 8)
   img:fill(128, 128, 128, 255)
@@ -1149,9 +917,7 @@ do -- LImageData:contrast
   local r = img:getPixel(0, 0)
   lurek.log.info("r after contrast=" .. r, "image")
 end
---@api-stub: LImageData:saturation
--- Adjusts colour saturation; 0.0 produces grayscale, 1.0 is unchanged, > 1.0 boosts saturation.
--- Use to desaturate backgrounds when a UI overlay is shown.
+--@api-stub: LImageData:saturation -- Applies a saturation factor to this image in place
 do -- LImageData:saturation
   local img = lurek.image.newImageData(8, 8)
   img:fill(255, 100, 50, 255)
@@ -1159,9 +925,7 @@ do -- LImageData:saturation
   local r, g, b = img:getPixel(0, 0)
   lurek.log.info("r=" .. r .. " g=" .. g .. " b=" .. b, "image")
 end
---@api-stub: LImageData:gamma
--- Applies gamma correction; values < 1.0 brighten shadows, > 1.0 darken them.
--- Use to linearise sRGB textures before blending or to match display gamma.
+--@api-stub: LImageData:gamma -- Applies gamma correction to this image in place
 do -- LImageData:gamma
   local img = lurek.image.newImageData(8, 8)
   img:fill(100, 100, 100, 255)
@@ -1169,9 +933,7 @@ do -- LImageData:gamma
   local r = img:getPixel(0, 0)
   lurek.log.info("r after gamma=" .. r, "image")
 end
---@api-stub: LImageData:tint
--- Blends an RGB tint colour into every pixel, controlled by factor (0.0 = no change, 1.0 = full tint).
--- Use to apply team colours to neutral sprite sheets.
+--@api-stub: LImageData:tint -- Blends this image toward a tint color in place
 do -- LImageData:tint
   local img = lurek.image.newImageData(8, 8)
   img:fill(200, 200, 200, 255)
@@ -1179,9 +941,7 @@ do -- LImageData:tint
   local r, g, b = img:getPixel(0, 0)
   lurek.log.info("r=" .. r .. " g=" .. g .. " b=" .. b, "image")
 end
---@api-stub: LImageData:grayscale
--- Converts the image to grayscale using luminance weights (BT.601).
--- Use to create silhouettes or monochrome UI variants.
+--@api-stub: LImageData:grayscale -- Converts this image to grayscale in place
 do -- LImageData:grayscale
   local img = lurek.image.newImageData(8, 8)
   img:fill(255, 128, 64, 255)
@@ -1189,9 +949,7 @@ do -- LImageData:grayscale
   local r, g, b = img:getPixel(0, 0)
   lurek.log.info("gray r=" .. r .. " g=" .. g .. " b=" .. b, "image")
 end
---@api-stub: LImageData:sepia
--- Applies a warm sepia tone to the image using standard sepia matrix weights.
--- Use for vintage photograph effects in journal or flashback scenes.
+--@api-stub: LImageData:sepia -- Applies a sepia filter to this image in place
 do -- LImageData:sepia
   local img = lurek.image.newImageData(8, 8)
   img:fill(200, 180, 160, 255)
@@ -1199,9 +957,7 @@ do -- LImageData:sepia
   local r, g, b = img:getPixel(0, 0)
   lurek.log.info("sepia r=" .. r .. " g=" .. g .. " b=" .. b, "image")
 end
---@api-stub: LImageData:invert
--- Inverts every colour channel (subtracts each R/G/B value from 255); alpha is preserved.
--- Use for a "negative" effect on UI elements or health-critical flashing.
+--@api-stub: LImageData:invert -- Inverts image color channels in place
 do -- LImageData:invert
   local img = lurek.image.newImageData(8, 8)
   img:fill(100, 150, 200, 255)
@@ -1209,9 +965,7 @@ do -- LImageData:invert
   local r, g, b = img:getPixel(0, 0)
   lurek.log.info("inverted r=" .. r .. " g=" .. g .. " b=" .. b, "image")
 end
---@api-stub: LImageData:threshold
--- Converts the image to black-and-white: pixels above value become white, at or below become black.
--- Use to extract silhouettes or create stencil masks for collision maps.
+--@api-stub: LImageData:threshold -- Applies a threshold filter to this image in place
 do -- LImageData:threshold
   local img = lurek.image.newImageData(8, 8)
   img:fill(200, 200, 200, 255)
@@ -1219,9 +973,7 @@ do -- LImageData:threshold
   local r = img:getPixel(0, 0)
   lurek.log.info("thresholded r=" .. r, "image")
 end
---@api-stub: LImageData:posterize
--- Reduces each channel to `levels` discrete steps, creating a flat poster-paint look.
--- Use for retro-stylised pixel art effects or cel-shading approximation.
+--@api-stub: LImageData:posterize -- Reduces image colors to a fixed number of levels in place
 do -- LImageData:posterize
   local img = lurek.image.newImageData(8, 8)
   img:fill(180, 120, 60, 255)
@@ -1229,27 +981,21 @@ do -- LImageData:posterize
   local r, g, b = img:getPixel(0, 0)
   lurek.log.info("posterised r=" .. r .. " g=" .. g .. " b=" .. b, "image")
 end
---@api-stub: LImageData:fill
--- Fills every pixel with the given solid RGBA colour, overwriting all existing content.
--- Use to reset an image buffer before drawing new content.
+--@api-stub: LImageData:fill -- Fills the whole image with one RGBA color
 do -- LImageData:fill
   local img = lurek.image.newImageData(16, 16)
   img:fill(64, 128, 192, 255)   -- fill solid blue-grey
   local r, g, b, a = img:getPixel(8, 8)
   lurek.log.info("fill r=" .. r .. " g=" .. g .. " b=" .. b, "image")
 end
---@api-stub: LImageData:noise
--- Adds random noise to every pixel channel; amount controls the maximum per-channel perturbation.
--- Use to create film grain effects or randomise procedural textures.
+--@api-stub: LImageData:noise -- Adds noise to this image in place
 do -- LImageData:noise
   local img = lurek.image.newImageData(16, 16)
   img:fill(128, 128, 128, 255)
   img:noise(20)   -- Â±20 per channel
   lurek.log.info("noise applied to 16x16 image", "image")
 end
---@api-stub: LImageData:alphaMask
--- Scales every pixel's alpha channel by factor; use to fade an image in or out uniformly.
--- Use to blend a sprite with the background for dissolve transitions.
+--@api-stub: LImageData:alphaMask -- Multiplies this image alpha channel by a factor in place
 do -- LImageData:alphaMask
   local img = lurek.image.newImageData(8, 8)
   img:fill(255, 255, 255, 255)
@@ -1257,9 +1003,7 @@ do -- LImageData:alphaMask
   local r, g, b, a = img:getPixel(0, 0)
   lurek.log.info("alpha after mask=" .. a, "image")
 end
---@api-stub: LImageData:flipHorizontal
--- Flips the image left-to-right (mirror across vertical axis), modifying in place.
--- Use to mirror a character's walk cycle without a separate sprite sheet.
+--@api-stub: LImageData:flipHorizontal -- Flips this image horizontally in place
 do -- LImageData:flipHorizontal
   local img = lurek.image.newImageData(4, 4)
   img:setPixel(0, 0, 255, 0, 0, 255)   -- red at top-left
@@ -1267,9 +1011,7 @@ do -- LImageData:flipHorizontal
   local r = img:getPixel(3, 0)   -- now at top-right
   lurek.log.info("flipped: r at (3,0)=" .. r, "image")
 end
---@api-stub: LImageData:flipVertical
--- Flips the image top-to-bottom (mirror across horizontal axis), modifying in place.
--- Use to invert a shadow sprite below a character.
+--@api-stub: LImageData:flipVertical -- Flips this image vertically in place
 do -- LImageData:flipVertical
   local img = lurek.image.newImageData(4, 4)
   img:setPixel(0, 0, 0, 255, 0, 255)   -- green at top-left
@@ -1277,35 +1019,27 @@ do -- LImageData:flipVertical
   local r, g = img:getPixel(0, 3)   -- now at bottom-left
   lurek.log.info("flipped: g at (0,3)=" .. g, "image")
 end
---@api-stub: LImageData:rotate90cw
--- Returns a new ImageData rotated 90 degrees clockwise; the original is not modified.
--- Use to rotate tile assets to fill directional variants from a single source.
+--@api-stub: LImageData:rotate90cw -- Returns a new image rotated ninety degrees clockwise
 do -- LImageData:rotate90cw
   local img = lurek.image.newImageData(4, 8)   -- 4Ă—8 original
   local rot = img:rotate90cw()               -- becomes 8Ă—4
   lurek.log.info("rotated w=" .. rot:getWidth() .. " h=" .. rot:getHeight(), "image")
 end
---@api-stub: LImageData:crop
--- Returns a new ImageData containing the rectangular sub-region at (x, y) of the given width and height.
--- Use to extract individual sprites from a sprite sheet atlas.
+--@api-stub: LImageData:crop -- Returns a cropped image region
 do -- LImageData:crop
   local sheet = lurek.image.newImageData(64, 64)
   sheet:fill(80, 160, 240, 255)
   local sprite = sheet:crop(0, 0, 16, 16)
   lurek.log.info("sprite w=" .. sprite:getWidth() .. " h=" .. sprite:getHeight(), "image")
 end
---@api-stub: LImageData:resizeNearest
--- Returns a new ImageData scaled to (new_w, new_h) using nearest-neighbour interpolation.
--- Use to upscale pixel art without blurring.
+--@api-stub: LImageData:resizeNearest -- Returns a resized image using nearest-neighbor sampling
 do -- LImageData:resizeNearest
   local img = lurek.image.newImageData(8, 8)
   img:fill(200, 50, 100, 255)
   local big = img:resizeNearest(64, 64)   -- 8Ă— upscale
   lurek.log.info("scaled w=" .. big:getWidth() .. " h=" .. big:getHeight(), "image")
 end
---@api-stub: LImageData:blur
--- Returns a new ImageData with a box blur applied using the given pixel radius.
--- Use to soften sprite outlines or generate depth-of-field effects.
+--@api-stub: LImageData:blur -- Returns a blurred copy of this image
 do -- LImageData:blur
   local img = lurek.image.newImageData(32, 32)
   img:fill(255, 255, 255, 255)
@@ -1313,18 +1047,14 @@ do -- LImageData:blur
   local blurred = img:blur(2)
   lurek.log.info("blurred w=" .. blurred:getWidth(), "image")
 end
---@api-stub: LImageData:sharpen
--- Returns a new ImageData with a sharpening convolution kernel applied.
--- Use to increase perceived detail after a nearest-neighbour downscale.
+--@api-stub: LImageData:sharpen -- Returns a sharpened copy of this image
 do -- LImageData:sharpen
   local img = lurek.image.newImageData(16, 16)
   img:fill(180, 180, 180, 255)
   local sharp = img:sharpen()
   lurek.log.info("sharpened w=" .. sharp:getWidth(), "image")
 end
---@api-stub: LImageData:drawRect
--- Draws a filled rectangle onto the image.
--- Use to draw health bars, UI panels, or debug overlays directly to an image buffer.
+--@api-stub: LImageData:drawRect -- Draws a filled rectangle into this image
 do -- LImageData:drawRect
   local img = lurek.image.newImageData(32, 32)
   img:fill(0, 0, 0, 255)
@@ -1332,9 +1062,7 @@ do -- LImageData:drawRect
   local r, g, b = img:getPixel(10, 8)
   lurek.log.info("bar pixel r=" .. r .. " g=" .. g, "image")
 end
---@api-stub: LImageData:drawCircle
--- Draws a filled circle onto the image.
--- Use to paint spotlight halos or generate round minimap markers.
+--@api-stub: LImageData:drawCircle -- Draws a filled circle into this image
 do -- LImageData:drawCircle
   local img = lurek.image.newImageData(32, 32)
   img:fill(0, 0, 0, 255)
@@ -1342,9 +1070,7 @@ do -- LImageData:drawCircle
   local r, g = img:getPixel(16, 16)
   lurek.log.info("center r=" .. r .. " g=" .. g, "image")
 end
---@api-stub: LImageData:drawLine
--- Draws a line using Bresenham's algorithm.
--- Use to render vector wireframes or debug ray visualisations to a texture.
+--@api-stub: LImageData:drawLine -- Draws a line into this image
 do -- LImageData:drawLine
   local img = lurek.image.newImageData(32, 32)
   img:fill(0, 0, 0, 255)
@@ -1352,18 +1078,14 @@ do -- LImageData:drawLine
   local r = img:getPixel(15, 15)
   lurek.log.info("line pixel r=" .. r, "image")
 end
---@api-stub: LImageData:resize
--- Returns a new ImageData scaled to (new_w, new_h) using nearest-neighbour interpolation.
--- Use to generate mipmaps or downscale textures for LOD.
+--@api-stub: LImageData:resize -- Creates a new ImageData resized to the given dimensions using bilinear sampling
 do -- LImageData:resize
   local img = lurek.image.newImageData(64, 64)
   img:fill(100, 200, 50, 255)
   local small = img:resize(8, 8)
   lurek.log.info("resized w=" .. small:getWidth() .. " h=" .. small:getHeight(), "image")
 end
---@api-stub: LImageData:blit
--- Blits the source ImageData onto this image at (dst_x, dst_y) using Porter-Duff over.
--- Use to composite sprites, icons, or HUD elements onto a render target.
+--@api-stub: LImageData:blit -- Copies pixel data from another ImageData onto this one at the specified position
 do -- LImageData:blit
   local base = lurek.image.newImageData(32, 32)
   base:fill(0, 0, 128, 255)
@@ -1373,18 +1095,14 @@ do -- LImageData:blit
   local r, g, b = base:getPixel(14, 14)
   lurek.log.info("blit pixel g=" .. g, "image")
 end
---@api-stub: LImageData:getRegion
--- Returns a copy of the rectangular sub-region as a new ImageData.
--- Use to extract atlas frames or thumbnails from a large image.
+--@api-stub: LImageData:getRegion -- Extracts a rectangular sub-region as a new ImageData
 do -- LImageData:getRegion
   local img = lurek.image.newImageData(64, 64)
   img:drawRect(10, 10, 20, 20, 255, 0, 0, 255)
   local region = img:getRegion(10, 10, 20, 20)
   lurek.log.info("region w=" .. region:getWidth() .. " h=" .. region:getHeight(), "image")
 end
---@api-stub: LImageData:diff
--- Returns the sum of absolute per-channel pixel differences with another ImageData.
--- Use for image comparison tests or change detection in screen recordings.
+--@api-stub: LImageData:diff -- Computes a numeric difference score between this image and another of the same size
 do -- LImageData:diff
   local a = lurek.image.newImageData(8, 8)
   local b = lurek.image.newImageData(8, 8)
@@ -1393,9 +1111,7 @@ do -- LImageData:diff
   local d = a:diff(b)
   lurek.log.info("pixel diff=" .. tostring(d), "image")
 end
---@api-stub: LImageData:mapPixels
--- Applies a function to every pixel in-place.
--- Use for fast in-place transforms without allocating a new buffer.
+--@api-stub: LImageData:mapPixels -- Iterates over every pixel and replaces its color with the return value of the callback
 do -- LImageData:mapPixels
   local img = lurek.image.newImageData(8, 8)
   img:fill(255, 0, 0, 255)
@@ -1405,9 +1121,7 @@ do -- LImageData:mapPixels
   local r, g = img:getPixel(0, 0)
   lurek.log.info("after map: r=" .. r .. " g=" .. g, "image")
 end
---@api-stub: LImageData:convolve
--- Applies a custom NxN convolution kernel to the image and returns a new ImageData.
--- Use for custom blur, sharpen, or edge-detect effects.
+--@api-stub: LImageData:convolve -- Applies a convolution kernel and returns the filtered image
 do -- LImageData:convolve
   local img = lurek.image.newImageData(16, 16)
   img:fill(180, 180, 180, 255)
@@ -1415,9 +1129,7 @@ do -- LImageData:convolve
   local result = img:convolve(kernel, 3)
   lurek.log.info("convolved w=" .. result:getWidth(), "image")
 end
---@api-stub: LImageData:applyPaletteLut
--- Applies a `PaletteLUT` to the image in place, replacing exact colour matches.
--- Use to swap team colours or apply retrograde palette mapping.
+--@api-stub: LImageData:applyPaletteLut -- Applies a palette lookup table to this image in place
 do -- LImageData:applyPaletteLut
   local img = lurek.image.newImageData(8, 8)
   img:fill(255, 0, 0, 255)   -- red
@@ -1427,9 +1139,7 @@ do -- LImageData:applyPaletteLut
   local r, g = img:getPixel(0, 0)
   lurek.log.info("after lut r=" .. r .. " g=" .. g, "image")
 end
---@api-stub: LImageData:setRawData
--- Replaces all pixel data from a raw RGBA byte string.
--- Use to upload GPU texture readbacks or load a pre-encoded buffer.
+--@api-stub: LImageData:setRawData -- Replaces the image byte buffer with raw bytes
 do -- LImageData:setRawData
   local img = lurek.image.newImageData(2, 2)
   -- 4 pixels Ă— 4 bytes (RGBA), all red
@@ -1438,9 +1148,7 @@ do -- LImageData:setRawData
   local r, g, b, a = img:getPixel(0, 0)
   lurek.log.info("raw r=" .. r .. " g=" .. g .. " b=" .. b, "image")
 end
---@api-stub: LImageData:paste
--- Copies pixels from `source` onto this image starting at (dx, dy).
--- Use to composite character portraits or tile icons onto a base canvas.
+--@api-stub: LImageData:paste -- Pastes a source image into this image at unsigned destination coordinates
 do -- LImageData:paste
   local canvas = lurek.image.newImageData(32, 32)
   canvas:fill(30, 30, 60, 255)
@@ -1450,40 +1158,30 @@ do -- LImageData:paste
   local r, g = canvas:getPixel(6, 6)
   lurek.log.info("icon pixel r=" .. r .. " g=" .. g, "image")
 end
---@api-stub: LLayeredImage:getWidth
--- Returns the canvas width shared by all layers.
--- Use to validate that blit operations stay within bounds.
+--@api-stub: LLayeredImage:getWidth -- Returns the layered image width
 do -- LLayeredImage:getWidth
   local li = lurek.image.newLayeredImage(128, 64)
   lurek.log.info("width=" .. li:getWidth(), "image")
 end
---@api-stub: LLayeredImage:getHeight
--- Returns the canvas height shared by all layers.
--- Use for aspect ratio calculations or viewport alignment.
+--@api-stub: LLayeredImage:getHeight -- Returns the layered image height
 do -- LLayeredImage:getHeight
   local li = lurek.image.newLayeredImage(128, 64)
   lurek.log.info("height=" .. li:getHeight(), "image")
 end
---@api-stub: LLayeredImage:layerCount
--- Returns the number of layers in the stack.
--- Use to iterate layers or validate that all expected layers were added.
+--@api-stub: LLayeredImage:layerCount -- Returns the number of layers in the stack
 do -- LLayeredImage:layerCount
   local li = lurek.image.newLayeredImage(64, 64)
   li:addLayer()
   li:addLayer()
   lurek.log.info("layers=" .. li:layerCount(), "image")
 end
---@api-stub: LLayeredImage:addLayer
--- Appends a new blank transparent layer on top and returns its 1-based index.
--- Use to stack sprite components (body, hair, equipment) for a doll system.
+--@api-stub: LLayeredImage:addLayer -- Adds a blank layer with an optional name
 do -- LLayeredImage:addLayer
   local li = lurek.image.newLayeredImage(64, 64)
   local idx = li:addLayer()
   lurek.log.info("added layer idx=" .. idx .. " total=" .. li:layerCount(), "image")
 end
---@api-stub: LLayeredImage:removeLayer
--- Removes the layer at the given 1-based index. Returns true on success.
--- Use to remove layers when switching character equipment.
+--@api-stub: LLayeredImage:removeLayer -- Removes a layer by one-based index
 do -- LLayeredImage:removeLayer
   local li = lurek.image.newLayeredImage(64, 64)
   li:addLayer()
@@ -1491,18 +1189,14 @@ do -- LLayeredImage:removeLayer
   local ok = li:removeLayer(1)
   lurek.log.info("removed=" .. tostring(ok) .. " remaining=" .. li:layerCount(), "image")
 end
---@api-stub: LLayeredImage:getLayer
--- Returns a copy of the layer's pixel buffer as an ImageData.
--- Use to export or process an individual layer separately.
+--@api-stub: LLayeredImage:getLayer -- Returns image data for a layer by one-based index
 do -- LLayeredImage:getLayer
   local li = lurek.image.newLayeredImage(32, 32)
   local idx = li:addLayer()
   local layer = li:getLayer(idx)
   lurek.log.info("layer w=" .. layer:getWidth(), "image")
 end
---@api-stub: LLayeredImage:setLayer
--- Replaces a layer's pixel buffer with a copy of the given ImageData.
--- Use to swap equipment sprites on a character doll at runtime.
+--@api-stub: LLayeredImage:setLayer -- Replaces a layer's image data by one-based index
 do -- LLayeredImage:setLayer
   local li = lurek.image.newLayeredImage(32, 32)
   local idx = li:addLayer()
@@ -1513,27 +1207,21 @@ do -- LLayeredImage:setLayer
   local r, g = out:getPixel(0, 0)
   lurek.log.info("layer g=" .. g, "image")
 end
---@api-stub: LLayeredImage:getOpacity
--- Returns the opacity of a layer in [0.0, 1.0].
--- Use to read layer transparency before writing a composited frame.
+--@api-stub: LLayeredImage:getOpacity -- Returns a layer opacity by one-based index
 do -- LLayeredImage:getOpacity
   local li = lurek.image.newLayeredImage(32, 32)
   local idx = li:addLayer()
   li:setOpacity(idx, 0.75)
   lurek.log.info("opacity=" .. li:getOpacity(idx), "image")
 end
---@api-stub: LLayeredImage:setOpacity
--- Sets the opacity of a layer. Value is clamped to [0.0, 1.0].
--- Use to fade individual layers (e.g., blood/damage overlay decals).
+--@api-stub: LLayeredImage:setOpacity -- Sets a layer opacity by one-based index
 do -- LLayeredImage:setOpacity
   local li = lurek.image.newLayeredImage(32, 32)
   local idx = li:addLayer()
   li:setOpacity(idx, 0.5)
   lurek.log.info("opacity=" .. li:getOpacity(idx), "image")
 end
---@api-stub: LLayeredImage:isVisible
--- Returns whether a layer is visible.
--- Use to gate compositing on layers that may be toggled by gameplay.
+--@api-stub: LLayeredImage:isVisible -- Returns layer visibility by one-based index
 do -- LLayeredImage:isVisible
   local li = lurek.image.newLayeredImage(32, 32)
   local idx = li:addLayer()
@@ -1541,9 +1229,7 @@ do -- LLayeredImage:isVisible
   li:setVisible(idx, false)
   lurek.log.info("after hide: " .. tostring(li:isVisible(idx)), "image")
 end
---@api-stub: LLayeredImage:setVisible
--- Shows or hides a layer during compositing.
--- Use to toggle equipment layers in a character customisation screen.
+--@api-stub: LLayeredImage:setVisible -- Sets layer visibility by one-based index
 do -- LLayeredImage:setVisible
   local li = lurek.image.newLayeredImage(32, 32)
   local idx = li:addLayer()
@@ -1552,27 +1238,21 @@ do -- LLayeredImage:setVisible
   li:setVisible(idx, true)
   lurek.log.info("visible again: " .. tostring(li:isVisible(idx)), "image")
 end
---@api-stub: LLayeredImage:getName
--- Returns the name of a layer.
--- Use to identify layers by semantic name when compositing sprites.
+--@api-stub: LLayeredImage:getName -- Returns a layer name by one-based index
 do -- LLayeredImage:getName
   local li = lurek.image.newLayeredImage(32, 32)
   local idx = li:addLayer()
   li:setName(idx, "body")
   lurek.log.info("name=" .. li:getName(idx), "image")
 end
---@api-stub: LLayeredImage:setName
--- Renames the layer at the given index to the new name string.
--- Use to tag layers with semantic identifiers for equipment slot lookup.
+--@api-stub: LLayeredImage:setName -- Sets a layer name by one-based index
 do -- LLayeredImage:setName
   local li = lurek.image.newLayeredImage(32, 32)
   local idx = li:addLayer()
   li:setName(idx, "helmet")
   lurek.log.info("name=" .. li:getName(idx), "image")
 end
---@api-stub: LLayeredImage:swapLayers
--- Swaps two layers by their 1-based indices, changing their compositing order.
--- Use to reorder z-levels in a doll system when wearing layered clothing.
+--@api-stub: LLayeredImage:swapLayers -- Swaps two layers by one-based indices
 do -- LLayeredImage:swapLayers
   local li = lurek.image.newLayeredImage(32, 32)
   li:addLayer(); li:addLayer()
@@ -1580,18 +1260,14 @@ do -- LLayeredImage:swapLayers
   li:swapLayers(1, 2)
   lurek.log.info("after swap: idx1=" .. li:getName(1), "image")
 end
---@api-stub: LLayeredImage:moveLayer
--- Moves a layer from one position to another, shifting layers in between.
--- Use to re-order paint layers after a user drag-and-drop in a layer panel.
+--@api-stub: LLayeredImage:moveLayer -- Moves a layer from one one-based index to another
 do -- LLayeredImage:moveLayer
   local li = lurek.image.newLayeredImage(32, 32)
   for i = 1, 3 do li:addLayer(); li:setName(i, "layer_" .. i) end
   li:moveLayer(3, 1)   -- bring layer 3 to the front
   lurek.log.info("front layer=" .. li:getName(1), "image")
 end
---@api-stub: LLayeredImage:merge
--- Flattens all visible layers into a single ImageData using Porter-Duff "over" compositing.
--- Use to produce a final sprite texture from a layered character doll.
+--@api-stub: LLayeredImage:merge -- Merges visible layers into a single image data object
 do -- LLayeredImage:merge
   local li = lurek.image.newLayeredImage(32, 32)
   local bg_idx = li:addLayer()
@@ -1602,9 +1278,7 @@ do -- LLayeredImage:merge
   local flat = li:merge()
   lurek.log.info("merged w=" .. flat:getWidth(), "image")
 end
---@api-stub: LLayeredImage:save
--- Saves the layered image to a LIMG binary file at the given path.
--- Use to serialise a character's costume state between sessions.
+--@api-stub: LLayeredImage:save -- Saves the layered image stack to a file
 do -- LLayeredImage:save
   local li = lurek.image.newLayeredImage(32, 32)
   local idx = li:addLayer()
@@ -1614,41 +1288,31 @@ do -- LLayeredImage:save
   li:save("save/test_layered.limg")
   lurek.log.info("saved layered image to save/test_layered.limg", "image")
 end
---@api-stub: LLayeredImage:type
--- Returns the type name of this object.
--- Useful for runtime type inspection.
+--@api-stub: LLayeredImage:type -- Returns the Lua-visible type name for this layered image handle
 do -- LLayeredImage:type
   local layered_image_obj = lurek.image.newLayeredImage(32, 32)
   local t = layered_image_obj:type()
   lurek.log.info("LLayeredImage:type = " .. t, "image")
 end
---@api-stub: LLayeredImage:typeOf
--- Returns true if this object is of the given type.
--- Use for runtime type checks.
+--@api-stub: LLayeredImage:typeOf -- Returns whether this layered image handle matches a supported type name
 do -- LLayeredImage:typeOf
   local layered_image_obj = lurek.image.newLayeredImage(32, 32)
   lurek.log.info("is LLayeredImage: " .. tostring(layered_image_obj:typeOf("LLayeredImage")), "image")
   lurek.log.info("is wrong: " .. tostring(layered_image_obj:typeOf("Unknown")), "image")
 end
---@api-stub: LPaletteLUT:type
--- Returns the type name of this object.
--- Useful for runtime type inspection.
+--@api-stub: LPaletteLUT:type -- Returns the Lua-visible type name for this palette lookup table handle
 do -- LPaletteLUT:type
   local palette_l_u_t_obj = lurek.image.newPaletteLut()
   local t = palette_l_u_t_obj:type()
   lurek.log.info("LPaletteLUT:type = " .. t, "image")
 end
---@api-stub: LPaletteLUT:typeOf
--- Returns true if this object is of the given type.
--- Use for runtime type checks.
+--@api-stub: LPaletteLUT:typeOf -- Returns whether this palette lookup table handle matches a supported type name
 do -- LPaletteLUT:typeOf
   local palette_l_u_t_obj = lurek.image.newPaletteLut()
   lurek.log.info("is LPaletteLUT: " .. tostring(palette_l_u_t_obj:typeOf("LPaletteLUT")), "image")
   lurek.log.info("is wrong: " .. tostring(palette_l_u_t_obj:typeOf("Unknown")), "image")
 end
---@api-stub: LProvinceGrid:type
--- Returns the type name of this object.
--- Useful for runtime type inspection.
+--@api-stub: LProvinceGrid:type -- Returns the Lua-visible type name for this province grid handle
 do -- LProvinceGrid:type
   local ok, province_grid_obj = pcall(lurek.image.newProvinceGrid, "assets/world_provinces.png")
   if ok and province_grid_obj then
@@ -1656,9 +1320,7 @@ do -- LProvinceGrid:type
     lurek.log.info("LProvinceGrid:type = " .. t, "image")
   end
 end
---@api-stub: LProvinceGrid:typeOf
--- Returns true if this object is of the given type.
--- Use for runtime type checks.
+--@api-stub: LProvinceGrid:typeOf -- Returns whether this province grid handle matches a supported type name
 do -- LProvinceGrid:typeOf
   local ok, province_grid_obj = pcall(lurek.image.newProvinceGrid, "assets/world_provinces.png")
   if ok and province_grid_obj then
@@ -1675,8 +1337,13 @@ end
 -- The final committed file must contain ZERO --@api-stub: lines.
 -- =============================================================================
 
--- ---- Example: lurek.image.newImageDataFromBytes -----------------------------
---@api-stub: lurek.image.newImageDataFromBytes
+--@api-stub: lurek.image.newImageDataFromBytes -- Creates image data from raw RGBA bytes and explicit dimensions
+do -- lurek.image.newImageDataFromBytes
+  local pixels = string.rep(string.char(0, 128, 255, 255), 16) -- 4x4 blue RGBA8
+  local img = lurek.image.newImageDataFromBytes(4, 4, pixels)
+  lurek.log.info("fromBytes " .. img:getWidth() .. "x" .. img:getHeight(), "image")
+end
+
 -- Creates an ImageData from a raw RGBA8 byte string. Width Ă— height Ă— 4 bytes required.
 -- lurek.image.newImageDataFromBytes(64.0, 64.0, bytes)  -- -> ImageData
 
@@ -1684,11 +1351,8 @@ end
 -- LImageData methods
 -- -----------------------------------------------------------------------------
 
--- ---- Example: raw bytes and explicit resize filter -------------------------
---@api-stub: lurek.image.newImageDataFromBytes
---@api-stub: LImageData:getRawBytes
---@api-stub: LImageData:resize
 -- Build an image from raw RGBA bytes, read bytes back, and resize with explicit lanczos3 filter.
+--@api-stub: raw
 do -- raw bytes + resize filter
   local bytes = string.rep(string.char(255, 0, 0, 255), 4) -- 2x2 red RGBA8
   local img = lurek.image.newImageDataFromBytes(2, 2, bytes)
@@ -1697,9 +1361,7 @@ do -- raw bytes + resize filter
   lurek.log.info("raw=" .. #raw .. " out=" .. out:getWidth() .. "x" .. out:getHeight(), "image")
 end
 
--- ---- Example: async fromScreen poll ---------------------------------------
---@api-stub: lurek.image.fromScreen
--- Poll-based readback: first call usually returns nil and queues capture; later call may return ImageData.
+--@api-stub: lurek.image.fromScreen -- Returns a completed screen capture image or requests one for a future call
 do -- lurek.image.fromScreen
   local first = lurek.image.fromScreen()
   if first == nil then
@@ -1714,12 +1376,7 @@ end
 -- LProvinceGrid methods
 -- -----------------------------------------------------------------------------
 
--- ---- Example: province geometry export ------------------------------------
---@api-stub: LProvinceGrid:provinceSpans
---@api-stub: LProvinceGrid:borderSegments
---@api-stub: LProvinceGrid:serializeShapeData
---@api-stub: LProvinceGrid:deserializeShapeData
--- Extract spans/segments and round-trip serialized geometry payload.
+--@api-stub: ProvinceGrid
 do -- ProvinceGrid geometry helpers
   local pg = lurek.image.newProvinceGrid("content/games/strategy/eu2/map.png")
   local spans = pg:provinceSpans()

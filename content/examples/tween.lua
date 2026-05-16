@@ -1,37 +1,21 @@
 -- content/examples/tween.lua
----@diagnostic disable: undefined-field
--- Hand-written coverage of the lurek.tween API (35 items).
---
--- The lurek.tween namespace drives table-field interpolation: classic
--- duration-based tweens, chained sequences, parallel groups, and
--- physics-based springs. Build animations once at startup or in
--- response to events; advance the global engine each frame with
--- lurek.tween.update(dt) inside lurek.process(dt).
---
+-- lurek.tween API examples.
 -- Run: cargo run -- content/examples/tween.lua
 
--- â”€â”€ lurek.tween.* functions â”€â”€
-
---@api-stub: lurek.tween.update
--- Advances all active tweens, sequences, and parallels by `dt` seconds.
--- Call once per frame in lurek.process(dt) so all active tweens, sequences, and springs advance.
+--@api-stub: lurek.tween.update -- Advances all active tweens, sequences, parallels, and springs by the given delta time
 do -- lurek.tween.update
   function lurek.process(dt)
     lurek.tween.update(dt)
   end
 end
 
---@api-stub: lurek.tween.tween
--- Creates a new property tween and registers it for automatic updating.
--- Pass any plain Lua table; start values are captured lazily on the first update tick.
+--@api-stub: lurek.tween.tween -- Creates and starts a property tween that smoothly interpolates numeric fields on the target table over the given duration
 do -- lurek.tween.tween
   local hud = { alpha = 0, y = -32 }
   lurek.tween.tween(0.4, hud, { alpha = 1, y = 0 }, "outQuad")
 end
 
---@api-stub: lurek.tween.sequence
--- Creates an empty TweenSequence.
--- Build a chain with :tween, :delay, and :callback, then :start to register it for ticking.
+--@api-stub: lurek.tween.sequence -- Creates a new empty tween sequence
 do -- lurek.tween.sequence
   local door = { y = 0 }
   lurek.tween.sequence()
@@ -40,9 +24,7 @@ do -- lurek.tween.sequence
     :start()
 end
 
---@api-stub: lurek.tween.parallel
--- Creates an empty TweenParallel.
--- Use to fire multiple tweens that share a start time and run in lockstep on the same target.
+--@api-stub: lurek.tween.parallel -- Creates a new empty parallel tween group
 do -- lurek.tween.parallel
   local actor = { x = 0, alpha = 1 }
   lurek.tween.parallel()
@@ -51,25 +33,19 @@ do -- lurek.tween.parallel
     :start()
 end
 
---@api-stub: lurek.tween.delay
--- Creates a no-op tween that waits `seconds`, then optionally calls `callback`.
--- Handy for one-shot timers like respawn delays; the callback fires once `seconds` elapse.
+--@api-stub: lurek.tween.delay -- Creates a one-shot delay
 do -- lurek.tween.delay
   lurek.tween.delay(1.5, function()
     lurek.log.info("respawn now", "spawn")
   end)
 end
 
---@api-stub: lurek.tween.cancelAll
--- Cancels all active tweens, sequences, parallels, and springs immediately.
--- Call at scene transitions to clear any animation that would race the new scene state.
+--@api-stub: lurek.tween.cancelAll -- Immediately cancels all active tweens, sequences, parallels, and springs managed by the tween engine
 do -- lurek.tween.cancelAll
   lurek.tween.cancelAll()
 end
 
---@api-stub: lurek.tween.getActiveCount
--- Returns the number of currently active tween objects (tweens + seqs + pars).
--- Useful for debug overlays or asserting that scene cleanup left no orphaned tweens behind.
+--@api-stub: lurek.tween.getActiveCount -- Returns the total number of currently active tweens, sequences, and parallels
 do -- lurek.tween.getActiveCount
   local n = lurek.tween.getActiveCount()
   if n > 100 then
@@ -77,18 +53,14 @@ do -- lurek.tween.getActiveCount
   end
 end
 
---@api-stub: lurek.tween.registerEasing
--- Registers a custom easing function under `name`.
--- Register at startup; `fn(t)` receives 0..1 and must return 0..1 for predictable behaviour.
+--@api-stub: lurek.tween.registerEasing -- Registers a custom easing function by name
 do -- lurek.tween.registerEasing
   lurek.tween.registerEasing("squared", function(t)
     return t * t
   end)
 end
 
---@api-stub: lurek.tween.getEasingNames
--- Returns a list of all available easing names (built-in + custom).
--- Useful for editor-style dropdowns or to validate a config string before passing to tween().
+--@api-stub: lurek.tween.getEasingNames -- Returns an array of all available easing function names, including both built-in and custom-registered easings
 do -- lurek.tween.getEasingNames
   local names = lurek.tween.getEasingNames()
   for i = 1, #names do
@@ -96,9 +68,7 @@ do -- lurek.tween.getEasingNames
   end
 end
 
---@api-stub: lurek.tween.newState
--- Creates a standalone tween timing state without registering it with the engine.
--- Use when you want to drive interpolation by hand; the engine will not tick this state for you.
+--@api-stub: lurek.tween.newState -- Creates a standalone tween state for manual interpolation
 do -- lurek.tween.newState
   local s = lurek.tween.newState(0.5, "outCubic")
   s:tick(1 / 60)
@@ -106,24 +76,19 @@ do -- lurek.tween.newState
   lurek.log.debug("hand-eased x=" .. x, "tween")
 end
 
---@api-stub: lurek.tween.to
--- Sugar for `tween()` with `target` first â€” natural read order.
--- Reads more naturally than tween() when the table being animated is the focus of the call.
+--@api-stub: lurek.tween.to -- Creates and starts a property tween with a different parameter order: target first, then fields, duration, easing
 do -- lurek.tween.to
   local enemy = { hp = 100 }
   lurek.tween.to(enemy, { hp = 0 }, 0.8, "inQuad")
 end
 
---@api-stub: lurek.tween.spring
--- Creates a physics-based spring animation that drives named fields on `target_table`.
--- Springs feel snappier than fixed-duration tweens for UI bounces, follow cameras, and pop-ins.
+--@api-stub: lurek.tween.spring -- Creates a spring-physics animation that smoothly drives table fields toward target values with bounce and settle behavior
 do -- lurek.tween.spring
   local cam = { x = 0, y = 0 }
   lurek.tween.spring(cam, { x = 320, y = 180 }, { stiffness = 180, damping = 18 })
 end
 
---@api-stub: lurek.tween.tweenChain
--- Builds and starts a declarative sequence from an array of step tables.
+--@api-stub: lurek.tween.tweenChain -- Creates a sequence from a table of step descriptors
 do -- lurek.tween.tweenChain
   local actor = { x = 0 }
   lurek.tween["tweenChain"]({
@@ -133,8 +98,7 @@ do -- lurek.tween.tweenChain
   })
 end
 
---@api-stub: lurek.tween.tweenColor
--- Convenience helper for animating rgba fields.
+--@api-stub: lurek.tween.tweenColor -- Creates and starts a color tween that smoothly interpolates r, g, b, and/or a fields on the target table
 do -- lurek.tween.tweenColor
   local c = { r = 1, g = 1, b = 1, a = 1 }
   lurek.tween["tweenColor"](0.4, c, { r = 1, g = 0.2, b = 0.2, a = 0.8 }, "linear")
@@ -143,17 +107,13 @@ end
 
 -- â”€â”€ TweenState methods â”€â”€
 
---@api-stub: LTweenState:tick
--- Advances the tween state by `dt` seconds.
--- Drive a standalone state when you do not want the engine to own its lifecycle.
+--@api-stub: TweenState:tick
 do -- TweenState:tick
   local s = lurek.tween.newState(1.0)
   function lurek.process(dt) s:tick(dt) end
 end
 
---@api-stub: LTweenState:isComplete
--- Returns whether the tween state has completed.
--- Poll inside a process callback to react when a hand-driven state finishes its run.
+--@api-stub: TweenState:isComplete
 do -- TweenState:isComplete
   local s = lurek.tween.newState(0.5)
   s:tick(0.5)
@@ -162,9 +122,7 @@ do -- TweenState:isComplete
   end
 end
 
---@api-stub: LTweenState:t
--- Returns the raw 0..1 playback progress.
--- Use the raw 0..1 progress when you need the linear input to a custom easing curve.
+--@api-stub: TweenState:t
 do -- TweenState:t
   local s = lurek.tween.newState(0.5)
   s:tick(0.25)
@@ -172,9 +130,7 @@ do -- TweenState:t
   lurek.log.debug("raw t=" .. raw, "tween")
 end
 
---@api-stub: LTweenState:lerp
--- Interpolates from `start` to `finish` using the eased tween progress.
--- Apply the eased progress to a numeric range; one state can drive several lerps per frame.
+--@api-stub: TweenState:lerp
 do -- TweenState:lerp
   local s = lurek.tween.newState(0.5, "outQuad")
   s:tick(0.25)
@@ -183,9 +139,7 @@ do -- TweenState:lerp
   lurek.log.debug("ease x=" .. x .. " y=" .. y, "tween")
 end
 
---@api-stub: LTweenState:reset
--- Resets the tween state to elapsed time zero.
--- Call when you want to replay the same animation without allocating a fresh state object.
+--@api-stub: TweenState:reset
 do -- TweenState:reset
   local s = lurek.tween.newState(0.5)
   s:tick(0.5)
@@ -195,18 +149,14 @@ end
 
 -- â”€â”€ Tween methods â”€â”€
 
---@api-stub: LTween:pause
--- Pauses this tween; time stops advancing but the tween is not cancelled.
--- Pause when the player opens a menu so the in-game tween freezes exactly mid-flight.
+--@api-stub: Tween:pause
 do -- Tween:pause
   local card = { y = 0 }
   local tw = lurek.tween.tween(0.6, card, { y = 200 })
   tw:pause()
 end
 
---@api-stub: LTween:resume
--- Resumes a paused tween, continuing from the position where it was paused.
--- Pair with :pause; :resume picks up exactly where the tween was suspended.
+--@api-stub: Tween:resume
 do -- Tween:resume
   local card = { y = 0 }
   local tw = lurek.tween.tween(0.6, card, { y = 200 })
@@ -214,9 +164,7 @@ do -- Tween:resume
   tw:resume()
 end
 
---@api-stub: LTween:isActive
--- Returns true if the tween is still running (not completed or cancelled).
--- Check before queueing a follow-up to avoid stacking duplicate animations on the same target.
+--@api-stub: Tween:isActive
 do -- Tween:isActive
   local card = { y = 0 }
   local tw = lurek.tween.tween(0.6, card, { y = 200 })
@@ -225,9 +173,7 @@ do -- Tween:isActive
   end
 end
 
---@api-stub: LTween:getProgress
--- Returns raw 0..1 playback progress (not eased, not accounting for yoyo).
--- Pair with isActive to drive a UI element like a loading bar that mirrors the tween.
+--@api-stub: Tween:getProgress
 do -- Tween:getProgress
   local bar = { fill = 0 }
   local tw = lurek.tween.tween(2.0, bar, { fill = 1 })
@@ -235,8 +181,7 @@ do -- Tween:getProgress
   lurek.log.debug("loading=" .. p, "ui")
 end
 
---@api-stub: LTween:getElapsed
--- Returns elapsed tween time in seconds.
+--@api-stub: Tween:getElapsed
 do -- Tween:getElapsed
   local obj = { x = 0 }
   local tw = lurek.tween.tween(1.0, obj, { x = 10 })
@@ -244,16 +189,14 @@ do -- Tween:getElapsed
   lurek.log.debug("elapsed=" .. tw["getElapsed"](tw), "tween")
 end
 
---@api-stub: LTween:getDuration
--- Returns configured tween duration in seconds.
+--@api-stub: Tween:getDuration
 do -- Tween:getDuration
   local obj = { x = 0 }
   local tw = lurek.tween.tween(1.0, obj, { x = 10 })
   lurek.log.debug("duration=" .. tw:getDuration(), "tween")
 end
 
---@api-stub: LTween:getRemaining
--- Returns remaining tween time in seconds.
+--@api-stub: Tween:getRemaining
 do -- Tween:getRemaining
   local obj = { x = 0 }
   local tw = lurek.tween.tween(1.0, obj, { x = 10 })
@@ -261,8 +204,7 @@ do -- Tween:getRemaining
   lurek.log.debug("remaining=" .. tw["getRemaining"](tw), "tween")
 end
 
---@api-stub: LTween:getFields
--- Returns animated field names.
+--@api-stub: Tween:getFields
 do -- Tween:getFields
   local obj = { x = 0, y = 0 }
   local tw = lurek.tween.tween(1.0, obj, { x = 10, y = 20 })
@@ -270,24 +212,21 @@ do -- Tween:getFields
   lurek.log.debug("fields=" .. tostring(#fields), "tween")
 end
 
---@api-stub: LTween:setRelative
--- Enables or disables relative (delta) mode.
+--@api-stub: Tween:setRelative
 do -- Tween:setRelative
   local obj = { x = 10 }
   local tw = lurek.tween.tween(1.0, obj, { x = 5 }, "linear")
   tw["setRelative"](tw, true)
 end
 
---@api-stub: LTween:relative
--- Chainable alias for relative mode.
+--@api-stub: Tween:relative
 do -- Tween:relative
   local obj = { x = 10 }
   local tw = lurek.tween.tween(1.0, obj, { x = 5 }, "linear")
   tw["relative"](tw, true)
 end
 
---@api-stub: LTween:await
--- Yields coroutine until tween completion.
+--@api-stub: Tween:await
 do -- Tween:await
   local obj = { x = 0 }
   local tw = lurek.tween.tween(0.2, obj, { x = 1 }, "linear")
@@ -298,18 +237,14 @@ do -- Tween:await
   coroutine.resume(co)
 end
 
---@api-stub: LTween:setRepeat
--- Sets the number of extra play cycles after the first (0 = play once, -1 = infinite).
--- Pass -1 for infinite; useful for idle loops like a heartbeat glow or a beacon flash.
+--@api-stub: Tween:setRepeat
 do -- Tween:setRepeat
   local glow = { alpha = 0.3 }
   local tw = lurek.tween.tween(0.8, glow, { alpha = 1.0 })
   tw:setRepeat(-1)
 end
 
---@api-stub: LTween:setYoyo
--- Enables or disables yoyo (ping-pong) on each repeat cycle.
--- Combine with setRepeat so the value bounces back-and-forth rather than snapping to start.
+--@api-stub: Tween:setYoyo
 do -- Tween:setYoyo
   local glow = { alpha = 0.3 }
   local tw = lurek.tween.tween(0.8, glow, { alpha = 1.0 })
@@ -320,18 +255,14 @@ end
 
 -- â”€â”€ TweenSequence methods â”€â”€
 
---@api-stub: LTweenSequence:cancel
--- Cancels the sequence and stops all pending steps.
--- Stop a chained intro animation when the player skips the cinematic mid-playback.
+--@api-stub: TweenSequence:cancel
 do -- TweenSequence:cancel
   local door = { y = 0 }
   local seq = lurek.tween.sequence():tween(0.4, door, { y = 64 }):start()
   seq:cancel()
 end
 
---@api-stub: LTweenSequence:isActive
--- Returns true if the sequence has been started and has not yet completed.
--- Gate input on isActive so the player cannot interrupt a critical mid-sequence step.
+--@api-stub: TweenSequence:isActive
 do -- TweenSequence:isActive
   local door = { y = 0 }
   local seq = lurek.tween.sequence():tween(0.4, door, { y = 64 }):start()
@@ -340,16 +271,14 @@ do -- TweenSequence:isActive
   end
 end
 
---@api-stub: LTweenSequence:getProgress
--- Returns sequence progress ratio.
+--@api-stub: TweenSequence:getProgress
 do -- TweenSequence:getProgress
   local door = { y = 0 }
   local seq = lurek.tween.sequence():tween(0.4, door, { y = 64 }):start()
   lurek.log.debug("seq progress=" .. seq["getProgress"](seq), "scene")
 end
 
---@api-stub: LTweenSequence:await
--- Yields coroutine until sequence completion.
+--@api-stub: TweenSequence:await
 do -- TweenSequence:await
   local door = { y = 0 }
   local seq = lurek.tween.sequence():tween(0.2, door, { y = 64 }):start()
@@ -363,9 +292,7 @@ end
 
 -- â”€â”€ TweenParallel methods â”€â”€
 
---@api-stub: LTweenParallel:cancel
--- Cancels the parallel group immediately.
--- Cancel the group as a unit; do not iterate child tweens and cancel them one at a time.
+--@api-stub: TweenParallel:cancel
 do -- TweenParallel:cancel
   local actor = { x = 0, alpha = 1 }
   local par = lurek.tween.parallel()
@@ -375,9 +302,7 @@ do -- TweenParallel:cancel
   par:cancel()
 end
 
---@api-stub: LTweenParallel:isActive
--- Returns true if the parallel is running and not yet complete.
--- Check before chaining a follow-up so two groups do not race each other on shared fields.
+--@api-stub: TweenParallel:isActive
 do -- TweenParallel:isActive
   local actor = { x = 0, alpha = 1 }
   local par = lurek.tween.parallel()
@@ -392,18 +317,14 @@ end
 
 -- â”€â”€ Spring methods â”€â”€
 
---@api-stub: LSpring:update
--- Advances the spring by `dt` seconds and writes positions to the target table.
--- Tick manually only when you skipped lurek.tween.update; otherwise let the engine drive it.
+--@api-stub: Spring:update
 do -- Spring:update
   local cam = { x = 0 }
   local sp = lurek.tween.spring(cam, { x = 320 })
   function lurek.process(dt) sp:update(dt) end
 end
 
---@api-stub: LSpring:isSettled
--- Returns `true` when all spring axes have converged within `precision`.
--- Detect convergence by precision rather than by waiting on a fixed duration as with tweens.
+--@api-stub: Spring:isSettled
 do -- Spring:isSettled
   local cam = { x = 0 }
   local sp = lurek.tween.spring(cam, { x = 320 })
@@ -412,9 +333,7 @@ do -- Spring:isSettled
   end
 end
 
---@api-stub: LSpring:isActive
--- Returns `true` if the spring has not been cancelled or settled.
--- isActive flips false after the spring settles or is cancelled; safer than checking isSettled.
+--@api-stub: Spring:isActive
 do -- Spring:isActive
   local cam = { x = 0 }
   local sp = lurek.tween.spring(cam, { x = 320 })
@@ -423,45 +342,35 @@ do -- Spring:isActive
   end
 end
 
---@api-stub: LSpring:setTarget
--- Updates target values for all fields present in `fields_table`.
--- Update mid-flight to chase a moving point; the spring keeps its current velocity for smoothness.
+--@api-stub: Spring:setTarget
 do -- Spring:setTarget
   local cam = { x = 0, y = 0 }
   local sp = lurek.tween.spring(cam, { x = 320, y = 180 })
   sp:setTarget({ x = 480, y = 240 })
 end
 
---@api-stub: LSpring:setStiffness
--- Updates the stiffness constant on all axes.
--- Higher stiffness reaches the target faster but overshoots more unless damping rises with it.
+--@api-stub: Spring:setStiffness
 do -- Spring:setStiffness
   local cam = { x = 0 }
   local sp = lurek.tween.spring(cam, { x = 320 })
   sp:setStiffness(240)
 end
 
---@api-stub: LSpring:setDamping
--- Updates the damping coefficient on all axes.
--- Raise damping alongside stiffness to keep the spring near-critical; under-damped springs ring.
+--@api-stub: Spring:setDamping
 do -- Spring:setDamping
   local cam = { x = 0 }
   local sp = lurek.tween.spring(cam, { x = 320 })
   sp:setDamping(24)
 end
 
---@api-stub: LSpring:cancel
--- Stops the spring.
--- Cancel does not snap the field to the target; clamp the value yourself if you need it landed.
+--@api-stub: Spring:cancel
 do -- Spring:cancel
   local cam = { x = 0 }
   local sp = lurek.tween.spring(cam, { x = 320 })
   sp:cancel()
 end
 
---@api-stub: LSpring:getPosition
--- Returns the current interpolated position for the named field, or `nil`.
--- Returns nil for unknown field names; useful for debug overlays without writing to the table.
+--@api-stub: Spring:getPosition
 do -- Spring:getPosition
   local cam = { x = 0 }
   local sp = lurek.tween.spring(cam, { x = 320 })
@@ -471,16 +380,14 @@ do -- Spring:getPosition
   end
 end
 
--- ---- Example: Spring:type ---------------------------------------------------
---@api-stub: LSpring:type
+--@api-stub: Spring:type
 do -- Spring:type
   local cam = { x = 0 }
   local sp = lurek.tween.spring(cam, { x = 320 })
   lurek.log.debug("spring type: " .. sp:type(), "tween")
 end
 
--- ---- Example: Spring:typeOf -------------------------------------------------
---@api-stub: LSpring:typeOf
+--@api-stub: Spring:typeOf
 do -- Spring:typeOf
   local cam = { x = 0 }
   local sp = lurek.tween.spring(cam, { x = 320 })
@@ -491,8 +398,7 @@ end
 -- Tween methods
 -- -----------------------------------------------------------------------------
 
--- ---- Example: Tween:onComplete ----------------------------------------------
---@api-stub: LTween:onComplete
+--@api-stub: Tween:onComplete
 do -- Tween:onComplete
   local box = { x = 0 }
   -- onComplete registers a callback; tween auto-starts via lurek.tween.tween.
@@ -501,8 +407,7 @@ do -- Tween:onComplete
   end)
 end
 
--- ---- Example: Tween:onUpdate ------------------------------------------------
---@api-stub: LTween:onUpdate
+--@api-stub: Tween:onUpdate
 do -- Tween:onUpdate
   local box = { x = 0 }
   lurek.tween.tween(0.5, box, { x = 100 }):onUpdate(function(t)
@@ -510,8 +415,7 @@ do -- Tween:onUpdate
   end)
 end
 
--- ---- Example: Tween:onCancel ------------------------------------------------
---@api-stub: LTween:onCancel
+--@api-stub: Tween:onCancel
 do -- Tween:onCancel
   local box = { x = 0 }
   local tw = lurek.tween.tween(0.5, box, { x = 100 })
@@ -519,16 +423,14 @@ do -- Tween:onCancel
   tw:cancel()
 end
 
--- ---- Example: Tween:type ----------------------------------------------------
---@api-stub: LTween:type
+--@api-stub: Tween:type
 do -- Tween:type
   local box = { x = 0 }
   local tw = lurek.tween.tween(0.5, box, { x = 100 })
   lurek.log.info("Tween:type = " .. tostring(tw and tw:type() or "nil"), "tween")
 end
 
--- ---- Example: Tween:typeOf --------------------------------------------------
---@api-stub: LTween:typeOf
+--@api-stub: Tween:typeOf
 do -- Tween:typeOf
   local box = { x = 0 }
   local tw = lurek.tween.tween(0.5, box, { x = 100 })
@@ -539,8 +441,7 @@ end
 -- TweenParallel methods
 -- -----------------------------------------------------------------------------
 
--- ---- Example: TweenParallel:add ---------------------------------------------
---@api-stub: LTweenParallel:add
+--@api-stub: TweenParallel:add
 do -- TweenParallel:add
   local a = { x = 0 }
   local b = { y = 0 }
@@ -551,8 +452,7 @@ do -- TweenParallel:add
   par:start()
 end
 
--- ---- Example: TweenParallel:onComplete --------------------------------------
---@api-stub: LTweenParallel:onComplete
+--@api-stub: TweenParallel:onComplete
 do -- TweenParallel:onComplete
   local actor = { x = 0, alpha = 1 }
   lurek.tween.parallel()
@@ -562,15 +462,13 @@ do -- TweenParallel:onComplete
     :start()
 end
 
--- ---- Example: TweenParallel:type --------------------------------------------
---@api-stub: LTweenParallel:type
+--@api-stub: TweenParallel:type
 do -- TweenParallel:type
   local par = lurek.tween.parallel()
   lurek.log.info("TweenParallel:type = " .. tostring(par:type()), "tween")
 end
 
--- ---- Example: TweenParallel:typeOf ------------------------------------------
---@api-stub: LTweenParallel:typeOf
+--@api-stub: TweenParallel:typeOf
 do -- TweenParallel:typeOf
   local par = lurek.tween.parallel()
   lurek.log.info("TweenParallel:typeOf = " .. tostring(par:typeOf("TweenParallel")), "tween")
@@ -580,8 +478,7 @@ end
 -- TweenSequence methods
 -- -----------------------------------------------------------------------------
 
--- ---- Example: TweenSequence:callback ----------------------------------------
---@api-stub: LTweenSequence:callback
+--@api-stub: TweenSequence:callback
 do -- TweenSequence:callback
   local door = { y = 0 }
   lurek.tween.sequence()
@@ -591,8 +488,7 @@ do -- TweenSequence:callback
     :start()
 end
 
--- ---- Example: TweenSequence:onComplete --------------------------------------
---@api-stub: LTweenSequence:onComplete
+--@api-stub: TweenSequence:onComplete
 do -- TweenSequence:onComplete
   local door = { y = 0 }
   lurek.tween.sequence()
@@ -601,15 +497,13 @@ do -- TweenSequence:onComplete
     :start()
 end
 
--- ---- Example: TweenSequence:type --------------------------------------------
---@api-stub: LTweenSequence:type
+--@api-stub: TweenSequence:type
 do -- TweenSequence:type
   local seq = lurek.tween.sequence()
   lurek.log.info("TweenSequence:type = " .. tostring(seq:type()), "tween")
 end
 
--- ---- Example: TweenSequence:typeOf ------------------------------------------
---@api-stub: LTweenSequence:typeOf
+--@api-stub: TweenSequence:typeOf
 do -- TweenSequence:typeOf
   local seq = lurek.tween.sequence()
   lurek.log.info("TweenSequence:typeOf = " .. tostring(seq:typeOf("TweenSequence")), "tween")
@@ -628,10 +522,7 @@ end
 -- LTween methods
 -- -----------------------------------------------------------------------------
 
--- ---- Example: LTween:cancel -------------------------------------------------
---@api-stub: LTween:cancel
--- Cancels this tween immediately; fires the onCancel callback if set.
--- Use to interrupt tweens on scene exit or player death.
+--@api-stub: LTween:cancel -- Cancels this tween immediately, fires the onCancel callback if set, and resumes any coroutines waiting on it
 do -- LTween:cancel
   local target = { x = 0 }
   local tw = lurek.tween.tween(1.0, target, { x = 100 })
@@ -639,8 +530,6 @@ do -- LTween:cancel
   lurek.log.info("tween cancelled, target.x=" .. tostring(target.x), "tween")
 end
 --@api-stub: LTweenParallel:tween
--- Creates and adds an inline tween entry to the parallel group. Returns self.
--- Lets you chain multiple property animations that run simultaneously.
 do -- LTweenParallel:tween
   local obj = { x = 0, alpha = 1.0 }
   lurek.tween.parallel()
@@ -649,9 +538,7 @@ do -- LTweenParallel:tween
     :start()
   lurek.log.info("parallel group with two tweens started", "tween")
 end
---@api-stub: LTweenParallel:start
--- Marks the parallel as active. Returns self.
--- Call once all child tweens have been added; lurek.tween.update(dt) then ticks it.
+--@api-stub: LTweenParallel:start -- Starts all tweens in this parallel group simultaneously
 do -- LTweenParallel:start
   local pos = { x = 0 }
   local col = { a = 1.0 }
@@ -662,8 +549,6 @@ do -- LTweenParallel:start
   lurek.log.info("parallel group started", "tween")
 end
 --@api-stub: LTweenSequence:tween
--- Appends a tween step: animates fields on target over duration. Returns self.
--- Chain multiple calls to build a step-by-step animation sequence.
 do -- LTweenSequence:tween
   local pos = { x = 0, y = 0 }
   lurek.tween.sequence()
@@ -673,8 +558,6 @@ do -- LTweenSequence:tween
   lurek.log.info("sequence with two tween steps queued", "tween")
 end
 --@api-stub: LTweenSequence:delay
--- Appends a delay step that waits seconds before proceeding. Returns self.
--- Insert pauses between animation steps for dramatic timing.
 do -- LTweenSequence:delay
   local obj = { x = 0 }
   lurek.tween.sequence()
@@ -684,9 +567,7 @@ do -- LTweenSequence:delay
     :start()
   lurek.log.info("sequence with delay inserted", "tween")
 end
---@api-stub: LTweenSequence:start
--- Marks the sequence as active so lurek.tween.update(dt) begins ticking it.
--- Without start() the sequence is dormant even after all steps are appended.
+--@api-stub: LTweenSequence:start -- Starts playback of this sequence from the first step
 do -- LTweenSequence:start
   local door = { y = 0 }
   local seq = lurek.tween.sequence()
@@ -696,17 +577,13 @@ do -- LTweenSequence:start
   seq:start()   -- begin the sequence
   lurek.log.info("door open/wait/close sequence started", "tween")
 end
---@api-stub: LTweenState:type
--- Returns the type name of this object.
--- Useful for runtime type inspection.
+--@api-stub: LTweenState:type -- Returns the type name of this object
 do -- LTweenState:type
   local tween_state_obj = lurek.tween.newState(0.5)
   local t = tween_state_obj:type()
   lurek.log.info("LTweenState:type = " .. t, "tween")
 end
---@api-stub: LTweenState:typeOf
--- Returns true if this object is of the given type.
--- Use for runtime type checks.
+--@api-stub: LTweenState:typeOf -- Checks whether this object matches the given type name
 do -- LTweenState:typeOf
   local tween_state_obj = lurek.tween.newState(0.5)
   lurek.log.info("is LTweenState: " .. tostring(tween_state_obj:typeOf("LTweenState")), "tween")

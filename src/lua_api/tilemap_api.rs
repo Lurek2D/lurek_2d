@@ -994,7 +994,7 @@ impl LuaUserData for LuaAutoTileSheet {
         });
         // -- getTileForBitmask --
         /// Looks up which tile corresponds to a given bitmask value.
-        /// @param | bitmask | number | Bitmask to resolve.
+        /// @param | bitmask | integer | Bitmask to resolve.
         /// @return | number | Tile ID (1-based), or nil if no tile matches.
         methods.add_method("getTileForBitmask", |_, this, bitmask: u16| {
             Ok(this

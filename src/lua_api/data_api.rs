@@ -115,7 +115,7 @@ impl LuaUserData for LuaRingBuffer {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
         // -- push --
         /// Pushes a value into the ring buffer and evicts the oldest value when full.
-        /// @param | value | LuaValue | Lua value to store in the buffer.
+        /// @param | value | any | Lua value to store in the buffer.
         /// @return | boolean | True when the push evicted an older value.
         methods.add_method_mut("push", |lua, this, value: LuaValue| {
             let key = lua.create_registry_value(value)?;
@@ -432,7 +432,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     )?;
     // -- newByteData --
     /// Creates ByteData from a size or string.
-    /// @param | value | LuaValue | Integer size for zeroed bytes, or string used as initial bytes.
+    /// @param | value | any | Integer size for zeroed bytes, or string used as initial bytes.
     /// @return | ByteData | New ByteData userdata.
     tbl.set(
         "newByteData",
@@ -554,7 +554,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     )?;
     // -- toMsgPack --
     /// Encodes a Lua value into the current structured binary interchange payload.
-    /// @param | value | LuaValue | Lua value to encode through the serial table converter.
+    /// @param | value | any | Lua value to encode through the serial table converter.
     /// @return | string | Encoded binary payload.
     tbl.set(
         "toMsgPack",

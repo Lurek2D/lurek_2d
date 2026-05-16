@@ -1,21 +1,8 @@
 -- content/examples/effect.lua
--- Hand-written coverage of the lurek.effect API (142 items).
---
--- The effect namespace owns post-processing (built-in and custom shader
--- passes), per-image effect chains, full-screen overlays for weather, flash,
--- shake and fade, and screen transitions. Most snippets below build a fresh
--- handle inside the `do ... end` block so every example is self-contained.
---
+-- lurek.effect API examples.
 -- Run: cargo run -- content/examples/effect.lua
 
--- Capture lurek.render draw API BEFORE any `function lurek.draw()` definition
--- overwrites the lurek.render slot with the callback function.
-
--- â”€â”€ lurek.effect.* functions â”€â”€
-
---@api-stub: lurek.effect.newEffect
--- Creates a new built-in post-processing effect by type name.
--- Pick a built-in type listed by getEffectTypes(); add the result to a stack with stack:add(eff).
+--@api-stub: lurek.effect.newEffect -- Creates a built-in post-processing effect by type name
 do -- lurek.effect.newEffect
   local bloom = lurek.effect.newEffect("bloom")
   bloom:setThreshold(0.6)
@@ -23,9 +10,7 @@ do -- lurek.effect.newEffect
   lurek.log.info("bloom built-in=" .. tostring(bloom:isBuiltIn()), "fx")
 end
 
---@api-stub: lurek.effect.newCustomEffect
--- Creates a custom shader post-processing effect.
--- Use after lurek.render.newShader(...) returns a shader id; the effect runs that shader as a post-pass.
+--@api-stub: lurek.effect.newCustomEffect -- Creates a custom post-processing effect that references an existing shader id
 do -- lurek.effect.newCustomEffect
   local shader_id = 7  -- shader handle created during setup
   local glitch = lurek.effect.newCustomEffect(shader_id)
@@ -33,9 +18,7 @@ do -- lurek.effect.newCustomEffect
   lurek.log.info("custom fx built-in=" .. tostring(glitch:isBuiltIn()), "fx")
 end
 
---@api-stub: lurek.effect.newStack
--- Creates a new post-processing pipeline stack.
--- Omit the size to pick up the current window dimensions; call resize() later when the window changes.
+--@api-stub: lurek.effect.newStack -- Creates a post-processing stack using optional dimensions or the current window size
 do -- lurek.effect.newStack
   local stack = lurek.effect.newStack()
   stack:add(lurek.effect.newEffect("bloom"))
@@ -43,9 +26,7 @@ do -- lurek.effect.newStack
   lurek.log.info("stack ready w=" .. stack:getWidth() .. " h=" .. stack:getHeight(), "fx")
 end
 
---@api-stub: lurek.effect.newPresetStack
--- Creates a pre-configured effect stack from a named preset.
--- Presets are 'retro_tv', 'horror', 'dream', 'neon', 'sepia_age' â€” saves wiring up effects by hand.
+--@api-stub: lurek.effect.newPresetStack -- Creates a named preset post-processing stack with optional dimensions
 do -- lurek.effect.newPresetStack
   local crt = lurek.effect.newPresetStack("retro_tv", 1280, 720)
   function lurek.draw()
@@ -53,9 +34,7 @@ do -- lurek.effect.newPresetStack
   end
 end
 
---@api-stub: lurek.effect.newPass
--- Creates a custom-shader post-processing effect (alias for newCustomEffect).
--- Alias for newCustomEffect kept for parity with engines that call shader passes 'passes'.
+--@api-stub: lurek.effect.newPass -- Creates a custom post-processing pass from an existing shader id
 do -- lurek.effect.newPass
   local shader_id = 3  -- shader handle created during setup
   local edge_pass = lurek.effect.newPass(shader_id)
@@ -63,9 +42,7 @@ do -- lurek.effect.newPass
   lurek.log.debug("pass enabled=" .. tostring(edge_pass:isEnabled()), "fx")
 end
 
---@api-stub: lurek.effect.getEffectTypes
--- Returns the list of all built-in effect type names.
--- Use to populate a debug dropdown of post-fx the player can toggle, or to validate a config string at startup.
+--@api-stub: lurek.effect.getEffectTypes -- Returns all built-in post-processing effect type names
 do -- lurek.effect.getEffectTypes
   local types = lurek.effect.getEffectTypes()
   for i, name in ipairs(types) do
@@ -73,9 +50,7 @@ do -- lurek.effect.getEffectTypes
   end
 end
 
---@api-stub: lurek.effect.newImageEffect
--- Creates a new per-image effect chain.
--- Build a per-image effect chain by passing a list of {type=..., params}; useful for offscreen image processing.
+--@api-stub: lurek.effect.newImageEffect -- Creates an image effect chain from no arguments, a type name and optional parameters, or a chain table
 do -- lurek.effect.newImageEffect
   local chain = lurek.effect.newImageEffect({
     { type = "blur", radius = 3.0 },
@@ -84,9 +59,7 @@ do -- lurek.effect.newImageEffect
   lurek.log.info("image chain count=" .. chain:effectCount(), "fx")
 end
 
---@api-stub: lurek.effect.newOverlay
--- Creates a new screen overlay controller for weather, flash, shake, and fade effects.
--- Pass the current window size; create one Overlay per scene and route weather/flash/shake through it.
+--@api-stub: lurek.effect.newOverlay -- Creates an overlay controller for screen effects using optional dimensions
 do -- lurek.effect.newOverlay
   local overlay = lurek.effect.newOverlay(1280, 720)
   overlay:setWeather("rain")
@@ -94,9 +67,7 @@ do -- lurek.effect.newOverlay
   function lurek.process(dt) overlay:update(dt) end
 end
 
---@api-stub: lurek.effect.newTransition
--- Creates a new screen-transition controller.
--- Drive scene-change transitions; combine with overlay:render() to draw the fade rect in render_ui.
+--@api-stub: lurek.effect.newTransition -- Creates a timed screen transition with optional kind, duration, and color
 do -- lurek.effect.newTransition
   local trans = lurek.effect.newTransition("wipe", 0.75, {0, 0, 0, 1})
   trans:play()
@@ -105,18 +76,14 @@ do -- lurek.effect.newTransition
   end
 end
 
---@api-stub: lurek.effect.setShaderErrorDisplay
--- Enables or disables the effect that renders shader compile errors as red text.
--- Enable in dev builds so shader compile errors appear as red text in the top-left instead of a silent black screen.
+--@api-stub: lurek.effect.setShaderErrorDisplay -- Enables or disables renderer shader error display overlays
 do -- lurek.effect.setShaderErrorDisplay
   local in_dev = true
   lurek.effect.setShaderErrorDisplay(in_dev)
   lurek.log.info("shader err display=" .. tostring(in_dev), "fx-dev")
 end
 
---@api-stub: lurek.effect.getShaderErrorDisplay
--- Returns whether shader error display is currently enabled.
--- Branch on the result to draw an extra in-game banner that warns the player a shader failed.
+--@api-stub: lurek.effect.getShaderErrorDisplay -- Returns whether renderer shader error display overlays are enabled
 do -- lurek.effect.getShaderErrorDisplay
   if lurek.effect.getShaderErrorDisplay() then
     lurek.log.warn("dev shader error overlay is ON â€” disable for shipping", "fx-dev")
@@ -125,18 +92,14 @@ end
 
 -- â”€â”€ PostFxEffect methods â”€â”€
 
---@api-stub: LPostFxEffect:getTypeName
--- Returns the display name of this effect type.
--- Use to label effects in a debug overlay or to write the active pipeline to a save file.
+--@api-stub: PostFxEffect:getTypeName
 do -- PostFxEffect:getTypeName
   local eff = lurek.effect.newEffect("crt")
   local name = eff:getTypeName()
   lurek.log.info("active fx: " .. name, "fx")
 end
 
---@api-stub: LPostFxEffect:isBuiltIn
--- Returns true if this is a built-in effect, false if custom.
--- Branch on the result before serialising â€” custom shader effects can't be persisted by name alone.
+--@api-stub: PostFxEffect:isBuiltIn
 do -- PostFxEffect:isBuiltIn
   local eff = lurek.effect.newEffect("vignette")
   if eff:isBuiltIn() then
@@ -144,9 +107,7 @@ do -- PostFxEffect:isBuiltIn
   end
 end
 
---@api-stub: LPostFxEffect:isEnabled
--- Returns whether this effect is currently active.
--- Read it before reapplying parameters so you don't waste GPU work on a disabled pass.
+--@api-stub: PostFxEffect:isEnabled
 do -- PostFxEffect:isEnabled
   local bloom = lurek.effect.newEffect("bloom")
   bloom:setEnabled(false)
@@ -155,18 +116,14 @@ do -- PostFxEffect:isEnabled
   end
 end
 
---@api-stub: LPostFxEffect:setEnabled
--- Enables or disables this effect.
--- Toggle from a settings menu; cheaper than removing the effect from the stack since the GPU pass is just skipped.
+--@api-stub: PostFxEffect:setEnabled
 do -- PostFxEffect:setEnabled
   local crt = lurek.effect.newEffect("crt")
   local low_quality = true
   crt:setEnabled(not low_quality)
 end
 
---@api-stub: LPostFxEffect:setParameter
--- Sets a named float parameter on this effect.
--- Parameter names are documented per effect (e.g. bloom: 'threshold', 'intensity'); call once at startup or animate per frame.
+--@api-stub: PostFxEffect:setParameter
 do -- PostFxEffect:setParameter
   local bloom = lurek.effect.newEffect("bloom")
   bloom:setParameter("threshold", 0.5)
@@ -174,9 +131,7 @@ do -- PostFxEffect:setParameter
   lurek.log.debug("bloom configured", "fx")
 end
 
---@api-stub: LPostFxEffect:hasParameter
--- Returns true if the named parameter exists on this effect.
--- Probe before calling setParameter when the effect type is loaded from config and the param set isn't known statically.
+--@api-stub: PostFxEffect:hasParameter
 do -- PostFxEffect:hasParameter
   local eff = lurek.effect.newEffect("crt")
   if eff:hasParameter("scanline_strength") then
@@ -184,9 +139,7 @@ do -- PostFxEffect:hasParameter
   end
 end
 
---@api-stub: LPostFxEffect:getParameterNames
--- Returns a list of all parameter names on this effect.
--- Use to build a generic 'tweak this effect' editor panel without hard-coding param names per type.
+--@api-stub: PostFxEffect:getParameterNames
 do -- PostFxEffect:getParameterNames
   local eff = lurek.effect.newEffect("colourgrade")
   for _, name in ipairs(eff:getParameterNames()) do
@@ -194,18 +147,14 @@ do -- PostFxEffect:getParameterNames
   end
 end
 
---@api-stub: LPostFxEffect:getEffectType
--- Returns the type name of this effect (alias for getTypeName).
--- Alias of getTypeName; use whichever reads better in your call site.
+--@api-stub: PostFxEffect:getEffectType
 do -- PostFxEffect:getEffectType
   local eff = lurek.effect.newEffect("sepia")
   local kind = eff:getEffectType()
   lurek.log.info("kind=" .. kind, "fx")
 end
 
---@api-stub: LPostFxEffect:getType
--- Returns the type name of this effect (alias for getTypeName).
--- Another alias of getTypeName retained for compatibility with code generated against the older API.
+--@api-stub: PostFxEffect:getType
 do -- PostFxEffect:getType
   local eff = lurek.effect.newEffect("invert")
   if eff:getType() == "invert" then
@@ -213,17 +162,13 @@ do -- PostFxEffect:getType
   end
 end
 
---@api-stub: LPostFxEffect:type
--- Returns the type name "PostFxEffect".
--- Use the Lurek2D type/typeOf protocol to assert the userdata kind before passing it across module boundaries.
+--@api-stub: PostFxEffect:type
 do -- PostFxEffect:type
   local eff = lurek.effect.newEffect("bloom")
   lurek.log.debug("effect type: " .. eff:type(), "fx")
 end
 
---@api-stub: LPostFxEffect:typeOf
--- Returns true when the given name matches "PostFxEffect" or a parent type.
--- Returns true for the type name itself or 'Object'; useful in generic dispatch tables keyed on type.
+--@api-stub: PostFxEffect:typeOf
 do -- PostFxEffect:typeOf
   local eff = lurek.effect.newEffect("blur")
   if eff:typeOf("Object") then
@@ -231,76 +176,58 @@ do -- PostFxEffect:typeOf
   end
 end
 
---@api-stub: LPostFxEffect:setThreshold
--- Sets the threshold parameter of this effect.
--- Convenience for setParameter('threshold', v); for bloom this is the brightness cutoff that begins to glow.
+--@api-stub: PostFxEffect:setThreshold
 do -- PostFxEffect:setThreshold
   local bloom = lurek.effect.newEffect("bloom")
   bloom:setThreshold(0.75)
   lurek.log.debug("bloom threshold set", "fx")
 end
 
---@api-stub: LPostFxEffect:setIntensity
--- Sets the intensity parameter of this effect.
--- Common knob shared by bloom, godrays, film grain, etc.; safe range is roughly 0.0 to 2.0.
+--@api-stub: PostFxEffect:setIntensity
 do -- PostFxEffect:setIntensity
   local godrays = lurek.effect.newEffect("godrays")
   godrays:setIntensity(1.4)
 end
 
---@api-stub: LPostFxEffect:setRadius
--- Sets the radius parameter of this effect.
--- For blur/bloom this controls the kernel size in pixels; larger values cost more GPU time.
+--@api-stub: PostFxEffect:setRadius
 do -- PostFxEffect:setRadius
   local blur = lurek.effect.newEffect("blur")
   blur:setRadius(4.0)
 end
 
---@api-stub: LPostFxEffect:setStrength
--- Sets the strength parameter of this effect.
--- Generic intensity-like knob used by vignette, sharpen, dither; clamp from a settings slider before passing in.
+--@api-stub: PostFxEffect:setStrength
 do -- PostFxEffect:setStrength
   local vig = lurek.effect.newEffect("vignette")
   local from_slider = 0.6
   vig:setStrength(math.max(0.0, math.min(1.0, from_slider)))
 end
 
---@api-stub: LPostFxEffect:setScanlineStrength
--- Sets the scanline strength parameter of this effect.
--- CRT-specific darkening of horizontal scanlines; pair with setIntensity to dial in the retro look.
+--@api-stub: PostFxEffect:setScanlineStrength
 do -- PostFxEffect:setScanlineStrength
   local crt = lurek.effect.newEffect("crt")
   crt:setScanlineStrength(0.35)
   crt:setIntensity(1.0)
 end
 
---@api-stub: LPostFxEffect:setOffset
--- Sets the offset parameter of this effect.
--- For chromatic aberration this shifts R/B channels in pixels; small values (1â€“4) are most pleasing.
+--@api-stub: PostFxEffect:setOffset
 do -- PostFxEffect:setOffset
   local chroma = lurek.effect.newEffect("chromatic")
   chroma:setOffset(2.0)
 end
 
---@api-stub: LPostFxEffect:setBrightness
--- Sets the brightness parameter of this effect.
--- Used by colourgrade; 0.0 is no change, positive brightens, negative darkens.
+--@api-stub: PostFxEffect:setBrightness
 do -- PostFxEffect:setBrightness
   local grade = lurek.effect.newEffect("colourgrade")
   grade:setBrightness(0.05)
 end
 
---@api-stub: LPostFxEffect:setContrast
--- Sets the contrast parameter of this effect.
--- Pairs with setBrightness/setSaturation; multiplicative around 0.5 grey, 1.0 = unchanged.
+--@api-stub: PostFxEffect:setContrast
 do -- PostFxEffect:setContrast
   local grade = lurek.effect.newEffect("colourgrade")
   grade:setContrast(1.15)
 end
 
---@api-stub: LPostFxEffect:setSaturation
--- Sets the saturation parameter of this effect.
--- Drop to 0.0 for full grayscale via colourgrade instead of swapping in the dedicated grayscale effect.
+--@api-stub: PostFxEffect:setSaturation
 do -- PostFxEffect:setSaturation
   local grade = lurek.effect.newEffect("colourgrade")
   grade:setSaturation(0.7)  -- desaturated mood
@@ -308,9 +235,7 @@ end
 
 -- â”€â”€ PostFxStack methods â”€â”€
 
---@api-stub: LPostFxStack:add
--- Appends a PostFxEffect to the end of the pipeline.
--- Order matters: blur before bloom is different from bloom before blur; build the chain bottom-up.
+--@api-stub: PostFxStack:add
 do -- PostFxStack:add
   local stack = lurek.effect.newStack()
   stack:add(lurek.effect.newEffect("bloom"))
@@ -318,9 +243,7 @@ do -- PostFxStack:add
   lurek.log.info("stack size=" .. stack:getEffectCount(), "fx")
 end
 
---@api-stub: LPostFxStack:remove
--- Removes the given PostFxEffect from the pipeline.
--- Pass the original effect handle returned by newEffect; returns true when an effect was actually removed.
+--@api-stub: PostFxStack:remove
 do -- PostFxStack:remove
   local stack = lurek.effect.newStack()
   local crt = lurek.effect.newEffect("crt")
@@ -329,9 +252,7 @@ do -- PostFxStack:remove
   lurek.log.debug("crt removed=" .. tostring(removed), "fx")
 end
 
---@api-stub: LPostFxStack:isEnabled
--- Returns whether the effect at the given 1-based position is enabled.
--- Index is 1-based like Lua tables; check before triggering an expensive parameter retune.
+--@api-stub: PostFxStack:isEnabled
 do -- PostFxStack:isEnabled
   local stack = lurek.effect.newStack()
   stack:add(lurek.effect.newEffect("bloom"))
@@ -340,9 +261,7 @@ do -- PostFxStack:isEnabled
   end
 end
 
---@api-stub: LPostFxStack:getEffectCount
--- Returns the number of effects in the pipeline.
--- Iterate from 1..count to walk the pipeline, or compare against an expected size in tests.
+--@api-stub: PostFxStack:getEffectCount
 do -- PostFxStack:getEffectCount
   local stack = lurek.effect.newStack()
   stack:add(lurek.effect.newEffect("bloom"))
@@ -353,9 +272,7 @@ do -- PostFxStack:getEffectCount
   end
 end
 
---@api-stub: LPostFxStack:getEffect
--- Returns the effect at the given 1-based position, or nil.
--- Returns nil when the index is out of range; pair with getEffectCount when iterating.
+--@api-stub: PostFxStack:getEffect
 do -- PostFxStack:getEffect
   local stack = lurek.effect.newStack()
   stack:add(lurek.effect.newEffect("vignette"))
@@ -363,9 +280,7 @@ do -- PostFxStack:getEffect
   if first then first:setStrength(0.8) end
 end
 
---@api-stub: LPostFxStack:getEnabledEffects
--- Returns a list of currently enabled effect objects.
--- Skips disabled slots so you don't have to filter manually; useful when serialising the active pipeline.
+--@api-stub: PostFxStack:getEnabledEffects
 do -- PostFxStack:getEnabledEffects
   local stack = lurek.effect.newStack()
   stack:add(lurek.effect.newEffect("bloom"))
@@ -374,9 +289,7 @@ do -- PostFxStack:getEnabledEffects
   end
 end
 
---@api-stub: LPostFxStack:getWidth
--- Returns the width of the render target.
--- Read after a window resize to confirm the stack picked up the new dimensions.
+--@api-stub: PostFxStack:getWidth
 do -- PostFxStack:getWidth
   local stack = lurek.effect.newStack(1920, 1080)
   if stack:getWidth() ~= 1920 then
@@ -384,9 +297,7 @@ do -- PostFxStack:getWidth
   end
 end
 
---@api-stub: LPostFxStack:getHeight
--- Returns the height of the render target.
--- Pair with getWidth or use getDimensions to fetch both at once.
+--@api-stub: PostFxStack:getHeight
 do -- PostFxStack:getHeight
   local stack = lurek.effect.newStack(1280, 720)
   if stack:getHeight() < 480 then
@@ -394,18 +305,14 @@ do -- PostFxStack:getHeight
   end
 end
 
---@api-stub: LPostFxStack:getDimensions
--- Returns width and height of the render target.
--- Multi-return convenience for resizing dependent render targets in lock-step with the stack.
+--@api-stub: PostFxStack:getDimensions
 do -- PostFxStack:getDimensions
   local stack = lurek.effect.newStack()
   local w, h = stack:getDimensions()
   lurek.log.info("stack target = " .. w .. "x" .. h, "fx")
 end
 
---@api-stub: LPostFxStack:resize
--- Resizes the render target to the given dimensions.
--- Call from your window-resize handler so the post-fx capture texture matches the new framebuffer size.
+--@api-stub: PostFxStack:resize
 do -- PostFxStack:resize
   local stack = lurek.effect.newStack(800, 600)
   local new_w, new_h = 1600, 900
@@ -413,18 +320,14 @@ do -- PostFxStack:resize
   lurek.log.info("stack resized to " .. new_w .. "x" .. new_h, "fx")
 end
 
---@api-stub: LPostFxStack:len
--- Returns the total number of effect slots in the pipeline.
--- Same value as getEffectCount, kept so Lua code can use #-style intent for stacks.
+--@api-stub: PostFxStack:len
 do -- PostFxStack:len
   local stack = lurek.effect.newStack()
   stack:add(lurek.effect.newEffect("bloom"))
   lurek.log.debug("stack len=" .. stack:len(), "fx")
 end
 
---@api-stub: LPostFxStack:isEmpty
--- Returns true if the pipeline has no effect slots.
--- Skip the begin/end/apply triplet entirely when the pipeline has no effects to spare a wasted GPU render pass.
+--@api-stub: PostFxStack:isEmpty
 do -- PostFxStack:isEmpty
   local stack = lurek.effect.newStack()
   if stack:isEmpty() then
@@ -432,9 +335,7 @@ do -- PostFxStack:isEmpty
   end
 end
 
---@api-stub: LPostFxStack:clear
--- Removes all effects from the pipeline.
--- Use at scene boundaries to drop the previous level's pipeline before adding the new one.
+--@api-stub: PostFxStack:clear
 do -- PostFxStack:clear
   local stack = lurek.effect.newStack()
   stack:add(lurek.effect.newEffect("crt"))
@@ -442,9 +343,7 @@ do -- PostFxStack:clear
   lurek.log.info("pipeline cleared, count=" .. stack:getEffectCount(), "fx")
 end
 
---@api-stub: LPostFxStack:dedup
--- Removes duplicate effects from the pipeline, keeping the first occurrence.
--- Returns the number of slots removed; safe to call after dynamic composition that might add the same effect twice.
+--@api-stub: PostFxStack:dedup
 do -- PostFxStack:dedup
   local stack = lurek.effect.newStack()
   local bloom = lurek.effect.newEffect("bloom")
@@ -453,9 +352,7 @@ do -- PostFxStack:dedup
   lurek.log.info("dedup removed " .. tostring(removed) .. " duplicate slot(s)", "fx")
 end
 
---@api-stub: LPostFxStack:isCapturing
--- Returns whether the stack is currently capturing the scene.
--- Use as an assertion inside your render code to make sure beginCapture/endCapture are correctly paired.
+--@api-stub: PostFxStack:isCapturing
 do -- PostFxStack:isCapturing
   local stack = lurek.effect.newStack()
   function lurek.draw()
@@ -465,9 +362,7 @@ do -- PostFxStack:isCapturing
   end
 end
 
---@api-stub: LPostFxStack:beginCapture
--- Begins capturing the scene for post-processing.
--- Call FIRST in lurek.render to redirect all subsequent draws into the capture texture.
+--@api-stub: PostFxStack:beginCapture
 do -- PostFxStack:beginCapture
   local stack = lurek.effect.newStack()
   stack:add(lurek.effect.newEffect("bloom"))
@@ -478,9 +373,7 @@ do -- PostFxStack:beginCapture
   end
 end
 
---@api-stub: LPostFxStack:endCapture
--- Ends scene capture for post-processing.
--- Closes the capture started by beginCapture; must come BEFORE apply() so the GPU knows the source is finalised.
+--@api-stub: PostFxStack:endCapture
 do -- PostFxStack:endCapture
   local stack = lurek.effect.newStack()
   function lurek.draw()
@@ -490,9 +383,7 @@ do -- PostFxStack:endCapture
   end
 end
 
---@api-stub: LPostFxStack:apply
--- Applies all enabled effects in the stack and composites the result to screen.
--- Composites the processed result back to screen; this is where the GPU actually runs the shaders.
+--@api-stub: PostFxStack:apply
 do -- PostFxStack:apply
   local stack = lurek.effect.newStack()
   stack:add(lurek.effect.newEffect("bloom"))
@@ -502,9 +393,7 @@ do -- PostFxStack:apply
   end
 end
 
---@api-stub: LPostFxStack:type
--- Returns the type name "PostFxStack".
--- Type-check before passing a stack into a generic render helper that also accepts ImageEffect.
+--@api-stub: PostFxStack:type
 do -- PostFxStack:type
   local stack = lurek.effect.newStack()
   if stack:type() == "PostFxStack" then
@@ -512,35 +401,27 @@ do -- PostFxStack:type
   end
 end
 
---@api-stub: LPostFxStack:typeOf
--- Returns true when the given name matches "PostFxStack" or a parent type.
--- Returns true for 'PostFxStack' or 'Object'; use in dispatch tables that key on parent class.
+--@api-stub: PostFxStack:typeOf
 do -- PostFxStack:typeOf
   local stack = lurek.effect.newStack()
   assert(stack:typeOf("Object"), "PostFxStack should inherit Object")
 end
 
---@api-stub: LPostFxStack:setFeedback
--- Sets the feedback loop intensity.
--- Values near 1.0 produce phosphor / motion-trail looks; clamp from a 0..1 settings slider.
+--@api-stub: PostFxStack:setFeedback
 do -- PostFxStack:setFeedback
   local stack = lurek.effect.newStack()
   stack:setFeedback(0.85)  -- strong trail for a dream sequence
   lurek.log.info("feedback=" .. stack:getFeedback(), "fx")
 end
 
---@api-stub: LPostFxStack:getFeedback
--- Returns the current feedback loop intensity `[0.0, 1.0]`.
--- Read once after configuration to confirm the slider value clamped into the [0,1] range.
+--@api-stub: PostFxStack:getFeedback
 do -- PostFxStack:getFeedback
   local stack = lurek.effect.newStack()
   stack:setFeedback(2.0)  -- will be clamped
   lurek.log.info("clamped feedback=" .. stack:getFeedback(), "fx")
 end
 
---@api-stub: LPostFxStack:clearFeedback
--- Resets the feedback intensity to `0.0` (disables feedback).
--- Equivalent to setFeedback(0); use when leaving the dream scene back to normal play.
+--@api-stub: PostFxStack:clearFeedback
 do -- PostFxStack:clearFeedback
   local stack = lurek.effect.newStack()
   stack:setFeedback(0.6)
@@ -550,9 +431,7 @@ end
 
 -- â”€â”€ ImageEffect methods â”€â”€
 
---@api-stub: LImageEffect:addEffect
--- Creates a new effect by type name, appends it, and returns the shared PostFxEffect.
--- Returns the shared PostFxEffect handle so you can tweak parameters in the same expression chain.
+--@api-stub: ImageEffect:addEffect
 do -- ImageEffect:addEffect
   local chain = lurek.effect.newImageEffect()
   local blur = chain:addEffect("blur")
@@ -560,45 +439,35 @@ do -- ImageEffect:addEffect
   lurek.log.info("chain size=" .. chain:effectCount(), "fx")
 end
 
---@api-stub: LImageEffect:getEffect
--- Returns the effect at the given 1-based index or with the given type name.
--- Look up by 1-based index OR by effect type name; returns nil when not present.
+--@api-stub: ImageEffect:getEffect
 do -- ImageEffect:getEffect
   local chain = lurek.effect.newImageEffect({{ type = "vignette" }})
   local vig = chain:getEffect("vignette")
   if vig then vig:setStrength(0.5) end
 end
 
---@api-stub: LImageEffect:removeEffect
--- Removes the effect at the given 1-based index or with the given type name.
--- Accepts an integer index or a type-name string; returns true on success.
+--@api-stub: ImageEffect:removeEffect
 do -- ImageEffect:removeEffect
   local chain = lurek.effect.newImageEffect({{ type = "blur" }, { type = "vignette" }})
   local removed = chain:removeEffect("blur")
   lurek.log.debug("blur removed=" .. tostring(removed) .. " count=" .. chain:effectCount(), "fx")
 end
 
---@api-stub: LImageEffect:clearEffects
--- Removes all effects from the chain.
--- Wipe the chain before re-populating with a different preset set.
+--@api-stub: ImageEffect:clearEffects
 do -- ImageEffect:clearEffects
   local chain = lurek.effect.newImageEffect({{ type = "bloom" }})
   chain:clearEffects()
   assert(chain:effectCount() == 0, "chain should be empty")
 end
 
---@api-stub: LImageEffect:clear
--- Removes all effects from the chain (alias for clearEffects).
--- Alias for clearEffects; use whichever reads better in your call site.
+--@api-stub: ImageEffect:clear
 do -- ImageEffect:clear
   local chain = lurek.effect.newImageEffect({{ type = "crt" }})
   chain:clear()
   lurek.log.debug("chain cleared", "fx")
 end
 
---@api-stub: LImageEffect:effectCount
--- Returns the number of effects in the chain.
--- Use to walk the chain or to early-exit when there is nothing to apply.
+--@api-stub: ImageEffect:effectCount
 do -- ImageEffect:effectCount
   local chain = lurek.effect.newImageEffect({{ type = "blur" }, { type = "vignette" }})
   if chain:effectCount() > 0 then
@@ -606,26 +475,20 @@ do -- ImageEffect:effectCount
   end
 end
 
---@api-stub: LImageEffect:getEffectCount
--- Returns the number of effects in the chain (alias for effectCount).
--- Alias for effectCount; both names are kept so older example code keeps working.
+--@api-stub: ImageEffect:getEffectCount
 do -- ImageEffect:getEffectCount
   local chain = lurek.effect.newImageEffect({{ type = "sepia" }})
   lurek.log.debug("count=" .. chain:getEffectCount(), "fx")
 end
 
---@api-stub: LImageEffect:clone
--- Returns a deep copy of this ImageEffect chain.
--- Useful when one chain serves as a template â€” clone, then tweak the copy without affecting the original.
+--@api-stub: ImageEffect:clone
 do -- ImageEffect:clone
   local base = lurek.effect.newImageEffect({{ type = "vignette", strength = 0.4 }})
   local night = base:clone()
   night:addEffect("colourgrade"):setBrightness(-0.1)
 end
 
---@api-stub: LImageEffect:save
--- Example: no-op serialisation placeholder.
--- Currently a no-op placeholder that always returns true; reserved for future on-disk serialisation.
+--@api-stub: ImageEffect:save
 do -- ImageEffect:save
   local chain = lurek.effect.newImageEffect({{ type = "bloom" }})
   if chain:save() then
@@ -633,9 +496,7 @@ do -- ImageEffect:save
   end
 end
 
---@api-stub: LImageEffect:type
--- Returns the type name "ImageEffect".
--- Use when a function accepts both ImageEffect and PostFxStack and must dispatch on the userdata kind.
+--@api-stub: ImageEffect:type
 do -- ImageEffect:type
   local chain = lurek.effect.newImageEffect()
   if chain:type() == "ImageEffect" then
@@ -643,26 +504,20 @@ do -- ImageEffect:type
   end
 end
 
---@api-stub: LImageEffect:typeOf
--- Returns true when the given name matches "ImageEffect" or a parent type.
--- Returns true for 'ImageEffect' or 'Object'; check the parent name in generic frameworks.
+--@api-stub: ImageEffect:typeOf
 do -- ImageEffect:typeOf
   local chain = lurek.effect.newImageEffect()
   assert(chain:typeOf("Object"), "ImageEffect should be an Object")
 end
 
---@api-stub: LImageEffect:removeByIndex
--- Removes the effect at the given 0-based index from the chain.
--- Legacy 0-based variant of removeEffect; prefer removeEffect for new code.
+--@api-stub: ImageEffect:removeByIndex
 do -- ImageEffect:removeByIndex
   local chain = lurek.effect.newImageEffect({{ type = "blur" }, { type = "crt" }})
   local removed = chain:removeByIndex(0)  -- removes the blur
   lurek.log.debug("by-index removed=" .. tostring(removed), "fx")
 end
 
---@api-stub: LImageEffect:removeByName
--- Removes the first effect matching the given type name.
--- Legacy variant of removeEffect that only takes a type name.
+--@api-stub: ImageEffect:removeByName
 do -- ImageEffect:removeByName
   local chain = lurek.effect.newImageEffect({{ type = "vignette" }, { type = "sepia" }})
   chain:removeByName("vignette")
@@ -671,9 +526,7 @@ end
 
 -- â”€â”€ Overlay methods â”€â”€
 
---@api-stub: LOverlay:update
--- Advances all effect subsystems by the given delta time.
--- Call once per simulation step from lurek.process; advances flash/fade/shake/weather animations.
+--@api-stub: Overlay:update
 do -- Overlay:update
   local overlay = lurek.effect.newOverlay()
   function lurek.process(dt)
@@ -681,18 +534,14 @@ do -- Overlay:update
   end
 end
 
---@api-stub: LOverlay:triggerLightning
--- Triggers a lightning flash effect.
--- Fires a one-shot bright flash; pair with audio:play('sfx/thunder.ogg') for the full effect.
+--@api-stub: Overlay:triggerLightning
 do -- Overlay:triggerLightning
   local overlay = lurek.effect.newOverlay()
   overlay:triggerLightning()
   lurek.log.info("lightning fired alpha=" .. overlay:getLightningAlpha(), "weather")
 end
 
---@api-stub: LOverlay:getShakeOffset
--- Returns the current shake displacement as x, y.
--- Returned x,y are pixel offsets to apply to the camera or the world transform during render.
+--@api-stub: Overlay:getShakeOffset
 do -- Overlay:getShakeOffset
   local overlay = lurek.effect.newOverlay()
   overlay:shake(8.0, 0.4)
@@ -702,9 +551,7 @@ do -- Overlay:getShakeOffset
   end
 end
 
---@api-stub: LOverlay:isActive
--- Returns true if any effect subsystem is currently active.
--- Use as an early-exit so you skip the overlay:render() call when nothing is going on.
+--@api-stub: Overlay:isActive
 do -- Overlay:isActive
   local overlay = lurek.effect.newOverlay()
   if overlay:isActive() then
@@ -712,9 +559,7 @@ do -- Overlay:isActive
   end
 end
 
---@api-stub: LOverlay:clear
--- Resets all effect subsystems to their default inactive state.
--- Resets shake/flash/fade/lightning to inactive â€” use when teleporting the player to a calm scene.
+--@api-stub: Overlay:clear
 do -- Overlay:clear
   local overlay = lurek.effect.newOverlay()
   overlay:flash(1, 1, 1, 1, 0.5)
@@ -722,43 +567,33 @@ do -- Overlay:clear
   assert(not overlay:isFlashing(), "flash should be cancelled")
 end
 
---@api-stub: LOverlay:resize
--- Resizes the effect to match new window dimensions.
--- Call from your window-resize handler so weather particles cover the new viewport.
+--@api-stub: Overlay:resize
 do -- Overlay:resize
   local overlay = lurek.effect.newOverlay(800, 600)
   overlay:resize(1920, 1080)
   lurek.log.info("overlay resized to " .. overlay:getWidth() .. "x" .. overlay:getHeight(), "fx")
 end
 
---@api-stub: LOverlay:getWidth
--- Returns the effect width.
--- Read after resize() to confirm the overlay matches the active framebuffer width.
+--@api-stub: Overlay:getWidth
 do -- Overlay:getWidth
   local overlay = lurek.effect.newOverlay(1024, 768)
   lurek.log.debug("overlay w=" .. overlay:getWidth(), "fx")
 end
 
---@api-stub: LOverlay:getHeight
--- Returns the effect height.
--- Pair with getWidth or use getDimensions for both in one call.
+--@api-stub: Overlay:getHeight
 do -- Overlay:getHeight
   local overlay = lurek.effect.newOverlay(1024, 768)
   lurek.log.debug("overlay h=" .. overlay:getHeight(), "fx")
 end
 
---@api-stub: LOverlay:getDimensions
--- Returns the effect width and height.
--- Multi-return convenience to keep dependent render targets aligned with the overlay size.
+--@api-stub: Overlay:getDimensions
 do -- Overlay:getDimensions
   local overlay = lurek.effect.newOverlay()
   local w, h = overlay:getDimensions()
   lurek.log.info("overlay = " .. w .. "x" .. h, "fx")
 end
 
---@api-stub: LOverlay:getFlashAlpha
--- Returns the current flash overlay alpha value.
--- Use to drive secondary effects like camera bloom that should peak in sync with the flash.
+--@api-stub: Overlay:getFlashAlpha
 do -- Overlay:getFlashAlpha
   local overlay = lurek.effect.newOverlay()
   overlay:flash(1, 1, 1, 1, 0.3)
@@ -768,9 +603,7 @@ do -- Overlay:getFlashAlpha
   end
 end
 
---@api-stub: LOverlay:getLightningAlpha
--- Returns the current lightning overlay alpha value.
--- Read each frame to brighten the level's ambient light in time with the lightning bolt.
+--@api-stub: Overlay:getLightningAlpha
 do -- Overlay:getLightningAlpha
   local overlay = lurek.effect.newOverlay()
   overlay:triggerLightning()
@@ -781,18 +614,14 @@ do -- Overlay:getLightningAlpha
   end
 end
 
---@api-stub: LOverlay:setAmbientEnabled
--- Enables or disables the ambient light layer.
--- Disable in the title menu where time-of-day tinting would distort the logo colours.
+--@api-stub: Overlay:setAmbientEnabled
 do -- Overlay:setAmbientEnabled
   local overlay = lurek.effect.newOverlay()
   overlay:setAmbientEnabled(true)
   overlay:setTimeOfDay(20.0)  -- evening
 end
 
---@api-stub: LOverlay:isAmbientEnabled
--- Returns whether the ambient light layer is active.
--- Branch on it before reading getAmbientColor â€” the value is meaningless when ambient is off.
+--@api-stub: Overlay:isAmbientEnabled
 do -- Overlay:isAmbientEnabled
   local overlay = lurek.effect.newOverlay()
   if overlay:isAmbientEnabled() then
@@ -800,9 +629,7 @@ do -- Overlay:isAmbientEnabled
   end
 end
 
---@api-stub: LOverlay:getAmbientColor
--- Returns the current ambient tint as r, g, b, a components.
--- Returns r,g,b,a as four numbers in 0..1; combine with light tints for a colour-graded look.
+--@api-stub: Overlay:getAmbientColor
 do -- Overlay:getAmbientColor
   local overlay = lurek.effect.newOverlay()
   overlay:setAmbientEnabled(true)
@@ -810,18 +637,14 @@ do -- Overlay:getAmbientColor
   lurek.log.info(string.format("ambient %.2f %.2f %.2f a=%.2f", r, g, b, a), "fx")
 end
 
---@api-stub: LOverlay:setTimeOfDay
--- Sets the simulated time-of-day (0Ă˘â‚¬â€ś24) which drives ambient colour.
--- Pass an hour 0..24 â€” 0 and 24 are midnight, 12 is noon; the overlay drives ambient colour from this.
+--@api-stub: Overlay:setTimeOfDay
 do -- Overlay:setTimeOfDay
   local overlay = lurek.effect.newOverlay()
   overlay:setAmbientEnabled(true)
   overlay:setTimeOfDay(7.5)  -- early morning
 end
 
---@api-stub: LOverlay:getTimeOfDay
--- Returns the current simulated time-of-day (0Ă˘â‚¬â€ś24).
--- Read to drive game logic that depends on the in-world clock, e.g. NPC schedules.
+--@api-stub: Overlay:getTimeOfDay
 do -- Overlay:getTimeOfDay
   local overlay = lurek.effect.newOverlay()
   overlay:setTimeOfDay(18.0)
@@ -830,18 +653,14 @@ do -- Overlay:getTimeOfDay
   end
 end
 
---@api-stub: LOverlay:setFogEnabled
--- Enables or disables the fog layer.
--- Toggle for cinematic moments or to indicate weather change; combine with setFogDensity for ramping in.
+--@api-stub: Overlay:setFogEnabled
 do -- Overlay:setFogEnabled
   local overlay = lurek.effect.newOverlay()
   overlay:setFogEnabled(true)
   overlay:setFogDensity(0.4)
 end
 
---@api-stub: LOverlay:isFogEnabled
--- Returns whether the fog layer is active.
--- Use as a guard before tuning fog density so you don't enable it accidentally.
+--@api-stub: Overlay:isFogEnabled
 do -- Overlay:isFogEnabled
   local overlay = lurek.effect.newOverlay()
   if not overlay:isFogEnabled() then
@@ -849,9 +668,7 @@ do -- Overlay:isFogEnabled
   end
 end
 
---@api-stub: LOverlay:setFogDensity
--- Sets the fog density (0.0 = clear, 1.0 = fully opaque).
--- 0.0 is clear, 1.0 is fully opaque; ramp gradually to avoid a jarring transition.
+--@api-stub: Overlay:setFogDensity
 do -- Overlay:setFogDensity
   local overlay = lurek.effect.newOverlay()
   overlay:setFogEnabled(true)
@@ -859,18 +676,14 @@ do -- Overlay:setFogDensity
   overlay:setFogDensity(target)
 end
 
---@api-stub: LOverlay:getFogDensity
--- Returns the current fog density.
--- Read each frame when ramping fog from the current density toward a target.
+--@api-stub: Overlay:getFogDensity
 do -- Overlay:getFogDensity
   local overlay = lurek.effect.newOverlay()
   overlay:setFogDensity(0.3)
   lurek.log.debug("fog density=" .. overlay:getFogDensity(), "fx")
 end
 
---@api-stub: LOverlay:getFogColor
--- Returns the current fog tint as r, g, b, a components.
--- Returns r,g,b,a in 0..1; tint pixel-perfect to your level's palette to avoid a 'green soup' look.
+--@api-stub: Overlay:getFogColor
 do -- Overlay:getFogColor
   local overlay = lurek.effect.newOverlay()
   overlay:setFogEnabled(true)
@@ -878,18 +691,14 @@ do -- Overlay:getFogColor
   lurek.log.info(string.format("fog rgb %.2f %.2f %.2f", r, g, b), "fx")
 end
 
---@api-stub: LOverlay:setHeatHazeEnabled
--- Enables or disables the heat-haze distortion layer.
--- Switch on inside desert / volcano biomes; pair with rising heat haze intensity for a layering effect.
+--@api-stub: Overlay:setHeatHazeEnabled
 do -- Overlay:setHeatHazeEnabled
   local overlay = lurek.effect.newOverlay()
   overlay:setHeatHazeEnabled(true)
   overlay:setHeatHazeIntensity(0.5)
 end
 
---@api-stub: LOverlay:isHeatHazeEnabled
--- Returns whether the heat-haze layer is active.
--- Branch on it before changing intensity to avoid waking up a dormant subsystem unintentionally.
+--@api-stub: Overlay:isHeatHazeEnabled
 do -- Overlay:isHeatHazeEnabled
   local overlay = lurek.effect.newOverlay()
   if overlay:isHeatHazeEnabled() then
@@ -897,9 +706,7 @@ do -- Overlay:isHeatHazeEnabled
   end
 end
 
---@api-stub: LOverlay:setHeatHazeIntensity
--- Sets the heat-haze distortion intensity (0.0Ă˘â‚¬â€ś1.0).
--- Range is 0.0..1.0; tie to ambient temperature so the visual matches the simulation.
+--@api-stub: Overlay:setHeatHazeIntensity
 do -- Overlay:setHeatHazeIntensity
   local overlay = lurek.effect.newOverlay()
   overlay:setHeatHazeEnabled(true)
@@ -907,27 +714,21 @@ do -- Overlay:setHeatHazeIntensity
   overlay:setHeatHazeIntensity(math.min(1.0, math.max(0.0, (temp_c - 30) / 20)))
 end
 
---@api-stub: LOverlay:getHeatHazeIntensity
--- Returns the current heat-haze distortion intensity.
--- Read to drive secondary effects like increased visual blur on top of the haze.
+--@api-stub: Overlay:getHeatHazeIntensity
 do -- Overlay:getHeatHazeIntensity
   local overlay = lurek.effect.newOverlay()
   overlay:setHeatHazeIntensity(0.6)
   lurek.log.debug("heat haze i=" .. overlay:getHeatHazeIntensity(), "fx")
 end
 
---@api-stub: LOverlay:setVignetteEnabled
--- Enables or disables the screen-edge vignette layer.
--- Most cinematic shots want this on; performance cost is negligible.
+--@api-stub: Overlay:setVignetteEnabled
 do -- Overlay:setVignetteEnabled
   local overlay = lurek.effect.newOverlay()
   overlay:setVignetteEnabled(true)
   overlay:setVignetteStrength(0.55)
 end
 
---@api-stub: LOverlay:isVignetteEnabled
--- Returns whether the vignette layer is active.
--- Use to skip vignette tuning code when the player has disabled it from the settings menu.
+--@api-stub: Overlay:isVignetteEnabled
 do -- Overlay:isVignetteEnabled
   local overlay = lurek.effect.newOverlay()
   if overlay:isVignetteEnabled() then
@@ -935,36 +736,28 @@ do -- Overlay:isVignetteEnabled
   end
 end
 
---@api-stub: LOverlay:setVignetteStrength
--- Sets the vignette darkening strength (0.0Ă˘â‚¬â€ś1.0).
--- 0.0 is no darkening, 1.0 fully blacks out the corners; 0.3..0.6 reads as 'cinematic'.
+--@api-stub: Overlay:setVignetteStrength
 do -- Overlay:setVignetteStrength
   local overlay = lurek.effect.newOverlay()
   overlay:setVignetteEnabled(true)
   overlay:setVignetteStrength(0.45)
 end
 
---@api-stub: LOverlay:getVignetteStrength
--- Returns the current vignette strength.
--- Read to confirm what the player picked in their settings menu.
+--@api-stub: Overlay:getVignetteStrength
 do -- Overlay:getVignetteStrength
   local overlay = lurek.effect.newOverlay()
   overlay:setVignetteStrength(0.5)
   lurek.log.debug("vignette s=" .. overlay:getVignetteStrength(), "fx")
 end
 
---@api-stub: LOverlay:setFilmGrainEnabled
--- Enables or disables the film-grain noise layer.
--- Adds a subtle noise overlay; useful for horror or 'old film' aesthetics.
+--@api-stub: Overlay:setFilmGrainEnabled
 do -- Overlay:setFilmGrainEnabled
   local overlay = lurek.effect.newOverlay()
   overlay:setFilmGrainEnabled(true)
   overlay:setFilmGrainIntensity(0.25)
 end
 
---@api-stub: LOverlay:isFilmGrainEnabled
--- Returns whether the film-grain layer is active.
--- Branch on it to expose a 'grain on/off' toggle in the player's accessibility menu.
+--@api-stub: Overlay:isFilmGrainEnabled
 do -- Overlay:isFilmGrainEnabled
   local overlay = lurek.effect.newOverlay()
   if overlay:isFilmGrainEnabled() then
@@ -972,36 +765,28 @@ do -- Overlay:isFilmGrainEnabled
   end
 end
 
---@api-stub: LOverlay:setFilmGrainIntensity
--- Sets the film-grain noise intensity (0.0Ă˘â‚¬â€ś1.0).
--- Keep below 0.4 to avoid making text hard to read.
+--@api-stub: Overlay:setFilmGrainIntensity
 do -- Overlay:setFilmGrainIntensity
   local overlay = lurek.effect.newOverlay()
   overlay:setFilmGrainEnabled(true)
   overlay:setFilmGrainIntensity(0.18)
 end
 
---@api-stub: LOverlay:getFilmGrainIntensity
--- Returns the current film-grain intensity.
--- Read after applying a player setting to confirm the value was accepted.
+--@api-stub: Overlay:getFilmGrainIntensity
 do -- Overlay:getFilmGrainIntensity
   local overlay = lurek.effect.newOverlay()
   overlay:setFilmGrainIntensity(0.3)
   lurek.log.debug("grain i=" .. overlay:getFilmGrainIntensity(), "fx")
 end
 
---@api-stub: LOverlay:setCloudShadows
--- Enables or disables scrolling cloud-shadow projection.
--- Drifting cloud shadows hide tile seams in outdoor scenes; pair with setCloudCount and setCloudSpeed.
+--@api-stub: Overlay:setCloudShadows
 do -- Overlay:setCloudShadows
   local overlay = lurek.effect.newOverlay()
   overlay:setCloudShadows(true)
   overlay:setCloudCount(8)
 end
 
---@api-stub: LOverlay:isCloudShadowsEnabled
--- Returns whether cloud shadows are active.
--- Use to gate the rest of the cloud setup so disabled clouds don't waste config calls.
+--@api-stub: Overlay:isCloudShadowsEnabled
 do -- Overlay:isCloudShadowsEnabled
   local overlay = lurek.effect.newOverlay()
   if overlay:isCloudShadowsEnabled() then
@@ -1009,72 +794,56 @@ do -- Overlay:isCloudShadowsEnabled
   end
 end
 
---@api-stub: LOverlay:setCloudCount
--- Sets the number of cloud shadow instances to render.
--- Higher counts cost more GPU; 4..16 is a sweet spot for a busy sky.
+--@api-stub: Overlay:setCloudCount
 do -- Overlay:setCloudCount
   local overlay = lurek.effect.newOverlay()
   overlay:setCloudShadows(true)
   overlay:setCloudCount(12)
 end
 
---@api-stub: LOverlay:getCloudCount
--- Returns the current cloud shadow instance count.
--- Read once to confirm config; the value is the number of shadow instances actually being drawn.
+--@api-stub: Overlay:getCloudCount
 do -- Overlay:getCloudCount
   local overlay = lurek.effect.newOverlay()
   overlay:setCloudCount(6)
   lurek.log.debug("clouds=" .. overlay:getCloudCount(), "fx")
 end
 
---@api-stub: LOverlay:setCloudSpeed
--- Sets the horizontal scroll speed of cloud shadows in pixels per second.
--- Pixels per second; tie to wind speed for a coherent weather look.
+--@api-stub: Overlay:setCloudSpeed
 do -- Overlay:setCloudSpeed
   local overlay = lurek.effect.newOverlay()
   overlay:setCloudShadows(true)
   overlay:setCloudSpeed(40.0)
 end
 
---@api-stub: LOverlay:getCloudSpeed
--- Returns the current cloud shadow scroll speed.
--- Read for a debug overlay or to ramp speed during weather changes.
+--@api-stub: Overlay:getCloudSpeed
 do -- Overlay:getCloudSpeed
   local overlay = lurek.effect.newOverlay()
   overlay:setCloudSpeed(25.0)
   lurek.log.debug("cloud px/s=" .. overlay:getCloudSpeed(), "fx")
 end
 
---@api-stub: LOverlay:setCloudScale
--- Sets the scale multiplier applied to each cloud shadow.
--- 1.0 is the texture's native size; <1 makes them small and busy, >1 makes them broad.
+--@api-stub: Overlay:setCloudScale
 do -- Overlay:setCloudScale
   local overlay = lurek.effect.newOverlay()
   overlay:setCloudShadows(true)
   overlay:setCloudScale(1.5)
 end
 
---@api-stub: LOverlay:getCloudScale
--- Returns the current cloud shadow scale.
--- Read after a config-load to confirm the saved scale was applied.
+--@api-stub: Overlay:getCloudScale
 do -- Overlay:getCloudScale
   local overlay = lurek.effect.newOverlay()
   overlay:setCloudScale(0.8)
   lurek.log.debug("cloud scale=" .. overlay:getCloudScale(), "fx")
 end
 
---@api-stub: LOverlay:setCloudOpacity
--- Sets the opacity of cloud shadows (0.0 = invisible, 1.0 = fully dark).
--- 0.0 invisible, 1.0 fully dark; 0.2..0.5 is most natural.
+--@api-stub: Overlay:setCloudOpacity
 do -- Overlay:setCloudOpacity
   local overlay = lurek.effect.newOverlay()
   overlay:setCloudShadows(true)
   overlay:setCloudOpacity(0.35)
 end
 
---@api-stub: LOverlay:getCloudOpacity
--- Returns the current cloud shadow opacity.
--- Read to drive a 'sunny vs overcast' state machine.
+--@api-stub: Overlay:getCloudOpacity
 do -- Overlay:getCloudOpacity
   local overlay = lurek.effect.newOverlay()
   overlay:setCloudOpacity(0.4)
@@ -1083,18 +852,14 @@ do -- Overlay:getCloudOpacity
   end
 end
 
---@api-stub: LOverlay:setWeatherEnabled
--- Enables or disables the weather particle system.
--- Master toggle; setWeather chooses the type and setWeatherIntensity dials it in.
+--@api-stub: Overlay:setWeatherEnabled
 do -- Overlay:setWeatherEnabled
   local overlay = lurek.effect.newOverlay()
   overlay:setWeather("rain")
   overlay:setWeatherEnabled(true)
 end
 
---@api-stub: LOverlay:isWeatherEnabled
--- Returns whether the weather particle system is active.
--- Use to gate the weather-driven gameplay logic (e.g. slippery floors when raining).
+--@api-stub: Overlay:isWeatherEnabled
 do -- Overlay:isWeatherEnabled
   local overlay = lurek.effect.newOverlay()
   if overlay:isWeatherEnabled() then
@@ -1102,9 +867,7 @@ do -- Overlay:isWeatherEnabled
   end
 end
 
---@api-stub: LOverlay:setWeather
--- Sets the active weather type by name ("none", "rain", "snow", "hail", "dust", "leaves", "ash", "pollen").
--- Names: 'none', 'rain', 'snow', 'hail', 'dust', 'leaves', 'ash', 'pollen'; raises an error on an unknown name.
+--@api-stub: Overlay:setWeather
 do -- Overlay:setWeather
   local overlay = lurek.effect.newOverlay()
   overlay:setWeather("snow")
@@ -1112,81 +875,63 @@ do -- Overlay:setWeather
   overlay:setWeatherIntensity(0.7)
 end
 
---@api-stub: LOverlay:getWeather
--- Returns the name of the current weather type.
--- Returns the active weather name; useful for HUD widgets or for save-game serialisation.
+--@api-stub: Overlay:getWeather
 do -- Overlay:getWeather
   local overlay = lurek.effect.newOverlay()
   overlay:setWeather("rain")
   lurek.log.info("current weather: " .. overlay:getWeather(), "weather")
 end
 
---@api-stub: LOverlay:setWeatherIntensity
--- Sets the particle spawn rate multiplier (0.0Ă˘â‚¬â€ś1.0).
--- Spawn-rate multiplier 0..1; 0 stops new particles, 1 is a downpour.
+--@api-stub: Overlay:setWeatherIntensity
 do -- Overlay:setWeatherIntensity
   local overlay = lurek.effect.newOverlay()
   overlay:setWeather("rain")
   overlay:setWeatherIntensity(0.85)
 end
 
---@api-stub: LOverlay:getWeatherIntensity
--- Returns the current weather intensity.
--- Read to ramp intensity smoothly toward a target instead of snapping.
+--@api-stub: Overlay:getWeatherIntensity
 do -- Overlay:getWeatherIntensity
   local overlay = lurek.effect.newOverlay()
   overlay:setWeatherIntensity(0.5)
   lurek.log.debug("weather i=" .. overlay:getWeatherIntensity(), "weather")
 end
 
---@api-stub: LOverlay:setWindDirection
--- Sets the wind direction in radians (0 = right, ÄŽâ‚¬/2 = down).
--- Radians: 0 right, Ď€/2 down, Ď€ left, 3Ď€/2 up; affects how weather particles travel.
+--@api-stub: Overlay:setWindDirection
 do -- Overlay:setWindDirection
   local overlay = lurek.effect.newOverlay()
   overlay:setWindDirection(math.pi / 4)  -- down-right
   overlay:setWindSpeed(60.0)
 end
 
---@api-stub: LOverlay:getWindDirection
--- Returns the current wind direction in radians.
--- Read to point a HUD wind-vane indicator or to compute affected gameplay angles.
+--@api-stub: Overlay:getWindDirection
 do -- Overlay:getWindDirection
   local overlay = lurek.effect.newOverlay()
   overlay:setWindDirection(math.pi)
   lurek.log.debug("wind dir rad=" .. overlay:getWindDirection(), "weather")
 end
 
---@api-stub: LOverlay:setWindSpeed
--- Sets the wind speed applied to weather particles in units per second.
--- Units per second applied to weather particles; pair with setCloudSpeed to keep visuals coherent.
+--@api-stub: Overlay:setWindSpeed
 do -- Overlay:setWindSpeed
   local overlay = lurek.effect.newOverlay()
   overlay:setWindSpeed(120.0)
   overlay:setCloudSpeed(60.0)
 end
 
---@api-stub: LOverlay:getWindSpeed
--- Returns the current wind speed.
--- Read for HUD wind speed display or to drive screen-shake intensity in storms.
+--@api-stub: Overlay:getWindSpeed
 do -- Overlay:getWindSpeed
   local overlay = lurek.effect.newOverlay()
   overlay:setWindSpeed(80.0)
   lurek.log.debug("wind=" .. overlay:getWindSpeed(), "weather")
 end
 
---@api-stub: LOverlay:getLightningColor
--- Returns the lightning flash tint as r, g, b, a components.
--- Returns r,g,b,a; usually keep near white for natural lightning, shift toward purple for sci-fi storms.
+--@api-stub: Overlay:getLightningColor
 do -- Overlay:getLightningColor
   local overlay = lurek.effect.newOverlay()
   local r, g, b, a = overlay:getLightningColor()
   lurek.log.info(string.format("lightning rgba %.2f %.2f %.2f %.2f", r, g, b, a), "fx")
 end
 
---@api-stub: LOverlay:isFlashing
--- Returns true while a flash effect is in progress.
--- Use to suppress player input during a hit-stun flash.
+--@api-stub: Overlay:isFlashing
 do -- Overlay:isFlashing
   local overlay = lurek.effect.newOverlay()
   overlay:flash(1, 0, 0, 1, 0.2)
@@ -1195,18 +940,14 @@ do -- Overlay:isFlashing
   end
 end
 
---@api-stub: LOverlay:shake
--- Triggers a camera shake; duration defaults to 0.5 s.
--- Convenience wrapper; default duration is 0.5 s. Pair with audio to sell impacts.
+--@api-stub: Overlay:shake
 do -- Overlay:shake
   local overlay = lurek.effect.newOverlay()
   overlay:shake(12.0, 0.35)  -- explosion impact
   function lurek.process(dt) overlay:update(dt) end
 end
 
---@api-stub: LOverlay:isShaking
--- Returns true while a shake effect is in progress.
--- Read to drive secondary effects like camera blur during the shake interval.
+--@api-stub: Overlay:isShaking
 do -- Overlay:isShaking
   local overlay = lurek.effect.newOverlay()
   overlay:shake(6.0, 0.25)
@@ -1215,9 +956,7 @@ do -- Overlay:isShaking
   end
 end
 
---@api-stub: LOverlay:isFading
--- Returns true while a fade effect is in progress.
--- Branch on it to chain into a scene change once the fade completes.
+--@api-stub: Overlay:isFading
 do -- Overlay:isFading
   local overlay = lurek.effect.newOverlay()
   overlay:fade(0, 0, 0, 1, 0.6)
@@ -1227,9 +966,7 @@ do -- Overlay:isFading
   end
 end
 
---@api-stub: LOverlay:render
--- Emits GPU render commands for all active overlay effects (flash, fade, lightning, vignette).
--- Call inside lurek.render_ui after world geometry; emits the overlay's screen-space passes.
+--@api-stub: Overlay:render
 do -- Overlay:render
   local overlay = lurek.effect.newOverlay()
   function lurek.draw_ui()
@@ -1237,9 +974,7 @@ do -- Overlay:render
   end
 end
 
---@api-stub: LOverlay:drawToImage
--- Renders the effect state (flash, fade, effects) to a CPU ImageData.
--- Returns a CPU ImageData of the overlay state; useful for screenshots or for offscreen compositing.
+--@api-stub: Overlay:drawToImage
 do -- Overlay:drawToImage
   local overlay = lurek.effect.newOverlay()
   overlay:flash(1, 1, 1, 1, 1.0)
@@ -1247,35 +982,27 @@ do -- Overlay:drawToImage
   lurek.log.info("overlay snapshot taken", "fx")
 end
 
---@api-stub: LOverlay:setCustomShader
--- Assigns a custom shader name to the effect, or clears it when `nil` is passed.
--- Pass a shader name registered via lurek.render, or nil to clear the override.
+--@api-stub: Overlay:setCustomShader
 do -- Overlay:setCustomShader
   local overlay = lurek.effect.newOverlay()
   overlay:setCustomShader("shaders/post_grade.wgsl")
   -- overlay:setCustomShader(nil)  -- to revert later
 end
 
---@api-stub: LOverlay:getWater
--- Returns a table describing the current water overlay state.
--- Returns a table of all water-overlay fields (enabled, amplitude, frequency, speed, tint, depth, time).
+--@api-stub: Overlay:getWater
 do -- Overlay:getWater
   local overlay = lurek.effect.newOverlay()
   local w = overlay:getWater()
   lurek.log.info("water enabled=" .. tostring(w.enabled) .. " amp=" .. w.amplitude, "fx")
 end
 
---@api-stub: LOverlay:type
--- Returns the type name of this object ("Overlay").
--- Type-check before passing the overlay into a generic render helper.
+--@api-stub: Overlay:type
 do -- Overlay:type
   local overlay = lurek.effect.newOverlay()
   lurek.log.info("Overlay:type = " .. overlay:type(), "fx")
 end
 
---@api-stub: LOverlay:typeOf
--- Returns true if this object is of the given type ("Object" or "Overlay").
--- Returns true for 'Overlay' or 'Object'; useful in dispatch tables.
+--@api-stub: Overlay:typeOf
 do -- Overlay:typeOf
   local overlay = lurek.effect.newOverlay()
   if overlay:typeOf("Object") then
@@ -1286,8 +1013,6 @@ end
 -- â”€â”€ mlua methods â”€â”€
 
 --@api-stub: mlua:play
--- Starts the transition playing forward (scene fades/wipes out).
--- Starts the transition forward (scene fades/wipes out); call once when leaving the current scene.
 do -- mlua:play
   local trans = lurek.effect.newTransition("fade", 0.6, {0, 0, 0, 1})
   trans:play()
@@ -1295,8 +1020,6 @@ do -- mlua:play
 end
 
 --@api-stub: mlua:reverse
--- Starts the transition in reverse (scene fades/wipes in).
--- Plays the transition in reverse so the scene fades/wipes back IN; useful for the post-load reveal.
 do -- mlua:reverse
   local trans = lurek.effect.newTransition("iris", 0.5)
   trans:reverse()
@@ -1304,8 +1027,6 @@ do -- mlua:reverse
 end
 
 --@api-stub: mlua:update
--- Advances the transition by `dt` seconds.
--- Advances by dt seconds and returns true while still running; call once per frame in lurek.process.
 do -- mlua:update
   local trans = lurek.effect.newTransition("dissolve", 0.8)
   trans:play()
@@ -1315,8 +1036,6 @@ do -- mlua:update
 end
 
 --@api-stub: mlua:progress
--- Returns the fractional progress `[0, 1]` of the transition, taking.
--- Returns 0..1; use to lerp other animations in lockstep with the transition.
 do -- mlua:progress
   local trans = lurek.effect.newTransition("wipe", 1.0)
   trans:play()
@@ -1327,8 +1046,6 @@ do -- mlua:progress
 end
 
 --@api-stub: mlua:isActive
--- Returns `true` while the transition is running.
--- Branch on it to suppress player input or to hold the new scene's update logic until the transition finishes.
 do -- mlua:isActive
   local trans = lurek.effect.newTransition("fade", 0.5)
   trans:play()
@@ -1338,8 +1055,6 @@ do -- mlua:isActive
 end
 
 --@api-stub: mlua:isDone
--- Returns `true` after the transition has completed.
--- Use to chain into the next scene-load step once the transition finishes.
 do -- mlua:isDone
   local trans = lurek.effect.newTransition("fade", 0.4)
   trans:play()
@@ -1350,16 +1065,12 @@ do -- mlua:isDone
 end
 
 --@api-stub: mlua:kind
--- Returns the transition kind name (`"fade"`, `"wipe"`, `"iris_wipe"`,.
--- Returns one of 'fade', 'wipe', 'iris_wipe', 'dissolve'; use for serialising the transition type.
 do -- mlua:kind
   local trans = lurek.effect.newTransition("dissolve", 0.5)
   lurek.log.info("transition kind=" .. trans:kind(), "fx")
 end
 
 --@api-stub: mlua:color
--- Returns the fill color as four numbers: `r, g, b, a`.
--- Multi-return r,g,b,a; useful when you want to draw a matching tint behind UI during the transition.
 do -- mlua:color
   local trans = lurek.effect.newTransition("fade", 0.5, {0.05, 0.0, 0.1, 1.0})
   local r, g, b, a = trans:color()
@@ -1367,24 +1078,18 @@ do -- mlua:color
 end
 
 --@api-stub: mlua:setColor
--- Updates the fill color from `{r, g, b, a?}`.
--- Pass a {r,g,b,a?} table; alpha defaults to 1.0. Change colour mid-game to match the destination scene.
 do -- mlua:setColor
   local trans = lurek.effect.newTransition("fade", 0.5)
   trans:setColor({0.0, 0.0, 0.0, 1.0})  -- fade to black
 end
 
 --@api-stub: mlua:type
--- Type.
--- Type-check before passing across module boundaries; the value is 'ScreenTransition'.
 do -- mlua:type
   local trans = lurek.effect.newTransition("wipe", 0.5)
   lurek.log.info("ScreenTransition:type = " .. tostring(trans and trans:type() or "nil"), "fx")
 end
 
 --@api-stub: mlua:typeOf
--- Type of.
--- Returns true for 'ScreenTransition' or 'Object'; check the parent class in generic dispatch code.
 do -- mlua:typeOf
   local trans = lurek.effect.newTransition("fade", 0.5)
   if trans:typeOf("Object") then
@@ -1392,14 +1097,6 @@ do -- mlua:typeOf
   end
 end
 
---@api-stub: lurek.effect.newCustomEffect + enableAutoUniforms
--- Creates a custom WGSL shader effect with auto-injected time and resolution uniforms.
--- Call enableAutoUniforms() on the effect to have the engine write (time, frame, width, height)
--- into p[3] each frame. Access them in WGSL as params.p[3].x / .y / .z / .w respectively.
--- do  -- enableAutoUniforms
---   local wgsl = [[
---     @group(0) @binding(0) var t_src: texture_2d<f32>;
---     @group(0) @binding(1) var s_src: sampler;
 
 --     struct PostFxParams { p: array<vec4<f32>, 4>, }
 --     @group(0) @binding(2) var<uniform> params: PostFxParams;
@@ -1439,27 +1136,21 @@ end
 --   end
 -- end
 
---@api-stub: LPostFxEffect:enableAutoUniforms
--- Enable auto-uniform injection for this effect.
--- The engine writes (time, frame, width, height) into p[3] each frame.
+--@api-stub: PostFxEffect:enableAutoUniforms
 do -- PostFxEffect:enableAutoUniforms
   local fx = lurek.effect.newCustomEffect(0)
   fx:enableAutoUniforms()
   lurek.log.debug("enableAutoUniforms called", "fx")
 end
 
---@api-stub: LPostFxEffect:isAutoUniforms
--- Returns true if auto-uniform injection is currently enabled for this effect.
--- Check before relying on p[3] values in WGSL.
+--@api-stub: PostFxEffect:isAutoUniforms
 do -- PostFxEffect:isAutoUniforms
   local fx = lurek.effect.newCustomEffect(0)
   fx:enableAutoUniforms()
   lurek.log.debug("isAutoUniforms=" .. tostring(fx:isAutoUniforms()), "fx")
 end
 
---@api-stub: LPostFxEffect:disableAutoUniforms
--- Disable auto-uniform injection (reverts enableAutoUniforms). p[3] will not be written.
--- Call before manually supplying custom p[3] values via setParam.
+--@api-stub: PostFxEffect:disableAutoUniforms
 do -- PostFxEffect:disableAutoUniforms
   local fx = lurek.effect.newCustomEffect(0)
   fx:enableAutoUniforms()
@@ -1467,27 +1158,21 @@ do -- PostFxEffect:disableAutoUniforms
   lurek.log.debug("auto_uniforms=" .. tostring(fx:isAutoUniforms()), "fx")
 end
 
---@api-stub: LOverlay:fade
--- Starts a fade effect on the overlay (typically a screen-fade to/from black).
--- duration controls the fade time; callback fires when the fade completes.
+--@api-stub: Overlay:fade
 do -- Overlay:fade
   local overlay = lurek.effect.newOverlay(800, 600)
   overlay:fade(0, 0, 0, 1.0, 1.0)
   lurek.log.info("fade started", "effect")
 end
 
---@api-stub: LOverlay:flash
--- Triggers a quick full-screen flash at the given colour and duration.
--- Use for muzzle flash, impact hits, or screen-blind on explosion.
+--@api-stub: Overlay:flash
 do -- Overlay:flash
   local overlay = lurek.effect.newOverlay(800, 600)
   overlay:flash(0.15, 1, 1, 1, 1)
   lurek.log.info("flash triggered", "effect")
 end
 
---@api-stub: LPostFxEffect:getParameter
--- Returns the current value of a named shader parameter on the effect.
--- Use to inspect or save effect state before applying a temporary override.
+--@api-stub: PostFxEffect:getParameter
 do -- PostFxEffect:getParameter
   local stack = lurek.effect.newStack(800, 600)
   stack:add(lurek.effect.newEffect("bloom"))
@@ -1496,9 +1181,7 @@ do -- PostFxEffect:getParameter
   lurek.log.info("bloom intensity: " .. tostring(intensity), "effect")
 end
 
---@api-stub: LPostFxStack:insert
--- Inserts an effect at a specific index position in the post-fx stack.
--- Existing effects at that index and above are shifted up by one position.
+--@api-stub: PostFxStack:insert
 do -- PostFxStack:insert
   local stack = lurek.effect.newStack(800, 600)
   stack:add(lurek.effect.newEffect("crt"))
@@ -1506,9 +1189,7 @@ do -- PostFxStack:insert
   lurek.log.info("stack count: " .. stack:getEffectCount(), "effect")
 end
 
---@api-stub: LOverlay:setAmbientColor
--- Sets the ambient light colour used by the overlay's 2D lighting pass.
--- RGBA values in [0,1]; lower alpha brightens the scene through the ambient layer.
+--@api-stub: Overlay:setAmbientColor
 do -- Overlay:setAmbientColor
   local overlay = lurek.effect.newOverlay(800, 600)
   overlay:setAmbientEnabled(true)
@@ -1516,9 +1197,7 @@ do -- Overlay:setAmbientColor
   lurek.log.info("ambient colour set", "effect")
 end
 
---@api-stub: LPostFxStack:setEnabled
--- Enables or disables the entire post-fx stack without removing any effects.
--- Useful for toggling all post-processing via a graphics quality setting.
+--@api-stub: PostFxStack:setEnabled
 do -- PostFxStack:setEnabled
   local stack = lurek.effect.newStack(800, 600)
   stack:add(lurek.effect.newEffect("bloom"))
@@ -1526,9 +1205,7 @@ do -- PostFxStack:setEnabled
   lurek.log.info("stack enabled: " .. tostring(stack:isEnabled(1)), "effect")
 end
 
---@api-stub: LOverlay:setFogColor
--- Sets the RGB colour of the atmospheric fog overlay.
--- Enable fog first with setFogEnabled(true); colour affects both near and far fog.
+--@api-stub: Overlay:setFogColor
 do -- Overlay:setFogColor
   local overlay = lurek.effect.newOverlay(800, 600)
   overlay:setFogEnabled(true)
@@ -1536,27 +1213,21 @@ do -- Overlay:setFogColor
   lurek.log.info("fog colour set", "effect")
 end
 
---@api-stub: LOverlay:setLightningColor
--- Sets the colour of lightning flash bursts on the overlay.
--- White-blue (1, 0.95, 0.8) mimics natural lightning; called before triggerLightning.
+--@api-stub: Overlay:setLightningColor
 do -- Overlay:setLightningColor
   local overlay = lurek.effect.newOverlay(800, 600)
   overlay:setLightningColor(0.9, 0.95, 1.0)
   lurek.log.info("lightning colour set", "effect")
 end
 
---@api-stub: LOverlay:setWater
--- Enables and configures the water distortion shader on the overlay.
--- amplitude and frequency control the ripple waviness; speed controls animation rate.
+--@api-stub: Overlay:setWater
 do -- Overlay:setWater
   local overlay = lurek.effect.newOverlay(800, 600)
   overlay:setWater(0.02, 12.0, 1.5)
   lurek.log.info("water effect set", "effect")
 end
 
---@api-stub: LOverlay:setWaterTint
--- Sets the RGBA tint applied to the water distortion pass.
--- Use a blue-green tint to simulate being underwater.
+--@api-stub: Overlay:setWaterTint
 do -- Overlay:setWaterTint
   local overlay = lurek.effect.newOverlay(800, 600)
   overlay:setWater(0.02, 12.0, 1.5)
@@ -1564,27 +1235,21 @@ do -- Overlay:setWaterTint
   lurek.log.info("water tint set", "effect")
 end
 
---@api-stub: LOverlay:triggerFade
--- Immediately starts a screen fade-in or fade-out with given duration and colour.
--- direction: "in" fades to transparent, "out" fades to the target colour.
+--@api-stub: Overlay:triggerFade
 do -- Overlay:triggerFade
   local overlay = lurek.effect.newOverlay(800, 600)
   overlay:triggerFade(0, 0, 0, 1.0, 1.5)
   lurek.log.info("fade out triggered", "effect")
 end
 
---@api-stub: LOverlay:triggerFlash
--- Triggers a one-shot full-screen colour flash, useful for explosions or damage feedback.
--- Pass RGBA and duration in seconds; alpha starts at 1 and fades to 0.
+--@api-stub: Overlay:triggerFlash
 do -- Overlay:triggerFlash
   local overlay = lurek.effect.newOverlay(800, 600)
   overlay:triggerFlash(1.0, 0.0, 0.0, 0.8, 0.12)
   lurek.log.info("flash triggered", "effect")
 end
 
---@api-stub: LOverlay:triggerShake
--- Triggers a screen shake effect with given magnitude and duration.
--- magnitude is in world-pixels; combine with triggerFlash for big impacts.
+--@api-stub: Overlay:triggerShake
 do -- Overlay:triggerShake
   local overlay = lurek.effect.newOverlay(800, 600)
   overlay:triggerShake(8.0, 0.4)
@@ -1604,53 +1269,40 @@ end
 -- LScreenTransition methods
 -- -----------------------------------------------------------------------------
 
--- ---- Example: LScreenTransition:play ----------------------------------------
---@api-stub: LScreenTransition:play
--- Starts the transition playing forward (scene fades/wipes out).
--- Call on scene exit to animate the screen away.
+--@api-stub: LScreenTransition:play -- Starts this screen transition forward from its current state
 do -- LScreenTransition:play
   local tr = lurek.effect.newTransition("fade", 0.5, {0, 0, 0, 1})
   tr:play()
   lurek.log.info("transition playing, active=" .. tostring(tr:isActive()), "effect")
 end
---@api-stub: LScreenTransition:reverse
--- Starts the transition in reverse (scene fades/wipes in).
--- Call on scene enter to animate the new screen appearing.
+--@api-stub: LScreenTransition:reverse -- Starts this screen transition in reverse from its current state
 do -- LScreenTransition:reverse
   local tr = lurek.effect.newTransition("fade", 0.5, {0, 0, 0, 1})
   tr:reverse()
   lurek.log.info("transition reversed, active=" .. tostring(tr:isActive()), "effect")
 end
---@api-stub: LScreenTransition:update
--- Advances the transition by dt seconds. Returns true while still running.
--- Call once per frame in your scene update to animate the transition.
+--@api-stub: LScreenTransition:update -- Advances this transition timer and returns whether it remains active
 do -- LScreenTransition:update
   local tr = lurek.effect.newTransition("fade", 0.5, {0, 0, 0, 1})
   tr:play()
   local running = tr:update(0.1)
   lurek.log.info("still_active=" .. tostring(running), "effect")
 end
---@api-stub: LScreenTransition:progress
--- Returns the fractional progress [0, 1] of the transition.
--- Use to synchronise game-logic events with the mid-point of a fade.
+--@api-stub: LScreenTransition:progress -- Returns normalized transition progress
 do -- LScreenTransition:progress
   local tr = lurek.effect.newTransition("fade", 1.0, {0, 0, 0, 1})
   tr:play()
   tr:update(0.25)
   lurek.log.info("progress=" .. tr:progress(), "effect")
 end
---@api-stub: LScreenTransition:isActive
--- Returns true while the transition is running.
--- Use to gate scene changes until the fade-out completes.
+--@api-stub: LScreenTransition:isActive -- Returns whether the transition is currently active
 do -- LScreenTransition:isActive
   local tr = lurek.effect.newTransition("wipe", 0.4, {0, 0, 0, 1})
   lurek.log.info("before play: " .. tostring(tr:isActive()), "effect")
   tr:play()
   lurek.log.info("after play: " .. tostring(tr:isActive()), "effect")
 end
---@api-stub: LScreenTransition:isDone
--- Returns true after the transition has completed.
--- Poll this to know when it is safe to load the next scene.
+--@api-stub: LScreenTransition:isDone -- Returns whether the transition has finished
 do -- LScreenTransition:isDone
   local tr = lurek.effect.newTransition("fade", 0.1, {0, 0, 0, 1})
   tr:play()
@@ -1659,60 +1311,50 @@ do -- LScreenTransition:isDone
   end
   lurek.log.info("transition is done", "effect")
 end
---@api-stub: LScreenTransition:kind
--- Returns the transition kind name (fade, wipe, iris_wipe, etc.).
--- Use to verify which transition type is active for debugging.
+--@api-stub: LScreenTransition:kind -- Returns the transition kind name
 do -- LScreenTransition:kind
   local tr = lurek.effect.newTransition("iris_wipe", 0.5, {0, 0, 0, 1})
   lurek.log.info("kind=" .. tr:kind(), "effect")
 end
---@api-stub: LScreenTransition:color
--- Returns the fill color as four numbers: r, g, b, a.
--- Use to read the current overlay color for UI synchronisation.
+--@api-stub: LScreenTransition:color -- Returns the transition RGBA color
 do -- LScreenTransition:color
   local tr = lurek.effect.newTransition("fade", 0.5, {0.1, 0.2, 0.3, 1.0})
   local r, g, b, a = tr:color()
   lurek.log.info("color r=" .. r .. " g=" .. g .. " b=" .. b, "effect")
 end
---@api-stub: LScreenTransition:setColor
--- Updates the fill color from {r, g, b, a?}.
--- Use to change the overlay colour between transitions (e.g. white flash).
+--@api-stub: LScreenTransition:setColor -- Sets the transition RGBA color from a numeric array table
 do -- LScreenTransition:setColor
   local tr = lurek.effect.newTransition("fade", 0.5, {0, 0, 0, 1})
   tr:setColor({1.0, 1.0, 1.0, 1.0})   -- switch to white flash
   local r, g, b = tr:color()
   lurek.log.info("updated color r=" .. r .. " g=" .. g, "effect")
 end
---@api-stub: LScreenTransition:type
--- Returns the type name of this object ("ScreenTransition").
--- Useful for runtime type inspection.
+--@api-stub: LScreenTransition:type -- Returns the Lua-visible type name for this transition handle
 do -- LScreenTransition:type
   local screen_transition_obj = lurek.effect.newTransition(nil, nil, nil)
   local t = screen_transition_obj:type()
   lurek.log.info("LScreenTransition:type = " .. t, "effect")
 end
---@api-stub: LScreenTransition:typeOf
--- Returns true if this object is of the given type name or a parent type.
--- Use for runtime type checks.
+--@api-stub: LScreenTransition:typeOf -- Returns whether this transition handle matches a supported type name
 do -- LScreenTransition:typeOf
   local screen_transition_obj = lurek.effect.newTransition(nil, nil, nil)
   lurek.log.info("is LScreenTransition: " .. tostring(screen_transition_obj:typeOf("LScreenTransition")), "effect")
   lurek.log.info("is wrong: " .. tostring(screen_transition_obj:typeOf("Unknown")), "effect")
 end
 
---@api-stub: LOverlay:pullAmbientFromLight
+--@api-stub: LOverlay:pullAmbientFromLight -- Copies ambient color from the shared light world into this overlay
 do -- LOverlay:pullAmbientFromLight
   local overlay = lurek.effect.newOverlay()
   overlay:pullAmbientFromLight()
 end
 
---@api-stub: LOverlay:pushAmbientToLight
+--@api-stub: LOverlay:pushAmbientToLight -- Copies this overlay ambient color into the shared light world
 do -- LOverlay:pushAmbientToLight
   local overlay = lurek.effect.newOverlay()
   overlay:pushAmbientToLight()
 end
 
---@api-stub: LOverlay:syncAmbientWithLight
+--@api-stub: LOverlay:syncAmbientWithLight -- Resolves overlay and light ambient colors using a named mode and writes both stores
 do -- LOverlay:syncAmbientWithLight
   local overlay = lurek.effect.newOverlay()
   overlay:syncAmbientWithLight("avg")

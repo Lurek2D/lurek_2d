@@ -147,7 +147,7 @@ All validators exit 0 on pass, 1 on failure.
 | ----------------------------- | ------------------------------------------------------------ | --------------------------------------------------------- |
 | `cag_validate.py`             | Validate `.github/` CAG files (agents, skills, prompts)      | `--type agent\|skill\|prompt\|instruction`, `--file PATH` |
 | `validate_generated_lua_stubs.py` | Validate committed `lua_api_data.json`, `docs/api/lurek.lua`, and `docs/api/library.lua` against fresh generator output | `--format text\|json` |
-| `validate_lua_binding_reports.py` | Compare code-derived Lua binding snapshots against `///` binding docs and fail on drift | `--format text\|json`, `--source-dir`, `--code-output`, `--doc-output`, `--report-output` |
+| `validate_lua_binding_reports.py` | Compare code-derived Lua binding snapshots against `///` binding docs, emit categorized issues with structured evidence, and fail only on confirmed doc bugs | `--format text\|json`, `--source-dir`, `--code-output`, `--doc-output`, `--report-output` |
 | `validate_lua_api.py`         | Validate `src/lua_api/*_api.rs` against SKILL.md contract    | `FILE_OR_DIR`, `--errors-only`                            |
 | `validate_module_coverage.py` | Ensure every `src/` module has a spec and no legacy AGENT.md | `--fix-readme`                                            |
 | `validate_game.py`            | Validate game/demo directory structure                       | `PATH`, `--all-examples`, `--json`, `--output`            |

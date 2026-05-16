@@ -366,7 +366,7 @@ impl LuaUserData for LuaLayeredImage {
         methods.add_method("layerCount", |_, this, ()| Ok(this.inner.layer_count()));
         // -- addLayer --
         /// Adds a blank layer with an optional name.
-        /// @param | name | string | Optional layer name.
+        /// @param | name | string? | Optional layer name.
         /// @return | integer | One-based index of the new layer.
         methods.add_method_mut("addLayer", |_, this, name: Option<String>| {
             let label = name.unwrap_or_else(|| format!("Layer {}", this.inner.layer_count() + 1));

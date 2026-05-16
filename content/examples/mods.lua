@@ -1,20 +1,8 @@
 -- content/examples/mods.lua
--- Hand-written coverage of the lurek.mods API (40 items).
---
--- The lurek.mods namespace builds and arranges Mod metadata records
--- (id, version, dependencies, priority, capabilities, config schema,
--- hooks) and exposes a ModManager that resolves load order, validates
--- dependency graphs, and tracks a hot-reload queue. Everything below
--- runs against in-memory metadata; no Lua chunks are executed by the
--- mod loader itself.
---
+-- lurek.mods API examples.
 -- Run: cargo run -- content/examples/mods.lua
 
--- â”€â”€ lurek.mods.* functions â”€â”€
-
---@api-stub: lurek.mods.newMod
--- Creates a new Mod from an info table with at least an `id` field.
--- Build the Mod once at load time and stash it on a registry table; reuse the same userdata when registering with a manager.
+--@api-stub: lurek.mods.newMod -- Creates a mod metadata handle from a Lua table
 do -- lurek.mods.newMod
   local hud_mod = lurek.mods.newMod({
     id = "core.hud",
@@ -27,17 +15,13 @@ do -- lurek.mods.newMod
   lurek.log.info("built mod " .. hud_mod:getId() .. " v" .. hud_mod:getVersion(), "mods")
 end
 
---@api-stub: lurek.mods.newModManager
--- Creates a new empty ModManager.
--- Create exactly one ModManager per game and keep it on a module-level local so every system shares the same registry.
+--@api-stub: lurek.mods.newModManager -- Creates an empty mod manager
 do -- lurek.mods.newModManager
   local manager = lurek.mods.newModManager()
   lurek.log.info("manager initialised, " .. manager:getModCount() .. " mods", "mods")
 end
 
---@api-stub: lurek.mods.checkApiVersion
--- Checks whether a mod's required `api_version` is compatible with the given `host_version`.
--- Call before registerMod when loading third-party content; reject the mod when ok is false and surface the message to the user.
+--@api-stub: lurek.mods.checkApiVersion -- Checks whether a mod API version is compatible with a host version
 do -- lurek.mods.checkApiVersion
   local probe = lurek.mods.newMod({id = "fan.skins", api_version = "1.4.0"})
   local ok, msg = lurek.mods.checkApiVersion(probe, "1.6.2")
@@ -48,18 +32,14 @@ end
 
 -- â”€â”€ Mod methods â”€â”€
 
---@api-stub: LMod:getId
--- Returns the unique mod identifier.
--- Use the id as the key when storing per-mod state in your own tables; it is guaranteed stable across restarts.
+--@api-stub: Mod:getId
 do -- Mod:getId
   local m = lurek.mods.newMod({id = "core.audio"})
   local registry = {}
   registry[m:getId()] = {volume = 0.8}
 end
 
---@api-stub: LMod:getName
--- Returns the localized or human-readable display name of the mod.
--- Show getName() in the mod-list UI; falls back to an empty string when the manifest omits the field.
+--@api-stub: Mod:getName
 do -- Mod:getName
   local m = lurek.mods.newMod({id = "ui.theme.dark", name = "Dark Theme"})
   local label = m:getName()
@@ -67,9 +47,7 @@ do -- Mod:getName
   lurek.log.info("listing: " .. label, "ui")
 end
 
---@api-stub: LMod:getVersion
--- Returns the version string.
--- Compare against an expected version string when validating save-file compatibility before loading mod-owned data.
+--@api-stub: Mod:getVersion
 do -- Mod:getVersion
   local m = lurek.mods.newMod({id = "core.physics", version = "2.1.0"})
   if m:getVersion() ~= "2.1.0" then
@@ -77,27 +55,21 @@ do -- Mod:getVersion
   end
 end
 
---@api-stub: LMod:getAuthor
--- Returns the author name string from this mod's metadata manifest.
--- Display in credits and "report bug" dialogs so players know who to contact about a misbehaving mod.
+--@api-stub: Mod:getAuthor
 do -- Mod:getAuthor
   local m = lurek.mods.newMod({id = "fan.maps", author = "alice"})
   local credit = m:getAuthor()
   lurek.log.info("map pack by " .. credit, "credits")
 end
 
---@api-stub: LMod:getDescription
--- Returns the mod description.
--- Render as a tooltip or detail-panel paragraph; treat as untrusted user text and avoid embedding in HTML/markup directly.
+--@api-stub: Mod:getDescription
 do -- Mod:getDescription
   local m = lurek.mods.newMod({id = "ui.minimap", description = "Adds a corner minimap with fog-of-war."})
   local detail = m:getDescription()
   lurek.log.info("about: " .. detail, "ui")
 end
 
---@api-stub: LMod:getDependencies
--- Returns the list of required mod IDs.
--- Iterate the result to ensure every dependency is registered before activating this mod's hooks.
+--@api-stub: Mod:getDependencies
 do -- Mod:getDependencies
   local m = lurek.mods.newMod({id = "fan.weapons", dependencies = {"core.combat", "core.audio"}})
   for _, dep in ipairs(m:getDependencies()) do
@@ -105,9 +77,7 @@ do -- Mod:getDependencies
   end
 end
 
---@api-stub: LMod:getPriority
--- Returns the load-order priority.
--- Higher priority mods load first; use it to sort a mod-list UI so foundational mods appear at the top.
+--@api-stub: Mod:getPriority
 do -- Mod:getPriority
   local a = lurek.mods.newMod({id = "core.base", priority = 100})
   local b = lurek.mods.newMod({id = "fan.tweak", priority = 5})
@@ -116,9 +86,7 @@ do -- Mod:getPriority
   end
 end
 
---@api-stub: LMod:isEnabled
--- Returns whether the mod is enabled.
--- Skip rendering and hook dispatch for disabled mods; default is true unless the manifest explicitly disables it.
+--@api-stub: Mod:isEnabled
 do -- Mod:isEnabled
   local m = lurek.mods.newMod({id = "fan.cheats"})
   if m:isEnabled() then
@@ -126,9 +94,7 @@ do -- Mod:isEnabled
   end
 end
 
---@api-stub: LMod:setEnabled
--- Enables or disables this mod; disabled mods are skipped during loading.
--- Call when the user toggles a checkbox in the mod-manager UI; persist the result so the choice survives restarts.
+--@api-stub: Mod:setEnabled
 do -- Mod:setEnabled
   local m = lurek.mods.newMod({id = "fan.skins"})
   local user_choice = false
@@ -136,9 +102,7 @@ do -- Mod:setEnabled
   lurek.log.info(m:getId() .. " enabled=" .. tostring(m:isEnabled()), "mods")
 end
 
---@api-stub: LMod:isLoaded
--- Returns whether the mod has been loaded.
--- Use to short-circuit re-registration logic and to drive a "loaded/unloaded" badge in the mod list.
+--@api-stub: Mod:isLoaded
 do -- Mod:isLoaded
   local m = lurek.mods.newMod({id = "core.input"})
   if not m:isLoaded() then
@@ -146,9 +110,7 @@ do -- Mod:isLoaded
   end
 end
 
---@api-stub: LMod:getApiVersion
--- Returns the required engine API version string, or nil if not set.
--- Branch on nil to treat absent api_version as "any version"; otherwise gate loading on a semver comparison.
+--@api-stub: Mod:getApiVersion
 do -- Mod:getApiVersion
   local m = lurek.mods.newMod({id = "fan.maps", api_version = "1.5.0"})
   local req = m:getApiVersion()
@@ -157,18 +119,14 @@ do -- Mod:getApiVersion
   end
 end
 
---@api-stub: LMod:setApiVersion
--- Sets the required engine API version string.
--- Use during programmatic mod construction (tests, scripted manifests) to declare the engine surface the mod was authored against.
+--@api-stub: Mod:setApiVersion
 do -- Mod:setApiVersion
   local m = lurek.mods.newMod({id = "test.fixture"})
   m:setApiVersion("1.6.0")
   lurek.log.debug("fixture api_version=" .. m:getApiVersion(), "test")
 end
 
---@api-stub: LMod:getCapabilities
--- Returns an array of declared capability flags.
--- Treat capabilities as a permissions list; check membership before letting a mod register network or filesystem hooks.
+--@api-stub: Mod:getCapabilities
 do -- Mod:getCapabilities
   local m = lurek.mods.newMod({id = "fan.online", capabilities = {"network", "filesystem"}})
   for _, cap in ipairs(m:getCapabilities()) do
@@ -176,9 +134,7 @@ do -- Mod:getCapabilities
   end
 end
 
---@api-stub: LMod:setCapabilities
--- Replaces the capability list with the given array of strings.
--- Replaces the entire list â€” read getCapabilities() first if you only want to add one entry.
+--@api-stub: Mod:setCapabilities
 do -- Mod:setCapabilities
   local m = lurek.mods.newMod({id = "fan.tools"})
   local caps = m:getCapabilities()
@@ -186,9 +142,7 @@ do -- Mod:setCapabilities
   m:setCapabilities(caps)
 end
 
---@api-stub: LMod:getConfigSchema
--- Returns the config schema as an array of `{key, type, default}` tables.
--- Walk the schema to generate a settings UI dynamically â€” one row per entry with the right widget for the type.
+--@api-stub: Mod:getConfigSchema
 do -- Mod:getConfigSchema
   local m = lurek.mods.newMod({id = "ui.theme", config_schema = {
     {key = "accent", type = "string", default = "#ff8800"},
@@ -198,9 +152,7 @@ do -- Mod:getConfigSchema
   end
 end
 
---@api-stub: LMod:setConfigSchema
--- Replaces the config schema with the given array of `{key, type, default}` tables.
--- Use when the schema is computed at runtime (e.g. derived from a TOML manifest) instead of supplied to newMod.
+--@api-stub: Mod:setConfigSchema
 do -- Mod:setConfigSchema
   local m = lurek.mods.newMod({id = "fan.audio"})
   m:setConfigSchema({
@@ -209,9 +161,7 @@ do -- Mod:setConfigSchema
   })
 end
 
---@api-stub: LMod:getHook
--- Returns the hook function for the given name, or nil.
--- Returns nil when the hook is not registered, so always check before invoking â€” calling nil panics the script.
+--@api-stub: Mod:getHook
 do -- Mod:getHook
   local m = lurek.mods.newMod({id = "fan.combat"})
   m:setHook("on_damage", function(amount) return amount * 2 end)
@@ -219,9 +169,7 @@ do -- Mod:getHook
   if fn then lurek.log.debug("doubled: " .. fn(10), "combat") end
 end
 
---@api-stub: LMod:hasHook
--- Returns whether a hook with the given name exists.
--- Cheaper than getHook() when you only need to know whether to dispatch; avoids the registry-value clone.
+--@api-stub: Mod:hasHook
 do -- Mod:hasHook
   local m = lurek.mods.newMod({id = "fan.input"})
   m:setHook("on_jump", function() end)
@@ -230,9 +178,7 @@ do -- Mod:hasHook
   end
 end
 
---@api-stub: LMod:getHookNames
--- Returns an array of registered hook names.
--- Iterate to dispatch every named callback during a global event, or to print a debug summary of a mod's surface.
+--@api-stub: Mod:getHookNames
 do -- Mod:getHookNames
   local m = lurek.mods.newMod({id = "fan.events"})
   m:setHook("on_load", function() end)
@@ -242,17 +188,13 @@ do -- Mod:getHookNames
   end
 end
 
---@api-stub: LMod:setConfig
--- Stores an arbitrary config value for this mod.
--- Persist the user's runtime choices (a table) here so the mod itself owns the state â€” no global config table needed.
+--@api-stub: Mod:setConfig
 do -- Mod:setConfig
   local m = lurek.mods.newMod({id = "fan.audio"})
   m:setConfig({music_vol = 0.6, sfx_vol = 1.0, mute = false})
 end
 
---@api-stub: LMod:getConfig
--- Returns the stored config value, or nil.
--- Returns nil before setConfig has been called; default to a safe fallback rather than indexing nil.
+--@api-stub: Mod:getConfig
 do -- Mod:getConfig
   local m = lurek.mods.newMod({id = "fan.audio"})
   m:setConfig({music_vol = 0.5})
@@ -260,9 +202,7 @@ do -- Mod:getConfig
   lurek.log.debug("music vol=" .. cfg.music_vol, "audio")
 end
 
---@api-stub: LMod:releaseRefs
--- Releases all hook and config registry references.
--- Call before discarding a mod userdata to free its Lua-registry slots; otherwise the GC keeps the closures alive.
+--@api-stub: Mod:releaseRefs
 do -- Mod:releaseRefs
   local m = lurek.mods.newMod({id = "scratch.tmp"})
   m:setHook("on_tick", function() end)
@@ -272,9 +212,7 @@ end
 
 -- â”€â”€ ModManager methods â”€â”€
 
---@api-stub: LModManager:registerMod
--- Registers a mod from its Mod userdata.
--- The manager copies the underlying ModInfo, so further edits to the Mod userdata won't show up â€” register last.
+--@api-stub: ModManager:registerMod
 do -- ModManager:registerMod
   local mgr = lurek.mods.newModManager()
   local m = lurek.mods.newMod({id = "core.hud", priority = 50})
@@ -282,9 +220,7 @@ do -- ModManager:registerMod
   lurek.log.info("registered " .. mgr:getModCount() .. " mods", "mods")
 end
 
---@api-stub: LModManager:unregisterMod
--- Removes a mod by ID and returns whether it was found.
--- Returns false when the id was not registered; useful for idempotent cleanup in a "disable mod" flow.
+--@api-stub: ModManager:unregisterMod
 do -- ModManager:unregisterMod
   local mgr = lurek.mods.newModManager()
   mgr:registerMod(lurek.mods.newMod({id = "fan.skins"}))
@@ -292,9 +228,7 @@ do -- ModManager:unregisterMod
   lurek.log.info("removed=" .. tostring(removed), "mods")
 end
 
---@api-stub: LModManager:hasMod
--- Returns whether a mod with the given ID is registered.
--- Use to gate dependency-aware features ("if combat mod present, show advanced HUD").
+--@api-stub: ModManager:hasMod
 do -- ModManager:hasMod
   local mgr = lurek.mods.newModManager()
   mgr:registerMod(lurek.mods.newMod({id = "core.combat"}))
@@ -303,9 +237,7 @@ do -- ModManager:hasMod
   end
 end
 
---@api-stub: LModManager:getModCount
--- Returns the number of registered mods.
--- Useful as a quick "mods detected: N" line in the title screen or a load-time summary log.
+--@api-stub: ModManager:getModCount
 do -- ModManager:getModCount
   local mgr = lurek.mods.newModManager()
   mgr:registerMod(lurek.mods.newMod({id = "a"}))
@@ -313,9 +245,7 @@ do -- ModManager:getModCount
   lurek.log.info("loaded " .. mgr:getModCount() .. " mods", "boot")
 end
 
---@api-stub: LModManager:getAllMods
--- Returns an array of info tables for all registered mods.
--- Returns plain Lua tables (snapshots), not live Mod userdata; safe to filter, sort, and serialise for UI rows.
+--@api-stub: ModManager:getAllMods
 do -- ModManager:getAllMods
   local mgr = lurek.mods.newModManager()
   mgr:registerMod(lurek.mods.newMod({id = "core.hud", name = "HUD"}))
@@ -324,9 +254,7 @@ do -- ModManager:getAllMods
   end
 end
 
---@api-stub: LModManager:getLoadOrder
--- Returns an array of info tables in effective load order.
--- Iterate this (not getAllMods) when running per-mod init code, so dependency order is respected.
+--@api-stub: ModManager:getLoadOrder
 do -- ModManager:getLoadOrder
   local mgr = lurek.mods.newModManager()
   mgr:registerMod(lurek.mods.newMod({id = "core.base", priority = 100}))
@@ -336,9 +264,7 @@ do -- ModManager:getLoadOrder
   end
 end
 
---@api-stub: LModManager:getModsByCapability
--- Returns an array of registered mods that declare a given capability flag.
--- Useful for wiring optional services only when a mod advertises support.
+--@api-stub: ModManager:getModsByCapability
 do -- ModManager:getModsByCapability
   local mgr = lurek.mods.newModManager()
   mgr:registerMod(lurek.mods.newMod({id = "fan.audio", capabilities = {"audio"}}))
@@ -348,9 +274,7 @@ do -- ModManager:getModsByCapability
   end
 end
 
---@api-stub: LModManager:validateDependencies
--- Returns an array of mod IDs with missing dependencies.
--- An empty result means the graph is satisfied; a non-empty list should be surfaced to the user before launching the game.
+--@api-stub: ModManager:validateDependencies
 do -- ModManager:validateDependencies
   local mgr = lurek.mods.newModManager()
   mgr:registerMod(lurek.mods.newMod({id = "fan.weapons", dependencies = {"core.combat"}}))
@@ -359,9 +283,7 @@ do -- ModManager:validateDependencies
   end
 end
 
---@api-stub: LModManager:hasCircularDependencies
--- Returns whether any circular dependency cycles exist.
--- Refuse to call getLoadOrder when this is true; the resulting order would be undefined.
+--@api-stub: ModManager:hasCircularDependencies
 do -- ModManager:hasCircularDependencies
   local mgr = lurek.mods.newModManager()
   mgr:registerMod(lurek.mods.newMod({id = "a", dependencies = {"b"}}))
@@ -371,9 +293,7 @@ do -- ModManager:hasCircularDependencies
   end
 end
 
---@api-stub: LModManager:setLoadOrder
--- Sets an explicit load order from an array of mod ID strings.
--- Use to honour a user-saved order from a previous session; IDs not in the array fall back to priority sorting.
+--@api-stub: ModManager:setLoadOrder
 do -- ModManager:setLoadOrder
   local mgr = lurek.mods.newModManager()
   mgr:registerMod(lurek.mods.newMod({id = "core.base"}))
@@ -381,9 +301,7 @@ do -- ModManager:setLoadOrder
   mgr:setLoadOrder({"core.base", "fan.ui"})
 end
 
---@api-stub: LModManager:clearLoadOrder
--- Clears the custom load order, reverting to priority-based sorting.
--- Call when the user clicks "reset order" in the mod-manager UI to undo a manual reorder.
+--@api-stub: ModManager:clearLoadOrder
 do -- ModManager:clearLoadOrder
   local mgr = lurek.mods.newModManager()
   mgr:setLoadOrder({"a", "b", "c"})
@@ -391,18 +309,14 @@ do -- ModManager:clearLoadOrder
   lurek.log.info("load order reset to priority", "mods")
 end
 
---@api-stub: LModManager:scanFolder
--- Scans a directory for mods with mod.toml and registers them.
--- Returns info tables for everything it found and registered; pass an absolute or game-relative folder path.
+--@api-stub: ModManager:scanFolder
 do -- ModManager:scanFolder
   local mgr = lurek.mods.newModManager()
   local discovered = mgr:scanFolder("content/plugins")
   lurek.log.info("auto-registered " .. #discovered .. " mods", "mods")
 end
 
---@api-stub: LModManager:getModPath
--- Returns the filesystem path of a registered mod, or nil.
--- Returns nil for in-memory mods that were not loaded from disk; use to locate a mod's assets folder.
+--@api-stub: ModManager:getModPath
 do -- ModManager:getModPath
   local mgr = lurek.mods.newModManager()
   mgr:registerMod(lurek.mods.newMod({id = "fan.skins"}))
@@ -410,9 +324,7 @@ do -- ModManager:getModPath
   if path then lurek.log.debug("on-disk at " .. path, "mods") end
 end
 
---@api-stub: LModManager:markForReload
--- Marks a registered mod for hot-reload.
--- Returns true when the mod was queued; false when the id is unknown. Watch for file changes and call this from a dev tool.
+--@api-stub: ModManager:markForReload
 do -- ModManager:markForReload
   local mgr = lurek.mods.newModManager()
   mgr:registerMod(lurek.mods.newMod({id = "core.hud"}))
@@ -420,9 +332,7 @@ do -- ModManager:markForReload
   lurek.log.debug("queued for reload=" .. tostring(queued), "mods")
 end
 
---@api-stub: LModManager:getReloadQueue
--- Returns the array of mod IDs pending hot-reload.
--- Drain this in your dev-tool reload step, then call clearReloadQueue once the actual reloads are applied.
+--@api-stub: ModManager:getReloadQueue
 do -- ModManager:getReloadQueue
   local mgr = lurek.mods.newModManager()
   mgr:registerMod(lurek.mods.newMod({id = "ui.theme"}))
@@ -432,18 +342,14 @@ do -- ModManager:getReloadQueue
   end
 end
 
---@api-stub: LModManager:clearReloadQueue
--- Clears the reload queue without reloading.
--- Call after you've actually performed the reloads, or to abandon a queued batch when the user cancels.
+--@api-stub: ModManager:clearReloadQueue
 do -- ModManager:clearReloadQueue
   local mgr = lurek.mods.newModManager()
   mgr:markForReload("core.hud")
   mgr:clearReloadQueue()
   lurek.log.debug("queue size=" .. #mgr:getReloadQueue(), "mods")
 end
---@api-stub: LModManager:processReloadQueue
--- Reloads every queued mod from disk and clears the queue.
--- Use this after a file watcher or editor save event has marked one or more mods dirty.
+--@api-stub: ModManager:processReloadQueue
 do -- ModManager:processReloadQueue
   local mgr = lurek.mods.newModManager()
   ---@diagnostic disable-next-line: undefined-field
@@ -452,26 +358,20 @@ do -- ModManager:processReloadQueue
 end
 -- â”€â”€ Content Registry â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
---@api-stub: lurek.mods.newRegistry
--- Create a new typed content registry for mod-contributed assets and objects.
--- Registries are standalone â€” attach them to a mod or keep them global.
+--@api-stub: lurek.mods.newRegistry -- Creates an empty content registry
 do -- lurek.mods.newRegistry
   local reg = lurek.mods.newRegistry()
   lurek.log.debug("registry created", "mods")
 end
 
---@api-stub: LContentRegistry:registerType
--- Register a new content type before inserting entries.
--- All entries must be registered under a declared type.
+--@api-stub: ContentRegistry:registerType
 do -- ContentRegistry:registerType
   local reg = lurek.mods.newRegistry()
   reg:registerType("weapon")
   lurek.log.debug("registered type 'weapon'", "mods")
 end
 
---@api-stub: LContentRegistry:register
--- Insert a content entry under a previously registered type.
--- @param type_name string, @param id string, @param obj any
+--@api-stub: ContentRegistry:register
 do -- ContentRegistry:register
   local reg = lurek.mods.newRegistry()
   reg:registerType("weapon")
@@ -479,9 +379,7 @@ do -- ContentRegistry:register
   lurek.log.debug("registered iron_sword", "mods")
 end
 
---@api-stub: LContentRegistry:get
--- Retrieve a content entry by type and id.
--- Returns nil if not found.
+--@api-stub: ContentRegistry:get
 do -- ContentRegistry:get
   local reg = lurek.mods.newRegistry()
   reg:registerType("spell")
@@ -490,9 +388,7 @@ do -- ContentRegistry:get
   lurek.log.debug("spell cost=" .. (s and s.cost or "nil"), "mods") ---@diagnostic disable-line:undefined-field
 end
 
---@api-stub: LContentRegistry:getAll
--- Return a table of all entries for a type as {id: obj} map.
--- Keys are the entry ids; values are the registered objects.
+--@api-stub: ContentRegistry:getAll
 do -- ContentRegistry:getAll
   local reg = lurek.mods.newRegistry()
   reg:registerType("item")
@@ -501,9 +397,7 @@ do -- ContentRegistry:getAll
   lurek.log.debug("item count=" .. (all.potion and 1 or 0), "mods") ---@diagnostic disable-line:undefined-field
 end
 
---@api-stub: LContentRegistry:getTypes
--- Return an array of all registered type names in this registry.
--- Useful for mod inspection UIs and validation passes.
+--@api-stub: ContentRegistry:getTypes
 do -- ContentRegistry:getTypes
   local reg = lurek.mods.newRegistry()
   reg:registerType("creature")
@@ -512,9 +406,7 @@ do -- ContentRegistry:getTypes
   lurek.log.debug("type count=" .. #types, "mods")
 end
 
---@api-stub: LMod:setHook
--- Registers a callback for a named engine hook point on this mod.
--- Hooks let mods intercept engine events (on_save, on_load, on_entity_spawn, etc.).
+--@api-stub: Mod:setHook
 do -- Mod:setHook
   local mod = lurek.mods.newMod({id="example_mod", name="Example", version="1.0"})
   mod:setHook("on_save", function(ctx)
@@ -526,9 +418,7 @@ end
 -- =============================================================================
 -- COVERAGE: 4 uncovered lurek.mods API item(s)
 -- Generated by tools/audit/example_add_missing.py
--- REQUIRED: replace every --@api-stub: block below with a real scenario.
 -- Run .github/prompts/flesh-out-example.prompt.md for instructions.
--- The final committed file must contain ZERO --@api-stub: lines.
 -- =============================================================================
 
 
@@ -539,35 +429,26 @@ end
 -- =============================================================================
 -- COVERAGE: 6 uncovered lurek.mods API item(s)
 -- Generated by tools/audit/example_add_missing.py
--- REQUIRED: replace every --@api-stub: block below with a real scenario.
 -- Run .github/prompts/flesh-out-example.prompt.md for instructions.
--- The final committed file must contain ZERO --@api-stub: lines.
 -- =============================================================================
 
 -- -----------------------------------------------------------------------------
 -- LContentRegistry methods
 -- -----------------------------------------------------------------------------
 
--- ---- Example: LContentRegistry:type -----------------------------------------
---@api-stub: LContentRegistry:type
--- Returns the type name of this object.
--- Useful for runtime type inspection.
+--@api-stub: LContentRegistry:type -- Returns the Lua-visible type name for this content registry handle
 do -- LContentRegistry:type
   local content_registry_obj = lurek.mods.newRegistry()
   local t = content_registry_obj:type()
   lurek.log.info("LContentRegistry:type = " .. t, "mods")
 end
---@api-stub: LContentRegistry:typeOf
--- Returns true if this object is of the given type.
--- Use for runtime type checks.
+--@api-stub: LContentRegistry:typeOf -- Returns whether this content registry handle matches a supported type name
 do -- LContentRegistry:typeOf
   local content_registry_obj = lurek.mods.newRegistry()
   lurek.log.info("is LContentRegistry: " .. tostring(content_registry_obj:typeOf("LContentRegistry")), "mods")
   lurek.log.info("is wrong: " .. tostring(content_registry_obj:typeOf("Unknown")), "mods")
 end
---@api-stub: LMod:type
--- Returns the type name of this object.
--- Useful for runtime type inspection.
+--@api-stub: LMod:type -- Returns the Lua-visible type name for this mod handle
 do -- LMod:type
   local ok ---@type boolean
   local mod_obj ---@type LMod?
@@ -576,9 +457,7 @@ do -- LMod:type
   local t = mod_obj and mod_obj:type() or "LMod"
   lurek.log.info("LMod:type = " .. t, "mods")
 end
---@api-stub: LMod:typeOf
--- Returns true if this object is of the given type.
--- Use for runtime type checks.
+--@api-stub: LMod:typeOf -- Returns whether this mod handle matches a supported type name
 do -- LMod:typeOf
   local ok2 ---@type boolean
   local mod_obj2 ---@type LMod?
@@ -587,25 +466,17 @@ do -- LMod:typeOf
   lurek.log.info("is LMod: " .. tostring(mod_obj2 and mod_obj2:typeOf("LMod") or false), "mods")
   lurek.log.info("is wrong: " .. tostring(mod_obj2 and mod_obj2:typeOf("Unknown") or false), "mods")
 end
---@api-stub: LModManager:type
--- Returns the type name of this object.
--- Useful for runtime type inspection.
+--@api-stub: LModManager:type -- Returns the Lua-visible type name for this mod manager handle
 do -- LModManager:type
   local mod_manager_obj = lurek.mods.newModManager()
   local t = mod_manager_obj:type()
   lurek.log.info("LModManager:type = " .. t, "mods")
 end
---@api-stub: LModManager:typeOf
--- Returns true if this object is of the given type.
--- Use for runtime type checks.
+--@api-stub: LModManager:typeOf -- Returns whether this mod manager handle matches a supported type name
 do -- LModManager:typeOf
   local mod_manager_obj = lurek.mods.newModManager()
   lurek.log.info("is LModManager: " .. tostring(mod_manager_obj:typeOf("LModManager")), "mods")
   lurek.log.info("is wrong: " .. tostring(mod_manager_obj:typeOf("Unknown")), "mods")
 end
---@api-stub: block below with a real scenario.
--- Run .github/prompts/flesh-out-example.prompt.md for instructions.
--- The final committed file must contain ZERO --@api-stub: lines.
--- =============================================================================
 
 

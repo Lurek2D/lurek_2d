@@ -1,22 +1,14 @@
 -- content/examples/tilemap.lua
--- Hand-written coverage of the lurek.tilemap API (134 items).
---
--- The lurek.tilemap namespace covers ortho/iso/hex grids, autotiling,
--- chunked sparse maps, large-map culling, TMX/LDtk import, and a
--- block + script driven procedural generator.
---
+-- lurek.tilemap API examples.
 -- Run: cargo run -- content/examples/tilemap.lua
 
---@api-stub: lurek.tilemap.newTileSet
--- Creates a new TileSet with the given atlas layout parameters.
--- Pass the firstGid you want this set to occupy in the global ID space; spacing/margin default to 0.
+--@api-stub: lurek.tilemap.newTileSet -- Creates a new tileset from atlas parameters
 do -- lurek.tilemap.newTileSet
   local grass = lurek.tilemap.newTileSet(1, 256, 16, 16, 16, 0, 0)
   lurek.log.info("grass tileset gid range " .. grass:getFirstGid() .. ".." .. (grass:getFirstGid() + grass:getTileCount() - 1), "tilemap")
 end
 
---@api-stub: LTileMap:tileTypeIndex
--- Returns gid->positions map for quick type queries.
+--@api-stub: LTileMap:tileTypeIndex -- Builds an index mapping each GID present on a layer to an array of `{x, y}` positions
 do -- LTileMap:tileTypeIndex
   local map = lurek.tilemap.newTileMap(16, 16, 8)
   map:addLayer("ground", 4, 4)
@@ -28,8 +20,7 @@ do -- LTileMap:tileTypeIndex
   end
 end
 
---@api-stub: LTileMap:findTilesByGid
--- Returns all positions for a single gid.
+--@api-stub: LTileMap:findTilesByGid -- Returns all positions on a layer that contain a specific GID
 do -- LTileMap:findTilesByGid
   local map = lurek.tilemap.newTileMap(16, 16, 8)
   map:addLayer("ground", 4, 4)
@@ -39,25 +30,19 @@ do -- LTileMap:findTilesByGid
   lurek.log.info("found gid=3 at " .. #pos .. " positions", "tilemap")
 end
 
---@api-stub: lurek.tilemap.newTileMap
--- Creates a new TileMap with the given tile size and chunk size.
--- Tile size is in pixels; chunk size groups tiles for spatial culling and defaults to 16 if omitted.
+--@api-stub: lurek.tilemap.newTileMap -- Creates a new empty tilemap with the given tile dimensions
 do -- lurek.tilemap.newTileMap
   local map = lurek.tilemap.newTileMap(16, 16, 32)
   lurek.log.info("map tile " .. map:getTileWidth() .. "x" .. map:getTileHeight() .. " chunk=" .. map:getChunkSize(), "tilemap")
 end
 
---@api-stub: lurek.tilemap.newAutoTileSheet
--- Creates a new AutoTileSheet with the given tile dimensions and layout.
--- Layout must be 'blob47', 'composite48', or 'minimal16' â€” pick to match how your atlas was authored.
+--@api-stub: lurek.tilemap.newAutoTileSheet -- Creates an auto-tile sheet with a given tile size and layout
 do -- lurek.tilemap.newAutoTileSheet
   local sheet = lurek.tilemap.newAutoTileSheet(16, 16, "blob47")
   lurek.log.info("autotile sheet '" .. sheet:getLayout() .. "' has " .. sheet:getTileCount() .. " tiles", "tilemap")
 end
 
---@api-stub: lurek.tilemap.newChunkMap
--- Creates a new ChunkMap with the given chunk size.
--- Use ChunkMap for sparse infinite worlds where most coordinates are empty; chunkSize defaults to 16.
+--@api-stub: lurek.tilemap.newChunkMap -- Creates a new infinite chunk-based tile map
 do -- lurek.tilemap.newChunkMap
   local world = lurek.tilemap.newChunkMap(32)
   world:setTile(0, 0, 1)
@@ -65,18 +50,14 @@ do -- lurek.tilemap.newChunkMap
   lurek.log.info("loaded " .. #world:getLoadedChunks() .. " chunks", "tilemap")
 end
 
---@api-stub: lurek.tilemap.newIsoMap
--- Creates a new IsoMap with no levels.
--- levelHeight is the vertical pixel offset between Z-levels; partCount defaults to 4 (floor/N-wall/W-wall/object).
+--@api-stub: lurek.tilemap.newIsoMap -- Creates a new isometric map with the given dimensions and tile geometry
 do -- lurek.tilemap.newIsoMap
   local iso = lurek.tilemap.newIsoMap(32, 32, 64, 32, 24, 4)
   iso:addLevel()
   lurek.log.info("iso map " .. iso:getWidth() .. "x" .. iso:getHeight() .. " parts=" .. iso:getPartCount(), "tilemap")
 end
 
---@api-stub: lurek.tilemap.newMapBlock
--- Creates a new MapBlock with the given dimensions.
--- MapBlocks are reusable map fragments stitched together by MapGen; layers/segmentSize default to 1.
+--@api-stub: lurek.tilemap.newMapBlock -- Creates a new procedural map block with the given dimensions
 do -- lurek.tilemap.newMapBlock
   local room = lurek.tilemap.newMapBlock(8, 8, 1, 4)
   room:setName("starter_room")
@@ -84,50 +65,38 @@ do -- lurek.tilemap.newMapBlock
   lurek.log.info("block '" .. room:getName() .. "' " .. room:getWidth() .. "x" .. room:getHeight(), "tilemap")
 end
 
---@api-stub: lurek.tilemap.newMapGroup
--- Creates a new empty MapGroup with the given name.
--- A MapGroup is a named bag of MapBlocks and MapScripts that MapGen samples from.
+--@api-stub: lurek.tilemap.newMapGroup -- Creates a new map group to hold blocks and generation scripts
 do -- lurek.tilemap.newMapGroup
   local dungeon = lurek.tilemap.newMapGroup("dungeon")
   lurek.log.info("group '" .. dungeon:getName() .. "' starts with " .. dungeon:getBlockCount() .. " blocks", "tilemap")
 end
 
---@api-stub: lurek.tilemap.toScreenIso
--- Converts tile coordinates to screen position using diamond isometric projection.
--- Use this to position sprites on a diamond-isometric grid; tileW/tileH are the tile footprint in pixels.
+--@api-stub: lurek.tilemap.toScreenIso -- Converts tile coordinates to screen-space position for isometric projection
 do -- lurek.tilemap.toScreenIso
   local sx, sy = lurek.tilemap.toScreenIso(3, 5, 64, 32)
   lurek.log.info("iso tile (3,5) -> screen (" .. sx .. ", " .. sy .. ")", "tilemap")
 end
 
---@api-stub: lurek.tilemap.fromScreenIso
--- Converts screen position back to tile coordinates for diamond isometric projection.
--- Inverse of toScreenIso; useful for hit-testing the mouse against an isometric grid.
+--@api-stub: lurek.tilemap.fromScreenIso -- Converts screen-space coordinates back to tile coordinates for isometric projection
 do -- lurek.tilemap.fromScreenIso
   local mx, my = 320, 200
   local tx, ty = lurek.tilemap.fromScreenIso(mx, my, 64, 32)
   lurek.log.info("mouse (" .. mx .. "," .. my .. ") over iso tile (" .. tx .. ", " .. ty .. ")", "tilemap")
 end
 
---@api-stub: lurek.tilemap.toScreenHex
--- Converts axial hex coordinates to screen position (pointy-top layout).
--- Pointy-top axial layout; size is the hex radius in pixels (corner-to-centre distance).
+--@api-stub: lurek.tilemap.toScreenHex -- Converts axial hex coordinates to screen-space pixel position
 do -- lurek.tilemap.toScreenHex
   local sx, sy = lurek.tilemap.toScreenHex(2, -1, 24)
   lurek.log.info("hex (q=2,r=-1) at screen (" .. sx .. ", " .. sy .. ")", "tilemap")
 end
 
---@api-stub: lurek.tilemap.fromScreenHex
--- Converts screen position back to axial hex coordinates (pointy-top layout).
--- Returns the integer axial (q, r) under the cursor; pair with hexRound for fractional sources.
+--@api-stub: lurek.tilemap.fromScreenHex -- Converts screen-space pixel coordinates to axial hex coordinates
 do -- lurek.tilemap.fromScreenHex
   local q, r = lurek.tilemap.fromScreenHex(150, 90, 24)
   lurek.log.info("screen (150,90) -> hex (q=" .. q .. ", r=" .. r .. ")", "tilemap")
 end
 
---@api-stub: lurek.tilemap.hexNeighbors
--- Returns the six axial neighbor coordinates as a table of {q, r} pairs.
--- Each entry is a {q, r} table; iterate with ipairs to walk all six adjacent cells.
+--@api-stub: lurek.tilemap.hexNeighbors -- Returns the six neighboring hex cells of a given axial coordinate
 do -- lurek.tilemap.hexNeighbors
   local n = lurek.tilemap.hexNeighbors(0, 0)
   for _, c in ipairs(n) do
@@ -135,9 +104,7 @@ do -- lurek.tilemap.hexNeighbors
   end
 end
 
---@api-stub: lurek.tilemap.hexDistance
--- Returns the hex distance between two axial coordinates.
--- Use to gate abilities by hex range or to sort enemies by proximity in a strategy game.
+--@api-stub: lurek.tilemap.hexDistance -- Computes the hex grid distance between two axial coordinates
 do -- lurek.tilemap.hexDistance
   local d = lurek.tilemap.hexDistance(0, 0, 3, -2)
   if d <= 2 then
@@ -145,17 +112,13 @@ do -- lurek.tilemap.hexDistance
   end
 end
 
---@api-stub: lurek.tilemap.hexRound
--- Rounds fractional axial coordinates to the nearest hex cell.
--- Snap a fractional hex (e.g. from fromScreenHex with floats) back to the nearest integer cell.
+--@api-stub: lurek.tilemap.hexRound -- Rounds fractional axial hex coordinates to the nearest integer hex cell
 do -- lurek.tilemap.hexRound
   local q, r = lurek.tilemap.hexRound(2.4, -1.7)
   lurek.log.info("rounded fractional hex to (q=" .. q .. ", r=" .. r .. ")", "tilemap")
 end
 
---@api-stub: lurek.tilemap.hexLine
--- Returns all hex cells along a line between two axial coordinates as a table.
--- Walk every cell along a straight hex line â€” useful for line-of-sight and ranged-attack paths.
+--@api-stub: lurek.tilemap.hexLine -- Returns all hex cells along a line between two axial coordinates
 do -- lurek.tilemap.hexLine
   local cells = lurek.tilemap.hexLine(0, 0, 4, -2)
   for _, c in ipairs(cells) do
@@ -163,25 +126,19 @@ do -- lurek.tilemap.hexLine
   end
 end
 
---@api-stub: lurek.tilemap.hexRing
--- Returns all cells at exactly radius distance from (q, r) as a table.
--- All cells exactly `radius` away â€” perfect for ring-shaped explosion or aura visuals.
+--@api-stub: lurek.tilemap.hexRing -- Returns all hex cells forming a ring at a given radius around a center
 do -- lurek.tilemap.hexRing
   local ring = lurek.tilemap.hexRing(0, 0, 3)
   lurek.log.info("ring at radius 3 has " .. #ring .. " cells", "tilemap")
 end
 
---@api-stub: lurek.tilemap.hexSpiral
--- Returns all hex cells from center outward to radius, ring by ring, as a table.
--- Returns center then each ring outward â€” handy for ordered placement or expanding-search BFS.
+--@api-stub: lurek.tilemap.hexSpiral -- Returns all hex cells in a spiral pattern out to a given radius
 do -- lurek.tilemap.hexSpiral
   local spiral = lurek.tilemap.hexSpiral(0, 0, 2)
   lurek.log.info("spiral 0..2 covers " .. #spiral .. " cells", "tilemap")
 end
 
---@api-stub: lurek.tilemap.hexArea
--- Returns all hex cells within radius distance (filled hex circle) as a table.
--- Filled hex disc â€” use for area-of-effect spells, fog-of-war reveal, or city-radius queries.
+--@api-stub: lurek.tilemap.hexArea -- Returns all hex cells within a filled area of a given radius
 do -- lurek.tilemap.hexArea
   local aoe = lurek.tilemap.hexArea(5, 5, 2)
   for _, c in ipairs(aoe) do
@@ -189,60 +146,46 @@ do -- lurek.tilemap.hexArea
   end
 end
 
---@api-stub: lurek.tilemap.hexRotate
--- Rotates hex coordinates around a center by steps x 60 degrees clockwise.
--- Each step is 60Â° clockwise; use a negative `steps` value to rotate counter-clockwise.
+--@api-stub: lurek.tilemap.hexRotate -- Rotates a hex cell around a center point by a number of 60-degree steps
 do -- lurek.tilemap.hexRotate
   local q, r = lurek.tilemap.hexRotate(2, 0, 0, 0, 1)
   lurek.log.info("rotated (2,0) by 60Â° -> (q=" .. q .. ", r=" .. r .. ")", "tilemap")
 end
 
---@api-stub: lurek.tilemap.hexReflect
--- Reflects hex coordinates across an axis through the center.
--- Axis is one of '"q"', '"r"', or '"s"' â€” the three hex symmetry axes.
+--@api-stub: lurek.tilemap.hexReflect -- Reflects a hex cell across an axis through a center point
 do -- lurek.tilemap.hexReflect
   local q, r = lurek.tilemap.hexReflect(2, 1, 0, 0, "q")
   lurek.log.info("reflected hex (2,1) over q -> (" .. q .. ", " .. r .. ")", "tilemap")
 end
 
---@api-stub: lurek.tilemap.isoRotate
--- Rotates an isometric direction (1-4) clockwise by steps.
--- Direction is 1=N, 2=E, 3=S, 4=W; steps wraps around modulo 4.
+--@api-stub: lurek.tilemap.isoRotate -- Rotates an isometric direction index by a number of 90-degree steps
 do -- lurek.tilemap.isoRotate
   local d = lurek.tilemap.isoRotate(1, 2)
   lurek.log.info("rotated dir 1 by 2 steps -> " .. d .. " (" .. lurek.tilemap.isoDirectionName(d) .. ")", "tilemap")
 end
 
---@api-stub: lurek.tilemap.isoDirectionName
--- Returns the name of an isometric direction (1-4).
--- Returns 'north'/'east'/'south'/'west'; useful for animation lookup keys.
+--@api-stub: lurek.tilemap.isoDirectionName -- Returns a human-readable name for an isometric direction index
 do -- lurek.tilemap.isoDirectionName
   local facing = lurek.tilemap.isoDirectionName(2)
   local sprite_key = "walk_" .. facing
   lurek.log.info("playing animation '" .. sprite_key .. "'", "anim")
 end
 
---@api-stub: lurek.tilemap.isoDirectionFromAngle
--- Snaps an angle (in radians) to the nearest isometric direction (1-4).
--- Maps a movement vector angle (math.atan2(dy, dx)) to the nearest cardinal iso direction.
+--@api-stub: lurek.tilemap.isoDirectionFromAngle -- Converts an angle in degrees to the nearest isometric direction index
 do -- lurek.tilemap.isoDirectionFromAngle
   local dx, dy = 1, 0.2
   local dir = lurek.tilemap.isoDirectionFromAngle(math.atan2(dy, dx))
   lurek.log.info("velocity faces " .. lurek.tilemap.isoDirectionName(dir), "anim")
 end
 
---@api-stub: lurek.tilemap.newMapScript
--- Creates a new empty MapScript procedural generation script.
--- A MapScript is a sequence of generation steps replayed by MapGen; build it once at load time.
+--@api-stub: lurek.tilemap.newMapScript -- Creates a new empty map-generation script
 do -- lurek.tilemap.newMapScript
   local script = lurek.tilemap.newMapScript()
   script:addStep({ type = "fillRandom", gid = 1, chance = 0.3 })
   lurek.log.info("script has " .. script:getStepCount() .. " step(s)", "tilemap")
 end
 
---@api-stub: lurek.tilemap.newMapGen
--- Creates a MapGen from a MapGroup, a preset name or dimensions, and a segment size.
--- Pass either a preset string ('small'/'medium'/'large') or explicit width/height; segmentSize controls block grid.
+--@api-stub: lurek.tilemap.newMapGen -- Creates a procedural map generator from a group and either a size preset or explicit dimensions
 do -- lurek.tilemap.newMapGen
   local group = lurek.tilemap.newMapGroup("rooms")
   group:addBlock(lurek.tilemap.newMapBlock(8, 8, 1, 4))
@@ -251,9 +194,7 @@ do -- lurek.tilemap.newMapGen
   lurek.log.info("generated map with " .. map:getLayerCount() .. " layer(s)", "tilemap")
 end
 
---@api-stub: lurek.tilemap.loadTMX
--- Parses a TMX XML string and returns a table with map metadata and layers.
--- Returns a metadata table â€” width/height/tileWidth/tileHeight/orientation/layers â€” not a TileMap.
+--@api-stub: lurek.tilemap.loadTMX -- Parses a TMX (Tiled XML) string and returns a table describing the map structure
 do -- lurek.tilemap.loadTMX
   pcall(function()
     local xml = [[
@@ -271,9 +212,7 @@ do -- lurek.tilemap.loadTMX
   end)
 end
 
---@api-stub: lurek.tilemap.fromLDtk
--- Parses an LDtk JSON export string and returns a TileMap.
--- Pass an optional level name to pick from a multi-level project; defaults to the first level.
+--@api-stub: lurek.tilemap.fromLDtk -- Loads a tilemap from an LDtk JSON string, optionally targeting a specific level
 do -- lurek.tilemap.fromLDtk
   pcall(function()
     local json = [[
@@ -320,9 +259,7 @@ do -- lurek.tilemap.fromLDtk
   end)
 end
 
---@api-stub: lurek.tilemap.newLargeMapRenderer
--- Creates a LargeMapRenderer for chunk-level occlusion culling on maps > 200Ä‚â€”200 tiles.
--- Use for maps over 200Ă—200 tiles; the renderer culls invisible chunks before issuing draw calls.
+--@api-stub: lurek.tilemap.newLargeMapRenderer -- Creates a chunk-based large-map renderer for efficient rendering of very large maps
 do -- lurek.tilemap.newLargeMapRenderer
   local renderer = lurek.tilemap.newLargeMapRenderer(16, 16)
   renderer:setChunkSize(32)
@@ -331,17 +268,13 @@ end
 
 -- â”€â”€ TileSet methods â”€â”€
 
---@api-stub: LTileSet:getFirstGid
--- Returns the first global ID assigned to this tileset.
--- Use the first GID to translate between local tile IDs and the map-wide global ID space.
+--@api-stub: TileSet:getFirstGid
 do -- TileSet:getFirstGid
   local ts = lurek.tilemap.newTileSet(257, 64, 8, 16, 16)
   lurek.log.info("tileset firstGid=" .. ts:getFirstGid(), "tilemap")
 end
 
---@api-stub: LTileSet:getTileCount
--- Returns the total number of tiles in this tileset.
--- Iterate 1..getTileCount() to enumerate every local tile ID in the set.
+--@api-stub: TileSet:getTileCount
 do -- TileSet:getTileCount
   local ts = lurek.tilemap.newTileSet(1, 96, 12, 16, 16)
   for id = 1, ts:getTileCount() do
@@ -349,71 +282,55 @@ do -- TileSet:getTileCount
   end
 end
 
---@api-stub: LTileSet:getColumns
--- Returns the number of tile columns in the atlas texture.
--- Columns Ă— rows = tileCount; use this to compute atlas row index for a given tile ID.
+--@api-stub: TileSet:getColumns
 do -- TileSet:getColumns
   local ts = lurek.tilemap.newTileSet(1, 64, 8, 16, 16)
   local rows = ts:getTileCount() / ts:getColumns()
   lurek.log.info("atlas " .. ts:getColumns() .. " cols x " .. rows .. " rows", "tilemap")
 end
 
---@api-stub: LTileSet:getTileWidth
--- Returns the width of a single tile in pixels.
--- Use when configuring matching collision shapes or placing markers in tile units.
+--@api-stub: TileSet:getTileWidth
 do -- TileSet:getTileWidth
   local ts = lurek.tilemap.newTileSet(1, 64, 8, 32, 16)
   local box_w = ts:getTileWidth()
   lurek.log.info("collision width matches tile = " .. box_w, "physics")
 end
 
---@api-stub: LTileSet:getTileHeight
--- Returns the height of a single tile in pixels.
--- Pair with getTileWidth when building axis-aligned colliders that match a tile sprite.
+--@api-stub: TileSet:getTileHeight
 do -- TileSet:getTileHeight
   local ts = lurek.tilemap.newTileSet(1, 64, 8, 16, 24)
   local box_h = ts:getTileHeight()
   lurek.log.info("collision height = " .. box_h, "physics")
 end
 
---@api-stub: LTileSet:getTileDimensions
--- Returns the tile dimensions as (width, height).
--- Returns (width, height) â€” handy for one-line capture without two getter calls.
+--@api-stub: TileSet:getTileDimensions
 do -- TileSet:getTileDimensions
   local ts = lurek.tilemap.newTileSet(1, 64, 8, 16, 16)
   local tw, th = ts:getTileDimensions()
   lurek.log.info("tile is " .. tw .. "x" .. th .. " px", "tilemap")
 end
 
---@api-stub: LTileSet:getSpacing
--- Returns the spacing in pixels between tiles in the atlas.
--- Spacing is the gap in pixels between adjacent tiles in the atlas; 0 means tiles touch.
+--@api-stub: TileSet:getSpacing
 do -- TileSet:getSpacing
   local ts = lurek.tilemap.newTileSet(1, 64, 8, 16, 16, 2, 1)
   lurek.log.info("atlas spacing=" .. ts:getSpacing() .. " margin=" .. ts:getMargin(), "tilemap")
 end
 
---@api-stub: LTileSet:getMargin
--- Returns the margin in pixels around the edges of the atlas.
--- Margin is the border in pixels around the entire atlas; account for it when slicing source rects.
+--@api-stub: TileSet:getMargin
 do -- TileSet:getMargin
   local ts = lurek.tilemap.newTileSet(1, 64, 8, 16, 16, 0, 4)
   local m = ts:getMargin()
   lurek.log.info("first tile starts " .. m .. " px in from atlas edge", "tilemap")
 end
 
---@api-stub: LTileSet:getQuad
--- Computes the atlas source rectangle for a 1-based local tile ID.
--- Returns a {x, y, width, height} table of the source rectangle in atlas pixels.
+--@api-stub: TileSet:getQuad
 do -- TileSet:getQuad
   local ts = lurek.tilemap.newTileSet(1, 64, 8, 16, 16)
   local q = ts:getQuad(5)
   lurek.log.info("tile 5 quad x=" .. q.x .. " y=" .. q.y .. " w=" .. q.width .. " h=" .. q.height, "tilemap")
 end
 
---@api-stub: LTileSet:getAnimation
--- Returns the animation frames for a 1-based local tile ID as a table of {tileid, duration}, or nil.
--- Returns nil when a tile has no animation; otherwise an array of {tileid, duration} frames.
+--@api-stub: TileSet:getAnimation
 do -- TileSet:getAnimation
   local ts = lurek.tilemap.newTileSet(1, 64, 8, 16, 16)
   local frames = ts:getAnimation(1)
@@ -422,9 +339,7 @@ do -- TileSet:getAnimation
   end
 end
 
---@api-stub: LTileSet:setSolid
--- Sets whether a 1-based local tile ID is solid for collision purposes.
--- Mark walls, water, or pit tiles solid up-front so isSolid/sweepRect later use it for collision.
+--@api-stub: TileSet:setSolid
 do -- TileSet:setSolid
   local ts = lurek.tilemap.newTileSet(1, 64, 8, 16, 16)
   for _, gid in ipairs({ 5, 6, 7, 8 }) do
@@ -432,9 +347,7 @@ do -- TileSet:setSolid
   end
 end
 
---@api-stub: LTileSet:isSolid
--- Returns whether a 1-based local tile ID is solid.
--- Defaults to false; query at startup to validate tilesets imported from external editors.
+--@api-stub: TileSet:isSolid
 do -- TileSet:isSolid
   local ts = lurek.tilemap.newTileSet(1, 64, 8, 16, 16)
   ts:setSolid(7, true)
@@ -445,9 +358,7 @@ end
 
 -- â”€â”€ TileMap methods â”€â”€
 
---@api-stub: LTileMap:addTileSet
--- Adds a tileset to this map.
--- Add tilesets in firstGid order so global IDs resolve correctly when you set or query tiles.
+--@api-stub: TileMap:addTileSet
 do -- TileMap:addTileSet
   local map = lurek.tilemap.newTileMap(16, 16)
   local terrain = lurek.tilemap.newTileSet(1, 64, 8, 16, 16)
@@ -455,9 +366,7 @@ do -- TileMap:addTileSet
   lurek.log.info("map now has " .. map:getTileSetCount() .. " tileset(s)", "tilemap")
 end
 
---@api-stub: LTileMap:getTileSetCount
--- Returns the number of tilesets attached to this map.
--- Loop 1..getTileSetCount() to walk every tileset attached to the map.
+--@api-stub: TileMap:getTileSetCount
 do -- TileMap:getTileSetCount
   local map = lurek.tilemap.newTileMap(16, 16)
   map:addTileSet(lurek.tilemap.newTileSet(1, 32, 8, 16, 16))
@@ -465,9 +374,7 @@ do -- TileMap:getTileSetCount
   lurek.log.info("tilesets attached: " .. map:getTileSetCount(), "tilemap")
 end
 
---@api-stub: LTileMap:getTileSet
--- Returns a tileset by 1-based index, or nil if out of range.
--- Returns nil for out-of-range indices, so always nil-check before calling tileset methods.
+--@api-stub: TileMap:getTileSet
 do -- TileMap:getTileSet
   local map = lurek.tilemap.newTileMap(16, 16)
   map:addTileSet(lurek.tilemap.newTileSet(1, 64, 8, 16, 16))
@@ -477,9 +384,7 @@ do -- TileMap:getTileSet
   end
 end
 
---@api-stub: LTileMap:addLayer
--- Adds a new empty layer and returns its 1-based index.
--- Pass the desired layer name plus width/height in tiles; returns the 1-based layer index.
+--@api-stub: TileMap:addLayer
 do -- TileMap:addLayer
   local map = lurek.tilemap.newTileMap(16, 16)
   local bg = map:addLayer("background", 64, 64)
@@ -487,9 +392,7 @@ do -- TileMap:addLayer
   lurek.log.info("background=" .. bg .. " collision=" .. fg, "tilemap")
 end
 
---@api-stub: LTileMap:getLayerCount
--- Returns the number of layers.
--- Use to drive a render loop that walks every layer in declaration order.
+--@api-stub: TileMap:getLayerCount
 do -- TileMap:getLayerCount
   local map = lurek.tilemap.newTileMap(16, 16)
   map:addLayer("background", 32, 32)
@@ -497,9 +400,7 @@ do -- TileMap:getLayerCount
   lurek.log.info("layers in map: " .. map:getLayerCount(), "tilemap")
 end
 
---@api-stub: LTileMap:getLayerName
--- Returns the name of a layer by 1-based index.
--- Names are the contract between scripts and level data â€” branch on them to drive collision rules.
+--@api-stub: TileMap:getLayerName
 do -- TileMap:getLayerName
   local map = lurek.tilemap.newTileMap(16, 16)
   map:addLayer("collision", 32, 32)
@@ -509,9 +410,7 @@ do -- TileMap:getLayerName
   end
 end
 
---@api-stub: LTileMap:getLayerVisible
--- Returns layer visibility.
--- Use in a debug-overlay toggle that hides layers without modifying their tile data.
+--@api-stub: TileMap:getLayerVisible
 do -- TileMap:getLayerVisible
   local map = lurek.tilemap.newTileMap(16, 16)
   map:addLayer("collision", 32, 32)
@@ -520,9 +419,7 @@ do -- TileMap:getLayerVisible
   end
 end
 
---@api-stub: LTileMap:getLayerColor
--- Returns the RGBA tint color of a layer.
--- Returns r, g, b, a in 0..1 range; use to fade layers in/out for transitions.
+--@api-stub: TileMap:getLayerColor
 do -- TileMap:getLayerColor
   local map = lurek.tilemap.newTileMap(16, 16)
   map:addLayer("background", 32, 32)
@@ -530,9 +427,7 @@ do -- TileMap:getLayerColor
   lurek.log.info("background tint rgba=" .. r .. "," .. g .. "," .. b .. "," .. a, "tilemap")
 end
 
---@api-stub: LTileMap:getLayerOffset
--- Returns the pixel offset of a layer.
--- Returns (ox, oy) in pixels â€” useful when implementing camera-relative parallax UI.
+--@api-stub: TileMap:getLayerOffset
 do -- TileMap:getLayerOffset
   local map = lurek.tilemap.newTileMap(16, 16)
   map:addLayer("background", 32, 32)
@@ -540,9 +435,7 @@ do -- TileMap:getLayerOffset
   lurek.log.info("layer offset px=(" .. ox .. ", " .. oy .. ")", "tilemap")
 end
 
---@api-stub: LTileMap:getLayerParallax
--- Returns the parallax factor of a layer.
--- Parallax of 1.0 scrolls 1:1 with the camera; 0.5 means half-speed (distant background).
+--@api-stub: TileMap:getLayerParallax
 do -- TileMap:getLayerParallax
   local map = lurek.tilemap.newTileMap(16, 16)
   map:addLayer("clouds", 64, 32)
@@ -550,9 +443,7 @@ do -- TileMap:getLayerParallax
   lurek.log.info("clouds parallax=(" .. px .. ", " .. py .. ")", "tilemap")
 end
 
---@api-stub: LTileMap:getTile
--- Returns the GID at (x, y) on the given layer (1-based).
--- Returns the GID at (x, y) on the layer; 0 means empty. Use for interaction probes.
+--@api-stub: TileMap:getTile
 do -- TileMap:getTile
   local map = lurek.tilemap.newTileMap(16, 16)
   map:addLayer("collision", 32, 32)
@@ -562,9 +453,7 @@ do -- TileMap:getTile
   end
 end
 
---@api-stub: LTileMap:clearTile
--- Clears a tile (sets GID to 0) at (x, y) on the given layer (1-based).
--- Equivalent to setTile(layer, x, y, 0); use when destroying a destructible block.
+--@api-stub: TileMap:clearTile
 do -- TileMap:clearTile
   local map = lurek.tilemap.newTileMap(16, 16)
   local layer = map:addLayer("walls", 32, 32)
@@ -572,9 +461,7 @@ do -- TileMap:clearTile
   map:clearTile(layer, 10, 10)  -- player blew up the wall
 end
 
---@api-stub: LTileMap:fill
--- Fills an entire layer with the given GID (1-based layer).
--- Floods every cell of a layer with a single GID â€” handy for paint-by-number background fills.
+--@api-stub: TileMap:fill
 do -- TileMap:fill
   local map = lurek.tilemap.newTileMap(16, 16)
   local bg = map:addLayer("background", 32, 32)
@@ -582,9 +469,7 @@ do -- TileMap:fill
   lurek.log.info("background filled with grass", "tilemap")
 end
 
---@api-stub: LTileMap:getViewport
--- Returns the viewport as (x, y, w, h) or nil if not set.
--- Returns nil values when no viewport is set; check before reading the rectangle.
+--@api-stub: TileMap:getViewport
 do -- TileMap:getViewport
   local map = lurek.tilemap.newTileMap(16, 16)
   local x, y, w, h = map:getViewport()
@@ -593,18 +478,14 @@ do -- TileMap:getViewport
   end
 end
 
---@api-stub: LTileMap:update
--- Advances tile animation timers by dt seconds.
--- Call once per frame from lurek.process(dt) to advance any animated tile timers.
+--@api-stub: TileMap:update
 do -- TileMap:update
   local map = lurek.tilemap.newTileMap(16, 16)
   map:addLayer("water", 32, 32)
   function lurek.process(dt) map:update(dt) end
 end
 
---@api-stub: LTileMap:worldToTile
--- Converts world pixel coordinates to tile coordinates.
--- Returns 1-based tile coordinates; use for mouse-over highlighting or click placement.
+--@api-stub: TileMap:worldToTile
 do -- TileMap:worldToTile
   local map = lurek.tilemap.newTileMap(16, 16)
   map:addLayer("background", 64, 64)
@@ -612,9 +493,7 @@ do -- TileMap:worldToTile
   lurek.log.info("world (128,96) -> tile (" .. tx .. ", " .. ty .. ")", "tilemap")
 end
 
---@api-stub: LTileMap:tileToWorld
--- Converts tile coordinates to world pixel coordinates (1-based input).
--- Inverse of worldToTile (1-based input); use to anchor sprites to tile centres or corners.
+--@api-stub: TileMap:tileToWorld
 do -- TileMap:tileToWorld
   local map = lurek.tilemap.newTileMap(16, 16)
   map:addLayer("background", 32, 32)
@@ -622,44 +501,34 @@ do -- TileMap:tileToWorld
   lurek.log.info("spawn pos px=(" .. wx .. ", " .. wy .. ")", "tilemap")
 end
 
---@api-stub: LTileMap:getTileWidth
--- Returns the tile width in pixels.
--- Use when computing camera bounds or snapping movement to multiples of one tile.
+--@api-stub: TileMap:getTileWidth
 do -- TileMap:getTileWidth
   local map = lurek.tilemap.newTileMap(32, 32)
   local step = map:getTileWidth()
   lurek.log.info("snap step = " .. step .. " px", "tilemap")
 end
 
---@api-stub: LTileMap:getTileHeight
--- Returns the tile height in pixels.
--- Pair with getTileWidth when scaling UI overlays to a tile grid.
+--@api-stub: TileMap:getTileHeight
 do -- TileMap:getTileHeight
   local map = lurek.tilemap.newTileMap(16, 32)
   local row_h = map:getTileHeight()
   lurek.log.info("HUD row height = " .. row_h, "ui")
 end
 
---@api-stub: LTileMap:getTileDimensions
--- Returns tile dimensions as (width, height).
--- Single-call alternative to getTileWidth / getTileHeight; returns (w, h).
+--@api-stub: TileMap:getTileDimensions
 do -- TileMap:getTileDimensions
   local map = lurek.tilemap.newTileMap(16, 16)
   local tw, th = map:getTileDimensions()
   lurek.log.info("tile size " .. tw .. "x" .. th, "tilemap")
 end
 
---@api-stub: LTileMap:getChunkSize
--- Returns the chunk size used for spatial partitioning.
--- Chunk size determines spatial-query granularity for culling; 16 is a good default.
+--@api-stub: TileMap:getChunkSize
 do -- TileMap:getChunkSize
   local map = lurek.tilemap.newTileMap(16, 16, 32)
   lurek.log.info("map chunk size = " .. map:getChunkSize(), "tilemap")
 end
 
---@api-stub: LTileMap:isSolid
--- Returns true if the tile at (x, y) on layer is solid (1-based).
--- Reads the solidity from the tileset for the GID at (layer, x, y); use as a cheap blocker check.
+--@api-stub: TileMap:isSolid
 do -- TileMap:isSolid
   local map = lurek.tilemap.newTileMap(16, 16)
   local layer = map:addLayer("collision", 32, 32)
@@ -668,9 +537,7 @@ do -- TileMap:isSolid
   end
 end
 
---@api-stub: LTileMap:getOrientation
--- Returns the map orientation as a string ("topdown", "sideview", "isometric", or "hexagonal").
--- One of 'topdown', 'sideview', 'isometric', or 'hexagonal' â€” branch on it to pick movement code.
+--@api-stub: TileMap:getOrientation
 do -- TileMap:getOrientation
   local map = lurek.tilemap.newTileMap(16, 16)
   local o = map:getOrientation()
@@ -679,18 +546,14 @@ do -- TileMap:getOrientation
   end
 end
 
---@api-stub: LTileMap:setOrientation
--- Sets the map orientation from a string ("topdown", "sideview", "isometric", or "hexagonal").
--- Set once at level load; passing an unknown string raises an error so validate first.
+--@api-stub: TileMap:setOrientation
 do -- TileMap:setOrientation
   local map = lurek.tilemap.newTileMap(64, 32)
   map:setOrientation("isometric")
   lurek.log.info("orientation now " .. map:getOrientation(), "tilemap")
 end
 
---@api-stub: LTileMap:render
--- Renders the tile map to the screen at the given offset.
--- Call from lurek.render with the camera offset to draw the map at the correct screen position.
+--@api-stub: TileMap:render
 do -- TileMap:render
   local map = lurek.tilemap.newTileMap(16, 16)
   map:addLayer("background", 32, 32)
@@ -698,9 +561,7 @@ do -- TileMap:render
   function lurek.draw() map:render(-cam_x, -cam_y) end
 end
 
---@api-stub: LTileMap:drawToImage
--- Renders the tile map to a CPU ImageData using the given tile pixel size.
--- Returns an ImageData you can save for a minimap thumbnail or in-engine debug snapshot.
+--@api-stub: TileMap:drawToImage
 do -- TileMap:drawToImage
   local map = lurek.tilemap.newTileMap(16, 16)
   map:addLayer("background", 32, 32)
@@ -710,9 +571,7 @@ end
 
 -- â”€â”€ AutoTileSheet methods â”€â”€
 
---@api-stub: LAutoTileSheet:getLayout
--- Returns the layout variant as a string.
--- Returns 'blob47'/'composite48'/'minimal16' â€” branch on it when emitting tiles per ruleset.
+--@api-stub: AutoTileSheet:getLayout
 do -- AutoTileSheet:getLayout
   local sheet = lurek.tilemap.newAutoTileSheet(16, 16, "minimal16")
   if sheet:getLayout() == "minimal16" then
@@ -720,51 +579,39 @@ do -- AutoTileSheet:getLayout
   end
 end
 
---@api-stub: LAutoTileSheet:getTileCount
--- Returns the number of tiles in this sheet.
--- Total tiles in the sheet; matches the layout (16, 47, or 48).
+--@api-stub: AutoTileSheet:getTileCount
 do -- AutoTileSheet:getTileCount
   local sheet = lurek.tilemap.newAutoTileSheet(16, 16, "blob47")
   lurek.log.info("blob47 sheet exposes " .. sheet:getTileCount() .. " tiles", "tilemap")
 end
 
---@api-stub: LAutoTileSheet:getTileWidth
--- Returns the tile width in pixels.
--- Use when sizing a debug overlay or palette preview for the autotile set.
+--@api-stub: AutoTileSheet:getTileWidth
 do -- AutoTileSheet:getTileWidth
   local sheet = lurek.tilemap.newAutoTileSheet(32, 32, "composite48")
   lurek.log.info("autotile tile width = " .. sheet:getTileWidth() .. " px", "tilemap")
 end
 
---@api-stub: LAutoTileSheet:getTileHeight
--- Returns the tile height in pixels.
--- Pair with getTileWidth when laying out a palette for tile selection in a level editor.
+--@api-stub: AutoTileSheet:getTileHeight
 do -- AutoTileSheet:getTileHeight
   local sheet = lurek.tilemap.newAutoTileSheet(16, 24, "blob47")
   lurek.log.info("autotile tile height = " .. sheet:getTileHeight() .. " px", "tilemap")
 end
 
---@api-stub: LAutoTileSheet:getBitmaskForTile
--- Returns the bitmask value associated with a 1-based local tile ID.
--- Returns the connectivity bitmask the given tile ID was authored to represent.
+--@api-stub: AutoTileSheet:getBitmaskForTile
 do -- AutoTileSheet:getBitmaskForTile
   local sheet = lurek.tilemap.newAutoTileSheet(16, 16, "blob47")
   local mask = sheet:getBitmaskForTile(5)
   lurek.log.info("tile 5 represents bitmask " .. mask, "tilemap")
 end
 
---@api-stub: LAutoTileSheet:getTileForBitmask
--- Returns the 1-based tile ID for a given bitmask, or nil.
--- Returns nil when no tile is assigned to that bitmask; fall back to a default in that case.
+--@api-stub: AutoTileSheet:getTileForBitmask
 do -- AutoTileSheet:getTileForBitmask
   local sheet = lurek.tilemap.newAutoTileSheet(16, 16, "blob47")
   local id = sheet:getTileForBitmask(15) or 1
   lurek.log.info("bitmask 15 -> tile " .. id, "tilemap")
 end
 
---@api-stub: LAutoTileSheet:getQuad
--- Returns the atlas region rectangle for the 1-based tile ID.
--- Source rectangle for the given tile ID; returned as {x, y, width, height} in atlas pixels.
+--@api-stub: AutoTileSheet:getQuad
 do -- AutoTileSheet:getQuad
   pcall(function()
     local sheet = lurek.tilemap.newAutoTileSheet(16, 16, "blob47")
@@ -775,9 +622,7 @@ end
 
 -- â”€â”€ ChunkMap methods â”€â”€
 
---@api-stub: LChunkMap:getTile
--- Returns the GID at tile coordinate (x, y).
--- Coordinates can be any integer (positive or negative); returns 0 for never-touched cells.
+--@api-stub: ChunkMap:getTile
 do -- ChunkMap:getTile
   local world = lurek.tilemap.newChunkMap(32)
   world:setTile(-5, 12, 9)
@@ -791,9 +636,7 @@ end
 --   end
 -- end
 
---@api-stub: LChunkMap:clearTile
--- Clears the tile at (x, y) by setting its GID to 0.
--- Sets the GID back to 0 but does NOT free the chunk â€” use unloadChunk for memory.
+--@api-stub: ChunkMap:clearTile
 do -- ChunkMap:clearTile
   local world = lurek.tilemap.newChunkMap(16)
   world:setTile(3, 3, 5)
@@ -801,9 +644,7 @@ do -- ChunkMap:clearTile
   lurek.log.info("tile (3,3) now gid=" .. world:getTile(3, 3), "tilemap")
 end
 
---@api-stub: LChunkMap:loadChunk
--- Pre-allocates the chunk at chunk coordinates (cx, cy).
--- Pre-warm chunks ahead of the camera to avoid first-touch allocation hitches at the edge.
+--@api-stub: ChunkMap:loadChunk
 do -- ChunkMap:loadChunk
   local world = lurek.tilemap.newChunkMap(16)
   for cx = 0, 3 do
@@ -811,9 +652,7 @@ do -- ChunkMap:loadChunk
   end
 end
 
---@api-stub: LChunkMap:unloadChunk
--- Removes the chunk at chunk coordinates (cx, cy) from memory.
--- Drop chunks the camera has left behind to keep memory bounded for infinite worlds.
+--@api-stub: ChunkMap:unloadChunk
 do -- ChunkMap:unloadChunk
   local world = lurek.tilemap.newChunkMap(16)
   world:loadChunk(0, 0)
@@ -821,18 +660,14 @@ do -- ChunkMap:unloadChunk
   lurek.log.info("chunks resident: " .. #world:getLoadedChunks(), "tilemap")
 end
 
---@api-stub: LChunkMap:getChunkSize
--- Returns the chunk size (tiles per side).
--- Use when converting world tile coords to chunk coords: cx = floor(x / chunkSize).
+--@api-stub: ChunkMap:getChunkSize
 do -- ChunkMap:getChunkSize
   local world = lurek.tilemap.newChunkMap(64)
   local size = world:getChunkSize()
   lurek.log.info("chunk side = " .. size .. " tiles", "tilemap")
 end
 
---@api-stub: LChunkMap:getLoadedChunks
--- Returns a table of all currently loaded chunk coordinates as {{cx, cy}, ...}.
--- Each entry is {cx, cy}; iterate to draw a debug overlay of resident chunks.
+--@api-stub: ChunkMap:getLoadedChunks
 do -- ChunkMap:getLoadedChunks
   local world = lurek.tilemap.newChunkMap(16)
   world:setTile(0, 0, 1)
@@ -842,9 +677,7 @@ do -- ChunkMap:getLoadedChunks
   end
 end
 
---@api-stub: LChunkMap:chunkTileRange
--- Returns the tile coordinate range for chunk (cx, cy) as (x0, y0, x1, y1).
--- Returns inclusive (x0, y0, x1, y1) tile bounds â€” use to iterate every cell of a chunk.
+--@api-stub: ChunkMap:chunkTileRange
 do -- ChunkMap:chunkTileRange
   local world = lurek.tilemap.newChunkMap(16)
   local x0, y0, x1, y1 = world:chunkTileRange(2, -1)
@@ -854,8 +687,6 @@ end
 -- â”€â”€ LargeMapRenderer methods â”€â”€
 
 --@api-stub: LargeMapRenderer:setTile
--- Sets a single tile ID at (x, y).
--- Coordinates are 0-based and must be within the map size set via setMapData.
 do -- LargeMapRenderer:setTile
   local r = lurek.tilemap.newLargeMapRenderer(16, 16)
   r:setMapData({ 0, 0, 0, 0 }, 2, 2)
@@ -864,8 +695,6 @@ do -- LargeMapRenderer:setTile
 end
 
 --@api-stub: LargeMapRenderer:getTile
--- Returns the tile ID at (x, y), or nil if out of bounds.
--- Returns nil when (x, y) is outside the map; pair with getMapSize for bounds.
 do -- LargeMapRenderer:getTile
   local r = lurek.tilemap.newLargeMapRenderer(16, 16)
   r:setMapData({ 1, 2, 3, 4 }, 2, 2)
@@ -874,8 +703,6 @@ do -- LargeMapRenderer:getTile
 end
 
 --@api-stub: LargeMapRenderer:getMapSize
--- Returns the map dimensions as (width, height) in tiles.
--- Use to drive iteration loops or to size a minimap proportional to the world.
 do -- LargeMapRenderer:getMapSize
   local r = lurek.tilemap.newLargeMapRenderer(16, 16)
   r:setMapData({ 0, 0, 0, 0 }, 2, 2)
@@ -884,8 +711,6 @@ do -- LargeMapRenderer:getMapSize
 end
 
 --@api-stub: LargeMapRenderer:setChunkSize
--- Sets the chunk size used for culling (default 16).
--- Larger chunks reduce overhead but coarsen culling; 16-32 is typical for HD tilesets.
 do -- LargeMapRenderer:setChunkSize
   local r = lurek.tilemap.newLargeMapRenderer(16, 16)
   r:setChunkSize(32)
@@ -893,16 +718,12 @@ do -- LargeMapRenderer:setChunkSize
 end
 
 --@api-stub: LargeMapRenderer:getChunkSize
--- Returns the current chunk size.
--- Read after setChunkSize to confirm the value the renderer is actually using.
 do -- LargeMapRenderer:getChunkSize
   local r = lurek.tilemap.newLargeMapRenderer(16, 16)
   lurek.log.info("default chunk size = " .. r:getChunkSize(), "render")
 end
 
 --@api-stub: LargeMapRenderer:invalidateChunk
--- Marks a chunk at chunk-grid coordinates (cx, cy) as dirty,.
--- Call after editing tiles in a chunk so the renderer rebuilds its cached geometry.
 do -- LargeMapRenderer:invalidateChunk
   local r = lurek.tilemap.newLargeMapRenderer(16, 16)
   r:setMapData({ 0, 0, 0, 0 }, 2, 2)
@@ -911,8 +732,6 @@ do -- LargeMapRenderer:invalidateChunk
 end
 
 --@api-stub: LargeMapRenderer:invalidateAll
--- Marks every chunk as dirty.
--- Use after a global change like swapping tilesets or applying a colour grading tint.
 do -- LargeMapRenderer:invalidateAll
   local r = lurek.tilemap.newLargeMapRenderer(16, 16)
   r:setMapData({ 1, 2, 3, 4 }, 2, 2)
@@ -921,8 +740,6 @@ do -- LargeMapRenderer:invalidateAll
 end
 
 --@api-stub: LargeMapRenderer:getVisibleChunks
--- Returns the number of chunks currently within the camera viewport.
--- Use as a debug HUD value to confirm culling is actually trimming work.
 do -- LargeMapRenderer:getVisibleChunks
   local r = lurek.tilemap.newLargeMapRenderer(16, 16)
   r:setMapData({ 0, 0, 0, 0 }, 2, 2)
@@ -932,8 +749,6 @@ do -- LargeMapRenderer:getVisibleChunks
 end
 
 --@api-stub: LargeMapRenderer:getTotalChunks
--- Returns the total number of chunks that cover the loaded map.
--- Compare against getVisibleChunks to compute culling efficiency in a perf overlay.
 do -- LargeMapRenderer:getTotalChunks
   local r = lurek.tilemap.newLargeMapRenderer(16, 16)
   r:setMapData({ 0, 0, 0, 0, 0, 0, 0, 0 }, 4, 2)
@@ -941,8 +756,6 @@ do -- LargeMapRenderer:getTotalChunks
 end
 
 --@api-stub: LargeMapRenderer:setCamera
--- Updates the camera position and zoom used for visibility culling.
--- Update from your main loop with the camera position and current zoom each frame.
 do -- LargeMapRenderer:setCamera
   local r = lurek.tilemap.newLargeMapRenderer(16, 16)
   r:setMapData({ 0, 0, 0, 0 }, 2, 2)
@@ -951,8 +764,6 @@ do -- LargeMapRenderer:setCamera
 end
 
 --@api-stub: LargeMapRenderer:setViewport
--- Sets the viewport dimensions in pixels used for visibility culling.
--- Pass your render target size in pixels so the renderer can compute culling bounds.
 do -- LargeMapRenderer:setViewport
   local r = lurek.tilemap.newLargeMapRenderer(16, 16)
   r:setMapData({ 0, 0, 0, 0 }, 2, 2)
@@ -960,8 +771,6 @@ do -- LargeMapRenderer:setViewport
 end
 
 --@api-stub: LargeMapRenderer:setLodEnabled
--- Enables or disables level-of-detail rendering for distant chunks.
--- Enable LOD when the camera can zoom out far enough to make per-tile rendering wasteful.
 do -- LargeMapRenderer:setLodEnabled
   local r = lurek.tilemap.newLargeMapRenderer(16, 16)
   r:setLodEnabled(true)
@@ -971,8 +780,6 @@ do -- LargeMapRenderer:setLodEnabled
 end
 
 --@api-stub: LargeMapRenderer:isLodEnabled
--- Returns whether LOD rendering is currently enabled.
--- Read in a debug HUD to confirm the LOD toggle is matching the menu setting.
 do -- LargeMapRenderer:isLodEnabled
   local r = lurek.tilemap.newLargeMapRenderer(16, 16)
   if not r:isLodEnabled() then
@@ -981,8 +788,6 @@ do -- LargeMapRenderer:isLodEnabled
 end
 
 --@api-stub: LargeMapRenderer:setLodThresholds
--- Sets the distance thresholds (in tile units) at which each LOD level activates.
--- Each entry is the camera-distance in tile units at which the next LOD tier kicks in.
 do -- LargeMapRenderer:setLodThresholds
   local r = lurek.tilemap.newLargeMapRenderer(16, 16)
   r:setLodEnabled(true)
@@ -990,8 +795,6 @@ do -- LargeMapRenderer:setLodThresholds
 end
 
 --@api-stub: LargeMapRenderer:setTilesetColumns
--- Sets the number of tile columns in the atlas texture used for UV calculation.
--- Set this to match your atlas column count so UV mapping is correct.
 do -- LargeMapRenderer:setTilesetColumns
   local r = lurek.tilemap.newLargeMapRenderer(16, 16)
   r:setTilesetColumns(16)
@@ -999,8 +802,6 @@ do -- LargeMapRenderer:setTilesetColumns
 end
 
 --@api-stub: LargeMapRenderer:getTilesetColumns
--- Returns the number of tileset atlas columns.
--- Read after setTilesetColumns to confirm the value used in the next render pass.
 do -- LargeMapRenderer:getTilesetColumns
   local r = lurek.tilemap.newLargeMapRenderer(16, 16)
   r:setTilesetColumns(8)
@@ -1009,36 +810,28 @@ end
 
 -- â”€â”€ IsoMap methods â”€â”€
 
---@api-stub: LIsoMap:addLevel
--- Appends a new empty Z-level and returns its 1-based index.
--- Adds an empty Z-level on top of the stack and returns its 1-based index.
+--@api-stub: IsoMap:addLevel
 do -- IsoMap:addLevel
   local iso = lurek.tilemap.newIsoMap(16, 16, 64, 32, 24)
   local z = iso:addLevel()
   lurek.log.info("added level " .. z .. ", count now " .. iso:getLevelCount(), "tilemap")
 end
 
---@api-stub: LIsoMap:getLevelCount
--- Returns the number of Z-levels currently in the map.
--- Drive a render loop from 1..getLevelCount() to draw every Z-level back to front.
+--@api-stub: IsoMap:getLevelCount
 do -- IsoMap:getLevelCount
   local iso = lurek.tilemap.newIsoMap(16, 16, 64, 32, 24)
   iso:addLevel(); iso:addLevel(); iso:addLevel()
   lurek.log.info("iso has " .. iso:getLevelCount() .. " level(s)", "tilemap")
 end
 
---@api-stub: LIsoMap:setLevelVisible
--- Sets the visibility of a level (1-based z).
--- Toggle to implement a 'cutaway' view that hides upper floors above the camera target.
+--@api-stub: IsoMap:setLevelVisible
 do -- IsoMap:setLevelVisible
   local iso = lurek.tilemap.newIsoMap(16, 16, 64, 32, 24)
   iso:addLevel(); iso:addLevel()
   iso:setLevelVisible(2, false)  -- hide upper floor
 end
 
---@api-stub: LIsoMap:isLevelVisible
--- Returns the visibility of a level (1-based z).
--- Combine with a UI toggle so the player can opt in to seeing higher Z-levels.
+--@api-stub: IsoMap:isLevelVisible
 do -- IsoMap:isLevelVisible
   local iso = lurek.tilemap.newIsoMap(16, 16, 64, 32, 24)
   iso:addLevel()
@@ -1047,67 +840,51 @@ do -- IsoMap:isLevelVisible
   end
 end
 
---@api-stub: LIsoMap:fillLevel
--- Fills every cell in level z with gid for the given part (1-based z; 0-based part).
--- Floods every cell of (z, part) with the same GID â€” handy for laying solid floors fast.
+--@api-stub: IsoMap:fillLevel
 do -- IsoMap:fillLevel
   local iso = lurek.tilemap.newIsoMap(16, 16, 64, 32, 24)
   iso:addLevel()
   iso:fillLevel(1, lurek.tilemap.FLOOR - 1, 1)  -- floor part 0, gid 1
 end
 
---@api-stub: LIsoMap:setOrigin
--- Sets the screen pixel origin.
--- Set the screen-space pixel origin (top-left of the diamond grid) when scrolling the iso world.
+--@api-stub: IsoMap:setOrigin
 do -- IsoMap:setOrigin
   local iso = lurek.tilemap.newIsoMap(16, 16, 64, 32, 24)
   iso:addLevel()
   iso:setOrigin(400, 100)
 end
 
---@api-stub: LIsoMap:getWidth
--- Returns the map width in tiles.
--- Use when sizing a minimap proportional to the iso footprint.
+--@api-stub: IsoMap:getWidth
 do -- IsoMap:getWidth
   local iso = lurek.tilemap.newIsoMap(20, 30, 64, 32, 24)
   lurek.log.info("iso map is " .. iso:getWidth() .. " tiles wide", "tilemap")
 end
 
---@api-stub: LIsoMap:getHeight
--- Returns the map height in tiles.
--- Pair with getWidth when iterating over every (x, y) on a level.
+--@api-stub: IsoMap:getHeight
 do -- IsoMap:getHeight
   local iso = lurek.tilemap.newIsoMap(20, 30, 64, 32, 24)
   lurek.log.info("iso map is " .. iso:getHeight() .. " tiles tall", "tilemap")
 end
 
---@api-stub: LIsoMap:getTileWidth
--- Returns the tile footprint width in pixels.
--- Tile footprint width in pixels â€” typical iso ratio is 2:1 width:height.
+--@api-stub: IsoMap:getTileWidth
 do -- IsoMap:getTileWidth
   local iso = lurek.tilemap.newIsoMap(16, 16, 64, 32, 24)
   lurek.log.info("iso tile footprint width = " .. iso:getTileWidth() .. " px", "tilemap")
 end
 
---@api-stub: LIsoMap:getTileHeight
--- Returns the tile footprint height in pixels.
--- Tile footprint height in pixels â€” half the width gives the classic 2:1 isometric look.
+--@api-stub: IsoMap:getTileHeight
 do -- IsoMap:getTileHeight
   local iso = lurek.tilemap.newIsoMap(16, 16, 64, 32, 24)
   lurek.log.info("iso tile footprint height = " .. iso:getTileHeight() .. " px", "tilemap")
 end
 
---@api-stub: LIsoMap:getLevelHeight
--- Returns the vertical pixel offset between consecutive Z-levels.
--- Vertical pixel offset between Z-levels; tune to match the height of your wall sprites.
+--@api-stub: IsoMap:getLevelHeight
 do -- IsoMap:getLevelHeight
   local iso = lurek.tilemap.newIsoMap(16, 16, 64, 32, 32)
   lurek.log.info("Z step = " .. iso:getLevelHeight() .. " px between levels", "tilemap")
 end
 
---@api-stub: LIsoMap:tileToScreen
--- Projects isometric tile coordinates (tx, ty, tz) to screen pixels.
--- Use to position sprite overlays (HP bars, names) above a particular iso tile.
+--@api-stub: IsoMap:tileToScreen
 do -- IsoMap:tileToScreen
   local iso = lurek.tilemap.newIsoMap(16, 16, 64, 32, 24)
   iso:setOrigin(400, 100)
@@ -1115,9 +892,7 @@ do -- IsoMap:tileToScreen
   lurek.log.info("tile (3,4,0) at screen (" .. sx .. ", " .. sy .. ")", "tilemap")
 end
 
---@api-stub: LIsoMap:screenToTile
--- Converts screen pixel coordinates to isometric tile coordinates at Z-level 0.
--- Use for mouse picking; result is at Z=0 â€” apply your own offset for higher levels.
+--@api-stub: IsoMap:screenToTile
 do -- IsoMap:screenToTile
   local iso = lurek.tilemap.newIsoMap(16, 16, 64, 32, 24)
   iso:setOrigin(400, 100)
@@ -1125,26 +900,20 @@ do -- IsoMap:screenToTile
   lurek.log.info("cursor over iso tile (" .. tx .. ", " .. ty .. ")", "tilemap")
 end
 
---@api-stub: LIsoMap:getPartCount
--- Returns the number of GID slots per tile.
--- Default 4 (floor/N-wall/W-wall/object); use the lurek.tilemap constants to index parts symbolically.
+--@api-stub: IsoMap:getPartCount
 do -- IsoMap:getPartCount
   local iso = lurek.tilemap.newIsoMap(16, 16, 64, 32, 24, 4)
   lurek.log.info("iso parts per tile = " .. iso:getPartCount(), "tilemap")
 end
 
---@api-stub: LIsoMap:getPartOrder
--- Returns the current draw-order array (0-based part slot indices).
--- Returns 0-based slot indices in draw order; useful for debugging Z-fighting on stacked parts.
+--@api-stub: IsoMap:getPartOrder
 do -- IsoMap:getPartOrder
   local iso = lurek.tilemap.newIsoMap(16, 16, 64, 32, 24, 4)
   local order = iso:getPartOrder()
   lurek.log.info("iso draw order has " .. #order .. " slots", "tilemap")
 end
 
---@api-stub: LIsoMap:setPartOrder
--- Overrides the draw order for this IsoMap.
--- Pass a permutation of 0..partCount-1; raises an error if the length or values are wrong.
+--@api-stub: IsoMap:setPartOrder
 do -- IsoMap:setPartOrder
   local iso = lurek.tilemap.newIsoMap(16, 16, 64, 32, 24, 4)
   iso:setPartOrder({ 0, 2, 1, 3 })  -- swap N-wall and W-wall draw order
@@ -1152,9 +921,7 @@ end
 
 -- â”€â”€ MapBlock methods â”€â”€
 
---@api-stub: LMapBlock:getTile
--- Returns the GID of the tile at (x, y) on the given layer (1-based).
--- Layer/x/y are 1-based; returns 0 for empty cells.
+--@api-stub: MapBlock:getTile
 do -- MapBlock:getTile
   local block = lurek.tilemap.newMapBlock(8, 8, 1, 4)
   block:setTile(1, 3, 3, 5)
@@ -1162,9 +929,7 @@ do -- MapBlock:getTile
   lurek.log.info("block tile (3,3) gid=" .. gid, "tilemap")
 end
 
---@api-stub: LMapBlock:getSide
--- Returns the side connection ID for a segment on a given edge.
--- Edge is 'north', 'east', 'south', or 'west'; segments are 1-based along each edge.
+--@api-stub: MapBlock:getSide
 do -- MapBlock:getSide
   local block = lurek.tilemap.newMapBlock(8, 8, 1, 4)
   block:setSide("north", 1, 7)
@@ -1172,75 +937,57 @@ do -- MapBlock:getSide
   lurek.log.info("north edge segment 1 connection id=" .. id, "tilemap")
 end
 
---@api-stub: LMapBlock:getWidth
--- Returns the block width in tiles.
--- Read the authored block width to validate against an expected room size.
+--@api-stub: MapBlock:getWidth
 do -- MapBlock:getWidth
   local block = lurek.tilemap.newMapBlock(12, 8, 1, 4)
   lurek.log.info("block width " .. block:getWidth() .. " tiles", "tilemap")
 end
 
---@api-stub: LMapBlock:getHeight
--- Returns the block height in tiles.
--- Pair with getWidth to compute the block bounding box for placement queries.
+--@api-stub: MapBlock:getHeight
 do -- MapBlock:getHeight
   local block = lurek.tilemap.newMapBlock(8, 12, 1, 4)
   lurek.log.info("block height " .. block:getHeight() .. " tiles", "tilemap")
 end
 
---@api-stub: LMapBlock:getDimensions
--- Returns the block dimensions as (width, height) in tiles.
--- Single-call alternative to getWidth/getHeight; returns (w, h).
+--@api-stub: MapBlock:getDimensions
 do -- MapBlock:getDimensions
   local block = lurek.tilemap.newMapBlock(10, 6, 1, 2)
   local w, h = block:getDimensions()
   lurek.log.info("block " .. w .. "x" .. h, "tilemap")
 end
 
---@api-stub: LMapBlock:getLayerCount
--- Returns the number of layers in this block.
--- Use to drive a per-layer iteration when copying a block into a TileMap.
+--@api-stub: MapBlock:getLayerCount
 do -- MapBlock:getLayerCount
   local block = lurek.tilemap.newMapBlock(8, 8, 3, 4)
   lurek.log.info("block has " .. block:getLayerCount() .. " layer(s)", "tilemap")
 end
 
---@api-stub: LMapBlock:getSegmentSize
--- Returns the segment size in tiles.
--- Edges are split into segments of this many tiles; segment-level matching drives MapGen connections.
+--@api-stub: MapBlock:getSegmentSize
 do -- MapBlock:getSegmentSize
   local block = lurek.tilemap.newMapBlock(8, 8, 1, 4)
   lurek.log.info("segment size = " .. block:getSegmentSize() .. " tiles", "tilemap")
 end
 
---@api-stub: LMapBlock:getWidthInSegments
--- Returns the number of segments along the width.
--- Equals getWidth() / getSegmentSize(); use when laying out edge-connection rules.
+--@api-stub: MapBlock:getWidthInSegments
 do -- MapBlock:getWidthInSegments
   local block = lurek.tilemap.newMapBlock(8, 8, 1, 4)
   lurek.log.info("block is " .. block:getWidthInSegments() .. " segments wide", "tilemap")
 end
 
---@api-stub: LMapBlock:getHeightInSegments
--- Returns the number of segments along the height.
--- Pair with getWidthInSegments when iterating over every edge segment of the block.
+--@api-stub: MapBlock:getHeightInSegments
 do -- MapBlock:getHeightInSegments
   local block = lurek.tilemap.newMapBlock(8, 8, 1, 4)
   lurek.log.info("block is " .. block:getHeightInSegments() .. " segments tall", "tilemap")
 end
 
---@api-stub: LMapBlock:setName
--- Sets the human-readable name of this block.
--- Names appear in MapGen logging and tooling; pick something searchable like '"start_room"'.
+--@api-stub: MapBlock:setName
 do -- MapBlock:setName
   local block = lurek.tilemap.newMapBlock(8, 8, 1, 4)
   block:setName("treasure_room")
   lurek.log.info("named block: " .. block:getName(), "tilemap")
 end
 
---@api-stub: LMapBlock:getName
--- Returns the name of this block.
--- Read the authored name to filter blocks before adding them to a MapGroup.
+--@api-stub: MapBlock:getName
 do -- MapBlock:getName
   local block = lurek.tilemap.newMapBlock(8, 8, 1, 4)
   block:setName("corridor_h")
@@ -1249,18 +996,14 @@ do -- MapBlock:getName
   end
 end
 
---@api-stub: LMapBlock:setWeight
--- Sets the placement weight.
--- Higher weights make MapGen pick this block more often; default is 1.0.
+--@api-stub: MapBlock:setWeight
 do -- MapBlock:setWeight
   local block = lurek.tilemap.newMapBlock(8, 8, 1, 4)
   block:setWeight(3.5)  -- show up 3.5x more often than weight=1 blocks
   lurek.log.info("weight = " .. block:getWeight(), "tilemap")
 end
 
---@api-stub: LMapBlock:getWeight
--- Returns the placement weight.
--- Read after setWeight to confirm the value MapGen will sample with.
+--@api-stub: MapBlock:getWeight
 do -- MapBlock:getWeight
   local block = lurek.tilemap.newMapBlock(8, 8, 1, 4)
   if block:getWeight() < 1.0 then
@@ -1270,9 +1013,7 @@ end
 
 -- â”€â”€ MapGroup methods â”€â”€
 
---@api-stub: LMapGroup:addBlock
--- Adds a block to this group.
--- Add every block variant once; MapGen will sample using each block's weight.
+--@api-stub: MapGroup:addBlock
 do -- MapGroup:addBlock
   local group = lurek.tilemap.newMapGroup("rooms")
   group:addBlock(lurek.tilemap.newMapBlock(8, 8, 1, 4))
@@ -1280,9 +1021,7 @@ do -- MapGroup:addBlock
   lurek.log.info("group has " .. group:getBlockCount() .. " blocks", "tilemap")
 end
 
---@api-stub: LMapGroup:getBlockCount
--- Returns the number of blocks in this group.
--- Use to validate level data loaded from disk before passing the group to MapGen.
+--@api-stub: MapGroup:getBlockCount
 do -- MapGroup:getBlockCount
   local group = lurek.tilemap.newMapGroup("rooms")
   group:addBlock(lurek.tilemap.newMapBlock(8, 8, 1, 4))
@@ -1291,9 +1030,7 @@ do -- MapGroup:getBlockCount
   end
 end
 
---@api-stub: LMapGroup:removeBlock
--- Removes a block by 1-based index.
--- 1-based index; remove a misauthored block before generation without rebuilding the group.
+--@api-stub: MapGroup:removeBlock
 do -- MapGroup:removeBlock
   local group = lurek.tilemap.newMapGroup("rooms")
   group:addBlock(lurek.tilemap.newMapBlock(8, 8, 1, 4))
@@ -1301,17 +1038,13 @@ do -- MapGroup:removeBlock
   group:removeBlock(1)  -- drop first block
 end
 
---@api-stub: LMapGroup:getName
--- Returns the name of this group.
--- Use when logging or when a generator picks a group from a registry by name.
+--@api-stub: MapGroup:getName
 do -- MapGroup:getName
   local group = lurek.tilemap.newMapGroup("dungeon_floor_1")
   lurek.log.info("active group: " .. group:getName(), "tilemap")
 end
 
---@api-stub: LMapGroup:addScript
--- Adds a MapScript to this group.
--- Attach generation scripts (random fill, place, flood) that MapGen runs in order.
+--@api-stub: MapGroup:addScript
 do -- MapGroup:addScript
   local group = lurek.tilemap.newMapGroup("rooms")
   local script = lurek.tilemap.newMapScript()
@@ -1319,9 +1052,7 @@ do -- MapGroup:addScript
   group:addScript(script)
 end
 
---@api-stub: LMapGroup:getScriptCount
--- Returns the number of scripts in this group.
--- Use to validate that all expected scripts loaded before generation begins.
+--@api-stub: MapGroup:getScriptCount
 do -- MapGroup:getScriptCount
   local group = lurek.tilemap.newMapGroup("rooms")
   group:addScript(lurek.tilemap.newMapScript())
@@ -1330,18 +1061,14 @@ end
 
 -- â”€â”€ MapScript methods â”€â”€
 
---@api-stub: LMapScript:getStepCount
--- Returns the number of steps in this script.
--- Inspect the step count after addStep calls to confirm a script loaded as expected.
+--@api-stub: MapScript:getStepCount
 do -- MapScript:getStepCount
   local script = lurek.tilemap.newMapScript()
   script:addStep({ type = "fillArea", x = 1, y = 1, w = 8, h = 8, gid = 1 })
   lurek.log.info("script step count: " .. script:getStepCount(), "tilemap")
 end
 
---@api-stub: LMapScript:addStep
--- Appends a generation step from a step-definition table.
--- Step `type` must be one of fillRandom/placeBlock/placeRandom/placeLine/floodFill/fillArea/drawPath/fillRect.
+--@api-stub: MapScript:addStep
 do -- MapScript:addStep
   local script = lurek.tilemap.newMapScript()
   script:addStep({ type = "fillRect", x = 0, y = 0, w = 16, h = 16, gid = 1 })
@@ -1349,9 +1076,7 @@ do -- MapScript:addStep
   lurek.log.info("authored " .. script:getStepCount() .. " step(s)", "tilemap")
 end
 
---@api-stub: LTileMap:onTileStep
--- Register a callback fired when an entity steps onto a tile with the given GID.
--- @param gid integer, @param fn function(entity, tx, ty)
+--@api-stub: TileMap:onTileStep
 do -- TileMap:onTileStep
   local tm = lurek.tilemap.newTileMap(16, 16)
   tm:onTileStep(5, function(entity, tx, ty)
@@ -1359,9 +1084,7 @@ do -- TileMap:onTileStep
   end)
 end
 
---@api-stub: LTileMap:onTileExit
--- Register a callback fired when an entity exits a tile with the given GID.
--- @param gid integer, @param fn function(entity, tx, ty)
+--@api-stub: TileMap:onTileExit
 do -- TileMap:onTileExit
   local tm = lurek.tilemap.newTileMap(16, 16)
   tm:onTileExit(5, function(entity, tx, ty)
@@ -1369,27 +1092,21 @@ do -- TileMap:onTileExit
   end)
 end
 
---@api-stub: LTileMap:fireTileStep
--- Manually fire the onTileStep callback for a GID, entity, and tile coords.
--- Used by physics integrations or scripted movement systems.
+--@api-stub: TileMap:fireTileStep
 do -- TileMap:fireTileStep
   local tm = lurek.tilemap.newTileMap(16, 16)
   tm:fireTileStep(5, {id="player", x=64, y=64}, 2, 3)
   lurek.log.debug("fireTileStep called", "tilemap")
 end
 
---@api-stub: LTileMap:fireTileExit
--- Manually fire the onTileExit callback for a GID, entity, and tile coords.
--- Used by scripted teleport or scene-transition systems that bypass the physics step.
+--@api-stub: TileMap:fireTileExit
 do -- TileMap:fireTileExit
   local tm = lurek.tilemap.newTileMap(16, 16)
   tm:fireTileExit(5, {id="player", x=64, y=64}, 2, 3)
   lurek.log.debug("fireTileExit called", "tilemap")
 end
 
---@api-stub: LTileMap:applyAutoTile
--- Applies auto-tiling rules to every cell in all layers using the attached TileSet.
--- Call after bulk map edits to recalculate all tile border variants at once.
+--@api-stub: TileMap:applyAutoTile
 do -- TileMap:applyAutoTile
   local ts = lurek.tilemap.newTileSet(1, 64, 8, 16, 16)
   local tm = lurek.tilemap.newTileMap(16, 16)
@@ -1398,9 +1115,7 @@ do -- TileMap:applyAutoTile
   lurek.log.info("auto-tile applied", "tilemap")
 end
 
---@api-stub: LTileMap:applyAutoTile8
--- Applies 8-direction auto-tiling to the entire map, considering diagonal neighbours.
--- Produces more natural corners and borders than the 4-direction variant.
+--@api-stub: TileMap:applyAutoTile8
 do -- TileMap:applyAutoTile8
   local ts = lurek.tilemap.newTileSet(1, 64, 8, 16, 16)
   local tm = lurek.tilemap.newTileMap(16, 16)
@@ -1409,9 +1124,7 @@ do -- TileMap:applyAutoTile8
   lurek.log.info("8-way auto-tile applied", "tilemap")
 end
 
---@api-stub: LTileMap:applyAutoTile8At
--- Applies 8-direction auto-tiling rules only at a specific cell and its neighbours.
--- Faster than a full applyAutoTile8 when only a single cell has changed.
+--@api-stub: TileMap:applyAutoTile8
 do -- TileMap:applyAutoTile8
   local ts = lurek.tilemap.newTileSet(1, 64, 8, 16, 16)
   local tm = lurek.tilemap.newTileMap(16, 16)
@@ -1420,9 +1133,7 @@ do -- TileMap:applyAutoTile8
   lurek.log.info("8-way at-cell applied", "tilemap")
 end
 
---@api-stub: LTileMap:applyAutoTileAt
--- Applies 4-direction auto-tiling rules at a single cell and its cardinal neighbours.
--- Cheaper than a full map pass when editing tiles interactively.
+--@api-stub: TileMap:applyAutoTileAt
 do -- TileMap:applyAutoTileAt
   local ts = lurek.tilemap.newTileSet(1, 64, 8, 16, 16)
   local tm = lurek.tilemap.newTileMap(16, 16)
@@ -1431,9 +1142,7 @@ do -- TileMap:applyAutoTileAt
   lurek.log.info("auto-tile at-cell applied", "tilemap")
 end
 
---@api-stub: LAutoTileSheet:applyToTileSet
--- Copies the auto-tile quads and rules from this sheet into a TileSet.
--- Call once after loading the sheet; the TileSet then supports applyAutoTile.
+--@api-stub: AutoTileSheet:applyToTileSet
 do -- AutoTileSheet:applyToTileSet
   local ts = lurek.tilemap.newTileSet(1, 64, 8, 16, 16)
   local ats = lurek.tilemap.newAutoTileSheet(16, 16, "blob47")
@@ -1441,9 +1150,7 @@ do -- AutoTileSheet:applyToTileSet
   lurek.log.info("auto-tile sheet applied to tileset", "tilemap")
 end
 
---@api-stub: LTileMap:checkEntities
--- Tests all registered entity rectangles against solid tiles and fires overlap callbacks.
--- Call each frame before physics to handle tile-based collision responses.
+--@api-stub: TileMap:checkEntities
 do -- TileMap:checkEntities
   local ts = lurek.tilemap.newTileSet(1, 64, 8, 16, 16)
   local tm = lurek.tilemap.newTileMap(16, 16)
@@ -1452,9 +1159,7 @@ do -- TileMap:checkEntities
   lurek.log.info("entities checked", "tilemap")
 end
 
---@api-stub: LChunkMap:fillRect
--- Fills a rectangle of cells in the chunk map with the given tile GID.
--- Works across chunk boundaries; loads chunks if needed.
+--@api-stub: ChunkMap:fillRect
 do -- ChunkMap:fillRect
   local ts = lurek.tilemap.newTileSet(1, 64, 8, 16, 16)
   local cm = lurek.tilemap.newChunkMap(16)
@@ -1462,9 +1167,7 @@ do -- ChunkMap:fillRect
   lurek.log.info("chunk rect filled", "tilemap")
 end
 
---@api-stub: LMapGen:generate
--- Runs the map generator and returns a 2D table of tile GIDs.
--- Generator parameters are set at construction; call once per new level.
+--@api-stub: MapGen:generate
 do -- MapGen:generate
   local grp = lurek.tilemap.newMapGroup("dungeon")
   local gen = lurek.tilemap.newMapGen(grp, "medium", 4)
@@ -1472,27 +1175,21 @@ do -- MapGen:generate
   lurek.log.info("map generated", "tilemap")
 end
 
---@api-stub: LTileSet:getAutoTileId
--- Returns the tile GID for a given 4-bit auto-tile bitmask.
--- Used internally by applyAutoTile; call directly for custom rendering.
+--@api-stub: TileSet:getAutoTileId
 do -- TileSet:getAutoTileId
   local ts = lurek.tilemap.newTileSet(1, 64, 8, 16, 16)
   local gid = ts:getAutoTileId("terrain", 15)
   lurek.log.info("auto-tile gid: " .. (gid or -1), "tilemap")
 end
 
---@api-stub: LTileSet:getAutoTileId8
--- Returns the tile GID for a given 8-bit auto-tile bitmask (8-direction variant).
--- bitmask encodes N/NE/E/SE/S/SW/W/NW neighbours as individual bits.
+--@api-stub: TileSet:getAutoTileId8
 do -- TileSet:getAutoTileId8
   local ts = lurek.tilemap.newTileSet(1, 64, 8, 16, 16)
   local gid = ts:getAutoTileId8("terrain", 255)
   lurek.log.info("8-way auto-tile gid: " .. (gid or -1), "tilemap")
 end
 
---@api-stub: LChunkMap:getChunksInView
--- Returns a list of chunk coordinate pairs currently overlapping the camera viewport.
--- Use to decide which chunks to stream in or render each frame.
+--@api-stub: ChunkMap:getChunksInView
 do -- ChunkMap:getChunksInView
   local ts = lurek.tilemap.newTileSet(1, 64, 8, 16, 16)
   local cm = lurek.tilemap.newChunkMap(16)
@@ -1500,9 +1197,7 @@ do -- ChunkMap:getChunksInView
   lurek.log.info("chunks in view: " .. #chunks, "tilemap")
 end
 
---@api-stub: LIsoMap:getTilePart
--- Returns the tile GID for a specific named part of an isometric tile at (x, y, level).
--- Parts split a tile into floor, wall, top, and decorations for layered rendering.
+--@api-stub: IsoMap:getTilePart
 do -- IsoMap:getTilePart
   local im = lurek.tilemap.newIsoMap(16, 16, 32, 16, 8)
   im:addLevel()
@@ -1510,9 +1205,7 @@ do -- IsoMap:getTilePart
   lurek.log.info("tile part gid: " .. (gid or 0), "tilemap")
 end
 
---@api-stub: LTileMap:onTileEnter
--- Registers a callback that fires when an entity moves onto a cell with the given GID.
--- Use for trigger tiles: damage zones, teleporters, chest-open triggers.
+--@api-stub: TileMap:onTileEnter
 do -- TileMap:onTileEnter
   local ts = lurek.tilemap.newTileSet(1, 64, 8, 16, 16)
   local tm = lurek.tilemap.newTileMap(16, 16)
@@ -1522,9 +1215,7 @@ do -- TileMap:onTileEnter
   lurek.log.info("tile enter callback registered", "tilemap")
 end
 
---@api-stub: LTileMap:rectOverlapsSolid
--- Returns true if a world-space rectangle overlaps any solid tile.
--- Use for AABB-based pre-collision tests before physics resolution.
+--@api-stub: TileMap:rectOverlapsSolid
 do -- TileMap:rectOverlapsSolid
   local ts = lurek.tilemap.newTileSet(1, 64, 8, 16, 16)
   ts:setSolid(1, true)
@@ -1534,36 +1225,28 @@ do -- TileMap:rectOverlapsSolid
   lurek.log.info("overlap: " .. tostring(hit), "tilemap")
 end
 
---@api-stub: LTileSet:setAnimation
--- Assigns a looping frame sequence to a tile GID for animated tiles.
--- frames is a table of GIDs; duration is total seconds for one full cycle.
+--@api-stub: TileSet:setAnimation
 do -- TileSet:setAnimation
   local ts = lurek.tilemap.newTileSet(1, 64, 8, 16, 16)
   ts:setAnimation(5, {{tileid=5, duration=0.125}, {tileid=6, duration=0.125}, {tileid=7, duration=0.125}, {tileid=8, duration=0.125}})
   lurek.log.info("tile animation set", "tilemap")
 end
 
---@api-stub: LTileSet:setAutoTileRule
--- Defines a 4-direction auto-tile rule: when neighbours match the bitmask, use this GID.
--- Use to register custom terrain transitions beyond the default ruleset.
+--@api-stub: TileSet:setAutoTileRule
 do -- TileSet:setAutoTileRule
   local ts = lurek.tilemap.newTileSet(1, 64, 8, 16, 16)
   ts:setAutoTileRule("terrain", 15, 10)
   lurek.log.info("auto-tile rule set", "tilemap")
 end
 
---@api-stub: LTileSet:setAutoTileRule8
--- Defines an 8-direction auto-tile rule for diagonal-neighbour aware tile selection.
--- bitmask encodes all 8 neighbours; pass the desired GID for that configuration.
+--@api-stub: TileSet:setAutoTileRule8
 do -- TileSet:setAutoTileRule8
   local ts = lurek.tilemap.newTileSet(1, 64, 8, 16, 16)
   ts:setAutoTileRule8("terrain", 255, 20)
   lurek.log.info("8-way auto-tile rule set", "tilemap")
 end
 
---@api-stub: LTileMap:setLayerColor
--- Sets the tint colour for an entire map layer, blending with individual tile tints.
--- Use to apply a day/night atmosphere tint to background layers.
+--@api-stub: TileMap:setLayerColor
 do -- TileMap:setLayerColor
   local ts = lurek.tilemap.newTileSet(1, 64, 8, 16, 16)
   local tm = lurek.tilemap.newTileMap(16, 16)
@@ -1572,9 +1255,7 @@ do -- TileMap:setLayerColor
   lurek.log.info("layer colour set", "tilemap")
 end
 
---@api-stub: LTileMap:setLayerOffset
--- Sets a pixel offset for a named layer, shifting it relative to the base grid.
--- Use for decorative layers that need sub-tile alignment.
+--@api-stub: TileMap:setLayerOffset
 do -- TileMap:setLayerOffset
   local ts = lurek.tilemap.newTileSet(1, 64, 8, 16, 16)
   local tm = lurek.tilemap.newTileMap(16, 16)
@@ -1583,9 +1264,7 @@ do -- TileMap:setLayerOffset
   lurek.log.info("layer offset set", "tilemap")
 end
 
---@api-stub: LTileMap:setLayerParallax
--- Sets a parallax scroll factor for a named layer.
--- factor < 1 makes the layer scroll slower than the camera (background effect).
+--@api-stub: TileMap:setLayerParallax
 do -- TileMap:setLayerParallax
   local ts = lurek.tilemap.newTileSet(1, 64, 8, 16, 16)
   local tm = lurek.tilemap.newTileMap(16, 16)
@@ -1594,9 +1273,7 @@ do -- TileMap:setLayerParallax
   lurek.log.info("parallax set", "tilemap")
 end
 
---@api-stub: LTileMap:setLayerVisible
--- Shows or hides a named map layer without removing it.
--- Toggle for editing workflow or conditional HUD layers.
+--@api-stub: TileMap:setLayerVisible
 do -- TileMap:setLayerVisible
   local ts = lurek.tilemap.newTileSet(1, 64, 8, 16, 16)
   local tm = lurek.tilemap.newTileMap(16, 16)
@@ -1606,8 +1283,6 @@ do -- TileMap:setLayerVisible
 end
 
 --@api-stub: LargeMapRenderer:setMapData
--- Loads tile data into the large-map renderer from a flat GID table.
--- table length must equal width*height; row-major order, starting from top-left.
 do -- LargeMapRenderer:setMapData
   local r = lurek.tilemap.newLargeMapRenderer(16, 16)
   local data = {}
@@ -1616,18 +1291,14 @@ do -- LargeMapRenderer:setMapData
   lurek.log.info("large map data loaded", "tilemap")
 end
 
---@api-stub: LMapBlock:setSide
--- Sets the tile GID for a specific side face (N/S/E/W) of a 3D map block cell.
--- Side faces are used for isometric and first-person wall rendering.
+--@api-stub: MapBlock:setSide
 do -- MapBlock:setSide
   local mb = lurek.tilemap.newMapBlock(8, 8)
   mb:setSide("north", 1, 5)
   lurek.log.info("block side set", "tilemap")
 end
 
---@api-stub: LTileMap:setTile
--- Sets the tile GID at (x, y) in the specified layer.
--- GID=0 clears the cell; non-zero GIDs reference tiles in the attached TileSet.
+--@api-stub: TileMap:setTile
 do -- TileMap:setTile
   local ts = lurek.tilemap.newTileSet(1, 64, 8, 16, 16)
   local tm = lurek.tilemap.newTileMap(16, 16)
@@ -1635,9 +1306,7 @@ do -- TileMap:setTile
   lurek.log.info("tile GID set: " .. tm:getTile(1, 4, 5), "tilemap")
 end
 
---@api-stub: LChunkMap:setTile
--- Sets the tile GID at a world-space cell in the chunk map, loading the chunk if needed.
--- Chunks are loaded/created on demand; the cell persists until explicitly cleared.
+--@api-stub: ChunkMap:setTile
 do -- ChunkMap:setTile
   local ts = lurek.tilemap.newTileSet(1, 64, 8, 16, 16)
   local cm = lurek.tilemap.newChunkMap(16)
@@ -1645,9 +1314,7 @@ do -- ChunkMap:setTile
   lurek.log.info("chunk tile set", "tilemap")
 end
 
---@api-stub: LIsoMap:setTilePart
--- Sets the tile GID for a specific named part of an isometric cell at (x, y, level).
--- Parts allow multi-layer isometric tiles: floor, walls, top decoration.
+--@api-stub: IsoMap:setTilePart
 do -- IsoMap:setTilePart
   local im = lurek.tilemap.newIsoMap(16, 16, 32, 16, 8)
   im:addLevel()
@@ -1655,9 +1322,7 @@ do -- IsoMap:setTilePart
   lurek.log.info("iso tile part set", "tilemap")
 end
 
---@api-stub: LTileMap:setTileTint
--- Sets the RGBA tint for a specific tile cell in a layer.
--- Tint multiplies the tile's texture colour; (1,1,1,1) means no tint change.
+--@api-stub: TileMap:setTileTint
 do -- TileMap:setTileTint
   local ts = lurek.tilemap.newTileSet(1, 64, 8, 16, 16)
   local tm = lurek.tilemap.newTileMap(16, 16)
@@ -1666,9 +1331,7 @@ do -- TileMap:setTileTint
   lurek.log.info("tile tint set", "tilemap")
 end
 
---@api-stub: LTileMap:setViewport
--- Restricts rendering to the given world-space rectangle.
--- Tiles outside the viewport are skipped; update each frame with the camera region.
+--@api-stub: TileMap:setViewport
 do -- TileMap:setViewport
   local ts = lurek.tilemap.newTileSet(1, 64, 8, 16, 16)
   local tm = lurek.tilemap.newTileMap(16, 16)
@@ -1676,9 +1339,7 @@ do -- TileMap:setViewport
   lurek.log.info("tilemap viewport set", "tilemap")
 end
 
---@api-stub: LTileMap:sweepRect
--- Sweeps a moving rectangle through the map and returns the first solid-tile hit.
--- Returns the resolved position and hit normal; returns nil if no collision.
+--@api-stub: TileMap:sweepRect
 do -- TileMap:sweepRect
   local ts = lurek.tilemap.newTileSet(1, 64, 8, 16, 16)
   ts:setSolid(1, true)
@@ -1688,9 +1349,7 @@ do -- TileMap:sweepRect
   lurek.log.info("sweep hit: " .. tostring(hit ~= nil), "tilemap")
 end
 
---@api-stub: LTileMap:toNavGrid
--- Converts the tile map's solid-tile pattern into a NavGrid for pathfinding.
--- Solid tiles become blocked cells; returns a lurek.pathfind NavGrid.
+--@api-stub: TileMap:toNavGrid
 do -- TileMap:toNavGrid
   local ts = lurek.tilemap.newTileSet(1, 64, 8, 16, 16)
   ts:setSolid(1, true)
@@ -1700,9 +1359,7 @@ do -- TileMap:toNavGrid
   lurek.log.info("nav grid: " .. #grid .. " rows", "tilemap")
 end
 
---@api-stub: LMapBlock:setTile
--- Sets the floor tile GID at a specific (x, y) cell in a MapBlock grid.
--- Used to configure the base terrain for isometric block rendering.
+--@api-stub: MapBlock:setTile
 do -- MapBlock:setTile
   local mb = lurek.tilemap.newMapBlock(8, 8)
   mb:setTile(1, 2, 3, 1)
@@ -1723,80 +1380,56 @@ end
 -- LargeMapRenderer methods
 -- -----------------------------------------------------------------------------
 
--- ---- Example: LargeMapRenderer:type -----------------------------------------
 --@api-stub: LargeMapRenderer:type
--- Returns the type name of this object.
--- Useful for runtime type inspection.
 do -- LargeMapRenderer:type
   lurek.log.info("LargeMapRenderer:type = dummy", "tilemap")
 end
 --@api-stub: LargeMapRenderer:typeOf
--- Returns true if this object is of the given type.
--- Use for runtime type checks.
 do -- LargeMapRenderer:typeOf
   lurek.log.info("is LargeMapRenderer: dummy", "tilemap")
 end
---@api-stub: block below with a real scenario.
--- Run .github/prompts/flesh-out-example.prompt.md for instructions.
--- The final committed file must contain ZERO --@api-stub: lines.
--- =============================================================================
 
 -- -----------------------------------------------------------------------------
 -- LAutoTileSheet methods
 -- -----------------------------------------------------------------------------
 
--- ---- Example: LAutoTileSheet:type -------------------------------------------
---@api-stub: LAutoTileSheet:type
--- Returns the type name of this object.
--- Useful for runtime type inspection.
+--@api-stub: LAutoTileSheet:type -- Returns the type name of this userdata
 do -- LAutoTileSheet:type
   local ok_at, auto_tile_sheet_obj = pcall(lurek.tilemap.newAutoTileSheet, nil, nil, nil)
   local t = (ok_at and auto_tile_sheet_obj) and auto_tile_sheet_obj:type() or "LAutoTileSheet"
   lurek.log.info("LAutoTileSheet:type = " .. t, "tilemap")
 end
---@api-stub: LAutoTileSheet:typeOf
--- Returns true if this object is of the given type.
--- Use for runtime type checks.
+--@api-stub: LAutoTileSheet:typeOf -- Checks whether this object matches the given type name
 do -- LAutoTileSheet:typeOf
   local ok_at2, auto_tile_sheet_obj = pcall(lurek.tilemap.newAutoTileSheet, nil, nil, nil)
   lurek.log.info("is LAutoTileSheet: " .. tostring((ok_at2 and auto_tile_sheet_obj) and auto_tile_sheet_obj:typeOf("LAutoTileSheet") or false), "tilemap")
   lurek.log.info("is wrong: " .. tostring((ok_at2 and auto_tile_sheet_obj) and auto_tile_sheet_obj:typeOf("Unknown") or false), "tilemap")
 end
---@api-stub: LChunkMap:type
--- Returns the type name of this object.
--- Useful for runtime type inspection.
+--@api-stub: LChunkMap:type -- Returns the type name of this userdata
 do -- LChunkMap:type
   local ok_cm, chunk_map_obj = pcall(lurek.tilemap.newChunkMap, nil)
   local t = (ok_cm and chunk_map_obj) and chunk_map_obj:type() or "LChunkMap"
   lurek.log.info("LChunkMap:type = " .. t, "tilemap")
 end
---@api-stub: LChunkMap:typeOf
--- Returns true if this object is of the given type.
--- Use for runtime type checks.
+--@api-stub: LChunkMap:typeOf -- Checks whether this object matches the given type name
 do -- LChunkMap:typeOf
   local ok_cm2, chunk_map_obj = pcall(lurek.tilemap.newChunkMap, nil)
   lurek.log.info("is LChunkMap: " .. tostring((ok_cm2 and chunk_map_obj) and chunk_map_obj:typeOf("LChunkMap") or false), "tilemap")
   lurek.log.info("is wrong: " .. tostring((ok_cm2 and chunk_map_obj) and chunk_map_obj:typeOf("Unknown") or false), "tilemap")
 end
---@api-stub: LIsoMap:type
--- Returns the type name of this object.
--- Useful for runtime type inspection.
+--@api-stub: LIsoMap:type -- Returns the type name of this userdata
 do -- LIsoMap:type
   local ok_im, iso_map_obj = pcall(lurek.tilemap.newIsoMap)
   local t = (ok_im and iso_map_obj) and iso_map_obj:type() or "LIsoMap"
   lurek.log.info("LIsoMap:type = " .. t, "tilemap")
 end
---@api-stub: LIsoMap:typeOf
--- Returns true if this object is of the given type.
--- Use for runtime type checks.
+--@api-stub: LIsoMap:typeOf -- Checks whether this object matches the given type name
 do -- LIsoMap:typeOf
   local ok_im2, iso_map_obj = pcall(lurek.tilemap.newIsoMap)
   lurek.log.info("is LIsoMap: " .. tostring((ok_im2 and iso_map_obj) and iso_map_obj:typeOf("LIsoMap") or false), "tilemap")
   lurek.log.info("is wrong: " .. tostring((ok_im2 and iso_map_obj) and iso_map_obj:typeOf("Unknown") or false), "tilemap")
 end
---@api-stub: LLargeMapRenderer:type
--- Returns the type name of this object.
--- Useful for runtime type inspection.
+--@api-stub: LLargeMapRenderer:type -- Returns the type name of this userdata
 do -- LLargeMapRenderer:type
   local ok_r, large_map_renderer_obj = pcall(lurek.tilemap.newLargeMapRenderer, 16, 16)
   if ok_r and large_map_renderer_obj then
@@ -1806,9 +1439,7 @@ do -- LLargeMapRenderer:type
     lurek.log.info("LLargeMapRenderer:type = skipped", "tilemap")
   end
 end
---@api-stub: LLargeMapRenderer:typeOf
--- Returns true if this object is of the given type.
--- Use for runtime type checks.
+--@api-stub: LLargeMapRenderer:typeOf -- Checks whether this object matches the given type name
 do -- LLargeMapRenderer:typeOf
   local ok_r2, large_map_renderer_obj = pcall(lurek.tilemap.newLargeMapRenderer, 16, 16)
   if ok_r2 and large_map_renderer_obj then
@@ -1818,9 +1449,7 @@ do -- LLargeMapRenderer:typeOf
     lurek.log.info("LLargeMapRenderer:typeOf = skipped", "tilemap")
   end
 end
---@api-stub: LMapBlock:type
--- Returns the type name of this object.
--- Useful for runtime type inspection.
+--@api-stub: LMapBlock:type -- Returns the type name of this userdata
 do -- LMapBlock:type
   local ok_mb, map_block_obj = pcall(lurek.tilemap.newMapBlock, 32, 32)
   if ok_mb and map_block_obj then
@@ -1830,9 +1459,7 @@ do -- LMapBlock:type
     lurek.log.info("LMapBlock:type = skipped", "tilemap")
   end
 end
---@api-stub: LMapBlock:typeOf
--- Returns true if this object is of the given type.
--- Use for runtime type checks.
+--@api-stub: LMapBlock:typeOf -- Checks whether this object matches the given type name
 do -- LMapBlock:typeOf
   local ok_mb2, map_block_obj = pcall(lurek.tilemap.newMapBlock, 32, 32)
   if ok_mb2 and map_block_obj then
@@ -1842,9 +1469,7 @@ do -- LMapBlock:typeOf
     lurek.log.info("LMapBlock:typeOf = skipped", "tilemap")
   end
 end
---@api-stub: LMapGen:type
--- Returns the type name of this object.
--- Useful for runtime type inspection.
+--@api-stub: LMapGen:type -- Returns the type name of this userdata
 do -- LMapGen:type
   local grp = lurek.tilemap.newMapGroup("test")
   grp:addBlock(lurek.tilemap.newMapBlock(8, 8, 1, 4))
@@ -1852,9 +1477,7 @@ do -- LMapGen:type
   local t = map_gen_obj:type()
   lurek.log.info("LMapGen:type = " .. t, "tilemap")
 end
---@api-stub: LMapGen:typeOf
--- Returns true if this object is of the given type.
--- Use for runtime type checks.
+--@api-stub: LMapGen:typeOf -- Checks whether this object matches the given type name
 do -- LMapGen:typeOf
   local grp = lurek.tilemap.newMapGroup("test")
   grp:addBlock(lurek.tilemap.newMapBlock(8, 8, 1, 4))
@@ -1862,84 +1485,61 @@ do -- LMapGen:typeOf
   lurek.log.info("is LMapGen: " .. tostring(map_gen_obj:typeOf("LMapGen")), "tilemap")
   lurek.log.info("is wrong: " .. tostring(map_gen_obj:typeOf("Unknown")), "tilemap")
 end
---@api-stub: LMapGroup:type
--- Returns the type name of this object.
--- Useful for runtime type inspection.
+--@api-stub: LMapGroup:type -- Returns the type name of this userdata
 do -- LMapGroup:type
   local map_group_obj = lurek.tilemap.newMapGroup("test")
   local t = map_group_obj:type()
   lurek.log.info("LMapGroup:type = " .. t, "tilemap")
 end
---@api-stub: LMapGroup:typeOf
--- Returns true if this object is of the given type.
--- Use for runtime type checks.
+--@api-stub: LMapGroup:typeOf -- Checks whether this object matches the given type name
 do -- LMapGroup:typeOf
   local map_group_obj = lurek.tilemap.newMapGroup("test")
   lurek.log.info("is LMapGroup: " .. tostring(map_group_obj:typeOf("LMapGroup")), "tilemap")
   lurek.log.info("is wrong: " .. tostring(map_group_obj:typeOf("Unknown")), "tilemap")
 end
---@api-stub: LMapScript:type
--- Returns the type name of this object.
--- Useful for runtime type inspection.
+--@api-stub: LMapScript:type -- Returns the type name of this userdata
 do -- LMapScript:type
   local map_script_obj = lurek.tilemap.newMapScript()
   local t = map_script_obj:type()
   lurek.log.info("LMapScript:type = " .. t, "tilemap")
 end
---@api-stub: LMapScript:typeOf
--- Returns true if this object is of the given type.
--- Use for runtime type checks.
+--@api-stub: LMapScript:typeOf -- Checks whether this object matches the given type name
 do -- LMapScript:typeOf
   local map_script_obj = lurek.tilemap.newMapScript()
   lurek.log.info("is LMapScript: " .. tostring(map_script_obj:typeOf("LMapScript")), "tilemap")
   lurek.log.info("is wrong: " .. tostring(map_script_obj:typeOf("Unknown")), "tilemap")
 end
---@api-stub: LTileMap:type
--- Returns the type name of this object.
--- Useful for runtime type inspection.
+--@api-stub: LTileMap:type -- Returns the type name of this userdata
 do -- LTileMap:type
   local tile_map_obj = lurek.tilemap.newTileMap(32, 32)
   local t = tile_map_obj:type()
   lurek.log.info("LTileMap:type = " .. t, "tilemap")
 end
---@api-stub: LTileMap:typeOf
--- Returns true if this object is of the given type.
--- Use for runtime type checks.
+--@api-stub: LTileMap:typeOf -- Checks whether this object matches the given type name
 do -- LTileMap:typeOf
   local tile_map_obj = lurek.tilemap.newTileMap(32, 32)
   lurek.log.info("is LTileMap: " .. tostring(tile_map_obj:typeOf("LTileMap")), "tilemap")
   lurek.log.info("is wrong: " .. tostring(tile_map_obj:typeOf("Unknown")), "tilemap")
 end
---@api-stub: LTileSet:type
--- Returns the type name of this object.
--- Useful for runtime type inspection.
+--@api-stub: LTileSet:type -- Returns the type name of this userdata
 do -- LTileSet:type
   local tile_set_obj = lurek.tilemap.newTileSet(1, 16, 4, 32, 32)
   local t = tile_set_obj:type()
   lurek.log.info("LTileSet:type = " .. t, "tilemap")
 end
---@api-stub: LTileSet:typeOf
--- Returns true if this object is of the given type.
--- Use for runtime type checks.
+--@api-stub: LTileSet:typeOf -- Checks whether this object matches the given type name
 do -- LTileSet:typeOf
   local tile_set_obj = lurek.tilemap.newTileSet(1, 16, 4, 32, 32)
   lurek.log.info("is LTileSet: " .. tostring(tile_set_obj:typeOf("LTileSet")), "tilemap")
   lurek.log.info("is wrong: " .. tostring(tile_set_obj:typeOf("Unknown")), "tilemap")
 end
---@api-stub: block below with a real scenario.
--- Run .github/prompts/flesh-out-example.prompt.md for instructions.
--- The final committed file must contain ZERO --@api-stub: lines.
--- =============================================================================
 
 
 -- -----------------------------------------------------------------------------
 -- LLargeMapRenderer methods
 -- -----------------------------------------------------------------------------
 
--- ---- Example: LLargeMapRenderer:setMapData ----------------------------------
---@api-stub: LLargeMapRenderer:setMapData
--- Loads a flat array of tile IDs (row-major) covering width Ă— height tiles.
--- Call once after creation to load the full tile array.
+--@api-stub: LLargeMapRenderer:setMapData -- Replaces all tile data with a flat array of GIDs for the given dimensions
 do -- LLargeMapRenderer:setMapData
   local lmr = lurek.tilemap.newLargeMapRenderer(16, 16)
   local map_data = {}
@@ -1947,9 +1547,7 @@ do -- LLargeMapRenderer:setMapData
   lmr:setMapData(map_data, 8, 8)
   lurek.log.info("map loaded: " .. lmr:getMapSize(), "tilemap")
 end
---@api-stub: LLargeMapRenderer:setTile
--- Sets a single tile ID at (x, y).  Coordinates are 0-based.
--- Use for real-time tile edits (e.g. destroying a tile on player impact).
+--@api-stub: LLargeMapRenderer:setTile -- Sets a single tile GID at a given position
 do -- LLargeMapRenderer:setTile
   local lmr = lurek.tilemap.newLargeMapRenderer(16, 16)
   local data = {}; for i = 1, 8*8 do data[i] = 1 end
@@ -1957,9 +1555,7 @@ do -- LLargeMapRenderer:setTile
   lmr:setTile(3, 2, 5)   -- (0-based col=3, row=2) â†’ tile 5
   lurek.log.info("tile(3,2)=" .. tostring(lmr:getTile(3, 2)), "tilemap")
 end
---@api-stub: LLargeMapRenderer:getTile
--- Returns the tile ID at (x, y), or nil if out of bounds.
--- Use to query terrain type or collision group for a given cell.
+--@api-stub: LLargeMapRenderer:getTile -- Returns the tile GID at a given position
 do -- LLargeMapRenderer:getTile
   local lmr = lurek.tilemap.newLargeMapRenderer(16, 16)
   local data = {}; for i = 1, 4*4 do data[i] = i end
@@ -1967,9 +1563,7 @@ do -- LLargeMapRenderer:getTile
   local id = lmr:getTile(1, 2)
   lurek.log.info("tile(1,2)=" .. tostring(id), "tilemap")
 end
---@api-stub: LLargeMapRenderer:getMapSize
--- Returns the map dimensions as (width, height) in tiles.
--- Use to validate bounds before iterating the tile array.
+--@api-stub: LLargeMapRenderer:getMapSize -- Returns the map dimensions in tiles
 do -- LLargeMapRenderer:getMapSize
   local lmr = lurek.tilemap.newLargeMapRenderer(16, 16)
   local data = {}; for i = 1, 10*10 do data[i] = 1 end
@@ -1977,25 +1571,19 @@ do -- LLargeMapRenderer:getMapSize
   local w, h = lmr:getMapSize()
   lurek.log.info("map size=" .. w .. "x" .. h, "tilemap")
 end
---@api-stub: LLargeMapRenderer:setChunkSize
--- Sets the chunk size used for culling (default 16).
--- Larger chunks reduce draw calls; smaller chunks improve culling precision.
+--@api-stub: LLargeMapRenderer:setChunkSize -- Sets the chunk size used for rendering subdivision
 do -- LLargeMapRenderer:setChunkSize
   local lmr = lurek.tilemap.newLargeMapRenderer(16, 16)
   lmr:setChunkSize(8)
   lurek.log.info("chunk_size=" .. lmr:getChunkSize(), "tilemap")
 end
---@api-stub: LLargeMapRenderer:getChunkSize
--- Returns the current chunk size.
--- Inspect before profiling to understand the culling granularity.
+--@api-stub: LLargeMapRenderer:getChunkSize -- Returns the current chunk size
 do -- LLargeMapRenderer:getChunkSize
   local lmr = lurek.tilemap.newLargeMapRenderer(16, 16)
   lmr:setChunkSize(16)
   lurek.log.info("chunk_size=" .. lmr:getChunkSize(), "tilemap")
 end
---@api-stub: LLargeMapRenderer:invalidateChunk
--- Marks a chunk at chunk-grid coordinates (cx, cy) as dirty.
--- Call after setTile so the renderer recomputes that chunk next frame.
+--@api-stub: LLargeMapRenderer:invalidateChunk -- Marks a specific chunk as dirty so it will be rebuilt on the next render
 do -- LLargeMapRenderer:invalidateChunk
   local lmr = lurek.tilemap.newLargeMapRenderer(16, 16)
   local data = {}; for i = 1, 32*32 do data[i] = 1 end
@@ -2004,17 +1592,13 @@ do -- LLargeMapRenderer:invalidateChunk
   lmr:invalidateChunk(0, 0)   -- chunk (0,0) contains tile (5,5) for chunk_size=16
   lurek.log.info("chunk (0,0) invalidated", "tilemap")
 end
---@api-stub: LLargeMapRenderer:invalidateAll
--- Marks every chunk as dirty.
--- Use after batch-editing many tiles or swapping the entire tileset atlas.
+--@api-stub: LLargeMapRenderer:invalidateAll -- Marks all chunks as dirty, forcing a full rebuild on the next render
 do -- LLargeMapRenderer:invalidateAll
   local lmr = lurek.tilemap.newLargeMapRenderer(16, 16)
   lmr:invalidateAll()
   lurek.log.info("all chunks invalidated", "tilemap")
 end
---@api-stub: LLargeMapRenderer:getVisibleChunks
--- Returns the number of chunks currently within the camera viewport.
--- Use to monitor culling efficiency during profiling.
+--@api-stub: LLargeMapRenderer:getVisibleChunks -- Returns the number of chunks currently visible in the viewport
 do -- LLargeMapRenderer:getVisibleChunks
   local lmr = lurek.tilemap.newLargeMapRenderer(16, 16)
   local data = {}; for i = 1, 32*32 do data[i] = 1 end
@@ -2023,69 +1607,53 @@ do -- LLargeMapRenderer:getVisibleChunks
   lmr:setViewport(800, 600)
   lurek.log.info("visible_chunks=" .. lmr:getVisibleChunks(), "tilemap")
 end
---@api-stub: LLargeMapRenderer:getTotalChunks
--- Returns the total number of chunks that cover the loaded map.
--- Compare with getVisibleChunks to measure culling effectiveness.
+--@api-stub: LLargeMapRenderer:getTotalChunks -- Returns the total number of chunks in the map
 do -- LLargeMapRenderer:getTotalChunks
   local lmr = lurek.tilemap.newLargeMapRenderer(16, 16)
   local data = {}; for i = 1, 32*32 do data[i] = 1 end
   lmr:setMapData(data, 32, 32)
   lurek.log.info("total_chunks=" .. lmr:getTotalChunks(), "tilemap")
 end
---@api-stub: LLargeMapRenderer:setCamera
--- Updates the camera position and zoom used for visibility culling.
--- Call every frame with the current camera state before rendering.
+--@api-stub: LLargeMapRenderer:setCamera -- Sets the camera position and zoom level for determining visible chunks
 do -- LLargeMapRenderer:setCamera
   local lmr = lurek.tilemap.newLargeMapRenderer(16, 16)
   lmr:setCamera(128, 64, 2.0)   -- camera at world (128, 64), zoom 2Ă—
   lmr:setViewport(800, 600)
   lurek.log.info("camera updated, visible=" .. lmr:getVisibleChunks(), "tilemap")
 end
---@api-stub: LLargeMapRenderer:setViewport
--- Sets the viewport dimensions in pixels used for visibility culling.
--- Update when the window is resized.
+--@api-stub: LLargeMapRenderer:setViewport -- Sets the viewport dimensions for visibility calculations
 do -- LLargeMapRenderer:setViewport
   local lmr = lurek.tilemap.newLargeMapRenderer(16, 16)
   lmr:setViewport(1280, 720)
   lmr:setCamera(0, 0, 1.0)
   lurek.log.info("viewport set 1280x720", "tilemap")
 end
---@api-stub: LLargeMapRenderer:setLodEnabled
--- Enables or disables level-of-detail rendering for distant chunks.
--- Enable on large maps (100+ chunks) to reduce GPU vertex count.
+--@api-stub: LLargeMapRenderer:setLodEnabled -- Enables or disables level-of-detail rendering for distant chunks
 do -- LLargeMapRenderer:setLodEnabled
   local lmr = lurek.tilemap.newLargeMapRenderer(16, 16)
   lmr:setLodEnabled(true)
   lurek.log.info("lod_enabled=" .. tostring(lmr:isLodEnabled()), "tilemap")
 end
---@api-stub: LLargeMapRenderer:isLodEnabled
--- Returns whether LOD rendering is currently enabled.
--- Use to conditionally show a quality indicator in the options menu.
+--@api-stub: LLargeMapRenderer:isLodEnabled -- Returns whether LOD rendering is currently enabled
 do -- LLargeMapRenderer:isLodEnabled
   local lmr = lurek.tilemap.newLargeMapRenderer(16, 16)
   lmr:setLodEnabled(false)
   lurek.log.info("lod=" .. tostring(lmr:isLodEnabled()), "tilemap")
 end
---@api-stub: LLargeMapRenderer:setLodThresholds
--- Sets the distance thresholds (in tile units) at which each LOD level activates.
--- Tune for your map size: closer thresholds = more aggressive LOD pop-in.
+--@api-stub: LLargeMapRenderer:setLodThresholds -- Sets the zoom thresholds at which LOD levels change
 do -- LLargeMapRenderer:setLodThresholds
   local lmr = lurek.tilemap.newLargeMapRenderer(16, 16)
   lmr:setLodEnabled(true)
   lmr:setLodThresholds({32, 64, 128})   -- lod1 at 32 tiles, lod2 at 64, lod3 at 128
   lurek.log.info("LOD thresholds configured", "tilemap")
 end
---@api-stub: LLargeMapRenderer:setTilesetColumns
--- Sets the number of tile columns in the atlas texture used for UV calculation.
--- Must match the actual atlas layout; wrong values produce scrambled tiles.
+--@api-stub: LLargeMapRenderer:setTilesetColumns -- Sets the column count of the associated tileset atlas for UV calculation
 do -- LLargeMapRenderer:setTilesetColumns
   local lmr = lurek.tilemap.newLargeMapRenderer(16, 16)
   lmr:setTilesetColumns(16)   -- 16-column atlas (e.g. 256Ă—256 with 16Ă—16 tiles)
   lurek.log.info("tileset_cols=" .. lmr:getTilesetColumns(), "tilemap")
 end
---@api-stub: LLargeMapRenderer:getTilesetColumns
--- Returns the number of tileset atlas columns.
--- Use to verify atlas configuration is correct before rendering.
+--@api-stub: LLargeMapRenderer:getTilesetColumns -- Returns the tileset column count used for UV calculation
 do -- LLargeMapRenderer:getTilesetColumns
   local lmr = lurek.tilemap.newLargeMapRenderer(16, 16)
   lmr:setTilesetColumns(8)

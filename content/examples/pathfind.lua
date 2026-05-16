@@ -1,19 +1,8 @@
 -- content/examples/pathfind.lua
--- Hand-written coverage of the lurek.pathfind API (65 items).
---
--- The lurek.pathfind namespace provides A*/Theta*/JPS pathfinding,
--- BFS flow fields, hex grids, range maps and HPA* abstract graphs
--- on top of weighted square or hex grids. Coordinates exposed to
--- Lua are 1-based; constructors return userdata with object-style
--- methods (`grid:setCost(x, y, cost)`).
---
+-- lurek.pathfind API examples.
 -- Run: cargo run -- content/examples/pathfind.lua
 
--- â”€â”€ lurek.pathfind.* functions â”€â”€
-
---@api-stub: lurek.pathfind.newNavGrid
--- Creates a new NavGrid with all cells walkable.
--- Allocate the grid once at level load; cells default to cost 1 (cheapest walkable).
+--@api-stub: lurek.pathfind.newNavGrid -- Creates a navigation grid
 do -- lurek.pathfind.newNavGrid
   local grid = lurek.pathfind.newNavGrid(64, 48)
   grid:setCost(10, 10, 0)  -- mark a wall: cost 0 == blocked
@@ -21,9 +10,7 @@ do -- lurek.pathfind.newNavGrid
   lurek.log.info("nav grid ready: " .. grid:getWidth() .. "x" .. grid:getHeight(), "pathfind")
 end
 
---@api-stub: lurek.pathfind.newPathfinder
--- Creates a new UnitPathfinder backed by a NavGrid.
--- Pair one pathfinder with each NavGrid so caches and dirty-rect state stay isolated per map.
+--@api-stub: lurek.pathfind.newPathfinder -- Creates a unit pathfinder for a navigation grid
 do -- lurek.pathfind.newPathfinder
   local grid = lurek.pathfind.newNavGrid(64, 48)
   local pf = lurek.pathfind.newPathfinder(grid)
@@ -31,9 +18,7 @@ do -- lurek.pathfind.newPathfinder
   pf:setCacheMaxSize(128)
 end
 
---@api-stub: lurek.pathfind.newFlowField
--- Creates a new FlowField backed by a NavGrid.
--- Use a flow field when many agents share the same goal â€” one calculate() amortises across the swarm.
+--@api-stub: lurek.pathfind.newFlowField -- Creates a flow field for a navigation grid
 do -- lurek.pathfind.newFlowField
   local grid = lurek.pathfind.newNavGrid(48, 32)
   local field = lurek.pathfind.newFlowField(grid)
@@ -42,9 +27,7 @@ do -- lurek.pathfind.newFlowField
   lurek.log.debug("flow at (5,5): " .. dx .. "," .. dy, "pathfind")
 end
 
---@api-stub: lurek.pathfind.newPathGrid
--- Creates a new PathGrid with per-cell cost and walkability.
--- PathGrid uses world-space cell sizes; pass tile pixel size so findPath returns pixel-space waypoints.
+--@api-stub: lurek.pathfind.newPathGrid -- Creates a cell-size path grid
 do -- lurek.pathfind.newPathGrid
   local grid = lurek.pathfind.newPathGrid(40, 30, 32)  -- 40x30 tiles, 32px each
   grid:setWalkable(15, 10, false)
@@ -52,9 +35,7 @@ do -- lurek.pathfind.newPathGrid
   lurek.log.info("path grid cell size = " .. grid:getCellSize(), "pathfind")
 end
 
---@api-stub: lurek.pathfind.newPathFlowField
--- Creates a new BFS flow field from a PathGrid.
--- Snapshots walkability from the PathGrid at construction time; rebuild a fresh field after editing the grid.
+--@api-stub: lurek.pathfind.newPathFlowField -- Creates an AI flow field from a path grid
 do -- lurek.pathfind.newPathFlowField
   local grid = lurek.pathfind.newPathGrid(32, 24, 16)
   grid:setWalkable(10, 10, false)
@@ -63,18 +44,14 @@ do -- lurek.pathfind.newPathFlowField
   lurek.log.debug("ai field has goal: " .. tostring(field:hasGoal()), "ai")
 end
 
---@api-stub: lurek.pathfind.setThreadCount
--- Sets the background pathfinding thread count (currently a no-op).
--- Currently a no-op EXAMPLE that emits a warning; safe to call from config but does not actually spawn workers yet.
+--@api-stub: lurek.pathfind.setThreadCount -- Records a warning because pathfinding thread count is not implemented
 do -- lurek.pathfind.setThreadCount
   local desired_workers = 4
   lurek.pathfind.setThreadCount(desired_workers)
   lurek.log.info("requested " .. desired_workers .. " pathfind workers", "pathfind")
 end
 
---@api-stub: lurek.pathfind.getThreadCount
--- Returns the background pathfinding thread count (currently always 0).
--- Always returns 0 in the current build â€” branch on the result to decide whether to dispatch async path requests.
+--@api-stub: lurek.pathfind.getThreadCount -- Returns the pathfinding thread count
 do -- lurek.pathfind.getThreadCount
   local n = lurek.pathfind.getThreadCount()
   if n == 0 then
@@ -82,9 +59,7 @@ do -- lurek.pathfind.getThreadCount
   end
 end
 
---@api-stub: lurek.pathfind.newNavGridFromTileMap
--- Builds a NavGrid from a TileMap layer, treating specified GIDs as blocked (unwalkable).
--- Pass the GIDs of solid tiles so the resulting NavGrid mirrors collision exactly without manual setCost loops.
+--@api-stub: lurek.pathfind.newNavGridFromTileMap -- Creates a navigation grid from a tilemap layer and blocked gid table
 do -- lurek.pathfind.newNavGridFromTileMap
   local tm = lurek.tilemap.newTileMap(40, 25, 32)
   tm:addLayer("walls", 40, 25)
@@ -93,9 +68,7 @@ do -- lurek.pathfind.newNavGridFromTileMap
   lurek.log.info("nav grid from tilemap: " .. grid:getWidth() .. "x" .. grid:getHeight(), "pathfind")
 end
 
---@api-stub: lurek.pathfind.newHexGrid
--- Creates a hex grid for pathfinding, LOS, FOV, and range queries.
--- Choose 'flat' or 'pointy' to match your tilemap orientation; default is 'flat' top.
+--@api-stub: lurek.pathfind.newHexGrid -- Creates a hex grid
 do -- lurek.pathfind.newHexGrid
   local hex = lurek.pathfind.newHexGrid(20, 16, "pointy")
   hex:setBlocked(5, 5, true)
@@ -103,9 +76,7 @@ do -- lurek.pathfind.newHexGrid
   lurek.log.info("hex grid blocked at 5,5: " .. tostring(hex:isBlocked(5, 5)), "hex")
 end
 
---@api-stub: lurek.pathfind.newJpsGrid
--- Creates a uniform-cost grid optimised for Jump Point Search (orthogonal + diagonal).
--- JPS is dramatically faster than A* on large open maps; use it when most cells are walkable.
+--@api-stub: lurek.pathfind.newJpsGrid -- Creates a Jump Point Search grid
 do -- lurek.pathfind.newJpsGrid
   local jps = lurek.pathfind.newJpsGrid(128, 128)
   jps:setBlocked(64, 64, true)
@@ -113,9 +84,7 @@ do -- lurek.pathfind.newJpsGrid
   lurek.log.info("jps path waypoints: " .. (path and #path or 0), "pathfind")
 end
 
---@api-stub: lurek.pathfind.newNavMesh
--- Creates a polygon navmesh for non-tile worlds.
--- Use navmesh when geometry is free-form and grid quantization causes jitter.
+--@api-stub: lurek.pathfind.newNavMesh -- Creates an empty navigation mesh
 do -- lurek.pathfind.newNavMesh
   local mesh = lurek.pathfind.newNavMesh()
   local a = mesh:addPolygon({
@@ -135,8 +104,7 @@ do -- lurek.pathfind.newNavMesh
   lurek.log.info("navmesh waypoints: " .. (path and #path or 0), "pathfind")
 end
 
---@api-stub: LNavMesh:addPolygon
--- Adds a polygon to navmesh and returns its 1-based id.
+--@api-stub: NavMesh:addPolygon
 do -- NavMesh:addPolygon
   local mesh = lurek.pathfind.newNavMesh()
   local id = mesh:addPolygon({
@@ -148,8 +116,7 @@ do -- NavMesh:addPolygon
   lurek.log.debug("navmesh polygon id=" .. id, "pathfind")
 end
 
---@api-stub: LNavMesh:connectPolygons
--- Connects two navmesh polygons by id.
+--@api-stub: NavMesh:connectPolygons
 do -- NavMesh:connectPolygons
   local mesh = lurek.pathfind.newNavMesh()
   local a = mesh:addPolygon({{x=0,y=0},{x=5,y=0},{x=5,y=5},{x=0,y=5}})
@@ -157,8 +124,7 @@ do -- NavMesh:connectPolygons
   mesh:connectPolygons(a, b, true)
 end
 
---@api-stub: LNavMesh:findPath
--- Finds a world-space waypoint path in navmesh.
+--@api-stub: NavMesh:findPath
 do -- NavMesh:findPath
   local mesh = lurek.pathfind.newNavMesh()
   local a = mesh:addPolygon({{x=0,y=0},{x=5,y=0},{x=5,y=5},{x=0,y=5}})
@@ -168,8 +134,7 @@ do -- NavMesh:findPath
   lurek.log.debug("navmesh path points=" .. (path and #path or 0), "pathfind")
 end
 
---@api-stub: LNavMesh:getPolygonCount
--- Returns number of polygons in navmesh.
+--@api-stub: NavMesh:getPolygonCount
 do -- NavMesh:getPolygonCount
   local mesh = lurek.pathfind.newNavMesh()
   mesh:addPolygon({{x=0,y=0},{x=4,y=0},{x=4,y=4},{x=0,y=4}})
@@ -177,24 +142,20 @@ do -- NavMesh:getPolygonCount
   lurek.log.debug("navmesh polygon count=" .. n, "pathfind")
 end
 
---@api-stub: LNavMesh:type
--- Returns userdata type string.
+--@api-stub: NavMesh:type
 do -- NavMesh:type
   local mesh = lurek.pathfind.newNavMesh()
   lurek.log.debug("navmesh type=" .. mesh:type(), "pathfind")
 end
 
---@api-stub: LNavMesh:typeOf
--- Checks userdata type identity.
+--@api-stub: NavMesh:typeOf
 do -- NavMesh:typeOf
   local mesh = lurek.pathfind.newNavMesh()
   local ok = mesh:typeOf("LNavMesh")
   lurek.log.debug("is LNavMesh=" .. tostring(ok), "pathfind")
 end
 
---@api-stub: lurek.pathfind.rangeMap
--- Computes a Dijkstra range-of-movement map from an origin within a movement budget.
--- One-shot Dijkstra range query â€” useful for tactics-style 'show movement squares' overlays.
+--@api-stub: lurek.pathfind.rangeMap -- Computes reachable cells from range map options
 do -- lurek.pathfind.rangeMap
   local result = lurek.pathfind.rangeMap({
     width = 16, height = 16, origin_x = 8, origin_y = 8,
@@ -205,27 +166,21 @@ end
 
 -- â”€â”€ NavGrid methods â”€â”€
 
---@api-stub: LNavGrid:getWidth
--- Returns the grid width in cells.
--- Use to clamp UI cursors and bullet trajectories to the grid extent.
+--@api-stub: NavGrid:getWidth
 do -- NavGrid:getWidth
   local grid = lurek.pathfind.newNavGrid(80, 60)
   local w = grid:getWidth()
   lurek.log.info("nav grid width = " .. w .. " cells", "pathfind")
 end
 
---@api-stub: LNavGrid:getHeight
--- Returns the grid height in cells.
--- Pair with getWidth() when iterating cells; keep loops 1-based to match the API.
+--@api-stub: NavGrid:getHeight
 do -- NavGrid:getHeight
   local grid = lurek.pathfind.newNavGrid(80, 60)
   local h = grid:getHeight()
   lurek.log.info("nav grid height = " .. h .. " cells", "pathfind")
 end
 
---@api-stub: LNavGrid:getDimensions
--- Returns the grid dimensions as width, height.
--- Cheaper than two separate getters when both axes are needed for the same calculation.
+--@api-stub: NavGrid:getDimensions
 do -- NavGrid:getDimensions
   local grid = lurek.pathfind.newNavGrid(64, 48)
   local w, h = grid:getDimensions()
@@ -233,9 +188,7 @@ do -- NavGrid:getDimensions
   lurek.log.info("grid has " .. total .. " cells", "pathfind")
 end
 
---@api-stub: LNavGrid:setCost
--- Sets the traversal cost of a cell (1-based coordinates).
--- Cost 0 = impassable, 1 = open, 2-255 = increasingly expensive (mud, water, hazards).
+--@api-stub: NavGrid:setCost
 do -- NavGrid:setCost
   local grid = lurek.pathfind.newNavGrid(32, 32)
   grid:setCost(16, 16, 0)   -- wall
@@ -243,9 +196,7 @@ do -- NavGrid:setCost
   grid:setCost(18, 16, 10)  -- deep water
 end
 
---@api-stub: LNavGrid:getCost
--- Returns the traversal cost of a cell (1-based coordinates).
--- Branch on the read-back to decide whether terrain modifiers like SFX or particle bursts should fire.
+--@api-stub: NavGrid:getCost
 do -- NavGrid:getCost
   local grid = lurek.pathfind.newNavGrid(32, 32)
   grid:setCost(10, 10, 5)
@@ -255,9 +206,7 @@ do -- NavGrid:getCost
   end
 end
 
---@api-stub: LNavGrid:isBlocked
--- Returns true if the cell is blocked (1-based coordinates).
--- Cheaper than getCost() == 0 because it short-circuits; use for collision pre-checks.
+--@api-stub: NavGrid:isBlocked
 do -- NavGrid:isBlocked
   local grid = lurek.pathfind.newNavGrid(20, 20)
   grid:setCost(5, 5, 0)
@@ -266,27 +215,21 @@ do -- NavGrid:isBlocked
   end
 end
 
---@api-stub: LNavGrid:fill
--- Sets every cell to the given cost.
--- Convenience for resetting between procgen passes; pass 0 to wipe to all-blocked, 1 to reopen everything.
+--@api-stub: NavGrid:fill
 do -- NavGrid:fill
   local grid = lurek.pathfind.newNavGrid(50, 50)
   grid:fill(0)  -- start fully blocked
   for x = 10, 40 do grid:setCost(x, 25, 1) end  -- carve a corridor
 end
 
---@api-stub: LNavGrid:loadFromString
--- Overwrites the grid from a raw byte string (row-major, one byte per cell).
--- Round-trips with saveToString(); the byte string is row-major with one byte per cell.
+--@api-stub: NavGrid:loadFromString
 do -- NavGrid:loadFromString
   local grid = lurek.pathfind.newNavGrid(4, 2)
   grid:loadFromString(string.char(1,1,0,1, 1,5,5,1))
   lurek.log.info("loaded grid, cell (2,2) cost=" .. grid:getCost(2, 2), "save")
 end
 
---@api-stub: LNavGrid:saveToString
--- Exports the cost grid as a byte string (row-major, one byte per cell).
--- Pair with lurek.fs.write to persist generated maps; the result is a raw byte string of length width*height.
+--@api-stub: NavGrid:saveToString
 do -- NavGrid:saveToString
   local grid = lurek.pathfind.newNavGrid(8, 8)
   grid:setCost(4, 4, 0)
@@ -294,18 +237,14 @@ do -- NavGrid:saveToString
   lurek.log.info("serialised grid: " .. #blob .. " bytes", "save")
 end
 
---@api-stub: LNavGrid:setChunkSize
--- Sets the HPAâ… chunk size.
--- Smaller chunks = faster local re-plans, larger chunks = fewer abstract nodes; 16 is a good default for 1k-cell maps.
+--@api-stub: NavGrid:setChunkSize
 do -- NavGrid:setChunkSize
   local grid = lurek.pathfind.newNavGrid(128, 128)
   grid:setChunkSize(16)
   grid:rebuildAbstract()
 end
 
---@api-stub: LNavGrid:getChunkSize
--- Returns the current HPAâ… chunk size.
--- Read it after rebuildAbstract() to confirm the planner picked up your size override.
+--@api-stub: NavGrid:getChunkSize
 do -- NavGrid:getChunkSize
   local grid = lurek.pathfind.newNavGrid(64, 64)
   grid:setChunkSize(8)
@@ -313,9 +252,7 @@ do -- NavGrid:getChunkSize
   lurek.log.debug("hpa chunk size = " .. cs, "pathfind")
 end
 
---@api-stub: LNavGrid:rebuildAbstract
--- Rebuilds the HPAâ… abstract graph from the current grid state.
--- Call once after bulk edits, or after clearDirty() processed pending rectangles, to refresh long-distance plans.
+--@api-stub: NavGrid:rebuildAbstract
 do -- NavGrid:rebuildAbstract
   local grid = lurek.pathfind.newNavGrid(64, 64)
   grid:setChunkSize(16)
@@ -323,9 +260,7 @@ do -- NavGrid:rebuildAbstract
   grid:rebuildAbstract()
 end
 
---@api-stub: LNavGrid:setDirty
--- Records a dirty rectangle for incremental HPAâ… updates (1-based coordinates).
--- Mark the bounding box of any cell edit so the next abstract rebuild only touches affected chunks.
+--@api-stub: NavGrid:setDirty
 do -- NavGrid:setDirty
   local grid = lurek.pathfind.newNavGrid(64, 64)
   grid:setCost(20, 20, 0)
@@ -333,9 +268,7 @@ do -- NavGrid:setDirty
   grid:setDirty(20, 20, 2, 1)  -- 2x1 rectangle from (20,20)
 end
 
---@api-stub: LNavGrid:clearDirty
--- Clears all pending dirty rectangles.
--- Call after rebuildAbstract() consumed the dirty list; lets the next frame start fresh.
+--@api-stub: NavGrid:clearDirty
 do -- NavGrid:clearDirty
   local grid = lurek.pathfind.newNavGrid(64, 64)
   grid:setDirty(10, 10, 4, 4)
@@ -343,18 +276,14 @@ do -- NavGrid:clearDirty
   grid:clearDirty()
 end
 
---@api-stub: LNavGrid:setDiagonalMode
--- Sets the diagonal movement mode.
--- Modes: "never", "always", "no_corner_cutting" (recommended for tile-based games to prevent clipping).
+--@api-stub: NavGrid:setDiagonalMode
 do -- NavGrid:setDiagonalMode
   local grid = lurek.pathfind.newNavGrid(40, 40)
   grid:setDiagonalMode("nocornercut")
   lurek.log.info("diagonal mode set to " .. grid:getDiagonalMode(), "pathfind")
 end
 
---@api-stub: LNavGrid:getDiagonalMode
--- Returns the current diagonal movement mode as a string.
--- Read back when serialising save files so the loaded map preserves movement rules.
+--@api-stub: NavGrid:getDiagonalMode
 do -- NavGrid:getDiagonalMode
   local grid = lurek.pathfind.newNavGrid(20, 20)
   local mode = grid:getDiagonalMode()
@@ -363,18 +292,14 @@ do -- NavGrid:getDiagonalMode
   end
 end
 
---@api-stub: LNavGrid:type
--- Returns the type name of this object.
--- Returns the literal string "LNavGrid"; use in generic dispatch tables to switch on userdata kind.
+--@api-stub: NavGrid:type
 do -- NavGrid:type
   local grid = lurek.pathfind.newNavGrid(8, 8)
   local kind = grid:type()
   lurek.log.debug("object type: " .. kind, "pathfind")
 end
 
---@api-stub: LNavGrid:typeOf
--- Returns true if this object is of the given type.
--- Accepts the literal type name or "Object" (the engine root type) for polymorphic checks.
+--@api-stub: NavGrid:typeOf
 do -- NavGrid:typeOf
   local grid = lurek.pathfind.newNavGrid(8, 8)
   if grid:typeOf("LNavGrid") then
@@ -384,9 +309,7 @@ end
 
 -- â”€â”€ UnitPathfinder methods â”€â”€
 
---@api-stub: LUnitPathfinder:getPathLength
--- Returns the euclidean length of a path table.
--- Returns euclidean (not grid-step) length â€” useful for ETA estimates given a unit speed.
+--@api-stub: UnitPathfinder:getPathLength
 do -- UnitPathfinder:getPathLength
   local g = lurek.pathfind.newNavGrid(32, 32)
   local pf = lurek.pathfind.newPathfinder(g)
@@ -396,9 +319,7 @@ do -- UnitPathfinder:getPathLength
   end
 end
 
---@api-stub: LUnitPathfinder:getPathCost
--- Returns the sum of grid traversal costs along a path.
--- Sums per-cell traversal costs; compare two candidate paths to pick the cheapest under terrain modifiers.
+--@api-stub: UnitPathfinder:getPathCost
 do -- UnitPathfinder:getPathCost
   local g = lurek.pathfind.newNavGrid(32, 32)
   g:setCost(10, 10, 5)
@@ -409,9 +330,7 @@ do -- UnitPathfinder:getPathCost
   end
 end
 
---@api-stub: LUnitPathfinder:setCacheEnabled
--- Enables or disables path result caching.
--- Enable for stationary maps where the same start/goal pairs recur; disable when the grid mutates each frame.
+--@api-stub: UnitPathfinder:setCacheEnabled
 do -- UnitPathfinder:setCacheEnabled
   local g = lurek.pathfind.newNavGrid(32, 32)
   local pf = lurek.pathfind.newPathfinder(g)
@@ -419,9 +338,7 @@ do -- UnitPathfinder:setCacheEnabled
   lurek.log.info("path cache enabled", "pathfind")
 end
 
---@api-stub: LUnitPathfinder:isCacheEnabled
--- Returns true if path result caching is enabled.
--- Branch on this before calling expensive query helpers â€” no point pre-warming the cache if it is off.
+--@api-stub: UnitPathfinder:isCacheEnabled
 do -- UnitPathfinder:isCacheEnabled
   local g = lurek.pathfind.newNavGrid(16, 16)
   local pf = lurek.pathfind.newPathfinder(g)
@@ -430,9 +347,7 @@ do -- UnitPathfinder:isCacheEnabled
   end
 end
 
---@api-stub: LUnitPathfinder:clearCache
--- Removes all cached path results.
--- Call after any setCost / setDirty change so stale paths through removed walls are invalidated.
+--@api-stub: UnitPathfinder:clearCache
 do -- UnitPathfinder:clearCache
   local g = lurek.pathfind.newNavGrid(32, 32)
   local pf = lurek.pathfind.newPathfinder(g)
@@ -440,9 +355,7 @@ do -- UnitPathfinder:clearCache
   pf:clearCache()
 end
 
---@api-stub: LUnitPathfinder:getCacheSize
--- Returns the number of entries in the path cache.
--- Use to monitor cache pressure; pair with setCacheMaxSize for back-pressure logging in long sessions.
+--@api-stub: UnitPathfinder:getCacheSize
 do -- UnitPathfinder:getCacheSize
   local g = lurek.pathfind.newNavGrid(32, 32)
   local pf = lurek.pathfind.newPathfinder(g)
@@ -451,9 +364,7 @@ do -- UnitPathfinder:getCacheSize
   lurek.log.debug("cached paths = " .. n, "pathfind")
 end
 
---@api-stub: LUnitPathfinder:setCacheMaxSize
--- Sets the maximum number of cached path entries.
--- Bound memory usage on long sessions; entries are evicted LRU when the cap is hit.
+--@api-stub: UnitPathfinder:setCacheMaxSize
 do -- UnitPathfinder:setCacheMaxSize
   local g = lurek.pathfind.newNavGrid(64, 64)
   local pf = lurek.pathfind.newPathfinder(g)
@@ -461,18 +372,14 @@ do -- UnitPathfinder:setCacheMaxSize
   pf:setCacheMaxSize(256)
 end
 
---@api-stub: LUnitPathfinder:type
--- Returns the type name of this object.
--- Returns "UnitPathfinder" â€” distinguish from the bare userdata wrappers.
+--@api-stub: UnitPathfinder:type
 do -- UnitPathfinder:type
   local g = lurek.pathfind.newNavGrid(8, 8)
   local pf = lurek.pathfind.newPathfinder(g)
   lurek.log.debug("object: " .. pf:type(), "pathfind")
 end
 
---@api-stub: LUnitPathfinder:typeOf
--- Returns true if this object is of the given type.
--- Returns true for the literal name or for "Object"; useful in generic dispatch tables.
+--@api-stub: UnitPathfinder:typeOf
 do -- UnitPathfinder:typeOf
   local g = lurek.pathfind.newNavGrid(8, 8)
   local pf = lurek.pathfind.newPathfinder(g)
@@ -483,9 +390,7 @@ end
 
 -- â”€â”€ FlowField methods â”€â”€
 
---@api-stub: LFlowField:getDirection
--- Returns the normalised direction vector at a cell (1-based coordinates).
--- Returns dx, dy in [-1, 1]; multiply by speed*dt to drive each agent toward the shared goal.
+--@api-stub: FlowField:getDirection
 do -- FlowField:getDirection
   local g = lurek.pathfind.newNavGrid(32, 32)
   local f = lurek.pathfind.newFlowField(g)
@@ -494,9 +399,7 @@ do -- FlowField:getDirection
   lurek.log.debug("flow @5,5 = " .. dx .. "," .. dy, "flow")
 end
 
---@api-stub: LFlowField:getDirectionAngle
--- Returns the flow direction as an angle in radians (1-based coordinates).
--- Convenience for sprite rotation â€” returns radians directly so you can feed it into render.draw().
+--@api-stub: FlowField:getDirectionAngle
 do -- FlowField:getDirectionAngle
   local g = lurek.pathfind.newNavGrid(32, 32)
   local f = lurek.pathfind.newFlowField(g)
@@ -505,9 +408,7 @@ do -- FlowField:getDirectionAngle
   lurek.log.debug("flow angle = " .. angle .. " rad", "flow")
 end
 
---@api-stub: LFlowField:getCostToTarget
--- Returns the integrated cost to the nearest target (1-based coordinates).
--- Returns the integrated cost to the nearest target â€” use as a heuristic for AI threat maps.
+--@api-stub: FlowField:getCostToTarget
 do -- FlowField:getCostToTarget
   local g = lurek.pathfind.newNavGrid(32, 32)
   local f = lurek.pathfind.newFlowField(g)
@@ -516,9 +417,7 @@ do -- FlowField:getCostToTarget
   lurek.log.info("distance to target = " .. d, "flow")
 end
 
---@api-stub: LFlowField:isCalculated
--- Returns true if the flow field has been computed at least once.
--- Guard reads with this â€” getDirection on an uncalculated field returns 0,0 which would stall agents.
+--@api-stub: FlowField:isCalculated
 do -- FlowField:isCalculated
   local g = lurek.pathfind.newNavGrid(16, 16)
   local f = lurek.pathfind.newFlowField(g)
@@ -527,9 +426,7 @@ do -- FlowField:isCalculated
   end
 end
 
---@api-stub: LFlowField:getTargets
--- Returns the target cells from the most recent computation (1-based coordinates).
--- Useful for visualising goal markers; entries are 1-based {x=,y=} tables.
+--@api-stub: FlowField:getTargets
 do -- FlowField:getTargets
   local g = lurek.pathfind.newNavGrid(20, 20)
   local f = lurek.pathfind.newFlowField(g)
@@ -538,18 +435,14 @@ do -- FlowField:getTargets
   lurek.log.info("flow has " .. #targets .. " goals", "flow")
 end
 
---@api-stub: LFlowField:type
--- Returns the type name of this object.
--- Returns "FlowField" â€” both NavGrid- and PathGrid-backed flow fields share this type name.
+--@api-stub: FlowField:type
 do -- FlowField:type
   local g = lurek.pathfind.newNavGrid(8, 8)
   local f = lurek.pathfind.newFlowField(g)
   lurek.log.debug("object: " .. f:type(), "flow")
 end
 
---@api-stub: LFlowField:typeOf
--- Returns true if this object is of the given type.
--- Use to write swarm AI that consumes either flavour of flow field uniformly.
+--@api-stub: FlowField:typeOf
 do -- FlowField:typeOf
   local g = lurek.pathfind.newNavGrid(8, 8)
   local f = lurek.pathfind.newFlowField(g)
@@ -560,45 +453,35 @@ end
 
 -- â”€â”€ PathGrid methods â”€â”€
 
---@api-stub: LPathGrid:getWidth
--- Returns the grid width in cells.
--- Returned in cells, not pixels â€” multiply by getCellSize() for world-space extent.
+--@api-stub: PathGrid:getWidth
 do -- PathGrid:getWidth
   local g = lurek.pathfind.newPathGrid(40, 30, 32)
   local w = g:getWidth()
   lurek.log.info("path grid is " .. w .. " cells wide", "pathfind")
 end
 
---@api-stub: LPathGrid:getHeight
--- Returns the grid height in cells.
--- Pair with getWidth() to clamp camera bounds on grid-based levels.
+--@api-stub: PathGrid:getHeight
 do -- PathGrid:getHeight
   local g = lurek.pathfind.newPathGrid(40, 30, 32)
   local h = g:getHeight()
   lurek.log.info("path grid is " .. h .. " cells tall", "pathfind")
 end
 
---@api-stub: LPathGrid:getCellSize
--- Returns the world-space size of each cell.
--- World-space cell size in pixels; multiply by cell index to get drawing coordinates.
+--@api-stub: PathGrid:getCellSize
 do -- PathGrid:getCellSize
   local g = lurek.pathfind.newPathGrid(20, 15, 64)
   local cs = g:getCellSize()
   lurek.log.info("each cell = " .. cs .. " px", "pathfind")
 end
 
---@api-stub: LPathGrid:setWalkable
--- Sets the walkability of a cell (1-based coordinates).
--- Cheaper alternative to setCost(0) when you only need on/off; preserves the existing cost multiplier.
+--@api-stub: PathGrid:setWalkable
 do -- PathGrid:setWalkable
   local g = lurek.pathfind.newPathGrid(30, 20, 32)
   g:setWalkable(15, 10, false)  -- close a doorway
   g:setWalkable(16, 10, true)   -- open another
 end
 
---@api-stub: LPathGrid:isWalkable
--- Returns true if a cell is walkable (1-based coordinates).
--- Pre-flight check before issuing findPath so you avoid the planner cost when the goal is unreachable.
+--@api-stub: PathGrid:isWalkable
 do -- PathGrid:isWalkable
   local g = lurek.pathfind.newPathGrid(20, 20, 32)
   g:setWalkable(10, 10, false)
@@ -607,18 +490,14 @@ do -- PathGrid:isWalkable
   end
 end
 
---@api-stub: LPathGrid:setCost
--- Sets the cost multiplier for a cell (1-based coordinates).
--- Floating-point cost multiplier â€” values < 1 prefer this terrain, > 1 avoid it.
+--@api-stub: PathGrid:setCost
 do -- PathGrid:setCost
   local g = lurek.pathfind.newPathGrid(40, 30, 32)
   g:setCost(20, 15, 3.0)  -- mud
   g:setCost(21, 15, 0.5)  -- road
 end
 
---@api-stub: LPathGrid:getCost
--- Returns the cost multiplier for a cell (1-based coordinates).
--- Returns the multiplier (default 1.0); branch on it to drive movement-speed modifiers on the agent.
+--@api-stub: PathGrid:getCost
 do -- PathGrid:getCost
   local g = lurek.pathfind.newPathGrid(20, 20, 32)
   g:setCost(5, 5, 2.5)
@@ -628,17 +507,13 @@ do -- PathGrid:getCost
   end
 end
 
---@api-stub: LPathGrid:type
--- Returns the type name of this object.
--- Returns "PathGrid" â€” distinguishes the world-space grid from the cell-only NavGrid.
+--@api-stub: PathGrid:type
 do -- PathGrid:type
   local g = lurek.pathfind.newPathGrid(8, 8, 16)
   lurek.log.debug("object: " .. g:type(), "pathfind")
 end
 
---@api-stub: LPathGrid:typeOf
--- Returns true if this object is of the given type.
--- Use in generic helpers that accept any grid kind for visualisation.
+--@api-stub: PathGrid:typeOf
 do -- PathGrid:typeOf
   local g = lurek.pathfind.newPathGrid(8, 8, 16)
   if g:typeOf("PathGrid") then
@@ -649,8 +524,6 @@ end
 -- â”€â”€ AiFlowField methods â”€â”€
 
 --@api-stub: AiFlowField:getWidth
--- Returns the flow field grid width in cells.
--- Mirrors the underlying PathGrid width; use for drawing debug overlays.
 do -- AiFlowField:getWidth
   local g = lurek.pathfind.newPathGrid(32, 24, 32)
   local f = lurek.pathfind.newPathFlowField(g)
@@ -658,8 +531,6 @@ do -- AiFlowField:getWidth
 end
 
 --@api-stub: AiFlowField:getHeight
--- Returns the flow field grid height in cells.
--- Pair with getWidth() when iterating cells for visualisation.
 do -- AiFlowField:getHeight
   local g = lurek.pathfind.newPathGrid(32, 24, 32)
   local f = lurek.pathfind.newPathFlowField(g)
@@ -667,8 +538,6 @@ do -- AiFlowField:getHeight
 end
 
 --@api-stub: AiFlowField:hasGoal
--- Returns true if a goal has been set.
--- Cheap guard before calling getDirection â€” without a goal the field yields zero vectors and agents stall.
 do -- AiFlowField:hasGoal
   local g = lurek.pathfind.newPathGrid(16, 16, 32)
   local f = lurek.pathfind.newPathFlowField(g)
@@ -678,8 +547,6 @@ do -- AiFlowField:hasGoal
 end
 
 --@api-stub: AiFlowField:setGoal
--- Sets the goal cell and triggers BFS recomputation (1-based coordinates).
--- Setting a new goal triggers a full BFS recompute â€” call sparingly (e.g. on player move, not per frame).
 do -- AiFlowField:setGoal
   local g = lurek.pathfind.newPathGrid(20, 20, 32)
   local f = lurek.pathfind.newPathFlowField(g)
@@ -688,8 +555,6 @@ do -- AiFlowField:setGoal
 end
 
 --@api-stub: AiFlowField:getDirection
--- Returns the normalised direction toward the goal (1-based coordinates).
--- Returns dx, dy unit vector toward the goal; multiply by agent speed*dt for displacement.
 do -- AiFlowField:getDirection
   local g = lurek.pathfind.newPathGrid(20, 20, 32)
   local f = lurek.pathfind.newPathFlowField(g)
@@ -699,8 +564,6 @@ do -- AiFlowField:getDirection
 end
 
 --@api-stub: AiFlowField:getDistance
--- Returns the BFS distance to the goal (1-based coordinates).
--- BFS hop count to the goal â€” handy as a threat heuristic or to gate aggro radius.
 do -- AiFlowField:getDistance
   local g = lurek.pathfind.newPathGrid(20, 20, 32)
   local f = lurek.pathfind.newPathFlowField(g)
@@ -712,8 +575,6 @@ do -- AiFlowField:getDistance
 end
 
 --@api-stub: AiFlowField:type
--- Returns the type name of this object.
--- Returns "FlowField" (shared with NavGrid-backed flow); use typeOf() if you must distinguish source grid.
 do -- AiFlowField:type
   local g = lurek.pathfind.newPathGrid(8, 8, 16)
   local f = lurek.pathfind.newPathFlowField(g)
@@ -721,8 +582,6 @@ do -- AiFlowField:type
 end
 
 --@api-stub: AiFlowField:typeOf
--- Returns true if this object is of the given type.
--- Useful in generic swarm code that accepts either flow-field flavour.
 do -- AiFlowField:typeOf
   local g = lurek.pathfind.newPathGrid(8, 8, 16)
   local f = lurek.pathfind.newPathFlowField(g)
@@ -733,18 +592,14 @@ end
 
 -- â”€â”€ HexGrid methods â”€â”€
 
---@api-stub: LHexGrid:setCost
--- Set movement cost for a cell (1-based coordinates).
--- Hex movement cost in floating-point; useful for terrain modifiers like 'forest costs 2 hexes to enter'.
+--@api-stub: HexGrid:setCost
 do -- HexGrid:setCost
   local hex = lurek.pathfind.newHexGrid(15, 12, "flat")
   hex:setCost(5, 4, 2.0)  -- forest hex
   hex:setCost(6, 4, 3.0)  -- swamp hex
 end
 
---@api-stub: LHexGrid:isBlocked
--- Returns true if a cell is blocked (1-based coordinates).
--- Pre-check before moving a unit; cheaper than calling findPath only to discover the goal is impassable.
+--@api-stub: HexGrid:isBlocked
 do -- HexGrid:isBlocked
   local hex = lurek.pathfind.newHexGrid(10, 8, "pointy")
   hex:setBlocked(3, 3, true)
@@ -755,9 +610,7 @@ end
 
 -- â”€â”€ JpsGrid methods â”€â”€
 
---@api-stub: LJpsGrid:isBlocked
--- Returns true if the cell is blocked (1-based coordinates).
--- JPS expects uniform-cost grids â€” query blocked state to gate AI before issuing a path request.
+--@api-stub: JpsGrid:isBlocked
 do -- JpsGrid:isBlocked
   local jps = lurek.pathfind.newJpsGrid(64, 64)
   jps:setBlocked(32, 32, true)
@@ -767,9 +620,7 @@ do -- JpsGrid:isBlocked
 end
 
 
---@api-stub: LFlowField:calculate
--- Computes the flow field toward a single target cell.
--- After calculation, every cell has a direction vector steering toward the target.
+--@api-stub: FlowField:calculate
 do -- FlowField:calculate
   local grid = lurek.pathfind.newNavGrid(32, 32)
   local ff = lurek.pathfind.newFlowField(grid)
@@ -777,9 +628,7 @@ do -- FlowField:calculate
   lurek.log.info("flow field calculated", "pathfind")
 end
 
---@api-stub: LFlowField:calculateMulti
--- Computes a flow field toward multiple target cells simultaneously.
--- Cells flow toward whichever target is nearest in cost terms.
+--@api-stub: FlowField:calculateMulti
 do -- FlowField:calculateMulti
   local grid = lurek.pathfind.newNavGrid(32, 32)
   local ff = lurek.pathfind.newFlowField(grid)
@@ -787,36 +636,28 @@ do -- FlowField:calculateMulti
   lurek.log.info("multi-target flow field done", "pathfind")
 end
 
---@api-stub: LHexGrid:distance
--- Returns the axial (cube-coordinate) distance between two hex cells.
--- Used to measure movement cost or attack range on hex maps.
+--@api-stub: HexGrid:distance
 do -- HexGrid:distance
   local hg = lurek.pathfind.newHexGrid(16, 16)
   local d = hg:distance(1, 1, 6, 4)
   lurek.log.info("hex distance: " .. d, "pathfind")
 end
 
---@api-stub: LHexGrid:fieldOfView
--- Returns a set of hex cells visible from (ox, oy) within radius r.
--- Blocked cells occlude cells behind them; returns a table of {q,r} pairs.
+--@api-stub: HexGrid:fieldOfView
 do -- HexGrid:fieldOfView
   local hg = lurek.pathfind.newHexGrid(16, 16)
   local visible = hg:fieldOfView(8, 8, 4)
   lurek.log.info("visible cells: " .. #visible, "pathfind")
 end
 
---@api-stub: LNavGrid:fillRect
--- Sets all cells within a world-space rectangle to blocked (or unblocked).
--- Faster than looping over individual setBlocked calls for bulk terrain setup.
+--@api-stub: NavGrid:fillRect
 do -- NavGrid:fillRect
   local grid = lurek.pathfind.newNavGrid(64, 64)
   grid:fillRect(10, 10, 20, 20, 1)
   lurek.log.info("rect filled", "pathfind")
 end
 
---@api-stub: LUnitPathfinder:findNearestWalkable
--- Returns the closest walkable cell to the given position.
--- Use when a target is blocked and you need an approximation point.
+--@api-stub: UnitPathfinder:findNearestWalkable
 do -- UnitPathfinder:findNearestWalkable
   local grid = lurek.pathfind.newNavGrid(32, 32)
   local pf = lurek.pathfind.newPathfinder(grid)
@@ -824,9 +665,7 @@ do -- UnitPathfinder:findNearestWalkable
   lurek.log.info("nearest walkable: " .. cx .. "," .. cy, "pathfind")
 end
 
---@api-stub: LUnitPathfinder:findPartialPath
--- Finds the longest partial path toward an unreachable goal.
--- Returns the path that gets closest within the cost budget.
+--@api-stub: UnitPathfinder:findPartialPath
 do -- UnitPathfinder:findPartialPath
   local grid = lurek.pathfind.newNavGrid(32, 32)
   grid:fillRect(15, 1, 15, 31, 0)
@@ -835,9 +674,7 @@ do -- UnitPathfinder:findPartialPath
   lurek.log.info("partial path length: " .. #path, "pathfind")
 end
 
---@api-stub: LUnitPathfinder:findPath
--- Finds the optimal path between two grid cells using A* on the NavGrid.
--- Returns a table of {x, y} step cells from start to goal (exclusive of start).
+--@api-stub: UnitPathfinder:findPath
 do -- UnitPathfinder:findPath
   local grid = lurek.pathfind.newNavGrid(32, 32)
   local pf = lurek.pathfind.newPathfinder(grid)
@@ -845,36 +682,28 @@ do -- UnitPathfinder:findPath
   lurek.log.info("path steps: " .. (path and #path or 0), "pathfind")
 end
 
---@api-stub: LPathGrid:findPath
--- Finds a path on a PathGrid using the smooth cell-based pathfinder.
--- Returns a table of waypoint positions; smoother than NavGrid paths.
+--@api-stub: PathGrid:findPath
 do -- PathGrid:findPath
   local pg = lurek.pathfind.newPathGrid(32, 32, 16)
   local path = pg:findPath(1, 1, 31, 31)
   lurek.log.info("path grid path: " .. (path and #path or 0), "pathfind")
 end
 
---@api-stub: LHexGrid:findPath
--- Finds the shortest path on a hex grid from start to goal hex cell.
--- Returns a table of {q, r} axial coordinate pairs.
+--@api-stub: HexGrid:findPath
 do -- HexGrid:findPath
   local hg = lurek.pathfind.newHexGrid(16, 16)
   local path = hg:findPath(1, 1, 8, 4)
   lurek.log.info("hex path: " .. (path and #path or 0), "pathfind")
 end
 
---@api-stub: LJpsGrid:findPath
--- Finds the shortest path on a uniform-cost jump-point-search grid.
--- Much faster than A* for open maps; returns table of {x,y} positions.
+--@api-stub: JpsGrid:findPath
 do -- JpsGrid:findPath
   local jg = lurek.pathfind.newJpsGrid(64, 64)
   local path = jg:findPath(1, 1, 63, 63)
   lurek.log.info("jps path: " .. (path and #path or 0), "pathfind")
 end
 
---@api-stub: LUnitPathfinder:findPathBidirectional
--- Finds the shortest path using bidirectional A* for improved performance.
--- Especially faster on long paths in large grids; result is equivalent to A*.
+--@api-stub: UnitPathfinder:findPathBidirectional
 do -- UnitPathfinder:findPathBidirectional
   local grid = lurek.pathfind.newNavGrid(64, 64)
   local pf = lurek.pathfind.newPathfinder(grid)
@@ -882,9 +711,7 @@ do -- UnitPathfinder:findPathBidirectional
   lurek.log.info("bidir path: " .. (path and #path or 0), "pathfind")
 end
 
---@api-stub: LUnitPathfinder:findPathSmooth
--- Finds an A* path and applies post-processing to remove unnecessary waypoints.
--- Returns a shorter path that agents can traverse with fewer turns.
+--@api-stub: UnitPathfinder:findPathSmooth
 do -- UnitPathfinder:findPathSmooth
   local grid = lurek.pathfind.newNavGrid(32, 32)
   local pf = lurek.pathfind.newPathfinder(grid)
@@ -892,9 +719,7 @@ do -- UnitPathfinder:findPathSmooth
   lurek.log.info("smooth path: " .. (path and #path or 0), "pathfind")
 end
 
---@api-stub: LPathGrid:findPathSmoothed
--- Finds and post-smooths a path on a PathGrid using the Theta* algorithm.
--- Produces direct line-of-sight segments where the terrain allows it.
+--@api-stub: PathGrid:findPathSmoothed
 do -- PathGrid:findPathSmoothed
   local pg = lurek.pathfind.newPathGrid(32, 32, 16)
   local path = pg:findPathSmoothed(1, 1, 30, 30)
@@ -902,8 +727,6 @@ do -- PathGrid:findPathSmoothed
 end
 
 --@api-stub: AiFlowField:getGoal
--- Returns the target cell (x, y) this flow field was calculated toward.
--- Use to verify which goal is active before re-computing on goal change.
 do -- AiFlowField:getGoal
   local pg = lurek.pathfind.newPathGrid(32, 32, 16)
   local pff = lurek.pathfind.newPathFlowField(pg)
@@ -912,9 +735,7 @@ do -- AiFlowField:getGoal
   lurek.log.info("goal: " .. gx .. "," .. gy, "pathfind")
 end
 
---@api-stub: LUnitPathfinder:heuristicDistance
--- Returns the heuristic distance estimate between two cells (octile or Manhattan).
--- Useful for pre-screening distant goals before committing to a full search.
+--@api-stub: UnitPathfinder:heuristicDistance
 do -- UnitPathfinder:heuristicDistance
   local grid = lurek.pathfind.newNavGrid(32, 32)
   local pf = lurek.pathfind.newPathfinder(grid)
@@ -922,9 +743,7 @@ do -- UnitPathfinder:heuristicDistance
   lurek.log.info("heuristic: " .. h, "pathfind")
 end
 
---@api-stub: LUnitPathfinder:isReachable
--- Returns true if the goal cell is reachable from the start without crossing blocked cells.
--- Faster than findPath when you only need a boolean reachability check.
+--@api-stub: UnitPathfinder:isReachable
 do -- UnitPathfinder:isReachable
   local grid = lurek.pathfind.newNavGrid(16, 16)
   local pf = lurek.pathfind.newPathfinder(grid)
@@ -932,18 +751,14 @@ do -- UnitPathfinder:isReachable
   lurek.log.info("reachable: " .. tostring(ok), "pathfind")
 end
 
---@api-stub: LNavGrid:isWalkable
--- Returns true if the given grid cell is not blocked and within bounds.
--- Use before spawning agents or placing objects to verify walkability.
+--@api-stub: NavGrid:isWalkable
 do -- NavGrid:isWalkable
   local grid = lurek.pathfind.newNavGrid(32, 32)
   grid:setBlocked(10, 10, true)
   lurek.log.info("walkable 10,10: " .. tostring(grid:isWalkable(10, 10)), "pathfind")
 end
 
---@api-stub: LUnitPathfinder:lineOfSight
--- Returns true if there are no blocked cells between two grid positions.
--- Uses Bresenham ray-cast; faster than findPath for LOS-only queries.
+--@api-stub: UnitPathfinder:lineOfSight
 do -- UnitPathfinder:lineOfSight
   local grid = lurek.pathfind.newNavGrid(32, 32)
   local pf = lurek.pathfind.newPathfinder(grid)
@@ -951,54 +766,42 @@ do -- UnitPathfinder:lineOfSight
   lurek.log.info("los: " .. tostring(los), "pathfind")
 end
 
---@api-stub: LHexGrid:lineOfSight
--- Returns true if there is unobstructed line-of-sight between two hex cells.
--- Uses the hex supergrid LOS algorithm; blocked cells break the sight line.
+--@api-stub: HexGrid:lineOfSight
 do -- HexGrid:lineOfSight
   local hg = lurek.pathfind.newHexGrid(16, 16)
   local los = hg:lineOfSight(1, 1, 8, 4)
   lurek.log.info("hex los: " .. tostring(los), "pathfind")
 end
 
---@api-stub: LHexGrid:rangeOfMovement
--- Returns all hex cells reachable from the origin within a given move-point budget.
--- Respects cell costs and blocked cells; result is a table of {q,r} pairs.
+--@api-stub: HexGrid:rangeOfMovement
 do -- HexGrid:rangeOfMovement
   local hg = lurek.pathfind.newHexGrid(16, 16)
   local cells = hg:rangeOfMovement(8, 8, 3)
   lurek.log.info("cells in range: " .. #cells, "pathfind")
 end
 
---@api-stub: LNavGrid:setBlocked
--- Sets a single grid cell as blocked (true) or walkable (false).
--- Invalidates cached paths that cross this cell; use setDirty() for bulk updates.
+--@api-stub: NavGrid:setBlocked
 do -- NavGrid:setBlocked
   local grid = lurek.pathfind.newNavGrid(32, 32)
   grid:setBlocked(8, 8, true)
   lurek.log.info("cell 8,8 blocked", "pathfind")
 end
 
---@api-stub: LHexGrid:setBlocked
--- Marks a hex cell as impassable on the hex grid.
--- Blocked cells are excluded from pathfinding and fieldOfView calculations.
+--@api-stub: HexGrid:setBlocked
 do -- HexGrid:setBlocked
   local hg = lurek.pathfind.newHexGrid(16, 16)
   hg:setBlocked(4, 4, true)
   lurek.log.info("hex cell 4,4 blocked", "pathfind")
 end
 
---@api-stub: LJpsGrid:setBlocked
--- Marks a cell as impassable on the JPS uniform-cost grid.
--- JPS rebuilds its jump-point cache lazily; no explicit rebuild needed.
+--@api-stub: JpsGrid:setBlocked
 do -- JpsGrid:setBlocked
   local jg = lurek.pathfind.newJpsGrid(32, 32)
   jg:setBlocked(15, 15, true)
   lurek.log.info("jps cell blocked", "pathfind")
 end
 
---@api-stub: LFlowField:steer
--- Returns the recommended velocity vector (vx, vy) for an agent at world position (x, y).
--- Interpolates between nearby cell direction vectors for smooth movement.
+--@api-stub: FlowField:steer
 do -- FlowField:steer
   local grid = lurek.pathfind.newNavGrid(32, 32)
   local ff = lurek.pathfind.newFlowField(grid)
@@ -1019,28 +822,21 @@ end
 -- LAIFlowField methods
 -- -----------------------------------------------------------------------------
 
--- ---- Example: LAIFlowField:getWidth -----------------------------------------
---@api-stub: LAIFlowField:getWidth
--- Returns the flow field grid width in cells.
--- Use to iterate over the field or validate coordinate range.
+--@api-stub: LAIFlowField:getWidth -- Returns flow field width
 do -- LAIFlowField:getWidth
   local grid = lurek.pathfind.newPathGrid(12, 8, 1.0)
   local ff = lurek.pathfind.newPathFlowField(grid)
   local ok_w, ww = pcall(function() return ff:getWidth() end)
   lurek.log.info("width=" .. tostring(ok_w and ww or "??"), "pathfind")
 end
---@api-stub: LAIFlowField:getHeight
--- Returns the flow field grid height in cells.
--- Use to iterate over the field or validate coordinate range.
+--@api-stub: LAIFlowField:getHeight -- Returns flow field height
 do -- LAIFlowField:getHeight
   local grid = lurek.pathfind.newPathGrid(12, 8, 1.0)
   local ff = lurek.pathfind.newPathFlowField(grid)
   local ok_h2, hh = pcall(function() return ff:getHeight() end)
   lurek.log.info("height=" .. tostring(ok_h2 and hh or "??"), "pathfind")
 end
---@api-stub: LAIFlowField:hasGoal
--- Returns true if a goal has been set.
--- Check before calling getDirection/getDistance to avoid nil errors.
+--@api-stub: LAIFlowField:hasGoal -- Returns whether a goal is set
 do -- LAIFlowField:hasGoal
   local grid = lurek.pathfind.newPathGrid(8, 8, 1.0)
   local ff = lurek.pathfind.newPathFlowField(grid)
@@ -1050,9 +846,7 @@ do -- LAIFlowField:hasGoal
   local ok2, v2 = pcall(function() return ff and ff:hasGoal() end)
   lurek.log.info("has goal after set: " .. tostring(ok2 and v2 or false), "pathfind")
 end
---@api-stub: LAIFlowField:setGoal
--- Sets the goal cell and triggers BFS recomputation (1-based coordinates).
--- Use when the player or a target moves to a new cell.
+--@api-stub: LAIFlowField:setGoal -- Sets the one-based flow field goal
 do -- LAIFlowField:setGoal
   local grid = lurek.pathfind.newPathGrid(8, 8, 1.0)
   local ff = lurek.pathfind.newPathFlowField(grid)
@@ -1063,9 +857,7 @@ do -- LAIFlowField:setGoal
     lurek.log.info("goal set: skipped (no ff)", "pathfind")
   end
 end
---@api-stub: LAIFlowField:getGoal
--- Returns the goal cell (1-based coordinates) or nil if unset.
--- Use to display or serialise the current goal.
+--@api-stub: LAIFlowField:getGoal -- Returns the one-based flow field goal when set
 do -- LAIFlowField:getGoal
   local grid = lurek.pathfind.newPathGrid(8, 8, 1.0)
   local ff = lurek.pathfind.newPathFlowField(grid)
@@ -1077,9 +869,7 @@ do -- LAIFlowField:getGoal
     lurek.log.info("goal=skipped", "pathfind")
   end
 end
---@api-stub: LAIFlowField:getDirection
--- Returns the normalised direction toward the goal (1-based coordinates).
--- Feed this vector directly into an agent's movement velocity.
+--@api-stub: LAIFlowField:getDirection -- Returns flow direction for a one-based cell
 do -- LAIFlowField:getDirection
   local grid = lurek.pathfind.newPathGrid(8, 8, 1.0)
   local ff = lurek.pathfind.newPathFlowField(grid)
@@ -1091,9 +881,7 @@ do -- LAIFlowField:getDirection
     lurek.log.info("dir dx=skipped", "pathfind")
   end
 end
---@api-stub: LAIFlowField:getDistance
--- Returns the BFS distance to the goal (1-based coordinates).
--- Use for threat evaluation: closer = higher urgency.
+--@api-stub: LAIFlowField:getDistance -- Returns distance to goal for a one-based cell
 do -- LAIFlowField:getDistance
   local grid = lurek.pathfind.newPathGrid(8, 8, 1.0)
   local ff = lurek.pathfind.newPathFlowField(grid)
@@ -1105,51 +893,39 @@ do -- LAIFlowField:getDistance
     lurek.log.info("distance from (1,1) to goal=skipped", "pathfind")
   end
 end
---@api-stub: LAIFlowField:type
--- Returns the type name of this object.
--- Useful for runtime type inspection of pathfind objects.
+--@api-stub: LAIFlowField:type -- Returns the Lua-visible type name for this AI flow field handle
 do -- LAIFlowField:type
   local grid = lurek.pathfind.newPathGrid(8, 8, 1.0)
   local ff = lurek.pathfind.newPathFlowField(grid)
   local t = ff and ff:type() or "LAIFlowField"
   lurek.log.info("LAIFlowField:type=" .. t, "pathfind")
 end
---@api-stub: LAIFlowField:typeOf
--- Returns true if this object is of the given type.
--- Use for runtime type checks on pathfind objects.
+--@api-stub: LAIFlowField:typeOf -- Returns whether this AI flow field handle matches a supported type name
 do -- LAIFlowField:typeOf
   local grid = lurek.pathfind.newPathGrid(8, 8, 1.0)
   local ff = lurek.pathfind.newPathFlowField(grid)
   lurek.log.info("is LAIFlowField: " .. tostring(ff and ff:typeOf("LAIFlowField") or false), "pathfind")
   lurek.log.info("is wrong: " .. tostring(ff and ff:typeOf("Unknown") or false), "pathfind")
 end
---@api-stub: LHexGrid:type
--- Returns the type name of this object.
--- Useful for runtime type inspection.
+--@api-stub: LHexGrid:type -- Returns the Lua-visible type name for this hex grid handle
 do -- LHexGrid:type
   local hex_grid_obj = lurek.pathfind.newHexGrid(32, 32, nil)
   local t = hex_grid_obj:type()
   lurek.log.info("LHexGrid:type = " .. t, "pathfind")
 end
---@api-stub: LHexGrid:typeOf
--- Returns true if this object is of the given type.
--- Use for runtime type checks.
+--@api-stub: LHexGrid:typeOf -- Returns whether this hex grid handle matches a supported type name
 do -- LHexGrid:typeOf
   local hex_grid_obj = lurek.pathfind.newHexGrid(32, 32, nil)
   lurek.log.info("is LHexGrid: " .. tostring(hex_grid_obj:typeOf("LHexGrid")), "pathfind")
   lurek.log.info("is wrong: " .. tostring(hex_grid_obj:typeOf("Unknown")), "pathfind")
 end
---@api-stub: LJpsGrid:type
--- Returns the type name of this object.
--- Useful for runtime type inspection.
+--@api-stub: LJpsGrid:type -- Returns the Lua-visible type name for this JPS grid handle
 do -- LJpsGrid:type
   local jps_grid_obj = lurek.pathfind.newJpsGrid(32, 32)
   local t = jps_grid_obj:type()
   lurek.log.info("LJpsGrid:type = " .. t, "pathfind")
 end
---@api-stub: LJpsGrid:typeOf
--- Returns true if this object is of the given type.
--- Use for runtime type checks.
+--@api-stub: LJpsGrid:typeOf -- Returns whether this JPS grid handle matches a supported type name
 do -- LJpsGrid:typeOf
   local jps_grid_obj = lurek.pathfind.newJpsGrid(32, 32)
   lurek.log.info("is LJpsGrid: " .. tostring(jps_grid_obj:typeOf("LJpsGrid")), "pathfind")

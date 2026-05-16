@@ -2,11 +2,24 @@
 
 ## Unreleased
 
+- docs/lua_api: fixed 77 confirmed doc-comment bugs in `src/lua_api/*.rs`: 32 `Option<T>` parameters missing `?` optionality markers, 27 params documented as `LuaValue` (internal Rust type) changed to `any`, 11 generic-container params (LList/LStack/LQueue/LObjectPool) mis-typed as `boolean` changed to `any`, 4 integer params mis-typed as `number` changed to `integer`, and 3 return types with wrong optionality or type name; drove `CONFIRMED_DOC_BUG` count from 374 to 0.
+- tools/lua_binding_reports: eliminated all false-positive `CONFIRMED_DOC_BUG` classifications — added 6 semantic rules to `_classify_issue`: all `parameter_name_mismatch` entries → `EXTRACTION_UNCERTAIN` (Rust closure param names are internal); `userdata` vs specific `L*` type → `EXTRACTION_UNCERTAIN`; `any` (from `LuaValue`) vs specific type → `EXTRACTION_UNCERTAIN`; optionality mismatch on `any` params/returns → `EXTRACTION_UNCERTAIN`; `LMultiValue` return → `UNSUPPORTED_PATTERN`; added `ctx` to the Lua-context parameter skip-list so `|ctx, path|` closures extract only `path` as a visible parameter. Validator now exits 0 with `confirmed_doc_bug_count = 0`.
+
+- docs/wiki: replaced the stale API-only wiki output with an English generated GitHub Wiki pipeline covering guide pages, module pages, per-module API pages, examples, games, and Lunasome; added TOCs, cross-page navigation, spec Purpose/Summary sections, source artifact links, and sourced Lua example blocks for every rendered callable.
+
+- docs/wiki: added generated example blocks for API type/class sections; type headings now use exact class or producer callable examples from `content/examples/` when available and fall back to module-level examples so every per-module API `###` section includes fenced Lua example code.
+
+- docs/wiki: merged Module-X.md and API-X.md into a single page per module (123→71 pages); removed dead Polish duplicate functions; updated all cross-references; added `--validate` flag to check 100% API example coverage with real (uncommented) Lua code in fenced blocks.
+
+- content/examples: replaced 82 `--@api-stub:` placeholders with real `do -- <name>` Lua example blocks in `ui.lua`, `province.lua`, `html.lua`, `render.lua`, `filesystem.lua`, and `image.lua`; wiki `--validate` now passes at 100% (4799/4799 callables covered).
+
 - test(ai,animation,effect): moved additional Lua-reachable agent defaults, ignored invalid decision-model input, animation state-machine edge cases, and postfx stack remove behavior into the existing Lua-first unit suites; narrowed `ai_agent_tests.rs`, `animation_state_machine_tests.rs`, and split effect Rust tests to the remaining parser and render-internal cases.
 
 - fix(examples,network): aligned camera and tilemap examples with the current Lua bindings, made network examples use fast loopback endpoints for offline-safe load tests, and configured the HTTP client to use `ureq`'s explicit `native-tls` provider so HTTPS requests no longer panic the background network thread.
 
 - tools/lua_api: moved the experimental Lua binding snapshot extractor out of `src/docs` and into standalone tool scripts under `tools/`; added `tools/docs/gen_lua_binding_reports.py` to emit `logs/data/lua_api_bindings_from_code.json` and `logs/data/lua_api_bindings_from_docstrings.json`, added `tools/validate/validate_lua_binding_reports.py` to diff code vs `///` signatures, generated the initial reports, and covered the tool with Python tests.
+
+- tools/lua_api: made the binding report output explicit instead of heuristic-only by adding categorized issues (`CONFIRMED_DOC_BUG`, `EXTRACTION_UNCERTAIN`, `UNSUPPORTED_PATTERN`), structured code/doc evidence in `logs/reports/lua_api_binding_validation.json`, extractor confidence metadata in the code snapshot, and validator behavior that blocks only on confirmed doc bugs while leaving uncertain extraction cases visible but non-failing.
 
 - test(automation): moved Lua-reachable repeat timing, macro dispatch, visual assert, condition gating, parser-failure, and exact elapsed-time checks into `tests/lua/unit/test_automation_core_unit.lua`, and narrowed `tests/rust/unit/automation_tests.rs` to parser, sink, and perf internals.
 

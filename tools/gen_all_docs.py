@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 """Convenience runner: regenerate the full Lurek2D documentation pipeline in one command.
 
 Steps:
@@ -8,10 +8,10 @@ Steps:
     4.  gen_luadoc.py                -> docs/api/lurek.lua                (LuaCATS stubs)
     4.  gen_docs_lua.py              -> docs/api/lurek.md                 (Lua API reference)
     5.  gen_docs_rust.py             -> docs/api/rust.md                  (Rust API reference)
-    6.  gen_wiki_api.py              -> wiki/API-Reference.md        (game-dev cheatsheet)
-    7.  gen_lib_docs.py              -> docs/api/library.md + docs/api/library.lua  (Lunasome library API)
-    8.  doc_coverage.py              -> logs/data/doc_coverage.json            (docstring coverage JSON)
-    9.  test_coverage.py             -> logs/data/test_coverage.json           (test coverage JSON)
+    6.  gen_lib_docs.py              -> docs/api/library.md + docs/api/library.lua  (Lunasome library API)
+    7.  gen_wiki.py                  -> docs/wiki/*.md                    (GitHub Wiki pages)
+    8.  doc_coverage.py              -> logs/data/doc_coverage.json       (docstring coverage JSON)
+    9.  test_coverage.py             -> logs/data/test_coverage.json      (test coverage JSON)
    10.  gen_test_docs.py --mode rust -> logs/reports/test_docs_rust.md
    11.  gen_test_docs.py --mode lua  -> logs/reports/test_docs_lua.md
    12.  gen_coverage_gaps.py         -> logs/reports/coverage_gaps.md     (API gap report)
@@ -40,8 +40,8 @@ SCRIPTS = [
     ("docs/gen_luadoc.py",        "LuaCATS Stubs (docs/api/lurek.lua)"),
     ("docs/gen_docs_lua.py",      "Lua API reference (docs/api/lurek.md)"),
     ("docs/gen_docs_rust.py",     "Rust API reference (docs/api/rust.md)"),
-    ("docs/gen_wiki_api.py",      "Wiki cheatsheet (wiki/API-Reference.md)"),
     ("docs/gen_lib_docs.py",      "Library API (docs/api/library.md + library.lua)"),
+    ("docs/gen_wiki.py",          "User wiki (docs/wiki/*.md)"),
     ("audit/doc_coverage.py",      "Doc coverage analytics (logs/data/doc_coverage.json)"),
     ("audit/test_coverage.py",     "Test coverage analytics (logs/data/test_coverage.json)"),
 ]

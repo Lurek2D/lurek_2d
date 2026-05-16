@@ -138,7 +138,7 @@ impl LuaUserData for LuaObjectPool {
         add_type_methods(methods);
         // -- add --
         /// Add an object to the pool's idle set, making it available for future acquisition.
-        /// @param | value | boolean|number|string|table | The object to store in the pool.
+        /// @param | value | any | The object to store in the pool.
         /// @return | nil | No value is returned.
         methods.add_method("add", |lua, this, value: LuaValue| {
             let total = this.pool.borrow().total_count();
@@ -166,7 +166,7 @@ impl LuaUserData for LuaObjectPool {
         });
         // -- release --
         /// Return an active object back to the pool's idle set so it can be reused.
-        /// @param | value | boolean|number|string|table | The object to release back into the pool.
+        /// @param | value | any | The object to release back into the pool.
         /// @return | nil | No value is returned.
         methods.add_method("release", |lua, this, value: LuaValue| {
             if let Some(id) = this.active_queue.borrow_mut().pop_front() {
@@ -1742,7 +1742,7 @@ impl LuaUserData for LuaStack {
         add_type_methods(methods);
         // -- push --
         /// Push a value onto the top of the stack. Returns false if the stack is at capacity.
-        /// @param | value | boolean|number|string|table | The value to push.
+        /// @param | value | any | The value to push.
         /// @return | boolean | True if pushed, false if full.
         methods.add_method("push", |lua, this, value: LuaValue| {
             let len = this.items.borrow().len();
@@ -1755,7 +1755,7 @@ impl LuaUserData for LuaStack {
         });
         // -- pushBottom --
         /// Push a value onto the bottom of the stack. Returns false if at capacity.
-        /// @param | value | boolean|number|string|table | The value to insert at the bottom.
+        /// @param | value | any | The value to insert at the bottom.
         /// @return | boolean | True if pushed, false if full.
         methods.add_method("pushBottom", |lua, this, value: LuaValue| {
             let len = this.items.borrow().len();
@@ -1941,7 +1941,7 @@ impl LuaUserData for LuaQueue {
         add_type_methods(methods);
         // -- enqueue --
         /// Add a value to the back of the queue. Returns false if at capacity.
-        /// @param | value | boolean|number|string|table | The value to enqueue.
+        /// @param | value | any | The value to enqueue.
         /// @return | boolean | True if enqueued, false if full.
         methods.add_method("enqueue", |lua, this, value: LuaValue| {
             let len = this.items.borrow().len();
@@ -1954,7 +1954,7 @@ impl LuaUserData for LuaQueue {
         });
         // -- enqueueFront --
         /// Add a value to the front of the queue (priority insertion). Returns false if at capacity.
-        /// @param | value | boolean|number|string|table | The value to insert at the front.
+        /// @param | value | any | The value to insert at the front.
         /// @return | boolean | True if enqueued, false if full.
         methods.add_method("enqueueFront", |lua, this, value: LuaValue| {
             let len = this.items.borrow().len();
@@ -2111,7 +2111,7 @@ impl LuaUserData for LuaList {
         add_type_methods(methods);
         // -- add --
         /// Append a value to the end of the list.
-        /// @param | value | boolean|number|string|table | The value to append.
+        /// @param | value | any | The value to append.
         /// @return | nil | No value is returned.
         methods.add_method("add", |lua, this, value: LuaValue| {
             let key = lua.create_registry_value(value)?;
@@ -2120,7 +2120,7 @@ impl LuaUserData for LuaList {
         });
         // -- push --
         /// Append a value to the end of the list (alias for add).
-        /// @param | value | boolean|number|string|table | The value to append.
+        /// @param | value | any | The value to append.
         /// @return | nil | No value is returned.
         methods.add_method("push", |lua, this, value: LuaValue| {
             let key = lua.create_registry_value(value)?;
@@ -2129,7 +2129,7 @@ impl LuaUserData for LuaList {
         });
         // -- unshift --
         /// Insert a value at the beginning of the list.
-        /// @param | value | boolean|number|string|table | The value to prepend.
+        /// @param | value | any | The value to prepend.
         /// @return | nil | No value is returned.
         methods.add_method("unshift", |lua, this, value: LuaValue| {
             let key = lua.create_registry_value(value)?;
@@ -2225,7 +2225,7 @@ impl LuaUserData for LuaList {
         });
         // -- indexOf --
         /// Find the 1-based index of the first occurrence of a value. Returns nil if not found.
-        /// @param | value | boolean|number|string|table | The value to search for.
+        /// @param | value | any | The value to search for.
         /// @return | integer | The 1-based index, or nil when the value is not found.
         methods.add_method("indexOf", |lua, this, value: LuaValue| {
             for (i, key) in this.items.borrow().iter().enumerate() {
@@ -2253,7 +2253,7 @@ impl LuaUserData for LuaList {
         methods.add_method("isEmpty", |_, this, ()| Ok(this.items.borrow().is_empty()));
         // -- contains --
         /// Check whether the list contains a specific value.
-        /// @param | value | boolean|number|string|table | The value to search for.
+        /// @param | value | any | The value to search for.
         /// @return | boolean | True if found.
         methods.add_method("contains", |lua, this, value: LuaValue| {
             for key in this.items.borrow().iter() {

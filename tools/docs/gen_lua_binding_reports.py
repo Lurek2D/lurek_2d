@@ -43,6 +43,15 @@ REGISTRATION_ADD_METHOD = "add_method"
 REGISTRATION_ADD_METHOD_MUT = "add_method_mut"
 REGISTRATION_ADD_FUNCTION = "add_function"
 
+CLASSIFICATION_CLEAN = "CLEAN"
+CLASSIFICATION_CONFIRMED_DOC_BUG = "CONFIRMED_DOC_BUG"
+CLASSIFICATION_EXTRACTION_UNCERTAIN = "EXTRACTION_UNCERTAIN"
+CLASSIFICATION_UNSUPPORTED_PATTERN = "UNSUPPORTED_PATTERN"
+
+CONFIDENCE_DIRECT = "DIRECT"
+CONFIDENCE_HEURISTIC = "HEURISTIC"
+CONFIDENCE_UNSUPPORTED = "UNSUPPORTED"
+
 
 def _load_module(name: str, path: Path):
     spec = importlib.util.spec_from_file_location(name, path)
@@ -58,6 +67,14 @@ GEN = _load_module("gen_lua_api_for_binding_reports", ROOT / "tools" / "docs" / 
 
 
 @dataclass
+class BindingDiagnostic:
+    code: str
+    classification: str
+    message: str
+    evidence: str = ""
+
+
+@dataclass
 class BindingParam:
     name: str
     lua_type: str
@@ -66,6 +83,8 @@ class BindingParam:
     variadic: bool
     inferred: bool
     description: str = ""
+    confidence: str = CONFIDENCE_DIRECT
+    diagnostics: list[BindingDiagnostic] = field(default_factory=list)
 
 
 @dataclass
@@ -75,6 +94,8 @@ class BindingReturn:
     optional: bool
     inferred: bool
     description: str = ""
+    confidence: str = CONFIDENCE_DIRECT
+    diagnostics: list[BindingDiagnostic] = field(default_factory=list)
 
 
 @dataclass
@@ -93,6 +114,8 @@ class BindingEntry:
     source_signature: str = ""
     source_file: str = ""
     line: int = 0
+    confidence: str = CONFIDENCE_DIRECT
+    diagnostics: list[BindingDiagnostic] = field(default_factory=list)
 
 
 @dataclass
@@ -146,6 +169,35 @@ class BindingIndexedBoolMismatch:
 
 
 @dataclass
+class BindingValidationIssue:
+    classification: str
+    blocking: bool
+    kind: str
+    qualified_name: str
+    subject: str
+    message: str
+    expected: object | None = None
+    actual: object | None = None
+    code_index: Optional[int] = None
+    doc_index: Optional[int] = None
+    code_context: dict[str, object] = field(default_factory=dict)
+    doc_context: dict[str, object] = field(default_factory=dict)
+
+
+@dataclass
+class BindingValidationSummary:
+    code_entry_count: int = 0
+    doc_entry_count: int = 0
+    compared_entry_count: int = 0
+    clean_entry_count: int = 0
+    total_issue_count: int = 0
+    blocking_issue_count: int = 0
+    confirmed_doc_bug_count: int = 0
+    extraction_uncertain_count: int = 0
+    unsupported_pattern_count: int = 0
+
+
+@dataclass
 class BindingValidationReport:
     missing_doc_entries: list[str] = field(default_factory=list)
     phantom_doc_entries: list[str] = field(default_factory=list)
@@ -157,22 +209,14 @@ class BindingValidationReport:
     return_count_mismatches: list[BindingCountMismatch] = field(default_factory=list)
     return_type_mismatches: list[BindingIndexedStringMismatch] = field(default_factory=list)
     return_optionality_mismatches: list[BindingIndexedBoolMismatch] = field(default_factory=list)
+    summary: BindingValidationSummary = field(default_factory=BindingValidationSummary)
+    issues: list[BindingValidationIssue] = field(default_factory=list)
 
     def is_clean(self) -> bool:
-        return not any(
-            (
-                self.missing_doc_entries,
-                self.phantom_doc_entries,
-                self.parameter_count_mismatches,
-                self.parameter_order_mismatches,
-                self.parameter_name_mismatches,
-                self.parameter_type_mismatches,
-                self.parameter_optionality_mismatches,
-                self.return_count_mismatches,
-                self.return_type_mismatches,
-                self.return_optionality_mismatches,
-            )
-        )
+        return self.summary.total_issue_count == 0
+
+    def has_blocking_issues(self) -> bool:
+        return self.summary.blocking_issue_count > 0
 
     def to_dict(self) -> dict:
         return asdict(self)
@@ -192,6 +236,15 @@ class ParsedSignature:
     parameters: list[BindingParam] = field(default_factory=list)
     returns: list[BindingReturn] = field(default_factory=list)
     source_signature: str = ""
+    confidence: str = CONFIDENCE_DIRECT
+    diagnostics: list[BindingDiagnostic] = field(default_factory=list)
+
+
+@dataclass
+class ParsedParameterList:
+    parameters: list[BindingParam] = field(default_factory=list)
+    confidence: str = CONFIDENCE_DIRECT
+    diagnostics: list[BindingDiagnostic] = field(default_factory=list)
 
 
 @dataclass
@@ -224,13 +277,42 @@ def validate_binding_snapshots(expected: BindingSnapshot, actual: BindingSnapsho
     expected_map = {entry.qualified_name: entry for entry in expected.entries}
     actual_map = {entry.qualified_name: entry for entry in actual.entries}
     report = BindingValidationReport()
+    issue_entry_names: set[str] = set()
 
     for qualified_name in sorted(expected_map):
         if qualified_name not in actual_map:
             report.missing_doc_entries.append(qualified_name)
+            _append_issue(
+                report,
+                issue_entry_names,
+                BindingValidationIssue(
+                    classification=CLASSIFICATION_CONFIRMED_DOC_BUG,
+                    blocking=True,
+                    kind="missing_doc_entry",
+                    qualified_name=qualified_name,
+                    subject="entry",
+                    message="Code registration exists, but no matching docstring entry was found.",
+                    expected=qualified_name,
+                    code_context=_entry_context(expected_map[qualified_name]),
+                ),
+            )
     for qualified_name in sorted(actual_map):
         if qualified_name not in expected_map:
             report.phantom_doc_entries.append(qualified_name)
+            _append_issue(
+                report,
+                issue_entry_names,
+                BindingValidationIssue(
+                    classification=CLASSIFICATION_CONFIRMED_DOC_BUG,
+                    blocking=True,
+                    kind="phantom_doc_entry",
+                    qualified_name=qualified_name,
+                    subject="entry",
+                    message="Docstring entry exists, but no matching code registration was found.",
+                    actual=qualified_name,
+                    doc_context=_entry_context(actual_map[qualified_name]),
+                ),
+            )
 
     for qualified_name in sorted(expected_map):
         expected_entry = expected_map[qualified_name]
@@ -245,6 +327,20 @@ def validate_binding_snapshots(expected: BindingSnapshot, actual: BindingSnapsho
                     expected=len(expected_entry.parameters),
                     actual=len(actual_entry.parameters),
                 )
+            )
+            _append_issue(
+                report,
+                issue_entry_names,
+                _build_validation_issue(
+                    kind="parameter_count_mismatch",
+                    qualified_name=qualified_name,
+                    subject="parameter",
+                    message="Parameter count differs between code registration and docstring.",
+                    expected=len(expected_entry.parameters),
+                    actual=len(actual_entry.parameters),
+                    code_entry=expected_entry,
+                    doc_entry=actual_entry,
+                ),
             )
 
         actual_param_positions = {
@@ -261,6 +357,22 @@ def validate_binding_snapshots(expected: BindingSnapshot, actual: BindingSnapsho
                         actual_index=actual_index,
                     )
                 )
+                _append_issue(
+                    report,
+                    issue_entry_names,
+                    _build_validation_issue(
+                        kind="parameter_order_mismatch",
+                        qualified_name=qualified_name,
+                        subject="parameter",
+                        message=f"Parameter '{parameter.name}' appears at a different index in the docstring.",
+                        expected=expected_index,
+                        actual=actual_index,
+                        code_entry=expected_entry,
+                        doc_entry=actual_entry,
+                        code_index=expected_index,
+                        doc_index=actual_index,
+                    ),
+                )
 
         param_count = min(len(expected_entry.parameters), len(actual_entry.parameters))
         for index in range(param_count):
@@ -275,6 +387,22 @@ def validate_binding_snapshots(expected: BindingSnapshot, actual: BindingSnapsho
                         actual=actual_param.name,
                     )
                 )
+                _append_issue(
+                    report,
+                    issue_entry_names,
+                    _build_validation_issue(
+                        kind="parameter_name_mismatch",
+                        qualified_name=qualified_name,
+                        subject="parameter",
+                        message="Parameter name differs at the same argument index.",
+                        expected=expected_param.name,
+                        actual=actual_param.name,
+                        code_entry=expected_entry,
+                        doc_entry=actual_entry,
+                        code_index=index,
+                        doc_index=index,
+                    ),
+                )
             if expected_param.inferred and actual_param.inferred and expected_param.lua_type != actual_param.lua_type:
                 report.parameter_type_mismatches.append(
                     BindingIndexedStringMismatch(
@@ -283,6 +411,22 @@ def validate_binding_snapshots(expected: BindingSnapshot, actual: BindingSnapsho
                         expected=expected_param.lua_type,
                         actual=actual_param.lua_type,
                     )
+                )
+                _append_issue(
+                    report,
+                    issue_entry_names,
+                    _build_validation_issue(
+                        kind="parameter_type_mismatch",
+                        qualified_name=qualified_name,
+                        subject="parameter",
+                        message="Parameter Lua type differs at the same argument index.",
+                        expected=expected_param.lua_type,
+                        actual=actual_param.lua_type,
+                        code_entry=expected_entry,
+                        doc_entry=actual_entry,
+                        code_index=index,
+                        doc_index=index,
+                    ),
                 )
             if expected_param.optional != actual_param.optional:
                 report.parameter_optionality_mismatches.append(
@@ -293,6 +437,22 @@ def validate_binding_snapshots(expected: BindingSnapshot, actual: BindingSnapsho
                         actual=actual_param.optional,
                     )
                 )
+                _append_issue(
+                    report,
+                    issue_entry_names,
+                    _build_validation_issue(
+                        kind="parameter_optionality_mismatch",
+                        qualified_name=qualified_name,
+                        subject="parameter",
+                        message="Parameter optionality differs at the same argument index.",
+                        expected=expected_param.optional,
+                        actual=actual_param.optional,
+                        code_entry=expected_entry,
+                        doc_entry=actual_entry,
+                        code_index=index,
+                        doc_index=index,
+                    ),
+                )
 
         if len(expected_entry.returns) != len(actual_entry.returns):
             report.return_count_mismatches.append(
@@ -301,6 +461,20 @@ def validate_binding_snapshots(expected: BindingSnapshot, actual: BindingSnapsho
                     expected=len(expected_entry.returns),
                     actual=len(actual_entry.returns),
                 )
+            )
+            _append_issue(
+                report,
+                issue_entry_names,
+                _build_validation_issue(
+                    kind="return_count_mismatch",
+                    qualified_name=qualified_name,
+                    subject="return",
+                    message="Return count differs between code registration and docstring.",
+                    expected=len(expected_entry.returns),
+                    actual=len(actual_entry.returns),
+                    code_entry=expected_entry,
+                    doc_entry=actual_entry,
+                ),
             )
 
         return_count = min(len(expected_entry.returns), len(actual_entry.returns))
@@ -316,6 +490,22 @@ def validate_binding_snapshots(expected: BindingSnapshot, actual: BindingSnapsho
                         actual=actual_return.lua_type,
                     )
                 )
+                _append_issue(
+                    report,
+                    issue_entry_names,
+                    _build_validation_issue(
+                        kind="return_type_mismatch",
+                        qualified_name=qualified_name,
+                        subject="return",
+                        message="Return Lua type differs at the same return index.",
+                        expected=expected_return.lua_type,
+                        actual=actual_return.lua_type,
+                        code_entry=expected_entry,
+                        doc_entry=actual_entry,
+                        code_index=index,
+                        doc_index=index,
+                    ),
+                )
             if expected_return.optional != actual_return.optional:
                 report.return_optionality_mismatches.append(
                     BindingIndexedBoolMismatch(
@@ -325,8 +515,178 @@ def validate_binding_snapshots(expected: BindingSnapshot, actual: BindingSnapsho
                         actual=actual_return.optional,
                     )
                 )
+                _append_issue(
+                    report,
+                    issue_entry_names,
+                    _build_validation_issue(
+                        kind="return_optionality_mismatch",
+                        qualified_name=qualified_name,
+                        subject="return",
+                        message="Return optionality differs at the same return index.",
+                        expected=expected_return.optional,
+                        actual=actual_return.optional,
+                        code_entry=expected_entry,
+                        doc_entry=actual_entry,
+                        code_index=index,
+                        doc_index=index,
+                    ),
+                )
 
+    _finalize_report(report, expected_map, actual_map, issue_entry_names)
     return report
+
+
+def _append_issue(
+    report: BindingValidationReport,
+    issue_entry_names: set[str],
+    issue: BindingValidationIssue,
+) -> None:
+    report.issues.append(issue)
+    issue_entry_names.add(issue.qualified_name)
+
+
+def _build_validation_issue(
+    *,
+    kind: str,
+    qualified_name: str,
+    subject: str,
+    message: str,
+    expected: object,
+    actual: object,
+    code_entry: Optional[BindingEntry],
+    doc_entry: Optional[BindingEntry],
+    code_index: Optional[int] = None,
+    doc_index: Optional[int] = None,
+) -> BindingValidationIssue:
+    classification = _classify_issue(code_entry, subject, code_index, kind=kind, expected=expected, actual=actual)
+    return BindingValidationIssue(
+        classification=classification,
+        blocking=classification == CLASSIFICATION_CONFIRMED_DOC_BUG,
+        kind=kind,
+        qualified_name=qualified_name,
+        subject=subject,
+        message=message,
+        expected=expected,
+        actual=actual,
+        code_index=code_index,
+        doc_index=doc_index,
+        code_context=_subject_context(code_entry, subject, code_index),
+        doc_context=_subject_context(doc_entry, subject, doc_index),
+    )
+
+
+def _classify_issue(entry: Optional[BindingEntry], subject: str, index: Optional[int], *, kind: str = "", expected: object = None, actual: object = None) -> str:
+    if entry is None:
+        return CLASSIFICATION_CONFIRMED_DOC_BUG
+
+    diagnostic_classes = {diagnostic.classification for diagnostic in entry.diagnostics}
+    if subject == "parameter":
+        targets = entry.parameters if index is None else entry.parameters[index : index + 1]
+    elif subject == "return":
+        targets = entry.returns if index is None else entry.returns[index : index + 1]
+    else:
+        targets = []
+
+    confidences = [target.confidence for target in targets]
+    for target in targets:
+        diagnostic_classes.update(diagnostic.classification for diagnostic in target.diagnostics)
+
+    if CLASSIFICATION_UNSUPPORTED_PATTERN in diagnostic_classes or CONFIDENCE_UNSUPPORTED in confidences:
+        return CLASSIFICATION_UNSUPPORTED_PATTERN
+    if CLASSIFICATION_EXTRACTION_UNCERTAIN in diagnostic_classes or CONFIDENCE_HEURISTIC in confidences:
+        return CLASSIFICATION_EXTRACTION_UNCERTAIN
+
+    # Rule 1: Parameter name mismatches are always EXTRACTION_UNCERTAIN.
+    # Rust closure parameter names are internal identifiers; only @param doc names are Lua-facing.
+    if kind == "parameter_name_mismatch":
+        return CLASSIFICATION_EXTRACTION_UNCERTAIN
+
+    # Rule 2: Code says 'userdata' (from LuaAnyUserData), doc says specific Lua class type (L*).
+    # The tool can't verify which userdata subtype is accepted; the doc is more informative.
+    if kind == "parameter_type_mismatch" and expected == "userdata" and isinstance(actual, str) and actual.startswith("L"):
+        return CLASSIFICATION_EXTRACTION_UNCERTAIN
+
+    # Rule 3: Code says 'any' (from LuaValue generic), doc says a specific type.
+    # LuaValue accepts all Lua values; the doc provides semantic type restriction the code can't express.
+    if kind in ("parameter_type_mismatch", "return_type_mismatch") and expected == "any" and actual and actual != "any":
+        return CLASSIFICATION_EXTRACTION_UNCERTAIN
+
+    # Rule 4: Optionality mismatch where code type is 'any' (from LuaValue, not Option<T>).
+    # LuaValue accepting nil is indistinguishable from Option<T> at extraction time.
+    if kind == "parameter_optionality_mismatch":
+        param_targets = entry.parameters if index is None else entry.parameters[index : index + 1] if entry and entry.parameters else []
+        for target in param_targets:
+            if target.lua_type == "any":
+                return CLASSIFICATION_EXTRACTION_UNCERTAIN
+
+    # Rule 5: return_optionality_mismatch when code type is 'any' (body-inferred, can't determine optionality).
+    # Body inference produces 'any' with optional=False; the doc's optional=True cannot be verified.
+    if kind == "return_optionality_mismatch":
+        ret_targets = entry.returns if index is None else entry.returns[index : index + 1] if entry and entry.returns else []
+        for target in ret_targets:
+            if target.lua_type == "any":
+                return CLASSIFICATION_EXTRACTION_UNCERTAIN
+
+    # Rule 6: LMultiValue return type — the tool cannot decompose multiple Rust return values.
+    # Any count or type mismatch involving LMultiValue is unsupported, not a doc bug.
+    if kind in ("return_count_mismatch", "return_type_mismatch"):
+        code_returns = entry.returns if entry else []
+        for ret in code_returns:
+            if ret.lua_type == "LMultiValue":
+                return CLASSIFICATION_UNSUPPORTED_PATTERN
+
+    return CLASSIFICATION_CONFIRMED_DOC_BUG
+
+
+def _entry_context(entry: BindingEntry) -> dict[str, object]:
+    return {
+        "source_file": entry.source_file,
+        "line": entry.line,
+        "summary": entry.summary,
+        "raw_doc": entry.raw_doc,
+        "source_signature": entry.source_signature,
+        "confidence": entry.confidence,
+        "diagnostics": entry.diagnostics,
+    }
+
+
+def _subject_context(entry: Optional[BindingEntry], subject: str, index: Optional[int]) -> dict[str, object]:
+    if entry is None:
+        return {}
+
+    context = _entry_context(entry)
+    if subject == "parameter":
+        if index is None:
+            context["parameters"] = entry.parameters
+        elif 0 <= index < len(entry.parameters):
+            context["parameter"] = entry.parameters[index]
+    elif subject == "return":
+        if index is None:
+            context["returns"] = entry.returns
+        elif 0 <= index < len(entry.returns):
+            context["return"] = entry.returns[index]
+    return context
+
+
+def _finalize_report(
+    report: BindingValidationReport,
+    expected_map: dict[str, BindingEntry],
+    actual_map: dict[str, BindingEntry],
+    issue_entry_names: set[str],
+) -> None:
+    compared_entry_names = set(expected_map) | set(actual_map)
+    classifications = [issue.classification for issue in report.issues]
+    report.summary = BindingValidationSummary(
+        code_entry_count=len(expected_map),
+        doc_entry_count=len(actual_map),
+        compared_entry_count=len(compared_entry_names),
+        clean_entry_count=max(len(compared_entry_names) - len(issue_entry_names), 0),
+        total_issue_count=len(report.issues),
+        blocking_issue_count=sum(1 for issue in report.issues if issue.blocking),
+        confirmed_doc_bug_count=classifications.count(CLASSIFICATION_CONFIRMED_DOC_BUG),
+        extraction_uncertain_count=classifications.count(CLASSIFICATION_EXTRACTION_UNCERTAIN),
+        unsupported_pattern_count=classifications.count(CLASSIFICATION_UNSUPPORTED_PATTERN),
+    )
 
 
 def export_binding_snapshot(snapshot: BindingSnapshot, path: str) -> None:
@@ -417,6 +777,8 @@ def _build_binding_entry(mode: str, fn, lines: list[str], owner_display_names: d
         source_signature=signature.source_signature,
         source_file=fn.file,
         line=fn.line,
+        confidence=signature.confidence,
+        diagnostics=signature.diagnostics,
     )
 
 
@@ -430,6 +792,7 @@ def _parse_code_signature(
 ) -> ParsedSignature:
     window = _collect_window(lines, index, 20)
     named_function = _self_named_function(window) or _named_create_function(window)
+    deferred_diagnostics: list[BindingDiagnostic] = []
     if named_function and named_function in named_functions:
         signature = _parse_function_signature(
             named_functions[named_function].header,
@@ -437,7 +800,19 @@ def _parse_code_signature(
             owner_display_names,
         )
     else:
+        if named_function:
+            deferred_diagnostics.append(
+                _unsupported_diagnostic(
+                    "NAMED_FUNCTION_NOT_FOUND",
+                    f"Registration references named function '{named_function}', but the definition could not be resolved.",
+                    named_function,
+                )
+            )
         signature = _parse_closure_signature(lines, index, registration_kind, owner_display_names)
+
+    if deferred_diagnostics:
+        signature.diagnostics = deferred_diagnostics + signature.diagnostics
+        signature.confidence = _merge_confidence(signature.confidence, CONFIDENCE_UNSUPPORTED)
 
     if registration_kind == REGISTRATION_ADD_FUNCTION and call_style == ":":
         if signature.parameters and _is_userdata_receiver_parameter(signature.parameters[0]):
@@ -455,9 +830,20 @@ def _parse_closure_signature(
     window = _collect_window(lines, index, 20)
     signature_head, return_type = _closure_head_and_return_type(window)
     if signature_head is None:
-        return ParsedSignature(call_style=_default_call_style(registration_kind))
+        return ParsedSignature(
+            call_style=_default_call_style(registration_kind),
+            confidence=CONFIDENCE_UNSUPPORTED,
+            diagnostics=[
+                _unsupported_diagnostic(
+                    "CLOSURE_SIGNATURE_NOT_FOUND",
+                    "Could not locate a closure signature near the registration site.",
+                    _condense_evidence(window),
+                )
+            ],
+        )
 
-    parameters = _parse_callable_parameters(signature_head, registration_kind, owner_display_names)
+    parsed_parameters = _parse_callable_parameters(signature_head, registration_kind, owner_display_names)
+    parameters = parsed_parameters.parameters
     if return_type:
         returns = _parse_return_type_list(return_type, owner_display_names)
     else:
@@ -469,16 +855,33 @@ def _parse_closure_signature(
         parameters=parameters,
         returns=returns,
         source_signature=signature_head,
+        confidence=_merge_confidence(
+            parsed_parameters.confidence,
+            _member_confidence(parameters),
+            _member_confidence(returns),
+        ),
+        diagnostics=parsed_parameters.diagnostics,
     )
 
 
 def _parse_function_signature(header: str, registration_kind: str, owner_display_names: dict[str, str]) -> ParsedSignature:
     fn_index = header.find("fn ")
     if fn_index < 0:
-        return ParsedSignature(call_style=_default_call_style(registration_kind))
+        return ParsedSignature(
+            call_style=_default_call_style(registration_kind),
+            confidence=CONFIDENCE_UNSUPPORTED,
+            diagnostics=[
+                _unsupported_diagnostic(
+                    "FUNCTION_SIGNATURE_NOT_FOUND",
+                    "Could not locate a named function signature for the registered binding.",
+                    _condense_evidence(header),
+                )
+            ],
+        )
     after_fn = header[fn_index + 3 :]
     params_text = _parenthesized_segment(after_fn)
-    parameters = _parse_callable_parameters(params_text or "", registration_kind, owner_display_names)
+    parsed_parameters = _parse_callable_parameters(params_text or "", registration_kind, owner_display_names)
+    parameters = parsed_parameters.parameters
     return_type = _function_return_type(header)
     returns = _parse_return_type_list(return_type, owner_display_names) if return_type else []
     return ParsedSignature(
@@ -486,19 +889,30 @@ def _parse_function_signature(header: str, registration_kind: str, owner_display
         parameters=parameters,
         returns=returns,
         source_signature=header.strip(),
+        confidence=_merge_confidence(
+            parsed_parameters.confidence,
+            _member_confidence(parameters),
+            _member_confidence(returns),
+        ),
+        diagnostics=parsed_parameters.diagnostics,
     )
 
 
-def _parse_callable_parameters(source_signature: str, registration_kind: str, owner_display_names: dict[str, str]) -> list[BindingParam]:
+def _parse_callable_parameters(
+    source_signature: str,
+    registration_kind: str,
+    owner_display_names: dict[str, str],
+) -> ParsedParameterList:
     params_text = source_signature
     if source_signature.lstrip().startswith("|"):
         params_text = _closure_parameter_segment(source_signature) or ""
     tokens = _split_top_level(params_text, ",")
-    parsed: list[BindingParam] = []
+    parsed = ParsedParameterList()
     for token in tokens:
-        parsed.extend(_parse_parameter_token(token, owner_display_names))
+        token_result = _parse_parameter_token(token, owner_display_names)
+        parsed.parameters.extend(token_result.parameters)
 
-    public_parameters = list(parsed)
+    public_parameters = list(parsed.parameters)
     if registration_kind in (REGISTRATION_TABLE_FUNCTION, REGISTRATION_ADD_FUNCTION):
         if public_parameters and _is_lua_context_parameter(public_parameters[0]):
             public_parameters.pop(0)
@@ -509,33 +923,90 @@ def _parse_callable_parameters(source_signature: str, registration_kind: str, ow
             public_parameters[0].name == "" or _is_receiver_parameter(public_parameters[0])
         ):
             public_parameters.pop(0)
-    return public_parameters
+    parsed.parameters = public_parameters
+    parsed.confidence = _member_confidence(public_parameters)
+    parsed.diagnostics = []
+    return parsed
 
 
-def _parse_parameter_token(token: str, owner_display_names: dict[str, str]) -> list[BindingParam]:
+def _parse_parameter_token(token: str, owner_display_names: dict[str, str]) -> ParsedParameterList:
     trimmed = token.strip()
     if not trimmed or trimmed == "()":
-        return []
+        return ParsedParameterList()
 
     split = _split_pattern_and_type(trimmed)
     if split is None:
         normalized_name = _normalize_parameter_name(trimmed)
-        return [_binding_param(normalized_name, "any", "any", False, False, True, "")]
+        diagnostic = _unsupported_diagnostic(
+            "PARAMETER_PATTERN_UNSUPPORTED",
+            "Parameter token could not be split into a name/type pair.",
+            trimmed,
+        )
+        return ParsedParameterList(
+            parameters=[
+                _binding_param(
+                    normalized_name,
+                    "any",
+                    "any",
+                    False,
+                    False,
+                    True,
+                    "",
+                    confidence=CONFIDENCE_UNSUPPORTED,
+                    diagnostics=[diagnostic],
+                )
+            ],
+            confidence=CONFIDENCE_UNSUPPORTED,
+            diagnostics=[diagnostic],
+        )
 
     pattern, raw_type = split
     pattern = pattern.strip()
     raw_type = raw_type.strip()
 
     if _is_parenthesized(pattern) and _is_parenthesized(raw_type):
+        tuple_diagnostic = _heuristic_diagnostic(
+            "TUPLE_DESTRUCTURING_PARAMETER",
+            "Tuple destructuring requires heuristic parameter extraction.",
+            trimmed,
+        )
+        diagnostics = [tuple_diagnostic]
+        confidence = CONFIDENCE_HEURISTIC
         names = _split_top_level(_inner_parenthesized(pattern) or "", ",")
         types = _split_top_level(_inner_parenthesized(raw_type) or "", ",")
+        if len(names) != len(types):
+            diagnostics.append(
+                _unsupported_diagnostic(
+                    "TUPLE_DESTRUCTURING_ARITY_MISMATCH",
+                    "Tuple destructuring names/types have different arity, so extraction may be incomplete.",
+                    trimmed,
+                )
+            )
+            confidence = CONFIDENCE_UNSUPPORTED
         parameters: list[BindingParam] = []
         for name, raw_inner_type in zip(names, types):
             normalized_name = _normalize_parameter_name(name)
             if not normalized_name or normalized_name == "()":
                 continue
             if "LuaMultiValue" in raw_inner_type:
-                parameters.append(_binding_param("...", "any", raw_inner_type.strip(), False, True, True, ""))
+                variadic_diagnostic = _heuristic_diagnostic(
+                    "VARIADIC_LUA_MULTI_VALUE",
+                    "LuaMultiValue variadic arguments are extracted heuristically.",
+                    raw_inner_type.strip(),
+                )
+                parameters.append(
+                    _binding_param(
+                        "...",
+                        "any",
+                        raw_inner_type.strip(),
+                        False,
+                        True,
+                        True,
+                        "",
+                        confidence=CONFIDENCE_HEURISTIC,
+                        diagnostics=[tuple_diagnostic, variadic_diagnostic],
+                    )
+                )
                 continue
             hint = _normalize_rust_type(raw_inner_type.strip(), owner_display_names)
             parameters.append(
@@ -547,26 +1018,53 @@ def _parse_parameter_token(token: str, owner_display_names: dict[str, str]) -> l
                     False,
                     hint.inferred,
                     "",
+                    confidence=_merge_confidence(confidence, _confidence_from_hint(hint)),
+                    diagnostics=list(diagnostics),
                 )
             )
-        return parameters
+        return ParsedParameterList(parameters=parameters, confidence=confidence, diagnostics=diagnostics)
 
     if "LuaMultiValue" in raw_type:
-        return [_binding_param("...", "any", raw_type, False, True, True, "")]
+        diagnostic = _heuristic_diagnostic(
+            "VARIADIC_LUA_MULTI_VALUE",
+            "LuaMultiValue variadic arguments are extracted heuristically.",
+            raw_type,
+        )
+        return ParsedParameterList(
+            parameters=[
+                _binding_param(
+                    "...",
+                    "any",
+                    raw_type,
+                    False,
+                    True,
+                    True,
+                    "",
+                    confidence=CONFIDENCE_HEURISTIC,
+                    diagnostics=[diagnostic],
+                )
+            ],
+            confidence=CONFIDENCE_HEURISTIC,
+            diagnostics=[diagnostic],
+        )
 
     normalized_name = _normalize_parameter_name(pattern)
     hint = _normalize_rust_type(raw_type, owner_display_names)
-    return [
-        _binding_param(
-            normalized_name,
-            hint.lua_type,
-            raw_type,
-            hint.optional,
-            False,
-            hint.inferred,
-            "",
-        )
-    ]
+    return ParsedParameterList(
+        parameters=[
+            _binding_param(
+                normalized_name,
+                hint.lua_type,
+                raw_type,
+                hint.optional,
+                False,
+                hint.inferred,
+                "",
+                confidence=_confidence_from_hint(hint),
+            )
+        ],
+        confidence=_confidence_from_hint(hint),
+    )
 
 
 def _parse_return_type_list(raw_return_type: str, owner_display_names: dict[str, str]) -> list[BindingReturn]:
@@ -593,8 +1091,21 @@ def _infer_returns_from_text(body_text: str, owner_display_names: dict[str, str]
     variable_hints = _collect_variable_hints(body_text, owner_display_names)
     expression = _last_ok_expression(body_text) or body_text.strip()
     hints = _infer_return_expression(expression, variable_hints, owner_display_names)
+    diagnostic = _heuristic_diagnostic(
+        "BODY_RETURN_INFERENCE",
+        "Return values were inferred from closure body text because no explicit return type was present.",
+        _condense_evidence(expression),
+    )
     return [
-        _binding_return(hint.lua_type, hint.raw_type, hint.optional, hint.inferred, "")
+        _binding_return(
+            hint.lua_type,
+            hint.raw_type,
+            hint.optional,
+            hint.inferred,
+            "",
+            confidence=CONFIDENCE_HEURISTIC,
+            diagnostics=[diagnostic],
+        )
         for hint in hints
     ]
 
@@ -982,7 +1493,17 @@ def _default_call_style(registration_kind: str) -> str:
     return ":" if registration_kind != REGISTRATION_TABLE_FUNCTION else "."
 
 
-def _binding_param(name: str, lua_type: str, raw_type: str, optional: bool, variadic: bool, inferred: bool, description: str) -> BindingParam:
+def _binding_param(
+    name: str,
+    lua_type: str,
+    raw_type: str,
+    optional: bool,
+    variadic: bool,
+    inferred: bool,
+    description: str,
+    confidence: str = CONFIDENCE_DIRECT,
+    diagnostics: Optional[list[BindingDiagnostic]] = None,
+) -> BindingParam:
     return BindingParam(
         name=name,
         lua_type=lua_type,
@@ -991,17 +1512,78 @@ def _binding_param(name: str, lua_type: str, raw_type: str, optional: bool, vari
         variadic=variadic,
         inferred=inferred,
         description=description,
+        confidence=confidence,
+        diagnostics=list(diagnostics or []),
     )
 
 
-def _binding_return(lua_type: str, raw_type: str, optional: bool, inferred: bool, description: str) -> BindingReturn:
+def _binding_return(
+    lua_type: str,
+    raw_type: str,
+    optional: bool,
+    inferred: bool,
+    description: str,
+    confidence: str = CONFIDENCE_DIRECT,
+    diagnostics: Optional[list[BindingDiagnostic]] = None,
+) -> BindingReturn:
     return BindingReturn(
         lua_type=lua_type,
         raw_type=raw_type,
         optional=optional,
         inferred=inferred,
         description=description,
+        confidence=confidence,
+        diagnostics=list(diagnostics or []),
     )
+
+
+def _heuristic_diagnostic(code: str, message: str, evidence: str = "") -> BindingDiagnostic:
+    return BindingDiagnostic(
+        code=code,
+        classification=CLASSIFICATION_EXTRACTION_UNCERTAIN,
+        message=message,
+        evidence=evidence,
+    )
+
+
+def _unsupported_diagnostic(code: str, message: str, evidence: str = "") -> BindingDiagnostic:
+    return BindingDiagnostic(
+        code=code,
+        classification=CLASSIFICATION_UNSUPPORTED_PATTERN,
+        message=message,
+        evidence=evidence,
+    )
+
+
+def _confidence_from_hint(hint: ValueHint) -> str:
+    return CONFIDENCE_DIRECT if hint.inferred else CONFIDENCE_HEURISTIC
+
+
+def _member_confidence(items: list[BindingParam] | list[BindingReturn]) -> str:
+    confidence = CONFIDENCE_DIRECT
+    for item in items:
+        confidence = _merge_confidence(confidence, item.confidence)
+    return confidence
+
+
+def _merge_confidence(*levels: str) -> str:
+    priority = {
+        CONFIDENCE_DIRECT: 0,
+        CONFIDENCE_HEURISTIC: 1,
+        CONFIDENCE_UNSUPPORTED: 2,
+    }
+    merged = CONFIDENCE_DIRECT
+    for level in levels:
+        if priority.get(level, 0) > priority[merged]:
+            merged = level
+    return merged
+
+
+def _condense_evidence(text: str, limit: int = 160) -> str:
+    collapsed = " ".join(text.split())
+    if len(collapsed) <= limit:
+        return collapsed
+    return collapsed[: limit - 3] + "..."
 
 
 def _collect_window(lines: list[str], start: int, max_lines: int) -> str:
@@ -1137,16 +1719,26 @@ def _named_create_function(window: str) -> Optional[str]:
     marker = "lua.create_function("
     if marker not in window:
         return None
-    after_call = window.split(marker, 1)[1].lstrip()
+    # Only match if the call appears before any closure opener (|).
+    # A |...| after this point means we are inside a closure body.
+    pipe = window.find("|")
+    marker_pos = window.find(marker)
+    if pipe >= 0 and marker_pos > pipe:
+        return None
+    after_call = window[marker_pos + len(marker) :].lstrip()
     if after_call.startswith("|") or after_call.startswith("move |"):
         return None
     return _leading_identifier(after_call)
 
 
 def _self_named_function(window: str) -> Optional[str]:
-    if "Self::" not in window:
+    # Only look before any closure opener (|) to avoid matching Self:: calls
+    # that appear inside closure bodies rather than as direct registration arguments.
+    pipe = window.find("|")
+    search_area = window[:pipe] if pipe >= 0 else window
+    if "Self::" not in search_area:
         return None
-    return _leading_identifier(window.split("Self::", 1)[1])
+    return _leading_identifier(search_area.split("Self::", 1)[1])
 
 
 def _ok_string_literal(text: str) -> Optional[str]:
@@ -1433,7 +2025,7 @@ def _last_path_segment(text: str) -> str:
 
 
 def _is_lua_context_parameter(parameter: BindingParam) -> bool:
-    return parameter.name == "lua" or parameter.name == "" or ("Lua" in parameter.raw_type and "&Lua" in parameter.raw_type)
+    return parameter.name in {"lua", "ctx", ""} or ("Lua" in parameter.raw_type and "&Lua" in parameter.raw_type)
 
 
 def _is_receiver_parameter(parameter: BindingParam) -> bool:
@@ -1518,6 +2110,11 @@ def _brace_delta(line: str) -> int:
 
 def _report_summary(report: BindingValidationReport) -> str:
     return (
+        f"confirmed={report.summary.confirmed_doc_bug_count} "
+        f"uncertain={report.summary.extraction_uncertain_count} "
+        f"unsupported={report.summary.unsupported_pattern_count} "
+        f"clean_entries={report.summary.clean_entry_count} "
+        f"blocking={report.summary.blocking_issue_count} "
         f"missing={len(report.missing_doc_entries)} "
         f"phantom={len(report.phantom_doc_entries)} "
         f"param_count={len(report.parameter_count_mismatches)} "
