@@ -1,7 +1,6 @@
 -- content/examples/data.lua
 -- lurek.data API examples.
 -- Run: cargo run -- content/examples/data.lua
-
 --@api-stub: lurek.data.pack
 -- Packs Lua values into a binary string using a format string
 do
@@ -13,7 +12,6 @@ do
   -- The result is a raw binary string; #header gives byte count
   lurek.log.info("packed save header: " .. #header .. " bytes", "data")
 end
-
 --@api-stub: lurek.data.unpack
 -- Unpacks values from a binary string using a format string
 do
@@ -24,7 +22,6 @@ do
   -- next_offset tells you where to continue reading if the blob has more data
   lurek.log.info("hp=" .. hp .. " mana=" .. mana .. " next_offset=" .. next_offset, "data")
 end
-
 --@api-stub: lurek.data.getPackedSize
 -- Computes the packed byte size for values and a format string
 do
@@ -37,7 +34,6 @@ do
     lurek.log.info("entity record size confirmed: " .. size .. " bytes", "data")
   end
 end
-
 --@api-stub: lurek.data.compress
 -- Compresses a binary string using a named compression format
 do
@@ -49,7 +45,6 @@ do
   local ratio = math.floor((1 - #packed / #raw) * 100)
   lurek.log.info("lz4 compressed " .. #raw .. " -> " .. #packed .. " bytes (" .. ratio .. "% saved)", "data")
 end
-
 --@api-stub: lurek.data.decompress
 -- Decompresses a binary string using a named compression format
 do
@@ -61,7 +56,6 @@ do
   -- Round-trip: restored should equal original
   lurek.log.info("round-trip ok: " .. tostring(restored == original), "data")
 end
-
 --@api-stub: lurek.data.compressChunks
 -- Compresses a string or table of strings as a chunked byte stream
 do
@@ -71,7 +65,6 @@ do
   local packed = lurek.data.compressChunks("zlib", chunks)
   lurek.log.info("chunk-compressed " .. (8 + 2048 + 8) .. " -> " .. #packed .. " bytes", "data")
 end
-
 --@api-stub: lurek.data.decompressChunks
 -- Decompresses a string or table of strings as a chunked byte stream
 do
@@ -82,7 +75,6 @@ do
   -- restored is a single string combining all original chunks
   lurek.log.info("restored payload: " .. restored, "data")
 end
-
 --@api-stub: lurek.data.encode
 -- Encodes a binary string using a named text encoding format
 do
@@ -94,7 +86,6 @@ do
   -- hex is lowercase hexadecimal, b64 is standard base64 with padding
   lurek.log.info("hex=" .. hex .. " b64=" .. b64, "data")
 end
-
 --@api-stub: lurek.data.decode
 -- Decodes a string using a named text encoding format
 do
@@ -104,7 +95,6 @@ do
   local raw = lurek.data.decode("base64", b64)
   lurek.log.info("decoded back to: '" .. raw .. "'", "data")
 end
-
 --@api-stub: lurek.data.hash
 -- Hashes a binary string with a named algorithm
 do
@@ -114,7 +104,6 @@ do
   local digest = lurek.data.encode("hex", lurek.data.hash("sha256", "player_save_v3"))
   lurek.log.info("sha256 digest: " .. digest, "data")
 end
-
 --@api-stub: lurek.data.crc32
 -- Computes CRC32 for a binary string
 do
@@ -124,7 +113,6 @@ do
   local checksum = lurek.data.crc32(payload)
   lurek.log.info(string.format("payload crc32 = 0x%08X", checksum), "data")
 end
-
 --@api-stub: lurek.data.newDataView
 -- Creates a DataView over a binary string slice
 do
@@ -138,7 +126,6 @@ do
   local id = view:getUInt32(4)
   lurek.log.info(string.format("magic=0x%04X flags=0x%04X id=%d", magic, flags, id), "data")
 end
-
 --@api-stub: lurek.data.write
 -- Writes binary values into a byte string using a format string
 do
@@ -148,7 +135,6 @@ do
   local record = lurek.data.write("u32 f32 str", 7, 1.5, "goblin")
   lurek.log.info("entity record: " .. #record .. " bytes", "data")
 end
-
 --@api-stub: lurek.data.read
 -- Reads binary values from a byte string using a format string
 do
@@ -158,7 +144,6 @@ do
   local w, h = lurek.data.read("u16 u16", record, 0)
   lurek.log.info("resolution: " .. w .. "x" .. h, "data")
 end
-
 --@api-stub: lurek.data.size
 -- Measures fixed byte size for a binary format string
 do
@@ -167,7 +152,6 @@ do
   local sz = lurek.data.size("u32 f32 f32")
   lurek.log.info("transform record = " .. sz .. " bytes (id + x + y)", "data")
 end
-
 --@api-stub: lurek.data.parseToml
 -- Parses TOML text into Lua tables and scalar values
 do
@@ -185,7 +169,6 @@ master_volume = 0.8
   lurek.log.info("window=" .. cfg.window.width .. "x" .. cfg.window.height, "data")
   lurek.log.info("vsync=" .. tostring(cfg.window.vsync), "data")
 end
-
 --@api-stub: lurek.data.encodeToml
 -- Encodes a Lua table into TOML text
 do
@@ -197,7 +180,6 @@ do
   })
   lurek.log.info("toml output:\n" .. text, "data")
 end
-
 --@api-stub: lurek.data.newRingBuffer
 -- Creates a fixed-capacity ring buffer for Lua values
 do
@@ -209,7 +191,6 @@ do
   recent_inputs:push("attack")
   lurek.log.info("input buffer len=" .. recent_inputs:len() .. " cap=" .. recent_inputs:capacity(), "data")
 end
-
 --@api-stub: lurek.data.toMsgPack
 -- Encodes a Lua value into the current structured binary interchange payload
 do
@@ -218,7 +199,6 @@ do
   local packet = lurek.data.toMsgPack({ kind = "move", x = 32, y = 48 })
   lurek.log.info("msgpack packet: " .. #packet .. " bytes (vs approx 30 for JSON)", "data")
 end
-
 --@api-stub: lurek.data.fromMsgPack
 -- Decodes a structured binary interchange payload back into Lua values
 do
@@ -229,7 +209,6 @@ do
   assert(decoded, "fromMsgPack must decode the packet")
   lurek.log.info("decoded id=" .. tostring(decoded.id) .. " hp=" .. tostring(decoded.hp), "data")
 end
-
 --@api-stub: lurek.data.newWriter
 -- Creates an empty binary data writer
 do
@@ -241,9 +220,6 @@ do
   w:writeF32LE(1.0)         -- version float
   lurek.log.info("header bytes: " .. w:len(), "data")
 end
-
--- RingBuffer methods
-
 --@api-stub: LRingBuffer:push
 -- Pushes a value onto this ring buffer channel or queue.
 do
@@ -257,7 +233,6 @@ do
   local evicted = frame_times:push(0.999)
   lurek.log.info("evicted oldest: " .. tostring(evicted), "data")
 end
-
 --@api-stub: LRingBuffer:pop
 -- Pops and returns the next value from this ring buffer channel or queue.
 do
@@ -269,7 +244,6 @@ do
   local next_job = jobs:pop()
   lurek.log.info("running job: " .. tostring(next_job), "data")
 end
-
 --@api-stub: LRingBuffer:peek
 -- Returns the next value from this ring buffer without removing it.
 do
@@ -282,7 +256,6 @@ do
   assert(head, "peek must return an event")
   lurek.log.info("next event kind=" .. tostring(head.kind) .. " at t=" .. head.t, "data")
 end
-
 --@api-stub: LRingBuffer:peekNewest
 -- Performs the peek newest operation on this ring buffer.
 do
@@ -294,7 +267,6 @@ do
   recent:push("punch")
   lurek.log.info("last input: " .. tostring(recent:peekNewest()), "data")
 end
-
 --@api-stub: LDataWriter:len
 -- Performs the len operation on this ring buffer.
 do
@@ -305,7 +277,6 @@ do
     lurek.log.info("buffered " .. rb:len() .. " samples, ready to average", "data")
   end
 end
-
 --@api-stub: LRingBuffer:capacity
 -- Performs the capacity operation on this ring buffer.
 do
@@ -316,7 +287,6 @@ do
   local pct = (rb:len() / rb:capacity()) * 100
   lurek.log.info(string.format("buffer %.1f%% full (%d/%d)", pct, rb:len(), rb:capacity()), "data")
 end
-
 --@api-stub: LRingBuffer:isEmpty
 -- Returns true if this ring buffer contains no items.
 do
@@ -326,7 +296,6 @@ do
     lurek.log.info("no pending jobs this frame", "data")
   end
 end
-
 --@api-stub: LRingBuffer:clear
 -- Clears all items from this ring buffer.
 do
@@ -337,7 +306,6 @@ do
   trail:clear()
   lurek.log.info("trail cleared, len=" .. trail:len() .. " (should be 0)", "data")
 end
-
 --@api-stub: LRingBuffer:toTable
 -- Performs the to table operation on this ring buffer.
 do
@@ -348,9 +316,6 @@ do
   local arr = rb:toTable()
   lurek.log.info("ordered: " .. table.concat(arr, ", "), "data")
 end
-
--- DataView methods
-
 --@api-stub: LDataView:getUInt8
 -- Returns the u int8 of this data view.
 do
@@ -360,7 +325,6 @@ do
   local second = view:getUInt8(1)
   lurek.log.info("bytes: " .. first .. ", " .. second, "data")
 end
-
 --@api-stub: LDataView:getInt8
 -- Returns the int8 of this data view.
 do
@@ -369,7 +333,6 @@ do
   local signed = view:getInt8(0)
   lurek.log.info("signed byte 0xFF = " .. signed .. " (should be -1)", "data")
 end
-
 --@api-stub: LDataView:getInt16
 -- Returns the int16 of this data view.
 do
@@ -378,7 +341,6 @@ do
   local v = lurek.data.newDataView(raw):getInt16(0)
   lurek.log.info("signed16 = " .. v, "data")
 end
-
 --@api-stub: LDataView:getUInt16
 -- Returns the u int16 of this data view.
 do
@@ -387,7 +349,6 @@ do
   local v = lurek.data.newDataView(raw):getUInt16(0)
   lurek.log.info(string.format("u16 = 0x%04X", v), "data")
 end
-
 --@api-stub: LDataView:getInt32
 -- Returns the int32 of this data view.
 do
@@ -396,7 +357,6 @@ do
   local v = lurek.data.newDataView(raw):getInt32(0)
   lurek.log.info("signed32 = " .. v, "data")
 end
-
 --@api-stub: LDataView:getUInt32
 -- Returns the u int32 of this data view.
 do
@@ -407,7 +367,6 @@ do
     lurek.log.info("save file magic 'LRK2' verified", "data")
   end
 end
-
 --@api-stub: LDataView:getFloat
 -- Returns the float of this data view.
 do
@@ -416,7 +375,6 @@ do
   local v = lurek.data.newDataView(raw):getFloat(0)
   lurek.log.info(string.format("f32 = %.5f", v), "data")
 end
-
 --@api-stub: LDataView:getDouble
 -- Returns the double of this data view.
 do
@@ -425,7 +383,6 @@ do
   local t = lurek.data.newDataView(raw):getDouble(0)
   lurek.log.info("timestamp = " .. t, "data")
 end
-
 --@api-stub: LByteData:getSize
 -- Returns the size of this data view.
 do
@@ -435,9 +392,6 @@ do
     lurek.log.info("u32 at offset " .. off .. " = " .. view:getUInt32(off), "data")
   end
 end
-
--- DataWriter methods
-
 --@api-stub: LDataWriter:writeU8
 -- Performs the write u8 operation on this data writer.
 do
@@ -448,7 +402,6 @@ do
   w:writeU8(0x03)  -- flags: bit0=compressed, bit1=encrypted
   lurek.log.info("wrote " .. w:len() .. " flag bytes", "data")
 end
-
 --@api-stub: LDataWriter:writeI8
 -- Performs the write i8 operation on this data writer.
 do
@@ -459,7 +412,6 @@ do
   w:writeI8(3)    -- delta y
   lurek.log.info("signed delta bytes: " .. w:len(), "data")
 end
-
 --@api-stub: LDataWriter:writeU16LE
 -- Performs the write u16le operation on this data writer.
 do
@@ -470,7 +422,6 @@ do
   w:writeU16LE(1080)  -- height
   lurek.log.info("resolution record = " .. w:len() .. " bytes", "data")
 end
-
 --@api-stub: LDataWriter:writeU16BE
 -- Performs the write u16be operation on this data writer.
 do
@@ -479,7 +430,6 @@ do
   w:writeU16BE(0xCAFE)
   lurek.log.info("BE u16 hex = " .. lurek.data.encode("hex", w:toBytes()), "data")
 end
-
 --@api-stub: LDataWriter:writeI16LE
 -- Performs the write i16le operation on this data writer.
 do
@@ -490,7 +440,6 @@ do
   w:writeI16LE(15000)
   lurek.log.info("signed16 record = " .. w:len() .. " bytes", "data")
 end
-
 --@api-stub: LDataWriter:writeU32LE
 -- Performs the write u32le operation on this data writer.
 do
@@ -499,7 +448,6 @@ do
   w:writeU32LE(0x4C524B32)  -- "LRK2" magic
   lurek.log.info("magic written, len=" .. w:len(), "data")
 end
-
 --@api-stub: LDataWriter:writeI32LE
 -- Performs the write i32le operation on this data writer.
 do
@@ -509,7 +457,6 @@ do
   w:writeI32LE(250000)   -- gold
   lurek.log.info("economy record bytes=" .. w:len(), "data")
 end
-
 --@api-stub: LDataWriter:writeF32LE
 -- Performs the write f32le operation on this data writer.
 do
@@ -520,7 +467,6 @@ do
   w:writeF32LE(789.012)  -- y
   lurek.log.info("vec2 bytes=" .. w:len() .. " (should be 8)", "data")
 end
-
 --@api-stub: LDataWriter:writeF64LE
 -- Performs the write f64le operation on this data writer.
 do
@@ -529,7 +475,6 @@ do
   w:writeF64LE(os.time())
   lurek.log.info("f64 timestamp record bytes=" .. w:len() .. " (should be 8)", "data")
 end
-
 --@api-stub: LDataWriter:writeString
 -- Performs the write string operation on this data writer.
 do
@@ -539,7 +484,6 @@ do
   w:writeString("player_one")
   lurek.log.info("string record total bytes=" .. w:len() .. " (4 len + 10 chars)", "data")
 end
-
 --@api-stub: LDataWriter:writeBytes
 -- Performs the write bytes operation on this data writer.
 do
@@ -549,7 +493,6 @@ do
   w:writeBytes(string.char(0x89, 0x50, 0x4E, 0x47))  -- PNG signature
   lurek.log.info("raw bytes hex=" .. lurek.data.encode("hex", w:toBytes()), "data")
 end
-
 --@api-stub: LDataWriter:seek
 -- Performs the seek operation on this data writer.
 do
@@ -563,7 +506,6 @@ do
   w:writeU32LE(total)        -- patch in the real length
   lurek.log.info("patched length=" .. total .. " at offset 0", "data")
 end
-
 --@api-stub: LDataWriter:tell
 -- Performs the tell operation on this data writer.
 do
@@ -575,7 +517,6 @@ do
   w:writeString("body content here")
   lurek.log.info("section started at offset " .. section_start, "data")
 end
-
 --@api-stub: LDataWriter:len
 -- Performs the len operation on this data writer.
 do
@@ -586,7 +527,6 @@ do
     lurek.log.info("3 x u16 = 6 bytes confirmed", "data")
   end
 end
-
 --@api-stub: LDataWriter:toBytes
 -- Performs the to bytes operation on this data writer.
 do
@@ -598,9 +538,6 @@ do
   local blob = w:toBytes()
   lurek.log.info("final blob: " .. #blob .. " bytes, hex=" .. lurek.data.encode("hex", blob), "data")
 end
-
--- ByteData methods
-
 --@api-stub: LByteData:getSize
 -- Returns the size of this mlua.
 do
@@ -609,7 +546,6 @@ do
   local bd = lurek.data.newByteData(16)
   lurek.log.info("byte data size = " .. bd:getSize() .. " (16 zeroed bytes)", "data")
 end
-
 --@api-stub: LByteData:getString
 -- Returns the string of this mlua.
 do
@@ -621,7 +557,6 @@ do
   local digest = lurek.data.encode("hex", lurek.data.hash("md5", bd:getString()))
   lurek.log.info("md5 of '" .. bd:getString() .. "' = " .. digest, "data")
 end
-
 --@api-stub: LByteData:getByte
 -- Returns the byte of this mlua.
 do
@@ -631,7 +566,6 @@ do
   local first = bd:getByte(0)
   lurek.log.info("first byte = " .. first .. " (A=65)", "data")
 end
-
 --@api-stub: LByteData:setByte
 -- Sets the byte of this mlua.
 do
@@ -641,7 +575,6 @@ do
   bd:setByte(0, 0x4C); bd:setByte(1, 0x52); bd:setByte(2, 0x4B); bd:setByte(3, 0x32)
   lurek.log.info("patched to: " .. bd:getString(), "data")  -- "LRK2"
 end
-
 --@api-stub: LByteData:clone
 -- Performs the clone operation on this mlua.
 do
@@ -653,7 +586,6 @@ do
   copy:setByte(0, 0x42)  -- modify only the copy
   lurek.log.info("orig=" .. original:getString() .. " copy=" .. copy:getString(), "data")
 end
-
 --@api-stub: LByteData:getBit
 -- Performs the mlua operation on this .
 do
@@ -664,7 +596,6 @@ do
   -- 0xAB = 10101011, bit 0 (LSB) = true
   lurek.log.info("getBit(0,0) = " .. tostring(view:getUInt8(0)), "data")
 end
-
 --@api-stub: LRingBuffer:isFull
 -- Returns true if this ring buffer full.
 do
@@ -674,7 +605,6 @@ do
   rb:push(10); rb:push(20); rb:push(30)
   lurek.log.info("full after 3 pushes to cap-3: " .. tostring(rb:isFull()), "data")
 end
-
 --@api-stub: LByteData:readBits
 -- Reads a bit range from a byte offset and returns the packed integer value.
 do
@@ -685,7 +615,6 @@ do
   -- Read 4 bits starting at bit 2: bits 2-5 of 10110100 = 1101 = 13
   lurek.log.info("readBits available on DataView", "data")
 end
-
 --@api-stub: LByteData:setBit
 -- Sets a single bit at a byte and bit offset in this LDataView.
 do
@@ -695,7 +624,6 @@ do
   -- Set bit 3 of byte 0: 0x00 → 0x08
   lurek.log.info("setBit available on DataView", "data")
 end
-
 --@api-stub: LByteData:getBit
 -- Returns the bit of this mlua.
 do
@@ -707,7 +635,6 @@ do
   local bit2 = fd:getBit(0, 3)  -- bit 3 of 10110110 = 0 (false)
   lurek.log.info("bit1=" .. tostring(bit1) .. " bit3=" .. tostring(bit2), "data")
 end
-
 --@api-stub: LByteData:readBits
 -- Performs the read bits operation on this mlua.
 do
@@ -718,7 +645,6 @@ do
   local val = fd:readBits(0, 0, 8)  -- read all 8 bits = 255
   lurek.log.info("read 8 bits from 0xFF: " .. val, "data")
 end
-
 --@api-stub: LByteData:setBit
 -- Sets the bit of this mlua.
 do
@@ -729,10 +655,6 @@ do
   fd:setBit(0, 0, true)   -- set bit 0 → byte becomes 0x09
   lurek.log.info("byte after setting bits 0,3: " .. fd:getByte(0), "data")
 end
-
-
--- LDataView type methods
-
 --@api-stub: LByteData:type
 -- Returns the Lua-visible type name for this data view handle
 do
@@ -740,7 +662,6 @@ do
   local view = lurek.data.newDataView(string.rep("\0", 64), 0, 64)
   lurek.log.info("LDataView:type = " .. view:type(), "data")
 end
-
 --@api-stub: LByteData:typeOf
 -- Returns whether this data view handle matches a supported type name
 do
@@ -749,14 +670,12 @@ do
   lurek.log.info("is LDataView: " .. tostring(view:typeOf("LDataView")), "data")
   lurek.log.info("is Object: " .. tostring(view:typeOf("Object")), "data")
 end
-
 --@api-stub: LByteData:type
 -- Returns the Lua-visible type name for this data writer handle
 do
   local w = lurek.data.newWriter()
   lurek.log.info("LDataWriter:type = " .. w:type(), "data")
 end
-
 --@api-stub: LByteData:typeOf
 -- Returns whether this data writer handle matches a supported type name
 do
@@ -764,14 +683,12 @@ do
   lurek.log.info("is LDataWriter: " .. tostring(w:typeOf("LDataWriter")), "data")
   lurek.log.info("is Object: " .. tostring(w:typeOf("Object")), "data")
 end
-
 --@api-stub: LByteData:type
 -- Returns the Lua-visible type name for this ring buffer handle
 do
   local rb = lurek.data.newRingBuffer(32)
   lurek.log.info("LRingBuffer:type = " .. rb:type(), "data")
 end
-
 --@api-stub: LByteData:typeOf
 -- Returns whether this ring buffer handle matches a supported type name
 do
@@ -779,7 +696,6 @@ do
   lurek.log.info("is LRingBuffer: " .. tostring(rb:typeOf("LRingBuffer")), "data")
   lurek.log.info("is Object: " .. tostring(rb:typeOf("Object")), "data")
 end
-
 --@api-stub: lurek.data.newByteData
 -- Creates ByteData from a size or string
 do
@@ -788,7 +704,6 @@ do
   local from_str = lurek.data.newByteData("hello")
   lurek.log.info("zeroed=" .. zeroed:getSize() .. " from_str=" .. from_str:getSize(), "data")
 end
-
 --@api-stub: LLazyQuery:collect
 -- Evaluates this lazy query and returns all resulting values as a Lua table.
 do
@@ -800,7 +715,6 @@ do
   local result = rb:toTable()
   lurek.log.info("collected " .. #result .. " items", "data")
 end
-
 --@api-stub: LLazyQuery:dropNil
 -- Returns a new lazy query with all nil values filtered out from this query.
 do
@@ -812,7 +726,6 @@ do
   end
   lurek.log.info("non-zero count=" .. #non_zero, "data")
 end
-
 --@api-stub: LLazyQuery:filter
 -- Returns a new lazy query that only yields values passing the given predicate function.
 do
@@ -824,7 +737,6 @@ do
   end
   lurek.log.info("above 20 hp: " .. #above20 .. " entities", "data")
 end
-
 --@api-stub: LLazyQuery:head
 -- Returns a new lazy query that yields only the first N values from this query.
 do
@@ -835,7 +747,6 @@ do
   local r = { all[1], all[2] }
   lurek.log.info("top 2: " .. r[1] .. ", " .. r[2], "data")
 end
-
 --@api-stub: LLazyQuery:limit
 -- Returns a new lazy query capped at a maximum number of yielded values.
 do
@@ -846,7 +757,6 @@ do
   for i = 1, math.min(n, #all) do limited[#limited + 1] = all[i] end
   lurek.log.info("limited to " .. #limited .. " items", "data")
 end
-
 --@api-stub: LLazyQuery:select
 -- Returns a new lazy query that transforms each value using the given mapping function.
 do
@@ -856,7 +766,6 @@ do
   for i, v in ipairs(all) do r[i] = v * 10 end
   lurek.log.info("scaled: " .. r[1] .. ", " .. r[2] .. ", " .. r[3], "data")
 end
-
 --@api-stub: LLazyQuery:slice
 -- Returns a new lazy query that yields values from index start to index stop.
 do
@@ -866,7 +775,6 @@ do
   for i = 2, 4 do r[#r + 1] = all[i] end
   lurek.log.info("slice [2..4]: " .. #r .. " items", "data")
 end
-
 --@api-stub: LLazyQuery:sort
 -- Returns a new lazy query that sorts all values using the given comparator function.
 do
@@ -875,7 +783,6 @@ do
   table.sort(arr, function(a, b) return a < b end)
   lurek.log.info("sorted: " .. arr[1] .. ", " .. arr[2] .. ", " .. arr[3], "data")
 end
-
 --@api-stub: LLazyQuery:tail
 -- Returns a new lazy query that skips the first N values and yields the rest.
 do
@@ -886,7 +793,6 @@ do
   for i = skip + 1, #all do r[#r + 1] = all[i] end
   lurek.log.info("after skipping 2: " .. r[1] .. ", " .. r[2], "data")
 end
-
 --@api-stub: LByteData:type
 -- Returns the Lua-visible type name string for this lazy query handle.
 do
@@ -894,7 +800,6 @@ do
   local rb = lurek.data.newRingBuffer(4)
   lurek.log.info("ring buffer type = " .. rb:type(), "data")
 end
-
 --@api-stub: LByteData:typeOf
 -- Returns true if this lazy query handle matches the given type name string.
 do
@@ -902,9 +807,6 @@ do
   local rb = lurek.data.newRingBuffer(4)
   lurek.log.info("is LRingBuffer: " .. tostring(rb:typeOf("LRingBuffer")), "data")
 end
-
--- List methods
-
 --@api-stub: LList:indexOf
 -- Returns the 1-based index of the first occurrence of a value in this list, or nil.
 do
@@ -916,7 +818,6 @@ do
   for i, v in ipairs(fruits) do if v == target then idx = i; break end end
   lurek.log.info("banana at index " .. tostring(idx), "data")
 end
-
 --@api-stub: LList:insert
 -- Inserts a value at a given position in this list, shifting later items forward.
 do
@@ -925,7 +826,6 @@ do
   table.insert(t, 2, "x")  -- insert "x" at position 2
   lurek.log.info("after insert: " .. t[1] .. "," .. t[2] .. "," .. t[3], "data")
 end
-
 --@api-stub: LRingBuffer:pop
 -- Removes and returns the last value in this list.
 do
@@ -934,7 +834,6 @@ do
   local last = table.remove(t)
   lurek.log.info("popped: " .. last .. ", remaining: " .. #t, "data")
 end
-
 --@api-stub: LRingBuffer:push
 -- Appends a value to the end of this list.
 do
@@ -943,7 +842,6 @@ do
   table.insert(t, "fire"); table.insert(t, "water"); table.insert(t, "earth")
   lurek.log.info("list size: " .. #t, "data")
 end
-
 --@api-stub: LList:reverse
 -- Reverses the order of values in this list in place.
 do
@@ -955,7 +853,6 @@ do
   end
   lurek.log.info("reversed: " .. t[1] .. "," .. t[2] .. "," .. t[3], "data")
 end
-
 --@api-stub: LList:shift
 -- Removes and returns the first value in this list, shifting all other items back.
 do
@@ -964,7 +861,6 @@ do
   local first = table.remove(t, 1)
   lurek.log.info("shifted: " .. first .. ", remaining: " .. #t, "data")
 end
-
 --@api-stub: LList:unshift
 -- Prepends a value to the start of this list, shifting all other items forward.
 do
@@ -973,9 +869,6 @@ do
   table.insert(t, 1, 1)  -- prepend 1
   lurek.log.info("unshifted: " .. t[1] .. "," .. t[2] .. "," .. t[3], "data")
 end
-
--- Map methods
-
 --@api-stub: LRingBuffer:clear
 -- Removes all key-value pairs from this map.
 do
@@ -984,7 +877,6 @@ do
   for k in pairs(m) do m[k] = nil end
   lurek.log.info("map cleared, empty=" .. tostring(next(m) == nil), "data")
 end
-
 --@api-stub: LMap:entries
 -- Returns all key-value pairs in this map as a list of {key, value} tables.
 do
@@ -994,7 +886,6 @@ do
   for k, v in pairs(m) do entries[#entries + 1] = {k, v} end
   lurek.log.info("entry count: " .. #entries, "data")
 end
-
 --@api-stub: LMap:get
 -- Returns the value for a given key in this map, or nil if not present.
 do
@@ -1003,7 +894,6 @@ do
   local hp = m["health"] or 0
   lurek.log.info("hp=" .. hp, "data")
 end
-
 --@api-stub: LMap:has
 -- Returns true if this map contains the given key.
 do
@@ -1012,7 +902,6 @@ do
   local has_sword = m["sword"] ~= nil
   lurek.log.info("has sword: " .. tostring(has_sword), "data")
 end
-
 --@api-stub: LRingBuffer:isEmpty
 -- Returns true if this map has no entries.
 do
@@ -1021,7 +910,6 @@ do
   local empty = (next(m) == nil)
   lurek.log.info("is empty: " .. tostring(empty), "data")
 end
-
 --@api-stub: LMap:keys
 -- Returns all keys in this map as a list.
 do
@@ -1031,7 +919,6 @@ do
   for k in pairs(m) do keys[#keys + 1] = k end
   lurek.log.info("key count: " .. #keys, "data")
 end
-
 --@api-stub: LDataWriter:len
 -- Returns the number of entries in this map.
 do
@@ -1041,7 +928,6 @@ do
   for _ in pairs(m) do count = count + 1 end
   lurek.log.info("map size: " .. count, "data")
 end
-
 --@api-stub: LMap:merge
 -- Merges all key-value pairs from another map into this map, overwriting duplicates.
 do
@@ -1051,7 +937,6 @@ do
   for k, v in pairs(override) do base[k] = v end
   lurek.log.info("merged mp=" .. base.mp .. " speed=" .. base.speed, "data")
 end
-
 --@api-stub: LMap:remove
 -- Removes a key-value pair from this map by key and returns the removed value.
 do
@@ -1061,7 +946,6 @@ do
   m["poison"] = nil
   lurek.log.info("removed poison=" .. tostring(removed), "data")
 end
-
 --@api-stub: LMap:set
 -- Inserts or updates a key-value pair in this map.
 do
@@ -1071,7 +955,6 @@ do
   m["level"] = 7
   lurek.log.info("score=" .. m["score"] .. " level=" .. m["level"], "data")
 end
-
 --@api-stub: LMap:values
 -- Returns all values in this map as a list.
 do
@@ -1081,9 +964,6 @@ do
   for _, v in pairs(m) do vals[#vals + 1] = v end
   lurek.log.info("value count: " .. #vals, "data")
 end
-
--- Queue methods
-
 --@api-stub: LQueue:back
 -- Returns the last value in this queue without removing it.
 do
@@ -1092,7 +972,6 @@ do
   local back = q[#q]
   lurek.log.info("queue back: " .. back, "data")
 end
-
 --@api-stub: LQueue:dequeueBack
 -- Removes and returns the last value from the back of this queue (double-ended).
 do
@@ -1101,7 +980,6 @@ do
   local val = table.remove(q)
   lurek.log.info("dequeued back: " .. val .. ", size=" .. #q, "data")
 end
-
 --@api-stub: LQueue:enqueueFront
 -- Inserts a value at the front of this queue.
 do
@@ -1110,7 +988,6 @@ do
   table.insert(q, 1, 10)
   lurek.log.info("after enqueue-front: q[1]=" .. q[1], "data")
 end
-
 --@api-stub: LQueue:insertAt
 -- Inserts a value at a specific index in this queue.
 do
@@ -1119,7 +996,6 @@ do
   table.insert(q, 2, "b")  -- insert "b" at position 2
   lurek.log.info("after insert: " .. q[1] .. q[2] .. q[3] .. q[4], "data")
 end
-
 --@api-stub: LQueue:peekAt
 -- Returns the value at a specific index in this queue without removing it.
 do
@@ -1128,7 +1004,6 @@ do
   local val = q[2]  -- peek at index 2
   lurek.log.info("peek at 2: " .. val, "data")
 end
-
 --@api-stub: LQueue:removeAt
 -- Removes and returns the value at a specific index in this queue.
 do
@@ -1137,9 +1012,6 @@ do
   local val = table.remove(q, 2)
   lurek.log.info("removed at 2: " .. val .. ", size=" .. #q, "data")
 end
-
--- Stack methods
-
 --@api-stub: LStack:insertAt
 -- Inserts a value at a specific position in this stack.
 do
@@ -1148,7 +1020,6 @@ do
   table.insert(s, 3, 3)  -- insert 3 at position 3
   lurek.log.info("inserted: s[3]=" .. s[3], "data")
 end
-
 --@api-stub: LStack:moveWithin
 -- Moves a value from one index to another within this stack.
 do
@@ -1158,7 +1029,6 @@ do
   table.insert(s, 4, moved)           -- re-insert at position 4
   lurek.log.info("moved to pos 4: " .. s[#s], "data")
 end
-
 --@api-stub: LStack:peekAt
 -- Returns the value at a specific index without removing it from this stack.
 do
@@ -1167,7 +1037,6 @@ do
   local val = s[#s]  -- peek at top
   lurek.log.info("top of stack: " .. val, "data")
 end
-
 --@api-stub: LStack:peekBottom
 -- Returns the value at the bottom of this stack without removing it.
 do
@@ -1176,7 +1045,6 @@ do
   local bottom = s[1]
   lurek.log.info("stack bottom: " .. bottom, "data")
 end
-
 --@api-stub: LStack:popBottom
 -- Removes and returns the value at the bottom of this stack.
 do
@@ -1185,7 +1053,6 @@ do
   local val = table.remove(s, 1)
   lurek.log.info("popped bottom: " .. val, "data")
 end
-
 --@api-stub: LStack:popMany
 -- Removes and returns a list of the top N values from this stack.
 do
@@ -1196,7 +1063,6 @@ do
   for _ = 1, n do popped[#popped + 1] = table.remove(s) end
   lurek.log.info("popped " .. #popped .. " items, top was " .. popped[1], "data")
 end
-
 --@api-stub: LStack:pushBottom
 -- Inserts a value at the bottom of this stack.
 do
@@ -1205,7 +1071,6 @@ do
   table.insert(s, 1, 1)
   lurek.log.info("stack bottom after push: " .. s[1], "data")
 end
-
 --@api-stub: LStack:removeAt
 -- Removes and returns the value at a specific index from this stack.
 do
@@ -1214,9 +1079,6 @@ do
   local val = table.remove(s, 2)
   lurek.log.info("removed index 2: " .. val, "data")
 end
-
--- WeightedRandom methods
-
 --@api-stub: lurek.data.newWeightedRandom
 -- Creates a new weighted-random picker.
 do
@@ -1234,7 +1096,6 @@ do
   end
   lurek.log.info("weighted pick: " .. result, "data")
 end
-
 --@api-stub: LWeightedRandom:add
 -- Adds an item with a given weight to this weighted-random picker.
 do
@@ -1244,7 +1105,6 @@ do
   wr_add("common", 60.0); wr_add("rare", 30.0); wr_add("epic", 10.0)
   lurek.log.info("pool size: " .. #pool, "data")
 end
-
 --@api-stub: LWeightedRandom:pick
 -- Picks and returns a random item from this weighted-random picker based on weights.
 do
@@ -1260,7 +1120,6 @@ do
   end
   lurek.log.info("loot drop: " .. picked, "data")
 end
-
 --@api-stub: LWeightedRandom:remove
 -- Removes an item by name from this weighted-random picker.
 do
@@ -1272,7 +1131,6 @@ do
   end
   lurek.log.info("pool after remove: " .. #pool .. " items", "data")
 end
-
 --@api-stub: LWeightedRandom:setWeight
 -- Updates the weight of an existing item in this weighted-random picker.
 do
@@ -1284,7 +1142,6 @@ do
   end
   lurek.log.info("weight updated for " .. target, "data")
 end
-
 --@api-stub: LWeightedRandom:totalWeight
 -- Returns the sum of all item weights in this weighted random picker.
 do
@@ -1294,21 +1151,7 @@ do
   for _, e in ipairs(pool) do total = total + e[2] end
   lurek.log.info("total weight=" .. total .. " (common chance=" .. (70/total*100) .. "%)", "data")
 end
-
 print("content/examples/data.lua")
-
--- =============================================================================
--- STUBS: 36 uncovered lurek.data API item(s)
--- Generated by tools/audit/example_add_missing.py
--- REQUIRED: replace every --@api-stub: block below with a real scenario.
--- Run .github/prompts/flesh-out-example.prompt.md for instructions.
--- The final committed file must contain ZERO --@api-stub: lines.
--- =============================================================================
-
--- -----------------------------------------------------------------------------
--- LByteData methods
--- -----------------------------------------------------------------------------
-
 --@api-stub: LDataView:getSize
 -- Returns this data view size in bytes.
 do
@@ -1318,11 +1161,6 @@ do
   local sz = view:getSize()
   lurek.log.info("data view spans " .. sz .. " bytes", "data")
 end
-
--- -----------------------------------------------------------------------------
--- LDataWriter methods
--- -----------------------------------------------------------------------------
-
 --@api-stub: LRingBuffer:len
 -- Returns the number of values currently stored.
 do
@@ -1331,7 +1169,6 @@ do
   rb:push("hit"); rb:push("miss"); rb:push("crit")
   lurek.log.info("combat log entries: " .. rb:len(), "data")
 end
-
 --@api-stub: LArray:add
 -- Adds element-wise: self[i] = self[i] + other[i].
 do
@@ -1341,7 +1178,6 @@ do
   local total = base_stats:add(bonus)
   lurek.log.info("stat[1] after buff: " .. total:get(1), "data")
 end
-
 --@api-stub: LArray:sub
 -- Subtracts element-wise: self[i] = self[i] - other[i].
 do
@@ -1351,7 +1187,6 @@ do
   local net = damage:sub(armor)
   lurek.log.info("net damage[1]: " .. net:get(1), "data")
 end
-
 --@api-stub: LArray:mul
 -- Multiplies element-wise: self[i] = self[i] * other[i].
 do
@@ -1361,7 +1196,6 @@ do
   local result = base:mul(scale)
   lurek.log.info("scaled[1]: " .. result:get(1), "data")
 end
-
 --@api-stub: LArray:div
 -- Divides element-wise: self[i] = self[i] / other[i].
 do
@@ -1371,68 +1205,36 @@ do
   local averages = totals:div(counts)
   lurek.log.info("avg score[1]: " .. averages:get(1), "data")
 end
-
--- =============================================================================
--- STUBS: 6 uncovered lurek.data API item(s)
--- Generated by tools/audit/example_add_missing.py
--- REQUIRED: replace every --@api-stub: block below with a real scenario.
--- Run .github/prompts/flesh-out-example.prompt.md for instructions.
--- The final committed file must contain ZERO --@api-stub: lines.
--- =============================================================================
-
--- -----------------------------------------------------------------------------
--- LDataView methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LDataView:type ------------------------------------------------
 --@api-stub: LDataView:type
 -- Returns the Lua-visible type name for this data view handle.
 do
   local obj = lurek.data.newRingBuffer(64)
   lurek.log.debug("type: " .. obj:type(), "example") -- "LRingBuffer"
 end
-
--- ---- Stub: LDataView:typeOf ----------------------------------------------
 --@api-stub: LDataView:typeOf
 -- Returns whether this data view handle matches a supported type name.
 do
   local obj = lurek.data.newRingBuffer(64)
   lurek.log.debug("typeOf LRingBuffer: " .. tostring(obj:typeOf("LRingBuffer")), "example") -- true
 end
-
--- -----------------------------------------------------------------------------
--- LDataWriter methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LDataWriter:type ----------------------------------------------
 --@api-stub: LDataWriter:type
 -- Returns the Lua-visible type name for this data writer handle.
 do
   local obj = lurek.data.newWriter()
   lurek.log.debug("type: " .. obj:type(), "example") -- "LDataWriter"
 end
-
--- ---- Stub: LDataWriter:typeOf --------------------------------------------
 --@api-stub: LDataWriter:typeOf
 -- Returns whether this data writer handle matches a supported type name.
 do
   local obj = lurek.data.newWriter()
   lurek.log.debug("typeOf LDataWriter: " .. tostring(obj:typeOf("LDataWriter")), "example") -- true
 end
-
--- -----------------------------------------------------------------------------
--- LRingBuffer methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LRingBuffer:type ----------------------------------------------
 --@api-stub: LRingBuffer:type
 -- Returns the Lua-visible type name for this ring buffer handle.
 do
   local obj = lurek.data.newRingBuffer(16)
   lurek.log.debug("type: " .. obj:type(), "example") -- "LRingBuffer"
 end
-
--- ---- Stub: LRingBuffer:typeOf --------------------------------------------
 --@api-stub: LRingBuffer:typeOf
 -- Returns whether this ring buffer handle matches a supported type name.
 do

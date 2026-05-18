@@ -1,7 +1,6 @@
 -- content/examples/i18n.lua
 -- Demonstrates the lurek.i18n localization API: loading translations, switching locales, formatting, and search.
 -- Run: cargo run -- content/examples/i18n.lua
-
 --@api-stub: lurek.i18n.loadTable
 -- Loads translations for a locale from a nested Lua table flattened with dot-separated keys
 do
@@ -24,7 +23,6 @@ do
     dialog = { npc_greet = "Witaj, poszukiwaczu przygód!" },
   })
 end
-
 --@api-stub: lurek.i18n.loadString
 -- Loads translations for a locale from TOML or JSON source text
 do
@@ -46,7 +44,6 @@ potion = "Health Potion"
   lurek.log.info("item.sword = " .. lurek.i18n.t("item.sword"), "i18n")
   lurek.log.info("ui.apply = " .. lurek.i18n.t("ui.apply"), "i18n")
 end
-
 --@api-stub: lurek.i18n.unloadTable
 -- Removes all translations for a locale from the catalog
 do
@@ -59,7 +56,6 @@ do
   local noop = lurek.i18n.unloadTable("nonexistent")
   lurek.log.info("nonexistent removed = " .. tostring(noop), "i18n")
 end
-
 --@api-stub: lurek.i18n.mergeLocale
 -- Merges flat translation entries into an existing locale
 do
@@ -76,7 +72,6 @@ do
   -- New keys from merge are accessible
   lurek.log.info("dialog.intro = " .. lurek.i18n.t("dialog.intro"), "i18n")
 end
-
 --@api-stub: lurek.i18n.setLanguage
 -- Sets the active locale and invokes registered change callbacks with new and old locale values
 do
@@ -88,7 +83,6 @@ do
   lurek.i18n.setLanguage("fr")
   lurek.log.info("after switch: " .. lurek.i18n.t("menu.play"), "i18n")
 end
-
 --@api-stub: lurek.i18n.getLanguage
 -- Returns the active locale code
 do
@@ -100,7 +94,6 @@ do
     lurek.log.info("Settings menu showing locale: " .. active, "i18n")
   end
 end
-
 --@api-stub: lurek.i18n.getLanguages
 -- Returns sorted locale codes currently loaded in the catalog
 do
@@ -113,7 +106,6 @@ do
     lurek.log.info("picker slot " .. i .. " = " .. code, "i18n")
   end
 end
-
 --@api-stub: lurek.i18n.getAvailableLanguages
 -- Returns sorted locale codes currently loaded in the catalog
 do
@@ -121,7 +113,6 @@ do
   local langs = lurek.i18n.getAvailableLanguages()
   lurek.log.info("total available locales: " .. #langs, "i18n")
 end
-
 --@api-stub: lurek.i18n.getLoadedLocales
 -- Returns locale codes currently loaded in the catalog
 do
@@ -131,7 +122,6 @@ do
   local locales = lurek.i18n.getLoadedLocales()
   lurek.log.info("loaded locale count = " .. #locales, "i18n")
 end
-
 --@api-stub: lurek.i18n.hasLanguage
 -- Returns whether a locale has translations loaded
 do
@@ -145,7 +135,6 @@ do
     lurek.log.info("Korean not loaded — skipping", "i18n")
   end
 end
-
 --@api-stub: lurek.i18n.validateLocale
 -- Returns whether a locale code has a valid syntax
 do
@@ -157,7 +146,6 @@ do
   -- Empty string is also invalid
   lurek.log.info("empty valid = " .. tostring(lurek.i18n.validateLocale("")), "i18n")
 end
-
 --@api-stub: lurek.i18n.detectLocale
 -- Detects the system locale when available
 do
@@ -170,7 +158,6 @@ do
     lurek.log.info("no system locale detected — using default", "i18n")
   end
 end
-
 --@api-stub: lurek.i18n.setBase
 -- Sets the base locale string stored by the localization module
 do
@@ -178,7 +165,6 @@ do
   lurek.i18n.setBase("en")
   lurek.log.info("base locale set to 'en'", "i18n")
 end
-
 --@api-stub: lurek.i18n.getBase
 -- Returns the base locale string stored by the localization module
 do
@@ -188,7 +174,6 @@ do
     lurek.log.info("base locale for coverage analysis: " .. base, "i18n")
   end
 end
-
 --@api-stub: lurek.i18n.setFallbacks
 -- Replaces the fallback locale list used for missing translations
 do
@@ -199,7 +184,6 @@ do
   -- Now any missing key in the active locale will try en-US first, then en
   lurek.log.info("fallback chain set: en-US -> en", "i18n")
 end
-
 --@api-stub: lurek.i18n.getFallbacks
 -- Returns fallback locale codes in lookup order
 do
@@ -208,7 +192,6 @@ do
   -- Display the fallback chain in a debug overlay
   lurek.log.info("fallback chain: " .. table.concat(chain, " -> "), "i18n")
 end
-
 --@api-stub: lurek.i18n.t
 -- Translates a key using the active locale, optional variables, and optional English plural selection
 do
@@ -232,7 +215,6 @@ do
   local player_hud = lurek.i18n.t("hud.player", { name = "Kira", level = "12" })
   lurek.log.info(player_hud, "i18n")
 end
-
 --@api-stub: lurek.i18n.tGender
 -- Translates a gender-specific key variant when present, then falls back to the base key
 do
@@ -252,7 +234,6 @@ do
   lurek.log.info("NPC says: " .. greeting, "i18n")
   -- If gender key is missing, falls back to the base key value
 end
-
 --@api-stub: lurek.i18n.interpolate
 -- Replaces `{name}` placeholders in a template using string variables
 do
@@ -266,7 +247,6 @@ do
   })
   lurek.log.info(msg, "i18n")
 end
-
 --@api-stub: lurek.i18n.pluralFor
 -- Returns the English plural category key for a number
 do
@@ -278,7 +258,6 @@ do
     lurek.log.info("count=" .. n .. " -> category='" .. category .. "'", "i18n")
   end
 end
-
 --@api-stub: lurek.i18n.hasKey
 -- Returns whether the catalog contains a translation key in active or fallback locales
 do
@@ -294,7 +273,6 @@ do
     end
   end
 end
-
 --@api-stub: lurek.i18n.getKeys
 -- Returns sorted translation keys known to the catalog
 do
@@ -310,7 +288,6 @@ do
     lurek.log.info("  " .. key .. " = " .. lurek.i18n.t(key), "i18n")
   end
 end
-
 --@api-stub: lurek.i18n.setKey
 -- Sets one translation value for one locale and key
 do
@@ -323,7 +300,6 @@ do
   lurek.log.info(lurek.i18n.t("ui.mod_menu"), "i18n")
   lurek.log.info(lurek.i18n.t("ui.mod_reload"), "i18n")
 end
-
 --@api-stub: lurek.i18n.keyCount
 -- Returns the number of translation keys known to the catalog
 do
@@ -336,7 +312,6 @@ do
   local total = lurek.i18n.keyCount()
   lurek.log.info("translation strings to maintain: " .. total, "i18n")
 end
-
 --@api-stub: lurek.i18n.categories
 -- Returns top-level translation key categories
 do
@@ -353,7 +328,6 @@ do
     lurek.log.info("category: " .. cat, "i18n")
   end
 end
-
 --@api-stub: lurek.i18n.keysInCategory
 -- Returns translation keys belonging to one category prefix
 do
@@ -369,7 +343,6 @@ do
     lurek.log.info("  " .. key .. " = " .. lurek.i18n.t(key), "i18n")
   end
 end
-
 --@api-stub: lurek.i18n.search
 -- Searches translation keys and values for a query string
 do
@@ -385,7 +358,6 @@ do
     lurek.log.info("  " .. row.key .. " = " .. row.value, "i18n")
   end
 end
-
 --@api-stub: lurek.i18n.buildIndex
 -- Builds a word-to-keys search index from the catalog
 do
@@ -398,7 +370,6 @@ do
   local index = lurek.i18n.buildIndex()
   lurek.log.info("search index built, has entries: " .. tostring(next(index) ~= nil), "i18n")
 end
-
 --@api-stub: lurek.i18n.searchIndexed
 -- Searches a prebuilt word index and returns matching keys
 do
@@ -415,7 +386,6 @@ do
     lurek.log.info("  " .. key, "i18n")
   end
 end
-
 --@api-stub: lurek.i18n.formatNumber
 -- Formats a number with locale-aware separators and optional decimal precision
 do
@@ -430,7 +400,6 @@ do
   local score = lurek.i18n.formatNumber(1000000, { decimals = 0 })
   lurek.log.info("high score (EN format): " .. score, "i18n")
 end
-
 --@api-stub: lurek.i18n.formatDate
 -- Formats a timestamp with the active locale and a named format
 do
@@ -443,7 +412,6 @@ do
   lurek.log.info("save slot 1: " .. short_date, "i18n")
   lurek.log.info("detailed: " .. long_date, "i18n")
 end
-
 --@api-stub: lurek.i18n.isRTL
 -- Returns whether a locale is written right-to-left
 do
@@ -456,7 +424,6 @@ do
   local active_rtl = lurek.i18n.isRTL()
   lurek.log.info("active locale isRTL = " .. tostring(active_rtl), "i18n")
 end
-
 --@api-stub: lurek.i18n.onLanguageChange
 -- Registers a callback invoked when the active locale changes
 do
@@ -468,7 +435,6 @@ do
   lurek.i18n.loadTable("es", { ui = { start = "Iniciar" } })
   lurek.i18n.setLanguage("es")
 end
-
 --@api-stub: lurek.i18n.onChange
 -- Registers a locale-change callback using the shorter alias name
 do
@@ -479,7 +445,6 @@ do
   lurek.i18n.loadTable("it", { ui = { start = "Inizia" } })
   lurek.i18n.setLanguage("it")
 end
-
 --@api-stub: lurek.i18n.offChange
 -- Removes every registered locale-change callback
 do
@@ -489,7 +454,6 @@ do
   lurek.i18n.offChange()
   lurek.log.info("all locale-change handlers cleared", "i18n")
 end
-
 --@api-stub: lurek.i18n.localeCoverage
 -- Returns missing translation keys for all locales compared to a reference locale
 do
@@ -504,5 +468,4 @@ do
       gap.key, table.concat(gap.missing_in, ", ")), "i18n")
   end
 end
-
 print("content/examples/i18n.lua")

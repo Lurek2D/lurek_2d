@@ -1,7 +1,6 @@
 -- content/examples/filesystem.lua
 -- lurek.filesystem API examples.
 -- Run: cargo run -- content/examples/filesystem.lua
-
 --@api-stub: lurek.filesystem.mountZip
 -- Opens a ZIP archive and exposes it through a virtual prefix
 do
@@ -18,7 +17,6 @@ do
     end
   end
 end
-
 --@api-stub: lurek.filesystem.watchPath
 -- Adds a path to the module-local file watcher
 do
@@ -29,7 +27,6 @@ do
   lurek.filesystem.watchPath("scripts/enemy.lua")
   -- Both paths are now tracked. Call pollWatchers() each frame to get changes.
 end
-
 --@api-stub: lurek.filesystem.unwatchPath
 -- Removes a path from the module-local file watcher
 do
@@ -39,7 +36,6 @@ do
   lurek.filesystem.unwatchPath("assets/levels/forest.json")
   -- After this call, changes to forest.json will no longer appear in pollWatchers().
 end
-
 --@api-stub: lurek.filesystem.pollWatchers
 -- Polls watched paths and returns paths that changed since the previous poll
 do
@@ -58,7 +54,6 @@ do
     end
   end
 end
-
 --@api-stub: LFileHandle:read
 -- Reads a UTF-8 text file from GameFS
 do
@@ -71,7 +66,6 @@ do
     -- Parse the TOML string here to extract game settings
   end
 end
-
 --@api-stub: LFileHandle:write
 -- Writes a UTF-8 text file through GameFS
 do
@@ -82,7 +76,6 @@ do
   lurek.filesystem.write("save/highscore.txt", tostring(score))
   -- The file now exists at <save_dir>/highscore.txt and will persist across runs.
 end
-
 --@api-stub: lurek.filesystem.writeJson
 -- Writes JSON text through GameFS
 do
@@ -91,7 +84,6 @@ do
   -- game state like player profiles, inventory, or settings.
   lurek.filesystem.writeJson("save/profile.json", '{"name":"hero","level":3}')
 end
-
 --@api-stub: lurek.filesystem.readJson
 -- Reads a JSON document as text from GameFS
 do
@@ -101,7 +93,6 @@ do
   lurek.log.info("profile json bytes: " .. #json, "save")
   -- local profile = lurek.data.decode(json)  -- decode to a Lua table
 end
-
 --@api-stub: lurek.filesystem.readOrWriteJson
 -- Reads a JSON file or writes and returns default JSON when the file is absent
 do
@@ -116,7 +107,6 @@ do
   -- On first run, options.json is created with the defaults.
   -- On subsequent runs, the existing file is read unchanged.
 end
-
 --@api-stub: lurek.filesystem.exists
 -- Returns whether a path exists in GameFS
 do
@@ -128,7 +118,6 @@ do
     lurek.log.info("no save, starting new game", "save")
   end
 end
-
 --@api-stub: lurek.filesystem.append
 -- Appends UTF-8 text to a GameFS file
 do
@@ -139,7 +128,6 @@ do
   lurek.filesystem.append("save/telemetry.log", line)
   -- Each call adds one more line — the file grows over time.
 end
-
 --@api-stub: lurek.filesystem.openFile
 -- Opens a GameFS file handle in a requested mode
 do
@@ -152,7 +140,6 @@ do
   fh:close()
   -- Always close file handles to flush data and release the file.
 end
-
 --@api-stub: lurek.filesystem.getDirectoryItems
 -- Lists immediate entries in a GameFS directory
 do
@@ -166,7 +153,6 @@ do
     lurek.log.debug("  save: " .. name, "save")
   end
 end
-
 --@api-stub: lurek.filesystem.isFile
 -- Returns whether a GameFS path is a regular file
 do
@@ -181,7 +167,6 @@ do
     end
   end)
 end
-
 --@api-stub: lurek.filesystem.isDirectory
 -- Returns whether a GameFS path is a directory
 do
@@ -192,7 +177,6 @@ do
     lurek.log.info("levels available: " .. #levels, "scene")
   end
 end
-
 --@api-stub: lurek.filesystem.createDirectory
 -- Creates a GameFS directory and any missing parents
 do
@@ -202,7 +186,6 @@ do
   lurek.filesystem.createDirectory("save/screenshots")
   lurek.filesystem.write("save/screenshots/last_run.txt", "ok")
 end
-
 --@api-stub: lurek.filesystem.remove
 -- Removes a GameFS file or supported path
 do
@@ -213,7 +196,6 @@ do
     lurek.log.info("cleared stale export", "save")
   end
 end
-
 --@api-stub: lurek.filesystem.getInfo
 -- Returns file metadata for a GameFS path when available
 do
@@ -227,7 +209,6 @@ do
     -- info.modtime gives the last-modified time for "last saved" display
   end
 end
-
 --@api-stub: lurek.filesystem.getSource
 -- Returns the GameFS source root string
 do
@@ -237,7 +218,6 @@ do
   local src = lurek.filesystem.getSource()
   lurek.log.info("game source dir: " .. src, "fs")
 end
-
 --@api-stub: lurek.filesystem.getSaveDirectory
 -- Returns the save directory path used by GameFS
 do
@@ -247,7 +227,6 @@ do
   local save_dir = lurek.filesystem.getSaveDirectory()
   lurek.log.info("saves stored at: " .. save_dir, "save")
 end
-
 --@api-stub: lurek.filesystem.getWorkingDirectory
 -- Returns the process working directory
 do
@@ -256,7 +235,6 @@ do
   local cwd = lurek.filesystem.getWorkingDirectory()
   lurek.log.debug("cwd at launch: " .. cwd, "fs")
 end
-
 --@api-stub: lurek.filesystem.getUserDirectory
 -- Returns the current user's directory path
 do
@@ -266,7 +244,6 @@ do
   local home = lurek.filesystem.getUserDirectory()
   lurek.log.info("user home: " .. home, "fs")
 end
-
 --@api-stub: lurek.filesystem.getIdentity
 -- Returns the current filesystem identity string
 do
@@ -275,7 +252,6 @@ do
   local id = lurek.filesystem.getIdentity()
   lurek.log.info("save identity: " .. id, "save")
 end
-
 --@api-stub: lurek.filesystem.setIdentity
 -- Sets the filesystem identity string used by save paths
 do
@@ -285,7 +261,6 @@ do
   lurek.filesystem.setIdentity("forest_quest")
   lurek.log.info("save identity set to forest_quest", "save")
 end
-
 --@api-stub: lurek.filesystem.lines
 -- Creates an iterator function over lines in a text file
 do
@@ -300,7 +275,6 @@ do
     lurek.log.info("dialogue lines: " .. count, "i18n")
   end)
 end
-
 --@api-stub: lurek.filesystem.readAsync
 -- Starts an asynchronous file load request
 do
@@ -313,7 +287,6 @@ do
     -- pending is a numeric handle ID — poll it each frame until done
   end
 end
-
 --@api-stub: lurek.filesystem.pollAsync
 -- Polls an asynchronous file load request
 do
@@ -334,7 +307,6 @@ do
     end
   end
 end
-
 --@api-stub: lurek.filesystem.writeAsync
 -- Starts an asynchronous file write request
 do
@@ -348,7 +320,6 @@ do
     -- The write proceeds in the background; poll to confirm completion.
   end
 end
-
 --@api-stub: lurek.filesystem.pollAsyncWrite
 -- Polls an asynchronous file write request
 do
@@ -373,7 +344,6 @@ do
     end
   end
 end
-
 --@api-stub: lurek.filesystem.mount
 -- Mounts an external source path at a GameFS mount point
 do
@@ -386,7 +356,6 @@ do
     -- Now lurek.filesystem.read("mods/extra/config.toml") reads from ../mods/extra/
   end
 end
-
 --@api-stub: lurek.filesystem.unmount
 -- Removes a GameFS mount point
 do
@@ -397,7 +366,6 @@ do
     -- Files under mods/extra/ are no longer accessible through GameFS.
   end
 end
-
 --@api-stub: lurek.filesystem.load
 -- Loads a Lua chunk from GameFS and returns it as a Lua function
 do
@@ -410,7 +378,6 @@ do
     lurek.log.info("enemy AI module loaded", "ai")
   end)
 end
-
 --@api-stub: lurek.filesystem.newFileData
 -- Loads a file into an immutable file data handle
 do
@@ -423,7 +390,6 @@ do
     lurek.log.info("loaded " .. fd:getFilename() .. " (" .. fd:getSize() .. " bytes)", "audio")
   end)
 end
-
 --@api-stub: lurek.filesystem.copy
 -- Copies one GameFS file to another path
 do
@@ -432,7 +398,6 @@ do
   lurek.filesystem.copy("save/slot1.dat", "save/slot1.bak")
   lurek.log.info("backed up slot 1", "save")
 end
-
 --@api-stub: lurek.filesystem.move
 -- Moves or renames one GameFS file to another path
 do
@@ -443,7 +408,6 @@ do
   lurek.filesystem.move("save/slot1.tmp", "save/slot1.dat")
   -- slot1.dat is now updated atomically — no half-written state possible.
 end
-
 --@api-stub: lurek.filesystem.removeDir
 -- Removes a GameFS directory
 do
@@ -454,7 +418,6 @@ do
     lurek.log.info("cleared screenshots cache", "save")
   end
 end
-
 --@api-stub: lurek.filesystem.glob
 -- Returns GameFS paths matching a glob pattern
 do
@@ -467,7 +430,6 @@ do
     lurek.log.info("save: " .. path, "save")
   end
 end
-
 --@api-stub: lurek.filesystem.listRecursive
 -- Lists all paths under a GameFS directory recursively
 do
@@ -480,7 +442,6 @@ do
     -- files contains: {"assets/levels/forest.json", "assets/levels/cave/map.json", ...}
   end
 end
-
 --@api-stub: lurek.filesystem.stat
 -- Returns size and file/directory flags for a GameFS path
 do
@@ -491,7 +452,6 @@ do
     lurek.log.info("forest.json: " .. s.size .. " bytes", "scene")
   end
 end
-
 --@api-stub: lurek.filesystem.createTempFile
 -- Creates a temporary file through GameFS
 do
@@ -503,7 +463,6 @@ do
   lurek.log.info("export staged at " .. tmp, "save")
   -- The returned path might be something like "save/_tmp_export_a3f2.txt"
 end
-
 --@api-stub: lurek.filesystem.mkdir
 -- Creates a directory under the GameFS base directory
 do
@@ -514,7 +473,6 @@ do
     lurek.filesystem.write("save/run_001/notes.txt", "ok")
   end)
 end
-
 --@api-stub: lurek.filesystem.toAbsolutePath
 -- Resolves a GameFS-relative path against the filesystem base directory
 do
@@ -525,10 +483,6 @@ do
   lurek.log.info("absolute path: " .. abs, "fs")
   -- Result: "C:/Users/Player/AppData/.../forest_quest/save/slot1.dat" (Windows)
 end
-
-
--- — FileData methods —
-
 --@api-stub: LFileHandle:getSize
 -- Returns the byte length of this file data
 do
@@ -540,7 +494,6 @@ do
     lurek.log.info(string.format("jump.ogg = %.1f KiB", kb), "audio")
   end)
 end
-
 --@api-stub: LFileData:getString
 -- Returns file data bytes as a Lua string without UTF-8 validation
 do
@@ -553,7 +506,6 @@ do
     lurek.log.info("first byte: " .. string.byte(body, 1), "config")
   end)
 end
-
 --@api-stub: LFileData:getFilename
 -- Returns the path associated with this file data object
 do
@@ -564,7 +516,6 @@ do
     lurek.log.info("loaded " .. fd:getFilename(), "scene")
   end)
 end
-
 --@api-stub: LZipMount:type
 -- Returns the Lua-visible type name for this file data handle
 do
@@ -578,7 +529,6 @@ do
     lurek.log.info("LFileData:type = skipped", "filesystem")
   end
 end
-
 --@api-stub: LZipMount:typeOf
 -- Returns whether this file data handle matches a supported type name
 do
@@ -593,10 +543,6 @@ do
     lurek.log.info("LFileData:typeOf = skipped", "filesystem")
   end
 end
-
-
--- — FileHandle methods —
-
 --@api-stub: LFileHandle:read
 -- Reads up to an optional byte count and returns text using lossless UTF-8 replacement
 do
@@ -608,7 +554,6 @@ do
   fh:close()
   lurek.log.info("slot1 size: " .. #body .. " bytes", "save")
 end
-
 --@api-stub: LFileHandle:readLine
 -- Reads the next line from this file handle
 do
@@ -621,7 +566,6 @@ do
     lurek.log.info("first telemetry line: " .. (first or "<empty>"), "fs")
   end)
 end
-
 --@api-stub: LFileHandle:write
 -- Writes a string to this file handle
 do
@@ -632,7 +576,6 @@ do
   fh:close()
   lurek.log.info("wrote " .. n .. " bytes to score.txt", "save")
 end
-
 --@api-stub: LFileHandle:seek
 -- Moves the file cursor to an absolute byte position
 do
@@ -645,7 +588,6 @@ do
   fh:close()
   lurek.log.debug("bytes 16..23 = " .. chunk, "save")
 end
-
 --@api-stub: LFileHandle:tell
 -- Returns the current file cursor position
 do
@@ -659,7 +601,6 @@ do
     fh:close()
   end)
 end
-
 --@api-stub: LFileHandle:getSize
 -- Returns the size of the open file
 do
@@ -671,7 +612,6 @@ do
     fh:close()
   end)
 end
-
 --@api-stub: LFileHandle:getMode
 -- Returns the mode used to open this file handle
 do
@@ -681,7 +621,6 @@ do
   lurek.log.debug("opened slot1 in mode " .. fh:getMode(), "save")
   fh:close()
 end
-
 --@api-stub: LFileHandle:flush
 -- Flushes pending writes on this file handle
 do

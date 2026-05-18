@@ -1,7 +1,6 @@
 -- content/examples/minimap.lua
 -- lurek.minimap API examples.
 -- Run: cargo run -- content/examples/minimap.lua
-
 --@api-stub: lurek.minimap.newMinimap
 -- Creates a minimap with grid dimensions and optional display size
 do
@@ -19,9 +18,6 @@ do
   lurek.log.info("world grid " .. world_map:getGridWidth() .. "x" .. world_map:getGridHeight(), "minimap")
   lurek.log.info("radar grid " .. radar:getGridWidth() .. "x" .. radar:getGridHeight(), "minimap")
 end
-
--- Minimap methods
-
 --@api-stub: LMinimap:getGridWidth
 -- Returns the grid width of this minimap.
 do
@@ -34,7 +30,6 @@ do
     mm:setTerrain(x, 1, 2)
   end
 end
-
 --@api-stub: LMinimap:getGridHeight
 -- Returns the grid height of this minimap.
 do
@@ -46,7 +41,6 @@ do
     mm:setTerrain(1, y, 3) -- type 3 = water
   end
 end
-
 --@api-stub: LMinimap:getGridSize
 -- Returns the grid size of this minimap.
 do
@@ -56,7 +50,6 @@ do
   local gw, gh = mm:getGridSize()
   lurek.log.info("dungeon has " .. (gw * gh) .. " tiles to fill", "minimap")
 end
-
 --@api-stub: LMinimap:getDisplayWidth
 -- Returns the display width of this minimap.
 do
@@ -68,7 +61,6 @@ do
   local label_x = 16 + px + 8
   lurek.log.info("label goes at x=" .. label_x, "ui")
 end
-
 --@api-stub: LMinimap:getDisplayHeight
 -- Returns the display height of this minimap.
 do
@@ -81,7 +73,6 @@ do
   local fits = (py + chat_h) <= screen_h
   lurek.log.info("minimap fits above chat: " .. tostring(fits), "ui")
 end
-
 --@api-stub: LMinimap:getDisplaySize
 -- Returns the display size of this minimap.
 do
@@ -92,7 +83,6 @@ do
   local center_px_x, center_px_y = dw * 0.5, dh * 0.5
   lurek.log.info("minimap center pixel: " .. center_px_x .. "," .. center_px_y, "minimap")
 end
-
 --@api-stub: LMinimap:setDisplaySize
 -- Sets the display size of this minimap.
 do
@@ -106,7 +96,6 @@ do
   local w, h = mm:getDisplaySize()
   lurek.log.info("expanded minimap to " .. w .. "x" .. h, "ui")
 end
-
 --@api-stub: LMinimap:getTerrain
 -- Returns the terrain of this minimap.
 do
@@ -119,7 +108,6 @@ do
   local names = { [0] = "void", [1] = "grass", [7] = "forest" }
   lurek.log.info("tile at 4,4: " .. (names[t] or "unknown"), "minimap")
 end
-
 --@api-stub: LMinimap:setTerrainData
 -- Sets the terrain data of this minimap.
 do
@@ -135,7 +123,6 @@ do
   mm:setTerrainData(level)
   lurek.log.info("loaded " .. #level .. " cells of dungeon data", "minimap")
 end
-
 --@api-stub: LMinimap:getTerrainColor
 -- Returns the terrain color of this minimap.
 do
@@ -146,7 +133,6 @@ do
   local r, g, b, a = mm:getTerrainColor(2)
   lurek.log.info("forest swatch: rgba(" .. r .. "," .. g .. "," .. b .. "," .. a .. ")", "ui")
 end
-
 --@api-stub: LMinimap:getTileDescription
 -- Returns the tile description of this minimap.
 do
@@ -159,7 +145,6 @@ do
     lurek.log.info("tooltip: " .. desc, "ui")
   end
 end
-
 --@api-stub: LMinimap:setFogEnabled
 -- Sets whether fog of war is enabled on this minimap.
 do
@@ -173,7 +158,6 @@ do
     lurek.log.info("fog of war active — dungeon unexplored", "minimap")
   end
 end
-
 --@api-stub: LMinimap:isFogEnabled
 -- Returns true if fog of war is currently enabled.
 do
@@ -187,7 +171,6 @@ do
     lurek.log.info("creative mode: full map visibility", "minimap")
   end
 end
-
 --@api-stub: LMinimap:setFogLevel
 -- Sets the fog level for a specific grid cell.
 do
@@ -204,7 +187,6 @@ do
   mm:setFogLevel(4, 5, 1)
   mm:setFogLevel(5, 5, 1)
 end
-
 --@api-stub: LMinimap:getFogLevel
 -- Returns the fog level for a specific grid cell.
 do
@@ -220,7 +202,6 @@ do
     lurek.log.info("cell 8,8 is hidden — safe to spawn enemy", "fog")
   end
 end
-
 --@api-stub: LMinimap:getFogColor
 -- Returns the fog color used when rendering fogged cells.
 do
@@ -231,7 +212,6 @@ do
   local r, g, b, a = mm:getFogColor()
   lurek.log.info("fog rgba: " .. r .. "," .. g .. "," .. b .. "," .. a, "fog")
 end
-
 --@api-stub: LMinimap:setFogData
 -- Sets all fog levels from a flat array (row-major, like setTerrainData).
 do
@@ -245,7 +225,6 @@ do
   mm:setFogData(saved_fog)
   lurek.log.info("fog state restored from save", "minimap")
 end
-
 --@api-stub: LMinimap:isObjectTypeVisible
 -- Returns true if the given object type is currently visible on the minimap.
 do
@@ -257,7 +236,6 @@ do
     lurek.log.info("enemy markers visible on radar", "minimap")
   end
 end
-
 --@api-stub: LMinimap:getObjectTypeCount
 -- Returns the number of registered object types.
 do
@@ -269,7 +247,6 @@ do
   mm:addObjectType("neutral", 0.8, 0.8, 0.8, 1) -- grey dots
   lurek.log.info("registered " .. mm:getObjectTypeCount() .. " object types", "minimap")
 end
-
 --@api-stub: LMinimap:removeObject
 -- Removes a tracked object from this minimap by its id.
 do
@@ -284,7 +261,6 @@ do
     lurek.log.info("loot #101 collected — removed from minimap", "minimap")
   end
 end
-
 --@api-stub: LMinimap:clearObjects
 -- Clears all tracked objects from this minimap.
 do
@@ -298,7 +274,6 @@ do
   mm:clearObjects()
   lurek.log.info("objects after wave clear: " .. mm:getObjectCount(), "minimap")
 end
-
 --@api-stub: LMinimap:getObjectCount
 -- Returns the number of tracked objects on this minimap.
 do
@@ -311,7 +286,6 @@ do
   end
   lurek.log.info("tracked objects: " .. mm:getObjectCount(), "minimap")
 end
-
 --@api-stub: LMinimap:getOwnerColor
 -- Returns the RGBA color assigned to an owner id.
 do
@@ -322,7 +296,6 @@ do
   local r, g, b, a = mm:getOwnerColor(2)
   lurek.log.info("team 2 colour: rgba(" .. r .. "," .. g .. "," .. b .. "," .. a .. ")", "team")
 end
-
 --@api-stub: LMinimap:setColorMode
 -- Sets the color mode used for rendering terrain cells.
 do
@@ -334,7 +307,6 @@ do
   mm:setColorMode("political")
   lurek.log.info("map mode: " .. mm:getColorMode(), "minimap")
 end
-
 --@api-stub: LMinimap:getColorMode
 -- Returns the current color mode of this minimap.
 do
@@ -347,7 +319,6 @@ do
     mm:setTerrainColor(1, 0.3, 0.5, 0.2, 1) -- grass green
   end
 end
-
 --@api-stub: LMinimap:setZoom
 -- Sets the zoom level of this minimap.
 do
@@ -358,7 +329,6 @@ do
   mm:setZoom(2.5) -- zoom in — show only a portion of the 64x64 grid
   lurek.log.info("zoom level: " .. mm:getZoom(), "minimap")
 end
-
 --@api-stub: LMinimap:getZoom
 -- Returns the current zoom level.
 do
@@ -370,7 +340,6 @@ do
   local cell_px = (mm:getDisplayWidth() / mm:getGridWidth()) * mm:getZoom()
   lurek.log.info("effective cell size: " .. cell_px .. " px", "minimap")
 end
-
 --@api-stub: LMinimap:setCenter
 -- Sets the world center point of this minimap's view.
 do
@@ -383,7 +352,6 @@ do
   -- Center the minimap on the player each frame
   mm:setCenter(player.x, player.y)
 end
-
 --@api-stub: LMinimap:getCenter
 -- Returns the current center point of this minimap's view.
 do
@@ -394,7 +362,6 @@ do
   local cx, cy = mm:getCenter()
   lurek.log.info("view centered at " .. cx .. "," .. cy, "minimap")
 end
-
 --@api-stub: LMinimap:getCenterX
 -- Returns the x coordinate of the minimap's view center.
 do
@@ -407,7 +374,6 @@ do
     mm:setCenter(max_x, mm:getCenterY())
   end
 end
-
 --@api-stub: LMinimap:getCenterY
 -- Returns the y coordinate of the minimap's view center.
 do
@@ -419,7 +385,6 @@ do
   local cy = math.min(mm:getCenterY(), max_y)
   mm:setCenter(mm:getCenterX(), cy)
 end
-
 --@api-stub: LMinimap:clearViewportRect
 -- Clears the viewport rectangle overlay from this minimap.
 do
@@ -434,7 +399,6 @@ do
     lurek.log.info("viewport rect hidden in fullscreen mode", "minimap")
   end
 end
-
 --@api-stub: LMinimap:getViewportRect
 -- Returns the viewport rectangle (x, y, w, h) or nil if not set.
 do
@@ -448,7 +412,6 @@ do
     lurek.log.info("camera sees grid region: " .. x .. "," .. y .. " size " .. w .. "x" .. h, "minimap")
   end
 end
-
 --@api-stub: LMinimap:setViewportVisible
 -- Sets whether the viewport rectangle overlay is drawn.
 do
@@ -461,7 +424,6 @@ do
   -- Cutscene ends — show it again (rect data is preserved)
   mm:setViewportVisible(true)
 end
-
 --@api-stub: LMinimap:isViewportVisible
 -- Returns true if the viewport rectangle overlay is visible.
 do
@@ -473,7 +435,6 @@ do
     lurek.log.info("viewport overlay is drawn on minimap", "minimap")
   end
 end
-
 --@api-stub: LMinimap:getViewportColor
 -- Returns the RGBA color of the viewport rectangle overlay.
 do
@@ -484,7 +445,6 @@ do
   local r, g, b, a = mm:getViewportColor()
   lurek.log.info("viewport colour: rgba(" .. r .. "," .. g .. "," .. b .. "," .. a .. ")", "ui")
 end
-
 --@api-stub: LMinimap:getPingCount
 -- Returns the number of active ping effects on this minimap.
 do
@@ -499,7 +459,6 @@ do
     lurek.log.info("can add more pings (current: " .. count .. ")", "minimap")
   end
 end
-
 --@api-stub: LMinimap:removeMarker
 -- Removes a marker from this minimap by its id.
 do
@@ -512,7 +471,6 @@ do
     lurek.log.info("quest marker " .. quest_id .. " cleared", "minimap")
   end
 end
-
 --@api-stub: LMinimap:hasMarker
 -- Returns true if a marker with the given id exists.
 do
@@ -525,7 +483,6 @@ do
     mm:setMarkerAnimation(id, "pulse", 1.5)
   end
 end
-
 --@api-stub: LMinimap:getMarkerDescription
 -- Returns the description text of a marker, or nil.
 do
@@ -538,7 +495,6 @@ do
     lurek.log.info("hovering marker: " .. desc, "minimap")
   end
 end
-
 --@api-stub: LMinimap:getMarkerCount
 -- Returns the total number of markers placed on this minimap.
 do
@@ -550,7 +506,6 @@ do
   mm:addMarker(14, 7, "Boss arena")
   lurek.log.info("points of interest: " .. mm:getMarkerCount(), "minimap")
 end
-
 --@api-stub: LMinimap:clearMarkerAnimation
 -- Clears the animation on a marker by its id.
 do
@@ -562,7 +517,6 @@ do
   -- Boss defeated — stop the blinking
   mm:clearMarkerAnimation(id)
 end
-
 --@api-stub: LMinimap:clearOverlay
 -- Clears all drawn overlay shapes (lines, rectangles).
 do
@@ -574,7 +528,6 @@ do
   -- Next frame: clear and redraw with updated positions
   mm:clearOverlay()
 end
-
 --@api-stub: LMinimap:clearPath
 -- Clears a specific path by id, or all paths if no id is given.
 do
@@ -585,7 +538,6 @@ do
   -- Player reached waypoint — clear this specific path
   mm:clearPath(path_id)
 end
-
 --@api-stub: LMinimap:setLayer
 -- Sets the active display layer of this minimap.
 do
@@ -598,7 +550,6 @@ do
   -- Player steps on a staircase — switch to dungeon layer
   mm:setLayer(1)
 end
-
 --@api-stub: LMinimap:getLayer
 -- Returns the currently active layer index.
 do
@@ -609,7 +560,6 @@ do
   local floor_names = { [0] = "Overworld", [1] = "Floor B1", [2] = "Floor B2" }
   lurek.log.info("current: " .. (floor_names[mm:getLayer()] or "unknown"), "minimap")
 end
-
 --@api-stub: LMinimap:setAntiAlias
 -- Enables or disables anti-aliasing on this minimap.
 do
@@ -623,7 +573,6 @@ do
     lurek.log.info("pixel-perfect minimap rendering", "render")
   end
 end
-
 --@api-stub: LMinimap:isAntiAlias
 -- Returns true if anti-aliasing is enabled.
 do
@@ -634,7 +583,6 @@ do
   local settings = { antiAlias = mm:isAntiAlias() }
   lurek.log.info("minimap AA=" .. tostring(settings.antiAlias), "settings")
 end
-
 --@api-stub: LMinimap:setClickable
 -- Enables or disables click interaction on this minimap.
 do
@@ -647,7 +595,6 @@ do
     lurek.log.info("minimap input locked (tutorial active)", "ui")
   end
 end
-
 --@api-stub: LMinimap:isClickable
 -- Returns true if click interaction is enabled.
 do
@@ -659,7 +606,6 @@ do
     mm:addMarker(20, 15, "Click here!")
   end
 end
-
 --@api-stub: LMinimap:update
 -- Advances minimap animations and timers by delta time.
 do
@@ -673,7 +619,6 @@ do
     mm:update(dt)
   end
 end
-
 --@api-stub: LMinimap:type
 -- Returns the Lua-visible type name string for this minimap handle.
 do
@@ -682,7 +627,6 @@ do
   local mm = lurek.minimap.newMinimap(16, 16)
   lurek.log.info("handle type: " .. mm:type(), "ui")
 end
-
 --@api-stub: LMinimap:typeOf
 -- Returns true if this handle matches the given type name string.
 do
@@ -696,7 +640,6 @@ do
     lurek.log.info("confirmed: this is a Minimap", "ui")
   end
 end
-
 --@api-stub: LMinimap:render
 -- Enqueues render commands to draw the minimap at a screen position.
 do
@@ -716,7 +659,6 @@ do
     mm:render(screen_w - mm:getDisplayWidth() - margin, margin)
   end
 end
-
 --@api-stub: LMinimap:drawToImage
 -- Renders the minimap into an image data object at a given pixel scale.
 do
@@ -729,7 +671,6 @@ do
   local img = mm:drawToImage(8) -- 16*8 = 128px wide image
   lurek.log.info("snapshot: " .. img:getWidth() .. "x" .. img:getHeight() .. " px", "minimap")
 end
-
 --@api-stub: LMinimap:addMarker
 -- Adds a marker at grid coordinates with optional description and color.
 do
@@ -746,7 +687,6 @@ do
   local poi = mm:addMarker(10, 50, "Hidden shop")
   lurek.log.info("placed markers: " .. quest_marker .. ", " .. danger_marker .. ", " .. poi, "minimap")
 end
-
 --@api-stub: LMinimap:addObjectType
 -- Registers a named object type with a display color.
 do
@@ -760,7 +700,6 @@ do
   local resource_idx = mm:addObjectType("resource", 1, 0.8, 0, 1) -- gold
   lurek.log.info("types registered: " .. mm:getObjectTypeCount(), "minimap")
 end
-
 --@api-stub: LMinimap:addPing
 -- Adds a timed ping effect that fades out over its duration.
 do
@@ -775,7 +714,6 @@ do
   mm:addPing(10, 45, 1.5)
   lurek.log.info("active pings: " .. mm:getPingCount(), "minimap")
 end
-
 --@api-stub: LMinimap:drawLine
 -- Draws an overlay line between two grid points.
 do
@@ -792,7 +730,6 @@ do
   mm:drawLine(5, 20, 5, 5, yellow)   -- left
   lurek.log.info("territory border drawn", "minimap")
 end
-
 --@api-stub: LMinimap:drawRect
 -- Draws an overlay rectangle at a grid position.
 do
@@ -805,7 +742,6 @@ do
   mm:drawRect(10, 10, 8, 6, danger_red)
   lurek.log.info("danger zone highlighted", "minimap")
 end
-
 --@api-stub: LMinimap:getHoverInfo
 -- Returns tooltip text for a screen position, if available.
 do
@@ -820,7 +756,6 @@ do
   local info = mm:getHoverInfo(40, 40, 0, 0)
   lurek.log.info("hover: " .. tostring(info), "minimap")
 end
-
 --@api-stub: LMinimap:gridToScreen
 -- Converts grid coordinates to screen pixel coordinates.
 do
@@ -833,7 +768,6 @@ do
   local sx, sy = mm:gridToScreen(16, 16, 0, 0)
   lurek.log.info("grid 16,16 -> screen " .. tostring(sx) .. "," .. tostring(sy), "minimap")
 end
-
 --@api-stub: LMinimap:screenToGrid
 -- Converts screen pixel coordinates to grid coordinates.
 do
@@ -845,7 +779,6 @@ do
   local gx, gy = mm:screenToGrid(64, 64, 0, 0)
   lurek.log.info("click -> grid cell " .. tostring(gx) .. "," .. tostring(gy), "minimap")
 end
-
 --@api-stub: LMinimap:setFogColor
 -- Sets the RGBA color of the fog overlay.
 do
@@ -857,7 +790,6 @@ do
   mm:setFogColor(0.0, 0.0, 0.1, 0.7)
   lurek.log.info("dark fog colour set for night dungeon", "minimap")
 end
-
 --@api-stub: LMinimap:setLayerData
 -- Sets raw terrain cell data for a specific layer.
 do
@@ -876,7 +808,6 @@ do
   mm:setLayerData(1, basement)
   lurek.log.info("2 dungeon floors loaded", "minimap")
 end
-
 --@api-stub: LMinimap:setMarkerAnimation
 -- Sets an animation on a marker by type name and speed.
 do
@@ -890,7 +821,6 @@ do
   mm:setMarkerAnimation(marker_id, "pulse", 1.5)
   lurek.log.info("quest marker now pulsing", "minimap")
 end
-
 --@api-stub: LMinimap:setObject
 -- Places or updates a tracked object on the minimap.
 do
@@ -907,7 +837,6 @@ do
   mm:setObject(1, 17, 15, unit_type, 1)
   lurek.log.info("tracking " .. mm:getObjectCount() .. " unit(s)", "minimap")
 end
-
 --@api-stub: LMinimap:setObjectTypeVisible
 -- Sets whether objects of a given type are drawn on the minimap.
 do
@@ -919,7 +848,6 @@ do
   mm:setObjectTypeVisible(enemy_idx, false)
   lurek.log.info("enemies hidden: " .. tostring(not mm:isObjectTypeVisible(enemy_idx)), "minimap")
 end
-
 --@api-stub: LMinimap:setOwnerColor
 -- Assigns an RGBA color to an owner/team id.
 do
@@ -933,7 +861,6 @@ do
   mm:setOwnerColor(4, 0.9, 0.9, 0.1, 1)  -- team 4 = yellow
   lurek.log.info("4 team colours assigned", "minimap")
 end
-
 --@api-stub: LMinimap:setTerrain
 -- Sets the terrain type for a specific grid cell.
 do
@@ -950,7 +877,6 @@ do
   end
   lurek.log.info("lake painted on minimap", "minimap")
 end
-
 --@api-stub: LMinimap:setTerrainColor
 -- Assigns an RGBA display color to a terrain type id.
 do
@@ -965,7 +891,6 @@ do
   mm:setTerrainColor(4, 0.5, 0.5, 0.5, 1)   -- type 4 = mountain (grey)
   lurek.log.info("5 terrain colours registered", "minimap")
 end
-
 --@api-stub: LMinimap:setTileDescription
 -- Assigns a text description to a terrain type id for tooltips.
 do
@@ -979,7 +904,6 @@ do
   mm:setTileDescription(4, "Mountain — impassable, blocks line of sight")
   lurek.log.info("tile tooltips configured", "minimap")
 end
-
 --@api-stub: LMinimap:setViewportColor
 -- Sets the RGBA color of the viewport rectangle overlay.
 do
@@ -989,7 +913,6 @@ do
   mm:setViewportColor(1, 1, 0, 0.8) -- bright yellow, slightly transparent
   lurek.log.info("viewport colour: bright yellow", "minimap")
 end
-
 --@api-stub: LMinimap:setViewportRect
 -- Sets the viewport rectangle showing the camera's visible area on the minimap.
 do
@@ -1001,7 +924,6 @@ do
   mm:setViewportRect(10, 8, 16, 12)
   lurek.log.info("viewport rect shows camera frustum", "minimap")
 end
-
 --@api-stub: LMinimap:showPath
 -- Draws a coloured path overlay and returns its id.
 do
@@ -1015,7 +937,6 @@ do
   local path_id = mm:showPath(waypoints, orange)
   lurek.log.info("navigation path id: " .. path_id, "minimap")
 end
-
 --@api-stub: LMinimap:getCellCount
 -- Returns the total number of grid cells (grid_w * grid_h).
 do
@@ -1025,7 +946,6 @@ do
   local total = mm:getCellCount() -- 40 * 30 = 1200
   lurek.log.info("total cells: " .. total, "minimap")
 end
-
 --@api-stub: LMinimap:trackCamera
 -- Centers the minimap and viewport rectangle from a camera handle.
 do
@@ -1041,7 +961,6 @@ do
   local x, y, w, h = mm:getViewportRect()
   lurek.log.info("camera rect: " .. tostring(x) .. "," .. tostring(y) .. " " .. tostring(w) .. "x" .. tostring(h), "minimap")
 end
-
 --@api-stub: LMinimap:revealRadius
 -- Reveals fog of war in a circle around a world position.
 do
@@ -1054,7 +973,6 @@ do
   -- Center cell should now be fully visible (level 2)
   lurek.log.info("center fog level: " .. mm:getFogLevel(8, 8), "minimap")
 end
-
 --@api-stub: LMinimap:setObjectTypeTexture
 -- Assigns an image texture to an object type for custom icons.
 do
@@ -1067,7 +985,6 @@ do
   -- Display enemy dots as a 12x12 pixel icon instead of a colour dot
   mm:setObjectTypeTexture(idx, icon, 12, 12)
 end
-
 --@api-stub: LMinimap:clearObjectTypeTexture
 -- Removes the image texture from an object type, reverting to colour dot.
 do
@@ -1080,7 +997,6 @@ do
   -- Revert to simple colour dot
   mm:clearObjectTypeTexture(idx)
 end
-
 --@api-stub: LMinimap:setMarkerTexture
 -- Assigns an image texture to a specific marker for a custom icon.
 do
@@ -1092,7 +1008,6 @@ do
   -- Render this marker as a 10x10 pixel custom icon
   mm:setMarkerTexture(id, quest_icon, 10, 10)
 end
-
 --@api-stub: LMinimap:clearMarkerTexture
 -- Removes the image texture from a marker, reverting to default dot.
 do
@@ -1105,7 +1020,6 @@ do
   -- Quest completed — clear the fancy icon, marker stays as plain dot
   mm:clearMarkerTexture(id)
 end
-
 --@api-stub: LMinimap:getOverlayShapeCount
 -- Returns the number of overlay shapes (lines and rectangles) drawn.
 do
@@ -1117,7 +1031,6 @@ do
   local count = mm:getOverlayShapeCount()
   lurek.log.info("overlay shapes: " .. count .. " (max recommended: 50)", "minimap")
 end
-
 --@api-stub: LMinimap:getPathCount
 -- Returns the number of active path overlays.
 do
@@ -1128,7 +1041,6 @@ do
   mm:showPath({ {10,10}, {15,12} }, {0, 1, 0.5, 1})
   lurek.log.info("active paths: " .. mm:getPathCount(), "minimap")
 end
-
 --@api-stub: LMinimap:getLayerCount
 -- Returns the number of layers that have data.
 do
@@ -1140,7 +1052,6 @@ do
   mm:setLayerData(1, {1,1,1,1, 0,0,0,0, 1,1,1,1, 0,0,0,0})
   lurek.log.info("dungeon has " .. mm:getLayerCount() .. " floors", "minimap")
 end
-
 --@api-stub: LMinimap:getLayerData
 -- Returns the raw cell data array for a specific layer.
 do
@@ -1153,17 +1064,4 @@ do
     lurek.log.info("layer 0 has " .. #data .. " cells to save", "minimap")
   end
 end
-
 print("content/examples/minimap.lua")
-
--- =============================================================================
--- STUBS: 86 uncovered lurek.minimap API item(s)
--- Generated by tools/audit/example_add_missing.py
--- REQUIRED: replace every --@api-stub: block below with a real scenario.
--- Run .github/prompts/flesh-out-example.prompt.md for instructions.
--- The final committed file must contain ZERO --@api-stub: lines.
--- =============================================================================
-
--- -----------------------------------------------------------------------------
--- LMinimap methods
--- -----------------------------------------------------------------------------

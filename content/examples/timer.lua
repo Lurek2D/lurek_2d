@@ -1,7 +1,6 @@
 -- content/examples/timer.lua
 -- Demonstrates every lurek.timer function and LScheduler method with realistic game usage.
 -- Run: cargo run -- content/examples/timer.lua
-
 --@api-stub: lurek.timer.getDelta
 -- Returns delta time in seconds since the last frame; essential for frame-rate independent movement.
 do
@@ -14,7 +13,6 @@ do
     player_x = player_x + speed * dt
   end
 end
-
 --@api-stub: lurek.timer.getFPS
 -- Returns the current frames-per-second count for performance monitoring overlays.
 do
@@ -26,7 +24,6 @@ do
     end
   end
 end
-
 --@api-stub: lurek.timer.getTime
 -- Returns total elapsed game time in seconds since engine start; useful for continuous animations.
 do
@@ -37,7 +34,6 @@ do
     lurek.log.debug(string.format("glow alpha=%.2f", alpha), "fx")
   end
 end
-
 --@api-stub: lurek.timer.getAverageDelta
 -- Returns smoothed average delta time over a recent frame window; more stable than getDelta for adaptive logic.
 do
@@ -50,7 +46,6 @@ do
     end
   end
 end
-
 --@api-stub: lurek.timer.getFrameCount
 -- Returns total frames rendered since engine start; useful for frame-based triggers.
 do
@@ -62,7 +57,6 @@ do
     end
   end
 end
-
 --@api-stub: lurek.timer.step
 -- Manually advances the internal clock by one tick; called by the engine loop. Rarely needed in game scripts.
 do
@@ -70,7 +64,6 @@ do
   local dt = lurek.timer.step()
   lurek.log.debug(string.format("manual step: dt=%.4fs", dt), "replay")
 end
-
 --@api-stub: lurek.timer.getMicroTime
 -- Returns high-resolution time in seconds since engine start; ideal for micro-benchmarks.
 do
@@ -81,7 +74,6 @@ do
   local elapsed = lurek.timer.getMicroTime() - t0
   lurek.log.info(string.format("computation took %.3fms", elapsed * 1000), "bench")
 end
-
 --@api-stub: lurek.timer.getPhysicsDelta
 -- Returns the fixed timestep in seconds used for physics simulation (default 1/60).
 do
@@ -90,7 +82,6 @@ do
   -- Display the physics tick rate for debugging physics behavior
   lurek.log.info("physics running at " .. hz .. " Hz (dt=" .. pdt .. "s)", "physics")
 end
-
 --@api-stub: lurek.timer.setPhysicsDelta
 -- Sets the fixed timestep for physics; lower values = more accuracy, more CPU cost. Clamped [1/240, 1/10].
 do
@@ -99,7 +90,6 @@ do
   local pdt = lurek.timer.getPhysicsDelta()
   lurek.log.info("physics precision mode: " .. math.floor(1 / pdt + 0.5) .. " Hz", "physics")
 end
-
 --@api-stub: lurek.timer.getPhysicsMaxSteps
 -- Returns max physics steps per frame; prevents spiral-of-death when the game lags.
 do
@@ -109,7 +99,6 @@ do
     lurek.log.warn("low physics step cap (" .. max_steps .. "); may skip collisions on lag spikes", "physics")
   end
 end
-
 --@api-stub: lurek.timer.setPhysicsMaxSteps
 -- Sets the max physics steps per frame. Higher = more accurate under lag, but costs more CPU. Clamped [1, 64].
 do
@@ -117,7 +106,6 @@ do
   lurek.timer.setPhysicsMaxSteps(8)
   lurek.log.info("physics catch-up cap set to 8 steps/frame", "physics")
 end
-
 --@api-stub: lurek.timer.sleep
 -- Blocks the entire game loop for the given seconds. Use only for loading screens or sync waits.
 do
@@ -128,7 +116,6 @@ do
   local elapsed = lurek.timer.getMicroTime() - before
   lurek.log.info(string.format("blocked for %.1fms", elapsed * 1000), "loader")
 end
-
 --@api-stub: lurek.timer.newScheduler
 -- Creates a new independent scheduler with its own event list and time scale.
 do
@@ -144,7 +131,6 @@ do
     game_timers:update(dt)
   end
 end
-
 --@api-stub: lurek.timer.chain
 -- Creates a scheduler pre-loaded with a sequence of accumulated delays; ideal for cutscenes.
 do
@@ -158,7 +144,6 @@ do
 
   function lurek.process(dt) cutscene:update(dt) end
 end
-
 --@api-stub: lurek.timer.afterReal
 -- Schedules a one-shot callback on wall-clock time, unaffected by game pause or time scale.
 do
@@ -169,7 +154,6 @@ do
 
   function lurek.process() lurek.timer.tickRealTimers() end
 end
-
 --@api-stub: lurek.timer.tickRealTimers
 -- Fires all real-time timers whose deadline has passed; call once per frame after afterReal scheduling.
 do
@@ -183,7 +167,6 @@ do
     end
   end
 end
-
 --@api-stub: lurek.timer.setSmoothingFactor
 -- Sets the exponential smoothing factor for getSmoothedDelta. Lower = smoother but more lag. Clamped [0.01, 1.0].
 do
@@ -191,7 +174,6 @@ do
   lurek.timer.setSmoothingFactor(0.05)
   lurek.log.info("smoothing factor set to 0.05 for stable HUD timer", "perf")
 end
-
 --@api-stub: lurek.timer.getSmoothedDelta
 -- Returns exponentially smoothed delta time; reduces jitter for UI frame time displays.
 do
@@ -202,7 +184,6 @@ do
     lurek.log.debug(string.format("frame: %.2fms", ms), "hud")
   end
 end
-
 --@api-stub: lurek.timer.waitSeconds
 -- Yields the current coroutine for real-time seconds; must call tickWaits each frame to resume.
 do
@@ -218,7 +199,6 @@ do
   function lurek.init() intro() end
   function lurek.process() lurek.timer.tickWaits() end
 end
-
 --@api-stub: lurek.timer.waitFrames
 -- Yields the current coroutine for N frames; must call tickWaits each frame to resume.
 do
@@ -232,7 +212,6 @@ do
   function lurek.init() setup() end
   function lurek.process() lurek.timer.tickWaits() end
 end
-
 --@api-stub: lurek.timer.tickWaits
 -- Resumes all waitSeconds/waitFrames coroutines whose deadline has passed; call once per frame.
 do
@@ -243,7 +222,6 @@ do
     end
   end
 end
-
 --@api-stub: LScheduler:after
 -- Schedules a one-shot callback after a delay in seconds; returns an event ID for management.
 do
@@ -256,7 +234,6 @@ do
 
   function lurek.process(dt) sched:update(dt) end
 end
-
 --@api-stub: LScheduler:afterFrames
 -- Schedules a one-shot callback after N frames; useful for frame-exact gameplay events.
 do
@@ -268,7 +245,6 @@ do
 
   function lurek.process() sched:updateFrames() end
 end
-
 --@api-stub: LScheduler:afterNamed
 -- Schedules a named one-shot; replaces any existing timer with the same name (debounce pattern).
 do
@@ -284,7 +260,6 @@ do
 
   function lurek.process(dt) sched:update(dt) end
 end
-
 --@api-stub: LScheduler:cancel
 -- Cancels a scheduled event by ID; returns true if found and removed.
 do
@@ -296,7 +271,6 @@ do
   local defused = sched:cancel(bomb_id)
   lurek.log.info("bomb defused: " .. tostring(defused), "game")
 end
-
 --@api-stub: LScheduler:cancelNamed
 -- Cancels a named event; returns true if found and removed.
 do
@@ -308,7 +282,6 @@ do
   local ok = sched:cancelNamed("invulnerability")
   lurek.log.debug("old invuln cancelled: " .. tostring(ok), "combat")
 end
-
 --@api-stub: LScheduler:cancelAll
 -- Removes all events from the scheduler; use on scene transitions to clean up.
 do
@@ -320,7 +293,6 @@ do
   local removed = sched:cancelAll()
   lurek.log.info("scene exit: cleared " .. removed .. " timers", "scene")
 end
-
 --@api-stub: LScheduler:every
 -- Schedules a repeating callback at a fixed interval; pass count to limit repetitions.
 do
@@ -333,7 +305,6 @@ do
 
   function lurek.process(dt) sched:update(dt) end
 end
-
 --@api-stub: LScheduler:everyFrames
 -- Schedules a repeating callback every N frames; useful for fixed-rate visual effects.
 do
@@ -345,7 +316,6 @@ do
 
   function lurek.process() sched:updateFrames() end
 end
-
 --@api-stub: LScheduler:everyNamed
 -- Schedules a named repeating callback; replaces any existing timer with that name.
 do
@@ -361,7 +331,6 @@ do
 
   function lurek.process(dt) sched:update(dt) end
 end
-
 --@api-stub: LScheduler:pause
 -- Pauses a scheduled event by ID; it stops accumulating time until resumed.
 do
@@ -373,7 +342,6 @@ do
   sched:pause(patrol_id)
   lurek.log.info("guard patrol paused during dialog", "ai")
 end
-
 --@api-stub: LScheduler:resume
 -- Resumes a previously paused event so it continues counting down.
 do
@@ -386,7 +354,6 @@ do
   local ok = sched:resume(id)
   lurek.log.info("heartbeat resumed: " .. tostring(ok), "fx")
 end
-
 --@api-stub: LScheduler:isPaused
 -- Checks whether an event is currently paused; useful for toggle buttons.
 do
@@ -398,7 +365,6 @@ do
     lurek.log.debug("showing pause indicator for timer " .. id, "ui")
   end
 end
-
 --@api-stub: LScheduler:pauseNamed
 -- Pauses a named event; convenient when you don't track IDs.
 do
@@ -410,7 +376,6 @@ do
   sched:pauseNamed("auto_save")
   lurek.log.info("auto-save paused for boss fight", "save")
 end
-
 --@api-stub: LScheduler:resumeNamed
 -- Resumes a named event that was previously paused.
 do
@@ -421,7 +386,6 @@ do
   local ok = sched:resumeNamed("auto_save")
   lurek.log.info("auto-save resumed: " .. tostring(ok), "save")
 end
-
 --@api-stub: LScheduler:isPausedNamed
 -- Checks if a named event is paused; use for UI state display.
 do
@@ -432,7 +396,6 @@ do
     lurek.log.debug("music fade is on hold", "audio")
   end
 end
-
 --@api-stub: LScheduler:getRemaining
 -- Returns remaining time before an event fires; useful for cooldown displays.
 do
@@ -446,7 +409,6 @@ do
     lurek.log.info(string.format("cooldown: %.1fs remaining", remaining), "hud")
   end
 end
-
 --@api-stub: LScheduler:getInterval
 -- Returns the interval duration of a repeating event; useful for displaying tick rate.
 do
@@ -457,7 +419,6 @@ do
     lurek.log.debug(string.format("spawn interval: %.1fs", interval), "game")
   end
 end
-
 --@api-stub: LScheduler:getRepeatCount
 -- Returns remaining repeat count for a limited-repetition event; -1 means infinite.
 do
@@ -471,7 +432,6 @@ do
     lurek.log.info("burst shots remaining: " .. charges, "combat")
   end
 end
-
 --@api-stub: LScheduler:getCount
 -- Returns total number of active events; useful for diagnostics.
 do
@@ -482,7 +442,6 @@ do
   local n = sched:getCount()
   lurek.log.debug("active scheduled events: " .. n, "timer")
 end
-
 --@api-stub: LScheduler:isEmpty
 -- Returns true when no events are scheduled; useful to skip update calls.
 do
@@ -495,7 +454,6 @@ do
     end
   end
 end
-
 --@api-stub: LScheduler:setInterval
 -- Changes the interval of an existing repeating event; useful for dynamic difficulty.
 do
@@ -507,7 +465,6 @@ do
   sched:setInterval(spawn_id, 1.0)
   lurek.log.info("spawn rate increased: now every 1.0s", "difficulty")
 end
-
 --@api-stub: LScheduler:resetEvent
 -- Resets an event's elapsed time to zero, restarting its countdown.
 do
@@ -520,7 +477,6 @@ do
   sched:resetEvent(buff_id)
   lurek.log.info("shield buff refreshed to full duration", "rpg")
 end
-
 --@api-stub: LScheduler:setTimeScale
 -- Sets the time scale for this scheduler; 2.0 = double speed, 0.5 = half speed.
 do
@@ -534,7 +490,6 @@ do
 
   function lurek.process(dt) enemies:update(dt) end
 end
-
 --@api-stub: LScheduler:getTimeScale
 -- Returns the current time scale multiplier for this scheduler.
 do
@@ -543,7 +498,6 @@ do
   local scale = sched:getTimeScale()
   lurek.log.info("scheduler running at " .. scale .. "x speed", "debug")
 end
-
 --@api-stub: LScheduler:update
 -- Advances all time-based events by dt seconds, fires ready callbacks, cleans up one-shots.
 do
@@ -559,7 +513,6 @@ do
     end
   end
 end
-
 --@api-stub: LScheduler:updateFrames
 -- Advances all frame-based events by one frame; call once per frame for frame-count timers.
 do
@@ -576,7 +529,6 @@ do
     sched:updateFrames()
   end
 end
-
 --@api-stub: LScheduler:type
 -- Returns the type name string "LScheduler" for this object.
 do
@@ -584,7 +536,6 @@ do
   -- Useful for generic serialization or debug logging of object types
   lurek.log.debug("object type: " .. sched:type(), "debug")
 end
-
 --@api-stub: LScheduler:typeOf
 -- Checks if this object matches a given type name; accepts "LScheduler" or "Object".
 do
@@ -594,5 +545,4 @@ do
     lurek.log.debug("confirmed: this is a scheduler", "debug")
   end
 end
-
 print("content/examples/timer.lua")

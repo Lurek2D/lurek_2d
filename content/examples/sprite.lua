@@ -1,7 +1,6 @@
 -- content/examples/sprite.lua
 -- Full coverage of the lurek.sprite API: sprite sheets, atlases, and frame utilities.
 -- Run: cargo run -- content/examples/sprite.lua
-
 --@api-stub: lurek.sprite.newSheet
 -- Creates a new sprite sheet by dividing a texture into a grid of equal-sized frames
 do
@@ -11,7 +10,6 @@ do
   local cols, rows = sheet:getGridSize()
   lurek.log.info("sheet ready: " .. cols .. "x" .. rows .. " (" .. sheet:getFrameCount() .. " frames)", "sprite")
 end
-
 --@api-stub: lurek.sprite.newRPGMakerSheet
 -- Creates a sprite sheet using RPG Maker's standard character layout (4 columns x 4 rows per character)
 do
@@ -23,7 +21,6 @@ do
     lurek.log.info("hero." .. dir .. " has " .. #frames .. " walk frames", "sprite")
   end
 end
-
 --@api-stub: lurek.sprite.parseAtlas
 -- Parses a TexturePacker JSON atlas string and returns a sprite atlas with named regions
 do
@@ -33,7 +30,6 @@ do
   local atlas = lurek.sprite.parseAtlas(json_data)
   lurek.log.info("ui atlas loaded with " .. atlas:entryCount() .. " regions", "sprite")
 end
-
 --@api-stub: lurek.sprite.newAtlasSheet
 -- Creates a sprite sheet from an existing atlas, treating each atlas entry as a frame
 do
@@ -44,7 +40,6 @@ do
   local sheet = lurek.sprite.newAtlasSheet(atlas, 64, 32)
   lurek.log.info("atlas-sheet has " .. sheet:getFrameCount() .. " frames", "sprite")
 end
-
 --@api-stub: lurek.sprite.parseAsepriteAtlas
 -- Parses an Aseprite JSON atlas string and returns a sprite atlas with frame tags as entries
 do
@@ -56,7 +51,6 @@ do
     lurek.log.info("aseprite tag: " .. name, "sprite")
   end
 end
-
 --@api-stub: LSpriteAtlas:entryCount
 -- Returns the total number of entries (named sprite regions) in the atlas
 do
@@ -71,7 +65,6 @@ do
     lurek.log.info("atlas has " .. n .. " sprite regions", "sprite")
   end
 end
-
 --@api-stub: LSpriteAtlas:entryNames
 -- Returns an array of all entry name strings in the atlas
 do
@@ -87,7 +80,6 @@ do
   end
   lurek.log.info("found " .. #icons .. " icon regions out of " .. atlas:entryCount() .. " total", "sprite")
 end
-
 --@api-stub: LSpriteAtlas:getByIndex
 -- Returns a sprite region by its 1-based index in the atlas
 do
@@ -100,7 +92,6 @@ do
     lurek.log.info("tile #" .. i .. " = " .. entry.name .. " at " .. entry.x .. "," .. entry.y, "sprite")
   end
 end
-
 --@api-stub: LSpriteAtlas:getEntry
 -- Looks up a named sprite region in the atlas by filename or tag
 do
@@ -115,7 +106,6 @@ do
     lurek.log.warn("btn_play not found in atlas", "sprite")
   end
 end
-
 --@api-stub: LSpriteAtlas:getFlipped
 -- Returns a copy of a named atlas entry with flip flags applied for mirrored drawing
 do
@@ -128,7 +118,6 @@ do
     lurek.log.info("flipped entry: flip_x=" .. tostring(facing_left.flip_x) .. " flip_y=" .. tostring(facing_left.flip_y), "sprite")
   end
 end
-
 --@api-stub: LSpriteAtlas:type
 -- Returns the type name string for this atlas object (always "LSpriteAtlas")
 do
@@ -137,7 +126,6 @@ do
   local atlas = lurek.sprite.parseAtlas(json_data)
   lurek.log.info("atlas type: " .. atlas:type(), "sprite")
 end
-
 --@api-stub: LSpriteAtlas:typeOf
 -- Checks whether this atlas object matches the given type name
 do
@@ -148,7 +136,6 @@ do
   local is_wrong = atlas:typeOf("LSpriteSheet")
   lurek.log.info("typeOf LSpriteAtlas: " .. tostring(is_atlas) .. ", typeOf LSpriteSheet: " .. tostring(is_wrong), "sprite")
 end
-
 --@api-stub: LSpriteSheet:getFrame
 -- Returns the UV quad for a single frame by its 1-based index
 do
@@ -160,7 +147,6 @@ do
     lurek.log.info("frame 1 UV: " .. quad.x .. "," .. quad.y .. " size " .. quad.w .. "x" .. quad.h, "sprite")
   end
 end
-
 --@api-stub: LSpriteSheet:getFrameCount
 -- Returns the total number of frames in this sprite sheet (columns x rows)
 do
@@ -173,7 +159,6 @@ do
   local frame_idx = (math.floor(time * fps) % count) + 1
   lurek.log.info("animating " .. count .. " frames, at t=1.5s showing frame " .. frame_idx, "sprite")
 end
-
 --@api-stub: LSpriteSheet:getFrameSize
 -- Returns the pixel width and height of a single frame cell
 do
@@ -185,7 +170,6 @@ do
   local hitbox_h = fh - 4
   lurek.log.info("frame " .. fw .. "x" .. fh .. " -> hitbox " .. hitbox_w .. "x" .. hitbox_h, "sprite")
 end
-
 --@api-stub: LSpriteSheet:getGridSize
 -- Returns the number of columns and rows in the sprite sheet grid
 do
@@ -194,7 +178,6 @@ do
   local cols, rows = sheet:getGridSize()
   lurek.log.info("grid: " .. cols .. " cols x " .. rows .. " rows", "sprite")
 end
-
 --@api-stub: LSpriteSheet:getRow
 -- Returns all frame quads in the given row (0-based) of the sprite sheet
 do
@@ -207,7 +190,6 @@ do
     lurek.log.debug("  frame " .. i .. ": x=" .. q.x .. " y=" .. q.y, "sprite")
   end
 end
-
 --@api-stub: LSpriteSheet:getColumn
 -- Returns all frame quads in the given column (0-based) of the sprite sheet
 do
@@ -216,7 +198,6 @@ do
   local first_col = sheet:getColumn(0)
   lurek.log.info("column 0 holds " .. #first_col .. " stacked poses", "sprite")
 end
-
 --@api-stub: LSpriteSheet:getGroupFrames
 -- Returns the frame quads for a named animation group
 do
@@ -231,7 +212,6 @@ do
     lurek.log.info("hero facing up, frame UV x=" .. current.x .. " y=" .. current.y, "sprite")
   end
 end
-
 --@api-stub: LSpriteSheet:getGroupNames
 -- Returns an array of all named animation group names defined on this sheet
 do
@@ -241,7 +221,6 @@ do
   table.sort(names)
   lurek.log.info("animation groups: " .. table.concat(names, ", "), "sprite")
 end
-
 --@api-stub: LSpriteSheet:nameGroup
 -- Defines a named animation group as a contiguous range of frames
 do
@@ -255,7 +234,6 @@ do
   local run_frames = sheet:getGroupFrames("run")
   lurek.log.info("run group has " .. #run_frames .. " frames", "sprite")
 end
-
 --@api-stub: LSpriteSheet:drawToImage
 -- Renders the sprite sheet grid into an LImage for debugging or previews
 do
@@ -265,14 +243,12 @@ do
   local preview = sheet:drawToImage(192, 256) -- 2x upscale for clarity
   lurek.log.info("debug preview generated: " .. tostring(preview), "sprite")
 end
-
 --@api-stub: LSpriteAtlas:type
 -- Returns the type name string for this sheet object (always "LSpriteSheet")
 do
   local sheet = lurek.sprite.newSheet(64, 64, 32, 32)
   lurek.log.info("sheet type: " .. sheet:type(), "sprite")
 end
-
 --@api-stub: LSpriteAtlas:typeOf
 -- Checks whether this sheet object matches the given type name
 do
@@ -282,30 +258,13 @@ do
   local is_atlas = sheet:typeOf("LSpriteAtlas")
   lurek.log.info("typeOf LSpriteSheet: " .. tostring(is_sheet) .. ", typeOf LSpriteAtlas: " .. tostring(is_atlas), "sprite")
 end
-
 print("content/examples/sprite.lua")
-
--- =============================================================================
--- STUBS: 2 uncovered lurek.sprite API item(s)
--- Generated by tools/audit/example_add_missing.py
--- REQUIRED: replace every --@api-stub: block below with a real scenario.
--- Run .github/prompts/flesh-out-example.prompt.md for instructions.
--- The final committed file must contain ZERO --@api-stub: lines.
--- =============================================================================
-
--- -----------------------------------------------------------------------------
--- LSpriteSheet methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LSpriteSheet:type ---------------------------------------------
 --@api-stub: LSpriteSheet:type
 -- Returns the type name of this object.
 do
   local obj = lurek.sprite.newSheet(256, 256, 64, 64)
   lurek.log.debug("type: " .. obj:type(), "example") -- "LSpriteSheet"
 end
-
--- ---- Stub: LSpriteSheet:typeOf -------------------------------------------
 --@api-stub: LSpriteSheet:typeOf
 -- Checks whether this object matches the given type name.
 do

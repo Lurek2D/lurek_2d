@@ -1,11 +1,6 @@
 -- content/examples/effect.lua
 -- lurek.effect API examples: post-processing, overlays, transitions, and image effects.
 -- Run: cargo run -- content/examples/effect.lua
-
--- =============================================================================
--- Module-level constructors
--- =============================================================================
-
 --@api-stub: lurek.effect.newEffect
 -- Creates a built-in post-processing effect by type name
 do
@@ -24,7 +19,6 @@ do
   -- Built-in effects can be serialized by name alone in save files.
   lurek.log.info("bloom built-in=" .. tostring(bloom:isBuiltIn()), "fx")
 end
-
 --@api-stub: lurek.effect.newCustomEffect
 -- Creates a custom post-processing effect that references an existing shader id
 do
@@ -44,7 +38,6 @@ do
   -- ship the shader source alongside any save data referencing them.
   lurek.log.info("custom fx built-in=" .. tostring(glitch:isBuiltIn()), "fx")
 end
-
 --@api-stub: lurek.effect.newStack
 -- Creates a post-processing stack using optional dimensions or the current window size
 do
@@ -60,7 +53,6 @@ do
 
   lurek.log.info("stack ready w=" .. stack:getWidth() .. " h=" .. stack:getHeight(), "fx")
 end
-
 --@api-stub: lurek.effect.newPresetStack
 -- Creates a named preset post-processing stack with optional dimensions
 do
@@ -77,7 +69,6 @@ do
     crt:apply()  -- Renders the processed result to the screen.
   end
 end
-
 --@api-stub: lurek.effect.newPass
 -- Creates a custom post-processing pass from an existing shader id
 do
@@ -92,7 +83,6 @@ do
 
   lurek.log.debug("pass enabled=" .. tostring(edge_pass:isEnabled()), "fx")
 end
-
 --@api-stub: lurek.effect.getEffectTypes
 -- Returns all built-in post-processing effect type names
 do
@@ -108,7 +98,6 @@ do
     lurek.log.info("[" .. i .. "] " .. name, "fx-types")
   end
 end
-
 --@api-stub: lurek.effect.newImageEffect
 -- Creates an image effect chain from no arguments, a type name and optional parameters, or a chain table
 do
@@ -128,7 +117,6 @@ do
   -- The chain can later be applied to an Image to produce a processed copy.
   lurek.log.info("image chain count=" .. chain:effectCount(), "fx")
 end
-
 --@api-stub: lurek.effect.newOverlay
 -- Creates an overlay controller for screen effects using optional dimensions
 do
@@ -148,7 +136,6 @@ do
   -- The overlay MUST be updated every frame to advance animations.
   function lurek.process(dt) overlay:update(dt) end
 end
-
 --@api-stub: lurek.effect.newTransition
 -- Creates a timed screen transition with optional kind, duration, and color
 do
@@ -168,7 +155,6 @@ do
     end
   end
 end
-
 --@api-stub: lurek.effect.setShaderErrorDisplay
 -- Enables or disables renderer shader error display overlays
 do
@@ -179,7 +165,6 @@ do
   lurek.effect.setShaderErrorDisplay(in_dev)
   lurek.log.info("shader err display=" .. tostring(in_dev), "fx-dev")
 end
-
 --@api-stub: lurek.effect.getShaderErrorDisplay
 -- Returns whether renderer shader error display overlays are enabled
 do
@@ -188,11 +173,6 @@ do
     lurek.log.warn("dev shader error overlay is ON - disable for shipping", "fx-dev")
   end
 end
-
--- =============================================================================
--- PostFxEffect methods
--- =============================================================================
-
 --@api-stub: LPostFxEffect:getTypeName
 -- Returns the type name of this post fx effect.
 do
@@ -202,7 +182,6 @@ do
   local name = eff:getTypeName()
   lurek.log.info("active fx: " .. name, "fx")
 end
-
 --@api-stub: LPostFxEffect:isBuiltIn
 -- Returns true if this post fx effect built in.
 do
@@ -214,7 +193,6 @@ do
     lurek.log.info("safe to serialise '" .. eff:getTypeName() .. "' by name", "fx")
   end
 end
-
 --@api-stub: LPostFxStack:isEnabled
 -- Returns true if this post fx effect is currently enabled.
 do
@@ -227,7 +205,6 @@ do
     lurek.log.debug("bloom currently muted", "fx")
   end
 end
-
 --@api-stub: LPostFxStack:setEnabled
 -- Sets whether this post fx effect is enabled and accepts input.
 do
@@ -237,7 +214,6 @@ do
   local low_quality = true
   crt:setEnabled(not low_quality)
 end
-
 --@api-stub: LPostFxEffect:setParameter
 -- Sets the parameter of this post fx effect.
 do
@@ -250,7 +226,6 @@ do
   bloom:setParameter("intensity", 1.2)
   lurek.log.debug("bloom configured", "fx")
 end
-
 --@api-stub: LPostFxEffect:hasParameter
 -- Returns true if this post fx effect has a parameter.
 do
@@ -262,7 +237,6 @@ do
     eff:setParameter("scanline_strength", 0.7)
   end
 end
-
 --@api-stub: LPostFxEffect:getParameterNames
 -- Returns the parameter names of this post fx effect.
 do
@@ -273,7 +247,6 @@ do
     lurek.log.info("colourgrade param: " .. name, "fx-edit")
   end
 end
-
 --@api-stub: LPostFxEffect:getEffectType
 -- Returns the effect type of this post fx effect.
 do
@@ -283,7 +256,6 @@ do
   local kind = eff:getEffectType()
   lurek.log.info("kind=" .. kind, "fx")
 end
-
 --@api-stub: LPostFxEffect:getType
 -- Returns the type of this post fx effect.
 do
@@ -294,7 +266,6 @@ do
     lurek.log.debug("invert pass detected", "fx")
   end
 end
-
 --@api-stub: LScreenTransition:type
 -- Returns the Lua-visible type name string for this post fx effect handle.
 do
@@ -303,7 +274,6 @@ do
   local eff = lurek.effect.newEffect("bloom")
   lurek.log.debug("handle type: " .. eff:type(), "fx")
 end
-
 --@api-stub: LScreenTransition:typeOf
 -- Returns true if this post fx effect handle matches the given type name string.
 do
@@ -314,7 +284,6 @@ do
     lurek.log.debug("eff inherits from Object", "fx")
   end
 end
-
 --@api-stub: LPostFxEffect:setThreshold
 -- Sets the threshold of this post fx effect.
 do
@@ -325,7 +294,6 @@ do
   bloom:setThreshold(0.75)
   lurek.log.debug("bloom threshold set", "fx")
 end
-
 --@api-stub: LPostFxEffect:setIntensity
 -- Sets the intensity of this post fx effect.
 do
@@ -335,7 +303,6 @@ do
   local godrays = lurek.effect.newEffect("godrays")
   godrays:setIntensity(1.4)
 end
-
 --@api-stub: LPostFxEffect:setRadius
 -- Sets the radius of this post fx effect.
 do
@@ -345,7 +312,6 @@ do
   local blur = lurek.effect.newEffect("blur")
   blur:setRadius(4.0)
 end
-
 --@api-stub: LPostFxEffect:setStrength
 -- Sets the strength of this post fx effect.
 do
@@ -356,7 +322,6 @@ do
   local from_slider = 0.6
   vig:setStrength(math.max(0.0, math.min(1.0, from_slider)))
 end
-
 --@api-stub: LPostFxEffect:setScanlineStrength
 -- Sets the scanline strength of this post fx effect.
 do
@@ -367,7 +332,6 @@ do
   crt:setScanlineStrength(0.35)
   crt:setIntensity(1.0)
 end
-
 --@api-stub: LPostFxEffect:setOffset
 -- Sets the offset of this post fx effect.
 do
@@ -377,7 +341,6 @@ do
   local chroma = lurek.effect.newEffect("chromatic")
   chroma:setOffset(2.0)
 end
-
 --@api-stub: LPostFxEffect:setBrightness
 -- Sets the brightness of this post fx effect.
 do
@@ -387,7 +350,6 @@ do
   local grade = lurek.effect.newEffect("colourgrade")
   grade:setBrightness(0.05)
 end
-
 --@api-stub: LPostFxEffect:setContrast
 -- Sets the contrast of this post fx effect.
 do
@@ -396,7 +358,6 @@ do
   local grade = lurek.effect.newEffect("colourgrade")
   grade:setContrast(1.15)
 end
-
 --@api-stub: LPostFxEffect:setSaturation
 -- Sets the saturation of this post fx effect.
 do
@@ -405,11 +366,6 @@ do
   local grade = lurek.effect.newEffect("colourgrade")
   grade:setSaturation(0.7)  -- slightly desaturated for a moody atmosphere
 end
-
--- =============================================================================
--- PostFxStack methods
--- =============================================================================
-
 --@api-stub: LPostFxStack:add
 -- Adds a post fx effect to this post fx stack.
 do
@@ -421,7 +377,6 @@ do
   stack:add(lurek.effect.newEffect("vignette"))
   lurek.log.info("stack size=" .. stack:getEffectCount(), "fx")
 end
-
 --@api-stub: LPostFxStack:remove
 -- Removes a post fx effect from this post fx stack.
 do
@@ -435,7 +390,6 @@ do
   local removed = stack:remove(crt)
   lurek.log.debug("crt removed=" .. tostring(removed), "fx")
 end
-
 --@api-stub: LPostFxStack:isEnabled
 -- Returns true if this post fx stack slot is currently enabled.
 do
@@ -447,7 +401,6 @@ do
     lurek.log.debug("slot 1 active", "fx")
   end
 end
-
 --@api-stub: LImageEffect:getEffectCount
 -- Returns the number of effect items in this post fx stack.
 do
@@ -461,7 +414,6 @@ do
     lurek.log.info("slot " .. i .. " = " .. effect:getTypeName(), "fx")
   end
 end
-
 --@api-stub: LImageEffect:getEffect
 -- Returns the effect handle at a one-based position in this post fx stack.
 do
@@ -473,7 +425,6 @@ do
   local first = stack:getEffect(1)
   if first then first:setStrength(0.8) end
 end
-
 --@api-stub: LPostFxStack:getEnabledEffects
 -- Returns the enabled effects of this post fx stack.
 do
@@ -486,7 +437,6 @@ do
     lurek.log.debug("enabled: " .. eff:getTypeName(), "fx")
   end
 end
-
 --@api-stub: LOverlay:getWidth
 -- Returns the width of this post fx stack.
 do
@@ -497,7 +447,6 @@ do
     lurek.log.warn("stack width drift: " .. stack:getWidth(), "fx")
   end
 end
-
 --@api-stub: LOverlay:getHeight
 -- Returns the height of this post fx stack.
 do
@@ -508,7 +457,6 @@ do
     lurek.log.warn("stack height too small for HUD layout", "fx")
   end
 end
-
 --@api-stub: LOverlay:getDimensions
 -- Returns the dimensions of this post fx stack.
 do
@@ -518,7 +466,6 @@ do
   local w, h = stack:getDimensions()
   lurek.log.info("stack target = " .. w .. "x" .. h, "fx")
 end
-
 --@api-stub: LOverlay:resize
 -- Performs the resize operation on this post fx stack.
 do
@@ -530,7 +477,6 @@ do
   stack:resize(new_w, new_h)
   lurek.log.info("stack resized to " .. new_w .. "x" .. new_h, "fx")
 end
-
 --@api-stub: LPostFxStack:len
 -- Returns the number of effects in this post fx stack.
 do
@@ -540,7 +486,6 @@ do
   stack:add(lurek.effect.newEffect("bloom"))
   lurek.log.debug("stack len=" .. stack:len(), "fx")
 end
-
 --@api-stub: LPostFxStack:isEmpty
 -- Returns true if this post fx stack contains no items.
 do
@@ -551,7 +496,6 @@ do
     lurek.log.debug("post-fx pipeline empty - skipping capture", "fx")
   end
 end
-
 --@api-stub: LOverlay:clear
 -- Clears all items from this post fx stack.
 do
@@ -562,7 +506,6 @@ do
   stack:clear()
   lurek.log.info("pipeline cleared, count=" .. stack:getEffectCount(), "fx")
 end
-
 --@api-stub: LPostFxStack:dedup
 -- Removes duplicate effect handles from this post fx stack.
 do
@@ -575,7 +518,6 @@ do
   local removed = stack:dedup()
   lurek.log.info("dedup removed " .. tostring(removed) .. " duplicate slot(s)", "fx")
 end
-
 --@api-stub: LPostFxStack:isCapturing
 -- Returns true if this post fx stack is currently capturing.
 do
@@ -589,7 +531,6 @@ do
     stack:endCapture(); stack:apply()
   end
 end
-
 --@api-stub: LPostFxStack:beginCapture
 -- Starts post-effect capture on this post fx stack.
 do
@@ -604,7 +545,6 @@ do
     stack:endCapture(); stack:apply()
   end
 end
-
 --@api-stub: LPostFxStack:endCapture
 -- Ends post-effect capture on this post fx stack.
 do
@@ -619,7 +559,6 @@ do
     stack:apply()
   end
 end
-
 --@api-stub: LPostFxStack:apply
 -- Applies all enabled effects in this post fx stack.
 do
@@ -634,7 +573,6 @@ do
     -- Draw HUD/UI here — not affected by bloom.
   end
 end
-
 --@api-stub: LScreenTransition:type
 -- Returns the Lua-visible type name string for this post fx stack handle.
 do
@@ -644,7 +582,6 @@ do
     lurek.log.debug("got a real post-fx stack", "fx")
   end
 end
-
 --@api-stub: LScreenTransition:typeOf
 -- Returns true if this post fx stack handle matches the given type name string.
 do
@@ -652,7 +589,6 @@ do
   local stack = lurek.effect.newStack()
   assert(stack:typeOf("Object"), "PostFxStack should inherit Object")
 end
-
 --@api-stub: LPostFxStack:setFeedback
 -- Sets the feedback blend factor of this post fx stack.
 do
@@ -663,7 +599,6 @@ do
   stack:setFeedback(0.85)
   lurek.log.info("feedback=" .. stack:getFeedback(), "fx")
 end
-
 --@api-stub: LPostFxStack:getFeedback
 -- Returns the feedback blend factor of this post fx stack.
 do
@@ -673,7 +608,6 @@ do
   stack:setFeedback(2.0)  -- will be clamped to 1.0
   lurek.log.info("clamped feedback=" .. stack:getFeedback(), "fx")
 end
-
 --@api-stub: LPostFxStack:clearFeedback
 -- Resets the feedback blend factor to zero.
 do
@@ -684,11 +618,6 @@ do
   stack:clearFeedback()
   lurek.log.debug("feedback cleared=" .. stack:getFeedback(), "fx")
 end
-
--- =============================================================================
--- ImageEffect methods
--- =============================================================================
-
 --@api-stub: LImageEffect:addEffect
 -- Adds a built-in effect to this image effect chain.
 do
@@ -700,7 +629,6 @@ do
   blur:setRadius(2.5)
   lurek.log.info("chain size=" .. chain:effectCount(), "fx")
 end
-
 --@api-stub: LImageEffect:getEffect
 -- Returns an effect from this image effect chain by index or name.
 do
@@ -710,7 +638,6 @@ do
   local vig = chain:getEffect("vignette")
   if vig then vig:setStrength(0.5) end
 end
-
 --@api-stub: LImageEffect:removeEffect
 -- Removes an effect from this image effect chain by index or name.
 do
@@ -721,7 +648,6 @@ do
   local removed = chain:removeEffect("blur")
   lurek.log.debug("blur removed=" .. tostring(removed) .. " count=" .. chain:effectCount(), "fx")
 end
-
 --@api-stub: LImageEffect:clearEffects
 -- Clears all effects from this image effect chain.
 do
@@ -731,7 +657,6 @@ do
   chain:clearEffects()
   assert(chain:effectCount() == 0, "chain should be empty")
 end
-
 --@api-stub: LOverlay:clear
 -- Clears all items from this image effect chain.
 do
@@ -741,7 +666,6 @@ do
   chain:clear()
   lurek.log.debug("chain cleared", "fx")
 end
-
 --@api-stub: LImageEffect:effectCount
 -- Returns the number of effects in this image effect chain.
 do
@@ -752,14 +676,12 @@ do
     lurek.log.info("image chain has " .. chain:effectCount() .. " passes", "fx")
   end
 end
-
 --@api-stub: LImageEffect:getEffectCount
 -- Returns the number of effect items in this image effect chain.
 do
   local chain = lurek.effect.newImageEffect({{ type = "sepia" }})
   lurek.log.debug("count=" .. chain:getEffectCount(), "fx")
 end
-
 --@api-stub: LImageEffect:clone
 -- Creates a copy of this image effect chain.
 do
@@ -770,7 +692,6 @@ do
   local night = base:clone()
   night:addEffect("colourgrade"):setBrightness(-0.1)
 end
-
 --@api-stub: LImageEffect:save
 -- Saves the current state of this image effect.
 do
@@ -781,7 +702,6 @@ do
     lurek.log.debug("image chain save() acknowledged", "fx")
   end
 end
-
 --@api-stub: LScreenTransition:type
 -- Returns the Lua-visible type name string for this image effect handle.
 do
@@ -791,14 +711,12 @@ do
     lurek.log.debug("per-image chain detected", "fx")
   end
 end
-
 --@api-stub: LScreenTransition:typeOf
 -- Returns true if this image effect handle matches the given type name string.
 do
   local chain = lurek.effect.newImageEffect()
   assert(chain:typeOf("Object"), "ImageEffect should be an Object")
 end
-
 --@api-stub: LImageEffect:removeByIndex
 -- Removes an effect by zero-based internal index.
 do
@@ -809,7 +727,6 @@ do
   local removed = chain:removeByIndex(0)  -- removes "blur" (first slot)
   lurek.log.debug("by-index removed=" .. tostring(removed), "fx")
 end
-
 --@api-stub: LImageEffect:removeByName
 -- Removes the first effect with a matching type name.
 do
@@ -819,11 +736,6 @@ do
   chain:removeByName("vignette")
   lurek.log.debug("after by-name remove count=" .. chain:effectCount(), "fx")
 end
-
--- =============================================================================
--- Overlay methods
--- =============================================================================
-
 --@api-stub: LScreenTransition:update
 -- Advances this overlay by the given delta time.
 do
@@ -835,7 +747,6 @@ do
     overlay:update(dt)
   end
 end
-
 --@api-stub: LOverlay:triggerLightning
 -- Triggers a lightning flash using the overlay lightning state.
 do
@@ -846,7 +757,6 @@ do
   overlay:triggerLightning()
   lurek.log.info("lightning fired alpha=" .. overlay:getLightningAlpha(), "weather")
 end
-
 --@api-stub: LOverlay:getShakeOffset
 -- Returns the current shake offset of this overlay.
 do
@@ -861,7 +771,6 @@ do
     lurek.log.debug("shake ox=" .. ox .. " oy=" .. oy, "shake")
   end
 end
-
 --@api-stub: LScreenTransition:isActive
 -- Returns true if any overlay effect is currently active.
 do
@@ -872,7 +781,6 @@ do
     function lurek.draw() overlay:render() end
   end
 end
-
 --@api-stub: LOverlay:clear
 -- Clears all active overlay effects and resets transient state.
 do
@@ -884,7 +792,6 @@ do
   overlay:clear()
   assert(not overlay:isFlashing(), "flash should be cancelled")
 end
-
 --@api-stub: LOverlay:resize
 -- Resizes the overlay target dimensions.
 do
@@ -894,21 +801,18 @@ do
   overlay:resize(1920, 1080)
   lurek.log.info("overlay resized to " .. overlay:getWidth() .. "x" .. overlay:getHeight(), "fx")
 end
-
 --@api-stub: LOverlay:getWidth
 -- Returns the width of this overlay.
 do
   local overlay = lurek.effect.newOverlay(1024, 768)
   lurek.log.debug("overlay w=" .. overlay:getWidth(), "fx")
 end
-
 --@api-stub: LOverlay:getHeight
 -- Returns the height of this overlay.
 do
   local overlay = lurek.effect.newOverlay(1024, 768)
   lurek.log.debug("overlay h=" .. overlay:getHeight(), "fx")
 end
-
 --@api-stub: LOverlay:getDimensions
 -- Returns the dimensions of this overlay.
 do
@@ -918,7 +822,6 @@ do
   local w, h = overlay:getDimensions()
   lurek.log.info("overlay = " .. w .. "x" .. h, "fx")
 end
-
 --@api-stub: LOverlay:getFlashAlpha
 -- Returns the current flash alpha of this overlay.
 do
@@ -931,7 +834,6 @@ do
     if overlay:getFlashAlpha() > 0.5 then lurek.log.debug("flash peak", "fx") end
   end
 end
-
 --@api-stub: LOverlay:getLightningAlpha
 -- Returns the current lightning alpha of this overlay.
 do
@@ -945,7 +847,6 @@ do
     if a > 0.0 then lurek.log.debug("lightning a=" .. a, "fx") end
   end
 end
-
 --@api-stub: LOverlay:setAmbientEnabled
 -- Enables or disables overlay ambient color rendering.
 do
@@ -955,7 +856,6 @@ do
   overlay:setAmbientEnabled(true)
   overlay:setTimeOfDay(20.0)  -- evening warm tint
 end
-
 --@api-stub: LOverlay:isAmbientEnabled
 -- Returns true if overlay ambient color rendering is enabled.
 do
@@ -964,7 +864,6 @@ do
     lurek.log.debug("ambient layer is live", "fx")
   end
 end
-
 --@api-stub: LOverlay:getAmbientColor
 -- Returns the ambient color RGBA of this overlay.
 do
@@ -975,7 +874,6 @@ do
   local r, g, b, a = overlay:getAmbientColor()
   lurek.log.info(string.format("ambient %.2f %.2f %.2f a=%.2f", r, g, b, a), "fx")
 end
-
 --@api-stub: LOverlay:setTimeOfDay
 -- Sets the time-of-day value used by ambient effects.
 do
@@ -985,7 +883,6 @@ do
   overlay:setAmbientEnabled(true)
   overlay:setTimeOfDay(7.5)  -- early morning
 end
-
 --@api-stub: LOverlay:getTimeOfDay
 -- Returns the current time-of-day value of this overlay.
 do
@@ -996,7 +893,6 @@ do
     lurek.log.info("dusk - enable street lamps", "world")
   end
 end
-
 --@api-stub: LOverlay:setFogEnabled
 -- Enables or disables overlay fog rendering.
 do
@@ -1006,7 +902,6 @@ do
   overlay:setFogEnabled(true)
   overlay:setFogDensity(0.4)
 end
-
 --@api-stub: LOverlay:isFogEnabled
 -- Returns true if overlay fog rendering is enabled.
 do
@@ -1015,7 +910,6 @@ do
     overlay:setFogEnabled(true)
   end
 end
-
 --@api-stub: LOverlay:setFogDensity
 -- Sets the fog density of this overlay.
 do
@@ -1026,7 +920,6 @@ do
   local target = 0.6
   overlay:setFogDensity(target)
 end
-
 --@api-stub: LOverlay:getFogDensity
 -- Returns the fog density of this overlay.
 do
@@ -1034,7 +927,6 @@ do
   overlay:setFogDensity(0.3)
   lurek.log.debug("fog density=" .. overlay:getFogDensity(), "fx")
 end
-
 --@api-stub: LOverlay:getFogColor
 -- Returns the fog RGBA color of this overlay.
 do
@@ -1045,7 +937,6 @@ do
   local r, g, b = overlay:getFogColor()
   lurek.log.info(string.format("fog rgb %.2f %.2f %.2f", r, g, b), "fx")
 end
-
 --@api-stub: LOverlay:setHeatHazeEnabled
 -- Enables or disables overlay heat haze rendering.
 do
@@ -1055,7 +946,6 @@ do
   overlay:setHeatHazeEnabled(true)
   overlay:setHeatHazeIntensity(0.5)
 end
-
 --@api-stub: LOverlay:isHeatHazeEnabled
 -- Returns true if overlay heat haze rendering is enabled.
 do
@@ -1064,7 +954,6 @@ do
     lurek.log.debug("heat haze on", "fx")
   end
 end
-
 --@api-stub: LOverlay:setHeatHazeIntensity
 -- Sets the heat haze intensity of this overlay.
 do
@@ -1075,7 +964,6 @@ do
   local temp_c = 42
   overlay:setHeatHazeIntensity(math.min(1.0, math.max(0.0, (temp_c - 30) / 20)))
 end
-
 --@api-stub: LOverlay:getHeatHazeIntensity
 -- Returns the heat haze intensity of this overlay.
 do
@@ -1083,7 +971,6 @@ do
   overlay:setHeatHazeIntensity(0.6)
   lurek.log.debug("heat haze i=" .. overlay:getHeatHazeIntensity(), "fx")
 end
-
 --@api-stub: LOverlay:setVignetteEnabled
 -- Enables or disables overlay vignette rendering.
 do
@@ -1093,7 +980,6 @@ do
   overlay:setVignetteEnabled(true)
   overlay:setVignetteStrength(0.55)
 end
-
 --@api-stub: LOverlay:isVignetteEnabled
 -- Returns true if overlay vignette rendering is enabled.
 do
@@ -1102,7 +988,6 @@ do
     overlay:setVignetteStrength(0.7)
   end
 end
-
 --@api-stub: LOverlay:setVignetteStrength
 -- Sets the vignette strength of this overlay.
 do
@@ -1112,7 +997,6 @@ do
   overlay:setVignetteEnabled(true)
   overlay:setVignetteStrength(0.45)
 end
-
 --@api-stub: LOverlay:getVignetteStrength
 -- Returns the vignette strength of this overlay.
 do
@@ -1120,7 +1004,6 @@ do
   overlay:setVignetteStrength(0.5)
   lurek.log.debug("vignette s=" .. overlay:getVignetteStrength(), "fx")
 end
-
 --@api-stub: LOverlay:setFilmGrainEnabled
 -- Enables or disables overlay film grain rendering.
 do
@@ -1130,7 +1013,6 @@ do
   overlay:setFilmGrainEnabled(true)
   overlay:setFilmGrainIntensity(0.25)
 end
-
 --@api-stub: LOverlay:isFilmGrainEnabled
 -- Returns true if overlay film grain rendering is enabled.
 do
@@ -1139,7 +1021,6 @@ do
     lurek.log.debug("grain layer is live", "fx")
   end
 end
-
 --@api-stub: LOverlay:setFilmGrainIntensity
 -- Sets the film grain intensity of this overlay.
 do
@@ -1149,7 +1030,6 @@ do
   overlay:setFilmGrainEnabled(true)
   overlay:setFilmGrainIntensity(0.18)
 end
-
 --@api-stub: LOverlay:getFilmGrainIntensity
 -- Returns the film grain intensity of this overlay.
 do
@@ -1157,7 +1037,6 @@ do
   overlay:setFilmGrainIntensity(0.3)
   lurek.log.debug("grain i=" .. overlay:getFilmGrainIntensity(), "fx")
 end
-
 --@api-stub: LOverlay:setCloudShadows
 -- Enables or disables overlay cloud shadow rendering.
 do
@@ -1167,7 +1046,6 @@ do
   overlay:setCloudShadows(true)
   overlay:setCloudCount(8)
 end
-
 --@api-stub: LOverlay:isCloudShadowsEnabled
 -- Returns true if overlay cloud shadow rendering is enabled.
 do
@@ -1176,7 +1054,6 @@ do
     overlay:setCloudOpacity(0.4)
   end
 end
-
 --@api-stub: LOverlay:setCloudCount
 -- Sets the cloud shadow count of this overlay.
 do
@@ -1185,7 +1062,6 @@ do
   overlay:setCloudShadows(true)
   overlay:setCloudCount(12)
 end
-
 --@api-stub: LOverlay:getCloudCount
 -- Returns the number of cloud shadows in this overlay.
 do
@@ -1193,7 +1069,6 @@ do
   overlay:setCloudCount(6)
   lurek.log.debug("clouds=" .. overlay:getCloudCount(), "fx")
 end
-
 --@api-stub: LOverlay:setCloudSpeed
 -- Sets the cloud shadow movement speed of this overlay.
 do
@@ -1202,7 +1077,6 @@ do
   overlay:setCloudShadows(true)
   overlay:setCloudSpeed(40.0)
 end
-
 --@api-stub: LOverlay:getCloudSpeed
 -- Returns the cloud shadow speed of this overlay.
 do
@@ -1210,7 +1084,6 @@ do
   overlay:setCloudSpeed(25.0)
   lurek.log.debug("cloud px/s=" .. overlay:getCloudSpeed(), "fx")
 end
-
 --@api-stub: LOverlay:setCloudScale
 -- Sets the cloud shadow scale of this overlay.
 do
@@ -1220,7 +1093,6 @@ do
   overlay:setCloudShadows(true)
   overlay:setCloudScale(1.5)
 end
-
 --@api-stub: LOverlay:getCloudScale
 -- Returns the cloud shadow scale of this overlay.
 do
@@ -1228,7 +1100,6 @@ do
   overlay:setCloudScale(0.8)
   lurek.log.debug("cloud scale=" .. overlay:getCloudScale(), "fx")
 end
-
 --@api-stub: LOverlay:setCloudOpacity
 -- Sets the cloud shadow opacity of this overlay.
 do
@@ -1238,7 +1109,6 @@ do
   overlay:setCloudShadows(true)
   overlay:setCloudOpacity(0.35)
 end
-
 --@api-stub: LOverlay:getCloudOpacity
 -- Returns the cloud shadow opacity of this overlay.
 do
@@ -1248,7 +1118,6 @@ do
     lurek.log.info("overcast skies", "weather")
   end
 end
-
 --@api-stub: LOverlay:setWeatherEnabled
 -- Enables or disables overlay weather rendering.
 do
@@ -1258,7 +1127,6 @@ do
   overlay:setWeather("rain")
   overlay:setWeatherEnabled(true)
 end
-
 --@api-stub: LOverlay:isWeatherEnabled
 -- Returns true if overlay weather rendering is enabled.
 do
@@ -1267,7 +1135,6 @@ do
     lurek.log.debug("weather active = " .. overlay:getWeather(), "weather")
   end
 end
-
 --@api-stub: LOverlay:setWeather
 -- Sets the weather type of this overlay.
 do
@@ -1279,7 +1146,6 @@ do
   overlay:setWeatherEnabled(true)
   overlay:setWeatherIntensity(0.7)
 end
-
 --@api-stub: LOverlay:getWeather
 -- Returns the current weather type name of this overlay.
 do
@@ -1287,7 +1153,6 @@ do
   overlay:setWeather("rain")
   lurek.log.info("current weather: " .. overlay:getWeather(), "weather")
 end
-
 --@api-stub: LOverlay:setWeatherIntensity
 -- Sets the weather intensity of this overlay.
 do
@@ -1297,7 +1162,6 @@ do
   overlay:setWeather("rain")
   overlay:setWeatherIntensity(0.85)
 end
-
 --@api-stub: LOverlay:getWeatherIntensity
 -- Returns the weather intensity of this overlay.
 do
@@ -1305,7 +1169,6 @@ do
   overlay:setWeatherIntensity(0.5)
   lurek.log.debug("weather i=" .. overlay:getWeatherIntensity(), "weather")
 end
-
 --@api-stub: LOverlay:setWindDirection
 -- Sets the wind direction of this overlay.
 do
@@ -1316,7 +1179,6 @@ do
   overlay:setWindDirection(math.pi / 4)  -- diagonal down-right
   overlay:setWindSpeed(60.0)
 end
-
 --@api-stub: LOverlay:getWindDirection
 -- Returns the wind direction of this overlay.
 do
@@ -1324,7 +1186,6 @@ do
   overlay:setWindDirection(math.pi)
   lurek.log.debug("wind dir rad=" .. overlay:getWindDirection(), "weather")
 end
-
 --@api-stub: LOverlay:setWindSpeed
 -- Sets the wind speed of this overlay.
 do
@@ -1334,7 +1195,6 @@ do
   overlay:setWindSpeed(120.0)
   overlay:setCloudSpeed(60.0)  -- clouds move slower than rain
 end
-
 --@api-stub: LOverlay:getWindSpeed
 -- Returns the wind speed of this overlay.
 do
@@ -1342,7 +1202,6 @@ do
   overlay:setWindSpeed(80.0)
   lurek.log.debug("wind=" .. overlay:getWindSpeed(), "weather")
 end
-
 --@api-stub: LOverlay:getLightningColor
 -- Returns the lightning RGBA color of this overlay.
 do
@@ -1352,7 +1211,6 @@ do
   local r, g, b, a = overlay:getLightningColor()
   lurek.log.info(string.format("lightning rgba %.2f %.2f %.2f %.2f", r, g, b, a), "fx")
 end
-
 --@api-stub: LOverlay:isFlashing
 -- Returns true if the flash overlay is active.
 do
@@ -1364,7 +1222,6 @@ do
     lurek.log.debug("ignoring input during damage flash", "input")
   end
 end
-
 --@api-stub: LOverlay:shake
 -- Starts a screen shake with optional duration.
 do
@@ -1375,7 +1232,6 @@ do
   overlay:shake(12.0, 0.35)  -- heavy explosion impact
   function lurek.process(dt) overlay:update(dt) end
 end
-
 --@api-stub: LOverlay:isShaking
 -- Returns true if the screen shake is active.
 do
@@ -1385,7 +1241,6 @@ do
     lurek.log.debug("camera shaking", "fx")
   end
 end
-
 --@api-stub: LOverlay:isFading
 -- Returns true if the fade overlay is active.
 do
@@ -1397,7 +1252,6 @@ do
     if not overlay:isFading() then lurek.log.debug("fade done", "fx") end
   end
 end
-
 --@api-stub: LOverlay:render
 -- Renders overlay visual state to the current render target.
 do
@@ -1408,7 +1262,6 @@ do
     overlay:render()
   end
 end
-
 --@api-stub: LOverlay:drawToImage
 -- Renders overlay state into an image object.
 do
@@ -1419,7 +1272,6 @@ do
   local img = overlay:drawToImage(640, 360)
   lurek.log.info("overlay snapshot taken", "fx")
 end
-
 --@api-stub: LOverlay:setCustomShader
 -- Sets or clears the custom overlay shader name.
 do
@@ -1430,7 +1282,6 @@ do
   overlay:setCustomShader("shaders/post_grade.wgsl")
   -- overlay:setCustomShader(nil)  -- revert to default later
 end
-
 --@api-stub: LOverlay:getWater
 -- Returns a table describing the current water effect settings.
 do
@@ -1440,7 +1291,6 @@ do
   local w = overlay:getWater()
   lurek.log.info("water enabled=" .. tostring(w.enabled) .. " amp=" .. w.amplitude, "fx")
 end
-
 --@api-stub: LScreenTransition:type
 -- Returns the Lua-visible type name string for this overlay handle.
 do
@@ -1448,7 +1298,6 @@ do
   local overlay = lurek.effect.newOverlay()
   lurek.log.info("Overlay:type = " .. overlay:type(), "fx")
 end
-
 --@api-stub: LScreenTransition:typeOf
 -- Returns true if this overlay handle matches the given type name string.
 do
@@ -1457,11 +1306,6 @@ do
     lurek.log.debug("overlay is an Object", "fx")
   end
 end
-
--- =============================================================================
--- ScreenTransition methods (via mlua handle)
--- =============================================================================
-
 --@api-stub: LScreenTransition:play
 -- Starts playback of this screen transition forward.
 do
@@ -1471,7 +1315,6 @@ do
   trans:play()
   function lurek.process(dt) trans:update(dt) end
 end
-
 --@api-stub: LScreenTransition:reverse
 -- Starts this screen transition in reverse from its current state.
 do
@@ -1481,7 +1324,6 @@ do
   trans:reverse()
   function lurek.process(dt) trans:update(dt) end
 end
-
 --@api-stub: LScreenTransition:update
 -- Advances this transition timer and returns whether it remains active.
 do
@@ -1494,7 +1336,6 @@ do
     if not trans:update(dt) then lurek.log.debug("transition complete", "fx") end
   end
 end
-
 --@api-stub: LScreenTransition:progress
 -- Returns normalized transition progress (0.0 to 1.0).
 do
@@ -1508,7 +1349,6 @@ do
     lurek.log.debug(string.format("trans p=%.2f", trans:progress()), "fx")
   end
 end
-
 --@api-stub: LScreenTransition:isActive
 -- Returns true if this screen transition is currently active.
 do
@@ -1520,7 +1360,6 @@ do
     lurek.log.debug("transition in progress - pausing input", "input")
   end
 end
-
 --@api-stub: LScreenTransition:isDone
 -- Returns true if this screen transition has finished.
 do
@@ -1533,7 +1372,6 @@ do
     if trans:isDone() then lurek.log.info("ready for next scene", "scene") end
   end
 end
-
 --@api-stub: LScreenTransition:kind
 -- Returns the transition kind name.
 do
@@ -1542,7 +1380,6 @@ do
   local trans = lurek.effect.newTransition("dissolve", 0.5)
   lurek.log.info("transition kind=" .. trans:kind(), "fx")
 end
-
 --@api-stub: LScreenTransition:color
 -- Returns the transition RGBA color.
 do
@@ -1552,7 +1389,6 @@ do
   local r, g, b, a = trans:color()
   lurek.log.info(string.format("trans color %.2f %.2f %.2f %.2f", r, g, b, a), "fx")
 end
-
 --@api-stub: LScreenTransition:setColor
 -- Sets the transition RGBA color from a numeric array table.
 do
@@ -1561,7 +1397,6 @@ do
   local trans = lurek.effect.newTransition("fade", 0.5)
   trans:setColor({0.0, 0.0, 0.0, 1.0})  -- fade to black
 end
-
 --@api-stub: LScreenTransition:type
 -- Returns the Lua-visible type name string for this screen transition handle.
 do
@@ -1569,7 +1404,6 @@ do
   local trans = lurek.effect.newTransition("wipe", 0.5)
   lurek.log.info("ScreenTransition:type = " .. tostring(trans and trans:type() or "nil"), "fx")
 end
-
 --@api-stub: LScreenTransition:typeOf
 -- Returns true if this screen transition handle matches the given type name string.
 do
@@ -1578,11 +1412,6 @@ do
     lurek.log.debug("transition inherits Object", "fx")
   end
 end
-
--- =============================================================================
--- PostFxEffect: auto-uniforms for custom shaders
--- =============================================================================
-
 --@api-stub: LPostFxEffect:enableAutoUniforms
 -- Enables automatic time and resolution uniforms for this effect.
 do
@@ -1597,7 +1426,6 @@ do
   fx:enableAutoUniforms()
   lurek.log.debug("enableAutoUniforms called", "fx")
 end
-
 --@api-stub: LPostFxEffect:isAutoUniforms
 -- Returns true if automatic uniforms are enabled for this effect.
 do
@@ -1605,7 +1433,6 @@ do
   fx:enableAutoUniforms()
   lurek.log.debug("isAutoUniforms=" .. tostring(fx:isAutoUniforms()), "fx")
 end
-
 --@api-stub: LPostFxEffect:disableAutoUniforms
 -- Disables automatic time and resolution uniforms for this effect.
 do
@@ -1616,11 +1443,6 @@ do
   fx:disableAutoUniforms()
   lurek.log.debug("auto_uniforms=" .. tostring(fx:isAutoUniforms()), "fx")
 end
-
--- =============================================================================
--- Overlay: fade, flash, and trigger methods
--- =============================================================================
-
 --@api-stub: LOverlay:fade
 -- Starts a fade overlay with optional alpha and duration.
 do
@@ -1632,7 +1454,6 @@ do
   overlay:fade(0, 0, 0, 1.0, 1.0)  -- 1-second fade to black
   lurek.log.info("fade started", "effect")
 end
-
 --@api-stub: LOverlay:flash
 -- Starts a short flash overlay with optional alpha and duration.
 do
@@ -1643,7 +1464,6 @@ do
   overlay:flash(0.15, 1, 1, 1, 1)  -- cyan flash for shield hit
   lurek.log.info("flash triggered", "effect")
 end
-
 --@api-stub: LPostFxEffect:getParameter
 -- Reads a numeric shader parameter with optional default value.
 do
@@ -1655,7 +1475,6 @@ do
   local intensity = effect:getParameter("intensity")
   lurek.log.info("bloom intensity: " .. tostring(intensity), "effect")
 end
-
 --@api-stub: LPostFxStack:insert
 -- Inserts an effect at a one-based stack position.
 do
@@ -1667,7 +1486,6 @@ do
   stack:insert(1, lurek.effect.newEffect("vignette"))  -- vignette now processes first
   lurek.log.info("stack count: " .. stack:getEffectCount(), "effect")
 end
-
 --@api-stub: LOverlay:setAmbientColor
 -- Sets the overlay ambient RGBA color.
 do
@@ -1678,7 +1496,6 @@ do
   overlay:setAmbientColor(0.1, 0.1, 0.3, 0.6)  -- blue-ish night indoor
   lurek.log.info("ambient colour set", "effect")
 end
-
 --@api-stub: LPostFxStack:setEnabled
 -- Enables or disables the effect pass at a one-based stack position.
 do
@@ -1689,7 +1506,6 @@ do
   stack:setEnabled(1, false)  -- disable bloom at slot 1
   lurek.log.info("stack enabled: " .. tostring(stack:isEnabled(1)), "effect")
 end
-
 --@api-stub: LOverlay:setFogColor
 -- Sets the fog RGBA color of this overlay.
 do
@@ -1700,7 +1516,6 @@ do
   overlay:setFogColor(0.6, 0.6, 0.7)  -- cool gray mountain fog
   lurek.log.info("fog colour set", "effect")
 end
-
 --@api-stub: LOverlay:setLightningColor
 -- Sets the lightning RGBA color of this overlay.
 do
@@ -1710,7 +1525,6 @@ do
   overlay:setLightningColor(0.9, 0.95, 1.0)  -- slightly blue-white
   lurek.log.info("lightning colour set", "effect")
 end
-
 --@api-stub: LOverlay:setWater
 -- Enables water distortion and sets wave parameters.
 do
@@ -1722,7 +1536,6 @@ do
   overlay:setWater(0.02, 12.0, 1.5)
   lurek.log.info("water effect set", "effect")
 end
-
 --@api-stub: LOverlay:setWaterTint
 -- Sets the water tint color and strength.
 do
@@ -1734,7 +1547,6 @@ do
   overlay:setWaterTint(0.2, 0.6, 0.8, 0.5)  -- ocean blue tint
   lurek.log.info("water tint set", "effect")
 end
-
 --@api-stub: LOverlay:triggerFade
 -- Starts a fade toward a target alpha over a duration.
 do
@@ -1744,7 +1556,6 @@ do
   overlay:triggerFade(0, 0, 0, 1.0, 1.5)  -- 1.5s fade to full black
   lurek.log.info("fade out triggered", "effect")
 end
-
 --@api-stub: LOverlay:triggerFlash
 -- Starts a flash with explicit RGBA and duration.
 do
@@ -1754,7 +1565,6 @@ do
   overlay:triggerFlash(1.0, 0.0, 0.0, 0.8, 0.12)  -- brief red damage flash
   lurek.log.info("flash triggered", "effect")
 end
-
 --@api-stub: LOverlay:triggerShake
 -- Starts a screen shake with explicit intensity and duration.
 do
@@ -1765,11 +1575,6 @@ do
   overlay:triggerShake(8.0, 0.4)
   lurek.log.info("shake triggered", "effect")
 end
-
--- =============================================================================
--- LScreenTransition methods (typed handle)
--- =============================================================================
-
 --@api-stub: LScreenTransition:play
 -- Starts this screen transition forward from its current state
 do
@@ -1777,7 +1582,6 @@ do
   tr:play()
   lurek.log.info("transition playing, active=" .. tostring(tr:isActive()), "effect")
 end
-
 --@api-stub: LScreenTransition:reverse
 -- Starts this screen transition in reverse from its current state
 do
@@ -1785,7 +1589,6 @@ do
   tr:reverse()
   lurek.log.info("transition reversed, active=" .. tostring(tr:isActive()), "effect")
 end
-
 --@api-stub: LScreenTransition:update
 -- Advances this transition timer and returns whether it remains active
 do
@@ -1794,7 +1597,6 @@ do
   local running = tr:update(0.1)
   lurek.log.info("still_active=" .. tostring(running), "effect")
 end
-
 --@api-stub: LScreenTransition:progress
 -- Returns normalized transition progress
 do
@@ -1803,7 +1605,6 @@ do
   tr:update(0.25)
   lurek.log.info("progress=" .. tr:progress(), "effect")
 end
-
 --@api-stub: LScreenTransition:isActive
 -- Returns whether the transition is currently active
 do
@@ -1812,7 +1613,6 @@ do
   tr:play()
   lurek.log.info("after play: " .. tostring(tr:isActive()), "effect")
 end
-
 --@api-stub: LScreenTransition:isDone
 -- Returns whether the transition has finished
 do
@@ -1823,14 +1623,12 @@ do
   end
   lurek.log.info("transition is done", "effect")
 end
-
 --@api-stub: LScreenTransition:kind
 -- Returns the transition kind name
 do
   local tr = lurek.effect.newTransition("iris_wipe", 0.5, {0, 0, 0, 1})
   lurek.log.info("kind=" .. tr:kind(), "effect")
 end
-
 --@api-stub: LScreenTransition:color
 -- Returns the transition RGBA color
 do
@@ -1838,7 +1636,6 @@ do
   local r, g, b, a = tr:color()
   lurek.log.info("color r=" .. r .. " g=" .. g .. " b=" .. b, "effect")
 end
-
 --@api-stub: LScreenTransition:setColor
 -- Sets the transition RGBA color from a numeric array table
 do
@@ -1847,7 +1644,6 @@ do
   local r, g, b = tr:color()
   lurek.log.info("updated color r=" .. r .. " g=" .. g, "effect")
 end
-
 --@api-stub: LScreenTransition:type
 -- Returns the Lua-visible type name for this transition handle
 do
@@ -1855,7 +1651,6 @@ do
   local t = screen_transition_obj:type()
   lurek.log.info("LScreenTransition:type = " .. t, "effect")
 end
-
 --@api-stub: LScreenTransition:typeOf
 -- Returns whether this transition handle matches a supported type name
 do
@@ -1863,11 +1658,6 @@ do
   lurek.log.info("is LScreenTransition: " .. tostring(screen_transition_obj:typeOf("LScreenTransition")), "effect")
   lurek.log.info("is wrong: " .. tostring(screen_transition_obj:typeOf("Unknown")), "effect")
 end
-
--- =============================================================================
--- Overlay: ambient/light synchronization
--- =============================================================================
-
 --@api-stub: LOverlay:pullAmbientFromLight
 -- Copies ambient color from the shared light world into this overlay
 do
@@ -1877,7 +1667,6 @@ do
   local overlay = lurek.effect.newOverlay()
   overlay:pullAmbientFromLight()
 end
-
 --@api-stub: LOverlay:pushAmbientToLight
 -- Copies this overlay ambient color into the shared light world
 do
@@ -1887,7 +1676,6 @@ do
   local overlay = lurek.effect.newOverlay()
   overlay:pushAmbientToLight()
 end
-
 --@api-stub: LOverlay:syncAmbientWithLight
 -- Resolves overlay and light ambient colors using a named mode and writes both stores
 do
@@ -1898,13 +1686,7 @@ do
   local overlay = lurek.effect.newOverlay()
   overlay:syncAmbientWithLight("avg")
 end
-
 print("content/examples/effect.lua")
-
--- =============================================================================
--- Additional LImageEffect / LOverlay / LPostFxEffect / LPostFxStack coverage
--- =============================================================================
-
 --@api-stub: LImageEffect:clear
 -- Removes every effect from this image effect chain.
 do
@@ -1913,21 +1695,18 @@ do
   chain:clear()
   lurek.log.debug("chain cleared, count=" .. chain:effectCount(), "fx")
 end
-
 --@api-stub: LImageEffect:type
 -- Returns the Lua-visible type name for this image effect handle.
 do
   local chain = lurek.effect.newImageEffect()
   lurek.log.info("ImageEffect:type = " .. chain:type(), "fx")
 end
-
 --@api-stub: LImageEffect:typeOf
 -- Returns whether this image effect handle matches a supported type name.
 do
   local chain = lurek.effect.newImageEffect()
   lurek.log.info("is Object: " .. tostring(chain:typeOf("Object")), "fx")
 end
-
 --@api-stub: LOverlay:update
 -- Advances overlay timers and animated effect state.
 do
@@ -1938,7 +1717,6 @@ do
     overlay:update(dt)
   end
 end
-
 --@api-stub: LOverlay:isActive
 -- Returns whether any overlay effect is currently active.
 do
@@ -1949,21 +1727,18 @@ do
     lurek.log.debug("overlay has active effects", "fx")
   end
 end
-
 --@api-stub: LOverlay:type
 -- Returns the Lua-visible type name for this overlay handle.
 do
   local overlay = lurek.effect.newOverlay()
   lurek.log.info("Overlay:type = " .. overlay:type(), "fx")
 end
-
 --@api-stub: LOverlay:typeOf
 -- Returns whether this overlay handle matches a supported type name.
 do
   local overlay = lurek.effect.newOverlay()
   lurek.log.info("is Object: " .. tostring(overlay:typeOf("Object")), "fx")
 end
-
 --@api-stub: LPostFxEffect:isEnabled
 -- Returns whether this effect is enabled on its owning effect object.
 do
@@ -1972,7 +1747,6 @@ do
   bloom:setEnabled(false)
   lurek.log.debug("bloom enabled=" .. tostring(bloom:isEnabled()), "fx")
 end
-
 --@api-stub: LPostFxEffect:setEnabled
 -- Enables or disables this effect. This method is available to Lua scripts.
 do
@@ -1981,21 +1755,18 @@ do
   crt:setEnabled(false)
   lurek.log.debug("crt disabled for performance", "fx")
 end
-
 --@api-stub: LPostFxEffect:type
 -- Returns the Lua-visible type name for this post-processing effect handle.
 do
   local eff = lurek.effect.newEffect("bloom")
   lurek.log.info("PostFxEffect:type = " .. eff:type(), "fx")
 end
-
 --@api-stub: LPostFxEffect:typeOf
 -- Returns whether this effect handle matches a supported type name.
 do
   local eff = lurek.effect.newEffect("bloom")
   lurek.log.info("is Object: " .. tostring(eff:typeOf("Object")), "fx")
 end
-
 --@api-stub: LPostFxStack:getEffectCount
 -- Returns the number of effect handles in this stack.
 do
@@ -2005,7 +1776,6 @@ do
   stack:add(lurek.effect.newEffect("vignette"))
   lurek.log.info("stack count=" .. stack:getEffectCount(), "fx")
 end
-
 --@api-stub: LPostFxStack:getEffect
 -- Returns the effect handle at a one-based position.
 do
@@ -2015,21 +1785,18 @@ do
   local eff = stack:getEffect(1)
   if eff then eff:setIntensity(1.5) end
 end
-
 --@api-stub: LPostFxStack:getWidth
 -- Returns the stack render width. This method is available to Lua scripts.
 do
   local stack = lurek.effect.newStack(1280, 720)
   lurek.log.info("stack width=" .. stack:getWidth(), "fx")
 end
-
 --@api-stub: LPostFxStack:getHeight
 -- Returns the stack render height. This method is available to Lua scripts.
 do
   local stack = lurek.effect.newStack(1280, 720)
   lurek.log.info("stack height=" .. stack:getHeight(), "fx")
 end
-
 --@api-stub: LPostFxStack:getDimensions
 -- Returns the stack render dimensions.
 do
@@ -2038,7 +1805,6 @@ do
   local w, h = stack:getDimensions()
   lurek.log.info("stack " .. w .. "x" .. h, "fx")
 end
-
 --@api-stub: LPostFxStack:resize
 -- Resizes the post-processing stack render target dimensions.
 do
@@ -2047,7 +1813,6 @@ do
   stack:resize(1920, 1080)
   lurek.log.info("stack resized to " .. stack:getWidth() .. "x" .. stack:getHeight(), "fx")
 end
-
 --@api-stub: LPostFxStack:clear
 -- Removes all effects and pass state from this stack.
 do
@@ -2057,14 +1822,12 @@ do
   stack:clear()
   lurek.log.debug("stack cleared, count=" .. stack:getEffectCount(), "fx")
 end
-
 --@api-stub: LPostFxStack:type
 -- Returns the Lua-visible type name for this post-processing stack handle.
 do
   local stack = lurek.effect.newStack()
   lurek.log.info("PostFxStack:type = " .. stack:type(), "fx")
 end
-
 --@api-stub: LPostFxStack:typeOf
 -- Returns whether this stack handle matches a supported type name.
 do

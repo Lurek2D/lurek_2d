@@ -1,7 +1,6 @@
 -- content/examples/dataframe.lua
 -- lurek.dataframe API examples: tabular data for analytics, leaderboards, item databases, and stat tracking.
 -- Run: cargo run -- content/examples/dataframe.lua
-
 --@api-stub: lurek.dataframe.newDataFrame
 -- Creates an empty dataframe with no columns or rows
 do
@@ -22,7 +21,6 @@ do
   -- The dataframe now has 2 rows and 3 columns
   lurek.log.info("session stats: " .. stats:nrows() .. " players tracked")
 end
-
 --@api-stub: lurek.dataframe.newDatabase
 -- Creates an empty dataframe database for managing multiple named tables
 do
@@ -39,7 +37,6 @@ do
 
   lurek.log.info("database has " .. db:tableCount() .. " tables")
 end
-
 --@api-stub: lurek.dataframe.fromTable
 -- Creates a dataframe from an array of row tables (most common constructor)
 do
@@ -55,7 +52,6 @@ do
   -- Useful for loading static game data defined in Lua tables
   lurek.log.info("enemy database: " .. enemies:nrows() .. " entries")
 end
-
 --@api-stub: lurek.dataframe.fromRows
 -- Creates a dataframe from column names and positional row arrays
 do
@@ -72,7 +68,6 @@ do
   local leaderboard = lurek.dataframe.fromRows(columns, rows)
   lurek.log.info("rank #2: " .. leaderboard:getValue(2, "player"))
 end
-
 --@api-stub: lurek.dataframe.fromCSV
 -- Parses a dataframe from CSV-formatted text
 do
@@ -84,7 +79,6 @@ do
   -- Numeric columns are auto-detected, so you can immediately compute stats
   lurek.log.info("avg weapon damage = " .. shop:mean("damage"))
 end
-
 --@api-stub: lurek.dataframe.fromJSON
 -- Parses a dataframe from a JSON array of objects
 do
@@ -95,7 +89,6 @@ do
 
   lurek.log.info("guild roster: " .. roster:nrows() .. " members")
 end
-
 --@api-stub: lurek.dataframe.fromBinary
 -- Deserializes a dataframe from its compact binary format
 do
@@ -113,7 +106,6 @@ do
   local restored = lurek.dataframe.fromBinary(blob)
   lurek.log.info("restored " .. restored:nrows() .. " entities from binary")
 end
-
 --@api-stub: lurek.dataframe.random
 -- Generates a random dataframe from column type definitions
 do
@@ -131,9 +123,6 @@ do
   local mob_pool = lurek.dataframe.random(defs, 100, 42)
   lurek.log.info("generated " .. mob_pool:nrows() .. " random mobs")
 end
-
--- DataFrame methods
-
 --@api-stub: LVecFrame:nrows
 -- Returns the number of rows in this dataframe
 do
@@ -145,7 +134,6 @@ do
     lurek.log.info("first player: " .. df:getValue(1, "name"))
   end
 end
-
 --@api-stub: LVecFrame:ncols
 -- Returns the number of columns in this dataframe
 do
@@ -158,7 +146,6 @@ do
     lurek.log.info("column " .. i .. " = " .. df:columns()[i])
   end
 end
-
 --@api-stub: LVecFrame:columns
 -- Returns an array table of column names in order
 do
@@ -172,7 +159,6 @@ do
     lurek.log.info("stat: " .. name)
   end
 end
-
 --@api-stub: LDataFrame:count
 -- Returns the total count of non-nil items in this dataframe
 do
@@ -186,7 +172,6 @@ do
   local total_cells = df:count()
   lurek.log.info("tracked " .. total_cells .. " data points this session")
 end
-
 --@api-stub: LDataFrame:removeColumn
 -- Removes a column from this dataframe by name or index
 do
@@ -201,7 +186,6 @@ do
   df:removeColumn("internal_id")
   lurek.log.info(df:toCSV())
 end
-
 --@api-stub: LDataFrame:rename
 -- Renames a column (by name or index) to a new name
 do
@@ -214,7 +198,6 @@ do
   df:rename("Pts", "points")
   lurek.log.info("first column is now: " .. df:columns()[1])
 end
-
 --@api-stub: LDataFrame:getColumn
 -- Returns all values in a column as an array table
 do
@@ -230,7 +213,6 @@ do
   local times = df:getColumn("ms")
   lurek.log.info("frame times: " .. times[1] .. ", " .. times[2] .. ", " .. times[3])
 end
-
 --@api-stub: LDataFrame:addRow
 -- Appends a row and returns its one-based index
 do
@@ -245,7 +227,6 @@ do
   local idx = event_log:addRow({event = "boss_kill", timestamp = 125.4, player = "Alice"})
   lurek.log.info("logged event at row " .. idx)
 end
-
 --@api-stub: LDataFrame:removeRow
 -- Removes a row by one-based index
 do
@@ -261,7 +242,6 @@ do
   roster:removeRow(2)
   lurek.log.info("active players: " .. roster:nrows())
 end
-
 --@api-stub: LDataFrame:getRow
 -- Returns a row as a table keyed by column name
 do
@@ -276,7 +256,6 @@ do
   local slot1 = inventory:getRow(1)
   lurek.log.info(slot1.item .. " x" .. slot1.qty)
 end
-
 --@api-stub: LDataFrame:getValue
 -- Returns one cell value by row index and column reference
 do
@@ -295,7 +274,6 @@ do
     end
   end
 end
-
 --@api-stub: LLazyQuery:head
 -- Returns a new dataframe with the first N rows (default 5)
 do
@@ -306,7 +284,6 @@ do
   local top3 = scores:head(3)
   lurek.log.info("top 3 preview:\n" .. top3:toString())
 end
-
 --@api-stub: LLazyQuery:tail
 -- Returns a new dataframe with the last N rows (default 5)
 do
@@ -317,7 +294,6 @@ do
   local recent = events:tail(5)
   lurek.log.info("recent events:\n" .. recent:toString())
 end
-
 --@api-stub: LLazyQuery:slice
 -- Returns a one-based inclusive row slice as a new dataframe
 do
@@ -329,7 +305,6 @@ do
   local page2 = all_items:slice(11, 20)
   lurek.log.info("page 2 has " .. page2:nrows() .. " items")
 end
-
 --@api-stub: LLazyQuery:select
 -- Returns a new dataframe with only the specified columns
 do
@@ -343,7 +318,6 @@ do
   local hud_view = full_data:select("name", "hp", "mp")
   lurek.log.info(hud_view:toString())
 end
-
 --@api-stub: LDataFrame:unique
 -- Returns unique values from a column as an array table
 do
@@ -359,7 +333,6 @@ do
   local enemy_types = spawns:unique("type")
   lurek.log.info("distinct enemy types: " .. #enemy_types)
 end
-
 --@api-stub: LDataFrame:groupBy
 -- Groups rows by column value; returns a table of {key = sub-dataframe}
 do
@@ -377,7 +350,6 @@ do
   lurek.log.info("red team players: " .. by_team["red"]:nrows())
   lurek.log.info("blue team players: " .. by_team["blue"]:nrows())
 end
-
 --@api-stub: LDatabase:merge
 -- Appends all rows from another dataframe into this one (in-place)
 do
@@ -390,7 +362,6 @@ do
   round1:merge(round2)
   lurek.log.info("total records after merge: " .. round1:nrows())
 end
-
 --@api-stub: LDataFrame:countBy
 -- Counts occurrences of each value in a column; returns a new dataframe
 do
@@ -405,7 +376,6 @@ do
   local freq = loot_drops:countBy("item")
   lurek.log.info("loot frequency:\n" .. freq:toString())
 end
-
 --@api-stub: LLazyQuery:dropNil
 -- Returns a new dataframe with rows where a column is nil removed
 do
@@ -421,7 +391,6 @@ do
   local valid = survey:dropNil("rating")
   lurek.log.info("valid responses: " .. valid:nrows())
 end
-
 --@api-stub: LDataFrame:sample
 -- Returns a random subset of N rows (optional seed for reproducibility)
 do
@@ -433,7 +402,6 @@ do
   local floor_mobs = all_mobs:sample(50, 123)
   lurek.log.info("spawning " .. floor_mobs:nrows() .. " mobs on this floor")
 end
-
 --@api-stub: LDataFrame:describe
 -- Returns summary statistics (count, mean, std, min, max) for numeric columns
 do
@@ -445,7 +413,6 @@ do
   local summary = combat_log:describe()
   lurek.log.info("combat stats:\n" .. summary:toString())
 end
-
 --@api-stub: LDataFrame:sum
 -- Returns the numeric sum of a column
 do
@@ -460,7 +427,6 @@ do
   local total_damage = hits:sum("dmg")
   lurek.log.info("total damage this combo: " .. total_damage)
 end
-
 --@api-stub: LDataFrame:mean
 -- Returns the arithmetic mean of a numeric column
 do
@@ -475,7 +441,6 @@ do
   local avg_dt = frame_stats:mean("dt_ms")
   lurek.log.info("average frame time: " .. string.format("%.1f", avg_dt) .. " ms")
 end
-
 --@api-stub: LDataFrame:min
 -- Returns the minimum value of a column
 do
@@ -489,7 +454,6 @@ do
   local best = speedrun:min("time_s")
   lurek.log.info("personal best: " .. best .. "s")
 end
-
 --@api-stub: LDataFrame:max
 -- Returns the maximum value of a column
 do
@@ -503,7 +467,6 @@ do
   local high_score = season_scores:max("score")
   lurek.log.info("season high score: " .. high_score)
 end
-
 --@api-stub: LDataFrame:median
 -- Returns the median (middle value) of a numeric column
 do
@@ -517,7 +480,6 @@ do
   local typical = frame_times:median("ms")
   lurek.log.info("typical frame time: " .. typical .. " ms")
 end
-
 --@api-stub: LDataFrame:stddev
 -- Returns the standard deviation of a numeric column
 do
@@ -527,7 +489,6 @@ do
   local spread = perf:stddev("frame_ms")
   lurek.log.info("frame time stddev: " .. string.format("%.2f", spread) .. " ms")
 end
-
 --@api-stub: LDataFrame:variance
 -- Returns the variance of a numeric column
 do
@@ -538,7 +499,6 @@ do
   local v = hits:variance("dmg")
   lurek.log.info("damage variance: " .. string.format("%.1f", v))
 end
-
 --@api-stub: LDataFrame:fillNil
 -- Replaces nil cells in a column with a specified value
 do
@@ -554,7 +514,6 @@ do
   scores:fillNil("score", 0)
   lurek.log.info("total score after fill: " .. scores:sum("score"))
 end
-
 --@api-stub: LDataFrame:toCSV
 -- Serializes this dataframe to CSV text
 do
@@ -570,7 +529,6 @@ do
   if lurek.fs then lurek.fs.write("save/leaderboard.csv", csv) end
   lurek.log.info("exported CSV: " .. #csv .. " bytes")
 end
-
 --@api-stub: LDatabase:toJSON
 -- Serializes this dataframe to a JSON array of objects
 do
@@ -584,7 +542,6 @@ do
   if lurek.fs then lurek.fs.write("save/slots.json", json) end
   lurek.log.info("exported JSON: " .. #json .. " bytes")
 end
-
 --@api-stub: LDataFrame:toBinary
 -- Serializes this dataframe to a compact binary format
 do
@@ -599,7 +556,6 @@ do
   if lurek.fs then lurek.fs.write("save/world.lvdf", blob) end
   lurek.log.info("binary size: " .. #blob .. " bytes")
 end
-
 --@api-stub: LDataFrame:toTable
 -- Converts this dataframe to a plain Lua array of row tables
 do
@@ -616,7 +572,6 @@ do
     lurek.log.info(row.name .. " has " .. row.hp .. " HP")
   end
 end
-
 --@api-stub: LDataFrame:rows
 -- Returns an iterator for use in for-loops (index, row_table)
 do
@@ -633,7 +588,6 @@ do
     lurek.log.info("#" .. i .. " " .. member.name .. " (" .. member.role .. ")")
   end
 end
-
 --@api-stub: LDataFrame:toString
 -- Formats this dataframe as a human-readable aligned text table
 do
@@ -646,7 +600,6 @@ do
   -- Great for lurek.log.info during development
   lurek.log.info("party:\n" .. party:toString())
 end
-
 --@api-stub: LDatabase:query
 -- Runs a SQL SELECT query against this dataframe (table alias is "t")
 do
@@ -662,7 +615,6 @@ do
   local wounded = players:query("SELECT name, hp FROM t WHERE hp < 50")
   lurek.log.info("wounded players: " .. wounded:nrows())
 end
-
 --@api-stub: LDataFrame:clone
 -- Returns a deep copy of this dataframe (modifications don't affect the original)
 do
@@ -679,7 +631,6 @@ do
   lurek.log.info("base atk=" .. base_stats:getValue(1, "value") ..
                  " buffed atk=" .. buffed:getValue(1, "value"))
 end
-
 --@api-stub: LDataFrame:correlationMatrix
 -- Returns a correlation matrix dataframe for all numeric columns
 do
@@ -691,7 +642,6 @@ do
   local matrix = balance:correlationMatrix()
   lurek.log.info("correlation:\n" .. matrix:toString())
 end
-
 --@api-stub: LDataFrame:modeVal
 -- Returns the most frequently occurring value in a column
 do
@@ -708,7 +658,6 @@ do
   local most_popular = weapon_picks:modeVal("weapon")
   lurek.log.info("most picked weapon: " .. tostring(most_popular))
 end
-
 --@api-stub: LDataFrame:entropy
 -- Returns the Shannon entropy of a column (measures diversity)
 do
@@ -723,7 +672,6 @@ do
   local h = class_picks:entropy("class")
   lurek.log.info("class diversity (entropy): " .. string.format("%.2f", h) .. " bits")
 end
-
 --@api-stub: LDataFrame:addRowBatch
 -- Appends multiple rows at once from positional arrays (faster than repeated addRow)
 do
@@ -742,7 +690,6 @@ do
   })
   lurek.log.info("entities tracked: " .. positions:nrows())
 end
-
 --@api-stub: LDataFrame:getColumnAsF64
 -- Returns a numeric column as an array of Lua numbers (float64)
 do
@@ -754,7 +701,6 @@ do
   local hp_values = df:getColumnAsF64("hp")
   lurek.log.info("first entity HP = " .. hp_values[1])
 end
-
 --@api-stub: LDataFrame:setColumnFromF64
 -- Replaces a numeric column's values from an array of numbers
 do
@@ -766,7 +712,6 @@ do
   df:setColumnFromF64("x", {1.5, 2.5, 3.5})
   lurek.log.info("sum of x after set: " .. df:sum("x"))  -- 7.5
 end
-
 --@api-stub: LVecFrame:type
 -- Returns the type name string "DataFrame" for this handle
 do
@@ -776,7 +721,6 @@ do
     lurek.log.info("confirmed: this is a DataFrame handle")
   end
 end
-
 --@api-stub: LVecFrame:typeOf
 -- Returns true if this handle matches the given type name
 do
@@ -787,7 +731,6 @@ do
     lurek.log.info("DataFrame is an Object (all handles are)")
   end
 end
-
 --@api-stub: LDataFrame:withEval
 -- Returns a new dataframe with an added column computed from an expression
 do
@@ -803,9 +746,6 @@ do
   local with_eff = weapons:withEval("effective_dmg", "atk + bonus * 1.5")
   lurek.log.info("best effective damage: " .. with_eff:max("effective_dmg"))
 end
-
--- Database methods
-
 --@api-stub: LDatabase:getTable
 -- Returns a copy of a named table from the database (or nil if not found)
 do
@@ -819,7 +759,6 @@ do
     lurek.log.info("players table has " .. players:nrows() .. " rows")
   end
 end
-
 --@api-stub: LDatabase:removeTable
 -- Removes a named table from the database
 do
@@ -831,7 +770,6 @@ do
   db:removeTable("temp_cache")
   lurek.log.info("tables remaining: " .. db:tableCount())
 end
-
 --@api-stub: LDatabase:hasTable
 -- Returns true if the database contains a table with the given name
 do
@@ -844,7 +782,6 @@ do
     lurek.log.info("created scores table")
   end
 end
-
 --@api-stub: LDatabase:listTables
 -- Returns an array of all table names in the database
 do
@@ -859,7 +796,6 @@ do
     lurek.log.info("table: " .. name)
   end
 end
-
 --@api-stub: LDatabase:tableCount
 -- Returns the number of tables in this database
 do
@@ -872,7 +808,6 @@ do
     lurek.log.info("database has " .. db:tableCount() .. " tables")
   end
 end
-
 --@api-stub: LDatabase:clear
 -- Removes all tables from this database
 do
@@ -885,7 +820,6 @@ do
   db:clear()
   lurek.log.info("database cleared, tables=" .. db:tableCount())
 end
-
 --@api-stub: LDatabase:merge
 -- Merges all tables from another database into this one
 do
@@ -901,7 +835,6 @@ do
   base:merge(mod_data)
   lurek.log.info("after mod merge: " .. base:tableCount() .. " tables")
 end
-
 --@api-stub: LDatabase:toJSON
 -- Serializes the entire database (all tables) to JSON text
 do
@@ -915,7 +848,6 @@ do
   if lurek.fs then lurek.fs.write("save/full_save.json", json) end
   lurek.log.info("database JSON: " .. #json .. " bytes")
 end
-
 --@api-stub: LDatabase:query
 -- Runs a SQL query across multiple database tables (supports JOINs)
 do
@@ -939,7 +871,6 @@ do
     lurek.log.info("joined result: " .. result:nrows() .. " rows")
   end)
 end
-
 --@api-stub: LVecFrame:type
 -- Returns the type name string "Database" for this handle
 do
@@ -948,7 +879,6 @@ do
     lurek.log.info("confirmed: this is a Database handle")
   end
 end
-
 --@api-stub: LVecFrame:typeOf
 -- Returns true if this handle matches the given type name
 do
@@ -958,7 +888,6 @@ do
     lurek.log.info("Database is an Object")
   end
 end
-
 --@api-stub: LGroupedFrame:aggregate
 -- Aggregates a column in each group using a custom Lua function
 do
@@ -983,7 +912,6 @@ do
     lurek.log.debug("aggregate done", "dataframe")
   end
 end
-
 --@api-stub: LDataFrame:groupByObj
 -- Groups rows by a column and returns a GroupedFrame object
 do
@@ -1001,16 +929,6 @@ do
     lurek.log.debug("groupByObj returned: " .. tostring(grouped), "dataframe")
   end
 end
-
--- VecFrame: vectorized columnar operations
---
--- VecFrame stores each column as a typed flat buffer (float64/int64/bool/text)
--- with an optional null-validity bitmap.  Operations run over the entire column
--- at once — no per-cell Lua dispatch — allowing the Rust compiler to apply
--- SIMD vectorization and rayon parallelism.
---
--- Workflow: DataFrame → toVec() → fast bulk ops → toDataFrame() (or fromVec)
-
 --@api-stub: lurek.dataframe.toVec
 -- Converts a dataframe to a vectorized VecFrame for bulk numeric operations
 do
@@ -1022,7 +940,6 @@ do
   local vf = lurek.dataframe.toVec(df)
   lurek.log.info("VecFrame: " .. vf:nrows() .. " rows, " .. vf:ncols() .. " cols")
 end
-
 --@api-stub: lurek.dataframe.fromVec
 -- Converts a VecFrame back to a regular DataFrame
 do
@@ -1038,7 +955,6 @@ do
   local result = lurek.dataframe.fromVec(vf)
   lurek.log.info("HP after 50% reduction: " .. tostring(result:getValue(1, "hp")))
 end
-
 --@api-stub: LVecFrame:colAdd
 -- Adds a scalar value to every cell in a numeric column (in-place)
 do
@@ -1051,7 +967,6 @@ do
   local df = vf:toDataFrame()
   lurek.log.info("score after +5 bonus: " .. tostring(df:getValue(1, "score")))  -- 15
 end
-
 --@api-stub: LVecFrame:colMul
 -- Multiplies every cell in a numeric column by a scalar (in-place)
 do
@@ -1064,7 +979,6 @@ do
   local df = vf:toDataFrame()
   lurek.log.info("crit damage: " .. tostring(df:getValue(1, "dmg")))  -- 15
 end
-
 --@api-stub: LVecFrame:colClamp
 -- Clamps every cell in a numeric column to [min, max] range (in-place)
 do
@@ -1078,7 +992,6 @@ do
   lurek.log.info("clamped: " .. tostring(df:getValue(1, "hp")) .. ", "
     .. tostring(df:getValue(3, "hp")))  -- 0, 100
 end
-
 --@api-stub: LVecFrame:colAbs
 -- Applies absolute value to every cell in a numeric column (in-place)
 do
@@ -1091,7 +1004,6 @@ do
   local df = vf:toDataFrame()
   lurek.log.info("speed values: " .. tostring(df:getValue(1, "velocity")))  -- 3
 end
-
 --@api-stub: LVecFrame:colSqrt
 -- Applies square root to every cell in a numeric column (in-place)
 do
@@ -1105,7 +1017,6 @@ do
   lurek.log.info("distances: " .. tostring(df:getValue(1, "dist_sq")) .. ", "
     .. tostring(df:getValue(2, "dist_sq")))  -- 3, 4
 end
-
 --@api-stub: LVecFrame:colOp
 -- Applies a binary operation between two columns, storing result in a new column
 do
@@ -1120,7 +1031,6 @@ do
   local result = vf:toDataFrame()
   lurek.log.info("net damage row 1: " .. tostring(result:getValue(1, "net_dmg")))  -- 20
 end
-
 --@api-stub: LVecFrame:reduce
 -- Reduces a numeric column to a single value using a named operation
 do
@@ -1132,7 +1042,6 @@ do
   local avg = vf:reduce("score", "mean")     -- 20
   lurek.log.info("total=" .. total .. " avg=" .. avg)
 end
-
 --@api-stub: LVecFrame:filterMask
 -- Builds a boolean mask array from a column comparison
 do
@@ -1145,7 +1054,6 @@ do
   -- mask = {false, true, true}
   lurek.log.info("row 2 passes filter: " .. tostring(mask[2]))
 end
-
 --@api-stub: LVecFrame:applyMask
 -- Returns a new VecFrame containing only rows where mask is true
 do
@@ -1159,7 +1067,6 @@ do
 
   lurek.log.info("alive entities: " .. alive:nrows())  -- 2
 end
-
 --@api-stub: LVecFrame:colType
 -- Returns the data type name of a vectorized column ("float64", "int64", "text", "bool")
 do
@@ -1170,7 +1077,6 @@ do
   local dtype = vf:colType("hp")
   lurek.log.info("hp stored as: " .. dtype)  -- "float64"
 end
-
 --@api-stub: LVecFrame:parReduce
 -- Reduces multiple columns in parallel using a named operation
 do
@@ -1184,7 +1090,6 @@ do
     lurek.log.info(col .. " total = " .. tostring(s))
   end
 end
-
 --@api-stub: LVecFrame:toDataFrame
 -- Converts this VecFrame back to a regular DataFrame
 do
@@ -1196,7 +1101,6 @@ do
   local df = vf:toDataFrame()
   lurek.log.info("v[1] after +10: " .. tostring(df:getValue(1, "v")))  -- 11
 end
-
 --@api-stub: LVecFrame:colSub
 -- Subtracts a scalar from every cell in a numeric column (in-place)
 do
@@ -1209,7 +1113,6 @@ do
   local df = vf:toDataFrame()
   lurek.log.info("stamina after drain: " .. tostring(df:getValue(1, "stamina")))  -- 90
 end
-
 --@api-stub: LVecFrame:colDiv
 -- Divides every cell in a numeric column by a scalar (in-place)
 do
@@ -1222,7 +1125,6 @@ do
   local df = vf:toDataFrame()
   lurek.log.info("normalized score[1]: " .. tostring(df:getValue(1, "score")))  -- 0.5
 end
-
 --@api-stub: LVecFrame:colFloor
 -- Applies floor (round down) to every cell in a numeric column (in-place)
 do
@@ -1236,7 +1138,6 @@ do
   lurek.log.info("floored: " .. tostring(df:getValue(1, "x")) .. ", "
     .. tostring(df:getValue(3, "x")))  -- 1, 3
 end
-
 --@api-stub: LVecFrame:colCeil
 -- Applies ceil (round up) to every cell in a numeric column (in-place)
 do
@@ -1248,7 +1149,6 @@ do
   local df = vf:toDataFrame()
   lurek.log.info("ceiled y[1]: " .. tostring(df:getValue(1, "y")))  -- 2
 end
-
 --@api-stub: LVecFrame:colNeg
 -- Negates every cell in a numeric column (in-place)
 do
@@ -1261,7 +1161,6 @@ do
   local df = vf:toDataFrame()
   lurek.log.info("bounced vy[1]: " .. tostring(df:getValue(1, "vy")))  -- -3
 end
-
 --@api-stub: LVecFrame:colCast
 -- Casts a column to a different data type (e.g., "float64", "int64")
 do
@@ -1276,7 +1175,6 @@ do
   local df = vf:toDataFrame()
   lurek.log.info("level[1] as float: " .. tostring(df:getValue(1, "level")))
 end
-
 --@api-stub: LVecFrame:nrows
 -- Returns the number of rows in this VecFrame
 do
@@ -1286,7 +1184,6 @@ do
   lurek.log.info("VecFrame rows: " .. vf:nrows())
   assert(vf:nrows() == 3)
 end
-
 --@api-stub: LVecFrame:ncols
 -- Returns the number of columns in this VecFrame
 do
@@ -1297,7 +1194,6 @@ do
   lurek.log.info("VecFrame cols: " .. vf:ncols())
   assert(vf:ncols() == df:ncols())
 end
-
 --@api-stub: LVecFrame:columns
 -- Returns an array of column names in this VecFrame
 do
@@ -1309,7 +1205,6 @@ do
     lurek.log.info("VecFrame col " .. i .. ": " .. name)
   end
 end
-
 --@api-stub: LVecFrame:type
 -- Returns the type name string "VecFrame" for this handle
 do
@@ -1318,7 +1213,6 @@ do
     lurek.log.info("confirmed: this is a VecFrame handle")
   end
 end
-
 --@api-stub: LVecFrame:typeOf
 -- Returns true if this handle matches the given type name
 do
@@ -1328,7 +1222,6 @@ do
     lurek.log.info("VecFrame is an Object")
   end
 end
-
 --@api-stub: LDataFrame:addColumn
 -- Adds a new column with an optional default value for existing rows
 do
@@ -1342,7 +1235,6 @@ do
   df:addColumn("grade", "ungraded")
   lurek.log.info("columns now: " .. df:ncols())
 end
-
 --@api-stub: LDatabase:addTable
 -- Adds or replaces a named table in the database
 do
@@ -1355,7 +1247,6 @@ do
   db:addTable("users", users)
   lurek.log.info("database now has " .. db:tableCount() .. " table(s)")
 end
-
 --@api-stub: LDataFrame:apply
 -- Transforms every cell in a column using a Lua function (in-place)
 do
@@ -1372,7 +1263,6 @@ do
   end)
   lurek.log.info("applied grade transform")
 end
-
 --@api-stub: LDataFrame:corr
 -- Returns the Pearson correlation between two numeric columns
 do
@@ -1387,7 +1277,6 @@ do
   local r = df:corr("playtime", "skill")
   lurek.log.info("playtime-skill correlation: " .. string.format("%.3f", r))
 end
-
 --@api-stub: LLazyQuery:filter
 -- Returns a new dataframe with rows matching a condition (col op val)
 do
@@ -1402,7 +1291,6 @@ do
   local raiders = players:filter("level", ">=", 15)
   lurek.log.info("raid-eligible: " .. raiders:nrows() .. " players")
 end
-
 --@api-stub: LDataFrame:groupAgg
 -- Groups by one column and aggregates another with a built-in function
 do
@@ -1417,7 +1305,6 @@ do
   local totals = sales:groupAgg("region", "revenue", "sum")
   lurek.log.info("revenue by region:\n" .. totals:toString())
 end
-
 --@api-stub: LDataFrame:join
 -- Joins two dataframes by column (inner, left, right, or outer)
 do
@@ -1435,7 +1322,6 @@ do
   local merged = players:join(guilds, "id", "player_id", "inner")
   lurek.log.info("joined rows: " .. merged:nrows())
 end
-
 --@api-stub: LDataFrame:normalizeCol
 -- Adds a range-normalized column (maps values to [out_min, out_max])
 do
@@ -1450,7 +1336,6 @@ do
   df:normalizeCol("val", 0.0, 1.0, "val_norm")
   lurek.log.info("normalized column added")
 end
-
 --@api-stub: LDataFrame:outliers
 -- Returns rows where a column value is a statistical outlier (z-score based)
 do
@@ -1463,7 +1348,6 @@ do
   local spikes = df:outliers("response_ms", 2.0)
   lurek.log.info("lag spikes detected: " .. spikes:nrows())
 end
-
 --@api-stub: LVecFrame:parScalarOp
 -- Applies a scalar operation to multiple columns in parallel
 do
@@ -1475,7 +1359,6 @@ do
   vf:parScalarOp({"x", "y", "z"}, "mul", 2.0)
   lurek.log.info("parallel scalar op done")
 end
-
 --@api-stub: LDataFrame:pivot
 -- Pivots rows into columns using row key, column key, and value fields
 do
@@ -1491,7 +1374,6 @@ do
   local wide = df:pivot("player", "stat", "value")
   lurek.log.info("pivot columns: " .. wide:ncols())
 end
-
 --@api-stub: LDataFrame:pivotTable
 -- Builds a pivot table with aggregation (like a spreadsheet pivot)
 do
@@ -1507,7 +1389,6 @@ do
   local pt = df:pivotTable("region", "product", "sales", "sum")
   lurek.log.info("pivot table:\n" .. pt:toString())
 end
-
 --@api-stub: LDataFrame:rank
 -- Returns a new dataframe with a rank column added
 do
@@ -1522,7 +1403,6 @@ do
   local ranked = df:rank("score", "desc", "position")
   lurek.log.info("ranked:\n" .. ranked:toString())
 end
-
 --@api-stub: LDataFrame:rollingMean
 -- Returns a new dataframe with a rolling average column added
 do
@@ -1537,7 +1417,6 @@ do
   local smoothed = df:rollingMean("frame_ms", 3)
   lurek.log.info("smoothed frame data:\n" .. smoothed:head(5):toString())
 end
-
 --@api-stub: LDataFrame:rollingSum
 -- Returns a new dataframe with a rolling sum column added
 do
@@ -1551,7 +1430,6 @@ do
   local windowed = df:rollingSum("dmg", 3)
   lurek.log.info("rolling sum data:\n" .. windowed:toString())
 end
-
 --@api-stub: LDataFrame:setValue
 -- Sets one cell value by row index and column reference
 do
@@ -1563,7 +1441,6 @@ do
   df:setValue(1, "score", 150)
   lurek.log.info("updated score: " .. df:getValue(1, "score"))
 end
-
 --@api-stub: LLazyQuery:sort
 -- Returns a new sorted dataframe by column (ascending or descending)
 do
@@ -1577,7 +1454,6 @@ do
   local leaderboard = df:sort("score", false)
   lurek.log.info("1st place: " .. leaderboard:getValue(1, "name"))
 end
-
 --@api-stub: LDataFrame:withCumsum
 -- Adds a cumulative sum column (running total) in-place
 do
@@ -1592,7 +1468,6 @@ do
   df:withCumsum("xp_gained", "total_xp")
   lurek.log.info("cumulative XP column added")
 end
-
 --@api-stub: LDataFrame:withPctChange
 -- Adds a percent-change column (row-over-row change rate) in-place
 do
@@ -1607,7 +1482,6 @@ do
   df:withPctChange("gold_price", "gold_change_pct")
   lurek.log.info("percent change column added")
 end
-
 --@api-stub: LDataFrame:withRank
 -- Adds a rank column in-place based on a source column
 do
@@ -1621,7 +1495,6 @@ do
   df:withRank("pts", true, "pts_rank")
   lurek.log.info("rank column added in-place")
 end
-
 --@api-stub: LDataFrame:withRollingMax
 -- Adds a rolling maximum column in-place
 do
@@ -1636,7 +1509,6 @@ do
   df:withRollingMax("value", 3, "peak_3")
   lurek.log.info("rolling max column added")
 end
-
 --@api-stub: LDataFrame:withRollingMean
 -- Adds a rolling mean column in-place
 do
@@ -1647,7 +1519,6 @@ do
   df:withRollingMean("temp", 3, "temp_smooth")
   lurek.log.info("rolling mean column added in-place")
 end
-
 --@api-stub: LDataFrame:withRollingMin
 -- Adds a rolling minimum column in-place
 do
@@ -1662,7 +1533,6 @@ do
   df:withRollingMin("hp", 3, "hp_floor")
   lurek.log.info("rolling min column added")
 end
-
 --@api-stub: LDataFrame:withRollingSum
 -- Adds a rolling sum column in-place
 do
@@ -1674,7 +1544,6 @@ do
   df:withRollingSum("sales", 3, "sales_3period")
   lurek.log.info("rolling sum column added in-place")
 end
-
 --@api-stub: LDataFrame:zscoreCol
 -- Adds a z-score normalized column in-place
 do
@@ -1687,11 +1556,6 @@ do
   df:zscoreCol("stat", "stat_z")
   lurek.log.info("z-score normalized column added")
 end
-
--- -----------------------------------------------------------------------------
--- LGroupedFrame methods
--- -----------------------------------------------------------------------------
-
 --@api-stub: LDataFrame:lazy
 -- Starts a lazy query pipeline from this dataframe
 do
@@ -1707,7 +1571,6 @@ do
   local q = df:lazy()
   lurek.log.info("lazy query type: " .. tostring(q:type()))
 end
-
 --@api-stub: LLazyQuery
 -- Lazy query pipeline: chain filter, sort, head, tail, limit, slice, select, dropNil, then collect
 do
@@ -1754,21 +1617,7 @@ do
   lurek.log.info("non-nil mana: " .. non_nil:nrows() .. " rows")
   lurek.log.info("selected cols: " .. selected:ncols() .. " cols")
 end
-
 print("content/examples/dataframe.lua")
-
--- =============================================================================
--- STUBS: 121 uncovered lurek.dataframe API item(s)
--- Generated by tools/audit/example_add_missing.py
--- REQUIRED: replace every --@api-stub: block below with a real scenario.
--- Run .github/prompts/flesh-out-example.prompt.md for instructions.
--- The final committed file must contain ZERO --@api-stub: lines.
--- =============================================================================
-
--- -----------------------------------------------------------------------------
--- LDataFrame methods
--- -----------------------------------------------------------------------------
-
 --@api-stub: LDataFrame:nrows
 -- Returns the number of rows in this dataframe.
 do
@@ -1780,7 +1629,6 @@ do
   })
   lurek.log.info("leaderboard rows: " .. df:nrows())
 end
-
 --@api-stub: LDataFrame:ncols
 -- Returns the number of columns in this dataframe.
 do
@@ -1790,7 +1638,6 @@ do
   })
   lurek.log.debug("item schema cols: " .. df:ncols())
 end
-
 --@api-stub: LDataFrame:columns
 -- Returns all column names in order. This method is available to Lua scripts.
 do
@@ -1801,7 +1648,6 @@ do
   local cols = df:columns()
   lurek.log.debug("columns: " .. table.concat(cols, ", "))
 end
-
 --@api-stub: LDataFrame:filter
 -- Returns rows whose column value matches a comparison.
 do
@@ -1814,7 +1660,6 @@ do
   local strong = df:filter("hp", ">", 50)
   lurek.log.info("strong enemies: " .. strong:nrows())
 end
-
 --@api-stub: LDataFrame:sort
 -- Returns rows sorted by a column. This method is available to Lua scripts.
 do
@@ -1827,7 +1672,6 @@ do
   local sorted = df:sort("score", false)
   lurek.log.info("top scorer row count: " .. sorted:nrows())
 end
-
 --@api-stub: LDataFrame:head
 -- Returns the first rows of this dataframe.
 do
@@ -1841,7 +1685,6 @@ do
   local preview = df:head(3)
   lurek.log.debug("preview rows: " .. preview:nrows())
 end
-
 --@api-stub: LDataFrame:tail
 -- Returns the last rows of this dataframe.
 do
@@ -1855,7 +1698,6 @@ do
   local recent = df:tail(2)
   lurek.log.debug("recent log rows: " .. recent:nrows())
 end
-
 --@api-stub: LDataFrame:slice
 -- Returns a one-based inclusive row slice.
 do
@@ -1867,7 +1709,6 @@ do
   local page2 = df:slice(4, 6)
   lurek.log.debug("page 2 recipes: " .. page2:nrows())
 end
-
 --@api-stub: LDataFrame:select
 -- Returns a dataframe with selected columns.
 do
@@ -1879,7 +1720,6 @@ do
   local view = df:select("name", "score")
   lurek.log.debug("selected cols: " .. view:ncols())
 end
-
 --@api-stub: LDataFrame:merge
 -- Appends another dataframe into this dataframe in place.
 do
@@ -1893,7 +1733,6 @@ do
   wave1:merge(wave2)
   lurek.log.info("combined spawn count: " .. wave1:nrows())
 end
-
 --@api-stub: LDataFrame:dropNil
 -- Returns rows where the chosen column is not nil.
 do
@@ -1906,7 +1745,6 @@ do
   local clean = df:dropNil("rarity")
   lurek.log.debug("valid loot rows: " .. clean:nrows())
 end
-
 --@api-stub: LDataFrame:toJSON
 -- Serializes this dataframe to JSON text.
 do
@@ -1918,7 +1756,6 @@ do
   local json = df:toJSON()
   lurek.log.debug("json length: " .. #json)
 end
-
 --@api-stub: LDataFrame:query
 -- Runs a SQL-style query against this dataframe.
 do
@@ -1931,7 +1768,6 @@ do
   local expensive = df:query("SELECT * WHERE gold > 100")
   lurek.log.info("expensive items: " .. expensive:nrows())
 end
-
 --@api-stub: LDataFrame:type
 -- Returns the Lua-visible type name for this dataframe handle.
 do
@@ -1939,7 +1775,6 @@ do
   local df = lurek.dataframe.fromTable({ { x = 1 } })
   lurek.log.debug("df type: " .. df:type())
 end
-
 --@api-stub: LDataFrame:typeOf
 -- Returns whether this dataframe handle matches a supported type name.
 do
@@ -1947,8 +1782,6 @@ do
   local df = lurek.dataframe.fromTable({ { x = 1 } })
   if df:typeOf("LDataFrame") then lurek.log.debug("confirmed LDataFrame") end
 end
-
--- ---- Stub: LDatabase:type ------------------------------------------------
 --@api-stub: LDatabase:type
 -- Returns the Lua-visible type name for this database handle.
 do
@@ -1956,8 +1789,6 @@ do
   local db = lurek.dataframe.newDatabase()
   lurek.log.debug("db type: " .. db:type())
 end
-
--- ---- Stub: LDatabase:typeOf ----------------------------------------------
 --@api-stub: LDatabase:typeOf
 -- Returns whether this database handle matches a supported type name.
 do
@@ -1965,11 +1796,6 @@ do
   local db = lurek.dataframe.newDatabase()
   if db:typeOf("LDatabase") then lurek.log.debug("confirmed LDatabase") end
 end
-
--- -----------------------------------------------------------------------------
--- LGroupedFrame methods
--- -----------------------------------------------------------------------------
-
 --@api-stub: LGroupedFrame:type
 -- Returns the Lua-visible type name for this grouped frame handle.
 do
@@ -1981,7 +1807,6 @@ do
   local grouped = df:groupByObj("team")
   lurek.log.debug("grouped type: " .. grouped:type())
 end
-
 --@api-stub: LGroupedFrame:typeOf
 -- Returns whether this grouped frame handle matches a supported type name.
 do
@@ -1993,11 +1818,6 @@ do
   local grouped = df:groupByObj("team")
   if grouped:typeOf("LGroupedFrame") then lurek.log.debug("confirmed LGroupedFrame") end
 end
-
--- -----------------------------------------------------------------------------
--- LLazyQuery methods
--- -----------------------------------------------------------------------------
-
 --@api-stub: LLazyQuery:limit
 -- Adds a row limit step to the lazy query.
 do
@@ -2010,7 +1830,6 @@ do
   local lazy = df:lazy():limit(5)
   lurek.log.debug("lazy query built with limit 5")
 end
-
 --@api-stub: LLazyQuery:collect
 -- Executes the lazy query and returns a dataframe.
 do
@@ -2022,7 +1841,6 @@ do
   local result = df:lazy():limit(10):collect()
   lurek.log.info("collected rows: " .. result:nrows())
 end
-
 --@api-stub: LLazyQuery:type
 -- Returns the Lua-visible type name for this lazy query handle.
 do
@@ -2031,7 +1849,6 @@ do
   local lq = df:lazy()
   lurek.log.debug("lazy query type: " .. lq:type())
 end
-
 --@api-stub: LLazyQuery:typeOf
 -- Returns whether this lazy query handle matches a supported type name.
 do
@@ -2040,7 +1857,3 @@ do
   local lq = df:lazy()
   if lq:typeOf("LLazyQuery") then lurek.log.debug("confirmed LLazyQuery") end
 end
-
--- -----------------------------------------------------------------------------
--- LVecFrame methods
--- -----------------------------------------------------------------------------

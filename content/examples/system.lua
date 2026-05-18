@@ -1,7 +1,6 @@
 -- content/examples/system.lua
 -- lurek.runtime and lurek.engine API examples.
 -- Run: cargo run -- content/examples/system.lua
-
 --@api-stub: lurek.runtime.getOS
 -- Returns the name of the host operating system as a string
 do
@@ -10,7 +9,6 @@ do
   local mod_key = (os_name == "macOS") and "cmd" or "ctrl"
   lurek.log.info("running on " .. os_name .. " (modifier=" .. mod_key .. ")", "boot")
 end
-
 --@api-stub: lurek.runtime.getVersion
 -- Returns the semantic version string of the Lurek2D engine
 do
@@ -19,7 +17,6 @@ do
   local save_header = "lurek2d/" .. engine_version
   lurek.log.info("save header tag: " .. save_header, "save")
 end
-
 --@api-stub: lurek.runtime.getProcessorCount
 -- Returns the number of logical processors available on the host machine
 do
@@ -28,7 +25,6 @@ do
   local workers = math.max(1, cores - 1)
   lurek.log.info("spawning " .. workers .. " worker threads (of " .. cores .. ")", "thread")
 end
-
 --@api-stub: lurek.runtime.getMemorySize
 -- Returns the total physical memory of the host system in megabytes
 do
@@ -37,7 +33,6 @@ do
   local quality = (ram_mb >= 8192) and "high" or (ram_mb >= 4096 and "medium" or "low")
   lurek.log.info("texture quality preset: " .. quality .. " (" .. ram_mb .. " MiB RAM)", "render")
 end
-
 --@api-stub: lurek.runtime.openURL
 -- Opens a URL in the default system browser (non-headless; do not call in automated tests)
 do

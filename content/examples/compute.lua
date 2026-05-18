@@ -1,7 +1,6 @@
 -- content/examples/compute.lua
 -- lurek.compute API examples.
 -- Run: cargo run -- content/examples/compute.lua
-
 --@api-stub: lurek.compute.newArray
 -- Creates a zero-filled array with the requested shape and data type
 do
@@ -17,7 +16,6 @@ do
   -- getSize() returns total element count (64*64 = 4096)
   lurek.log.info("heat grid: " .. heat:getSize() .. " cells", "compute")
 end
-
 --@api-stub: lurek.compute.zeros
 -- Creates a zero-filled array with the requested shape and data type
 do
@@ -32,7 +30,6 @@ do
   local total = damage:sum()
   lurek.log.info("total damage: " .. total, "compute")
 end
-
 --@api-stub: lurek.compute.ones
 -- Creates a one-filled array with the requested shape and data type
 do
@@ -47,7 +44,6 @@ do
   -- mean() returns the average value across all elements
   lurek.log.info("faded mean: " .. faded:mean(), "compute")
 end
-
 --@api-stub: lurek.compute.range
 -- Creates a one-dimensional range array
 do
@@ -61,7 +57,6 @@ do
   -- get() uses 1-based indexing: element 6 holds value (5)^2 = 25
   lurek.log.info("frame[5]^2 = " .. doubled:get(6), "compute")
 end
-
 --@api-stub: lurek.compute.fromTable
 -- Creates an array from a flat Lua table and optional shape
 do
@@ -75,7 +70,6 @@ do
   local peak = wave:max()
   lurek.log.info("wave peak: " .. peak, "compute")
 end
-
 --@api-stub: lurek.compute.getParThreshold
 -- Returns the global compute parallelism threshold
 do
@@ -85,7 +79,6 @@ do
   local threshold = lurek.compute.getParThreshold()
   lurek.log.info("compute parallel threshold=" .. threshold, "compute")
 end
-
 --@api-stub: lurek.compute.setParThreshold
 -- Sets the global compute parallelism threshold and returns the previous value
 do
@@ -100,7 +93,6 @@ do
 
   lurek.log.info("threshold " .. previous .. " -> " .. updated, "compute")
 end
-
 --@api-stub: lurek.compute.gaussianKernel
 -- Creates a square Gaussian kernel array
 do
@@ -113,7 +105,6 @@ do
   local weight_sum = kernel:sum()
   lurek.log.info("gaussian sum (should be approx 1.0): " .. weight_sum, "compute")
 end
-
 --@api-stub: lurek.compute.rotate2dMatrix
 -- Creates a 2D rotation matrix
 do
@@ -130,7 +121,6 @@ do
   local rotated = rot:transformPoints(pts)
   lurek.log.info("rotated[1,1] = " .. rotated:get(1, 1), "compute")
 end
-
 --@api-stub: lurek.compute.affine2d
 -- Creates a 2D affine transform matrix
 do
@@ -148,7 +138,6 @@ do
   local moved = m:transformPoints(origin)
   lurek.log.info("moved x = " .. moved:get(1, 1), "compute")
 end
-
 --@api-stub: lurek.compute.fft
 -- Computes the FFT of real-valued samples
 do
@@ -163,7 +152,6 @@ do
   local bin0 = spectrum[1]
   lurek.log.info("bin 0 re=" .. bin0.re .. " im=" .. bin0.im, "fft")
 end
-
 --@api-stub: lurek.compute.ifft
 -- Computes the inverse FFT of complex frequency pairs
 do
@@ -176,7 +164,6 @@ do
   local rebuilt = lurek.compute.ifft(freqs)
   lurek.log.info("rebuilt[1] = " .. rebuilt[1], "fft")
 end
-
 --@api-stub: lurek.compute.fftMagnitude
 -- Computes FFT magnitudes for real-valued samples
 do
@@ -188,9 +175,6 @@ do
   local mags = lurek.compute.fftMagnitude(samples)
   lurek.log.info("mag[2] = " .. mags[2], "fft")
 end
-
--- Array methods
-
 --@api-stub: LArray:getShape
 -- Returns the shape of this array
 do
@@ -201,7 +185,6 @@ do
   local shape = grid:getShape()
   lurek.log.info("grid is " .. shape[1] .. "x" .. shape[2], "compute")
 end
-
 --@api-stub: LArray:getDimensions
 -- Returns the number of dimensions of this array
 do
@@ -212,7 +195,6 @@ do
     lurek.log.info("vector, len=" .. v:getSize(), "compute")
   end
 end
-
 --@api-stub: LArray:getSize
 -- Returns the total number of elements in this array
 do
@@ -222,7 +204,6 @@ do
   local n = img:getSize()
   lurek.log.info("img has " .. n .. " pixels", "compute")
 end
-
 --@api-stub: LArray:getDataType
 -- Returns the data type of this array
 do
@@ -233,7 +214,6 @@ do
   local dt = mask:getDataType()
   if dt == "int32" then lurek.log.info("ready for bitwise ops", "compute") end
 end
-
 --@api-stub: LArray:isOnGPU
 -- Returns true if this array is stored on the GPU
 do
@@ -245,7 +225,6 @@ do
     lurek.log.debug("running compute on CPU", "compute")
   end
 end
-
 --@api-stub: LArray:get
 -- Returns the element value at the given indices
 do
@@ -259,7 +238,6 @@ do
     lurek.log.info("m[1,2] = " .. top_right, "compute")
   end)
 end
-
 --@api-stub: LArray:set
 -- Sets the element value at the given indices
 do
@@ -271,7 +249,6 @@ do
   board:set(2, 2, 1.0)
   lurek.log.info("centre = " .. board:get(2, 2), "compute")
 end
-
 --@api-stub: LArray:toTable
 -- Converts this array to a flat Lua table
 do
@@ -282,7 +259,6 @@ do
   local flat = arr:toTable()
   lurek.log.info("flat[3] = " .. flat[3] .. ", count=" .. #flat, "compute")
 end
-
 --@api-stub: LArray:reshape
 -- Returns a reshaped copy of this array
 do
@@ -295,7 +271,6 @@ do
   -- After reshape: row 2, col 3 = last element = 5.0
   lurek.log.info("grid[2,3] = " .. grid:get(2, 3), "compute")
 end
-
 --@api-stub: LArray:clone
 -- Returns a deep copy of this array
 do
@@ -309,7 +284,6 @@ do
   copy:fill(0.0)
   lurek.log.info("orig sum=" .. original:sum() .. " copy sum=" .. copy:sum(), "compute")
 end
-
 --@api-stub: LArray:transpose
 -- Returns a transposed copy of this 2D array
 do
@@ -320,7 +294,6 @@ do
   local t = m:transpose()
   lurek.log.info("t shape: " .. t:getShape()[1] .. "x" .. t:getShape()[2], "compute")
 end
-
 --@api-stub: LArray:fill
 -- Fills all elements of this array with a single value (in place)
 do
@@ -332,7 +305,6 @@ do
   scratch:fill(-1.0)
   lurek.log.info("scratch sum after fill: " .. scratch:sum(), "compute")
 end
-
 --@api-stub: LArray:pow
 -- Returns a new array with each element raised to an exponent
 do
@@ -343,7 +315,6 @@ do
 
   lurek.log.info("4^2 = " .. sq:get(4), "compute")
 end
-
 --@api-stub: LArray:sqrt
 -- Returns a new array with element-wise square roots
 do
@@ -353,7 +324,6 @@ do
   local roots = sq:sqrt()
   lurek.log.info("sqrt(16) = " .. roots:get(4), "compute")
 end
-
 --@api-stub: LArray:abs
 -- Returns a new array with element-wise absolute values
 do
@@ -363,7 +333,6 @@ do
   local mag = deltas:abs()
   lurek.log.info("abs sum = " .. mag:sum(), "compute")
 end
-
 --@api-stub: LArray:neg
 -- Returns a new array with each element negated
 do
@@ -373,7 +342,6 @@ do
   local counter = impulse:neg()
   lurek.log.info("counter[1] = " .. counter:get(1), "compute")
 end
-
 --@api-stub: LArray:clamp
 -- Returns a new array with values clamped between min and max
 do
@@ -385,7 +353,6 @@ do
   local clamped = hp:clamp(0, 100)
   lurek.log.info("clamped max = " .. clamped:max(), "compute")
 end
-
 --@api-stub: LArray:threshold
 -- Returns a mask array where values above the threshold become 1, else 0
 do
@@ -397,7 +364,6 @@ do
   local visible = field:threshold(4.0)
   lurek.log.info("cells visible: " .. visible:sum(), "compute")
 end
-
 --@api-stub: LArray:countNonZero
 -- Returns the count of non-zero elements
 do
@@ -407,7 +373,6 @@ do
   local live = occupied:countNonZero()
   lurek.log.info("occupied tiles: " .. live, "compute")
 end
-
 --@api-stub: LArray:argmin
 -- Returns the 1-based flat index of the minimum element
 do
@@ -417,7 +382,6 @@ do
   local nearest = distances:argmin()
   lurek.log.info("nearest enemy index: " .. nearest, "ai")
 end
-
 --@api-stub: LArray:argmax
 -- Returns the 1-based flat index of the maximum element
 do
@@ -427,7 +391,6 @@ do
   local choice = scores:argmax()
   lurek.log.info("AI picks action " .. choice, "ai")
 end
-
 --@api-stub: LArray:any
 -- Returns true if any element is non-zero
 do
@@ -438,7 +401,6 @@ do
     lurek.log.warn("at least one hit registered", "combat")
   end
 end
-
 --@api-stub: LArray:all
 -- Returns true if all elements are non-zero
 do
@@ -449,7 +411,6 @@ do
     lurek.log.info("door unlocked", "puzzle")
   end
 end
-
 --@api-stub: LArray:sum
 -- Returns the total sum of all elements (or sum along an axis)
 do
@@ -459,7 +420,6 @@ do
   local total = hits:sum()
   lurek.log.info("total damage: " .. total, "compute")
 end
-
 --@api-stub: LArray:mean
 -- Returns the arithmetic mean of all elements (or mean along an axis)
 do
@@ -469,7 +429,6 @@ do
   local avg = frame_ms:mean()
   lurek.log.info("avg frame ms: " .. avg, "perf")
 end
-
 --@api-stub: LArray:min
 -- Returns the minimum element value (or minimum along an axis)
 do
@@ -479,7 +438,6 @@ do
   local cheapest = costs:min()
   lurek.log.info("cheapest cost: " .. cheapest, "compute")
 end
-
 --@api-stub: LArray:max
 -- Returns the maximum element value (or maximum along an axis)
 do
@@ -489,7 +447,6 @@ do
   local worst = latencies:max()
   lurek.log.info("worst latency: " .. worst .. "ms", "net")
 end
-
 --@api-stub: LArray:matmul
 -- Performs matrix multiplication with another 2D array
 do
@@ -503,7 +460,6 @@ do
   -- c[1,1] = 1*5 + 2*7 = 19
   lurek.log.info("c[1,1] = " .. c:get(1, 1), "compute")
 end
-
 --@api-stub: LArray:dot
 -- Computes the dot product with another 1D array
 do
@@ -516,7 +472,6 @@ do
   -- alignment = 0.7, meaning target is mostly in front
   lurek.log.info("alignment: " .. alignment, "ai")
 end
-
 --@api-stub: LArray:bitwiseAnd
 -- Returns element-wise bitwise AND with another int32 array
 do
@@ -529,7 +484,6 @@ do
   local both = walk:bitwiseAnd(lit)
   lurek.log.info("walkable AND lit count: " .. both:countNonZero(), "tiles")
 end
-
 --@api-stub: LArray:bitwiseOr
 -- Returns element-wise bitwise OR with another int32 array
 do
@@ -541,7 +495,6 @@ do
   local seen = fov:bitwiseOr(mem)
   lurek.log.info("seen-tile count: " .. seen:countNonZero(), "fov")
 end
-
 --@api-stub: LArray:bitwiseXor
 -- Returns element-wise bitwise XOR with another int32 array
 do
@@ -554,7 +507,6 @@ do
   local changed = prev:bitwiseXor(curr)
   lurek.log.info("cells changed: " .. changed:countNonZero(), "tiles")
 end
-
 --@api-stub: LArray:bitwiseNot
 -- Returns element-wise bitwise NOT of this int32 array
 do
@@ -564,7 +516,6 @@ do
   local free = occupied:bitwiseNot()
   lurek.log.info("free mask[2] = " .. free:get(2), "tiles")
 end
-
 --@api-stub: LArray:bitwiseLShift
 -- Returns element-wise left bit shift by a given amount
 do
@@ -576,7 +527,6 @@ do
   local packed = ids:bitwiseLShift(4)
   lurek.log.info("packed[2] = " .. packed:get(2), "compute")
 end
-
 --@api-stub: LArray:bitwiseRShift
 -- Returns element-wise right bit shift by a given amount
 do
@@ -588,7 +538,6 @@ do
   local high = packed:bitwiseRShift(4)
   lurek.log.info("high[3] = " .. high:get(3), "compute")
 end
-
 --@api-stub: LArray:convolve2D
 -- Applies a 2D convolution kernel to this array
 do
@@ -602,7 +551,6 @@ do
   local blurred = img:convolve2D(k)
   lurek.log.info("blurred mean = " .. blurred:mean(), "compute")
 end
-
 --@api-stub: LArray:dilate
 -- Applies morphological dilation with a given radius
 do
@@ -616,7 +564,6 @@ do
   local grown = mask:dilate(1)
   lurek.log.info("grown nonzero: " .. grown:countNonZero(), "compute")
 end
-
 --@api-stub: LArray:erode
 -- Applies morphological erosion with a given radius
 do
@@ -629,7 +576,6 @@ do
   local interior = mask:erode(1)
   lurek.log.info("interior cells: " .. interior:countNonZero(), "compute")
 end
-
 --@api-stub: LArray:cumsum
 -- Returns the cumulative sum (prefix sum) of this array
 do
@@ -641,7 +587,6 @@ do
   local running = scores:cumsum()
   lurek.log.info("score after 3rd round = " .. running:get(3), "score")
 end
-
 --@api-stub: LArray:diff
 -- Returns finite differences (velocity from position, acceleration from velocity)
 do
@@ -654,7 +599,6 @@ do
   local vel = pos:diff(1)
   lurek.log.info("vel[2] = " .. vel:get(2), "compute")
 end
-
 --@api-stub: LArray:percentile
 -- Returns a percentile value from the array data
 do
@@ -666,7 +610,6 @@ do
   local p95 = times:percentile(95)
   lurek.log.info("frame p95 = " .. p95 .. "ms", "perf")
 end
-
 --@api-stub: LArray:covariance
 -- Computes covariance with another array
 do
@@ -679,7 +622,6 @@ do
   local cov = x:covariance(y)
   lurek.log.info("cov(x,y) = " .. cov, "compute")
 end
-
 --@api-stub: LArray:pearsonCorr
 -- Computes Pearson correlation coefficient with another array
 do
@@ -693,7 +635,6 @@ do
   local r = fps:pearsonCorr(entities)
   lurek.log.info("fps vs entity correlation: " .. r, "perf")
 end
-
 --@api-stub: LArray:normalizeRange
 -- Returns values rescaled to a target [lo, hi] range
 do
@@ -706,7 +647,6 @@ do
   local unit = raw:normalizeRange(0, 1)
   lurek.log.info("unit min=" .. unit:min() .. " max=" .. unit:max(), "compute")
 end
-
 --@api-stub: LArray:zscore
 -- Returns z-score normalized values (mean=0, std=1)
 do
@@ -719,7 +659,6 @@ do
   -- First element is below mean, so z[1] should be negative
   lurek.log.info("z[1] = " .. z:get(1), "compute")
 end
-
 --@api-stub: LArray:convolve1d
 -- Applies a 1D convolution kernel to this array
 do
@@ -732,7 +671,6 @@ do
   local smoothed = signal:convolve1d(kernel)
   lurek.log.info("smoothed length: " .. smoothed:getSize(), "compute")
 end
-
 --@api-stub: LArray:correlate1d
 -- Computes 1D cross-correlation with a template array
 do
@@ -745,7 +683,6 @@ do
   local match = stream:correlate1d(template)
   lurek.log.info("best match index: " .. match:argmax(), "compute")
 end
-
 --@api-stub: LArray:normalizeVec
 -- Returns this vector normalized to unit length
 do
@@ -757,7 +694,6 @@ do
   -- unit[1]^2 + unit[2]^2 should equal 1.0
   lurek.log.info("unit[1]^2 + unit[2]^2 = " .. unit:pow(2):sum(), "compute")
 end
-
 --@api-stub: LArray:outer
 -- Computes the outer product of two vectors (result is a matrix)
 do
@@ -770,7 +706,6 @@ do
   local mat = row:outer(col)
   lurek.log.info("outer[2,2] = " .. mat:get(2, 2), "compute")
 end
-
 --@api-stub: LArray:cross2d
 -- Computes the 2D cross product (scalar) with another 2D vector
 do
@@ -784,7 +719,6 @@ do
   -- cross > 0 means target is to the left of heading
   lurek.log.info("turn direction: " .. (cross > 0 and "left" or "right"), "ai")
 end
-
 --@api-stub: LArray:transformPoints
 -- Transforms point rows by this matrix (rotation, affine, etc.)
 do
@@ -800,7 +734,6 @@ do
     lurek.log.info("rotated[1,2] = " .. out:get(1, 2), "compute")
   end)
 end
-
 --@api-stub: LArray:sobel
 -- Computes Sobel edge-detection gradients (returns {gx, gy} table)
 do
@@ -811,7 +744,6 @@ do
   local g = img:sobel()
   lurek.log.info("gx[2,2] = " .. g.gx:get(2, 2) .. " gy[2,2] = " .. g.gy:get(2, 2), "compute")
 end
-
 --@api-stub: LArray:linsolve
 -- Solves the linear system Ax = b for x
 do
@@ -825,7 +757,6 @@ do
   local x = a:linsolve(b)
   lurek.log.info("x[1] = " .. x:get(1) .. " x[2] = " .. x:get(2), "compute")
 end
-
 --@api-stub: LArray:luDecompose
 -- Returns LU decomposition data for this square matrix
 do
@@ -836,7 +767,6 @@ do
   local lu = a:luDecompose()
   lurek.log.info("LU n=" .. lu.n .. " det_sign=" .. lu.det_sign, "compute")
 end
-
 --@api-stub: LArray:type
 -- Returns the Lua-visible type name string for this array handle
 do
@@ -846,7 +776,6 @@ do
   local kind = arr:type()
   if kind == "LArray" then lurek.log.debug("got an Array", "compute") end
 end
-
 --@api-stub: LArray:typeOf
 -- Returns true if this array handle matches the given type name string
 do
@@ -857,7 +786,6 @@ do
     lurek.log.debug("typeOf check passed", "compute")
   end
 end
-
 --@api-stub: LArray:map
 -- Applies a Lua function to each element, returning a new array
 do
@@ -868,7 +796,6 @@ do
   local b = a:map(function(x) return math.sqrt(x) end)
   lurek.log.debug("map sqrt: " .. tostring(b:toTable()[1]), "compute")
 end
-
 --@api-stub: LArray:eval
 -- Evaluates a Lua expression string on each element (x = current value)
 do
@@ -881,7 +808,6 @@ do
   -- Element 2: 2*2+1 = 5
   lurek.log.debug("eval x^2+1: " .. tostring(b:toTable()[2]), "compute")
 end
-
 --@api-stub: LArray:reduce
 -- Reduces all elements to a single value using an accumulator function
 do
@@ -893,7 +819,6 @@ do
   -- Equivalent to a:sum(), but allows arbitrary fold logic
   lurek.log.debug("reduce sum: " .. tostring(total), "compute")
 end
-
 --@api-stub: LArray:scan
 -- Produces a prefix-scan array using an accumulator function
 do
@@ -906,8 +831,6 @@ do
   -- prefix = {1, 3, 6, 10}
   lurek.log.debug("scan prefix[4]: " .. tostring(prefix:toTable()[4]), "compute")
 end
-
-
 --@api-stub: LArray:eigenPower
 -- Estimates the dominant eigenvalue and eigenvector via power iteration
 do
@@ -920,7 +843,6 @@ do
   local result = A:eigenPower(50)
   lurek.log.info("dominant eigenvalue: " .. result.value, "compute")
 end
-
 --@api-stub: LArray:floodFill
 -- Fills connected cells from a start position with a replacement value
 do
@@ -937,7 +859,6 @@ do
   -- Only the single 0-cell at (3,3) gets filled since it's isolated
   lurek.log.info("filled[3,3] = " .. tostring(filled:get(3, 3)), "compute")
 end
-
 --@api-stub: LArray:getRegion
 -- Extracts a rectangular sub-region from this 2D array
 do
@@ -950,7 +871,6 @@ do
   local patch = a:getRegion(2, 2, 4, 4)
   lurek.log.info("patch shape: " .. patch:getShape()[1] .. "x" .. patch:getShape()[2], "compute")
 end
-
 --@api-stub: LArray:histogram
 -- Computes a histogram of values across the given number of bins
 do
@@ -963,7 +883,6 @@ do
   local hist = a:histogram(4)
   lurek.log.info("hist bins: " .. #hist .. ", first count: " .. hist[1].count, "compute")
 end
-
 --@api-stub: LArray:setRegion
 -- Writes a source array into this array at a given position (in place)
 do
@@ -977,7 +896,6 @@ do
   canvas:setRegion(6, 6, stamp)
   lurek.log.info("canvas[7,7] after stamp = " .. canvas:get(7, 7), "compute")
 end
-
 --@api-stub: LArray:where
 -- Selects values from this array or another based on a mask
 do
@@ -994,7 +912,6 @@ do
   local result = a:where(mask, zeros)
   lurek.log.info("where filtered sum: " .. result:sum(), "compute")
 end
-
 --@api-stub: LArray:add
 -- Returns element-wise addition with an array or scalar
 do
@@ -1007,7 +924,6 @@ do
   local out = base:add(boost)
   lurek.log.info("add row-broadcast [2,2] = " .. out:get(2, 2), "compute")
 end
-
 --@api-stub: LArray:sub
 -- Returns element-wise subtraction with an array or scalar
 do
@@ -1018,7 +934,6 @@ do
 
   lurek.log.info("sub result first = " .. after:get(1), "compute")
 end
-
 --@api-stub: LArray:mul
 -- Returns element-wise multiplication with an array or scalar
 do
@@ -1029,7 +944,6 @@ do
 
   lurek.log.info("crit total = " .. crit:sum(), "compute")
 end
-
 --@api-stub: LArray:div
 -- Returns element-wise division with an array or scalar
 do
@@ -1040,7 +954,6 @@ do
 
   lurek.log.info("sec[1] = " .. sec:get(1), "compute")
 end
-
 --@api-stub: LArray:eq
 -- Returns a mask array where elements equal the given value
 do
@@ -1052,7 +965,6 @@ do
   local walls = tiles:eq(1)
   lurek.log.info("wall count = " .. walls:countNonZero(), "compute")
 end
-
 --@api-stub: LArray:neq
 -- Returns a mask array where elements do not equal the given value
 do
@@ -1062,7 +974,6 @@ do
   local non_two = tags:neq(2)
   lurek.log.info("non-2 count = " .. non_two:countNonZero(), "compute")
 end
-
 --@api-stub: LArray:gt
 -- Returns a mask array where elements are greater than the value
 do
@@ -1072,7 +983,6 @@ do
   local hot = heat:gt(0.5)
   lurek.log.info("hot cells = " .. hot:countNonZero(), "compute")
 end
-
 --@api-stub: LArray:lt
 -- Returns a mask array where elements are less than the value
 do
@@ -1082,7 +992,6 @@ do
   local low = stamina:lt(20)
   lurek.log.info("low stamina count = " .. low:countNonZero(), "compute")
 end
-
 --@api-stub: LArray:gte
 -- Returns a mask array where elements are greater than or equal to the value
 do
@@ -1091,7 +1000,6 @@ do
   local far = dist:gte(7)
   lurek.log.info("far targets = " .. far:countNonZero(), "compute")
 end
-
 --@api-stub: LArray:lte
 -- Returns a mask array where elements are less than or equal to the value
 do
@@ -1100,7 +1008,6 @@ do
   local under_cap = scores:lte(120)
   lurek.log.info("<=120 count = " .. under_cap:countNonZero(), "compute")
 end
-
 --@api-stub: LArray:addInplace
 -- Adds another array into this array in place (mutates self)
 do
@@ -1114,7 +1021,6 @@ do
   a:addInplace(b)
   lurek.log.info("addInplace result: " .. a:get(1) .. "," .. a:get(2) .. "," .. a:get(3), "compute")
 end
-
 --@api-stub: LArray:subInplace
 -- Subtracts another array from this array in place (mutates self)
 do
@@ -1127,7 +1033,6 @@ do
   a:subInplace(b)
   lurek.log.info("subInplace result: " .. a:get(1) .. "," .. a:get(2) .. "," .. a:get(3), "compute")
 end
-
 --@api-stub: LArray:mulInplace
 -- Multiplies this array by another array in place (mutates self)
 do
@@ -1140,7 +1045,6 @@ do
   a:mulInplace(b)
   lurek.log.info("mulInplace result: " .. a:get(1) .. "," .. a:get(2) .. "," .. a:get(3), "compute")
 end
-
 --@api-stub: LArray:divInplace
 -- Divides this array by another array in place (mutates self)
 do
@@ -1153,5 +1057,4 @@ do
   a:divInplace(b)
   lurek.log.info("divInplace result: " .. a:get(1) .. "," .. a:get(2) .. "," .. a:get(3), "compute")
 end
-
 print("content/examples/compute.lua")

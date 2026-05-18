@@ -1,7 +1,6 @@
 -- content/examples/engine.lua
 -- Demonstrates lurek.engine module and all engine lifecycle/input callbacks.
 -- Run: cargo run -- content/examples/engine.lua
-
 --@api-stub: lurek.engine.getVersion
 -- Returns the engine crate version string embedded at build time.
 do
@@ -10,7 +9,6 @@ do
   local save_header = { engine = version, schema = 3, ts = os.time() }
   lurek.log.info("save header: engine=" .. save_header.engine .. " schema=" .. save_header.schema, "save")
 end
-
 --@api-stub: lurek.engine.getFrameBudget
 -- Returns the target frame budget in milliseconds (16.67 ms for 60 FPS).
 do
@@ -25,7 +23,6 @@ do
     end
   end
 end
-
 --@api-stub: lurek.engine.memoryUsage
 -- Returns a table with lua_bytes and lua_kb fields for Lua VM heap usage.
 do
@@ -42,7 +39,6 @@ do
     last_kb = mem.lua_kb
   end
 end
-
 --@api-stub: lurek.engine.platform
 -- Returns "windows", "linux", "macos", or "unknown" for the current OS.
 do
@@ -53,7 +49,6 @@ do
   -- Windows: os.getenv("APPDATA")  macOS: ~/Library/Application Support  Linux: ~/.config
   lurek.log.info("platform=" .. os_name .. " config_dir=" .. config_dir, "boot")
 end
-
 --@api-stub: lurek.engine.uptime
 -- Returns total engine runtime in seconds since the process started.
 do
@@ -76,7 +71,6 @@ do
     lurek.log.info(string.format("session duration: %.1fs", played), "session")
   end
 end
-
 --@api-stub: lurek.engine.fps
 -- Returns the current frames-per-second estimate from the runtime clock.
 do
@@ -99,7 +93,6 @@ do
     lurek.render.print(string.format("FPS: %.0f", fps), 8, 8)
   end
 end
-
 --@api-stub: lurek.engine.frameCount
 -- Returns the total number of frames rendered since engine start.
 do
@@ -113,7 +106,6 @@ do
     end
   end
 end
-
 --@api-stub: lurek.engine.isDebug
 -- Returns true if the binary was built with debug assertions (cargo build).
 do
@@ -125,7 +117,6 @@ do
     lurek.log.setLevel("warn")
   end
 end
-
 --@api-stub: lurek.engine.setResourceBudget
 -- Sets the byte budget used by getResourceStats to calculate usage percentage.
 do
@@ -134,7 +125,6 @@ do
   lurek.engine.setResourceBudget(budget_mb * 1024 * 1024)
   lurek.log.info("resource budget set to " .. budget_mb .. " MB", "boot")
 end
-
 --@api-stub: lurek.engine.getResourceStats
 -- Returns a table with texture/font/canvas/shader counts and byte totals.
 do
@@ -148,7 +138,6 @@ do
       stats.texture_count, stats.font_count, stats.canvas_count, used_mb), "mem")
   end
 end
-
 --@api-stub: lurek.engine.getFrameProfile
 -- Returns a table with per-phase timings: app_tick_ms, process_ms, draw_ms, etc.
 do
@@ -162,7 +151,6 @@ do
       p.app_tick_ms, p.process_ms, p.draw_ms), 8, 8)
   end
 end
-
 --@api-stub: lurek.engine.getFrameProfileText
 -- Returns a pre-formatted one-line string summarizing the frame profile.
 do
@@ -172,7 +160,6 @@ do
     lurek.render.print(lurek.engine.getFrameProfileText(), 8, 28)
   end
 end
-
 --@api-stub: lurek.engine.getConfigRevision
 -- Returns a counter that increments each time runtime config is hot-reloaded.
 do
@@ -187,7 +174,6 @@ do
     end
   end
 end
-
 --@api-stub: lurek.init
 -- Called once before the first frame to load assets and set up initial game state.
 do
@@ -197,7 +183,6 @@ do
     -- Example: player = { x = 400, y = 300, speed = 200 }
   end
 end
-
 --@api-stub: lurek.ready
 -- Called once after init when the window and GPU are fully ready.
 do
@@ -207,7 +192,6 @@ do
     lurek.log.info(string.format("ready — display %dx%d", w, h), "lifecycle")
   end
 end
-
 --@api-stub: lurek.process
 -- Called every frame with delta time in seconds to run game logic.
 do
@@ -218,7 +202,6 @@ do
     -- Example: player.x = player.x + speed * dt
   end
 end
-
 --@api-stub: lurek.process_late
 -- Called after process each frame for logic that depends on updated positions.
 do
@@ -228,7 +211,6 @@ do
     -- Example: camera.x = lerp(camera.x, player.x, 5 * dt)
   end
 end
-
 --@api-stub: lurek.process_physics
 -- Called at a fixed physics timestep rate for deterministic simulation.
 do
@@ -238,7 +220,6 @@ do
     -- Example: body:applyForce(0, gravity * dt)
   end
 end
-
 --@api-stub: lurek.fixedUpdate
 -- Alias for process_physics — called at fixed timestep for deterministic updates.
 do
@@ -247,7 +228,6 @@ do
     -- Useful if you prefer Unity-style naming.
   end
 end
-
 --@api-stub: lurek.draw
 -- Called each frame after process to submit world-space draw commands.
 do
@@ -258,7 +238,6 @@ do
     lurek.render.rectangle("fill", 100, 100, 64, 64)
   end
 end
-
 --@api-stub: lurek.draw_ui
 -- Called after draw for screen-space HUD and UI overlay rendering.
 do
@@ -269,7 +248,6 @@ do
     lurek.render.print("Score: 0", 10, 10)
   end
 end
-
 --@api-stub: lurek.quit
 -- Called when the window close is requested. Return true to cancel the quit.
 do
@@ -280,7 +258,6 @@ do
     return false
   end
 end
-
 --@api-stub: lurek.exit
 -- Called during engine shutdown after quit — final cleanup opportunity.
 do
@@ -289,7 +266,6 @@ do
     lurek.log.info("engine shutdown complete", "lifecycle")
   end
 end
-
 --@api-stub: lurek.resize
 -- Called when the window is resized with the new pixel dimensions.
 do
@@ -299,7 +275,6 @@ do
     -- Example: canvas = lurek.render.newCanvas(w, h)
   end
 end
-
 --@api-stub: lurek.focus
 -- Called when the window gains or loses input focus.
 do
@@ -313,7 +288,6 @@ do
     end
   end
 end
-
 --@api-stub: lurek.visible
 -- Called when the window is shown or hidden (minimized/restored).
 do
@@ -324,7 +298,6 @@ do
     end
   end
 end
-
 --@api-stub: lurek.keypressed
 -- Called when a key is pressed with key name, scancode, and repeat flag.
 do
@@ -339,7 +312,6 @@ do
     end
   end
 end
-
 --@api-stub: lurek.keyreleased
 -- Called when a key is released with key name and scancode.
 do
@@ -350,7 +322,6 @@ do
     end
   end
 end
-
 --@api-stub: lurek.textinput
 -- Called when the user types a printable character (UTF-8 string).
 do
@@ -361,7 +332,6 @@ do
     -- Example: input_buffer = input_buffer .. char
   end
 end
-
 --@api-stub: lurek.textedited
 -- Called during IME composition with partial text, cursor start, and length.
 do
@@ -372,7 +342,6 @@ do
       text, start, length), "input")
   end
 end
-
 --@api-stub: lurek.mousepressed
 -- Called when a mouse button is pressed with pixel position and button index.
 do
@@ -386,7 +355,6 @@ do
     end
   end
 end
-
 --@api-stub: lurek.mousereleased
 -- Called when a mouse button is released with position and button index.
 do
@@ -397,7 +365,6 @@ do
     end
   end
 end
-
 --@api-stub: lurek.mousemoved
 -- Called when the mouse cursor moves with position and delta values.
 do
@@ -407,7 +374,6 @@ do
     -- Example: camera_angle = camera_angle + dx * sensitivity
   end
 end
-
 --@api-stub: lurek.wheelmoved
 -- Called when the mouse wheel scrolls with horizontal and vertical deltas.
 do
@@ -422,7 +388,6 @@ do
     end
   end
 end
-
 --@api-stub: lurek.gamepadpressed
 -- Called when a gamepad button is pressed with controller id and button name.
 do
@@ -435,7 +400,6 @@ do
     end
   end
 end
-
 --@api-stub: lurek.gamepadreleased
 -- Called when a gamepad button is released with controller id and button name.
 do
@@ -445,7 +409,6 @@ do
     end
   end
 end
-
 --@api-stub: lurek.gamepadaxis
 -- Called when a gamepad analog axis changes value (-1.0 to 1.0).
 do
@@ -461,7 +424,6 @@ do
     end
   end
 end
-
 --@api-stub: lurek.joystickadded
 -- Called when a gamepad or joystick is connected with the device id.
 do
@@ -470,7 +432,6 @@ do
     lurek.log.info("controller " .. id .. " connected — ready for player assignment", "input")
   end
 end
-
 --@api-stub: lurek.joystickremoved
 -- Called when a gamepad or joystick is disconnected with the device id.
 do
@@ -480,7 +441,6 @@ do
     -- Example: show_reconnect_prompt(id)
   end
 end
-
 --@api-stub: lurek.touchpressed
 -- Called when a touch begins with id, position, delta, and pressure.
 do
@@ -491,7 +451,6 @@ do
     -- Example: active_touches[id] = { x = x, y = y, start_time = lurek.engine.uptime() }
   end
 end
-
 --@api-stub: lurek.touchreleased
 -- Called when a touch point ends with id, final position, delta, and pressure.
 do
@@ -501,7 +460,6 @@ do
     -- Example: active_touches[id] = nil
   end
 end
-
 --@api-stub: lurek.touchmoved
 -- Called when a touch point moves with id, position, delta, and pressure.
 do
@@ -510,5 +468,4 @@ do
     -- Example: virtual_stick.x = virtual_stick.x + dx
   end
 end
-
 print("content/examples/engine.lua")

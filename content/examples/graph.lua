@@ -1,11 +1,6 @@
 -- content/examples/graph.lua
 -- lurek.graph API examples: logistics graphs, pathfinding, supply/demand, and graph algorithms.
 -- Run: cargo run -- content/examples/graph.lua
-
--- =============================================================================
--- Graph Creation
--- =============================================================================
-
 --@api-stub: lurek.graph.newGraph
 -- Creates an empty logistics graph with no nodes, edges, items, or callbacks.
 do
@@ -21,11 +16,6 @@ do
   lurek.log.info("quest graph: " .. quest_graph:getNodeCount() .. " quests, "
     .. quest_graph:getEdgeCount() .. " dependencies", "quest")
 end
-
--- =============================================================================
--- GraphItem Methods
--- =============================================================================
-
 --@api-stub: LGraphNode:getType
 -- Returns the item type string used by filters, conversions, supplies, and demands.
 do
@@ -41,7 +31,6 @@ do
     lurek.log.info("rendering potion with glow shader", "render")
   end
 end
-
 --@api-stub: LGraphNode:setType
 -- Changes the item type string used by graph routing and processing rules.
 do
@@ -56,7 +45,6 @@ do
   raw_blade:setType("enchanted_sword")
   lurek.log.info("blade forged into: " .. raw_blade:getType(), "craft")
 end
-
 --@api-stub: LGraphItem:getDecayTime
 -- Returns the total decay lifetime configured for this item.
 do
@@ -73,7 +61,6 @@ do
   local freshness = math.floor((remaining / total) * 100)
   lurek.log.debug("bread freshness: " .. freshness .. "%", "ui")
 end
-
 --@api-stub: LGraphItem:setDecayTime
 -- Sets the total decay lifetime for this item.
 do
@@ -88,7 +75,6 @@ do
   artifact:setDecayTime(-1)
   lurek.log.info("relic preserved, decay=" .. artifact:getDecayTime(), "magic")
 end
-
 --@api-stub: LGraphItem:getRemainingLife
 -- Returns this item's remaining lifetime before decay.
 do
@@ -104,7 +90,6 @@ do
     lurek.log.warn("fish about to spoil! Deliver it now!", "logistics")
   end
 end
-
 --@api-stub: LGraphItem:isAlive
 -- Returns whether this item is still alive in the graph simulation.
 do
@@ -120,7 +105,6 @@ do
     lurek.log.warn("milk expired before delivery — customer unhappy", "economy")
   end
 end
-
 --@api-stub: LGraphItem:kill
 -- Marks this item as dead so graph processing can remove or ignore it.
 do
@@ -135,7 +119,6 @@ do
   scroll:kill()
   lurek.log.info("scroll consumed, alive=" .. tostring(scroll:isAlive()), "gameplay")
 end
-
 --@api-stub: LGraphItem:getPriority
 -- Returns this item's routing or queue priority.
 do
@@ -150,7 +133,6 @@ do
   lurek.log.debug("antidote priority: " .. urgent_package:getPriority()
     .. " (will be routed before normal items)", "logistics")
 end
-
 --@api-stub: LGraphItem:setPriority
 -- Sets this item's routing or queue priority.
 do
@@ -167,7 +149,6 @@ do
   luxury:setPriority(1)
   lurek.log.info("medical supplies will route before silk at bottlenecks", "logistics")
 end
-
 --@api-stub: LGraphItem:getPosition
 -- Returns where this item is stored: a node, an edge plus progress, or no values when unplaced.
 do
@@ -194,7 +175,6 @@ do
     lurek.log.info("ore is floating (unplaced)", "factory")
   end
 end
-
 --@api-stub: LGraph:type
 -- Returns the Lua-visible type name string for this graph item handle.
 do
@@ -206,7 +186,6 @@ do
   -- Useful for generic serialization or debug printing
   lurek.log.debug("handle type: " .. item:type(), "debug")  -- prints "GraphItem"
 end
-
 --@api-stub: LGraph:typeOf
 -- Returns true if this graph item handle matches the given type name string.
 do
@@ -220,11 +199,6 @@ do
     lurek.log.debug("item is a tracked Lurek engine object", "debug")
   end
 end
-
--- =============================================================================
--- Edge Methods
--- =============================================================================
-
 --@api-stub: LGraphNode:getType
 -- Returns the edge type string used by routing and filters.
 do
@@ -239,7 +213,6 @@ do
     lurek.log.debug("draw a wide road sprite between towns", "render")
   end
 end
-
 --@api-stub: LGraphNode:setType
 -- Sets the edge type string used by routing and filters.
 do
@@ -253,7 +226,6 @@ do
   path:setType("stone_road")
   lurek.log.info("path upgraded to: " .. path:getType(), "world")
 end
-
 --@api-stub: LGraphEdge:getFrom
 -- Returns the source node for this edge.
 do
@@ -266,7 +238,6 @@ do
   local origin = march_route:getFrom()
   lurek.log.info("troops depart from: " .. origin:getType(), "military")
 end
-
 --@api-stub: LGraphEdge:getTo
 -- Returns the destination node for this edge.
 do
@@ -278,7 +249,6 @@ do
   local destination = march_route:getTo()
   lurek.log.info("troops arrive at: " .. destination:getType(), "military")
 end
-
 --@api-stub: LGraphNode:getCapacity
 -- Returns this edge's maximum concurrent item capacity.
 do
@@ -292,7 +262,6 @@ do
 
   lurek.log.info("ferry capacity: " .. ferry:getCapacity() .. " passengers", "transport")
 end
-
 --@api-stub: LGraphNode:setCapacity
 -- Sets this edge's maximum concurrent item capacity.
 do
@@ -306,7 +275,6 @@ do
   ship_route:setCapacity(20)
   lurek.log.info("cargo capacity upgraded to " .. ship_route:getCapacity(), "economy")
 end
-
 --@api-stub: LGraphEdge:getThroughput
 -- Returns this edge's throughput value (items per second).
 do
@@ -320,7 +288,6 @@ do
 
   lurek.log.info("belt moves " .. conveyor:getThroughput() .. " items/sec", "factory")
 end
-
 --@api-stub: LGraphEdge:setThroughput
 -- Sets this edge's throughput value.
 do
@@ -333,7 +300,6 @@ do
   -- Tier 3 express belt: 6 items per second
   belt:setThroughput(6.0)
 end
-
 --@api-stub: LGraphEdge:getTravelTime
 -- Returns the travel time for items moving across this edge.
 do
@@ -347,7 +313,6 @@ do
 
   lurek.log.info("caravan takes " .. caravan_route:getTravelTime() .. "s", "trade")
 end
-
 --@api-stub: LGraphEdge:setTravelTime
 -- Sets the travel time for items moving across this edge.
 do
@@ -360,7 +325,6 @@ do
   -- Player discovers a hidden tunnel: travel time drops
   desert_road:setTravelTime(1.0)
 end
-
 --@api-stub: LGraphEdge:getWeight
 -- Returns the pathfinding weight for this edge.
 do
@@ -374,7 +338,6 @@ do
 
   lurek.log.debug("risky road weight=" .. risky_road:getWeight() .. " (pathfinder avoids it)", "ai")
 end
-
 --@api-stub: LGraphEdge:setWeight
 -- Sets the pathfinding weight for this edge.
 do
@@ -387,7 +350,6 @@ do
   -- Scouts report wolves on the trail: increase cost
   trail:setWeight(15.0)
 end
-
 --@api-stub: LGraphEdge:getSpeedModifier
 -- Returns this edge's speed modifier.
 do
@@ -401,7 +363,6 @@ do
 
   lurek.log.debug("downhill speed: " .. slope:getSpeedModifier() .. "x", "physics")
 end
-
 --@api-stub: LGraphEdge:setSpeedModifier
 -- Sets this edge's speed modifier.
 do
@@ -414,7 +375,6 @@ do
   -- Mud terrain halves movement speed
   mud_path:setSpeedModifier(0.5)
 end
-
 --@api-stub: LGraphEdge:getCooldown
 -- Returns this edge's cooldown timer value.
 do
@@ -428,7 +388,6 @@ do
 
   lurek.log.debug("catapult cooldown: " .. catapult:getCooldown() .. "s", "siege")
 end
-
 --@api-stub: LGraphEdge:setCooldown
 -- Sets this edge's cooldown timer value.
 do
@@ -441,7 +400,6 @@ do
   -- Warp gate recharges in 10 seconds between uses
   warp:setCooldown(10.0)
 end
-
 --@api-stub: LGraphEdge:isOnCooldown
 -- Returns true if this edge is currently on cooldown.
 do
@@ -458,7 +416,6 @@ do
     lurek.log.info("cannon ready to fire!", "ui")
   end
 end
-
 --@api-stub: LGraphEdge:isBidirectional
 -- Returns whether this edge allows travel in both directions.
 do
@@ -474,7 +431,6 @@ do
     lurek.log.debug("road accepts traffic in both directions", "world")
   end
 end
-
 --@api-stub: LGraphEdge:setBidirectional
 -- Sets whether this edge allows travel in both directions.
 do
@@ -487,7 +443,6 @@ do
   -- During the parade: one-way only
   avenue:setBidirectional(false)
 end
-
 --@api-stub: LGraphNode:isActive
 -- Returns whether this edge is active for routing and simulation.
 do
@@ -502,7 +457,6 @@ do
     lurek.log.info("drawbridge is down, trade flows freely", "world")
   end
 end
-
 --@api-stub: LGraphNode:setActive
 -- Enables or disables this edge for routing and simulation.
 do
@@ -516,7 +470,6 @@ do
   power_line:setActive(false)
   lurek.log.warn("power line severed — factory offline", "event")
 end
-
 --@api-stub: LGraphEdge:getItemsInTransit
 -- Returns graph items currently traveling along this edge.
 do
@@ -532,7 +485,6 @@ do
     lurek.log.debug("  carrying: " .. item:getType(), "factory")
   end
 end
-
 --@api-stub: LGraphEdge:addAllowedType
 -- Allows an item type to traverse this edge (creates a whitelist filter).
 do
@@ -548,7 +500,6 @@ do
   oil_pipe:addAllowedType("natural_gas")
   lurek.log.info("pipe accepts: crude_oil, natural_gas", "factory")
 end
-
 --@api-stub: LGraphEdge:removeAllowedType
 -- Removes an item type from this edge's allow-list.
 do
@@ -563,7 +514,6 @@ do
   -- Pipe corroded: no longer safe for acid
   pipe:removeAllowedType("acid")
 end
-
 --@api-stub: LGraphEdge:clearAllowedTypes
 -- Clears this edge's item type allow-list (returns to permissive mode).
 do
@@ -578,7 +528,6 @@ do
   belt:clearAllowedTypes()
   lurek.log.info("belt filter cleared — accepts all items", "factory")
 end
-
 --@api-stub: LGraphEdge:isItemTypeAllowed
 -- Returns whether an item type may traverse this edge.
 do
@@ -593,7 +542,6 @@ do
     lurek.log.warn("copper ore rejected by ore belt — rerouting", "logistics")
   end
 end
-
 --@api-stub: LGraph:type
 -- Returns the Lua-visible type name string for this edge handle.
 do
@@ -605,7 +553,6 @@ do
   -- Always returns "LGraphEdge" — useful for type-checking in generic code
   lurek.log.debug("edge handle type: " .. edge:type(), "debug")
 end
-
 --@api-stub: LGraph:typeOf
 -- Returns true if this edge handle matches the given type name string.
 do
@@ -619,11 +566,6 @@ do
     lurek.log.debug("confirmed: this is a graph edge", "debug")
   end
 end
-
--- =============================================================================
--- Node Methods
--- =============================================================================
-
 --@api-stub: LGraphNode:getType
 -- Returns this node's type string.
 do
@@ -636,7 +578,6 @@ do
     lurek.log.debug("draw anvil icon on minimap", "render")
   end
 end
-
 --@api-stub: LGraphNode:setType
 -- Sets this node's type string.
 do
@@ -648,7 +589,6 @@ do
   workshop:setType("factory")
   lurek.log.info("building upgraded to: " .. workshop:getType(), "build")
 end
-
 --@api-stub: LGraphNode:getCapacity
 -- Returns this node's item capacity.
 do
@@ -659,7 +599,6 @@ do
 
   lurek.log.info("silo can hold " .. silo:getCapacity() .. " items", "economy")
 end
-
 --@api-stub: LGraphNode:setCapacity
 -- Sets this node's item capacity.
 do
@@ -671,7 +610,6 @@ do
   warehouse:setCapacity(100)
   lurek.log.info("warehouse expanded to " .. warehouse:getCapacity(), "build")
 end
-
 --@api-stub: LGraph:getItemCount
 -- Returns the number of items currently stored on this node.
 do
@@ -683,7 +621,6 @@ do
 
   lurek.log.info("armory contains " .. armory:getItemCount() .. " items", "inventory")
 end
-
 --@api-stub: LGraphNode:isFull
 -- Returns whether this node has reached its item capacity.
 do
@@ -697,7 +634,6 @@ do
     lurek.log.warn("chest is full! Find another storage location.", "ui")
   end
 end
-
 --@api-stub: LGraphNode:isActive
 -- Returns whether this node is active for graph simulation.
 do
@@ -710,7 +646,6 @@ do
     lurek.log.info("reactor online — processing fuel", "factory")
   end
 end
-
 --@api-stub: LGraphNode:setActive
 -- Enables or disables this node for graph simulation.
 do
@@ -722,7 +657,6 @@ do
   farm:setActive(false)
   lurek.log.info("farm closed for winter", "season")
 end
-
 --@api-stub: LGraphNode:getOverflowPolicy
 -- Returns this node's overflow policy name.
 do
@@ -734,7 +668,6 @@ do
 
   lurek.log.info("overflow policy: " .. bin:getOverflowPolicy(), "logistics")
 end
-
 --@api-stub: LGraphNode:setOverflowPolicy
 -- Sets this node's overflow policy from a policy name.
 do
@@ -748,7 +681,6 @@ do
   -- Incinerator destroys overflow (by design)
   incinerator:setOverflowPolicy("destroy")
 end
-
 --@api-stub: LGraphNode:getFlowMode
 -- Returns this node's flow mode name.
 do
@@ -760,7 +692,6 @@ do
 
   lurek.log.info("pump flow mode: " .. pump:getFlowMode(), "factory")
 end
-
 --@api-stub: LGraphNode:setFlowMode
 -- Sets this node's flow mode from a mode name.
 do
@@ -774,7 +705,6 @@ do
   -- Distributor actively pushes items to all connected consumers
   distributor:setFlowMode("push")
 end
-
 --@api-stub: LGraphNode:getPushRate
 -- Returns this node's push rate (items per second pushed to outgoing edges).
 do
@@ -786,7 +716,6 @@ do
 
   lurek.log.info("quarry pushes " .. quarry:getPushRate() .. " stones/sec", "factory")
 end
-
 --@api-stub: LGraphNode:setPushRate
 -- Sets this node's push rate.
 do
@@ -798,7 +727,6 @@ do
   -- Tier 2 sawmill: faster output
   sawmill:setPushRate(4.0)
 end
-
 --@api-stub: LGraphNode:getPullRate
 -- Returns this node's pull rate (items per second pulled from source nodes).
 do
@@ -810,7 +738,6 @@ do
 
   lurek.log.info("furnace consumes " .. furnace:getPullRate() .. " ore/sec", "factory")
 end
-
 --@api-stub: LGraphNode:setPullRate
 -- Sets this node's pull rate.
 do
@@ -822,7 +749,6 @@ do
   -- Fast assembler: needs steady input to avoid idle time
   assembler:setPullRate(3.0)
 end
-
 --@api-stub: LGraphNode:getPushFilter
 -- Returns this node's optional push item-type filter.
 do
@@ -837,7 +763,6 @@ do
     lurek.log.info("sorter only pushes: " .. filter, "factory")
   end
 end
-
 --@api-stub: LGraphNode:setPushFilter
 -- Sets or clears this node's push item-type filter.
 do
@@ -848,7 +773,6 @@ do
   -- This splitter only pushes copper ingots (other items stay until pulled)
   splitter:setPushFilter("copper_ingot")
 end
-
 --@api-stub: LGraphNode:getPullFilter
 -- Returns this node's optional pull item-type filter.
 do
@@ -862,7 +786,6 @@ do
     lurek.log.info("smelter only pulls: " .. filter, "factory")
   end
 end
-
 --@api-stub: LGraphNode:setPullFilter
 -- Sets or clears this node's pull item-type filter.
 do
@@ -873,7 +796,6 @@ do
   -- Furnace specifically consumes coal (ignores other items at connected nodes)
   furnace:setPullFilter("coal")
 end
-
 --@api-stub: LGraphNode:getProcessTime
 -- Returns the processing time used by this node's conversions.
 do
@@ -885,7 +807,6 @@ do
 
   lurek.log.info("kiln process time: " .. kiln:getProcessTime() .. "s per batch", "factory")
 end
-
 --@api-stub: LGraphNode:setProcessTime
 -- Sets the processing time used by this node's conversions.
 do
@@ -896,7 +817,6 @@ do
   -- Advanced refinery: processes crude oil in 1.5 seconds
   refinery:setProcessTime(1.5)
 end
-
 --@api-stub: LGraphNode:isQueueEnabled
 -- Returns whether this node's explicit queue is enabled.
 do
@@ -910,7 +830,6 @@ do
     lurek.log.info("station uses FIFO buffer for arrivals", "transport")
   end
 end
-
 --@api-stub: LGraphNode:setQueueEnabled
 -- Enables or disables this node's explicit queue.
 do
@@ -921,7 +840,6 @@ do
   -- Customs processes packages in the order they arrive
   customs:setQueueEnabled(true)
 end
-
 --@api-stub: LGraphNode:getQueueCapacity
 -- Returns this node's queue capacity.
 do
@@ -934,7 +852,6 @@ do
 
   lurek.log.info("buffer queue holds up to " .. buffer:getQueueCapacity() .. " items", "logistics")
 end
-
 --@api-stub: LGraphNode:setQueueCapacity
 -- Sets this node's queue capacity.
 do
@@ -946,7 +863,6 @@ do
   -- Dock expansion: larger waiting area
   loading_dock:setQueueCapacity(64)
 end
-
 --@api-stub: LGraphNode:getQueueSize
 -- Returns the number of items currently queued at this node.
 do
@@ -960,7 +876,6 @@ do
     lurek.log.warn("checkpoint backlog: " .. backlog .. " items waiting!", "alert")
   end
 end
-
 --@api-stub: LGraph:getItems
 -- Returns item handles currently stored on this node.
 do
@@ -976,7 +891,6 @@ do
     lurek.log.info("  for sale: " .. item:getType(), "shop")
   end
 end
-
 --@api-stub: LGraph:getEdges
 -- Returns edge handles connected to this node in the requested direction.
 do
@@ -994,7 +908,6 @@ do
   local incoming = hub:getEdges("in")
   lurek.log.info("hub: " .. #outgoing .. " outgoing, " .. #incoming .. " incoming roads", "world")
 end
-
 --@api-stub: LGraphNode:clearConversion
 -- Removes a conversion rule by input item type.
 do
@@ -1006,7 +919,6 @@ do
   -- Player resets the foundry recipe
   foundry:clearConversion("iron_ore")
 end
-
 --@api-stub: LGraphNode:clearAllConversions
 -- Removes every conversion rule from this node.
 do
@@ -1019,7 +931,6 @@ do
   -- Building converted to pure storage: remove all recipes
   multi_crafter:clearAllConversions()
 end
-
 --@api-stub: LGraphNode:addTag
 -- Adds a tag to this node.
 do
@@ -1033,7 +944,6 @@ do
   fortress:addTag("capital")
   lurek.log.info("fortress tagged as military capital", "world")
 end
-
 --@api-stub: LGraphNode:removeTag
 -- Removes a tag from this node.
 do
@@ -1047,7 +957,6 @@ do
   city:removeTag("defended")
   lurek.log.info("city lost its defenses", "combat")
 end
-
 --@api-stub: LGraphNode:hasTag
 -- Returns whether this node has a tag.
 do
@@ -1060,7 +969,6 @@ do
     lurek.log.info("AI will not spawn enemies near this outpost", "ai")
   end
 end
-
 --@api-stub: LGraphNode:clearTags
 -- Removes every tag from this node.
 do
@@ -1073,7 +981,6 @@ do
   -- Camp captured by enemy: reset all associations
   camp:clearTags()
 end
-
 --@api-stub: LGraphNode:getTags
 -- Returns all tags assigned to this node.
 do
@@ -1087,7 +994,6 @@ do
   local tags = base:getTags()
   lurek.log.info("base has " .. #tags .. " tags: " .. table.concat(tags, ", "), "ui")
 end
-
 --@api-stub: LGraphNode:removeSupply
 -- Removes supply entry for an item type from this node.
 do
@@ -1100,7 +1006,6 @@ do
   mine:removeSupply("gold_ore")
   lurek.log.info("gold mine exhausted", "economy")
 end
-
 --@api-stub: LGraphNode:clearSupplies
 -- Removes every supply entry from this node.
 do
@@ -1113,7 +1018,6 @@ do
   -- Fire destroys the plantation
   plantation:clearSupplies()
 end
-
 --@api-stub: LGraphNode:removeDemand
 -- Removes demand entry for an item type from this node.
 do
@@ -1125,7 +1029,6 @@ do
   -- Tavern switches to wine-only menu
   tavern:removeDemand("ale")
 end
-
 --@api-stub: LGraphNode:clearDemands
 -- Removes every demand entry from this node.
 do
@@ -1138,7 +1041,6 @@ do
   -- Peacetime: barracks shut down
   barracks:clearDemands()
 end
-
 --@api-stub: LGraphNode:enqueue
 -- Adds an item handle to this node's explicit queue.
 do
@@ -1153,7 +1055,6 @@ do
   loading_bay:enqueue(crate)
   lurek.log.info("crate queued, queue size: " .. loading_bay:getQueueSize(), "logistics")
 end
-
 --@api-stub: LGraphNode:dequeue
 -- Removes and returns the next item from this node's explicit queue.
 do
@@ -1172,7 +1073,6 @@ do
     lurek.log.info("now printing: " .. next_job:getType(), "factory")
   end
 end
-
 --@api-stub: LGraph:type
 -- Returns the Lua-visible type name string for this node handle.
 do
@@ -1182,7 +1082,6 @@ do
   -- Always returns "LGraphNode"
   lurek.log.debug("node handle type: " .. depot:type(), "debug")
 end
-
 --@api-stub: LGraph:typeOf
 -- Returns true if this node handle matches the given type name string.
 do
@@ -1194,11 +1093,6 @@ do
     lurek.log.debug("confirmed: this is a graph node", "debug")
   end
 end
-
--- =============================================================================
--- Graph Methods
--- =============================================================================
-
 --@api-stub: LGraph:removeNode
 -- Removes a node and all edges connected to it.
 do
@@ -1213,7 +1107,6 @@ do
   g:removeNode(outpost)
   lurek.log.info("outpost removed, still exists? " .. tostring(g:hasNode(outpost)), "world")
 end
-
 --@api-stub: LGraph:hasNode
 -- Returns whether a node handle still exists in this graph.
 do
@@ -1225,7 +1118,6 @@ do
     lurek.log.info("checkpoint registered in navigation graph", "nav")
   end
 end
-
 --@api-stub: LGraph:getNodes
 -- Returns all nodes in this graph.
 do
@@ -1239,7 +1131,6 @@ do
     lurek.log.info("location: " .. node:getType(), "map")
   end
 end
-
 --@api-stub: LGraph:getNodeCount
 -- Returns the number of nodes in this graph.
 do
@@ -1250,7 +1141,6 @@ do
 
   lurek.log.info("map has " .. g:getNodeCount() .. " bases", "strategy")
 end
-
 --@api-stub: LGraph:removeEdge
 -- Removes an edge from this graph.
 do
@@ -1264,7 +1154,6 @@ do
   g:removeEdge(bridge)
   lurek.log.info("bridge destroyed, edge exists? " .. tostring(g:hasEdge(bridge)), "combat")
 end
-
 --@api-stub: LGraph:hasEdge
 -- Returns whether an edge handle still exists in this graph.
 do
@@ -1277,7 +1166,6 @@ do
     lurek.log.info("ferry route is operational", "transport")
   end
 end
-
 --@api-stub: LGraph:getEdges
 -- Returns all edges in this graph.
 do
@@ -1292,7 +1180,6 @@ do
       .. edge:getTo():getType() .. " [" .. edge:getType() .. "]", "map")
   end
 end
-
 --@api-stub: LGraph:getEdgeCount
 -- Returns the number of edges in this graph.
 do
@@ -1302,7 +1189,6 @@ do
 
   lurek.log.info("rail network: " .. g:getEdgeCount() .. " connections", "transport")
 end
-
 --@api-stub: LGraph:removeItem
 -- Removes an item from this graph.
 do
@@ -1316,7 +1202,6 @@ do
   g:removeItem(potion)
   lurek.log.info("potion sold, still in graph? " .. tostring(g:hasItem(potion)), "shop")
 end
-
 --@api-stub: LGraph:hasItem
 -- Returns whether an item handle still exists in this graph.
 do
@@ -1329,7 +1214,6 @@ do
     lurek.log.info("diamond is safe in the vault", "security")
   end
 end
-
 --@api-stub: LGraph:getItems
 -- Returns all items in this graph.
 do
@@ -1342,7 +1226,6 @@ do
 
   lurek.log.info("total items in logistics: " .. #g:getItems(), "stats")
 end
-
 --@api-stub: LGraph:getItemCount
 -- Returns the number of items in this graph.
 do
@@ -1352,7 +1235,6 @@ do
 
   lurek.log.info("items tracked: " .. g:getItemCount(), "logistics")
 end
-
 --@api-stub: LGraph:update
 -- Advances graph simulation by delta time and dispatches generated callbacks.
 do
@@ -1368,7 +1250,6 @@ do
     g:update(dt)
   end
 end
-
 --@api-stub: LGraph:step
 -- Performs one discrete graph simulation step and dispatches generated callbacks.
 do
@@ -1381,7 +1262,6 @@ do
   g:step()
   lurek.log.info("logistics step complete", "turn")
 end
-
 --@api-stub: LGraph:tickParallel
 -- Advances graph simulation through the parallel update path.
 do
@@ -1396,7 +1276,6 @@ do
     g:tickParallel(dt)
   end
 end
-
 --@api-stub: LGraph:getNeighbors
 -- Returns neighbor nodes connected to a node.
 do
@@ -1412,7 +1291,6 @@ do
   local neighbors = g:getNeighbors(capital)
   lurek.log.info("capital connects to " .. #neighbors .. " locations", "map")
 end
-
 --@api-stub: LGraph:getComponents
 -- Returns connected components as arrays of node handles.
 do
@@ -1431,7 +1309,6 @@ do
   local components = g:getComponents()
   lurek.log.info("network has " .. #components .. " disconnected regions", "logistics")
 end
-
 --@api-stub: LGraph:subgraph
 -- Creates a new graph containing a subset of nodes (and edges between them).
 do
@@ -1449,7 +1326,6 @@ do
   lurek.log.info("local map: " .. local_map:getNodeCount() .. " nodes, "
     .. local_map:getEdgeCount() .. " edges", "minimap")
 end
-
 --@api-stub: LGraph:hasCycle
 -- Returns whether this graph contains a cycle.
 do
@@ -1468,7 +1344,6 @@ do
     lurek.log.info("tech tree is valid (no cycles)", "data")
   end
 end
-
 --@api-stub: LGraph:topologicalSort
 -- Returns nodes in topological order when the graph is acyclic.
 do
@@ -1489,7 +1364,6 @@ do
     end
   end
 end
-
 --@api-stub: LGraph:mst
 -- Computes a minimum spanning tree using Kruskal and returns edge ids.
 do
@@ -1509,7 +1383,6 @@ do
   local tree_edges = g:mst()
   lurek.log.info("MST uses " .. #tree_edges .. " edges (cheapest network)", "plan")
 end
-
 --@api-stub: LGraph:colorGraph
 -- Computes graph coloring and returns color indices by node id.
 do
@@ -1528,7 +1401,6 @@ do
     lurek.log.info("region " .. node_id .. " => color " .. color_idx, "render")
   end
 end
-
 --@api-stub: LGraph:isBipartite
 -- Returns whether this graph is bipartite (can be split into two independent sets).
 do
@@ -1546,7 +1418,6 @@ do
     lurek.log.info("graph is bipartite — valid for matching algorithm", "ai")
   end
 end
-
 --@api-stub: LGraph:processDemand
 -- Processes graph supply and demand once and dispatches generated callbacks.
 do
@@ -1563,7 +1434,6 @@ do
   g:processDemand()
   lurek.log.info("supply-demand matching complete", "logistics")
 end
-
 --@api-stub: LGraph:getStats
 -- Returns graph counts and aggregate supply-demand statistics.
 do
@@ -1578,7 +1448,6 @@ do
     .. " edges=" .. stats.edges
     .. " items=" .. stats.items, "debug")
 end
-
 --@api-stub: LGraph:type
 -- Returns the Lua-visible type name string for this graph handle.
 do
@@ -1587,7 +1456,6 @@ do
   -- Returns "LGraph" — the Lua handle type name
   lurek.log.debug("graph type: " .. g:type(), "debug")
 end
-
 --@api-stub: LGraph:typeOf
 -- Returns true if this graph handle matches the given type name string.
 do
@@ -1598,11 +1466,6 @@ do
     lurek.log.debug("confirmed: this is a graph handle", "debug")
   end
 end
-
--- =============================================================================
--- Supply & Demand
--- =============================================================================
-
 --@api-stub: LGraphNode:addDemand
 -- Adds demand quantity and optional priority for an item type on this node.
 do
@@ -1618,7 +1481,6 @@ do
   hospital:addDemand("food", 50, 1)
   lurek.log.info("hospital demands registered", "logistics")
 end
-
 --@api-stub: LGraphNode:addSupply
 -- Adds supply quantity for an item type on this node.
 do
@@ -1632,11 +1494,6 @@ do
   farm:addSupply("eggs", 50)
   lurek.log.info("farm supply registered", "economy")
 end
-
--- =============================================================================
--- Graph Construction & Pathfinding
--- =============================================================================
-
 --@api-stub: LGraph:addEdge
 -- Creates an edge between two nodes with an optional edge type.
 do
@@ -1652,7 +1509,6 @@ do
   trade_route:setCapacity(10)
   lurek.log.info("trade route established, edges: " .. g:getEdgeCount(), "world")
 end
-
 --@api-stub: LGraph:addItem
 -- Places an item onto a node.
 do
@@ -1666,7 +1522,6 @@ do
   g:addItem(cargo, warehouse)
   lurek.log.info("warehouse now holds " .. g:getItemCount() .. " items", "trade")
 end
-
 --@api-stub: LGraph:addNode
 -- Creates a node with optional type and capacity.
 do
@@ -1681,7 +1536,6 @@ do
 
   lurek.log.info("mine created, capacity=" .. mine:getCapacity(), "build")
 end
-
 --@api-stub: LGraph:astar
 -- Runs A* pathfinding between two nodes.
 do
@@ -1703,7 +1557,6 @@ do
     lurek.log.warn("no path to treasure!", "pathfind")
   end
 end
-
 --@api-stub: LGraph:createItem
 -- Creates an unplaced graph item with optional type and decay time.
 do
@@ -1720,7 +1573,6 @@ do
   lurek.log.info("fish alive=" .. tostring(fresh_fish:isAlive())
     .. ", gold alive=" .. tostring(gold_bar:isAlive()), "items")
 end
-
 --@api-stub: LGraph:findPath
 -- Finds a path between two nodes with detailed result.
 do
@@ -1738,7 +1590,6 @@ do
     lurek.log.info("path found, cost: " .. tostring(result.cost), "nav")
   end
 end
-
 --@api-stub: LGraph:findPathForItem
 -- Finds a path for a specific item while respecting item constraints (type filters).
 do
@@ -1756,7 +1607,6 @@ do
     lurek.log.info("fuel can reach the tank via pipe", "logistics")
   end
 end
-
 --@api-stub: LGraph:getDistance
 -- Returns graph distance between two nodes when reachable.
 do
@@ -1776,7 +1626,6 @@ do
     lurek.log.info("guard to throne distance: " .. dist, "ai")
   end
 end
-
 --@api-stub: LGraph:getEdgeBetween
 -- Returns the edge connecting two nodes when one exists.
 do
@@ -1792,7 +1641,6 @@ do
     lurek.log.info("shipping lane capacity: " .. lane:getCapacity(), "trade")
   end
 end
-
 --@api-stub: LGraph:getReachable
 -- Returns nodes reachable from a start node within an optional maximum distance.
 do
@@ -1811,7 +1659,6 @@ do
   local nearby = g:getReachable(castle, 3.0)
   lurek.log.info("reachable within range 3: " .. #nearby .. " nodes", "strategy")
 end
-
 --@api-stub: LGraph:on
 -- Registers a callback for a named graph event generated during simulation.
 do
@@ -1838,7 +1685,6 @@ do
 
   lurek.log.info("event listeners registered", "setup")
 end
-
 --@api-stub: LGraph:sendItem
 -- Starts moving an item along an edge.
 do
@@ -1858,7 +1704,6 @@ do
   g:sendItem(passenger, ferry)
   lurek.log.info("traveler boarding ferry (3s crossing)", "transport")
 end
-
 --@api-stub: LGraphNode:setConversion
 -- Configures an item conversion rule on this node.
 do
@@ -1877,11 +1722,6 @@ do
 
   lurek.log.info("smelter recipes configured", "craft")
 end
-
--- =============================================================================
--- LGraphEdge Methods (full handle API)
--- =============================================================================
-
 --@api-stub: LGraphNode:getType
 -- Returns the edge type string used by routing and filters.
 do
@@ -1893,7 +1733,6 @@ do
   -- Use edge type to select rendering: van sprite, pipe sprite, rail sprite, etc.
   lurek.log.info("transport type: " .. delivery:getType(), "render")
 end
-
 --@api-stub: LGraphNode:setType
 -- Sets the edge type string used by routing and filters.
 do
@@ -1906,7 +1745,6 @@ do
   route:setType("steamship")
   lurek.log.info("route upgraded to: " .. route:getType(), "upgrade")
 end
-
 --@api-stub: LGraphEdge:getFrom
 -- Returns the source node for this edge.
 do
@@ -1918,7 +1756,6 @@ do
   local from_node = route:getFrom()
   lurek.log.info("mail departs from: " .. from_node:getType(), "mail")
 end
-
 --@api-stub: LGraphEdge:getTo
 -- Returns the destination node for this edge.
 do
@@ -1930,7 +1767,6 @@ do
   local to_node = route:getTo()
   lurek.log.info("package arrives at: " .. to_node:getType(), "mail")
 end
-
 --@api-stub: LGraphNode:getCapacity
 -- Returns this edge's maximum concurrent item capacity.
 do
@@ -1942,7 +1778,6 @@ do
 
   lurek.log.info("rail capacity: " .. rail:getCapacity() .. " cars", "transport")
 end
-
 --@api-stub: LGraphNode:setCapacity
 -- Sets this edge's maximum concurrent item capacity.
 do
@@ -1955,7 +1790,6 @@ do
   channel:setCapacity(25)
   lurek.log.info("channel expanded to " .. channel:getCapacity(), "infra")
 end
-
 --@api-stub: LGraphEdge:getThroughput
 -- Returns this edge's throughput value.
 do
@@ -1967,7 +1801,6 @@ do
 
   lurek.log.info("pipe flow: " .. pipe:getThroughput() .. " liters/sec", "factory")
 end
-
 --@api-stub: LGraphEdge:setThroughput
 -- Sets this edge's throughput value.
 do
@@ -1980,7 +1813,6 @@ do
   aqueduct:setThroughput(15.0)
   lurek.log.info("aqueduct throughput set to " .. aqueduct:getThroughput(), "infra")
 end
-
 --@api-stub: LGraphEdge:getTravelTime
 -- Returns the travel time for items moving across this edge.
 do
@@ -1992,7 +1824,6 @@ do
 
   lurek.log.info("caravan crossing: " .. caravan:getTravelTime() .. " seconds", "trade")
 end
-
 --@api-stub: LGraphEdge:setTravelTime
 -- Sets the travel time for items moving across this edge.
 do
@@ -2005,7 +1836,6 @@ do
   climb:setTravelTime(12.0)
   lurek.log.info("mountain crossing set to " .. climb:getTravelTime() .. "s", "world")
 end
-
 --@api-stub: LGraphEdge:getWeight
 -- Returns the pathfinding weight for this edge.
 do
@@ -2017,7 +1847,6 @@ do
 
   lurek.log.info("exposed road weight: " .. path:getWeight() .. " (high cost)", "pathfind")
 end
-
 --@api-stub: LGraphEdge:setWeight
 -- Sets the pathfinding weight for this edge.
 do
@@ -2030,7 +1859,6 @@ do
   road:setWeight(1.0)
   lurek.log.info("road weight: " .. road:getWeight(), "pathfind")
 end
-
 --@api-stub: LGraphEdge:getSpeedModifier
 -- Returns this edge's speed modifier.
 do
@@ -2042,7 +1870,6 @@ do
 
   lurek.log.info("downhill speed: " .. slope:getSpeedModifier() .. "x normal", "physics")
 end
-
 --@api-stub: LGraphEdge:setSpeedModifier
 -- Sets this edge's speed modifier.
 do
@@ -2055,7 +1882,6 @@ do
   runway:setSpeedModifier(3.0)
   lurek.log.info("runway boost: " .. runway:getSpeedModifier() .. "x", "launch")
 end
-
 --@api-stub: LGraphEdge:getCooldown
 -- Returns this edge's cooldown timer value.
 do
@@ -2067,7 +1893,6 @@ do
 
   lurek.log.info("cannon reload time: " .. shot:getCooldown() .. "s", "siege")
 end
-
 --@api-stub: LGraphEdge:setCooldown
 -- Sets this edge's cooldown timer value.
 do
@@ -2080,7 +1905,6 @@ do
   spell_channel:setCooldown(8.0)
   lurek.log.info("spell cooldown: " .. spell_channel:getCooldown() .. "s", "combat")
 end
-
 --@api-stub: LGraphEdge:isOnCooldown
 -- Returns whether this edge is currently on cooldown.
 do
@@ -2093,7 +1917,6 @@ do
   -- Check if turret can fire again
   lurek.log.info("turret on cooldown: " .. tostring(fire_arc:isOnCooldown()), "combat")
 end
-
 --@api-stub: LGraphEdge:isBidirectional
 -- Returns whether this edge allows travel in both directions.
 do
@@ -2105,7 +1928,6 @@ do
 
   lurek.log.info("highway two-way: " .. tostring(highway:isBidirectional()), "world")
 end
-
 --@api-stub: LGraphEdge:setBidirectional
 -- Sets whether this edge allows travel in both directions.
 do
@@ -2118,7 +1940,6 @@ do
   corridor:setBidirectional(false)
   lurek.log.info("corridor one-way: " .. tostring(not corridor:isBidirectional()), "event")
 end
-
 --@api-stub: LGraphNode:isActive
 -- Returns whether this edge is active for routing and simulation.
 do
@@ -2129,7 +1950,6 @@ do
 
   lurek.log.info("power line active: " .. tostring(power_line:isActive()), "infra")
 end
-
 --@api-stub: LGraphNode:setActive
 -- Enables or disables this edge for routing and simulation.
 do
@@ -2142,7 +1962,6 @@ do
   drawbridge:setActive(false)
   lurek.log.info("drawbridge raised, active=" .. tostring(drawbridge:isActive()), "castle")
 end
-
 --@api-stub: LGraphEdge:getItemsInTransit
 -- Returns graph items currently traveling along this edge.
 do
@@ -2154,7 +1973,6 @@ do
   local on_road = truck_route:getItemsInTransit()
   lurek.log.info("deliveries in progress: " .. #on_road, "logistics")
 end
-
 --@api-stub: LGraphEdge:addAllowedType
 -- Allows an item type to traverse this edge.
 do
@@ -2167,7 +1985,6 @@ do
   pipe:addAllowedType("clean_water")
   lurek.log.info("water pipe filter set", "infra")
 end
-
 --@api-stub: LGraphEdge:removeAllowedType
 -- Removes an item type from this edge's allow-list.
 do
@@ -2182,7 +1999,6 @@ do
   pipe:removeAllowedType("toxic_waste")
   lurek.log.info("toxic waste no longer allowed", "compliance")
 end
-
 --@api-stub: LGraphEdge:clearAllowedTypes
 -- Clears this edge's item type allow-list.
 do
@@ -2196,7 +2012,6 @@ do
   belt:clearAllowedTypes()
   lurek.log.info("belt filter cleared", "factory")
 end
-
 --@api-stub: LGraphEdge:isItemTypeAllowed
 -- Returns whether an item type may traverse this edge.
 do
@@ -2210,7 +2025,6 @@ do
   lurek.log.info("gas allowed: " .. tostring(pipe:isItemTypeAllowed("natural_gas")), "check")
   lurek.log.info("oil allowed: " .. tostring(pipe:isItemTypeAllowed("crude_oil")), "check")
 end
-
 --@api-stub: LGraph:type
 -- Returns the Lua-visible type name for this graph edge handle.
 do
@@ -2221,7 +2035,6 @@ do
 
   lurek.log.info("handle type: " .. edge:type(), "debug")
 end
-
 --@api-stub: LGraph:typeOf
 -- Returns whether this graph edge handle matches a supported type name.
 do
@@ -2233,11 +2046,6 @@ do
   lurek.log.info("is GraphEdge: " .. tostring(edge:typeOf("GraphEdge")), "debug")
   lurek.log.info("is Object: " .. tostring(edge:typeOf("Object")), "debug")
 end
-
--- =============================================================================
--- LGraphNode Methods (full handle API)
--- =============================================================================
-
 --@api-stub: LGraphNode:getType
 -- Returns this node's type string.
 do
@@ -2246,7 +2054,6 @@ do
 
   lurek.log.info("node type: " .. smithy:getType(), "world")
 end
-
 --@api-stub: LGraphNode:setType
 -- Sets this node's type string.
 do
@@ -2257,7 +2064,6 @@ do
   building:setType("stone_house")
   lurek.log.info("building upgraded to: " .. building:getType(), "build")
 end
-
 --@api-stub: LGraphNode:getCapacity
 -- Returns this node's item capacity.
 do
@@ -2266,7 +2072,6 @@ do
 
   lurek.log.info("granary holds " .. granary:getCapacity() .. " bushels", "economy")
 end
-
 --@api-stub: LGraphNode:setCapacity
 -- Sets this node's item capacity.
 do
@@ -2277,7 +2082,6 @@ do
   barn:setCapacity(150)
   lurek.log.info("barn expanded to " .. barn:getCapacity(), "build")
 end
-
 --@api-stub: LGraph:getItemCount
 -- Returns the number of items currently stored on this node.
 do
@@ -2288,7 +2092,6 @@ do
 
   lurek.log.info("pantry contains " .. pantry:getItemCount() .. " items", "inventory")
 end
-
 --@api-stub: LGraphNode:isFull
 -- Returns whether this node has reached its item capacity.
 do
@@ -2299,7 +2102,6 @@ do
 
   lurek.log.info("locker full: " .. tostring(locker:isFull()), "inventory")
 end
-
 --@api-stub: LGraphNode:isActive
 -- Returns whether this node is active for graph simulation.
 do
@@ -2308,7 +2110,6 @@ do
 
   lurek.log.info("turbine active: " .. tostring(generator:isActive()), "energy")
 end
-
 --@api-stub: LGraphNode:setActive
 -- Enables or disables this node for graph simulation.
 do
@@ -2319,7 +2120,6 @@ do
   solar_panel:setActive(false)
   lurek.log.info("solar panel active: " .. tostring(solar_panel:isActive()), "energy")
 end
-
 --@api-stub: LGraphNode:getOverflowPolicy
 -- Returns this node's overflow policy name.
 do
@@ -2329,7 +2129,6 @@ do
 
   lurek.log.info("overflow policy: " .. trash_bin:getOverflowPolicy(), "config")
 end
-
 --@api-stub: LGraphNode:setOverflowPolicy
 -- Sets this node's overflow policy from a policy name.
 do
@@ -2340,7 +2139,6 @@ do
   buffer:setOverflowPolicy("reject")
   lurek.log.info("policy set: " .. buffer:getOverflowPolicy(), "config")
 end
-
 --@api-stub: LGraphNode:getFlowMode
 -- Returns this node's flow mode name.
 do
@@ -2350,7 +2148,6 @@ do
 
   lurek.log.info("hub flow mode: " .. hub:getFlowMode(), "logistics")
 end
-
 --@api-stub: LGraphNode:setFlowMode
 -- Sets this node's flow mode from a mode name.
 do
@@ -2361,7 +2158,6 @@ do
   consumer:setFlowMode("pull")
   lurek.log.info("consumer flow mode: " .. consumer:getFlowMode(), "logistics")
 end
-
 --@api-stub: LGraphNode:getPushRate
 -- Returns this node's push rate.
 do
@@ -2372,7 +2168,6 @@ do
 
   lurek.log.info("assembly pushes " .. producer:getPushRate() .. " items/sec", "factory")
 end
-
 --@api-stub: LGraphNode:setPushRate
 -- Sets this node's push rate.
 do
@@ -2384,7 +2179,6 @@ do
   extractor:setPushRate(8.0)
   lurek.log.info("extractor push rate: " .. extractor:getPushRate(), "factory")
 end
-
 --@api-stub: LGraphNode:getPullRate
 -- Returns this node's pull rate.
 do
@@ -2395,7 +2189,6 @@ do
 
   lurek.log.info("workbench pulls " .. crafter:getPullRate() .. " items/sec", "factory")
 end
-
 --@api-stub: LGraphNode:setPullRate
 -- Sets this node's pull rate.
 do
@@ -2407,7 +2200,6 @@ do
   centrifuge:setPullRate(6.0)
   lurek.log.info("centrifuge pull rate: " .. centrifuge:getPullRate(), "factory")
 end
-
 --@api-stub: LGraphNode:getPushFilter
 -- Returns this node's optional push item-type filter.
 do
@@ -2417,7 +2209,6 @@ do
 
   lurek.log.info("sorter pushes: " .. tostring(sorter:getPushFilter()), "factory")
 end
-
 --@api-stub: LGraphNode:setPushFilter
 -- Sets or clears this node's push item-type filter.
 do
@@ -2428,7 +2219,6 @@ do
   output_valve:setPushFilter("steam")
   lurek.log.info("valve push filter: " .. tostring(output_valve:getPushFilter()), "factory")
 end
-
 --@api-stub: LGraphNode:getPullFilter
 -- Returns this node's optional pull item-type filter.
 do
@@ -2438,7 +2228,6 @@ do
 
   lurek.log.info("reactor pulls: " .. tostring(reactor:getPullFilter()), "energy")
 end
-
 --@api-stub: LGraphNode:setPullFilter
 -- Sets or clears this node's pull item-type filter.
 do
@@ -2449,7 +2238,6 @@ do
   boiler:setPullFilter("coal")
   lurek.log.info("boiler pull filter: " .. tostring(boiler:getPullFilter()), "energy")
 end
-
 --@api-stub: LGraphNode:getProcessTime
 -- Returns the processing time used by this node's conversions.
 do
@@ -2459,7 +2247,6 @@ do
 
   lurek.log.info("baking time: " .. oven:getProcessTime() .. "s per loaf", "craft")
 end
-
 --@api-stub: LGraphNode:setProcessTime
 -- Sets the processing time used by this node's conversions.
 do
@@ -2470,7 +2257,6 @@ do
   press:setProcessTime(0.5)
   lurek.log.info("print time: " .. press:getProcessTime() .. "s", "craft")
 end
-
 --@api-stub: LGraphNode:isQueueEnabled
 -- Returns whether this node's explicit queue is enabled.
 do
@@ -2480,7 +2266,6 @@ do
 
   lurek.log.info("queue enabled: " .. tostring(ticket_booth:isQueueEnabled()), "service")
 end
-
 --@api-stub: LGraphNode:setQueueEnabled
 -- Enables or disables this node's explicit queue.
 do
@@ -2491,7 +2276,6 @@ do
   checkout:setQueueEnabled(true)
   lurek.log.info("checkout queue: " .. tostring(checkout:isQueueEnabled()), "service")
 end
-
 --@api-stub: LGraphNode:getQueueCapacity
 -- Returns this node's queue capacity.
 do
@@ -2502,7 +2286,6 @@ do
 
   lurek.log.info("runway queue holds " .. runway:getQueueCapacity() .. " planes", "transport")
 end
-
 --@api-stub: LGraphNode:setQueueCapacity
 -- Sets this node's queue capacity.
 do
@@ -2514,7 +2297,6 @@ do
   platform:setQueueCapacity(8)
   lurek.log.info("platform queue: " .. platform:getQueueCapacity(), "transport")
 end
-
 --@api-stub: LGraphNode:getQueueSize
 -- Returns the number of item ids currently queued at this node.
 do
@@ -2524,7 +2306,6 @@ do
 
   lurek.log.info("print queue: " .. printer:getQueueSize() .. " jobs", "office")
 end
-
 --@api-stub: LGraph:getItems
 -- Returns item handles currently stored on this node.
 do
@@ -2536,7 +2317,6 @@ do
   local contents = fridge:getItems()
   lurek.log.info("fridge has " .. #contents .. " items", "kitchen")
 end
-
 --@api-stub: LGraph:getEdges
 -- Returns edge handles connected to this node in the requested direction.
 do
@@ -2552,7 +2332,6 @@ do
   local out_edges = junction:getEdges("out")
   lurek.log.info("junction has " .. #out_edges .. " outgoing tracks", "transport")
 end
-
 --@api-stub: LGraphNode:setConversion
 -- Configures an item conversion rule on this node.
 do
@@ -2564,7 +2343,6 @@ do
   brewery:setConversion("wheat", "ale", 3, 1)
   lurek.log.info("brewery recipe: 3 wheat -> 1 ale", "craft")
 end
-
 --@api-stub: LGraphNode:clearConversion
 -- Removes a conversion rule by input item type.
 do
@@ -2576,7 +2354,6 @@ do
   kiln:clearConversion("clay")
   lurek.log.info("clay recipe removed from kiln", "craft")
 end
-
 --@api-stub: LGraphNode:clearAllConversions
 -- Removes every conversion rule from this node.
 do
@@ -2589,7 +2366,6 @@ do
   workshop:clearAllConversions()
   lurek.log.info("workshop recipes cleared", "craft")
 end
-
 --@api-stub: LGraphNode:addTag
 -- Adds a tag to this node.
 do
@@ -2600,7 +2376,6 @@ do
   castle:addTag("capital")
   lurek.log.info("castle tagged, has fortified: " .. tostring(castle:hasTag("fortified")), "world")
 end
-
 --@api-stub: LGraphNode:removeTag
 -- Removes a tag from this node.
 do
@@ -2613,7 +2388,6 @@ do
   outpost:removeTag("manned")
   lurek.log.info("outpost manned: " .. tostring(outpost:hasTag("manned")), "military")
 end
-
 --@api-stub: LGraphNode:hasTag
 -- Returns whether this node has a tag.
 do
@@ -2625,7 +2399,6 @@ do
     lurek.log.info("no combat encounters near this village", "ai")
   end
 end
-
 --@api-stub: LGraphNode:clearTags
 -- Removes every tag from this node.
 do
@@ -2638,7 +2411,6 @@ do
   camp:clearTags()
   lurek.log.info("camp tags cleared, count: " .. #camp:getTags(), "quest")
 end
-
 --@api-stub: LGraphNode:getTags
 -- Returns all tags assigned to this node.
 do
@@ -2651,7 +2423,6 @@ do
   local tags = shrine:getTags()
   lurek.log.info("shrine tags (" .. #tags .. "): " .. table.concat(tags, ", "), "world")
 end
-
 --@api-stub: LGraphNode:addSupply
 -- Adds supply quantity for an item type on this node.
 do
@@ -2662,7 +2433,6 @@ do
   iron_mine:addSupply("iron_ore", 500)
   lurek.log.info("iron mine supply registered", "economy")
 end
-
 --@api-stub: LGraphNode:removeSupply
 -- Removes supply entry for an item type from this node.
 do
@@ -2674,7 +2444,6 @@ do
   quarry:removeSupply("marble")
   lurek.log.info("marble supply removed", "economy")
 end
-
 --@api-stub: LGraphNode:clearSupplies
 -- Removes every supply entry from this node.
 do
@@ -2687,7 +2456,6 @@ do
   harbor:clearSupplies()
   lurek.log.info("harbor supplies cleared", "war")
 end
-
 --@api-stub: LGraphNode:addDemand
 -- Adds demand quantity and optional priority for an item type on this node.
 do
@@ -2699,7 +2467,6 @@ do
   army_camp:addDemand("food", 200, 2)
   lurek.log.info("army demands registered", "military")
 end
-
 --@api-stub: LGraphNode:removeDemand
 -- Removes demand entry for an item type from this node.
 do
@@ -2711,7 +2478,6 @@ do
   workshop:removeDemand("leather")
   lurek.log.info("leather demand removed", "craft")
 end
-
 --@api-stub: LGraphNode:clearDemands
 -- Removes every demand entry from this node.
 do
@@ -2724,7 +2490,6 @@ do
   settlement:clearDemands()
   lurek.log.info("settlement demands cleared", "world")
 end
-
 --@api-stub: LGraphNode:enqueue
 -- Adds an item handle to this node's explicit queue.
 do
@@ -2738,7 +2503,6 @@ do
   assembly:enqueue(g:createItem("engine", -1))
   lurek.log.info("assembly queue: " .. assembly:getQueueSize() .. " items", "factory")
 end
-
 --@api-stub: LGraphNode:dequeue
 -- Removes and returns the next item from this node's explicit queue.
 do
@@ -2754,7 +2518,6 @@ do
     lurek.log.info("serving: " .. next_order:getType(), "service")
   end
 end
-
 --@api-stub: LGraph:type
 -- Returns the Lua-visible type name for this graph node handle.
 do
@@ -2763,7 +2526,6 @@ do
 
   lurek.log.info("node handle type: " .. node:type(), "debug")
 end
-
 --@api-stub: LGraph:typeOf
 -- Returns whether this graph node handle matches a supported type name.
 do
@@ -2773,11 +2535,6 @@ do
   lurek.log.info("is GraphNode: " .. tostring(node:typeOf("GraphNode")), "debug")
   lurek.log.info("is Object: " .. tostring(node:typeOf("Object")), "debug")
 end
-
--- =============================================================================
--- Additional Graph Methods
--- =============================================================================
-
 --@api-stub: LGraph:bfs
 -- Performs a breadth-first search from a start node and returns nodes in visit order.
 do
@@ -2794,7 +2551,6 @@ do
   local visit_order = g:bfs(center)
   lurek.log.info("BFS visited " .. #visit_order .. " nodes", "algorithm")
 end
-
 --@api-stub: LGraph:clearAll
 -- Removes all nodes and edges from this graph and resets it to an empty state.
 do
@@ -2807,7 +2563,6 @@ do
   g:clearAll()
   lurek.log.info("graph cleared, nodes=" .. g:nodeCount(), "reset")
 end
-
 --@api-stub: LGraph:dfs
 -- Performs a depth-first search from a start node and returns nodes in visit order.
 do
@@ -2824,7 +2579,6 @@ do
   local visit_order = g:dfs(root)
   lurek.log.info("DFS visited " .. #visit_order .. " rooms", "explore")
 end
-
 --@api-stub: LGraph:edgeCount
 -- Returns the total number of edges currently in this graph.
 do
@@ -2836,7 +2590,6 @@ do
 
   lurek.log.info("total edges: " .. g:edgeCount(), "stats")
 end
-
 --@api-stub: LGraph:getNodeValue
 -- Returns the value stored at a node id in this graph.
 do
@@ -2847,7 +2600,6 @@ do
   local val = g:getNodeValue(city)
   lurek.log.info("node value: " .. tostring(val), "data")
 end
-
 --@api-stub: LGraph:isConnected
 -- Returns true if there is a path between two given nodes in this graph.
 do
@@ -2864,7 +2616,6 @@ do
     lurek.log.warn("network broken! Some bases are isolated", "alert")
   end
 end
-
 --@api-stub: LGraph:neighbors
 -- Returns a list of node ids directly connected to a given node in this graph.
 do
@@ -2879,7 +2630,6 @@ do
   local adjacent = g:neighbors(hub)
   lurek.log.info("hub connects to " .. #adjacent .. " neighbors", "nav")
 end
-
 --@api-stub: LGraph:nodeCount
 -- Returns the total number of nodes currently in this graph.
 do
@@ -2891,21 +2641,7 @@ do
 
   lurek.log.info("total nodes: " .. g:nodeCount(), "stats")
 end
-
 print("content/examples/graph.lua")
-
--- =============================================================================
--- STUBS: 51 uncovered lurek.graph API item(s)
--- Generated by tools/audit/example_add_missing.py
--- REQUIRED: replace every --@api-stub: block below with a real scenario.
--- Run .github/prompts/flesh-out-example.prompt.md for instructions.
--- The final committed file must contain ZERO --@api-stub: lines.
--- =============================================================================
-
--- -----------------------------------------------------------------------------
--- LGraph methods
--- -----------------------------------------------------------------------------
-
 --@api-stub: LGraphItem:getType
 -- Returns the item type string used by filters, conversions, supplies, and demands.
 do
@@ -2916,7 +2652,6 @@ do
   g:addItem(item, node)
   lurek.log.info("item type: " .. item:getType(), "graph")
 end
-
 --@api-stub: LGraphItem:setType
 -- Changes the item type string used by graph routing and processing rules.
 do
@@ -2928,7 +2663,6 @@ do
   bar:setType("steel_ingot")
   lurek.log.info("transformed to: " .. bar:getType(), "graph")
 end
-
 --@api-stub: LGraphItem:type
 -- Returns the Lua-visible type name for this graph item handle.
 do
@@ -2939,7 +2673,6 @@ do
   g:addItem(crate, node)
   lurek.log.info("handle type: " .. crate:type(), "graph")
 end
-
 --@api-stub: LGraphItem:typeOf
 -- Returns whether this graph item handle matches a supported type name.
 do
@@ -2951,20 +2684,6 @@ do
   local is_item = pkg:typeOf("LGraphItem")
   lurek.log.info("is LGraphItem=" .. tostring(is_item), "graph")
 end
-
--- =============================================================================
--- STUBS: 13 uncovered lurek.graph API item(s)
--- Generated by tools/audit/example_add_missing.py
--- REQUIRED: replace every --@api-stub: block below with a real scenario.
--- Run .github/prompts/flesh-out-example.prompt.md for instructions.
--- The final committed file must contain ZERO --@api-stub: lines.
--- =============================================================================
-
--- -----------------------------------------------------------------------------
--- LGraphEdge methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LGraphEdge:getType --------------------------------------------
 --@api-stub: LGraphEdge:getType
 -- Returns the edge type string used by routing and filters.
 do
@@ -2975,8 +2694,6 @@ do
   local t = e:getType()
   lurek.log.debug("edge type: " .. tostring(t), "graph")
 end
-
--- ---- Stub: LGraphEdge:setType --------------------------------------------
 --@api-stub: LGraphEdge:setType
 -- Sets the edge type string used by routing and filters.
 do
@@ -2987,8 +2704,6 @@ do
   e:setType("road")
   lurek.log.debug("edge type set: " .. tostring(e:getType()), "graph") -- "road"
 end
-
--- ---- Stub: LGraphEdge:getCapacity ----------------------------------------
 --@api-stub: LGraphEdge:getCapacity
 -- Returns this edge's maximum concurrent item capacity.
 do
@@ -2999,8 +2714,6 @@ do
   local cap = e:getCapacity()
   lurek.log.debug("capacity: " .. tostring(cap), "graph")
 end
-
--- ---- Stub: LGraphEdge:setCapacity ----------------------------------------
 --@api-stub: LGraphEdge:setCapacity
 -- Sets this edge's maximum concurrent item capacity.
 do
@@ -3011,8 +2724,6 @@ do
   e:setCapacity(10.0)
   lurek.log.debug("new capacity: " .. tostring(e:getCapacity()), "graph") -- 10
 end
-
--- ---- Stub: LGraphEdge:isActive -------------------------------------------
 --@api-stub: LGraphEdge:isActive
 -- Returns whether this edge is active for routing and simulation.
 do
@@ -3022,8 +2733,6 @@ do
   local e = g:addEdge(a, b)
   lurek.log.debug("edge active: " .. tostring(e:isActive()), "graph") -- true
 end
-
--- ---- Stub: LGraphEdge:setActive ------------------------------------------
 --@api-stub: LGraphEdge:setActive
 -- Enables or disables this edge for routing and simulation.
 do
@@ -3034,28 +2743,18 @@ do
   e:setActive(false)
   lurek.log.debug("edge disabled: " .. tostring(not e:isActive()), "graph") -- true
 end
-
--- ---- Stub: LGraphEdge:type -----------------------------------------------
 --@api-stub: LGraphEdge:type
 -- Returns the Lua-visible type name for this graph edge handle.
 do
   local obj = (function() local g = lurek.graph.newGraph(); local a = g:addNode('a'); local b = g:addNode('b'); return g:addEdge(a, b) end)()
   lurek.log.debug("type: " .. obj:type(), "example") -- "LGraphEdge"
 end
-
--- ---- Stub: LGraphEdge:typeOf ---------------------------------------------
 --@api-stub: LGraphEdge:typeOf
 -- Returns whether this graph edge handle matches a supported type name.
 do
   local obj = (function() local g = lurek.graph.newGraph(); local a = g:addNode('a'); local b = g:addNode('b'); return g:addEdge(a, b) end)()
   lurek.log.debug("typeOf LGraphEdge: " .. tostring(obj:typeOf("LGraphEdge")), "example") -- true
 end
-
--- -----------------------------------------------------------------------------
--- LGraphNode methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LGraphNode:getItemCount ---------------------------------------
 --@api-stub: LGraphNode:getItemCount
 -- Returns the number of items currently stored on this node.
 do
@@ -3065,8 +2764,6 @@ do
   g:addItem(g:createItem("market"), n)
   lurek.log.debug("items on node: " .. n:getItemCount(), "graph") -- 2
 end
-
--- ---- Stub: LGraphNode:getItems -------------------------------------------
 --@api-stub: LGraphNode:getItems
 -- Returns item handles currently stored on this node.
 do
@@ -3076,8 +2773,6 @@ do
   local items = n:getItems()
   lurek.log.debug("item count: " .. #items, "graph") -- 1
 end
-
--- ---- Stub: LGraphNode:getEdges -------------------------------------------
 --@api-stub: LGraphNode:getEdges
 -- Returns edge handles connected to this node in the requested direction.
 do
@@ -3088,16 +2783,12 @@ do
   local edges = a:getEdges()
   lurek.log.debug("edges from a: " .. #edges, "graph") -- 1
 end
-
--- ---- Stub: LGraphNode:type -----------------------------------------------
 --@api-stub: LGraphNode:type
 -- Returns the Lua-visible type name for this graph node handle.
 do
   local obj = lurek.graph.newGraph():addNode('n1')
   lurek.log.debug("type: " .. obj:type(), "example") -- "LGraphNode"
 end
-
--- ---- Stub: LGraphNode:typeOf ---------------------------------------------
 --@api-stub: LGraphNode:typeOf
 -- Returns whether this graph node handle matches a supported type name.
 do

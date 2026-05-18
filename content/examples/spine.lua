@@ -1,11 +1,6 @@
 -- content/examples/spine.lua
 -- Spine-like skeletal animation: bones, slots, skins, IK, keyframes, events, and blending.
 -- Run: cargo run -- content/examples/spine.lua
-
--- =============================================================================
--- Module constructors
--- =============================================================================
-
 --@api-stub: lurek.spine.newSkeleton
 -- Creates a new empty skeleton with the given name
 do
@@ -24,7 +19,6 @@ do
 
   lurek.log.info("hero rig: " .. hero:boneCount() .. " bones", "spine")
 end
-
 --@api-stub: lurek.spine.newSkeletonAnimation
 -- Creates a new empty animation with the given name and duration
 do
@@ -41,7 +35,6 @@ do
 
   lurek.log.info("idle anim: " .. idle:getDuration() .. "s, " .. idle:getTimelineCount() .. " timeline(s)", "spine")
 end
-
 --@api-stub: lurek.spine.animationFromJson
 -- Parses a JSON string into a SkeletonAnimation
 do
@@ -76,11 +69,6 @@ do
     lurek.log.warn("JSON parse failed — check format", "spine")
   end
 end
-
--- =============================================================================
--- Skeleton: building the bone hierarchy
--- =============================================================================
-
 --@api-stub: LSkeleton:addBone
 -- Adds a root-level bone to this skeleton with optional transform properties
 do
@@ -97,7 +85,6 @@ do
 
   lurek.log.info("base=" .. base .. " flash=" .. flash, "spine")
 end
-
 --@api-stub: LSkeleton:addChildBone
 -- Adds a child bone that inherits its parent's world transform
 do
@@ -117,7 +104,6 @@ do
 
   lurek.log.info("arm chain: " .. sk:boneCount() .. " bones", "spine")
 end
-
 --@api-stub: LSkeleton:addSlot
 -- Adds an attachment slot to a specific bone
 do
@@ -135,11 +121,6 @@ do
 
   lurek.log.info("slots: chest=" .. chest_slot .. " weapon=" .. weapon_slot, "spine")
 end
-
--- =============================================================================
--- Skeleton: querying bones and slots
--- =============================================================================
-
 --@api-stub: LSkeleton:findBone
 -- Searches for a bone by name and returns its zero-based index, or nil
 do
@@ -157,7 +138,6 @@ do
   if head_idx then lurek.log.info("head bone index: " .. head_idx, "spine") end
   if not missing then lurek.log.info("missing bone returns nil as expected", "spine") end
 end
-
 --@api-stub: LSkeleton:findSlot
 -- Searches for a slot by name and returns its zero-based index, or nil
 do
@@ -173,7 +153,6 @@ do
     lurek.log.info("armor slot found at index " .. armor_idx, "spine")
   end
 end
-
 --@api-stub: LSkeleton:boneCount
 -- Returns the total number of bones in this skeleton
 do
@@ -189,7 +168,6 @@ do
   assert(rig:boneCount() == 5, "vehicle rig should have 5 bones")
   lurek.log.info("vehicle bones: " .. rig:boneCount(), "spine")
 end
-
 --@api-stub: LSkeleton:slotCount
 -- Returns the total number of slots in this skeleton
 do
@@ -204,11 +182,6 @@ do
 
   lurek.log.info("mech has " .. rig:slotCount() .. " attachment slots", "spine")
 end
-
--- =============================================================================
--- Skeleton: world transforms and positioning
--- =============================================================================
-
 --@api-stub: LSkeleton:setPosition
 -- Sets the root bone world position, shifting the entire skeleton
 do
@@ -227,7 +200,6 @@ do
     rig:updateWorldTransforms()
   end
 end
-
 --@api-stub: LSkeleton:updateWorldTransforms
 -- Recomputes world transforms for all bones in hierarchy order
 do
@@ -249,7 +221,6 @@ do
     lurek.log.info("hook world pos: " .. hook.x .. ", " .. hook.y, "spine")
   end
 end
-
 --@api-stub: LSkeleton:getBoneWorld
 -- Returns the world-space transform of a bone after hierarchy resolution
 do
@@ -272,11 +243,6 @@ do
     ), "spine")
   end
 end
-
--- =============================================================================
--- Skeleton: animation playback
--- =============================================================================
-
 --@api-stub: LSkeleton:addAnimation
 -- Registers a SkeletonAnimation so it can be played by name
 do
@@ -301,7 +267,6 @@ do
   rig:addAnimation(alert)
   lurek.log.info("guard has idle + alert animations registered", "spine")
 end
-
 --@api-stub: LSkeleton:playAnimation
 -- Starts playing a named animation, optionally looping
 do
@@ -326,7 +291,6 @@ do
   local bad = rig:playAnimation("fly", true)
   lurek.log.info("play 'fly' result: " .. tostring(bad), "spine")
 end
-
 --@api-stub: LSkeleton:updateAnimation
 -- Advances the current animation by delta time, applying bone transforms
 do
@@ -349,7 +313,6 @@ do
     rig:updateWorldTransforms()
   end
 end
-
 --@api-stub: LSkeleton:getAnimationTime
 -- Returns the current playback time of the active animation in seconds
 do
@@ -375,7 +338,6 @@ do
     end
   end
 end
-
 --@api-stub: LSkeleton:stopAnimation
 -- Stops the currently playing animation and resets playback state
 do
@@ -397,7 +359,6 @@ do
     lurek.log.info("patrol stopped — enemy is stunned", "spine")
   end
 end
-
 --@api-stub: LSkeleton:blendAnimation
 -- Blends an animation pose onto the skeleton with a weight factor
 do
@@ -425,11 +386,6 @@ do
   rig:blendAnimation(aim_up, 0.0, 0.6)
   lurek.log.info("walk + 60% aim blend applied", "spine")
 end
-
--- =============================================================================
--- Skeleton: skins (visual equipment variants)
--- =============================================================================
-
 --@api-stub: LSkeleton:addSkin
 -- Registers a new named skin for slot-attachment remapping
 do
@@ -447,7 +403,6 @@ do
   rig:addSkin("gold")
   lurek.log.info("3 skins registered on hero", "spine")
 end
-
 --@api-stub: LSkeleton:setSkinMapping
 -- Maps a slot to a specific attachment within a skin
 do
@@ -472,7 +427,6 @@ do
 
   lurek.log.info("skin mappings configured for warrior and mage", "spine")
 end
-
 --@api-stub: LSkeleton:setSkin
 -- Activates a named skin, applying its slot-attachment mappings
 do
@@ -497,7 +451,6 @@ do
   local bad = rig:setSkin("summer")
   lurek.log.info("set unknown skin: " .. tostring(bad), "spine")
 end
-
 --@api-stub: LSkeleton:getSkin
 -- Returns the name of the currently active skin, or nil
 do
@@ -515,11 +468,6 @@ do
     lurek.log.info("no skin active (using default attachments)", "spine")
   end
 end
-
--- =============================================================================
--- Skeleton: inverse kinematics
--- =============================================================================
-
 --@api-stub: LSkeleton:addIKConstraint
 -- Adds an IK constraint controlling a chain of bones toward a target
 do
@@ -535,7 +483,6 @@ do
   local ik_idx = rig:addIKConstraint("reach_ik", {upper, forearm}, true)
   lurek.log.info("IK constraint index: " .. ik_idx, "spine")
 end
-
 --@api-stub: LSkeleton:setIKTarget
 -- Sets the world-space target for a named IK constraint
 do
@@ -560,11 +507,6 @@ do
     end
   end
 end
-
--- =============================================================================
--- Skeleton: rendering
--- =============================================================================
-
 --@api-stub: LSkeleton:drawToImage
 -- Renders the skeleton into an in-memory image for debug or UI preview
 do
@@ -586,11 +528,6 @@ do
     lurek.render.draw(tex, 16, 16)
   end
 end
-
--- =============================================================================
--- SkeletonAnimation: keyframes and timelines
--- =============================================================================
-
 --@api-stub: LSkeletonAnimation:addKeyframe
 -- Adds a keyframe to a bone property timeline with value and easing
 do
@@ -612,7 +549,6 @@ do
 
   lurek.log.info("jump clip: " .. anim:getTimelineCount() .. " timelines", "spine")
 end
-
 --@api-stub: LSkeletonAnimation:getTimelineCount
 -- Returns the number of bone-property timelines in this animation
 do
@@ -635,7 +571,6 @@ do
   -- Should be 3 timelines: (0,y), (1,rotation), (2,rotation)
   lurek.log.info("run timelines: " .. run:getTimelineCount(), "spine")
 end
-
 --@api-stub: LSkeletonAnimation:getDuration
 -- Returns the total duration of this animation in seconds
 do
@@ -650,11 +585,6 @@ do
   local respawn_delay = death:getDuration() + 2.0
   lurek.log.info("respawn after " .. respawn_delay .. "s (anim=" .. death:getDuration() .. "s + 2s wait)", "spine")
 end
-
--- =============================================================================
--- SkeletonAnimation: events
--- =============================================================================
-
 --@api-stub: LSkeletonAnimation:addEventKey
 -- Inserts an event trigger at a specific time in the animation
 do
@@ -678,7 +608,6 @@ do
 
   lurek.log.info("walk has footstep events; attack has damage event", "spine")
 end
-
 --@api-stub: LSkeletonAnimation:getEvents
 -- Collects all events that fire within a time range
 do
@@ -708,11 +637,6 @@ do
     if now >= clip:getDuration() then prev_time = 0 end
   end
 end
-
--- =============================================================================
--- SkeletonAnimation: sampling and manipulation
--- =============================================================================
-
 --@api-stub: LSkeletonAnimation:poseAt
 -- Samples all timelines at a given time and returns the pose as a table
 do
@@ -735,7 +659,6 @@ do
     ), "spine")
   end
 end
-
 --@api-stub: LSkeletonAnimation:reverse
 -- Creates a new animation that plays keyframes in reverse order
 do
@@ -757,11 +680,6 @@ do
   door:addAnimation(door_open)
   door:addAnimation(door_close)
 end
-
--- =============================================================================
--- Type introspection
--- =============================================================================
-
 --@api-stub: LSkeletonAnimation:type
 -- Returns the type name of this userdata object
 do
@@ -770,7 +688,6 @@ do
   local sk = lurek.spine.newSkeleton("test")
   lurek.log.info("LSkeleton:type() = " .. sk:type(), "spine")
 end
-
 --@api-stub: LSkeletonAnimation:typeOf
 -- Checks whether this object is of the given type name
 do
@@ -782,7 +699,6 @@ do
   assert(sk:typeOf("LImage") == false)
   lurek.log.info("typeOf checks pass", "spine")
 end
-
 --@api-stub: LSkeletonAnimation:type
 -- Returns the type name of this userdata object
 do
@@ -790,7 +706,6 @@ do
   local clip = lurek.spine.newSkeletonAnimation("test_clip", 1.0)
   lurek.log.info("LSkeletonAnimation:type() = " .. clip:type(), "spine")
 end
-
 --@api-stub: LSkeletonAnimation:typeOf
 -- Checks whether this object is of the given type name
 do
@@ -801,42 +716,13 @@ do
   assert(clip:typeOf("LSkeleton") == false)
   lurek.log.info("animation typeOf checks pass", "spine")
 end
-
 print("content/examples/spine.lua")
-
--- =============================================================================
--- STUBS: 28 uncovered lurek.spine API item(s)
--- Generated by tools/audit/example_add_missing.py
--- REQUIRED: replace every --@api-stub: block below with a real scenario.
--- Run .github/prompts/flesh-out-example.prompt.md for instructions.
--- The final committed file must contain ZERO --@api-stub: lines.
--- =============================================================================
-
--- -----------------------------------------------------------------------------
--- LSkeleton methods
--- -----------------------------------------------------------------------------
-
--- =============================================================================
--- STUBS: 2 uncovered lurek.spine API item(s)
--- Generated by tools/audit/example_add_missing.py
--- REQUIRED: replace every --@api-stub: block below with a real scenario.
--- Run .github/prompts/flesh-out-example.prompt.md for instructions.
--- The final committed file must contain ZERO --@api-stub: lines.
--- =============================================================================
-
--- -----------------------------------------------------------------------------
--- LSkeleton methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LSkeleton:type ------------------------------------------------
 --@api-stub: LSkeleton:type
 -- Returns the type name of this userdata object.
 do
   local obj = lurek.spine.newSkeleton('assets/spine/hero.json')
   lurek.log.debug("type: " .. obj:type(), "example") -- "LSkeleton"
 end
-
--- ---- Stub: LSkeleton:typeOf ----------------------------------------------
 --@api-stub: LSkeleton:typeOf
 -- Checks whether this object is of the given type name. Supports "LSkeleton" and "Object".
 do

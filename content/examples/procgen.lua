@@ -1,7 +1,6 @@
 -- content/examples/procgen.lua
 -- Procedural generation API: noise, dungeons, WFC, L-systems, biomes, names, world graphs.
 -- Run: cargo run -- content/examples/procgen.lua
-
 --@api-stub: lurek.procgen.cellularAutomata
 -- Generate a cave map using cellular automata rules
 do
@@ -21,7 +20,6 @@ do
   local pct = math.floor(floor_count / (w * h) * 100)
   lurek.log.info("cave: " .. floor_count .. " walkable tiles (" .. pct .. "% open)", "procgen")
 end
-
 --@api-stub: lurek.procgen.floodFill
 -- Flood-fill a grid from a starting cell to find connected regions
 do
@@ -46,7 +44,6 @@ do
   for i = 1, #mask do if mask[i] == 1 then reachable = reachable + 1 end end
   lurek.log.info("flood fill from (" .. sx .. "," .. sy .. "): " .. reachable .. " reachable cells", "procgen")
 end
-
 --@api-stub: lurek.procgen.perlinNoise
 -- Sample periodic 2D Perlin noise for tileable terrain
 do
@@ -61,7 +58,6 @@ do
   elseif n < -0.3 then terrain = "water" end
   lurek.log.info("tile(" .. sample_x .. "," .. sample_y .. ") noise=" .. string.format("%.3f", n) .. " -> " .. terrain, "procgen")
 end
-
 --@api-stub: lurek.procgen.poissonDisk
 -- Place trees/items with even spacing using Poisson disk sampling
 do
@@ -76,7 +72,6 @@ do
     lurek.log.debug("  tree " .. i .. " at (" .. string.format("%.1f", trees[i].x) .. ", " .. string.format("%.1f", trees[i].y) .. ")", "procgen")
   end
 end
-
 --@api-stub: lurek.procgen.voronoi
 -- Compute a Voronoi diagram for biome regions or territory maps
 do
@@ -102,7 +97,6 @@ do
   end
   lurek.log.info("voronoi: " .. #seeds .. " regions, " .. border_cells .. " border cells", "procgen")
 end
-
 --@api-stub: lurek.procgen.bspDungeon
 -- Generate a dungeon layout using Binary Space Partitioning
 do
@@ -123,7 +117,6 @@ do
   local py = spawn.y + math.floor(spawn.h / 2)
   lurek.log.debug("  player spawn: (" .. px .. ", " .. py .. ")", "procgen")
 end
-
 --@api-stub: lurek.procgen.bspDungeonWithPrefabs
 -- Generate a BSP dungeon with special prefab rooms stamped into leaves
 do
@@ -143,7 +136,6 @@ do
     lurek.log.debug("  placed '" .. p.name .. "' at (" .. p.x .. "," .. p.y .. ")", "procgen")
   end
 end
-
 --@api-stub: lurek.procgen.roomsDungeon
 -- Generate a dungeon with random non-overlapping rooms and corridors
 do
@@ -164,7 +156,6 @@ do
   end
   lurek.log.info("rooms dungeon: " .. #dungeon.rooms .. " rooms, " .. floors .. " floor tiles", "procgen")
 end
-
 --@api-stub: lurek.procgen.roomsDungeonWithPrefabs
 -- Generate a rooms dungeon and stamp shaped prefabs into qualifying rooms
 do
@@ -190,7 +181,6 @@ do
   local dungeon_result = dungeon --[[@as {rooms: table}]]
   lurek.log.info("prefab dungeon: " .. #dungeon_result.rooms .. " rooms, " .. #placements .. " prefabs placed", "procgen")
 end
-
 --@api-stub: lurek.procgen.heightmap
 -- Generate a fractal heightmap for terrain with optional erosion
 do
@@ -213,7 +203,6 @@ do
   end
   lurek.log.info("heightmap " .. hm.width .. "x" .. hm.height .. " range=[" .. string.format("%.2f", min_h) .. ", " .. string.format("%.2f", max_h) .. "]", "procgen")
 end
-
 --@api-stub: lurek.procgen.heightmapFromCellular
 -- Convert a cave grid into a heightmap via distance transform
 do
@@ -226,7 +215,6 @@ do
   local centre = hm.cells[math.floor(h / 2) * w + math.floor(w / 2)]
   lurek.log.info("cave heightmap centre value=" .. string.format("%.3f", centre), "procgen")
 end
-
 --@api-stub: lurek.procgen.wfcGenerate
 -- Run Wave Function Collapse to generate constrained tile layouts
 do
@@ -259,7 +247,6 @@ do
   end
   lurek.log.info("wfc " .. result.width .. "x" .. result.height .. ": ground=" .. counts[1] .. " water=" .. counts[2] .. " sand=" .. counts[3], "procgen")
 end
-
 --@api-stub: lurek.procgen.lsystem
 -- Expand an L-system grammar for branching structure generation
 do
@@ -274,7 +261,6 @@ do
   -- The string encodes movement: F=forward, +=turn left, -=turn right
   lurek.log.info("lsystem output length=" .. #result .. " chars (Koch curve variant)", "procgen")
 end
-
 --@api-stub: lurek.procgen.lsystemSegments
 -- Expand an L-system into drawable line segments (turtle graphics)
 do
@@ -293,7 +279,6 @@ do
     lurek.log.debug("  first segment: (" .. string.format("%.1f", s.x1) .. "," .. string.format("%.1f", s.y1) .. ") -> (" .. string.format("%.1f", s.x2) .. "," .. string.format("%.1f", s.y2) .. ")", "procgen")
   end
 end
-
 --@api-stub: lurek.procgen.generateName
 -- Generate a single random fantasy name from sample data
 do
@@ -303,7 +288,6 @@ do
   local name = lurek.procgen.generateName(elf_names, 4, 9, 17)
   lurek.log.info("generated elf name: '" .. name .. "'", "procgen")
 end
-
 --@api-stub: lurek.procgen.generateNames
 -- Generate multiple random names in one batch
 do
@@ -316,7 +300,6 @@ do
     lurek.log.debug("  " .. i .. ". " .. party[i], "procgen")
   end
 end
-
 --@api-stub: lurek.procgen.newBiomeClassifier
 -- Create a BiomeClassifier with custom threshold rules
 do
@@ -333,7 +316,6 @@ do
   })
   lurek.log.info("biome classifier created: " .. bc:type(), "procgen")
 end
-
 --@api-stub: BiomeClassifier:classify
 -- Classify a single terrain point into a biome type
 do
@@ -348,7 +330,6 @@ do
   local ocean_biome = bc:classify(0.1, 0.5, 0.5)
   lurek.log.info("biomes: mountain=" .. mountain_biome .. " tropical=" .. tropical_biome .. " ocean=" .. ocean_biome, "procgen")
 end
-
 --@api-stub: BiomeClassifier:classifyMap
 -- Classify an entire grid of terrain points into biomes in bulk
 do
@@ -371,7 +352,6 @@ do
   local biomes = bc:classifyMap(w, h, heights, moisture, temperature)
   lurek.log.info("classifyMap: " .. #biomes .. " cells, corners: TL=" .. biomes[1] .. " BR=" .. biomes[#biomes], "procgen")
 end
-
 --@api-stub: BiomeClassifier:type
 -- Returns the type name of the classifier object
 do
@@ -379,7 +359,6 @@ do
   local t = bc:type()
   lurek.log.debug("classifier type: " .. t, "procgen")
 end
-
 --@api-stub: BiomeClassifier:typeOf
 -- Check whether this object matches a given type name
 do
@@ -389,7 +368,6 @@ do
   local is_sprite = bc:typeOf("Sprite")
   lurek.log.debug("is BiomeClassifier=" .. tostring(is_classifier) .. ", is Sprite=" .. tostring(is_sprite), "procgen")
 end
-
 --@api-stub: lurek.procgen.biomeColor
 -- Get the default display color for a biome name (for minimaps/debug views)
 do
@@ -401,7 +379,6 @@ do
     lurek.log.debug("  " .. name .. " -> rgba(" .. r .. "," .. g .. "," .. b .. "," .. a .. ")", "procgen")
   end
 end
-
 --@api-stub: lurek.procgen.worldGraph
 -- Generate a connected world graph with named regions and trade routes
 do
@@ -420,7 +397,6 @@ do
     lurek.log.debug("  edge: region " .. e.from .. " <-> " .. e.to .. " cost=" .. e.cost, "procgen")
   end
 end
-
 --@api-stub: lurek.procgen.noiseMap
 -- Generate a 2D noise map for terrain, moisture, or temperature layers
 do
@@ -441,7 +417,6 @@ do
   end
   lurek.log.info("noise map: " .. #moisture_map .. " samples, range=[" .. string.format("%.3f", min_v) .. "," .. string.format("%.3f", max_v) .. "]", "procgen")
 end
-
 --@api-stub: lurek.procgen.noiseMapParallel
 -- Generate a large noise map using multiple threads for speed
 do
@@ -458,7 +433,6 @@ do
   local mid = big_map[256 * 128 + 128]
   lurek.log.info("parallel noise: " .. #big_map .. " cells, centre=" .. string.format("%.4f", mid), "procgen")
 end
-
 --@api-stub: lurek.procgen.noiseMapParallelSeeded
 -- Generate a reproducible noise map using threads with a fixed seed
 do
@@ -480,7 +454,6 @@ do
   local match = (map_a[1] == map_b[1]) and (map_a[100] == map_b[100])
   lurek.log.info("seeded parallel: deterministic=" .. tostring(match) .. " first=" .. string.format("%.4f", map_a[1]), "procgen")
 end
-
 --@api-stub: lurek.procgen.simplex2d
 -- Sample 2D simplex noise for fast single-point queries
 do
@@ -492,7 +465,6 @@ do
   local is_water = normalized < 0.3
   lurek.log.info("simplex2d at (12.5, 7.25): raw=" .. string.format("%.3f", terrain_height) .. " water=" .. tostring(is_water), "procgen")
 end
-
 --@api-stub: lurek.procgen.simplex3d
 -- Sample 3D simplex noise (use z-axis for animation or layering)
 do
@@ -509,5 +481,4 @@ do
   end
   lurek.log.info("cloud evolution over 5 frames: " .. table.concat(densities, ", "), "procgen")
 end
-
 print("content/examples/procgen.lua")

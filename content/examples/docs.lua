@@ -1,7 +1,6 @@
 -- content/examples/docs.lua
 -- lurek.docs API examples: live reflection, catalog management, validation, quality scoring, schema, and export.
 -- Run: cargo run -- content/examples/docs.lua
-
 --@api-stub: lurek.docs.scan
 -- Reflects the live `lurek` table and builds a catalog of callable APIs
 do
@@ -15,7 +14,6 @@ do
   -- The returned LApiCatalog is a snapshot — if modules are added later,
   -- you need to scan() again to see them.
 end
-
 --@api-stub: lurek.docs.scanModule
 -- Reflects one live `lurek.<module>` table and builds a catalog for that module
 do
@@ -27,7 +25,6 @@ do
     lurek.log.debug("audio-api", entry:getQualifiedName())
   end
 end
-
 --@api-stub: lurek.docs.loadToml
 -- Loads a TOML documentation catalog file and converts its entries into an API catalog
 do
@@ -42,7 +39,6 @@ do
     end
   end
 end
-
 --@api-stub: lurek.docs.loadAll
 -- Loads all TOML documentation catalog files from a directory and combines their entries
 do
@@ -54,7 +50,6 @@ do
     lurek.log.info("docs", "loaded " .. #mods .. " documented modules from docs/api/")
   end
 end
-
 --@api-stub: lurek.docs.describe
 -- Adds or updates the description for one editable catalog entry
 do
@@ -68,7 +63,6 @@ do
   -- This pattern is useful for auto-documentation tools that read annotations
   -- from game source files and inject them into the runtime catalog.
 end
-
 --@api-stub: lurek.docs.setParamInfo
 -- Replaces parameter metadata for one editable catalog entry
 do
@@ -83,7 +77,6 @@ do
   -- After setting param info, the entry shows typed signatures in help output
   -- and exported editor artifacts (completions, hover, signatures).
 end
-
 --@api-stub: lurek.docs.setReturnInfo
 -- Replaces return-value metadata for one editable catalog entry
 do
@@ -93,7 +86,6 @@ do
     { type = "LSource", description = "Handle to the playing audio source" },
   })
 end
-
 --@api-stub: lurek.docs.getCatalog
 -- Returns the editable in-memory documentation catalog
 do
@@ -103,7 +95,6 @@ do
   local cat = lurek.docs.getCatalog()
   lurek.log.info("docs", "editable catalog has " .. cat:entryCount() .. " entries")
 end
-
 --@api-stub: lurek.docs.resetCatalog
 -- Clears the editable in-memory documentation catalog
 do
@@ -113,7 +104,6 @@ do
   lurek.docs.resetCatalog()
   assert(lurek.docs.getCatalog():entryCount() == 0, "catalog should be empty after reset")
 end
-
 --@api-stub: LSchema:validate
 -- Compares a documentation catalog with the live reflected `lurek` API table
 do
@@ -130,7 +120,6 @@ do
     end
   end
 end
-
 --@api-stub: lurek.docs.validateModule
 -- Compares one module's documentation catalog entries with the live reflected module table
 do
@@ -144,7 +133,6 @@ do
     end
   end
 end
-
 --@api-stub: lurek.docs.checkStaleness
 -- Lists source files in a directory for simple documentation staleness checks
 do
@@ -160,7 +148,6 @@ do
     end
   end
 end
-
 --@api-stub: lurek.docs.quality
 -- Computes documentation quality for a supplied catalog or the editable in-memory catalog
 do
@@ -172,7 +159,6 @@ do
     lurek.log.info("docs", string.format("overall %.0f%% (grade %s)", q:getOverallScore() * 100, q:getGrade()))
   end
 end
-
 --@api-stub: lurek.docs.qualityModule
 -- Computes documentation quality for entries belonging to one module
 do
@@ -184,7 +170,6 @@ do
     lurek.log.info("audio-docs", "audio module grade: " .. q:getGrade())
   end
 end
-
 --@api-stub: lurek.docs.coverage
 -- Returns documented and live API counts for the full `lurek` table
 do
@@ -197,7 +182,6 @@ do
     lurek.log.info("docs", string.format("coverage %d/%d (%.0f%%)", documented, total, pct))
   end
 end
-
 --@api-stub: lurek.docs.coverageModule
 -- Returns documented and live API counts for one module
 do
@@ -208,7 +192,6 @@ do
     lurek.log.info("audio-docs", string.format("audio %d/%d documented", documented, total))
   end
 end
-
 --@api-stub: lurek.docs.exportCompletions
 -- Exports catalog completion metadata to a file
 do
@@ -218,7 +201,6 @@ do
   pcall(lurek.docs.exportCompletions, catalog, "build/vscode/completions.json")
   lurek.log.info("docs", "wrote completions.json for editor autocomplete")
 end
-
 --@api-stub: lurek.docs.exportHover
 -- Exports catalog hover metadata to a file
 do
@@ -228,7 +210,6 @@ do
   pcall(lurek.docs.exportHover, catalog, "build/vscode/hover.json")
   lurek.log.info("docs", "wrote hover.json for editor tooltips")
 end
-
 --@api-stub: lurek.docs.exportSignatures
 -- Exports catalog signature metadata to a file
 do
@@ -238,7 +219,6 @@ do
   pcall(lurek.docs.exportSignatures, catalog, "build/vscode/signatures.json")
   lurek.log.info("docs", "wrote signatures.json for signature help")
 end
-
 --@api-stub: lurek.docs.exportAll
 -- Exports all editor documentation artifacts for a catalog into a directory
 do
@@ -248,7 +228,6 @@ do
   pcall(lurek.docs.exportAll, catalog, "build/vscode")
   lurek.log.info("docs", "wrote full editor documentation bundle to build/vscode/")
 end
-
 --@api-stub: lurek.docs.exportMarkdown
 -- Writes a Markdown API reference from catalog entries
 do
@@ -261,7 +240,6 @@ do
     lurek.log.info("docs", "regenerated lua-api.md reference")
   end
 end
-
 --@api-stub: lurek.docs.exportCheatsheet
 -- Writes a compact text cheatsheet from catalog entries
 do
@@ -271,7 +249,6 @@ do
   pcall(lurek.docs.exportCheatsheet, catalog, "build/cheatsheet.txt")
   lurek.log.info("docs", "wrote cheatsheet.txt")
 end
-
 --@api-stub: lurek.docs.schema
 -- Builds a schema validator from Lua table rules
 do
@@ -288,7 +265,6 @@ do
   schema:assert({ name = "Hero", level = 1, class = "warrior" })
   lurek.log.info("docs", "PlayerSave schema validated successfully")
 end
-
 --@api-stub: lurek.docs.schemaFromToml
 -- Builds a schema validator from TOML schema text
 do
@@ -309,7 +285,6 @@ max = 99
   schema:assert({ level = 10 })
   lurek.log.info("docs", "TOML-based schema validated level=10")
 end
-
 --@api-stub: lurek.docs.reflectLive
 -- Reflects live `lurek` module tables into plain name and type rows
 do
@@ -321,7 +296,6 @@ do
     lurek.log.debug("reflect", item.name .. " (" .. item.type .. ")")
   end
 end
-
 --@api-stub: lurek.docs.reflectTable
 -- Reflects an arbitrary Lua table into name, qualifiedName, and type rows
 do
@@ -334,9 +308,6 @@ do
     lurek.log.debug("reflect", it.qualifiedName .. " : " .. it.type)
   end
 end
-
--- Schema methods
-
 --@api-stub: LSchema:validate
 -- Validates a table and returns success flag plus structured error details
 do
@@ -353,7 +324,6 @@ do
     end
   end
 end
-
 --@api-stub: LSchema:check
 -- Validates a table and returns only the boolean result
 do
@@ -366,7 +336,6 @@ do
     lurek.log.info("net", "port 8080 is valid")
   end
 end
-
 --@api-stub: LSchema:assert
 -- Validates a table and raises a Lua error if validation fails
 do
@@ -377,7 +346,6 @@ do
   schema:assert({ width = 1280 })
   lurek.log.info("config", "window config validated via assert")
 end
-
 --@api-stub: LDocEntry:getName
 -- Returns the display name of this schema
 do
@@ -386,7 +354,6 @@ do
   local label = schema:getName()
   lurek.log.debug("schema", "loaded schema: " .. label) -- prints "Point"
 end
-
 --@api-stub: LSchema:getFields
 -- Returns the field names declared by this schema
 do
@@ -397,9 +364,6 @@ do
     lurek.log.debug("schema", "declared field: " .. field)
   end
 end
-
--- DocEntry methods
-
 --@api-stub: LDocEntry:getName
 -- Returns the short name of this entry (without module prefix)
 do
@@ -410,7 +374,6 @@ do
     lurek.log.debug("docs", "first audio entry: " .. entry:getName())
   end
 end
-
 --@api-stub: LDocEntry:getQualifiedName
 -- Returns the full dotted API name of this entry
 do
@@ -422,7 +385,6 @@ do
     end
   end
 end
-
 --@api-stub: LDocEntry:getModule
 -- Returns the module name this entry belongs to
 do
@@ -433,7 +395,6 @@ do
     lurek.log.debug("docs", "module: " .. first:getModule())
   end
 end
-
 --@api-stub: LDocEntry:getKind
 -- Returns the documentation kind: "function", "method", "type", or "value"
 do
@@ -445,7 +406,6 @@ do
   end
   lurek.log.debug("docs", "found " .. type_count .. " type entries")
 end
-
 --@api-stub: LDocEntry:getDescription
 -- Returns the prose description text for this entry
 do
@@ -458,7 +418,6 @@ do
     end
   end
 end
-
 --@api-stub: LDocEntry:getParameters
 -- Returns parameter metadata as an array of {name, type, description, optional, default}
 do
@@ -475,7 +434,6 @@ do
     end
   end
 end
-
 --@api-stub: LDocEntry:getReturns
 -- Returns return-value metadata as an array of {type, description}
 do
@@ -489,7 +447,6 @@ do
     end
   end
 end
-
 --@api-stub: LDocEntry:getExample
 -- Returns the example code snippet if one was recorded, or nil
 do
@@ -502,7 +459,6 @@ do
     end
   end
 end
-
 --@api-stub: LDocEntry:getSince
 -- Returns the version this entry was introduced, or nil
 do
@@ -517,7 +473,6 @@ do
     end
   end
 end
-
 --@api-stub: LDocEntry:getDeprecated
 -- Returns the deprecation notice if the entry is deprecated, or nil
 do
@@ -532,7 +487,6 @@ do
     end
   end
 end
-
 --@api-stub: LDocEntry:getScore
 -- Returns the documentation quality score for this entry (0.0 to 1.0)
 do
@@ -547,7 +501,6 @@ do
     end
   end
 end
-
 --@api-stub: LDocEntry:hasDescription
 -- Returns true if this entry has a non-empty description
 do
@@ -559,7 +512,6 @@ do
   -- Live-scanned entries have no authored descriptions — only TOML catalogs do.
   lurek.log.info("docs", missing .. " entries missing descriptions (expected for live scan)")
 end
-
 --@api-stub: LDocEntry:hasParameters
 -- Returns true if this entry has at least one parameter documented
 do

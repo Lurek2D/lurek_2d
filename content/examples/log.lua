@@ -1,7 +1,6 @@
 -- content/examples/log.lua
 -- Demonstrates every lurek.log.* function with realistic game-dev usage.
 -- Run: cargo run -- content/examples/log.lua
-
 --@api-stub: lurek.log.setLevel
 -- Sets the minimum severity for log output across all sinks
 do
@@ -14,7 +13,6 @@ do
     lurek.log.setLevel("warn")
   end
 end
-
 --@api-stub: lurek.log.getLevel
 -- Returns the current global log level as a string
 do
@@ -25,7 +23,6 @@ do
     lurek.log.debug("world snapshot: " .. world_state, "perf")
   end
 end
-
 --@api-stub: lurek.log.debug
 -- Logs a debug message visible only at debug/trace level
 do
@@ -36,7 +33,6 @@ do
     "movement"
   )
 end
-
 --@api-stub: lurek.log.info
 -- Logs an informational message for notable lifecycle events
 do
@@ -49,7 +45,6 @@ do
     "scene"
   )
 end
-
 --@api-stub: lurek.log.warn
 -- Logs a warning for recoverable problems that deserve attention
 do
@@ -63,7 +58,6 @@ do
     )
   end
 end
-
 --@api-stub: lurek.log.error
 -- Logs an error for failures that need immediate investigation
 do
@@ -75,7 +69,6 @@ do
     "save"
   )
 end
-
 --@api-stub: lurek.log.print
 -- Logs at a runtime-chosen level, useful when severity comes from config or data
 do
@@ -84,7 +77,6 @@ do
   local mod_name = "expanded_items"
   lurek.log.print(mod_log_level, "mod '" .. mod_name .. "' initialized (v1.2.0)", "mods")
 end
-
 --@api-stub: lurek.log.debug_fields
 -- Logs a debug message with a structured key-value table
 do
@@ -96,7 +88,6 @@ do
     island_count = 3,
   })
 end
-
 --@api-stub: lurek.log.info_fields
 -- Logs an info message with structured fields
 do
@@ -108,7 +99,6 @@ do
     coins = 187,
   })
 end
-
 --@api-stub: lurek.log.warn_fields
 -- Logs a warning with structured fields for machine-parseable diagnostics
 do
@@ -124,7 +114,6 @@ do
     })
   end
 end
-
 --@api-stub: lurek.log.error_fields
 -- Logs an error with structured fields for post-mortem analysis
 do
@@ -136,7 +125,6 @@ do
     fallback = "sprites/placeholder.png",
   })
 end
-
 --@api-stub: lurek.log.struct
 -- Logs a structured message at a runtime-selected level
 do
@@ -149,7 +137,6 @@ do
     crafter = "player_01",
   })
 end
-
 --@api-stub: lurek.log.addSink
 -- Registers a new sink (memory, file, rotating, or callback) and returns its id
 do
@@ -169,7 +156,6 @@ do
 
   lurek.log.info("sinks ready: console=" .. console_sink .. " session=" .. session_sink, "boot")
 end
-
 --@api-stub: lurek.log.removeSink
 -- Removes a sink by id; returns true if it existed
 do
@@ -180,7 +166,6 @@ do
   local was_removed = lurek.log.removeSink(diag)
   lurek.log.info("diag sink removed=" .. tostring(was_removed), "combat")
 end
-
 --@api-stub: lurek.log.clearSinks
 -- Removes ALL sinks; useful during teardown or hot-reload
 do
@@ -191,7 +176,6 @@ do
   -- After clearing, only stderr remains. Re-add sinks for the new scene.
   lurek.log.info("sinks cleared for scene transition", "scene")
 end
-
 --@api-stub: lurek.log.listSinks
 -- Returns an array of tables describing every active sink
 do
@@ -205,7 +189,6 @@ do
     )
   end
 end
-
 --@api-stub: lurek.log.readMemory
 -- Reads entries from a memory sink; optionally drains (clears) them
 do
@@ -221,7 +204,6 @@ do
     print(string.format("[%s][%s] %s", e.level, e.tag, e.message))
   end
 end
-
 --@api-stub: lurek.log.flushFile
 -- Forces a file sink to write buffered data to disk immediately
 do
@@ -231,5 +213,4 @@ do
   lurek.log.flushFile(crash_log)
   -- Now the file has the error even if we abort right after.
 end
-
 print("content/examples/log.lua")

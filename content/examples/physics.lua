@@ -1,7 +1,6 @@
 -- content/examples/physics.lua
 -- lurek.physics API examples.
 -- Run: cargo run -- content/examples/physics.lua
-
 --@api-stub: lurek.physics.newWorld
 -- Creates a new physics world with the given gravity vector
 do
@@ -13,7 +12,6 @@ do
   -- The world starts empty. Verify it was created successfully.
   lurek.log.info("physics world created with " .. world:getBodyCount() .. " bodies", "boot")
 end
-
 --@api-stub: LCellular:step
 -- Steps a physics world forward by dt seconds (free-function variant)
 do
@@ -26,7 +24,6 @@ do
     lurek.physics.step(world, dt)
   end
 end
-
 --@api-stub: lurek.physics.destroyWorld
 -- No-op placeholder for API parity
 do
@@ -35,7 +32,6 @@ do
   local world = lurek.physics.newWorld(0, 9.81)
   lurek.physics.destroyWorld(world)
 end
-
 --@api-stub: LWorld:newBody
 -- Creates a new body in a world (free-function variant)
 do
@@ -48,7 +44,6 @@ do
   local crate = lurek.physics.newBody(world, 100, 200, "dynamic")
   crate:setMass(1.0) -- mass in kg, affects inertia and impulse response
 end
-
 --@api-stub: lurek.physics.getBody
 -- Returns position and velocity of a body (free-function variant for quick queries)
 do
@@ -59,7 +54,6 @@ do
   local x, y, vx, vy = lurek.physics.getBody(world, body)
   lurek.log.debug("crate at " .. x .. "," .. y .. " v=" .. vx .. "," .. vy, "phys")
 end
-
 --@api-stub: lurek.physics.setBodyVelocity
 -- Sets a body's velocity (free-function variant)
 do
@@ -71,7 +65,6 @@ do
   -- Fire bullet rightward at 600 px/s with slight upward arc
   lurek.physics.setBodyVelocity(world, bullet, 600, -200)
 end
-
 --@api-stub: LBody:isSleepingAllowed
 -- Checks if sleeping is allowed on a body (free-function variant)
 do
@@ -83,7 +76,6 @@ do
     lurek.log.debug("body may sleep when idle — good for background props", "phys")
   end
 end
-
 --@api-stub: LBody:setSleepingAllowed
 -- Sets whether a body is allowed to sleep (free-function variant)
 do
@@ -93,7 +85,6 @@ do
   local player = lurek.physics.newBody(world, 100, 200, "dynamic")
   lurek.physics.setSleepingAllowed(world, player, false)
 end
-
 --@api-stub: lurek.physics.newRectangleShape
 -- Creates a rectangle collision shape with the given dimensions
 do
@@ -104,7 +95,6 @@ do
   -- Verify the shape was created with the expected type
   lurek.log.info("crate shape type=" .. crate_shape:getType(), "phys")
 end
-
 --@api-stub: lurek.physics.newCircleShape
 -- Creates a circle collision shape with the given radius
 do
@@ -113,7 +103,6 @@ do
   local ball_shape = lurek.physics.newCircleShape(16)
   lurek.log.info("ball radius=" .. ball_shape:getRadius(), "phys")
 end
-
 --@api-stub: lurek.physics.newEdgeShape
 -- Creates an edge (line segment) collision shape between two local points
 do
@@ -122,7 +111,6 @@ do
   local floor_shape = lurek.physics.newEdgeShape(0, 480, 800, 480)
   lurek.log.info("floor edge type=" .. floor_shape:getType(), "phys")
 end
-
 --@api-stub: lurek.physics.newPolygonShape
 -- Creates a convex polygon collision shape from vertex coordinate pairs
 do
@@ -131,7 +119,6 @@ do
   local triangle = lurek.physics.newPolygonShape(0, 0, 32, 0, 16, 28)
   lurek.log.info("triangle type=" .. triangle:getType(), "phys")
 end
-
 --@api-stub: lurek.physics.newChainShape
 -- Creates a chain (polyline) collision shape
 do
@@ -141,7 +128,6 @@ do
   local hill = lurek.physics.newChainShape(false, 0, 400, 100, 360, 200, 380, 300, 420)
   lurek.log.info("hill chain type=" .. hill:getType(), "phys")
 end
-
 --@api-stub: lurek.physics.attachShape
 -- Attaches a previously created shape to a body, using the shape's stored material properties
 do
@@ -159,7 +145,6 @@ do
   -- Attach the configured shape — body mass updates automatically from density
   lurek.physics.attachShape(car, roof)
 end
-
 --@api-stub: lurek.physics.getCollisions
 -- Returns all collision events from the last world step as {body_a, body_b} pairs
 do
@@ -174,7 +159,6 @@ do
     end
   end
 end
-
 --@api-stub: lurek.physics.debugDraw
 -- Enables or disables automatic physics debug overlay rendering for the next frame
 do
@@ -186,7 +170,6 @@ do
     if lurek.input.keyboard.isDown("f3") then lurek.physics.debugDraw(false) end
   end
 end
-
 --@api-stub: lurek.physics.drawDebugGpu
 -- Queues a GPU-rendered physics debug visualization using the world's current body state
 do
@@ -200,7 +183,6 @@ do
     })
   end
 end
-
 --@api-stub: lurek.physics.newTerrain
 -- Creates a destructible terrain grid linked to a physics world for automatic collider generation
 do
@@ -215,7 +197,6 @@ do
   -- flush() must be called to sync the grid state to the physics engine
   terrain:flush()
 end
-
 --@api-stub: lurek.physics.newCellular
 -- Creates a new cellular automaton simulation grid for particle-like physics (sand, water, fire)
 do
@@ -229,10 +210,6 @@ do
   -- Call step() each frame to advance the simulation one tick
   function lurek.process(dt) sand:step() end
 end
-
-
--- World methods
-
 --@api-stub: LCellular:step
 -- Performs the step operation on this world.
 do
@@ -243,7 +220,6 @@ do
     world:step(dt) -- advances bodies, resolves collisions, fires callbacks
   end
 end
-
 --@api-stub: LWorld:clear
 -- Clears all items from this world.
 do
@@ -254,7 +230,6 @@ do
   world:clear()
   lurek.log.info("world cleared, body count=" .. world:getBodyCount(), "scene")
 end
-
 --@api-stub: LWorld:getGravity
 -- Returns the gravity of this world.
 do
@@ -263,7 +238,6 @@ do
   local gx, gy = world:getGravity()
   lurek.log.info("gravity=" .. gx .. "," .. gy, "phys")
 end
-
 --@api-stub: LWorld:setGravity
 -- Sets the gravity of this world.
 do
@@ -275,7 +249,6 @@ do
     if lurek.input.keyboard.isDown("g") then world:setGravity(0, -9.81) end
   end
 end
-
 --@api-stub: LWorld:setMeter
 -- Sets the meter of this world.
 do
@@ -286,7 +259,6 @@ do
   world:setMeter(64) -- now 64 pixels = 1 physics meter
   lurek.log.info("ppm=" .. world:getMeter(), "phys")
 end
-
 --@api-stub: LWorld:getMeter
 -- Returns the meter of this world.
 do
@@ -295,7 +267,6 @@ do
   local ppm = world:getMeter()
   lurek.log.debug("1 meter = " .. ppm .. " pixels", "phys")
 end
-
 --@api-stub: LWorld:toPhysics
 -- Performs the to physics operation on this world.
 do
@@ -306,7 +277,6 @@ do
   local meters = world:toPhysics(px)
   lurek.log.debug(px .. " px = " .. meters .. " m", "phys")
 end
-
 --@api-stub: LWorld:toPixels
 -- Performs the to pixels operation on this world.
 do
@@ -316,7 +286,6 @@ do
   local pixels = world:toPixels(2.5)
   lurek.log.debug("2.5 m = " .. pixels .. " px", "phys")
 end
-
 --@api-stub: LWorld:getBodyCount
 -- Returns the number of body items in this world.
 do
@@ -325,7 +294,6 @@ do
   world:newBody(100, 200, "dynamic")
   if world:getBodyCount() < 1000 then world:newBody(150, 200, "dynamic") end
 end
-
 --@api-stub: LWorld:getBodyIds
 -- Returns the body ids of this world.
 do
@@ -337,7 +305,6 @@ do
     lurek.log.debug("body id=" .. id, "phys")
   end
 end
-
 --@api-stub: LWorld:destroyBody
 -- Destroys this world and releases all associated resources.
 do
@@ -348,7 +315,6 @@ do
   local enemy = world:newBody(300, 200, "dynamic")
   world:destroyBody(enemy:getId()) -- enemy is now invalid, don't use it
 end
-
 --@api-stub: LWorld:newBody
 -- Creates and returns a new body widget or object.
 do
@@ -359,7 +325,6 @@ do
   crate:setMass(2.5)         -- heavier crate resists impulses more
   crate:setRestitution(0.3)  -- slight bounce on impact
 end
-
 --@api-stub: LWorld:fixtureCount
 -- Performs the fixture count operation on this world.
 do
@@ -370,7 +335,6 @@ do
   local n = world:fixtureCount(body:getId())
   lurek.log.debug("body has " .. n .. " fixtures", "phys")
 end
-
 --@api-stub: LWorld:jointCount
 -- Performs the joint count operation on this world.
 do
@@ -378,7 +342,6 @@ do
   local world = lurek.physics.newWorld(0, 9.81)
   lurek.log.info("joints=" .. world:jointCount(), "phys")
 end
-
 --@api-stub: LWorld:getJointIds
 -- Returns the joint ids of this world.
 do
@@ -388,7 +351,6 @@ do
     lurek.log.debug("joint id=" .. jid, "phys")
   end
 end
-
 --@api-stub: LWorld:getJointBodies
 -- Returns the joint bodies of this world.
 do
@@ -401,7 +363,6 @@ do
   local a, b = world:getJointBodies(jid)
   lurek.log.debug("joint " .. jid .. " links " .. a .. " <-> " .. b, "phys")
 end
-
 --@api-stub: LWorld:destroyJoint
 -- Destroys this world and releases all associated resources.
 do
@@ -413,7 +374,6 @@ do
   local jid = world:addRevoluteJoint(b1:getId(), b2:getId(), 0, 50)
   world:destroyJoint(jid) -- b2 is now free-falling
 end
-
 --@api-stub: LWorld:getJointType
 -- Returns the joint type of this world.
 do
@@ -426,7 +386,6 @@ do
   local kind = world:getJointType(jid)
   if kind == "revolute" then lurek.log.debug("hinge joint", "phys") end
 end
-
 --@api-stub: LWorld:getJointMotorSpeed
 -- Returns the joint motor speed of this world.
 do
@@ -438,7 +397,6 @@ do
   local rpm = world:getJointMotorSpeed(jid)
   lurek.log.debug("motor speed=" .. rpm, "phys")
 end
-
 --@api-stub: LWorld:getJointLimits
 -- Returns the joint limits of this world.
 do
@@ -451,7 +409,6 @@ do
   local lo, hi = world:getJointLimits(jid)
   lurek.log.debug("limits=[" .. lo .. ", " .. hi .. "]", "phys")
 end
-
 --@api-stub: LWorld:getBodyAtPoint
 -- Returns the body at point of this world.
 do
@@ -461,7 +418,6 @@ do
   local hit = world:getBodyAtPoint(150, 200)
   if hit then lurek.log.debug("clicked body=" .. hit, "phys") end
 end
-
 --@api-stub: LWorld:getCollisionEvents
 -- Returns the collision events of this world.
 do
@@ -476,7 +432,6 @@ do
     end
   end
 end
-
 --@api-stub: LWorld:getBeginContactEvents
 -- Returns the begin contact events of this world.
 do
@@ -490,7 +445,6 @@ do
     end
   end
 end
-
 --@api-stub: LWorld:getEndContactEvents
 -- Returns the end contact events of this world.
 do
@@ -504,7 +458,6 @@ do
     end
   end
 end
-
 --@api-stub: LWorld:getContacts
 -- Returns the contacts of this world.
 do
@@ -519,7 +472,6 @@ do
     end
   end
 end
-
 --@api-stub: LWorld:getBodyContacts
 -- Returns the body contacts of this world.
 do
@@ -530,7 +482,6 @@ do
   local touches = world:getBodyContacts(player:getId())
   lurek.log.debug("player contacts=" .. #touches, "phys")
 end
-
 --@api-stub: LWorld:setBodyType
 -- Sets the body type of this world.
 do
@@ -540,7 +491,6 @@ do
   local door = world:newBody(200, 200, "static")
   world:setBodyType(door:getId(), "kinematic") -- now movable by code
 end
-
 --@api-stub: LWorld:getBodyType
 -- Returns the body type of this world.
 do
@@ -549,7 +499,6 @@ do
   local body = world:newBody(100, 200, "dynamic")
   if world:getBodyType(body:getId()) == "dynamic" then body:setMass(1.0) end
 end
-
 --@api-stub: LWorld:setBeginContact
 -- Sets the begin contact of this world.
 do
@@ -560,7 +509,6 @@ do
     lurek.log.info("touch " .. a .. " <-> " .. b, "phys")
   end)
 end
-
 --@api-stub: LWorld:clearBeginContact
 -- Clears all begin contact items from this world.
 do
@@ -569,7 +517,6 @@ do
   world:setBeginContact(function(a, b) end)
   world:clearBeginContact() -- callback is now nil, won't fire
 end
-
 --@api-stub: LWorld:setEndContact
 -- Sets the end contact of this world.
 do
@@ -579,7 +526,6 @@ do
     lurek.log.debug("apart " .. a .. " / " .. b, "phys")
   end)
 end
-
 --@api-stub: LWorld:clearEndContact
 -- Clears all end contact items from this world.
 do
@@ -587,7 +533,6 @@ do
   world:setEndContact(function(a, b) end)
   world:clearEndContact()
 end
-
 --@api-stub: LWorld:getBodyData
 -- Returns the body data of this world.
 do
@@ -601,7 +546,6 @@ do
   local data = world:getBodyData(body:getId())
   if data then lurek.log.debug("entity kind=" .. data.kind, "phys") end
 end
-
 --@api-stub: LWorld:clearBodyData
 -- Clears all body data items from this world.
 do
@@ -611,7 +555,6 @@ do
   world:setBodyData(body:getId(), { name = "crate" })
   world:clearBodyData(body:getId()) -- data is now nil
 end
-
 --@api-stub: LWorld:setBodyCCD
 -- Sets the body ccd of this world.
 do
@@ -621,7 +564,6 @@ do
   local bullet = world:newBody(100, 200, "dynamic")
   world:setBodyCCD(bullet:getId(), true) -- no more passing through walls
 end
-
 --@api-stub: LWorld:getBodyCCD
 -- Returns the body ccd of this world.
 do
@@ -630,7 +572,6 @@ do
   local body = world:newBody(100, 200, "dynamic")
   if not world:getBodyCCD(body:getId()) then world:setBodyCCD(body:getId(), true) end
 end
-
 --@api-stub: LWorld:clearBodyOneWay
 -- Clears all body one way items from this world.
 do
@@ -639,7 +580,6 @@ do
   local platform = world:newBody(200, 300, "static")
   world:clearBodyOneWay(platform:getId())
 end
-
 --@api-stub: LWorld:getBodyOneWay
 -- Returns the body one way of this world.
 do
@@ -650,7 +590,6 @@ do
   local nx, ny = world:getBodyOneWay(platform:getId())
   if nx then lurek.log.debug("one-way n=" .. nx .. "," .. ny, "phys") end
 end
-
 --@api-stub: LWorld:setJointBreakForce
 -- Sets the joint break force of this world.
 do
@@ -662,7 +601,6 @@ do
   local jid = world:addRevoluteJoint(b1:getId(), b2:getId(), 0, 50)
   world:setJointBreakForce(jid, 5000.0) -- breaks at 5000 Newtons
 end
-
 --@api-stub: LWorld:getJointBreakForce
 -- Returns the joint break force of this world.
 do
@@ -673,7 +611,6 @@ do
   local f = world:getJointBreakForce(jid)
   if f then lurek.log.debug("breaks at " .. f .. " N", "phys") end
 end
-
 --@api-stub: LWorld:isBodySleeping
 -- Returns true if this world body sleeping.
 do
@@ -685,7 +622,6 @@ do
     lurek.log.debug("body active", "phys")
   end
 end
-
 --@api-stub: LWorld:wakeUpBody
 -- Performs the wake up body operation on this world.
 do
@@ -696,7 +632,6 @@ do
   world:wakeUpBody(body:getId())
   body:applyImpulse(0, -100) -- now the impulse takes effect
 end
-
 --@api-stub: LWorld:sleepBody
 -- Performs the sleep body operation on this world.
 do
@@ -706,7 +641,6 @@ do
   local rubble = world:newBody(100, 200, "dynamic")
   world:sleepBody(rubble:getId())
 end
-
 --@api-stub: LWorld:setSolverIterations
 -- Sets the solver iterations of this world.
 do
@@ -715,7 +649,6 @@ do
   local world = lurek.physics.newWorld(0, 9.81)
   world:setSolverIterations(12)
 end
-
 --@api-stub: LWorld:getSolverIterations
 -- Returns the solver iterations of this world.
 do
@@ -723,7 +656,6 @@ do
   local iters = world:getSolverIterations()
   lurek.log.info("solver iterations=" .. iters, "phys")
 end
-
 --@api-stub: LWorld:newBodies
 -- Creates and returns a new bodies widget or object.
 do
@@ -737,7 +669,6 @@ do
   })
   lurek.log.info("spawned " .. #ids .. " crates", "phys")
 end
-
 --@api-stub: LWorld:addZone
 -- Adds a zone to this world.
 do
@@ -749,7 +680,6 @@ do
   local water = world:addZone(0, 400, 800, 200)
   water:setGravityDirectional(0, 2.0) -- gentle downward pull in water
 end
-
 --@api-stub: LWorld:getZoneEvents
 -- Returns the zone events of this world.
 do
@@ -763,10 +693,6 @@ do
     end
   end
 end
-
-
--- Zone methods
-
 --@api-stub: LBody:getId
 -- Returns the id of this zone.
 do
@@ -775,7 +701,6 @@ do
   local zone = world:addZone(0, 0, 100, 100)
   lurek.log.info("water zone id=" .. zone:getId(), "phys")
 end
-
 --@api-stub: LZone:setEnabled
 -- Sets whether this zone is enabled and accepts input.
 do
@@ -784,7 +709,6 @@ do
   local field = world:addZone(0, 0, 200, 200)
   field:setEnabled(false) -- force field is off until player hits a switch
 end
-
 --@api-stub: LZone:setPriority
 -- Sets the priority of this zone.
 do
@@ -794,7 +718,6 @@ do
   local wind = world:addZone(0, 0, 200, 200)
   wind:setPriority(10) -- higher priority overrides lower-priority overlapping zones
 end
-
 --@api-stub: LZone:setLayerMask
 -- Sets the layer mask of this zone.
 do
@@ -804,7 +727,6 @@ do
   local slow = world:addZone(100, 100, 200, 200)
   slow:setLayerMask(0x02) -- only affects bodies on layer 2
 end
-
 --@api-stub: LZone:setCircle
 -- Sets the circle of this zone.
 do
@@ -814,7 +736,6 @@ do
   local well = world:addZone(0, 0, 1, 1) -- initial rect doesn't matter
   well:setCircle(400, 300, 120) -- centered at (400,300), radius 120px
 end
-
 --@api-stub: LZone:setGravityDirectional
 -- Sets the gravity directional of this zone.
 do
@@ -824,7 +745,6 @@ do
   local water = world:addZone(0, 400, 800, 200)
   water:setGravityDirectional(0, 2.0) -- slow sinking in water
 end
-
 --@api-stub: LZone:setGravityZero
 -- Sets the gravity zero of this zone.
 do
@@ -834,7 +754,6 @@ do
   local bubble = world:addZone(300, 100, 200, 200)
   bubble:setGravityZero() -- bodies inside float weightlessly
 end
-
 --@api-stub: LZone:setLinearDampingOverride
 -- Sets the linear damping override of this zone.
 do
@@ -844,7 +763,6 @@ do
   local glue = world:addZone(0, 0, 100, 100)
   glue:setLinearDampingOverride(5.0) -- bodies slow dramatically inside
 end
-
 --@api-stub: LPhysicsShape:destroy
 -- Destroys this zone and releases all associated resources.
 do
@@ -853,10 +771,6 @@ do
   local zone = world:addZone(0, 0, 100, 100)
   zone:destroy() -- zone is gone
 end
-
-
--- Terrain methods
-
 --@api-stub: LCellular:setCell
 -- Sets the cell of this terrain.
 do
@@ -867,7 +781,6 @@ do
   terrain:setCell(10, 5, true)  -- make cell (10,5) solid
   terrain:flush()               -- regenerate colliders
 end
-
 --@api-stub: LCellular:getCell
 -- Returns the cell of this terrain.
 do
@@ -877,7 +790,6 @@ do
   local terrain = lurek.physics.newTerrain(64, 32, 8.0, world)
   if terrain:getCell(10, 5) then lurek.log.debug("solid cell", "terrain") end
 end
-
 --@api-stub: LTerrain:fillAll
 -- Performs the fill all operation on this terrain.
 do
@@ -887,7 +799,6 @@ do
   local terrain = lurek.physics.newTerrain(64, 32, 8.0, world)
   terrain:fillAll(true) -- everything is solid ground
 end
-
 --@api-stub: LTerrain:flush
 -- Flushes all pending output from this terrain immediately.
 do
@@ -900,7 +811,6 @@ do
   terrain:setCell(7, 5, true)
   terrain:flush() -- one flush for all three changes
 end
-
 --@api-stub: LTerrain:isDirty
 -- Returns true if this terrain dirty.
 do
@@ -910,7 +820,6 @@ do
   local terrain = lurek.physics.newTerrain(64, 32, 8.0, world)
   if terrain:isDirty() then terrain:flush() end
 end
-
 --@api-stub: LTerrain:collapseColumns
 -- Collapses this terrain to hide its children or content.
 do
@@ -923,7 +832,6 @@ do
   lurek.log.info("collapsed " .. fell .. " cells", "terrain")
   terrain:flush()
 end
-
 --@api-stub: LTerrain:solidPositions
 -- Performs the solid positions operation on this terrain.
 do
@@ -934,7 +842,6 @@ do
   local positions = terrain:solidPositions()
   lurek.log.debug("solid cells=" .. #positions, "terrain")
 end
-
 --@api-stub: LCellular:toBytes
 -- Performs the to bytes operation on this terrain.
 do
@@ -945,7 +852,6 @@ do
   local bytes = terrain:toBytes()
   lurek.log.info("terrain blob=" .. #bytes .. " bytes", "save")
 end
-
 --@api-stub: LCellular:loadFromBytes
 -- Loads from bytes into this terrain.
 do
@@ -956,10 +862,6 @@ do
   terrain:loadFromBytes(snapshot)
   terrain:flush() -- must flush to regenerate physics
 end
-
-
--- Cellular methods
-
 --@api-stub: LCellular:setCell
 -- Sets the cell of this cellular.
 do
@@ -970,7 +872,6 @@ do
   sand:setCell(64, 0, lurek.physics.CELL_SAND)   -- sand falls down
   sand:setCell(65, 0, lurek.physics.CELL_WATER)  -- water flows sideways
 end
-
 --@api-stub: LCellular:getCell
 -- Returns the cell of this cellular.
 do
@@ -982,7 +883,6 @@ do
     sand:setCell(10, 10, lurek.physics.CELL_ROCK)
   end
 end
-
 --@api-stub: LCellular:step
 -- Performs the step operation on this cellular.
 do
@@ -993,7 +893,6 @@ do
     sand:step() -- one tick per frame gives smooth 60fps simulation
   end
 end
-
 --@api-stub: LCellular:stepN
 -- Performs the step n operation on this cellular.
 do
@@ -1002,7 +901,6 @@ do
   local sand = lurek.physics.newCellular(128, 64)
   sand:stepN(30) -- settle the grid before gameplay starts
 end
-
 --@api-stub: LCellular:toImageData
 -- Performs the to image data operation on this cellular.
 do
@@ -1012,7 +910,6 @@ do
   local rgba = sand:toImageData()
   lurek.log.debug("cellular bytes=" .. #rgba, "cell")
 end
-
 --@api-stub: LCellular:countCells
 -- Performs the count cells operation on this cellular.
 do
@@ -1022,7 +919,6 @@ do
   local water = sand:countCells(lurek.physics.CELL_WATER)
   lurek.log.debug("water cells=" .. water, "cell")
 end
-
 --@api-stub: LCellular:findCells
 -- Finds and returns the cells in this cellular by name or id.
 do
@@ -1032,7 +928,6 @@ do
     lurek.log.debug("fire at " .. p.x .. "," .. p.y, "cell")
   end
 end
-
 --@api-stub: LCellular:toBytes
 -- Performs the to bytes operation on this cellular.
 do
@@ -1041,7 +936,6 @@ do
   local blob = sand:toBytes()
   lurek.log.info("cellular blob=" .. #blob .. " bytes", "save")
 end
-
 --@api-stub: LCellular:loadFromBytes
 -- Loads from bytes into this cellular.
 do
@@ -1051,10 +945,6 @@ do
   local ok = sand:loadFromBytes(blob)
   lurek.log.info("cellular reload ok=" .. tostring(ok), "save")
 end
-
-
--- Body methods
-
 --@api-stub: LBody:getId
 -- Returns the id of this body.
 do
@@ -1064,7 +954,6 @@ do
   local crate = world:newBody(100, 200, "dynamic")
   lurek.log.debug("crate id=" .. crate:getId(), "phys")
 end
-
 --@api-stub: LBody:getPosition
 -- Returns the position of this body.
 do
@@ -1075,7 +964,6 @@ do
   local x, y = crate:getPosition()
   lurek.log.debug("crate at " .. x .. "," .. y, "phys")
 end
-
 --@api-stub: LBody:setPosition
 -- Sets the position of this body.
 do
@@ -1085,7 +973,6 @@ do
   local player = world:newBody(100, 200, "dynamic")
   player:setPosition(400, 300) -- teleport to screen center
 end
-
 --@api-stub: LBody:getX
 -- Returns the x of this body.
 do
@@ -1095,7 +982,6 @@ do
   local enemy = world:newBody(900, 200, "dynamic")
   if enemy:getX() > 800 then enemy:destroy() end -- off-screen cleanup
 end
-
 --@api-stub: LBody:getY
 -- Returns the y of this body.
 do
@@ -1104,7 +990,6 @@ do
   local player = world:newBody(100, 200, "dynamic")
   if player:getY() > 1000 then player:setPosition(100, 200) end
 end
-
 --@api-stub: LBody:getVelocity
 -- Returns the velocity of this body.
 do
@@ -1115,7 +1000,6 @@ do
   local vx, vy = body:getVelocity()
   lurek.log.debug("v=" .. vx .. "," .. vy, "phys")
 end
-
 --@api-stub: LBody:setVelocity
 -- Sets the velocity of this body.
 do
@@ -1128,7 +1012,6 @@ do
     player:setVelocity(150, 0)
   end
 end
-
 --@api-stub: LBody:getAngle
 -- Returns the angle of this body.
 do
@@ -1139,7 +1022,6 @@ do
   local rad = crate:getAngle()
   lurek.log.debug("angle=" .. rad .. " rad", "phys")
 end
-
 --@api-stub: LBody:setAngle
 -- Sets the angle of this body.
 do
@@ -1148,7 +1030,6 @@ do
   local sign = world:newBody(200, 200, "static")
   sign:setAngle(math.pi / 4) -- 45 degree tilt
 end
-
 --@api-stub: LBody:getAngularVelocity
 -- Returns the angular velocity of this body.
 do
@@ -1160,7 +1041,6 @@ do
     wheel:applyTorque(-5) -- brake to prevent infinite spin
   end
 end
-
 --@api-stub: LBody:setAngularVelocity
 -- Sets the angular velocity of this body.
 do
@@ -1169,7 +1049,6 @@ do
   local turret = world:newBody(200, 200, "kinematic")
   turret:setAngularVelocity(1.5) -- slow constant rotation
 end
-
 --@api-stub: LBody:getMass
 -- Returns the mass of this body.
 do
@@ -1179,7 +1058,6 @@ do
   local crate = world:newBody(100, 200, "dynamic")
   lurek.log.debug("crate mass=" .. crate:getMass() .. " kg", "phys")
 end
-
 --@api-stub: LBody:setMass
 -- Sets the mass of this body.
 do
@@ -1188,7 +1066,6 @@ do
   local heavy = world:newBody(100, 200, "dynamic")
   heavy:setMass(50.0) -- 50 kg — hard to push
 end
-
 --@api-stub: LPhysicsShape:getType
 -- Returns the type of this body.
 do
@@ -1198,7 +1075,6 @@ do
   local body = world:newBody(100, 200, "dynamic")
   if body:getType() == "dynamic" then body:applyImpulse(0, -50) end
 end
-
 --@api-stub: LBody:setType
 -- Sets the type of this body.
 do
@@ -1207,7 +1083,6 @@ do
   local wall = world:newBody(200, 200, "static")
   wall:setType("dynamic") -- wall crumbles — now affected by gravity
 end
-
 --@api-stub: LBody:getWidth
 -- Returns the width of this body.
 do
@@ -1217,7 +1092,6 @@ do
   local body = world:newBody(100, 200, "dynamic")
   lurek.log.debug("body width=" .. body:getWidth(), "phys")
 end
-
 --@api-stub: LBody:getHeight
 -- Returns the height of this body.
 do
@@ -1226,7 +1100,6 @@ do
   local body = world:newBody(100, 200, "dynamic")
   lurek.log.debug("body height=" .. body:getHeight(), "phys")
 end
-
 --@api-stub: LBody:getFriction
 -- Returns the friction of this body.
 do
@@ -1236,7 +1109,6 @@ do
   local crate = world:newBody(100, 200, "dynamic")
   if crate:getFriction() < 0.5 then crate:setFriction(0.7) end
 end
-
 --@api-stub: LPhysicsShape:setFriction
 -- Sets the friction of this body.
 do
@@ -1245,7 +1117,6 @@ do
   local ice = world:newBody(100, 200, "dynamic")
   ice:setFriction(0.05) -- nearly frictionless — slides easily
 end
-
 --@api-stub: LBody:getRestitution
 -- Returns the restitution of this body.
 do
@@ -1254,7 +1125,6 @@ do
   local ball = world:newBody(100, 200, "dynamic")
   lurek.log.debug("ball bounce=" .. ball:getRestitution(), "phys")
 end
-
 --@api-stub: LPhysicsShape:setRestitution
 -- Sets the restitution of this body.
 do
@@ -1263,7 +1133,6 @@ do
   local ball = world:newBody(100, 200, "dynamic")
   ball:setRestitution(0.8) -- bounces back 80% of impact speed
 end
-
 --@api-stub: LBody:getLayer
 -- Returns the layer of this body.
 do
@@ -1273,7 +1142,6 @@ do
   local pickup = world:newBody(100, 200, "dynamic")
   lurek.log.debug("layer=" .. pickup:getLayer(), "phys")
 end
-
 --@api-stub: LBody:setLayer
 -- Sets the layer of this body.
 do
@@ -1282,7 +1150,6 @@ do
   local pickup = world:newBody(100, 200, "dynamic")
   pickup:setLayer(0x04) -- layer 3 (bit 2)
 end
-
 --@api-stub: LBody:getMask
 -- Returns the mask of this body.
 do
@@ -1292,7 +1159,6 @@ do
   local body = world:newBody(100, 200, "dynamic")
   lurek.log.debug("mask=" .. body:getMask(), "phys")
 end
-
 --@api-stub: LBody:setMask
 -- Sets the mask of this body.
 do
@@ -1301,7 +1167,6 @@ do
   local ghost = world:newBody(100, 200, "dynamic")
   ghost:setMask(0x01) -- only respond to layer 1 (walls)
 end
-
 --@api-stub: LBody:applyImpulse
 -- Applies impulse to this body.
 do
@@ -1314,7 +1179,6 @@ do
     if lurek.input.keyboard.isDown("space") then player:applyImpulse(0, -300) end
   end
 end
-
 --@api-stub: LBody:applyForce
 -- Applies force to this body.
 do
@@ -1327,7 +1191,6 @@ do
     rocket:applyForce(0, -200)
   end
 end
-
 --@api-stub: LBody:applyTorque
 -- Applies torque to this body.
 do
@@ -1337,7 +1200,6 @@ do
   local wheel = world:newBody(100, 200, "dynamic")
   wheel:applyTorque(50.0) -- spin the wheel counter-clockwise
 end
-
 --@api-stub: LBody:applyAngularImpulse
 -- Applies angular impulse to this body.
 do
@@ -1346,7 +1208,6 @@ do
   local top = world:newBody(100, 200, "dynamic")
   top:applyAngularImpulse(2.5) -- instant spin
 end
-
 --@api-stub: LBody:getGravityScale
 -- Returns the gravity scale of this body.
 do
@@ -1356,7 +1217,6 @@ do
   local body = world:newBody(100, 200, "dynamic")
   lurek.log.debug("g-scale=" .. body:getGravityScale(), "phys")
 end
-
 --@api-stub: LBody:setGravityScale
 -- Sets the gravity scale of this body.
 do
@@ -1365,7 +1225,6 @@ do
   local balloon = world:newBody(100, 200, "dynamic")
   balloon:setGravityScale(-0.5) -- gently floats up
 end
-
 --@api-stub: LBody:isFixedRotation
 -- Returns true if this body fixed rotation.
 do
@@ -1375,7 +1234,6 @@ do
   local player = world:newBody(100, 200, "dynamic")
   if not player:isFixedRotation() then player:setFixedRotation(true) end
 end
-
 --@api-stub: LBody:setFixedRotation
 -- Sets the fixed rotation of this body.
 do
@@ -1384,7 +1242,6 @@ do
   local player = world:newBody(100, 200, "dynamic")
   player:setFixedRotation(true) -- player won't topple over
 end
-
 --@api-stub: LBody:getLinearDamping
 -- Returns the linear damping of this body.
 do
@@ -1394,7 +1251,6 @@ do
   local body = world:newBody(100, 200, "dynamic")
   lurek.log.debug("damping=" .. body:getLinearDamping(), "phys")
 end
-
 --@api-stub: LBody:setLinearDamping
 -- Sets the linear damping of this body.
 do
@@ -1403,7 +1259,6 @@ do
   local fish = world:newBody(100, 200, "dynamic")
   fish:setLinearDamping(2.0) -- slows quickly when thrust stops
 end
-
 --@api-stub: LBody:getAngularDamping
 -- Returns the angular damping of this body.
 do
@@ -1412,7 +1267,6 @@ do
   local top = world:newBody(100, 200, "dynamic")
   lurek.log.debug("ang damping=" .. top:getAngularDamping(), "phys")
 end
-
 --@api-stub: LBody:setAngularDamping
 -- Sets the angular damping of this body.
 do
@@ -1422,7 +1276,6 @@ do
   local crate = world:newBody(100, 200, "dynamic")
   crate:setAngularDamping(0.5) -- moderate spin decay
 end
-
 --@api-stub: LBody:isBullet
 -- Returns true if this body bullet.
 do
@@ -1432,7 +1285,6 @@ do
   local proj = world:newBody(100, 200, "dynamic")
   if proj:isBullet() then lurek.log.debug("CCD on", "phys") end
 end
-
 --@api-stub: LBody:setBullet
 -- Sets the bullet of this body.
 do
@@ -1442,7 +1294,6 @@ do
   local arrow = world:newBody(100, 200, "dynamic")
   arrow:setBullet(true)
 end
-
 --@api-stub: LBody:isSleepingAllowed
 -- Returns true if this body sleeping allowed.
 do
@@ -1450,7 +1301,6 @@ do
   local body = world:newBody(100, 200, "dynamic")
   if body:isSleepingAllowed() then body:setSleepingAllowed(false) end
 end
-
 --@api-stub: LBody:setSleepingAllowed
 -- Sets the sleeping allowed of this body.
 do
@@ -1459,7 +1309,6 @@ do
   local player = world:newBody(100, 200, "dynamic")
   player:setSleepingAllowed(false) -- always simulated
 end
-
 --@api-stub: LPhysicsShape:destroy
 -- Destroys this body and releases all associated resources.
 do
@@ -1469,7 +1318,6 @@ do
   local enemy = world:newBody(100, 200, "dynamic")
   enemy:destroy()
 end
-
 --@api-stub: LBody:isSleeping
 -- Returns true if this body sleeping.
 do
@@ -1478,7 +1326,6 @@ do
   local body = world:newBody(100, 200, "dynamic")
   if not body:isSleeping() then lurek.log.debug("active", "phys") end
 end
-
 --@api-stub: LBody:wakeUp
 -- Performs the wake up operation on this body.
 do
@@ -1488,7 +1335,6 @@ do
   body:wakeUp()
   body:applyImpulse(0, -100) -- impulse now takes effect
 end
-
 --@api-stub: LBody:sleep
 -- Performs the sleep operation on this body.
 do
@@ -1498,10 +1344,6 @@ do
   local rubble = world:newBody(100, 200, "dynamic")
   rubble:sleep()
 end
-
-
--- PhysicsShape methods
-
 --@api-stub: LPhysicsShape:getType
 -- Returns the type of this physics shape.
 do
@@ -1512,7 +1354,6 @@ do
     lurek.log.debug("ball-shape r=" .. shape:getRadius(), "phys")
   end
 end
-
 --@api-stub: LPhysicsShape:getRadius
 -- Returns the radius of this physics shape.
 do
@@ -1520,7 +1361,6 @@ do
   local ball = lurek.physics.newCircleShape(16)
   lurek.log.debug("radius=" .. ball:getRadius(), "phys")
 end
-
 --@api-stub: LPhysicsShape:getBoundingBox
 -- Returns the bounding box of this physics shape.
 do
@@ -1530,7 +1370,6 @@ do
   local x1, y1, x2, y2 = crate_shape:getBoundingBox()
   lurek.log.debug("aabb " .. x1 .. "," .. y1 .. "->" .. x2 .. "," .. y2, "phys")
 end
-
 --@api-stub: LPhysicsShape:setDensity
 -- Sets the density of this physics shape.
 do
@@ -1539,7 +1378,6 @@ do
   local shape = lurek.physics.newRectangleShape(32, 32)
   shape:setDensity(2.0) -- twice as heavy as default
 end
-
 --@api-stub: LPhysicsShape:setFriction
 -- Sets the friction of this physics shape.
 do
@@ -1548,7 +1386,6 @@ do
   local shape = lurek.physics.newRectangleShape(32, 32)
   shape:setFriction(0.7)
 end
-
 --@api-stub: LPhysicsShape:setRestitution
 -- Sets the restitution of this physics shape.
 do
@@ -1556,7 +1393,6 @@ do
   local ball = lurek.physics.newCircleShape(16)
   ball:setRestitution(0.85) -- very bouncy
 end
-
 --@api-stub: LPhysicsShape:setSensor
 -- Sets the sensor of this physics shape.
 do
@@ -1565,7 +1401,6 @@ do
   local trigger = lurek.physics.newRectangleShape(64, 64)
   trigger:setSensor(true) -- no collision response, only detection
 end
-
 --@api-stub: LPhysicsShape:destroy
 -- Destroys this physics shape and releases all associated resources.
 do
@@ -1574,7 +1409,6 @@ do
   local shape = lurek.physics.newRectangleShape(32, 32)
   shape:destroy()
 end
-
 --@api-stub: lurek.physics.testAABB
 -- Tests whether two axis-aligned bounding boxes overlap
 do
@@ -1584,7 +1418,6 @@ do
   local hit = lurek.physics.testAABB(0, 0, 10, 10, 5, 5, 20, 20)
   lurek.log.debug("AABB overlap=" .. tostring(hit), "physics")
 end
-
 --@api-stub: lurek.physics.testCircles
 -- Tests whether two circles overlap
 do
@@ -1593,7 +1426,6 @@ do
   local hit = lurek.physics.testCircles(0, 0, 5, 3, 3, 5)
   lurek.log.debug("circles overlap=" .. tostring(hit), "physics")
 end
-
 --@api-stub: lurek.physics.testCircleAABB
 -- Tests whether a circle overlaps an AABB
 do
@@ -1602,7 +1434,6 @@ do
   local hit = lurek.physics.testCircleAABB(5, 5, 3, 0, 0, 10, 10)
   lurek.log.debug("circle-AABB overlap=" .. tostring(hit), "physics")
 end
-
 --@api-stub: lurek.physics.testPoint
 -- Tests whether a point lies inside an AABB
 do
@@ -1611,7 +1442,6 @@ do
   local hit = lurek.physics.testPoint(5, 5, 0, 0, 10, 10)
   lurek.log.debug("point-in-AABB=" .. tostring(hit), "physics")
 end
-
 --@api-stub: LWorld:addDistanceJoint
 -- Adds a distance joint to this world.
 do
@@ -1625,7 +1455,6 @@ do
   local jid = world:addDistanceJoint(a:getId(), b:getId(), 100, 100, 200, 100, 100)
   lurek.log.info("distance joint: " .. jid, "physics")
 end
-
 --@api-stub: LWorld:addFixture
 -- Adds a fixture to this world.
 do
@@ -1639,7 +1468,6 @@ do
   local fid = world:addFixture(b:getId(), "circle", 1.0, 0.4, 0.3, false, 16.0)
   lurek.log.info("fixture id: " .. fid, "physics")
 end
-
 --@api-stub: LWorld:addFrictionJoint
 -- Adds a friction joint to this world.
 do
@@ -1652,7 +1480,6 @@ do
   local jid = world:addFrictionJoint(a:getId(), b:getId(), 100, 100, 50, 10)
   lurek.log.info("friction joint: " .. jid, "physics")
 end
-
 --@api-stub: LWorld:addGearJoint
 -- Adds a gear joint to this world.
 do
@@ -1671,7 +1498,6 @@ do
   local jid = world:addGearJoint(a:getId(), b:getId(), 150, 200)
   lurek.log.info("gear joint: " .. jid, "physics")
 end
-
 --@api-stub: LWorld:addMotorJoint
 -- Adds a motor joint to this world.
 do
@@ -1684,7 +1510,6 @@ do
   local jid = world:addMotorJoint(a:getId(), b:getId(), 0.3)
   lurek.log.info("motor joint: " .. jid, "physics")
 end
-
 --@api-stub: LWorld:addMouseJoint
 -- Adds a mouse joint to this world.
 do
@@ -1696,7 +1521,6 @@ do
   local jid = world:addMouseJoint(b:getId(), 200, 200, 1000)
   lurek.log.info("mouse joint: " .. jid, "physics")
 end
-
 --@api-stub: LWorld:addPrismaticJoint
 -- Adds a prismatic joint to this world.
 do
@@ -1711,7 +1535,6 @@ do
   local jid = world:addPrismaticJoint(a:getId(), b:getId(), 100, 300, 0, -1)
   lurek.log.info("prismatic joint: " .. jid, "physics")
 end
-
 --@api-stub: LWorld:addPulleyJoint
 -- Adds a pulley joint to this world.
 do
@@ -1723,7 +1546,6 @@ do
   local jid = world:addPulleyJoint(a:getId(), b:getId(), 100, 100)
   lurek.log.info("pulley joint: " .. jid, "physics")
 end
-
 --@api-stub: LWorld:addRevoluteJoint
 -- Adds a revolute joint to this world.
 do
@@ -1737,7 +1559,6 @@ do
   local jid = world:addRevoluteJoint(wall:getId(), door:getId(), 200, 200)
   lurek.log.info("revolute joint: " .. jid, "physics")
 end
-
 --@api-stub: LWorld:addRopeJoint
 -- Adds a rope joint to this world.
 do
@@ -1750,7 +1571,6 @@ do
   local jid = world:addRopeJoint(a:getId(), b:getId(), 100, 100, 100, 200, 120)
   lurek.log.info("rope joint: " .. jid, "physics")
 end
-
 --@api-stub: LWorld:addWeldJoint
 -- Adds a weld joint to this world.
 do
@@ -1762,7 +1582,6 @@ do
   local jid = world:addWeldJoint(a:getId(), b:getId(), 160, 200)
   lurek.log.info("weld joint: " .. jid, "physics")
 end
-
 --@api-stub: LWorld:addWheelJoint
 -- Adds a wheel joint to this world.
 do
@@ -1777,7 +1596,6 @@ do
   local jid = world:addWheelJoint(chassis:getId(), wheel:getId(), 200, 240, 0, -1)
   lurek.log.info("wheel joint: " .. jid, "physics")
 end
-
 --@api-stub: LBody:applyForceAtPoint
 -- Applies force at point to this body.
 do
@@ -1791,7 +1609,6 @@ do
   b:applyForceAtPoint(100, 0, 220, 200)
   lurek.log.info("force at point applied", "physics")
 end
-
 --@api-stub: LWorld:drawDebug
 -- Draws or renders this world to the current render target.
 do
@@ -1806,7 +1623,6 @@ do
   end
   lurek.log.info("drawDebug hooked", "physics")
 end
-
 --@api-stub: LCellular:fillCircle
 -- Performs the fill circle operation on this terrain.
 do
@@ -1821,7 +1637,6 @@ do
   terrain:flush() -- regenerate colliders after modification
   lurek.log.info("terrain crater dug", "physics")
 end
-
 --@api-stub: LCellular:fillCircle
 -- Performs the fill circle operation on this cellular.
 do
@@ -1831,7 +1646,6 @@ do
   ca:fillCircle(32, 32, 20, lurek.physics.CELL_SAND)
   lurek.log.info("cellular circle filled", "physics")
 end
-
 --@api-stub: LCellular:fillRect
 -- Performs the fill rect operation on this terrain.
 do
@@ -1843,7 +1657,6 @@ do
   terrain:flush()
   lurek.log.info("terrain rect filled", "physics")
 end
-
 --@api-stub: LCellular:fillRect
 -- Performs the fill rect operation on this cellular.
 do
@@ -1853,7 +1666,6 @@ do
   ca:fillRect(4, 4, 28, 28, lurek.physics.CELL_WATER)
   lurek.log.info("cellular rect filled", "physics")
 end
-
 --@api-stub: LWorld:newChainBody
 -- Creates and returns a new chain body widget or object.
 do
@@ -1867,7 +1679,6 @@ do
   local b = world:newChainBody(0, 0, verts, false, "static")
   lurek.log.info("chain body: " .. b:getId(), "physics")
 end
-
 --@api-stub: LWorld:newCircleBody
 -- Creates and returns a new circle body widget or object.
 do
@@ -1877,7 +1688,6 @@ do
   local b = world:newCircleBody(300, 200, 20, "dynamic") -- ball, radius 20
   lurek.log.info("circle body: " .. b:getId(), "physics")
 end
-
 --@api-stub: LWorld:newEdgeBody
 -- Creates and returns a new edge body widget or object.
 do
@@ -1889,7 +1699,6 @@ do
   local b = world:newEdgeBody(0, 0, 0, 400, 800, 400, "static")
   lurek.log.info("edge body: " .. b:getId(), "physics")
 end
-
 --@api-stub: LWorld:newPolygonBody
 -- Creates and returns a new polygon body widget or object.
 do
@@ -1901,7 +1710,6 @@ do
   local b = world:newPolygonBody(300, 200, verts, "dynamic")
   lurek.log.info("polygon body: " .. b:getId(), "physics")
 end
-
 --@api-stub: LWorld:queryAABB
 -- Performs the query aabb operation on this world.
 do
@@ -1914,7 +1722,6 @@ do
   local hits = world:queryAABB(80, 80, 130, 130)
   lurek.log.info("AABB hits: " .. #hits, "physics")
 end
-
 --@api-stub: LWorld:raycast
 -- Performs the raycast operation on this world.
 do
@@ -1928,7 +1735,6 @@ do
   local id, nx, ny, frac = world:raycast(0, 200, 400, 200)
   lurek.log.info("raycast hit: " .. tostring(id), "physics")
 end
-
 --@api-stub: LWorld:raycastAll
 -- Performs the raycast all operation on this world.
 do
@@ -1943,7 +1749,6 @@ do
   local hits = world:raycastAll(0, 200, 1, 0, 400)
   lurek.log.info("all hits: " .. #hits, "physics")
 end
-
 --@api-stub: LWorld:raycastClosest
 -- Performs the raycast closest operation on this world.
 do
@@ -1955,7 +1760,6 @@ do
   local hit = world:raycastClosest(0, 200, 1, 0, 400)
   lurek.log.info("closest hit: " .. tostring(hit and hit.bodyId), "physics")
 end
-
 --@api-stub: LZone:setAngularDampingOverride
 -- Sets the angular damping override of this zone.
 do
@@ -1966,7 +1770,6 @@ do
   z:setAngularDampingOverride(5.0) -- bodies stop spinning quickly inside
   lurek.log.info("zone angular damping set", "physics")
 end
-
 --@api-stub: LWorld:setBodyData
 -- Sets the body data of this world.
 do
@@ -1977,7 +1780,6 @@ do
   world:setBodyData(b:getId(), {entityId=42, type="player"})
   lurek.log.info("body data set", "physics")
 end
-
 --@api-stub: LWorld:setBodyOneWay
 -- Sets the body one way of this world.
 do
@@ -1989,7 +1791,6 @@ do
   world:setBodyOneWay(platform:getId(), 0, -1) -- blocks downward movement only
   lurek.log.info("one-way platform set", "physics")
 end
-
 --@api-stub: LWorld:setFixtureFriction
 -- Sets the fixture friction of this world.
 do
@@ -2001,7 +1802,6 @@ do
   world:setFixtureFriction(b:getId(), fid, 0.1) -- make this fixture slippery
   lurek.log.info("fixture friction set", "physics")
 end
-
 --@api-stub: LWorld:setFixtureRestitution
 -- Sets the fixture restitution of this world.
 do
@@ -2012,7 +1812,6 @@ do
   world:setFixtureRestitution(b:getId(), fid, 0.8) -- very bouncy ball
   lurek.log.info("restitution set", "physics")
 end
-
 --@api-stub: LWorld:setFixtureSensor
 -- Sets the fixture sensor of this world.
 do
@@ -2024,7 +1823,6 @@ do
   world:setFixtureSensor(b:getId(), fid, true) -- confirm it's a sensor
   lurek.log.info("sensor fixture set", "physics")
 end
-
 --@api-stub: LZone:setGravityPoint
 -- Sets the gravity point of this zone.
 do
@@ -2035,7 +1833,6 @@ do
   z:setGravityPoint(400, 300, 500) -- everything pulls toward screen center
   lurek.log.info("gravity point set", "physics")
 end
-
 --@api-stub: LZone:setGravityRepulsor
 -- Sets the gravity repulsor of this zone.
 do
@@ -2046,7 +1843,6 @@ do
   z:setGravityRepulsor(400, 300, 300) -- pushes everything outward from center
   lurek.log.info("gravity repulsor set", "physics")
 end
-
 --@api-stub: LWorld:setJointLimits
 -- Sets the joint limits of this world.
 do
@@ -2061,7 +1857,6 @@ do
   world:setJointLimits(jid, -math.pi/4, math.pi/4)
   lurek.log.info("joint limits set", "physics")
 end
-
 --@api-stub: LWorld:setJointLimitsEnabled
 -- Sets whether this world is enabled and accepts input.
 do
@@ -2074,7 +1869,6 @@ do
   world:setJointLimitsEnabled(jid, true) -- now limits are enforced
   lurek.log.info("joint limits enabled", "physics")
 end
-
 --@api-stub: LWorld:setJointMotorSpeed
 -- Sets the joint motor speed of this world.
 do
@@ -2087,7 +1881,6 @@ do
   world:setJointMotorSpeed(jid, 2.0) -- spin at 2 rad/s
   lurek.log.info("motor speed: 2.0 rad/s", "physics")
 end
-
 --@api-stub: LWorld:setMouseJointTarget
 -- Sets the mouse joint target of this world.
 do
@@ -2101,7 +1894,6 @@ do
   world:setMouseJointTarget(jid, 350, 250)
   lurek.log.info("mouse joint target updated", "physics")
 end
-
 --@api-stub: LTerrain:spawnDebris
 -- Performs the spawn debris operation on this terrain.
 do
@@ -2119,7 +1911,6 @@ do
   local debris = terrain:spawnDebris(positions, 1.0, 0.5)
   lurek.log.info("debris count: " .. #debris, "physics")
 end
-
 --@api-stub: LWorld:stepFixed
 -- Performs the step fixed operation on this world.
 do
@@ -2131,7 +1922,6 @@ do
   world:stepFixed(1/60, 6, 2) -- step with 1/60 accumulated, 6 sub-steps max, 2 iterations
   lurek.log.info("fixed step done", "physics")
 end
-
 --@api-stub: LCellular:toImageData
 -- Performs the to image data operation on this terrain.
 do
@@ -2148,7 +1938,6 @@ do
   local bytes = terrain:toImageData(255, 255, 255, 0, 0, 0)
   lurek.log.info("terrain image: " .. #bytes .. " bytes", "physics")
 end
-
 --@api-stub: LCellular:toImageDataRegion
 -- Performs the to image data region operation on this cellular.
 do
@@ -2162,11 +1951,6 @@ do
   local img = ca:toImageDataRegion(10, 10, 40, 40)
   lurek.log.info("region img: " .. #img .. " bytes", "physics")
 end
-
--- -----------------------------------------------------------------------------
--- Type introspection methods
--- -----------------------------------------------------------------------------
-
 --@api-stub: LPhysicsShape:type
 -- Returns the type name of this object ("LBody")
 do
@@ -2176,7 +1960,6 @@ do
   local t = body_obj:type()
   lurek.log.info("LBody:type = " .. t, "physics")
 end
-
 --@api-stub: LPhysicsShape:typeOf
 -- Checks if this object is of a given type name
 do
@@ -2186,7 +1969,6 @@ do
   lurek.log.info("is LBody: " .. tostring(body_obj2 and body_obj2:typeOf("LBody") or false), "physics")
   lurek.log.info("is wrong: " .. tostring(body_obj2 and body_obj2:typeOf("Unknown") or false), "physics")
 end
-
 --@api-stub: LPhysicsShape:type
 -- Returns the type name of this object ("LCellular")
 do
@@ -2194,7 +1976,6 @@ do
   local t = cellular_obj:type()
   lurek.log.info("LCellular:type = " .. t, "physics")
 end
-
 --@api-stub: LPhysicsShape:typeOf
 -- Checks if this object is of a given type name
 do
@@ -2202,7 +1983,6 @@ do
   lurek.log.info("is LCellular: " .. tostring(cellular_obj:typeOf("LCellular")), "physics")
   lurek.log.info("is wrong: " .. tostring(cellular_obj:typeOf("Unknown")), "physics")
 end
-
 --@api-stub: LPhysicsShape:type
 -- Returns the type name of this object ("LPhysicsShape")
 do
@@ -2210,7 +1990,6 @@ do
   local t = physics_shape_obj:type()
   lurek.log.info("LPhysicsShape:type = " .. t, "physics")
 end
-
 --@api-stub: LPhysicsShape:typeOf
 -- Checks if this object is of a given type name
 do
@@ -2218,7 +1997,6 @@ do
   lurek.log.info("is LPhysicsShape: " .. tostring(physics_shape_obj:typeOf("LPhysicsShape")), "physics")
   lurek.log.info("is wrong: " .. tostring(physics_shape_obj:typeOf("Unknown")), "physics")
 end
-
 --@api-stub: LPhysicsShape:type
 -- Returns the type name of this object ("LTerrain")
 do
@@ -2227,7 +2005,6 @@ do
   local t = terrain_obj:type()
   lurek.log.info("LTerrain:type = " .. t, "physics")
 end
-
 --@api-stub: LPhysicsShape:typeOf
 -- Checks if this object is of a given type name
 do
@@ -2236,7 +2013,6 @@ do
   lurek.log.info("is LTerrain: " .. tostring(terrain_obj:typeOf("LTerrain")), "physics")
   lurek.log.info("is wrong: " .. tostring(terrain_obj:typeOf("Unknown")), "physics")
 end
-
 --@api-stub: LPhysicsShape:type
 -- Returns the type name of this object ("LWorld")
 do
@@ -2244,7 +2020,6 @@ do
   local t = world_obj:type()
   lurek.log.info("LWorld:type = " .. t, "physics")
 end
-
 --@api-stub: LPhysicsShape:typeOf
 -- Checks if this object is of a given type name
 do
@@ -2252,7 +2027,6 @@ do
   lurek.log.info("is LWorld: " .. tostring(world_obj:typeOf("LWorld")), "physics")
   lurek.log.info("is wrong: " .. tostring(world_obj:typeOf("Unknown")), "physics")
 end
-
 --@api-stub: LPhysicsShape:type
 -- Returns the type name of this object ("LZone")
 do
@@ -2261,7 +2035,6 @@ do
   local t = zone:type()
   lurek.log.info("LZone:type = " .. t, "physics")
 end
-
 --@api-stub: LPhysicsShape:typeOf
 -- Checks if this object is of a given type name
 do
@@ -2270,27 +2043,12 @@ do
   lurek.log.info("is LZone: " .. tostring(zone:typeOf("LZone")), "physics")
   lurek.log.info("is wrong: " .. tostring(zone:typeOf("Unknown")), "physics")
 end
-
 --@api-stub: block
 -- Performs the block operation on this .
 do
   lurek.log.info("block below with a real scenario. called", "example")
 end
-
 print("content/examples/physics.lua")
-
--- =============================================================================
--- STUBS: 170 uncovered lurek.physics API item(s)
--- Generated by tools/audit/example_add_missing.py
--- REQUIRED: replace every --@api-stub: block below with a real scenario.
--- Run .github/prompts/flesh-out-example.prompt.md for instructions.
--- The final committed file must contain ZERO --@api-stub: lines.
--- =============================================================================
-
--- -----------------------------------------------------------------------------
--- LBody methods
--- -----------------------------------------------------------------------------
-
 --@api-stub: LBody:getType
 -- Returns the body's type as a string.
 do
@@ -2300,7 +2058,6 @@ do
   local kind = crate:getType()
   lurek.log.info("body type: " .. kind, "phys")
 end
-
 --@api-stub: LBody:setFriction
 -- Sets the body's friction coefficient.
 do
@@ -2311,7 +2068,6 @@ do
   ice_block:setFriction(0.05)
   lurek.log.debug("ice block friction set to 0.05", "phys")
 end
-
 --@api-stub: LBody:setRestitution
 -- Sets the body's restitution (bounciness) value.
 do
@@ -2322,7 +2078,6 @@ do
   ball:setRestitution(0.8)
   lurek.log.debug("bouncy ball restitution=0.8", "phys")
 end
-
 --@api-stub: LBody:destroy
 -- Destroys this body, removing it from the world along with all fixtures and joints.
 do
@@ -2332,7 +2087,6 @@ do
   arrow:destroy()
   lurek.log.info("arrow removed from world", "phys")
 end
-
 --@api-stub: LTerrain:setCell
 -- Sets a single terrain cell to solid or empty.
 do
@@ -2344,7 +2098,6 @@ do
   terrain:flush()
   lurek.log.debug("carved cell (10,5) out of terrain", "phys")
 end
-
 --@api-stub: LTerrain:getCell
 -- Returns whether a cell is solid. This method is available to Lua scripts.
 do
@@ -2356,7 +2109,6 @@ do
   local solid = terrain:getCell(5, 5)
   lurek.log.debug("cell (5,5) solid=" .. tostring(solid), "phys")
 end
-
 --@api-stub: LTerrain:fillCircle
 -- Fills or clears a circular region of terrain cells.
 do
@@ -2368,7 +2120,6 @@ do
   terrain:flush()
   lurek.log.info("explosion crater carved at (32,16) r=24", "phys")
 end
-
 --@api-stub: LTerrain:fillRect
 -- Fills or clears a rectangular region of terrain cells.
 do
@@ -2380,7 +2131,6 @@ do
   terrain:flush()
   lurek.log.info("tunnel carved at (10,12) 64x16", "phys")
 end
-
 --@api-stub: LTerrain:toImageData
 -- Renders the terrain grid to raw RGBA pixel data with solid and empty colors.
 do
@@ -2392,7 +2142,6 @@ do
   local pixels = terrain:toImageData(0, 200, 0, 0, 0, 0)
   lurek.log.info("terrain preview generated: " .. #pixels .. " bytes", "phys")
 end
-
 --@api-stub: LTerrain:toBytes
 -- Serializes the terrain grid to a compact binary format for saving.
 do
@@ -2404,7 +2153,6 @@ do
   local data = terrain:toBytes()
   lurek.log.info("terrain serialized, " .. #data .. " bytes", "phys")
 end
-
 --@api-stub: LTerrain:loadFromBytes
 -- Restores terrain grid state from binary data previously produced by toBytes.
 do
@@ -2417,11 +2165,6 @@ do
   terrain:flush()
   lurek.log.info("terrain restored from bytes, success=" .. tostring(ok), "phys")
 end
-
--- -----------------------------------------------------------------------------
--- LWorld methods
--- -----------------------------------------------------------------------------
-
 --@api-stub: LWorld:step
 -- Advances the physics simulation by a time delta and fires any registered contact callbacks.
 do
@@ -2431,7 +2174,6 @@ do
   world:step(0.016)
   lurek.log.debug("world stepped by 16ms", "phys")
 end
-
 --@api-stub: LZone:getId
 -- Returns the unique ID of this zone. This method is available to Lua scripts.
 do
@@ -2441,7 +2183,6 @@ do
   local id = zone:getId()
   lurek.log.info("created zone id=" .. id, "phys")
 end
-
 --@api-stub: LZone:destroy
 -- Removes this zone from the world. Bodies will no longer be affected by it.
 do
@@ -2451,16 +2192,6 @@ do
   boost:destroy()
   lurek.log.info("speed boost zone removed", "phys")
 end
-
--- =============================================================================
--- STUBS: 14 uncovered lurek.physics API item(s)
--- Generated by tools/audit/example_add_missing.py
--- REQUIRED: replace every --@api-stub: block below with a real scenario.
--- Run .github/prompts/flesh-out-example.prompt.md for instructions.
--- The final committed file must contain ZERO --@api-stub: lines.
--- =============================================================================
-
--- ---- Stub: lurek.physics.step --------------------------------------------
 --@api-stub: lurek.physics.step
 -- Steps a physics world forward by dt seconds (free-function variant).
 do
@@ -2471,8 +2202,6 @@ do
   local x, y = body:getPosition()
   lurek.log.debug("pos after step: " .. string.format("%.2f, %.2f", x, y), "physics")
 end
-
--- ---- Stub: lurek.physics.newBody -----------------------------------------
 --@api-stub: lurek.physics.newBody
 -- Creates a new body in a world (free-function variant).
 do
@@ -2481,8 +2210,6 @@ do
   local body = lurek.physics.newBody(world, 200, 100, "dynamic")
   lurek.log.debug("body type: " .. body:type(), "physics") -- "LBody"
 end
-
--- ---- Stub: lurek.physics.isSleepingAllowed -------------------------------
 --@api-stub: lurek.physics.isSleepingAllowed
 -- Checks if sleeping is allowed on a body (free-function variant).
 do
@@ -2492,8 +2219,6 @@ do
   local allowed = lurek.physics.isSleepingAllowed(world, body)
   lurek.log.debug("sleeping allowed: " .. tostring(allowed), "physics") -- true
 end
-
--- ---- Stub: lurek.physics.setSleepingAllowed ------------------------------
 --@api-stub: lurek.physics.setSleepingAllowed
 -- Sets whether a body is allowed to sleep (free-function variant).
 do
@@ -2503,52 +2228,30 @@ do
   lurek.physics.setSleepingAllowed(world, body, false)
   lurek.log.debug("sleeping not allowed for body", "physics")
 end
-
--- -----------------------------------------------------------------------------
--- LBody methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LBody:type ----------------------------------------------------
 --@api-stub: LBody:type
 -- Returns the type name of this object ("LBody").
 do
   local obj = (function() local w = lurek.physics.newWorld(0, 9.8); return w:newBody(100, 100, 'dynamic') end)()
   lurek.log.debug("type: " .. obj:type(), "example") -- "LBody"
 end
-
--- ---- Stub: LBody:typeOf --------------------------------------------------
 --@api-stub: LBody:typeOf
 -- Checks if this object is of a given type name.
 do
   local obj = (function() local w = lurek.physics.newWorld(0, 9.8); return w:newBody(100, 100, 'dynamic') end)()
   lurek.log.debug("typeOf LBody: " .. tostring(obj:typeOf("LBody")), "example") -- true
 end
-
--- -----------------------------------------------------------------------------
--- LCellular methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LCellular:type ------------------------------------------------
 --@api-stub: LCellular:type
 -- Returns the type name of this object ("LCellular").
 do
   local obj = lurek.physics.newCellular(40, 30)
   lurek.log.debug("type: " .. obj:type(), "example") -- "LCellular"
 end
-
--- ---- Stub: LCellular:typeOf ----------------------------------------------
 --@api-stub: LCellular:typeOf
 -- Checks if this object is of a given type name.
 do
   local obj = lurek.physics.newCellular(40, 30)
   lurek.log.debug("typeOf LCellular: " .. tostring(obj:typeOf("LCellular")), "example") -- true
 end
-
--- -----------------------------------------------------------------------------
--- LTerrain methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LTerrain:type -------------------------------------------------
 --@api-stub: LTerrain:type
 -- Returns the type name of this object ("LTerrain").
 do
@@ -2556,8 +2259,6 @@ do
   local obj = lurek.physics.newTerrain(64, 64, 1.0, world)
   lurek.log.debug("type: " .. obj:type(), "example") -- "LTerrain"
 end
-
--- ---- Stub: LTerrain:typeOf -----------------------------------------------
 --@api-stub: LTerrain:typeOf
 -- Checks if this object is of a given type name.
 do
@@ -2565,32 +2266,18 @@ do
   local obj = lurek.physics.newTerrain(64, 64, 1.0, world)
   lurek.log.debug("typeOf LTerrain: " .. tostring(obj:typeOf("LTerrain")), "example") -- true
 end
-
--- -----------------------------------------------------------------------------
--- LWorld methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LWorld:type ---------------------------------------------------
 --@api-stub: LWorld:type
 -- Returns the type name of this object ("LWorld").
 do
   local obj = lurek.physics.newWorld(0, 9.8)
   lurek.log.debug("type: " .. obj:type(), "example") -- "LWorld"
 end
-
--- ---- Stub: LWorld:typeOf -------------------------------------------------
 --@api-stub: LWorld:typeOf
 -- Checks if this object is of a given type name. Supports inheritance (always matches "Object").
 do
   local obj = lurek.physics.newWorld(0, 9.8)
   lurek.log.debug("typeOf LWorld: " .. tostring(obj:typeOf("LWorld")), "example") -- true
 end
-
--- -----------------------------------------------------------------------------
--- LZone methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LZone:type ----------------------------------------------------
 --@api-stub: LZone:type
 -- Returns the type name of this object ("LZone").
 do
@@ -2598,8 +2285,6 @@ do
   local world = lurek.physics.newWorld(0, 9.8)
   lurek.log.debug("LZone: use world:newZone(x, y, w, h) to create", "example")
 end
-
--- ---- Stub: LZone:typeOf --------------------------------------------------
 --@api-stub: LZone:typeOf
 -- Checks if this object is of a given type name.
 do

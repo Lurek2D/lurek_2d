@@ -1,7 +1,6 @@
 -- content/examples/save.lua
 -- lurek.save API examples: persistent game state management with SaveManager.
 -- Run: cargo run -- content/examples/save.lua
-
 --@api-stub: lurek.save.newSaveManager
 -- Create a new SaveManager for managing persistent game saves
 do
@@ -16,7 +15,6 @@ do
       lurek.log.info("restored player: " .. data.name .. " hp=" .. data.hp, "save")
     end)
 end
-
 --@api-stub: LSaveManager:register
 -- Register a named data section with collector and restorer function pair
 do
@@ -46,7 +44,6 @@ do
       lurek.log.info("world day " .. data.day .. ", weather: " .. data.weather, "save")
     end)
 end
-
 --@api-stub: LSaveManager:unregister
 -- Remove a previously registered section by name
 do
@@ -61,7 +58,6 @@ do
   mgr:unregister("minigame_progress")
   lurek.log.info("minigame section removed from save cycle", "save")
 end
-
 --@api-stub: LSaveManager:setSchemaVersion
 -- Set the schema version for saves produced by this game build
 do
@@ -71,7 +67,6 @@ do
   mgr:setSchemaVersion(3)
   lurek.log.info("save format v3 (added inventory slots)", "save")
 end
-
 --@api-stub: LSaveManager:getSchemaVersion
 -- Return the current schema version number
 do
@@ -83,7 +78,6 @@ do
     lurek.log.info("running schema v" .. ver .. " (pre-inventory update)", "save")
   end
 end
-
 --@api-stub: LSaveManager:collect
 -- Invoke all collectors and return the assembled save-data table
 do
@@ -103,7 +97,6 @@ do
   lurek.log.info("collected: " .. snapshot.inventory.gold .. " gold, "
     .. snapshot.quest_log.completed .. " quests done", "save")
 end
-
 --@api-stub: LSaveManager:restore
 -- Apply a save-data table back into game state via all registered restorers
 do
@@ -124,7 +117,6 @@ do
   current_hp = 10  -- player takes damage after checkpoint
   mgr:restore(checkpoint)  -- reverts hp back to 50
 end
-
 --@api-stub: LSaveManager:markDirty
 -- Mark the save state as having unsaved changes
 do
@@ -141,7 +133,6 @@ do
   on_enemy_killed()
   lurek.log.info("state marked dirty after kill", "save")
 end
-
 --@api-stub: LSaveManager:isDirty
 -- Check whether unsaved changes exist since last save or load
 do
@@ -155,7 +146,6 @@ do
     -- In a real game: show "Save before quitting?" dialog
   end
 end
-
 --@api-stub: LSaveManager:save
 -- Persist all registered data sections to a named slot file on disk
 do
@@ -171,7 +161,6 @@ do
   mgr:save("slot1")
   lurek.log.info("game saved to slot1", "save")
 end
-
 --@api-stub: LSaveManager:load
 -- Load game state from a named slot file
 do
@@ -190,7 +179,6 @@ do
     lurek.log.warn("load failed: " .. tostring(err) .. " - starting new game", "save")
   end
 end
-
 --@api-stub: LSaveManager:delete
 -- Permanently delete a save slot file from disk
 do
@@ -206,7 +194,6 @@ do
     lurek.log.info("no quicksave_temp slot to clean up", "save")
   end
 end
-
 --@api-stub: LSaveManager:exists
 -- Check whether a save slot file exists on disk
 do
@@ -220,7 +207,6 @@ do
     lurek.log.info("no save found - showing New Game only", "save")
   end
 end
-
 --@api-stub: LSaveManager:getSlots
 -- List all save slots found on disk with their metadata
 do
@@ -239,7 +225,6 @@ do
     end
   end
 end
-
 --@api-stub: LSaveManager:getSlotInfo
 -- Read metadata for a single save slot without loading full game state
 do
@@ -255,7 +240,6 @@ do
     lurek.log.info("slot1 is empty", "save")
   end
 end
-
 --@api-stub: LSaveManager:setSummary
 -- Set a human-readable summary embedded in the next save
 do
@@ -269,7 +253,6 @@ do
   mgr:setSummary(area_name .. " - " .. play_hours .. "h " .. play_minutes .. "m")
   lurek.log.info("summary updated for next save", "save")
 end
-
 --@api-stub: LSaveManager:getSummary
 -- Get the current summary string that will be embedded in the next save
 do
@@ -279,7 +262,6 @@ do
   local label = mgr:getSummary()
   lurek.log.info("current summary: " .. label, "save")
 end
-
 --@api-stub: LSaveManager:setCompress
 -- Enable or disable LZ4 compression for save files
 do
@@ -289,7 +271,6 @@ do
   mgr:setCompress(true)
   lurek.log.info("saves will be LZ4-compressed from now on", "save")
 end
-
 --@api-stub: LSaveManager:isCompressed
 -- Check whether save compression is currently enabled
 do
@@ -302,7 +283,6 @@ do
     lurek.log.info("compression: OFF (faster writes, larger files)", "save")
   end
 end
-
 --@api-stub: LSaveManager:enableAutoSave
 -- Enable periodic auto-saving on a timer
 do
@@ -318,7 +298,6 @@ do
   mgr:enableAutoSave(60.0, "autosave")
   lurek.log.info("auto-save armed: every 60s -> autosave slot", "save")
 end
-
 --@api-stub: LSaveManager:disableAutoSave
 -- Disable the periodic auto-save timer
 do
@@ -331,7 +310,6 @@ do
   mgr:disableAutoSave()
   lurek.log.info("auto-save paused for cutscene", "save")
 end
-
 --@api-stub: LSaveManager:update
 -- Advance the auto-save timer by dt seconds (call once per frame)
 do
@@ -349,7 +327,6 @@ do
     lurek.log.info("auto-save fired this frame", "save")
   end
 end
-
 --@api-stub: LSaveManager:onBeforeSave
 -- Set a hook called immediately before each save operation
 do
@@ -363,7 +340,6 @@ do
     lurek.log.info("preparing save to slot: " .. slot, "save")
   end)
 end
-
 --@api-stub: LSaveManager:onAfterLoad
 -- Set a hook called after a save file is loaded and all restorers have run
 do
@@ -376,7 +352,6 @@ do
     -- In a real game: invalidate texture caches, rebuild spatial index, etc.
   end)
 end
-
 --@api-stub: LSaveManager:addMigration
 -- Register a migration function for upgrading save data between schema versions
 do
@@ -405,7 +380,6 @@ do
 
   lurek.log.info("migrations registered: v1->v2, v2->v3", "save")
 end
-
 --@api-stub: LSaveManager:reset
 -- Reset the save manager: unregister all sections, clear migrations and hooks
 do
@@ -421,7 +395,6 @@ do
   mgr:reset()
   lurek.log.info("save manager fully reset for main menu", "save")
 end
-
 --@api-stub: LSaveManager:type
 -- Return the type name string for this userdata object
 do
@@ -430,7 +403,6 @@ do
   local t = mgr:type()
   lurek.log.info("object type: " .. t, "save")  -- prints "LSaveManager"
 end
-
 --@api-stub: LSaveManager:typeOf
 -- Check whether this object matches a given type name
 do
@@ -441,5 +413,4 @@ do
   lurek.log.info("is Object: " .. tostring(mgr:typeOf("Object")), "save")
   lurek.log.info("is LSource: " .. tostring(mgr:typeOf("LSource")), "save")
 end
-
 print("content/examples/save.lua")

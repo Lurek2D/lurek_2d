@@ -1,7 +1,6 @@
 -- content/examples/math.lua
 -- Comprehensive lurek.math API examples: vectors, transforms, noise, easing, geometry, and more.
 -- Run: cargo run -- content/examples/math.lua
-
 --@api-stub: lurek.math.newRandomGenerator
 -- Creates a deterministic random generator with an optional seed
 do
@@ -16,7 +15,6 @@ do
   local same_roll = rng2:randomInt(1, 100)
   lurek.log.debug("same seed same roll=" .. same_roll, "rng")
 end
-
 --@api-stub: lurek.math.newTransform
 -- Creates a 2D transform
 do
@@ -28,7 +26,6 @@ do
   local wx, wy = t:transformPoint(8, 0)
   lurek.log.debug("rotated corner at " .. wx .. "," .. wy, "xform")
 end
-
 --@api-stub: lurek.math.newBezierCurve
 -- Creates a Bezier curve from a flat point table
 do
@@ -42,7 +39,6 @@ do
   lurek.log.info("bezier midpoint " .. mid_x .. "," .. mid_y, "anim")
   lurek.log.debug("bezier distance sample " .. d_x .. "," .. d_y, "anim")
 end
-
 --@api-stub: lurek.math.newTween
 -- Creates a tween with a duration and optional easing name
 do
@@ -54,7 +50,6 @@ do
   -- In a real game loop, call tw:update(dt) each frame
   function lurek.process(dt) tw:update(dt) end
 end
-
 --@api-stub: lurek.math.newSpatialHash
 -- Creates a spatial hash index with a cell size
 do
@@ -68,7 +63,6 @@ do
   local hits = hash:queryCircle(110, 110, 50)
   lurek.log.debug("nearby entities=" .. #hits, "spatial")
 end
-
 --@api-stub: lurek.math.newNoiseGenerator
 -- Creates a procedural noise generator with an optional seed
 do
@@ -82,7 +76,6 @@ do
   lurek.log.debug("terrain h=" .. h, "noise")
   lurek.log.debug("terrain map samples=" .. #map, "noise")
 end
-
 --@api-stub: lurek.math.newRectPacker
 -- Creates a rectangle packer
 do
@@ -93,7 +86,6 @@ do
   local x, y = packer:pack(64, 64, "hero")
   lurek.log.info("packed hero at " .. tostring(x) .. "," .. tostring(y), "atlas")
 end
-
 --@api-stub: LRectPacker:pack
 -- Performs the pack operation on this rect packer.
 do
@@ -106,7 +98,6 @@ do
     lurek.log.warn("btn_ok did not fit!", "atlas")
   end
 end
-
 --@api-stub: LRectPacker:getPacked
 -- Returns the packed of this rect packer.
 do
@@ -118,7 +109,6 @@ do
   -- Each entry has x, y, w, h, and optional id fields
   lurek.log.debug("packed count=" .. #packed, "atlas")
 end
-
 --@api-stub: LRectPacker:occupancy
 -- Performs the occupancy operation on this rect packer.
 do
@@ -129,7 +119,6 @@ do
   local occ = packer:occupancy()
   lurek.log.debug("occupancy=" .. occ, "atlas")
 end
-
 --@api-stub: LAabbTree:clear
 -- Clears all items from this rect packer.
 do
@@ -139,7 +128,6 @@ do
   packer:clear()
   lurek.log.debug("atlas cleared", "atlas")
 end
-
 --@api-stub: LNoiseGenerator:perlin2d
 -- Samples stateless 2D Perlin noise
 do
@@ -150,7 +138,6 @@ do
     lurek.log.info("hill peak", "terrain")
   end
 end
-
 --@api-stub: LNoiseGenerator:perlin3d
 -- Samples stateless 3D Perlin noise
 do
@@ -163,7 +150,6 @@ do
     lurek.log.debug("cloud=" .. cloud, "sky")
   end
 end
-
 --@api-stub: LNoiseGenerator:simplex2d
 -- Samples stateless 2D simplex noise
 do
@@ -173,7 +159,6 @@ do
     lurek.log.debug("simplex above zero", "noise")
   end
 end
-
 --@api-stub: LNoiseGenerator:fbm
 -- Samples stateless fractal Brownian motion noise
 do
@@ -184,7 +169,6 @@ do
   local altitude = math.floor(h * 1000)
   lurek.log.info("fbm altitude=" .. altitude, "world")
 end
-
 --@api-stub: lurek.math.applyEasing
 -- Applies a named easing function to a normalized value
 do
@@ -194,7 +178,6 @@ do
   local eased = lurek.math.applyEasing(name, 0.75)
   lurek.log.debug(name .. "(0.75)=" .. eased, "tween")
 end
-
 --@api-stub: lurek.math.linear
 -- Applies linear easing
 do
@@ -203,7 +186,6 @@ do
   local v = lurek.math.linear(t)
   lurek.log.debug("linear " .. t .. "=" .. v, "easing")
 end
-
 --@api-stub: lurek.math.inQuad
 -- Applies quadratic ease-in
 do
@@ -213,7 +195,6 @@ do
   local y = lurek.math.inQuad(progress) * 200
   lurek.log.debug("falling y=" .. y, "anim")
 end
-
 --@api-stub: lurek.math.outQuad
 -- Applies quadratic ease-out
 do
@@ -221,7 +202,6 @@ do
   local x = lurek.math.outQuad(0.6) * 480
   lurek.log.debug("panel x=" .. x, "ui")
 end
-
 --@api-stub: lurek.math.inOutQuad
 -- Applies quadratic ease-in-out
 do
@@ -230,7 +210,6 @@ do
   local cam_x = 100 + lurek.math.inOutQuad(t) * 400
   lurek.log.debug("cam x=" .. cam_x, "cam")
 end
-
 --@api-stub: lurek.math.inCubic
 -- Applies cubic ease-in
 do
@@ -240,7 +219,6 @@ do
     lurek.log.info("charge ready", "combat")
   end
 end
-
 --@api-stub: lurek.math.outCubic
 -- Applies cubic ease-out
 do
@@ -248,7 +226,6 @@ do
   local opacity = lurek.math.outCubic(0.8)
   lurek.log.debug("tooltip alpha=" .. opacity, "ui")
 end
-
 --@api-stub: lurek.math.inOutCubic
 -- Applies cubic ease-in-out
 do
@@ -257,7 +234,6 @@ do
   local panel_y = 600 - t * 400
   lurek.log.debug("panel y=" .. panel_y, "ui")
 end
-
 --@api-stub: lurek.math.inQuart
 -- Applies quartic ease-in
 do
@@ -265,7 +241,6 @@ do
   local v = lurek.math.inQuart(0.7)
   lurek.log.debug("inQuart=" .. v, "easing")
 end
-
 --@api-stub: lurek.math.outQuart
 -- Applies quartic ease-out
 do
@@ -273,7 +248,6 @@ do
   local v = lurek.math.outQuart(0.2)
   lurek.log.debug("outQuart=" .. v, "easing")
 end
-
 --@api-stub: lurek.math.inOutQuart
 -- Applies quartic ease-in-out
 do
@@ -281,7 +255,6 @@ do
   local v = lurek.math.inOutQuart(0.5)
   lurek.log.debug("inOutQuart=" .. v, "easing")
 end
-
 --@api-stub: lurek.math.inSine
 -- Applies sine ease-in
 do
@@ -289,7 +262,6 @@ do
   local pulse = lurek.math.inSine(0.4)
   lurek.log.debug("pulse=" .. pulse, "fx")
 end
-
 --@api-stub: lurek.math.outSine
 -- Applies sine ease-out
 do
@@ -297,7 +269,6 @@ do
   local v = lurek.math.outSine(0.6)
   lurek.log.debug("icon alpha=" .. v, "ui")
 end
-
 --@api-stub: lurek.math.inOutSine
 -- Applies sine ease-in-out
 do
@@ -305,7 +276,6 @@ do
   local v = lurek.math.inOutSine(0.5)
   lurek.log.debug("drift=" .. v, "bg")
 end
-
 --@api-stub: lurek.math.inExpo
 -- Applies exponential ease-in
 do
@@ -313,7 +283,6 @@ do
   local v = lurek.math.inExpo(0.85)
   lurek.log.debug("inExpo=" .. v, "fx")
 end
-
 --@api-stub: lurek.math.outExpo
 -- Applies exponential ease-out
 do
@@ -321,7 +290,6 @@ do
   local v = lurek.math.outExpo(0.15)
   lurek.log.debug("outExpo=" .. v, "fx")
 end
-
 --@api-stub: lurek.math.inOutExpo
 -- Applies exponential ease-in-out
 do
@@ -329,7 +297,6 @@ do
   local v = lurek.math.inOutExpo(0.5)
   lurek.log.debug("inOutExpo=" .. v, "fx")
 end
-
 --@api-stub: lurek.math.inElastic
 -- Applies elastic ease-in
 do
@@ -337,7 +304,6 @@ do
   local v = lurek.math.inElastic(0.8)
   lurek.log.debug("inElastic=" .. v, "anim")
 end
-
 --@api-stub: lurek.math.outElastic
 -- Applies elastic ease-out
 do
@@ -345,7 +311,6 @@ do
   local v = lurek.math.outElastic(0.6)
   lurek.log.debug("button bounce=" .. v, "ui")
 end
-
 --@api-stub: lurek.math.outBounce
 -- Applies bounce ease-out
 do
@@ -353,7 +318,6 @@ do
   local h = lurek.math.outBounce(0.3) * 100
   lurek.log.debug("bounce h=" .. h, "fx")
 end
-
 --@api-stub: lurek.math.inBounce
 -- Applies bounce ease-in
 do
@@ -361,7 +325,6 @@ do
   local v = lurek.math.inBounce(0.7)
   lurek.log.debug("inBounce=" .. v, "fx")
 end
-
 --@api-stub: lurek.math.inBack
 -- Applies back ease-in
 do
@@ -369,7 +332,6 @@ do
   local v = lurek.math.inBack(0.5)
   lurek.log.debug("inBack=" .. v, "ui")
 end
-
 --@api-stub: lurek.math.outBack
 -- Applies back ease-out
 do
@@ -377,7 +339,6 @@ do
   local v = lurek.math.outBack(0.5)
   lurek.log.debug("outBack=" .. v, "ui")
 end
-
 --@api-stub: lurek.math.inOutElastic
 -- Applies elastic ease-in-out
 do
@@ -385,7 +346,6 @@ do
   local v = lurek.math.inOutElastic(0.4)
   lurek.log.debug("inOutElastic=" .. v, "fx")
 end
-
 --@api-stub: lurek.math.inOutBounce
 -- Applies bounce ease-in-out
 do
@@ -393,7 +353,6 @@ do
   local v = lurek.math.inOutBounce(0.5)
   lurek.log.debug("inOutBounce=" .. v, "fx")
 end
-
 --@api-stub: lurek.math.inOutBack
 -- Applies back ease-in-out
 do
@@ -401,7 +360,6 @@ do
   local v = lurek.math.inOutBack(0.5)
   lurek.log.debug("inOutBack=" .. v, "fx")
 end
-
 --@api-stub: lurek.math.triangulate
 -- Triangulates a flat polygon point table
 do
@@ -411,7 +369,6 @@ do
   local tris = lurek.math.triangulate(poly)
   lurek.log.info("triangulated into " .. #tris .. " triangles", "geo")
 end
-
 --@api-stub: lurek.math.isConvex
 -- Returns whether a flat polygon point table is convex
 do
@@ -422,7 +379,6 @@ do
     lurek.log.debug("polygon is convex", "geo")
   end
 end
-
 --@api-stub: lurek.math.gammaToLinear
 -- Converts a gamma-space channel to linear space
 do
@@ -431,7 +387,6 @@ do
   local linear = lurek.math.gammaToLinear(0.5)
   lurek.log.debug("0.5 sRGB -> " .. linear .. " linear", "color")
 end
-
 --@api-stub: lurek.math.linearToGamma
 -- Converts a linear-space channel to gamma space
 do
@@ -439,7 +394,6 @@ do
   local srgb = lurek.math.linearToGamma(0.214)
   lurek.log.debug("linear 0.214 -> " .. srgb .. " sRGB", "color")
 end
-
 --@api-stub: lurek.math.angleBetween
 -- Returns the angle between two points
 do
@@ -448,7 +402,6 @@ do
   local rad = lurek.math.angleBetween(0, 0, 100, 100)
   lurek.log.debug("angle=" .. lurek.math.deg(rad) .. " deg", "geo")
 end
-
 --@api-stub: lurek.math.circleContainsPoint
 -- Returns whether a circle contains a point
 do
@@ -458,7 +411,6 @@ do
     lurek.log.info("inside aura", "trigger")
   end
 end
-
 --@api-stub: lurek.math.circleIntersectsCircle
 -- Returns whether two circles intersect
 do
@@ -468,7 +420,6 @@ do
     lurek.log.warn("orbs collided", "physics")
   end
 end
-
 --@api-stub: lurek.math.circleIntersectsLine
 -- Returns circle-line intersection state and hit points when present
 do
@@ -479,7 +430,6 @@ do
     lurek.log.info("laser hit at " .. ix .. "," .. iy, "fx")
   end
 end
-
 --@api-stub: lurek.math.circleIntersectsSegment
 -- Returns circle-segment intersection state and hit points when present
 do
@@ -490,7 +440,6 @@ do
     lurek.log.info("bullet impact " .. ix .. "," .. iy, "combat")
   end
 end
-
 --@api-stub: lurek.math.closestPointOnSegment
 -- Returns the closest point on a segment to an input point
 do
@@ -499,7 +448,6 @@ do
   local cx, cy = lurek.math.closestPointOnSegment(50, 30, 0, 0, 100, 0)
   lurek.log.debug("nearest=" .. cx .. "," .. cy, "ai")
 end
-
 --@api-stub: lurek.math.convexHull
 -- Computes the convex hull for a flat point table
 do
@@ -509,7 +457,6 @@ do
   local hull = lurek.math.convexHull(pts)
   lurek.log.info("hull verts=" .. (#hull / 2), "geo")
 end
-
 --@api-stub: lurek.math.delaunayTriangulate
 -- Computes Delaunay triangles for a flat point table
 do
@@ -519,7 +466,6 @@ do
   local tris = lurek.math.delaunayTriangulate(pts)
   lurek.log.info("delaunay tris=" .. #tris, "geo")
 end
-
 --@api-stub: lurek.math.lineIntersect
 -- Returns intersection point for two infinite lines when present
 do
@@ -530,7 +476,6 @@ do
     lurek.log.debug("cross at " .. ix .. "," .. iy, "geo")
   end
 end
-
 --@api-stub: lurek.math.pointInPolygon
 -- Returns whether a point lies inside a polygon
 do
@@ -541,7 +486,6 @@ do
     lurek.log.info("inside zone", "trigger")
   end
 end
-
 --@api-stub: lurek.math.polygonArea
 -- Computes signed area for a flat polygon point table
 do
@@ -551,7 +495,6 @@ do
   local area = lurek.math.polygonArea(poly)
   lurek.log.info("polygon area=" .. math.abs(area), "geo")
 end
-
 --@api-stub: lurek.math.polygonCentroid
 -- Computes the centroid for a flat polygon point table
 do
@@ -560,7 +503,6 @@ do
   local cx, cy = lurek.math.polygonCentroid(poly)
   lurek.log.debug("centroid " .. cx .. "," .. cy, "geo")
 end
-
 --@api-stub: lurek.math.segmentIntersectsSegment
 -- Returns whether two segments intersect and their intersection point when present
 do
@@ -571,7 +513,6 @@ do
     lurek.log.info("blade crossed " .. ix .. "," .. iy, "combat")
   end
 end
-
 --@api-stub: lurek.math.bresenham
 -- Returns integer grid points along a Bresenham line
 do
@@ -580,7 +521,6 @@ do
   local pts = lurek.math.bresenham(0, 0, 5, 3)
   lurek.log.info("bresenham steps=" .. #pts, "tile")
 end
-
 --@api-stub: lurek.math.rad
 -- Converts degrees to radians
 do
@@ -589,7 +529,6 @@ do
   local turn_rad = lurek.math.rad(turn_deg)
   lurek.log.debug(turn_deg .. " deg = " .. turn_rad .. " rad", "math")
 end
-
 --@api-stub: lurek.math.deg
 -- Converts radians to degrees
 do
@@ -597,7 +536,6 @@ do
   local heading = lurek.math.deg(math.pi / 2)
   lurek.log.info("heading=" .. heading .. " deg", "compass")
 end
-
 --@api-stub: lurek.math.sin
 -- Returns sine of an angle
 do
@@ -610,7 +548,6 @@ do
     lurek.log.debug("bob=" .. bob, "fx")
   end
 end
-
 --@api-stub: lurek.math.cos
 -- Returns cosine of an angle
 do
@@ -619,7 +556,6 @@ do
   local x = lurek.math.cos(t) * 50
   lurek.log.debug("orbit x=" .. x, "fx")
 end
-
 --@api-stub: lurek.math.tan
 -- Returns tangent of an angle
 do
@@ -627,7 +563,6 @@ do
   local slope = lurek.math.tan(math.pi / 6)
   lurek.log.debug("30deg slope=" .. slope, "math")
 end
-
 --@api-stub: lurek.math.asin
 -- Returns arcsine of a value
 do
@@ -635,7 +570,6 @@ do
   local angle = lurek.math.asin(0.5)
   lurek.log.debug("asin(0.5)=" .. lurek.math.deg(angle), "math")
 end
-
 --@api-stub: lurek.math.acos
 -- Returns arccosine of a value
 do
@@ -643,7 +577,6 @@ do
   local angle = lurek.math.acos(0.0)
   lurek.log.debug("acos(0)=" .. lurek.math.deg(angle), "math")
 end
-
 --@api-stub: lurek.math.atan
 -- Returns arctangent or two-argument arctangent
 do
@@ -652,7 +585,6 @@ do
   local b = lurek.math.atan(1.0, -1.0)
   lurek.log.debug("atan results " .. a .. " " .. b, "math")
 end
-
 --@api-stub: lurek.math.atan2
 -- Returns two-argument arctangent
 do
@@ -662,7 +594,6 @@ do
   local heading = lurek.math.atan2(dy, dx)
   lurek.log.info("heading rad=" .. heading, "ai")
 end
-
 --@api-stub: lurek.math.sqrt
 -- Returns square root of a value
 do
@@ -670,7 +601,6 @@ do
   local hyp = lurek.math.sqrt(3 * 3 + 4 * 4)
   lurek.log.debug("hyp=" .. hyp, "math")
 end
-
 --@api-stub: lurek.math.abs
 -- Returns absolute value
 do
@@ -680,7 +610,6 @@ do
     lurek.log.debug("axis active", "input")
   end
 end
-
 --@api-stub: lurek.math.floor
 -- Returns floor of a value
 do
@@ -689,7 +618,6 @@ do
   local pixel_x = lurek.math.floor(raw_x)
   lurek.log.debug("pixel x=" .. pixel_x, "render")
 end
-
 --@api-stub: lurek.math.ceil
 -- Returns ceiling of a value
 do
@@ -697,7 +625,6 @@ do
   local dmg = lurek.math.ceil(2.3)
   lurek.log.info("damage=" .. dmg, "combat")
 end
-
 --@api-stub: lurek.math.round
 -- Returns rounded value
 do
@@ -705,7 +632,6 @@ do
   local snapped = lurek.math.round(127.5)
   lurek.log.debug("rounded=" .. snapped, "ui")
 end
-
 --@api-stub: lurek.math.exp
 -- Returns exponential of a value
 do
@@ -713,7 +639,6 @@ do
   local decay = lurek.math.exp(-0.5)
   lurek.log.debug("decay=" .. decay, "math")
 end
-
 --@api-stub: lurek.math.log
 -- Returns natural logarithm or logarithm with a supplied base
 do
@@ -722,7 +647,6 @@ do
   local db = 20 * lurek.math.log(0.5, 10)
   lurek.log.debug("0.5 -> " .. db .. " dB", "audio")
 end
-
 --@api-stub: lurek.math.pow
 -- Raises a value to a power
 do
@@ -730,7 +654,6 @@ do
   local energy = lurek.math.pow(2.0, 8)
   lurek.log.debug("2^8=" .. energy, "math")
 end
-
 --@api-stub: lurek.math.min
 -- Returns the smallest supplied value
 do
@@ -739,7 +662,6 @@ do
   local clamp_hp = lurek.math.min(100, current_hp_or_default(85), 90)
   lurek.log.debug("hp=" .. clamp_hp, "combat")
 end
-
 --@api-stub: lurek.math.max
 -- Returns the largest supplied value
 do
@@ -747,7 +669,6 @@ do
   local final = lurek.math.max(1, 5 - 7)
   lurek.log.debug("final dmg=" .. final, "combat")
 end
-
 --@api-stub: lurek.math.clamp
 -- Clamps a value to a range
 do
@@ -756,7 +677,6 @@ do
   local volume = lurek.math.clamp(1.4, 0, 1)
   lurek.log.debug("clamped vol=" .. volume, "audio")
 end
-
 --@api-stub: lurek.math.sign
 -- Returns the sign of a value
 do
@@ -765,7 +685,6 @@ do
   local dir = lurek.math.sign(axis)
   lurek.log.debug("walk dir=" .. dir, "input")
 end
-
 --@api-stub: lurek.math.fmod
 -- Returns floating-point remainder
 do
@@ -773,7 +692,6 @@ do
   local wrapped = lurek.math.fmod(7.5, lurek.math.tau)
   lurek.log.debug("wrapped=" .. wrapped, "math")
 end
-
 --@api-stub: LVec3:lerp
 -- Linearly interpolates between two values
 do
@@ -782,7 +700,6 @@ do
   local hp_bar = lurek.math.lerp(0, 200, 0.42)
   lurek.log.debug("hp bar pixels=" .. hp_bar, "ui")
 end
-
 --@api-stub: LVec3:distance
 -- Returns Euclidean distance between two points
 do
@@ -792,7 +709,6 @@ do
     lurek.log.debug("near target", "ai")
   end
 end
-
 --@api-stub: lurek.math.distanceSq
 -- Returns squared Euclidean distance between two points
 do
@@ -803,7 +719,6 @@ do
     lurek.log.debug("within 10 units", "ai")
   end
 end
-
 --@api-stub: LRandomGenerator:random
 -- Returns a Lua math random value, optionally scaled to one or two bounds
 do
@@ -813,7 +728,6 @@ do
   local rolled = lurek.math.random(1, 6)
   lurek.log.info("dice=" .. rolled, "rng")
 end
-
 --@api-stub: LRandomGenerator:randomInt
 -- Returns a Lua math random integer in an inclusive range
 do
@@ -821,7 +735,6 @@ do
   local slot = lurek.math.randomInt(1, 8)
   lurek.log.debug("loot slot=" .. slot, "rng")
 end
-
 --@api-stub: lurek.math.simplexNoise
 -- Samples 2D or 3D simplex noise
 do
@@ -830,7 +743,6 @@ do
   local n = lurek.math.simplexNoise(0.5, 1.5, 0.0)
   lurek.log.debug("simplex=" .. n, "noise")
 end
-
 --@api-stub: lurek.math.vec2
 -- Creates a 2D vector
 do
@@ -840,7 +752,6 @@ do
   local len = pos:length()
   lurek.log.debug("pos length=" .. len, "math")
 end
-
 --@api-stub: lurek.math.Vec2
 -- Creates a 2D vector
 do
@@ -849,7 +760,6 @@ do
   local n = v:normalize()
   lurek.log.debug("normalised x=" .. n.x, "math")
 end
-
 --@api-stub: lurek.math.vec3
 -- Creates a 3D vector
 do
@@ -860,7 +770,6 @@ do
   local len = p:length()
   lurek.log.debug("vec3 len=" .. len, "math")
 end
-
 --@api-stub: lurek.math.Vec3
 -- Creates a 3D vector
 do
@@ -870,7 +779,6 @@ do
   local s = p:scale(5)
   lurek.log.debug("scaled z=" .. s.z, "math")
 end
-
 --@api-stub: lurek.math.catmullRom
 -- Creates a Catmull-Rom spline from point tables
 do
@@ -881,7 +789,6 @@ do
   local x, y = cr:sample(0.5)
   lurek.log.debug("catmull mid " .. x .. "," .. y, "spline")
 end
-
 --@api-stub: lurek.math.hermite
 -- Creates a Hermite spline from endpoints and tangents
 do
@@ -892,7 +799,6 @@ do
   local mx, my = h:sample(0.5)
   lurek.log.debug("hermite mid " .. mx .. "," .. my, "spline")
 end
-
 --@api-stub: lurek.math.remap
 -- Remaps a value from one range to another
 do
@@ -901,7 +807,6 @@ do
   local mapped = lurek.math.remap(127, 0, 255, 0, 1)
   lurek.log.debug("normalised input=" .. mapped, "input")
 end
-
 --@api-stub: lurek.math.smoothstep
 -- Applies smoothstep interpolation between two edges
 do
@@ -910,7 +815,6 @@ do
   local fade = lurek.math.smoothstep(50, 100, 75)
   lurek.log.debug("fade=" .. fade, "fx")
 end
-
 --@api-stub: lurek.math.inverseLerp
 -- Returns the interpolation factor of a value between two bounds
 do
@@ -919,7 +823,6 @@ do
   local t = lurek.math.inverseLerp(0, 200, 50)
   lurek.log.debug("t=" .. t, "math")
 end
-
 --@api-stub: lurek.math.hslToRgb
 -- Converts HSL color values to RGBA channels
 do
@@ -928,7 +831,6 @@ do
   local r, g, b, a = lurek.math.hslToRgb(200, 0.7, 0.5)
   lurek.log.debug("rgb " .. r .. "," .. g .. "," .. b, "color")
 end
-
 --@api-stub: lurek.math.fromHex
 -- Converts a hex color string to RGBA channels
 do
@@ -936,7 +838,6 @@ do
   local r, g, b, a = lurek.math.fromHex("#ff8800")
   lurek.log.debug("hex -> " .. r .. "," .. g .. "," .. b, "color")
 end
-
 --@api-stub: lurek.math.rgbToHsl
 -- Converts RGB channels to HSL values
 do
@@ -944,7 +845,6 @@ do
   local h, s, l = lurek.math.rgbToHsl(1.0, 0.5, 0.0)
   lurek.log.debug("hsl " .. h .. "," .. s .. "," .. l, "color")
 end
-
 --@api-stub: lurek.math.rectUnion
 -- Returns the union rectangle for two rectangles
 do
@@ -953,7 +853,6 @@ do
   local x, y, w, h = lurek.math.rectUnion(0, 0, 50, 50, 30, 30, 60, 60)
   lurek.log.debug("union " .. w .. "x" .. h, "ui")
 end
-
 --@api-stub: lurek.math.rectFromCenter
 -- Creates a rectangle tuple from center coordinates and size
 do
@@ -961,7 +860,6 @@ do
   local x, y, w, h = lurek.math.rectFromCenter(100, 100, 32, 32)
   lurek.log.debug("rect " .. x .. "," .. y, "geo")
 end
-
 --@api-stub: lurek.math.polygonClip
 -- Clips a flat polygon point table against a plane
 do
@@ -971,7 +869,6 @@ do
   local clipped = lurek.math.polygonClip(poly, 1, 0, 50)
   lurek.log.debug("clipped verts=" .. (#clipped / 2), "geo")
 end
-
 --@api-stub: lurek.math.aabbTree
 -- Creates an empty AABB tree
 do
@@ -981,7 +878,6 @@ do
   tree:insert(1, 0, 0, 32, 32)
   lurek.log.debug("tree size=" .. tree:len(), "physics")
 end
-
 --@api-stub: lurek.math.newCircle
 -- Creates a circle primitive
 do
@@ -992,7 +888,6 @@ do
     lurek.log.debug("inside circle", "geo")
   end
 end
-
 --@api-stub: lurek.math.polygonIntersection
 -- Returns polygon intersection points for two polygon tables
 do
@@ -1003,7 +898,6 @@ do
   local hit = lurek.math.polygonIntersection(a, b)
   lurek.log.info("overlap verts=" .. #hit, "geo")
 end
-
 --@api-stub: lurek.math.polygonUnion
 -- Returns polygon union points for two polygon tables
 do
@@ -1013,7 +907,6 @@ do
   local u = lurek.math.polygonUnion(a, b)
   lurek.log.info("union verts=" .. #u, "geo")
 end
-
 --@api-stub: lurek.math.polygonDifference
 -- Returns polygon difference points for two polygon tables
 do
@@ -1024,7 +917,6 @@ do
   local diff = lurek.math.polygonDifference(a, b)
   lurek.log.info("diff verts=" .. #diff, "geo")
 end
-
 --@api-stub: lurek.math.voronoi
 -- Builds Voronoi cells from a polygon-style point table
 do
@@ -1034,7 +926,6 @@ do
   local cells = lurek.math.voronoi(seeds)
   lurek.log.info("voronoi cells=" .. #cells, "geo")
 end
-
 --@api-stub: LVec3:dot
 -- Performs the dot operation on this vec2.
 do
@@ -1044,7 +935,6 @@ do
   local b = lurek.math.vec2(0, 1)
   lurek.log.debug("dot=" .. a:dot(b), "math")
 end
-
 --@api-stub: LBezierCurve:length
 -- Performs the length operation on this vec2.
 do
@@ -1053,7 +943,6 @@ do
   local len = v:length()
   lurek.log.info("len=" .. len, "math")
 end
-
 --@api-stub: LCircle:x
 -- Performs the x operation on this vec2.
 do
@@ -1062,7 +951,6 @@ do
   local x = v.x
   lurek.log.debug("x=" .. x, "math")
 end
-
 --@api-stub: LCircle:y
 -- Performs the y operation on this vec2.
 do
@@ -1071,7 +959,6 @@ do
   local y = v.y
   lurek.log.debug("y=" .. y, "math")
 end
-
 --@api-stub: LVec3:lengthSquared
 -- Performs the length squared operation on this vec2.
 do
@@ -1081,7 +968,6 @@ do
     lurek.log.debug("vector longer than 5", "math")
   end
 end
-
 --@api-stub: LVec3:normalize
 -- Performs the normalize operation on this vec2.
 do
@@ -1090,7 +976,6 @@ do
   local dir = lurek.math.vec2(10, 0):normalize()
   lurek.log.debug("dir x=" .. dir.x, "math")
 end
-
 --@api-stub: LVec2:normalized
 -- Performs the normalized operation on this vec2.
 do
@@ -1098,7 +983,6 @@ do
   local n = lurek.math.vec2(0, 5):normalized()
   lurek.log.debug("n.y=" .. n.y, "math")
 end
-
 --@api-stub: LVec3:lerp
 -- Performs the lerp operation on this vec2.
 do
@@ -1109,7 +993,6 @@ do
   local mid = a:lerp(b, 0.5)
   lurek.log.debug("mid x=" .. mid.x, "math")
 end
-
 --@api-stub: LVec3:distance
 -- Performs the distance operation on this vec2.
 do
@@ -1118,7 +1001,6 @@ do
   local b = lurek.math.vec2(3, 4)
   lurek.log.info("dist=" .. a:distance(b), "math")
 end
-
 --@api-stub: LVec2:angle
 -- Performs the angle operation on this vec2.
 do
@@ -1126,7 +1008,6 @@ do
   local v = lurek.math.vec2(0, 1)
   lurek.log.debug("angle=" .. lurek.math.deg(v:angle()), "math")
 end
-
 --@api-stub: LBezierCurve:rotate
 -- Performs the rotate operation on this vec2.
 do
@@ -1136,7 +1017,6 @@ do
   local r = v:rotate(math.pi / 2)
   lurek.log.debug("rotated x=" .. r.x .. " y=" .. r.y, "math")
 end
-
 --@api-stub: LVec2:perpendicular
 -- Performs the perpendicular operation on this vec2.
 do
@@ -1145,7 +1025,6 @@ do
   local n = lurek.math.vec2(1, 0):perpendicular()
   lurek.log.debug("perp y=" .. n.y, "math")
 end
-
 --@api-stub: LVec3:cross
 -- Performs the cross operation on this vec2.
 do
@@ -1155,7 +1034,6 @@ do
   local b = lurek.math.vec2(0, 1)
   lurek.log.debug("cross=" .. a:cross(b), "math")
 end
-
 --@api-stub: LVec2:reflect
 -- Performs the reflect operation on this vec2.
 do
@@ -1166,7 +1044,6 @@ do
   local bounced = incoming:reflect(floor)
   lurek.log.debug("bounce y=" .. bounced.y, "physics")
 end
-
 --@api-stub: LBezierCurve:length
 -- Performs the length operation on this vec3.
 do
@@ -1174,7 +1051,6 @@ do
   local v = lurek.math.vec3(1, 2, 2)
   lurek.log.debug("len=" .. v:length(), "math")
 end
-
 --@api-stub: LVec3:lengthSquared
 -- Performs the length squared operation on this vec3.
 do
@@ -1182,7 +1058,6 @@ do
   local v = lurek.math.vec3(2, 2, 1)
   lurek.log.debug("len2=" .. v:lengthSquared(), "math")
 end
-
 --@api-stub: LVec3:normalize
 -- Performs the normalize operation on this vec3.
 do
@@ -1191,7 +1066,6 @@ do
   local n = v:normalize()
   lurek.log.debug("n.z=" .. n.z, "math")
 end
-
 --@api-stub: LVec3:dot
 -- Performs the dot operation on this vec3.
 do
@@ -1202,7 +1076,6 @@ do
   local l = lurek.math.vec3(0, 1, 0)
   lurek.log.debug("ndotl=" .. n:dot(l), "light")
 end
-
 --@api-stub: LVec3:cross
 -- Performs the cross operation on this vec3.
 do
@@ -1215,7 +1088,6 @@ do
   local z = x:cross(y)
   lurek.log.debug("z.z=" .. z.z, "math")
 end
-
 --@api-stub: LVec3:lerp
 -- Performs the lerp operation on this vec3.
 do
@@ -1227,7 +1099,6 @@ do
   local m = a:lerp(b, 0.5)
   lurek.log.debug("mid.x=" .. m.x, "math")
 end
-
 --@api-stub: LVec3:distance
 -- Performs the distance operation on this vec3.
 do
@@ -1237,7 +1108,6 @@ do
   local b = lurek.math.vec3(3, 4, 0)
   lurek.log.info("dist=" .. a:distance(b), "math")
 end
-
 --@api-stub: LVec3:add
 -- Adds a  to this vec3.
 do
@@ -1249,7 +1119,6 @@ do
   local s = a:add(b)
   lurek.log.debug("sum.x=" .. s.x, "math")
 end
-
 --@api-stub: LVec3:sub
 -- Performs the sub operation on this vec3.
 do
@@ -1261,7 +1130,6 @@ do
   local d = a:sub(b)
   lurek.log.debug("diff.z=" .. d.z, "math")
 end
-
 --@api-stub: LBezierCurve:scale
 -- Performs the scale operation on this vec3.
 do
@@ -1271,7 +1139,6 @@ do
   local v = base:scale(9.81)
   lurek.log.debug("scaled.x=" .. v.x, "physics")
 end
-
 --@api-stub: LHermite:sample
 -- Performs the sample operation on this catmull rom.
 do
@@ -1282,7 +1149,6 @@ do
   local x, y = cr:sample(0.25)
   lurek.log.debug("sample " .. x .. "," .. y, "spline")
 end
-
 --@api-stub: LCatmullRom:sampleSegment
 -- Performs the sample segment operation on this catmull rom.
 do
@@ -1293,7 +1159,6 @@ do
   local x, y = cr:sampleSegment(0, 0.5)
   lurek.log.debug("seg0 mid " .. x .. "," .. y, "spline")
 end
-
 --@api-stub: LAabbTree:len
 -- Performs the len operation on this catmull rom.
 do
@@ -1302,7 +1167,6 @@ do
   local cr = lurek.math.catmullRom({{x=0,y=0},{x=10,y=10},{x=20,y=0},{x=30,y=10}})
   lurek.log.info("control points=" .. cr:len(), "spline")
 end
-
 --@api-stub: LCatmullRom:addPoint
 -- Adds a point to this catmull rom.
 do
@@ -1312,7 +1176,6 @@ do
   cr:addPoint(200, 0)
   lurek.log.debug("after add count=" .. cr:len(), "spline")
 end
-
 --@api-stub: LCatmullRom:removePoint
 -- Removes a point from this catmull rom.
 do
@@ -1323,7 +1186,6 @@ do
   local rx, ry = cr:removePoint(1)
   lurek.log.debug("removed " .. rx .. "," .. ry, "spline")
 end
-
 --@api-stub: LHermite:sample
 -- Performs the sample operation on this hermite.
 do
@@ -1333,7 +1195,6 @@ do
   local x, y = h:sample(0.5)
   lurek.log.debug("hermite mid " .. x .. "," .. y, "spline")
 end
-
 --@api-stub: LRandomGenerator:random
 -- Performs the random operation on this random generator.
 do
@@ -1342,7 +1203,6 @@ do
   local v = rng:random()
   lurek.log.debug("u01=" .. v, "rng")
 end
-
 --@api-stub: LRandomGenerator:randomFloat
 -- Performs the random float operation on this random generator.
 do
@@ -1352,7 +1212,6 @@ do
   local angle = rng:randomFloat(0, math.pi * 2)
   lurek.log.debug("angle=" .. angle, "rng")
 end
-
 --@api-stub: LRandomGenerator:randomInt
 -- Performs the random int operation on this random generator.
 do
@@ -1362,7 +1221,6 @@ do
   local roll = rng:randomInt(1, 20)
   lurek.log.info("d20=" .. roll, "rng")
 end
-
 --@api-stub: LNoiseGenerator:getSeed
 -- Returns the seed of this random generator.
 do
@@ -1371,7 +1229,6 @@ do
   local seed = rng:getSeed()
   lurek.log.info("rng seed=" .. seed, "rng")
 end
-
 --@api-stub: LNoiseGenerator:setSeed
 -- Sets the seed of this random generator.
 do
@@ -1381,7 +1238,6 @@ do
   rng:setSeed(12345)
   lurek.log.debug("after reseed=" .. rng:randomInt(1, 6), "rng")
 end
-
 --@api-stub: LRandomGenerator:getState
 -- Returns the state of this random generator.
 do
@@ -1391,7 +1247,6 @@ do
   local snapshot = rng:getState()
   lurek.log.debug("state bytes=" .. #snapshot, "rng")
 end
-
 --@api-stub: LRandomGenerator:setState
 -- Sets the state of this random generator.
 do
@@ -1402,7 +1257,6 @@ do
   rng:setState(snap)  -- rewind to the snapshot
   -- Next call will produce the same value as before the advance
 end
-
 --@api-stub: LBezierCurve:translate
 -- Performs the translate operation on this transform.
 do
@@ -1411,7 +1265,6 @@ do
   t:translate(50, -10)
   lurek.log.debug("translated", "xform")
 end
-
 --@api-stub: LBezierCurve:rotate
 -- Performs the rotate operation on this transform.
 do
@@ -1420,7 +1273,6 @@ do
   t:rotate(math.pi / 4)
   lurek.log.debug("rotated 45deg", "xform")
 end
-
 --@api-stub: LBezierCurve:scale
 -- Performs the scale operation on this transform.
 do
@@ -1429,7 +1281,6 @@ do
   t:scale(2, 0.5)
   lurek.log.debug("scaled", "xform")
 end
-
 --@api-stub: LTransform:shear
 -- Performs the shear operation on this transform.
 do
@@ -1438,7 +1289,6 @@ do
   t:shear(0.2, 0)
   lurek.log.debug("sheared", "xform")
 end
-
 --@api-stub: LTween:reset
 -- Resets this transform to its default state.
 do
@@ -1447,7 +1297,6 @@ do
   t:reset()
   lurek.log.debug("reset to identity", "xform")
 end
-
 --@api-stub: LTransform:transformPoint
 -- Performs the transform point operation on this transform.
 do
@@ -1457,7 +1306,6 @@ do
   local wx, wy = t:transformPoint(10, 0)
   lurek.log.debug("world " .. wx .. "," .. wy, "xform")
 end
-
 --@api-stub: LTransform:inverseTransformPoint
 -- Performs the inverse transform point operation on this transform.
 do
@@ -1467,7 +1315,6 @@ do
   local lx, ly = t:inverseTransformPoint(100, 50)
   lurek.log.debug("local " .. lx .. "," .. ly, "xform")
 end
-
 --@api-stub: LTransform:inverse
 -- Performs the inverse operation on this transform.
 do
@@ -1477,7 +1324,6 @@ do
   local inv = t:inverse()
   lurek.log.debug("got inverse", "xform")
 end
-
 --@api-stub: LTransform:clone
 -- Performs the clone operation on this transform.
 do
@@ -1486,7 +1332,6 @@ do
   local dup = t:clone()
   dup:translate(5, 0)
 end
-
 --@api-stub: LTransform:getMatrix
 -- Returns the matrix of this transform.
 do
@@ -1496,7 +1341,6 @@ do
   local m = t:getMatrix()
   lurek.log.debug("matrix elems=" .. #m, "xform")
 end
-
 --@api-stub: LTransform:decompose
 -- Performs the decompose operation on this transform.
 do
@@ -1506,7 +1350,6 @@ do
   local x, y, angle, sx, sy = t:decompose()
   lurek.log.info("xform " .. x .. "," .. y .. " a=" .. angle, "xform")
 end
-
 --@api-stub: LBezierCurve:evaluate
 -- Performs the evaluate operation on this bezier curve.
 do
@@ -1515,7 +1358,6 @@ do
   local x, y = c:evaluate(0.25)
   lurek.log.debug("eval " .. x .. "," .. y, "spline")
 end
-
 --@api-stub: LBezierCurve:evaluateAtDistance
 -- Performs the evaluate at distance operation on this bezier curve.
 do
@@ -1525,7 +1367,6 @@ do
   local x, y = c:evaluateAtDistance(120, 128)
   lurek.log.debug("eval@dist " .. x .. "," .. y, "spline")
 end
-
 --@api-stub: LBezierCurve:render
 -- Draws or renders this bezier curve to the current render target.
 do
@@ -1535,7 +1376,6 @@ do
   local pts = c:render(32)
   lurek.log.info("polyline points=" .. #pts, "spline")
 end
-
 --@api-stub: LBezierCurve:getDerivative
 -- Returns the derivative of this bezier curve.
 do
@@ -1545,7 +1385,6 @@ do
   local d = c:getDerivative()
   lurek.log.debug("derivative ready", "spline")
 end
-
 --@api-stub: LBezierCurve:getControlPoint
 -- Returns the control point of this bezier curve.
 do
@@ -1554,7 +1393,6 @@ do
   local x, y = c:getControlPoint(2)
   lurek.log.debug("cp2=" .. x .. "," .. y, "spline")
 end
-
 --@api-stub: LBezierCurve:removeControlPoint
 -- Removes a control point from this bezier curve.
 do
@@ -1564,7 +1402,6 @@ do
   local ok = c:removeControlPoint(3)
   lurek.log.debug("removed=" .. tostring(ok), "spline")
 end
-
 --@api-stub: LBezierCurve:getControlPointCount
 -- Returns the number of control point items in this bezier curve.
 do
@@ -1573,7 +1410,6 @@ do
   local n = c:getControlPointCount()
   lurek.log.info("cp count=" .. n, "spline")
 end
-
 --@api-stub: LBezierCurve:length
 -- Performs the length operation on this bezier curve.
 do
@@ -1582,7 +1418,6 @@ do
   local len = c:length()
   lurek.log.info("arc len=" .. len, "spline")
 end
-
 --@api-stub: LBezierCurve:translate
 -- Performs the translate operation on this bezier curve.
 do
@@ -1591,7 +1426,6 @@ do
   c:translate(10, 5)
   lurek.log.debug("translated", "spline")
 end
-
 --@api-stub: LBezierCurve:rotate
 -- Performs the rotate operation on this bezier curve.
 do
@@ -1600,7 +1434,6 @@ do
   c:rotate(math.pi / 6, 0, 0)
   lurek.log.debug("rotated", "spline")
 end
-
 --@api-stub: LBezierCurve:scale
 -- Performs the scale operation on this bezier curve.
 do
@@ -1609,7 +1442,6 @@ do
   c:scale(2.0, 0, 0)
   lurek.log.debug("scaled", "spline")
 end
-
 --@api-stub: LTween:reset
 -- Resets this tween to its default state.
 do
@@ -1618,7 +1450,6 @@ do
   tw:addValue(0, 100)
   tw:reset()
 end
-
 --@api-stub: LTween:getValue
 -- Returns the value of this tween.
 do
@@ -1628,7 +1459,6 @@ do
   local v = tw:getValue(1)
   lurek.log.debug("value=" .. v, "tween")
 end
-
 --@api-stub: LTween:getAllValues
 -- Returns all values values associated with this tween.
 do
@@ -1638,7 +1468,6 @@ do
   local all = tw:getAllValues()
   lurek.log.debug("count=" .. #all, "tween")
 end
-
 --@api-stub: LTween:isComplete
 -- Returns true if this tween complete.
 do
@@ -1648,7 +1477,6 @@ do
     lurek.log.debug("ready", "tween")
   end
 end
-
 --@api-stub: LTween:getValueCount
 -- Returns the number of value items in this tween.
 do
@@ -1657,7 +1485,6 @@ do
   tw:addValue(0, 10)
   lurek.log.info("count=" .. tw:getValueCount(), "tween")
 end
-
 --@api-stub: LTween:getEasingName
 -- Returns the easing name of this tween.
 do
@@ -1665,7 +1492,6 @@ do
   local tw = lurek.math.newTween(0.5, "outBack")
   lurek.log.debug("easing=" .. tw:getEasingName(), "tween")
 end
-
 --@api-stub: LTween:getTime
 -- Returns the time of this tween.
 do
@@ -1674,7 +1500,6 @@ do
   local pct = tw:getTime() / tw:getDuration()
   lurek.log.debug("pct=" .. pct, "tween")
 end
-
 --@api-stub: LTween:getClock
 -- Returns the clock of this tween.
 do
@@ -1683,7 +1508,6 @@ do
   local now = tw:getClock()
   lurek.log.debug("now=" .. now, "tween")
 end
-
 --@api-stub: LTween:setTime
 -- Sets the time of this tween.
 do
@@ -1692,7 +1516,6 @@ do
   tw:setTime(0.5)
   lurek.log.debug("seeked to 0.5", "tween")
 end
-
 --@api-stub: LTween:set
 -- Sets the  of this tween.
 do
@@ -1701,7 +1524,6 @@ do
   tw:set(0.25)
   lurek.log.debug("clock set", "tween")
 end
-
 --@api-stub: LTween:addValue
 -- Adds a value to this tween.
 do
@@ -1711,7 +1533,6 @@ do
   local idx = tw:addValue(0, 200)
   lurek.log.info("value idx=" .. idx, "tween")
 end
-
 --@api-stub: LAabbTree:remove
 -- Removes a  from this spatial hash.
 do
@@ -1720,7 +1541,6 @@ do
   h:insert("npc", 0, 0, 32, 32)
   h:remove("npc")
 end
-
 --@api-stub: LAabbTree:clear
 -- Clears all items from this spatial hash.
 do
@@ -1729,7 +1549,6 @@ do
   h:insert("a", 0, 0, 16, 16)
   h:clear()
 end
-
 --@api-stub: LSpatialHash:getCellSize
 -- Returns the cell size of this spatial hash.
 do
@@ -1738,7 +1557,6 @@ do
   local cs = h:getCellSize()
   lurek.log.debug("cell=" .. cs, "spatial")
 end
-
 --@api-stub: LSpatialHash:getItemCount
 -- Returns the number of item items in this spatial hash.
 do
@@ -1747,7 +1565,6 @@ do
   h:insert("a", 0, 0, 16, 16)
   lurek.log.info("items=" .. h:getItemCount(), "spatial")
 end
-
 --@api-stub: LNoiseGenerator:perlin1d
 -- Performs the perlin1d operation on this noise generator.
 do
@@ -1757,7 +1574,6 @@ do
   local wind = n:perlin1d(0.4)
   lurek.log.debug("wind=" .. wind, "weather")
 end
-
 --@api-stub: LNoiseGenerator:perlin2d
 -- Performs the perlin2d operation on this noise generator.
 do
@@ -1767,7 +1583,6 @@ do
   local h = n:perlin2d(2.5, 4.5)
   lurek.log.debug("h=" .. h, "noise")
 end
-
 --@api-stub: LNoiseGenerator:perlin3d
 -- Performs the perlin3d operation on this noise generator.
 do
@@ -1776,7 +1591,6 @@ do
   local v = n:perlin3d(1.0, 2.0, 3.0)
   lurek.log.debug("v=" .. v, "noise")
 end
-
 --@api-stub: LNoiseGenerator:perlin4d
 -- Performs the perlin4d operation on this noise generator.
 do
@@ -1785,7 +1599,6 @@ do
   local v = n:perlin4d(0.1, 0.2, 0.3, 0.4)
   lurek.log.debug("v4=" .. v, "noise")
 end
-
 --@api-stub: LNoiseGenerator:simplex1d
 -- Performs the simplex1d operation on this noise generator.
 do
@@ -1794,7 +1607,6 @@ do
   local s = n:simplex1d(0.7)
   lurek.log.debug("s1=" .. s, "noise")
 end
-
 --@api-stub: LNoiseGenerator:simplex2d
 -- Performs the simplex2d operation on this noise generator.
 do
@@ -1803,7 +1615,6 @@ do
   local s = n:simplex2d(0.4, 0.6)
   lurek.log.debug("s2=" .. s, "noise")
 end
-
 --@api-stub: LNoiseGenerator:simplex3d
 -- Performs the simplex3d operation on this noise generator.
 do
@@ -1812,14 +1623,12 @@ do
   local s = n:simplex3d(0.1, 0.2, 0.3)
   lurek.log.debug("s3=" .. s, "noise")
 end
-
 --@api-stub: LNoiseGenerator:getSeed
 -- Returns the seed of this noise generator.
 do
   local n = lurek.math.newNoiseGenerator(2026)
   lurek.log.info("noise seed=" .. n:getSeed(), "noise")
 end
-
 --@api-stub: LNoiseGenerator:setSeed
 -- Sets the seed of this noise generator.
 do
@@ -1828,7 +1637,6 @@ do
   n:setSeed(99)
   lurek.log.debug("re-seeded", "noise")
 end
-
 --@api-stub: LCircle:area
 -- Performs the area operation on this circle.
 do
@@ -1836,7 +1644,6 @@ do
   local c = lurek.math.newCircle(0, 0, 5)
   lurek.log.debug("area=" .. c:area(), "geo")
 end
-
 --@api-stub: LCircle:perimeter
 -- Performs the perimeter operation on this circle.
 do
@@ -1844,7 +1651,6 @@ do
   local c = lurek.math.newCircle(0, 0, 10)
   lurek.log.debug("perimeter=" .. c:perimeter(), "geo")
 end
-
 --@api-stub: LAabbTree:contains
 -- Performs the contains operation on this circle.
 do
@@ -1854,7 +1660,6 @@ do
     lurek.log.debug("inside", "geo")
   end
 end
-
 --@api-stub: LCircle:intersects
 -- Performs the intersects operation on this circle.
 do
@@ -1863,7 +1668,6 @@ do
   local b = lurek.math.newCircle(15, 0, 10)
   lurek.log.debug("hit=" .. tostring(a:intersects(b)), "geo")
 end
-
 --@api-stub: LCircle:aabb
 -- Performs the aabb operation on this circle.
 do
@@ -1873,7 +1677,6 @@ do
   local x1, y1, x2, y2 = c:aabb()
   lurek.log.debug("aabb " .. x1 .. "," .. y1 .. " to " .. x2 .. "," .. y2, "geo")
 end
-
 --@api-stub: LCircle:x
 -- Performs the x operation on this circle.
 do
@@ -1881,7 +1684,6 @@ do
   local c = lurek.math.newCircle(72, 18, 5)
   lurek.log.debug("x=" .. c:x(), "geo")
 end
-
 --@api-stub: LCircle:y
 -- Performs the y operation on this circle.
 do
@@ -1889,7 +1691,6 @@ do
   local c = lurek.math.newCircle(72, 18, 5)
   lurek.log.debug("y=" .. c:y(), "geo")
 end
-
 --@api-stub: LCircle:radius
 -- Performs the radius operation on this circle.
 do
@@ -1897,7 +1698,6 @@ do
   local c = lurek.math.newCircle(0, 0, 12)
   lurek.log.info("radius=" .. c:radius(), "geo")
 end
-
 --@api-stub: LAabbTree:remove
 -- Removes a  from this aabb tree.
 do
@@ -1907,7 +1707,6 @@ do
   local ok = t:remove(1)
   lurek.log.debug("removed=" .. tostring(ok), "physics")
 end
-
 --@api-stub: LAabbTree:queryPoint
 -- Performs the query point operation on this aabb tree.
 do
@@ -1918,7 +1717,6 @@ do
   local ids = t:queryPoint(10, 10)
   lurek.log.info("hits=" .. #ids, "physics")
 end
-
 --@api-stub: LAabbTree:contains
 -- Performs the contains operation on this aabb tree.
 do
@@ -1929,7 +1727,6 @@ do
     lurek.log.debug("entry exists", "physics")
   end
 end
-
 --@api-stub: LAabbTree:len
 -- Performs the len operation on this aabb tree.
 do
@@ -1938,7 +1735,6 @@ do
   t:insert(1, 0, 0, 8, 8)
   lurek.log.info("aabb tree size=" .. t:len(), "physics")
 end
-
 --@api-stub: LAabbTree:isEmpty
 -- Returns true if this aabb tree contains no items.
 do
@@ -1948,7 +1744,6 @@ do
     lurek.log.debug("tree empty", "physics")
   end
 end
-
 --@api-stub: LAabbTree:clear
 -- Clears all items from this aabb tree.
 do
@@ -1957,7 +1752,6 @@ do
   t:insert(1, 0, 0, 16, 16)
   t:clear()
 end
-
 --@api-stub: LNoiseGenerator:fbm
 -- Performs the fbm operation on this noise generator.
 do
@@ -1967,7 +1761,6 @@ do
   local v = ng:fbm(0.3, 0.7, 6, 2.0, 0.5)
   lurek.log.info("fbm noise: " .. v, "math")
 end
-
 --@api-stub: LNoiseGenerator:generateMap
 -- Performs the generate map operation on this noise generator.
 do
@@ -1977,7 +1770,6 @@ do
   local map = ng:generateMap(32, 32, { scale = 0.05, offsetX = 0.0, offsetY = 0.0 })
   lurek.log.info("map size: " .. #map, "math")
 end
-
 --@api-stub: LNoiseGenerator:generateMapCompute
 -- Performs the generate map compute operation on this noise generator.
 do
@@ -1987,7 +1779,6 @@ do
   local map = ng:generateMapCompute(16, 16, { octaves = 3, lacunarity = 2.0, gain = 0.5 })
   lurek.log.info("compute map size: " .. #map, "math")
 end
-
 --@api-stub: LAabbTree:insert
 -- Performs the insert operation on this spatial hash.
 do
@@ -1997,7 +1788,6 @@ do
   sh:insert("entity_02", 200, 150, 32, 32)
   lurek.log.info("items: " .. sh:getItemCount(), "math")
 end
-
 --@api-stub: LAabbTree:insert
 -- Performs the insert operation on this aabb tree.
 do
@@ -2007,7 +1797,6 @@ do
   tree:insert(2, 80, 80, 120, 120)
   lurek.log.info("tree len: " .. tree:len(), "math")
 end
-
 --@api-stub: LBezierCurve:insertControlPoint
 -- Performs the insert control point operation on this bezier curve.
 do
@@ -2017,7 +1806,6 @@ do
   bc:insertControlPoint(100, 25, 0.5)
   lurek.log.info("ctrl pts: " .. bc:getControlPointCount(), "math")
 end
-
 --@api-stub: LAabbTree:query
 -- Performs the query operation on this aabb tree.
 do
@@ -2029,7 +1817,6 @@ do
   local hits = tree:query(10, 10, 50, 50)
   lurek.log.info("hits: " .. #hits, "math")
 end
-
 --@api-stub: LSpatialHash:queryCircle
 -- Performs the query circle operation on this spatial hash.
 do
@@ -2041,7 +1828,6 @@ do
   local hits = sh:queryCircle(110, 110, 50)
   lurek.log.info("circle hits: " .. #hits, "math")
 end
-
 --@api-stub: LSpatialHash:queryRect
 -- Performs the query rect operation on this spatial hash.
 do
@@ -2052,7 +1838,6 @@ do
   local hits = sh:queryRect(90, 90, 170, 150)
   lurek.log.info("rect hits: " .. #hits, "math")
 end
-
 --@api-stub: LSpatialHash:querySegment
 -- Performs the query segment operation on this spatial hash.
 do
@@ -2063,7 +1848,6 @@ do
   local hits = sh:querySegment(0, 200, 400, 200)
   lurek.log.info("segment hits: " .. #hits, "math")
 end
-
 --@api-stub: LRandomGenerator:randomNormal
 -- Performs the random normal operation on this random generator.
 do
@@ -2073,7 +1857,6 @@ do
   local v = rng:randomNormal(0, 1)
   lurek.log.info("normal sample: " .. v, "math")
 end
-
 --@api-stub: LNoiseGenerator:ridged
 -- Performs the ridged operation on this noise generator.
 do
@@ -2083,7 +1866,6 @@ do
   local v = ng:ridged(0.5, 0.5, 5, 2.0, 0.5)
   lurek.log.info("ridged: " .. v, "math")
 end
-
 --@api-stub: LBezierCurve:setControlPoint
 -- Sets the control point of this bezier curve.
 do
@@ -2094,7 +1876,6 @@ do
   local cx, cy = bc:getControlPoint(2)
   lurek.log.info("ctrl pt 2: " .. cx .. "," .. cy, "math")
 end
-
 --@api-stub: LTransform:setTransformation
 -- Sets the transformation of this transform.
 do
@@ -2106,7 +1887,6 @@ do
   local x, y = t:transformPoint(0, 0)
   lurek.log.info("transformed origin: " .. x .. "," .. y, "math")
 end
-
 --@api-stub: LNoiseGenerator:turbulence
 -- Performs the turbulence operation on this noise generator.
 do
@@ -2116,7 +1896,6 @@ do
   local v = ng:turbulence(0.4, 0.6, 5, 2.0, 0.5)
   lurek.log.info("turbulence: " .. v, "math")
 end
-
 --@api-stub: LAabbTree:update
 -- Advances this tween by the given delta time.
 do
@@ -2127,7 +1906,6 @@ do
   tw:update(0.5)
   lurek.log.info("x at t=0.5: " .. tw:getValue(1), "math")
 end
-
 --@api-stub: LAabbTree:update
 -- Advances this spatial hash by the given delta time.
 do
@@ -2138,7 +1916,6 @@ do
   sh:update("player", 110, 105, 32, 32)
   lurek.log.info("player position updated", "math")
 end
-
 --@api-stub: LNoiseGenerator:warpDomain
 -- Performs the warp domain operation on this noise generator.
 do
@@ -2151,7 +1928,6 @@ do
   local v = ng:perlin2d(wx, wy)
   lurek.log.info("warped: " .. v, "math")
 end
-
 --@api-stub: LNoiseGenerator:worley2d
 -- Performs the worley2d operation on this noise generator.
 do
@@ -2161,7 +1937,6 @@ do
   local v = ng:worley2d(0.25, 0.75)
   lurek.log.info("worley2d: " .. v, "math")
 end
-
 --@api-stub: LNoiseGenerator:worley3d
 -- Performs the worley3d operation on this noise generator.
 do
@@ -2170,7 +1945,6 @@ do
   local v = ng:worley3d(0.1, 0.5, 0.9)
   lurek.log.info("worley3d: " .. v, "math")
 end
-
 --@api-stub: LAabbTree:update
 -- Advances this aabb tree by the given delta time.
 do
@@ -2182,7 +1956,6 @@ do
   tree:update(id, 110, 110, 142, 142)
   lurek.log.info("AABB tree updated", "math")
 end
-
 --@api-stub: LAabbTree:type
 -- Returns the Lua-visible type name for this AABB tree handle
 do
@@ -2191,7 +1964,6 @@ do
   local t = aabb_tree_obj:type()
   lurek.log.info("LAabbTree:type = " .. t, "math")
 end
-
 --@api-stub: LAabbTree:typeOf
 -- Returns whether this AABB tree handle matches a supported type name
 do
@@ -2200,7 +1972,6 @@ do
   lurek.log.info("is LAabbTree: " .. tostring(aabb_tree_obj:typeOf("LAabbTree")), "math")
   lurek.log.info("is wrong: " .. tostring(aabb_tree_obj:typeOf("Unknown")), "math")
 end
-
 --@api-stub: LAabbTree:type
 -- Returns the Lua-visible type name for this Bezier curve handle
 do
@@ -2208,7 +1979,6 @@ do
   local t = bezier_curve_obj:type()
   lurek.log.info("LBezierCurve:type = " .. t, "math")
 end
-
 --@api-stub: LAabbTree:typeOf
 -- Returns whether this Bezier curve handle matches a supported type name
 do
@@ -2216,7 +1986,6 @@ do
   lurek.log.info("is LBezierCurve: " .. tostring(bezier_curve_obj:typeOf("LBezierCurve")), "math")
   lurek.log.info("is wrong: " .. tostring(bezier_curve_obj:typeOf("Unknown")), "math")
 end
-
 --@api-stub: LAabbTree:type
 -- Returns the Lua-visible type name for this spline handle
 do
@@ -2224,7 +1993,6 @@ do
   local t = catmull_rom_obj:type()
   lurek.log.info("LCatmullRom:type = " .. t, "math")
 end
-
 --@api-stub: LAabbTree:typeOf
 -- Returns whether this spline handle matches a supported type name
 do
@@ -2232,7 +2000,6 @@ do
   lurek.log.info("is LCatmullRom: " .. tostring(catmull_rom_obj:typeOf("LCatmullRom")), "math")
   lurek.log.info("is wrong: " .. tostring(catmull_rom_obj:typeOf("Unknown")), "math")
 end
-
 --@api-stub: LAabbTree:type
 -- Returns the Lua-visible type name for this circle handle
 do
@@ -2240,7 +2007,6 @@ do
   local t = circle_obj:type()
   lurek.log.info("LCircle:type = " .. t, "math")
 end
-
 --@api-stub: LAabbTree:typeOf
 -- Returns whether this circle handle matches a supported type name
 do
@@ -2248,7 +2014,6 @@ do
   lurek.log.info("is LCircle: " .. tostring(circle_obj:typeOf("LCircle")), "math")
   lurek.log.info("is wrong: " .. tostring(circle_obj:typeOf("Unknown")), "math")
 end
-
 --@api-stub: LAabbTree:type
 -- Returns the Lua-visible type name for this spline handle
 do
@@ -2256,7 +2021,6 @@ do
   local t = hermite_obj:type()
   lurek.log.info("LHermite:type = " .. t, "math")
 end
-
 --@api-stub: LAabbTree:typeOf
 -- Returns whether this spline handle matches a supported type name
 do
@@ -2264,7 +2028,6 @@ do
   lurek.log.info("is LHermite: " .. tostring(hermite_obj:typeOf("LHermite")), "math")
   lurek.log.info("is wrong: " .. tostring(hermite_obj:typeOf("Unknown")), "math")
 end
-
 --@api-stub: LAabbTree:type
 -- Returns the Lua-visible type name for this noise generator handle
 do
@@ -2272,7 +2035,6 @@ do
   local t = noise_generator_obj:type()
   lurek.log.info("LNoiseGenerator:type = " .. t, "math")
 end
-
 --@api-stub: LAabbTree:typeOf
 -- Returns whether this noise generator handle matches a supported type name
 do
@@ -2280,7 +2042,6 @@ do
   lurek.log.info("is LNoiseGenerator: " .. tostring(noise_generator_obj:typeOf("LNoiseGenerator")), "math")
   lurek.log.info("is wrong: " .. tostring(noise_generator_obj:typeOf("Unknown")), "math")
 end
-
 --@api-stub: LAabbTree:type
 -- Returns the Lua-visible type name for this random generator handle
 do
@@ -2288,7 +2049,6 @@ do
   local t = random_generator_obj:type()
   lurek.log.info("LRandomGenerator:type = " .. t, "math")
 end
-
 --@api-stub: LAabbTree:typeOf
 -- Returns whether this random generator handle matches a supported type name
 do
@@ -2296,7 +2056,6 @@ do
   lurek.log.info("is LRandomGenerator: " .. tostring(random_generator_obj:typeOf("LRandomGenerator")), "math")
   lurek.log.info("is wrong: " .. tostring(random_generator_obj:typeOf("Unknown")), "math")
 end
-
 --@api-stub: LAabbTree:type
 -- Returns the Lua-visible type name for this spatial hash handle
 do
@@ -2304,7 +2063,6 @@ do
   local t = spatial_hash_obj:type()
   lurek.log.info("LSpatialHash:type = " .. t, "math")
 end
-
 --@api-stub: LAabbTree:typeOf
 -- Returns whether this spatial hash handle matches a supported type name
 do
@@ -2312,7 +2070,6 @@ do
   lurek.log.info("is LSpatialHash: " .. tostring(spatial_hash_obj:typeOf("LSpatialHash")), "math")
   lurek.log.info("is wrong: " .. tostring(spatial_hash_obj:typeOf("Unknown")), "math")
 end
-
 --@api-stub: LAabbTree:type
 -- Returns the Lua-visible type name for this transform handle
 do
@@ -2320,7 +2077,6 @@ do
   local t = transform_obj:type()
   lurek.log.info("LTransform:type = " .. t, "math")
 end
-
 --@api-stub: LAabbTree:typeOf
 -- Returns whether this transform handle matches a supported type name
 do
@@ -2328,7 +2084,6 @@ do
   lurek.log.info("is LTransform: " .. tostring(transform_obj:typeOf("LTransform")), "math")
   lurek.log.info("is wrong: " .. tostring(transform_obj:typeOf("Unknown")), "math")
 end
-
 --@api-stub: LAabbTree:type
 -- Returns the type name of this object
 do
@@ -2336,7 +2091,6 @@ do
   local t = tween_obj:type()
   lurek.log.info("LTween:type = " .. t, "math")
 end
-
 --@api-stub: LAabbTree:typeOf
 -- Checks whether this object matches the given type name
 do
@@ -2344,7 +2098,6 @@ do
   lurek.log.info("is LTween: " .. tostring(tween_obj:typeOf("LTween")), "math")
   lurek.log.info("is wrong: " .. tostring(tween_obj:typeOf("Unknown")), "math")
 end
-
 --@api-stub: LVec2:fromAngle
 -- Performs the from angle operation on this vec2.
 do
@@ -2354,7 +2107,6 @@ do
   local dir = lurek.math.vec2(1, 0):fromAngle(angle)
   lurek.log.info("dir.x=" .. dir.x .. " dir.y=" .. dir.y, "math")
 end
-
 --@api-stub: LAabbTree:type
 -- Returns the Lua-visible type name for this vector handle
 do
@@ -2362,7 +2114,6 @@ do
   local t = vec2_obj:type()
   lurek.log.info("LVec2:type = " .. t, "math")
 end
-
 --@api-stub: LAabbTree:typeOf
 -- Returns whether this vector handle matches a supported type name
 do
@@ -2370,7 +2121,6 @@ do
   lurek.log.info("is LVec2: " .. tostring(vec2_obj:typeOf("LVec2")), "math")
   lurek.log.info("is wrong: " .. tostring(vec2_obj:typeOf("Unknown")), "math")
 end
-
 --@api-stub: LVec3:splat
 -- Performs the splat operation on this vec3.
 do
@@ -2379,7 +2129,6 @@ do
   local ones = lurek.math.vec3(1.0, 1.0, 1.0):splat(1.0)
   lurek.log.info("splat=" .. ones.x .. "," .. ones.y .. "," .. ones.z, "math")
 end
-
 --@api-stub: LAabbTree:type
 -- Returns the Lua-visible type name for this vector handle
 do
@@ -2387,7 +2136,6 @@ do
   local t = vec3_obj:type()
   lurek.log.info("LVec3:type = " .. t, "math")
 end
-
 --@api-stub: LAabbTree:typeOf
 -- Returns whether this vector handle matches a supported type name
 do
@@ -2395,13 +2143,7 @@ do
   lurek.log.info("is LVec3: " .. tostring(vec3_obj:typeOf("LVec3")), "math")
   lurek.log.info("is wrong: " .. tostring(vec3_obj:typeOf("Unknown")), "math")
 end
-
 print("content/examples/math.lua")
-
--- =============================================================================
--- Additional coverage stubs (fleshed out)
--- =============================================================================
-
 --@api-stub: LCatmullRom:sample
 -- Samples the spline at normalized parameter `t`.
 do
@@ -2411,7 +2153,6 @@ do
   local x, y = cr:sample(0.25)
   lurek.log.debug("patrol pos=" .. x .. "," .. y, "spline")
 end
-
 --@api-stub: LCatmullRom:len
 -- Returns the number of points in the spline.
 do
@@ -2420,7 +2161,6 @@ do
   local cr = lurek.math.catmullRom({{x=0,y=0},{x=50,y=50},{x=100,y=0},{x=150,y=50}})
   lurek.log.info("spline points=" .. cr:len(), "spline")
 end
-
 --@api-stub: LCircle:contains
 -- Returns whether this circle contains a point.
 do
@@ -2429,7 +2169,6 @@ do
   local inside = btn:contains(210, 145)
   lurek.log.debug("click inside=" .. tostring(inside), "ui")
 end
-
 --@api-stub: LRandomGenerator:getSeed
 -- Returns this generator seed. This method is available to Lua scripts.
 do
@@ -2437,7 +2176,6 @@ do
   local rng = lurek.math.newRandomGenerator(98765)
   lurek.log.info("world seed=" .. rng:getSeed(), "world")
 end
-
 --@api-stub: LRandomGenerator:setSeed
 -- Resets this generator to a seed value.
 do
@@ -2446,7 +2184,6 @@ do
   rng:setSeed(42)
   lurek.log.debug("reseeded, first roll=" .. rng:randomInt(1, 100), "rng")
 end
-
 --@api-stub: LRectPacker:clear
 -- Clears packed rectangles from this packer.
 do
@@ -2456,7 +2193,6 @@ do
   packer:clear()
   lurek.log.debug("packer cleared for new page", "atlas")
 end
-
 --@api-stub: LSpatialHash:insert
 -- Inserts an item rectangle into the spatial hash.
 do
@@ -2465,7 +2201,6 @@ do
   hash:insert("goblin", 200, 150, 24, 24)
   lurek.log.debug("goblin inserted into spatial hash", "spatial")
 end
-
 --@api-stub: LSpatialHash:update
 -- Updates an item rectangle in the spatial hash.
 do
@@ -2475,7 +2210,6 @@ do
   hash:update("player", 120, 105, 32, 32)
   lurek.log.debug("player position updated in hash", "spatial")
 end
-
 --@api-stub: LSpatialHash:remove
 -- Removes an item from the spatial hash.
 do
@@ -2485,7 +2219,6 @@ do
   hash:remove("enemy_1")
   lurek.log.debug("enemy removed from spatial hash", "spatial")
 end
-
 --@api-stub: LSpatialHash:clear
 -- Clears all items from the spatial hash.
 do
@@ -2496,7 +2229,6 @@ do
   hash:clear()
   lurek.log.debug("spatial hash cleared", "spatial")
 end
-
 --@api-stub: LTransform:translate
 -- Applies a translation to this transform.
 do
@@ -2506,7 +2238,6 @@ do
   local wx, wy = t:transformPoint(0, 0)
   lurek.log.debug("after translate origin at " .. wx .. "," .. wy, "xform")
 end
-
 --@api-stub: LTransform:rotate
 -- Applies a rotation to this transform.
 do
@@ -2515,7 +2246,6 @@ do
   t:rotate(math.pi / 3)
   lurek.log.debug("turret rotated 60deg", "xform")
 end
-
 --@api-stub: LTransform:scale
 -- Applies scale to this transform. This method is available to Lua scripts.
 do
@@ -2524,7 +2254,6 @@ do
   t:scale(1.5, 1.5)
   lurek.log.debug("scaled 150%", "xform")
 end
-
 --@api-stub: LTransform:reset
 -- Resets this transform to identity.
 do
@@ -2534,7 +2263,6 @@ do
   local wx, wy = t:transformPoint(10, 10)
   lurek.log.debug("after reset, 10,10 -> " .. wx .. "," .. wy, "xform")
 end
-
 --@api-stub: LTween:update
 -- Advances the tween clock and returns whether it is complete.
 do
@@ -2544,7 +2272,6 @@ do
   local done = tw:update(0.5)
   lurek.log.debug("tween done=" .. tostring(done), "anim")
 end
-
 --@api-stub: LTween:getDuration
 -- Returns this tween duration. This method is available to Lua scripts.
 do
@@ -2552,7 +2279,6 @@ do
   local tw = lurek.math.newTween(2.5, "linear")
   lurek.log.info("tween duration=" .. tw:getDuration() .. "s", "anim")
 end
-
 --@api-stub: LVec2:dot
 -- Returns the dot product with another vector.
 do
@@ -2561,7 +2287,6 @@ do
   local wall = lurek.math.vec2(0, 1)
   lurek.log.debug("alignment=" .. move:dot(wall), "physics")
 end
-
 --@api-stub: LVec2:length
 -- Returns this vector length. This method is available to Lua scripts.
 do
@@ -2569,7 +2294,6 @@ do
   local vel = lurek.math.vec2(3, 4)
   lurek.log.debug("speed=" .. vel:length(), "physics")
 end
-
 --@api-stub: LVec2:x
 -- Returns this vector x component. This method is available to Lua scripts.
 do
@@ -2577,7 +2301,6 @@ do
   local dir = lurek.math.vec2(0.7, 0.7)
   lurek.log.debug("dir.x=" .. dir.x, "math")
 end
-
 --@api-stub: LVec2:y
 -- Returns this vector y component. This method is available to Lua scripts.
 do
@@ -2585,7 +2308,6 @@ do
   local gravity = lurek.math.vec2(0, 9.81)
   lurek.log.debug("gravity.y=" .. gravity.y, "physics")
 end
-
 --@api-stub: LVec2:lengthSquared
 -- Returns this vector squared length.
 do
@@ -2595,7 +2317,6 @@ do
     lurek.log.debug("close enough to snap", "ui")
   end
 end
-
 --@api-stub: LVec2:normalize
 -- Returns a normalized copy of this vector.
 do
@@ -2604,7 +2325,6 @@ do
   local dir = raw:normalize()
   lurek.log.debug("unit dir=" .. dir.x .. "," .. dir.y, "math")
 end
-
 --@api-stub: LVec2:lerp
 -- Returns a vector interpolated toward another vector.
 do
@@ -2614,7 +2334,6 @@ do
   local step = current:lerp(target, 0.1)
   lurek.log.debug("chase pos=" .. step.x .. "," .. step.y, "ai")
 end
-
 --@api-stub: LVec2:distance
 -- Returns distance to another vector.
 do
@@ -2623,7 +2342,6 @@ do
   local target = lurek.math.vec2(100, 50)
   lurek.log.debug("dist=" .. bullet:distance(target), "combat")
 end
-
 --@api-stub: LVec2:rotate
 -- Returns this vector rotated by an angle.
 do
@@ -2632,7 +2350,6 @@ do
   local pellet = base:rotate(0.1)
   lurek.log.debug("pellet dir=" .. pellet.x .. "," .. pellet.y, "combat")
 end
-
 --@api-stub: LVec2:cross
 -- Returns the scalar 2D cross product with another vector.
 do
@@ -2641,7 +2358,6 @@ do
   local b = lurek.math.vec2(0, 1)
   lurek.log.debug("winding=" .. a:cross(b), "geo")
 end
-
 --@api-stub: LVec3:length
 -- Returns this vector length. This method is available to Lua scripts.
 do
@@ -2650,7 +2366,6 @@ do
   local pos = lurek.math.vec3(3, 4, 0)
   lurek.log.debug("3d dist=" .. pos:length(), "audio")
 end
-
 --@api-stub: LVec3:scale
 -- Returns this vector multiplied by a scalar.
 do
@@ -2660,16 +2375,6 @@ do
   local vel = dir:scale(50)
   lurek.log.debug("velocity z=" .. vel.z, "physics")
 end
-
--- =============================================================================
--- STUBS: 29 uncovered lurek.math API item(s)
--- Generated by tools/audit/example_add_missing.py
--- REQUIRED: replace every --@api-stub: block below with a real scenario.
--- Run .github/prompts/flesh-out-example.prompt.md for instructions.
--- The final committed file must contain ZERO --@api-stub: lines.
--- =============================================================================
-
--- ---- Stub: lurek.math.perlin2d -------------------------------------------
 --@api-stub: lurek.math.perlin2d
 -- Samples stateless 2D Perlin noise.
 do
@@ -2677,8 +2382,6 @@ do
   local n = lurek.math.perlin2d(0.5, 0.3)
   lurek.log.debug("perlin2d: " .. string.format("%.3f", n), "math")
 end
-
--- ---- Stub: lurek.math.perlin3d -------------------------------------------
 --@api-stub: lurek.math.perlin3d
 -- Samples stateless 3D Perlin noise.
 do
@@ -2686,8 +2389,6 @@ do
   local n = lurek.math.perlin3d(0.5, 0.3, 1.0)
   lurek.log.debug("perlin3d: " .. string.format("%.3f", n), "math")
 end
-
--- ---- Stub: lurek.math.simplex2d ------------------------------------------
 --@api-stub: lurek.math.simplex2d
 -- Samples stateless 2D simplex noise.
 do
@@ -2695,8 +2396,6 @@ do
   local n = lurek.math.simplex2d(0.5, 0.3)
   lurek.log.debug("simplex2d: " .. string.format("%.3f", n), "math")
 end
-
--- ---- Stub: lurek.math.fbm ------------------------------------------------
 --@api-stub: lurek.math.fbm
 -- Samples stateless fractal Brownian motion noise.
 do
@@ -2704,8 +2403,6 @@ do
   local h = lurek.math.fbm(0.3, 0.7, 4, 2.0, 0.5)
   lurek.log.debug("fbm height: " .. string.format("%.3f", h), "math")
 end
-
--- ---- Stub: lurek.math.random ---------------------------------------------
 --@api-stub: lurek.math.random
 -- Returns a Lua math random value, optionally scaled to one or two bounds.
 do
@@ -2713,16 +2410,12 @@ do
   local v = lurek.math.random()
   lurek.log.debug("random float: " .. string.format("%.3f", v), "math")
 end
-
--- ---- Stub: lurek.math.randomInt ------------------------------------------
 --@api-stub: lurek.math.randomInt
 -- Returns a Lua math random integer in an inclusive range.
 do
   local n = lurek.math.randomInt(1, 6) -- dice roll
   lurek.log.debug("dice roll: " .. n, "math")
 end
-
--- ---- Stub: lurek.math.lerp -----------------------------------------------
 --@api-stub: lurek.math.lerp
 -- Linearly interpolates between two values.
 do
@@ -2730,228 +2423,138 @@ do
   local v = lurek.math.lerp(10, 20, 0.25)
   lurek.log.debug("lerp(10,20,0.25) = " .. v, "math") -- 12.5
 end
-
--- -----------------------------------------------------------------------------
--- LBezierCurve methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LBezierCurve:type ---------------------------------------------
 --@api-stub: LBezierCurve:type
 -- Returns the Lua-visible type name for this Bezier curve handle.
 do
   local obj = lurek.math.newBezierCurve({0,0, 100,0, 100,100, 200,100})
   lurek.log.debug("type: " .. obj:type(), "example") -- "LBezierCurve"
 end
-
--- ---- Stub: LBezierCurve:typeOf -------------------------------------------
 --@api-stub: LBezierCurve:typeOf
 -- Returns whether this Bezier curve handle matches a supported type name.
 do
   local obj = lurek.math.newBezierCurve({0,0, 100,0, 100,100, 200,100})
   lurek.log.debug("typeOf LBezierCurve: " .. tostring(obj:typeOf("LBezierCurve")), "example") -- true
 end
-
--- -----------------------------------------------------------------------------
--- LCatmullRom methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LCatmullRom:type ----------------------------------------------
 --@api-stub: LCatmullRom:type
 -- Returns the Lua-visible type name for this spline handle.
 do
   local obj = lurek.math.catmullRom({{0,0},{100,50},{200,0}})
   lurek.log.debug("type: " .. obj:type(), "example") -- "LCatmullRom"
 end
-
--- ---- Stub: LCatmullRom:typeOf --------------------------------------------
 --@api-stub: LCatmullRom:typeOf
 -- Returns whether this spline handle matches a supported type name.
 do
   local obj = lurek.math.catmullRom({{0,0},{100,50},{200,0}})
   lurek.log.debug("typeOf LCatmullRom: " .. tostring(obj:typeOf("LCatmullRom")), "example") -- true
 end
-
--- -----------------------------------------------------------------------------
--- LCircle methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LCircle:type --------------------------------------------------
 --@api-stub: LCircle:type
 -- Returns the Lua-visible type name for this circle handle.
 do
   local obj = lurek.math.newCircle(100, 100, 40)
   lurek.log.debug("type: " .. obj:type(), "example") -- "LCircle"
 end
-
--- ---- Stub: LCircle:typeOf ------------------------------------------------
 --@api-stub: LCircle:typeOf
 -- Returns whether this circle handle matches a supported type name.
 do
   local obj = lurek.math.newCircle(100, 100, 40)
   lurek.log.debug("typeOf LCircle: " .. tostring(obj:typeOf("LCircle")), "example") -- true
 end
-
--- -----------------------------------------------------------------------------
--- LHermite methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LHermite:type -------------------------------------------------
 --@api-stub: LHermite:type
 -- Returns the Lua-visible type name for this spline handle.
 do
   local obj = lurek.math.hermite(0,0,100,50,0,1,0,1)
   lurek.log.debug("type: " .. obj:type(), "example") -- "LHermite"
 end
-
--- ---- Stub: LHermite:typeOf -----------------------------------------------
 --@api-stub: LHermite:typeOf
 -- Returns whether this spline handle matches a supported type name.
 do
   local obj = lurek.math.hermite(0,0,100,50,0,1,0,1)
   lurek.log.debug("typeOf LHermite: " .. tostring(obj:typeOf("LHermite")), "example") -- true
 end
-
--- -----------------------------------------------------------------------------
--- LNoiseGenerator methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LNoiseGenerator:type ------------------------------------------
 --@api-stub: LNoiseGenerator:type
 -- Returns the Lua-visible type name for this noise generator handle.
 do
   local obj = lurek.math.newNoiseGenerator(42)
   lurek.log.debug("type: " .. obj:type(), "example") -- "LNoiseGenerator"
 end
-
--- ---- Stub: LNoiseGenerator:typeOf ----------------------------------------
 --@api-stub: LNoiseGenerator:typeOf
 -- Returns whether this noise generator handle matches a supported type name.
 do
   local obj = lurek.math.newNoiseGenerator(42)
   lurek.log.debug("typeOf LNoiseGenerator: " .. tostring(obj:typeOf("LNoiseGenerator")), "example") -- true
 end
-
--- -----------------------------------------------------------------------------
--- LRandomGenerator methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LRandomGenerator:type -----------------------------------------
 --@api-stub: LRandomGenerator:type
 -- Returns the Lua-visible type name for this random generator handle.
 do
   local obj = lurek.math.newRandomGenerator(12345)
   lurek.log.debug("type: " .. obj:type(), "example") -- "LRandomGenerator"
 end
-
--- ---- Stub: LRandomGenerator:typeOf ---------------------------------------
 --@api-stub: LRandomGenerator:typeOf
 -- Returns whether this random generator handle matches a supported type name.
 do
   local obj = lurek.math.newRandomGenerator(12345)
   lurek.log.debug("typeOf LRandomGenerator: " .. tostring(obj:typeOf("LRandomGenerator")), "example") -- true
 end
-
--- -----------------------------------------------------------------------------
--- LSpatialHash methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LSpatialHash:type ---------------------------------------------
 --@api-stub: LSpatialHash:type
 -- Returns the Lua-visible type name for this spatial hash handle.
 do
   local obj = lurek.math.newSpatialHash(64)
   lurek.log.debug("type: " .. obj:type(), "example") -- "LSpatialHash"
 end
-
--- ---- Stub: LSpatialHash:typeOf -------------------------------------------
 --@api-stub: LSpatialHash:typeOf
 -- Returns whether this spatial hash handle matches a supported type name.
 do
   local obj = lurek.math.newSpatialHash(64)
   lurek.log.debug("typeOf LSpatialHash: " .. tostring(obj:typeOf("LSpatialHash")), "example") -- true
 end
-
--- -----------------------------------------------------------------------------
--- LTransform methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LTransform:type -----------------------------------------------
 --@api-stub: LTransform:type
 -- Returns the Lua-visible type name for this transform handle.
 do
   local obj = lurek.math.newTransform()
   lurek.log.debug("type: " .. obj:type(), "example") -- "LTransform"
 end
-
--- ---- Stub: LTransform:typeOf ---------------------------------------------
 --@api-stub: LTransform:typeOf
 -- Returns whether this transform handle matches a supported type name.
 do
   local obj = lurek.math.newTransform()
   lurek.log.debug("typeOf LTransform: " .. tostring(obj:typeOf("LTransform")), "example") -- true
 end
-
--- -----------------------------------------------------------------------------
--- LTween methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LTween:type ---------------------------------------------------
 --@api-stub: LTween:type
 -- Returns the Lua-visible type name for this tween handle.
 do
   local obj = lurek.math.newTween(1.0, 'linear')
   lurek.log.debug("type: " .. obj:type(), "example") -- "LTween"
 end
-
--- ---- Stub: LTween:typeOf -------------------------------------------------
 --@api-stub: LTween:typeOf
 -- Returns whether this tween handle matches a supported type name.
 do
   local obj = lurek.math.newTween(1.0, 'linear')
   lurek.log.debug("typeOf LTween: " .. tostring(obj:typeOf("LTween")), "example") -- true
 end
-
--- -----------------------------------------------------------------------------
--- LVec2 methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LVec2:type ----------------------------------------------------
 --@api-stub: LVec2:type
 -- Returns the Lua-visible type name for this vector handle.
 do
   local obj = lurek.math.vec2(1, 0)
   lurek.log.debug("type: " .. obj:type(), "example") -- "LVec2"
 end
-
--- ---- Stub: LVec2:typeOf --------------------------------------------------
 --@api-stub: LVec2:typeOf
 -- Returns whether this vector handle matches a supported type name.
 do
   local obj = lurek.math.vec2(1, 0)
   lurek.log.debug("typeOf LVec2: " .. tostring(obj:typeOf("LVec2")), "example") -- true
 end
-
--- -----------------------------------------------------------------------------
--- LVec3 methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LVec3:type ----------------------------------------------------
 --@api-stub: LVec3:type
 -- Returns the Lua-visible type name for this vector handle.
 do
   local obj = lurek.math.vec3(1, 0, 0)
   lurek.log.debug("type: " .. obj:type(), "example") -- "LVec3"
 end
-
--- ---- Stub: LVec3:typeOf --------------------------------------------------
 --@api-stub: LVec3:typeOf
 -- Returns whether this vector handle matches a supported type name.
 do
   local obj = lurek.math.vec3(1, 0, 0)
   lurek.log.debug("typeOf LVec3: " .. tostring(obj:typeOf("LVec3")), "example") -- true
 end
-
--- ---- Stub: lurek.math.distance ------------------------------------------
 --@api-stub: lurek.math.distance
 -- Returns the Euclidean distance between two 2D points.
 do

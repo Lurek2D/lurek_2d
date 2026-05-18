@@ -1,7 +1,6 @@
 -- content/examples/event.lua
 -- Demonstrates every lurek.event function and LSignal class method with realistic game usage.
 -- Run: cargo run -- content/examples/event.lua
-
 --@api-stub: lurek.event.newSignal
 -- Creates an isolated signal dispatcher for decoupled Lua-side pub/sub communication
 do
@@ -12,7 +11,6 @@ do
   end)
   combat_bus:emit("damage_dealt", "skeleton_warrior", 25)
 end
-
 --@api-stub: lurek.event.push
 -- Pushes a named event with arguments into the shared queue for cross-system communication
 do
@@ -26,7 +24,6 @@ do
     end
   end
 end
-
 --@api-stub: lurek.event.pushPriority
 -- Pushes an event with explicit priority so high-priority events are polled first
 do
@@ -40,7 +37,6 @@ do
     end
   end
 end
-
 --@api-stub: lurek.event.poll
 -- Returns a polling iterator that drains queued events one at a time
 do
@@ -55,7 +51,6 @@ do
   end
   lurek.log.info("processed " .. #actions .. " input actions this frame", "input")
 end
-
 --@api-stub: lurek.event.pump
 -- Pumps the OS/engine event queue so new events become visible to poll
 do
@@ -66,7 +61,6 @@ do
     lurek.log.debug("event: " .. name, "input")
   end
 end
-
 --@api-stub: lurek.event.wait
 -- Blocks until an event arrives or timeout elapses; useful for tool scripts
 do
@@ -78,7 +72,6 @@ do
     lurek.log.info("no event within timeout, continuing idle loop", "tool")
   end
 end
-
 --@api-stub: LSignal:clear
 -- Removes all pending events from the shared queue
 do
@@ -91,7 +84,6 @@ do
   for _ in lurek.event.poll() do count = count + 1 end
   lurek.log.info("events after scene transition clear: " .. count, "scene")
 end
-
 --@api-stub: lurek.event.pushDeferred
 -- Queues an event into the deferred buffer, not the live queue
 do
@@ -103,7 +95,6 @@ do
   -- Events sit in the deferred buffer until flushed
   lurek.log.info("queued 5 deferred spawn events", "spawner")
 end
-
 --@api-stub: lurek.event.pushDeferredPriority
 -- Queues a prioritized event into the deferred buffer
 do
@@ -113,7 +104,6 @@ do
   lurek.event.pushDeferredPriority("spawn_minion", "normal", "imp", 200, 200)
   lurek.log.info("deferred priority batch queued", "spawner")
 end
-
 --@api-stub: lurek.event.flushDeferred
 -- Moves all deferred events into the live queue and returns the count moved
 do
@@ -124,7 +114,6 @@ do
   local moved = lurek.event.flushDeferred()
   lurek.log.info("flushed " .. moved .. " end-of-frame events", "game")
 end
-
 --@api-stub: lurek.event.enableHistory
 -- Enables event history with a fixed capacity for replay or debugging
 do
@@ -135,7 +124,6 @@ do
   -- History retains push calls up to capacity for post-mortem inspection
   lurek.log.info("event history enabled with capacity 128", "debug")
 end
-
 --@api-stub: lurek.event.getHistory
 -- Returns the retained event history as an array of {name, args} entries
 do
@@ -149,7 +137,6 @@ do
     lurek.log.debug("history: " .. entry.name .. "(" .. arg_str .. ")", "replay")
   end
 end
-
 --@api-stub: lurek.event.clearHistory
 -- Clears retained event history without disabling future recording
 do
@@ -161,7 +148,6 @@ do
   local h = lurek.event.getHistory()
   lurek.log.info("history after clear has " .. #h .. " entry", "debug")
 end
-
 --@api-stub: lurek.event.quit
 -- Requests a graceful engine shutdown with exit code 0
 do
@@ -172,7 +158,6 @@ do
   end
   on_quit_confirmed()
 end
-
 --@api-stub: lurek.event.exit
 -- Requests engine shutdown with a specific process exit code
 do
@@ -185,7 +170,6 @@ do
     lurek.event.exit(0)
   end
 end
-
 --@api-stub: lurek.event.restart
 -- Requests a full engine restart, reloading conf.lua and all scripts
 do
@@ -196,7 +180,6 @@ do
   end
   apply_language_change("pl")
 end
-
 --@api-stub: LSignal:register
 -- Registers a persistent callback for a named signal event
 do
@@ -212,7 +195,6 @@ do
   sig:emit("hit", "orc", 15)
   lurek.log.info("registered handles: " .. hp_listener .. ", " .. fx_listener, "event")
 end
-
 --@api-stub: LSignal:emit
 -- Emits a signal event, invoking all matching callbacks with the provided arguments
 do
@@ -229,7 +211,6 @@ do
   -- Emit passes all extra args to every matching callback
   inventory:emit("item_added", "health_potion", 5)
 end
-
 --@api-stub: LSignal:connect
 -- Registers a callback for an exact name or wildcard pattern
 do
@@ -247,7 +228,6 @@ do
   sig:emit("player.land")
   lurek.log.info("wildcard listener id: " .. debug_id, "event")
 end
-
 --@api-stub: LSignal:once
 -- Registers a one-shot callback that auto-removes after first matching emission
 do
@@ -262,7 +242,6 @@ do
   sig:emit("first_enemy_seen", "goblin")
   lurek.log.info("once listener count: " .. sig:getCount("first_enemy_seen"), "event")
 end
-
 --@api-stub: LSignal:registerWithFilter
 -- Registers a callback that only fires when a filter predicate returns true
 do
@@ -281,7 +260,6 @@ do
   combat:emit("damage", {target = "boss", amount = 50, critical = true})
   combat:emit("damage", {target = "boss", amount = 10, critical = false})
 end
-
 --@api-stub: LSignal:remove
 -- Removes a specific callback by its subscription handle
 do
@@ -296,7 +274,6 @@ do
   -- Emit after removal: no callback fires
   sig:emit("tick")
 end
-
 --@api-stub: LSignal:clear
 -- Removes all callbacks registered under one specific event name
 do
@@ -309,7 +286,6 @@ do
   local removed = sig:clear("update")
   lurek.log.info("cleared " .. removed .. " update listeners, draw remains: " .. sig:getCount("draw"), "event")
 end
-
 --@api-stub: LSignal:clearAll
 -- Removes every callback from this signal regardless of event name
 do
@@ -321,7 +297,6 @@ do
   local total = sig:clearAll()
   lurek.log.info("level unload: removed " .. total .. " signal listeners", "scene")
 end
-
 --@api-stub: LSignal:getCount
 -- Returns the number of callbacks registered for one specific event name
 do
@@ -335,7 +310,6 @@ do
     lurek.log.info("emitted to " .. count .. " explosion listeners", "vfx")
   end
 end
-
 --@api-stub: LSignal:getTotalCount
 -- Returns the total number of callbacks across all event names in this signal
 do
@@ -347,7 +321,6 @@ do
   local total = sig:getTotalCount()
   lurek.log.info("signal has " .. total .. " total subscriptions", "diag")
 end
-
 --@api-stub: LSignal:type
 -- Returns the Lua-visible type name string for this signal handle
 do
@@ -356,7 +329,6 @@ do
   local type_name = sig:type()
   lurek.log.info("signal handle type: " .. type_name, "diag")
 end
-
 --@api-stub: LSignal:typeOf
 -- Returns true if this handle matches a given type name
 do
@@ -372,10 +344,7 @@ do
   register_safe(sig, "test", function() end)
   lurek.log.info("typeOf Signal=" .. tostring(sig:typeOf("Signal")) .. " Object=" .. tostring(sig:typeOf("Object")), "diag")
 end
-
 print("content/examples/event.lua")
-
--- ---- Stub: lurek.event.clear ---------------------------------------------
 --@api-stub: lurek.event.clear
 -- Removes all listeners for a named event, or all events if no name given.
 do

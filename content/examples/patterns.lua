@@ -1,7 +1,6 @@
 -- content/examples/patterns.lua
 -- lurek.patterns API examples: data structures, design patterns, and game architecture utilities.
 -- Run: cargo run -- content/examples/patterns.lua
-
 --@api-stub: lurek.patterns.newEventBus
 -- Create a new publish/subscribe event bus for decoupled communication between game systems
 do
@@ -27,7 +26,6 @@ do
   -- Unsubscribe the HUD listener when leaving the game screen.
   bus:off(hud_id)
 end
-
 --@api-stub: lurek.patterns.newObjectPool
 -- Create a new object pool for reusing pre-allocated game objects to reduce allocation overhead
 do
@@ -52,7 +50,6 @@ do
 
   print("active=" .. pool:getActiveCount() .. " idle=" .. pool:getAvailableCount())
 end
-
 --@api-stub: lurek.patterns.newCommandStack
 -- Create a new undo/redo command stack for recording and reversing player or editor actions
 do
@@ -80,7 +77,6 @@ do
   stack:redo()
   print("after redo: " .. tile_type)
 end
-
 --@api-stub: lurek.patterns.newServiceLocator
 -- Create a new service locator for registering and retrieving shared services by name at runtime
 do
@@ -108,7 +104,6 @@ do
     analytics.track("session_start")
   end
 end
-
 --@api-stub: lurek.patterns.newFactory
 -- Create a new factory for producing typed game objects from registered constructor functions
 do
@@ -133,7 +128,6 @@ do
     if e then print("spawned " .. e.kind .. " at " .. e.x .. "," .. e.y) end
   end
 end
-
 --@api-stub: lurek.patterns.newSimpleState
 -- Create a new finite state machine with enter/exit/update callbacks per state
 do
@@ -161,7 +155,6 @@ do
   sm:transitionTo("patrol")
   sm:update(0.016)
 end
-
 --@api-stub: lurek.patterns.newBlackboard
 -- Create a new shared key-value blackboard supporting reactive watchers for game logic variables
 do
@@ -181,7 +174,6 @@ do
   end
   print("alarm=" .. tostring(bb:get("alarm_active")))
 end
-
 --@api-stub: lurek.patterns.newObserver
 -- Create a new reactive observer that stores values and notifies subscribers when they change
 do
@@ -200,7 +192,6 @@ do
   obs:set("score", 100)  -- triggers subscriber
   obs:set("score", 250)  -- triggers subscriber again
 end
-
 --@api-stub: lurek.patterns.newThrottle
 -- Create a new throttle that limits how often an action can fire, enforcing a minimum interval
 do
@@ -219,7 +210,6 @@ do
   weapon_fire:update(0.25)   -- interval elapsed, fires!
   print("shots fired=" .. weapon_fire:getFireCount())
 end
-
 --@api-stub: lurek.patterns.newDebounce
 -- Create a new debounce that delays firing until input stops for a specified wait period
 do
@@ -238,7 +228,6 @@ do
   -- After 0.5s of no triggers, the callback fires.
   print("pending=" .. tostring(autosave:isPending()))
 end
-
 --@api-stub: lurek.patterns.newPriorityQueue
 -- Create a new priority queue that orders elements by numeric priority (highest first)
 do
@@ -257,7 +246,6 @@ do
   local task = ai_tasks:pop()
   if task then print("executing: " .. task.kind) end  -- "attack"
 end
-
 --@api-stub: lurek.patterns.newRing
 -- Create a new fixed-size ring buffer for numeric or string values
 do
@@ -275,7 +263,6 @@ do
   print("avg fps=" .. string.format("%.1f", fps_log:average())
     .. " samples=" .. fps_log:len())
 end
-
 --@api-stub: lurek.patterns.newFunnel
 -- Create a new batching funnel that collects events over a time window and flushes them together
 do
@@ -296,7 +283,6 @@ do
   -- After 2 seconds or 32 events, onFlush fires with the full batch.
   print("buffered=" .. analytics:pendingCount())
 end
-
 --@api-stub: lurek.patterns.newRelationshipManager
 -- Create a new relationship manager for tracking numeric values and named levels between entity pairs
 do
@@ -320,7 +306,6 @@ do
   local value = rel:getValue(player_id, merchant_id)
   print("merchant is " .. tostring(level) .. " (score=" .. tostring(value) .. ")")
 end
-
 --@api-stub: lurek.patterns.newMediator
 -- Create a new mediator for channel-based message passing between decoupled game systems
 do
@@ -341,7 +326,6 @@ do
   hub:send("chat", "alice", "gg")
   hub:send("combat_log", "warrior", "dragon", 150)
 end
-
 --@api-stub: lurek.patterns.newStrategy
 -- Create a new strategy pattern container for hot-swappable algorithm implementations
 do
@@ -366,7 +350,6 @@ do
   local dmg = damage_calc:execute(20, 5)
   print("critical hit dmg=" .. dmg)
 end
-
 --@api-stub: lurek.patterns.newStack
 -- Create a new LIFO stack with optional capacity limit
 do
@@ -387,7 +370,6 @@ do
   scene_stack:pop()
   print("back to=" .. scene_stack:peek())
 end
-
 --@api-stub: lurek.patterns.newQueue
 -- Create a new FIFO queue with optional capacity limit
 do
@@ -404,7 +386,6 @@ do
   -- Process in order: first message sent is first message handled.
   print("next=" .. mail:front() .. " total=" .. mail:len())
 end
-
 --@api-stub: lurek.patterns.newList
 -- Create a new dynamic array list with indexed access, insertion, removal, and search
 do
@@ -421,7 +402,6 @@ do
   print("active quest: " .. quest_log:get(1))
   print("total quests: " .. quest_log:len())
 end
-
 --@api-stub: lurek.patterns.newSet
 -- Create a new string set with add/remove/has operations and set algebra (union, intersection)
 do
@@ -440,7 +420,6 @@ do
   end
   print("unlocked " .. unlocked:len() .. " items")
 end
-
 --@api-stub: LMediator:on
 -- Subscribe a callback to a named event with optional priority ordering
 do
@@ -455,7 +434,6 @@ do
   bus:emit("level_clear", "forest_01")
   bus:off(id)
 end
-
 --@api-stub: LMediator:off
 -- Unsubscribe a listener by its subscription ID
 do
@@ -467,7 +445,6 @@ do
   bus:emit("ping")  -- no output: listener was removed
   print("listeners=" .. bus:getListenerCount("ping"))
 end
-
 --@api-stub: LEventBus:emit
 -- Emit an event, invoking all listeners in priority order with payload arguments
 do
@@ -482,7 +459,6 @@ do
   bus:emit("damage", 12, "goblin")
   bus:emit("damage", 30, "boss")
 end
-
 --@api-stub: LMap:clear
 -- Remove all listeners for a specific event name
 do
@@ -494,7 +470,6 @@ do
   bus:clear("minigame_end")
   print("after clear: " .. bus:getListenerCount("minigame_end") .. " listeners")
 end
-
 --@api-stub: LPatternGraph:clearAll
 -- Remove all listeners from every event on this bus
 do
@@ -506,7 +481,6 @@ do
   bus:clearAll()
   print("events remaining=" .. #bus:getEvents())
 end
-
 --@api-stub: LEventBus:getListenerCount
 -- Return the number of active listeners for a given event
 do
@@ -519,7 +493,6 @@ do
   if n > 10 then print("WARNING: " .. n .. " hit listeners, possible leak") end
   print("hit listeners=" .. n)
 end
-
 --@api-stub: LEventBus:getEvents
 -- Return an array of all event names that have at least one listener
 do
@@ -532,7 +505,6 @@ do
     print("  active channel: " .. name)
   end
 end
-
 --@api-stub: LWeightedRandom:add
 -- Add an object to the pool's idle set for future acquisition
 do
@@ -544,7 +516,6 @@ do
   end
   print("pool pre-warmed: " .. bullets:getAvailableCount() .. " bullets ready")
 end
-
 --@api-stub: LObjectPool:acquire
 -- Take an idle object from the pool and mark it active
 do
@@ -561,7 +532,6 @@ do
   end
   print("active=" .. pool:getActiveCount())
 end
-
 --@api-stub: LObjectPool:release
 -- Return an active object back to the pool's idle set for reuse
 do
@@ -577,7 +547,6 @@ do
   pool:release(obj)
   print("returned to pool, idle=" .. pool:getAvailableCount())
 end
-
 --@api-stub: LObjectPool:getActiveCount
 -- Return how many objects are currently checked out from the pool
 do
@@ -590,7 +559,6 @@ do
   if n > 100 then print("WARN: pool leak detected, active=" .. n) end
   print("active=" .. n)
 end
-
 --@api-stub: LObjectPool:getAvailableCount
 -- Return how many idle objects are ready for acquisition
 do
@@ -604,7 +572,6 @@ do
   end
   print("idle=" .. pool:getAvailableCount())
 end
-
 --@api-stub: LObjectPool:getTotalCount
 -- Return the total number of objects managed (active + idle)
 do
@@ -615,7 +582,6 @@ do
   -- Total = active + available. Useful for memory budget monitoring.
   print("total=" .. pool:getTotalCount() .. " active=" .. pool:getActiveCount())
 end
-
 --@api-stub: LPatternGraph:clearAll
 -- Destroy all objects (active and idle) and reset the pool to empty
 do
@@ -626,7 +592,6 @@ do
   pool:clearAll()
   print("after clearAll: total=" .. pool:getTotalCount())
 end
-
 --@api-stub: LStrategy:execute
 -- Execute a named command, recording it in history for undo/redo
 do
@@ -641,7 +606,6 @@ do
   )
   print("doc=" .. doc.text)
 end
-
 --@api-stub: LCommandStack:undo
 -- Undo the most recent command by calling its undo function
 do
@@ -652,7 +616,6 @@ do
   local ok = stack:undo()
   print("undone=" .. tostring(ok) .. " x=" .. x)  -- x is back to 5
 end
-
 --@api-stub: LCommandStack:redo
 -- Redo a previously undone command by re-calling its execute function
 do
@@ -664,7 +627,6 @@ do
   stack:redo()   -- n=1 again
   print("after redo n=" .. n)
 end
-
 --@api-stub: LCommandStack:canUndo
 -- Check whether an undo operation is possible
 do
@@ -674,7 +636,6 @@ do
   -- Use to enable/disable the undo button in UI.
   if stack:canUndo() then print("undo button: enabled") end
 end
-
 --@api-stub: LCommandStack:canRedo
 -- Check whether a redo operation is possible
 do
@@ -685,7 +646,6 @@ do
   -- Use to enable/disable the redo button in UI.
   if stack:canRedo() then print("redo button: enabled") end
 end
-
 --@api-stub: LCommandStack:getHistorySize
 -- Return the total number of commands in history
 do
@@ -695,7 +655,6 @@ do
   end
   print("history depth=" .. stack:getHistorySize())
 end
-
 --@api-stub: LCommandStack:getCurrentName
 -- Return the name of the most recently executed command
 do
@@ -706,7 +665,6 @@ do
   local name = stack:getCurrentName()
   if name then print("undo will revert: " .. name) end
 end
-
 --@api-stub: LPatternGraph:clearAll
 -- Discard all command history and free callbacks
 do
@@ -717,7 +675,6 @@ do
   stack:clearAll()
   print("history after clear=" .. stack:getHistorySize())
 end
-
 --@api-stub: LServiceLocator:provide
 -- Register a service instance under a given name
 do
@@ -728,7 +685,6 @@ do
   sl:provide("save_manager", { path = "save/slot1.dat" })
   print("registered services=" .. #sl:getServices())
 end
-
 --@api-stub: LServiceLocator:locate
 -- Retrieve a registered service by name (returns nil if not found)
 do
@@ -740,7 +696,6 @@ do
   local audio = sl:locate("audio")
   if audio then print("volume=" .. audio.volume) end
 end
-
 --@api-stub: LMap:has
 -- Check whether a service with the given name is registered
 do
@@ -750,7 +705,6 @@ do
   -- Guard optional services before use.
   if sl:has("analytics") then print("telemetry active") end
 end
-
 --@api-stub: LWeightedRandom:remove
 -- Unregister and discard a service by name
 do
@@ -761,7 +715,6 @@ do
   sl:remove("network")
   print("network registered=" .. tostring(sl:has("network")))
 end
-
 --@api-stub: LServiceLocator:getServices
 -- Return an array of all registered service names
 do
@@ -771,7 +724,6 @@ do
   -- Debug overlay: list all active services.
   for _, name in ipairs(sl:getServices()) do print("  service: " .. name) end
 end
-
 --@api-stub: LPatternGraph:clearAll
 -- Remove all registered services and reset the locator
 do
@@ -782,7 +734,6 @@ do
   sl:clearAll()
   print("services after clear=" .. #sl:getServices())
 end
-
 --@api-stub: LStrategy:register
 -- Register a constructor function for a given type name
 do
@@ -793,7 +744,6 @@ do
   f:register("troll", function(x, y) return { kind = "troll", hp = 80, x = x, y = y } end)
   print("registered types=" .. #f:getTypes())
 end
-
 --@api-stub: LFactory:create
 -- Create a new object by type name, forwarding arguments to the constructor
 do
@@ -805,7 +755,6 @@ do
   local c = f:create("coin", 50)
   if c then print("dropped " .. c.value .. " gold") end
 end
-
 --@api-stub: LMap:has
 -- Check whether a constructor is registered for the given type
 do
@@ -815,7 +764,6 @@ do
   -- Guard before create() to avoid silent nil returns.
   if f:has("npc") then print("npc factory ready") end
 end
-
 --@api-stub: LFactory:alias
 -- Create an alias that maps to an existing type name
 do
@@ -828,7 +776,6 @@ do
   local m = f:create("monster_v1")
   if m then print("created via alias: " .. m.kind) end
 end
-
 --@api-stub: LFactory:getTypes
 -- Return an array of all registered type names
 do
@@ -838,7 +785,6 @@ do
   -- Useful for editor dropdowns or spawn-menu population.
   for _, name in ipairs(f:getTypes()) do print("  type: " .. name) end
 end
-
 --@api-stub: LWeightedRandom:remove
 -- Unregister a type and discard its constructor
 do
@@ -849,7 +795,6 @@ do
   f:remove("temp_enemy")
   print("temp still registered=" .. tostring(f:has("temp_enemy")))
 end
-
 --@api-stub: LPatternGraph:clearAll
 -- Remove all registered types and reset the factory
 do
@@ -860,7 +805,6 @@ do
   f:clearAll()
   print("types after clear=" .. #f:getTypes())
 end
-
 --@api-stub: LSimpleState:addState
 -- Register a named state with optional enter, exit, and update callbacks
 do
@@ -876,7 +820,6 @@ do
   })
   print("registered states=" .. #sm:getStates())
 end
-
 --@api-stub: LSimpleState:transitionTo
 -- Transition to a new state, calling exit on current and enter on target
 do
@@ -888,7 +831,6 @@ do
   sm:transitionTo("menu")
   sm:transitionTo("game")
 end
-
 --@api-stub: LFunnel:update
 -- Call the current state's update callback with frame delta time
 do
@@ -901,7 +843,6 @@ do
   -- Call each frame with the real delta time.
   sm:update(0.016)
 end
-
 --@api-stub: LStrategy:getCurrent
 -- Return the name of the currently active state
 do
@@ -912,7 +853,6 @@ do
   -- Use for conditional logic outside the FSM.
   if sm:getCurrent() == "paused" then print("game is paused") end
 end
-
 --@api-stub: LSimpleState:hasState
 -- Check whether a state with the given name is registered
 do
@@ -922,7 +862,6 @@ do
   -- Guard transitions to prevent errors on missing states.
   if sm:hasState("boss_fight") then sm:transitionTo("boss_fight") end
 end
-
 --@api-stub: LSimpleState:getStates
 -- Return an array of all registered state names
 do
@@ -932,7 +871,6 @@ do
   -- Debug: list all possible states.
   for _, name in ipairs(sm:getStates()) do print("  state: " .. name) end
 end
-
 --@api-stub: LPatternGraph:clearAll
 -- Remove all states and their callbacks, resetting the state machine
 do
@@ -943,7 +881,6 @@ do
   sm:clearAll()
   print("states left=" .. #sm:getStates())
 end
-
 --@api-stub: LMap:set
 -- Store a value (bool, number, string, or nil to clear) under a key
 do
@@ -955,7 +892,6 @@ do
   bb:set("is_hostile", true)
   print("name=" .. bb:get("name"))
 end
-
 --@api-stub: LMap:get
 -- Retrieve a value by key (returns nil if not set)
 do
@@ -966,7 +902,6 @@ do
   local ammo = bb:get("ammo") or 0
   if ammo <= 0 then print("reload needed!") else print("ammo=" .. ammo) end
 end
-
 --@api-stub: LMap:keys
 -- Return an array of all keys currently stored on the blackboard
 do
@@ -978,7 +913,6 @@ do
     print("  " .. k .. "=" .. tostring(bb:get(k)))
   end
 end
-
 --@api-stub: LBlackboard:watch
 -- Register a watcher callback that fires when a key changes (use "*" for all keys)
 do
@@ -992,7 +926,6 @@ do
   bb:set("hp", 75)  -- triggers watcher
   bb:unwatch(id)    -- stop watching
 end
-
 --@api-stub: LBlackboard:unwatch
 -- Remove a previously registered watcher by its ID
 do
@@ -1006,7 +939,6 @@ do
   bb:unwatch(id)
   bb:set("debug", "off")  -- no trigger
 end
-
 --@api-stub: LWeightedRandom:getRevision
 -- Return the revision counter (increments on every value change)
 do
@@ -1017,7 +949,6 @@ do
   -- Use revision to detect if anything changed since last check (dirty flag pattern).
   if bb:getRevision() ~= last_rev then print("blackboard is dirty") end
 end
-
 --@api-stub: LBlackboard:snapshot
 -- Return a table copy of all key-value pairs (useful for serialization or debug)
 do
@@ -1028,7 +959,6 @@ do
   local snap = bb:snapshot()
   for k, v in pairs(snap) do print("  " .. k .. "=" .. tostring(v)) end
 end
-
 --@api-stub: LPatternGraph:clearAll
 -- Remove all keys and values from the blackboard
 do
@@ -1039,7 +969,6 @@ do
   bb:clearAll()
   print("keys after clear=" .. #bb:keys())
 end
-
 --@api-stub: LMap:set
 -- Set a value by key and notify all subscribers watching that key
 do
@@ -1053,7 +982,6 @@ do
   o:set("hp", 100)  -- triggers subscriber
   o:set("hp", 75)   -- triggers again with new value
 end
-
 --@api-stub: LMap:get
 -- Retrieve the current value for a key (returns nil if not set)
 do
@@ -1064,7 +992,6 @@ do
   local s = o:get("score") or 0
   print("current score=" .. s)
 end
-
 --@api-stub: LObserver:subscribe
 -- Subscribe to changes on a key; callback receives (key, newValue) on each change
 do
@@ -1079,7 +1006,6 @@ do
   o:set("lives", 2)
   o:unsubscribe(id)
 end
-
 --@api-stub: LObserver:unsubscribe
 -- Remove a subscription by its ID
 do
@@ -1090,7 +1016,6 @@ do
   o:unsubscribe(id)
   print("subscriptions remaining=" .. o:getCount())
 end
-
 --@api-stub: LObserver:getCount
 -- Return the total number of active subscriptions across all keys
 do
@@ -1101,7 +1026,6 @@ do
   -- Monitor subscription count to detect leaks.
   print("active subscriptions=" .. o:getCount())
 end
-
 --@api-stub: LDebounce:onFire
 -- Set the callback function to invoke each time the throttle fires
 do
@@ -1113,7 +1037,6 @@ do
   end)
   -- In a real game: function lurek.process(dt) t:update(dt) end
 end
-
 --@api-stub: LFunnel:update
 -- Advance the throttle timer; returns true if it fired this frame
 do
@@ -1125,7 +1048,6 @@ do
   local fired = t:update(0.30)
   if fired then print("  additional post-fire logic") end
 end
-
 --@api-stub: LThrottle:reset
 -- Reset the throttle timer back to zero without firing
 do
@@ -1137,7 +1059,6 @@ do
   t:reset()
   print("progress after reset=" .. t:getProgress())  -- 0.0
 end
-
 --@api-stub: LThrottle:getProgress
 -- Return how far through the current interval (0.0 to 1.0)
 do
@@ -1149,7 +1070,6 @@ do
   local pct = math.floor(t:getProgress() * 100)
   print("cooldown: " .. pct .. "% filled")
 end
-
 --@api-stub: LDebounce:getFireCount
 -- Return the total number of times this throttle has fired since creation
 do
@@ -1160,7 +1080,6 @@ do
   for i = 1, 5 do t:update(0.1) end
   print("total fires=" .. t:getFireCount())
 end
-
 --@api-stub: LThrottle:setEnabled
 -- Enable or disable the throttle (disabled throttle does not accumulate time)
 do
@@ -1172,7 +1091,6 @@ do
   t:update(1.0)  -- no fire because disabled
   print("fires while disabled=" .. t:getFireCount())
 end
-
 --@api-stub: LDebounce:onFire
 -- Set the callback to invoke when the debounce fires after the wait period
 do
@@ -1185,7 +1103,6 @@ do
   d:trigger()
   -- In a real game: function lurek.process(dt) d:update(dt) end
 end
-
 --@api-stub: LDebounce:trigger
 -- Signal input activity, resetting the wait timer
 do
@@ -1197,7 +1114,6 @@ do
   d:trigger()  -- timer resets back to 0
   print("pending=" .. tostring(d:isPending()))
 end
-
 --@api-stub: LFunnel:update
 -- Advance the debounce timer; returns true if it fired this frame
 do
@@ -1209,7 +1125,6 @@ do
   local fired = d:update(0.5)  -- 0.5 > 0.4 wait, so it fires
   print("fired=" .. tostring(fired))
 end
-
 --@api-stub: LDebounce:cancel
 -- Cancel any pending debounce without firing
 do
@@ -1221,7 +1136,6 @@ do
   d:cancel()
   print("pending after cancel=" .. tostring(d:isPending()))
 end
-
 --@api-stub: LDebounce:isPending
 -- Check whether the debounce is waiting to fire
 do
@@ -1232,7 +1146,6 @@ do
   -- Use to show a "saving..." indicator in the UI.
   if d:isPending() then print("waiting for idle before save...") end
 end
-
 --@api-stub: LDebounce:getFireCount
 -- Return the total number of times this debounce has fired since creation
 do
@@ -1243,7 +1156,6 @@ do
 
   print("total fires=" .. d:getFireCount())
 end
-
 --@api-stub: LList:push
 -- Add an item with a numeric priority (higher = dequeued sooner)
 do
@@ -1255,7 +1167,6 @@ do
   pq:push(20, { kind = "investigate" }, "medium")
   print("queued=" .. pq:len())
 end
-
 --@api-stub: LList:pop
 -- Remove and return the highest-priority item
 do
@@ -1266,7 +1177,6 @@ do
   local job = pq:pop()
   if job then print("executing: " .. job) end  -- "critical_task"
 end
-
 --@api-stub: LStack:peek
 -- Return the highest-priority item without removing it
 do
@@ -1277,7 +1187,6 @@ do
   local next_job = pq:peek()
   if next_job then print("next up: " .. next_job) end
 end
-
 --@api-stub: LWeightedRandom:len
 -- Return the current number of items in the queue
 do
@@ -1288,7 +1197,6 @@ do
   if pq:len() > 100 then print("queue saturated, shedding tasks") end
   print("queue size=" .. pq:len())
 end
-
 --@api-stub: LWeightedRandom:isEmpty
 -- Check whether the queue contains no items
 do
@@ -1300,7 +1208,6 @@ do
     print("  processing: " .. pq:pop())
   end
 end
-
 --@api-stub: LPatternGraph:clearAll
 -- Remove all items from the priority queue
 do
@@ -1311,7 +1218,6 @@ do
   pq:clearAll()
   print("after clear: len=" .. pq:len())
 end
-
 --@api-stub: LList:push
 -- Push a value into the ring (overwrites oldest when full)
 do
@@ -1321,7 +1227,6 @@ do
   for i = 1, 10 do r:push(i * 1.5, "latency") end
   print("len=" .. r:len() .. " full=" .. tostring(r:isFull()))
 end
-
 --@api-stub: LRing:latest
 -- Return the most recently pushed entry as a table
 do
@@ -1333,7 +1238,6 @@ do
   local last = r:latest()
   if last then print("last event: " .. last.text) end
 end
-
 --@api-stub: LSet:toArray
 -- Return all entries as an ordered array (oldest to newest)
 do
@@ -1345,7 +1249,6 @@ do
     print("  " .. entry.tag .. "=" .. entry.value)
   end
 end
-
 --@api-stub: LRing:sum
 -- Return the sum of all numeric values in the ring
 do
@@ -1355,7 +1258,6 @@ do
   -- sum() for total accumulated latency over the window.
   print("total latency=" .. string.format("%.2f", r:sum()) .. "s")
 end
-
 --@api-stub: LRing:average
 -- Return the arithmetic mean of all numeric values in the ring
 do
@@ -1365,7 +1267,6 @@ do
   -- Rolling average for smooth FPS display.
   print("avg fps=" .. string.format("%.1f", r:average()))
 end
-
 --@api-stub: LWeightedRandom:len
 -- Return the number of entries currently in the ring
 do
@@ -1375,7 +1276,6 @@ do
   -- Check if we have enough samples for a meaningful average.
   if r:len() >= 3 then print("enough samples for analysis") end
 end
-
 --@api-stub: LQueue:isFull
 -- Check whether the ring has reached its maximum capacity
 do
@@ -1385,7 +1285,6 @@ do
   -- Only report average once the ring is fully warmed up.
   if r:isFull() then print("warm: avg=" .. string.format("%.1f", r:average())) end
 end
-
 --@api-stub: LMap:clear
 -- Remove all entries from the ring
 do
@@ -1396,7 +1295,6 @@ do
   r:clear()
   print("len after clear=" .. r:len())
 end
-
 --@api-stub: LFunnel:onFlush
 -- Set the callback invoked when the funnel flushes its batch
 do
@@ -1408,7 +1306,6 @@ do
   end)
   -- In a real game: function lurek.process(dt) f:update(dt) end
 end
-
 --@api-stub: LList:push
 -- Push a tagged event into the funnel (may trigger immediate flush if at max entries)
 do
@@ -1419,7 +1316,6 @@ do
   f:push("kill", 1); f:push("kill", 1); f:push("kill", 1); f:push("kill", 1)
   print("pending after max-flush=" .. f:pendingCount())
 end
-
 --@api-stub: LFunnel:update
 -- Advance the funnel's time window; returns true if it flushed this frame
 do
@@ -1431,7 +1327,6 @@ do
   local flushed = f:update(0.6)
   print("flushed=" .. tostring(flushed))
 end
-
 --@api-stub: LFunnel:flush
 -- Force an immediate flush of all pending entries
 do
@@ -1442,7 +1337,6 @@ do
   -- Force flush on critical events that cannot wait for the time window.
   f:flush()
 end
-
 --@api-stub: LFunnel:discard
 -- Discard all pending entries without flushing or calling the callback
 do
@@ -1454,7 +1348,6 @@ do
   f:discard()
   print("pending after discard=" .. f:pendingCount())
 end
-
 --@api-stub: LFunnel:pendingCount
 -- Return the number of entries waiting to be flushed
 do
@@ -1465,7 +1358,6 @@ do
   -- Monitor buffer fill level.
   print("buffered events=" .. f:pendingCount())
 end
-
 --@api-stub: LFunnel:getFlushCount
 -- Return the total number of times this funnel has flushed since creation
 do
@@ -1476,7 +1368,6 @@ do
   -- Track how many batches were sent for monitoring.
   print("total flushes=" .. f:getFlushCount())
 end
-
 --@api-stub: LRelationshipManager:defineType
 -- Define a relationship type with named levels in order
 do
@@ -1487,7 +1378,6 @@ do
   rm:defineType("trust", { "low", "medium", "high" }, "low")
   print("defined types=" .. #rm:typeNames())
 end
-
 --@api-stub: LRelationshipManager:removeType
 -- Remove a relationship type definition
 do
@@ -1498,7 +1388,6 @@ do
   rm:removeType("temp_rel")
   print("types remaining=" .. #rm:typeNames())
 end
-
 --@api-stub: LRelationshipManager:typeNames
 -- Return all defined relationship type names
 do
@@ -1508,7 +1397,6 @@ do
 
   for _, t in ipairs(rm:typeNames()) do print("  type: " .. t) end
 end
-
 --@api-stub: LRelationshipManager:setValue
 -- Set the numeric relationship value between two entity IDs
 do
@@ -1518,7 +1406,6 @@ do
   rm:setValue(101, 202, 35)
   print("value=" .. rm:getValue(101, 202) .. " pairs=" .. rm:pairCount())
 end
-
 --@api-stub: LRelationshipManager:getValue
 -- Get the numeric relationship value between two entity IDs (0 if not set)
 do
@@ -1530,7 +1417,6 @@ do
   local discount = affinity * 0.005
   print("shop discount=" .. (discount * 100) .. "%")
 end
-
 --@api-stub: LRelationshipManager:adjustValue
 -- Add a delta to the relationship value between two entities
 do
@@ -1542,7 +1428,6 @@ do
   rm:adjustValue(1, 2, -10)  -- minor offence: -10
   print("net affinity=" .. rm:getValue(1, 2))  -- 15
 end
-
 --@api-stub: LRelationshipManager:setLevel
 -- Set the named level for a relationship type between two entities
 do
@@ -1553,7 +1438,6 @@ do
   local ok = rm:setLevel(1, 2, "faction", "ally")
   print("set ally=" .. tostring(ok))
 end
-
 --@api-stub: LRelationshipManager:getLevel
 -- Get the named level for a relationship type between two entities
 do
@@ -1565,7 +1449,6 @@ do
   local lvl = rm:getLevel(1, 2, "faction")
   if lvl == "ally" then print("hold fire - they are allies") end
 end
-
 --@api-stub: LRelationshipManager:removePair
 -- Remove all relationship data between two entities
 do
@@ -1576,7 +1459,6 @@ do
   rm:removePair(1, 2)
   print("pairs after removal=" .. rm:pairCount())
 end
-
 --@api-stub: LRelationshipManager:pairCount
 -- Return the total number of tracked entity pairs
 do
@@ -1587,7 +1469,6 @@ do
   if rm:pairCount() > 10000 then print("WARN: large relationship graph") end
   print("tracked pairs=" .. rm:pairCount())
 end
-
 --@api-stub: LMediator:on
 -- Register a handler callback on a named channel
 do
@@ -1600,7 +1481,6 @@ do
   m:send("network", "player_joined")
   m:off("network", id)
 end
-
 --@api-stub: LMediator:off
 -- Unregister a handler from a channel by its ID
 do
@@ -1611,7 +1491,6 @@ do
   m:off("ui_events", id)
   print("handlers on ui_events=" .. m:handlerCount("ui_events"))
 end
-
 --@api-stub: LMediator:send
 -- Send a message to all handlers on a specific channel
 do
@@ -1623,7 +1502,6 @@ do
   -- All handlers on "damage_log" receive the same arguments.
   m:send("damage_log", 12, "spike_trap")
 end
-
 --@api-stub: LMediator:broadcast
 -- Send a message to all handlers on ALL channels
 do
@@ -1635,7 +1513,6 @@ do
   -- Use for global commands like "pause" or "shutdown".
   m:broadcast("pause")
 end
-
 --@api-stub: LMediator:handlerCount
 -- Return the number of handlers on a specific channel
 do
@@ -1646,7 +1523,6 @@ do
   -- Debug: verify expected handler count.
   print("save handlers=" .. m:handlerCount("save"))
 end
-
 --@api-stub: LMediator:channels
 -- Return an array of all channel names with at least one handler
 do
@@ -1656,7 +1532,6 @@ do
   -- List active channels for debug overlay.
   for _, ch in ipairs(m:channels()) do print("  channel: " .. ch) end
 end
-
 --@api-stub: LMediator:removeChannel
 -- Remove an entire channel and all its handlers
 do
@@ -1667,7 +1542,6 @@ do
   m:removeChannel("minigame")
   print("minigame handlers=" .. m:handlerCount("minigame"))
 end
-
 --@api-stub: LMap:clear
 -- Remove all channels and handlers, resetting the mediator
 do
@@ -1678,7 +1552,6 @@ do
   m:clear()
   print("channels after clear=" .. #m:channels())
 end
-
 --@api-stub: LStrategy:register
 -- Register a named strategy implementation function
 do
@@ -1693,7 +1566,6 @@ do
   end)
   print("registered strategies=" .. #s:names())
 end
-
 --@api-stub: LMap:set
 -- Switch to a named strategy for future execute() calls
 do
@@ -1704,7 +1576,6 @@ do
   local ok = s:set("fast")
   if not ok then print("ERROR: strategy not found") end
 end
-
 --@api-stub: LStrategy:execute
 -- Execute the currently active strategy, forwarding arguments
 do
@@ -1716,7 +1587,6 @@ do
   local dmg = s:execute(20, 5)
   print("critical damage=" .. dmg)
 end
-
 --@api-stub: LStrategy:getCurrent
 -- Return the name of the currently active strategy (nil if none)
 do
@@ -1728,7 +1598,6 @@ do
   local name = s:getCurrent()
   if name then print("active strategy: " .. name) end
 end
-
 --@api-stub: LMap:has
 -- Check whether a strategy with the given name is registered
 do
@@ -1738,7 +1607,6 @@ do
   -- Guard before set() to handle missing strategies gracefully.
   if s:has("legacy") then s:set("legacy") end
 end
-
 --@api-stub: LWeightedRandom:remove
 -- Remove a named strategy (clears selection if it was active)
 do
@@ -1748,7 +1616,6 @@ do
   local removed = s:remove("deprecated")
   print("removed=" .. tostring(removed))
 end
-
 --@api-stub: LStrategy:names
 -- Return an array of all registered strategy names
 do
@@ -1757,7 +1624,6 @@ do
 
   for _, n in ipairs(s:names()) do print("  strategy: " .. n) end
 end
-
 --@api-stub: LMap:clear
 -- Remove all strategies and reset the selection
 do
@@ -1768,7 +1634,6 @@ do
   s:clear()
   print("strategies after clear=" .. #s:names())
 end
-
 --@api-stub: LList:push
 -- Push a value onto the top of the stack (returns false if at capacity)
 do
@@ -1780,7 +1645,6 @@ do
   -- ok is false if capacity is reached.
   print("pushed=" .. tostring(ok) .. " depth=" .. s:len())
 end
-
 --@api-stub: LList:pop
 -- Remove and return the top value (nil if empty)
 do
@@ -1791,7 +1655,6 @@ do
   local top = s:pop()
   print("popped=" .. top .. " now at=" .. (s:peek() or "<empty>"))
 end
-
 --@api-stub: LStack:peek
 -- Return the top value without removing it
 do
@@ -1802,7 +1665,6 @@ do
   local top = s:peek()
   if top == "dialog_layer" then print("dialog is showing") end
 end
-
 --@api-stub: LWeightedRandom:len
 -- Return the current number of items in the stack
 do
@@ -1810,7 +1672,6 @@ do
   s:push("a"); s:push("b"); s:push("c")
   print("stack depth=" .. s:len())
 end
-
 --@api-stub: LWeightedRandom:isEmpty
 -- Check whether the stack contains no items
 do
@@ -1821,7 +1682,6 @@ do
   -- Empty stack = user navigated all the way back.
   if s:isEmpty() then print("at root, quit to main menu") end
 end
-
 --@api-stub: LQueue:isFull
 -- Check whether the stack has reached its capacity limit
 do
@@ -1831,7 +1691,6 @@ do
   -- Prevent pushing more dialogs when at max depth.
   if s:isFull() then print("dialog stack full, close one first") end
 end
-
 --@api-stub: LMap:clear
 -- Remove all items from the stack
 do
@@ -1842,7 +1701,6 @@ do
   s:clear()
   print("len after clear=" .. s:len())
 end
-
 --@api-stub: LSet:toArray
 -- Return all items as an array table (bottom to top)
 do
@@ -1852,7 +1710,6 @@ do
   -- Useful for breadcrumb display: Main > Settings > Audio
   for i, v in ipairs(s:toArray()) do print("  " .. i .. ": " .. v) end
 end
-
 --@api-stub: LQueue:enqueue
 -- Add a value to the back of the queue (returns false if at capacity)
 do
@@ -1862,7 +1719,6 @@ do
   local ok = q:enqueue("packet_c")
   print("enqueued=" .. tostring(ok) .. " size=" .. q:len())
 end
-
 --@api-stub: LQueue:dequeue
 -- Remove and return the front value (nil if empty)
 do
@@ -1873,7 +1729,6 @@ do
   local msg = q:dequeue()
   if msg then print("processing: " .. msg) end
 end
-
 --@api-stub: LQueue:front
 -- Return the front value without removing it
 do
@@ -1884,7 +1739,6 @@ do
   local f = q:front()
   if f then print("next in queue: " .. f) end
 end
-
 --@api-stub: LWeightedRandom:len
 -- Return the current number of items in the queue
 do
@@ -1892,7 +1746,6 @@ do
   for i = 1, 4 do q:enqueue("event_" .. i) end
   print("queue size=" .. q:len())
 end
-
 --@api-stub: LWeightedRandom:isEmpty
 -- Check whether the queue contains no items
 do
@@ -1904,7 +1757,6 @@ do
     print("  handled: " .. q:dequeue())
   end
 end
-
 --@api-stub: LQueue:isFull
 -- Check whether the queue has reached its capacity limit
 do
@@ -1914,7 +1766,6 @@ do
   -- Drop new inputs when the queue is saturated.
   if q:isFull() then print("queue full, dropping input") end
 end
-
 --@api-stub: LMap:clear
 -- Remove all items from the queue
 do
@@ -1925,7 +1776,6 @@ do
   q:clear()
   print("size after clear=" .. q:len())
 end
-
 --@api-stub: LSet:toArray
 -- Return all items as an array table (front to back)
 do
@@ -1934,7 +1784,6 @@ do
 
   for i, v in ipairs(q:toArray()) do print("  " .. i .. ": " .. v) end
 end
-
 --@api-stub: LWeightedRandom:add
 -- Append a value to the end of the list
 do
@@ -1944,7 +1793,6 @@ do
   l:add("sword"); l:add("shield"); l:add("potion")
   print("inventory size=" .. l:len())
 end
-
 --@api-stub: LMap:get
 -- Get the value at a 1-based index (nil if out of range)
 do
@@ -1955,7 +1803,6 @@ do
   local item = l:get(1)
   if item then print("first item: " .. item) end
 end
-
 --@api-stub: LMap:set
 -- Replace the value at a 1-based index
 do
@@ -1966,7 +1813,6 @@ do
   l:set(1, "enchanted_sword")
   print("slot 1: " .. l:get(1))
 end
-
 --@api-stub: LWeightedRandom:remove
 -- Remove and return the value at a 1-based index
 do
@@ -1977,7 +1823,6 @@ do
   local removed = l:remove(2)
   print("removed=" .. removed .. " remaining=" .. l:len())
 end
-
 --@api-stub: LWeightedRandom:len
 -- Return the number of items in the list
 do
@@ -1985,7 +1830,6 @@ do
   for i = 1, 5 do l:add("item_" .. i) end
   print("count=" .. l:len())
 end
-
 --@api-stub: LWeightedRandom:isEmpty
 -- Check whether the list is empty
 do
@@ -1994,7 +1838,6 @@ do
   l:add("ring")
   print("after add: empty=" .. tostring(l:isEmpty()))
 end
-
 --@api-stub: LList:contains
 -- Check whether the list contains a specific value
 do
@@ -2004,7 +1847,6 @@ do
   -- Fast membership check for quest prerequisites.
   if l:contains("key") then print("door can be opened") end
 end
-
 --@api-stub: LMap:clear
 -- Remove all items from the list
 do
@@ -2015,7 +1857,6 @@ do
   l:clear()
   print("len after clear=" .. l:len())
 end
-
 --@api-stub: LSet:toArray
 -- Return all items as a plain Lua array table
 do
@@ -2025,7 +1866,6 @@ do
   -- Convert to plain table for iteration or serialization.
   for i, v in ipairs(l:toArray()) do print("  " .. i .. "=" .. v) end
 end
-
 --@api-stub: LWeightedRandom:add
 -- Add a string to the set (returns true if newly added)
 do
@@ -2036,7 +1876,6 @@ do
   if was_new then print("first gem collected!") end
   s:add("collected_gem")  -- returns false, already present
 end
-
 --@api-stub: LWeightedRandom:remove
 -- Remove a string from the set (returns true if it was present)
 do
@@ -2047,7 +1886,6 @@ do
   local existed = s:remove("buff_speed")
   print("removed=" .. tostring(existed) .. " size=" .. s:len())
 end
-
 --@api-stub: LMap:has
 -- Check whether a string is in the set
 do
@@ -2057,7 +1895,6 @@ do
   -- O(1) membership check for status effects.
   if s:has("flying") then print("ignore gravity") end
 end
-
 --@api-stub: LWeightedRandom:len
 -- Return the number of items in the set
 do
@@ -2067,7 +1904,6 @@ do
   -- Unique count only.
   print("unique enemies killed=" .. s:len())
 end
-
 --@api-stub: LWeightedRandom:isEmpty
 -- Check whether the set is empty
 do
@@ -2076,7 +1912,6 @@ do
   s:add("brass_key")
   print("empty=" .. tostring(s:isEmpty()))
 end
-
 --@api-stub: LSet:toArray
 -- Return all items as an array table
 do
@@ -2086,7 +1921,6 @@ do
   -- Convert for serialization or display.
   for _, k in ipairs(s:toArray()) do print("  color: " .. k) end
 end
-
 --@api-stub: LMap:clear
 -- Remove all items from the set
 do
@@ -2097,7 +1931,6 @@ do
   s:clear()
   print("size after clear=" .. s:len())
 end
-
 --@api-stub: LSet:union
 -- Return a new set containing all items from both sets
 do
@@ -2108,7 +1941,6 @@ do
   local combined = a:union(b)
   print("union size=" .. combined:len())  -- 3: sword, shield, bow
 end
-
 --@api-stub: LSet:intersection
 -- Return a new set containing only items present in both sets
 do
@@ -2119,11 +1951,6 @@ do
   local matched = player_has:intersection(door_needs)
   print("requirements met=" .. matched:len())  -- 1: map
 end
-
--- -----------------------------------------------------------------------------
--- Extended LList methods (push, unshift, insert, indexOf, reverse, pop, shift)
--- -----------------------------------------------------------------------------
-
 --@api-stub: LWeightedRandom:add
 -- Append a value to the end of the list
 do
@@ -2134,7 +1961,6 @@ do
   lst:add("potion")
   print("list size=" .. lst:len())
 end
-
 --@api-stub: LMap:get
 -- Get the value at a 1-based index
 do
@@ -2145,7 +1971,6 @@ do
   local item = lst:get(2)
   print("item[2]=" .. tostring(item))
 end
-
 --@api-stub: LMap:set
 -- Replace the value at a 1-based index
 do
@@ -2156,7 +1981,6 @@ do
   lst:set(1, "mythril_sword")
   print("slot 1=" .. tostring(lst:get(1)))
 end
-
 --@api-stub: LWeightedRandom:remove
 -- Remove and return the value at a 1-based index
 do
@@ -2168,7 +1992,6 @@ do
   local removed = lst:remove(2)
   print("removed=" .. tostring(removed) .. " remaining=" .. lst:len())
 end
-
 --@api-stub: LWeightedRandom:len
 -- Return the number of items in the list
 do
@@ -2176,7 +1999,6 @@ do
   for i = 1, 5 do lst:add(i * 10) end
   print("list length=" .. lst:len())
 end
-
 --@api-stub: LWeightedRandom:isEmpty
 -- Check whether the list is empty
 do
@@ -2185,7 +2007,6 @@ do
   lst:add("item")
   print("after add: empty=" .. tostring(lst:isEmpty()))
 end
-
 --@api-stub: LList:contains
 -- Check whether the list contains a specific value
 do
@@ -2197,7 +2018,6 @@ do
   print("has fire: " .. tostring(lst:contains("fire")))
   print("has wind: " .. tostring(lst:contains("wind")))
 end
-
 --@api-stub: LMap:clear
 -- Remove all items from the list
 do
@@ -2207,7 +2027,6 @@ do
   lst:clear()
   print("length after clear=" .. lst:len())
 end
-
 --@api-stub: LSet:toArray
 -- Return all items as an array table
 do
@@ -2219,7 +2038,6 @@ do
   local arr = lst:toArray()
   print("arr[2]=" .. tostring(arr[2]))
 end
-
 --@api-stub: new
 -- Create new pattern instances (WeightedRandom, BehaviorTree, Graph)
 do
@@ -2231,7 +2049,6 @@ do
     print("all pattern factories operational")
   end
 end
-
 --@api-stub: LWeightedRandom
 -- Weighted random selection pool for loot tables, spawn variety, and procedural generation
 do
@@ -2259,7 +2076,6 @@ do
   print("revision changed: " .. tostring(wr:getRevision() ~= rev))
   wr:clearAll()
 end
-
 --@api-stub: LBehaviorTree
 -- Behavior tree for AI decision-making with sequences, selectors, parallels, and leaf actions
 do
@@ -2300,7 +2116,6 @@ do
   bt:resetState()
   bt:clearAll()
 end
-
 --@api-stub: LPatternGraph:addNode
 --@api-stub: LPatternGraph:removeNode
 --@api-stub: LPatternGraph:getNodeValue
@@ -2354,7 +2169,6 @@ do
   print("nodes=" .. g:nodeCount() .. " edges=" .. g:edgeCount())
   g:clearAll()
 end
-
 --@api-stub: lurek.patterns.newMap
 -- Create a new string-keyed dictionary (map) with keys/values/entries access and merge support
 do
@@ -2365,7 +2179,6 @@ do
   config:set("fullscreen", true)
   print("map has volume=" .. tostring(config:has("volume")))
 end
-
 --@api-stub: LStack
 -- Extended Stack operations: pushBottom, peekBottom, insertAt, moveWithin, removeAt, popMany, popBottom
 do
@@ -2400,7 +2213,6 @@ do
     .. " batch=" .. #batch
     .. " popBottom=" .. tostring(from_bottom))
 end
-
 --@api-stub: LQueue
 -- Extended Queue operations: enqueueFront, dequeueBack, insertAt, peekAt, removeAt, back
 do
@@ -2429,7 +2241,6 @@ do
     .. " removeAt3=" .. tostring(removed)
     .. " dequeueBack=" .. tostring(from_back))
 end
-
 --@api-stub: LList
 -- Extended List operations: push, unshift, insert, indexOf, reverse, pop, shift
 do
@@ -2456,7 +2267,6 @@ do
     .. " pop=" .. tostring(popped)
     .. " shift=" .. tostring(shifted))
 end
-
 --@api-stub: LMap
 -- Map operations: set, get, has, len, isEmpty, keys, values, entries, merge, remove, clear
 do
@@ -2499,13 +2309,7 @@ do
     .. " entries=" .. #entries
     .. " removed=" .. tostring(removed))
 end
-
 print("content/examples/patterns.lua")
-
--- =============================================================================
--- Additional individual method examples
--- =============================================================================
-
 --@api-stub: lurek.patterns.newWeightedRandom
 -- Create a new weighted random selection pool. Add items with weights and pick random selections.
 do
@@ -2517,7 +2321,6 @@ do
   local drop = loot:pick(math.random())
   print("monster dropped: " .. tostring(drop))
 end
-
 --@api-stub: lurek.patterns.newBehaviorTree
 -- Create a new behavior tree for AI decision-making with sequences, selectors, parallels, and leaf actions.
 do
@@ -2533,7 +2336,6 @@ do
   bt:setRoot(root)
   print("guard decision: " .. bt:tick())
 end
-
 --@api-stub: lurek.patterns.newGraph
 -- Create a new graph data structure with directed or undirected edges, BFS, DFS, and connectivity queries.
 do
@@ -2546,11 +2348,6 @@ do
   g:addEdge(mid, boss, 1.0)
   print("quest graph: " .. g:nodeCount() .. " quests, " .. g:edgeCount() .. " dependencies")
 end
-
--- -----------------------------------------------------------------------------
--- LBehaviorTree methods
--- -----------------------------------------------------------------------------
-
 --@api-stub: LBehaviorTree:addSequence
 -- Create a sequence composite node. All children must succeed for this node to succeed.
 do
@@ -2566,7 +2363,6 @@ do
   bt:setRoot(seq)
   print("rest_routine: " .. bt:tick())
 end
-
 --@api-stub: LBehaviorTree:addSelector
 -- Create a selector (fallback) composite node. Succeeds if any child succeeds.
 do
@@ -2582,7 +2378,6 @@ do
   bt:setRoot(sel)
   print("attack: " .. bt:tick())  -- falls back to melee
 end
-
 --@api-stub: LBehaviorTree:addParallel
 -- Create a parallel composite node that runs all children simultaneously.
 do
@@ -2598,7 +2393,6 @@ do
   bt:setRoot(par)
   print("parallel: " .. bt:tick())
 end
-
 --@api-stub: LBehaviorTree:addInverter
 -- Create a decorator node that inverts its child's result (success ↔ failure).
 do
@@ -2611,7 +2405,6 @@ do
   bt:setRoot(inv)
   print("not_hungry: " .. bt:tick())  -- inverted failure -> success
 end
-
 --@api-stub: LBehaviorTree:addRepeat
 -- Create a decorator node that repeats its child a fixed number of times.
 do
@@ -2626,7 +2419,6 @@ do
   bt:tick()
   print("slashes executed=" .. count)
 end
-
 --@api-stub: LBehaviorTree:addLeaf
 -- Create a leaf (action) node that will invoke a named callback function on tick.
 do
@@ -2639,7 +2431,6 @@ do
   bt:setRoot(leaf)
   print("gather result: " .. bt:tick())
 end
-
 --@api-stub: LBehaviorTree:addChild
 -- Attach a child node to a parent composite or decorator node.
 do
@@ -2652,7 +2443,6 @@ do
   local ok2 = bt:addChild(root, b)
   print("wired=" .. tostring(ok1) .. "," .. tostring(ok2) .. " nodes=" .. bt:nodeCount())
 end
-
 --@api-stub: LBehaviorTree:setRoot
 -- Designate a node as the tree's root. Tick evaluation starts here.
 do
@@ -2663,7 +2453,6 @@ do
   local ok = bt:setRoot(node)
   print("root set=" .. tostring(ok))
 end
-
 --@api-stub: LBehaviorTree:setLeaf
 -- Register or replace the callback function for a named leaf. The function must return "success", "failure", or "running".
 do
@@ -2676,7 +2465,6 @@ do
   bt:setLeaf("move", function() return "success" end)  -- arrived
   print("second tick: " .. bt:tick())
 end
-
 --@api-stub: LBehaviorTree:tick
 -- Execute one tick of the behavior tree from the root. Returns the root node's status.
 do
@@ -2688,7 +2476,6 @@ do
   local status = bt:tick()
   print("AI status: " .. status)  -- "running" means still processing
 end
-
 --@api-stub: LBehaviorTree:resetState
 -- Reset the tree's running state. Use between encounters or when restarting AI logic.
 do
@@ -2701,7 +2488,6 @@ do
   bt:resetState()
   print("state reset, ready for next encounter")
 end
-
 --@api-stub: LBehaviorTree:nodeCount
 -- Return the total number of nodes in the tree.
 do
@@ -2712,7 +2498,6 @@ do
   bt:addLeaf("c", "leaf_c")
   print("tree nodes=" .. bt:nodeCount())
 end
-
 --@api-stub: LBehaviorTree:clearAll
 -- Remove all nodes and leaf functions, resetting the tree to empty.
 do
@@ -2723,11 +2508,6 @@ do
   bt:clearAll()
   print("after clear: nodes=" .. bt:nodeCount())
 end
-
--- -----------------------------------------------------------------------------
--- LBlackboard methods
--- -----------------------------------------------------------------------------
-
 --@api-stub: LBlackboard:set
 -- Set a key to a value (boolean, number, string, or nil to clear). Notifies registered watchers if value changed.
 do
@@ -2738,7 +2518,6 @@ do
   bb:set("cover_nearby", false)
   print("distance=" .. bb:get("player_distance"))
 end
-
 --@api-stub: LBlackboard:get
 -- Retrieve the value stored under a key. Returns nil if the key does not exist.
 do
@@ -2748,7 +2527,6 @@ do
   local threat = bb:get("threat_level") or 0
   if threat > 2 then print("high alert!") end
 end
-
 --@api-stub: LBlackboard:has
 -- Check whether a key exists on the blackboard.
 do
@@ -2758,7 +2536,6 @@ do
   if bb:has("waypoint_x") then print("waypoint assigned") end
   print("has target=" .. tostring(bb:has("target_id")))
 end
-
 --@api-stub: LBlackboard:clear
 -- Remove a single key from the blackboard.
 do
@@ -2768,7 +2545,6 @@ do
   bb:clear("last_sound_pos")
   print("after clear: " .. tostring(bb:get("last_sound_pos")))  -- nil
 end
-
 --@api-stub: LBlackboard:keys
 -- Return an array of all keys currently stored on the blackboard.
 do
@@ -2778,7 +2554,6 @@ do
   local all_keys = bb:keys()
   print("blackboard has " .. #all_keys .. " entries")
 end
-
 --@api-stub: LBlackboard:getRevision
 -- Return the current revision counter. Increments on every value change.
 do
@@ -2789,7 +2564,6 @@ do
   local rev2 = bb:getRevision()
   print("changed=" .. tostring(rev2 > rev1))
 end
-
 --@api-stub: LBlackboard:clearAll
 -- Remove all keys and values from the blackboard.
 do
@@ -2799,11 +2573,6 @@ do
   bb:clearAll()
   print("keys remaining=" .. #bb:keys())
 end
-
--- -----------------------------------------------------------------------------
--- LCommandStack methods
--- -----------------------------------------------------------------------------
-
 --@api-stub: LCommandStack:execute
 -- Execute a named command immediately, recording it in history. Discards any redo history ahead of the current position.
 do
@@ -2817,7 +2586,6 @@ do
   )
   print("tile[1]=" .. grid[1])  -- "wall"
 end
-
 --@api-stub: LCommandStack:clearAll
 -- Discard all command history and free associated callbacks.
 do
@@ -2828,11 +2596,6 @@ do
   stack:clearAll()
   print("history after clear=" .. stack:getHistorySize())
 end
-
--- -----------------------------------------------------------------------------
--- LDebounce methods
--- -----------------------------------------------------------------------------
-
 --@api-stub: LDebounce:update
 -- Advance the debounce timer. If the wait period elapsed since last trigger, fires the callback and returns true.
 do
@@ -2843,7 +2606,6 @@ do
   local fired = search:update(0.35)  -- waited long enough
   print("search fired=" .. tostring(fired))
 end
-
 --@api-stub: LEventBus:on
 -- Subscribe a callback to a named event. Higher priority listeners fire first.
 do
@@ -2855,7 +2617,6 @@ do
   bus:emit("score_changed", 500)
   print("listener id=" .. id)
 end
-
 --@api-stub: LEventBus:off
 -- Unsubscribe a listener by its subscription ID. Removes the callback from the event bus.
 do
@@ -2866,7 +2627,6 @@ do
   bus:emit("tick")  -- no output
   print("removed, count=" .. bus:getListenerCount("tick"))
 end
-
 --@api-stub: LEventBus:clear
 -- Remove all listeners subscribed to a specific event name.
 do
@@ -2877,7 +2637,6 @@ do
   bus:clear("puzzle_move")
   print("puzzle listeners=" .. bus:getListenerCount("puzzle_move"))
 end
-
 --@api-stub: LEventBus:clearAll
 -- Remove all listeners from every event on this bus. Resets the bus to empty.
 do
@@ -2888,7 +2647,6 @@ do
   bus:clearAll()
   print("events after clearAll=" .. #bus:getEvents())
 end
-
 --@api-stub: LFactory:register
 -- Register a constructor function for a given type name. Future `create()` calls with this type will invoke it.
 do
@@ -2899,7 +2657,6 @@ do
   end)
   print("registered bat factory")
 end
-
 --@api-stub: LFactory:has
 -- Check whether a constructor is registered for the given type name.
 do
@@ -2909,7 +2666,6 @@ do
   if factory:has("slime") then print("slime spawner ready") end
   print("has dragon=" .. tostring(factory:has("dragon")))
 end
-
 --@api-stub: LFactory:remove
 -- Unregister a type and discard its constructor function.
 do
@@ -2919,7 +2675,6 @@ do
   factory:remove("old_enemy")
   print("old_enemy registered=" .. tostring(factory:has("old_enemy")))
 end
-
 --@api-stub: LFactory:clearAll
 -- Remove all registered types and constructors, resetting the factory.
 do
@@ -2930,11 +2685,6 @@ do
   factory:clearAll()
   print("types after clear=" .. #factory:getTypes())
 end
-
--- -----------------------------------------------------------------------------
--- LFunnel methods
--- -----------------------------------------------------------------------------
-
 --@api-stub: LFunnel:push
 -- Push a tagged event into the funnel. May trigger an immediate flush if the max entry count is reached.
 do
@@ -2945,7 +2695,6 @@ do
   funnel:push("item_pickup", 1)
   print("buffered=" .. funnel:pendingCount())
 end
-
 --@api-stub: LGraph:addNode
 -- Add a node to the graph with an optional label and payload value.
 do
@@ -2955,7 +2704,6 @@ do
   local city_b = g:addNode("Stormwind", { gold = 8000 })
   print("added nodes: " .. city_a .. ", " .. city_b)
 end
-
 --@api-stub: LGraph:removeNode
 -- Remove a node and all its connected edges. Returns true if the node existed.
 do
@@ -2965,7 +2713,6 @@ do
   local ok = g:removeNode(n)
   print("removed=" .. tostring(ok) .. " nodes=" .. g:nodeCount())
 end
-
 --@api-stub: LGraph:getNodeValue
 -- Retrieve the payload value stored on a node. Returns nil if no payload.
 do
@@ -2975,7 +2722,6 @@ do
   local data = g:getNodeValue(quest)
   if data then print("reward=" .. data.reward .. " xp=" .. data.xp) end
 end
-
 --@api-stub: LGraph:addEdge
 -- Add a directed (or undirected) edge between two nodes with optional weight and label.
 do
@@ -2986,7 +2732,6 @@ do
   local edge_id = g:addEdge(basic, power, 1.0, "requires")
   print("edge " .. edge_id .. " connects skills")
 end
-
 --@api-stub: LGraph:removeEdge
 -- Remove an edge by its ID. Returns true if it existed.
 do
@@ -2998,7 +2743,6 @@ do
   g:removeEdge(bridge)
   print("bridge destroyed, edges=" .. g:edgeCount())
 end
-
 --@api-stub: LGraph:neighbors
 -- Return an array of node IDs directly connected to the given node.
 do
@@ -3012,7 +2756,6 @@ do
   local nearby = g:neighbors(home)
   print("reachable from home: " .. #nearby .. " places")
 end
-
 --@api-stub: LGraph:bfs
 -- Perform a breadth-first search from a node. Returns visited node IDs in BFS order.
 do
@@ -3026,7 +2769,6 @@ do
   local order = g:bfs(entrance)
   print("BFS visit order: " .. #order .. " rooms")
 end
-
 --@api-stub: LGraph:dfs
 -- Perform a depth-first search from a node. Returns visited node IDs in DFS order.
 do
@@ -3040,7 +2782,6 @@ do
   local visited = g:dfs(start)
   print("DFS explored " .. #visited .. " nodes")
 end
-
 --@api-stub: LGraph:isConnected
 -- Check whether there is any path from one node to another.
 do
@@ -3053,7 +2794,6 @@ do
   print("key->door connected=" .. tostring(g:isConnected(q1, q2)))
   print("key->side connected=" .. tostring(g:isConnected(q1, q3)))
 end
-
 --@api-stub: LGraph:hasNode
 -- Check whether a node with the given ID exists in the graph.
 do
@@ -3063,7 +2803,6 @@ do
   print("exists=" .. tostring(g:hasNode(n)))
   print("fake=" .. tostring(g:hasNode(9999)))
 end
-
 --@api-stub: LGraph:nodeCount
 -- Return the total number of nodes in the graph.
 do
@@ -3072,7 +2811,6 @@ do
   g:addNode("a"); g:addNode("b"); g:addNode("c")
   print("total nodes=" .. g:nodeCount())
 end
-
 --@api-stub: LGraph:edgeCount
 -- Return the total number of edges in the graph.
 do
@@ -3082,7 +2820,6 @@ do
   g:addEdge(a, b, 1.0)
   print("total edges=" .. g:edgeCount())
 end
-
 --@api-stub: LGraph:clearAll
 -- Remove all nodes, edges, and payloads from the graph.
 do
@@ -3092,11 +2829,6 @@ do
   g:clearAll()
   print("after clear: nodes=" .. g:nodeCount() .. " edges=" .. g:edgeCount())
 end
-
--- -----------------------------------------------------------------------------
--- LList methods
--- -----------------------------------------------------------------------------
-
 --@api-stub: LList:unshift
 -- Insert a value at the beginning of the list.
 do
@@ -3106,7 +2838,6 @@ do
   notifications:unshift("URGENT: server restart")
   print("first=" .. notifications:get(1))
 end
-
 --@api-stub: LList:insert
 -- Insert a value at a 1-based index, shifting subsequent items right.
 do
@@ -3117,7 +2848,6 @@ do
   quests:insert(2, "defend village")  -- inserted between the two
   print("quest 2=" .. quests:get(2) .. " total=" .. quests:len())
 end
-
 --@api-stub: LList:shift
 -- Remove and return the first value. Returns nil if empty.
 do
@@ -3128,7 +2858,6 @@ do
   local first = events:shift()
   print("processing: " .. tostring(first) .. " remaining=" .. events:len())
 end
-
 --@api-stub: LList:indexOf
 -- Find the 1-based index of the first occurrence of a value. Returns nil if not found.
 do
@@ -3138,7 +2867,6 @@ do
   local idx = inv:indexOf("shield")
   print("shield is at slot " .. tostring(idx))
 end
-
 --@api-stub: LList:reverse
 -- Reverse the order of all items in the list in-place.
 do
@@ -3148,11 +2876,6 @@ do
   path:reverse()
   print("backtrack start=" .. path:get(1))  -- "cave"
 end
-
--- -----------------------------------------------------------------------------
--- LMap methods
--- -----------------------------------------------------------------------------
-
 --@api-stub: LMap:remove
 -- Remove a key from the map. Returns true if it was present.
 do
@@ -3163,7 +2886,6 @@ do
   local removed = effects:remove("speed_boost")
   print("removed speed_boost=" .. tostring(removed) .. " remaining=" .. effects:len())
 end
-
 --@api-stub: LMap:len
 -- Return the number of key-value pairs.
 do
@@ -3172,7 +2894,6 @@ do
   config:set("volume", 0.8); config:set("difficulty", "hard")
   print("config entries=" .. config:len())
 end
-
 --@api-stub: LMap:isEmpty
 -- Check whether the map has no entries.
 do
@@ -3182,7 +2903,6 @@ do
   bag:set("gold_ring", 1)
   print("empty after add=" .. tostring(bag:isEmpty()))
 end
-
 --@api-stub: LMap:values
 -- Return an array of all values in the map.
 do
@@ -3193,7 +2913,6 @@ do
   for _, v in ipairs(bonuses:values()) do total = total + v end
   print("total defense=" .. total)
 end
-
 --@api-stub: LMap:entries
 -- Return an array of {key, value} tables for all entries.
 do
@@ -3204,7 +2923,6 @@ do
     print("  " .. tostring(entry[1]) .. "=" .. tostring(entry[2]))
   end
 end
-
 --@api-stub: LMap:merge
 -- Copy all entries from another LMap into this map. Existing keys are overwritten.
 do
@@ -3216,7 +2934,6 @@ do
   defaults:merge(overrides)
   print("final volume=" .. defaults:get("volume"))
 end
-
 --@api-stub: LMediator:clear
 -- Remove all channels and handlers, resetting the mediator.
 do
@@ -3226,11 +2943,6 @@ do
   m:clear()
   print("channels after clear=" .. #m:channels())
 end
-
--- -----------------------------------------------------------------------------
--- LObjectPool methods
--- -----------------------------------------------------------------------------
-
 --@api-stub: LObjectPool:add
 -- Add an object to the pool's idle set, making it available for future acquisition.
 do
@@ -3241,7 +2953,6 @@ do
   end
   print("particle pool ready: " .. particles:getAvailableCount() .. " idle")
 end
-
 --@api-stub: LObjectPool:clearAll
 -- Destroy all objects (active and idle) and reset the pool to empty.
 do
@@ -3252,11 +2963,6 @@ do
   pool:clearAll()
   print("after clearAll: total=" .. pool:getTotalCount())
 end
-
--- -----------------------------------------------------------------------------
--- LObserver methods
--- -----------------------------------------------------------------------------
-
 --@api-stub: LObserver:set
 -- Set a value by key and notify all subscribers watching that key.
 do
@@ -3266,7 +2972,6 @@ do
   obs:set("gold", 100)
   obs:set("gold", 150)  -- triggers notification again
 end
-
 --@api-stub: LObserver:get
 -- Retrieve the current value for a key. Returns nil if not set.
 do
@@ -3276,7 +2981,6 @@ do
   local lvl = obs:get("level") or 1
   print("player level=" .. lvl)
 end
-
 --@api-stub: LPriorityQueue:push
 -- Add an item with a numeric priority. Higher priority items are dequeued first.
 do
@@ -3287,7 +2991,6 @@ do
   tasks:push(40, "restock_shelves", "medium")
   print("queued " .. tasks:len() .. " tasks")
 end
-
 --@api-stub: LPriorityQueue:pop
 -- Remove and return the highest-priority item. Returns nil if the queue is empty.
 do
@@ -3298,7 +3001,6 @@ do
   local top = jobs:pop()
   print("processing: " .. tostring(top))  -- "critical_fix"
 end
-
 --@api-stub: LPriorityQueue:peek
 -- Return the highest-priority item without removing it. Returns nil if empty.
 do
@@ -3308,7 +3010,6 @@ do
   local next_item = pq:peek()
   print("next job: " .. tostring(next_item) .. " still queued=" .. pq:len())
 end
-
 --@api-stub: LPriorityQueue:len
 -- Return the number of items currently in the queue.
 do
@@ -3317,7 +3018,6 @@ do
   for i = 1, 5 do pq:push(i, "task_" .. i) end
   print("backlog=" .. pq:len())
 end
-
 --@api-stub: LPriorityQueue:isEmpty
 -- Check whether the queue contains no items.
 do
@@ -3328,7 +3028,6 @@ do
     print("  AI decided: " .. tostring(pq:pop()))
   end
 end
-
 --@api-stub: LPriorityQueue:clearAll
 -- Remove all items from the queue. This method is available to Lua scripts.
 do
@@ -3338,11 +3037,6 @@ do
   pq:clearAll()
   print("after clear: len=" .. pq:len())
 end
-
--- -----------------------------------------------------------------------------
--- LQueue methods
--- -----------------------------------------------------------------------------
-
 --@api-stub: LQueue:enqueueFront
 -- Add a value to the front of the queue (priority insertion). Returns false if at capacity.
 do
@@ -3352,7 +3046,6 @@ do
   q:enqueueFront("URGENT_msg")
   print("front=" .. q:front())  -- "URGENT_msg"
 end
-
 --@api-stub: LQueue:dequeueBack
 -- Remove and return the back value. Returns nil if empty.
 do
@@ -3362,7 +3055,6 @@ do
   local back = q:dequeueBack()
   print("removed from back: " .. tostring(back))  -- "third"
 end
-
 --@api-stub: LQueue:back
 -- Return the back value without removing it. Returns nil if empty.
 do
@@ -3371,7 +3063,6 @@ do
   q:enqueue("oldest"); q:enqueue("newest")
   print("back=" .. tostring(q:back()))  -- "newest"
 end
-
 --@api-stub: LQueue:peekAt
 -- Return the value at a 1-based index without removing it. Returns nil if out of range.
 do
@@ -3380,7 +3071,6 @@ do
   q:enqueue("alpha"); q:enqueue("beta"); q:enqueue("gamma")
   print("position 2=" .. tostring(q:peekAt(2)))  -- "beta"
 end
-
 --@api-stub: LQueue:insertAt
 -- Insert a value at a 1-based index in the queue. Returns false if at capacity.
 do
@@ -3390,7 +3080,6 @@ do
   q:insertAt(2, "b")  -- insert between a and c
   print("order: " .. q:peekAt(1) .. "," .. q:peekAt(2) .. "," .. q:peekAt(3))
 end
-
 --@api-stub: LQueue:removeAt
 -- Remove and return the value at a 1-based index. Returns nil if out of range.
 do
@@ -3400,7 +3089,6 @@ do
   local removed = q:removeAt(2)
   print("cancelled: " .. tostring(removed) .. " remaining=" .. q:len())
 end
-
 --@api-stub: LQueue:len
 -- Return the current number of items in the queue.
 do
@@ -3409,7 +3097,6 @@ do
   q:enqueue("x"); q:enqueue("y"); q:enqueue("z")
   print("queue depth=" .. q:len())
 end
-
 --@api-stub: LQueue:isEmpty
 -- Check whether the queue is empty. This method is available to Lua scripts.
 do
@@ -3419,7 +3106,6 @@ do
   q:dequeue()
   if q:isEmpty() then print("all commands processed") end
 end
-
 --@api-stub: LQueue:clear
 -- Remove all items from the queue. This method is available to Lua scripts.
 do
@@ -3429,7 +3115,6 @@ do
   q:clear()
   print("cleared, len=" .. q:len())
 end
-
 --@api-stub: LQueue:toArray
 -- Return all queue items as an array table (front to back).
 do
@@ -3439,11 +3124,6 @@ do
   local arr = q:toArray()
   print("exported " .. #arr .. " commands")
 end
-
--- -----------------------------------------------------------------------------
--- LRing methods
--- -----------------------------------------------------------------------------
-
 --@api-stub: LRing:push
 -- Push a number or string value into the ring. Overwrites the oldest entry if the ring is full.
 do
@@ -3454,7 +3134,6 @@ do
   end
   print("ring samples=" .. frame_times:len())  -- capped at 120
 end
-
 --@api-stub: LRing:toArray
 -- Return all entries in the ring as an ordered array of tables (oldest to newest).
 do
@@ -3464,7 +3143,6 @@ do
   local entries = r:toArray()
   print("exported " .. #entries .. " ring entries")
 end
-
 --@api-stub: LRing:len
 -- Return the number of entries currently in the ring.
 do
@@ -3473,7 +3151,6 @@ do
   r:push(1, "x"); r:push(2, "x")
   if r:len() < 10 then print("warming up, only " .. r:len() .. " samples") end
 end
-
 --@api-stub: LRing:isFull
 -- Check whether the ring has reached its maximum capacity.
 do
@@ -3482,7 +3159,6 @@ do
   r:push(60, "fps"); r:push(59, "fps"); r:push(61, "fps")
   if r:isFull() then print("stable avg=" .. string.format("%.1f", r:average())) end
 end
-
 --@api-stub: LRing:clear
 -- Remove all entries from the ring. This method is available to Lua scripts.
 do
@@ -3492,11 +3168,6 @@ do
   r:clear()
   print("after clear: len=" .. r:len())
 end
-
--- -----------------------------------------------------------------------------
--- LServiceLocator methods
--- -----------------------------------------------------------------------------
-
 --@api-stub: LServiceLocator:has
 -- Check whether a service with the given name is currently registered.
 do
@@ -3506,7 +3177,6 @@ do
   if sl:has("audio") then print("audio system available") end
   print("has network=" .. tostring(sl:has("network")))
 end
-
 --@api-stub: LServiceLocator:remove
 -- Unregister and discard a service by name.
 do
@@ -3516,7 +3186,6 @@ do
   sl:remove("multiplayer")
   print("multiplayer active=" .. tostring(sl:has("multiplayer")))
 end
-
 --@api-stub: LServiceLocator:clearAll
 -- Remove all registered services and reset the locator.
 do
@@ -3526,11 +3195,6 @@ do
   sl:clearAll()
   print("services after reset=" .. #sl:getServices())
 end
-
--- -----------------------------------------------------------------------------
--- LSet methods
--- -----------------------------------------------------------------------------
-
 --@api-stub: LSet:add
 -- Add a string to the set. Returns true if it was not already present.
 do
@@ -3540,7 +3204,6 @@ do
   local new2 = achievements:add("first_kill")  -- duplicate
   print("first add=" .. tostring(new1) .. " second=" .. tostring(new2))
 end
-
 --@api-stub: LSet:remove
 -- Remove a string from the set. Returns true if it was present.
 do
@@ -3550,7 +3213,6 @@ do
   local was_there = effects:remove("poisoned")
   print("removed poison=" .. tostring(was_there) .. " size=" .. effects:len())
 end
-
 --@api-stub: LSet:has
 -- Check whether a string is in the set.
 do
@@ -3560,7 +3222,6 @@ do
   if keys:has("silver_key") then print("silver door: unlocked") end
   if not keys:has("gold_key") then print("gold door: locked") end
 end
-
 --@api-stub: LSet:len
 -- Return the number of items in the set.
 do
@@ -3569,7 +3230,6 @@ do
   visited:add("room_1"); visited:add("room_2"); visited:add("room_1")
   print("unique rooms visited=" .. visited:len())
 end
-
 --@api-stub: LSet:isEmpty
 -- Check whether the set is empty. This method is available to Lua scripts.
 do
@@ -3579,7 +3239,6 @@ do
   buffs:add("haste")
   print("empty after buff=" .. tostring(buffs:isEmpty()))
 end
-
 --@api-stub: LSet:clear
 -- Remove all items from the set. This method is available to Lua scripts.
 do
@@ -3589,7 +3248,6 @@ do
   flags:clear()
   print("flags after new game=" .. flags:len())
 end
-
 --@api-stub: LSimpleState:update
 -- Call the current state's update callback with the frame delta time.
 do
@@ -3601,7 +3259,6 @@ do
   sm:transitionTo("patrol")
   sm:update(0.016)
 end
-
 --@api-stub: LSimpleState:getCurrent
 -- Return the name of the currently active state, or nil if no state is set.
 do
@@ -3612,7 +3269,6 @@ do
   local state = sm:getCurrent()
   if state == "combat" then print("showing combat UI") end
 end
-
 --@api-stub: LSimpleState:clearAll
 -- Remove all states and their callbacks, resetting the state machine.
 do
@@ -3622,11 +3278,6 @@ do
   sm:clearAll()
   print("states after clear=" .. #sm:getStates())
 end
-
--- -----------------------------------------------------------------------------
--- LStack methods
--- -----------------------------------------------------------------------------
-
 --@api-stub: LStack:push
 -- Push a value onto the top of the stack. Returns false if the stack is at capacity.
 do
@@ -3636,7 +3287,6 @@ do
   nav:push("settings")
   print("pushed=" .. tostring(ok) .. " depth=" .. nav:len())
 end
-
 --@api-stub: LStack:pushBottom
 -- Push a value onto the bottom of the stack. Returns false if at capacity.
 do
@@ -3646,7 +3296,6 @@ do
   layers:pushBottom("background")
   print("bottom=" .. layers:peekBottom() .. " top=" .. layers:peek())
 end
-
 --@api-stub: LStack:pop
 -- Remove and return the top value. Returns nil if the stack is empty.
 do
@@ -3656,7 +3305,6 @@ do
   local closed = screens:pop()
   print("closed " .. tostring(closed) .. ", now at " .. tostring(screens:peek()))
 end
-
 --@api-stub: LStack:popBottom
 -- Remove and return the bottom value. Returns nil if empty.
 do
@@ -3666,7 +3314,6 @@ do
   local oldest = history:popBottom()
   print("removed oldest: " .. tostring(oldest))
 end
-
 --@api-stub: LStack:popMany
 -- Pop up to `count` values from the top and return them as an array table.
 do
@@ -3676,7 +3323,6 @@ do
   local closed = dialogs:popMany(2)
   print("closed " .. #closed .. " dialogs, remaining=" .. dialogs:len())
 end
-
 --@api-stub: LStack:peekBottom
 -- Return the bottom value without removing it. Returns nil if empty.
 do
@@ -3685,7 +3331,6 @@ do
   nav:push("title_screen"); nav:push("options")
   print("base screen=" .. tostring(nav:peekBottom()))
 end
-
 --@api-stub: LStack:peekAt
 -- Return the value at a 1-based index without removing it. Returns nil if out of range.
 do
@@ -3694,7 +3339,6 @@ do
   breadcrumbs:push("Home"); breadcrumbs:push("Shop"); breadcrumbs:push("Weapons")
   print("breadcrumb[2]=" .. tostring(breadcrumbs:peekAt(2)))
 end
-
 --@api-stub: LStack:insertAt
 -- Insert a value at a 1-based index in the stack, shifting items above it. Returns false if at capacity.
 do
@@ -3704,7 +3348,6 @@ do
   layers:insertAt(2, "notification")
   print("middle layer=" .. tostring(layers:peekAt(2)))
 end
-
 --@api-stub: LStack:removeAt
 -- Remove and return the value at a 1-based index. Returns nil if out of range.
 do
@@ -3714,7 +3357,6 @@ do
   local removed = cards:removeAt(2)
   print("removed=" .. tostring(removed) .. " remaining=" .. cards:len())
 end
-
 --@api-stub: LStack:moveWithin
 -- Move an item from one 1-based index to another within the stack.
 do
@@ -3724,7 +3366,6 @@ do
   z_order:moveWithin(1, 3)  -- move background to top
   print("new top=" .. tostring(z_order:peek()))
 end
-
 --@api-stub: LStack:len
 -- Return the current number of items in the stack.
 do
@@ -3733,7 +3374,6 @@ do
   nav:push("a"); nav:push("b"); nav:push("c")
   print("navigation depth=" .. nav:len())
 end
-
 --@api-stub: LStack:isEmpty
 -- Check whether the stack is empty. This method is available to Lua scripts.
 do
@@ -3743,7 +3383,6 @@ do
   nav:pop()
   if nav:isEmpty() then print("at root, show exit prompt") end
 end
-
 --@api-stub: LStack:isFull
 -- Check whether the stack has reached its capacity limit (if one was set).
 do
@@ -3752,7 +3391,6 @@ do
   nav:push("a"); nav:push("b"); nav:push("c")
   if nav:isFull() then print("max dialog depth reached") end
 end
-
 --@api-stub: LStack:clear
 -- Remove all items from the stack. This method is available to Lua scripts.
 do
@@ -3762,7 +3400,6 @@ do
   nav:clear()
   print("stack cleared, len=" .. nav:len())
 end
-
 --@api-stub: LStack:toArray
 -- Return all stack items as an array table (bottom to top).
 do
@@ -3772,11 +3409,6 @@ do
   local arr = trail:toArray()
   print("trail: " .. table.concat(arr, " > "))
 end
-
--- -----------------------------------------------------------------------------
--- LStrategy methods
--- -----------------------------------------------------------------------------
-
 --@api-stub: LStrategy:set
 -- Switch to a named strategy. Future `execute()` calls will use this implementation.
 do
@@ -3787,7 +3419,6 @@ do
   local ok = pathfinder:set("astar")
   print("set astar=" .. tostring(ok))
 end
-
 --@api-stub: LStrategy:has
 -- Check whether a strategy with the given name is registered.
 do
@@ -3797,7 +3428,6 @@ do
   if s:has("fast") then print("fast strategy available") end
   print("has slow=" .. tostring(s:has("slow")))
 end
-
 --@api-stub: LStrategy:remove
 -- Remove a named strategy. If it was the active strategy, no strategy will be selected.
 do
@@ -3807,7 +3437,6 @@ do
   local removed = s:remove("old_algo")
   print("removed=" .. tostring(removed))
 end
-
 --@api-stub: LStrategy:clear
 -- Remove all strategies and reset the selection.
 do
@@ -3817,11 +3446,6 @@ do
   s:clear()
   print("strategies after clear=" .. #s:names())
 end
-
--- -----------------------------------------------------------------------------
--- LThrottle methods
--- -----------------------------------------------------------------------------
-
 --@api-stub: LThrottle:onFire
 -- Set the callback function to invoke each time the throttle fires.
 do
@@ -3832,7 +3456,6 @@ do
   end)
   net_send:update(0.1)  -- fires
 end
-
 --@api-stub: LThrottle:update
 -- Advance the throttle timer. If the interval has elapsed, fires the callback and returns true.
 do
@@ -3843,7 +3466,6 @@ do
   local fired2 = weapon:update(0.3)  -- total 0.6 > 0.5, fires
   print("attempt1=" .. tostring(fired1) .. " attempt2=" .. tostring(fired2))
 end
-
 --@api-stub: LThrottle:getFireCount
 -- Return the total number of times this throttle has fired since creation.
 do
@@ -3853,7 +3475,6 @@ do
   t:update(0.1); t:update(0.1); t:update(0.1)
   print("total fires=" .. t:getFireCount())
 end
-
 --@api-stub: LWeightedRandom:setWeight
 -- Change the weight of an existing entry.
 do
@@ -3865,7 +3486,6 @@ do
   loot:setWeight(rare_id, 25.0)
   print("rare weight boosted, total=" .. string.format("%.1f", loot:totalWeight()))
 end
-
 --@api-stub: LWeightedRandom:pick
 -- Pick one item using a random sample value in [0, 1). Returns its value or nil.
 do
@@ -3876,7 +3496,6 @@ do
   local drop = loot:pick(math.random())
   print("dropped: " .. tostring(drop))
 end
-
 --@api-stub: LWeightedRandom:pickN
 -- Pick multiple unique items. Requires an array of random samples.
 do
@@ -3889,7 +3508,6 @@ do
   local drops = pool:pickN(3, { math.random(), math.random(), math.random() })
   print("chest contains " .. #drops .. " items")
 end
-
 --@api-stub: LWeightedRandom:totalWeight
 -- Return the sum of all entry weights.
 do
@@ -3900,7 +3518,6 @@ do
   wr:add(10.0, "rare", "tier_3")
   print("total weight=" .. wr:totalWeight())  -- 100.0
 end
-
 --@api-stub: LWeightedRandom:clearAll
 -- Remove all entries from the pool. This method is available to Lua scripts.
 do
@@ -3910,20 +3527,6 @@ do
   wr:clearAll()
   print("entries after clear=" .. wr:len())
 end
-
--- =============================================================================
--- STUBS: 8 uncovered lurek.patterns API item(s)
--- Generated by tools/audit/example_add_missing.py
--- REQUIRED: replace every --@api-stub: block below with a real scenario.
--- Run .github/prompts/flesh-out-example.prompt.md for instructions.
--- The final committed file must contain ZERO --@api-stub: lines.
--- =============================================================================
-
--- -----------------------------------------------------------------------------
--- LList methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LList:add -----------------------------------------------------
 --@api-stub: LList:add
 -- Append a value to the end of the list.
 do
@@ -3933,8 +3536,6 @@ do
   list:add("potion")
   lurek.log.debug("list size after adds: " .. list:len(), "patterns") -- 3
 end
-
--- ---- Stub: LList:get -----------------------------------------------------
 --@api-stub: LList:get
 -- Get the value at a 1-based index. Returns nil if out of range.
 do
@@ -3944,8 +3545,6 @@ do
   local item = list:get(1)
   lurek.log.debug("first item: " .. tostring(item), "patterns") -- "alpha"
 end
-
--- ---- Stub: LList:set -----------------------------------------------------
 --@api-stub: LList:set
 -- Replace the value at a 1-based index. Errors if index is 0 or out of range.
 do
@@ -3954,8 +3553,6 @@ do
   list:set(1, "new_value")
   lurek.log.debug("after set: " .. tostring(list:get(1)), "patterns") -- "new_value"
 end
-
--- ---- Stub: LList:remove --------------------------------------------------
 --@api-stub: LList:remove
 -- Remove and return the value at a 1-based index. Returns nil if out of range.
 do
@@ -3965,8 +3562,6 @@ do
   list:remove(2)
   lurek.log.debug("len after remove: " .. list:len(), "patterns") -- 1
 end
-
--- ---- Stub: LList:len -----------------------------------------------------
 --@api-stub: LList:len
 -- Return the number of items in the list.
 do
@@ -3976,8 +3571,6 @@ do
   list:add("c")
   lurek.log.debug("len: " .. list:len(), "patterns") -- 3
 end
-
--- ---- Stub: LList:isEmpty -------------------------------------------------
 --@api-stub: LList:isEmpty
 -- Check whether the list is empty. This method is available to Lua scripts.
 do
@@ -3986,8 +3579,6 @@ do
   list:add("x")
   lurek.log.debug("empty after add: " .. tostring(list:isEmpty()), "patterns") -- false
 end
-
--- ---- Stub: LList:clear ---------------------------------------------------
 --@api-stub: LList:clear
 -- Remove all items from the list. This method is available to Lua scripts.
 do
@@ -3997,8 +3588,6 @@ do
   list:clear()
   lurek.log.debug("list empty: " .. tostring(list:isEmpty()), "patterns") -- true
 end
-
--- ---- Stub: LList:toArray -------------------------------------------------
 --@api-stub: LList:toArray
 -- Return all items as an array table. This method is available to Lua scripts.
 do

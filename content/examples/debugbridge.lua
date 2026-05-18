@@ -1,7 +1,6 @@
 -- content/examples/debugbridge.lua
 -- Debug bridge: localhost TCP server for VS Code extension and external debuggers.
 -- Run: cargo run -- content/examples/debugbridge.lua
-
 --@api-stub: lurek.debugbridge.start
 -- Starts the localhost debug bridge server on a given TCP port.
 do
@@ -22,7 +21,6 @@ do
     lurek.log.warn("debug bridge failed: " .. tostring(err), "debugbridge")
   end
 end
-
 --@api-stub: lurek.debugbridge.stop
 -- Stops the debug bridge server and joins its background thread.
 do
@@ -39,7 +37,6 @@ do
     shutdown_bridge()
   end
 end
-
 --@api-stub: lurek.debugbridge.isRunning
 -- Returns true when the debug bridge server thread is active.
 do
@@ -54,7 +51,6 @@ do
   end
   lurek.log.info(get_debug_status_text(), "debugbridge")
 end
-
 --@api-stub: lurek.debugbridge.getPort
 -- Returns the bound TCP port, or zero when the bridge is not running.
 do
@@ -67,7 +63,6 @@ do
     lurek.log.debug("no active bridge port — start the bridge first", "debugbridge")
   end
 end
-
 --@api-stub: lurek.debugbridge.getClientCount
 -- Returns the number of currently connected debugger/tool clients.
 do
@@ -82,7 +77,6 @@ do
     lurek.debugbridge.broadcast("player_state", payload)
   end
 end
-
 --@api-stub: lurek.debugbridge.poll
 -- Polls pending debugger requests, evaluates them, and queues responses.
 do
@@ -95,7 +89,6 @@ do
     end
   end
 end
-
 --@api-stub: lurek.debugbridge.capturePrint
 -- Captures a print message and broadcasts it to connected debug clients.
 do
@@ -114,7 +107,6 @@ do
   end
   print("hello from captured print")
 end
-
 --@api-stub: lurek.debugbridge.getPrintHistory
 -- Returns an array of recent captured print entries.
 do
@@ -127,7 +119,6 @@ do
     lurek.log.debug("[" .. loc .. "] " .. entry.message, "console")
   end
 end
-
 --@api-stub: lurek.debugbridge.clearPrintHistory
 -- Clears all captured print history entries from memory.
 do
@@ -139,7 +130,6 @@ do
   end
   enter_scene("dungeon_floor_3")
 end
-
 --@api-stub: lurek.debugbridge.setMaxPrintHistory
 -- Sets the maximum number of print history entries retained in memory.
 do
@@ -150,7 +140,6 @@ do
   lurek.debugbridge.setMaxPrintHistory(max_entries)
   lurek.log.info("print history capacity set to " .. max_entries, "debugbridge")
 end
-
 --@api-stub: lurek.debugbridge.getPerformance
 -- Returns a table of debug bridge performance metrics.
 do
@@ -164,7 +153,6 @@ do
   end
   lurek.log.info(summary, "debugbridge")
 end
-
 --@api-stub: lurek.debugbridge.requestScreenshot
 -- Requests a screenshot capture at the given scale (1-8, default 1).
 do
@@ -177,7 +165,6 @@ do
   -- In a real game this would be inside lurek.init with lurek.input.bind.
   on_screenshot_key()
 end
-
 --@api-stub: lurek.debugbridge.isScreenshotRequested
 -- Returns true when a screenshot capture is still pending.
 do
@@ -190,7 +177,6 @@ do
   end
   draw_capture_indicator()
 end
-
 --@api-stub: lurek.debugbridge.broadcast
 -- Sends a named event with a JSON payload string to all connected clients.
 do
@@ -204,7 +190,6 @@ do
   )
   lurek.debugbridge.broadcast(event_name, json)
 end
-
 --@api-stub: lurek.debugbridge.getProtocolInfo
 -- Returns protocol version, capabilities list, and handshake nonce.
 do
@@ -218,7 +203,6 @@ do
     "debugbridge"
   )
 end
-
 --@api-stub: lurek.debugbridge.consumeHotReloadRequest
 -- Returns and clears the pending hot-reload flag set by an external tool.
 do
@@ -234,5 +218,4 @@ do
   end
   check_hot_reload()
 end
-
 print("content/examples/debugbridge.lua")

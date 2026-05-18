@@ -1,11 +1,6 @@
 -- content/examples/globe.lua
 -- lurek.globe API examples: spherical province maps, fog of war, markers, labels, layers, pathfinding, and coordinate math.
 -- Run: cargo run -- content/examples/globe.lua
-
--- ═══════════════════════════════════════════════════════════════════════════════
--- Module-level functions
--- ═══════════════════════════════════════════════════════════════════════════════
-
 --@api-stub: LGlobeRegistry:new
 -- Creates a named globe with optional specification fields in the module registry
 do
@@ -21,7 +16,6 @@ do
   g:setBorders(true)
   lurek.log.info("created globe '" .. g:getName() .. "' with borders enabled", "globe")
 end
-
 --@api-stub: LGlobeRegistry:get
 -- Returns a globe from the module registry by name
 do
@@ -37,7 +31,6 @@ do
     lurek.log.warn("globe 'campaign' not found — was it created?", "globe")
   end
 end
-
 --@api-stub: lurek.globe.loadFromTOML
 -- Creates a globe and populates provinces from TOML source text
 do
@@ -61,7 +54,6 @@ do
   -- The globe is ready with province graph connectivity from the TOML data
   lurek.log.info("loaded " .. g:provinceCount() .. " provinces from TOML", "globe")
 end
-
 --@api-stub: lurek.globe.loadFromPNG
 -- Creates a globe and populates provinces from a PNG file
 do
@@ -79,7 +71,6 @@ do
     lurek.log.debug("PNG globe load skipped — asset not available", "globe")
   end
 end
-
 --@api-stub: lurek.globe.generateVoronoi
 -- Creates a globe and populates provinces from latitude-longitude seed points
 do
@@ -98,7 +89,6 @@ do
   -- Each seed generated one province; neighbors are computed from adjacency
   lurek.log.info("voronoi globe has " .. g:provinceCount() .. " provinces", "globe")
 end
-
 --@api-stub: lurek.globe.greatCircleDistance
 -- Computes great-circle distance between two latitude-longitude points
 do
@@ -111,7 +101,6 @@ do
   local km = rad * earth_radius_km
   lurek.log.info(string.format("NYC -> London = %.0f km (%.3f rad)", km, rad), "globe")
 end
-
 --@api-stub: lurek.globe.greatCirclePath
 -- Computes sampled latitude-longitude points along a great-circle path
 do
@@ -124,7 +113,6 @@ do
     lurek.log.debug(string.format("waypoint %d: lat=%.2f lon=%.2f", i, p[1], p[2]), "globe")
   end
 end
-
 --@api-stub: lurek.globe.latLonToUnit
 -- Converts latitude and longitude to a unit-sphere 3D vector table
 do
@@ -136,11 +124,6 @@ do
   -- The magnitude should always be 1.0 (unit sphere)
   lurek.log.info(string.format("unit vector = (%.3f, %.3f, %.3f), |v|=%.4f", v[1], v[2], v[3], mag), "globe")
 end
-
--- ═══════════════════════════════════════════════════════════════════════════════
--- Province management
--- ═══════════════════════════════════════════════════════════════════════════════
-
 --@api-stub: LGlobe:addProvince
 -- Adds a province to this globe.
 do
@@ -172,7 +155,6 @@ do
     base_color = {0.8, 0.7, 0.3, 1.0},   -- sandy desert color
   })
 end
-
 --@api-stub: LGlobe:removeProvince
 -- Removes a province from this globe.
 do
@@ -186,7 +168,6 @@ do
   lurek.log.info(string.format("removed=%s, count %d -> %d",
     tostring(existed), count_before, g:provinceCount()), "globe")
 end
-
 --@api-stub: LGlobe:provinceCount
 -- Returns the number of provinces currently in this globe.
 do
@@ -198,7 +179,6 @@ do
   g:addProvince({ id = 3, centroid = {10,10}, vertices = {{9,9},{11,9},{11,11}} })
   lurek.log.info("total provinces = " .. g:provinceCount(), "globe")
 end
-
 --@api-stub: LGlobe:getNeighbors
 -- Returns the neighbor province ids for a given province.
 do
@@ -214,7 +194,6 @@ do
   -- In a strategy game, check if the target province is adjacent before allowing movement
   lurek.log.info("province 1 borders " .. #nbrs .. " neighbors: " .. table.concat(nbrs, ", "), "globe")
 end
-
 --@api-stub: LGlobe:getProvinceAttr
 -- Returns a string attribute stored on a province.
 do
@@ -230,7 +209,6 @@ do
   local terrain = g:getProvinceAttr(1, "terrain") or "unknown"
   lurek.log.info(string.format("province 1: owner=%s, terrain=%s", owner, terrain), "globe")
 end
-
 --@api-stub: LGlobe:setProvinceAttr
 -- Sets a string attribute on a province.
 do
@@ -247,7 +225,6 @@ do
   g:setProvinceAttr(3, "resource", "iron")
   lurek.log.info("province 3 population = " .. g:getProvinceAttr(3, "population"), "globe")
 end
-
 --@api-stub: LGlobe:setProvinceTexture
 -- Sets a raw texture handle and UV rectangle on a province for textured rendering.
 do
@@ -261,7 +238,6 @@ do
   -- Map province 1 to the top-left quadrant of texture atlas slot 0
   g:setProvinceTexture(1, 0, 0.0, 0.0, 0.5, 0.5)
 end
-
 --@api-stub: LGlobe:clearProvinceTexture
 -- Clears texture metadata from a province, reverting to base color rendering.
 do
@@ -274,11 +250,6 @@ do
   -- Toggle back to flat color mode
   g:clearProvinceTexture(1)
 end
-
--- ═══════════════════════════════════════════════════════════════════════════════
--- Camera and navigation
--- ═══════════════════════════════════════════════════════════════════════════════
-
 --@api-stub: LGlobe:pan
 -- Pans the globe camera by latitude and longitude deltas.
 do
@@ -296,7 +267,6 @@ do
     if lurek.input.keyboard.isDown("s") then g:pan(-pan_speed * dt, 0) end
   end
 end
-
 --@api-stub: LGlobe:zoom
 -- Multiplies the globe camera zoom by a factor.
 do
@@ -315,7 +285,6 @@ do
     end
   end
 end
-
 --@api-stub: LGlobe:setCamera
 -- Sets the camera latitude, longitude, and zoom directly.
 do
@@ -329,7 +298,6 @@ do
   local lat, lon, z = g:getCamera()
   lurek.log.info(string.format("camera at (%.2f, %.2f) zoom=%.1f", lat, lon, z), "globe")
 end
-
 --@api-stub: LGlobe:getCamera
 -- Returns the camera latitude, longitude, and zoom as three values.
 do
@@ -344,7 +312,6 @@ do
   lurek.filesystem.write("save/globe_camera.txt", save_data)
   lurek.log.info("camera state saved: " .. save_data, "globe")
 end
-
 --@api-stub: LGlobe:getLod
 -- Returns the current level-of-detail tier based on camera zoom.
 do
@@ -364,7 +331,6 @@ do
     lurek.log.info("far: show only continent outlines and strategic icons", "globe")
   end
 end
-
 --@api-stub: LGlobe:setRotation
 -- Sets the globe rotation angle in degrees.
 do
@@ -377,7 +343,6 @@ do
     g:setRotation((lurek.time.getTime() * 6.0) % 360.0)
   end
 end
-
 --@api-stub: LGlobe:setAutoRotationSpeed
 -- Sets the automatic rotation speed in degrees per second for this globe.
 do
@@ -389,11 +354,6 @@ do
   g:setAutoRotationSpeed(2.0)
   lurek.log.info("auto-rotation enabled at 2 deg/sec", "globe")
 end
-
--- ═══════════════════════════════════════════════════════════════════════════════
--- Picking and interaction
--- ═══════════════════════════════════════════════════════════════════════════════
-
 --@api-stub: LGlobe:pick
 -- Picks a province at screen coordinates using the fastest internal method.
 do
@@ -415,7 +375,6 @@ do
     end
   end
 end
-
 --@api-stub: LGlobe:pickLatLon
 -- Picks at screen coordinates and returns the hit province centroid in screen space.
 do
@@ -437,7 +396,6 @@ do
     end
   end
 end
-
 --@api-stub: LGlobe:pickRaycast
 -- Performs a raycast pick by sampling along a screen ray from center to target.
 do
@@ -454,11 +412,6 @@ do
     lurek.log.info("raycast hit province " .. hit, "globe")
   end
 end
-
--- ═══════════════════════════════════════════════════════════════════════════════
--- Fog of war
--- ═══════════════════════════════════════════════════════════════════════════════
-
 --@api-stub: LGlobe:setActiveViewer
 -- Sets the active fog-of-war viewer name for rendering.
 do
@@ -475,7 +428,6 @@ do
   g:revealProvince("blue_faction", 1)
   lurek.log.info("viewing world as blue_faction", "globe")
 end
-
 --@api-stub: LGlobe:revealProvince
 -- Reveals a single province for one fog-of-war viewer.
 do
@@ -491,7 +443,6 @@ do
   g:revealProvince("blue_faction", 13)
   lurek.log.info("blue scouted provinces 12 and 13", "globe")
 end
-
 --@api-stub: LGlobe:hideProvince
 -- Hides a province for one fog-of-war viewer (re-fogs it).
 do
@@ -505,7 +456,6 @@ do
   g:hideProvince("blue", 5)
   lurek.log.info("province 5 re-fogged for blue (enemy jammer active)", "globe")
 end
-
 --@api-stub: LGlobe:isVisible
 -- Returns whether a province is currently visible to a fog-of-war viewer.
 do
@@ -521,7 +471,6 @@ do
     lurek.log.info("province 3: hidden — show only terrain silhouette", "globe")
   end
 end
-
 --@api-stub: LGlobe:revealAll
 -- Reveals every province for one fog-of-war viewer.
 do
@@ -535,7 +484,6 @@ do
   g:revealAll("debug_viewer")
   lurek.log.info("full map revealed for debug_viewer", "globe")
 end
-
 --@api-stub: LGlobe:setFogState
 -- Sets the fog-of-war exploration state for a specific province and viewer.
 do
@@ -554,7 +502,6 @@ do
   local state = g:getFogState("player1", 2)
   lurek.log.info("province 2 fog state for player1 = " .. state, "globe")
 end
-
 --@api-stub: LGlobe:getFogState
 -- Returns the fog-of-war state string for a province and viewer.
 do
@@ -573,7 +520,6 @@ do
     lurek.log.info("province completely unknown", "globe")
   end
 end
-
 --@api-stub: LGlobe:encodeFogBase64
 -- Encodes one viewer's fog-of-war state as a base64 string for save/load.
 do
@@ -587,7 +533,6 @@ do
   local encoded = g:encodeFogBase64("player1")
   lurek.log.info("fog encoded: " .. #encoded .. " bytes", "globe")
 end
-
 --@api-stub: LGlobe:decodeFogBase64
 -- Restores fog-of-war state from a previously encoded base64 string.
 do
@@ -604,11 +549,6 @@ do
   local ok = g:decodeFogBase64("player1", data)
   lurek.log.info("fog restored from save: " .. tostring(ok), "globe")
 end
-
--- ═══════════════════════════════════════════════════════════════════════════════
--- Markers
--- ═══════════════════════════════════════════════════════════════════════════════
-
 --@api-stub: LGlobe:addMarker
 -- Adds a marker at latitude and longitude with an optional label.
 do
@@ -622,7 +562,6 @@ do
   local mid = g:addMarker("capital_icon", 2.0, 2.0, "Capital City")
   lurek.log.info("placed marker id=" .. mid .. " at province 5 centroid", "globe")
 end
-
 --@api-stub: LGlobe:removeMarker
 -- Removes a marker from this globe by id.
 do
@@ -635,7 +574,6 @@ do
   local ok = g:removeMarker(id)
   lurek.log.info("marker " .. id .. " removed=" .. tostring(ok), "globe")
 end
-
 --@api-stub: LGlobe:moveMarker
 -- Moves an existing marker to new latitude and longitude coordinates.
 do
@@ -651,7 +589,6 @@ do
     g:moveMarker(ship_id, 0.0, lon)
   end
 end
-
 --@api-stub: LGlobe:setMarkerVisible
 -- Shows or hides a marker without removing it.
 do
@@ -665,7 +602,6 @@ do
   lurek.log.info("HQ marker hidden during cutscene", "globe")
   -- Re-show after cutscene: g:setMarkerVisible(hq_id, true)
 end
-
 --@api-stub: LGlobe:getMarkerAttr
 -- Returns a string attribute stored on a marker.
 do
@@ -679,7 +615,6 @@ do
   local fuel = g:getMarkerAttr(squad_id, "fuel") or "0"
   lurek.log.info("Alpha Squad fuel = " .. fuel .. "%", "globe")
 end
-
 --@api-stub: LGlobe:setMarkerAttr
 -- Sets a string attribute on a marker for storing game state.
 do
@@ -693,7 +628,6 @@ do
   g:setMarkerAttr(fort_id, "garrison", "200")
   lurek.log.info("fort strength = " .. (g:getMarkerAttr(fort_id, "strength") or "?"), "globe")
 end
-
 --@api-stub: LGlobe:setMarkerPulse
 -- Sets the pulse animation speed and scale factor for a marker.
 do
@@ -708,7 +642,6 @@ do
   g:setMarkerPulse(alert_id, 3.0, 0.3)
   lurek.log.info("alert marker pulsing at 3 Hz", "globe")
 end
-
 --@api-stub: LGlobe:setMarkerRotation
 -- Sets the rotation speed in degrees per second for a marker.
 do
@@ -721,11 +654,6 @@ do
   g:setMarkerRotation(radar_id, 120.0)
   lurek.log.info("radar marker spinning", "globe")
 end
-
--- ═══════════════════════════════════════════════════════════════════════════════
--- Labels
--- ═══════════════════════════════════════════════════════════════════════════════
-
 --@api-stub: LGlobe:addLabel
 -- Adds a text label at latitude and longitude on the globe.
 do
@@ -739,7 +667,6 @@ do
   local ocean_id = g:addLabel("ocean", -20.0, 50.0, "Indian Ocean")
   lurek.log.info("placed city label id=" .. city_id, "globe")
 end
-
 --@api-stub: LGlobe:setLabelText
 -- Changes the text of an existing label.
 do
@@ -752,7 +679,6 @@ do
   g:setLabelText(id, "New Londinium")
   lurek.log.info("city " .. id .. " renamed", "globe")
 end
-
 --@api-stub: LGlobe:setLabelVisible
 -- Shows or hides a label based on visibility flag.
 do
@@ -766,7 +692,6 @@ do
   g:setLabelVisible(id, show)
   lurek.log.info("label visible = " .. tostring(show) .. " (LOD=" .. g:getLod() .. ")", "globe")
 end
-
 --@api-stub: LGlobe:removeLabel
 -- Removes a label from this globe by id.
 do
@@ -778,11 +703,6 @@ do
   local ok = g:removeLabel(id)
   lurek.log.info("Atlantis label removed=" .. tostring(ok), "globe")
 end
-
--- ═══════════════════════════════════════════════════════════════════════════════
--- Render layers
--- ═══════════════════════════════════════════════════════════════════════════════
-
 --@api-stub: LGlobe:addLayer
 -- Adds a named render layer with optional z-order for province color overlays.
 do
@@ -797,7 +717,6 @@ do
   g:addLayer("selection", 10) -- highlighted selection (topmost)
   lurek.log.info("3 render layers configured", "globe")
 end
-
 --@api-stub: LGlobe:removeLayer
 -- Removes a render layer from this globe by name.
 do
@@ -808,7 +727,6 @@ do
   local ok = g:removeLayer("weather")
   lurek.log.info("weather layer removed=" .. tostring(ok), "globe")
 end
-
 --@api-stub: LGlobe:setLayerVisible
 -- Shows or hides a render layer by name.
 do
@@ -821,7 +739,6 @@ do
   g:setLayerVisible("politics", false)
   lurek.log.info("political overlay hidden", "globe")
 end
-
 --@api-stub: LGlobe:setLayerAlpha
 -- Sets the opacity of a render layer (0.0 = transparent, 1.0 = opaque).
 do
@@ -836,7 +753,6 @@ do
     g:setLayerAlpha("heat", alpha)
   end
 end
-
 --@api-stub: LGlobe:setLayerColor
 -- Sets a per-province color override inside a specific render layer.
 do
@@ -853,11 +769,6 @@ do
   g:setLayerColor("ownership", 2, 0.9, 0.2, 0.2, 0.7)  -- red faction
   lurek.log.info("ownership colors applied", "globe")
 end
-
--- ═══════════════════════════════════════════════════════════════════════════════
--- Arcs (route visualization)
--- ═══════════════════════════════════════════════════════════════════════════════
-
 --@api-stub: LGlobe:addArc
 -- Adds a visible route arc between two lat/lon points on the globe.
 do
@@ -872,7 +783,6 @@ do
   local arc_id = g:addArc(0.0, 0.0, 45.0, 90.0, 32)
   lurek.log.info("trade route arc id=" .. arc_id, "globe")
 end
-
 --@api-stub: LGlobe:removeArc
 -- Removes a route arc from this globe by id.
 do
@@ -884,11 +794,6 @@ do
   g:removeArc(id)
   lurek.log.info("arc " .. id .. " removed (trade route broken)", "globe")
 end
-
--- ═══════════════════════════════════════════════════════════════════════════════
--- Sectors and heat layers
--- ═══════════════════════════════════════════════════════════════════════════════
-
 --@api-stub: LGlobe:setProvinceSector
 -- Assigns a province to a named sector for grouping and queries.
 do
@@ -908,7 +813,6 @@ do
   local europe_ids = g:getSectorProvinces("europe")
   lurek.log.info("europe has " .. #europe_ids .. " provinces", "globe")
 end
-
 --@api-stub: LGlobe:getProvinceSector
 -- Returns the sector name assigned to a province, or nil if none.
 do
@@ -921,7 +825,6 @@ do
   local sector = g:getProvinceSector(1)
   lurek.log.debug("province 1 sector = " .. tostring(sector), "globe")
 end
-
 --@api-stub: LGlobe:getSectorProvinces
 -- Returns all province ids that belong to a named sector.
 do
@@ -936,7 +839,6 @@ do
   local ids = g:getSectorProvinces("north")
   lurek.log.debug("north sector has " .. #ids .. " provinces", "globe")
 end
-
 --@api-stub: LGlobe:setHeatLayer
 -- Creates or replaces a named heat layer for data-driven province coloring.
 do
@@ -956,7 +858,6 @@ do
   g:setHeatLayer("population", "pop", 0.0, 100.0, 0.6)
   lurek.log.info("population heat layer active", "globe")
 end
-
 --@api-stub: LGlobe:removeHeatLayer
 -- Removes a heat layer by name from this globe.
 do
@@ -967,11 +868,6 @@ do
   g:removeHeatLayer("temp")
   lurek.log.info("temperature heat layer removed", "globe")
 end
-
--- ═══════════════════════════════════════════════════════════════════════════════
--- Time of day and simulation
--- ═══════════════════════════════════════════════════════════════════════════════
-
 --@api-stub: LGlobe:setTimeOfDay
 -- Sets the globe time of day (0-24 hours) for day/night rendering.
 do
@@ -985,7 +881,6 @@ do
     g:setTimeOfDay(hours)
   end
 end
-
 --@api-stub: LGlobe:getTimeOfDay
 -- Returns the current globe time of day in hours (0-24).
 do
@@ -1001,7 +896,6 @@ do
     lurek.log.info("daytime: solar-powered defenses active", "globe")
   end
 end
-
 --@api-stub: LGlobe:update
 -- Advances globe simulation (rotation, marker animations, timers) by delta time.
 do
@@ -1016,7 +910,6 @@ do
     g:update(dt)
   end
 end
-
 --@api-stub: LGlobe:setBorders
 -- Enables or disables province border rendering.
 do
@@ -1033,11 +926,6 @@ do
   end
   lurek.log.info("borders " .. (lod == "far" and "hidden" or "shown") .. " for LOD=" .. lod, "globe")
 end
-
--- ═══════════════════════════════════════════════════════════════════════════════
--- Pathfinding and reachability
--- ═══════════════════════════════════════════════════════════════════════════════
-
 --@api-stub: LGlobe:findPath
 -- Finds the shortest province path between two province ids using default costs.
 do
@@ -1057,7 +945,6 @@ do
     lurek.log.warn("no path between provinces 1 and 3", "globe")
   end
 end
-
 --@api-stub: LGlobe:reachable
 -- Returns all provinces reachable from a start province within a cost budget.
 do
@@ -1078,7 +965,6 @@ do
     lurek.log.debug(string.format("  province %d reachable at cost %.1f", id, cost), "globe")
   end
 end
-
 --@api-stub: LGlobe:cacheReachability
 -- Pre-computes reachability costs from a province and caches them for a faction.
 do
@@ -1093,7 +979,6 @@ do
   g:cacheReachability("ai_blue", 1, 5.0)
   lurek.log.info("reachability cached for ai_blue from province 1", "globe")
 end
-
 --@api-stub: LGlobe:getCachedReachability
 -- Returns the previously cached reachability cost table for a faction.
 do
@@ -1108,11 +993,6 @@ do
   local reach = g:getCachedReachability("blue")
   lurek.log.debug("cached reachable provinces: " .. (reach and #reach or 0), "globe")
 end
-
--- ═══════════════════════════════════════════════════════════════════════════════
--- Export and utility
--- ═══════════════════════════════════════════════════════════════════════════════
-
 --@api-stub: LGlobe:exportProvinceMeshOBJ
 -- Exports all province geometry as a Wavefront OBJ string for external tools.
 do
@@ -1127,7 +1007,6 @@ do
   lurek.filesystem.write("save/globe_mesh.obj", obj_text)
   lurek.log.info("exported " .. #obj_text .. " bytes of OBJ mesh", "globe")
 end
-
 --@api-stub: LGlobe:getName
 -- Returns the registry name of this globe.
 do
@@ -1139,11 +1018,6 @@ do
   lurek.filesystem.write("save/active_globe.txt", name)
   lurek.log.info("active globe = " .. name, "globe")
 end
-
--- ═══════════════════════════════════════════════════════════════════════════════
--- Globe Registry
--- ═══════════════════════════════════════════════════════════════════════════════
-
 --@api-stub: LGlobeRegistry:new
 -- Creates and returns a new named globe in the shared registry.
 do
@@ -1153,7 +1027,6 @@ do
   local g = lurek.globe.new("world_alpha", {})
   lurek.log.info("registry globe '" .. g:getName() .. "' created", "globe")
 end
-
 --@api-stub: LGlobeRegistry:get
 -- Returns a globe from the registry by name, or nil if not found.
 do
@@ -1165,7 +1038,6 @@ do
     lurek.log.info("registry lookup returned '" .. g:getName() .. "'", "globe")
   end
 end
-
 --@api-stub: LGlobeRegistry:remove
 -- Removes a globe from the registry by name.
 do
@@ -1177,7 +1049,6 @@ do
     lurek.log.info("temp_world exists — will be collected when handle drops", "globe")
   end
 end
-
 --@api-stub: LGlobeRegistry:names
 -- Returns all globe names currently stored in the registry.
 do
@@ -1188,11 +1059,6 @@ do
   local g = lurek.globe.get("world_a")
   if g then lurek.log.info("verified world_a in registry", "globe") end
 end
-
--- ═══════════════════════════════════════════════════════════════════════════════
--- Type introspection
--- ═══════════════════════════════════════════════════════════════════════════════
-
 --@api-stub: LGlobeRegistry:type
 -- Returns the Lua-visible type name for this globe handle
 do
@@ -1202,7 +1068,6 @@ do
   local t = g:type()
   lurek.log.info("LGlobe:type() = " .. t, "globe")
 end
-
 --@api-stub: LGlobeRegistry:typeOf
 -- Returns whether this globe handle matches a supported type name
 do
@@ -1213,7 +1078,6 @@ do
   lurek.log.info("is Object: " .. tostring(g:typeOf("Object")), "globe")
   lurek.log.info("is wrong:  " .. tostring(g:typeOf("Unknown")), "globe")
 end
-
 --@api-stub: LGlobeRegistry:type
 -- Returns the Lua-visible type name for this globe registry handle
 do
@@ -1222,7 +1086,6 @@ do
   local t = g:type()
   lurek.log.info("globe handle type = " .. t, "globe")
 end
-
 --@api-stub: LGlobeRegistry:typeOf
 -- Returns whether this registry handle matches a supported type name
 do
@@ -1231,30 +1094,7 @@ do
   lurek.log.info("typeOf LGlobe: " .. tostring(g:typeOf("LGlobe")), "globe")
   lurek.log.info("typeOf Unknown: " .. tostring(g:typeOf("Unknown")), "globe")
 end
-
 print("content/examples/globe.lua")
-
--- =============================================================================
--- STUBS: 51 uncovered lurek.globe API item(s)
--- Generated by tools/audit/example_add_missing.py
--- REQUIRED: replace every --@api-stub: block below with a real scenario.
--- Run .github/prompts/flesh-out-example.prompt.md for instructions.
--- The final committed file must contain ZERO --@api-stub: lines.
--- =============================================================================
-
--- -----------------------------------------------------------------------------
--- LGlobe methods
--- -----------------------------------------------------------------------------
-
--- =============================================================================
--- STUBS: 4 uncovered lurek.globe API item(s)
--- Generated by tools/audit/example_add_missing.py
--- REQUIRED: replace every --@api-stub: block below with a real scenario.
--- Run .github/prompts/flesh-out-example.prompt.md for instructions.
--- The final committed file must contain ZERO --@api-stub: lines.
--- =============================================================================
-
--- ---- Stub: lurek.globe.new -----------------------------------------------
 --@api-stub: lurek.globe.new
 -- Creates a named globe with optional specification fields in the module registry.
 do
@@ -1262,8 +1102,6 @@ do
   local planet = lurek.globe.new(6)
   lurek.log.debug("globe type: " .. planet:type(), "globe") -- "LGlobe"
 end
-
--- ---- Stub: lurek.globe.get -----------------------------------------------
 --@api-stub: lurek.globe.get
 -- Returns a globe from the module registry by name.
 do
@@ -1273,20 +1111,12 @@ do
   local same = lurek.globe.get(name)
   lurek.log.debug("got globe by id: " .. tostring(same ~= nil), "globe") -- true
 end
-
--- -----------------------------------------------------------------------------
--- LGlobe methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LGlobe:type ---------------------------------------------------
 --@api-stub: LGlobe:type
 -- Returns the Lua-visible type name for this globe handle.
 do
   local obj = lurek.globe.new(8)
   lurek.log.debug("type: " .. obj:type(), "example") -- "LGlobe"
 end
-
--- ---- Stub: LGlobe:typeOf -------------------------------------------------
 --@api-stub: LGlobe:typeOf
 -- Returns whether this globe handle matches a supported type name.
 do

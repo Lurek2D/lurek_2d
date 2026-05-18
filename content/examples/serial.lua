@@ -1,7 +1,6 @@
 -- content/examples/serial.lua
 -- Demonstrates every lurek.serial.* function with realistic game-developer usage.
 -- Run: cargo run -- content/examples/serial.lua
-
 --@api-stub: lurek.serial.fromJson
 -- Parses a JSON string into a Lua table
 do
@@ -13,7 +12,6 @@ do
   lurek.log.info("Player: " .. profile.username .. " (level " .. profile.level .. ")", "serial")
   lurek.log.info("First item: " .. profile.inventory[1], "serial")
 end
-
 --@api-stub: lurek.serial.toJson
 -- Serializes a Lua value into a JSON string
 do
@@ -29,7 +27,6 @@ do
   local pretty = lurek.serial.toJson(save_data, true)
   lurek.log.info("Compact length: " .. #compact .. " Pretty length: " .. #pretty, "serial")
 end
-
 --@api-stub: lurek.serial.fromToml
 -- Parses a TOML string into a Lua table
 do
@@ -54,7 +51,6 @@ max_enemies = 50
   lurek.log.info("Window: " .. cfg.window.width .. "x" .. cfg.window.height, "serial")
   lurek.log.info("Difficulty: " .. cfg.gameplay.difficulty, "serial")
 end
-
 --@api-stub: lurek.serial.toToml
 -- Serializes a Lua table into a TOML-formatted string
 do
@@ -69,7 +65,6 @@ do
   -- The result can be written to a .toml file via lurek.filesystem
   lurek.log.info("Generated config:\n" .. toml_output, "serial")
 end
-
 --@api-stub: lurek.serial.fromIni
 -- Parses an INI-format string into a Lua table
 do
@@ -90,7 +85,6 @@ fullscreen=true
   lurek.log.info("Character: " .. cfg.player.name .. " (" .. cfg.player.class .. ")", "serial")
   lurek.log.info("Resolution: " .. cfg.display.resolution, "serial")
 end
-
 --@api-stub: lurek.serial.fromCsv
 -- Parses a CSV string into an array of row tables
 do
@@ -108,7 +102,6 @@ do
   local scores = lurek.serial.fromCsv(tsv, ";")
   lurek.log.info("Top scorer: " .. scores[1].name .. " = " .. scores[1].score, "serial")
 end
-
 --@api-stub: lurek.serial.toCsv
 -- Serializes an array of row tables into a CSV-formatted string
 do
@@ -127,7 +120,6 @@ do
   local csv_semi = lurek.serial.toCsv(scores, ";")
   lurek.log.info("Semicolon variant:\n" .. csv_semi, "serial")
 end
-
 --@api-stub: lurek.serial.encodeMsgPack
 -- Encodes a Lua table into compact binary MessagePack
 do
@@ -147,7 +139,6 @@ do
   -- Compare sizes: msgpack is typically 30-50% smaller than JSON
   lurek.log.info("MsgPack: " .. #bytes .. " bytes, JSON: " .. #json_equivalent .. " bytes", "serial")
 end
-
 --@api-stub: lurek.serial.decodeMsgPack
 -- Decodes a binary MessagePack string back into a Lua table
 do
@@ -160,7 +151,6 @@ do
   lurek.log.info("Restored: level=" .. restored.level .. " at (" .. restored.player_x .. "," .. restored.player_y .. ")", "serial")
   lurek.log.info("Items: " .. restored.items[1] .. ", " .. restored.items[2], "serial")
 end
-
 --@api-stub: lurek.serial.decodeXml
 -- Parses an XML string into a nested Lua table structure
 do
@@ -183,7 +173,6 @@ do
     lurek.log.info("First child: <" .. first_child.tag .. "> name=" .. tostring(first_child.attrs.name), "serial")
   end
 end
-
 --@api-stub: lurek.serial.validate
 -- Validates a Lua value against a schema table
 do
@@ -207,7 +196,6 @@ do
 
   -- Use validate before loading untrusted user data to prevent corrupted state
 end
-
 --@api-stub: lurek.serial.detectFormat
 -- Auto-detects the serialization format of a string
 do
@@ -226,7 +214,6 @@ do
     lurek.log.info("Detected: " .. tostring(detected) .. " for: " .. sample:sub(1, 20) .. "...", "serial")
   end
 end
-
 --@api-stub: lurek.serial.decode
 -- Universal decoder that auto-detects or uses a format hint
 do
@@ -243,7 +230,6 @@ do
   local csv_data = lurek.serial.decode("name;score\nAda;99\n", "csv", { delimiter = ";", has_headers = true })
   lurek.log.info("CSV: " .. csv_data[1].name .. "=" .. csv_data[1].score, "serial")
 end
-
 --@api-stub: lurek.serial.encode
 -- Universal encoder that serializes to a specified format
 do
@@ -266,7 +252,6 @@ do
   local bin = lurek.serial.encode({ tick = 999, alive = true }, "msgpack")
   lurek.log.info("MsgPack bytes: " .. #bin, "serial")
 end
-
 --@api-stub: lurek.serial.applyDefaults
 -- Merges schema defaults into a data table without overwriting existing values
 do
@@ -291,5 +276,4 @@ do
   lurek.log.info("Lang: " .. complete.language, "serial")         -- "en" (default)
   lurek.log.info("Fullscreen: " .. tostring(complete.fullscreen), "serial") -- false (default)
 end
-
 print("content/examples/serial.lua")

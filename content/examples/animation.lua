@@ -1,11 +1,6 @@
 -- content/examples/animation.lua
 -- lurek.animation API examples.
 -- Run: cargo run -- content/examples/animation.lua
-
--- =============================================================================
--- Module-level constructors
--- =============================================================================
-
 --@api-stub: lurek.animation.new
 -- Creates an empty animation with no frames or clips
 do
@@ -26,7 +21,6 @@ do
   -- Start playing the clip by name. Returns false if the clip does not exist.
   hero:play("idle")
 end
-
 --@api-stub: lurek.animation.fromAseprite
 -- Loads an animation from an Aseprite JSON export string
 do
@@ -41,7 +35,6 @@ do
   -- After loading, clips are ready to play by their Aseprite tag name.
   hero:play("walk")
 end
-
 --@api-stub: lurek.animation.newStateMachine
 -- Creates an animation state machine by consuming an animation handle
 do
@@ -60,7 +53,6 @@ do
   fsm:addState("run", "run", true)
   fsm:addTransition("idle", "run", "speed > 0.5")
 end
-
 --@api-stub: lurek.animation.newCurve
 -- Creates an empty animation curve
 do
@@ -76,7 +68,6 @@ do
   local current = zoom:eval(0.75)
   lurek.log.info("camera zoom at t=0.75 -> " .. current, "anim")
 end
-
 --@api-stub: lurek.animation.newSyncGroup
 -- Creates an empty animation synchronization group
 do
@@ -89,7 +80,6 @@ do
   squad:add(2 --[[@as table]])
   lurek.log.info("synced animations: " .. squad:memberCount(), "anim")
 end
-
 --@api-stub: lurek.animation.newBlendLayerSet
 -- Creates an empty blend layer set for layered animation playback
 do
@@ -105,7 +95,6 @@ do
   -- With a bone mask, only listed bones are affected by this layer.
   bls:addLayer("upper", "aim", 0.8, {"spine", "arm_r", "arm_l"})
 end
-
 --@api-stub: lurek.animation.buildCharacter
 -- Builds a complete character animation bundle from a configuration table
 do
@@ -145,11 +134,6 @@ do
     lurek.log.info("FSM initial state: " .. (bundle.stateMachine --[[@as LAnimStateMachine]]):getState(), "anim")
   end
 end
-
--- =============================================================================
--- LAnimation methods — frame and clip management
--- =============================================================================
-
 --@api-stub: LAnimation:addFrame
 -- Adds a frame to this animation.
 do
@@ -160,7 +144,6 @@ do
   local idx1 = anim:addFrame(48, 0, 48, 64)   -- second frame in row
   lurek.log.debug("added frames at indices " .. idx0 .. ", " .. idx1, "anim")
 end
-
 --@api-stub: LAnimation:addFramesFromRects
 -- Adds a frames from rects to this animation.
 do
@@ -174,7 +157,6 @@ do
   })
   lurek.log.debug("added " .. tostring(added) .. " irregular frames", "anim")
 end
-
 --@api-stub: LAnimation:addFramesFromGrid
 -- Adds a frames from grid to this animation.
 do
@@ -188,7 +170,6 @@ do
   local n = anim:addFramesFromGrid(256, 64, 32, 32, 0, 8)
   lurek.log.info("imported " .. n .. " grid frames", "anim")
 end
-
 --@api-stub: LAnimation:addClip
 -- Adds a clip to this animation.
 do
@@ -209,7 +190,6 @@ do
   anim:play("walk")
   lurek.log.info("clip count: " .. anim:getClipCount(), "anim")
 end
-
 --@api-stub: LAnimation:addClipFromGrid
 -- Adds a clip from grid to this animation.
 do
@@ -225,11 +205,6 @@ do
   anim:addClipFromGrid("run", 128, 128, 32, 32, 4, 4, 10, true)
   anim:play("run")
 end
-
--- =============================================================================
--- LAnimation methods — playback control
--- =============================================================================
-
 --@api-stub: LAnimation:play
 -- Starts playback of on this animation.
 do
@@ -246,7 +221,6 @@ do
     lurek.log.warn("clip 'walk' not registered — check spritesheet setup", "anim")
   end
 end
-
 --@api-stub: LAnimation:stop
 -- Stops the current operation or playback on this animation.
 do
@@ -260,7 +234,6 @@ do
   -- Stop when the character reaches a cutscene trigger.
   anim:stop()
 end
-
 --@api-stub: LAnimation:pause
 -- Pauses the current operation or playback on this animation.
 do
@@ -275,7 +248,6 @@ do
   -- Game paused — freeze all animations in place.
   anim:pause()
 end
-
 --@api-stub: LAnimation:resume
 -- Resumes a previously paused operation or playback on this animation.
 do
@@ -290,7 +262,6 @@ do
   -- Player unpauses the game.
   anim:resume()
 end
-
 --@api-stub: LAnimStateMachine:update
 -- Advances this animation by the given delta time.
 do
@@ -307,7 +278,6 @@ do
     anim:update(dt)
   end
 end
-
 --@api-stub: LAnimation:crossfade
 -- Performs the crossfade operation on this animation.
 do
@@ -327,11 +297,6 @@ do
     lurek.log.info("crossfade to 'run' started (0.25s blend)", "anim")
   end
 end
-
--- =============================================================================
--- LAnimation methods — query state
--- =============================================================================
-
 --@api-stub: LAnimStateMachine:getQuad
 -- Returns the quad of this animation.
 do
@@ -350,7 +315,6 @@ do
     lurek.log.debug("drawing frame at (" .. q.x .. "," .. q.y .. ") size " .. q.w .. "x" .. q.h, "anim")
   end
 end
-
 --@api-stub: LAnimation:pollEvents
 -- Performs the poll events operation on this animation.
 do
@@ -375,7 +339,6 @@ do
     end
   end
 end
-
 --@api-stub: LAnimation:isPlaying
 -- Returns true if this animation playing.
 do
@@ -392,7 +355,6 @@ do
     lurek.log.debug("swing in progress — ignoring movement input", "combat")
   end
 end
-
 --@api-stub: LAnimation:isLooping
 -- Returns true if this animation looping.
 do
@@ -409,7 +371,6 @@ do
     lurek.log.debug("current clip loops — no need to poll for end", "anim")
   end
 end
-
 --@api-stub: LAnimation:getClip
 -- Returns the clip of this animation.
 do
@@ -426,7 +387,6 @@ do
     lurek.log.debug("character is running", "anim")
   end
 end
-
 --@api-stub: LAnimation:getSpeed
 -- Returns the speed of this animation.
 do
@@ -440,7 +400,6 @@ do
   local original = anim:getSpeed()
   lurek.log.debug("current speed multiplier: " .. original, "anim")
 end
-
 --@api-stub: LAnimation:setSpeed
 -- Sets the speed of this animation.
 do
@@ -460,7 +419,6 @@ do
   -- Slow motion: half speed for dramatic effect.
   anim:setSpeed(0.5)
 end
-
 --@api-stub: LAnimation:getFrameCount
 -- Returns the number of frame items in this animation.
 do
@@ -475,7 +433,6 @@ do
     lurek.log.error("expected 3 frames in the pool", "anim")
   end
 end
-
 --@api-stub: LAnimation:getClipCount
 -- Returns the number of clip items in this animation.
 do
@@ -488,7 +445,6 @@ do
 
   lurek.log.info("registered " .. anim:getClipCount() .. " clips", "anim")
 end
-
 --@api-stub: LAnimation:getCurrentFrame
 -- Returns the current frame of this animation.
 do
@@ -506,7 +462,6 @@ do
     lurek.log.info("slash contact frame — deal damage now", "combat")
   end
 end
-
 --@api-stub: LAnimation:setFrame
 -- Sets the frame of this animation.
 do
@@ -522,7 +477,6 @@ do
   -- Skip to the last frame instantly (door already open on level load).
   anim:setFrame(2)
 end
-
 --@api-stub: LAnimation:getBlendState
 -- Returns the blend state of this animation.
 do
@@ -544,7 +498,6 @@ do
     lurek.log.debug("crossfade progress: " .. string.format("%.0f%%", bs.blend * 100), "anim")
   end
 end
-
 --@api-stub: LAnimation:drawToImage
 -- Draws or renders this animation to the current render target.
 do
@@ -561,7 +514,6 @@ do
     lurek.log.info("generated thumbnail: " .. tostring(thumbnail), "anim")
   end)
 end
-
 --@api-stub: LAnimation:drawPreviewGrid
 -- Draws a debug grid of all frames in this animation atlas at the given position and scale.
 do
@@ -575,7 +527,6 @@ do
   local preview = anim:drawPreviewGrid(4, 24)
   lurek.log.info("preview grid generated: " .. tostring(preview), "anim")
 end
-
 --@api-stub: LAnimation:getClipMode
 -- Returns the current clip mode string, either "loop", "once", or "pingpong".
 do
@@ -589,7 +540,6 @@ do
   local mode = anim:getClipMode("walk")
   lurek.log.debug("walk clip mode: " .. tostring(mode), "anim")  -- "pingpong"
 end
-
 --@api-stub: LAnimation:setClipMode
 -- Sets the clip playback mode to "loop", "once", or "pingpong" for this animation.
 do
@@ -604,7 +554,6 @@ do
   anim:setClipMode("idle", "pingpong")
   lurek.log.info("idle mode now: " .. tostring(anim:getClipMode("idle")), "anim")
 end
-
 --@api-stub: LAnimSyncGroup:type
 -- Returns the Lua-visible type name for this animation handle
 do
@@ -612,7 +561,6 @@ do
   local t = anim:type()
   lurek.log.info("LAnimation:type = " .. t, "animation")  -- "LAnimation"
 end
-
 --@api-stub: LAnimSyncGroup:typeOf
 -- Returns whether this animation handle matches a supported type name
 do
@@ -622,11 +570,6 @@ do
   lurek.log.info("is Object: " .. tostring(anim:typeOf("Object")), "animation")
   lurek.log.info("is wrong: " .. tostring(anim:typeOf("Unknown")), "animation")
 end
-
--- =============================================================================
--- LAnimStateMachine methods
--- =============================================================================
-
 --@api-stub: LAnimStateMachine:addState
 -- Adds a state to this anim state machine.
 do
@@ -644,7 +587,6 @@ do
   fsm:addState("run", "run", true)     -- loops
   fsm:addState("death", "death", false) -- plays once, stays on last frame
 end
-
 --@api-stub: LAnimStateMachine:addTransition
 -- Adds a transition to this anim state machine.
 do
@@ -665,7 +607,6 @@ do
   -- When "speed" drops below 0.1, transition back to idle.
   fsm:addTransition("run", "idle", "speed < 0.1")
 end
-
 --@api-stub: LAnimStateMachine:update
 -- Advances this anim state machine by the given delta time.
 do
@@ -682,7 +623,6 @@ do
     fsm:update(dt)
   end
 end
-
 --@api-stub: LAnimStateMachine:getState
 -- Returns the state of this anim state machine.
 do
@@ -699,7 +639,6 @@ do
     lurek.log.debug("character is idle", "anim")
   end
 end
-
 --@api-stub: LAnimStateMachine:forceState
 -- Performs the force state operation on this anim state machine.
 do
@@ -718,7 +657,6 @@ do
     lurek.log.error("'dead' state not registered", "anim")
   end
 end
-
 --@api-stub: LAnimStateMachine:setParam
 -- Sets the param of this anim state machine.
 do
@@ -742,7 +680,6 @@ do
     fsm:update(dt)
   end
 end
-
 --@api-stub: LAnimStateMachine:getQuad
 -- Returns the quad of this anim state machine.
 do
@@ -763,7 +700,6 @@ do
     end
   end
 end
-
 --@api-stub: LAnimSyncGroup:type
 -- Returns the Lua-visible type name for this animation state machine handle
 do
@@ -771,7 +707,6 @@ do
   local t = fsm:type()
   lurek.log.info("LAnimStateMachine:type = " .. t, "animation")  -- "LAnimStateMachine"
 end
-
 --@api-stub: LAnimSyncGroup:typeOf
 -- Returns whether this animation state machine handle matches a supported type name
 do
@@ -780,11 +715,6 @@ do
   lurek.log.info("is Object: " .. tostring(fsm:typeOf("Object")), "animation")
   lurek.log.info("is wrong: " .. tostring(fsm:typeOf("Unknown")), "animation")
 end
-
--- =============================================================================
--- LBlendLayerSet methods
--- =============================================================================
-
 --@api-stub: LBlendLayerSet:addLayer
 -- Adds a layer to this blend layer set.
 do
@@ -801,7 +731,6 @@ do
 
   lurek.log.info("blend layers: " .. bls:len(), "anim")
 end
-
 --@api-stub: LBlendLayerSet:removeLayer
 -- Removes a layer from this blend layer set.
 do
@@ -814,7 +743,6 @@ do
   bls:removeLayer("upper")
   lurek.log.info("layers after remove: " .. bls:len(), "anim")
 end
-
 --@api-stub: LBlendLayerSet:setWeight
 -- Sets the weight of this blend layer set.
 do
@@ -828,7 +756,6 @@ do
   local aim_strength = 0.7
   bls:setWeight("aim", aim_strength)
 end
-
 --@api-stub: LBlendLayerSet:getWeight
 -- Returns the weight of this blend layer set.
 do
@@ -841,7 +768,6 @@ do
     lurek.log.debug("aim layer is dominant (weight=" .. w .. ")", "anim")
   end
 end
-
 --@api-stub: LBlendLayerSet:setMask
 -- Sets the mask of this blend layer set.
 do
@@ -853,7 +779,6 @@ do
   -- Player switches to two-handed rifle — expand mask to both arms and spine.
   bls:setMask("aim", {"spine", "arm_l", "arm_r", "hand_l", "hand_r"})
 end
-
 --@api-stub: LBlendLayerSet:listLayers
 -- Performs the list layers operation on this blend layer set.
 do
@@ -867,7 +792,6 @@ do
     lurek.log.debug(layer.name .. " -> clip=" .. layer.clip_name .. " weight=" .. layer.weight, "anim")
   end
 end
-
 --@api-stub: LBlendLayerSet:len
 -- Performs the len operation on this blend layer set.
 do
@@ -882,7 +806,6 @@ do
     lurek.log.info("active blend layers: " .. bls:len(), "anim")
   end
 end
-
 --@api-stub: LAnimSyncGroup:type
 -- Returns the Lua-visible type name for this blend layer set handle
 do
@@ -890,7 +813,6 @@ do
   local t = bls:type()
   lurek.log.info("LBlendLayerSet:type = " .. t, "animation")  -- "LBlendLayerSet"
 end
-
 --@api-stub: LAnimSyncGroup:typeOf
 -- Returns whether this blend layer set handle matches a supported type name
 do
@@ -899,11 +821,6 @@ do
   lurek.log.info("is Object: " .. tostring(bls:typeOf("Object")), "animation")
   lurek.log.info("is wrong: " .. tostring(bls:typeOf("Unknown")), "animation")
 end
-
--- =============================================================================
--- LAnimCurve methods
--- =============================================================================
-
 --@api-stub: LAnimCurve:addKeyframe
 -- Adds a keyframe to this anim curve.
 do
@@ -917,7 +834,6 @@ do
   fade:addKeyframe(1.7, 1.0)   -- hold at full
   fade:addKeyframe(2.0, 0.0)   -- fade out at the end
 end
-
 --@api-stub: LAnimCurve:eval
 -- Performs the eval operation on this anim curve.
 do
@@ -932,7 +848,6 @@ do
   local alpha_75 = fade:eval(0.75)  -- approx 0.75
   lurek.log.info("alpha at 25%: " .. string.format("%.2f", alpha_25), "anim")
 end
-
 --@api-stub: LAnimCurve:setEasing
 -- Sets the easing of this anim curve.
 do
@@ -948,7 +863,6 @@ do
   -- "step" snaps to the next keyframe value — good for pixel-art frame timing.
   -- curve:setEasing("step")
 end
-
 --@api-stub: LAnimCurve:setCustomEasing
 -- Sets the custom easing of this anim curve.
 do
@@ -966,7 +880,6 @@ do
   -- Pass nil to remove custom easing and revert to the built-in mode.
   -- curve:setCustomEasing(nil)
 end
-
 --@api-stub: LAnimCurve:keyframeCount
 -- Performs the keyframe count operation on this anim curve.
 do
@@ -982,7 +895,6 @@ do
   curve:addKeyframe(1.0, 1.0)
   lurek.log.debug("keyframes: " .. curve:keyframeCount(), "anim")  -- 2
 end
-
 --@api-stub: LAnimSyncGroup:clear
 -- Clears all items from this anim curve.
 do
@@ -996,7 +908,6 @@ do
   curve:addKeyframe(0.0, 0.0)
   curve:addKeyframe(2.0, 1.0)  -- slower ramp for easier difficulty
 end
-
 --@api-stub: LAnimSyncGroup:type
 -- Returns the Lua-visible type name for this animation curve handle
 do
@@ -1004,7 +915,6 @@ do
   local t = curve:type()
   lurek.log.info("LAnimCurve:type = " .. t, "animation")  -- "LAnimCurve"
 end
-
 --@api-stub: LAnimSyncGroup:typeOf
 -- Returns whether this animation curve handle matches a supported type name
 do
@@ -1013,11 +923,6 @@ do
   lurek.log.info("is Object: " .. tostring(curve:typeOf("Object")), "animation")
   lurek.log.info("is wrong: " .. tostring(curve:typeOf("Unknown")), "animation")
 end
-
--- =============================================================================
--- LAnimSyncGroup methods
--- =============================================================================
-
 --@api-stub: LAnimSyncGroup:add
 -- Adds a  to this anim sync group.
 do
@@ -1028,7 +933,6 @@ do
   squad:add(2 --[[@as table]])  -- soldier 2's animation handle
   squad:add(3 --[[@as table]])  -- soldier 3's animation handle
 end
-
 --@api-stub: LAnimSyncGroup:remove
 -- Removes a  from this anim sync group.
 do
@@ -1040,7 +944,6 @@ do
   -- Soldier 1 broke formation — unsync their animation.
   squad:remove(1 --[[@as table]])
 end
-
 --@api-stub: LAnimSyncGroup:clear
 -- Clears all items from this anim sync group.
 do
@@ -1053,7 +956,6 @@ do
   -- Battle ended — disband the synchronized formation.
   squad:clear()
 end
-
 --@api-stub: LAnimSyncGroup:memberCount
 -- Performs the member count operation on this anim sync group.
 do
@@ -1066,7 +968,6 @@ do
     lurek.log.info("synchronized squad size: " .. squad:memberCount(), "anim")
   end
 end
-
 --@api-stub: LAnimSyncGroup:type
 -- Returns the Lua-visible type name for this animation sync group handle
 do
@@ -1074,7 +975,6 @@ do
   local t = sg:type()
   lurek.log.info("LAnimSyncGroup:type = " .. t, "animation")  -- "LAnimSyncGroup"
 end
-
 --@api-stub: LAnimSyncGroup:typeOf
 -- Returns whether this animation sync group handle matches a supported type name
 do
@@ -1083,21 +983,7 @@ do
   lurek.log.info("is Object: " .. tostring(sg:typeOf("Object")), "animation")
   lurek.log.info("is wrong: " .. tostring(sg:typeOf("Unknown")), "animation")
 end
-
 print("content/examples/animation.lua")
-
--- =============================================================================
--- STUBS: 47 uncovered lurek.animation API item(s)
--- Generated by tools/audit/example_add_missing.py
--- REQUIRED: replace every --@api-stub: block below with a real scenario.
--- Run .github/prompts/flesh-out-example.prompt.md for instructions.
--- The final committed file must contain ZERO --@api-stub: lines.
--- =============================================================================
-
--- -----------------------------------------------------------------------------
--- LAnimCurve methods
--- -----------------------------------------------------------------------------
-
 --@api-stub: LAnimCurve:clear
 -- Removes all keyframes from this curve.
 do
@@ -1109,11 +995,6 @@ do
   curve:clear()
   lurek.log.info("curve cleared, ready for new keyframes", "anim")
 end
-
--- -----------------------------------------------------------------------------
--- LAnimStateMachine methods
--- -----------------------------------------------------------------------------
-
 --@api-stub: LAnimation:update
 -- Advances animation playback and records any frame or clip events.
 do
@@ -1127,7 +1008,6 @@ do
   anim:update(0.016)
   lurek.log.debug("animation advanced by 16ms", "anim")
 end
-
 --@api-stub: LAnimation:getQuad
 -- Returns the current frame rectangle as a table.
 do
@@ -1143,40 +1023,18 @@ do
     lurek.log.debug("frame rect: " .. q.x .. "," .. q.y .. " " .. q.w .. "x" .. q.h, "anim")
   end
 end
-
--- =============================================================================
--- STUBS: 8 uncovered lurek.animation API item(s)
--- Generated by tools/audit/example_add_missing.py
--- REQUIRED: replace every --@api-stub: block below with a real scenario.
--- Run .github/prompts/flesh-out-example.prompt.md for instructions.
--- The final committed file must contain ZERO --@api-stub: lines.
--- =============================================================================
-
--- -----------------------------------------------------------------------------
--- LAnimCurve methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LAnimCurve:type -----------------------------------------------
 --@api-stub: LAnimCurve:type
 -- Returns the Lua-visible type name for this animation curve handle.
 do
   local obj = lurek.animation.newCurve()
   lurek.log.debug("type: " .. obj:type(), "example") -- "LAnimCurve"
 end
-
--- ---- Stub: LAnimCurve:typeOf ---------------------------------------------
 --@api-stub: LAnimCurve:typeOf
 -- Returns whether this animation curve handle matches a supported type name.
 do
   local obj = lurek.animation.newCurve()
   lurek.log.debug("typeOf LAnimCurve: " .. tostring(obj:typeOf("LAnimCurve")), "example") -- true
 end
-
--- -----------------------------------------------------------------------------
--- LAnimStateMachine methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LAnimStateMachine:type ----------------------------------------
 --@api-stub: LAnimStateMachine:type
 -- Returns the Lua-visible type name for this animation state machine handle.
 do
@@ -1184,8 +1042,6 @@ do
   local obj = lurek.animation.newStateMachine(anim, 'idle')
   lurek.log.debug("type: " .. obj:type(), "example") -- "LAnimStateMachine"
 end
-
--- ---- Stub: LAnimStateMachine:typeOf --------------------------------------
 --@api-stub: LAnimStateMachine:typeOf
 -- Returns whether this animation state machine handle matches a supported type name.
 do
@@ -1193,40 +1049,24 @@ do
   local obj = lurek.animation.newStateMachine(anim, 'idle')
   lurek.log.debug("typeOf LAnimStateMachine: " .. tostring(obj:typeOf("LAnimStateMachine")), "example") -- true
 end
-
--- -----------------------------------------------------------------------------
--- LAnimation methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LAnimation:type -----------------------------------------------
 --@api-stub: LAnimation:type
 -- Returns the Lua-visible type name for this animation handle.
 do
   local obj = lurek.animation.new()
   lurek.log.debug("type: " .. obj:type(), "example") -- "LAnimation"
 end
-
--- ---- Stub: LAnimation:typeOf ---------------------------------------------
 --@api-stub: LAnimation:typeOf
 -- Returns whether this animation handle matches a supported type name.
 do
   local obj = lurek.animation.new()
   lurek.log.debug("typeOf LAnimation: " .. tostring(obj:typeOf("LAnimation")), "example") -- true
 end
-
--- -----------------------------------------------------------------------------
--- LBlendLayerSet methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LBlendLayerSet:type -------------------------------------------
 --@api-stub: LBlendLayerSet:type
 -- Returns the Lua-visible type name for this blend layer set handle.
 do
   local obj = lurek.animation.newBlendLayerSet()
   lurek.log.debug("type: " .. obj:type(), "example") -- "LBlendLayerSet"
 end
-
--- ---- Stub: LBlendLayerSet:typeOf -----------------------------------------
 --@api-stub: LBlendLayerSet:typeOf
 -- Returns whether this blend layer set handle matches a supported type name.
 do

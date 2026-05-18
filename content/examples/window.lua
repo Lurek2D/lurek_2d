@@ -1,7 +1,6 @@
 -- content/examples/window.lua
 -- lurek.window API examples.
 -- Run: cargo run -- content/examples/window.lua
-
 --@api-stub: lurek.window.setTitle
 -- Sets the window title bar text
 do
@@ -15,7 +14,6 @@ do
     lurek.window.setTitle("My Game v" .. version .. " [DEBUG]")
   end
 end
-
 --@api-stub: lurek.window.getTitle
 -- Returns the current window title bar text
 do
@@ -28,7 +26,6 @@ do
     lurek.window.setTitle(base .. " [PAUSED]")
   end
 end
-
 --@api-stub: lurek.window.getWidth
 -- Returns the current window width in logical (DPI-independent) pixels
 do
@@ -39,7 +36,6 @@ do
   local centre_x = w * 0.5
   lurek.log.info("hud centre x=" .. centre_x .. " (window width " .. w .. "px)", "ui")
 end
-
 --@api-stub: lurek.window.getHeight
 -- Returns the current window height in logical (DPI-independent) pixels
 do
@@ -49,7 +45,6 @@ do
   local hud_y = h - 48
   lurek.log.info("hud anchored at y=" .. hud_y, "ui")
 end
-
 --@api-stub: lurek.window.getDimensions
 -- Returns the current window width and height in logical pixels
 do
@@ -60,7 +55,6 @@ do
   -- Aspect ratio is useful for deciding UI layout (wide vs narrow)
   lurek.log.info("window " .. w .. "x" .. h .. " aspect=" .. string.format("%.2f", aspect), "boot")
 end
-
 --@api-stub: lurek.window.setFullscreen
 -- Enables or disables fullscreen mode
 do
@@ -79,7 +73,6 @@ do
     end
   end
 end
-
 --@api-stub: lurek.window.getFullscreen
 -- Returns the current fullscreen state and type
 do
@@ -92,7 +85,6 @@ do
     lurek.log.info("running windowed", "video")
   end
 end
-
 --@api-stub: lurek.window.isOpen
 -- Returns whether the window is currently open
 do
@@ -102,7 +94,6 @@ do
     lurek.log.info("window is live, starting subsystems", "boot")
   end
 end
-
 --@api-stub: lurek.window.setVSync
 -- Sets the vertical sync mode
 do
@@ -118,7 +109,6 @@ do
     lurek.window.setVSync(1)   -- standard sync for gameplay
   end
 end
-
 --@api-stub: lurek.window.getVSync
 -- Returns the current VSync mode
 do
@@ -128,7 +118,6 @@ do
   local label = labels[mode] or "Unknown"
   lurek.log.info("VSync: " .. label, "video")
 end
-
 --@api-stub: lurek.window.hasFocus
 -- Returns whether the window currently has keyboard focus
 do
@@ -141,7 +130,6 @@ do
     -- ... normal game logic here ...
   end
 end
-
 --@api-stub: lurek.window.hasMouseFocus
 -- Returns whether the mouse cursor is inside the window
 do
@@ -154,7 +142,6 @@ do
     end
   end
 end
-
 --@api-stub: lurek.window.isMinimized
 -- Returns whether the window is currently minimized to the taskbar
 do
@@ -167,7 +154,6 @@ do
     -- ... render game world ...
   end
 end
-
 --@api-stub: lurek.window.isMaximized
 -- Returns whether the window is currently maximized
 do
@@ -177,7 +163,6 @@ do
     lurek.log.info("window starts maximized - using full-width layout", "boot")
   end
 end
-
 --@api-stub: lurek.window.isVisible
 -- Returns whether the window is currently visible on screen
 do
@@ -190,7 +175,6 @@ do
     -- ... render scene ...
   end
 end
-
 --@api-stub: lurek.window.minimize
 -- Minimizes the window to the taskbar
 do
@@ -201,7 +185,6 @@ do
     end
   end
 end
-
 --@api-stub: lurek.window.maximize
 -- Maximizes the window to fill the screen
 do
@@ -211,7 +194,6 @@ do
     lurek.window.maximize()
   end
 end
-
 --@api-stub: lurek.window.restore
 -- Restores the window from minimized or maximized state to its previous size and position
 do
@@ -223,7 +205,6 @@ do
     lurek.window.setMode(1280, 720)
   end
 end
-
 --@api-stub: lurek.window.getPosition
 -- Returns the window position on screen in pixels
 do
@@ -235,7 +216,6 @@ do
     -- In a real game, write x,y to a config file here
   end
 end
-
 --@api-stub: lurek.window.setPosition
 -- Moves the window to the specified screen position
 do
@@ -247,7 +227,6 @@ do
     lurek.window.setPosition(saved_x, saved_y)
   end
 end
-
 --@api-stub: lurek.window.getDisplayCount
 -- Returns the number of connected displays (monitors)
 do
@@ -257,7 +236,6 @@ do
     lurek.log.info("multi-monitor setup detected (" .. n .. " displays)", "video")
   end
 end
-
 --@api-stub: lurek.window.getDesktopDimensions
 -- Returns the desktop resolution of a specific display, or the current display if none is specified
 do
@@ -269,7 +247,6 @@ do
   local want_h = math.min(720, math.floor(dh * 0.8))
   lurek.window.setMode(want_w, want_h)
 end
-
 --@api-stub: lurek.window.getDPIScale
 -- Returns the current DPI scale factor of the window
 do
@@ -279,7 +256,6 @@ do
   local font_px = math.floor(16 * s + 0.5)
   lurek.log.info("font size scaled to " .. font_px .. "px (dpi scale=" .. s .. ")", "ui")
 end
-
 --@api-stub: lurek.window.toPixels
 -- Converts a value from logical (DPI-independent) units to physical pixel units using the current DPI scale
 do
@@ -289,7 +265,6 @@ do
   local pixel_size = lurek.window.toPixels(logical_size)
   lurek.log.info("64 logical units = " .. pixel_size .. " physical pixels", "ui")
 end
-
 --@api-stub: lurek.window.fromPixels
 -- Converts a value from physical pixel units to logical (DPI-independent) units using the current DPI scale
 do
@@ -299,7 +274,6 @@ do
   local logical_dx = lurek.window.fromPixels(mouse_dx_pixels)
   lurek.log.info("mouse moved " .. logical_dx .. " logical units", "input")
 end
-
 --@api-stub: lurek.window.setIcon
 -- Sets the window icon from an image file
 do
@@ -310,7 +284,6 @@ do
     lurek.window.setIcon("assets/icon.png")
   end
 end
-
 --@api-stub: lurek.window.setMode
 -- Sets the window display mode with a specific resolution and optional flags
 do
@@ -324,7 +297,6 @@ do
     })
   end
 end
-
 --@api-stub: lurek.window.getMode
 -- Returns the current window display mode: width, height, and a flags table containing fullscreen state, fullscreen type, and VSync mode
 do
@@ -339,7 +311,6 @@ do
     "video"
   )
 end
-
 --@api-stub: lurek.window.windowConfig
 -- Applies multiple window settings at once from a configuration table
 do
@@ -359,7 +330,6 @@ do
     display = 0,
   })
 end
-
 --@api-stub: lurek.window.close
 -- Closes the window and signals the engine to shut down
 do
@@ -371,7 +341,6 @@ do
     end
   end
 end
-
 --@api-stub: lurek.window.requestAttention
 -- Requests user attention by flashing the taskbar icon
 do
@@ -382,7 +351,6 @@ do
     lurek.window.requestAttention()
   end
 end
-
 --@api-stub: lurek.window.getFullscreenModes
 -- Returns a list of all supported fullscreen video modes across all monitors
 do
@@ -397,7 +365,6 @@ do
     if i >= 5 then break end -- limit output for demo
   end
 end
-
 --@api-stub: lurek.window.getDisplayName
 -- Returns the human-readable name of a display
 do
@@ -406,7 +373,6 @@ do
   local name = lurek.window.getDisplayName()
   lurek.log.info("running on display: " .. name, "video")
 end
-
 --@api-stub: lurek.window.getPixelDimensions
 -- Returns the window dimensions in actual physical pixels, accounting for DPI scaling
 do
@@ -415,7 +381,6 @@ do
   local pw, ph = lurek.window.getPixelDimensions()
   lurek.log.info("backbuffer " .. pw .. "x" .. ph .. " physical pixels", "video")
 end
-
 --@api-stub: lurek.window.focus
 -- Requests keyboard focus for the window
 do
@@ -425,7 +390,6 @@ do
     lurek.window.focus()
   end
 end
-
 --@api-stub: lurek.window.getNativeDPIScale
 -- Returns the native DPI scale factor reported by the operating system
 do
@@ -436,7 +400,6 @@ do
     lurek.log.info("HiDPI screen detected (native scale " .. native .. "x)", "video")
   end
 end
-
 --@api-stub: lurek.window.getDisplayOrientation
 -- Returns the display orientation based on the window's aspect ratio
 do
@@ -445,7 +408,6 @@ do
   local orient = lurek.window.getDisplayOrientation()
   lurek.log.info("layout mode: " .. orient, "ui")
 end
-
 --@api-stub: lurek.window.getSafeArea
 -- Returns the safe drawing area of the window
 do
@@ -454,7 +416,6 @@ do
   local x, y, w, h = lurek.window.getSafeArea()
   lurek.log.info("safe area " .. w .. "x" .. h .. " at (" .. x .. "," .. y .. ")", "ui")
 end
-
 --@api-stub: lurek.window.getSystemTheme
 -- Returns the operating system's current color theme
 do
@@ -466,7 +427,6 @@ do
     or { 0.95, 0.95, 0.96, 1 }
   lurek.log.info("system theme=" .. theme, "ui")
 end
-
 --@api-stub: lurek.window.isHighDPIAllowed
 -- Returns whether high-DPI rendering is allowed
 do
@@ -476,7 +436,6 @@ do
     lurek.log.info("HiDPI rendering enabled - expect higher GPU load", "video")
   end
 end
-
 --@api-stub: lurek.window.getScaleInfo
 -- Returns detailed scaling information including scale factors, offsets, and logical game dimensions
 do
@@ -493,7 +452,6 @@ do
     "video"
   )
 end
-
 --@api-stub: lurek.window.getScaleMode
 -- Returns the current content scale mode name
 do
@@ -502,7 +460,6 @@ do
   local mode = lurek.window.getScaleMode()
   lurek.log.info("viewport scale mode: " .. mode, "video")
 end
-
 --@api-stub: lurek.window.setScaleMode
 -- Sets the content scale mode
 do
@@ -514,7 +471,6 @@ do
     lurek.window.setScaleMode("letterbox")
   end
 end
-
 --@api-stub: lurek.window.getGameWidth
 -- Returns the logical game width as defined by the current scale mode and game configuration
 do
@@ -524,7 +480,6 @@ do
   local centre = gw * 0.5
   lurek.log.info("game width " .. gw .. " centre=" .. centre, "ui")
 end
-
 --@api-stub: lurek.window.getGameHeight
 -- Returns the logical game height as defined by the current scale mode and game configuration
 do
@@ -534,7 +489,6 @@ do
   local hud_y = gh - 32
   lurek.log.info("hud baseline at game-y=" .. hud_y, "ui")
 end
-
 --@api-stub: lurek.window.isFullscreen
 -- Returns whether the window is currently in fullscreen mode
 do
@@ -544,7 +498,6 @@ do
     lurek.log.info("fullscreen mode active", "video")
   end
 end
-
 --@api-stub: lurek.window.isResizable
 -- Returns whether the window can be resized by the user
 do
@@ -554,7 +507,6 @@ do
     lurek.log.info("resolution picker disabled (window is non-resizable)", "ui")
   end
 end
-
 --@api-stub: lurek.window.onDpiChange
 -- Registers a callback function that is called whenever the DPI scale factor changes
 do
@@ -568,7 +520,6 @@ do
     end)
   end
 end
-
 --@api-stub: lurek.window.pollDpiChange
 -- Checks if the DPI scale has changed since the last poll and fires the onDpiChange callback if so
 do
@@ -582,7 +533,6 @@ do
     end
   end
 end
-
 --@api-stub: lurek.window.openFileDialog
 -- Opens a native file picker dialog and returns the selected file paths (non-headless)
 do

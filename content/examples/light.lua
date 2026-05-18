@@ -1,7 +1,6 @@
 -- content/examples/light.lua
 -- Comprehensive lurek.light API examples: 2D lighting, shadows, occluders, flicker, transitions, cookies, and normal maps.
 -- Run: cargo run -- content/examples/light.lua
-
 --@api-stub: lurek.light.newLight
 -- Creates a light and applies optional light settings
 do
@@ -22,7 +21,6 @@ do
   torch:setBlendMode("add")
   lurek.log.info("torch lit at (200, 150) radius=180", "light")
 end
-
 --@api-stub: lurek.light.newOccluder
 -- Creates an occluder from a flat vertex coordinate table and optional settings
 do
@@ -37,7 +35,6 @@ do
   -- useful for curtains, frosted glass, or thin wooden fences.
   wall:setEnabled(true)
 end
-
 --@api-stub: lurek.light.setAmbient
 -- Sets global ambient light color
 do
@@ -47,7 +44,6 @@ do
   lurek.light.setAmbient(0.15, 0.18, 0.30, 1.0)  -- deep dusk blue for a nighttime scene
   lurek.log.info("ambient set to dusk blue", "light")
 end
-
 --@api-stub: lurek.light.getAmbient
 -- Returns global ambient light color
 do
@@ -58,7 +54,6 @@ do
     lurek.log.info("scene is dark — consider spawning extra torches", "light")
   end
 end
-
 --@api-stub: LOccluder:setEnabled
 -- Enables or disables the shared light world
 do
@@ -67,7 +62,6 @@ do
   local cinematic_mode = false
   lurek.light.setEnabled(not cinematic_mode)
 end
-
 --@api-stub: LOccluder:isEnabled
 -- Returns whether the shared light world is enabled
 do
@@ -76,7 +70,6 @@ do
     lurek.log.info("lighting system active", "light")
   end
 end
-
 --@api-stub: lurek.light.getLightCount
 -- Returns the number of live lights
 do
@@ -86,7 +79,6 @@ do
     lurek.log.warn("scene has " .. n .. " lights — may exceed GPU budget", "perf")
   end
 end
-
 --@api-stub: lurek.light.getOccluderCount
 -- Returns the number of live occluders
 do
@@ -94,7 +86,6 @@ do
   local n = lurek.light.getOccluderCount()
   lurek.log.info("active occluders: " .. n, "light")
 end
-
 --@api-stub: lurek.light.getMaxLights
 -- Returns the maximum configured light count
 do
@@ -105,7 +96,6 @@ do
     lurek.light.setMaxLights(64)  -- raise for levels with many torch sconces
   end
 end
-
 --@api-stub: lurek.light.setMaxLights
 -- Sets the maximum configured light count, clamped to 1 through 256
 do
@@ -115,7 +105,6 @@ do
   local cap = (quality == "high") and 128 or 32
   lurek.light.setMaxLights(cap)
 end
-
 --@api-stub: lurek.light.clear
 -- Removes all lights and occluders from the light world
 do
@@ -124,7 +113,6 @@ do
   lurek.light.clear()
   lurek.log.info("light world reset for new scene", "light")
 end
-
 --@api-stub: lurek.light.setGroupEnabled
 -- Enables or disables all lights in a group
 do
@@ -133,7 +121,6 @@ do
   local TORCHES_GROUP = 1
   lurek.light.setGroupEnabled(TORCHES_GROUP, false)  -- all group-1 torches go dark
 end
-
 --@api-stub: lurek.light.setGroupIntensity
 -- Sets intensity for all lights in a group
 do
@@ -141,7 +128,6 @@ do
   local STREETLAMPS = 2
   lurek.light.setGroupIntensity(STREETLAMPS, 0.6)  -- dim to 60%
 end
-
 --@api-stub: lurek.light.setGroupColor
 -- Sets color for all lights in a group
 do
@@ -149,7 +135,6 @@ do
   local ALARM_LIGHTS = 3
   lurek.light.setGroupColor(ALARM_LIGHTS, 1.0, 0.1, 0.1, 1.0)  -- intense red
 end
-
 --@api-stub: lurek.light.getGroupCount
 -- Returns the number of lights in a group
 do
@@ -158,7 +143,6 @@ do
   local n = lurek.light.getGroupCount(TORCHES_GROUP)
   lurek.log.info("torches group has " .. n .. " lights", "light")
 end
-
 --@api-stub: lurek.light.advanceFlickers
 -- Advances flicker animation for all indexed flickering lights
 do
@@ -166,7 +150,6 @@ do
   -- This updates intensity modulation for every light that has flicker enabled.
   function lurek.process(dt) lurek.light.advanceFlickers(dt) end
 end
-
 --@api-stub: lurek.light.syncAmbient
 -- Returns the light world's ambient color hint
 do
@@ -177,7 +160,6 @@ do
   local fog_tint = { r * 0.8, g * 0.8, b * 0.8, a }
   lurek.log.debug("fog tint=(" .. fog_tint[1] .. "," .. fog_tint[2] .. ")", "fx")
 end
-
 --@api-stub: lurek.light.getGodRayHints
 -- Returns directional light hints for god-ray style effects
 do
@@ -189,7 +171,6 @@ do
     lurek.log.debug("god-ray src x=" .. h.x .. " y=" .. h.y .. " angle=" .. h.angle, "fx")
   end
 end
-
 --@api-stub: lurek.light.getNormalMapHints
 -- Returns light hints that reference normal maps
 do
@@ -200,9 +181,6 @@ do
     lurek.log.debug("normal-map=" .. h.normalMap .. " strength=" .. h.strength, "fx")
   end
 end
-
--- Light methods
-
 --@api-stub: LOccluder:setPosition
 -- Sets the position of this light.
 do
@@ -212,7 +190,6 @@ do
   local player_x, player_y = 320, 240
   lamp:setPosition(player_x, player_y)
 end
-
 --@api-stub: LOccluder:getPosition
 -- Returns the position of this light.
 do
@@ -221,7 +198,6 @@ do
   local x, y = lamp:getPosition()
   lurek.log.info("lamp at (" .. x .. "," .. y .. ")", "light")
 end
-
 --@api-stub: LLight:setRadius
 -- Sets the radius of this light.
 do
@@ -231,7 +207,6 @@ do
   local battery_pct = 0.6  -- 60% battery remaining
   lantern:setRadius(40 + 80 * battery_pct)  -- range shrinks as battery dies
 end
-
 --@api-stub: LLight:getRadius
 -- Returns the radius of this light.
 do
@@ -241,7 +216,6 @@ do
     glow:setRadius(50)  -- ensure player can always see at least 50px around them
   end
 end
-
 --@api-stub: LLight:getColor
 -- Returns the color of this light.
 do
@@ -251,7 +225,6 @@ do
   local r, g, b, a = lamp:getColor()
   lurek.log.debug("lamp color=(" .. r .. "," .. g .. "," .. b .. "," .. a .. ")", "light")
 end
-
 --@api-stub: LLight:setIntensity
 -- Sets the intensity of this light.
 do
@@ -260,7 +233,6 @@ do
   local torch = lurek.light.newLight(0, 0, 120)
   torch:setIntensity(1.4)  -- 40% brighter than default
 end
-
 --@api-stub: LLight:getIntensity
 -- Returns the intensity of this light.
 do
@@ -270,7 +242,6 @@ do
     lurek.log.warn("lamp intensity very low — may be invisible to player", "light")
   end
 end
-
 --@api-stub: LLight:setEnergy
 -- Sets the energy of this light.
 do
@@ -279,7 +250,6 @@ do
   local sun = lurek.light.newLight(0, 0, 500)
   sun:setEnergy(2.5)  -- high energy for a bright sunbeam shaft
 end
-
 --@api-stub: LLight:getEnergy
 -- Returns the energy of this light.
 do
@@ -287,7 +257,6 @@ do
   local e = lamp:getEnergy()
   lurek.log.debug("lamp energy=" .. e, "light")
 end
-
 --@api-stub: LLight:setBlendMode
 -- Sets the blend mode of this light.
 do
@@ -297,7 +266,6 @@ do
   local glow = lurek.light.newLight(0, 0, 100)
   glow:setBlendMode("add")  -- neon sign glow added on top of scene
 end
-
 --@api-stub: LLight:getBlendMode
 -- Returns the blend mode of this light.
 do
@@ -306,7 +274,6 @@ do
     lamp:setBlendMode("add")  -- ensure additive for fire particles
   end
 end
-
 --@api-stub: LLight:setFalloff
 -- Sets the falloff of this light.
 do
@@ -316,7 +283,6 @@ do
   local lamp = lurek.light.newLight(0, 0, 100)
   lamp:setFalloff("smooth")  -- best default for indoor scenes
 end
-
 --@api-stub: LLight:getFalloff
 -- Returns the falloff of this light.
 do
@@ -324,7 +290,6 @@ do
   local mode = lamp:getFalloff()
   lurek.log.debug("falloff=" .. mode, "light")
 end
-
 --@api-stub: LLight:setShadowEnabled
 -- Enables or disables shadow casting for this light.
 do
@@ -333,7 +298,6 @@ do
   local torch = lurek.light.newLight(100, 100, 200)
   torch:setShadowEnabled(true)  -- this is the player's main light
 end
-
 --@api-stub: LLight:isShadowEnabled
 -- Returns whether this light casts shadows.
 do
@@ -343,7 +307,6 @@ do
     lamp:setShadowEnabled(true)
   end
 end
-
 --@api-stub: LLight:getShadowColor
 -- Returns the shadow color of this light.
 do
@@ -353,7 +316,6 @@ do
   local _, _, _, a = lamp:getShadowColor()
   lurek.log.debug("shadow alpha=" .. a, "light")
 end
-
 --@api-stub: LLight:setShadowFilter
 -- Sets the shadow filter of this light.
 do
@@ -363,7 +325,6 @@ do
   local lamp = lurek.light.newLight(0, 0, 100)
   lamp:setShadowFilter("pcf13")  -- high quality for hero light
 end
-
 --@api-stub: LLight:getShadowFilter
 -- Returns the shadow filter of this light.
 do
@@ -372,7 +333,6 @@ do
     lamp:setShadowFilter("pcf5")  -- upgrade from hard shadows
   end
 end
-
 --@api-stub: LLight:setShadowSmooth
 -- Sets the shadow smooth value of this light.
 do
@@ -381,7 +341,6 @@ do
   local lamp = lurek.light.newLight(0, 0, 100)
   lamp:setShadowSmooth(2.5)  -- moderate softening
 end
-
 --@api-stub: LLight:getShadowSmooth
 -- Returns the shadow smooth value of this light.
 do
@@ -389,7 +348,6 @@ do
   local s = lamp:getShadowSmooth()
   lurek.log.debug("shadow smooth=" .. s, "light")
 end
-
 --@api-stub: LLight:setShadowSoftness
 -- Sets the shadow softness of this light.
 do
@@ -398,14 +356,12 @@ do
   local lamp = lurek.light.newLight(0, 0, 100)
   lamp:setShadowSoftness(1.8)
 end
-
 --@api-stub: LLight:getShadowSoftness
 -- Returns the shadow softness of this light.
 do
   local lamp = lurek.light.newLight(0, 0, 100)
   lurek.log.debug("shadow softness=" .. lamp:getShadowSoftness(), "light")
 end
-
 --@api-stub: LOccluder:setLightMask
 -- Sets the light mask of this light.
 do
@@ -415,7 +371,6 @@ do
   local lamp = lurek.light.newLight(0, 0, 100)
   lamp:setLightMask(PLAYER_LAYER)  -- only lights the player layer
 end
-
 --@api-stub: LOccluder:getLightMask
 -- Returns the light mask of this light.
 do
@@ -423,7 +378,6 @@ do
   local mask = lamp:getLightMask()
   lurek.log.debug("lamp mask=" .. mask, "light")
 end
-
 --@api-stub: LLight:setShadowMask
 -- Sets the shadow mask of this light.
 do
@@ -433,7 +387,6 @@ do
   local lamp = lurek.light.newLight(0, 0, 100)
   lamp:setShadowMask(WALLS_ONLY)
 end
-
 --@api-stub: LLight:getShadowMask
 -- Returns the shadow mask of this light.
 do
@@ -442,7 +395,6 @@ do
     lamp:setShadowMask(0xFFFF)  -- receive shadows from all layers
   end
 end
-
 --@api-stub: LOccluder:setEnabled
 -- Enables or disables this light.
 do
@@ -452,7 +404,6 @@ do
   local power_on = false
   lamp:setEnabled(power_on)  -- light is off until player flips the switch
 end
-
 --@api-stub: LOccluder:isEnabled
 -- Returns whether this light is enabled.
 do
@@ -461,7 +412,6 @@ do
     lurek.log.debug("lamp is drawing", "light")
   end
 end
-
 --@api-stub: LLight:setLightType
 -- Sets the light type of this light.
 do
@@ -472,7 +422,6 @@ do
   sun:setLightType("directional")
   sun:setDirection(math.pi * 0.25)  -- sun angle: 45 degrees from right
 end
-
 --@api-stub: LLight:getLightType
 -- Returns the light type of this light.
 do

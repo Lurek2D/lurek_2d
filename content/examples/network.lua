@@ -1,7 +1,6 @@
 -- content/examples/network.lua
 -- lurek.network API examples: ENet hosts, async HTTP/TCP/WebSocket, lobbies, rooms, relay, prediction.
 -- Run: cargo run -- content/examples/network.lua
-
 --@api-stub: lurek.network.newHost
 -- Creates a network host from an options table
 do
@@ -23,7 +22,6 @@ do
   -- Always destroy when done to release the port and memory.
   host:destroy()
 end
-
 --@api-stub: lurek.network.newServer
 -- Creates a server host from an options table
 do
@@ -42,7 +40,6 @@ do
   lurek.log.info("server up on " .. server:getAddress(), "net")
   server:destroy()
 end
-
 --@api-stub: lurek.network.newClient
 -- Creates a client host and connects to an address
 do
@@ -64,7 +61,6 @@ do
     client:destroy()
   end)
 end
-
 --@api-stub: lurek.network.newRuntime
 -- Creates a background network runtime
 do
@@ -78,7 +74,6 @@ do
   -- Shut down cleanly when the game exits.
   function lurek.quit() rt:shutdown() end
 end
-
 --@api-stub: lurek.network.pack
 -- Packs a supported Lua value into a binary network message string
 do
@@ -91,7 +86,6 @@ do
   -- The result is a binary string — send it with host:send() or host:broadcast().
   lurek.log.debug("packed " .. #bytes .. " bytes", "net")
 end
-
 --@api-stub: lurek.network.unpack
 -- Unpacks a binary network message string into Lua values
 do
@@ -104,7 +98,6 @@ do
     lurek.log.info("received action=" .. msg.action .. " id=" .. msg.id, "net")
   end
 end
-
 --@api-stub: lurek.network.createLobby
 -- Broadcasts lobby information and returns it as a table
 do
@@ -115,7 +108,6 @@ do
   local lobby = lurek.network.createLobby("Tom's Co-op", 5555, 1, 4)
   lurek.log.info("advertised lobby " .. lobby.name .. " on port " .. lobby.port, "net")
 end
-
 --@api-stub: lurek.network.discoverLobbies
 -- Discovers broadcast lobbies
 do
@@ -129,7 +121,6 @@ do
     lurek.log.info(i .. ": " .. info.name .. " " .. info.host .. ":" .. info.port, "lobby")
   end
 end
-
 --@api-stub: lurek.network.createRoom
 -- Creates a local room record
 do
@@ -147,7 +138,6 @@ do
   -- Leave and clean up.
   lurek.network.leaveRoom(room.id)
 end
-
 --@api-stub: lurek.network.joinRoom
 -- Joins a room by id when available
 do
@@ -160,7 +150,6 @@ do
     lurek.log.debug("joined room=" .. joined_room.id .. " count=" .. joined_room.player_count, "match")
   end
 end
-
 --@api-stub: lurek.network.leaveRoom
 -- Leaves a room by id when available
 do
@@ -174,7 +163,6 @@ do
     lurek.log.debug("left room=" .. left_room.id, "match")
   end
 end
-
 --@api-stub: lurek.network.listRooms
 -- Lists known local room records
 do
@@ -183,7 +171,6 @@ do
   local rooms = lurek.network.listRooms()
   lurek.log.debug("room count=" .. #rooms, "match")
 end
-
 --@api-stub: lurek.network.newRelayTicket
 -- Creates an encoded relay ticket
 do
@@ -200,7 +187,6 @@ do
     lurek.log.debug("relay ticket peer=" .. tostring(from_peer), "relay")
   end
 end
-
 --@api-stub: lurek.network.parseRelayTicket
 -- Parses an encoded relay ticket
 do
@@ -210,7 +196,6 @@ do
   local parsed = lurek.network.parseRelayTicket(token)
   if parsed then lurek.log.debug(parsed.room_id .. ":" .. parsed.peer_id, "relay") end
 end
-
 --@api-stub: lurek.network.makePunchProbe
 -- Creates a relay punch probe payload for a peer id
 do
@@ -220,7 +205,6 @@ do
   local probe = lurek.network.makePunchProbe("peer-C")
   lurek.log.debug("probe bytes=" .. #probe, "relay")
 end
-
 --@api-stub: lurek.network.parsePunchProbe
 -- Parses a relay punch probe payload
 do
@@ -230,7 +214,6 @@ do
   local who = lurek.network.parsePunchProbe(probe)
   lurek.log.debug("probe peer=" .. tostring(who), "relay")
 end
-
 --@api-stub: lurek.network.predictLinear
 -- Predicts an entity snapshot forward by linear velocity
 do
@@ -246,7 +229,6 @@ do
   local smooth = lurek.network.reconcileSnapshot(predicted, server, 0.5)
   lurek.log.debug("reconciled x=" .. smooth.x, "net-sync")
 end
-
 --@api-stub: lurek.network.reconcileSnapshot
 -- Reconciles a predicted snapshot toward an authoritative snapshot
 do
@@ -260,7 +242,6 @@ do
   -- out.x = 1.1 (halfway between 1.0 and 1.2)
   lurek.log.debug("reconciled snapshot tick=" .. out.tick, "net-sync")
 end
-
 --@api-stub: lurek.network.syncEntity
 -- Broadcasts a packed entity sync payload through a network host
 do
@@ -274,7 +255,6 @@ do
   lurek.network.syncEntity(server, 1, player, 0, false)
   server:destroy()
 end
-
 --@api-stub: LNetworkHost:service
 -- Polls the host for the next incoming network event and returns it, or nil if none.
 do
@@ -301,7 +281,6 @@ do
     end
   end
 end
-
 --@api-stub: LNetworkHost:flush
 -- Sends all queued outgoing packets on this host immediately without waiting for service.
 do
@@ -312,7 +291,6 @@ do
   host:broadcast(0, lurek.network.pack({ event = "round_end" }), true)
   host:flush()
 end
-
 --@api-stub: LNetworkHost:resetPeer
 -- Forcibly resets a peer connection by id without sending a graceful disconnect message.
 do
@@ -324,7 +302,6 @@ do
   host:resetPeer(cheater_peer_id)
   lurek.log.warn("force-reset peer " .. cheater_peer_id, "net")
 end
-
 --@api-stub: LNetworkHost:ping
 -- Sends a ping packet to a peer to trigger a round-trip time measurement.
 do
@@ -335,7 +312,6 @@ do
   local peer_id = 1
   host:ping(peer_id)
 end
-
 --@api-stub: LNetworkHost:getRoundTripTime
 -- Returns the last measured round-trip time in milliseconds for a connected peer.
 do
@@ -347,7 +323,6 @@ do
     lurek.log.warn("high latency: " .. rtt_ms .. " ms", "net")
   end
 end
-
 --@api-stub: LNetworkHost:getPeerState
 -- Returns the current connection state string for a given peer id, such as "connected".
 do
@@ -361,7 +336,6 @@ do
     host:send(1, 0, "hello", true)
   end
 end
-
 --@api-stub: LNetworkHost:getPeerAddress
 -- Returns the remote IP address and port string for a connected peer id, or nil.
 do
@@ -371,7 +345,6 @@ do
   local addr = host:getPeerAddress(1)
   if addr then lurek.log.info("peer 1 at " .. addr, "net") end
 end
-
 --@api-stub: LNetworkHost:getAddress
 -- Returns the local bound address and port string for this host.
 do
@@ -381,7 +354,6 @@ do
   local bound = host:getAddress()
   lurek.log.info("bound to " .. bound, "net")
 end
-
 --@api-stub: LNetworkHost:getPeerLimit
 -- Returns the maximum number of peers this host was configured to accept.
 do
@@ -390,7 +362,6 @@ do
   local cap = host:getPeerLimit()
   lurek.log.info("max players: " .. cap, "net")
 end
-
 --@api-stub: LNetworkHost:getChannelLimit
 -- Returns the number of channels currently configured on this host.
 do
@@ -400,7 +371,6 @@ do
   local channels = host:getChannelLimit()
   assert(channels >= 2, "need at least 2 channels for state+chat")
 end
-
 --@api-stub: LNetworkHost:setChannelLimit
 -- Sets the maximum number of channels this host will negotiate with connecting peers.
 do
@@ -411,7 +381,6 @@ do
   host:setChannelLimit(4)
   lurek.log.info("now negotiating " .. host:getChannelLimit() .. " channels", "net")
 end
-
 --@api-stub: LNetworkHost:getBandwidthLimit
 -- Returns the configured incoming and outgoing bandwidth limits in bytes per second.
 do
@@ -424,7 +393,6 @@ do
     host:destroy()
   end)
 end
-
 --@api-stub: LNetworkHost:getConnectedPeerCount
 -- Returns the number of peers currently in a connected state on this host.
 do
@@ -434,7 +402,6 @@ do
   local n = host:getConnectedPeerCount()
   lurek.log.info("players online: " .. n, "net")
 end
-
 --@api-stub: LNetworkHost:getConnectedPeerIds
 -- Returns a list of all peer ids that are currently connected to this host.
 do
@@ -445,7 +412,6 @@ do
     host:send(pid, 1, lurek.network.pack({ welcome = true }), true)
   end
 end
-
 --@api-stub: LNetworkHost:getPeerStats
 -- Returns a table of packet and byte send and receive statistics for a peer.
 do
@@ -459,7 +425,6 @@ do
   local stats = host:getPeerStats(1)
   lurek.log.debug("peer 1 sent=" .. stats.packets_sent .. " lost=" .. stats.packets_lost, "net")
 end
-
 --@api-stub: LNetworkHost:destroy
 -- Destroys this host and releases all ENet resources and peer connections.
 do
@@ -470,7 +435,6 @@ do
     host:destroy()
   end
 end
-
 --@api-stub: LNetworkHost:isDestroyed
 -- Returns true if this host has already been destroyed and can no longer be used.
 do
@@ -480,7 +444,6 @@ do
   host:destroy()
   if host:isDestroyed() then lurek.log.info("host shut down cleanly", "net") end
 end
-
 --@api-stub: LNetworkHost:getRole
 -- Returns the role string of this host, either "server", "client", or "host".
 do
@@ -490,7 +453,6 @@ do
   local role = host:getRole()
   lurek.log.info("running as " .. role, "net")
 end
-
 --@api-stub: LNetworkHost:isServer
 -- Returns true if this host was created with newServer and is running as an authority.
 do
@@ -501,7 +463,6 @@ do
     lurek.log.info("authoritative tick enabled", "net")
   end
 end
-
 --@api-stub: LNetworkHost:isClient
 -- Returns true if this host was created with newClient and is running as a client.
 do
@@ -511,7 +472,6 @@ do
     lurek.log.info("running prediction-only logic", "net")
   end
 end
-
 --@api-stub: LNetworkRuntime:httpRequest
 -- Submits a configurable HTTP request asynchronously and returns a request id for polling.
 do
@@ -532,7 +492,6 @@ do
   }
   lurek.log.info("submitted score request id=" .. req_id, "net")
 end
-
 --@api-stub: LNetworkRuntime:tcpConnect
 -- Opens an async TCP connection to a host address and returns a connection id.
 do
@@ -543,7 +502,6 @@ do
   local conn = rt:tcpConnect("127.0.0.1:9")
   lurek.log.info("dialling tcp conn=" .. conn, "net")
 end
-
 --@api-stub: LNetworkRuntime:tcpSend
 -- Sends a string payload over an open TCP connection identified by its connection id.
 do
@@ -553,7 +511,6 @@ do
   local conn = rt:tcpConnect("127.0.0.1:9")
   rt:tcpSend(conn, "LOGIN tom\n")
 end
-
 --@api-stub: LNetworkRuntime:tcpClose
 -- Closes an open TCP connection by its connection id and releases the slot.
 do
@@ -563,7 +520,6 @@ do
   local conn = rt:tcpConnect("127.0.0.1:9")
   rt:tcpClose(conn)
 end
-
 --@api-stub: LNetworkRuntime:wsConnect
 -- Opens an async WebSocket connection to a URL and returns a connection id.
 do
@@ -575,7 +531,6 @@ do
   local ws = rt:wsConnect("ws://127.0.0.1:9/lobby")
   lurek.log.info("opening websocket id=" .. ws, "net")
 end
-
 --@api-stub: LNetworkRuntime:wsSend
 -- Sends a text or binary message over an open WebSocket connection by id.
 do
@@ -585,7 +540,6 @@ do
   local ws = rt:wsConnect("ws://127.0.0.1:9/lobby")
   rt:wsSend(ws, '{"chat":"hello everyone!"}')
 end
-
 --@api-stub: LNetworkRuntime:wsClose
 -- Closes an open WebSocket connection by its connection id.
 do
@@ -594,7 +548,6 @@ do
   local ws = rt:wsConnect("ws://127.0.0.1:9/lobby")
   rt:wsClose(ws)
 end
-
 --@api-stub: LNetworkRuntime:poll
 -- Collects and returns all pending responses from async HTTP, TCP, and WebSocket operations.
 do
@@ -617,7 +570,6 @@ do
     end
   end
 end
-
 --@api-stub: LNetworkRuntime:shutdown
 -- Shuts down the network runtime and cancels all pending async network operations.
 do
@@ -628,7 +580,6 @@ do
     rt:shutdown()
   end
 end
-
 --@api-stub: LNetworkHost:broadcast
 -- Sends a packet to all currently connected peers on a channel with optional reliability.
 do
@@ -640,7 +591,6 @@ do
   host:broadcast(0, lurek.network.pack({ event = "round_start", map = "arena" }), true)
   lurek.log.info("broadcast sent to all peers", "network")
 end
-
 --@api-stub: LNetworkHost:connect
 -- Initiates a connection from this client host to a remote server address string.
 do
@@ -655,7 +605,6 @@ do
   end)
   if not ok then lurek.log.info("connect: no server available", "network") end
 end
-
 --@api-stub: LNetworkHost:disconnect
 -- Sends a graceful disconnect request to a peer and waits for acknowledgement.
 do
@@ -667,7 +616,6 @@ do
   host:disconnect(1)
   lurek.log.info("disconnect requested for peer 1", "network")
 end
-
 --@api-stub: LNetworkHost:disconnectLater
 -- Queues a graceful disconnect to be sent only after all pending outgoing packets are delivered.
 do
@@ -679,7 +627,6 @@ do
   host:disconnectLater(1)
   lurek.log.info("disconnect-later queued after final data", "network")
 end
-
 --@api-stub: LNetworkHost:disconnectNow
 -- Immediately terminates a peer connection without waiting for any pending packets.
 do
@@ -689,7 +636,6 @@ do
   host:disconnectNow(1)
   lurek.log.info("disconnect-now issued — peer dropped", "network")
 end
-
 --@api-stub: LNetworkRuntime:httpGet
 -- Submits an async HTTP GET request to a URL and returns a request id for polling.
 do
@@ -700,7 +646,6 @@ do
   local id = rt:httpGet("http://127.0.0.1:9/leaderboard", { ["Accept"] = "application/json" })
   lurek.log.info("GET leaderboard, request id=" .. id, "network")
 end
-
 --@api-stub: LNetworkRuntime:httpPost
 -- Submits an async HTTP POST request with a string body and returns a request id.
 do
@@ -715,7 +660,6 @@ do
   )
   lurek.log.info("POST save, request id=" .. id, "network")
 end
-
 --@api-stub: LNetworkHost:send
 -- Sends a packet to a specific peer on a given channel with optional reliable delivery.
 do
@@ -727,7 +671,6 @@ do
   host:send(1, 0, player_state, false)
   lurek.log.info("sent state to peer 1 (unreliable)", "network")
 end
-
 --@api-stub: LNetworkHost:setBandwidthLimit
 -- Sets the incoming and outgoing bandwidth limits for this host in bytes per second.
 do
@@ -738,7 +681,6 @@ do
   host:setBandwidthLimit(128000, 64000)
   lurek.log.info("bandwidth capped: 128KB/s in, 64KB/s out", "network")
 end
-
 --@api-stub: LNetworkRuntime:type
 -- Returns the Lua-visible type name for this network host handle
 do
@@ -747,7 +689,6 @@ do
   lurek.log.info("LNetworkHost:type = " .. host:type(), "net")
   host:destroy()
 end
-
 --@api-stub: LNetworkRuntime:typeOf
 -- Returns whether this network host handle matches a supported type name
 do
@@ -758,7 +699,6 @@ do
   lurek.log.info("is Object: " .. tostring(host:typeOf("Object")), "net")
   host:destroy()
 end
-
 --@api-stub: LNetworkRuntime:type
 -- Returns the Lua-visible type name string for this network runtime handle.
 do
@@ -767,7 +707,6 @@ do
   lurek.log.info(rt:type(), "net")
   rt:shutdown()
 end
-
 --@api-stub: LNetworkRuntime:typeOf
 -- Returns true if this network runtime handle matches the given type name string.
 do
@@ -776,42 +715,13 @@ do
   lurek.log.info("is LNetworkRuntime: " .. tostring(rt:typeOf("LNetworkRuntime")), "net")
   rt:shutdown()
 end
-
 print("content/examples/network.lua")
-
--- =============================================================================
--- STUBS: 38 uncovered lurek.network API item(s)
--- Generated by tools/audit/example_add_missing.py
--- REQUIRED: replace every --@api-stub: block below with a real scenario.
--- Run .github/prompts/flesh-out-example.prompt.md for instructions.
--- The final committed file must contain ZERO --@api-stub: lines.
--- =============================================================================
-
--- -----------------------------------------------------------------------------
--- LNetworkHost methods
--- -----------------------------------------------------------------------------
-
--- =============================================================================
--- STUBS: 2 uncovered lurek.network API item(s)
--- Generated by tools/audit/example_add_missing.py
--- REQUIRED: replace every --@api-stub: block below with a real scenario.
--- Run .github/prompts/flesh-out-example.prompt.md for instructions.
--- The final committed file must contain ZERO --@api-stub: lines.
--- =============================================================================
-
--- -----------------------------------------------------------------------------
--- LNetworkHost methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LNetworkHost:type ---------------------------------------------
 --@api-stub: LNetworkHost:type
 -- Returns the Lua-visible type name for this network host handle.
 do
   local obj = lurek.network.newHost({addr = '127.0.0.1:7777', maxPeers = 8})
   lurek.log.debug("type: " .. obj:type(), "example") -- "LNetworkHost"
 end
-
--- ---- Stub: LNetworkHost:typeOf -------------------------------------------
 --@api-stub: LNetworkHost:typeOf
 -- Returns whether this network host handle matches a supported type name.
 do

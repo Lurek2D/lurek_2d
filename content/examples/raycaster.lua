@@ -1,11 +1,6 @@
 -- content/examples/raycaster.lua
 -- lurek.raycaster API examples.
 -- Run: cargo run -- content/examples/raycaster.lua
-
--- =============================================================================
--- Module-level constructors
--- =============================================================================
-
 --@api-stub: lurek.raycaster.new
 -- Creates a new raycaster map with the given grid dimensions
 do
@@ -19,7 +14,6 @@ do
   -- The map dimensions are fixed at creation time
   lurek.log.info("grid " .. rc:width() .. "x" .. rc:height(), "raycaster")
 end
-
 --@api-stub: lurek.raycaster.newMap
 -- Creates a new raycaster map (alias for `new`)
 do
@@ -32,7 +26,6 @@ do
   -- Left and right columns
   for y = 0, 31 do map:setCell(0, y, 1); map:setCell(31, y, 1) end
 end
-
 --@api-stub: lurek.raycaster.projectColumn
 -- Computes the projected wall-column height for a given distance, FOV, and screen height
 do
@@ -50,7 +43,6 @@ do
   -- Closer walls produce larger h values
   lurek.log.debug("col h=" .. h .. " top=" .. top .. " bot=" .. bot, "raycaster")
 end
-
 --@api-stub: lurek.raycaster.distanceShade
 -- Returns a brightness multiplier (0.0..1.0) based on distance for fog/darkness falloff
 do
@@ -68,7 +60,6 @@ do
   local b = base_b * shade
   lurek.log.debug("wall rgb=" .. r .. "," .. g .. "," .. b, "raycaster")
 end
-
 --@api-stub: lurek.raycaster.newDoorManager
 -- Creates a new door manager for tracking and animating sliding doors
 do
@@ -81,7 +72,6 @@ do
   -- Add a vertical-sliding door at cell (9,3) — slower at 1.8 units/sec
   doors:addDoor(9, 3, "vertical", 1.8)
 end
-
 --@api-stub: lurek.raycaster.newHeightMap
 -- Creates a new height map for variable floor/ceiling heights across the grid
 do
@@ -96,7 +86,6 @@ do
   -- Raise the ceiling at (4,5) to give extra headroom above the pit
   hm:setCeiling(4, 5, 1.5)
 end
-
 --@api-stub: lurek.raycaster.newPointLight
 -- Creates a new point light with position, color, radius, and intensity
 do
@@ -113,7 +102,6 @@ do
   -- Query properties for debug display
   lurek.log.info("torch radius=" .. torch:radius(), "raycaster")
 end
-
 --@api-stub: lurek.raycaster.newSpriteManager
 -- Creates a new sprite manager for tracking and projecting billboard sprites
 do
@@ -126,11 +114,6 @@ do
   sprites:add(6.5, 4.5, "enemy_zombie", 1.0)   -- full-size enemy
   sprites:add(10.0, 8.0, "barrel", 0.75)        -- smaller prop barrel
 end
-
--- =============================================================================
--- DoorManager methods
--- =============================================================================
-
 --@api-stub: LDoorManager:addDoor
 -- Adds a door to this door manager
 do
@@ -141,7 +124,6 @@ do
   local did = dm:addDoor(5, 7, "horizontal", 1.0)
   lurek.log.info("door id: " .. did, "raycaster")
 end
-
 --@api-stub: LDoorManager:openDoor
 -- Begins opening the door at the given index
 do
@@ -152,7 +134,6 @@ do
   -- The door slides from closed (0.0) to fully open (1.0) at the configured speed.
   doors:openDoor(idx)
 end
-
 --@api-stub: LDoorManager:closeDoor
 -- Begins closing the door at the given index
 do
@@ -163,7 +144,6 @@ do
   doors:openDoor(idx)
   doors:closeDoor(idx)  -- immediately reverses direction
 end
-
 --@api-stub: LDoorManager:update
 -- Advances all door animations by the given delta time
 do
@@ -176,7 +156,6 @@ do
     doors:update(dt)
   end
 end
-
 --@api-stub: LDoorManager:getDoor
 -- Returns a table describing the door at the given index
 do
@@ -190,7 +169,6 @@ do
     lurek.log.info("door " .. d.x .. "," .. d.y .. " passable (state=" .. d.state .. ")", "doors")
   end
 end
-
 --@api-stub: LDoorManager:count
 -- Returns the total number of registered doors
 do
@@ -201,7 +179,6 @@ do
   -- Useful for iterating all doors (indices 0 to count-1)
   lurek.log.info("level has " .. doors:count() .. " doors", "doors")
 end
-
 --@api-stub: LSpriteManager:type
 -- Returns the Lua-visible type name string for this door manager handle
 do
@@ -211,7 +188,6 @@ do
     lurek.log.debug("door manager OK", "raycaster")
   end
 end
-
 --@api-stub: LSpriteManager:typeOf
 -- Returns true if this door manager handle matches the given type name string
 do
@@ -221,11 +197,6 @@ do
     lurek.log.debug("dispatched as DoorManager", "raycaster")
   end
 end
-
--- =============================================================================
--- HeightMap methods
--- =============================================================================
-
 --@api-stub: LHeightMap:setFloor
 -- Sets the floor height offset at a specific grid cell
 do
@@ -237,7 +208,6 @@ do
   -- Gradual ramp: half-depth at the edge
   hm:setFloor(8, 6, -0.25)
 end
-
 --@api-stub: LHeightMap:setCeiling
 -- Sets the ceiling height offset at a specific grid cell
 do
@@ -247,7 +217,6 @@ do
   -- Lower values = ceiling comes down, making the space feel cramped.
   for x = 0, 15 do hm:setCeiling(x, 0, 0.6) end
 end
-
 --@api-stub: LHeightMap:floorAt
 -- Returns the floor height offset at a given grid cell
 do
@@ -260,7 +229,6 @@ do
     lurek.log.debug("pit depth " .. -h, "raycaster")
   end
 end
-
 --@api-stub: LHeightMap:ceilingAt
 -- Returns the ceiling height offset at a given grid cell
 do
@@ -270,7 +238,6 @@ do
   local headroom = hm:ceilingAt(3, 4) - hm:floorAt(3, 4)
   lurek.log.debug("cell headroom=" .. headroom, "raycaster")
 end
-
 --@api-stub: LSpriteManager:type
 -- Returns the Lua-visible type name string for this height map handle
 do
@@ -278,7 +245,6 @@ do
   -- Always returns "LHeightMap"
   lurek.log.debug("heightmap type: " .. hm:type(), "raycaster")
 end
-
 --@api-stub: LSpriteManager:typeOf
 -- Returns true if this height map handle matches the given type name string
 do
@@ -286,11 +252,6 @@ do
   -- Accepts "LHeightMap", "HeightMap", or "Object"
   if hm:typeOf("HeightMap") then lurek.log.debug("is HeightMap", "raycaster") end
 end
-
--- =============================================================================
--- PointLight methods
--- =============================================================================
-
 --@api-stub: LPointLight:x
 -- Returns the X world position of this point light
 do
@@ -302,7 +263,6 @@ do
     lurek.log.debug("light is east of midpoint at x=" .. px, "raycaster")
   end
 end
-
 --@api-stub: LPointLight:y
 -- Returns the Y world position of this point light
 do
@@ -312,7 +272,6 @@ do
   local py = light:y()
   lurek.log.debug("light row " .. math.floor(py), "raycaster")
 end
-
 --@api-stub: LPointLight:radius
 -- Returns the light's falloff radius in world units
 do
@@ -323,7 +282,6 @@ do
   local r = light:radius()
   if r > 5 then lurek.log.info("large light radius=" .. r, "raycaster") end
 end
-
 --@api-stub: LPointLight:intensity
 -- Returns the brightness multiplier of this point light
 do
@@ -335,7 +293,6 @@ do
   local contribution = light:intensity() * shade
   lurek.log.debug("light contribution at wall=" .. contribution, "raycaster")
 end
-
 --@api-stub: LPointLight:color
 -- Returns the RGB color components of this point light
 do
@@ -346,7 +303,6 @@ do
   local r, g, b = light:color()
   lurek.log.debug("torch tint " .. r .. "," .. g .. "," .. b, "raycaster")
 end
-
 --@api-stub: LPointLight:set
 -- Overwrites all properties of this point light in a single call
 do
@@ -362,7 +318,6 @@ do
   )
   lurek.log.info("point light configured", "raycaster")
 end
-
 --@api-stub: LSpriteManager:type
 -- Returns the Lua-visible type name string for this point light handle
 do
@@ -370,7 +325,6 @@ do
   -- Always returns "LPointLight"
   lurek.log.info("PointLight:type = " .. light:type(), "raycaster")
 end
-
 --@api-stub: LSpriteManager:typeOf
 -- Returns true if this point light handle matches the given type name string
 do
@@ -378,11 +332,6 @@ do
   -- Accepts "LPointLight", "PointLight", or "Object"
   if light:typeOf("LPointLight") then lurek.log.debug("light kind ok", "raycaster") end
 end
-
--- =============================================================================
--- Raycaster map methods
--- =============================================================================
-
 --@api-stub: LRaycaster:setCell
 -- Sets the wall type value at a grid cell
 do
@@ -393,7 +342,6 @@ do
   rc:setCell(4, 4, 2)  -- wall type 2 at column 4, row 4
   lurek.log.info("cell 4,4 = 2", "raycaster")
 end
-
 --@api-stub: LRaycaster:getCell
 -- Returns the wall type value at a grid cell
 do
@@ -405,7 +353,6 @@ do
     lurek.log.debug("cell holds tile id 3", "raycaster")
   end
 end
-
 --@api-stub: LRaycaster:setCells
 -- Replaces the entire map grid with a flat array of cell values
 do
@@ -420,7 +367,6 @@ do
     1, 1, 1, 1,
   })
 end
-
 --@api-stub: LRaycaster:width
 -- Returns the map width in grid cells
 do
@@ -429,7 +375,6 @@ do
   -- Use width() for boundary loops when building perimeter walls
   for x = 0, rc:width() - 1 do rc:setCell(x, 0, 1) end
 end
-
 --@api-stub: LRaycaster:height
 -- Returns the map height in grid cells
 do
@@ -438,7 +383,6 @@ do
   -- Use height() for boundary loops
   for y = 0, rc:height() - 1 do rc:setCell(0, y, 1) end
 end
-
 --@api-stub: LRaycaster:isBlocked
 -- Returns true if the grid cell is a solid wall (non-zero value)
 do
@@ -450,7 +394,6 @@ do
   local blocked = rc:isBlocked(4, 4)
   lurek.log.debug("(4,4) blocked=" .. tostring(blocked), "raycaster")
 end
-
 --@api-stub: LRaycaster:isWalkBlocked
 -- Returns true if this cell blocks walking (solid wall OR blocked lowered-floor cell)
 do
@@ -461,7 +404,6 @@ do
   -- This is what tryMove and gridMove use internally for collision.
   lurek.log.info("walk blocked: " .. tostring(rc:isWalkBlocked(1, 1)), "raycaster")
 end
-
 --@api-stub: LRaycaster:setWallAlpha
 -- Sets the transparency for a specific wall tile type
 do
@@ -473,7 +415,6 @@ do
   -- castRayMulti will pass through transparent walls and report multiple hits.
   rc:setWallAlpha(5, 0.4)
 end
-
 --@api-stub: LRaycaster:getWallAlpha
 -- Returns the current transparency value for a wall tile type
 do
@@ -484,7 +425,6 @@ do
   local a = rc:getWallAlpha(2)
   if a < 1.0 then lurek.log.debug("tile 2 alpha=" .. a, "raycaster") end
 end
-
 --@api-stub: LRaycaster:tryMove
 -- Attempts to move with wall-slide collision
 do
@@ -498,7 +438,6 @@ do
   local x, y, moved = rc:tryMove(3.5, 3.5, 1.0, 0.0)
   lurek.log.debug("tryMove -> " .. x .. "," .. y .. " moved=" .. tostring(moved), "raycaster")
 end
-
 --@api-stub: LRaycaster:gridMove
 -- Performs a discrete grid-step movement in one of 4 cardinal directions
 do
@@ -511,7 +450,6 @@ do
   local x, y, moved = rc:gridMove(2.5, 2.5, 1, "forward", 1.0)
   lurek.log.debug("gridMove -> " .. x .. "," .. y .. " moved=" .. tostring(moved), "raycaster")
 end
-
 --@api-stub: LRaycaster:castRay
 -- Casts a single ray from a point at a given angle
 do
@@ -532,7 +470,6 @@ do
     lurek.log.info("ray dist: " .. hit.distance .. " cell=" .. hit.cell_value, "raycaster")
   end
 end
-
 --@api-stub: LRaycaster:castRayMulti
 -- Casts a single ray that passes through transparent walls, returning multiple hits
 do
@@ -547,7 +484,6 @@ do
   local results = rc:castRayMulti(8.5, 8.5, math.pi * 1.5, 16)
   lurek.log.info("multi-ray hits: " .. #results, "raycaster")
 end
-
 --@api-stub: LRaycaster:castRays
 -- Casts multiple rays across a field of view
 do
@@ -560,7 +496,6 @@ do
   local cols = rc:castRays(8, 8, 0, math.pi/3, 320, 16)
   lurek.log.info("columns: " .. (cols and #cols or 0), "raycaster")
 end
-
 --@api-stub: LRaycaster:castRaysFlat
 -- Casts multiple rays and returns only corrected distances as a flat array
 do
@@ -572,7 +507,6 @@ do
   local dists = rc:castRaysFlat(8, 8, 0, math.pi/3, 320, 16)
   lurek.log.info("flat ray count: " .. (dists and #dists or 0), "raycaster")
 end
-
 --@api-stub: LRaycaster:lineOfSight
 -- Tests line of sight between two world points
 do
@@ -583,7 +517,6 @@ do
   local can_see = rc:lineOfSight(4, 4, 12, 12)
   lurek.log.info("LOS clear: " .. tostring(can_see), "raycaster")
 end
-
 --@api-stub: LRaycaster:revealCellsFromRays
 -- Reveals grid cells visible from a point for fog-of-war
 do
@@ -605,7 +538,6 @@ do
   )
   lurek.log.info("revealed cells: " .. #cells, "raycaster")
 end
-
 --@api-stub: LRaycaster:computeTileLight
 -- Computes combined lighting color at a tile from ambient and point lights
 do
@@ -618,7 +550,6 @@ do
   })
   lurek.log.info("tile luma: " .. luma, "raycaster")
 end
-
 --@api-stub: LRaycaster:buildMinimapWindow
 -- Generates minimap tile samples around a center point with lighting
 do
@@ -638,7 +569,6 @@ do
   )
   lurek.log.info("minimap rows: " .. #rows, "raycaster")
 end
-
 --@api-stub: LRaycaster:projectSprite
 -- Projects a world-space sprite to screen coordinates for billboard rendering
 do
@@ -660,7 +590,6 @@ do
     lurek.log.info("sprite at screen_x=" .. sp.screen_x .. " scale=" .. sp.scale, "raycaster")
   end
 end
-
 --@api-stub: LRaycaster:castFloorRow
 -- Computes floor/ceiling texture UV coordinates for a single scanline row
 do
@@ -677,7 +606,6 @@ do
   -- Each entry is {u, v} — the world-space texture coordinate for that pixel
   lurek.log.info("floor row uv count: " .. (uvs and #uvs or 0), "raycaster")
 end
-
 --@api-stub: LRaycaster:setFloorTextureCell
 -- Assigns a per-cell floor texture override
 do
@@ -691,7 +619,6 @@ do
   -- Pass nil to remove the override and revert to the default floor
   rc:setFloorTextureCell(4, 4, nil)
 end
-
 --@api-stub: LRaycaster:getFloorTextureCell
 -- Returns the raw texture id assigned to a floor cell
 do
@@ -703,7 +630,6 @@ do
   local id = rc:getFloorTextureCell(2, 2)
   lurek.log.info("floor tex id: " .. tostring(id), "raycaster")
 end
-
 --@api-stub: LRaycaster:setCeilingTextureCell
 -- Assigns a per-cell ceiling texture override
 do
@@ -716,7 +642,6 @@ do
   -- Pass nil to clear
   rc:setCeilingTextureCell(4, 4, nil)
 end
-
 --@api-stub: LRaycaster:getCeilingTextureCell
 -- Returns the raw texture id assigned to a ceiling cell
 do
@@ -728,7 +653,6 @@ do
   local id = rc:getCeilingTextureCell(2, 2)
   lurek.log.info("ceiling tex id: " .. tostring(id), "raycaster")
 end
-
 --@api-stub: LRaycaster:setLoweredFloorCell
 -- Marks a cell as a lowered floor (pit) with texture, depth, tint, and blocking
 do
@@ -749,7 +673,6 @@ do
   -- Pass nil to remove the lowered floor and revert to a normal cell
   rc:setLoweredFloorCell(6, 6, nil)
 end
-
 --@api-stub: LRaycaster:getLoweredFloorCell
 -- Returns the lowered floor configuration at a cell
 do
@@ -763,7 +686,6 @@ do
     lurek.log.info("pit depth=" .. cell.depth .. " blocked=" .. tostring(cell.blocked), "raycaster")
   end
 end
-
 --@api-stub: LRaycaster:buildScene
 -- Builds a complete textured raycaster scene for GPU rendering
 do
@@ -797,7 +719,6 @@ do
   local quad_count = rc:buildScene(params, nil, nil, { [1] = wall_tex })
   lurek.log.info("scene quads: " .. quad_count, "raycaster")
 end
-
 --@api-stub: LRaycaster:buildSceneWithModels
 -- Builds a textured scene with additional 3D .obj model instances projected into the view
 do
@@ -814,7 +735,6 @@ do
   local ok, n = pcall(function() return rc:buildSceneWithModels(params) end)
   lurek.log.info("buildSceneWithModels ok=" .. tostring(ok), "raycaster")
 end
-
 --@api-stub: LRaycaster:drawView
 -- Renders a first-person raycaster view to a raw image buffer (flat-shaded, no textures)
 do
@@ -827,7 +747,6 @@ do
   local img = rc:drawView(8, 8, 0, math.pi/3, 320, 240, 16)
   lurek.log.info("view rendered", "raycaster")
 end
-
 --@api-stub: LRaycaster:drawTopDown
 -- Renders a top-down debug view of the map
 do
@@ -839,7 +758,6 @@ do
   local img = rc:drawTopDown(8, 8, 0, 8)
   lurek.log.info("top-down drawn", "raycaster")
 end
-
 --@api-stub: LRaycaster:drawDepthMap
 -- Renders a grayscale depth map showing distance-to-wall for each column
 do
@@ -852,7 +770,6 @@ do
   local img = rc:drawDepthMap(8, 8, 0, math.pi/3, 320, 320, 240, 16)
   lurek.log.info("depth map drawn", "raycaster")
 end
-
 --@api-stub: LRaycaster:drawLineOfSight
 -- Renders a debug image showing the line-of-sight ray between two points
 do
@@ -864,7 +781,6 @@ do
   local img = rc:drawLineOfSight(4, 4, 12, 12, 8)
   lurek.log.info("LOS drawn", "raycaster")
 end
-
 --@api-stub: LRaycaster:drawCameraSweep
 -- Renders multiple rotation frames as a combined image
 do
@@ -883,7 +799,6 @@ do
   )
   lurek.log.info("camera sweep drawn", "raycaster")
 end
-
 --@api-stub: LSpriteManager:type
 -- Returns the type name of this object ("LRaycaster")
 do
@@ -892,7 +807,6 @@ do
   local t = rc:type()
   lurek.log.info("LRaycaster:type = " .. t, "raycaster")
 end
-
 --@api-stub: LSpriteManager:typeOf
 -- Checks whether this object matches the given type name
 do
@@ -901,11 +815,6 @@ do
   lurek.log.info("is LRaycaster: " .. tostring(rc:typeOf("LRaycaster")), "raycaster")
   lurek.log.info("is unknown: " .. tostring(rc:typeOf("Unknown")), "raycaster")
 end
-
--- =============================================================================
--- SpriteManager methods
--- =============================================================================
-
 --@api-stub: LSpriteManager:add
 -- Adds a sprite to this sprite manager
 do
@@ -916,7 +825,6 @@ do
   local id = sm:add(3.5, 2.5, "crate", 1.0)
   lurek.log.info("sprite id: " .. id, "raycaster")
 end
-
 --@api-stub: LSpriteManager:remove
 -- Removes a sprite by its id
 do
@@ -926,7 +834,6 @@ do
   -- Remove a sprite when it is picked up or destroyed
   sprites:remove(id)
 end
-
 --@api-stub: LSpriteManager:setPosition
 -- Updates the world position of an existing sprite
 do
@@ -938,7 +845,6 @@ do
     sprites:setPosition(id, 2.0 + dt, 2.0)
   end
 end
-
 --@api-stub: LSpriteManager:setVisible
 -- Shows or hides a sprite without removing it
 do
@@ -949,7 +855,6 @@ do
   -- Hidden sprites are skipped during sortAndProject
   sprites:setVisible(id, false)
 end
-
 --@api-stub: LSpriteManager:clear
 -- Removes all sprites from the manager
 do
@@ -960,7 +865,6 @@ do
   -- Use clear() when transitioning between levels
   sprites:clear()
 end
-
 --@api-stub: LSpriteManager:sortAndProject
 -- Sorts all visible sprites by distance from camera and returns projection data
 do
@@ -974,7 +878,6 @@ do
   local projs = sm:sortAndProject(8, 8, 0)
   lurek.log.info("projected sprites: " .. #projs, "raycaster")
 end
-
 --@api-stub: LSpriteManager:type
 -- Returns the Lua-visible type name string for this sprite manager handle
 do
@@ -982,7 +885,6 @@ do
   -- Always returns "LSpriteManager"
   lurek.log.info("SpriteManager:type = " .. tostring(sprites and sprites:type() or "nil"), "raycaster")
 end
-
 --@api-stub: LSpriteManager:typeOf
 -- Returns true if this sprite manager handle matches the given type name string
 do
@@ -992,21 +894,7 @@ do
     lurek.log.debug("sprite mgr ok", "raycaster")
   end
 end
-
 print("content/examples/raycaster.lua")
-
--- =============================================================================
--- STUBS: 64 uncovered lurek.raycaster API item(s)
--- Generated by tools/audit/example_add_missing.py
--- REQUIRED: replace every --@api-stub: block below with a real scenario.
--- Run .github/prompts/flesh-out-example.prompt.md for instructions.
--- The final committed file must contain ZERO --@api-stub: lines.
--- =============================================================================
-
--- -----------------------------------------------------------------------------
--- LDoorManager methods
--- -----------------------------------------------------------------------------
-
 --@api-stub: LDoorManager:type
 -- Returns the type name of this object.
 do
@@ -1014,7 +902,6 @@ do
   local doors = lurek.raycaster.newDoorManager()
   lurek.log.info("door mgr type: " .. doors:type(), "raycaster")
 end
-
 --@api-stub: LDoorManager:typeOf
 -- Checks whether this object matches the given type name.
 do
@@ -1023,11 +910,6 @@ do
   local is_door = doors:typeOf("LDoorManager")
   lurek.log.info("is LDoorManager=" .. tostring(is_door), "raycaster")
 end
-
--- -----------------------------------------------------------------------------
--- LHeightMap methods
--- -----------------------------------------------------------------------------
-
 --@api-stub: LHeightMap:type
 -- Returns the type name of this object.
 do
@@ -1035,7 +917,6 @@ do
   local hm = lurek.raycaster.newHeightMap(16, 12)
   lurek.log.info("heightmap type: " .. hm:type(), "raycaster")
 end
-
 --@api-stub: LHeightMap:typeOf
 -- Checks whether this object matches the given type name.
 do
@@ -1044,11 +925,6 @@ do
   local is_hm = hm:typeOf("LHeightMap")
   lurek.log.info("is LHeightMap=" .. tostring(is_hm), "raycaster")
 end
-
--- -----------------------------------------------------------------------------
--- LPointLight methods
--- -----------------------------------------------------------------------------
-
 --@api-stub: LPointLight:type
 -- Returns the type name of this object ("LPointLight").
 do
@@ -1056,7 +932,6 @@ do
   local torch = lurek.raycaster.newPointLight(5.5, 3.5, 1.0, 0.8, 0.4, 6.0, 1.0)
   lurek.log.info("light type: " .. torch:type(), "raycaster")
 end
-
 --@api-stub: LPointLight:typeOf
 -- Checks whether this object matches the given type name.
 do
@@ -1065,32 +940,12 @@ do
   local is_light = torch:typeOf("LPointLight")
   lurek.log.info("is LPointLight=" .. tostring(is_light), "raycaster")
 end
-
--- -----------------------------------------------------------------------------
--- LRaycaster methods
--- -----------------------------------------------------------------------------
-
--- =============================================================================
--- STUBS: 2 uncovered lurek.raycaster API item(s)
--- Generated by tools/audit/example_add_missing.py
--- REQUIRED: replace every --@api-stub: block below with a real scenario.
--- Run .github/prompts/flesh-out-example.prompt.md for instructions.
--- The final committed file must contain ZERO --@api-stub: lines.
--- =============================================================================
-
--- -----------------------------------------------------------------------------
--- LRaycaster methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LRaycaster:type -----------------------------------------------
 --@api-stub: LRaycaster:type
 -- Returns the type name of this object ("LRaycaster").
 do
   local obj = lurek.raycaster.new(800, 600)
   lurek.log.debug("type: " .. obj:type(), "example") -- "LRaycaster"
 end
-
--- ---- Stub: LRaycaster:typeOf ---------------------------------------------
 --@api-stub: LRaycaster:typeOf
 -- Checks whether this object matches the given type name.
 do

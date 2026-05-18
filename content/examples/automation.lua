@@ -1,7 +1,6 @@
 -- content/examples/automation.lua
 -- Demonstrates the lurek.automation module for scripted input playback, macros, and test automation.
 -- Run: cargo run -- content/examples/automation.lua
-
 --@api-stub: lurek.automation.load
 -- Loads an automation script from a Lua table of steps and optional metadata
 do
@@ -21,7 +20,6 @@ do
   -- The name is used to reference this script in start(), saveMacro(), etc.
   lurek.automation.load("menu_skip", menu_skip)
 end
-
 --@api-stub: lurek.automation.unload
 -- Unloads a named automation script to free memory
 do
@@ -38,7 +36,6 @@ do
     lurek.log.info("tutorial_tap script cleaned up", "automation")
   end
 end
-
 --@api-stub: lurek.automation.hasScript
 -- Returns whether a script is loaded by name
 do
@@ -54,7 +51,6 @@ do
     })
   end
 end
-
 --@api-stub: lurek.automation.getScripts
 -- Returns an array of all loaded script names
 do
@@ -66,7 +62,6 @@ do
     lurek.log.debug("script [" .. i .. "]: " .. name, "automation")
   end
 end
-
 --@api-stub: lurek.automation.start
 -- Starts playback of a loaded automation script by name
 do
@@ -85,7 +80,6 @@ do
     lurek.automation.start("speed_run")
   end
 end
-
 --@api-stub: lurek.automation.stop
 -- Stops the currently running automation script immediately
 do
@@ -97,7 +91,6 @@ do
     end
   end
 end
-
 --@api-stub: lurek.automation.pause
 -- Pauses automation playback without losing progress
 do
@@ -112,7 +105,6 @@ do
     end
   end
 end
-
 --@api-stub: lurek.automation.resume
 -- Resumes paused automation playback from where it left off
 do
@@ -127,7 +119,6 @@ do
     end
   end
 end
-
 --@api-stub: lurek.automation.update
 -- Advances automation playback by dt seconds; dispatches input events for passed steps
 do
@@ -138,7 +129,6 @@ do
     lurek.automation.update(dt)
   end
 end
-
 --@api-stub: lurek.automation.isRunning
 -- Returns true when an automation script is actively playing
 do
@@ -151,7 +141,6 @@ do
     end
   end
 end
-
 --@api-stub: lurek.automation.isPaused
 -- Returns true when automation is loaded and paused
 do
@@ -164,7 +153,6 @@ do
     end
   end
 end
-
 --@api-stub: lurek.automation.isComplete
 -- Returns true when the current script has played all steps
 do
@@ -182,7 +170,6 @@ do
     end
   end
 end
-
 --@api-stub: lurek.automation.getCurrentStep
 -- Returns the 1-based index of the step currently being processed
 do
@@ -196,7 +183,6 @@ do
     end
   end
 end
-
 --@api-stub: lurek.automation.getStepCount
 -- Returns the total number of steps in the currently active script
 do
@@ -207,7 +193,6 @@ do
     lurek.log.info("speed_run: " .. count .. " input steps queued", "automation")
   end
 end
-
 --@api-stub: lurek.automation.getCurrentScript
 -- Returns the name of the active script, or nil if nothing is playing
 do
@@ -221,7 +206,6 @@ do
     end
   end
 end
-
 --@api-stub: lurek.automation.getElapsedTime
 -- Returns the time in seconds since the current script started
 do
@@ -233,7 +217,6 @@ do
     end
   end
 end
-
 --@api-stub: lurek.automation.loadFromToml
 -- Loads an automation script from a TOML-formatted string
 do
@@ -265,7 +248,6 @@ key = "lshift"
 ]=]
   lurek.automation.loadFromToml("jump_dash", toml_text)
 end
-
 --@api-stub: lurek.automation.getStepLimit
 -- Returns the maximum step count for a loaded script, or nil if unlimited
 do
@@ -277,7 +259,6 @@ do
     lurek.log.info("speed_run has no step limit", "automation")
   end
 end
-
 --@api-stub: lurek.automation.setStepLimit
 -- Sets the maximum number of steps a script will execute before auto-stopping
 do
@@ -288,7 +269,6 @@ do
     lurek.log.info("speed_run limited to " .. CI_STEP_CAP .. " steps for CI", "automation")
   end
 end
-
 --@api-stub: lurek.automation.saveMacro
 -- Saves a loaded script as a reusable macro by name
 do
@@ -302,7 +282,6 @@ do
   })
   lurek.automation.saveMacro("confirm", "confirm_dialog")
 end
-
 --@api-stub: lurek.automation.playMacro
 -- Starts playback of a previously saved macro
 do
@@ -313,7 +292,6 @@ do
     end
   end
 end
-
 --@api-stub: lurek.automation.hasMacro
 -- Returns true if a macro with the given name has been saved
 do
@@ -325,7 +303,6 @@ do
     end
   end
 end
-
 --@api-stub: lurek.automation.listMacros
 -- Returns an array of all saved macro names
 do
@@ -337,7 +314,6 @@ do
     lurek.log.info("no macros registered", "automation")
   end
 end
-
 --@api-stub: lurek.automation.setPlaybackSpeed
 -- Sets the speed multiplier for automation playback (1.0 = real-time)
 do
@@ -350,7 +326,6 @@ do
     lurek.automation.setPlaybackSpeed(1.0)
   end
 end
-
 --@api-stub: lurek.automation.getPlaybackSpeed
 -- Returns the current playback speed multiplier
 do
@@ -362,7 +337,6 @@ do
     end
   end
 end
-
 --@api-stub: lurek.automation.setHighlightMode
 -- Enables visual highlight mode to show which inputs automation is injecting
 do
@@ -371,7 +345,6 @@ do
   local debug_mode = true
   lurek.automation.setHighlightMode(debug_mode)
 end
-
 --@api-stub: lurek.automation.isHighlightMode
 -- Returns true when highlight mode is active
 do
@@ -385,7 +358,6 @@ do
     end
   end
 end
-
 --@api-stub: lurek.automation.waitUntil
 -- Suspends automation until a predicate returns true or a timeout elapses
 do
@@ -401,7 +373,6 @@ do
   -- Somewhere else in the game:
   -- level_loaded = true  -- this unblocks the automation
 end
-
 --@api-stub: lurek.automation.setCondition
 -- Sets a named boolean condition that automation steps can reference
 do
@@ -414,7 +385,6 @@ do
     lurek.automation.update(dt)
   end
 end
-
 --@api-stub: lurek.automation.getCondition
 -- Returns the current value of a named automation condition
 do
@@ -426,7 +396,6 @@ do
     lurek.render.print("door_open=" .. tostring(door), 8, 88)
   end
 end
-
 --@api-stub: lurek.automation.isFailed
 -- Returns true when the current automation script encountered an error
 do
@@ -440,7 +409,6 @@ do
     end
   end
 end
-
 --@api-stub: lurek.automation.getLastError
 -- Returns the last error message string, or nil if no error occurred
 do
@@ -454,5 +422,4 @@ do
     end
   end
 end
-
 print("content/examples/automation.lua")

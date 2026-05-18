@@ -1,7 +1,6 @@
 -- content/examples/repl.lua
 -- Demonstrates the lurek.repl module: in-game developer console with eval, history, and tab-completion.
 -- Run: cargo run -- content/examples/repl.lua
-
 --@api-stub: lurek.repl.new
 -- Creates a REPL session with bounded command history (default 200 entries)
 do
@@ -15,7 +14,6 @@ do
   -- Default history size (200) is fine for most in-game consoles
   local default_console = lurek.repl.new()
 end
-
 --@api-stub: LReplSession:eval
 -- Evaluates a Lua string and returns the display result (value, output, or error text)
 do
@@ -35,7 +33,6 @@ do
   -- Use eval to toggle debug overlays from the in-game console
   console:eval("show_hitboxes = not show_hitboxes")
 end
-
 --@api-stub: LReplSession:history
 -- Returns all recorded inputs as an array, oldest entry first
 do
@@ -52,7 +49,6 @@ do
     lurek.log.info(i .. ": " .. cmd, "repl")
   end
 end
-
 --@api-stub: LReplSession:clear
 -- Removes all history entries; useful when switching contexts or resetting the console
 do
@@ -70,7 +66,6 @@ do
   local count = console:len()
   lurek.log.info("after clear: " .. tostring(count) .. " entries", "repl")
 end
-
 --@api-stub: LReplSession:len
 -- Returns the current number of stored history entries
 do
@@ -88,7 +83,6 @@ do
   local max = 8
   lurek.log.info(tostring(n) .. "/" .. tostring(max) .. " history slots", "repl")
 end
-
 --@api-stub: LReplSession:complete
 -- Returns an array of completion candidates matching a prefix (for tab-completion)
 do
@@ -107,7 +101,6 @@ do
   local broad = console:complete("lurek.")
   lurek.log.info("completions for 'lurek.': " .. tostring(#broad), "repl")
 end
-
 --@api-stub: LReplSession:type
 -- Returns the type name string "LReplSession" for this handle
 do
@@ -117,7 +110,6 @@ do
   local t = console:type()
   lurek.log.info("handle type: " .. t, "repl")
 end
-
 --@api-stub: LReplSession:typeOf
 -- Checks whether this handle matches a given type name (supports "LReplSession" and "Object")
 do
@@ -133,5 +125,4 @@ do
     lurek.log.info("also matches base Object type", "repl")
   end
 end
-
 print("content/examples/repl.lua")

@@ -1,7 +1,6 @@
 -- content/examples/parallax.lua
 -- Comprehensive lurek.parallax API examples: layers, sets, presets, scrolling, tiling, effects, and rendering.
 -- Run: cargo run -- content/examples/parallax.lua
-
 --@api-stub: lurek.parallax.newLayer
 -- Creates a parallax layer from an options table
 do

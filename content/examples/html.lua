@@ -1,7 +1,6 @@
 -- content/examples/html.lua
 -- lurek.html API examples: HTML/CSS documents for game UI (HUDs, menus, dialogs, inventories).
 -- Run: cargo run -- content/examples/html.lua
-
 --@api-stub: lurek.html.newDocument
 -- Creates an HTML document from optional source and layout/style options
 do
@@ -39,7 +38,6 @@ do
   empty:setHtml("<body><p>Populated later</p></body>")
   lurek.log.info("empty doc populated", "html")
 end
-
 --@api-stub: lurek.html.loadDocument
 -- Loads an HTML document from GameFS and optionally loads CSS from options or companion file
 do
@@ -59,7 +57,6 @@ do
     lurek.log.info("loadDocument: file not found (expected in example)", "html")
   end
 end
-
 --@api-stub: lurek.html.supports
 -- Returns whether the HTML engine supports a named feature
 do
@@ -71,7 +68,6 @@ do
   lurek.log.info("flex=" .. tostring(has_flex) .. " grid=" .. tostring(has_grid)
     .. " transitions=" .. tostring(has_transitions), "html")
 end
-
 --@api-stub: lurek.html.preventDefault
 -- Prevent default for Lua scripts in this module
 do
@@ -88,7 +84,6 @@ do
   pcall(function() doc:mousepressed(50, 50, 1) end)
   lurek.log.info("preventDefault called in handler", "html")
 end
-
 --@api-stub: lurek.html.stopPropagation
 -- Stop propagation for Lua scripts in this module
 do
@@ -118,7 +113,6 @@ do
   end
   pcall(function() doc:mousepressed(10, 10, 1) end)
 end
-
 --@api-stub: lurek.html.isDefaultPrevented
 -- Returns true if default prevented for Lua scripts in this module
 do
@@ -133,7 +127,6 @@ do
   end)
   pcall(function() doc:mousepressed(20, 20, 1) end)
 end
-
 --@api-stub: LHtmlElement:setHtml
 -- Replaces the document markup and invalidates existing element handles
 do
@@ -153,7 +146,6 @@ do
 ]])
   lurek.log.info("setHtml replaced entire markup for scene transition", "html")
 end
-
 --@api-stub: LHtmlElement:getHtml
 -- Returns the current document markup string
 do
@@ -165,7 +157,6 @@ do
   local markup = doc:getHtml()
   lurek.log.info("getHtml length=" .. #markup .. " chars", "html")
 end
-
 --@api-stub: LHtmlDocument:setCss
 -- Replaces the document stylesheet text
 do
@@ -187,7 +178,6 @@ do
   ]])
   lurek.log.info("setCss applied light theme", "html")
 end
-
 --@api-stub: LHtmlDocument:addCss
 -- Appends CSS source text to the document stylesheet
 do
@@ -210,7 +200,6 @@ do
   ]])
   lurek.log.info("addCss appended combo highlight rule", "html")
 end
-
 --@api-stub: LHtmlDocument:clearCss
 -- Clears all CSS source text from the document
 do
@@ -224,7 +213,6 @@ do
   doc:setCss("p { color: green; font-size: 16px; }")
   lurek.log.info("clearCss + setCss: theme fully replaced", "html")
 end
-
 --@api-stub: LHtmlDocument:setViewport
 -- Sets the document layout viewport size
 do
@@ -238,7 +226,6 @@ do
   doc:setViewport(1920, 1080)
   lurek.log.info("setViewport updated to 1920x1080", "html")
 end
-
 --@api-stub: LHtmlDocument:getViewport
 -- Returns the document layout viewport size
 do
@@ -247,7 +234,6 @@ do
   local w, h = doc:getViewport()
   lurek.log.info("getViewport: " .. tostring(w) .. "x" .. tostring(h), "html")
 end
-
 --@api-stub: LHtmlDocument:update
 -- Advances document timers and animated state
 do
@@ -263,7 +249,6 @@ do
   end
   lurek.log.info("update called for 10 frames", "html")
 end
-
 --@api-stub: LHtmlDocument:draw
 -- Queues render commands for this document at an optional offset
 do
@@ -280,7 +265,6 @@ do
   -- You could also offset for screen shake: doc:draw(shake_x, shake_y)
   lurek.log.info("draw queued render commands", "html")
 end
-
 --@api-stub: LHtmlDocument:render
 -- Queues render commands for this document at an optional offset
 do
@@ -291,7 +275,6 @@ do
   pcall(function() doc:render(0, 0) end)
   lurek.log.info("render (alias for draw) called", "html")
 end
-
 --@api-stub: LHtmlDocument:relayout
 -- Rebuilds document layout immediately
 do
@@ -311,7 +294,6 @@ do
     lurek.log.info("relayout done, tooltip rect: " .. w .. "x" .. h, "html")
   end
 end
-
 --@api-stub: LHtmlDocument:isDirty
 -- Returns whether the document layout is dirty
 do
@@ -330,7 +312,6 @@ do
   if el then el:setText("HP: 50") end
   lurek.log.info("after setText, dirty=" .. tostring(doc:isDirty()), "html")
 end
-
 --@api-stub: LHtmlDocument:getRoot
 -- Returns the root DOM element handle
 do
@@ -348,7 +329,6 @@ do
     lurek.log.info("root tag: " .. root:getTagName(), "html")
   end
 end
-
 --@api-stub: LHtmlDocument:getElementById
 -- Looks up the first element with a matching id attribute
 do
@@ -375,7 +355,6 @@ do
   local missing = doc:getElementById("does-not-exist")
   lurek.log.info("missing element is nil: " .. tostring(missing == nil), "html")
 end
-
 --@api-stub: LHtmlElement:query
 -- Looks up the first element matching a selector
 do
@@ -398,7 +377,6 @@ do
     lurek.log.info("active quest: " .. active:getText(), "html")
   end
 end
-
 --@api-stub: LHtmlElement:queryAll
 -- Returns all elements matching a selector
 do
@@ -423,7 +401,6 @@ do
     lurek.log.info("  row " .. i .. ": " .. text, "html")
   end
 end
-
 --@api-stub: LHtmlElement:on
 -- Registers a document-level event listener
 do
@@ -444,7 +421,6 @@ do
   end)
   lurek.log.info("on() returned handle=" .. tostring(handle), "html")
 end
-
 --@api-stub: LHtmlElement:off
 -- Removes a document-level event listener by handle
 do
@@ -458,7 +434,6 @@ do
   doc:off(handle)
   lurek.log.info("off() removed listener, handle=" .. tostring(handle), "html")
 end
-
 --@api-stub: LHtmlDocument:mousepressed
 -- Forwards a mouse press to the document and dispatches a click event when an element is hit
 do
@@ -480,7 +455,6 @@ do
   local consumed = doc:mousepressed(50, 20, 1)
   lurek.log.info("mousepressed consumed=" .. tostring(consumed), "html")
 end
-
 --@api-stub: LHtmlDocument:mousereleased
 -- Forwards a mouse release to the document
 do
@@ -491,7 +465,6 @@ do
   doc:mousereleased(50, 20, 1)
   lurek.log.info("mousereleased completes the press/release cycle", "html")
 end
-
 --@api-stub: LHtmlDocument:mousemoved
 -- Forwards mouse movement to the document
 do
@@ -507,7 +480,6 @@ do
   doc:mousemoved(50, 20)
   lurek.log.info("mousemoved enables hover CSS states", "html")
 end
-
 --@api-stub: LHtmlDocument:wheelmoved
 -- Forwards mouse wheel movement to the document
 do
@@ -525,7 +497,6 @@ do
   doc:wheelmoved(0, -3)
   lurek.log.info("wheelmoved scrolled chat log down", "html")
 end
-
 --@api-stub: LHtmlDocument:keypressed
 -- Forwards a key press to the focused document element and dispatches `keydown`
 do
@@ -544,7 +515,6 @@ do
   local consumed = doc:keypressed("return")
   lurek.log.info("keypressed(return) consumed=" .. tostring(consumed), "html")
 end
-
 --@api-stub: LHtmlDocument:textinput
 -- Forwards text input to the focused document element and dispatches `input`
 do
@@ -566,7 +536,6 @@ do
   doc:textinput("o")
   lurek.log.info("textinput sent 'Hero' character by character", "html")
 end
-
 --@api-stub: LHtmlElement:type
 -- Returns the Lua-visible type name for this HTML document handle
 do
@@ -575,7 +544,6 @@ do
   local t = doc:type()
   lurek.log.info("doc:type() = " .. t, "html")
 end
-
 --@api-stub: LHtmlElement:typeOf
 -- Returns whether this document handle matches a supported type name
 do
@@ -586,7 +554,6 @@ do
   lurek.log.info("typeOf(Object)=" .. tostring(doc:typeOf("Object")), "html")
   lurek.log.info("typeOf(LImage)=" .. tostring(doc:typeOf("LImage")), "html")
 end
-
 --@api-stub: LHtmlElement:getDocument
 -- Returns the document handle that owns this element
 do
@@ -604,7 +571,6 @@ do
     lurek.log.info("getDocument viewport: " .. tostring(w) .. "x" .. tostring(h), "html")
   end
 end
-
 --@api-stub: LHtmlElement:getTagName
 -- Returns this element's tag name
 do
@@ -622,7 +588,6 @@ do
   if btn then lurek.log.info("action tag: " .. btn:getTagName(), "html") end
   if lbl then lurek.log.info("label tag: " .. lbl:getTagName(), "html") end
 end
-
 --@api-stub: LHtmlElement:getId
 -- Returns this element's id attribute
 do
@@ -634,7 +599,6 @@ do
     lurek.log.info("getId=" .. tostring(el:getId()), "html")
   end
 end
-
 --@api-stub: LHtmlElement:setId
 -- Sets or clears this element's id attribute
 do
@@ -649,7 +613,6 @@ do
     lurek.log.info("setId changed to: " .. tostring(el:getId()), "html")
   end
 end
-
 --@api-stub: LHtmlElement:getText
 -- Returns this element's text content
 do
@@ -665,7 +628,6 @@ do
     lurek.log.info("getText: " .. el:getText(), "html")
   end
 end
-
 --@api-stub: LHtmlElement:setText
 -- Replaces this element's text content
 do
@@ -690,7 +652,6 @@ do
   end
   lurek.log.info("setText updated score and timer displays", "html")
 end
-
 --@api-stub: LHtmlElement:getHtml
 -- Returns this element's inner HTML
 do
@@ -711,7 +672,6 @@ do
     lurek.log.info("getHtml (tooltip inner): " .. inner, "html")
   end
 end
-
 --@api-stub: LHtmlElement:setHtml
 -- Replaces this element's inner HTML and may invalidate descendant element handles
 do
@@ -733,7 +693,6 @@ do
     lurek.log.info("setHtml populated shop items", "html")
   end
 end
-
 --@api-stub: LHtmlElement:appendHtml
 -- Appends HTML source to this element's inner HTML
 do
@@ -752,7 +711,6 @@ do
     lurek.log.info("appendHtml added 3 chat messages", "html")
   end
 end
-
 --@api-stub: LHtmlElement:remove
 -- Removes this element from the document
 do
@@ -775,7 +733,6 @@ do
   local check = doc:getElementById("notification")
   lurek.log.info("notification after remove: " .. tostring(check), "html")
 end
-
 --@api-stub: LHtmlElement:getAttribute
 -- Returns an attribute value from this element
 do
@@ -796,7 +753,6 @@ do
     lurek.log.info("item=" .. tostring(item_id) .. " qty=" .. tostring(qty), "html")
   end
 end
-
 --@api-stub: LHtmlElement:setAttribute
 -- Sets or clears an attribute on this element
 do
@@ -815,7 +771,6 @@ do
     lurek.log.info("setAttribute stored item data on slot", "html")
   end
 end
-
 --@api-stub: LHtmlElement:removeAttribute
 -- Removes an attribute from this element
 do
@@ -832,7 +787,6 @@ do
     lurek.log.info("removeAttribute cleared equipped flag", "html")
   end
 end
-
 --@api-stub: LHtmlElement:hasClass
 -- Returns whether this element has a CSS class
 do
@@ -851,7 +805,6 @@ do
     lurek.log.info("disabled=" .. tostring(is_disabled) .. " primary=" .. tostring(is_primary), "html")
   end
 end
-
 --@api-stub: LHtmlElement:addClass
 -- Adds a CSS class to this element
 do
@@ -868,7 +821,6 @@ do
     lurek.log.info("addClass(damaged) adds red border via CSS", "html")
   end
 end
-
 --@api-stub: LHtmlElement:removeClass
 -- Removes a CSS class from this element
 do
@@ -884,7 +836,6 @@ do
     lurek.log.info("removeClass(disabled) re-enables the button", "html")
   end
 end
-
 --@api-stub: LHtmlElement:toggleClass
 -- Toggles a CSS class on this element, optionally forcing the final state
 do
@@ -905,7 +856,6 @@ do
     lurek.log.info("toggleClass(open, false) → forced closed=" .. tostring(forced), "html")
   end
 end
-
 --@api-stub: LHtmlElement:getStyle
 -- Returns an inline or computed style value for this element
 do
@@ -922,7 +872,6 @@ do
     lurek.log.info("health bar width=" .. tostring(width) .. " bg=" .. tostring(bg), "html")
   end
 end
-
 --@api-stub: LHtmlElement:setStyle
 -- Sets or clears a style property on this element
 do
@@ -943,7 +892,6 @@ do
     lurek.log.info("setStyle updated health bar to " .. hp_percent .. "%", "html")
   end
 end
-
 --@api-stub: LHtmlElement:getRect
 -- Returns this element's layout rectangle after relayout if needed
 do
@@ -966,7 +914,6 @@ do
       .. " w=" .. tostring(w) .. " h=" .. tostring(h), "html")
   end
 end
-
 --@api-stub: LHtmlElement:focus
 -- Gives keyboard focus to this element
 do
@@ -985,7 +932,6 @@ do
     lurek.log.info("focus() set on player name input", "html")
   end
 end
-
 --@api-stub: LHtmlElement:blur
 -- Removes keyboard focus from this element when it is focused
 do
@@ -1003,7 +949,6 @@ do
     lurek.log.info("blur() removed focus from chat input", "html")
   end
 end
-
 --@api-stub: LHtmlElement:query
 -- Looks up the first descendant element matching a selector
 do
@@ -1027,7 +972,6 @@ do
     end
   end
 end
-
 --@api-stub: LHtmlElement:queryAll
 -- Returns all descendant elements matching a selector
 do
@@ -1049,7 +993,6 @@ do
     lurek.log.info("active buffs: " .. #buffs, "html")
   end
 end
-
 --@api-stub: LHtmlElement:on
 -- Registers an element-level event listener
 do
@@ -1075,7 +1018,6 @@ do
     lurek.log.info("element:on() registered per-button handlers", "html")
   end
 end
-
 --@api-stub: LHtmlElement:off
 -- Removes an element-level event listener by handle
 do
@@ -1096,7 +1038,6 @@ do
     lurek.log.info("element:off() ready for one-shot pattern", "html")
   end
 end
-
 --@api-stub: LHtmlElement:type
 -- Returns the Lua-visible type name for this HTML element handle
 do
@@ -1108,7 +1049,6 @@ do
     lurek.log.info("element:type() = " .. el:type(), "html")
   end
 end
-
 --@api-stub: LHtmlElement:typeOf
 -- Returns whether this element handle matches a supported type name
 do
@@ -1122,22 +1062,7 @@ do
     lurek.log.info("typeOf(LImage)=" .. tostring(el:typeOf("LImage")), "html")
   end
 end
-
 print("content/examples/html.lua")
-
--- =============================================================================
--- STUBS: 8 uncovered lurek.html API item(s)
--- Generated by tools/audit/example_add_missing.py
--- REQUIRED: replace every --@api-stub: block below with a real scenario.
--- Run .github/prompts/flesh-out-example.prompt.md for instructions.
--- The final committed file must contain ZERO --@api-stub: lines.
--- =============================================================================
-
--- -----------------------------------------------------------------------------
--- LHtmlDocument methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LHtmlDocument:setHtml -----------------------------------------
 --@api-stub: LHtmlDocument:setHtml
 -- Replaces the document markup and invalidates existing element handles.
 do
@@ -1145,8 +1070,6 @@ do
   doc:setHtml("<h1>Game Over</h1><p>Score: 1234</p>")
   lurek.log.debug("html set", "html")
 end
-
--- ---- Stub: LHtmlDocument:getHtml -----------------------------------------
 --@api-stub: LHtmlDocument:getHtml
 -- Returns the current document markup string.
 do
@@ -1155,8 +1078,6 @@ do
   local html = doc:getHtml()
   lurek.log.debug("html: " .. html, "html")
 end
-
--- ---- Stub: LHtmlDocument:query -------------------------------------------
 --@api-stub: LHtmlDocument:query
 -- Looks up the first element matching a selector.
 do
@@ -1165,8 +1086,6 @@ do
   local el = doc:query("#hud")
   lurek.log.debug("found element: " .. tostring(el ~= nil), "html")
 end
-
--- ---- Stub: LHtmlDocument:queryAll ----------------------------------------
 --@api-stub: LHtmlDocument:queryAll
 -- Returns all elements matching a selector.
 do
@@ -1175,8 +1094,6 @@ do
   local items = doc:queryAll("li")
   lurek.log.debug("list items: " .. #items, "html") -- 3
 end
-
--- ---- Stub: LHtmlDocument:on ----------------------------------------------
 --@api-stub: LHtmlDocument:on
 -- Registers a document-level event listener.
 do
@@ -1186,8 +1103,6 @@ do
     lurek.log.debug("button clicked in HTML UI", "html")
   end)
 end
-
--- ---- Stub: LHtmlDocument:off ---------------------------------------------
 --@api-stub: LHtmlDocument:off
 -- Removes a document-level event listener by handle.
 do
@@ -1196,16 +1111,12 @@ do
   doc:off(handle)
   lurek.log.debug("event listener removed", "html")
 end
-
--- ---- Stub: LHtmlDocument:type --------------------------------------------
 --@api-stub: LHtmlDocument:type
 -- Returns the Lua-visible type name for this HTML document handle.
 do
   local obj = lurek.html.newDocument()
   lurek.log.debug("type: " .. obj:type(), "example") -- "LHtmlDocument"
 end
-
--- ---- Stub: LHtmlDocument:typeOf ------------------------------------------
 --@api-stub: LHtmlDocument:typeOf
 -- Returns whether this document handle matches a supported type name.
 do

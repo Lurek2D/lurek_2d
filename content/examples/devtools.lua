@@ -1,11 +1,6 @@
 -- content/examples/devtools.lua
 -- lurek.devtools API examples: logging, profiling, file watching, REPL, watches, and inspection.
 -- Run: cargo run -- content/examples/devtools.lua
-
--- =============================================================================
--- LOGGING
--- =============================================================================
-
 --@api-stub: lurek.devtools.log
 -- Adds a message to the devtools log using an explicit severity level
 do
@@ -22,7 +17,6 @@ do
   end
   log_asset("debug", "hero.png", "loaded 256x256 RGBA")
 end
-
 --@api-stub: lurek.devtools.trace
 -- Adds a trace-level diagnostic message to the devtools log
 do
@@ -31,7 +25,6 @@ do
   local dt = 1 / 60
   lurek.devtools.trace("tick dt=" .. string.format("%.4f", dt) .. " entities=128")
 end
-
 --@api-stub: lurek.devtools.debug
 -- Adds a debug-level diagnostic message to the devtools log
 do
@@ -41,7 +34,6 @@ do
   local target_id = 42
   lurek.devtools.debug("AI state -> " .. state .. " target=" .. target_id)
 end
-
 --@api-stub: lurek.devtools.info
 -- Adds an info-level diagnostic message to the devtools log
 do
@@ -51,7 +43,6 @@ do
   local entity_count = 87
   lurek.devtools.info("level '" .. level_name .. "' loaded: " .. entity_count .. " entities")
 end
-
 --@api-stub: lurek.devtools.warn
 -- Adds a warning-level diagnostic message to the devtools log
 do
@@ -60,7 +51,6 @@ do
   local texture = "assets/hero_alt.png"
   lurek.devtools.warn("texture not found: " .. texture .. " — using placeholder")
 end
-
 --@api-stub: lurek.devtools.error
 -- Adds an error-level diagnostic message to the devtools log
 do
@@ -72,7 +62,6 @@ do
     lurek.devtools.error("save failed: " .. path .. " (disk full?)")
   end
 end
-
 --@api-stub: lurek.devtools.fatal
 -- Adds a fatal-level diagnostic message to the devtools log
 do
@@ -86,7 +75,6 @@ do
     -- Game would initiate graceful shutdown here.
   end
 end
-
 --@api-stub: lurek.devtools.setLogLevel
 -- Sets the minimum severity that remains visible in devtools log output
 do
@@ -99,7 +87,6 @@ do
   -- This debug message will pass:
   lurek.devtools.debug("this is visible")
 end
-
 --@api-stub: lurek.devtools.getLogLevel
 -- Returns the minimum severity currently used by devtools log output
 do
@@ -111,7 +98,6 @@ do
     lurek.devtools.debug(dump)
   end
 end
-
 --@api-stub: lurek.devtools.setLogConsole
 -- Enables or disables mirroring devtools log entries to the console
 do
@@ -120,7 +106,6 @@ do
   lurek.devtools.setLogConsole(true)
   lurek.devtools.info("messages now visible in terminal output")
 end
-
 --@api-stub: lurek.devtools.getLogConsole
 -- Returns whether devtools log entries are mirrored to the console
 do
@@ -129,7 +114,6 @@ do
     lurek.devtools.debug("console active — verbose output enabled")
   end
 end
-
 --@api-stub: lurek.devtools.setLogFile
 -- Sets the file path used by devtools file logging state
 do
@@ -140,7 +124,6 @@ do
   lurek.devtools.setLogFile(path)
   lurek.devtools.info("file logging started: " .. path)
 end
-
 --@api-stub: lurek.devtools.getLogFile
 -- Returns the file path currently stored as the devtools log target
 do
@@ -152,7 +135,6 @@ do
     lurek.devtools.debug("logging to: " .. path)
   end
 end
-
 --@api-stub: lurek.devtools.getLogHistory
 -- Returns recent devtools log entries as structured tables
 do
@@ -167,7 +149,6 @@ do
     lurek.devtools.trace("[" .. entry.level .. "] " .. entry.message)
   end
 end
-
 --@api-stub: lurek.devtools.clearLog
 -- Clears all in-memory devtools log entries
 do
@@ -180,11 +161,6 @@ do
   -- Only the "scene transition" message remains.
   lurek.devtools.debug("entries after clear: " .. #history)
 end
-
--- =============================================================================
--- PROFILING
--- =============================================================================
-
 --@api-stub: lurek.devtools.setProfilingEnabled
 -- Enables or disables collection of CPU profiling zones
 do
@@ -194,7 +170,6 @@ do
   lurek.devtools.setProfilingEnabled(debug_mode)
   lurek.devtools.info("profiler " .. (debug_mode and "enabled" or "disabled"))
 end
-
 --@api-stub: lurek.devtools.isProfilingEnabled
 -- Returns whether CPU profiling zone collection is currently enabled
 do
@@ -205,7 +180,6 @@ do
     lurek.devtools.profilePop()
   end
 end
-
 --@api-stub: lurek.devtools.profilePush
 -- Starts a named profiling zone on the current profiler stack
 do
@@ -227,7 +201,6 @@ do
   lurek.devtools.profilePop()
   lurek.devtools.profilePop()
 end
-
 --@api-stub: lurek.devtools.profilePop
 -- Ends the current profiling zone on the profiler stack
 do

@@ -1,11 +1,6 @@
 -- content/examples/thread.lua
 -- lurek.thread API examples: worker threads, channels, pools, and promises.
 -- Run: cargo run -- content/examples/thread.lua
-
--- =============================================================================
--- Module-level functions
--- =============================================================================
-
 --@api-stub: lurek.thread.newThread
 -- Creates a new worker thread that executes a Lua code string on a dedicated OS thread.
 do
@@ -19,7 +14,6 @@ do
   ]])
   generator:start()
 end
-
 --@api-stub: lurek.thread.newChannel
 -- Creates a new unbounded channel for sending typed values between threads.
 do
@@ -33,7 +27,6 @@ do
     lurek.log.info("event: " .. msg.kind, "thread")
   end
 end
-
 --@api-stub: lurek.thread.newBoundedChannel
 -- Creates a bounded channel with a fixed capacity; pushes block when full.
 do
@@ -45,7 +38,6 @@ do
   local accepted = render_queue:tryPush({ cmd = "draw_sprite", id = 3 })
   lurek.log.info("queued ok=" .. tostring(accepted), "thread")
 end
-
 --@api-stub: lurek.thread.getChannel
 -- Returns a named shared channel, creating it on first access; same name = same channel.
 do
@@ -56,7 +48,6 @@ do
   jobs:push({ from = { x = 10, y = 5 }, to = { x = 60, y = 40 } })
   lurek.log.info("queued " .. jobs:getCount() .. " pathfind jobs", "thread")
 end
-
 --@api-stub: lurek.thread.newPool
 -- Creates a fixed-size thread pool; workers share an input channel and write to an output channel.
 do
@@ -74,7 +65,6 @@ do
   pool:submit({ id = 1, x = 3, y = 4 })
   pool:submit({ id = 2, x = 5, y = 12 })
 end
-
 --@api-stub: lurek.thread.async
 -- Runs code or a dumped function asynchronously, returning a promise for the result.
 do
@@ -92,7 +82,6 @@ do
   end, 20, 22)
   lurek.log.info("fn async dispatched, done=" .. tostring(fn_promise:isDone()), "thread")
 end
-
 --@api-stub: lurek.thread.getWorkerCapabilities
 -- Returns a list of lurek.* module names available inside worker VMs.
 do
@@ -102,18 +91,12 @@ do
     lurek.log.debug("worker capability: " .. caps[i], "thread")
   end
 end
-
--- =============================================================================
--- LThread methods
--- =============================================================================
-
 --@api-stub: LChannel:type
 -- Returns the type name string for this thread handle (always "LThread").
 do
   local t = lurek.thread.newThread("-- noop")
   lurek.log.info("type = " .. t:type(), "thread")
 end
-
 --@api-stub: LChannel:typeOf
 -- Checks whether this thread handle matches a given type name.
 do
@@ -122,7 +105,6 @@ do
   assert(t:typeOf("Object"))
   assert(not t:typeOf("LChannel"))
 end
-
 --@api-stub: LThread:start
 -- Launches the worker thread; optional arguments become the worker's varargs.
 do
@@ -137,7 +119,6 @@ do
   ]])
   t:start(12345, 8)
 end
-
 --@api-stub: LThread:wait
 -- Blocks the calling thread until the worker finishes execution.
 do
@@ -149,7 +130,6 @@ do
   loader:wait()
   lurek.log.info("level data ready", "thread")
 end
-
 --@api-stub: LThread:isRunning
 -- Returns true if the worker thread is still executing.
 do
@@ -163,7 +143,6 @@ do
   job:wait()
   lurek.log.info("after wait: running=" .. tostring(job:isRunning()), "thread")
 end
-
 --@api-stub: LPromise:getError
 -- Returns the error message if the worker terminated with an error, or nil.
 do
@@ -178,18 +157,12 @@ do
     lurek.log.error("worker failed: " .. err, "thread")
   end
 end
-
--- =============================================================================
--- LThreadPool methods
--- =============================================================================
-
 --@api-stub: LChannel:type
 -- Returns the type name string for this pool handle (always "LThreadPool").
 do
   local pool = lurek.thread.newPool(2, "-- noop")
   lurek.log.info("pool type = " .. pool:type(), "thread")
 end
-
 --@api-stub: LChannel:typeOf
 -- Checks whether this pool handle matches a given type name.
 do
@@ -198,7 +171,6 @@ do
   assert(pool:typeOf("Object"))
   assert(not pool:typeOf("LChannel"))
 end
-
 --@api-stub: LThreadPool:submit
 -- Pushes a value into the pool's input channel for processing by a worker.
 do
@@ -214,7 +186,6 @@ do
   pool:submit({ id = 1, x = 3, y = 4 })
   pool:submit({ id = 2, x = 6, y = 8 })
 end
-
 --@api-stub: LThreadPool:collect
 -- Pops and returns the next result from the pool's output channel, or nil.
 do
@@ -232,7 +203,6 @@ do
     lurek.log.info("pool result: " .. tostring(result), "thread")
   end
 end
-
 --@api-stub: LThreadPool:size
 -- Returns the number of worker threads in the pool.
 do
@@ -241,7 +211,6 @@ do
   local inflight_cap = pool:size() * 4
   lurek.log.info("pool has " .. pool:size() .. " workers, cap=" .. inflight_cap, "thread")
 end
-
 --@api-stub: LThreadPool:join
 -- Blocks until all workers finish or the optional timeout expires.
 do
@@ -255,7 +224,6 @@ do
   local finished = pool:join(1.0)
   lurek.log.info("pool join result: " .. tostring(finished), "thread")
 end
-
 --@api-stub: LThreadPool:getInputChannel
 -- Returns the pool's shared input channel for direct access.
 do
@@ -271,7 +239,6 @@ do
   end
   lurek.log.info("bulk-queued 100 items", "thread")
 end
-
 --@api-stub: LThreadPool:getOutputChannel
 -- Returns the pool's shared output channel for direct access.
 do
@@ -280,18 +247,12 @@ do
   local out = pool:getOutputChannel()
   lurek.log.info("pending results: " .. out:getCount(), "thread")
 end
-
--- =============================================================================
--- LPromise methods
--- =============================================================================
-
 --@api-stub: LChannel:type
 -- Returns the type name string for this promise (always "LPromise").
 do
   local p = lurek.thread.async("-- noop")
   lurek.log.info("promise type = " .. p:type(), "thread")
 end
-
 --@api-stub: LChannel:typeOf
 -- Checks whether this promise matches a given type name.
 do
@@ -300,7 +261,6 @@ do
   assert(p:typeOf("Object"))
   assert(not p:typeOf("LChannel"))
 end
-
 --@api-stub: LPromise:isDone
 -- Returns true if the async computation has completed (success or error).
 do
@@ -310,7 +270,6 @@ do
   ]])
   lurek.log.info("promise done=" .. tostring(p:isDone()), "thread")
 end
-
 --@api-stub: LPromise:result
 -- Returns the computed result value, or nil if not yet done.
 do
@@ -324,7 +283,6 @@ do
     lurek.log.info("async result received", "thread")
   end
 end
-
 --@api-stub: LPromise:getError
 -- Returns the error string if the promise failed, or nil on success.
 do
@@ -336,7 +294,6 @@ do
     if err then lurek.log.error("async error: " .. err, "thread") end
   end
 end
-
 --@api-stub: LPromise:chain
 -- Creates a new promise that runs after this promise resolves, receiving its result.
 do
@@ -348,18 +305,12 @@ do
   -- local parse_promise = load_promise:chain([[ local result = ... ]])
   lurek.log.info("chain: parent promise created, done=" .. tostring(load_promise:isDone()), "thread")
 end
-
--- =============================================================================
--- LChannel methods
--- =============================================================================
-
 --@api-stub: LChannel:type
 -- Returns the type name string for this channel (always "LChannel").
 do
   local ch = lurek.thread.newChannel()
   lurek.log.info("channel type = " .. ch:type(), "thread")
 end
-
 --@api-stub: LChannel:typeOf
 -- Checks whether this channel matches a given type name.
 do
@@ -368,7 +319,6 @@ do
   assert(ch:typeOf("Object"))
   assert(not ch:typeOf("LThread"))
 end
-
 --@api-stub: LChannel:push
 -- Pushes a value onto the channel; blocks on bounded channels if full.
 do
@@ -379,7 +329,6 @@ do
   local seq2 = events:push({ kind = "score_delta", value = 100 })
   lurek.log.info("pushed seq " .. seq1 .. " and " .. seq2, "thread")
 end
-
 --@api-stub: LChannel:pop
 -- Removes and returns the next value without blocking; returns nil if empty.
 do
@@ -392,7 +341,6 @@ do
     ev = events:pop()
   end
 end
-
 --@api-stub: LChannel:peek
 -- Returns the front value without removing it; nil if empty.
 do
@@ -405,7 +353,6 @@ do
     lurek.log.info("high-priority job waiting", "thread")
   end
 end
-
 --@api-stub: LChannel:demand
 -- Blocks until a value is available or the optional timeout expires.
 do
@@ -421,7 +368,6 @@ do
   lurek.thread.getChannel("worker_inbox"):push("hello")
   worker:start()
 end
-
 --@api-stub: LChannel:getCount
 -- Returns the number of values currently queued in the channel.
 do
@@ -434,7 +380,6 @@ do
   end
   lurek.log.info("queued: " .. jobs:getCount(), "thread")
 end
-
 --@api-stub: LChannel:getCapacity
 -- Returns the max capacity of a bounded channel, or nil for unbounded.
 do
@@ -443,7 +388,6 @@ do
   lurek.log.info("bounded cap=" .. tostring(bounded:getCapacity()), "thread")
   lurek.log.info("unbounded cap=" .. tostring(unbounded:getCapacity()), "thread")
 end
-
 --@api-stub: LChannel:isBounded
 -- Returns true if this channel has a fixed capacity limit.
 do
@@ -452,7 +396,6 @@ do
   lurek.log.info("unbounded: " .. tostring(a:isBounded()), "thread")
   lurek.log.info("bounded: " .. tostring(b:isBounded()), "thread")
 end
-
 --@api-stub: LChannel:tryPush
 -- Attempts to push without blocking; returns false if the bounded channel is full.
 do
@@ -463,7 +406,6 @@ do
   local ok = bounded:tryPush("frame_3")
   lurek.log.info("3rd push accepted=" .. tostring(ok), "thread")
 end
-
 --@api-stub: LChannel:clear
 -- Removes all pending values from the channel.
 do
@@ -475,7 +417,6 @@ do
   assert(stale:getCount() == 0)
   lurek.log.info("channel cleared for new scene", "thread")
 end
-
 --@api-stub: LChannel:supply
 -- Pushes a value and blocks until a consumer pops it (synchronous handoff).
 do
@@ -487,7 +428,6 @@ do
   -- handoff:supply({ request = "generate_chunk", id = 5 })
   lurek.log.info("supply: use for synchronous handoff to a waiting consumer", "thread")
 end
-
 --@api-stub: LChannel:pushTable
 -- Pushes a table value, raising an error if the value is not a table.
 do
@@ -496,7 +436,6 @@ do
   ch:pushTable({ op = "spawn", x = 64, y = 32, entity = "goblin" })
   ch:pushTable({ op = "move", id = 7, dx = 1, dy = 0 })
 end
-
 --@api-stub: LChannel:popTable
 -- Pops the next value only if it is a table; discards non-table values.
 do
@@ -508,7 +447,6 @@ do
     lurek.log.info("got packet op=" .. pkt.op, "thread")
   end
 end
-
 --@api-stub: LChannel:pushBytes
 -- Pushes raw binary data onto the channel as a byte blob.
 do
@@ -519,7 +457,6 @@ do
   net_out:pushBytes(header .. payload)
   lurek.log.info("sent " .. #(header .. payload) .. " bytes", "thread")
 end
-
 --@api-stub: LChannel:popBytes
 -- Pops the next value only if it is a byte blob; discards non-bytes values.
 do
@@ -531,58 +468,31 @@ do
     lurek.log.info("received " .. #bytes .. " bytes", "thread")
   end
 end
-
 print("content/examples/thread.lua")
-
--- =============================================================================
--- STUBS: 7 uncovered lurek.thread API item(s)
--- Generated by tools/audit/example_add_missing.py
--- REQUIRED: replace every --@api-stub: block below with a real scenario.
--- Run .github/prompts/flesh-out-example.prompt.md for instructions.
--- The final committed file must contain ZERO --@api-stub: lines.
--- =============================================================================
-
--- -----------------------------------------------------------------------------
--- LPromise methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LPromise:type -------------------------------------------------
 --@api-stub: LPromise:type
 -- Returns the type name of this object.
 do
   local obj = lurek.thread.async(function() return 42 end)
   lurek.log.debug("type: " .. obj:type(), "example") -- "LPromise"
 end
-
--- ---- Stub: LPromise:typeOf -----------------------------------------------
 --@api-stub: LPromise:typeOf
 -- Checks whether this object matches the given type name.
 do
   local obj = lurek.thread.async(function() return 42 end)
   lurek.log.debug("typeOf LPromise: " .. tostring(obj:typeOf("LPromise")), "example") -- true
 end
-
--- -----------------------------------------------------------------------------
--- LThread methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LThread:type --------------------------------------------------
 --@api-stub: LThread:type
 -- Returns the type name of this object.
 do
   local obj = lurek.thread.newThread("return 42")
   lurek.log.debug("type: " .. obj:type(), "example") -- "LThread"
 end
-
--- ---- Stub: LThread:typeOf ------------------------------------------------
 --@api-stub: LThread:typeOf
 -- Checks whether this object matches the given type name.
 do
   local obj = lurek.thread.newThread("return 42")
   lurek.log.debug("typeOf LThread: " .. tostring(obj:typeOf("LThread")), "example") -- true
 end
-
--- ---- Stub: LThread:getError ----------------------------------------------
 --@api-stub: LThread:getError
 -- Returns the error message from the worker thread, if it terminated with an error.
 do
@@ -592,20 +502,12 @@ do
   local err = t:getError()
   lurek.log.debug("thread error: " .. tostring(err), "thread")
 end
-
--- -----------------------------------------------------------------------------
--- LThreadPool methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LThreadPool:type ----------------------------------------------
 --@api-stub: LThreadPool:type
 -- Returns the type name of this object.
 do
   local obj = lurek.thread.newPool(2, "worker")
   lurek.log.debug("type: " .. obj:type(), "example") -- "LThreadPool"
 end
-
--- ---- Stub: LThreadPool:typeOf --------------------------------------------
 --@api-stub: LThreadPool:typeOf
 -- Checks whether this object matches the given type name.
 do

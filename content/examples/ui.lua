@@ -1,7 +1,6 @@
 -- content/examples/ui.lua
 -- Demonstrates every lurek.ui.* function with realistic game UI patterns.
 -- Run: cargo run -- content/examples/ui.lua
-
 --@api-stub: lurek.ui.beginDrag
 -- Begins a drag operation on a widget
 do
@@ -10,7 +9,6 @@ do
   local slot = lurek.ui.newButton("Iron Sword")
   lurek.ui.beginDrag(slot)
 end
-
 --@api-stub: lurek.ui.getActiveDrag
 -- Returns the widget index currently being dragged, or nil
 do
@@ -21,7 +19,6 @@ do
     print("Currently dragging widget:", dragged)
   end
 end
-
 --@api-stub: lurek.ui.dropOn
 -- Drops the currently dragged widget onto a target widget
 do
@@ -32,7 +29,6 @@ do
   lurek.ui.beginDrag(item)
   lurek.ui.dropOn(equipment_slot)
 end
-
 --@api-stub: lurek.ui.endDrag
 -- Ends the current drag operation without dropping
 do
@@ -41,7 +37,6 @@ do
   local cancelled_widget = lurek.ui.endDrag()
   print("Drag cancelled, returning widget:", cancelled_widget)
 end
-
 --@api-stub: LUiWidget:animateAlpha
 -- Performs the animate alpha operation on this ui widget.
 do
@@ -50,7 +45,6 @@ do
   local damage_text = lurek.ui.newLabel("-42 HP")
   damage_text:animateAlpha(0.0, 0.25, false)
 end
-
 --@api-stub: LUiWidget:animatePosition
 -- Performs the animate position operation on this ui widget.
 do
@@ -59,7 +53,6 @@ do
   local toast = lurek.ui.newLabel("Quest Complete!")
   toast:animatePosition(120, 40, 0.25)
 end
-
 --@api-stub: LUiWidget:isAnimating
 -- Returns true if this ui widget animating.
 do
@@ -69,7 +62,6 @@ do
   local busy = menu:isAnimating()
   print("Menu animating:", busy)
 end
-
 --@api-stub: LUiWidget:cancelAnimations
 -- Performs the cancel animations operation on this ui widget.
 do
@@ -78,7 +70,6 @@ do
   local dialog = lurek.ui.newLabel("Loading...")
   dialog:cancelAnimations()
 end
-
 --@api-stub: LUiWidget:setPosition
 -- Sets the position of this ui widget.
 do
@@ -87,7 +78,6 @@ do
   local label = lurek.ui.newLabel("HP: 100")
   label:setPosition(100, 200)
 end
-
 --@api-stub: LUiWidget:getPosition
 -- Returns the position of this ui widget.
 do
@@ -97,7 +87,6 @@ do
   local x, y = label:getPosition()
   print("Widget at:", x, y)
 end
-
 --@api-stub: LUiWidget:setSize
 -- Sets the size of this ui.
 do
@@ -106,7 +95,6 @@ do
   local _w = lurek.ui.newLabel("ui")
   _w:setSize(320, 80)
 end
-
 --@api-stub: LUiWidget:getSize
 -- Returns the size of this ui.
 do
@@ -115,7 +103,6 @@ do
   local w, h = _w:getSize()
   print("Panel size:", w, "x", h)
 end
-
 --@api-stub: LUiWidget:getRect
 -- Returns the rect of this ui.
 do
@@ -125,7 +112,6 @@ do
   local rect = _w:getRect()
   print("Bounding rect:", rect)
 end
-
 --@api-stub: LUiWidget:setVisible
 -- Sets the visibility flag for this ui.
 do
@@ -134,7 +120,6 @@ do
   local _w = lurek.ui.newLabel("ui")
   _w:setVisible(true)
 end
-
 --@api-stub: LUiWidget:isVisible
 -- Returns true if this ui is currently visible.
 do
@@ -143,7 +128,6 @@ do
   local shown = _w:isVisible()
   print("Currently visible:", shown)
 end
-
 --@api-stub: LUiWidget:setEnabled
 -- Sets whether this ui is enabled and accepts input.
 do
@@ -152,7 +136,6 @@ do
   local _w = lurek.ui.newLabel("ui")
   _w:setEnabled(true)
 end
-
 --@api-stub: LUiWidget:isEnabled
 -- Returns true if this ui is currently enabled.
 do
@@ -161,7 +144,6 @@ do
   local active = _w:isEnabled()
   print("Accepts input:", active)
 end
-
 --@api-stub: LUiWidget:setId
 -- Sets the id of this ui.
 do
@@ -170,7 +152,6 @@ do
   local _w = lurek.ui.newLabel("ui")
   _w:setId("hud_health_bar")
 end
-
 --@api-stub: LUiWidget:getId
 -- Returns the id of this ui.
 do
@@ -179,7 +160,6 @@ do
   local id = _w:getId()
   print("Clicked widget ID:", id)
 end
-
 --@api-stub: LUiWidget:setTooltip
 -- Sets the tooltip of this ui.
 do
@@ -187,7 +167,6 @@ do
   _w:setTooltip("Hello")
   print("applied")
 end
-
 --@api-stub: LUiWidget:getTooltip
 -- Returns the tooltip of this ui.
 do
@@ -196,7 +175,6 @@ do
   local v = _w:getTooltip()
   print("getTooltip:", v)
 end
-
 --@api-stub: LUiWidget:getState
 -- Returns the state of this ui.
 do
@@ -204,7 +182,6 @@ do
   local v = _w:getState()
   print("getState:", v)
 end
-
 --@api-stub: LUiWidget:addChild
 -- Adds a child to this ui.
 do
@@ -212,7 +189,6 @@ do
   _w:addChild(lurek.ui.newButton("x"))
   print("added")
 end
-
 --@api-stub: LUiWidget:removeChild
 -- Removes a child from this ui.
 do
@@ -220,7 +196,6 @@ do
   _w:removeChild(lurek.ui.newButton("x"))
   print("done")
 end
-
 --@api-stub: LUiWidget:getChildCount
 -- Returns the number of child items in this ui.
 do
@@ -228,7 +203,6 @@ do
   local v = _w:getChildCount()
   print("getChildCount:", v)
 end
-
 --@api-stub: LUiWidget:getChildren
 -- Returns the children of this ui.
 do
@@ -236,7 +210,6 @@ do
   local v = _w:getChildren()
   print("getChildren:", v)
 end
-
 --@api-stub: LUiWidget:findById
 -- Finds and returns the by id in this ui by name or id.
 do
@@ -246,7 +219,6 @@ do
   local v = _w:findById("widget_id")
   print("findById:", v)
 end
-
 --@api-stub: LMenuItem:setOnClick
 -- Sets the on click of this ui.
 do
@@ -258,7 +230,6 @@ do
   end)
   print("applied")
 end
-
 --@api-stub: LColorPicker:setOnChange
 -- Sets the on change of this ui.
 do
@@ -270,7 +241,6 @@ do
   end)
   print("applied")
 end
-
 --@api-stub: LUiWidget:setOnDraw
 -- Sets the on draw of this ui.
 do
@@ -282,7 +252,6 @@ do
   end)
   print("applied")
 end
-
 --@api-stub: LUiWidget:containsPoint
 -- Performs the contains point operation on this ui.
 do
@@ -292,7 +261,6 @@ do
   local v = _w:containsPoint(0, 0)
   print("containsPoint:", v)
 end
-
 --@api-stub: LUiWidget:setPadding
 -- Sets the padding of this ui.
 do
@@ -302,7 +270,6 @@ do
   _w:setPadding(8)
   print("applied")
 end
-
 --@api-stub: LUiWidget:getPadding
 -- Returns the padding of this ui.
 do
@@ -310,7 +277,6 @@ do
   local v = _w:getPadding()
   print("getPadding:", v)
 end
-
 --@api-stub: LUiWidget:setMargin
 -- Sets the margin of this ui.
 do
@@ -320,7 +286,6 @@ do
   _w:setMargin(8)
   print("applied")
 end
-
 --@api-stub: LUiWidget:getMargin
 -- Returns the margin of this ui.
 do
@@ -328,7 +293,6 @@ do
   local v = _w:getMargin()
   print("getMargin:", v)
 end
-
 --@api-stub: LUiWidget:setZOrder
 -- Sets the z order of this ui.
 do
@@ -338,7 +302,6 @@ do
   _w:setZOrder(1)
   print("applied")
 end
-
 --@api-stub: LUiWidget:getZOrder
 -- Returns the z order of this ui.
 do
@@ -346,7 +309,6 @@ do
   local v = _w:getZOrder()
   print("getZOrder:", v)
 end
-
 --@api-stub: LUiWidget:setMinSize
 -- Sets the min size of this ui.
 do
@@ -356,7 +318,6 @@ do
   _w:setMinSize(200, 50)
   print("applied")
 end
-
 --@api-stub: LUiWidget:getMinSize
 -- Returns the min size of this ui.
 do
@@ -364,7 +325,6 @@ do
   local v = _w:getMinSize()
   print("getMinSize:", v)
 end
-
 --@api-stub: LUiWidget:setMaxSize
 -- Sets the max size of this ui.
 do
@@ -374,7 +334,6 @@ do
   _w:setMaxSize(200, 50)
   print("applied")
 end
-
 --@api-stub: LUiWidget:getMaxSize
 -- Returns the max size of this ui.
 do
@@ -382,7 +341,6 @@ do
   local v = _w:getMaxSize()
   print("getMaxSize:", v)
 end
-
 --@api-stub: LUiWidget:setAnchor
 -- Sets the anchor of this ui.
 do
@@ -392,7 +350,6 @@ do
   _w:setAnchor(8, 8, 8, 8)
   print("applied")
 end
-
 --@api-stub: LUiWidget:setAnchorCenter
 -- Sets the anchor center of this ui.
 do
@@ -402,7 +359,6 @@ do
   _w:setAnchorCenter(0, 0)
   print("applied")
 end
-
 --@api-stub: LUiWidget:clearAnchor
 -- Clears all anchor items from this ui.
 do
@@ -410,7 +366,6 @@ do
   _w:clearAnchor()
   print("done")
 end
-
 --@api-stub: LUiWidget:setFlexGrow
 -- Sets the flex grow of this ui.
 do
@@ -420,7 +375,6 @@ do
   _w:setFlexGrow(1)
   print("applied")
 end
-
 --@api-stub: LUiWidget:getFlexGrow
 -- Returns the flex grow of this ui.
 do
@@ -428,7 +382,6 @@ do
   local v = _w:getFlexGrow()
   print("getFlexGrow:", v)
 end
-
 --@api-stub: LUiWidget:setFlexShrink
 -- Sets the flex shrink of this ui.
 do
@@ -438,7 +391,6 @@ do
   _w:setFlexShrink(1)
   print("applied")
 end
-
 --@api-stub: LUiWidget:getFlexShrink
 -- Returns the flex shrink of this ui.
 do
@@ -446,7 +398,6 @@ do
   local v = _w:getFlexShrink()
   print("getFlexShrink:", v)
 end
-
 --@api-stub: LUiWidget:bind
 -- Performs the bind operation on this ui.
 do
@@ -456,7 +407,6 @@ do
   _w:bind("key")
   print("bind called")
 end
-
 --@api-stub: LUiWidget:unbind
 -- Performs the unbind operation on this ui.
 do
@@ -464,7 +414,6 @@ do
   _w:unbind()
   print("unbind called")
 end
-
 --@api-stub: LUiWidget:setAlpha
 -- Sets the alpha of this ui.
 do
@@ -474,7 +423,6 @@ do
   _w:setAlpha(0.85)
   print("applied")
 end
-
 --@api-stub: LUiWidget:getAlpha
 -- Returns the alpha of this ui.
 do
@@ -482,7 +430,6 @@ do
   local v = _w:getAlpha()
   print("getAlpha:", v)
 end
-
 --@api-stub: LUiWidget:fadeIn
 -- Performs the fade in operation on this ui.
 do
@@ -492,7 +439,6 @@ do
   _w:fadeIn()
   print("fadeIn called")
 end
-
 --@api-stub: LUiWidget:fadeOut
 -- Performs the fade out operation on this ui.
 do
@@ -502,7 +448,6 @@ do
   _w:fadeOut()
   print("fadeOut called")
 end
-
 --@api-stub: LUiWidget:slideIn
 -- Performs the slide in operation on this ui.
 do
@@ -512,7 +457,6 @@ do
   _w:slideIn(0, 0)
   print("slideIn called")
 end
-
 --@api-stub: LUiWidget:slideOut
 -- Performs the slide out operation on this ui.
 do
@@ -522,7 +466,6 @@ do
   _w:slideOut(0, 0)
   print("slideOut called")
 end
-
 --@api-stub: LUiWidget:attachToEntity
 -- Performs the attach to entity operation on this ui.
 do
@@ -532,7 +475,6 @@ do
   _w:attachToEntity(1)
   print("attachToEntity called")
 end
-
 --@api-stub: LUiWidget:detachFromEntity
 -- Performs the detach from entity operation on this ui.
 do
@@ -542,13 +484,9 @@ do
   _w:detachFromEntity()
   print("detachFromEntity called")
 end
-
-
----@return table
 local function new_example_image_widget()
   return {}
 end
-
 --@api-stub: LTooltipPanel:setText
 -- Sets the text of this button.
 do
@@ -556,7 +494,6 @@ do
   local btn = lurek.ui.newButton("Play")
   btn:setText("Hello")
 end
-
 --@api-stub: LTooltipPanel:getText
 -- Returns the text of this button.
 do
@@ -564,16 +501,12 @@ do
   local v = btn:getText()
   print("getText:", v)
 end
-
--- Label methods
-
 --@api-stub: LTooltipPanel:setText
 -- Sets the text of this label.
 do
   local lbl = lurek.ui.newLabel("Score: 0")
   lbl:setText("Hello")
 end
-
 --@api-stub: LTooltipPanel:getText
 -- Returns the text of this label.
 do
@@ -581,16 +514,12 @@ do
   local v = lbl:getText()
   print("getText:", v)
 end
-
--- Text_Input methods
-
 --@api-stub: LTooltipPanel:setText
 -- Sets the text of this text_input.
 do
   local ti = lurek.ui.newTextInput()
   ti:setText("Hello")
 end
-
 --@api-stub: LTooltipPanel:getText
 -- Returns the text of this text_input.
 do
@@ -598,14 +527,12 @@ do
   local v = ti:getText()
   print("getText:", v)
 end
-
 --@api-stub: LTextInput:setPlaceholder
 -- Sets the placeholder of this text_input.
 do
   local ti = lurek.ui.newTextInput()
   ti:setPlaceholder("Hello")
 end
-
 --@api-stub: LTextInput:getPlaceholder
 -- Returns the placeholder of this text_input.
 do
@@ -613,14 +540,12 @@ do
   local v = ti:getPlaceholder()
   print("getPlaceholder:", v)
 end
-
 --@api-stub: LTextInput:setMaxLength
 -- Sets the max length of this text_input.
 do
   local ti = lurek.ui.newTextInput()
   ti:setMaxLength(100)
 end
-
 --@api-stub: LTextInput:isFocused
 -- Returns true if this text_input focused.
 do
@@ -628,7 +553,6 @@ do
   local v = ti:isFocused()
   print("isFocused:", v)
 end
-
 --@api-stub: LTextInput:getCursorPosition
 -- Returns the cursor position of this text_input.
 do
@@ -636,16 +560,12 @@ do
   local v = ti:getCursorPosition()
   print("getCursorPosition:", v)
 end
-
--- Checkbox methods
-
 --@api-stub: LMenuItem:setChecked
 -- Sets the checked of this checkbox.
 do
   local cb = lurek.ui.newCheckbox("Sound")
   cb:setChecked(true)
 end
-
 --@api-stub: LMenuItem:isChecked
 -- Returns true if this checkbox checked.
 do
@@ -653,14 +573,12 @@ do
   local v = cb:isChecked()
   print("isChecked:", v)
 end
-
 --@api-stub: LTooltipPanel:setText
 -- Sets the text of this checkbox.
 do
   local cb = lurek.ui.newCheckbox("Sound")
   cb:setText("Hello")
 end
-
 --@api-stub: LTooltipPanel:getText
 -- Returns the text of this checkbox.
 do
@@ -668,16 +586,12 @@ do
   local v = cb:getText()
   print("getText:", v)
 end
-
--- Slider methods
-
 --@api-stub: LSpinBox:setValue
 -- Sets the value of this slider.
 do
   local sl = lurek.ui.newSlider(0, 100)
   sl:setValue(0.5)
 end
-
 --@api-stub: LSpinBox:getValue
 -- Returns the value of this slider.
 do
@@ -685,21 +599,18 @@ do
   local v = sl:getValue()
   print("getValue:", v)
 end
-
 --@api-stub: LSpinBox:setRange
 -- Sets the range of this slider.
 do
   local sl = lurek.ui.newSlider(0, 100)
   sl:setRange(0, 100)
 end
-
 --@api-stub: LSpinBox:setStep
 -- Sets the step of this slider.
 do
   local sl = lurek.ui.newSlider(0, 100)
   sl:setStep(1)
 end
-
 --@api-stub: LProgressBar:getMin
 -- Returns the min of this slider.
 do
@@ -707,7 +618,6 @@ do
   local v = sl:getMin()
   print("getMin:", v)
 end
-
 --@api-stub: LProgressBar:getMax
 -- Returns the max of this slider.
 do
@@ -715,16 +625,12 @@ do
   local v = sl:getMax()
   print("getMax:", v)
 end
-
--- Progress_Bar methods
-
 --@api-stub: LSpinBox:setValue
 -- Sets the value of this progress_bar.
 do
   local pb = lurek.ui.newProgressBar()
   pb:setValue(0.5)
 end
-
 --@api-stub: LSpinBox:getValue
 -- Returns the value of this progress_bar.
 do
@@ -732,7 +638,6 @@ do
   local v = pb:getValue()
   print("getValue:", v)
 end
-
 --@api-stub: LToast:getProgress
 -- Returns the progress of this progress_bar.
 do
@@ -740,14 +645,12 @@ do
   local v = pb:getProgress()
   print("getProgress:", v)
 end
-
 --@api-stub: LSpinBox:setRange
 -- Sets the range of this progress_bar.
 do
   local pb = lurek.ui.newProgressBar()
   pb:setRange(0, 100)
 end
-
 --@api-stub: LProgressBar:getMin
 -- Returns the min of this progress_bar.
 do
@@ -755,7 +658,6 @@ do
   local v = pb:getMin()
   print("getMin:", v)
 end
-
 --@api-stub: LProgressBar:getMax
 -- Returns the max of this progress_bar.
 do
@@ -763,9 +665,6 @@ do
   local v = pb:getMax()
   print("getMax:", v)
 end
-
--- Combo_Box methods
-
 --@api-stub: LListBox:addItem
 -- Adds a item to this combo_box.
 do
@@ -774,21 +673,18 @@ do
   local cb = lurek.ui.newComboBox()
   cb:addItem("Nightmare") -- append a new option discovered from DLC or unlocks
 end
-
 --@api-stub: LListBox:removeItem
 -- Removes a item from this combo_box.
 do
   local cb = lurek.ui.newComboBox()
   cb:removeItem(1)
 end
-
 --@api-stub: LListBox:clearItems
 -- Clears all items items from this combo_box.
 do
   local cb = lurek.ui.newComboBox()
   cb:clearItems()
 end
-
 --@api-stub: LListBox:getItemCount
 -- Returns the number of item items in this combo_box.
 do
@@ -796,7 +692,6 @@ do
   local v = cb:getItemCount()
   print("getItemCount:", v)
 end
-
 --@api-stub: LListBox:getItem
 -- Returns the item of this combo_box.
 do
@@ -804,7 +699,6 @@ do
   local v = cb:getItem(1)
   print("getItem:", v)
 end
-
 --@api-stub: LListBox:setSelectedIndex
 -- Sets the selected index of this combo_box.
 do
@@ -813,7 +707,6 @@ do
   local cb = lurek.ui.newComboBox()
   cb:setSelectedIndex(2) -- select "Normal" (1-based index)
 end
-
 --@api-stub: LListBox:getSelectedIndex
 -- Returns the selected index of this combo_box.
 do
@@ -821,7 +714,6 @@ do
   local v = cb:getSelectedIndex()
   print("getSelectedIndex:", v)
 end
-
 --@api-stub: LComboBox:getSelectedItem
 -- Returns the selected item of this combo_box.
 do
@@ -829,30 +721,24 @@ do
   local v = cb:getSelectedItem()
   print("getSelectedItem:", v)
 end
-
--- List_Box methods
-
 --@api-stub: LListBox:addItem
 -- Adds a item to this list_box.
 do
   local w = lurek.ui.newList()
   w:addItem("item_1")
 end
-
 --@api-stub: LListBox:removeItem
 -- Removes a item from this list_box.
 do
   local w = lurek.ui.newList()
   w:removeItem(1)
 end
-
 --@api-stub: LListBox:clearItems
 -- Clears all items items from this list_box.
 do
   local w = lurek.ui.newList()
   w:clearItems()
 end
-
 --@api-stub: LListBox:getItemCount
 -- Returns the number of item items in this list_box.
 do
@@ -860,7 +746,6 @@ do
   local v = w:getItemCount()
   print("getItemCount:", v)
 end
-
 --@api-stub: LListBox:getItem
 -- Returns the item of this list_box.
 do
@@ -868,14 +753,12 @@ do
   local v = w:getItem(1)
   print("getItem:", v)
 end
-
 --@api-stub: LListBox:setSelectedIndex
 -- Sets the selected index of this list_box.
 do
   local w = lurek.ui.newList()
   w:setSelectedIndex(1)
 end
-
 --@api-stub: LListBox:getSelectedIndex
 -- Returns the selected index of this list_box.
 do
@@ -883,16 +766,12 @@ do
   local v = w:getSelectedIndex()
   print("getSelectedIndex:", v)
 end
-
 --@api-stub: LListBox:setItemHeight
 -- Sets the item height of this list_box.
 do
   local w = lurek.ui.newList()
   w:setItemHeight(50)
 end
-
--- Tab_Bar methods
-
 --@api-stub: LTabBar:addTab
 -- Adds a tab to this tab_bar.
 do
@@ -901,7 +780,6 @@ do
   local tabs = lurek.ui.newTabBar()
   tabs:addTab("Journal") -- dynamically add a tab unlocked mid-game
 end
-
 --@api-stub: LTabBar:removeTab
 -- Removes a tab from this tab_bar.
 do
@@ -909,7 +787,6 @@ do
   tabs:addTab("Tab1"); tabs:addTab("Tab2")
   tabs:removeTab(1)
 end
-
 --@api-stub: LTabBar:getTab
 -- Returns the tab of this tab_bar.
 do
@@ -918,7 +795,6 @@ do
   local v = tabs:getTab(1)
   print("getTab:", v)
 end
-
 --@api-stub: LTabBar:getTabCount
 -- Returns the number of tab items in this tab_bar.
 do
@@ -926,7 +802,6 @@ do
   local v = tabs:getTabCount()
   print("getTabCount:", v)
 end
-
 --@api-stub: LTabBar:setActiveTab
 -- Sets the active tab of this tab_bar.
 do
@@ -935,7 +810,6 @@ do
   local tabs = lurek.ui.newTabBar()
   tabs:setActiveTab(3) -- jump directly to the Map tab
 end
-
 --@api-stub: LTabBar:getActiveTab
 -- Returns the active tab of this tab_bar.
 do
@@ -943,16 +817,12 @@ do
   local v = tabs:getActiveTab()
   print("getActiveTab:", v)
 end
-
--- Spin_Box methods
-
 --@api-stub: LSpinBox:setValue
 -- Sets the value of this spin_box.
 do
   local spin = lurek.ui.newSpinBox()
   spin:setValue(0.5)
 end
-
 --@api-stub: LSpinBox:getValue
 -- Returns the value of this spin_box.
 do
@@ -960,21 +830,18 @@ do
   local v = spin:getValue()
   print("getValue:", v)
 end
-
 --@api-stub: LSpinBox:increment
 -- Increments the value of this spin_box by one step.
 do
   local spin = lurek.ui.newSpinBox()
   spin:increment()
 end
-
 --@api-stub: LSpinBox:decrement
 -- Decrements the value of this spin_box by one step.
 do
   local spin = lurek.ui.newSpinBox()
   spin:decrement()
 end
-
 --@api-stub: LSpinBox:setRange
 -- Sets the range of this spin_box.
 do
@@ -983,7 +850,6 @@ do
   local spin = lurek.ui.newSpinBox()
   spin:setRange(1, 99) -- min=1 (e.g. at least 1 party member)
 end
-
 --@api-stub: LSpinBox:setStep
 -- Sets the step of this spin_box.
 do
@@ -992,16 +858,12 @@ do
   local spin = lurek.ui.newSpinBox()
   spin:setStep(5) -- each click changes value by 5 (e.g. volume slider)
 end
-
--- Switch methods
-
 --@api-stub: LSwitch:setOn
 -- Sets the on of this switch.
 do
   local sw = lurek.ui.newSwitch()
   sw:setOn(true)
 end
-
 --@api-stub: LSwitch:isOn
 -- Returns true if this switch on.
 do
@@ -1009,7 +871,6 @@ do
   local v = sw:isOn()
   print("isOn:", v)
 end
-
 --@api-stub: LSwitch:toggle
 -- Toggles the  state of this switch.
 do

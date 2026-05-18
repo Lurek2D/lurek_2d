@@ -1,11 +1,6 @@
 -- content/examples/input.lua
 -- lurek.input API examples: keyboard, mouse, gamepad, touch, action bindings, combos, and replay.
 -- Run: cargo run -- content/examples/input.lua
-
--- =============================================================================
--- KEYBOARD
--- =============================================================================
-
 --@api-stub: lurek.input.isDown
 -- Check if one or more keyboard keys are currently held down (variadic).
 do
@@ -28,7 +23,6 @@ do
     end
   end
 end
-
 --@api-stub: lurek.input.isScancodeDown
 -- Check if a physical scancode is held, ignoring keyboard layout remapping.
 do
@@ -41,7 +35,6 @@ do
     end
   end
 end
-
 --@api-stub: lurek.input.setKeyRepeat
 -- Enable or disable OS key-repeat events reaching lurek.keypressed callback.
 do
@@ -50,7 +43,6 @@ do
   lurek.input.keyboard.setKeyRepeat(true)
   lurek.log.info("key repeat enabled — menus will auto-scroll on hold", "input")
 end
-
 --@api-stub: lurek.input.hasKeyRepeat
 -- Query whether key-repeat is currently enabled.
 do
@@ -60,7 +52,6 @@ do
     lurek.log.warn("key repeat disabled — hold-to-scroll will not work in menus", "input")
   end
 end
-
 --@api-stub: lurek.input.setTextInput
 -- Enable or disable text input mode (IME composition, unicode entry).
 do
@@ -80,7 +71,6 @@ do
   open_chat()
   close_chat()
 end
-
 --@api-stub: lurek.input.hasTextInput
 -- Query whether text input mode is active (useful to suppress game controls).
 do
@@ -92,7 +82,6 @@ do
     -- Normal gameplay controls continue here...
   end
 end
-
 --@api-stub: lurek.input.getScancodeFromKey
 -- Convert a logical key name (layout-dependent) to its physical scancode.
 do
@@ -102,7 +91,6 @@ do
     lurek.log.debug("'space' maps to physical scancode: " .. sc, "input")
   end
 end
-
 --@api-stub: lurek.input.getKeyFromScancode
 -- Convert a physical scancode to its layout-dependent key name.
 do
@@ -111,7 +99,6 @@ do
   local label = key_name or "unbound"
   lurek.log.info("crouch is bound to: " .. label, "ui")
 end
-
 --@api-stub: lurek.input.isModifierActive
 -- Check if a modifier key (ctrl, shift, alt, gui) is currently held.
 do
@@ -127,11 +114,6 @@ do
     end
   end
 end
-
--- =============================================================================
--- MOUSE
--- =============================================================================
-
 --@api-stub: lurek.input.getPosition
 -- Get the current mouse cursor position in window coordinates.
 do
@@ -142,7 +124,6 @@ do
     lurek.log.debug("cursor at (" .. mx .. ", " .. my .. ")", "input")
   end
 end
-
 --@api-stub: lurek.input.getX
 -- Get just the mouse x coordinate (avoids unpacking two values).
 do
@@ -154,7 +135,6 @@ do
     lurek.log.debug("volume slider value: " .. string.format("%.2f", volume), "ui")
   end
 end
-
 --@api-stub: lurek.input.getY
 -- Get just the mouse y coordinate.
 do
@@ -166,7 +146,6 @@ do
     end
   end
 end
-
 --@api-stub: lurek.input.setVisible
 -- Show or hide the OS mouse cursor.
 do
@@ -174,7 +153,6 @@ do
   lurek.input.mouse.setVisible(false)
   lurek.log.info("cursor hidden — using custom crosshair sprite", "input")
 end
-
 --@api-stub: lurek.input.isVisible
 -- Query whether the OS cursor is currently visible.
 do
@@ -184,7 +162,6 @@ do
     lurek.log.info("pause menu opened — OS cursor restored", "ui")
   end
 end
-
 --@api-stub: lurek.input.setGrabbed
 -- Confine the cursor to the game window (prevents leaving window bounds).
 do
@@ -193,7 +170,6 @@ do
   lurek.input.mouse.setRelativeMode(true)
   lurek.log.info("entered mouselook mode (grabbed + relative)", "input")
 end
-
 --@api-stub: lurek.input.isGrabbed
 -- Query whether the mouse is grabbed by the window.
 do
@@ -201,7 +177,6 @@ do
     lurek.log.debug("mouse locked to window — Alt+Tab will release", "input")
   end
 end
-
 --@api-stub: lurek.input.setRelativeMode
 -- Enable relative mode: cursor is hidden and dx/dy deltas are reported.
 do
@@ -210,7 +185,6 @@ do
   lurek.input.mouse.setRelativeMode(true)
   lurek.log.info("relative mouse: read dx/dy from lurek.mousemoved callback", "input")
 end
-
 --@api-stub: lurek.input.getRelativeMode
 -- Query whether relative mouse mode is active.
 do
@@ -221,7 +195,6 @@ do
     end
   end
 end
-
 --@api-stub: lurek.input.setPosition
 -- Warp the cursor to a specific window position.
 do
@@ -230,7 +203,6 @@ do
   lurek.input.mouse.setPosition(cx, cy)
   lurek.log.debug("cursor warped to center (" .. cx .. "," .. cy .. ")", "input")
 end
-
 --@api-stub: lurek.input.setCursor
 -- Set the active cursor shape from a handle, system name, or nil for default arrow.
 do
@@ -238,7 +210,6 @@ do
   lurek.input.mouse.setCursor("hand")
   lurek.log.debug("cursor set to 'hand' — hovering a clickable element", "ui")
 end
-
 --@api-stub: lurek.input.newCursor
 -- Create a custom cursor from RGBA pixel data with hotspot coordinates.
 do
@@ -256,7 +227,6 @@ do
   lurek.input.mouse.setCursor(cur)
   lurek.log.debug("custom 2x2 debug cursor active", "input")
 end
-
 --@api-stub: lurek.input.getSystemCursor
 -- Get a system cursor handle by name (crosshair, hand, ibeam, etc.).
 do
@@ -267,7 +237,6 @@ do
     lurek.input.mouse.setCursor(crosshair)
   end
 end
-
 --@api-stub: lurek.input.isCursorSupported
 -- Check if the platform supports custom/system cursor changes.
 do
@@ -279,14 +248,12 @@ do
     lurek.log.warn("custom cursors unsupported — using sprite fallback", "input")
   end
 end
-
 --@api-stub: lurek.input.getCursor
 -- Get the name of the currently active cursor.
 do
   local name = lurek.input.mouse.getCursor()
   lurek.log.debug("active cursor: " .. name, "ui")
 end
-
 --@api-stub: lurek.input.getWheelDelta
 -- Get mouse wheel scroll delta this frame (horizontal, vertical).
 do
@@ -302,18 +269,12 @@ do
     end
   end
 end
-
--- =============================================================================
--- GAMEPAD
--- =============================================================================
-
 --@api-stub: lurek.input.getCount
 -- Get the number of gamepad slots currently tracked by the runtime.
 do
   local n = lurek.input.gamepad.getCount()
   lurek.log.info("gamepad slots tracked: " .. n, "input")
 end
-
 --@api-stub: lurek.input.getJoystickCount
 -- Get the number of joystick slots tracked (may differ from gamepad count).
 do
@@ -322,7 +283,6 @@ do
     lurek.log.info("no joystick devices detected", "input")
   end
 end
-
 --@api-stub: lurek.input.getJoysticks
 -- Get an array of connected gamepad IDs for iterating players.
 do
@@ -332,7 +292,6 @@ do
     lurek.log.debug("player " .. i .. " assigned to gamepad id " .. id, "input")
   end
 end
-
 --@api-stub: lurek.input.isConnected
 -- Check if a specific gamepad ID is currently connected.
 do
@@ -342,7 +301,6 @@ do
     lurek.log.warn("player 1 controller not connected", "input")
   end
 end
-
 --@api-stub: lurek.input.getName
 -- Get the human-readable display name of a gamepad.
 do
@@ -351,7 +309,6 @@ do
   -- Show in options menu so players know which controller is which
   lurek.log.info("gamepad " .. id .. " name: " .. name, "input")
 end
-
 --@api-stub: lurek.input.isGamepad
 -- Check if a joystick slot has a recognized gamepad mapping (SDL layout).
 do
@@ -364,7 +321,6 @@ do
     lurek.log.debug("slot " .. id .. " is an unmapped joystick", "input")
   end
 end
-
 --@api-stub: lurek.input.getButtonCount
 -- Get the number of buttons on a gamepad.
 do
@@ -372,7 +328,6 @@ do
   local nbtn = lurek.input.gamepad.getButtonCount(id)
   lurek.log.debug("gamepad " .. id .. " has " .. nbtn .. " buttons", "input")
 end
-
 --@api-stub: lurek.input.getAxisCount
 -- Get the number of axes on a gamepad (sticks + triggers).
 do
@@ -383,7 +338,6 @@ do
     lurek.log.warn("gamepad " .. id .. " has only " .. naxis .. " axes — dual-stick unavailable", "input")
   end
 end
-
 --@api-stub: lurek.input.getAxis
 -- Read an analog axis value (-1.0 to 1.0 for sticks, 0.0 to 1.0 for triggers).
 do
@@ -402,7 +356,6 @@ do
     end
   end
 end
-
 --@api-stub: lurek.input.isVibrationSupported
 -- Check if a gamepad supports haptic feedback (rumble).
 do
@@ -413,7 +366,6 @@ do
     lurek.log.info("gamepad " .. id .. " has no rumble motor", "input")
   end
 end
-
 --@api-stub: lurek.input.vibrate
 -- Trigger gamepad vibration with asymmetric motor strengths and duration.
 do
@@ -428,7 +380,6 @@ do
     lurek.log.debug("vibrate request ignored (no haptics backend)", "input")
   end
 end
-
 --@api-stub: lurek.input.getGUID
 -- Get the unique hardware GUID for a gamepad (for mapping lookups).
 do
@@ -438,7 +389,6 @@ do
     lurek.log.debug("gamepad 0 GUID: " .. guid, "input")
   end
 end
-
 --@api-stub: lurek.input.getHat
 -- Read a gamepad hat (d-pad on older controllers) direction string.
 do
@@ -449,7 +399,6 @@ do
     lurek.log.debug("d-pad hat direction: " .. dir, "input")
   end
 end
-
 --@api-stub: lurek.input.setVibration
 -- Alternate vibration API with same signature as vibrate.
 do
@@ -457,7 +406,6 @@ do
   local ok = lurek.input.gamepad.setVibration(id, 0.5, 0.5, 200)
   lurek.log.debug("setVibration queued: " .. tostring(ok), "input")
 end
-
 --@api-stub: lurek.input.wasPressed
 -- Check if a gamepad button was pressed THIS frame (edge-triggered, not held).
 do
@@ -469,7 +417,6 @@ do
     end
   end
 end
-
 --@api-stub: lurek.input.wasReleased
 -- Check if a gamepad button was released THIS frame (edge-triggered).
 do
@@ -480,7 +427,6 @@ do
     end
   end
 end
-
 --@api-stub: lurek.input.wasConnected
 -- Check if a gamepad connected during this frame (hot-plug detection).
 do
@@ -491,7 +437,6 @@ do
     end
   end
 end
-
 --@api-stub: lurek.input.wasDisconnected
 -- Check if a gamepad disconnected during this frame.
 do
@@ -502,7 +447,6 @@ do
     end
   end
 end
-
 --@api-stub: lurek.input.virtualDpad
 -- Convert analog stick values into a virtual d-pad with direction and booleans.
 do
@@ -524,7 +468,6 @@ do
     end
   end
 end
-
 --@api-stub: lurek.input.setBackgroundEvents
 -- Enable or disable gamepad input while the window is unfocused.
 do
@@ -532,14 +475,12 @@ do
   lurek.input.gamepad.setBackgroundEvents(true)
   lurek.log.info("gamepad input continues while window is unfocused", "input")
 end
-
 --@api-stub: lurek.input.getBackgroundEvents
 -- Query whether background gamepad events are enabled.
 do
   local on = lurek.input.gamepad.getBackgroundEvents()
   lurek.log.debug("background gamepad events: " .. tostring(on), "input")
 end
-
 --@api-stub: lurek.input.setGamepadMapping
 -- Store a custom SDL-style mapping string for a specific gamepad GUID.
 do
@@ -549,7 +490,6 @@ do
   lurek.input.gamepad.setGamepadMapping(guid, mapping)
   lurek.log.info("custom mapping stored for GUID " .. guid, "input")
 end
-
 --@api-stub: lurek.input.getGamepadMappingString
 -- Retrieve the stored mapping string for a gamepad GUID.
 do
@@ -561,7 +501,6 @@ do
     lurek.log.debug("no custom mapping for " .. guid, "input")
   end
 end
-
 --@api-stub: lurek.input.loadGamepadMappings
 -- Load gamepad mappings from a file (SDL GameControllerDB format).
 do
@@ -573,7 +512,6 @@ do
     lurek.log.debug("gamecontrollerdb.txt not found — using built-in mappings", "input")
   end
 end
-
 --@api-stub: lurek.input.saveGamepadMappings
 -- Save all current gamepad mappings to a file for persistence.
 do
@@ -581,11 +519,6 @@ do
   lurek.input.gamepad.saveGamepadMappings("save/user_mappings.txt")
   lurek.log.info("user gamepad mappings saved to disk", "input")
 end
-
--- =============================================================================
--- TOUCH
--- =============================================================================
-
 --@api-stub: lurek.input.getTouches
 -- Get all active touch points with id, position, and pressure.
 do
@@ -597,7 +530,6 @@ do
     end
   end
 end
-
 --@api-stub: lurek.input.getPressure
 -- Get pressure value for a specific touch ID (0.0 to 1.0).
 do
@@ -612,7 +544,6 @@ do
     end
   end
 end
-
 --@api-stub: lurek.input.getTouchCount
 -- Get the number of currently active touch points.
 do
@@ -624,11 +555,6 @@ do
     end
   end
 end
-
--- =============================================================================
--- ACTION BINDINGS (rebindable input layer)
--- =============================================================================
-
 --@api-stub: lurek.input.bind
 -- Bind one or more keys to a named action (supports string or array of strings).
 do
@@ -642,7 +568,6 @@ do
 
   lurek.log.info("default action bindings installed", "input")
 end
-
 --@api-stub: lurek.input.unbind
 -- Remove all bindings for a named action. Returns true if the action existed.
 do
@@ -651,7 +576,6 @@ do
   local existed = lurek.input.unbind("jump")
   lurek.log.debug("unbind 'jump': had bindings = " .. tostring(existed), "input")
 end
-
 --@api-stub: lurek.input.clearBindings
 -- Remove ALL action bindings (reset to empty before loading new profile).
 do
@@ -661,7 +585,6 @@ do
   lurek.input.clearBindings()
   lurek.log.info("all bindings cleared — ready to load new profile", "input")
 end
-
 --@api-stub: lurek.input.getBindings
 -- Get a table of all current action bindings (action_name -> {keys}).
 do
@@ -674,7 +597,6 @@ do
     lurek.log.debug(action .. " bound to: " .. table.concat(keys --[[@as string[] ]], ", "), "input")
   end
 end
-
 --@api-stub: lurek.input.isActionDown
 -- Check if any key bound to an action is currently held (continuous).
 do
@@ -686,7 +608,6 @@ do
     end
   end
 end
-
 --@api-stub: lurek.input.wasActionPressed
 -- Check if any key bound to an action was pressed THIS frame (edge-triggered).
 do
@@ -698,7 +619,6 @@ do
     end
   end
 end
-
 --@api-stub: lurek.input.wasActionReleased
 -- Check if any key bound to an action was released THIS frame.
 do
@@ -710,7 +630,6 @@ do
     end
   end
 end
-
 --@api-stub: lurek.input.wasActionPressedWithin
 -- Check if an action was pressed within a recent frame window (input buffering).
 do
@@ -724,7 +643,6 @@ do
     end
   end
 end
-
 --@api-stub: lurek.input.newMapping
 -- Create a mapping object that bundles an action with isDown/wasPressed/wasReleased closures.
 do
@@ -742,11 +660,6 @@ do
     end
   end
 end
-
--- =============================================================================
--- COMBO SYSTEM
--- =============================================================================
-
 --@api-stub: lurek.input.newCombo
 -- Create a combo detector for sequential key inputs with optional timing constraints.
 do
@@ -760,11 +673,6 @@ do
   -- total_gap = max ms for the entire combo from first to last input
   lurek.log.info("hadouken combo ready (" .. hadouken:totalSteps() .. " steps)", "combat")
 end
-
--- =============================================================================
--- RECORDING & PLAYBACK (replay system)
--- =============================================================================
-
 --@api-stub: lurek.input.startRecording
 -- Begin recording all input events into the internal recorder.
 do
@@ -772,7 +680,6 @@ do
   lurek.input.startRecording()
   lurek.log.info("input recording started", "replay")
 end
-
 --@api-stub: lurek.input.stopRecording
 -- Stop recording and get the captured LInputRecording handle.
 do
@@ -783,7 +690,6 @@ do
     lurek.log.info("captured " .. rec:totalFrames() .. " frames of input", "replay")
   end
 end
-
 --@api-stub: lurek.input.loadRecording
 -- Load a JSON recording string into the recorder for playback.
 do
@@ -792,7 +698,6 @@ do
   lurek.input.loadRecording(json)
   lurek.log.info("recording loaded — ready for playback", "replay")
 end
-
 --@api-stub: lurek.input.startPlayback
 -- Begin playing back the loaded recording (replays input events each frame).
 do
@@ -802,14 +707,12 @@ do
   lurek.input.startPlayback()
   lurek.log.info("playback started — live input suppressed", "replay")
 end
-
 --@api-stub: lurek.input.stopPlayback
 -- Stop playback and return to live input.
 do
   lurek.input.stopPlayback()
   lurek.log.info("playback stopped — live input restored", "replay")
 end
-
 --@api-stub: lurek.input.isRecording
 -- Query whether the recorder is currently capturing input.
 do
@@ -818,7 +721,6 @@ do
     lurek.log.debug("REC indicator should be visible", "ui")
   end
 end
-
 --@api-stub: lurek.input.isPlayingBack
 -- Query whether the recorder is currently replaying.
 do
@@ -830,7 +732,6 @@ do
     -- Normal live input handling...
   end
 end
-
 --@api-stub: lurek.input.getPlaybackFrame
 -- Get the current frame index during playback.
 do
@@ -842,7 +743,6 @@ do
     end
   end
 end
-
 --@api-stub: lurek.input.advancePlayback
 -- Advance playback by one frame and get the events for that frame.
 do
@@ -855,11 +755,6 @@ do
     end
   end
 end
-
--- =============================================================================
--- CURSOR HANDLE METHODS
--- =============================================================================
-
 --@api-stub: LCursor:release
 -- Release cursor resources (no-op on desktop, but good practice for cleanup).
 do
@@ -868,7 +763,6 @@ do
   cur:release()
   lurek.log.debug("cursor handle released", "input")
 end
-
 --@api-stub: LCursor:getType
 -- Get whether this cursor is "system" or "custom".
 do
@@ -877,11 +771,6 @@ do
   -- Returns "system" for getSystemCursor results, "custom" for newCursor results
   lurek.log.debug("cursor type: " .. kind, "input")
 end
-
--- =============================================================================
--- COMBO HANDLE METHODS
--- =============================================================================
-
 --@api-stub: LCombo:feed
 -- Feed a key press into the combo detector. Returns progress status string.
 do
@@ -894,7 +783,6 @@ do
   -- "broken" means wrong key broke the sequence
   -- "idle" means no combo is in progress and key did not start one
 end
-
 --@api-stub: LCombo:tick
 -- Update combo timeout state. Call every frame to expire stale combos.
 do
@@ -908,7 +796,6 @@ do
     end
   end
 end
-
 --@api-stub: LCombo:reset
 -- Manually reset combo progress (e.g. after player gets hit/staggered).
 do
@@ -918,7 +805,6 @@ do
   combo:reset()
   lurek.log.debug("combo reset after stagger", "combat")
 end
-
 --@api-stub: LCombo:totalSteps
 -- Get the total number of steps in this combo sequence.
 do
@@ -927,7 +813,6 @@ do
   -- Useful for drawing a combo step indicator in the HUD
   lurek.log.debug("combo has " .. total .. " steps", "combat")
 end
-
 --@api-stub: LCombo:isInProgress
 -- Check if the combo has been partially matched (player started the sequence).
 do
@@ -938,7 +823,6 @@ do
     lurek.log.debug("combo in progress — show HUD indicator", "ui")
   end
 end
-
 --@api-stub: LCombo:getStep
 -- Get step data by 1-based index (returns table with key and gap_ms fields).
 do
@@ -949,11 +833,6 @@ do
     lurek.log.debug("step 2: key=" .. step.key .. " gap=" .. step.gap_ms .. "ms", "combat")
   end
 end
-
--- =============================================================================
--- INPUT RECORDING HANDLE METHODS
--- =============================================================================
-
 --@api-stub: LInputRecording:toJson
 -- Serialize the recording to JSON for saving to disk.
 do
@@ -966,7 +845,6 @@ do
     -- Could write to file: lurek.filesystem.write("replay.json", json)
   end
 end
-
 --@api-stub: LInputRecording:totalFrames
 -- Get the total number of frames in this recording.
 do
@@ -977,7 +855,6 @@ do
     lurek.log.info("recording length: " .. rec:totalFrames() .. " frames", "replay")
   end
 end
-
 --@api-stub: LInputRecording:frameCount
 -- Get the number of event-containing frames (frames that had input activity).
 do
@@ -988,7 +865,6 @@ do
     lurek.log.warn("recording has no input events — nothing to replay", "replay")
   end
 end
-
 --@api-stub: LCombo:progress
 -- Get the number of completed combo steps so far.
 do
@@ -998,7 +874,6 @@ do
   -- Use for HUD: highlight completed steps in the combo display
   lurek.log.info("combo progress: " .. steps_done .. "/" .. combo:totalSteps(), "input")
 end
-
 --@api-stub: lurek.input.loadGamepadMappings
 -- Load gamepad mappings from file (alternate call path via gamepad sub-table).
 do
@@ -1006,11 +881,6 @@ do
   local ok, count = pcall(lurek.input.gamepad.loadGamepadMappings, "assets/gamecontrollerdb.txt")
   lurek.log.info("loadGamepadMappings ok=" .. tostring(ok), "input")
 end
-
--- =============================================================================
--- TYPE INTROSPECTION (handle type checks)
--- =============================================================================
-
 --@api-stub: LInputRecording:type
 -- Returns the Lua-visible type name for this combo handle.
 do
@@ -1021,7 +891,6 @@ do
   local t = combo_obj and combo_obj:type() or "LInputCombo"
   lurek.log.info("LCombo:type = " .. t, "input")
 end
-
 --@api-stub: LInputRecording:typeOf
 -- Check if a combo handle matches a given type name.
 do
@@ -1033,7 +902,6 @@ do
   lurek.log.info("is LCombo: " .. tostring(combo_obj2 and combo_obj2:typeOf("LCombo") or false), "input")
   lurek.log.info("is wrong: " .. tostring(combo_obj2 and combo_obj2:typeOf("Unknown") or false), "input")
 end
-
 --@api-stub: LInputRecording:type
 -- Returns the Lua-visible type name for this cursor handle.
 do
@@ -1045,7 +913,6 @@ do
     lurek.log.info("LCursor:type = skipped", "input")
   end
 end
-
 --@api-stub: LInputRecording:typeOf
 -- Check if a cursor handle matches a given type name.
 do
@@ -1057,7 +924,6 @@ do
     lurek.log.info("LCursor:typeOf = skipped", "input")
   end
 end
-
 --@api-stub: LInputRecording:type
 -- Returns the Lua-visible type name for this input recording handle.
 do
@@ -1069,7 +935,6 @@ do
   local t = obj and obj:type() or "LInputRecording"
   lurek.log.info("LInputRecording:type = " .. t, "input")
 end
-
 --@api-stub: LInputRecording:typeOf
 -- Check if an input recording handle matches a given type name.
 do
@@ -1081,62 +946,25 @@ do
   lurek.log.info("is LInputRecording: " .. tostring(obj and obj:typeOf("LInputRecording") or false), "input")
   lurek.log.info("is wrong: " .. tostring(obj and obj:typeOf("Unknown") or false), "input")
 end
-
 print("content/examples/input.lua")
-
--- =============================================================================
--- STUBS: 12 uncovered lurek.input API item(s)
--- Generated by tools/audit/example_add_missing.py
--- REQUIRED: replace every --@api-stub: block below with a real scenario.
--- Run .github/prompts/flesh-out-example.prompt.md for instructions.
--- The final committed file must contain ZERO --@api-stub: lines.
--- =============================================================================
-
--- -----------------------------------------------------------------------------
--- LCombo methods
--- -----------------------------------------------------------------------------
-
--- =============================================================================
--- STUBS: 4 uncovered lurek.input API item(s)
--- Generated by tools/audit/example_add_missing.py
--- REQUIRED: replace every --@api-stub: block below with a real scenario.
--- Run .github/prompts/flesh-out-example.prompt.md for instructions.
--- The final committed file must contain ZERO --@api-stub: lines.
--- =============================================================================
-
--- -----------------------------------------------------------------------------
--- LCombo methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LCombo:type ---------------------------------------------------
 --@api-stub: LCombo:type
 -- Returns the Lua-visible type name for this combo handle.
 do
   local obj = lurek.input.newCombo({'ctrl', 's'})
   lurek.log.debug("type: " .. obj:type(), "example") -- "LCombo"
 end
-
--- ---- Stub: LCombo:typeOf -------------------------------------------------
 --@api-stub: LCombo:typeOf
 -- Returns whether this combo handle matches a supported type name.
 do
   local obj = lurek.input.newCombo({'ctrl', 's'})
   lurek.log.debug("typeOf LCombo: " .. tostring(obj:typeOf("LCombo")), "example") -- true
 end
-
--- -----------------------------------------------------------------------------
--- LCursor methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LCursor:type --------------------------------------------------
 --@api-stub: LCursor:type
 -- Returns the Lua-visible type name for this cursor handle.
 do
   local obj = lurek.input.mouse.getSystemCursor('crosshair')
   lurek.log.debug("type: " .. obj:type(), "example") -- "LCursor"
 end
-
--- ---- Stub: LCursor:typeOf ------------------------------------------------
 --@api-stub: LCursor:typeOf
 -- Returns whether this cursor handle matches a supported type name.
 do

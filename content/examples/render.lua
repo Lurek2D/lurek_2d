@@ -1,11 +1,6 @@
 -- content/examples/render.lua
 -- Comprehensive lurek.render API examples: drawing, text, transforms, canvases, shaders, and more.
 -- Run: cargo run -- content/examples/render.lua
-
--- =============================================================================
--- COLOR STATE
--- =============================================================================
-
 --@api-stub: LShape:setColor
 -- Sets the active drawing color for all subsequent draw operations
 do
@@ -15,7 +10,6 @@ do
   lurek.render.setColor(1.0, 0.5, 0.2, 1.0)  -- warm orange, fully opaque
   lurek.render.setColor(0.0, 0.0, 0.0, 0.5)  -- semi-transparent black (shadow overlay)
 end
-
 --@api-stub: lurek.render.getColor
 -- Returns the current drawing color
 do
@@ -27,7 +21,6 @@ do
   -- ...then restore the original color so the caller is unaffected.
   lurek.render.setColor(r, g, b, a)
 end
-
 --@api-stub: lurek.render.setBackgroundColor
 -- Sets the background clear color used at the start of each frame
 do
@@ -36,7 +29,6 @@ do
   -- Use dark desaturated tones for most games to reduce eye strain.
   lurek.render.setBackgroundColor(0.05, 0.07, 0.10)  -- near-black blue-grey
 end
-
 --@api-stub: lurek.render.getBackgroundColor
 -- Returns the current background clear color
 do
@@ -48,11 +40,6 @@ do
     lurek.log.info("dark theme active — using light text")
   end
 end
-
--- =============================================================================
--- SHAPE PRIMITIVES
--- =============================================================================
-
 --@api-stub: LShape:rectangle
 -- Draws a rectangle
 do
@@ -65,7 +52,6 @@ do
   lurek.render.rectangle("line", 32, 32, 200, 40)         -- white outline
   lurek.render.rectangle("fill", 32, 90, 200, 40, 8, 8)  -- rounded corners
 end
-
 --@api-stub: LShape:circle
 -- Draws a circle
 do
@@ -76,7 +62,6 @@ do
   lurek.render.setColor(1, 1, 1, 0.4)
   lurek.render.circle("line", 200, 150, 30)   -- faint outer ring (glow)
 end
-
 --@api-stub: LShape:ellipse
 -- Draws an ellipse
 do
@@ -85,7 +70,6 @@ do
   lurek.render.setColor(0, 0, 0, 0.3)
   lurek.render.ellipse("fill", 200, 300, 40, 10)  -- ground shadow
 end
-
 --@api-stub: LShape:triangle
 -- Draws a triangle from three vertex positions
 do
@@ -94,7 +78,6 @@ do
   lurek.render.setColor(1, 0.8, 0, 1)
   lurek.render.triangle("fill", 400, 50, 380, 100, 420, 100)  -- yellow arrow tip
 end
-
 --@api-stub: LShape:line
 -- Draws a line between two points, or a polyline through multiple points
 do
@@ -106,7 +89,6 @@ do
   lurek.render.line(10, 10, 200, 10)                 -- horizontal line
   lurek.render.line(10, 20, 50, 60, 100, 40, 150, 80)  -- polyline path
 end
-
 --@api-stub: LShape:polygon
 -- Draws a polygon from a flat list of x,y vertex coordinates
 do
@@ -116,7 +98,6 @@ do
   lurek.render.setColor(0.6, 0.3, 0.9, 1)
   lurek.render.polygon("fill", 100, 100, 150, 80, 200, 120, 170, 170, 120, 160)
 end
-
 --@api-stub: LShape:arc
 -- Draws a circular arc
 do
@@ -127,7 +108,6 @@ do
   lurek.render.setColor(0, 0.8, 1, 1)
   lurek.render.arc("fill", 400, 200, 50, -math.pi/2, -math.pi/2 + math.pi*2 * cooldown_pct)
 end
-
 --@api-stub: lurek.render.points
 -- Draws one or more points
 do
@@ -137,11 +117,6 @@ do
   lurek.render.setColor(1, 1, 1, 0.8)
   lurek.render.points(10, 10, 25, 40, 60, 20, 90, 55, 130, 30)  -- starfield dots
 end
-
--- =============================================================================
--- IMAGE & DRAWABLE RENDERING
--- =============================================================================
-
 --@api-stub: LShape:draw
 -- Draws a drawable object (Image, Canvas, SpriteBatch, or Mesh) at the given position with optional transform
 do
@@ -158,7 +133,6 @@ do
     lurek.render.draw(img, 200, 200, math.pi/4, 1, 1, w/2, h/2)
   end
 end
-
 --@api-stub: lurek.render.drawq
 -- Draws a sub-region of an image defined by a Quad, with optional transform
 do
@@ -179,7 +153,6 @@ do
     lurek.render.drawq(sheet, frames[idx], 100, 100)
   end
 end
-
 --@api-stub: lurek.render.drawMany
 -- Batch-draws multiple images in one call
 do
@@ -198,11 +171,6 @@ do
     lurek.render.drawMany(items)
   end
 end
-
--- =============================================================================
--- TEXT RENDERING
--- =============================================================================
-
 --@api-stub: lurek.render.print
 -- Draws text using the active font at the given position
 do
@@ -215,7 +183,6 @@ do
     lurek.render.print("ZOOMED", 10, 40, 2.0)  -- scale=2 doubles the text size
   end
 end
-
 --@api-stub: lurek.render.printf
 -- Draws word-wrapped and aligned text within a pixel-width limit
 do
@@ -230,7 +197,6 @@ do
     lurek.render.printf("GAME OVER", 0, 300, 800, "center")  -- centered on screen
   end
 end
-
 --@api-stub: lurek.render.printRich
 -- Draws rich text composed of individually styled spans at the given position
 do
@@ -244,7 +210,6 @@ do
     }, 10, 10)
   end
 end
-
 --@api-stub: lurek.render.printRotated
 -- Draws text centered and rotated around its midpoint
 do
@@ -256,11 +221,6 @@ do
     lurek.render.printRotated("E", 450, 100, math.pi / 2)    -- east, rotated 90 deg
   end
 end
-
--- =============================================================================
--- FRAME MANAGEMENT
--- =============================================================================
-
 --@api-stub: LDrawLayer:clear
 -- Clears all queued render commands for the current frame
 do
@@ -273,11 +233,6 @@ do
     lurek.render.rectangle("fill", 0, 0, 100, 100)
   end
 end
-
--- =============================================================================
--- LINE & POINT STYLE
--- =============================================================================
-
 --@api-stub: LShape:setLineWidth
 -- Sets the line width for subsequent line-mode draw calls
 do
@@ -289,7 +244,6 @@ do
     lurek.render.setLineWidth(1)                      -- restore default
   end
 end
-
 --@api-stub: lurek.render.getLineWidth
 -- Returns the current line width
 do
@@ -299,7 +253,6 @@ do
   -- ... draw thick outlines ...
   lurek.render.setLineWidth(prev)
 end
-
 --@api-stub: lurek.render.setPointSize
 -- Sets the point size for subsequent point draw calls
 do
@@ -308,18 +261,12 @@ do
   lurek.render.setPointSize(4)
   lurek.render.points(100, 100, 110, 100, 120, 100)  -- 4px dots in a row
 end
-
 --@api-stub: lurek.render.getPointSize
 -- Returns the current point size
 do
   local sz = lurek.render.getPointSize()
   lurek.log.debug("current point size: " .. tostring(sz))
 end
-
--- =============================================================================
--- BLEND MODES
--- =============================================================================
-
 --@api-stub: lurek.render.setBlendMode
 -- Sets the blend mode for subsequent draw operations
 do
@@ -335,18 +282,12 @@ do
     lurek.render.setBlendMode("alpha")
   end
 end
-
 --@api-stub: lurek.render.getBlendMode
 -- Returns the current blend mode name
 do
   local mode = lurek.render.getBlendMode()
   lurek.log.debug("blend mode: " .. mode)  -- e.g. "alpha"
 end
-
--- =============================================================================
--- FONTS
--- =============================================================================
-
 --@api-stub: lurek.render.newFont
 -- Creates a new bitmap font from a PNG sprite sheet path or returns a built-in font by pixel height
 do
@@ -358,7 +299,6 @@ do
     title_font = lurek.render.newFont(22)
   end
 end
-
 --@api-stub: lurek.render.setFont
 -- Sets the active font used by print, printf, and other text rendering calls
 do
@@ -372,7 +312,6 @@ do
     lurek.render.print("TITLE SCREEN", 100, 20)
   end
 end
-
 --@api-stub: lurek.render.getFont
 -- Returns the currently active font, or nil if none is set
 do
@@ -381,7 +320,6 @@ do
     lurek.log.debug("active font height: " .. tostring(f:getHeight()))
   end
 end
-
 --@api-stub: lurek.render.getFontSizes
 -- Returns all available built-in font pixel heights
 do
@@ -392,7 +330,6 @@ do
     lurek.log.debug("available built-in size: " .. sz)
   end
 end
-
 --@api-stub: lurek.render.getDefaultFont
 -- Returns a built-in default font at the nearest available pixel height
 do
@@ -403,7 +340,6 @@ do
     lurek.render.setFont(font)
   end)
 end
-
 --@api-stub: lurek.render.getFontCellWidth
 -- Returns the fixed cell width of a bitmap font
 do
@@ -415,7 +351,6 @@ do
     lurek.log.debug("cell width: " .. tostring(cw))
   end)
 end
-
 --@api-stub: lurek.render.getFontWidth
 -- Measures the pixel width of text using the given font
 do
@@ -430,7 +365,6 @@ do
     lurek.log.debug("label x=" .. tostring(x))
   end)
 end
-
 --@api-stub: lurek.render.getFontHeight
 -- Returns the line height of the given font
 do
@@ -445,7 +379,6 @@ do
     end
   end)
 end
-
 --@api-stub: lurek.render.getFontLineHeight
 -- Returns the line spacing of the given font
 do
@@ -455,7 +388,6 @@ do
     lurek.log.debug("line spacing: " .. tostring(lh))
   end)
 end
-
 --@api-stub: lurek.render.setFontLineHeight
 -- Sets the line height override for a font (currently a no-op stub)
 do
@@ -464,7 +396,6 @@ do
     lurek.render.setFontLineHeight(lurek.render.getDefaultFont(), 1.4)
   end)
 end
-
 --@api-stub: lurek.render.getFontAscent
 -- Returns the ascent (pixels above baseline) of the given font
 do
@@ -474,7 +405,6 @@ do
     lurek.log.debug("ascent: " .. tostring(asc) .. "px")
   end)
 end
-
 --@api-stub: lurek.render.getFontDescent
 -- Returns the descent (pixels below baseline) of the given font
 do
@@ -484,7 +414,6 @@ do
     lurek.log.debug("descent: " .. tostring(desc) .. "px")
   end)
 end
-
 --@api-stub: lurek.render.getFontWrap
 -- Word-wraps text using the active font and returns the resulting lines and widest line width
 do
@@ -497,11 +426,6 @@ do
     end
   end)
 end
-
--- =============================================================================
--- IMAGES & TEXTURES
--- =============================================================================
-
 --@api-stub: lurek.render.newImage
 -- Loads a texture from a file path or creates one from an ImageData object
 do
@@ -514,11 +438,6 @@ do
     normal_map = lurek.render.newImage("img/normals.png", "linear")
   end
 end
-
--- =============================================================================
--- CANVASES (RENDER TARGETS)
--- =============================================================================
-
 --@api-stub: lurek.render.newCanvas
 -- Creates a new off-screen render target with the given dimensions
 do
@@ -529,7 +448,6 @@ do
     scene_buffer = lurek.render.newCanvas(320, 240)  -- quarter-res for retro look
   end
 end
-
 --@api-stub: lurek.render.setCanvas
 -- Redirects all subsequent drawing to the given canvas
 do
@@ -550,7 +468,6 @@ do
     lurek.render.draw(rt, 0, 0, 0, 2.5, 2.5)
   end
 end
-
 --@api-stub: lurek.render.getCanvas
 -- Returns the currently active canvas, or nil if drawing to the screen
 do
@@ -559,7 +476,6 @@ do
     lurek.log.debug("currently rendering to the main screen")
   end
 end
-
 --@api-stub: lurek.render.getCanvasSize
 -- Returns the pixel dimensions of a canvas
 do
@@ -570,11 +486,6 @@ do
     lurek.log.debug("canvas: " .. w .. "x" .. h)
   end)
 end
-
--- =============================================================================
--- SPRITE BATCHES
--- =============================================================================
-
 --@api-stub: lurek.render.newSpriteBatch
 -- Creates a batched sprite renderer for efficiently drawing many copies of the same texture
 do
@@ -586,11 +497,6 @@ do
     batch = lurek.render.newSpriteBatch(tileset, 2048)  -- up to 2048 tiles
   end
 end
-
--- =============================================================================
--- MESHES
--- =============================================================================
-
 --@api-stub: lurek.render.newMesh
 -- Creates a custom vertex mesh from an array of vertex data tables
 do
@@ -609,11 +515,6 @@ do
     lurek.render.draw(mesh, 100, 100)
   end
 end
-
--- =============================================================================
--- SHADERS
--- =============================================================================
-
 --@api-stub: lurek.render.newShader
 -- Compiles a WGSL shader program from source code and returns a handle
 do
@@ -628,7 +529,6 @@ do
     ]])
   end
 end
-
 --@api-stub: lurek.render.setShader
 -- Activates a shader for subsequent draw calls
 do
@@ -644,7 +544,6 @@ do
     lurek.render.setShader()                         -- back to default
   end
 end
-
 --@api-stub: lurek.render.getShader
 -- Returns the currently active shader, or nil if using the default
 do
@@ -653,11 +552,6 @@ do
     lurek.log.debug("using default shader pipeline")
   end
 end
-
--- =============================================================================
--- QUADS (SPRITE SHEET REGIONS)
--- =============================================================================
-
 --@api-stub: lurek.render.newQuad
 -- Creates a Quad defining a rectangular sub-region of a texture for sprite-sheet rendering
 do
@@ -670,11 +564,6 @@ do
     walk_frame = lurek.render.newQuad(32, 0, 32, 32, 256, 256)
   end
 end
-
--- =============================================================================
--- TRANSFORM STACK
--- =============================================================================
-
 --@api-stub: lurek.render.push
 -- Pushes the current transformation matrix onto the transform stack
 do
@@ -689,7 +578,6 @@ do
     -- Transform is restored here — subsequent draws are unaffected.
   end
 end
-
 --@api-stub: lurek.render.pop
 -- Pops the top transformation matrix from the transform stack, restoring the previous one
 do
@@ -703,7 +591,6 @@ do
     lurek.render.print("normal", 0, 30)
   end
 end
-
 --@api-stub: lurek.render.translate
 -- Applies a translation to the current transformation matrix
 do
@@ -716,7 +603,6 @@ do
     lurek.render.pop()
   end
 end
-
 --@api-stub: lurek.render.rotate
 -- Applies a rotation to the current transformation matrix
 do
@@ -730,7 +616,6 @@ do
     lurek.render.pop()
   end
 end
-
 --@api-stub: lurek.render.scale
 -- Applies scaling to the current transformation matrix
 do
@@ -747,7 +632,6 @@ do
     lurek.render.pop()
   end
 end
-
 --@api-stub: lurek.render.shear
 -- Applies a shear (skew) to the current transformation matrix
 do
@@ -760,7 +644,6 @@ do
     lurek.render.pop()
   end
 end
-
 --@api-stub: lurek.render.origin
 -- Resets the current transformation matrix to the identity (no transform)
 do
@@ -773,7 +656,6 @@ do
     lurek.render.print("FPS: 60", 8, 8)  -- always at top-left of screen
   end
 end
-
 --@api-stub: lurek.render.applyTransform
 -- Multiplies the current transformation matrix by a 3x3 matrix (9 values in row-major order)
 do
@@ -788,11 +670,6 @@ do
     lurek.render.pop()
   end
 end
-
--- =============================================================================
--- SCISSOR (CLIPPING)
--- =============================================================================
-
 --@api-stub: lurek.render.setScissor
 -- Sets or clears the scissor rectangle
 do
@@ -806,7 +683,6 @@ do
     lurek.render.setScissor()  -- clear scissor
   end
 end
-
 --@api-stub: lurek.render.getScissor
 -- Returns the current scissor rectangle, or nothing if no scissor is set
 do
@@ -815,7 +691,6 @@ do
     lurek.log.debug("scissor active at " .. x .. "," .. y .. " size " .. w .. "x" .. h)
   end
 end
-
 --@api-stub: lurek.render.intersectScissor
 -- Intersects the given rectangle with the current scissor, narrowing the drawable region
 do
@@ -827,11 +702,6 @@ do
     lurek.render.setScissor()
   end
 end
-
--- =============================================================================
--- COLOR MASK
--- =============================================================================
-
 --@api-stub: lurek.render.setColorMask
 -- Sets which color channels are written during draw calls
 do
@@ -843,18 +713,12 @@ do
     lurek.render.setColorMask(true, true, true, true)    -- restore all channels
   end
 end
-
 --@api-stub: lurek.render.getColorMask
 -- Returns the current color write mask
 do
   local r, g, b, a = lurek.render.getColorMask()
   lurek.log.debug("mask: R=" .. tostring(r) .. " G=" .. tostring(g) .. " B=" .. tostring(b) .. " A=" .. tostring(a))
 end
-
--- =============================================================================
--- WIREFRAME
--- =============================================================================
-
 --@api-stub: lurek.render.setWireframe
 -- Enables or disables wireframe rendering mode
 do
@@ -868,7 +732,6 @@ do
     end
   end
 end
-
 --@api-stub: lurek.render.isWireframe
 -- Returns whether wireframe rendering is currently active
 do
@@ -876,11 +739,6 @@ do
     lurek.log.warn("wireframe mode is ON — remember to disable for release")
   end
 end
-
--- =============================================================================
--- STENCIL BUFFER
--- =============================================================================
-
 --@api-stub: lurek.render.stencil
 -- Begins a stencil write pass with the given action and reference value
 do
@@ -898,7 +756,6 @@ do
     lurek.render.setStencilTest()  -- disable test
   end
 end
-
 --@api-stub: lurek.render.setStencilTest
 -- Configures the stencil comparison test for subsequent draws
 do
@@ -910,7 +767,6 @@ do
     lurek.render.setStencilTest()               -- disable
   end
 end
-
 --@api-stub: lurek.render.setStencilMode
 -- Sets the stencil write action, compare function, and reference value at once
 do
@@ -921,14 +777,12 @@ do
     lurek.render.circle("fill", 100, 100, 50)  -- writes 1 into stencil
   end
 end
-
 --@api-stub: lurek.render.getStencilMode
 -- Returns the current stencil action, compare mode, and reference value
 do
   local action, compare, value = lurek.render.getStencilMode()
   lurek.log.debug("stencil: " .. tostring(action) .. " " .. tostring(compare) .. " ref=" .. tostring(value))
 end
-
 --@api-stub: lurek.render.clearStencil
 -- Resets the stencil state to defaults (no stencil operations)
 do
@@ -940,11 +794,6 @@ do
     lurek.render.rectangle("fill", 50, 50, 100, 100)
   end
 end
-
--- =============================================================================
--- DEPTH BUFFER
--- =============================================================================
-
 --@api-stub: lurek.render.setDepthMode
 -- Sets the depth comparison mode and whether depth writes are enabled
 do
@@ -954,32 +803,24 @@ do
     lurek.render.setDepthMode("lequal", true)
   end
 end
-
 --@api-stub: lurek.render.getDepthMode
 -- Returns the current depth comparison mode and write-enable flag
 do
   local cmp, write = lurek.render.getDepthMode()
   lurek.log.debug("depth: mode=" .. tostring(cmp) .. " write=" .. tostring(write))
 end
-
--- =============================================================================
--- SCREEN DIMENSIONS
--- =============================================================================
-
 --@api-stub: LCanvas:getWidth
 -- Returns the current window width in pixels
 do
   local w = lurek.render.getWidth()
   lurek.log.info("screen width: " .. tostring(w) .. "px")
 end
-
 --@api-stub: LCanvas:getHeight
 -- Returns the current window height in pixels
 do
   local h = lurek.render.getHeight()
   lurek.log.info("screen height: " .. tostring(h) .. "px")
 end
-
 --@api-stub: LCanvas:getDimensions
 -- Returns the current window width and height
 do
@@ -990,11 +831,6 @@ do
     lurek.render.print("CENTER", cx - 20, cy)
   end
 end
-
--- =============================================================================
--- TEXTURE FILTERING
--- =============================================================================
-
 --@api-stub: lurek.render.setDefaultFilter
 -- Sets the default texture filtering mode for newly created images
 do
@@ -1005,18 +841,12 @@ do
     lurek.render.setDefaultFilter("nearest", "nearest")  -- pixel art game
   end
 end
-
 --@api-stub: lurek.render.getDefaultFilter
 -- Returns the current default texture filtering settings
 do
   local min_f, mag_f, aniso = lurek.render.getDefaultFilter()
   lurek.log.debug("filter: min=" .. min_f .. " mag=" .. mag_f .. " aniso=" .. tostring(aniso))
 end
-
--- =============================================================================
--- RENDER STATISTICS
--- =============================================================================
-
 --@api-stub: lurek.render.getStats
 -- Returns a table of rendering statistics for the current frame
 do
@@ -1027,11 +857,6 @@ do
                  ", batched: " .. tostring(stats.batched_draws) ..
                  ", tex switches: " .. tostring(stats.texture_switches))
 end
-
--- =============================================================================
--- SCREENSHOTS
--- =============================================================================
-
 --@api-stub: lurek.render.saveScreenshot
 -- Saves a screenshot of the current frame to a file under the save/ directory
 do
@@ -1043,7 +868,6 @@ do
     end
   end
 end
-
 --@api-stub: lurek.render.captureScreenshot
 -- Captures a screenshot as ImageData and passes it to a callback (stub: returns 1x1 placeholder)
 do
@@ -1055,11 +879,6 @@ do
     end)
   end
 end
-
--- =============================================================================
--- NINE-SLICE UI
--- =============================================================================
-
 --@api-stub: lurek.render.newNineSlice
 -- Creates a 9-slice definition from an image and four border insets for scalable UI rendering
 do
@@ -1074,7 +893,6 @@ do
     end
   end
 end
-
 --@api-stub: lurek.render.drawNineSlice
 -- Draws a 9-slice image stretched to fill the given rectangle, keeping borders unscaled
 do
@@ -1090,11 +908,6 @@ do
     end
   end
 end
-
--- =============================================================================
--- RETAINED SHAPES
--- =============================================================================
-
 --@api-stub: lurek.render.newShape
 -- Creates a new retained compound shape for accumulating draw commands
 do
@@ -1113,11 +926,6 @@ do
     icon:draw(200, 100, 0, 2, 2)  -- draw again at 2x scale
   end
 end
-
--- =============================================================================
--- DRAW LAYERS (Z-SORTED CALLBACKS)
--- =============================================================================
-
 --@api-stub: lurek.render.newDrawLayer
 -- Creates a new z-ordered draw layer for sorting draw callbacks by depth
 do
@@ -1134,11 +942,6 @@ do
     layer:flush()  -- draws z=5 first, then z=10 on top
   end
 end
-
--- =============================================================================
--- BEZIER CURVES
--- =============================================================================
-
 --@api-stub: lurek.render.drawQuadBezier
 -- Draws a quadratic Bezier curve through start, control, and end points
 do
@@ -1155,7 +958,6 @@ do
     )
   end
 end
-
 --@api-stub: lurek.render.drawCubicBezier
 -- Draws a cubic Bezier curve through start, two control points, and end
 do
@@ -1172,11 +974,6 @@ do
     )
   end
 end
-
--- =============================================================================
--- VECTOR PATHS
--- =============================================================================
-
 --@api-stub: lurek.render.drawPath
 -- Draws a vector path composed of moveTo, lineTo, quadTo, and cubicTo segments
 do
@@ -1191,11 +988,6 @@ do
     )
   end
 end
-
--- =============================================================================
--- GRADIENT & COLORED PRIMITIVES
--- =============================================================================
-
 --@api-stub: lurek.render.drawGradientRect
 -- Draws a rectangle with a two-color gradient fill
 do
@@ -1211,7 +1003,6 @@ do
     )
   end
 end
-
 --@api-stub: lurek.render.drawColoredPolygon
 -- Draws a polygon with per-vertex colors
 do
@@ -1225,11 +1016,6 @@ do
     )
   end
 end
-
--- =============================================================================
--- ISOMETRIC & HEX TILES
--- =============================================================================
-
 --@api-stub: lurek.render.drawIsoCubeTile
 -- Draws an isometric cube tile with configurable face colors and optional textures
 do
@@ -1243,7 +1029,6 @@ do
     })
   end
 end
-
 --@api-stub: lurek.render.drawHexTile
 -- Draws a regular hexagonal tile
 do
@@ -1257,11 +1042,6 @@ do
     lurek.render.drawHexTile(200, 200, 32, "pointyTop", "line")  -- outline
   end
 end
-
--- =============================================================================
--- SORT GROUPS (DEPTH SORTING)
--- =============================================================================
-
 --@api-stub: lurek.render.beginSortGroup
 -- Begins a depth-sorted rendering group
 do
@@ -1278,7 +1058,6 @@ do
     lurek.render.flushSortGroup(1)
   end
 end
-
 --@api-stub: lurek.render.pushSortKey
 -- Sets the depth sort key for subsequent draw calls within the current sort group
 do
@@ -1292,7 +1071,6 @@ do
     lurek.render.flushSortGroup(1)
   end
 end
-
 --@api-stub: lurek.render.flushSortGroup
 -- Ends a sort group and emits all accumulated draw calls in sorted order
 do
@@ -1305,11 +1083,6 @@ do
     lurek.render.flushSortGroup(1)
   end
 end
-
--- =============================================================================
--- BEVEL RECTANGLES (3D-STYLE UI)
--- =============================================================================
-
 --@api-stub: lurek.render.drawBevelRect
 -- Draws a beveled rectangle with highlight, shadow, and fill colors for 3D-style UI elements
 do
@@ -1325,11 +1098,6 @@ do
     lurek.render.drawBevelRect(50, 150, 200, 80, 4, "sunken")
   end
 end
-
--- =============================================================================
--- COMPOSITING LAYERS
--- =============================================================================
-
 --@api-stub: lurek.render.pushLayer
 -- Begins a compositing layer with the given alpha and blend mode
 do
@@ -1344,7 +1112,6 @@ do
     lurek.render.popLayer(1)
   end
 end
-
 --@api-stub: lurek.render.popLayer
 -- Ends a compositing layer and composites it with the previous content
 do
@@ -1355,11 +1122,6 @@ do
     lurek.render.popLayer(2)
   end
 end
-
--- =============================================================================
--- NAMED RENDER LAYERS
--- =============================================================================
-
 --@api-stub: lurek.render.newLayer
 -- Creates a named rendering layer with an optional z-order for draw call organization
 do
@@ -1371,7 +1133,6 @@ do
     lurek.render.newLayer("hud", 100)
   end
 end
-
 --@api-stub: lurek.render.setLayer
 -- Sets the active rendering layer by name
 do
@@ -1383,14 +1144,12 @@ do
     lurek.render.print("Score: 999", 10, 10)         -- always on top
   end
 end
-
 --@api-stub: lurek.render.currentLayer
 -- Returns the name of the currently active rendering layer
 do
   local name = lurek.render.currentLayer()
   lurek.log.debug("active layer: " .. tostring(name))
 end
-
 --@api-stub: lurek.render.setLayerVisible
 -- Sets whether a named rendering layer is visible
 do
@@ -1400,7 +1159,6 @@ do
     lurek.render.setLayerVisible("debug_overlay", false)  -- hidden by default
   end
 end
-
 --@api-stub: lurek.render.isLayerVisible
 -- Returns whether a named rendering layer is currently visible
 do
@@ -1408,14 +1166,12 @@ do
     lurek.log.debug("HUD layer is visible")
   end
 end
-
 --@api-stub: lurek.render.getLayerZOrder
 -- Returns the z-order value of a named rendering layer
 do
   local z = lurek.render.getLayerZOrder("hud")
   lurek.log.debug("hud z-order: " .. tostring(z))
 end
-
 --@api-stub: lurek.render.setLayerZOrder
 -- Sets the z-order value of a named rendering layer
 do
@@ -1429,25 +1185,18 @@ do
     end
   end
 end
-
--- =============================================================================
--- IMAGEDATA METHODS
--- =============================================================================
-
 --@api-stub: LCanvas:getWidth
 -- Returns the width of this image data.
 do
   local data = lurek.image.newImageData(64, 64)
   lurek.log.debug("imagedata width: " .. tostring(data:getWidth()))
 end
-
 --@api-stub: LCanvas:getHeight
 -- Returns the height of this image data.
 do
   local data = lurek.image.newImageData(64, 64)
   lurek.log.debug("imagedata height: " .. tostring(data:getHeight()))
 end
-
 --@api-stub: LImageData:resize
 -- Performs the resize operation on this image data.
 do
@@ -1459,7 +1208,6 @@ do
     lurek.log.info("resized to 32x32")
   end
 end
-
 --@api-stub: LImageData:diff
 -- Performs the diff operation on this image data.
 do
@@ -1472,7 +1220,6 @@ do
     lurek.log.debug("diff score: " .. tostring(diff_score))
   end
 end
-
 --@api-stub: LImageData:mapPixels
 -- Performs the map pixels operation on this image data.
 do
@@ -1486,7 +1233,6 @@ do
     end)
   end
 end
-
 --@api-stub: LImageData:blit
 -- Performs the blit operation on this image data.
 do
@@ -1498,7 +1244,6 @@ do
     dst:blit(src, 10, 10)  -- paste src at (10, 10) on dst
   end
 end
-
 --@api-stub: LImageData:getRegion
 -- Returns the region of this image data.
 do
@@ -1512,11 +1257,6 @@ do
     end
   end
 end
-
--- =============================================================================
--- NINESLICE METHODS
--- =============================================================================
-
 --@api-stub: LNineSlice:getInsets
 -- Returns the insets of this nine slice.
 do
@@ -1531,7 +1271,6 @@ do
     end
   end
 end
-
 --@api-stub: LNineSlice:getTextureSize
 -- Returns the texture size of this nine slice.
 do
@@ -1546,7 +1285,6 @@ do
     end
   end
 end
-
 --@api-stub: LDrawLayer:type
 -- Returns the Lua-visible type name string for this nine slice handle.
 do
@@ -1557,7 +1295,6 @@ do
     if panel then lurek.log.debug(panel:type()) end  -- "LNineSlice"
   end
 end
-
 --@api-stub: LDrawLayer:typeOf
 -- Returns true if this nine slice handle matches the given type name string.
 do
@@ -1570,7 +1307,6 @@ do
     end
   end
 end
-
 --@api-stub: LShape:draw
 -- Draws or renders this nine slice to the current render target.
 do
@@ -1584,11 +1320,6 @@ do
     if panel then lurek.render.drawNineSlice(panel, 100, 100, 300, 200) end
   end
 end
-
--- =============================================================================
--- IMAGE METHODS
--- =============================================================================
-
 --@api-stub: LCanvas:getWidth
 -- Returns the width of this image.
 do
@@ -1598,7 +1329,6 @@ do
     lurek.log.debug("image width: " .. img:getWidth() .. "px")
   end
 end
-
 --@api-stub: LCanvas:getHeight
 -- Returns the height of this image.
 do
@@ -1608,7 +1338,6 @@ do
     lurek.log.debug("image height: " .. img:getHeight() .. "px")
   end
 end
-
 --@api-stub: LCanvas:getDimensions
 -- Returns the dimensions of this image.
 do
@@ -1620,7 +1349,6 @@ do
     lurek.log.debug("image: " .. w .. "x" .. h)
   end
 end
-
 --@api-stub: LShader:release
 -- Performs the release operation on this image.
 do
@@ -1630,7 +1358,6 @@ do
   function lurek.init() img = lurek.render.newImage("img/hero.png") end
   function lurek.quit() if img then img:release() end end
 end
-
 --@api-stub: LDrawLayer:typeOf
 -- Returns true if this image handle matches the given type name string.
 do
@@ -1640,7 +1367,6 @@ do
     if img:typeOf("LImage") then lurek.log.debug("confirmed Image type") end
   end
 end
-
 --@api-stub: LDrawLayer:type
 -- Returns the Lua-visible type name string for this image handle.
 do
@@ -1650,7 +1376,6 @@ do
     lurek.log.debug("type: " .. img:type())  -- "LImage"
   end
 end
-
 --@api-stub: LImage:getId
 -- Returns the internal numeric handle ID for this image
 do
@@ -1660,11 +1385,6 @@ do
     lurek.log.info("texture handle ID: " .. tostring(img:getId()))
   end
 end
-
--- =============================================================================
--- FONT METHODS
--- =============================================================================
-
 --@api-stub: LCanvas:getWidth
 -- Returns the width of this font.
 do
@@ -1676,7 +1396,6 @@ do
     lurek.log.debug("text width: " .. w .. "px")
   end
 end
-
 --@api-stub: LCanvas:getHeight
 -- Returns the height of this font.
 do
@@ -1687,7 +1406,6 @@ do
     lurek.log.debug("font height: " .. f:getHeight() .. "px")
   end
 end
-
 --@api-stub: LFont:getLineHeight
 -- Returns the line height of this font.
 do
@@ -1698,7 +1416,6 @@ do
     lurek.log.debug("line height: " .. f:getLineHeight())
   end
 end
-
 --@api-stub: LFont:setLineHeight
 -- Sets the line height of this font.
 do
@@ -1709,7 +1426,6 @@ do
     f:setLineHeight(24)  -- force 24px between lines
   end
 end
-
 --@api-stub: LFont:getAscent
 -- Returns the ascent of this font.
 do
@@ -1720,7 +1436,6 @@ do
     lurek.log.debug("ascent: " .. tostring(f:getAscent()) .. "px")
   end
 end
-
 --@api-stub: LFont:getDescent
 -- Returns the descent of this font.
 do
@@ -1731,7 +1446,6 @@ do
     lurek.log.debug("descent: " .. tostring(f:getDescent()) .. "px")
   end
 end
-
 --@api-stub: LFont:getWrap
 -- Returns the wrap of this font.
 do
@@ -1744,7 +1458,6 @@ do
     lurek.log.debug("wrapped to " .. #lines .. " lines, widest=" .. tostring(widest))
   end
 end
-
 --@api-stub: LShader:release
 -- Performs the release operation on this font.
 do
@@ -1753,7 +1466,6 @@ do
   function lurek.init() f = lurek.render.newFont(18) end
   function lurek.quit() if f then f:release() end end
 end
-
 --@api-stub: LDrawLayer:typeOf
 -- Returns true if this font handle matches the given type name string.
 do
@@ -1763,7 +1475,6 @@ do
     if f:typeOf("LFont") then lurek.log.debug("confirmed Font type") end
   end
 end
-
 --@api-stub: LDrawLayer:type
 -- Returns the Lua-visible type name string for this font handle.
 do
@@ -1773,11 +1484,6 @@ do
     lurek.log.debug("type: " .. f:type())  -- "LFont"
   end
 end
-
--- =============================================================================
--- CANVAS METHODS
--- =============================================================================
-
 --@api-stub: LCanvas:getWidth
 -- Returns the width of this canvas.
 do
@@ -1787,7 +1493,6 @@ do
     lurek.log.debug("canvas width: " .. c:getWidth())
   end
 end
-
 --@api-stub: LCanvas:getHeight
 -- Returns the height of this canvas.
 do
@@ -1797,7 +1502,6 @@ do
     lurek.log.debug("canvas height: " .. c:getHeight())
   end
 end
-
 --@api-stub: LCanvas:getDimensions
 -- Returns the dimensions of this canvas.
 do
@@ -1808,7 +1512,6 @@ do
     lurek.log.debug("canvas: " .. w .. "x" .. h)
   end
 end
-
 --@api-stub: LShader:release
 -- Performs the release operation on this canvas.
 do
@@ -1817,7 +1520,6 @@ do
   function lurek.init() c = lurek.render.newCanvas(320, 240) end
   function lurek.quit() if c then c:release() end end
 end
-
 --@api-stub: LDrawLayer:typeOf
 -- Returns true if this canvas handle matches the given type name string.
 do
@@ -1827,7 +1529,6 @@ do
     if c:typeOf("LCanvas") then lurek.log.debug("confirmed Canvas type") end
   end
 end
-
 --@api-stub: LDrawLayer:type
 -- Returns the Lua-visible type name string for this canvas handle.
 do
@@ -1837,11 +1538,6 @@ do
     lurek.log.debug("type: " .. c:type())  -- "LCanvas"
   end
 end
-
--- =============================================================================
--- SPRITEBATCH METHODS
--- =============================================================================
-
 --@api-stub: LSpriteBatch:add
 -- Adds a sprite entry to this sprite batch.
 do
@@ -1857,7 +1553,6 @@ do
     end
   end
 end
-
 --@api-stub: LDrawLayer:clear
 -- Clears all items from this sprite batch.
 do
@@ -1871,7 +1566,6 @@ do
     -- Re-add visible tiles based on camera position...
   end
 end
-
 --@api-stub: LDrawLayer:getCount
 -- Returns the total count of items held by this sprite batch.
 do
@@ -1884,7 +1578,6 @@ do
     lurek.log.debug("batch count: " .. batch:getCount())  -- 2
   end
 end
-
 --@api-stub: LSpriteBatch:getBufferSize
 -- Returns the buffer size of this sprite batch.
 do
@@ -1895,7 +1588,6 @@ do
     lurek.log.debug("capacity: " .. batch:getBufferSize())  -- 512
   end
 end
-
 --@api-stub: LShader:release
 -- Performs the release operation on this sprite batch.
 do
@@ -1905,7 +1597,6 @@ do
   end
   function lurek.quit() if batch then batch:release() end end
 end
-
 --@api-stub: LDrawLayer:typeOf
 -- Returns true if this sprite batch handle matches the given type name string.
 do
@@ -1915,7 +1606,6 @@ do
     if batch:typeOf("LSpriteBatch") then lurek.log.debug("confirmed SpriteBatch") end
   end
 end
-
 --@api-stub: LDrawLayer:type
 -- Returns the Lua-visible type name string for this sprite batch handle.
 do
@@ -1925,11 +1615,6 @@ do
     lurek.log.debug("type: " .. batch:type())  -- "LSpriteBatch"
   end
 end
-
--- =============================================================================
--- MESH METHODS
--- =============================================================================
-
 --@api-stub: LObjModel:getVertexCount
 -- Returns the number of vertex items in this mesh.
 do
@@ -1943,7 +1628,6 @@ do
     lurek.log.debug("vertex count: " .. m:getVertexCount())  -- 3
   end
 end
-
 --@api-stub: LMesh:getVertex
 -- Returns the vertex of this mesh.
 do
@@ -1959,7 +1643,6 @@ do
     lurek.log.debug("v1 pos: " .. tostring(x) .. "," .. tostring(y))
   end
 end
-
 --@api-stub: LMesh:setVertex
 -- Sets the vertex of this mesh.
 do
@@ -1978,7 +1661,6 @@ do
     m:setVertex(3, { 32, 64 + offset, 0.5, 1, 1, 1, 1, 1 })
   end
 end
-
 --@api-stub: LMesh:setTexture
 -- Sets the texture of this mesh.
 do
@@ -1994,7 +1676,6 @@ do
     m:setTexture(tex)  -- UVs now sample from sheet.png
   end
 end
-
 --@api-stub: LShader:release
 -- Performs the release operation on this mesh.
 do
@@ -2008,7 +1689,6 @@ do
   end
   function lurek.quit() if m then m:release() end end
 end
-
 --@api-stub: LDrawLayer:typeOf
 -- Returns true if this mesh handle matches the given type name string.
 do
@@ -2022,7 +1702,6 @@ do
     if m:typeOf("LMesh") then lurek.log.debug("confirmed Mesh type") end
   end
 end
-
 --@api-stub: LDrawLayer:type
 -- Returns the Lua-visible type name string for this mesh handle.
 do
@@ -2036,11 +1715,6 @@ do
     lurek.log.debug("type: " .. m:type())  -- "LMesh"
   end
 end
-
--- =============================================================================
--- SHADER METHODS
--- =============================================================================
-
 --@api-stub: LShader:send
 -- Sends to the target associated with this shader.
 do
@@ -2056,7 +1730,6 @@ do
     end
   end
 end
-
 --@api-stub: LShader:hasUniform
 -- Returns true if this shader has a uniform.
 do
@@ -2070,7 +1743,6 @@ do
     end
   end
 end
-
 --@api-stub: LShader:release
 -- Performs the release operation on this shader.
 do
@@ -2078,7 +1750,6 @@ do
   function lurek.init() sh = lurek.render.newShader("// shader source") end
   function lurek.quit() if sh then sh:release() end end
 end
-
 --@api-stub: LDrawLayer:typeOf
 -- Returns true if this shader handle matches the given type name string.
 do
@@ -2088,7 +1759,6 @@ do
     if sh:typeOf("LShader") then lurek.log.debug("confirmed Shader type") end
   end
 end
-
 --@api-stub: LDrawLayer:type
 -- Returns the Lua-visible type name string for this shader handle.
 do
@@ -2098,11 +1768,6 @@ do
     lurek.log.debug("type: " .. sh:type())  -- "LShader"
   end
 end
-
--- =============================================================================
--- QUAD METHODS
--- =============================================================================
-
 --@api-stub: LQuad:getViewport
 -- Returns the viewport of this quad.
 do
@@ -2114,7 +1779,6 @@ do
     lurek.log.debug("quad viewport: " .. x .. "," .. y .. " " .. w .. "x" .. h)
   end
 end
-
 --@api-stub: LQuad:getTextureDimensions
 -- Returns the texture dimensions of this quad.
 do
@@ -2126,7 +1790,6 @@ do
     lurek.log.debug("source texture: " .. sw .. "x" .. sh)
   end
 end
-
 --@api-stub: LQuad:setViewport
 -- Sets the viewport of this quad.
 do
@@ -2142,7 +1805,6 @@ do
     q:setViewport(frame * 32, 0, 32, 32)
   end
 end
-
 --@api-stub: LDrawLayer:typeOf
 -- Returns true if this quad handle matches the given type name string.
 do
@@ -2152,7 +1814,6 @@ do
     if q:typeOf("LQuad") then lurek.log.debug("confirmed Quad type") end
   end
 end
-
 --@api-stub: LDrawLayer:type
 -- Returns the Lua-visible type name string for this quad handle.
 do
@@ -2162,11 +1823,6 @@ do
     lurek.log.debug("type: " .. q:type())  -- "LQuad"
   end
 end
-
--- =============================================================================
--- SHAPE METHODS
--- =============================================================================
-
 --@api-stub: LShape:getCommandCount
 -- Returns the number of command items in this shape.
 do
@@ -2179,7 +1835,6 @@ do
     lurek.log.debug("shape commands: " .. s:getCommandCount())  -- 2
   end
 end
-
 --@api-stub: LDrawLayer:clear
 -- Clears all items from this shape.
 do
@@ -2192,7 +1847,6 @@ do
     s:rectangle("fill", 0, 0, 50, 50)
   end
 end
-
 --@api-stub: LShape:setLineWidth
 -- Sets the line width of this shape.
 do
@@ -2204,7 +1858,6 @@ do
     s:line(0, 0, 100, 0)  -- thick line
   end
 end
-
 --@api-stub: LShape:setColor
 -- Sets the color of this shape.
 do
@@ -2219,7 +1872,6 @@ do
     s:circle("fill", 50, 20, 10)
   end
 end
-
 --@api-stub: LShape:line
 -- Performs the line operation on this shape.
 do
@@ -2231,7 +1883,6 @@ do
     s:line(100, 0, 100, 50)  -- vertical
   end
 end
-
 --@api-stub: LShape:polyline
 -- Performs the polyline operation on this shape.
 do
@@ -2242,7 +1893,6 @@ do
     s:polyline(0, 0, 30, 50, 60, 10, 90, 60, 120, 0)  -- zigzag path
   end
 end
-
 --@api-stub: LShape:arc
 -- Performs the arc operation on this shape.
 do
@@ -2255,7 +1905,6 @@ do
   end
   function lurek.draw() s:draw(100, 100) end
 end
-
 --@api-stub: LShape:circle
 -- Performs the circle operation on this shape.
 do
@@ -2267,7 +1916,6 @@ do
   end
   function lurek.draw() s:draw(200, 200) end
 end
-
 --@api-stub: LShape:ellipse
 -- Performs the ellipse operation on this shape.
 do
@@ -2279,7 +1927,6 @@ do
   end
   function lurek.draw() s:draw(300, 200) end
 end
-
 --@api-stub: LShape:rectangle
 -- Performs the rectangle operation on this shape.
 do
@@ -2291,7 +1938,6 @@ do
   end
   function lurek.draw() s:draw(50, 50) end
 end
-
 --@api-stub: LShape:roundedRectangle
 -- Performs the rounded rectangle operation on this shape.
 do
@@ -2304,7 +1950,6 @@ do
   end
   function lurek.draw() s:draw(100, 100) end
 end
-
 --@api-stub: LShape:polygon
 -- Performs the polygon operation on this shape.
 do
@@ -2316,7 +1961,6 @@ do
   end
   function lurek.draw() s:draw(150, 150) end
 end
-
 --@api-stub: LShape:triangle
 -- Performs the triangle operation on this shape.
 do
@@ -2328,7 +1972,6 @@ do
   end
   function lurek.draw() s:draw(200, 200) end
 end
-
 --@api-stub: LShape:draw
 -- Draws or renders this shape to the current render target.
 do
@@ -2344,7 +1987,6 @@ do
     s:draw(200, 200, math.pi / 4)  -- draw rotated 45 degrees
   end
 end
-
 --@api-stub: LDrawLayer:typeOf
 -- Returns true if this shape handle matches the given type name string.
 do
@@ -2354,7 +1996,6 @@ do
     if s:typeOf("LShape") then lurek.log.debug("confirmed Shape") end
   end
 end
-
 --@api-stub: LDrawLayer:type
 -- Returns the Lua-visible type name string for this shape handle.
 do
@@ -2364,11 +2005,6 @@ do
     lurek.log.debug("type: " .. s:type())  -- "LShape"
   end
 end
-
--- =============================================================================
--- DRAWLAYER METHODS
--- =============================================================================
-
 --@api-stub: LDrawLayer:queue
 -- Performs the queue operation on this draw layer.
 do
@@ -2382,7 +2018,6 @@ do
     dl:flush()  -- circle draws first (z=5), then rectangle (z=10)
   end
 end
-
 --@api-stub: LDrawLayer:flush
 -- Flushes all pending output from this draw layer immediately.
 do
@@ -2394,7 +2029,6 @@ do
     dl:flush()
   end
 end
-
 --@api-stub: LDrawLayer:clear
 -- Clears all items from this draw layer.
 do
@@ -2405,7 +2039,6 @@ do
     dl:clear()  -- discard stale frame data before queuing new draws
   end
 end
-
 --@api-stub: LDrawLayer:getCount
 -- Returns the total count of items held by this draw layer.
 do
@@ -2417,7 +2050,6 @@ do
     lurek.log.debug("queued callbacks: " .. dl:getCount())  -- 2
   end
 end
-
 --@api-stub: LDrawLayer:type
 -- Returns the Lua-visible type name string for this draw layer handle.
 do
@@ -2427,7 +2059,6 @@ do
     lurek.log.debug("type: " .. dl:type())  -- "LDrawLayer"
   end
 end
-
 --@api-stub: LDrawLayer:typeOf
 -- Returns true if this draw layer handle matches the given type name string.
 do
@@ -2437,11 +2068,6 @@ do
     if dl:typeOf("LDrawLayer") then lurek.log.debug("confirmed DrawLayer") end
   end
 end
-
--- =============================================================================
--- 3D MODEL LOADING (OBJ)
--- =============================================================================
-
 --@api-stub: lurek.render.loadObj
 -- Loads a Wavefront OBJ model file and returns a model handle for projection and rendering
 do
@@ -2452,7 +2078,6 @@ do
     lurek.log.info("loaded OBJ: " .. model:getVertexCount() .. " verts")
   end
 end
-
 --@api-stub: lurek.render.loadModel
 -- Loads a 3D model file (OBJ format) and returns a handle for 2D projection and sprite rendering
 do
@@ -2462,11 +2087,6 @@ do
     lurek.log.info("model: " .. mdl:getFaceCount() .. " faces")
   end
 end
-
--- =============================================================================
--- OBJ MODEL METHODS
--- =============================================================================
-
 --@api-stub: LObjModel:getVertexCount
 -- Returns the number of vertices in this OBJ model
 do
@@ -2475,7 +2095,6 @@ do
     lurek.log.debug("vertices: " .. model:getVertexCount())
   end
 end
-
 --@api-stub: LObjModel:getFaceCount
 -- Returns the number of faces (triangles) in this OBJ model
 do
@@ -2484,7 +2103,6 @@ do
     lurek.log.debug("faces: " .. model:getFaceCount())
   end
 end
-
 --@api-stub: LObjModel:getUvCount
 -- Returns the number of UV texture coordinates in this OBJ model
 do
@@ -2493,7 +2111,6 @@ do
     lurek.log.debug("UVs: " .. model:getUvCount())
   end
 end
-
 --@api-stub: LObjModel:getNormalCount
 -- Returns the number of vertex normals in this OBJ model
 do
@@ -2502,7 +2119,6 @@ do
     lurek.log.debug("normals: " .. model:getNormalCount())
   end
 end
-
 --@api-stub: LObjModel:projectToMesh
 -- Projects the OBJ model into 2D vertex data using a virtual camera, returning a table of vertex rows
 do
@@ -2517,7 +2133,6 @@ do
     lurek.log.debug("projected " .. #verts .. " vertex rows")
   end
 end
-
 --@api-stub: LObjModel:renderToImage
 -- Renders the OBJ model to a GPU texture at the given resolution with optional 90-degree rotation
 do
@@ -2531,21 +2146,7 @@ do
     end
   end
 end
-
 print("content/examples/render.lua")
-
--- =============================================================================
--- STUBS: 81 uncovered lurek.render API item(s)
--- Generated by tools/audit/example_add_missing.py
--- REQUIRED: replace every --@api-stub: block below with a real scenario.
--- Run .github/prompts/flesh-out-example.prompt.md for instructions.
--- The final committed file must contain ZERO --@api-stub: lines.
--- =============================================================================
-
--- -----------------------------------------------------------------------------
--- LCanvas methods
--- -----------------------------------------------------------------------------
-
 --@api-stub: LCanvas:release
 -- Releases the canvas GPU resource. If this canvas is currently active, drawing reverts to the screen.
 do
@@ -2554,7 +2155,6 @@ do
   rt:release()
   lurek.log.info("canvas released", "render")
 end
-
 --@api-stub: LCanvas:typeOf
 -- Checks whether this object matches the given type name.
 do
@@ -2564,7 +2164,6 @@ do
     lurek.log.debug("confirmed LCanvas handle")
   end
 end
-
 --@api-stub: LCanvas:type
 -- Returns the internal Lua type tag. This method is available to Lua scripts.
 do
@@ -2572,11 +2171,6 @@ do
   local rt = lurek.render.newCanvas(320, 240)
   lurek.log.debug("canvas type: " .. rt:type())
 end
-
--- -----------------------------------------------------------------------------
--- LDrawLayer methods
--- -----------------------------------------------------------------------------
-
 --@api-stub: LFont:getWidth
 -- Measures the pixel width of a string when rendered with this font.
 do
@@ -2587,7 +2181,6 @@ do
     lurek.log.debug("text width: " .. tostring(w) .. "px")
   end)
 end
-
 --@api-stub: LFont:getHeight
 -- Returns the line height of this font in pixels.
 do
@@ -2598,7 +2191,6 @@ do
     lurek.log.debug("font height: " .. tostring(h) .. "px")
   end)
 end
-
 --@api-stub: LFont:release
 -- Releases the font resource. The handle becomes invalid after this call.
 do
@@ -2609,7 +2201,6 @@ do
     lurek.log.debug("font released")
   end)
 end
-
 --@api-stub: LFont:typeOf
 -- Checks whether this object matches the given type name.
 do
@@ -2621,7 +2212,6 @@ do
     end
   end)
 end
-
 --@api-stub: LFont:type
 -- Returns the internal Lua type tag. This method is available to Lua scripts.
 do
@@ -2631,11 +2221,6 @@ do
     lurek.log.debug("font handle type: " .. f:type())
   end)
 end
-
--- -----------------------------------------------------------------------------
--- LImage methods
--- -----------------------------------------------------------------------------
-
 --@api-stub: LImage:getWidth
 -- Returns the width of this image in pixels.
 do
@@ -2645,7 +2230,6 @@ do
     lurek.log.debug("image width: " .. img:getWidth() .. "px")
   end)
 end
-
 --@api-stub: LImage:getHeight
 -- Returns the height of this image in pixels.
 do
@@ -2655,7 +2239,6 @@ do
     lurek.log.debug("image height: " .. img:getHeight() .. "px")
   end)
 end
-
 --@api-stub: LImage:getDimensions
 -- Returns both width and height of this image.
 do
@@ -2666,7 +2249,6 @@ do
     lurek.log.debug("image: " .. w .. "x" .. h)
   end)
 end
-
 --@api-stub: LImage:release
 -- Releases the GPU memory for this image. The handle becomes invalid after this call.
 do
@@ -2677,7 +2259,6 @@ do
     lurek.log.debug("image GPU memory freed")
   end)
 end
-
 --@api-stub: LImage:typeOf
 -- Checks whether this object matches the given type name.
 do
@@ -2689,7 +2270,6 @@ do
     end
   end)
 end
-
 --@api-stub: LImage:type
 -- Returns the internal Lua type tag. This method is available to Lua scripts.
 do
@@ -2699,11 +2279,6 @@ do
     lurek.log.debug("handle type: " .. img:type())
   end)
 end
-
--- -----------------------------------------------------------------------------
--- LImageData methods
--- -----------------------------------------------------------------------------
-
 --@api-stub: LImageData:getWidth
 -- Returns the width of this image data in pixels.
 do
@@ -2711,7 +2286,6 @@ do
   local data = lurek.image.newImageData(128, 64)
   if data then lurek.log.debug("imagedata width: " .. data:getWidth()) end
 end
-
 --@api-stub: LImageData:getHeight
 -- Returns the height of this image data in pixels.
 do
@@ -2719,7 +2293,6 @@ do
   local data = lurek.image.newImageData(128, 64)
   if data then lurek.log.debug("imagedata height: " .. data:getHeight()) end
 end
-
 --@api-stub: LImageData:type
 -- Returns the type name of this object.
 do
@@ -2727,7 +2300,6 @@ do
   local data = lurek.image.newImageData(32, 32)
   if data then lurek.log.debug("type: " .. data:type()) end
 end
-
 --@api-stub: LImageData:typeOf
 -- Checks whether this object matches the given type name.
 do
@@ -2737,11 +2309,6 @@ do
     lurek.log.debug("confirmed LImageData handle")
   end
 end
-
--- -----------------------------------------------------------------------------
--- LMesh methods
--- -----------------------------------------------------------------------------
-
 --@api-stub: LMesh:getVertexCount
 -- Returns the number of vertices in this mesh.
 do
@@ -2753,7 +2320,6 @@ do
   }, "triangles")
   lurek.log.debug("mesh verts: " .. mesh:getVertexCount())
 end
-
 --@api-stub: LMesh:release
 -- Releases the mesh resource. This method is available to Lua scripts.
 do
@@ -2766,7 +2332,6 @@ do
   mesh:release()
   lurek.log.debug("mesh released")
 end
-
 --@api-stub: LMesh:typeOf
 -- Checks whether this object matches the given type name.
 do
@@ -2778,7 +2343,6 @@ do
   }, "triangles")
   if mesh:typeOf("LMesh") then lurek.log.debug("confirmed LMesh") end
 end
-
 --@api-stub: LMesh:type
 -- Returns the internal Lua type tag. This method is available to Lua scripts.
 do
@@ -2790,11 +2354,6 @@ do
   }, "triangles")
   lurek.log.debug("mesh type: " .. mesh:type())
 end
-
--- -----------------------------------------------------------------------------
--- LNineSlice methods
--- -----------------------------------------------------------------------------
-
 --@api-stub: LNineSlice:type
 -- Returns the type name of this object.
 do
@@ -2805,7 +2364,6 @@ do
     lurek.log.debug("nine-slice type: " .. ns:type())
   end)
 end
-
 --@api-stub: LNineSlice:typeOf
 -- Checks whether this object matches the given type name.
 do
@@ -2816,11 +2374,6 @@ do
     if ns:typeOf("LNineSlice") then lurek.log.debug("confirmed LNineSlice") end
   end)
 end
-
--- -----------------------------------------------------------------------------
--- LQuad methods
--- -----------------------------------------------------------------------------
-
 --@api-stub: LQuad:typeOf
 -- Checks whether this object matches the given type name.
 do
@@ -2828,7 +2381,6 @@ do
   local q = lurek.render.newQuad(0, 0, 32, 32, 256, 256)
   if q:typeOf("LQuad") then lurek.log.debug("confirmed LQuad") end
 end
-
 --@api-stub: LQuad:type
 -- Returns the internal Lua type tag. This method is available to Lua scripts.
 do
@@ -2836,11 +2388,6 @@ do
   local q = lurek.render.newQuad(0, 0, 32, 32, 256, 256)
   lurek.log.debug("quad type: " .. q:type())
 end
-
--- -----------------------------------------------------------------------------
--- LShader methods
--- -----------------------------------------------------------------------------
-
 --@api-stub: LShader:typeOf
 -- Checks whether this object matches the given type name.
 do
@@ -2850,7 +2397,6 @@ do
     if sh:typeOf("LShader") then lurek.log.debug("confirmed LShader") end
   end)
 end
-
 --@api-stub: LShader:type
 -- Returns the internal Lua type tag. This method is available to Lua scripts.
 do
@@ -2860,11 +2406,6 @@ do
     lurek.log.debug("shader type: " .. sh:type())
   end)
 end
-
--- -----------------------------------------------------------------------------
--- LShape methods
--- -----------------------------------------------------------------------------
-
 --@api-stub: LShape:clear
 -- Removes all drawing commands from this shape, making it empty.
 do
@@ -2874,7 +2415,6 @@ do
   icon:clear()
   lurek.log.debug("shape cleared — ready for new commands")
 end
-
 --@api-stub: LShape:typeOf
 -- Checks whether this object matches the given type name.
 do
@@ -2882,7 +2422,6 @@ do
   local shape = lurek.render.newShape()
   if shape:typeOf("LShape") then lurek.log.debug("confirmed LShape") end
 end
-
 --@api-stub: LShape:type
 -- Returns the internal Lua type tag. This method is available to Lua scripts.
 do
@@ -2890,11 +2429,6 @@ do
   local shape = lurek.render.newShape()
   lurek.log.debug("shape type: " .. shape:type())
 end
-
--- -----------------------------------------------------------------------------
--- LSpriteBatch methods
--- -----------------------------------------------------------------------------
-
 --@api-stub: LSpriteBatch:clear
 -- Removes all entries from the sprite batch.
 do
@@ -2906,7 +2440,6 @@ do
     lurek.log.debug("sprite batch cleared")
   end)
 end
-
 --@api-stub: LSpriteBatch:getCount
 -- Returns the number of sprite entries currently in the batch.
 do
@@ -2917,7 +2450,6 @@ do
     lurek.log.debug("batch entries: " .. batch:getCount())
   end)
 end
-
 --@api-stub: LSpriteBatch:release
 -- Releases the sprite batch resource.
 do
@@ -2929,7 +2461,6 @@ do
     lurek.log.debug("sprite batch released")
   end)
 end
-
 --@api-stub: LSpriteBatch:typeOf
 -- Checks whether this object matches the given type name.
 do
@@ -2940,7 +2471,6 @@ do
     if batch:typeOf("LSpriteBatch") then lurek.log.debug("confirmed LSpriteBatch") end
   end)
 end
-
 --@api-stub: LSpriteBatch:type
 -- Returns the internal Lua type tag. This method is available to Lua scripts.
 do
@@ -2951,16 +2481,6 @@ do
     lurek.log.debug("batch type: " .. batch:type())
   end)
 end
-
--- =============================================================================
--- STUBS: 12 uncovered lurek.render API item(s)
--- Generated by tools/audit/example_add_missing.py
--- REQUIRED: replace every --@api-stub: block below with a real scenario.
--- Run .github/prompts/flesh-out-example.prompt.md for instructions.
--- The final committed file must contain ZERO --@api-stub: lines.
--- =============================================================================
-
--- ---- Stub: lurek.render.rectangle ----------------------------------------
 --@api-stub: lurek.render.rectangle
 -- Draws a rectangle. If rx is provided, draws a rounded rectangle.
 do
@@ -2968,8 +2488,6 @@ do
   lurek.render.setColor(0.2, 0.8, 0.2, 1)
   lurek.render.rectangle("fill", 100, 100, 200, 120)
 end
-
--- ---- Stub: lurek.render.circle -------------------------------------------
 --@api-stub: lurek.render.circle
 -- Draws a filled or outlined circle at the given position.
 do
@@ -2977,8 +2495,6 @@ do
   lurek.render.setColor(1, 0.5, 0, 1)
   lurek.render.circle("fill", 400, 300, 50)
 end
-
--- ---- Stub: lurek.render.ellipse ------------------------------------------
 --@api-stub: lurek.render.ellipse
 -- Draws a filled or outlined ellipse at the given position.
 do
@@ -2986,8 +2502,6 @@ do
   lurek.render.setColor(0.3, 0.6, 1, 1)
   lurek.render.ellipse("fill", 300, 200, 80, 40)
 end
-
--- ---- Stub: lurek.render.triangle -----------------------------------------
 --@api-stub: lurek.render.triangle
 -- Draws a triangle from three vertex positions.
 do
@@ -2995,8 +2509,6 @@ do
   lurek.render.setColor(1, 0.2, 0.2, 1)
   lurek.render.triangle("fill", 200, 50, 100, 250, 300, 250)
 end
-
--- ---- Stub: lurek.render.line ---------------------------------------------
 --@api-stub: lurek.render.line
 -- Draws a line between two points, or a polyline through multiple points.
 do
@@ -3004,8 +2516,6 @@ do
   lurek.render.setColor(1, 1, 0, 1)
   lurek.render.line(100, 100, 400, 300)
 end
-
--- ---- Stub: lurek.render.polygon ------------------------------------------
 --@api-stub: lurek.render.polygon
 -- Draws a polygon from a flat list of x,y vertex coordinates.
 do
@@ -3013,8 +2523,6 @@ do
   lurek.render.setColor(0.8, 0.2, 0.8, 1)
   lurek.render.polygon("fill", 200, 100, 100, 300, 300, 300)
 end
-
--- ---- Stub: lurek.render.arc ----------------------------------------------
 --@api-stub: lurek.render.arc
 -- Draws a filled or outlined circular arc segment.
 do
@@ -3022,8 +2530,6 @@ do
   lurek.render.setColor(0, 1, 0.5, 1)
   lurek.render.arc("fill", 200, 200, 80, 0, math.pi)
 end
-
--- ---- Stub: lurek.render.setLineWidth -------------------------------------
 --@api-stub: lurek.render.setLineWidth
 -- Sets the line width for subsequent line-mode draw calls.
 do
@@ -3033,8 +2539,6 @@ do
   lurek.render.rectangle("line", 50, 50, 200, 100)
   lurek.render.setLineWidth(1) -- restore default
 end
-
--- ---- Stub: lurek.render.resetCanvas --------------------------------------
 --@api-stub: lurek.render.resetCanvas
 -- Marks a canvas as needing a full clear before its next render pass. Use before re-rendering to avoid content accumulation.
 do
@@ -3043,32 +2547,24 @@ do
   lurek.render.resetCanvas(canvas)
   lurek.log.debug("canvas reset, ready for fresh render pass", "render")
 end
-
--- ---- Stub: lurek.render.getWidth -----------------------------------------
 --@api-stub: lurek.render.getWidth
 -- Returns the current window width in pixels.
 do
   local w = lurek.render.getWidth()
   lurek.log.debug("render width: " .. w .. " px", "render")
 end
-
--- ---- Stub: lurek.render.getHeight ----------------------------------------
 --@api-stub: lurek.render.getHeight
 -- Returns the current window height in pixels.
 do
   local h = lurek.render.getHeight()
   lurek.log.debug("render height: " .. h .. " px", "render")
 end
-
--- ---- Stub: lurek.render.getDimensions ------------------------------------
 --@api-stub: lurek.render.getDimensions
 -- Returns the current window width and height.
 do
   local w, h = lurek.render.getDimensions()
   lurek.log.debug("canvas: " .. w .. "x" .. h, "render")
 end
-
--- ---- Stub: lurek.render.clear --------------------------------------------
 --@api-stub: lurek.render.clear
 -- Clears the screen with a solid color.
 do
@@ -3076,8 +2572,6 @@ do
     lurek.render.clear(0.1, 0.1, 0.2)
   end
 end
-
--- ---- Stub: lurek.render.draw ---------------------------------------------
 --@api-stub: lurek.render.draw
 -- Submits a drawable object or render command to the current frame.
 do
@@ -3090,8 +2584,6 @@ do
     lurek.render.draw(_draw_canvas, 10, 10)
   end
 end
-
--- ---- Stub: lurek.render.setColor ----------------------------------------
 --@api-stub: lurek.render.setColor
 -- Sets the current draw color used by subsequent render calls.
 do
